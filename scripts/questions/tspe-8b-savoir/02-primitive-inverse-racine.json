@@ -1,10 +1,8 @@
 {
+	"id": "10c6d48e-22b6-4e03-90a2-2cc25bf6dc87",
 	"title": "Primitive de x ↦ 1/√x",
 	"description": "À savoir : une primitive de 1/√x sur ]0 ; +∞[ est 2√x ; dans les deux sens ; distracteurs : √x (facteur oublié), √x/2, dérivée",
 	"grades": ["T_SPE"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Primitives",
-	"subdomain": "À savoir",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

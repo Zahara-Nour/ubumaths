@@ -1,10 +1,8 @@
 {
+	"id": "06601c87-7abb-4a3d-a0fc-750d61760faa",
 	"title": "Représenter les solutions d'une inéquation ax ⩾ b",
 	"description": "Résoudre une inéquation du type ax ⩾ b (a positif ou négatif, les quatre sens, borne entière ou en tiers) et représenter ses solutions sur la droite graduée avec un crochet",
 	"grades": ["3"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "ax ⩾ b",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

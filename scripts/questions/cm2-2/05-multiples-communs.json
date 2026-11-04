@@ -1,10 +1,8 @@
 {
+	"id": "84749b7b-839d-46f2-aae3-796549146c33",
 	"title": "Multiples communs à deux nombres",
 	"description": "Multiples communs à deux entiers inférieurs à 15 (6 et 8) : le plus petit, un multiple commun inférieur à 100, les cocher dans une liste",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Multiples et diviseurs",
 	"level": 8,
 	"delay": 30,
 	"status": "draft",

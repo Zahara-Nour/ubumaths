@@ -1,10 +1,8 @@
 {
+	"id": "1bd819dd-d9ae-4120-94e0-86ada1d1c3bf",
 	"title": "Estimer une longueur",
 	"description": "Une trousse mesure plutôt 2 cm, 20 cm ou 2 m ?",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Ordres de grandeur",
 	"level": 5,
 	"delay": 45,
 	"status": "draft",

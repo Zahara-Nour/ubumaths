@@ -1,10 +1,8 @@
 {
+	"id": "46ca97e7-278a-43ce-ada2-f237b8febd33",
 	"title": "Représenter une grandeur par un graphique",
 	"description": "Représenter une grandeur en fonction d'une autre par un graphique : placer les points donnés par une formule ou un tableau de valeurs, choisir le bon graphique",
 	"grades": ["4"],
-	"theme": "Fonctions",
-	"domain": "Dépendance",
-	"subdomain": "Graphique",
 	"level": 1,
 	"delay": 120,
 	"status": "draft",

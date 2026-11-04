@@ -1,10 +1,8 @@
 {
+	"id": "0ce253ea-fd79-4810-81c3-5a0dc2e9d38d",
 	"title": "Placer un nombre décimal",
 	"description": "Placer un nombre décimal sur une demi-droite graduée : en dixièmes, en centièmes (droite agrandie), en demis ou en quarts, puis deux points sur la même droite",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 2,
 	"delay": 45,
 	"status": "draft",

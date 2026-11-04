@@ -1,10 +1,8 @@
 {
+	"id": "32bf80ae-9321-48cd-aa5a-12eeb6fbb9aa",
 	"title": "Variance de aX + b : V(aX) = a²V(X)",
 	"description": "V(aX) = a²V(X), V(aX + b) = a²V(X), σ(aX + b) = |a|σ(X) avec a négatif, gain G = aX − b (pièges : aV(X), b ajouté, σ négatif)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Sommes de variables aléatoires",
-	"subdomain": "Espérance et variance",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

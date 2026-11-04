@@ -1,10 +1,8 @@
 {
+	"id": "87a869c2-5800-4f4d-853a-ae67fb7c688a",
 	"title": "Soustraire 10",
 	"description": "Retirer une dizaine à un nombre",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Soustraire",
-	"subdomain": "Différence",
 	"level": 13,
 	"delay": 20,
 	"status": "draft",

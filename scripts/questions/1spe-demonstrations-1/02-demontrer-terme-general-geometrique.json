@@ -1,10 +1,8 @@
 {
+	"id": "acaeb02a-e934-43b6-99bc-46bb1ffb4f0f",
 	"title": "Démontrer le terme général d'une suite géométrique",
 	"description": "Démonstration à trous de uₙ = u₀qⁿ : produit télescopique des n quotients uₖ₊₁/uₖ = q, calcul de proche en proche jusqu'à u₃, justification de l'existence des quotients",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Suites géométriques",
-	"subdomain": "Démonstrations",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

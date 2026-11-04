@@ -1,10 +1,8 @@
 {
+	"id": "19889310-745e-4dba-b236-38b3f813e71d",
 	"title": "Proportionnalité, graphique et Thalès",
 	"description": "Lire une proportionnalité sur une droite passant par l'origine avec le théorème de Thalès : choisir l'égalité, calculer l'ordonnée d'un point",
 	"grades": ["3"],
-	"theme": "Proportionnalité",
-	"domain": "Caractérisation",
-	"subdomain": "Graphique et Thalès",
 	"level": 1,
 	"delay": 75,
 	"status": "draft",

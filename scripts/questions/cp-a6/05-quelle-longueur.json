@@ -1,10 +1,8 @@
 {
+	"id": "39dfd0cc-fb95-41cb-adbd-88e240b19abd",
 	"title": "Quelle longueur ? (longueurs de référence)",
 	"description": "Choisir la longueur possible d'un objet familier : une trousse mesure 2 cm, 20 cm ou 1 m ?",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Ordres de grandeur",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

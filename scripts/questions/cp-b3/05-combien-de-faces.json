@@ -1,10 +1,8 @@
 {
+	"id": "8e207417-6be5-4c0d-81d2-d419a7dc4db1",
 	"title": "Combien de faces ?",
 	"description": "Le nombre de faces d'un cube ou d'un pavé (6), faces cachées comprises",
 	"grades": ["CP"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Reconnaître et décrire",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

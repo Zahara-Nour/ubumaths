@@ -1,10 +1,8 @@
 {
+	"id": "f5edd7ef-88c1-420a-8a29-39bee56a6114",
 	"title": "Les unités de masse : g, kg, t",
 	"description": "Symbole et sens de g, kg, t ; la plus grande et la plus petite ; laquelle est la plus grande de deux unités",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Unités",
 	"level": 3,
 	"delay": 45,
 	"status": "draft",

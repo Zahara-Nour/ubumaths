@@ -1,10 +1,8 @@
 {
+	"id": "b807cc6c-a78e-4f28-94b1-afa99517d179",
 	"title": "Résoudre graphiquement une équation |x| = k",
 	"description": "Équation |x| = k lue sur la courbe de la valeur absolue : deux solutions, k = 0, k < 0",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Valeur absolue",
-	"subdomain": "Lecture graphique",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

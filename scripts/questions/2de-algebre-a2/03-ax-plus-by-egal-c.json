@@ -1,10 +1,8 @@
 {
+	"id": "d7aa3f33-53fb-4529-98da-c8a64a3f0281",
 	"title": "Exprimer une variable en fonction de l'autre",
 	"description": "ax + by = c : y en fonction de x, x en fonction de y",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Transformation",
-	"subdomain": "Isoler une variable",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

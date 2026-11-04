@@ -1,11 +1,9 @@
 {
+	"id": "604f83b7-4ed3-4b0f-b393-85e60ac353b4",
 	"title": "Factoriser un trinôme à l'aide de ses racines",
 	"description": "Forme factorisée a(x − x₁)(x − x₂)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Polynôme du second degré",
 	"status": "draft",
-	"subdomain": "Formes",
 	"level": 3,
 	"delay": 90,
 	"variations": [

@@ -1,10 +1,8 @@
 {
+	"id": "dc5d7cb6-5d9a-41ca-89c3-83f4d6750613",
 	"title": "Tracer une droite donnée par un point et sa pente",
 	"description": "Droite donnée par un point A et son coefficient directeur, à tracer dans un repère (deux points posés) : pente entière, puis fractionnaire (avancer de q, monter de k)",
 	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Équations de droites",
 	"level": 8,
 	"delay": 60,
 	"status": "draft",

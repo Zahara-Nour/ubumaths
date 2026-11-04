@@ -14,7 +14,7 @@
  *  - seuls `variations`, `options`, `test_specs`, `title`, `description`, `level`, `delay` sont
  *    écrits ; ⚠️ `delay` n'est donc plus une garde : relancer un ancien lot réécrit le temps
  *    de son instantané (chantier `tableau-signes`, 2026-11-03) ;
- *    tout autre champ du fichier (thème, domaine, sous-domaine, classes…) doit être
+ *    tout autre champ du fichier (classes, consigne…) doit être
  *    IDENTIQUE à la base, sinon arrêt ; `status` n'est jamais écrit ;
  *  - `shared` : seul l'AJOUT de `cleanCoefficients: true` s'écrit (valeur = `shared` de la
  *    base + l'option, `relecture/shared-clean-coefficients.ts`) ; tout autre écart = arrêt ;
@@ -24,8 +24,10 @@
  * S'arrête à la première erreur.
  *
  * Changement de niveau : l'index `idx_question_templates_unique_category` interdit deux modèles
- * publiés au même (thème, domaine, sous-domaine, niveau). Un échange de niveaux passe donc par
- * un niveau temporaire (900 + niveau) avant l'écriture finale.
+ * publiés au même (thème, domaine, sous-domaine, niveau). Ces colonnes sont lues en base : un
+ * fichier ne les porte plus. Un échange de niveaux passe donc par
+ * un niveau temporaire (900 + niveau) avant l'écriture finale. Contrôle et niveau temporaire
+ * partent avec l'index (lot 4 du chantier `automaths-arbre`, ADR 0035).
  *
  * Usage :
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
@@ -245,9 +247,6 @@ type ChampEcrit = (typeof CHAMPS_ECRITS)[number];
 
 /** Champs comparés sans être écrits (un écart = arrêt) */
 const CHAMPS_FIGES = [
-	'theme',
-	'domain',
-	'subdomain',
 	'grades',
 	'status',
 	'exerciseInstruction',

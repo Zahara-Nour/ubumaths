@@ -1,10 +1,8 @@
 {
+	"id": "78a6ba79-0f98-42f6-b965-e2fd2a3291fa",
 	"title": "Ranger des nombres",
 	"description": "Quatre nombres jusqu'à 100, ordre croissant ou décroissant",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 5,
 	"delay": 20,
 	"status": "draft",

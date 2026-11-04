@@ -1,10 +1,8 @@
 {
+	"id": "d6d9d5f7-8af1-45ba-aa9f-fb5f9e0fc82e",
 	"title": "Espace : position relative de deux droites",
 	"description": "Sur un cube ou un pavé droit nommé, deux droites par deux sommets : sécantes (en un sommet ou au milieu de diagonales), strictement parallèles, non coplanaires (piège : ne pas se couper n'est pas être parallèles)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Positions relatives",
 	"level": 1,
 	"delay": 120,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "5bf5b452-1039-4139-aff0-ed5224050761",
 	"title": "Comparaison et encadrement pour les fonctions",
 	"description": "À savoir : f ≥ g et g → +∞ ⟹ f → +∞ ; encadrement g ≤ f ≤ h, même limite ; piège : f ≤ g et g → +∞ ne dit rien de f",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Limites de fonctions",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

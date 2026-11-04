@@ -1,10 +1,8 @@
 {
+	"id": "e7ef2835-a2c6-4666-b288-a56c2570e7a5",
 	"title": "Ce que conserve une translation",
 	"description": "Utiliser les propriétés de conservation d'une translation : longueur, angle, aire d'une figure image, image d'une droite",
 	"grades": ["4"],
-	"theme": "Géométrie",
-	"domain": "Translations",
-	"subdomain": "Conservations",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

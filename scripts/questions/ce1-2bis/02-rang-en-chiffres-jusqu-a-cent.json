@@ -1,10 +1,8 @@
 {
+	"id": "50d9118b-8b76-4a21-9be0-6db6d6eb39ca",
 	"title": "Le rang en chiffres (jusqu'à centième)",
 	"description": "Lire un rang écrit en lettres : quatre-vingt-unième → place numéro 81",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordinaux",
 	"level": 8,
 	"delay": 30,
 	"status": "draft",

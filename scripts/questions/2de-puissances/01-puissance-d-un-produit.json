@@ -1,10 +1,8 @@
 {
+	"id": "04b1cc7f-8630-4ff2-981c-95c2f57d1161",
 	"title": "Puissance d'un produit",
 	"description": "Écrire sans parenthèses (kx)ⁿ, (−kx)ⁿ et (kxᵐ)ⁿ",
 	"grades": ["2"],
-	"theme": "Puissances",
-	"domain": "Calculer",
-	"subdomain": "Puissance d'un produit",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

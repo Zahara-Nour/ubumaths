@@ -1,10 +1,8 @@
 {
+	"id": "8df8ba2b-a492-47be-a5a4-e1da13f4eba7",
 	"title": "Termes et facteurs",
 	"description": "Reconnaître les termes d'une somme et les facteurs d'un produit : le 2e terme de 7 + 3 × 5 est 3 × 5 ; le 1er facteur de (4 + 2) × 9 est 4 + 2",
 	"grades": ["5"],
-	"theme": "Entiers",
-	"domain": "Priorités opératoires",
-	"subdomain": "Vocabulaire",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

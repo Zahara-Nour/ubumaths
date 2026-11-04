@@ -1,10 +1,8 @@
 {
+	"id": "a371b402-df21-4f20-ac46-250ef1a36b7c",
 	"title": "Résoudre graphiquement une inéquation √x < k",
 	"description": "Inéquation √x < k lue sur la courbe de la fonction racine carrée : k > 0 (les quatre sens, 0 compris à gauche), k < 0 (∅ ou [0 ; +∞[)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction racine carrée",
-	"subdomain": "Lecture graphique",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

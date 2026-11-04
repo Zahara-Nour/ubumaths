@@ -1,10 +1,8 @@
 {
+	"id": "7d07b0c2-dfa7-45a5-997e-0309d14af3bb",
 	"title": "Représentants d'un vecteur",
 	"description": "Trouver le point L tel que KL = u, puis l'origine M telle que MK = u, sur quadrillage (pièges : sens inversé, coordonnées échangées, signe)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Égalité",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

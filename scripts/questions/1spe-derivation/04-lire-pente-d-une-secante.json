@@ -1,10 +1,8 @@
 {
+	"id": "8a384698-1367-4a12-a995-b6cd4df9cfe1",
 	"title": "Lire la pente d'une sécante sur un graphique",
 	"description": "Coefficient directeur de la sécante (AB) lu sur la courbe, A et B sur des nœuds de la grille ; sécante tracée, puis points seuls",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Taux de variation",
 	"level": 4,
 	"delay": 45,
 	"status": "draft",

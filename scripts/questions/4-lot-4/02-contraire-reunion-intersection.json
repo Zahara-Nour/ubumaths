@@ -1,10 +1,8 @@
 {
+	"id": "abd1eeb7-24dd-4f51-bb29-0c85223cd553",
 	"title": "Contraire, réunion, intersection",
 	"description": "Écrire le contraire, la réunion et l'intersection d'évènements comme des ensembles d'issues ; reconnaître l'évènement impossible ; lire ∩, ∪ et la barre",
 	"grades": ["4"],
-	"theme": "Probabilités",
-	"domain": "Évènements",
-	"subdomain": "Opérations",
 	"level": 2,
 	"delay": 75,
 	"status": "draft",

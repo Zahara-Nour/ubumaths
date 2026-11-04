@@ -1,10 +1,8 @@
 {
+	"id": "0ada6949-e6e5-42b3-961c-6b40e6d35af0",
 	"title": "Termes, somme et différence dans une égalité",
 	"description": "Dans 12 + 25 = 37 : les termes, la somme ; dans 60 − 37 = 23 : les termes, la différence",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Additionner",
-	"subdomain": "Sens",
 	"level": 7,
 	"delay": 20,
 	"status": "draft",

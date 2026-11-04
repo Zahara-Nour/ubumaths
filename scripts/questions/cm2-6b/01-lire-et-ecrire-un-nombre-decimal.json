@@ -1,10 +1,8 @@
 {
+	"id": "bc2cc245-bb5c-4063-bb15-8243a5dbefb5",
 	"title": "Lire et écrire un nombre décimal",
 	"description": "Quatre unités et cent-sept millièmes ↔ 4,107 : écrire avec une virgule un nombre donné en lettres (un rang parfois vide : 3,205), le lire parmi quatre écritures ; au plus trois décimales",
 	"grades": ["CM2"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 13,
 	"delay": 30,
 	"status": "draft",

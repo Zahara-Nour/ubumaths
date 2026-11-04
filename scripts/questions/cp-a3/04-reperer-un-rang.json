@@ -1,10 +1,8 @@
 {
+	"id": "10226cae-4a16-4e9f-98a1-469099d3e192",
 	"title": "Repérer un rang dans une liste ou une file",
 	"description": "Le 4e nombre d'une liste, la place d'un nombre, une perle comptée depuis la gauche ou depuis la droite",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordinaux",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

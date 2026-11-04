@@ -1,10 +1,8 @@
 {
+	"id": "22141fa4-f1b9-43d8-88c2-ff2637d0a8a1",
 	"title": "Évolution exponentielle et suite géométrique",
 	"description": "Temps continu f(t) = Ce^{kt}, temps discret uₙ = f(n) : raison e^{−k} arrondie, taux annuel e^k − 1 en %, facteur d'une demi-année e^{k/2}",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "Suites et modélisation",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

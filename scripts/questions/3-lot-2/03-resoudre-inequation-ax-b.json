@@ -1,10 +1,8 @@
 {
+	"id": "24aff7b0-dded-4530-b743-1072643bd7be",
 	"title": "Résoudre une inéquation ax ⩾ b",
 	"description": "Résoudre une inéquation du type ax ⩾ b, les quatre sens (<, ⩽, >, ⩾), a positif ou négatif (3x ⩾ 12, −2x < 6, −7x < 3) ; réponse écrite en inégalité « x > 4 »",
 	"grades": ["3"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "ax ⩾ b",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

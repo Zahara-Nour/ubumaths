@@ -1,10 +1,8 @@
 {
+	"id": "3b9d3ec2-502e-4443-b03d-6a098a97dd41",
 	"title": "Donner la valeur absolue d'un nombre",
 	"description": "Donner la valeur absolue (la distance à zéro) d'un nombre relatif : celle de −7 est 7, celle de 12 est 12, celle de −4,5 est 4,5",
 	"grades": ["5"],
-	"theme": "Relatifs",
-	"domain": "Apprivoiser",
-	"subdomain": "Valeur absolue",
 	"level": 1,
 	"delay": 20,
 	"status": "draft",

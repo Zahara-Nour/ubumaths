@@ -1,9 +1,7 @@
 {
+	"id": "a0089728-f07a-46ba-8109-7550d2ac800d",
 	"title": "Vérifier si un nombre est racine d'un polynôme",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Polynôme du second degré",
-	"subdomain": "Racines",
 	"level": 1,
 	"delay": 20,
 	"status": "published",

@@ -1,10 +1,8 @@
 {
+	"id": "d80a7d42-d377-415e-b5b1-5fc0a0b01b5a",
 	"title": "Résoudre A(x) = 0 avec un tableau de signes",
 	"description": "Lire les solutions de A(x) = 0 sur le tableau de signes d'un produit (pièges : une seule solution, solutions sans accolades, intervalle au lieu d'un ensemble de valeurs)",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Produit et quotient",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

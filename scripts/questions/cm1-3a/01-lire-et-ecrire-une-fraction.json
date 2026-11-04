@@ -1,10 +1,8 @@
 {
+	"id": "a2b41659-6473-423a-93ed-2ecd60b87d6e",
 	"title": "Lire et écrire une fraction",
 	"description": "Cinq tiers ↔ 5/3 : écrire en chiffres une fraction donnée en lettres, la lire parmi quatre écritures ; dénominateur au plus 20, fractions éventuellement supérieures à 1",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 6,
 	"delay": 30,
 	"status": "draft",

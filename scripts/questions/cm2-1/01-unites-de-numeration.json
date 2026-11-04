@@ -1,10 +1,8 @@
 {
+	"id": "0372fe18-23eb-44bd-902c-3f1b675acd9c",
 	"title": "Unités de numération",
 	"description": "Relations entre les unités de numération, des unités aux centaines de millions (7 millions = 7 000 milliers ; 35 centaines de mille = 3 millions et 5 centaines de mille)",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 15,
 	"delay": 20,
 	"status": "draft",

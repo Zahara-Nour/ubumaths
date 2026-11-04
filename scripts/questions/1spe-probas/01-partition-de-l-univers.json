@@ -1,10 +1,8 @@
 {
+	"id": "e0520082-84d1-417b-b344-b3bdea05300e",
 	"title": "Partition de l'univers",
 	"description": "Reconnaître une partition de l'univers (jetons numérotés : oui, issue commune, issue oubliée) ; probabilité du dernier événement d'une partition",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Partition de l'univers",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

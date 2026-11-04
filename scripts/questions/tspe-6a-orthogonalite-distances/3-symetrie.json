@@ -1,10 +1,8 @@
 {
+	"id": "49b2182f-67e3-4243-b628-483dc9cea18a",
 	"title": "Espace : symétrie du produit scalaire",
 	"description": "(u + v)·(u − v) = ‖u‖² − ‖v‖² (les termes u·v et v·u s'annulent par symétrie), v·(ku) connaissant u·v (pièges : normes non élevées au carré, signe, coefficient oublié)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Orthogonalité et distances dans l'espace",
-	"subdomain": "Produit scalaire",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "aeaff491-9215-47c0-aba1-c021a335d6d0",
 	"title": "Résoudre f(x) < k (fonction affine)",
 	"description": "Fonction affine donnée par son expression : résoudre f(x) < k, coefficient directeur positif puis négatif (le sens change), les quatre sens (pièges : sens non changé, crochet, signe en changeant de membre)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonctions affines",
-	"subdomain": "Résolution algébrique",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

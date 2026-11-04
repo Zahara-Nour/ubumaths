@@ -1,10 +1,8 @@
 {
+	"id": "fba01378-d2d7-4d44-9236-300a5871ef1c",
 	"title": "Variance et écart type",
 	"description": "À savoir : V(X) = E((X − E(X))²) et σ(X) = √V(X), parmi des erreurs typiques (E(X)², E(X − E(X)), V(X)²) ; König-Huygens reste au point 352",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

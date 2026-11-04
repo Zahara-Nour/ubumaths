@@ -1,10 +1,8 @@
 {
+	"id": "fa0c8afd-e769-4717-ae69-a8c96f9cca27",
 	"title": "Employer « en fonction de »",
 	"description": "Comprendre « exprimer A en fonction de B » : la formule p = 2n exprime p en fonction de n ; choisir la formule qui exprime le prix en fonction de la masse",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Écrire",
-	"subdomain": "Formules",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

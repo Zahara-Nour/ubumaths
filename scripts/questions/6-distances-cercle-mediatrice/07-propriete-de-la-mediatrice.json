@@ -1,10 +1,8 @@
 {
+	"id": "9e90342c-2426-4f9f-93bd-f4e6dd3d6670",
 	"title": "Propriété caractéristique de la médiatrice",
 	"description": "La médiatrice d'un segment est l'ensemble des points à égale distance de ses extrémités : trouver MB quand M est sur la médiatrice, dire si un point y est d'après MA et MB",
 	"grades": ["6"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Médiatrice d'un segment",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

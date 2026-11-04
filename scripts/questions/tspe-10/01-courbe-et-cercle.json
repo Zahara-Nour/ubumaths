@@ -1,10 +1,8 @@
 {
+	"id": "96b90f36-da1d-4d77-be73-ede6ee6420ed",
 	"title": "Lier la courbe de sinus ou cosinus et le cercle",
 	"description": "Point M du cercle associé à x → point (x ; sin x) ou (x ; cos x) de la courbe (distracteurs −x, π − x, π/2 − x, tous sur la courbe) ; signe de cos x lu sur le quadrant de M → position du point de la courbe",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Fonctions cosinus et sinus",
 	"level": 6,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "3fa3af6c-e50f-42ff-88a9-85ca0d913cef",
 	"title": "Établir une inégalité par les variations",
 	"description": "Inégalité démontrée par le minimum de g = différence des deux membres : x³ + 2a³ ≥ 3a²x sur [0 ; +∞[, eˣ ≥ 1 + x, x + a²/x ≥ 2a sur ]0 ; +∞[",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Variations",
 	"level": 8,
 	"delay": 90,
 	"status": "draft",

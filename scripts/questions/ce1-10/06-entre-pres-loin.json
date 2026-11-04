@@ -1,10 +1,8 @@
 {
+	"id": "1b29650b-bfd7-4282-b8e3-d48aa6684c1c",
 	"title": "Entre, à gauche, à droite, au-dessus, en dessous, près, loin",
 	"description": "Situer des objets sur une étagère",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Repérage et déplacements",
-	"subdomain": "Positions et plans",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

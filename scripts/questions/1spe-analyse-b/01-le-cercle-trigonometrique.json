@@ -1,10 +1,8 @@
 {
+	"id": "aae5c0fc-e220-4958-9604-01f110b6fecf",
 	"title": "Le cercle trigonométrique",
 	"description": "Rayon et longueur du cercle trigonométrique, sens direct (ou indirect), point du cercle associé à un multiple de π/2",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Cercle et radians",
 	"level": 4,
 	"delay": 45,
 	"status": "draft",

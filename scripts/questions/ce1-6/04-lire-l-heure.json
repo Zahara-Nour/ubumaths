@@ -1,10 +1,8 @@
 {
+	"id": "e3d11972-bc53-429f-93a5-a68c166785bd",
 	"title": "Quelle heure est-il ? (quarts et demies)",
 	"description": "Lire 8 h 30, 3 h 15, 8 h 45 sur une horloge à aiguilles ; l'après-midi, 14 h 15",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Lire l'heure",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

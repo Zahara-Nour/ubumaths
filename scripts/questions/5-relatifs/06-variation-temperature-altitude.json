@@ -1,10 +1,8 @@
 {
+	"id": "469f1c9d-9f38-43e7-8464-ab4af7dfb682",
 	"title": "Variation de température ou d'altitude",
 	"description": "Calculer une température qui monte ou baisse en passant par 0 (−5 °C, puis +8 °C), une altitude de sous-marin qui remonte ou descend",
 	"grades": ["5"],
-	"theme": "Relatifs",
-	"domain": "Additionner et soustraire",
-	"subdomain": "Problèmes",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

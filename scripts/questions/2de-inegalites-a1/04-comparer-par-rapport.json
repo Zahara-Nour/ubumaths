@@ -1,10 +1,8 @@
 {
+	"id": "d8b9e814-6dd9-4719-bc1f-a14d1bbfcdc2",
 	"title": "Comparer deux nombres positifs par leur rapport",
 	"description": "Rapport a/b comparé à 1 : deux fractions ; deux nombres écrits avec des puissances de 10",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inégalités",
-	"subdomain": "Comparer",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

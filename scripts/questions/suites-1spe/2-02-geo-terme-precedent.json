@@ -1,10 +1,8 @@
 {
+	"id": "279cf28f-a9e9-4c15-bd00-adbb9442c9bd",
 	"title": "Calculer un terme d'une suite géométrique",
 	"description": "Calculer le terme précédent",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Suites géométriques",
-	"subdomain": "Calculer un terme",
 	"level": 2,
 	"status": "draft",
 	"delay": 30,

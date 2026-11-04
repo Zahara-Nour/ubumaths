@@ -1,10 +1,8 @@
 {
+	"id": "08c059b8-2efc-483e-9a7d-cdb9d146c9f9",
 	"title": "Résoudre graphiquement une inéquation x² < k",
 	"description": "Inéquation x² < k lue sur la parabole de la fonction carré : k > 0 (entre −√k et √k, ou en dehors, les quatre sens), k < 0 (∅ ou ℝ)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction carré",
-	"subdomain": "Lecture graphique",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

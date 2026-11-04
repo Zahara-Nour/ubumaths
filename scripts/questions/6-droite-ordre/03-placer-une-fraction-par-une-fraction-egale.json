@@ -1,10 +1,8 @@
 {
+	"id": "5f9ba34d-e78b-46ba-b05f-1bc3eaaa1074",
 	"title": "Placer une fraction en passant par une fraction égale",
 	"description": "Placer une fraction sur une demi-droite graduée dans un autre dénominateur (2/3 sur une droite en sixièmes) : passer par la fraction égale ; puis deux points sur la même droite",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 7,
 	"delay": 45,
 	"status": "draft",

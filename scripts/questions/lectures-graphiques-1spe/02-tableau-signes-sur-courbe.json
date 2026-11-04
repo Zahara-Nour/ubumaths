@@ -1,10 +1,8 @@
 {
+	"id": "5397c20f-7b3a-4d56-b441-644607e0138a",
 	"title": "Dresser le tableau de signes d'une fonction lu sur sa courbe",
 	"description": "Tableau de signes à compléter (zéros, signes, marques) d'après la courbe : cubique à trois zéros ou parabole à deux zéros",
 	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Signe",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

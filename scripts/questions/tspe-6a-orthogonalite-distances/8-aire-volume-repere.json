@@ -1,10 +1,8 @@
 {
+	"id": "aaa16821-b175-45c9-9085-84b879d77ae6",
 	"title": "Espace : aire et volume en repère",
 	"description": "Aire d'un triangle rectangle (orthogonalité vérifiée par le produit scalaire), volume d'un tétraèdre trirectangle (pièges : division par 2 oubliée, 1/3 oublié)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Orthogonalité et distances dans l'espace",
-	"subdomain": "Grandeurs",
 	"level": 1,
 	"delay": 180,
 	"status": "draft",

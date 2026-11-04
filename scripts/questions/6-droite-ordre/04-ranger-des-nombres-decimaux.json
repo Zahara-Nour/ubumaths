@@ -1,10 +1,8 @@
 {
+	"id": "92db5823-66b8-4778-9c40-42f6b5eed9fe",
 	"title": "Ranger des nombres décimaux",
 	"description": "Ranger cinq nombres décimaux : même partie entière et nombres de décimales différents (3,247 < 3,4), parties entières proches avec un entier, zéros intercalés (3,05 < 3,055 < 3,5)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

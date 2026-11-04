@@ -1,10 +1,8 @@
 {
+	"id": "9e377c97-6940-48c9-9442-d64f05cb9a94",
 	"title": "Démontrer l'équation de la tangente",
 	"description": "Démonstration à trous de y = f(a) + f′(a)(x − a) : justification du coefficient directeur f′(a), ordonnée à l'origine par le point A (valeurs tirées), factorisation par f′(a)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Démonstrations",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

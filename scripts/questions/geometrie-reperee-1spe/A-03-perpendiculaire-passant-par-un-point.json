@@ -1,10 +1,8 @@
 {
+	"id": "518f7f0b-389b-4cf2-b67c-5591ca00afb9",
 	"title": "Droite perpendiculaire passant par un point",
 	"description": "Déterminer une équation de la perpendiculaire à une droite passant par un point : un vecteur directeur de la droite est normal à la perpendiculaire",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Géométrie repérée",
-	"subdomain": "Vecteur normal et équation de droite",
 	"level": 2,
 	"status": "draft",
 	"delay": 120,

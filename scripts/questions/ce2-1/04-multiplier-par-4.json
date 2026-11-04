@@ -1,10 +1,8 @@
 {
+	"id": "df4f2372-bce6-4480-a279-eb08ffb84ec7",
 	"title": "Multiplier par $4$",
 	"description": "Le double du double : 4 × 13, puis 4 × 37",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Quadruple et quart",
 	"level": 6,
 	"delay": 20,
 	"status": "draft",

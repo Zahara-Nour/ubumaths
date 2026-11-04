@@ -1,10 +1,8 @@
 {
+	"id": "39154ac5-b4b2-4995-a953-ab980156bce1",
 	"title": "Extremums lus sur une courbe",
 	"description": "Maximum et minimum d'une fonction sur un intervalle et leurs abscisses, lus sur la courbe (pièges : abscisse donnée pour la valeur, maximum cherché au sommet seulement, extrémité oubliée)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Extremums",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

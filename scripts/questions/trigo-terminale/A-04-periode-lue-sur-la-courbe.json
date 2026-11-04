@@ -1,10 +1,8 @@
 {
+	"id": "5072030d-8036-4621-a92b-75df54d371f9",
 	"title": "Lire la période sur la courbe d'une fonction trigonométrique",
 	"description": "Écart entre deux motifs identiques consécutifs sur la courbe de cos(ax), sin(3x), cos(x/2), sin(πx) (pièges : demi-période, 2π recopié, deux zéros consécutifs)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Parité et périodicité",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

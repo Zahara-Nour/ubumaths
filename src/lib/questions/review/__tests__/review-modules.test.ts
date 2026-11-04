@@ -133,7 +133,7 @@ describe('toTemplateInsertRow', () => {
 		expect(row.status).toBe('draft');
 	});
 
-	it('écrit les specs et les colonnes de la route API', () => {
+	it('écrit les specs et les colonnes de la route API, sans l’ancien quadruplet (ADR 0035)', () => {
 		const row = toTemplateInsertRow(doubleTemplate(), DAVID);
 		expect(row.test_specs).toEqual(SPECS);
 		expect(row.created_by).toBe(DAVID);
@@ -149,9 +149,6 @@ describe('toTemplateInsertRow', () => {
 				'exercise_instruction',
 				'options',
 				'grades',
-				'theme',
-				'domain',
-				'subdomain',
 				'level',
 				'status',
 				'delay',

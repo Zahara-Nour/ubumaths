@@ -1,10 +1,8 @@
 {
+	"id": "fa65910d-147f-447f-b846-8e7348e58ed0",
 	"title": "Multiple : a = k × b",
 	"description": "Trouver k dans 351 = k × 13 ; dire si 391 est un multiple de 17 (nombres ⩽ 800) ; écrire 6n + 15 = 3 × (2n + 5)",
 	"grades": ["2"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Multiples et diviseurs",
 	"level": 9,
 	"delay": 60,
 	"status": "draft",

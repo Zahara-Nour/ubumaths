@@ -1,10 +1,8 @@
 {
+	"id": "47d451b4-4d79-4bf1-9190-c7a8b131c2a5",
 	"title": "Équation de cercle",
 	"description": "À savoir : en repère orthonormé, (x − a)² + (y − b)² = r² est une équation du cercle de centre (a ; b) et de rayon r, dans les deux sens (erreurs typiques : signes, r au lieu de r², disque)",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Géométrie repérée",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

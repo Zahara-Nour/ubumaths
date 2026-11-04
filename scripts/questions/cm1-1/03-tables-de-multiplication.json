@@ -1,10 +1,8 @@
 {
+	"id": "50a9d91c-9647-4b98-bec1-5a7b939e3180",
 	"title": "Tables de multiplication",
 	"description": "Toutes les tables mêlées : a × b, a et b de 2 à 10",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Tables",
 	"level": 10,
 	"delay": 20,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "db8b5dc8-2d2d-41ed-9af5-a4f5551c6aaa",
 	"title": "Un couple appartient-il à A × B ?",
 	"description": "Reconnaître les couples d'un produit cartésien (l'ordre des composantes compte) ; plusieurs bonnes réponses",
 	"grades": ["1_SPE"],
-	"theme": "Logique",
-	"domain": "Ensembles",
-	"subdomain": "Cardinal et produit cartésien",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

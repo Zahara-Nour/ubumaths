@@ -1,10 +1,8 @@
 {
+	"id": "7a3b209d-05b1-400d-98ba-e57d85639d05",
 	"title": "Trois points alignés : par une équation de droite",
 	"description": "A, B, C alignés ? en testant C dans l'équation de (AB) ; ordonnée de C pour que A, B, C soient alignés, par l'équation de (AB) (pièges : abscisse et ordonnée échangées, signe de p)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Positions relatives",
 	"level": 1,
 	"delay": 120,
 	"status": "draft",

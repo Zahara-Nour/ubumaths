@@ -1,11 +1,9 @@
 {
+	"id": "25a7549a-34f5-4afc-a97d-d61c0a9efe4d",
 	"title": "Calculer la racine double",
 	"description": "Δ = 0 : x₀ = −b/(2a)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Polynôme du second degré",
 	"status": "draft",
-	"subdomain": "Discriminant",
 	"level": 5,
 	"delay": 45,
 	"shared": {

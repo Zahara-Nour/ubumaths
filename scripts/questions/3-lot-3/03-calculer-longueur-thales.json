@@ -1,10 +1,8 @@
 {
+	"id": "f55d07b0-9256-4cfd-817a-28b7be6bb8ea",
 	"title": "Calculer une longueur avec Thalès",
 	"description": "Calculer une longueur avec le théorème de Thalès : côté parallèle MN, longueur sur un côté, papillon, longueur du grand triangle, puis MB donné au lieu de AM",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Théorème de Thalès",
-	"subdomain": "Calculer une longueur",
 	"level": 1,
 	"delay": 120,
 	"status": "draft",

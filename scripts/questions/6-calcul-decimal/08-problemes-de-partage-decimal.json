@@ -1,10 +1,8 @@
 {
+	"id": "87cfa41b-cd8c-4b53-9150-78f91dd71702",
 	"title": "Problèmes de partage décimal",
 	"description": "Diviser de tête une somme, une longueur, un prix total par un entier d'un chiffre (7,50 € entre 3 ; 4,2 m en 6 ; 4 cahiers pour 7,60 €)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Problèmes",
-	"subdomain": "Division",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

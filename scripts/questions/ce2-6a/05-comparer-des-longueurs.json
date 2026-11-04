@@ -1,10 +1,8 @@
 {
+	"id": "7a493f49-fee5-4345-a5c6-043aea35471b",
 	"title": "Comparer des longueurs",
 	"description": "Deux longueurs dans deux unités : 2 m et 150 cm ; 1 km et 900 m ; 12 dm et 125 cm ; ranger trois ou quatre longueurs",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Comparaison et mesure",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

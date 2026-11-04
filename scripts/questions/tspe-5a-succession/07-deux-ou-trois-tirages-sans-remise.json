@@ -1,10 +1,8 @@
 {
+	"id": "5925e666-75c5-45a7-91d8-dd92f9853ead",
 	"title": "Deux ou trois tirages sans remise",
 	"description": "Épreuves non indépendantes (deux ou trois tirages sans remise) : probabilité d'un chemin par les probabilités conditionnelles, d'un événement réalisé par deux chemins, d'« au moins une » par l'événement contraire",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Succession d'épreuves",
-	"subdomain": "Épreuves dépendantes",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

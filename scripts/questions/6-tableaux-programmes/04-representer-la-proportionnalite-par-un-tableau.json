@@ -1,10 +1,8 @@
 {
+	"id": "3838457d-87ce-4b1e-a19e-a59ad2cd0c98",
 	"title": "Représenter une situation de proportionnalité par un tableau",
 	"description": "Ranger les données d'un énoncé dans un tableau de proportionnalité (nom et unité de chaque grandeur), écrire le nombre qui fait passer d'une ligne à l'autre, reconnaître le tableau qui représente la situation",
 	"grades": ["6"],
-	"theme": "Proportionnalité",
-	"domain": "Tableaux de proportionnalité",
-	"subdomain": "Représenter",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "57585d68-65d1-42ce-b146-99b924b517b3",
 	"title": "Ajouter des inégalités",
 	"description": "Encadrer a + b, puis a − b = a + (−b), à partir de deux encadrements",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inégalités",
-	"subdomain": "Règles de calcul",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

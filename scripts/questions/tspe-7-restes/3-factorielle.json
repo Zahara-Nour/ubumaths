@@ -1,10 +1,8 @@
 {
+	"id": "ecc7bf70-34d1-4ca6-8c14-bdb74b1c39e5",
 	"title": "Factorielle : calculer, simplifier",
 	"description": "Définition de n! : calculer n!, (n+1)! à partir de n!, (n+2)!/n!, 0! (pièges : 0! = 0, (n+2)!/n! = 2)",
 	"grades": ["T_SPE"],
-	"theme": "Dénombrement",
-	"domain": "Arrangements et permutations",
-	"subdomain": "Factorielle",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

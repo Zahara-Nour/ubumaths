@@ -4,8 +4,10 @@
  *
  * Utilisé par `scripts/questions/page-a-cocher.ts` et `scripts/questions/publier-lot.ts`
  * (démarche : docs/pratiques/couvrir-un-niveau.md § 8). Un modèle du lot est retrouvé en base par
- * la même clé que `create-questions.ts` : titre, thème, domaine, sous-domaine, niveau — ou, pour
- * un instantané de la base (`export-question-templates.ts`), par l'id qu'il porte.
+ * l'`id` que porte son fichier (écrit par `create-questions --publier`, ou par
+ * `export-question-templates.ts`) ; titre et niveau doivent encore concorder. L'ancienne clé
+ * (titre + thème, domaine, sous-domaine, niveau) est abandonnée (ADR 0035, chantier
+ * `automaths-arbre`, lot 3b).
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -26,9 +28,6 @@ export interface ModeleDuLot {
 export interface LigneModele {
 	id: string;
 	title: string;
-	theme: string;
-	domain: string;
-	subdomain: string | null;
 	level: number;
 	status: string;
 }
@@ -37,8 +36,6 @@ export interface Paire<L extends LigneModele> {
 	fichier: string;
 	modele: ModeleFichier;
 	ligne: L;
-	/** Homonymes d'un autre niveau écartés par le départage (niveau hors de la clé) : à signaler */
-	ecartes?: L[];
 }
 
 export type Appariement<L extends LigneModele> =
@@ -66,29 +63,16 @@ export interface OptionsAppariement {
 	/** Statut exigé de chaque ligne (`draft` pour publier) ; tout statut sinon */
 	statut?: string;
 	/**
-	 * false : le niveau n'entre pas dans la clé (page à cocher d'un ancien lot, dont les niveaux
-	 * ont été renumérotés en base après coup ; la fiche signale l'écart). Vrai par défaut.
+	 * false : le niveau n'a pas à concorder (page à cocher d'un ancien lot, dont les niveaux ont
+	 * été renumérotés en base après coup ; la fiche signale l'écart). Vrai par défaut.
 	 */
 	niveau?: boolean;
 }
 
-/** Même clé que `create-questions.ts` (sous-domaine absent = null), niveau compris sauf option */
-function memeModele(modele: ModeleFichier, ligne: LigneModele, niveau: boolean): boolean {
-	return (
-		ligne.title === modele.title &&
-		ligne.theme === modele.theme &&
-		ligne.domain === modele.domain &&
-		ligne.subdomain === (modele.subdomain ?? null) &&
-		(!niveau || ligne.level === modele.level)
-	);
-}
-
-/** Ce qui sépare une ligne de même titre du fichier : « sous-domaine X en base, Y dans le fichier » */
+/** Ce qui sépare la ligne du fichier : « titre X en base, Y dans le fichier », vide si rien */
 function ecarts(modele: ModeleFichier, ligne: LigneModele, niveau: boolean): string {
 	const champs: [string, unknown, unknown][] = [
-		['thème', ligne.theme, modele.theme],
-		['domaine', ligne.domain, modele.domain],
-		['sous-domaine', ligne.subdomain, modele.subdomain ?? null],
+		['titre', ligne.title, modele.title],
 		...(niveau ? [['niveau', ligne.level, modele.level] as [string, unknown, unknown]] : [])
 	];
 	return champs
@@ -100,15 +84,16 @@ function ecarts(modele: ModeleFichier, ligne: LigneModele, niveau: boolean): str
 		.join(', ');
 }
 
-/** L'id que porte un fichier exporté de la base, null pour un fichier de lot écrit à la main */
+/** L'id que porte un fichier, null s'il n'en porte pas (modèle pas encore créé) */
 function idDuFichier(modele: ModeleFichier): string | null {
 	const id: unknown = (modele as { id?: unknown }).id;
 	return typeof id === 'string' && id.length > 0 ? id : null;
 }
 
 /**
- * Chaque modèle du lot avec SA ligne en base : exactement une, au statut demandé s'il est donné.
- * Tout ou rien : la moindre absence, ambiguïté ou erreur de statut fait échouer le lot entier.
+ * Chaque modèle du lot avec SA ligne en base, désignée par l'id du fichier, au statut demandé
+ * s'il est donné. Tout ou rien : un fichier sans id, un id absent, un titre ou un niveau qui ne
+ * concordent plus, un statut inattendu font échouer le lot entier.
  */
 export function apparierLot<L extends LigneModele>(
 	lot: readonly ModeleDuLot[],
@@ -118,63 +103,35 @@ export function apparierLot<L extends LigneModele>(
 	const erreurs: string[] = [];
 	const paires: Paire<L>[] = [];
 	for (const { fichier, modele } of lot) {
-		// Instantané de la base (`export-question-templates.ts`) : le fichier porte son id, qui
-		// désigne sa ligne sans homonyme possible ; la clé doit encore concorder
 		const id = idDuFichier(modele);
-		if (id !== null) {
-			const ligne = lignes.find((l) => l.id === id);
-			if (!ligne) {
-				erreurs.push(`${fichier} : id ${id.slice(0, 8)} absent de la base`);
-			} else if (!memeModele(modele, ligne, true)) {
-				erreurs.push(`${fichier} : ${ecarts(modele, ligne, true)} (${id.slice(0, 8)})`);
-			} else if (statutAttendu && ligne.status !== statutAttendu) {
-				erreurs.push(
-					`${fichier} : « ${modele.title} » (${id.slice(0, 8)}) est « ${ligne.status} », attendu « ${statutAttendu} »`
-				);
-			} else {
-				const deja = paires.find((p) => p.ligne.id === id);
-				if (deja)
-					erreurs.push(`${fichier} : même modèle en base que ${deja.fichier} (${id.slice(0, 8)})`);
-				else paires.push({ fichier, modele, ligne });
-			}
-			continue;
-		}
-		let trouvees = lignes.filter((l) => memeModele(modele, l, niveau));
-		// Niveau hors de la clé : un homonyme d'un autre niveau (même modèle en CM1 et en 6e) est
-		// départagé par le niveau du fichier, s'il en désigne exactement un. Le choix est rendu
-		// (`ecartes`) : un ancien lot renuméroté prendrait ainsi l'homonyme, pas son modèle
-		let ecartes: L[] = [];
-		const memeNiveau = trouvees.filter((l) => l.level === modele.level);
-		if (trouvees.length > 1 && memeNiveau.length === 1) {
-			ecartes = trouvees.filter((l) => l !== memeNiveau[0]);
-			trouvees = memeNiveau;
-		}
-		if (trouvees.length === 0) {
-			const memeTitre = lignes.filter((l) => l.title === modele.title);
+		if (id === null) {
 			erreurs.push(
-				`${fichier} : « ${modele.title} » absent de la base${memeTitre.map((l) => ` ; même titre, ${ecarts(modele, l, niveau)} (${l.id.slice(0, 8)})`).join('')}`
+				`${fichier} : « ${modele.title} » sans id — le créer d’abord (create-questions --publier écrit son id)`
 			);
 			continue;
 		}
-		if (trouvees.length > 1) {
-			erreurs.push(`${fichier} : ${trouvees.length} modèles « ${modele.title} » en base`);
+		const ligne = lignes.find((l) => l.id === id);
+		if (!ligne) {
+			erreurs.push(`${fichier} : id ${id.slice(0, 8)} absent de la base`);
 			continue;
 		}
-		const ligne = trouvees[0];
+		const ecart = ecarts(modele, ligne, niveau);
+		if (ecart) {
+			erreurs.push(`${fichier} : ${ecart} (${id.slice(0, 8)})`);
+			continue;
+		}
 		if (statutAttendu && ligne.status !== statutAttendu) {
 			erreurs.push(
-				`${fichier} : « ${modele.title} » (${ligne.id.slice(0, 8)}) est « ${ligne.status} », attendu « ${statutAttendu} »`
+				`${fichier} : « ${modele.title} » (${id.slice(0, 8)}) est « ${ligne.status} », attendu « ${statutAttendu} »`
 			);
 			continue;
 		}
-		const deja = paires.find((p) => p.ligne.id === ligne.id);
+		const deja = paires.find((p) => p.ligne.id === id);
 		if (deja) {
-			erreurs.push(
-				`${fichier} : même modèle en base que ${deja.fichier} (${ligne.id.slice(0, 8)})`
-			);
+			erreurs.push(`${fichier} : même modèle en base que ${deja.fichier} (${id.slice(0, 8)})`);
 			continue;
 		}
-		paires.push({ fichier, modele, ligne, ...(ecartes.length > 0 ? { ecartes } : {}) });
+		paires.push({ fichier, modele, ligne });
 	}
 	return erreurs.length > 0 ? { ok: false, erreurs } : { ok: true, paires };
 }
@@ -189,15 +146,8 @@ export function valeurArgument(argv: readonly string[], option: string): string 
 	return valeur === undefined || valeur.startsWith('--') ? undefined : valeur;
 }
 
-/**
- * Titres distincts du lot, prêts pour `.in('title', …)` : le filtre de la requête (l'appariement
- * fin se fait ensuite). postgrest-js met entre guillemets, sans rien échapper, une valeur qui
- * contient `,`, `(` ou `)` ; entre guillemets, PostgREST lit `\` comme un échappement (« $1\,000$ »
- * devenait « $1,000$ », introuvable). Ces titres-là ont donc leur antislash et leur guillemet
- * échappés ; les autres, transmis tels quels, sont lus à la lettre.
- */
-export function titresDuLot(lot: readonly ModeleDuLot[]): string[] {
-	return [...new Set(lot.map((m) => m.modele.title))].map((t) =>
-		/[,()]/.test(t) ? t.replace(/[\\"]/g, '\\$&') : t
-	);
+/** Ids distincts du lot, pour `.in('id', …)` ; un fichier sans id n'en donne pas (refusé par
+ *  `apparierLot`) */
+export function idsDuLot(lot: readonly ModeleDuLot[]): string[] {
+	return [...new Set(lot.flatMap((m) => idDuFichier(m.modele) ?? []))];
 }

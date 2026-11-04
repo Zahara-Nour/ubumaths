@@ -1,10 +1,8 @@
 {
+	"id": "6de4ad5b-49a4-44a5-9b3f-062797fbefab",
 	"title": "Repérer un point par une fraction décimale",
 	"description": "Lire la fraction décimale qui repère un point d'une demi-droite graduée en dixièmes (23/10), d'un morceau gradué en centièmes (237/100) ou d'un morceau agrandi gradué en millièmes (2 812/1 000)",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 12,
 	"delay": 45,
 	"status": "draft",

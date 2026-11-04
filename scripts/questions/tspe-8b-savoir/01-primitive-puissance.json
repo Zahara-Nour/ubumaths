@@ -1,10 +1,8 @@
 {
+	"id": "9f47bf89-8973-4047-bf46-3e88b8700dd2",
 	"title": "Primitive de x ↦ xⁿ",
 	"description": "À savoir : une primitive de xⁿ (n ∈ ℤ, n ≠ −1) est xⁿ⁺¹/(n + 1) ; formule générale, cas n = 3, cas n = −2 ; distracteurs : dérivée, oubli de la division, division par n",
 	"grades": ["T_SPE"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Primitives",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

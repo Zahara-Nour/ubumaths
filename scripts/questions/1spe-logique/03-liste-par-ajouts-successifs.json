@@ -1,10 +1,8 @@
 {
+	"id": "63849c41-cd39-4bd0-98e9-acba106f231e",
 	"title": "Liste par ajouts successifs",
 	"description": "Contenu d'une liste construite par append dans une boucle (Python, avec ou sans condition), ou par « ajouter à la fin » en langage naturel",
 	"grades": ["1_SPE"],
-	"theme": "Algorithmique",
-	"domain": "Listes",
-	"subdomain": "Créer une liste",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

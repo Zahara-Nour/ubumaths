@@ -1,10 +1,8 @@
 {
+	"id": "90e2e7d8-4c6a-4ce9-b870-79e300381d14",
 	"title": "Moyenne d'une série regroupée en classes",
 	"description": "Répartition uniforme dans chaque classe : moyenne calculée avec les centres des classes",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Moyenne",
 	"level": 7,
 	"delay": 90,
 	"status": "draft",

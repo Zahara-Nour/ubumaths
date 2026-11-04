@@ -1,10 +1,8 @@
 {
+	"id": "00000006-0000-4000-8000-000000000000",
 	"title": "Pose et calcule une addition",
 	"description": "Addition posée en colonnes, sans ou avec retenue, deux ou trois termes, somme ≤ 99",
 	"grades": ["CP"],
-	"theme": "Nombres",
-	"domain": "Addition",
-	"subdomain": "Calcul posé",
 	"level": 1,
 	"delay": 120,
 	"status": "draft",

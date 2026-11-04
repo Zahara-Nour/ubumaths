@@ -1,10 +1,8 @@
 {
+	"id": "e2908d60-2360-453c-a6e2-5c0318d8b9b2",
 	"title": "Démontrer la dérivée de la fonction inverse",
 	"description": "Démonstration à trous de (1/x)′ = −1/x² par le taux de variation entre a et a + h : numérateur −h, taux −1/(a(a + h)), limite −1/a²",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Démonstrations",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

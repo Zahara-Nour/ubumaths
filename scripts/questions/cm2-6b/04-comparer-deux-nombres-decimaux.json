@@ -1,10 +1,8 @@
 {
+	"id": "fdf0418e-3be5-4837-b5e5-d4bee77d1fcf",
 	"title": "Comparer deux nombres décimaux",
 	"description": "Comparer deux nombres décimaux avec <, = ou > : 4,592 … 4,71 (plus de chiffres ne veut pas dire plus grand) ; 3,7 … 3,70 ; 4,758 … 4,72 ; 5,2 … 4,876",
 	"grades": ["CM2"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 6,
 	"delay": 30,
 	"status": "draft",

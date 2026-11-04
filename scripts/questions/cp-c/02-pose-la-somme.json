@@ -1,10 +1,8 @@
 {
+	"id": "541b3209-b661-4b2f-b47e-366e81787660",
 	"title": "Pose la somme",
 	"description": "Constituer une somme donnée avec des pièces et des billets ; variation sans pièce de 1 €",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 6,
 	"delay": 90,
 	"status": "draft",

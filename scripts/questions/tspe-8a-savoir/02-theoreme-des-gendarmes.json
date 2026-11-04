@@ -1,10 +1,8 @@
 {
+	"id": "2b29942c-0947-47cd-9a4d-77e43d34bb58",
 	"title": "Théorème des gendarmes",
 	"description": "À savoir : uₙ ≤ wₙ ≤ vₙ, uₙ et vₙ → ℓ ⟹ wₙ → ℓ ; hypothèse : les deux suites, même limite",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Limites de suites",
-	"subdomain": "À savoir",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

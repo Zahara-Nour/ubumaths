@@ -1,10 +1,8 @@
 {
+	"id": "8865b98c-ba20-4188-bd16-5c6637cd6fad",
 	"title": "Démontrer la résolution de l'équation du second degré",
 	"description": "Démonstration à trous de la résolution de ax² + bx + c = 0 par la forme canonique : terme b²/(4a²) du carré, numérateur b² − 4ac, justification du cas Δ < 0",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Polynôme du second degré",
-	"subdomain": "Démonstrations",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "e05931f9-cbcb-481e-9c46-0835e7635fd1",
 	"title": "Simule tes achats avec des pièces et des billets",
 	"description": "Payer un article, trois articles, sans pièce de 1 € ; dire si l'argent montré suffit",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 12,
 	"delay": 120,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "e67b1cbd-3a00-4379-bb4c-5a39ddff360f",
 	"title": "Terme général d'une suite géométrique",
 	"description": "À partir de u_0 et de la raison",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Suites géométriques",
-	"subdomain": "Terme général",
 	"level": 1,
 	"status": "draft",
 	"delay": 30,

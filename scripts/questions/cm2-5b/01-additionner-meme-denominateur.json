@@ -1,10 +1,8 @@
 {
+	"id": "13ccf7b1-adb2-4343-84b4-137d0e0ab22d",
 	"title": "Additionner des fractions de même dénominateur",
 	"description": "Somme de deux ou trois fractions de même dénominateur (7/12 + 8/12 = 15/12) ; dénominateur au plus 60, toute fraction égale juste",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 23,
 	"delay": 30,
 	"status": "draft",

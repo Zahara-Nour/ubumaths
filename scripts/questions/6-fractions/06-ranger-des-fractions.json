@@ -1,10 +1,8 @@
 {
+	"id": "83c835bb-5534-4b1a-afc2-2d3430622f9e",
 	"title": "Ranger des fractions",
 	"description": "Ranger trois fractions dans l'ordre croissant : même dénominateur, dénominateurs multiples (1/2 ; 5/8 ; 3/4), autour de 1 (99/100 ; 1 ; 7/6)",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordonner",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

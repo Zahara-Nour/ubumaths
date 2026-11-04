@@ -1,10 +1,8 @@
 {
+	"id": "2cb242e0-fa40-458b-abb0-819e4720c731",
 	"title": "Intercaler un nombre décimal",
 	"description": "Écrire un nombre décimal compris entre deux dixièmes consécutifs (3,4 < 3,45 < 3,5), ou entre un dixième et l'entier suivant (1,9 < 1,95 < 2) ; toute réponse strictement entre est juste",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 6,
 	"delay": 45,
 	"status": "draft",

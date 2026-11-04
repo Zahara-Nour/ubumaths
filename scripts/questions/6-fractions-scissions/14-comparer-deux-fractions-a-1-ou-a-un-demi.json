@@ -1,10 +1,8 @@
 {
+	"id": "6818662d-446f-4307-8bab-235f0247545c",
 	"title": "Comparer deux fractions à 1 ou à 1/2",
 	"description": "Comparer deux fractions de part et d'autre de 1 (7/8 et 10/9) ou de 1/2 (5/12 et 6/11)",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 6,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "86c59a05-936c-41a5-a05e-d85ab56a2bfb",
 	"title": "Variations de ln : comparer, signe",
 	"description": "ln strictement croissante sur ]0 ; +∞[ : sens de variation, comparer ln a et ln b, signe de ln x (pièges : croissante sur ℝ, signe confondu avec le sens)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Logarithmes",
-	"subdomain": "Dérivée",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

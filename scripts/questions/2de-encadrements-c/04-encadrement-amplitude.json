@@ -1,10 +1,8 @@
 {
+	"id": "7d411132-aecc-4788-bb06-9c9d27012e1f",
 	"title": "Encadrement d'amplitude donnée",
 	"description": "Encadrer √2, π, 2/7… entre deux multiples consécutifs de 0,5, 0,2 ou 0,05",
 	"grades": ["2"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 9,
 	"delay": 60,
 	"status": "draft",

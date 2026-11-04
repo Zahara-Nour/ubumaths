@@ -1,10 +1,8 @@
 {
+	"id": "1666b8e9-8225-4e66-8b8c-4d5190806ed1",
 	"title": "Dériver un polynôme",
 	"description": "Dérivée d'un polynôme de degré 2 ou 3, coefficients entiers ou fractionnaires simples",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Fonctions dérivées",
 	"level": 1,
 	"status": "draft",
 	"delay": 30,

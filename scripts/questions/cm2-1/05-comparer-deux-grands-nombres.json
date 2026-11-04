@@ -1,10 +1,8 @@
 {
+	"id": "d6466135-abb1-4c73-9dc3-2e81fef71359",
 	"title": "Comparer deux grands nombres",
 	"description": "Comparer deux entiers de 6 à 9 chiffres avec <, = ou > : chiffres échangés, nombres de chiffres différents",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 8,
 	"delay": 20,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "ea1a0929-a30c-41d1-9b2d-0d8a28ca3880",
 	"title": "Durées à une étape",
 	"description": "Durée entre deux heures (8 h 30 -> 12 h 30), heure de fin, heure de début",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Durée écoulée",
 	"level": 3,
 	"delay": 120,
 	"status": "draft",

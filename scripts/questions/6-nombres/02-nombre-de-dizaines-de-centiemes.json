@@ -1,10 +1,8 @@
 {
+	"id": "4bcbbaae-a01d-43c2-903c-1b365a438761",
 	"title": "Le nombre de dizaines, de centièmes…",
 	"description": "Distinguer le chiffre et le nombre de dizaines, centaines, milliers (entiers) ou de dixièmes, centièmes, millièmes (décimaux)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 6,
 	"delay": 20,
 	"status": "draft",

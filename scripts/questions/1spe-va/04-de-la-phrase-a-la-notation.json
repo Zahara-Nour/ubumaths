@@ -1,10 +1,8 @@
 {
+	"id": "3bd19f82-85f7-4828-8cac-2a2281642f86",
 	"title": "De la phrase à la notation",
 	"description": "Langue naturelle → symboles : au moins, au plus, strictement plus de, perdre de l'argent ({G < 0}) ; événement {G = a} ou probabilité P(G = a)",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Notations",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "39e7d0a5-c605-4e1c-b0db-91a67f53f117",
 	"title": "Poser une addition de nombres décimaux",
 	"description": "Addition posée de décimaux (deux décimales au plus) : 45,78 + 26,57 ; 34,5 + 2,58 ; 234 + 5,68 ; 56,75 + 234 + 0,8",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Additionner",
-	"subdomain": "Calcul posé",
 	"level": 1,
 	"delay": 180,
 	"status": "draft",

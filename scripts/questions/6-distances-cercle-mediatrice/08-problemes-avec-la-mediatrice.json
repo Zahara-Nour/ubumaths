@@ -1,10 +1,8 @@
 {
+	"id": "1b2ed3a5-7080-4bd2-8c0d-962df1814cf7",
 	"title": "Problèmes avec la médiatrice",
 	"description": "S'appuyer sur la propriété de la médiatrice : le centre d'un cercle est sur la médiatrice de chaque corde, le centre d'un cercle passant par A et B est sur la médiatrice de [AB], un point à égale distance de deux maisons",
 	"grades": ["6"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Médiatrice d'un segment",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

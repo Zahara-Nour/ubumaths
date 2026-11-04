@@ -1,10 +1,8 @@
 {
+	"id": "bd45ed7f-0e09-4777-9f66-1b932cd087d0",
 	"title": "Puissance et inverse d'une exponentielle",
 	"description": "(eᵃ)ⁿ = eⁿᵃ et 1/eᵃ = e⁻ᵃ",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "Propriétés algébriques",
 	"level": 4,
 	"status": "draft",
 	"delay": 45,

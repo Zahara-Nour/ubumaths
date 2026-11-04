@@ -1,10 +1,8 @@
 {
+	"id": "4f8f420a-c93b-4d99-8fe2-acfac2d38cbe",
 	"title": "Associer une formule à un nuage de points",
 	"description": "Reconnaître la formule explicite d'une suite arithmétique ou géométrique sur son nuage de points",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Représentation graphique",
-	"subdomain": "Associer formule et nuage",
 	"level": 1,
 	"delay": 40,
 	"status": "draft",

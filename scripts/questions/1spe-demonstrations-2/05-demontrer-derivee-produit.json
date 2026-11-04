@@ -1,10 +1,8 @@
 {
+	"id": "16ee6f33-695d-45c0-b6fe-deb1ae02138f",
 	"title": "Démontrer la dérivée d'un produit",
 	"description": "Démonstration à trous de (uv)′ = u′v + uv′ (taux de variation de uv) : terme ajouté et retranché, limite du premier terme, limite du taux avec des valeurs tirées",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Démonstrations",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "e56be9b5-5189-48a6-aca9-4f7781ddcc51",
 	"title": "Expression de la loi binomiale",
 	"description": "À savoir : si X suit B(n ; p), P(X = k) = C(n, k) pᵏ(1 − p)ⁿ⁻ᵏ ; formule, exemple B(10 ; 0,3) ; distracteurs : coefficient oublié, exposants échangés, exposant des échecs",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Loi binomiale",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

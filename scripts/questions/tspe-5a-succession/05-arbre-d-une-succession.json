@@ -1,10 +1,8 @@
 {
+	"id": "eb12ac14-2618-43aa-995f-491d56a57406",
 	"title": "Arbre d'une succession : chemins, indépendance",
 	"description": "Arbre de trois épreuves : nombre de chemins (une par issue) et de branches ; reconnaître sur un arbre pondéré si les épreuves sont indépendantes (mêmes pondérations à chaque niveau)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Succession d'épreuves",
-	"subdomain": "Arbres",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

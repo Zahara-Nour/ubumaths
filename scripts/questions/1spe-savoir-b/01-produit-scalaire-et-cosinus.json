@@ -1,10 +1,8 @@
 {
+	"id": "4f8c7b91-af59-46f3-8ec3-b2f6e9a72c53",
 	"title": "Produit scalaire et cosinus",
 	"description": "À savoir : u·v = ‖u‖‖v‖cos(u, v), et dans l'autre sens cos(u, v) = u·v / (‖u‖‖v‖), parmi des erreurs typiques (cosinus oublié, sinus, quotient renversé)",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

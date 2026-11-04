@@ -1,10 +1,8 @@
 {
+	"id": "968f4295-08a9-44a4-8327-9087de7efd85",
 	"title": "Solution de y′ = ay vérifiant une condition initiale",
 	"description": "Résoudre y′ = ay (ou une forme équivalente : y′ + ay = 0, py′ = qy) avec une condition f(0) ou f(1) : réponse unique Ce^{ax}",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Équations différentielles",
-	"subdomain": "Équation y′ = ay",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

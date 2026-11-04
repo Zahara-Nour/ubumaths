@@ -190,7 +190,10 @@ Dans un worktree (`git worktree add -b feat/questions-<lot> ../ubumaths-wt-quest
 
 1. `docs/wip/questions/lot-<x>.py <dossier>` écrit les JSON de
    `scripts/questions/<niveau>-<lot>/` (gabarit : `lot-c.py`, fonctions `modele`, `var`, `spec`,
-   `bloc`). Le script porte en commentaire les décisions et les pièges du lot.
+   `bloc`). Le script porte en commentaire les décisions et les pièges du lot. Un fichier ne porte
+   **ni `theme`, ni `domain`, ni `subdomain`** (ancien quadruplet, ADR 0035 : refusés à la
+   lecture) ; le `modele()` des anciens scripts de lot les écrit encore, à retirer en copiant le
+   gabarit. Il ne porte pas d'`id` tant que le modèle n'est pas créé.
 2. Chaque modèle a des `testSpecs` : un juste par variation, et les **erreurs typiques** de
    l'élève en `incorrect`.
 3. `pnpm tsx scripts/create-questions.ts --dir scripts/questions/<niveau>-<lot>` (simulation :
@@ -225,7 +228,11 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
 
 1. Si le lot utilise un bloc pas encore en prod : attendre le `deploy:prod` (David seul).
 2. **David** lance `create-questions --dir … --publier` (l'écriture en prod est refusée au mode
-   auto) : les modèles arrivent en **brouillon**, sans nœud ni tag. Relever leurs `id`.
+   auto) : les modèles arrivent en **brouillon**, sans nœud ni tag. Le script écrit l'`id` de
+   chaque modèle **en tête de son fichier** (le reste intact) : commiter ces fichiers, c'est par
+   cet id que page à cocher, publication et corrections retrouvent le modèle ; relancer ne crée
+   rien. Un fichier sans id dont le titre et le niveau existent déjà en base **bloque le lot**
+   avant toute écriture (`--malgre-homonyme` pour un homonyme voulu).
 3. Migration nœud + tag : gabarit `supabase/migrations/20261026210000_questions_cp_c_rangement_tags.sql`
    (garde « encore sans nœud ni tag », nœud résolu par son chemin et égal à celui du point,
    tout ou rien, `updated_at` préservé, rollback en commentaire) et son test
@@ -242,7 +249,8 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
 Relevé MCP (contenu complet, md5, nœuds, points, tags, **0 donnée d'élève**) ; instantané dans
 `docs/wip/<chantier>/etat-prod-<date>/` (ses md5 = prod) ; nouveau contenu écrit par le script
 de lot, `checkTemplate` vert ; **David** lance `create-questions --publier --mettre-a-jour`
-(remplace contenu et description). Retrait de tag ou niveaux seuls → migration à la main.
+(remplace contenu et description). Le script de lot réécrit les fichiers **sans leur `id`** :
+le remettre (`git diff`) avant de lancer, sinon le lot est bloqué (homonyme en base). Retrait de tag ou niveaux seuls → migration à la main.
 
 Modèle **publié** (`--mettre-a-jour` ne le touche pas) → deux migrations, gabarits du lot 0 du
 CE1 : contenu générée par un script de lot (`docs/wip/questions/lot-corrections-ce1.py` →
@@ -281,17 +289,16 @@ niveau chacune (`idx_question_templates_unique_category`).
    les points sont **lus en base** (lecture seule, `.env` = prod), avec les bornes de chaque
    point (`docs/systeme/programmes/bornes/`). Alertes en tête de fiche : sans point, deux points
    d'un même programme (1SPE-224 avec 1TECHNO-037 est permis, ADR 0020), sans nœud, niveau en base
-   différent du fichier, point absent des bornes, bloc non dessiné. Le niveau n'entre pas dans la clé de la page : les anciens
-   lots ont été renumérotés en base après coup (CP B1, B3, H) ; un sous-domaine changé après coup
-   (CP B2) fait refuser le lot, et le message dit ce qui diffère. Deux modèles de même clé (un
-   homonyme d'un autre niveau, « Comparer deux nombres décimaux » en CM1 et en 6e) sont départagés
-   par le niveau du fichier, s'il en désigne exactement un ; la fiche le signale (« homonyme …
-   écarté »), car un ancien lot renuméroté prendrait ainsi l'homonyme au lieu de son modèle.
-   **Brouillons déjà en base** (lots d'avant ce chantier, dont les fichiers ne concordent plus) :
-   partir d'un instantané, `pnpm tsx scripts/export-question-templates.ts --dir
-scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte son `id`, qui
-   l'apparie à sa ligne sans homonyme (la clé doit encore concorder). Le même dossier sert aux
-   corrections (§ 7, `--mettre-a-jour`) et à la publication.
+   différent du fichier, point absent des bornes, bloc non dessiné. Chaque fichier est retrouvé en
+   base par **son `id`** (écrit par `create-questions --publier`, ou posé une fois pour tous les
+   lots existants par `scripts/questions/fichiers-sans-quadruplet.ts`, 2026-11-04) ; un fichier
+   sans id, un id absent ou un titre changé en base font refuser le lot, et le message dit ce qui
+   diffère. Le niveau n'a pas à concorder pour la page : les anciens lots ont été renumérotés en
+   base après coup (CP B1, B3, H).
+   **Brouillons déjà en base** dont le fichier n'est plus à jour : partir d'un instantané,
+   `pnpm tsx scripts/export-question-templates.ts --dir
+scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte son `id`. Le même
+   dossier sert aux corrections (§ 7, `--mettre-a-jour`) et à la publication.
    Gabarit : `scripts/questions/page-a-cocher.html` (collection `verdicts`, « OK / À revoir » +
    commentaire, filtre « Ce qui reste » par défaut, file d'écriture unique, nouvel essai
    automatique, bandeau tant qu'une réponse attend). Publier la page en artefact avec la capacité
@@ -302,8 +309,8 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
    ```bash
    pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/<niveau>-<lot>   # simulation
    ```
-   Retrouve chaque fichier en base par la clé de `create-questions` (titre, thème, domaine,
-   sous-domaine, niveau), un modèle par fichier, et joue les **contrôles de la publication**
+   Retrouve chaque fichier en base par son `id` (titre et niveau doivent concorder), un modèle
+   par fichier, et joue les **contrôles de la publication**
    (`publishTemplates` en simulation : contrôle de l'admin, collisions de catégorie). Un seul
    refus, et rien n'est écrit. **David** le lance avec `--publier`, puis le statut `published`
    est relu en base. Un modèle déjà publié est laissé tel quel : relancer reprend une
@@ -322,12 +329,11 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
 - Jamais de variable `e` (Euler) ; lettres parlantes, jamais P / E / V.
 - Prénoms écrits dans le texte ; montants en `$n~\unit{€}$`, jamais « : » juste après un montant
   ([notation-unites.md](notation-unites.md)).
-- **Niveaux numérotés dès l'écriture** (pas de migration de niveaux après coup), **après relevé
-  des niveaux publiés de la catégorie** (`theme`, `domain`, `subdomain`) : un niveau pris bloque
-  la publication, et `create-questions` cherche un modèle par son niveau (`--mettre-a-jour` ne le
-  change pas) ; corriger après coup = migration + fichiers (CE1 lot 1, 2026-10-27).
-- **Niveaux d'une catégorie relevés tous niveaux scolaires confondus** : l'index d'unicité ignore
-  `grades` (1re spé, lot 1-dérivation).
+- **Niveaux numérotés dès l'écriture** (pas de migration de niveaux après coup) :
+  `--mettre-a-jour` ne change pas le niveau ; corriger après coup = migration + fichiers (CE1
+  lot 1, 2026-10-27). Un modèle créé sans thème ni domaine (depuis le 2026-11-04) n'entre plus
+  dans l'index d'unicité de l'ancienne catégorie (`idx_question_templates_unique_category`,
+  retiré au lot 4 d'`automaths-arbre`) ; seuls les anciens modèles y restent soumis.
 - Modèle tagué d'un point d'un autre niveau (1TECHNO, 1GEN compris) : `grades` porte les **deux** niveaux (`['2', '1_SPE']`), le
   cahier de texte filtrant `grades` par égalité exacte.
 - **Réponses refusées en `bad_form` sans erreur de l'élève** (1re spé) : décimal sans

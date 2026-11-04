@@ -1,10 +1,8 @@
 {
+	"id": "a7dfe502-4af3-4130-8f88-3d8ab14bf91b",
 	"title": "Trois points alignés ? Vérifie à la règle",
 	"description": "Tracer la droite par deux points pour dire si un troisième, presque dessus, est aligné avec eux (réponse oui / non)",
 	"grades": ["CP", "CE1"],
-	"theme": "Géométrie",
-	"domain": "Tracés",
-	"subdomain": "Droites",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

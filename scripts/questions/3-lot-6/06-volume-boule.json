@@ -1,10 +1,8 @@
 {
+	"id": "87f79961-03c8-44af-98b5-438165d2f689",
 	"title": "Volume d'une boule",
 	"description": "Calculer le volume d'une boule avec V = 4/3 π r³ : valeur exacte en fonction de π, valeur arrondie, à partir du diamètre, demi-boule",
 	"grades": ["3"],
-	"theme": "Grandeurs",
-	"domain": "Volumes",
-	"subdomain": "Volume d'une boule",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

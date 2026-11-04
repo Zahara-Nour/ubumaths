@@ -1,10 +1,8 @@
 {
+	"id": "f9e9637c-b62f-4758-baf4-0b28de4a5dc6",
 	"title": "Comprendre le sens d'un pourcentage",
 	"description": "Lire un pourcentage comme « tant sur 100 » : 35 % des élèves, c'est 35 élèves sur 100 ; tous = 100 %, la moitié = 50 %, aucun = 0 %",
 	"grades": ["6"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Définition",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

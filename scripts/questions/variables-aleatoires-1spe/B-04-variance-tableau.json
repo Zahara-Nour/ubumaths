@@ -1,10 +1,8 @@
 {
+	"id": "2af6296f-7863-40db-89de-eda542be5e45",
 	"title": "Variance à partir de la loi",
 	"description": "Calculer l'espérance puis la variance d'une variable aléatoire dont la loi est donnée par un tableau",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Variance et écart-type",
 	"level": 2,
 	"status": "draft",
 	"delay": 90,

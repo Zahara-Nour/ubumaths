@@ -1,10 +1,8 @@
 {
+	"id": "0c675062-76c3-4929-8545-c4d1bc6e0e35",
 	"title": "Lire une fraction",
 	"description": "Lire 3/8 : trois huitièmes (leurres : « huit tiers », « trois huit », un numérateur voisin)",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

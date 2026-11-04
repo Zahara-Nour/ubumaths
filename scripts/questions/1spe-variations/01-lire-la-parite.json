@@ -1,10 +1,8 @@
 {
+	"id": "707aa89d-3366-4372-b508-3fa946fc4e9b",
 	"title": "Lire la parité sur une courbe",
 	"description": "Symétrie par rapport à l'axe des ordonnées (paire) ou à l'origine (impaire) lue sur la courbe ; pièges : axe x = h, centre (0 ; c) ; puis f(−a) déduit de la parité",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Parité",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

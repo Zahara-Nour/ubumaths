@@ -1,11 +1,9 @@
 {
+	"id": "bf3e3211-3dc9-4a91-964a-eb8a68350903",
 	"title": "Conjecturer le sens de variation d'une suite sur un nuage de points",
 	"description": "Points qui montent, qui descendent, ou ni l'un ni l'autre",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Sens de variation",
 	"status": "draft",
-	"subdomain": "Lecture graphique",
 	"level": 1,
 	"delay": 20,
 	"variations": [

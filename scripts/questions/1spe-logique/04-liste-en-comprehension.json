@@ -1,10 +1,8 @@
 {
+	"id": "5d17692b-397d-4de1-8629-fe5c5a5cc73b",
 	"title": "Liste en compréhension",
 	"description": "Contenu d'une liste en compréhension (formule, puis condition « if » liée à un ensemble), et choix de la compréhension qui donne un ensemble décrit en mots",
 	"grades": ["1_SPE"],
-	"theme": "Algorithmique",
-	"domain": "Listes",
-	"subdomain": "Liste en compréhension",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

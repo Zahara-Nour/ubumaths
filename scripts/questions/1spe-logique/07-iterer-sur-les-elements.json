@@ -1,10 +1,8 @@
 {
+	"id": "051ff81f-69df-475a-89d6-6eca7a225efa",
 	"title": "Itérer sur les éléments d'une liste",
 	"description": "Itération sur les éléments d'une liste (for x in L) : somme, plus petit élément, nouvelle liste construite à partir des éléments qui vérifient une condition",
 	"grades": ["1_SPE"],
-	"theme": "Algorithmique",
-	"domain": "Listes",
-	"subdomain": "Parcourir une liste",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

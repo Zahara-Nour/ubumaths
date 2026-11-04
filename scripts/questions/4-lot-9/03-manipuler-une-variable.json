@@ -1,10 +1,8 @@
 {
+	"id": "20cb9b55-7ce1-4872-87e9-f2f82904b41b",
 	"title": "Manipuler une variable",
 	"description": "Suivre la valeur d'une variable modifiée dans une boucle : score, doublement, compteur de 6 sur des lancers donnés ; dire ce que contient la variable, choisir l'instruction qui accumule",
 	"grades": ["4"],
-	"theme": "Algorithmique",
-	"domain": "Variables",
-	"subdomain": "Accumulation",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

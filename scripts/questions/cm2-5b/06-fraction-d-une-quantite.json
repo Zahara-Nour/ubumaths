@@ -1,10 +1,8 @@
 {
+	"id": "cf85bd1b-725b-4195-a65b-3c53d132a55d",
 	"title": "Calculer une fraction d'une quantité",
 	"description": "Deux tiers de 12 œufs, trois dixièmes de 500 g : fraction de numérateur au moins 2 d'une quantité ou d'une grandeur, résultat entier",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Fraction d'une quantité",
 	"level": 8,
 	"delay": 30,
 	"status": "draft",

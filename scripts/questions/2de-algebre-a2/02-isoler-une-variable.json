@@ -1,10 +1,8 @@
 {
+	"id": "ec690625-2ca4-443e-ac1f-563c99219df6",
 	"title": "Isoler une grandeur dans une formule",
 	"description": "U = RI, d = vt, ρ = m/V : exprimer l'une des grandeurs ; V = πr²h → h ; S = πr² → r = √(S/π)",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Transformation",
-	"subdomain": "Isoler une variable",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

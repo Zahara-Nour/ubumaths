@@ -1,10 +1,8 @@
 {
+	"id": "bb5fa6ef-004d-4828-8277-a2aa3a2a6eba",
 	"title": "Résoudre une inéquation ax + b ⩾ cx + d",
 	"description": "Ensemble des solutions de ax + b ⩾ cx + d : a − c positif, négatif (le sens change), a = c (aucune solution ou tous les réels), les quatre sens",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Premier degré",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	apparierLot,
 	lireLot,
-	titresDuLot,
+	idsDuLot,
 	valeurArgument,
 	type LigneModele
 } from '../lib/lot-questions';
@@ -21,9 +21,6 @@ function ligne(
 	return {
 		id: `0000000${i}-0000-4000-8000-000000000000`,
 		title: m.title,
-		theme: m.theme,
-		domain: m.domain,
-		subdomain: m.subdomain ?? null,
 		level: m.level,
 		status: 'draft',
 		...plus
@@ -55,12 +52,19 @@ describe('lireLot', () => {
 		writeFileSync(join(dossier, '01.json'), JSON.stringify({ title: 'x', points: ['CP-001'] }));
 		expect(() => lireLot(dossier)).toThrow(/champ « points » abandonné/);
 	});
+
+	it('refuse un fichier qui porte encore thème, domaine ou sous-domaine', () => {
+		const dossier = mkdtempSync(join(tmpdir(), 'lot-theme-'));
+		writeFileSync(join(dossier, '01.json'), JSON.stringify({ title: 'x', theme: 'Entiers' }));
+		expect(() => lireLot(dossier)).toThrow(/champ « theme » abandonné/);
+	});
 });
 
 describe('apparierLot', () => {
 	const lot = lireLot(FIXTURES).slice(0, 3);
+	const ID0 = '00000000-0000-4000-8000-000000000000';
 
-	it('apparie chaque fichier à sa ligne, quel que soit l’ordre des lignes', () => {
+	it('apparie chaque fichier à la ligne de son id, quel que soit l’ordre des lignes', () => {
 		const r = apparierLot(lot, [ligne(lot, 2), ligne(lot, 0), ligne(lot, 1)], { statut: 'draft' });
 		expect(r.ok).toBe(true);
 		if (!r.ok) return;
@@ -71,99 +75,48 @@ describe('apparierLot', () => {
 		]);
 	});
 
-	it('ignore un modèle de même titre mais d’un autre niveau ou d’un autre domaine', () => {
-		const autres = [
-			ligne(lot, 0, { id: 'autre-niveau', level: 9, status: 'published' }),
-			ligne(lot, 0, { id: 'autre-domaine', domain: 'Ailleurs', status: 'published' })
-		];
-		const r = apparierLot(lot, [...autres, ligne(lot, 0), ligne(lot, 1), ligne(lot, 2)], {
-			statut: 'draft'
-		});
-		expect(r.ok).toBe(true);
+	it('seul l’id désigne la ligne : un homonyme de même titre et même niveau est ignoré', () => {
+		const homonyme = ligne(lot, 0, { id: 'homonyme' });
+		const r = apparierLot(lot, [homonyme, ligne(lot, 0), ligne(lot, 1), ligne(lot, 2)]);
+		expect(r.ok && r.paires[0].ligne.id).toBe(ID0);
 	});
 
-	it('instantané de la base : le fichier porte son id, qui départage les homonymes', () => {
-		// Même titre, même clé, deux niveaux : l'id désigne la ligne, sans homonyme écarté
-		const exporte = [{ ...lot[0], modele: { ...lot[0].modele, id: 'ligne-du-fichier' } }];
-		const homonyme = ligne(lot, 0, { id: 'homonyme', level: lot[0].modele.level + 1 });
-		const r = apparierLot(exporte, [homonyme, ligne(lot, 0, { id: 'ligne-du-fichier' })], {
-			niveau: false
-		});
-		expect(r.ok && r.paires.map((p) => [p.ligne.id, p.ecartes])).toEqual([
-			['ligne-du-fichier', undefined]
-		]);
-	});
-
-	it('instantané de la base : seul l’id départage deux lignes de même clé complète', () => {
-		const exporte = [{ ...lot[0], modele: { ...lot[0].modele, id: 'la-bonne' } }];
-		const r = apparierLot(exporte, [
-			ligne(lot, 0, { id: 'jumelle' }),
-			ligne(lot, 0, { id: 'la-bonne' })
-		]);
-		expect(r.ok && r.paires.map((p) => p.ligne.id)).toEqual(['la-bonne']);
-	});
-
-	it('instantané de la base : deux fichiers du même id, ou un statut inattendu, refusés', () => {
-		const exporte = { ...lot[0], modele: { ...lot[0].modele, id: 'meme-id' } };
-		const r = apparierLot(
-			[exporte, { ...exporte, fichier: 'copie.json' }],
-			[ligne(lot, 0, { id: 'meme-id' })]
-		);
-		expect(r).toEqual({
+	it('refuse un fichier sans id (modèle pas encore créé)', () => {
+		const sansId = [{ ...lot[0], modele: { ...lot[0].modele, id: undefined } }];
+		expect(apparierLot(sansId, [ligne(lot, 0)])).toEqual({
 			ok: false,
-			erreurs: ['copie.json : même modèle en base que 01-construis-le-nombre.json (meme-id)']
+			erreurs: [
+				'01-construis-le-nombre.json : « Construis le nombre » sans id — le créer d’abord (create-questions --publier écrit son id)'
+			]
 		});
-		const publie = apparierLot([exporte], [ligne(lot, 0, { id: 'meme-id', status: 'published' })], {
-			statut: 'draft'
-		});
-		expect(!publie.ok && publie.erreurs[0]).toMatch(/est « published », attendu « draft »/);
 	});
 
-	it('instantané de la base : id absent, ou clé qui ne concorde plus, refusé', () => {
-		const exporte = [{ ...lot[0], modele: { ...lot[0].modele, id: 'abcdef12-x' } }];
-		expect(apparierLot(exporte, [ligne(lot, 0)])).toEqual({
-			ok: false,
-			erreurs: ['01-construis-le-nombre.json : id abcdef12 absent de la base']
-		});
-		const r = apparierLot(exporte, [ligne(lot, 0, { id: 'abcdef12-x', domain: 'Ailleurs' })]);
-		expect(r.ok).toBe(false);
-		expect(!r.ok && r.erreurs[0]).toMatch(/domaine « Ailleurs » en base/);
-	});
-
-	it('tout ou rien : un modèle absent fait échouer le lot entier', () => {
+	it('tout ou rien : un id absent de la base fait échouer le lot entier', () => {
 		const r = apparierLot(lot, [ligne(lot, 0), ligne(lot, 2)], { statut: 'draft' });
 		expect(r).toEqual({
 			ok: false,
-			erreurs: ['02-rends-la-monnaie.json : « Rends la monnaie » absent de la base']
+			erreurs: ['02-rends-la-monnaie.json : id 00000001 absent de la base']
 		});
 	});
 
-	it('modèle absent mais même titre en base : le message dit ce qui diffère', () => {
+	it('titre ou niveau qui ne concordent plus : le message dit ce qui diffère', () => {
 		const r = apparierLot(lot, [
-			ligne(lot, 0, { subdomain: 'Compter', level: 3 }),
+			ligne(lot, 0, { title: 'Autre titre', level: 3 }),
 			ligne(lot, 1),
 			ligne(lot, 2)
 		]);
 		expect(r).toEqual({
 			ok: false,
 			erreurs: [
-				'01-construis-le-nombre.json : « Construis le nombre » absent de la base ; même titre, sous-domaine « Compter » en base, « Dénombrer » dans le fichier, niveau « 3 » en base, « 1 » dans le fichier (00000000)'
+				'01-construis-le-nombre.json : titre « Autre titre » en base, « Construis le nombre » dans le fichier, niveau « 3 » en base, « 1 » dans le fichier (00000000)'
 			]
 		});
 	});
 
-	it('refuse un modèle en double en base', () => {
-		const r = apparierLot(lot, [
-			ligne(lot, 0),
-			ligne(lot, 0, { id: 'double' }),
-			ligne(lot, 1),
-			ligne(lot, 2)
-		]);
-		expect(r.ok).toBe(false);
-		if (r.ok) return;
-		expect(r.erreurs).toEqual([
-			'01-construis-le-nombre.json : 2 modèles « Construis le nombre » en base'
-		]);
+	it('niveau hors de la clé : un ancien lot renuméroté en base est retrouvé', () => {
+		const renumerote = [ligne(lot, 0, { level: 4 }), ligne(lot, 1), ligne(lot, 2)];
+		expect(apparierLot(lot, renumerote).ok).toBe(false);
+		expect(apparierLot(lot, renumerote, { niveau: false }).ok).toBe(true);
 	});
 
 	it('refuse un modèle déjà publié quand un brouillon est attendu', () => {
@@ -172,11 +125,12 @@ describe('apparierLot', () => {
 			[ligne(lot, 0), ligne(lot, 1, { status: 'published' }), ligne(lot, 2)],
 			{ statut: 'draft' }
 		);
-		expect(r.ok).toBe(false);
-		if (r.ok) return;
-		expect(r.erreurs).toEqual([
-			'02-rends-la-monnaie.json : « Rends la monnaie » (00000001) est « published », attendu « draft »'
-		]);
+		expect(r).toEqual({
+			ok: false,
+			erreurs: [
+				'02-rends-la-monnaie.json : « Rends la monnaie » (00000001) est « published », attendu « draft »'
+			]
+		});
 	});
 
 	it('sans statut attendu, accepte tout statut (page à cocher d’un lot déjà publié)', () => {
@@ -188,85 +142,20 @@ describe('apparierLot', () => {
 		expect(r.ok).toBe(true);
 	});
 
-	it('niveau hors de la clé : un ancien lot renuméroté en base est retrouvé', () => {
-		const renumerote = [ligne(lot, 0, { level: 4 }), ligne(lot, 1), ligne(lot, 2)];
-		expect(apparierLot(lot, renumerote).ok).toBe(false);
-		expect(apparierLot(lot, renumerote, { niveau: false }).ok).toBe(true);
-	});
-
-	it('niveau hors de la clé : un homonyme d’un autre niveau est départagé par le niveau', () => {
-		// « Comparer deux nombres décimaux » : CM1 (niveau 2, publié) et 6e (niveau 3, brouillon)
-		const homonymes = [
-			ligne(lot, 0, { id: 'autre-niveau', level: 9, status: 'published' }),
-			ligne(lot, 0),
-			ligne(lot, 1),
-			ligne(lot, 2)
-		];
-		const r = apparierLot(lot, homonymes, { niveau: false });
-		expect(r.ok).toBe(true);
-		if (!r.ok) return;
-		expect(r.paires[0].ligne.id).toBe('00000000-0000-4000-8000-000000000000');
-		// Le départage est rendu : un ancien lot renuméroté prendrait l'homonyme sans le dire
-		expect(r.paires[0].ecartes?.map((l) => l.id)).toEqual(['autre-niveau']);
-		expect(r.paires[1].ecartes).toBeUndefined();
-	});
-
-	it('niveau hors de la clé : deux homonymes dont aucun n’a le niveau du fichier restent ambigus', () => {
-		const r = apparierLot(
-			lot,
-			[
-				ligne(lot, 0, { id: 'a', level: 8 }),
-				ligne(lot, 0, { id: 'b', level: 9 }),
-				ligne(lot, 1),
-				ligne(lot, 2)
-			],
-			{ niveau: false }
-		);
-		expect(r.ok).toBe(false);
-		if (r.ok) return;
-		expect(r.erreurs).toEqual([
-			'01-construis-le-nombre.json : 2 modèles « Construis le nombre » en base'
-		]);
-	});
-
-	it('un modèle sans sous-domaine se compare à une ligne au sous-domaine null', () => {
-		const sans = [{ ...lot[0], modele: { ...lot[0].modele, subdomain: undefined } }];
-		expect(apparierLot(sans, [ligne(sans, 0)]).ok).toBe(true);
-		expect(apparierLot(sans, [ligne(sans, 0, { subdomain: 'Dénombrer' })]).ok).toBe(false);
-	});
-
-	it('deux fichiers de même clé ne prennent pas la même ligne', () => {
+	it('deux fichiers du même id ne prennent pas la même ligne', () => {
 		const double = [lot[0], { ...lot[0], fichier: '09-copie.json' }];
-		const r = apparierLot(double, [ligne(lot, 0)]);
-		expect(r).toEqual({
+		expect(apparierLot(double, [ligne(lot, 0)])).toEqual({
 			ok: false,
 			erreurs: ['09-copie.json : même modèle en base que 01-construis-le-nombre.json (00000000)']
 		});
 	});
 
-	it('titresDuLot donne chaque titre une fois', () => {
-		const doublon = [...lot, lot[0]];
-		expect(titresDuLot(doublon)).toEqual([
-			'Construis le nombre',
-			'Rends la monnaie',
-			"Qui a le plus d'argent ?"
-		]);
-	});
-
-	// postgrest-js met entre guillemets, sans rien échapper, une valeur qui contient , ( ou ) :
-	// PostgREST y lit alors `\,` comme une virgule échappée (lot 2 du CE1, « $1\,000$ »)
-	it('titresDuLot échappe antislash et guillemet des titres que postgrest-js met entre guillemets', () => {
-		const titre = (title: string) => ({ ...lot[0], modele: { ...lot[0].modele, title } });
-		expect(
-			titresDuLot([
-				titre("Intercaler un nombre (jusqu'à $1\\,000$)"),
-				titre('Le mot "cent", écrit'),
-				titre('Division $x \\div a=b$')
-			])
-		).toEqual([
-			"Intercaler un nombre (jusqu'à $1\\\\,000$)",
-			'Le mot \\"cent\\", écrit',
-			'Division $x \\div a=b$'
+	it('idsDuLot donne chaque id une fois, sans les fichiers qui n’en portent pas', () => {
+		const sansId = { ...lot[1], modele: { ...lot[1].modele, id: undefined } };
+		expect(idsDuLot([...lot, lot[0], sansId])).toEqual([
+			ID0,
+			'00000001-0000-4000-8000-000000000000',
+			'00000002-0000-4000-8000-000000000000'
 		]);
 	});
 });

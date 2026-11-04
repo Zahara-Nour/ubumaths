@@ -1,10 +1,8 @@
 {
+	"id": "77a5b60b-d501-4648-b3a6-91443c2384b9",
 	"title": "Tour de Hanoï",
 	"description": "Nombre minimal de déplacements hₙ de la tour de Hanoï (hₙ₊₁ = 2hₙ + 1, h₁ = 1) : terme suivant par la relation, raison de la suite auxiliaire vₙ = hₙ + 1, hₙ = 2ⁿ − 1",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Apprivoiser",
-	"subdomain": "Approfondissements",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

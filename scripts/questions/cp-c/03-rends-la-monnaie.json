@@ -1,10 +1,8 @@
 {
+	"id": "7be00c4a-4c48-41ee-8c4c-f975c1ab4e1c",
 	"title": "Rends la monnaie",
 	"description": "Rendre la monnaie sur un billet de 10, 20 ou 50 € en posant les pièces et les billets (rendu ≤ 20 €)",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Rendre la monnaie",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

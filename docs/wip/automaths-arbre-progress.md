@@ -247,3 +247,41 @@ titre, unicité du quadruplet retirée (éditeur, API, lot), store/routes/module
   21 brouillons « Graphes et matrices » (tous rangés sous Matrices / Graphes, aucun publié) ;
   l'éditeur prend la branche (Matrices, Graphes → produit) comme contexte et écrit la déclaration à
   l'enregistrement. Question d'accès confirmée (personne ne gagne de lecture).
+
+## Lot 3b — phase 0 (2026-11-04)
+
+`create-questions.ts` et les scripts qui partagent sa clé (`lib/lot-questions.ts` → page à cocher,
+`publier-lot.ts`) retrouvent un fichier de lot en base par le quadruplet + titre + niveau.
+Mesure prod : (titre, niveau) ambigu pour 56 couples (123 lignes), (titre, nœud, niveau) pour 14 ;
+(quadruplet, titre, niveau) pour 0. 1 806 fichiers dans `scripts/questions/`, tous avec `theme`,
+428 avec `id` ; 19 « Graphes et matrices » sans `capitalPairs` (sens de AB lu dans le thème).
+
+- **Q14 — clé** : l'**id écrit dans le fichier** ; `create-questions --publier` l'écrit après la
+  création, tout apparie ensuite par id ; les fichiers existants le reçoivent une fois, par le
+  quadruplet, tant que les colonnes existent.
+- **Q15 — anciens champs** : retirés des fichiers par script, et refusés à la lecture (comme
+  `points`) ; les 19 « Graphes et matrices » déclarent `shared.capitalPairs = 'product'` (comme Q13).
+- **Q16 — rangement** : inchangé (migration nœud + tag, démarche `couvrir-niveau`).
+
+Les trois : « recommandé » choisi par David.
+
+### 3b — code (2026-11-04)
+
+- `fichiers-sans-quadruplet.ts` (ponctuel, lecture seule de la prod) joué : 1 806 fichiers sans
+  `theme`/`domain`/`subdomain` ; 428 portaient déjà leur id, 1 311 l'ont reçu par le quadruplet
+  (50 au niveau renuméroté en base, 2 re-rangés trouvés par le titre seul), **67 sans modèle en
+  base** (lot pas encore créé, ex. 2de-vecteurs-c2/06-10, ou modèle renommé/scindé depuis) →
+  sans id, « à créer » ; 19 « Graphes et matrices » déclarent `capitalPairs: product`.
+  Réécriture textuelle pour 42 fichiers (la re-sérialisation dépliait les objets d'une ligne).
+- `create-questions` : sans id → créé puis id écrit en tête du fichier (`withTemplateId`) ;
+  avec id → retrouvé par id, titre exigé, niveau renuméroté signalé. Choix d'exécution :
+  homonyme (titre, niveau) en base **bloquant** avant toute écriture (`--malgre-homonyme`), car un
+  script de lot rejoué (§ 7 de couvrir-un-niveau) efface les id → doublons sinon.
+- `lot-questions` (page à cocher, publier-lot) : par id seul ; plus d'homonyme « écarté ».
+- Essai local : création sans thème, id écrit, relance = « déjà en base », lignes d'essai supprimées.
+- **Autres worktrees** avec des lots en cours (questions-4, -ce1, -cm1) : après rebase, leurs
+  fichiers portent encore `theme` → refusés ; rejouer `fichiers-sans-quadruplet.ts --ecrire`.
+- **Lot 4, à reprendre** : supprimer `fichiers-sans-quadruplet.ts` ; `update-published-questions`
+  (contrôle de niveau par l'ancien index, niveau temporaire) ; vieux scripts ponctuels qui lisent
+  le quadruplet (`create-automatismes-*-1spe.ts`, `rename-question-subdomains.ts`,
+  `audit-question-syntax.ts`) ; `OLD_CATEGORY_TAKEN` de `questions-bulk-status`.

@@ -1,10 +1,8 @@
 {
+	"id": "477016d2-7316-4454-ab9d-6cd1372241ee",
 	"title": "Image d'une issue par une variable aléatoire",
 	"description": "Variable aléatoire comme fonction de l'univers : gain associé à une issue (deux pièces, dé et pièce) ; reconnaître la définition d'une variable aléatoire",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Modéliser par une variable aléatoire",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

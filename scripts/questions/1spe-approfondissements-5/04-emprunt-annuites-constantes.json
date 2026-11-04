@@ -1,10 +1,8 @@
 {
+	"id": "061e83b5-1d07-4edd-a87b-53bcb5ec0fd9",
 	"title": "Emprunt remboursé par annuités constantes",
 	"description": "Capital restant dû Rₖ d'un emprunt (Rₖ₊₁ = (1 + t)Rₖ − a) : R₁, coefficient de la relation de récurrence, nature de la suite auxiliaire vₖ = Rₖ − a/t (case choix)",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Modélisation",
-	"subdomain": "Approfondissements",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

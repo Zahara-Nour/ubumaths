@@ -1,10 +1,8 @@
 {
+	"id": "23acfcd1-8cea-4c5e-9990-0c6097503826",
 	"title": "Encadrer un nombre",
 	"description": "Un nombre plus petit, un nombre plus grand : … < 47 < …",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 5,
 	"delay": 20,
 	"status": "draft",

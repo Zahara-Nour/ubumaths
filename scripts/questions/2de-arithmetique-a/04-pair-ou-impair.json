@@ -1,10 +1,8 @@
 {
+	"id": "d264f7aa-1867-43cc-93e1-f66912786117",
 	"title": "Pair ou impair : écrire 2k ou 2k + 1",
 	"description": "Parité de an + b selon les coefficients ; (2n + 1) + (2m + 3) = 2(n + m + 2) ; 4n + 3 = 2(2n + 1) + 1 ; 2n(2m + 3) = 2(2nm + 3n)",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Produire une formule",
-	"subdomain": "Pairs et impairs",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

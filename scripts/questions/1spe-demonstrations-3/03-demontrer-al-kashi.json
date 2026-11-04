@@ -1,10 +1,8 @@
 {
+	"id": "e8011f4e-72fe-4419-8ba2-6956775ce5f7",
 	"title": "Démontrer la formule d'Al-Kashi",
 	"description": "Démonstration à trous de la formule d'Al-Kashi par le produit scalaire : BC = AC − AB (Chasles), développement du carré scalaire, BC² pour un angle de 60° (valeurs tirées)",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "Démonstrations",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

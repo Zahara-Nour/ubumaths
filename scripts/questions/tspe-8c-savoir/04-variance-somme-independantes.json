@@ -1,10 +1,8 @@
 {
+	"id": "26e12581-5fab-4ae0-8422-8cdb07cfe360",
 	"title": "Variance d'une somme de variables indépendantes",
 	"description": "À savoir : V(X + Y) = V(X) + V(Y) si X et Y sont indépendantes ; hypothèse, exemple, écart-type ; distracteurs : sans hypothèse, somme des écarts-types",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Sommes de variables aléatoires",
-	"subdomain": "À savoir",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

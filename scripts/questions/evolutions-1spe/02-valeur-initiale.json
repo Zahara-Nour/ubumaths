@@ -1,10 +1,8 @@
 {
+	"id": "1c443c35-ef93-4dc5-8635-b7ddcea32b77",
 	"title": "Retrouver la valeur initiale avant une évolution",
 	"description": "Prix avant une hausse ou une baisse en pourcentage",
 	"grades": ["2"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Variations",
 	"level": 8,
 	"delay": 30,
 	"status": "draft",

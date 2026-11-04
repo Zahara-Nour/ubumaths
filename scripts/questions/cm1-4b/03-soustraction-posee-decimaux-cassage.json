@@ -1,10 +1,8 @@
 {
+	"id": "1ed5202f-d031-4964-8f4b-a8dc0ade21c5",
 	"title": "Poser une soustraction de nombres décimaux (par cassage)",
 	"description": "Soustraction posée de décimaux, méthode par cassage : 52,34 − 17,58 ; 34,5 − 2,58 ; 25 − 3,46",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Soustraire",
-	"subdomain": "Calcul posé",
 	"level": 2,
 	"delay": 180,
 	"status": "draft",

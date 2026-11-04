@@ -1,10 +1,8 @@
 {
+	"id": "9755a856-1059-40aa-abf7-cb531d85cebc",
 	"title": "Dériver une somme avec 1/x et √x",
 	"description": "Dérivée de k·u et d'une somme de fonctions de référence : x², √x, 1/x",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Fonctions dérivées",
 	"level": 2,
 	"status": "draft",
 	"delay": 45,

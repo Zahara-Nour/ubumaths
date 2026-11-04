@@ -1,10 +1,8 @@
 {
+	"id": "f6415cb9-d177-406d-9745-8c7f30840def",
 	"title": "Opérations sur les limites : formes indéterminées",
 	"description": "À savoir : opérations sur les limites, formes indéterminées ∞ − ∞, 0 × ∞, ∞/∞, 0/0 ; reconnaître une forme indéterminée et conclure quand ce n'en est pas une",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Limites de fonctions",
-	"subdomain": "À savoir",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "5dbcc8dd-861a-4d4d-ba98-735fb7418c3d",
 	"title": "Est-ce un multiple ?",
 	"description": "Dire si un entier jusqu'à 999 est un multiple de 3, 4, 6, 7, 8 ou 9 (141 n'est pas multiple de 7) ; trouver le multiple parmi quatre nombres",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Multiples et diviseurs",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

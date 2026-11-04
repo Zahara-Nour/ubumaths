@@ -1,10 +1,8 @@
 {
+	"id": "25e2fdd1-efbe-4cff-b2bd-fd583f1e9226",
 	"title": "Mesurer un segment avec la règle, sans partir du 0",
 	"description": "Segment de 3 à 10 cm qui ne commence pas au 0 ; segment dont le bout tombe entre deux graduations (encadrer entre deux nombres entiers de centimètres)",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Comparaison et mesure",
 	"level": 6,
 	"delay": 90,
 	"status": "draft",

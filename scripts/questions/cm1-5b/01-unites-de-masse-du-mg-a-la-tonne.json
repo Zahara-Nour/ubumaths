@@ -1,10 +1,8 @@
 {
+	"id": "8f48ef70-8e7a-444b-9a23-0e4418762332",
 	"title": "Les unités de masse, du milligramme à la tonne",
 	"description": "Symbole et sens de mg, cg, dg, g, dag, hg, kg et t ; la plus grande ou la plus petite de trois unités",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Unités",
 	"level": 6,
 	"delay": 45,
 	"status": "draft",

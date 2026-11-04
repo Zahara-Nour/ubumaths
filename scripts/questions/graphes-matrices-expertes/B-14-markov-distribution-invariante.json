@@ -1,13 +1,14 @@
 {
+	"id": "49134f4f-864d-43a4-ab26-b60db0fe2388",
 	"title": "Chaîne de Markov à deux états : distribution invariante",
 	"description": "Déterminer la distribution invariante π = πP d'une chaîne de Markov à deux états (pièges : composantes échangées, π = (½ ½) d'office, oubli de la condition a + b = 1)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Chaînes de Markov",
-	"subdomain": "Chaînes de Markov",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}{{eval:(10-p)/10;d}}&{{eval:p/10;d}}\\\\{{eval:q/10;d}}&{{eval:(10-q)/10;d}}\\end{pmatrix}$.\n\nDétermine sa distribution invariante $\\pi = \\begin{pmatrix} a & b \\end{pmatrix}$ ($\\pi P = \\pi$ et $a + b = 1$), en valeurs exactes.\n\n$a=?$\n\n$b=?$",

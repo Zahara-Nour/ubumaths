@@ -1,10 +1,8 @@
 {
+	"id": "7b08589b-c870-4632-9f36-50d6c441b15b",
 	"title": "Le cube de 10",
 	"description": "Connaître le cube de 10 : 10³ = 10 × 10 × 10 = 1 000",
 	"grades": ["5"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Cubes",
 	"level": 1,
 	"delay": 20,
 	"status": "draft",

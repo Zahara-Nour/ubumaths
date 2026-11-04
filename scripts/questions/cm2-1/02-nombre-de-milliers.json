@@ -1,10 +1,8 @@
 {
+	"id": "41e8421f-21f0-48f3-9b3a-e2cd0ebca51e",
 	"title": "Le nombre de milliers, de dizaines de mille…",
 	"description": "Distinguer le chiffre et le nombre de dizaines… de millions dans un entier de 7 à 9 chiffres ; problème des cartons (12 342 320 pailles en cartons de 10 000)",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 16,
 	"delay": 30,
 	"status": "draft",

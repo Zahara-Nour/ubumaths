@@ -1,10 +1,8 @@
 {
+	"id": "4604b429-1559-4406-800a-4d73340c8b8a",
 	"title": "Calculer une étendue",
 	"description": "Calculer l'étendue d'une série donnée en données brutes (températures relatives), par un tableau d'effectifs ou un diagramme en barres",
 	"grades": ["4"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Étendue",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

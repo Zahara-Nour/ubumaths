@@ -1,10 +1,8 @@
 {
+	"id": "61ffb696-de5f-4c8f-a09d-7298682b5a0c",
 	"title": "Écrire une formule de périmètre ou d'aire",
 	"description": "Écrire la formule du périmètre ou de l'aire d'un carré de côté c (4c, c²), d'un rectangle de longueur L et de largeur l (L × l, 2(L + l)), d'un triangle équilatéral de côté a (3a)",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Écrire",
-	"subdomain": "Formules",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

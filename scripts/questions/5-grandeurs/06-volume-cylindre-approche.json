@@ -1,10 +1,8 @@
 {
+	"id": "55b26d32-b3dd-40cc-b294-a63938cc5325",
 	"title": "Volume d'un cylindre avec π ≈ 3,14",
 	"description": "Calculer le volume d'un cylindre en prenant π ≈ 3,14 (rayon 10 cm, hauteur 2 cm : 628 cm³)",
 	"grades": ["5"],
-	"theme": "Grandeurs",
-	"domain": "Volumes",
-	"subdomain": "Volume d'un cylindre",
 	"level": 2,
 	"delay": 120,
 	"status": "draft",

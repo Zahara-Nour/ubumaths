@@ -1,10 +1,8 @@
 {
+	"id": "dd9a33b7-6b33-441f-8db2-05b30aa4bd39",
 	"title": "Quantification implicite",
 	"description": "Repérer le « pour tout » sous-entendu d'une proposition conditionnelle (forme explicite, « pour tout » ou « il existe », vraie ou fausse par un contre-exemple)",
 	"grades": ["1_SPE"],
-	"theme": "Logique",
-	"domain": "Logique et raisonnement",
-	"subdomain": "Quantificateurs et négation",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

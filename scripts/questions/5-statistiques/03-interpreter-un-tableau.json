@@ -1,10 +1,8 @@
 {
+	"id": "446c1b41-3c6c-4371-a955-817094e16e38",
 	"title": "Interpréter un tableau",
 	"description": "Exploiter un tableau d'effectifs : la valeur la plus fréquente, combien au-delà d'une valeur, l'effectif total",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "tableaux",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

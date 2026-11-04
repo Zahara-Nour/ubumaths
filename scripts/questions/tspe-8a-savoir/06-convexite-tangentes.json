@@ -1,10 +1,8 @@
 {
+	"id": "eeb72d3a-8a31-494a-afcf-6a6a580dfe69",
 	"title": "Convexité : position par rapport aux tangentes",
 	"description": "À savoir : f deux fois dérivable, convexe ⟺ courbe au-dessus de ses tangentes ; inégalité f(x) ≥ f′(a)(x − a) + f(a) ; concave : en dessous",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions convexes",
-	"domain": "Convexité",
-	"subdomain": "À savoir",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

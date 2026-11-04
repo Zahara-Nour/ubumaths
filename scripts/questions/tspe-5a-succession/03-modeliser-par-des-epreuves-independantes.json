@@ -1,10 +1,8 @@
 {
+	"id": "303aeac2-268d-4654-9b9a-702068a38562",
 	"title": "Modéliser par des épreuves indépendantes",
 	"description": "Reconnaître une succession d'épreuves indépendantes (avec ou sans remise, simultané) ; choisir la modélisation de n lancers de dé (univers {S ; S̄}ⁿ, P(S) = 1/6)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Succession d'épreuves",
-	"subdomain": "Épreuves indépendantes",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

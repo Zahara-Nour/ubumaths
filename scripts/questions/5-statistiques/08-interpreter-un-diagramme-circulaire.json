@@ -1,10 +1,8 @@
 {
+	"id": "86e43598-c030-41bb-8f06-3db0bbc51d1b",
 	"title": "Interpréter un diagramme circulaire",
 	"description": "Exploiter un diagramme circulaire en pourcentages : la catégorie la plus utilisée, le nombre d'élèves d'une catégorie sur 200",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "diagrammes circulaires",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

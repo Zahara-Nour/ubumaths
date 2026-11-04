@@ -1,13 +1,14 @@
 {
+	"id": "e90997eb-3058-460e-b120-9c045d2114e6",
 	"title": "Produit de matrices : AB, matrice × colonne, ligne × matrice",
 	"description": "Calculer un produit de matrices 2 × 2, un produit matrice × colonne et ligne × matrice (pièges : BA au lieu de AB, produit coefficient par coefficient, ligne et colonne inversées)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Matrices",
-	"subdomain": "Calcul matriciel",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $B = \\begin{pmatrix}{{b1}}&{{b2}}\\\\{{b3}}&{{b4}}\\end{pmatrix}$.\n\nOn note $AB = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",

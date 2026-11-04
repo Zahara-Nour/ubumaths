@@ -1,10 +1,8 @@
 {
+	"id": "e9e9970b-1cc7-4567-9cde-112efb0405c2",
 	"title": "Lourd ou léger ?",
 	"description": "Le plus lourd ou le plus léger de deux objets familiers très différents, le contraire",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Lexique",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

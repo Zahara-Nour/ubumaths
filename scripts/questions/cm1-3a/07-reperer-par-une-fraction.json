@@ -1,10 +1,8 @@
 {
+	"id": "c2fa5767-5d3d-492f-8992-f46d8db66957",
 	"title": "Repérer un point par une fraction",
 	"description": "Lire le nombre qui repère un point d'une demi-droite graduée, sous la forme d'une fraction (A repère 3/4) ; unité partagée en 2 à 10 parts",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

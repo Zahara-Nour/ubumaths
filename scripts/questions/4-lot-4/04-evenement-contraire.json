@@ -1,10 +1,8 @@
 {
+	"id": "247fddd1-1467-46db-888a-0871b02617c5",
 	"title": "Évènement contraire",
 	"description": "Calculer la probabilité de l'évènement contraire : P(non A) = 1 − P(A), avec P(A) décimal ou en fraction",
 	"grades": ["4"],
-	"theme": "Probabilités",
-	"domain": "Calculer",
-	"subdomain": "Évènement contraire",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "5e6ce5a3-2071-4c79-9995-9eacd5944477",
 	"title": "Tous les diviseurs d'un nombre, par paires",
 	"description": "Écrire les 6 diviseurs de p × q² (50, 75, 98, 147…), puis les 9 diviseurs de p² × q² (36, 100, 196, 225)",
 	"grades": ["2"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Multiples et diviseurs",
 	"level": 10,
 	"delay": 60,
 	"status": "draft",

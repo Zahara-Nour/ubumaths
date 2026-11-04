@@ -1,10 +1,8 @@
 {
+	"id": "baec0070-8a67-4c58-99c6-dc9fd127cc3d",
 	"title": "Facteurs et produit dans une égalité",
 	"description": "Dans 4 × 6 = 24 : les facteurs, le produit ; aussi écrit 24 = 4 × 6",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Sens",
 	"level": 4,
 	"delay": 20,
 	"status": "draft",

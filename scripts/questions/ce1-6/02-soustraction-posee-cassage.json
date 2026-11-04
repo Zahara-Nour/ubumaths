@@ -1,10 +1,8 @@
 {
+	"id": "1e66bb1f-2c43-4599-8dfc-4b1c4132f5bb",
 	"title": "Pose et calcule une soustraction (par cassage)",
 	"description": "Soustraction posée, méthode par cassage : un échange, deux échanges, zéro au milieu (504 − 37)",
 	"grades": ["CE1"],
-	"theme": "Nombres",
-	"domain": "Soustraction",
-	"subdomain": "Calcul posé",
 	"level": 1,
 	"delay": 180,
 	"status": "draft",

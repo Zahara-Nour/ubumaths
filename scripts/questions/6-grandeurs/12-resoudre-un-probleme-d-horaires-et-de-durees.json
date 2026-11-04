@@ -1,10 +1,8 @@
 {
+	"id": "ee82f057-9b6a-46e6-9892-ca2f9578dd9d",
 	"title": "Résoudre un problème d'horaires et de durées",
 	"description": "Problèmes à deux étapes : durée totale de plusieurs séances, horaire d'arrivée avec un arrêt, durée d'un film précédé de publicités",
 	"grades": ["6"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Problèmes",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

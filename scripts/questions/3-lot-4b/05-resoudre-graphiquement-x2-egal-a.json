@@ -1,10 +1,8 @@
 {
+	"id": "8cb2cdfd-d905-4e37-bff4-cceeb774fdc9",
 	"title": "Résoudre x² = a graphiquement",
 	"description": "Résoudre graphiquement une équation x² = a, parabole et droite y = a tracées : a carré parfait (deux solutions), a = 0 (une solution), a négatif (aucune solution)",
 	"grades": ["3"],
-	"theme": "Fonctions",
-	"domain": "Fonction carré",
-	"subdomain": "x² = a",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

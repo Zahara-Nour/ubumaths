@@ -1,10 +1,8 @@
 {
+	"id": "7deff4e0-61c6-42bd-8cfb-ddcad1c94b35",
 	"title": "Contrôler par un ordre de grandeur",
 	"description": "Choisir le bon résultat d'un produit ou d'une somme de décimaux (mêmes chiffres, virgule déplacée) ; choisir un ordre de grandeur d'un produit",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Arrondir",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

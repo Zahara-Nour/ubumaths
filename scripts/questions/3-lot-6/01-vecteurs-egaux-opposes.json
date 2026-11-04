@@ -1,10 +1,8 @@
 {
+	"id": "ff3bd841-6d22-40f6-a4e3-4ddc7e017905",
 	"title": "Vecteurs égaux, opposés, nul",
 	"description": "Reconnaître sur un quadrillage un vecteur égal ou opposé à un vecteur donné ; égalités de vecteurs dans un parallélogramme ; vecteur nul",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs",
-	"subdomain": "Égalité",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

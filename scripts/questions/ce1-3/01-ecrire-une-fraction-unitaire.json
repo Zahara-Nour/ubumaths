@@ -1,10 +1,8 @@
 {
+	"id": "a8685870-00a4-4534-a479-99b4793e9405",
 	"title": "Écrire en chiffres une fraction unitaire",
 	"description": "Écrire en chiffres un demi, un tiers, un quart… un dixième : un quart → 1/4",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

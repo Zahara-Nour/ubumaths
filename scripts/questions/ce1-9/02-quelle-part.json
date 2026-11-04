@@ -1,10 +1,8 @@
 {
+	"id": "435eb33c-e070-4edc-b0b4-80854aeffdff",
 	"title": "Quelle fraction de la figure est coloriée ? Jusqu'à 1",
 	"description": "Plusieurs parts coloriées, à la suite ou éparpillées ; toute la figure (d/d ou 1)",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Partage",
 	"level": 6,
 	"delay": 90,
 	"status": "draft",

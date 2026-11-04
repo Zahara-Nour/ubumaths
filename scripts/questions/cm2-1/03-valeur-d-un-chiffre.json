@@ -1,10 +1,8 @@
 {
+	"id": "8e1f6003-e9b1-4761-a68e-8ace9c020248",
 	"title": "La valeur d'un chiffre",
 	"description": "Chiffre d'un rang, valeur d'un chiffre selon sa position, rang d'un chiffre, dans un entier de 6 à 9 chiffres",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 17,
 	"delay": 20,
 	"status": "draft",

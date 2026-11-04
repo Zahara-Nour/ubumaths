@@ -1,10 +1,8 @@
 {
+	"id": "ac50c946-05f0-464b-a39f-323b3226293a",
 	"title": "Égalité de deux vecteurs",
 	"description": "Reconnaître le vecteur égal à u parmi des flèches, puis dans un parallélogramme (pièges : l'opposé, même longueur autre direction, ordre des lettres)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Égalité",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

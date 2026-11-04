@@ -1,10 +1,8 @@
 {
+	"id": "f2ed0ea0-e285-49fc-93df-9e388cc36eb0",
 	"title": "Répéter une épreuve de Bernoulli",
 	"description": "Répétition de n ⩽ 4 épreuves de Bernoulli indépendantes et identiques : nombre de chemins, probabilité d'un chemin donné (cas général, archer)",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Répétition de Bernoulli",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

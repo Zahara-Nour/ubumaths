@@ -1,10 +1,8 @@
 {
+	"id": "cda9c7de-fceb-466b-be2f-640c8bf2419c",
 	"title": "Litres, décilitres et centilitres",
 	"description": "1 L = 10 dL = 100 cL ; 1 dL = 10 cL ; 780 cL = 7 L + 80 cL ; 35 dL = 3 L + 5 dL",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Contenances",
-	"subdomain": "Unités",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "bded0f4a-4a15-4974-a951-f0369770fc32",
 	"title": "Range les réponses dans un tableau",
 	"description": "Compter une liste de réponses (12, 16, 20 élèves ; 3 à 5 valeurs) et remplir la colonne des effectifs, avec une ligne Total",
 	"grades": ["CE1"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Tableaux",
 	"level": 2,
 	"delay": 180,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "f9df1cd9-9791-42a3-bb5f-c0c84ad84d9c",
 	"title": "Espace : trois vecteurs forment-ils une base ?",
 	"description": "Sur un cube ou un pavé droit nommé, trois vecteurs entre sommets : base, coplanaires sans être colinéaires deux à deux, ou deux colinéaires (pièges : coplanaires pris pour une base, vecteurs parallèles d'origines différentes)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Sur une figure",
 	"level": 4,
 	"delay": 150,
 	"status": "draft",

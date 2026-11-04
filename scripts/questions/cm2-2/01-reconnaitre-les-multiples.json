@@ -1,10 +1,8 @@
 {
+	"id": "9c69a637-1c74-4789-82a5-addab3ec775f",
 	"title": "Reconnaître les multiples d'un nombre",
 	"description": "Dire si un entier est un multiple d'un entier de 3 à 9 (56 est-il un multiple de 7 ?), jusqu'à 100 puis jusqu'à 999 ; cocher les multiples dans une liste",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Multiples et diviseurs",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

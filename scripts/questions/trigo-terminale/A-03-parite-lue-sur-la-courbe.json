@@ -1,10 +1,8 @@
 {
+	"id": "18855802-b8e9-4fff-bfa8-256cc4d50c31",
 	"title": "Lire la parité sur la courbe d'une fonction trigonométrique",
 	"description": "Symétrie par rapport à l'axe des ordonnées (paire) ou à l'origine (impaire), lue sur une courbe tracée sur [−2π ; 2π] (pièges : axe et origine confondus, symétrie seulement apparente)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Parité et périodicité",
 	"level": 1,
 	"status": "draft",
 	"delay": 45,

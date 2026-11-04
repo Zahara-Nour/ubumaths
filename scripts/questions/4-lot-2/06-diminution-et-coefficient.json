@@ -1,10 +1,8 @@
 {
+	"id": "76f5f143-14c0-4181-8e8c-525aa4f99292",
 	"title": "Diminution et coefficient multiplicateur",
 	"description": "Traduire une diminution de t % par le coefficient 1 − t/100 : − 20 % → × 0,8 ; 120 € diminué de 20 % ; × 0,85 → − 15 %",
 	"grades": ["4"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Coefficient",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "6acde723-b599-40ec-99b5-eb22f3c578a4",
 	"title": "Effectifs cumulés croissants",
 	"description": "Calculer un effectif cumulé croissant à partir d'un tableau d'effectifs ; « au moins » par le total moins un cumulé",
 	"grades": ["3"],
-	"theme": "Statistiques",
-	"domain": "Effectifs cumulés",
-	"subdomain": "Calculer",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

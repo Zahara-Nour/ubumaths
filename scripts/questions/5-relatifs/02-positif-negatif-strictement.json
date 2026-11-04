@@ -1,10 +1,8 @@
 {
+	"id": "fc8fb430-1510-4984-9cfd-56448de8793a",
 	"title": "Positif, négatif, strictement ?",
 	"description": "Dire si un nombre est positif, strictement positif, négatif, strictement négatif : −3,5 est négatif et strictement négatif ; 0 est positif et négatif",
 	"grades": ["5"],
-	"theme": "Relatifs",
-	"domain": "Apprivoiser",
-	"subdomain": "La définition d'un nombre négatif",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

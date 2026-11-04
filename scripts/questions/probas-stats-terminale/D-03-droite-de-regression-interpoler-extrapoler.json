@@ -1,10 +1,8 @@
 {
+	"id": "a573d517-be46-442b-a298-03469d286e79",
 	"title": "Droite de régression donnée par la calculatrice : estimer une valeur",
 	"description": "Utiliser l'équation y = ax + b fournie par la calculatrice pour estimer y (ou x), avec un rang d'année (pièges : année au lieu du rang, rang décalé de 1, a et b échangés)",
 	"grades": ["T_COMP"],
-	"theme": "Statistiques",
-	"domain": "Statistique à deux variables",
-	"subdomain": "Ajustement affine",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

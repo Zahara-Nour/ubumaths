@@ -1,10 +1,8 @@
 {
+	"id": "3c411c3b-354b-4e66-91ce-64c6308860e0",
 	"title": "Médiane après l'ajout ou le retrait d'une valeur",
 	"description": "Série de 7 valeurs donnée dans le désordre ; nouvelle médiane après l'ajout d'une valeur extrême ou le retrait de la plus grande",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Médiane",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "77500c81-ffb6-4404-a096-89476d219565",
 	"title": "Résoudre f(x) ⩽ k sur un graphique",
 	"description": "Résoudre graphiquement une inéquation f(x) ⩽ k (les quatre sens), f linéaire tracée : a positif, a négatif (le sens change) ; réponse écrite en inégalité « x ⩽ 3 »",
 	"grades": ["3"],
-	"theme": "Fonctions",
-	"domain": "Fonctions linéaires",
-	"subdomain": "Résolution graphique",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

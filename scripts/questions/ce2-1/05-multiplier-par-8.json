@@ -1,10 +1,8 @@
 {
+	"id": "32c0d191-649a-4133-9eda-b94b6e40e450",
 	"title": "Multiplier par $8$",
 	"description": "Le double du double du double : 8 × 12, puis 8 × 27",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Produits astucieux",
 	"level": 3,
 	"delay": 20,
 	"status": "draft",

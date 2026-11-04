@@ -1,10 +1,8 @@
 {
+	"id": "60207cfd-4e73-455e-9be8-a01f8d4bf37e",
 	"title": "Résoudre graphiquement une équation 1/x = k",
 	"description": "Équation 1/x = k lue sur l'hyperbole de la fonction inverse : k ∈ {±½ ; ±1 ; ±2}, une solution",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction inverse",
-	"subdomain": "Lecture graphique",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

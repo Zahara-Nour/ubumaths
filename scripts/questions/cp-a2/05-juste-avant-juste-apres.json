@@ -1,10 +1,8 @@
 {
+	"id": "dc95f4f6-381d-4e57-a0ab-4430b2acecb4",
 	"title": "Le nombre juste avant, le nombre juste après",
 	"description": "Encadrer par les deux voisins : 46 < 47 < 48",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 4,
 	"delay": 20,
 	"status": "draft",

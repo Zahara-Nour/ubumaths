@@ -1,10 +1,8 @@
 {
+	"id": "c64028b0-2001-4320-a02b-5d0692089d1a",
 	"title": "Lire l'ordonnée à l'origine",
 	"description": "Lire graphiquement l'ordonnée à l'origine d'une fonction affine : droite montante, descendante, fonction linéaire (b = 0)",
 	"grades": ["3"],
-	"theme": "Fonctions",
-	"domain": "Fonctions affines",
-	"subdomain": "Lecture graphique",
 	"level": 2,
 	"delay": 45,
 	"status": "draft",

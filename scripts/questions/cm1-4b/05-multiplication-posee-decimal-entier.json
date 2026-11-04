@@ -1,10 +1,8 @@
 {
+	"id": "c3246792-8dbf-4afb-8ad5-33c6f37feeb0",
 	"title": "Poser la multiplication d'un nombre décimal par un entier",
 	"description": "Multiplication posée d'un décimal par un entier de 2 à 9 : 8 × 17,3 ; 7 × 46,55 ; 4 × 12,35 = 49,4",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Multiplier",
-	"subdomain": "Calcul posé",
 	"level": 1,
 	"delay": 180,
 	"status": "draft",

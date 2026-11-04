@@ -1,10 +1,8 @@
 {
+	"id": "1f6fb2c2-f7b6-46d2-bdd9-defd927f8247",
 	"title": "Soustraire des fractions de même dénominateur",
 	"description": "3/4 − 1/4 (exemple du BO) ; 1 − 5/9",
 	"grades": ["CE2"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 20,
 	"delay": 45,
 	"status": "draft",

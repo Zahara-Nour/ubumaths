@@ -1,10 +1,8 @@
 {
+	"id": "31a77ba9-520c-4f35-82b3-066492b512c1",
 	"title": "Valeur renvoyée par une fonction Python qui calcule un terme",
 	"description": "Boucle for : compter les tours, puis calculer les termes",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Seuil et algorithmes",
-	"subdomain": "Algorithmes",
 	"level": 1,
 	"status": "draft",
 	"delay": 90,

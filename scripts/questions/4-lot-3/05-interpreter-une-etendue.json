@@ -1,10 +1,8 @@
 {
+	"id": "e4d9eb0f-a896-45f4-af15-12a737b2da5a",
 	"title": "Interpréter une étendue",
 	"description": "Interpréter l'étendue d'une série : laquelle des deux classes a les notes les plus dispersées ? Retrouver une valeur extrême à partir de l'étendue",
 	"grades": ["4"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Étendue",
 	"level": 2,
 	"delay": 45,
 	"status": "draft",

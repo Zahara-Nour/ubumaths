@@ -1,10 +1,8 @@
 {
+	"id": "1c86d122-92f8-4bee-a566-b023ffb79dda",
 	"title": "Lire un graphique dont l'axe ne part pas de 0",
 	"description": "Évolution lue sur un nuage dont l'axe vertical ne part pas de 0 : repérer la comparaison trompeuse (choix), calculer le taux d'évolution réel (case)",
 	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Lire un graphique",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

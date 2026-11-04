@@ -1,10 +1,8 @@
 {
+	"id": "6dbea912-4647-4021-91e8-18e6f9dc36b9",
 	"title": "Est-ce un diviseur ?",
 	"description": "Dire si 3, 4, 6, 7, 8 ou 9 est un diviseur d'un entier jusqu'à 999 ; trouver le diviseur parmi quatre nombres qui se suivent (de 2 à 10)",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Multiples et diviseurs",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

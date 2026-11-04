@@ -1,10 +1,8 @@
 {
+	"id": "2a08a490-7ee7-45c6-8b17-9c7abd3a3bf9",
 	"title": "Quelle unité pour mesurer une longueur ?",
 	"description": "Choisir parmi mm, cm, dm, m et km : une graine de riz de 6 mm, un téléphone de 15 cm, une chaise de 9 dm, une girafe de 5 m, un marathon de 42 km",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Unités",
 	"level": 13,
 	"delay": 45,
 	"status": "draft",

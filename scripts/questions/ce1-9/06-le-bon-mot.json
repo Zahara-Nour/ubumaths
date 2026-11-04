@@ -1,10 +1,8 @@
 {
+	"id": "9733e97c-0313-429a-bd0e-bfe5b4ee82b1",
 	"title": "Le bon mot : sommet, côté, centre, milieu, droite, segment",
 	"description": "Nommer un élément montré sur une figure",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Propriétés",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

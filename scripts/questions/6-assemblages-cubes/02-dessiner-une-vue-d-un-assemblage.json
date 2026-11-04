@@ -1,10 +1,8 @@
 {
+	"id": "763d1183-65e9-497f-9cd6-84ccadf32802",
 	"title": "Dessiner une vue d'un assemblage de cubes",
 	"description": "Colorier sur un quadrillage la vue de face, de dessus, de droite ou de gauche d'un assemblage de cubes dessiné en perspective ; dans l'autre sens, reconnaître sa vue de face",
 	"grades": ["6"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Assemblages de cubes",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

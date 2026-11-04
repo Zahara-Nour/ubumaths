@@ -1,10 +1,8 @@
 {
+	"id": "8354a0e7-f707-48e0-ac3d-f43cc5b2e2fa",
 	"title": "Espérance à partir de la loi",
 	"description": "Calculer l'espérance d'une variable aléatoire dont la loi est donnée par un tableau",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Espérance",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

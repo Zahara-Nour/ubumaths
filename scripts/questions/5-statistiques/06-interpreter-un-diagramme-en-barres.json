@@ -1,10 +1,8 @@
 {
+	"id": "98db0948-cb05-4802-9099-e9395541580f",
 	"title": "Interpréter un diagramme en barres",
 	"description": "Exploiter un diagramme en barres : la catégorie la plus choisie, un écart entre deux barres, l'effectif total",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "diagrammes en barres",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "5c8a6da6-f99b-4d61-94cc-7147605ec7c6",
 	"title": "Exprimer une proportion en pourcentage (tout multiple de 100)",
 	"description": "Écrire la partie sur le tout, puis la simplifier en une fraction sur 100 : 120 élèves sur 400, c'est 30/100, soit 30 % (le tout vaut 200, 300, 400 ou 500)",
 	"grades": ["6"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Proportion",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

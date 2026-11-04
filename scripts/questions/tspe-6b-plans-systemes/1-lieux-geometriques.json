@@ -1,10 +1,8 @@
 {
+	"id": "8767110f-dedc-4315-bed7-7023c2d219ec",
 	"title": "Espace : lieux géométriques",
 	"description": "Point du plan médiateur de [AB] (MA² = MB²), équation du plan médiateur, ensemble des M tels que MA·MB = 0 (sphère de diamètre [AB]) (pièges : point A au lieu du milieu, rayon AB au lieu de AB/2)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Orthogonalité et distances dans l'espace",
-	"subdomain": "Lieux géométriques",
 	"level": 1,
 	"delay": 180,
 	"status": "draft",

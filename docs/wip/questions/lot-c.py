@@ -16,11 +16,11 @@ def spec(desc, vi, variables_, status, answers):
 
 
 def modele(title, description, theme, domain, subdomain, level, delay, variations, specs):
-    # theme / domain / subdomain : anciennes colonnes, remplies pour create-questions ; le
-    # rangement (nœud du point) est posé par la migration
-    return {'title': title, 'description': description, 'grades': ['CP'], 'theme': theme,
-            'domain': domain, 'subdomain': subdomain, 'level': level, 'delay': delay,
-            'status': 'draft', 'variations': variations, 'testSpecs': specs}
+    # theme / domain / subdomain : ancien quadruplet, plus écrit (ADR 0035, refusé par
+    # create-questions) ; arguments gardés pour les appels du lot. Le rangement (nœud du point)
+    # est posé par la migration. Réécrire un lot déjà créé efface l'`id` des fichiers : le remettre.
+    return {'title': title, 'description': description, 'grades': ['CP'], 'level': level,
+            'delay': delay, 'status': 'draft', 'variations': variations, 'testSpecs': specs}
 
 
 def bloc(nom, *lignes):

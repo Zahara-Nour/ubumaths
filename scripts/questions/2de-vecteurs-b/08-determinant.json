@@ -1,10 +1,8 @@
 {
+	"id": "930711ec-0bb7-4cf0-bd78-c06140bc41c3",
 	"title": "Déterminant de deux vecteurs",
 	"description": "det(u, v) = xy′ − yx′ en base orthonormée : coordonnées entières, une fraction, puis det(AB, AC) à partir de trois points (pièges : somme au lieu de différence, produits mal croisés)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Colinéarité",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

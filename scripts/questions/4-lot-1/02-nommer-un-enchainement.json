@@ -1,10 +1,8 @@
 {
+	"id": "25c02016-377f-434a-9b05-c6539c902c96",
 	"title": "Nommer un enchaînement d'opérations",
 	"description": "Lire un calcul avec le vocabulaire somme, différence, produit, quotient : (3 + 5) × 2 est « le produit de la somme de 3 et 5 par 2 »",
 	"grades": ["4"],
-	"theme": "Entiers",
-	"domain": "Priorités opératoires",
-	"subdomain": "Vocabulaire",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

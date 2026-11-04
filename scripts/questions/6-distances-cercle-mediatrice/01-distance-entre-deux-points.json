@@ -1,10 +1,8 @@
 {
+	"id": "4a86db27-ae09-4095-97a6-e29eb29927eb",
 	"title": "Distance entre deux points",
 	"description": "La distance AB est la longueur du segment [AB] : l'additionner quand C est sur [AB], la comparer à AC + CB quand C n'y est pas, dire si C est sur [AB] d'après trois longueurs",
 	"grades": ["6"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Distances",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -62,7 +62,9 @@ couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David déc
    `create-questions` en simulation tout vert ; essai en base **locale** (`.env.local` chargé) et
    modèles joués dans l'aperçu admin. PR des fichiers (revue : aucune, contenu), merge.
 3. **Prod** : `deploy:prod` si un bloc neuf l'exige (David seul) ; **David** lance
-   `create-questions --publier` (brouillons) ; relever les `id`.
+   `create-questions --publier` (brouillons) ; l'`id` de chaque modèle est écrit en tête de son
+   fichier : commiter les fichiers. Un fichier ne porte ni `theme`, ni `domain`, ni `subdomain`
+   (refusés, ADR 0035).
 4. **Migration nœud + tag** (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + son
    test d'intégration) : test rouge sans la migration puis vert, `security-auditor`, CI verte,
    `pnpm check:migrations --pr <n>`, merge, `db:migrate` depuis le dépôt principal, vérification en prod.

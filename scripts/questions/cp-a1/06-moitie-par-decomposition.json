@@ -1,10 +1,8 @@
 {
+	"id": "eccf910b-e001-4ef5-95fd-bdade806c198",
 	"title": "Moitié d'un nombre pair",
 	"description": "En décomposant en dizaines et unités (46 = 40 + 6)",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Additionner",
-	"subdomain": "Double et moitié",
 	"level": 8,
 	"delay": 20,
 	"status": "draft",

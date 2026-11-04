@@ -1,10 +1,8 @@
 {
+	"id": "5c092e43-3bb3-4f5d-8eaf-5f9da9a70039",
 	"title": "Formules du tableur",
 	"description": "Utiliser le tableur pour calculer une moyenne, une médiane et une étendue : =MOYENNE(B2:B8), =MEDIANE(B2:B8), =MAX(B2:B8)-MIN(B2:B8)",
 	"grades": ["4", "3"],
-	"theme": "Statistiques",
-	"domain": "Tableur",
-	"subdomain": "Formules",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

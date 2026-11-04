@@ -1,11 +1,9 @@
 {
+	"id": "2c116f4d-d7ef-4d8c-8114-9f113a983c4c",
 	"title": "Contrôle qualité : d'où vient la pièce défectueuse ?",
 	"description": "Deux machines (ou deux fournisseurs), parts et taux de défaut en pourcentages : probabilité qu'une pièce soit défectueuse (valeur exacte), puis provenance sachant l'état de la pièce, arrondie au centième ou au millième",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
 	"status": "draft",
-	"subdomain": "Problèmes en contexte",
 	"level": 2,
 	"delay": 120,
 	"shared": {

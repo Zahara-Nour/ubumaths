@@ -1,10 +1,8 @@
 {
+	"id": "53045ec4-7d7d-4e66-8f5d-5829c52431e4",
 	"title": "Échanger les facteurs d'un produit",
 	"description": "Compléter 3/4 × 7 = 7 × ? : l'ordre des facteurs ne compte pas dans un produit",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Multiplication",
 	"level": 9,
 	"delay": 30,
 	"status": "draft",

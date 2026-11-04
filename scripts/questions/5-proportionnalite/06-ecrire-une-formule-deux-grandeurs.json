@@ -1,10 +1,8 @@
 {
+	"id": "2cc9db57-609f-4b07-9749-3ca403d9d2a3",
 	"title": "Écrire une formule reliant deux grandeurs",
 	"description": "Écrire la formule qui relie deux grandeurs dans un contexte concret : prix de n cahiers (3n), inscription et films (5 + 2n), distance à vitesse constante (60t)",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Écrire",
-	"subdomain": "Formules",
 	"level": 5,
 	"delay": 60,
 	"status": "draft",

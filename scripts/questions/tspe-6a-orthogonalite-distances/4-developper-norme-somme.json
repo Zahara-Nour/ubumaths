@@ -1,10 +1,8 @@
 {
+	"id": "2af3814b-0991-48b3-86bb-5046c91f6e56",
 	"title": "Espace : développer ‖u + v‖²",
 	"description": "‖u + v‖², ‖u − v‖² et ‖u + v‖ connaissant ‖u‖, ‖v‖ et u·v ; données possibles (|u·v| < ‖u‖‖v‖) (pièges : facteur 2 oublié, double produit oublié, racine oubliée)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Orthogonalité et distances dans l'espace",
-	"subdomain": "Produit scalaire",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

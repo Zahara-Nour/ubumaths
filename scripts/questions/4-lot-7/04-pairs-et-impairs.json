@@ -1,10 +1,8 @@
 {
+	"id": "9a06de2e-ee18-42ef-bae2-7a99f5d51cf0",
 	"title": "Pairs et impairs",
 	"description": "Écrire un nombre pair 2n, un nombre impair 2n + 1, et tester une affirmation : quelle expression est toujours paire ? le pair qui suit 2n ? « n + 1 est toujours impair » ?",
 	"grades": ["4"],
-	"theme": "Calcul littéral",
-	"domain": "Produire une formule",
-	"subdomain": "Pairs et impairs",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

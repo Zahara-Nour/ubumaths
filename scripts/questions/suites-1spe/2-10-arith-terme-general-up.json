@@ -1,10 +1,8 @@
 {
+	"id": "373fc5b4-63af-409d-a1b9-1320ae9b3b75",
 	"title": "Terme général d'une suite arithmétique",
 	"description": "À partir de u_1 ou d'un terme u_p",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Suites arithmétiques",
-	"subdomain": "Terme général",
 	"level": 2,
 	"status": "draft",
 	"delay": 40,

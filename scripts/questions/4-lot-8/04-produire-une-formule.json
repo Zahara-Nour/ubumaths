@@ -1,10 +1,8 @@
 {
+	"id": "cb545bd7-befe-4bec-94f2-1fe37328b73b",
 	"title": "Produire une formule",
 	"description": "Produire une formule littérale qui exprime une grandeur en fonction d'une autre : prix d'une course, aire et périmètre d'un rectangle, volume d'un réservoir",
 	"grades": ["4"],
-	"theme": "Fonctions",
-	"domain": "Dépendance",
-	"subdomain": "Formule",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "93f9ecdf-9166-486d-8fca-42e380a664f2",
 	"title": "Reconnaître un type de raisonnement",
 	"description": "Reconnaître le type de raisonnement d'une courte démonstration : direct, par l'absurde, par contraposée, par disjonction des cas, contre-exemple",
 	"grades": ["1_SPE"],
-	"theme": "Logique",
-	"domain": "Logique et raisonnement",
-	"subdomain": "Raisonnements",
 	"level": 2,
 	"status": "draft",
 	"delay": 90,

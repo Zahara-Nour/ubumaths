@@ -1,10 +1,8 @@
 {
+	"id": "9852d62c-4109-4155-aa56-afef8c72d923",
 	"title": "Angle d'un secteur d'un diagramme circulaire",
 	"description": "Passer des effectifs à l'angle d'un secteur (données → diagramme) et de l'angle à l'effectif (diagramme → données)",
 	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Diagramme circulaire",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

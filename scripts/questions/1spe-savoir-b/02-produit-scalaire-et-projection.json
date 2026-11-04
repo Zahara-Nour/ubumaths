@@ -1,10 +1,8 @@
 {
+	"id": "7bf472bc-fcc9-436c-bc49-931990208941",
 	"title": "Produit scalaire et projection orthogonale",
 	"description": "À savoir : AB·AC = AB·AH, H projeté de C sur (AB), et le signe de AB × AH selon le sens (erreurs typiques : AB × AC, signe oublié)",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "À savoir",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

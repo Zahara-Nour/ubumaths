@@ -1,10 +1,8 @@
 {
+	"id": "1ac09759-00b1-498f-ae7c-2a773ca175c4",
 	"title": "Résoudre graphiquement une équation √x = k",
 	"description": "Équation √x = k lue sur la courbe de la fonction racine carrée : k ∈ {1 ; 2 ; 3}, k = 0, k < 0",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction racine carrée",
-	"subdomain": "Lecture graphique",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

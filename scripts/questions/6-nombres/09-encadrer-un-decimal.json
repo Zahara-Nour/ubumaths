@@ -1,10 +1,8 @@
 {
+	"id": "030e3554-0a49-4a22-9931-bebd2a8cb227",
 	"title": "Encadrer un nombre décimal",
 	"description": "Encadrer un décimal à 3 décimales à l'unité, au dixième ou au centième près (piège du 9 : 2,9 < 2,98 < 3)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

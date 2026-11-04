@@ -1,10 +1,8 @@
 {
+	"id": "7ed61c5f-dd82-4a78-8251-621e01138ebb",
 	"title": "Intercaler une fraction décimale",
 	"description": "Écrire une fraction comprise entre deux dixièmes consécutifs (14/10 < 145/100 < 15/10) ; toute fraction strictement entre les deux est juste",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 4,
 	"delay": 45,
 	"status": "draft",

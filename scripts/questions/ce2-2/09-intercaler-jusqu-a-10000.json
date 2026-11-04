@@ -1,10 +1,8 @@
 {
+	"id": "f8fd9552-6a1d-4caa-acb3-54f0748f58d3",
 	"title": "Intercaler un nombre (jusqu'à $10\\,000$)",
 	"description": "2 393 < … < 2 396 ; suite à trous avec passage de la dizaine, de la centaine, du millier",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 12,
 	"delay": 20,
 	"status": "draft",

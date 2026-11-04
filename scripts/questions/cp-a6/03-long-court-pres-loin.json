@@ -1,10 +1,8 @@
 {
+	"id": "192f52f3-7363-473c-a174-e3b5fb48a835",
 	"title": "Long, court, près, loin",
 	"description": "Le plus long ou le plus court de deux rubans, le plus près ou le plus loin en pas, les contraires",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Lexique",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

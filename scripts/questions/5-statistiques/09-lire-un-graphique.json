@@ -1,10 +1,8 @@
 {
+	"id": "06c07f43-dff7-40ba-ae44-2c414e76c8c9",
 	"title": "Lire un graphique",
 	"description": "Lire une valeur sur un graphique d'évolution (quelle est la valeur en 2020 ?), ou l'année qui correspond à une valeur",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "courbes et repères",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

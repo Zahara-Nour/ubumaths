@@ -1,10 +1,8 @@
 {
+	"id": "0fb97bb9-f5fd-4c5e-b220-8d6bdb6da662",
 	"title": "Croissances comparées : suites",
 	"description": "Limite de k·nᵖ/eⁿ, eⁿ/(k·nᵖ), k·nᵖe⁻ⁿ, eⁿ − k·nᵖ (pièges : ∞/∞ = 1, limite d'un seul facteur, ∞ − ∞ = 0)",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Limites de suites",
-	"subdomain": "Croissances comparées",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

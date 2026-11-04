@@ -1,10 +1,8 @@
 {
+	"id": "e8086f21-13e4-4adf-8691-347c65f88258",
 	"title": "Poser une multiplication de deux nombres entiers",
 	"description": "Multiplication posée : 48 × 37 ; 347 × 26 ; 876 × 208 (un 0 au milieu, sa ligne sautée)",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Calcul posé",
 	"level": 1,
 	"delay": 240,
 	"status": "draft",

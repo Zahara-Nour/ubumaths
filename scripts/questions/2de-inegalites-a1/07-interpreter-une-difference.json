@@ -1,10 +1,8 @@
 {
+	"id": "52516a54-40e9-48e9-ac86-8a91d388dd46",
 	"title": "Interpréter une différence",
 	"description": "x − y = −120 : « 120 € de moins » ; L − T = 25 : « 25 points de plus » ; retrouver une des deux quantités",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inégalités",
-	"subdomain": "Comparer",
 	"level": 5,
 	"delay": 60,
 	"status": "draft",

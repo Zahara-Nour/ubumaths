@@ -1,10 +1,8 @@
 {
+	"id": "e8e14e8f-9e4d-4195-ae90-b4203412059a",
 	"title": "Écrire une variable comme somme",
 	"description": "Nombre de succès = somme de variables de Bernoulli ; somme de n dés (E = 3,5n) ; succès de deux séries d'épreuves différentes : N = Y + Z, E(N) et V(N)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Sommes de variables aléatoires",
-	"subdomain": "Décomposer en somme",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

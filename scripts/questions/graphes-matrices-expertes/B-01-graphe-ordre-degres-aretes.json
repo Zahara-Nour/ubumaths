@@ -1,13 +1,14 @@
 {
+	"id": "31be400c-29fb-4877-a0e8-49c33d40add7",
 	"title": "Graphe : ordre, degrés, nombre d'arêtes",
 	"description": "Lire sur un graphe (figure ou liste d'arêtes) son ordre, le degré d'un sommet et le nombre d'arêtes (pièges : ordre confondu avec le nombre d'arêtes, arête comptée deux fois, degré compté en sommets voisins non adjacents)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Graphes",
-	"subdomain": "Vocabulaire des graphes",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nOrdre du graphe : $?$\n\nDegré du sommet $B$ : $?$\n\nNombre d'arêtes : $?$",

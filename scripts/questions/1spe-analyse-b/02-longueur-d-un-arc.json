@@ -1,10 +1,8 @@
 {
+	"id": "ac9b1868-c019-42c3-a5fe-4b2952cce654",
 	"title": "Longueur d'un arc du cercle trigonométrique",
 	"description": "Sur le cercle de rayon 1, la longueur d'un arc est la différence des réels associés : arc IM, arc AB, réel associé à un arc parcouru dans un sens, fractions de tour",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Cercle et radians",
 	"level": 5,
 	"delay": 60,
 	"status": "draft",

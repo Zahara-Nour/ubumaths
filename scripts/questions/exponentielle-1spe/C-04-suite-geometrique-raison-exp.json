@@ -1,11 +1,9 @@
 {
+	"id": "ca8f40c2-bcb9-4f1d-8647-53e84a04ed79",
 	"title": "Suite géométrique de raison exponentielle",
 	"description": "La suite (e^{na}) est géométrique de raison e^a ; terme général v_0 e^{na}",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
 	"status": "draft",
-	"subdomain": "Suites et modélisation",
 	"level": 1,
 	"delay": 40,
 	"variations": [

@@ -1,10 +1,8 @@
 {
+	"id": "1bd1f044-6e18-4ea6-8b77-e3ba5def0d5e",
 	"title": "Intercaler un nombre",
 	"description": "Un nombre entre deux nombres donnés : 47 < … < 52",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 6,
 	"delay": 20,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "4ff9d049-afd9-4fd2-be40-f8e242923af4",
 	"title": "Loi binomiale : identifier les paramètres n et p",
 	"description": "Reconnaître un schéma de Bernoulli dans un énoncé et donner les paramètres de la loi binomiale (pièges : p et 1 − p, n confondu avec le nombre de faces ou de boules)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Probabilités",
-	"domain": "Loi binomiale",
-	"subdomain": "Schéma de Bernoulli",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

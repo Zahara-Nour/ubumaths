@@ -1,10 +1,8 @@
 {
+	"id": "406fd9a8-ad71-4c24-ab35-5029ddc1b18b",
 	"title": "Résoudre graphiquement une équation f(x) = g(x)",
 	"description": "Solutions de f(x) = g(x) : abscisses des points d'intersection d'une parabole et d'une droite",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Lecture graphique",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

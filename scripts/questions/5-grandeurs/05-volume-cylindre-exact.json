@@ -1,10 +1,8 @@
 {
+	"id": "47971d3d-cc14-4880-8b1b-09f80f703d2a",
 	"title": "Volume d'un cylindre : valeur exacte",
 	"description": "Donner le volume exact d'un cylindre en fonction de π (rayon 3 cm, hauteur 5 cm : 45π cm³), à partir du rayon ou du diamètre",
 	"grades": ["5"],
-	"theme": "Grandeurs",
-	"domain": "Volumes",
-	"subdomain": "Volume d'un cylindre",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

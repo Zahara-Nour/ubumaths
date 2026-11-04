@@ -1,10 +1,8 @@
 {
+	"id": "178730c2-36e1-4343-b99c-c3952303a29d",
 	"title": "Encadrer un nombre (jusqu'à $999\\,999$)",
 	"description": "Encadrer un entier de 5 à 6 chiffres à la dizaine, à la centaine, au millier ou à la dizaine de mille près",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 13,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "66ecbb33-60fc-46a9-bdfe-2a978c5dec47",
 	"title": "Démontrer les valeurs de cos(π/4) et sin(π/4)",
 	"description": "Démonstration à trous de cos(π/4) = sin(π/4) = √2/2 : triangle OHM rectangle isocèle (justification), cos²(π/4) = 1/2, valeur exacte positive",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Démonstrations",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

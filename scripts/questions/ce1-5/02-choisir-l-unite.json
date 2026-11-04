@@ -1,10 +1,8 @@
 {
+	"id": "48d19e46-31cb-4692-a917-160bf0bef457",
 	"title": "Centimètre, mètre ou kilomètre ?",
 	"description": "Choisir l'unité qui convient : un crayon de 15 cm, un bus de 12 m, un trajet de 3 km",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Unités",
 	"level": 6,
 	"delay": 45,
 	"status": "draft",

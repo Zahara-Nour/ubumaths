@@ -1,10 +1,8 @@
 {
+	"id": "9592804d-cbbc-48e7-8f57-085d1da10d0a",
 	"title": "Combien de pièces ou de billets faut-il ajouter ?",
 	"description": "Compléter une somme d'argent avec des pièces de 2 € ou des billets de 10 €",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

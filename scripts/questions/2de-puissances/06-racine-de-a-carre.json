@@ -1,10 +1,8 @@
 {
+	"id": "37ef27bc-d17f-4dd2-8825-2a655032b676",
 	"title": "Simplifier la racine carrée d'un carré",
 	"description": "√a² = |a| : a entier négatif, a = 1 − √2, 3 − π…, puis √((x − k)²) sachant x < k ou x > k",
 	"grades": ["2"],
-	"theme": "Racines carrées",
-	"domain": "Manipuler",
-	"subdomain": "Propriétés",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

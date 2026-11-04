@@ -1,10 +1,8 @@
 {
+	"id": "d478935f-2f3a-4b5f-9756-647cd069d258",
 	"title": "Place les aiguilles",
 	"description": "Poser les aiguilles : heure juste, et quart, et demie, moins le quart ; 15 h 30 sur le 3",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Lire l'heure",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

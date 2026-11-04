@@ -1,13 +1,14 @@
 {
+	"id": "41eb477b-89b6-487c-9951-a5393caacc46",
 	"title": "Modéliser une situation par un graphe : ordre, degrés, arêtes",
 	"description": "Traduire une situation (tournoi, poignées de main, réseau de lignes, amitiés) par un graphe et en lire l'ordre, les degrés, le nombre d'arêtes, les arêtes manquantes pour un graphe complet (pièges : n(n − 1) au lieu de n(n − 1)/2, degré n au lieu de n − 1, poignée de main comptée deux fois)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Graphes",
-	"subdomain": "Modélisation par un graphe",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "Dans un tournoi, ${{n}}$ équipes se rencontrent : chaque équipe joue exactement une fois contre chacune des autres. On modélise le tournoi par un graphe dont les sommets sont les équipes et les arêtes les matchs.\n\nOrdre du graphe : $?$\n\nDegré de chaque sommet : $?$\n\nNombre de matchs joués : $?$",

@@ -1,10 +1,8 @@
 {
+	"id": "23ceafb0-61ea-4ce8-9e38-7a3e1f1a0dd1",
 	"title": "Construire un tableau croisé d'effectifs",
 	"description": "Énoncé en pourcentages traduit en tableau croisé, puis probabilité d'un événement",
 	"grades": ["2"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Tableaux croisés",
 	"level": 4,
 	"delay": 180,
 	"status": "draft",

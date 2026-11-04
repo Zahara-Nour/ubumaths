@@ -1,10 +1,8 @@
 {
+	"id": "73bb66e4-458b-4117-b5b0-5ac98b0e255b",
 	"title": "Compléter la suite des nombres",
 	"description": "Quatre nombres qui se suivent, un manque",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 12,
 	"delay": 20,
 	"status": "draft",

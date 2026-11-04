@@ -1,11 +1,9 @@
 {
+	"id": "ed8444bb-dfa3-4b6c-8414-27afb3066d2b",
 	"title": "Lire l'équation d'une tangente sur un graphique",
 	"description": "Lecture du coefficient directeur m (entier ou demi-entier) et de l'ordonnée à l'origine p d'une tangente tracée",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
 	"status": "draft",
-	"subdomain": "Tangente",
 	"level": 3,
 	"delay": 60,
 	"options": {

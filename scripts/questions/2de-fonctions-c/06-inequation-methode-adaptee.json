@@ -1,10 +1,8 @@
 {
+	"id": "d86c9577-898c-4c0b-8fc0-bf789c20bc89",
 	"title": "Résoudre f(x) < k en se ramenant à une fonction de référence",
 	"description": "f(x) < k avec f donnée par son expression (2x² + 1, 2√x + 1, 2x³ + 3) : isoler la fonction de référence, puis résoudre par sa courbe ou sa croissance, les quatre sens (pièges : partie négative oubliée, x ⩾ 0 oublié, m au lieu de m², crochets)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Résolution algébrique",
 	"level": 2,
 	"delay": 120,
 	"status": "draft",

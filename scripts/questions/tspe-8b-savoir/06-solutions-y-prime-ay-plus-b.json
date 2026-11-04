@@ -1,10 +1,8 @@
 {
+	"id": "c79a1c43-18c6-4ea6-b729-d32819d30419",
 	"title": "Solutions de l'équation y′ = ay + b",
 	"description": "À savoir : pour a ≠ 0, les solutions de y′ = ay + b sont Ce^(ax) − b/a ; solution constante −b/a ; exemple y′ = −y + 4 ; distracteurs : signe, oubli de diviser par a, e^(−ax)",
 	"grades": ["T_SPE"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Équations différentielles",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

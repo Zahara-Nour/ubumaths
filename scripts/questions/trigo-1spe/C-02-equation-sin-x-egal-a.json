@@ -1,10 +1,8 @@
 {
+	"id": "afd9b3ff-c4ee-4061-ab99-7589aa1dc045",
 	"title": "Résoudre sin x = a sur un tour (valeurs remarquables)",
 	"description": "sin x = a, a valeur remarquable, résolue dans [0 ; 2π[ ; réponse : ensemble fini de solutions",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Équations",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

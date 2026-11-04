@@ -1,10 +1,8 @@
 {
+	"id": "35f82aad-c94f-4d8a-84d6-12faeebf1c7f",
 	"title": "Problèmes et notation scientifique",
 	"description": "Utiliser les préfixes (nano à giga) et la notation scientifique : 1 μm = 10⁻⁶ m ; 350 nm = 3,5 × 10⁻⁷ m ; distance parcourue par la lumière ; bactéries bout à bout",
 	"grades": ["3"],
-	"theme": "Puissances",
-	"domain": "Problèmes",
-	"subdomain": "Notation scientifique",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

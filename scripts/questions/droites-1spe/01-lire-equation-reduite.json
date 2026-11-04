@@ -1,10 +1,8 @@
 {
+	"id": "f5585668-2ec1-45d1-a279-d82f45903926",
 	"title": "Lire l'équation réduite d'une droite sur un graphique",
 	"description": "Ordonnée à l'origine et pente lues sur la droite tracée, pente entière ou fractionnaire",
 	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Équations de droites",
 	"level": 9,
 	"delay": 40,
 	"status": "draft",

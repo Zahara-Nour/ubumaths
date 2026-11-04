@@ -1,10 +1,8 @@
 {
+	"id": "7e7e2968-a550-483f-9399-3526f2bb5030",
 	"title": "Comment s'appelle ce solide ?",
 	"description": "Nommer un cube, un pavé ou une boule dessinés",
 	"grades": ["CP"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Reconnaître et décrire",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

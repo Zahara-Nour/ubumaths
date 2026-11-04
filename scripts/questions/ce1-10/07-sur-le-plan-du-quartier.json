@@ -1,10 +1,8 @@
 {
+	"id": "48627efc-439a-48c0-b3af-c0c7a58b1079",
 	"title": "Sur le plan du quartier",
 	"description": "Lire un plan vu du dessus : entre, en face, le plus près, à gauche, à droite",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Repérage et déplacements",
-	"subdomain": "Positions et plans",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "d7ad48d8-614c-44e3-905d-b60f6630d2f5",
 	"title": "Est-ce l’équation d’un cercle ?",
 	"description": "Compléter les carrés dans x² + y² + αx + βy + γ = 0 : cercle, point ou ensemble vide selon le signe du second membre",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Géométrie repérée",
-	"subdomain": "Équation de cercle",
 	"level": 3,
 	"status": "draft",
 	"delay": 120,

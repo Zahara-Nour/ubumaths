@@ -1,10 +1,8 @@
 {
+	"id": "b0c57a57-f732-4c5d-9ef3-6f8f45e745d5",
 	"title": "Rendre une fraction irréductible",
 	"description": "Simplifier par décomposition en facteurs premiers : diviseur commun 2ᵘ × 3ᵛ (60/84), puis diviseur commun caché, produit de deux premiers ⩾ 7 (154/231)",
 	"grades": ["2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Simplification",
 	"level": 7,
 	"delay": 60,
 	"status": "draft",

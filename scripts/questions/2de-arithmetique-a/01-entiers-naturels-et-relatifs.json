@@ -1,10 +1,8 @@
 {
+	"id": "be39c27d-41f6-41ba-821d-70c25dd50a5e",
 	"title": "Entiers naturels, entiers relatifs",
 	"description": "Compter les x de ℕ, puis de ℤ, tels que −a < x ⩽ b ; vrai ou faux : −a ∈ ℕ, 0 ∈ ℕ, 15/5 ∈ ℕ, 7/2 ∈ ℤ, ℤ ⊂ ℕ",
 	"grades": ["2"],
-	"theme": "Logique",
-	"domain": "Ensembles",
-	"subdomain": "Appartenance et inclusion",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

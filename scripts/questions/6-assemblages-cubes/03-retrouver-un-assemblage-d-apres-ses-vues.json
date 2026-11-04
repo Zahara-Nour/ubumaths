@@ -1,10 +1,8 @@
 {
+	"id": "37c6852c-1408-45d1-95b5-5e2e31530de3",
 	"title": "Retrouver un assemblage de cubes d'après ses vues",
 	"description": "Choisir, parmi trois assemblages en perspective, celui qui a les vues données ; puis écrire la hauteur de chaque pile d'un assemblage dont on connaît la vue de dessus et la vue de face (et de droite)",
 	"grades": ["6"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Assemblages de cubes",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",
