@@ -38,9 +38,6 @@
 			}
 		],
 		"grades": ["CE2"],
-		"theme": "Entiers",
-		"domain": "Soustraire",
-		"subdomain": "Différence astucieuse",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

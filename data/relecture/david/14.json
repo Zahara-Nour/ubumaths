@@ -6,17 +6,14 @@
 	"template": {
 		"delay": 20,
 		"level": 6,
-		"theme": "Entiers",
 		"title": "Décomposer l'écriture décimale un nombre",
 		"options": {
 			"constraints": {
 				"spacesFromFourDigits": true
 			}
 		},
-		"domain": "Apprivoiser",
 		"grades": ["CE2"],
 		"status": "draft",
-		"subdomain": "Décomposition",
 		"testSpecs": [
 			{
 				"answers": ["1\\,000+200+30+4"],

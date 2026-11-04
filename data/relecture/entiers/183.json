@@ -31,9 +31,6 @@
 			}
 		],
 		"grades": ["CE1"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Distributivité",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

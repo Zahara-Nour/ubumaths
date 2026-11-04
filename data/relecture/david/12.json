@@ -6,9 +6,7 @@
 	"template": {
 		"delay": 30,
 		"level": 4,
-		"theme": "Entiers",
 		"title": "Décomposer l'écriture décimale d'un nombre",
-		"domain": "Apprivoiser",
 		"grades": ["CE1"],
 		"status": "draft",
 		"options": {
@@ -17,7 +15,6 @@
 				"factorOne": "off"
 			}
 		},
-		"subdomain": "Décomposition",
 		"variations": [
 			{
 				"blanks": [

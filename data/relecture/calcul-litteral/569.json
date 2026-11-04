@@ -35,9 +35,6 @@
 			}
 		],
 		"grades": ["5"],
-		"theme": "Calcul littéral",
-		"domain": "Equations",
-		"subdomain": "Dans $$\\Q$$",
 		"level": 3,
 		"status": "draft",
 		"delay": 30,

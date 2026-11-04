@@ -122,9 +122,6 @@
 			}
 		],
 		"grades": ["2"],
-		"theme": "Calcul littéral",
-		"domain": "Transformation",
-		"subdomain": "Réduction",
 		"level": 8,
 		"status": "draft",
 		"delay": 30,

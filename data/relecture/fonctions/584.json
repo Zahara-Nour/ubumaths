@@ -37,9 +37,6 @@
 			}
 		],
 		"grades": ["3"],
-		"theme": "Fonctions",
-		"domain": "Fonctions affines",
-		"subdomain": "Apprivoiser",
 		"level": 6,
 		"status": "draft",
 		"delay": 20,

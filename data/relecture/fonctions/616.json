@@ -38,9 +38,6 @@
 			}
 		},
 		"grades": ["1_SPE"],
-		"theme": "Fonctions",
-		"domain": "Dérivation",
-		"subdomain": "Apprivoiser",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,

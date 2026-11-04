@@ -51,9 +51,6 @@
 		"grades": [
 			"CM1"
 		],
-		"theme": "Entiers",
-		"domain": "Diviser",
-		"subdomain": "Divisibilité",
 		"level": 5,
 		"status": "draft",
 		"delay": 30,

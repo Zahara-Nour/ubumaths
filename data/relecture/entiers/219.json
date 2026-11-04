@@ -41,9 +41,6 @@
 			}
 		},
 		"grades": ["CE2"],
-		"theme": "Entiers",
-		"domain": "Diviser",
-		"subdomain": "Division euclidienne",
 		"level": 3,
 		"status": "draft",
 		"delay": 30,

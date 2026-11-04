@@ -347,9 +347,6 @@
 		"grades": [
 			"T_SPE"
 		],
-		"theme": "Suites",
-		"domain": "Limites",
-		"subdomain": "Determiner une limite",
 		"level": 2,
 		"status": "draft",
 		"delay": 30,

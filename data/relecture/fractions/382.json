@@ -99,9 +99,6 @@
 			}
 		},
 		"grades": ["CM1"],
-		"theme": "Fractions",
-		"domain": "Calculer",
-		"subdomain": "Addition et Soustraction",
 		"level": 1,
 		"status": "draft",
 		"delay": 30,

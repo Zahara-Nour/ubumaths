@@ -30,9 +30,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Entiers",
-		"domain": "Diviser",
-		"subdomain": "Quotient",
 		"level": 3,
 		"status": "draft",
 		"delay": 20,

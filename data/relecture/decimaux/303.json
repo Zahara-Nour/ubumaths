@@ -39,9 +39,6 @@
 			}
 		],
 		"grades": ["CM2"],
-		"theme": "Décimaux",
-		"domain": "Diviser",
-		"subdomain": "Quotient",
 		"level": 5,
 		"status": "draft",
 		"delay": 15,

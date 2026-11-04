@@ -47,9 +47,6 @@
 		"grades": [
 			"CP"
 		],
-		"theme": "Entiers",
-		"domain": "Apprivoiser",
-		"subdomain": "Comparer",
 		"level": 1,
 		"status": "draft",
 		"delay": 10,

@@ -91,9 +91,6 @@
 		"grades": [
 			"5"
 		],
-		"theme": "Fractions",
-		"domain": "Apprivoiser",
-		"subdomain": "Comparer",
 		"level": 4,
 		"status": "draft",
 		"delay": 20,

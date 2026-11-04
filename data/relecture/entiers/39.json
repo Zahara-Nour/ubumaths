@@ -34,9 +34,6 @@
 			}
 		],
 		"grades": ["CP"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "Somme",
 		"level": 6,
 		"status": "draft",
 		"delay": 20,

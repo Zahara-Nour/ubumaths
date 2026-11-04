@@ -49,9 +49,6 @@
 			}
 		},
 		"grades": ["6"],
-		"theme": "Grandeurs",
-		"domain": "Durées",
-		"subdomain": "Calculer",
 		"level": 6,
 		"status": "draft",
 		"delay": 20,

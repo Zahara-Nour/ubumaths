@@ -31,9 +31,6 @@
 			}
 		},
 		"grades": ["5"],
-		"theme": "Relatifs",
-		"domain": "Apprivoiser",
-		"subdomain": "La définition d'un nombre négatif",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

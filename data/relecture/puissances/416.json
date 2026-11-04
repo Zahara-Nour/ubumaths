@@ -49,9 +49,6 @@
 			}
 		},
 		"grades": ["4"],
-		"theme": "Puissances",
-		"domain": "Calculer",
-		"subdomain": "Multiplier",
 		"level": 4,
 		"status": "draft",
 		"delay": 60,

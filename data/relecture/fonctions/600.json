@@ -38,9 +38,6 @@
 			"orderIndependent": true
 		},
 		"grades": ["2"],
-		"theme": "Fonctions",
-		"domain": "Valeur absolue",
-		"subdomain": "Equations",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,

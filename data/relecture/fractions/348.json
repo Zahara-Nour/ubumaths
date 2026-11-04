@@ -59,9 +59,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Fractions",
-		"domain": "Apprivoiser",
-		"subdomain": "Définition",
 		"level": 2,
 		"status": "draft",
 		"delay": 10,

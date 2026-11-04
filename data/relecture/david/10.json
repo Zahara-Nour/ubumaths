@@ -6,12 +6,9 @@
 	"template": {
 		"delay": 20,
 		"level": 2,
-		"theme": "Entiers",
 		"title": "Décomposition décimale -> nombre entier (jusqu'aux centaines)",
-		"domain": "Apprivoiser",
 		"grades": ["CE1"],
 		"status": "draft",
-		"subdomain": "Décomposition",
 		"variations": [
 			{
 				"blanks": [

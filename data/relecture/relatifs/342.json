@@ -50,9 +50,6 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Relatifs",
-		"domain": "Multiplier et Diviser",
-		"subdomain": "Carré",
 		"level": 1,
 		"status": "draft",
 		"delay": 15,

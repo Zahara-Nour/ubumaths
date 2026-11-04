@@ -6,9 +6,7 @@
 	"template": {
 		"delay": 30,
 		"level": 6,
-		"theme": "Entiers",
 		"title": "Ecrire un grand nombre entier avec des espaces",
-		"domain": "Apprivoiser",
 		"grades": ["CM1"],
 		"status": "draft",
 		"options": {
@@ -17,7 +15,6 @@
 				"spaces": "strict"
 			}
 		},
-		"subdomain": "Ecriture",
 		"variations": [
 			{
 				"blanks": [

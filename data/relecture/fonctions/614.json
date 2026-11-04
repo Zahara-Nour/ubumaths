@@ -101,9 +101,6 @@
 		"grades": [
 			"1_SPE"
 		],
-		"theme": "Fonctions",
-		"domain": "Polynôme du second degré",
-		"subdomain": "Vrai ou Faux",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

@@ -38,9 +38,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "A trou",
 		"level": 12,
 		"status": "draft",
 		"delay": 15,

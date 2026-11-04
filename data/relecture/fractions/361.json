@@ -36,9 +36,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Fractions",
-		"domain": "Apprivoiser",
-		"subdomain": "Forme décimale",
 		"level": 10,
 		"status": "draft",
 		"delay": 20,

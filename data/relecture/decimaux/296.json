@@ -64,9 +64,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Décimaux",
-		"domain": "Multiplier",
-		"subdomain": "A trou",
 		"level": 8,
 		"status": "draft",
 		"delay": 15,

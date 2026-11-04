@@ -6,9 +6,7 @@
 	"template": {
 		"delay": 10,
 		"level": 4,
-		"theme": "Entiers",
 		"title": "Connaître la position décimale",
-		"domain": "Apprivoiser",
 		"grades": ["CE2"],
 		"shared": {
 			"variables": [
@@ -35,7 +33,6 @@
 			]
 		},
 		"status": "draft",
-		"subdomain": "Ecriture",
 		"variations": [
 			{
 				"blanks": [

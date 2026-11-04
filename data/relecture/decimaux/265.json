@@ -75,9 +75,6 @@
 			}
 		],
 		"grades": ["CM2"],
-		"theme": "Décimaux",
-		"domain": "Multiplier",
-		"subdomain": "Produit",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

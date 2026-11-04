@@ -144,9 +144,6 @@
 			}
 		],
 		"grades": ["CE2"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Produits astucieux",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,
