@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, phase 0 du lot 2._
+_Mis à jour le 2026-11-04, lot 2a-1 en PR._
 
-- **État** : lot 1 mergé (#2378), pas en prod. Lot 2 : relevé fait, phase 0 posée (Q5-Q8).
-- **Prochaine action** : réponses de David à Q5-Q8, puis tests rouges du lot 2a.
-- **En attente de David** : Q5-Q8 (section « Lot 2 — phase 0 »).
-- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env`. Prod lit l'ancienne forme jusqu'au `deploy:prod` : la conversion des données attend la mise en prod. Hors chantier : QCM en `$$<$$` bruts sur les tuiles (Entiers › Apprivoiser › Comparer).
+- **État** : lot 1 mergé (#2378), pas en prod. Q5-Q8 tranchées (recos). Lot 2a-1 (migration `category_key` facultative) en PR.
+- **Prochaine action** : merger 2a-1, `db:migrate`, `db:types` ; puis 2a-2 (code : lignes `{ templateId, quantity, delay }`, lecture des deux formes) sur une nouvelle branche.
+- **En attente de David** : question d'accès de 2a-1 (« personne ne gagne de lecture ») — à confirmer explicitement avant `db:migrate`.
+- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env`. Conversion des données (2b) seulement APRÈS le `deploy:prod` de 2a-2. Hors chantier : QCM en `$$<$$` bruts sur les tuiles (Entiers › Apprivoiser › Comparer).
 - **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-modeles`.
 
 ## Origine (2026-11-04)
@@ -145,3 +145,14 @@ Mergée le 2026-11-04 (CI verte, intégration comprise). Vérification manuelle 
   gardée (les anciens noms restent dans la base).
 - **Question d'accès** (Q6) : personne ne gagne de lecture ; la conversion réécrit des lignes que
   leur auteur lit déjà ; relâcher NOT NULL n'ouvre rien.
+
+### Q5-Q8 tranchées (2026-11-04)
+
+David : « Je suis tes recos » → Q5 A (id seul) · Q6 deux temps (2a code lisant les deux formes +
+`category_key` facultative ; 2b conversion après `deploy:prod`) · Q7 modèle retiré signalé au prof
+(éditeur de série, panier) · Q8 A (anciens liens illisibles après le lot 4, message clair).
+Question d'accès : réponse explicite encore à recueillir avant `db:migrate`.
+
+Découpage : `db:types` vient de la prod, et le code qui n'écrit plus `category_key` exige le type
+facultatif → **2a-1** = migration seule (`20261104140651`, rouge sans elle : « null value in column
+category_key », vert avec, 82/82 sur les 3 fichiers de tentatives) ; **2a-2** = le code.
