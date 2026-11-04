@@ -122,6 +122,8 @@ on:
       - 'src/routes/*/dashboard/teacher/cours/*/*/*page.server.ts'
       - 'src/routes/*/dashboard/teacher/contenu/templates/*/*page.server.ts'
       - 'src/routes/*/presques-evaluations/*page.server.ts'
+      - 'src/routes/*/automaths/test/*page.server.ts'
+      - 'src/routes/api/questions/templates/all/*server.ts'
       - 'src/routes/*/dashboard/student/*layout.server.ts'
       - 'src/routes/api/evaluations/assignments/*/start/*server.ts'
       - 'src/routes/api/worksheets/templates/*/*server.ts'

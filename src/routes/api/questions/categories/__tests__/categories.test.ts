@@ -19,9 +19,13 @@ const ROWS = [
 ];
 
 function call(rows: unknown[]) {
-	const supabase = {
-		from: () => ({ select: async () => ({ data: rows, error: null }) })
+	// Lecture paginée (`readAllRows`) : `.range(from, to)` rend la tranche demandée
+	const query = {
+		select: () => query,
+		order: () => query,
+		range: async (from: number, to: number) => ({ data: rows.slice(from, to + 1), error: null })
 	};
+	const supabase = { from: () => query };
 	return GET({ locals: { supabase } } as never);
 }
 
