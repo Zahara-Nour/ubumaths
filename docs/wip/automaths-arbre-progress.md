@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2378._
+_Mis à jour le 2026-11-04, phase 0 du lot 2._
 
-- **État** : lot 1 (catalogue selon l'arbre) mergé (#2378), pas encore en prod. Lots 2-4 à faire (ADR 0035).
-- **Prochaine action** : lot 2 — nouveau worktree `../ubumaths-wt-automaths-arbre` sur `feat/automaths-arbre-modeles` ; phase 0 : panier, séries, liens / QR, contrôles (`test_sessions`, `evaluation_attempt_questions.category_key`), paquet de révision désignent le **modèle** ; conversion des 5 séries + 1 contrôle (migration, question d'accès à poser) ; anciens liens relus (quadruplet → modèle unique).
-- **En attente de David** : rien.
-- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env` (prod, lecture anonyme). Hors chantier, vu en prod : choix de QCM en `$$<$$` bruts sur les tuiles du catalogue (Entiers › Apprivoiser › Comparer).
-- **Worktree / branche** : aucun (lot 1 nettoyé).
-
----
+- **État** : lot 1 mergé (#2378), pas en prod. Lot 2 : relevé fait, phase 0 posée (Q5-Q8).
+- **Prochaine action** : réponses de David à Q5-Q8, puis tests rouges du lot 2a.
+- **En attente de David** : Q5-Q8 (section « Lot 2 — phase 0 »).
+- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env`. Prod lit l'ancienne forme jusqu'au `deploy:prod` : la conversion des données attend la mise en prod. Hors chantier : QCM en `$$<$$` bruts sur les tuiles (Entiers › Apprivoiser › Comparer).
+- **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-modeles`.
 
 ## Origine (2026-11-04)
 
@@ -92,3 +90,58 @@ Laissés : `openRubrics` non vidé si la notion affichée change par repli (cosm
 une sous-notion archivée → « Non classés » sans dire pourquoi (à remonter dans l'admin).
 
 Mergée le 2026-11-04 (CI verte, intégration comprise). Vérification manuelle notée (#2378).
+
+## Lot 2 — phase 0 (2026-11-04)
+
+### Relevé (code + prod, lecture seule)
+
+- **Forme actuelle d'une ligne** : `CartItem = { category: {theme, domain, subdomain, level}, quantity, delay }`
+  (`stores/questionCart.svelte.ts`, Zod `cartItemSchema` dans `validation/series.ts`). Résolution
+  quadruplet → modèles : `templatesOfCategory` (`questions/series-items.ts`) ; clé `categoryKeyOf`.
+- **Où elle vit** : panier (localStorage `chiphre_question_cart`) ; liens `/automaths/panier|test?categories=…`
+  (`buildSeriesLink`, `parseCategoriesParam`, `utils/test-launch.ts`) et leurs QR ; `series.categories`
+  (jsonb) lu par `server/series.ts`, `chapter-series.ts`, `course-share-tokens.ts` (+ RPC
+  `20261016100300` qui recopie `s.categories` tel quel), `evaluations.ts`, `evaluation-attempts.ts`
+  (tirage côté serveur, filtre `theme in / domain in`), `curriculum-coverage.ts` ; paquet de révision
+  (`srs/chapter-deck.ts`, filtre PostgREST `categoriesFilter`) ; Entraînement Mathoux
+  (`mathoux/collection-logic.ts`, `TrainingCategory`) ; `test_sessions.categories` (écrit par
+  `/api/tests/save`, lu par l'export RGPD) ; `evaluation_attempt_questions.category_key` (NOT NULL, à
+  côté de `template_id`) ; `ClassroomItem.categoryKey` (regroupe les durées réglées en classe).
+- **Prod** : 5 séries / 29 lignes → **29 désignent exactement 1 modèle publié** ; 4 séances / 27 lignes
+  → 27 sur 1 modèle publié ; 0 question de tentative ; 0 lien court. L'index unique
+  `idx_question_templates_unique_category` (publiés) garantit ≤ 1 modèle par quadruplet.
+- **Contrainte de livraison** : entre `db:migrate` et `deploy:prod`, la prod tourne l'ANCIEN code, qui
+  lit et écrit le quadruplet dans `series.categories`.
+
+### Comportements proposés
+
+- **Nominal** : une ligne de série / panier = `{ templateId, quantity, delay }`. « Ajouter au panier »
+  ajoute CE modèle ; jouer une série joue ce modèle autant de fois que demandé (identique à
+  aujourd'hui, la catégorie ne tirait déjà qu'un modèle). Liens nouveaux : `?modeles=…` (JSON des
+  lignes). Paquet de révision, couverture du programme, Entraînement Mathoux, tirage d'une évaluation :
+  lus par id.
+- **Limite — ancienne forme** : un ancien lien `?categories=…`, un ancien panier du navigateur, une
+  série pas encore convertie → chaque quadruplet est résolu vers son modèle publié (≤ 1) ; panier du
+  navigateur réécrit dans la nouvelle forme au chargement.
+- **Limite — modèle retiré** (dépublié, archivé) : ligne sautée au jeu, comme aujourd'hui (Q7).
+- **Erreur** : quadruplet ou id sans modèle publié → ligne sautée, message « N questions de ce lien
+  n'existent plus » ; lien entièrement illisible → message actuel ; jamais de plantage.
+
+### Questions à David
+
+- **Q5 — ce que garde une ligne.** A (recommandé) : l'id seul ; titre, niveau, place dans l'arbre
+  relus dans le modèle. B : id + copie du titre (affichable même si le modèle disparaît).
+- **Q6 — livraison en deux temps** (imposée par la prod). Recommandé : **2a** = code qui lit les deux
+  formes et n'écrit que la nouvelle, + migration additive au merge : `category_key` perd son NOT NULL
+  (le nouveau code ne l'écrit plus ; colonne retirée au lot 4) ; **2b** = migration de données APRÈS
+  le `deploy:prod` de 2a : les 5 séries et 4 séances converties en place (colonnes gardées, renommées
+  au lot 4). Écarté : nouvelle colonne `series.items` dès 2a (l'ancien code en prod écrirait encore
+  l'autre colonne pendant l'intervalle).
+- **Q7 — modèle retiré d'une série** : sauté en silence (comme aujourd'hui), ou en plus signalé au
+  prof dans l'éditeur de série et dans le panier (« modèle retiré », recommandé).
+- **Q8 — anciens liens APRÈS le lot 4** (colonnes thème / domaine / sous-domaine retirées : plus rien
+  pour résoudre un quadruplet). A (recommandé) : illisibles, avec un message clair (0 lien court en
+  prod, les QR imprimés portent l'URL longue). B : table de correspondance figée quadruplet → id
+  gardée (les anciens noms restent dans la base).
+- **Question d'accès** (Q6) : personne ne gagne de lecture ; la conversion réécrit des lignes que
+  leur auteur lit déjà ; relâcher NOT NULL n'ouvre rien.
