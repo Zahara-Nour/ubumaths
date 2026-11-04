@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.70.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.69.0...v0.70.0) (2026-11-04)
+
+### ✨ Features
+
+- **fiches:** automatismes de 1re, fiche de probabilités conditionnelles en deux séries ([36ffd18](https://github.com/Zahara-Nour/ubumaths/commit/36ffd1871b03cceceace5a5e32905af9ad20904b))
+- **questions:** 1re spé, approfondissements lot 6 (algèbre : degré 3, xⁿ − aⁿ, somme et produit) ([7a06355](https://github.com/Zahara-Nour/ubumaths/commit/7a06355b8fb80a79a0bd7b848969c6c7b0db70d1))
+- **questions:** range le modèle TSPE-334 sur « vecteurs de l'espace » et pose son tag ([8892f26](https://github.com/Zahara-Nour/ubumaths/commit/8892f26edb57ce3a6a21c4c04582b3ac90448ada))
+- **questions:** seconde, lot 12 b-2 (produit, colinéarité, combinaison, base, périmètre) ([dfc5eee](https://github.com/Zahara-Nour/ubumaths/commit/dfc5eee9a944f948f96e72754f799c5c4bedbfa0))
+
+### 🐛 Bug Fixes
+
+- **automaths:** galerie montée seulement pour la rubrique ouverte et l'onglet choisi ([1518db4](https://github.com/Zahara-Nour/ubumaths/commit/1518db42417669a9ca8589f955c25c72eef7de8a))
+
+### ⚡ Performance Improvements
+
+- **automaths:** aperçus calculés à l'ouverture, modèles lus une fois par onglet ([dfded78](https://github.com/Zahara-Nour/ubumaths/commit/dfded789fefeed537873358d91c58c1d4c480f8d))
+
+### 📚 Documentation
+
+- **wip:** automaths-apercus, constat et décisions ([4431eee](https://github.com/Zahara-Nour/ubumaths/commit/4431eee97e8b4b150ede2e941d7289fe0a13ff43))
+- **wip:** automaths-apercus, reprendre ici après [#2376](https://github.com/Zahara-Nour/ubumaths/issues/2376) ([a41eb37](https://github.com/Zahara-Nour/ubumaths/commit/a41eb378a030f1137eb4e33bde6ca60affb018dc))
+- **wip:** automatismes-1spe, fiche statistiques vérifiée après mise à jour en prod ([17f8a00](https://github.com/Zahara-Nour/ubumaths/commit/17f8a0040d8640483568e7bb38cd348685cc1cd2))
+- **wip:** automatismes-1spe, phase 0 du lot probabilités (relevé) ([de812fb](https://github.com/Zahara-Nour/ubumaths/commit/de812fb8190a6509efbf50771ec90028b7a4cd3a))
+- **wip:** automatismes-1spe, reprendre ici après [#2373](https://github.com/Zahara-Nour/ubumaths/issues/2373) ([b1cca68](https://github.com/Zahara-Nour/ubumaths/commit/b1cca68b7ce447c593cff2d54f76e3baa6a14295))
+- **wip:** modeles-plafond-1000 en prod (0.69.0) ([a816a5e](https://github.com/Zahara-Nour/ubumaths/commit/a816a5efae09f1618dc55ff6314e8d3c7c2b5089))
+- **wip:** outils manquants, contrôles de la figure et rapporteur livrés ([3b6e6ba](https://github.com/Zahara-Nour/ubumaths/commit/3b6e6ba9476b0d2a1e8f2130039bc11d36e96e05))
+- **wip:** outils manquants, décisions du § 3 et ordre des outils ([9f9c8b6](https://github.com/Zahara-Nour/ubumaths/commit/9f9c8b6446986d3d05a1290023249337e149325b))
+- **wip:** outils manquants, état de prod vérifié (0.69.0) ([9ac95bb](https://github.com/Zahara-Nour/ubumaths/commit/9ac95bb7b2d1f3912491827aa16d7ef6c90669f6))
+- **wip:** questions-1spe-demonstrations, reprendre ici après [#2374](https://github.com/Zahara-Nour/ubumaths/issues/2374) ([bec3b42](https://github.com/Zahara-Nour/ubumaths/commit/bec3b42b01d1dfd5ef624ca671149168c167ca64))
+- **wip:** questions-2de, reprendre ici après [#2375](https://github.com/Zahara-Nour/ubumaths/issues/2375) ([0144fa7](https://github.com/Zahara-Nour/ubumaths/commit/0144fa72fba06c9dcc8a0be38fc98a9eb76b6948))
+- **wip:** solide-vecteur, brouillon TSPE-334 en prod et migration de rangement ([531b7c6](https://github.com/Zahara-Nour/ubumaths/commit/531b7c6ce1c26d960b13c0c03157798644ffa922))
+- **wip:** solide-vecteur, reprendre ici après [#2372](https://github.com/Zahara-Nour/ubumaths/issues/2372) ([e051f95](https://github.com/Zahara-Nour/ubumaths/commit/e051f95c4c8e541df11e546346f7ed9be5bca5a4))
+
 ## [0.69.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.68.0...v0.69.0) (2026-11-04)
 
 ### ✨ Features
