@@ -26,7 +26,8 @@ const DEFAULT_DELAY = 20;
 const MIN_DELAY = 5;
 const MAX_DELAY = 300;
 
-class QuestionCartStore {
+/** Exportée pour les tests (un panier neuf relu du localStorage) ; l'appli utilise `questionCart` */
+export class QuestionCartStore {
 	private items = $state<SeriesItem[]>([]);
 	/** Lignes d'un ancien panier, en attente des modèles */
 	private legacyLines: LegacyLine[] = [];

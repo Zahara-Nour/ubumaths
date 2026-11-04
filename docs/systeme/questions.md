@@ -118,9 +118,11 @@ rend un exercice privé écrit `search_indexed: false` dans la même requête
 
 ### `src/lib/validation/` — schémas partagés client / serveur
 
-Seul `series.ts` concerne les questions : composition d'une série (`cartItemSchema`,
-`seriesCategoriesSchema`, bornes `MAX_SERIES_CATEGORIES`, `MAX_SERIES_QUESTIONS`,
-`MAX_QUESTION_DELAY_SECONDS`), relue aussi pour un lien `/automaths/panier?categories=…`.
+Seul `series.ts` concerne les questions : composition d'une série (`seriesItemSchema`,
+`seriesItemsSchema`, `savedSeriesItemsSchema`, bornes `MAX_SERIES_ITEMS`, `MAX_ITEM_QUANTITY`,
+`MAX_SERIES_QUESTIONS`, `MAX_QUESTION_DELAY_SECONDS`), relue aussi pour un lien
+`/automaths/panier?modeles=…` (`buildSeriesLink`). L'ancienne forme (catégories) : `$lib/questions/series-legacy.ts`
+([evaluations.md § Les formes d'une série](evaluations.md#les-formes-dune-série)).
 `shop.ts` et `marketplace.ts` relèvent de [jeux-et-economie](jeux-et-economie.md).
 
 ### Composants et routes
@@ -184,20 +186,20 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   Les modèles posés sur la notion elle-même forment la rubrique « Général », en tête ; une branche,
   notion ou sous-notion sans modèle publié n'apparaît pas ; un modèle hors de l'arbre lu va dans
   « Non classés » (jamais perdu). La tuile ne montre plus l'ancien sous-domaine. Le panier et les
-  séries désignent encore les modèles par l'ancien quadruplet, jusqu'au lot 2 du chantier
-  `automaths-arbre` (ADR 0035). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés que pour la rubrique
+  séries désignent le **modèle** par son id (ADR 0035). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés que pour la rubrique
   dépliée (`CatalogueGallery`, montée par un `{#if}` : l'accordéon et les onglets de bits-ui
   gardent le contenu fermé dans le DOM), une fois par modèle (`templatePreview`), et réutilisés par le
   panier. Avant (novembre 2026), le serveur calculait les 1 912 aperçus à chaque visite : 7 à 11 s.
   `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
-  `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'une catégorie du
-  panier : durée par pas de 5 s entre 5 et 300 s, nombre de questions).
+  `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'un modèle du
+  panier, sous son titre : durée par pas de 5 s entre 5 et 300 s, nombre de questions ; modèle plus
+  publié → « Modèle retiré », avec « Retirer du panier »).
 - Stores (`src/lib/stores/`) :
-  - `questionCart.svelte.ts` (`questionCart`) : le **panier**, des catégories
-    (`theme`, `domain`, `subdomain`, `level`) avec un nombre de questions (1 à 99,
-    `MAX_QUANTITY`) et une durée par question ; persistant en `localStorage`
+  - `questionCart.svelte.ts` (`questionCart`) : le **panier**, des lignes `SeriesItem`
+    (`templateId`, nombre de questions 1 à 99, durée par question) ; persistant en `localStorage`
     (`chiphre_question_cart`). `replaceWith` / `mergeItems` y chargent une série (lien de série).
-    Ses types `QuestionCategory` et `CartItem` sont repris par les séries, les évaluations et le SRS.
+    Un panier d'avant l'ADR 0035 (catégories) attend les modèles : `questionTemplatesCache` appelle
+    `resolveLegacy` à chaque chargement.
   - `questionCategories.svelte.ts` (`questionCategoriesCache`) : catégories des modèles
     (`/api/questions/categories/all`), pour refuser une catégorie déjà prise et proposer le
     prochain niveau libre dans `QuestionTemplateForm`.
