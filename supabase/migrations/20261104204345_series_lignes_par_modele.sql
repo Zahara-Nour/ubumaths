@@ -57,6 +57,9 @@
 -- ROLLBACK:END
 -- ============================================================================
 
+-- Les `alter table` attendent les transactions en cours sur `series` : pas plus de 5 s
+set local lock_timeout = '5s';
+
 -- 1. Les anciennes lignes et leur modèle publié (rejouée dans la même transaction : table refaite)
 drop table if exists _lignes_2b;
 create temporary table _lignes_2b on commit drop as

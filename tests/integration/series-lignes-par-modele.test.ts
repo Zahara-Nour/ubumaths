@@ -47,17 +47,20 @@ const THEME = 'Conversion 2b';
 /** Date de modification fabriquée : elle ne doit pas bouger (Q10) */
 const AVANT = '2026-01-02T03:04:05.000Z';
 
-const cat = (domain: string, subdomain: string | null | undefined, level: number) => ({
+const cat = (domain: string, subdomain: string | null | undefined, level: number | string) => ({
 	theme: THEME,
 	domain,
 	...(subdomain === undefined ? {} : { subdomain }),
 	level
 });
 
-/** Lignes d'avant : sous-domaine renseigné, absent, vide */
+/**
+ * Lignes d'avant : sous-domaine renseigné, absent (modèle à sous-domaine vide, niveau en chaîne
+ * comme dans un ancien panier), vide (modèle à sous-domaine nul)
+ */
 const LIGNES_ANCIENNES = [
 	{ category: cat('Additionner', 'Somme', 1), quantity: 4, delay: 10 },
-	{ category: cat('Additionner', undefined, 2), quantity: 1, delay: 20 },
+	{ category: cat('Additionner', undefined, '2'), quantity: 1, delay: 20 },
 	{ category: cat('Multiplier', '', 3), quantity: 2, delay: 30 }
 ];
 
@@ -106,7 +109,7 @@ async function ecarterAnciennesLignesLocales(pg: Client): Promise<void> {
 async function poserDecor(pg: Client, prof: string, eleve: string): Promise<Decor> {
 	const modeles = {
 		somme: await insererModele(pg, prof, 'Additionner', 'Somme', 1, 'published'),
-		double: await insererModele(pg, prof, 'Additionner', null, 2, 'published'),
+		double: await insererModele(pg, prof, 'Additionner', '', 2, 'published'),
 		vide: await insererModele(pg, prof, 'Multiplier', null, 3, 'published')
 	};
 	// Homonyme non publié de « somme » (niveau 1) : la ligne doit désigner le modèle publié
@@ -255,10 +258,14 @@ describe('Séries et séances : conversion en lignes de modèle (migration de do
 	it('le rollback écrit dans la migration rend des catégories équivalentes, dates gardées', () => {
 		const attendu = [
 			{ category: cat('Additionner', 'Somme', 1), quantity: 4, delay: 10 },
-			{ category: cat('Additionner', null, 2), quantity: 1, delay: 20 },
+			{ category: cat('Additionner', '', 2), quantity: 1, delay: 20 },
 			{ category: cat('Multiplier', null, 3), quantity: 2, delay: 30 }
 		];
 		expect(annule.series.get(decor.series.ancienne)).toEqual(attendu);
+		// Une série déjà en nouvelle forme repasse aussi en catégories (modèle qui en a une)
+		expect(annule.series.get(decor.series.nouvelle)).toEqual([
+			{ category: cat('Additionner', '', 2), quantity: 3, delay: 15 }
+		]);
 		expect(annule.seance).toEqual(attendu);
 		expect([...annule.dates.values()]).toEqual([AVANT, AVANT, AVANT]);
 	});
