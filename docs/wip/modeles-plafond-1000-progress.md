@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, PR ouverte (phase 0 validée)._
+_Mis à jour le 2026-11-04, PR #2369 ouverte, CI en cours._
 
 - **État** : `readAllRows` (`src/lib/server/read-all-rows.ts`) branché sur les 7 lieux ; test d'intégration rouge prouvé (1000 au lieu de 1100) puis vert.
 - **Prochaine action** : revue `code-reviewer` (Sonnet) → CI verte → merge → `deploy:prod` sur demande de David.
@@ -44,3 +44,4 @@ _Mis à jour le 2026-11-04, PR ouverte (phase 0 validée)._
 
 - 2026-11-04 : diagnostic, worktree ouvert.
 - 2026-11-04 : phase 0 validée ; `readAllRows` + 7 lieux + test d’intégration ; PR ouverte.
+- 2026-11-04 : PR #2369. Revue Sonnet : arrêt sur page VIDE (robuste à un `max_rows` < 1000), test d'intégration robuste au parallèle (inclusion, pas total exact). Non retenus : dédoublonnage par `id` (2 requêtes, risque infime), couverture des 5 autres routes. CI : 2 faux Supabase de routes sans `.range()` adaptés, filtre `paths` de nightly-integration, `docs/systeme/questions.md`.
