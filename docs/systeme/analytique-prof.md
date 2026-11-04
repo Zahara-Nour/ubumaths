@@ -25,10 +25,12 @@ classes du prof. Elle montre l'état de la classe sous trois onglets :
 | Surveillance     | Drapeaux anti-triche non résolus (badge = leur nombre ; « ? » si le compteur est illisible, au chargement comme au rafraîchissement : `unresolved-count.ts`) | `srs_anti_fraud_flags` — voir [srs.md](srs.md) (anti-triche éteint en prod)               |
 
 Termes ([CONTEXT.md](../../CONTEXT.md)) : Point du programme, branche, notion, compétences
-mathématiques. L'interface dit « point » ; ⚠️ le code dit encore « **capacité** »
-(`ClassCapacityGrid`, `getClassCapacityGrid`, `CapacityBadge`) et certains commentaires « famille A » :
-c'est le **vocabulaire du référentiel abandonné**
-([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)). Les colonnes sont des **points**
+mathématiques. L'interface et le code disent « point du programme » (`CurriculumPoint` dans les noms :
+`ClassCurriculumPointGrid`, `getClassCurriculumPointGrid`, `CurriculumPointBadge`) ; « capacité » et
+« famille A », vocabulaire du référentiel abandonné
+([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)), ont été renommés (écart C10,
+2026-11-04). Seule reste la colonne `srs_anti_fraud_flags.capacity_point_id` (renommage par
+migration, à part). Les colonnes sont des **points**
 du programme (posés sur un nœud de l'arbre, ADR 0020) ; seule la famille B (compétences) reste un
 référentiel vivant.
 
@@ -44,7 +46,7 @@ s'élève quand il a besoin de l'admin ; l'élévation laisse le rôle de sessio
 
 Onglet 📘 Connaissances :
 
-- **A — Grille élève × point** (`ClassCapacityGrid.svelte`) : une colonne par point **non
+- **A — Grille élève × point** (`ClassCurriculumPointGrid.svelte`) : une colonne par point **non
   archivé** tagué sur un modèle que la classe a tenté (via `question_template_points`, sans `!inner` ;
   points sans niveau et archivés écartés en mémoire par `isLivePoint`). Carte tagguée dans plusieurs
   programmes : seuls ses points du **niveau de la classe** comptent, s'il en a (`keepLinksOfGrade`,
@@ -52,7 +54,7 @@ Onglet 📘 Connaissances :
   `placeInTree`) ; sous chaque nom (rendu par `InlineMarkdown`, LaTeX compris), la **notion** du
   point ; un point qu'on ne sait pas placer garde sa colonne, en dernier, sans notion. Cellule = badge
   FSRS agrégé 🆘 / 🔁 / ⏳ / ✅ / ◯ (`templateToBadge` + `BADGE_PRIORITY`,
-  `src/lib/server/srs/capacity-badge.ts`). Bascule « Tout le niveau » : ajoute les points non
+  `src/lib/server/srs/curriculum-point-badge.ts`). Bascule « Tout le niveau » : ajoute les points non
   archivés du niveau de la classe, même non touchés. Tri optionnel par % acquis ; pied de colonne
   `% acquise / % à remédier`.
 - **B — Courbe de rétention** (`StudentRetentionCurve.svelte`) : un élève × une **branche** de l'arbre,
@@ -64,7 +66,7 @@ Onglet 📘 Connaissances :
   mais pas dans le taux de réussite (`success_pct` à `null` un jour sans question notée).
 - **D — Histogramme des notes** (`StudentGradeHistogram.svelte`) : Again/Hard/Good/Easy sur 7 jours,
   avec stabilité moyenne.
-- **E — Top à remédier** (`TopCapacitiesToRemediate.svelte`) : points triés par % 🆘 + 🔁 ; clic →
+- **E — Top à remédier** (`TopCurriculumPointsToRemediate.svelte`) : points triés par % 🆘 + 🔁 ; clic →
   `AnalyticsModal.svelte` (élèves concernés).
 
 Les widgets B et D apparaissent dans « Détail par élève », après choix d'un élève ; B demande en plus
@@ -90,7 +92,7 @@ chaque widget suit dans son `$effect` de chargement).
   `+page.server.ts` (classe, élèves actifs, branches du niveau, compte des drapeaux non résolus). Les widgets
   chargent leurs données eux-mêmes, côté client.
 - Agrégations (`src/lib/server/stats/`, barrel `index.ts`) :
-  - `class-knowledge.ts` : `getClassCapacityGrid`, `getClassTopCapacitiesToRemediate`,
+  - `class-knowledge.ts` : `getClassCurriculumPointGrid`, `getClassTopCurriculumPointsToRemediate`,
     `getStudentRetentionCurve`, `getClassActivityHeatmap`, `getStudentGradeHistogram` ;
   - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate`.
     Requêtes groupées (pas une requête par élève) ; les listes de modèles sont découpées par
@@ -132,10 +134,6 @@ admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page
 
 ## Écarts connus
 
-- **Vocabulaire périmé** : « capacité » et « famille A » dans les noms (`ClassCapacityGrid`,
-  `getClassCapacityGrid`, `CapacityBadge`, `capacity-badge.ts`) et des commentaires, alors que les
-  données sont des points du programme. L'interface dit « point » depuis la PR F de l'arbre des
-  notions (2026-10-21) ; les noms du code restent à renommer (non tranché).
 - **Nom d'un point en LaTeX brut** dans les infobulles (`title`) de la grille et dans le titre de la
   fenêtre des élèves concernés (Top) : un attribut ou un titre texte ne rend pas les formules.
 - **Deux « acquis » différents** : la grille A calcule un badge **FSRS** depuis `srs_card_stats` ;

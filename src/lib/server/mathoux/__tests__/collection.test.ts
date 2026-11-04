@@ -9,7 +9,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/srs/capacity-badge', () => ({
+vi.mock('$lib/server/srs/curriculum-point-badge', () => ({
 	computePointBadges: vi.fn()
 }));
 
@@ -26,7 +26,7 @@ vi.mock('../memory', async (importOriginal) => ({
 // Versement des gidouilles des étapes : simulé (la fonction SQL est prouvée en intégration)
 vi.mock('../gidouilles', () => ({ payMathouMilestones: vi.fn() }));
 
-import { computePointBadges } from '$lib/server/srs/capacity-badge';
+import { computePointBadges } from '$lib/server/srs/curriculum-point-badge';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { MathouMemoryWriteError, rememberMathoux } from '../memory';
 import { payMathouMilestones } from '../gidouilles';

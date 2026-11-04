@@ -1,8 +1,8 @@
 /**
  * GET /api/teacher/classes/[classId]/analytics/knowledge-grid
  *
- * Widget A — Grille élève × capacité famille A.
- * Query : ?includeAllCycle=true pour étendre aux capacités non touchées.
+ * Widget A — Grille élève × point du programme.
+ * Query : ?includeAllCycle=true pour étendre aux points non touchés.
  */
 
 import { json } from '@sveltejs/kit';
@@ -12,7 +12,7 @@ import {
 	classIdParamSchema,
 	knowledgeGridQuerySchema
 } from '$lib/server/validation/teacher-analytics';
-import { getClassCapacityGrid } from '$lib/server/stats';
+import { getClassCurriculumPointGrid } from '$lib/server/stats';
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const paramCheck = classIdParamSchema.safeParse(params);
@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const { classId } = paramCheck.data;
 	await requireTeacherOfClass(locals, classId);
 
-	const grid = await getClassCapacityGrid(locals.supabase, classId, {
+	const grid = await getClassCurriculumPointGrid(locals.supabase, classId, {
 		includeAllCycle: queryCheck.data.includeAllCycle
 	});
 

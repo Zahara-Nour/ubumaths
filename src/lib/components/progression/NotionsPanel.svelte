@@ -18,7 +18,7 @@
 		notionLevel,
 		type NotionLevel
 	} from '$lib/types/skills';
-	import CapacityFsrsBadge from '$lib/components/srs/CapacityFsrsBadge.svelte';
+	import CurriculumPointFsrsBadge from '$lib/components/srs/CurriculumPointFsrsBadge.svelte';
 	import { formatGradeForDisplay, isValidGradeCode } from '$lib/utils/grades';
 	import type { NotionsProgression } from '$lib/server/progression/student-progression';
 	import { notionHref } from '$lib/navigation/return-links';
@@ -190,7 +190,7 @@
 													À remédier
 												</Badge>
 											{/if}
-											<CapacityFsrsBadge badge={notion.fsrs_badge} showLabel />
+											<CurriculumPointFsrsBadge badge={notion.fsrs_badge} showLabel />
 										</div>
 									</div>
 									<ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground" />

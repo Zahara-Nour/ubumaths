@@ -262,7 +262,7 @@ bouton « j'ai fini » auto-déclaré).
   ou sous-notion) : 2 124 points sur 3 131, 130 notions touchées sur 137.
 - Deux signaux existent déjà : l'**acquisition** d'un point (`student_point_state.is_acquired`,
   nourrie par les réponses aux questions taguées) et l'état **« à revoir »** (badges FSRS
-  `a_renforcer` / `a_remedier` de `src/lib/server/srs/capacity-badge.ts` : une question taguée sur
+  `a_renforcer` / `a_remedier` de `src/lib/server/srs/curriculum-point-badge.ts` : une question taguée sur
   le point est due).
 - ⚠️ **Seuls les niveaux du lycée ont des questions taguées.** Points travaillables (au moins une
   question taguée) / points, et notions travaillables :

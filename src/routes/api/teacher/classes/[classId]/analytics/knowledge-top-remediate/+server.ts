@@ -1,7 +1,7 @@
 /**
  * GET /api/teacher/classes/[classId]/analytics/knowledge-top-remediate
  *
- * Widget E — Top capacités à remédier dans la classe.
+ * Widget E — Top points du programme à remédier dans la classe.
  * Query : ?topN=10
  */
 
@@ -9,7 +9,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
 import { classIdParamSchema, topNQuerySchema } from '$lib/server/validation/teacher-analytics';
-import { getClassTopCapacitiesToRemediate } from '$lib/server/stats';
+import { getClassTopCurriculumPointsToRemediate } from '$lib/server/stats';
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const paramCheck = classIdParamSchema.safeParse(params);
@@ -27,7 +27,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const { classId } = paramCheck.data;
 	await requireTeacherOfClass(locals, classId);
 
-	const rows = await getClassTopCapacitiesToRemediate(
+	const rows = await getClassTopCurriculumPointsToRemediate(
 		locals.supabase,
 		classId,
 		queryCheck.data.topN

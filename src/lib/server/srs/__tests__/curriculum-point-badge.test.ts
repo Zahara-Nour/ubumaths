@@ -1,5 +1,5 @@
 /**
- * Unit tests for capacity-badge.ts
+ * Unit tests for curriculum-point-badge.ts
  * =================================
  *
  * Tests les 4 fonctions exportées du helper de badge FSRS agrégé.
@@ -11,7 +11,7 @@
  *   - aggregateBadge (pure) : composition templateToBadge + worstBadge.
  *   - computePointBadges (avec mock Supabase) : 2 round-trips DB + agrégation.
  *
- * Source : src/lib/server/srs/capacity-badge.ts (refonte chantier 2026-06-10)
+ * Source : src/lib/server/srs/curriculum-point-badge.ts (refonte chantier 2026-06-10)
  * Spec    : docs/archive/wip/srs-fsrs-spec-tdd.md §5 + docs/systeme/srs.md §5
  */
 
@@ -24,8 +24,8 @@ import {
 	BADGE_LABEL,
 	BADGE_VISUAL,
 	BADGE_PRIORITY,
-	type CapacityBadge
-} from '../capacity-badge';
+	type CurriculumPointBadge
+} from '../curriculum-point-badge';
 import { IN_CHUNK_SIZE } from '$lib/server/utils/chunked-in';
 
 // ============================================================================
@@ -163,7 +163,7 @@ describe('worstBadge', () => {
 	});
 
 	it('respects priority order: a_remedier > a_renforcer > en_apprentissage > acquise_en_memoire > non_commencee', () => {
-		const all: CapacityBadge[] = [
+		const all: CurriculumPointBadge[] = [
 			'non_commencee',
 			'acquise_en_memoire',
 			'en_apprentissage',
@@ -417,8 +417,8 @@ describe('computePointBadges', () => {
 // ============================================================================
 
 describe('BADGE_LABEL + BADGE_VISUAL', () => {
-	it('BADGE_LABEL has all 5 CapacityBadge keys', () => {
-		const keys: CapacityBadge[] = [
+	it('BADGE_LABEL has all 5 CurriculumPointBadge keys', () => {
+		const keys: CurriculumPointBadge[] = [
 			'a_remedier',
 			'a_renforcer',
 			'acquise_en_memoire',
@@ -432,8 +432,8 @@ describe('BADGE_LABEL + BADGE_VISUAL', () => {
 		}
 	});
 
-	it('BADGE_VISUAL has all 5 CapacityBadge keys with emoji', () => {
-		const keys: CapacityBadge[] = [
+	it('BADGE_VISUAL has all 5 CurriculumPointBadge keys with emoji', () => {
+		const keys: CurriculumPointBadge[] = [
 			'a_remedier',
 			'a_renforcer',
 			'acquise_en_memoire',
@@ -463,7 +463,7 @@ describe('BADGE_LABEL + BADGE_VISUAL', () => {
 
 describe('BADGE_PRIORITY (exporté)', () => {
 	it('contient les 5 badges avec des valeurs numériques distinctes', () => {
-		const keys: CapacityBadge[] = [
+		const keys: CurriculumPointBadge[] = [
 			'a_remedier',
 			'a_renforcer',
 			'acquise_en_memoire',
@@ -486,7 +486,7 @@ describe('BADGE_PRIORITY (exporté)', () => {
 	});
 
 	it('peut servir de comparateur Array.sort()', () => {
-		const arr: CapacityBadge[] = [
+		const arr: CurriculumPointBadge[] = [
 			'acquise_en_memoire',
 			'a_remedier',
 			'non_commencee',

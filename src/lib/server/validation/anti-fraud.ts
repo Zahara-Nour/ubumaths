@@ -38,7 +38,7 @@ export const flagsListQuerySchema = z.object({
 		.transform((v) => v === 'true'),
 	since: z.string().datetime().optional(),
 	type: z.enum(FLAG_TYPES).optional(),
-	capacity: z.string().uuid().optional()
+	point: z.string().uuid().optional()
 });
 
 // ----------------------------------------------------------------------------

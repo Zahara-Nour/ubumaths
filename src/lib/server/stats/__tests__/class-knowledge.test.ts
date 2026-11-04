@@ -7,8 +7,8 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import {
-	getClassCapacityGrid,
-	getClassTopCapacitiesToRemediate,
+	getClassCurriculumPointGrid,
+	getClassTopCurriculumPointsToRemediate,
 	getStudentRetentionCurve,
 	getClassActivityHeatmap,
 	getStudentGradeHistogram
@@ -70,7 +70,7 @@ function buildMock(tableHandlers: MockSpec, inCalls: InCall[] = []) {
 		queryBuilder.single.mockImplementation(handler);
 		return queryBuilder;
 	});
-	return { from: fromMock } as unknown as Parameters<typeof getClassCapacityGrid>[0];
+	return { from: fromMock } as unknown as Parameters<typeof getClassCurriculumPointGrid>[0];
 }
 
 // =============================================================================
@@ -156,71 +156,69 @@ function gridFixture(tags: ReturnType<typeof tag>[], extra: MockSpec = {}, inCal
 }
 
 // =============================================================================
-// getClassCapacityGrid
+// getClassCurriculumPointGrid
 // =============================================================================
 
-describe('getClassCapacityGrid', () => {
+describe('getClassCurriculumPointGrid', () => {
 	it('returns empty for class with no active members', async () => {
 		const supabase = buildMock({
 			class_members: () => ({ data: [], error: null })
 		});
-		const grid = await getClassCapacityGrid(supabase, 'class-1');
+		const grid = await getClassCurriculumPointGrid(supabase, 'class-1');
 		expect(grid.students).toEqual([]);
-		expect(grid.capacities).toEqual([]);
+		expect(grid.points).toEqual([]);
 	});
 
-	it('returns students but no capacities when no skill_attempts', async () => {
+	it('returns students but no points when no skill_attempts', async () => {
 		const supabase = buildMock({
 			class_members: () => ({ data: ALICE, error: null }),
 			skill_attempts: () => ({ data: [], error: null })
 		});
-		const grid = await getClassCapacityGrid(supabase, 'class-1');
+		const grid = await getClassCurriculumPointGrid(supabase, 'class-1');
 		expect(grid.students.length).toBe(1);
-		expect(grid.capacities).toEqual([]);
+		expect(grid.points).toEqual([]);
 		expect(grid.cells).toEqual({});
 	});
 
 	it('un point neuf tagué fait une colonne, étiquetée par sa notion', async () => {
-		const grid = await getClassCapacityGrid(
+		const grid = await getClassCurriculumPointGrid(
 			gridFixture([tag('t1', point('cap1', { name: 'Additionner' }))]),
 			'class-1'
 		);
 		expect(grid.students.length).toBe(1);
-		expect(grid.capacities).toEqual([
-			{ id: 'cap1', name: 'Additionner', notion_name: 'Fractions' }
-		]);
+		expect(grid.points).toEqual([{ id: 'cap1', name: 'Additionner', notion_name: 'Fractions' }]);
 		expect(grid.cells['s1:cap1']).toBe('acquise_en_memoire');
 		expect(grid.columnStats.cap1.acquise_pct).toBe(100);
 		expect(grid.columnStats.cap1.remediate_pct).toBe(0);
 	});
 
 	it('point posé sur une sous-notion : étiquette = la notion parente', async () => {
-		const grid = await getClassCapacityGrid(
+		const grid = await getClassCurriculumPointGrid(
 			gridFixture([tag('t1', point('cap1', { nodeId: 'sn-comparer' }))]),
 			'class-1'
 		);
-		expect(grid.capacities[0].notion_name).toBe('Fractions');
+		expect(grid.points[0].notion_name).toBe('Fractions');
 	});
 
 	it('un point sans niveau ne fait pas de colonne', async () => {
-		const grid = await getClassCapacityGrid(
+		const grid = await getClassCurriculumPointGrid(
 			gridFixture([tag('t1', point('actif')), tag('t1', point('sans-niveau', { grade: null }))]),
 			'class-1'
 		);
-		expect(grid.capacities.map((c) => c.id)).toEqual(['actif']);
+		expect(grid.points.map((c) => c.id)).toEqual(['actif']);
 		expect(grid.cells['s1:sans-niveau']).toBeUndefined();
 	});
 
 	it('un point archivé ne fait pas de colonne', async () => {
-		const grid = await getClassCapacityGrid(
+		const grid = await getClassCurriculumPointGrid(
 			gridFixture([tag('t1', point('actif')), tag('t2', point('archive', { archived: true }))]),
 			'class-1'
 		);
-		expect(grid.capacities.map((c) => c.id)).toEqual(['actif']);
+		expect(grid.points.map((c) => c.id)).toEqual(['actif']);
 	});
 
 	it('colonnes dans l’ordre de l’arbre : branche, notion, puis ordre du BO', async () => {
-		const grid = await getClassCapacityGrid(
+		const grid = await getClassCurriculumPointGrid(
 			gridFixture([
 				tag('t1', point('triangle', { name: 'A', nodeId: 'n-triangles' })),
 				tag('t2', point('decimal', { name: 'B', nodeId: 'n-decimaux' })),
@@ -229,7 +227,7 @@ describe('getClassCapacityGrid', () => {
 			]),
 			'class-1'
 		);
-		expect(grid.capacities.map((c) => c.id)).toEqual([
+		expect(grid.points.map((c) => c.id)).toEqual([
 			'fraction-1',
 			'fraction-2',
 			'decimal',
@@ -255,8 +253,8 @@ describe('getClassCapacityGrid', () => {
 			},
 			inCalls
 		);
-		const grid = await getClassCapacityGrid(supabase, 'class-1', { includeAllCycle: true });
-		expect(grid.capacities.map((c) => c.id)).toEqual(['touche', 'non-touche']);
+		const grid = await getClassCurriculumPointGrid(supabase, 'class-1', { includeAllCycle: true });
+		expect(grid.points.map((c) => c.id)).toEqual(['touche', 'non-touche']);
 		expect(inCalls).toContainEqual({
 			table: 'curriculum_points',
 			method: 'eq',
@@ -299,7 +297,7 @@ describe('getClassCapacityGrid', () => {
 			})
 		});
 
-		const grid = await getClassCapacityGrid(supabase, 'class-1');
+		const grid = await getClassCurriculumPointGrid(supabase, 'class-1');
 		expect(grid.cells['s1:cap1']).toBe('a_remedier');
 	});
 
@@ -314,7 +312,7 @@ describe('getClassCapacityGrid', () => {
 			}),
 			skill_attempts: () => ({ data: [], error: null })
 		});
-		const grid = await getClassCapacityGrid(supabase, 'class-1');
+		const grid = await getClassCurriculumPointGrid(supabase, 'class-1');
 		expect(grid.students.map((s) => s.display_name)).toEqual(['Alice', 'Zoé']);
 	});
 
@@ -326,7 +324,7 @@ describe('getClassCapacityGrid', () => {
 			}),
 			skill_attempts: () => ({ data: [], error: null })
 		});
-		const grid = await getClassCapacityGrid(supabase, 'class-1');
+		const grid = await getClassCurriculumPointGrid(supabase, 'class-1');
 		expect(grid.students[0].display_name).toBe('Élève sans nom');
 	});
 
@@ -371,33 +369,33 @@ describe('getClassCapacityGrid', () => {
 		}
 
 		it('classe de T_SPE : pas de colonne T_COMP pour la carte partagée', async () => {
-			const grid = await getClassCapacityGrid(fixture('T_SPE'), 'class-1');
-			expect(grid.capacities.map((c) => c.id).sort()).toEqual(['p-comp-seul', 'p-spe']);
+			const grid = await getClassCurriculumPointGrid(fixture('T_SPE'), 'class-1');
+			expect(grid.points.map((c) => c.id).sort()).toEqual(['p-comp-seul', 'p-spe']);
 			expect(grid.cells['s1:p-comp']).toBeUndefined();
 		});
 
 		it('classe de T_COMP : la carte partagée ne compte que sous son point T_COMP', async () => {
-			const grid = await getClassCapacityGrid(fixture('T_COMP'), 'class-1');
-			expect(grid.capacities.map((c) => c.id).sort()).toEqual(['p-comp', 'p-comp-seul']);
+			const grid = await getClassCurriculumPointGrid(fixture('T_COMP'), 'class-1');
+			expect(grid.points.map((c) => c.id).sort()).toEqual(['p-comp', 'p-comp-seul']);
 		});
 
 		it('classe sans niveau : tous les points, comme avant', async () => {
-			const grid = await getClassCapacityGrid(fixture(null), 'class-1');
-			expect(grid.capacities.map((c) => c.id).sort()).toEqual(['p-comp', 'p-comp-seul', 'p-spe']);
+			const grid = await getClassCurriculumPointGrid(fixture(null), 'class-1');
+			expect(grid.points.map((c) => c.id).sort()).toEqual(['p-comp', 'p-comp-seul', 'p-spe']);
 		});
 
-		it('top à remédier : la capacité de l’autre programme n’y figure pas', async () => {
-			const top = await getClassTopCapacitiesToRemediate(fixture('T_SPE'), 'class-1');
+		it('top à remédier : le point de l’autre programme n’y figure pas', async () => {
+			const top = await getClassTopCurriculumPointsToRemediate(fixture('T_SPE'), 'class-1');
 			expect(top.map((r) => r.point_id)).toEqual(['p-spe']);
 		});
 	});
 });
 
 // =============================================================================
-// getClassTopCapacitiesToRemediate
+// getClassTopCurriculumPointsToRemediate
 // =============================================================================
 
-describe('getClassTopCapacitiesToRemediate', () => {
+describe('getClassTopCurriculumPointsToRemediate', () => {
 	function remediateFixture(count: number) {
 		const past = new Date(Date.now() - 86400000).toISOString();
 		return buildMock({
@@ -424,16 +422,16 @@ describe('getClassTopCapacitiesToRemediate', () => {
 		});
 	}
 
-	it('returns empty when no capacities', async () => {
+	it('returns empty when no points', async () => {
 		const supabase = buildMock({
 			class_members: () => ({ data: [], error: null })
 		});
-		const rows = await getClassTopCapacitiesToRemediate(supabase, 'class-1');
+		const rows = await getClassTopCurriculumPointsToRemediate(supabase, 'class-1');
 		expect(rows).toEqual([]);
 	});
 
-	it('excludes capacities with 0% remediate', async () => {
-		const rows = await getClassTopCapacitiesToRemediate(
+	it('excludes points with 0% remediate', async () => {
+		const rows = await getClassTopCurriculumPointsToRemediate(
 			gridFixture([tag('t1', point('cap1'))]),
 			'class-1'
 		);
@@ -441,7 +439,7 @@ describe('getClassTopCapacitiesToRemediate', () => {
 	});
 
 	it('lists students concerned with their badge, and the notion', async () => {
-		const rows = await getClassTopCapacitiesToRemediate(remediateFixture(1), 'class-1');
+		const rows = await getClassTopCurriculumPointsToRemediate(remediateFixture(1), 'class-1');
 		expect(rows.length).toBe(1);
 		expect(rows[0].remediate_pct).toBe(100);
 		expect(rows[0].notion_name).toBe('Fractions');
@@ -449,7 +447,7 @@ describe('getClassTopCapacitiesToRemediate', () => {
 	});
 
 	it('respects topN limit', async () => {
-		const rows = await getClassTopCapacitiesToRemediate(remediateFixture(5), 'class-1', 3);
+		const rows = await getClassTopCurriculumPointsToRemediate(remediateFixture(5), 'class-1', 3);
 		expect(rows.length).toBe(3);
 	});
 });
@@ -735,8 +733,8 @@ describe('getStudentGradeHistogram', () => {
 		expect(buckets[3].count).toBe(1); // grade 4
 	});
 
-	// Décision A1 de David (2026-09-28) : une carte de cours ne mesure pas une
-	// capacité — ses notes (auto-évaluation) restent hors de l'histogramme.
+	// Décision A1 de David (2026-09-28) : une carte de cours ne mesure pas un
+	// point du programme — ses notes (auto-évaluation) restent hors de l'histogramme.
 	it('ignore les notes des cartes de cours', async () => {
 		const today = new Date().toISOString();
 		const supabase = buildMock({

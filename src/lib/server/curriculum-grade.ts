@@ -7,7 +7,7 @@
  * (`T_SPE`) et en maths complémentaires (`T_COMP`). Un lecteur qui sert UN
  * niveau (l'élève, la classe) ne doit alors retenir que les points de ce
  * niveau : sinon il affiche les objectifs de l'autre programme, ou compte deux
- * fois la même capacité.
+ * fois le même point du programme.
  *
  * Règle, carte par carte :
  *   - pas de niveau connu → tous les points (comportement d'avant) ;

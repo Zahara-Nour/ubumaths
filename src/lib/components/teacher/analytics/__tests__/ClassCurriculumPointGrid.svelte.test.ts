@@ -1,5 +1,5 @@
 /**
- * ClassCapacityGrid — component tests.
+ * ClassCurriculumPointGrid — component tests.
  *
  * Mock fetch + smoke checks rendering grille / sort / mode projection.
  */
@@ -8,14 +8,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import ClassCapacityGrid from '../ClassCapacityGrid.svelte';
+import ClassCurriculumPointGrid from '../ClassCurriculumPointGrid.svelte';
 
 const sampleGrid = {
 	students: [
 		{ id: 's1', display_name: 'Alice Martin' },
 		{ id: 's2', display_name: 'Bob Dupont' }
 	],
-	capacities: [
+	points: [
 		{ id: 'cap1', name: 'Additionner', notion_name: 'Entiers' },
 		{ id: 'cap2', name: 'Comparer $\\frac{1}{2}$ et $\\frac{1}{3}$', notion_name: 'Fractions' }
 	],
@@ -31,7 +31,7 @@ const sampleGrid = {
 	}
 };
 
-describe('ClassCapacityGrid', () => {
+describe('ClassCurriculumPointGrid', () => {
 	let originalFetch: typeof globalThis.fetch;
 
 	beforeEach(() => {
@@ -51,7 +51,7 @@ describe('ClassCapacityGrid', () => {
 
 	it('renders student names, point names and notions after fetch', async () => {
 		mockFetch(sampleGrid);
-		await render(ClassCapacityGrid, { classId: 'class-1' });
+		await render(ClassCurriculumPointGrid, { classId: 'class-1' });
 		await expect.element(page.getByText('Alice Martin')).toBeVisible();
 		await expect.element(page.getByText('Bob Dupont')).toBeVisible();
 		await expect.element(page.getByText('Additionner')).toBeVisible();
@@ -62,33 +62,33 @@ describe('ClassCapacityGrid', () => {
 	});
 
 	it('shows empty state when class has no students', async () => {
-		mockFetch({ students: [], capacities: [], cells: {}, columnStats: {} });
-		await render(ClassCapacityGrid, { classId: 'class-1' });
+		mockFetch({ students: [], points: [], cells: {}, columnStats: {} });
+		await render(ClassCurriculumPointGrid, { classId: 'class-1' });
 		await expect
 			.element(page.getByText(`Aucun ${lore.entities.student} dans cette classe.`))
 			.toBeVisible();
 	});
 
-	it('shows "no capacities" message when students have no skill_attempts', async () => {
+	it('shows "no points" message when students have no skill_attempts', async () => {
 		mockFetch({
 			students: [{ id: 's1', display_name: 'Alice' }],
-			capacities: [],
+			points: [],
 			cells: {},
 			columnStats: {}
 		});
-		await render(ClassCapacityGrid, { classId: 'class-1' });
+		await render(ClassCurriculumPointGrid, { classId: 'class-1' });
 		await expect.element(page.getByText(/Aucun point du programme travaillé/)).toBeVisible();
 	});
 
 	it('renders column stats (% acquise / % à remédier)', async () => {
 		mockFetch(sampleGrid);
-		await render(ClassCapacityGrid, { classId: 'class-1' });
+		await render(ClassCurriculumPointGrid, { classId: 'class-1' });
 		await expect.element(page.getByText('50%').first()).toBeVisible();
 	});
 
 	it('replaces student names by anonymized labels in projection mode', async () => {
 		mockFetch(sampleGrid);
-		await render(ClassCapacityGrid, { classId: 'class-1', anonymized: true });
+		await render(ClassCurriculumPointGrid, { classId: 'class-1', anonymized: true });
 		await expect.element(page.getByText(`${lore.entities.student} 1`)).toBeVisible();
 		await expect.element(page.getByText(`${lore.entities.student} 2`)).toBeVisible();
 	});
@@ -99,7 +99,7 @@ describe('ClassCapacityGrid', () => {
 			status: 500,
 			json: async () => ({ error: 'Internal' })
 		} as Response);
-		await render(ClassCapacityGrid, { classId: 'class-1' });
+		await render(ClassCurriculumPointGrid, { classId: 'class-1' });
 		await expect.element(page.getByText('⚠ Internal')).toBeVisible();
 	});
 });
