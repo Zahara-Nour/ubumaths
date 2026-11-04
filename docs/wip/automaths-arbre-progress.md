@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2382 et le `deploy:prod` 0.71.0._
+_Mis à jour le 2026-11-04, après #2383._
 
-- **État** : 3a-1 (#2381) et 3a-2 (#2382) mergés ; `db:migrate` de Q13 fait (21/21 modèles « Graphes et matrices » déclarent `product`, aucun publié). Code de l'éditeur sans quadruplet **en prod** (`deploy:prod` 0.71.0, `production` → c17444bc2).
-- **Prochaine action** : ouvrir 3b (`create-questions.ts` sans quadruplet) puis 2b, sur un nouveau worktree.
-- **En attente de David** : rien (essai de l'éditeur et de la liste admin validé le 2026-11-04).
-- **Pièges en cours** : un modèle enregistré sous Matrices/Graphes garde `capitalPairs = 'product'` s'il change de branche (le sélecteur l'affiche comme déclaré à la réouverture ; limite acceptée, relecture du 2026-11-04). PUT : le 23505 est attrapé sans tester le nom de l'index (seul unique de la table) → à retirer au lot 4 avec l'index. `create-questions.ts` garde le quadruplet jusqu'au deploy (3b). Lot 4 : le générateur lit encore le contexte AB dans `theme` (anciens modèles) → à remplacer avant de retirer la colonne. CI : « Browser connection was closed » → relancer.
-- **Worktree / branche** : aucun (worktree de 3a-2 retiré, branche supprimée). 3b → nouveau worktree.
+- **État** : 3a-1 (#2381), 3a-2 (#2382, en prod 0.71.0) et **3b (#2383)** mergés. Les fichiers de lot portent l'`id` de leur modèle, sans `theme`/`domain`/`subdomain` ; `create-questions` écrit l'id après création. 3b est un script : rien à déployer.
+- **Prochaine action** : **2b** = migration de données qui convertit en place les 5 séries et 4 séances encore en ancienne forme (`series.categories` → lignes `{templateId, quantity, delay}`) ; possible car 2a est en prod (0.71.0). Phase 0 de 2b, puis question d'accès. Ensuite lot 4 (destructif).
+- **En attente de David** : rien.
+- **Pièges en cours** : worktrees questions-4 / -ce1 / -cm1 ont des lots dont les fichiers portent encore `theme` → après rebase, rejouer `pnpm tsx scripts/questions/fichiers-sans-quadruplet.ts --ecrire --liste <f>` puis prettier sur la liste. Un script de lot rejoué efface les `id` des fichiers → `create-questions` bloque (homonyme) : remettre l'id. Lot 4 : liste « à reprendre » dans § 3b — code ; aussi `capitalPairs = 'product'` gardé si un modèle change de branche ; le 23505 du PUT ; contexte AB lu dans `theme`. CI : « Browser connection was closed » → relancer (chantier à part noté).
+- **Worktree / branche** : aucun (3b retiré). 2b → nouveau worktree.
 
 ## Origine (2026-11-04)
 
