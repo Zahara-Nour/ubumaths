@@ -1,10 +1,8 @@
 {
+	"id": "00000002-0000-4000-8000-000000000000",
 	"title": "Qui a le plus d'argent ?",
 	"description": "Comparer deux ensembles de pièces et de billets ; piège : plus d'objets ne veut pas dire plus d'argent",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

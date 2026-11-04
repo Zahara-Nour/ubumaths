@@ -7,11 +7,18 @@
  * Pour des questions écrites hors de l'éditeur (ex. automatismes de 1re) ; les
  * questions TinyMath passent, elles, par `pnpm relecture:import`.
  *
- * Chaque fichier `*.json` du dossier est un modèle brut (camelCase, sans `id`), avec
- * ses `testSpecs`. Il n'est créé que si :
- *  - `checkTemplate` passe (structure, TOUTES les specs vertes, tirages sans échec) ;
- *  - aucun modèle de même titre n'existe au même endroit (thème, domaine,
- *    sous-domaine, niveau) — rejouable sans doublon.
+ * Chaque fichier `*.json` du dossier est un modèle brut (camelCase), avec ses `testSpecs`.
+ * `checkTemplate` doit passer sur tous (structure, TOUTES les specs vertes, tirages sans
+ * échec) avant la moindre écriture.
+ *  - Fichier SANS `id` : modèle à créer. Après la création, son `id` est écrit en tête du
+ *    fichier (le reste du texte intact) : relancer ne crée pas de doublon. Un modèle de même
+ *    titre et même niveau déjà en base BLOQUE tout le lot, avant la moindre écriture : c'est le
+ *    plus souvent un fichier réécrit par son script de lot, qui a perdu son `id` (le remettre,
+ *    `git diff`) ; un homonyme voulu passe avec `--malgre-homonyme`.
+ *  - Fichier AVEC `id` : modèle déjà en base, retrouvé par cet id ; titre et niveau doivent
+ *    concorder.
+ * Les champs `theme`, `domain`, `subdomain` (ancien quadruplet, ADR 0035) sont refusés : le
+ * rangement dans l'arbre se fait ensuite par migration (nœud + tag, démarche `couvrir-niveau`).
  * Statut forcé à `draft` (David publie lui-même) ; `test_specs` écrit ; chaque ligne
  * est relue après écriture. S'arrête à la première erreur.
  *
@@ -21,21 +28,25 @@
  * Usage :
  *   pnpm tsx scripts/create-questions.ts --dir <dossier>            (simulation)
  *   pnpm tsx scripts/create-questions.ts --dir <dossier> --publier  (écrit)
+ *   … --malgre-homonyme           crée même si un modèle de même titre et niveau existe
  *   … --publier --mettre-a-jour   remplace aussi le contenu des modèles DÉJÀ en base, s'ils
  *                                 sont encore en brouillon (un modèle publié n'est jamais touché).
  *                                 Contenu = description, variations, shared, options, test_specs
  *                                 ET grades (comparés comme un ensemble).
  */
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { checkTemplate } from '$lib/questions/review/check-template';
 import { toTemplateInsertRow } from '$lib/questions/review/template-insert-row';
 import { argValue, createScriptClient, findReviewerId, hasFlag } from './relecture/common';
-import { readTemplateFile, sameGrades } from './lib/template-file';
+import { readTemplateFile, sameGrades, withTemplateId } from './lib/template-file';
 
 interface Entree {
 	fichier: string;
+	texte: string;
+	/** Id du modèle en base, porté par le fichier ; null = modèle à créer */
+	id: string | null;
 	modele: Omit<QuestionTemplate, 'id'>;
 }
 
@@ -74,48 +85,76 @@ async function main(): Promise<number> {
 	// 1. Tout vérifier avant la moindre écriture
 	const entrees: Entree[] = [];
 	for (const fichier of fichiers) {
-		const extrait = readTemplateFile(
-			JSON.parse(readFileSync(join(dossier, fichier), 'utf8')) as unknown,
-			fichier
-		);
+		const texte = readFileSync(join(dossier, fichier), 'utf8');
+		const extrait = readTemplateFile(JSON.parse(texte) as unknown, fichier);
 		if (!extrait.ok) {
 			console.error(`⛔ ${extrait.error}`);
 			return 1;
 		}
-		const modele = extrait.template as unknown as Omit<QuestionTemplate, 'id'>;
+		const { id: brut, ...reste } = extrait.template;
+		const modele = reste as unknown as Omit<QuestionTemplate, 'id'>;
 		const rapport = checkTemplate(modele);
 		if (!rapport.passed) {
 			console.error(`⛔ ${fichier} refusé : ${rapport.reasons.join(' ; ')}`);
 			return 1;
 		}
-		entrees.push({ fichier, modele });
+		const id = typeof brut === 'string' && brut.length > 0 ? brut : null;
+		entrees.push({ fichier, texte, id, modele });
+	}
+
+	// Homonymes des modèles à créer (même titre, même niveau) : tout le lot s'arrête
+	const homonymesDe = new Map<string, string[]>();
+	for (const { fichier, id, modele } of entrees) {
+		if (id !== null) continue;
+		const { data, error } = await supabase
+			.from('question_templates')
+			.select('id')
+			.eq('title', modele.title)
+			.eq('level', modele.level);
+		if (error) throw new Error(`${fichier} : lecture impossible — ${error.message}`);
+		if (data.length > 0)
+			homonymesDe.set(
+				fichier,
+				data.map((h) => h.id.slice(0, 8))
+			);
+	}
+	if (homonymesDe.size > 0 && !hasFlag('--malgre-homonyme')) {
+		for (const [fichier, ids] of homonymesDe)
+			console.error(
+				`⛔ ${fichier} : sans id, mais même titre et même niveau déjà en base (${ids.join(', ')}) — fichier réécrit qui a perdu son id ? Le remettre ; homonyme voulu : --malgre-homonyme`
+			);
+		return 1;
 	}
 
 	// 2. Créer / mettre à jour
 	let crees = 0;
 	let deja = 0;
 	let misAJour = 0;
-	for (const { fichier, modele } of entrees) {
-		let requete = supabase
-			.from('question_templates')
-			.select('id, status, grades, description, variations, shared, options, test_specs')
-			.eq('title', modele.title)
-			.eq('theme', modele.theme)
-			.eq('domain', modele.domain)
-			.eq('level', modele.level);
-		requete = modele.subdomain
-			? requete.eq('subdomain', modele.subdomain)
-			: requete.is('subdomain', null);
-		const { data: existants, error: e1 } = await requete;
-		if (e1) throw new Error(`${fichier} : lecture impossible — ${e1.message}`);
-		if (existants && existants.length > 0) {
-			if (existants.length > 1) {
+	for (const { fichier, texte, id, modele } of entrees) {
+		if (id !== null) {
+			const { data: existants, error: e1 } = await supabase
+				.from('question_templates')
+				.select(
+					'id, title, level, status, grades, description, variations, shared, options, test_specs'
+				)
+				.eq('id', id);
+			if (e1) throw new Error(`${fichier} : lecture impossible — ${e1.message}`);
+			const existant = existants?.[0];
+			if (!existant) {
+				console.error(`⛔ ${fichier} : id ${id.slice(0, 8)} absent de la base`);
+				return 1;
+			}
+			if (existant.title !== modele.title) {
 				console.error(
-					`⛔ ${fichier} : ${existants.length} modèles identiques déjà en base — à régler à la main`
+					`⛔ ${fichier} : titre « ${existant.title} » en base, « ${modele.title} » dans le fichier (${id.slice(0, 8)})`
 				);
 				return 1;
 			}
-			const existant = existants[0];
+			// Niveau renuméroté en base depuis la création : signalé, jamais réécrit par ce script
+			const noteNiveau =
+				existant.level === modele.level
+					? ''
+					: `\n      niveau ${existant.level} en base, ${modele.level} dans le fichier`;
 			const ligne = toTemplateInsertRow(modele, auteur);
 			// `grades` : comparé comme un ensemble (l'ordre ne compte pas)
 			const memesGrades = sameGrades(existant.grades, ligne.grades);
@@ -131,7 +170,7 @@ async function main(): Promise<number> {
 				: `\n      grades : [${existant.grades.join(', ')}] → [${ligne.grades.join(', ')}]`;
 			if (identique || !mettreAJour) {
 				console.log(
-					`  = ${fichier} : déjà en base (${existant.id})${identique ? '' : ' — CONTENU DIFFÉRENT (--mettre-a-jour)'}${noteGrades}`
+					`  = ${fichier} : déjà en base (${existant.id})${identique ? '' : ' — CONTENU DIFFÉRENT (--mettre-a-jour)'}${noteGrades}${noteNiveau}`
 				);
 				deja++;
 				continue;
@@ -166,9 +205,15 @@ async function main(): Promise<number> {
 			continue;
 		}
 
+		const homonymes = homonymesDe.get(fichier);
+		const noteHomonymes = homonymes
+			? `\n      homonyme voulu (même titre et niveau : ${homonymes.join(', ')})`
+			: '';
 		const specs = modele.testSpecs?.length ?? 0;
 		if (!publier) {
-			console.log(`  ✓ ${fichier} : « ${modele.title} » (${specs} specs) — à créer`);
+			console.log(
+				`  ✓ ${fichier} : « ${modele.title} » (${specs} specs) — à créer${noteHomonymes}`
+			);
 			continue;
 		}
 		const { data: cree, error: e2 } = await supabase
@@ -182,7 +227,18 @@ async function main(): Promise<number> {
 				`${fichier} : création non confirmée — ${e2?.message ?? JSON.stringify(cree)}`
 			);
 		}
-		console.log(`  ✍️  ${fichier} : « ${cree.title} » créé en brouillon (${cree.id})`);
+		// L'id écrit dans le fichier le désigne désormais : relancer ne crée pas de doublon
+		try {
+			writeFileSync(join(dossier, fichier), withTemplateId(texte, cree.id));
+		} catch (e) {
+			throw new Error(
+				`${fichier} : « ${cree.title} » créé (${cree.id}) mais id NON écrit dans le fichier — l'y ajouter à la main avant de relancer (${e instanceof Error ? e.message : String(e)})`,
+				{ cause: e }
+			);
+		}
+		console.log(
+			`  ✍️  ${fichier} : « ${cree.title} » créé en brouillon (${cree.id}), id écrit dans le fichier${noteHomonymes}`
+		);
 		crees++;
 	}
 	console.log(

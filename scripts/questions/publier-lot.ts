@@ -2,8 +2,8 @@
  * Publication d'un lot de modèles relu sur sa page à cocher
  * ==========================================================
  *
- * Retrouve en base chaque fichier du dossier (même clé que `create-questions.ts`, exactement une
- * ligne par fichier), puis publie les brouillons par `publishTemplates` (le contrôle de l'admin :
+ * Retrouve en base chaque fichier du dossier par l'id qu'il porte (écrit par `create-questions.ts`),
+ * puis publie les brouillons par `publishTemplates` (le contrôle de l'admin :
  * `templatePublicationErrors`, collisions de catégorie) et relit leur statut.
  * - Simulation par défaut : les contrôles sont JOUÉS (`publishTemplates` en simulation), rien
  *   n'est écrit.
@@ -23,7 +23,7 @@
 
 import { createScriptClient, hasFlag } from '../relecture/common';
 import { publishTemplates } from '../../src/lib/server/questions-bulk-status';
-import { apparierLot, lireLot, titresDuLot, valeurArgument } from '../lib/lot-questions';
+import { apparierLot, idsDuLot, lireLot, valeurArgument } from '../lib/lot-questions';
 import {
 	ecartsNiveaux,
 	formaterEcart,
@@ -46,8 +46,8 @@ async function main(): Promise<number> {
 
 	const { data, error } = await supabase
 		.from('question_templates')
-		.select('id, title, theme, domain, subdomain, level, status')
-		.in('title', titresDuLot(lot));
+		.select('id, title, level, status')
+		.in('id', idsDuLot(lot));
 	if (error) throw new Error(`lecture impossible — ${error.message}`);
 	const appariement = apparierLot(lot, data ?? []);
 	if (!appariement.ok) {
