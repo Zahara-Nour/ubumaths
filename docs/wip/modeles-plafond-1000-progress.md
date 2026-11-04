@@ -8,6 +8,7 @@ _Mis à jour le 2026-11-04, après le `deploy:prod` 0.69.0._
 - **Prochaine action** : ligne #2369 de `verifications-manuelles.md` sur chiph.re ; ensuite versement et archivage du journal.
 - **En attente de David** : la vérification manuelle #2369.
 - **Suite possible (PR de ménage, non décidée)** : migrer les 9 boucles de pagination recopiées vers `readAllRows` (liste dans « Décisions »).
+- **Effet de bord** : #2369 a rendu `/automaths` très lent en prod (7 à 11 s, 1 912 aperçus calculés par le serveur) → corrigé par #2376 (chantier `automaths-apercus`), à livrer au même `deploy:prod`.
 - **Worktree / branche** : supprimés après le merge.
 
 ## Constat (2026-11-04)

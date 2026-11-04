@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, PR à ouvrir._
+_Mis à jour le 2026-11-04, après #2376._
 
-- **État** : implémentation faite, tests verts (unitaires, navigateur, intégration plafond 1000), vérifiée dans Chrome en local.
-- **Prochaine action** : PR, revues `code-reviewer` + `security-auditor`, CI, merge ; puis mesure en prod après `deploy:prod` (cible ~2 s sur `/automaths`).
-- **En attente de David** : `deploy:prod` après le merge ; la vérification manuelle #2369 (chantier `modeles-plafond-1000`).
-- **Pièges en cours** : la base locale n'a aucun modèle publié (726 brouillons) → catalogue vide en local, sur `main` aussi ; pour voir le rendu, publier en local puis remettre en brouillon (fait le 2026-11-04, 712 modèles, remis).
-- **Worktree / branche** : `../ubumaths-wt-automaths-apercus` · `perf/automaths-apercus`.
+- **État** : #2376 mergée (`4d93161c6`) : aperçus calculés à l'ouverture d'une rubrique (galerie montée seulement si ouverte : bits-ui garde le contenu fermé dans le DOM), modèles lus une fois par onglet, API gardée 5 min par Vercel. **Pas encore en prod.**
+- **Prochaine action** : après `deploy:prod`, mesurer `/automaths` en prod (`curl -w %{time_starttransfer}` sur `https://www.chiph.re/automaths`, cible ~2 s, avant 7 à 11 s) ; puis versement (doc système déjà à jour dans `docs/systeme/questions.md`) et archivage du journal.
+- **En attente de David** : `deploy:prod` ; vérification manuelle #2376.
+- **Pièges en cours** : base locale sans modèle publié (726 brouillons) → catalogue vide en local ; pour voir le rendu, publier en local puis remettre en brouillon.
+- **Suite décidée** : chantier à part « Automaths selon l'arbre des notions » (voir Décisions).
+- **Worktree / branche** : supprimés après le merge.
 
 ---
 
