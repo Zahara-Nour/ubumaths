@@ -6,21 +6,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot « Statistiques » en cours (PR à ouvrir)._
+_Mis à jour le 2026-11-04, après #2362 et #2371._
 
-- **État** : lot « Statistiques » codé sur `feat/automatismes-statistiques` : `buildSerie` fige une
-  boîte à construire ; modèles neufs en brouillon `1c86d122` (axe tronqué) et `9852d62c` (angle d'un
-  secteur) ; script de fiche prêt, simulation verte · **Prochaine action** : PR (revue, CI, merge),
-  puis écrire la fiche (`create-automatismes-statistiques-1spe.ts --publier`) et la vérifier en PDF
-  · **En attente de David** : `create-questions.ts --dir scripts/questions/statistiques-1spe --publier
---mettre-a-jour` (texte de `9852d62c` reformulé : « élèves interrogés dans un lycée ») ; publier
-  `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c` (+ `1bd7378d`, `9a9026fc`
-  de `questions-3`) et les fiches `9217dfaa`, `0f98be04`, `7ff081db` ; garder ou non les 2 figures
-  d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** :
-  `create-questions.ts --publier` refusé par le classifieur du mode auto (David le lance) ; l'API
-  plafonne à 1 000 lignes (relevé page par page) ; variable `i` = imaginaire dans un modèle ;
-  `compile-prod.mjs --polices-corrige` pour un corrigé · **Worktree / branche** :
-  `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-statistiques`.
+- **État** : lot « Statistiques » livré : `buildSerie` fige une boîte à construire (#2362) ; fiche
+  « Automatismes : statistiques (1) » en brouillon `d37413a3` ; PDF vérifié (énoncé, réponses,
+  corrigé) ; #2371 corrige un débord (graine 3 de la moyenne regroupée) et le corrigé de l'angle,
+  et ajoute `--mettre-a-jour` au script de fiche · **Prochaine action** : après la commande de
+  David, régénérer la fiche (`regen-depuis-base.ts <sortie> d37413a3`), recompiler, `debord.py` = 0 ;
+  puis lot « Probabilités » · **En attente de David** : depuis le dépôt principal,
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/statistiques-1spe --publier
+--mettre-a-jour && pnpm tsx scripts/create-automatismes-statistiques-1spe.ts --publier
+--mettre-a-jour` ; publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c`
+  (+ `1bd7378d`, `9a9026fc`) et les fiches `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3` ; garder ou
+  non les 2 figures d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en
+  cours** : écritures en prod refusées par le classifieur (David les lance) ; API plafonnée à 1 000
+  lignes ; variable `i` = imaginaire ; `compile-prod.mjs --polices-corrige` pour un corrigé ;
+  `regen-depuis-base.ts --variante guided` évite l'étiquette « [guided] » des titres ; le venv de
+  `debord.py` est dans le dépôt principal · **Worktree / branche** : aucun (retiré après #2371).
 - Lot suivant décidé : « Probabilités » (bloc du BO de 1re), à part.
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
