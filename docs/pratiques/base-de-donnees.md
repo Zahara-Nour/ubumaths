@@ -1,3 +1,8 @@
+---
+couvre:
+  - src/lib/server/read-all-rows.ts
+---
+
 # Database (Supabase)
 
 Référence synthétique pour Claude : **workflow migrations**, **règle des types**, **RLS mono-professeur**, **tests d'intégration**. Détail schéma : [docs/systeme/base-de-donnees.md](../systeme/base-de-donnees.md) · règles condensées dans [CLAUDE.md](../../CLAUDE.md).
