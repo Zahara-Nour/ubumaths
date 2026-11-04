@@ -6,19 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2368 (rangement du lot 12 b-1) et la page à cocher (§ 78)._
+_Mis à jour le 2026-11-04, après la publication du lot 12 b-1 (§ 78)._
 
-- **État** : lots 1 à 9 et 12 a publiés. 12 b-1 (5 modèles) en prod en brouillon, rangé et tagué (#2368,
-  migration jouée) ; page à cocher publiée (§ 78). Ordre ensuite : 12 b-2, puis 10, puis 11.
-- **Prochaine action** : lire et compter les verdicts de la page ; corriger les « À revoir » ; puis David
-  lance `publier-lot` (simulation puis `--publier`) sur `scripts/questions/2de-vecteurs-c1` ; vérifier au
-  MCP. Ensuite 12 b-2 (289, 290, 291, 292, 401 ; phase 0 du § 77 déjà validée).
-- **En attente de David** : la relecture de la page à cocher.
+- **État** : lots 1 à 9, 12 a et 12 b-1 publiés. Ordre ensuite : 12 b-2, puis 10, puis 11.
+- **Prochaine action** : écrire le 12 b-2 (phase 0 validée au § 77 : 289 produit par un réel, 290
+  colinéarité sur la figure, 291 combinaison de deux vecteurs, 292 base orthonormée, 401 périmètre d'un
+  polygone rangé sur la notion Périmètres) ; gabarit `questions-2de/lot-vecteurs-c1-2de.py`.
+- **En attente de David** : rien.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
-  statut au MCP ; jamais `| head` derrière un `--publier` (le tuyau coupe le script en route) ; liste
-  blanche : pas de `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100
-  caractères par ligne ; une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis
-  le dépôt principal seulement.
+  statut au MCP ; jamais `| head` derrière un `--publier` ; noms de points ≠ lettres A-D des cases choix ;
+  `0..3;±` refusé par le tirage (`-3..3`) ; liste blanche : pas de `{{if:}}` à plus de ~6 niveaux dans une
+  réponse attendue ; corps de commit ≤ 100 caractères par ligne ; une autre session écrit aussi dans ce
+  journal : `git pull` ; `db:migrate` depuis le dépôt principal seulement.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -2028,3 +2027,5 @@ vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12
   sur leur nœud, un point chacun, `updated_at` inchangé.
 - Page à cocher (5 fiches, aucune alerte ; capacité `db`, `verdicts` vide à la publication) :
   https://claude.ai/artifact/5HjYJpnuyzEhYansfXYNBq
+- Page à cocher relue par David : 5/5 « ok », sans commentaire (ids du rangement). `publier-lot`
+  (simulation puis `--publier`) lancé par David ; MCP (prod) : 5/5 `published`, nœud et tag chacun.
