@@ -62,8 +62,7 @@
 --     'concat_ws('' · ''::text, g.name, p.name, n.name)',
 --     'concat_ws('' · ''::text, q.theme, q.domain, q.subdomain)');
 --   execute 'create or replace view public.resources with (security_invoker = true) as ' || d;
--- end;
--- $rb$;
+-- end $rb$;
 -- ROLLBACK:END
 -- ============================================================================
 
