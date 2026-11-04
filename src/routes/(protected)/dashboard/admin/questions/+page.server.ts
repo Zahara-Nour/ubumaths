@@ -28,6 +28,7 @@ import { COURSE_QUESTION_FILTER } from '$lib/questions/course-question';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { readAllRows } from '$lib/server/read-all-rows';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('(protected)/dashboard/admin/questions/+page.server');
@@ -151,16 +152,26 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		/**
 		 * Brouillons : mêmes filtres et même tri que les publiés, sans pagination
 		 * (la publication par lot doit pouvoir cocher tout ce qui est filtré).
+		 * Lus page par page : PostgREST tronque à 1000 lignes.
 		 */
-		const { data: drafts, error: draftsError } = await applyTemplateFilters(
-			supabase.from('question_templates').select('*').eq('status', 'draft'),
-			filters
-		)
-			.order(actualSortField, { ascending: actualSortOrder })
-			// Départage : des modèles importés en lot partagent le même created_at
-			.order('id');
-
-		if (draftsError) {
+		let drafts;
+		try {
+			drafts = await readAllRows(
+				(from, to) =>
+					applyTemplateFilters(
+						supabase
+							.from('question_templates')
+							.select('*')
+							.eq('status', 'draft')
+							.order(actualSortField, { ascending: actualSortOrder })
+							// Départage : des modèles importés en lot partagent le même created_at
+							.order('id')
+							.range(from, to),
+						filters
+					),
+				'des brouillons'
+			);
+		} catch (draftsError) {
 			logger.error('Error fetching draft templates:', draftsError);
 			throw error(500, 'Failed to load draft templates');
 		}
@@ -214,12 +225,20 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		 *
 		 * This is used to populate the filter dropdowns dynamically.
 		 * We fetch all templates (no filters except count) to get all possible categories.
+		 * Lus page par page : PostgREST tronque à 1000 lignes.
 		 */
-		const { data: allTemplates, error: allTemplatesError } = await supabase
-			.from('question_templates')
-			.select('theme, domain, subdomain');
-
-		if (allTemplatesError) {
+		let allTemplates;
+		try {
+			allTemplates = await readAllRows(
+				(from, to) =>
+					supabase
+						.from('question_templates')
+						.select('theme, domain, subdomain')
+						.order('id')
+						.range(from, to),
+				'des catégories'
+			);
+		} catch (allTemplatesError) {
 			logger.error('Lecture impossible :', allTemplatesError);
 			throw error(500, 'Impossible de charger les données');
 		}
@@ -237,7 +256,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		}
 
 		return {
-			drafts: drafts || [],
+			drafts,
 			templates: templates || [],
 			publishedIds,
 			total: count || 0,

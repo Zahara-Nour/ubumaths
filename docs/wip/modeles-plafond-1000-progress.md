@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, ouverture du chantier (aucune PR encore)._
+_Mis à jour le 2026-11-04, PR ouverte (phase 0 validée)._
 
-- **État** : bug diagnostiqué en prod, rien de codé. David a dit « il faut corriger le bug ».
-- **Prochaine action** : phase 0 courte (comportements ci-dessous) → test rouge (> 1 000 modèles) → helper de lecture paginée → brancher les lieux touchés → PR.
-- **En attente de David** : rien ; `deploy:prod` après merge (sur sa demande seulement).
-- **Pièges en cours** : un refus/une troncature PostgREST est SILENCIEUX (pas d'erreur) ; tri stable obligatoire pour paginer (`created_at` nullable → départager par `id`).
+- **État** : `readAllRows` (`src/lib/server/read-all-rows.ts`) branché sur les 7 lieux ; test d'intégration rouge prouvé (1000 au lieu de 1100) puis vert.
+- **Prochaine action** : revue `code-reviewer` (Sonnet) → CI verte → merge → `deploy:prod` sur demande de David.
+- **En attente de David** : `deploy:prod` après merge.
+- **Pièges en cours** : troncature PostgREST SILENCIEUSE ; tri stable terminé par `.order('id')`.
 - **Worktree / branche** : `../ubumaths-wt-modeles-plafond-1000` · `fix/modeles-plafond-1000` · port 5176.
 
 ## Constat (2026-11-04)
@@ -27,12 +27,20 @@ _Mis à jour le 2026-11-04, ouverture du chantier (aucune PR encore)._
 - `src/routes/(protected)/dashboard/admin/questions/+page.server.ts:219` (thème/domaine/sous-domaine de tous les modèles)
 - À vérifier (requêtes multi-lignes non relevées par le grep) : `srs/chapter-deck.ts`, `curriculum-coverage.ts`, `revisions/decks/programme`, `api/srs/*`, `template-review.ts`, `cahier-texte`.
 
-## Comportements (phase 0, à valider)
+## Comportements (phase 0, validée par David le 2026-11-04)
 
 - Nominal : avec N > 1 000 modèles publiés, les pages rendent les N.
 - Limite : exactement 1 000, 0 modèle.
 - Erreur : une page en échec → même comportement d'erreur qu'aujourd'hui (pas de liste partielle présentée comme complète).
 
+## Décisions (2026-11-04)
+
+- Les 9 boucles de pagination recopiées à la main (`template-review`, `curriculum-coverage`, `programme-tree`, `questions-bulk-status`, `dictionary/*`, `mathoux/*`, `exercise-import-export`, ids de l'admin) restent hors de cette PR : justes, à migrer vers `readAllRows` dans une PR de ménage.
+- `api/questions/templates/all` garde son `[]` en cas d'erreur (discutable : le store l'affiche comme un catalogue vide), hors bug.
+- Brouillons de l'admin (177) paginés dès maintenant.
+- Vérifiés sans risque : contrôles (`evaluation-attempts`, ≤ 100 par thème + domaine en prod), `category-validation`, `chapter-deck` (filtré, lève une erreur au plafond).
+
 ## Historique
 
 - 2026-11-04 : diagnostic, worktree ouvert.
+- 2026-11-04 : phase 0 validée ; `readAllRows` + 7 lieux + test d’intégration ; PR ouverte.

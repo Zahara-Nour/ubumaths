@@ -68,6 +68,27 @@ import type { Profile, FriendProfile } from '$lib/types/database-helpers';
 
 ---
 
+## Lire « toutes » les lignes : le plafond de 1 000
+
+PostgREST rend **1 000 lignes au plus** par requête (`max_rows`), et tronque **en silence** : ni erreur, ni avertissement. Une lecture sans filtre borné (tous les modèles publiés, toutes les catégories…) passe donc par `readAllRows` (`src/lib/server/read-all-rows.ts`), qui lit page par page et lève une erreur si une page échoue, jamais de liste partielle.
+
+```ts
+const rows = await readAllRows(
+	(from, to) =>
+		supabase
+			.from('question_templates')
+			.select('*')
+			.eq('status', 'published')
+			.order('id')
+			.range(from, to),
+	'des modèles publiés'
+);
+```
+
+- **Tri stable obligatoire**, terminé par `.order('id')` : sans lui, une ligne peut sauter ou être lue deux fois d'une page à l'autre (`created_at` est nullable et partagé par les imports en lot).
+- Cas vécu (2026-11-04) : 1 912 modèles publiés, la page de test et le panier n'en voyaient que 1 000 ; des séries sautaient des catégories (« Série : aucun modèle pour … »).
+- D'anciennes boucles recopiées à la main subsistent (`template-review`, `curriculum-coverage`, `dictionary`, `mathoux`…) : elles sont justes, à migrer vers `readAllRows` lors d'un ménage.
+
 ## RLS — modèle mono-professeur (Option B)
 
 > Refactor « professeur unique » : mergé (PR #11). Doc : `docs/archive/wip/single-teacher-refactor.md`.

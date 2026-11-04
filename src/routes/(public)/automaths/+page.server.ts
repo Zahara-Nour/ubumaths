@@ -5,6 +5,7 @@ import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
 import { compareCategories } from '$lib/questions/category-order';
 import { PREVIEW_SEED } from '$lib/questions/cart-preview';
 import { createServerLogger } from '$lib/utils/logger';
+import { readAllRows } from '$lib/server/read-all-rows';
 
 const logger = createServerLogger('(public)/automaths/+page.server');
 
@@ -33,26 +34,32 @@ interface ThemeGroup {
 }
 
 export const load: PageServerLoad = async ({ locals: { supabase } }) => {
-	// Fetch all published question templates directly from database
-	const { data: allTemplates, error: templatesError } = await supabase
-		.from('question_templates')
-		.select('*')
-		.eq('status', 'published');
-
-	// Ordre déclaré (TinyMath) des thèmes, domaines, sous-domaines, puis niveau.
-	// La hiérarchie ci-dessous est construite dans cet ordre d'apparition.
-	const templates =
-		allTemplates?.sort((a, b) => {
-			const byCategory = compareCategories(a, b);
-			if (byCategory !== 0) return byCategory;
-			// `level` est numérique : un tri lexicographique classerait 10 avant 2.
-			return (a.level ?? 0) - (b.level ?? 0);
-		}) || [];
-
-	if (templatesError) {
+	// Tous les modèles publiés, page par page (PostgREST tronque à 1000 lignes)
+	let allTemplates;
+	try {
+		allTemplates = await readAllRows(
+			(from, to) =>
+				supabase
+					.from('question_templates')
+					.select('*')
+					.eq('status', 'published')
+					.order('id')
+					.range(from, to),
+			'des modèles publiés'
+		);
+	} catch (templatesError) {
 		logger.error('Failed to load question templates:', templatesError);
 		throw error(500, 'Failed to load questions');
 	}
+
+	// Ordre déclaré (TinyMath) des thèmes, domaines, sous-domaines, puis niveau.
+	// La hiérarchie ci-dessous est construite dans cet ordre d'apparition.
+	const templates = allTemplates.sort((a, b) => {
+		const byCategory = compareCategories(a, b);
+		if (byCategory !== 0) return byCategory;
+		// `level` est numérique : un tri lexicographique classerait 10 avant 2.
+		return (a.level ?? 0) - (b.level ?? 0);
+	});
 
 	if (!templates || templates.length === 0) {
 		return {
