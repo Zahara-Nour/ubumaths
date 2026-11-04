@@ -6,20 +6,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2362, #2371 et la mise à jour en prod._
+_Mis à jour le 2026-11-04, pendant la PR du lot « Probabilités »._
 
-- **État** : lot « Statistiques » livré et vérifié : modèles et fiche `d37413a3` réécrits en prod
-  par David (`--mettre-a-jour`) ; régénérée depuis la base, 6 PDF compilés, `debord.py` = 0,
-  corrigé de l'angle en un calcul (`16 × 360 / 80 = 72°`) · **Prochaine action** : lot
-  « Probabilités », phase 0 (relevé du BO, comportements à valider) · **En attente de David** :
+- **État** : lot « Statistiques » livré et vérifié en prod (`d37413a3`, 0 débord) ; lot
+  « Probabilités » : composition validée par David, script
+  `scripts/create-automatismes-probabilites-1spe.ts` (aucun modèle neuf), rendu vérifié avant
+  écriture (4 PDF, 0 débord, pages relues) · **Prochaine action** : merger la PR ; puis David lance
+  `pnpm tsx scripts/create-automatismes-probabilites-1spe.ts --publier` depuis le dépôt principal ;
+  ensuite régénérer la fiche depuis la base et `debord.py` = 0 · **En attente de David** :
   publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c`
   (+ `1bd7378d`, `9a9026fc`) et les fiches `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3` ; garder ou
   non les 2 figures d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en
   cours** : écritures en prod refusées par le classifieur (David les lance) ; API plafonnée à 1 000
-  lignes ; variable `i` = imaginaire ; `compile-prod.mjs --polices-corrige` pour un corrigé ;
-  `regen-depuis-base.ts --variante guided` évite l'étiquette « [guided] » des titres ; le venv de
-  `debord.py` est dans le dépôt principal · **Worktree / branche** : aucun (retiré après #2371).
-- Lot suivant décidé : « Probabilités » (bloc du BO de 1re), à part.
+  lignes (`.in('id', …)` pour sonder) ; modèles d'une même famille = mêmes données à graine égale ;
+  `svelte-kit sync` dans un worktree neuf avant `tsx` ; `--polices-corrige` pour un corrigé ; le venv
+  de `debord.py` est dans le dépôt principal · **Worktree / branche** :
+  `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-probabilites-1spe`.
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
@@ -209,6 +211,23 @@ passent**. Aucun modèle neuf nécessaire.
 | (A) Tableau croisé               | 2de : `23ceafb0` construire, `89e928a4` compléter (effectifs), `b6ab5599` compléter (fréquence cond.), `eb0dcd85` lire, `cf548ea1` intersection, `4016b05c` sachant A, `f3e68e4b` A sachant B                       |
 | (A) Arbre pondéré                | 2de : `b28f4a68` construire, `9d7c4d98` compléter une branche, `1cfc575d` chemin, `d7507e78` conditionnelle ; 1re : `6dd2f133` construire depuis un énoncé, `5ba712bc` probabilités totales, `69a05f98` « inverse » |
 | (B) Distinguer ∩, P_A(B), P_B(A) | 2de : `31096bae` traduire un énoncé en notations (4 variantes, choix), `77d6fedc` « Parmi les… », `ba16b4f4` reconnaître une fréquence conditionnelle                                                               |
+
+**Validé par David (2026-11-04)** : 2 séries de 8 — série 1 (tableaux croisés) = construire, compléter
+(effectifs), lire, intersection, sachant A, A sachant B, compléter avec une fréquence conditionnelle,
+notations (« et ») ; série 2 (arbres) = construire, compléter une branche, chemin, conditionnelle,
+probabilités totales, « inverse », « Parmi les… », notations (« sachant »).
+
+### Fait (PR du lot « Probabilités », 2026-11-04)
+
+- `scripts/create-automatismes-probabilites-1spe.ts` : 15 modèles, fiche « Automatismes :
+  probabilités (1) ». Graines : à graine égale, les modèles d'une même famille tirent les **mêmes
+  données** (lire / compléter un tableau ; chemin / totales / inverse sur l'arbre) — la graine 1
+  partout donnait deux fois le même tableau (la question 3 livrait les réponses de la 2) et trois
+  fois le même arbre. Retenues : lire le tableau 4, chemin 2, totales 4, « inverse » 5 ; notations
+  7 (« et ») et 1 (« sachant »).
+- Rendu vérifié AVANT écriture (séries de la simulation → `pnpm fiche:verifier`) : fiche 3 p.,
+  corrigé 5 p., 0 débord, pages relues. Q8 de la série 2 coupée entre deux colonnes (mise en page
+  du générateur, acceptable).
 
 ## Questions ouvertes (à poser à David)
 
