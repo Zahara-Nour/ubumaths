@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, 2a-2 en PR._
+_Mis à jour le 2026-11-04, après #2380._
 
-- **État** : lot 1 (#2378) et 2a-1 (#2379, migration en prod) mergés. 2a-2 (code) en PR : revues faites (code-reviewer Opus, security-auditor : rien de bloquant, 8 points mineurs corrigés).
-- **Prochaine action** : CI verte → merge. Puis attendre le `deploy:prod` de David ; ensuite 2b = migration de données (5 séries + 4 séances converties en place).
-- **En attente de David** : `deploy:prod` de 2a-2 (avant 2b) ; avis sur le contrôle « modèle publié » à l'enregistrement d'une série (aujourd'hui : non, modèle sauté et signalé).
-- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env`. Restes pour le lot 3 : store `questionCategories`, `category-validation.ts`, méthodes « category » de `questionTemplatesCache`, `/api/questions/categories/all`. Hors chantier : QCM en `$$<$$` bruts sur les tuiles (Entiers › Apprivoiser › Comparer).
-- **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-modeles-code`.
+- **État** : lot 1 (#2378), 2a-1 (#2379, migration en prod) et 2a-2 (#2380, code sur le modèle) mergés, **pas encore en prod**.
+- **Prochaine action** : après le `deploy:prod` de David → lot 2b : migration de données qui convertit en place les 5 séries et 4 séances (ancienne forme → `{ templateId, … }`), question d'accès à poser, tests d'intégration rouges sans elle. Puis lot 3 (éditeur et `create-questions.ts` sans thème / domaine / sous-domaine).
+- **En attente de David** : `deploy:prod` (avant 2b) ; avis : refuser l'enregistrement d'une série qui contient un modèle retiré ? (aujourd'hui : accepté, modèle sauté au jeu et signalé).
+- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env`. Restes pour le lot 3 : store `questionCategories`, `category-validation.ts`, méthodes « category » de `questionTemplatesCache`, `/api/questions/categories/all`. CI : plantage intermittent « Browser connection was closed » des tests client (vu aussi sur une autre branche) → relancer. Hors chantier : QCM en `$$<$$` bruts sur les tuiles (Entiers › Apprivoiser › Comparer).
+- **Worktree / branche** : aucun (2a-2 nettoyé) ; 2b → nouveau worktree `../ubumaths-wt-automaths-arbre`.
 
 ## Origine (2026-11-04)
 
@@ -188,3 +188,10 @@ appliquée en prod (`category_key` : `is_nullable = YES`), `db:types` régénér
 - Tests : 27 fichiers adaptés + 14 qui échouaient à l'exécution (agent Sonnet) ; neufs :
   `series-legacy`, `series-lines`, `questionCart-ancien-panier`, éditeur « Modèle retiré ».
   Serveur 13 002 verts, client ciblé 567 verts, 14 fichiers d'intégration verts.
+
+### 2a-2 mergé (#2380, 2026-11-04)
+
+CI : intégration rouge au premier passage (`series-de-chapitre-code` : série en ancienne forme dont
+la catégorie n'avait pas de modèle publié dans le décor → 0 question) ; décor corrigé (modèle publié
+correspondant, lien `?modeles=` vérifié). Tests client : deux plantages « Browser connection was
+closed » sans rapport (aussi vus sur `fix/fenetre-choix-test`), relancés. Vérification manuelle notée.
