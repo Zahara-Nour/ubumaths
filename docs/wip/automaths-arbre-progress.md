@@ -450,3 +450,26 @@ aucune série au `updated_at` changé.
   0 publié sans nœud ; 0 `category_key` ; 0 ancienne ligne ; **16 brouillons sans nœud** dont le
   quadruplet est le seul rangement (CE2 durées / heure / droite graduée, CP tracés, 1re fonctions,
   droites, statistiques) — ils deviennent « Non rangés ».
+
+#### Les 16 brouillons sans nœud et leur ancien rangement (gardé ici avant le DROP)
+
+Rangement à refaire dans l'arbre (décision de David en attente ; passés dans « Non rangés ») :
+
+| Niveaux | Thème › Domaine › Sous-domaine (niveau)                           | Titre                                                            |
+| ------- | ----------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 1re     | Fonctions › Généralités › Lecture graphique (5)                   | Résoudre graphiquement une inéquation f(x) < k sur une courbe    |
+| 1re     | Fonctions › Généralités › Signe (3)                               | Dresser le tableau de signes d'une fonction lu sur sa courbe     |
+| 1re     | Fonctions › Généralités › Variations (6)                          | Dresser le tableau de variations d'une fonction lu sur sa courbe |
+| 1re     | Géométrie › Droites du plan › Équations de droites (9)            | Lire l'équation réduite d'une droite sur un graphique            |
+| CP      | Géométrie › Tracés › Carrés et rectangles (1)                     | Termine le carré ou le rectangle sur le quadrillage              |
+| CE2     | Grandeurs › Durées › Durée écoulée (5)                            | Combien de temps a-t-il duré ? (deux horloges)                   |
+| CE2     | Grandeurs › Durées › Durée écoulée (6)                            | Convertir une durée en minutes                                   |
+| CE2     | Grandeurs › Durées › Durée écoulée (7)                            | Quelle durée est la plus longue ? (deux horloges)                |
+| CE2     | Grandeurs › Durées › Lire l'heure (5)                             | Quelle heure est-il ? (heures et minutes)                        |
+| CE2     | Grandeurs › Durées › Lire l'heure (6)                             | Dire l'heure et l'écrire en chiffres                             |
+| CE2     | Grandeurs › Durées › Lire l'heure (7)                             | Place les aiguilles (heures et minutes)                          |
+| CE2     | Grandeurs › Durées › Lire l'heure (8)                             | Quelle horloge indique… ? (heures et minutes)                    |
+| CE2     | Nombres › Entiers › Repérage (2)                                  | Repérer un point sur une droite graduée (de 1 en 1 à 1 000)      |
+| CE2     | Nombres › Entiers › Repérage (3)                                  | Placer des nombres sur une droite graduée (de 1 en 1 à 1 000)    |
+| 1re     | Statistiques › Représenter des données › Diagramme circulaire (2) | Angle d'un secteur d'un diagramme circulaire                     |
+| 1re     | Statistiques › Représenter des données › Lire un graphique (2)    | Lire un graphique dont l'axe ne part pas de 0                    |
