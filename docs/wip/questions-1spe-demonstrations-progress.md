@@ -9,19 +9,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot 5 publié._
+_Mis à jour le 2026-11-04, lot 6 en PR._
 
-- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lot 5 (suites : 240, 241, 381, 242)
-  relu 4/4 OK et publié (§ 10).
-- **Prochaine action** : lot 6 (algèbre : 256, 387, 257, 258), nouvelle branche depuis `origin/main` dans le
-  worktree ; relevé prod des 4 points d'abord. Puis lots 7 à 9.
+- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lot 5 publié (§ 10) ; lot 6
+  (algèbre : 256, 387, 257, 258) écrit et vérifié, PR ouverte (§ 11).
+- **Prochaine action** : après le merge, David lance `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/1spe-approfondissements-6 --publier` (prod), puis migration nœud + tag (aucune sous-notion
+  neuve), page à cocher, publication. Ensuite lots 7 à 9.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
   `feat/questions-1spe-demonstrations` (rien à perdre ; `git push --delete` refusé par le classifieur le 2026-11-04).
-- **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer `.env.local`. Spec `bad_form` →
-  `constraintViolations: ['form']`. Ports 5176-5177 pris par d'autres sessions (5178 libre le 2026-11-04).
-  `db:migrate` depuis le dépôt principal à jour.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-5-tags` (mergée ; nouvelle branche depuis `origin/main` pour le lot 6).
+- **Pièges en cours** : `create-questions` lit `.env` = PROD → en local, `DOTENV_CONFIG_PATH=../ubumaths/.env.local`.
+  Spec `bad_form` → `constraintViolations: ['form']`. Port 5178 pour l'aperçu. `db:migrate` depuis le dépôt
+  principal à jour. Le journal à jour est celui de `main` après merge (celui du worktree peut retarder).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-6`.
 
 ---
 
@@ -361,3 +362,24 @@ https://claude.ai/artifact/CjbnjiD6DawhSe4zrQqKLU.
 
 Relecture (2026-11-04) : 4/4 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`), 4/4 `published`
 relus en base (MCP).
+
+## 11. Lot 6 : approfondissements, algèbre (2026-11-04)
+
+Relevé prod (MCP, 2026-11-04) : 256 et 387 sur Nombres complexes › Équations polynomiales › degré 3 et
+factorisation ; 257 sur Algèbre › Calcul littéral › factorisation ; 258 sur Fonctions › Second degré › somme et
+produit des racines. Les 4 sous-notions existent : **aucune neuve**. Aucun modèle sur les 4 points. Catégorie :
+« Approfondissements » neuve dans Fonctions › Polynôme du second degré (où est la démonstration 255).
+
+| Point | Modèle (`scripts/questions/1spe-approfondissements-6/`) | Niveau | Variations                                                                        |
+| ----- | ------------------------------------------------------- | ------ | --------------------------------------------------------------------------------- |
+| 256   | `01-factoriser-un-polynome-de-degre-3`                  | 1      | P(x) = (x − r)(x² + bx + c) : c, puis b par identification, factorisation (choix) |
+| 387   | `02-resoudre-une-equation-de-degre-3`                   | 2      | autre solution (la plus grande), nombre de solutions si Δ < 0, si Δ = 0           |
+| 257   | `03-factoriser-x-puissance-n-moins-a-puissance-n`       | 1      | exposant de xⁿ⁻¹ (case dans l'exposant), x³ − a³ : a², preuve xⁿ − 1 (ranger)     |
+| 258   | `04-deux-reels-de-somme-et-produit-donnes`              | 1      | coefficient s de x² − sx + p, plus grand des deux, Δ < 0 (choix)                  |
+
+Script : `docs/wip/questions/lot-1spe-approfondissements-6.py` ; positions des specs « ranger » calculées par
+`docs/wip/questions/positions-ranger.ts` (générateur, graine 0 ; le script du lot 4 n'avait pas été commité).
+Gardes : r, b, c non nuls (pas de « (x + 0) » ni « (c + 0)x »), s, u ≠ 0 pour 387. Vérifié : `question:specs`
+150 tirages par modèle, 38 specs vertes, 0 `\textcolor` hors `$` ; 40 aperçus par modèle relus (signes,
+coefficients nuls) ; `create-questions` simulation et brouillons en base locale ; aperçu admin du 257 : case dans
+l'exposant et x³ − a³ bien rendus.

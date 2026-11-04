@@ -1,0 +1,249 @@
+{
+	"title": "Factoriser un polynôme de degré 3",
+	"description": "Polynôme P de degré 3 dont une racine r est donnée : P(x) = (x − r)(x² + bx + c), terme constant c puis coefficient b par identification, factorisation à choisir",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Approfondissements",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $P(x)={{eval:x^3+(b-r)*x^2+(c-r*b)*x-r*c}}$. On vérifie que $P({{eval:r}})=0$ : ${{eval:r}}$ est une racine de $P$, donc il existe deux réels $b$ et $c$ tels que, pour tout réel $x$ :\n\n$$P(x)=(x{{eval:-r;+}})(x^2+bx+c)$$\n\nComplète.\n\n$P(x)=(x{{eval:-r;+}})(x^2{{eval:b*x;+}}+?)$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En développant $(x{{eval:-r;+}})(x^2+bx+c)$, le terme constant est ${{eval:-r;()}}\\times c$ ; celui de $P(x)$ est ${{eval:-r*c}}$.",
+					"Les termes constants : ${{eval:-r;()}}\\times c={{eval:-r*c}}$, donc $c=\\textcolor{{{color:primary.0}}}{{{eval:c}}}$.",
+					"Attention au signe : le terme constant du produit est ${{eval:-r;()}}\\times c$."
+				]
+			},
+			"conditions": ["r != 0", "b != 0", "c != 0"]
+		},
+		{
+			"statement": "Soit $P(x)={{eval:x^3+(b-r)*x^2+(c-r*b)*x-r*c}}$. On vérifie que $P({{eval:r}})=0$ : ${{eval:r}}$ est une racine de $P$, donc il existe deux réels $b$ et $c$ tels que, pour tout réel $x$ :\n\n$$P(x)=(x{{eval:-r;+}})(x^2+bx+c)$$\n\nComplète.\n\n$P(x)=(x{{eval:-r;+}})(x^2+?x{{eval:c;+}})$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En développant, $(x{{eval:-r;+}})(x^2+bx+c)=x^3+(b{{eval:-r;+}})x^2+(c{{eval:-r*b;+}})x{{eval:-r*c;+}}$ : on identifie avec $P(x)$.",
+					"Les coefficients de $x^2$ : $b{{eval:-r;+}}={{eval:b-r}}$, donc $b=\\textcolor{{{color:primary.0}}}{{{eval:b}}}$.",
+					"Vérification sur les coefficients de $x$ : $c{{eval:-r*b;+}}={{eval:c-r*b}}$."
+				]
+			},
+			"conditions": ["r != 0", "b != 0", "c != 0"]
+		},
+		{
+			"statement": "Soit $P(x)={{eval:x^3+(b-r)*x^2+(c-r*b)*x-r*c}}$. On vérifie que $P({{eval:r}})=0$.\n\nQuelle est une factorisation de $P(x)$ ?\n\n```choix\n- $P(x)=(x{{eval:-r;+}})({{eval:x^2+b*x+c}})$\n- $P(x)=(x{{eval:r;+}})({{eval:x^2+b*x+c}})$\n- $P(x)=(x{{eval:-r;+}})({{eval:x^2+(b-r)*x+c}})$\n- $P(x)=(x{{eval:-r;+}})({{eval:x^2+b*x-c}})$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:r}}$ est racine de $P$ : $P(x)$ se factorise par $x{{eval:-r;+}}$ (et non par $x{{eval:r;+}}$).",
+					"On cherche $P(x)=(x{{eval:-r;+}})(x^2+bx+c)$. En développant, $(x{{eval:-r;+}})(x^2+bx+c)=x^3+(b{{eval:-r;+}})x^2+(c{{eval:-r*b;+}})x{{eval:-r*c;+}}$ : on identifie avec $P(x)$.",
+					"Coefficient de $x^2$ : $b={{eval:b-r}}{{eval:r;+}}={{eval:b}}$ ; terme constant : $c={{eval:c}}$.",
+					"Donc $P(x)=\\textcolor{{{color:primary.0}}}{(x{{eval:-r;+}})({{eval:x^2+b*x+c}})}$."
+				]
+			},
+			"conditions": ["r != 0", "b != 0", "c != 0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "c = −6",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (signe)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 12 (terme constant de P)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "b = −1",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3 (coefficient de x² dans P)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −5 (−3 − 2)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x − 2)(x² − x − 6)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : facteur x + 2",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b pris dans P",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe de c",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

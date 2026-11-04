@@ -1,0 +1,242 @@
+{
+	"title": "Deux réels de somme et de produit donnés",
+	"description": "Deux réels de somme s et de produit p, racines de x² − sx + p : coefficient du trinôme, plus grand des deux réels, cas Δ < 0 (case choix)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Approfondissements",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On cherche deux réels dont la somme vaut ${{eval:s}}$ et le produit ${{eval:p}}$.\n\nCes deux réels sont les racines d'un trinôme. Complète.\n\n$x^2-?x{{eval:p;+}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-6..6"
+				},
+				{
+					"name": "t",
+					"expression": "-6..7"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+t"
+				},
+				{
+					"name": "p",
+					"expression": "eval:r*t"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $x_1+x_2=s$ et $x_1x_2=p$, alors $(x-x_1)(x-x_2)=x^2-(x_1+x_2)x+x_1x_2=x^2-sx+p$.",
+					"Les deux réels sont donc les racines de $x^2-sx+p$, avec $s=\\textcolor{{{color:primary.0}}}{{{eval:s}}}$ : ${{eval:x^2-s*x+p}}$.",
+					"Attention au signe : le coefficient de $x$ est $-s$."
+				]
+			},
+			"conditions": ["r < t", "r != 0", "t != 0", "r + t != 0"]
+		},
+		{
+			"statement": "On cherche deux réels dont la somme vaut ${{eval:s}}$ et le produit ${{eval:p}}$.\n\nQuel est le plus grand des deux ?\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-6..6"
+				},
+				{
+					"name": "t",
+					"expression": "-6..7"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+t"
+				},
+				{
+					"name": "p",
+					"expression": "eval:r*t"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux réels sont les racines de $x^2-sx+p$, ici ${{eval:x^2-s*x+p}}$.",
+					"$\\Delta={{eval:s;()}}^2-4\\times{{eval:p;()}}={{eval:s^2-4*p}}$, d'où deux racines : ${{eval:r}}$ et ${{eval:t}}$.",
+					"Vérification : ${{eval:r}}{{eval:t;+}}={{eval:s}}$ et ${{eval:r}}\\times{{eval:t;()}}={{eval:p}}$. Le plus grand est $\\textcolor{{{color:primary.0}}}{{{eval:t}}}$."
+				]
+			},
+			"conditions": ["r < t", "r != 0", "t != 0", "r + t != 0"]
+		},
+		{
+			"statement": "On cherche deux réels dont la somme vaut ${{eval:s}}$ et le produit ${{eval:p}}$. Que peut-on dire ?\n\n```choix\n- Il n'existe pas deux tels réels.\n- Ce sont deux réels égaux à ${{eval:s/2}}$.\n- Il en existe deux, de signes contraires.\n- Il en existe deux, puisque leur produit est positif.\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "s",
+					"expression": "-6..6"
+				},
+				{
+					"name": "p",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux tels réels seraient les racines de $x^2-sx+p$, ici ${{eval:x^2-s*x+p}}$.",
+					"$\\Delta={{eval:s;()}}^2-4\\times{{eval:p}}={{eval:s^2-4*p}}<0$ : ce trinôme n'a pas de racine réelle.",
+					"Donc **il n'existe pas deux réels** de somme ${{eval:s}}$ et de produit ${{eval:p}}$."
+				]
+			},
+			"conditions": ["s != 0", "s^2 - 4*p < 0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "s = 7",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"t": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −7 (signe)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"t": "5"
+			},
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10 (le produit)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"t": "5"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"t": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 (le plus petit)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"t": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 (la somme)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"t": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "aucun réel",
+			"variationIndex": 2,
+			"variables": {
+				"s": "4",
+				"p": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : s/2",
+			"variationIndex": 2,
+			"variables": {
+				"s": "4",
+				"p": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signes contraires",
+			"variationIndex": 2,
+			"variables": {
+				"s": "4",
+				"p": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit positif",
+			"variationIndex": 2,
+			"variables": {
+				"s": "4",
+				"p": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

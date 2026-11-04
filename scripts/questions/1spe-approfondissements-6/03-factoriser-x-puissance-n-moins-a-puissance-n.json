@@ -1,0 +1,163 @@
+{
+	"title": "Factoriser xⁿ − 1 et xⁿ − aⁿ",
+	"description": "xⁿ − 1 = (x − 1)(xⁿ⁻¹ + ⋯ + x + 1) : exposant du premier terme, x³ − a³ = (x − a)(x² + ax + a²) avec a tiré, démonstration de la factorisation de xⁿ − 1 (étapes à ranger)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Approfondissements",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Pour tout entier $n\\geqslant 2$ et tout réel $x$, $x^n-1$ se factorise par $x-1$. Complète.\n\n$x^{{{eval:n}}}-1=(x-1)(x^{?}+x^{{{eval:n-2}}}+\\cdots+x+1)$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le second facteur est la somme $1+x+\\cdots+x^{{{eval:n-1}}}$ : elle compte ${{eval:n}}$ termes, de $x^0$ à $x^{{{eval:n-1}}}$.",
+					"En développant, $x\\times x^{{{eval:n-1}}}=x^{{{eval:n}}}$ : l'exposant cherché est $\\textcolor{{{color:primary.0}}}{{{eval:n-1}}}$.",
+					"Attention : ce n'est pas ${{eval:n}}$, sinon le produit commencerait par $x^{{{eval:n+1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $a$, $x^3-a^3=(x-a)(x^2+ax+a^2)$. Complète.\n\n$x^3-{{eval:a^3}}=(x-{{eval:a}})(x^2+{{eval:a}}x+?)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:a^3}}={{eval:a}}^3$ : on applique la formule avec $a={{eval:a}}$.",
+					"Le terme constant du second facteur est $a^2={{eval:a}}^2=\\textcolor{{{color:primary.0}}}{{{eval:a^2}}}$.",
+					"Vérification : le terme constant du produit vaut $-{{eval:a}}\\times{{eval:a^2}}=-{{eval:a^3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier, $n\\geqslant 2$, et $x$ un réel. On démontre que $x^n-1=(x-1)(1+x+\\cdots+x^{n-1})$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On développe : $(x-1)(1+x+\\cdots+x^{n-1})=x(1+x+\\cdots+x^{n-1})-(1+x+\\cdots+x^{n-1})$.\n- Or $x(1+x+\\cdots+x^{n-1})=x+x^2+\\cdots+x^n$.\n- On soustrait : les termes $x$, …, $x^{n-1}$ se compensent, il reste $x^n-1$.\n- Donc $x^n-1=(x-1)(1+x+\\cdots+x^{n-1})$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On distribue $x-1$, puis on multiplie chaque terme de la somme par $x$ : les exposants avancent de $1$.",
+					"Les deux sommes ont les mêmes termes sauf $x^n$ et $1$ : $\\textcolor{{{color:primary.0}}}{x^n-1=(x-1)(1+x+\\cdots+x^{n-1})}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Exposant 5 pour n = 6",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (n)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a² = 9",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (a)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 27 (a³)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 (2a)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

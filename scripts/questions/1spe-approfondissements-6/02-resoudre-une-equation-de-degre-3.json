@@ -1,0 +1,229 @@
+{
+	"title": "Résoudre une équation de degré 3",
+	"description": "Équation P(x) = 0 de degré 3 dont une racine est donnée : autres solutions (factorisation, discriminant du facteur du second degré), nombre de solutions quand Δ < 0 ou Δ = 0",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Approfondissements",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $P(x)={{eval:x^3-(r+s+u)*x^2+(r*s+r*u+s*u)*x-r*s*u}}$. On vérifie que $P({{eval:r}})=0$.\n\nL'équation $P(x)=0$ a, en plus de ${{eval:r}}$, deux autres solutions. Quelle est la plus grande des deux ?\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-4..4"
+				},
+				{
+					"name": "s",
+					"expression": "-5..5"
+				},
+				{
+					"name": "u",
+					"expression": "-5..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:r}}$ est racine : $P(x)=(x{{eval:-r;+}})(x^2+bx+c)$. Par identification, $P(x)=(x{{eval:-r;+}})({{eval:x^2-(s+u)*x+s*u}})$.",
+					"Le produit est nul si et seulement si $x={{eval:r}}$ ou ${{eval:x^2-(s+u)*x+s*u}}=0$.",
+					"Pour ce trinôme, $\\Delta={{eval:(s+u)^2-4*s*u}}>0$ : deux racines, ${{eval:s}}$ et ${{eval:u}}$.",
+					"Les solutions de $P(x)=0$ sont ${{eval:r}}$, ${{eval:s}}$ et ${{eval:u}}$ : la plus grande des deux autres est $\\textcolor{{{color:primary.0}}}{{{eval:u}}}$."
+				]
+			},
+			"conditions": ["s < u", "s != 0", "u != 0", "r != 0", "r != s", "r != u"]
+		},
+		{
+			"statement": "Soit $P(x)=(x{{eval:-r;+}})({{eval:x^2+b*x+c}})$.\n\nCombien l'équation $P(x)=0$ a-t-elle de solutions réelles ?\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-4..4"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit est nul si et seulement si l'un de ses facteurs est nul : $x={{eval:r}}$ ou ${{eval:x^2+b*x+c}}=0$.",
+					"Pour le trinôme, $\\Delta={{eval:b;()}}^2-4\\times{{eval:c;()}}={{eval:b^2-4*c}}<0$ : il n'a pas de racine réelle.",
+					"L'équation a donc $\\textcolor{{{color:primary.0}}}{1}$ seule solution réelle, ${{eval:r}}$."
+				]
+			},
+			"conditions": ["r != 0", "b^2 - 4*c < 0"]
+		},
+		{
+			"statement": "Soit $P(x)=(x{{eval:-r;+}})({{eval:x^2-2*s*x+s^2}})$.\n\nCombien l'équation $P(x)=0$ a-t-elle de solutions réelles ?\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-4..4"
+				},
+				{
+					"name": "s",
+					"expression": "-5..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit est nul si et seulement si l'un de ses facteurs est nul : $x={{eval:r}}$ ou ${{eval:x^2-2*s*x+s^2}}=0$.",
+					"Pour le trinôme, $\\Delta={{eval:(2*s)^2-4*s^2}}$ : une racine double, ${{eval:s}}$ (c'est $(x{{eval:-s;+}})^2$).",
+					"L'équation a donc $\\textcolor{{{color:primary.0}}}{2}$ solutions réelles, ${{eval:r}}$ et ${{eval:s}}$ : une racine double ne compte qu'une fois."
+				]
+			},
+			"conditions": ["r != 0", "r != s", "s != 0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "1",
+				"s": "-2",
+				"u": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −2 (la plus petite)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "1",
+				"s": "-2",
+				"u": "3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 (la racine donnée)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "1",
+				"s": "-2",
+				"u": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Une solution",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (degré 3)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux solutions",
+			"variationIndex": 2,
+			"variables": {
+				"r": "-1",
+				"s": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (racine double comptée deux fois)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "-1",
+				"s": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 2,
+			"variables": {
+				"r": "-1",
+				"s": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
