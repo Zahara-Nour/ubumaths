@@ -320,6 +320,9 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
   et le premier clic renvoyer la valeur déjà enregistrée. Le store utilise `writable`, pas les runes.
 - **Temps de course par défaut** : 5 min dans `TestModeDialog` (séance libre), 7 min pour un
   contrôle.
+- **Fenêtre de choix du panier** (`TestModeDialog`) : un clic sur une carte lance la série ; seule la
+  Course aux nombres affiche d'abord le temps imparti, puis « Commencer le test ». La fenêtre défile
+  (`max-h-[90vh]`) : avec quatre cartes, elle dépasse un écran bas.
 - **En-têtes de code anglais et anciens** : `test.ts`, `TestCourse`, `TestResults`, `test-mode.ts`
   parlent encore de « quiz », « Revision », « assessment ».
 - **Le code garde les anciens noms** : les écrans disent **contrôle** et **observation** depuis le

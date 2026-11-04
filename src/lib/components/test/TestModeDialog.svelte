@@ -9,6 +9,9 @@
 	- Course aux nombres: All questions at once with time limit
 	- Flash (« Flash-cards ») : l'élève retourne chaque carte et s'auto-évalue, sans chrono
 
+	Un clic sur une carte lance la série, sauf la Course aux nombres : elle
+	affiche d'abord le temps imparti, puis « Commencer le test » la lance.
+
 	Props:
 	- open: boolean - Dialog open state
 	- onSelect: (mode: TestMode, timeLimit?: number) => void - Callback when mode selected
@@ -82,10 +85,11 @@
 	];
 
 	/**
-	 * Handle mode selection
+	 * Clic sur une carte : lance la série, sauf la Course (temps à régler d'abord)
 	 */
 	function handleModeSelect(mode: TestMode) {
 		selectedMode = mode;
+		if (mode !== 'course') handleStart();
 	}
 
 	/**
@@ -117,7 +121,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Choisissez un mode de test</Dialog.Title>
 			<Dialog.Description>
-				Sélectionnez comment vous souhaitez pratiquer avec les questions de votre panier.
+				Cliquez sur une forme pour lancer la série avec les questions de votre panier.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -190,10 +194,12 @@
 
 		<Dialog.Footer>
 			<Button variant="outline" onclick={handleClose}>{lore.actions.cancel}</Button>
-			<Button onclick={handleStart} disabled={!canStart}>
-				<Rocket class="mr-2 h-4 w-4" />
-				Commencer le test
-			</Button>
+			{#if selectedMode === 'course'}
+				<Button onclick={handleStart} disabled={!canStart}>
+					<Rocket class="mr-2 h-4 w-4" />
+					Commencer le test
+				</Button>
+			{/if}
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
