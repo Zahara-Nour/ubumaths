@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, phase 0 rédigée._
+_Mis à jour le 2026-11-04, Q1 tranchée (ADR 0035)._
 
-- **État** : relevé fait, comportements écrits (§ Phase 0) ; rien de codé.
-- **Prochaine action** : réponses de David à Q1-Q3, puis tests rouges de `buildCatalogue` rangé selon l'arbre.
-- **En attente de David** : Q1 (unité du panier et des séries), Q2 (modèles posés sur une notion), Q3 (ordre).
+- **État** : phase 0 ; Q1 = B → une série enregistre des **modèles** (ADR 0035, CONTEXT.md à jour sur `main`). Rien de codé.
+- **Prochaine action** : réponses à Q2, Q3, Q4 ; puis lot 1 (catalogue selon l'arbre), tests rouges d'abord.
+- **En attente de David** : Q2 (« Général » en tête), Q3 (ordre de l'arbre), Q4 (les 4 lots sur ce chantier, une PR par lot).
 - **Pièges en cours** : base locale sans modèle publié → catalogue vide en local.
 - **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre`.
 
@@ -68,3 +68,12 @@ Vocabulaire : branche → notion → sous-notion (CONTEXT.md), jamais les noms d
   sous-notions (recommandé, comme aujourd'hui), ou en fin.
 - **Q3 — ordre** : l'ordre de l'arbre (`position`, que tu règles dans l'admin) remplace
   `category-order.ts` (recommandé ; le fichier et ses tests partent), ou alphabétique.
+
+### Q1 tranchée (2026-11-04) : B
+
+David : « les anciennes dénominations polluent tout ». Une série / le panier enregistre des modèles
+(répétitions + durée) ; catégorie, thème, domaine, sous-domaine disparaissent → ADR 0035.
+Lots : 1 catalogue selon l'arbre · 2 panier / séries / liens / contrôles / paquet de révision sur le
+modèle (conversion des 5 séries + 1 contrôle, anciens liens relus) · 3 éditeur et
+`create-questions.ts` sans thème / domaine / sous-domaine · 4 retrait des colonnes (destructif,
+après `deploy:prod` des lots 2-3). Q4 posée : les 4 lots ici, une PR par lot.
