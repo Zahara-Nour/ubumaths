@@ -1,0 +1,266 @@
+{
+	"title": "Vecteurs colinéaires, sur la figure",
+	"description": "Reconnaître la flèche colinéaire à u parmi d'autres, puis interpréter u = kv (pièges : coordonnées échangées, perpendiculaire, sens contraire pris pour non colinéaire)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Colinéarité",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Parmi les vecteurs représentés ci-dessous, lequel est colinéaire à $\\vec{u}$ ?\n\n```figure\nfenetre: 0 ; 21 ; 0 ; 12\naxes: non\ngrille: 1\ntaille: moyenne\ndescription: Quadrillage ; à gauche la flèche u ; à droite quatre flèches nommées v, w, s et t.\n---\nvecteur({{a}}, {{b}}, ancre=({{oxu}}, {{oyu}}))\ntexte({{eval:round(100*((oxu)+(a)/2-0.6*(b)/sqrt((a)^2+(b)^2)))/100;d}}, {{eval:round(100*((oyu)+(b)/2+0.6*(a)/sqrt((a)^2+(b)^2)))/100;d}}, \"u⃗\")\nvecteur({{dx0}}, {{dy0}}, ancre=({{ox0}}, {{oy0}}))\ntexte({{eval:round(100*((ox0)+(dx0)/2-0.6*(dy0)/sqrt((dx0)^2+(dy0)^2)))/100;d}}, {{eval:round(100*((oy0)+(dy0)/2+0.6*(dx0)/sqrt((dx0)^2+(dy0)^2)))/100;d}}, \"v⃗\")\nvecteur({{dx1}}, {{dy1}}, ancre=({{ox1}}, {{oy1}}))\ntexte({{eval:round(100*((ox1)+(dx1)/2-0.6*(dy1)/sqrt((dx1)^2+(dy1)^2)))/100;d}}, {{eval:round(100*((oy1)+(dy1)/2+0.6*(dx1)/sqrt((dx1)^2+(dy1)^2)))/100;d}}, \"w⃗\")\nvecteur({{dx2}}, {{dy2}}, ancre=({{ox2}}, {{oy2}}))\ntexte({{eval:round(100*((ox2)+(dx2)/2-0.6*(dy2)/sqrt((dx2)^2+(dy2)^2)))/100;d}}, {{eval:round(100*((oy2)+(dy2)/2+0.6*(dx2)/sqrt((dx2)^2+(dy2)^2)))/100;d}}, \"s⃗\")\nvecteur({{dx3}}, {{dy3}}, ancre=({{ox3}}, {{oy3}}))\ntexte({{eval:round(100*((ox3)+(dx3)/2-0.6*(dy3)/sqrt((dx3)^2+(dy3)^2)))/100;d}}, {{eval:round(100*((oy3)+(dy3)/2+0.6*(dx3)/sqrt((dx3)^2+(dy3)^2)))/100;d}}, \"t⃗\")\n```\n\n```choix\nmelanger: non\n- $\\vec{v}$\n- $\\vec{w}$\n- $\\vec{s}$\n- $\\vec{t}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "c",
+					"expression": "-2..2"
+				},
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "oxu",
+					"expression": "eval:3-floor((a)/2)"
+				},
+				{
+					"name": "oyu",
+					"expression": "eval:6-floor((b)/2)"
+				},
+				{
+					"name": "r0",
+					"expression": "eval:(0+(p))-4*floor((0+(p))/4)"
+				},
+				{
+					"name": "dx0",
+					"expression": "eval:(1-min(abs((r0)-0),1))*((c)*(a))+(1-min(abs((r0)-1),1))*((b))+(1-min(abs((r0)-2),1))*((c)*(a))+(1-min(abs((r0)-3),1))*(-(b))"
+				},
+				{
+					"name": "dy0",
+					"expression": "eval:(1-min(abs((r0)-0),1))*((c)*(b))+(1-min(abs((r0)-1),1))*((a))+(1-min(abs((r0)-2),1))*(-(c)*(b))+(1-min(abs((r0)-3),1))*((a))"
+				},
+				{
+					"name": "ox0",
+					"expression": "eval:10-floor((dx0)/2)"
+				},
+				{
+					"name": "oy0",
+					"expression": "eval:9-floor((dy0)/2)"
+				},
+				{
+					"name": "r1",
+					"expression": "eval:(1+(p))-4*floor((1+(p))/4)"
+				},
+				{
+					"name": "dx1",
+					"expression": "eval:(1-min(abs((r1)-0),1))*((c)*(a))+(1-min(abs((r1)-1),1))*((b))+(1-min(abs((r1)-2),1))*((c)*(a))+(1-min(abs((r1)-3),1))*(-(b))"
+				},
+				{
+					"name": "dy1",
+					"expression": "eval:(1-min(abs((r1)-0),1))*((c)*(b))+(1-min(abs((r1)-1),1))*((a))+(1-min(abs((r1)-2),1))*(-(c)*(b))+(1-min(abs((r1)-3),1))*((a))"
+				},
+				{
+					"name": "ox1",
+					"expression": "eval:17-floor((dx1)/2)"
+				},
+				{
+					"name": "oy1",
+					"expression": "eval:9-floor((dy1)/2)"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:(2+(p))-4*floor((2+(p))/4)"
+				},
+				{
+					"name": "dx2",
+					"expression": "eval:(1-min(abs((r2)-0),1))*((c)*(a))+(1-min(abs((r2)-1),1))*((b))+(1-min(abs((r2)-2),1))*((c)*(a))+(1-min(abs((r2)-3),1))*(-(b))"
+				},
+				{
+					"name": "dy2",
+					"expression": "eval:(1-min(abs((r2)-0),1))*((c)*(b))+(1-min(abs((r2)-1),1))*((a))+(1-min(abs((r2)-2),1))*(-(c)*(b))+(1-min(abs((r2)-3),1))*((a))"
+				},
+				{
+					"name": "ox2",
+					"expression": "eval:10-floor((dx2)/2)"
+				},
+				{
+					"name": "oy2",
+					"expression": "eval:3-floor((dy2)/2)"
+				},
+				{
+					"name": "r3",
+					"expression": "eval:(3+(p))-4*floor((3+(p))/4)"
+				},
+				{
+					"name": "dx3",
+					"expression": "eval:(1-min(abs((r3)-0),1))*((c)*(a))+(1-min(abs((r3)-1),1))*((b))+(1-min(abs((r3)-2),1))*((c)*(a))+(1-min(abs((r3)-3),1))*(-(b))"
+				},
+				{
+					"name": "dy3",
+					"expression": "eval:(1-min(abs((r3)-0),1))*((c)*(b))+(1-min(abs((r3)-1),1))*((a))+(1-min(abs((r3)-2),1))*(-(c)*(b))+(1-min(abs((r3)-3),1))*((a))"
+				},
+				{
+					"name": "ox3",
+					"expression": "eval:17-floor((dx3)/2)"
+				},
+				{
+					"name": "oy3",
+					"expression": "eval:3-floor((dy3)/2)"
+				},
+				{
+					"name": "bon",
+					"expression": "eval:(4-(p))*min(p,1)"
+				}
+			],
+			"conditions": ["c != 0", "c != 1", "abs(a) != abs(b)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{bon}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux vecteurs non nuls sont colinéaires** lorsqu'ils ont **la même direction** (des flèches parallèles), quels que soient leur sens et leur longueur : l'un est un multiple de l'autre, $\\vec{v}=k\\vec{u}$.",
+					"Une seule flèche est parallèle à $\\vec{u}$ : celle qui avance de ${{eval:(c)*(a)}}$ horizontalement et de ${{eval:(c)*(b)}}$ verticalement, c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{if:c==1||{{if:c==-1|-|{{c}}}}}}}\\vec{u}$ {{if:c>0|(même sens)|(sens contraire)}}.",
+					"Les autres flèches ne sont pas parallèles à $\\vec{u}$ : pour elles, les deux déplacements ne sont pas multipliés par le même nombre."
+				]
+			}
+		},
+		{
+			"statement": "On sait que $\\vec{u}={{k}}\\vec{v}$ (avec $\\vec{v}\\neq\\vec{0}$). Les vecteurs $\\vec{u}$ et $\\vec{v}$ sont :\n\n```choix\n- colinéaires et de même sens\n- colinéaires et de sens contraires\n- non colinéaires\n- on ne peut pas savoir sans figure\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux vecteurs non nuls sont colinéaires** lorsqu'ils ont **la même direction** (des flèches parallèles), quels que soient leur sens et leur longueur : l'un est un multiple de l'autre, $\\vec{v}=k\\vec{u}$.",
+					"$\\vec{u}={{k}}\\vec{v}$ : $\\vec{u}$ est un multiple de $\\vec{v}$, ils sont **colinéaires**. Le coefficient ${{k}}$ est {{if:k>0|positif : **même sens**|négatif : **sens contraires**}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−2u : bonne case 2",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"c": "-2",
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coordonnées échangées (case 3)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"c": "-2",
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : perpendiculaire (case 1)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"c": "-2",
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sans décalage : bonne case 0",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"c": "-2",
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u = −3v : sens contraires",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non colinéaires",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u = 2v : même sens",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens contraires",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

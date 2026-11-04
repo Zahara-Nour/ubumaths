@@ -6,19 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après la publication du lot 12 b-1 (§ 78)._
+_Mis à jour le 2026-11-04, PR des fichiers du lot 12 b-2 ouverte (§ 79)._
 
-- **État** : lots 1 à 9, 12 a et 12 b-1 publiés. Ordre ensuite : 12 b-2, puis 10, puis 11.
-- **Prochaine action** : écrire le 12 b-2 (phase 0 validée au § 77 : 289 produit par un réel, 290
-  colinéarité sur la figure, 291 combinaison de deux vecteurs, 292 base orthonormée, 401 périmètre d'un
-  polygone rangé sur la notion Périmètres) ; gabarit `questions-2de/lot-vecteurs-c1-2de.py`.
-- **En attente de David** : rien.
+- **État** : lots 1 à 9, 12 a et 12 b-1 publiés. 12 b-2 (5 modèles : 289, 290, 291, 292, 401) écrit
+  et joué en local, PR des fichiers ouverte. Ordre ensuite : 10, puis 11.
+- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --publier` sur
+  `scripts/questions/2de-vecteurs-c2` (depuis le dépôt principal) ; relever les 5 ids ; migration nœud +
+  tag (nœuds du § 77 ; 401 sur la notion Périmètres) ; page à cocher.
+- **En attente de David** : le `--publier` du 12 b-2, après le merge.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `| head` derrière un `--publier` ; noms de points ≠ lettres A-D des cases choix ;
   `0..3;±` refusé par le tirage (`-3..3`) ; liste blanche : pas de `{{if:}}` à plus de ~6 niveaux dans une
   réponse attendue ; corps de commit ≤ 100 caractères par ligne ; une autre session écrit aussi dans ce
   journal : `git pull` ; `db:migrate` depuis le dépôt principal seulement.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (`feat/questions-2de-lot12b2`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2029,3 +2030,28 @@ vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12
   https://claude.ai/artifact/5HjYJpnuyzEhYansfXYNBq
 - Page à cocher relue par David : 5/5 « ok », sans commentaire (ids du rangement). `publier-lot`
   (simulation puis `--publier`) lancé par David ; MCP (prod) : 5/5 `published`, nœud et tag chacun.
+
+## 79. Lot 12 b-2, fichiers (2026-11-04)
+
+- `questions-2de/lot-vecteurs-c2-2de.py` → `scripts/questions/2de-vecteurs-c2/` (5 modèles, 45 specs).
+  Catégories (relevées en prod, libres) : Géométrie › Vecteurs du plan › Produit par un réel 1 (289),
+  › Colinéarité 5 (290), › Combinaison 1 (291), › Coordonnées 7 (292) ; Grandeurs › Périmètres ›
+  « Périmètre d'un polygone » 1 (401), nommée comme ses sœurs (« Périmètre d'un carré »…), au lieu de
+  « Polygone » écrit au § 77.
+- 289 et 290 : flèches à reconnaître, même mécanique que le 12 b-1 (décalage `p`). 289 : k ∈ {±2, ±3}
+  (k = −1 confondrait deux rôles) ; puis k lu sur la figure, k ∈ {−3, −2, −½, ½, 2, 3}. 290 : la
+  colinéaire est c·u⃗, c ∈ {−2, −1, 2} ; puis « u⃗ = kv⃗ : même sens / sens contraires ».
+- 291 : x, y de −3 à 3, **non nuls** (écart au § 77, « non tous deux nuls ») : le corrigé dessine le
+  chemin x·i⃗ puis y·j⃗, sans flèche nulle. Fenêtre du corrigé calculée sur le chemin.
+- 292 : sur quadrillage, une base orthonormée tirée est toujours sur les axes (seuls vecteurs entiers de
+  norme 1) ; une orthogonale peut l'être aussi ((1 ; 0), (0 ; 2)). Deuxième variation : normes et angle
+  donnés. Normes du corrigé simplifiées par `eval` (√2, 2√2).
+- 401 : triangle, quadrilatère, pentagone (figures irrégulières, « pas en vraie grandeur »), polygone
+  régulier (5, 6, 8 côtés), longueurs en cm et en mm. 13,30 noté « forme non optimale » (`zeros`).
+- Joué en local (aperçu admin, Chrome) : corrections faites — pentagone et quadrilatère d'allure
+  régulière redessinés ; fenêtres de 291 et 292 resserrées (flèches d'un carreau illisibles) ; « −1u⃗ »,
+  « 1i⃗ » → −u⃗, i⃗ ; « v⃗ plus courte » → « plus court » ; texte de 290 corrigé (« même longueur ou
+  presque » faux pour c = ±2).
+- `create-questions` (simulation, prod) : 5/5 à créer ; `question:specs` 5/5 importables ;
+  `sonde-figures` : 0 problème ; `validateLatex` + accolades sur 2 189 formules (40 aperçus par modèle) :
+  0 problème hors `\unit` (macro de l'appli, rendu vérifié à l'écran).

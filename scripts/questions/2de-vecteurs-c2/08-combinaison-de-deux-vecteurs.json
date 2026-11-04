@@ -1,0 +1,186 @@
+{
+	"title": "Écrire un vecteur avec deux vecteurs non colinéaires",
+	"description": "Lire sur un quadrillage w = x i + y j quand i et j ne sont pas colinéaires (pièges : x et y échangés, signe, coordonnées lues dans le repère du quadrillage)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Combinaison",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Les vecteurs $\\vec{i}$ et $\\vec{j}$ ne sont pas colinéaires.\n\n```figure\nfenetre: 0 ; 13 ; 0 ; 10\naxes: non\ngrille: 1\ntaille: moyenne\ndescription: Quadrillage ; à gauche les flèches i et j ; à droite la flèche w.\n---\nvecteur({{p}}, {{q}}, ancre=({{oxi}}, {{oyi}}))\ntexte({{eval:round(100*((oxi)+(p)/2-0.6*(q)/sqrt((p)^2+(q)^2)))/100;d}}, {{eval:round(100*((oyi)+(q)/2+0.6*(p)/sqrt((p)^2+(q)^2)))/100;d}}, \"i⃗\")\nvecteur({{r}}, {{s}}, ancre=({{oxj}}, {{oyj}}))\ntexte({{eval:round(100*((oxj)+(r)/2-0.6*(s)/sqrt((r)^2+(s)^2)))/100;d}}, {{eval:round(100*((oyj)+(s)/2+0.6*(r)/sqrt((r)^2+(s)^2)))/100;d}}, \"j⃗\")\nvecteur({{wx}}, {{wy}}, ancre=({{oxw}}, {{oyw}}))\ntexte({{eval:round(100*((oxw)+(wx)/2-0.6*(wy)/sqrt((wx)^2+(wy)^2)))/100;d}}, {{eval:round(100*((oyw)+(wy)/2+0.6*(wx)/sqrt((wx)^2+(wy)^2)))/100;d}}, \"w⃗\")\n```\n\nÉcris $\\vec{w}$ en fonction de $\\vec{i}$ et $\\vec{j}$.\n\n$$\\vec{w}=?\\,\\vec{i}+?\\,\\vec{j}$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "-1..1"
+				},
+				{
+					"name": "r",
+					"expression": "-1..1"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				},
+				{
+					"name": "x",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "y",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "wx",
+					"expression": "eval:(x)*(p)+(y)*(r)"
+				},
+				{
+					"name": "wy",
+					"expression": "eval:(x)*(q)+(y)*(s)"
+				},
+				{
+					"name": "oxi",
+					"expression": "eval:2-floor((p)/2)"
+				},
+				{
+					"name": "oyi",
+					"expression": "eval:2-floor((q)/2)"
+				},
+				{
+					"name": "oxj",
+					"expression": "eval:2-floor((r)/2)"
+				},
+				{
+					"name": "oyj",
+					"expression": "eval:7-floor((s)/2)"
+				},
+				{
+					"name": "oxw",
+					"expression": "eval:9-floor((wx)/2)"
+				},
+				{
+					"name": "oyw",
+					"expression": "eval:5-floor((wy)/2)"
+				},
+				{
+					"name": "cx",
+					"expression": "eval:(x)*(p)"
+				},
+				{
+					"name": "cy",
+					"expression": "eval:(x)*(q)"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:min(min(0,cx),wx)-1"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:max(max(0,cx),wx)+1"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:min(min(0,cy),wy)-1"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:max(max(0,cy),wy)+1"
+				}
+			],
+			"conditions": ["(p)*(s)-(q)*(r) != 0", "abs(wx) <= 6", "abs(wy) <= 6", "abs(wx)+abs(wy) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				},
+				{
+					"expectedAnswer": "{{y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche combien de fois il faut mettre $\\vec{i}$ bout à bout, puis $\\vec{j}$, pour aller de l'origine de $\\vec{w}$ à son extrémité.",
+					"```figure\nfenetre: {{x0}} ; {{x1}} ; {{y0}} ; {{y1}}\naxes: non\ngrille: 1\ntaille: moyenne\ndescription: La flèche w, et le chemin : x fois la flèche i, puis y fois la flèche j.\n---\nvecteur({{wx}}, {{wy}}, ancre=(0, 0))\nvecteur({{cx}}, {{cy}}, ancre=(0, 0), couleur=\"bleu\", trait=\"tirets\")\nvecteur({{eval:(y)*(r)}}, {{eval:(y)*(s)}}, ancre=({{cx}}, {{cy}}), couleur=\"rouge\", trait=\"tirets\")\ntexte({{eval:round(100*((0)+(cx)/2-0.6*(cy)/sqrt((cx)^2+(cy)^2)))/100;d}}, {{eval:round(100*((0)+(cy)/2+0.6*(cx)/sqrt((cx)^2+(cy)^2)))/100;d}}, \"{{if:x==1||{{if:x==-1|-|{{x}}}}}}i⃗\")\ntexte({{eval:round(100*((cx)+((y)*(r))/2-0.6*((y)*(s))/sqrt(((y)*(r))^2+((y)*(s))^2)))/100;d}}, {{eval:round(100*((cy)+((y)*(s))/2+0.6*((y)*(r))/sqrt(((y)*(r))^2+((y)*(s))^2)))/100;d}}, \"{{if:y==1||{{if:y==-1|-|{{y}}}}}}j⃗\")\n```",
+					"$$\\vec{w}=\\textcolor{{{color:primary.0}}}{{{if:x==1||{{if:x==-1|-|{{x}}}}}}}\\vec{i}{{if:y>0|+|}}\\textcolor{{{color:primary.1}}}{{{if:y==1||{{if:y==-1|-|{{y}}}}}}}\\vec{j}$$",
+					"Vérification en carreaux : ${{x}}\\times{{p;()}}{{if:y>0|+|}}{{y}}\\times{{r;()}}={{wx}}$ horizontalement et ${{x}}\\times{{q;()}}{{if:y>0|+|}}{{y}}\\times{{s;()}}={{wy}}$ verticalement."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "w = 2i − j",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "1",
+				"r": "-1",
+				"s": "1",
+				"x": "2",
+				"y": "-1"
+			},
+			"answers": ["2", "-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x et y échangés",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "1",
+				"r": "-1",
+				"s": "1",
+				"x": "2",
+				"y": "-1"
+			},
+			"answers": ["-1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe de y",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "1",
+				"r": "-1",
+				"s": "1",
+				"x": "2",
+				"y": "-1"
+			},
+			"answers": ["2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coordonnées du quadrillage (5 ; 1)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "1",
+				"r": "-1",
+				"s": "1",
+				"x": "2",
+				"y": "-1"
+			},
+			"answers": ["5", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
