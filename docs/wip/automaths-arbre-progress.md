@@ -333,3 +333,9 @@ subdomain, level}, quantity, delay}`.
 - **Question d'accès** : personne ne lit rien de nouveau ; la migration réécrit en place des lignes
   que leurs lecteurs actuels (auteur de la série, élève de la séance, export RGPD) lisent déjà ;
   aucune policy touchée.
+
+### Q9-Q11 tranchées (2026-11-04)
+
+David : « je te suis » → Q9 A (verrou levé le temps de la conversion) · Q10 A (date de modification
+inchangée) · Q11 A (une ligne sans modèle → tout annulé). Question d'accès : confirmation explicite
+encore à recueillir avant `db:migrate`.
