@@ -351,8 +351,6 @@ describe('questionTemplateSchema (strict)', () => {
 		title: 'Test',
 		variations: [{ statement: 'What is 1+1?' }],
 		grades: ['6e'],
-		theme: 'Calcul',
-		domain: 'Addition',
 		level: 1,
 		status: 'published' as const
 	};
@@ -438,8 +436,6 @@ describe('questionTemplateSchema refine', () => {
 	const base = {
 		title: 'Test',
 		grades: ['6e'],
-		theme: 'Calcul',
-		domain: 'Addition',
 		level: 1,
 		status: 'published' as const
 	};

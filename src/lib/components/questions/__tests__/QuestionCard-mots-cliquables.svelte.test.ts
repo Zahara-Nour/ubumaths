@@ -26,8 +26,6 @@ function instanceOf(
 	const template = {
 		id: '00000000-0000-4000-8000-0000000000d1',
 		title: 'Mots cliquables',
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		grades,
 		status: 'published',

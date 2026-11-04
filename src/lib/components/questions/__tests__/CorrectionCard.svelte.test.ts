@@ -25,8 +25,6 @@ function result(
 			templateId: 't',
 			statement: resolvedMarkdown('Calcule $16 \\times 10 = \\placeholder[0]{}$'),
 			grades: ['6'],
-			theme: 'Entiers',
-			domain: 'Multiplier',
 			level: 1,
 			generatedAt: new Date().toISOString(),
 			...instance

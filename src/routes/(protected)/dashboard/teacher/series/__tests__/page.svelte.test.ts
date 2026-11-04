@@ -23,7 +23,7 @@ vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
 
 import Page from '../+page.svelte';
 import type { SeriesWithUsage } from '$lib/types/evaluation';
-import { parseSeriesLink } from '$lib/questions/series-legacy';
+import { parseSeriesLink } from '$lib/validation/series';
 
 const ITEM = {
 	templateId: '11111111-1111-4111-8111-111111111111',

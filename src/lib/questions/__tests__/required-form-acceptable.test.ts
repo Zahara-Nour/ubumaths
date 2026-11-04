@@ -117,8 +117,6 @@ describe('générateur : variables tirées dans les deux motifs', () => {
 				}
 			],
 			grades: ['2'],
-			theme: 'Calcul littéral',
-			domain: 'Transformation',
 			level: 1
 		} as unknown as QuestionTemplate;
 		const generated = generateInstance(template, 1);
@@ -146,8 +144,6 @@ describe('schémas Zod', () => {
 				}
 			],
 			grades: ['2'],
-			theme: 'Calcul littéral',
-			domain: 'Transformation',
 			level: 1
 		};
 		const parsed = questionTemplateSchema.safeParse(template);
@@ -246,8 +242,6 @@ describe('générateur : variables tirées dans les motifs', () => {
 				}
 			],
 			grades: ['2'],
-			theme: 'Calcul littéral',
-			domain: 'Transformation',
 			level: 1
 		} as unknown as QuestionTemplate;
 		const generated = generateInstance(template, 1);

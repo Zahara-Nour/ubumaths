@@ -90,8 +90,6 @@ function generated(statement: string, blanks?: { expectedAnswer: string }[]): Qu
 				}
 			],
 			grades: ['1SPE'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as unknown as QuestionTemplate,
 		42

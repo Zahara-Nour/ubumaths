@@ -157,12 +157,8 @@ describe('cahier de texte — programme travaillé (C5, B2)', () => {
 });
 
 describe('cahier de texte — liste des questions (ADR 0035)', () => {
-	it('un modèle neuf (sans thème ni domaine) : titre et niveau seuls, jamais « null / null »', async () => {
-		const result = await loadWith(
-			'5',
-			[],
-			[{ id: 'q1', title: 'Additionner', theme: null, domain: null, level: 2 }]
-		);
+	it('un modèle : titre et niveau seuls', async () => {
+		const result = await loadWith('5', [], [{ id: 'q1', title: 'Additionner', level: 2 }]);
 		expect(result.questionOptions).toEqual([{ value: 'q1', label: 'Additionner (niv. 2)' }]);
 	});
 });

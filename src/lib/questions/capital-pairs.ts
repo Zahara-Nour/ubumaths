@@ -7,8 +7,10 @@
  * l'ordre fixé par David (2026-10-12) :
  *
  * 1. la DÉCLARATION du modèle, `shared.capitalPairs` (`'length'` | `'product'`) ;
- * 2. sinon le CONTEXTE : un thème « produit » (`Graphes et matrices`, ou un thème de
- *    physique, où `U = RI`) — table unique ci-dessous ;
+ * 2. sinon le CONTEXTE : une BRANCHE de l'arbre des notions « produit » (`Matrices`,
+ *    `Graphes`) — pour un modèle, la branche où il est rangé, lue par l'éditeur qui
+ *    écrit alors la déclaration ; pour un exercice, son champ `topic` (`Graphes et
+ *    matrices`, ou un thème de physique, où `U = RI`) — table unique ci-dessous ;
  * 3. sinon une LONGUEUR, par défaut.
  *
  * Le résultat est copié sur l'instance (`QuestionInstance.capitalPairs`) et suit le
@@ -26,14 +28,14 @@ import type { CapitalPairs } from '$lib/mathAST/parser/types';
 
 // Types
 
-/** D'où vient le sens retenu : déclaration du modèle, contexte (thème), défaut */
+/** D'où vient le sens retenu : déclaration du modèle, contexte (branche, sujet), défaut */
 export type CapitalPairsSource = 'declaration' | 'context' | 'default';
 
 export interface CapitalPairsResolution {
 	capitalPairs: CapitalPairs;
 	source: CapitalPairsSource;
-	/** Thème qui a décidé (source `context` seulement) */
-	theme?: string;
+	/** Contexte qui a décidé (source `context` seulement) */
+	context?: string;
 }
 
 // Constantes
@@ -45,21 +47,23 @@ export const CAPITAL_PAIRS_VALUES = [
 ] as const satisfies readonly CapitalPairs[];
 
 /**
- * Table de CONTEXTE « produit » (décisions Q-I et Q-M) : thèmes où deux majuscules
- * collées sont un produit (matrices `AB`, `AX = B`). Seul endroit à compléter.
+ * Table de CONTEXTE « produit » (décisions Q-I et Q-M) : où deux majuscules collées
+ * sont un produit (matrices `AB`, `AX = B`). Seul endroit à compléter.
+ * `Matrices` et `Graphes` : branches de l'arbre des notions (ADR 0035), le contexte
+ * d'un modèle. `Graphes et matrices` : sujet (`topic`) d'un exercice rédigé.
  */
-const PRODUCT_CONTEXT_THEMES: ReadonlySet<string> = new Set([
-	'Graphes et matrices',
-	// Branches de l'arbre des notions (ADR 0035) : le contexte d'un modèle sans thème
+const PRODUCT_CONTEXTS: ReadonlySet<string> = new Set([
 	'Matrices',
-	'Graphes'
+	'Graphes',
+	'Graphes et matrices'
 ]);
 
 /**
- * Thème de physique (`Physique-chimie`, `Sciences physiques`) : contexte « produit »
- * (`U = RI`, `P = UI`). Aucun en base au 2026-10-12 ; règle écrite pour un thème à venir.
+ * Sujet d'exercice de physique (`Physique-chimie`, `Sciences physiques`) : contexte
+ * « produit » (`U = RI`, `P = UI`). Aucun en base au 2026-10-12 ; règle écrite pour un
+ * sujet à venir.
  */
-const PHYSICS_THEME_REGEX = /physique/i;
+const PHYSICS_CONTEXT_REGEX = /physique/i;
 
 /** Lecture française d'un sens, pour l'éditeur */
 const MEANING_LABELS: Record<CapitalPairs, string> = {
@@ -92,36 +96,36 @@ export function declaredCapitalPairs(value: unknown): CapitalPairs | undefined {
 	return result.success ? result.data : undefined;
 }
 
-/** Le thème est-il un contexte « produit » ? */
-function isProductContext(theme: string): boolean {
-	return PRODUCT_CONTEXT_THEMES.has(theme) || PHYSICS_THEME_REGEX.test(theme);
+/** Le contexte est-il « produit » ? */
+function isProductContext(context: string): boolean {
+	return PRODUCT_CONTEXTS.has(context) || PHYSICS_CONTEXT_REGEX.test(context);
 }
 
 /** Sens de deux majuscules collées pour un modèle : déclaration → contexte → longueur */
 export function resolveCapitalPairs({
 	declaration,
-	theme
+	context
 }: {
 	declaration?: unknown;
-	theme?: string | null;
+	context?: string | null;
 }): CapitalPairsResolution {
 	const declared = declaredCapitalPairs(declaration);
 	if (declared) return { capitalPairs: declared, source: 'declaration' };
-	const trimmedTheme = theme?.trim() ?? '';
-	if (trimmedTheme && isProductContext(trimmedTheme)) {
-		return { capitalPairs: 'product', source: 'context', theme: trimmedTheme };
+	const trimmedContext = context?.trim() ?? '';
+	if (trimmedContext && isProductContext(trimmedContext)) {
+		return { capitalPairs: 'product', source: 'context', context: trimmedContext };
 	}
 	return { capitalPairs: 'length', source: 'default' };
 }
 
 /**
  * Sens de deux majuscules collées dans un EXERCICE rédigé (`~AB^2~`) : le contexte
- * seul, son thème (`exercises.topic`), sans déclaration (décision Q-J du 2026-10-12).
- * Même table que les questions : `Graphes et matrices` ou un thème de physique →
- * produit ; tout autre thème, ou aucun → longueur.
+ * seul, son sujet (`exercises.topic`), sans déclaration (décision Q-J du 2026-10-12).
+ * Même table que les questions : `Graphes et matrices` ou un sujet de physique →
+ * produit ; tout autre sujet, ou aucun → longueur.
  */
 export function exerciseCapitalPairs(topic: string | null | undefined): CapitalPairs {
-	return resolveCapitalPairs({ theme: topic }).capitalPairs;
+	return resolveCapitalPairs({ context: topic }).capitalPairs;
 }
 
 /** « une longueur, par défaut » / « un produit, contexte Graphes et matrices » */
@@ -131,7 +135,7 @@ export function describeCapitalPairs(resolution: CapitalPairsResolution): string
 		case 'declaration':
 			return `${meaning}, déclaré dans le modèle`;
 		case 'context':
-			return `${meaning}, contexte ${resolution.theme ?? ''}`.trimEnd();
+			return `${meaning}, contexte ${resolution.context ?? ''}`.trimEnd();
 		case 'default':
 			return `${meaning}, par défaut`;
 	}
@@ -165,9 +169,9 @@ export function capitalPairsChoiceOf(declaration: unknown): CapitalPairsChoice {
  * ce que donne le contexte quand rien n'est déclaré (« une longueur, par défaut »).
  */
 export function capitalPairsChoiceItems(
-	theme: string | null | undefined
+	context: string | null | undefined
 ): { value: CapitalPairsChoice; label: string }[] {
-	const resolved = describeCapitalPairs(resolveCapitalPairs({ theme }));
+	const resolved = describeCapitalPairs(resolveCapitalPairs({ context }));
 	return [
 		{ value: 'auto', label: `Selon le contexte : ${resolved}` },
 		{ value: 'length', label: 'Une longueur (segment [AB])' },
@@ -176,14 +180,11 @@ export function capitalPairsChoiceItems(
 }
 
 /**
- * Contexte d'un modèle dans l'éditeur : son ancien thème s'il en a un, sinon le nom de la
- * branche choisie dans « Rangé dans » (un modèle neuf ou une copie n'a plus de thème, ADR 0035).
+ * Contexte d'un modèle dans l'éditeur : le nom de la BRANCHE choisie dans « Rangé dans »
+ * (ADR 0035). Vide tant que le modèle n'est pas rangé.
  */
-export function capitalPairsContextOf(
-	theme: string | null | undefined,
-	branchName: string | null | undefined
-): string {
-	return theme?.trim() || branchName?.trim() || '';
+export function capitalPairsContextOf(branchName: string | null | undefined): string {
+	return branchName?.trim() || '';
 }
 
 /**
@@ -196,6 +197,6 @@ export function capitalPairsToWrite(
 	context: string
 ): CapitalPairs | undefined {
 	if (choice !== 'auto') return choice;
-	const resolution = resolveCapitalPairs({ theme: context });
+	const resolution = resolveCapitalPairs({ context });
 	return resolution.source === 'context' ? resolution.capitalPairs : undefined;
 }

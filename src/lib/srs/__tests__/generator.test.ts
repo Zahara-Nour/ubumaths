@@ -53,8 +53,6 @@ const createMockTemplate = (overrides: Partial<QuestionTemplate> = {}): Question
 	title: 'Test Template',
 	description: 'Test description',
 	grades: ['6'],
-	theme: 'Algèbre',
-	domain: 'Calcul',
 	level: 5,
 	status: 'published',
 	variations: [

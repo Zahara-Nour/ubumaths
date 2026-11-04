@@ -24,8 +24,6 @@ function makeTemplate(
 		title: 'Génération auteurs',
 		status: 'draft',
 		grades: ['2'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...(shared && { shared }),
 		variations: [{ statement: templateMarkdown('$?$'), ...variation }]

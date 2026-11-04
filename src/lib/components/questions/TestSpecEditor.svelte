@@ -208,8 +208,6 @@
 			variations,
 			options,
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		};
 	}

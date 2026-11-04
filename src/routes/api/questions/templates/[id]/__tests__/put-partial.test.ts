@@ -139,9 +139,6 @@ describe("PUT complet (éditeur) : objet d'écriture inchangé", () => {
 			exerciseInstruction: null,
 			options: null,
 			grades: FIXTURE.grades,
-			theme: FIXTURE.theme,
-			domain: FIXTURE.domain,
-			subdomain: FIXTURE.subdomain,
 			level: FIXTURE.level,
 			status: 'draft',
 			delay: FIXTURE.delay,
@@ -150,7 +147,7 @@ describe("PUT complet (éditeur) : objet d'écriture inchangé", () => {
 		const response = await callPut(db, payload);
 
 		expect(response.status).toBe(200);
-		// Objet qu'écrivait la route, sans theme / domain / subdomain (ignorés, ADR 0035)
+		// Objet qu'écrivait la route (rangement par `classification_node_id`, ADR 0035)
 		expect(db.updates).toEqual([
 			{
 				type: 'fill_in_blanks',

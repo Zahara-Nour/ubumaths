@@ -20,14 +20,13 @@ describe('test system validation schemas', () => {
 		// et `type`, que le générateur ne produit plus : il restait vert pendant
 		// que la route refusait toute session réelle. Voir aussi
 		// `tests-real-instances.test.ts` (instances générées).
-		type FixtureInstance = { templateId?: string; statement: string; theme?: string };
+		type FixtureInstance = { templateId?: string; statement: string };
 		const TEMPLATE_ID = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 		const makeAnswer = (index: number, isCorrect: boolean) => ({
 			index,
 			instance: {
 				templateId: TEMPLATE_ID,
-				statement: `$$${index}+1$$`,
-				theme: 'Entiers'
+				statement: `$$${index}+1$$`
 			} as FixtureInstance,
 			userAnswer: {
 				value: [String(index + 1)] as string | string[] | number | number[],
@@ -98,14 +97,19 @@ describe('test system validation schemas', () => {
 
 		it('should strip unknown instance fields (never stored in test_answers)', () => {
 			const data = createValidTestData();
-			Object.assign(data.result.answers[0].instance, { answer: 4, type: 'qcm', blanks: [] });
+			// `theme` : ancien champ d'instance (avant l'ADR 0035), retiré comme les autres
+			Object.assign(data.result.answers[0].instance, {
+				answer: 4,
+				type: 'qcm',
+				blanks: [],
+				theme: 'Calcul'
+			});
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 			if (result.success) {
 				expect(Object.keys(result.data.result.answers[0].instance).sort()).toEqual([
 					'statement',
-					'templateId',
-					'theme'
+					'templateId'
 				]);
 			}
 		});
@@ -181,25 +185,24 @@ describe('test system validation schemas', () => {
 
 		it('should accept instance with only templateId and statement', () => {
 			const data = createValidTestData();
-			delete data.result.answers[0].instance.theme;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
-		// Un onglet ouvert avant la mise en prod envoie encore l'ancienne forme (ADR 0035)
-		it('should still accept the old `categories` shape (category with null subdomain)', () => {
+		// Un onglet ouvert avant la mise en prod de l'ADR 0035 envoie l'ancienne forme : refusée
+		it('should reject the old `categories` shape (no repli, `items` required)', () => {
 			const { items: _items, ...data } = createValidTestData();
 			const result = saveTestSchema.safeParse({
 				...data,
 				categories: [
 					{
-						category: { theme: 'Arithmétique', domain: 'Opérations', subdomain: null, level: 2 },
+						category: { level: 2 },
 						quantity: 5,
 						delay: 90
 					}
 				]
 			});
-			expect(result.success).toBe(true);
+			expect(result.success).toBe(false);
 		});
 
 		it('should reject score below 0', () => {
@@ -320,7 +323,7 @@ describe('test system validation schemas', () => {
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject a body with neither items nor categories', () => {
+		it('should reject a body without items', () => {
 			const { items: _items, ...data } = createValidTestData();
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
@@ -359,50 +362,6 @@ describe('test system validation schemas', () => {
 			data.items[0].delay = 601;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
-		});
-
-		describe('old `categories` shape (still readable, ADR 0035)', () => {
-			const legacy = (overrides: Record<string, unknown> = {}, category = {}) => {
-				const { items: _items, ...data } = createValidTestData();
-				return {
-					...data,
-					categories: [
-						{
-							category: {
-								theme: 'Algebra',
-								domain: 'Equations',
-								subdomain: 'Linear',
-								level: 1,
-								...category
-							},
-							quantity: 5,
-							delay: 60,
-							...overrides
-						}
-					]
-				};
-			};
-
-			it('should accept category level 20 (highest level in production)', () => {
-				expect(saveTestSchema.safeParse(legacy({}, { level: 20 })).success).toBe(true);
-			});
-
-			it('should reject category level above 100', () => {
-				expect(saveTestSchema.safeParse(legacy({}, { level: 101 })).success).toBe(false);
-			});
-
-			it('should reject empty or too long theme, empty domain', () => {
-				expect(saveTestSchema.safeParse(legacy({}, { theme: '' })).success).toBe(false);
-				expect(saveTestSchema.safeParse(legacy({}, { theme: 'a'.repeat(101) })).success).toBe(
-					false
-				);
-				expect(saveTestSchema.safeParse(legacy({}, { domain: '' })).success).toBe(false);
-			});
-
-			it('should apply the same bounds on quantity', () => {
-				expect(saveTestSchema.safeParse(legacy({ quantity: 0 })).success).toBe(false);
-				expect(saveTestSchema.safeParse(legacy({ quantity: 100 })).success).toBe(false);
-			});
 		});
 
 		it('should reject invalid mode', () => {

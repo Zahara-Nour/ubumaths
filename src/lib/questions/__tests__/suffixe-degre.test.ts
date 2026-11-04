@@ -68,8 +68,6 @@ describe('case à unité : traitement des unités inchangé', () => {
 			type: 'fill_in_blanks',
 			title: 't',
 			grades: ['6'],
-			theme: 'T',
-			domain: 'D',
 			level: 1,
 			delay: 20,
 			status: 'draft',

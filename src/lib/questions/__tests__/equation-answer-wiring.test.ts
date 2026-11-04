@@ -68,8 +68,6 @@ function lineTemplate(expected = '{{a}}x-y+{{b}}=0'): QuestionTemplate {
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Géométrie',
-		domain: 'Géométrie repérée',
 		level: 3
 	};
 }

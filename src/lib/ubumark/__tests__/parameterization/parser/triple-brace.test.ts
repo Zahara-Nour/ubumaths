@@ -20,8 +20,6 @@ function statementOf(statement: string): string {
 		title: 't',
 		status: 'draft',
 		grades: ['5'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		variations: [
 			{

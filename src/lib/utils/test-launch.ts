@@ -5,27 +5,27 @@
  *   du serveur, le `mode` de l'URL est ignoré (B15).
  * - `modeles=<…>` (ou un ancien `categories=<…>`) sans `mode` : lien de série
  *   partagé → le PANIER, paramètre intact (Q46) ; le panier le relit et dit
- *   s'il est abîmé.
+ *   s'il est abîmé ou d'une ancienne version.
  * - `modeles=<…>&mode=<…>` : démarrage direct sous cette forme.
  *
  * La composition est validée (mêmes bornes que l'enregistrement d'une série) :
- * un lien abîmé donne un message, jamais un plantage. Les lignes d'un ancien
- * lien (catégories, ADR 0035) restent à résoudre par la page, qui a les modèles.
+ * un lien abîmé, ou un ancien lien `categories=` (plus relu), donne un message,
+ * jamais un plantage.
  */
 
 import type { TestMode } from '$lib/types/test';
 import {
-	LEGACY_SERIES_LINK_PARAM,
+	ANCIEN_LIEN_PARAM,
+	SERIES_LINK_PARAM,
 	hasSeriesLink,
 	parseSeriesLink,
-	type StoredSeriesLine
-} from '$lib/questions/series-legacy';
-import { SERIES_LINK_PARAM } from '$lib/validation/series';
+	type SeriesItem
+} from '$lib/validation/series';
 
 export type TestLaunch =
 	| { kind: 'assignment'; assignmentId: string }
 	| { kind: 'cart'; href: string }
-	| { kind: 'start'; mode: TestMode; lines: StoredSeriesLine[]; timeLimit?: number }
+	| { kind: 'start'; mode: TestMode; lines: SeriesItem[]; timeLimit?: number }
 	| { kind: 'error'; message: string };
 
 const TEST_MODES: readonly TestMode[] = ['display', 'interactive', 'course', 'flash'];
@@ -46,7 +46,7 @@ export function resolveTestLaunch(searchParams: URLSearchParams): TestLaunch {
 	const modeParam = searchParams.get('mode');
 	if ((modeParam === null || modeParam === '') && hasSeriesLink(searchParams)) {
 		const cart = new URLSearchParams();
-		for (const name of [SERIES_LINK_PARAM, LEGACY_SERIES_LINK_PARAM]) {
+		for (const name of [SERIES_LINK_PARAM, ANCIEN_LIEN_PARAM]) {
 			const value = searchParams.get(name);
 			if (value !== null) cart.set(name, value);
 		}

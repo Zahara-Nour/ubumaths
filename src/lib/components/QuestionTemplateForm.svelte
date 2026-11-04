@@ -169,8 +169,6 @@
 	let classificationNodeId = $state<string | null>(initialTemplate?.classification_node_id ?? null);
 	// Ancien thème / domaine d'un modèle existant : jamais modifiés ni envoyés (ils restent
 	// en base pour les anciens liens), mais le contexte de certaines aides en dépend encore.
-	let theme = $state<string>(initialTemplate?.theme || '');
-	let domain = $state<string>(initialTemplate?.domain || '');
 	let level = $state<number>(initialTemplate?.level || 1);
 	let status = $state<'draft' | 'published'>(initialTemplate?.status || 'draft');
 
@@ -375,8 +373,8 @@
 	let capitalPairsChoice = $state<CapitalPairsChoice>(
 		capitalPairsChoiceOf(initialTemplate?.shared?.capitalPairs)
 	);
-	// Contexte : ancien thème du modèle, sinon branche de « Rangé dans » (ADR 0035)
-	const capitalPairsContext = $derived(capitalPairsContextOf(theme, chosenPlace?.branch.name));
+	// Contexte : branche de « Rangé dans » (ADR 0035)
+	const capitalPairsContext = $derived(capitalPairsContextOf(chosenPlace?.branch.name));
 	// Options de la liste : la première dit ce que donne le contexte
 	let capitalPairsItems = $derived(capitalPairsChoiceItems(capitalPairsContext));
 	let genericFunctionsError = $derived.by(() => {
@@ -462,8 +460,7 @@
 	// Garde auteur (Q-A) : un nom de figure attendu en mode longueur ne serait jamais accepté
 	let capitalPairsWarnings = $derived(
 		figureNameWarnings({
-			shared: capitalPairsChoice === 'auto' ? undefined : { capitalPairs: capitalPairsChoice },
-			theme: capitalPairsContext,
+			shared: { capitalPairs: capitalPairsToWrite(capitalPairsChoice, capitalPairsContext) },
 			variations
 		})
 	);
@@ -1063,13 +1060,7 @@
 	}
 
 	// Memoize buildTemplate() for preview (avoid recalculating on every render).
-	// L'aperçu garde l'ancien thème / domaine d'un modèle existant : la génération
-	// en tire encore le sens de deux majuscules collées.
-	let previewTemplate = $derived({
-		...buildTemplate(),
-		...(theme ? { theme } : {}),
-		...(domain ? { domain } : {})
-	});
+	let previewTemplate = $derived(buildTemplate());
 
 	// Dirty state: protect against accidental data loss
 	function computeSnapshot(): string {
@@ -1499,8 +1490,8 @@
 			/>
 			<p id="capital-pairs-help" class="text-xs text-muted-foreground">
 				Lecture de AB dans les réponses (élève et attendue) : la longueur du segment [AB] (BA = AB,
-				AB² = BA²), ou le produit A × B (matrices, physique). Rien de déclaré : produit pour le
-				thème « Graphes et matrices » ou un thème de physique, longueur sinon.
+				AB² = BA²), ou le produit A × B (matrices, graphes). Rien de choisi : produit pour les
+				branches « Matrices » et « Graphes », longueur sinon.
 			</p>
 			{#each capitalPairsWarnings as warning (warning)}
 				<p class="text-xs text-destructive" role="alert">{warning}</p>
@@ -1538,8 +1529,8 @@
 		<AnswerAssumptionsEditor
 			bind:rows={assumptionRows}
 			drawnNames={drawnVariableNames}
-			theme={theme || chosenPlace?.branch.name || ''}
-			domain={domain || chosenPlace?.notion.name || ''}
+			branch={chosenPlace?.branch.name ?? ''}
+			notion={chosenPlace?.notion.name ?? ''}
 		/>
 
 		<!-- Options de validation -->

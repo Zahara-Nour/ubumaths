@@ -7,7 +7,6 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 	import type { SeriesItem } from '$lib/validation/series';
-	import { isLegacyLine, resolveSeriesLines } from '$lib/questions/series-legacy';
 	import type { ClassroomItem, TestMode, TestSession } from '$lib/types/test';
 	import { AlertCircle } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -87,26 +86,7 @@
 				return;
 			}
 
-			// Ancien lien (catégories, ADR 0035) : chaque ligne retrouve son modèle ;
-			// modèles non chargés (réseau) : le dire, pas « n'existent plus »
-			if (launch.lines.some(isLegacyLine) && !questionTemplatesCache.isLoaded) {
-				throw new Error(
-					'Aucun modèle disponible. Veuillez vous reconnecter à Internet et recharger la page.'
-				);
-			}
-			const { items, unresolved } = resolveSeriesLines(
-				launch.lines,
-				questionTemplatesCache.templates
-			);
-			if (items.length === 0) {
-				throw new Error("Les questions de ce lien n'existent plus.");
-			}
-			if (unresolved > 0) {
-				toaster.warning(
-					`${unresolved} question${unresolved > 1 ? 's' : ''} de ce lien n'existe${unresolved > 1 ? 'nt' : ''} plus.`
-				);
-			}
-			startSeries(launch.mode, items, launch.timeLimit);
+			startSeries(launch.mode, launch.lines, launch.timeLimit);
 			isLoading = false;
 		} catch (err) {
 			console.error('Error initializing test:', err);

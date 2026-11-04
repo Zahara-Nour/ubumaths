@@ -28,8 +28,6 @@ function choiceQuestion(statement = 'Combien font 2 + 2 ?'): QuestionInstance {
 		templateId: 'tpl-choix',
 		statement: resolvedMarkdown(`${statement}\n\n\`\`\`choix\ncase: 0\n- 3\n- 4\n\`\`\``),
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Calcul',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		blanks: [
@@ -48,8 +46,6 @@ function courseCard(): QuestionInstance {
 		templateId: 'tpl-cours',
 		statement: resolvedMarkdown('Définition de la médiane'),
 		grades: ['6'],
-		theme: 'Statistiques',
-		domain: 'Données',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		correction: { steps: [resolvedMarkdown('Valeur qui partage la série en deux')] },

@@ -68,8 +68,6 @@ function templateWith(blank: TemplateBlank, id = 'test-calculus'): QuestionTempl
 			}
 		],
 		grades: ['T_SPE'],
-		theme: 'Analyse',
-		domain: 'Primitives',
 		level: 1
 	};
 }

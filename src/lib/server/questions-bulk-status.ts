@@ -52,10 +52,6 @@ const ID_CHUNK_SIZE = 100;
 
 const NOT_FOUND = 'modèle introuvable';
 const NOT_SAVED = "la modification n'a pas été enregistrée par la base (droits insuffisants ?)";
-const UNIQUE_VIOLATION = '23505';
-/** Refus de l'ancien index unique des publiés (retiré au lot 4, ADR 0035) */
-export const OLD_CATEGORY_TAKEN =
-	'un modèle publié occupe déjà la même ancienne catégorie (thème, domaine, sous-domaine, niveau) : change le niveau ou range-le autrement avant de le publier';
 
 // ============================================================================
 // FUNCTIONS
@@ -102,17 +98,15 @@ async function fetchTemplates(supabase: Client, ids: string[]): Promise<Question
 
 /**
  * Passe `ids` au statut `status` (seulement depuis `from`) et rend les lignes
- * réellement modifiées. Un conflit d'unicité (course avec une autre publication)
- * refuse tout le paquet : on le signale au lieu de planter.
+ * réellement modifiées.
  */
 async function updateStatus(
 	supabase: Client,
 	ids: string[],
 	from: 'draft' | 'published',
 	to: 'draft' | 'published'
-): Promise<{ updated: BulkTemplateEntry[]; conflicts: string[] }> {
+): Promise<BulkTemplateEntry[]> {
 	const updated: BulkTemplateEntry[] = [];
-	const conflicts: string[] = [];
 	for (const part of chunk(ids, ID_CHUNK_SIZE)) {
 		const { data, error: updateError } = await supabase
 			.from('question_templates')
@@ -121,35 +115,27 @@ async function updateStatus(
 			.eq('status', from)
 			.select('id, title');
 		if (updateError) {
-			if (updateError.code === UNIQUE_VIOLATION) {
-				conflicts.push(...part);
-				continue;
-			}
 			logger.error('Mise à jour du statut impossible :', updateError);
 			throw error(500, 'Impossible de modifier le statut des modèles');
 		}
 		updated.push(...(data ?? []).map((row) => ({ id: row.id, title: row.title })));
 	}
-	return { updated, conflicts };
+	return updated;
 }
 
 /** Répartit le résultat d'une mise à jour : lignes rendues = changées, le reste = refus */
 function settle(
 	candidates: QuestionTemplateRow[],
-	updated: BulkTemplateEntry[],
-	conflicts: string[]
+	updated: BulkTemplateEntry[]
 ): { changed: BulkTemplateEntry[]; refused: BulkTemplateRefusal[] } {
 	const updatedIds = new Set(updated.map((entry) => entry.id));
-	const conflictIds = new Set(conflicts);
 	const refused: BulkTemplateRefusal[] = [];
 	for (const row of candidates) {
 		if (updatedIds.has(row.id)) continue;
 		refused.push({
 			id: row.id,
 			title: row.title,
-			reasons: [
-				conflictIds.has(row.id) ? `la base a refusé le lot : ${OLD_CATEGORY_TAKEN}` : NOT_SAVED
-			]
+			reasons: [NOT_SAVED]
 		});
 	}
 	return { changed: updated, refused };
@@ -207,13 +193,13 @@ export async function publishTemplates(
 	if (simulation) {
 		return { published: candidates.map((row) => ({ id: row.id, title: row.title })), refused };
 	}
-	const { updated, conflicts } = await updateStatus(
+	const updated = await updateStatus(
 		supabase,
 		candidates.map((row) => row.id),
 		'draft',
 		'published'
 	);
-	const settled = settle(candidates, updated, conflicts);
+	const settled = settle(candidates, updated);
 	return { published: settled.changed, refused: [...refused, ...settled.refused] };
 }
 
@@ -245,12 +231,12 @@ export async function unpublishTemplates(
 	}
 
 	if (candidates.length === 0) return { unpublished: [], refused };
-	const { updated, conflicts } = await updateStatus(
+	const updated = await updateStatus(
 		supabase,
 		candidates.map((row) => row.id),
 		'published',
 		'draft'
 	);
-	const settled = settle(candidates, updated, conflicts);
+	const settled = settle(candidates, updated);
 	return { unpublished: settled.changed, refused: [...refused, ...settled.refused] };
 }

@@ -5,8 +5,8 @@
 
 import { z } from 'zod';
 import { isCourseCard } from '$lib/questions/types';
+import { seriesItemsSchema } from '$lib/validation/series';
 import { uuidSchema } from './common';
-import { storedSeriesLinesSchema } from '$lib/questions/series-legacy';
 
 // ============================================================================
 // BORNES
@@ -34,7 +34,7 @@ const MAX_ANSWER_PARTS = 50;
  *
  * Ne retient que ce que la route exploite : `templateId` (référentiel, FSRS,
  * paquet Programme) et ce qu'elle archive dans `test_answers.question_instance`
- * (énoncé vu par l'élève + rangement + graine). Tout autre champ est RETIRÉ par Zod
+ * (énoncé vu par l'élève + niveau + graine). Tout autre champ est RETIRÉ par Zod
  * (objet non strict) : ni `blanks`, ni `choices`, ni `correction` n'atteignent
  * la base. Aucun code ne relit `question_instance` à ce jour.
  *
@@ -44,9 +44,6 @@ const MAX_ANSWER_PARTS = 50;
 const questionInstanceSchema = z.object({
 	templateId: uuidSchema,
 	statement: z.string().max(MAX_STATEMENT_LENGTH, 'Statement too long'),
-	theme: z.string().max(200).nullable().optional(),
-	domain: z.string().max(200).nullable().optional(),
-	subdomain: z.string().max(200).nullable().optional(),
 	level: z.number().int().min(0).max(100).nullable().optional(),
 	generatedAt: z.string().max(64).optional(),
 	selectedVariationIndex: z.number().int().min(0).max(1000).optional(),
@@ -139,18 +136,12 @@ const testResultSchema = z.object({
 /**
  * Schema for saving test results (POST /api/tests/save)
  * Résultat, composition jouée (`items`, ADR 0035) et assignation éventuelle.
- * `categories` : un onglet ouvert avant la mise en prod envoie encore
- * l'ancienne forme — acceptée, enregistrée telle quelle (lot 4 : retirée).
  */
 export const saveTestSchema = z
 	.object({
 		result: testResultSchema,
-		items: storedSeriesLinesSchema.optional(),
-		categories: storedSeriesLinesSchema.optional(),
+		items: seriesItemsSchema,
 		assignmentId: uuidSchema.optional()
-	})
-	.refine((data) => data.items !== undefined || data.categories !== undefined, {
-		message: 'Ajoute au moins un modèle de questions'
 	})
 	.refine(
 		(data) => {

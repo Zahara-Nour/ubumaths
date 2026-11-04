@@ -46,8 +46,6 @@ function card(overrides: Partial<QuestionTemplate> = {}): QuestionTemplate {
 			}
 		],
 		grades: ['2'],
-		theme: 'Fonctions',
-		domain: 'Généralités',
 		level: 1,
 		...overrides
 	};
@@ -65,8 +63,6 @@ function blankQuestion(overrides: Partial<QuestionTemplate> = {}): QuestionTempl
 			}
 		],
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Multiplier',
 		level: 1,
 		...overrides
 	};

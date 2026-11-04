@@ -199,8 +199,6 @@ describe('FillBlanksInput — barres à construire', () => {
 					}
 				],
 				grades: ['CE1'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1
 			} as QuestionTemplate,
 			42

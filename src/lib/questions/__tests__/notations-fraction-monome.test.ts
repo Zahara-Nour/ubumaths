@@ -18,8 +18,6 @@ function verdicts(expected: string, answers: string[]): Record<string, string> {
 		type: 'fill_in_blanks',
 		title: 't',
 		grades: ['T_SPE'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		delay: 20,
 		status: 'draft',

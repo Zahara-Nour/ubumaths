@@ -20,8 +20,6 @@ function card(): QuestionInstance {
 		correction: { steps: [resolvedMarkdown('On détermine son ensemble de définition.')] },
 		options: { courseCard: true },
 		grades: ['2'],
-		theme: 'Fonctions',
-		domain: 'Généralités',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	} as QuestionInstance;
@@ -130,8 +128,6 @@ describe('carte de cours — verso en étapes générées (mode B)', () => {
 					}
 				],
 				grades: ['6'],
-				theme: 'T',
-				domain: 'D',
 				level: 1
 			},
 			1

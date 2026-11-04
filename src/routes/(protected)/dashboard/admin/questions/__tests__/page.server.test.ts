@@ -34,13 +34,12 @@ const POSTGREST_MAX_ROWS = 1000;
 // HELPERS
 // ============================================================================
 
-function row(index: number, status: string, theme: string, overrides: Row = {}): Row {
+/** `groupe` : étiquette de test qui distingue les lignes entre elles (champ propre au faux) */
+function row(index: number, status: string, groupe: string, overrides: Row = {}): Row {
 	return {
-		id: `${status}-${theme}-${String(index).padStart(5, '0')}`,
+		id: `${status}-${groupe}-${String(index).padStart(5, '0')}`,
 		status,
-		theme,
-		domain: 'Additionner',
-		subdomain: null,
+		groupe,
 		classification_node_id: null,
 		level: 1,
 		type: 'fill_in_blanks',
@@ -51,8 +50,8 @@ function row(index: number, status: string, theme: string, overrides: Row = {}):
 	};
 }
 
-function rows(count: number, status: string, theme: string, overrides: Row = {}): Row[] {
-	return Array.from({ length: count }, (_, index) => row(index, status, theme, overrides));
+function rows(count: number, status: string, groupe: string, overrides: Row = {}): Row[] {
+	return Array.from({ length: count }, (_, index) => row(index, status, groupe, overrides));
 }
 
 /** Constructeur de requête minimal, à la manière de PostgREST (1000 lignes max) */
@@ -310,7 +309,7 @@ describe('page admin des modèles — filtre « Questions de cours »', () => {
 	it('avec le filtre : questions de cours et cartes de cours, dans les deux onglets', async () => {
 		const result = await loadPage(catalogue(), '?courseQuestion=1');
 
-		expect(result.drafts.map((draft) => draft.theme).sort()).toEqual([
+		expect(result.drafts.map((draft) => draft.groupe).sort()).toEqual([
 			'Fonctions',
 			'Polynômes',
 			'Polynômes'

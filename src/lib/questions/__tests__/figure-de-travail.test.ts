@@ -45,8 +45,6 @@ function template(
 		type: 'fill_in_blanks',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['CP'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...(options && { options })
 	} as QuestionTemplate;

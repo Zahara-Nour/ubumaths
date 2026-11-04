@@ -475,19 +475,11 @@ export async function resolveCourseShareToken(
 		return null;
 	}
 
-	// Compositions relues dans la nouvelle forme (anciennes lignes résolues,
-	// ADR 0035) ; une panne laisse les séries sans lien, pas le cours illisible
+	// Compositions relues dans la nouvelle forme (ADR 0035) ; une composition
+	// illisible laisse la série sans lien, pas le cours illisible
 	const allSeries = parsed.data.chapters.flatMap((chapter) => chapter.series);
-	let read = new Map<string, { items: unknown }>();
-	try {
-		read = await readStoredSeriesMany(
-			supabase,
-			allSeries.map((s) => ({ id: s.id, categories: s.categories }))
-		);
-	} catch (readError) {
-		logger.error('[course-share] modèles des séries illisibles:', readError);
-	}
-	for (const s of allSeries) s.categories = read.get(s.id)?.items ?? null;
+	const read = readStoredSeriesMany(allSeries.map((s) => ({ id: s.id, categories: s.categories })));
+	for (const s of allSeries) s.categories = read.get(s.id) ?? null;
 	return parsed.data;
 }
 

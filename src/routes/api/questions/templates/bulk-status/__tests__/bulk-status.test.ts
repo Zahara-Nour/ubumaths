@@ -29,7 +29,7 @@ interface FakeDb {
 	profiles: Row[];
 	/** Simule une RLS qui refuse l'écriture : 0 ligne rendue, pas d'erreur */
 	blockUpdates?: boolean;
-	/** Simule un conflit d'unicité (index partiel des catégories publiées) */
+	/** Simule une erreur de la base (23505) : l'erreur générique, pas un refus rangé */
 	uniqueViolation?: boolean;
 }
 
@@ -39,9 +39,6 @@ interface FixtureTemplate {
 	shared?: unknown;
 	variations: unknown[];
 	grades: string[];
-	theme: string;
-	domain: string;
-	subdomain?: string;
 	level: number;
 	delay?: number;
 	testSpecs?: Array<{ answers: string[]; expected: { status: string } }>;
@@ -72,9 +69,6 @@ function templateRow(id: string, overrides: Row = {}): Row {
 		id,
 		title: FIXTURE.title,
 		description: FIXTURE.description ?? null,
-		theme: FIXTURE.theme,
-		domain: FIXTURE.domain,
-		subdomain: FIXTURE.subdomain ?? null,
 		level: FIXTURE.level,
 		status: 'draft',
 		grades: FIXTURE.grades,
@@ -116,7 +110,7 @@ function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 			if (db.uniqueViolation) {
 				return {
 					data: null,
-					error: { code: '23505', message: 'idx_question_templates_unique_category' }
+					error: { code: '23505', message: 'duplicate key value' }
 				};
 			}
 			if (db.blockUpdates) {
@@ -244,10 +238,10 @@ describe('POST /api/questions/templates/bulk-status — publier', () => {
 		expect(statusOf(db, ID_B)).toBe('published');
 	});
 
-	it('ne contrôle plus la catégorie : un modèle de même thème/domaine/niveau qu’un publié passe', async () => {
+	it('ne contrôle aucune catégorie : un modèle de même niveau qu’un publié passe', async () => {
 		const db = fakeDb('admin', [
 			templateRow(ID_PUBLISHED, { status: 'published', title: 'Double (déjà publié)' }),
-			templateRow(ID_A, { theme: null, domain: null, subdomain: null })
+			templateRow(ID_A)
 		]);
 
 		const body = await (await callBulk(db, { ids: [ID_A], status: 'published' })).json();
@@ -258,10 +252,7 @@ describe('POST /api/questions/templates/bulk-status — publier', () => {
 	});
 
 	it('publie ensemble des modèles de la sélection rangés au même endroit', async () => {
-		const db = fakeDb('admin', [
-			templateRow(ID_A, { theme: null, domain: null }),
-			templateRow(ID_B, { theme: null, domain: null, title: 'Double bis' })
-		]);
+		const db = fakeDb('admin', [templateRow(ID_A), templateRow(ID_B, { title: 'Double bis' })]);
 
 		const body = await (await callBulk(db, { ids: [ID_A, ID_B], status: 'published' })).json();
 
@@ -271,15 +262,8 @@ describe('POST /api/questions/templates/bulk-status — publier', () => {
 		expect(statusOf(db, ID_B)).toBe('published');
 	});
 
-	it('publie un modèle neuf sans thème ni domaine (rangé par l’arbre)', async () => {
-		const db = fakeDb('admin', [
-			templateRow(ID_A, {
-				theme: null,
-				domain: null,
-				subdomain: null,
-				classification_node_id: ID_B
-			})
-		]);
+	it('publie un modèle rangé par l’arbre', async () => {
+		const db = fakeDb('admin', [templateRow(ID_A, { classification_node_id: ID_B })]);
 
 		const body = await (await callBulk(db, { ids: [ID_A], status: 'published' })).json();
 
@@ -318,15 +302,13 @@ describe('POST /api/questions/templates/bulk-status — publier', () => {
 		expect(statusOf(db, ID_A)).toBe('archived');
 	});
 
-	it('transforme un conflit d’unicité de la base (23505) en refus, pas en erreur 500', async () => {
+	it('une erreur 23505 de la base n’a plus de cas à part : erreur générique 500', async () => {
 		const db = fakeDb('admin', [templateRow(ID_A)], { uniqueViolation: true });
 
-		const response = await callBulk(db, { ids: [ID_A], status: 'published' });
-
-		expect(response.status).toBe(200);
-		const body = await response.json();
-		expect(body.published).toEqual([]);
-		expect(body.refused[0].reasons.join(' ')).toMatch(/ancienne catégorie/);
+		await expect(callBulk(db, { ids: [ID_A], status: 'published' })).rejects.toMatchObject({
+			status: 500
+		});
+		expect(statusOf(db, ID_A)).toBe('draft');
 	});
 
 	it("rend un échec, pas un succès, quand la RLS refuse l'écriture en silence (0 ligne)", async () => {

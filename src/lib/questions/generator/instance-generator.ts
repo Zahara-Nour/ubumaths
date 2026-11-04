@@ -445,10 +445,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		const genericFunctionNames = declaredGenericFunctions(template.shared?.genericFunctions);
 		const genericFunctions = templateGenericFunctions(genericFunctionNames);
 		// Sens de `AB` (longueur ou produit), résolu UNE fois ici (Q-K) : déclaration du
-		// modèle → contexte (thème) → longueur. Porté par l'instance jusqu'au parseur.
+		// modèle → longueur (le contexte de la branche est lu à l'enregistrement, par
+		// l'éditeur, qui écrit alors la déclaration). Porté par l'instance jusqu'au parseur.
 		const { capitalPairs } = resolveCapitalPairs({
-			declaration: template.shared?.capitalPairs,
-			theme: template.theme
+			declaration: template.shared?.capitalPairs
 		});
 		// Coefficients nettoyés (`1x-1y+0` → `x-y`) : strictement `true`, sinon rien ne change
 		const cleanCoefficients = template.shared?.cleanCoefficients === true;

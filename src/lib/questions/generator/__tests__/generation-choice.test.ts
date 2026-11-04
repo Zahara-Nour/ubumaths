@@ -29,8 +29,6 @@ function template(
 		type: 'fill_in_blanks',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...extra
 	} as QuestionTemplate;
@@ -363,8 +361,6 @@ describe('invariants : les questions existantes ne bougent pas', () => {
 		title: 't',
 		status: 'draft',
 		grades: ['6'],
-		theme: 'T',
-		domain: 'D',
 		level: 1
 	};
 	const fib = {

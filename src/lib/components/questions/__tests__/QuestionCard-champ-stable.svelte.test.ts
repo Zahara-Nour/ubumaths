@@ -26,8 +26,6 @@ const WITH_PROMPT = {
 	blanks: [{ expectedAnswer: '8', expectedAnswerLatex: '8', type: 'math' }],
 	correction: { steps: [resolvedMarkdown('$3+5=8$')] },
 	grades: ['6'],
-	theme: 'Calcul',
-	domain: 'Nombres',
 	level: 1,
 	generatedAt: new Date().toISOString()
 } as QuestionInstance;

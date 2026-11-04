@@ -67,8 +67,6 @@ function productTemplate(expected = M): QuestionTemplate {
 			}
 		],
 		grades: ['T_EXP'],
-		theme: 'Graphes et matrices',
-		domain: 'Matrices',
 		level: 1
 	};
 }

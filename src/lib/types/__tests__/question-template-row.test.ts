@@ -13,9 +13,6 @@ const row = (overrides: Partial<QuestionTemplateRow> = {}): QuestionTemplateRow 
 	id: 'modele-1',
 	title: 'Résoudre une équation',
 	description: null,
-	theme: 'Algèbre',
-	domain: 'Équations',
-	subdomain: null,
 	level: 3,
 	status: 'published',
 	grades: ['3'],
@@ -58,7 +55,6 @@ describe('toQuestionTemplate', () => {
 		const modele = toQuestionTemplate(row());
 
 		expect(modele.description).toBeUndefined();
-		expect(modele.subdomain).toBeUndefined();
 		expect(modele.delay).toBeUndefined();
 		expect(modele.shared).toBeUndefined();
 		expect(modele.testSpecs).toBeUndefined();

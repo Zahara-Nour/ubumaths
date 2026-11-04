@@ -20,8 +20,6 @@ function modele(id: string, statement: string): QuestionTemplate {
 		id,
 		title: 't',
 		grades: ['2'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		status: 'draft',
 		variations: [

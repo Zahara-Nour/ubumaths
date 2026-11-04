@@ -14,8 +14,6 @@ function modele(statement: string, steps: string[] = [], extra: Record<string, u
 		id: 't',
 		title: 't',
 		grades: ['2'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		status: 'draft',
 		variations: [

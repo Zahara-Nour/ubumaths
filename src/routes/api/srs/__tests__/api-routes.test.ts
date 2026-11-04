@@ -1201,8 +1201,6 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 									options: { courseCard: true },
 									variations: [{ statement: 'Recto' }],
 									grades: ['2'],
-									theme: 'Fonctions',
-									domain: 'Généralités',
 									level: 1
 								},
 								error: null

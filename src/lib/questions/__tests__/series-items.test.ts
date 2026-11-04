@@ -28,9 +28,7 @@ vi.mock('$lib/questions/generator/instance-generator', () => ({
 function template(domain: string, id: string, overrides: Partial<QuestionTemplate> = {}) {
 	return {
 		id,
-		theme: 'Entiers',
 		domain,
-		subdomain: 'Somme',
 		level: 1,
 		...overrides
 	} as unknown as QuestionTemplate;

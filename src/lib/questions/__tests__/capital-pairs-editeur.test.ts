@@ -1,36 +1,33 @@
 /**
- * Éditeur de modèle : contexte (thème ancien, sinon branche) et déclaration à l'enregistrement
- * ADR 0035, lot 3a : un modèle neuf n'a plus de thème, la branche de « Rangé dans » le remplace.
+ * Éditeur de modèle : contexte (la branche de « Rangé dans ») et déclaration à l'enregistrement
+ * ADR 0035 : un modèle n'a plus de thème, seule la branche de l'arbre fait contexte.
  */
 import { describe, it, expect } from 'vitest';
 import { capitalPairsContextOf, capitalPairsToWrite, resolveCapitalPairs } from '../capital-pairs';
 
-describe('capitalPairsContextOf : ancien thème, sinon nom de la branche', () => {
-	it('le thème du modèle passe avant la branche', () => {
-		expect(capitalPairsContextOf('Algèbre', 'Matrices')).toBe('Algèbre');
+describe('capitalPairsContextOf : le nom de la branche', () => {
+	it('la branche décide', () => {
+		expect(capitalPairsContextOf('Matrices')).toBe('Matrices');
+		expect(capitalPairsContextOf('  Graphes ')).toBe('Graphes');
 	});
-	it('sans thème (modèle neuf ou copie), la branche décide', () => {
-		expect(capitalPairsContextOf('', 'Matrices')).toBe('Matrices');
-		expect(capitalPairsContextOf(null, 'Graphes')).toBe('Graphes');
-		expect(capitalPairsContextOf('  ', 'Graphes')).toBe('Graphes');
-	});
-	it('ni thème ni branche : vide', () => {
-		expect(capitalPairsContextOf(undefined, undefined)).toBe('');
+	it('pas de branche (modèle pas encore rangé) : vide', () => {
+		expect(capitalPairsContextOf(undefined)).toBe('');
+		expect(capitalPairsContextOf(null)).toBe('');
 	});
 });
 
 describe('branches Matrices et Graphes : contexte « produit »', () => {
 	it.each(['Matrices', 'Graphes', 'Graphes et matrices'])('%s → produit', (name) => {
-		expect(resolveCapitalPairs({ theme: name })).toMatchObject({
+		expect(resolveCapitalPairs({ context: name })).toMatchObject({
 			capitalPairs: 'product',
 			source: 'context'
 		});
 	});
 	it('une autre branche reste une longueur', () => {
-		expect(resolveCapitalPairs({ theme: 'Géométrie' }).capitalPairs).toBe('length');
+		expect(resolveCapitalPairs({ context: 'Géométrie' }).capitalPairs).toBe('length');
 	});
 	it('physique reste un contexte produit', () => {
-		expect(resolveCapitalPairs({ theme: 'Physique-chimie' }).capitalPairs).toBe('product');
+		expect(resolveCapitalPairs({ context: 'Physique-chimie' }).capitalPairs).toBe('product');
 	});
 });
 

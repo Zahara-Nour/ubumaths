@@ -30,8 +30,6 @@ function makeTemplate(overrides?: Partial<QuestionTemplate>): QuestionTemplate {
 			}
 		],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...overrides
 	};
@@ -132,8 +130,6 @@ describe('runTestSpec with constraint violations', () => {
 				}
 			},
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		};
 
@@ -167,8 +163,6 @@ describe('runTestSpec with a case choix', () => {
 			}
 		],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	};
 
@@ -221,8 +215,6 @@ describe('runTestSpec with question #13 (decomposition)', () => {
 			],
 			options: { constraints: { zeros: 'warn', spaces: 'warn' } },
 			grades: ['CE2'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		};
 

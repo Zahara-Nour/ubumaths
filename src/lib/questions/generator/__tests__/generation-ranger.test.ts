@@ -31,8 +31,6 @@ function template(
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...(options && { options })
 	} as QuestionTemplate;

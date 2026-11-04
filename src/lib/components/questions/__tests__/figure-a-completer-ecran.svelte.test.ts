@@ -40,8 +40,6 @@ const TEMPLATE = {
 		{ statement: templateMarkdown(`Trace la droite qui passe par les points A et B.\n\n${BLOCK}`) }
 	],
 	grades: ['CP'],
-	theme: 'Test',
-	domain: 'Test',
 	level: 1
 } as unknown as QuestionTemplate;
 

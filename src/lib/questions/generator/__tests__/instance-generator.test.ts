@@ -46,8 +46,6 @@ describe('generateInstance - Numerical Exact Questions', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -84,8 +82,6 @@ describe('generateInstance - Numerical Exact Questions', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -124,8 +120,6 @@ describe('generateInstance - Numerical Exact Questions', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -164,8 +158,6 @@ describe('generateInstance - Algebraic Transform Questions', () => {
 			],
 
 			grades: ['3'],
-			theme: 'Algèbre',
-			domain: 'Factorisation',
 			level: 2,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -203,8 +195,6 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -241,8 +231,6 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -282,8 +270,6 @@ describe('generateInstance - Complex Variable Resolution', () => {
 				}
 			],
 			grades: ['6', '5'],
-			theme: 'Fractions',
-			domain: 'Addition',
 			level: 2,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -329,8 +315,6 @@ describe('generateInstance - Complex Variable Resolution', () => {
 				}
 			],
 			grades: ['6', '5'],
-			theme: 'Fractions',
-			domain: 'Simplification',
 			level: 3,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -371,8 +355,6 @@ describe('generateInstance - Content Resolution', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Multiplication',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -407,8 +389,6 @@ describe('generateInstance - Content Resolution', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Fractions',
-			domain: 'Division',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -449,8 +429,6 @@ describe('generateInstance - Content Resolution', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -490,8 +468,6 @@ describe('generateInstance - Validation Errors', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -525,8 +501,6 @@ describe('generateInstance - Validation Errors', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -555,8 +529,6 @@ describe('generateInstance - Validation Errors', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -587,8 +559,6 @@ describe('generateInstance - Edge Cases', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -618,8 +588,6 @@ describe('generateInstance - Edge Cases', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			delay: 120,
 			created_at: new Date().toISOString(),
@@ -651,8 +619,6 @@ describe('generateInstance - Edge Cases', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Multiplication',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -696,8 +662,6 @@ describe('generateInstance - Real-World Templates', () => {
 			],
 
 			grades: ['3'],
-			theme: 'Algèbre',
-			domain: 'Équations',
 			level: 4,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -736,8 +700,6 @@ describe('generateInstance - Real-World Templates', () => {
 				}
 			],
 			grades: ['6', '5'],
-			theme: 'Arithmétique',
-			domain: 'Pourcentages',
 			level: 2,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -783,8 +745,6 @@ describe('generateInstance - Variation Selection', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Opérations',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -837,8 +797,6 @@ describe('generateInstance - Variation Selection', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -877,8 +835,6 @@ describe('generateInstance - Variation Selection', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -915,8 +871,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -955,8 +909,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -989,8 +941,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -1026,8 +976,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -1070,8 +1018,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -1109,8 +1055,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -1151,8 +1095,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -1189,8 +1131,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Multiplication',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -1238,8 +1178,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -1284,8 +1222,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -1338,8 +1274,6 @@ describe('generateInstance - Shared Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -1390,8 +1324,6 @@ describe('generateInstance - Bug: bare text choice "pair"', () => {
 				}
 			],
 			grades: ['CE1'] as QuestionTemplate['grades'],
-			theme: 'Nombres',
-			domain: 'Arithmétique',
 			level: 1,
 			status: 'draft',
 			delay: 10
@@ -1429,8 +1361,6 @@ describe('generateInstance - Bug: bare text choice "pair"', () => {
 				}
 			],
 			grades: ['CE1'] as QuestionTemplate['grades'],
-			theme: 'Nombres',
-			domain: 'Arithmétique',
 			level: 1,
 			status: 'draft',
 			delay: 10
@@ -1474,8 +1404,6 @@ describe('generateInstance - Correction placeholder integration', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1
 		};
 
@@ -1508,8 +1436,6 @@ describe('generateInstance - Correction placeholder integration', () => {
 				}
 			],
 			grades: ['CE1'],
-			theme: 'Nombres',
-			domain: 'Parité',
 			level: 1
 		};
 
@@ -1537,8 +1463,6 @@ describe('generateInstance - Correction placeholder integration', () => {
 				}
 			],
 			grades: ['CE1'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1
 		};
 
@@ -1577,8 +1501,6 @@ describe('generateInstance - Correction placeholder integration', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1
 		};
 
@@ -1621,8 +1543,6 @@ describe('generateInstance - Mode B generatedSteps auto-call', () => {
 				}
 			],
 			grades: ['CM2'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1
 		};
 
@@ -1653,8 +1573,6 @@ describe('generateInstance - Mode B generatedSteps auto-call', () => {
 				}
 			],
 			grades: ['CM2'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1
 		};
 
@@ -1681,8 +1599,6 @@ describe('generateInstance - Mode B generatedSteps auto-call', () => {
 				}
 			],
 			grades: ['CM2'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1
 		};
 
@@ -1718,8 +1634,6 @@ describe('generateInstance - Mode B generatedSteps auto-call', () => {
 				}
 			],
 			grades: ['2'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1
 		};
 

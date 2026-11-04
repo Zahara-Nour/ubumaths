@@ -23,8 +23,6 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		type: 'fill_in_blanks',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['CP'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as QuestionTemplate;
 }

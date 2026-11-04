@@ -23,14 +23,14 @@
 	import SaveSeriesDialog from '$lib/components/series/SaveSeriesDialog.svelte';
 	import SeriesLinkShare from '$lib/components/series/SeriesLinkShare.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { SERIES_LINK_PARAM, encodeSeriesParam, type SeriesItem } from '$lib/validation/series';
 	import {
+		SERIES_LINK_PARAM,
 		deleteSeriesLink,
+		encodeSeriesParam,
 		hasSeriesLink,
-		isLegacyLine,
 		parseSeriesLink,
-		resolveSeriesLines
-	} from '$lib/questions/series-legacy';
+		type SeriesItem
+	} from '$lib/validation/series';
 	import { templatePreview } from '$lib/questions/catalogue';
 	import type { TestMode } from '$lib/types/test';
 	import type { PageData } from './$types';
@@ -181,9 +181,8 @@
 
 	/**
 	 * Lien de série `/automaths/panier?modeles=…` (Q45) : panier vide → la
-	 * série y est mise ; sinon on demande. Lien abîmé → message, panier intact.
-	 * Un ancien lien `?categories=…` attend les modèles pour retrouver les siens
-	 * (ADR 0035) ; une ancienne ligne sans modèle est signalée.
+	 * série y est mise ; sinon on demande. Lien abîmé, ou ancien lien
+	 * `?categories=…` (plus relu) → message, panier intact.
 	 */
 	onMount(async () => {
 		if (!hasSeriesLink(page.url.searchParams)) return;
@@ -198,34 +197,13 @@
 			clearSoon();
 			return;
 		}
-		if (parsed.lines.some(isLegacyLine)) {
-			await questionTemplatesCache.fetchTemplates();
-			if (!questionTemplatesCache.isLoaded) {
-				linkError = 'Ce lien de série ne peut pas être relu pour le moment : recharge la page.';
-				return;
-			}
-		}
-		const { items, unresolved } = resolveSeriesLines(
-			parsed.lines,
-			questionTemplatesCache.templates
-		);
-		if (items.length === 0) {
-			linkError = "Les questions de ce lien n'existent plus.";
-			clearSoon();
-			return;
-		}
-		if (unresolved > 0) {
-			toaster.warning(
-				`${unresolved} question${unresolved > 1 ? 's' : ''} de ce lien n'existe${unresolved > 1 ? 'nt' : ''} plus.`
-			);
-		}
 		if (questionCart.totalItems === 0) {
-			questionCart.replaceWith(items);
+			questionCart.replaceWith(parsed.lines);
 			toaster.success('Série chargée dans ton panier');
 			clearSoon();
 			return;
 		}
-		incomingSeries = items;
+		incomingSeries = parsed.lines;
 		incomingDialogOpen = true;
 	});
 </script>

@@ -26,7 +26,7 @@ import { getAttemptsRemaining, getStudentStatus, isEvaluationForm } from '$lib/t
 import { isDeadlinePassed } from '$lib/utils/dates';
 import { SeriesError, toDbSeriesMany } from '$lib/server/series';
 import { savedSeriesItemsSchema } from '$lib/validation/series';
-import { readStoredSeries, SeriesLinesError } from '$lib/server/series-lines';
+import { parseStoredSeries } from '$lib/server/series-lines';
 import type { EvaluationSettings } from '$lib/server/validation/evaluations';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -149,15 +149,9 @@ export async function createEvaluation(
 		throw new EvaluationError(500, 'Impossible de vérifier la série');
 	}
 	if (!series) throw new EvaluationError(404, 'Série introuvable');
-	let read;
-	try {
-		read = await readStoredSeries(supabase, input.series_id, series.categories);
-	} catch (readError) {
-		if (!(readError instanceof SeriesLinesError)) throw readError;
-		logger.error('[createEvaluation] Modèles de la série illisibles :', readError);
-		throw new EvaluationError(500, 'Impossible de vérifier la série');
-	}
-	const items = savedSeriesItemsSchema.safeParse(read?.items ?? []);
+	const items = savedSeriesItemsSchema.safeParse(
+		parseStoredSeries(input.series_id, series.categories) ?? []
+	);
 	if (!items.success) {
 		throw new EvaluationError(400, items.error.issues[0].message);
 	}
