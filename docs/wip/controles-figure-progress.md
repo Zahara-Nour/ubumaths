@@ -6,22 +6,23 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, PR #2359 (lot 8) ouverte._
+_Mis à jour le 2026-11-04, après #2359 (lot 8 mergé)._
 
-- **État** : lots 1 à 7 et #2305 mergés ; lot 8 (rapporteur déjà posé, § 23-24) en PR #2359, revue
-  faite. Rien en prod (`deploy:prod` sur demande de David).
-- **Prochaine action** : CI verte → merger #2359, noter la vérification à l'œil dans
-  `verifications-manuelles.md`, retirer le worktree. Restent ouverts : la règle sévère des médiatrices
-  (§ 12) ; l'angle non adjacent au côté (§ 21, décision 5).
+- **État** : lots 1 à 8 et #2305 mergés (lot 8 = mesurer un angle, rapporteur déjà posé, § 23-24).
+  Rien en prod (`deploy:prod` sur demande de David). Vérification à l'œil de #2359 dans
+  `verifications-manuelles.md`.
+- **Prochaine action** : à décider avec David, rien n'est décidé après le lot 8. Restent ouverts : la
+  règle sévère des médiatrices (§ 12, sa propre phase 0) ; l'angle non adjacent au côté (§ 21,
+  décision 5 : calcul du 3e angle).
 - **En attente de David** : rien.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
   `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
   d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
   CI ne part pas sur une PR en conflit ; tests navigateur : Chromium fermé en pleine suite (encore 2
-  fois sur #2348, `ConstructionPlayer-points-auxiliaires`, `atelier/serialize`) et `demo/lexique`
+  fois sur #2348 et 2 sur #2359 — `grapheur-slots` —, `ConstructionPlayer-points-auxiliaires`, `atelier/serialize`) et `demo/lexique`
   instable (« aire » absent, vert en local) ; la garde « doc à jour » peut passer en local et
   échouer en CI : la relancer après `git fetch`.
-- **Worktree / branche** : `../ubumaths-wt-controles-figure-lot8`, `feat/controles-figure-lot8`.
+- **Worktree / branche** : aucun (retiré après #2359).
 
 ---
 
