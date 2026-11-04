@@ -100,6 +100,14 @@ describe('readStoredSeriesMany', () => {
 		).rejects.toBeInstanceOf(SeriesLinesError);
 	});
 
+	it('plafond de modèles atteint : lève plutôt que de retirer des lignes en silence', async () => {
+		const row = { id: ADDITION_ID, theme: 'Nombres', domain: 'Calcul', subdomain: null, level: 2 };
+		const { client } = fakeClient({ data: Array(1000).fill(row), error: null });
+		await expect(
+			readStoredSeriesMany(client, [{ id: 's1', categories: [LEGACY_ADDITION] }])
+		).rejects.toBeInstanceOf(SeriesLinesError);
+	});
+
 	it('composition illisible : absente du résultat, les autres lues', async () => {
 		const { client } = fakeClient({ data: [], error: null });
 		const line = { templateId: FRACTIONS_ID, quantity: 1, delay: 30 };

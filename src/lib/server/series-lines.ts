@@ -76,6 +76,12 @@ export async function loadLegacyTemplates(
 		.or(legacyTemplatesFilter(categories))
 		.limit(MAX_LEGACY_TEMPLATES);
 	if (error) throw new SeriesLinesError(error.message);
+	// Plafond atteint : des anciennes lignes seraient retirées en silence — on le dit
+	if ((data ?? []).length >= MAX_LEGACY_TEMPLATES) {
+		throw new SeriesLinesError(
+			`Anciennes lignes : plafond de ${MAX_LEGACY_TEMPLATES} modèles atteint, lecture incomplète`
+		);
+	}
 	return data ?? [];
 }
 
