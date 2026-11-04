@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 2 complet, PR ouverte._
+_Mis à jour le 2026-11-04, après #2326 (lot 2 mergé), en prod depuis la 0.67.0._
 
-- **État** : lot 1 en `main` (#2307). Lot 2 (7 articles parus restants) : 7 dessins intégrés sur `feat/shtam-illustrations-lot-2`, PR ouverte. Les 13 articles parus sont alors illustrés.
-- **Prochaine action** : après le merge, lot 3 = les 41 articles programmés, dans leur ordre de parution (le plus proche d'abord : `pifometrie-anniversaires`… vérifier par `date:`), par lots d'environ 6.
+- **État** : lot 1 en `main` (#2307). Lot 2 (7 articles parus restants) : mergé (#2326) et **en prod (0.67.0)** : les 13 articles parus sont illustrés.
+- **Prochaine action** : lot 3 = les 41 articles programmés, dans leur ordre de parution (le plus proche d'abord : `pifometrie-anniversaires`… vérifier par `date:`), par lots d'environ 6.
 - **En attente de David** : rien.
 - **Pièges en cours** : ne jamais lancer prettier sur les articles ; pièces jointes → `~/Downloads` ; **couleurs d'un personnage : les recopier de son portrait** (Czar = bleu ciel, Bordure = veste verte), jamais de mémoire ; **pas de kippa/redingote noire/longue barbe** pour un savant (caricature) ; une blague abstraite a besoin d'un signe lisible (exceptions « ÷ 0 », « ∞ », « LUNDI/MARDI », π) ; Nano Banana rend parfois du 16:9 ou du carré → demander « extend to 3:2 » dans la même conversation (il redessine) ; texte illisible → réécrit par `magick -annotate` (voir `nombrilie-division-par-zero/retouche.txt`) ; jamais de personne réelle dessinée.
-- **Worktree / branche** : `ubumaths-wt-shtam-illustrations`, `feat/shtam-illustrations-lot-2`.
+- **Worktree / branche** : aucun (lot 2 nettoyé) ; lot 3 → nouveau worktree `ubumaths-wt-shtam-illustrations`, branche `feat/shtam-illustrations-lot-3`.
 
 ## À lire avant de commencer
 
@@ -50,3 +50,4 @@ _2026-11-03, phase 0 :_
 - 2026-11-03 — #2307 mergé (lot 1, CI verte), worktree retiré.
 - 2026-11-03 — Lot 2 ouvert : prompts des 7 derniers articles parus écrits. Choix : π seul symbole permis (pi-transcendant) ; triangle 3-4-5 par des graduations, sans chiffres ; ni jambe de bois ni troisième jambe (moyenne-des-jambes : Bordure qui compte) ; aucun portrait de Pythagore.
 - 2026-11-03 — Lot 2 : 7 dessins intégrés. moyenne-des-jambes, pile-ou-face : essai 1. triangle-plainte : 4:3, fenêtre de recadrage décalée (+70) pour garder les pieds. czar-alexis : redingote verte (erreur de prompt) recolorée en bleu du portrait. division-par-zero : essai 1 refusé (illisible, gardes confus), v2 en 16:9, redessiné en 3:2, écran « ÷0 » réécrit à la main. pi-transcendant : essai 1 refusé (incompréhensible, savant caricatural), v2 LUNDI/MARDI retenue. pythagore : essai 1.
+- 2026-11-03 — #2326 mergé (CI relancée après #2322, échec d'intégration étranger au lot), déployé en 0.67.0 à la demande de David ; worktree retiré.
