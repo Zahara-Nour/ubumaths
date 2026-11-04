@@ -610,11 +610,11 @@ export interface QuestionTemplate {
 
 	// ---- Categorization ----
 
-	/** Question theme (e.g., Algèbre, Géométrie) - independent from grades */
-	theme: string;
+	/** Ancien thème (ex. Algèbre). Facultatif : un modèle neuf est rangé par `classification_node_id`. */
+	theme?: string;
 
-	/** Question domain within theme (e.g., Équations, Polynômes) */
-	domain: string;
+	/** Ancien domaine dans le thème (ex. Équations). Facultatif, comme `theme`. */
+	domain?: string;
 
 	/** Optional subdomain for finer categorization (e.g., Linéaires, Quadratiques) */
 	subdomain?: string;
@@ -924,9 +924,6 @@ export interface QuestionInstance {
 	capitalPairs?: CapitalPairs;
 
 	grades: GradeLevel[];
-	theme: string;
-	domain: string;
-	subdomain?: string;
 	level: number;
 	delay?: number;
 

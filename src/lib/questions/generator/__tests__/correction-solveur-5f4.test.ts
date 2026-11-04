@@ -23,8 +23,6 @@ function instanceWith(
 		statement: resolvedMarkdown('Test statement'),
 		resolvedVariables: [],
 		grades: [...grades],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: '2026-10-25T00:00:00Z',
 		correction: { generatedSteps }

@@ -61,7 +61,12 @@ type CreateEvent = Parameters<(typeof actions)['create']>[0];
 // HELPERS
 // ============================================================================
 
-function fakeDb(grade: string | null, coveredPointIds: string[], pointsUnreadable = false) {
+function fakeDb(
+	grade: string | null,
+	coveredPointIds: string[],
+	pointsUnreadable = false,
+	questionTemplates: Record<string, unknown>[] = []
+) {
 	return createFakeSupabase((table, calls) => {
 		if (pointsUnreadable && table === 'curriculum_points') {
 			return { data: null, error: { message: 'panne' } };
@@ -87,9 +92,10 @@ function fakeDb(grade: string | null, coveredPointIds: string[], pointsUnreadabl
 				return {
 					data: coveredPointIds.map((point_id) => ({ point_id, source: 'manual' }))
 				};
+			case 'question_templates':
+				return { data: questionTemplates };
 			case 'journal_entry_activities':
 			case 'exercises':
-			case 'question_templates':
 			case 'evaluations':
 				return { data: [] };
 			default:
@@ -98,8 +104,12 @@ function fakeDb(grade: string | null, coveredPointIds: string[], pointsUnreadabl
 	});
 }
 
-async function loadWith(grade: string | null, coveredPointIds: string[]) {
-	const fake = fakeDb(grade, coveredPointIds);
+async function loadWith(
+	grade: string | null,
+	coveredPointIds: string[],
+	questionTemplates: Record<string, unknown>[] = []
+) {
+	const fake = fakeDb(grade, coveredPointIds, false, questionTemplates);
 	const event = {
 		locals: { supabase: fake.client },
 		params: { classId: CLASS_ID, date: DATE }
@@ -143,6 +153,17 @@ describe('cahier de texte — programme travaillé (C5, B2)', () => {
 	it('classe sans niveau : aucun programme', async () => {
 		const result = await loadWith(null, []);
 		expect(result.curriculumTree).toEqual([]);
+	});
+});
+
+describe('cahier de texte — liste des questions (ADR 0035)', () => {
+	it('un modèle neuf (sans thème ni domaine) : titre et niveau seuls, jamais « null / null »', async () => {
+		const result = await loadWith(
+			'5',
+			[],
+			[{ id: 'q1', title: 'Additionner', theme: null, domain: null, level: 2 }]
+		);
+		expect(result.questionOptions).toEqual([{ value: 'q1', label: 'Additionner (niv. 2)' }]);
 	});
 });
 

@@ -12,14 +12,14 @@ import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { getQuestionType, mapDbTemplateToForm } from '$lib/questions/types';
 import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { categoryTakenMessage, checkCategoryUniqueness } from '$lib/questions/category-validation';
+import { classificationNodeErrorMessage } from '$lib/server/classification-node-error';
 import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
 import { requireRoles, requireRole } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { toJson } from '$lib/types/database-helpers';
 import type { Database } from '$lib/types/database';
 import { toQuestionTemplate } from '$lib/types/question-template';
-import { withoutDbMetadata } from '$lib/server/questions-bulk-status';
+import { OLD_CATEGORY_TAKEN, withoutDbMetadata } from '$lib/server/questions-bulk-status';
 import { templatePublicationErrors } from '$lib/server/template-publication';
 import {
 	assumptionCollisionMessage,
@@ -111,10 +111,10 @@ function buildTemplateUpdate(
 		update.exercise_instruction = data.exerciseInstruction || null;
 	if (isProvided(data, 'options')) update.options = toJson(data.options ?? null);
 	if (isProvided(data, 'grades') && data.grades !== undefined) update.grades = data.grades;
-	// Catégorie : theme / domain / level requis, subdomain facultatif
-	if (isProvided(data, 'theme') && data.theme !== undefined) update.theme = data.theme;
-	if (isProvided(data, 'domain') && data.domain !== undefined) update.domain = data.domain;
-	if (isProvided(data, 'subdomain')) update.subdomain = data.subdomain || null;
+	// Rangement : nœud de l'arbre, `null` le vide. L'ancien quadruplet (thème, domaine,
+	// sous-domaine) n'est jamais écrit : il reste en base pour les anciens liens.
+	if (isProvided(data, 'classification_node_id'))
+		update.classification_node_id = data.classification_node_id ?? null;
 	if (isProvided(data, 'level') && data.level !== undefined) update.level = data.level;
 	if (isProvided(data, 'status') && data.status !== undefined) update.status = data.status;
 	if (isProvided(data, 'delay')) update.delay = data.delay || null;
@@ -150,8 +150,16 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			);
 		}
 
-		// `type` n'est jamais écrit tel quel : il est recalculé (getQuestionType)
-		const { type: _ignoredType, ...provided } = validation.data;
+		// `type` n'est jamais écrit tel quel : il est recalculé (getQuestionType).
+		// Thème, domaine, sous-domaine : acceptés (vieil onglet) puis écartés, ni
+		// écrits ni fusionnés (ADR 0035).
+		const {
+			type: _ignoredType,
+			theme: _ignoredTheme,
+			domain: _ignoredDomain,
+			subdomain: _ignoredSubdomain,
+			...provided
+		} = validation.data;
 		const templateData = provided as Partial<QuestionTemplate>;
 
 		// ====================================================================
@@ -209,34 +217,6 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			if (errors.length > 0) {
 				return json({ success: false, errors }, { status: 400 });
 			}
-
-			const categoryCheck = await checkCategoryUniqueness(
-				locals.supabase,
-				{
-					theme: merged.theme,
-					domain: merged.domain,
-					subdomain: merged.subdomain,
-					level: merged.level
-				},
-				id // Exclude current template from check
-			);
-
-			if (!categoryCheck.isUnique) {
-				return json(
-					{
-						success: false,
-						errors: [
-							categoryTakenMessage({
-								theme: merged.theme,
-								domain: merged.domain,
-								subdomain: merged.subdomain,
-								level: merged.level
-							})
-						]
-					},
-					{ status: 400 }
-				);
-			}
 		}
 
 		// Écriture des seules colonnes envoyées ; zéro ligne rendue = refus RLS
@@ -252,6 +232,16 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			throw error(404, 'Template not found');
 		}
 		if (updateError) {
+			// Nœud refusé par la base (branche, archivé, inexistant) : faute de saisie, pas panne
+			const nodeMessage = classificationNodeErrorMessage(updateError);
+			if (nodeMessage) {
+				return json({ success: false, errors: [nodeMessage] }, { status: 400 });
+			}
+			// Ancien index unique (thème, domaine, sous-domaine, niveau) des publiés, resté en base
+			// jusqu'au lot 4 : un autre modèle publié occupe déjà cet ancien quadruplet
+			if (updateError.code === '23505') {
+				return json({ success: false, errors: [OLD_CATEGORY_TAKEN] }, { status: 400 });
+			}
 			logger.error('Error updating template:', updateError);
 			throw error(500, 'Failed to update template');
 		}

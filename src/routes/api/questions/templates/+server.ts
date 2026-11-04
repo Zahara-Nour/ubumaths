@@ -13,7 +13,7 @@ import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { getQuestionType } from '$lib/questions/types';
 import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { categoryTakenMessage, checkCategoryUniqueness } from '$lib/questions/category-validation';
+import { classificationNodeErrorMessage } from '$lib/server/classification-node-error';
 import {
 	createQuestionTemplateSchema,
 	validateRequest,
@@ -147,11 +147,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		}
 
-		// Le schéma Zod garantit déjà `title`, `grades`, `theme`, `domain`, `level`
-		// et `status`. Le double cast vers `Partial<QuestionTemplate>` effaçait
-		// précisément ces garanties, et l'insertion ne pouvait donc plus prouver
-		// qu'elle fournissait les colonnes obligatoires.
-		const templateData = validation.data;
+		// Le schéma Zod garantit déjà `title`, `grades`, `level` et `status`. Le double
+		// cast vers `Partial<QuestionTemplate>` effaçait précisément ces garanties.
+		// L'ancien quadruplet (thème, domaine, sous-domaine) est accepté puis écarté :
+		// un modèle neuf se range par `classification_node_id` (ADR 0035).
+		const {
+			theme: _ignoredTheme,
+			domain: _ignoredDomain,
+			subdomain: _ignoredSubdomain,
+			...templateData
+		} = validation.data;
 
 		// Case choix (V1) : jamais plusieurs bonnes réponses sans `plusieurs: oui`, même
 		// en brouillon ; « aucune » n'est refusée qu'à la publication (templatePublicationErrors)
@@ -174,21 +179,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		// Catégorie occupée : refus, comme le PUT et le lot — jamais de décalage
-		// automatique du niveau (l'éditeur propose un niveau libre avant l'envoi)
-		if (templateData.status === 'published') {
-			const category = {
-				theme: templateData.theme,
-				domain: templateData.domain,
-				subdomain: templateData.subdomain,
-				level: templateData.level
-			};
-			const categoryCheck = await checkCategoryUniqueness(locals.supabase, category);
-			if (!categoryCheck.isUnique) {
-				return json({ success: false, errors: [categoryTakenMessage(category)] }, { status: 400 });
-			}
-		}
-
 		// Insert template (map camelCase to snake_case for database)
 		const { data: template, error: insertError } = await locals.supabase
 			.from('question_templates')
@@ -204,14 +194,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				exercise_instruction: templateData.exerciseInstruction || null,
 				options: toJson(templateData.options ?? null),
 				grades: templateData.grades,
-				// Categorization fields (independent from grades)
-				// - theme: Broad subject area (e.g., "Algèbre", "Géométrie") [required]
-				// - domain: Specific topic (e.g., "Équations", "Triangles") [required]
-				// - subdomain: Optional sub-topic (e.g., "Linéaires") [nullable]
-				// - level: Difficulty (positive integer, 1=easy, higher=harder) [required]
-				theme: templateData.theme,
-				domain: templateData.domain,
-				subdomain: templateData.subdomain || null,
+				// Rangement : notion ou sous-notion de l'arbre (facultatif). Ni thème, ni
+				// domaine, ni sous-domaine : ils ne s'écrivent plus.
+				classification_node_id: templateData.classification_node_id ?? null,
+				// Niveau de difficulté : ordonne les modèles d'une même rubrique
 				level: templateData.level,
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
@@ -222,6 +208,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (insertError) {
+			// Nœud refusé par la base (branche, archivé, inexistant) : faute de saisie, pas panne
+			const nodeMessage = classificationNodeErrorMessage(insertError);
+			if (nodeMessage) {
+				return json({ success: false, errors: [nodeMessage] }, { status: 400 });
+			}
 			logger.error('Error inserting template:', insertError);
 			throw error(500, 'Failed to create template');
 		}

@@ -26,9 +26,11 @@
 	import type { QuestionTemplate } from '$lib/questions/types';
 	import * as Card from '$lib/components/ui/card';
 	import { Loader2 } from '@lucide/svelte';
-	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
+	import type { PageData } from './$types';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import { onMount } from 'svelte';
+
+	let { data }: { data: PageData } = $props();
 
 	let isSubmitting = $state(false);
 	let QuestionTemplateForm = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -56,15 +58,13 @@
 			const result = await response.json();
 
 			if (result.success) {
-				// Invalidate category cache to force refresh
-				questionCategoriesCache.invalidate();
 				questionTemplatesCache.invalidate();
 
 				toaster.success('Question créée avec succès');
 				goto('/dashboard/admin/questions').then(() => {});
 				return true;
 			} else {
-				// Raisons du refus (contrôle de publication, catégorie occupée…)
+				// Raisons du refus (contrôle de publication, nœud de l'arbre invalide…)
 				const errors: string[] = Array.isArray(result.errors) ? result.errors : [];
 				toaster.error('Erreur lors de la création', {
 					description: errors.slice(0, 5).join('\n') || undefined
@@ -108,7 +108,12 @@
 					<Loader2 class="h-8 w-8 animate-spin text-muted-foreground" />
 				</div>
 			{:else if QuestionTemplateForm}
-				<QuestionTemplateForm onSave={handleSave} onCancel={handleCancel} {isSubmitting} />
+				<QuestionTemplateForm
+					onSave={handleSave}
+					onCancel={handleCancel}
+					{isSubmitting}
+					nodes={data.nodes}
+				/>
 			{/if}
 		</Card.Content>
 	</Card.Root>

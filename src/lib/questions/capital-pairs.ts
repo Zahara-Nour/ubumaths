@@ -48,7 +48,12 @@ export const CAPITAL_PAIRS_VALUES = [
  * Table de CONTEXTE « produit » (décisions Q-I et Q-M) : thèmes où deux majuscules
  * collées sont un produit (matrices `AB`, `AX = B`). Seul endroit à compléter.
  */
-const PRODUCT_CONTEXT_THEMES: ReadonlySet<string> = new Set(['Graphes et matrices']);
+const PRODUCT_CONTEXT_THEMES: ReadonlySet<string> = new Set([
+	'Graphes et matrices',
+	// Branches de l'arbre des notions (ADR 0035) : le contexte d'un modèle sans thème
+	'Matrices',
+	'Graphes'
+]);
 
 /**
  * Thème de physique (`Physique-chimie`, `Sciences physiques`) : contexte « produit »
@@ -168,4 +173,29 @@ export function capitalPairsChoiceItems(
 		{ value: 'length', label: 'Une longueur (segment [AB])' },
 		{ value: 'product', label: 'Un produit (A × B)' }
 	];
+}
+
+/**
+ * Contexte d'un modèle dans l'éditeur : son ancien thème s'il en a un, sinon le nom de la
+ * branche choisie dans « Rangé dans » (un modèle neuf ou une copie n'a plus de thème, ADR 0035).
+ */
+export function capitalPairsContextOf(
+	theme: string | null | undefined,
+	branchName: string | null | undefined
+): string {
+	return theme?.trim() || branchName?.trim() || '';
+}
+
+/**
+ * Valeur de `shared.capitalPairs` à enregistrer : le choix explicite, sinon « product » si le
+ * contexte l'impose (le modèle se suffit à lui-même, le générateur ne lit pas l'arbre), sinon
+ * rien (longueur par défaut).
+ */
+export function capitalPairsToWrite(
+	choice: CapitalPairsChoice,
+	context: string
+): CapitalPairs | undefined {
+	if (choice !== 'auto') return choice;
+	const resolution = resolveCapitalPairs({ theme: context });
+	return resolution.source === 'context' ? resolution.capitalPairs : undefined;
 }

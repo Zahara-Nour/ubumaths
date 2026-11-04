@@ -168,8 +168,6 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		templateId: '',
 		statement: question.statement as ResolvedMarkdown,
 		grades: question.grades ? [...question.grades] : [],
-		theme: '',
-		domain: '',
 		level: 0,
 		generatedAt: '',
 		...(question.exerciseInstruction && { exerciseInstruction: question.exerciseInstruction }),

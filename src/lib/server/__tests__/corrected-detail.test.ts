@@ -37,8 +37,6 @@ function blanksInstance(
 		statement: '$\\placeholder[0]{}$ et $\\placeholder[1]{}$' as ResolvedMarkdown,
 		blanks,
 		grades: ['6'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		generatedAt: '',
 		...(options && { options })
@@ -56,8 +54,6 @@ const qcm: QuestionInstance = {
 		}
 	],
 	grades: ['6'],
-	theme: 'T',
-	domain: 'D',
 	level: 1,
 	generatedAt: ''
 };

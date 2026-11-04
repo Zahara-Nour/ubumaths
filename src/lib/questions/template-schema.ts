@@ -682,9 +682,11 @@ export const questionTemplateSchema = z
 		exerciseInstruction: z.string().optional().nullable(),
 		options: optionsStrictZ.optional().nullable(),
 		grades: z.array(z.string()),
-		theme: z.string(),
-		domain: z.string(),
+		// Ancien quadruplet, facultatif : un modèle neuf est rangé par `classification_node_id`
+		theme: z.string().optional().nullable(),
+		domain: z.string().optional().nullable(),
 		subdomain: z.string().optional().nullable(),
+		classification_node_id: z.string().optional().nullable(),
 		level: z.number(),
 		status: z.enum(['draft', 'published']),
 		delay: z.number().optional().nullable(),

@@ -79,9 +79,13 @@ const questionTemplateFieldsSchema = z.object({
 	defaultDisplayOptions: displayOptionsSchema.optional().nullable(),
 	options: optionsSchema.optional().nullable(),
 	grades: z.array(gradeSchema).min(1, 'Au moins un niveau requis'),
-	theme: z.string().min(1, 'Thème requis').max(100),
-	domain: z.string().min(1, 'Domaine requis').max(100),
+	// Ancien quadruplet : un vieil onglet peut encore envoyer thème, domaine, sous-domaine.
+	// Acceptés puis ignorés par les routes (jamais écrits) ; le rangement est `classification_node_id`.
+	theme: z.string().max(100).optional().nullable(),
+	domain: z.string().max(100).optional().nullable(),
 	subdomain: z.string().max(100).optional().nullable(),
+	/** Notion ou sous-notion de l'arbre (ADR 0035) ; le trigger de la base refuse une branche */
+	classification_node_id: z.string().uuid('Identifiant de nœud invalide').nullable().optional(),
 	level: z.number().int().nonnegative('Le niveau doit être >= 0'),
 	status: z.enum(['draft', 'published']).default('published'),
 	delay: z.number().int().nonnegative().optional().nullable(),
@@ -215,15 +219,6 @@ export const bulkTemplateStatusSchema = z.object({
 	status: z.enum(['published', 'draft'])
 });
 
-/**
- * Schema for question categories
- */
-export const questionCategorySchema = z.object({
-	theme: z.string().min(1).max(100),
-	domain: z.string().min(1).max(100),
-	subdomain: z.string().max(100).optional().nullable()
-});
-
 // ============================================================================
 // RESPONSE SCHEMAS
 // ============================================================================
@@ -243,9 +238,10 @@ export const questionTemplateResponseSchema = z.object({
 	options: z.unknown().nullable().optional(),
 	precision: z.unknown().nullable().optional(),
 	grades: z.array(gradeSchema),
-	theme: z.string(),
-	domain: z.string(),
+	theme: z.string().nullable().optional(),
+	domain: z.string().nullable().optional(),
 	subdomain: z.string().nullable().optional(),
+	classification_node_id: z.string().uuid().nullable().optional(),
 	level: z.number().int().nonnegative(),
 	status: z.enum(['draft', 'published']),
 	delay: z.number().int().nonnegative().nullable().optional(),
@@ -293,19 +289,4 @@ export const generatedQuestionResponseSchema = z.object({
 		seed: z.number().int().nonnegative(),
 		variationIndex: z.number().int().nonnegative().optional()
 	})
-});
-
-/**
- * Question categories response schema (GET /api/questions/categories)
- */
-export const questionCategoriesResponseSchema = z.object({
-	categories: z.array(
-		z.object({
-			id: z.string().uuid(),
-			theme: z.string(),
-			domain: z.string(),
-			subdomain: z.string().nullable().optional(),
-			question_count: z.number().int().nonnegative()
-		})
-	)
 });

@@ -60,8 +60,6 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 			'Quel est le resultat de $2^3$ ?\n\n```choix\ncase: 0\n- $6$\n- $8$\n- $9$\n- $16$\n```'
 		),
 		grades: ['6'],
-		theme: 'Calcul',
-		domain: 'Puissances',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		// Case choix : bonne réponse en indice d'origine ($8$)

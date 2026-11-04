@@ -12,7 +12,6 @@
  * les specs (a = 40, 100, 13) restent vertes.
  */
 import { describe, it, expect } from 'vitest';
-import { categoryTakenMessage } from '$lib/questions/category-validation';
 import { callPost, callPut, fakeDb, FIXTURE, templateRow, type FakeDb } from './fake-templates-db';
 
 const BROKEN_ANSWER = '{{eval:2*a+sqrt(a-8)-sqrt(a-8)}}';
@@ -127,34 +126,152 @@ describe('POST : créer directement publié passe le même contrôle', () => {
 	});
 });
 
-// Collision de catégorie à la création : refus, comme le PUT et le lot (décision
-// de David du 2026-09-29, étendue à la création le 2026-10-10) ; plus de
-// décalage automatique du niveau
-describe('POST : catégorie déjà occupée', () => {
-	it('créer publié dans une catégorie occupée → 400, rien inséré, niveau inchangé', async () => {
+const NODE_ID = '55555555-5555-4555-8555-555555555555';
+
+// Plus aucun contrôle « catégorie occupée » (ADR 0035) : un modèle est rangé dans
+// l'arbre des notions, où plusieurs modèles cohabitent.
+describe('POST : rangement dans l’arbre, plus de catégorie', () => {
+	it('créer publié alors qu’un publié porte le même thème/domaine/niveau → 201', async () => {
 		const db = fakeDb();
 		db.question_templates = [{ ...templateRow(), status: 'published' }];
 		const response = await callPost(db, createBody('published'));
 
-		expect(response.status).toBe(400);
-		const json = await response.json();
-		// Même message que le PUT, au niveau DEMANDÉ (aucun niveau décalé)
-		expect(json.errors).toEqual([
-			categoryTakenMessage({
-				theme: FIXTURE.theme as string,
-				domain: FIXTURE.domain as string,
-				subdomain: FIXTURE.subdomain as string,
-				level: FIXTURE.level as number
-			})
-		]);
-		expect(db.inserts).toEqual([]);
+		expect(response.status).toBe(201);
+		expect(db.inserts).toHaveLength(1);
 	});
 
-	it('créer en BROUILLON dans une catégorie occupée → 201 (le contrôle vient à la publication)', async () => {
+	it('theme / domain / subdomain d’un vieil onglet : acceptés puis ignorés (jamais écrits)', async () => {
 		const db = fakeDb();
-		db.question_templates = [{ ...templateRow(), status: 'published' }];
-		const response = await callPost(db, createBody('draft'));
+		db.question_templates = [];
+		const response = await callPost(db, {
+			...createBody('draft'),
+			theme: 'Entiers',
+			domain: 'Multiplier',
+			subdomain: 'x'
+		});
 
 		expect(response.status).toBe(201);
+		expect(db.inserts[0]).not.toHaveProperty('theme');
+		expect(db.inserts[0]).not.toHaveProperty('domain');
+		expect(db.inserts[0]).not.toHaveProperty('subdomain');
+	});
+
+	it('un modèle sans theme ni domain est créé (brouillon et publié)', async () => {
+		const db = fakeDb();
+		db.question_templates = [];
+		const body: Record<string, unknown> = createBody('published');
+		delete body.theme;
+		delete body.domain;
+		delete body.subdomain;
+
+		const response = await callPost(db, body);
+
+		expect(response.status).toBe(201);
+	});
+
+	it('écrit classification_node_id', async () => {
+		const db = fakeDb();
+		db.question_templates = [];
+		const response = await callPost(db, {
+			...createBody('draft'),
+			classification_node_id: NODE_ID
+		});
+
+		expect(response.status).toBe(201);
+		expect(db.inserts[0].classification_node_id).toBe(NODE_ID);
+	});
+
+	it('nœud non rangeable (branche) → 400 en français, jamais 500', async () => {
+		const db = fakeDb();
+		db.question_templates = [];
+		db.nodeError = {
+			code: '23514',
+			message: 'Un contenu se range dans une notion ou une sous-notion, pas dans une branche.'
+		};
+		const response = await callPost(db, {
+			...createBody('draft'),
+			classification_node_id: NODE_ID
+		});
+
+		expect(response.status).toBe(400);
+		const json = await response.json();
+		expect(json.success).toBe(false);
+		expect(json.errors.join(' ')).toMatch(/pas dans une branche/);
+	});
+
+	it('identifiant de nœud qui n’est pas un UUID → 400', async () => {
+		const db = fakeDb();
+		db.question_templates = [];
+		const response = await callPost(db, { ...createBody('draft'), classification_node_id: 'abc' });
+
+		expect(response.status).toBe(400);
+		expect(db.inserts).toEqual([]);
+	});
+});
+
+describe('PUT : rangement dans l’arbre', () => {
+	it('publier un modèle dont un autre publié partage thème/domaine/niveau → 200', async () => {
+		const db = fakeDb();
+		db.question_templates.push({
+			...templateRow(),
+			id: '66666666-6666-4666-8666-666666666666',
+			status: 'published'
+		});
+		const response = await callPut(db, { status: 'published' });
+
+		expect(response.status).toBe(200);
+	});
+
+	it('écrit classification_node_id, et le vide avec null', async () => {
+		const db = fakeDb();
+		expect((await callPut(db, { classification_node_id: NODE_ID })).status).toBe(200);
+		expect(db.updates[0]).toEqual({ classification_node_id: NODE_ID });
+		expect((await callPut(db, { classification_node_id: null })).status).toBe(200);
+		expect(db.updates[1]).toEqual({ classification_node_id: null });
+	});
+
+	it('theme / domain / subdomain envoyés : ignorés, la base les garde', async () => {
+		const db = fakeDb();
+		const response = await callPut(db, {
+			theme: 'Autre',
+			domain: 'Autre',
+			subdomain: 'x',
+			level: 3
+		});
+
+		expect(response.status).toBe(200);
+		expect(db.updates).toEqual([{ level: 3 }]);
+		expect(db.question_templates[0].theme).toBe(FIXTURE.theme);
+	});
+
+	it('seuls theme / domain envoyés : rien à mettre à jour → 400', async () => {
+		const db = fakeDb();
+		const response = await callPut(db, { theme: 'Autre' });
+
+		expect(response.status).toBe(400);
+	});
+
+	it('nœud non rangeable (branche) → 400 en français, jamais 500', async () => {
+		const db = fakeDb();
+		db.nodeError = {
+			code: '23514',
+			message: 'Un contenu se range dans une notion ou une sous-notion, pas dans une branche.'
+		};
+		const response = await callPut(db, { classification_node_id: NODE_ID });
+
+		expect(response.status).toBe(400);
+		const json = await response.json();
+		expect(json.errors.join(' ')).toMatch(/pas dans une branche/);
+	});
+
+	it('nœud inexistant (clé étrangère) → 400', async () => {
+		const db = fakeDb();
+		db.nodeError = {
+			code: '23503',
+			message: 'violates foreign key constraint "question_templates_classification_node_id_fkey"'
+		};
+		const response = await callPut(db, { classification_node_id: NODE_ID });
+
+		expect(response.status).toBe(400);
 	});
 });

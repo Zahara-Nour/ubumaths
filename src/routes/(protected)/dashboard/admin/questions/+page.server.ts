@@ -29,6 +29,9 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { readAllRows } from '$lib/server/read-all-rows';
+import { loadActiveNodes } from '$lib/server/classification-nodes';
+import { z } from 'zod';
+import { filterNodeIds, type TreeNode } from '$lib/questions/classification-tree';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('(protected)/dashboard/admin/questions/+page.server');
@@ -41,9 +44,10 @@ const logger = createServerLogger('(protected)/dashboard/admin/questions/+page.s
 interface TemplateFilters {
 	type: string | null;
 	grades: string | null;
-	theme: string | null;
-	domain: string | null;
-	subdomain: string | null;
+	/** Modèles rangés sous ces nœuds (notion + sous-notions, ou toute une branche) ; `null` : pas de filtre */
+	nodeIds: string[] | null;
+	/** Modèles non rangés (`classification_node_id is null`) */
+	unranked: boolean;
 	minLevel: string | null;
 	maxLevel: string | null;
 	/** Questions de cours seulement (`?courseQuestion=1`, Q110 b) */
@@ -53,6 +57,8 @@ interface TemplateFilters {
 /** Ce que `applyTemplateFilters` utilise d'une requête PostgREST */
 interface FilterableQuery {
 	eq(column: string, value: string): this;
+	in(column: string, values: string[]): this;
+	is(column: string, value: null): this;
 	overlaps(column: string, value: string[]): this;
 	gte(column: string, value: number): this;
 	lte(column: string, value: number): this;
@@ -66,6 +72,11 @@ interface FilterableQuery {
 /** Plafond de lignes par requête côté PostgREST */
 const ID_PAGE_SIZE = 1000;
 
+/** Identifiant qu'aucun nœud ne porte : un filtre sur un nœud inconnu ne rend rien */
+const NO_NODE_ID = '00000000-0000-0000-0000-000000000000';
+
+const uuidSchema = z.string().uuid();
+
 // ============================================================================
 // FUNCTIONS
 // ============================================================================
@@ -74,7 +85,8 @@ const ID_PAGE_SIZE = 1000;
  * Applique les filtres de la page à une requête, quel que soit l'onglet.
  *
  * Niveaux scolaires : chevauchement de tableaux JSONB (un modèle 6e/5e sort
- * pour le filtre « 6e, 3e »). Thème, domaine, sous-domaine : égalité exacte.
+ * pour le filtre « 6e, 3e »). Arbre des notions : « Non rangés » l'emporte, sinon les
+ * nœuds retenus (une notion inclut ses sous-notions).
  */
 function applyTemplateFilters<Q extends FilterableQuery>(query: Q, filters: TemplateFilters): Q {
 	let filtered = query;
@@ -85,9 +97,14 @@ function applyTemplateFilters<Q extends FilterableQuery>(query: Q, filters: Temp
 			filters.grades.split(',').map((grade) => grade.trim())
 		);
 	}
-	if (filters.theme) filtered = filtered.eq('theme', filters.theme);
-	if (filters.domain) filtered = filtered.eq('domain', filters.domain);
-	if (filters.subdomain) filtered = filtered.eq('subdomain', filters.subdomain);
+	if (filters.unranked) {
+		filtered = filtered.is('classification_node_id', null);
+	} else if (filters.nodeIds) {
+		filtered = filtered.in(
+			'classification_node_id',
+			filters.nodeIds.length > 0 ? filters.nodeIds : [NO_NODE_ID]
+		);
+	}
 	const minLevel = filters.minLevel ? parseInt(filters.minLevel) : NaN;
 	if (!isNaN(minLevel)) filtered = filtered.gte('level', minLevel);
 	const maxLevel = filters.maxLevel ? parseInt(filters.maxLevel) : NaN;
@@ -108,9 +125,13 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	 */
 	const typeFilter = url.searchParams.get('type'); // Question type ('numerical_exact', etc.)
 	const gradesFilter = url.searchParams.get('grades'); // Comma-separated grades ('6,5,4')
-	const themeFilter = url.searchParams.get('theme'); // Theme category
-	const domainFilter = url.searchParams.get('domain'); // Domain category
-	const subdomainFilter = url.searchParams.get('subdomain'); // Subdomain category
+	// Arbre des notions : identifiants mal formés ignorés. Les anciens `theme`,
+	// `domain`, `subdomain` ne sont plus lus.
+	const branchParam = url.searchParams.get('branche');
+	const notionParam = url.searchParams.get('notion');
+	const branchFilter = uuidSchema.safeParse(branchParam).success ? branchParam : null;
+	const notionFilter = uuidSchema.safeParse(notionParam).success ? notionParam : null;
+	const unrankedFilter = url.searchParams.get('nonRanges') === '1';
 	const minLevelFilter = url.searchParams.get('minLevel'); // Minimum difficulty level
 	const maxLevelFilter = url.searchParams.get('maxLevel'); // Maximum difficulty level
 	const searchFilter = url.searchParams.get('search'); // Full-text search term
@@ -135,12 +156,20 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const actualSortField = validSortFields.includes(sortField) ? sortField : 'created_at';
 	const actualSortOrder = sortOrder === 'asc' ? true : false; // Convert to boolean
 
+	// Les nœuds non archivés : filtres de la page et chemins des étiquettes
+	let nodes: TreeNode[];
+	try {
+		nodes = await loadActiveNodes(supabase);
+	} catch (nodesError) {
+		logger.error("Lecture de l'arbre impossible :", nodesError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	const filters: TemplateFilters = {
 		type: typeFilter,
 		grades: gradesFilter,
-		theme: themeFilter,
-		domain: domainFilter,
-		subdomain: subdomainFilter,
+		nodeIds: filterNodeIds(nodes, { branchId: branchFilter, notionId: notionFilter }),
+		unranked: unrankedFilter,
 		minLevel: minLevelFilter,
 		maxLevel: maxLevelFilter,
 		courseQuestion: courseQuestionFilter
@@ -220,41 +249,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			if (idRows.length < ID_PAGE_SIZE) break;
 		}
 
-		/**
-		 * Extract unique categories from all templates
-		 *
-		 * This is used to populate the filter dropdowns dynamically.
-		 * We fetch all templates (no filters except count) to get all possible categories.
-		 * Lus page par page : PostgREST tronque à 1000 lignes.
-		 */
-		let allTemplates;
-		try {
-			allTemplates = await readAllRows(
-				(from, to) =>
-					supabase
-						.from('question_templates')
-						.select('theme, domain, subdomain')
-						.order('id')
-						.range(from, to),
-				'des catégories'
-			);
-		} catch (allTemplatesError) {
-			logger.error('Lecture impossible :', allTemplatesError);
-			throw error(500, 'Impossible de charger les données');
-		}
-
-		const themes = new Set<string>();
-		const domains = new Set<string>();
-		const subdomains = new Set<string>();
-
-		if (allTemplates) {
-			for (const template of allTemplates) {
-				if (template.theme) themes.add(template.theme);
-				if (template.domain) domains.add(template.domain);
-				if (template.subdomain) subdomains.add(template.subdomain);
-			}
-		}
-
 		return {
 			drafts,
 			templates: templates || [],
@@ -267,19 +261,15 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			filters: {
 				type: typeFilter,
 				grades: gradesFilter,
-				theme: themeFilter,
-				domain: domainFilter,
-				subdomain: subdomainFilter,
+				branche: branchFilter,
+				notion: notionFilter,
+				nonRanges: unrankedFilter,
 				minLevel: minLevelFilter,
 				maxLevel: maxLevelFilter,
 				courseQuestion: courseQuestionFilter,
 				search: searchFilter
 			},
-			categories: {
-				themes: Array.from(themes).sort(),
-				domains: Array.from(domains).sort(),
-				subdomains: Array.from(subdomains).sort()
-			}
+			nodes
 		};
 	} catch (err) {
 		logger.error('Error in question templates load:', err);

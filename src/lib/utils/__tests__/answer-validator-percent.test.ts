@@ -18,8 +18,6 @@ function createInstance(blanks: InstanceBlank[]): QuestionInstance {
 		statement: 'Calcule' as ResolvedMarkdown,
 		blanks,
 		grades: ['5'],
-		theme: 'Nombres et calculs',
-		domain: 'Proportionnalité',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

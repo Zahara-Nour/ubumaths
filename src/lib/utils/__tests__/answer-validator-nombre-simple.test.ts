@@ -35,8 +35,6 @@ function createInstance(blank: InstanceBlank): QuestionInstance {
 		statement: 'Test' as ResolvedMarkdown,
 		blanks: [blank],
 		grades: ['5'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

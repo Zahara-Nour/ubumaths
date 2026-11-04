@@ -9036,7 +9036,7 @@ export type Database = {
           default_display_options: Json | null
           delay: number | null
           description: string | null
-          domain: string
+          domain: string | null
           exercise_instruction: string | null
           grades: string[]
           id: string
@@ -9047,7 +9047,7 @@ export type Database = {
           status: string
           subdomain: string | null
           test_specs: Json | null
-          theme: string
+          theme: string | null
           title: string
           type: string
           updated_at: string | null
@@ -9060,7 +9060,7 @@ export type Database = {
           default_display_options?: Json | null
           delay?: number | null
           description?: string | null
-          domain: string
+          domain?: string | null
           exercise_instruction?: string | null
           grades: string[]
           id?: string
@@ -9071,7 +9071,7 @@ export type Database = {
           status: string
           subdomain?: string | null
           test_specs?: Json | null
-          theme: string
+          theme?: string | null
           title: string
           type: string
           updated_at?: string | null
@@ -9084,7 +9084,7 @@ export type Database = {
           default_display_options?: Json | null
           delay?: number | null
           description?: string | null
-          domain?: string
+          domain?: string | null
           exercise_instruction?: string | null
           grades?: string[]
           id?: string
@@ -9095,7 +9095,7 @@ export type Database = {
           status?: string
           subdomain?: string | null
           test_specs?: Json | null
-          theme?: string
+          theme?: string | null
           title?: string
           type?: string
           updated_at?: string | null

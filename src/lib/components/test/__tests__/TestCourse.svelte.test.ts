@@ -108,8 +108,6 @@ describe('TestCourse — évaluation, réponses non validées', () => {
 			templateId: '',
 			statement: resolvedMarkdown(`${statement}\n\n\`\`\`choix\ncase: 0\n- $$3$$\n- $$4$$\n\`\`\``),
 			grades: [],
-			theme: '',
-			domain: '',
 			level: 0,
 			generatedAt: '',
 			blanks: [

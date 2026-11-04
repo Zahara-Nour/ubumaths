@@ -39,8 +39,6 @@ function fullInstance(grades: GradeLevel[]): QuestionInstance {
 		statement: 'Nombre de tirages : $\\placeholder[0]{}$' as ResolvedMarkdown,
 		blanks: [{ type: 'math', expectedAnswer: '120' }],
 		grades,
-		theme: 'Probabilités',
-		domain: 'Dénombrement',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

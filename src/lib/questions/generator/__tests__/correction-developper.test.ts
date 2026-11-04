@@ -43,8 +43,6 @@ function instanceOf({
 		statement: resolvedMarkdown('Développe et réduis.'),
 		resolvedVariables: [...resolvedVariables],
 		grades: [...grades],
-		theme: 'Calcul littéral',
-		domain: 'Développement',
 		level: 1,
 		generatedAt: '2026-10-14T00:00:00Z',
 		correction: {

@@ -38,8 +38,6 @@
 		blanks: [{ expectedAnswer: '9', expectedAnswerLatex: '9', type: 'math' }],
 		correction: { steps: [resolvedMarkdown('L’aire du carré vaut $3 \\times 3 = 9$.')] },
 		grades: ['6'],
-		theme: 'Grandeurs',
-		domain: 'Aires',
 		level: 1,
 		generatedAt: '2026-10-24T00:00:00.000Z'
 	};

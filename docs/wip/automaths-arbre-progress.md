@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot 3a-1 en cours._
+_Mis à jour le 2026-11-04, 3a-1 mergé (#2381, migration en prod), 3a-2 en cours._
 
-- **État** : lots 1, 2a-1, 2a-2 mergés (#2378-#2380), **pas en prod**. David continue sans déployer → lot 3 scindé : **3a** maintenant (3a-1 migration `theme`/`domain` facultatifs, 3a-2 code), **3b** (`create-questions.ts`) et **2b** après le `deploy:prod`.
-- **Prochaine action** : 3a-1 → PR, CI, merge, `db:migrate`, `db:types` ; puis 3a-2 : éditeur avec sélecteur « Rangé dans » (arbre), liste admin filtrée par l'arbre (+ « Non rangés »), étiquettes = chemin dans l'arbre, paquets de révision = titre, retrait de l'unicité du quadruplet (éditeur, API, publication en masse) et des restes (store `questionCategories`, `category-validation.ts`, `category-options.ts`, `QuestionCategoryFields`, `/api/questions/categories(/all)`).
-- **En attente de David** : `deploy:prod` (avant 3b et 2b).
-- **Pièges en cours** : `create-questions.ts` écrit en prod dès le merge → il garde le quadruplet jusqu'au deploy (3b). Un modèle modifié garde ses anciens thème/domaine/sous-domaine (anciens liens). Base locale sans modèle publié → serveur de test avec `.env`. CI : « Browser connection was closed » → relancer.
-- **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-quadruplet-facultatif` (3a-1).
+- **État** : 3a-1 mergé (#2381), `db:migrate` fait. 3a-2 + correctifs de revue commités et poussés sur `feat/automaths-arbre-editeur-sans-quadruplet` (AB : contexte = ancien thème sinon branche, Matrices/Graphes → `product` écrit à l'enregistrement ; migration Q13 `20261104165734` rouge→vert 6/6, appliquée en LOCAL seulement ; cahier de texte = titre + niveau ; PUT 23505 → 400 ; picker suit `value`). PR pas encore ouverte. Rien en prod côté code.
+- **Prochaine action** : docs signalées par `docs:check-a-jour` (voir pièges) → `check:incremental` → PR 3a-2 (code-reviewer + security-auditor déjà passés sur le gros du code ; relecture rapide des correctifs) → CI → merge → `check:migrations --pr` → `db:migrate` (Q13, 4 conditions : accès confirmé, test rouge→vert, audit à faire sur la migration Q13, rollback écrit). Puis 3b et 2b après le `deploy:prod`.
+- **En attente de David** : essai de l'éditeur et de la liste admin (serveur 5176, base locale, `admin@local.test` / `local-admin`) ; `deploy:prod` (avant 3b et 2b).
+- **Pièges en cours** : avant la PR, `docs:check-a-jour --depuis origin/main` signale 5 docs (srs.md : decks = titre, à mettre à jour ; dictionnaire, outils-prof, surveillance-des-erreurs, utilitaires-et-demos : retrait mécanique de theme/domain → ligne `Doc-inchangée:`). `create-questions.ts` garde le quadruplet jusqu'au deploy (3b). Lot 4 : le générateur lit encore le contexte AB dans `theme` (anciens modèles) → à remplacer avant de retirer la colonne. CI : « Browser connection was closed » → relancer.
+- **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-editeur-sans-quadruplet`.
 
 ## Origine (2026-11-04)
 
@@ -222,3 +222,28 @@ dès le merge (un modèle publié sans thème/domaine serait invisible dans l'an
 `20261104160229_modele_theme_domaine_facultatifs.sql` ; test
 `tests/integration/modele-sans-theme-domaine.test.ts` **rouge sans elle** (23502 « null value in
 column theme »), vert avec (2/2 ; l'index unique du quadruplet tient toujours, 23505).
+
+### 3a-1 mergé (#2381, 2026-11-04)
+
+CI retardée par une panne partielle de GitHub Actions (~1 h). Audit sécurité : aucun bloquant
+(note sur l'ordre du rollback ajoutée). Mergé, `check:migrations` OK, `db:migrate` : seule
+`20261104160229` manquait ; prod vérifiée (`theme`/`domain` `is_nullable = YES`) ; `db:types` de prod
+identique aux types retouchés à la main sur la branche 3a-2.
+
+### 3a-2 — code et revues (2026-11-04)
+
+Agent Sonnet : `classification-tree.ts` (chemin, cascade, filtre), `ClassificationNodePicker`,
+liste admin filtrée par l'arbre (`branche`, `notion`, `nonRanges=1`), étiquettes = chemin, decks =
+titre, unicité du quadruplet retirée (éditeur, API, lot), store/routes/modules « catégorie » supprimés,
+`theme`/`domain`/`subdomain` retirés de l'instance. Choix d'exécution : validateur sans
+`theme`/`domain` requis ; anciens `<select>` du filtre → `MySelect`.
+
+- security-auditor : aucun bloquant ; mineur corrigé (seul un 23514 de rangement connu → 400, un
+  test qui assertait un message inventé réécrit avec le vrai texte du trigger).
+- code-reviewer (Opus) : sens de AB perdu pour les neufs / copies ; cahier de texte « null / null » ;
+  23505 de l'ancien index → 500 au PUT ; picker figé après le mode JSON ; mineur : modèle dans un
+  nœud archivé ni sous sa notion ni « Non rangés » (0 en prod, laissé).
+- **Q13 — sens de AB** : « Déclarer + l'arbre » → migration de données qui déclare `product` dans les
+  21 brouillons « Graphes et matrices » (tous rangés sous Matrices / Graphes, aucun publié) ;
+  l'éditeur prend la branche (Matrices, Graphes → produit) comme contexte et écrit la déclaration à
+  l'enregistrement. Question d'accès confirmée (personne ne gagne de lecture).

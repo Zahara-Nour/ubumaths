@@ -25,8 +25,6 @@ function instanceWith(
 		statement: 'Donne un argument de z' as ResolvedMarkdown,
 		blanks,
 		grades: ['T_EXP'],
-		theme: 'Nombres complexes',
-		domain: 'Forme exponentielle',
 		level: 2,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })

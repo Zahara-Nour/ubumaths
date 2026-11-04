@@ -180,7 +180,9 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
   `subdomain` sont facultatifs depuis l'[ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)
   (`20261104160229`) et partent au lot 4 du chantier `automaths-arbre` ; l'index unique
   `idx_question_templates_unique_category` (un ancien quadruplet = au plus un modèle publié) reste
-  jusque-là. `question_template_points` le tague aux points du programme (**RESTRICT** côté point : pivot de
+  jusque-là. Le sens « produit » de `AB` (matrices), jadis déduit du thème `Graphes et matrices`, est
+  déclaré dans `shared.capitalPairs` : l'éditeur l'écrit, `20261104165734` l'a posé sur les modèles
+  existants de ce thème. `question_template_points` le tague aux points du programme (**RESTRICT** côté point : pivot de
   l'acquisition).
 - `question_template_reviews` (depuis `20261029150000`) : le verdict de relecture d'un modèle
   (`valide` / `a_revoir` + commentaire), un par modèle, posé depuis `/dev/modeles`. **Admin seul** en

@@ -76,8 +76,6 @@ describe('Case à unité + arrondi : le message arrive à l’élève', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			generatedAt: new Date().toISOString()
 		};
@@ -224,8 +222,6 @@ describe('Case à unité, trop de chiffres : mauvaise forme si l’arrondi redon
 			statement: 'Test' as ResolvedMarkdown,
 			blanks: [{ expectedAnswer, type: 'math', unit: { expected: true }, precision: HUNDREDTH }],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			generatedAt: new Date().toISOString()
 		};
