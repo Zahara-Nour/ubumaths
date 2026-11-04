@@ -34,6 +34,7 @@ DECLARE
     v_author uuid;
     v_owner uuid;
     v_tagged int;
+    v_node uuid;
 BEGIN
     -- Le référentiel de seconde est amorcé par une migration, donc avant ce
     -- seed. Si la garde saute, c'est que l'ordre a changé : on le dit plutôt
@@ -49,9 +50,17 @@ BEGIN
     -- Une série créée par l'admin serait donc invisible depuis le compte prof.
     SELECT id INTO v_owner FROM public.profiles WHERE email = 'teacher@local.test';
 
+    -- Rangée dans l'arbre des notions (ADR 0035) : Géométrie > Géométrie repérée >
+    -- milieu et distance, nœud posé par une migration (identifiant non figé, d'où le chemin).
+    SELECT s.id INTO v_node
+      FROM public.classification_nodes s
+      JOIN public.classification_nodes n ON n.id = s.parent_id
+      JOIN public.classification_nodes b ON b.id = n.parent_id
+     WHERE b.name = 'Géométrie' AND n.name = 'Géométrie repérée' AND s.name = 'milieu et distance';
+
     INSERT INTO public.question_templates (
         id, title, description, status, type, grades,
-        theme, domain, subdomain, level, shared, variations, created_by
+        classification_node_id, level, shared, variations, created_by
     ) VALUES (
         v_template,
         'Distance et milieu dans un repère orthonormé',
@@ -59,9 +68,7 @@ BEGIN
         'published',
         'fill_in_blanks',
         ARRAY['2'],
-        'Géométrie',
-        'Géométrie repérée',
-        'Distance et milieu',
+        v_node,
         1,
         '{"statement": "Le plan est muni d''un repère orthonormé.\n\nOn donne les points $A({{xa}} ; {{ya}})$ et $B({{xb}} ; {{yb}})$.\n\n1. Les coordonnées du vecteur $\\vec{AB}$ sont $(? ; ?)$.\n2. La distance entre $A$ et $B$ vaut $?$.\n3. Le milieu $I$ du segment $[AB]$ a pour coordonnées $I(? ; ?)$.", "correction": {"steps": ["On retranche les coordonnées de $A$ à celles de $B$ : $x_{\\vec{AB}} = x_B - x_A$ et $y_{\\vec{AB}} = y_B - y_A$. Ici $\\vec{AB}({{dx}} ; {{dy}})$.", "Le repère est orthonormé, donc la distance est la norme de $\\vec{AB}$ : $\\sqrt{x_{\\vec{AB}}^2 + y_{\\vec{AB}}^2} = \\sqrt{{{eval:dx*dx}} + {{eval:dy*dy}}} = \\sqrt{{{eval:dx*dx+dy*dy}}} = {{d}}$.", "Les coordonnées du milieu sont les moyennes de celles des extrémités : $x_I = \\frac{x_A + x_B}{2}$ et $y_I = \\frac{y_A + y_B}{2}$. Ici $I({{eval:xa+dx/2}} ; {{eval:ya+dy/2}})$."], "feedback": {"correct": "Les trois formules de la géométrie repérée sont en place.", "incorrect": "Attention au sens de la soustraction : $\\vec{AB}$ se lit « arrivée moins départ », donc $x_B - x_A$ — et le milieu, lui, s''obtient par une somme divisée par deux."}}}'::jsonb,
         '[{"variables": [{"name": "dx", "expression": "6"}, {"name": "dy", "expression": "8"}, {"name": "d", "expression": "10"}, {"name": "xa", "expression": "{{-4..4}}"}, {"name": "ya", "expression": "{{-4..4}}"}, {"name": "xb", "expression": "{{eval:xa+dx}}"}, {"name": "yb", "expression": "{{eval:ya+dy}}"}], "blanks": [{"expectedAnswer": "{{dx}}"}, {"expectedAnswer": "{{dy}}"}, {"expectedAnswer": "{{d}}"}, {"expectedAnswer": "{{eval:xa+dx/2}}"}, {"expectedAnswer": "{{eval:ya+dy/2}}"}]}, {"variables": [{"name": "dx", "expression": "-8"}, {"name": "dy", "expression": "6"}, {"name": "d", "expression": "10"}, {"name": "xa", "expression": "{{-4..4}}"}, {"name": "ya", "expression": "{{-4..4}}"}, {"name": "xb", "expression": "{{eval:xa+dx}}"}, {"name": "yb", "expression": "{{eval:ya+dy}}"}], "blanks": [{"expectedAnswer": "{{dx}}"}, {"expectedAnswer": "{{dy}}"}, {"expectedAnswer": "{{d}}"}, {"expectedAnswer": "{{eval:xa+dx/2}}"}, {"expectedAnswer": "{{eval:ya+dy/2}}"}]}, {"variables": [{"name": "dx", "expression": "12"}, {"name": "dy", "expression": "-16"}, {"name": "d", "expression": "20"}, {"name": "xa", "expression": "{{-4..4}}"}, {"name": "ya", "expression": "{{-4..4}}"}, {"name": "xb", "expression": "{{eval:xa+dx}}"}, {"name": "yb", "expression": "{{eval:ya+dy}}"}], "blanks": [{"expectedAnswer": "{{dx}}"}, {"expectedAnswer": "{{dy}}"}, {"expectedAnswer": "{{d}}"}, {"expectedAnswer": "{{eval:xa+dx/2}}"}, {"expectedAnswer": "{{eval:ya+dy/2}}"}]}]'::jsonb,
@@ -82,12 +89,10 @@ BEGIN
     -- Sans elle, le troisième sélecteur du cahier de texte reste invisible :
     -- il ne s'affiche que s'il a quelque chose à proposer.
     --
-    -- Elle désigne sa question par CATÉGORIE et non par identifiant, comme le
-    -- fait le modèle : c'est le quadruplet (thème, domaine, sous-domaine,
-    -- niveau) qui pointe l'unique template publié de cette catégorie. Ce seed
-    -- exerce donc aussi la couverture du programme (`evaluationCurriculumPoints`).
+    -- Elle désigne sa question par son identifiant (ligne de modèle, ADR 0035) ;
+    -- ce seed exerce aussi la couverture du programme (`evaluationCurriculumPoints`).
     -- Tables `series` / `evaluations` depuis le 2026-09-30 (`assessments` supprimée).
-    INSERT INTO public.series (id, title, grade, description, created_by, categories)
+    INSERT INTO public.series (id, title, grade, description, created_by, items)
     VALUES (
         '66666666-6666-4666-8666-666666666666',
         'Géométrie repérée — série de démonstration',
@@ -95,12 +100,7 @@ BEGIN
         'Une seule question, pour rendre visible le rattachement d''une série à une séance.',
         v_owner,
         jsonb_build_array(jsonb_build_object(
-            'category', jsonb_build_object(
-                'theme', 'Géométrie',
-                'domain', 'Géométrie repérée',
-                'subdomain', 'Distance et milieu',
-                'level', 1
-            ),
+            'templateId', v_template,
             'quantity', 3,
             'delay', 45
         ))
