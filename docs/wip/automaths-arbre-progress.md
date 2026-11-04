@@ -285,3 +285,51 @@ Les trois : « recommandé » choisi par David.
   (contrôle de niveau par l'ancien index, niveau temporaire) ; vieux scripts ponctuels qui lisent
   le quadruplet (`create-automatismes-*-1spe.ts`, `rename-question-subdomains.ts`,
   `audit-question-syntax.ts`) ; `OLD_CATEGORY_TAKEN` de `questions-bulk-status`.
+
+## Lot 2b — phase 0 (2026-11-04)
+
+### Relevé (prod, lecture seule, après le `deploy:prod` 0.71.0 qui livre 2a)
+
+- **Ancienne forme restante** : `series.categories` 5 séries / 29 lignes ; `test_sessions.categories`
+  4 séances / 27 lignes. Aucune composition en nouvelle forme, aucune mixte (dernière séance
+  11:56 UTC, avant la mise en prod 0.71.0 de 17:55 UTC). Chaque ligne = `{category:{theme, domain,
+subdomain, level}, quantity, delay}`.
+- **Résolution** : 56/56 lignes → exactement 1 modèle publié (0 sans modèle, 0 à plusieurs) ; 0 doublon
+  de catégorie dans une même composition.
+- **Lecteurs** : `series.categories` → `server/series-lines.ts` (lit les deux formes) ;
+  `test_sessions.categories` → seulement l'export RGPD (`api/account/export`), recopié tel quel.
+  `evaluation_attempt_questions` : 0 ligne.
+- **Triggers sur `series`** : `series_lock_guard` refuse toute modification de `categories` d'une
+  série dont une évaluation a été commencée (0 série concernée aujourd'hui), sans regarder le rôle :
+  il bloquerait aussi la migration. `update_series_updated_at` changerait la date de modification
+  des 5 séries. Sur `test_sessions` : `test_sessions_evaluation_immutable` ne joue pas (auth.uid()
+  nul en migration).
+- **Test** : précédent de test d'intégration qui rejoue un fichier de `supabase/migrations/` sur un
+  décor (`tests/integration/tags-lot-2bis.test.ts`) → décor en ancienne forme, rouge avant le
+  fichier, vert après.
+
+### Comportements proposés
+
+- **Nominal** : une migration de données, en une transaction : dans `series.categories` et
+  `test_sessions.categories`, chaque ancienne ligne devient `{templateId, quantity, delay}` (modèle
+  publié du quadruplet), ordre, nombres et durées gardés. Colonnes gardées (renommage/retrait : lot 4).
+  Rejouée, elle ne change rien (les nouvelles lignes sont laissées telles quelles).
+- **Limite — série verrouillée** (évaluation commencée) : convertie quand même (Q9).
+- **Limite — date de modification** : inchangée (Q10).
+- **Erreur — ancienne ligne sans modèle publié au moment du `db:migrate`** : la migration échoue
+  entièrement et ne change rien (Q11) ; on remesure et on décide.
+- **Rollback** (en commentaire) : nouvelle ligne → quadruplet relu dans `question_templates`
+  (colonnes encore là jusqu'au lot 4).
+
+### Questions à David
+
+- **Q9 — série verrouillée.** A (recommandé) : la migration lève le verrou le temps de la conversion
+  (la série joue les mêmes modèles, seule l'écriture change). B : sauter ces séries (elles resteraient
+  en ancienne forme et le lot 4 les casserait).
+- **Q10 — date de modification des séries.** A (recommandé) : inchangée (le prof n'a rien modifié).
+  B : mise à la date de la conversion.
+- **Q11 — ligne sans modèle au `db:migrate`** (0 aujourd'hui). A (recommandé) : tout annuler. B :
+  laisser la ligne en ancienne forme (lue par 2a, cassée au lot 4).
+- **Question d'accès** : personne ne lit rien de nouveau ; la migration réécrit en place des lignes
+  que leurs lecteurs actuels (auteur de la série, élève de la séance, export RGPD) lisent déjà ;
+  aucune policy touchée.
