@@ -184,7 +184,6 @@ function saveBody(mode: 'interactive' | 'flash') {
 					instance: {
 						templateId: TEMPLATE_ID,
 						statement: 'Combien font 2 + 2 ?',
-						theme: 'Calcul',
 						generatedAt: new Date().toISOString()
 					},
 					isCorrect: true,
@@ -193,9 +192,9 @@ function saveBody(mode: 'interactive' | 'flash') {
 				}
 			]
 		},
-		categories: [
+		items: [
 			{
-				category: { theme: 'Calcul', domain: 'Nombres', subdomain: null, level: 5 },
+				templateId: TEMPLATE_ID,
 				quantity: 1,
 				delay: 20
 			}
@@ -339,9 +338,6 @@ describe('la boucle du Palotin tourne', () => {
 			id: TEMPLATE_ID,
 			type: 'numerical_exact',
 			title: 'Palotin boucle',
-			theme: 'Calcul',
-			domain: 'Domaine Palotin boucle',
-			subdomain: null,
 			level: 1,
 			grades: ['5'],
 			classification_node_id: notionId,

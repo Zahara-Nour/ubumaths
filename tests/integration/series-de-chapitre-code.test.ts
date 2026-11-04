@@ -40,21 +40,10 @@ const ANON_KEY =
 const SERVICE_KEY =
 	process.env.SUPABASE_TEST_SERVICE_ROLE_KEY ||
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
-/** Modèle publié du décor : l'ancienne catégorie ci-dessous le désigne (ADR 0035) */
+/** Modèle publié du décor : la ligne de série le désigne par son identifiant (ADR 0035) */
 const TEMPLATE_ID = '0a11f0e0-0000-4000-8000-00000000c5d1';
-/** Série à l'ANCIENNE forme (catégorie), relue vers son modèle sous la RLS de l'élève */
-const CATEGORIES = [
-	{
-		category: {
-			theme: 'Fonctions SD',
-			domain: 'Étude de fonction SD',
-			subdomain: 'Méthode',
-			level: 1
-		},
-		quantity: 4,
-		delay: 20
-	}
-];
+/** Série à la forme actuelle (une ligne par modèle), relue sous la RLS de l'élève */
+const CATEGORIES = [{ templateId: TEMPLATE_ID, quantity: 4, delay: 20 }];
 const PAST = new Date(Date.now() - 3600_000).toISOString();
 
 // Variables
@@ -135,9 +124,6 @@ describe('séries de chapitre — code serveur', () => {
 			id: TEMPLATE_ID,
 			type: 'fill_in_blanks',
 			title: 'Modèle SD',
-			theme: 'Fonctions SD',
-			domain: 'Étude de fonction SD',
-			subdomain: 'Méthode',
 			level: 1,
 			grades: ['1_SPE'],
 			status: 'published',

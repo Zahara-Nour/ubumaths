@@ -88,7 +88,6 @@ async function insertQuestion(position: number, instance: unknown) {
 		template_id: TEMPLATE_ID,
 		seed: 42,
 		delay_seconds: 20,
-		category_key: 'entiers/1',
 		instance
 	});
 }
@@ -122,8 +121,6 @@ describe('question figée au démarrage (20260930170000)', () => {
 			id: TEMPLATE_ID,
 			type: 'fill_in_blanks',
 			title: 'Figée ZZ',
-			theme: 'Test',
-			domain: 'Figée',
 			level: 1,
 			grades: ['6'],
 			status: 'draft',
@@ -255,7 +252,6 @@ describe('question figée au démarrage (20260930170000)', () => {
 				template_id: TEMPLATE_ID,
 				seed: 1,
 				delay_seconds: 20,
-				category_key: 'entiers/1',
 				instance: INSTANCE
 			});
 			expect(error?.code).toBe('42501');

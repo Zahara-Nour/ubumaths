@@ -224,31 +224,15 @@ async function makeTaggedExercise(
 	return exId;
 }
 
-/** Une catégorie de questions — le quadruplet qui identifie un template publié. */
-interface Category {
-	theme: string;
-	domain: string;
-	subdomain: string | null;
-	level: number;
-}
-
 /**
  * Un template de questions tagué sur les points donnés.
  *
- * Publié par défaut : c'est le statut qu'exige la résolution d'une évaluation,
- * qui ne référence pas ses templates par identifiant mais par catégorie.
+ * Publié par défaut : c'est le statut qu'exige la résolution d'une évaluation.
  */
 async function makeTaggedTemplate(
 	pointIds: string[],
-	opts?: { status?: 'draft' | 'published'; category?: Partial<Category>; notionId?: string }
-): Promise<{ id: string; category: Category }> {
-	const category: Category = {
-		theme: opts?.category?.theme ?? `Thème ${crypto.randomUUID().slice(0, 8)}`,
-		domain: opts?.category?.domain ?? 'Domaine de test',
-		subdomain: opts?.category?.subdomain ?? null,
-		level: opts?.category?.level ?? 1
-	};
-
+	opts?: { status?: 'draft' | 'published'; notionId?: string }
+): Promise<{ id: string }> {
 	const { data, error } = await service
 		.from('question_templates' as never)
 		.insert({
@@ -257,7 +241,7 @@ async function makeTaggedTemplate(
 			type: 'fill_in_blanks',
 			grades: [TEST_GRADE],
 			classification_node_id: opts?.notionId ?? null,
-			...category,
+			level: 1,
 			variations: [{ blanks: [{ expectedAnswer: '2' }], statement: 'Calculer $1 + 1 = ?$' }]
 		} as never)
 		.select('id')
@@ -271,21 +255,21 @@ async function makeTaggedTemplate(
 			.insert(pointIds.map((point_id) => ({ template_id: id, point_id })) as never);
 		if (tagErr) throw new Error(`tag template: ${tagErr.message}`);
 	}
-	return { id, category };
+	return { id };
 }
 
 /**
- * Une évaluation dont la SÉRIE porte les catégories données (une par template
+ * Une évaluation dont la SÉRIE porte les modèles donnés (un par template
  * attendu). Rend l'identifiant de l'ÉVALUATION (Q29).
  */
-async function makeAssessment(teacherId: string, categories: Category[]): Promise<string> {
+async function makeAssessment(teacherId: string, templateIds: string[]): Promise<string> {
 	const { data: series, error: seriesError } = await service
 		.from('series' as never)
 		.insert({
 			title: 'Série de test',
 			grade: TEST_GRADE,
 			created_by: teacherId,
-			categories: categories.map((category) => ({ category, quantity: 1, delay: 20 }))
+			categories: templateIds.map((templateId) => ({ templateId, quantity: 1, delay: 20 }))
 		} as never)
 		.select('id')
 		.single();
@@ -1134,7 +1118,7 @@ describe('Assessment activities', () => {
 		];
 		const t1 = await makeTaggedTemplate([p1, p2], { notionId: notion });
 		const t2 = await makeTaggedTemplate([p2, p3], { notionId: notion });
-		const assessment = await makeAssessment(ctx.teacher.id, [t1.category, t2.category]);
+		const assessment = await makeAssessment(ctx.teacher.id, [t1.id, t2.id]);
 
 		const activity = await addActivityId(ctx, { kind: 'assessment', evaluation_id: assessment });
 		let cov = await coverageMap(ctx);
@@ -1161,7 +1145,7 @@ describe('Assessment activities', () => {
 		const [p1, p2] = [await svcNewPoint(notion, 'P1'), await svcNewPoint(notion, 'P2')];
 		const live = await makeTaggedTemplate([p1], { notionId: notion });
 		const draft = await makeTaggedTemplate([p2], { status: 'draft', notionId: notion });
-		const assessment = await makeAssessment(ctx.teacher.id, [live.category, draft.category]);
+		const assessment = await makeAssessment(ctx.teacher.id, [live.id, draft.id]);
 
 		await addActivityId(ctx, { kind: 'assessment', evaluation_id: assessment });
 		const cov = await coverageMap(ctx);
@@ -1200,7 +1184,7 @@ describe('Mixed sources', () => {
 		const exercise = await makeTaggedExercise(ctx.teacher.id, [pe]);
 		const question = await makeTaggedTemplate([pq], { notionId: notion });
 		const inAssessment = await makeTaggedTemplate([pa, pq], { notionId: notion });
-		const assessment = await makeAssessment(ctx.teacher.id, [inAssessment.category]);
+		const assessment = await makeAssessment(ctx.teacher.id, [inAssessment.id]);
 
 		await addExerciseActivity(ctx, exercise);
 		const qAct = await addActivityId(ctx, {

@@ -44,10 +44,7 @@ function template(id: string, type: string, options: Record<string, unknown>, le
 	return {
 		id,
 		type,
-		title: `Modèle ${id.slice(0, 8)} ZZ`,
-		theme: THEME,
-		domain: 'Tests',
-		subdomain: null,
+		title: `${THEME} ${id.slice(0, 8)}`,
 		level,
 		grades: ['1_SPE'],
 		status: level === 4 ? 'draft' : 'published',
@@ -64,7 +61,7 @@ describe('questions de cours : filtre et lecture élève', () => {
 
 	beforeAll(async () => {
 		await cleanupAllTestData();
-		await service.from('question_templates').delete().eq('theme', THEME);
+		await service.from('question_templates').delete().like('title', `${THEME}%`);
 		// Reste d'un passage interrompu : point, puis notion, puis branche.
 		await service.from('curriculum_points').delete().eq('code', `TST-${THEME}`);
 		await service.from('classification_nodes').delete().eq('name', `N ${THEME}`);
@@ -135,7 +132,7 @@ describe('questions de cours : filtre et lecture élève', () => {
 			.from('question_template_points' as never)
 			.delete()
 			.eq('point_id', pointId);
-		await service.from('question_templates').delete().eq('theme', THEME);
+		await service.from('question_templates').delete().like('title', `${THEME}%`);
 		await service.from('curriculum_points').delete().eq('id', pointId);
 		await service.from('classification_nodes').delete().eq('id', notionId);
 		await service.from('classification_nodes').delete().eq('id', brancheId);
@@ -146,7 +143,7 @@ describe('questions de cours : filtre et lecture élève', () => {
 		const { data, error } = await service
 			.from('question_templates')
 			.select('id')
-			.eq('theme', THEME)
+			.like('title', `${THEME}%`)
 			.or(COURSE_QUESTION_FILTER);
 		expect(error).toBeNull();
 		expect((data ?? []).map((r) => r.id).sort()).toEqual([IDS.carte, IDS.marque].sort());

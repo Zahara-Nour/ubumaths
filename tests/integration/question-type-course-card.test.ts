@@ -21,8 +21,6 @@ function template(id: string, type: string) {
 		id,
 		type,
 		title: `Carte de cours — ${type}`,
-		theme: 'Test',
-		domain: 'Cartes',
 		level: 1,
 		grades: ['6'],
 		status: 'draft',

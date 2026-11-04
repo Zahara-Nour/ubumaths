@@ -120,8 +120,8 @@ const POINT_CODES = fixture.points.map((p) => p.code);
 const PUBLIC_WRITE = /\b(?:insert\s+into|update|delete\s+from|alter\s+table)\s+public\./i;
 /** Un modèle de plus, hors des 1 005 copies, pour poser un contenu sur un nœud. */
 const EXTRA_TEMPLATE = `insert into public.question_templates
-	(id, type, grades, theme, domain, level, variations, status, title, classification_node_id)
-	values (gen_random_uuid(), 'numerical_exact', array['2'], 'copie', 'copie', 1, '[{}]'::jsonb,
+	(id, type, grades, level, variations, status, title, classification_node_id)
+	values (gen_random_uuid(), 'numerical_exact', array['2'], 1, '[{}]'::jsonb,
 	        'draft', 'modèle de plus', $1)`;
 
 // ============================================================================

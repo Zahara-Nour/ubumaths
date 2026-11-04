@@ -22,8 +22,6 @@ function template(id: string, type: string) {
 		id,
 		type,
 		title: `Retrait du QCM — ${type}`,
-		theme: 'Test',
-		domain: 'QCM',
 		level: 1,
 		grades: ['6'],
 		status: 'draft',

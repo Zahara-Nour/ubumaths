@@ -80,13 +80,6 @@ const CHOICE_ID = '0a11f0e0-0000-4000-8000-00000000e604';
 const GESTE_ID = '0a11f0e0-0000-4000-8000-00000000e605';
 /** Assemblage à retrouver (`fuite-enonce`, lot 2) : l'énoncé envoyé ne dit pas les hauteurs */
 const CUBES_ID = '0a11f0e0-0000-4000-8000-00000000e606';
-const THEME = 'ZZ Éval serveur';
-const FILL_CATEGORY = { theme: THEME, domain: 'Moitié', subdomain: 'Entiers', level: 1 };
-const QCM_CATEGORY = { theme: THEME, domain: 'Comparer', subdomain: 'Relatifs', level: 1 };
-const MULTI_CATEGORY = { theme: THEME, domain: 'Plusieurs', subdomain: 'Pairs', level: 1 };
-const CHOICE_CATEGORY = { theme: THEME, domain: 'Case choix', subdomain: 'Pairs', level: 1 };
-const GESTE_CATEGORY = { theme: THEME, domain: 'Droite', subdomain: 'Placer', level: 1 };
-const CUBES_CATEGORY = { theme: THEME, domain: 'Cubes', subdomain: 'Retrouver', level: 1 };
 /** Composition par défaut : nouvelle forme, une ligne par modèle (ADR 0035) */
 const CATEGORIES = [
 	{ templateId: FILL_ID, quantity: 2, delay: 20 },
@@ -333,7 +326,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: QCM_ID,
 				type: 'fill_in_blanks',
 				title: 'QCM ZZ éval serveur',
-				...QCM_CATEGORY,
+				level: 1,
 				grades: ['5'],
 				status: 'published',
 				shared: qcm.shared,
@@ -343,7 +336,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: FILL_ID,
 				type: 'fill_in_blanks',
 				title: 'Moitié ZZ éval serveur',
-				...FILL_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: fill.variations
@@ -703,7 +696,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 		beforeAll(async () => {
 			({ assignmentId } = await createEvaluation({
-				categories: [{ category: FILL_CATEGORY, quantity: QUESTIONS, delay: 20 }]
+				categories: [{ templateId: FILL_ID, quantity: QUESTIONS, delay: 20 }]
 			}));
 		});
 
@@ -902,8 +895,6 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: '0a11f0e0-0000-4000-8000-00000000e603',
 				type: 'fill_in_blanks',
 				title: 'Tiré seulement ZZ',
-				theme: 'ZZ tiré',
-				domain: 'Tiré',
 				level: 1,
 				grades: ['6'],
 				status: 'draft',
@@ -926,8 +917,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			position: 0,
 			template_id: template!.id,
 			seed: 1,
-			delay_seconds: 20,
-			category_key: 'zz'
+			delay_seconds: 20
 		});
 		const { error } = await service.from('question_templates').delete().eq('id', template!.id);
 		expect(error?.code).toBe('23503');
@@ -957,7 +947,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: MULTI_ID,
 				type: 'fill_in_blanks',
 				title: 'Pairs ZZ éval serveur',
-				...MULTI_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: [
@@ -972,7 +962,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 3,
-				categories: [{ category: MULTI_CATEGORY, quantity: 1, delay: 20 }]
+				categories: [{ templateId: MULTI_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
@@ -1043,7 +1033,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: CHOICE_ID,
 				type: 'fill_in_blanks',
 				title: 'Case choix ZZ éval serveur',
-				...CHOICE_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: [
@@ -1058,7 +1048,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 3,
-				categories: [{ category: CHOICE_CATEGORY, quantity: 1, delay: 20 }]
+				categories: [{ templateId: CHOICE_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
@@ -1107,7 +1097,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: GESTE_ID,
 				type: 'fill_in_blanks',
 				title: 'Droite à placer ZZ éval serveur',
-				...GESTE_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: [
@@ -1121,7 +1111,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 2,
-				categories: [{ category: GESTE_CATEGORY, quantity: 1, delay: 20 }]
+				categories: [{ templateId: GESTE_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
@@ -1171,7 +1161,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: CUBES_ID,
 				type: 'fill_in_blanks',
 				title: 'Assemblage à retrouver ZZ éval serveur',
-				...CUBES_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: [
@@ -1185,7 +1175,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 2,
-				categories: [{ category: CUBES_CATEGORY, quantity: 1, delay: 20 }]
+				categories: [{ templateId: CUBES_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
