@@ -113,7 +113,7 @@
 </script>
 
 <Dialog.Root bind:open>
-	<Dialog.Content class="max-w-3xl">
+	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>Choisissez un mode de test</Dialog.Title>
 			<Dialog.Description>
@@ -125,7 +125,11 @@
 		<div class="grid gap-4 py-4 sm:grid-cols-2">
 			{#each modeConfigs as config (config.mode)}
 				{@const Icon = config.icon}
-				<button type="button" onclick={() => handleModeSelect(config.mode)} class="transition-all">
+				<button
+					type="button"
+					onclick={() => handleModeSelect(config.mode)}
+					class="text-left transition-all"
+				>
 					<Card.Root
 						class="h-full cursor-pointer transition-all hover:shadow-lg {selectedMode ===
 						config.mode
