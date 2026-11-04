@@ -264,8 +264,8 @@ les lignes des cadres de réponse de chaque exercice) ;
 
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture
-s'allume quand le contenu est tagué après coup. Une évaluation se résout en points par ses
-catégories de série (quadruplet unique d'un modèle publié), en TypeScript.
+s'allume quand le contenu est tagué après coup. Une évaluation se résout en points par les
+modèles de sa série, en TypeScript.
 
 Documents : plafond de **25 Mo** tenu à deux endroits qui doivent bouger ensemble (bucket
 `file_size_limit` et CHECK `valid_file_size` de `chapter_documents`) ; le fichier va directement du
@@ -339,6 +339,11 @@ des fiches : [pratiques/fiches-exercices.md](../pratiques/fiches-exercices.md).
   `authenticated`, `service_role` seul. Chaque question désigne son modèle (`template_id`) ;
   l'ancienne `category_key` est facultative depuis l'[ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)
   et part au lot 4 du chantier `automaths-arbre`.
+- `series.categories` et `test_sessions.categories` (jsonb, nom gardé jusqu'au lot 4) : lignes
+  `{templateId, quantity, delay}` ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)).
+  Les anciennes lignes `{category: {theme, domain, subdomain, level}, …}` ont été converties par
+  `20261104204345_series_lignes_par_modele` ; `src/lib/server/series-lines.ts` lit encore les deux
+  formes (anciens liens, onglets ouverts) jusqu'au lot 4.
 - `test_sessions` / `test_answers` : passages de séries. Une policy RESTRICTIVE interdit à un
   compte connecté d'écrire une séance de contrôle (`evaluation_id`, note, points) : c'est le serveur
   qui les écrit.
