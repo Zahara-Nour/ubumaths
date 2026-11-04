@@ -6,7 +6,8 @@
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
-	import type { CartItem } from '$lib/stores/questionCart.svelte';
+	import type { SeriesItem } from '$lib/validation/series';
+	import { resolveSeriesLines } from '$lib/questions/series-legacy';
 	import type { ClassroomItem, TestMode, TestSession } from '$lib/types/test';
 	import { AlertCircle } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -34,7 +35,7 @@
 
 	// State
 	let testSession = $state<TestSession | null>(null);
-	// « En classe » et « Entraînement » : chaque question porte sa durée et sa catégorie
+	// « En classe » et « Entraînement » : chaque question porte sa durée et son modèle
 	let seriesItems = $state<ClassroomItem[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
@@ -86,7 +87,20 @@
 				return;
 			}
 
-			startSeries(launch.mode, launch.categories, launch.timeLimit);
+			// Ancien lien (catégories, ADR 0035) : chaque ligne retrouve son modèle
+			const { items, unresolved } = resolveSeriesLines(
+				launch.lines,
+				questionTemplatesCache.templates
+			);
+			if (items.length === 0) {
+				throw new Error("Les questions de ce lien n'existent plus.");
+			}
+			if (unresolved > 0) {
+				toaster.warning(
+					`${unresolved} question${unresolved > 1 ? 's' : ''} de ce lien n'existe${unresolved > 1 ? 'nt' : ''} plus.`
+				);
+			}
+			startSeries(launch.mode, items, launch.timeLimit);
 			isLoading = false;
 		} catch (err) {
 			console.error('Error initializing test:', err);
@@ -129,10 +143,10 @@
 			// Aperçu : les modèles sont chargés seulement maintenant (la page d'un
 			// élève en évaluation n'en reçoit aucun)
 			await questionTemplatesCache.fetchTemplates();
-			seriesItems = generateSeriesItems(start.evaluation.categories, { excludeCourseCards: true });
+			seriesItems = generateSeriesItems(start.evaluation.items, { excludeCourseCards: true });
 			testSession = {
 				mode: form,
-				categories: start.evaluation.categories,
+				items: start.evaluation.items,
 				instances: seriesItems.map((item) => item.instance),
 				userAnswers: new Map(),
 				startTime: Date.now(),
@@ -151,13 +165,14 @@
 		seriesItems = attempt.questions.map((question) => ({
 			instance: toDisplayInstance(question),
 			delaySeconds: question.delaySeconds,
-			categoryKey: '',
+			// Durée réglable par question : la tentative ne livre pas le modèle
+			templateId: `position-${question.position}`,
 			unitKeys: unitKeysOf(question)
 		}));
 
 		testSession = {
 			mode: form,
-			categories: [],
+			items: [],
 			instances: seriesItems.map((item) => item.instance),
 			userAnswers: new Map(),
 			startTime: Date.now(),
@@ -179,16 +194,16 @@
 	/**
 	 * Lance une série libre (panier ou lien) sous la forme choisie
 	 */
-	function startSeries(mode: TestMode, categories: CartItem[], timeLimit?: number) {
+	function startSeries(mode: TestMode, series: SeriesItem[], timeLimit?: number) {
 		// Course aux nombres : pas de carte de cours (décision 2026-09-28)
-		const items = generateSeriesItems(categories, { excludeCourseCards: mode === 'course' });
+		const items = generateSeriesItems(series, { excludeCourseCards: mode === 'course' });
 		const instances = items.map((item) => item.instance);
-		// « En classe », « Entraînement » : chaque question garde sa durée et sa catégorie
+		// « En classe », « Entraînement » : chaque question garde sa durée et son modèle
 		if (mode === 'display' || mode === 'interactive') seriesItems = items;
 
 		testSession = {
 			mode,
-			categories,
+			items: series,
 			instances,
 			userAnswers: new Map(),
 			startTime: Date.now(),
@@ -199,11 +214,11 @@
 	}
 
 	/**
-	 * Questions d'une série, chacune avec sa durée et sa catégorie
+	 * Questions d'une série, chacune avec sa durée et son modèle
 	 * (`buildSeriesItems`) ; modèles lus dans le cache de l'onglet.
 	 */
 	function generateSeriesItems(
-		categories: CartItem[],
+		series: SeriesItem[],
 		options: { excludeCourseCards?: boolean } = {}
 	): ClassroomItem[] {
 		const templates = questionTemplatesCache.templates;
@@ -214,7 +229,7 @@
 				'Aucun modèle disponible. Veuillez vous reconnecter à Internet et recharger la page.'
 			);
 		}
-		return buildSeriesItems(categories, templates, options);
+		return buildSeriesItems(series, templates, options);
 	}
 
 	/**
@@ -227,7 +242,7 @@
 		mathouNews = null;
 		newsRequest += 1;
 		try {
-			seriesItems = generateSeriesItems(testSession.categories, {
+			seriesItems = generateSeriesItems(testSession.items, {
 				excludeCourseCards: !!assignmentId
 			});
 			testSession.instances = seriesItems.map((item) => item.instance);
@@ -246,9 +261,7 @@
 	function handleFlashRestart() {
 		if (!testSession) return;
 		try {
-			testSession.instances = generateSeriesItems(testSession.categories).map(
-				(item) => item.instance
-			);
+			testSession.instances = generateSeriesItems(testSession.items).map((item) => item.instance);
 			testSession.startTime = Date.now();
 		} catch (err) {
 			toaster.error(
@@ -363,7 +376,7 @@
 					},
 					body: JSON.stringify({
 						result,
-						categories: testSession?.categories || []
+						items: testSession?.items || []
 					})
 				});
 

@@ -392,16 +392,12 @@ async function loadPathGrades(supabase: SB, grade: string): Promise<string[]> {
 	return [...new Set([grade, ...ancestors])];
 }
 
-/** Ligne de tag lue : le point, le modèle et, par la jointure, sa catégorie. */
+/** Ligne de tag lue : le point, le modèle et, par la jointure, son statut et sa durée. */
 interface PublishedTagRow {
 	point_id: string;
 	template_id?: string;
 	question_templates?: {
 		status: string;
-		theme: string;
-		domain: string;
-		subdomain: string | null;
-		level: number;
 		delay: number | null;
 	} | null;
 }
@@ -444,9 +440,7 @@ async function fetchPublishedTagPages(
 	for (let from = 0; ; from += TAG_PAGE_SIZE) {
 		const { data, error } = await supabase
 			.from('question_template_points')
-			.select(
-				'point_id, template_id, question_templates!inner(status, theme, domain, subdomain, level, delay)'
-			)
+			.select('point_id, template_id, question_templates!inner(status, delay)')
 			.eq('question_templates.status', 'published')
 			.in('point_id', pointIds)
 			.order('point_id')

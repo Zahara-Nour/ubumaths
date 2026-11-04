@@ -7,7 +7,7 @@
  *   nombres), avec ses réglages, son statut et ses destinataires.
  */
 
-import type { CartItem } from '$lib/stores/questionCart.svelte';
+import type { SeriesItem } from '$lib/validation/series';
 import { isDeadlinePassed as isDeadlinePassedUtil } from '$lib/utils/dates';
 
 // ===========================================================================
@@ -52,7 +52,8 @@ export interface DbSeries {
 	title: string;
 	description: string | null;
 	grade: string;
-	categories: CartItem[];
+	/** Composition (colonne `categories`), relue dans la nouvelle forme */
+	items: SeriesItem[];
 	created_by: string;
 	created_at: string;
 	updated_at: string;
@@ -247,8 +248,8 @@ export function getStatusLabel(status: StudentEvaluationStatus): string {
 }
 
 /** Nombre total de questions d'une série */
-export function countSeriesQuestions(categories: CartItem[]): number {
-	return categories.reduce((sum, item) => sum + item.quantity, 0);
+export function countSeriesQuestions(items: readonly SeriesItem[]): number {
+	return items.reduce((sum, item) => sum + item.quantity, 0);
 }
 
 /** Note sur 20 à la française : 13,5/20 ; « – » sans note */

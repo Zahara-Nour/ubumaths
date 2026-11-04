@@ -23,8 +23,14 @@
 	import SaveSeriesDialog from '$lib/components/series/SaveSeriesDialog.svelte';
 	import SeriesLinkShare from '$lib/components/series/SeriesLinkShare.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { parseCategoriesParam, type SeriesCategories } from '$lib/validation/series';
-	import { findCategoryTemplate } from '$lib/questions/cart-preview';
+	import { SERIES_LINK_PARAM, encodeSeriesParam, type SeriesItem } from '$lib/validation/series';
+	import {
+		deleteSeriesLink,
+		hasSeriesLink,
+		isLegacyLine,
+		parseSeriesLink,
+		resolveSeriesLines
+	} from '$lib/questions/series-legacy';
 	import { templatePreview } from '$lib/questions/catalogue';
 	import type { TestMode } from '$lib/types/test';
 	import type { PageData } from './$types';
@@ -48,43 +54,43 @@
 	let testDialogOpen = $state(false);
 	let saveSeriesDialogOpen = $state(false);
 
-	// Série reçue par un lien `?categories=…` alors que le panier n'est pas vide (Q45)
-	let incomingSeries = $state<SeriesCategories | null>(null);
+	// Série reçue par un lien `?modeles=…` alors que le panier n'est pas vide (Q45)
+	let incomingSeries = $state<SeriesItem[] | null>(null);
 	let incomingDialogOpen = $state(false);
 	// Lien de série abîmé : message affiché, panier inchangé
 	let linkError = $state<string | null>(null);
 
 	/**
-	 * Aperçu de chaque catégorie du panier (graine fixe, calculé une fois par
-	 * modèle : changer une quantité ne relance aucun calcul)
+	 * Modèle et aperçu de chaque ligne du panier (graine fixe, calculé une fois
+	 * par modèle : changer une quantité ne relance aucun calcul). Modèle absent
+	 * de la liste des publiés : retiré (Q7).
 	 */
 	let cartItemsWithInstances = $derived(
 		cartItems.map((item) => {
-			const template = findCategoryTemplate(questionTemplatesCache.templates, item.category);
-			return { item, instance: template ? (templatePreview(template) ?? undefined) : undefined };
+			const template = questionTemplatesCache.getTemplateById(item.templateId);
+			return {
+				item,
+				template,
+				instance: template ? (templatePreview(template) ?? undefined) : undefined
+			};
 		})
 	);
 
-	/**
-	 * Increment quantity for a category
-	 */
-	function handleIncrementQuantity(category: (typeof cartItems)[0]['category']) {
-		questionCart.incrementQuantity(category);
+	function handleIncrementQuantity(templateId: string) {
+		questionCart.incrementQuantity(templateId);
 	}
 
-	/**
-	 * Decrement quantity for a category
-	 * Will remove item from cart if quantity reaches 0
-	 */
-	function handleDecrementQuantity(category: (typeof cartItems)[0]['category']) {
-		questionCart.decrementQuantity(category);
+	/** Une question de moins ; la dernière retire la ligne */
+	function handleDecrementQuantity(templateId: string) {
+		questionCart.decrementQuantity(templateId);
 	}
 
-	/**
-	 * Update delay for a category
-	 */
-	function handleUpdateDelay(category: (typeof cartItems)[0]['category'], delay: number) {
-		questionCart.updateDelay(category, delay);
+	function handleUpdateDelay(templateId: string, delay: number) {
+		questionCart.updateDelay(templateId, delay);
+	}
+
+	function handleRemove(templateId: string) {
+		questionCart.removeFromCart(templateId);
 	}
 
 	/**
@@ -114,13 +120,9 @@
 	 * Handle test mode selection and navigate to test page
 	 */
 	function handleTestModeSelect(mode: TestMode, timeLimit?: number) {
-		// Encode cart items as JSON for URL param
-		const categoriesParam = encodeURIComponent(JSON.stringify(cartItems));
-
-		// Build URL params
 		const params = new URLSearchParams({
 			mode,
-			categories: categoriesParam
+			[SERIES_LINK_PARAM]: encodeSeriesParam(cartItems)
 		});
 
 		// Add time limit for course mode
@@ -150,11 +152,11 @@
 	}
 
 	/**
-	 * Retire `categories` de l'URL : un rechargement ne redemande rien (Q45)
+	 * Retire la composition de l'URL : un rechargement ne redemande rien (Q45)
 	 */
-	function clearCategoriesParam() {
+	function clearSeriesParam() {
 		const url = new URL(page.url);
-		url.searchParams.delete('categories');
+		deleteSeriesLink(url.searchParams);
 		replaceState(`${url.pathname}${url.search}${url.hash}`, page.state);
 	}
 
@@ -169,7 +171,7 @@
 		}
 		incomingSeries = null;
 		incomingDialogOpen = false;
-		clearCategoriesParam();
+		clearSeriesParam();
 	}
 
 	/** Fermer la fenêtre (Échap, clic dehors) vaut Annuler */
@@ -178,30 +180,52 @@
 	}
 
 	/**
-	 * Lien de série `/automaths/panier?categories=…` (Q45) : panier vide → la
+	 * Lien de série `/automaths/panier?modeles=…` (Q45) : panier vide → la
 	 * série y est mise ; sinon on demande. Lien abîmé → message, panier intact.
+	 * Un ancien lien `?categories=…` attend les modèles pour retrouver les siens
+	 * (ADR 0035) ; une ancienne ligne sans modèle est signalée.
 	 */
-	onMount(() => {
-		const raw = page.url.searchParams.get('categories');
-		if (raw === null) return;
+	onMount(async () => {
+		if (!hasSeriesLink(page.url.searchParams)) return;
 
 		// Au premier affichage, le routeur de SvelteKit n'est pas forcément prêt
 		// (`replaceState` lève alors en dev) : on nettoie l'URL juste après
-		const clearSoon = () => setTimeout(clearCategoriesParam, 0);
+		const clearSoon = () => setTimeout(clearSeriesParam, 0);
 
-		const parsed = parseCategoriesParam(raw);
+		const parsed = parseSeriesLink(page.url.searchParams);
 		if (!parsed.success) {
 			linkError = parsed.error;
 			clearSoon();
 			return;
 		}
+		if (parsed.lines.some(isLegacyLine)) {
+			await questionTemplatesCache.fetchTemplates();
+			if (!questionTemplatesCache.isLoaded) {
+				linkError = 'Ce lien de série ne peut pas être relu pour le moment : recharge la page.';
+				return;
+			}
+		}
+		const { items, unresolved } = resolveSeriesLines(
+			parsed.lines,
+			questionTemplatesCache.templates
+		);
+		if (items.length === 0) {
+			linkError = "Les questions de ce lien n'existent plus.";
+			clearSoon();
+			return;
+		}
+		if (unresolved > 0) {
+			toaster.warning(
+				`${unresolved} question${unresolved > 1 ? 's' : ''} de ce lien n'existe${unresolved > 1 ? 'nt' : ''} plus.`
+			);
+		}
 		if (questionCart.totalItems === 0) {
-			questionCart.replaceWith(parsed.data);
+			questionCart.replaceWith(items);
 			toaster.success('Série chargée dans ton panier');
 			clearSoon();
 			return;
 		}
-		incomingSeries = parsed.data;
+		incomingSeries = items;
 		incomingDialogOpen = true;
 	});
 </script>
@@ -270,13 +294,15 @@
 				</p>
 			{:else}
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{#each cartItemsWithInstances as { item, instance } (item.category.theme + item.category.domain + item.category.subdomain + item.category.level)}
+					{#each cartItemsWithInstances as { item, template, instance } (item.templateId)}
 						<CartQuestionCard
 							{item}
+							{template}
 							{instance}
 							onIncrementQuantity={handleIncrementQuantity}
 							onDecrementQuantity={handleDecrementQuantity}
 							onUpdateDelay={handleUpdateDelay}
+							onRemove={handleRemove}
 						/>
 					{/each}
 				</div>
@@ -287,8 +313,8 @@
 				<Card.Header>
 					<Card.Title>Actions disponibles</Card.Title>
 					<Card.Description>
-						{totalInstances} instance{totalInstances > 1 ? 's' : ''} au total ({cartItems.length}
-						catégorie{cartItems.length > 1 ? 's' : ''})
+						{totalInstances} question{totalInstances > 1 ? 's' : ''} au total ({cartItems.length}
+						modèle{cartItems.length > 1 ? 's' : ''})
 					</Card.Description>
 				</Card.Header>
 				<Card.Content class="grid gap-4 {isTeacher ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}">
@@ -332,7 +358,7 @@
 							lance directement.
 						</p>
 					</div>
-					<SeriesLinkShare categories={cartItems} canMakeQr={isTeacher} />
+					<SeriesLinkShare items={cartItems} canMakeQr={isTeacher} />
 				</Card.Footer>
 			</Card.Root>
 		</div>
@@ -346,7 +372,7 @@
 			<Dialog.Title>Remplacer ton panier par cette série ?</Dialog.Title>
 			<Dialog.Description>
 				{#if incomingSeries}
-					Ce lien contient {incomingSeries.length} catégorie{incomingSeries.length > 1 ? 's' : ''}
+					Ce lien contient {incomingSeries.length} modèle{incomingSeries.length > 1 ? 's' : ''}
 					de questions. Tu peux aussi les ajouter à ton panier actuel.
 				{/if}
 			</Dialog.Description>
@@ -365,7 +391,7 @@
 {#if isTeacher}
 	<SaveSeriesDialog
 		bind:open={saveSeriesDialogOpen}
-		categories={cartItems}
+		items={cartItems}
 		onSaved={handleSeriesSaved}
 	/>
 {/if}

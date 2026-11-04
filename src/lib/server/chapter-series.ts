@@ -6,7 +6,7 @@
  * étape 2). La série reste celle du professeur : le lien la SUIT (Q125), son
  * titre et sa composition sont relus à chaque chargement. L'élève la lance dans
  * la forme choisie au rattachement (Q124 a), sans note : le lien est celui de
- * l'entraînement libre (`/automaths/test?categories=…&mode=…`).
+ * l'entraînement libre (`/automaths/test?modeles=…&mode=…`).
  *
  * ⚠️ Toutes ces fonctions passent par le client de la requête, donc SOUS RLS.
  * La RLS échoue en silence (docs/pratiques/rls-echecs-silencieux.md) : chaque
@@ -19,7 +19,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { ChapterSeriesForm, ChapterSeriesRow } from '$lib/types/database-helpers';
 import { chapterIdOf, type ChapterSeries } from '$lib/types/chapters';
-import { buildSeriesLink, seriesCategoriesSchema, totalQuestions } from '$lib/validation/series';
+import { buildSeriesLink, totalQuestions, type SeriesItem } from '$lib/validation/series';
+import { storedSeriesLinesSchema } from '$lib/questions/series-legacy';
+import { readStoredSeriesMany } from '$lib/server/series-lines';
 import { isDeadlinePassed } from '$lib/utils/dates';
 import { createServerLogger } from '$lib/utils/logger';
 import { ownerColumn, ownerInsert, toOwner, type ContentOwner } from './content-owner';
@@ -62,17 +64,16 @@ function toForm(value: string): ChapterSeriesForm {
 	return value === 'interactive' ? 'interactive' : 'flash';
 }
 
-/** Ligne de base + série relue → vue applicative, avec son lien de lancement. */
+/**
+ * Ligne de base + série relue → vue applicative, avec son lien de lancement.
+ * `items` : composition relue (`server/series-lines`), `null` si illisible.
+ */
 export function toChapterSeries(
 	row: ChapterSeriesRow,
-	series: { title: string; categories: unknown } | undefined
+	series: { title: string; items: SeriesItem[] | null } | undefined
 ): ChapterSeries {
 	const form = toForm(row.form);
-	const categories = series ? seriesCategoriesSchema.safeParse(series.categories) : null;
-	if (categories && !categories.success) {
-		logger.error('[chapter-series] Composition illisible pour la série', row.series_id);
-	}
-	const lisible = categories?.success ? categories.data : null;
+	const lisible = series?.items && series.items.length > 0 ? series.items : null;
 
 	return {
 		id: row.id,
@@ -139,7 +140,25 @@ export async function listChapterSeries(
 		logger.error('[listChapterSeries] Séries rattachées mais illisibles :', manquantes);
 	}
 
-	return { data: links.map((l) => toChapterSeries(l, parId.get(l.series_id))), error: null };
+	let read;
+	try {
+		read = await readStoredSeriesMany(supabase, series ?? []);
+	} catch (readError) {
+		logger.error('[listChapterSeries] Modèles des séries illisibles :', readError);
+		const message = readError instanceof Error ? readError.message : 'lecture';
+		return { data: null, error: new ChapterSeriesError('db', message) };
+	}
+
+	return {
+		data: links.map((l) => {
+			const s = parId.get(l.series_id);
+			return toChapterSeries(
+				l,
+				s ? { title: s.title, items: read.get(s.id)?.items ?? null } : undefined
+			);
+		}),
+		error: null
+	};
 }
 
 /** Les séries enregistrées du professeur, pour le sélecteur de rattachement. */
@@ -161,11 +180,12 @@ export async function listAvailableSeries(
 
 	return {
 		data: (data ?? []).map((s) => {
-			const categories = seriesCategoriesSchema.safeParse(s.categories);
+			// Compter ne demande pas de résoudre les anciennes lignes
+			const lines = storedSeriesLinesSchema.safeParse(s.categories);
 			return {
 				id: s.id,
 				title: s.title,
-				questionCount: categories.success ? totalQuestions(categories.data) : 0
+				questionCount: lines.success ? totalQuestions(lines.data) : 0
 			};
 		}),
 		error: null

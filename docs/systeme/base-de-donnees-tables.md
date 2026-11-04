@@ -488,7 +488,7 @@ Liens : `assigned_by` → `profiles` · `class_id` → `classes` · `evaluation_
 
 ### `evaluation_attempt_questions`
 
-`category_key` · `created_at` · `delay_seconds` · `instance?` · `position` · `seed` · `template_id` · `test_session_id`
+`category_key?` · `created_at` · `delay_seconds` · `instance?` · `position` · `seed` · `template_id` · `test_session_id`
 
 Liens : `template_id` → `question_templates` · `test_session_id` → `test_sessions`
 

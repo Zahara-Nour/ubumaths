@@ -11,7 +11,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
 import type { DbSeries, SeriesWithUsage } from '$lib/types/evaluation';
-import { seriesCategoriesSchema } from '$lib/validation/series';
+import { readStoredSeriesMany } from '$lib/server/series-lines';
 import type { CreateSeriesInput, UpdateSeriesInput } from '$lib/server/validation/evaluations';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -67,25 +67,37 @@ export function mapSeriesWriteError(
 }
 
 /**
- * Ligne `series` → `DbSeries`. Les catégories sont relues avec le schéma de la
- * composition : une ligne dont le JSON ne le respecte pas rend une liste vide
- * plutôt que de faire planter l'écran.
+ * Lignes `series` → `DbSeries`. La composition (colonne `categories`) est relue
+ * dans la nouvelle forme, anciennes lignes résolues (`server/series-lines`) :
+ * une composition illisible rend une liste vide plutôt que de faire planter
+ * l'écran.
  */
-export function toDbSeries(row: Tables<'series'>): DbSeries {
-	const categories = seriesCategoriesSchema.safeParse(row.categories);
-	if (!categories.success) {
-		logger.error('[series] Catégories illisibles pour la série', row.id);
+export async function toDbSeriesMany(
+	supabase: TypedSupabaseClient,
+	rows: readonly Tables<'series'>[]
+): Promise<DbSeries[]> {
+	let read;
+	try {
+		read = await readStoredSeriesMany(supabase, rows);
+	} catch (readError) {
+		logger.error('[series] Modèles des anciennes lignes illisibles :', readError);
+		throw new SeriesError(500, 'Impossible de charger la série');
 	}
-	return {
+	return rows.map((row) => ({
 		id: row.id,
 		title: row.title,
 		description: row.description,
 		grade: row.grade,
-		categories: categories.success ? categories.data : [],
+		items: read.get(row.id)?.items ?? [],
 		created_by: row.created_by,
 		created_at: row.created_at,
 		updated_at: row.updated_at
-	};
+	}));
+}
+
+async function toDbSeries(supabase: TypedSupabaseClient, row: Tables<'series'>): Promise<DbSeries> {
+	const [series] = await toDbSeriesMany(supabase, [row]);
+	return series;
 }
 
 /** Titre d'une copie, tronqué à la longueur autorisée */
@@ -111,7 +123,7 @@ export async function getSeries(
 		logger.error('[getSeries] Lecture impossible :', error);
 		throw new SeriesError(500, 'Impossible de charger la série');
 	}
-	return data ? toDbSeries(data) : null;
+	return data ? toDbSeries(supabase, data) : null;
 }
 
 /**
@@ -132,7 +144,7 @@ export async function getTeacherSeries(
 		logger.error('[getTeacherSeries] Séries illisibles :', error);
 		throw new SeriesError(500, 'Impossible de charger les séries');
 	}
-	const series = (rows ?? []).map(toDbSeries);
+	const series = await toDbSeriesMany(supabase, rows ?? []);
 	if (series.length === 0) return [];
 
 	const { data: evaluations, error: evaluationsError } = await supabase
@@ -200,7 +212,7 @@ export async function createSeries(
 			title: input.title,
 			grade: input.grade,
 			description: input.description ?? null,
-			categories: toJson(input.categories),
+			categories: toJson(input.items),
 			created_by: userId
 		})
 		.select()
@@ -210,7 +222,7 @@ export async function createSeries(
 		logger.error('[createSeries] Insertion impossible :', error);
 		throw new SeriesError(500, "La série n'a pas pu être enregistrée");
 	}
-	return toDbSeries(data);
+	return toDbSeries(supabase, data);
 }
 
 /** Modifier une série (refusée par la base si elle est verrouillée) */
@@ -223,7 +235,7 @@ export async function updateSeries(
 	if (input.title !== undefined) update.title = input.title;
 	if (input.grade !== undefined) update.grade = input.grade;
 	if (input.description !== undefined) update.description = input.description;
-	if (input.categories !== undefined) update.categories = toJson(input.categories);
+	if (input.items !== undefined) update.categories = toJson(input.items);
 
 	// `.select()` : un refus RLS rend zéro ligne, sans erreur
 	const { data, error } = await supabase.from('series').update(update).eq('id', seriesId).select();
@@ -237,7 +249,7 @@ export async function updateSeries(
 	if (!data || data.length === 0) {
 		throw new SeriesError(404, SERIES_NOT_FOUND_MESSAGE);
 	}
-	return toDbSeries(data[0]);
+	return toDbSeries(supabase, data[0]);
 }
 
 /**
@@ -253,7 +265,7 @@ export async function duplicateSeries(
 	if (!original) {
 		throw new SeriesError(404, SERIES_NOT_FOUND_MESSAGE);
 	}
-	if (original.categories.length === 0) {
+	if (original.items.length === 0) {
 		throw new SeriesError(400, 'Cette série ne contient aucune question lisible');
 	}
 
@@ -263,7 +275,7 @@ export async function duplicateSeries(
 			title: copyTitle(original.title),
 			grade: original.grade as CreateSeriesInput['grade'],
 			description: original.description,
-			categories: original.categories
+			items: original.items
 		},
 		userId
 	);

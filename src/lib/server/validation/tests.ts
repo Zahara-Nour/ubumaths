@@ -6,34 +6,7 @@
 import { z } from 'zod';
 import { isCourseCard } from '$lib/questions/types';
 import { uuidSchema } from './common';
-
-// ============================================================================
-// QUESTION CATEGORY & CART ITEM SCHEMAS
-// ============================================================================
-
-/**
- * Question category schema
- */
-const questionCategorySchema = z.object({
-	theme: z.string().min(1, 'Theme is required').max(100),
-	domain: z.string().min(1, 'Domain is required').max(100),
-	subdomain: z.string().max(100).nullable(),
-	// La production a des modèles jusqu'au niveau 20 (lu le 2026-09-28)
-	level: z.number().int().min(1).max(100)
-});
-
-/**
- * Cart item schema (category + quantity + delay)
- */
-const cartItemSchema = z.object({
-	category: questionCategorySchema,
-	quantity: z
-		.number()
-		.int()
-		.positive('Quantity must be positive')
-		.max(100, 'Maximum 100 questions'),
-	delay: z.number().int().positive('Delay must be positive').max(300, 'Maximum 300 seconds delay')
-});
+import { storedSeriesLinesSchema } from '$lib/questions/series-legacy';
 
 // ============================================================================
 // BORNES
@@ -165,16 +138,19 @@ const testResultSchema = z.object({
 
 /**
  * Schema for saving test results (POST /api/tests/save)
- * Includes test result, categories, and optional assignment ID
+ * Résultat, composition jouée (`items`, ADR 0035) et assignation éventuelle.
+ * `categories` : un onglet ouvert avant la mise en prod envoie encore
+ * l'ancienne forme — acceptée, enregistrée telle quelle (lot 4 : retirée).
  */
 export const saveTestSchema = z
 	.object({
 		result: testResultSchema,
-		categories: z
-			.array(cartItemSchema)
-			.min(1, 'At least one category required')
-			.max(50, 'Maximum 50 categories'),
+		items: storedSeriesLinesSchema.optional(),
+		categories: storedSeriesLinesSchema.optional(),
 		assignmentId: uuidSchema.optional()
+	})
+	.refine((data) => data.items !== undefined || data.categories !== undefined, {
+		message: 'Ajoute au moins un modèle de questions'
 	})
 	.refine(
 		(data) => {

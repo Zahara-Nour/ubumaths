@@ -5,10 +5,10 @@
  * Pas de copie par élève (Q112) : le paquet est recalculé à chaque usage.
  *
  *   chapitres VISIBLES de l'élève → séries PUBLIÉES dans ces chapitres
- *   → catégories des séries → modèles PUBLIÉS de ces catégories (Q163 a, Q164)
+ *   → modèles des séries, s'ils sont PUBLIÉS (Q163 a, Q164, ADR 0035)
  *
- * La résolution catégorie → modèles est CELLE des séries (`templatesOfCategory`,
- * `questions/series-items.ts`) : pas de seconde logique.
+ * La composition est relue comme partout (`server/series-lines`) : une
+ * ancienne ligne (catégorie) est résolue vers son modèle, pas de seconde logique.
  *
  * La mémoire est unique : `srs_card_stats` (élève, `template`, id du modèle),
  * partagée avec le Programme (Q165). Une séance = toutes les questions dues +
@@ -25,12 +25,8 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
-import { categoryKeyOf, templatesOfCategory } from '$lib/questions/series-items';
-import { seriesCategoriesSchema } from '$lib/validation/series';
-import { createServerLogger } from '$lib/utils/logger';
-
-const logger = createServerLogger('server/srs/chapter-deck');
+import type { SeriesItem } from '$lib/validation/series';
+import { readStoredSeriesMany } from '$lib/server/series-lines';
 
 // Types
 type SB = SupabaseClient<Database>;
@@ -38,10 +34,6 @@ type SB = SupabaseClient<Database>;
 /** Ce que le calcul lit d'un modèle (`question_templates`). */
 export interface DeckTemplateRow {
 	id: string;
-	theme: string;
-	domain: string;
-	subdomain: string | null;
-	level: number;
 	status: string | null;
 }
 
@@ -88,30 +80,28 @@ export class ChapterDeckError extends Error {
 export const CHAPTER_SESSION_NEW_LIMIT = 10;
 
 /**
- * Modèles lus au plus en une requête (plafond de lignes de PostgREST). Une seule
- * question publiée par catégorie (index unique partiel) : l'atteindre voudrait
- * dire des centaines de catégories — on le dit plutôt que de tronquer.
+ * Modèles lus au plus en une requête (plafond de lignes de PostgREST) :
+ * l'atteindre voudrait dire des centaines de séries — on le dit plutôt que de
+ * tronquer.
  */
 export const MAX_DECK_TEMPLATES = 1000;
 
 // Functions
 
 /**
- * Modèles du paquet : tous les modèles PUBLIÉS des catégories des séries
- * (Q163 a), pas la quantité de la série ; union sans doublon (N6). Une
- * catégorie sans modèle publié est ignorée (L4).
+ * Modèles du paquet : les modèles PUBLIÉS des séries (Q163 a), pas la quantité
+ * de la série ; union sans doublon (N6), dans l'ordre des séries. Un modèle
+ * retiré (plus publié) est ignoré (L4).
  */
 export function resolveDeckTemplateIds(
-	seriesCategories: ReadonlyArray<ReadonlyArray<CartItem>>,
+	seriesItems: ReadonlyArray<ReadonlyArray<SeriesItem>>,
 	templates: readonly DeckTemplateRow[]
 ): string[] {
-	const published = templates.filter((t) => t.status === 'published');
+	const published = new Set(templates.filter((t) => t.status === 'published').map((t) => t.id));
 	const ids = new Set<string>();
-	for (const categories of seriesCategories) {
-		for (const item of categories) {
-			for (const template of templatesOfCategory(published, item.category)) {
-				ids.add(template.id);
-			}
+	for (const items of seriesItems) {
+		for (const item of items) {
+			if (published.has(item.templateId)) ids.add(item.templateId);
 		}
 	}
 	return [...ids];
@@ -145,38 +135,6 @@ export function selectChapterSession(
 	return { due, fresh };
 }
 
-/** Valeur PostgREST entre guillemets : `"` et `\` échappés. */
-function quoted(value: string): string {
-	return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
-}
-
-/**
- * Filtre `or` PostgREST : une condition EXACTE par catégorie (thème, domaine,
- * sous-domaine, niveau), doublons fusionnés — pas de produit croisé thèmes ×
- * domaines. Sous-domaine absent : `null` ou `''`, comme `templatesOfCategory`.
- */
-export function categoriesFilter(categories: readonly QuestionCategory[]): string {
-	const unique = new Map(categories.map((c) => [categoryKeyOf(c), c]));
-	return [...unique.values()]
-		.map((c) => {
-			const subdomain = c.subdomain
-				? `subdomain.eq.${quoted(c.subdomain)}`
-				: 'or(subdomain.is.null,subdomain.eq."")';
-			return `and(theme.eq.${quoted(c.theme)},domain.eq.${quoted(c.domain)},${subdomain},level.eq.${Number(c.level)})`;
-		})
-		.join(',');
-}
-
-/** Composition lisible d'une série, ou `null` (tracé) */
-function readCategories(seriesId: string, raw: unknown): CartItem[] | null {
-	const parsed = seriesCategoriesSchema.safeParse(raw);
-	if (!parsed.success) {
-		logger.error('[chapter-deck] Composition illisible pour la série', seriesId);
-		return null;
-	}
-	return parsed.data;
-}
-
 /**
  * Paquets des chapitres visibles de l'appelant (ou d'un seul, `chapterId`).
  * Un chapitre introuvable ou masqué n'est simplement pas rendu.
@@ -205,30 +163,31 @@ export async function loadChapterDecks(
 	if (linksError) throw new ChapterDeckError(linksError.message);
 
 	const seriesIds = [...new Set((links ?? []).map((l) => l.series_id))];
-	const categoriesBySeries = new Map<string, CartItem[]>();
+	const itemsBySeries = new Map<string, SeriesItem[]>();
 	if (seriesIds.length > 0) {
 		const { data: series, error: seriesError } = await supabase
 			.from('series')
 			.select('id, categories')
 			.in('id', seriesIds);
 		if (seriesError) throw new ChapterDeckError(seriesError.message);
-		for (const row of series ?? []) {
-			const categories = readCategories(row.id, row.categories);
-			if (categories) categoriesBySeries.set(row.id, categories);
+		let read;
+		try {
+			read = await readStoredSeriesMany(supabase, series ?? []);
+		} catch (readError) {
+			throw new ChapterDeckError(readError instanceof Error ? readError.message : 'lecture');
 		}
+		for (const [id, { items }] of read) itemsBySeries.set(id, items);
 	}
 
-	// Les modèles des catégories exactes : la base pré-filtre, la résolution
-	// (`templatesOfCategory`) reste celle des séries.
-	const allCategories = [...categoriesBySeries.values()].flat().map((item) => item.category);
+	// Les modèles des séries, s'ils sont publiés : la base filtre
+	const allIds = [...new Set([...itemsBySeries.values()].flat().map((item) => item.templateId))];
 	let templates: DeckTemplateRow[] = [];
-	if (allCategories.length > 0) {
+	if (allIds.length > 0) {
 		const { data, error: templatesError } = await supabase
 			.from('question_templates')
-			.select('id, theme, domain, subdomain, level, status')
+			.select('id, status')
 			.eq('status', 'published')
-			.or(categoriesFilter(allCategories))
-			.order('created_at')
+			.in('id', allIds)
 			.limit(MAX_DECK_TEMPLATES);
 		if (templatesError) throw new ChapterDeckError(templatesError.message);
 		templates = data ?? [];
@@ -242,8 +201,8 @@ export async function loadChapterDecks(
 	return chapters.map((chapter) => {
 		const chapterSeries = (links ?? [])
 			.filter((l) => l.chapter_id === chapter.id)
-			.map((l) => categoriesBySeries.get(l.series_id))
-			.filter((c): c is CartItem[] => c !== undefined);
+			.map((l) => itemsBySeries.get(l.series_id))
+			.filter((items): items is SeriesItem[] => items !== undefined);
 		return {
 			chapterId: chapter.id,
 			title: chapter.title,

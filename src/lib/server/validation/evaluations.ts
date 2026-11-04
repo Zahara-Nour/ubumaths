@@ -1,13 +1,13 @@
 /**
  * Séries et évaluations : schémas Zod (chantier 4).
  *
- * Les bornes de la composition (catégories) sont partagées avec le navigateur :
+ * Les bornes de la composition (modèles) sont partagées avec le navigateur :
  * `$lib/validation/series`.
  */
 
 import { z } from 'zod';
 import { gradeSchema, uuidSchema } from './common';
-import { savedSeriesCategoriesSchema } from '$lib/validation/series';
+import { savedSeriesItemsSchema } from '$lib/validation/series';
 import {
 	MAX_ANSWER_LENGTH,
 	MAX_ANSWER_PARTS,
@@ -43,7 +43,7 @@ export const createSeriesSchema = z.object({
 	title: seriesTitleSchema,
 	grade: gradeSchema,
 	description: seriesDescriptionSchema,
-	categories: savedSeriesCategoriesSchema
+	items: savedSeriesItemsSchema
 });
 
 export type CreateSeriesInput = z.infer<typeof createSeriesSchema>;
@@ -54,10 +54,10 @@ export const updateSeriesSchema = z
 		title: seriesTitleSchema.optional(),
 		grade: gradeSchema.optional(),
 		description: seriesDescriptionSchema,
-		categories: savedSeriesCategoriesSchema.optional()
+		items: savedSeriesItemsSchema.optional()
 	})
 	.refine(
-		(data) => data.title !== undefined || data.grade !== undefined || data.categories !== undefined,
+		(data) => data.title !== undefined || data.grade !== undefined || data.items !== undefined,
 		{ message: 'Rien à modifier' }
 	);
 

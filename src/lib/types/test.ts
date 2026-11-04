@@ -3,7 +3,7 @@
  * Types for test/assessment functionality (display, interactive, course modes)
  */
 
-import type { CartItem } from '$lib/stores/questionCart.svelte';
+import type { SeriesItem } from '$lib/validation/series';
 import type { QuestionInstance } from '$lib/questions/types';
 import type { AnswerData } from '$lib/types/question-display';
 
@@ -29,7 +29,7 @@ export type TestMode = 'display' | 'interactive' | 'course' | 'flash';
  */
 export interface TestConfig {
 	mode: TestMode;
-	categories: CartItem[];
+	items: SeriesItem[];
 	timeLimit?: number; // Time limit in seconds (for 'course' mode only)
 }
 
@@ -43,7 +43,7 @@ export interface TestConfig {
  */
 export interface TestSession {
 	mode: TestMode;
-	categories: CartItem[];
+	items: SeriesItem[];
 	instances: QuestionInstance[];
 	userAnswers: Map<number, AnswerData>; // Key = question index
 	startTime: number; // Timestamp
@@ -61,10 +61,10 @@ export interface TestSession {
  */
 export interface ClassroomItem {
 	instance: QuestionInstance;
-	/** Durée de SA catégorie en secondes (déjà résolue, > 0) */
+	/** Durée de SA ligne de série en secondes (déjà résolue, > 0) */
 	delaySeconds: number;
-	/** Clé de catégorie (theme|domain|subdomain|level) : ±5 s s'applique à toute la catégorie */
-	categoryKey: string;
+	/** Modèle de la question : ±5 s s'applique à toutes les questions du modèle */
+	templateId: string;
 	/** Évaluation : touches d'unités calculées par le serveur (cf. public-question.ts) */
 	unitKeys?: string[];
 }
@@ -115,7 +115,8 @@ export interface DbTestSession {
 	id: string;
 	user_id: string;
 	mode: TestMode;
-	categories: CartItem[]; // Stored as JSONB
+	/** Composition jouée (jsonb, colonne `categories`) : nouvelle ou ancienne forme */
+	categories: unknown;
 	score: number | null;
 	total_questions: number;
 	time_spent: number | null;
