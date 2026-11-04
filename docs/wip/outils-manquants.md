@@ -51,12 +51,13 @@ fait déjà (` ```figure ` + ` ```choix `, B).
 
 ## 3. À trancher par David
 
-| Points                                                        | Question                                                           | Où                                        |
-| ------------------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------- |
-| 5-113                                                         | diagramme circulaire à construire : geste, ou calcul d'angle (A) ? | `questions-5` l. 90                       |
-| 3-032                                                         | tableur : formule écrite en texte, ou D ?                          | `questions-3` l. 127                      |
-| 4-026 ; 3-017, 3-050 ; CP-002                                 | classés D, sans décision « hors appli » relevée                    | `questions-4` l. 129, `questions-3` l. 99 |
-| CE1, CE2, CM1, CM2 (D : manipuler, soupeser, plier, enquêter) | hors appli ? (décision explicite seulement en 6e et en 5e)         | § 3 de chaque journal                     |
+| Points                                                        | Question                                                                                                                                                                                                                                                        | Où                                         |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| 5-113                                                         | diagramme circulaire à construire : geste, ou calcul d'angle (A) ?                                                                                                                                                                                              | `questions-5` l. 90                        |
+| 3-032                                                         | tableur : formule écrite en texte, ou D ?                                                                                                                                                                                                                       | `questions-3` l. 127                       |
+| 4-026 ; 3-017, 3-050 ; CP-002                                 | classés D, sans décision « hors appli » relevée                                                                                                                                                                                                                 | `questions-4` l. 129, `questions-3` l. 99  |
+| CE1, CE2, CM1, CM2 (D : manipuler, soupeser, plier, enquêter) | hors appli ? (décision explicite seulement en 6e et en 5e)                                                                                                                                                                                                      | § 3 de chaque journal                      |
+| — (aucun point ne le demande au 2026-11-04)                   | **Réunion d'intervalles à représenter** (` ```line representer: ]-inf, -2[ ∪ ]2, +inf[`, \|x\| > k) : geste à deux morceaux, à faire si un point le demande ? `representer:` ne pose qu'un intervalle ; l'affichage (`segments:`) sait déjà dessiner la réunion | `docs/archive/wip/demi-droite-progress.md` |
 
 Tranchés hors appli : 5-011, 040, 130, 065, 042, 043, 059, 075, 084 (David, `questions-5` l. 127) ;
 2-452, 454, 351 (Q6, `questions-2de` l. 222) ; CP-053, 063-066, 074 ; 6e (« non évaluable », `questions-6` l. 173).

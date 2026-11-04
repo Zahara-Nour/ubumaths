@@ -1,5 +1,5 @@
 ---
-status: clos
+status: en-cours
 ---
 
 # Chantier `demi-droite` — demi-droite et intervalle à crochets sur ` ```line `
@@ -10,14 +10,16 @@ status: clos
 
 ## Reprendre ici
 
-_Chantier clos le 2026-11-04, après #2346 et la mise à jour de 80a87e34 en prod._
+_Mis à jour le 2026-11-04 : chantier ROUVERT pour 3-057 (journal laissé dans `docs/archive/wip/`, une PR)._
 
-- **État** : clos. Affichage (#2294), geste `representer:` (#2309), rangement (#2317), 3-014 (#2328, #2336,
-  publié), corrigé de |x| < k (#2346, écrit en prod). 2-251 couvert par 2069ac7e (chantier `questions-2de`).
-  Doc durable : `docs/systeme/ubumark.md` et `docs/systeme/questions.md`.
-- **Reste** : vérifications à l'œil (`docs/wip/verifications-manuelles.md`, #2294, #2309, #2328, #2346) ;
-  page à cocher sans ` ```line ` (`outils-manquants.md`, ligne 16) ; branche distante
-  `fix/integration-locals-session` laissée sur GitHub (à David).
+- **État** : outils livrés (#2294, #2309) ; 3-014 publié (#2328) ; 2-251 couvert (2069ac7e) ; 80a87e34 (#2346) en
+  prod. Rouvert : **3-057** (oublié à la clôture #2357) — 320f5ac7 « Résoudre ax ⩾ b graphiquement », publié,
+  corrigé sans droite graduée. PR en cours : lot `resoudre-graphique-droite-3`.
+- **Prochaine action** : PR mergée → David lance la simulation puis `--publier` du lot → relire 320f5ac7 en prod
+  (MCP) → statut `clos`, ligne de vérification manuelle.
+- **En attente de David** : les deux commandes du lot (`update-published-questions` refusé à Claude).
+- **Pièges en cours** : vérifications à l'œil (#2294, #2309, #2328, #2346) dans `verifications-manuelles.md`.
+- **Worktree / branche** : `../ubumaths-wt-demi-droite`, `feat/demi-droite-3-057`.
 
 ---
 
@@ -227,3 +229,15 @@ catégorie est libre.
 - Voie : `update-published-questions.ts`, nouveau lot `valeur-absolue-droite-2de` (instantané exporté de la
   prod, commité avant la correction : le diff de la PR est la correction). `checkTemplate` vert sur l'instantané
   et sur la correction ; bloc lu sans erreur pour s = 0..3 et k = 1..6.
+
+## PR 6 — 3-057 : droite graduée au corrigé de 320f5ac7 (2026-11-04)
+
+- Oubli de la clôture (#2357) : l'en-tête annonçait 3-057 (« Résoudre graphiquement ax ⩾ b »), jamais relevé.
+  Relevé MCP : 320f5ac7 (publié) couvre le point — lecture du graphique, réponse « x ⩾ z » ; son corrigé
+  repassait les solutions en vert sur l'axe d'une ` ```courbe `, sans droite à crochets.
+- Décision de David (2026-11-04, « oui » à mes recos) : ajouter la droite graduée ; pas de geste « réunion »
+  tant qu'aucun point ne le demande (noté au § 3 de `outils-manquants.md`).
+- Écrit : 4e étape (après « les solutions sont les x tels que… »), ` ```line ` −5 … 5 ; v1 (m > 0) ]−∞ ; z[,
+  ]−∞ ; z], ]z ; +∞[, [z ; +∞[ selon s ; v2 (m < 0) sens inversés, comme la réponse attendue. Instantané exporté
+  commité avant. `checkTemplate` vert (instantané et correction) ; 48 blocs (2 variations × 4 sens × z = ±1..3)
+  lus sans erreur ni avertissement.
