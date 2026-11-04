@@ -339,3 +339,16 @@ subdomain, level}, quantity, delay}`.
 David : « je te suis » → Q9 A (verrou levé le temps de la conversion) · Q10 A (date de modification
 inchangée) · Q11 A (une ligne sans modèle → tout annulé). Question d'accès : confirmation explicite
 encore à recueillir avant `db:migrate`.
+
+### 2b — code (2026-11-04)
+
+- Migration `20261104204345_series_lignes_par_modele` : table temporaire des anciennes lignes
+  (modèle publié du quadruplet, sous-domaine nul/vide confondus comme `series-legacy.ts`), garde
+  TOUT ou RIEN (`raise` si 0 ou plusieurs modèles), puis conversion des deux tables, ordre gardé
+  (`with ordinality`), `series_lock_guard` et `update_series_updated_at` suspendus puis rétablis.
+  Rollback en commentaire (catégorie relue dans le modèle), extrait et exécuté par le test.
+- Test `tests/integration/series-lignes-par-modele.test.ts` : 10 cas (sous-domaine renseigné /
+  absent / vide, brouillon homonyme, série mêlée et verrouillée, date gardée, verrou rétabli,
+  séance, rejouée sans effet, rollback, échec Q11). **Rouge sans la conversion** (5/10), vert avec.
+- Piège : la base locale garde 8 séances laissées par d'autres suites (`category: "entiers/1"`,
+  une chaîne) ; le test les retire dans sa transaction. La prod n'en a aucune (relevé).
