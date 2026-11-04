@@ -194,6 +194,22 @@ quels.
   fréquence conditionnelle 1 → 5 (4/5 et non 8/67), axe tronqué 1 → 7 (variante choix), angle 1 → 12
   (données → angle).
 
+## Lot « Probabilités » — phase 0 (2026-11-04)
+
+Capacités (BO 1re, Automatismes, « Probabilités ») : (A) calculer des probabilités conditionnelles
+quand les évènements sont présentés en **tableau croisé d'effectifs** ou en **arbre pondéré** ;
+(B) distinguer $P(A \cap B)$, $P_A(B)$, $P_B(A)$. Le cours de 1re (indépendance, probabilités
+totales, Bernoulli n ⩽ 4, variables aléatoires) n'est pas un automatisme : hors lot.
+
+Relevé en prod (titres, puis `buildSerie` en lecture seule, graines 1-3) : **28 candidats, 28
+passent**. Aucun modèle neuf nécessaire.
+
+| Capacité                         | Modèles                                                                                                                                                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| (A) Tableau croisé               | 2de : `23ceafb0` construire, `89e928a4` compléter (effectifs), `b6ab5599` compléter (fréquence cond.), `eb0dcd85` lire, `cf548ea1` intersection, `4016b05c` sachant A, `f3e68e4b` A sachant B                       |
+| (A) Arbre pondéré                | 2de : `b28f4a68` construire, `9d7c4d98` compléter une branche, `1cfc575d` chemin, `d7507e78` conditionnelle ; 1re : `6dd2f133` construire depuis un énoncé, `5ba712bc` probabilités totales, `69a05f98` « inverse » |
+| (B) Distinguer ∩, P_A(B), P_B(A) | 2de : `31096bae` traduire un énoncé en notations (4 variantes, choix), `77d6fedc` « Parmi les… », `ba16b4f4` reconnaître une fréquence conditionnelle                                                               |
+
 ## Questions ouvertes (à poser à David)
 
 1. **Collision de vocabulaire « série ».** `CONTEXT.md` définit désormais **Série** = exercice de
