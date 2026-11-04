@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { readTemplateFile, sameGrades, withTemplateId } from '../lib/template-file';
+import {
+	readTemplateFile,
+	sameGrades,
+	sameTitleLevelGroups,
+	withTemplateId
+} from '../lib/template-file';
 
 describe('readTemplateFile', () => {
 	it('rend le modèle brut tel quel', () => {
@@ -61,5 +66,26 @@ describe('withTemplateId', () => {
 			/porte déjà un id/
 		);
 		expect(() => withTemplateId('[]\n', ID)).toThrow(/objet JSON/);
+	});
+
+	it.each([
+		['fin de ligne CRLF', '{\r\n\t"title": "X"\r\n}\r\n'],
+		['BOM', '\uFEFF{\n\t"title": "X"\n}\n'],
+		['fichier sur une ligne', '{"title": "X"}\n']
+	])('refuse un format inattendu (%s) : vérifié avant toute création', (_cas, texte) => {
+		expect(() => withTemplateId(texte, ID)).toThrow(/objet JSON/);
+	});
+});
+
+describe('sameTitleLevelGroups', () => {
+	it('regroupe les fichiers de même titre et même niveau, et eux seuls', () => {
+		expect(
+			sameTitleLevelGroups([
+				{ file: 'a.json', title: 'Dériver', level: 1 },
+				{ file: 'b.json', title: 'Dériver', level: 2 },
+				{ file: 'c.json', title: 'Dériver', level: 1 },
+				{ file: 'd.json', title: 'Intégrer', level: 1 }
+			])
+		).toEqual([['a.json', 'c.json']]);
 	});
 });

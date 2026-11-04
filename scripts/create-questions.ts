@@ -40,7 +40,15 @@ import type { QuestionTemplate } from '$lib/questions/types';
 import { checkTemplate } from '$lib/questions/review/check-template';
 import { toTemplateInsertRow } from '$lib/questions/review/template-insert-row';
 import { argValue, createScriptClient, findReviewerId, hasFlag } from './relecture/common';
-import { readTemplateFile, sameGrades, withTemplateId } from './lib/template-file';
+import {
+	readTemplateFile,
+	sameGrades,
+	sameTitleLevelGroups,
+	withTemplateId
+} from './lib/template-file';
+
+/** Id de forme valide, pour vérifier qu'un id POURRA s'écrire dans le fichier */
+const ID_FICTIF = '00000000-0000-4000-8000-000000000000';
 
 interface Entree {
 	fichier: string;
@@ -99,7 +107,56 @@ async function main(): Promise<number> {
 			return 1;
 		}
 		const id = typeof brut === 'string' && brut.length > 0 ? brut : null;
+		// L'id d'un modèle créé doit pouvoir s'écrire dans son fichier : vérifié AVANT l'insert
+		if (id === null) {
+			try {
+				withTemplateId(texte, ID_FICTIF);
+			} catch (e) {
+				console.error(`⛔ ${fichier} : ${e instanceof Error ? e.message : String(e)}`);
+				return 1;
+			}
+		}
 		entrees.push({ fichier, texte, id, modele });
+	}
+	const malgreHomonyme = hasFlag('--malgre-homonyme');
+	const doublons = sameTitleLevelGroups(
+		entrees
+			.filter((e) => e.id === null)
+			.map((e) => ({ file: e.fichier, title: e.modele.title, level: e.modele.level }))
+	);
+	if (doublons.length > 0 && !malgreHomonyme) {
+		for (const groupe of doublons)
+			console.error(
+				`⛔ ${groupe.join(', ')} : même titre et même niveau dans le lot — homonyme voulu : --malgre-homonyme`
+			);
+		return 1;
+	}
+
+	// Modèles déjà en base, retrouvés par l'id de leur fichier ; titre vérifié avant toute écriture
+	const idsDuLot = entrees.flatMap((e) => (e.id === null ? [] : [e.id]));
+	const { data: lignesDuLot, error: e0 } = idsDuLot.length
+		? await supabase
+				.from('question_templates')
+				.select(
+					'id, title, level, status, grades, description, variations, shared, options, test_specs'
+				)
+				.in('id', idsDuLot)
+		: { data: [], error: null };
+	if (e0) throw new Error(`lecture des modèles impossible — ${e0.message}`);
+	const existantsParId = new Map((lignesDuLot ?? []).map((l) => [l.id, l]));
+	for (const { fichier, id, modele } of entrees) {
+		if (id === null) continue;
+		const existant = existantsParId.get(id);
+		if (!existant) {
+			console.error(`⛔ ${fichier} : id ${id.slice(0, 8)} absent de la base`);
+			return 1;
+		}
+		if (existant.title !== modele.title) {
+			console.error(
+				`⛔ ${fichier} : titre « ${existant.title} » en base, « ${modele.title} » dans le fichier (${id.slice(0, 8)})`
+			);
+			return 1;
+		}
 	}
 
 	// Homonymes des modèles à créer (même titre, même niveau) : tout le lot s'arrête
@@ -118,7 +175,7 @@ async function main(): Promise<number> {
 				data.map((h) => h.id.slice(0, 8))
 			);
 	}
-	if (homonymesDe.size > 0 && !hasFlag('--malgre-homonyme')) {
+	if (homonymesDe.size > 0 && !malgreHomonyme) {
 		for (const [fichier, ids] of homonymesDe)
 			console.error(
 				`⛔ ${fichier} : sans id, mais même titre et même niveau déjà en base (${ids.join(', ')}) — fichier réécrit qui a perdu son id ? Le remettre ; homonyme voulu : --malgre-homonyme`
@@ -132,24 +189,8 @@ async function main(): Promise<number> {
 	let misAJour = 0;
 	for (const { fichier, texte, id, modele } of entrees) {
 		if (id !== null) {
-			const { data: existants, error: e1 } = await supabase
-				.from('question_templates')
-				.select(
-					'id, title, level, status, grades, description, variations, shared, options, test_specs'
-				)
-				.eq('id', id);
-			if (e1) throw new Error(`${fichier} : lecture impossible — ${e1.message}`);
-			const existant = existants?.[0];
-			if (!existant) {
-				console.error(`⛔ ${fichier} : id ${id.slice(0, 8)} absent de la base`);
-				return 1;
-			}
-			if (existant.title !== modele.title) {
-				console.error(
-					`⛔ ${fichier} : titre « ${existant.title} » en base, « ${modele.title} » dans le fichier (${id.slice(0, 8)})`
-				);
-				return 1;
-			}
+			const existant = existantsParId.get(id);
+			if (!existant) throw new Error(`${fichier} : id ${id.slice(0, 8)} absent de la base`);
 			// Niveau renuméroté en base depuis la création : signalé, jamais réécrit par ce script
 			const noteNiveau =
 				existant.level === modele.level
@@ -232,7 +273,7 @@ async function main(): Promise<number> {
 			writeFileSync(join(dossier, fichier), withTemplateId(texte, cree.id));
 		} catch (e) {
 			throw new Error(
-				`${fichier} : « ${cree.title} » créé (${cree.id}) mais id NON écrit dans le fichier — l'y ajouter à la main avant de relancer (${e instanceof Error ? e.message : String(e)})`,
+				`${fichier} : « ${cree.title} » créé (${cree.id}) mais id NON écrit dans le fichier — l'y ajouter à la main avant de relancer (--malgre-homonyme créerait un doublon) (${e instanceof Error ? e.message : String(e)})`,
 				{ cause: e }
 			);
 		}

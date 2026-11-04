@@ -57,6 +57,21 @@ export function withTemplateId(text: string, id: string): string {
 	return `{\n\t"id": ${JSON.stringify(id)},\n${text.slice(2)}`;
 }
 
+/**
+ * Fichiers d'un même lot qui créeraient deux modèles de même titre et même niveau : chaque groupe
+ * de plus d'un fichier, dans l'ordre des fichiers (le contrôle en base ne voit pas le lot)
+ */
+export function sameTitleLevelGroups(
+	entries: readonly { file: string; title: string; level: number }[]
+): string[][] {
+	const groups = new Map<string, string[]>();
+	for (const { file, title, level } of entries) {
+		const key = JSON.stringify([title, level]);
+		groups.set(key, [...(groups.get(key) ?? []), file]);
+	}
+	return [...groups.values()].filter((files) => files.length > 1);
+}
+
 /** `grades` comparés comme des ensembles : l'ordre (et un doublon) ne compte pas */
 export function sameGrades(a: readonly string[], b: readonly string[]): boolean {
 	const ea = new Set(a);

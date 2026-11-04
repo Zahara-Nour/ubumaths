@@ -24,9 +24,10 @@
  * S'arrête à la première erreur.
  *
  * Changement de niveau : l'index `idx_question_templates_unique_category` interdit deux modèles
- * publiés au même (thème, domaine, sous-domaine, niveau) — colonnes lues EN BASE (un fichier ne
- * les porte plus) ; contrôle et niveau temporaire à retirer avec l'index (lot 4, ADR 0035). Un échange de niveaux passe donc par
- * un niveau temporaire (900 + niveau) avant l'écriture finale.
+ * publiés au même (thème, domaine, sous-domaine, niveau). Ces colonnes sont lues en base : un
+ * fichier ne les porte plus. Un échange de niveaux passe donc par
+ * un niveau temporaire (900 + niveau) avant l'écriture finale. Contrôle et niveau temporaire
+ * partent avec l'index (lot 4 du chantier `automaths-arbre`, ADR 0035).
  *
  * Usage :
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
