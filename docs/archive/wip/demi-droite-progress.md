@@ -1,5 +1,5 @@
 ---
-status: en-cours
+status: clos
 ---
 
 # Chantier `demi-droite` — demi-droite et intervalle à crochets sur ` ```line `
@@ -10,16 +10,13 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04 : chantier ROUVERT pour 3-057 (journal laissé dans `docs/archive/wip/`, une PR)._
+_Mis à jour le 2026-11-04, après #2370 : chantier CLOS._
 
-- **État** : outils livrés (#2294, #2309) ; 3-014 publié (#2328) ; 2-251 couvert (2069ac7e) ; 80a87e34 (#2346) en
-  prod. Rouvert : **3-057** (oublié à la clôture #2357) — 320f5ac7 « Résoudre ax ⩾ b graphiquement », publié,
-  corrigé sans droite graduée. PR en cours : lot `resoudre-graphique-droite-3`.
-- **Prochaine action** : PR mergée → David lance la simulation puis `--publier` du lot → relire 320f5ac7 en prod
-  (MCP) → statut `clos`, ligne de vérification manuelle.
-- **En attente de David** : les deux commandes du lot (`update-published-questions` refusé à Claude).
-- **Pièges en cours** : vérifications à l'œil (#2294, #2309, #2328, #2346) dans `verifications-manuelles.md`.
-- **Worktree / branche** : `../ubumaths-wt-demi-droite`, `feat/demi-droite-3-057`.
+- **État** : clos. Outils livrés (#2294 demi-droite, #2309 `representer:`) ; 3-014 publié (#2328) ; 2-251 couvert
+  (2069ac7e) ; droite graduée au corrigé de 80a87e34 (#2346) et de 320f5ac7 (#2370, 3-057), toutes deux en prod.
+- **Prochaine action** : aucune. Réunion d'intervalles à représenter : notée « à trancher » dans `outils-manquants.md`.
+- **En attente de David** : vérifications à l'œil (#2294, #2309, #2328, #2346, #2370) dans `verifications-manuelles.md`.
+- **Worktree / branche** : retirés.
 
 ---
 
