@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, PR #2369 ouverte, CI en cours._
+_Mis à jour le 2026-11-04, après #2369._
 
-- **État** : `readAllRows` (`src/lib/server/read-all-rows.ts`) branché sur les 7 lieux ; test d'intégration rouge prouvé (1000 au lieu de 1100) puis vert.
-- **Prochaine action** : revue `code-reviewer` (Sonnet) → CI verte → merge → `deploy:prod` sur demande de David.
-- **En attente de David** : `deploy:prod` après merge.
-- **Pièges en cours** : troncature PostgREST SILENCIEUSE ; tri stable terminé par `.order('id')`.
-- **Worktree / branche** : `../ubumaths-wt-modeles-plafond-1000` · `fix/modeles-plafond-1000` · port 5176.
+- **État** : correctif mergé (#2369, `651a1e3bf`) : `readAllRows` sur les 7 lieux. **Pas encore en prod.**
+- **Prochaine action** : `deploy:prod` (sur demande de David), puis la ligne #2369 de `verifications-manuelles.md` ; ensuite versement et archivage du journal.
+- **En attente de David** : `deploy:prod`.
+- **Suite possible (PR de ménage, non décidée)** : migrer les 9 boucles de pagination recopiées vers `readAllRows` (liste dans « Décisions »).
+- **Worktree / branche** : supprimés après le merge.
 
 ## Constat (2026-11-04)
 
@@ -44,4 +44,4 @@ _Mis à jour le 2026-11-04, PR #2369 ouverte, CI en cours._
 
 - 2026-11-04 : diagnostic, worktree ouvert.
 - 2026-11-04 : phase 0 validée ; `readAllRows` + 7 lieux + test d’intégration ; PR ouverte.
-- 2026-11-04 : PR #2369. Revue Sonnet : arrêt sur page VIDE (robuste à un `max_rows` < 1000), test d'intégration robuste au parallèle (inclusion, pas total exact). Non retenus : dédoublonnage par `id` (2 requêtes, risque infime), couverture des 5 autres routes. CI : 2 faux Supabase de routes sans `.range()` adaptés, filtre `paths` de nightly-integration, `docs/systeme/questions.md`.
+- 2026-11-04 : PR #2369 (mergée). Revue Sonnet : arrêt sur page VIDE (robuste à un `max_rows` < 1000), test d'intégration robuste au parallèle (inclusion, pas total exact). Non retenus : dédoublonnage par `id` (2 requêtes, risque infime), couverture des 5 autres routes. CI : 2 faux Supabase de routes sans `.range()` adaptés, filtre `paths` de nightly-integration, `docs/systeme/questions.md`.
