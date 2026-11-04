@@ -2018,3 +2018,7 @@ vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12
 - `create-questions` (simulation, prod) : 5/5 à créer ; `question:specs` 5/5 importables ; `sonde-figures`
   et `sonde-courbes` : 0 problème. Base locale : `-3..3` au lieu de `0..3;±` (refusé par le tirage).
 - **#2367 mergée** (CI verte) le 2026-11-04.
+- Brouillons créés en prod par David le 2026-11-04 : 2-287 `ac50c946`, 2-433 `2228d79e`, 2-288 `7d07b0c2`,
+  2-296 `37a1b7ab`, 2-297 `51192dc4` (MCP : 5 `draft`, sans nœud ni tag). Migration
+  `20261103235826_questions_2de_lot12b1_rangement_tags` (gabarit du 12 a), test d'intégration rouge sans
+  elle (3 échecs, 5 sautés sur 10), vert avec (10/10).
