@@ -3,75 +3,51 @@
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Accordion from '$lib/components/ui/accordion';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import CatalogueGallery from '$lib/components/questions/CatalogueGallery.svelte';
 	import CartFloatingButton from '$lib/components/CartFloatingButton.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-	import { buildCatalogue } from '$lib/questions/catalogue';
+	import { buildCatalogue, type CatalogueRubric } from '$lib/questions/catalogue';
 
-	// Le catalogue se range dans le navigateur, depuis le cache des modèles (lu
-	// une fois par onglet) ; aucun aperçu n'est calculé par le serveur.
-	let hierarchy = $derived(buildCatalogue(questionTemplatesCache.templates));
-	let themes = $derived(hierarchy.map((t) => t.theme));
+	// Valeur d'accordéon de la rubrique « Général » (elle n'a pas de nœud)
+	const GENERAL_RUBRIC_VALUE = 'general';
 
-	// Selected theme (starts as first theme if available)
-	let selectedTheme = $state<string | undefined>(undefined);
+	// Le catalogue se range dans le navigateur, selon l'arbre des notions reçu
+	// avec les modèles (lus une fois par onglet) ; aucun aperçu n'est calculé
+	// par le serveur.
+	let catalogue = $derived(
+		buildCatalogue(questionTemplatesCache.templates, questionTemplatesCache.nodes)
+	);
+	let branchItems = $derived(catalogue.branches.map((b) => ({ value: b.id, label: b.name })));
 
-	// Initialize selected theme when data is available
-	$effect(() => {
-		if (!selectedTheme && themes.length > 0) {
-			selectedTheme = themes[0];
-		}
-	});
-
-	// Get domains for selected theme
-	let availableDomains = $derived(
-		selectedTheme ? hierarchy.find((t) => t.theme === selectedTheme)?.domains || [] : []
+	// Branche choisie (la première tant que rien n'est choisi)
+	let chosenBranchId = $state<string | undefined>(undefined);
+	let selectedBranch = $derived(
+		catalogue.branches.find((b) => b.id === chosenBranchId) ?? catalogue.branches[0]
 	);
 
-	// Selected domain state
-	let selectedDomain = $state<string | undefined>(undefined);
-
-	// Rubriques dépliées du domaine affiché (valeurs des Accordion.Item)
-	let openSubdomains = $state<string[]>([]);
-
-	// Initialize selected domain when availableDomains changes
-	$effect(() => {
-		if (availableDomains.length > 0 && !selectedDomain) {
-			selectedDomain = availableDomains[0]?.domain;
-		}
-	});
-
-	// Get subdomains for selected domain
-	let availableSubdomains = $derived(
-		selectedDomain && availableDomains
-			? availableDomains.find((d) => d.domain === selectedDomain)?.subdomains || []
-			: []
+	// Notion choisie dans la branche (la première tant que rien n'est choisi)
+	let chosenNotionId = $state<string | undefined>(undefined);
+	let selectedNotion = $derived(
+		selectedBranch?.notions.find((n) => n.id === chosenNotionId) ?? selectedBranch?.notions[0]
 	);
 
-	/**
-	 * Handle theme change
-	 */
-	function handleThemeChange(value: string | undefined) {
-		selectedTheme = value;
-		// Reset domain when theme changes
-		const newDomains = value ? hierarchy.find((t) => t.theme === value)?.domains || [] : [];
-		selectedDomain = newDomains.length > 0 ? newDomains[0]?.domain : undefined;
-		openSubdomains = [];
+	// Rubriques dépliées de la notion affichée (valeurs des Accordion.Item)
+	let openRubrics = $state<string[]>([]);
+
+	function rubricValue(rubric: CatalogueRubric): string {
+		return rubric.id ?? GENERAL_RUBRIC_VALUE;
 	}
 
-	/**
-	 * Handle domain tab change
-	 */
-	function handleDomainChange(value: string | undefined) {
-		selectedDomain = value;
-		openSubdomains = [];
+	function handleBranchChange(value: string) {
+		chosenBranchId = value;
+		chosenNotionId = undefined;
+		openRubrics = [];
 	}
 
-	/**
-	 * Get subdomain display name
-	 */
-	function getSubdomainLabel(subdomain: string | null): string {
-		return subdomain || 'Général';
+	function handleNotionChange(value: string | undefined) {
+		chosenNotionId = value;
+		openRubrics = [];
 	}
 
 	onMount(() => {
@@ -106,7 +82,7 @@
 		</div>
 	{:else if !questionTemplatesCache.isLoaded}
 		<p class="text-center text-muted-foreground">Chargement des questions…</p>
-	{:else if themes.length === 0}
+	{:else if catalogue.branches.length === 0 && catalogue.unclassified.length === 0}
 		<!-- Empty state -->
 		<div class="flex min-h-96 items-center justify-center rounded-lg border border-dashed p-12">
 			<div class="text-center">
@@ -117,69 +93,56 @@
 			</div>
 		</div>
 	{:else}
-		<!-- Theme selector -->
-		<div class="mb-6 flex justify-items-center gap-4">
-			<label for="theme-select" class="mb-2 block text-sm font-medium"> Thème : </label>
-			<select
-				id="theme-select"
-				bind:value={selectedTheme}
-				onchange={(e) => handleThemeChange(e.currentTarget.value)}
-				class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none sm:w-80"
-			>
-				<option value="" disabled selected={!selectedTheme}>Choisir un thème...</option>
-				{#each themes as theme (theme)}
-					<option value={theme}>{theme}</option>
-				{/each}
-			</select>
-		</div>
+		{#if selectedBranch}
+			<!-- Branche -->
+			<div class="mb-6 flex items-center gap-4">
+				<label for="branch-select" class="shrink-0 text-sm font-medium whitespace-nowrap"
+					>Branche :</label
+				>
+				<MySelect
+					id="branch-select"
+					items={branchItems}
+					value={selectedBranch.id}
+					onValueChange={handleBranchChange}
+					triggerClass="w-full sm:w-80"
+				/>
+			</div>
 
-		{#if selectedTheme && availableDomains.length > 0}
-			<!-- Domain tabs -->
-			<Tabs.Root value={selectedDomain} onValueChange={handleDomainChange}>
+			<!-- Notions -->
+			<Tabs.Root value={selectedNotion?.id} onValueChange={handleNotionChange}>
 				<Tabs.List class="mb-6 flex-wrap border border-border !bg-transparent">
-					{#each availableDomains as domain (domain.domain)}
-						<Tabs.Trigger value={domain.domain} class="flex items-center gap-2">
-							{domain.domain}
+					{#each selectedBranch.notions as notion (notion.id)}
+						<Tabs.Trigger value={notion.id} class="flex items-center gap-2">
+							{notion.name}
 						</Tabs.Trigger>
 					{/each}
 				</Tabs.List>
 
-				{#each availableDomains as domain (domain.domain)}
-					<Tabs.Content value={domain.domain} class="space-y-6 bg-transparent">
+				{#each selectedBranch.notions as notion (notion.id)}
+					<Tabs.Content value={notion.id} class="space-y-6 bg-transparent">
 						<!-- bits-ui garde les onglets inactifs dans le DOM (hidden) : seul l'onglet
-						     choisi porte les rubriques, sinon chaque domaine les répéterait -->
-						{#if domain.domain === selectedDomain && availableSubdomains.length === 0}
-							<p class="text-center text-muted-foreground">
-								Aucun sous-domaine disponible pour ce domaine.
-							</p>
-						{:else if domain.domain === selectedDomain}
-							<!-- Subdomain accordions -->
+						     choisi porte les rubriques, sinon chaque notion les répéterait -->
+						{#if notion.id === selectedNotion?.id}
 							<Accordion.Root
 								type="multiple"
-								bind:value={openSubdomains}
+								bind:value={openRubrics}
 								class="space-y-4 rounded-lg border-border bg-background"
 							>
-								{#each availableSubdomains as subdomainGroup (subdomainGroup.subdomain)}
+								{#each notion.rubrics as rubric (rubricValue(rubric))}
 									<Accordion.Item
-										value={subdomainGroup.subdomain || 'general'}
+										value={rubricValue(rubric)}
 										class="rounded-lg border !border-b-0 bg-background"
 									>
 										<Accordion.Trigger
 											class="bg-background px-4 hover:bg-muted/50 hover:no-underline"
 										>
-											<div class="flex w-full items-center justify-between pr-4">
-												<div class="flex items-center gap-3">
-													<span class="font-medium text-foreground">
-														{getSubdomainLabel(subdomainGroup.subdomain)}
-													</span>
-												</div>
-											</div>
+											<span class="font-medium text-foreground">{rubric.name}</span>
 										</Accordion.Trigger>
 										<Accordion.Content class="bg-background px-4 pt-2 pb-4">
 											<!-- bits-ui rend aussi le contenu FERMÉ (hidden) : la galerie, et
 											     ses aperçus, ne sont montés qu'à l'ouverture de la rubrique -->
-											{#if openSubdomains.includes(subdomainGroup.subdomain || 'general')}
-												<CatalogueGallery templates={subdomainGroup.templates} />
+											{#if openRubrics.includes(rubricValue(rubric))}
+												<CatalogueGallery templates={rubric.templates} />
 											{/if}
 										</Accordion.Content>
 									</Accordion.Item>
@@ -189,6 +152,14 @@
 					</Tabs.Content>
 				{/each}
 			</Tabs.Root>
+		{/if}
+
+		{#if catalogue.unclassified.length > 0}
+			<!-- Modèles hors de l'arbre lu : ne devrait pas arriver, jamais perdus pour autant -->
+			<section class="mt-10 space-y-4">
+				<h2 class="text-lg font-semibold">Non classés</h2>
+				<CatalogueGallery templates={catalogue.unclassified} />
+			</section>
 		{/if}
 	{/if}
 </div>

@@ -20,14 +20,12 @@ vi.mock('$lib/questions/catalogue', async (importOriginal) => {
 import Page from '../+page.svelte';
 import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 
-function modele(id: string, domain: string, subdomain: string) {
+function modele(id: string, nodeId: string) {
 	return {
 		id,
 		type: 'fill_in_blanks',
 		title: `Modèle ${id}`,
-		theme: 'Entiers',
-		domain,
-		subdomain,
+		classification_node_id: nodeId,
 		level: 1,
 		grades: ['6'],
 		status: 'published',
@@ -35,15 +33,28 @@ function modele(id: string, domain: string, subdomain: string) {
 	};
 }
 
+const NODES = [
+	{ id: 'b', kind: 'branch', name: 'Nombres et calculs', parent_id: null, position: 0 },
+	{ id: 'n-add', kind: 'notion', name: 'Addition', parent_id: 'b', position: 0 },
+	{ id: 'n-mul', kind: 'notion', name: 'Multiplication', parent_id: 'b', position: 1 },
+	{ id: 's-somme', kind: 'subnotion', name: 'Somme', parent_id: 'n-add', position: 0 },
+	{ id: 's-diff', kind: 'subnotion', name: 'Différence', parent_id: 'n-add', position: 1 },
+	{ id: 's-tables', kind: 'subnotion', name: 'Tables', parent_id: 'n-mul', position: 0 }
+];
+
 const TEMPLATES = [
-	modele('a', 'Additionner', 'Somme'),
-	modele('b', 'Additionner', 'Différence'),
-	modele('c', 'Multiplier', 'Tables')
+	modele('a', 's-somme'),
+	modele('b', 's-diff'),
+	modele('c', 's-tables'),
+	modele('d', 'n-add')
 ];
 
 async function seedTemplatesCache() {
 	questionTemplatesCache.clear();
-	vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ templates: TEMPLATES })));
+	vi.stubGlobal(
+		'fetch',
+		async () => new Response(JSON.stringify({ templates: TEMPLATES, nodes: NODES }))
+	);
 	await questionTemplatesCache.fetchTemplates();
 	vi.unstubAllGlobals();
 }
@@ -67,7 +78,7 @@ describe('Catalogue Automaths — aperçus à la demande', () => {
 		expect(calledIds()).toEqual([]);
 	});
 
-	it('déplier une rubrique : ses aperçus seulement, pas ceux des autres rubriques ni domaines', async () => {
+	it('déplier une rubrique : ses aperçus seulement, pas ceux des autres rubriques ni notions', async () => {
 		await render(Page);
 
 		await page.getByRole('button', { name: 'Somme' }).click();
@@ -75,5 +86,17 @@ describe('Catalogue Automaths — aperçus à la demande', () => {
 		await vi.waitFor(() => expect(calledIds()).toContain('a'));
 		await new Promise((resolve) => setTimeout(resolve, 50));
 		expect(new Set(calledIds())).toEqual(new Set(['a']));
+	});
+
+	it('rangé selon l’arbre : notions en onglets, « Général » en tête des rubriques', async () => {
+		await render(Page);
+
+		await expect.element(page.getByRole('tab', { name: 'Addition' })).toBeVisible();
+		await expect.element(page.getByRole('tab', { name: 'Multiplication' })).toBeVisible();
+		const rubriques = page
+			.getByRole('heading', { level: 3 })
+			.elements()
+			.map((e) => e.textContent?.trim());
+		expect(rubriques).toEqual(['Général', 'Somme', 'Différence']);
 	});
 });

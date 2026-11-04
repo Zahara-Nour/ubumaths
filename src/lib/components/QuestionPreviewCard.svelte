@@ -4,8 +4,8 @@
 	 *
 	 * Décision de David (2026-09-29) : la tuile EST la flash-card de la question
 	 * (non interactive, avec son bouton de retournement), sous un intitulé fait
-	 * du sous-domaine, du titre et de la description du modèle (2026-09-30 ;
-	 * thème et domaine sont déjà affichés par la page). Un clic sur la tuile ne fait rien. En dessous, le
+	 * du titre et de la description du modèle (branche, notion et sous-notion
+	 * sont affichées par la page : sélecteur, onglet, rubrique). Un clic sur la tuile ne fait rien. En dessous, le
 	 * bouton d'ajout au panier (la grille n'a ni durée ni répétitions).
 	 */
 	import { Badge } from '$lib/components/ui/badge';
@@ -40,18 +40,15 @@
 </script>
 
 <div class="flex h-full flex-col gap-3">
-	<!-- Intitulé : sous-domaine et titre du modèle (thème et domaine sont déjà
-	     affichés par la page : sélecteur et onglet) -->
+	<!-- Intitulé : titre et description du modèle (branche, notion et sous-notion
+	     sont affichées par la page : sélecteur, onglet, rubrique) -->
 	<!-- flex-1 : la zone s'étire, les cartes d'une même rangée commencent à la même hauteur -->
 	<div class="flex flex-1 items-start justify-between gap-2" data-tile-heading>
 		<div class="min-w-0">
-			{#if template.subdomain}
-				<p class="tile-subdomain text-muted-foreground">{template.subdomain}</p>
-			{/if}
 			<div class="tile-title">
 				<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
 			</div>
-			<!-- Les modèles d'un même sous-domaine partagent souvent leur titre : la
+			<!-- Les modèles d'une même rubrique partagent souvent leur titre : la
 			     description les distingue (« Somme égale à 10 », « avec retenue »…) -->
 			{#if template.description}
 				<div class="tile-description" data-tile-description>
@@ -91,7 +88,6 @@
 	 * (réglage « A − / + ») : une classe Tailwind ne suffit pas. Ces règles, plus
 	 * précises, gardent la mise à l'échelle par --font-scale.
 	 */
-	.tile-subdomain,
 	.tile-description :global(p) {
 		margin: 0;
 		font-size: calc(0.75rem * var(--font-scale, 1)) !important;

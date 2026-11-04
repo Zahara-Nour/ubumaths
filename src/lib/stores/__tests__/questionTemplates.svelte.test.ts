@@ -10,8 +10,10 @@ import { questionTemplatesCache } from '../questionTemplates.svelte';
 
 const API = '/api/questions/templates/all';
 
+const NODES = [{ id: 'b1', kind: 'branch', name: 'Nombres', parent_id: null, position: 0 }];
+
 function reponse(templates: Array<{ id: string }>, ok = true) {
-	return { ok, json: async () => ({ templates }) } as Response;
+	return { ok, json: async () => ({ templates, nodes: NODES }) } as Response;
 }
 
 describe('questionTemplatesCache', () => {
@@ -35,6 +37,14 @@ describe('questionTemplatesCache', () => {
 		expect(fetchMock).toHaveBeenCalledWith(API);
 		expect(questionTemplatesCache.templates.map((t) => t.id)).toEqual(['m1', 'm2']);
 		expect(questionTemplatesCache.isLoaded).toBe(true);
+	});
+
+	it('garde l’arbre des notions reçu avec les modèles ; clear() l’oublie', async () => {
+		await questionTemplatesCache.fetchTemplates();
+		expect(questionTemplatesCache.nodes).toEqual(NODES);
+
+		questionTemplatesCache.clear();
+		expect(questionTemplatesCache.nodes).toEqual([]);
 	});
 
 	it('deux pages qui demandent en même temps partagent la même lecture, et attendent ses données', async () => {

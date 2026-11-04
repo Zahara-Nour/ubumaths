@@ -6,39 +6,64 @@
  * publiés (`questionTemplatesCache`) : le serveur ne calcule plus aucun aperçu
  * (1 912 modèles le 2026-11-04, 7 à 11 s par chargement).
  *
- * - `buildCatalogue` range les modèles : thème → domaine → sous-domaine, dans
- *   l'ordre déclaré (`compareCategories`), puis par niveau croissant.
+ * - `buildCatalogue` range les modèles selon l'arbre des notions (ADR 0019) :
+ *   branche → notion → sous-notion, dans l'ordre de l'arbre (`position`, réglée
+ *   dans l'admin), puis par niveau croissant. Les modèles posés sur la notion
+ *   elle-même forment la rubrique « Général », en tête.
  * - `templatePreview` calcule l'aperçu d'UN modèle (graine du panier), une
  *   seule fois : la rubrique dépliée l'appelle pour ses cartes seulement.
  *
- * Le rangement suit encore les colonnes `theme` / `domain` / `subdomain`, pas
- * l'arbre des notions (ADR 0019) : le panier et les séries en dépendent.
+ * Seul le rangement suit l'arbre : le panier et les séries désignent encore les
+ * modèles par l'ancien quadruplet, jusqu'au lot 2 du chantier `automaths-arbre`
+ * (ADR 0035).
  */
 
 import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { compareCategories } from '$lib/questions/category-order';
 import { PREVIEW_SEED } from '$lib/questions/cart-preview';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
+import type { ClassificationNode } from '$lib/types/database-helpers';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export interface CatalogueSubdomain {
-	/** `null` : modèles sans sous-domaine (`null` ou chaîne vide) */
-	subdomain: string | null;
+/** Ce que le catalogue lit d'un nœud de l'arbre */
+export type CatalogueNode = Pick<
+	ClassificationNode,
+	'id' | 'kind' | 'name' | 'parent_id' | 'position'
+>;
+
+/** Rubrique dépliable : une sous-notion, ou « Général » (modèles posés sur la notion) */
+export interface CatalogueRubric {
+	/** `null` : rubrique « Général » */
+	id: string | null;
+	name: string;
 	templates: QuestionTemplate[];
 }
 
-export interface CatalogueDomain {
-	domain: string;
-	subdomains: CatalogueSubdomain[];
+export interface CatalogueNotion {
+	id: string;
+	name: string;
+	rubrics: CatalogueRubric[];
 }
 
-export interface CatalogueTheme {
-	theme: string;
-	domains: CatalogueDomain[];
+export interface CatalogueBranch {
+	id: string;
+	name: string;
+	notions: CatalogueNotion[];
 }
+
+export interface Catalogue {
+	branches: CatalogueBranch[];
+	/** Modèles dont le nœud manque dans l'arbre lu : montrés à part, jamais perdus */
+	unclassified: QuestionTemplate[];
+}
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+export const GENERAL_RUBRIC_NAME = 'Général';
 
 // ============================================================================
 // VARIABLES
@@ -55,39 +80,92 @@ let previews = new WeakMap<QuestionTemplate, QuestionInstance | null>();
 // FUNCTIONS
 // ============================================================================
 
-/** Modèles rangés thème → domaine → sous-domaine (ordre déclaré, puis niveau) */
-export function buildCatalogue(templates: readonly QuestionTemplate[]): CatalogueTheme[] {
-	const sorted = [...templates].sort((a, b) => {
-		const byCategory = compareCategories(a, b);
-		if (byCategory !== 0) return byCategory;
-		// `level` est numérique : un tri lexicographique classerait 10 avant 2.
-		return (a.level ?? 0) - (b.level ?? 0);
+/** Ordre de l'arbre : `position`, puis nom (deux nœuds de même position) */
+function compareNodes(a: CatalogueNode, b: CatalogueNode): number {
+	return a.position - b.position || a.name.localeCompare(b.name, 'fr');
+}
+
+/** Dans une rubrique : niveau croissant (numérique : 10 après 2), puis titre */
+function compareTemplates(a: QuestionTemplate, b: QuestionTemplate): number {
+	return (a.level ?? 0) - (b.level ?? 0) || (a.title ?? '').localeCompare(b.title ?? '', 'fr');
+}
+
+/** Notion et sous-notion d'un modèle, ou `null` s'il n'est pas rangé sous une notion */
+function placeOf(
+	template: QuestionTemplate,
+	nodesById: ReadonlyMap<string, CatalogueNode>
+): { branch: CatalogueNode; notion: CatalogueNode; subnotion: CatalogueNode | null } | null {
+	const node = template.classification_node_id
+		? nodesById.get(template.classification_node_id)
+		: undefined;
+	if (!node) return null;
+
+	const notion = node.kind === 'subnotion' ? nodesById.get(node.parent_id ?? '') : node;
+	if (!notion || notion.kind !== 'notion') return null;
+	const branch = nodesById.get(notion.parent_id ?? '');
+	if (!branch || branch.kind !== 'branch') return null;
+
+	return { branch, notion, subnotion: node.kind === 'subnotion' ? node : null };
+}
+
+/**
+ * Modèles rangés branche → notion → sous-notion, dans l'ordre de l'arbre puis
+ * par niveau. Ce qui n'a aucun modèle n'apparaît pas.
+ */
+export function buildCatalogue(
+	templates: readonly QuestionTemplate[],
+	nodes: readonly CatalogueNode[]
+): Catalogue {
+	const nodesById = new Map(nodes.map((n) => [n.id, n]));
+	const unclassified: QuestionTemplate[] = [];
+	// branche → notion → rubrique (clé '' = « Général ») → modèles
+	const placed = new Map<string, Map<string, Map<string, QuestionTemplate[]>>>();
+
+	for (const template of templates) {
+		const place = placeOf(template, nodesById);
+		if (!place) {
+			console.warn(`Catalogue : modèle ${template.id} hors de l'arbre, rangé dans « non classés »`);
+			unclassified.push(template);
+			continue;
+		}
+		const notions = placed.get(place.branch.id) ?? new Map();
+		placed.set(place.branch.id, notions);
+		const rubrics = notions.get(place.notion.id) ?? new Map();
+		notions.set(place.notion.id, rubrics);
+		const rubricKey = place.subnotion?.id ?? '';
+		rubrics.set(rubricKey, [...(rubrics.get(rubricKey) ?? []), template]);
+	}
+
+	const byTreeOrder = (ids: Iterable<string>) =>
+		[...ids].map((id) => nodesById.get(id)!).sort(compareNodes);
+
+	const branches = byTreeOrder(placed.keys()).map((branch): CatalogueBranch => {
+		const notions = placed.get(branch.id)!;
+		return {
+			id: branch.id,
+			name: branch.name,
+			notions: byTreeOrder(notions.keys()).map((notion): CatalogueNotion => {
+				const rubrics = notions.get(notion.id)!;
+				const general = rubrics.get('');
+				return {
+					id: notion.id,
+					name: notion.name,
+					rubrics: [
+						...(general
+							? [{ id: null, name: GENERAL_RUBRIC_NAME, templates: general.sort(compareTemplates) }]
+							: []),
+						...byTreeOrder([...rubrics.keys()].filter((k) => k !== '')).map((subnotion) => ({
+							id: subnotion.id,
+							name: subnotion.name,
+							templates: rubrics.get(subnotion.id)!.sort(compareTemplates)
+						}))
+					]
+				};
+			})
+		};
 	});
 
-	const catalogue: CatalogueTheme[] = [];
-	for (const template of sorted) {
-		let theme = catalogue.find((t) => t.theme === template.theme);
-		if (!theme) {
-			theme = { theme: template.theme, domains: [] };
-			catalogue.push(theme);
-		}
-
-		let domain = theme.domains.find((d) => d.domain === template.domain);
-		if (!domain) {
-			domain = { domain: template.domain, subdomains: [] };
-			theme.domains.push(domain);
-		}
-
-		const subdomainKey = template.subdomain || null;
-		let subdomain = domain.subdomains.find((s) => s.subdomain === subdomainKey);
-		if (!subdomain) {
-			subdomain = { subdomain: subdomainKey, templates: [] };
-			domain.subdomains.push(subdomain);
-		}
-
-		subdomain.templates.push(template);
-	}
-	return catalogue;
+	return { branches, unclassified };
 }
 
 /** Aperçu d'un modèle (graine du panier), calculé une fois ; `null` si impossible */

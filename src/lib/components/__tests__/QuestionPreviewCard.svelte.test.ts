@@ -1,8 +1,8 @@
 /**
  * QuestionPreviewCard — tuile de la grille Automaths
  *
- * La tuile EST la flash-card (non interactive, retournable), sous « Thème /
- * Domaine » ; un clic sur la tuile n'ouvre rien ; ajout au panier en dessous.
+ * La tuile EST la flash-card (non interactive, retournable), sous le titre et la
+ * description du modèle ; un clic sur la tuile n'ouvre rien ; ajout au panier en dessous.
  */
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -50,14 +50,15 @@ describe('QuestionPreviewCard', () => {
 		await expect.element(page.getByRole('button', { name: /panier/ })).toBeInTheDocument();
 	});
 
-	it('intitulé : sous-domaine, titre et description du modèle, pas « Thème / Domaine »', async () => {
+	it('intitulé : titre et description du modèle, sans l’ancien sous-domaine (la rubrique dit la sous-notion)', async () => {
 		const screen = await renderTile();
 		const heading = screen.container.querySelector<HTMLElement>('[data-tile-heading]');
 
 		expect(heading).not.toBeNull();
-		expect(heading!.textContent).toContain(TEMPLATE.subdomain!);
 		expect(heading!.textContent).toContain(TEMPLATE.title);
-		// La description distingue les modèles d'un même sous-domaine (même titre)
+		expect(TEMPLATE.subdomain).toBeTruthy();
+		expect(heading!.textContent).not.toContain(TEMPLATE.subdomain!);
+		// La description distingue les modèles d'une même rubrique (même titre)
 		const description = heading!.querySelector<HTMLElement>('[data-tile-description] p');
 		expect(description).not.toBeNull();
 		// Plus petite que le titre (le rendu Markdown imposait sa propre taille)
@@ -65,7 +66,6 @@ describe('QuestionPreviewCard', () => {
 		expect(parseFloat(getComputedStyle(description!).fontSize)).toBeLessThan(
 			parseFloat(getComputedStyle(title!).fontSize)
 		);
-		// Thème et domaine sont déjà affichés par la page (sélecteur, onglet)
 		expect(heading!.textContent).not.toContain(`${TEMPLATE.theme} /`);
 	});
 

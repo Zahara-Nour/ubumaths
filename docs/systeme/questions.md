@@ -80,7 +80,7 @@ le SRS ([srs.md](srs.md)).
 | Case choix                                                       | `choice-case.ts` (réponse « 0;2 », positions affichées → indices d'origine), `choices.ts` (`statusFromChoices`, `choiceLetter`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Cours                                                            | `course-card.ts` (`excludeCourseCards`), `course-question.ts`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Séries et évaluations                                            | `series-items.ts` (`drawSeriesQuestions`, `buildSeriesItems`), `grading.ts` (`gradeQuestion`, `gradeOutOf20`), `public-question.ts` (`toPublicQuestion`, `toDisplayInstance`), `submission.ts`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| Catalogue, éditeur, publication                                  | `category-*.ts`, `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images), `template-fact-sheet.ts` (fiche du modèle : types, réglages en mots, chemin dans l'arbre).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Catalogue, éditeur, publication                                  | `catalogue.ts`, `category-*.ts`, `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images), `template-fact-sheet.ts` (fiche du modèle : types, réglages en mots, chemin dans l'arbre).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 ### Hors du dossier
 
@@ -178,9 +178,14 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   **modifié depuis le verdict** (`updated_at` du modèle postérieur au verdict — les migrations de
   rangement le font bouger aussi). Reprise des verdicts des anciennes pages à cocher :
   `scripts/questions/reprise-verdicts.ts` (simulation par défaut, `--ecrire`).
-- Automaths : catalogue rangé dans le navigateur (`src/lib/questions/catalogue.ts` :
-  `buildCatalogue`, thème → domaine → sous-domaine, ordre déclaré puis niveau — pas encore
-  l'arbre des notions). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés que pour la rubrique
+- Automaths : catalogue rangé dans le navigateur selon l'**arbre des notions**
+  (`src/lib/questions/catalogue.ts` : `buildCatalogue`) — sélecteur de branche, onglets de notion,
+  rubriques de sous-notion, dans l'ordre de l'arbre (`position`, puis nom), puis par niveau et titre.
+  Les modèles posés sur la notion elle-même forment la rubrique « Général », en tête ; une branche,
+  notion ou sous-notion sans modèle publié n'apparaît pas ; un modèle hors de l'arbre lu va dans
+  « Non classés » (jamais perdu). La tuile ne montre plus l'ancien sous-domaine. Le panier et les
+  séries désignent encore les modèles par l'ancien quadruplet, jusqu'au lot 2 du chantier
+  `automaths-arbre` (ADR 0035). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés que pour la rubrique
   dépliée (`CatalogueGallery`, montée par un `{#if}` : l'accordéon et les onglets de bits-ui
   gardent le contenu fermé dans le DOM), une fois par modèle (`templatePreview`), et réutilisés par le
   panier. Avant (novembre 2026), le serveur calculait les 1 912 aperçus à chaque visite : 7 à 11 s.
@@ -196,13 +201,14 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   - `questionCategories.svelte.ts` (`questionCategoriesCache`) : catégories des modèles
     (`/api/questions/categories/all`), pour refuser une catégorie déjà prise et proposer le
     prochain niveau libre dans `QuestionTemplateForm`.
-  - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés, **seule source
-    des pages Automaths** (catalogue, panier, `test`) — leurs `load` n'en envoient aucun.
+  - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés et arbre des
+    notions (`nodes`, nœuds non archivés), **seule source des pages Automaths** (catalogue, panier, `test`) — leurs `load` n'en envoient aucun.
     `fetchTemplates()` lit `/api/questions/templates/all` une fois par onglet (lectures
     simultanées partagées) ; naviguer entre ces pages ne recharge rien. Les pages admin
     invalident les deux caches après écriture : la relecture passe par `?frais=…`, adresse que
     le cache de Vercel ne connaît pas.
-- `/api/questions/templates/all` : liste publique gardée **5 min par Vercel**
+- `/api/questions/templates/all` : liste publique (`{ templates, nodes }` : modèles publiés et
+  nœuds non archivés de l'arbre, colonnes du rangement seulement) gardée **5 min par Vercel**
   (`s-maxage=300, stale-while-revalidate=300`) — un modèle publié ou dépublié l'est pour les
   élèves en 5 à 10 min. Servie à tous : lue par un client **anonyme** (`createAnonymousSupabase`),
   jamais par la session ; un échec répond 500, sans cache. Le hook passe en `private, no-store`
