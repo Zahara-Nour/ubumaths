@@ -9,13 +9,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2365._
+_Mis à jour le 2026-11-04, lot 5 publié._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lot 5 (suites : 240, 241, 381, 242)
-  en brouillon en prod, rangé et tagué (#2365, `db:migrate` fait, vérifié MCP, 2 sous-notions neuves). Page à
-  cocher publiée : https://claude.ai/artifact/CjbnjiD6DawhSe4zrQqKLU (0 verdict au 2026-11-04).
-- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`), puis David lance
-  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-approfondissements-5 --publier`. Ensuite lots 6 à 9.
+  relu 4/4 OK et publié (§ 10).
+- **Prochaine action** : lot 6 (algèbre : 256, 387, 257, 258), nouvelle branche depuis `origin/main` dans le
+  worktree ; relevé prod des 4 points d'abord. Puis lots 7 à 9.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
   `feat/questions-1spe-demonstrations` (rien à perdre ; `git push --delete` refusé par le classifieur le 2026-11-04).
@@ -359,3 +358,6 @@ Mergée (#2365, CI verte après les tests frères : copie figée de l'arbre, `LA
 doc lit les commits, pas la description de PR). `db:migrate` le 2026-11-04, vérifié MCP : 4 modèles sur leur nœud,
 un tag chacun, `draft`, `updated_at` inchangé. Garde des niveaux verte. Page à cocher :
 https://claude.ai/artifact/CjbnjiD6DawhSe4zrQqKLU.
+
+Relecture (2026-11-04) : 4/4 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`), 4/4 `published`
+relus en base (MCP).
