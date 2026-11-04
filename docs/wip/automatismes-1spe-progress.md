@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, pendant la PR du lot « Probabilités »._
+_Mis à jour le 2026-11-04, après #2373._
 
 - **État** : lot « Statistiques » livré et vérifié en prod (`d37413a3`, 0 débord) ; lot
   « Probabilités » : composition validée par David, script
   `scripts/create-automatismes-probabilites-1spe.ts` (aucun modèle neuf), rendu vérifié avant
-  écriture (4 PDF, 0 débord, pages relues) · **Prochaine action** : merger la PR ; puis David lance
+  écriture (4 PDF, 0 débord, pages relues), mergé (#2373) · **Prochaine action** : David lance
   `pnpm tsx scripts/create-automatismes-probabilites-1spe.ts --publier` depuis le dépôt principal ;
   ensuite régénérer la fiche depuis la base et `debord.py` = 0 · **En attente de David** :
   publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c`
@@ -20,8 +20,7 @@ _Mis à jour le 2026-11-04, pendant la PR du lot « Probabilités »._
   cours** : écritures en prod refusées par le classifieur (David les lance) ; API plafonnée à 1 000
   lignes (`.in('id', …)` pour sonder) ; modèles d'une même famille = mêmes données à graine égale ;
   `svelte-kit sync` dans un worktree neuf avant `tsx` ; `--polices-corrige` pour un corrigé ; le venv
-  de `debord.py` est dans le dépôt principal · **Worktree / branche** :
-  `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-probabilites-1spe`.
+  de `debord.py` est dans le dépôt principal · **Worktree / branche** : aucun (retiré après #2373).
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
