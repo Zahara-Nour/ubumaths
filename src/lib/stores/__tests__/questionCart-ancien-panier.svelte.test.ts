@@ -96,4 +96,13 @@ describe('questionCart — ancien panier du navigateur', () => {
 		localStorage.setItem(STORAGE_KEY, '{abîmé');
 		expect((await freshCart()).totalItems).toBe(0);
 	});
+
+	it('lien fabriqué : un modèle présent deux fois ne fait qu’une ligne (quantités additionnées)', async () => {
+		const cart = await freshCart();
+		cart.replaceWith([
+			{ templateId: ADDITION_ID, quantity: 2, delay: 20 },
+			{ templateId: ADDITION_ID, quantity: 3, delay: 40 }
+		]);
+		expect(cart.allItems).toEqual([{ templateId: ADDITION_ID, quantity: 5, delay: 20 }]);
+	});
 });
