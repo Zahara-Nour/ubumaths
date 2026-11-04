@@ -1,10 +1,8 @@
 {
+	"id": "a6d7b414-b42d-4378-a3fd-eff48890cc72",
 	"title": "Équation d’un cercle : centre et point, ou diamètre",
 	"description": "Écrire une équation du cercle de centre Ω passant par A, ou du cercle de diamètre [AB] (calcul de r²)",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Géométrie repérée",
-	"subdomain": "Équation de cercle",
 	"level": 2,
 	"status": "draft",
 	"delay": 90,

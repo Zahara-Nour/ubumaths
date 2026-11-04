@@ -1,10 +1,8 @@
 {
+	"id": "560effd0-8fce-46a7-b59e-bc4988f4f1fc",
 	"title": "Transformer une écriture exponentielle",
 	"description": "Équation fonctionnelle de exp pour transformer : factoriser par e^{qx}, diviser haut et bas par eˣ, double produit eˣ·e⁻ˣ = 1, réduire au même dénominateur",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "Propriétés algébriques",
 	"level": 8,
 	"delay": 60,
 	"status": "draft",

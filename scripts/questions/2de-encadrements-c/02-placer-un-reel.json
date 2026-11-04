@@ -1,10 +1,8 @@
 {
+	"id": "3b0a04c0-1af8-4040-9537-0aef99b31dd0",
 	"title": "Placer un réel sur une droite graduée",
 	"description": "Placer 2,7 (graduée en dixièmes), −5/3 (en tiers), −7/4 (en quarts)",
 	"grades": ["2"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 6,
 	"delay": 60,
 	"status": "draft",

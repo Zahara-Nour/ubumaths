@@ -1,10 +1,8 @@
 {
+	"id": "6cabd2db-ade8-4e08-b1bb-715d0eaa5a99",
 	"title": "Construire un tableau pour présenter des données",
 	"description": "Ranger un relevé brut dans un tableau : effectifs de quatre catégories, avec la ligne Total, observations datées (pluie de la semaine)",
 	"grades": ["6"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Tableaux",
 	"level": 3,
 	"delay": 120,
 	"status": "draft",

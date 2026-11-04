@@ -1,10 +1,8 @@
 {
+	"id": "558c31a7-cbf0-4f7f-b282-2ada6a64c9f3",
 	"title": "Placer un point sur le cercle trigonométrique",
 	"description": "Placer le point image d'un réel multiple de π/6 ou π/4, dans ]−π ; π] puis hors de cet intervalle (mesure principale), ou deux points symétriques",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Cercle et radians",
 	"level": 6,
 	"delay": 60,
 	"status": "draft",

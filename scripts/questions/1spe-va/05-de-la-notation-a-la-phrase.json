@@ -1,10 +1,8 @@
 {
+	"id": "9c04693a-33f3-4c4c-bf1a-ff801b8b15c4",
 	"title": "De la notation à la phrase",
 	"description": "Symboles → langue naturelle : {X ⩽ a}, P(X > a) (au moins a + 1, X entier), {X < a} (au plus a − 1) ; P(X ⩽ a) est un nombre",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Notations",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

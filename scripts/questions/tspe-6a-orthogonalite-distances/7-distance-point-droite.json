@@ -1,10 +1,8 @@
 {
+	"id": "4f056eb3-1626-44ad-828c-d0e39d1956da",
 	"title": "Espace : distance d'un point à une droite",
 	"description": "Distance de M à une droite (point, vecteur directeur) par le projeté orthogonal H = A + t u (pièges : distance AM, carré de la distance)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Orthogonalité et distances dans l'espace",
-	"subdomain": "Projeté orthogonal",
 	"level": 5,
 	"delay": 240,
 	"status": "draft",

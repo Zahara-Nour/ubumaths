@@ -1,10 +1,8 @@
 {
+	"id": "e7b37987-fcb4-42e1-b133-b3b83ba55865",
 	"title": "Résoudre x³ = k",
 	"description": "Équation x³ = k (cubes parfaits) par la croissance de la fonction cube : k entier, fraction (8/27), décimal (0,008), positif ou négatif, une seule solution (pièges : ∅ pour k < 0, deux solutions opposées, k/3, virgule)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction cube",
-	"subdomain": "Résolution algébrique",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

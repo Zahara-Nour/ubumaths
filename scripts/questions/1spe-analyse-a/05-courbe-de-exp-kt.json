@@ -1,10 +1,8 @@
 {
+	"id": "a2852ea5-ce64-4010-805b-d00874605510",
 	"title": "Courbe de t ↦ e^(kt)",
 	"description": "Fonction t ↦ e^(kt), k > 0 : courbe à choisir parmi 4 (sens contraire, opposée, décalée), k = 0,5 ou 2 selon la pente, description (croissante, au-dessus de l'axe, par (0 ; 1))",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "Représentation graphique",
 	"level": 5,
 	"delay": 45,
 	"status": "draft",

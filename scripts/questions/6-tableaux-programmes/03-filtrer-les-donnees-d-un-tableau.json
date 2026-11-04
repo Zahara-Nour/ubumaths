@@ -1,10 +1,8 @@
 {
+	"id": "b371908d-14fc-44a5-a286-d32cc55e6cd5",
 	"title": "Filtrer les données d'un tableau",
 	"description": "Choisir les lignes d'un tableau qui vérifient un critère (pluie, température), les compter, puis choisir un forfait avec deux critères à la fois",
 	"grades": ["6"],
-	"theme": "Statistiques",
-	"domain": "Exploiter des données",
-	"subdomain": "Filtrer un tableau",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

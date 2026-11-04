@@ -1,10 +1,8 @@
 {
+	"id": "6b2b7055-f935-4481-98b2-f0704be3a0f3",
 	"title": "Comparer deux séries : médiane et écart interquartile",
 	"description": "Deux séries résumées par (Q1, médiane, Q3) : écarts interquartiles, la plus dispersée",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Problèmes",
-	"subdomain": "Comparer des séries",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "29d74cf6-a8bc-4545-b83c-d772ec6e3f0f",
 	"title": "Résoudre une inéquation a + x ⩾ b",
 	"description": "Ensemble des solutions de x + a ⩾ b (entiers relatifs) et de a + x ⩾ b (décimaux), les quatre sens",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Premier degré",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

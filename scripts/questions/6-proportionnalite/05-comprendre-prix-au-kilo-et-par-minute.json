@@ -1,10 +1,8 @@
 {
+	"id": "d960edfb-120f-44ba-a118-cfbcd629caf3",
 	"title": "Comprendre « prix au kilo » et « par minute »",
 	"description": "Relier les expressions de la vie courante à la proportionnalité : « 3 € le kilo », c'est le prix de 1 kg ; 70 battements par minute, c'est 210 en 3 minutes ; 15 € pour 5 kg, c'est 3 € le kilo",
 	"grades": ["6"],
-	"theme": "Proportionnalité",
-	"domain": "Situations de proportionnalité",
-	"subdomain": "Définition",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

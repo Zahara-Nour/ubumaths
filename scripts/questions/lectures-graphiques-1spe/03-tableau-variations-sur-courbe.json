@@ -1,10 +1,8 @@
 {
+	"id": "7f82d15a-1c46-4bd5-81bc-a9f5e21048ed",
 	"title": "Dresser le tableau de variations d'une fonction lu sur sa courbe",
 	"description": "Choisir, parmi quatre, le tableau de variations d'une courbe à deux extremums (trois flèches), extremums et bornes sur les nœuds",
 	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Variations",
 	"level": 6,
 	"delay": 60,
 	"status": "draft",

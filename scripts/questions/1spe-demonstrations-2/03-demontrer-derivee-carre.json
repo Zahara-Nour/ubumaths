@@ -1,10 +1,8 @@
 {
+	"id": "b05ec37a-3e3a-4a98-bd32-635636b84281",
 	"title": "Démontrer la dérivée de la fonction carré",
 	"description": "Démonstration à trous de (x²)′ = 2x par le taux de variation entre a et a + h : (a + h)² − a² à développer, taux 2a + h, justification de la limite",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Démonstrations",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

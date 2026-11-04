@@ -1,10 +1,8 @@
 {
+	"id": "8f587948-d661-4eaf-b358-48bd35855311",
 	"title": "Paie tes achats",
 	"description": "Payer un objet, puis deux objets (additionner les prix), en posant pièces et billets",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 7,
 	"delay": 90,
 	"status": "draft",

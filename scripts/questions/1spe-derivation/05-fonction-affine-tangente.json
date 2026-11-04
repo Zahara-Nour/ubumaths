@@ -1,10 +1,8 @@
 {
+	"id": "be57bd36-3bd4-4852-9033-b443630eab40",
 	"title": "Fonction affine tangente",
 	"description": "Fonction affine tangente x ↦ f(a) + f′(a)(x − a), sous forme réduite, pour le carré, le cube, l'inverse et la racine carrée",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Approximation affine",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

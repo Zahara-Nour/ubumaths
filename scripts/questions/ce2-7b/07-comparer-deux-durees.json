@@ -1,10 +1,8 @@
 {
+	"id": "19c370bd-84de-45ea-9816-dd8af0c14451",
 	"title": "Quelle durée est la plus longue ? (deux horloges)",
 	"description": "Le film ou le match, lu sur quatre horloges ; de combien de minutes l'un dure-t-il plus longtemps que l'autre",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Durée écoulée",
 	"level": 7,
 	"delay": 120,
 	"status": "draft",

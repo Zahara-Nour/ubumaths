@@ -1,10 +1,8 @@
 {
+	"id": "8fee3492-87df-4227-a6f5-77d70a715b77",
 	"title": "Tables d'addition",
 	"description": "Toutes les tables mêlées : a + b, a et b de 2 à 10",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Additionner",
-	"subdomain": "Tables",
 	"level": 11,
 	"delay": 20,
 	"status": "draft",

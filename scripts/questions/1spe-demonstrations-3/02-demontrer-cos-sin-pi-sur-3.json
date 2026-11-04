@@ -1,10 +1,8 @@
 {
+	"id": "0931c87e-2038-422e-a783-a096c3bd23e8",
 	"title": "Démontrer les valeurs de cos(π/3) et sin(π/3)",
 	"description": "Démonstration à trous de cos(π/3) = 1/2 et sin(π/3) = √3/2 : triangle OAM équilatéral (justification), H milieu de [OA], sinus par cos² + sin² = 1",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Démonstrations",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

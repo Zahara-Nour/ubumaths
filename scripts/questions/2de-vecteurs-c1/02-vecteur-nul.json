@@ -1,10 +1,8 @@
 {
+	"id": "2228d79e-c5db-43e3-b896-26ea11aefbdd",
 	"title": "Le vecteur nul",
 	"description": "Reconnaître le vecteur nul (somme de deux vecteurs opposés) et ce que signifie AB = 0⃗ (pièges : le nombre 0, 2AB, l'opposé)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Égalité",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

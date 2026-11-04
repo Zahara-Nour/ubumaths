@@ -1,10 +1,8 @@
 {
+	"id": "f81bbacb-2664-4abb-9721-60c59bda589e",
 	"title": "Plans perpendiculaires et vecteurs normaux",
 	"description": "À savoir : deux plans sont perpendiculaires ⟺ leurs vecteurs normaux sont orthogonaux ; caractérisation, exemple en repère orthonormé ; distracteurs : colinéarité (plans parallèles), produit scalaire égal à 1",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Orthogonalité et distances dans l'espace",
-	"subdomain": "À savoir",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

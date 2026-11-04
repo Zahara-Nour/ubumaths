@@ -1,10 +1,8 @@
 {
+	"id": "043436d5-b6ad-4525-ab33-6b5bb0ebc48e",
 	"title": "Raisonner par équivalence",
 	"description": "Équivalence ou implication seule entre deux propositions, solution perdue par une étape non équivalente, propriété caractéristique d'une suite (pièges : diviser par x, x² = a² ⇔ x = a, vérifier sur les premiers termes)",
 	"grades": ["T_SPE"],
-	"theme": "Logique",
-	"domain": "Raisonnements",
-	"subdomain": "Par équivalence",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

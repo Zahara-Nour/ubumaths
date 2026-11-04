@@ -1,10 +1,8 @@
 {
+	"id": "fe7f5218-5a09-4ef4-844b-e0d1202dda83",
 	"title": "Théorème des valeurs intermédiaires : cas strictement monotone",
 	"description": "À savoir : f continue et strictement monotone sur [a ; b], k entre f(a) et f(b) ⟹ solution unique ; hypothèse : stricte monotonie (au sens large ne suffit pas)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Continuité",
-	"subdomain": "À savoir",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

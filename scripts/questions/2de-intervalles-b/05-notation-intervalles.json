@@ -1,10 +1,8 @@
 {
+	"id": "b720edd7-fe00-4ff7-a26a-f23b4dbd72ec",
 	"title": "Inégalités et intervalles",
 	"description": "Écrire −2 < x ⩽ 5 et x ⩾ 3 sous forme d'intervalle ; l'inégalité qui traduit x ∈ [a ; b[",
 	"grades": ["2"],
-	"theme": "Logique",
-	"domain": "Ensembles",
-	"subdomain": "Intervalles",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

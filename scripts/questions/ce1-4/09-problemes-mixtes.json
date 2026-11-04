@@ -1,10 +1,8 @@
 {
+	"id": "e4815e7f-4994-4041-9df1-0fc671da3ef8",
 	"title": "Problèmes mixtes en deux étapes",
 	"description": "Une multiplication et une addition ou une soustraction : 7 L à 2 €, billet de 20 € ; 20 cahiers à 4 € et 20 protège-cahiers à 2 €",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Deux étapes",
 	"level": 6,
 	"delay": 120,
 	"status": "draft",

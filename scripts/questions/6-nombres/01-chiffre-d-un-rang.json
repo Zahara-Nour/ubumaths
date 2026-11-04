@@ -1,10 +1,8 @@
 {
+	"id": "4d825d44-928a-4461-9df0-3b3c3fdc74fc",
 	"title": "Le chiffre d'un rang",
 	"description": "Donner le chiffre d'un rang d'un grand entier (jusqu'aux centaines de milliards) ou d'un décimal (des centaines aux millièmes)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 5,
 	"delay": 20,
 	"status": "draft",

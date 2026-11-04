@@ -1,10 +1,8 @@
 {
+	"id": "7e9b9b32-0d7a-4bd9-89f3-af0dd3a95431",
 	"title": "Compléter une loi : trouver le paramètre p",
 	"description": "Les probabilités de la loi s'expriment en fonction d'un réel p : écrire que leur somme vaut 1 et résoudre l'équation du premier degré",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Compléter une loi",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

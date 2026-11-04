@@ -1,10 +1,8 @@
 {
+	"id": "b2a4a178-ee4f-431f-aaef-baf1224910c9",
 	"title": "Échanger les nombres d'une multiplication",
 	"description": "Exemple : 8 × 4 = 4 × 8",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Produit",
 	"level": 11,
 	"delay": 20,
 	"status": "draft",

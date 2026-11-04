@@ -1,10 +1,8 @@
 {
+	"id": "c43bd203-4d0b-42a1-9543-291ebe6b9386",
 	"title": "Problèmes parties-tout avec des prix",
 	"description": "Des achats en euros et centimes : 1,20 € + 90 centimes + 12 € ; un prix manquant",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Parties-tout",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

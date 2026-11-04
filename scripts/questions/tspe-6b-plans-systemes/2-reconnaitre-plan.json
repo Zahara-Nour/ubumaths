@@ -1,10 +1,8 @@
 {
+	"id": "86efd357-5bf1-440d-b42f-447a31e513c5",
 	"title": "Espace : reconnaître un plan par son équation",
 	"description": "Nature d'un ensemble de points par son équation (plan, sphère, droite, point), plans x = k, y = k, z = k, équation non développée d'un plan à réduire (pièges : somme de carrés nulle, z = k pris pour une droite, signe de d)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Représentations paramétriques et équations cartésiennes",
-	"subdomain": "Équation cartésienne d'un plan",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

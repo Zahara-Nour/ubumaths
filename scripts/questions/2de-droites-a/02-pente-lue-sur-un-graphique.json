@@ -1,10 +1,8 @@
 {
+	"id": "f381c646-80fa-4cd2-86c0-0c3d9ad934be",
 	"title": "Lire la pente d'une droite sur un graphique",
 	"description": "Pente lue sur une droite tracée dans un repère : entière, puis fractionnaire entre deux points marqués (pièges : horizontal sur vertical, signe d'une droite qui descend)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Pente et vecteur directeur",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

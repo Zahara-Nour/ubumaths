@@ -1,10 +1,8 @@
 {
+	"id": "618d795c-5f19-49ba-be65-9a9ecd491e70",
 	"title": "Raisonnement par récurrence : hypothèse, hérédité, initialisation",
 	"description": "QCM : ce que l'on suppose dans l'hérédité, l'étape de calcul qui la prouve, l'implication à démontrer, et une récurrence sans initialisation (pièges : supposer P(n) pour tout n, réciproque)",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Raisonnement par récurrence",
-	"subdomain": "Structure d'une récurrence",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

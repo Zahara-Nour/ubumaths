@@ -1,10 +1,8 @@
 {
+	"id": "97781d22-6653-4f45-af32-e861bf0206a5",
 	"title": "Quelle unité pour peser un objet ?",
 	"description": "Choisir parmi mg, g, kg et t : un comprimé de 500 mg, une pomme de 150 g, un enfant de 30 kg, un camion de 20 t",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Unités",
 	"level": 7,
 	"delay": 45,
 	"status": "draft",

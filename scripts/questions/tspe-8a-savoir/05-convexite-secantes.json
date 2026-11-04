@@ -1,10 +1,8 @@
 {
+	"id": "12ed13ec-d4d8-43e2-9da0-48eff48effc9",
 	"title": "Convexité : position par rapport aux sécantes",
 	"description": "À savoir : f convexe sur I ⟺ courbe en dessous de ses sécantes (définition) ; concave : au-dessus ; distracteurs : tangentes, signe, sens de variation",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions convexes",
-	"domain": "Convexité",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "30585711-5e3e-40b1-a910-7f5d60b48980",
 	"title": "Nombres irrationnels de la géométrie",
 	"description": "Diagonale d'un carré (c√2), hauteur d'un triangle équilatéral (c√3), périmètre d'un cercle (dπ) ; cocher √2, π, √3 parmi des rationnels",
 	"grades": ["2"],
-	"theme": "Logique",
-	"domain": "Ensembles",
-	"subdomain": "Ensembles de nombres",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

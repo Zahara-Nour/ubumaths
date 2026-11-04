@@ -1,10 +1,8 @@
 {
+	"id": "1cb66993-a0f8-42fb-8d3d-21593ce29c79",
 	"title": "Le nombre qui suit, le nombre qui précède (jusqu'à $999\\,999$)",
 	"description": "Suite écrite des nombres jusqu'à 999 999 : nombre qui suit, nombre qui précède, avec les passages (… 999 → … 000, 99 999 → 100 000)",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 19,
 	"delay": 20,
 	"status": "draft",

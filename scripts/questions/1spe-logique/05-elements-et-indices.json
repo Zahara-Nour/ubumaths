@@ -1,10 +1,8 @@
 {
+	"id": "de42b303-0c6b-4e54-9c1e-61d8a5d4fd6b",
 	"title": "Éléments et indices d'une liste",
 	"description": "Lire un élément par son indice (dès 0), modifier, ajouter (append) et supprimer (del) des éléments, et suivre le décalage des indices",
 	"grades": ["1_SPE"],
-	"theme": "Algorithmique",
-	"domain": "Listes",
-	"subdomain": "Éléments et indices",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

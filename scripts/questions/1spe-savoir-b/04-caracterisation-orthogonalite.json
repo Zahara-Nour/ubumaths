@@ -1,10 +1,8 @@
 {
+	"id": "52a3ad9b-a6af-4e19-a4fe-dcb4806df355",
 	"title": "Caractérisation de l'orthogonalité",
 	"description": "À savoir : u et v orthogonaux ⟺ u·v = 0, dans les deux sens, parmi des erreurs typiques (u·v = 1, colinéaires, « un des vecteurs est nul »)",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "À savoir",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

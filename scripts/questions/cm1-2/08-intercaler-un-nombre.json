@@ -1,10 +1,8 @@
 {
+	"id": "08ec7b9f-7f8b-42f7-8ed5-b9cc3f6ee24a",
 	"title": "Intercaler un nombre (jusqu'à $999\\,999$)",
 	"description": "Écrire un entier compris entre deux entiers de 5 à 6 chiffres (45 307 < … < 45 370) ; toute réponse comprise est juste",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 14,
 	"delay": 20,
 	"status": "draft",

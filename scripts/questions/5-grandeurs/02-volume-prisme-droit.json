@@ -1,10 +1,8 @@
 {
+	"id": "9dea9199-078b-4458-8ef5-2f160174d5e1",
 	"title": "Volume d'un prisme droit",
 	"description": "Calculer le volume d'un prisme droit : aire de la base × hauteur (base 12 cm², hauteur 5 cm : 60 cm³), la base pouvant être un triangle rectangle à calculer",
 	"grades": ["5"],
-	"theme": "Grandeurs",
-	"domain": "Volumes",
-	"subdomain": "Volume d'un prisme droit",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

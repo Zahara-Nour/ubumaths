@@ -1,10 +1,8 @@
 {
+	"id": "16974687-c9a6-41ca-9faa-c11c7e881a1e",
 	"title": "Allure des solutions de y′ = ay",
 	"description": "Solutions Ce^(ax) de y′ = ay : lire le signe de a et de f(0) sur la courbe, décrire l'allure connaissant a et f(0) (pièges : signe de a confondu avec le sens de variation, limite en +∞)",
 	"grades": ["T_SPE"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Équations différentielles",
-	"subdomain": "Allure des courbes",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

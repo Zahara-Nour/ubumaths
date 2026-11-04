@@ -1,10 +1,8 @@
 {
+	"id": "2953c9c0-5a8b-40df-b1c7-9c840da8c7e4",
 	"title": "Encadrer un grand nombre",
 	"description": "Encadrer un entier de 7 à 9 chiffres au millier, à la dizaine de mille, à la centaine de mille ou au million près",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 9,
 	"delay": 30,
 	"status": "draft",

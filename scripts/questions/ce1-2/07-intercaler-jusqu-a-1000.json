@@ -1,10 +1,8 @@
 {
+	"id": "949ba026-2f6e-47e7-98e5-bc49a28bf25e",
 	"title": "Intercaler un nombre (jusqu'à $1\\,000$)",
 	"description": "391 < … < 396 ; suite à trous 387 ; 388 ; … ; … ; 391",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 8,
 	"delay": 20,
 	"status": "draft",

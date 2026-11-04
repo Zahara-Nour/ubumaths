@@ -1,10 +1,8 @@
 {
+	"id": "db7bb314-7e6a-41e8-86e8-2f38a2a71f72",
 	"title": "Factoriser un trinôme quand c'est possible",
 	"description": "Discriminant puis forme factorisée (case choix) : Δ > 0 avec a = 1 ou a ≠ 1, Δ = 0, Δ < 0 (ne se factorise pas) ; pièges : signes des racines, a oublié, somme prise pour un produit",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Polynôme du second degré",
-	"subdomain": "Formes",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

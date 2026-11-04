@@ -1,10 +1,8 @@
 {
+	"id": "17809937-5109-4af9-87a6-988f33bb33fc",
 	"title": "Déterminer graphiquement des antécédents",
 	"description": "Antécédents de k lus sur une courbe : deux, trois, un seul (sommet) ou aucun",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Lecture graphique",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

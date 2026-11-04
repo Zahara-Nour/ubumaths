@@ -1,10 +1,8 @@
 {
+	"id": "cfd13223-e81b-427b-8a99-f7c126b9ad19",
 	"title": "Convexité et croissance de la dérivée",
 	"description": "À savoir : f deux fois dérivable, convexe ⟺ f′ croissante ; concave ⟺ f′ décroissante ; distracteur : f′ positive (f croissante)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions convexes",
-	"domain": "Convexité",
-	"subdomain": "À savoir",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

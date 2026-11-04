@@ -1,10 +1,8 @@
 {
+	"id": "ab668c94-7f69-4cb9-9d50-cdeec974af6c",
 	"title": "Mettre un problème en inéquation",
 	"description": "« Au plus », « au moins » : choisir l'inéquation qui traduit la situation, puis la valeur entière extrême",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Mettre en inéquation",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

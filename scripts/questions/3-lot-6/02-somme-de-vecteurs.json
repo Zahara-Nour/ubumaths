@@ -1,10 +1,8 @@
 {
+	"id": "787cc937-5bc7-435f-9a63-7d4d0f102ea1",
 	"title": "Somme de deux vecteurs",
 	"description": "Construire la somme de deux vecteurs en enchaînant deux translations, sur un quadrillage",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs",
-	"subdomain": "Somme",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

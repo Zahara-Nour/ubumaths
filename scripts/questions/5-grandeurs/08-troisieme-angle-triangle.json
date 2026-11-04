@@ -1,10 +1,8 @@
 {
+	"id": "6bf0a792-4b71-4117-af9d-1fcbce1ca65c",
 	"title": "Le troisième angle d'un triangle",
 	"description": "Utiliser la somme des angles d'un triangle (180°) : deux angles de 40° et 65°, le troisième mesure 75° ; cas du triangle isocèle, rectangle, équilatéral",
 	"grades": ["5"],
-	"theme": "Géométrie",
-	"domain": "Triangles",
-	"subdomain": "Somme des angles",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

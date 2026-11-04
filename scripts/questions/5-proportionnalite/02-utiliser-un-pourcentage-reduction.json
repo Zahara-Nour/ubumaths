@@ -1,10 +1,8 @@
 {
+	"id": "ef08a256-64ee-49d4-aad7-d87a8a9d7d02",
 	"title": "Utiliser un pourcentage : réduction",
 	"description": "Calculer une réduction de 10 %, 25 % ou 50 % et le prix payé (25 % de 60 € = 15 € ; prix payé 45 €), sans coefficient multiplicateur",
 	"grades": ["5"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Problèmes",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

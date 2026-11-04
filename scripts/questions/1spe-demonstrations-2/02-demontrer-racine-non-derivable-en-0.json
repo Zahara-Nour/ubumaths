@@ -1,10 +1,8 @@
 {
+	"id": "f7938cd3-471f-43e8-81e0-3108215d399a",
 	"title": "Démontrer que la racine carrée n'est pas dérivable en 0",
 	"description": "Démonstration à trous : taux de variation de √ entre 0 et h égal à 1/√h, sa valeur pour h = 0,01, 0,0001 ou 0,000001 (tirée), conclusion (taux non borné)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Démonstrations",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

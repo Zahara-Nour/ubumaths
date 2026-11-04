@@ -1,10 +1,8 @@
 {
+	"id": "76d14aa6-086b-4c58-b668-b8a0b2968cb8",
 	"title": "Complète le tableau à double entrée",
 	"description": "Compléter un tableau à double entrée en partie rempli : table d'addition 3 × 3, formes pleines ou vides",
 	"grades": ["CP"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Tableau à double entrée",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

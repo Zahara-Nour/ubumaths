@@ -1,10 +1,8 @@
 {
+	"id": "ba0925ce-e338-4a87-91f5-270c55329e0b",
 	"title": "Linéarité de la moyenne",
 	"description": "Moyenne d'une série dont chaque valeur est augmentée de b, multipliée par a, ou transformée en ax + b",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Moyenne",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

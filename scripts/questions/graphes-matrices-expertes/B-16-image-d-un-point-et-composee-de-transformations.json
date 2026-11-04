@@ -1,13 +1,14 @@
 {
+	"id": "93539700-7047-4edd-98fa-85a80276931e",
 	"title": "Image d'un point par une transformation, composée = produit de matrices",
 	"description": "Calculer l'image d'un point par la matrice d'une transformation, par une rotation de centre O d'angle ±π/2 ou π, la matrice d'une composée (produit dans le bon ordre), un antécédent par la matrice inverse (pièges : produit ligne × matrice, ordre de la composée inversé, multiplier par A au lieu de A⁻¹)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Matrices",
-	"subdomain": "Transformations du plan",
 	"level": 2,
 	"status": "draft",
 	"delay": 90,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "Une transformation $f$ du plan a pour matrice $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ : le point de coordonnées $(x \\,;\\, y)$ a pour image le point de coordonnées $(X \\,;\\, Y)$ avec $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = A\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\nDonne les coordonnées de l'image $M'$ du point $M({{x}} \\,;\\, {{y}})$, sous la forme d'un vecteur colonne.\n\n$?$",

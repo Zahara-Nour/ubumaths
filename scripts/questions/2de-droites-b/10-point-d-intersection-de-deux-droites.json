@@ -1,10 +1,8 @@
 {
+	"id": "718b7183-415b-4a86-bbf1-70a3c1eb0c6c",
 	"title": "Point d'intersection de deux droites",
 	"description": "Coordonnées du point d'intersection de deux droites y = mx + p (deux cases), entières puis fractionnaires ; une droite x = c (pièges : x seul, y calculé dans une seule équation mal, signe)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Positions relatives",
 	"level": 3,
 	"delay": 120,
 	"status": "draft",

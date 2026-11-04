@@ -1,10 +1,8 @@
 {
+	"id": "3edf49f2-16e4-4deb-940d-42c01fa61519",
 	"title": "Petit théorème de Fermat : reste d'une puissance modulo p",
 	"description": "Utiliser aᵖ⁻¹ ≡ 1 [p] (p premier, a non multiple de p) et aᵖ ≡ a [p] pour réduire un exposant (pièges : répondre 1 pour toute puissance, a multiple de p, p non premier)",
 	"grades": ["T_EXP"],
-	"theme": "Arithmétique",
-	"domain": "Nombres premiers",
-	"subdomain": "Nombres premiers",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

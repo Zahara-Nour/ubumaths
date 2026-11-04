@@ -1,10 +1,8 @@
 {
+	"id": "1608d73f-d249-4bc2-ae97-1ff921374854",
 	"title": "Développement de ‖u + v‖²",
 	"description": "Utiliser ‖u + v‖² = ‖u‖² + 2u·v + ‖v‖² : la formule parmi des erreurs typiques, le cas de deux vecteurs orthogonaux, et ‖u‖² retrouvé à partir de ‖u + v‖², u·v et ‖v‖",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "Propriétés",
 	"level": 7,
 	"delay": 45,
 	"status": "draft",

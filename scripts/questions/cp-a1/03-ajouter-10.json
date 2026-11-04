@@ -1,10 +1,8 @@
 {
+	"id": "882c436f-d74c-41df-a449-5175533cdf9c",
 	"title": "Ajouter 10",
 	"description": "Ajouter une dizaine à un nombre",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Additionner",
-	"subdomain": "Somme",
 	"level": 19,
 	"delay": 20,
 	"status": "draft",

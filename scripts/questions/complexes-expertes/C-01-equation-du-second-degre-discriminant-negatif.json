@@ -1,10 +1,8 @@
 {
+	"id": "760093ec-400a-4774-beb7-ca9d2cb389fb",
 	"title": "Résoudre une équation du second degré à coefficients réels (Δ < 0)",
 	"description": "z² + bz + c = 0 et 4z² − 4pz + p² + 1 = 0 avec Δ < 0 : deux solutions conjuguées, dans l'ordre que l'on veut (pièges : oubli de la solution conjuguée, signe de b, division par 2a oubliée, √Δ avec Δ < 0)",
 	"grades": ["T_EXP"],
-	"theme": "Nombres complexes",
-	"domain": "Équations polynomiales",
-	"subdomain": "Second degré",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

@@ -1,10 +1,8 @@
 {
+	"id": "ecf4d46b-02d5-4fd1-86db-eac7b017a257",
 	"title": "Probabilités totales",
 	"description": "Formule des probabilités totales : partition en trois (trois machines) ; probabilité de gagner la troisième partie sur un arbre de trois épreuves dépendantes (quatre chemins)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Succession d'épreuves",
-	"subdomain": "Épreuves dépendantes",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

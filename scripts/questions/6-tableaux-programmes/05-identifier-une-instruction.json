@@ -1,10 +1,8 @@
 {
+	"id": "4aa51892-3278-4b1d-af37-dbfc4e1ae5f1",
 	"title": "Identifier une instruction dans un programme",
 	"description": "Programme Scratch court : l'instruction exécutée juste après une autre, le nombre de fois qu'une instruction est exécutée dans une boucle « répéter », l'instruction d'entrée et celle de sortie",
 	"grades": ["6"],
-	"theme": "Algorithmique",
-	"domain": "Variables et instructions",
-	"subdomain": "Séquence d'instructions",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

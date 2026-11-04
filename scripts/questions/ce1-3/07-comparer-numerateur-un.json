@@ -1,10 +1,8 @@
 {
+	"id": "643d294c-8228-4bef-8986-1eee2c252a72",
 	"title": "Comparer des fractions de numérateur 1",
 	"description": "Comparer 1/5 et 1/3 : plus on fait de parts, plus chaque part est petite",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 10,
 	"delay": 30,
 	"status": "draft",

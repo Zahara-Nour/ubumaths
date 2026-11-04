@@ -1,10 +1,8 @@
 {
+	"id": "eb04ebf7-8476-4c01-8e6b-25fc488a1acb",
 	"title": "Résoudre f(x) = k sur un graphique",
 	"description": "Résoudre graphiquement une équation f(x) = k, f linéaire tracée (droite par l'origine) : a positif, a négatif ; solution entière",
 	"grades": ["3"],
-	"theme": "Fonctions",
-	"domain": "Fonctions linéaires",
-	"subdomain": "Résolution graphique",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

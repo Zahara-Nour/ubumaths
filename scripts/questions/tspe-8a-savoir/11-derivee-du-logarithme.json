@@ -1,10 +1,8 @@
 {
+	"id": "9de80159-979b-4917-81e4-8e956147dafc",
 	"title": "Dérivée de la fonction logarithme",
 	"description": "À savoir : ln′(x) = 1/x sur ]0 ; +∞[, reconnue parmi des erreurs typiques, et dans l'autre sens (quelle fonction a pour dérivée 1/x)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction logarithme",
-	"subdomain": "À savoir",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

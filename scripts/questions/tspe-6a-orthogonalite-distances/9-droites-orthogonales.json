@@ -1,10 +1,8 @@
 {
+	"id": "dcabc409-b67b-4d21-8fe7-7c104d64c8a3",
 	"title": "Espace : deux droites orthogonales ?",
 	"description": "Décider si deux droites (par deux points chacune, ou par représentation paramétrique) sont orthogonales, par le produit scalaire de leurs vecteurs directeurs (orthogonales n'est pas sécantes)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Orthogonalité et distances dans l'espace",
-	"subdomain": "Orthogonalité",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

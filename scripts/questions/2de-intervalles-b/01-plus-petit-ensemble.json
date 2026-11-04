@@ -1,10 +1,8 @@
 {
+	"id": "bfcbf381-d454-41f3-9097-939f72c0df16",
 	"title": "Le plus petit ensemble de nombres",
 	"description": "Choisir le plus petit des ensembles ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ ⊂ ℝ qui contient 12/4, −√49, 7/4, 5/3, √7",
 	"grades": ["2"],
-	"theme": "Logique",
-	"domain": "Ensembles",
-	"subdomain": "Ensembles de nombres",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

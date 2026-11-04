@@ -1,10 +1,8 @@
 {
+	"id": "36c21f21-fee5-4d2e-a191-364b42039cd1",
 	"title": "Vecteur directeur d'une droite donnée par une équation",
 	"description": "Vecteur directeur (−b ; a) de ax + by + c = 0, puis (1 ; m) de y = mx + p, pente entière ou fractionnaire ; tout vecteur colinéaire accepté (pièges : (a ; b) normal, (m ; 1), (1 ; p))",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Pente et vecteur directeur",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

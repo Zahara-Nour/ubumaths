@@ -1,10 +1,8 @@
 {
+	"id": "6adcd053-17ce-40f7-9da7-92ab8d2d27e0",
 	"title": "Additionner des décimaux en regroupant",
 	"description": "Calcul astucieux : regrouper les termes dont la somme est un entier (2,75 + 4,6 + 0,25 ; 1,25 + 3,6 + 0,75 + 0,4)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Additionner",
-	"subdomain": "Somme astucieuse",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

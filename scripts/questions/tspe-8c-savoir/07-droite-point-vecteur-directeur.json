@@ -1,10 +1,8 @@
 {
+	"id": "d3ae0ac1-2a8e-4d07-bad1-f5d396297313",
 	"title": "Droite : un point et un vecteur directeur",
 	"description": "À savoir : une droite est déterminée par un point A et un vecteur directeur u non nul, M ∈ d ⟺ AM = t u ; caractérisation, données ; distracteurs : plan normal, demi-droite, point ou vecteur seul",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "8a6e41cc-264c-40df-b0b7-8a47e779d40d",
 	"title": "Combinaisons avec répétitions : glaces, bonbons, solutions entières",
 	"description": "Approfondissement : choix de k objets parmi n types, sans ordre et avec répétition, compté par C(n + k − 1, k) (étoiles et barres) — boules de glace, bonbons identiques, solutions de x + y + z = k (pièges : C(n, k) sans répétition, nᵏ avec ordre)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Dénombrement",
-	"subdomain": "Combinaisons",
 	"level": 3,
 	"status": "draft",
 	"delay": 60,

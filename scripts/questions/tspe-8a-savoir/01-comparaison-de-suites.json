@@ -1,10 +1,8 @@
 {
+	"id": "747d627a-54ed-45f3-9ac3-d10b1d68e2a0",
 	"title": "Théorèmes de comparaison pour les suites",
 	"description": "À savoir : uₙ ≤ vₙ et uₙ → +∞ ⟹ vₙ → +∞ ; vₙ → −∞ ⟹ uₙ → −∞ ; piège : uₙ → −∞ ne dit rien de vₙ",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Limites de suites",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "bbb43bf4-2cb7-4aa0-abf2-946b7199d159",
 	"title": "Angle droit, aigu ou obtus ?",
 	"description": "Un angle sur quadrillage, droit (aussi tourné), aigu ou obtus, loin de l'angle droit",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Angles",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

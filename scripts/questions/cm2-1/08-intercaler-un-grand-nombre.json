@@ -1,10 +1,8 @@
 {
+	"id": "69ea8b2a-bea0-44c7-a19c-cb7089e73f19",
 	"title": "Intercaler un grand nombre",
 	"description": "Écrire un entier compris entre deux entiers de 7 à 9 chiffres (3 405 270 < … < 3 450 207) ; toute réponse comprise est juste",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 10,
 	"delay": 20,
 	"status": "draft",

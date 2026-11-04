@@ -1,10 +1,8 @@
 {
+	"id": "d820232a-62a0-422f-9c08-33b279258af1",
 	"title": "Image et antécédent",
 	"description": "Image et antécédent : lus dans un tableau de valeurs, lus sur une courbe (deux antécédents), image calculée par une expression simple (x² − 3)",
 	"grades": ["3"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Image et antécédent",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

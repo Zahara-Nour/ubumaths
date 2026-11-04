@@ -1,10 +1,8 @@
 {
+	"id": "1076ebed-6b19-4259-9afa-c09932e97ba4",
 	"title": "La somme de deux ou trois nombres",
 	"description": "« La somme de 12 et de 25 est 37 » ; terme manquant d'une somme donnée",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Additionner",
-	"subdomain": "Sens",
 	"level": 6,
 	"delay": 20,
 	"status": "draft",

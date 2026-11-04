@@ -1,10 +1,8 @@
 {
+	"id": "10f05004-a9a0-49d0-9646-52b1951cbc52",
 	"title": "Problèmes de comparaison (jusqu'à 10 000)",
 	"description": "Le plus grand, le plus petit ou l'écart : Léo 1 188 billes, Lucie 2 075 de plus ; un vélo à 249,90 € et un casque à 35,40 €",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Comparaison",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

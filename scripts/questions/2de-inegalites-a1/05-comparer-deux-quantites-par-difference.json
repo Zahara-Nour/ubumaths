@@ -1,10 +1,8 @@
 {
+	"id": "5ffcde13-e2e7-43a6-8cfb-0004e7f2295d",
 	"title": "Comparer deux quantités par leur différence",
 	"description": "Deux tarifs de location (inscription + prix horaire) ; deux distances : le signe de la différence décide",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inégalités",
-	"subdomain": "Comparer",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

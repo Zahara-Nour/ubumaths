@@ -1,10 +1,8 @@
 {
+	"id": "570f91d5-75e6-4af8-b22b-67fae6c4bde1",
 	"title": "Probabilité d'un événement du type X ≥ a, X < a ou a ≤ X ≤ b",
 	"description": "À partir du tableau de la loi, additionner les probabilités des valeurs qui réalisent l'événement (inégalité large ou stricte)",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Loi d'une variable aléatoire",
 	"level": 2,
 	"status": "draft",
 	"delay": 45,

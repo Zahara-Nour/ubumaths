@@ -1,10 +1,8 @@
 {
+	"id": "6e712e78-2bef-4028-be37-745c47418797",
 	"title": "Le sens de « fois » : quel calcul ?",
 	"description": "3 boîtes de 4 œufs : 4 + 4 + 4 (sans le signe ×)",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Sens",
 	"level": 1,
 	"delay": 20,
 	"status": "draft",

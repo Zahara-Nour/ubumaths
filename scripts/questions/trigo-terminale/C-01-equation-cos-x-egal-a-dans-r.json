@@ -1,10 +1,8 @@
 {
+	"id": "4314e62e-6357-4374-856d-69dd36883851",
 	"title": "Résoudre cos x = a ou sin x = a dans ℝ",
 	"description": "Solutions dans ℝ par périodicité : ±α + 2kπ pour cos, α + 2kπ et π − α + 2kπ pour sin (pièges : une seule famille, cos et sin confondus, kπ au lieu de 2kπ)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Équations et inéquations",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

@@ -1,10 +1,8 @@
 {
+	"id": "d5a36be9-f6bb-428f-b0e0-60bee080bd19",
 	"title": "Où est-il ?",
 	"description": "Positions relatives : gauche, droite, au-dessus, en dessous, entre, sur, sous, devant, derrière",
 	"grades": ["CP"],
-	"theme": "Géométrie",
-	"domain": "Repérage et déplacements",
-	"subdomain": "Positions et plans",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "97a4df30-e3e7-4d25-af41-1103a90fea74",
 	"title": "Valeurs possibles d'une variable aléatoire",
 	"description": "Modéliser une situation par une variable aléatoire et donner ses valeurs possibles, dans l'ordre croissant (deux pièces, urne avec mise, dé)",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Modéliser par une variable aléatoire",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

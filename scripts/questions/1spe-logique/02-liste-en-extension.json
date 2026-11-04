@@ -1,10 +1,8 @@
 {
+	"id": "344a2248-3f01-4b9e-8bd7-6fcb8537221a",
 	"title": "Liste en extension",
 	"description": "Créer une liste en énumérant ses éléments : reconnaître l'instruction Python (bornes, premier terme), ou écrire la liste d'entiers décrite en mots",
 	"grades": ["1_SPE"],
-	"theme": "Algorithmique",
-	"domain": "Listes",
-	"subdomain": "Créer une liste",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

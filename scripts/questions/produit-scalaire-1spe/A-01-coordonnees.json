@@ -1,10 +1,8 @@
 {
+	"id": "fe407c88-478d-419e-aa02-8b3c8e1a917a",
 	"title": "Produit scalaire avec les coordonnées",
 	"description": "Calculer un produit scalaire dans une base orthonormée à partir des coordonnées de deux vecteurs ou de points",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "Calculer un produit scalaire",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

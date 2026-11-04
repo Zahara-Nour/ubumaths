@@ -1,10 +1,8 @@
 {
+	"id": "e3bacfdc-aa73-4e44-90fe-03156dce6c53",
 	"title": "Le robot avance et pivote",
 	"description": "Code « avance de », « pivote d'un quart de tour » : où arrive le robot ? quel code ?",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Repérage et déplacements",
-	"subdomain": "Coder un déplacement",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

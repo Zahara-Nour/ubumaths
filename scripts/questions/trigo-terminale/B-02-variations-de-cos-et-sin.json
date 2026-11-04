@@ -1,10 +1,8 @@
 {
+	"id": "77b5e06d-1040-49ca-b8a4-f524ab0448ac",
 	"title": "Variations de cos et sin entre −π et π",
 	"description": "Intervalles de croissance et de décroissance de cos et sin sur [−π ; π], par le signe de la dérivée ; bornes fermées ouvrables (pièges : cos et sin confondus, sens inversé, un seul morceau)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Dérivées et variations",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

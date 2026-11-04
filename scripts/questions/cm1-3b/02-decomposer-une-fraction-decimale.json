@@ -1,10 +1,8 @@
 {
+	"id": "6faa64d0-6b77-41f6-930d-f12549e69e2c",
 	"title": "Décomposer une fraction décimale",
 	"description": "Écrire une fraction décimale supérieure à 1 comme un entier plus des fractions décimales de numérateur inférieur à 10 (347/100 = 3 + 4/10 + 7/100)",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 6,
 	"delay": 30,
 	"status": "draft",

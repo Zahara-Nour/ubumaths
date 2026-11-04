@@ -1,10 +1,8 @@
 {
+	"id": "a1c5da8b-caca-4e55-9f51-152b14e782b3",
 	"title": "Problèmes parties-tout (jusqu'à 100)",
 	"description": "Chercher le tout jusqu'à 100 (25 + 32 + 18), une partie jusqu'à 30",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Parties-tout",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

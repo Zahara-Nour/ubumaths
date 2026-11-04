@@ -1,10 +1,8 @@
 {
+	"id": "2067f7a4-c00d-4b9b-b590-70987d82372c",
 	"title": "Valeur approchée de f(a + h)",
 	"description": "Valeur décimale approchée de f(a + h) par f(a) + f′(a)h : f(a) et f′(a) donnés, puis √, 1/x et x² à reconnaître",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Approximation affine",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

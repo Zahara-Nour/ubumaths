@@ -1,10 +1,8 @@
 {
+	"id": "19961e67-88c4-43bf-a76b-6a2af61dedf3",
 	"title": "Valeur renvoyée par une fonction Python de seuil",
 	"description": "Boucle while : premier rang où la condition devient fausse",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Seuil et algorithmes",
-	"subdomain": "Algorithmes",
 	"level": 2,
 	"status": "draft",
 	"delay": 90,

@@ -1,10 +1,8 @@
 {
+	"id": "14a2d26f-44a6-48b2-b661-b8acf856c26e",
 	"title": "Colorier une fraction d'une figure",
 	"description": "Colorier les parts d'une figure partagée en parts égales pour représenter une fraction : 3/8 sur 8 parts, 3/4 sur 8 parts, 7/4 sur deux bandes de 4",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Partage",
 	"level": 2,
 	"delay": 45,
 	"status": "draft",

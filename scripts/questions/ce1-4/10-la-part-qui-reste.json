@@ -1,10 +1,8 @@
 {
+	"id": "584dc8b3-2f0f-41ba-a954-76ba1c882e31",
 	"title": "La part qui reste",
 	"description": "Lucie colorie 3/10 d'une figure en bleu et le reste en rouge : quelle fraction est rouge ?",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 17,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "1d25a492-f7c9-4108-bbf7-5fbd512c0813",
 	"title": "Interpréter un rapport",
 	"description": "Rapport 1,25 : hausse de 25 % ; 0,8 : baisse de 20 % ; multiplié par 3 : hausse de 200 %",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inégalités",
-	"subdomain": "Comparer",
 	"level": 6,
 	"delay": 60,
 	"status": "draft",

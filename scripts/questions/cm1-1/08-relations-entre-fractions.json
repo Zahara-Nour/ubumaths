@@ -1,10 +1,8 @@
 {
+	"id": "2d58ce54-26d3-407a-a0d6-05281d543169",
 	"title": "Relations entre fractions usuelles",
 	"description": "Demis, quarts, dixièmes, centièmes et l'unité : 1/2 = ?/4, 1 − 1/4 = ?/4",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Egalité de fractions",
 	"level": 5,
 	"delay": 20,
 	"status": "draft",

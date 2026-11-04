@@ -1,10 +1,8 @@
 {
+	"id": "49fc94d2-517a-42de-b793-dcb397d459af",
 	"title": "Espace : la base est-elle orthonormée ?",
 	"description": "Trois vecteurs à coordonnées fractionnaires : orthogonaux deux à deux et de norme 1 ? (pièges : base orthogonale mais pas normée, vecteurs normés mais pas orthogonaux)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Orthogonalité et distances dans l'espace",
-	"subdomain": "Base orthonormée",
 	"level": 1,
 	"delay": 150,
 	"status": "draft",

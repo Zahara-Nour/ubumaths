@@ -1,10 +1,8 @@
 {
+	"id": "43c4f21f-9ccd-45cf-94c3-7615285b3bce",
 	"title": "Démontrer avec le calcul littéral",
 	"description": "Utiliser le calcul littéral pour démontrer : somme de trois entiers consécutifs multiple de 3, deux programmes de calcul équivalents, somme de deux pairs",
 	"grades": ["4"],
-	"theme": "Calcul littéral",
-	"domain": "Raisonner",
-	"subdomain": "Démontrer",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

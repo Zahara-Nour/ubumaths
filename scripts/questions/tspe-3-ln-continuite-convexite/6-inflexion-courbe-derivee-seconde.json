@@ -1,10 +1,8 @@
 {
+	"id": "5ffe398a-1f35-4681-8b47-e123e3ee03f7",
 	"title": "Point d'inflexion lu sur la courbe de f″",
 	"description": "Lire sur la courbe de f″ les points d'inflexion de f : zéros où f″ change de signe (pièges : le sommet de f″, un zéro où f″ ne change pas de signe)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Convexité",
-	"subdomain": "Point d'inflexion",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

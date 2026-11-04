@@ -1,10 +1,8 @@
 {
+	"id": "9660771f-b3e2-47ad-8f11-9afc4a0f3927",
 	"title": "Comparer deux nombres par leur différence",
 	"description": "Signe de a − b pour comparer deux fractions ; A = x² + k², B = 2kx : A − B = (x − k)² ⩾ 0",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inégalités",
-	"subdomain": "Comparer",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

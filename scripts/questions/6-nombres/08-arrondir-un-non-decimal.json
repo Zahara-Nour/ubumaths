@@ -1,10 +1,8 @@
 {
+	"id": "36991abb-b704-4c0f-9165-c5de5e18f70b",
 	"title": "Arrondir un quotient, arrondir π",
 	"description": "Valeur arrondie au dixième ou au centième de a/3 et a/9 (division qui ne s'arrête pas) ; arrondi de π à l'unité, au dixième, au centième",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Arrondir",
 	"level": 2,
 	"delay": 20,
 	"status": "draft",

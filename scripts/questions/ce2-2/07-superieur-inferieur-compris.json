@@ -1,10 +1,8 @@
 {
+	"id": "d6753aef-f384-41ee-be25-f57c663fc5c2",
 	"title": "Supérieur à, inférieur à, compris entre (jusqu'à $10\\,000$)",
 	"description": "Écrire un nombre qui respecte la phrase (toute réponse juste acceptée)",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 11,
 	"delay": 20,
 	"status": "draft",

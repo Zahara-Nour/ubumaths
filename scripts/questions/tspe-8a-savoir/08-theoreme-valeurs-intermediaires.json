@@ -1,10 +1,8 @@
 {
+	"id": "c10096eb-7403-4986-863e-e497ea477f44",
 	"title": "Théorème des valeurs intermédiaires",
 	"description": "À savoir : f continue sur [a ; b], k entre f(a) et f(b) ⟹ f(x) = k a au moins une solution dans [a ; b] ; hypothèse : la continuité (pas la monotonie) ; conclusion : au moins une",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Continuité",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

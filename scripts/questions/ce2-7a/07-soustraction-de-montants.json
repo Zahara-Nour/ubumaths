@@ -1,10 +1,8 @@
 {
+	"id": "8c90be06-d281-4020-b607-2958767b0313",
 	"title": "Pose et calcule une soustraction de montants en euros",
 	"description": "Soustraire deux montants à virgule, avec ou sans échange sur les centimes ; ôter un montant entier (143,45 € − 68 €) ; un reste",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Euros et centimes",
 	"level": 4,
 	"delay": 180,
 	"status": "draft",

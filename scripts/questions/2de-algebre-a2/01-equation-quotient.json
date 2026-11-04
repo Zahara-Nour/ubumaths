@@ -1,10 +1,8 @@
 {
+	"id": "9ed8c72e-60b7-4960-bbbc-fa766f11fd66",
 	"title": "Résoudre une équation quotient",
 	"description": "a/x = b ; (x + p)/(x + q) = k avec sa valeur interdite ; un cas où la seule solution est la valeur interdite (S = ∅)",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Equations",
-	"subdomain": "Quotient égal à k",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

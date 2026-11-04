@@ -1,10 +1,8 @@
 {
+	"id": "0027cea7-3d39-4958-b524-f09c575b8771",
 	"title": "Espace : coordonnées d'un vecteur dans une base",
 	"description": "Traduire t = au + bv + cw par un système et le résoudre par substitution (base triangulaire), choisir le système qui traduit l'égalité (pièges : coordonnées dans le repère à la place, lignes lues au lieu des colonnes)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Coplanarité, décomposition",
 	"level": 3,
 	"delay": 180,
 	"status": "draft",

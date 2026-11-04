@@ -1,10 +1,8 @@
 {
+	"id": "4329e837-f3ca-48e9-9d4b-b1e34418fb2a",
 	"title": "F est-elle une primitive de f ?",
 	"description": "Vérifier qu'une fonction donnée est une primitive en la dérivant : produit par eˣ, x ln x − x, ln(x² + c) (pièges : dérivée d'un produit, facteur u′ oublié)",
 	"grades": ["T_SPE"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Primitives",
-	"subdomain": "Notion de primitive",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

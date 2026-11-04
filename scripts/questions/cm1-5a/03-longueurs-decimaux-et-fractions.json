@@ -1,10 +1,8 @@
 {
+	"id": "e22cff99-529a-49c9-8ef9-0c48b7dae6ea",
 	"title": "Longueurs : écritures décimales et fractions",
 	"description": "215 cm = 2,15 m ; 2,15 m = 215 cm ; 3,75 km = 3 750 m ; 7 cm = 0,7 dm ; 1/2 km = 500 m ; 3/4 m = 75 cm",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Unités",
 	"level": 15,
 	"delay": 90,
 	"status": "draft",

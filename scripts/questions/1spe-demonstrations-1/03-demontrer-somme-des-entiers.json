@@ -1,10 +1,8 @@
 {
+	"id": "5fbb9a04-d4c3-4810-b717-075493df916b",
 	"title": "Démontrer la somme 1 + 2 + ⋯ + n",
 	"description": "Démonstration à trous de 1 + 2 + ⋯ + n = n(n + 1)/2 (S écrite deux fois, à l'envers) : somme d'une colonne, 2S, justification du produit n(n + 1)",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Sommes",
-	"subdomain": "Démonstrations",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

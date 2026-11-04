@@ -1,10 +1,8 @@
 {
+	"id": "7a8a67fa-6950-4aa3-8497-b4da042d0c5f",
 	"title": "Linéarité de l'espérance",
 	"description": "À savoir : E(X + Y) = E(X) + E(Y) et E(aX) = aE(X), sans hypothèse ; somme, produit par un réel, exemple E(2X + Y) ; distracteurs : variance, produit, a²",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Sommes de variables aléatoires",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

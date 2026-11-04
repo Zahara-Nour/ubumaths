@@ -1,9 +1,7 @@
 {
+	"id": "f8ccc8b6-b5ec-4fce-9c74-8dd1520bb709",
 	"title": "Vrai ou Faux sur les polynômes du second degré",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Polynôme du second degré",
-	"subdomain": "Propriétés",
 	"level": 1,
 	"delay": 20,
 	"status": "published",

@@ -1,10 +1,8 @@
 {
+	"id": "833cf1f1-8a3f-4319-806c-1893e30ef2dd",
 	"title": "Espace : interpréter les solutions d'un système",
 	"description": "Interpréter le résultat d'une résolution : droite et plan (une solution, aucune, une infinité), deux plans, trois plans (pièges : deux plans sécants en un point, « 0 = 0 » pris pour « aucune solution »)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Représentations paramétriques et équations cartésiennes",
-	"subdomain": "Positions relatives",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

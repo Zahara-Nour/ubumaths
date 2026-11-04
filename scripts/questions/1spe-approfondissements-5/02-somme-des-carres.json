@@ -1,10 +1,8 @@
 {
+	"id": "96d19805-a14f-474d-aa4c-5309c7af0afd",
 	"title": "Somme des n premiers carrés",
 	"description": "Formule 1² + 2² + ⋯ + n² = n(n + 1)(2n + 1)/6 donnée : somme pour n tiré, somme de a² à b² (différence de deux sommes), Sₙ₊₁ − Sₙ",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Sommes",
-	"subdomain": "Approfondissements",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

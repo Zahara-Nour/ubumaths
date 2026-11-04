@@ -1,10 +1,8 @@
 {
+	"id": "37c13d51-d85c-4315-846a-ae51562220e0",
 	"title": "Réciproque et contraposée de Thalès",
 	"description": "Dire si deux droites sont parallèles par la réciproque ou la contraposée du théorème de Thalès : triangles emboîtés, papillon ; rapports égaux ou proches",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Théorème de Thalès",
-	"subdomain": "Réciproque",
 	"level": 1,
 	"delay": 120,
 	"status": "draft",

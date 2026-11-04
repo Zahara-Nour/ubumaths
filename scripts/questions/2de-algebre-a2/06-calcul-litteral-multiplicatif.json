@@ -1,10 +1,8 @@
 {
+	"id": "36a37542-6efd-473d-9d2b-37227e1bcc2f",
 	"title": "Calcul littéral multiplicatif",
 	"description": "1/(a/b) = b/a ; (a/b)/(c/d) = ad/(bc) ; ax/b = (a/b) × x ; a/(−1) = −a",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Transformation",
-	"subdomain": "Simplification d'écriture",
 	"level": 5,
 	"delay": 45,
 	"status": "draft",

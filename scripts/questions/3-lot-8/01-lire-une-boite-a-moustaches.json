@@ -1,10 +1,8 @@
 {
+	"id": "1bd7378d-e2e3-4c28-af26-16fa904e58dd",
 	"title": "Lire une boîte à moustaches",
 	"description": "Lire la médiane, les quartiles, l'étendue sur une boîte à moustaches ; choisir la phrase juste ; comparer deux boîtes",
 	"grades": ["3"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Boîte à moustaches",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

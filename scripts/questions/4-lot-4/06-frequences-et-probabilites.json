@@ -1,10 +1,8 @@
 {
+	"id": "bb4dc318-4dbc-4411-92f2-5c27a67763e0",
 	"title": "Fréquences et probabilités",
 	"description": "Comparer les fréquences observées lors de la répétition d'une expérience aléatoire aux probabilités : fréquence d'une face sur 500 lancers, dé truqué, simulation de 1 000 lancers",
 	"grades": ["4"],
-	"theme": "Probabilités",
-	"domain": "Simulation",
-	"subdomain": "Fréquences",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "1ebd1c86-7970-49c9-a373-74ba4d71d9ec",
 	"title": "Limite de a × qⁿ + b, raison positive",
 	"description": "Limite d'une suite géométrique de raison q > 0 (q > 1 ou 0 < q < 1), multipliée et translatée (pièges : qⁿ → 0 pour q > 1, signe de a, q proche de 1)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Suites",
-	"domain": "Limites de suites",
-	"subdomain": "Suites géométriques",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

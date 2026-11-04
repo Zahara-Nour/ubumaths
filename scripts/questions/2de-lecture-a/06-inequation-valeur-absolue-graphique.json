@@ -1,10 +1,8 @@
 {
+	"id": "cbf00ce7-71c1-4bec-9dc8-7ae53972cbeb",
 	"title": "Résoudre graphiquement une inéquation |x| < k",
 	"description": "Inéquation |x| < k lue sur la courbe de la valeur absolue : k > 0 (entre −k et k, ou en dehors, les quatre sens), k < 0 (∅ ou ℝ)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Valeur absolue",
-	"subdomain": "Lecture graphique",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

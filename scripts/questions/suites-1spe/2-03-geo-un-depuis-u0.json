@@ -1,10 +1,8 @@
 {
+	"id": "727fb88a-0cb7-4937-88c7-c522dffe04f4",
 	"title": "Calculer un terme d'une suite géométrique",
 	"description": "Calculer u_n à partir de u_0 et de la raison",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Suites géométriques",
-	"subdomain": "Calculer un terme",
 	"level": 3,
 	"status": "draft",
 	"delay": 30,

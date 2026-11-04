@@ -1,10 +1,8 @@
 {
+	"id": "22e8272e-9139-4f0d-8b87-6ea1be635ad9",
 	"title": "Lire les coordonnées d'un vecteur sur un repère",
 	"description": "Lire les coordonnées d'un vecteur représenté par une flèche (AB puis u seul) (pièges : coordonnées échangées, sens inversé, coordonnées de B, signe)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Coordonnées",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

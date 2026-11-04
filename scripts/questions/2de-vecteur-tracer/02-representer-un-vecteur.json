@@ -1,10 +1,8 @@
 {
+	"id": "dd286c93-c5f2-4938-92d8-c27855745c79",
 	"title": "Représenter un vecteur dont on connaît les coordonnées",
 	"description": "Tracer un représentant de u (a ; b) dans un repère, origine libre puis imposée (pièges : sens inversé, coordonnées échangées, signe, mauvaise origine)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Coordonnées",
 	"level": 6,
 	"delay": 120,
 	"status": "draft",

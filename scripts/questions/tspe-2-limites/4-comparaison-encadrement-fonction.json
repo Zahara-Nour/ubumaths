@@ -1,10 +1,8 @@
 {
+	"id": "ae70373c-8135-4c3b-bf17-74ca1e265c68",
 	"title": "Limite d'une fonction par comparaison ou encadrement",
 	"description": "Encadrement, minoration ou majoration donnés ; fonction bornée divisée par x² (pièges : limite d'un seul membre, L ± m, sens de la comparaison)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Limites de fonctions",
-	"subdomain": "Comparaison et encadrement",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

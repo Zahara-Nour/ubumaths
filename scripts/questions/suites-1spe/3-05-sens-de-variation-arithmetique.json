@@ -1,11 +1,9 @@
 {
+	"id": "5cb7f6ce-8c71-4874-9b42-cd9afd4a1c29",
 	"title": "Sens de variation d'une suite arithmétique",
 	"description": "Le signe de la raison r donne le sens de variation",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Sens de variation",
 	"status": "draft",
-	"subdomain": "Suites arithmétiques et géométriques",
 	"level": 1,
 	"delay": 20,
 	"variations": [

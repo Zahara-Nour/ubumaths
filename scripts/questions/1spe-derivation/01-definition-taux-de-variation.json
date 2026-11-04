@@ -1,10 +1,8 @@
 {
+	"id": "de73e71d-031b-4f9a-b3c9-a1cc6f970a0e",
 	"title": "Utiliser la définition du taux de variation",
 	"description": "Le taux (f(b) − f(a))/(b − a) étant connu, retrouver f(b), ou b à partir d'un tableau de valeurs",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Taux de variation",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

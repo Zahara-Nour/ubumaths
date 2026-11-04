@@ -1,10 +1,8 @@
 {
+	"id": "c99ae1e8-25bd-4cf4-b2ed-dbcf2b3c672d",
 	"title": "Encadrement décimal à 10⁻ⁿ près",
 	"description": "Encadrer √2, √3, √5, √7, π, 2/7 ou 5/3, développement donné, à 10⁻¹, 10⁻² ou 10⁻³ près",
 	"grades": ["2"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 8,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "837cd6bc-a660-4b4d-9b97-06a983b3f73d",
 	"title": "Lire une fraction unitaire",
 	"description": "Lire 1/4 : un quart (leurres : « un quatre », une autre part, « un quatrième »)",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

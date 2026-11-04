@@ -1,10 +1,8 @@
 {
+	"id": "18e2afca-3e36-4dfc-b92b-38c9a6f4bb1a",
 	"title": "Développer (a + b)² et (a − b)²",
 	"description": "Développer avec les identités remarquables : (x + 3)², (x − 5)², (2x + 5)², (3x − 4)², puis l'une des trois identités à reconnaître ((ax + b)², (ax − b)², (ax − b)(ax + b))",
 	"grades": ["3"],
-	"theme": "Calcul littéral",
-	"domain": "Transformation",
-	"subdomain": "Identités remarquables",
 	"level": 10,
 	"delay": 60,
 	"status": "draft",

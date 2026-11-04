@@ -1,10 +1,8 @@
 {
+	"id": "d1aee0b9-ccca-4e3b-bbeb-80d4fff6f53d",
 	"title": "Récurrence sur une suite définie par une fonction croissante",
 	"description": "Hérédité d'un encadrement et de la monotonie quand u_{n+1} = f(u_n) avec f croissante, hérédité d'une formule conjecturée (pièges : vérifier l'initialisation seule, partir de la conclusion)",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Raisonnement par récurrence",
-	"subdomain": "Structure d'une récurrence",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

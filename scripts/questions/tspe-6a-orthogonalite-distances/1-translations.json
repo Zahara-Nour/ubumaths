@@ -1,10 +1,8 @@
 {
+	"id": "158e5e1a-c501-404e-b270-253c2b9e86a3",
 	"title": "Espace : translations",
 	"description": "Image d'un point par la translation qui transforme A en B, image par deux translations enchaînées (pièges : vecteur BA, M donné à la place de N, un seul vecteur ajouté)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Translations",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

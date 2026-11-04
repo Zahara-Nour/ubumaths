@@ -1,10 +1,8 @@
 {
+	"id": "af373581-11de-4246-b50d-21cb18f9e7c4",
 	"title": "Comparer des fractions de même dénominateur",
 	"description": "Comparer 2/5 et 3/5 : le symbole <, = ou >",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 9,
 	"delay": 30,
 	"status": "draft",

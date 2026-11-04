@@ -1,10 +1,8 @@
 {
+	"id": "76843d15-31fa-42a3-9da3-8ee1490d6018",
 	"title": "Valeur moyenne d'une fonction sur un intervalle",
 	"description": "μ = 1/(b − a) × ∫ₐᵇ f(x) dx en valeur exacte (piège : oubli du facteur 1/(b − a), on donne l'intégrale)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Intégration",
-	"domain": "Valeur moyenne",
-	"subdomain": "Calcul",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

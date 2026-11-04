@@ -1,10 +1,8 @@
 {
+	"id": "dbdf02be-9dbe-4b9a-97ff-3ab197135785",
 	"title": "Démontrer l'ensemble des points M tels que MA·MB = 0",
 	"description": "Démonstration à trous, par le milieu I de [AB] : MA·MB = MI² − IA², MI pour AB tiré, conclusion (le cercle de diamètre [AB])",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "Démonstrations",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

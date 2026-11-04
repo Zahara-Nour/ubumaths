@@ -1,10 +1,8 @@
 {
+	"id": "58c55bba-b741-4221-b3ce-a28a7e0618f5",
 	"title": "Variance par la formule de König-Huygens",
 	"description": "V(X) = E(X²) − E(X)² : E(X²) calculée depuis la loi (E(X) donnée), ou E(X) et E(X²) données (E(X) parfois négative)",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Variance et écart-type",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

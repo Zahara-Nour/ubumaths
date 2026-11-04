@@ -1,10 +1,8 @@
 {
+	"id": "4a51f887-48be-4eda-a58e-00ae529c15a1",
 	"title": "Termes d'une suite donnée par un algorithme",
 	"description": "Calculer des termes : langage naturel avec ← (u ← u² − c), liste Python construite par append (indice à partir de 0), boucle à deux variables (a, b = b, a + b)",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Seuil et algorithmes",
-	"subdomain": "Algorithmes",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

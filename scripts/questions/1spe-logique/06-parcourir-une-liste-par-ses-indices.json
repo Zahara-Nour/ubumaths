@@ -1,10 +1,8 @@
 {
+	"id": "2f7d637b-c49c-41bd-811d-dcaad76f52b3",
 	"title": "Parcourir une liste par ses indices",
 	"description": "Parcours d'une liste par ses indices (for k in range(len(L))) : compter selon une condition, trouver l'indice du plus grand élément, sommer selon l'indice",
 	"grades": ["1_SPE"],
-	"theme": "Algorithmique",
-	"domain": "Listes",
-	"subdomain": "Parcourir une liste",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "4c19f2cb-1c90-4b43-83ad-521ee4edb1f0",
 	"title": "Espace : deux vecteurs forment-ils une base d'un plan ?",
 	"description": "Sur un cube ou un pavé droit nommé, deux vecteurs d'une face ou d'un plan diagonal : base du plan si et seulement s'ils ne sont pas colinéaires (pièges : exiger l'orthogonalité, vecteurs parallèles de sens contraire)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Sur une figure",
 	"level": 3,
 	"delay": 120,
 	"status": "draft",

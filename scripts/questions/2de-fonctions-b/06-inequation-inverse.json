@@ -1,10 +1,8 @@
 {
+	"id": "214f91c0-997a-4086-9fd9-747f0311ca30",
 	"title": "Résoudre 1/x < k",
 	"description": "Inéquation 1/x < k par le signe de x et la décroissance de la fonction inverse : k > 0 ou k < 0 (±½ à ±4), les quatre sens (pièges : branche négative oubliée, 0 inclus, sens non changé)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction inverse",
-	"subdomain": "Résolution algébrique",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "36abc642-aa7a-44a2-8597-4246fc62069c",
 	"title": "Composer deux évolutions successives",
 	"description": "Coefficient multiplicateur et taux d'évolution globaux",
 	"grades": ["2"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Variations",
 	"level": 10,
 	"delay": 45,
 	"status": "draft",

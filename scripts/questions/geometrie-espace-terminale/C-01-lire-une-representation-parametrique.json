@@ -1,10 +1,8 @@
 {
+	"id": "33be404b-d498-4243-8653-dbb819ea7542",
 	"title": "Espace : lire une représentation paramétrique de droite",
 	"description": "Vecteur directeur, point de paramètre donné, paramètre d'un point, coordonnées manquantes d'un point de la droite (pièges : point pris pour vecteur, t mal reporté)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Représentations paramétriques et équations cartésiennes",
-	"subdomain": "Représentation paramétrique d'une droite",
 	"level": 1,
 	"status": "draft",
 	"delay": 90,

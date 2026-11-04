@@ -1,10 +1,8 @@
 {
+	"id": "d2be01f6-bc9c-47a7-a2dd-80e090544146",
 	"title": "Des diviseurs d'un nombre",
 	"description": "Trouver des diviseurs d'un entier de 24 à 100 : les cocher parmi 1 à 10, en proposer un dans un problème de partage en équipes",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Multiples et diviseurs",
 	"level": 5,
 	"delay": 30,
 	"status": "draft",

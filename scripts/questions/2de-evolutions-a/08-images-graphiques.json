@@ -1,10 +1,8 @@
 {
+	"id": "cc88ebd3-411a-4a86-80f9-084b9840f863",
 	"title": "Déterminer graphiquement des images",
 	"description": "Image d'un nombre lue sur une courbe : ordonnée du point d'abscisse donnée (pièges : abscisse recopiée, signe)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Lecture graphique",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

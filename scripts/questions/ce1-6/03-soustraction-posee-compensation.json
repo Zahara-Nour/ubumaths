@@ -1,10 +1,8 @@
 {
+	"id": "92caa903-cab9-4c74-a8bc-50cedd1cdba4",
 	"title": "Pose et calcule une soustraction (par compensation)",
 	"description": "Soustraction posée, méthode par compensation : un échange, deux échanges, zéro au milieu (504 − 37)",
 	"grades": ["CE1"],
-	"theme": "Nombres",
-	"domain": "Soustraction",
-	"subdomain": "Calcul posé",
 	"level": 2,
 	"delay": 180,
 	"status": "draft",

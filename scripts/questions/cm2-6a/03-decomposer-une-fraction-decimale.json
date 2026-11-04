@@ -1,10 +1,8 @@
 {
+	"id": "f316dfa7-62cf-468b-8927-0af6054e610a",
 	"title": "Décomposer une fraction décimale",
 	"description": "Écrire une fraction décimale comme un entier plus des fractions décimales de numérateur inférieur à 10, et l'inverse (4 107/1 000 = 4 + 1/10 + 0/100 + 7/1 000)",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 8,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "31789847-27f2-403f-92ee-cc5d25de4603",
 	"title": "Primitive de la fonction sinus",
 	"description": "À savoir : une primitive de sin sur ℝ est −cos ; dans les deux sens ; distracteurs : cos (signe), −sin, la fonction elle-même",
 	"grades": ["T_SPE"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Primitives",
-	"subdomain": "À savoir",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

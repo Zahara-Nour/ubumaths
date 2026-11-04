@@ -1,10 +1,8 @@
 {
+	"id": "edb094bd-ad97-4144-b293-9a4fea4bfa84",
 	"title": "Tracer une tangente connaissant le nombre dérivé",
 	"description": "Tracer la tangente à une courbe en un point A connaissant f′(a) : entier (nul compris) ou demi-entier ; geste « tracer » (deux nœuds de la grille)",
 	"grades": ["1_SPE", "1_TECHNO"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Tangente",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

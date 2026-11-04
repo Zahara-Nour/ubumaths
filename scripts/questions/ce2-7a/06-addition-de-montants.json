@@ -1,10 +1,8 @@
 {
+	"id": "4954edb5-588e-41ed-8801-8165f83ec001",
 	"title": "Pose et calcule une addition de montants en euros",
 	"description": "Additionner deux ou trois montants à virgule ; unités mêlées (43,45 € + 68 centimes)",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Euros et centimes",
 	"level": 3,
 	"delay": 180,
 	"status": "draft",

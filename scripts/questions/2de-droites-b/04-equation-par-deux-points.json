@@ -1,10 +1,8 @@
 {
+	"id": "6e074f0e-0c3a-41b8-b70a-82cb402494b3",
 	"title": "Équation d'une droite passant par deux points",
 	"description": "Équation de (AB) : pente puis ordonnée à l'origine, pente fractionnaire (par le déterminant), droite x = c quand x_A = x_B ; forme libre (pièges : droite par un seul des deux points, pente Δx/Δy)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Équations de droites",
 	"level": 4,
 	"delay": 120,
 	"status": "draft",

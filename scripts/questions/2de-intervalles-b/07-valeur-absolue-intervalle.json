@@ -1,10 +1,8 @@
 {
+	"id": "f4a12cab-b62e-473e-92f0-b5cdc7e82d19",
 	"title": "|x − a| ⩽ r : un intervalle centré",
 	"description": "Écrire {x : |x − 3| ⩽ 2} = [1 ; 5] et {x : |x + 1| < 3} = ]−4 ; 2[ ; retrouver a et r de [2 ; 8]",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Valeur absolue",
-	"subdomain": "Inéquations",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "aad6c700-242c-40a4-bd13-f24b016a8a59",
 	"title": "Lire le réel associé à un point du cercle",
 	"description": "Mesure principale dans ]−π ; π] d'un ou deux points nommés sur le cercle trigonométrique (multiples de π/6 et de π/4)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Cercle et radians",
 	"level": 3,
 	"status": "draft",
 	"delay": 45,

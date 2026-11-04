@@ -1,10 +1,8 @@
 {
+	"id": "c24d21e1-1441-4f0a-90fd-12a0288a234a",
 	"title": "Exponentielle d'une somme",
 	"description": "À savoir : exp(x + y) = exp(x)exp(y), dans les deux sens, parmi des erreurs typiques (somme des exponentielles, exp(xy))",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

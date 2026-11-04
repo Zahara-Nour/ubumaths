@@ -1,10 +1,8 @@
 {
+	"id": "651907b3-cb88-498f-92a1-d782b0a3fa1d",
 	"title": "Évolution en pourcentage avec apport constant",
 	"description": "Modéliser une évolution « p % puis apport constant » par u_{n+1} = a·u_n + b : relation, premiers termes, évolution à long terme (pièges : multiplier par p/100, apport avant le pourcentage, stabilisation confondue avec croissance sans limite)",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Modèles d'évolution",
-	"subdomain": "Pourcentages",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "c360d588-3e4f-4ea5-8d27-1f671fe47bcd",
 	"title": "Ranger des nombres mixtes",
 	"description": "Ranger trois nombres mixtes dans l'ordre croissant : parties entières différentes, même partie entière (2 + 1/4 et 2 + 1/3), une fraction parmi eux (9/4)",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordonner",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

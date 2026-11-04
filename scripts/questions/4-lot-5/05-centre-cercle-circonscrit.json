@@ -1,10 +1,8 @@
 {
+	"id": "f7d802ae-0dfa-4bd9-ad31-44bfd9f68254",
 	"title": "Centre du cercle circonscrit",
 	"description": "Le centre du cercle circonscrit à un triangle rectangle est le milieu de l'hypoténuse : le placer, calculer le rayon, puis le rayon après Pythagore",
 	"grades": ["4"],
-	"theme": "Géométrie",
-	"domain": "Triangles",
-	"subdomain": "Cercle circonscrit",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

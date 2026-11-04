@@ -1,10 +1,8 @@
 {
+	"id": "6ba40e95-f8d6-4843-b109-f311423b6bcc",
 	"title": "Symétrie du produit scalaire",
 	"description": "Utiliser la symétrie u·v = v·u : valeur de v·u, somme de produits scalaires écrits dans l'autre ordre, et l'égalité toujours vraie parmi des pièges (vecteur remplacé par son opposé)",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "Propriétés",
 	"level": 6,
 	"delay": 45,
 	"status": "draft",

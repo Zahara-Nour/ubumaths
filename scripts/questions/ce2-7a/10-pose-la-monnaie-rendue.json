@@ -1,10 +1,8 @@
 {
+	"id": "52206066-8c93-4538-99e8-4cfd7fc1c689",
 	"title": "Pose la monnaie rendue",
 	"description": "Poser le rendu sur 5 €, 10 €, 20 € et 50 € avec des pièces et des billets",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Rendre la monnaie",
 	"level": 6,
 	"delay": 120,
 	"status": "draft",

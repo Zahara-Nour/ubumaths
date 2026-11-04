@@ -1,10 +1,8 @@
 {
+	"id": "b5389494-3b1c-4f32-85c2-473192c9bacc",
 	"title": "Quels points sont alignés ?",
 	"description": "Repérer à l'œil trois points alignés parmi cinq",
 	"grades": ["CP"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Propriétés",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

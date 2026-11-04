@@ -1,10 +1,8 @@
 {
+	"id": "ea48f760-341d-431b-89aa-49c1798de4d8",
 	"title": "Calculer avec des probabilités conditionnelles",
 	"description": "Arbre à deux épreuves dépendantes (P(A), P_A(B), P_Ā(B) donnés) : P(A ∩ B), P(Ā ∩ B̄), P(A ∩ B̄) par P(A) × P_A(B) ; branches à compléter (événement contraire) ; jamais P(B) (probabilités totales, TSPE-617)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Succession d'épreuves",
-	"subdomain": "Épreuves dépendantes",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

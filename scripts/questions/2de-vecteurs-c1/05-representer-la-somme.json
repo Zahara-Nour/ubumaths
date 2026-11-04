@@ -1,10 +1,8 @@
 {
+	"id": "51192dc4-78df-4d5d-b6be-7062f456cef3",
 	"title": "Représenter la somme de deux vecteurs",
 	"description": "Tracer u + v depuis A quand u = AB et v = AC ont la même origine (règle du parallélogramme) (pièges : u − v, v − u, u seul, la diagonale BC)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Somme",
 	"level": 1,
 	"delay": 120,
 	"status": "draft",

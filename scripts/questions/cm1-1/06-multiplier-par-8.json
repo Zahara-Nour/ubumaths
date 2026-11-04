@@ -1,10 +1,8 @@
 {
+	"id": "9db49362-f770-4b90-9775-a4d9dc58ad11",
 	"title": "Multiplier par $8$",
 	"description": "Le double, puis le double, puis encore le double : 8 × 35",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Produits astucieux",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

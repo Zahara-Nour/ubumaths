@@ -1,10 +1,8 @@
 {
+	"id": "b500b44e-af29-4a2e-a2bd-67a57ed5ab20",
 	"title": "Tirages dans une urne : avec remise, sans remise, simultanés",
 	"description": "Une même urne, trois façons de tirer : nᵏ, n!/(n − k)!, C(n, k) ; puis tirages contenant une boule donnée (pièges : confondre les trois modèles, oublier de fixer la boule imposée)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Dénombrement",
-	"subdomain": "Reconnaître le modèle",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

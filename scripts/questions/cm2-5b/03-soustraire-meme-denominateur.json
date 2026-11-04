@@ -1,10 +1,8 @@
 {
+	"id": "a14767bc-8b4f-4e07-98ae-2cdea8531a24",
 	"title": "Soustraire des fractions de même dénominateur",
 	"description": "Différence de deux fractions de même dénominateur (37/40 − 12/40 = 25/40) ; dénominateur au plus 60, toute fraction égale juste",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 25,
 	"delay": 30,
 	"status": "draft",

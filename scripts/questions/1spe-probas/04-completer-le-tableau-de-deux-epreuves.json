@@ -1,10 +1,8 @@
 {
+	"id": "82e6baff-f309-47a6-be10-c43acb9a92e0",
 	"title": "Compléter le tableau de deux épreuves",
 	"description": "Deux épreuves indépendantes représentées par un tableau : tableau des issues (somme de deux dés à quatre faces), tableau des probabilités (produits des marges)",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Épreuves indépendantes",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

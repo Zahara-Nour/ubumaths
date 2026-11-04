@@ -1,10 +1,8 @@
 {
+	"id": "37a1b7ab-94c8-4ad7-9286-934d10cc7b5f",
 	"title": "Milieu d'un segment et vecteurs",
 	"description": "Caractériser le milieu I de [AB] par des vecteurs : AI = IB, AB = 2AI, IA = −IB, IA + IB = 0⃗ (pièges : AI = BI, IA = IB, 1/2 et 2 échangés, le nombre 0)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Milieu",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

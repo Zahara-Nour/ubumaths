@@ -1,10 +1,8 @@
 {
+	"id": "a8ec4c14-04c7-4ebe-9a0c-60234ca6784f",
 	"title": "Répéter à la main une séquence d'instructions",
 	"description": "Suivre une boucle « répéter » à la main : où arrive un robot sur un quadrillage, quelle figure trace le lutin, combien de répétitions pour une distance imposée",
 	"grades": ["6"],
-	"theme": "Algorithmique",
-	"domain": "Boucles",
-	"subdomain": "Boucle bornée",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

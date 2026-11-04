@@ -1,10 +1,8 @@
 {
+	"id": "19d80fc9-0d50-4dee-9ae8-b2ac4a42dece",
 	"title": "Rends la monnaie en euros et centimes",
 	"description": "Poser le rendu sur 1 €, 5 €, 10 € et 20 € avec des pièces et des billets",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Rendre la monnaie",
 	"level": 4,
 	"delay": 120,
 	"status": "draft",

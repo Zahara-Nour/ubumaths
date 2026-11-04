@@ -1,10 +1,8 @@
 {
+	"id": "027d1e21-9904-4684-99a9-7f118be80df9",
 	"title": "Calculer une expression avec un carré ou un cube",
 	"description": "Calculer la valeur d'une expression littérale avec un carré ou un cube pour une valeur entière de x : 3x² − 7 et (3x)² − 7 pour x = 4 ; x³ + 5 pour x = 3",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Calculs",
-	"subdomain": "Avec des puissances",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

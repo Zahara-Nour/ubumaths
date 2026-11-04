@@ -1,10 +1,8 @@
 {
+	"id": "63669e60-3140-4f55-8d5e-cc9d390adaf1",
 	"title": "Espace : coordonnées d'un vecteur dans une base",
 	"description": "Sur un cube ou un pavé droit nommé, coordonnées d'un vecteur entre deux sommets dans la base (AB, AD, AE), puis dans la base (AB, AC, AE) (pièges : signe, coefficients de l'ancienne base)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Sur une figure",
 	"level": 2,
 	"delay": 120,
 	"status": "draft",

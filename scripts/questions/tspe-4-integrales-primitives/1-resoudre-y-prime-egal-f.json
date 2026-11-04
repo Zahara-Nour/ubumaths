@@ -1,10 +1,8 @@
 {
+	"id": "b822359e-6a1c-418b-b991-95b46a5c5b17",
 	"title": "Résoudre l'équation y′ = f",
 	"description": "Les solutions de y′ = f sont les primitives de f, à une constante près (pièges : une seule solution, la dérivée au lieu d'une primitive, exposant non divisé, f elle-même)",
 	"grades": ["T_SPE"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Primitives",
-	"subdomain": "Notion de primitive",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "6bcb3535-6632-4659-9a83-23a740b8e685",
 	"title": "Boule ou sphère ?",
 	"description": "Connaître la définition de la sphère (OM = r) et de la boule (OM ⩽ r) ; situer un point par rapport à une sphère",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Sphère et boule",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

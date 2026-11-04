@@ -1,10 +1,8 @@
 {
+	"id": "c413489d-a61f-44b4-b58b-fd23b31fb460",
 	"title": "Loi de la somme de deux variables",
 	"description": "X et Y indépendantes : P(X + Y = s) par les couples de valeurs (lois en tableaux ; un dé à 4 faces et un dé à 6 faces) ; valeurs prises par X + Y",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Sommes de variables aléatoires",
-	"subdomain": "Loi d'une somme",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

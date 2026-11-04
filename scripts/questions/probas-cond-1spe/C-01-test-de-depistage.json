@@ -1,11 +1,9 @@
 {
+	"id": "a9c71276-30e3-406f-8082-248cce389824",
 	"title": "Test de dépistage",
 	"description": "Prévalence, sensibilité et spécificité données en pourcentages : probabilité d'un test positif (probabilités totales, valeur exacte) puis probabilité d'être malade (ou sain) sachant le test positif, arrondie au centième",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
 	"status": "draft",
-	"subdomain": "Problèmes en contexte",
 	"level": 1,
 	"delay": 120,
 	"shared": {

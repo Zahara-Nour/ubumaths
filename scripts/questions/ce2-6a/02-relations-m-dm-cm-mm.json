@@ -1,10 +1,8 @@
 {
+	"id": "0987f91b-6714-4841-be27-71bfee87ccb3",
 	"title": "Mètres, décimètres, centimètres et millimètres",
 	"description": "1 m = 10 dm = 100 cm = 1 000 mm ; 16 m = 1 600 cm = 160 dm ; 1 600 cm = 16 m ; 25 cm = 250 mm",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Unités",
 	"level": 10,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "b46ed512-5233-415b-9cfa-f5f448f846d4",
 	"title": "Primitive de la fonction exponentielle",
 	"description": "À savoir : exp est une primitive de exp sur ℝ ; les primitives sont eˣ + C ; distracteurs : formules des puissances, Ceˣ, eˣ + Cx",
 	"grades": ["T_SPE"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Primitives",
-	"subdomain": "À savoir",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

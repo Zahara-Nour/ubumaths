@@ -1,10 +1,8 @@
 {
+	"id": "eb5ecee6-0008-40c6-826a-c5948ebce59f",
 	"title": "Contrôler la vraisemblance d'un résultat",
 	"description": "Repérer, par un ordre de grandeur, le résultat vraisemblable d'un problème à deux étapes parmi trois : le bon, une virgule mal placée, une mauvaise opération",
 	"grades": ["5"],
-	"theme": "Décimaux",
-	"domain": "Problèmes",
-	"subdomain": "Vraisemblance",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

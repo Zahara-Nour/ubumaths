@@ -1,10 +1,8 @@
 {
+	"id": "883c9922-023c-47ee-acef-e112a13ae955",
 	"title": "Compléter l'arbre de trois épreuves",
 	"description": "Arbre pondéré à trois niveaux, à compléter : trois épreuves indépendantes différentes (mêmes pondérations à chaque niveau) ; trois parties dépendantes (pondérations selon la partie précédente)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Succession d'épreuves",
-	"subdomain": "Arbres",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

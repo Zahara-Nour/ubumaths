@@ -1,10 +1,8 @@
 {
+	"id": "8b59ca4b-9a09-49df-a10c-4f3772176d46",
 	"title": "Coefficient multiplicateur d'une évolution répétée",
 	"description": "Même taux appliqué plusieurs années de suite",
 	"grades": ["1_SPE"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Variations",
 	"level": 11,
 	"delay": 30,
 	"status": "draft",

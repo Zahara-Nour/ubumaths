@@ -1,10 +1,8 @@
 {
+	"id": "2cfae58d-7fdb-45f7-8ea1-777a4a307b5a",
 	"title": "Tracer une droite donnée par une équation cartésienne",
 	"description": "Tracer la droite ax + by + c = 0 (b ≠ 0) dans un repère (deux points posés), en isolant y d'abord, pente entière puis fractionnaire (pièges : pente a/b, −b/a, signe de la pente, signe de p)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Équations de droites",
 	"level": 7,
 	"delay": 120,
 	"status": "draft",

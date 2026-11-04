@@ -1,13 +1,14 @@
 {
+	"id": "bff6ba73-181e-46b5-aa84-aef634c6d7fb",
 	"title": "Nombre de chaînes de longueur n par la puissance de la matrice d'adjacence",
 	"description": "Lire dans Aⁿ le nombre de chaînes (ou de chemins orientés) de longueur n entre deux sommets, compter les chaînes de longueur 2 (pièges : coefficient de A au lieu de Aⁿ, coefficient (j, i) au lieu de (i, j) pour un graphe orienté)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Graphes",
-	"subdomain": "Matrice d'adjacence",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "On considère le graphe ci-dessous, de sommets rangés dans l'ordre $A$, $B$, $C$, $D$, $E$.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nSa matrice d'adjacence $M$ vérifie\n\n$$M^3 = \\begin{pmatrix}2&5&2&2&3\\\\5&4&5&5&5\\\\2&5&2&3&2\\\\2&5&3&2&2\\\\3&5&2&2&2\\end{pmatrix}$$\n\nCombien y a-t-il de chaînes de longueur $3$ reliant $A$ à $C$ ?\n\n$?$",

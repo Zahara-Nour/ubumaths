@@ -1,10 +1,8 @@
 {
+	"id": "a73704d7-0109-4e59-8df4-fc7f382c35f5",
 	"title": "Nommer un solide : cube, pavé, boule, cône, pyramide",
 	"description": "Un solide dessiné en perspective, à nommer",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Reconnaître et décrire",
 	"level": 8,
 	"delay": 90,
 	"status": "draft",

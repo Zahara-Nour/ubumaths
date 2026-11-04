@@ -1,10 +1,8 @@
 {
+	"id": "f61cd451-0435-4fa7-ba72-93b1f98f65b8",
 	"title": "Espace : position relative d'une droite et d'un plan",
 	"description": "Sur un cube ou un pavé droit nommé, une droite par deux sommets et un plan par trois sommets (face ou plan diagonal) : sécants, strictement parallèles, droite contenue (pièges : droite qui ne touche pas la face dessinée mais coupe le plan, contenue prise pour sécante)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Positions relatives",
 	"level": 2,
 	"delay": 120,
 	"status": "draft",

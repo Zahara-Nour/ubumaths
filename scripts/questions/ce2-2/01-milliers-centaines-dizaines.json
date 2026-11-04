@@ -1,10 +1,8 @@
 {
+	"id": "5258350a-1bcd-4ef7-bdd2-14b1ac5a5b3b",
 	"title": "Milliers, centaines et dizaines",
 	"description": "1 millier = 10 centaines = 100 dizaines ; nombre de centaines dans 4 357",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 18,
 	"delay": 20,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "69a05f98-9dd9-4ce5-b23e-5376e85fbbaf",
 	"title": "Probabilité « inverse » à partir d'un arbre",
 	"description": "P_B(A) = P(A∩B) / P(B), avec P(B) par la formule des probabilités totales",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Arbres pondérés",
 	"level": 4,
 	"status": "draft",
 	"delay": 90,

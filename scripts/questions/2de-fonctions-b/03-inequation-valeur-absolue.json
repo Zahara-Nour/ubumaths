@@ -1,10 +1,8 @@
 {
+	"id": "80a87e34-251c-481a-a086-7b7add231cc9",
 	"title": "Résoudre |x| < k",
 	"description": "Inéquation |x| < k par la distance à 0 : k > 0 (entre −k et k, ou en dehors, les quatre sens), k < 0 (∅ ou ℝ), k = 0 ({0}, ℝ \\ {0}, ∅, ℝ) (pièges : un seul côté, crochets, ∅ et ℝ confondus)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Valeur absolue",
-	"subdomain": "Résolution algébrique",
 	"level": 1,
 	"delay": 75,
 	"status": "draft",

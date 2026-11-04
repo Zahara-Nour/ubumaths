@@ -1,10 +1,8 @@
 {
+	"id": "7a56029d-3c3b-4dcd-a7fc-c94912d9d80f",
 	"title": "Lire un polygone des fréquences cumulées",
 	"description": "Fréquence cumulée lue à une borne de classe ; médiane lue à 50 %",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Fréquences cumulées",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

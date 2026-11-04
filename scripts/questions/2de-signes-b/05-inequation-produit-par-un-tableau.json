@@ -1,10 +1,8 @@
 {
+	"id": "71174c9c-2ab7-4829-9f0f-d8e81e2eb7a8",
 	"title": "Résoudre A(x) > 0 avec un tableau de signes",
 	"description": "Lire les solutions de A(x) > 0, ⩾ 0, < 0, ⩽ 0 sur le tableau de signes d'un produit (pièges : signe lu à l'envers, crochets fermés pour une inégalité stricte, réunion oubliée)",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Produit et quotient",
 	"level": 7,
 	"delay": 90,
 	"status": "draft",

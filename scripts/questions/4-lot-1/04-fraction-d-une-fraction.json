@@ -1,10 +1,8 @@
 {
+	"id": "a635df43-313d-47f7-a445-2020867ed2e4",
 	"title": "Fraction d'une fraction",
 	"description": "Calculer une fraction d'une fraction par un produit : 2/3 de 4/5 = 8/15 ; 3/4 de 8/9 = 2/3 ; les 2/3 des 3/5 des élèves",
 	"grades": ["4"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Fraction d'une quantité",
 	"level": 7,
 	"delay": 45,
 	"status": "draft",

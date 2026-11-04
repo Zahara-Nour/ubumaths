@@ -1,10 +1,8 @@
 {
+	"id": "f4f0d076-e95e-4662-b0a4-d04b0b5416c9",
 	"title": "Probabilité en décimal ou en pourcentage",
 	"description": "Donner une probabilité sous forme décimale ou de pourcentage (7 billes rouges sur 20 : 0,35 ; 3 secteurs gagnants sur 5 : 60 %)",
 	"grades": ["5"],
-	"theme": "Probabilités",
-	"domain": "Expériences aléatoires",
-	"subdomain": "équiprobabilité",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

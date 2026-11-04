@@ -1,10 +1,8 @@
 {
+	"id": "313ae1a2-1bfb-4da6-bcdd-8487bc4a84a2",
 	"title": "Comparer deux quantités par leur rapport",
 	"description": "Rapport de deux hauteurs, de deux populations, comparé à 1",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inégalités",
-	"subdomain": "Comparer",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

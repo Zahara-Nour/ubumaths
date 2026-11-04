@@ -1,13 +1,14 @@
 {
+	"id": "cd4f9fb3-9deb-402d-8fa5-278ef5089d61",
 	"title": "Inverse d'une matrice carrée d'ordre 2",
 	"description": "Calculer le déterminant ad − bc et l'inverse d'une matrice 2 × 2, à coefficients entiers ou fractionnaires (pièges : signes de b et c non changés, a et d non échangés, oubli de diviser par ad − bc)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Matrices",
-	"subdomain": "Calcul matriciel",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ est inversible.\n\nOn note $A^{-1} = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",

@@ -1,10 +1,8 @@
 {
+	"id": "e82450c7-fbb5-47e4-8a97-7762b8e1c3e6",
 	"title": "Calculer en utilisant l'indépendance",
 	"description": "Trois événements indépendants de probabilités différentes : montage en série (produit), en parallèle (événement contraire), exactement une réussite sur trois (trois produits)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Succession d'épreuves",
-	"subdomain": "Épreuves indépendantes",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

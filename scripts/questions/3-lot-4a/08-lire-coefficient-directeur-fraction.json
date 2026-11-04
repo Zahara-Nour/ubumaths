@@ -1,10 +1,8 @@
 {
+	"id": "b9771108-fe6a-4f37-8b49-671b5627f5d3",
 	"title": "Lire un coefficient directeur fractionnaire",
 	"description": "Lire graphiquement un coefficient directeur fractionnaire en tiers (1/3, 2/3, −1/3, −2/3) entre deux nœuds du quadrillage",
 	"grades": ["3"],
-	"theme": "Fonctions",
-	"domain": "Fonctions affines",
-	"subdomain": "Lecture graphique",
 	"level": 4,
 	"delay": 75,
 	"status": "draft",

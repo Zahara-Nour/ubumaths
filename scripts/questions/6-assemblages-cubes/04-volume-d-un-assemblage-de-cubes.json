@@ -1,10 +1,8 @@
 {
+	"id": "650dcfc6-19f5-40a5-a9a1-13d3e657d60f",
 	"title": "Volume d'un assemblage de cubes",
 	"description": "Volume en cm³ d'un assemblage de cubes d'arête 1 cm : compter les cubes, un pavé plein compté étage par étage, un pavé auquel il manque une marche ou un coin",
 	"grades": ["6"],
-	"theme": "Grandeurs",
-	"domain": "Volumes",
-	"subdomain": "Assemblages de cubes",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

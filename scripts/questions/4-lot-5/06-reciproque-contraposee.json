@@ -1,10 +1,8 @@
 {
+	"id": "03f891f6-7af1-45b4-bb61-d83b48f65600",
 	"title": "Réciproque et contraposée",
 	"description": "Écrire la réciproque et la contraposée d'une propriété vraie du collège, puis dire si elles sont vraies (contre-exemple)",
 	"grades": ["4"],
-	"theme": "Géométrie",
-	"domain": "Raisonner",
-	"subdomain": "Réciproque et contraposée",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

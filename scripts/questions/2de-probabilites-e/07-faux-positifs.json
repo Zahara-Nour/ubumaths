@@ -1,10 +1,8 @@
 {
+	"id": "94b22887-26db-491d-aa5e-ca3f828eafb7",
 	"title": "Faux positifs : P_M(T) ou P_T(M)",
 	"description": "Test de dépistage en tableau croisé : sensibilité, probabilité d'être malade sachant le test positif, faux positifs",
 	"grades": ["2"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Problèmes en contexte",
 	"level": 4,
 	"delay": 150,
 	"status": "draft",

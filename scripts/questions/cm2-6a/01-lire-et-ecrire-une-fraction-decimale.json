@@ -1,10 +1,8 @@
 {
+	"id": "bd735bc4-39d6-4942-92c9-e1969072085e",
 	"title": "Lire et écrire une fraction décimale",
 	"description": "Deux-cent-sept millièmes ↔ 207/1 000 : écrire en chiffres une fraction décimale donnée en lettres, la lire parmi quatre écritures ; dénominateur 10, 100 ou 1 000",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 9,
 	"delay": 30,
 	"status": "draft",

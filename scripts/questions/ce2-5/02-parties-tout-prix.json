@@ -1,10 +1,8 @@
 {
+	"id": "a2bee082-e50e-44b7-880b-baf7b16c9748",
 	"title": "Problèmes parties-tout avec des prix à virgule",
 	"description": "Des achats en euros et centimes : 59,90 € + 24,50 € + 9,75 € ; un prix manquant ; l'argent qui reste",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Parties-tout",
 	"level": 8,
 	"delay": 90,
 	"status": "draft",

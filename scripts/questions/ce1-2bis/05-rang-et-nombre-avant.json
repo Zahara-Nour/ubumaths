@@ -1,10 +1,8 @@
 {
+	"id": "2dec5c08-d8b8-4e0d-8239-ef8f549156ee",
 	"title": "Rang et nombre de coureurs avant ou après",
 	"description": "167 cyclistes : combien avant le 48e ? 35 avant moi : quelle place ? Combien après ?",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordinaux",
 	"level": 11,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "cd756e21-af71-4922-8106-8387658a45e1",
 	"title": "Grands cercles et diamètre d'une sphère",
 	"description": "Relier rayon et diamètre d'une sphère ; reconnaître un grand cercle (section par un plan passant par le centre, équateur et méridiens)",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Grands cercles",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

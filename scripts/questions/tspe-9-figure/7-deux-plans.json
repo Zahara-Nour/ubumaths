@@ -1,10 +1,8 @@
 {
+	"id": "14a02a32-092f-4c1c-83cc-44f912c66f43",
 	"title": "Espace : position relative de deux plans",
 	"description": "Sur un cube ou un pavé droit nommé, deux plans par trois sommets : strictement parallèles (faces opposées, plans diagonaux), sécants et leur droite d'intersection, confondus sous deux noms (pièges : plans diagonaux parallèles, un même plan nommé deux fois)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Positions relatives",
 	"level": 3,
 	"delay": 150,
 	"status": "draft",

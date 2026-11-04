@@ -1,10 +1,8 @@
 {
+	"id": "fe6f5606-df06-43c5-882f-afbe0430be0a",
 	"title": "Compléter l'arbre de deux épreuves",
 	"description": "Deux épreuves indépendantes (deux urnes ; penalty puis lancer franc) : compléter les pondérations de l'arbre, les mêmes sous chaque branche du premier niveau",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Épreuves indépendantes",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

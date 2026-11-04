@@ -1,10 +1,8 @@
 {
+	"id": "9d9b2301-700d-4613-bba3-5c62017fb193",
 	"title": "Calculer avec des carrés et des cubes",
 	"description": "Calculer une expression avec des carrés et des cubes en respectant les priorités : 3 × 5² − 7 et (3 × 5)² − 7 ; 4² + 2³ ; 5 + 2 × 3²",
 	"grades": ["5"],
-	"theme": "Puissances",
-	"domain": "Calculer",
-	"subdomain": "Avec carrés et cubes",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

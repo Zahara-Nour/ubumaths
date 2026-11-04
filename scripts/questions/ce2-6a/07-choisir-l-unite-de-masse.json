@@ -1,10 +1,8 @@
 {
+	"id": "73cf4818-56d6-4b4e-bac9-9b1c2ea13911",
 	"title": "Gramme, kilogramme ou tonne ?",
 	"description": "Choisir l'unité qui convient : un stylo de 10 g, un élève de 30 kg, un camion de 12 t",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Unités",
 	"level": 4,
 	"delay": 45,
 	"status": "draft",

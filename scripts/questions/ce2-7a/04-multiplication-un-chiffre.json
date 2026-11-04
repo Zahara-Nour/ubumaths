@@ -1,10 +1,8 @@
 {
+	"id": "d1fc9daa-1dc9-4e3b-9b99-ec50943c25a8",
 	"title": "Pose et calcule une multiplication par un nombre à un chiffre",
 	"description": "Multiplication posée : 2 ou 3 chiffres × 1 chiffre, retenues, un 0 au milieu (305 × 7)",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Calcul posé",
 	"level": 2,
 	"delay": 180,
 	"status": "draft",

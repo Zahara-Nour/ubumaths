@@ -1,10 +1,8 @@
 {
+	"id": "e8990535-33cf-43c2-ae54-c72a94136afb",
 	"title": "Interpréter la médiane",
 	"description": "Interpréter la médiane d'une série de petit effectif : si la médiane vaut 12, au moins la moitié des valeurs sont supérieures ou égales à 12",
 	"grades": ["4"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Médiane",
 	"level": 2,
 	"delay": 45,
 	"status": "draft",

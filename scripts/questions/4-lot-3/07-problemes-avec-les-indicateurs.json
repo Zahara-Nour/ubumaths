@@ -1,10 +1,8 @@
 {
+	"id": "7bb351d0-be4f-4b90-a70c-471560537518",
 	"title": "Problèmes avec les indicateurs",
 	"description": "Résoudre des problèmes avec la moyenne : la note qui manque pour atteindre une moyenne, la somme des notes, la moyenne de deux groupes réunis",
 	"grades": ["4"],
-	"theme": "Statistiques",
-	"domain": "Problèmes",
-	"subdomain": "Indicateurs",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

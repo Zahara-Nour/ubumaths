@@ -1,10 +1,8 @@
 {
+	"id": "b28ed4fa-8a9c-4aaa-986f-00da7fde2215",
 	"title": "Deux épreuves",
 	"description": "Calculer une probabilité dans une expérience à deux épreuves aux issues équiprobables : deux pièces, une pièce et un dé, deux dés (tableau des sommes), une pièce puis une urne (arbre)",
 	"grades": ["4"],
-	"theme": "Probabilités",
-	"domain": "Calculer",
-	"subdomain": "Deux épreuves",
 	"level": 2,
 	"delay": 75,
 	"status": "draft",

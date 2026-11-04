@@ -1,10 +1,8 @@
 {
+	"id": "a32e6d38-6472-41fe-8499-cb4a85a9b718",
 	"title": "Intégrale d'une fonction de signe quelconque : aire algébrique",
 	"description": "Les aires sous l'axe comptent négativement dans l'intégrale ; l'aire géométrique les compte positivement (piège : confondre les deux)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Intégration",
-	"domain": "Intégrale et aire",
-	"subdomain": "Aire algébrique",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

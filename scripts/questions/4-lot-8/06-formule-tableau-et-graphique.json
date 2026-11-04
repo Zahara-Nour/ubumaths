@@ -1,10 +1,8 @@
 {
+	"id": "e678f1d0-9b29-4829-a3fa-96420eb9cff2",
 	"title": "Formule, tableau et graphique",
 	"description": "Passer d'une formule à un tableau de valeurs, lire un graphique, retrouver la formule d'un tableau : trois façons de traduire la dépendance d'une grandeur à une autre",
 	"grades": ["4"],
-	"theme": "Fonctions",
-	"domain": "Dépendance",
-	"subdomain": "Formule, tableau et graphique",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

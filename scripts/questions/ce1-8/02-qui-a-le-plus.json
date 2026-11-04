@@ -1,10 +1,8 @@
 {
+	"id": "0942f96a-ee04-4c46-a480-b270826f002c",
 	"title": "Qui a le plus d'argent ? Euros et centimes",
 	"description": "Comparer deux porte-monnaie en euros et centimes ; une grosse coupure contre beaucoup de petites pièces ; le plus cher et le moins cher de quatre prix écrits autrement",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 9,
 	"delay": 90,
 	"status": "draft",

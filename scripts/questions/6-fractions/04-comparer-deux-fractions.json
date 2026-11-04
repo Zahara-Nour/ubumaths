@@ -1,10 +1,8 @@
 {
+	"id": "afebbb91-4d08-46f0-8640-77fe4e6f4e62",
 	"title": "Comparer deux fractions de même dénominateur ou de même numérateur",
 	"description": "Comparer deux fractions de même dénominateur (3/7 et 5/7) ou de même numérateur (5/7 et 5/9)",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 5,
 	"delay": 30,
 	"status": "draft",

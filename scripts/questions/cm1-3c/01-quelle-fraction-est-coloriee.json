@@ -1,10 +1,8 @@
 {
+	"id": "092b310c-7a6b-44d0-8d41-3351beb2c912",
 	"title": "Quelle fraction de la figure est coloriée ?",
 	"description": "Lire une fraction sur une figure partagée en parts égales (bande, disque, grille ; parts d'affilée ou éparpillées), jusqu'à 20 parts ; plusieurs bandes au-delà de 1 (7/4)",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Partage",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

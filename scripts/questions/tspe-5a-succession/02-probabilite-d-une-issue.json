@@ -1,10 +1,8 @@
 {
+	"id": "7e357962-aa93-43cd-a3d5-3c0020f0020b",
 	"title": "Probabilité d'une issue (x₁, …, xₙ)",
 	"description": "Épreuves indépendantes : la probabilité d'une issue est le produit des probabilités de ses composantes (trois épreuves différentes ; n = 5 à 7 tirs)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Succession d'épreuves",
-	"subdomain": "Épreuves indépendantes",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

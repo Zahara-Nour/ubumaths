@@ -2,10 +2,7 @@
 	"title": "Reconnaître une suite arithmétique ou géométrique à partir de ses premiers termes",
 	"description": "Différences constantes, quotients constants, ou ni l'un ni l'autre",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Reconnaître une suite",
 	"status": "draft",
-	"subdomain": "Arithmétique ou géométrique",
 	"level": 1,
 	"delay": 30,
 	"variations": [

@@ -1,10 +1,8 @@
 {
+	"id": "afbfa8c6-ad87-40ed-83e9-2e29cec24480",
 	"title": "Pourcentages de pourcentages : effectifs",
 	"description": "Situation à ensembles emboîtés : effectif d'une partie d'une partie ; trois proportions successives",
 	"grades": ["2"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Problèmes",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

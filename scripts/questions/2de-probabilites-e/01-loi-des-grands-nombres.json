@@ -1,10 +1,8 @@
 {
+	"id": "7953dcfc-bedc-465e-9abe-b8db19647d7e",
 	"title": "Loi des grands nombres",
 	"description": "Lancers d'un dé : la fréquence d'une grande série est, sauf exception, proche de la probabilité",
 	"grades": ["2"],
-	"theme": "Probabilités",
-	"domain": "Simulation",
-	"subdomain": "Stabilisation",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

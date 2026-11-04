@@ -1,10 +1,8 @@
 {
+	"id": "2c5bae8f-03e3-44c6-9dbd-6849c7177ceb",
 	"title": "Liens entre les unités de numération",
 	"description": "Relations entre millier, centaine, dizaine, unité, dixième, centième, millième ; 1/10 = 0,1, 1/100 = 0,01, 1/1 000 = 0,001",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 7,
 	"delay": 20,
 	"status": "draft",

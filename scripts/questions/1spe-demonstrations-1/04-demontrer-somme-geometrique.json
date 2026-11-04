@@ -1,10 +1,8 @@
 {
+	"id": "b554a47f-1b2e-4530-a979-44d785890adf",
 	"title": "Démontrer la somme 1 + q + ⋯ + qⁿ",
 	"description": "Démonstration à trous de 1 + q + ⋯ + qⁿ = (1 − qⁿ⁺¹)/(1 − q), q ≠ 1 : qS à compléter, S − qS, justification de la division par 1 − q",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Sommes",
-	"subdomain": "Démonstrations",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

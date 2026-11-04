@@ -1,10 +1,8 @@
 {
+	"id": "b2b5320f-332d-4335-bcdc-9ad8ff48b7e9",
 	"title": "Encadrer une fraction par deux entiers",
 	"description": "Encadrer une fraction par deux entiers consécutifs à l'aide des tables (2 < 21/8 < 3 ; 5 < 16/3 < 6) ; dénominateur au plus 10",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "e9fe1a28-be69-4ac8-8cd0-019f76a981da",
 	"title": "Interpréter le nombre dérivé en contexte",
 	"description": "Vitesse instantanée d′(t₀), coût marginal C′(q₀), puis sens de f′(a) en contexte (case choix)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Nombre dérivé",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

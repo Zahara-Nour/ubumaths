@@ -1,10 +1,8 @@
 {
+	"id": "b6b1cae5-f2a2-40c3-996b-b5e2e22aaf21",
 	"title": "Soustraire $8$, $9$, $18$, $19$, $28$, $29$, $38$ ou $39$",
 	"description": "Soustraire la dizaine au-dessus, puis rajouter 1 ou 2 : 53 − 9, 57 − 29, 305 − 18",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Soustraire",
-	"subdomain": "Différence astucieuse",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

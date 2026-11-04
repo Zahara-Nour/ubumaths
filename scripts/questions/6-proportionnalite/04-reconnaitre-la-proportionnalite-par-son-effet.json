@@ -1,10 +1,8 @@
 {
+	"id": "c26597b4-c2c6-463c-a5ca-b18cae5e1662",
 	"title": "Reconnaître la proportionnalité par son effet",
 	"description": "Deux grandeurs proportionnelles : quand l'une est multipliée (ou divisée) par un nombre, l'autre l'est aussi par le même nombre (et non augmentée de ce nombre)",
 	"grades": ["6"],
-	"theme": "Proportionnalité",
-	"domain": "Situations de proportionnalité",
-	"subdomain": "Définition",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

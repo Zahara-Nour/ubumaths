@@ -1,10 +1,8 @@
 {
+	"id": "f0a879d2-c78d-42ea-b569-5b9bc6d4332f",
 	"title": "Écrire un nombre donné en unités non canoniques",
 	"description": "63 d et 5 u ; 5 u, 5 c et 13 d ; 2 c, 27 d et 14 u",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 14,
 	"delay": 20,
 	"status": "draft",

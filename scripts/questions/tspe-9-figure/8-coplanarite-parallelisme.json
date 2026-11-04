@@ -1,10 +1,8 @@
 {
+	"id": "a45a315b-9610-4452-9ab3-df00d5eb24bf",
 	"title": "Espace : coplanarité et parallélisme sur un cube",
 	"description": "Sur un cube ou un pavé droit nommé, quatre sommets coplanaires ou non, droite parallèle à un plan ou non, en écrivant un vecteur en fonction de deux autres (pièges : quatre sommets « en rectangle » pris pour non coplanaires, droite qui ne touche pas la face mais coupe le plan)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Sur une figure",
 	"level": 5,
 	"delay": 180,
 	"status": "draft",

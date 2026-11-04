@@ -1,10 +1,8 @@
 {
+	"id": "c8306505-e030-4d65-8a56-3271669f28b5",
 	"title": "Translation et parallélogramme",
 	"description": "Faire le lien entre la translation qui transforme A en B et le parallélogramme ABDC : nature du quadrilatère, image d'un point, frise de parallélogrammes",
 	"grades": ["4"],
-	"theme": "Géométrie",
-	"domain": "Translations",
-	"subdomain": "Parallélogramme",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

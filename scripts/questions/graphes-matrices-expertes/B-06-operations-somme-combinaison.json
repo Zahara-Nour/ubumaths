@@ -1,13 +1,14 @@
 {
+	"id": "a45c83ab-d85b-4958-b43c-223342a81acc",
 	"title": "Opérations sur les matrices : somme, combinaison linéaire",
 	"description": "Calculer A + B, kA − B, et trouver B tel que A + B = C pour des matrices 2 × 2, coefficient par coefficient (pièges : signe d'un coefficient négatif, k appliqué aux deux matrices)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Matrices",
-	"subdomain": "Calcul matriciel",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $B = \\begin{pmatrix}{{b1}}&{{b2}}\\\\{{b3}}&{{b4}}\\end{pmatrix}$.\n\nOn note $A+B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",

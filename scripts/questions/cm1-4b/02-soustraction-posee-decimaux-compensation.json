@@ -1,10 +1,8 @@
 {
+	"id": "613817ea-58af-4c94-b82a-a2dba19e687a",
 	"title": "Poser une soustraction de nombres décimaux (par compensation)",
 	"description": "Soustraction posée de décimaux, méthode par compensation : 52,34 − 17,58 ; 34,5 − 2,58 ; 25 − 3,46",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Soustraire",
-	"subdomain": "Calcul posé",
 	"level": 1,
 	"delay": 180,
 	"status": "draft",

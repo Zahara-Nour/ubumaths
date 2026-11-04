@@ -1,10 +1,8 @@
 {
+	"id": "5592a129-22f8-450d-9dff-f454afb1908e",
 	"title": "Lequel est le plus lourd ?",
 	"description": "Comparer deux masses sur une balance à deux plateaux, penchée ou à l'équilibre",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Comparaison",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

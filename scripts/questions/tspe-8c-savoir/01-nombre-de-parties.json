@@ -1,10 +1,8 @@
 {
+	"id": "3ebbca97-653d-40d9-bec6-77ac67b3f93e",
 	"title": "Nombre de parties d'un ensemble",
 	"description": "À savoir : un ensemble à n éléments a 2ⁿ parties, lien avec les n-uplets de {0 ; 1} ; formule, exemple n = 5, codage ; distracteurs : n², n!, 2n, oubli de l'ensemble vide",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Dénombrement",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "9eac8754-d19d-4d55-bcda-8c50d1bc09e7",
 	"title": "Somme des n premiers cubes",
 	"description": "Formule 1³ + 2³ + ⋯ + n³ = (n(n + 1)/2)² donnée : somme pour n tiré, carré de la somme 1 + 2 + ⋯ + n, somme de a³ à b³ (différence de deux sommes)",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Sommes",
-	"subdomain": "Approfondissements",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

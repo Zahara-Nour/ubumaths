@@ -1,10 +1,8 @@
 {
+	"id": "64a2c3f6-ea43-4219-b71e-66be169c20b7",
 	"title": "Quelle unité pour mesurer une contenance ?",
 	"description": "Choisir parmi mL, cL, L et hL : une cuillère de 5 mL, un verre de 20 cL, un seau de 10 L, un tonneau de 2 hL",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Contenances",
-	"subdomain": "Unités",
 	"level": 4,
 	"delay": 45,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "ac94a453-5a3f-43f0-9984-d832e9117263",
 	"title": "Espace : décomposer un vecteur, vecteurs coplanaires",
 	"description": "Trouver a et b tels que w = a u + b v, ou AD = a AB + b AC pour un point D du plan (ABC) (pièges : a et b échangés, signe)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Coplanarité, décomposition",
 	"level": 2,
 	"status": "draft",
 	"delay": 120,

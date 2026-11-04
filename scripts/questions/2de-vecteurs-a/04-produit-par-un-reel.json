@@ -1,10 +1,8 @@
 {
+	"id": "f26e24b9-abe3-45ca-84ee-dfeea372a5ef",
 	"title": "Coordonnées du produit d'un vecteur par un réel",
 	"description": "k·u avec k entier relatif, k fraction (−⅔u), puis trouver k tel que v = k·u (pièges : une seule coordonnée multipliée, k inversé)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Coordonnées",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

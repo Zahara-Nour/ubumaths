@@ -1,10 +1,8 @@
 {
+	"id": "a81c4c9f-7a25-48a4-89c4-d48cadf0fa1b",
 	"title": "Démontrer le terme général d'une suite arithmétique",
 	"description": "Démonstration à trous de uₙ = u₀ + nr (somme télescopique des n égalités uₖ₊₁ − uₖ = r) : uₙ − u₀ à compléter, nombre de termes de la somme, justification du télescopage",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Suites arithmétiques",
-	"subdomain": "Démonstrations",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

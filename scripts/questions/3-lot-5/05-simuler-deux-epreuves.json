@@ -1,10 +1,8 @@
 {
+	"id": "c7928fc7-836c-4422-9972-ec3d0b567af1",
 	"title": "Simuler deux épreuves indépendantes",
 	"description": "Simuler deux épreuves indépendantes (deux dés, deux pièces) et confronter les fréquences simulées à la probabilité donnée par un arbre ou un tableau",
 	"grades": ["3"],
-	"theme": "Probabilités",
-	"domain": "Simulation",
-	"subdomain": "Deux épreuves",
 	"level": 1,
 	"delay": 75,
 	"status": "draft",

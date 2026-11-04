@@ -1,10 +1,8 @@
 {
+	"id": "98892db9-7034-4883-89a5-1e64c8b1fc9a",
 	"title": "Résoudre graphiquement une équation x³ = k",
 	"description": "Équation x³ = k lue sur la courbe de la fonction cube : k ∈ {−8 ; −1 ; 1 ; 8}, une solution",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction cube",
-	"subdomain": "Lecture graphique",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

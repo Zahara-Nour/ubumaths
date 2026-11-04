@@ -1,10 +1,8 @@
 {
+	"id": "d9811133-1a11-4fc8-86f7-cc391654a463",
 	"title": "Traduire un problème en une seule expression",
 	"description": "Écrire en une seule expression, sans l'effectuer, le calcul qui résout un problème : 3 × 2 + 1, 2 × 3 + 3 × 5, 40 − 3 × 7 ; (8 + 6) × 5 quand l'énoncé impose de calculer une journée d'abord",
 	"grades": ["5"],
-	"theme": "Entiers",
-	"domain": "Priorités opératoires",
-	"subdomain": "Traduire en une expression",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

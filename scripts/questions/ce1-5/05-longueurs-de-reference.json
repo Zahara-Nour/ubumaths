@@ -1,10 +1,8 @@
 {
+	"id": "a709b222-91a2-4c07-841c-1e4e0117a1e2",
 	"title": "Des longueurs de référence",
 	"description": "Doigt 1 cm, porte 2 m, terrain de football 100 m, 1 km à pied en un quart d'heure",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Ordres de grandeur",
 	"level": 4,
 	"delay": 45,
 	"status": "draft",

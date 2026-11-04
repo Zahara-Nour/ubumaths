@@ -1,10 +1,8 @@
 {
+	"id": "8e54475b-fc73-42cc-b25b-d31497406216",
 	"title": "Quel porte-monnaie contient exactement… ?",
 	"description": "Reconnaître le porte-monnaie qui contient une somme donnée ; leurres : pièce oubliée, même nombre d'objets ; contrainte « sans pièce de 1 € »",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

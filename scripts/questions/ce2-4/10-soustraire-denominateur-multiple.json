@@ -1,10 +1,8 @@
 {
+	"id": "de7d9cf3-db6c-4ff0-9a36-bd370ac70ab3",
 	"title": "Soustraire des fractions dont un dénominateur est multiple de l'autre",
 	"description": "3/4 − 1/2 ; 2/3 − 1/6 : on écrit les deux fractions avec le même dénominateur",
 	"grades": ["CE2"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 21,
 	"delay": 60,
 	"status": "draft",

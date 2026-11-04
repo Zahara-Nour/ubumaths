@@ -1,10 +1,8 @@
 {
+	"id": "7efd2e76-f27c-4b9c-b8f0-71dfa86265e2",
 	"title": "Résoudre graphiquement une inéquation f(x) < g(x)",
 	"description": "Solutions de f(x) < g(x) lues sur une parabole et une droite : entre les points d'intersection ou en dehors, les quatre sens",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Lecture graphique",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "57cc0fca-d299-4dbd-a20b-dd4c60d6893c",
 	"title": "Multiplier par $5$",
 	"description": "Multiplier par 10, puis prendre la moitié : 5 × 46, 5 × 37",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Produits astucieux",
 	"level": 5,
 	"delay": 30,
 	"status": "draft",

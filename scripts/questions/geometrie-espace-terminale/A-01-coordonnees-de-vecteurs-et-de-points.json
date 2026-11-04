@@ -1,10 +1,8 @@
 {
+	"id": "d6938108-2f87-430c-bc69-c2b148356087",
 	"title": "Espace : coordonnées de vecteurs et de points",
 	"description": "Coordonnées de AB, d'une combinaison linéaire, du milieu, de l'image par une translation, du 4e sommet d'un parallélogramme (pièges : A − B, z oublié, signe)",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs, droites et plans de l'espace",
-	"subdomain": "Coordonnées dans l'espace",
 	"level": 1,
 	"status": "draft",
 	"delay": 90,

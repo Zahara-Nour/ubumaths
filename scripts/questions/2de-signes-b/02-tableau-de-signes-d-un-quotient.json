@@ -1,10 +1,8 @@
 {
+	"id": "9c7ab1c7-d3f3-4c78-96f4-c14e5a657574",
 	"title": "Tableau de signes d'un quotient",
 	"description": "Compléter le tableau de signes de (ax + b)/(cx + d) : valeur qui annule, valeur interdite, signes, 0 et double barre ; lire la ligne du quotient (pièges : 0 sous la valeur interdite, valeur interdite et zéro échangés, double barre dans la ligne du dénominateur)",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Produit et quotient",
 	"level": 4,
 	"delay": 180,
 	"status": "draft",

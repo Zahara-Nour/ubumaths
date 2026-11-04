@@ -1,10 +1,8 @@
 {
+	"id": "49df6491-f424-4560-8fba-a9c302449e3d",
 	"title": "Lire la pente d'une droite sur son équation",
 	"description": "Pente d'une droite donnée par y = p + mx, puis par ax + by + c = 0 (m = −a/b) (pièges : terme constant pris pour la pente, a/b sans le signe, b/a)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Pente et vecteur directeur",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

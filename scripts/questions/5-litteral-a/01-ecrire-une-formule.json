@@ -1,10 +1,8 @@
 {
+	"id": "9815bed5-0680-42da-8e41-5840cfae89f8",
 	"title": "Écrire une formule",
 	"description": "Écrire en fonction de n le double (2n), le triple (3n), la moitié, le carré (n²), le successeur (n + 1) et le prédécesseur (n − 1) d'un nombre n",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Écrire",
-	"subdomain": "Formules",
 	"level": 1,
 	"delay": 20,
 	"status": "draft",

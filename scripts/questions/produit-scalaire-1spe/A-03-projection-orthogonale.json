@@ -1,10 +1,8 @@
 {
+	"id": "9c7f7ef0-8491-4ce9-a52c-80bcf907845f",
 	"title": "Produit scalaire par projection orthogonale",
 	"description": "Calculer un produit scalaire dans un triangle à l'aide du projeté orthogonal (pied d'une hauteur), en tenant compte du sens des vecteurs",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "Calculer un produit scalaire",
 	"level": 2,
 	"status": "draft",
 	"delay": 90,

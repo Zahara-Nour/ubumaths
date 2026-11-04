@@ -1,10 +1,8 @@
 {
+	"id": "3f4bacc6-2ee4-48c7-8ea4-e5ac52af62d4",
 	"title": "Problèmes de division euclidienne",
 	"description": "Interpréter le quotient et le reste, calculs de tête : boîtes pleines et reste (boîtes de 6, 10, 12), nombre de cars (un de plus pour le reste), jours en semaines et jours, heures en jours, minutes en heures",
 	"grades": ["6"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Division euclidienne",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

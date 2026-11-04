@@ -1,10 +1,8 @@
 {
+	"id": "ccb8407b-ca23-4329-af89-513b613361ce",
 	"title": "Choisir une représentation adaptée",
 	"description": "Choisir entre diagramme circulaire (part d'un tout), diagramme en barres (comparer des effectifs) et graphique (évolution dans le temps) selon ce qu'on veut montrer",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "choisir une représentation",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",
