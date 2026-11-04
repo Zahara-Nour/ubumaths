@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après le `deploy:prod` v0.72.0 (4a en prod)._
+_Mis à jour le 2026-11-04, 4b en cours (avant la PR)._
 
-- **État** : lots 1-3, 2b et 4a mergés ; **4a en prod (v0.72.0)**. Plus rien en prod ne lit `theme`/`domain`/`subdomain` ni `category_key`.
-- **Prochaine action** : 4b (nouveau worktree `ubumaths-wt-automaths-arbre`, branche `feat/automaths-arbre-drop`) : migration destructive (DROP `theme`/`domain`/`subdomain`, `category_key`, index, contrainte ; vue `resources` au chemin dans l'arbre, Q17 A) + renommage `categories` → `items` avec le code (Q18 B), livrés sous `maintenance:on` → `db:migrate` → `deploy:prod` → `maintenance:off`. Liste « Pour 4b » dans § 4a.
-- **En attente de David** : confirmation explicite de la question d'accès de 4b avant `db:migrate` ; arrêt obligatoire avant la migration destructive (ce qui sera perdu, grep des usages collé).
-- **Pièges en cours** : Worktrees questions-4 / -ce1 / -cm1 : fichiers portant `theme` → `fichiers-sans-quadruplet.ts --ecrire` (supprimé en 4b). Pre-commit sur `data/` : « paths are ignored » sans effet, `git add -u data/…`. `db:migrate` depuis le dépôt principal. Avant tout push : grep des messages (git-workflow R4).
-- **Worktree / branche** : aucun pour l'instant. 4b → nouveau worktree.
+- **État** : 4a en prod (v0.72.0). 4b codé en partie : migration `20261104224856_automaths_fin_ancienne_forme` + test d'intégration (11 verts, rouges sans la migration), seed corrigé, types alignés, doc système ; renommage du code `categories` → `items` en cours.
+- **Prochaine action** : finir le code, check:incremental + tests, PR, revues `code-reviewer` + `security-auditor` (Opus), merge ; puis **STOP avant `db:migrate`** (destructive : ce qui sera perdu + grep des usages à montrer à David), et livraison `maintenance:on` → `db:migrate` → `db:types` (diff nul attendu) → `deploy:prod` (sur demande de David) → `maintenance:off`.
+- **En attente de David** : go pour la migration destructive, puis pour le `deploy:prod`. Question d'accès **confirmée** le 2026-11-04.
+- **Pièges en cours** : base locale partagée migrée en 4b (`db:reset`) : les autres worktrees encore sur `categories` y voient des tests rouges jusqu'au merge. `database.ts` aligné à la main (format de `gen types --local` différent) → `db:types` après `db:migrate` doit donner un diff nul. Entre `db:migrate` et `deploy:prod`, l'ancien code plante → maintenance obligatoire.
+- **Worktree / branche** : `../ubumaths-wt-automaths-arbre`, `feat/automaths-arbre-drop`.
 
 ## Origine (2026-11-04)
 
@@ -420,3 +420,19 @@ aucune série au `updated_at` changé.
 
 - `deploy:prod` lancé par David (session « libre 5 ») : v0.72.0 (`53afb6638`), `production` avancée.
   2b, 3b et 4a livrés. 4b peut commencer.
+
+### 4b — migration et tests (2026-11-04)
+
+- Question d'accès confirmée par David : personne ne gagne ni ne perd de lecture.
+- Migration : gardes TOUT ou RIEN (ancienne ligne de série / séance, modèle publié sans nœud) ;
+  vue `resources` recréée `security_invoker`, sous-titre = chemin (3 jointures externes sur
+  l'arbre, au plus 3 niveaux) ; 5 index et 4 colonnes supprimés ; `categories` → `items` +
+  `series_items_non_empty` ; `series_lock_guard` et `get_class_course_by_share_token` réécrites
+  (clé rendue `items`). Rollback complet et exécuté par le test (structure seulement, valeurs
+  perdues), fonctions et vue reconstruites par `replace` sur leur définition en vigueur.
+- Relevé prod avant écriture : 0 ancienne ligne, 0 publié sans nœud, 0 `category_key` ; modèles
+  rangés branche > notion > sous-notion (1 924) ou branche > notion (150).
+- Seed `dev_question_demo.sql` : modèle rangé dans l'arbre, série en ligne de modèle (il gardait
+  l'ancienne forme, d'où l'échec local de 2b).
+- Tests qui rejouent d'anciennes migrations nommant les colonnes : supprimés (ne peuvent plus
+  tourner ; migrations déjà en prod).

@@ -337,12 +337,17 @@ des fiches : [pratiques/fiches-exercices.md](../pratiques/fiches-exercices.md).
   élève) ; `evaluation_attempt_questions` : questions tirées et corrigées **côté serveur**
   ([ADR 0015](../adr/0015-evaluation-notee-correction-serveur.md)) — aucun droit pour `anon` ni
   `authenticated`, `service_role` seul. Chaque question désigne son modèle (`template_id`) ;
-  l'ancienne `category_key` est facultative depuis l'[ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)
-  et part au lot 4b du chantier `automaths-arbre` (le code ne la lit plus).
-- `series.categories` et `test_sessions.categories` (jsonb, nom gardé jusqu'au lot 4b) : lignes
-  `{templateId, quantity, delay}` ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)).
-  Les anciennes lignes `{category: {theme, domain, subdomain, level}, …}` ont été converties par
-  `20261104204345_series_lignes_par_modele` ; `src/lib/server/series-lines.ts` ne lit plus que la forme par modèle.
+  l'ancienne `category_key` a été supprimée par `20261104224856_automaths_fin_ancienne_forme`
+  ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)).
+- `series.items` et `test_sessions.items` (jsonb, ex-`categories`, renommées par
+  `20261104224856_automaths_fin_ancienne_forme`) : lignes `{templateId, quantity, delay}`
+  ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)), au moins une par série
+  (`series_items_non_empty`). Les anciennes lignes `{category: {theme, domain, subdomain, level}, …}`
+  ont été converties par `20261104204345_series_lignes_par_modele` ; `src/lib/server/series-lines.ts`
+  ne lit que la forme par modèle.
+- `question_templates` n'a plus de thème / domaine / sous-domaine (même migration) : un modèle est
+  rangé par `classification_node_id` dans l'arbre des notions ; dans la vue `resources`, son
+  sous-titre est son chemin dans l'arbre (« branche · notion · sous-notion »).
 - `test_sessions` / `test_answers` : passages de séries. Une policy RESTRICTIVE interdit à un
   compte connecté d'écrire une séance de contrôle (`evaluation_id`, note, points) : c'est le serveur
   qui les écrit.
