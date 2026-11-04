@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2380._
+_Mis à jour le 2026-11-04, lot 3a-1 en cours._
 
-- **État** : lot 1 (#2378), 2a-1 (#2379, migration en prod) et 2a-2 (#2380, code sur le modèle) mergés, **pas encore en prod**.
-- **Prochaine action** : après le `deploy:prod` de David → lot 2b : migration de données qui convertit en place les 5 séries et 4 séances (ancienne forme → `{ templateId, … }`), question d'accès à poser, tests d'intégration rouges sans elle. Puis lot 3 (éditeur et `create-questions.ts` sans thème / domaine / sous-domaine).
-- **En attente de David** : `deploy:prod` (avant 2b) ; avis : refuser l'enregistrement d'une série qui contient un modèle retiré ? (aujourd'hui : accepté, modèle sauté au jeu et signalé).
-- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env`. Restes pour le lot 3 : store `questionCategories`, `category-validation.ts`, méthodes « category » de `questionTemplatesCache`, `/api/questions/categories/all`. CI : plantage intermittent « Browser connection was closed » des tests client (vu aussi sur une autre branche) → relancer. Hors chantier : QCM en `$$<$$` bruts sur les tuiles (Entiers › Apprivoiser › Comparer).
-- **Worktree / branche** : aucun (2a-2 nettoyé) ; 2b → nouveau worktree `../ubumaths-wt-automaths-arbre`.
+- **État** : lots 1, 2a-1, 2a-2 mergés (#2378-#2380), **pas en prod**. David continue sans déployer → lot 3 scindé : **3a** maintenant (3a-1 migration `theme`/`domain` facultatifs, 3a-2 code), **3b** (`create-questions.ts`) et **2b** après le `deploy:prod`.
+- **Prochaine action** : 3a-1 → PR, CI, merge, `db:migrate`, `db:types` ; puis 3a-2 : éditeur avec sélecteur « Rangé dans » (arbre), liste admin filtrée par l'arbre (+ « Non rangés »), étiquettes = chemin dans l'arbre, paquets de révision = titre, retrait de l'unicité du quadruplet (éditeur, API, publication en masse) et des restes (store `questionCategories`, `category-validation.ts`, `category-options.ts`, `QuestionCategoryFields`, `/api/questions/categories(/all)`).
+- **En attente de David** : `deploy:prod` (avant 3b et 2b).
+- **Pièges en cours** : `create-questions.ts` écrit en prod dès le merge → il garde le quadruplet jusqu'au deploy (3b). Un modèle modifié garde ses anciens thème/domaine/sous-domaine (anciens liens). Base locale sans modèle publié → serveur de test avec `.env`. CI : « Browser connection was closed » → relancer.
+- **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-quadruplet-facultatif` (3a-1).
 
 ## Origine (2026-11-04)
 
@@ -195,3 +195,30 @@ CI : intégration rouge au premier passage (`series-de-chapitre-code` : série e
 la catégorie n'avait pas de modèle publié dans le décor → 0 question) ; décor corrigé (modèle publié
 correspondant, lien `?modeles=` vérifié). Tests client : deux plantages « Browser connection was
 closed » sans rapport (aussi vus sur `fix/fenetre-choix-test`), relancés. Vérification manuelle notée.
+
+## Lot 3a — phase 0 (2026-11-04)
+
+David : « je veux continuer sans déployer ». 2b impossible avant le deploy (l'ancien code en prod lit
+le quadruplet dans `series.categories`). Lot 3 possible, sauf `create-questions.ts` qui écrit en prod
+dès le merge (un modèle publié sans thème/domaine serait invisible dans l'ancien catalogue de prod).
+
+- **Q9 — découpage** : « Scinder » → 3a (migration, éditeur, restes) maintenant ; 3b
+  (`create-questions.ts`) après le deploy.
+- **Relevé** : aucune interface n'écrit `classification_node_id` (seules les migrations de
+  `couvrir-niveau`) ; `theme`/`domain` NOT NULL, `subdomain` facultatif ; index unique du quadruplet
+  sur les publiés (`COALESCE(subdomain,'')`).
+- **Q10 — rangement dans l'éditeur** : sélecteur dans l'arbre (« Rangé dans », facultatif ; sans lui
+  « Non classés »).
+- **Q11 — filtres de la liste admin** : par l'arbre (branche, notion) + « Non rangés ».
+- **Q12 (ex-avis 2a-2) — série avec un modèle retiré** : gardée telle quelle (acceptée, sautée,
+  signalée).
+- **Comportements validés** : niveau gardé ; plus de contrôle « catégorie déjà occupée » ; un modèle
+  modifié garde ses anciens champs (invisibles) ; étiquettes = chemin dans l'arbre ; paquets de
+  révision = titre ; anciens `theme`/`domain` envoyés par un vieil onglet ignorés.
+- **Question d'accès** (migration) : personne ne gagne de lecture — confirmée par David.
+
+### 3a-1 — migration (2026-11-04)
+
+`20261104160229_modele_theme_domaine_facultatifs.sql` ; test
+`tests/integration/modele-sans-theme-domaine.test.ts` **rouge sans elle** (23502 « null value in
+column theme »), vert avec (2/2 ; l'index unique du quadruplet tient toujours, 23505).
