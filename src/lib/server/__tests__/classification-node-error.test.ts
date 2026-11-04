@@ -32,10 +32,21 @@ describe('classificationNodeErrorMessage', () => {
 		).toMatch(/n'existe pas/);
 	});
 
-	it('autre refus de contrôle (tags de points) : message de la base repris', () => {
+	it('refus du trigger des tags de points : message de la base repris', () => {
+		// Texte réel de `tags_modeles_points` (20261013120000)
+		const message =
+			'Le modèle 1 porte le point CM2-12, qui ne serait ni sur « Fractions » ni sur sa notion : retirez d’abord ce tag, ou rangez le modèle sur un nœud compatible.';
+		expect(classificationNodeErrorMessage({ code: '23514', message })).toBe(message);
+	});
+
+	it('une autre contrainte CHECK n’est pas un refus de rangement (panne, 500)', () => {
 		expect(
-			classificationNodeErrorMessage({ code: '23514', message: 'Le point X est posé sur « Y »' })
-		).toBe('Le point X est posé sur « Y »');
+			classificationNodeErrorMessage({
+				code: '23514',
+				message:
+					'new row for relation "question_templates" violates check constraint "variations_minimum_one"'
+			})
+		).toBeNull();
 	});
 
 	it('une autre clé étrangère ou une panne ne sont pas un refus de rangement', () => {

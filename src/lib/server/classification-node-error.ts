@@ -7,6 +7,7 @@
  * inexistant (23503). Ce sont des fautes de saisie : 400 avec un message clair,
  * jamais 500. Le trigger des tags de points (23514 aussi) explique en français
  * pourquoi un nouveau rangement est refusé : son message est repris tel quel.
+ * Tout autre 23514 vient d'une autre contrainte : `null`, donc panne (500).
  */
 
 const CHECK_VIOLATION = '23514';
@@ -36,7 +37,10 @@ export function classificationNodeErrorMessage(err: {
 		if (message.includes('nœud archivé')) {
 			return 'Un modèle ne se range pas dans un nœud archivé.';
 		}
-		return message || 'Rangement refusé par la base.';
+		// Trigger des tags de points (`tags_modeles_points`) : message français, repris
+		if (message.includes('porte le point')) return message;
+		// Autre contrainte CHECK : pas une faute de rangement, panne journalisée (500)
+		return null;
 	}
 	return null;
 }
