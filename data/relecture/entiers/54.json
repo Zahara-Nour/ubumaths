@@ -48,9 +48,6 @@
 			}
 		],
 		"grades": ["CE1"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "Complément",
 		"level": 4,
 		"status": "draft",
 		"delay": 10,

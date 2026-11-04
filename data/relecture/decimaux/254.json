@@ -64,9 +64,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Décimaux",
-		"domain": "Additionner",
-		"subdomain": "A trou",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,

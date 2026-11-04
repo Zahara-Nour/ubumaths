@@ -41,8 +41,8 @@ export interface BulkStatusSummary {
  *   par variation côté serveur ; tout d'un coup dépasserait le délai d'une fonction) ;
  * - le serveur accepte au plus 100 identifiants par appel (`MAX_BULK_TEMPLATE_IDS`),
  *   la marge reste utile si un paquet est rejoué ;
- * - un conflit d'unicité (23505, ancien quadruplet) refuse tout le paquet concerné :
- *   des paquets petits limitent ce qui est refusé d'un coup.
+ * - un paquet en échec porte ce qui était déjà passé : des paquets petits limitent
+ *   ce qui est refait.
  */
 export const BULK_CLIENT_CHUNK_SIZE = 50;
 

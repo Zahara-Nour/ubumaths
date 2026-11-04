@@ -73,7 +73,6 @@ function reponse(templateId: string | undefined, isCorrect: boolean, index: numb
 		instance: {
 			templateId,
 			statement: 'Combien font 2 + 2 ?',
-			theme: 'Calcul',
 			generatedAt: new Date().toISOString()
 		},
 		isCorrect,

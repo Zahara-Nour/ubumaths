@@ -398,7 +398,7 @@ describe('« Mon cours » partageable par lien', () => {
 
 		const categories = [
 			{
-				category: { theme: 'Nombres', domain: 'Fractions', subdomain: 'Simplifier', level: 1 },
+				templateId: crypto.randomUUID(),
 				quantity: 4,
 				delay: 20
 			}

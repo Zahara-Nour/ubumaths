@@ -149,14 +149,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Le schéma Zod garantit déjà `title`, `grades`, `level` et `status`. Le double
 		// cast vers `Partial<QuestionTemplate>` effaçait précisément ces garanties.
-		// L'ancien quadruplet (thème, domaine, sous-domaine) est accepté puis écarté :
-		// un modèle neuf se range par `classification_node_id` (ADR 0035).
-		const {
-			theme: _ignoredTheme,
-			domain: _ignoredDomain,
-			subdomain: _ignoredSubdomain,
-			...templateData
-		} = validation.data;
+		// Un modèle se range par `classification_node_id` (ADR 0035) ; l'ancien quadruplet
+		// d'un vieil onglet a déjà été retiré par le schéma.
+		const templateData = validation.data;
 
 		// Case choix (V1) : jamais plusieurs bonnes réponses sans `plusieurs: oui`, même
 		// en brouillon ; « aucune » n'est refusée qu'à la publication (templatePublicationErrors)

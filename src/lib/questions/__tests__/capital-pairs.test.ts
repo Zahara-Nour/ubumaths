@@ -3,8 +3,9 @@
  * ================================================================
  *
  * Le sens se résout UNE fois, à la génération de l'instance (Q-K), dans l'ordre :
- * déclaration du modèle (`shared.capitalPairs`) → contexte (thème `Graphes et
- * matrices`, thème de physique) → longueur par défaut. L'instance le garde (Q-L) ;
+ * déclaration du modèle (`shared.capitalPairs`) → contexte (branche `Matrices` ou
+ * `Graphes`, lue par l'éditeur qui écrit alors la déclaration ; sujet d'exercice
+ * `Graphes et matrices` ou de physique) → longueur par défaut. L'instance le garde (Q-L) ;
  * une instance déjà servie, sans le champ, garde le sens d'avant : le produit.
  * La réponse de l'élève et la réponse attendue sont toujours lues dans le même sens.
  * Cf. docs/archive/wip/longueurs-segments-progress.md.
@@ -35,10 +36,10 @@ import { templateMarkdown } from '$lib/ubumark';
 // HELPERS
 // ============================================================================
 
-/** Une case, réponse attendue `expectedAnswer`, thème et déclaration au choix */
+/** Une case, réponse attendue `expectedAnswer`, déclaration au choix */
 function lengthTemplate(
 	expectedAnswer: string,
-	{ theme = 'Géométrie', capitalPairs }: { theme?: string; capitalPairs?: unknown } = {}
+	{ capitalPairs }: { capitalPairs?: unknown } = {}
 ): QuestionTemplate {
 	return {
 		id: 'test-capital-pairs',
@@ -56,8 +57,6 @@ function lengthTemplate(
 			}
 		],
 		grades: ['4'],
-		theme,
-		domain: 'Théorème de Pythagore',
 		level: 1
 	};
 }
@@ -79,34 +78,43 @@ function verdict(instance: QuestionInstance, answer: string) {
 
 describe('resolveCapitalPairs — déclaration → contexte → longueur', () => {
 	it('aucune déclaration, aucun contexte « produit » : longueur, par défaut', () => {
-		expect(resolveCapitalPairs({ theme: 'Géométrie' })).toEqual({
+		expect(resolveCapitalPairs({ context: 'Géométrie' })).toEqual({
 			capitalPairs: 'length',
 			source: 'default'
 		});
-		expect(resolveCapitalPairs({ theme: 'Grandeurs' }).capitalPairs).toBe('length');
-		expect(resolveCapitalPairs({ theme: '' }).capitalPairs).toBe('length');
+		expect(resolveCapitalPairs({ context: 'Grandeurs' }).capitalPairs).toBe('length');
+		expect(resolveCapitalPairs({ context: '' }).capitalPairs).toBe('length');
 		expect(resolveCapitalPairs({}).capitalPairs).toBe('length');
 	});
 
-	it('thème « Graphes et matrices » sans déclaration : produit, par le contexte', () => {
-		expect(resolveCapitalPairs({ theme: 'Graphes et matrices' })).toEqual({
+	it('contexte « Graphes et matrices » sans déclaration : produit, par le contexte', () => {
+		expect(resolveCapitalPairs({ context: 'Graphes et matrices' })).toEqual({
 			capitalPairs: 'product',
 			source: 'context',
-			theme: 'Graphes et matrices'
+			context: 'Graphes et matrices'
 		});
 	});
 
-	it('thème de physique sans déclaration : produit (U = RI)', () => {
-		expect(resolveCapitalPairs({ theme: 'Physique-chimie' }).capitalPairs).toBe('product');
-		expect(resolveCapitalPairs({ theme: 'Sciences physiques' }).capitalPairs).toBe('product');
+	it('branches de l’arbre « Matrices » et « Graphes » sans déclaration : produit', () => {
+		expect(resolveCapitalPairs({ context: 'Matrices' })).toEqual({
+			capitalPairs: 'product',
+			source: 'context',
+			context: 'Matrices'
+		});
+		expect(resolveCapitalPairs({ context: 'Graphes' }).capitalPairs).toBe('product');
+	});
+
+	it('contexte de physique sans déclaration : produit (U = RI)', () => {
+		expect(resolveCapitalPairs({ context: 'Physique-chimie' }).capitalPairs).toBe('product');
+		expect(resolveCapitalPairs({ context: 'Sciences physiques' }).capitalPairs).toBe('product');
 	});
 
 	it('la déclaration l’emporte sur le contexte, dans les deux sens', () => {
-		expect(resolveCapitalPairs({ declaration: 'length', theme: 'Graphes et matrices' })).toEqual({
+		expect(resolveCapitalPairs({ declaration: 'length', context: 'Graphes et matrices' })).toEqual({
 			capitalPairs: 'length',
 			source: 'declaration'
 		});
-		expect(resolveCapitalPairs({ declaration: 'product', theme: 'Géométrie' })).toEqual({
+		expect(resolveCapitalPairs({ declaration: 'product', context: 'Géométrie' })).toEqual({
 			capitalPairs: 'product',
 			source: 'declaration'
 		});
@@ -117,15 +125,15 @@ describe('resolveCapitalPairs — déclaration → contexte → longueur', () =>
 		expect(declaredCapitalPairs(null)).toBeUndefined();
 		expect(declaredCapitalPairs(['length'])).toBeUndefined();
 		expect(
-			resolveCapitalPairs({ declaration: 'matrix', theme: 'Graphes et matrices' }).source
+			resolveCapitalPairs({ declaration: 'matrix', context: 'Graphes et matrices' }).source
 		).toBe('context');
 	});
 
 	it('libellé de la valeur résolue, pour l’éditeur', () => {
-		expect(describeCapitalPairs(resolveCapitalPairs({ theme: 'Géométrie' }))).toBe(
+		expect(describeCapitalPairs(resolveCapitalPairs({ context: 'Géométrie' }))).toBe(
 			'une longueur, par défaut'
 		);
-		expect(describeCapitalPairs(resolveCapitalPairs({ theme: 'Graphes et matrices' }))).toBe(
+		expect(describeCapitalPairs(resolveCapitalPairs({ context: 'Graphes et matrices' }))).toBe(
 			'un produit, contexte Graphes et matrices'
 		);
 		expect(describeCapitalPairs(resolveCapitalPairs({ declaration: 'product' }))).toBe(
@@ -198,14 +206,14 @@ describe('Génération — le sens résolu est porté par l’instance', () => {
 		expect(instanceOf(lengthTemplate('AB=5')).capitalPairs).toBe('length');
 	});
 
-	it('Graphes et matrices : produit', () => {
-		expect(instanceOf(lengthTemplate('AB', { theme: 'Graphes et matrices' })).capitalPairs).toBe(
+	it('déclaré « produit » : produit', () => {
+		expect(instanceOf(lengthTemplate('AB', { capitalPairs: 'product' })).capitalPairs).toBe(
 			'product'
 		);
 	});
 
-	it('Graphes et matrices déclaré « longueur » : longueur', () => {
-		const template = lengthTemplate('AB', { theme: 'Graphes et matrices', capitalPairs: 'length' });
+	it('déclaré « longueur » : longueur', () => {
+		const template = lengthTemplate('AB', { capitalPairs: 'length' });
 		expect(instanceOf(template).capitalPairs).toBe('length');
 	});
 
@@ -237,21 +245,18 @@ describe('Correction — réponse et attendu lus dans le sens de l’instance', 
 		expect(verdict(instanceOf(lengthTemplate('AB')), 'A\\times B').isCorrect).toBe(false);
 	});
 
-	it('Graphes et matrices : « AB » est le produit, « A×B » est juste', () => {
-		const instance = instanceOf(lengthTemplate('AB', { theme: 'Graphes et matrices' }));
+	it('déclaré « produit » : « AB » est le produit, « A×B » est juste', () => {
+		const instance = instanceOf(lengthTemplate('AB', { capitalPairs: 'product' }));
 		expect(verdict(instance, 'A\\times B').isCorrect).toBe(true);
 	});
 
-	it('Graphes et matrices : « BA^2 » n’est pas « AB^2 » (A·B² ≠ B·A²)', () => {
-		const instance = instanceOf(lengthTemplate('AB^2', { theme: 'Graphes et matrices' }));
+	it('déclaré « produit » : « BA^2 » n’est pas « AB^2 » (A·B² ≠ B·A²)', () => {
+		const instance = instanceOf(lengthTemplate('AB^2', { capitalPairs: 'product' }));
 		expect(verdict(instance, 'BA^2').isCorrect).toBe(false);
 	});
 
-	it('Graphes et matrices déclaré « longueur » : « BA^2 » est juste', () => {
-		const template = lengthTemplate('AB^2', {
-			theme: 'Graphes et matrices',
-			capitalPairs: 'length'
-		});
+	it('déclaré « longueur » : « BA^2 » est juste', () => {
+		const template = lengthTemplate('AB^2', { capitalPairs: 'length' });
 		expect(verdict(instanceOf(template), 'BA^2').isCorrect).toBe(true);
 	});
 
@@ -316,8 +321,7 @@ describe('figureNameWarnings — un nom de figure attendu est signalé à l’au
 		expect(figureNameWarnings(template)).toEqual([]);
 	});
 
-	it('mode produit (contexte ou déclaration) : rien à signaler', () => {
-		expect(figureNameWarnings(lengthTemplate('ABC', { theme: 'Graphes et matrices' }))).toEqual([]);
+	it('mode produit (déclaration) : rien à signaler', () => {
 		expect(figureNameWarnings(lengthTemplate('ABC', { capitalPairs: 'product' }))).toEqual([]);
 	});
 });

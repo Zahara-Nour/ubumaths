@@ -22,8 +22,6 @@ function modele(id: string, statement: string, blanks?: unknown[]): QuestionTemp
 		id,
 		title: 't',
 		grades: ['3'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		status: 'draft',
 		variations: [

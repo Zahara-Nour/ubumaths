@@ -31,7 +31,7 @@ couvre:
 > [suivi du programme](../archive/wip/suivi-programme-progress.md),
 > [progression élève](../archive/wip/progression-eleve-progress.md)) et du chantier clos
 > [publication progressive](../wip/publication-progressive-progress.md).
-> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21 ; filtres de l'ancienne génération retirés (C5, après l'étape 4) le 2026-10-22 ; vue « Carte » de la page Programme le 2026-10-23 ; liste des questions du cahier de texte (ADR 0035) le 2026-11-04.
+> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21 ; filtres de l'ancienne génération retirés (C5, après l'étape 4) le 2026-10-22 ; vue « Carte » de la page Programme le 2026-10-23 ; liste des questions du cahier de texte (ADR 0035) le 2026-11-04 ; séries relues sans ancienne forme (lot 4a) le 2026-11-04.
 
 ## À quoi ça sert
 
@@ -277,7 +277,7 @@ migration `supabase/migrations/20260915260000_chapter_sections.sql` (plus
 `20261002100000_series_de_chapitre.sql` pour les séries).
 
 Une **série** rattachée reste celle du prof : le lien la suit, son titre et sa composition sont
-relus à chaque chargement (`readStoredSeriesMany` : des modèles, anciennes catégories résolues, ADR
+relus à chaque chargement (`readStoredSeriesMany` : des modèles, ADR
 0035 ; de même pour le cours partagé, `resolveCourseShareToken`). L'élève la lance dans la **forme**
 choisie au rattachement (`setSeriesForm`), sans note, par le lien de l'entraînement libre
 (`?modeles=…&mode=…`, voir [evaluations.md](evaluations.md#les-formes-dune-série)).
@@ -401,7 +401,7 @@ scolaire de l'école (`getClassSessionCalendar`).
 **Activités** d'une séance (`journal_entry_activities`) : cinq sortes — `exercise`, `question`,
 `assessment`, `course`, `textbook`. Sur une séance neuve, la page les garde et les envoie avec le
 formulaire (`parsePendingActivities`). Dans la liste des questions à ajouter, un modèle se lit par son titre et
-son niveau (`Titre (niv. 2)`) : les modèles neufs n'ont plus de thème ni de domaine (ADR 0035).
+son niveau (`Titre (niv. 2)`) : un modèle n'a plus de thème ni de domaine (ADR 0035).
 
 ### Couverture du programme
 

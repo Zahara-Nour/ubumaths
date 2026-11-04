@@ -188,8 +188,8 @@ async function insertPoint(
 async function insertTemplate(pg: Client, nodeId: string | null): Promise<string> {
 	const r = await pg.query<{ id: string }>(
 		`insert into public.question_templates
-		   (id, type, grades, theme, domain, level, variations, status, title, classification_node_id)
-		 values (gen_random_uuid(), 'numerical_exact', array['2'], 'copie', 'copie', 1, '[{}]'::jsonb,
+		   (id, type, grades, level, variations, status, title, classification_node_id)
+		 values (gen_random_uuid(), 'numerical_exact', array['2'], 1, '[{}]'::jsonb,
 		         'draft', $1, $2)
 		 returning id`,
 		[TAG, nodeId]

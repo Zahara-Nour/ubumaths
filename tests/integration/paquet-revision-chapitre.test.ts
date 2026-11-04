@@ -51,25 +51,6 @@ const ANON_KEY =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 const PAST = new Date(Date.now() - 3600_000).toISOString();
 
-/** Une catégorie de question : le sous-domaine est facultatif. */
-type Category = { theme: string; domain: string; subdomain: string | null; level: number };
-
-const CAT_A: Category = {
-	theme: 'Thème PRC',
-	domain: 'Domaine A PRC',
-	subdomain: 'Méthode',
-	level: 1
-};
-/** Une seule question PUBLIÉE par catégorie (index unique partiel) : A2 porte la seconde. */
-const CAT_A2: Category = {
-	theme: 'Thème PRC',
-	domain: 'Domaine A PRC',
-	subdomain: 'Méthode',
-	level: 2
-};
-const CAT_B: Category = { theme: 'Thème PRC', domain: 'Domaine B PRC', subdomain: null, level: 2 };
-const CAT_C: Category = { theme: 'Thème PRC', domain: 'Domaine C PRC', subdomain: null, level: 1 };
-const CAT_D: Category = { theme: 'Thème PRC', domain: 'Domaine D PRC', subdomain: null, level: 1 };
 const FUTURE = new Date(Date.now() + 86_400_000).toISOString();
 
 /** Modèles du décor (identifiants fixes, supprimés avant et après). */
@@ -193,12 +174,12 @@ async function insertRow(table: string, row: Record<string, unknown>): Promise<s
 	return (data as { id: string }).id;
 }
 
-function templateRow(id: string, category: Category, status: string, options = {}) {
+function templateRow(id: string, level: number, status: string, options = {}) {
 	return {
 		id,
 		type: 'fill_in_blanks',
 		title: `Paquet chapitre PRC ${id.slice(-2)}`,
-		...category,
+		level,
 		grades: ['1_SPE'],
 		status,
 		options,
@@ -251,12 +232,12 @@ describe('paquet de révision calculé du chapitre', () => {
 		const { error: templatesError } = await service
 			.from('question_templates')
 			.insert([
-				templateRow(T.course, CAT_A, 'published', { courseQuestion: true }),
-				templateRow(T.regular, CAT_A2, 'published'),
-				templateRow(T.draft, CAT_A, 'draft'),
-				templateRow(T.other, CAT_B, 'published'),
-				templateRow(T.outside, CAT_C, 'published'),
-				templateRow(T.future, CAT_D, 'published')
+				templateRow(T.course, 1, 'published', { courseQuestion: true }),
+				templateRow(T.regular, 2, 'published'),
+				templateRow(T.draft, 1, 'draft'),
+				templateRow(T.other, 2, 'published'),
+				templateRow(T.outside, 1, 'published'),
+				templateRow(T.future, 1, 'published')
 			] as never);
 		expect(templatesError, 'décor : modèles').toBeNull();
 
@@ -271,18 +252,18 @@ describe('paquet de révision calculé du chapitre', () => {
 		chapterHidden = await chapter(k1.id, 'Masqué PRC', false);
 		chapterOther = await chapter(k2.id, 'Autre classe PRC', true);
 
-		const series = (title: string, categories: Category[]) =>
+		const series = (title: string, templateIds: string[]) =>
 			insertRow('series', {
 				title,
 				grade: '1_SPE',
-				categories: categories.map((category) => ({ category, quantity: 2, delay: 20 })),
+				categories: templateIds.map((templateId) => ({ templateId, quantity: 2, delay: 20 })),
 				created_by: teacherId
 			});
-		const seriesA = await series('Série A PRC', [CAT_A, CAT_A2]);
-		// N6 : la catégorie A revient dans la seconde série
-		const seriesB = await series('Série B PRC', [CAT_B, CAT_A]);
-		const seriesC = await series('Série C PRC', [CAT_C]);
-		const seriesD = await series('Série D PRC', [CAT_D]);
+		const seriesA = await series('Série A PRC', [T.course, T.regular, T.draft]);
+		// N6 : le modèle `course` revient dans la seconde série
+		const seriesB = await series('Série B PRC', [T.other, T.course]);
+		const seriesC = await series('Série C PRC', [T.outside]);
+		const seriesD = await series('Série D PRC', [T.future]);
 
 		await insertRow('chapter_series', {
 			chapter_id: chapterVisible,

@@ -39,8 +39,6 @@ function template(statement: string, answers: string[]): QuestionTemplate {
 			}
 		],
 		grades: ['T_EXP'],
-		theme: 'Graphes et matrices',
-		domain: 'Matrices',
 		level: 1
 	};
 }

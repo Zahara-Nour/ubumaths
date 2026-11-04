@@ -55,8 +55,6 @@ function figureTemplate(
 			}
 		],
 		grades: ['CP'],
-		theme: 'Géométrie',
-		domain: 'Tracés',
 		level: 1,
 		testSpecs: [
 			{
@@ -238,8 +236,6 @@ function symmetryTemplate(xa: string): QuestionTemplate {
 			}
 		],
 		grades: ['CM1'],
-		theme: 'Géométrie',
-		domain: 'Symétrie',
 		level: 1,
 		testSpecs: [
 			{
@@ -304,8 +300,6 @@ function pointTemplate(xa: string): QuestionTemplate {
 			}
 		],
 		grades: ['6'],
-		theme: 'Géométrie',
-		domain: 'Symétrie',
 		level: 1,
 		testSpecs: [
 			{

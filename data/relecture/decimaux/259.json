@@ -109,9 +109,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Décimaux",
-		"domain": "Additionner",
-		"subdomain": "Somme astucieuse",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,

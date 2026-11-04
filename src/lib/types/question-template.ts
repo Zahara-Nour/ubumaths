@@ -26,9 +26,6 @@ export interface QuestionTemplateRow {
 	id: string;
 	title: string;
 	description: string | null;
-	theme: string | null;
-	domain: string | null;
-	subdomain: string | null;
 	classification_node_id?: string | null;
 	level: number;
 	status: string;
@@ -69,9 +66,6 @@ export function toQuestionTemplate(row: QuestionTemplateRow): QuestionTemplate {
 		id: row.id,
 		title: row.title,
 		description: row.description ?? undefined,
-		theme: row.theme ?? undefined,
-		domain: row.domain ?? undefined,
-		subdomain: row.subdomain ?? undefined,
 		...(row.classification_node_id !== undefined && {
 			classification_node_id: row.classification_node_id
 		}),

@@ -3,7 +3,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { resolveTestLaunch } from '../test-launch';
-import { encodeSeriesParam, SERIES_LINK_PARAM } from '$lib/validation/series';
+import { ANCIEN_LIEN_MESSAGE, encodeSeriesParam, SERIES_LINK_PARAM } from '$lib/validation/series';
 
 const ITEM = {
 	templateId: '11111111-1111-4111-8111-111111111111',
@@ -11,9 +11,9 @@ const ITEM = {
 	delay: 20
 };
 
-/** Ancienne ligne par catégorie (ADR 0035) : les anciens liens restent lisibles */
+/** Ancienne ligne par catégorie (ADR 0035) : les anciens liens ne sont plus relus */
 const LEGACY_ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+	category: { level: 3 },
 	quantity: 4,
 	delay: 20
 };
@@ -89,7 +89,7 @@ describe('resolveTestLaunch', () => {
 		).toMatchObject({ kind: 'start', lines: [big] });
 	});
 
-	it('un ANCIEN lien categories AVEC mode → démarrage direct, ligne par catégorie gardée', () => {
+	it('un ANCIEN lien categories AVEC mode → message « ancienne version », pas de démarrage', () => {
 		expect(
 			resolveTestLaunch(
 				params({
@@ -97,7 +97,7 @@ describe('resolveTestLaunch', () => {
 					mode: 'interactive'
 				})
 			)
-		).toMatchObject({ kind: 'start', mode: 'interactive', lines: [LEGACY_ITEM] });
+		).toEqual({ kind: 'error', message: ANCIEN_LIEN_MESSAGE });
 	});
 
 	it('forme inconnue → message', () => {

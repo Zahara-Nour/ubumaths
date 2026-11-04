@@ -31,8 +31,6 @@ function template(
 	return {
 		id: ID,
 		title: 'Clôture',
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		status: 'draft',
 		grades: ['6'],

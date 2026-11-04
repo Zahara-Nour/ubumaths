@@ -35,9 +35,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Décimaux",
-		"domain": "Multiplier",
-		"subdomain": "Puissances de 10",
 		"level": 3,
 		"status": "draft",
 		"delay": 15,

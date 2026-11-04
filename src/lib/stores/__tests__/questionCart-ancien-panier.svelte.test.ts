@@ -2,23 +2,28 @@
  * Panier du navigateur enregistré avant l'ADR 0035 : des catégories
  * =================================================================
  *
- * Relu au chargement, il attend les modèles (`resolveLegacy`) pour devenir des
- * lignes `{ templateId, … }` ; une ancienne ligne sans modèle est abandonnée et
- * comptée ; une ligne illisible est ignorée, jamais un plantage.
+ * Ces lignes ne sont plus relues : au chargement elles sont retirées, le panier
+ * est réécrit sans elles et un message le dit. Une ligne illisible est ignorée,
+ * jamais un plantage.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+const toaster = vi.hoisted(() => ({
+	success: vi.fn(),
+	error: vi.fn(),
+	warning: vi.fn(),
+	info: vi.fn()
+}));
+vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+
 import { QuestionCartStore } from '../questionCart.svelte';
 
 // Constantes
 const STORAGE_KEY = 'chiphre_question_cart';
 const ADDITION_ID = '0a11f0e0-0000-4000-8000-000000000001';
 const FRACTIONS_ID = '0a11f0e0-0000-4000-8000-000000000002';
-
-const TEMPLATES = [
-	{ id: ADDITION_ID, theme: 'Nombres', domain: 'Calcul', subdomain: null, level: 2 },
-	{ id: FRACTIONS_ID, theme: 'Nombres', domain: 'Fractions', subdomain: null, level: 3 }
-];
+const ANCIENNE = { category: { level: 2 }, quantity: 4, delay: 25 };
 
 // Functions
 /** Un panier tout neuf, relu depuis ce que contient le localStorage */
@@ -27,61 +32,46 @@ async function freshCart() {
 }
 
 describe('questionCart — ancien panier du navigateur', () => {
-	beforeEach(() => localStorage.removeItem(STORAGE_KEY));
+	beforeEach(() => {
+		localStorage.removeItem(STORAGE_KEY);
+		Object.values(toaster).forEach((fn) => fn.mockClear());
+	});
 	afterEach(() => localStorage.removeItem(STORAGE_KEY));
 
-	it('les catégories attendent les modèles, puis deviennent des lignes', async () => {
+	it('panier entièrement ancien : vidé, réécrit, message', async () => {
+		localStorage.setItem(STORAGE_KEY, JSON.stringify([ANCIENNE, { ...ANCIENNE, quantity: 1 }]));
+		const cart = await freshCart();
+		expect(cart.totalItems).toBe(0);
+		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null')).toEqual([]);
+		expect(toaster.info).toHaveBeenCalledWith("Panier d'une ancienne version vidé.");
+	});
+
+	it('panier mixte : les anciennes lignes sont retirées et comptées, les neuves gardées', async () => {
 		localStorage.setItem(
 			STORAGE_KEY,
-			JSON.stringify([
-				{
-					category: { theme: 'Nombres', domain: 'Calcul', subdomain: null, level: '2' },
-					quantity: 4,
-					delay: 25
-				},
-				{ templateId: FRACTIONS_ID, quantity: 1, delay: 20 }
-			])
+			JSON.stringify([ANCIENNE, { templateId: FRACTIONS_ID, quantity: 1, delay: 20 }, ANCIENNE])
 		);
 		const cart = await freshCart();
-		// Avant les modèles : la ligne nouvelle est là, l'ancienne compte déjà
 		expect(cart.allItems).toEqual([{ templateId: FRACTIONS_ID, quantity: 1, delay: 20 }]);
-		expect(cart.totalItems).toBe(2);
+		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null')).toEqual(cart.allItems);
+		expect(toaster.info).toHaveBeenCalledWith(
+			"2 questions d'une ancienne version retirées du panier."
+		);
+	});
 
-		expect(cart.resolveLegacy(TEMPLATES)).toBe(0);
-		expect(cart.allItems).toEqual([
-			{ templateId: FRACTIONS_ID, quantity: 1, delay: 20 },
-			{ templateId: ADDITION_ID, quantity: 4, delay: 25 }
-		]);
-		// Réécrit dans la nouvelle forme
-		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')).toEqual(cart.allItems);
+	it('panier à jour : aucun message, rien de réécrit', async () => {
+		const stored = JSON.stringify([{ templateId: ADDITION_ID, quantity: 2, delay: 20 }]);
+		localStorage.setItem(STORAGE_KEY, stored);
+		const cart = await freshCart();
+		expect(cart.totalItems).toBe(1);
+		expect(localStorage.getItem(STORAGE_KEY)).toBe(stored);
+		expect(toaster.info).not.toHaveBeenCalled();
 	});
 
 	it('très ancien panier sans durée : 20 s', async () => {
-		localStorage.setItem(
-			STORAGE_KEY,
-			JSON.stringify([
-				{ category: { theme: 'Nombres', domain: 'Calcul', subdomain: null, level: 2 }, quantity: 1 }
-			])
-		);
+		localStorage.setItem(STORAGE_KEY, JSON.stringify([{ templateId: ADDITION_ID, quantity: 1 }]));
 		const cart = await freshCart();
-		cart.resolveLegacy(TEMPLATES);
 		expect(cart.allItems).toEqual([{ templateId: ADDITION_ID, quantity: 1, delay: 20 }]);
-	});
-
-	it('une catégorie sans modèle publié est abandonnée et comptée', async () => {
-		localStorage.setItem(
-			STORAGE_KEY,
-			JSON.stringify([
-				{
-					category: { theme: 'Disparu', domain: 'Nulle part', subdomain: null, level: 1 },
-					quantity: 2,
-					delay: 20
-				}
-			])
-		);
-		const cart = await freshCart();
-		expect(cart.resolveLegacy(TEMPLATES)).toBe(1);
-		expect(cart.totalItems).toBe(0);
 	});
 
 	it('une ligne illisible est ignorée, les autres gardées ; un JSON abîmé vide le panier', async () => {

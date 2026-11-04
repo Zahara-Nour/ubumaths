@@ -61,8 +61,8 @@ async function insertTemplate(suffix: string): Promise<string> {
 	const pg = await getPostgresClient();
 	const r = await pg.query<{ id: string }>(
 		`insert into public.question_templates
-		   (id, type, grades, theme, domain, level, variations, status, title)
-		 values (gen_random_uuid(), 'numerical_exact', array['6'], 'revue', 'revue', 1, '[{}]'::jsonb,
+		   (id, type, grades, level, variations, status, title)
+		 values (gen_random_uuid(), 'numerical_exact', array['6'], 1, '[{}]'::jsonb,
 		         'draft', $1)
 		 returning id`,
 		[`${TAG} ${suffix}`]

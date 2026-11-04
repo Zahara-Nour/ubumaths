@@ -161,9 +161,6 @@
 		"grades": [
 			"1_SPE"
 		],
-		"theme": "Suites",
-		"domain": "Limites",
-		"subdomain": "Determiner une limite",
 		"level": 1,
 		"status": "draft",
 		"delay": 30,

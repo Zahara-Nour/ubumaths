@@ -25,8 +25,6 @@ import { toLatex } from '$lib/mathAST';
 const base = {
 	title: 't',
 	grades: ['2'],
-	theme: 'T',
-	domain: 'D',
 	level: 1,
 	status: 'draft'
 } as const;
@@ -513,13 +511,13 @@ describe('buildSerie — chaque question garde ses fonctions déclarées', () =>
 });
 
 // Longueurs de segments, lot 5 : la série fige les formules maison avec le sens de `AB`
-// résolu pour l'instance (longueur par défaut, produit en `Graphes et matrices`)
+// résolu pour l'instance (longueur par défaut, produit si le modèle le déclare)
 describe('buildSerie — sens de AB (longueurs de segments)', () => {
-	const pythagore = (theme: string) =>
+	const pythagore = (capitalPairs?: 'length' | 'product') =>
 		({
 			...base,
-			theme,
-			id: `pythagore-${theme}`,
+			shared: capitalPairs ? { capitalPairs } : undefined,
+			id: `pythagore-${capitalPairs ?? 'defaut'}`,
 			variations: [
 				{
 					statement: 'Dans le triangle ~ABC~, on a ~AB^2=AC^2+BC^2~. Combien vaut $?$ ?',
@@ -529,7 +527,7 @@ describe('buildSerie — sens de AB (longueurs de segments)', () => {
 		}) as unknown as QuestionTemplate;
 
 	it('longueur (géométrie) : AB^2 et ABC écrits sans espace entre les points', () => {
-		const template = pythagore('Géométrie');
+		const template = pythagore();
 		const serie = buildSerie(new Map([[template.id, template]]), [
 			{ templateId: template.id, seed: 1 }
 		]);
@@ -537,8 +535,8 @@ describe('buildSerie — sens de AB (longueurs de segments)', () => {
 		expect(serie.statement).toContain('AB^2 = AC^2 + BC^2');
 	});
 
-	it('produit (Graphes et matrices) : l’écriture d’avant', () => {
-		const template = pythagore('Graphes et matrices');
+	it('produit (déclaré) : l’écriture d’avant', () => {
+		const template = pythagore('product');
 		const serie = buildSerie(new Map([[template.id, template]]), [
 			{ templateId: template.id, seed: 1 }
 		]);

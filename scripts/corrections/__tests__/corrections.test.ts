@@ -54,8 +54,6 @@ function sumTemplate(): QuestionTemplate {
 	return {
 		id: ID,
 		title: 'Calculer une somme',
-		theme: 'Entiers',
-		domain: 'Calcul',
 		level: 1,
 		status: 'draft',
 		grades: ['CP'],
@@ -83,8 +81,6 @@ function signChoiceTemplate(
 	return {
 		id: ID,
 		title: 'Signe d’un produit',
-		theme: 'Relatifs',
-		domain: 'Multiplier',
 		level: 1,
 		status: 'draft',
 		grades: ['4'],

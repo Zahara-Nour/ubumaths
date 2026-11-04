@@ -35,8 +35,6 @@ function instance(overrides: Partial<QuestionInstance>): QuestionInstance {
 			steps: [resolvedMarkdown('On ajoute les unités [3 + 5 donne 8]{.calcul}.')]
 		},
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Additionner',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		...overrides

@@ -405,11 +405,6 @@ export async function createFakeTemplate(
 	const { data, error } = await service
 		.from('question_templates')
 		.insert({
-			domain: 'test',
-			// UNIQUE idx_question_templates_unique_category (theme, domain, subdomain, level)
-			// WHERE published: keep domain='test' (cleanup marker) but vary theme per call
-			// so repeated createFakeTemplate() calls don't collide.
-			theme: `test-${crypto.randomUUID()}`,
 			title: `test-template-${crypto.randomUUID()}`,
 			// CHECK question_templates_type_check: valid types only (not 'direct').
 			type: 'numerical_exact',
@@ -547,10 +542,14 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 		.delete()
 		.not('id', 'is', null);
 
-	// Step 5: fake templates (domain = 'test') — scoped to test users to avoid
+	// Step 5: fake templates (titre `test-template-…`) — scoped to test users to avoid
 	// polluting parallel test sessions (B10: filter by created_by)
 	if (allIds.length > 0) {
-		await service.from('question_templates').delete().eq('domain', 'test').in('created_by', allIds);
+		await service
+			.from('question_templates')
+			.delete()
+			.like('title', 'test-template-%')
+			.in('created_by', allIds);
 	}
 
 	// Step 6: class membership + classes
@@ -656,23 +655,16 @@ export async function callSkillAttemptsEndpoint(
  * was created by migration 20260609130000 — i.e., a real seeded 6e template
  * tagged to a real knowledge skill.
  *
- * Filters by the template's domain/subdomain to target a specific seed.
  * Returns null if the migration hasn't been applied yet.
  *
  * @param service - Service-role client
- * @param domain - Template domain to match (e.g. 'Fractions')
- * @param subdomain - Template subdomain to match (e.g. 'Addition')
  */
 export async function getTaggedKnowledgeTemplate(
-	service: SupabaseClient<Database>,
-	domain: string,
-	subdomain: string
+	service: SupabaseClient<Database>
 ): Promise<{ template_id: string; point_id: string } | null> {
 	const { data, error } = await service
 		.from('question_template_points' as never)
-		.select('template_id, point_id, question_templates!inner(domain, subdomain)')
-		.eq('question_templates.domain', domain)
-		.eq('question_templates.subdomain', subdomain)
+		.select('template_id, point_id')
 		.limit(1)
 		.maybeSingle();
 

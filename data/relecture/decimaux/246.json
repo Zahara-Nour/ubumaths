@@ -36,9 +36,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Décimaux",
-		"domain": "Apprivoiser",
-		"subdomain": "Encadrer",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

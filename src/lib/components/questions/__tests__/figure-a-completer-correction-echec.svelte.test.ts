@@ -39,8 +39,6 @@ function instance(): QuestionInstance {
 			type: 'fill_in_blanks',
 			variations: [{ statement: templateMarkdown(STATEMENT) }],
 			grades: ['CP'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as unknown as QuestionTemplate,
 		42

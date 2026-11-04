@@ -68,8 +68,6 @@ function normalTemplate(
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Géométrie',
-		domain: 'Géométrie repérée',
 		level: 1
 	};
 }

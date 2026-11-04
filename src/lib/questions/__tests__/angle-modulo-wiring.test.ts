@@ -64,8 +64,6 @@ function argumentTemplate(where: 'blank' | 'blankDefaults'): QuestionTemplate {
 			}
 		],
 		grades: ['T_EXP'],
-		theme: 'Nombres complexes',
-		domain: 'Forme exponentielle',
 		level: 2
 	} as QuestionTemplate;
 }

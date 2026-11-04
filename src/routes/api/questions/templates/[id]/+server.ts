@@ -19,7 +19,7 @@ import { validateUuidParam } from '$lib/server/validation/params';
 import { toJson } from '$lib/types/database-helpers';
 import type { Database } from '$lib/types/database';
 import { toQuestionTemplate } from '$lib/types/question-template';
-import { OLD_CATEGORY_TAKEN, withoutDbMetadata } from '$lib/server/questions-bulk-status';
+import { withoutDbMetadata } from '$lib/server/questions-bulk-status';
 import { templatePublicationErrors } from '$lib/server/template-publication';
 import {
 	assumptionCollisionMessage,
@@ -151,15 +151,8 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		// `type` n'est jamais écrit tel quel : il est recalculé (getQuestionType).
-		// Thème, domaine, sous-domaine : acceptés (vieil onglet) puis écartés, ni
-		// écrits ni fusionnés (ADR 0035).
-		const {
-			type: _ignoredType,
-			theme: _ignoredTheme,
-			domain: _ignoredDomain,
-			subdomain: _ignoredSubdomain,
-			...provided
-		} = validation.data;
+		// L'ancien quadruplet d'un vieil onglet a déjà été retiré par le schéma (ADR 0035).
+		const { type: _ignoredType, ...provided } = validation.data;
 		const templateData = provided as Partial<QuestionTemplate>;
 
 		// ====================================================================
@@ -236,11 +229,6 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			const nodeMessage = classificationNodeErrorMessage(updateError);
 			if (nodeMessage) {
 				return json({ success: false, errors: [nodeMessage] }, { status: 400 });
-			}
-			// Ancien index unique (thème, domaine, sous-domaine, niveau) des publiés, resté en base
-			// jusqu'au lot 4 : un autre modèle publié occupe déjà cet ancien quadruplet
-			if (updateError.code === '23505') {
-				return json({ success: false, errors: [OLD_CATEGORY_TAKEN] }, { status: 400 });
 			}
 			logger.error('Error updating template:', updateError);
 			throw error(500, 'Failed to update template');

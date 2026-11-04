@@ -221,9 +221,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Grandeurs",
-		"domain": "Aires",
-		"subdomain": "Aire d'un rectangle",
 		"level": 1,
 		"status": "draft",
 		"delay": 15,

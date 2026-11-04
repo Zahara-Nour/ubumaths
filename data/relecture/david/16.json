@@ -6,12 +6,9 @@
 	"template": {
 		"delay": 20,
 		"level": 8,
-		"theme": "Entiers",
 		"title": "Décomposition décimale -> nombre entier",
-		"domain": "Apprivoiser",
 		"grades": ["CM1"],
 		"status": "draft",
-		"subdomain": "Décomposition",
 		"testSpecs": [
 			{
 				"answers": ["12\\,345"],

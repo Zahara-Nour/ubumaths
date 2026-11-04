@@ -53,9 +53,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Produit",
 		"level": 8,
 		"status": "draft",
 		"delay": 30,

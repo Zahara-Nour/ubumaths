@@ -51,9 +51,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Décimaux",
-		"domain": "Soustraire",
-		"subdomain": "Différence",
 		"level": 3,
 		"status": "draft",
 		"delay": 20,

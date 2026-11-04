@@ -198,9 +198,6 @@
 			}
 		],
 		"grades": ["5"],
-		"theme": "Entiers",
-		"domain": "Priorités opératoires",
-		"subdomain": "Sans parenthèses",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

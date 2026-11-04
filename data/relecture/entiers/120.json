@@ -26,9 +26,6 @@
 			}
 		],
 		"grades": ["CE1"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Tables",
 		"level": 3,
 		"status": "draft",
 		"delay": 6,

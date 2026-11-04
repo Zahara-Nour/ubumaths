@@ -26,8 +26,6 @@ function template(rules: ValidationRule[]): QuestionTemplate {
 			}
 		],
 		grades: ['T_EXP'],
-		theme: 'Arithmétique',
-		domain: 'Diophantiennes',
 		level: 3
 	};
 }

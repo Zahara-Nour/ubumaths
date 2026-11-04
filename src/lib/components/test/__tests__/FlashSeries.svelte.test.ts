@@ -21,8 +21,6 @@ function makeInstance(statement: string, courseCard = false): QuestionInstance {
 		templateId: `tpl-${statement}`,
 		statement: resolvedMarkdown(statement),
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Calcul',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		correction: { steps: [resolvedMarkdown(`Correction de ${statement}`)] },

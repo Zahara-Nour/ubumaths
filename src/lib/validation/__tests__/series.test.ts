@@ -66,9 +66,9 @@ describe('seriesItemsSchema', () => {
 		expect(seriesItemSchema.safeParse({ quantity: 1, delay: 20 }).success).toBe(false);
 	});
 
-	it('refuse une ancienne ligne par catégorie (elle ne se lit que par series-legacy)', () => {
+	it('refuse une ancienne ligne par catégorie (plus relue)', () => {
 		const legacy = {
-			category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+			category: { level: 3 },
 			quantity: 4,
 			delay: 20
 		};

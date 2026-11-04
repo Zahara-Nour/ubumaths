@@ -79,11 +79,9 @@ const questionTemplateFieldsSchema = z.object({
 	defaultDisplayOptions: displayOptionsSchema.optional().nullable(),
 	options: optionsSchema.optional().nullable(),
 	grades: z.array(gradeSchema).min(1, 'Au moins un niveau requis'),
-	// Ancien quadruplet : un vieil onglet peut encore envoyer thème, domaine, sous-domaine.
-	// Acceptés puis ignorés par les routes (jamais écrits) ; le rangement est `classification_node_id`.
-	theme: z.string().max(100).optional().nullable(),
-	domain: z.string().max(100).optional().nullable(),
-	subdomain: z.string().max(100).optional().nullable(),
+	// Un vieil onglet peut encore envoyer l'ancien quadruplet (thème, domaine, sous-domaine) :
+	// l'objet n'est pas `.strict()`, ces clés sont retirées à la lecture, jamais écrites.
+	// Le rangement est `classification_node_id`.
 	/** Notion ou sous-notion de l'arbre (ADR 0035) ; le trigger de la base refuse une branche */
 	classification_node_id: z.string().uuid('Identifiant de nœud invalide').nullable().optional(),
 	level: z.number().int().nonnegative('Le niveau doit être >= 0'),
@@ -238,9 +236,6 @@ export const questionTemplateResponseSchema = z.object({
 	options: z.unknown().nullable().optional(),
 	precision: z.unknown().nullable().optional(),
 	grades: z.array(gradeSchema),
-	theme: z.string().nullable().optional(),
-	domain: z.string().nullable().optional(),
-	subdomain: z.string().nullable().optional(),
 	classification_node_id: z.string().uuid().nullable().optional(),
 	level: z.number().int().nonnegative(),
 	status: z.enum(['draft', 'published']),

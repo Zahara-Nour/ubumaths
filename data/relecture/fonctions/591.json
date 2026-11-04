@@ -49,9 +49,6 @@
 			}
 		],
 		"grades": ["2"],
-		"theme": "Fonctions",
-		"domain": "Valeur absolue",
-		"subdomain": "Apprivoiser",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

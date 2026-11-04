@@ -20,8 +20,6 @@ function makeTemplate(statement: string, expectedAnswers: string[]): QuestionTem
 			}
 		],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	};
 }

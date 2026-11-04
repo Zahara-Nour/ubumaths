@@ -58,13 +58,4 @@ describe('Éditeur de série — modèle retiré', () => {
 		expect(rows[0].textContent).toContain('niveau 3');
 		expect(rows[1].querySelector('[data-modele-retire]')?.textContent).toContain('Modèle retiré');
 	});
-
-	it('anciennes lignes sans modèle : annoncées, accord au pluriel ; aucune : rien', async () => {
-		const { container } = await renderPage(series({ unresolved_lines: 2 }));
-		expect(container.querySelector('[data-lignes-perdues]')?.textContent?.trim()).toBe(
-			"2 anciennes questions de cette série n'existent plus : l'enregistrer les retirera."
-		);
-		const sans = await renderPage(series({ unresolved_lines: 0 }));
-		expect(sans.container.querySelector('[data-lignes-perdues]')).toBeNull();
-	});
 });

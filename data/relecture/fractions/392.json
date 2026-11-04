@@ -59,9 +59,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Fractions",
-		"domain": "Calculer",
-		"subdomain": "Multiplication",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

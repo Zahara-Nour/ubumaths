@@ -22,9 +22,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Quadruple et quart",
 		"level": 4,
 		"status": "draft",
 		"delay": 15,

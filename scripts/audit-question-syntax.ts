@@ -254,7 +254,6 @@ function displayResults(result: AuditResult): void {
 
 		oldSyntaxQuestions.slice(0, 5).forEach((q) => {
 			console.log(`• ${q.title}`);
-			console.log(`  Theme: ${q.theme} / ${q.domain}`);
 			console.log(`  Status: ${q.status}`);
 			console.log(`  Updated: ${new Date(q.updated_at).toLocaleDateString()}`);
 			console.log();
@@ -269,7 +268,6 @@ function displayResults(result: AuditResult): void {
 
 		newSyntaxQuestions.slice(0, 5).forEach((q) => {
 			console.log(`• ${q.title}`);
-			console.log(`  Theme: ${q.theme} / ${q.domain}`);
 			console.log(`  Status: ${q.status}`);
 			console.log(`  Updated: ${new Date(q.updated_at).toLocaleDateString()}`);
 			console.log();
@@ -284,7 +282,6 @@ function displayResults(result: AuditResult): void {
 
 		mixedSyntaxQuestions.forEach((q) => {
 			console.log(`• ${q.title}`);
-			console.log(`  Theme: ${q.theme} / ${q.domain}`);
 			console.log(`  Status: ${q.status}`);
 			console.log(`  ID: ${q.id}`);
 			console.log();

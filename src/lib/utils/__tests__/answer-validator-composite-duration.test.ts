@@ -163,8 +163,6 @@ describe('runTestSpec — gabarit de durée', () => {
 			}
 		],
 		grades: ['6'],
-		theme: 'Grandeurs',
-		domain: 'Durées',
 		level: 1
 	} as unknown as QuestionTemplate;
 

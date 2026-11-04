@@ -66,9 +66,6 @@
 			}
 		],
 		"grades": ["2"],
-		"theme": "Calcul littéral",
-		"domain": "Transformation",
-		"subdomain": "Identités remarquables",
 		"level": 9,
 		"status": "draft",
 		"delay": 30,

@@ -88,8 +88,6 @@ const SUBMIT_RESPONSE = {
 				}
 			],
 			grades: ['6'],
-			theme: 'T',
-			domain: 'D',
 			level: 1,
 			generatedAt: ''
 		},

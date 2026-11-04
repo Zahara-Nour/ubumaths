@@ -81,9 +81,6 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Fractions",
-		"domain": "Calculer",
-		"subdomain": "Multiplication",
 		"level": 6,
 		"status": "draft",
 		"delay": 20,

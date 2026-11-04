@@ -12,8 +12,6 @@ import { buildSerie, BLANK_TEXT } from '../serie-automatismes';
 const base = {
 	title: 't',
 	grades: ['6'],
-	theme: 'T',
-	domain: 'D',
 	level: 1,
 	status: 'draft'
 } as const;

@@ -25,12 +25,8 @@ const SERIES_ID = '2b3c4d5e-2222-4222-8222-222222222222';
 const COPY_ID = '3c4d5e6f-3333-4333-8333-333333333333';
 const TEMPLATE_ID = '4d5e6f70-4444-4444-8444-444444444444';
 const ITEM = { templateId: TEMPLATE_ID, quantity: 4, delay: 20 };
-/** Ancienne ligne (avant l'ADR 0035) : une catégorie, résolue vers son modèle publié */
-const LEGACY_ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
-	quantity: 4,
-	delay: 20
-};
+/** Ancienne ligne (avant l'ADR 0035) : une catégorie, plus relue */
+const LEGACY_ITEM = { category: { level: 3 }, quantity: 4, delay: 20 };
 
 function seriesRow(overrides: Record<string, unknown> = {}) {
 	return {
@@ -255,18 +251,12 @@ describe('getTeacherSeries (C17)', () => {
 		expect(called(fake.on('test_sessions')[0], 'in', 'evaluation_id', [EVAL_A, EVAL_B])).toBe(true);
 	});
 
-	it('une série d’ancienne forme (catégories) est relue : ses lignes pointent sur le modèle publié', async () => {
-		const fake = createFakeSupabase((table) => {
-			if (table === 'series') return { data: [seriesRow({ categories: [LEGACY_ITEM] })] };
-			if (table === 'question_templates') {
-				return {
-					data: [{ id: TEMPLATE_ID, theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 }]
-				};
-			}
-			return { data: [] };
-		});
+	it('une série d’ancienne forme (catégories) n’est plus relue : liste vide, pas de plantage', async () => {
+		const fake = createFakeSupabase((table) =>
+			table === 'series' ? { data: [seriesRow({ categories: [LEGACY_ITEM] })] } : { data: [] }
+		);
 		const [series] = await getTeacherSeries(fake.client, TEACHER);
-		expect(series.items).toEqual([ITEM]);
+		expect(series.items).toEqual([]);
 	});
 
 	it('composition illisible en base : liste vide, pas de plantage', async () => {

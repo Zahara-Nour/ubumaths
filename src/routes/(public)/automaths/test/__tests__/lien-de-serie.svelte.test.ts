@@ -8,7 +8,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import { SERIES_LINK_PARAM, encodeSeriesParam } from '$lib/validation/series';
+import { ANCIEN_LIEN_MESSAGE, SERIES_LINK_PARAM, encodeSeriesParam } from '$lib/validation/series';
 import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 
 const goto = vi.hoisted(() => vi.fn(async () => {}));
@@ -30,9 +30,9 @@ import Page from '../+page.svelte';
 const TEMPLATE_ID = '11111111-1111-4111-8111-111111111111';
 const ITEM = { templateId: TEMPLATE_ID, quantity: 2, delay: 20 };
 
-/** Ancienne ligne (avant l'ADR 0035) : une catégorie dont aucun modèle n'est publié */
+/** Ancienne ligne (avant l'ADR 0035) : une catégorie, plus relue */
 const LEGACY_ITEM = {
-	category: { theme: 'Disparu', domain: 'Nulle part', subdomain: null, level: 1 },
+	category: { level: 1 },
 	quantity: 2,
 	delay: 20
 };
@@ -40,9 +40,6 @@ const LEGACY_ITEM = {
 /** Un modèle quelconque : la page n'en a besoin qu'une fois la forme choisie */
 const TEMPLATE = {
 	id: TEMPLATE_ID,
-	theme: 'Calcul',
-	domain: 'Tables',
-	subdomain: null,
 	level: 3,
 	status: 'published'
 };
@@ -103,7 +100,7 @@ describe('C19 — lien de série', () => {
 		expect(href.searchParams.get('categories')).toBe(encoded);
 	});
 
-	it('ancien lien dont aucun modèle n’est publié : message clair, pas de série vide', async () => {
+	it('ancien lien ?categories=… avec forme : « ancienne version », rien ne démarre', async () => {
 		openLink(
 			new URLSearchParams({
 				categories: encodeURIComponent(JSON.stringify([LEGACY_ITEM])),
@@ -112,7 +109,7 @@ describe('C19 — lien de série', () => {
 		);
 		await renderPage();
 
-		await expect.element(page.getByText(/n'existent plus/)).toBeVisible();
+		await expect.element(page.getByText(ANCIEN_LIEN_MESSAGE)).toBeVisible();
 	});
 
 	it('lien abîmé (JSON tronqué) : message clair', async () => {

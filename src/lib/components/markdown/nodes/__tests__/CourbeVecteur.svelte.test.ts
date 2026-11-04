@@ -241,8 +241,6 @@ describe('Vecteur à tracer — décor de la prod', () => {
 					}
 				],
 				grades: ['2'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1
 			} as QuestionTemplate,
 			42

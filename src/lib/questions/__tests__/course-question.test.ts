@@ -34,8 +34,6 @@ function question(overrides: Partial<QuestionTemplate> = {}): QuestionTemplate {
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Algèbre',
-		domain: 'Polynômes',
 		level: 1,
 		...overrides
 	};

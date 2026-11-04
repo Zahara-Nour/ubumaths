@@ -519,9 +519,6 @@
 			}
 		],
 		"grades": ["2"],
-		"theme": "Fonctions",
-		"domain": "Fonctions affines",
-		"subdomain": "Equations",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,

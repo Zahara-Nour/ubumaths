@@ -120,17 +120,14 @@ export async function evaluationCurriculumPoints(
 		.or(`id.in.(${list}),legacy_assessment_id.in.(${list})`);
 	if (evalErr) throw new Error(`reconcileAutoCoverage evaluations: ${evalErr.message}`);
 
-	// Compositions relues comme partout (anciennes lignes résolues, ADR 0035) ;
+	// Compositions relues comme partout (ADR 0035) ;
 	// une composition illisible est ignorée, pas fatale
-	const read = await readStoredSeriesMany(
-		supabase,
+	const read = readStoredSeriesMany(
 		(evaluations ?? []).flatMap((e) =>
 			e.series ? [{ id: e.id, categories: e.series.categories }] : []
 		)
 	);
-	const templateIds = [
-		...new Set([...read.values()].flatMap((r) => r.items.map((i) => i.templateId)))
-	];
+	const templateIds = [...new Set([...read.values()].flatMap((r) => r.map((i) => i.templateId)))];
 	if (templateIds.length === 0) return [];
 
 	// Seuls les modèles PUBLIÉS comptent ; paginé : PostgREST plafonne une lecture

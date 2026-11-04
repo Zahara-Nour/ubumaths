@@ -32,8 +32,6 @@ function generate(statement: string, expected: string[]): QuestionInstance {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as QuestionTemplate,
 		42

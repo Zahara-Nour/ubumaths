@@ -54,8 +54,6 @@ export interface DbSeries {
 	grade: string;
 	/** Composition (colonne `categories`), relue dans la nouvelle forme */
 	items: SeriesItem[];
-	/** Anciennes lignes (catégories) sans modèle publié, retirées de `items` (ADR 0035) */
-	unresolved_lines?: number;
 	created_by: string;
 	created_at: string;
 	updated_at: string;

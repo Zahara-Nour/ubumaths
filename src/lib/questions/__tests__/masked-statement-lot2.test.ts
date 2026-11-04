@@ -37,8 +37,6 @@ function template(statement: string): QuestionTemplate {
 		type: 'fill_in_blanks',
 		variations: [{ statement: templateMarkdown(statement) }],
 		grades: ['5e'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as unknown as QuestionTemplate;
 }

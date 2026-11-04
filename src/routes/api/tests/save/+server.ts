@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const { result, assignmentId } = validation.data;
-		const playedSeries = validation.data.items ?? validation.data.categories;
+		const playedSeries = validation.data.items;
 		// Forme « Flash-cards » (2026-09-30) : chaque réponse est une
 		// auto-évaluation de l'élève (« J'avais trouvé » / « Je n'avais pas
 		// trouvé ») — tentatives `student_self`, pas d'XP.
@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.insert({
 				user_id: user.id,
 				mode: result.mode,
-				categories: toJson(playedSeries ?? []),
+				categories: toJson(playedSeries),
 				score: sessionScore.score,
 				total_questions: sessionScore.gradedQuestions,
 				time_spent: result.timeSpent,

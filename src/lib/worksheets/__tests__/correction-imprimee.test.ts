@@ -207,8 +207,6 @@ describe('série d’automatismes : les marqueurs sont gardés, le choix se fait
 	const marque = {
 		title: 't',
 		grades: ['2'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		status: 'draft',
 		id: 'marque',

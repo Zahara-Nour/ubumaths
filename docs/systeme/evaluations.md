@@ -100,14 +100,14 @@ chaque question porte la durée de **sa** ligne (`delay`, 20 s par défaut :
 `DEFAULT_QUESTION_DELAY_SECONDS`). Bornes de la composition : 1 à 50 modèles, 99 répétitions, 600 s
 (`src/lib/validation/series.ts`).
 
-**Ancienne forme** (avant l'ADR 0035) : une ligne désignait une catégorie (thème · domaine ·
-sous-domaine · niveau). Elle reste lisible — séries en base pas encore converties, anciens liens
-`?categories=…` et leurs QR, paniers du navigateur — : chaque catégorie retrouve son modèle publié
-(l'index unique `idx_question_templates_unique_category` en garantit un au plus). Tout passe par
-`src/lib/questions/series-legacy.ts` (navigateur) et `src/lib/server/series-lines.ts` (serveur, une
-requête pour toutes les anciennes lignes, sous la RLS de l'appelant) ; une ancienne ligne sans modèle
-est retirée et comptée (« N questions de ce lien n'existent plus »). La colonne garde son nom
-`series.categories` jusqu'au lot 4 du chantier `automaths-arbre`, qui retirera aussi l'ancienne forme.
+**Ancienne forme** (avant l'ADR 0035 : une ligne désignait une catégorie, thème · domaine ·
+sous-domaine · niveau) : **plus relue**. Les séries en base ont été converties (lot 2b) ; une
+composition qui n'a pas la forme actuelle est illisible : `src/lib/server/series-lines.ts`
+(`readStoredSeriesMany(rows)`, synchrone, rend une `Map` id → lignes ; l'illisible est absent et
+tracé) la saute. Un ancien lien `?categories=…` (et son QR) est reconnu par `resolveTestLaunch` mais
+non relu : le panier dit qu'il est d'une ancienne version ; un panier du navigateur qui porte des
+catégories en est vidé de ces lignes au chargement, réécrit, avec un message. La colonne garde son
+nom `series.categories` jusqu'au lot 4b du chantier `automaths-arbre`.
 
 | Forme (`TestMode`)            | Composant         | Cartes de cours | Chrono                                                                              | Correction et score                                      | Enregistré                                        |
 | ----------------------------- | ----------------- | --------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------- |
@@ -117,7 +117,7 @@ est retirée et comptée (« N questions de ce lien n'existent plus »). La colo
 | Course aux nombres (`course`) | `TestCourse`      | **non**         | Global, toutes les questions à l'écran ; 1 à 60 min (5 min proposées)               | Navigateur, score sur 10                                 | Comme l'entraînement                              |
 
 Lancement (`resolveTestLaunch`) : `?assignment=<id>` → contrôle (forme et temps viennent du serveur,
-le `mode` de l'URL est ignoré) ; `?modeles=…` (ou un ancien `?categories=…`) sans `mode` → le panier ;
+le `mode` de l'URL est ignoré) ; `?modeles=…` (ou un ancien `?categories=…`, signalé sans être relu) sans `mode` → le panier ;
 `?modeles=…&mode=…[&time=…]` → démarrage direct. `SeriesLinkShare` fabrique ces liens. Visiteur non connecté : la série se joue,
 rien n'est enregistré.
 
@@ -346,4 +346,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04.

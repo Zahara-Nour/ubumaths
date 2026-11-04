@@ -25,7 +25,7 @@ vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
 import Page from '../+page.svelte';
 import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 import { questionCart } from '$lib/stores/questionCart.svelte';
-import { parseSeriesLink } from '$lib/questions/series-legacy';
+import { parseSeriesLink } from '$lib/validation/series';
 
 const TEMPLATE_ID = '11111111-1111-4111-8111-111111111111';
 

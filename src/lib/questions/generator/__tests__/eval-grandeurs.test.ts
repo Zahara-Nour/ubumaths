@@ -38,8 +38,6 @@ function templateOf(statement: string, expectedAnswer: string): QuestionTemplate
 		title: 't',
 		status: 'draft',
 		grades: ['6'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		variations: [
 			{
@@ -255,8 +253,6 @@ describe('relecture #467 : durées ;hms dans l’énoncé et la correction', () 
 		title: 't',
 		status: 'draft',
 		grades: ['6'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		variations: [
 			{

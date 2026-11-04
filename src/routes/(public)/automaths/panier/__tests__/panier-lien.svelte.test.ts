@@ -6,12 +6,12 @@
  *   Remplacer / Ajouter (plafond 99) / Annuler (panier inchangé) ;
  * - ensuite le paramètre `modeles` (ou l'ancien `categories`) est retiré de l'URL (replaceState) ;
  * - lien abîmé : message clair, panier inchangé ;
- * - ancien lien `?categories=…` (ADR 0035) : relu, ses catégories retrouvent leur modèle.
+ * - ancien lien `?categories=…` (ADR 0035) : plus relu, message « ancienne version », panier inchangé.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import { SERIES_LINK_PARAM, encodeSeriesParam } from '$lib/validation/series';
+import { ANCIEN_LIEN_MESSAGE, SERIES_LINK_PARAM, encodeSeriesParam } from '$lib/validation/series';
 
 const url = vi.hoisted(() => ({ current: new URL('http://localhost/automaths/panier') }));
 vi.mock('$app/state', () => ({
@@ -154,29 +154,15 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		await expectUrlCleaned();
 	});
 
-	it('ancien lien ?categories=… : relu, chaque catégorie retrouve son modèle publié', async () => {
-		const legacy = [
-			{
-				category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
-				quantity: 5,
-				delay: 30
-			},
-			{
-				category: { theme: 'Disparu', domain: 'Nulle part', subdomain: null, level: 1 },
-				quantity: 2,
-				delay: 20
-			}
-		];
-		openLink(encodeURIComponent(JSON.stringify(legacy)), 'categories');
-		await renderPanier([
-			{ id: MINE, theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3, title: 'Tables' }
-		]);
+	it('ancien lien ?categories=… : message « ancienne version », panier inchangé', async () => {
+		questionCart.addToCart(MINE, 3, 20);
+		const ancien = [{ category: { level: 3 }, quantity: 5, delay: 30 }];
+		openLink(encodeURIComponent(JSON.stringify(ancien)), 'categories');
+		await renderPanier();
 
-		await vi.waitFor(() =>
-			expect(questionCart.allItems).toEqual([{ templateId: MINE, quantity: 5, delay: 30 }])
-		);
-		// La ligne sans modèle est signalée, pas perdue en silence
-		expect(toaster.warning).toHaveBeenCalledWith("1 question de ce lien n'existe plus.");
+		await expect.element(page.getByText(ANCIEN_LIEN_MESSAGE)).toBeVisible();
+		expect(document.body.textContent).not.toContain('Remplacer ton panier');
+		expect(questionCart.allItems).toEqual([{ templateId: MINE, quantity: 3, delay: 20 }]);
 		await expectUrlCleaned();
 	});
 

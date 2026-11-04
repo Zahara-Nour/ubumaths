@@ -5,19 +5,13 @@
  * Le panier est une série en cours de composition : des lignes `{ templateId,
  * quantity, delay }` (ADR 0035), gardées dans le navigateur (localStorage).
  *
- * Un panier enregistré AVANT l'ADR 0035 porte des catégories (thème, domaine,
- * sous-domaine, niveau) : elles attendent dans `legacyLines` que la page ait
- * chargé les modèles (`resolveLegacy`), puis deviennent des lignes.
+ * Un panier enregistré AVANT l'ADR 0035 porte des catégories (thème, domaine…) :
+ * ces lignes ne sont plus relues. Au chargement elles sont retirées, le panier
+ * est réécrit et un message le dit.
  */
 
-import {
-	isLegacyLine,
-	resolveSeriesLines,
-	storedSeriesLineSchema,
-	type LegacyLine,
-	type LegacyResolvableTemplate
-} from '$lib/questions/series-legacy';
-import { MAX_ITEM_QUANTITY, type SeriesItem } from '$lib/validation/series';
+import { toaster } from '$lib/stores/toaster.svelte';
+import { MAX_ITEM_QUANTITY, seriesItemSchema, type SeriesItem } from '$lib/validation/series';
 
 // Constantes
 
@@ -29,8 +23,6 @@ const MAX_DELAY = 300;
 /** Exportée pour les tests (un panier neuf relu du localStorage) ; l'appli utilise `questionCart` */
 export class QuestionCartStore {
 	private items = $state<SeriesItem[]>([]);
-	/** Lignes d'un ancien panier, en attente des modèles */
-	private legacyLines = $state<LegacyLine[]>([]);
 	private readonly storageKey = 'chiphre_question_cart';
 
 	constructor() {
@@ -40,7 +32,10 @@ export class QuestionCartStore {
 		}
 	}
 
-	/** Relit le panier ; une ligne illisible est ignorée, jamais un plantage */
+	/**
+	 * Relit le panier ; une ligne illisible est ignorée, jamais un plantage.
+	 * Une ligne d'ancienne forme (catégorie) est retirée et dite à l'élève.
+	 */
 	private loadFromStorage() {
 		try {
 			const stored = localStorage.getItem(this.storageKey);
@@ -48,18 +43,29 @@ export class QuestionCartStore {
 			const parsed: unknown = JSON.parse(stored);
 			if (!Array.isArray(parsed)) return;
 			const items: SeriesItem[] = [];
+			let anciennes = 0;
 			for (const raw of parsed) {
+				if (raw && typeof raw === 'object' && 'category' in raw) {
+					anciennes += 1;
+					continue;
+				}
 				// Très ancien panier sans durée
 				const withDelay =
 					raw && typeof raw === 'object' && !('delay' in raw)
 						? { ...raw, delay: DEFAULT_DELAY }
 						: raw;
-				const line = storedSeriesLineSchema.safeParse(withDelay);
-				if (!line.success) continue;
-				if (isLegacyLine(line.data)) this.legacyLines.push(line.data);
-				else items.push(line.data);
+				const line = seriesItemSchema.safeParse(withDelay);
+				if (line.success) items.push(line.data);
 			}
 			this.items = items;
+			if (anciennes > 0) {
+				this.saveToStorage();
+				toaster.info(
+					items.length === 0
+						? "Panier d'une ancienne version vidé."
+						: `${anciennes} question${anciennes > 1 ? 's' : ''} d'une ancienne version retirée${anciennes > 1 ? 's' : ''} du panier.`
+				);
+			}
 		} catch (error) {
 			console.error('Failed to load cart from localStorage:', error);
 			this.items = [];
@@ -68,7 +74,7 @@ export class QuestionCartStore {
 
 	private saveToStorage() {
 		try {
-			localStorage.setItem(this.storageKey, JSON.stringify([...this.items, ...this.legacyLines]));
+			localStorage.setItem(this.storageKey, JSON.stringify(this.items));
 		} catch (error) {
 			console.error('Failed to save cart to localStorage:', error);
 			if (error instanceof DOMException && error.name === 'QuotaExceededError') {
@@ -77,28 +83,14 @@ export class QuestionCartStore {
 		}
 	}
 
-	/**
-	 * Convertit les lignes d'un ancien panier, une fois les modèles publiés
-	 * chargés. Une ancienne ligne sans modèle est abandonnée. Rend le nombre de
-	 * lignes abandonnées.
-	 */
-	resolveLegacy(templates: readonly LegacyResolvableTemplate[]): number {
-		if (this.legacyLines.length === 0) return 0;
-		const { items, unresolved } = resolveSeriesLines(this.legacyLines, templates);
-		this.legacyLines = [];
-		for (const item of items) this.addToCart(item.templateId, item.quantity, item.delay);
-		this.saveToStorage();
-		return unresolved;
-	}
-
 	/** Lignes du panier (réactif) */
 	get allItems(): SeriesItem[] {
 		return this.items;
 	}
 
-	/** Nombre de lignes (anciennes lignes en attente comprises) */
+	/** Nombre de lignes */
 	get totalItems(): number {
-		return this.items.length + this.legacyLines.length;
+		return this.items.length;
 	}
 
 	/** Nombre de questions (somme des répétitions) */
@@ -181,7 +173,6 @@ export class QuestionCartStore {
 	 * deux fois (lien fabriqué) n'en fait qu'une ligne.
 	 */
 	replaceWith(items: readonly SeriesItem[]) {
-		this.legacyLines = [];
 		this.items = [];
 		this.mergeItems(items);
 		this.saveToStorage();
@@ -199,7 +190,6 @@ export class QuestionCartStore {
 
 	clearCart() {
 		this.items = [];
-		this.legacyLines = [];
 		this.saveToStorage();
 	}
 }

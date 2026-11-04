@@ -19,8 +19,12 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { ChapterSeriesForm, ChapterSeriesRow } from '$lib/types/database-helpers';
 import { chapterIdOf, type ChapterSeries } from '$lib/types/chapters';
-import { buildSeriesLink, totalQuestions, type SeriesItem } from '$lib/validation/series';
-import { storedSeriesLinesSchema } from '$lib/questions/series-legacy';
+import {
+	buildSeriesLink,
+	seriesItemsSchema,
+	totalQuestions,
+	type SeriesItem
+} from '$lib/validation/series';
 import { readStoredSeriesMany } from '$lib/server/series-lines';
 import { isDeadlinePassed } from '$lib/utils/dates';
 import { createServerLogger } from '$lib/utils/logger';
@@ -140,22 +144,12 @@ export async function listChapterSeries(
 		logger.error('[listChapterSeries] Séries rattachées mais illisibles :', manquantes);
 	}
 
-	let read;
-	try {
-		read = await readStoredSeriesMany(supabase, series ?? []);
-	} catch (readError) {
-		logger.error('[listChapterSeries] Modèles des séries illisibles :', readError);
-		const message = readError instanceof Error ? readError.message : 'lecture';
-		return { data: null, error: new ChapterSeriesError('db', message) };
-	}
+	const read = readStoredSeriesMany(series ?? []);
 
 	return {
 		data: links.map((l) => {
 			const s = parId.get(l.series_id);
-			return toChapterSeries(
-				l,
-				s ? { title: s.title, items: read.get(s.id)?.items ?? null } : undefined
-			);
+			return toChapterSeries(l, s ? { title: s.title, items: read.get(s.id) ?? null } : undefined);
 		}),
 		error: null
 	};
@@ -180,8 +174,7 @@ export async function listAvailableSeries(
 
 	return {
 		data: (data ?? []).map((s) => {
-			// Compter ne demande pas de résoudre les anciennes lignes
-			const lines = storedSeriesLinesSchema.safeParse(s.categories);
+			const lines = seriesItemsSchema.safeParse(s.categories);
 			return {
 				id: s.id,
 				title: s.title,

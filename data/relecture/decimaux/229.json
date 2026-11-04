@@ -81,9 +81,6 @@
 			}
 		},
 		"grades": ["CM1"],
-		"theme": "Décimaux",
-		"domain": "Apprivoiser",
-		"subdomain": "Ecriture",
 		"level": 2,
 		"status": "draft",
 		"delay": 10,

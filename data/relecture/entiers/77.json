@@ -22,9 +22,6 @@
 			}
 		],
 		"grades": ["CE1"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "Double et moitié",
 		"level": 4,
 		"status": "draft",
 		"delay": 15,

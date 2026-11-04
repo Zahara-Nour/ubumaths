@@ -106,9 +106,6 @@
 			}
 		},
 		"grades": ["6"],
-		"theme": "Probabilités",
-		"domain": "Apprivoiser",
-		"subdomain": "Probabilité simple",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

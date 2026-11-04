@@ -255,8 +255,6 @@ describe('FillBlanksInput — bloc ```collection à construire', () => {
 					}
 				],
 				grades: ['CP'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1
 			} as QuestionTemplate,
 			42

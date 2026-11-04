@@ -20,16 +20,14 @@ import { GET as lireTousLesModeles } from '../../src/routes/api/questions/templa
 
 const service = createServiceRoleClient();
 
-const THEME = 'Test plafond 1000';
+const TITRE = 'Plafond 1000 —';
 const NB_MODELES = 1100;
 
-/** Un modèle publié ; `level` distinct (index unique thème/domaine/sous-domaine/niveau) */
+/** Un modèle publié ; `level` distinct (ex-index unique, sans objet ici) */
 function modele(level: number) {
 	return {
 		type: 'fill_in_blanks',
-		title: `Plafond 1000 — ${level}`,
-		theme: THEME,
-		domain: 'Plafond',
+		title: `${TITRE} ${level}`,
 		level,
 		grades: ['6'],
 		status: 'published',
@@ -39,7 +37,7 @@ function modele(level: number) {
 }
 
 async function supprimerLeDecor() {
-	const { error } = await service.from('question_templates').delete().eq('theme', THEME);
+	const { error } = await service.from('question_templates').delete().like('title', `${TITRE}%`);
 	expect(error, 'le décor n’a pas pu être retiré').toBeNull();
 }
 

@@ -36,9 +36,6 @@
 			}
 		],
 		"grades": ["CM2"],
-		"theme": "Décimaux",
-		"domain": "Diviser",
-		"subdomain": "A trou",
 		"level": 3,
 		"status": "draft",
 		"delay": 15,

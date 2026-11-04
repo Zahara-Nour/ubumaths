@@ -38,8 +38,6 @@ function generate(statement: string, expected: string[], seed = 42): QuestionIns
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as unknown as QuestionTemplate,
 		seed

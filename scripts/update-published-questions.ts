@@ -23,11 +23,10 @@
  *  - après écriture, la ligne est relue et comparée champ par champ.
  * S'arrête à la première erreur.
  *
- * Changement de niveau : l'index `idx_question_templates_unique_category` interdit deux modèles
- * publiés au même (thème, domaine, sous-domaine, niveau). Ces colonnes sont lues en base : un
- * fichier ne les porte plus. Un échange de niveaux passe donc par
- * un niveau temporaire (900 + niveau) avant l'écriture finale. Contrôle et niveau temporaire
- * partent avec l'index (lot 4 du chantier `automaths-arbre`, ADR 0035).
+ * Changement de niveau : tant que l'ancien index unique des publiés existe en base (il part
+ * au lot 4b du chantier `automaths-arbre`, ADR 0035), un échange de niveaux passe par un
+ * niveau temporaire (900 + niveau) avant l'écriture finale. Le script ne contrôle plus
+ * lui-même la collision : la base la refuse, l'écriture s'arrête alors.
  *
  * Usage :
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
@@ -378,24 +377,9 @@ async function main(): Promise<number> {
 		preparations.push({ id, fichier, base, cible, changes });
 	}
 
-	// Niveaux finaux : jamais deux modèles publiés de la même catégorie
+	// Niveaux changés (échange éventuel, cf. NIVEAU_TEMPORAIRE)
 	const aDeplacer = preparations.filter((p) => p.changes.includes('level'));
 	for (const p of aDeplacer) {
-		const { data, error } = await supabase
-			.from('question_templates')
-			.select('id')
-			.eq('status', 'published')
-			.eq('theme', p.base.theme)
-			.eq('domain', p.base.domain)
-			.eq('subdomain', p.base.subdomain ?? '')
-			.in('level', [p.cible.level, NIVEAU_TEMPORAIRE + p.base.level]);
-		if (error) throw new Error(`${p.id} : lecture des niveaux — ${error.message}`);
-		const occupants = (data ?? []).filter((row) => !aDeplacer.some((autre) => autre.id === row.id));
-		if (occupants.length > 0) {
-			throw new Error(
-				`${p.id} : niveau ${p.cible.level} déjà pris par ${occupants.map((o) => o.id).join(', ')}`
-			);
-		}
 		console.log(`  ↕ ${p.id.slice(0, 8)} : niveau ${p.base.level} → ${p.cible.level}`);
 	}
 

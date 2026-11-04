@@ -610,15 +610,6 @@ export interface QuestionTemplate {
 
 	// ---- Categorization ----
 
-	/** Ancien thème (ex. Algèbre). Facultatif : un modèle neuf est rangé par `classification_node_id`. */
-	theme?: string;
-
-	/** Ancien domaine dans le thème (ex. Équations). Facultatif, comme `theme`. */
-	domain?: string;
-
-	/** Optional subdomain for finer categorization (e.g., Linéaires, Quadratiques) */
-	subdomain?: string;
-
 	/** Difficulty level as positive integer (no max) - independent from grades */
 	level: number;
 

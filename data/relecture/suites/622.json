@@ -52,9 +52,6 @@
 			}
 		],
 		"grades": ["1_SPE"],
-		"theme": "Suites",
-		"domain": "Apprivoiser",
-		"subdomain": "Deviner le terme général",
 		"level": 1,
 		"status": "draft",
 		"delay": 30,

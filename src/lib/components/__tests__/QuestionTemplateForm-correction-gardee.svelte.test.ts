@@ -28,8 +28,6 @@ function baseTemplate(overrides: Partial<QuestionTemplate>): QuestionTemplate {
 	return {
 		id: '55555555-5555-4555-8555-555555555555',
 		title: 'Correction gardée',
-		theme: 'Fonctions',
-		domain: 'Dérivation',
 		level: 1,
 		grades: ['1re'],
 		status: 'draft',

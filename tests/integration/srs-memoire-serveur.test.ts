@@ -129,14 +129,11 @@ async function memory(type: 'template' | 'custom', refId: string) {
 	return data;
 }
 
-function template(id: string, domain: string) {
+function template(id: string) {
 	return {
 		id,
 		type: 'numerical_exact',
 		title: `Mémoire serveur ${id.slice(-4)}`,
-		theme: 'Thème SRSMS',
-		domain,
-		subdomain: null,
 		level: 1,
 		grades: ['6'],
 		status: 'published',
@@ -159,8 +156,8 @@ describe('mémoire de révision écrite par le serveur seul (Q171)', () => {
 		student = await person('student');
 		teacher = await person('teacher');
 
-		for (const [key, id] of Object.entries(T)) {
-			await insertRow('question_templates', template(id, `Domaine ${key} SRSMS`));
+		for (const id of Object.values(T)) {
+			await insertRow('question_templates', template(id));
 		}
 
 		// Fiche existante, posée au service : échue MAINTENANT

@@ -35,14 +35,8 @@ const FICHE = '44444444-4444-4444-8444-444444444444';
 
 const MODELE = '55555555-5555-4555-8555-555555555555';
 const ITEMS = [{ templateId: MODELE, quantity: 2, delay: 20 }];
-/** Ancienne forme (avant l'ADR 0035) : une catégorie, résolue vers son modèle publié */
-const ANCIENNES_LIGNES = [
-	{
-		category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
-		quantity: 2,
-		delay: 20
-	}
-];
+/** Ancienne forme (avant l'ADR 0035) : une catégorie, plus relue */
+const ANCIENNES_LIGNES = [{ category: { level: 3 }, quantity: 2, delay: 20 }];
 
 function client(rpcResult: { data: unknown; error: unknown }) {
 	const rpc = vi.fn(async () => rpcResult);
@@ -150,41 +144,10 @@ describe('resolveCourseShareToken', () => {
 		expect(resultat?.chapters[0].series[0].categories).toEqual(ITEMS);
 	});
 
-	it('une série d’ancienne forme (catégories) est relue : sa ligne pointe sur le modèle publié', async () => {
+	it('une série d’ancienne forme (catégories) n’est plus relue : le cours reste lisible, la série sans lien', async () => {
 		const c = cours();
 		c.chapters[0].series[0].categories = ANCIENNES_LIGNES;
-		const rpc = vi.fn(async () => ({ data: c, error: null }));
-		// Lecture des modèles des anciennes lignes : une requête, filtrée sur le quadruplet
-		const query = {
-			select: vi.fn(() => query),
-			eq: vi.fn(() => query),
-			or: vi.fn(() => query),
-			limit: vi.fn(async () => ({
-				data: [{ id: MODELE, theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 }],
-				error: null
-			}))
-		};
-		const from = vi.fn(() => query);
-		const sb = { rpc, from } as unknown as SupabaseClient<Database>;
-
-		const resultat = await resolveCourseShareToken(sb, JETON);
-
-		expect(from).toHaveBeenCalledTimes(1);
-		expect(from).toHaveBeenCalledWith('question_templates');
-		expect(resultat?.chapters[0].series[0].categories).toEqual(ITEMS);
-	});
-
-	it('modèles illisibles (panne) : le cours reste lisible, la série sans lien', async () => {
-		const c = cours();
-		c.chapters[0].series[0].categories = ANCIENNES_LIGNES;
-		const rpc = vi.fn(async () => ({ data: c, error: null }));
-		const query = {
-			select: vi.fn(() => query),
-			eq: vi.fn(() => query),
-			or: vi.fn(() => query),
-			limit: vi.fn(async () => ({ data: null, error: { message: 'panne' } }))
-		};
-		const sb = { rpc, from: vi.fn(() => query) } as unknown as SupabaseClient<Database>;
+		const { sb } = client({ data: c, error: null });
 		vi.spyOn(console, 'error').mockImplementation(() => {});
 
 		const resultat = await resolveCourseShareToken(sb, JETON);

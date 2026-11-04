@@ -35,9 +35,6 @@
 			}
 		],
 		"grades": ["5"],
-		"theme": "Fractions",
-		"domain": "Calculer",
-		"subdomain": "Fraction d'une quantité",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

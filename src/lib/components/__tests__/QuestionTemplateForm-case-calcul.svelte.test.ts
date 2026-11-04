@@ -18,8 +18,6 @@ function calculusTemplate(blankDefaults: BlankDefaults): QuestionTemplate {
 	return {
 		id: '44444444-4444-4444-8444-444444444444',
 		title: 'Primitive',
-		theme: 'Analyse',
-		domain: 'Primitives',
 		level: 1,
 		grades: ['T_SPE'],
 		status: 'draft',

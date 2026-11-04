@@ -85,9 +85,6 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Fractions",
-		"domain": "A trou",
-		"subdomain": "Multiplication",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,

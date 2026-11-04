@@ -49,8 +49,6 @@ const TEMPLATE = {
 		}
 	],
 	grades: ['CP'],
-	theme: 'Test',
-	domain: 'Test',
 	level: 1
 } as unknown as QuestionTemplate;
 

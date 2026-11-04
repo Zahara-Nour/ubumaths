@@ -338,12 +338,11 @@ des fiches : [pratiques/fiches-exercices.md](../pratiques/fiches-exercices.md).
   ([ADR 0015](../adr/0015-evaluation-notee-correction-serveur.md)) — aucun droit pour `anon` ni
   `authenticated`, `service_role` seul. Chaque question désigne son modèle (`template_id`) ;
   l'ancienne `category_key` est facultative depuis l'[ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)
-  et part au lot 4 du chantier `automaths-arbre`.
-- `series.categories` et `test_sessions.categories` (jsonb, nom gardé jusqu'au lot 4) : lignes
+  et part au lot 4b du chantier `automaths-arbre` (le code ne la lit plus).
+- `series.categories` et `test_sessions.categories` (jsonb, nom gardé jusqu'au lot 4b) : lignes
   `{templateId, quantity, delay}` ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)).
   Les anciennes lignes `{category: {theme, domain, subdomain, level}, …}` ont été converties par
-  `20261104204345_series_lignes_par_modele` ; `src/lib/server/series-lines.ts` lit encore les deux
-  formes (anciens liens, onglets ouverts) jusqu'au lot 4.
+  `20261104204345_series_lignes_par_modele` ; `src/lib/server/series-lines.ts` ne lit plus que la forme par modèle.
 - `test_sessions` / `test_answers` : passages de séries. Une policy RESTRICTIVE interdit à un
   compte connecté d'écrire une séance de contrôle (`evaluation_id`, note, points) : c'est le serveur
   qui les écrit.

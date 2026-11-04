@@ -322,22 +322,11 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		expect(second).toMatchObject({ can_attempt: false, current_attempts: 1 });
 	});
 
-	it('une série enregistrée par catégories (ancienne forme) est relue : l’élève retrouve le modèle publié', async () => {
-		// Le quadruplet du modèle du décor, relu dans la base
-		const { data: tpl, error: tplError } = await service
-			.from('question_templates')
-			.select('theme, domain, subdomain, level')
-			.eq('id', templateId)
-			.single();
-		expect(tplError, 'décor : modèle').toBeNull();
+	it('une série enregistrée par catégories (ancienne forme) est illisible : items vides, sans erreur', async () => {
+		// L'ancienne forme n'est plus résolue vers un modèle (ADR 0035)
 		const legacy = [
 			{
-				category: {
-					theme: tpl!.theme,
-					domain: tpl!.domain,
-					subdomain: tpl!.subdomain,
-					level: tpl!.level
-				},
+				category: { theme: 'Ancien', domain: 'Ancien', subdomain: null, level: 1 },
 				quantity: 3,
 				delay: 25
 			}
@@ -366,6 +355,6 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		expect(e3, 'décor : assignation').toBeNull();
 
 		const found = await getAssignmentWithEvaluation(student.client, assignment!.id);
-		expect(found!.evaluation.series.items).toEqual([{ templateId, quantity: 3, delay: 25 }]);
+		expect(found!.evaluation.series.items).toEqual([]);
 	});
 });

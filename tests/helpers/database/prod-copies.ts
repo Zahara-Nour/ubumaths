@@ -28,8 +28,8 @@ export interface ProdCopies {
 
 export async function insertProdCopies(pg: Client, copies: ProdCopies): Promise<void> {
 	await pg.query(
-		`insert into public.question_templates (id, type, grades, theme, domain, level, variations, status, title, created_at, updated_at)
-		 select unnest($1::uuid[]), 'numerical_exact', array['2'], 'copie', 'copie', 1, '[{}]'::jsonb, 'draft', 'copie de la prod', $2::timestamptz, $2::timestamptz`,
+		`insert into public.question_templates (id, type, grades, level, variations, status, title, created_at, updated_at)
+		 select unnest($1::uuid[]), 'numerical_exact', array['2'], 1, '[{}]'::jsonb, 'draft', 'copie de la prod', $2::timestamptz, $2::timestamptz`,
 		[copies.templateIds, copies.timestamp]
 	);
 	await pg.query(

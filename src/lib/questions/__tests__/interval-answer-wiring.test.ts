@@ -60,8 +60,6 @@ function inequalityTemplate(
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Second degré',
 		level: 3
 	};
 }

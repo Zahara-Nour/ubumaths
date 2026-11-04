@@ -58,9 +58,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "Complément",
 		"level": 9,
 		"status": "draft",
 		"delay": 20,

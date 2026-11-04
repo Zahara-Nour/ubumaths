@@ -65,8 +65,6 @@ export const additionGroupingDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['CM2'],
-	theme: 'Arithmétique',
-	domain: 'Calcul mental',
 	level: 1
 };
 
@@ -101,9 +99,6 @@ export const linearEquationDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['4'],
-	theme: 'Algèbre',
-	domain: 'Équations',
-	subdomain: 'Linéaires',
 	level: 2
 };
 
@@ -141,9 +136,6 @@ export const differentiatePolynomialDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['1_SPE'],
-	theme: 'Analyse',
-	domain: 'Dérivation',
-	subdomain: 'Polynômes',
 	level: 1
 };
 
@@ -179,9 +171,6 @@ export const quadraticEquationDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['T_SPE'],
-	theme: 'Algèbre',
-	domain: 'Équations',
-	subdomain: 'Second degré',
 	level: 2
 };
 
@@ -215,9 +204,6 @@ export const linearInequalityFlipDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['4'],
-	theme: 'Algèbre',
-	domain: 'Inéquations',
-	subdomain: 'Linéaires',
 	level: 2
 };
 
@@ -251,9 +237,6 @@ export const linearInequalityTwoSidesDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['4'],
-	theme: 'Algèbre',
-	domain: 'Inéquations',
-	subdomain: 'Linéaires',
 	level: 1
 };
 
@@ -289,9 +272,6 @@ export const quadraticInequalityClassicDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['1_SPE'],
-	theme: 'Algèbre',
-	domain: 'Inéquations',
-	subdomain: 'Second degré',
 	level: 2
 };
 
@@ -327,9 +307,6 @@ export const quadraticInequalityNegativeADemo: QuestionTemplate = {
 		}
 	],
 	grades: ['1_SPE'],
-	theme: 'Algèbre',
-	domain: 'Inéquations',
-	subdomain: 'Second degré',
 	level: 3
 };
 
@@ -365,9 +342,6 @@ export const rationalInequalitySimpleDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['1_SPE'],
-	theme: 'Algèbre',
-	domain: 'Inéquations',
-	subdomain: 'Rationnelles',
 	level: 3
 };
 
@@ -398,9 +372,6 @@ export const rationalInequalityQuadDenomDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['T_SPE'],
-	theme: 'Algèbre',
-	domain: 'Inéquations',
-	subdomain: 'Rationnelles',
 	level: 4
 };
 
@@ -436,9 +407,6 @@ export const rationalInequalityMultiFracDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['1_SPE'],
-	theme: 'Algèbre',
-	domain: 'Inéquations',
-	subdomain: 'Rationnelles',
 	level: 4
 };
 
@@ -470,9 +438,6 @@ export const differentiateCompositionDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['T_SPE'],
-	theme: 'Analyse',
-	domain: 'Dérivation',
-	subdomain: 'Composition',
 	level: 2
 };
 
@@ -510,9 +475,6 @@ export const integrateIndefiniteDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['T_SPE'],
-	theme: 'Analyse',
-	domain: 'Intégration',
-	subdomain: 'Primitives',
 	level: 1
 };
 
@@ -549,9 +511,6 @@ export const integrateDefiniteDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['T_SPE'],
-	theme: 'Analyse',
-	domain: 'Intégration',
-	subdomain: 'Intégrales définies',
 	level: 2
 };
 
@@ -584,8 +543,6 @@ export const simplifyDistributionDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['4'],
-	theme: 'Calcul littéral',
-	domain: 'Identités remarquables',
 	level: 1
 };
 
@@ -622,8 +579,6 @@ export const simplifyTrigDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['1_SPE'],
-	theme: 'Trigonométrie',
-	domain: 'Identités trigonométriques',
 	level: 1
 };
 
@@ -662,8 +617,6 @@ export const arithmeticFromBlankDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['CM2'],
-	theme: 'Arithmétique',
-	domain: 'Calcul mental',
 	level: 1
 };
 
@@ -697,8 +650,6 @@ export const limitFactorisationDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['T_SPE'],
-	theme: 'Analyse',
-	domain: 'Limites',
 	level: 1
 };
 
@@ -731,8 +682,6 @@ export const limitInfinityDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['T_SPE'],
-	theme: 'Analyse',
-	domain: 'Limites',
 	level: 1
 };
 
@@ -764,8 +713,6 @@ export const domainSqrtFractionDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['1_SPE'],
-	theme: 'Analyse',
-	domain: 'Fonctions',
 	level: 1
 };
 
@@ -796,8 +743,6 @@ export const domainTanDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['T_SPE'],
-	theme: 'Analyse',
-	domain: 'Fonctions',
 	level: 1
 };
 
@@ -828,7 +773,5 @@ export const domainArcsinDemo: QuestionTemplate = {
 		}
 	],
 	grades: ['T_SPE'],
-	theme: 'Analyse',
-	domain: 'Fonctions',
 	level: 1
 };

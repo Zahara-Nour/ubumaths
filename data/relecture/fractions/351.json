@@ -45,9 +45,6 @@
 			}
 		},
 		"grades": ["CM2"],
-		"theme": "Fractions",
-		"domain": "Apprivoiser",
-		"subdomain": "Décomposition",
 		"level": 3,
 		"status": "draft",
 		"delay": 30,

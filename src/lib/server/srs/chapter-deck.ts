@@ -170,13 +170,7 @@ export async function loadChapterDecks(
 			.select('id, categories')
 			.in('id', seriesIds);
 		if (seriesError) throw new ChapterDeckError(seriesError.message);
-		let read;
-		try {
-			read = await readStoredSeriesMany(supabase, series ?? []);
-		} catch (readError) {
-			throw new ChapterDeckError(readError instanceof Error ? readError.message : 'lecture');
-		}
-		for (const [id, { items }] of read) itemsBySeries.set(id, items);
+		for (const [id, items] of readStoredSeriesMany(series ?? [])) itemsBySeries.set(id, items);
 	}
 
 	// Les modèles des séries, s'ils sont publiés : la base filtre

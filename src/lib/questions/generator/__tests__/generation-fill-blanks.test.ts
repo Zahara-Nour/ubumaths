@@ -32,8 +32,6 @@ function makeFillInTemplate(
 		status: 'draft',
 		variations: [variation],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...overrides
 	};
@@ -54,8 +52,6 @@ function makeFillInTemplateWithShared(
 		shared,
 		variations: [variation],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...overrides
 	};

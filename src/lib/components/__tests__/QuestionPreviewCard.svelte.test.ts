@@ -47,14 +47,12 @@ describe('QuestionPreviewCard', () => {
 		await expect.element(page.getByRole('button', { name: /panier/ })).toBeInTheDocument();
 	});
 
-	it('intitulé : titre et description du modèle, sans l’ancien sous-domaine (la rubrique dit la sous-notion)', async () => {
+	it('intitulé : titre et description du modèle (la rubrique dit la sous-notion)', async () => {
 		const screen = await renderTile();
 		const heading = screen.container.querySelector<HTMLElement>('[data-tile-heading]');
 
 		expect(heading).not.toBeNull();
 		expect(heading!.textContent).toContain(TEMPLATE.title);
-		expect(TEMPLATE.subdomain).toBeTruthy();
-		expect(heading!.textContent).not.toContain(TEMPLATE.subdomain!);
 		// La description distingue les modèles d'une même rubrique (même titre)
 		const description = heading!.querySelector<HTMLElement>('[data-tile-description] p');
 		expect(description).not.toBeNull();
@@ -63,7 +61,6 @@ describe('QuestionPreviewCard', () => {
 		expect(parseFloat(getComputedStyle(description!).fontSize)).toBeLessThan(
 			parseFloat(getComputedStyle(title!).fontSize)
 		);
-		expect(heading!.textContent).not.toContain(`${TEMPLATE.theme} /`);
 	});
 
 	it("un clic sur l'énoncé n'ouvre rien", async () => {

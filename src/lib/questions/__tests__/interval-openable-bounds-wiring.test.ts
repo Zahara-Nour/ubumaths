@@ -72,8 +72,6 @@ function variationsTemplate(where: 'blank' | 'blankDefaults'): QuestionTemplate 
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Dérivation',
 		level: 2
 	} as QuestionTemplate;
 }

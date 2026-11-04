@@ -11,7 +11,6 @@ const LEGACY = '99999999-9999-4999-8999-999999999999';
 const T1 = '77777777-7777-4777-8777-777777777771';
 const T_LOIN = '77777777-7777-4777-8777-777777777772';
 const ITEMS = [{ templateId: T1, quantity: 1, delay: 20 }];
-const CATEGORY = { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 };
 
 function rangeOf(calls: Call[]): [number, number] | null {
 	const range = calls.find((c) => c.method === 'range');
@@ -94,28 +93,23 @@ describe('evaluationCurriculumPoints', () => {
 		expect(read.find((c) => c.method === 'in')?.args).toEqual(['id', [T1]]);
 	});
 
-	it('ancienne série par catégories (niveau « 3 » en texte) : retrouve son modèle publié', async () => {
-		const fake = createFakeSupabase((table, calls) => {
+	it('ancienne série par catégories : plus relue, aucun point (et pas d’erreur)', async () => {
+		const fake = createFakeSupabase((table) => {
 			if (table === 'evaluations') {
 				return {
 					data: [
 						{
 							id: EVALUATION,
 							series: {
-								categories: [{ category: { ...CATEGORY, level: '3' }, quantity: 1, delay: 20 }]
+								categories: [{ category: { level: '3' }, quantity: 1, delay: 20 }]
 							}
 						}
 					]
 				};
 			}
-			if (table === 'question_templates') {
-				// Lecture des anciennes lignes (filtre `or`), puis lecture des modèles publiés
-				if (calls.some((c) => c.method === 'or')) return { data: [{ id: T1, ...CATEGORY }] };
-				return { data: rangeOf(calls)?.[0] === 0 ? [{ id: T1 }] : [] };
-			}
-			return { data: [programmeTag('p1')] };
+			throw new Error(`Table inattendue : ${table}`);
 		});
 
-		expect(await evaluationCurriculumPoints(fake.client as never, [EVALUATION])).toEqual(['p1']);
+		expect(await evaluationCurriculumPoints(fake.client as never, [EVALUATION])).toEqual([]);
 	});
 });

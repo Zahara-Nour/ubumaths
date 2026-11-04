@@ -51,9 +51,6 @@
 		"grades": [
 			"CM1"
 		],
-		"theme": "Entiers",
-		"domain": "Apprivoiser",
-		"subdomain": "Comparer",
 		"level": 4,
 		"status": "draft",
 		"delay": 20,

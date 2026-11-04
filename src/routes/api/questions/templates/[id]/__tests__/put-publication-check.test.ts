@@ -131,7 +131,7 @@ const NODE_ID = '55555555-5555-4555-8555-555555555555';
 // Plus aucun contrôle « catégorie occupée » (ADR 0035) : un modèle est rangé dans
 // l'arbre des notions, où plusieurs modèles cohabitent.
 describe('POST : rangement dans l’arbre, plus de catégorie', () => {
-	it('créer publié alors qu’un publié porte le même thème/domaine/niveau → 201', async () => {
+	it('créer publié alors qu’un publié porte le même niveau → 201', async () => {
 		const db = fakeDb();
 		db.question_templates = [{ ...templateRow(), status: 'published' }];
 		const response = await callPost(db, createBody('published'));
@@ -140,33 +140,21 @@ describe('POST : rangement dans l’arbre, plus de catégorie', () => {
 		expect(db.inserts).toHaveLength(1);
 	});
 
-	it('theme / domain / subdomain d’un vieil onglet : acceptés puis ignorés (jamais écrits)', async () => {
+	// Un onglet de l'éditeur ouvert avant la mise en prod envoie encore l'ancien quadruplet
+	it('ancien quadruplet d’un vieil onglet : accepté puis ignoré (jamais écrit)', async () => {
 		const db = fakeDb();
 		db.question_templates = [];
 		const response = await callPost(db, {
 			...createBody('draft'),
-			theme: 'Entiers',
-			domain: 'Multiplier',
-			subdomain: 'x'
+			theme: 'Ancien thème',
+			domain: 'Ancien domaine',
+			subdomain: 'Ancien sous-domaine'
 		});
 
 		expect(response.status).toBe(201);
 		expect(db.inserts[0]).not.toHaveProperty('theme');
 		expect(db.inserts[0]).not.toHaveProperty('domain');
 		expect(db.inserts[0]).not.toHaveProperty('subdomain');
-	});
-
-	it('un modèle sans theme ni domain est créé (brouillon et publié)', async () => {
-		const db = fakeDb();
-		db.question_templates = [];
-		const body: Record<string, unknown> = createBody('published');
-		delete body.theme;
-		delete body.domain;
-		delete body.subdomain;
-
-		const response = await callPost(db, body);
-
-		expect(response.status).toBe(201);
 	});
 
 	it('écrit classification_node_id', async () => {
@@ -230,21 +218,20 @@ describe('PUT : rangement dans l’arbre', () => {
 		expect(db.updates[1]).toEqual({ classification_node_id: null });
 	});
 
-	it('theme / domain / subdomain envoyés : ignorés, la base les garde', async () => {
+	it('ancien quadruplet d’un vieil onglet : ignoré, jamais écrit', async () => {
 		const db = fakeDb();
 		const response = await callPut(db, {
-			theme: 'Autre',
-			domain: 'Autre',
-			subdomain: 'x',
-			level: 3
+			level: 3,
+			theme: 'Ancien thème',
+			domain: 'Ancien domaine',
+			subdomain: 'Ancien sous-domaine'
 		});
 
 		expect(response.status).toBe(200);
 		expect(db.updates).toEqual([{ level: 3 }]);
-		expect(db.question_templates[0].theme).toBe(FIXTURE.theme);
 	});
 
-	it('seuls theme / domain envoyés : rien à mettre à jour → 400', async () => {
+	it('seul l’ancien quadruplet envoyé : rien à mettre à jour → 400', async () => {
 		const db = fakeDb();
 		const response = await callPut(db, { theme: 'Autre' });
 

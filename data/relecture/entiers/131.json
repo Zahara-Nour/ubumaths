@@ -48,9 +48,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Produit",
 		"level": 5,
 		"status": "draft",
 		"delay": 15,

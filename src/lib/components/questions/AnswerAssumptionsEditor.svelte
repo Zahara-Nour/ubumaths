@@ -30,11 +30,13 @@
 		rows: AnswerAssumptionRow[];
 		/** Variables tirées du modèle : une hypothèse ne peut pas les viser */
 		drawnNames: string[];
-		theme: string;
-		domain: string;
+		/** Branche de l'arbre où le modèle est rangé (vide : pas encore rangé) */
+		branch: string;
+		/** Notion de l'arbre où le modèle est rangé */
+		notion: string;
 	}
 
-	let { rows = $bindable(), drawnNames, theme, domain }: Props = $props();
+	let { rows = $bindable(), drawnNames, branch, notion }: Props = $props();
 
 	const KIND_ITEMS = ANSWER_ASSUMPTION_KINDS.map((kind) => ({
 		value: kind,
@@ -45,7 +47,7 @@
 
 	// Proposition « n ∈ ℕ » : Suites, n ni déjà décrit, ni tiré
 	let proposeNatural = $derived(
-		isSequenceCategory(theme, domain) &&
+		isSequenceCategory(branch, notion) &&
 			!rows.some((row) => row.name.trim() === 'n') &&
 			!drawnNames.includes('n')
 	);

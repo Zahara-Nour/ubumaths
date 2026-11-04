@@ -125,8 +125,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	 */
 	const typeFilter = url.searchParams.get('type'); // Question type ('numerical_exact', etc.)
 	const gradesFilter = url.searchParams.get('grades'); // Comma-separated grades ('6,5,4')
-	// Arbre des notions : identifiants mal formés ignorés. Les anciens `theme`,
-	// `domain`, `subdomain` ne sont plus lus.
+	// Arbre des notions : identifiants mal formés ignorés. Les anciens paramètres
+	// d'adresse (thème, domaine, sous-domaine) ne sont plus lus.
 	const branchParam = url.searchParams.get('branche');
 	const notionParam = url.searchParams.get('notion');
 	const branchFilter = uuidSchema.safeParse(branchParam).success ? branchParam : null;

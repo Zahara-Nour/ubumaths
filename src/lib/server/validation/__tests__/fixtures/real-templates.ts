@@ -17,15 +17,12 @@ const singleBlankRow = {
 	type: 'fill_in_blanks',
 	delay: 15,
 	level: 1,
-	theme: 'Entiers',
 	title: "Table d'addition'",
-	domain: 'Additionner',
 	grades: ['CP'],
 	shared: null,
 	status: 'draft',
 	options: null,
 	precision: null,
-	subdomain: 'Tables',
 	variations: [
 		{
 			blanks: [{ expectedAnswer: 'eval:expression' }],
@@ -48,15 +45,12 @@ const choiceCaseRow = {
 	type: 'fill_in_blanks',
 	delay: 20,
 	level: 1,
-	theme: 'Relatifs',
 	title: "Déterminer le signe d'un quotient",
-	domain: 'Multiplier et Diviser',
 	grades: ['4'],
 	shared: null,
 	status: 'draft',
 	options: null,
 	precision: null,
-	subdomain: 'Quotient',
 	variations: [
 		{
 			blanks: [{ expectedAnswer: '{{eval:(1-a*b/abs(a*b))/2}}' }],
@@ -81,15 +75,12 @@ const multiBlankRow = {
 	type: 'fill_in_blanks',
 	delay: 20,
 	level: 1,
-	theme: 'Décimaux',
 	title: 'Encadrer un nombre décimal par deux entiers consécutifs',
-	domain: 'Apprivoiser',
 	grades: ['CM1'],
 	shared: null,
 	status: 'draft',
 	options: null,
 	precision: null,
-	subdomain: 'Encadrer',
 	variations: [
 		{
 			blanks: [{ expectedAnswer: '{{a}}' }, { expectedAnswer: '{{eval:a+1}}' }],
@@ -113,15 +104,12 @@ const unitRow = {
 	type: 'fill_in_blanks',
 	delay: 20,
 	level: 1,
-	theme: 'Grandeurs',
 	title: 'Calculer une vitesse moyenne',
-	domain: 'Vitesses',
 	grades: ['4'],
 	shared: null,
 	status: 'draft',
 	options: null,
 	precision: null,
-	subdomain: 'Calculer',
 	variations: [
 		{
 			blanks: [{ unit: { expected: true }, expectedAnswer: '{{eval:b;[km.h^{-1}]}}' }],
@@ -153,15 +141,12 @@ const courseCardRow = {
 	// Comme en production : les 4 cartes n'ont pas de délai (généré depuis #495)
 	delay: null,
 	level: 3,
-	theme: 'Fonctions',
 	title: 'Étude de fonction : ce que donne la dérivée',
-	domain: 'Etude de fonction',
 	grades: ['1_SPE'],
 	shared: null,
 	status: 'draft',
 	options: { courseCard: true },
 	precision: null,
-	subdomain: 'Flash',
 	variations: [
 		{
 			statement: "Que permet de trouver la dérivée d'une fonction ?",

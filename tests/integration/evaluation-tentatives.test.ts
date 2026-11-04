@@ -40,8 +40,8 @@ const ANON_KEY =
 const SERVICE_KEY =
 	process.env.SUPABASE_TEST_SERVICE_ROLE_KEY ||
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
-const CATEGORIES = [{ category: 'entiers/1', quantity: 2, delay: 20 }];
 const TEMPLATE_ID = '0a11f0e0-0000-4000-8000-00000000e501';
+const CATEGORIES = [{ templateId: TEMPLATE_ID, quantity: 2, delay: 20 }];
 const ATTEMPTS = 'evaluation_attempt_questions';
 
 // Variables
@@ -133,16 +133,14 @@ async function serverStartsAttempt(userId: string, evaluationId: string): Promis
 			position: 0,
 			template_id: TEMPLATE_ID,
 			seed: 123456,
-			delay_seconds: 20,
-			category_key: 'entiers/1'
+			delay_seconds: 20
 		},
 		{
 			test_session_id: session!.id,
 			position: 1,
 			template_id: TEMPLATE_ID,
 			seed: 2147483647,
-			delay_seconds: 20,
-			category_key: 'entiers/1'
+			delay_seconds: 20
 		}
 	]);
 	expect(questionsError, 'décor : questions tirées').toBeNull();
@@ -201,8 +199,6 @@ describe('tentatives d’évaluation (20260930160000)', () => {
 			id: TEMPLATE_ID,
 			type: 'fill_in_blanks',
 			title: 'Tentatives ZZ',
-			theme: 'Test',
-			domain: 'Tentatives',
 			level: 1,
 			grades: ['6'],
 			status: 'draft',
@@ -455,8 +451,7 @@ describe('tentatives d’évaluation (20260930160000)', () => {
 					position: 5,
 					template_id: TEMPLATE_ID,
 					seed: 1,
-					delay_seconds: 20,
-					category_key: 'entiers/1'
+					delay_seconds: 20
 				});
 				expect(error?.code).toBe('42501');
 			}
@@ -470,7 +465,7 @@ describe('tentatives d’évaluation (20260930160000)', () => {
 		it('service_role lit les questions tirées, dans l’ordre', async () => {
 			const { data, error } = await service
 				.from(ATTEMPTS)
-				.select('position, template_id, seed, delay_seconds, category_key')
+				.select('position, template_id, seed, delay_seconds')
 				.eq('test_session_id', evaluationSessionId)
 				.order('position');
 			expect(error).toBeNull();
@@ -479,15 +474,13 @@ describe('tentatives d’évaluation (20260930160000)', () => {
 					position: 0,
 					template_id: TEMPLATE_ID,
 					seed: 123456,
-					delay_seconds: 20,
-					category_key: 'entiers/1'
+					delay_seconds: 20
 				},
 				{
 					position: 1,
 					template_id: TEMPLATE_ID,
 					seed: 2147483647,
-					delay_seconds: 20,
-					category_key: 'entiers/1'
+					delay_seconds: 20
 				}
 			]);
 		});
@@ -574,8 +567,7 @@ describe('tentatives d’évaluation (20260930160000)', () => {
 				test_session_id: evaluationSessionId,
 				template_id: TEMPLATE_ID,
 				seed: 1,
-				delay_seconds: 20,
-				category_key: 'entiers/1'
+				delay_seconds: 20
 			};
 			const cases: [Record<string, unknown>, string][] = [
 				[{ ...base, position: 7, seed: -1 }, '23514'],
@@ -583,36 +575,12 @@ describe('tentatives d’évaluation (20260930160000)', () => {
 				[{ ...base, position: 7, delay_seconds: 0 }, '23514'],
 				[{ ...base, position: 7, delay_seconds: 601 }, '23514'],
 				[{ ...base, position: -1 }, '23514'],
-				[{ ...base, position: 7, category_key: '' }, '23514'],
 				[{ ...base, position: 0 }, '23505']
 			];
 			for (const [row, code] of cases) {
 				const { error } = await service.from(ATTEMPTS).insert(row);
 				expect(error?.code, JSON.stringify(row)).toBe(code);
 			}
-		});
-
-		it('une question sans category_key est acceptée (ADR 0035, 20261104140651)', async () => {
-			const { error } = await service.from(ATTEMPTS).insert({
-				test_session_id: evaluationSessionId,
-				position: 8,
-				template_id: TEMPLATE_ID,
-				seed: 1,
-				delay_seconds: 20
-			});
-			expect(error).toBeNull();
-			const { data } = await service
-				.from(ATTEMPTS)
-				.select('category_key')
-				.eq('test_session_id', evaluationSessionId)
-				.eq('position', 8)
-				.single();
-			expect(data).toEqual({ category_key: null });
-			await service
-				.from(ATTEMPTS)
-				.delete()
-				.eq('test_session_id', evaluationSessionId)
-				.eq('position', 8);
 		});
 
 		it('un modèle tiré dans une tentative ne se supprime pas (23503)', async () => {

@@ -333,7 +333,7 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
   `--mettre-a-jour` ne change pas le niveau ; corriger après coup = migration + fichiers (CE1
   lot 1, 2026-10-27). Un modèle créé sans thème ni domaine (depuis le 2026-11-04) n'entre plus
   dans l'index d'unicité de l'ancienne catégorie (`idx_question_templates_unique_category`,
-  retiré au lot 4 d'`automaths-arbre`) ; seuls les anciens modèles y restent soumis.
+  retiré au lot 4b d'`automaths-arbre`) ; seuls les anciens modèles y restent soumis.
 - Modèle tagué d'un point d'un autre niveau (1TECHNO, 1GEN compris) : `grades` porte les **deux** niveaux (`['2', '1_SPE']`), le
   cahier de texte filtrant `grades` par égalité exacte.
 - **Réponses refusées en `bad_form` sans erreur de l'élève** (1re spé) : décimal sans

@@ -63,9 +63,6 @@
 		"grades": [
 			"CE2"
 		],
-		"theme": "Entiers",
-		"domain": "Apprivoiser",
-		"subdomain": "Comparer",
 		"level": 3,
 		"status": "draft",
 		"delay": 10,

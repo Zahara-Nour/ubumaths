@@ -7,8 +7,8 @@
  * pour un lien `/automaths/panier?modeles=…` relu par le navigateur (C19, Q45) :
  * un lien abîmé ou fabriqué ne doit jamais faire planter la page.
  *
- * L'ANCIENNE forme (catégorie thème · domaine · sous-domaine · niveau) n'est
- * relue que par `$lib/questions/series-legacy`, retiré au lot 4.
+ * L'ancienne forme (une catégorie par ligne, avant l'ADR 0035) n'est plus relue :
+ * un ancien lien `?categories=…` donne `ANCIEN_LIEN_MESSAGE`.
  */
 
 import { z } from 'zod';
@@ -138,4 +138,59 @@ export function buildSeriesLink(
 		params.set('time', String(form.timeLimit));
 	}
 	return `${origin}/automaths/test?${params.toString()}`;
+}
+
+// ============================================================================
+// LIEN DE SÉRIE (lecture de l'URL)
+// ============================================================================
+
+/** Paramètre des anciens liens de série (avant l'ADR 0035) : détecté, jamais relu */
+export const ANCIEN_LIEN_PARAM = 'categories';
+
+export const ANCIEN_LIEN_MESSAGE =
+	"Ce lien vient d'une ancienne version de Chiphre et ne peut plus être ouvert.";
+
+export type SeriesLinkResult =
+	{ success: true; lines: SeriesItem[] } | { success: false; error: string };
+
+/**
+ * Relit la composition d'un lien de série `?modeles=…`. Un ancien lien
+ * `?categories=…` (sans `modeles`) n'est plus relu : message dédié.
+ */
+export function parseSeriesLink(searchParams: URLSearchParams): SeriesLinkResult {
+	const raw = searchParams.get(SERIES_LINK_PARAM);
+	if (raw === null && searchParams.has(ANCIEN_LIEN_PARAM)) {
+		return { success: false, error: ANCIEN_LIEN_MESSAGE };
+	}
+	if (raw === null || raw.trim() === '') {
+		return { success: false, error: 'Ce lien ne contient aucune question.' };
+	}
+
+	const json = decodeSeriesParamJson(raw);
+	if (!json.ok) {
+		return {
+			success: false,
+			error: 'Ce lien de série est abîmé : les questions ne peuvent pas être relues.'
+		};
+	}
+
+	const validation = seriesItemsSchema.safeParse(json.value);
+	if (!validation.success) {
+		return {
+			success: false,
+			error: `Ce lien de série n'est pas valide : ${validation.error.issues[0].message}.`
+		};
+	}
+	return { success: true, lines: validation.data };
+}
+
+/** Le lien porte-t-il une composition (ou un ancien lien, à signaler) ? */
+export function hasSeriesLink(searchParams: URLSearchParams): boolean {
+	return searchParams.has(SERIES_LINK_PARAM) || searchParams.has(ANCIEN_LIEN_PARAM);
+}
+
+/** Retire la composition d'une URL (y compris un ancien paramètre) */
+export function deleteSeriesLink(searchParams: URLSearchParams): void {
+	searchParams.delete(SERIES_LINK_PARAM);
+	searchParams.delete(ANCIEN_LIEN_PARAM);
 }

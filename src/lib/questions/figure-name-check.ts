@@ -38,14 +38,13 @@ function figureNameIn(expectedAnswer: string): string | null {
 /**
  * Messages (français) pour l'auteur : une ligne par case dont la réponse attendue
  * contient un nom de figure, quand le modèle lit deux majuscules collées comme une
- * longueur. Rien en mode produit (déclaré ou par le contexte).
+ * longueur. Rien en mode produit (déclaré dans le modèle).
  */
 export function figureNameWarnings(
-	template: Pick<QuestionTemplate, 'shared' | 'theme' | 'variations'>
+	template: Pick<QuestionTemplate, 'shared' | 'variations'>
 ): string[] {
 	const { capitalPairs } = resolveCapitalPairs({
-		declaration: template.shared?.capitalPairs,
-		theme: template.theme
+		declaration: template.shared?.capitalPairs
 	});
 	if (capitalPairs !== 'length') return [];
 

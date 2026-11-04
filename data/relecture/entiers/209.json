@@ -43,9 +43,6 @@
 			}
 		],
 		"grades": ["CE2"],
-		"theme": "Entiers",
-		"domain": "Diviser",
-		"subdomain": "Divisibilité",
 		"level": 1,
 		"status": "draft",
 		"delay": 15,

@@ -68,7 +68,7 @@ export function mapSeriesWriteError(
 
 /**
  * Lignes `series` → `DbSeries`. La composition (colonne `categories`) est relue
- * dans la nouvelle forme, anciennes lignes résolues (`server/series-lines`) :
+ * dans la nouvelle forme (`server/series-lines`) :
  * une composition illisible rend une liste vide plutôt que de faire planter
  * l'écran.
  */
@@ -76,20 +76,13 @@ export async function toDbSeriesMany(
 	supabase: TypedSupabaseClient,
 	rows: readonly Tables<'series'>[]
 ): Promise<DbSeries[]> {
-	let read;
-	try {
-		read = await readStoredSeriesMany(supabase, rows);
-	} catch (readError) {
-		logger.error('[series] Modèles des anciennes lignes illisibles :', readError);
-		throw new SeriesError(500, 'Impossible de charger la série');
-	}
+	const read = readStoredSeriesMany(rows);
 	return rows.map((row) => ({
 		id: row.id,
 		title: row.title,
 		description: row.description,
 		grade: row.grade,
-		items: read.get(row.id)?.items ?? [],
-		unresolved_lines: read.get(row.id)?.unresolved ?? 0,
+		items: read.get(row.id) ?? [],
 		created_by: row.created_by,
 		created_at: row.created_at,
 		updated_at: row.updated_at

@@ -30,9 +30,6 @@
 			}
 		],
 		"grades": ["CE2"],
-		"theme": "Entiers",
-		"domain": "Diviser",
-		"subdomain": "Quotient",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

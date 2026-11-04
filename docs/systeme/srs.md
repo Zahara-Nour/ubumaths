@@ -20,7 +20,7 @@ couvre:
 
 > Remplace les sept fichiers de [`srs/`](../archive/systeme-2026-06/srs/README.md) (juin 2026, archivés), écrits au temps de la
 > « famille A » du référentiel, abandonnée ([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)).
-> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04.
+> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04 ; composition relue sans ancienne forme (lot 4a) le 2026-11-04.
 
 ## À quoi ça sert
 
@@ -204,7 +204,7 @@ cartes) ; chaque élève y résout sa copie par `source_deck_id`.
 
 Calculé à chaque appel (`loadChapterDeck`), pas de copie par élève (Q112) : chapitres visibles
 de l'élève → séries publiées → leurs modèles, s'ils sont publiés (composition relue par
-`readStoredSeriesMany`, anciennes lignes comprises, ADR 0035). Séance = toutes les questions dues + au plus 10 jamais vues (Q166).
+`readStoredSeriesMany`, ADR 0035). Séance = toutes les questions dues + au plus 10 jamais vues (Q166).
 Toutes les lectures passent par le client de l'élève, sous RLS, et reposent aussi les filtres
 dans la requête.
 

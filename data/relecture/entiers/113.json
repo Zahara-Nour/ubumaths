@@ -39,9 +39,6 @@
 			}
 		],
 		"grades": ["CE1"],
-		"theme": "Entiers",
-		"domain": "Soustraire",
-		"subdomain": "A trou",
 		"level": 7,
 		"status": "draft",
 		"delay": 15,

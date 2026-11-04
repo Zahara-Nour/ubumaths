@@ -553,7 +553,7 @@ describe('End-to-end : answer → attempt → trigger → cache', () => {
 	it.skip('one of the seeded 6e templates (Fractions/Addition) is correctly tagged via migration 2.1', async () => {
 		// Verify that the migration 20260609130000 actually tagged real templates.
 		// getTaggedKnowledgeTemplate fetches a template that has at least one skill linked.
-		const taggedTemplate = await getTaggedKnowledgeTemplate(service, 'Fractions', 'Addition');
+		const taggedTemplate = await getTaggedKnowledgeTemplate(service);
 		expect(taggedTemplate).not.toBeNull();
 		expect(taggedTemplate!.template_id).toBeDefined();
 		expect(taggedTemplate!.point_id).toBeDefined();

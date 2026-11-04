@@ -28,8 +28,6 @@ function unitInstance(): QuestionInstance {
 		statement,
 		blanks,
 		grades: ['6'],
-		theme: 'Grandeurs',
-		domain: 'Grandeurs et mesures',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	} as QuestionInstance;

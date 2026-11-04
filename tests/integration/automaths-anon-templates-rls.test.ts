@@ -62,8 +62,6 @@ function template(id: string, status: 'published' | 'draft') {
 		id,
 		type: 'fill_in_blanks',
 		title: `RLS anon — ${status}`,
-		theme: 'Test',
-		domain: 'RLS',
 		level: 1,
 		grades: ['6'],
 		status,

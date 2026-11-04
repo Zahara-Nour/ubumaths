@@ -87,9 +87,6 @@
 			}
 		],
 		"grades": ["1_SPE"],
-		"theme": "Suites",
-		"domain": "Apprivoiser",
-		"subdomain": "Ecriture des termes",
 		"level": 1,
 		"status": "draft",
 		"delay": 30,

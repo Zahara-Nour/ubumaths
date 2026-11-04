@@ -365,8 +365,6 @@ describe('hors question, dans une question, dans la copie corrigée', () => {
 					}
 				],
 				grades: ['CM1'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1
 			} as QuestionTemplate,
 			42

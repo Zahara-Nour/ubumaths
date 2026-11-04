@@ -42,8 +42,6 @@ function doubleTemplate(overrides: Partial<QuestionTemplate> = {}): QuestionTemp
 			}
 		],
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Multiplier',
 		level: 1,
 		testSpecs: SPECS,
 		...overrides

@@ -20,8 +20,6 @@ export function specVerdicts(
 		type: 'fill_in_blanks',
 		title: 't',
 		grades: ['1_SPE'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		delay: 20,
 		status: 'draft',

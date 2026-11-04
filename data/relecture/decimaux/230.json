@@ -99,9 +99,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Décimaux",
-		"domain": "Apprivoiser",
-		"subdomain": "Ecriture",
 		"level": 3,
 		"status": "draft",
 		"delay": 15,
