@@ -247,3 +247,20 @@ titre, unicité du quadruplet retirée (éditeur, API, lot), store/routes/module
   21 brouillons « Graphes et matrices » (tous rangés sous Matrices / Graphes, aucun publié) ;
   l'éditeur prend la branche (Matrices, Graphes → produit) comme contexte et écrit la déclaration à
   l'enregistrement. Question d'accès confirmée (personne ne gagne de lecture).
+
+## Lot 3b — phase 0 (2026-11-04)
+
+`create-questions.ts` et les scripts qui partagent sa clé (`lib/lot-questions.ts` → page à cocher,
+`publier-lot.ts`) retrouvent un fichier de lot en base par le quadruplet + titre + niveau.
+Mesure prod : (titre, niveau) ambigu pour 56 couples (123 lignes), (titre, nœud, niveau) pour 14 ;
+(quadruplet, titre, niveau) pour 0. 1 806 fichiers dans `scripts/questions/`, tous avec `theme`,
+428 avec `id` ; 19 « Graphes et matrices » sans `capitalPairs` (sens de AB lu dans le thème).
+
+- **Q14 — clé** : l'**id écrit dans le fichier** ; `create-questions --publier` l'écrit après la
+  création, tout apparie ensuite par id ; les fichiers existants le reçoivent une fois, par le
+  quadruplet, tant que les colonnes existent.
+- **Q15 — anciens champs** : retirés des fichiers par script, et refusés à la lecture (comme
+  `points`) ; les 19 « Graphes et matrices » déclarent `shared.capitalPairs = 'product'` (comme Q13).
+- **Q16 — rangement** : inchangé (migration nœud + tag, démarche `couvrir-niveau`).
+
+Les trois : « recommandé » choisi par David.
