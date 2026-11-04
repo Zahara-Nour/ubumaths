@@ -6,14 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2367 (fichiers du lot 12 b-1)._
+_Mis à jour le 2026-11-04, après #2368 (rangement du lot 12 b-1) et la page à cocher (§ 78)._
 
-- **État** : lots 1 à 9 et 12 a publiés. 12 b-1 (5 modèles : 287, 433, 288, 296, 297) mergé (#2367),
-  pas encore en prod. Ordre ensuite : 12 b-2, puis 10, puis 11.
-- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/2de-vecteurs-c1`
-  (depuis le dépôt principal) ; relever les 5 ids ; migration nœud + tag (nœuds du § 77 : égalité de
-  vecteurs pour 287, 433, 288, 296 ; somme et relation de Chasles pour 297). Puis 12 b-2.
-- **En attente de David** : le `--publier` du 12 b-1.
+- **État** : lots 1 à 9 et 12 a publiés. 12 b-1 (5 modèles) en prod en brouillon, rangé et tagué (#2368,
+  migration jouée) ; page à cocher publiée (§ 78). Ordre ensuite : 12 b-2, puis 10, puis 11.
+- **Prochaine action** : lire et compter les verdicts de la page ; corriger les « À revoir » ; puis David
+  lance `publier-lot` (simulation puis `--publier`) sur `scripts/questions/2de-vecteurs-c1` ; vérifier au
+  MCP. Ensuite 12 b-2 (289, 290, 291, 292, 401 ; phase 0 du § 77 déjà validée).
+- **En attente de David** : la relecture de la page à cocher.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `| head` derrière un `--publier` (le tuyau coupe le script en route) ; liste
   blanche : pas de `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100
@@ -2022,3 +2022,9 @@ vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12
   2-296 `37a1b7ab`, 2-297 `51192dc4` (MCP : 5 `draft`, sans nœud ni tag). Migration
   `20261103235826_questions_2de_lot12b1_rangement_tags` (gabarit du 12 a), test d'intégration rouge sans
   elle (3 échecs, 5 sautés sur 10), vert avec (10/10).
+
+- PR #2368 (migration), `security-auditor` : aucun finding bloquant. **#2368 mergée** (CI verte, intégration
+  comprise) ; `check:migrations --pr 2368` OK ; `db:migrate` le 2026-11-04 ; vérifié en prod : 5 brouillons
+  sur leur nœud, un point chacun, `updated_at` inchangé.
+- Page à cocher (5 fiches, aucune alerte ; capacité `db`, `verdicts` vide à la publication) :
+  https://claude.ai/artifact/5HjYJpnuyzEhYansfXYNBq
