@@ -9,18 +9,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2363._
+_Mis à jour le 2026-11-04, PR de rangement ouverte._
 
-- **État** : outil mergé (#2331, #2339, #2347, #2356) ; modèle TSPE-334 mergé (#2363,
-  `scripts/questions/tspe-334-tracer/`), joué en local. Pas en prod : fractions, vecteurs nommés, indice.
-- **Prochaine action** : **David** : `pnpm deploy:prod`, puis
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-334-tracer --publier` (brouillon) ;
-  ensuite relever l'id, migration nœud « vecteurs de l'espace » + tag TSPE-334 (nouveau worktree), page à
-  cocher, publication.
-- **En attente de David** : `deploy:prod` (v2 et v3 ont besoin de #2347), puis création du brouillon.
+- **État** : v0.69.0 en prod (outil complet) ; brouillon TSPE-334 créé en prod
+  (`7ce9936b-7835-4b99-9e2b-f3644f2956af`) ; migration nœud « vecteurs de l'espace » + tag TSPE-334 en PR
+  (`20261104070713_questions_tspe_334_rangement_tags.sql`, 9 tests d'intégration verts, rouges sans écritures).
+- **Prochaine action** : CI verte + audit sans finding bloquant → merge, `db:migrate` depuis la branche mergée,
+  vérifier le rangement en prod (MCP) ; puis page à cocher, publication par David.
+- **En attente de David** : rien (question d'accès tranchée le 2026-11-04 : personne ne gagne d'accès).
 - **Pièges en cours** : le geste ne vise que des points connus en 3D ; tétraèdre illisible (ligne 15 de
   `outils-manquants.md`) ; un point déclaré peut tomber sur un pointillé (vérifier le rendu).
-- **Worktree / branche** : aucun (#2363 nettoyé).
+- **Worktree / branche** : `../ubumaths-wt-solide-vecteur` · `chore/tspe-334-rangement`.
 
 ---
 
@@ -191,3 +190,13 @@ pavé) ; tétraèdre en ligne 15 de `outils-manquants.md`. Ligne 13 (geste) pass
 - Base locale, aperçu admin (Chrome) : v0 faux → « Ta flèche représente BF, pas AE − AB », flèche juste en vert,
   corrigé de Chasles ; v2 juste (K) ; v3 juste (O), corrigé lu ; 40 tirages, 17 cas sur 19, aucune formule en
   erreur ni figure indisponible. Pavé : J tombait sur le pointillé [DC] (`6 4 4`, `6 6 4`) → `6 6 7`.
+
+## Lot 3 — brouillon en prod et rangement (2026-11-04)
+
+- `deploy:prod` v0.69.0 (lancé par une autre session) : #2347 et #2363 en prod.
+- Brouillon créé par David (`create-questions --publier`) : `7ce9936b-7835-4b99-9e2b-f3644f2956af`, [T_SPE],
+  sans nœud ni tag. Relevé MCP : TSPE-334 actif, sur « Géométrie > Espace > vecteurs de l'espace » (active).
+- Question d'accès posée, tranchée par David (« je te suis ») : personne ne gagne ni ne perd d'accès.
+- Migration `20261104070713_questions_tspe_334_rangement_tags.sql` (forme du lot 9, un seul modèle) + test
+  `tests/integration/questions-tspe-334-rangement-tags.test.ts` : 9 verts ; sans le bloc d'écriture, le
+  nominal échoue au `beforeAll` (5 sautés) et 2 gardes ne se déclenchent pas.
