@@ -23,11 +23,6 @@
  *  - après écriture, la ligne est relue et comparée champ par champ.
  * S'arrête à la première erreur.
  *
- * Changement de niveau : tant que l'ancien index unique des publiés existe en base (il part
- * au lot 4b du chantier `automaths-arbre`, ADR 0035), un échange de niveaux passe par un
- * niveau temporaire (900 + niveau) avant l'écriture finale. Le script ne contrôle plus
- * lui-même la collision : la base la refuse, l'écriture s'arrête alors.
- *
  * Usage :
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
@@ -253,8 +248,6 @@ const CHAMPS_FIGES = [
 	'multipleAnswers'
 ] as const;
 
-const NIVEAU_TEMPORAIRE = 900;
-
 // ============================================================================
 // FONCTIONS
 // ============================================================================
@@ -377,7 +370,7 @@ async function main(): Promise<number> {
 		preparations.push({ id, fichier, base, cible, changes });
 	}
 
-	// Niveaux changés (échange éventuel, cf. NIVEAU_TEMPORAIRE)
+	// Niveaux changés
 	const aDeplacer = preparations.filter((p) => p.changes.includes('level'));
 	for (const p of aDeplacer) {
 		console.log(`  ↕ ${p.id.slice(0, 8)} : niveau ${p.base.level} → ${p.cible.level}`);
@@ -388,23 +381,7 @@ async function main(): Promise<number> {
 		return 0;
 	}
 
-	// 2. Niveaux temporaires (échange sans violer l'index unique)
-	for (const p of aDeplacer) {
-		const temporaire = NIVEAU_TEMPORAIRE + p.base.level;
-		const { data, error } = await supabase
-			.from('question_templates')
-			.update({ level: temporaire })
-			.eq('id', p.id)
-			.eq('level', p.base.level)
-			.select('id, level');
-		if (error || data?.length !== 1 || data[0].level !== temporaire) {
-			throw new Error(
-				`${p.id} : niveau temporaire non confirmé — ${error?.message ?? 'aucune ligne'}`
-			);
-		}
-	}
-
-	// 3. Écriture des champs, puis relecture
+	// 2. Écriture des champs, puis relecture
 	let ecrits = 0;
 	for (const p of preparations) {
 		if (p.changes.length === 0) continue;

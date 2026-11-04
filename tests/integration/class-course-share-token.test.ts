@@ -396,7 +396,7 @@ describe('« Mon cours » partageable par lien', () => {
 			published_at: null
 		});
 
-		const categories = [
+		const items = [
 			{
 				templateId: crypto.randomUUID(),
 				quantity: 4,
@@ -407,13 +407,13 @@ describe('« Mon cours » partageable par lien', () => {
 			title: 'Série fractions',
 			description: 'Révisions',
 			grade: '1_SPE',
-			categories,
+			items,
 			created_by: teacherId
 		});
 		const serieDemain = await insert('series', {
 			title: 'Série programmée',
 			grade: '1_SPE',
-			categories,
+			items,
 			created_by: teacherId
 		});
 		ids.seriePubliee = await insert('chapter_series', {

@@ -109,7 +109,7 @@ async function studentSession(score: number) {
 		.insert({
 			user_id: student.id,
 			mode: 'course',
-			categories: ITEMS,
+			items: ITEMS,
 			total_questions: 2,
 			score,
 			grade: score * 2,
@@ -144,7 +144,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 
 		const { data: series, error: e1 } = await teacher.client
 			.from('series')
-			.insert({ title: 'Tables ZZ', grade: '6', categories: ITEMS, created_by: teacher.id })
+			.insert({ title: 'Tables ZZ', grade: '6', items: ITEMS, created_by: teacher.id })
 			.select('id')
 			.single();
 		expect(e1, 'décor : série').toBeNull();
@@ -279,7 +279,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 	it('B16 : au-delà de max_attempts = 1, la deuxième tentative est refusée', async () => {
 		const { data: series } = await teacher.client
 			.from('series')
-			.insert({ title: 'Une fois ZZ', grade: '6', categories: ITEMS, created_by: teacher.id })
+			.insert({ title: 'Une fois ZZ', grade: '6', items: ITEMS, created_by: teacher.id })
 			.select('id')
 			.single();
 		const { data: evaluation } = await teacher.client
@@ -309,7 +309,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		const { error: insertError } = await service.from('test_sessions').insert({
 			user_id: student.id,
 			mode: 'interactive',
-			categories: ITEMS,
+			items: ITEMS,
 			total_questions: 2,
 			score: 5,
 			completed_at: new Date().toISOString(),
@@ -333,7 +333,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		];
 		const { data: series, error: e1 } = await teacher.client
 			.from('series')
-			.insert({ title: 'Ancienne ZZ', grade: '6', categories: legacy, created_by: teacher.id })
+			.insert({ title: 'Ancienne ZZ', grade: '6', items: legacy, created_by: teacher.id })
 			.select('id')
 			.single();
 		expect(e1, 'décor : ancienne série').toBeNull();

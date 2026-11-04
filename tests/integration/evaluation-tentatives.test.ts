@@ -89,7 +89,7 @@ async function createEvaluation(
 ): Promise<Created> {
 	const { data: series, error: seriesError } = await service
 		.from('series')
-		.insert({ title, grade: '6', categories: CATEGORIES, created_by: teacher.id })
+		.insert({ title, grade: '6', items: CATEGORIES, created_by: teacher.id })
 		.select('id')
 		.single();
 	expect(seriesError, 'décor : série').toBeNull();
@@ -120,7 +120,7 @@ async function serverStartsAttempt(userId: string, evaluationId: string): Promis
 		.insert({
 			user_id: userId,
 			mode: 'interactive',
-			categories: CATEGORIES,
+			items: CATEGORIES,
 			total_questions: 2,
 			evaluation_id: evaluationId
 		})
@@ -151,7 +151,7 @@ function sessionRow(userId: string, extra: Record<string, unknown> = {}) {
 	return {
 		user_id: userId,
 		mode: 'interactive',
-		categories: CATEGORIES,
+		items: CATEGORIES,
 		total_questions: 2,
 		...extra
 	};

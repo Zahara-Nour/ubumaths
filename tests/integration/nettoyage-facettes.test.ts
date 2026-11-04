@@ -376,7 +376,9 @@ describe('Nettoyage : rejeu sur une copie de la prod (modèles et exercices)', (
 			fixture.noeuds.archives.filter((a) => prodState.nodes.get(a.avant)?.archived !== false)
 		).toEqual([]);
 		expect([...prodState.nodes.values()].filter((n) => n.archived)).toEqual([]);
-		expect(prodState.nodes.size).toBe(19 + 137 + 540);
+		// + la sous-notion « reconnaître et nommer des formes » (CP) : sa migration n'est plus
+		// rejouée à l'envers (son rollback nommait l'ancien sous-domaine, supprimé en 4b)
+		expect(prodState.nodes.size).toBe(19 + 137 + 540 + 1);
 	});
 
 	it('le rollback remet chaque point re-rattaché sur son nœud d’avant', () => {

@@ -132,7 +132,7 @@ describe('séries de chapitre — code serveur', () => {
 		expect(templateError, 'décor : modèle publié').toBeNull();
 
 		const series = (title: string, owner = teacher.id) =>
-			insertRow('series', { title, grade: '1_SPE', categories: CATEGORIES, created_by: owner });
+			insertRow('series', { title, grade: '1_SPE', items: CATEGORIES, created_by: owner });
 		published = { series: await series('Publiée SD'), link: '' };
 		published.link = await insertRow('chapter_series', {
 			chapter_id: chapter,
@@ -227,7 +227,7 @@ describe('séries de chapitre — code serveur', () => {
 			const s = await insertRow('series', {
 				title: `Éval ${status} SD`,
 				grade: '1_SPE',
-				categories: CATEGORIES,
+				items: CATEGORIES,
 				created_by: teacher.id
 			});
 			await insertRow('evaluations', {

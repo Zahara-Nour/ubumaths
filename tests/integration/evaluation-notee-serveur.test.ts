@@ -152,7 +152,7 @@ async function createEvaluation(
 		max_attempts?: number | null;
 		deadline?: string | null;
 		status?: 'draft' | 'published';
-		categories?: Json;
+		items?: Json;
 	} = {}
 ): Promise<{ evaluationId: string; assignmentId: string }> {
 	const { data: series, error: seriesError } = await service
@@ -160,7 +160,7 @@ async function createEvaluation(
 		.insert({
 			title: 'Éval serveur ZZ',
 			grade: '6',
-			categories: settings.categories ?? CATEGORIES,
+			items: settings.items ?? CATEGORIES,
 			created_by: teacher.id
 		})
 		.select('id')
@@ -696,7 +696,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 		beforeAll(async () => {
 			({ assignmentId } = await createEvaluation({
-				categories: [{ templateId: FILL_ID, quantity: QUESTIONS, delay: 20 }]
+				items: [{ templateId: FILL_ID, quantity: QUESTIONS, delay: 20 }]
 			}));
 		});
 
@@ -907,7 +907,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			.insert({
 				user_id: student.id,
 				mode: 'interactive',
-				categories: CATEGORIES,
+				items: CATEGORIES,
 				total_questions: 1
 			})
 			.select('id')
@@ -962,7 +962,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 3,
-				categories: [{ templateId: MULTI_ID, quantity: 1, delay: 20 }]
+				items: [{ templateId: MULTI_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
@@ -1048,7 +1048,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 3,
-				categories: [{ templateId: CHOICE_ID, quantity: 1, delay: 20 }]
+				items: [{ templateId: CHOICE_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
@@ -1111,7 +1111,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 2,
-				categories: [{ templateId: GESTE_ID, quantity: 1, delay: 20 }]
+				items: [{ templateId: GESTE_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
@@ -1175,7 +1175,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 2,
-				categories: [{ templateId: CUBES_ID, quantity: 1, delay: 20 }]
+				items: [{ templateId: CUBES_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 

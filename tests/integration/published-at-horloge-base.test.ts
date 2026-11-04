@@ -213,7 +213,7 @@ describe('publier pose l’heure de la base, pas celle de Node', () => {
 		const serie = await insert('series', {
 			title: 'Série horloge HB',
 			grade: '1_SPE',
-			categories: [
+			items: [
 				{
 					templateId: crypto.randomUUID(),
 					quantity: 4,
