@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, PR #2378 (lot 1) ouverte._
+_Mis à jour le 2026-11-04, après #2378._
 
-- **État** : Q1-Q4 tranchées (B, « Général » en tête, ordre de l'arbre, 4 lots, une PR chacun). Lot 1 (catalogue selon l'arbre) codé, revu (Sonnet : 0 bloquant, points 1-4 et 7 corrigés), PR #2378 en CI.
-- **Prochaine action** : merger #2378 quand la CI est verte ; puis phase 0 du lot 2 (panier, séries, liens, contrôles, paquet de révision sur le modèle ; conversion 5 séries + 1 contrôle ; anciens liens relus).
+- **État** : lot 1 (catalogue selon l'arbre) mergé (#2378), pas encore en prod. Lots 2-4 à faire (ADR 0035).
+- **Prochaine action** : lot 2 — nouveau worktree `../ubumaths-wt-automaths-arbre` sur `feat/automaths-arbre-modeles` ; phase 0 : panier, séries, liens / QR, contrôles (`test_sessions`, `evaluation_attempt_questions.category_key`), paquet de révision désignent le **modèle** ; conversion des 5 séries + 1 contrôle (migration, question d'accès à poser) ; anciens liens relus (quadruplet → modèle unique).
 - **En attente de David** : rien.
-- **Pièges en cours** : base locale sans modèle publié → serveur de test 5176 lancé avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env` (prod, lecture anonyme). Hors chantier, vu en prod : choix de QCM affichés en `$$<$$` bruts sur les tuiles du catalogue (Entiers › Apprivoiser › Comparer).
-- **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre`.
+- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env` (prod, lecture anonyme). Hors chantier, vu en prod : choix de QCM en `$$<$$` bruts sur les tuiles du catalogue (Entiers › Apprivoiser › Comparer).
+- **Worktree / branche** : aucun (lot 1 nettoyé).
 
 ---
 
@@ -90,3 +90,5 @@ Catalogue rangé selon l'arbre (`buildCatalogue(templates, nodes)`), arbre servi
 du cache sans arbre → relue avec `?frais` ; « Non classés » replié ; un seul `console.warn`.
 Laissés : `openRubrics` non vidé si la notion affichée change par repli (cosmétique) ; modèle sur
 une sous-notion archivée → « Non classés » sans dire pourquoi (à remonter dans l'admin).
+
+Mergée le 2026-11-04 (CI verte, intégration comprise). Vérification manuelle notée (#2378).
