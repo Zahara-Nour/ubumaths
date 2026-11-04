@@ -103,7 +103,7 @@ describe('le support de classe et l’élève archivé', () => {
 			.insert({
 				title: 'Contrôle support ZZ',
 				grade: '4',
-				categories: [{ category: 'entiers/1', quantity: 1, delay: 20 }],
+				items: [{ category: 'entiers/1', quantity: 1, delay: 20 }],
 				created_by: teacher.id
 			})
 			.select('id')

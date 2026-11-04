@@ -148,8 +148,8 @@ describe('selectChapterSession — séance du jour', () => {
 
 describe('loadChapterDecks — lecture aux droits de l’élève', () => {
 	const series = [
-		{ id: 's1', categories: [item(A1)] },
-		{ id: 's2', categories: [item(B1)] }
+		{ id: 's1', items: [item(A1)] },
+		{ id: 's2', items: [item(B1)] }
 	];
 
 	function decor() {
@@ -201,7 +201,7 @@ describe('loadChapterDecks — lecture aux droits de l’élève', () => {
 	});
 
 	it('une série à la composition illisible est ignorée, pas fatale', async () => {
-		const tables = { ...decor(), series: [{ id: 's1', categories: 'abîmé' }, series[1]] };
+		const tables = { ...decor(), series: [{ id: 's1', items: 'abîmé' }, series[1]] };
 		const decks = await loadChapterDecks(fakeClient(tables, []), { now: NOW });
 		expect(decks[0].templateIds).toEqual([B1]);
 	});
@@ -218,7 +218,7 @@ describe('loadChapterDecks — filtre et plafond', () => {
 	const decor = (templates: unknown[], items = [item(A1)]) => ({
 		class_chapters: [{ id: 'c1', title: 'Fonctions' }],
 		chapter_series: [{ chapter_id: 'c1', series_id: 's1' }],
-		series: [{ id: 's1', categories: items }],
+		series: [{ id: 's1', items: items }],
 		question_templates: templates
 	});
 

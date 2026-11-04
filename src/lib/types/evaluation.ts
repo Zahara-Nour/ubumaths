@@ -52,7 +52,7 @@ export interface DbSeries {
 	title: string;
 	description: string | null;
 	grade: string;
-	/** Composition (colonne `categories`), relue dans la nouvelle forme */
+	/** Composition (colonne `items`), relue dans la nouvelle forme */
 	items: SeriesItem[];
 	created_by: string;
 	created_at: string;

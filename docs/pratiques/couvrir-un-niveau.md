@@ -291,7 +291,7 @@ niveau chacune (`idx_question_templates_unique_category`).
    d'un même programme (1SPE-224 avec 1TECHNO-037 est permis, ADR 0020), sans nœud, niveau en base
    différent du fichier, point absent des bornes, bloc non dessiné. Chaque fichier est retrouvé en
    base par **son `id`** (écrit par `create-questions --publier`, ou posé une fois pour tous les
-   lots existants par `scripts/questions/fichiers-sans-quadruplet.ts`, 2026-11-04) ; un fichier
+   lots existants, 2026-11-04) ; un fichier
    sans id, un id absent ou un titre changé en base font refuser le lot, et le message dit ce qui
    diffère. Le niveau n'a pas à concorder pour la page : les anciens lots ont été renumérotés en
    base après coup (CP B1, B3, H).

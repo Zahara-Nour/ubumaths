@@ -266,13 +266,13 @@ Liens : `template_id` → `question_templates`
 
 ### `question_templates`
 
-`classification_node_id?` · `created_at?` · `created_by?` · `default_display_options?` · `delay?` · `description?` · `domain?` · `exercise_instruction?` · `grades` · `id` · `level` · `options?` · `precision?` · `shared?` · `status` · `subdomain?` · `test_specs?` · `theme?` · `title` · `type` · `updated_at?` · `variations`
+`classification_node_id?` · `created_at?` · `created_by?` · `default_display_options?` · `delay?` · `description?` · `exercise_instruction?` · `grades` · `id` · `level` · `options?` · `precision?` · `shared?` · `status` · `test_specs?` · `title` · `type` · `updated_at?` · `variations`
 
 Liens : `classification_node_id` → `classification_nodes` · `created_by` → `profiles`
 
 ### `series`
 
-`categories` · `created_at` · `created_by` · `description?` · `grade` · `id` · `title` · `updated_at`
+`created_at` · `created_by` · `description?` · `grade` · `id` · `items` · `title` · `updated_at`
 
 Liens : `created_by` → `profiles`
 
@@ -488,7 +488,7 @@ Liens : `assigned_by` → `profiles` · `class_id` → `classes` · `evaluation_
 
 ### `evaluation_attempt_questions`
 
-`category_key?` · `created_at` · `delay_seconds` · `instance?` · `position` · `seed` · `template_id` · `test_session_id`
+`created_at` · `delay_seconds` · `instance?` · `position` · `seed` · `template_id` · `test_session_id`
 
 Liens : `template_id` → `question_templates` · `test_session_id` → `test_sessions`
 
@@ -524,7 +524,7 @@ Liens : `test_session_id` → `test_sessions`
 
 ### `test_sessions`
 
-`categories` · `completed_at?` · `created_at?` · `evaluation_id?` · `grade?` · `id` · `mode` · `points_earned?` · `score?` · `time_limit?` · `time_spent?` · `total_questions` · `user_id?`
+`completed_at?` · `created_at?` · `evaluation_id?` · `grade?` · `id` · `items` · `mode` · `points_earned?` · `score?` · `time_limit?` · `time_spent?` · `total_questions` · `user_id?`
 
 Liens : `evaluation_id` → `evaluations`
 

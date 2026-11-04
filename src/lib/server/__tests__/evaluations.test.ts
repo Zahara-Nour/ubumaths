@@ -38,7 +38,7 @@ const SERIES: DbSeries = {
 };
 
 const { items: _items, ...SERIES_WITHOUT_ITEMS } = SERIES;
-const SERIES_ROW = { ...SERIES_WITHOUT_ITEMS, categories: SERIES.items };
+const SERIES_ROW = { ...SERIES_WITHOUT_ITEMS, items: SERIES.items };
 
 function evaluationRow(overrides: Record<string, unknown> = {}) {
 	return {
@@ -55,7 +55,7 @@ function evaluationRow(overrides: Record<string, unknown> = {}) {
 		created_at: '2026-09-30T10:00:00Z',
 		updated_at: '2026-09-30T10:00:00Z',
 		legacy_assessment_id: null,
-		// Ligne `series` telle que la base la rend : la composition est la colonne `categories`
+		// Ligne `series` telle que la base la rend : la composition est la colonne `items`
 		series: { ...SERIES_ROW },
 		...overrides
 	};
@@ -138,7 +138,7 @@ describe('createEvaluation (B13)', () => {
 	it('écrit forme et temps limite (secondes) de la Course aux nombres', async () => {
 		const fake = createFakeSupabase((table) =>
 			table === 'series'
-				? { data: { categories: SERIES.items } }
+				? { data: { items: SERIES.items } }
 				: { data: evaluationRow({ series: undefined }) }
 		);
 		await createEvaluation(
@@ -173,7 +173,7 @@ describe('createEvaluation (B13)', () => {
 			delay: 20
 		}));
 		const fake = createFakeSupabase((table) =>
-			table === 'series' ? { data: { categories: big } } : { data: evaluationRow() }
+			table === 'series' ? { data: { items: big } } : { data: evaluationRow() }
 		);
 		await expect(
 			createEvaluation(
@@ -198,7 +198,7 @@ describe('createEvaluation (B13)', () => {
 	it('contrainte forme/temps violée (23514) : 400', async () => {
 		const fake = createFakeSupabase((table) =>
 			table === 'series'
-				? { data: { categories: SERIES.items } }
+				? { data: { items: SERIES.items } }
 				: { error: { code: '23514', message: 'check' } }
 		);
 		await expect(

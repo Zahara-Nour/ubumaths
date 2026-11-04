@@ -133,7 +133,7 @@ describe('question figée au démarrage (20260930170000)', () => {
 			.insert({
 				title: 'Série figée ZZ',
 				grade: '6',
-				categories: CATEGORIES,
+				items: CATEGORIES,
 				created_by: teacher.id
 			})
 			.select('id')
@@ -163,7 +163,7 @@ describe('question figée au démarrage (20260930170000)', () => {
 			.insert({
 				user_id: student.id,
 				mode: 'interactive',
-				categories: CATEGORIES,
+				items: CATEGORIES,
 				total_questions: 2,
 				evaluation_id: evaluation!.id
 			})

@@ -106,8 +106,9 @@ composition qui n'a pas la forme actuelle est illisible : `src/lib/server/series
 (`readStoredSeriesMany(rows)`, synchrone, rend une `Map` id → lignes ; l'illisible est absent et
 tracé) la saute. Un ancien lien `?categories=…` (et son QR) est reconnu par `resolveTestLaunch` mais
 non relu : le panier dit qu'il est d'une ancienne version ; un panier du navigateur qui porte des
-catégories en est vidé de ces lignes au chargement, réécrit, avec un message. La colonne garde son
-nom `series.categories` jusqu'au lot 4b du chantier `automaths-arbre`.
+catégories en est vidé de ces lignes au chargement, réécrit, avec un message. Les lignes vivent dans
+`series.items` (et `test_sessions.items` pour une séance), ex-`categories`, renommées au lot 4b du
+chantier `automaths-arbre`.
 
 | Forme (`TestMode`)            | Composant         | Cartes de cours | Chrono                                                                              | Correction et score                                      | Enregistré                                        |
 | ----------------------------- | ----------------- | --------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------- |

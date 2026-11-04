@@ -115,8 +115,8 @@ export interface DbTestSession {
 	id: string;
 	user_id: string;
 	mode: TestMode;
-	/** Composition jouée (jsonb, colonne `categories`) : nouvelle ou ancienne forme */
-	categories: unknown;
+	/** Composition jouée (jsonb, colonne `items`) : nouvelle ou ancienne forme */
+	items: unknown;
 	score: number | null;
 	total_questions: number;
 	time_spent: number | null;

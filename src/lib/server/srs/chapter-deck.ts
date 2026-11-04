@@ -167,7 +167,7 @@ export async function loadChapterDecks(
 	if (seriesIds.length > 0) {
 		const { data: series, error: seriesError } = await supabase
 			.from('series')
-			.select('id, categories')
+			.select('id, items')
 			.in('id', seriesIds);
 		if (seriesError) throw new ChapterDeckError(seriesError.message);
 		for (const [id, items] of readStoredSeriesMany(series ?? [])) itemsBySeries.set(id, items);

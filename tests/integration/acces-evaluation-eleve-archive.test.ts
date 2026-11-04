@@ -116,7 +116,7 @@ describe('un élève archivé et l’évaluation de son ancienne classe', () => 
 			.insert({
 				title: 'Contrôle sur les fractions ZZ',
 				grade: '3',
-				categories: [
+				items: [
 					{
 						templateId: TEMPLATE_ID,
 						quantity: 1,

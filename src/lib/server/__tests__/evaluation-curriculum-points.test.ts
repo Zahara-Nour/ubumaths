@@ -32,7 +32,7 @@ describe('evaluationCurriculumPoints', () => {
 				const or = calls.find((c) => c.method === 'or');
 				const matches = String(or?.args[0]).includes(`legacy_assessment_id.in.(${LEGACY})`);
 				return {
-					data: matches ? [{ id: EVALUATION, series: { categories: ITEMS } }] : []
+					data: matches ? [{ id: EVALUATION, series: { items: ITEMS } }] : []
 				};
 			}
 			if (table === 'question_templates') {
@@ -53,7 +53,7 @@ describe('evaluationCurriculumPoints', () => {
 						{
 							id: EVALUATION,
 							series: {
-								categories: [
+								items: [
 									{ templateId: T1, quantity: 1, delay: 20 },
 									{ templateId: T_LOIN, quantity: 1, delay: 20 }
 								]
@@ -80,7 +80,7 @@ describe('evaluationCurriculumPoints', () => {
 	it('seuls les modèles lus (publiés) comptent : le modèle de la série est demandé par son id', async () => {
 		const fake = createFakeSupabase((table) => {
 			if (table === 'evaluations') {
-				return { data: [{ id: EVALUATION, series: { categories: ITEMS } }] };
+				return { data: [{ id: EVALUATION, series: { items: ITEMS } }] };
 			}
 			// Modèle repassé en brouillon : la lecture des publiés ne le rend pas
 			if (table === 'question_templates') return { data: [] };
@@ -101,7 +101,7 @@ describe('evaluationCurriculumPoints', () => {
 						{
 							id: EVALUATION,
 							series: {
-								categories: [{ category: { level: '3' }, quantity: 1, delay: 20 }]
+								items: [{ category: { level: '3' }, quantity: 1, delay: 20 }]
 							}
 						}
 					]

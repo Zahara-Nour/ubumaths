@@ -269,7 +269,7 @@ async function makeAssessment(teacherId: string, templateIds: string[]): Promise
 			title: 'Série de test',
 			grade: TEST_GRADE,
 			created_by: teacherId,
-			categories: templateIds.map((templateId) => ({ templateId, quantity: 1, delay: 20 }))
+			items: templateIds.map((templateId) => ({ templateId, quantity: 1, delay: 20 }))
 		} as never)
 		.select('id')
 		.single();

@@ -213,7 +213,7 @@ describe('ADR 0029 — le modèle possède son contenu, le chapitre le relie', (
 			title: 'Série modèle YY',
 			description: 'Série du modèle',
 			grade: '1_SPE',
-			categories: [{ category: 'entiers/1', quantity: 2, delay: 20 }],
+			items: [{ category: 'entiers/1', quantity: 2, delay: 20 }],
 			created_by: profId
 		});
 		serie = await insertAs(prof, 'chapter_series', {

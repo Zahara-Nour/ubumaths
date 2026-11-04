@@ -113,7 +113,7 @@ async function createEvaluation(
 			title,
 			description: `Description de ${title}`,
 			grade: '5',
-			categories: CATEGORIES,
+			items: CATEGORIES,
 			created_by: teacher.id
 		})
 		.select('id')

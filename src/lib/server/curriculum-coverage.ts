@@ -116,16 +116,14 @@ export async function evaluationCurriculumPoints(
 	const list = uuids.join(',');
 	const { data: evaluations, error: evalErr } = await supabase
 		.from('evaluations')
-		.select('id, series:series(categories)')
+		.select('id, series:series(items)')
 		.or(`id.in.(${list}),legacy_assessment_id.in.(${list})`);
 	if (evalErr) throw new Error(`reconcileAutoCoverage evaluations: ${evalErr.message}`);
 
 	// Compositions relues comme partout (ADR 0035) ;
 	// une composition illisible est ignorée, pas fatale
 	const read = readStoredSeriesMany(
-		(evaluations ?? []).flatMap((e) =>
-			e.series ? [{ id: e.id, categories: e.series.categories }] : []
-		)
+		(evaluations ?? []).flatMap((e) => (e.series ? [{ id: e.id, items: e.series.items }] : []))
 	);
 	const templateIds = [...new Set([...read.values()].flatMap((r) => r.map((i) => i.templateId)))];
 	if (templateIds.length === 0) return [];

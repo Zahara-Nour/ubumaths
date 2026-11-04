@@ -256,7 +256,7 @@ describe('paquet de révision calculé du chapitre', () => {
 			insertRow('series', {
 				title,
 				grade: '1_SPE',
-				categories: templateIds.map((templateId) => ({ templateId, quantity: 2, delay: 20 })),
+				items: templateIds.map((templateId) => ({ templateId, quantity: 2, delay: 20 })),
 				created_by: teacherId
 			});
 		const seriesA = await series('Série A PRC', [T.course, T.regular, T.draft]);

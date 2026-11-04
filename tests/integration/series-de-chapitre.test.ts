@@ -98,7 +98,7 @@ async function createSeries(title: string): Promise<string> {
 	return insertRow('series', {
 		title,
 		grade: '1_SPE',
-		categories: CATEGORIES,
+		items: CATEGORIES,
 		created_by: teacher.id
 	});
 }
@@ -178,7 +178,7 @@ describe('séries de chapitre', () => {
 			// Mono-professeur : le seul « autre » propriétaire possible est l'admin.
 			title: 'Série d’un autre SC',
 			grade: '1_SPE',
-			categories: CATEGORIES,
+			items: CATEGORIES,
 			created_by: admin.id
 		});
 
@@ -217,11 +217,11 @@ describe('séries de chapitre', () => {
 		it('lit la série rattachée (titre, niveau, catégories)', async () => {
 			const { data, error } = await student.client
 				.from('series')
-				.select('id, title, grade, categories')
+				.select('id, title, grade, items')
 				.eq('id', s.published);
 			expect(error).toBeNull();
 			expect(data).toEqual([
-				{ id: s.published, title: 'Publiée SC', grade: '1_SPE', categories: CATEGORIES }
+				{ id: s.published, title: 'Publiée SC', grade: '1_SPE', items: CATEGORIES }
 			]);
 		});
 

@@ -68,7 +68,7 @@ function setup(options: {
 							title: 'Tables de 7',
 							description: null,
 							grade: '6',
-							categories: [ITEM],
+							items: [ITEM],
 							created_by: TEACHER,
 							created_at: '2026-09-30T10:00:00Z',
 							updated_at: '2026-09-30T10:00:00Z'
