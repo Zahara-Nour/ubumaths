@@ -31,7 +31,7 @@ couvre:
 > [suivi du programme](../archive/wip/suivi-programme-progress.md),
 > [progression élève](../archive/wip/progression-eleve-progress.md)) et du chantier clos
 > [publication progressive](../wip/publication-progressive-progress.md).
-> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21 ; filtres de l'ancienne génération retirés (C5, après l'étape 4) le 2026-10-22 ; vue « Carte » de la page Programme le 2026-10-23.
+> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21 ; filtres de l'ancienne génération retirés (C5, après l'étape 4) le 2026-10-22 ; vue « Carte » de la page Programme le 2026-10-23 ; liste des questions du cahier de texte (ADR 0035) le 2026-11-04.
 
 ## À quoi ça sert
 
@@ -400,7 +400,8 @@ scolaire de l'école (`getClassSessionCalendar`).
 
 **Activités** d'une séance (`journal_entry_activities`) : cinq sortes — `exercise`, `question`,
 `assessment`, `course`, `textbook`. Sur une séance neuve, la page les garde et les envoie avec le
-formulaire (`parsePendingActivities`).
+formulaire (`parsePendingActivities`). Dans la liste des questions à ajouter, un modèle se lit par son titre et
+son niveau (`Titre (niv. 2)`) : les modèles neufs n'ont plus de thème ni de domaine (ADR 0035).
 
 ### Couverture du programme
 

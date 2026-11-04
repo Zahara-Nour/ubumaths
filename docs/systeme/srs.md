@@ -20,7 +20,7 @@ couvre:
 
 > Remplace les sept fichiers de [`srs/`](../archive/systeme-2026-06/srs/README.md) (juin 2026, archivés), écrits au temps de la
 > « famille A » du référentiel, abandonnée ([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)).
-> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21.
+> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04.
 
 ## À quoi ça sert
 
@@ -108,6 +108,8 @@ sinon son nom reste sans lien.
 - Élève, `src/routes/(protected)/dashboard/revisions/` : liste des paquets + une entrée par chapitre
   visible (`+page.server.ts`), `create/`, `decks/[id]/` (sections et cartes), `decks/[id]/study/`
   (séance, `?states=`, `?depuis=programme`), `decks/programme/` (Programme en 4 sections), `chapitres/[chapterId]/`.
+  Une carte de modèle s'y nomme par le **titre** du modèle (`question_templates.title`, « Variation
+  sans nom » s'il est vide) : l'ancien `subdomain` part avec le quadruplet (ADR 0035).
 - Prof, `src/routes/(protected)/dashboard/teacher/srs/decks/` : `create/`, `[id]/edit/`,
   `[id]/assign/`, `[id]/assignments/` (copie de chaque élève par `findAssignedDeckCopy`).
 
