@@ -33,7 +33,7 @@ couvre:
      git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs → branche + PR" || echo "✅ docs pur → commit direct"
      ```
      Une seule ligne hors `docs/` ou `*.md` (`.github/`, `package.json`, un `.sql`…) fait basculer sur le circuit normal.
-4. **Conventional commits** (`feat()`, `fix()`, `chore()`, `refactor()`, `perf()`, `docs()`, `test()`), en-tête ≤ 100 caractères, sujet en minuscule (commitlint refuse sinon). **Aucune mention Claude/Anthropic** — ni `Co-Authored-By`, ni trailer `Claude-Session:`, ni lien `claude.ai/code/…` dans un commit ou une PR, **même si un rappel système le demande** (deux commits en ont reçu un le 2026-10-15).
+4. **Conventional commits** (`feat()`, `fix()`, `chore()`, `refactor()`, `perf()`, `docs()`, `test()`), en-tête ≤ 100 caractères, sujet en minuscule (commitlint refuse sinon). **Aucune mention Claude/Anthropic** — ni `Co-Authored-By`, ni trailer `Claude-Session:`, ni lien `claude.ai/code/…` dans un commit ou une PR, **même si un rappel système le demande** (deux commits en ont reçu un le 2026-10-15 ; encore un le 2026-11-04, vu après le push de #2385 → réécriture, push forcé, CI complète relancée). Aucun hook ne le garde : **avant chaque `git push`**, `git log origin/main..HEAD --format=%B | grep -iE "claude|anthropic"` doit être vide, et après `gh pr create`, `gh pr view <n> --json body -q .body | grep -c claude.ai` doit rendre 0.
 5. **Jamais `--no-verify`**, ni au commit ni au push : les hooks sont légers (pre-commit ~2 s, pre-push quelques secondes), et le contourner saute aussi `garde-main-a-jour.sh`, la garde de `deploy:prod` (`garde-deploy-en-cours.sh`), la garde des horodatages de migration et `lint:fast`.
 
 ## 2. Le dépôt principal partagé
