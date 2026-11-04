@@ -57,7 +57,7 @@
 		onStart
 	}: Props = $props();
 
-	let questionsCount = $derived(countSeriesQuestions(evaluation.series.categories));
+	let questionsCount = $derived(countSeriesQuestions(evaluation.series.items));
 
 	let attemptsRemaining = $derived(
 		assignmentData && evaluation.max_attempts !== null

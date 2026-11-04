@@ -1,7 +1,7 @@
 /**
  * POST /api/series — enregistrer le panier comme série (B11). Prof et admin.
  *
- * Corps : { title, grade, description?, categories: CartItem[] (1 à 50) }.
+ * Corps : { title, grade, description?, items: SeriesItem[] (1 à 50, ADR 0035) }.
  * Réponse 201 : { series }.
  */
 

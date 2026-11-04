@@ -10,7 +10,7 @@ import type { PageServerLoad } from './$types';
  * ne reçoit que les questions publiques de la tentative (chantier 5, ADR 0015,
  * E19). L'aperçu du prof charge les modèles lui-même, à la demande.
  *
- * Lien de série SANS forme (`?categories=…` seul) : redirection vers le panier,
+ * Lien de série SANS forme (`?modeles=…` ou ancien `?categories=…` seul) : redirection vers le panier,
  * qui y met la série (Q46). Plus de fenêtre de choix pour un lien.
  */
 export const load: PageServerLoad = async ({ url }) => {
