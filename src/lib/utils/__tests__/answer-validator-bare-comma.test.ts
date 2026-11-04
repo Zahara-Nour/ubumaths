@@ -14,8 +14,6 @@ function check(answer: string, blank: InstanceBlank) {
 		statement: 'Test' as ResolvedMarkdown,
 		blanks: [blank],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		resolvedVariables: [{ name: 'n', value: '10' }]

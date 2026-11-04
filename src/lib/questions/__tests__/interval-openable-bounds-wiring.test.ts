@@ -28,8 +28,6 @@ function instanceWith(
 		statement: 'Intervalle où f est croissante' as ResolvedMarkdown,
 		blanks,
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Dérivation',
 		level: 2,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })

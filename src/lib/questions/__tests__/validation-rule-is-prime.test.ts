@@ -85,8 +85,6 @@ describe('règle custom isPrime dans une case rulesSuffice', () => {
 		statement: 'Trouve n tel que n²+n+41 ne soit pas premier : $?$' as ResolvedMarkdown,
 		blanks: [blank],
 		grades: ['2'],
-		theme: 'Arithmétique',
-		domain: 'Arithmétique',
 		level: 2,
 		generatedAt: new Date().toISOString()
 	};

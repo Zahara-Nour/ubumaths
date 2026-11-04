@@ -6,9 +6,10 @@
  * partagé avec la publication d'un modèle seul (`checkTemplate` : structure,
  * schéma strict, specs vertes, une spec « correct » par variation, 50 tirages
  * par variation). Un modèle qui échoue reste en brouillon.
- * Une collision de catégorie (thème, domaine, sous-domaine, niveau) avec un
- * modèle déjà publié OU avec un autre modèle de la sélection est refusée : pas
- * de décalage automatique du niveau (décision de David, 2026-09-29).
+ * Aucun contrôle de catégorie : les modèles sont rangés dans l'arbre des notions
+ * (`classification_node_id`), où plusieurs modèles cohabitent. Seul l'index unique
+ * des anciens quadruplets (thème, domaine, sous-domaine, niveau) subsiste en base :
+ * s'il refuse un lot, le paquet est signalé comme refus, pas comme plantage.
  *
  * Repasser en brouillon : aucun contrôle.
  *
@@ -23,12 +24,11 @@ import type { Database } from '$lib/types/database';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
 import { templatePublicationErrors } from '$lib/server/template-publication';
-import {
-	templateCategoryKey,
-	type BulkPublishResult,
-	type BulkTemplateEntry,
-	type BulkTemplateRefusal,
-	type BulkUnpublishResult
+import type {
+	BulkPublishResult,
+	BulkTemplateEntry,
+	BulkTemplateRefusal,
+	BulkUnpublishResult
 } from '$lib/questions/bulk-status';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -40,15 +40,6 @@ const logger = createServerLogger('server/questions-bulk-status');
 
 type Client = SupabaseClient<Database>;
 
-interface CategoryRow {
-	id: string;
-	title: string;
-	theme: string;
-	domain: string;
-	subdomain: string | null;
-	level: number;
-}
-
 // ============================================================================
 // CONSTANTS
 // ============================================================================
@@ -58,8 +49,6 @@ interface CategoryRow {
  * ce que les proxys acceptent. On découpe.
  */
 const ID_CHUNK_SIZE = 100;
-/** Plafond de lignes par requête côté PostgREST */
-const PAGE_SIZE = 1000;
 
 const NOT_FOUND = 'modèle introuvable';
 const NOT_SAVED = "la modification n'a pas été enregistrée par la base (droits insuffisants ?)";
@@ -92,11 +81,6 @@ export function withoutDbMetadata(template: QuestionTemplate): QuestionTemplate 
 	return rest;
 }
 
-function describeCategory(row: Pick<CategoryRow, 'theme' | 'domain' | 'subdomain' | 'level'>) {
-	const subdomain = row.subdomain ? ` / ${row.subdomain}` : '';
-	return `${row.theme} / ${row.domain}${subdomain}, niveau ${row.level}`;
-}
-
 async function fetchTemplates(supabase: Client, ids: string[]): Promise<QuestionTemplateRow[]> {
 	const rows: QuestionTemplateRow[] = [];
 	for (const part of chunk(ids, ID_CHUNK_SIZE)) {
@@ -111,30 +95,6 @@ async function fetchTemplates(supabase: Client, ids: string[]): Promise<Question
 		rows.push(...(data ?? []));
 	}
 	return rows;
-}
-
-/** Modèles déjà publiés dans les thèmes concernés (pour les collisions) */
-async function fetchPublishedCategories(
-	supabase: Client,
-	themes: string[]
-): Promise<CategoryRow[]> {
-	const rows: CategoryRow[] = [];
-	if (themes.length === 0) return rows;
-	for (let from = 0; ; from += PAGE_SIZE) {
-		const { data, error: readError } = await supabase
-			.from('question_templates')
-			.select('id, title, theme, domain, subdomain, level')
-			.eq('status', 'published')
-			.in('theme', themes)
-			.order('id')
-			.range(from, from + PAGE_SIZE - 1);
-		if (readError) {
-			logger.error('Lecture des modèles publiés impossible :', readError);
-			throw error(500, 'Impossible de vérifier les catégories publiées');
-		}
-		rows.push(...(data ?? []));
-		if (!data || data.length < PAGE_SIZE) return rows;
-	}
 }
 
 /**
@@ -186,7 +146,7 @@ function settle(
 			title: row.title,
 			reasons: [
 				conflictIds.has(row.id)
-					? 'la base a refusé le lot : une catégorie est devenue occupée entre-temps, réessayer'
+					? 'la base a refusé le lot : un modèle publié occupe la même ancienne catégorie (thème, domaine, sous-domaine, niveau)'
 					: NOT_SAVED
 			]
 		});
@@ -195,7 +155,7 @@ function settle(
 }
 
 /**
- * Publie les brouillons `ids` qui passent le contrôle complet et ne heurtent aucune catégorie.
+ * Publie les brouillons `ids` qui passent le contrôle complet (aucun contrôle de catégorie).
  * `simulation` : mêmes contrôles, aucune écriture ; `published` liste ce qui serait publié
  * (la simulation de `scripts/questions/publier-lot.ts`).
  */
@@ -239,45 +199,7 @@ export async function publishTemplates(
 		checked.push(row);
 	}
 
-	// 2. Collisions de catégorie : avec les publiés, puis au sein de la sélection
-	const published = await fetchPublishedCategories(supabase, [
-		...new Set(checked.map((row) => row.theme))
-	]);
-	const publishedByKey = new Map(published.map((row) => [templateCategoryKey(row), row]));
-	const batchByKey = new Map<string, QuestionTemplateRow[]>();
-	for (const row of checked) {
-		const key = templateCategoryKey(row);
-		batchByKey.set(key, [...(batchByKey.get(key) ?? []), row]);
-	}
-
-	const candidates: QuestionTemplateRow[] = [];
-	for (const row of checked) {
-		const key = templateCategoryKey(row);
-		const occupant = publishedByKey.get(key);
-		if (occupant) {
-			refused.push({
-				id: row.id,
-				title: row.title,
-				reasons: [
-					`catégorie déjà occupée (${describeCategory(row)}) par « ${occupant.title} » : change le niveau`
-				]
-			});
-			continue;
-		}
-		const rivals = (batchByKey.get(key) ?? []).filter((other) => other.id !== row.id);
-		if (rivals.length > 0) {
-			const names = rivals.map((other) => `« ${other.title} »`).join(', ');
-			refused.push({
-				id: row.id,
-				title: row.title,
-				reasons: [
-					`même catégorie (${describeCategory(row)}) que ${names} dans la sélection : change le niveau`
-				]
-			});
-			continue;
-		}
-		candidates.push(row);
-	}
+	const candidates = checked;
 
 	// 3. Écriture, vérifiée ligne à ligne
 	if (candidates.length === 0) return { published: [], refused };

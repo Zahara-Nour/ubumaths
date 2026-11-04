@@ -32,8 +32,6 @@ function instanceWith(
 		statement: 'Résoudre' as ResolvedMarkdown,
 		blanks,
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Second degré',
 		level: 3,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })

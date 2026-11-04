@@ -74,38 +74,6 @@ describe('changeTemplatesStatus', () => {
 		expect(bulkError.partial.changed).toEqual([{ id: ids[0], title: 'a' }]);
 	});
 
-	it('met les rivaux d’une même catégorie dans le MÊME paquet (A en 10, B en 55)', async () => {
-		const sixty = ids.slice(0, 60);
-		const rivalA = sixty[10];
-		const rivalB = sixty[55];
-		const groupOf = (id: string) => (id === rivalA || id === rivalB ? 'rivaux' : id);
-		const sentParts: string[][] = [];
-		// Serveur simulé : refuse les modèles qui partagent une catégorie DANS le paquet reçu
-		vi.stubGlobal(
-			'fetch',
-			vi.fn(async (_url: string, init: RequestInit) => {
-				const { ids: part } = JSON.parse(String(init.body)) as { ids: string[] };
-				sentParts.push(part);
-				const clash = (id: string) =>
-					part.filter((other) => groupOf(other) === groupOf(id)).length > 1;
-				return jsonResponse({
-					published: part.filter((id) => !clash(id)).map((id) => ({ id, title: id })),
-					refused: part
-						.filter(clash)
-						.map((id) => ({ id, title: id, reasons: ['même catégorie dans la sélection'] }))
-				});
-			})
-		);
-
-		const summary = await changeTemplatesStatus(sixty, 'published', undefined, groupOf);
-
-		expect(summary.refused.map((entry) => entry.id).sort()).toEqual([rivalA, rivalB].sort());
-		expect(summary.changed).toHaveLength(58);
-		// Chaque identifiant part une fois, aucun paquet ne dépasse la taille prévue
-		expect(sentParts.flat().sort()).toEqual([...sixty].sort());
-		expect(sentParts.every((part) => part.length <= BULK_CLIENT_CHUNK_SIZE)).toBe(true);
-	});
-
 	it('lève BulkStatusError avec le partiel quand le réseau tombe au 2e paquet', async () => {
 		vi.stubGlobal(
 			'fetch',

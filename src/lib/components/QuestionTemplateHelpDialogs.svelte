@@ -253,20 +253,20 @@
 	</Dialog.Content>
 </Dialog.Root>
 
-<!-- Categorization Help -->
+<!-- Aide : rangement -->
 <Dialog.Root bind:open={categorizationHelpOpen}>
 	<Dialog.Content class="max-h-[85vh] max-w-2xl overflow-y-auto">
 		<Dialog.Header>
-			<Dialog.Title>Catégorisation des questions</Dialog.Title>
+			<Dialog.Title>Rangement des questions</Dialog.Title>
 			<Dialog.Description>
-				Organisez vos questions par thème, domaine et difficulté
+				Rangez vos questions dans l'arbre des notions et donnez-leur une difficulté
 			</Dialog.Description>
 		</Dialog.Header>
 
 		<div class="space-y-4 py-4">
 			<section>
-				<h4 class="mb-2 font-semibold">Pourquoi catégoriser ?</h4>
-				<p class="text-sm text-muted-foreground">La catégorisation permet de :</p>
+				<h4 class="mb-2 font-semibold">Pourquoi ranger ?</h4>
+				<p class="text-sm text-muted-foreground">Le rangement permet de :</p>
 				<ul class="mt-2 space-y-1 text-sm text-muted-foreground">
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
@@ -284,29 +284,28 @@
 			</section>
 
 			<section>
-				<h4 class="mb-2 font-semibold">Les trois niveaux</h4>
-
+				<h4 class="mb-2 font-semibold">Rangé dans</h4>
+				<p class="mb-2 text-sm text-muted-foreground">
+					Le modèle se range dans l'arbre des notions, en trois pas, tous facultatifs :
+				</p>
 				<div class="space-y-3">
 					<div class="rounded-lg border bg-muted/30 p-3">
-						<p class="mb-1 text-sm font-medium">1. Thème (obligatoire)</p>
-						<p class="text-xs text-muted-foreground">Catégorie générale de mathématiques</p>
-						<p class="mt-2 font-mono text-xs">Ex: Algèbre, Géométrie, Analyse, Probabilités</p>
+						<p class="mb-1 text-sm font-medium">1. Branche</p>
+						<p class="text-xs text-muted-foreground">Elle ne sert qu'à trouver la notion.</p>
 					</div>
 
 					<div class="rounded-lg border bg-muted/30 p-3">
-						<p class="mb-1 text-sm font-medium">2. Domaine (obligatoire)</p>
-						<p class="text-xs text-muted-foreground">Sous-catégorie plus précise du thème</p>
-						<p class="mt-2 font-mono text-xs">
-							Ex: Pour "Algèbre" → Équations, Polynômes, Systèmes<br />
-							Pour "Géométrie" → Triangles, Cercles, Vecteurs
+						<p class="mb-1 text-sm font-medium">2. Notion</p>
+						<p class="text-xs text-muted-foreground">
+							Le modèle est rangé ici s'il n'y a pas de sous-notion.
 						</p>
 					</div>
 
 					<div class="rounded-lg border bg-muted/30 p-3">
-						<p class="mb-1 text-sm font-medium">3. Sous-domaine (optionnel)</p>
-						<p class="text-xs text-muted-foreground">Spécialisation encore plus fine</p>
-						<p class="mt-2 font-mono text-xs">
-							Ex: Pour "Équations" → Linéaires, Quadratiques, Polynomiales
+						<p class="mb-1 text-sm font-medium">3. Sous-notion</p>
+						<p class="text-xs text-muted-foreground">
+							Si elle est choisie, le modèle est rangé dedans. Un modèle sans notion reste « Non
+							rangé ».
 						</p>
 					</div>
 				</div>
@@ -316,7 +315,7 @@
 				<h4 class="mb-2 font-semibold">Niveau de difficulté</h4>
 				<p class="mb-2 text-sm text-muted-foreground">
 					Le niveau est un nombre entier positif (1, 2, 3...) qui indique la difficulté de la
-					question.
+					question. Il ordonne les modèles d'une même rubrique.
 				</p>
 				<div class="rounded-lg border bg-muted/30 p-3 text-sm">
 					<p class="mb-2 font-medium">Recommandations :</p>
@@ -332,7 +331,7 @@
 			<section>
 				<h4 class="mb-2 font-semibold">Indépendant des niveaux scolaires</h4>
 				<p class="text-sm text-muted-foreground">
-					⚠️ La catégorisation est indépendante des "Niveaux scolaires" (6ème, 2nde, etc.). Une même
+					⚠️ Le rangement est indépendant des "Niveaux scolaires" (6ème, 2nde, etc.). Une même
 					question peut être utilisée pour plusieurs niveaux scolaires.
 				</p>
 			</section>

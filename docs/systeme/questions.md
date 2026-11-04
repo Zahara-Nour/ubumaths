@@ -80,7 +80,7 @@ le SRS ([srs.md](srs.md)).
 | Case choix                                                       | `choice-case.ts` (réponse « 0;2 », positions affichées → indices d'origine), `choices.ts` (`statusFromChoices`, `choiceLetter`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Cours                                                            | `course-card.ts` (`excludeCourseCards`), `course-question.ts`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Séries et évaluations                                            | `series-items.ts` (`drawSeriesQuestions`, `buildSeriesItems`), `grading.ts` (`gradeQuestion`, `gradeOutOf20`), `public-question.ts` (`toPublicQuestion`, `toDisplayInstance`), `submission.ts`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| Catalogue, éditeur, publication                                  | `catalogue.ts`, `category-*.ts`, `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images), `template-fact-sheet.ts` (fiche du modèle : types, réglages en mots, chemin dans l'arbre).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Catalogue, éditeur, publication                                  | `catalogue.ts`, `classification-tree.ts` (chemin d'un nœud, cascade du sélecteur, filtre de liste), `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images), `template-fact-sheet.ts` (fiche du modèle : types, réglages en mots, chemin dans l'arbre).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ### Hors du dossier
 
@@ -145,15 +145,19 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   `TestSpecEditor.svelte`.
 - Éditeur : `src/lib/components/QuestionTemplateForm.svelte`, `SharedFieldsEditor.svelte`,
   `exercises/VariationEditor.svelte`. Ses sous-composants, à la racine de `src/lib/components/`
-  (vérifié le 2026-10-13) : `QuestionCategoryFields` (thème / domaine / sous-domaine, options
-  filtrées par `$lib/questions/category-options`, chaque liste est un `CategorySelector` sur
-  `MySelect` avec « Ajouter… »), `VariableEditor`, `AnswerEditor` (cases ; une case choix a sa carte `ChoiceCaseEditor`, voir « Case choix dans l'éditeur »), `PrecisionEditor` (`none`, `decimal`, `significant`, `magnitude`, `tolerance`) — ces
+  (vérifié le 2026-10-13) : `questions/ClassificationNodePicker` (« Rangé dans » : branche →
+  notion → sous-notion en cascade, trois `MySelect`, tout facultatif ; écrit
+  `classification_node_id`), `VariableEditor`, `AnswerEditor` (cases ; une case choix a sa carte `ChoiceCaseEditor`, voir « Case choix dans l'éditeur »), `PrecisionEditor` (`none`, `decimal`, `significant`, `magnitude`, `tolerance`) — ces
   trois-là servent aussi à `SharedFieldsEditor` —, `DisplayOptionsEditor`,
   `ValidationOptionsEditor`, `CourseQuestionToggle` (`options.courseQuestion`, cochée et
   désactivée pour une carte de cours), `QuestionPreview` (instance générée, graine affichée, autre
   graine, choix de la variation, taille d'affichage) et `QuestionTemplateHelpDialogs` (sept fenêtres d'aide statiques).
 - Liste admin (`dashboard/admin/questions/`) : une `QuestionTemplateCard` par modèle (badge de
   type, « Cours », niveaux ; aperçu, édition, duplication, suppression).
+  Filtres par l'arbre des notions : branche, puis notion (une notion inclut ses sous-notions), ou
+  « Non rangés » (`?branche=`, `?notion=`, `?nonRanges=1` ; les anciens `theme`/`domain`/`subdomain`
+  sont ignorés). Chaque carte et chaque ligne dit son chemin « Branche › Notion › Sous-notion »
+  (`nodePathLabel`), « Non rangé » sinon ; sans les nœuds sous la main, rien n'est affiché.
 - Fiche du modèle (`components/questions/TemplateFactSheet.svelte`) : en tête de `[id]/preview`
   (complète) et de `[id]/edit` (courte : sans points ni réglages, qui s'éditent plus bas). Statut,
   type, classes, chemin dans l'arbre des notions (« (archivé) » signalé), points du programme
@@ -200,9 +204,6 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
     (`chiphre_question_cart`). `replaceWith` / `mergeItems` y chargent une série (lien de série).
     Un panier d'avant l'ADR 0035 (catégories) attend les modèles : `questionTemplatesCache` appelle
     `resolveLegacy` à chaque chargement.
-  - `questionCategories.svelte.ts` (`questionCategoriesCache`) : catégories des modèles
-    (`/api/questions/categories/all`), pour refuser une catégorie déjà prise et proposer le
-    prochain niveau libre dans `QuestionTemplateForm`.
   - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés et arbre des
     notions (`nodes`, nœuds non archivés), **seule source des pages Automaths** (catalogue, panier, `test`) — leurs `load` n'en envoient aucun.
     `fetchTemplates()` lit `/api/questions/templates/all` une fois par onglet (lectures
@@ -217,11 +218,11 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   toute réponse qui pose un cookie. Vercel retire `s-maxage` de l'en-tête rendu au client (on y lit
   `public, max-age=0`) : le cache se vérifie à `x-vercel-cache` (`MISS` puis `HIT`).
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
-  `generate/[id]`, `categories`), admin `src/routes/(protected)/dashboard/admin/questions/`
+  `generate/[id]`), admin `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`
   (catalogue, `panier`, `test`), séries du prof `src/routes/(protected)/dashboard/teacher/series/`.
-- Lecture de **tous** les modèles (`templates/all`, `categories`,
-  `categories/all`, brouillons et filtres de l'admin) : par `readAllRows`
+- Lecture de **tous** les modèles (`templates/all`, brouillons et arbre des
+  filtres de l'admin) : par `readAllRows`
   (`src/lib/server/read-all-rows.ts`), page par page, tri terminé par `.order('id')`.
   PostgREST tronque à 1 000 lignes sans erreur : en novembre 2026 (1 912 modèles publiés), des
   séries sautaient des catégories (« Série : aucun modèle pour … »). Voir
@@ -239,7 +240,8 @@ lisibles par les élèves et par anon (Automaths) — réponses attendues compri
 
 ### 1. Le modèle
 
-Un `QuestionTemplate` porte des **catégories** (`theme`, `domain`, `subdomain`, `level` ≥ 1),
+Un `QuestionTemplate` est **rangé dans l'arbre des notions** (`classification_node_id`, une notion ou une sous-notion, facultatif ; [ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)) et porte un `level` ≥ 1 qui l'ordonne dans sa rubrique. L'ancien quadruplet (`theme`, `domain`, `subdomain`) n'est plus demandé ni écrit : un modèle existant garde ses valeurs en base (les anciens liens s'en servent), un modèle neuf n'en a pas. L'éditeur ne les propose plus ; l'API les accepte puis les ignore. Un nœud refusé par le trigger de la base (branche, archivé) ou la clé étrangère répond 400 en français.
+Il porte aussi
 des `grades`, un `status` (`draft` | `published`), des `options` (contraintes,
 `orderIndependent`, `courseCard`, `courseQuestion`, `answerAssumptions`), des `testSpecs`, un
 `shared` (valeurs par défaut) et au moins une **variation**.
@@ -1017,22 +1019,19 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
   (`src/lib/server/template-publication.ts`) = `checkTemplate` (structure, schéma strict, specs
   vertes, une spec `correct` par variation, 50 tirages par variation) + dépendances circulaires.
   Les trois chemins qui publient l'appellent : création (`POST`), `PUT` d'un modèle, lot.
-- **Catégorie occupée = refus, sur les trois chemins**, jamais de décalage automatique du niveau
-  (décision du 2026-09-29, étendue à la création le 2026-10-10). Création et `PUT` rendent le même
-  message (`categoryTakenMessage`, `category-validation.ts`). Avant l'envoi, `QuestionTemplateForm`
-  repère la collision et propose un niveau libre (`questionCategoriesCache.getNextAvailableLevel`),
-  que l'auteur choisit lui-même.
-- `POST /api/questions/templates` (statut `published` **par défaut**) : `templatePublicationErrors`,
-  puis unicité de la catégorie. Un brouillon n'est pas contrôlé.
+- **Plus de contrôle « catégorie occupée »** (ADR 0035) : plusieurs modèles cohabitent dans une
+  notion. Ni l'éditeur, ni le `POST`, ni le `PUT`, ni le lot ne le font ; seul l'index unique des
+  anciens quadruplets subsiste en base — s'il refuse un lot (23505), le paquet est signalé comme
+  refus, pas comme plantage.
+- `POST /api/questions/templates` (statut `published` **par défaut**) : `templatePublicationErrors`.
+  Un brouillon n'est pas contrôlé.
 - `PUT` d'un modèle dont le statut fusionné est `published` (publication, **ou toute modification
-  d'un modèle déjà publié**) : `templatePublicationErrors`, puis **unicité de la catégorie**
-  (thème, domaine, sous-domaine, niveau). Un modèle publié qui échoue ne se modifie plus qu'en
+  d'un modèle déjà publié**) : `templatePublicationErrors`. Un modèle publié qui échoue ne se modifie plus qu'en
   le repassant en brouillon. Refus 400 : messages détaillés, puis raisons résumées ; l'éditeur
   (`questions/[id]/edit`, `questions/create`) les affiche dans le toast d'erreur (5 au plus) et,
   si la publication est refusée, `QuestionTemplateForm` remet le statut d'avant.
 - **Publication par lot** (`POST /api/questions/templates/bulk-status`, 1 à 100 modèles par envoi, `MAX_BULK_TEMPLATE_IDS` ; l’en-tête de la route dit encore 700) : chaque
-  modèle repasse `templatePublicationErrors` (le même contrôle que le `PUT`) ; un échec le laisse en brouillon avec sa raison ; collision
-  de catégorie = refus, jamais de décalage automatique du niveau. Seules les lignes **rendues** par
+  modèle repasse `templatePublicationErrors` (le même contrôle que le `PUT`) ; un échec le laisse en brouillon avec sa raison, sans contrôle de catégorie. Seules les lignes **rendues** par
   `.update().select()` comptent (RLS silencieuse).
 - Tags du programme (`[id]/edit`, `$lib/server/programme-tags`) : un point par programme, choisi
   parmi ceux du nœud du modèle et de sa notion ; un modèle sans nœud se range d'abord

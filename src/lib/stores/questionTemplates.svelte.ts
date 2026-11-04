@@ -13,7 +13,6 @@
  * - Lectures simultanées partagées (une seule requête)
  * - Invalidation manuelle (pas de durée de vie) ; la relecture contourne le
  *   cache de Vercel
- * - Distinct du cache questionCategories
  *
  * Usage:
  * ```typescript
@@ -24,14 +23,6 @@
  *
  * // Get all templates
  * const templates = questionTemplatesCache.templates;
- *
- * // Filter by category
- * const filtered = questionTemplatesCache.getTemplatesByCategory({
- *   theme: 'Algèbre',
- *   domain: 'Équations',
- *   subdomain: null,
- *   level: 1
- * });
  *
  * // Find by ID
  * const template = questionTemplatesCache.getTemplateById('abc-123');
@@ -48,16 +39,6 @@ import { toaster } from '$lib/stores/toaster.svelte';
 
 /** Liste publique des modèles publiés (gardée 5 min par Vercel) */
 const TEMPLATES_URL = '/api/questions/templates/all';
-
-/**
- * Category filter for finding templates
- */
-export interface TemplateCategory {
-	theme: string;
-	domain: string;
-	subdomain: string | null;
-	level: number;
-}
 
 /**
  * Cache storage structure
@@ -203,85 +184,6 @@ class QuestionTemplatesStore {
 	 */
 	getTemplateById(id: string): QuestionTemplate | undefined {
 		return this.cache.templates.find((t) => t.id === id);
-	}
-
-	/**
-	 * Get all templates matching a category
-	 *
-	 * Useful for filtering templates in automaths pages.
-	 *
-	 * @param category - Category filter (theme, domain, subdomain, level)
-	 * @returns Array of matching templates
-	 */
-	getTemplatesByCategory(category: TemplateCategory): QuestionTemplate[] {
-		return this.cache.templates.filter(
-			(t) =>
-				t.theme === category.theme &&
-				t.domain === category.domain &&
-				(t.subdomain || null) === category.subdomain &&
-				t.level === category.level
-		);
-	}
-
-	/**
-	 * Get all templates matching partial category (without level)
-	 *
-	 * Useful for finding all levels within a subdomain.
-	 *
-	 * @param category - Partial category (theme, domain, subdomain)
-	 * @returns Array of matching templates
-	 */
-	getTemplatesByPartialCategory(category: Omit<TemplateCategory, 'level'>): QuestionTemplate[] {
-		return this.cache.templates.filter(
-			(t) =>
-				t.theme === category.theme &&
-				t.domain === category.domain &&
-				(t.subdomain || null) === category.subdomain
-		);
-	}
-
-	/**
-	 * Get unique themes from cached templates
-	 *
-	 * @returns Array of unique theme names
-	 */
-	getThemes(): string[] {
-		const themes = new Set(this.cache.templates.map((t) => t.theme));
-		return Array.from(themes).sort();
-	}
-
-	/**
-	 * Get unique domains for a theme
-	 *
-	 * @param theme - Theme name
-	 * @returns Array of unique domain names
-	 */
-	getDomains(theme: string): string[] {
-		const domains = new Set(
-			this.cache.templates.filter((t) => t.theme === theme).map((t) => t.domain)
-		);
-		return Array.from(domains).sort();
-	}
-
-	/**
-	 * Get unique subdomains for a theme and domain
-	 *
-	 * @param theme - Theme name
-	 * @param domain - Domain name
-	 * @returns Array of unique subdomain names (may include null)
-	 */
-	getSubdomains(theme: string, domain: string): (string | null)[] {
-		const subdomains = new Set(
-			this.cache.templates
-				.filter((t) => t.theme === theme && t.domain === domain)
-				.map((t) => t.subdomain || null)
-		);
-		return Array.from(subdomains).sort((a, b) => {
-			// Sort null last
-			if (a === null) return 1;
-			if (b === null) return -1;
-			return a.localeCompare(b);
-		});
 	}
 
 	/**

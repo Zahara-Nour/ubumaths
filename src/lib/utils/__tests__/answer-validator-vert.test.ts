@@ -18,8 +18,6 @@ function status(expected: string, answer: string): string {
 		statement: 'Valeur absolue' as ResolvedMarkdown,
 		blanks: [{ expectedAnswer: expected, type: 'math' }],
 		grades: ['2'],
-		theme: 'Algèbre',
-		domain: 'Valeur absolue',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

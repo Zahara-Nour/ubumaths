@@ -41,8 +41,6 @@ function simpleInstance(expectedAnswer: string, form?: ConstraintMode): Question
 		// Case de maths : le type que le générateur donne à une case `$…$`
 		blanks: [{ expectedAnswer, type: 'math' }],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		...(form && { options: { constraints: { form } } })

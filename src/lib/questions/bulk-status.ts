@@ -40,9 +40,9 @@ export interface BulkStatusSummary {
  * - le client envoie des paquets de 50 (chaque modèle publié coûte 50 tirages
  *   par variation côté serveur ; tout d'un coup dépasserait le délai d'une fonction) ;
  * - le serveur accepte au plus 100 identifiants par appel (`MAX_BULK_TEMPLATE_IDS`),
- *   la marge couvre un groupe de rivaux qui déborde un paquet ;
- * - un conflit d'unicité (23505) refuse tout le paquet concerné : des paquets
- *   petits limitent ce qui est refusé d'un coup.
+ *   la marge reste utile si un paquet est rejoué ;
+ * - un conflit d'unicité (23505, ancien quadruplet) refuse tout le paquet concerné :
+ *   des paquets petits limitent ce qui est refusé d'un coup.
  */
 export const BULK_CLIENT_CHUNK_SIZE = 50;
 
@@ -57,46 +57,11 @@ export class BulkStatusError extends Error {
 	}
 }
 
-/**
- * Clé de catégorie, alignée sur l'index unique de la base :
- * `(theme, domain, coalesce(subdomain, ''), level)`.
- */
-export function templateCategoryKey(template: {
-	theme: string;
-	domain: string;
-	subdomain?: string | null;
-	level: number;
-}): string {
-	return JSON.stringify([
-		template.theme,
-		template.domain,
-		template.subdomain ?? '',
-		template.level
-	]);
-}
-
-/**
- * Découpe en paquets SANS couper un groupe : les rivaux d'une même catégorie
- * partent ensemble, sinon le serveur ne les verrait jamais côte à côte et
- * publierait les deux (un par paquet). Un groupe plus grand qu'un paquet forme
- * son propre paquet (le serveur accepte jusqu'à 100).
- */
-function chunkKeepingGroups(ids: string[], size: number, groupOf: (id: string) => string) {
-	const groups = new Map<string, string[]>();
-	for (const id of ids) {
-		const key = groupOf(id);
-		groups.set(key, [...(groups.get(key) ?? []), id]);
-	}
+/** Découpe en paquets de la taille prévue (le serveur en accepte jusqu'à 100) */
+function chunkIds(ids: string[], size: number): string[][] {
 	const chunks: string[][] = [];
-	let current: string[] = [];
-	for (const group of groups.values()) {
-		if (current.length > 0 && current.length + group.length > size) {
-			chunks.push(current);
-			current = [];
-		}
-		current.push(...group);
-	}
-	if (current.length > 0) chunks.push(current);
+	for (let start = 0; start < ids.length; start += size)
+		chunks.push(ids.slice(start, start + size));
 	return chunks;
 }
 
@@ -118,19 +83,15 @@ async function readErrorMessage(response: Response): Promise<string> {
  * Appelle l'endpoint par paquets et agrège les comptes rendus. Tout échec
  * (réseau, réponse non OK, réponse illisible) interrompt la suite et lève une
  * `BulkStatusError` qui porte ce qui est déjà passé : le compte rendu reste vrai.
- *
- * `groupOf` : clé de catégorie d'un identifiant (publication) ; sans elle, chaque
- * identifiant est son propre groupe.
  */
 export async function changeTemplatesStatus(
 	ids: string[],
 	status: BulkTemplateStatus,
-	onProgress?: (done: number, total: number) => void,
-	groupOf: (id: string) => string = (id) => id
+	onProgress?: (done: number, total: number) => void
 ): Promise<BulkStatusSummary> {
 	const summary: BulkStatusSummary = { status, changed: [], refused: [] };
 	let done = 0;
-	for (const part of chunkKeepingGroups(ids, BULK_CLIENT_CHUNK_SIZE, groupOf)) {
+	for (const part of chunkIds(ids, BULK_CLIENT_CHUNK_SIZE)) {
 		let result: unknown;
 		try {
 			const response = await fetch('/api/questions/templates/bulk-status', {

@@ -18,8 +18,6 @@ function instanceOf(
 		statement: 'Test question' as ResolvedMarkdown,
 		blanks: [{ expectedAnswer, type: 'math' }],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		options

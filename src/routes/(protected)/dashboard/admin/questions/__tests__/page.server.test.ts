@@ -41,6 +41,7 @@ function row(index: number, status: string, theme: string, overrides: Row = {}):
 		theme,
 		domain: 'Additionner',
 		subdomain: null,
+		classification_node_id: null,
 		level: 1,
 		type: 'fill_in_blanks',
 		grades: ['CE1'],
@@ -108,6 +109,14 @@ function fakeQuery(table: Row[]) {
 			);
 			return builder;
 		},
+		in: (column: string, values: unknown[]) => {
+			filters.push((candidate) => values.includes(candidate[column]));
+			return builder;
+		},
+		is: (column: string, value: null) => {
+			filters.push((candidate) => (candidate[column] ?? null) === value);
+			return builder;
+		},
 		gte: (column: string, value: number) => {
 			filters.push((candidate) => (candidate[column] as number) >= value);
 			return builder;
@@ -129,13 +138,29 @@ function fakeQuery(table: Row[]) {
 	return builder;
 }
 
+const B_CALC = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
+const B_GEO = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2';
+const N_FRAC = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1';
+const N_DEC = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2';
+const S_ADD = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
+
+const NODES: Row[] = [
+	{ id: B_CALC, kind: 'branch', name: 'Calcul', parent_id: null, position: 0 },
+	{ id: B_GEO, kind: 'branch', name: 'Géométrie', parent_id: null, position: 1 },
+	{ id: N_FRAC, kind: 'notion', name: 'Fractions', parent_id: B_CALC, position: 0 },
+	{ id: N_DEC, kind: 'notion', name: 'Décimaux', parent_id: B_CALC, position: 1 },
+	{ id: S_ADD, kind: 'subnotion', name: 'Additionner', parent_id: N_FRAC, position: 0 }
+];
+
 async function loadPage(table: Row[], query = ''): Promise<LoadResult> {
 	const event = {
 		url: new URL(`http://localhost/dashboard/admin/questions${query}`),
 		locals: {
 			user: { id: USER_ID },
 			profile: { role: 'admin' },
-			supabase: { from: () => fakeQuery(table) }
+			supabase: {
+				from: (name: string) => fakeQuery(name === 'classification_nodes' ? NODES : table)
+			}
 		}
 	} as unknown as LoadEvent;
 	return (await load(event)) as LoadResult;
@@ -146,12 +171,64 @@ async function loadPage(table: Row[], query = ''): Promise<LoadResult> {
 // ============================================================================
 
 describe('page admin des modèles — filtres communs aux deux onglets', () => {
-	it('filtre les brouillons par thème, comme les publiés', async () => {
+	it('filtre les brouillons par notion (sous-notions comprises), comme les publiés', async () => {
+		const table = [
+			...rows(2, 'draft', 'Entiers', { classification_node_id: N_FRAC }),
+			...rows(1, 'draft', 'Entiers', { classification_node_id: S_ADD }),
+			...rows(4, 'draft', 'Fractions', { classification_node_id: N_DEC })
+		];
+
+		const result = await loadPage(table, `?branche=${B_CALC}&notion=${N_FRAC}`);
+
+		expect(result.drafts).toHaveLength(3);
+	});
+
+	it('filtre par branche seule : toutes ses notions, pas une autre branche', async () => {
+		const table = [
+			...rows(2, 'draft', 'a', { classification_node_id: N_FRAC }),
+			...rows(3, 'draft', 'b', { classification_node_id: N_DEC }),
+			...rows(5, 'draft', 'c', { classification_node_id: B_GEO })
+		];
+
+		const result = await loadPage(table, `?branche=${B_CALC}`);
+
+		expect(result.drafts).toHaveLength(5);
+	});
+
+	it('« Non rangés » : seulement les modèles sans nœud', async () => {
+		const table = [
+			...rows(2, 'draft', 'a', { classification_node_id: N_FRAC }),
+			...rows(3, 'draft', 'b'),
+			...rows(4, 'published', 'c')
+		];
+
+		const result = await loadPage(table, '?nonRanges=1');
+
+		expect(result.drafts).toHaveLength(3);
+		expect(result.publishedIds).toHaveLength(4);
+		expect(result.filters.nonRanges).toBe(true);
+	});
+
+	it('ignore les anciens paramètres theme / domain / subdomain', async () => {
 		const table = [...rows(3, 'draft', 'Entiers'), ...rows(4, 'draft', 'Fractions')];
 
-		const result = await loadPage(table, '?theme=Entiers');
+		const result = await loadPage(table, '?theme=Entiers&domain=Additionner&subdomain=x');
 
-		expect(result.drafts.map((draft) => draft.theme)).toEqual(['Entiers', 'Entiers', 'Entiers']);
+		expect(result.drafts).toHaveLength(7);
+	});
+
+	it('un identifiant de branche mal formé est ignoré, pas une erreur', async () => {
+		const table = rows(3, 'draft', 'Entiers');
+
+		const result = await loadPage(table, '?branche=pas-un-uuid');
+
+		expect(result.drafts).toHaveLength(3);
+	});
+
+	it('rend les nœuds de l’arbre pour les filtres et les chemins', async () => {
+		const result = await loadPage(rows(1, 'draft', 'Entiers'));
+
+		expect(result.nodes.map((node) => node.id)).toContain(S_ADD);
 	});
 
 	it('filtre les brouillons par niveau scolaire (chevauchement)', async () => {
@@ -174,9 +251,12 @@ describe('page admin des modèles — filtres communs aux deux onglets', () => {
 	});
 
 	it('rend les identifiants de TOUS les publiés filtrés, au-delà de la page de 50', async () => {
-		const table = [...rows(228, 'published', 'Entiers'), ...rows(10, 'published', 'Fractions')];
+		const table = [
+			...rows(228, 'published', 'Entiers', { classification_node_id: N_FRAC }),
+			...rows(10, 'published', 'Fractions')
+		];
 
-		const result = await loadPage(table, '?theme=Entiers');
+		const result = await loadPage(table, `?notion=${N_FRAC}`);
 
 		expect(result.templates).toHaveLength(50);
 		expect(result.total).toBe(228);
@@ -242,10 +322,10 @@ describe('page admin des modèles — filtre « Questions de cours »', () => {
 	});
 
 	it('se combine avec les autres filtres', async () => {
-		const result = await loadPage(catalogue(), '?courseQuestion=1&theme=Fonctions');
+		const result = await loadPage(catalogue(), '?courseQuestion=1&nonRanges=1');
 
-		expect(result.drafts).toHaveLength(1);
-		expect(result.publishedIds).toHaveLength(0);
+		expect(result.drafts).toHaveLength(3);
+		expect(result.publishedIds).toHaveLength(5);
 	});
 
 	it('valeur inattendue du paramètre → filtre inactif', async () => {

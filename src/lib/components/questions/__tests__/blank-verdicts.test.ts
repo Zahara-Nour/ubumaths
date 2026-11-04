@@ -17,8 +17,6 @@ function instance(blanks: InstanceBlank[]): QuestionInstance {
 		statement: 'Trouve un diviseur de 12' as ResolvedMarkdown,
 		blanks,
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Diviser',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		resolvedVariables: [{ name: 'n', value: '12' }]

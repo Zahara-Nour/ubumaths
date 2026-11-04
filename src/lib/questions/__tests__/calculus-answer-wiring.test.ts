@@ -27,8 +27,6 @@ function instanceWith(
 		statement: 'Donner une primitive' as ResolvedMarkdown,
 		blanks,
 		grades: ['T_SPE'],
-		theme: 'Analyse',
-		domain: 'Primitives',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })

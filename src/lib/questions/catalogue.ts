@@ -21,17 +21,14 @@
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { PREVIEW_SEED } from '$lib/questions/cart-preview';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { ClassificationNode } from '$lib/types/database-helpers';
+import { compareNodes, placeOfNode, type TreeNode } from '$lib/questions/classification-tree';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 /** Ce que le catalogue lit d'un nœud de l'arbre */
-export type CatalogueNode = Pick<
-	ClassificationNode,
-	'id' | 'kind' | 'name' | 'parent_id' | 'position'
->;
+export type CatalogueNode = TreeNode;
 
 /** Rubrique dépliable : une sous-notion, ou « Général » (modèles posés sur la notion) */
 export interface CatalogueRubric {
@@ -80,32 +77,14 @@ let previews = new WeakMap<QuestionTemplate, QuestionInstance | null>();
 // FUNCTIONS
 // ============================================================================
 
-/** Ordre de l'arbre : `position`, puis nom (deux nœuds de même position) */
-function compareNodes(a: CatalogueNode, b: CatalogueNode): number {
-	return a.position - b.position || a.name.localeCompare(b.name, 'fr');
-}
-
 /** Dans une rubrique : niveau croissant (numérique : 10 après 2), puis titre */
 function compareTemplates(a: QuestionTemplate, b: QuestionTemplate): number {
 	return (a.level ?? 0) - (b.level ?? 0) || (a.title ?? '').localeCompare(b.title ?? '', 'fr');
 }
 
 /** Notion et sous-notion d'un modèle, ou `null` s'il n'est pas rangé sous une notion */
-function placeOf(
-	template: QuestionTemplate,
-	nodesById: ReadonlyMap<string, CatalogueNode>
-): { branch: CatalogueNode; notion: CatalogueNode; subnotion: CatalogueNode | null } | null {
-	const node = template.classification_node_id
-		? nodesById.get(template.classification_node_id)
-		: undefined;
-	if (!node) return null;
-
-	const notion = node.kind === 'subnotion' ? nodesById.get(node.parent_id ?? '') : node;
-	if (!notion || notion.kind !== 'notion') return null;
-	const branch = nodesById.get(notion.parent_id ?? '');
-	if (!branch || branch.kind !== 'branch') return null;
-
-	return { branch, notion, subnotion: node.kind === 'subnotion' ? node : null };
+function placeOf(template: QuestionTemplate, nodesById: ReadonlyMap<string, CatalogueNode>) {
+	return placeOfNode(template.classification_node_id, nodesById);
 }
 
 /**

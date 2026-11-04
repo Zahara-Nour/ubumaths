@@ -140,7 +140,7 @@
 	}
 
 	function cardLabel(c: DeckCardLite): string {
-		if (c.cardType === 'template') return c.templateSubdomain || 'Variation sans nom';
+		if (c.cardType === 'template') return c.templateTitle || 'Variation sans nom';
 		return 'Carte personnalisée';
 	}
 

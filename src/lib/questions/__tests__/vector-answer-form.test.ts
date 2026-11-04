@@ -18,8 +18,6 @@ function instanceWith(blanks: InstanceBlank[]): QuestionInstance {
 		statement: 'Donner un vecteur' as ResolvedMarkdown,
 		blanks,
 		grades: ['1_SPE'],
-		theme: 'Géométrie',
-		domain: 'Géométrie repérée',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

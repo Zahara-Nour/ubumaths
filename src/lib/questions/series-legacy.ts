@@ -31,8 +31,9 @@ import {
 /** Ce qu'il faut lire d'un modèle pour retrouver celui d'une ancienne ligne */
 export interface LegacyResolvableTemplate {
 	id: string;
-	theme: string;
-	domain: string;
+	/** Absents sur un modèle neuf (rangé par l'arbre) : il ne correspond à aucune ancienne ligne */
+	theme?: string | null;
+	domain?: string | null;
 	subdomain?: string | null;
 	level: number;
 }

@@ -24,7 +24,7 @@ export interface DeckCardLite {
 	id: string;
 	cardType: 'template' | 'custom';
 	templateId: string | null;
-	templateSubdomain: string | null;
+	templateTitle: string | null;
 	sectionId: string | null;
 	createdAt: string;
 }
@@ -77,7 +77,7 @@ export const load: PageServerLoad = async ({ params, locals }): Promise<DeckDeta
 	// 3. Charger les cartes avec leur section_id
 	const { data: cardsData, error: cardsErr } = await locals.supabase
 		.from('srs_cards')
-		.select('id, card_type, template_id, section_id, created_at, question_templates(subdomain)')
+		.select('id, card_type, template_id, section_id, created_at, question_templates(title)')
 		.eq('deck_id', deck.id)
 		.order('created_at', { ascending: true });
 
@@ -89,14 +89,14 @@ export const load: PageServerLoad = async ({ params, locals }): Promise<DeckDeta
 		template_id: string | null;
 		section_id: string | null;
 		created_at: string;
-		question_templates: { subdomain: string | null } | null;
+		question_templates: { title: string | null } | null;
 	};
 
 	const cards: DeckCardLite[] = ((cardsData ?? []) as unknown as CardRow[]).map((c) => ({
 		id: c.id,
 		cardType: c.card_type,
 		templateId: c.template_id,
-		templateSubdomain: c.question_templates?.subdomain ?? null,
+		templateTitle: c.question_templates?.title ?? null,
 		sectionId: c.section_id,
 		createdAt: c.created_at
 	}));

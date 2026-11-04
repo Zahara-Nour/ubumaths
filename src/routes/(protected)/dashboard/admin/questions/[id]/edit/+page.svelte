@@ -32,7 +32,6 @@
 	import { Loader2, ListTodo } from '@lucide/svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import { onMount } from 'svelte';
 	import { GRADES, isGradeCode } from '$lib/types/grades';
@@ -70,7 +69,6 @@
 
 			if (result.success) {
 				// Invalidate caches to force refresh
-				questionCategoriesCache.invalidate();
 				questionTemplatesCache.invalidate();
 
 				toaster.success('Question mise à jour avec succès');
@@ -229,6 +227,7 @@
 					onSave={handleSave}
 					onCancel={handleCancel}
 					{isSubmitting}
+					nodes={data.nodes}
 				/>
 			{/if}
 		</Card.Content>

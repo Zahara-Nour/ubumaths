@@ -116,8 +116,6 @@
 				}
 			],
 			grades: ['CP'],
-			theme: 'Géométrie',
-			domain: 'Points alignés',
 			level: 1
 		},
 		figure_carre: {
@@ -136,8 +134,6 @@
 				}
 			],
 			grades: ['CP'],
-			theme: 'Géométrie',
-			domain: 'Terminer un carré',
 			level: 1
 		},
 		figure_a_completer: {
@@ -156,8 +152,6 @@
 				}
 			],
 			grades: ['CP'],
-			theme: 'Géométrie',
-			domain: 'Tracer une droite',
 			level: 1
 		},
 		numerical_exact: {
@@ -220,8 +214,6 @@
 			// réponse n'a alors rien à afficher.
 			blanks: [{ expectedAnswer: '5/4', expectedAnswerLatex: '\\frac{5}{4}', type: 'math' }],
 			grades: ['6', '5'],
-			theme: 'Algèbre',
-			domain: 'Fractions',
 			level: 1,
 			correction: {
 				steps: [
@@ -248,8 +240,6 @@
 				}
 			],
 			grades: ['6'],
-			theme: 'Géométrie',
-			domain: 'Constantes',
 			level: 1,
 			correction: {
 				steps: [
@@ -267,8 +257,6 @@
 				{ expectedAnswer: 'c', type: 'text' }
 			],
 			grades: ['4', '3'],
-			theme: 'Géométrie',
-			domain: 'Théorème de Pythagore',
 			level: 2,
 			correction: {
 				steps: [

@@ -38,7 +38,7 @@ describe('toTemplatePutBody', () => {
 			defaultDisplayOptions: null,
 			exerciseInstruction: null,
 			options: null,
-			subdomain: null,
+			classification_node_id: null,
 			testSpecs: null
 		});
 	});

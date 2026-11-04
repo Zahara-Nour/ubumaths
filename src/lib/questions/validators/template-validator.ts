@@ -77,15 +77,8 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		errors.push(assumptionCollisionMessage(name));
 	}
 
-	// Categorization fields
-	if (!template.theme || template.theme.trim() === '') {
-		errors.push('Missing required field: theme');
-	}
-
-	if (!template.domain || template.domain.trim() === '') {
-		errors.push('Missing required field: domain');
-	}
-
+	// Rangement : `theme` et `domain` ne sont plus exigés (le modèle se range dans l'arbre
+	// des notions par `classification_node_id`, facultatif — ADR 0035). Seul le niveau reste.
 	if (template.level == null || template.level < 0) {
 		errors.push('level must be a non-negative integer');
 	}

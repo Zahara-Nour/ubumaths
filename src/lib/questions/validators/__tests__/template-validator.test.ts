@@ -300,7 +300,7 @@ describe('validateTemplate - Required Fields', () => {
 		expect(errors.some((e) => e.includes('grades'))).toBe(true);
 	});
 
-	it('should fail on missing theme', () => {
+	it('does not require a theme any more (rangement par l’arbre)', () => {
 		const template = {
 			id: 'test',
 			title: 'Test Template',
@@ -322,10 +322,10 @@ describe('validateTemplate - Required Fields', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('theme'))).toBe(true);
+		expect(errors.some((e) => e.includes('theme'))).toBe(false);
 	});
 
-	it('should fail on missing domain', () => {
+	it('does not require a domain any more (rangement par l’arbre)', () => {
 		const template = {
 			id: 'test',
 			title: 'Test Template',
@@ -347,7 +347,7 @@ describe('validateTemplate - Required Fields', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('domain'))).toBe(true);
+		expect(errors.some((e) => e.includes('domain'))).toBe(false);
 	});
 
 	it('should fail on missing level', () => {
@@ -896,7 +896,7 @@ describe('validateTemplate - Multiple Errors', () => {
 				}
 			],
 			grades: [],
-			// missing theme, domain, level
+			// missing level
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
@@ -910,8 +910,6 @@ describe('validateTemplate - Multiple Errors', () => {
 		expect(errors.some((e) => e.includes('Statement cannot be empty'))).toBe(true);
 		expect(errors.some((e) => e.includes('Duplicate') || e.includes('duplicate'))).toBe(true);
 		expect(errors.some((e) => e.includes('grade'))).toBe(true);
-		expect(errors.some((e) => e.includes('theme'))).toBe(true);
-		expect(errors.some((e) => e.includes('domain'))).toBe(true);
 		expect(errors.some((e) => e.includes('level'))).toBe(true);
 		expect(errors.some((e) => e.includes('blanks'))).toBe(true);
 	});

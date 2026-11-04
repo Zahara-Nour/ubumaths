@@ -18,8 +18,6 @@ function createInstance(blanks: InstanceBlank[]): QuestionInstance {
 		statement: 'Durée ?' as ResolvedMarkdown,
 		blanks,
 		grades: ['6'],
-		theme: 'Grandeurs',
-		domain: 'Durées',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

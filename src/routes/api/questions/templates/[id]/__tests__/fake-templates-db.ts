@@ -18,6 +18,8 @@ export interface FakeDb {
 	profiles: Row[];
 	updates: Row[];
 	inserts: Row[];
+	/** Refus de la base sur le nœud de rangement (trigger / clé étrangère), pour un nœud non nul */
+	nodeError?: { code: string; message: string };
 }
 
 export const USER_ID = '11111111-1111-4111-8111-111111111111';
@@ -52,7 +54,8 @@ export function templateRow(): Row {
 		exercise_instruction: null,
 		created_at: '2026-09-28T09:14:03.52+00:00',
 		updated_at: '2026-09-28T09:14:03.52+00:00',
-		created_by: USER_ID
+		created_by: USER_ID,
+		classification_node_id: null
 	};
 }
 
@@ -64,6 +67,10 @@ function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 	let single: false | 'single' | 'maybe' = false;
 
 	function execute() {
+		const written = inserted ?? patch;
+		if (db.nodeError && written && typeof written.classification_node_id === 'string') {
+			return { data: null, error: db.nodeError };
+		}
 		if (inserted) {
 			const row = {
 				id: '44444444-4444-4444-8444-444444444444',

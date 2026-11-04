@@ -78,8 +78,6 @@ function toInstance(question: DemoQuestion): QuestionInstance {
 		],
 		correction: { steps: [resolvedMarkdown(question.correction)] },
 		grades: [question.grade],
-		theme: question.theme,
-		domain: question.domain,
 		level: 1,
 		generatedAt: '2026-10-25T00:00:00.000Z'
 	};
