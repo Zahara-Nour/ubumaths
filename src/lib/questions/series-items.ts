@@ -2,19 +2,19 @@
  * Questions d'une série
  * =====================
  *
- * Une série est une composition : des catégories, chacune avec un nombre de
- * répétitions et une durée (CONTEXT.md). À chaque usage, on tire un modèle au
- * hasard dans chaque catégorie et on génère une instance par répétition.
+ * Une série est une composition : des modèles, chacun avec un nombre de
+ * répétitions et une durée (CONTEXT.md, ADR 0035). À chaque usage, on génère
+ * une instance du modèle par répétition, chacune avec sa graine.
  *
- * Chaque question porte SA durée et SA catégorie : avant, les durées étaient
- * reconstruites à part depuis le panier et se décalaient dès qu'une catégorie
+ * Chaque question porte SA durée et SON modèle : avant, les durées étaient
+ * reconstruites à part depuis le panier et se décalaient dès qu'une ligne
  * était sautée ou qu'une génération échouait.
  */
 
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { excludeCourseCards as withoutCourseCards } from '$lib/questions/course-card';
 import type { GenerationResult, QuestionTemplate } from '$lib/questions/types';
-import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
+import type { SeriesItem } from '$lib/validation/series';
 import type { ClassroomItem } from '$lib/types/test';
 
 // ============================================================================
@@ -28,8 +28,6 @@ interface BuildOptions {
 	generate?: (template: QuestionTemplate, seed: number) => GenerationResult;
 	/** Injectable pour les tests : graine d'une question */
 	nextSeed?: () => number;
-	/** Injectable pour les tests : index tiré parmi `count` modèles */
-	pickIndex?: (count: number) => number;
 }
 
 // ============================================================================
@@ -46,86 +44,45 @@ export const MAX_QUESTION_SEED = 2 ** 31 - 1;
 // FUNCTIONS
 // ============================================================================
 
-/** Clé stable d'une catégorie (thème, domaine, sous-domaine, niveau) */
-export function categoryKeyOf(category: QuestionCategory): string {
-	return [category.theme, category.domain, category.subdomain ?? '', Number(category.level)].join(
-		'|'
-	);
-}
-
-/** Ce que la résolution d'une catégorie lit d'un modèle. */
-export type CategorizedTemplate = {
-	theme: string;
-	domain: string;
-	subdomain?: string | null;
-	level: number;
-};
-
-/**
- * Modèles d'une catégorie. Sous-domaine absent : `null` et `''` se valent.
- * Niveau : un ancien panier (localStorage) peut le porter en chaîne.
- *
- * Résolution UNIQUE catégorie → modèles : la série (tirage) et le paquet de
- * révision d'un chapitre (`server/srs/chapter-deck.ts`) passent par elle.
- */
-export function templatesOfCategory<T extends CategorizedTemplate>(
-	templates: readonly T[],
-	category: QuestionCategory
-): T[] {
-	return templates.filter(
-		(template) =>
-			template.theme === category.theme &&
-			template.domain === category.domain &&
-			(template.subdomain || null) === (category.subdomain || null) &&
-			template.level === Number(category.level)
-	);
-}
-
 /** Graine entière tirée au hasard, dans [0, MAX_QUESTION_SEED] */
 function randomSeed(): number {
 	return Math.floor(Math.random() * (MAX_QUESTION_SEED + 1));
 }
 
-/** Un tirage : le modèle et la graine d'une question, avec sa durée et sa catégorie */
+/** Un tirage : le modèle et la graine d'une question, avec sa durée */
 export interface SeriesDraw {
 	template: QuestionTemplate;
 	seed: number;
 	delaySeconds: number;
-	categoryKey: string;
 }
 
 /**
- * Tirages d'une série, dans l'ordre de la composition, SANS générer : un modèle
- * au hasard dans la catégorie et une graine par répétition. Une catégorie sans
- * modèle est sautée. Le serveur d'une évaluation enregistre ces tirages (modèle +
- * graine) pour régénérer et corriger la copie (ADR 0015).
+ * Tirages d'une série, dans l'ordre de la composition, SANS générer : le modèle
+ * de la ligne et une graine par répétition. Une ligne dont le modèle manque
+ * (retiré, ou carte de cours exclue) est sautée. Le serveur d'une évaluation
+ * enregistre ces tirages (modèle + graine) pour régénérer et corriger la copie
+ * (ADR 0015).
  */
 export function drawSeriesQuestions(
-	categories: readonly CartItem[],
+	items: readonly SeriesItem[],
 	templates: readonly QuestionTemplate[],
 	options: Omit<BuildOptions, 'generate'> = {}
 ): SeriesDraw[] {
 	const nextSeed = options.nextSeed ?? randomSeed;
-	const pickIndex = options.pickIndex ?? ((count) => Math.floor(Math.random() * count));
+	const available = options.excludeCourseCards ? withoutCourseCards([...templates]) : templates;
+	const byId = new Map(available.map((template) => [template.id, template]));
 	const draws: SeriesDraw[] = [];
 
-	for (const cartItem of categories) {
-		const inCategory = templatesOfCategory(templates, cartItem.category);
-		const candidates = options.excludeCourseCards ? withoutCourseCards(inCategory) : inCategory;
-		if (candidates.length === 0) {
-			console.warn(
-				`Série : aucun modèle pour ${categoryKeyOf(cartItem.category)}, catégorie sautée`
-			);
+	for (const item of items) {
+		const template = byId.get(item.templateId);
+		if (!template) {
+			console.warn(`Série : modèle ${item.templateId} absent, ligne sautée`);
 			continue;
 		}
 
-		const delaySeconds =
-			cartItem.delay && cartItem.delay > 0 ? cartItem.delay : DEFAULT_QUESTION_DELAY_SECONDS;
-		const categoryKey = categoryKeyOf(cartItem.category);
-
-		for (let repetition = 0; repetition < cartItem.quantity; repetition++) {
-			const template = candidates[pickIndex(candidates.length)];
-			draws.push({ template, seed: nextSeed(), delaySeconds, categoryKey });
+		const delaySeconds = item.delay && item.delay > 0 ? item.delay : DEFAULT_QUESTION_DELAY_SECONDS;
+		for (let repetition = 0; repetition < item.quantity; repetition++) {
+			draws.push({ template, seed: nextSeed(), delaySeconds });
 		}
 	}
 
@@ -133,7 +90,7 @@ export function drawSeriesQuestions(
 }
 
 /**
- * Questions d'une série, dans l'ordre de la composition. Une catégorie sans
+ * Questions d'une série, dans l'ordre de la composition. Une ligne sans
  * modèle est sautée ; une génération qui échoue est omise. Aucune des deux ne
  * décale la durée des autres questions.
  *
@@ -141,21 +98,21 @@ export function drawSeriesQuestions(
  * (`instance.seed`).
  */
 export function buildSeriesItems(
-	categories: readonly CartItem[],
+	seriesItems: readonly SeriesItem[],
 	templates: readonly QuestionTemplate[],
 	options: BuildOptions = {}
 ): ClassroomItem[] {
 	const generate = options.generate ?? ((template, seed) => generateInstance(template, seed));
 	const items: ClassroomItem[] = [];
 
-	for (const { template, seed, delaySeconds, categoryKey } of drawSeriesQuestions(
-		categories,
+	for (const { template, seed, delaySeconds } of drawSeriesQuestions(
+		seriesItems,
 		templates,
 		options
 	)) {
 		const result = generate(template, seed);
 		if (result.success) {
-			items.push({ instance: result.instance, delaySeconds, categoryKey });
+			items.push({ instance: result.instance, delaySeconds, templateId: template.id });
 		} else {
 			console.error(`Série : génération impossible pour le modèle ${template.id}`, result.errors);
 		}

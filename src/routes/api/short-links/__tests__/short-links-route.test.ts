@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { POST } from '../+server';
 
 const TEACHER = '22222222-2222-4222-8222-222222222222';
-const TARGET = '/automaths/panier?categories=%255B%257B%2522a%2522%253A1%257D%255D';
+const TARGET = '/automaths/panier?modeles=%255B%257B%2522a%2522%253A1%257D%255D';
 
 type RpcResult = { data: unknown; error: { code: string; message: string } | null };
 
@@ -89,7 +89,7 @@ describe('POST /api/short-links', () => {
 		['le glossaire', '/glossaire'],
 		['le panier sans requête', '/automaths/panier'],
 		['un chemin qui ressort du panier', '/automaths/panier/../auth/logout?x'],
-		['un faux panier', '/automaths/paniers?categories=x']
+		['un faux panier', '/automaths/paniers?modeles=x']
 	])(
 		'cible interne qui n’est pas une série (%s) : 400, rien d’enregistré',
 		async (_cas, target) => {
@@ -102,7 +102,7 @@ describe('POST /api/short-links', () => {
 	);
 
 	it('série lancée sous une forme (/automaths/test) : acceptée', async () => {
-		const target = '/automaths/test?categories=%255B%255D&mode=course&time=300';
+		const target = '/automaths/test?modeles=%255B%255D&mode=course&time=300';
 		const { promise, rpc } = call('teacher', { target });
 		expect((await promise).status).toBe(200);
 		expect(rpc).toHaveBeenCalledWith('create_short_link', { p_target: target });
@@ -110,7 +110,7 @@ describe('POST /api/short-links', () => {
 
 	it('cible de plus de 16 384 caractères : 400', async () => {
 		const { promise, rpc } = call('teacher', {
-			target: `/automaths/panier?categories=${'a'.repeat(16384)}`
+			target: `/automaths/panier?modeles=${'a'.repeat(16384)}`
 		});
 		expect((await promise).status).toBe(400);
 		expect(rpc).not.toHaveBeenCalled();

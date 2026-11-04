@@ -2808,7 +2808,7 @@ export type Database = {
       }
       evaluation_attempt_questions: {
         Row: {
-          category_key: string
+          category_key: string | null
           created_at: string
           delay_seconds: number
           instance: Json | null
@@ -2818,7 +2818,7 @@ export type Database = {
           test_session_id: string
         }
         Insert: {
-          category_key: string
+          category_key?: string | null
           created_at?: string
           delay_seconds: number
           instance?: Json | null
@@ -2828,7 +2828,7 @@ export type Database = {
           test_session_id: string
         }
         Update: {
-          category_key?: string
+          category_key?: string | null
           created_at?: string
           delay_seconds?: number
           instance?: Json | null

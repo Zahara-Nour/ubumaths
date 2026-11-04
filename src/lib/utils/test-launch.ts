@@ -3,22 +3,29 @@
  *
  * - `assignment=<id>` : une évaluation assignée ; sa forme et son temps viennent
  *   du serveur, le `mode` de l'URL est ignoré (B15).
- * - `categories=<…>` sans `mode` : ancien lien de série partagé → le PANIER,
- *   paramètre intact (Q46) ; le panier le relit et dit s'il est abîmé.
- * - `categories=<…>&mode=<…>` : démarrage direct sous cette forme.
+ * - `modeles=<…>` (ou un ancien `categories=<…>`) sans `mode` : lien de série
+ *   partagé → le PANIER, paramètre intact (Q46) ; le panier le relit et dit
+ *   s'il est abîmé.
+ * - `modeles=<…>&mode=<…>` : démarrage direct sous cette forme.
  *
- * Les catégories sont validées (mêmes bornes que l'enregistrement d'une série) :
- * un lien abîmé donne un message, jamais un plantage.
+ * La composition est validée (mêmes bornes que l'enregistrement d'une série) :
+ * un lien abîmé donne un message, jamais un plantage. Les lignes d'un ancien
+ * lien (catégories, ADR 0035) restent à résoudre par la page, qui a les modèles.
  */
 
-import type { CartItem } from '$lib/stores/questionCart.svelte';
 import type { TestMode } from '$lib/types/test';
-import { parseCategoriesParam } from '$lib/validation/series';
+import {
+	LEGACY_SERIES_LINK_PARAM,
+	hasSeriesLink,
+	parseSeriesLink,
+	type StoredSeriesLine
+} from '$lib/questions/series-legacy';
+import { SERIES_LINK_PARAM } from '$lib/validation/series';
 
 export type TestLaunch =
 	| { kind: 'assignment'; assignmentId: string }
 	| { kind: 'cart'; href: string }
-	| { kind: 'start'; mode: TestMode; categories: CartItem[]; timeLimit?: number }
+	| { kind: 'start'; mode: TestMode; lines: StoredSeriesLine[]; timeLimit?: number }
 	| { kind: 'error'; message: string };
 
 const TEST_MODES: readonly TestMode[] = ['display', 'interactive', 'course', 'flash'];
@@ -36,16 +43,19 @@ export function resolveTestLaunch(searchParams: URLSearchParams): TestLaunch {
 		return { kind: 'assignment', assignmentId };
 	}
 
-	const categoriesParam = searchParams.get('categories');
 	const modeParam = searchParams.get('mode');
-	if ((modeParam === null || modeParam === '') && categoriesParam) {
-		const cart = new URLSearchParams({ categories: categoriesParam });
+	if ((modeParam === null || modeParam === '') && hasSeriesLink(searchParams)) {
+		const cart = new URLSearchParams();
+		for (const name of [SERIES_LINK_PARAM, LEGACY_SERIES_LINK_PARAM]) {
+			const value = searchParams.get(name);
+			if (value !== null) cart.set(name, value);
+		}
 		return { kind: 'cart', href: `/automaths/panier?${cart.toString()}` };
 	}
 
-	const categories = parseCategoriesParam(categoriesParam);
-	if (!categories.success) {
-		return { kind: 'error', message: categories.error };
+	const series = parseSeriesLink(searchParams);
+	if (!series.success) {
+		return { kind: 'error', message: series.error };
 	}
 	if (modeParam === null || modeParam === '') {
 		return { kind: 'error', message: 'Forme de série inconnue' };
@@ -59,5 +69,5 @@ export function resolveTestLaunch(searchParams: URLSearchParams): TestLaunch {
 	const timeLimit =
 		Number.isInteger(time) && time > 0 && time <= MAX_TIME_LIMIT_SECONDS ? time : undefined;
 
-	return { kind: 'start', mode: modeParam, categories: categories.data, timeLimit };
+	return { kind: 'start', mode: modeParam, lines: series.lines, timeLimit };
 }

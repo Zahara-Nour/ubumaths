@@ -54,7 +54,7 @@
 
 	/** Lien de l'Entraînement d'un Mathou, construit au rendu (`trainingQuery`). */
 	function trainingLink(mathou: Mathou): string | null {
-		const query = trainingQuery(mathou.trainingCategories);
+		const query = trainingQuery(mathou.trainingItems);
 		return query ? `${resolve('/automaths/test')}?${query}` : null;
 	}
 

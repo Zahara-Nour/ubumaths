@@ -30,6 +30,7 @@ import type { Database } from '$lib/types/database';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
+import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
 import {
 	deleteSeries,
 	duplicateSeries,
@@ -57,19 +58,16 @@ const ANON_KEY =
 const SERVICE_KEY =
 	process.env.SUPABASE_TEST_SERVICE_ROLE_KEY ||
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
-const CATEGORIES = [
-	{
-		category: { theme: 'Calcul ZZ', domain: 'Tables', subdomain: null, level: 3 },
-		quantity: 2,
-		delay: 20
-	}
-];
 
 // Variables
 const service = createClient<Database>(SUPABASE_URL, SERVICE_KEY, {
 	auth: { persistSession: false, autoRefreshToken: false }
 });
 
+/** Modèle publié réel (ADR 0035 : une ligne de série désigne un modèle) */
+let templateId: string;
+/** Composition de la série du décor */
+let ITEMS: Array<{ templateId: string; quantity: number; delay: number }>;
 let teacher: Person;
 /** Membre actif de la classe assignée */
 let student: Person;
@@ -111,7 +109,7 @@ async function studentSession(score: number) {
 		.insert({
 			user_id: student.id,
 			mode: 'course',
-			categories: CATEGORIES,
+			categories: ITEMS,
 			total_questions: 2,
 			score,
 			grade: score * 2,
@@ -132,6 +130,9 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		student = await person('student');
 		outsider = await person('student');
 
+		templateId = await createFakeTemplate(service, teacher.id);
+		ITEMS = [{ templateId, quantity: 2, delay: 20 }];
+
 		const k1 = await TestData.class().withName('6e A code ZZ').create();
 		const k2 = await TestData.class().withName('6e B code ZZ').create();
 		classId = k1.id;
@@ -143,7 +144,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 
 		const { data: series, error: e1 } = await teacher.client
 			.from('series')
-			.insert({ title: 'Tables ZZ', grade: '6', categories: CATEGORIES, created_by: teacher.id })
+			.insert({ title: 'Tables ZZ', grade: '6', categories: ITEMS, created_by: teacher.id })
 			.select('id')
 			.single();
 		expect(e1, 'décor : série').toBeNull();
@@ -184,7 +185,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		expect(found).not.toBeNull();
 		expect(found!.evaluation).toMatchObject({ id: evaluationId, form: 'course', time_limit: 420 });
 		expect(found!.evaluation.series.title).toBe('Tables ZZ');
-		expect(found!.evaluation.series.categories).toEqual(CATEGORIES);
+		expect(found!.evaluation.series.items).toEqual(ITEMS);
 	});
 
 	it('un élève d’une autre classe ne voit rien (null, pas d’erreur)', async () => {
@@ -198,7 +199,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		const updated = await updateSeries(teacher.client, seriesId, {
 			title: 'Tables ZZ',
 			description: 'avant',
-			categories: CATEGORIES
+			items: ITEMS
 		});
 		expect(updated.description).toBe('avant');
 	});
@@ -278,7 +279,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 	it('B16 : au-delà de max_attempts = 1, la deuxième tentative est refusée', async () => {
 		const { data: series } = await teacher.client
 			.from('series')
-			.insert({ title: 'Une fois ZZ', grade: '6', categories: CATEGORIES, created_by: teacher.id })
+			.insert({ title: 'Une fois ZZ', grade: '6', categories: ITEMS, created_by: teacher.id })
 			.select('id')
 			.single();
 		const { data: evaluation } = await teacher.client
@@ -308,7 +309,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		const { error: insertError } = await service.from('test_sessions').insert({
 			user_id: student.id,
 			mode: 'interactive',
-			categories: CATEGORIES,
+			categories: ITEMS,
 			total_questions: 2,
 			score: 5,
 			completed_at: new Date().toISOString(),
@@ -319,5 +320,52 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		// Deuxième : refusée
 		const second = await validateAttempt(student.client, found!.evaluation, student.id);
 		expect(second).toMatchObject({ can_attempt: false, current_attempts: 1 });
+	});
+
+	it('une série enregistrée par catégories (ancienne forme) est relue : l’élève retrouve le modèle publié', async () => {
+		// Le quadruplet du modèle du décor, relu dans la base
+		const { data: tpl, error: tplError } = await service
+			.from('question_templates')
+			.select('theme, domain, subdomain, level')
+			.eq('id', templateId)
+			.single();
+		expect(tplError, 'décor : modèle').toBeNull();
+		const legacy = [
+			{
+				category: {
+					theme: tpl!.theme,
+					domain: tpl!.domain,
+					subdomain: tpl!.subdomain,
+					level: tpl!.level
+				},
+				quantity: 3,
+				delay: 25
+			}
+		];
+		const { data: series, error: e1 } = await teacher.client
+			.from('series')
+			.insert({ title: 'Ancienne ZZ', grade: '6', categories: legacy, created_by: teacher.id })
+			.select('id')
+			.single();
+		expect(e1, 'décor : ancienne série').toBeNull();
+		const { data: evaluation } = await teacher.client
+			.from('evaluations')
+			.insert({
+				series_id: series!.id,
+				form: 'interactive',
+				status: 'published',
+				created_by: teacher.id
+			})
+			.select('id')
+			.single();
+		const { data: assignment, error: e3 } = await teacher.client
+			.from('evaluation_assignments')
+			.insert({ evaluation_id: evaluation!.id, class_id: classId, assigned_by: teacher.id })
+			.select('id')
+			.single();
+		expect(e3, 'décor : assignation').toBeNull();
+
+		const found = await getAssignmentWithEvaluation(student.client, assignment!.id);
+		expect(found!.evaluation.series.items).toEqual([{ templateId, quantity: 3, delay: 25 }]);
 	});
 });

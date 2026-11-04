@@ -74,7 +74,7 @@
 	function newCourseSession(): TestSession {
 		return {
 			mode: 'course',
-			categories: [],
+			items: [],
 			instances: demoInstances(),
 			userAnswers: new Map(),
 			startTime: Date.now(),

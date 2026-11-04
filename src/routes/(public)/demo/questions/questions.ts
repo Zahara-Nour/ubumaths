@@ -95,7 +95,7 @@ export function demoClassroomItems(): ClassroomItem[] {
 	return demoInstances().map((instance) => ({
 		instance,
 		delaySeconds: CLASSROOM_DELAY_SECONDS,
-		categoryKey: instance.templateId
+		templateId: instance.templateId
 	}));
 }
 

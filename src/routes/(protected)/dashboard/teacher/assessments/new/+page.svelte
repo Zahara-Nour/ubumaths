@@ -19,7 +19,7 @@
 	let lastSettings = $state<EvaluationSettingsInput | undefined>(undefined);
 	let isSubmitting = $state(false);
 
-	let questionsCount = $derived(countSeriesQuestions(data.series.categories));
+	let questionsCount = $derived(countSeriesQuestions(data.series.items));
 
 	function handleBack() {
 		goto('/dashboard/teacher/series').then(() => {});

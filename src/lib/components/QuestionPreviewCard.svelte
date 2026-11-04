@@ -26,16 +26,10 @@
 		preview: QuestionInstance;
 	} = $props();
 
-	let category = $derived({
-		theme: template.theme,
-		domain: template.domain,
-		subdomain: template.subdomain || null,
-		level: template.level
-	});
-	let isInCart = $derived(questionCart.hasCategory(category));
+	let isInCart = $derived(questionCart.hasTemplate(template.id));
 
 	function handleAddToCart() {
-		questionCart.addToCart(category, 1);
+		questionCart.addToCart(template.id, 1);
 	}
 </script>
 

@@ -14,7 +14,7 @@ import { resolvedMarkdown } from '$lib/ubumark';
 function session(): TestSession {
 	return {
 		mode: 'course',
-		categories: [],
+		items: [],
 		instances: [],
 		userAnswers: new Map(),
 		startTime: Date.now(),

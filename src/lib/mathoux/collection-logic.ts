@@ -23,7 +23,7 @@
  * la mémoire doit apprendre.
  *
  * « FAIRE GRANDIR » (v1.1, spec de David du 2026-10-18) : chaque Mathou né porte
- * les catégories d'un Entraînement (`trainingCategories`) : les modèles PUBLIÉS qui taguent
+ * les lignes d'un Entraînement (`trainingItems`) : les modèles PUBLIÉS qui taguent
  * les points de sa notion, sur tout le parcours : d'abord les points perdus,
  * puis les non acquis, puis les autres ; au plus 10 questions, une par modèle
  * (`selectTrainingTemplates`). Un Mathou endormi sans carte due
@@ -36,7 +36,11 @@
  */
 
 import { GRADE_CODES, GRADES, isGradeCode } from '$lib/types/grades';
-import { buildSeriesLink, cartItemSchema, type SeriesCategories } from '$lib/validation/series';
+import {
+	buildSeriesLink,
+	MAX_QUESTION_DELAY_SECONDS,
+	type SeriesItem
+} from '$lib/validation/series';
 import { MATHOU_NAMES } from './mathou-noms';
 import type {
 	MathouCollarId,
@@ -100,13 +104,9 @@ export interface WorkablePoint {
 }
 
 /** État d'un point pour l'élève. Absent de la carte = jamais travaillé. */
-/** Catégorie de questions d'une série (thème, domaine, sous-domaine, niveau du modèle). */
-export type TrainingCategory = SeriesCategories[number]['category'];
-
-/** Modèle PUBLIÉ qui tague un point : de quoi en faire une catégorie d'Entraînement. */
+/** Modèle PUBLIÉ qui tague un point : de quoi en faire une ligne d'Entraînement. */
 export interface TrainingTemplate {
 	id: string;
-	category: TrainingCategory;
 	/** Durée par question (secondes), celle du modèle sinon le défaut du panier. */
 	delay: number;
 }
@@ -114,10 +114,6 @@ export interface TrainingTemplate {
 /** Ligne lue d'un modèle (`question_templates`), avant validation. */
 export interface TrainingTemplateRow {
 	id: string;
-	theme: string;
-	domain: string;
-	subdomain: string | null;
-	level: number;
 	delay: number | null;
 	status: string;
 }
@@ -167,11 +163,11 @@ export interface Mathou {
 	 */
 	dueForRevision: boolean;
 	/**
-	 * « Faire grandir » : catégories de l'Entraînement sur la notion (une question
+	 * « Faire grandir » : lignes de l'Entraînement sur la notion (une question
 	 * par modèle), dont `trainingQuery` fait le lien au rendu. `null` pour une
 	 * silhouette ou une notion sans modèle publié.
 	 */
-	trainingCategories: SeriesCategories | null;
+	trainingItems: SeriesItem[] | null;
 	/** Niveaux étoilés (calculés ∪ mémorisés), du plus ancien au plus récent. */
 	stars: string[];
 	/** Décoration de panse portée (lue dans la mémoire), `null` sinon. */
@@ -474,7 +470,7 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 			growth,
 			asleep,
 			dueForRevision: asleep && hasNappingPoint,
-			trainingCategories: trainingCategories(trainingTemplates),
+			trainingItems: trainingItems(trainingTemplates),
 			stars,
 			decoration: remembered?.decoration ?? null,
 			collar: remembered?.collar ?? null,
@@ -528,8 +524,8 @@ export const MAX_TRAINING_QUESTIONS = 10;
 /** Durée par question quand le modèle n'en donne pas (défaut du panier). */
 const DEFAULT_TRAINING_DELAY = 20;
 
-/** Durée la plus longue qu'accepte une série (`cartItemSchema`). */
-const MAX_TRAINING_DELAY = 600;
+/** Durée la plus longue qu'accepte une série (`seriesItemSchema`). */
+const MAX_TRAINING_DELAY = MAX_QUESTION_DELAY_SECONDS;
 
 /** Priorité d'un point : 0 perdu, 1 non acquis (ou jamais travaillé), 2 acquis. */
 function trainingPriority(state: PointProgress | undefined): number {
@@ -538,9 +534,8 @@ function trainingPriority(state: PointProgress | undefined): number {
 }
 
 /**
- * Ligne de modèle → modèle d'Entraînement, ou `null` si elle ne doit pas y
- * entrer : un brouillon (garde en plus du filtre de la requête), ou une
- * catégorie que le lien de série refuserait (mêmes bornes que `cartItemSchema`).
+ * Ligne de modèle → modèle d'Entraînement, ou `null` pour un brouillon (garde
+ * en plus du filtre de la requête). Durée bornée comme dans une série.
  */
 export function trainingTemplateFrom(row: TrainingTemplateRow): TrainingTemplate | null {
 	if (row.status !== 'published') return null;
@@ -548,18 +543,7 @@ export function trainingTemplateFrom(row: TrainingTemplateRow): TrainingTemplate
 		row.delay === null || !Number.isFinite(row.delay) || row.delay < 0
 			? DEFAULT_TRAINING_DELAY
 			: Math.min(MAX_TRAINING_DELAY, Math.round(row.delay));
-	const item = cartItemSchema.safeParse({
-		category: {
-			theme: row.theme,
-			domain: row.domain,
-			subdomain: row.subdomain,
-			level: row.level
-		},
-		quantity: 1,
-		delay
-	});
-	if (!item.success) return null;
-	return { id: row.id, category: item.data.category, delay: item.data.delay };
+	return { id: row.id, delay };
 }
 
 /**
@@ -608,13 +592,13 @@ export function selectTrainingTemplates(
 }
 
 /**
- * Catégories de l'Entraînement : une question par modèle, rien d'autre (ce que
+ * Lignes de l'Entraînement : une question par modèle, rien d'autre (ce que
  * demande `buildSeriesLink`). Aucun modèle → `null` (pas de bouton).
  */
-export function trainingCategories(templates: TrainingTemplate[]): SeriesCategories | null {
+export function trainingItems(templates: TrainingTemplate[]): SeriesItem[] | null {
 	if (templates.length === 0) return null;
 	return templates.map((template) => ({
-		category: template.category,
+		templateId: template.id,
 		quantity: 1,
 		delay: template.delay
 	}));
@@ -624,14 +608,14 @@ export function trainingCategories(templates: TrainingTemplate[]): SeriesCategor
 const TEST_PATH_PREFIX = '/automaths/test?';
 
 /**
- * Paramètres (`categories=…&mode=interactive`) du lien de l'Entraînement, à
+ * Paramètres (`modeles=…&mode=interactive`) du lien de l'Entraînement, à
  * placer après `resolve('/automaths/test')` + `?`. Encodés par
  * `buildSeriesLink` lui-même (relus par `resolveTestLaunch`) : on n'en garde
  * que la partie après `?`. Pas de catégories → `null`.
  */
-export function trainingQuery(categories: SeriesCategories | null): string | null {
-	if (!categories || categories.length === 0) return null;
-	const link = buildSeriesLink('', categories, { mode: 'interactive' });
+export function trainingQuery(items: SeriesItem[] | null): string | null {
+	if (!items || items.length === 0) return null;
+	const link = buildSeriesLink('', items, { mode: 'interactive' });
 	return link.startsWith(TEST_PATH_PREFIX) ? link.slice(TEST_PATH_PREFIX.length) : null;
 }
 

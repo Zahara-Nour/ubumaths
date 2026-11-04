@@ -43,6 +43,8 @@
 
 import type { QuestionTemplate } from '$lib/questions/types';
 import type { CatalogueNode } from '$lib/questions/catalogue';
+import { questionCart } from '$lib/stores/questionCart.svelte';
+import { toaster } from '$lib/stores/toaster.svelte';
 
 /** Liste publique des modèles publiés (gardée 5 min par Vercel) */
 const TEMPLATES_URL = '/api/questions/templates/all';
@@ -175,6 +177,13 @@ class QuestionTemplatesStore {
 
 			this.cache.templates = data.templates ?? [];
 			this.cache.nodes = data.nodes ?? [];
+			// Un panier d'avant l'ADR 0035 attend les modèles pour devenir des lignes
+			const dropped = questionCart.resolveLegacy(this.cache.templates);
+			if (dropped > 0) {
+				toaster.warning(
+					`${dropped} question${dropped > 1 ? 's' : ''} de ton panier n'existe${dropped > 1 ? 'nt' : ''} plus.`
+				);
+			}
 			this.cache.lastFetched = Date.now();
 			// Invalidée pendant la lecture : la liste reçue peut être antérieure
 			if (this.invalidations === invalidationsAtStart) this.stale = false;

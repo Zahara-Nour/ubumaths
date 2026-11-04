@@ -23,7 +23,10 @@ import { called, createFakeSupabase, type Call, type Result } from './helpers/fa
 const TEACHER = '1a2b3c4d-1111-4111-8111-111111111111';
 const SERIES_ID = '2b3c4d5e-2222-4222-8222-222222222222';
 const COPY_ID = '3c4d5e6f-3333-4333-8333-333333333333';
-const ITEM = {
+const TEMPLATE_ID = '4d5e6f70-4444-4444-8444-444444444444';
+const ITEM = { templateId: TEMPLATE_ID, quantity: 4, delay: 20 };
+/** Ancienne ligne (avant l'ADR 0035) : une catégorie, résolue vers son modèle publié */
+const LEGACY_ITEM = {
 	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
 	quantity: 4,
 	delay: 20
@@ -55,7 +58,7 @@ describe('createSeries (B11)', () => {
 
 		const series = await createSeries(
 			fake.client,
-			{ title: 'Tables de 7', grade: '6', description: null, categories: [ITEM] },
+			{ title: 'Tables de 7', grade: '6', description: null, items: [ITEM] },
 			TEACHER
 		);
 
@@ -69,7 +72,7 @@ describe('createSeries (B11)', () => {
 				created_by: TEACHER
 			})
 		).toBe(true);
-		expect(series).toMatchObject({ id: SERIES_ID, categories: [ITEM] });
+		expect(series).toMatchObject({ id: SERIES_ID, items: [ITEM] });
 	});
 
 	it('une panne à l’insertion est une erreur 500, pas un succès', async () => {
@@ -77,7 +80,7 @@ describe('createSeries (B11)', () => {
 		await expect(
 			createSeries(
 				fake.client,
-				{ title: 'T', grade: '6', description: null, categories: [ITEM] },
+				{ title: 'T', grade: '6', description: null, items: [ITEM] },
 				TEACHER
 			)
 		).rejects.toMatchObject({ status: 500 });
@@ -252,11 +255,25 @@ describe('getTeacherSeries (C17)', () => {
 		expect(called(fake.on('test_sessions')[0], 'in', 'evaluation_id', [EVAL_A, EVAL_B])).toBe(true);
 	});
 
-	it('catégories illisibles en base : liste vide, pas de plantage', async () => {
+	it('une série d’ancienne forme (catégories) est relue : ses lignes pointent sur le modèle publié', async () => {
+		const fake = createFakeSupabase((table) => {
+			if (table === 'series') return { data: [seriesRow({ categories: [LEGACY_ITEM] })] };
+			if (table === 'question_templates') {
+				return {
+					data: [{ id: TEMPLATE_ID, theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 }]
+				};
+			}
+			return { data: [] };
+		});
+		const [series] = await getTeacherSeries(fake.client, TEACHER);
+		expect(series.items).toEqual([ITEM]);
+	});
+
+	it('composition illisible en base : liste vide, pas de plantage', async () => {
 		const fake = createFakeSupabase((table) =>
 			table === 'series' ? { data: [seriesRow({ categories: { oups: true } })] } : { data: [] }
 		);
 		const [series] = await getTeacherSeries(fake.client, TEACHER);
-		expect(series.categories).toEqual([]);
+		expect(series.items).toEqual([]);
 	});
 });

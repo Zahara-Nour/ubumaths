@@ -8,6 +8,9 @@ import { createFakeSupabase, type Call } from './helpers/fake-supabase';
 
 const EVALUATION = '55555555-5555-4555-8555-555555555555';
 const LEGACY = '99999999-9999-4999-8999-999999999999';
+const T1 = '77777777-7777-4777-8777-777777777771';
+const T_LOIN = '77777777-7777-4777-8777-777777777772';
+const ITEMS = [{ templateId: T1, quantity: 1, delay: 20 }];
 const CATEGORY = { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 };
 
 function rangeOf(calls: Call[]): [number, number] | null {
@@ -30,13 +33,11 @@ describe('evaluationCurriculumPoints', () => {
 				const or = calls.find((c) => c.method === 'or');
 				const matches = String(or?.args[0]).includes(`legacy_assessment_id.in.(${LEGACY})`);
 				return {
-					data: matches
-						? [{ id: EVALUATION, series: { categories: [{ category: CATEGORY }] } }]
-						: []
+					data: matches ? [{ id: EVALUATION, series: { categories: ITEMS } }] : []
 				};
 			}
 			if (table === 'question_templates') {
-				return { data: rangeOf(calls)?.[0] === 0 ? [{ id: 't1', ...CATEGORY }] : [] };
+				return { data: rangeOf(calls)?.[0] === 0 ? [{ id: T1 }] : [] };
 			}
 			return { data: [programmeTag('p1')] };
 		});
@@ -45,23 +46,31 @@ describe('evaluationCurriculumPoints', () => {
 	});
 
 	it('lit TOUS les modèles, page par page (plafond de PostgREST à 1000)', async () => {
-		const page1 = Array.from({ length: 1000 }, (_, i) => ({
-			id: `autre-${i}`,
-			...CATEGORY,
-			level: 9
-		}));
+		const page1 = Array.from({ length: 1000 }, (_, i) => ({ id: `autre-${i}` }));
 		const fake = createFakeSupabase((table, calls) => {
 			if (table === 'evaluations') {
-				return { data: [{ id: EVALUATION, series: { categories: [{ category: CATEGORY }] } }] };
+				return {
+					data: [
+						{
+							id: EVALUATION,
+							series: {
+								categories: [
+									{ templateId: T1, quantity: 1, delay: 20 },
+									{ templateId: T_LOIN, quantity: 1, delay: 20 }
+								]
+							}
+						}
+					]
+				};
 			}
 			if (table === 'question_templates') {
 				const [from] = rangeOf(calls) ?? [0];
 				if (from === 0) return { data: page1 };
-				if (from === 1000) return { data: [{ id: 't-loin', ...CATEGORY }] };
+				if (from === 1000) return { data: [{ id: T_LOIN }] };
 				return { data: [] };
 			}
 			const ids = calls.find((c) => c.method === 'in')?.args[1] as string[];
-			return { data: ids.includes('t-loin') ? [programmeTag('p-loin')] : [] };
+			return { data: ids.includes(T_LOIN) ? [programmeTag('p-loin')] : [] };
 		});
 
 		expect(await evaluationCurriculumPoints(fake.client as never, [EVALUATION])).toEqual([
@@ -69,20 +78,40 @@ describe('evaluationCurriculumPoints', () => {
 		]);
 	});
 
-	it('niveau comparé comme le SQL (texte) : « 3 » et 3 se correspondent', async () => {
+	it('seuls les modèles lus (publiés) comptent : le modèle de la série est demandé par son id', async () => {
+		const fake = createFakeSupabase((table) => {
+			if (table === 'evaluations') {
+				return { data: [{ id: EVALUATION, series: { categories: ITEMS } }] };
+			}
+			// Modèle repassé en brouillon : la lecture des publiés ne le rend pas
+			if (table === 'question_templates') return { data: [] };
+			throw new Error(`Table inattendue : ${table}`);
+		});
+
+		expect(await evaluationCurriculumPoints(fake.client as never, [EVALUATION])).toEqual([]);
+		const read = fake.on('question_templates')[0].calls;
+		expect(read.find((c) => c.method === 'eq')?.args).toEqual(['status', 'published']);
+		expect(read.find((c) => c.method === 'in')?.args).toEqual(['id', [T1]]);
+	});
+
+	it('ancienne série par catégories (niveau « 3 » en texte) : retrouve son modèle publié', async () => {
 		const fake = createFakeSupabase((table, calls) => {
 			if (table === 'evaluations') {
 				return {
 					data: [
 						{
 							id: EVALUATION,
-							series: { categories: [{ category: { ...CATEGORY, level: '3' } }] }
+							series: {
+								categories: [{ category: { ...CATEGORY, level: '3' }, quantity: 1, delay: 20 }]
+							}
 						}
 					]
 				};
 			}
 			if (table === 'question_templates') {
-				return { data: rangeOf(calls)?.[0] === 0 ? [{ id: 't1', ...CATEGORY }] : [] };
+				// Lecture des anciennes lignes (filtre `or`), puis lecture des modèles publiés
+				if (calls.some((c) => c.method === 'or')) return { data: [{ id: T1, ...CATEGORY }] };
+				return { data: rangeOf(calls)?.[0] === 0 ? [{ id: T1 }] : [] };
 			}
 			return { data: [programmeTag('p1')] };
 		});

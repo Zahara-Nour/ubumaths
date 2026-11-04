@@ -8,7 +8,7 @@ couvre:
   - 'src/lib/components/{test,assessments,series}/**'
   - src/lib/components/teacher/TestModeToggle.svelte
   - src/lib/stores/test-mode.svelte.ts
-  - 'src/lib/server/{evaluations,evaluation-attempts,series,chapter-series,test-mode}.ts'
+  - 'src/lib/server/{evaluations,evaluation-attempts,series,series-lines,chapter-series,test-mode}.ts'
   - 'src/lib/server/validation/{evaluations,tests,parody-evaluations,grades,chapter-series}.ts'
   - 'src/lib/types/{evaluation,evaluation-attempt,test,grades,skills}.ts'
   - 'src/lib/utils/{test-launch,test-score,grades}.ts'
@@ -91,22 +91,34 @@ pas des notes.
 
 ## Les formes d'une série
 
-Une série est tirée **à neuf à chaque usage** : `drawSeriesQuestions` (`src/lib/questions/series-items.ts`)
-prend, pour chaque catégorie et chaque répétition, un modèle publié au hasard dans la catégorie et une
-graine neuve. Une catégorie sans modèle est sautée ; chaque question porte la durée de **sa** catégorie
-(`delay`, 20 s par défaut : `DEFAULT_QUESTION_DELAY_SECONDS`). Bornes de la composition : 1 à 50
-catégories, 99 répétitions, 600 s (`src/lib/validation/series.ts`).
+Une série est une liste de lignes `{ templateId, quantity, delay }` : tel **modèle**, tant de fois,
+tant de secondes ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)). Elle est tirée **à
+neuf à chaque usage** : `drawSeriesQuestions` (`src/lib/questions/series-items.ts`) prend, pour
+chaque ligne et chaque répétition, le modèle de la ligne et une graine neuve. Un modèle retiré (plus
+publié) est sauté, et signalé au prof dans le panier et l'éditeur de série (« Modèle retiré ») ;
+chaque question porte la durée de **sa** ligne (`delay`, 20 s par défaut :
+`DEFAULT_QUESTION_DELAY_SECONDS`). Bornes de la composition : 1 à 50 modèles, 99 répétitions, 600 s
+(`src/lib/validation/series.ts`).
+
+**Ancienne forme** (avant l'ADR 0035) : une ligne désignait une catégorie (thème · domaine ·
+sous-domaine · niveau). Elle reste lisible — séries en base pas encore converties, anciens liens
+`?categories=…` et leurs QR, paniers du navigateur — : chaque catégorie retrouve son modèle publié
+(l'index unique `idx_question_templates_unique_category` en garantit un au plus). Tout passe par
+`src/lib/questions/series-legacy.ts` (navigateur) et `src/lib/server/series-lines.ts` (serveur, une
+requête pour toutes les anciennes lignes, sous la RLS de l'appelant) ; une ancienne ligne sans modèle
+est retirée et comptée (« N questions de ce lien n'existent plus »). La colonne garde son nom
+`series.categories` jusqu'au lot 4 du chantier `automaths-arbre`, qui retirera aussi l'ancienne forme.
 
 | Forme (`TestMode`)            | Composant         | Cartes de cours | Chrono                                                                              | Correction et score                                      | Enregistré                                        |
 | ----------------------------- | ----------------- | --------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------- |
-| En classe (`display`)         | `ClassroomSeries` | oui             | Par question ; ±5 s change toute la catégorie (min. 5 s) ; Espace = pause           | Aucune note ; grilles des questions puis des corrections | **Rien**                                          |
+| En classe (`display`)         | `ClassroomSeries` | oui             | Par question ; ±5 s change tout le modèle (min. 5 s) ; Espace = pause               | Aucune note ; grilles des questions puis des corrections | **Rien**                                          |
 | Flash-cards (`flash`)         | `FlashSeries`     | oui             | Aucun                                                                               | L'élève dit s'il avait trouvé (auto-évaluation)          | `test_sessions` + traces `student_self`, pas d'XP |
 | Entraînement (`interactive`)  | `TestInteractive` | oui, hors score | Par question ; à 0, ce qui est saisi est validé, rien = faux ; pas de chrono global | Navigateur (ADR 0001), score sur 10 (`computeTestScore`) | `test_sessions`, `test_answers`, SRS, XP          |
 | Course aux nombres (`course`) | `TestCourse`      | **non**         | Global, toutes les questions à l'écran ; 1 à 60 min (5 min proposées)               | Navigateur, score sur 10                                 | Comme l'entraînement                              |
 
 Lancement (`resolveTestLaunch`) : `?assignment=<id>` → contrôle (forme et temps viennent du serveur,
-le `mode` de l'URL est ignoré) ; `?categories=…` sans `mode` → le panier ; `?categories=…&mode=…[&time=…]`
-→ démarrage direct. `SeriesLinkShare` fabrique ces liens. Visiteur non connecté : la série se joue,
+le `mode` de l'URL est ignoré) ; `?modeles=…` (ou un ancien `?categories=…`) sans `mode` → le panier ;
+`?modeles=…&mode=…[&time=…]` → démarrage direct. `SeriesLinkShare` fabrique ces liens. Visiteur non connecté : la série se joue,
 rien n'est enregistré.
 
 **Quitter** ([composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)) : pendant la série, l'en-tête porte un lien « Quitter »
@@ -162,7 +174,7 @@ dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'un contrôle co
 
 1. L'assignation est lue **sous RLS** avec le client de l'élève. Destinataire = élève nommé ou membre
    **actif** de la classe (`isAssignmentRecipient`). Sinon : propriétaire ou admin → **aperçu**
-   (catégories renvoyées, le navigateur génère comme une séance libre, rien n'est rattaché) ; autre → 404.
+   (lignes de la série renvoyées, le navigateur génère comme une séance libre, rien n'est rattaché) ; autre → 404.
 2. Contrôle non publié → 404.
 3. **Tentative ouverte** (commencée, non envoyée) → reprise telle quelle, mêmes questions, même ordre,
    sans compter de tentative, **même après la date limite** ; les réponses tapées sont perdues (Q34).

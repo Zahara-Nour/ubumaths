@@ -13,7 +13,7 @@ import {
 } from '../evaluations';
 
 const ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+	templateId: '4d5e6f70-4444-4444-8444-444444444444',
 	quantity: 4,
 	delay: 20
 };
@@ -21,7 +21,7 @@ const SERIES_ID = '5b1f6a2e-3c4d-4e8f-9a0b-1c2d3e4f5a6b';
 const CLASS_ID = '6c2a7b3f-4d5e-4f90-8b1c-2d3e4f5a6b7c';
 
 describe('createSeriesSchema (B11)', () => {
-	const valid = { title: '  Tables de 7  ', grade: '6', categories: [ITEM] };
+	const valid = { title: '  Tables de 7  ', grade: '6', items: [ITEM] };
 
 	it('accepte un panier et nettoie le titre', () => {
 		const result = createSeriesSchema.safeParse(valid);
@@ -40,22 +40,22 @@ describe('createSeriesSchema (B11)', () => {
 		expect(createSeriesSchema.safeParse({ ...valid, title: undefined }).success).toBe(false);
 	});
 
-	it('catégories : 1 à 50, quantités et durées bornées', () => {
-		expect(createSeriesSchema.safeParse({ ...valid, categories: [] }).success).toBe(false);
+	it('modèles : 1 à 50, quantités et durées bornées', () => {
+		expect(createSeriesSchema.safeParse({ ...valid, items: [] }).success).toBe(false);
+		expect(createSeriesSchema.safeParse({ ...valid, items: Array(51).fill(ITEM) }).success).toBe(
+			false
+		);
 		expect(
-			createSeriesSchema.safeParse({ ...valid, categories: Array(51).fill(ITEM) }).success
+			createSeriesSchema.safeParse({ ...valid, items: [{ ...ITEM, quantity: 100 }] }).success
 		).toBe(false);
 		expect(
-			createSeriesSchema.safeParse({ ...valid, categories: [{ ...ITEM, quantity: 100 }] }).success
-		).toBe(false);
-		expect(
-			createSeriesSchema.safeParse({ ...valid, categories: [{ ...ITEM, delay: 4000 }] }).success
+			createSeriesSchema.safeParse({ ...valid, items: [{ ...ITEM, delay: 4000 }] }).success
 		).toBe(false);
 	});
 
-	it('99 questions pour une catégorie (plafond du panier) : enregistrable', () => {
+	it('99 questions pour un modèle (plafond du panier) : enregistrable', () => {
 		expect(
-			createSeriesSchema.safeParse({ ...valid, categories: [{ ...ITEM, quantity: 99 }] }).success
+			createSeriesSchema.safeParse({ ...valid, items: [{ ...ITEM, quantity: 99 }] }).success
 		).toBe(true);
 	});
 
@@ -264,7 +264,7 @@ describe('bornes d’une série enregistrée (alignées sur la base et l’envoi
 		const result = createSeriesSchema.safeParse({
 			title: 'T',
 			grade: '6',
-			categories: [item(1, 601)]
+			items: [item(1, 601)]
 		});
 		expect(result.success).toBe(false);
 		if (!result.success) expect(result.error.issues[0].message).toMatch(/600 s au plus/);
@@ -274,7 +274,7 @@ describe('bornes d’une série enregistrée (alignées sur la base et l’envoi
 		const result = createSeriesSchema.safeParse({
 			title: 'T',
 			grade: '6',
-			categories: Array.from({ length: 6 }, () => item(99))
+			items: Array.from({ length: 6 }, () => item(99))
 		});
 		expect(result.success).toBe(false);
 		if (!result.success) {
@@ -285,7 +285,7 @@ describe('bornes d’une série enregistrée (alignées sur la base et l’envoi
 
 	it('modification : même borne', () => {
 		const result = updateSeriesSchema.safeParse({
-			categories: Array.from({ length: 6 }, () => item(99))
+			items: Array.from({ length: 6 }, () => item(99))
 		});
 		expect(result.success).toBe(false);
 	});
@@ -295,7 +295,7 @@ describe('bornes d’une série enregistrée (alignées sur la base et l’envoi
 			createSeriesSchema.safeParse({
 				title: 'T',
 				grade: '6',
-				categories: [...Array.from({ length: 5 }, () => item(99, 600)), item(5)]
+				items: [...Array.from({ length: 5 }, () => item(99, 600)), item(5)]
 			}).success
 		).toBe(true);
 	});

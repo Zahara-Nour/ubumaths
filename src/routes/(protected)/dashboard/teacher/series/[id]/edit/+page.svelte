@@ -11,7 +11,9 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitAction } from '$lib/utils/form-action';
 	import { getGradeSelectItems } from '$lib/utils/grades';
-	import type { CartItem } from '$lib/stores/questionCart.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
+	import type { SeriesItem } from '$lib/validation/series';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -24,24 +26,31 @@
 	let title = $state(initial.title);
 	let grade = $state(initial.grade);
 	let description = $state(initial.description ?? '');
-	let categories = $state<CartItem[]>(initial.categories.map((item) => ({ ...item })));
+	let items = $state<SeriesItem[]>(initial.items.map((item) => ({ ...item })));
 	let isSaving = $state(false);
 
-	let canSave = $derived(title.trim().length > 0 && categories.length > 0 && !isSaving);
+	// Modèles publiés de la série ; absent = retiré (ADR 0035, Q7)
+	let templateById = $derived(new Map(data.templates.map((template) => [template.id, template])));
 
-	function categoryLabel(item: CartItem): string {
-		const { theme, domain, subdomain, level } = item.category;
-		return [theme, domain, subdomain].filter(Boolean).join(' / ') + ` — niveau ${level}`;
-	}
+	let canSave = $derived(title.trim().length > 0 && items.length > 0 && !isSaving);
+
+	/** Anciennes lignes (catégories) sans modèle : l'enregistrement les retirera */
+	const lostLines = initial.unresolved_lines ?? 0;
+	const lostLinesMessage =
+		lostLines === 0
+			? null
+			: lostLines === 1
+				? "1 ancienne question de cette série n'existe plus : l'enregistrer la retirera."
+				: `${lostLines} anciennes questions de cette série n'existent plus : l'enregistrer les retirera.`;
 
 	function handleQuantity(index: number, delta: number) {
-		const next = categories[index].quantity + delta;
+		const next = items[index].quantity + delta;
 		if (next < 1 || next > 99) return;
-		categories[index].quantity = next;
+		items[index].quantity = next;
 	}
 
 	function handleRemove(index: number) {
-		categories.splice(index, 1);
+		items.splice(index, 1);
 	}
 
 	function handleBack() {
@@ -56,7 +65,7 @@
 			formData.set('title', title.trim());
 			formData.set('grade', grade);
 			formData.set('description', description.trim());
-			formData.set('categories', JSON.stringify(categories));
+			formData.set('items', JSON.stringify(items));
 			const outcome = await submitAction('', formData);
 			if (!outcome.ok) {
 				toaster.error(outcome.message);
@@ -114,13 +123,28 @@
 				<Card.Title>Questions</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				{#if categories.length === 0}
-					<p class="text-sm text-destructive">Une série garde au moins une catégorie.</p>
+				{#if lostLinesMessage}
+					<p class="mb-3 text-sm text-muted-foreground" role="status" data-lignes-perdues>
+						{lostLinesMessage}
+					</p>
+				{/if}
+				{#if items.length === 0}
+					<p class="text-sm text-destructive">Une série garde au moins un modèle.</p>
 				{:else}
 					<ul class="divide-y">
-						{#each categories as item, index (index)}
+						{#each items as item, index (index)}
+							{@const template = templateById.get(item.templateId)}
 							<li class="flex flex-wrap items-center justify-between gap-2 py-2">
-								<span class="text-sm">{categoryLabel(item)}</span>
+								{#if template}
+									<span class="flex items-baseline gap-2 text-sm">
+										<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
+										<span class="text-xs text-muted-foreground">niveau {template.level}</span>
+									</span>
+								{:else}
+									<span class="text-sm text-muted-foreground" data-modele-retire>
+										Modèle retiré : il n'est plus publié et sera sauté.
+									</span>
+								{/if}
 								<div class="flex items-center gap-2">
 									<Button
 										type="button"
@@ -145,7 +169,7 @@
 										type="button"
 										size="icon"
 										variant="ghost"
-										aria-label="Retirer la catégorie"
+										aria-label="Retirer le modèle"
 										onclick={() => handleRemove(index)}
 									>
 										<Trash2 class="h-4 w-4" />

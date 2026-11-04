@@ -28,6 +28,7 @@ import { parseExerciseSelection } from '$lib/resources/exercise-selection';
 import { resolveExercisesAtDisplayNumbers } from '$lib/server/worksheets/display-number';
 import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
 import { keepCheckablePointIds } from '$lib/server/curriculum-point-status';
+import { readStoredSeriesMany } from '$lib/server/series-lines';
 
 type Sb = App.Locals['supabase'];
 
@@ -94,44 +95,9 @@ async function templatePointIds(
 /** Taille d'une page de `question_templates` (plafond de PostgREST) */
 const TEMPLATES_PAGE_SIZE = 1000;
 
-/** Catégorie d'une série, telle que la couverture la compare aux modèles */
-interface SeriesCategoryRef {
-	theme: string;
-	domain: string;
-	subdomain: string | null;
-	/** En texte, comme la fonction SQL remplacée (`t.level::text = … ->> 'level'`) */
-	level: string;
-}
-
-function readCategories(raw: unknown): SeriesCategoryRef[] {
-	if (!Array.isArray(raw)) return [];
-	const categories: SeriesCategoryRef[] = [];
-	for (const item of raw) {
-		const category = (item as { category?: unknown } | null)?.category as
-			Partial<SeriesCategoryRef> | undefined;
-		// Une catégorie mal formée est ignorée, pas fatale (même règle que l'ancienne
-		// fonction SQL, qui comparait en texte pour ne pas échouer en entier).
-		if (
-			!category ||
-			typeof category.theme !== 'string' ||
-			typeof category.domain !== 'string' ||
-			(typeof category.level !== 'number' && typeof category.level !== 'string')
-		) {
-			continue;
-		}
-		categories.push({
-			theme: category.theme,
-			domain: category.domain,
-			subdomain: typeof category.subdomain === 'string' ? category.subdomain : null,
-			level: String(category.level)
-		});
-	}
-	return categories;
-}
-
 /**
- * Points du programme couverts par des évaluations : les modèles PUBLIÉS que
- * désignent les catégories de leur série, puis leurs points.
+ * Points du programme couverts par des évaluations : les modèles PUBLIÉS de
+ * leur série, puis leurs points.
  *
  * Remplace la fonction SQL `assessment_curriculum_points` (qui lisait
  * `assessments`) : le calcul se fait ici, sur des tables lisibles par le prof.
@@ -154,43 +120,34 @@ export async function evaluationCurriculumPoints(
 		.or(`id.in.(${list}),legacy_assessment_id.in.(${list})`);
 	if (evalErr) throw new Error(`reconcileAutoCoverage evaluations: ${evalErr.message}`);
 
-	const categories = (evaluations ?? []).flatMap((e) => readCategories(e.series?.categories));
-	if (categories.length === 0) return [];
+	// Compositions relues comme partout (anciennes lignes résolues, ADR 0035) ;
+	// une composition illisible est ignorée, pas fatale
+	const read = await readStoredSeriesMany(
+		supabase,
+		(evaluations ?? []).flatMap((e) =>
+			e.series ? [{ id: e.id, categories: e.series.categories }] : []
+		)
+	);
+	const templateIds = [
+		...new Set([...read.values()].flatMap((r) => r.items.map((i) => i.templateId)))
+	];
+	if (templateIds.length === 0) return [];
 
-	// Paginé : PostgREST plafonne une lecture à 1000 lignes, et une page tronquée
-	// ferait disparaître des points en silence.
-	const themes = [...new Set(categories.map((c) => c.theme))];
-	const domains = [...new Set(categories.map((c) => c.domain))];
-	const templates: {
-		id: string;
-		theme: string;
-		domain: string;
-		subdomain: string | null;
-		level: number;
-	}[] = [];
+	// Seuls les modèles PUBLIÉS comptent ; paginé : PostgREST plafonne une lecture
+	// à 1000 lignes, et une page tronquée ferait disparaître des points en silence.
+	const matching: { id: string }[] = [];
 	for (let from = 0; ; from += TEMPLATES_PAGE_SIZE) {
 		const { data: page, error: tplErr } = await supabase
 			.from('question_templates')
-			.select('id, theme, domain, subdomain, level')
+			.select('id')
 			.eq('status', 'published')
-			.in('theme', themes)
-			.in('domain', domains)
+			.in('id', templateIds)
 			.order('id', { ascending: true })
 			.range(from, from + TEMPLATES_PAGE_SIZE - 1);
 		if (tplErr) throw new Error(`reconcileAutoCoverage evaluation templates: ${tplErr.message}`);
-		templates.push(...(page ?? []));
+		matching.push(...(page ?? []));
 		if (!page || page.length < TEMPLATES_PAGE_SIZE) break;
 	}
-
-	const matching = templates.filter((t) =>
-		categories.some(
-			(c) =>
-				c.theme === t.theme &&
-				c.domain === t.domain &&
-				(c.subdomain ?? '') === (t.subdomain ?? '') &&
-				c.level === String(t.level)
-		)
-	);
 	if (matching.length === 0) return [];
 
 	return templatePointIds(

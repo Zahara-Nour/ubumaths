@@ -23,10 +23,10 @@ vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
 
 import Page from '../+page.svelte';
 import type { SeriesWithUsage } from '$lib/types/evaluation';
-import { parseCategoriesParam } from '$lib/validation/series';
+import { parseSeriesLink } from '$lib/questions/series-legacy';
 
 const ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+	templateId: '11111111-1111-4111-8111-111111111111',
 	quantity: 4,
 	delay: 20
 };
@@ -37,7 +37,7 @@ function series(overrides: Partial<SeriesWithUsage>): SeriesWithUsage {
 		title: 'Tables de 7',
 		description: null,
 		grade: '6',
-		categories: [ITEM],
+		items: [ITEM],
 		created_by: 'prof',
 		created_at: '2026-09-30T10:00:00Z',
 		updated_at: '2026-09-30T10:00:00Z',
@@ -107,10 +107,8 @@ describe('Page Séries — lien de série (Q44, Q46)', () => {
 		await vi.waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
 		const link = new URL(writeText.mock.calls[0][0] as string);
 		expect(link.pathname).toBe('/automaths/panier');
-		expect(parseCategoriesParam(link.searchParams.get('categories'))).toEqual({
-			success: true,
-			data: [ITEM]
-		});
+		expect(link.searchParams.has('categories')).toBe(false);
+		expect(parseSeriesLink(link.searchParams)).toEqual({ success: true, lines: [ITEM] });
 		expect(toaster.success).toHaveBeenCalledWith('Lien copié');
 	});
 

@@ -8,18 +8,15 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import QuestionPreviewCard from '../QuestionPreviewCard.svelte';
-import { previewCartItem } from '$lib/questions/cart-preview';
+import { PREVIEW_SEED } from '$lib/questions/cart-preview';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionTemplate } from '$lib/questions/types';
 // Modèle réel relu (Entiers #139) : « Le double de … est … », avec un trou
 import fixture from '../../../../data/relecture/entiers/139.json';
 
 const TEMPLATE = { ...(fixture.template as unknown as QuestionTemplate), id: 'modele-139' };
-const { instance } = previewCartItem([TEMPLATE], {
-	theme: TEMPLATE.theme,
-	domain: TEMPLATE.domain,
-	subdomain: TEMPLATE.subdomain ?? null,
-	level: TEMPLATE.level
-});
+const generated = generateInstance(TEMPLATE, PREVIEW_SEED);
+const instance = generated.success ? generated.instance : undefined;
 
 async function renderTile() {
 	expect(instance).toBeDefined();

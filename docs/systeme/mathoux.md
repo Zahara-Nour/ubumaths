@@ -65,21 +65,21 @@ Points travaillables par niveau en prod (2026-10-18, modèles publiés / tous le
   nouvellement tagué le fait baisser sans oubli). Une silhouette ne dort jamais : elle n'est pas
   encore un Mathou. Le Mathou n'est jamais perdu ; une révision le réveille. `Mathou.dueForRevision`
   dit si une carte due est en cause (sinon, seul un point perdu l'endort).
-- **Faire grandir** (v1.1, spec de David du 2026-10-18) : chaque Mathou **né** porte les catégories d'un
-  **Entraînement** sur sa notion (`Mathou.trainingCategories`) ; la page en fait le lien au rendu
+- **Faire grandir** (v1.1, spec de David du 2026-10-18) : chaque Mathou **né** porte les lignes d'un
+  **Entraînement** sur sa notion (`Mathou.trainingItems`, `{ templateId, quantity: 1, delay }`) ; la page en fait le lien au rendu
   (`resolve('/automaths/test')` + `?` + `trainingQuery`, encodé par `buildSeriesLink`, relu par
   `resolveTestLaunch` ; mode interactif). Il est fait des modèles **publiés**
   qui taguent les points de la notion, sur tout le parcours (`selectTrainingTemplates`) : d'abord
   ceux des points **perdus**, puis des points **non acquis** (jamais travaillés compris), puis des
   autres ; **au plus 10**, **une question par modèle** (un modèle qui tague plusieurs points vient
   une fois, au rang du plus prioritaire). À priorité égale, les points sont servis tour à tour
-  (ordre du parcours, puis id), les modèles d'un point par id. Un modèle dont la catégorie
-  dépasserait les bornes d'un lien de série (`cartItemSchema`) est écarté
-  (`trainingTemplateFrom`) ; durée = celle du modèle, 20 s sinon, 600 s au plus. Silhouette, ou
+  (ordre du parcours, puis id), les modèles d'un point par id. `trainingTemplateFrom` écarte un
+  brouillon ; durée = celle du modèle, 20 s sinon, 600 s au plus. Silhouette, ou
   notion sans modèle publié : `null`, pas de bouton. Avec 10 modèles aux noms longs et accentués, le
   lien fait environ 4 Ko (test : moins de 6 000 caractères) ; c'est pourquoi les données de la page
-  portent les catégories (≈ 1,5 Ko par Mathou) et non le lien : pour 40 Mathoux de 10 modèles,
-  172 Ko de données avec les liens, 80 Ko avec les catégories (mesuré le 2026-10-18).
+  portent les lignes et non le lien : pour 40 Mathoux de 10 modèles, 172 Ko de données avec les
+  liens, 80 Ko avec les anciennes catégories (mesuré le 2026-10-18, avant l'ADR 0035 : une ligne
+  par identifiant est plus courte encore).
 - **Nom** (`mathouName`) : d'abord le **nom propre** de la notion (`mathou-noms.ts`, 134 noms,
   clé = nom de la notion comme dans la migration de seed, car les identifiants diffèrent entre la
   base locale et la prod) : « Tangentin » pour « Dérivation ». Relus en partie par David le
@@ -208,7 +208,7 @@ Cinq allers-retours (six s'il y a du nouveau à retenir) :
    alors que le parcours entier d'une Terminale dépasserait le plafond de 1 000 lignes de
    PostgREST) ;
 3. en parallèle : les tags par un modèle publié (lots de 100 points, chaque lot lu par pages de
-   1 000 lignes avec `.range()` ; la jointure rapporte aussi la catégorie et la durée du modèle,
+   1 000 lignes avec `.range()` ; la jointure rapporte aussi le statut et la durée du modèle,
    d'où « Faire grandir » sans requête de plus), l'arbre (branches et notions, environ 160 lignes) et les
    sous-notions référencées (lots de 100 nœuds) ;
 4. sur les seuls points **travaillables** : les états de l'élève, et les tags de

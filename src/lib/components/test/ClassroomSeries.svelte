@@ -6,9 +6,9 @@
 
 	- Une question par diapositive (UbuSlides), carte en lecture seule, sans
 	  retournement : la réponse n'est pas montrée à la classe.
-	- Minuteur par question = durée de sa catégorie ; à 0, question suivante.
-	- ±5 s : change la durée de la catégorie de la question courante (elle et les
-	  suivantes de la même catégorie), minimum 5 s, sans remise à zéro du compte.
+	- Minuteur par question = durée de sa ligne de série ; à 0, question suivante.
+	- ±5 s : change la durée du modèle de la question courante (elle et les
+	  suivantes du même modèle), minimum 5 s, sans remise à zéro du compte.
 	- Espace = pause / reprise (au lieu de « suivante » dans UbuSlides).
 	- Fin : grille des questions, puis grille des corrections (aller-retour).
 -->
@@ -60,14 +60,14 @@
 	let phase = $state<Phase>('slides');
 	// Incrémenté à chaque « Recommencer » : remonte le Deck (minuteurs à neuf)
 	let run = $state(0);
-	// Durées ajustées par catégorie (s) ; absente = durée de l'item
-	let categoryDelays = $state<Record<string, number>>({});
+	// Durées ajustées par modèle (s) ; absente = durée de l'item
+	let templateDelays = $state<Record<string, number>>({});
 	// Contexte du Deck monté, pour la touche Espace (hors du snippet overlay)
 	let deckContext: DeckContext | undefined;
 
 	// Functions
 	function delayOf(item: ClassroomItem): number {
-		return categoryDelays[item.categoryKey] ?? item.delaySeconds;
+		return templateDelays[item.templateId] ?? item.delaySeconds;
 	}
 
 	function currentItem(deck: DeckContext): ClassroomItem | undefined {
@@ -77,7 +77,7 @@
 	function adjustCategoryDelay(deck: DeckContext, delta: number) {
 		const item = currentItem(deck);
 		if (!item) return;
-		categoryDelays[item.categoryKey] = Math.max(MIN_DELAY_SECONDS, delayOf(item) + delta);
+		templateDelays[item.templateId] = Math.max(MIN_DELAY_SECONDS, delayOf(item) + delta);
 	}
 
 	function remainingSeconds(deck: DeckContext): number {
@@ -194,7 +194,7 @@
 									<span
 										class="min-w-12 text-center text-sm font-medium text-muted-foreground tabular-nums"
 										data-testid="classroom-duration"
-										title="Durée des questions de cette catégorie"
+										title="Durée des questions de ce modèle"
 									>
 										{item ? delayOf(item) : 0} s
 									</span>

@@ -23,22 +23,22 @@ const ASSIGNMENT = '9c0d1e2f-9999-4999-8999-999999999999';
 const CLASS_ID = 'a0b1c2d3-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const SERIES_ID = '2b3c4d5e-2222-4222-8222-222222222222';
 
-const ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
-	quantity: 4,
-	delay: 20
-};
+const TEMPLATE_ID = '4d5e6f70-4444-4444-8444-444444444444';
+const ITEM = { templateId: TEMPLATE_ID, quantity: 4, delay: 20 };
 
 const SERIES: DbSeries = {
 	id: SERIES_ID,
 	title: 'Tables de 7',
 	description: null,
 	grade: '6',
-	categories: [ITEM],
+	items: [ITEM],
 	created_by: TEACHER,
 	created_at: '2026-09-30T10:00:00Z',
 	updated_at: '2026-09-30T10:00:00Z'
 };
+
+const { items: _items, ...SERIES_WITHOUT_ITEMS } = SERIES;
+const SERIES_ROW = { ...SERIES_WITHOUT_ITEMS, categories: SERIES.items };
 
 function evaluationRow(overrides: Record<string, unknown> = {}) {
 	return {
@@ -55,7 +55,8 @@ function evaluationRow(overrides: Record<string, unknown> = {}) {
 		created_at: '2026-09-30T10:00:00Z',
 		updated_at: '2026-09-30T10:00:00Z',
 		legacy_assessment_id: null,
-		series: { ...SERIES },
+		// Ligne `series` telle que la base la rend : la composition est la colonne `categories`
+		series: { ...SERIES_ROW },
 		...overrides
 	};
 }
@@ -137,7 +138,7 @@ describe('createEvaluation (B13)', () => {
 	it('écrit forme et temps limite (secondes) de la Course aux nombres', async () => {
 		const fake = createFakeSupabase((table) =>
 			table === 'series'
-				? { data: { categories: SERIES.categories } }
+				? { data: { categories: SERIES.items } }
 				: { data: evaluationRow({ series: undefined }) }
 		);
 		await createEvaluation(
@@ -167,7 +168,7 @@ describe('createEvaluation (B13)', () => {
 
 	it('série de plus de 500 questions : 400 avec message clair, rien d’inséré', async () => {
 		const big = Array.from({ length: 6 }, () => ({
-			category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+			templateId: TEMPLATE_ID,
 			quantity: 99,
 			delay: 20
 		}));
@@ -197,7 +198,7 @@ describe('createEvaluation (B13)', () => {
 	it('contrainte forme/temps violée (23514) : 400', async () => {
 		const fake = createFakeSupabase((table) =>
 			table === 'series'
-				? { data: { categories: SERIES.categories } }
+				? { data: { categories: SERIES.items } }
 				: { error: { code: '23514', message: 'check' } }
 		);
 		await expect(
@@ -264,6 +265,7 @@ describe('getStudentAssignments', () => {
 		});
 		expect(assignment.evaluation).toMatchObject({ form: 'course', time_limit: 420 });
 		expect(assignment.evaluation.series.title).toBe('Tables de 7');
+		expect(assignment.evaluation.series.items).toEqual([ITEM]);
 		expect(called(fake.on('test_sessions')[0], 'in', 'evaluation_id', [EVALUATION])).toBe(true);
 	});
 

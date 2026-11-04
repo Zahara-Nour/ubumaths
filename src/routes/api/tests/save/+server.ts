@@ -20,7 +20,7 @@ const logger = createServerLogger('api/tests/save/+server');
  * API route to save test results to database
  * POST /api/tests/save
  *
- * Body: TestResult + categories
+ * Body: TestResult + items (composition jouée)
  * Returns: { sessionId: string }
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -37,7 +37,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
-		const { result, categories, assignmentId } = validation.data;
+		const { result, assignmentId } = validation.data;
+		const playedSeries = validation.data.items ?? validation.data.categories;
 		// Forme « Flash-cards » (2026-09-30) : chaque réponse est une
 		// auto-évaluation de l'élève (« J'avais trouvé » / « Je n'avais pas
 		// trouvé ») — tentatives `student_self`, pas d'XP.
@@ -96,11 +97,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.insert({
 				user_id: user.id,
 				mode: result.mode,
-				categories: categories,
+				categories: toJson(playedSeries ?? []),
 				score: sessionScore.score,
 				total_questions: sessionScore.gradedQuestions,
 				time_spent: result.timeSpent,
-				time_limit: null, // Will be set from categories if needed
+				time_limit: null,
 				completed_at: result.completedAt,
 				evaluation_id: null
 			})

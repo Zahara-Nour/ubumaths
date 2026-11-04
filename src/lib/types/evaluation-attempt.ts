@@ -4,7 +4,7 @@
  * questions publiques ; la correction complète n'arrive qu'avec la note.
  */
 
-import type { CartItem } from '$lib/stores/questionCart.svelte';
+import type { SeriesItem } from '$lib/validation/series';
 import type { PublicQuestion } from '$lib/questions/public-question';
 import type { QuestionPoints } from '$lib/questions/grading';
 import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
@@ -19,7 +19,7 @@ export interface EvaluationStartSummary {
 
 /** Réponse de `POST /api/evaluations/assignments/[id]/start` */
 export type EvaluationStartResponse =
-	| { preview: true; evaluation: EvaluationStartSummary & { categories: CartItem[] } }
+	| { preview: true; evaluation: EvaluationStartSummary & { items: SeriesItem[] } }
 	| {
 			preview: false;
 			evaluation: EvaluationStartSummary;

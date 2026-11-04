@@ -201,8 +201,8 @@ cartes) ; chaque élève y résout sa copie par `source_deck_id`.
 ### Paquet d'un chapitre (questions de cours)
 
 Calculé à chaque appel (`loadChapterDeck`), pas de copie par élève (Q112) : chapitres visibles
-de l'élève → séries publiées → catégories → modèles publiés (même résolution que les séries,
-`templatesOfCategory`). Séance = toutes les questions dues + au plus 10 jamais vues (Q166).
+de l'élève → séries publiées → leurs modèles, s'ils sont publiés (composition relue par
+`readStoredSeriesMany`, anciennes lignes comprises, ADR 0035). Séance = toutes les questions dues + au plus 10 jamais vues (Q166).
 Toutes les lectures passent par le client de l'élève, sous RLS, et reposent aussi les filtres
 dans la requête.
 

@@ -272,20 +272,15 @@ describe('loadMathouCollection', () => {
 	});
 
 	it('« Faire grandir » : les modèles viennent de la MÊME lecture des tags (aucune requête en plus)', async () => {
-		const tpl = (id: string, domain: string) => ({
-			status: 'published',
-			theme: 'Nombres',
-			domain,
-			subdomain: null,
-			level: 1,
-			delay: null
-		});
+		const ACQUIS = '00000000-0000-4000-8000-0000000000a1';
+		const NON_ACQUIS = '00000000-0000-4000-8000-0000000000a2';
+		const tpl = () => ({ status: 'published', delay: null });
 		const { supabase, queries } = buildMock(
 			nominalHandlers({
 				question_template_points: () =>
 					ok([
-						{ point_id: 'p1', template_id: 't1', question_templates: tpl('t1', 'Acquis') },
-						{ point_id: 'p2', template_id: 't2', question_templates: tpl('t2', 'Non acquis') }
+						{ point_id: 'p1', template_id: ACQUIS, question_templates: tpl() },
+						{ point_id: 'p2', template_id: NON_ACQUIS, question_templates: tpl() }
 					])
 			})
 		);
@@ -293,25 +288,26 @@ describe('loadMathouCollection', () => {
 		const select = queries
 			.find((q) => q.table === 'question_template_points')
 			?.calls.find(([m]) => m === 'select')?.[1];
-		expect(select).toMatch(
-			/question_templates!inner\(status, theme, domain, subdomain, level, delay\)/
-		);
+		expect(select).toMatch(/question_templates!inner\(status, delay\)/);
 		expect(queries.filter((q) => q.table === 'question_template_points')).toHaveLength(1);
 
 		const [mathou] = collection.races[0].mathoux;
 		const launch = resolveTestLaunch(
-			new URLSearchParams(trainingQuery(mathou.trainingCategories) ?? '')
+			new URLSearchParams(trainingQuery(mathou.trainingItems) ?? '')
 		);
 		expect(launch.kind).toBe('start');
 		if (launch.kind !== 'start') return;
 		// p2 (non acquis) avant p1 (acquis)
-		expect(launch.categories.map((c) => c.category.domain)).toEqual(['Non acquis', 'Acquis']);
+		expect(launch.lines).toEqual([
+			{ templateId: NON_ACQUIS, quantity: 1, delay: 20 },
+			{ templateId: ACQUIS, quantity: 1, delay: 20 }
+		]);
 	});
 
 	it('une ligne de tag sans modèle lisible ne casse rien : pas de lien « Faire grandir »', async () => {
 		const { supabase } = buildMock(nominalHandlers());
 		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
-		expect(collection.races[0].mathoux[0].trainingCategories).toBeNull();
+		expect(collection.races[0].mathoux[0].trainingItems).toBeNull();
 	});
 
 	it('les états ne sont lus que pour les points travaillables', async () => {

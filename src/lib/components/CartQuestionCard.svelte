@@ -1,10 +1,11 @@
 <script lang="ts">
 	/**
-	 * Tuile d'une catégorie du panier (panier Automaths, création d'évaluation)
+	 * Tuile d'un modèle du panier Automaths
 	 *
 	 * Décision de David (2026-09-29) : la tuile EST la flash-card de la question
-	 * (non interactive, avec son bouton de retournement), sous l'intitulé
-	 * « Thème / Domaine ». En dessous : la durée et le nombre de répétitions,
+	 * (non interactive, avec son bouton de retournement), sous le titre du
+	 * modèle. Modèle retiré (plus publié, ADR 0035 Q7) : la tuile le dit et
+	 * propose de le retirer du panier. En dessous : la durée et le nombre de répétitions,
 	 * toujours visibles ; leurs boutons − / + n'apparaissent qu'au survol (ou au
 	 * focus clavier, ou toujours sur écran tactile). Un clic sur la tuile ne fait
 	 * rien : tout est déjà dans la flash-card.
@@ -13,8 +14,10 @@
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
 	import { Clock, Minus, Plus, Repeat } from '@lucide/svelte';
-	import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
-	import type { QuestionInstance } from '$lib/questions/types';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
+	import type { SeriesItem } from '$lib/validation/series';
+	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 
 	// Bornes et pas de la durée (secondes)
 	const DELAY_STEP = 5;
@@ -28,38 +31,58 @@
 
 	let {
 		item,
+		template,
 		instance,
 		onIncrementQuantity,
 		onDecrementQuantity,
-		onUpdateDelay
+		onUpdateDelay,
+		onRemove
 	}: {
-		item: CartItem;
+		item: SeriesItem;
+		/** Absent : le modèle n'est plus publié */
+		template?: QuestionTemplate;
 		instance?: QuestionInstance;
-		onIncrementQuantity: (category: QuestionCategory) => void;
-		onDecrementQuantity: (category: QuestionCategory) => void;
-		onUpdateDelay: (category: QuestionCategory, delay: number) => void;
+		onIncrementQuantity: (templateId: string) => void;
+		onDecrementQuantity: (templateId: string) => void;
+		onUpdateDelay: (templateId: string, delay: number) => void;
+		onRemove: (templateId: string) => void;
 	} = $props();
 
 	function handleIncrementDelay() {
 		const newDelay = item.delay + DELAY_STEP;
-		if (newDelay <= DELAY_MAX) onUpdateDelay(item.category, newDelay);
+		if (newDelay <= DELAY_MAX) onUpdateDelay(item.templateId, newDelay);
 	}
 
 	function handleDecrementDelay() {
 		const newDelay = item.delay - DELAY_STEP;
-		if (newDelay >= DELAY_MIN) onUpdateDelay(item.category, newDelay);
+		if (newDelay >= DELAY_MIN) onUpdateDelay(item.templateId, newDelay);
 	}
 </script>
 
 <div class="group flex flex-col gap-3">
-	<!-- Intitulé -->
-	<p class="text-sm font-medium">
-		{item.category.theme}
-		<span class="text-muted-foreground"> / {item.category.domain}</span>
-	</p>
+	<!-- Intitulé : titre et niveau du modèle -->
+	{#if template}
+		<div class="flex items-start justify-between gap-2 text-sm font-medium">
+			<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
+			<span class="shrink-0 text-xs text-muted-foreground" title="Niveau">{template.level}</span>
+		</div>
+	{:else}
+		<p class="text-sm font-medium text-muted-foreground">Modèle retiré</p>
+	{/if}
 
 	<!-- La flash-card elle-même -->
-	{#if instance}
+	{#if !template}
+		<div
+			class="flex flex-col items-center gap-3 rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground"
+			role="status"
+			data-modele-retire
+		>
+			Ce modèle n'est plus publié : il sera sauté.
+			<Button size="sm" variant="outline" onclick={() => onRemove(item.templateId)}>
+				Retirer du panier
+			</Button>
+		</div>
+	{:else if instance}
 		<FlashCard {instance} interactive={false} size="sm" height={TILE_CARD_HEIGHT} />
 	{:else}
 		<div
@@ -106,7 +129,7 @@
 				size="icon"
 				variant="ghost"
 				class="h-6 w-6 text-primary-foreground hover:bg-primary-foreground/20 {revealOnHover}"
-				onclick={() => onDecrementQuantity(item.category)}
+				onclick={() => onDecrementQuantity(item.templateId)}
 				aria-label="Diminuer le nombre de répétitions"
 			>
 				<Minus class="h-3 w-3" />
@@ -122,7 +145,7 @@
 				size="icon"
 				variant="ghost"
 				class="h-6 w-6 text-primary-foreground hover:bg-primary-foreground/20 {revealOnHover}"
-				onclick={() => onIncrementQuantity(item.category)}
+				onclick={() => onIncrementQuantity(item.templateId)}
 				disabled={item.quantity >= QUANTITY_MAX}
 				aria-label="Augmenter le nombre de répétitions"
 			>
