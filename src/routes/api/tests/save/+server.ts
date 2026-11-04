@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.insert({
 				user_id: user.id,
 				mode: result.mode,
-				categories: toJson(playedSeries),
+				items: toJson(playedSeries),
 				score: sessionScore.score,
 				total_questions: sessionScore.gradedQuestions,
 				time_spent: result.timeSpent,

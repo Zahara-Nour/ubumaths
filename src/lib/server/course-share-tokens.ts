@@ -111,7 +111,7 @@ const publicSeriesSchema = z.object({
 	description: z.string().nullable(),
 	// Relue plus loin (`resolveCourseShareToken`), série par série : une
 	// composition abîmée ne doit pas rendre tout le cours illisible.
-	categories: z.unknown(),
+	items: z.unknown(),
 	form: z.enum(['flash', 'interactive']),
 	...placement
 });
@@ -243,8 +243,8 @@ export function safeExternalUrl(raw: string | null): string | null {
 }
 
 function toPublicSeries(s: PublicCourseChapter['series'][number]): PublicCourseSeries {
-	// `categories` a été relue dans la nouvelle forme par `resolveCourseShareToken`
-	const items = seriesItemsSchema.safeParse(s.categories);
+	// `items` a été relue dans la nouvelle forme par `resolveCourseShareToken`
+	const items = seriesItemsSchema.safeParse(s.items);
 	const lisible = items.success ? items.data : null;
 	return {
 		title: s.title,
@@ -478,8 +478,8 @@ export async function resolveCourseShareToken(
 	// Compositions relues dans la nouvelle forme (ADR 0035) ; une composition
 	// illisible laisse la série sans lien, pas le cours illisible
 	const allSeries = parsed.data.chapters.flatMap((chapter) => chapter.series);
-	const read = readStoredSeriesMany(allSeries.map((s) => ({ id: s.id, categories: s.categories })));
-	for (const s of allSeries) s.categories = read.get(s.id) ?? null;
+	const read = readStoredSeriesMany(allSeries.map((s) => ({ id: s.id, items: s.items })));
+	for (const s of allSeries) s.items = read.get(s.id) ?? null;
 	return parsed.data;
 }
 

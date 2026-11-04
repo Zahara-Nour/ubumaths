@@ -128,7 +128,7 @@ describe('evaluationCurriculumPoints — niveau de la classe', () => {
 						{
 							id: EVALUATION,
 							series: {
-								categories: [
+								items: [
 									{ templateId: T_PARTAGEE, quantity: 1, delay: 20 },
 									{ templateId: T_SEULE, quantity: 1, delay: 20 }
 								]

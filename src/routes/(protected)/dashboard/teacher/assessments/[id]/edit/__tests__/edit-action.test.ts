@@ -28,7 +28,7 @@ function evaluationRow(status: string) {
 			title: 'Tables',
 			description: null,
 			grade: '6',
-			categories: [],
+			items: [],
 			created_by: TEACHER,
 			created_at: '2026-09-30T10:00:00Z',
 			updated_at: '2026-09-30T10:00:00Z'

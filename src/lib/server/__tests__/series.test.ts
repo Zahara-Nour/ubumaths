@@ -34,7 +34,7 @@ function seriesRow(overrides: Record<string, unknown> = {}) {
 		title: 'Tables de 7',
 		description: null,
 		grade: '6',
-		categories: [ITEM],
+		items: [ITEM],
 		created_by: TEACHER,
 		created_at: '2026-09-30T10:00:00Z',
 		updated_at: '2026-09-30T10:00:00Z',
@@ -64,7 +64,7 @@ describe('createSeries (B11)', () => {
 				title: 'Tables de 7',
 				grade: '6',
 				description: null,
-				categories: [ITEM],
+				items: [ITEM],
 				created_by: TEACHER
 			})
 		).toBe(true);
@@ -100,7 +100,7 @@ describe('duplicateSeries (B12)', () => {
 		>;
 		expect(payload).toMatchObject({
 			title: 'Copie de Tables de 7',
-			categories: [ITEM],
+			items: [ITEM],
 			created_by: TEACHER
 		});
 		// Nouvelle ligne : jamais rattachée à une évaluation, donc jamais verrouillée
@@ -253,7 +253,7 @@ describe('getTeacherSeries (C17)', () => {
 
 	it('une série d’ancienne forme (catégories) n’est plus relue : liste vide, pas de plantage', async () => {
 		const fake = createFakeSupabase((table) =>
-			table === 'series' ? { data: [seriesRow({ categories: [LEGACY_ITEM] })] } : { data: [] }
+			table === 'series' ? { data: [seriesRow({ items: [LEGACY_ITEM] })] } : { data: [] }
 		);
 		const [series] = await getTeacherSeries(fake.client, TEACHER);
 		expect(series.items).toEqual([]);
@@ -261,7 +261,7 @@ describe('getTeacherSeries (C17)', () => {
 
 	it('composition illisible en base : liste vide, pas de plantage', async () => {
 		const fake = createFakeSupabase((table) =>
-			table === 'series' ? { data: [seriesRow({ categories: { oups: true } })] } : { data: [] }
+			table === 'series' ? { data: [seriesRow({ items: { oups: true } })] } : { data: [] }
 		);
 		const [series] = await getTeacherSeries(fake.client, TEACHER);
 		expect(series.items).toEqual([]);

@@ -453,7 +453,7 @@ export async function startEvaluationAttempt(
 			user_id: userId,
 			evaluation_id: evaluation.id,
 			mode: evaluation.form,
-			categories: toJson(items),
+			items: toJson(items),
 			total_questions: generated.length,
 			time_limit: evaluation.form === 'course' ? evaluation.time_limit : null,
 			completed_at: null

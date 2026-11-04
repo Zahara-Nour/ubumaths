@@ -128,7 +128,7 @@ export async function listChapterSeries(
 	const seriesIds = [...new Set(links.map((l) => l.series_id))];
 	const { data: series, error: seriesError } = await supabase
 		.from('series')
-		.select('id, title, categories')
+		.select('id, title, items')
 		.in('id', seriesIds);
 
 	if (seriesError) {
@@ -162,7 +162,7 @@ export async function listAvailableSeries(
 ): Promise<Result<AvailableSeries[]>> {
 	const { data, error } = await supabase
 		.from('series')
-		.select('id, title, categories')
+		.select('id, title, items')
 		.eq('created_by', teacherId)
 		.order('updated_at', { ascending: false })
 		.limit(AVAILABLE_SERIES_LIMIT);
@@ -174,7 +174,7 @@ export async function listAvailableSeries(
 
 	return {
 		data: (data ?? []).map((s) => {
-			const lines = seriesItemsSchema.safeParse(s.categories);
+			const lines = seriesItemsSchema.safeParse(s.items);
 			return {
 				id: s.id,
 				title: s.title,

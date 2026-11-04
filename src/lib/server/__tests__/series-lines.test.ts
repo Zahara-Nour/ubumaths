@@ -21,22 +21,22 @@ const ANCIENNE = { category: { level: 2 }, quantity: 3, delay: 20 };
 describe('readStoredSeriesMany', () => {
 	it('lignes de modèle rendues telles quelles, par id', () => {
 		const line = { templateId: FRACTIONS_ID, quantity: 1, delay: 30 };
-		const read = readStoredSeriesMany([{ id: 's1', categories: [line] }]);
+		const read = readStoredSeriesMany([{ id: 's1', items: [line] }]);
 		expect(read.get('s1')).toEqual([line]);
 	});
 
 	it('composition illisible : absente du résultat, les autres lues', () => {
 		const line = { templateId: FRACTIONS_ID, quantity: 1, delay: 30 };
 		const read = readStoredSeriesMany([
-			{ id: 'abimee', categories: { pas: 'un tableau' } },
-			{ id: 'saine', categories: [line] }
+			{ id: 'abimee', items: { pas: 'un tableau' } },
+			{ id: 'saine', items: [line] }
 		]);
 		expect(read.has('abimee')).toBe(false);
 		expect(read.get('saine')).toEqual([line]);
 	});
 
 	it('ancienne forme par catégorie : plus relue, absente du résultat', () => {
-		const read = readStoredSeriesMany([{ id: 's1', categories: [ANCIENNE] }]);
+		const read = readStoredSeriesMany([{ id: 's1', items: [ANCIENNE] }]);
 		expect(read.has('s1')).toBe(false);
 	});
 });

@@ -67,7 +67,7 @@ export function mapSeriesWriteError(
 }
 
 /**
- * Lignes `series` → `DbSeries`. La composition (colonne `categories`) est relue
+ * Lignes `series` → `DbSeries`. La composition (colonne `items`) est relue
  * dans la nouvelle forme (`server/series-lines`) :
  * une composition illisible rend une liste vide plutôt que de faire planter
  * l'écran.
@@ -206,7 +206,7 @@ export async function createSeries(
 			title: input.title,
 			grade: input.grade,
 			description: input.description ?? null,
-			categories: toJson(input.items),
+			items: toJson(input.items),
 			created_by: userId
 		})
 		.select()
@@ -229,7 +229,7 @@ export async function updateSeries(
 	if (input.title !== undefined) update.title = input.title;
 	if (input.grade !== undefined) update.grade = input.grade;
 	if (input.description !== undefined) update.description = input.description;
-	if (input.items !== undefined) update.categories = toJson(input.items);
+	if (input.items !== undefined) update.items = toJson(input.items);
 
 	// `.select()` : un refus RLS rend zéro ligne, sans erreur
 	const { data, error } = await supabase.from('series').update(update).eq('id', seriesId).select();

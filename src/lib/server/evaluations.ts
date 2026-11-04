@@ -141,7 +141,7 @@ export async function createEvaluation(
 	// qu'elles existent ne devient pas une évaluation impossible à passer
 	const { data: series, error: seriesError } = await supabase
 		.from('series')
-		.select('categories')
+		.select('items')
 		.eq('id', input.series_id)
 		.maybeSingle();
 	if (seriesError) {
@@ -150,7 +150,7 @@ export async function createEvaluation(
 	}
 	if (!series) throw new EvaluationError(404, 'Série introuvable');
 	const items = savedSeriesItemsSchema.safeParse(
-		parseStoredSeries(input.series_id, series.categories) ?? []
+		parseStoredSeries(input.series_id, series.items) ?? []
 	);
 	if (!items.success) {
 		throw new EvaluationError(400, items.error.issues[0].message);

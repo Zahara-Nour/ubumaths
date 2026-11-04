@@ -123,7 +123,7 @@ function cours(): PublicCourse {
 						series_id: 'serie-1',
 						title: 'Tables',
 						description: null,
-						categories: ITEMS,
+						items: ITEMS,
 						form: 'flash',
 						section_id: SECTION_A,
 						section_order: 1,
@@ -141,19 +141,19 @@ describe('resolveCourseShareToken', () => {
 		const resultat = await resolveCourseShareToken(sb, JETON);
 		expect(rpc).toHaveBeenCalledWith('get_class_course_by_share_token', { p_token: JETON });
 		expect(resultat?.class_name).toBe('4e B');
-		expect(resultat?.chapters[0].series[0].categories).toEqual(ITEMS);
+		expect(resultat?.chapters[0].series[0].items).toEqual(ITEMS);
 	});
 
 	it('une série d’ancienne forme (catégories) n’est plus relue : le cours reste lisible, la série sans lien', async () => {
 		const c = cours();
-		c.chapters[0].series[0].categories = ANCIENNES_LIGNES;
+		c.chapters[0].series[0].items = ANCIENNES_LIGNES;
 		const { sb } = client({ data: c, error: null });
 		vi.spyOn(console, 'error').mockImplementation(() => {});
 
 		const resultat = await resolveCourseShareToken(sb, JETON);
 
 		expect(resultat?.class_name).toBe('4e B');
-		expect(resultat?.chapters[0].series[0].categories).toBeNull();
+		expect(resultat?.chapters[0].series[0].items).toBeNull();
 	});
 
 	it('rend null quand la fonction SQL rend null', async () => {
@@ -292,7 +292,7 @@ describe('buildPublicCourseView', () => {
 
 	it('une composition de série illisible donne une série sans lien', () => {
 		const c = cours();
-		c.chapters[0].series[0].categories = 'abîmée';
+		c.chapters[0].series[0].items = 'abîmée';
 		vi.spyOn(console, 'error').mockImplementation(() => {});
 		const item = buildPublicCourseView(c).chapters[0].plan[0].items[1];
 		expect(item.kind === 'series' && item.series.launchHref).toBeNull();

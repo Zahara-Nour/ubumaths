@@ -2,7 +2,7 @@
  * Composition enregistrée d'une série → lignes `{ templateId, quantity, delay }`
  * ============================================================================
  *
- * `series.categories` porte les lignes de modèle (ADR 0035). Toute lecture
+ * `series.items` porte les lignes de modèle (ADR 0035). Toute lecture
  * serveur d'une composition passe par ici : une composition illisible (forme
  * inconnue, ancienne forme d'avant l'ADR) est absente du résultat, et tracée.
  *
@@ -29,11 +29,11 @@ export function parseStoredSeries(id: string, raw: unknown): SeriesItem[] | null
  * illisible est absente du résultat (tracée).
  */
 export function readStoredSeriesMany(
-	rows: ReadonlyArray<{ id: string; categories: unknown }>
+	rows: ReadonlyArray<{ id: string; items: unknown }>
 ): Map<string, SeriesItem[]> {
 	const result = new Map<string, SeriesItem[]>();
 	for (const row of rows) {
-		const items = parseStoredSeries(row.id, row.categories);
+		const items = parseStoredSeries(row.id, row.items);
 		if (items) result.set(row.id, items);
 	}
 	return result;
