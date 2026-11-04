@@ -330,7 +330,9 @@ des fiches : [pratiques/fiches-exercices.md](../pratiques/fiches-exercices.md).
 - `evaluations` (une série, une `form`, `status`) → `evaluation_assignments` (à une classe ou un
   élève) ; `evaluation_attempt_questions` : questions tirées et corrigées **côté serveur**
   ([ADR 0015](../adr/0015-evaluation-notee-correction-serveur.md)) — aucun droit pour `anon` ni
-  `authenticated`, `service_role` seul.
+  `authenticated`, `service_role` seul. Chaque question désigne son modèle (`template_id`) ;
+  l'ancienne `category_key` est facultative depuis l'[ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)
+  et part au lot 4 du chantier `automaths-arbre`.
 - `test_sessions` / `test_answers` : passages de séries. Une policy RESTRICTIVE interdit à un
   compte connecté d'écrire une séance de contrôle (`evaluation_id`, note, points) : c'est le serveur
   qui les écrit.
