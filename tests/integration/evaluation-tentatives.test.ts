@@ -592,6 +592,29 @@ describe('tentatives d’évaluation (20260930160000)', () => {
 			}
 		});
 
+		it('une question sans category_key est acceptée (ADR 0035, 20261104140651)', async () => {
+			const { error } = await service.from(ATTEMPTS).insert({
+				test_session_id: evaluationSessionId,
+				position: 8,
+				template_id: TEMPLATE_ID,
+				seed: 1,
+				delay_seconds: 20
+			});
+			expect(error).toBeNull();
+			const { data } = await service
+				.from(ATTEMPTS)
+				.select('category_key')
+				.eq('test_session_id', evaluationSessionId)
+				.eq('position', 8)
+				.single();
+			expect(data).toEqual({ category_key: null });
+			await service
+				.from(ATTEMPTS)
+				.delete()
+				.eq('test_session_id', evaluationSessionId)
+				.eq('position', 8);
+		});
+
 		it('un modèle tiré dans une tentative ne se supprime pas (23503)', async () => {
 			const { error } = await service.from('question_templates').delete().eq('id', TEMPLATE_ID);
 			expect(error?.code).toBe('23503');
