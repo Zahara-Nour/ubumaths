@@ -23,16 +23,29 @@ const toaster = vi.hoisted(() => ({
 vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
 
 import Page from '../+page.svelte';
+import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 import { questionCart } from '$lib/stores/questionCart.svelte';
 import { parseCategoriesParam } from '$lib/validation/series';
 
 const CATEGORY = { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 };
 
+/**
+ * Remplit le cache des modèles (la page le lit, le serveur ne les envoie plus)
+ * sans appeler la vraie API sur le serveur de test.
+ */
+async function seedTemplatesCache(templates: unknown[] = []) {
+	questionTemplatesCache.clear();
+	vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ templates })));
+	await questionTemplatesCache.fetchTemplates();
+	vi.unstubAllGlobals();
+}
+
 async function renderPanier(userRole: string | null) {
+	await seedTemplatesCache();
 	const main = document.body.appendChild(document.createElement('main'));
 	return await render(Page, {
 		target: main,
-		props: { data: { templates: [], userRole } } as never
+		props: { data: { userRole } } as never
 	});
 }
 

@@ -9,6 +9,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import { encodeCategoriesParam } from '$lib/validation/series';
+import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 
 const goto = vi.hoisted(() => vi.fn(async () => {}));
 const url = vi.hoisted(() => ({ current: new URL('http://localhost/automaths/test') }));
@@ -46,11 +47,23 @@ function openLink(query: string) {
 	url.current = new URL(`http://localhost/automaths/test?${query}`);
 }
 
+/**
+ * Remplit le cache des modèles (la page le lit, le serveur ne les envoie plus)
+ * sans appeler la vraie API sur le serveur de test.
+ */
+async function seedTemplatesCache(templates: unknown[] = []) {
+	questionTemplatesCache.clear();
+	vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ templates })));
+	await questionTemplatesCache.fetchTemplates();
+	vi.unstubAllGlobals();
+}
+
 async function renderPage() {
+	await seedTemplatesCache([TEMPLATE]);
 	const main = document.body.appendChild(document.createElement('main'));
 	return await render(Page, {
 		target: main,
-		props: { data: { templates: [TEMPLATE], user: null } } as never
+		props: { data: { user: null } } as never
 	});
 }
 

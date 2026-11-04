@@ -1,35 +1,42 @@
 /**
- * Question Templates API - Get All Published Templates
- * ======================================================
+ * GET /api/questions/templates/all — tous les modèles publiés
+ * ===========================================================
  *
- * GET /api/questions/templates/all - Get all published question templates
+ * Liste publique (sans authentification) qui remplit le cache des modèles du
+ * navigateur (`questionTemplatesCache`) : catalogue Automaths, panier, test.
  *
- * Public endpoint (no authentication required) that returns all published
- * question templates for use in automaths pages. Used by client-side cache
- * to avoid repeated database queries.
+ * Gardée 5 min par Vercel (`s-maxage=300`), puis servie périmée pendant qu'il
+ * la relit en arrière-plan : la base n'est plus relue à chaque visite. Un
+ * modèle tout juste publié (ou dépublié) l'est pour les élèves en 5 à 10 min ;
+ * l'onglet qui vient de l'éditer contourne le cache (`?frais=…`, cf.
+ * `questionTemplatesCache.invalidate()`).
  *
- * Returns complete template data including variables, content, answers, etc.
+ * ⚠️ Une réponse en cache est servie à TOUS les visiteurs : elle est lue par un
+ * client ANONYME, jamais par la session de l'appelant. Un échec répond 500,
+ * sans en-tête de cache (une liste vide ne doit pas être servie 5 min).
  */
 
-import { json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerLogger } from '$lib/utils/logger';
 import { readAllRows } from '$lib/server/read-all-rows';
+import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
 
 const logger = createServerLogger('api/questions/templates/all/+server');
 
 /**
- * GET /api/questions/templates/all
- *
- * Fetch all published question templates.
- * Public endpoint - no authentication required.
- *
- * Returns: { templates: QuestionTemplate[] }
+ * 5 min chez Vercel, puis servie périmée (5 min au plus) pendant la relecture :
+ * un modèle dépublié (réponse fausse…) disparaît en 10 min au pire.
  */
-export const GET: RequestHandler = async ({ locals: { supabase } }) => {
+const CACHE_CONTROL = 'public, max-age=0, s-maxage=300, stale-while-revalidate=300';
+
+export const GET: RequestHandler = async ({ setHeaders }) => {
+	const supabase = createAnonymousSupabase();
+
 	// Tous les modèles publiés, page par page (PostgREST tronque à 1000 lignes)
+	let templates;
 	try {
-		const templates = await readAllRows(
+		templates = await readAllRows(
 			(from, to) =>
 				supabase
 					.from('question_templates')
@@ -39,10 +46,11 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 					.range(from, to),
 			'des modèles publiés'
 		);
-		return json({ templates });
-	} catch (error) {
-		logger.error('[GET /api/questions/templates/all] Error fetching templates:', error);
-		// Return empty array on error (fail-safe pattern)
-		return json({ templates: [] });
+	} catch (readError) {
+		logger.error('[GET /api/questions/templates/all] Error fetching templates:', readError);
+		throw error(500, 'Impossible de charger les modèles');
 	}
+
+	setHeaders({ 'cache-control': CACHE_CONTROL });
+	return json({ templates });
 };

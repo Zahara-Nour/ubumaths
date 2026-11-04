@@ -178,7 +178,13 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   **modifié depuis le verdict** (`updated_at` du modèle postérieur au verdict — les migrations de
   rangement le font bouger aussi). Reprise des verdicts des anciennes pages à cocher :
   `scripts/questions/reprise-verdicts.ts` (simulation par défaut, `--ecrire`).
-- Automaths : `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
+- Automaths : catalogue rangé dans le navigateur (`src/lib/questions/catalogue.ts` :
+  `buildCatalogue`, thème → domaine → sous-domaine, ordre déclaré puis niveau — pas encore
+  l'arbre des notions). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés que pour la rubrique
+  dépliée (`CatalogueGallery`, montée par un `{#if}` : l'accordéon et les onglets de bits-ui
+  gardent le contenu fermé dans le DOM), une fois par modèle (`templatePreview`), et réutilisés par le
+  panier. Avant (novembre 2026), le serveur calculait les 1 912 aperçus à chaque visite : 7 à 11 s.
+  `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
   `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'une catégorie du
   panier : durée par pas de 5 s entre 5 et 300 s, nombre de questions).
 - Stores (`src/lib/stores/`) :
@@ -190,14 +196,22 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   - `questionCategories.svelte.ts` (`questionCategoriesCache`) : catégories des modèles
     (`/api/questions/categories/all`), pour refuser une catégorie déjà prise et proposer le
     prochain niveau libre dans `QuestionTemplateForm`.
-  - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés
-    (`/api/questions/templates/all`, ou `initializeFromServer` depuis le `load`), sans durée de
-    vie ; lu par les pages Automaths. Les pages admin invalident les deux caches après écriture.
+  - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés, **seule source
+    des pages Automaths** (catalogue, panier, `test`) — leurs `load` n'en envoient aucun.
+    `fetchTemplates()` lit `/api/questions/templates/all` une fois par onglet (lectures
+    simultanées partagées) ; naviguer entre ces pages ne recharge rien. Les pages admin
+    invalident les deux caches après écriture : la relecture passe par `?frais=…`, adresse que
+    le cache de Vercel ne connaît pas.
+- `/api/questions/templates/all` : liste publique gardée **5 min par Vercel**
+  (`s-maxage=300, stale-while-revalidate=300`) — un modèle publié ou dépublié l'est pour les
+  élèves en 5 à 10 min. Servie à tous : lue par un client **anonyme** (`createAnonymousSupabase`),
+  jamais par la session ; un échec répond 500, sans cache. Le hook passe en `private, no-store`
+  toute réponse qui pose un cookie.
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
   `generate/[id]`, `categories`), admin `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`
   (catalogue, `panier`, `test`), séries du prof `src/routes/(protected)/dashboard/teacher/series/`.
-- Lecture de **tous** les modèles (catalogue, panier, `test`, `templates/all`, `categories`,
+- Lecture de **tous** les modèles (`templates/all`, `categories`,
   `categories/all`, brouillons et filtres de l'admin) : par `readAllRows`
   (`src/lib/server/read-all-rows.ts`), page par page, tri terminé par `.order('id')`.
   PostgREST tronque à 1 000 lignes sans erreur : en novembre 2026 (1 912 modèles publiés), des

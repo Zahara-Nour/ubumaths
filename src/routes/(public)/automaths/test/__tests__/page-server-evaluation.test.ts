@@ -1,7 +1,8 @@
 /**
  * E19 — la page d'une évaluation ne charge AUCUN modèle : le serveur tire et
  * corrige, le navigateur ne reçoit que les questions publiques de la tentative.
- * Hors évaluation : les modèles publiés, comme avant.
+ * Hors évaluation non plus : la page lit les modèles dans le cache de l'onglet
+ * (`questionTemplatesCache`), le serveur n'en lit ni n'en envoie aucun.
  */
 import { describe, it, expect, vi } from 'vitest';
 import { isRedirect } from '@sveltejs/kit';
@@ -29,18 +30,18 @@ describe('/automaths/test — chargement', () => {
 				'http://localhost/automaths/test?assignment=44444444-4444-4444-8444-444444444444'
 			)
 		} as never);
-		expect(result).toEqual({ templates: [] });
+		expect(result).toEqual({});
 		expect(from).not.toHaveBeenCalled();
 	});
 
-	it('entraînement libre : les modèles publiés', async () => {
+	it('entraînement libre : aucun modèle envoyé, aucune lecture', async () => {
 		const { from, supabase } = locals();
 		const result = await load({
 			locals: { supabase },
 			url: new URL('http://localhost/automaths/test?mode=interactive')
 		} as never);
-		expect(result).toEqual({ templates: [{ id: 'm1' }] });
-		expect(from).toHaveBeenCalledWith('question_templates');
+		expect(result).toEqual({});
+		expect(from).not.toHaveBeenCalled();
 	});
 
 	it('Q46 : lien de série SANS forme → redirection vers le panier, aucune lecture', async () => {

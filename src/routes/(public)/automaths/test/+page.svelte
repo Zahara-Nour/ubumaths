@@ -128,7 +128,7 @@
 		if (start.preview) {
 			// Aperçu : les modèles sont chargés seulement maintenant (la page d'un
 			// élève en évaluation n'en reçoit aucun)
-			if (questionTemplatesCache.isEmpty) await questionTemplatesCache.fetchTemplates();
+			await questionTemplatesCache.fetchTemplates();
 			seriesItems = generateSeriesItems(start.evaluation.categories, { excludeCourseCards: true });
 			testSession = {
 				mode: form,
@@ -200,16 +200,13 @@
 
 	/**
 	 * Questions d'une série, chacune avec sa durée et sa catégorie
-	 * (`buildSeriesItems`) ; source des modèles : cache, sinon données serveur.
+	 * (`buildSeriesItems`) ; modèles lus dans le cache de l'onglet.
 	 */
 	function generateSeriesItems(
 		categories: CartItem[],
 		options: { excludeCourseCards?: boolean } = {}
 	): ClassroomItem[] {
-		const templates =
-			questionTemplatesCache.templates.length > 0
-				? questionTemplatesCache.templates
-				: data.templates;
+		const templates = questionTemplatesCache.templates;
 
 		// Aucun modèle du tout (hors ligne, sans cache) : échec explicite
 		if (templates.length === 0) {
@@ -402,15 +399,9 @@
 		// Évaluation assignée : aucun modèle n'est chargé (le serveur tire les
 		// questions ; l'aperçu du prof les chargera lui-même)
 		if (!new URL(page.url).searchParams.has('assignment')) {
-			// Priority: server data > existing cache > API fetch (only if necessary)
-			if (data.templates && data.templates.length > 0) {
-				questionTemplatesCache.initializeFromServer(data.templates);
-			}
-			// Only fetch from API if cache is completely empty AND server didn't load data
-			// This prevents fetch loops when offline
-			else if (questionTemplatesCache.isEmpty && !questionTemplatesCache.error) {
-				await questionTemplatesCache.fetchTemplates();
-			}
+			// Modèles : cache de l'onglet, lu une fois (déjà là si on vient du catalogue
+			// ou du panier ; sinon lu maintenant, lien de série ouvert directement)
+			await questionTemplatesCache.fetchTemplates();
 		}
 
 		// Initialize test after cache is ready

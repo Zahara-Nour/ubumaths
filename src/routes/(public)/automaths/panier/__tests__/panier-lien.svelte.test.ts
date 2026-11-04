@@ -38,6 +38,7 @@ const toaster = vi.hoisted(() => ({
 vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
 
 import Page from '../+page.svelte';
+import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 import { questionCart } from '$lib/stores/questionCart.svelte';
 
 const MINE = { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 };
@@ -52,11 +53,23 @@ function openLink(categories: string) {
 	url.current = new URL(`http://localhost/automaths/panier?${query}`);
 }
 
+/**
+ * Remplit le cache des modèles (la page le lit, le serveur ne les envoie plus)
+ * sans appeler la vraie API sur le serveur de test.
+ */
+async function seedTemplatesCache(templates: unknown[] = []) {
+	questionTemplatesCache.clear();
+	vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ templates })));
+	await questionTemplatesCache.fetchTemplates();
+	vi.unstubAllGlobals();
+}
+
 async function renderPanier() {
+	await seedTemplatesCache();
 	const main = document.body.appendChild(document.createElement('main'));
 	return await render(Page, {
 		target: main,
-		props: { data: { templates: [], userRole: null } } as never
+		props: { data: { userRole: null } } as never
 	});
 }
 
