@@ -374,26 +374,20 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		const collection = await loadMathouCollection(client, id, GRADE);
 		const mathou = mathouOf(collection, notionOrdre);
 		expect(mathou).toMatchObject({ asleep: true, dueForRevision: false });
-		const query = trainingQuery(mathou?.trainingCategories ?? null);
+		const query = trainingQuery(mathou?.trainingItems ?? null);
 		expect(query).toBeTruthy();
 		const launch = resolveTestLaunch(new URLSearchParams(query ?? ''));
 		expect(launch.kind).toBe('start');
 		if (launch.kind !== 'start') return;
 		expect(launch.mode).toBe('interactive');
 
-		// L'ordre attendu, relu dans la base : perdu, puis non acquis, puis acquis
-		const expected = await service
-			.from('question_templates')
-			.select('id, theme')
-			.in('id', [templates['o-perdu'], templates['o-neuf'], templates['o-acquis']]);
-		expect(expected.error).toBeNull();
-		const themeOf = new Map((expected.data ?? []).map((t) => [t.id, t.theme]));
-		expect(launch.categories.map((c) => c.category.theme)).toEqual([
-			themeOf.get(templates['o-perdu']),
-			themeOf.get(templates['o-neuf']),
-			themeOf.get(templates['o-acquis'])
+		// L'ordre attendu : perdu, puis non acquis, puis acquis ; le brouillon n'y est pas
+		expect(launch.lines.map((line) => ('templateId' in line ? line.templateId : null))).toEqual([
+			templates['o-perdu'],
+			templates['o-neuf'],
+			templates['o-acquis']
 		]);
-		expect(launch.categories.every((c) => c.quantity === 1)).toBe(true);
+		expect(launch.lines.every((line) => line.quantity === 1)).toBe(true);
 	});
 
 	it('tous les points d’une notion acquis → grand matou', async () => {
@@ -795,7 +789,7 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 							collar: null,
 							glasses: null,
 							hat: null,
-							trainingCategories: null,
+							trainingItems: null,
 							stars: [],
 							workablePoints: 2,
 							acquiredPoints: 1,

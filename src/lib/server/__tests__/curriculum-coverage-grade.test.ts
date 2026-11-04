@@ -15,7 +15,8 @@ import { createFakeSupabase, type Call } from './helpers/fake-supabase';
 
 const ENTRY = 'entry-1';
 const EVALUATION = '55555555-5555-4555-8555-555555555555';
-const CATEGORY = { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 };
+const T_PARTAGEE = '66666666-6666-4666-8666-666666666661';
+const T_SEULE = '66666666-6666-4666-8666-666666666662';
 
 /** Tag d'un point lisible, avec son programme. */
 function tag(templateId: string, pointId: string, grade: string) {
@@ -37,11 +38,11 @@ function hiddenTag(templateId: string, pointId: string) {
  * Chacune porte en plus un point illisible, que la couverture ne doit jamais retenir.
  */
 const TAGS = [
-	tag('t-partagee', 'p-spe', 'T_SPE'),
-	tag('t-partagee', 'p-comp', 'T_COMP'),
-	tag('t-seule', 'p-comp-seul', 'T_COMP'),
-	hiddenTag('t-partagee', 'p-masque-partagee'),
-	hiddenTag('t-seule', 'p-masque-seule')
+	tag(T_PARTAGEE, 'p-spe', 'T_SPE'),
+	tag(T_PARTAGEE, 'p-comp', 'T_COMP'),
+	tag(T_SEULE, 'p-comp-seul', 'T_COMP'),
+	hiddenTag(T_PARTAGEE, 'p-masque-partagee'),
+	hiddenTag(T_SEULE, 'p-masque-seule')
 ];
 
 function tagsFor(calls: Call[]) {
@@ -59,13 +60,13 @@ async function reconcile(classGrade: string | null) {
 						{
 							kind: 'question',
 							exercise_id: null,
-							question_template_id: 't-partagee',
+							question_template_id: T_PARTAGEE,
 							evaluation_id: null
 						},
 						{
 							kind: 'question',
 							exercise_id: null,
-							question_template_id: 't-seule',
+							question_template_id: T_SEULE,
 							evaluation_id: null
 						}
 					]
@@ -122,18 +123,24 @@ describe('evaluationCurriculumPoints — niveau de la classe', () => {
 	function evaluationFake() {
 		return createFakeSupabase((table, calls) => {
 			if (table === 'evaluations') {
-				return { data: [{ id: EVALUATION, series: { categories: [{ category: CATEGORY }] } }] };
+				return {
+					data: [
+						{
+							id: EVALUATION,
+							series: {
+								categories: [
+									{ templateId: T_PARTAGEE, quantity: 1, delay: 20 },
+									{ templateId: T_SEULE, quantity: 1, delay: 20 }
+								]
+							}
+						}
+					]
+				};
 			}
 			if (table === 'question_templates') {
 				const range = calls.find((c) => c.method === 'range')?.args as [number, number];
 				return {
-					data:
-						range[0] === 0
-							? [
-									{ id: 't-partagee', ...CATEGORY },
-									{ id: 't-seule', ...CATEGORY }
-								]
-							: []
+					data: range[0] === 0 ? [{ id: T_PARTAGEE }, { id: T_SEULE }] : []
 				};
 			}
 			return tagsFor(calls);

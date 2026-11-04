@@ -114,7 +114,7 @@ describe('QuestionPreviewTabs — touches d’unités (Entraînement)', () => {
 			target: mainElement(),
 			props: {
 				// Item tel que buildSeriesItems le construit : sans unitKeys
-				items: [{ instance: unitInstance(), delaySeconds: 600, categoryKey: 'x' }],
+				items: [{ instance: unitInstance(), delaySeconds: 600, templateId: 'x' }],
 				isLoggedIn: true,
 				onComplete: vi.fn(),
 				onRestart: vi.fn(),

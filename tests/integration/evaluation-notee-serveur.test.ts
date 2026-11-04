@@ -23,7 +23,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database, Json } from '$lib/types/database';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -87,9 +87,10 @@ const MULTI_CATEGORY = { theme: THEME, domain: 'Plusieurs', subdomain: 'Pairs', 
 const CHOICE_CATEGORY = { theme: THEME, domain: 'Case choix', subdomain: 'Pairs', level: 1 };
 const GESTE_CATEGORY = { theme: THEME, domain: 'Droite', subdomain: 'Placer', level: 1 };
 const CUBES_CATEGORY = { theme: THEME, domain: 'Cubes', subdomain: 'Retrouver', level: 1 };
+/** Composition par défaut : nouvelle forme, une ligne par modèle (ADR 0035) */
 const CATEGORIES = [
-	{ category: FILL_CATEGORY, quantity: 2, delay: 20 },
-	{ category: QCM_CATEGORY, quantity: 1, delay: 15 }
+	{ templateId: FILL_ID, quantity: 2, delay: 20 },
+	{ templateId: QCM_ID, quantity: 1, delay: 15 }
 ];
 /** Clés qui, présentes dans ce que reçoit l'élève, laisseraient tricher */
 const FORBIDDEN_KEYS = [
@@ -158,7 +159,7 @@ async function createEvaluation(
 		max_attempts?: number | null;
 		deadline?: string | null;
 		status?: 'draft' | 'published';
-		categories?: typeof CATEGORIES;
+		categories?: Json;
 	} = {}
 ): Promise<{ evaluationId: string; assignmentId: string }> {
 	const { data: series, error: seriesError } = await service

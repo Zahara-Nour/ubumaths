@@ -25,9 +25,9 @@ vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
 import Page from '../+page.svelte';
 import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 import { questionCart } from '$lib/stores/questionCart.svelte';
-import { parseCategoriesParam } from '$lib/validation/series';
+import { parseSeriesLink } from '$lib/questions/series-legacy';
 
-const CATEGORY = { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 };
+const TEMPLATE_ID = '11111111-1111-4111-8111-111111111111';
 
 /**
  * Remplit le cache des modèles (la page le lit, le serveur ne les envoie plus)
@@ -54,7 +54,7 @@ describe('Panier — série (C18)', () => {
 
 	beforeEach(() => {
 		questionCart.clearCart();
-		questionCart.addToCart(CATEGORY, 3, 20);
+		questionCart.addToCart(TEMPLATE_ID, 3, 20);
 		writeText = vi.fn(async () => {});
 		Object.defineProperty(navigator, 'clipboard', {
 			value: { writeText },
@@ -94,10 +94,10 @@ describe('Panier — série (C18)', () => {
 		const link = new URL(writeText.mock.calls[0][0] as string);
 		expect(link.pathname).toBe('/automaths/panier');
 		expect(link.searchParams.has('mode')).toBe(false);
-		const categories = parseCategoriesParam(link.searchParams.get('categories'));
-		expect(categories).toMatchObject({
+		expect(link.searchParams.has('categories')).toBe(false);
+		expect(parseSeriesLink(link.searchParams)).toMatchObject({
 			success: true,
-			data: [{ category: CATEGORY, quantity: 3 }]
+			lines: [{ templateId: TEMPLATE_ID, quantity: 3 }]
 		});
 		expect(toaster.success).toHaveBeenCalledWith('Lien copié');
 	});
@@ -153,7 +153,7 @@ describe('Panier — série (C18)', () => {
 		);
 	});
 
-	it('enregistrer : POST /api/series avec le titre et les catégories du panier', async () => {
+	it('enregistrer : POST /api/series avec le titre et les modèles du panier', async () => {
 		const fetchSpy = vi
 			.spyOn(globalThis, 'fetch')
 			.mockResolvedValue(
@@ -170,7 +170,8 @@ describe('Panier — série (C18)', () => {
 			expect(url).toBe('/api/series');
 			const body = JSON.parse((init as RequestInit).body as string);
 			expect(body).toMatchObject({ title: 'Tables de 7', grade: '6' });
-			expect(body.categories).toEqual([{ category: CATEGORY, quantity: 3, delay: 20 }]);
+			expect(body.items).toEqual([{ templateId: TEMPLATE_ID, quantity: 3, delay: 20 }]);
+			expect(body).not.toHaveProperty('categories');
 		} finally {
 			fetchSpy.mockRestore();
 		}

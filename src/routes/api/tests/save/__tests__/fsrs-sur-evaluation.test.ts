@@ -192,9 +192,9 @@ async function enregistrer(
 				completedAt: new Date().toISOString(),
 				answers
 			},
-			categories: [
+			items: [
 				{
-					category: { theme: 'Calcul', domain: 'Nombres', subdomain: null, level: 5 },
+					templateId: '4d5e6f70-4444-4444-8444-444444444444',
 					quantity: answers.length,
 					delay: 20
 				}

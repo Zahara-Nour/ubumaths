@@ -3,8 +3,8 @@
  * =====================================================================
  *
  * Comportements validés par David (2026-10-03) : N2 (questions PUBLIÉES des
- * catégories des séries publiées), N3 (dues + au plus 10 nouvelles), N6 (union
- * sans doublon), L2 (brouillon exclu), L4 (catégorie sans question ignorée).
+ * modèles des séries publiées), N3 (dues + au plus 10 nouvelles), N6 (union
+ * sans doublon), L2 (brouillon exclu), L4 (modèle retiré ignoré).
  *
  * Le calcul est pur ; la lecture passe par un faux client qui enregistre les
  * filtres : la RLS fait le gros du tri, mais le code ne doit pas s'y reposer en
@@ -13,11 +13,10 @@
 import { describe, it, expect } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import type { CartItem } from '$lib/stores/questionCart.svelte';
+import type { SeriesItem } from '$lib/validation/series';
 import {
 	CHAPTER_SESSION_NEW_LIMIT,
 	MAX_DECK_TEMPLATES,
-	categoriesFilter,
 	loadChapterDecks,
 	resolveDeckTemplateIds,
 	selectChapterSession,
@@ -32,21 +31,21 @@ const NOW = new Date('2026-10-03T10:00:00Z');
 const PAST = '2026-10-02T10:00:00Z';
 const FUTURE = '2026-10-05T10:00:00Z';
 
-const catA = { theme: 'Fonctions', domain: 'Étude', subdomain: 'Méthode', level: 1 };
-const catB = { theme: 'Fonctions', domain: 'Dérivation', subdomain: null, level: 2 };
-const catEmpty = { theme: 'Géométrie', domain: 'Vide', subdomain: null, level: 1 };
+const A1 = '00000000-0000-4000-8000-0000000000a1';
+const A2 = '00000000-0000-4000-8000-0000000000a2';
+const A3 = '00000000-0000-4000-8000-0000000000a3';
+const B1 = '00000000-0000-4000-8000-0000000000b1';
+const X1 = '00000000-0000-4000-8000-0000000000c1';
+/** Modèle qui n'existe pas (retiré, ou jamais publié) */
+const VIDE = '00000000-0000-4000-8000-0000000000ff';
 
 // Functions
-function item(category: CartItem['category'], quantity = 3): CartItem {
-	return { category, quantity, delay: 20 };
+function item(templateId: string, quantity = 3): SeriesItem {
+	return { templateId, quantity, delay: 20 };
 }
 
-function template(
-	id: string,
-	category: CartItem['category'],
-	status: string = 'published'
-): DeckTemplateRow {
-	return { id, ...category, status };
+function template(id: string, status: string = 'published'): DeckTemplateRow {
+	return { id, status };
 }
 
 /** Faux client : rend les lignes de chaque table et enregistre chaque appel. */
@@ -68,42 +67,31 @@ function fakeClient(tables: Record<string, unknown[]>, calls: Call[]) {
 }
 
 describe('resolveDeckTemplateIds — contenu du paquet', () => {
-	const templates = [
-		template('a1', catA),
-		template('a2', catA),
-		template('a3', catA, 'draft'),
-		template('b1', catB),
-		template('x1', { ...catA, level: 3 })
-	];
+	const templates = [template(A1), template(A2), template(A3, 'draft'), template(B1), template(X1)];
 
-	it('N2 : toutes les questions publiées des catégories, pas la quantité de la série', () => {
-		expect(resolveDeckTemplateIds([[item(catA, 1)]], templates)).toEqual(['a1', 'a2']);
+	it('N2 : les modèles publiés de la série, pas la quantité de la série', () => {
+		expect(resolveDeckTemplateIds([[item(A1, 1), item(A2, 1)]], templates)).toEqual([A1, A2]);
 	});
 
 	it('L2 : un modèle repassé en brouillon sort du paquet', () => {
-		expect(resolveDeckTemplateIds([[item(catA)]], templates)).not.toContain('a3');
+		expect(resolveDeckTemplateIds([[item(A1), item(A3)]], templates)).not.toContain(A3);
 	});
 
 	it('N6 : plusieurs séries → union sans doublon', () => {
 		const ids = resolveDeckTemplateIds(
-			[[item(catA), item(catB)], [item(catB)], [item(catA)]],
+			[[item(A1), item(B1)], [item(B1)], [item(A1), item(A2)]],
 			templates
 		);
-		expect(ids).toEqual(['a1', 'a2', 'b1']);
+		expect(ids).toEqual([A1, B1, A2]);
 	});
 
-	it('L4 : une catégorie sans question publiée est ignorée', () => {
-		expect(resolveDeckTemplateIds([[item(catEmpty), item(catB)]], templates)).toEqual(['b1']);
+	it('L4 : un modèle absent des modèles publiés lus est ignoré', () => {
+		expect(resolveDeckTemplateIds([[item(VIDE), item(B1)]], templates)).toEqual([B1]);
 	});
 
 	it('L4 : aucune question → paquet vide', () => {
-		expect(resolveDeckTemplateIds([[item(catEmpty)]], templates)).toEqual([]);
+		expect(resolveDeckTemplateIds([[item(VIDE)]], templates)).toEqual([]);
 		expect(resolveDeckTemplateIds([], templates)).toEqual([]);
-	});
-
-	it('sous-domaine absent : null et chaîne vide se valent (même résolution que la série)', () => {
-		const sansSousDomaine = { ...template('b2', catB), subdomain: '' };
-		expect(resolveDeckTemplateIds([[item(catB)]], [sansSousDomaine])).toEqual(['b2']);
 	});
 });
 
@@ -160,8 +148,8 @@ describe('selectChapterSession — séance du jour', () => {
 
 describe('loadChapterDecks — lecture aux droits de l’élève', () => {
 	const series = [
-		{ id: 's1', categories: [item(catA)] },
-		{ id: 's2', categories: [item(catB)] }
+		{ id: 's1', categories: [item(A1)] },
+		{ id: 's2', categories: [item(B1)] }
 	];
 
 	function decor() {
@@ -175,11 +163,7 @@ describe('loadChapterDecks — lecture aux droits de l’élève', () => {
 				{ chapter_id: 'c1', series_id: 's2' }
 			],
 			series,
-			question_templates: [
-				template('a1', catA),
-				template('b1', catB),
-				template('a3', catA, 'draft')
-			]
+			question_templates: [template(A1), template(B1), template(A3, 'draft')]
 		};
 	}
 
@@ -187,7 +171,7 @@ describe('loadChapterDecks — lecture aux droits de l’élève', () => {
 		const calls: Call[] = [];
 		const decks = await loadChapterDecks(fakeClient(decor(), calls), { now: NOW });
 		expect(decks).toEqual([
-			{ chapterId: 'c1', title: 'Fonctions', seriesCount: 2, templateIds: ['a1', 'b1'] },
+			{ chapterId: 'c1', title: 'Fonctions', seriesCount: 2, templateIds: [A1, B1] },
 			{ chapterId: 'c2', title: 'Sans série', seriesCount: 0, templateIds: [] }
 		]);
 	});
@@ -219,7 +203,7 @@ describe('loadChapterDecks — lecture aux droits de l’élève', () => {
 	it('une série à la composition illisible est ignorée, pas fatale', async () => {
 		const tables = { ...decor(), series: [{ id: 's1', categories: 'abîmé' }, series[1]] };
 		const decks = await loadChapterDecks(fakeClient(tables, []), { now: NOW });
-		expect(decks[0].templateIds).toEqual(['b1']);
+		expect(decks[0].templateIds).toEqual([B1]);
 	});
 
 	it('aucun chapitre visible → aucune autre lecture', async () => {
@@ -230,49 +214,34 @@ describe('loadChapterDecks — lecture aux droits de l’élève', () => {
 	});
 });
 
-describe('categoriesFilter — une condition EXACTE par catégorie', () => {
-	it('thème, domaine, sous-domaine et niveau ensemble, valeurs entre guillemets', () => {
-		expect(categoriesFilter([catA])).toBe(
-			'and(theme.eq."Fonctions",domain.eq."Étude",subdomain.eq."Méthode",level.eq.1)'
-		);
-	});
-
-	it('sous-domaine absent : null ou chaîne vide (même règle que la série)', () => {
-		expect(categoriesFilter([catB])).toBe(
-			'and(theme.eq."Fonctions",domain.eq."Dérivation",or(subdomain.is.null,subdomain.eq.""),level.eq.2)'
-		);
-	});
-
-	it('pas de produit croisé : deux catégories → deux conditions, doublons fusionnés', () => {
-		const filter = categoriesFilter([catA, catB, { ...catA }]);
-		expect(filter.match(/and\(/g)).toHaveLength(2);
-	});
-
-	it('guillemets et barres obliques inverses échappés', () => {
-		expect(categoriesFilter([{ ...catB, theme: 'A "B" \\ C' }])).toContain(
-			'theme.eq."A \\"B\\" \\\\ C"'
-		);
-	});
-});
-
 describe('loadChapterDecks — filtre et plafond', () => {
-	const decor = (templates: unknown[]) => ({
+	const decor = (templates: unknown[], items = [item(A1)]) => ({
 		class_chapters: [{ id: 'c1', title: 'Fonctions' }],
 		chapter_series: [{ chapter_id: 'c1', series_id: 's1' }],
-		series: [{ id: 's1', categories: [item(catA)] }],
+		series: [{ id: 's1', categories: items }],
 		question_templates: templates
 	});
 
-	it('filtre les modèles par catégorie exacte (or), sans in(theme) × in(domain)', async () => {
+	it('lit les modèles par leurs identifiants (in), sans filtre de catégorie', async () => {
 		const calls: Call[] = [];
-		await loadChapterDecks(fakeClient(decor([template('a1', catA)]), calls), { now: NOW });
+		await loadChapterDecks(fakeClient(decor([template(A1)], [item(A1), item(B1)]), calls), {
+			now: NOW
+		});
 		const templateCalls = calls.filter((c) => c.table === 'question_templates');
-		expect(templateCalls.some((c) => c.method === 'or')).toBe(true);
-		expect(templateCalls.some((c) => c.method === 'in')).toBe(false);
+		expect(templateCalls.find((c) => c.method === 'in')?.args).toEqual(['id', [A1, B1]]);
+		expect(templateCalls.some((c) => c.method === 'or')).toBe(false);
+	});
+
+	it('aucun modèle dans les séries : les modèles ne sont pas lus', async () => {
+		const calls: Call[] = [];
+		await loadChapterDecks(fakeClient(decor([], []), calls), { now: NOW });
+		expect(calls.some((c) => c.table === 'question_templates')).toBe(false);
 	});
 
 	it('plafond atteint → erreur explicite, jamais une troncature silencieuse', async () => {
-		const many = Array.from({ length: MAX_DECK_TEMPLATES }, (_, i) => template(`t${i}`, catA));
+		const many = Array.from({ length: MAX_DECK_TEMPLATES }, (_, i) =>
+			template(`00000000-0000-4000-8000-${String(i).padStart(12, '0')}`)
+		);
 		await expect(loadChapterDecks(fakeClient(decor(many), []), { now: NOW })).rejects.toThrow(
 			/plafond/
 		);

@@ -35,8 +35,8 @@ let sessionInseree: Record<string, unknown> | null;
 /** Séances déjà rattachées à l'évaluation (comptage des tentatives) */
 let tentativesPassees: number;
 
-const CATEGORY_ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+const ITEM = {
+	templateId: '4d5e6f70-4444-4444-8444-444444444444',
 	quantity: 1,
 	delay: 20
 };
@@ -70,7 +70,7 @@ function fakeSupabase(options: { form: 'interactive' | 'course'; recipient: bool
 							title: 'Tables',
 							description: null,
 							grade: '6',
-							categories: [CATEGORY_ITEM],
+							categories: [ITEM],
 							created_by: TEACHER,
 							created_at: '2026-09-30T10:00:00Z',
 							updated_at: '2026-09-30T10:00:00Z'
@@ -104,7 +104,7 @@ async function enregistrer(options: {
 	recipient?: boolean;
 	userId?: string;
 	assignmentId?: string;
-	categories?: unknown[];
+	items?: unknown[];
 }) {
 	const answers = [
 		{
@@ -130,7 +130,7 @@ async function enregistrer(options: {
 				completedAt: new Date().toISOString(),
 				answers
 			},
-			categories: options.categories ?? [CATEGORY_ITEM],
+			items: options.items ?? [ITEM],
 			assignmentId: options.assignmentId
 		})
 	});

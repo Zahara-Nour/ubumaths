@@ -9,42 +9,55 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import CartQuestionCard from '../CartQuestionCard.svelte';
-import { previewCartItem } from '$lib/questions/cart-preview';
+import { PREVIEW_SEED } from '$lib/questions/cart-preview';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionTemplate } from '$lib/questions/types';
-import type { CartItem } from '$lib/stores/questionCart.svelte';
+import type { SeriesItem } from '$lib/validation/series';
 // Modèle réel relu (Entiers #139) : « Le double de … est … », avec un trou
 import fixture from '../../../../data/relecture/entiers/139.json';
 
 const TEMPLATE = { ...(fixture.template as unknown as QuestionTemplate), id: 'modele-139' };
-const ITEM: CartItem = {
-	category: {
-		theme: TEMPLATE.theme,
-		domain: TEMPLATE.domain,
-		subdomain: TEMPLATE.subdomain ?? null,
-		level: TEMPLATE.level
-	},
+const ITEM: SeriesItem = {
+	templateId: '11111111-1111-4111-8111-111111111139',
 	quantity: 3,
 	delay: 25
 };
-const { instance } = previewCartItem([TEMPLATE], ITEM.category);
+const TEMPLATE_WITH_ID = { ...TEMPLATE, id: ITEM.templateId };
+const generated = generateInstance(TEMPLATE_WITH_ID, PREVIEW_SEED);
+const instance = generated.success ? generated.instance : undefined;
 
-async function renderCard(overrides: { onUpdateDelay?: () => void } = {}) {
+async function renderCard(
+	overrides: { onUpdateDelay?: () => void; onRemove?: () => void; template?: boolean } = {}
+) {
 	return await render(CartQuestionCard, {
 		item: ITEM,
+		template: overrides.template === false ? undefined : TEMPLATE_WITH_ID,
 		instance,
 		onIncrementQuantity: vi.fn(),
 		onDecrementQuantity: vi.fn(),
-		onUpdateDelay: overrides.onUpdateDelay ?? vi.fn()
+		onUpdateDelay: overrides.onUpdateDelay ?? vi.fn(),
+		onRemove: overrides.onRemove ?? vi.fn()
 	});
 }
 
 describe('CartQuestionCard', () => {
-	it('affiche « Thème / Domaine » au-dessus de la flash-card', async () => {
+	it('affiche le titre du modèle au-dessus de la flash-card', async () => {
 		const screen = await renderCard();
 
 		await expect
-			.element(screen.getByText(`${TEMPLATE.theme}`, { exact: false }).first())
-			.toHaveTextContent(`${TEMPLATE.theme} / ${TEMPLATE.domain}`);
+			.element(screen.getByText(TEMPLATE.title, { exact: false }).first())
+			.toBeInTheDocument();
+	});
+
+	it('modèle retiré : « Modèle retiré » et un bouton pour le retirer du panier', async () => {
+		const onRemove = vi.fn();
+		const screen = await renderCard({ template: false, onRemove });
+
+		await expect.element(screen.getByText('Modèle retiré')).toBeInTheDocument();
+		expect(screen.container.querySelector('.flip-card-front')).toBeNull();
+		await screen.getByRole('button', { name: 'Retirer du panier' }).click();
+
+		expect(onRemove).toHaveBeenCalledWith(ITEM.templateId);
 	});
 
 	it("affiche l'énoncé dans la flash-card, sans champ de saisie", async () => {
@@ -92,7 +105,7 @@ describe('CartQuestionCard', () => {
 		await screen.getByTitle('Durée par question').hover();
 		await screen.getByRole('button', { name: 'Augmenter la durée' }).click();
 
-		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.category, 30);
+		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.templateId, 30);
 	});
 
 	/**

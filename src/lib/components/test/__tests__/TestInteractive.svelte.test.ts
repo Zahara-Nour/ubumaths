@@ -37,7 +37,7 @@ function choiceQuestion(statement: string): QuestionInstance {
 }
 
 function item(statement: string, delaySeconds: number): ClassroomItem {
-	return { instance: choiceQuestion(statement), delaySeconds, categoryKey: 'x' };
+	return { instance: choiceQuestion(statement), delaySeconds, templateId: 'x' };
 }
 
 async function open(

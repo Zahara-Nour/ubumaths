@@ -40,9 +40,9 @@ describe('canonicalUrl', () => {
 		).toBe('https://www.chiph.re/exercice/aire-du-disque?token=Ab12Cd34Ef56Gh78');
 		expect(
 			canonicalUrl(
-				'https://preview.vercel.app/automaths/test?categories=%255B%257B%2522a%2522%255D&mode=course'
+				'https://preview.vercel.app/automaths/test?modeles=%255B%257B%2522a%2522%255D&mode=course'
 			)
-		).toBe('https://www.chiph.re/automaths/test?categories=%255B%257B%2522a%2522%255D&mode=course');
+		).toBe('https://www.chiph.re/automaths/test?modeles=%255B%257B%2522a%2522%255D&mode=course');
 	});
 
 	it('garde le fragment', () => {

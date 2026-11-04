@@ -4,7 +4,7 @@
  *
  * 1. Le lien de lancement produit pour l'élève doit être ACCEPTÉ par la page
  *    `/automaths/test` (`resolveTestLaunch`), dans la forme choisie et avec les
- *    catégories de la série — sinon l'élève clique et tombe sur une erreur.
+ *    modèles de la série — sinon l'élève clique et tombe sur une erreur.
  * 2. Q129 (b) : « évaluation non terminée » = ni archivée (clôturée), ni date
  *    limite dépassée — brouillon (à venir) ou publiée (en cours).
  */
@@ -13,17 +13,9 @@ import { describe, it, expect } from 'vitest';
 import { toChapterSeries, isEvaluationUnfinished } from '../chapter-series';
 import { resolveTestLaunch } from '$lib/utils/test-launch';
 
-const CATEGORIES = [
-	{
-		category: { theme: 'Fonctions', domain: 'Étude de fonction', subdomain: 'Méthode', level: 1 },
-		quantity: 4,
-		delay: 20
-	},
-	{
-		category: { theme: 'Fonctions', domain: 'Dérivation', subdomain: null, level: 2 },
-		quantity: 3,
-		delay: 30
-	}
+const ITEMS = [
+	{ templateId: '11111111-1111-4111-8111-111111111111', quantity: 4, delay: 20 },
+	{ templateId: '22222222-2222-4222-8222-222222222222', quantity: 3, delay: 30 }
 ];
 
 function ligne(form: string) {
@@ -50,31 +42,26 @@ function lancer(href: string) {
 }
 
 describe('toChapterSeries → resolveTestLaunch', () => {
-	it.each(['flash', 'interactive'] as const)(
-		'forme %s : lien accepté, bonnes catégories',
-		(form) => {
-			const cs = toChapterSeries(ligne(form), { title: 'Méthode', categories: CATEGORIES });
-			expect(cs.form).toBe(form);
-			expect(cs.questionCount).toBe(7);
-			expect(new URL(cs.launchHref!, 'http://localhost').pathname).toBe('/automaths/test');
+	it.each(['flash', 'interactive'] as const)('forme %s : lien accepté, bons modèles', (form) => {
+		const cs = toChapterSeries(ligne(form), { title: 'Méthode', items: ITEMS });
+		expect(cs.form).toBe(form);
+		expect(cs.questionCount).toBe(7);
+		expect(new URL(cs.launchHref!, 'http://localhost').pathname).toBe('/automaths/test');
 
-			const launch = lancer(cs.launchHref!);
-			expect(launch.kind).toBe('start');
-			if (launch.kind !== 'start') return;
-			expect(launch.mode).toBe(form);
-			expect(launch.categories).toEqual(CATEGORIES);
-			expect(launch.timeLimit).toBeUndefined();
-		}
-	);
+		const launch = lancer(cs.launchHref!);
+		expect(launch.kind).toBe('start');
+		if (launch.kind !== 'start') return;
+		expect(launch.mode).toBe(form);
+		expect(launch.lines).toEqual(ITEMS);
+		expect(launch.timeLimit).toBeUndefined();
+	});
 
 	it('forme inconnue en base : retombe sur flash (défaut Q124 a)', () => {
-		expect(toChapterSeries(ligne('course'), { title: 'x', categories: CATEGORIES }).form).toBe(
-			'flash'
-		);
+		expect(toChapterSeries(ligne('course'), { title: 'x', items: ITEMS }).form).toBe('flash');
 	});
 
 	it('composition illisible : pas de lien (jamais un lien vers une erreur)', () => {
-		const cs = toChapterSeries(ligne('flash'), { title: 'x', categories: [{ nope: 1 }] });
+		const cs = toChapterSeries(ligne('flash'), { title: 'x', items: null });
 		expect(cs.launchHref).toBeNull();
 		expect(cs.questionCount).toBe(0);
 	});

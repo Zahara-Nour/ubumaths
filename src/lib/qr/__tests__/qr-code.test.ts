@@ -27,7 +27,7 @@ describe('encodeQr', () => {
 
 	it('refuse une adresse trop longue pour un QR code lisible', () => {
 		expect(
-			encodeQr(`https://www.chiph.re/automaths/test?categories=${'%2522x'.repeat(200)}`)
+			encodeQr(`https://www.chiph.re/automaths/test?modeles=${'%2522x'.repeat(200)}`)
 		).toBeNull();
 	});
 

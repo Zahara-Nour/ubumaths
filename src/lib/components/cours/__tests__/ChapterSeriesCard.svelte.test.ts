@@ -27,7 +27,7 @@ function serie(partiel: Partial<ChapterSeries> = {}): ChapterSeries {
 		hidden: false,
 		title: 'Étude de fonction — méthode',
 		questionCount: 4,
-		launchHref: '/automaths/test?categories=abc&mode=flash',
+		launchHref: '/automaths/test?modeles=abc&mode=flash',
 		...partiel
 	};
 }
@@ -39,7 +39,7 @@ describe('ChapterSeriesCard', () => {
 		const { container } = await render(ChapterSeriesCard, { series: serie() });
 		const lien = container.querySelector('a');
 		expect(lien?.textContent?.trim()).toBe('Étude de fonction — méthode');
-		expect(lien?.getAttribute('href')).toBe('/automaths/test?categories=abc&mode=flash');
+		expect(lien?.getAttribute('href')).toBe('/automaths/test?modeles=abc&mode=flash');
 		expect(texte(container as HTMLElement)).toContain('Flash-cards');
 		expect(texte(container as HTMLElement)).toContain('4 questions');
 	});

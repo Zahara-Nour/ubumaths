@@ -33,7 +33,10 @@ const SECTION_A = '22222222-2222-4222-8222-222222222222';
 const SECTION_B = '33333333-3333-4333-8333-333333333333';
 const FICHE = '44444444-4444-4444-8444-444444444444';
 
-const CATEGORIES = [
+const MODELE = '55555555-5555-4555-8555-555555555555';
+const ITEMS = [{ templateId: MODELE, quantity: 2, delay: 20 }];
+/** Ancienne forme (avant l'ADR 0035) : une catégorie, résolue vers son modèle publié */
+const ANCIENNES_LIGNES = [
 	{
 		category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
 		quantity: 2,
@@ -126,7 +129,7 @@ function cours(): PublicCourse {
 						series_id: 'serie-1',
 						title: 'Tables',
 						description: null,
-						categories: CATEGORIES,
+						categories: ITEMS,
 						form: 'flash',
 						section_id: SECTION_A,
 						section_order: 1,
@@ -144,7 +147,50 @@ describe('resolveCourseShareToken', () => {
 		const resultat = await resolveCourseShareToken(sb, JETON);
 		expect(rpc).toHaveBeenCalledWith('get_class_course_by_share_token', { p_token: JETON });
 		expect(resultat?.class_name).toBe('4e B');
-		expect(resultat?.chapters[0].series[0].categories).toEqual(CATEGORIES);
+		expect(resultat?.chapters[0].series[0].categories).toEqual(ITEMS);
+	});
+
+	it('une série d’ancienne forme (catégories) est relue : sa ligne pointe sur le modèle publié', async () => {
+		const c = cours();
+		c.chapters[0].series[0].categories = ANCIENNES_LIGNES;
+		const rpc = vi.fn(async () => ({ data: c, error: null }));
+		// Lecture des modèles des anciennes lignes : une requête, filtrée sur le quadruplet
+		const query = {
+			select: vi.fn(() => query),
+			eq: vi.fn(() => query),
+			or: vi.fn(() => query),
+			limit: vi.fn(async () => ({
+				data: [{ id: MODELE, theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 }],
+				error: null
+			}))
+		};
+		const from = vi.fn(() => query);
+		const sb = { rpc, from } as unknown as SupabaseClient<Database>;
+
+		const resultat = await resolveCourseShareToken(sb, JETON);
+
+		expect(from).toHaveBeenCalledTimes(1);
+		expect(from).toHaveBeenCalledWith('question_templates');
+		expect(resultat?.chapters[0].series[0].categories).toEqual(ITEMS);
+	});
+
+	it('modèles illisibles (panne) : le cours reste lisible, la série sans lien', async () => {
+		const c = cours();
+		c.chapters[0].series[0].categories = ANCIENNES_LIGNES;
+		const rpc = vi.fn(async () => ({ data: c, error: null }));
+		const query = {
+			select: vi.fn(() => query),
+			eq: vi.fn(() => query),
+			or: vi.fn(() => query),
+			limit: vi.fn(async () => ({ data: null, error: { message: 'panne' } }))
+		};
+		const sb = { rpc, from: vi.fn(() => query) } as unknown as SupabaseClient<Database>;
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+
+		const resultat = await resolveCourseShareToken(sb, JETON);
+
+		expect(resultat?.class_name).toBe('4e B');
+		expect(resultat?.chapters[0].series[0].categories).toBeNull();
 	});
 
 	it('rend null quand la fonction SQL rend null', async () => {
@@ -268,7 +314,7 @@ describe('buildPublicCourseView', () => {
 		const serie = plan[0].items[1];
 		expect(serie.kind).toBe('series');
 		if (serie.kind !== 'series') return;
-		expect(serie.series.launchHref).toMatch(/^\/automaths\/test\?categories=.*&mode=flash$/);
+		expect(serie.series.launchHref).toMatch(/^\/automaths\/test\?modeles=.*&mode=flash$/);
 		expect(serie.series.questionCount).toBe(2);
 	});
 

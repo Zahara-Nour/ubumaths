@@ -26,7 +26,7 @@ const ASSIGNMENT = '44444444-4444-4444-8444-444444444444';
 const EVALUATION = '55555555-5555-4555-8555-555555555555';
 
 const ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+	templateId: '4d5e6f70-4444-4444-8444-444444444444',
 	quantity: 4,
 	delay: 20
 };
@@ -136,14 +136,14 @@ describe('POST /api/evaluations/assignments/[id]/start', () => {
 		expect(serviceFrom).not.toHaveBeenCalled();
 	});
 
-	it('prof propriétaire, non destinataire : aperçu (catégories), aucune tentative', async () => {
+	it('prof propriétaire, non destinataire : aperçu (modèles de la série), aucune tentative', async () => {
 		const { call, fake } = setup({ role: 'teacher', userId: TEACHER, recipient: false });
 		const body = await (await call()).json();
 		expect(body).toMatchObject({
 			preview: true,
 			evaluation: { id: EVALUATION, form: 'course', time_limit: 420, title: 'Tables de 7' }
 		});
-		expect(body.evaluation.categories).toEqual([ITEM]);
+		expect(body.evaluation.items).toEqual([ITEM]);
 		expect(fake.on('test_sessions')).toHaveLength(0);
 		expect(serviceFrom).not.toHaveBeenCalled();
 	});

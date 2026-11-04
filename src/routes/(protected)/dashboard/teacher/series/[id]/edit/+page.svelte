@@ -34,6 +34,15 @@
 
 	let canSave = $derived(title.trim().length > 0 && items.length > 0 && !isSaving);
 
+	/** Anciennes lignes (catégories) sans modèle : l'enregistrement les retirera */
+	const lostLines = initial.unresolved_lines ?? 0;
+	const lostLinesMessage =
+		lostLines === 0
+			? null
+			: lostLines === 1
+				? "1 ancienne question de cette série n'existe plus : l'enregistrer la retirera."
+				: `${lostLines} anciennes questions de cette série n'existent plus : l'enregistrer les retirera.`;
+
 	function handleQuantity(index: number, delta: number) {
 		const next = items[index].quantity + delta;
 		if (next < 1 || next > 99) return;
@@ -114,13 +123,9 @@
 				<Card.Title>Questions</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				{#if (initial.unresolved_lines ?? 0) > 0}
-					{@const lost = initial.unresolved_lines ?? 0}
+				{#if lostLinesMessage}
 					<p class="mb-3 text-sm text-muted-foreground" role="status" data-lignes-perdues>
-						{lost} ancienne{lost > 1 ? 's' : ''} question{lost > 1 ? 's' : ''} de cette série n'existe{lost >
-						1
-							? 'nt'
-							: ''} plus : l'enregistrer la{lost > 1 ? 's' : ''} retirera.
+						{lostLinesMessage}
 					</p>
 				{/if}
 				{#if items.length === 0}

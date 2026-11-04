@@ -1,6 +1,6 @@
 /**
  * Forme « En classe » d'une série : projection des questions une à une
- * (UbuSlides), minuteur par catégorie, grilles de fin.
+ * (UbuSlides), minuteur par modèle, grilles de fin.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -25,11 +25,11 @@ function makeInstance(statement: string): QuestionInstance {
 	} as QuestionInstance;
 }
 
-function item(statement: string, delaySeconds: number, categoryKey: string): ClassroomItem {
-	return { instance: makeInstance(statement), delaySeconds, categoryKey };
+function item(statement: string, delaySeconds: number, templateId: string): ClassroomItem {
+	return { instance: makeInstance(statement), delaySeconds, templateId };
 }
 
-// Trois questions : A et C dans la catégorie x, B dans y
+// Trois questions : A et C du modèle x, B dans y
 function threeItems(): ClassroomItem[] {
 	return [item('Énoncé A', 10, 'x'), item('Énoncé B', 10, 'y'), item('Énoncé C', 10, 'x')];
 }
@@ -119,7 +119,7 @@ describe('ClassroomSeries — projection', () => {
 		expect(activeSlideText(container)).toContain('Énoncé C');
 	});
 
-	it('+5 s allonge la question courante et les suivantes de la même catégorie seulement', async () => {
+	it('+5 s allonge la question courante et les suivantes du même modèle seulement', async () => {
 		const { container } = await open(threeItems());
 		elapse(2000);
 
@@ -131,18 +131,18 @@ describe('ClassroomSeries — projection', () => {
 		elapse(12_999);
 		expect(activeSlideText(container)).toContain('Énoncé A');
 		elapse(1);
-		// B (catégorie y) garde 10 s
+		// B (modèle y) garde 10 s
 		expect(activeSlideText(container)).toContain('Énoncé B');
 		expect(text(container, 'classroom-duration')).toBe('10 s');
 
 		elapse(10_000);
-		// C (catégorie x) hérite des 15 s
+		// C (modèle x) hérite des 15 s
 		expect(activeSlideText(container)).toContain('Énoncé C');
 		expect(text(container, 'classroom-duration')).toBe('15 s');
 		expect(text(container, 'classroom-remaining')).toBe('15');
 	});
 
-	it('−5 s raccourcit la catégorie, sans descendre sous 5 s', async () => {
+	it('−5 s raccourcit le modèle, sans descendre sous 5 s', async () => {
 		const { container } = await open(threeItems());
 
 		click(container, 'Réduire la durée de 5 secondes');
