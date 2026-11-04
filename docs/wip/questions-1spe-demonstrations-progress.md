@@ -9,19 +9,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2361._
+_Mis à jour le 2026-11-04, après #2365._
 
-- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : fichiers du lot 5 (suites : 240,
-  241, 381, 242) mergés (#2361, § 10, D4), brouillons pas encore en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-5 --publier`
-  (prod), puis migration nœud + tag (avec 2 sous-notions neuves, D4), page à cocher, publication. Ensuite lots 6 à 9.
+- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lot 5 (suites : 240, 241, 381, 242)
+  en brouillon en prod, rangé et tagué (#2365, `db:migrate` fait, vérifié MCP, 2 sous-notions neuves). Page à
+  cocher publiée : https://claude.ai/artifact/CjbnjiD6DawhSe4zrQqKLU (0 verdict au 2026-11-04).
+- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`), puis David lance
+  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-approfondissements-5 --publier`. Ensuite lots 6 à 9.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
   `feat/questions-1spe-demonstrations` (rien à perdre ; `git push --delete` refusé par le classifieur le 2026-11-04).
 - **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer `.env.local`. Spec `bad_form` →
   `constraintViolations: ['form']`. Ports 5176-5177 pris par d'autres sessions (5178 libre le 2026-11-04).
   `db:migrate` depuis le dépôt principal à jour.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-5` (mergée ; nouvelle branche depuis `origin/main` pour la migration).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-5-tags` (mergée ; nouvelle branche depuis `origin/main` pour le lot 6).
 
 ---
 
@@ -353,3 +354,8 @@ absentes (ni actives, ni archivées). Migration `20261103233226_questions_1spe_a
 (gabarit `tspe_lot2` : 2 sous-notions neuves, Hanoï sur « explicite ou par récurrence »), test
 `questions-1spe-approfondissements-5-rangement-tags` 11/11 vert, rouge sans la migration (6 rouges, la suite
 principale ne s'exécute pas). Accès : Q5 de D3, personne.
+
+Mergée (#2365, CI verte après les tests frères : copie figée de l'arbre, `LATER`, test du lot 7 de Tle ; la garde de
+doc lit les commits, pas la description de PR). `db:migrate` le 2026-11-04, vérifié MCP : 4 modèles sur leur nœud,
+un tag chacun, `draft`, `updated_at` inchangé. Garde des niveaux verte. Page à cocher :
+https://claude.ai/artifact/CjbnjiD6DawhSe4zrQqKLU.
