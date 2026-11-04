@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { READ_ALL_PAGE_SIZE, readAllRows } from '../read-all-rows';
 
-// Simule PostgREST : rend la tranche [from, to] d'un tableau, plafonnée à 1000 lignes
-function pagedSource(total: number) {
+// Simule PostgREST : rend la tranche [from, to] d'un tableau, plafonnée à `maxRows` lignes
+function pagedSource(total: number, maxRows = 1000) {
 	const rows = Array.from({ length: total }, (_, i) => ({ id: i }));
 	const calls: [number, number][] = [];
 	const read = async (from: number, to: number) => {
 		calls.push([from, to]);
-		return { data: rows.slice(from, Math.min(to + 1, from + 1000)), error: null };
+		return { data: rows.slice(from, Math.min(to + 1, from + maxRows)), error: null };
 	};
 	return { read, calls };
 }
@@ -21,14 +21,21 @@ describe('readAllRows', () => {
 		expect(rows.map((r) => r.id)).toEqual(Array.from({ length: 2500 }, (_, i) => i));
 	});
 
-	it('demande des pages contiguës de READ_ALL_PAGE_SIZE lignes', async () => {
+	it('demande des pages contiguës, jusqu’à une page vide', async () => {
 		const { read, calls } = pagedSource(2500);
 		await readAllRows(read, 'des modèles');
 		expect(calls).toEqual([
 			[0, READ_ALL_PAGE_SIZE - 1],
-			[READ_ALL_PAGE_SIZE, 2 * READ_ALL_PAGE_SIZE - 1],
-			[2 * READ_ALL_PAGE_SIZE, 3 * READ_ALL_PAGE_SIZE - 1]
+			[1000, 1000 + READ_ALL_PAGE_SIZE - 1],
+			[2000, 2000 + READ_ALL_PAGE_SIZE - 1],
+			[2500, 2500 + READ_ALL_PAGE_SIZE - 1]
 		]);
+	});
+
+	it('serveur plafonné SOUS la taille demandée : lit quand même tout', async () => {
+		const { read } = pagedSource(1200, 500);
+		const rows = await readAllRows(read, 'des modèles');
+		expect(rows.map((r) => r.id)).toEqual(Array.from({ length: 1200 }, (_, i) => i));
 	});
 
 	it('exactement une page pleine : lit la page suivante, vide, puis s’arrête', async () => {

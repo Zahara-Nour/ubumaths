@@ -7,6 +7,10 @@
  *
  * La requête doit avoir un tri stable (terminer par `.order('id')`) :
  * sans lui, une ligne peut sauter ou être lue deux fois d'une page à l'autre.
+ *
+ * Arrêt sur une page VIDE, pas sur une page courte : si `max_rows` descendait
+ * sous la taille demandée, une page courte ne serait pas la dernière, et l'on
+ * retomberait en silence dans la troncature. Le prix : une requête de plus.
  */
 
 // Types
@@ -15,7 +19,7 @@ type PageResult<T> = PromiseLike<{ data: T[] | null; error: { message: string } 
 
 // Constantes
 
-/** Égale au plafond `max_rows` de PostgREST : une page plus courte est la dernière */
+/** Égale au plafond `max_rows` de PostgREST */
 export const READ_ALL_PAGE_SIZE = 1000;
 
 // Functions
@@ -30,10 +34,12 @@ export async function readAllRows<T>(
 	what: string
 ): Promise<T[]> {
 	const rows: T[] = [];
-	for (let from = 0; ; from += READ_ALL_PAGE_SIZE) {
+	for (;;) {
+		// La page suivante commence après la dernière ligne REÇUE, pas demandée
+		const from = rows.length;
 		const { data, error } = await read(from, from + READ_ALL_PAGE_SIZE - 1);
 		if (error) throw new Error(`lecture ${what} impossible — ${error.message}`);
-		rows.push(...(data ?? []));
-		if (!data || data.length < READ_ALL_PAGE_SIZE) return rows;
+		if (!data || data.length === 0) return rows;
+		rows.push(...data);
 	}
 }

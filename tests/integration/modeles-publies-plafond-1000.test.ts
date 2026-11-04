@@ -59,7 +59,6 @@ async function supprimerLeDecor() {
 
 describe('plus de 1000 modèles publiés', () => {
 	let attendus: Set<string>;
-	let totalPublies: number;
 
 	beforeAll(async () => {
 		await supprimerLeDecor();
@@ -68,14 +67,6 @@ describe('plus de 1000 modèles publiés', () => {
 		expect(error, 'le décor n’a pas pu être posé').toBeNull();
 		attendus = new Set((data ?? []).map((r) => r.id));
 		expect(attendus.size).toBe(NB_MODELES);
-
-		const { count, error: countError } = await service
-			.from('question_templates')
-			.select('id', { count: 'exact', head: true })
-			.eq('status', 'published');
-		expect(countError).toBeNull();
-		totalPublies = count ?? 0;
-		expect(totalPublies, 'le décor ne dépasse pas le plafond').toBeGreaterThan(1000);
 	}, 120_000);
 
 	afterAll(supprimerLeDecor);
@@ -86,10 +77,14 @@ describe('plus de 1000 modèles publiés', () => {
 			url: new URL('http://localhost/automaths/test')
 		} as never)) as { templates: Array<{ id: string }> };
 
+		// Pas de total exact : d'autres fichiers peuvent publier en parallèle.
+		// Les 1100 du décor dépassent à eux seuls le plafond de 1000.
 		const ids = data.templates.map((t) => t.id);
-		expect(ids, 'liste tronquée au plafond PostgREST').toHaveLength(totalPublies);
-		expect(new Set(ids).size, 'un modèle lu deux fois').toBe(totalPublies);
-		expect(ids.filter((id) => attendus.has(id))).toHaveLength(NB_MODELES);
+		expect(new Set(ids).size, 'un modèle lu deux fois').toBe(ids.length);
+		expect(
+			ids.filter((id) => attendus.has(id)),
+			'liste tronquée au plafond PostgREST'
+		).toHaveLength(NB_MODELES);
 	});
 
 	it('l’API des modèles publiés les rend tous', async () => {
@@ -98,7 +93,11 @@ describe('plus de 1000 modèles publiés', () => {
 		} as never);
 		const { templates } = (await reponse.json()) as { templates: Array<{ id: string }> };
 
-		expect(templates, 'liste tronquée au plafond PostgREST').toHaveLength(totalPublies);
-		expect(new Set(templates.map((t) => t.id)).size).toBe(totalPublies);
+		const ids = templates.map((t) => t.id);
+		expect(new Set(ids).size, 'un modèle lu deux fois').toBe(ids.length);
+		expect(
+			ids.filter((id) => attendus.has(id)),
+			'liste tronquée au plafond PostgREST'
+		).toHaveLength(NB_MODELES);
 	});
 });
