@@ -62,7 +62,7 @@ ainsi (voir la ligne du tableau) et sert de modèle.
 | Probabilités                       | `570376ab`                                                            | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts`                                     |
 | Variables aléatoires               | `0ef45afb` (8 sections, 18 ex. dont « Rappels »)                      | `d720d039` (5 sections, 11 ex.)  | `create-variables-aleatoires-1spe.ts` puis `refonte-variables-aleatoires-1spe.ts` |
 | Géométrie repérée                  | `6ee9c178` (10 neufs + 2 existants)                                   | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`                                                |
-| Automatismes (évolutions)          | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8           | —                                | `create-automatismes-evolutions-1spe.ts`                                          |
+| Automatismes (évolutions)          | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8           | —                                | _(script retiré, fiche en base)_                                                  |
 | Automatismes (droites)             | `0f98be04` « Automatismes : droites (1) », 2 séries de 8              | —                                | `create-automatismes-droites-1spe.ts`                                             |
 | Automatismes (lectures graphiques) | `7ff081db` « Automatismes : lectures graphiques (1) », 2 séries de 8  | —                                | `create-automatismes-lectures-graphiques-1spe.ts`                                 |
 | Automatismes (statistiques)        | `d37413a3` « Automatismes : statistiques (1) », 2 séries de 8         | —                                | `create-automatismes-statistiques-1spe.ts`                                        |
@@ -200,7 +200,7 @@ toute la classe.
    créé en brouillon par `pnpm tsx scripts/create-questions.ts --dir <dossier> [--publier]`
    (`--mettre-a-jour` pour corriger un modèle encore en brouillon). Les modèles d'autres niveaux
    se réutilisent tels quels (pas de niveau ajouté).
-2. Fiche : script sur le modèle de `scripts/create-automatismes-evolutions-1spe.ts` — chaque
+2. Fiche : script sur le modèle de `scripts/create-automatismes-droites-1spe.ts` — chaque
    **série** est un exercice listant des (modèle, graine) ; `buildSerie`
    (`src/lib/worksheets/serie-automatismes.ts`) met les cases en pointillés et les réponses en gras
    au corrigé, et convertit chaque formule maison `~…~` / `~~…~~` en LaTeX `$…$` / `$$…$$` avec

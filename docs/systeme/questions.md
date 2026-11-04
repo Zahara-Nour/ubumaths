@@ -121,7 +121,7 @@ rend un exercice privé écrit `search_indexed: false` dans la même requête
 Seul `series.ts` concerne les questions : composition d'une série (`seriesItemSchema`,
 `seriesItemsSchema`, `savedSeriesItemsSchema`, bornes `MAX_SERIES_ITEMS`, `MAX_ITEM_QUANTITY`,
 `MAX_SERIES_QUESTIONS`, `MAX_QUESTION_DELAY_SECONDS`), relue aussi pour un lien
-`/automaths/panier?modeles=…` (`buildSeriesLink`). L'ancienne forme (catégories) : `$lib/questions/series-legacy.ts`
+`/automaths/panier?modeles=…` (`buildSeriesLink`). L'ancienne forme (catégories) n'est plus relue
 ([evaluations.md § Les formes d'une série](evaluations.md#les-formes-dune-série)).
 `shop.ts` et `marketplace.ts` relèvent de [jeux-et-economie](jeux-et-economie.md).
 
@@ -204,8 +204,8 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   - `questionCart.svelte.ts` (`questionCart`) : le **panier**, des lignes `SeriesItem`
     (`templateId`, nombre de questions 1 à 99, durée par question) ; persistant en `localStorage`
     (`chiphre_question_cart`). `replaceWith` / `mergeItems` y chargent une série (lien de série).
-    Un panier d'avant l'ADR 0035 (catégories) attend les modèles : `questionTemplatesCache` appelle
-    `resolveLegacy` à chaque chargement.
+    Un panier d'avant l'ADR 0035 (catégories) n'est plus relu : au chargement ses lignes sont
+    retirées, le panier réécrit, et un message le dit.
   - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés et arbre des
     notions (`nodes`, nœuds non archivés), **seule source des pages Automaths** (catalogue, panier, `test`) — leurs `load` n'en envoient aucun.
     `fetchTemplates()` lit `/api/questions/templates/all` une fois par onglet (lectures
@@ -242,7 +242,7 @@ lisibles par les élèves et par anon (Automaths) — réponses attendues compri
 
 ### 1. Le modèle
 
-Un `QuestionTemplate` est **rangé dans l'arbre des notions** (`classification_node_id`, une notion ou une sous-notion, facultatif ; [ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)) et porte un `level` ≥ 1 qui l'ordonne dans sa rubrique. L'ancien quadruplet (`theme`, `domain`, `subdomain`) n'est plus demandé ni écrit : un modèle existant garde ses valeurs en base (les anciens liens s'en servent), un modèle neuf n'en a pas. L'éditeur ne les propose plus ; l'API les accepte puis les ignore. Les fichiers de lot (`scripts/questions/**`, `create-questions.ts`, `toTemplateInsertRow`) ne les portent plus non plus : ils sont refusés à la lecture, et un fichier retrouve son modèle par l'`id` écrit en tête après la création ([couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md)). Un nœud refusé par le trigger de la base (branche, archivé) ou la clé étrangère répond 400 en français.
+Un `QuestionTemplate` est **rangé dans l'arbre des notions** (`classification_node_id`, une notion ou une sous-notion, facultatif ; [ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)) et porte un `level` ≥ 1 qui l'ordonne dans sa rubrique. L'ancien quadruplet (`theme`, `domain`, `subdomain`) n'est plus lu ni écrit par le code : types, schémas Zod, API et OpenAPI ne le portent plus (les colonnes restent en base jusqu'au lot 4b ; un vieil onglet qui l'envoie le voit retiré par le schéma, sans erreur). Les fichiers de lot (`scripts/questions/**`, `create-questions.ts`, `toTemplateInsertRow`) ne les portent plus non plus : ils sont refusés à la lecture, et un fichier retrouve son modèle par l'`id` écrit en tête après la création ([couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md)). Un nœud refusé par le trigger de la base (branche, archivé) ou la clé étrangère répond 400 en français.
 Il porte aussi
 des `grades`, un `status` (`draft` | `published`), des `options` (contraintes,
 `orderIndependent`, `courseCard`, `courseQuestion`, `answerAssumptions`), des `testSpecs`, un
@@ -478,9 +478,9 @@ construire » héritent encore (`answerKind`, unité, précision, `requiredForm`
 
 **Sens de deux majuscules collées** (`AB` : longueur du segment ou produit A × B) : résolu **une
 fois** à la génération par `resolveCapitalPairs` (`capital-pairs.ts`), dans l'ordre : déclaration
-`shared.capitalPairs` → contexte (thème `Graphes et matrices`, branches `Matrices` et `Graphes`,
-thème contenant « physique » → produit) → **longueur** par défaut. Un modèle neuf ou copié n'a plus
-de thème (ADR 0035) : l'éditeur prend le contexte dans l'ancien thème, sinon dans la branche de
+`shared.capitalPairs` → contexte (branches `Matrices` et `Graphes` pour un modèle ; pour un exercice, son sujet
+`Graphes et matrices` ou contenant « physique » → produit) → **longueur** par défaut. Un modèle n'a plus
+de thème (ADR 0035) : l'éditeur prend le contexte dans la branche de
 « Rangé dans », et à l'enregistrement écrit `shared.capitalPairs = 'product'` si le choix est
 « selon le contexte » et que le contexte l'impose (`capitalPairsToWrite`) ; le générateur ne lit
 jamais l'arbre. Les anciens modèles « Graphes et matrices » ont reçu cette déclaration par migration. Copié sur l'instance (`QuestionInstance.capitalPairs`, toujours

@@ -203,7 +203,7 @@ worksheets (type, status, config jsonb, translations, style_id, school_id)
   `manual`, `immediate`, `scheduled`, `after_due`). Libérer échoue plutôt que de libérer à un
   sous-ensemble silencieux d'élèves.
 - **Fiche d'automatismes** : exercices ordinaires dont l'énoncé est une série figée (graine fixe,
-  même copie pour la classe), créés par script (`scripts/create-automatismes-evolutions-1spe.ts`) —
+  même copie pour la classe), créés par script (sur le modèle de `scripts/create-automatismes-droites-1spe.ts`) —
   [ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md),
   [pratiques § 2 bis](../pratiques/fiches-exercices.md).
 
