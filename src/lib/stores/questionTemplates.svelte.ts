@@ -42,6 +42,7 @@
  */
 
 import type { QuestionTemplate } from '$lib/questions/types';
+import type { CatalogueNode } from '$lib/questions/catalogue';
 
 /** Liste publique des modèles publiés (gardée 5 min par Vercel) */
 const TEMPLATES_URL = '/api/questions/templates/all';
@@ -61,6 +62,8 @@ export interface TemplateCategory {
  */
 interface TemplatesCache {
 	templates: QuestionTemplate[];
+	/** Arbre des notions (nœuds non archivés), qui range le catalogue */
+	nodes: CatalogueNode[];
 	lastFetched: number | null;
 	isLoading: boolean;
 	error: string | null;
@@ -69,6 +72,7 @@ interface TemplatesCache {
 class QuestionTemplatesStore {
 	private cache = $state<TemplatesCache>({
 		templates: [],
+		nodes: [],
 		lastFetched: null,
 		isLoading: false,
 		error: null
@@ -88,6 +92,11 @@ class QuestionTemplatesStore {
 	 */
 	get templates(): QuestionTemplate[] {
 		return this.cache.templates;
+	}
+
+	/** Arbre des notions (nœuds non archivés), reçu avec les modèles */
+	get nodes(): CatalogueNode[] {
+		return this.cache.nodes;
 	}
 
 	/**
@@ -152,9 +161,20 @@ class QuestionTemplatesStore {
 				throw new Error('Impossible de charger les modèles');
 			}
 
-			const data = (await response.json()) as { templates?: QuestionTemplate[] };
+			const data = (await response.json()) as {
+				templates?: QuestionTemplate[];
+				nodes?: CatalogueNode[];
+			};
+
+			// Réponse sans arbre : Vercel sert encore une liste d'avant le déploiement
+			// (jusqu'à 10 min). Sans arbre, tout le catalogue serait « non classé » :
+			// une relecture qui contourne le cache, une seule fois.
+			if (!Array.isArray(data.nodes) && !bypassSharedCache) {
+				return await this.load(true);
+			}
 
 			this.cache.templates = data.templates ?? [];
+			this.cache.nodes = data.nodes ?? [];
 			this.cache.lastFetched = Date.now();
 			// Invalidée pendant la lecture : la liste reçue peut être antérieure
 			if (this.invalidations === invalidationsAtStart) this.stale = false;
@@ -274,6 +294,7 @@ class QuestionTemplatesStore {
 	 */
 	clear(): void {
 		this.cache.templates = [];
+		this.cache.nodes = [];
 		this.cache.lastFetched = null;
 		this.cache.error = null;
 		this.stale = false;

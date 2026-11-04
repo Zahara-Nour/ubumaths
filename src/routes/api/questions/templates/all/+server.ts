@@ -4,6 +4,8 @@
  *
  * Liste publique (sans authentification) qui remplit le cache des modèles du
  * navigateur (`questionTemplatesCache`) : catalogue Automaths, panier, test.
+ * Elle porte aussi l'arbre des notions (nœuds non archivés, colonnes du
+ * rangement seulement), qui range le catalogue : même cache, une seule requête.
  *
  * Gardée 5 min par Vercel (`s-maxage=300`), puis servie périmée pendant qu'il
  * la relit en arrière-plan : la base n'est plus relue à chaque visite. Un
@@ -22,6 +24,9 @@ import { createServerLogger } from '$lib/utils/logger';
 import { readAllRows } from '$lib/server/read-all-rows';
 import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
 
+/** Colonnes de l'arbre dont le catalogue a besoin (`CatalogueNode`) */
+const NODE_COLUMNS = 'id, kind, name, parent_id, position';
+
 const logger = createServerLogger('api/questions/templates/all/+server');
 
 /**
@@ -33,24 +38,40 @@ const CACHE_CONTROL = 'public, max-age=0, s-maxage=300, stale-while-revalidate=3
 export const GET: RequestHandler = async ({ setHeaders }) => {
 	const supabase = createAnonymousSupabase();
 
-	// Tous les modèles publiés, page par page (PostgREST tronque à 1000 lignes)
+	// Tous les modèles publiés, et l'arbre qui les range, page par page
+	// (PostgREST tronque à 1000 lignes). Lus en parallèle, pas au même instant :
+	// un nœud créé entre les deux lectures laisse ses modèles « Non classés »
+	// jusqu'à la prochaine relecture (5 à 10 min), sans en perdre aucun.
 	let templates;
+	let nodes;
 	try {
-		templates = await readAllRows(
-			(from, to) =>
-				supabase
-					.from('question_templates')
-					.select('*')
-					.eq('status', 'published')
-					.order('id')
-					.range(from, to),
-			'des modèles publiés'
-		);
+		[templates, nodes] = await Promise.all([
+			readAllRows(
+				(from, to) =>
+					supabase
+						.from('question_templates')
+						.select('*')
+						.eq('status', 'published')
+						.order('id')
+						.range(from, to),
+				'des modèles publiés'
+			),
+			readAllRows(
+				(from, to) =>
+					supabase
+						.from('classification_nodes')
+						.select(NODE_COLUMNS)
+						.is('archived_at', null)
+						.order('id')
+						.range(from, to),
+				"de l'arbre des notions"
+			)
+		]);
 	} catch (readError) {
 		logger.error('[GET /api/questions/templates/all] Error fetching templates:', readError);
 		throw error(500, 'Impossible de charger les modèles');
 	}
 
 	setHeaders({ 'cache-control': CACHE_CONTROL });
-	return json({ templates });
+	return json({ templates, nodes });
 };

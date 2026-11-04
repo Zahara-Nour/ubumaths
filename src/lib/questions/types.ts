@@ -622,6 +622,13 @@ export interface QuestionTemplate {
 	/** Difficulty level as positive integer (no max) - independent from grades */
 	level: number;
 
+	/**
+	 * Nœud de l'arbre des notions (notion ou sous-notion, ADR 0019). Nom de
+	 * colonne brut : la liste publique (`/api/questions/templates/all`) ne passe
+	 * pas par `mapDbTemplateToForm`.
+	 */
+	classification_node_id?: string | null;
+
 	/** Template status: 'draft' (work-in-progress) or 'published' (active) */
 	status: 'draft' | 'published';
 

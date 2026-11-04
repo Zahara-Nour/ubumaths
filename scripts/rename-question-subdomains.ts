@@ -4,9 +4,9 @@
  *
  * ⚠️ SIMULATION PAR DÉFAUT : rien n'est écrit sans `--publier`.
  *
- * Les catégories ne sont que des champs texte des modèles ; leur ordre d'affichage vit dans
- * `src/lib/questions/category-order.ts`, qui doit porter le NOUVEAU nom AVANT le renommage
- * (sinon la catégorie se range en fin de liste). Seuls les renommages listés dans `RENOMMAGES`
+ * Les sous-domaines ne sont que des champs texte des modèles ; le catalogue ne les lit plus (il
+ * suit l'arbre des notions), mais les séries enregistrées, si : un renommage les casse tant que
+ * le lot 2 du chantier `automaths-arbre` n'est pas livré (ADR 0035). Seuls les renommages listés dans `RENOMMAGES`
  * sont faits (décision de David du 2026-10-01 : sous-domaines des suites sans accent).
  *
  * Pour chaque renommage : les modèles concernés sont lus, puis mis à jour par id ; chaque
