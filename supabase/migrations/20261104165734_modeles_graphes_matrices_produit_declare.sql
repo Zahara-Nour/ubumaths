@@ -23,7 +23,9 @@
 --
 -- Rollback (retire la clé posée ; limite : il ne distingue pas une clé posée par
 -- cette migration d'un `product` déclaré à la main ou par l'éditeur depuis, sur
--- un modèle de ce thème. Le sens rendu reste le même, le thème le redonnant) :
+-- un modèle de ce thème. Le sens rendu reste le même, le thème le redonnant.
+-- Autre limite : un `shared` NULL avant la migration (19 des 21 en prod) revient en
+-- `{}`, lu de la même façon par le générateur) :
 -- ROLLBACK:BEGIN
 -- update public.question_templates
 --    set shared = shared - 'capitalPairs'
