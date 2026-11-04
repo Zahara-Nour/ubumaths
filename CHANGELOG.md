@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.71.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.70.0...v0.71.0) (2026-11-04)
+
+### ✨ Features
+
+- **automaths:** catalogue rangé selon l'arbre des notions (branche, notion, sous-notion) ([4f3f3c5](https://github.com/Zahara-Nour/ubumaths/commit/4f3f3c55bb26df3a0894b334167ea0d31aeb1f6b))
+- **automaths:** éditeur de série et écrans de contrôle sur le modèle (ADR 0035) ([42c2115](https://github.com/Zahara-Nour/ubumaths/commit/42c2115e12a172cf4a6e26d1de43df9d8dc11c45))
+- **automaths:** une série enregistre des modèles (ADR 0035, lot 2a, en cours) ([1600e2a](https://github.com/Zahara-Nour/ubumaths/commit/1600e2a98a23ac5ce4d212ac1b0d1240920c3acf))
+- **db:** category_key facultative sur les questions de tentative (ADR 0035) ([09361d5](https://github.com/Zahara-Nour/ubumaths/commit/09361d5d12df7eb91f21d2a79c8cde9c86099d70))
+- **db:** thème et domaine facultatifs sur les modèles de question (ADR 0035) ([7127d2a](https://github.com/Zahara-Nour/ubumaths/commit/7127d2abcfbaa5c13a5c85aa4c2c1aee2e3018ff))
+- **panier:** un clic sur une forme lance la série, sauf la Course aux nombres ([6949693](https://github.com/Zahara-Nour/ubumaths/commit/6949693f4742158306c3f033256639bdd0166dfc))
+- **questions:** modèle rangé dans l'arbre, sans thème ni domaine (ADR 0035) ([11d900b](https://github.com/Zahara-Nour/ubumaths/commit/11d900bd5219f89234beef84e584e4853178b22e))
+
+### 🐛 Bug Fixes
+
+- **automaths:** catalogue sans arbre relu hors cache, non classés repliés, un seul avertissement ([9697779](https://github.com/Zahara-Nour/ubumaths/commit/9697779fbe1ec46e5ca54966a31f2635299836fd))
+- **automaths:** plafond des anciennes lignes signalé, jamais tronqué en silence ([03118c9](https://github.com/Zahara-Nour/ubumaths/commit/03118c9a61f1c5e28b841b9c2e6796a4b9eea6d8))
+- **automaths:** retours de revue (doublons de lien, réseau, panier ancien, lignes perdues) ([9b60fab](https://github.com/Zahara-Nour/ubumaths/commit/9b60fab526f6061fb0bf70145be7f474445dad4c))
+- **panier:** fenêtre de choix du test qui défile, bouton Commencer atteignable ([cbb2198](https://github.com/Zahara-Nour/ubumaths/commit/cbb2198d3ddabea8100bc3aadaac3894cc468951))
+- **questions:** sens de AB lu dans l'arbre, correctifs de la revue (ADR 0035) ([02494dd](https://github.com/Zahara-Nour/ubumaths/commit/02494ddae7f284aa8d7fd242a9619eb12a0c9b88))
+- **questions:** seul un refus de rangement connu devient un 400 ([2d3d5f5](https://github.com/Zahara-Nour/ubumaths/commit/2d3d5f53db17869a572b980d39db4f71eb5767eb))
+
+### 📚 Documentation
+
+- **adr:** 0035, une série enregistre des modèles, plus des catégories ([bd5bb6d](https://github.com/Zahara-Nour/ubumaths/commit/bd5bb6d3043177d51976e178d5d3bc9077d0e364))
+- **db:** category_key facultative (ADR 0035) ([d3b0da0](https://github.com/Zahara-Nour/ubumaths/commit/d3b0da00aae555505568f03ebade83a56462b0c9))
+- **db:** limite du rollback de Q13, shared NULL rendu en objet vide ([916555d](https://github.com/Zahara-Nour/ubumaths/commit/916555d69ccf7905f0f354296750f87d6dc7ac3e))
+- **db:** ordre du rollback de la migration thème/domaine facultatifs ([e58f7d0](https://github.com/Zahara-Nour/ubumaths/commit/e58f7d0154e409bf6d0af1058aedb9f36a17cb46))
+- **evaluations:** couvre series-lines.ts ([cbac7b7](https://github.com/Zahara-Nour/ubumaths/commit/cbac7b715fb0e604ec1b65ceda9a1d71ec5fe1f0))
+- **questions:** couvre la lecture de l'arbre et les refus de rangement ([61c99eb](https://github.com/Zahara-Nour/ubumaths/commit/61c99eb3b4dc29e64994d26b995155423702b905))
+- **systeme:** nom des modèles sans quadruplet et sens AB déclaré (ADR 0035) ([7b054c0](https://github.com/Zahara-Nour/ubumaths/commit/7b054c0f0f01691f071aad52f2e64dd0f9fe3da0))
+- **wip:** automaths-apercus clos, mesuré en prod (0.70.0) et archivé ([df872bb](https://github.com/Zahara-Nour/ubumaths/commit/df872bbe67b093730360b6d4da35e03e837d1551))
+- **wip:** automaths-arbre, 2a-1 mergé, 2a-2 en cours ([87fb123](https://github.com/Zahara-Nour/ubumaths/commit/87fb1235253c22e0b4f785f67926d668cde13932))
+- **wip:** automaths-arbre, 2a-2 mergé ([#2380](https://github.com/Zahara-Nour/ubumaths/issues/2380)), vérification notée ([9d011c4](https://github.com/Zahara-Nour/ubumaths/commit/9d011c4ab520e969e537f16dce1232aa3fc34b4d))
+- **wip:** automaths-arbre, 2a-2 prêt pour PR ([9e2802a](https://github.com/Zahara-Nour/ubumaths/commit/9e2802aef5033a51330ca4849f8dc51cd9dd9644))
+- **wip:** automaths-arbre, 3a-1 mergé, 3a-2 en revue ([98d725b](https://github.com/Zahara-Nour/ubumaths/commit/98d725bfe02830967902a3e3686a612d25e2f64e))
+- **wip:** automaths-arbre, 3a-2 mergé ([#2382](https://github.com/Zahara-Nour/ubumaths/issues/2382)), Q13 migrée, essai noté ([eb6191f](https://github.com/Zahara-Nour/ubumaths/commit/eb6191f9494908ed412260fc931560fc1339c0fa))
+- **wip:** automaths-arbre, docs à reprendre avant la PR 3a-2 ([44dfe38](https://github.com/Zahara-Nour/ubumaths/commit/44dfe381055c8408169ba4d13073ca9ea97bb602))
+- **wip:** automaths-arbre, lot 1 mergé ([#2378](https://github.com/Zahara-Nour/ubumaths/issues/2378)), vérification notée ([a8f7fd0](https://github.com/Zahara-Nour/ubumaths/commit/a8f7fd05811608c4d8bcdf08ae3d38f156964f76))
+- **wip:** automaths-arbre, ouverture du chantier ([a42e47b](https://github.com/Zahara-Nour/ubumaths/commit/a42e47b8b0d24eaf61043401cee2d62e3d3f5436))
+- **wip:** automaths-arbre, phase 0 (relevé et questions) ([6822482](https://github.com/Zahara-Nour/ubumaths/commit/68224822edb90728e7a39689623fadab436106d0))
+- **wip:** automaths-arbre, phase 0 du lot 2 (relevé, Q5-Q8) ([534cf6a](https://github.com/Zahara-Nour/ubumaths/commit/534cf6a4ffaab213317f8985dafd7a21b04b66a9))
+- **wip:** automaths-arbre, Q1 tranchée (ADR 0035) ([b3943e1](https://github.com/Zahara-Nour/ubumaths/commit/b3943e1b4848860487d69b7d9a8c5e01ff8cf99f))
+- **wip:** automaths-arbre, Q5-Q8 tranchées, lot 2a-1 ([7ba6982](https://github.com/Zahara-Nour/ubumaths/commit/7ba6982d445ee70b8cc786c4acebdb3a6f65d695))
+- **wip:** fenetre-choix-test clos après [#2377](https://github.com/Zahara-Nour/ubumaths/issues/2377), journal archivé ([47c03c1](https://github.com/Zahara-Nour/ubumaths/commit/47c03c16e195f9a41e75eee39cd972d611070dcb))
+- **wip:** shtam-illustrations, reprendre ici après [#2326](https://github.com/Zahara-Nour/ubumaths/issues/2326) ([aa07fdc](https://github.com/Zahara-Nour/ubumaths/commit/aa07fdcfaa100521feb99a21f4bd32be33c37f32))
+
 ## [0.70.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.69.0...v0.70.0) (2026-11-04)
 
 ### ✨ Features
