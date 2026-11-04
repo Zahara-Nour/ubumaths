@@ -8,7 +8,6 @@
 	 * de la notion, sinon `null` (modèle « Non rangé »). Une branche seule ne se
 	 * range pas : elle ne fait que guider le choix de la notion.
 	 */
-	import { untrack } from 'svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import {
 		childrenOf,
@@ -47,9 +46,15 @@
 
 	const nodesById = $derived(indexNodes(nodes));
 
-	// Les trois niveaux affichés : initialisés depuis la valeur enregistrée, puis
-	// pilotés par les choix (une branche choisie seule n'a pas de nœud à écrire).
-	let selection = $state<CascadeSelection>(untrack(() => selectionOf(value, indexNodes(nodes))));
+	// Choix de l'utilisateur, gardé tant qu'il correspond à `value` (une branche choisie seule
+	// n'a pas de nœud à écrire : `value` reste `null` et la branche doit rester affichée).
+	let choice = $state<CascadeSelection | null>(null);
+
+	// Les trois niveaux affichés : le choix local s'il dit la même chose que `value`, sinon
+	// `value` (changée de l'extérieur, par exemple au retour du mode JSON) fait foi.
+	const selection = $derived<CascadeSelection>(
+		choice && nodeIdOfSelection(choice) === (value ?? null) ? choice : selectionOf(value, nodesById)
+	);
 
 	const branchItems = $derived([
 		{ value: NONE, label: 'Aucune branche' },
@@ -86,7 +91,7 @@
 	// ============================================================================
 
 	function choose(next: CascadeSelection) {
-		selection = next;
+		choice = next;
 		value = nodeIdOfSelection(next);
 	}
 

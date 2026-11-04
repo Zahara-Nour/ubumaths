@@ -47,6 +47,8 @@
 	} from '$lib/questions/generic-functions';
 	import {
 		capitalPairsChoiceItems,
+		capitalPairsContextOf,
+		capitalPairsToWrite,
 		capitalPairsChoiceOf,
 		type CapitalPairsChoice
 	} from '$lib/questions/capital-pairs';
@@ -373,8 +375,10 @@
 	let capitalPairsChoice = $state<CapitalPairsChoice>(
 		capitalPairsChoiceOf(initialTemplate?.shared?.capitalPairs)
 	);
-	// Options de la liste : la première dit ce que donne le contexte (thème courant)
-	let capitalPairsItems = $derived(capitalPairsChoiceItems(theme));
+	// Contexte : ancien thème du modèle, sinon branche de « Rangé dans » (ADR 0035)
+	const capitalPairsContext = $derived(capitalPairsContextOf(theme, chosenPlace?.branch.name));
+	// Options de la liste : la première dit ce que donne le contexte
+	let capitalPairsItems = $derived(capitalPairsChoiceItems(capitalPairsContext));
 	let genericFunctionsError = $derived.by(() => {
 		const result = genericFunctionNamesSchema.safeParse(
 			parseGenericFunctionNames(genericFunctionsText)
@@ -459,7 +463,7 @@
 	let capitalPairsWarnings = $derived(
 		figureNameWarnings({
 			shared: capitalPairsChoice === 'auto' ? undefined : { capitalPairs: capitalPairsChoice },
-			theme,
+			theme: capitalPairsContext,
 			variations
 		})
 	);
@@ -756,8 +760,10 @@
 		if (genericFunctionNames.length > 0) shared.genericFunctions = genericFunctionNames;
 		// Absente quand décochée : un modèle sans l'option reste identique
 		if (cleanCoefficients) shared.cleanCoefficients = true;
-		// Absente sur « selon le contexte » : le thème décide à la génération
-		if (capitalPairsChoice !== 'auto') shared.capitalPairs = capitalPairsChoice;
+		// « Selon le contexte » + contexte « produit » (branche Matrices, Graphes…) : déclaré
+		// explicitement, le générateur ne lit pas l'arbre. Sinon absente (longueur par défaut).
+		const capitalPairsWritten = capitalPairsToWrite(capitalPairsChoice, capitalPairsContext);
+		if (capitalPairsWritten) shared.capitalPairs = capitalPairsWritten;
 
 		// Build defaultDisplayOptions
 		const displayOpts: DisplayOptions = {};

@@ -20,6 +20,8 @@ export interface FakeDb {
 	inserts: Row[];
 	/** Refus de la base sur le nœud de rangement (trigger / clé étrangère), pour un nœud non nul */
 	nodeError?: { code: string; message: string };
+	/** Refus de l'ancien index unique des publiés (23505) à toute écriture sur un modèle existant */
+	uniqueError?: { code: string; message: string };
 }
 
 export const USER_ID = '11111111-1111-4111-8111-111111111111';
@@ -71,6 +73,7 @@ function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 		if (db.nodeError && written && typeof written.classification_node_id === 'string') {
 			return { data: null, error: db.nodeError };
 		}
+		if (db.uniqueError && patch) return { data: null, error: db.uniqueError };
 		if (inserted) {
 			const row = {
 				id: '44444444-4444-4444-8444-444444444444',

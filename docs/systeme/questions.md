@@ -478,8 +478,12 @@ construire » héritent encore (`answerKind`, unité, précision, `requiredForm`
 
 **Sens de deux majuscules collées** (`AB` : longueur du segment ou produit A × B) : résolu **une
 fois** à la génération par `resolveCapitalPairs` (`capital-pairs.ts`), dans l'ordre : déclaration
-`shared.capitalPairs` → contexte (thème `Graphes et matrices`, thème contenant « physique » →
-produit) → **longueur** par défaut. Copié sur l'instance (`QuestionInstance.capitalPairs`, toujours
+`shared.capitalPairs` → contexte (thème `Graphes et matrices`, branches `Matrices` et `Graphes`,
+thème contenant « physique » → produit) → **longueur** par défaut. Un modèle neuf ou copié n'a plus
+de thème (ADR 0035) : l'éditeur prend le contexte dans l'ancien thème, sinon dans la branche de
+« Rangé dans », et à l'enregistrement écrit `shared.capitalPairs = 'product'` si le choix est
+« selon le contexte » et que le contexte l'impose (`capitalPairsToWrite`) ; le générateur ne lit
+jamais l'arbre. Les anciens modèles « Graphes et matrices » ont reçu cette déclaration par migration. Copié sur l'instance (`QuestionInstance.capitalPairs`, toujours
 présent sur une instance neuve, et dans `toPublicQuestion`). Une instance sans le champ (servie
 avant) est lue comme avant : produit, défaut du parseur. L'éditeur propose « Deux majuscules
 collées (AB) désignent : » et signale une réponse attendue qui contient un nom de figure (`ABC`)

@@ -183,7 +183,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		const [{ data: qs }, { data: evals }] = await Promise.all([
 			locals.supabase
 				.from('question_templates')
-				.select('id, title, theme, domain, level')
+				.select('id, title, level')
 				.contains('grades', [classData.grade])
 				.order('title', { ascending: true })
 				.limit(500),
@@ -198,9 +198,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		]);
 		questionOptions = (qs ?? []).map((q) => ({
 			value: q.id,
-			// Le titre seul se répète beaucoup d'une question à l'autre ; la
-			// catégorie est ce qui les distingue dans la liste.
-			label: `${q.title} — ${q.theme} / ${q.domain} (niv. ${q.level})`
+			// Un modèle neuf n'a plus de thème ni de domaine (ADR 0035) : titre et niveau
+			label: `${q.title} (niv. ${q.level})`
 		}));
 		evaluationOptions = (evals ?? [])
 			.map((e) => ({

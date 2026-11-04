@@ -56,4 +56,26 @@ describe('ClassificationNodePicker', () => {
 		await expect.element(page.getByRole('button', { name: /^Notion/ })).toBeDisabled();
 		await expect.element(page.getByRole('button', { name: /^Sous-notion/ })).toBeDisabled();
 	});
+
+	it('suit `value` quand il change de l’extérieur (retour du mode JSON)', async () => {
+		const screen = await renderPicker('n1');
+		await expect.element(page.getByRole('button', { name: 'Notion : Fractions' })).toBeVisible();
+
+		await screen.rerender({ nodes: NODES, value: 'n3' });
+
+		await expect.element(page.getByRole('button', { name: 'Branche : Géométrie' })).toBeVisible();
+		await expect.element(page.getByRole('button', { name: 'Notion : Triangles' })).toBeVisible();
+
+		await screen.rerender({ nodes: NODES, value: null });
+		await expect.element(page.getByRole('button', { name: 'Branche : aucune' })).toBeVisible();
+	});
+
+	it('une branche choisie seule reste affichée (aucun nœud à écrire)', async () => {
+		await renderPicker(null);
+
+		await page.getByRole('button', { name: /^Branche/ }).click();
+		await page.getByRole('option', { name: 'Calcul' }).click();
+
+		await expect.element(page.getByRole('button', { name: 'Branche : Calcul' })).toBeVisible();
+	});
 });

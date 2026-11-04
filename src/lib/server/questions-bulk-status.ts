@@ -53,6 +53,9 @@ const ID_CHUNK_SIZE = 100;
 const NOT_FOUND = 'modèle introuvable';
 const NOT_SAVED = "la modification n'a pas été enregistrée par la base (droits insuffisants ?)";
 const UNIQUE_VIOLATION = '23505';
+/** Refus de l'ancien index unique des publiés (retiré au lot 4, ADR 0035) */
+export const OLD_CATEGORY_TAKEN =
+	'un modèle publié occupe déjà la même ancienne catégorie (thème, domaine, sous-domaine, niveau) : change le niveau ou range-le autrement avant de le publier';
 
 // ============================================================================
 // FUNCTIONS
@@ -145,9 +148,7 @@ function settle(
 			id: row.id,
 			title: row.title,
 			reasons: [
-				conflictIds.has(row.id)
-					? 'la base a refusé le lot : un modèle publié occupe la même ancienne catégorie (thème, domaine, sous-domaine, niveau)'
-					: NOT_SAVED
+				conflictIds.has(row.id) ? `la base a refusé le lot : ${OLD_CATEGORY_TAKEN}` : NOT_SAVED
 			]
 		});
 	}

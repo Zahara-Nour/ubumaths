@@ -19,7 +19,7 @@ import { validateUuidParam } from '$lib/server/validation/params';
 import { toJson } from '$lib/types/database-helpers';
 import type { Database } from '$lib/types/database';
 import { toQuestionTemplate } from '$lib/types/question-template';
-import { withoutDbMetadata } from '$lib/server/questions-bulk-status';
+import { OLD_CATEGORY_TAKEN, withoutDbMetadata } from '$lib/server/questions-bulk-status';
 import { templatePublicationErrors } from '$lib/server/template-publication';
 import {
 	assumptionCollisionMessage,
@@ -236,6 +236,11 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			const nodeMessage = classificationNodeErrorMessage(updateError);
 			if (nodeMessage) {
 				return json({ success: false, errors: [nodeMessage] }, { status: 400 });
+			}
+			// Ancien index unique (thème, domaine, sous-domaine, niveau) des publiés, resté en base
+			// jusqu'au lot 4 : un autre modèle publié occupe déjà cet ancien quadruplet
+			if (updateError.code === '23505') {
+				return json({ success: false, errors: [OLD_CATEGORY_TAKEN] }, { status: 400 });
 			}
 			logger.error('Error updating template:', updateError);
 			throw error(500, 'Failed to update template');
