@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot 2a-2 en cours._
+_Mis à jour le 2026-11-04, 2a-2 en PR._
 
-- **État** : lot 1 mergé (#2378). 2a-1 mergé (#2379), migration appliquée en prod, `db:types` fait. 2a-2 (code) écrit, typecheck à 0, tests neufs verts ; tests existants en cours d'adaptation.
-- **Prochaine action** : finir les tests, revues (`code-reviewer` + `security-auditor`), PR 2a-2. Après son `deploy:prod` : 2b (conversion des 5 séries + 4 séances).
-- **En attente de David** : rien.
-- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env`. Prod lit l'ancienne forme jusqu'au `deploy:prod` de 2a-2. Restes pour le lot 3 : `questionCategories` store, `category-validation.ts`, méthodes « category » de `questionTemplatesCache`, `/api/questions/categories/all`. Hors chantier : QCM en `$$<$$` bruts sur les tuiles (Entiers › Apprivoiser › Comparer).
+- **État** : lot 1 (#2378) et 2a-1 (#2379, migration en prod) mergés. 2a-2 (code) en PR : revues faites (code-reviewer Opus, security-auditor : rien de bloquant, 8 points mineurs corrigés).
+- **Prochaine action** : CI verte → merge. Puis attendre le `deploy:prod` de David ; ensuite 2b = migration de données (5 séries + 4 séances converties en place).
+- **En attente de David** : `deploy:prod` de 2a-2 (avant 2b) ; avis sur le contrôle « modèle publié » à l'enregistrement d'une série (aujourd'hui : non, modèle sauté et signalé).
+- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env`. Restes pour le lot 3 : store `questionCategories`, `category-validation.ts`, méthodes « category » de `questionTemplatesCache`, `/api/questions/categories/all`. Hors chantier : QCM en `$$<$$` bruts sur les tuiles (Entiers › Apprivoiser › Comparer).
 - **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-modeles-code`.
 
 ## Origine (2026-11-04)
@@ -177,3 +177,14 @@ appliquée en prod (`category_key` : `is_nullable = YES`), `db:types` régénér
 - Choix d'exécution (pas de décision d'archi) : pas de contrôle « modèle publié » à
   l'enregistrement d'une série (une série dupliquée avec un modèle retiré resterait possible ;
   le modèle est sauté au jeu et signalé).
+
+### 2a-2 — revues et tests (2026-11-04)
+
+- security-auditor : aucun accès gagné ; F1 (plafond 1000 tronqué en silence) → lève désormais.
+- code-reviewer (Opus) : 7 mineurs corrigés — doublons d'un lien fusionnés (`replaceWith`),
+  anciennes lignes perdues annoncées dans l'éditeur (`unresolved_lines`), ancien lien hors ligne →
+  message réseau, `legacyLines` réactif + avertissement, actions du panier après chargement des
+  modèles, panne de lecture → `EvaluationError`, doc de l'API de démarrage.
+- Tests : 27 fichiers adaptés + 14 qui échouaient à l'exécution (agent Sonnet) ; neufs :
+  `series-legacy`, `series-lines`, `questionCart-ancien-panier`, éditeur « Modèle retiré ».
+  Serveur 13 002 verts, client ciblé 567 verts, 14 fichiers d'intégration verts.
