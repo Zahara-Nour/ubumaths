@@ -21,6 +21,7 @@ import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { distinctCategoryEntries } from '$lib/questions/category-options';
 import { createServerLogger } from '$lib/utils/logger';
+import { readAllRows } from '$lib/server/read-all-rows';
 
 const logger = createServerLogger('api/questions/categories/+server');
 
@@ -29,12 +30,19 @@ export const GET: RequestHandler = async ({ locals }) => {
 	const supabase = locals.supabase;
 
 	try {
-		// Fetch all templates to extract unique categories
-		const { data: templates, error: queryError } = await supabase
-			.from('question_templates')
-			.select('theme, domain, subdomain');
-
-		if (queryError) {
+		// Tous les modèles (tous statuts), page par page : PostgREST tronque à 1000 lignes
+		let templates;
+		try {
+			templates = await readAllRows(
+				(from, to) =>
+					supabase
+						.from('question_templates')
+						.select('theme, domain, subdomain')
+						.order('id')
+						.range(from, to),
+				'des modèles'
+			);
+		} catch (queryError) {
 			logger.error('Error fetching templates:', queryError);
 			throw error(500, 'Failed to fetch templates');
 		}
@@ -44,7 +52,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const domainsSet = new Set<string>();
 		const subdomainsSet = new Set<string>();
 
-		templates?.forEach((template) => {
+		templates.forEach((template) => {
 			if (template.theme) themesSet.add(template.theme);
 			if (template.domain) domainsSet.add(template.domain);
 			if (template.subdomain) subdomainsSet.add(template.subdomain);
@@ -59,7 +67,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			themes,
 			domains,
 			subdomains,
-			entries: distinctCategoryEntries(templates ?? [])
+			entries: distinctCategoryEntries(templates)
 		});
 	} catch (err) {
 		logger.error('Error in GET /api/questions/categories:', err);

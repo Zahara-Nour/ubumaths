@@ -197,6 +197,12 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   `generate/[id]`, `categories`), admin `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`
   (catalogue, `panier`, `test`), séries du prof `src/routes/(protected)/dashboard/teacher/series/`.
+- Lecture de **tous** les modèles (catalogue, panier, `test`, `templates/all`, `categories`,
+  `categories/all`, brouillons et filtres de l'admin) : par `readAllRows`
+  (`src/lib/server/read-all-rows.ts`), page par page, tri terminé par `.order('id')`.
+  PostgREST tronque à 1 000 lignes sans erreur : en novembre 2026 (1 912 modèles publiés), des
+  séries sautaient des catégories (« Série : aucun modèle pour … »). Voir
+  [base-de-donnees.md](../pratiques/base-de-donnees.md#lire--toutes--les-lignes--le-plafond-de-1-000).
 
 ### Tables
 

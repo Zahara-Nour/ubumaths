@@ -8,10 +8,15 @@ import { isRedirect } from '@sveltejs/kit';
 import { load } from '../+page.server';
 
 function locals() {
-	const order = vi.fn(async () => ({ data: [{ id: 'm1' }], error: null }));
-	const eq = vi.fn(() => ({ order }));
-	const select = vi.fn(() => ({ eq }));
-	const from = vi.fn(() => ({ select }));
+	const rows = [{ id: 'm1' }];
+	// Lecture paginée (`readAllRows`) : `.range(from, to)` rend la tranche demandée
+	const query = {
+		select: () => query,
+		eq: () => query,
+		order: () => query,
+		range: async (from: number, to: number) => ({ data: rows.slice(from, to + 1), error: null })
+	};
+	const from = vi.fn(() => query);
 	return { from, supabase: { from } };
 }
 
