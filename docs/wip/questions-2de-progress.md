@@ -6,20 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, PR des fichiers du lot 12 b-2 ouverte (§ 79)._
+_Mis à jour le 2026-11-04, après #2375 (fichiers du lot 12 b-2)._
 
 - **État** : lots 1 à 9, 12 a et 12 b-1 publiés. 12 b-2 (5 modèles : 289, 290, 291, 292, 401) écrit
-  et joué en local, PR des fichiers ouverte. Ordre ensuite : 10, puis 11.
-- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --publier` sur
+  et joué en local, mergé (#2375), pas encore en prod. Ordre ensuite : 10, puis 11.
+- **Prochaine action** : David lance `create-questions --publier` sur
   `scripts/questions/2de-vecteurs-c2` (depuis le dépôt principal) ; relever les 5 ids ; migration nœud +
   tag (nœuds du § 77 ; 401 sur la notion Périmètres) ; page à cocher.
-- **En attente de David** : le `--publier` du 12 b-2, après le merge.
+- **En attente de David** : le `--publier` du 12 b-2.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `| head` derrière un `--publier` ; noms de points ≠ lettres A-D des cases choix ;
   `0..3;±` refusé par le tirage (`-3..3`) ; liste blanche : pas de `{{if:}}` à plus de ~6 niveaux dans une
   réponse attendue ; corps de commit ≤ 100 caractères par ligne ; une autre session écrit aussi dans ce
   journal : `git pull` ; `db:migrate` depuis le dépôt principal seulement.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (`feat/questions-2de-lot12b2`).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2055,3 +2055,4 @@ vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12
 - `create-questions` (simulation, prod) : 5/5 à créer ; `question:specs` 5/5 importables ;
   `sonde-figures` : 0 problème ; `validateLatex` + accolades sur 2 189 formules (40 aperçus par modèle) :
   0 problème hors `\unit` (macro de l'appli, rendu vérifié à l'écran).
+- **#2375 mergée** (CI verte) le 2026-11-04.
