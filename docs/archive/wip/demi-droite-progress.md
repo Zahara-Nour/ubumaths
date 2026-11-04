@@ -1,29 +1,23 @@
 ---
-status: en-cours
+status: clos
 ---
 
 # Chantier `demi-droite` — demi-droite et intervalle à crochets sur ` ```line `
 
-> Outil n° 7 de [outils-manquants.md](outils-manquants.md). Points servis : 3-014 et 3-057 (solutions
+> Outil n° 7 de [outils-manquants.md](../../wip/outils-manquants.md). Points servis : 3-014 et 3-057 (solutions
 > d'une inéquation ax ⩾ b « représentées sur la droite graduée avec un crochet »), 2-251 (représenter un
 > intervalle, borné ou non). Ouvert le 2026-11-03.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2346._
+_Chantier clos le 2026-11-04, après #2346 et la mise à jour de 80a87e34 en prod._
 
-- **État** : 3-014 (06601c87) publié. 2-251 **déjà couvert** par 2069ac7e (chantier `questions-2de`, lot 9 :
-  `representer:`, demi-droites et borné, publié) : pas de modèle à faire. #2346 mergée : lot
-  `valeur-absolue-droite-2de` de `update-published-questions.ts`, droite graduée ajoutée au corrigé de 80a87e34.
-- **Prochaine action** : David lance la simulation puis `--publier` du lot → relire 80a87e34 en prod
-  (MCP) → clôture (archiver ce journal, outil n° 7 livré dans `outils-manquants.md`). La doc système est déjà
-  versée (`ubumark.md`, `questions.md`).
-- **En attente de David** : les deux commandes du lot (classifieur : simulation refusée à Claude).
-- **Pièges en cours** : `update-published-questions` lit `.env` (prod) : simulation et écriture → David avec `!`.
-  Rendu à l'œil non vu (Chrome n'a pas navigué) : le voir dans l'aperçu admin après `--publier` ; copie
-  locale a917fb27 en base locale.
-  Branche distante `fix/integration-locals-session` laissée sur GitHub.
-- **Worktree / branche** : `../ubumaths-wt-demi-droite` (HEAD détachée sur `origin/main`, pour la clôture).
+- **État** : clos. Affichage (#2294), geste `representer:` (#2309), rangement (#2317), 3-014 (#2328, #2336,
+  publié), corrigé de |x| < k (#2346, écrit en prod). 2-251 couvert par 2069ac7e (chantier `questions-2de`).
+  Doc durable : `docs/systeme/ubumark.md` et `docs/systeme/questions.md`.
+- **Reste** : vérifications à l'œil (`docs/wip/verifications-manuelles.md`, #2294, #2309, #2328, #2346) ;
+  page à cocher sans ` ```line ` (`outils-manquants.md`, ligne 16) ; branche distante
+  `fix/integration-locals-session` laissée sur GitHub (à David).
 
 ---
 

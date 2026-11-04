@@ -3,7 +3,7 @@
  * ======================================================================
  *
  * L'élève représente un intervalle (` ```line ` + `representer: [2, +inf[`,
- * chantier `docs/wip/demi-droite-progress.md` § « Geste de l'élève ») : il pose
+ * chantier `docs/archive/wip/demi-droite-progress.md` § « Geste de l'élève ») : il pose
  * la borne (deux pour un intervalle borné), choisit le côté des solutions
  * (demi-droite) et bascule chaque borne comprise / exclue.
  *

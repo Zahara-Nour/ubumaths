@@ -133,7 +133,7 @@ export interface NumberLineConfig {
 
 /**
  * Droite à représenter (`representer: [2, +inf[`) : l'intervalle que l'élève
- * dessine (chantier `docs/wip/demi-droite-progress.md`). `bounded` dit le geste :
+ * dessine (chantier `docs/archive/wip/demi-droite-progress.md`). `bounded` dit le geste :
  * deux bornes (intervalle borné) ou une borne et un côté (demi-droite).
  * `interval` null : valeur masquée (`representer: ?`, `? ; ?`), énoncé envoyé.
  */

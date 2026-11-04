@@ -1,5 +1,5 @@
 /**
- * Droite graduée à représenter à l'écran (phase 0 : `docs/wip/demi-droite-progress.md`
+ * Droite graduée à représenter à l'écran (phase 0 : `docs/archive/wip/demi-droite-progress.md`
  * § « Geste de l'élève », points 10 à 17)
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).

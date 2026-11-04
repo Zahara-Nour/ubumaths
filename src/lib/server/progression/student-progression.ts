@@ -24,7 +24,11 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { computePointBadges, worstBadge, type CapacityBadge } from '$lib/server/srs/capacity-badge';
+import {
+	computePointBadges,
+	worstBadge,
+	type CurriculumPointBadge
+} from '$lib/server/srs/curriculum-point-badge';
 import { getProgrammeTree } from '$lib/server/programme-tree';
 import {
 	notionLevel,
@@ -54,7 +58,7 @@ export interface NotionSummary {
 	total_count: number;
 	has_remediation: boolean;
 	/** Pire badge FSRS parmi les points (priorité a_remedier > a_renforcer > ...). */
-	fsrs_badge: CapacityBadge;
+	fsrs_badge: CurriculumPointBadge;
 }
 
 export interface BranchWithNotions {
@@ -98,7 +102,7 @@ export interface NotionPointDetail {
 	trainable: boolean;
 	is_acquired: boolean;
 	needs_remediation: boolean;
-	badge: CapacityBadge;
+	badge: CurriculumPointBadge;
 }
 
 export interface NotionDetail {
@@ -219,11 +223,11 @@ function summarizeNotion(
 	notion: { id: string; name: string; points: ProgrammePointView[] },
 	branch: { id: string; name: string },
 	stateByPoint: Map<string, PointState>,
-	badges: Map<string, CapacityBadge>
+	badges: Map<string, CurriculumPointBadge>
 ): NotionSummary {
 	let acquired_count = 0;
 	let has_remediation = false;
-	const notionBadges: CapacityBadge[] = [];
+	const notionBadges: CurriculumPointBadge[] = [];
 
 	for (const point of notion.points) {
 		const state = stateByPoint.get(point.id);

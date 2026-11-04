@@ -28,8 +28,12 @@ export const QUESTIONS_TSPE_LOT2 =
 /** Sous-notion « Algorithmique > Variables et instructions > blocs personnalisés » (3-050), lots 7 et 8 de la 3e. */
 export const QUESTIONS_3_LOTS7_8 =
 	'supabase/migrations/20261102070008_questions_3_lots7_8_rangement_tags.sql';
+/** Sous-notions « Généralités sur les suites > sommes de termes » et « Modèles d'évolution > emprunt », lot 5 de 1re spé. */
+export const QUESTIONS_1SPE_APPRO5 =
+	'supabase/migrations/20261103233226_questions_1spe_approfondissements_5_rangement_tags.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
+	QUESTIONS_1SPE_APPRO5,
 	QUESTIONS_3_LOTS7_8,
 	QUESTIONS_TSPE_LOT2,
 	QUESTIONS_5_LOT6,

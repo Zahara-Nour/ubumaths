@@ -17,7 +17,7 @@
 	interface FlagListItem {
 		id: string;
 		student: { id: string; first_name: string | null; last_name: string | null };
-		capacity: { id: string; name: string } | null;
+		point: { id: string; name: string } | null;
 		flag_type: string;
 		severity: number;
 		score: number;
@@ -191,7 +191,7 @@
 								</Badge>
 							</div>
 							<p class="mt-1 text-xs text-muted-foreground">
-								{flag.capacity?.name ?? 'Toutes capacités'}
+								{flag.point?.name ?? 'Tous les points du programme'}
 								· score {Math.round(flag.score * 100)}/100 · {flag.sample_size} reviews
 							</p>
 						</div>

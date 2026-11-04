@@ -6,19 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot 12 b-1 écrit (§ 78), PR des fichiers à ouvrir._
+_Mis à jour le 2026-11-04, après #2367 (fichiers du lot 12 b-1)._
 
-- **État** : lots 1 à 9 et 12 a publiés. Phase 0 du 12 b validée (§ 77). 12 b-1 (5 modèles, 287, 433, 288,
-  296, 297) écrit, simulé, joué en local. Ordre ensuite : 12 b-2, puis 10, puis 11.
-- **Prochaine action** : PR des fichiers du 12 b-1 (CI, merge) ; puis David lance `create-questions
---publier` sur `scripts/questions/2de-vecteurs-c1` ; puis 12 b-2 (289, 290, 291, 292, 401).
-- **En attente de David** : rien.
+- **État** : lots 1 à 9 et 12 a publiés. 12 b-1 (5 modèles : 287, 433, 288, 296, 297) mergé (#2367),
+  pas encore en prod. Ordre ensuite : 12 b-2, puis 10, puis 11.
+- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/2de-vecteurs-c1`
+  (depuis le dépôt principal) ; relever les 5 ids ; migration nœud + tag (nœuds du § 77 : égalité de
+  vecteurs pour 287, 433, 288, 296 ; somme et relation de Chasles pour 297). Puis 12 b-2.
+- **En attente de David** : le `--publier` du 12 b-1.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `| head` derrière un `--publier` (le tuyau coupe le script en route) ; liste
   blanche : pas de `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100
   caractères par ligne ; une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis
   le dépôt principal seulement.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot12b1`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2016,3 +2017,4 @@ vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12
   mélangeaient aux lettres A-D des cases choix) ; « 3 + (2) » → `{{eval:c;+}}`. Fraction 1/2 acceptée.
 - `create-questions` (simulation, prod) : 5/5 à créer ; `question:specs` 5/5 importables ; `sonde-figures`
   et `sonde-courbes` : 0 problème. Base locale : `-3..3` au lieu de `0..3;±` (refusé par le tirage).
+- **#2367 mergée** (CI verte) le 2026-11-04.

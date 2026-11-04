@@ -1,18 +1,18 @@
 <!--
-	CapacityFsrsBadge — badge FSRS agrégé d'une capacité famille A.
+	CurriculumPointFsrsBadge — badge FSRS agrégé d'un point du programme.
 
 	Affiche le statut dynamique calculé à partir des états FSRS des templates
-	tagués sur la capacité. Coexiste avec le verdict BO `is_acquired` formel
+	tagués sur le point. Coexiste avec le verdict BO `is_acquired` formel
 	dans la même UI.
 
 	Cf. docs/systeme/srs.md §5.1.
 -->
 <script lang="ts">
 	import { AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from '@lucide/svelte';
-	import type { CapacityBadge } from '$lib/server/srs/capacity-badge';
+	import type { CurriculumPointBadge } from '$lib/server/srs/curriculum-point-badge';
 
 	interface Props {
-		badge: CapacityBadge;
+		badge: CurriculumPointBadge;
 		size?: 'sm' | 'md';
 		showLabel?: boolean;
 	}

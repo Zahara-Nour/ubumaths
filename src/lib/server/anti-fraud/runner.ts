@@ -5,7 +5,7 @@
  *
  * Flux :
  *   1. Vérifie app_config.anti_fraud_enabled. Exit early si false.
- *   2. Liste les (student × capacity) avec ≥ N reviews SRS sur 7j.
+ *   2. Liste les (élève × point du programme) avec ≥ N reviews SRS sur 7j.
  *   3. Pour chaque paire :
  *      - Load reviews depuis srs_card_stats.review_history.
  *      - Load skill_attempts (srs vs auto) pour srs_vs_quiz_gap.
@@ -106,7 +106,7 @@ async function listScanPairs(
 		review_history: ReviewEntry[] | null;
 	};
 
-	// 2. Tous les tags template → skill famille A.
+	// 2. Tous les tags template → point du programme.
 	const templateIds = [
 		...new Set(((statsRows ?? []) as unknown as StatRow[]).map((r) => r.card_reference_id))
 	];
@@ -129,7 +129,7 @@ async function listScanPairs(
 		skills: { family: string } | null;
 	};
 
-	// Map template_id → liste de capacity_point_id (famille A).
+	// Map template_id → liste de capacity_point_id (points du programme).
 	const templateToSkills = new Map<string, string[]>();
 	for (const tag of (tagRows ?? []) as unknown as TagRow[]) {
 		if (tag.skills?.family !== 'knowledge') continue;
@@ -138,7 +138,7 @@ async function listScanPairs(
 		templateToSkills.set(tag.template_id, arr);
 	}
 
-	// 3. Construction des paires : Map<student_id, Map<capacity_id, ReviewEntry[]>>.
+	// 3. Construction des paires : Map<student_id, Map<point_id, ReviewEntry[]>>.
 	const pairs = new Map<string, Map<string, ReviewEntry[]>>();
 	const cutoffMs = windowStart.getTime();
 
@@ -168,7 +168,7 @@ async function listScanPairs(
 }
 
 /**
- * Load skill_attempts SRS vs Monde 1 pour une paire (student, capacity).
+ * Load skill_attempts SRS vs Monde 1 pour une paire (élève, point du programme).
  *
  * ⚠️ À la remise en service du module : exclure les cartes de cours
  * (`question_templates.type = 'course_card'`), ici ET dans `listScanPairs`
@@ -178,14 +178,14 @@ async function listScanPairs(
 async function loadAttempts(
 	supabase: SBClient,
 	studentId: string,
-	capacityPointId: string,
+	pointId: string,
 	windowStart: Date
 ): Promise<{ srs: AttemptEntry[]; quiz: AttemptEntry[] }> {
-	// Templates tagués avec cette capacité.
+	// Templates tagués avec ce point du programme.
 	const { data: tagRows, error: tagRowsError } = await supabase
 		.from('question_template_points')
 		.select('template_id')
-		.eq('point_id', capacityPointId);
+		.eq('point_id', pointId);
 
 	// Un détecteur qui ne voit rien conclut « rien à signaler ». Une panne de
 	// lecture produisait exactement ce verdict, sans jamais le distinguer d'une
@@ -223,7 +223,7 @@ async function loadAttempts(
 async function hasRecentFlag(
 	supabase: SBClient,
 	studentId: string,
-	capacityId: string | null,
+	pointId: string | null,
 	flagType: string,
 	now: Date
 ): Promise<boolean> {
@@ -236,10 +236,10 @@ async function hasRecentFlag(
 		.eq('resolved', false)
 		.gte('created_at', dedupeCutoff.toISOString());
 
-	if (capacityId === null) {
+	if (pointId === null) {
 		q = q.is('capacity_point_id', null);
 	} else {
-		q = q.eq('capacity_point_id', capacityId);
+		q = q.eq('capacity_point_id', pointId);
 	}
 
 	const { data, error } = await q.limit(1);
@@ -256,7 +256,7 @@ async function hasRecentFlag(
 async function insertFlag(
 	supabase: SBClient,
 	studentId: string,
-	capacityId: string | null,
+	pointId: string | null,
 	signal:
 		| SignalResult
 		| (typeof composeSignals extends (...args: never[]) => infer R ? Exclude<R, null> : never),
@@ -265,7 +265,7 @@ async function insertFlag(
 ): Promise<boolean> {
 	const { error } = await supabase.from('srs_anti_fraud_flags').insert({
 		student_id: studentId,
-		capacity_point_id: capacityId,
+		capacity_point_id: pointId,
 		flag_type: signal.flag_type,
 		severity: signal.severity,
 		score: signal.score,
@@ -309,8 +309,8 @@ export async function runAntiFraudJob(
 	let scannedPairs = 0;
 	let skippedDedupe = 0;
 
-	for (const [studentId, capacityMap] of pairs) {
-		for (const [capacityId, reviews] of capacityMap) {
+	for (const [studentId, pointMap] of pairs) {
+		for (const [pointId, reviews] of pointMap) {
 			scannedPairs += 1;
 
 			const signals: SignalResult[] = [];
@@ -325,7 +325,7 @@ export async function runAntiFraudJob(
 			if (burst) signals.push(burst);
 
 			// srs_vs_quiz_gap nécessite un load skill_attempts séparé.
-			const { srs, quiz } = await loadAttempts(supabase, studentId, capacityId, windowStart);
+			const { srs, quiz } = await loadAttempts(supabase, studentId, pointId, windowStart);
 			const gap = detectSrsVsQuizGap(srs, quiz);
 			if (gap) signals.push(gap);
 
@@ -341,12 +341,12 @@ export async function runAntiFraudJob(
 					flagsCreated += 1;
 					continue;
 				}
-				const recent = await hasRecentFlag(supabase, studentId, capacityId, sig.flag_type, now);
+				const recent = await hasRecentFlag(supabase, studentId, pointId, sig.flag_type, now);
 				if (recent) {
 					skippedDedupe += 1;
 					continue;
 				}
-				const ok = await insertFlag(supabase, studentId, capacityId, sig, windowStart, now);
+				const ok = await insertFlag(supabase, studentId, pointId, sig, windowStart, now);
 				if (ok) flagsCreated += 1;
 			}
 		}

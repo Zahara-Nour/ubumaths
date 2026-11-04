@@ -222,7 +222,7 @@ Mathou qui grandit.
 
 Les tags sont lus par pages : un lot de 100 points peut dépasser 1 000 tags (14 au plus par point,
 1 499 en tout en prod), et PostgREST tronquerait en silence. ⚠️ `computePointBadges`
-(`src/lib/server/srs/capacity-badge.ts`) garde ce plafond latent sur ses propres lots : il est
+(`src/lib/server/srs/curriculum-point-badge.ts`) garde ce plafond latent sur ses propres lots : il est
 partagé avec le tableau de bord, et n'est pas corrigé ici.
 
 C'est trop pour `dashboard/student/+layout.server.ts`, qui tourne à chaque page de l'espace élève :

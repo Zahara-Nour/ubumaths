@@ -15,7 +15,7 @@
 		sample_size: number;
 		created_at: string;
 		details: Record<string, unknown> | null;
-		capacity: { id: string; name: string } | null;
+		point: { id: string; name: string } | null;
 	}
 
 	interface Props {
@@ -82,7 +82,7 @@
 			<Dialog.Header>
 				<Dialog.Title>{flagTypeLabel(flag.flag_type)}</Dialog.Title>
 				<Dialog.Description>
-					{studentName} — {flag.capacity?.name ?? 'Toutes capacités'}
+					{studentName} — {flag.point?.name ?? 'Tous les points du programme'}
 				</Dialog.Description>
 			</Dialog.Header>
 

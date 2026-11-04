@@ -75,7 +75,8 @@
 		<div class="flex-1">
 			<h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Programme</h1>
 			<p class="text-muted-foreground">
-				Tes capacités à retravailler — mises à jour automatiquement après chaque entraînement.
+				Tes points du programme à retravailler — mises à jour automatiquement après chaque
+				entraînement.
 			</p>
 			<div class="mt-2 text-sm text-muted-foreground">
 				{data.totalCards} carte{data.totalCards > 1 ? 's' : ''} au total
@@ -87,7 +88,7 @@
 		<Card.Root>
 			<Card.Content class="py-12 text-center">
 				<p class="mb-4 text-muted-foreground">
-					Tu n'as pas encore travaillé de capacité tagué dans le référentiel.<br />
+					Tu n'as pas encore travaillé de point du programme.<br />
 					Va t'entraîner pour faire apparaître tes premières cartes ici.
 				</p>
 				<Button href="/dashboard/student/progression?onglet=objectifs">Voir ma progression</Button>

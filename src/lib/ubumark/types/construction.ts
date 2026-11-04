@@ -239,6 +239,11 @@ export interface AngleCheck {
 export interface MeasureCheck {
 	kind: 'mesure';
 	points: [string, string, string];
+	/**
+	 * `mesure AOB, rapporteur posé` (lot 8, § 23) : le rapporteur apparaît posé en O,
+	 * base sur le premier côté nommé, figé ; l'élève tape seulement la mesure
+	 */
+	posed?: true;
 	line: number;
 }
 

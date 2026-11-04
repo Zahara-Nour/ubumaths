@@ -304,7 +304,7 @@ Bleue:1/2          ```                  end: 5
 Branches imbriquées par indentation (`Pile:1/2` puis `  Face:1/2`), options `root:`, `outcomes:`,
 `intersection:` : `src/lib/ubumark/__tests__/parser/probability-tree-parser.test.ts`.
 
-**Segments, demi-droites, crochets** (chantier [demi-droite](../wip/demi-droite-progress.md), 3-014,
+**Segments, demi-droites, crochets** (chantier [demi-droite](../archive/wip/demi-droite-progress.md), 3-014,
 2-251) — `src/lib/ubumark/__tests__/number-line/number-line-demi-droite.test.ts`,
 `NumberLine-crochets.svelte.test.ts`, `number-line-typst.test.ts` : `segments: [-2, 1] vert, ]2, +inf[`.
 Borne infinie : `-inf` / `+inf` (`inf` seul = `+inf`, aussi `∞`, `\infty`) ; le nœud porte
@@ -348,7 +348,7 @@ actif (`aria-valuetext` « point B sur 7 »). Correction : une phrase par point 
 sur 9. », « Tu n'as pas placé C. ») ; cadre rouge dès qu'un point est faux, vert quand tous sont
 justes ; la droite juste avec tous les points, nommés, en vert.
 
-**Droite à représenter** (chantier [demi-droite](../wip/demi-droite-progress.md), PR 2, 3-014, 2-251) —
+**Droite à représenter** (chantier [demi-droite](../archive/wip/demi-droite-progress.md), PR 2, 3-014, 2-251) —
 `src/lib/ubumark/__tests__/number-line/number-line-representer.test.ts`,
 `NumberLineRepresenter.svelte.test.ts` : `representer: [2, +inf[` (demi-droite) ou `[-1, 3[` (intervalle
 borné) dans un ` ```line ` (nœud : `representer`, `NumberLineRepresenter` : `bounded` et `interval`, un
@@ -577,7 +577,8 @@ un angle par trois lettres, le sommet A ou B au milieu (`triangle ABC : CAB = 40
 Règle · Segment, plus Report · Compas avec une longueur) ;
 `angle AOy = 50`, un point du côté donné, le sommet, le nom du côté à tracer, une mesure entière de 1 à 179
 (`°` admis), un angle à construire sur papier uni, seul, palette Rapporteur · Segment ; `mesure AOB`, trois
-points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le rapporteur seul ; le rapporteur
+points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le rapporteur seul (suivi de
+`, rapporteur posé` : déjà posé sur le premier côté nommé, figé, `outils:` refusé) ; le rapporteur
 refusé ailleurs, sauf dans un triangle à angle donné) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),

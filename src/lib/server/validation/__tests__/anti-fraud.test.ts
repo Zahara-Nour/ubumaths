@@ -84,16 +84,16 @@ describe('flagsListQuerySchema', () => {
 		}
 	});
 
-	it('refuse capacity non-UUID', () => {
-		const r = flagsListQuerySchema.safeParse({ capacity: 'abc' });
+	it('refuse point non-UUID', () => {
+		const r = flagsListQuerySchema.safeParse({ point: 'abc' });
 		expect(r.success).toBe(false);
 	});
 
-	it('accepte since ISO + capacity UUID + type', () => {
+	it('accepte since ISO + point UUID + type', () => {
 		const r = flagsListQuerySchema.safeParse({
 			since: '2026-06-01T00:00:00.000Z',
 			type: 'burst',
-			capacity: 'c3ee0eea-ab18-4f1f-9b15-2a3b4c5d6e7f'
+			point: 'c3ee0eea-ab18-4f1f-9b15-2a3b4c5d6e7f'
 		});
 		expect(r.success).toBe(true);
 	});

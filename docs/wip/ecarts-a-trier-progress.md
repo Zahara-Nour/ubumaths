@@ -8,12 +8,12 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2345 et la remise à jour de `ecarts-a-trier.md` (tableaux = source unique, bilan : 23 ouverts + 11 T)._
+_Mis à jour le 2026-11-04, après #2366._
 
-- **État** : lot B en cours. **Faits** : M4 code (#2340, en prod), M11 `DROP` + `db:types` (#2342, #2345, mergées), M8 (#2343) ; L13 et V63 fermés (déjà tranchés). Liste A et lot RGPD comme avant (T14 attend David).
-- **Prochaine action** : D11 + C10 ; C14 ; V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc). **M4 `DROP worksheet_instances`** : le `deploy:prod` du 2026-11-04 livre le code qui ne la lit plus → `DROP` possible (stop + explication à David avant `db:migrate`) (retirer aussi les tests d'intégration qui la lisent : `phantom-columns`, `anon-option-b`, `eleve-inscrit-apres-publication`, `profiles-columns`, `worksheet-instance-not-writable-by-student`).
+- **État** : lot B en cours. **Faits** : M4 code (#2340, en prod), M11 (#2342, #2345), M8 (#2343), **D11 + C10 (#2366** : « capacité » → `CurriculumPoint`, liste des drapeaux anti-triche qui rend enfin le point). `ecarts-a-trier.md` remis à jour (tableaux = source unique) : **22 ouverts + 11 T**.
+- **Prochaine action** : C14 (`lexicon/` → `dictionary/`) ; V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc) ; L36 (message PostgREST brut, relevé par l'audit de #2366). **M4 `DROP worksheet_instances`** : possible depuis le `deploy:prod` du 2026-11-04 (stop + explication à David avant `db:migrate` ; retirer aussi les tests d'intégration qui la lisent : `phantom-columns`, `anon-option-b`, `eleve-inscrit-apres-publication`, `profiles-columns`, `worksheet-instance-not-writable-by-student`). Reste de C10 : colonne `capacity_point_id` (migration à part, pas planifiée).
 - **En attente de David** : DPA (Drive privé, preuves d'acceptation) ; relire `conformite/violation-de-donnees.md` ; T14 ; perf `requireAuth` ; `account/delete` 1 / 24 h.
-- **Pièges en cours** : `db:migrate` refusé par le mode auto → David le lance (`! cd <worktree> && pnpm db:migrate`) ; worktree non lié → copier `../ubumaths/supabase/.temp` ; un `DROP` garde la ligne de `generate-db-doc.ts` jusqu'à `db:types` (test « aucune table sans domaine ») ; migration appliquée en local par `psql` sous verrou (pas de `db:reset`, base partagée).
+- **Pièges en cours** : `db:migrate` refusé par le mode auto → David le lance (`! cd <worktree> && pnpm db:migrate`) ; worktree non lié → copier `../ubumaths/supabase/.temp` ; un `DROP` garde la ligne de `generate-db-doc.ts` jusqu'à `db:types` ; migration appliquée en local par `psql` sous verrou (pas de `db:reset`) ; `docs:check-a-jour --depuis` ne voit que les commits : la relancer APRÈS le commit (`Doc-inchangée:` dans un commit si besoin) ; corps de commit ≤ 100 caractères par ligne.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier`, une branche par PR du lot (aucune en cours : worktree détaché sur `origin/main`).
 
 ---
@@ -72,3 +72,4 @@ Page : https://claude.ai/artifact/J4Z8UfhGXAwSafQX59x1nm (20 fiches, revérifié
 - **M8** (#2343) : export `.tex` d'ubumark retiré (`latex-generator.ts`, `variation-table-latex.ts`, `probability-tree-latex.ts` + tests).
 - **L13 fermé** (2026-11-03) : déjà tranché (lecture naturelle des unités, 2026-10-11, `grandeurs.md`) ; question reposée à tort.
 - **V63 fermé** (2026-11-03) : corrigé depuis le 2026-10-19 (`atelier.md`, « Noms indicés ») ; la liste ne l'avait pas noté.
+- **D11 + C10** (2026-11-04, `chore/ecarts-renommer-capacite`) : « capacité » → `CurriculumPoint` dans le code (composants, fonctions, fichiers, textes vus par l'élève et le prof, paramètre `?point=` de l'API anti-triche), « famille A » retiré des commentaires. David : code seul d'abord, la colonne `capacity_point_id` à part ; nom `CurriculumPoint`. Trouvé en route et corrigé : `GET …/anti-fraud/flags` lisait `row.skills` alors que la requête embarque `curriculum_points` → chaque drapeau sans point (« Toutes capacités ») ; test rouge sans le correctif.

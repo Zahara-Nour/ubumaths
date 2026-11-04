@@ -95,7 +95,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.order('created_at', { ascending: false })
 				.limit(5000),
 
-			// Évaluation — indicateurs observables par capacité
+			// Évaluation — indicateurs observables par point du programme
 			supabase
 				.from('student_observable_state')
 				.select('observable_id, count_plus, count_minus, is_acquis, last_attempt_at')
@@ -309,7 +309,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			// Profile
 			profile: sanitizedProfile,
 
-			// Évaluation référentielle : connaissances (famille A) + compétences (famille B)
+			// Évaluation : points du programme (`connaissances`) + compétences mathématiques
 			evaluation: {
 				connaissances: skillStateResult.data || [],
 				competences: competenceLevelResult.data || [],
