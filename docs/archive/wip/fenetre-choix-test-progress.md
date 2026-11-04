@@ -2,12 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, à l'ouverture de la PR._
+_Mis à jour le 2026-11-04, après #2377 (`e9c638928`). **Chantier clos, journal archivé.**_
 
-- **État** : correctif sur `fix/fenetre-choix-test` (PR à merger après CI verte).
-- **Prochaine action** : merger, puis attendre le prochain `deploy:prod` de David.
-- **En attente de David** : `deploy:prod` ; vérification manuelle (`docs/wip/verifications-manuelles.md`).
-- **Worktree / branche** : `../ubumaths-wt-fenetre-choix-test` · `fix/fenetre-choix-test`.
+- **État** : #2377 mergée, pas encore en prod.
+- **En attente de David** : `deploy:prod` ; vérification manuelle #2377 (`docs/wip/verifications-manuelles.md`).
 
 ---
 
