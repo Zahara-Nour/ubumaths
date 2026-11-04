@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot 6 en PR._
+_Mis à jour le 2026-11-04, après #2374._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lot 5 publié (§ 10) ; lot 6
-  (algèbre : 256, 387, 257, 258) écrit et vérifié, PR ouverte (§ 11).
-- **Prochaine action** : après le merge, David lance `pnpm tsx scripts/create-questions.ts --dir
+  (algèbre : 256, 387, 257, 258) mergé (#2374, § 11), brouillons pas encore en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
 scripts/questions/1spe-approfondissements-6 --publier` (prod), puis migration nœud + tag (aucune sous-notion
   neuve), page à cocher, publication. Ensuite lots 7 à 9.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
@@ -22,7 +22,7 @@ scripts/questions/1spe-approfondissements-6 --publier` (prod), puis migration n�
 - **Pièges en cours** : `create-questions` lit `.env` = PROD → en local, `DOTENV_CONFIG_PATH=../ubumaths/.env.local`.
   Spec `bad_form` → `constraintViolations: ['form']`. Port 5178 pour l'aperçu. `db:migrate` depuis le dépôt
   principal à jour. Le journal à jour est celui de `main` après merge (celui du worktree peut retarder).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-6`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-6` (mergée ; nouvelle branche depuis `origin/main` pour la migration).
 
 ---
 
