@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, 4b en cours (avant la PR)._
+_Mis à jour le 2026-11-05, après #2386._
 
-- **État** : 4a en prod (v0.72.0). 4b codé en partie : migration `20261104224856_automaths_fin_ancienne_forme` + test d'intégration (11 verts, rouges sans la migration), seed corrigé, types alignés, doc système ; renommage du code `categories` → `items` en cours.
-- **Prochaine action** : finir le code, check:incremental + tests, PR, revues `code-reviewer` + `security-auditor` (Opus), merge ; puis **STOP avant `db:migrate`** (destructive : ce qui sera perdu + grep des usages à montrer à David), et livraison `maintenance:on` → `db:migrate` → `db:types` (diff nul attendu) → `deploy:prod` (sur demande de David) → `maintenance:off`.
-- **En attente de David** : go pour la migration destructive, puis pour le `deploy:prod`. Question d'accès **confirmée** le 2026-11-04.
-- **Pièges en cours** : base locale partagée migrée en 4b (`db:reset`) : les autres worktrees encore sur `categories` y voient des tests rouges jusqu'au merge. `database.ts` aligné à la main (format de `gen types --local` différent) → `db:types` après `db:migrate` doit donner un diff nul. Entre `db:migrate` et `deploy:prod`, l'ancien code plante → maintenance obligatoire.
-- **Worktree / branche** : `../ubumaths-wt-automaths-arbre`, `feat/automaths-arbre-drop`.
+- **État** : 4b **mergé (#2386)**, PAS appliqué : prod en 0.72.0, base sans la migration `20261104224856_automaths_fin_ancienne_forme`.
+- **Prochaine action** (sur go de David, depuis le dépôt principal) : `pnpm maintenance:on` → `pnpm db:migrate` → `pnpm db:types` (diff nul attendu sur `database.ts`) → `pnpm deploy:prod` → `pnpm maintenance:off` ; puis versement du chantier (journal → archive, durable → `docs/systeme/`).
+- **En attente de David** : go pour la migration destructive (ce qui sera perdu : § 4b mergé) ; décision sur les 16 brouillons rangés seulement par l'ancien quadruplet ; `deploy:prod`.
+- **Pièges en cours** : ⛔ **aucun `deploy:prod` avant `db:migrate`** : `main` lit `items`, la prod a encore `categories` → séries, séances, export RGPD et cours partagé planteraient. ⛔ et pas de `db:migrate` sans le `deploy:prod` qui suit, sous maintenance. Base locale partagée déjà migrée en 4b. Avant tout push : grep des messages (R4).
+- **Worktree / branche** : aucun (retiré après #2386).
 
 ## Origine (2026-11-04)
 
@@ -436,3 +436,17 @@ aucune série au `updated_at` changé.
   l'ancienne forme, d'où l'échec local de 2b).
 - Tests qui rejouent d'anciennes migrations nommant les colonnes : supprimés (ne peuvent plus
   tourner ; migrations déjà en prod).
+
+### 4b mergé (#2386, 2026-11-05)
+
+- Revues : security-auditor (Opus) sans bloquant (fonctions SECURITY DEFINER identiques à la prod
+  au renommage près, vue `security_invoker`, mêmes droits) ; code-reviewer (Opus) sans bloquant.
+  Mineurs corrigés : clé `items` du cours partagé assertée, rollback de la fonction de partage
+  asserté, `scripts/audit-question-syntax.sql` sans `theme`/`domain`.
+- Agent Sonnet : code passé à `items` ; ~40 tests de rejeu d'anciennes migrations et 19 fixtures
+  retirés (chaque migration rejouée nomme une colonne supprimée, vérifié) ; niveau temporaire de
+  `update-published-questions.ts` retiré (plus d'index unique hors clé primaire).
+- Relevé prod avant `db:migrate` (2026-11-05) : 2 090 modèles portent un quadruplet (perdu) ;
+  0 publié sans nœud ; 0 `category_key` ; 0 ancienne ligne ; **16 brouillons sans nœud** dont le
+  quadruplet est le seul rangement (CE2 durées / heure / droite graduée, CP tracés, 1re fonctions,
+  droites, statistiques) — ils deviennent « Non rangés ».
