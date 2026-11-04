@@ -1,0 +1,381 @@
+{
+	"title": "Produit d'un vecteur par un réel",
+	"description": "Reconnaître la flèche de ku parmi d'autres, puis lire k quand v = ku sont dessinés (pièges : signe de k oublié, une seule coordonnée multipliée, k et 1/k échangés)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Produit par un réel",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Parmi les vecteurs représentés ci-dessous, lequel est égal à ${{k}}\\vec{u}$ ?\n\n```figure\nfenetre: 0 ; 21 ; 0 ; 12\naxes: non\ngrille: 1\ntaille: moyenne\ndescription: Quadrillage ; à gauche la flèche u ; à droite quatre flèches nommées v, w, s et t.\n---\nvecteur({{a}}, {{b}}, ancre=({{oxu}}, {{oyu}}))\ntexte({{eval:round(100*((oxu)+(a)/2-0.6*(b)/sqrt((a)^2+(b)^2)))/100;d}}, {{eval:round(100*((oyu)+(b)/2+0.6*(a)/sqrt((a)^2+(b)^2)))/100;d}}, \"u⃗\")\nvecteur({{dx0}}, {{dy0}}, ancre=({{ox0}}, {{oy0}}))\ntexte({{eval:round(100*((ox0)+(dx0)/2-0.6*(dy0)/sqrt((dx0)^2+(dy0)^2)))/100;d}}, {{eval:round(100*((oy0)+(dy0)/2+0.6*(dx0)/sqrt((dx0)^2+(dy0)^2)))/100;d}}, \"v⃗\")\nvecteur({{dx1}}, {{dy1}}, ancre=({{ox1}}, {{oy1}}))\ntexte({{eval:round(100*((ox1)+(dx1)/2-0.6*(dy1)/sqrt((dx1)^2+(dy1)^2)))/100;d}}, {{eval:round(100*((oy1)+(dy1)/2+0.6*(dx1)/sqrt((dx1)^2+(dy1)^2)))/100;d}}, \"w⃗\")\nvecteur({{dx2}}, {{dy2}}, ancre=({{ox2}}, {{oy2}}))\ntexte({{eval:round(100*((ox2)+(dx2)/2-0.6*(dy2)/sqrt((dx2)^2+(dy2)^2)))/100;d}}, {{eval:round(100*((oy2)+(dy2)/2+0.6*(dx2)/sqrt((dx2)^2+(dy2)^2)))/100;d}}, \"s⃗\")\nvecteur({{dx3}}, {{dy3}}, ancre=({{ox3}}, {{oy3}}))\ntexte({{eval:round(100*((ox3)+(dx3)/2-0.6*(dy3)/sqrt((dx3)^2+(dy3)^2)))/100;d}}, {{eval:round(100*((oy3)+(dy3)/2+0.6*(dx3)/sqrt((dx3)^2+(dy3)^2)))/100;d}}, \"t⃗\")\n```\n\n```choix\nmelanger: non\n- $\\vec{v}$\n- $\\vec{w}$\n- $\\vec{s}$\n- $\\vec{t}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "k",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "oxu",
+					"expression": "eval:3-floor((a)/2)"
+				},
+				{
+					"name": "oyu",
+					"expression": "eval:6-floor((b)/2)"
+				},
+				{
+					"name": "r0",
+					"expression": "eval:(0+(p))-4*floor((0+(p))/4)"
+				},
+				{
+					"name": "dx0",
+					"expression": "eval:(1-min(abs((r0)-0),1))*((k)*(a))+(1-min(abs((r0)-1),1))*(-(k)*(a))+(1-min(abs((r0)-2),1))*((k)*(a))+(1-min(abs((r0)-3),1))*((k)*(a))"
+				},
+				{
+					"name": "dy0",
+					"expression": "eval:(1-min(abs((r0)-0),1))*((k)*(b))+(1-min(abs((r0)-1),1))*(-(k)*(b))+(1-min(abs((r0)-2),1))*(-(k)*(b))+(1-min(abs((r0)-3),1))*((b))"
+				},
+				{
+					"name": "ox0",
+					"expression": "eval:10-floor((dx0)/2)"
+				},
+				{
+					"name": "oy0",
+					"expression": "eval:9-floor((dy0)/2)"
+				},
+				{
+					"name": "r1",
+					"expression": "eval:(1+(p))-4*floor((1+(p))/4)"
+				},
+				{
+					"name": "dx1",
+					"expression": "eval:(1-min(abs((r1)-0),1))*((k)*(a))+(1-min(abs((r1)-1),1))*(-(k)*(a))+(1-min(abs((r1)-2),1))*((k)*(a))+(1-min(abs((r1)-3),1))*((k)*(a))"
+				},
+				{
+					"name": "dy1",
+					"expression": "eval:(1-min(abs((r1)-0),1))*((k)*(b))+(1-min(abs((r1)-1),1))*(-(k)*(b))+(1-min(abs((r1)-2),1))*(-(k)*(b))+(1-min(abs((r1)-3),1))*((b))"
+				},
+				{
+					"name": "ox1",
+					"expression": "eval:17-floor((dx1)/2)"
+				},
+				{
+					"name": "oy1",
+					"expression": "eval:9-floor((dy1)/2)"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:(2+(p))-4*floor((2+(p))/4)"
+				},
+				{
+					"name": "dx2",
+					"expression": "eval:(1-min(abs((r2)-0),1))*((k)*(a))+(1-min(abs((r2)-1),1))*(-(k)*(a))+(1-min(abs((r2)-2),1))*((k)*(a))+(1-min(abs((r2)-3),1))*((k)*(a))"
+				},
+				{
+					"name": "dy2",
+					"expression": "eval:(1-min(abs((r2)-0),1))*((k)*(b))+(1-min(abs((r2)-1),1))*(-(k)*(b))+(1-min(abs((r2)-2),1))*(-(k)*(b))+(1-min(abs((r2)-3),1))*((b))"
+				},
+				{
+					"name": "ox2",
+					"expression": "eval:10-floor((dx2)/2)"
+				},
+				{
+					"name": "oy2",
+					"expression": "eval:3-floor((dy2)/2)"
+				},
+				{
+					"name": "r3",
+					"expression": "eval:(3+(p))-4*floor((3+(p))/4)"
+				},
+				{
+					"name": "dx3",
+					"expression": "eval:(1-min(abs((r3)-0),1))*((k)*(a))+(1-min(abs((r3)-1),1))*(-(k)*(a))+(1-min(abs((r3)-2),1))*((k)*(a))+(1-min(abs((r3)-3),1))*((k)*(a))"
+				},
+				{
+					"name": "dy3",
+					"expression": "eval:(1-min(abs((r3)-0),1))*((k)*(b))+(1-min(abs((r3)-1),1))*(-(k)*(b))+(1-min(abs((r3)-2),1))*(-(k)*(b))+(1-min(abs((r3)-3),1))*((b))"
+				},
+				{
+					"name": "ox3",
+					"expression": "eval:17-floor((dx3)/2)"
+				},
+				{
+					"name": "oy3",
+					"expression": "eval:3-floor((dy3)/2)"
+				},
+				{
+					"name": "bon",
+					"expression": "eval:(4-(p))*min(p,1)"
+				}
+			],
+			"conditions": ["abs((k)*(a)) <= 4", "abs((k)*(b)) <= 4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{bon}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Produit par un réel** : si $k>0$, $k\\vec{u}$ a **la même direction et le même sens** que $\\vec{u}$ ; si $k<0$, la même direction et le **sens contraire**. Sa longueur est celle de $\\vec{u}$ multipliée par $|k|$.",
+					"$\\vec{u}$ avance de ${{a}}$ horizontalement et de ${{b}}$ verticalement ; ${{k}}\\vec{u}$ avance donc de ${{k}}\\times{{a;()}}=\\textcolor{{{color:primary.0}}}{{{eval:(k)*(a)}}}$ et de ${{k}}\\times{{b;()}}=\\textcolor{{{color:primary.1}}}{{{eval:(k)*(b)}}}$ : **les deux** déplacements sont multipliés par ${{k}}$.",
+					"{{if:k>0|$k>0$ : la flèche garde le sens de $\\vec{u}$.|$k<0$ : la flèche est dans le sens contraire de $\\vec{u}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "On a représenté les vecteurs $\\vec{u}$ et $\\vec{v}$.\n\n```figure\nfenetre: 0 ; 20 ; 0 ; 12\naxes: non\ngrille: 1\ntaille: moyenne\ndescription: Quadrillage ; à gauche la flèche u, à droite la flèche v.\n---\nvecteur({{ux}}, {{uy}}, ancre=({{oxu}}, {{oyu}}))\ntexte({{eval:round(100*((oxu)+(ux)/2-0.6*(uy)/sqrt((ux)^2+(uy)^2)))/100;d}}, {{eval:round(100*((oyu)+(uy)/2+0.6*(ux)/sqrt((ux)^2+(uy)^2)))/100;d}}, \"u⃗\")\nvecteur({{vx}}, {{vy}}, ancre=({{oxv}}, {{oyv}}))\ntexte({{eval:round(100*((oxv)+(vx)/2-0.6*(vy)/sqrt((vx)^2+(vy)^2)))/100;d}}, {{eval:round(100*((oyv)+(vy)/2+0.6*(vx)/sqrt((vx)^2+(vy)^2)))/100;d}}, \"v⃗\")\n```\n\nComplète l'égalité.\n\n$$\\vec{v}=?\\,\\vec{u}$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				},
+				{
+					"name": "sg",
+					"expression": "-1..1"
+				},
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "b",
+					"expression": "-2..2"
+				},
+				{
+					"name": "ux",
+					"expression": "eval:(1+(t))*(a)"
+				},
+				{
+					"name": "uy",
+					"expression": "eval:(1+(t))*(b)"
+				},
+				{
+					"name": "m",
+					"expression": "eval:(1-(t))*(n)+(t)"
+				},
+				{
+					"name": "vx",
+					"expression": "eval:(sg)*(m)*(a)"
+				},
+				{
+					"name": "vy",
+					"expression": "eval:(sg)*(m)*(b)"
+				},
+				{
+					"name": "oxu",
+					"expression": "eval:4-floor((ux)/2)"
+				},
+				{
+					"name": "oyu",
+					"expression": "eval:6-floor((uy)/2)"
+				},
+				{
+					"name": "oxv",
+					"expression": "eval:13-floor((vx)/2)"
+				},
+				{
+					"name": "oyv",
+					"expression": "eval:6-floor((vy)/2)"
+				}
+			],
+			"conditions": ["sg != 0", "abs((m)*(a)) <= 6", "abs((m)*(b)) <= 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(sg)*(m)/(1+(t))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Produit par un réel** : si $k>0$, $k\\vec{u}$ a **la même direction et le même sens** que $\\vec{u}$ ; si $k<0$, la même direction et le **sens contraire**. Sa longueur est celle de $\\vec{u}$ multipliée par $|k|$.",
+					"**Longueur** : $\\vec{v}$ est {{if:t>0|deux fois plus court|${{n}}$ fois plus long}} que $\\vec{u}$. **Sens** : {{if:sg>0|le même|contraire}}. Donc $\\vec{v}=\\textcolor{{{color:primary.0}}}{{{eval:(sg)*(m)/(1+(t))}}}\\,\\vec{u}$.",
+					"Vérification sur une coordonnée : $\\vec{u}$ avance de ${{ux}}$ horizontalement, $\\vec{v}$ de ${{vx}}$, et ${{eval:(sg)*(m)/(1+(t))}}\\times{{ux;()}}={{vx}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−2u : bonne case 3",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"k": "-2",
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié, 2u (case 0)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"k": "-2",
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une seule coordonnée (case 2)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"k": "-2",
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sans décalage : bonne case 0",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"k": "-2",
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v = −3u",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"n": "3",
+				"sg": "-1",
+				"a": "1",
+				"b": "-1"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié, 3",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"n": "3",
+				"sg": "-1",
+				"a": "1",
+				"b": "-1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1/3 (inverse)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"n": "3",
+				"sg": "-1",
+				"a": "1",
+				"b": "-1"
+			},
+			"answers": ["-\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v = ½u",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"n": "2",
+				"sg": "1",
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v = 0,5u (décimal)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"n": "2",
+				"sg": "1",
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 (inverse)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"n": "2",
+				"sg": "1",
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v = −½u",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"n": "2",
+				"sg": "-1",
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

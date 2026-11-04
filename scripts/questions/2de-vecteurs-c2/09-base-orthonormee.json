@@ -1,0 +1,315 @@
+{
+	"title": "Base orthonormée",
+	"description": "Dire si une base (i, j) est orthonormée, orthogonale seulement, ou ni l'une ni l'autre, sur quadrillage puis d'après les normes et l'angle (pièges : orthogonale lue orthonormée, normes 1 sans angle droit)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Coordonnées",
+	"level": 7,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le quadrillage est formé de carrés de côté $1$. On a représenté deux vecteurs $\\vec{i}$ et $\\vec{j}$ de même origine $O$.\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 8\naxes: non\ngrille: 1\ntaille: moyenne\ndescription: Quadrillage ; deux flèches i et j partant du même point O.\n---\nO = point(4, 4, etiquette=\"bas-gauche\")\nvecteur({{ix}}, {{iy}}, ancre=(4, 4))\ntexte({{eval:round(100*((4)+(ix)/2-0.6*(iy)/sqrt((ix)^2+(iy)^2)))/100;d}}, {{eval:round(100*((4)+(iy)/2+0.6*(ix)/sqrt((ix)^2+(iy)^2)))/100;d}}, \"i⃗\")\nvecteur({{jx}}, {{jy}}, ancre=(4, 4))\ntexte({{eval:round(100*((4)+(jx)/2-0.6*(jy)/sqrt((jx)^2+(jy)^2)))/100;d}}, {{eval:round(100*((4)+(jy)/2+0.6*(jx)/sqrt((jx)^2+(jy)^2)))/100;d}}, \"j⃗\")\n```\n\nLa base $(\\vec{i},\\vec{j})$ est :\n\n```choix\n- orthonormée\n- orthogonale, mais pas orthonormée\n- ni orthogonale, ni orthonormée\n```",
+			"variables": [
+				{
+					"name": "ty",
+					"expression": "0..2"
+				},
+				{
+					"name": "h",
+					"expression": "0..1"
+				},
+				{
+					"name": "sg",
+					"expression": "-1..1"
+				},
+				{
+					"name": "tau",
+					"expression": "-1..1"
+				},
+				{
+					"name": "m",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b",
+					"expression": "-2..2"
+				},
+				{
+					"name": "c",
+					"expression": "-2..2"
+				},
+				{
+					"name": "d",
+					"expression": "-2..2"
+				},
+				{
+					"name": "ix",
+					"expression": "eval:(1-min(abs((ty)-0),1))*((sg)*(1-(h)))+(1-min(abs((ty)-1),1))*((a))+(1-min(abs((ty)-2),1))*((a))"
+				},
+				{
+					"name": "iy",
+					"expression": "eval:(1-min(abs((ty)-0),1))*((sg)*(h))+(1-min(abs((ty)-1),1))*((b))+(1-min(abs((ty)-2),1))*((b))"
+				},
+				{
+					"name": "jx",
+					"expression": "eval:(1-min(abs((ty)-0),1))*(-(tau)*(h))+(1-min(abs((ty)-1),1))*(-(m)*(tau)*(b))+(1-min(abs((ty)-2),1))*((c))"
+				},
+				{
+					"name": "jy",
+					"expression": "eval:(1-min(abs((ty)-0),1))*((tau)*(1-(h)))+(1-min(abs((ty)-1),1))*((m)*(tau)*(a))+(1-min(abs((ty)-2),1))*((d))"
+				}
+			],
+			"conditions": [
+				"sg != 0",
+				"tau != 0",
+				"(a)^2+(b)^2+(m) >= 3",
+				"(a)*(c)+(b)*(d) != 0",
+				"(a)*(d)-(b)*(c) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une base $(\\vec{i},\\vec{j})$ est **orthogonale** si $\\vec{i}$ et $\\vec{j}$ ont des directions **perpendiculaires** ; elle est **orthonormée** si de plus $\\|\\vec{i}\\|=\\|\\vec{j}\\|=1$.",
+					"{{if:ty==2|Les flèches $\\vec{i}$ et $\\vec{j}$ ne sont **pas perpendiculaires** : la base n'est pas orthogonale, donc pas orthonormée non plus.|Les flèches $\\vec{i}$ et $\\vec{j}$ sont **perpendiculaires** : la base est orthogonale.}}",
+					"{{if:ty==0|Chacune mesure **un carreau** : $\\|\\vec{i}\\|=\\|\\vec{j}\\|=1$, la base est **orthonormée**.|{{if:ty==1|Mais au moins une des deux ne mesure pas un carreau : $\\|\\vec{i}\\|={{eval:sqrt((ix)^2+(iy)^2)}}$ et $\\|\\vec{j}\\|={{eval:sqrt((jx)^2+(jy)^2)}}$. La base est **orthogonale, mais pas orthonormée**.|La base n'est **ni orthogonale, ni orthonormée**.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Deux vecteurs $\\vec{i}$ et $\\vec{j}$ vérifient $\\|\\vec{i}\\|={{n1}}$, $\\|\\vec{j}\\|={{n2}}$, et leurs directions forment un angle de ${{if:g==0|90|{{if:g==1|60|45}}}}^\\circ$.\n\nLa base $(\\vec{i},\\vec{j})$ est :\n\n```choix\n- orthonormée\n- orthogonale, mais pas orthonormée\n- ni orthogonale, ni orthonormée\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "n1",
+					"expression": "1..2"
+				},
+				{
+					"name": "n2",
+					"expression": "1..2"
+				},
+				{
+					"name": "ortho",
+					"expression": "eval:(1-min(abs((g)-0),1))"
+				},
+				{
+					"name": "norme",
+					"expression": "eval:(1-min(abs((n1)-1),1))*(1-min(abs((n2)-1),1))"
+				},
+				{
+					"name": "bon",
+					"expression": "eval:(ortho)*(1-(norme))+2*(1-(ortho))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{bon}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une base $(\\vec{i},\\vec{j})$ est **orthogonale** si $\\vec{i}$ et $\\vec{j}$ ont des directions **perpendiculaires** ; elle est **orthonormée** si de plus $\\|\\vec{i}\\|=\\|\\vec{j}\\|=1$.",
+					"{{if:g==0|Angle droit : la base est orthogonale. {{if:norme>0|Et les deux normes valent $1$ : elle est **orthonormée**.|Mais une norme au moins n'est pas $1$ : elle est **orthogonale, mais pas orthonormée**.}}|L'angle n'est pas droit : la base n'est **ni orthogonale, ni orthonormée**, même si les normes valent $1$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Sur les axes, un carreau : orthonormée",
+			"variationIndex": 0,
+			"variables": {
+				"ty": "0",
+				"h": "0",
+				"sg": "1",
+				"tau": "1",
+				"m": "1",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"d": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : orthogonale seulement",
+			"variationIndex": 0,
+			"variables": {
+				"ty": "0",
+				"h": "0",
+				"sg": "1",
+				"tau": "1",
+				"m": "1",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"d": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(1 ; 1), (−1 ; 1) : orthogonale",
+			"variationIndex": 0,
+			"variables": {
+				"ty": "1",
+				"h": "0",
+				"sg": "1",
+				"tau": "1",
+				"m": "1",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"d": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : orthogonale lue orthonormée",
+			"variationIndex": 0,
+			"variables": {
+				"ty": "1",
+				"h": "0",
+				"sg": "1",
+				"tau": "1",
+				"m": "1",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"d": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(1 ; 0), (0 ; 2) : orthogonale",
+			"variationIndex": 0,
+			"variables": {
+				"ty": "1",
+				"h": "0",
+				"sg": "1",
+				"tau": "1",
+				"m": "2",
+				"a": "1",
+				"b": "0",
+				"c": "1",
+				"d": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(1 ; 1), (1 ; 0) : ni l'une ni l'autre",
+			"variationIndex": 0,
+			"variables": {
+				"ty": "2",
+				"h": "0",
+				"sg": "1",
+				"tau": "1",
+				"m": "1",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"d": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "90°, normes 1 : orthonormée",
+			"variationIndex": 1,
+			"variables": {
+				"g": "0",
+				"n1": "1",
+				"n2": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "90°, norme 2 : orthogonale",
+			"variationIndex": 1,
+			"variables": {
+				"g": "0",
+				"n1": "1",
+				"n2": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 90°, norme 2 lue orthonormée",
+			"variationIndex": 1,
+			"variables": {
+				"g": "0",
+				"n1": "2",
+				"n2": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "60°, normes 1 : ni l'une ni l'autre",
+			"variationIndex": 1,
+			"variables": {
+				"g": "1",
+				"n1": "1",
+				"n2": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 60°, normes 1 lue orthonormée",
+			"variationIndex": 1,
+			"variables": {
+				"g": "1",
+				"n1": "1",
+				"n2": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
