@@ -2,7 +2,7 @@
  * Cases d'un tableau de signes à compléter (```variation à `?`)
  * =============================================================
  *
- * Chantier `docs/wip/tableau-signes-progress.md`. L'auteur écrit le tableau juste
+ * Chantier `docs/archive/wip/tableau-signes-progress.md`. L'auteur écrit le tableau juste
  * et préfixe d'un `?` chaque cellule cachée : la réponse attendue de chaque case
  * est tirée du bloc (`cases` du nœud), jamais écrite dans `blanks`.
  *

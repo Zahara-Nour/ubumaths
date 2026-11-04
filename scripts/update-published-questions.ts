@@ -12,7 +12,8 @@
  * chaque cible :
  *  - le modèle est relu en base ; le fichier doit porter le même `id` ;
  *  - seuls `variations`, `options`, `test_specs`, `title`, `description`, `level`, `delay` sont
- *    écrits ;
+ *    écrits ; ⚠️ `delay` n'est donc plus une garde : relancer un ancien lot réécrit le temps
+ *    de son instantané (chantier `tableau-signes`, 2026-11-03) ;
  *    tout autre champ du fichier (thème, domaine, sous-domaine, classes…) doit être
  *    IDENTIQUE à la base, sinon arrêt ; `status` n'est jamais écrit ;
  *  - `shared` : seul l'AJOUT de `cleanCoefficients: true` s'écrit (valeur = `shared` de la

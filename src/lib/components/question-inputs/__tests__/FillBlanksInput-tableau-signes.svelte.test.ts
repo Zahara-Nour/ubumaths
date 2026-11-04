@@ -2,7 +2,7 @@
  * FillBlanksInput — tableau de signes à compléter (```variation à `?`)
  * =====================================================================
  *
- * Chantier `docs/wip/tableau-signes-progress.md`, PR 3 (saisie). Chaque cellule
+ * Chantier `docs/archive/wip/tableau-signes-progress.md`, PR 3 (saisie). Chaque cellule
  * cachée est UNE case de la question :
  * - valeur de x : petite case MathLive (prompt `N` du champ) ;
  * - signe : une case qui ouvre au toucher les boutons + / − ;

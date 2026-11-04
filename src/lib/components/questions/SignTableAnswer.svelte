@@ -3,7 +3,7 @@
 	========================================================================
 
 	Copie corrigée, verso de la carte flash, bonne réponse affichée (chantier
-	`docs/wip/tableau-signes-progress.md`, PR 4) : le tableau lui-même, chaque
+	`docs/archive/wip/tableau-signes-progress.md`, PR 4) : le tableau lui-même, chaque
 	cellule cachée remplie (phase 0, point 5) —
 	- juste : la réponse de l'élève, en vert ;
 	- forme à améliorer : sa réponse en ambre, la bonne dessous ;

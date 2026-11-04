@@ -2,7 +2,7 @@
  * VariationTable au téléphone (390 px)
  * ===================================
  *
- * Chantier `docs/wip/tableau-signes-progress.md`, PR « tableau à compléter au téléphone ».
+ * Chantier `docs/archive/wip/tableau-signes-progress.md`, PR « tableau à compléter au téléphone ».
  * À 390 px, le tableau de signes à compléter de 2-330 faisait 565 px pour 308 px de place :
  * +∞ et près de la moitié des cases hors écran, sans aucun signe qu'il en restait.
  * - le bord qui défile porte une ombre (droite au départ, gauche une fois défilé) ;

@@ -1,6 +1,6 @@
 /**
  * Tableau de signes à compléter (` ```variation ` à `?`, chantier
- * `docs/wip/tableau-signes-progress.md`, PR 2)
+ * `docs/archive/wip/tableau-signes-progress.md`, PR 2)
  *
  * L'auteur écrit le tableau JUSTE et préfixe d'un `?` chaque cellule cachée ; la
  * réponse attendue est tirée du bloc, jamais écrite dans `blanks`. Une case par

@@ -1,27 +1,23 @@
 ---
-status: en cours
+status: clos
 ---
 
 # Chantier « tableau-signes » — tableau de signes à compléter
 
-> Outil n° 8 de [outils-manquants.md](outils-manquants.md) : cases dans le bloc ` ```variation `.
+> Outil n° 8 de [outils-manquants.md](../../wip/outils-manquants.md) : cases dans le bloc ` ```variation `.
 > Points servis : 2-268, 426, 330, 446, 337, 449-451 (2de), puis 1re et Tle. Ouvert le 2026-11-02.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2358._
+_Mis à jour le 2026-11-04, versement (chantier clos)._
 
-- **État** : #2335, #2338 en prod (0.68.0) ; #2353 (`clavier-mathlive`) et #2358 (tableau resserré au
-  téléphone : 2-330 à 390 px de 565 à 396 px, ombre du bord qui défile, pas de bouton clavier dans les
-  cases sur écran tactile) mergées, **pas encore déployées**.
-- **Prochaine action** : essais iPhone de David (#2287, #2297, 2-330, 2-446 dès maintenant ; #2353 et
-  #2358 après `deploy:prod`), notés dans `verifications-manuelles.md` ; puis verser le chantier.
-- **En attente de David** : `deploy:prod` (sa décision) ; juger au doigt les 88 px qui défilent encore
-  (deux racines).
-- **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` ; Chrome n'atteint
-  pas `localhost` → Playwright (`devices['iPhone 13']` = `pointer: coarse`) ; worktree neuf →
-  `svelte-kit sync` ; lire `question_templates` en pages (plafond 1000 lignes).
-- **Worktree / branche** : aucun (retiré après #2358).
+- **État** : clos et versé (`docs/systeme/ubumark.md`, `questions.md`, `fiches-et-pdf.md`). #2335, #2338
+  en prod (0.68.0) ; #2353 et #2358 mergées, en prod au prochain `deploy:prod`.
+- **Reste, hors chantier** : essais iPhone de David dans `docs/wip/verifications-manuelles.md` (dont
+  les 88 px qui défilent encore, deux racines) ; domaine `]a[, +inf` et tableau de variations à
+  compléter, repère PDF d'une marque cachée : lignes 12, 14 et 17 de
+  `docs/wip/outils-manquants.md`. Un essai raté → PR de correctif.
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -203,7 +199,7 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
   conditions, corrigés inchangés.
 - Prod relue (MCP) : f0163416 (2-330) et 9c7ab1c7 (2-446) **publiés** ; empreintes md5 de `variations`,
   `test_specs`, `shared` identiques aux fichiers du dépôt → instantanés construits depuis eux.
-- Script `docs/wip/tableau-signes/reecrire-330-446.py` (source lue au commit 2d2343108) : le tableau du
+- Script `docs/archive/wip/tableau-signes/reecrire-330-446.py` (source lue au commit 2d2343108) : le tableau du
   corrigé, préfixé de `?` → énoncé ; specs réécrites en cases (−b/a, ordre, signe de a seul, 0 du mauvais
   facteur, constante oubliée, 0 sous la valeur interdite, zéro et valeur interdite échangés, double barre
   dans la ligne du dénominateur, `0` tapé = `z`). Sorties : `scripts/questions/2de-signes-b/01`, `02` et
