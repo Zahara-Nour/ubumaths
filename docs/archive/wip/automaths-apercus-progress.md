@@ -2,14 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2376._
+_Mis à jour le 2026-11-04, après le `deploy:prod` 0.70.0. **Chantier clos, journal archivé.**_
 
-- **État** : #2376 mergée (`4d93161c6`) : aperçus calculés à l'ouverture d'une rubrique (galerie montée seulement si ouverte : bits-ui garde le contenu fermé dans le DOM), modèles lus une fois par onglet, API gardée 5 min par Vercel. **Pas encore en prod.**
-- **Prochaine action** : après `deploy:prod`, mesurer `/automaths` en prod (`curl -w %{time_starttransfer}` sur `https://www.chiph.re/automaths`, cible ~2 s, avant 7 à 11 s) ; puis versement (doc système déjà à jour dans `docs/systeme/questions.md`) et archivage du journal.
-- **En attente de David** : `deploy:prod` ; vérification manuelle #2376.
-- **Pièges en cours** : base locale sans modèle publié (726 brouillons) → catalogue vide en local ; pour voir le rendu, publier en local puis remettre en brouillon.
+- **État** : #2376 en prod (0.70.0). Réussite mesurée (voir « Mesure en prod ») : `/automaths` répond en 0,07 à 0,3 s (1,3 s à froid), contre 7 à 11 s.
+- **Versement** : la doc durable est dans `docs/systeme/questions.md` (catalogue, cache d'onglet, cache Vercel).
+- **En attente de David** : la vérification manuelle #2376 (`docs/wip/verifications-manuelles.md`).
 - **Suite décidée** : chantier à part « Automaths selon l'arbre des notions » (voir Décisions).
-- **Worktree / branche** : supprimés après le merge.
 
 ---
 
@@ -53,5 +51,15 @@ Validée le 2026-11-04.
 - `src/lib/components/questions/CatalogueGallery.svelte` : cartes d'une rubrique, montée à l'ouverture.
 - `questionTemplatesCache.fetchTemplates()` : promesse partagée, `isLoaded`, `invalidate()` → relecture `?frais=…` ; `initializeFromServer` retiré.
 - Catalogue : `+page.server.ts` supprimé. Panier : `load` = rôle seulement. Test : `load` = redirection seulement.
-- API `templates/all` : client anonyme, `s-maxage=300, stale-while-revalidate=3600`, échec → 500 (avant : 200 + liste vide).
+- API `templates/all` : client anonyme, `s-maxage=300, stale-while-revalidate=300`, échec → 500 (avant : 200 + liste vide).
 - Vérifié dans Chrome (local, 712 modèles publiés le temps du test) : rubrique dépliée = aperçus ; catalogue → panier → catalogue → panier sans aucune lecture de l'API ; lien de série direct joué (1 sur 3) ; panier par lien avec aperçu.
+
+## Mesure en prod (2026-11-04, 0.70.0)
+
+| Requête                                 | Avant (0.69.0)       | Après (0.70.0)                              |
+| --------------------------------------- | -------------------- | ------------------------------------------- |
+| `/automaths` (premier octet)            | 7 à 11 s             | 1,3 s à froid, puis 0,07 à 0,3 s            |
+| `/automaths` (taille)                   | 2,3 Mo gzip          | 34 Ko                                       |
+| `/api/questions/templates/all` (Vercel) | relue à chaque appel | `MISS` 1,3 s puis `HIT` 0,2 s ; 1,7 Mo gzip |
+
+Vercel retire `s-maxage` de l'en-tête rendu au client (`cache-control: public, max-age=0`) : le cache se lit à `x-vercel-cache`, pas à `cache-control`.

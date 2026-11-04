@@ -206,7 +206,8 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   (`s-maxage=300, stale-while-revalidate=300`) — un modèle publié ou dépublié l'est pour les
   élèves en 5 à 10 min. Servie à tous : lue par un client **anonyme** (`createAnonymousSupabase`),
   jamais par la session ; un échec répond 500, sans cache. Le hook passe en `private, no-store`
-  toute réponse qui pose un cookie.
+  toute réponse qui pose un cookie. Vercel retire `s-maxage` de l'en-tête rendu au client (on y lit
+  `public, max-age=0`) : le cache se vérifie à `x-vercel-cache` (`MISS` puis `HIT`).
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
   `generate/[id]`, `categories`), admin `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`
