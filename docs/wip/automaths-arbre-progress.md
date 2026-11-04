@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2385._
+_Mis à jour le 2026-11-04, après le `deploy:prod` v0.72.0 (4a en prod)._
 
-- **État** : lots 1-3, 2b et **4a (#2385)** mergés. 4a (code sans ancienne forme ni anciennes colonnes) **pas encore en prod**.
-- **Prochaine action** : `deploy:prod` de 4a **sur demande de David** ; puis 4b (nouveau worktree) : migration destructive (DROP `theme`/`domain`/`subdomain`, `category_key`, index, contrainte ; vue `resources` au chemin dans l'arbre, Q17 A) + renommage `categories` → `items` avec le code (Q18 B), livrés sous `maintenance:on` → `db:migrate` → `deploy:prod` → `maintenance:off`. Liste « Pour 4b » dans § 4a.
-- **En attente de David** : le `deploy:prod` de 4a ; confirmation explicite de la question d'accès de 4b avant `db:migrate`.
-- **Pièges en cours** : 4b avant le deploy de 4a = l'ancien code de prod planterait (select nommés). Worktrees questions-4 / -ce1 / -cm1 : fichiers portant `theme` → `fichiers-sans-quadruplet.ts --ecrire` (supprimé en 4b). Pre-commit sur `data/` : « paths are ignored » sans effet, `git add -u data/…`. `db:migrate` depuis le dépôt principal. Avant tout push : grep des messages (git-workflow R4).
-- **Worktree / branche** : aucun (4a retiré). 4b → nouveau worktree.
+- **État** : lots 1-3, 2b et 4a mergés ; **4a en prod (v0.72.0)**. Plus rien en prod ne lit `theme`/`domain`/`subdomain` ni `category_key`.
+- **Prochaine action** : 4b (nouveau worktree `ubumaths-wt-automaths-arbre`, branche `feat/automaths-arbre-drop`) : migration destructive (DROP `theme`/`domain`/`subdomain`, `category_key`, index, contrainte ; vue `resources` au chemin dans l'arbre, Q17 A) + renommage `categories` → `items` avec le code (Q18 B), livrés sous `maintenance:on` → `db:migrate` → `deploy:prod` → `maintenance:off`. Liste « Pour 4b » dans § 4a.
+- **En attente de David** : confirmation explicite de la question d'accès de 4b avant `db:migrate` ; arrêt obligatoire avant la migration destructive (ce qui sera perdu, grep des usages collé).
+- **Pièges en cours** : Worktrees questions-4 / -ce1 / -cm1 : fichiers portant `theme` → `fichiers-sans-quadruplet.ts --ecrire` (supprimé en 4b). Pre-commit sur `data/` : « paths are ignored » sans effet, `git add -u data/…`. `db:migrate` depuis le dépôt principal. Avant tout push : grep des messages (git-workflow R4).
+- **Worktree / branche** : aucun pour l'instant. 4b → nouveau worktree.
 
 ## Origine (2026-11-04)
 
@@ -415,3 +415,8 @@ aucune série au `updated_at` changé.
   `update-published-questions` devenu inutile sans l'index.
 - Vérification manuelle au merge : toast « Panier d'une ancienne version vidé » au premier
   chargement (émis avant le montage du Toaster ; non couvert par un test, toaster mocké).
+
+### 4a en prod (2026-11-04)
+
+- `deploy:prod` lancé par David (session « libre 5 ») : v0.72.0 (`53afb6638`), `production` avancée.
+  2b, 3b et 4a livrés. 4b peut commencer.
