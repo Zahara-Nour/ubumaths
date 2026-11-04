@@ -29,6 +29,8 @@
  * Usage :
  *   pnpm tsx scripts/create-automatismes-statistiques-1spe.ts            # simulation
  *   pnpm tsx scripts/create-automatismes-statistiques-1spe.ts --publier  # écrit en prod
+ *   … --publier --mettre-a-jour   réécrit les deux séries d'une fiche déjà créée, si elle est
+ *                                 encore en brouillon (graines ou modèles corrigés)
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -48,6 +50,7 @@ config({ path: '.env' });
 
 const PROJET_PROD = 'cnevnzsvixxpnurautls';
 const PUBLIER = process.argv.includes('--publier');
+const METTRE_A_JOUR = process.argv.includes('--mettre-a-jour');
 const DAVID = '97c1d5e4-5fa0-44ce-be83-ed5467f3a424';
 const ECOLE = '05668b78-e4d2-4d85-85b6-183e75d24204';
 const MODELE_FICHE_ELEVE = '00000000-0000-4000-8000-000000000012';
@@ -99,7 +102,7 @@ const SERIES = [
 			q('histogramme', 1),
 			q('circulaire', 1),
 			q('boiteALire', 1),
-			q('moyenneRegroupee', 1),
+			q('moyenneRegroupee', 3),
 			q('mediane', 1),
 			q('ecartType', 1),
 			q('frequenceConditionnelle', 5),
@@ -140,6 +143,52 @@ const CONFIG_FICHE = {
 	shuffle_exercises: false,
 	shuffle_within_sections: false
 };
+
+type Client = ReturnType<typeof createClient<Database>>;
+type Exercice = { title: string; variations: unknown };
+
+/** Réécrit les variantes des séries d'une fiche encore en brouillon ; chaque écriture relue */
+async function mettreAJour(supabase: Client, exercices: Exercice[]) {
+	const { data: fiches, error: e0 } = await supabase
+		.from('worksheets')
+		.select('id, status')
+		.eq('title', FICHE.title);
+	if (e0) throw new Error(`Lecture des fiches impossible : ${e0.message}`);
+	if (fiches?.length !== 1)
+		throw new Error(`Fiche « ${FICHE.title} » : ${fiches?.length ?? 0} trouvée(s)`);
+	const fiche = fiches[0];
+	if (fiche.status !== 'draft')
+		throw new Error(`Fiche ${fiche.id} : ${fiche.status}, pas brouillon`);
+	const { data: liens, error: e1 } = await supabase
+		.from('worksheet_exercises')
+		.select('exercise_id, exercises(title, topic)')
+		.eq('worksheet_id', fiche.id);
+	if (e1) throw new Error(`Lecture des séries impossible : ${e1.message}`);
+	const ids = new Map<string, string>();
+	for (const l of liens ?? []) {
+		const ex = l.exercises as { title: string; topic: string } | null;
+		if (ex?.topic === TOPIC) ids.set(ex.title, l.exercise_id);
+	}
+	for (const e of exercices) {
+		if (!ids.has(e.title)) throw new Error(`Série « ${e.title} » absente de la fiche ${fiche.id}`);
+	}
+	console.log(`  ✓ fiche ${fiche.id} en brouillon, ${exercices.length} séries retrouvées`);
+	if (!PUBLIER) {
+		console.log('\nSimulation terminée — relancer avec --publier --mettre-a-jour pour écrire.');
+		return;
+	}
+	for (const e of exercices) {
+		const { data, error } = await supabase
+			.from('exercises')
+			.update({ variations: e.variations as never, updated_at: new Date().toISOString() })
+			.eq('id', ids.get(e.title)!)
+			.select('id');
+		if (error || data?.length !== 1)
+			throw new Error(`« ${e.title} » : mise à jour refusée — ${error?.message ?? '0 ligne'}`);
+		console.log(`  ✍️  « ${e.title} » réécrite`);
+	}
+	console.log('\n✅ Terminé.');
+}
 
 async function main() {
 	const url = process.env.PUBLIC_SUPABASE_URL;
@@ -184,6 +233,12 @@ async function main() {
 		// Ce qui est écrit est ce que Zod a validé (défauts et transformations compris)
 		return v.data;
 	});
+
+	if (METTRE_A_JOUR) {
+		await mettreAJour(supabase, exercices);
+		return;
+	}
+
 	const { data: dejaLa, error: e1 } = await supabase
 		.from('exercises')
 		.select('title')
