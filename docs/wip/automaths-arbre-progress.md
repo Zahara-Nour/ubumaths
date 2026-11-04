@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2382 (3a-2 mergé, Q13 migrée en prod)._
+_Mis à jour le 2026-11-04, après #2382 et le `deploy:prod` 0.71.0._
 
-- **État** : 3a-1 (#2381) et 3a-2 (#2382) mergés ; `db:migrate` de Q13 fait (21/21 modèles « Graphes et matrices » déclarent `product`, aucun publié). Code de l'éditeur sans quadruplet sur `main`, pas encore en prod.
-- **Prochaine action** : après le `deploy:prod`, ouvrir 3b (`create-questions.ts` sans quadruplet) puis 2b, sur un nouveau worktree.
-- **En attente de David** : essai de l'éditeur et de la liste admin (serveur 5176, base locale, `admin@local.test` / `local-admin`) ; `deploy:prod` (avant 3b et 2b).
+- **État** : 3a-1 (#2381) et 3a-2 (#2382) mergés ; `db:migrate` de Q13 fait (21/21 modèles « Graphes et matrices » déclarent `product`, aucun publié). Code de l'éditeur sans quadruplet **en prod** (`deploy:prod` 0.71.0, `production` → c17444bc2).
+- **Prochaine action** : ouvrir 3b (`create-questions.ts` sans quadruplet) puis 2b, sur un nouveau worktree.
+- **En attente de David** : essai de l'éditeur et de la liste admin (serveur 5176, base locale, `admin@local.test` / `local-admin`) .
 - **Pièges en cours** : un modèle enregistré sous Matrices/Graphes garde `capitalPairs = 'product'` s'il change de branche (le sélecteur l'affiche comme déclaré à la réouverture ; limite acceptée, relecture du 2026-11-04). PUT : le 23505 est attrapé sans tester le nom de l'index (seul unique de la table) → à retirer au lot 4 avec l'index. `create-questions.ts` garde le quadruplet jusqu'au deploy (3b). Lot 4 : le générateur lit encore le contexte AB dans `theme` (anciens modèles) → à remplacer avant de retirer la colonne. CI : « Browser connection was closed » → relancer.
 - **Worktree / branche** : `../ubumaths-wt-automaths-arbre` gardé pour l'essai de David (serveur 5176) ; branche `feat/automaths-arbre-editeur-sans-quadruplet` mergée → `worktree remove` + `branch -d` après l'essai.
 
