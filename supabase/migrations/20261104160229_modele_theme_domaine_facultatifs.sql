@@ -25,6 +25,8 @@
 --   update public.question_templates set domain = 'Non rangé' where domain is null;
 --   alter table public.question_templates alter column theme set not null;
 --   alter table public.question_templates alter column domain set not null;
+-- ⚠️ Avec le retour à l'ancien code seulement (ou avant) : le code du lot 3
+-- n'écrit plus ces colonnes, chaque enregistrement échouerait sinon.
 -- (deux modèles publiés « Non rangé » de même niveau et sans sous-domaine
 -- buteraient sur l'index unique : leur donner un sous-domaine distinct avant.)
 -- =============================================================================
