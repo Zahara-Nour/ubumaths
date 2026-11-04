@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot 4 phase 0 validée._
+_Mis à jour le 2026-11-04, après #2385._
 
-- **État** : lots 1-3 et 2b mergés et en prod. Lot 4 phase 0 validée (Q17 A, Q18 B) ; 4a en cours.
-- **Prochaine action** : 4a = code sans ancienne forme ni anciennes colonnes (§ Lot 4), PR, merge, puis `deploy:prod` sur demande de David ; 4b = migration destructive + renommage `categories` → `items` sous maintenance.
-- **En attente de David** : confirmation explicite de la question d'accès avant le `db:migrate` de 4b.
-- **Pièges en cours** : `template-review.ts` sélectionne les colonnes nommément (déployer 4a AVANT le DROP). Vue `resources` dépend des colonnes. Worktrees questions-4 / -ce1 / -cm1 : fichiers portant `theme` → `fichiers-sans-quadruplet.ts --ecrire` avant que 4a ne le supprime. CI « Browser connection was closed » → relancer. `db:migrate` depuis le dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-retrait`.
+- **État** : lots 1-3, 2b et **4a (#2385)** mergés. 4a (code sans ancienne forme ni anciennes colonnes) **pas encore en prod**.
+- **Prochaine action** : `deploy:prod` de 4a **sur demande de David** ; puis 4b (nouveau worktree) : migration destructive (DROP `theme`/`domain`/`subdomain`, `category_key`, index, contrainte ; vue `resources` au chemin dans l'arbre, Q17 A) + renommage `categories` → `items` avec le code (Q18 B), livrés sous `maintenance:on` → `db:migrate` → `deploy:prod` → `maintenance:off`. Liste « Pour 4b » dans § 4a.
+- **En attente de David** : le `deploy:prod` de 4a ; confirmation explicite de la question d'accès de 4b avant `db:migrate`.
+- **Pièges en cours** : 4b avant le deploy de 4a = l'ancien code de prod planterait (select nommés). Worktrees questions-4 / -ce1 / -cm1 : fichiers portant `theme` → `fichiers-sans-quadruplet.ts --ecrire` (supprimé en 4b). Pre-commit sur `data/` : « paths are ignored » sans effet, `git add -u data/…`. `db:migrate` depuis le dépôt principal. Avant tout push : grep des messages (git-workflow R4).
+- **Worktree / branche** : aucun (4a retiré). 4b → nouveau worktree.
 
 ## Origine (2026-11-04)
 
