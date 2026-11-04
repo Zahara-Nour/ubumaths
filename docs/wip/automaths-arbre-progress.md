@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2384._
+_Mis à jour le 2026-11-04, lot 4 phase 0 validée._
 
-- **État** : 3a-1 (#2381), 3a-2 (#2382, prod 0.71.0), 3b (#2383) et **2b (#2384)** mergés. 2b appliquée en prod (`db:migrate`) : 56/56 lignes de séries et séances désignent un modèle publié, 0 ancienne ligne, triggers rétablis, dates gardées. 2b est une migration de données : rien à déployer.
-- **Prochaine action** : **lot 4** (destructif) — phase 0 : retirer l'ancienne forme du code (`series-legacy.ts`, `series-lines.ts`, `?categories=`, `category_key`), `deploy:prod`, PUIS la migration qui retire les colonnes `theme`/`domain`/`subdomain` (et renomme `categories`). Liste « à reprendre » dans § 3b — code.
-- **En attente de David** : rien.
-- **Pièges en cours** : worktrees questions-4 / -ce1 / -cm1 : lots à fichiers portant encore `theme` → après rebase, `pnpm tsx scripts/questions/fichiers-sans-quadruplet.ts --ecrire --liste <f>` puis prettier. Un script de lot rejoué efface les `id` → remettre l'id. Base locale : 8 séances laissées par d'autres suites (`category: "entiers/1"`). Lot 4 : `capitalPairs = 'product'` si un modèle change de branche ; le 23505 du PUT ; contexte AB lu dans `theme`. CI « Browser connection was closed » → relancer. Le worktree n'est pas lié à Supabase : `db:migrate` depuis le dépôt principal.
-- **Worktree / branche** : aucun (2b retiré). Lot 4 → nouveau worktree.
+- **État** : lots 1-3 et 2b mergés et en prod. Lot 4 phase 0 validée (Q17 A, Q18 B) ; 4a en cours.
+- **Prochaine action** : 4a = code sans ancienne forme ni anciennes colonnes (§ Lot 4), PR, merge, puis `deploy:prod` sur demande de David ; 4b = migration destructive + renommage `categories` → `items` sous maintenance.
+- **En attente de David** : confirmation explicite de la question d'accès avant le `db:migrate` de 4b.
+- **Pièges en cours** : `template-review.ts` sélectionne les colonnes nommément (déployer 4a AVANT le DROP). Vue `resources` dépend des colonnes. Worktrees questions-4 / -ce1 / -cm1 : fichiers portant `theme` → `fichiers-sans-quadruplet.ts --ecrire` avant que 4a ne le supprime. CI « Browser connection was closed » → relancer. `db:migrate` depuis le dépôt principal.
+- **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-retrait`.
 
 ## Origine (2026-11-04)
 
@@ -361,3 +361,34 @@ sous-domaine vide, rollback d'une série déjà en nouvelle forme). CI verte, `c
 `db:migrate` depuis le dépôt principal (le worktree n'est pas lié). Vérifié en prod : 29 + 27
 lignes → modèle publié, 0 ancienne ligne, `series_lock_guard` et `update_series_updated_at` actifs,
 aucune série au `updated_at` changé.
+
+## Lot 4 — phase 0 (2026-11-04)
+
+### Relevé (code + prod, lecture seule)
+
+- **Prod** : 2 090 modèles portent encore `theme`/`domain`/`subdomain` ; 0 modèle publié sans nœud ;
+  0 ancienne ligne (séries, séances), 0 `category_key` rempli, 0 lien court.
+- **Base** : vue `resources` (sous-titre `concat_ws(' · ', theme, domain, subdomain)`, lue par
+  `search_resources` → recherche `[[…]]`) ; index `idx_question_templates_categories` (theme, domain,
+  level) et `idx_question_templates_unique_category` ; contrainte
+  `evaluation_attempt_questions_category_key_check`. Nom `categories` dans `series_lock_guard`,
+  `get_class_course_by_share_token`, contrainte `series_categories_non_empty`.
+- **Code** : `questions/series-legacy.ts`, branche ancienne forme de `server/series-lines.ts`, ancien
+  panier, `test-launch`, `?categories=` (panier, test), repli `categories` de `validation/tests.ts`,
+  `template-review.ts` (select nommé → l'ancien code planterait au DROP), Zod et types des modèles,
+  `capitalPairsContextOf(theme, branche)`, `OLD_CATEGORY_TAKEN`, scripts du § 3b ; ~20 tests
+  d'intégration insèrent `theme`.
+
+### Comportements validés (« je te suis », 2026-11-04)
+
+- Nominal : plus de thème / domaine / sous-domaine / catégorie ; lignes de modèle seules.
+- Ancien lien `?categories=` : message « lien d'une ancienne version » (Q8 A). Ancien panier du
+  navigateur : lignes anciennes retirées, message « panier d'une ancienne version vidé ».
+- Migration 4b : refuse s'il reste une ancienne ligne ou un modèle publié sans nœud.
+- **Q17 A** : sous-titre d'un modèle dans `resources` = chemin dans l'arbre (branche · notion ·
+  sous-notion).
+- **Q18 B** : `series.categories` et `test_sessions.categories` → `items`, dans 4b (fonctions SQL
+  réécrites), livrés sous `maintenance:on` → `db:migrate` → `deploy:prod` → `maintenance:off`.
+- Découpage : **4a** code seul (+ `deploy:prod` sur demande) ; **4b** migration destructive + renommage.
+- Question d'accès (4b) : personne ne gagne ni ne perd de lecture — **confirmation explicite à
+  recueillir avant `db:migrate`**.
