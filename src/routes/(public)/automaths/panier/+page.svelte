@@ -24,7 +24,8 @@
 	import SeriesLinkShare from '$lib/components/series/SeriesLinkShare.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { parseCategoriesParam, type SeriesCategories } from '$lib/validation/series';
-	import { previewCartItem } from '$lib/questions/cart-preview';
+	import { findCategoryTemplate } from '$lib/questions/cart-preview';
+	import { templatePreview } from '$lib/questions/catalogue';
 	import type { TestMode } from '$lib/types/test';
 	import type { PageData } from './$types';
 
@@ -33,17 +34,9 @@
 	// Prof et admin enregistrent le panier comme série (C18)
 	let isTeacher = $derived(data.userRole === 'teacher' || data.userRole === 'admin');
 
-	// Initialize cache with server-loaded templates (SSR support)
-	// Or fetch from API if server load failed (e.g., offline after navigation)
-	$effect(() => {
-		if (data.templates && data.templates.length > 0) {
-			questionTemplatesCache.initializeFromServer(data.templates);
-		} else if (questionTemplatesCache.isEmpty) {
-			// Try to fetch from API if cache is empty and server load failed
-			questionTemplatesCache.fetchTemplates().catch((err) => {
-				console.error('Failed to fetch templates for cache:', err);
-			});
-		}
+	// Modèles : cache de l'onglet, lu une fois (le serveur ne les envoie plus)
+	onMount(() => {
+		void questionTemplatesCache.fetchTemplates();
 	});
 
 	// Reactive cart state
@@ -62,17 +55,13 @@
 	let linkError = $state<string | null>(null);
 
 	/**
-	 * Generate instances for cart items
-	 * For each category, finds matching templates and randomly selects one
+	 * Aperçu de chaque catégorie du panier (graine fixe, calculé une fois par
+	 * modèle : changer une quantité ne relance aucun calcul)
 	 */
 	let cartItemsWithInstances = $derived(
 		cartItems.map((item) => {
-			// Use cache if available, fallback to data.templates
-			const templates =
-				questionTemplatesCache.templates.length > 0
-					? questionTemplatesCache.templates
-					: data.templates;
-			return { item, ...previewCartItem(templates, item.category) };
+			const template = findCategoryTemplate(questionTemplatesCache.templates, item.category);
+			return { item, instance: template ? (templatePreview(template) ?? undefined) : undefined };
 		})
 	);
 
@@ -273,17 +262,25 @@
 		<!-- Cart content -->
 		<div class="space-y-6">
 			<!-- Questions grid -->
-			<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{#each cartItemsWithInstances as { item, instance } (item.category.theme + item.category.domain + item.category.subdomain + item.category.level)}
-					<CartQuestionCard
-						{item}
-						{instance}
-						onIncrementQuantity={handleIncrementQuantity}
-						onDecrementQuantity={handleDecrementQuantity}
-						onUpdateDelay={handleUpdateDelay}
-					/>
-				{/each}
-			</div>
+			{#if !questionTemplatesCache.isLoaded}
+				<p class="text-muted-foreground" role={questionTemplatesCache.error ? 'alert' : undefined}>
+					{questionTemplatesCache.error
+						? 'Impossible de charger les aperçus : vérifie ta connexion, puis recharge la page.'
+						: 'Chargement des aperçus…'}
+				</p>
+			{:else}
+				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+					{#each cartItemsWithInstances as { item, instance } (item.category.theme + item.category.domain + item.category.subdomain + item.category.level)}
+						<CartQuestionCard
+							{item}
+							{instance}
+							onIncrementQuantity={handleIncrementQuantity}
+							onDecrementQuantity={handleDecrementQuantity}
+							onUpdateDelay={handleUpdateDelay}
+						/>
+					{/each}
+				</div>
+			{/if}
 
 			<!-- Action buttons -->
 			<Card.Root>

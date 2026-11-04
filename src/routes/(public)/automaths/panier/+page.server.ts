@@ -1,35 +1,14 @@
-import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { QuestionTemplate } from '$lib/questions/types';
 import { createServerLogger } from '$lib/utils/logger';
-import { readAllRows } from '$lib/server/read-all-rows';
 
 const logger = createServerLogger('(public)/automaths/panier/+page.server');
 
+/**
+ * Panier : rôle du visiteur seulement (enregistrer une série = prof ou admin).
+ * Les modèles viennent du cache de l'onglet (`questionTemplatesCache`).
+ */
 export const load: PageServerLoad = async ({ locals }) => {
 	const { supabase } = locals;
-
-	// Tous les modèles publiés, page par page (PostgREST tronque à 1000 lignes).
-	// Tri délégué à la base : `created_at` est nullable, et le tri JS
-	// construisait une `Date` à partir de `null` ; `id` départage les modèles
-	// importés en lot (même `created_at`) pour que la pagination soit stable.
-	let templates;
-	try {
-		templates = await readAllRows(
-			(from, to) =>
-				supabase
-					.from('question_templates')
-					.select('*')
-					.eq('status', 'published')
-					.order('created_at', { ascending: false })
-					.order('id')
-					.range(from, to),
-			'des modèles publiés'
-		);
-	} catch (templatesError) {
-		logger.error('Failed to load question templates:', templatesError);
-		throw error(500, 'Failed to load questions');
-	}
 
 	// Get user role if authenticated
 	const { user } = await locals.safeGetSession();
@@ -52,7 +31,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	return {
-		templates: (templates as QuestionTemplate[]) || [],
 		userRole
 	};
 };

@@ -135,7 +135,7 @@ async function renderPage() {
 	const main = document.body.appendChild(document.createElement('main'));
 	return await render(Page, {
 		target: main,
-		props: { data: { templates: [], user: { id: 'eleve' } } } as never
+		props: { data: { user: { id: 'eleve' } } } as never
 	});
 }
 

@@ -1,36 +1,31 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Accordion from '$lib/components/ui/accordion';
-	import QuestionPreviewCard from '$lib/components/QuestionPreviewCard.svelte';
+	import CatalogueGallery from '$lib/components/questions/CatalogueGallery.svelte';
 	import CartFloatingButton from '$lib/components/CartFloatingButton.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-	import type { PageData } from './$types';
+	import { buildCatalogue } from '$lib/questions/catalogue';
 
-	let { data }: { data: PageData } = $props();
-
-	// Initialize cache with server-loaded templates (SSR support)
-	$effect(() => {
-		if (data.templates && data.templates.length > 0) {
-			questionTemplatesCache.initializeFromServer(data.templates);
-		}
-	});
+	// Le catalogue se range dans le navigateur, depuis le cache des modèles (lu
+	// une fois par onglet) ; aucun aperçu n'est calculé par le serveur.
+	let hierarchy = $derived(buildCatalogue(questionTemplatesCache.templates));
+	let themes = $derived(hierarchy.map((t) => t.theme));
 
 	// Selected theme (starts as first theme if available)
 	let selectedTheme = $state<string | undefined>(undefined);
 
 	// Initialize selected theme when data is available
 	$effect(() => {
-		if (!selectedTheme && data.themes && data.themes.length > 0) {
-			selectedTheme = data.themes[0];
+		if (!selectedTheme && themes.length > 0) {
+			selectedTheme = themes[0];
 		}
 	});
 
 	// Get domains for selected theme
 	let availableDomains = $derived(
-		selectedTheme && data.hierarchy
-			? data.hierarchy.find((t) => t.theme === selectedTheme)?.domains || []
-			: []
+		selectedTheme ? hierarchy.find((t) => t.theme === selectedTheme)?.domains || [] : []
 	);
 
 	// Selected domain state
@@ -56,8 +51,7 @@
 	function handleThemeChange(value: string | undefined) {
 		selectedTheme = value;
 		// Reset domain when theme changes
-		const newDomains =
-			value && data.hierarchy ? data.hierarchy.find((t) => t.theme === value)?.domains || [] : [];
+		const newDomains = value ? hierarchy.find((t) => t.theme === value)?.domains || [] : [];
 		selectedDomain = newDomains.length > 0 ? newDomains[0]?.domain : undefined;
 	}
 
@@ -74,6 +68,10 @@
 	function getSubdomainLabel(subdomain: string | null): string {
 		return subdomain || 'Général';
 	}
+
+	onMount(() => {
+		void questionTemplatesCache.fetchTemplates();
+	});
 </script>
 
 <SeoHead
@@ -87,7 +85,23 @@
 		<h1 class="text-3xl font-bold tracking-tight">Automaths</h1>
 	</div>
 
-	{#if !data.themes || data.themes.length === 0}
+	{#if !questionTemplatesCache.isLoaded && questionTemplatesCache.error}
+		<div
+			class="flex min-h-96 items-center justify-center rounded-lg border border-dashed p-12"
+			role="alert"
+		>
+			<div class="text-center">
+				<h2 class="text-xl font-semibold text-muted-foreground">
+					Impossible de charger les questions
+				</h2>
+				<p class="mt-2 text-sm text-muted-foreground">
+					Vérifie ta connexion, puis recharge la page.
+				</p>
+			</div>
+		</div>
+	{:else if !questionTemplatesCache.isLoaded}
+		<p class="text-center text-muted-foreground">Chargement des questions…</p>
+	{:else if themes.length === 0}
 		<!-- Empty state -->
 		<div class="flex min-h-96 items-center justify-center rounded-lg border border-dashed p-12">
 			<div class="text-center">
@@ -108,7 +122,7 @@
 				class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none sm:w-80"
 			>
 				<option value="" disabled selected={!selectedTheme}>Choisir un thème...</option>
-				{#each data.themes || [] as theme (theme)}
+				{#each themes as theme (theme)}
 					<option value={theme}>{theme}</option>
 				{/each}
 			</select>
@@ -154,15 +168,8 @@
 											</div>
 										</Accordion.Trigger>
 										<Accordion.Content class="bg-background px-4 pt-2 pb-4">
-											<!-- Questions gallery -->
-											<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-												{#each subdomainGroup.questions as question (question.id)}
-													<QuestionPreviewCard
-														template={question.template}
-														preview={question.preview}
-													/>
-												{/each}
-											</div>
+											<!-- Aperçus calculés à l'ouverture de la rubrique -->
+											<CatalogueGallery templates={subdomainGroup.templates} />
 										</Accordion.Content>
 									</Accordion.Item>
 								{/each}

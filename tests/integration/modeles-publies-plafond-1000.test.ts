@@ -8,34 +8,20 @@
  * séries « Limites de fonctions » sautaient des catégories
  * (« Série : aucun modèle pour … »), jouées à 5 questions au lieu de 10.
  *
- * Décor : 1100 modèles publiés de plus que la base locale. Les routes sont
- * appelées avec un client ANONYME réel, comme un visiteur.
+ * Décor : 1100 modèles publiés de plus que la base locale. Les pages Automaths
+ * lisent toutes les modèles par l'API (cache de l'onglet) : c'est elle qu'on
+ * appelle, avec son client ANONYME réel, comme un visiteur.
  *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { createServiceRoleClient } from '../helpers/database/trigger-test-helpers';
-import type { Database } from '$lib/types/database';
-import { load as chargerLaPageDeTest } from '../../src/routes/(public)/automaths/test/+page.server';
 import { GET as lireTousLesModeles } from '../../src/routes/api/questions/templates/all/+server';
-
-const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
-const ANON_KEY =
-	process.env.SUPABASE_TEST_ANON_KEY ||
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
 const service = createServiceRoleClient();
 
 const THEME = 'Test plafond 1000';
 const NB_MODELES = 1100;
-
-/** Un visiteur : pas de session, pas de jeton. */
-function clientAnonyme(): SupabaseClient<Database> {
-	return createClient<Database>(SUPABASE_URL, ANON_KEY, {
-		auth: { persistSession: false, autoRefreshToken: false }
-	});
-}
 
 /** Un modèle publié ; `level` distinct (index unique thème/domaine/sous-domaine/niveau) */
 function modele(level: number) {
@@ -71,26 +57,9 @@ describe('plus de 1000 modèles publiés', () => {
 
 	afterAll(supprimerLeDecor);
 
-	it('la page de test reçoit tous les modèles publiés', async () => {
-		const data = (await chargerLaPageDeTest({
-			locals: { supabase: clientAnonyme() },
-			url: new URL('http://localhost/automaths/test')
-		} as never)) as { templates: Array<{ id: string }> };
-
-		// Pas de total exact : d'autres fichiers peuvent publier en parallèle.
-		// Les 1100 du décor dépassent à eux seuls le plafond de 1000.
-		const ids = data.templates.map((t) => t.id);
-		expect(new Set(ids).size, 'un modèle lu deux fois').toBe(ids.length);
-		expect(
-			ids.filter((id) => attendus.has(id)),
-			'liste tronquée au plafond PostgREST'
-		).toHaveLength(NB_MODELES);
-	});
-
 	it('l’API des modèles publiés les rend tous', async () => {
-		const reponse = await lireTousLesModeles({
-			locals: { supabase: clientAnonyme() }
-		} as never);
+		// L'API lit avec son propre client anonyme (réponse mise en cache par Vercel)
+		const reponse = await lireTousLesModeles({ setHeaders: () => {} } as never);
 		const { templates } = (await reponse.json()) as { templates: Array<{ id: string }> };
 
 		const ids = templates.map((t) => t.id);

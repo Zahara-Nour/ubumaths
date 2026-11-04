@@ -5,20 +5,22 @@
  * Client-side cache for published question templates to avoid repeated API/DB calls.
  * Used by automaths pages (public access) for instant template lookups.
  *
- * Features:
- * - Public access (no authentication required)
- * - Caches all published templates
- * - Can be initialized from server data (SSR support)
- * - Provides instant filtering by category
- * - Manual invalidation (no TTL - cache until explicitly refreshed)
- * - Separate from questionCategories cache (different scope & data)
+ * Les pages Automaths (catalogue, panier, test) ne reçoivent PAS les modèles
+ * de leur serveur : elles appellent `fetchTemplates()`, qui lit la liste une
+ * fois par onglet ; naviguer entre elles ne la recharge pas.
+ *
+ * - Accès public (sans authentification)
+ * - Lectures simultanées partagées (une seule requête)
+ * - Invalidation manuelle (pas de durée de vie) ; la relecture contourne le
+ *   cache de Vercel
+ * - Distinct du cache questionCategories
  *
  * Usage:
  * ```typescript
  * import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
  *
- * // Initialize from server data (SSR)
- * questionTemplatesCache.initializeFromServer(data.templates);
+ * // Lire la liste (une fois par onglet)
+ * await questionTemplatesCache.fetchTemplates();
  *
  * // Get all templates
  * const templates = questionTemplatesCache.templates;
@@ -40,6 +42,9 @@
  */
 
 import type { QuestionTemplate } from '$lib/questions/types';
+
+/** Liste publique des modèles publiés (gardée 5 min par Vercel) */
+const TEMPLATES_URL = '/api/questions/templates/all';
 
 /**
  * Category filter for finding templates
@@ -69,6 +74,12 @@ class QuestionTemplatesStore {
 		error: null
 	});
 
+	/** Lecture en cours, partagée par toutes les pages qui la demandent */
+	private pending: Promise<void> | null = null;
+
+	/** Liste à relire en contournant le cache de Vercel (après `invalidate()`) */
+	private stale = false;
+
 	/**
 	 * Get all cached templates
 	 */
@@ -97,67 +108,54 @@ class QuestionTemplatesStore {
 		return this.cache.templates.length === 0;
 	}
 
-	/**
-	 * Initialize cache from server data (for SSR hydration)
-	 *
-	 * This allows pages to use server-loaded data for initial render,
-	 * then benefit from client-side cache for subsequent navigations.
-	 *
-	 * @param templates - Templates from server load function
-	 */
-	initializeFromServer(templates: QuestionTemplate[]): void {
-		// Only initialize if cache is empty (first load)
-		if (this.cache.templates.length === 0 && templates.length > 0) {
-			this.cache.templates = templates;
-			this.cache.lastFetched = Date.now();
-			this.cache.error = null;
-		}
+	/** La liste a-t-elle été lue (même vide) ? Faux tant qu'elle charge ou après un échec */
+	get isLoaded(): boolean {
+		return this.cache.lastFetched !== null;
 	}
 
 	/**
-	 * Fetch templates from API and update cache
+	 * Lit la liste des modèles publiés, UNE fois par onglet.
 	 *
-	 * Fetches all published templates from the server.
-	 * Skips if already loading to prevent duplicate requests.
+	 * - Déjà lue (et non invalidée) : rend la main aussitôt.
+	 * - Lecture en cours : rend la MÊME promesse, résolue avec les données
+	 *   (deux pages qui demandent ensemble ne lancent qu'une lecture).
+	 * - Après `invalidate()` : relit avec une adresse distincte (`?frais=…`),
+	 *   que le cache de Vercel (5 min, cf. l'API) ne connaît pas.
+	 * - Échec : `error` renseigné, la liste n'est pas marquée lue ; un appel
+	 *   suivant retentera.
 	 *
-	 * @param force - Force refetch even if recently fetched
+	 * @param force - Relire même si la liste est déjà là
 	 */
-	async fetchTemplates(force = false): Promise<void> {
-		// Skip if already loading
-		if (this.cache.isLoading && !force) {
-			return;
-		}
+	fetchTemplates(force = false): Promise<void> {
+		if (this.pending) return this.pending;
+		if (!force && !this.stale && this.isLoaded) return Promise.resolve();
 
-		// Skip if already fetched and not forced
-		// Note: No TTL - cache persists until invalidated
-		if (!force && this.cache.lastFetched && this.cache.templates.length > 0) {
-			return;
-		}
+		this.pending = this.load(force || this.stale).finally(() => {
+			this.pending = null;
+		});
+		return this.pending;
+	}
 
-		// Skip if there was a recent error (likely offline)
-		// Don't retry immediately to avoid error spam
-		if (!force && this.cache.error) {
-			// Skip fetch silently to avoid error spam
-			return;
-		}
-
+	private async load(bypassSharedCache: boolean): Promise<void> {
 		this.cache.isLoading = true;
 		this.cache.error = null;
 
 		try {
-			const response = await fetch('/api/questions/templates/all');
+			const url = bypassSharedCache ? `${TEMPLATES_URL}?frais=${Date.now()}` : TEMPLATES_URL;
+			const response = await fetch(url);
 
 			if (!response.ok) {
 				throw new Error('Impossible de charger les modèles');
 			}
 
-			const data = await response.json();
+			const data = (await response.json()) as { templates?: QuestionTemplate[] };
 
-			this.cache.templates = data.templates || [];
+			this.cache.templates = data.templates ?? [];
 			this.cache.lastFetched = Date.now();
+			this.stale = false;
 		} catch (err) {
-			this.cache.error = err instanceof Error ? err.message : 'Unknown error';
-			console.error('[Templates Cache] Fetch error (likely offline):', this.cache.error);
+			this.cache.error = err instanceof Error ? err.message : 'Erreur inconnue';
+			console.error('[Templates Cache] Fetch error:', this.cache.error);
 		} finally {
 			this.cache.isLoading = false;
 		}
@@ -259,7 +257,7 @@ class QuestionTemplatesStore {
 	 * to ensure fresh data on next access.
 	 */
 	invalidate(): void {
-		this.cache.lastFetched = null;
+		this.stale = true;
 	}
 
 	/**
@@ -272,6 +270,7 @@ class QuestionTemplatesStore {
 		this.cache.templates = [];
 		this.cache.lastFetched = null;
 		this.cache.error = null;
+		this.stale = false;
 	}
 }
 
