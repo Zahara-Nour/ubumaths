@@ -24,22 +24,24 @@ import { createServerLogger } from '$lib/utils/logger';
 import { readAllRows } from '$lib/server/read-all-rows';
 import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
 
+/** Colonnes de l'arbre dont le catalogue a besoin (`CatalogueNode`) */
+const NODE_COLUMNS = 'id, kind, name, parent_id, position';
+
 const logger = createServerLogger('api/questions/templates/all/+server');
 
 /**
  * 5 min chez Vercel, puis servie périmée (5 min au plus) pendant la relecture :
  * un modèle dépublié (réponse fausse…) disparaît en 10 min au pire.
  */
-/** Colonnes de l'arbre dont le catalogue a besoin (`CatalogueNode`) */
-const NODE_COLUMNS = 'id, kind, name, parent_id, position';
-
 const CACHE_CONTROL = 'public, max-age=0, s-maxage=300, stale-while-revalidate=300';
 
 export const GET: RequestHandler = async ({ setHeaders }) => {
 	const supabase = createAnonymousSupabase();
 
 	// Tous les modèles publiés, et l'arbre qui les range, page par page
-	// (PostgREST tronque à 1000 lignes)
+	// (PostgREST tronque à 1000 lignes). Lus en parallèle, pas au même instant :
+	// un nœud créé entre les deux lectures laisse ses modèles « Non classés »
+	// jusqu'à la prochaine relecture (5 à 10 min), sans en perdre aucun.
 	let templates;
 	let nodes;
 	try {

@@ -99,4 +99,28 @@ describe('Catalogue Automaths — aperçus à la demande', () => {
 			.map((e) => e.textContent?.trim());
 		expect(rubriques).toEqual(['Général', 'Somme', 'Différence']);
 	});
+
+	it('modèle hors de l’arbre : « Non classés », replié, sans aperçu calculé avant l’ouverture', async () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => {});
+		questionTemplatesCache.clear();
+		vi.stubGlobal(
+			'fetch',
+			async () =>
+				new Response(
+					JSON.stringify({ templates: [...TEMPLATES, modele('perdu', 'inconnu')], nodes: NODES })
+				)
+		);
+		await questionTemplatesCache.fetchTemplates();
+		vi.unstubAllGlobals();
+		templatePreview.mockClear();
+
+		await render(Page);
+
+		await expect.element(page.getByRole('button', { name: 'Non classés (1)' })).toBeVisible();
+		await new Promise((resolve) => setTimeout(resolve, 50));
+		expect(calledIds()).not.toContain('perdu');
+
+		await page.getByRole('button', { name: 'Non classés (1)' }).click();
+		await vi.waitFor(() => expect(calledIds()).toContain('perdu'));
+	});
 });

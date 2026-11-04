@@ -124,7 +124,6 @@ export function buildCatalogue(
 	for (const template of templates) {
 		const place = placeOf(template, nodesById);
 		if (!place) {
-			console.warn(`Catalogue : modèle ${template.id} hors de l'arbre, rangé dans « non classés »`);
 			unclassified.push(template);
 			continue;
 		}
@@ -133,7 +132,18 @@ export function buildCatalogue(
 		const rubrics = notions.get(place.notion.id) ?? new Map();
 		notions.set(place.notion.id, rubrics);
 		const rubricKey = place.subnotion?.id ?? '';
-		rubrics.set(rubricKey, [...(rubrics.get(rubricKey) ?? []), template]);
+		const rubric = rubrics.get(rubricKey) ?? [];
+		rubrics.set(rubricKey, rubric);
+		rubric.push(template);
+	}
+
+	// Un seul avertissement par rangement, pas un par modèle
+	if (unclassified.length > 0) {
+		const firstIds = unclassified.slice(0, 5).map((t) => t.id);
+		console.warn(
+			`Catalogue : ${unclassified.length} modèle(s) hors de l'arbre, rangés dans « Non classés » :`,
+			firstIds
+		);
 	}
 
 	const byTreeOrder = (ids: Iterable<string>) =>

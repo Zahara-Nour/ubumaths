@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, Q1 tranchée (ADR 0035)._
+_Mis à jour le 2026-11-04, PR #2378 (lot 1) ouverte._
 
-- **État** : phase 0 ; Q1 = B → une série enregistre des **modèles** (ADR 0035, CONTEXT.md à jour sur `main`). Rien de codé.
-- **Prochaine action** : réponses à Q2, Q3, Q4 ; puis lot 1 (catalogue selon l'arbre), tests rouges d'abord.
-- **En attente de David** : Q2 (« Général » en tête), Q3 (ordre de l'arbre), Q4 (les 4 lots sur ce chantier, une PR par lot).
-- **Pièges en cours** : base locale sans modèle publié → catalogue vide en local.
+- **État** : Q1-Q4 tranchées (B, « Général » en tête, ordre de l'arbre, 4 lots, une PR chacun). Lot 1 (catalogue selon l'arbre) codé, revu (Sonnet : 0 bloquant, points 1-4 et 7 corrigés), PR #2378 en CI.
+- **Prochaine action** : merger #2378 quand la CI est verte ; puis phase 0 du lot 2 (panier, séries, liens, contrôles, paquet de révision sur le modèle ; conversion 5 séries + 1 contrôle ; anciens liens relus).
+- **En attente de David** : rien.
+- **Pièges en cours** : base locale sans modèle publié → serveur de test 5176 lancé avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env` (prod, lecture anonyme). Hors chantier, vu en prod : choix de QCM affichés en `$$<$$` bruts sur les tuiles du catalogue (Entiers › Apprivoiser › Comparer).
 - **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre`.
 
 ---
@@ -77,3 +77,16 @@ Lots : 1 catalogue selon l'arbre · 2 panier / séries / liens / contrôles / pa
 modèle (conversion des 5 séries + 1 contrôle, anciens liens relus) · 3 éditeur et
 `create-questions.ts` sans thème / domaine / sous-domaine · 4 retrait des colonnes (destructif,
 après `deploy:prod` des lots 2-3). Q4 posée : les 4 lots ici, une PR par lot.
+
+### Q2-Q4 tranchées (2026-11-04)
+
+« oui » de David aux trois recommandations : rubrique « Général » en tête ; ordre de l'arbre
+(`category-order.ts` retiré) ; 4 lots sur ce chantier, une PR chacun, dans l'ordre.
+
+### Lot 1 — PR #2378 (2026-11-04)
+
+Catalogue rangé selon l'arbre (`buildCatalogue(templates, nodes)`), arbre servi par
+`/api/questions/templates/all` (`nodes`), tuile sans l'ancien sous-domaine. Revue Sonnet : réponse
+du cache sans arbre → relue avec `?frais` ; « Non classés » replié ; un seul `console.warn`.
+Laissés : `openRubrics` non vidé si la notion affichée change par repli (cosmétique) ; modèle sur
+une sous-notion archivée → « Non classés » sans dire pourquoi (à remonter dans l'admin).

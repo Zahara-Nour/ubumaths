@@ -11,6 +11,7 @@
 
 	// Valeur d'accordéon de la rubrique « Général » (elle n'a pas de nœud)
 	const GENERAL_RUBRIC_VALUE = 'general';
+	const UNCLASSIFIED_VALUE = 'non-classes';
 
 	// Le catalogue se range dans le navigateur, selon l'arbre des notions reçu
 	// avec les modèles (lus une fois par onglet) ; aucun aperçu n'est calculé
@@ -34,6 +35,7 @@
 
 	// Rubriques dépliées de la notion affichée (valeurs des Accordion.Item)
 	let openRubrics = $state<string[]>([]);
+	let openUnclassified = $state<string[]>([]);
 
 	function rubricValue(rubric: CatalogueRubric): string {
 		return rubric.id ?? GENERAL_RUBRIC_VALUE;
@@ -155,11 +157,22 @@
 		{/if}
 
 		{#if catalogue.unclassified.length > 0}
-			<!-- Modèles hors de l'arbre lu : ne devrait pas arriver, jamais perdus pour autant -->
-			<section class="mt-10 space-y-4">
-				<h2 class="text-lg font-semibold">Non classés</h2>
-				<CatalogueGallery templates={catalogue.unclassified} />
-			</section>
+			<!-- Modèles hors de l'arbre lu : ne devrait pas arriver, jamais perdus pour autant.
+			     Repliés : leurs aperçus ne se calculent qu'à l'ouverture. -->
+			<Accordion.Root type="multiple" bind:value={openUnclassified} class="mt-10">
+				<Accordion.Item value={UNCLASSIFIED_VALUE} class="rounded-lg border !border-b-0">
+					<Accordion.Trigger class="px-4 hover:bg-muted/50 hover:no-underline">
+						<span class="font-medium text-foreground">
+							Non classés ({catalogue.unclassified.length})
+						</span>
+					</Accordion.Trigger>
+					<Accordion.Content class="px-4 pt-2 pb-4">
+						{#if openUnclassified.includes(UNCLASSIFIED_VALUE)}
+							<CatalogueGallery templates={catalogue.unclassified} />
+						{/if}
+					</Accordion.Content>
+				</Accordion.Item>
+			</Accordion.Root>
 		{/if}
 	{/if}
 </div>

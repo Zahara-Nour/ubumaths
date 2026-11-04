@@ -142,7 +142,7 @@ describe('buildCatalogue', () => {
 	});
 
 	it('nœud absent de l’arbre lu, ou posé sur une branche : « non classés », jamais perdu', () => {
-		vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		const catalogue = buildCatalogue(
 			[
 				modele('perdu', 'inconnu', 1),
@@ -155,6 +155,9 @@ describe('buildCatalogue', () => {
 
 		expect(catalogue.unclassified.map((t) => t.id)).toEqual(['perdu', 'sans', 'branche']);
 		expect(noms(catalogue)).toHaveLength(1);
+		// Un seul avertissement pour tout le rangement, pas un par modèle
+		expect(warn).toHaveBeenCalledTimes(1);
+		warn.mockRestore();
 	});
 
 	it('sous-notion dont la notion manque : « non classés »', () => {

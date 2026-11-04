@@ -47,6 +47,20 @@ describe('questionTemplatesCache', () => {
 		expect(questionTemplatesCache.nodes).toEqual([]);
 	});
 
+	it('réponse sans arbre (cache de Vercel d’avant le déploiement) : relue une fois en contournant le cache', async () => {
+		fetchMock
+			.mockImplementationOnce(
+				async () => ({ ok: true, json: async () => ({ templates: [{ id: 'm1' }] }) }) as Response
+			)
+			.mockImplementationOnce(async () => reponse([{ id: 'm1' }]));
+
+		await questionTemplatesCache.fetchTemplates();
+
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+		expect(fetchMock.mock.calls[1][0]).toMatch(/^\/api\/questions\/templates\/all\?frais=\d+$/);
+		expect(questionTemplatesCache.nodes).toEqual(NODES);
+	});
+
 	it('deux pages qui demandent en même temps partagent la même lecture, et attendent ses données', async () => {
 		const premiere = questionTemplatesCache.fetchTemplates();
 		const seconde = questionTemplatesCache.fetchTemplates();

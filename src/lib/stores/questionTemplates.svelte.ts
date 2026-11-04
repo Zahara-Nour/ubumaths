@@ -94,13 +94,14 @@ class QuestionTemplatesStore {
 		return this.cache.templates;
 	}
 
-	/**
-	 * Check if cache is currently loading
-	 */
+	/** Arbre des notions (nœuds non archivés), reçu avec les modèles */
 	get nodes(): CatalogueNode[] {
 		return this.cache.nodes;
 	}
 
+	/**
+	 * Check if cache is currently loading
+	 */
 	get isLoading(): boolean {
 		return this.cache.isLoading;
 	}
@@ -164,6 +165,13 @@ class QuestionTemplatesStore {
 				templates?: QuestionTemplate[];
 				nodes?: CatalogueNode[];
 			};
+
+			// Réponse sans arbre : Vercel sert encore une liste d'avant le déploiement
+			// (jusqu'à 10 min). Sans arbre, tout le catalogue serait « non classé » :
+			// une relecture qui contourne le cache, une seule fois.
+			if (!Array.isArray(data.nodes) && !bypassSharedCache) {
+				return await this.load(true);
+			}
 
 			this.cache.templates = data.templates ?? [];
 			this.cache.nodes = data.nodes ?? [];
