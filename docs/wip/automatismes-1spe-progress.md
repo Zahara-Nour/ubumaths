@@ -6,17 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2362 et #2371._
+_Mis à jour le 2026-11-04, après #2362, #2371 et la mise à jour en prod._
 
-- **État** : lot « Statistiques » livré : `buildSerie` fige une boîte à construire (#2362) ; fiche
-  « Automatismes : statistiques (1) » en brouillon `d37413a3` ; PDF vérifié (énoncé, réponses,
-  corrigé) ; #2371 corrige un débord (graine 3 de la moyenne regroupée) et le corrigé de l'angle,
-  et ajoute `--mettre-a-jour` au script de fiche · **Prochaine action** : après la commande de
-  David, régénérer la fiche (`regen-depuis-base.ts <sortie> d37413a3`), recompiler, `debord.py` = 0 ;
-  puis lot « Probabilités » · **En attente de David** : depuis le dépôt principal,
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/statistiques-1spe --publier
---mettre-a-jour && pnpm tsx scripts/create-automatismes-statistiques-1spe.ts --publier
---mettre-a-jour` ; publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c`
+- **État** : lot « Statistiques » livré et vérifié : modèles et fiche `d37413a3` réécrits en prod
+  par David (`--mettre-a-jour`) ; régénérée depuis la base, 6 PDF compilés, `debord.py` = 0,
+  corrigé de l'angle en un calcul (`16 × 360 / 80 = 72°`) · **Prochaine action** : lot
+  « Probabilités », phase 0 (relevé du BO, comportements à valider) · **En attente de David** :
+  publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c`
   (+ `1bd7378d`, `9a9026fc`) et les fiches `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3` ; garder ou
   non les 2 figures d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en
   cours** : écritures en prod refusées par le classifieur (David les lance) ; API plafonnée à 1 000
