@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.72.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.71.0...v0.72.0) (2026-11-04)
+
+### ✨ Features
+
+- **db:** séries et séances converties en lignes de modèle (automaths-arbre 2b) ([9dfac1f](https://github.com/Zahara-Nour/ubumaths/commit/9dfac1f7f3415f39a78adfeac69ff96adc6a4204))
+- **questions:** create-questions apparie les fichiers par id, sans quadruplet ([6ee3bd0](https://github.com/Zahara-Nour/ubumaths/commit/6ee3bd0885925db4f00f19caf34ebafc11f6489a))
+
+### 🐛 Bug Fixes
+
+- **questions:** create-questions vérifie homonymes du lot, format et titres avant d'écrire ([76121de](https://github.com/Zahara-Nour/ubumaths/commit/76121dec55213b8e16de4abfb4695d93d70e2b1c))
+- **questions:** fichiers de relecture sans thème ni domaine, test de l'ancien index retiré ([debb8ea](https://github.com/Zahara-Nour/ubumaths/commit/debb8ea30caae90d54825e1a9049364c13f26e48))
+
+### 📚 Documentation
+
+- **db:** séries en lignes de modèle, journal de 2b ([137dacd](https://github.com/Zahara-Nour/ubumaths/commit/137dacddd7be2b92e870cf1f2f59a1b9bd14e938))
+- **pratiques:** vérifier les messages de commit et de PR avant chaque push ([aa1ee2d](https://github.com/Zahara-Nour/ubumaths/commit/aa1ee2d2efa16ca6f54a65bf744ccba2c86ab6e2))
+- **questions:** fichiers de lot sans quadruplet, appariés par id ([5122745](https://github.com/Zahara-Nour/ubumaths/commit/51227452762fdbea6ab0e4075adb3c95254858c1))
+- **systeme:** séries sans ancienne forme, modèles sans thème (automaths-arbre 4a) ([2d4889f](https://github.com/Zahara-Nour/ubumaths/commit/2d4889fbe7a1ec76e33d27e7aa9659035c761907))
+- **wip:** automaths-arbre, 2b mergé ([#2384](https://github.com/Zahara-Nour/ubumaths/issues/2384)) et appliqué en prod ([f50ea65](https://github.com/Zahara-Nour/ubumaths/commit/f50ea658c457e0469096b5d2fcb42a42d4b16c68))
+- **wip:** automaths-arbre, 3b codé ([a1277e7](https://github.com/Zahara-Nour/ubumaths/commit/a1277e716d66f7f13f415a38a63baa96313a25a4))
+- **wip:** automaths-arbre, 3b mergé ([#2383](https://github.com/Zahara-Nour/ubumaths/issues/2383)), 2b ensuite ([4ab68cd](https://github.com/Zahara-Nour/ubumaths/commit/4ab68cdc9da5f34e58f7a8abf23d883b4742ccb6))
+- **wip:** automaths-arbre, 4a mergé ([#2385](https://github.com/Zahara-Nour/ubumaths/issues/2385)), vérification manuelle notée ([33c525f](https://github.com/Zahara-Nour/ubumaths/commit/33c525fc4b231f72ca55d72cf2af8338c1762f13))
+- **wip:** automaths-arbre, code et revues du lot 4a ([1693aa9](https://github.com/Zahara-Nour/ubumaths/commit/1693aa9e09597619c6353a8d26795df70f3bbcb1))
+- **wip:** automaths-arbre, deploy:prod 0.71.0 fait, 3b ensuite ([90dc1a7](https://github.com/Zahara-Nour/ubumaths/commit/90dc1a77c40011268c5cc7445a005dcb0fe011e8))
+- **wip:** automaths-arbre, essai validé, worktree de 3a-2 retiré ([ca45028](https://github.com/Zahara-Nour/ubumaths/commit/ca450285e3a87fe4bb390e162811725a6458540a))
+- **wip:** automaths-arbre, phase 0 de 2b ([8f8715c](https://github.com/Zahara-Nour/ubumaths/commit/8f8715c80b2317225cdc2aa219ea8809263cbe95))
+- **wip:** automaths-arbre, phase 0 de 3b tranchée ([449b771](https://github.com/Zahara-Nour/ubumaths/commit/449b7714f989d52168fe8d82bd7458c1f4c1df6d))
+- **wip:** automaths-arbre, phase 0 du lot 4 validée ([1011561](https://github.com/Zahara-Nour/ubumaths/commit/101156152ffd909c2128be6cd63b19940aac2c1b))
+- **wip:** automaths-arbre, Q9-Q11 de 2b tranchées ([9d24bae](https://github.com/Zahara-Nour/ubumaths/commit/9d24bae4cb46bc3e655a86bc37de4053322a78d4))
+
 ## [0.71.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.70.0...v0.71.0) (2026-11-04)
 
 ### ✨ Features
