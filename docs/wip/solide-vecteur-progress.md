@@ -9,17 +9,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, PR de rangement ouverte._
+_Mis à jour le 2026-11-04, après #2372._
 
-- **État** : v0.69.0 en prod (outil complet) ; brouillon TSPE-334 créé en prod
-  (`7ce9936b-7835-4b99-9e2b-f3644f2956af`) ; migration nœud « vecteurs de l'espace » + tag TSPE-334 en PR
-  (`20261104070713_questions_tspe_334_rangement_tags.sql`, 9 tests d'intégration verts, rouges sans écritures).
-- **Prochaine action** : CI verte + audit sans finding bloquant → merge, `db:migrate` depuis la branche mergée,
-  vérifier le rangement en prod (MCP) ; puis page à cocher, publication par David.
-- **En attente de David** : rien (question d'accès tranchée le 2026-11-04 : personne ne gagne d'accès).
+- **État** : v0.69.0 en prod (outil complet) ; brouillon TSPE-334 (`7ce9936b-7835-4b99-9e2b-f3644f2956af`)
+  rangé sur « Géométrie > Espace > vecteurs de l'espace », tag TSPE-334 (#2372, `db:migrate` fait, vérifié MCP :
+  `draft`, `updated_at` intact).
+- **Prochaine action** : **David** relit le modèle en prod (`/dashboard/admin/questions/7ce9936b-7835-4b99-9e2b-f3644f2956af/preview`)
+  et le publie ; ensuite, clore le chantier (ligne 13 de `outils-manquants.md`, versement, archivage du journal).
+- **En attente de David** : relecture et publication du modèle.
 - **Pièges en cours** : le geste ne vise que des points connus en 3D ; tétraèdre illisible (ligne 15 de
   `outils-manquants.md`) ; un point déclaré peut tomber sur un pointillé (vérifier le rendu).
-- **Worktree / branche** : `../ubumaths-wt-solide-vecteur` · `chore/tspe-334-rangement`.
+- **Worktree / branche** : aucun (#2372 nettoyé).
 
 ---
 
@@ -200,3 +200,5 @@ pavé) ; tétraèdre en ligne 15 de `outils-manquants.md`. Ligne 13 (geste) pass
 - Migration `20261104070713_questions_tspe_334_rangement_tags.sql` (forme du lot 9, un seul modèle) + test
   `tests/integration/questions-tspe-334-rangement-tags.test.ts` : 9 verts ; sans le bloc d'écriture, le
   nominal échoue au `beforeAll` (5 sautés) et 2 gardes ne se déclenchent pas.
+- #2372 mergé (CI verte, `check:migrations` OK, `security-auditor` sans finding bloquant), `db:migrate` appliqué
+  depuis `main` (seule migration en attente) ; vérification MCP : nœud et tag posés, `draft`, `updated_at` inchangé.
