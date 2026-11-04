@@ -344,3 +344,12 @@ donc R₁ entier. Vérifié : `create-questions` simulation verte (47 specs) ; `
 aperçu admin (flash-card) de Hanoï (variation 1) et de l'emprunt (variation 2 : « 1,03 » à la virgule). Piège : `2⁶ − 1`
 non calculé = `bad_form` avec `constraintViolations: ['form']` (sans cette clé, la spec reste rouge alors que le
 statut est le bon). Saisie MathLive par l'extension Chrome impossible : jouer en flash-card.
+
+### Lot 5 en prod : brouillons, puis migration nœud + tag (2026-11-04)
+
+David a lancé `create-questions --publier` après #2361. Relevé prod (MCP) : 4 brouillons {1_SPE}, sans nœud ni tag :
+`77a5b60b` Hanoï, `96d19805` carrés, `9eac8754` cubes, `061e83b5` emprunt ; « sommes de termes » et « emprunt »
+absentes (ni actives, ni archivées). Migration `20261103233226_questions_1spe_approfondissements_5_rangement_tags`
+(gabarit `tspe_lot2` : 2 sous-notions neuves, Hanoï sur « explicite ou par récurrence »), test
+`questions-1spe-approfondissements-5-rangement-tags` 11/11 vert, rouge sans la migration (6 rouges, la suite
+principale ne s'exécute pas). Accès : Q5 de D3, personne.

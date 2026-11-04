@@ -24,6 +24,7 @@ import { TestData } from '../helpers/database/test-data-factory';
 import { extractRollback } from '../helpers/database/migration-rollback';
 import { readNodePaths } from '../helpers/database/classification-paths';
 import { insertProdCopies } from '../helpers/database/prod-copies';
+import { QUESTIONS_3_LOTS7_8, undoLaterMigrations } from '../helpers/database/later-migrations';
 
 // ============================================================================
 // TYPES
@@ -152,6 +153,7 @@ describe('Terminale spé, lot 7 : nœud et tags (migration de données)', () => 
 		pg = await getPostgresClient();
 
 		await pg.query('begin');
+		await undoLaterMigrations(pg, QUESTIONS_3_LOTS7_8);
 		await poserEtatProd(pg, prof.id);
 		avant = await lireEtat(pg);
 		await pg.query(readFileSync(MIGRATION, 'utf-8'));
@@ -206,6 +208,9 @@ describe('Terminale spé, lot 7 : les branches d’échec de la migration', () =
 
 	async function enTransaction(corps: () => Promise<void>): Promise<void> {
 		await pg.query('begin');
+		// La base porte les migrations venues après celle-ci (« emprunt » sous Modèles d'évolution,
+		// 1re spé lot 5) : on retrouve l'état que la garde de M6 attend.
+		await undoLaterMigrations(pg, QUESTIONS_3_LOTS7_8);
 		try {
 			await corps();
 		} finally {
