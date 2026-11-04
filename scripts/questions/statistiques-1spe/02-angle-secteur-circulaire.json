@@ -42,7 +42,7 @@
 			"correction": {
 				"steps": [
 					"Les ${{eval:d*m}}$ élèves correspondent au disque entier, soit $360^\\circ$ : l'angle d'un secteur est proportionnel à son effectif.",
-					"Vélo : $\\dfrac{ {{eval:b*m}} }{ {{eval:d*m}} } \\times 360 = \\dfrac{ {{b}} }{ {{d}} } \\times 360 = {{eval:360*b/d}}^\\circ$.",
+					"Vélo : $\\dfrac{ {{eval:b*m}} \\times 360 }{ {{eval:d*m}} } = {{eval:360*b/d}}^\\circ$.",
 					"```circulaire\ntitre: Moyen de transport de {{eval:d*m}} élèves\nÀ pied = {{eval:a*m}}\nVélo = {{eval:b*m}}\nBus = {{eval:c*m}}\nVoiture = {{eval:(d-a-b-c)*m}}\nétiquettes: angles\n```"
 				]
 			}
