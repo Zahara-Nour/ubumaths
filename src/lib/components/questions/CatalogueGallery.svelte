@@ -2,13 +2,14 @@
 	CatalogueGallery — cartes d'une rubrique du catalogue Automaths
 	===============================================================
 
-	Montée seulement quand la rubrique est dépliée (l'accordéon ne rend pas une
-	rubrique fermée) : les aperçus ne sont calculés que pour elle, après un
+	Montée par le catalogue seulement quand la rubrique est dépliée (bits-ui rend
+	aussi le contenu fermé, masqué par `hidden` : la page conditionne le montage).
+	Les aperçus ne sont calculés que pour elle, après un
 	premier affichage « Chargement… », et retenus par `templatePreview` (une
-	rubrique rouverte ne recalcule rien). Un modèle sans aperçu est omis.
+	rubrique rouverte ne recalcule rien). Un modèle sans aperçu est omis ; une
+	rubrique sans aucun aperçu le dit.
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import QuestionPreviewCard from '$lib/components/QuestionPreviewCard.svelte';
 	import { templatePreview } from '$lib/questions/catalogue';
 	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
@@ -25,19 +26,22 @@
 	let cards = $state<CardData[] | null>(null);
 
 	// Functions
-	function computeCards(): CardData[] {
+	function computeCards(list: QuestionTemplate[]): CardData[] {
 		const result: CardData[] = [];
-		for (const template of templates) {
+		for (const template of list) {
 			const preview = templatePreview(template);
 			if (preview) result.push({ template, preview });
 		}
 		return result;
 	}
 
-	onMount(() => {
-		// Laisse s'afficher « Chargement… » (et l'accordéon s'ouvrir) avant le calcul
+	// Calcul différé : « Chargement… » (et l'accordéon) s'affichent d'abord.
+	// Relancé si la liste change (liste des modèles relue après invalidate()).
+	$effect(() => {
+		const current = templates;
+		cards = null;
 		const timer = setTimeout(() => {
-			cards = computeCards();
+			cards = computeCards(current);
 		}, 0);
 		return () => clearTimeout(timer);
 	});
@@ -45,6 +49,8 @@
 
 {#if cards === null}
 	<p class="text-sm text-muted-foreground">Chargement…</p>
+{:else if cards.length === 0}
+	<p class="text-sm text-muted-foreground">Aucun aperçu disponible pour cette rubrique.</p>
 {:else}
 	<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 		{#each cards as card (card.template.id)}

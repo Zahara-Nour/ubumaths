@@ -67,6 +67,23 @@ describe('questionTemplatesCache', () => {
 		expect(fetchMock).toHaveBeenCalledTimes(2);
 	});
 
+	it('invalidate() pendant une lecture : la liste reçue ne la fait pas oublier', async () => {
+		let terminer: (r: Response) => void = () => {};
+		fetchMock.mockImplementationOnce(() => new Promise<Response>((r) => (terminer = r)));
+
+		const enVol = questionTemplatesCache.fetchTemplates();
+		questionTemplatesCache.invalidate(); // un modèle enregistré pendant la lecture
+		terminer(reponse([{ id: 'ancien' }]));
+		await enVol;
+
+		fetchMock.mockResolvedValueOnce(reponse([{ id: 'nouveau' }]));
+		await questionTemplatesCache.fetchTemplates();
+
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+		expect(String(fetchMock.mock.calls[1][0]).startsWith(`${API}?`)).toBe(true);
+		expect(questionTemplatesCache.templates.map((t) => t.id)).toEqual(['nouveau']);
+	});
+
 	it('échec de lecture : erreur exposée, liste non marquée comme chargée', async () => {
 		fetchMock.mockResolvedValueOnce(reponse([], false));
 		vi.spyOn(console, 'error').mockImplementation(() => {});

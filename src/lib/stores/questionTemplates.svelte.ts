@@ -80,6 +80,9 @@ class QuestionTemplatesStore {
 	/** Liste à relire en contournant le cache de Vercel (après `invalidate()`) */
 	private stale = false;
 
+	/** Nombre d'`invalidate()` : une invalidation pendant une lecture survit à celle-ci */
+	private invalidations = 0;
+
 	/**
 	 * Get all cached templates
 	 */
@@ -137,6 +140,7 @@ class QuestionTemplatesStore {
 	}
 
 	private async load(bypassSharedCache: boolean): Promise<void> {
+		const invalidationsAtStart = this.invalidations;
 		this.cache.isLoading = true;
 		this.cache.error = null;
 
@@ -152,7 +156,8 @@ class QuestionTemplatesStore {
 
 			this.cache.templates = data.templates ?? [];
 			this.cache.lastFetched = Date.now();
-			this.stale = false;
+			// Invalidée pendant la lecture : la liste reçue peut être antérieure
+			if (this.invalidations === invalidationsAtStart) this.stale = false;
 		} catch (err) {
 			this.cache.error = err instanceof Error ? err.message : 'Erreur inconnue';
 			console.error('[Templates Cache] Fetch error:', this.cache.error);
@@ -258,6 +263,7 @@ class QuestionTemplatesStore {
 	 */
 	invalidate(): void {
 		this.stale = true;
+		this.invalidations += 1;
 	}
 
 	/**

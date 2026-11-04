@@ -181,7 +181,8 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
 - Automaths : catalogue rangé dans le navigateur (`src/lib/questions/catalogue.ts` :
   `buildCatalogue`, thème → domaine → sous-domaine, ordre déclaré puis niveau — pas encore
   l'arbre des notions). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés que pour la rubrique
-  dépliée (`CatalogueGallery`), une fois par modèle (`templatePreview`), et réutilisés par le
+  dépliée (`CatalogueGallery`, montée par un `{#if}` : l'accordéon et les onglets de bits-ui
+  gardent le contenu fermé dans le DOM), une fois par modèle (`templatePreview`), et réutilisés par le
   panier. Avant (novembre 2026), le serveur calculait les 1 912 aperçus à chaque visite : 7 à 11 s.
   `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
   `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'une catégorie du
@@ -202,10 +203,10 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
     invalident les deux caches après écriture : la relecture passe par `?frais=…`, adresse que
     le cache de Vercel ne connaît pas.
 - `/api/questions/templates/all` : liste publique gardée **5 min par Vercel**
-  (`s-maxage=300, stale-while-revalidate`) — un modèle publié apparaît aux élèves après 5 min
-  environ. Servie à tous : lue par un client **anonyme** (`createAnonymousSupabase`), jamais par
-  la session ; un échec répond 500, sans cache. Le hook passe en `private, no-store` toute réponse
-  qui pose un cookie.
+  (`s-maxage=300, stale-while-revalidate=300`) — un modèle publié ou dépublié l'est pour les
+  élèves en 5 à 10 min. Servie à tous : lue par un client **anonyme** (`createAnonymousSupabase`),
+  jamais par la session ; un échec répond 500, sans cache. Le hook passe en `private, no-store`
+  toute réponse qui pose un cookie.
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
   `generate/[id]`, `categories`), admin `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`

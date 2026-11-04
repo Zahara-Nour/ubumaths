@@ -31,6 +31,9 @@
 	// Selected domain state
 	let selectedDomain = $state<string | undefined>(undefined);
 
+	// Rubriques dépliées du domaine affiché (valeurs des Accordion.Item)
+	let openSubdomains = $state<string[]>([]);
+
 	// Initialize selected domain when availableDomains changes
 	$effect(() => {
 		if (availableDomains.length > 0 && !selectedDomain) {
@@ -53,6 +56,7 @@
 		// Reset domain when theme changes
 		const newDomains = value ? hierarchy.find((t) => t.theme === value)?.domains || [] : [];
 		selectedDomain = newDomains.length > 0 ? newDomains[0]?.domain : undefined;
+		openSubdomains = [];
 	}
 
 	/**
@@ -60,6 +64,7 @@
 	 */
 	function handleDomainChange(value: string | undefined) {
 		selectedDomain = value;
+		openSubdomains = [];
 	}
 
 	/**
@@ -141,14 +146,17 @@
 
 				{#each availableDomains as domain (domain.domain)}
 					<Tabs.Content value={domain.domain} class="space-y-6 bg-transparent">
-						{#if availableSubdomains.length === 0}
+						<!-- bits-ui garde les onglets inactifs dans le DOM (hidden) : seul l'onglet
+						     choisi porte les rubriques, sinon chaque domaine les répéterait -->
+						{#if domain.domain === selectedDomain && availableSubdomains.length === 0}
 							<p class="text-center text-muted-foreground">
 								Aucun sous-domaine disponible pour ce domaine.
 							</p>
-						{:else}
+						{:else if domain.domain === selectedDomain}
 							<!-- Subdomain accordions -->
 							<Accordion.Root
 								type="multiple"
+								bind:value={openSubdomains}
 								class="space-y-4 rounded-lg border-border bg-background"
 							>
 								{#each availableSubdomains as subdomainGroup (subdomainGroup.subdomain)}
@@ -168,8 +176,11 @@
 											</div>
 										</Accordion.Trigger>
 										<Accordion.Content class="bg-background px-4 pt-2 pb-4">
-											<!-- Aperçus calculés à l'ouverture de la rubrique -->
-											<CatalogueGallery templates={subdomainGroup.templates} />
+											<!-- bits-ui rend aussi le contenu FERMÉ (hidden) : la galerie, et
+											     ses aperçus, ne sont montés qu'à l'ouverture de la rubrique -->
+											{#if openSubdomains.includes(subdomainGroup.subdomain || 'general')}
+												<CatalogueGallery templates={subdomainGroup.templates} />
+											{/if}
 										</Accordion.Content>
 									</Accordion.Item>
 								{/each}

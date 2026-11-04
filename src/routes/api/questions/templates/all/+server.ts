@@ -7,7 +7,7 @@
  *
  * Gardée 5 min par Vercel (`s-maxage=300`), puis servie périmée pendant qu'il
  * la relit en arrière-plan : la base n'est plus relue à chaque visite. Un
- * modèle tout juste publié apparaît donc aux élèves après 5 min environ ;
+ * modèle tout juste publié (ou dépublié) l'est pour les élèves en 5 à 10 min ;
  * l'onglet qui vient de l'éditer contourne le cache (`?frais=…`, cf.
  * `questionTemplatesCache.invalidate()`).
  *
@@ -24,8 +24,11 @@ import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
 
 const logger = createServerLogger('api/questions/templates/all/+server');
 
-/** 5 min chez Vercel, puis servie périmée (1 h au plus) pendant la relecture */
-const CACHE_CONTROL = 'public, max-age=0, s-maxage=300, stale-while-revalidate=3600';
+/**
+ * 5 min chez Vercel, puis servie périmée (5 min au plus) pendant la relecture :
+ * un modèle dépublié (réponse fausse…) disparaît en 10 min au pire.
+ */
+const CACHE_CONTROL = 'public, max-age=0, s-maxage=300, stale-while-revalidate=300';
 
 export const GET: RequestHandler = async ({ setHeaders }) => {
 	const supabase = createAnonymousSupabase();
