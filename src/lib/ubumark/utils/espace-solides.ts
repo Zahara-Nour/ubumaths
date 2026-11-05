@@ -342,9 +342,11 @@ export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
 			return [p(l / 2, h, d / 2), p(0, 0, 0), p(l, 0, 0), p(l, 0, d), p(0, 0, d)];
 		}
 		case 'pyramide-triangle': {
+			// Un sommet devant (B), une arête au fond (AC) : avec un sommet au fond, celui-ci
+			// se projetait presque sur l'arête du sommet S au sommet de devant à droite
 			const [a, h] = dims;
 			const depth = (a * Math.sqrt(3)) / 2;
-			return [p(a / 2, h, depth / 3), p(0, 0, 0), p(a, 0, 0), p(a / 2, 0, depth)];
+			return [p(a / 2, h, (2 * depth) / 3), p(0, 0, depth), p(a / 2, 0, 0), p(a, 0, depth)];
 		}
 		default:
 			return [];
@@ -507,12 +509,15 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 				cotes.push({ at: middle(v[1], v[4]), value: d2, side: 'bas-droite' });
 				break;
 			case 'pyramide-carree':
-			case 'pyramide-triangle': {
 				cotes.push({ at: middle(v[1], v[2]), value: d0, side: 'dessous' });
-				const base = points3.slice(1);
-				height(v[0], project({ ...centroid(base), y: 0 }), d1);
+				height(v[0], project({ ...centroid(points3.slice(1)), y: 0 }), d1);
 				break;
-			}
+			case 'pyramide-triangle':
+				// B devant : [AB] est raide, le texte en dessous serait traversé ; [BC] monte
+				// vers le fond comme la fuyante du pavé
+				cotes.push({ at: middle(v[2], v[3]), value: d0, side: 'bas-droite' });
+				height(v[0], project({ ...centroid(points3.slice(1)), y: 0 }), d1);
+				break;
 			case 'pyramide-rectangle':
 				cotes.push({ at: middle(v[1], v[2]), value: d0, side: 'dessous' });
 				cotes.push({ at: middle(v[2], v[3]), value: d1, side: 'bas-droite' });
@@ -746,7 +751,8 @@ function roundDraft(spec: SolideSpec): Draft {
 }
 
 /** Boîte d'une étiquette centrée en `at` */
-const labelBox = (label: SolideLabel) => {
+/** Boîte d'une étiquette (coins bas-gauche, haut-droit), en cm ; exportée pour les tests */
+export const labelBox = (label: SolideLabel) => {
 	const halfWidth = (labelChars(label) * CHAR_WIDTH) / 2 + 0.03;
 	const halfHeight = SOLIDE_LABEL_SIZE / 2 + 0.03;
 	return [
