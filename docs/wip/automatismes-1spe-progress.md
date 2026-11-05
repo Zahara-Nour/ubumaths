@@ -6,23 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2390._
+_Mis à jour le 2026-11-05, lot « Calcul numérique et algébrique » en phase 0._
 
-- **État** : lots « Statistiques » (`d37413a3`) et « Probabilités » (`84b512df`) en prod, en brouillon,
-  vérifiés depuis la base (0 débord). Les 6 brouillons ex-« Non rangés » ont leur nœud et leur point
-  en prod (#2390, `db:migrate` fait, vérifié par MCP ; § Rangement des 6 brouillons) · **Prochaine
-  action** : lot suivant (§ Suite), à choisir avec David · **En attente de David** : publier
-  `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c` (+ `1bd7378d`, `9a9026fc`) et
-  les fiches `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df` ; garder ou non les 2 figures
-  d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** : écritures en
-  prod refusées par le classifieur (David les lance) ; API plafonnée à 1 000 lignes ; modèles d'une
-  même famille = mêmes données à graine égale ; `--polices-corrige` pour un corrigé ; venv de
-  `debord.py` = `scripts/fiches/.venv` du dépôt principal ; `db:migrate` depuis un worktree : copier
-  `supabase/.temp` (lien) et, si la prod a une migration absente de la branche, reprendre CE fichier
-  seul de `origin/main` (jamais les migrations non appliquées des autres) puis `--dry-run` ·
-  **Worktree / branche** : aucun (retiré après #2390).
-- Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
-  brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
+- **État** : phase 0 du lot « Calcul numérique et algébrique » écrite (§ du même nom) ; correctif
+  `<<expr:…>>` de `buildSerie` fait sur la branche (40/40 candidats passent), sans tests encore ·
+  **Prochaine action** : réponses de David aux 3 points « À trancher », puis tests, modèle neuf
+  éventuel, script de fiche · **En attente de David** : ces 3 points ; publier `f5585668`,
+  `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c` (+ `1bd7378d`, `9a9026fc`) et les fiches
+  `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df` ; figures du corrigé de tracé ;
+  questions 2 à 4 · **Pièges en cours** : écritures en prod refusées par le classifieur (David les
+  lance) ; worktree neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx` (sinon `$lib` introuvable) ;
+  modèles d'une même famille = mêmes données à graine égale ; `--polices-corrige` pour un corrigé ·
+  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-1spe-calcul`.
+- Hors de ce chantier : 18 fiches de 1re spé en brouillon depuis septembre, à relire et publier.
 
 ## Décisions de David (figées)
 
@@ -230,6 +226,34 @@ probabilités totales, « inverse », « Parmi les… », notations (« sachant 
 - **Écrit en prod par David (2026-11-05)** : fiche `84b512df` « Automatismes : probabilités (1) »,
   brouillon. Vérifiée depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs`, `--polices-corrige`,
   `debord.py`) : fiche 3 p., réponses 1 p., corrigé 5 p., 0 débord, pages relues.
+
+## Lot « Calcul numérique et algébrique » — phase 0 (2026-11-05)
+
+Capacités (BO 1re, Automatismes, « Calcul numérique et algébrique ») : (A) solutions d'une
+équation produit nul ; (B) signe d'une expression du premier degré, d'une expression factorisée du
+second degré ; (C) développer, factoriser, réduire une expression algébrique simple.
+
+Relevé en prod (titres), puis `buildSerie` en lecture seule (graines 1-3) : **40 candidats, 20
+passaient**. Les 20 refusés (tout le calcul littéral : développer, factoriser, réduire) suivent la
+convention `<<expr:NOM>>` (l'écran ajoute « = case » après l'expression, `answerFormat`) : 0 case
+vue pour 1 réponse. **Correctif dans `buildSerie`** (`deplierExpressions`, branche
+`feat/automatismes-1spe-calcul`, non commité) : énoncé « (y+1)² = …… », corrigé « = **y² + 2y + 1** »
+→ **40/40 passent**.
+
+| Capacité                       | Modèles retenus (candidats)                                                                                                                                                                                                           | Manque                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| (A) Produit nul                | 2de `bb3b8e76` (ax+b)(cx+d) = 0 ; 3e `2ab49a6f` x(ax+b) = 0 ; (2de `d80a7d42` avec un tableau)                                                                                                                                        | —                                                           |
+| (B) Signe, 1er degré           | 2de `f0163416` tableau d'un produit (graine 1 : −5(x−6)) ; (`bba95c2d` choix entre images PNG : non imprimable a priori ; `4cc21ccd`/`c7cdca01` « x positif, x + 2 ? » : 1 seul tirage)                                               | **tableau de signes de ax + b** seul (pas de modèle direct) |
+| (B) Signe, 2nd degré factorisé | 2de `6bb5ff09` signe d'un produit sans tableau, `71174c9c` A(x) > 0 avec un tableau ; 1re `afe51ac4` inéquation sur a(x−x₁)(x−x₂), `b48d72dd` signe de k(x−a)²                                                                        | —                                                           |
+| (C) Réduire                    | 2de `33eb676e` ; 3e `77b82211` somme, `93a5f7a9` produit                                                                                                                                                                              | —                                                           |
+| (C) Développer                 | 4e `54107079`, `32a81f6f` ; 3e `9fefb94c`, `1703620c` double produit, `32cf5766`, `a6a6c491` (a+b)(a−b), `18e2afca` ; 2de `288c2bf0`, `85f6e96e` (a+b)², `6909bfde`, `1338da34` (a−b)² ; 1re `45e47034` forme canonique ou factorisée | —                                                           |
+| (C) Factoriser                 | 4e `d7f2568a`, `11607586`, `dac2e771`, `2120ce5f` facteur commun simple ; 3e `dcaabf69` facteur commun (expression), `ff8082bd`, `ff9bb2fb` a² − b² ; 2de `d1648508` carré parfait ; 1re `604f83b7` à l'aide des racines              | —                                                           |
+
+**À trancher par David** : (1) correctif `<<expr:…>>` de `buildSerie` ; (2) modèle neuf « tableau
+de signes de ax + b » ou `f0163416` seul ; (3) séries proposées — série 1 (équations, signes) =
+`bb3b8e76`, `2ab49a6f`, [ax + b], `f0163416`, `6bb5ff09`, `71174c9c`, `afe51ac4`, `b48d72dd` ;
+série 2 (calcul littéral) = `33eb676e`, `9fefb94c`, `288c2bf0`, `32cf5766`, `45e47034`, `dcaabf69`,
+`ff9bb2fb`, `d1648508`.
 
 ## Questions ouvertes (à poser à David)
 

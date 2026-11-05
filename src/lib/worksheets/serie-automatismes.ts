@@ -64,6 +64,21 @@ export const BLANK_TEXT = '……';
 const PLACEHOLDER = /\\placeholder\[(\d+)\]\{[^}]*\}/g;
 /** Case dans le texte : `{{blank:N}}` */
 const TEXT_BLANK = /\{\{blank:(\d+)\}\}/g;
+/** Expression nommée dans une formule : `$$<<expr:NOM>>…$$` ou `$<<expr:NOM>>…$` */
+const EXPRESSION_NOMMEE = /(\$\$?)<<expr:([A-Za-z_]\w*)>>([^$]*)\1/g;
+
+/**
+ * Expressions nommées (`<<expr:NOM>>`) : l'écran ajoute « = case » après
+ * l'expression (`answerFormat`, cf. `augmentASTForExpressions`) ; la fiche écrit
+ * de même. Sans `answerFormat` (l'expression porte ses propres `?`), le marqueur
+ * seul disparaît.
+ */
+function deplierExpressions(texte: string, instance: QuestionInstance): string {
+	return texte.replace(EXPRESSION_NOMMEE, (_m, dollars: string, nom: string, corps: string) => {
+		const format = instance.expressions?.find((e) => e.name === nom)?.answerFormat;
+		return `${dollars}${format ? `${corps} = ${format}` : corps}${dollars}`;
+	});
+}
 
 /**
  * Zones d'un texte, dans l'ordre de l'extraction d'ubumark (`math-extractor.ts`) :
@@ -317,10 +332,9 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 		throw new Error(`${template.id} : correction générée (mode B) non prise en charge`);
 	}
 	// La consigne du modèle précède l'énoncé (sinon la question perd son contexte)
+	const enonceBrut = deplierExpressions(instance.statement, instance);
 	const texte = enLatex(
-		instance.exerciseInstruction
-			? `${instance.exerciseInstruction}\n\n${instance.statement}`
-			: instance.statement
+		instance.exerciseInstruction ? `${instance.exerciseInstruction}\n\n${enonceBrut}` : enonceBrut
 	);
 	if (isCourseCard(template)) {
 		return { statement: texte, solution: [texte, ...etapes].join('\n\n') };
