@@ -6,20 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2403 (rangement du lot 10, mergée et migrée)._
+_Mis à jour le 2026-11-05, après la publication du lot 10 (§ 86)._
 
-- **État** : lots 1 à 9 et 12 publiés. Lot 10 : 11 brouillons rangés et tagués en prod, 2 anciens ramenés
-  à `['2']` (§ 85) ; page à cocher publiée (11 neufs + 16 anciens) : https://claude.ai/artifact/HmCouhdsu9DNwALFUToRbb
-- **Prochaine action** : lire `verdicts` et compter (27) ; « À revoir » → corriger ; puis `publier-lot`
-  par David sur `scripts/questions/2de-ensembles-10a`, `scripts/questions/2de-logique-10b` et les 16
-  anciens exportés dans `/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/ca860cb4-ad18-48de-9396-5f355030bad1/scratchpad/lot10-page/anciens` (à réexporter si le scratchpad a disparu :
-  `export-question-templates.ts --ids`, liste au § 82). Puis lot 11.
-- **En attente de David** : relecture de la page à cocher.
+- **État** : lots 1 à 10 et 12 publiés (lot 10 : 11 neufs + 16 anciens, 27/27 `published` au MCP).
+- **Prochaine action** : lot 11 « lire un programme » (218-223, 413, 229, 416, 228, 232, 233, 417 ;
+  relevé au § 70) : relevé de l'existant puis phase 0 à faire valider, sur une branche neuve. C'est le
+  dernier lot de l'ordre tranché le 2026-11-03.
+- **En attente de David** : rien.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
   dossier, variables Supabase locales passées à la main (il ne lit que `.env` = prod) ; lettre ≠
   étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : aucun (le prochain lot ouvre une branche neuve).
+- **Worktree / branche** : aucun (le lot 11 ouvre une branche neuve).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2196,3 +2194,9 @@ recommandations (16 anciens sur la page et publiés avec le lot, `grades` ramen�
   chacun, 2 anciens en `{2}`, `updated_at` inchangés.
 - Page à cocher : 16 anciens exportés (`export-question-templates.ts`) dans le scratchpad, préfixes `a-` /
   `b-` / `c-ancien-` ; 27 fiches, aucune alerte ; capacité `db`, `verdicts` vide à la publication.
+
+## 86. Lot 10 publié (2026-11-05)
+
+- Page à cocher relue par David : 27/27 « ok », sans commentaire ; ids = les 11 neufs (§ 84-85) et les 16
+  anciens exportés (§ 85). `publier-lot` (simulation puis `--publier`) lancé par David sur
+  `2de-ensembles-10a`, `2de-logique-10b` et le dossier des anciens ; MCP (prod) : 27/27 `published`.
