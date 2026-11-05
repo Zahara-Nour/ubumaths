@@ -9,19 +9,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 7 mergé (#2396)._
+_Mis à jour le 2026-11-05, lot 7 rangé en prod (#2397)._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 et 6 publiés ; lot 7
-  (exponentielle, § 12) mergé (#2396), brouillons pas encore créés en prod.
-- **Prochaine action** : David lance `create-questions --publier` (commande `!` du § 12),
-  relevé MCP des 3 brouillons, migration nœud + tag (gabarit lot 6, D5 : 300 sur « dérivée »), page à cocher. Ensuite lots 8, 9.
-- **En attente de David** : (1) `create-questions --publier` du lot 7 ; (2) vérification à l'œil en prod (ligne du 2026-11-03
-  de `docs/wip/verifications-manuelles.md`) ; (3) suppression des branches distantes `docs/questions-1spe-demonstrations`,
-  `feat/questions-1spe-demonstrations` (refusée au classifieur le 2026-11-04).
+  (exponentielle, § 12) en brouillon, rangé et tagué en prod, page à cocher publiée.
+- **Prochaine action** : lire les verdicts de la page du lot 7 (https://claude.ai/artifact/LEJtGYjAorBSHC7wwCzyx1,
+  `ArtifactData`) ; tout OK → David publie (`publier-lot.ts --publier`). Ensuite lot 8 (géométrie : 324, 325, 326, 334,
+  335, 420), puis 9.
+- **En attente de David** : (1) relecture du lot 7 sur la page à cocher ; (2) vérification à l'œil en prod (ligne du
+  2026-11-03 de `docs/wip/verifications-manuelles.md`) ; (3) suppression des branches distantes
+  `docs/questions-1spe-demonstrations`, `feat/questions-1spe-demonstrations` (refusée au classifieur le 2026-11-04).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
-  dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. `db push` :
-  `--include-all` si une migration plus récente est déjà en prod (lancé par David). Port 5178.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, nouvelle branche depuis `origin/main`.
+  dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Job navigateur
+  de la CI qui plante tests verts → `gh run rerun <run> --failed`. Port 5178.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (HEAD détaché), nouvelle branche depuis
+  `origin/main`.
 
 ---
 
@@ -438,3 +440,7 @@ tagué sur ces points. Ids écrits dans les JSON du lot (cette PR), `git restore
 `20261105123948_questions_1spe_approfondissements_7_rangement_tags` (gabarit lot 6, aucune sous-notion neuve ; 300 sur
 « dérivée », D5, son point restant sur la notion), test `questions-1spe-approfondissements-7-rangement-tags` 12/12 vert,
 rouge sans la migration (6 rouges, la suite principale ne s'exécute pas). Accès : Q5 de D3, personne.
+
+Mergée (#2397, CI verte après relance du job navigateur planté, 2097 tests verts). `security-auditor` : aucun finding.
+`db:migrate` le 2026-11-05 (seule migration en attente, sans `--include-all`), vérifié MCP : 3 modèles sur leur nœud,
+un tag chacun, `draft`, `updated_at` inchangé. Page à cocher : https://claude.ai/artifact/LEJtGYjAorBSHC7wwCzyx1.
