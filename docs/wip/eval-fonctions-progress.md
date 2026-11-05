@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, PR #2412 ouverte._
+_Mis à jour le 2026-11-06, après #2412._
 
-- **État** : deux fiches publiées en prod en brouillon (A `403e458b`, B `4693b28c`), puis retouchées sur demande de David (`maj-evaluation-fonctions-2nde.ts`) : 2 exercices (« Lecture graphique », « Fonction quotient » sans h), exercice 3 retiré et supprimé, ni points ni barème. Correctif vartable (« 0 » de borne) + doc `ubumark.md` dans la PR #2412 ; relecture `code-reviewer` : rien de bloquant.
-- **Prochaine action** : CI verte → merger #2412 ; David regarde l'aperçu PDF des deux fiches.
-- **En attente de David** : retour sur l'aperçu PDF.
-- **Pièges en cours** : titres d'exercices identiques entre A et B (voulu par David) ; contenu de travail dans le scratchpad de la session `09504a5e…` (déjà en base, perdu au redémarrage sans dommage).
-- **Worktree / branche** : `../ubumaths-wt-eval-fonctions` · `feat/evaluation-fonctions-2nde`.
+- **État** : #2412 mergée (correctif vartable « 0 » de borne, scripts, doc). Deux fiches en prod, brouillon : A `403e458b`, B `4693b28c` — 2 exercices (« Lecture graphique », « Fonction quotient »), sans points ni barème. Worktree retiré.
+- **Prochaine action** : aucune côté code ; selon le retour de David sur l'aperçu PDF, retouche en base (script sur le modèle de `scripts/maj-evaluation-fonctions-2nde.ts`) ; sinon clore le chantier (archiver ce journal).
+- **En attente de David** : retour sur l'aperçu PDF des deux fiches.
+- **Pièges en cours** : « 0 » de borne absent au PDF par choix (`docs/wip/outils-manquants.md`) ; titres identiques entre A et B (voulu).
+- **Worktree / branche** : aucun (retirés après #2412) ; un correctif de contenu = nouveau worktree.
 
 ## Cadre (réponses de David, 2026-11-05)
 
