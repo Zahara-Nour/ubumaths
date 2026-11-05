@@ -1,0 +1,345 @@
+{
+	"title": "Choisis l'échelle et construis le diagramme",
+	"description": "Tableau des effectifs donné : choisir l'échelle (2, 5 ou 10 par graduation) puis monter toutes les barres",
+	"grades": ["CE2"],
+	"level": 6,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les élèves de la classe ont choisi leur fruit préféré.\n\n| Fruit | Nombre d'élèves |\n|---|---|\n| Pomme | ${{a}}$ |\n| Banane | ${{b}}$ |\n| Fraise | ${{c}}$ |\n| Orange | ${{d}}$ |\n\nChoisis l'échelle de l'axe, puis construis le diagramme en barres.\n\n```barres\ntitre: Fruit préféré\naxes: Fruit ; Élèves\nPomme = {{a}}\nBanane = {{b}}\nFraise = {{c}}\nOrange = {{d}}\naxe: à choisir\nplacer: toutes\n```",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "1..10"
+				},
+				{
+					"name": "ub",
+					"expression": "1..10"
+				},
+				{
+					"name": "uc",
+					"expression": "1..10"
+				},
+				{
+					"name": "ud",
+					"expression": "1..10"
+				},
+				{
+					"name": "a",
+					"expression": "eval:2*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:2*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:2*uc"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*ud"
+				},
+				{
+					"name": "m",
+					"expression": "eval:max(a,b,c,d)"
+				}
+			],
+			"conditions": ["m > 10"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"L'axe a $10$ graduations : on prend la plus petite échelle où la plus grande barre rentre.",
+					"La plus grande barre : ${{m}}$ élèves. Avec $1$ par graduation, l'axe s'arrêterait à $10$ : trop court. Avec $2$, il monte jusqu'à $20$ : tout rentre.",
+					"Chaque barre monte jusqu'à son nombre d'élèves."
+				]
+			}
+		},
+		{
+			"statement": "Les élèves de l'école ont choisi leur sport préféré.\n\n| Sport | Nombre d'élèves |\n|---|---|\n| Football | ${{a}}$ |\n| Danse | ${{b}}$ |\n| Judo | ${{c}}$ |\n| Basket | ${{d}}$ |\n\nChoisis l'échelle de l'axe, puis construis le diagramme en barres.\n\n```barres\ntitre: Sport préféré\naxes: Sport ; Élèves\nFootball = {{a}}\nDanse = {{b}}\nJudo = {{c}}\nBasket = {{d}}\naxe: à choisir\nplacer: toutes\n```",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "1..10"
+				},
+				{
+					"name": "ub",
+					"expression": "1..10"
+				},
+				{
+					"name": "uc",
+					"expression": "1..10"
+				},
+				{
+					"name": "ud",
+					"expression": "1..10"
+				},
+				{
+					"name": "a",
+					"expression": "eval:5*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:5*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:5*uc"
+				},
+				{
+					"name": "d",
+					"expression": "eval:5*ud"
+				},
+				{
+					"name": "m",
+					"expression": "eval:max(a,b,c,d)"
+				}
+			],
+			"conditions": ["m > 20"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"L'axe a $10$ graduations : on prend la plus petite échelle où la plus grande barre rentre.",
+					"La plus grande barre : ${{m}}$ élèves. Avec $2$ par graduation, l'axe s'arrêterait à $20$ : trop court. Avec $5$, il monte jusqu'à $50$ : tout rentre.",
+					"Chaque barre monte jusqu'à son nombre d'élèves."
+				]
+			}
+		},
+		{
+			"statement": "Les élèves de l'école ont choisi leur animal préféré.\n\n| Animal | Nombre d'élèves |\n|---|---|\n| Chat | ${{a}}$ |\n| Chien | ${{b}}$ |\n| Lapin | ${{c}}$ |\n| Poisson | ${{d}}$ |\n| Cheval | ${{g}}$ |\n\nChoisis l'échelle de l'axe, puis construis le diagramme en barres.\n\n```barres\ntitre: Animal préféré\naxes: Animal ; Élèves\nChat = {{a}}\nChien = {{b}}\nLapin = {{c}}\nPoisson = {{d}}\nCheval = {{g}}\naxe: à choisir\nplacer: toutes\n```",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "1..9"
+				},
+				{
+					"name": "ub",
+					"expression": "1..9"
+				},
+				{
+					"name": "uc",
+					"expression": "1..9"
+				},
+				{
+					"name": "ud",
+					"expression": "1..9"
+				},
+				{
+					"name": "ug",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:10*uc"
+				},
+				{
+					"name": "d",
+					"expression": "eval:10*ud"
+				},
+				{
+					"name": "g",
+					"expression": "eval:10*ug"
+				},
+				{
+					"name": "m",
+					"expression": "eval:max(a,b,c,d,g)"
+				}
+			],
+			"conditions": ["m > 50"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"L'axe a $10$ graduations : on prend la plus petite échelle où la plus grande barre rentre.",
+					"La plus grande barre : ${{m}}$ élèves. Avec $5$ par graduation, l'axe s'arrêterait à $50$ : trop court. Avec $10$, il monte jusqu'à $100$ : tout rentre.",
+					"Chaque barre monte jusqu'à son nombre d'élèves."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Fruits jusqu'à 18 : échelle 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "18",
+				"ua": "9",
+				"b": "6",
+				"ub": "3",
+				"c": "12",
+				"uc": "6",
+				"d": "10",
+				"ud": "5",
+				"m": "18"
+			},
+			"answers": ["2", "18", "6", "12", "10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : échelle 1 (18 ne rentre pas)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "18",
+				"ua": "9",
+				"b": "6",
+				"ub": "3",
+				"c": "12",
+				"uc": "6",
+				"d": "10",
+				"ud": "5",
+				"m": "18"
+			},
+			"answers": ["1", "18", "6", "12", "10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : échelle 5 (rentre, mais moins lisible)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "18",
+				"ua": "9",
+				"b": "6",
+				"ub": "3",
+				"c": "12",
+				"uc": "6",
+				"d": "10",
+				"ud": "5",
+				"m": "18"
+			},
+			"answers": ["5", "18", "6", "12", "10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sports jusqu'à 45 : échelle 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "45",
+				"ua": "9",
+				"b": "20",
+				"ub": "4",
+				"c": "35",
+				"uc": "7",
+				"d": "10",
+				"ud": "2",
+				"m": "45"
+			},
+			"answers": ["5", "45", "20", "35", "10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Le basket le plus haut (40) : échelle 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "15",
+				"ua": "3",
+				"b": "20",
+				"ub": "4",
+				"c": "35",
+				"uc": "7",
+				"d": "40",
+				"ud": "8",
+				"m": "40"
+			},
+			"answers": ["5", "15", "20", "35", "40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : échelle 2 (40 ne rentre pas)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "15",
+				"ua": "3",
+				"b": "20",
+				"ub": "4",
+				"c": "35",
+				"uc": "7",
+				"d": "40",
+				"ud": "8",
+				"m": "40"
+			},
+			"answers": ["2", "15", "20", "35", "40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une barre un trait trop haut",
+			"variationIndex": 1,
+			"variables": {
+				"a": "45",
+				"ua": "9",
+				"b": "20",
+				"ub": "4",
+				"c": "35",
+				"uc": "7",
+				"d": "10",
+				"ud": "2",
+				"m": "45"
+			},
+			"answers": ["5", "45", "25", "35", "10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Animaux jusqu'à 80 : échelle 10",
+			"variationIndex": 2,
+			"variables": {
+				"a": "80",
+				"ua": "8",
+				"b": "30",
+				"ub": "3",
+				"c": "60",
+				"uc": "6",
+				"d": "20",
+				"ud": "2",
+				"g": "50",
+				"ug": "5",
+				"m": "80"
+			},
+			"answers": ["10", "80", "30", "60", "20", "50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : échelle 5 (80 ne rentre pas)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "80",
+				"ua": "8",
+				"b": "30",
+				"ub": "3",
+				"c": "60",
+				"uc": "6",
+				"d": "20",
+				"ud": "2",
+				"g": "50",
+				"ug": "5",
+				"m": "80"
+			},
+			"answers": ["5", "80", "30", "60", "20", "50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

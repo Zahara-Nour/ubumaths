@@ -1,0 +1,616 @@
+{
+	"title": "Que dit le tableau à double entrée ? (trois lignes)",
+	"description": "Sans totaux : le jour où la cantine a le plus, le moins de personnes (case choix), combien en tout un jour, combien de garçons de plus",
+	"grades": ["CE2"],
+	"level": 6,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\n```\n\nQuel jour y a-t-il le plus de personnes à la cantine ?\n\n```choix\nmelanger: non\n- Lundi\n- Mardi\n- Jeudi\n- Vendredi\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "40..150"
+				},
+				{
+					"name": "f2",
+					"expression": "40..150"
+				},
+				{
+					"name": "f3",
+					"expression": "40..150"
+				},
+				{
+					"name": "f4",
+					"expression": "40..150"
+				},
+				{
+					"name": "g1",
+					"expression": "40..150"
+				},
+				{
+					"name": "g2",
+					"expression": "40..150"
+				},
+				{
+					"name": "g3",
+					"expression": "40..150"
+				},
+				{
+					"name": "g4",
+					"expression": "40..150"
+				},
+				{
+					"name": "a1",
+					"expression": "5..20"
+				},
+				{
+					"name": "a2",
+					"expression": "5..20"
+				},
+				{
+					"name": "a3",
+					"expression": "5..20"
+				},
+				{
+					"name": "a4",
+					"expression": "5..20"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:f1+g1+a1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:f2+g2+a2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:f3+g3+a3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:f4+g4+a4"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:t1>t2 && t1>t3 && t1>t4|0|{{if:t2>t1 && t2>t3 && t2>t4|1|{{if:t3>t1 && t3>t2 && t3>t4|2|3}}}}}}"
+				}
+			],
+			"conditions": [
+				"(t1-t2)*(t1-t2) > 0",
+				"(t1-t3)*(t1-t3) > 0",
+				"(t1-t4)*(t1-t4) > 0",
+				"(t2-t3)*(t2-t3) > 0",
+				"(t2-t4)*(t2-t4) > 0",
+				"(t3-t4)*(t3-t4) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On additionne les trois lignes, chaque jour : Lundi ${{f1}} + {{g1}} + {{a1}} = {{t1}}$ ; Mardi ${{f2}} + {{g2}} + {{a2}} = {{t2}}$ ; Jeudi ${{f3}} + {{g3}} + {{a3}} = {{t3}}$ ; Vendredi ${{f4}} + {{g4}} + {{a4}} = {{t4}}$.",
+					"Le plus grand total : {{if:r==0|le lundi|{{if:r==1|le mardi|{{if:r==2|le jeudi|le vendredi}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\n```\n\nQuel jour y a-t-il le moins de personnes à la cantine ?\n\n```choix\nmelanger: non\n- Lundi\n- Mardi\n- Jeudi\n- Vendredi\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "40..150"
+				},
+				{
+					"name": "f2",
+					"expression": "40..150"
+				},
+				{
+					"name": "f3",
+					"expression": "40..150"
+				},
+				{
+					"name": "f4",
+					"expression": "40..150"
+				},
+				{
+					"name": "g1",
+					"expression": "40..150"
+				},
+				{
+					"name": "g2",
+					"expression": "40..150"
+				},
+				{
+					"name": "g3",
+					"expression": "40..150"
+				},
+				{
+					"name": "g4",
+					"expression": "40..150"
+				},
+				{
+					"name": "a1",
+					"expression": "5..20"
+				},
+				{
+					"name": "a2",
+					"expression": "5..20"
+				},
+				{
+					"name": "a3",
+					"expression": "5..20"
+				},
+				{
+					"name": "a4",
+					"expression": "5..20"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:f1+g1+a1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:f2+g2+a2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:f3+g3+a3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:f4+g4+a4"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:t1<t2 && t1<t3 && t1<t4|0|{{if:t2<t1 && t2<t3 && t2<t4|1|{{if:t3<t1 && t3<t2 && t3<t4|2|3}}}}}}"
+				}
+			],
+			"conditions": [
+				"(t1-t2)*(t1-t2) > 0",
+				"(t1-t3)*(t1-t3) > 0",
+				"(t1-t4)*(t1-t4) > 0",
+				"(t2-t3)*(t2-t3) > 0",
+				"(t2-t4)*(t2-t4) > 0",
+				"(t3-t4)*(t3-t4) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On additionne les trois lignes, chaque jour : Lundi ${{f1}} + {{g1}} + {{a1}} = {{t1}}$ ; Mardi ${{f2}} + {{g2}} + {{a2}} = {{t2}}$ ; Jeudi ${{f3}} + {{g3}} + {{a3}} = {{t3}}$ ; Vendredi ${{f4}} + {{g4}} + {{a4}} = {{t4}}$.",
+					"Le plus petit total : {{if:r==0|le lundi|{{if:r==1|le mardi|{{if:r==2|le jeudi|le vendredi}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\n```\n\nCombien de personnes ont mangé à la cantine {{if:j==0|le lundi|{{if:j==1|le mardi|{{if:j==2|le jeudi|le vendredi}}}}}} ?\n\n$?$ personnes",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "40..150"
+				},
+				{
+					"name": "f2",
+					"expression": "40..150"
+				},
+				{
+					"name": "f3",
+					"expression": "40..150"
+				},
+				{
+					"name": "f4",
+					"expression": "40..150"
+				},
+				{
+					"name": "g1",
+					"expression": "40..150"
+				},
+				{
+					"name": "g2",
+					"expression": "40..150"
+				},
+				{
+					"name": "g3",
+					"expression": "40..150"
+				},
+				{
+					"name": "g4",
+					"expression": "40..150"
+				},
+				{
+					"name": "a1",
+					"expression": "5..20"
+				},
+				{
+					"name": "a2",
+					"expression": "5..20"
+				},
+				{
+					"name": "a3",
+					"expression": "5..20"
+				},
+				{
+					"name": "a4",
+					"expression": "5..20"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((f1+g1+a1)*(j-1)*(j-2)*(j-3)/(-6)+(f2+g2+a2)*(j-0)*(j-2)*(j-3)/(2)+(f3+g3+a3)*(j-0)*(j-1)*(j-3)/(-2)+(f4+g4+a4)*(j-0)*(j-1)*(j-2)/(6))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On prend toute la colonne {{if:j==0|du lundi|{{if:j==1|du mardi|{{if:j==2|du jeudi|du vendredi}}}}}} : filles, garçons et adultes.",
+					"On additionne : ${{eval:((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6))}} + {{eval:((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6))}} + {{eval:((a1)*(j-1)*(j-2)*(j-3)/(-6)+(a2)*(j-0)*(j-2)*(j-3)/(2)+(a3)*(j-0)*(j-1)*(j-3)/(-2)+(a4)*(j-0)*(j-1)*(j-2)/(6))}} = {{eval:((f1+g1+a1)*(j-1)*(j-2)*(j-3)/(-6)+(f2+g2+a2)*(j-0)*(j-2)*(j-3)/(2)+(f3+g3+a3)*(j-0)*(j-1)*(j-3)/(-2)+(f4+g4+a4)*(j-0)*(j-1)*(j-2)/(6))}}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\n```\n\n{{if:j==0|Le lundi|{{if:j==1|Le mardi|{{if:j==2|Le jeudi|Le vendredi}}}}}}, combien de garçons de plus que de filles ont mangé à la cantine ?\n\n$?$ garçons de plus",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "40..150"
+				},
+				{
+					"name": "f2",
+					"expression": "40..150"
+				},
+				{
+					"name": "f3",
+					"expression": "40..150"
+				},
+				{
+					"name": "f4",
+					"expression": "40..150"
+				},
+				{
+					"name": "g1",
+					"expression": "40..150"
+				},
+				{
+					"name": "g2",
+					"expression": "40..150"
+				},
+				{
+					"name": "g3",
+					"expression": "40..150"
+				},
+				{
+					"name": "g4",
+					"expression": "40..150"
+				},
+				{
+					"name": "a1",
+					"expression": "5..20"
+				},
+				{
+					"name": "a2",
+					"expression": "5..20"
+				},
+				{
+					"name": "a3",
+					"expression": "5..20"
+				},
+				{
+					"name": "a4",
+					"expression": "5..20"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6))-((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6))"
+				}
+			],
+			"conditions": ["n >= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La colonne {{if:j==0|du lundi|{{if:j==1|du mardi|{{if:j==2|du jeudi|du vendredi}}}}}} : ${{eval:((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6))}}$ garçons et ${{eval:((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6))}}$ filles.",
+					"L'écart : ${{eval:((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6))}} - {{eval:((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6))}} = {{eval:((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6))-((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6))}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le plus : le mardi (238)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"t1": "228",
+				"t2": "238",
+				"t3": "235",
+				"t4": "217",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le jeudi (la plus grande case des filles)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"t1": "228",
+				"t2": "238",
+				"t3": "235",
+				"t4": "217",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le lundi (la première colonne)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"t1": "228",
+				"t2": "238",
+				"t3": "235",
+				"t4": "217",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le moins : le vendredi (217)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"t1": "228",
+				"t2": "238",
+				"t3": "235",
+				"t4": "217",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le mardi (la plus petite case des filles, 98)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"t1": "228",
+				"t2": "238",
+				"t3": "235",
+				"t4": "217",
+				"r": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "En tout le jeudi : 125 + 96 + 14 = 235",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"t1": "228",
+				"t2": "238",
+				"t3": "235",
+				"t4": "217",
+				"j": "2",
+				"n": "235"
+			},
+			"answers": ["235"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les adultes oubliés (221)",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"t1": "228",
+				"t2": "238",
+				"t3": "235",
+				"t4": "217",
+				"j": "2",
+				"n": "235"
+			},
+			"answers": ["221"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le vendredi : 119 − 87 = 32",
+			"variationIndex": 3,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"t1": "228",
+				"t2": "238",
+				"t3": "235",
+				"t4": "217",
+				"j": "3",
+				"n": "32"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les garçons du vendredi (119)",
+			"variationIndex": 3,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"t1": "228",
+				"t2": "238",
+				"t3": "235",
+				"t4": "217",
+				"j": "3",
+				"n": "32"
+			},
+			"answers": ["119"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la somme (206)",
+			"variationIndex": 3,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"t1": "228",
+				"t2": "238",
+				"t3": "235",
+				"t4": "217",
+				"j": "3",
+				"n": "32"
+			},
+			"answers": ["206"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,508 @@
+{
+	"title": "Lis le tableau à double entrée (trois lignes)",
+	"description": "Cantine (filles, garçons, adultes), bibliothèque (CE1, CE2, CM1) : une case, nombres jusqu'à 200, puis le total d'une colonne",
+	"grades": ["CE2"],
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\n```\n\nCombien de {{if:q==0|filles|{{if:q==1|garçons|adultes}}}} mangent à la cantine {{if:j==0|le lundi|{{if:j==1|le mardi|{{if:j==2|le jeudi|le vendredi}}}}}} ?\n\n$?$ {{if:q==0|filles|{{if:q==1|garçons|adultes}}}}",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "40..150"
+				},
+				{
+					"name": "f2",
+					"expression": "40..150"
+				},
+				{
+					"name": "f3",
+					"expression": "40..150"
+				},
+				{
+					"name": "f4",
+					"expression": "40..150"
+				},
+				{
+					"name": "g1",
+					"expression": "40..150"
+				},
+				{
+					"name": "g2",
+					"expression": "40..150"
+				},
+				{
+					"name": "g3",
+					"expression": "40..150"
+				},
+				{
+					"name": "g4",
+					"expression": "40..150"
+				},
+				{
+					"name": "a1",
+					"expression": "5..20"
+				},
+				{
+					"name": "a2",
+					"expression": "5..20"
+				},
+				{
+					"name": "a3",
+					"expression": "5..20"
+				},
+				{
+					"name": "a4",
+					"expression": "5..20"
+				},
+				{
+					"name": "q",
+					"expression": "0..2"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6)))*(q-1)*(q-2)/(2)+(((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6)))*(q-0)*(q-2)/(-1)+(((a1)*(j-1)*(j-2)*(j-3)/(-6)+(a2)*(j-0)*(j-2)*(j-3)/(2)+(a3)*(j-0)*(j-1)*(j-3)/(-2)+(a4)*(j-0)*(j-1)*(j-2)/(6)))*(q-0)*(q-1)/(2))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On prend la ligne des {{if:q==0|filles|{{if:q==1|garçons|adultes}}}} et la colonne {{if:j==0|du lundi|{{if:j==1|du mardi|{{if:j==2|du jeudi|du vendredi}}}}}}.",
+					"La case où elles se croisent : ${{eval:((((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6)))*(q-1)*(q-2)/(2)+(((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6)))*(q-0)*(q-2)/(-1)+(((a1)*(j-1)*(j-2)*(j-3)/(-6)+(a2)*(j-0)*(j-2)*(j-3)/(2)+(a3)*(j-0)*(j-1)*(j-3)/(-2)+(a4)*(j-0)*(j-1)*(j-2)/(6)))*(q-0)*(q-1)/(2))}}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre de livres empruntés à la bibliothèque de l'école cette année.\n\n```tableau-croise\nlignes: CE1 ; CE2 ; CM1\ncolonnes: Albums ; Romans ; BD ; Documentaires\nCE1 = {{b1}} ; {{b2}} ; {{b3}} ; {{b4}}\nCE2 = {{c1}} ; {{c2}} ; {{c3}} ; {{c4}}\nCM1 = {{d1}} ; {{d2}} ; {{d3}} ; {{d4}}\ncoin: Classe \\ Livres\n```\n\nCombien de {{if:j==0|albums|{{if:j==1|romans|{{if:j==2|BD|documentaires}}}}}} les élèves de {{if:q==0|CE1|{{if:q==1|CE2|CM1}}}} ont-ils empruntés ?\n\n$?$ livres",
+			"variables": [
+				{
+					"name": "b1",
+					"expression": "10..200"
+				},
+				{
+					"name": "b2",
+					"expression": "10..200"
+				},
+				{
+					"name": "b3",
+					"expression": "10..200"
+				},
+				{
+					"name": "b4",
+					"expression": "10..200"
+				},
+				{
+					"name": "c1",
+					"expression": "10..200"
+				},
+				{
+					"name": "c2",
+					"expression": "10..200"
+				},
+				{
+					"name": "c3",
+					"expression": "10..200"
+				},
+				{
+					"name": "c4",
+					"expression": "10..200"
+				},
+				{
+					"name": "d1",
+					"expression": "10..200"
+				},
+				{
+					"name": "d2",
+					"expression": "10..200"
+				},
+				{
+					"name": "d3",
+					"expression": "10..200"
+				},
+				{
+					"name": "d4",
+					"expression": "10..200"
+				},
+				{
+					"name": "q",
+					"expression": "0..2"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((((b1)*(j-1)*(j-2)*(j-3)/(-6)+(b2)*(j-0)*(j-2)*(j-3)/(2)+(b3)*(j-0)*(j-1)*(j-3)/(-2)+(b4)*(j-0)*(j-1)*(j-2)/(6)))*(q-1)*(q-2)/(2)+(((c1)*(j-1)*(j-2)*(j-3)/(-6)+(c2)*(j-0)*(j-2)*(j-3)/(2)+(c3)*(j-0)*(j-1)*(j-3)/(-2)+(c4)*(j-0)*(j-1)*(j-2)/(6)))*(q-0)*(q-2)/(-1)+(((d1)*(j-1)*(j-2)*(j-3)/(-6)+(d2)*(j-0)*(j-2)*(j-3)/(2)+(d3)*(j-0)*(j-1)*(j-3)/(-2)+(d4)*(j-0)*(j-1)*(j-2)/(6)))*(q-0)*(q-1)/(2))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On prend la ligne « {{if:q==0|CE1|{{if:q==1|CE2|CM1}}}} » et la colonne « {{if:j==0|Albums|{{if:j==1|Romans|{{if:j==2|BD|Documentaires}}}}}} ».",
+					"La case où elles se croisent : ${{eval:((((b1)*(j-1)*(j-2)*(j-3)/(-6)+(b2)*(j-0)*(j-2)*(j-3)/(2)+(b3)*(j-0)*(j-1)*(j-3)/(-2)+(b4)*(j-0)*(j-1)*(j-2)/(6)))*(q-1)*(q-2)/(2)+(((c1)*(j-1)*(j-2)*(j-3)/(-6)+(c2)*(j-0)*(j-2)*(j-3)/(2)+(c3)*(j-0)*(j-1)*(j-3)/(-2)+(c4)*(j-0)*(j-1)*(j-2)/(6)))*(q-0)*(q-2)/(-1)+(((d1)*(j-1)*(j-2)*(j-3)/(-6)+(d2)*(j-0)*(j-2)*(j-3)/(2)+(d3)*(j-0)*(j-1)*(j-3)/(-2)+(d4)*(j-0)*(j-1)*(j-2)/(6)))*(q-0)*(q-1)/(2))}}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre de livres empruntés à la bibliothèque de l'école cette année.\n\n```tableau-croise\nlignes: CE1 ; CE2 ; CM1\ncolonnes: Albums ; Romans ; BD ; Documentaires\nCE1 = {{b1}} ; {{b2}} ; {{b3}} ; {{b4}}\nCE2 = {{c1}} ; {{c2}} ; {{c3}} ; {{c4}}\nCM1 = {{d1}} ; {{d2}} ; {{d3}} ; {{d4}}\ncoin: Classe \\ Livres\ntotaux: oui\n```\n\nCombien de {{if:j==0|albums|{{if:j==1|romans|{{if:j==2|BD|documentaires}}}}}} ont été empruntés en tout ?\n\n$?$ livres",
+			"variables": [
+				{
+					"name": "b1",
+					"expression": "10..200"
+				},
+				{
+					"name": "b2",
+					"expression": "10..200"
+				},
+				{
+					"name": "b3",
+					"expression": "10..200"
+				},
+				{
+					"name": "b4",
+					"expression": "10..200"
+				},
+				{
+					"name": "c1",
+					"expression": "10..200"
+				},
+				{
+					"name": "c2",
+					"expression": "10..200"
+				},
+				{
+					"name": "c3",
+					"expression": "10..200"
+				},
+				{
+					"name": "c4",
+					"expression": "10..200"
+				},
+				{
+					"name": "d1",
+					"expression": "10..200"
+				},
+				{
+					"name": "d2",
+					"expression": "10..200"
+				},
+				{
+					"name": "d3",
+					"expression": "10..200"
+				},
+				{
+					"name": "d4",
+					"expression": "10..200"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((b1+c1+d1)*(j-1)*(j-2)*(j-3)/(-6)+(b2+c2+d2)*(j-0)*(j-2)*(j-3)/(2)+(b3+c3+d3)*(j-0)*(j-1)*(j-3)/(-2)+(b4+c4+d4)*(j-0)*(j-1)*(j-2)/(6))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« En tout » : on prend la colonne « {{if:j==0|Albums|{{if:j==1|Romans|{{if:j==2|BD|Documentaires}}}}}} », jusqu'à la ligne Total.",
+					"Le total : ${{eval:((b1+c1+d1)*(j-1)*(j-2)*(j-3)/(-6)+(b2+c2+d2)*(j-0)*(j-2)*(j-3)/(2)+(b3+c3+d3)*(j-0)*(j-1)*(j-3)/(-2)+(b4+c4+d4)*(j-0)*(j-1)*(j-2)/(6))}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : les filles le lundi, 112",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"q": "0",
+				"j": "0",
+				"n": "112"
+			},
+			"answers": ["112"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les garçons du lundi (104)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"q": "0",
+				"j": "0",
+				"n": "112"
+			},
+			"answers": ["104"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les filles du mardi (98)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"q": "0",
+				"j": "0",
+				"n": "112"
+			},
+			"answers": ["98"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Les adultes le jeudi, 14",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"q": "2",
+				"j": "2",
+				"n": "14"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Les garçons le mardi, 131",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "104",
+				"g2": "131",
+				"g3": "96",
+				"g4": "119",
+				"a1": "12",
+				"a2": "9",
+				"a3": "14",
+				"a4": "11",
+				"q": "1",
+				"j": "1",
+				"n": "131"
+			},
+			"answers": ["131"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Romans du CM1, 103",
+			"variationIndex": 1,
+			"variables": {
+				"b1": "45",
+				"b2": "18",
+				"b3": "62",
+				"b4": "23",
+				"c1": "37",
+				"c2": "54",
+				"c3": "88",
+				"c4": "41",
+				"d1": "16",
+				"d2": "103",
+				"d3": "75",
+				"d4": "58",
+				"q": "2",
+				"j": "1",
+				"n": "103"
+			},
+			"answers": ["103"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : romans du CE2 (54)",
+			"variationIndex": 1,
+			"variables": {
+				"b1": "45",
+				"b2": "18",
+				"b3": "62",
+				"b4": "23",
+				"c1": "37",
+				"c2": "54",
+				"c3": "88",
+				"c4": "41",
+				"d1": "16",
+				"d2": "103",
+				"d3": "75",
+				"d4": "58",
+				"q": "2",
+				"j": "1",
+				"n": "103"
+			},
+			"answers": ["54"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BD du CE1, 62",
+			"variationIndex": 1,
+			"variables": {
+				"b1": "45",
+				"b2": "18",
+				"b3": "62",
+				"b4": "23",
+				"c1": "37",
+				"c2": "54",
+				"c3": "88",
+				"c4": "41",
+				"d1": "16",
+				"d2": "103",
+				"d3": "75",
+				"d4": "58",
+				"q": "0",
+				"j": "2",
+				"n": "62"
+			},
+			"answers": ["62"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BD en tout : 62 + 88 + 75 = 225",
+			"variationIndex": 2,
+			"variables": {
+				"b1": "45",
+				"b2": "18",
+				"b3": "62",
+				"b4": "23",
+				"c1": "37",
+				"c2": "54",
+				"c3": "88",
+				"c4": "41",
+				"d1": "16",
+				"d2": "103",
+				"d3": "75",
+				"d4": "58",
+				"j": "2",
+				"n": "225"
+			},
+			"answers": ["225"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les BD du CE1 seules (62)",
+			"variationIndex": 2,
+			"variables": {
+				"b1": "45",
+				"b2": "18",
+				"b3": "62",
+				"b4": "23",
+				"c1": "37",
+				"c2": "54",
+				"c3": "88",
+				"c4": "41",
+				"d1": "16",
+				"d2": "103",
+				"d3": "75",
+				"d4": "58",
+				"j": "2",
+				"n": "225"
+			},
+			"answers": ["62"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Albums en tout : 98",
+			"variationIndex": 2,
+			"variables": {
+				"b1": "45",
+				"b2": "18",
+				"b3": "62",
+				"b4": "23",
+				"c1": "37",
+				"c2": "54",
+				"c3": "88",
+				"c4": "41",
+				"d1": "16",
+				"d2": "103",
+				"d3": "75",
+				"d4": "58",
+				"j": "0",
+				"n": "98"
+			},
+			"answers": ["98"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

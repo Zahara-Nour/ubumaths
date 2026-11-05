@@ -1,0 +1,328 @@
+{
+	"title": "Complète le tableau avec ses totaux",
+	"description": "Tableau à double entrée avec totaux, cases cachées : une case par son total, un total de ligne et de colonne, puis trois cases dont le total général",
+	"grades": ["CE2"],
+	"level": 1,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Ce tableau donne la façon dont les élèves de l'école viennent le matin. Des cases sont cachées.\n\n```tableau-croise\nlignes: À pied ; Vélo ; Voiture ; Bus\ncolonnes: Filles ; Garçons\nÀ pied = {{f1}} ; {{g1}}\nVélo = {{f2}} ; {{g2}}\nVoiture = {{f3}} ; {{g3}}\nBus = {{f4}} ; {{g4}}\ncoin: Transport \\ Élèves\ntotaux: oui\nmasquer: Voiture/Filles\n```\n\nCombien de filles viennent en voiture ?\n\n$?$ filles",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "10..90"
+				},
+				{
+					"name": "f2",
+					"expression": "10..90"
+				},
+				{
+					"name": "f3",
+					"expression": "10..90"
+				},
+				{
+					"name": "f4",
+					"expression": "10..90"
+				},
+				{
+					"name": "g1",
+					"expression": "10..90"
+				},
+				{
+					"name": "g2",
+					"expression": "10..90"
+				},
+				{
+					"name": "g3",
+					"expression": "10..90"
+				},
+				{
+					"name": "g4",
+					"expression": "10..90"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{f3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La ligne « Voiture » : ${{g3}}$ garçons, et ${{eval:f3+g3}}$ élèves en tout.",
+					"Les filles : ${{eval:f3+g3}} - {{g3}} = {{f3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne la façon dont les élèves de l'école viennent le matin. Des cases sont cachées.\n\n```tableau-croise\nlignes: À pied ; Vélo ; Voiture ; Bus\ncolonnes: Filles ; Garçons\nÀ pied = {{f1}} ; {{g1}}\nVélo = {{f2}} ; {{g2}}\nVoiture = {{f3}} ; {{g3}}\nBus = {{f4}} ; {{g4}}\ncoin: Transport \\ Élèves\ntotaux: oui\nmasquer: Bus/Total ; Total/Filles\n```\n\nComplète les cases cachées.\n\nÉlèves qui viennent en bus : $?$\n\nNombre total de filles : $?$",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "10..90"
+				},
+				{
+					"name": "f2",
+					"expression": "10..90"
+				},
+				{
+					"name": "f3",
+					"expression": "10..90"
+				},
+				{
+					"name": "f4",
+					"expression": "10..90"
+				},
+				{
+					"name": "g1",
+					"expression": "10..90"
+				},
+				{
+					"name": "g2",
+					"expression": "10..90"
+				},
+				{
+					"name": "g3",
+					"expression": "10..90"
+				},
+				{
+					"name": "g4",
+					"expression": "10..90"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:f4+g4}}"
+				},
+				{
+					"expectedAnswer": "{{eval:f1+f2+f3+f4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le bus : on additionne la ligne, ${{f4}} + {{g4}} = {{eval:f4+g4}}$.",
+					"Les filles : on additionne la colonne, ${{f1}} + {{f2}} + {{f3}} + {{f4}} = {{eval:f1+f2+f3+f4}}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne la façon dont les élèves de l'école viennent le matin. Des cases sont cachées.\n\n```tableau-croise\nlignes: À pied ; Vélo ; Voiture ; Bus\ncolonnes: Filles ; Garçons\nÀ pied = {{f1}} ; {{g1}}\nVélo = {{f2}} ; {{g2}}\nVoiture = {{f3}} ; {{g3}}\nBus = {{f4}} ; {{g4}}\ncoin: Transport \\ Élèves\ntotaux: oui\nmasquer: Vélo/Garçons ; Total/Garçons ; Total/Total\n```\n\nComplète les cases cachées.\n\nGarçons à vélo : $?$\n\nNombre total de garçons : $?$\n\nNombre total d'élèves : $?$",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "10..90"
+				},
+				{
+					"name": "f2",
+					"expression": "10..90"
+				},
+				{
+					"name": "f3",
+					"expression": "10..90"
+				},
+				{
+					"name": "f4",
+					"expression": "10..90"
+				},
+				{
+					"name": "g1",
+					"expression": "10..90"
+				},
+				{
+					"name": "g2",
+					"expression": "10..90"
+				},
+				{
+					"name": "g3",
+					"expression": "10..90"
+				},
+				{
+					"name": "g4",
+					"expression": "10..90"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:g1+g2+g3+g4}}"
+				},
+				{
+					"expectedAnswer": "{{eval:f1+f2+f3+f4+g1+g2+g3+g4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Garçons à vélo : la ligne « Vélo » fait ${{eval:f2+g2}}$ élèves, dont ${{f2}}$ filles : ${{eval:f2+g2}} - {{f2}} = {{g2}}$.",
+					"Les garçons : ${{g1}} + {{g2}} + {{g3}} + {{g4}} = {{eval:g1+g2+g3+g4}}$.",
+					"Tous les élèves : ${{eval:f1+f2+f3+f4}} + {{eval:g1+g2+g3+g4}} = {{eval:f1+f2+f3+f4+g1+g2+g3+g4}}$ (ou la colonne Total)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Filles en voiture : 83 − 36 = 47",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le total de la ligne (83)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40"
+			},
+			"answers": ["83"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les garçons en voiture (36)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bus 81, filles 141",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40"
+			},
+			"answers": ["81", "141"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le bus = les filles en bus (41)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40"
+			},
+			"answers": ["41", "141"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une case oubliée dans les filles (100)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40"
+			},
+			"answers": ["81", "100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Vélo 23, garçons 141, total 282",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40"
+			},
+			"answers": ["23", "141", "282"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : total = filles + garçons sans le vélo (259)",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40"
+			},
+			"answers": ["23", "141", "259"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : garçons à vélo = ligne vélo (38)",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40"
+			},
+			"answers": ["38", "141", "282"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
