@@ -79,6 +79,7 @@ interface MathFieldElement extends HTMLElement {
 	readOnly: boolean;
 	position: number;
 	readonly lastOffset: number;
+	readonly selectionIsCollapsed: boolean;
 	inlineShortcuts: Record<string, string | { value: string; after?: string }>;
 	focus(): void;
 	executeCommand(command: string): void;
@@ -1011,22 +1012,36 @@ export const MathBlock = Node.create({
 					event.preventDefault();
 					event.stopPropagation();
 					poserAvecCurseur(mathfield, sansLigne);
-					synchroniser();
+				};
+
+				const nouvelleLigne = (event: KeyboardEvent) => {
+					event.preventDefault();
+					event.stopPropagation();
+					insererMarqueur(mathfield);
+					poserAvecCurseur(mathfield, ajouterLigne(mathfield.value));
 				};
 
 				mathfield.addEventListener(
 					'keydown',
 					(event: KeyboardEvent) => {
-						if (estEffacement(event) && aUneLigneVide(mathfield.value)) {
-							effacerLigneVide(event);
-							return;
+						// Une sélection effacée reste l'affaire de MathLive : le marqueur la
+						// replierait et un seul caractère partirait.
+						const effacer =
+							estEffacement(event) &&
+							mathfield.selectionIsCollapsed &&
+							aUneLigneVide(mathfield.value);
+						if (!effacer && !estNouvelleLigne(event)) return;
+						try {
+							if (effacer) effacerLigneVide(event);
+							else nouvelleLigne(event);
+						} finally {
+							// Jamais de marqueur oublié dans le champ ni dans le nœud, même
+							// si une étape a levé.
+							if (mathfield.value.includes(MARQUEUR_CURSEUR)) {
+								mathfield.value = mathfield.value.replace(MARQUEUR_CURSEUR, '');
+							}
+							synchroniser();
 						}
-						if (!estNouvelleLigne(event)) return;
-						event.preventDefault();
-						event.stopPropagation();
-						insererMarqueur(mathfield);
-						poserAvecCurseur(mathfield, ajouterLigne(mathfield.value));
-						synchroniser();
 					},
 					{ capture: true }
 				);

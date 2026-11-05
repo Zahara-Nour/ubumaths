@@ -68,8 +68,9 @@ const RELATIONS = new Set([
 	'\\approx'
 ]);
 
-const OUVRANTS = new Set(['{', '(', '\\left', '\\begin']);
-const FERMANTS = new Set(['}', ')', '\\right', '\\end']);
+/** Ouvrants de structure : toujours fermés dans un LaTeX valide. */
+const OUVRANTS = new Set(['{', '\\left', '\\begin']);
+const FERMANTS = new Set(['}', '\\right', '\\end']);
 
 const LIGNE = '\\\\';
 const CELLULE = '&';
@@ -87,7 +88,10 @@ interface Jeton {
  */
 function jetons(latex: string): Jeton[] {
 	const resultat: Jeton[] = [];
-	let profondeur = 0;
+	let structure = 0;
+	// Les parenthèses comptent à part, jamais sous zéro : un intervalle `[0,1)` a une
+	// `)` sans `(`, qui ne doit pas faire croire la suite plus haut que la ligne.
+	let parentheses = 0;
 	let i = 0;
 	while (i < latex.length) {
 		let fin = i + 1;
@@ -98,9 +102,11 @@ function jetons(latex: string): Jeton[] {
 			}
 		}
 		const texte = latex.slice(i, fin);
-		resultat.push({ texte, debut: i, profondeur });
-		if (OUVRANTS.has(texte)) profondeur++;
-		if (FERMANTS.has(texte)) profondeur--;
+		resultat.push({ texte, debut: i, profondeur: structure + parentheses });
+		if (OUVRANTS.has(texte)) structure++;
+		if (FERMANTS.has(texte)) structure--;
+		if (texte === '(') parentheses++;
+		if (texte === ')') parentheses = Math.max(0, parentheses - 1);
 		i = fin;
 	}
 	return resultat;
@@ -161,9 +167,17 @@ function lignesAligned(latex: string): string[][] | null {
 	return decouper(corps, LIGNE).map((ligne) => decouper(ligne, CELLULE).map((c) => c.trim()));
 }
 
-/** Retire le marqueur du curseur (et l'espace que MathLive met parfois derrière). */
+/**
+ * Retire le marqueur du curseur, et l'espace que MathLive met derrière — sauf
+ * quand cet espace sépare une commande d'une lettre (`\\alpha x`, pas `\\alphax`).
+ */
 function sansMarqueur(latex: string): string {
-	return latex.replace(/\\maltese ?/, '').trim();
+	const indice = latex.indexOf(MARQUEUR_CURSEUR);
+	if (indice < 0) return latex.trim();
+	const avant = latex.slice(0, indice);
+	const apres = latex.slice(indice + MARQUEUR_CURSEUR.length).replace(/^ /, '');
+	const souderait = /\\[a-zA-Z]+$/.test(avant) && /^[a-zA-Z]/.test(apres);
+	return (avant + (souderait ? ' ' : '') + apres).trim();
 }
 
 /**

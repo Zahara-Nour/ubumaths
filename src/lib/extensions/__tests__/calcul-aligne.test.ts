@@ -60,6 +60,28 @@ describe('ajouterLigne — bloc simple', () => {
 	});
 });
 
+describe('ajouterLigne — curseur entre une commande et une lettre (revue #2410)', () => {
+	it('garde l’espace : \\alpha x ne devient pas \\alphax', () => {
+		expect(ajouterLigne(`A=\\alpha${M} x+1`)).toBe(aligne(`A&=\\alpha x+1\\\\&=${M}`));
+	});
+
+	it('idem après un connecteur', () => {
+		expect(ajouterLigne(`a\\iff${M} x>0`)).toBe(aligne(`a&\\iff x>0\\\\&\\iff ${M}`));
+	});
+});
+
+describe('ajouterLigne — intervalle demi-ouvert (revue #2410)', () => {
+	it('une ) sans ( ne fait pas perdre la coupure', () => {
+		expect(ajouterLigne(`x\\in[0,1)\\iff x<1${M}`)).toBe(
+			aligne(`x\\in[0,1)&\\iff x<1\\\\&\\iff ${M}`)
+		);
+	});
+
+	it('un aligned contenant [0,1) reste reconnu', () => {
+		expect(ajouterLigne(aligne(`x&\\in[0,1)${M}`))).toBe(aligne(`x&\\in[0,1)\\\\&${M}`));
+	});
+});
+
 describe('ajouterLigne — bloc déjà aligné', () => {
 	it('ajoute une ligne sous la dernière avec la même relation', () => {
 		expect(ajouterLigne(aligne(`A&=3+4\\\\&=7${M}`))).toBe(aligne(`A&=3+4\\\\&=7\\\\&=${M}`));

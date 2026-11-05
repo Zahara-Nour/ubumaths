@@ -113,3 +113,19 @@ describe('bouton « Calcul aligné »', () => {
 		expect(latexDe(e, 'mathBlock')).toBe('\\begin{aligned}A&=3+4\\\\&=7\\end{aligned}');
 	});
 });
+
+describe('Retour arrière sur une sélection (revue #2410)', () => {
+	it('efface toute la sélection, même avec une ligne vide ailleurs', async () => {
+		const e = await editeur([bloc('\\begin{aligned}A&=3+4\\\\&\\end{aligned}')]);
+		const champ = document.querySelector('.math-block-wrapper math-field') as HTMLElement & {
+			selection: unknown;
+			value: string;
+		};
+		await userEvent.click(champ);
+		await pause(300);
+		// Sélectionne « =3 » (deux atomes de la cellule droite de la ligne 1)
+		champ.selection = { ranges: [[2, 5]] };
+		await taper('{Backspace}');
+		expect(latexDe(e, 'mathBlock')).toBe('\\begin{aligned}A&+4\\\\&\\end{aligned}');
+	});
+});

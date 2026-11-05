@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, avant la PR._
+_Mis à jour le 2026-11-05, PR #2410 ouverte, revue traitée._
 
-- **État** : code + tests écrits sur `feat/calcul-aligne` ; PR à ouvrir · **Prochaine action** : checks, revue `code-reviewer`, PR, essai par David dans l'éditeur de correction · **En attente de David** : essai réel (Cmd+Entrée dans un bloc, bouton « Calcul aligné ») · **Pièges en cours** : voir « Pièges » · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` · `feat/calcul-aligne`
+- **État** : PR #2410 ouverte, revue `code-reviewer` traitée (4 findings corrigés) · **Prochaine action** : CI verte → merge ; essai par David dans l'éditeur de correction · **À trancher par David** : bouton = 1 ligne (au lieu de 2 vides) · **En attente de David** : essai réel (Cmd+Entrée dans un bloc, bouton « Calcul aligné ») · **Pièges en cours** : voir « Pièges » · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` · `feat/calcul-aligne`
 
 ## Décisions de David (2026-11-05)
 
@@ -33,3 +33,4 @@ Erreur : 11 LaTeX mal formé tapé à la main → rien ne casse (le bloc n'est p
 ## Journal
 
 - 2026-11-05 — phase 0 validée ; `calcul-aligne.ts` (pur) + câblage `MathBlock` + bouton ; tests : 23 purs, 7 chaîne (aller-retour, rendu, PDF), 5 navigateur (preuve rouge faite sans le câblage).
+- 2026-11-05 — PR #2410. Revue : (1) marqueur retiré avec l'espace → `\alpha x` soudé en `\alphax` → `sansMarqueur` garde l'espace entre commande et lettre ; (2) Retour arrière sur une sélection n'effaçait qu'un caractère quand une ligne vide existait → laissé à MathLive si sélection ; (3) `[0,1)` faisait perdre la coupure → parenthèses comptées à part, jamais sous zéro ; (4) `try/finally` : jamais de marqueur oublié. Tests ajoutés (rouges vérifiés).
