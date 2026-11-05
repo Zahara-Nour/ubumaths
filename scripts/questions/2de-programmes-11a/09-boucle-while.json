@@ -1,4 +1,5 @@
 {
+	"id": "3cacefc5-59a1-498e-a453-fc25369110f9",
 	"title": "Boucle non bornée (while)",
 	"description": "Valeurs de n et s après while s < 20: n = n + 1, s = s + n ; nombre d'années pour qu'un capital qui double atteigne un seuil",
 	"grades": ["2"],

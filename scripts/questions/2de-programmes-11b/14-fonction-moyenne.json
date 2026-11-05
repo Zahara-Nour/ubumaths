@@ -1,0 +1,232 @@
+{
+	"title": "Lire une fonction Python qui renvoie une moyenne",
+	"description": "Valeur renvoyée par moyenne(a, b, c, d) ; ce que renvoie une fonction qui additionne n lancers de dé puis divise par n ; moyenne de deux notes avec coefficients",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef moyenne(a, b, c, d):\n    s = a + b + c + d\n    return s / 4\n```\n\nQue renvoie `moyenne({{a}}, {{b}}, {{c}}, {{d}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "6..18"
+				},
+				{
+					"name": "b",
+					"expression": "6..18"
+				},
+				{
+					"name": "c",
+					"expression": "6..18"
+				},
+				{
+					"name": "d",
+					"expression": "6..18"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(a)+(b)+(c)+(d)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(s)/4;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moyenne de plusieurs valeurs est leur **somme** divisée par leur **nombre**.",
+					"`s` vaut ${{a}}+{{b}}+{{c}}+{{d}}={{s}}$.",
+					"La fonction renvoie $\\dfrac{ {{s}} }{4}=\\textcolor{{{color:primary.0}}}{{{eval:(s)/4;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\nfrom random import randint\n\ndef experience(n):\n    s = 0\n    for i in range(n):\n        s = s + randint(1, 6)\n    return s / n\n```\n\n`randint(1, 6)` renvoie un entier au hasard entre $1$ et $6$, comme un lancer de dé. Que renvoie `experience({{n}})` ?\n\n```choix\n- la moyenne des résultats de ${{n}}$ lancers de dé\n- la somme des résultats de ${{n}}$ lancers de dé\n- le résultat d'un seul lancer de dé\n- le nombre de lancers, ${{n}}$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|50|100|500|1000"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moyenne de plusieurs valeurs est leur **somme** divisée par leur **nombre**.",
+					"La boucle tourne ${{n}}$ fois et ajoute à `s` le résultat d'un lancer : à la fin, `s` est la **somme** des ${{n}}$ résultats.",
+					"La fonction renvoie `s / {{n}}` : la somme divisée par le nombre de lancers, c'est la **moyenne** des résultats."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante, qui calcule une moyenne de deux notes avec des coefficients.\n\n```python\ndef moyenne(n1, c1, n2, c2):\n    return (n1 * c1 + n2 * c2) / (c1 + c2)\n```\n\nQue renvoie `moyenne({{x}}, {{c1}}, {{y}}, {{c2}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..6"
+				},
+				{
+					"name": "c1",
+					"expression": "eval:(1-min(abs((t)-0),1))*(1)+(1-min(abs((t)-1),1))*(1)+(1-min(abs((t)-2),1))*(3)+(1-min(abs((t)-3),1))*(2)+(1-min(abs((t)-4),1))*(3)+(1-min(abs((t)-5),1))*(1)+(1-min(abs((t)-6),1))*(4)"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:(1-min(abs((t)-0),1))*(1)+(1-min(abs((t)-1),1))*(3)+(1-min(abs((t)-2),1))*(1)+(1-min(abs((t)-3),1))*(3)+(1-min(abs((t)-4),1))*(2)+(1-min(abs((t)-5),1))*(4)+(1-min(abs((t)-6),1))*(1)"
+				},
+				{
+					"name": "x",
+					"expression": "6..18"
+				},
+				{
+					"name": "y",
+					"expression": "6..18"
+				},
+				{
+					"name": "num",
+					"expression": "eval:(x)*(c1)+(y)*(c2)"
+				}
+			],
+			"conditions": ["x != y"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(num)/((c1)+(c2));d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moyenne de plusieurs valeurs est leur **somme** divisée par leur **nombre**.",
+					"Le numérateur vaut ${{x}}\\times{{c1}}+{{y}}\\times{{c2}}={{num}}$ et le dénominateur ${{c1}}+{{c2}}={{eval:(c1)+(c2)}}$.",
+					"La fonction renvoie $\\dfrac{ {{num}} }{ {{eval:(c1)+(c2)}} }=\\textcolor{{{color:primary.0}}}{{{eval:(num)/((c1)+(c2));d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "moyenne(12, 9, 15, 11) = 11,75",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "15",
+				"d": "11",
+				"s": "47"
+			},
+			"answers": ["11,75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme 47",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "15",
+				"d": "11",
+				"s": "47"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "moyenne(10, 12, 14, 16) = 13",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"b": "12",
+				"c": "14",
+				"d": "16",
+				"s": "52"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Lancers : la moyenne",
+			"variationIndex": 1,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme",
+			"variationIndex": 1,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12 coef 1, 16 coef 3 : 15",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"c1": "1",
+				"c2": "3",
+				"x": "12",
+				"y": "16",
+				"num": "60"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne sans coefficients 14",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"c1": "1",
+				"c2": "3",
+				"x": "12",
+				"y": "16",
+				"num": "60"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "14 coef 2, 9 coef 3 : 11",
+			"variationIndex": 2,
+			"variables": {
+				"t": "3",
+				"c1": "2",
+				"c2": "3",
+				"x": "14",
+				"y": "9",
+				"num": "55"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	],
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	}
+}

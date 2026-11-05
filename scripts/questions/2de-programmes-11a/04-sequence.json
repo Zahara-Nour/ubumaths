@@ -1,4 +1,5 @@
 {
+	"id": "bfdb42c0-5157-458b-b3f9-00e4deac849c",
 	"title": "Séquence d'instructions",
 	"description": "Valeurs de x et y après x = 3, y = x + 4, x = y * 2, y = x - y ; a = b puis b = a (pas d'échange), échange avec une variable c",
 	"grades": ["2"],

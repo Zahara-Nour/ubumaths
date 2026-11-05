@@ -8,15 +8,15 @@
 
 _Mis à jour le 2026-11-05, après la publication du lot 10 (§ 86)._
 
-- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), 11 A écrit (§ 88, PR des fichiers).
-- **Prochaine action** : merger la PR du 11 A, puis David lance `create-questions --publier` sur
-  `2de-programmes-11a` ; écrire le 11 B (229, 416, 232, 233, 417) sur une branche neuve.
+- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), 11 A en brouillon en prod (§ 89) ; 11 B écrit (§ 90, PR des fichiers).
+- **Prochaine action** : merger la PR du 11 B, David lance `create-questions --publier` sur
+  `2de-programmes-11b` ; puis migration de rangement 11 A + 11 B (15 nœuds + tags), page à cocher.
 - **En attente de David** : rien.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
   dossier, variables Supabase locales passées à la main (il ne lit que `.env` = prod) ; lettre ≠
   étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lot11a`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lot11b`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2293,3 +2293,24 @@ une migration, une page à cocher ; ← seulement dans 2-219).
   recalculées de même (0 écart) ; LaTeX 3 599 formules, 0 problème. Joués en local (aperçu admin, Chrome) :
   `while` (n = 3, c = 1600) « juste », corrigé lisible ; condition `n % 8 = 0` « faux », bonne réponse
   montrée ; algorithme en ← bien rendu.
+
+## 89. Lot 11 A en brouillon en prod (2026-11-05)
+
+- #2411 mergée. David a lancé `create-questions --publier` sur `2de-programmes-11a` : b7785962 (2-218),
+  b3db9b3c (2-223), 1bb39e2d (2-219), bfdb42c0 (2-220), 3f4c0e5f (2-224), 5bd3323d (2-221), e2cc8a48 (2-415),
+  2ffa6d80 (2-222), 3cacefc5 (2-413), 8f0bbf63 (2-228) ; MCP : brouillons, `grades = ['2']`, niveaux du § 88,
+  sans nœud ni tag. Ids commités sur la branche du 11 B.
+
+## 90. Lot 11 B, fichiers (2026-11-06)
+
+- `questions-2de/lot-programmes-11b-2de.py` → `scripts/questions/2de-programmes-11b/` (5 modèles, 38 specs) :
+  2-229 « Fonction Python à un ou plusieurs arguments » (niv. 1), 2-416 « Appeler une fonction Python » (1),
+  2-232 « Lire une fonction Python plus complexe » (3 ; diviseurs, seuil n² > A, compléter max / min),
+  2-233 « Lire une fonction Python qui renvoie une moyenne » (2 ; quatre arguments, lancers de dé,
+  coefficients), 2-417 « Lire une fonction Python qui renvoie un écart type » (3). Nœuds du § 87 (L11-b :
+  233 et 417 sous Algorithmique › Fonctions Python › définir une fonction).
+- « Variance » absente du BO 2de : le distracteur dit « le carré de l'écart type ».
+- Piège : `{{eval:(s)/4}}` s'écrit `\dfrac{39}{4}` dans le corrigé alors que Python renvoie `9.75` →
+  `{{eval:…;d}}` (rendu `9{,}75`) ; `acceptDecimal` partagé sur 233 et 417.
+- Contrôles : simulation prod 5 à créer, specs vertes ; 60 tirages par modèle, 169 réponses recalculées en
+  exécutant le code affiché (0 écart) ; LaTeX 1 392 formules, 0 problème. Joué en local : moyenne(9, 12, 7, 17) → `11,25` tapé « juste », corrigé `45/4 = 11,25`.

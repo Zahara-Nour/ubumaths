@@ -1,4 +1,5 @@
 {
+	"id": "e2cc8a48-5b81-4909-9d8c-5000fc4340b8",
 	"title": "Compléter une condition",
 	"description": "Écrire la condition du tarif réduit pour « moins de », « au moins », « plus de », « au plus » n ans (<, >=, >, <=) ; condition « n est pair », « n est multiple de d » avec %",
 	"grades": ["2"],

@@ -1,0 +1,215 @@
+{
+	"title": "Appeler une fonction Python",
+	"description": "Valeur de y = f(4) + f(7), y = f(f(4)), y = 2 * f(4) avec f(x) = 3x + 2 ; écrire l'appel qui range l'image de a dans y",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef f(x):\n    return {{k}} * x + {{p}}\n```\n\nOn exécute ensuite `y = {{if:t==0|f({{a}}) + f({{b}})|{{if:t==1|f(f({{a}}))|2 * f({{a}})}}}}`. Que vaut `y` ?\n\n$y=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "6..9"
+				},
+				{
+					"name": "fa",
+					"expression": "eval:(k)*(a)+(p)"
+				},
+				{
+					"name": "fb",
+					"expression": "eval:(k)*(b)+(p)"
+				},
+				{
+					"name": "ffa",
+					"expression": "eval:(k)*(fa)+(p)"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*((fa)+(fb))+(1-min(abs((t)-1),1))*((ffa))+(1-min(abs((t)-2),1))*(2*(fa))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Appeler `f(5)` calcule l'image de $5$ : `x` reçoit $5$ et l'appel **vaut** la valeur renvoyée ; il s'utilise comme un nombre dans un calcul.",
+					"`f({{a}})` vaut ${{k}}\\times{{a}}+{{p}}={{fa}}$.",
+					"{{if:t==0|`f({{b}})` vaut ${{k}}\\times{{b}}+{{p}}={{fb}}$, donc $y={{fa}}+{{fb}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.|{{if:t==1|`f(f({{a}}))` est donc `f({{fa}})`, qui vaut ${{k}}\\times{{fa}}+{{p}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.|$y=2\\times{{fa}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "On a défini la fonction Python ci-dessous.\n\n```python\ndef f(x):\n    return {{k}} * x + {{p}}\n```\n\nQuelle instruction range dans `y` l'image de ${{a}}$ par `f` ?\n\n```choix\n- `y = f({{a}})`\n- `y = f`\n- `f({{a}}) = y`\n- `y = def f({{a}})`\n- `y = f(x) = {{a}}`\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Appeler `f(5)` calcule l'image de $5$ : `x` reçoit $5$ et l'appel **vaut** la valeur renvoyée ; il s'utilise comme un nombre dans un calcul.",
+					"On écrit le nom de la fonction suivi de la valeur entre parenthèses, et on range le résultat dans `y` : `y = f({{a}})`, qui vaut ${{k}}\\times{{a}}+{{p}}={{eval:(k)*(a)+(p)}}$.",
+					"`def` sert seulement à **définir** la fonction ; `y = f` ne calcule rien ; la variable qui reçoit la valeur est toujours à gauche du `=`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(4) + f(7) = 37",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"k": "3",
+				"p": "2",
+				"a": "4",
+				"b": "7",
+				"fa": "14",
+				"fb": "23",
+				"ffa": "44",
+				"rep": "37"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(4 + 7)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"k": "3",
+				"p": "2",
+				"a": "4",
+				"b": "7",
+				"fa": "14",
+				"fb": "23",
+				"ffa": "44",
+				"rep": "37"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(f(4)) = 44",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"k": "3",
+				"p": "2",
+				"a": "4",
+				"b": "7",
+				"fa": "14",
+				"fb": "23",
+				"ffa": "44",
+				"rep": "44"
+			},
+			"answers": ["44"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(f(4)) lu f(4)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"k": "3",
+				"p": "2",
+				"a": "4",
+				"b": "7",
+				"fa": "14",
+				"fb": "23",
+				"ffa": "44",
+				"rep": "44"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 * f(4) = 28",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"k": "3",
+				"p": "2",
+				"a": "4",
+				"b": "7",
+				"fa": "14",
+				"fb": "23",
+				"ffa": "44",
+				"rep": "28"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "y = f(4)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"p": "2",
+				"a": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(4) = y",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"p": "2",
+				"a": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

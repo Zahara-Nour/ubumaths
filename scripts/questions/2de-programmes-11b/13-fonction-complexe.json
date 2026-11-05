@@ -1,0 +1,184 @@
+{
+	"title": "Lire une fonction Python plus complexe",
+	"description": "Que renvoie une fonction qui compte les diviseurs (boucle et condition), une fonction de seuil n² > A (while) ; compléter la fonction maximum ou minimum",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante (`n % k` est le reste de la division de `n` par `k`).\n\n```python\ndef mystere(n):\n    c = 0\n    for k in range(1, n + 1):\n        if n % k == 0:\n            c = c + 1\n    return c\n```\n\nQue renvoie `mystere({{n}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-min(abs((t)-0),1))*(12)+(1-min(abs((t)-1),1))*(18)+(1-min(abs((t)-2),1))*(20)+(1-min(abs((t)-3),1))*(24)+(1-min(abs((t)-4),1))*(28)+(1-min(abs((t)-5),1))*(30)+(1-min(abs((t)-6),1))*(36)+(1-min(abs((t)-7),1))*(40)+(1-min(abs((t)-8),1))*(45)+(1-min(abs((t)-9),1))*(48)"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*(6)+(1-min(abs((t)-1),1))*(6)+(1-min(abs((t)-2),1))*(6)+(1-min(abs((t)-3),1))*(8)+(1-min(abs((t)-4),1))*(6)+(1-min(abs((t)-5),1))*(8)+(1-min(abs((t)-6),1))*(9)+(1-min(abs((t)-7),1))*(8)+(1-min(abs((t)-8),1))*(6)+(1-min(abs((t)-9),1))*(10)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour lire une fonction, on suit ses variables **tour par tour** pour un argument donné, puis on dit ce qu'elle calcule.",
+					"`k` prend les valeurs $1$ à ${{n}}$ ; `c` augmente de $1$ quand le reste de ${{n}}$ par `k` est nul, c'est-à-dire quand `k` est un **diviseur** de ${{n}}$ : la fonction compte les diviseurs.",
+					"${{n}}$ a \\textcolor{{{color:primary.0}}}{{{rep}}} diviseurs : {{if:t==0|$1, 2, 3, 4, 6, 12$|{{if:t==1|$1, 2, 3, 6, 9, 18$|{{if:t==2|$1, 2, 4, 5, 10, 20$|{{if:t==3|$1, 2, 3, 4, 6, 8, 12, 24$|{{if:t==4|$1, 2, 4, 7, 14, 28$|{{if:t==5|$1, 2, 3, 5, 6, 10, 15, 30$|{{if:t==6|$1, 2, 3, 4, 6, 9, 12, 18, 36$|{{if:t==7|$1, 2, 4, 5, 8, 10, 20, 40$|{{if:t==8|$1, 3, 5, 9, 15, 45$|$1, 2, 3, 4, 6, 8, 12, 16, 24, 48$}}}}}}}}}}}}}}}}}}. La fonction renvoie $\\textcolor{{{color:primary.0}}}{{{rep}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef seuil(A):\n    n = 0\n    while n * n <= A:\n        n = n + 1\n    return n\n```\n\nQue renvoie `seuil({{A}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "10..150"
+				},
+				{
+					"name": "N",
+					"expression": "eval:floor(sqrt(A)+0.000001)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour lire une fonction, on suit ses variables **tour par tour** pour un argument donné, puis on dit ce qu'elle calcule.",
+					"La boucle continue tant que $n^2\\leqslant{{A}}$ : la fonction renvoie le **plus petit entier** $n$ tel que $n^2>{{A}}$.",
+					"${{eval:(N)-1}}^2={{eval:((N)-1)^2}}\\leqslant{{A}}$ et ${{N}}^2={{eval:(N)^2}}>{{A}}$ : la fonction renvoie $\\textcolor{{{color:primary.0}}}{{{N}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction ci-dessous doit renvoyer le {{if:t==0|plus grand|plus petit}} des deux nombres `a` et `b`.\n\n```python\ndef {{if:t==0|maximum|minimum}}(a, b):\n    if a > b:\n        return {{if:t==0|a|b}}\n    else:\n        ...\n```\n\nPar quelle instruction faut-il remplacer les points de suspension ?\n\n```choix\n- {{if:t==0|`return b`|`return a`}}\n- {{if:t==0|`return a`|`return b`}}\n- `return a > b`\n- `print(a)`\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour lire une fonction, on suit ses variables **tour par tour** pour un argument donné, puis on dit ce qu'elle calcule.",
+					"Dans le `else`, on a $a\\leqslant b$ : le {{if:t==0|plus grand|plus petit}} est `{{if:t==0|b|a}}`, la fonction doit renvoyer `{{if:t==0|b|a}}` avec `return`.",
+					"`print` affiche sans rien renvoyer ; `a > b` est un booléen, pas un nombre."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "24 : 8 diviseurs",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "24",
+				"rep": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 24 lu comme résultat",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "24",
+				"rep": "8"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "36 : 9 diviseurs",
+			"variationIndex": 0,
+			"variables": {
+				"t": "6",
+				"n": "36",
+				"rep": "9"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "seuil(50) = 8",
+			"variationIndex": 1,
+			"variables": {
+				"A": "50",
+				"N": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : seuil(50) = 7",
+			"variationIndex": 1,
+			"variables": {
+				"A": "50",
+				"N": "8"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "seuil(49) = 8 (49 ⩽ 49)",
+			"variationIndex": 1,
+			"variables": {
+				"A": "49",
+				"N": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "maximum : return b",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : print(a)",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,4 +1,5 @@
 {
+	"id": "8f0bbf63-6861-453d-acf1-a942dbf7e67c",
 	"title": "Lire et modifier un programme (boucle et condition)",
 	"description": "Compter ou additionner les multiples de d entre 1 et n (boucle for et if avec %) ; modifier la borne de range pour sommer jusqu'à n",
 	"grades": ["2"],

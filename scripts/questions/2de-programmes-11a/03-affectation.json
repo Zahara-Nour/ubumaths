@@ -1,4 +1,5 @@
 {
+	"id": "1bb39e2d-4b9c-4fe2-b434-bfc06894f871",
 	"title": "Affectation en langage naturel et en Python",
 	"description": "Valeurs de a et b après a ← 3, b ← a + 4, a ← 2 × b, b ← a − b ; traduire x ← x + 5 en Python",
 	"grades": ["2"],

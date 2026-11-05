@@ -1,4 +1,5 @@
 {
+	"id": "5bd3323d-8cf5-4f62-a4a8-15d6245494ab",
 	"title": "Instruction conditionnelle",
 	"description": "Valeur de y après if x < s: y = 2 * x else: y = x - s ; prix selon l'âge avec if, elif, else (âges frontières 12 et 18 compris)",
 	"grades": ["2"],
