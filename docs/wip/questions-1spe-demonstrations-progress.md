@@ -9,19 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2391._
+_Mis à jour le 2026-11-05, lot 6 publié (#2391, #2395)._
 
-- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lot 5 publié (§ 10) ; lot 6
-  (algèbre : 256, 387, 257, 258) en brouillon en prod, migration nœud + tag mergée (#2391), `db:migrate` en attente (§ 11, « Lot 6 en prod »).
-- **Prochaine action** : David lance `db push --include-all` (3 migrations) → vérif MCP → page à cocher →
-  relecture de David → publication. Ensuite lots 7 à 9.
+- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 et 6 publiés (§ 10, § 11).
+- **Prochaine action** : lot 7, exponentielle (300, 301, 302) : relevé prod des points et de l'existant, écriture
+  dans `scripts/questions/1spe-approfondissements-7/`, PR, puis le même enchaînement que le lot 6. Ensuite lots 8, 9.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
   `feat/questions-1spe-demonstrations` (rien à perdre ; refusée au classifieur le 2026-11-04).
-- **Pièges en cours** : `create-questions --publier` vers la prod = refus du classifieur sur un simple « go » →
-  donner d'emblée la commande `!` à David. Spec `bad_form` → `constraintViolations: ['form']`. Port 5178.
-  `db:migrate` depuis le dépôt principal à jour. Le journal à jour est celui de `main` après merge.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-6-tags`.
+- **Pièges en cours** : écritures en prod (`create-questions --publier`, `publier-lot --publier`) : donner d'emblée
+  la commande `!` à David (un « go » est refusé par le classifieur). `create-questions` écrit l'`id` dans les JSON du
+  dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. `db push` : une migration
+  plus récente d'un autre chantier déjà en prod oblige à `--include-all` (lancé par David). Port 5178.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, nouvelle branche depuis `origin/main`.
 
 ---
 
@@ -395,3 +395,8 @@ migration (7 rouges, la suite principale ne s'exécute pas). Accès : Q5 de D3, 
 `security-auditor` : aucun finding bloquant. Mergée (#2391, CI verte). `db:migrate` en attente : `20261105055721`
 (automatismes-1spe) déjà en prod oblige à `--include-all`, qui passe aussi 055111 (CP-060) et 055243 (2de lot 12 b-2) ;
 David le lance pour les trois (refusé au classifieur pour la session geometrie-validation).
+
+Migration appliquée le 2026-11-05 par David (`--include-all`, avec 055111 et 055243), vérifiée MCP : 4 modèles sur
+leur nœud, un tag chacun, `draft`, `updated_at` inchangé. Ids des modèles écrits dans les JSON du lot (#2395). Page
+à cocher : https://claude.ai/artifact/SR49JgobeQAu37YCSSyazJ. Relecture (2026-11-05) : 4/4 OK, aucun commentaire.
+Publié par David (`publier-lot.ts --publier`), 4/4 `published` relus en base (MCP).
