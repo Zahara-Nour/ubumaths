@@ -70,13 +70,14 @@ const EXPRESSION_NOMMEE = /(\$\$?)<<expr:([A-Za-z_]\w*)>>([^$]*)\1/g;
 /**
  * Expressions nommées (`<<expr:NOM>>`) : l'écran ajoute « = case » après
  * l'expression (`answerFormat`, cf. `augmentASTForExpressions`) ; la fiche écrit
- * de même. Sans `answerFormat` (l'expression porte ses propres `?`), le marqueur
- * seul disparaît.
+ * de même. Une expression qui porte déjà ses cases (`\placeholder`) n'est jamais
+ * augmentée (même règle que l'écran, `hasPrompts`) : le marqueur seul disparaît.
  */
 function deplierExpressions(texte: string, instance: QuestionInstance): string {
 	return texte.replace(EXPRESSION_NOMMEE, (_m, dollars: string, nom: string, corps: string) => {
 		const format = instance.expressions?.find((e) => e.name === nom)?.answerFormat;
-		return `${dollars}${format ? `${corps} = ${format}` : corps}${dollars}`;
+		const aSesCases = /\\placeholder\[/.test(corps);
+		return `${dollars}${format && !aSesCases ? `${corps} = ${format}` : corps}${dollars}`;
 	});
 }
 

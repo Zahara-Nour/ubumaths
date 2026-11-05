@@ -138,9 +138,9 @@ describe('12. gras en formule', () => {
 		['\\boldsymbol{\\alpha}', 'bold(alpha)'],
 		['\\bm{u}', 'bold(u)'],
 		// Forme du corrigé de 1acb6d47 : couleur dans le gras
-		['\\bold{\\textcolor{#FF5722}{1}}', 'bold(#text(fill: rgb("#FF5722"))[$1$])'],
+		['\\bold{\\textcolor{#FF5722}{1}}', 'bold(#text(fill: rgb("#FF5722"))[$1$];)'],
 		// \textbf autour d'une commande : gras mathématique, plus « textbf » en texte
-		['\\textbf{\\textcolor{#FF5722}{1}}', 'bold(#text(fill: rgb("#FF5722"))[$1$])']
+		['\\textbf{\\textcolor{#FF5722}{1}}', 'bold(#text(fill: rgb("#FF5722"))[$1$];)']
 	])('%s → %s', (latex, typst) => {
 		expect(convertLatexToTypstMath(latex)).toBe(typst);
 	});
@@ -148,7 +148,7 @@ describe('12. gras en formule', () => {
 	it('formes existantes inchangées', () => {
 		expect(convertLatexToTypstMath('\\mathbf{x}')).toBe('bold(x)');
 		expect(convertLatexToTypstMath('\\mathbf{\\textcolor{#FF5722}{1}}')).toBe(
-			'bold(#text(fill: rgb("#FF5722"))[$1$])'
+			'bold(#text(fill: rgb("#FF5722"))[$1$];)'
 		);
 		expect(convertLatexToTypstMath('\\textbf{Vrai}')).toBe('bold("Vrai")');
 		expect(convertLatexToTypstMath('x \\textbf{ si } y')).toBe('x bold(" si ") y');

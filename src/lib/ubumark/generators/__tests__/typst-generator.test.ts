@@ -2250,31 +2250,42 @@ describe('convertLatexToTypstMath - Unknown LaTeX commands', () => {
 
 	it('should convert \\textcolor{color}{content} to Typst colored text', () => {
 		// Contenu en MATH (`[$…$]`) : en `[…]` seul, Typst l'imprimerait comme du texte
-		expect(convertLatexToTypstMath('\\textcolor{red}{x}')).toBe('#text(fill: red)[$x$]');
-		expect(convertLatexToTypstMath('\\textcolor{blue}{a + b}')).toBe('#text(fill: blue)[$a + b$]');
+		expect(convertLatexToTypstMath('\\textcolor{red}{x}')).toBe('#text(fill: red)[$x$];');
+		expect(convertLatexToTypstMath('\\textcolor{blue}{a + b}')).toBe('#text(fill: blue)[$a + b$];');
 		expect(convertLatexToTypstMath('f(x) = \\textcolor{red}{3}')).toBe(
-			'f(x) = #text(fill: red)[$3$]'
+			'f(x) = #text(fill: red)[$3$];'
 		);
 	});
 
 	it('\\textcolor : le contenu est composé en math (fraction, lettres séparées)', () => {
 		// Vu dans un corrigé compilé : « display(frac(1, 2)) » imprimé tel quel
 		expect(convertLatexToTypstMath('\\textcolor{red}{\\dfrac{1}{2}}')).toBe(
-			'#text(fill: red)[$frac(1, 2)$]'
+			'#text(fill: red)[$frac(1, 2)$];'
 		);
 		// `ab` resté collé serait une variable inconnue en math : PDF en échec
-		expect(convertLatexToTypstMath('\\textcolor{red}{ab}')).toBe('#text(fill: red)[$a b$]');
+		expect(convertLatexToTypstMath('\\textcolor{red}{ab}')).toBe('#text(fill: red)[$a b$];');
 	});
 
 	it('\\textcolor avec une couleur hexadécimale : rgb("…"), seule forme valide en Typst', () => {
 		// `{{color:primary.0}}` des corrigés se résout en `#FF5722` ; `fill: #FF5722` ne compile pas
 		expect(convertLatexToTypstMath('\\textcolor{#FF5722}{4}')).toBe(
-			'#text(fill: rgb("#FF5722"))[$4$]'
+			'#text(fill: rgb("#FF5722"))[$4$];'
 		);
 		expect(convertLatexToTypstMath('\\textcolor{#2196f3}{x}')).toBe(
-			'#text(fill: rgb("#2196f3"))[$x$]'
+			'#text(fill: rgb("#2196f3"))[$x$];'
 		);
-		expect(convertLatexToTypstMath('\\textcolor{#F00}{x}')).toBe('#text(fill: rgb("#F00"))[$x$]');
+		expect(convertLatexToTypstMath('\\textcolor{#F00}{x}')).toBe('#text(fill: rgb("#F00"))[$x$];');
+	});
+
+	it('\\textcolor suivi d’une parenthèse : `;` ferme le bloc (sinon « invalid number suffix »)', () => {
+		// Corrigé de dcaabf69 (factoriser) : `(4x-2)` collé au bloc était lu comme les
+		// arguments de l'appel `#text(…)[…]`, et tout le PDF du corrigé échouait
+		expect(convertLatexToTypstMath('\\textcolor{red}{(x+3)}(4x-2)')).toBe(
+			'#text(fill: red)[$(x+3)$];(4x-2)'
+		);
+		expect(convertLatexToTypstMath('\\boxed{x}(y)')).toBe(
+			'#box(stroke: 0.5pt, inset: 2pt)[$x$];(y)'
+		);
 	});
 
 	it('should preserve known Typst spacing keywords', () => {
