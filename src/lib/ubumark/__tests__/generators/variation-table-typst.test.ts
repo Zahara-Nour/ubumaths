@@ -268,6 +268,56 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 		expect(typst).toContain('("0", $+$)');
 	});
 
+	// vartable 0.2.1 ne dessine en borne que "||" : un "0" final fait planter la
+	// compilation (division par zéro), un "0" initial est ignoré. Le zéro en borne
+	// reste à l'écran ; au PDF, la borne n'a pas de marque (sujet B de l'évaluation
+	// « Fonctions » 2de, 2026-11-05).
+	it("n'envoie pas à vartable de « 0 » sur une borne du domaine", () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '-7' }, { expression: '-2' }, { expression: '2' }],
+			rows: [
+				{
+					type: 'sign',
+					label: 'f(x)',
+					values: new Map([
+						['-7', { type: 'marker', marker: 'zero' }],
+						['-7,-2', { type: 'sign', value: '-' }],
+						['-2', { type: 'marker', marker: 'zero' }],
+						['-2,2', { type: 'sign', value: '+' }],
+						['2', { type: 'marker', marker: 'zero' }]
+					])
+				}
+			]
+		};
+
+		const typst = generateVariationTableTypst(node);
+
+		// n − 1 éléments, le zéro intérieur gardé, aucun "0" aux bornes
+		expect(typst).toContain('($-$, ("0", $+$)),');
+	});
+
+	it('garde la double barre sur une borne de droite', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '-inf' }, { expression: '1' }],
+			rows: [
+				{
+					type: 'sign',
+					label: 'f(x)',
+					values: new Map([
+						['-inf,1', { type: 'sign', value: '+' }],
+						['1', { type: 'marker', marker: 'asymptote' }]
+					])
+				}
+			]
+		};
+
+		expect(generateVariationTableTypst(node)).toContain('($+$, "||"),');
+	});
+
 	it('should handle empty intervals with empty strings', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
