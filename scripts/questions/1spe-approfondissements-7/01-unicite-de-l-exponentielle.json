@@ -1,0 +1,170 @@
+{
+	"title": "Démontrer l'unicité de l'exponentielle",
+	"description": "Unicité d'une fonction g dérivable sur ℝ avec g′ = g et g(0) = 1 : exp(x)exp(−x) = 1, quotient g/exp défini (case choix), de dérivée nulle, démonstration (étapes à ranger)",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On rappelle que la fonction exponentielle est dérivable sur $\\mathbb{R}$, avec $\\exp'=\\exp$ et $\\exp(0)=1$. Pour tout réel $x$, on pose $\\varphi(x)=\\exp(x)\\exp(-x)$.\n\n$\\varphi$ est dérivable et $\\varphi'(x)=\\exp(x)\\exp(-x)+\\exp(x)\\times\\left(-\\exp(-x)\\right)=0$ : $\\varphi$ est constante sur $\\mathbb{R}$. Complète.\n\nPour tout réel $x$, $\\exp(x)\\exp(-x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\varphi$ est constante : elle garde partout sa valeur en $0$.",
+					"$\\varphi(0)=\\exp(0)\\exp(0)=1\\times 1=1$.",
+					"Donc, pour tout réel $x$, $\\exp(x)\\exp(-x)=\\textcolor{{{color:primary.0}}}{1}$ : en particulier, $\\exp(x)\\neq 0$."
+				]
+			}
+		},
+		{
+			"statement": "On rappelle que la fonction exponentielle est dérivable sur $\\mathbb{R}$, avec $\\exp'=\\exp$ et $\\exp(0)=1$. Soit $g$ une fonction dérivable sur $\\mathbb{R}$ telle que $g'=g$ et $g(0)=1$. On veut démontrer que $g=\\exp$. Pour tout réel $x$, on pose $h(x)=\\dfrac{g(x)}{\\exp(x)}$.\n\nPourquoi $h$ est-elle définie sur $\\mathbb{R}$ ?\n\n```choix\n- Car $\\exp(x)\\exp(-x)=1$ pour tout réel $x$ : $\\exp$ ne s'annule pas.\n- Car $\\exp(0)=1$.\n- Car $g(0)=1$.\n- Car $g'=g$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h(x)$ a un sens dès que son dénominateur $\\exp(x)$ n'est pas nul.",
+					"Or $\\exp(x)\\exp(-x)=1$ : un produit qui vaut $1$ n'a aucun facteur nul, donc $\\exp(x)\\neq 0$ pour tout réel $x$.",
+					"$\\exp(0)=1$ ne dit rien de $\\exp(x)$ quand $x\\neq 0$."
+				]
+			}
+		},
+		{
+			"statement": "On rappelle que la fonction exponentielle est dérivable sur $\\mathbb{R}$, avec $\\exp'=\\exp$ et $\\exp(0)=1$. Soit $g$ une fonction dérivable sur $\\mathbb{R}$ telle que $g'=g$ et $g(0)=1$. On veut démontrer que $g=\\exp$. Pour tout réel $x$, on pose $h(x)=\\dfrac{g(x)}{\\exp(x)}$.\n\n$h$ est dérivable et, pour tout réel $x$, $h'(x)=\\dfrac{g'(x)\\exp(x)-g(x)\\exp(x)}{\\exp(x)^2}$. Comme $g'=g$, complète.\n\n$h'(x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dérivée d'un quotient, avec $\\exp'=\\exp$ : $h'(x)=\\dfrac{g'(x)\\exp(x)-g(x)\\exp(x)}{\\exp(x)^2}$.",
+					"Comme $g'(x)=g(x)$, le numérateur vaut $g(x)\\exp(x)-g(x)\\exp(x)=0$ : $h'(x)=\\textcolor{{{color:primary.0}}}{0}$.",
+					"Donc $h$ est constante, égale à $h(0)=\\dfrac{g(0)}{\\exp(0)}=1$ : $g(x)=\\exp(x)$ pour tout réel $x$."
+				]
+			}
+		},
+		{
+			"statement": "On rappelle que la fonction exponentielle est dérivable sur $\\mathbb{R}$, avec $\\exp'=\\exp$ et $\\exp(0)=1$. Soit $g$ une fonction dérivable sur $\\mathbb{R}$ telle que $g'=g$ et $g(0)=1$. On démontre que $g=\\exp$, sachant que $\\exp$ ne s'annule pas.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On pose $h(x)=\\dfrac{g(x)}{\\exp(x)}$, définie car $\\exp(x)\\neq 0$.\n- $h'(x)=\\dfrac{g'(x)\\exp(x)-g(x)\\exp(x)}{\\exp(x)^2}=0$, car $g'=g$.\n- $h$ est donc constante, égale à $h(0)=\\dfrac{g(0)}{\\exp(0)}=1$.\n- Donc $g(x)=\\exp(x)$ pour tout réel $x$ : $g=\\exp$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On divise par $\\exp$, qui ne s'annule pas, puis on dérive le quotient.",
+					"Une dérivée nulle sur $\\mathbb{R}$ donne une fonction constante : sa valeur en $0$ conclut, $\\textcolor{{{color:primary.0}}}{g=\\exp}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 (la dérivée)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exp ne s'annule pas",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exp(0) = 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : g(0) = 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : g′ = g",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 (la valeur de h)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
