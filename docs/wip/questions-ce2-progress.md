@@ -17,7 +17,7 @@ scripts/questions/ce2-8 --publier`.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; `axe: à choisir` →
   la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) et
   `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` (branche mergée, à retirer ou à réutiliser au lot 9).
+- **Worktree / branche** : aucun, `../ubumaths-wt-questions-ce2` retiré (à recréer pour le lot 9).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
