@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.73.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.72.0...v0.73.0) (2026-11-05)
+
+### ✨ Features
+
+- **db:** fin de l'ancienne forme, categories renommée items (automaths-arbre 4b) ([266f676](https://github.com/Zahara-Nour/ubumaths/commit/266f676c01511e0e5051ae42b1abed5ed475ee69))
+
+### 🐛 Bug Fixes
+
+- **db:** rollback de la migration 4b sans fin de bloc prise pour un contrôle de transaction ([0a7274c](https://github.com/Zahara-Nour/ubumaths/commit/0a7274c3bcf4aff5923d090ab9e83ddd605b6fcd))
+
+### 📚 Documentation
+
+- **questions:** colonnes du quadruplet supprimées au lot 4b ([6d38625](https://github.com/Zahara-Nour/ubumaths/commit/6d38625ff9fd8e91da2d89ea69a9d35d7e3d89e7))
+- **systeme:** ancienne forme retirée, lignes de série dans items (automaths-arbre 4b) ([67a9b84](https://github.com/Zahara-Nour/ubumaths/commit/67a9b846b20e7dfa9501aa790ee0db3b407903e1))
+- **wip:** automaths-arbre, 4a en prod (v0.72.0), 4b ensuite ([cb35fc6](https://github.com/Zahara-Nour/ubumaths/commit/cb35fc6893fb86c4a5317941d96e6d7139b2850d))
+- **wip:** automaths-arbre, 4b mergé ([#2386](https://github.com/Zahara-Nour/ubumaths/issues/2386)), en attente de db:migrate ([5a35615](https://github.com/Zahara-Nour/ubumaths/commit/5a35615818fd0bd781cb769175d6b714b958b06a))
+- **wip:** automaths-arbre, ancien rangement des 16 brouillons sans nœud gardé ([36e4958](https://github.com/Zahara-Nour/ubumaths/commit/36e495889cf7a0fed0fb7bc63f04d506dc2c550d))
+
 ## [0.72.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.71.0...v0.72.0) (2026-11-04)
 
 ### ✨ Features
