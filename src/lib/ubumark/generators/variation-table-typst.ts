@@ -390,6 +390,8 @@ function generateSignRow(
 		if (markerValue && markerValue.type === 'marker' && !blankKeys.has(startPoint)) {
 			marker = convertSignMarkerToTypst(markerValue.marker);
 		}
+		// Borne de gauche : vartable 0.2.1 n'y dessine que "||" (un « 0 » est ignoré)
+		if (i === 0 && marker !== '"||"') marker = null;
 
 		// Format the element
 		let signStr = '""';
@@ -413,11 +415,15 @@ function generateSignRow(
 	}
 
 	// Check for trailing marker at the LAST domain point (separate element)
-	// vartable handles "||" at the end by drawing a bar at the boundary
+	// vartable handles "||" at the end by drawing a bar at the boundary.
+	// Seule "||" est permise en borne de droite : un « 0 » final fait planter la
+	// compilation de vartable 0.2.1 (division par zéro). Le zéro en borne reste
+	// affiché à l'écran ; au PDF, la borne n'a pas de marque.
 	const lastPoint = domain[domain.length - 1].expression;
 	const trailingValue = row.values.get(lastPoint);
 	if (trailingValue && trailingValue.type === 'marker' && !blankKeys.has(lastPoint)) {
-		values.push(convertSignMarkerToTypst(trailingValue.marker));
+		const trailing = convertSignMarkerToTypst(trailingValue.marker);
+		if (trailing === '"||"') values.push(trailing);
 	}
 
 	return formatTypstTuple(values);
