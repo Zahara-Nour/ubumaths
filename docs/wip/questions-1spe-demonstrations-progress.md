@@ -9,19 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 7 publié (#2396, #2397)._
+_Mis à jour le 2026-11-05, lot 8 en PR._
 
-- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5, 6 et 7 publiés (§ 10 à 12).
-- **Prochaine action** : lot 8, géométrie (324, 325, 326, 334, 335, 420) : relevé prod des points et de l'existant,
-  écriture dans `scripts/questions/1spe-approfondissements-8/`, PR, puis le même enchaînement que le lot 7. Ensuite
-  lot 9 (probabilités : 345, 346, 361).
+- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5, 6 et 7 publiés ; lot 8
+  (géométrie, § 13, D6) écrit, vérifié, en PR.
+- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --publier` (commande `!` du § 13),
+  relevé MCP des 6 brouillons, migration nœud + tag (1 sous-notion neuve « parabole » sous Géométrie repérée),
+  page à cocher. Ensuite lot 9 (probabilités : 345, 346, 361).
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
-  une notion → choisir sa sous-notion avec David. Job navigateur de la CI qui plante tests verts → `gh run rerun <run>
---failed`. Port 5178.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (HEAD détaché), nouvelle branche depuis
-  `origin/main`.
+  une notion → choisir sa sous-notion avec David. Variable `e` = Euler : jamais comme nom de variable. Job navigateur
+  de la CI qui plante tests verts → `gh run rerun <run> --failed`. Port 5178.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-8`.
 
 ---
 
@@ -448,3 +448,35 @@ Branches distantes `docs/questions-1spe-demonstrations` et `feat/questions-1spe-
 
 Relecture (2026-11-05) : 3/3 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`), 3/3 `published`
 relus en base (MCP).
+
+## 13. Lot 8 : approfondissements, géométrie (2026-11-05)
+
+Relevé prod (MCP, 2026-11-05) : 324 sur Géométrie › Produit scalaire › angles et longueurs ; 325 sur la **notion**
+Produit scalaire ; 326 sur la **notion** Vecteurs ; 334, 335 et 420 sur la **notion** Géométrie repérée. Aucun modèle
+sur les 6 points. Pas de sous-notion « parabole » sous Géométrie repérée (celle de Fonctions › Second degré n'est pas
+sous la notion des points).
+
+**D6 (David, 2026-11-05, « je te suis »)** : 324 sur « angles et longueurs » ; 325 sur Produit scalaire › « propriétés » ;
+326 sur Vecteurs › « combinaison linéaire » ; 334 et 420 sur une sous-notion **neuve « parabole »** sous Géométrie
+repérée (posée par la migration du lot) ; 335 sur « équation de cercle ». Une seule PR pour les 6 modèles.
+
+| Point | Modèle (`scripts/questions/1spe-approfondissements-8/`) | Niveau | Variations                                                                     |
+| ----- | ------------------------------------------------------- | ------ | ------------------------------------------------------------------------------ |
+| 324   | `01-loi-des-sinus`                                      | 1      | AC (30°, 45° : a√2), AC (45°, 60° : k√3), sin B̂ = b/(2a) ; loi rappelée        |
+| 325   | `02-concourance-des-hauteurs`                           | 2      | HA·BC + HB·CA + HC·AB = ? (0), HA·BC = 0 (choix), conclusion (choix), à ranger |
+| 326   | `03-medianes-et-centre-de-gravite`                      | 2      | GB + GC = ?·GA′ (2), A, G, A′ alignés (choix), AG = ? AA′ (2/3), à ranger      |
+| 334   | `04-points-equidistants-de-l-axe-et-d-un-point`         | 2      | point de x = a (b/2), 2by = (x − a)² + ? (b²), la parabole (choix)             |
+| 335   | `05-cercle-et-droite-parallele-a-un-axe`                | 1      | plus grande abscisse (y = k), plus petite ordonnée (x = k), nombre de points   |
+| 420   | `06-parabole-et-droite-parallele-a-un-axe`              | 1      | ordonnée (x = k), plus grande abscisse (y = k), nombre de points               |
+
+Script : `docs/wip/questions/lot-1spe-approfondissements-8.py`. Preuve des hauteurs par la relation d'Euler
+HA·BC + HB·CA + HC·AB = 0 (Chasles) ; médianes par GA + GB + GC = 0 (G admis). Étapes à ranger enchaînées (chacune
+s'appuie sur la précédente). Cercle de rayon 5 et d = ±3, ±4 : solutions entières. Nombre de points communs :
+`1+sign(…)`. Piège : la variable `e` est la constante d'Euler (spec rouge « 1 point » avant renommage en `t`).
+Vérifié : `question:specs` 150 tirages par variation, 62 specs vertes, 0 `\textcolor` hors `$` ; 439 formules
+distinctes des aperçus, `validateLatex` + accolades : 0 problème ; aperçus relus ; `create-questions` simulation
+prod (6 à créer) ; brouillons en base locale (copie hors dépôt), aperçu admin du 325 vu à l'écran (vecteurs,
+case choix).
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-8 --publier`

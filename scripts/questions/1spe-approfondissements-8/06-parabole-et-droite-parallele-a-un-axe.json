@@ -1,0 +1,252 @@
+{
+	"title": "Intersection d'une parabole et d'une droite parallèle à un axe",
+	"description": "Parabole y = ax² + bx + c : ordonnée du point commun avec x = k, plus grande abscisse des points communs avec y = k, nombre de points communs avec y = k",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un repère, on considère la parabole $\\mathcal{P}$ d'équation $y={{eval:a*x^2+b*x+c}}$.\n\nLa droite d'équation $x={{eval:k}}$ coupe $\\mathcal{P}$ en un seul point. Quelle est son ordonnée ?\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-2|-1|1|2"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*k^2+b*k+c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le point commun a pour abscisse ${{eval:k}}$ : son ordonnée est l'image de ${{eval:k}}$.",
+					"$y={{eval:a}}\\times{{eval:k;()}}^2{{eval:b;+}}\\times{{eval:k;()}}{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{eval:a*k^2+b*k+c}}}$."
+				]
+			},
+			"conditions": ["b != 0", "c != 0", "k != 0"]
+		},
+		{
+			"statement": "Dans un repère, on considère la parabole $\\mathcal{P}$ d'équation $y={{eval:a*x^2-a*(u+v)*x+a*u*v+k}}$.\n\nLa droite d'équation $y={{eval:k}}$ coupe $\\mathcal{P}$ en deux points. Quelle est la plus grande de leurs abscisses ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-2|-1|1|2"
+				},
+				{
+					"name": "u",
+					"expression": "-4..4"
+				},
+				{
+					"name": "v",
+					"expression": "-4..4"
+				},
+				{
+					"name": "k",
+					"expression": "-5..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points communs vérifient ${{eval:a*x^2-a*(u+v)*x+a*u*v+k}}={{eval:k}}$, soit ${{eval:a*x^2-a*(u+v)*x+a*u*v}}=0$.",
+					"Ce trinôme a pour racines ${{eval:u}}$ et ${{eval:v}}$ (discriminant, ou factorisation ${{eval:a*(x-u)*(x-v)}}$).",
+					"La plus grande abscisse est $\\textcolor{{{color:primary.0}}}{{{eval:v}}}$."
+				]
+			},
+			"conditions": ["u < v", "u != 0", "v != 0", "k != 0", "u*v + k != 0", "u + v != 0"]
+		},
+		{
+			"statement": "Dans un repère, on considère la parabole $\\mathcal{P}$ d'équation $y={{eval:a*x^2-2*a*s*x+a*s^2+m}}$.\n\nCombien la droite d'équation $y={{eval:k}}$ a-t-elle de points communs avec $\\mathcal{P}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-2|-1|1|2"
+				},
+				{
+					"name": "s",
+					"expression": "-4..4"
+				},
+				{
+					"name": "m",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "-5..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1+sign(a*(k-m))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$y={{eval:a*x^2-2*a*s*x+a*s^2+m}}={{eval:a*(x-s)^2}}{{eval:m;+}}$ (forme canonique).",
+					"Les points communs vérifient ${{eval:a*(x-s)^2}}{{eval:m;+}}={{eval:k}}$, soit $(x{{eval:-s;+}})^2={{eval:(k-m)/a}}$.",
+					"Deux solutions si ce nombre est strictement positif, une s'il est nul, aucune sinon : nombre de points communs, $\\textcolor{{{color:primary.0}}}{{{eval:1+sign(a*(k-m))}}}$."
+				]
+			},
+			"conditions": ["s != 0", "m != 0", "a*s^2 + m != 0", "abs(k - m) <= 3"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "9",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 (c)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"u": "-1",
+				"v": "3",
+				"k": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −1 (la plus petite)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"u": "-1",
+				"v": "3",
+				"k": "2"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 (la droite)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"u": "-1",
+				"v": "3",
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 points",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"s": "1",
+				"m": "-2",
+				"k": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 point (sommet)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"s": "1",
+				"m": "-2",
+				"k": "-2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0 point",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"s": "1",
+				"m": "-2",
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 au lieu de 0 (a < 0)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"s": "1",
+				"m": "-2",
+				"k": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

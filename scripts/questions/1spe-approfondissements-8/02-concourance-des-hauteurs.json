@@ -1,0 +1,179 @@
+{
+	"title": "Démontrer que les hauteurs d'un triangle sont concourantes",
+	"description": "H intersection de deux hauteurs : HA·BC + HB·CA + HC·AB = 0 par Chasles, HA·BC = 0 (case choix), conclusion HC·AB = 0 (case choix), démonstration (étapes à ranger)",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $ABC$ un triangle. Les hauteurs issues de $A$ et de $B$ ne sont pas parallèles (sinon $(BC)$ et $(AC)$ le seraient) : soit $H$ leur point d'intersection.\n\nPar la relation de Chasles, $\\overrightarrow{BC}=\\overrightarrow{HC}-\\overrightarrow{HB}$, $\\overrightarrow{CA}=\\overrightarrow{HA}-\\overrightarrow{HC}$ et $\\overrightarrow{AB}=\\overrightarrow{HB}-\\overrightarrow{HA}$. En développant, complète.\n\n$\\overrightarrow{HA}\\cdot\\overrightarrow{BC}+\\overrightarrow{HB}\\cdot\\overrightarrow{CA}+\\overrightarrow{HC}\\cdot\\overrightarrow{AB}=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace : $\\overrightarrow{HA}\\cdot\\overrightarrow{HC}-\\overrightarrow{HA}\\cdot\\overrightarrow{HB}+\\overrightarrow{HB}\\cdot\\overrightarrow{HA}-\\overrightarrow{HB}\\cdot\\overrightarrow{HC}+\\overrightarrow{HC}\\cdot\\overrightarrow{HB}-\\overrightarrow{HC}\\cdot\\overrightarrow{HA}$.",
+					"Le produit scalaire est symétrique : les termes s'annulent deux à deux.",
+					"Donc $\\overrightarrow{HA}\\cdot\\overrightarrow{BC}+\\overrightarrow{HB}\\cdot\\overrightarrow{CA}+\\overrightarrow{HC}\\cdot\\overrightarrow{AB}=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. Les hauteurs issues de $A$ et de $B$ ne sont pas parallèles (sinon $(BC)$ et $(AC)$ le seraient) : soit $H$ leur point d'intersection.\n\nPourquoi $\\overrightarrow{HA}\\cdot\\overrightarrow{BC}=0$ ?\n\n```choix\n- Car $H$ est sur la hauteur issue de $A$, perpendiculaire à $(BC)$.\n- Car $H$ est le milieu de $[BC]$.\n- Car $HA=HB$.\n- Car $\\overrightarrow{HA}$ et $\\overrightarrow{BC}$ sont colinéaires.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur issue de $A$ est la droite passant par $A$ et perpendiculaire à $(BC)$.",
+					"$H$ et $A$ sont sur cette droite, donc $\\overrightarrow{HA}$ est orthogonal à $\\overrightarrow{BC}$ : $\\textcolor{{{color:primary.0}}}{\\overrightarrow{HA}\\cdot\\overrightarrow{BC}=0}$.",
+					"De même, $H$ est sur la hauteur issue de $B$ : $\\overrightarrow{HB}\\cdot\\overrightarrow{CA}=0$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. Les hauteurs issues de $A$ et de $B$ ne sont pas parallèles (sinon $(BC)$ et $(AC)$ le seraient) : soit $H$ leur point d'intersection.\n\nOn a démontré que $\\overrightarrow{HC}\\cdot\\overrightarrow{AB}=0$. Qu'en conclut-on ?\n\n```choix\n- $H$ est sur la droite passant par $C$ et perpendiculaire à $(AB)$ : la hauteur issue de $C$.\n- $H$ est le milieu de $[AB]$.\n- $H$ est à égale distance de $A$, de $B$ et de $C$.\n- $H$ est sur la droite $(AB)$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{HC}\\cdot\\overrightarrow{AB}=0$ : $\\overrightarrow{HC}$ est orthogonal à $\\overrightarrow{AB}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{H}$ est sur la droite passant par $C$ et perpendiculaire à $(AB)$, c'est-à-dire sur la hauteur issue de $C$.",
+					"Les trois hauteurs passent par $H$ : elles sont concourantes."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. On démontre que ses trois hauteurs sont concourantes.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Soit $H$ le point d'intersection des hauteurs issues de $A$ et de $B$.\n- Par Chasles, en développant : $\\overrightarrow{HA}\\cdot\\overrightarrow{BC}+\\overrightarrow{HB}\\cdot\\overrightarrow{CA}+\\overrightarrow{HC}\\cdot\\overrightarrow{AB}=0$.\n- Or $\\overrightarrow{HA}\\cdot\\overrightarrow{BC}=0$ et $\\overrightarrow{HB}\\cdot\\overrightarrow{CA}=0$, donc $\\overrightarrow{HC}\\cdot\\overrightarrow{AB}=0$.\n- Donc $H$ est sur la hauteur issue de $C$ : les trois hauteurs sont concourantes.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On nomme $H$, puis on écrit une égalité vraie pour tout point, avec $H$.",
+					"Deux des trois produits sont nuls, car $H$ est sur deux hauteurs : le troisième l'est aussi, $\\textcolor{{{color:primary.0}}}{\\overrightarrow{HC}\\cdot\\overrightarrow{AB}=0}$, et $H$ est sur la troisième hauteur."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "H sur la hauteur issue de A",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : milieu",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : HA = HB",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : colinéaires",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "hauteur issue de C",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : milieu",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : équidistant",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sur (AB)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

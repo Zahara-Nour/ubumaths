@@ -1,0 +1,183 @@
+{
+	"title": "Calculer avec la loi des sinus",
+	"description": "Loi des sinus rappelée : un côté avec des angles de 30° et 45°, puis 45° et 60° (valeurs exactes), et le sinus d'un angle connaissant deux côtés et l'angle de 30°",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un triangle $ABC$, on admet la loi des sinus :\n\n$$\\dfrac{BC}{\\sin\\widehat{A}}=\\dfrac{AC}{\\sin\\widehat{B}}=\\dfrac{AB}{\\sin\\widehat{C}}$$\n\nDans le triangle $ABC$, $\\widehat{A}=30^\\circ$, $\\widehat{B}=45^\\circ$ et $BC={{eval:a}}$ cm. Calcule $AC$, en valeur exacte.\n\n$AC=?$ cm",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}\\sqrt{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La loi des sinus donne $\\dfrac{AC}{\\sin\\widehat{B}}=\\dfrac{BC}{\\sin\\widehat{A}}$, donc $AC=\\dfrac{BC\\times\\sin\\widehat{B}}{\\sin\\widehat{A}}$.",
+					"$\\sin 30^\\circ=\\dfrac{1}{2}$ et $\\sin 45^\\circ=\\dfrac{\\sqrt{2}}{2}$ : $AC=\\dfrac{{{eval:a}}\\times\\frac{\\sqrt{2}}{2}}{\\frac{1}{2}}$.",
+					"Donc $AC=\\textcolor{{{color:primary.0}}}{{{eval:a}}\\sqrt{2}}$ cm."
+				]
+			}
+		},
+		{
+			"statement": "Dans un triangle $ABC$, on admet la loi des sinus :\n\n$$\\dfrac{BC}{\\sin\\widehat{A}}=\\dfrac{AC}{\\sin\\widehat{B}}=\\dfrac{AB}{\\sin\\widehat{C}}$$\n\nDans le triangle $ABC$, $\\widehat{A}=45^\\circ$, $\\widehat{B}=60^\\circ$ et $BC={{eval:k}}\\sqrt{2}$ cm. Calcule $AC$, en valeur exacte.\n\n$AC=?$ cm",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k}}\\sqrt{3}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La loi des sinus donne $AC=\\dfrac{BC\\times\\sin\\widehat{B}}{\\sin\\widehat{A}}$.",
+					"$\\sin 45^\\circ=\\dfrac{\\sqrt{2}}{2}$ et $\\sin 60^\\circ=\\dfrac{\\sqrt{3}}{2}$ : $AC=\\dfrac{{{eval:k}}\\sqrt{2}\\times\\frac{\\sqrt{3}}{2}}{\\frac{\\sqrt{2}}{2}}$.",
+					"Les $\\dfrac{\\sqrt{2}}{2}$ se simplifient : $AC=\\textcolor{{{color:primary.0}}}{{{eval:k}}\\sqrt{3}}$ cm."
+				]
+			}
+		},
+		{
+			"statement": "Dans un triangle $ABC$, on admet la loi des sinus :\n\n$$\\dfrac{BC}{\\sin\\widehat{A}}=\\dfrac{AC}{\\sin\\widehat{B}}=\\dfrac{AB}{\\sin\\widehat{C}}$$\n\nDans le triangle $ABC$, $\\widehat{A}=30^\\circ$, $BC={{eval:a}}$ cm et $AC={{eval:b}}$ cm. Calcule $\\sin\\widehat{B}$, en valeur exacte.\n\n$\\sin\\widehat{B}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b/(2*a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La loi des sinus donne $\\dfrac{AC}{\\sin\\widehat{B}}=\\dfrac{BC}{\\sin\\widehat{A}}$, donc $\\sin\\widehat{B}=\\dfrac{AC\\times\\sin\\widehat{A}}{BC}$.",
+					"$\\sin 30^\\circ=\\dfrac{1}{2}$ : $\\sin\\widehat{B}=\\dfrac{{{eval:b}}\\times\\frac{1}{2}}{{{eval:a}}}$.",
+					"Donc $\\sin\\widehat{B}=\\textcolor{{{color:primary.0}}}{{{eval:b/(2*a)}}}$."
+				]
+			},
+			"conditions": ["b < 2*a", "b != a"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5√2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["5\\sqrt{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quotient inversé (5√2/2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["\\frac{5\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4√3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["4\\sqrt{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quotient inversé (8√3/3)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["\\frac{8\\sqrt{3}}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4√2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["4\\sqrt{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2/5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quotient inversé (5/8)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{5}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le sinus de 30° (4/5)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{4}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
