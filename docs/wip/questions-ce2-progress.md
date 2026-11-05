@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2409 et la page à cocher du lot 8._
+_Mis à jour le 2026-11-05, après la publication du lot 8._
 
-- **État** : lots 1 à 7c publiés ; lot 8 (9 modèles) en brouillon, rangé et tagué en prod (#2409) ; page à cocher
-  publiée (https://claude.ai/artifact/AkuQcXN5U1GitVZzWRbGsF).
-- **Prochaine action** : compter les verdicts en base, `publier-lot` (David), puis lot 9 (longueurs, masses : 012,
-  040, 041, 042, 044, 049, 050).
-- **En attente de David** : relecture de la page à cocher ; puis `pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/ce2-8 --publier`.
+- **État** : lots 1 à 8 en prod et publiés (8 : figures planes et symétrie, 9/9 relus OK, publiés par David).
+- **Prochaine action** : lot 9 (longueurs, fraction de l'unité, masses : 012, 040, 041, 042, 044, 049, 050), phase 0
+  (nouveau worktree `ubumaths-wt-questions-ce2`) ; puis lot 10 (solides : 061 à 064, 066), puis `collection`
+  `centaines:` (001, 002, 005) en chantier à part.
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; `axe: à choisir` →
   la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) et
-  `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance.
+  `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance ; worktree retiré
+  → donner les commandes avec `cd /Users/david/Coding/js/ubumaths &&`.
 - **Worktree / branche** : aucun, `../ubumaths-wt-questions-ce2` retiré (à recréer pour le lot 9).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -759,3 +759,6 @@ Réponse de David (« je te suis », 2026-11-05) : les cinq recommandations.
   dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 9/9 sur le nœud de leur point, un point chacun,
   brouillons, `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/AkuQcXN5U1GitVZzWRbGsF), une
   alerte attendue (09 non dessiné : le jouer dans l'aperçu), base `verdicts` vide.
+- 2026-11-05 : relecture de David sur la page à cocher : 9 verdicts « OK », sans commentaire (base `verdicts` comptée,
+  posés de 22:55:55 à 22:56:01). `publier-lot --publier` (David, depuis le dépôt principal) ; relevé MCP : 9
+  `published`, rangés, un point chacun. **Lot 8 clos.**
