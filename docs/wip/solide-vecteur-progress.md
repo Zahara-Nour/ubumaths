@@ -19,9 +19,17 @@ _Mis à jour le 2026-11-04, après #2372._
 - **En attente de David** : relecture et publication du modèle.
 - **Pièges en cours** : le geste ne vise que des points connus en 3D ; tétraèdre illisible (ligne 15 de
   `outils-manquants.md`) ; un point déclaré peut tomber sur un pointillé (vérifier le rendu).
-- **Worktree / branche** : aucun (#2372 nettoyé).
+- **Worktree / branche** : `../ubumaths-wt-solide-vecteur`, `fix/solide-vecteur-bouton-extremite` (PR en cours :
+  bouton « Extrémité » retiré quand l'origine est imposée, `SolideGeste` et `CourbePlacer`).
 
 ---
+
+## 2026-11-05 — bouton « Extrémité » retiré (origine imposée)
+
+Remarque de David à la relecture du brouillon TSPE-334 : avec `depuis A`, un bouton « Extrémité » seul ne choisit
+rien (chaque toucher repose déjà l'extrémité). Retiré dans `SolideGeste.svelte` (reste « Effacer ») et, pour le même
+défaut, dans `CourbePlacer.svelte` (aucune étiquette). L'état reste dit au lecteur d'écran : « Point C, extrémité »
+(solide), `aria-valuetext` « extrémité en … » (courbe). Tests mis à jour, vérifiés rouges sans le correctif.
 
 ## Existant (relevé du 2026-11-03)
 

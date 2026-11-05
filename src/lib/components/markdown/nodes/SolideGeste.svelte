@@ -10,8 +10,8 @@
 	  l'extrémité ; les boutons « Origine » / « Extrémité » choisissent ce que le
 	  prochain toucher pose. Dès que les deux sont posés et distincts, une flèche
 	  les relie (le dessin d'un vecteur donné, `solideArrowBetween`).
-	- Origine imposée (`depuis A`) : A est posée d'office (ni bouton, ni toucher),
-	  seul « Extrémité » reste.
+	- Origine imposée (`depuis A`) : A est posée d'office (ni bouton, ni toucher) ;
+	  aucun bouton « Extrémité » non plus (il ne choisirait rien), seul « Effacer » reste.
 	- Réponse de la case : `A/G` (`solideAnswer`). Rien n'est émis avant un toucher :
 	  le cadre, le dessin et les noms ne donnent aucune réponse.
 	- Faux : la phrase (`solideVectorMistake`, formules rendues en ubumark en ligne)
@@ -318,18 +318,18 @@
 				>
 					Origine
 				</button>
+				<button
+					type="button"
+					class="solide-bouton"
+					class:solide-bouton-actif={active === 'to'}
+					class:solide-bouton-absent={ends.to === null}
+					aria-pressed={active === 'to'}
+					aria-label={ends.to === null ? 'Extrémité' : `Extrémité : point ${ends.to}`}
+					onclick={() => (chosen = 'to')}
+				>
+					Extrémité
+				</button>
 			{/if}
-			<button
-				type="button"
-				class="solide-bouton"
-				class:solide-bouton-actif={active === 'to'}
-				class:solide-bouton-absent={ends.to === null}
-				aria-pressed={active === 'to'}
-				aria-label={ends.to === null ? 'Extrémité' : `Extrémité : point ${ends.to}`}
-				onclick={() => (chosen = 'to')}
-			>
-				Extrémité
-			</button>
 			<button type="button" class="solide-bouton" disabled={nothing} onclick={clearAll}>
 				Effacer
 			</button>

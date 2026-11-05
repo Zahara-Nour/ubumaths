@@ -469,8 +469,8 @@ lignes) dans un ` ```courbe ` (nœud : `spec.vecteur`, `CourbeVectorToTrace` `na
 grille, vecteur qui ne tient dans la fenêtre depuis aucun nœud, `depuis A` sans A dans `points:`,
 A hors nœud ou A + u hors fenêtre, avec `placer:` (`vectorProblem`, `utils/courbe-vecteur.ts`).
 `CourbePlacer.svelte` fait le geste : étiquettes-boutons « Origine » / « Extrémité » (nom accessible
-sans « Point ») ; origine imposée : posée d'office, ni déplaçable ni reprenable, un seul bouton
-« Extrémité », pas de disque (A est dessiné par `points:`) ; dès que les deux bouts sont distincts,
+sans « Point ») ; origine imposée : posée d'office, ni déplaçable ni reprenable, aucune étiquette
+(seule l'extrémité bouge, il n'y a rien à choisir), pas de disque (A est dessiné par `points:`) ; dès que les deux bouts sont distincts,
 une flèche (prop `traces`, `arrow: true` de `Courbe.svelte` : trait arrêté au pied de la pointe,
 triangle `polygon`, groupe `.courbe-fleche`) ; l'extrémité perd son disque, qui cacherait la pointe.
 `aria-valuetext` « extrémité en (3 ; -2) ». Une case, réponse `x1;y1/x2;y2` (origine imposée :
@@ -987,8 +987,8 @@ donnés. Énoncé d'évaluation : rien à masquer (la combinaison est la tâche)
 `FillBlanksInput` et `BuildAnswer` reconnaissent `construire: 'solide'`) : le solide de `Solide.svelte`, et sur chaque
 point cliquable un anneau avec une zone de toucher de ~15 px (`role="button"`, « Point A », `aria-pressed` ; « Point A,
 origine » une fois posé). Toucher pose l'origine, puis l'extrémité ; boutons « Origine » / « Extrémité » (choix de ce
-que pose le prochain toucher) et « Effacer » ; origine imposée : A posée d'office, ni bouton ni toucher, seul
-« Extrémité ». La flèche de l'élève est dessinée par `solideArrowBetween` (bleu), dès que les deux bouts sont distincts.
+que pose le prochain toucher) et « Effacer » ; origine imposée : A posée d'office, ni toucher ni bouton
+« Origine » / « Extrémité » (il n'y a rien à choisir), seul « Effacer » reste. La flèche de l'élève est dessinée par `solideArrowBetween` (bleu), dès que les deux bouts sont distincts.
 Rien n'est émis avant un toucher (la case reste vide) et le cadre, le dessin, les noms ne donnent aucune réponse.
 Faux : la phrase (`InlineMarkdown`, formules rendues) et un second dessin « Correction » avec la flèche juste en vert ;
 bonne réponse / verso de la copie : la flèche juste seule (`solution`).
