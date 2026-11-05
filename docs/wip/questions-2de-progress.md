@@ -6,18 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après la publication du lot 12 b-2 (§ 81)._
+_Mis à jour le 2026-11-05, PR #2399 (fichiers du lot 10 A) ouverte, CI en cours._
 
-- **État** : lots 1 à 9 et 12 (a, b-1, b-2) publiés. Lot 10 « Ensembles et logique » : relevé et phase 0
-  proposés (§ 82). Ensuite le lot 11.
-- **Prochaine action** : après le go de David sur la phase 0 du lot 10, écrire 10 A puis 10 B
-  (worktree remis sur `origin/main`, nouvelle branche).
-- **En attente de David** : rien (phase 0 validée, § 82).
+- **État** : lots 1 à 9 et 12 publiés. Lot 10 : phase 0 validée (§ 82) ; 10 A (4 modèles : 201, 202,
+  203, 206) écrit, joué en local, **PR #2399 ouverte** (§ 83). 10 B (7 modèles de logique) à écrire.
+- **Prochaine action** : `gh pr checks 2399` → verte : `gh pr merge 2399 --merge` (commande seule) ;
+  puis David lance `create-questions --publier` sur `scripts/questions/2de-ensembles-10a` ; relever les
+  ids. Écrire 10 B (même branche de travail neuve). Migration nœud + tag pour 10 A + 10 B, `grades` de
+  5062197a, 5b20321f ramenés à `['2']` (L10-a) ; page à cocher : 11 neufs + 16 anciens.
+- **En attente de David** : rien.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
-  statut au MCP ; jamais `; gh pr merge` derrière la CI ; `Doc-inchangée:` dans le commit d'une
-  migration ; `0..3;±` refusé (`-3..3`) ; une autre session écrit aussi dans ce journal : `git pull` ;
-  `db:migrate` depuis le dépôt principal seulement (ses fichiers d'autres sessions : `merge --ff-only`).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée, en retard sur `origin/main`).
+  statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
+  dossier (il écrit l'id dans le fichier) ; ensemble fini en réponse = `answerKind: intervalles` ;
+  lettre d'ensemble ≠ étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot10a`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2141,3 +2143,21 @@ _10 B — Logique (7)_
 **Réponse de David (2026-11-05)** : « je te suis » → phase 0 validée, L10-a à L10-d selon mes
 recommandations (16 anciens sur la page et publiés avec le lot, `grades` ramenés à `['2']` ; 10 A puis
 10 B ; pas de négation de « et / ou » ; les mots dans l'énoncé, ⇒ / ⇔ dans le corrigé seulement).
+
+## 83. Lot 10 A, fichiers (2026-11-05)
+
+- `questions-2de/lot-ensembles-10a-2de.py` → `scripts/questions/2de-ensembles-10a/` (4 modèles, 42 specs) :
+  2-201 « Élément d'un ensemble, appartenance » (niv. 3), 2-202 « L'ensemble vide » (niv. 1), 2-203
+  « Le bon symbole : ∈, ⊂, ∩, ∪ » (niv. 4), 2-206 « Notations Ā et E \ A » (niv. 1).
+- Nœuds visés (relevés en prod) : 201 et 203 → Ensembles › Ensembles de nombres › appartenance et
+  inclusion ; 202 → Ensembles › Opérations sur les ensembles (notion, sous-notion nulle) ; 206 →
+  › Opérations sur les ensembles › complémentaire.
+- Pièges : un ensemble fini en réponse veut `answerKind: intervalles` (sans lui, `\{1;3;5\}` et
+  `\varnothing` partent en `bad_form`) ; `?` dans `$…$` = une case (« … » à la place) ;
+  `\leqslantn` sans espace ; lettre d'ensemble / d'événement = étiquette de choix (E, A) → F, M.
+- Les lettres capitales des formules sont rendues droites (E, F, A…) dans l'appli, comme dans les
+  anciens brouillons : rien changé.
+- `question:specs` 4/4 importables ; `create-questions` (simulation prod) 4 à créer ; `validateLatex` +
+  accolades : 3 058 formules, 0 problème. Joués en local (aperçu admin, Chrome) : `{4;5;6}` tapé au
+  clavier « juste » ; ∅ par le clavier « Intervalles » « juste » ; cases multiples « juste ».
+- PR #2399.
