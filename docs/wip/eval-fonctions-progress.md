@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-05, avant la rédaction (aucune PR encore)._
 
-- **État** : plan de contenu validé par David (« je suis tes recos », 2026-11-05) ; rien de rédigé, rien en base.
+- **État** : plan de contenu validé par David (« je suis tes recos » + tableaux graphiques seulement, 2026-11-05) ; rien de rédigé, rien en base.
 - **Prochaine action** : lancer UN agent `pedagogy-expert` (model **opus**) avec le brief du § « Plan validé » ci-dessous → dossier scratchpad (`md/ sol/ en/ sol-en/`, `plan.json`, `verif/assert_all.py`, `pnpm check:ubumark` à 0) ; puis `pnpm fiche:verifier`, relecture des pages, script `scripts/create-evaluation-fonctions-2nde.ts` (copie de `create-fonctions-generalites-2nde.ts`, DEUX fiches `type: 'assessment'`, `points` par exercice), simulation montrée à David, `--publier` sur son accord seulement.
 - **En attente de David** : rien avant la simulation.
 - **Pièges en cours** : le bloc ` ```courbe ` ne trace que des formules → courbes choisies pour que tout se lise sur un nœud (vérifié en fractions exactes) ; titres d'exercices uniques dans le thème `Fonctions`.
@@ -16,11 +16,11 @@ _Mis à jour le 2026-11-05, avant la rédaction (aucune PR encore)._
 - Consignes données aux élèves : ensemble de définition, tableau de variation, tableau de signe, extremums, image / antécédent, f(x)=k et f(x)>0, graphiquement ou par calcul.
 - **55 min**, **calculatrice interdite**, **deux sujets**, ensemble de définition par le calcul **seulement pour le quotient**.
 - Forme (choix de Claude, présenté à David sans objection) : deux fiches « Évaluation : fonctions (sujet A) » / « (sujet B) », type `assessment`, `show_points: true`, `calculator: forbidden`, réponses sur copie (`answers_on_sheet: false`), brouillon, FR + EN, thème `Fonctions`, grade `2`.
-- Points ouverts posés à David et tranchés par « je suis tes recos » = plan tel que proposé : tableau de signes d'un produit par le calcul GARDÉ ; sens de variation ADMIS (« on admet que… ») ; les 18 questions GARDÉES (pistes d'allègement si besoin : f(1+√3) / f(−2+√2), ensemble de définition de h).
+- Points ouverts posés à David et tranchés par « je suis tes recos » = plan tel que proposé : puis David a précisé (2026-11-05) : tableaux de signes et de variation **graphiquement seulement** → retirés de l'exercice 3 (17 questions) (pistes d'allègement si besoin : f(1+√3) / f(−2+√2), ensemble de définition de h).
 
 ## Plan validé (/20)
 
-### Exercice 1 — Lecture graphique (8 pts)
+### Exercice 1 — Lecture graphique (9 pts)
 
 Courbes (bloc ` ```courbe `, grille 1 ; 1) :
 
@@ -45,16 +45,19 @@ Questions (A | B) :
 3. g(0), g(1/2) : A −1/5, −5/8 | B −1/3, 3/8
 4. Antécédent de 2 par g : A 11 | B 7 (vérifier ≠ valeur interdite)
 
-### Exercice 3 — Par le calcul (7 pts)
+### Exercice 3 — Par le calcul (6 pts)
+
+**David, 2026-11-05 : tableau de signes et tableau de variation SEULEMENT graphiquement** (exercice 1) → aucun tableau dans l'exercice 3.
 
 A : f(x)=(x−1)²−4 sur ℝ | B : f(x)=(x+2)²−9 sur ℝ
 
 1. Images : A f(0)=−3, f(−3)=12, f(1+√3)=−1 | B f(0)=−5, f(−3)=−8, f(−2+√2)=−7
 2. Montrer : A f(x)=(x+1)(x−3) | B f(x)=(x+5)(x−1)
-3. Résoudre : A f(x)=−3 → {0;2} | B f(x)=−8 → {−3;−1}
-4. Tableau de signes du produit puis f(x)>0 : A ]−∞;−1[∪]3;+∞[ | B ]−∞;−5[∪]1;+∞[
+3. Résoudre f(x)=0 (produit nul, forme factorisée) : A {−1;3} | B {−5;1}
+4. Résoudre : A f(x)=−3 → {0;2} | B f(x)=−8 → {−3;−1} (forme canonique)
 5. Montrer f(x) ≥ −4 (A) / ≥ −9 (B), en déduire le minimum : A −4 en 1 | B −9 en −2
-6. Sens de variation admis (décroissante puis croissante), tableau de variation.
+
+Barème révisé : ex. 1 = 9 pts, ex. 2 = 5 pts, ex. 3 = 6 pts.
 
 ### Modèles de forme
 
