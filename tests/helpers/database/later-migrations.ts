@@ -28,8 +28,12 @@ export const QUESTIONS_3_LOTS7_8 =
 /** Sous-notions « Généralités sur les suites > sommes de termes » et « Modèles d'évolution > emprunt », lot 5 de 1re spé. */
 export const QUESTIONS_1SPE_APPRO5 =
 	'supabase/migrations/20261103233226_questions_1spe_approfondissements_5_rangement_tags.sql';
+/** Sous-notion « Géométrie > Géométrie repérée > parabole », lot 8 de 1re spé. */
+export const QUESTIONS_1SPE_APPRO8 =
+	'supabase/migrations/20261105195513_questions_1spe_approfondissements_8_rangement_tags.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
+	QUESTIONS_1SPE_APPRO8,
 	QUESTIONS_1SPE_APPRO5,
 	QUESTIONS_3_LOTS7_8,
 	QUESTIONS_TSPE_LOT2,
