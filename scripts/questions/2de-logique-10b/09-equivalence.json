@@ -1,4 +1,5 @@
 {
+	"id": "75d0fc89-24b1-4edb-abf2-82b7e76f272e",
 	"title": "Implication ou équivalence ?",
 	"description": "Relier deux propositions par « implique » ou « équivaut à » : x = 3 et x² = 9, 2x + 1 = 7 et x = 3, losange et carré, x > 1 et x > 3, n pair et n² pair, x > 1 et x < 3 (piège : « équivaut » partout)",
 	"grades": ["2"],

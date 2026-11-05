@@ -1,4 +1,5 @@
 {
+	"id": "9207c6e6-2875-4927-b651-45982a09d428",
 	"title": "Écrire une proposition avec une variable",
 	"description": "Traduire « le carré d'un réel est positif », « n est pair », « n est multiple de m » avec une lettre (pièges : lettre non introduite, k réel, « pour tout » et « il existe » échangés) ; lire « il existe un entier k tel que n = 2k + 1 »",
 	"grades": ["2"],
