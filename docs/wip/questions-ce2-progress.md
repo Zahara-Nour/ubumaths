@@ -6,15 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 8 écrit (§ 14)._
+_Mis à jour le 2026-11-05, migration du lot 8 en PR._
 
-- **État** : lots 1 à 7c en prod et publiés ; lot 8 (figures planes et symétrie, 9 modèles) écrit, simulé, PR ouverte.
-- **Prochaine action** : merge de la PR du lot 8, puis `create-questions --publier` par David, migration nœud + tag.
-- **En attente de David** : `create-questions --publier` du lot 8 après le merge.
+- **État** : lots 1 à 7c publiés ; lot 8 (9 modèles) en brouillon en prod ; migration nœud + tag en PR (rouge sans,
+  vert 10/10, `security-auditor` sans finding bloquant).
+- **Prochaine action** : CI verte → `check:migrations --pr`, merge, `db:migrate` depuis le dépôt principal, relevé MCP,
+  page à cocher.
+- **En attente de David** : rien avant la page à cocher.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; `axe: à choisir` →
   la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) et
   `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot8`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot8-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -747,3 +749,8 @@ Réponse de David (« je te suis », 2026-11-05) : les cinq recommandations.
   varier le contenu d'une figure, jamais le bloc.
 - CI #2408 rouge : la garde `answer-complexity-corpus` veut chaque réponse de spec ≤ 133 caractères (limite 400,
   marge × 3) ; le château du 09 (11 segments, 189 caractères) → une tour de 6 segments (105 au plus).
+- 2026-11-05 : #2408 mergée (CI verte après la correction).
+- 2026-11-05 : `create-questions --publier` (David) : 9 brouillons en prod, relus au MCP (draft, CE2, niveaux 6 à 10,
+  3, 1 à 3 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids commités. Migration
+  `20261105201824_questions_ce2_lot8_rangement_tags` + test : rouge sans le corps (6 échecs sur 10), vert 10/10 ;
+  `security-auditor` : aucun finding bloquant (diff avec la 7c : valeurs seules ; chemins et points vérifiés en prod).
