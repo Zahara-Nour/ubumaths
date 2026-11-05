@@ -811,9 +811,10 @@ MOITIES_V = [
 MOITIES_H = [
     ('une flèche', [(1, 4), (1, 6), (7, 6), (7, 7), (10, 4)]),
     ('un poisson', [(2, 4), (4, 6), (8, 6), (9, 5), (11, 7), (11, 4)]),
-    ('un château', [(1, 4), (1, 7), (3, 7), (3, 6), (5, 6), (5, 7), (7, 7), (7, 6), (9, 6),
-                    (9, 7), (11, 7), (11, 4)]),
+    ('une tour', [(2, 4), (2, 6), (4, 6), (4, 7), (7, 7), (7, 6), (9, 4)]),
 ]
+# réponses courtes : la garde de complexité (answer-complexity-corpus) veut ≤ 133 caractères
+# (limite 400, marge × 3) → au plus 7 segments, coordonnées d'un chiffre
 # figures écartées de l'axe vertical x = 6
 ECARTEES = [
     ('un triangle', [(1, 2), (4, 2), (4, 6), (1, 2)]),

@@ -745,3 +745,5 @@ Réponse de David (« je te suis », 2026-11-05) : les cinq recommandations.
 - Pièges : la page à cocher n'affiche pas l'italique `_…_` (l'appli oui, vu dans l'aperçu) ; la sonde ne passe pas les
   figures d'un choix (seul le rendu les voit) ; `{{if}}` autour d'un bloc `choix` refusé (« bloc non fermé ») : faire
   varier le contenu d'une figure, jamais le bloc.
+- CI #2408 rouge : la garde `answer-complexity-corpus` veut chaque réponse de spec ≤ 133 caractères (limite 400,
+  marge × 3) ; le château du 09 (11 segments, 189 caractères) → une tour de 6 segments (105 au plus).
