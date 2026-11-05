@@ -342,9 +342,11 @@ export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
 			return [p(l / 2, h, d / 2), p(0, 0, 0), p(l, 0, 0), p(l, 0, d), p(0, 0, d)];
 		}
 		case 'pyramide-triangle': {
+			// Un sommet devant (B), une arête au fond (AC) : avec un sommet au fond, celui-ci
+			// se projetait presque sur l'arête du sommet S au sommet de devant à droite
 			const [a, h] = dims;
 			const depth = (a * Math.sqrt(3)) / 2;
-			return [p(a / 2, h, depth / 3), p(0, 0, 0), p(a, 0, 0), p(a / 2, 0, depth)];
+			return [p(a / 2, h, (2 * depth) / 3), p(0, 0, depth), p(a / 2, 0, 0), p(a, 0, depth)];
 		}
 		default:
 			return [];
