@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, phase 0 du lot 9 validée._
+_Mis à jour le 2026-11-06, lot 9 écrit (PR des fichiers)._
 
 - **État** : lots 1 à 8 en prod et publiés ; lot 9 (longueurs, fraction de l'unité, masses ; § 15) en écriture.
-- **Prochaine action** : écrire `docs/wip/questions/lot-ce2-9.py` → `scripts/questions/ce2-9/`, simulation, essai
-  local, PR des fichiers ; puis lot 10 (solides : 061 à 064, 066), puis `collection` `centaines:` (001, 002, 005)
+- **Prochaine action** : merger la PR des fichiers du lot 9, puis David lance `create-questions --publier` ; migration
+  nœud + tag ; page à cocher ; puis lot 10 (solides : 061 à 064, 066), puis `collection` `centaines:` (001, 002, 005)
   en chantier à part.
 - **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; réponse de spec
@@ -793,3 +793,15 @@ tag ne change aucune règle.
 3. 050 : g et kg seulement (voiture ≈ 1 000 kg) ; la tonne au 049.
 4. 012 : réponse « [_] u + [_] u », fraction dans la seconde case ; simplification coupée (2/8 juste pour 1/4).
 5. Un seul lot de 8 modèles, puis le lot 10.
+
+### Lot 9 — écriture (2026-11-06)
+
+- Script `docs/wip/questions/lot-ce2-9.py` → `scripts/questions/ce2-9/` : 8 modèles, 86 specs ; `create-questions` en
+  simulation (prod) : 8 « à créer » ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-figures` : 0 problème. 8 brouillons en base locale (copies du dossier dans le scratchpad, pour ne pas écrire
+  d'id local dans les fichiers), rendu relu sur la page à cocher locale et dans l'aperçu.
+- Piège : `{{eval:…}}` rend un non-entier en fraction LaTeX (`\dfrac{9}{2}`), refusée comme coordonnée de figure →
+  helper `demi()` qui écrit « partie entière . 0 ou 5 » ; l'encadrement en dixièmes écrit ses centièmes de même.
+- Piège : la sonde exige une fenêtre de figure de rapport hauteur / largeur ≥ 1/4 (règles graduées : hauteur 3,6).
+- Corrigé en route : 05, dessins du choix « où voit-on le périmètre ? » — contour `gris` invisible sur fond sombre →
+  `noir` (suit le thème), tour, intérieur et côté en rouge.

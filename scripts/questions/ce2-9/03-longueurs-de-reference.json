@@ -1,0 +1,193 @@
+{
+	"title": "Des longueurs de référence, du millimètre au kilomètre",
+	"description": "Carte 1 mm, doigt 1 cm, main 1 dm, grand pas 1 m, porte 2 m, 1 km à pied en un quart d'heure, 100 km en une heure d'autoroute, la France 1 000 km",
+	"grades": ["CE2"],
+	"level": 5,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Qu'est-ce qui mesure environ {{if:k==1|$1~\\unit{mm}$|{{if:k==2|$1~\\unit{cm}$|{{if:k==3|$1~\\unit{dm}$|{{if:k==4|$1~\\unit{m}$|{{if:k==5|$2~\\unit{m}$|{{if:k==6|$1~\\unit{km}$|{{if:k==7|$100~\\unit{km}$|$1\\,000~\\unit{km}$}}}}}}}}}}}}}} ?\n\n```choix\n- {{if:k==1|l'épaisseur d'une carte de cantine|{{if:k==2|la largeur d'un doigt|{{if:k==3|la largeur d'une main|{{if:k==4|un grand pas|{{if:k==5|la hauteur d'une porte|{{if:k==6|le chemin qu'on fait à pied en un quart d'heure|{{if:k==7|le trajet d'une heure en voiture sur l'autoroute|la France d'un bout à l'autre}}}}}}}}}}}}}}\n- {{if:k==1|la largeur d'un doigt|{{if:k==2|l'épaisseur d'une carte de cantine|{{if:k==3|la largeur d'un doigt|{{if:k==4|la largeur d'une main|{{if:k==5|la longueur d'un crayon|{{if:k==6|le tour de la classe|{{if:k==7|le chemin qu'on fait à pied en un quart d'heure|le trajet d'une heure en voiture sur l'autoroute}}}}}}}}}}}}}}\n- {{if:k==1|la largeur d'une main|{{if:k==2|la longueur d'une règle d'écolier|{{if:k==3|un grand pas|{{if:k==4|la longueur d'un bus|{{if:k==5|la longueur d'un bus|{{if:k==6|le trajet d'une heure sur l'autoroute|{{if:k==7|la France d'un bout à l'autre|le tour de la cour de l'école}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quelques longueurs à retenir : l'épaisseur d'une carte de cantine fait environ $1~\\unit{mm}$, la largeur d'un doigt environ $1~\\unit{cm}$, la largeur d'une main environ $1~\\unit{dm}$, un grand pas environ $1~\\unit{m}$ ; à pied, on fait $1~\\unit{km}$ en un quart d'heure ; en voiture sur l'autoroute, environ $100~\\unit{km}$ en une heure ; la France mesure environ $1\\,000~\\unit{km}$ d'un bout à l'autre.",
+					"C'est {{if:k==1|l'épaisseur d'une carte de cantine|{{if:k==2|la largeur d'un doigt|{{if:k==3|la largeur d'une main|{{if:k==4|un grand pas|{{if:k==5|la hauteur d'une porte|{{if:k==6|le chemin qu'on fait à pied en un quart d'heure|{{if:k==7|le trajet d'une heure en voiture sur l'autoroute|la France d'un bout à l'autre}}}}}}}}}}}}}} qui mesure environ {{if:k==1|$1~\\unit{mm}$|{{if:k==2|$1~\\unit{cm}$|{{if:k==3|$1~\\unit{dm}$|{{if:k==4|$1~\\unit{m}$|{{if:k==5|$2~\\unit{m}$|{{if:k==6|$1~\\unit{km}$|{{if:k==7|$100~\\unit{km}$|$1\\,000~\\unit{km}$}}}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|L'épaisseur d'une carte de cantine|{{if:k==2|La largeur d'un doigt|{{if:k==3|La largeur d'une main|{{if:k==4|Un grand pas|{{if:k==5|La hauteur d'une porte|{{if:k==6|Le chemin qu'on fait à pied en un quart d'heure|Le trajet d'une heure en voiture sur l'autoroute}}}}}}}}}}}} mesure environ…\n\n```choix\nmelanger: non\n- ${{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|1|{{if:k==5|2|{{if:k==6|1|100}}}}}}}}}}}}~\\unit{mm}$\n- ${{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|1|{{if:k==5|2|{{if:k==6|1|100}}}}}}}}}}}}~\\unit{cm}$\n- ${{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|1|{{if:k==5|2|{{if:k==6|1|100}}}}}}}}}}}}~\\unit{dm}$\n- ${{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|1|{{if:k==5|2|{{if:k==6|1|100}}}}}}}}}}}}~\\unit{m}$\n- ${{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|1|{{if:k==5|2|{{if:k==6|1|100}}}}}}}}}}}}~\\unit{km}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..7"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|0|{{if:k==2|1|{{if:k==3|2|{{if:k==4|3|{{if:k==5|3|{{if:k==6|4|4}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quelques longueurs à retenir : l'épaisseur d'une carte de cantine fait environ $1~\\unit{mm}$, la largeur d'un doigt environ $1~\\unit{cm}$, la largeur d'une main environ $1~\\unit{dm}$, un grand pas environ $1~\\unit{m}$ ; à pied, on fait $1~\\unit{km}$ en un quart d'heure ; en voiture sur l'autoroute, environ $100~\\unit{km}$ en une heure ; la France mesure environ $1\\,000~\\unit{km}$ d'un bout à l'autre.",
+					"{{if:k==1|L'épaisseur d'une carte de cantine mesure environ $1~\\unit{mm}$.|{{if:k==2|La largeur d'un doigt mesure environ $1~\\unit{cm}$.|{{if:k==3|La largeur d'une main mesure environ $1~\\unit{dm}$.|{{if:k==4|Un grand pas mesure environ $1~\\unit{m}$.|{{if:k==5|La hauteur d'une porte mesure environ $2~\\unit{m}$.|{{if:k==6|Le chemin qu'on fait à pied en un quart d'heure mesure environ $1~\\unit{km}$.|Le trajet d'une heure en voiture sur l'autoroute mesure environ $100~\\unit{km}$.}}}}}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "environ 1 mm : la carte",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 mm, le doigt",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "environ 1 dm : la main",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 dm, un grand pas",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "environ 100 km : une heure d'autoroute",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 100 km à pied en un quart d'heure",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "environ 1 000 km : la France",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "main : 1 dm",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : main de 1 cm",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "porte : 2 m",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "autoroute : 100 km",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 100 m en une heure d'autoroute",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"r": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

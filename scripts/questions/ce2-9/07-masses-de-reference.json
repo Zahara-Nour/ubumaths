@@ -1,0 +1,159 @@
+{
+	"title": "Des masses de référence, du gramme à la tonne",
+	"description": "Trombone 1 g, tablette de chocolat 100 g, bouteille d'un litre 1 kg, seau d'eau 10 kg, voiture 1 t",
+	"grades": ["CE2"],
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Qu'est-ce qui pèse environ {{if:k==1|$1~\\unit{g}$|{{if:k==2|$100~\\unit{g}$|{{if:k==3|$1~\\unit{kg}$|{{if:k==4|$10~\\unit{kg}$|$1~\\unit{t}$}}}}}}}} ?\n\n```choix\n- {{if:k==1|un trombone|{{if:k==2|une tablette de chocolat|{{if:k==3|une bouteille d'eau d'un litre|{{if:k==4|un seau d'eau plein|une voiture}}}}}}}}\n- {{if:k==1|une pomme|{{if:k==2|un trombone|{{if:k==3|une tablette de chocolat|{{if:k==4|une bouteille d'eau d'un litre|un seau d'eau plein}}}}}}}}\n- {{if:k==1|un dictionnaire|{{if:k==2|un seau d'eau plein|{{if:k==3|une voiture|{{if:k==4|un trombone|un vélo}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quelques masses à retenir : un trombone pèse environ $1~\\unit{g}$, une tablette de chocolat $100~\\unit{g}$, une bouteille d'eau d'un litre $1~\\unit{kg}$, un seau d'eau plein $10~\\unit{kg}$, une voiture $1~\\unit{t}$ (une tonne, c'est $1\\,000~\\unit{kg}$).",
+					"C'est {{if:k==1|un trombone|{{if:k==2|une tablette de chocolat|{{if:k==3|une bouteille d'eau d'un litre|{{if:k==4|un seau d'eau plein|une voiture}}}}}}}} qui pèse environ {{if:k==1|$1~\\unit{g}$|{{if:k==2|$100~\\unit{g}$|{{if:k==3|$1~\\unit{kg}$|{{if:k==4|$10~\\unit{kg}$|$1~\\unit{t}$}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Un trombone|{{if:k==2|Une tablette de chocolat|{{if:k==3|Une bouteille d'eau d'un litre|{{if:k==4|Un seau d'eau plein|Une voiture}}}}}}}} pèse environ…\n\n```choix\nmelanger: non\n- ${{if:k==1|1|{{if:k==2|100|{{if:k==3|1|{{if:k==4|10|1}}}}}}}}~\\unit{g}$\n- ${{if:k==1|1|{{if:k==2|100|{{if:k==3|1|{{if:k==4|10|1}}}}}}}}~\\unit{kg}$\n- ${{if:k==1|1|{{if:k==2|100|{{if:k==3|1|{{if:k==4|10|1}}}}}}}}~\\unit{t}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|0|{{if:k==2|0|{{if:k==3|1|{{if:k==4|1|2}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quelques masses à retenir : un trombone pèse environ $1~\\unit{g}$, une tablette de chocolat $100~\\unit{g}$, une bouteille d'eau d'un litre $1~\\unit{kg}$, un seau d'eau plein $10~\\unit{kg}$, une voiture $1~\\unit{t}$ (une tonne, c'est $1\\,000~\\unit{kg}$).",
+					"{{if:k==1|Un trombone pèse environ $1~\\unit{g}$.|{{if:k==2|Une tablette de chocolat pèse environ $100~\\unit{g}$.|{{if:k==3|Une bouteille d'eau d'un litre pèse environ $1~\\unit{kg}$.|{{if:k==4|Un seau d'eau plein pèse environ $10~\\unit{kg}$.|Une voiture pèse environ $1~\\unit{t}$.}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "environ 1 g : le trombone",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 g, le dictionnaire",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "environ 1 kg : la bouteille d'un litre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "environ 1 t : la voiture",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 t, le seau d'eau",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "tablette : 100 g",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tablette de 100 kg",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "voiture : 1 t",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : voiture de 1 kg",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

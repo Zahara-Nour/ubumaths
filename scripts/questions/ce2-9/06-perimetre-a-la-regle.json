@@ -1,0 +1,466 @@
+{
+	"title": "Le périmètre d'un polygone, mesuré à la règle",
+	"description": "Chaque côté posé sur une règle (au 0 ou non), puis la somme des côtés ; triangle, quadrilatère, maison à 5 côtés",
+	"grades": ["CE2"],
+	"level": 2,
+	"delay": 150,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un triangle ABC.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Un polygone à 3 sommets nommés A, B, C, dessiné en petit.\n---\na = point({{if:k==1|3.5|{{if:k==2|2.92|{{if:k==3|3.66|{{if:k==4|2.69|{{if:k==5|3.36|1}}}}}}}}}}, {{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|1|{{if:k==5|1|1.06}}}}}}}}}}, visible=faux)\nb = point({{if:k==1|6.5|{{if:k==2|7.08|{{if:k==3|6.34|{{if:k==4|7.31|{{if:k==5|6.23|9}}}}}}}}}}, {{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|1|{{if:k==5|1|1.06}}}}}}}}}}, visible=faux)\nc = point({{if:k==1|6.5|{{if:k==2|5.92|{{if:k==3|6.09|{{if:k==4|5|{{if:k==5|6.64|2}}}}}}}}}}, {{if:k==1|5|{{if:k==2|5|{{if:k==3|5|{{if:k==4|5|{{if:k==5|5|4.94}}}}}}}}}}, visible=faux)\nq = polygone(a, b, c, couleur=\"bleu\", epaisseur=2)\ntexte({{if:k==1|3.13|{{if:k==2|2.53|{{if:k==3|3.31|{{if:k==4|2.3|{{if:k==5|2.98|0.59}}}}}}}}}}, {{if:k==1|0.6|{{if:k==2|0.63|{{if:k==3|0.57|{{if:k==4|0.63|{{if:k==5|0.6|0.73}}}}}}}}}}, \"A\")\ntexte({{if:k==1|6.77|{{if:k==2|7.44|{{if:k==3|6.61|{{if:k==4|7.7|{{if:k==5|6.47|9.44}}}}}}}}}}, {{if:k==1|0.49|{{if:k==2|0.58|{{if:k==3|0.49|{{if:k==4|0.63|{{if:k==5|0.47|0.8}}}}}}}}}}, \"B\")\ntexte({{if:k==1|6.66|{{if:k==2|6.02|{{if:k==3|6.21|{{if:k==4|5|{{if:k==5|6.83|1.72}}}}}}}}}}, {{if:k==1|5.27|{{if:k==2|5.29|{{if:k==3|5.28|{{if:k==4|5.3|{{if:k==5|5.26|5.15}}}}}}}}}}, \"C\")\n```\n\nOn a posé chacun de ses côtés sur une règle.\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté AB du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{p}}, 2, visible=faux)\nN = point({{eval:p+a}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{p}}, 1.7, visible=faux)\nMt2 = point({{p}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:p+a}}, 1.7, visible=faux)\nNt2 = point({{eval:p+a}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:p+floor(a/2)}}.{{eval:5*(a-2*floor(a/2))}}, 2.75, \"AB\")\n```\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté BC du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{q}}, 2, visible=faux)\nN = point({{eval:q+b}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{q}}, 1.7, visible=faux)\nMt2 = point({{q}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:q+b}}, 1.7, visible=faux)\nNt2 = point({{eval:q+b}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:q+floor(b/2)}}.{{eval:5*(b-2*floor(b/2))}}, 2.75, \"BC\")\n```\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté CA du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{s}}, 2, visible=faux)\nN = point({{eval:s+c}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{s}}, 1.7, visible=faux)\nMt2 = point({{s}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:s+c}}, 1.7, visible=faux)\nNt2 = point({{eval:s+c}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:s+floor(c/2)}}.{{eval:5*(c-2*floor(c/2))}}, 2.75, \"CA\")\n```\n\nMesure chaque côté, puis trouve le périmètre du polygone.\n\n$AB = ?~\\text{cm}$ ; $BC = ?~\\text{cm}$ ; $CA = ?~\\text{cm}$\n\nPérimètre : $?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:k==1|6|{{if:k==2|5|{{if:k==3|4|{{if:k==4|7|{{if:k==5|5|8}}}}}}}}}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{if:k==1|8|{{if:k==2|5|{{if:k==3|6|{{if:k==4|7|{{if:k==5|7|8}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:k==1|10|{{if:k==2|6|{{if:k==3|7|{{if:k==4|7|{{if:k==5|9|4}}}}}}}}}}"
+				},
+				{
+					"name": "p",
+					"expression": "0"
+				},
+				{
+					"name": "q",
+					"expression": "0"
+				},
+				{
+					"name": "s",
+					"expression": "0"
+				},
+				{
+					"name": "z",
+					"expression": "eval:a+b+c"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:p==0|AB part du $0$ et va jusqu'au ${{a}}$ : $AB = {{a}}~\\unit{cm}$.|AB va du ${{p}}$ au ${{eval:p+a}}$ : ${{eval:p+a}} - {{p}} = {{a}}$, donc $AB = {{a}}~\\unit{cm}$.}}",
+					"{{if:q==0|BC part du $0$ et va jusqu'au ${{b}}$ : $BC = {{b}}~\\unit{cm}$.|BC va du ${{q}}$ au ${{eval:q+b}}$ : ${{eval:q+b}} - {{q}} = {{b}}$, donc $BC = {{b}}~\\unit{cm}$.}}",
+					"{{if:s==0|CA part du $0$ et va jusqu'au ${{c}}$ : $CA = {{c}}~\\unit{cm}$.|CA va du ${{s}}$ au ${{eval:s+c}}$ : ${{eval:s+c}} - {{s}} = {{c}}$, donc $CA = {{c}}~\\unit{cm}$.}}",
+					"Le périmètre est la longueur du tour : on additionne les 3 côtés.",
+					"$${{a}} + {{b}} + {{c}} = \\textcolor{{{color:primary.0}}}{{{z}}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un quadrilatère ABCD. Attention : les côtés ne sont pas posés au $0$ de la règle.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Un polygone à 4 sommets nommés A, B, C, D, dessiné en petit.\n---\na = point({{if:k==1|1|{{if:k==2|3|{{if:k==3|1|{{if:k==4|1|{{if:k==5|1|1}}}}}}}}}}, {{if:k==1|1.5|{{if:k==2|1|{{if:k==3|1.4|{{if:k==4|1|{{if:k==5|1|1.22}}}}}}}}}}, visible=faux)\nb = point({{if:k==1|9|{{if:k==2|7|{{if:k==3|9|{{if:k==4|9|{{if:k==5|6|9}}}}}}}}}}, {{if:k==1|1.5|{{if:k==2|1|{{if:k==3|1.4|{{if:k==4|1|{{if:k==5|1|1.22}}}}}}}}}}, visible=faux)\nc = point({{if:k==1|9|{{if:k==2|7|{{if:k==3|6.6|{{if:k==4|6|{{if:k==5|9|9}}}}}}}}}}, {{if:k==1|4.5|{{if:k==2|5|{{if:k==3|4.6|{{if:k==4|5|{{if:k==5|5|4.78}}}}}}}}}}, visible=faux)\nd = point({{if:k==1|1|{{if:k==2|3|{{if:k==3|3.4|{{if:k==4|1|{{if:k==5|4|3.67}}}}}}}}}}, {{if:k==1|4.5|{{if:k==2|5|{{if:k==3|4.6|{{if:k==4|5|{{if:k==5|5|4.78}}}}}}}}}}, visible=faux)\nq = polygone(a, b, c, d, couleur=\"bleu\", epaisseur=2)\ntexte({{if:k==1|0.58|{{if:k==2|2.68|{{if:k==3|0.58|{{if:k==4|0.62|{{if:k==5|0.6|0.58}}}}}}}}}}, {{if:k==1|1.19|{{if:k==2|0.53|{{if:k==3|1.08|{{if:k==4|0.61|{{if:k==5|0.65|0.91}}}}}}}}}}, \"A\")\ntexte({{if:k==1|9.42|{{if:k==2|7.32|{{if:k==3|9.42|{{if:k==4|9.41|{{if:k==5|6.2|9.4}}}}}}}}}}, {{if:k==1|1.19|{{if:k==2|0.53|{{if:k==3|1.08|{{if:k==4|0.68|{{if:k==5|0.45|0.86}}}}}}}}}}, \"B\")\ntexte({{if:k==1|9.42|{{if:k==2|7.32|{{if:k==3|6.92|{{if:k==4|6.3|{{if:k==5|9.4|9.4}}}}}}}}}}, {{if:k==1|4.51|{{if:k==2|5.17|{{if:k==3|4.77|{{if:k==4|5.19|{{if:k==5|5.05|4.84}}}}}}}}}}, \"C\")\ntexte({{if:k==1|0.58|{{if:k==2|2.68|{{if:k==3|3.08|{{if:k==4|0.62|{{if:k==5|3.8|3.33}}}}}}}}}}, {{if:k==1|4.51|{{if:k==2|5.17|{{if:k==3|4.77|{{if:k==4|5.09|{{if:k==5|5.25|4.93}}}}}}}}}}, \"D\")\n```\n\nOn a posé chacun de ses côtés sur une règle.\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté AB du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{p}}, 2, visible=faux)\nN = point({{eval:p+a}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{p}}, 1.7, visible=faux)\nMt2 = point({{p}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:p+a}}, 1.7, visible=faux)\nNt2 = point({{eval:p+a}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:p+floor(a/2)}}.{{eval:5*(a-2*floor(a/2))}}, 2.75, \"AB\")\n```\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté BC du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{q}}, 2, visible=faux)\nN = point({{eval:q+b}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{q}}, 1.7, visible=faux)\nMt2 = point({{q}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:q+b}}, 1.7, visible=faux)\nNt2 = point({{eval:q+b}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:q+floor(b/2)}}.{{eval:5*(b-2*floor(b/2))}}, 2.75, \"BC\")\n```\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté CD du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{s}}, 2, visible=faux)\nN = point({{eval:s+c}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{s}}, 1.7, visible=faux)\nMt2 = point({{s}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:s+c}}, 1.7, visible=faux)\nNt2 = point({{eval:s+c}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:s+floor(c/2)}}.{{eval:5*(c-2*floor(c/2))}}, 2.75, \"CD\")\n```\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté DA du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{t}}, 2, visible=faux)\nN = point({{eval:t+d}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{t}}, 1.7, visible=faux)\nMt2 = point({{t}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:t+d}}, 1.7, visible=faux)\nNt2 = point({{eval:t+d}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:t+floor(d/2)}}.{{eval:5*(d-2*floor(d/2))}}, 2.75, \"DA\")\n```\n\nMesure chaque côté, puis trouve le périmètre du polygone.\n\n$AB = ?~\\text{cm}$ ; $BC = ?~\\text{cm}$ ; $CD = ?~\\text{cm}$ ; $DA = ?~\\text{cm}$\n\nPérimètre : $?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:k==1|8|{{if:k==2|5|{{if:k==3|10|{{if:k==4|8|{{if:k==5|5|9}}}}}}}}}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{if:k==1|3|{{if:k==2|5|{{if:k==3|5|{{if:k==4|5|{{if:k==5|5|4}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:k==1|8|{{if:k==2|5|{{if:k==3|4|{{if:k==4|5|{{if:k==5|5|6}}}}}}}}}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:k==1|3|{{if:k==2|5|{{if:k==3|5|{{if:k==4|4|{{if:k==5|5|5}}}}}}}}}}"
+				},
+				{
+					"name": "p",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				},
+				{
+					"name": "t",
+					"expression": "1..2"
+				},
+				{
+					"name": "z",
+					"expression": "eval:a+b+c+d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{d}}"
+				},
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:p==0|AB part du $0$ et va jusqu'au ${{a}}$ : $AB = {{a}}~\\unit{cm}$.|AB va du ${{p}}$ au ${{eval:p+a}}$ : ${{eval:p+a}} - {{p}} = {{a}}$, donc $AB = {{a}}~\\unit{cm}$.}}",
+					"{{if:q==0|BC part du $0$ et va jusqu'au ${{b}}$ : $BC = {{b}}~\\unit{cm}$.|BC va du ${{q}}$ au ${{eval:q+b}}$ : ${{eval:q+b}} - {{q}} = {{b}}$, donc $BC = {{b}}~\\unit{cm}$.}}",
+					"{{if:s==0|CD part du $0$ et va jusqu'au ${{c}}$ : $CD = {{c}}~\\unit{cm}$.|CD va du ${{s}}$ au ${{eval:s+c}}$ : ${{eval:s+c}} - {{s}} = {{c}}$, donc $CD = {{c}}~\\unit{cm}$.}}",
+					"{{if:t==0|DA part du $0$ et va jusqu'au ${{d}}$ : $DA = {{d}}~\\unit{cm}$.|DA va du ${{t}}$ au ${{eval:t+d}}$ : ${{eval:t+d}} - {{t}} = {{d}}$, donc $DA = {{d}}~\\unit{cm}$.}}",
+					"Le périmètre est la longueur du tour : on additionne les 4 côtés.",
+					"$${{a}} + {{b}} + {{c}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{z}}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un polygone ABCDE en forme de maison.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Un polygone à 5 sommets nommés A, B, C, D, E, dessiné en petit.\n---\na = point({{if:k==1|3.5|{{if:k==2|3.47|{{if:k==3|2.33|3.8}}}}}}, {{if:k==1|1|{{if:k==2|1|{{if:k==3|1|1}}}}}}, visible=faux)\nb = point({{if:k==1|6.5|{{if:k==2|6.53|{{if:k==3|7.67|6.2}}}}}}, {{if:k==1|1|{{if:k==2|1|{{if:k==3|1|1}}}}}}, visible=faux)\nc = point({{if:k==1|6.5|{{if:k==2|6.53|{{if:k==3|7.67|6.2}}}}}}, {{if:k==1|3|{{if:k==2|3.29|{{if:k==3|3|3.4}}}}}}, visible=faux)\nd = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|5|5}}}}}}, {{if:k==1|5|{{if:k==2|5|{{if:k==3|5|5}}}}}}, visible=faux)\nf = point({{if:k==1|3.5|{{if:k==2|3.47|{{if:k==3|2.33|3.8}}}}}}, {{if:k==1|3|{{if:k==2|3.29|{{if:k==3|3|3.4}}}}}}, visible=faux)\nq = polygone(a, b, c, d, f, couleur=\"bleu\", epaisseur=2)\ntexte({{if:k==1|3.19|{{if:k==2|3.17|{{if:k==3|1.94|3.55}}}}}}, {{if:k==1|0.52|{{if:k==2|0.51|{{if:k==3|0.62|0.48}}}}}}, \"A\")\ntexte({{if:k==1|6.81|{{if:k==2|6.83|{{if:k==3|8.06|6.45}}}}}}, {{if:k==1|0.52|{{if:k==2|0.51|{{if:k==3|0.62|0.48}}}}}}, \"B\")\ntexte({{if:k==1|6.93|{{if:k==2|6.95|{{if:k==3|8.12|6.6}}}}}}, {{if:k==1|2.97|{{if:k==2|3.3|{{if:k==3|2.92|3.46}}}}}}, \"C\")\ntexte({{if:k==1|5|{{if:k==2|5|{{if:k==3|5|5}}}}}}, {{if:k==1|5.3|{{if:k==2|5.3|{{if:k==3|5.3|5.3}}}}}}, \"D\")\ntexte({{if:k==1|3.07|{{if:k==2|3.05|{{if:k==3|1.88|3.4}}}}}}, {{if:k==1|2.97|{{if:k==2|3.3|{{if:k==3|2.92|3.46}}}}}}, \"E\")\n```\n\nOn a posé chacun de ses côtés sur une règle.\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté AB du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{p}}, 2, visible=faux)\nN = point({{eval:p+a}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{p}}, 1.7, visible=faux)\nMt2 = point({{p}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:p+a}}, 1.7, visible=faux)\nNt2 = point({{eval:p+a}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:p+floor(a/2)}}.{{eval:5*(a-2*floor(a/2))}}, 2.75, \"AB\")\n```\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté BC du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{q}}, 2, visible=faux)\nN = point({{eval:q+b}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{q}}, 1.7, visible=faux)\nMt2 = point({{q}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:q+b}}, 1.7, visible=faux)\nNt2 = point({{eval:q+b}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:q+floor(b/2)}}.{{eval:5*(b-2*floor(b/2))}}, 2.75, \"BC\")\n```\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté CD du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{s}}, 2, visible=faux)\nN = point({{eval:s+c}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{s}}, 1.7, visible=faux)\nMt2 = point({{s}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:s+c}}, 1.7, visible=faux)\nNt2 = point({{eval:s+c}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:s+floor(c/2)}}.{{eval:5*(c-2*floor(c/2))}}, 2.75, \"CD\")\n```\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté DE du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{t}}, 2, visible=faux)\nN = point({{eval:t+d}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{t}}, 1.7, visible=faux)\nMt2 = point({{t}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:t+d}}, 1.7, visible=faux)\nNt2 = point({{eval:t+d}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:t+floor(d/2)}}.{{eval:5*(d-2*floor(d/2))}}, 2.75, \"DE\")\n```\n\n```figure\nfenetre: -0.8 ; 12.8 ; -0.4 ; 3.2\ndescription: Le côté EA du polygone posé au-dessus d'une règle graduée en centimètres.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(12.4, 0, visible=faux)\nregle3 = point(12.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\nM = point({{v}}, 2, visible=faux)\nN = point({{eval:v+f}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point({{v}}, 1.7, visible=faux)\nMt2 = point({{v}}, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{eval:v+f}}, 1.7, visible=faux)\nNt2 = point({{eval:v+f}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\ntexte({{eval:v+floor(f/2)}}.{{eval:5*(f-2*floor(f/2))}}, 2.75, \"EA\")\n```\n\nMesure chaque côté, puis trouve le périmètre du polygone.\n\n$AB = ?~\\text{cm}$ ; $BC = ?~\\text{cm}$ ; $CD = ?~\\text{cm}$ ; $DE = ?~\\text{cm}$ ; $EA = ?~\\text{cm}$\n\nPérimètre : $?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:k==1|6|{{if:k==2|4|{{if:k==3|8|6}}}}}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{if:k==1|4|{{if:k==2|3|{{if:k==3|3|6}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:k==1|5|{{if:k==2|3|{{if:k==3|5|5}}}}}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:k==1|5|{{if:k==2|3|{{if:k==3|5|5}}}}}}"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:k==1|4|{{if:k==2|3|{{if:k==3|3|6}}}}}}"
+				},
+				{
+					"name": "p",
+					"expression": "0..2"
+				},
+				{
+					"name": "q",
+					"expression": "0..2"
+				},
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "v",
+					"expression": "0..2"
+				},
+				{
+					"name": "z",
+					"expression": "eval:a+b+c+d+f"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{d}}"
+				},
+				{
+					"expectedAnswer": "{{f}}"
+				},
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:p==0|AB part du $0$ et va jusqu'au ${{a}}$ : $AB = {{a}}~\\unit{cm}$.|AB va du ${{p}}$ au ${{eval:p+a}}$ : ${{eval:p+a}} - {{p}} = {{a}}$, donc $AB = {{a}}~\\unit{cm}$.}}",
+					"{{if:q==0|BC part du $0$ et va jusqu'au ${{b}}$ : $BC = {{b}}~\\unit{cm}$.|BC va du ${{q}}$ au ${{eval:q+b}}$ : ${{eval:q+b}} - {{q}} = {{b}}$, donc $BC = {{b}}~\\unit{cm}$.}}",
+					"{{if:s==0|CD part du $0$ et va jusqu'au ${{c}}$ : $CD = {{c}}~\\unit{cm}$.|CD va du ${{s}}$ au ${{eval:s+c}}$ : ${{eval:s+c}} - {{s}} = {{c}}$, donc $CD = {{c}}~\\unit{cm}$.}}",
+					"{{if:t==0|DE part du $0$ et va jusqu'au ${{d}}$ : $DE = {{d}}~\\unit{cm}$.|DE va du ${{t}}$ au ${{eval:t+d}}$ : ${{eval:t+d}} - {{t}} = {{d}}$, donc $DE = {{d}}~\\unit{cm}$.}}",
+					"{{if:v==0|EA part du $0$ et va jusqu'au ${{f}}$ : $EA = {{f}}~\\unit{cm}$.|EA va du ${{v}}$ au ${{eval:v+f}}$ : ${{eval:v+f}} - {{v}} = {{f}}$, donc $EA = {{f}}~\\unit{cm}$.}}",
+					"Le périmètre est la longueur du tour : on additionne les 5 côtés.",
+					"$${{a}} + {{b}} + {{c}} + {{d}} + {{f}} = \\textcolor{{{color:primary.0}}}{{{z}}}~\\unit{cm}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Triangle 6, 8, 10 : 24 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "6",
+				"p": "0",
+				"b": "8",
+				"q": "0",
+				"c": "10",
+				"s": "0",
+				"z": "24"
+			},
+			"answers": ["6", "8", "10", "24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : côté oublié (14)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "6",
+				"p": "0",
+				"b": "8",
+				"q": "0",
+				"c": "10",
+				"s": "0",
+				"z": "24"
+			},
+			"answers": ["6", "8", "10", "14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : côté compté deux fois (34)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "6",
+				"p": "0",
+				"b": "8",
+				"q": "0",
+				"c": "10",
+				"s": "0",
+				"z": "24"
+			},
+			"answers": ["6", "8", "10", "34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle 5, 5, 6 : 16 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"a": "5",
+				"p": "0",
+				"b": "5",
+				"q": "0",
+				"c": "6",
+				"s": "0",
+				"z": "16"
+			},
+			"answers": ["5", "5", "6", "16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle 8 × 3, départs au 1 et au 2 : 22 cm",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "8",
+				"p": "1",
+				"b": "3",
+				"q": "2",
+				"c": "8",
+				"s": "1",
+				"d": "3",
+				"t": "2",
+				"z": "22"
+			},
+			"answers": ["8", "3", "8", "3", "22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : départ non retiré (9, 5, 9, 5)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "8",
+				"p": "1",
+				"b": "3",
+				"q": "2",
+				"c": "8",
+				"s": "1",
+				"d": "3",
+				"t": "2",
+				"z": "22"
+			},
+			"answers": ["9", "5", "9", "5", "28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux côtés seulement (11)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "8",
+				"p": "1",
+				"b": "3",
+				"q": "2",
+				"c": "8",
+				"s": "1",
+				"d": "3",
+				"t": "2",
+				"z": "22"
+			},
+			"answers": ["8", "3", "8", "3", "11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré de 5 : 20 cm, sans formule",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "5",
+				"p": "2",
+				"b": "5",
+				"q": "1",
+				"c": "5",
+				"s": "1",
+				"d": "5",
+				"t": "2",
+				"z": "20"
+			},
+			"answers": ["5", "5", "5", "5", "20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Trapèze 10, 5, 4, 5 : 24 cm",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "10",
+				"p": "1",
+				"b": "5",
+				"q": "1",
+				"c": "4",
+				"s": "2",
+				"d": "5",
+				"t": "2",
+				"z": "24"
+			},
+			"answers": ["10", "5", "4", "5", "24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Maison 6, 4, 5, 5, 4 : 24 cm",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"a": "6",
+				"p": "0",
+				"b": "4",
+				"q": "1",
+				"c": "5",
+				"s": "2",
+				"d": "5",
+				"t": "0",
+				"f": "4",
+				"v": "1",
+				"z": "24"
+			},
+			"answers": ["6", "4", "5", "5", "4", "24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : toit oublié (14)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"a": "6",
+				"p": "0",
+				"b": "4",
+				"q": "1",
+				"c": "5",
+				"s": "2",
+				"d": "5",
+				"t": "0",
+				"f": "4",
+				"v": "1",
+				"z": "24"
+			},
+			"answers": ["6", "4", "5", "5", "4", "14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bouts lus sans retirer le départ",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"a": "6",
+				"p": "0",
+				"b": "4",
+				"q": "1",
+				"c": "5",
+				"s": "2",
+				"d": "5",
+				"t": "0",
+				"f": "4",
+				"v": "1",
+				"z": "24"
+			},
+			"answers": ["6", "5", "7", "5", "5", "28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
