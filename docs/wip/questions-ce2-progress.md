@@ -641,3 +641,32 @@ de durées noté, publiés intacts) ; horloge « digitale » = texte + `cadran: 
   sans que 02, 03, 05-08 aient été joués à l'écran. Page à cocher publiée après coup :
   https://claude.ai/artifact/JdCbHActB2vzgTsasDxN4b (capacité `db`, 9 fiches ; alerte « bloc `line` non dessiné » sur 08 et
   09). Worktree et branche supprimés.
+
+## 13. Lot 7c — statistiques (phase 0, proposée le 2026-11-05, à valider)
+
+Points CE2-074, 075, 076, 083, 096, 097, sans modèle au relevé MCP du 2026-11-05 ; **082 aussi** (classé « outil neuf :
+barres à monter » au § 3, mais l'outil est en prod depuis le 2026-10-28 : `placer:` du bloc `barres`, et `axe: à choisir`
+pour l'échelle adaptée du BO). Nœuds existants, aucun à créer :
+« Représenter des données › tableaux » (074 ; CP 1, CE1 2, 6e 1 et 3, 5e 3-5), « › tableau à double entrée » (075, 096 ;
+CP 1-2, CE1 3-4), « › diagrammes en barres » (083, 097, 082 ; CE1 1-3, 5e 4-5), « Statistiques › Représenter des données »
+(076 : son point est sur le nœud parent ; 2de 1-2). Le CE1 (lot `ce1-7`) a déjà la cantine et le sport préféré : le CE2
+monte les nombres, gradue l'axe de 2 en 2, 5 en 5, 10 en 10, et ajoute les totaux.
+
+| Fichier                               | Point | Nœud · niveau               | Variations                                                                                |
+| ------------------------------------- | ----- | --------------------------- | ----------------------------------------------------------------------------------------- |
+| `01-ranger-les-donnees-en-tableau`    | 074   | Tableaux · 3                | liste de 15 à 25 réponses (frères et sœurs, âge) → effectifs du tableau en cases `$?$`    |
+| `02-lire-un-tableau-double-entree`    | 075   | Tableau double entrée · 5   | 3 × 4, nombres jusqu'à 200 ; une case nommée par sa ligne et sa colonne                   |
+| `03-interpreter-un-tableau`           | 096   | Tableau double entrée · 6   | le jour où il y a le plus / le moins (case choix), combien de plus, sans totaux           |
+| `04-completer-un-tableau-avec-totaux` | 076   | Représenter des données · 1 | `totaux: oui`, cases cachées : une case, un total, une case retrouvée par le total        |
+| `05-completer-une-barre-par-le-total` | 076   | Représenter des données · 2 | total donné (175 élèves, BO) ; barre manquante à construire (`placer:`), puis à calculer  |
+| `06-lire-un-diagramme-gradue`         | 083   | Diagrammes en barres · 4    | axe de 2 en 2, 5 en 5, 10 en 10 ; barre sur une graduation, puis entre deux (5 en 5 → 35) |
+| `07-comparer-sur-un-diagramme`        | 097   | Diagrammes en barres · 5    | combien de plus (BO : foot / basket), combien en tout, le plus choisi (case choix)        |
+| `08-construire-un-diagramme-echelle`  | 082   | Diagrammes en barres · 6    | tableau donné, effectifs jusqu'à 60 ; `axe: à choisir` puis barres à monter               |
+
+Erreurs typiques des `testSpecs` : graduation lue comme un pas de 1 (axe de 5 en 5 : 7 pour 35) ; total de ligne pris pour
+une case ; écart lu comme la plus grande barre ; échelle trop fine (barres qui ne rentrent pas).
+
+**Question d'accès** : personne ne lit rien de plus (brouillons, admin seul) ; la migration nœud + tag ne change aucune règle.
+
+À trancher : niveaux partagés (diagrammes 4-6 avec la 5e ; 076 au niveau 1-2 avec la 2de, sur un nœud parent) ; 082 dans ce
+lot (outil en prod) plutôt qu'en « outils neufs ».
