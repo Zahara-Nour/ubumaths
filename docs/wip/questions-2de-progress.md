@@ -6,20 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2402 (lot 10 B + ids du 10 A, mergée)._
+_Mis à jour le 2026-11-05, après #2403 (rangement du lot 10, mergée et migrée)._
 
-- **État** : lots 1 à 9 et 12 publiés. Lot 10 : 10 A en brouillon en prod (§ 84) ; 10 B (7 modèles de
-  logique) écrit, joué en local, **#2402 mergée** (§ 84).
-- **Prochaine action** : David lance
-  `create-questions --publier` sur `scripts/questions/2de-logique-10b` ; ids commités ; migration nœud +
-  tag pour 10 A + 10 B (11 modèles, § 83-84), `grades` de 5062197a, 5b20321f ramenés à `['2']` (L10-a) ;
-  page à cocher : 11 neufs + 16 anciens ; `publier-lot` par David.
-- **En attente de David** : `create-questions --publier` du lot 10 B (depuis `main`).
+- **État** : lots 1 à 9 et 12 publiés. Lot 10 : 11 brouillons rangés et tagués en prod, 2 anciens ramenés
+  à `['2']` (§ 85) ; page à cocher publiée (11 neufs + 16 anciens) : https://claude.ai/artifact/HmCouhdsu9DNwALFUToRbb
+- **Prochaine action** : lire `verdicts` et compter (27) ; « À revoir » → corriger ; puis `publier-lot`
+  par David sur `scripts/questions/2de-ensembles-10a`, `scripts/questions/2de-logique-10b` et les 16
+  anciens exportés dans `/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/ca860cb4-ad18-48de-9396-5f355030bad1/scratchpad/lot10-page/anciens` (à réexporter si le scratchpad a disparu :
+  `export-question-templates.ts --ids`, liste au § 82). Puis lot 11.
+- **En attente de David** : relecture de la page à cocher.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
   dossier, variables Supabase locales passées à la main (il ne lit que `.env` = prod) ; lettre ≠
   étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot10-rangement` (neuve : ids du 10 B + migration).
+- **Worktree / branche** : aucun (le prochain lot ouvre une branche neuve).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2178,3 +2178,21 @@ recommandations (16 anciens sur la page et publiés avec le lot, `grades` ramen�
 - Contrôles : 7/7 importables ; simulation prod 7 à créer ; LaTeX 150 tirages par modèle, 882 formules.
   Joués en local : négation « juste » ; « il existe » avec −4 (réponse stockée 5) « juste ».
 - PR #2402.
+
+## 85. Lot 10 B en brouillon, rangement du lot 10, page à cocher (2026-11-05)
+
+- David a lancé `create-questions --publier` sur `2de-logique-10b` : fa39b703 (2-208), 9207c6e6 (2-209),
+  c4e19f99 (2-211), 214f7500 (2-213), 75d0fc89 (2-409), 61d0571e (2-215), 24fd6a10 (2-412) ; MCP : brouillons,
+  `grades = ['2']`, sans nœud ni tag.
+- Migration `20261105194635_questions_2de_lot10_rangement_tags` (gabarit 12 b-2) : 11 nœuds + tags, et
+  5062197a, 5b20321f de {2, 1_SPE} à {2} (L10-a, garde « niveaux encore ceux du relevé », rollback filtré
+  sur `{2}`). **Écart au § 83** : c22d387e (2-203) va sur la notion « Opérations sur les ensembles » (où est
+  posé 2-203) et non sur « appartenance et inclusion » : la base refuse un point hors du nœud ou de sa notion.
+- Garde « un chemin = un nœud » (remarque du 12 b-2) inutile : l'index `classification_nodes_sibling_name_key`
+  rend le nom unique parmi les frères ; test d'échec de la branche « notion » ajouté (notion renommée).
+- Test d'intégration 14/14, 8 rouges sans le corps de la migration ; `security-auditor` : aucun finding
+  bloquant (2 anciens = 0 tentative, 0 carte SRS en prod ; ils sortent seulement du filtre « 1re » de l'admin).
+  **#2403 mergée**, `db:migrate` lancé (seule migration en attente) ; MCP : 11 sur leur nœud, un point
+  chacun, 2 anciens en `{2}`, `updated_at` inchangés.
+- Page à cocher : 16 anciens exportés (`export-question-templates.ts`) dans le scratchpad, préfixes `a-` /
+  `b-` / `c-ancien-` ; 27 fiches, aucune alerte ; capacité `db`, `verdicts` vide à la publication.
