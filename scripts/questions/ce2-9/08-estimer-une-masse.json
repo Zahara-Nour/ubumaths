@@ -1,0 +1,144 @@
+{
+	"title": "Estimer une masse",
+	"description": "Une pomme pèse plutôt 15 g, 150 g ou 15 kg ? Feuille, dictionnaire, seau d'eau, voiture (1 000 kg)",
+	"grades": ["CE2"],
+	"level": 5,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|Une feuille de papier|{{if:k==2|Une pièce de 1 euro|{{if:k==3|Un morceau de sucre|{{if:k==4|Une pomme|{{if:k==5|Un œuf|{{if:k==6|Une baguette de pain|{{if:k==7|Un enfant de CE2|{{if:k==8|Un dictionnaire|{{if:k==9|Un seau d'eau plein|{{if:k==10|Une voiture|{{if:k==11|Un chat|Un cartable plein}}}}}}}}}}}}}}}}}}}}}} pèse plutôt…\n\n```choix\nmelanger: non\n- {{if:k==1|$5~\\unit{g}$|{{if:k==2|$7~\\unit{g}$|{{if:k==3|$5~\\unit{g}$|{{if:k==4|$15~\\unit{g}$|{{if:k==5|$6~\\unit{g}$|{{if:k==6|$25~\\unit{g}$|{{if:k==7|$3~\\unit{kg}$|{{if:k==8|$2~\\unit{g}$|{{if:k==9|$10~\\unit{g}$|{{if:k==10|$10~\\unit{kg}$|{{if:k==11|$4~\\unit{g}$|$4~\\unit{g}$}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==1|$50~\\unit{g}$|{{if:k==2|$70~\\unit{g}$|{{if:k==3|$50~\\unit{g}$|{{if:k==4|$150~\\unit{g}$|{{if:k==5|$60~\\unit{g}$|{{if:k==6|$250~\\unit{g}$|{{if:k==7|$30~\\unit{kg}$|{{if:k==8|$20~\\unit{g}$|{{if:k==9|$100~\\unit{g}$|{{if:k==10|$100~\\unit{kg}$|{{if:k==11|$40~\\unit{g}$|$400~\\unit{g}$}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==1|$5~\\unit{kg}$|{{if:k==2|$7~\\unit{kg}$|{{if:k==3|$5~\\unit{kg}$|{{if:k==4|$15~\\unit{kg}$|{{if:k==5|$6~\\unit{kg}$|{{if:k==6|$25~\\unit{kg}$|{{if:k==7|$300~\\unit{kg}$|{{if:k==8|$2~\\unit{kg}$|{{if:k==9|$10~\\unit{kg}$|{{if:k==10|$1\\,000~\\unit{kg}$|{{if:k==11|$4~\\unit{kg}$|$4~\\unit{kg}$}}}}}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..12"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|0|{{if:k==2|0|{{if:k==3|0|{{if:k==4|1|{{if:k==5|1|{{if:k==6|1|{{if:k==7|1|{{if:k==8|2|{{if:k==9|2|{{if:k==10|2|{{if:k==11|2|2}}}}}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare avec des masses connues : un trombone pèse environ $1~\\unit{g}$, une tablette de chocolat $100~\\unit{g}$, une bouteille d'eau d'un litre $1~\\unit{kg}$.",
+					"{{if:k==1|Une feuille de papier pèse plutôt $5~\\unit{g}$.|{{if:k==2|Une pièce de 1 euro pèse plutôt $7~\\unit{g}$.|{{if:k==3|Un morceau de sucre pèse plutôt $5~\\unit{g}$.|{{if:k==4|Une pomme pèse plutôt $150~\\unit{g}$.|{{if:k==5|Un œuf pèse plutôt $60~\\unit{g}$.|{{if:k==6|Une baguette de pain pèse plutôt $250~\\unit{g}$.|{{if:k==7|Un enfant de CE2 pèse plutôt $30~\\unit{kg}$.|{{if:k==8|Un dictionnaire pèse plutôt $2~\\unit{kg}$.|{{if:k==9|Un seau d'eau plein pèse plutôt $10~\\unit{kg}$.|{{if:k==10|Une voiture pèse plutôt $1\\,000~\\unit{kg}$.|{{if:k==11|Un chat pèse plutôt $4~\\unit{kg}$.|Un cartable plein pèse plutôt $4~\\unit{kg}$.}}}}}}}}}}}}}}}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : feuille, 5 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : feuille de 50 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : pomme, 150 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pomme de 15 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : dictionnaire, 2 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dictionnaire de 20 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : seau d'eau, 10 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : voiture, 1 000 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "10",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : voiture de 100 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "10",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

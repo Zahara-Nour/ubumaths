@@ -1,0 +1,236 @@
+{
+	"title": "Qu'est-ce que le périmètre ?",
+	"description": "Le périmètre est la longueur du tour ; le dessin qui le montre ; le plus grand périmètre sur quadrillage",
+	"grades": ["CE2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|Le périmètre d'une figure, c'est…|Pour poser une clôture tout autour d'un jardin, il faut connaître…}}\n\n```choix\n- {{if:k==1|la longueur de son tour.|le périmètre du jardin.}}\n- {{if:k==1|la place qu'elle occupe à l'intérieur.|la place qu'il y a dans le jardin.}}\n- {{if:k==1|la longueur de son plus grand côté.|la longueur du plus grand côté du jardin.}}\n- {{if:k==1|le nombre de ses côtés.|le nombre de côtés du jardin.}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le $\\textcolor{{{color:primary.0}}}{\\text{périmètre}}$ d'une figure est la **longueur de son tour** : on fait le tour de la figure et on additionne les longueurs de tous ses côtés.",
+					"{{if:k==2|La clôture fait le tour du jardin : il faut connaître son périmètre.|La place à l'intérieur, ce n'est pas le périmètre.}}"
+				]
+			}
+		},
+		{
+			"statement": "Sur quel dessin voit-on le **périmètre** de la figure ?\n\n````choix\n- ```figure\n  fenetre: -0.5 ; 6.5 ; -0.5 ; 3.9\n  description: Le tour de la figure, tracé en couleur et en gras.\n  ---\n  a = point({{if:k==1|0|{{if:k==2|0|0}}}}, {{if:k==1|0|{{if:k==2|0|0}}}}, visible=faux)\n  b = point({{if:k==1|5|{{if:k==2|6|5}}}}, {{if:k==1|0|{{if:k==2|0|0.8}}}}, visible=faux)\n  c = point({{if:k==1|5|{{if:k==2|4.5|4}}}}, {{if:k==1|3|{{if:k==2|3|3.4}}}}, visible=faux)\n  d = point({{if:k==1|0|{{if:k==2|1|0.6}}}}, {{if:k==1|3|{{if:k==2|3|2.6}}}}, visible=faux)\n  q = polygone(a, b, c, d, couleur=\"rouge\", epaisseur=5)\n  ```\n- ```figure\n  fenetre: -0.5 ; 6.5 ; -0.5 ; 3.9\n  description: L'intérieur de la figure, colorié.\n  ---\n  a = point({{if:k==1|0|{{if:k==2|0|0}}}}, {{if:k==1|0|{{if:k==2|0|0}}}}, visible=faux)\n  b = point({{if:k==1|5|{{if:k==2|6|5}}}}, {{if:k==1|0|{{if:k==2|0|0.8}}}}, visible=faux)\n  c = point({{if:k==1|5|{{if:k==2|4.5|4}}}}, {{if:k==1|3|{{if:k==2|3|3.4}}}}, visible=faux)\n  d = point({{if:k==1|0|{{if:k==2|1|0.6}}}}, {{if:k==1|3|{{if:k==2|3|2.6}}}}, visible=faux)\n  q = polygone(a, b, c, d, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=0.5)\n  ```\n- ```figure\n  fenetre: -0.5 ; 6.5 ; -0.5 ; 3.9\n  description: Un seul côté de la figure, en couleur et en gras.\n  ---\n  a = point({{if:k==1|0|{{if:k==2|0|0}}}}, {{if:k==1|0|{{if:k==2|0|0}}}}, visible=faux)\n  b = point({{if:k==1|5|{{if:k==2|6|5}}}}, {{if:k==1|0|{{if:k==2|0|0.8}}}}, visible=faux)\n  c = point({{if:k==1|5|{{if:k==2|4.5|4}}}}, {{if:k==1|3|{{if:k==2|3|3.4}}}}, visible=faux)\n  d = point({{if:k==1|0|{{if:k==2|1|0.6}}}}, {{if:k==1|3|{{if:k==2|3|2.6}}}}, visible=faux)\n  q = polygone(a, b, c, d, couleur=\"noir\")\n  s = segment(a, b, couleur=\"rouge\", epaisseur=5)\n  ```\n````",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre est la longueur du **tour** de la figure : c'est le dessin où tout le tour est en couleur.",
+					"L'intérieur colorié, ce n'est pas le périmètre ; un seul côté non plus."
+				]
+			}
+		},
+		{
+			"statement": "Sur ce quadrillage, quelle figure a le plus grand périmètre ?\n\n```figure\nfenetre: 0 ; 14 ; 0 ; 9\ngrille: oui\ndescription: Deux rectangles A et B tracés sur un quadrillage.\n---\nra0 = point(1, 1, visible=faux)\nra1 = point({{eval:1+a}}, 1, visible=faux)\nra2 = point({{eval:1+a}}, {{eval:1+b}}, visible=faux)\nra3 = point(1, {{eval:1+b}}, visible=faux)\nra = polygone(ra0, ra1, ra2, ra3, couleur=\"bleu\", epaisseur=3)\nrb0 = point(8, 1, visible=faux)\nrb1 = point({{eval:8+c}}, 1, visible=faux)\nrb2 = point({{eval:8+c}}, {{eval:1+d}}, visible=faux)\nrb3 = point(8, {{eval:1+d}}, visible=faux)\nrb = polygone(rb0, rb1, rb2, rb3, couleur=\"orange\", epaisseur=3)\ntexte(1.5, {{eval:1+b}}.5, \"A\")\ntexte(8.5, {{eval:1+d}}.5, \"B\")\n```\n\n```choix\nmelanger: non\n- la figure A\n- la figure B\n- elles ont le même périmètre\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:k==1|3|{{if:k==2|2|{{if:k==3|4|{{if:k==4|4|{{if:k==5|1|2}}}}}}}}}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{if:k==1|3|{{if:k==2|5|{{if:k==3|2|{{if:k==4|4|{{if:k==5|5|6}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:k==1|1|{{if:k==2|3|{{if:k==3|3|{{if:k==4|2|{{if:k==5|2|4}}}}}}}}}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:k==1|6|{{if:k==2|3|{{if:k==3|3|{{if:k==4|7|{{if:k==5|3|4}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|1|{{if:k==2|0|{{if:k==3|2|{{if:k==4|1|{{if:k==5|0|2}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les côtés de carreaux tout autour de chaque figure.",
+					"Tour de A : ${{a}} + {{b}} + {{a}} + {{b}} = {{eval:2*(a+b)}}$.",
+					"Tour de B : ${{c}} + {{d}} + {{c}} + {{d}} = {{eval:2*(c+d)}}$.",
+					"{{if:r==0|$\\textcolor{{{color:primary.0}}}{\\text{A}}$ a le plus grand périmètre.|{{if:r==1|$\\textcolor{{{color:primary.0}}}{\\text{B}}$ a le plus grand périmètre.|$\\textcolor{{{color:primary.0}}}{\\text{Elles ont le même périmètre.}}$}}}}",
+					"Attention : la figure qui prend le plus de place n'a pas toujours le plus long tour."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "la longueur du tour",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'intérieur",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "clôture : le périmètre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le plus grand côté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "le tour en couleur",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'intérieur colorié",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un seul côté",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3×3 (12) contre 1×6 (14) : B",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "3",
+				"c": "1",
+				"d": "6",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A, qui prend plus de place",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "3",
+				"c": "1",
+				"d": "6",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4×2 et 3×3 : même périmètre",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "4",
+				"b": "2",
+				"c": "3",
+				"d": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3×3 plus grand",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "4",
+				"b": "2",
+				"c": "3",
+				"d": "3",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,156 @@
+{
+	"title": "Estimer une longueur ou une distance",
+	"description": "Une fourmi mesure plutôt 5 mm, 5 cm ou 5 dm ? La cour : 30 cm, 30 m ou 30 km ?",
+	"grades": ["CE2"],
+	"level": 6,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|Une fourmi|{{if:k==2|Un timbre|{{if:k==3|L'épaisseur d'une pièce de monnaie|{{if:k==4|Un crayon neuf|{{if:k==5|La largeur d'une feuille de cahier|{{if:k==6|La cour de l'école|{{if:k==7|Un bus|{{if:k==8|L'épaisseur d'un livre|{{if:k==9|La hauteur de la classe|{{if:k==10|Un lit|{{if:k==11|Une randonnée d'une journée|La route d'une ville à la ville voisine}}}}}}}}}}}}}}}}}}}}}} mesure plutôt…\n\n```choix\nmelanger: non\n- {{if:k==1|$5~\\unit{mm}$|{{if:k==2|$3~\\unit{cm}$|{{if:k==3|$2~\\unit{mm}$|{{if:k==4|$18~\\unit{mm}$|{{if:k==5|$2~\\unit{cm}$|{{if:k==6|$30~\\unit{cm}$|{{if:k==7|$12~\\unit{cm}$|{{if:k==8|$2~\\unit{mm}$|{{if:k==9|$3~\\unit{mm}$|{{if:k==10|$2~\\unit{cm}$|{{if:k==11|$20~\\unit{m}$|$15~\\unit{m}$}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==1|$5~\\unit{cm}$|{{if:k==2|$3~\\unit{dm}$|{{if:k==3|$2~\\unit{cm}$|{{if:k==4|$18~\\unit{cm}$|{{if:k==5|$2~\\unit{dm}$|{{if:k==6|$30~\\unit{m}$|{{if:k==7|$12~\\unit{m}$|{{if:k==8|$2~\\unit{cm}$|{{if:k==9|$3~\\unit{cm}$|{{if:k==10|$2~\\unit{dm}$|{{if:k==11|$200~\\unit{m}$|$150~\\unit{m}$}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==1|$5~\\unit{dm}$|{{if:k==2|$3~\\unit{m}$|{{if:k==3|$2~\\unit{dm}$|{{if:k==4|$18~\\unit{m}$|{{if:k==5|$2~\\unit{m}$|{{if:k==6|$30~\\unit{km}$|{{if:k==7|$12~\\unit{km}$|{{if:k==8|$2~\\unit{dm}$|{{if:k==9|$3~\\unit{m}$|{{if:k==10|$2~\\unit{m}$|{{if:k==11|$20~\\unit{km}$|$15~\\unit{km}$}}}}}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..12"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|0|{{if:k==2|0|{{if:k==3|0|{{if:k==4|1|{{if:k==5|1|{{if:k==6|1|{{if:k==7|1|{{if:k==8|1|{{if:k==9|2|{{if:k==10|2|{{if:k==11|2|2}}}}}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare avec des longueurs connues : une carte de cantine a environ $1~\\unit{mm}$ d'épaisseur, un doigt environ $1~\\unit{cm}$ de large, une main $1~\\unit{dm}$, un grand pas $1~\\unit{m}$ ; à pied, on fait $1~\\unit{km}$ en un quart d'heure.",
+					"{{if:k==1|Une fourmi mesure plutôt $5~\\unit{mm}$.|{{if:k==2|Un timbre mesure plutôt $3~\\unit{cm}$.|{{if:k==3|L'épaisseur d'une pièce de monnaie mesure plutôt $2~\\unit{mm}$.|{{if:k==4|Un crayon neuf mesure plutôt $18~\\unit{cm}$.|{{if:k==5|La largeur d'une feuille de cahier mesure plutôt $2~\\unit{dm}$.|{{if:k==6|La cour de l'école mesure plutôt $30~\\unit{m}$.|{{if:k==7|Un bus mesure plutôt $12~\\unit{m}$.|{{if:k==8|L'épaisseur d'un livre mesure plutôt $2~\\unit{cm}$.|{{if:k==9|La hauteur de la classe mesure plutôt $3~\\unit{m}$.|{{if:k==10|Un lit mesure plutôt $2~\\unit{m}$.|{{if:k==11|Une randonnée d'une journée mesure plutôt $20~\\unit{km}$.|La route d'une ville à la ville voisine mesure plutôt $15~\\unit{km}$.}}}}}}}}}}}}}}}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "fourmi : 5 mm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : fourmi de 5 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "crayon : 18 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crayon de 18 mm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "feuille : 2 dm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "cour : 30 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cour de 30 km",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "classe : 3 m de haut",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "route vers la ville voisine : 15 km",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 150 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
