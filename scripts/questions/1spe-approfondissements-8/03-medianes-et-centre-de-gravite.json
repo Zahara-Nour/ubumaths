@@ -1,4 +1,5 @@
 {
+	"id": "d4db2207-e392-4b3b-8973-3656a4ab4642",
 	"title": "Démontrer que les médianes concourent au centre de gravité",
 	"description": "G tel que GA + GB + GC = 0 : GB + GC = 2GA′ (case), A, G, A′ alignés (case choix), AG = 2/3 AA′ (case), démonstration (étapes à ranger)",
 	"grades": ["1_SPE"],

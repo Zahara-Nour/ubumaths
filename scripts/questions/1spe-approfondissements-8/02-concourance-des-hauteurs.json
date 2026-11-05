@@ -1,4 +1,5 @@
 {
+	"id": "d33f98d5-f76d-40d2-b17d-7113ed420053",
 	"title": "Démontrer que les hauteurs d'un triangle sont concourantes",
 	"description": "H intersection de deux hauteurs : HA·BC + HB·CA + HC·AB = 0 par Chasles, HA·BC = 0 (case choix), conclusion HC·AB = 0 (case choix), démonstration (étapes à ranger)",
 	"grades": ["1_SPE"],

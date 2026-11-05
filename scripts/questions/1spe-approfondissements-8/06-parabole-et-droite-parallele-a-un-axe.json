@@ -1,4 +1,5 @@
 {
+	"id": "8cbfcf4b-5529-4b6c-bb75-453224840ab3",
 	"title": "Intersection d'une parabole et d'une droite parallèle à un axe",
 	"description": "Parabole y = ax² + bx + c : ordonnée du point commun avec x = k, plus grande abscisse des points communs avec y = k, nombre de points communs avec y = k",
 	"grades": ["1_SPE"],

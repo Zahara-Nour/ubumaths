@@ -9,20 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 8 mergé (#2401)._
+_Mis à jour le 2026-11-05, lot 8 : brouillons en prod, migration nœud + tag en PR._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5, 6 et 7 publiés ; lot 8
-  (géométrie, § 13, D6) mergé (#2401), brouillons pas encore créés en prod.
-- **Prochaine action** : David lance `create-questions --publier` (commande `!` du § 13),
-  relevé MCP des 6 brouillons, migration nœud + tag (1 sous-notion neuve « parabole » sous Géométrie repérée),
-  page à cocher. Ensuite lot 9 (probabilités : 345, 346, 361).
+  (géométrie, § 13, D6) : 6 brouillons créés en prod, migration `20261105195513` (nœud + tag, sous-notion neuve
+  « parabole ») en PR.
+- **Prochaine action** : CI verte → merge → `db:migrate` (4 conditions réunies) → vérif MCP → page à cocher. Ensuite
+  lot 9 (probabilités : 345, 346, 361).
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
   une notion → choisir sa sous-notion avec David. Variable `e` = Euler : jamais comme nom de variable. Job navigateur
   de la CI qui plante tests verts → `gh run rerun <run> --failed`. Port 5178.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (HEAD détaché), nouvelle branche depuis
-  `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-8-db`.
 
 ---
 
@@ -483,3 +482,13 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-8 --publier`
 
 Mergée (#2401, CI verte du premier coup).
+
+### Lot 8 en prod : brouillons, puis migration nœud + tag (2026-11-05)
+
+David a lancé `create-questions --publier` après #2401. Relevé prod (MCP) : 6 brouillons {1_SPE}, sans nœud ni tag :
+`4664114e` loi des sinus (324), `d33f98d5` hauteurs (325), `d4db2207` médianes (326), `64f54fc1` équidistants (334),
+`a98fd3cf` cercle (335), `8cbfcf4b` parabole (420) ; aucun modèle déjà tagué sur ces points ; pas de sous-notion
+« parabole » sous Géométrie repérée (ni active, ni archivée). Ids écrits dans les JSON du lot (cette PR), `git restore`
+fait dans le dépôt principal. Migration `20261105195513_questions_1spe_approfondissements_8_rangement_tags` (gabarit
+lot 5 : sous-notion neuve, tout ou rien), test `questions-1spe-approfondissements-8-rangement-tags` 11/11 vert, rouge
+sans la migration (6 rouges, la suite principale ne s'exécute pas). Accès : Q5 de D3, personne.
