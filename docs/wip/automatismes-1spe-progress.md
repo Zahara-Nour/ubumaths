@@ -6,22 +6,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot « Calcul numérique et algébrique » en PR._
+_Mis à jour le 2026-11-05, après #2406._
 
-- **État** : lot « Calcul » codé (§ Lot « Calcul numérique et algébrique », Fait) : `buildSerie`
-  lit `<<expr:…>>`, `\textcolor` suivi de `(` ne casse plus le PDF, modèle neuf ax + b, script de
-  fiche ; rendu vérifié en simulation · **Prochaine action** : PR, revue, merge ; puis David lance
-  les 2 écritures en prod (§ Fait, « À lancer ») ; rangement du modèle neuf · **En attente de
-  David** : ces 2 écritures ; correction de `dcaabf69` qui déborde (la réécrire sur deux lignes ?) ;
-  **garde des niveaux des tags** (session `questions-ce2`, 2026-11-05) : `9852d62c`, `7f82d15a`,
-  `f5585668`, `1c86d122`, `95ee57c8` tagués hors de leurs `grades` → ajouter ces niveaux aux `grades`
-  (migration) ou les mettre en `EXCEPTIONS_NIVEAUX` (`scripts/lib/niveaux-des-tags.ts`), avant de les
-  publier ; publier les brouillons et fiches listés plus bas (§ Rangement…) ; questions 2 à 4 ·
+- **État** : lot « Calcul numérique et algébrique » mergé (#2406) : `buildSerie` lit `<<expr:…>>`,
+  `\textcolor`/`\boxed` suivis de `(` ne cassent plus le PDF, modèle neuf ax + b, script de fiche ;
+  rendu vérifié en simulation · **Prochaine action** : après les 2 écritures de David, vérifier la
+  fiche depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs --polices-corrige`, `debord.py`),
+  commiter l'`id` écrit dans le JSON du modèle neuf, ranger ce modèle (nœud + tag, migration comme
+  #2390) · **En attente de David** : (1) `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/calcul-1spe --publier`, puis (2) `pnpm tsx scripts/create-automatismes-calcul-1spe.ts
+--publier` ; correction de `dcaabf69` qui déborde au corrigé (la réécrire sur deux lignes ?) ;
+  **garde des niveaux des tags** (session `questions-ce2`) : `9852d62c`, `7f82d15a`, `f5585668`,
+  `1c86d122`, `95ee57c8` tagués hors de leurs `grades` → niveaux ajoutés aux `grades` (migration) ou
+  `EXCEPTIONS_NIVEAUX` (`scripts/lib/niveaux-des-tags.ts`), avant publication ; questions 2 à 4 ·
   **Pièges en cours** : écritures en prod refusées par le classifieur (David les lance) ; worktree
-  neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx` ; `fiche:verifier` veut `en/` et `sol-en/`
-  (copier `md/`, `sol/`) et le venv `scripts/fiches/.venv` (lien vers celui du dépôt principal, à
-  retirer ensuite) · **Worktree / branche** : `../ubumaths-wt-automatismes-1spe`,
-  `feat/automatismes-1spe-calcul`.
+  neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx` ; `fiche:verifier` veut `en/`, `sol-en/` et le
+  venv `scripts/fiches/.venv` du dépôt principal ; job CI navigateur 2/2 qui plante → `gh run rerun
+--failed` · **Worktree / branche** : aucun (retiré après #2406).
 - Brouillons à publier (lots précédents) : `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`,
   `1c86d122`, `9852d62c` (+ `1bd7378d`, `9a9026fc`) ; fiches `9217dfaa`, `0f98be04`, `7ff081db`,
   `d37413a3`, `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
