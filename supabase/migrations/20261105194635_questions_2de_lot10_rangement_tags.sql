@@ -93,7 +93,8 @@
 --               '61d0571e-b6f3-413b-9272-3539b8a55708',
 --               '24fd6a10-7843-4b7c-9e7c-7a05b1696bc9');
 -- update public.question_templates set grades = array['2', '1_SPE']::text[]
---  where id in ('5062197a-5ffa-47bf-805d-8ec39d4445b8', '5b20321f-e86a-4a13-b478-1cf4f441e920');
+--  where id in ('5062197a-5ffa-47bf-805d-8ec39d4445b8', '5b20321f-e86a-4a13-b478-1cf4f441e920')
+--    and grades = array['2']::text[];
 -- alter table public.question_templates enable trigger update_question_templates_updated_at;
 -- ROLLBACK:END
 -- ============================================================================
