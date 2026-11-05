@@ -6,20 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, PR #2402 (lot 10 B + ids du 10 A) ouverte, CI en cours._
+_Mis à jour le 2026-11-05, après #2402 (lot 10 B + ids du 10 A, mergée)._
 
 - **État** : lots 1 à 9 et 12 publiés. Lot 10 : 10 A en brouillon en prod (§ 84) ; 10 B (7 modèles de
-  logique) écrit, joué en local, **PR #2402 ouverte** (§ 84).
-- **Prochaine action** : #2402 verte → `gh pr merge 2402 --merge` (commande seule) ; David lance
+  logique) écrit, joué en local, **#2402 mergée** (§ 84).
+- **Prochaine action** : David lance
   `create-questions --publier` sur `scripts/questions/2de-logique-10b` ; ids commités ; migration nœud +
   tag pour 10 A + 10 B (11 modèles, § 83-84), `grades` de 5062197a, 5b20321f ramenés à `['2']` (L10-a) ;
   page à cocher : 11 neufs + 16 anciens ; `publier-lot` par David.
-- **En attente de David** : rien avant le merge de #2402.
+- **En attente de David** : `create-questions --publier` du lot 10 B (depuis `main`).
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
   dossier, variables Supabase locales passées à la main (il ne lit que `.env` = prod) ; lettre ≠
   étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot10b`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot10-rangement` (neuve : ids du 10 B + migration).
 
 ## 1. Relevé (prod, 2026-10-27)
 
