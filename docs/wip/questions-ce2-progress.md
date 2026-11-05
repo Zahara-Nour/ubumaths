@@ -6,17 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 9 écrit (PR des fichiers)._
+_Mis à jour le 2026-11-06, après #2414._
 
-- **État** : lots 1 à 8 en prod et publiés ; lot 9 (longueurs, fraction de l'unité, masses ; § 15) en écriture.
-- **Prochaine action** : merger la PR des fichiers du lot 9, puis David lance `create-questions --publier` ; migration
-  nœud + tag ; page à cocher ; puis lot 10 (solides : 061 à 064, 066), puis `collection` `centaines:` (001, 002, 005)
-  en chantier à part.
-- **En attente de David** : rien.
-- **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; réponse de spec
-  ≤ 133 caractères ; `{{if}}` autour d'un bloc `choix` refusé ; commitlint : sujet en minuscule ; `publier-lot` et
-  `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot9`.
+- **État** : lots 1 à 8 en prod et publiés ; lot 9 (§ 15) : fichiers mergés (#2414), pas encore en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce2-9 --publier` ; relevé MCP, commit
+  des ids ; migration nœud + tag (012 → droite graduée 1-2, 040-041 → Longueurs comparaison 5-6, 042-044 →
+  Périmètres 1-2, 049-050 → Masses comparaison 4-5) ; page à cocher ; puis lot 10 (solides : 061 à 064, 066), puis
+  `collection` `centaines:` (001, 002, 005) en chantier à part.
+- **En attente de David** : `create-questions --publier` du lot 9.
+- **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
+  coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
+  `publier-lot` et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` (branche `feat/questions-ce2-lot9` mergée, à recréer pour la
+  migration).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -805,3 +807,4 @@ tag ne change aucune règle.
 - Piège : la sonde exige une fenêtre de figure de rapport hauteur / largeur ≥ 1/4 (règles graduées : hauteur 3,6).
 - Corrigé en route : 05, dessins du choix « où voit-on le périmètre ? » — contour `gris` invisible sur fond sombre →
   `noir` (suit le thème), tour, intérieur et côté en rouge.
+- 2026-11-06 : #2414 mergée (CI verte ; merge retardé par un `deploy:prod` en cours).
