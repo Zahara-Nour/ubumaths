@@ -1,7 +1,7 @@
 # Chantier « tetraedre-vue » — vue lisible du tétraèdre (` ```solide ` `pyramide triangle`)
 
-> Origine : ligne 15 de [`outils-manquants.md`](outils-manquants.md) (TSPE-334 sur un tétraèdre), relevée au lot 3
-> de [`solide-vecteur`](../archive/wip/solide-vecteur-progress.md). Phase 0 validée par David le 2026-11-05
+> Origine : ligne 15 de [`outils-manquants.md`](../../wip/outils-manquants.md) (TSPE-334 sur un tétraèdre), relevée au lot 3
+> de [`solide-vecteur`](solide-vecteur-progress.md). Phase 0 validée par David le 2026-11-05
 > (« je te suis »).
 
 ## Reprendre ici
