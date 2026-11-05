@@ -6,18 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après la publication du lot 8._
+_Mis à jour le 2026-11-06, phase 0 du lot 9 validée._
 
-- **État** : lots 1 à 8 en prod et publiés (8 : figures planes et symétrie, 9/9 relus OK, publiés par David).
-- **Prochaine action** : lot 9 (longueurs, fraction de l'unité, masses : 012, 040, 041, 042, 044, 049, 050), phase 0
-  (nouveau worktree `ubumaths-wt-questions-ce2`) ; puis lot 10 (solides : 061 à 064, 066), puis `collection`
-  `centaines:` (001, 002, 005) en chantier à part.
+- **État** : lots 1 à 8 en prod et publiés ; lot 9 (longueurs, fraction de l'unité, masses ; § 15) en écriture.
+- **Prochaine action** : écrire `docs/wip/questions/lot-ce2-9.py` → `scripts/questions/ce2-9/`, simulation, essai
+  local, PR des fichiers ; puis lot 10 (solides : 061 à 064, 066), puis `collection` `centaines:` (001, 002, 005)
+  en chantier à part.
 - **En attente de David** : rien.
-- **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; `axe: à choisir` →
-  la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) et
-  `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance ; worktree retiré
-  → donner les commandes avec `cd /Users/david/Coding/js/ubumaths &&`.
-- **Worktree / branche** : aucun, `../ubumaths-wt-questions-ce2` retiré (à recréer pour le lot 9).
+- **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; réponse de spec
+  ≤ 133 caractères ; `{{if}}` autour d'un bloc `choix` refusé ; commitlint : sujet en minuscule ; `publier-lot` et
+  `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot9`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -762,3 +761,35 @@ Réponse de David (« je te suis », 2026-11-05) : les cinq recommandations.
 - 2026-11-05 : relecture de David sur la page à cocher : 9 verdicts « OK », sans commentaire (base `verdicts` comptée,
   posés de 22:55:55 à 22:56:01). `publier-lot --publier` (David, depuis le dépôt principal) ; relevé MCP : 9
   `published`, rangés, un point chacun. **Lot 8 clos.**
+
+## 15. Lot 9 — longueurs, fraction de l'unité, masses (phase 0 validée le 2026-11-06)
+
+Relevé MCP (prod, 2026-11-06) : 012, 040, 041, 042, 044, 049, 050 toujours sans modèle. Rangement : 012 → « Fractions :
+sens et écritures › droite graduée » (1 à 11 pris par CM1, CM2, 6e ; aucun CE2) ; 040, 041 → « Longueurs ›
+comparaison et mesure » (CE2 : 4) ; 042, 044 → « Périmètres » (un modèle de 2de) ; 049, 050 → « Masses › comparaison
+et mesure » (CE2 : 3). Aucun outil neuf : règle graduée en ` ```figure ` (CE1 `01-mesure-a-la-regle`), case « choix ».
+
+| Fichier                         | Point | Rangement · niveau CE2                | Variations                                                                                                                     |
+| ------------------------------- | ----- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `01-regle-en-quarts`            | 012   | Fractions › droite graduée · 1        | unité u en 4 ou 8 ; segment → « [_] u + [_] u » (2 u + 1/4 u ; 7/8 u ; 1 u + 5/8 u)                                            |
+| `02-regle-en-dixiemes`          | 012   | droite graduée · 2                    | unité en 10 : segment juste (1 u + 3/10 u) ; bout entre deux graduations → encadrer entre deux dixièmes                        |
+| `03-longueurs-de-reference`     | 040   | Longueurs › comparaison et mesure · 5 | « mesure environ… ? » (choix) : 1 mm, 1 cm, 1 dm, 1 m, 2 m, 1 km (¼ h à pied), 100 km (1 h d'autoroute), ~1 000 km (la France) |
+| `04-estimer-une-longueur`       | 041   | comparaison et mesure · 6             | « plutôt… » : 3 choix au même chiffre (30 cm / 30 m / 30 km) ; objets et distances, mm à km                                    |
+| `05-qu-est-ce-que-le-perimetre` | 042   | Périmètres · 1                        | phrase juste (« longueur du tour ») ; tour en couleur / intérieur grisé ; deux figures sur quadrillage : le plus grand tour    |
+| `06-perimetre-a-la-regle`       | 044   | Périmètres · 2                        | polygone « démonté » : chaque côté (3 à 5) sur sa règle, au 0 puis non ; mesures puis périmètre ; aucune formule               |
+| `07-masses-de-reference`        | 049   | Masses › comparaison et mesure · 4    | « pèse environ… ? » (choix) : 1 g trombone, 100 g tablette, 1 kg bouteille d'1 L, 10 kg seau d'eau, 1 t voiture                |
+| `08-estimer-une-masse`          | 050   | comparaison et mesure · 5             | objets du BO (feuille, pomme, dictionnaire, seau d'eau, voiture ≈ 1 000 kg) ; 3 choix au même chiffre, g ou kg                 |
+
+Erreurs typiques des `testSpecs` : graduations comptées au lieu des parts ; 1/4 pris pour 1/8 ; encadrement renversé ;
+estimation à × 10 près ; périmètre pris pour l'intérieur ; côté oublié ou compté deux fois, départ de la règle non retiré.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+**Décisions (David, « tes recos ? » puis « ok », 2026-11-06)** :
+
+1. 044 : polygone démonté, chaque côté sur sa règle dessinée (pas de quadrillage).
+2. 040 : repères indépendants de l'école (¼ h à pied, 1 h d'autoroute, traversée de la France), pas « vers Paris ».
+3. 050 : g et kg seulement (voiture ≈ 1 000 kg) ; la tonne au 049.
+4. 012 : réponse « [_] u + [_] u », fraction dans la seconde case ; simplification coupée (2/8 juste pour 1/4).
+5. Un seul lot de 8 modèles, puis le lot 10.
