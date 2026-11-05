@@ -1,0 +1,186 @@
+{
+	"id": "61d0571e-b6f3-413b-9272-3539b8a55708",
+	"title": "Propositions « pour tout »",
+	"description": "Dire si « pour tout réel x, x² ⩾ 0 », « x² ⩾ x », « (x + a)² = x² + a² », l'identité, « n² + n pair », « ax ⩾ x » est vraie ou fausse ; des exemples ne prouvent pas un « pour tout » (n² + n + 41)",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La proposition « {{if:t==0|pour tout réel $x$, $x^2\\geqslant 0$|{{if:t==1|pour tout réel $x$, $x^2\\geqslant x$|{{if:t==2|pour tout réel $x$, $(x+{{a}})^2=x^2+{{eval:(a)^2}}$|{{if:t==3|pour tout réel $x$, $(x+{{a}})^2=x^2+{{eval:2*(a)}}x+{{eval:(a)^2}}$|{{if:t==4|pour tout entier $n$, $n^2+n$ est pair|pour tout réel $x$, ${{a}}x\\geqslant x$}}}}}}}}}} » est-elle vraie ou fausse ?\n\n```choix\nmelanger: non\n- La proposition est vraie.\n- La proposition est fausse.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*(0)+(1-min(abs((t)-1),1))*(1)+(1-min(abs((t)-2),1))*(1)+(1-min(abs((t)-3),1))*(0)+(1-min(abs((t)-4),1))*(0)+(1-min(abs((t)-5),1))*(1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une proposition « **pour tout** … » est vraie si elle est vraie pour **chaque** valeur, ce qui se démontre. Elle est fausse dès qu'**une seule** valeur la met en défaut (un contre-exemple).",
+					"{{if:t==0|Un carré est toujours positif ou nul : la proposition est **vraie**.|{{if:t==1|Pour $x=0{,}5$ : $x^2=0{,}25$ et $0{,}25<0{,}5$. Ce contre-exemple suffit : la proposition est **fausse**.|{{if:t==2|Pour $x=1$ : $(1+{{a}})^2={{eval:(1+(a))^2}}$ mais $1+{{eval:(a)^2}}={{eval:1+(a)^2}}$. La proposition est **fausse** (on a oublié le double produit).|{{if:t==3|C'est l'identité $(x+{{a}})^2=x^2+2\\times{{a}}\\times x+{{a}}^2$ : la proposition est **vraie**.|{{if:t==4|$n^2+n=n(n+1)$ : l'un des deux entiers consécutifs $n$ et $n+1$ est pair, donc le produit est pair. La proposition est **vraie**.|Pour $x=-1$ : ${{a}}\\times(-1)=-{{a}}$ et $-{{a}}<-1$. Ce contre-exemple suffit : la proposition est **fausse**.}}}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "On vérifie la proposition « {{if:t==0|pour tout entier naturel $n$, $n^2+n+41$ est un nombre premier|pour tout réel $x$, $x^2\\geqslant x$}} » {{if:t==0|pour $n=0$, $1$, $2$, $3$ et $4$ : on obtient $41$, $43$, $47$, $53$ et $61$, tous premiers.|pour $x=0$, $1$, $2$ et $3$ : elle est vraie à chaque fois.}} Que peut-on conclure ?\n\n```choix\n- On ne peut rien conclure : des exemples ne prouvent pas une proposition « pour tout ».\n- La proposition est vraie.\n- La proposition est fausse.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une proposition « **pour tout** … » est vraie si elle est vraie pour **chaque** valeur, ce qui se démontre. Elle est fausse dès qu'**une seule** valeur la met en défaut (un contre-exemple).",
+					"Quelques exemples ne suffisent pas : il faudrait que **toutes** les valeurs conviennent.",
+					"{{if:t==0|D'ailleurs elle est fausse : pour $n=40$, $40^2+40+41=1681=41\\times41$ n'est pas premier.|D'ailleurs elle est fausse : pour $x=0{,}5$, $x^2=0{,}25<0{,}5$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² ⩾ 0 : vraie",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x² ⩾ x : fausse",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"a": "3",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x² ⩾ x vraie",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"a": "3",
+				"rep": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x + 3)² = x² + 9 : fausse",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"a": "3",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Identité : vraie",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"a": "3",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n² + n pair : vraie",
+			"variationIndex": 0,
+			"variables": {
+				"t": "4",
+				"a": "3",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3x ⩾ x : fausse",
+			"variationIndex": 0,
+			"variables": {
+				"t": "5",
+				"a": "3",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Exemples : rien",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exemples, donc vraie",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² ⩾ x vérifiée sur 4 valeurs : rien",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

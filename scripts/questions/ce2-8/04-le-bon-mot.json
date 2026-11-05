@@ -1,0 +1,257 @@
+{
+	"title": "Le bon mot : diagonale, rayon, diamètre, longueur, largeur ; polygones",
+	"description": "Nommer un trait montré sur un rectangle ou un cercle ; triangle, quadrilatère, pentagone, hexagone",
+	"grades": ["CE2"],
+	"level": 9,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le trait rouge est …\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure et un trait rouge.\n---\n{{if:u==1|a = point(2, 1.5, visible=faux)\nb = point(8, 1.5, visible=faux)\nc = point(8, 5.5, visible=faux)\nd = point(2, 5.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)\ntexte(1.6, 1.1, \"A\")\ntexte(8.4, 1.1, \"B\")\ntexte(8.4, 5.7, \"C\")\ntexte(1.6, 5.7, \"D\")\ns = segment({{if:t==1|a|b}}, {{if:t==1|c|d}}, couleur=\"rouge\", epaisseur=4)|{{if:u==2|o = point(5, 3.5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(4.75, 3.05, \"O\")\nr = cercle(o, rayon=2.8, couleur=\"noir\", epaisseur=2)\np = point(o, longueur=2.8, angle={{eval:30+40*t}}, visible=faux)\ns = segment(o, p, couleur=\"rouge\", epaisseur=4)|{{if:u==3|o = point(5, 3.5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(4.75, 3.05, \"O\")\nr = cercle(o, rayon=2.8, couleur=\"noir\", epaisseur=2)\np = point(o, longueur=2.8, angle={{eval:20+50*t}}, visible=faux)\nm = point(o, longueur=2.8, angle={{eval:200+50*t}}, visible=faux)\ns = segment(p, m, couleur=\"rouge\", epaisseur=4)|{{if:u==4|a = point(2, 1.5, visible=faux)\nb = point(8, 1.5, visible=faux)\nc = point(8, 5.5, visible=faux)\nd = point(2, 5.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)\ntexte(1.6, 1.1, \"A\")\ntexte(8.4, 1.1, \"B\")\ntexte(8.4, 5.7, \"C\")\ntexte(1.6, 5.7, \"D\")\ns = segment({{if:t==1|a|c}}, {{if:t==1|b|d}}, couleur=\"rouge\", epaisseur=4)|a = point(2, 1.5, visible=faux)\nb = point(8, 1.5, visible=faux)\nc = point(8, 5.5, visible=faux)\nd = point(2, 5.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)\ntexte(1.6, 1.1, \"A\")\ntexte(8.4, 1.1, \"B\")\ntexte(8.4, 5.7, \"C\")\ntexte(1.6, 5.7, \"D\")\ns = segment({{if:t==1|b|d}}, {{if:t==1|c|a}}, couleur=\"rouge\", epaisseur=4)}}}}}}}}\n```\n\n```choix\nmelanger: non\n- une diagonale\n- un rayon\n- un diamètre\n- la longueur du rectangle\n- la largeur du rectangle\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..5"
+				},
+				{
+					"name": "t",
+					"expression": "1..2"
+				},
+				{
+					"name": "w",
+					"expression": "eval:u-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:u==1|Le trait va d'un sommet au sommet opposé du rectangle : c'est $\\textcolor{{{color:primary.0}}}{\\text{une diagonale}}$.|{{if:u==2|Le trait va du centre $O$ à un point du cercle : c'est $\\textcolor{{{color:primary.0}}}{\\text{un rayon}}$.|{{if:u==3|Le trait va d'un point du cercle à un autre en passant par le centre : c'est $\\textcolor{{{color:primary.0}}}{\\text{un diamètre}}$ (deux rayons bout à bout).|{{if:u==4|C'est le grand côté du rectangle : $\\textcolor{{{color:primary.0}}}{\\text{la longueur}}$.|C'est le petit côté du rectangle : $\\textcolor{{{color:primary.0}}}{\\text{la largeur}}$.}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Cette figure est …\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un polygone.\n---\n{{if:k==1|a = point(4.77, 5.57, visible=faux)\nb = point(2.98, 1.43, visible=faux)\nc = point(7.02, 1.57, visible=faux)\nq = polygone(a, b, c, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==2|a = point(7.25, 4.58, visible=faux)\nb = point(2.75, 5.55, visible=faux)\nc = point(4.26, 1.45, visible=faux)\nq = polygone(a, b, c, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==3|a = point(4.9, 6.15, visible=faux)\nb = point(2.63, 3.09, visible=faux)\nc = point(4.9, 0.85, visible=faux)\nd = point(7.37, 3.84, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==4|a = point(7.41, 3.94, visible=faux)\nb = point(4.0, 5.78, visible=faux)\nc = point(2.59, 2.64, visible=faux)\nd = point(6.03, 1.22, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==5|a = point(4.85, 5.9, visible=faux)\nb = point(2.58, 3.56, visible=faux)\nc = point(3.32, 1.1, visible=faux)\nd = point(6.62, 1.43, visible=faux)\nf = point(7.42, 4.04, visible=faux)\nq = polygone(a, b, c, d, f, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==6|a = point(7.37, 3.91, visible=faux)\nb = point(4.77, 5.97, visible=faux)\nc = point(2.63, 4.22, visible=faux)\nd = point(3.9, 1.3, visible=faux)\nf = point(6.53, 1.03, visible=faux)\nq = polygone(a, b, c, d, f, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==7|a = point(4.96, 6.08, visible=faux)\nb = point(2.81, 4.21, visible=faux)\nc = point(2.71, 2.08, visible=faux)\nd = point(5.35, 0.92, visible=faux)\nf = point(7.29, 2.03, visible=faux)\ng = point(6.67, 4.77, visible=faux)\nq = polygone(a, b, c, d, f, g, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|a = point(7.21, 4.08, visible=faux)\nb = point(5.17, 6.15, visible=faux)\nc = point(3.05, 5.3, visible=faux)\nd = point(2.79, 2.53, visible=faux)\nf = point(4.19, 0.85, visible=faux)\ng = point(6.91, 1.99, visible=faux)\nq = polygone(a, b, c, d, f, g, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)}}}}}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- un triangle\n- un quadrilatère\n- un pentagone\n- un hexagone\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..8"
+				},
+				{
+					"name": "w",
+					"expression": "eval:floor((k-1)/2)"
+				},
+				{
+					"name": "n",
+					"expression": "eval:w+3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les côtés : $\\textcolor{{{color:primary.0}}}{{{n}}}$. {{if:w==0|Un polygone à $3$ côtés est $\\textcolor{{{color:primary.0}}}{\\text{un triangle}}$.|{{if:w==1|Un polygone à $4$ côtés est $\\textcolor{{{color:primary.0}}}{\\text{un quadrilatère}}$.|{{if:w==2|Un polygone à $5$ côtés est $\\textcolor{{{color:primary.0}}}{\\text{un pentagone}}$.|Un polygone à $6$ côtés est $\\textcolor{{{color:primary.0}}}{\\text{un hexagone}}$.}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Diagonale",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"t": "1",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : diagonale prise pour la longueur",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"t": "1",
+				"w": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rayon",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"t": "2",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rayon pris pour un diamètre",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"t": "2",
+				"w": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diamètre",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"t": "1",
+				"w": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : diamètre pris pour un rayon",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"t": "1",
+				"w": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Longueur",
+			"variationIndex": 0,
+			"variables": {
+				"u": "4",
+				"t": "2",
+				"w": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Largeur",
+			"variationIndex": 0,
+			"variables": {
+				"u": "5",
+				"t": "1",
+				"w": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : largeur prise pour la longueur",
+			"variationIndex": 0,
+			"variables": {
+				"u": "5",
+				"t": "1",
+				"w": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"k": "1",
+				"w": "0",
+				"n": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Quadrilatère",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"k": "4",
+				"w": "1",
+				"n": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pentagone",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "5",
+				"w": "2",
+				"n": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pentagone pris pour un hexagone",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "5",
+				"w": "2",
+				"n": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Hexagone",
+			"variationIndex": 1,
+			"variables": {
+				"c": "4",
+				"k": "8",
+				"w": "3",
+				"n": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

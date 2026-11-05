@@ -1,0 +1,178 @@
+{
+	"title": "Démontrer que les médianes concourent au centre de gravité",
+	"description": "G tel que GA + GB + GC = 0 : GB + GC = 2GA′ (case), A, G, A′ alignés (case choix), AG = 2/3 AA′ (case), démonstration (étapes à ranger)",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $ABC$ un triangle. On admet qu'il existe un point $G$ tel que $\\overrightarrow{GA}+\\overrightarrow{GB}+\\overrightarrow{GC}=\\vec{0}$. On note $A'$ le milieu de $[BC]$.\n\nComplète.\n\n$\\overrightarrow{GB}+\\overrightarrow{GC}=?\\,\\overrightarrow{GA'}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par Chasles, $\\overrightarrow{GB}=\\overrightarrow{GA'}+\\overrightarrow{A'B}$ et $\\overrightarrow{GC}=\\overrightarrow{GA'}+\\overrightarrow{A'C}$.",
+					"$A'$ est le milieu de $[BC]$ : $\\overrightarrow{A'B}+\\overrightarrow{A'C}=\\vec{0}$.",
+					"Donc $\\overrightarrow{GB}+\\overrightarrow{GC}=\\textcolor{{{color:primary.0}}}{2}\\overrightarrow{GA'}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. On admet qu'il existe un point $G$ tel que $\\overrightarrow{GA}+\\overrightarrow{GB}+\\overrightarrow{GC}=\\vec{0}$. On note $A'$ le milieu de $[BC]$.\n\nOn a obtenu $\\overrightarrow{GA}=-2\\,\\overrightarrow{GA'}$. Pourquoi $G$ est-il sur la médiane issue de $A$ ?\n\n```choix\n- Car $\\overrightarrow{GA}$ et $\\overrightarrow{GA'}$ sont colinéaires : $A$, $G$ et $A'$ sont alignés.\n- Car $GA=GA'$.\n- Car $G$ est le milieu de $[AA']$.\n- Car $A'$ est le milieu de $[BC]$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{GA}=-2\\,\\overrightarrow{GA'}$ : les deux vecteurs sont colinéaires.",
+					"Donc $A$, $G$ et $A'$ sont alignés : $\\textcolor{{{color:primary.0}}}{G\\in(AA')}$, la médiane issue de $A$.",
+					"$A'$ milieu de $[BC]$ sert à obtenir l'égalité, pas à conclure."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. On admet qu'il existe un point $G$ tel que $\\overrightarrow{GA}+\\overrightarrow{GB}+\\overrightarrow{GC}=\\vec{0}$. On note $A'$ le milieu de $[BC]$.\n\nOn a obtenu $\\overrightarrow{GA}=-2\\,\\overrightarrow{GA'}$. Complète.\n\n$\\overrightarrow{AG}=?\\,\\overrightarrow{AA'}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{2}{3}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AG}=2\\,\\overrightarrow{GA'}$ et $\\overrightarrow{AA'}=\\overrightarrow{AG}+\\overrightarrow{GA'}=3\\,\\overrightarrow{GA'}$.",
+					"Donc $\\overrightarrow{AG}=\\textcolor{{{color:primary.0}}}{\\dfrac{2}{3}}\\overrightarrow{AA'}$ : $G$ est aux deux tiers de la médiane, en partant du sommet."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. On démontre que ses trois médianes sont concourantes, au point $G$ tel que $\\overrightarrow{GA}+\\overrightarrow{GB}+\\overrightarrow{GC}=\\vec{0}$ (on admet qu'il existe).\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Soit $G$ tel que $\\overrightarrow{GA}+\\overrightarrow{GB}+\\overrightarrow{GC}=\\vec{0}$, et $A'$ le milieu de $[BC]$.\n- Comme $A'$ est le milieu de $[BC]$, $\\overrightarrow{GB}+\\overrightarrow{GC}=2\\,\\overrightarrow{GA'}$.\n- Donc $\\overrightarrow{GA}+2\\,\\overrightarrow{GA'}=\\vec{0}$, soit $\\overrightarrow{GA}=-2\\,\\overrightarrow{GA'}$.\n- $A$, $G$ et $A'$ sont alignés : $G$ est sur la médiane issue de $A$ ; de même pour $B$ et $C$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Le milieu $A'$ transforme $\\overrightarrow{GB}+\\overrightarrow{GC}$ en $2\\,\\overrightarrow{GA'}$.",
+					"La colinéarité de $\\overrightarrow{GA}$ et $\\overrightarrow{GA'}$ place $G$ sur la médiane ; le même calcul vaut pour les deux autres : $\\textcolor{{{color:primary.0}}}{G}$ est sur les trois."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "colinéaires",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : GA = GA′",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : milieu de [AA′]",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : A′ milieu",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2/3",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/3",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

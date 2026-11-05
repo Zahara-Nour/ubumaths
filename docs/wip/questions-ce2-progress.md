@@ -6,17 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après la publication du 7c._
+_Mis à jour le 2026-11-05, lot 8 écrit (§ 14)._
 
-- **État** : lots 1 à 7c en prod et publiés (7c : 8/8 relus OK, `publier-lot --publier` par David, relevé MCP : 8
-  `published`, rangés, un point chacun). Worktree et branche retirés.
-- **Prochaine action** : lot suivant, dans l'ordre du § 4 bis : figures / images fixes, puis QCM, puis outils neufs ;
-  relevé MCP des points encore sans modèle avant la phase 0 (nouveau worktree `ubumaths-wt-questions-ce2`).
-- **En attente de David** : `garde-niveaux-tags.ts` (lecture seule, prod) si pas encore lancé.
+- **État** : lots 1 à 7c en prod et publiés ; lot 8 (figures planes et symétrie, 9 modèles) écrit, simulé, PR ouverte.
+- **Prochaine action** : merge de la PR du lot 8, puis `create-questions --publier` par David, migration nœud + tag.
+- **En attente de David** : `create-questions --publier` du lot 8 après le merge.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; `axe: à choisir` →
-  la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) refusé à Claude
-  par le classifieur : David le lance.
-- **Worktree / branche** : aucun (à recréer pour le lot suivant).
+  la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) et
+  `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot8`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -682,3 +680,70 @@ avec la 2de, sur le nœud parent) ; 082 dans ce lot (outil en prod) plutôt qu'e
   par le classifieur du mode auto (accès prod) : à lancer par David.
 - 2026-11-05 : simulation puis `--publier` (David) : 8/8 publiés ; relevé MCP : 8 `published`, `grades` CE2, rangés, un
   point chacun (074, 075, 096, 076 ×2, 083, 097, 082). Worktree retiré. **Lot 7c clos.**
+
+## 14. Relevé après le lot 7c et lot 8 — figures planes et symétrie (phase 0 validée le 2026-11-05)
+
+Relevé MCP (prod, 2026-11-05) : **28 points CE2 sans modèle** — 001, 002 (`collection` `centaines:`, outil C) ;
+D : 086, 039, 043, 051, 065, 070 ; longueurs et masses : 012, 040, 041, 042, 044, 049, 050 ; solides : 061, 062,
+063, 064, 066 ; figures planes : 067, 068, 095, 069, 071, 081 ; symétrie : 072, 073.
+
+Outils depuis le § 4 bis : case `choix` en prod (les QCM ne sont plus bloqués, décision 6 remplie) ; contrôle
+`symetrique par d` de ` ```figure-a-completer ` en prod (0.69.0, quadrillage `grille:`) → **073 passe de C à B**.
+Pas de papier pointé (quadrillage seul).
+
+Découpage proposé : **lot 8 figures planes et symétrie** (8 points) → lot 9 longueurs, fraction de l'unité et masses
+(012, 040, 041, 042, 044, 049, 050) → lot 10 solides (061 à 064, 066) → chantier à part `collection` `centaines:`
+(001, 002, matériel de 005).
+
+Rangement (prod) : 067, 068, 095, 069, 081 sur « Géométrie › Figures planes › propriétés » (niveaux 1 à 5 pris, CP et
+CE1) ; 071 sur « … › angles droits » (1, 2 pris, CE1) ; 072, 073 sur la notion « Géométrie › Symétrie axiale » (aucun
+modèle, aucune sous-notion ; 8 points de CE2 à 6e y sont attachés ; 153 modèles de la base sont déjà rangés sur une
+notion).
+
+| Fichier                           | Point   | Catégorie · niveau              | Variations                                                                                                                                                                                                                 |
+| --------------------------------- | ------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-quelle-est-cette-figure`      | CE2-068 | Figures planes · propriétés · 6 | carré, rectangle, triangle, triangle rectangle, **losange** (choix) ; losange sur la pointe, carré sur la pointe (angles droits codés), losange presque carré, rectangle allongé                                           |
+| `02-decrire-la-figure`            | CE2-095 | propriétés · 7                  | côtés, sommets, angles droits des 5 figures, losange compris (0) → [_] ; « qui suis-je ? » (4 côtés égaux, aucun angle droit → losange) (choix)                                                                            |
+| `03-carre-rectangle-losange`      | CE2-069 | propriétés · 8                  | phrase vraie (choix) : côtés égaux, côtés opposés égaux, 4 angles droits ; figure codée (côtés et angles) → son nom (choix) ; ce qui manque au losange pour être un carré (choix)                                          |
+| `04-le-bon-mot`                   | CE2-067 | propriétés · 9                  | élément en couleur : diagonale, rayon, diamètre, centre, milieu, longueur / largeur du rectangle (choix) ; nombre de côtés → triangle, quadrilatère, pentagone, hexagone (choix)                                           |
+| `05-le-code-des-longueurs`        | CE2-081 | propriétés · 10                 | quels segments ont la même longueur ? (choix) ; rectangle codé : [AB] = 6 cm, [CD] = ? → [_] ; quelle figure est bien codée ? (choix de dessins)                                                                           |
+| `06-utiliser-le-code-angle-droit` | CE2-071 | angles droits · 3               | quadrilatère aux angles codés : lesquels sont droits (choix des sommets) ; angle qui « a l'air » droit mais non codé ; codes de longueurs et d'angles → nom de la figure (choix)                                           |
+| `07-est-ce-un-axe`                | CE2-072 | Symétrie axiale · 1             | figure + droite tracée : est-ce un axe de symétrie ? oui / non — losange et sa diagonale (oui), rectangle et sa diagonale (non, piège), cerf-volant, lettres A, H, N, flèche ; quelle figure a un axe ? (choix de dessins) |
+| `08-combien-d-axes`               | CE2-072 | Symétrie axiale · 2             | carré 4, rectangle 2, losange 2, cerf-volant 1, triangle à deux côtés égaux 1, triangle aux trois côtés égaux 3 (montrés, jamais nommés), parallélogramme 0 → [_]                                                          |
+| `09-complete-par-symetrie`        | CE2-073 | Symétrie axiale · 3             | quadrillage, axe vertical ou horizontal ; la moitié d'une figure (maison, sapin, flèche, vase, 3 à 6 segments) contre l'axe → l'élève trace l'autre moitié (`symetrique par d`) ; v1 : figure écartée de l'axe             |
+
+Erreurs typiques des `testSpecs` : losange pris pour un carré (et l'inverse) ; triangle rectangle → « rectangle » ;
+diagonale / côté, rayon / diamètre confondus ; diagonale du rectangle prise pour un axe ; carré à 2 axes (médianes
+seules) ; figure glissée au lieu de retournée (message du juge).
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **Noms au 068** : même convention qu'au CE1 — le nom le plus précis est seul juste ; « rectangle » et « losange »
+   restent des leurres d'un carré, jamais « triangle » avec « triangle rectangle ». Recommandation : oui.
+2. **Symétrie axiale** : modèles rangés sur la notion elle-même (niveaux 1 à 3), là où sont les points ; pas de
+   sous-notion créée (le CM1, le CM2 et la 6e prendront 4 et suivants). Recommandation : oui.
+3. **Papier pointé** (073) : absent ; quadrillage seul, sans outil neuf. Recommandation : oui.
+4. **Figures du 072** : cœur, pique, trèfle (courbes) non dessinés ; figures à côtés droits (carreau = losange,
+   cerf-volant, rectangle, panneaux, lettres en segments). Recommandation : oui.
+5. **Découpage** : lot 8 ici, puis 9 (longueurs, masses), 10 (solides), puis `collection` `centaines:`. Recommandation : oui.
+
+Réponse de David (« je te suis », 2026-11-05) : les cinq recommandations.
+
+### Lot 8 — écriture (2026-11-05)
+
+- Script `docs/wip/questions/lot-ce2-8.py` → `scripts/questions/ce2-8/` : 9 modèles, 105 specs ; `create-questions`
+  en simulation (prod) : 9 « à créer » ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-figures` : 0 problème. 9 brouillons en base locale, joués dans l'aperçu admin (symétrique de la flèche tracé
+  au segment : « Juste »).
+- Rendu relu (page d'essai locale + aperçu) ; corrigé en route : un dessin dans un choix est rapetissé et le code de
+  l'angle droit y devient invisible (`arcRadiusPx` sans effet) → « Quel triangle est rectangle ? » en **une figure à
+  trois triangles numérotés** ; dessins des choix en fenêtre serrée et `taille: grande` ; trapèze codé : codes sur
+  ses côtés obliques égaux (et non sur deux côtés visiblement inégaux) ; parallélogramme du 08 plus franc.
+- Pièges : la page à cocher n'affiche pas l'italique `_…_` (l'appli oui, vu dans l'aperçu) ; la sonde ne passe pas les
+  figures d'un choix (seul le rendu les voit) ; `{{if}}` autour d'un bloc `choix` refusé (« bloc non fermé ») : faire
+  varier le contenu d'une figure, jamais le bloc.
+- CI #2408 rouge : la garde `answer-complexity-corpus` veut chaque réponse de spec ≤ 133 caractères (limite 400,
+  marge × 3) ; le château du 09 (11 segments, 189 caractères) → une tour de 6 segments (105 au plus).

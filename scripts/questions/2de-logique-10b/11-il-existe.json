@@ -1,0 +1,252 @@
+{
+	"id": "24fd6a10-7843-4b7c-9e7c-7a05b1696bc9",
+	"title": "Propositions « il existe »",
+	"description": "Dire si « il existe un réel x tel que x² = −4 », « x² = 4 », « 2n = 7 », « 5n = 15 », « x² < x » est vraie ou fausse ; donner un entier n tel que n² = 2n + 3 (toute solution acceptée)",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La proposition « {{if:t==0|il existe un réel $x$ tel que $x^2=-{{k}}$|{{if:t==1|il existe un réel $x$ tel que $x^2={{k}}$|{{if:t==2|il existe un entier $n$ tel que $2n={{eval:2*(q)+1}}$|{{if:t==3|il existe un entier $n$ tel que ${{m}}n={{eval:(m)*(q)}}$|il existe un réel $x$ tel que $x^2<x$}}}}}}}} » est-elle vraie ou fausse ?\n\n```choix\nmelanger: non\n- La proposition est vraie.\n- La proposition est fausse.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "m",
+					"expression": "3..9"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*(1)+(1-min(abs((t)-1),1))*(0)+(1-min(abs((t)-2),1))*(1)+(1-min(abs((t)-3),1))*(0)+(1-min(abs((t)-4),1))*(0)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une proposition « **il existe** … » est vraie dès qu'**une** valeur convient (un exemple suffit). Elle est fausse si **aucune** valeur ne convient.",
+					"{{if:t==0|Un carré est toujours positif ou nul : aucun réel n'a pour carré $-{{k}}$. La proposition est **fausse**.|{{if:t==1|$x=\\sqrt{ {{k}} }$ convient : la proposition est **vraie**.|{{if:t==2|$2n$ est pair et ${{eval:2*(q)+1}}$ est impair : aucun entier ne convient. La proposition est **fausse**.|{{if:t==3|$n={{q}}$ convient : ${{m}}\\times{{q}}={{eval:(m)*(q)}}$. La proposition est **vraie**.|$x=0{,}5$ convient : $0{,}25<0{,}5$. La proposition est **vraie**.}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "La proposition « il existe un entier $n$ tel que $n^2={{if:s==1|n|{{if:s==-1|-n|{{s}}n}}}}+{{pr}}$ » est vraie. Donne un tel entier.\n\n$n=?$",
+			"variables": [
+				{
+					"name": "r1",
+					"expression": "2..6"
+				},
+				{
+					"name": "r2",
+					"expression": "-5..-1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(r1)+(r2)"
+				},
+				{
+					"name": "pr",
+					"expression": "eval:-(r1)*(r2)"
+				}
+			],
+			"conditions": ["s != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "equation_root",
+							"equation": "n^2 = ({{s}})*n + {{pr}}",
+							"variable": "n"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une proposition « **il existe** … » est vraie dès qu'**une** valeur convient (un exemple suffit). Elle est fausse si **aucune** valeur ne convient.",
+					"On cherche un entier qui convient, en essayant de petites valeurs.",
+					"Pour $n={{r1}}$ : $n^2={{eval:(r1)^2}}$ et ${{s}}\\times{{r1}}+{{pr}}={{eval:(r1)^2}}$ : $\\textcolor{{{color:primary.0}}}{n={{r1}}}$ convient. $n={{r2}}$ convient aussi : un seul exemple suffit."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² = −4 : fausse",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"k": "4",
+				"q": "3",
+				"m": "5",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x² = −4 vraie",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"k": "4",
+				"q": "3",
+				"m": "5",
+				"rep": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² = 4 : vraie",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"k": "4",
+				"q": "3",
+				"m": "5",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2n = 7 : fausse",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"k": "4",
+				"q": "3",
+				"m": "5",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5n = 15 : vraie",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"k": "4",
+				"q": "3",
+				"m": "5",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x² < x : vraie",
+			"variationIndex": 0,
+			"variables": {
+				"t": "4",
+				"k": "4",
+				"q": "3",
+				"m": "5",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x² < x fausse",
+			"variationIndex": 0,
+			"variables": {
+				"t": "4",
+				"k": "4",
+				"q": "3",
+				"m": "5",
+				"rep": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 3",
+			"variationIndex": 1,
+			"variables": {
+				"r1": "3",
+				"r2": "-1",
+				"s": "2",
+				"pr": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = −1, l'autre solution",
+			"variationIndex": 1,
+			"variables": {
+				"r1": "3",
+				"r2": "-1",
+				"s": "2",
+				"pr": "3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n = 2",
+			"variationIndex": 1,
+			"variables": {
+				"r1": "3",
+				"r2": "-1",
+				"s": "2",
+				"pr": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s = 1 : n² = n + 6, n = −2",
+			"variationIndex": 1,
+			"variables": {
+				"r1": "3",
+				"r2": "-2",
+				"s": "1",
+				"pr": "6"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

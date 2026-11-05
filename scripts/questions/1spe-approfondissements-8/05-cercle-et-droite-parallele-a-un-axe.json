@@ -1,0 +1,241 @@
+{
+	"title": "Intersection d'un cercle et d'une droite parallèle à un axe",
+	"description": "Cercle (x − p)² + (y − q)² = r² : plus grande abscisse des points communs avec y = k, plus petite ordonnée avec x = k, nombre de points communs",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé, on considère le cercle $\\mathcal{C}$ d'équation $(x{{eval:-p;+}})^2+(y{{eval:-q;+}})^2=25$.\n\nLa droite d'équation $y={{eval:q+d}}$ coupe $\\mathcal{C}$ en deux points. Quelle est la plus grande de leurs abscisses ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-5..5"
+				},
+				{
+					"name": "q",
+					"expression": "-5..5"
+				},
+				{
+					"name": "d",
+					"expression": "-4|-3|3|4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p+sqrt(25-d^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $y$ par ${{eval:q+d}}$ : $(x{{eval:-p;+}})^2+{{eval:d;()}}^2=25$, soit $(x{{eval:-p;+}})^2={{eval:25-d^2}}$.",
+					"Donc $x{{eval:-p;+}}={{eval:sqrt(25-d^2)}}$ ou $x{{eval:-p;+}}=-{{eval:sqrt(25-d^2)}}$, soit $x={{eval:p+sqrt(25-d^2)}}$ ou $x={{eval:p-sqrt(25-d^2)}}$.",
+					"La plus grande abscisse est $\\textcolor{{{color:primary.0}}}{{{eval:p+sqrt(25-d^2)}}}$."
+				]
+			},
+			"conditions": ["p != 0", "q != 0", "q + d != 0"]
+		},
+		{
+			"statement": "Dans un repère orthonormé, on considère le cercle $\\mathcal{C}$ d'équation $(x{{eval:-p;+}})^2+(y{{eval:-q;+}})^2=25$.\n\nLa droite d'équation $x={{eval:p+d}}$ coupe $\\mathcal{C}$ en deux points. Quelle est la plus petite de leurs ordonnées ?\n\n$y=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-5..5"
+				},
+				{
+					"name": "q",
+					"expression": "-5..5"
+				},
+				{
+					"name": "d",
+					"expression": "-4|-3|3|4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q-sqrt(25-d^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{eval:p+d}}$ : ${{eval:d;()}}^2+(y{{eval:-q;+}})^2=25$, soit $(y{{eval:-q;+}})^2={{eval:25-d^2}}$.",
+					"Donc $y={{eval:q+sqrt(25-d^2)}}$ ou $y={{eval:q-sqrt(25-d^2)}}$.",
+					"La plus petite ordonnée est $\\textcolor{{{color:primary.0}}}{{{eval:q-sqrt(25-d^2)}}}$."
+				]
+			},
+			"conditions": ["p != 0", "q != 0", "p + d != 0"]
+		},
+		{
+			"statement": "Dans un repère orthonormé, on considère le cercle $\\mathcal{C}$ d'équation $(x{{eval:-p;+}})^2+(y{{eval:-q;+}})^2={{eval:r^2}}$.\n\nCombien la droite d'équation $y={{eval:q+t}}$ a-t-elle de points communs avec $\\mathcal{C}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-5..5"
+				},
+				{
+					"name": "q",
+					"expression": "-5..5"
+				},
+				{
+					"name": "r",
+					"expression": "2..5"
+				},
+				{
+					"name": "t",
+					"expression": "-7..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1+sign(r^2-t^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $y$ par ${{eval:q+t}}$ : $(x{{eval:-p;+}})^2+{{eval:t;()}}^2={{eval:r^2}}$, soit $(x{{eval:-p;+}})^2={{eval:r^2-t^2}}$.",
+					"Un carré est positif ou nul : deux solutions si le second membre est strictement positif, une s'il est nul, aucune s'il est négatif.",
+					"Nombre de points communs de la droite et de $\\mathcal{C}$ : $\\textcolor{{{color:primary.0}}}{{{eval:1+sign(r^2-t^2)}}}$."
+				]
+			},
+			"conditions": ["p != 0", "q != 0", "q + t != 0", "abs(t) >= r - 1", "abs(t) <= r + 1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "6",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-1",
+				"d": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −2 (la plus petite)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-1",
+				"d": "3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 (sans le centre)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-1",
+				"d": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−4",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "-1",
+				"d": "-4"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 (la plus grande)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "-1",
+				"d": "-4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −3 (sans le centre)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "-1",
+				"d": "-4"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 points",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"r": "3",
+				"t": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 point (tangente)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"r": "3",
+				"t": "-3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0 point",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"r": "3",
+				"t": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 au lieu de 0",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"r": "3",
+				"t": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

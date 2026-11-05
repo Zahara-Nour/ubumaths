@@ -1,0 +1,249 @@
+{
+	"id": "75d0fc89-24b1-4edb-abf2-82b7e76f272e",
+	"title": "Implication ou équivalence ?",
+	"description": "Relier deux propositions par « implique » ou « équivaut à » : x = 3 et x² = 9, 2x + 1 = 7 et x = 3, losange et carré, x > 1 et x > 3, n pair et n² pair, x > 1 et x < 3 (piège : « équivaut » partout)",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:t==0|Soit $x$ un réel.|{{if:t==1|Soit $x$ un réel.|{{if:t==2|Soit $IJKL$ un quadrilatère.|{{if:t==3|Soit $x$ un réel.|{{if:t==4|Soit $n$ un entier.|Soit $x$ un réel.}}}}}}}}}} On considère les propositions $P$ : « {{if:t==0|$x={{a}}$|{{if:t==1|${{c}}x+{{dd}}={{f}}$|{{if:t==2|$IJKL$ est un losange|{{if:t==3|$x>{{b}}$|{{if:t==4|$n$ est pair|$x>{{b}}$}}}}}}}}}} » et $Q$ : « {{if:t==0|$x^2={{eval:(a)^2}}$|{{if:t==1|$x={{s}}$|{{if:t==2|$IJKL$ est un carré|{{if:t==3|$x>{{g}}$|{{if:t==4|$n^2$ est pair|$x<{{g}}$}}}}}}}}}} ». Quelle phrase est juste ?\n\n```choix\nmelanger: non\n- $P$ implique $Q$, mais $Q$ n'implique pas $P$.\n- $Q$ implique $P$, mais $P$ n'implique pas $Q$.\n- $P$ équivaut à $Q$.\n- Ni $P$ n'implique $Q$, ni $Q$ n'implique $P$.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..5"
+				},
+				{
+					"name": "dd",
+					"expression": "1..9"
+				},
+				{
+					"name": "f",
+					"expression": "eval:(c)*(s)+(dd)"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "g",
+					"expression": "eval:(b)+(d)"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*(0)+(1-min(abs((t)-1),1))*(2)+(1-min(abs((t)-2),1))*(1)+(1-min(abs((t)-3),1))*(1)+(1-min(abs((t)-4),1))*(2)+(1-min(abs((t)-5),1))*(3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $P$ **équivaut à** $Q$ » ($P\\Leftrightarrow Q$) veut dire : $P$ implique $Q$ **et** $Q$ implique $P$. Pour le montrer, on vérifie les **deux** sens ; un seul contre-exemple suffit à écarter un sens.",
+					"{{if:t==0|Si $x={{a}}$, alors $x^2={{eval:(a)^2}}$ : $P\\Rightarrow Q$. Mais $x=-{{a}}$ vérifie $Q$ sans vérifier $P$ : $Q$ n'implique pas $P$. Donc $\\textcolor{{{color:primary.0}}}{P\\Rightarrow Q}$ seulement.|{{if:t==1|${{c}}x+{{dd}}={{f}}\\Leftrightarrow{{c}}x={{eval:(f)-(dd)}}\\Leftrightarrow x={{s}}$ : chaque étape se fait dans les deux sens, donc $\\textcolor{{{color:primary.0}}}{P\\Leftrightarrow Q}$.|{{if:t==2|Un carré est un losange : $Q\\Rightarrow P$. Un losange dont les angles ne sont pas droits n'est pas un carré : $P$ n'implique pas $Q$. Donc $\\textcolor{{{color:primary.0}}}{Q\\Rightarrow P}$ seulement.|{{if:t==3|Si $x>{{g}}$, comme ${{g}}>{{b}}$, alors $x>{{b}}$ : $Q\\Rightarrow P$. Mais $x={{g}}$ vérifie $P$ sans vérifier $Q$. Donc $\\textcolor{{{color:primary.0}}}{Q\\Rightarrow P}$ seulement.|{{if:t==4|Si $n=2k$, alors $n^2=2\\times(2k^2)$ est pair : $P\\Rightarrow Q$. Si $n=2k+1$, alors $n^2=2\\times(2k^2+2k)+1$ est impair ; donc si $n^2$ est pair, $n$ n'est pas impair, il est pair : $Q\\Rightarrow P$. Donc $\\textcolor{{{color:primary.0}}}{P\\Leftrightarrow Q}$.|$x={{eval:(g)+1}}$ vérifie $P$ sans vérifier $Q$ ; $x={{eval:(b)-1}}$ vérifie $Q$ sans vérifier $P$. Aucune des deux propositions n'implique l'autre.}}}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x = 3 et x² = 9 : P ⇒ Q",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"c": "2",
+				"s": "3",
+				"dd": "1",
+				"f": "7",
+				"b": "1",
+				"d": "2",
+				"g": "3",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : équivalence",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"c": "2",
+				"s": "3",
+				"dd": "1",
+				"f": "7",
+				"b": "1",
+				"d": "2",
+				"g": "3",
+				"rep": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x + 1 = 7 et x = 3 : ⇔",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"a": "3",
+				"c": "2",
+				"s": "3",
+				"dd": "1",
+				"f": "7",
+				"b": "1",
+				"d": "2",
+				"g": "3",
+				"rep": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul sens",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"a": "3",
+				"c": "2",
+				"s": "3",
+				"dd": "1",
+				"f": "7",
+				"b": "1",
+				"d": "2",
+				"g": "3",
+				"rep": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Losange, carré : Q ⇒ P",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"a": "3",
+				"c": "2",
+				"s": "3",
+				"dd": "1",
+				"f": "7",
+				"b": "1",
+				"d": "2",
+				"g": "3",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : losange ⇒ carré",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"a": "3",
+				"c": "2",
+				"s": "3",
+				"dd": "1",
+				"f": "7",
+				"b": "1",
+				"d": "2",
+				"g": "3",
+				"rep": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x > 1, x > 3 : Q ⇒ P",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"a": "3",
+				"c": "2",
+				"s": "3",
+				"dd": "1",
+				"f": "7",
+				"b": "1",
+				"d": "2",
+				"g": "3",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n pair, n² pair : ⇔",
+			"variationIndex": 0,
+			"variables": {
+				"t": "4",
+				"a": "3",
+				"c": "2",
+				"s": "3",
+				"dd": "1",
+				"f": "7",
+				"b": "1",
+				"d": "2",
+				"g": "3",
+				"rep": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x > 1, x < 3 : aucune",
+			"variationIndex": 0,
+			"variables": {
+				"t": "5",
+				"a": "3",
+				"c": "2",
+				"s": "3",
+				"dd": "1",
+				"f": "7",
+				"b": "1",
+				"d": "2",
+				"g": "3",
+				"rep": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

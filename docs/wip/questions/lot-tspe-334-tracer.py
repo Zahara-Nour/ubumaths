@@ -11,6 +11,10 @@ l'espace › Sur une figure », niveau 6 ; réponse = le geste ` ```solide ` `tr
 | v1   | cube, vecteurs entre sommets                                  | libre    |
 | v2   | cube, u = AB, v = AD, w = AE dessinés, milieux I, J, K, L     | imposée  |
 | v3   | pavé droit, u = AB, v = AD, w = AE dessinés, centres I, J, K, O | imposée |
+| v4   | tétraèdre SABC, u = SA, v = SB, w = SC dessinés, I, J milieux de BC, AB, G centre de ABC | imposée |
+
+v4 ajoutée le 2026-11-05 (chantier tetraedre-vue, B3), une fois le tétraèdre du bloc lisible (#2400).
+Le fichier garde l'`id` du brouillon en base (`create-questions --publier --mettre-a-jour`).
 
 L'extrémité de chaque cas est **calculée ici** (coordonnées) et vérifiée par une assertion ; le bloc la
 recalcule de son côté. Un cas tiré = la variable `k`, les textes de cas en `{{if:k==…}}` à plat.
@@ -359,13 +363,73 @@ SPECS += [spec('v3 : ½ u + ½ v depuis A → I', 3, 0, 'A/I', 'correct'),
           spec('v3 : ½ w − ½ u depuis B → J', 3, 4, 'B/J', 'correct'),
           spec('v3 : signe de u ignoré (B vers K)', 3, 4, 'B/K', 'incorrect')]
 
-MODELE = {'title': 'Espace : tracer une combinaison linéaire de vecteurs',
-          'description': 'Sur un cube ou un pavé droit nommé, représenter une combinaison linéaire de vecteurs '
-                         'donnés (arêtes, ou u, v, w dessinés ; coefficients ±1, ½) en touchant l\'origine et '
+# --- v4 : tétraèdre SABC, u = SA, v = SB, w = SC, milieux et centre de gravité ---------------------
+# (2026-11-05, chantier tetraedre-vue : la vue du tétraèdre est lisible depuis #2400.) Aucun milieu de
+# [SA], [SB], [SC] : il tomberait sur le nom de u, v ou w (écrit au milieu de la flèche). Repère affine
+# (S ; SA, SB, SC) : les combinaisons ne dépendent pas de la forme du tétraèdre.
+
+TETRA = {'S': (0, 0, 0), 'A': (1, 0, 0), 'B': (0, 1, 0), 'C': (0, 0, 1),
+         'I': (0, Fr(1, 2), Fr(1, 2)), 'J': (Fr(1, 2), Fr(1, 2), 0), 'G': (Fr(1, 3), Fr(1, 3), Fr(1, 3))}
+TETRA_NOMMES = {'u': 'SA', 'v': 'SB', 'w': 'SC'}
+V4 = [('S', [(Fr(1, 2), 'v'), (Fr(1, 2), 'w')], 'I'),
+      ('S', [(Fr(1, 3), 'u'), (Fr(1, 3), 'v'), (Fr(1, 3), 'w')], 'G'),
+      ('A', [(Fr(1, 2), 'v'), (Fr(1, 2), 'w'), (-1, 'u')], 'I'),
+      ('A', [(-1, 'u'), (1, 'v')], 'B'),
+      ('C', [(Fr(1, 2), 'u'), (Fr(1, 2), 'v'), (-1, 'w')], 'J')]
+for o, t, fin in V4:
+    assert extremite(TETRA, TETRA_NOMMES, o, t) == fin, (o, t)
+assert vec(TETRA, 'SI') == tuple((a + b) / 2 for a, b in zip(vec(TETRA, 'SB'), vec(TETRA, 'SC')))
+assert vec(TETRA, 'SG') == tuple((a + b + c) / 3 for a, b, c in
+                                 zip(vec(TETRA, 'SA'), vec(TETRA, 'SB'), vec(TETRA, 'SC')))
+assert vec(TETRA, 'SJ') == tuple((a + b) / 2 for a, b in zip(vec(TETRA, 'SA'), vec(TETRA, 'SB')))
+UVW_TETRA = ('$\\vec{u}=' + O('SA') + '$, $\\vec{v}=' + O('SB') + '$, $\\vec{w}=' + O('SC') + '$.')
+REGLE_I = ('$I$ est le milieu de $[BC]$, donc $' + O('SI') + '=\\dfrac{1}{2}' + O('SB') + '+\\dfrac{1}{2}'
+           + O('SC') + '=\\dfrac{1}{2}\\vec{v}+\\dfrac{1}{2}\\vec{w}$.')
+D4 = [[REGLE_I, 'Donc $' + latex(V4[0][1]) + '=' + col(O('SI')) + '$.'],
+      [
+       '$G$ est le centre de gravité du triangle $ABC$ : $' + O('GA') + '+' + O('GB') + '+' + O('GC')
+       + '=\\vec{0}$, donc $' + O('SA') + '+' + O('SB') + '+' + O('SC') + '=3' + O('SG') + '$.',
+       'Donc $' + latex(V4[1][1]) + '=' + col(O('SG')) + '$.'],
+      [REGLE_I,
+       'Donc $' + latex(V4[2][1]) + '=' + O('SI') + '-' + O('SA') + '=' + O('AS') + '+' + O('SI') + '='
+       + col(O('AI')) + '$ (relation de Chasles).'],
+      [
+       'Donc $' + latex(V4[3][1]) + '=-' + O('SA') + '+' + O('SB') + '=' + O('AS') + '+' + O('SB') + '='
+       + col(O('AB')) + '$ (relation de Chasles).'],
+      [
+       '$J$ est le milieu de $[AB]$, donc $' + O('SJ') + '=\\dfrac{1}{2}' + O('SA') + '+\\dfrac{1}{2}' + O('SB')
+       + '=\\dfrac{1}{2}\\vec{u}+\\dfrac{1}{2}\\vec{v}$.',
+       'Donc $' + latex(V4[4][1]) + '=' + O('SJ') + '-' + O('SC') + '=' + O('CS') + '+' + O('SJ') + '='
+       + col(O('CJ')) + '$ (relation de Chasles).']]
+VARIATIONS.append(variation(
+    '$SABC$ est un tétraèdre (sommet $S$, base $ABC$). Les vecteurs $\\vec{u}=' + O('SA') + '$, $\\vec{v}='
+    + O('SB') + '$ et $\\vec{w}=' + O('SC') + '$ sont dessinés ; $I$ et $J$ sont les milieux des arêtes $[BC]$ '
+    'et $[AB]$, $G$ est le centre de gravité du triangle $ABC$. Représente le vecteur '
+    + cas(['$' + latex(t) + '$' for _, t, _ in V4]) + ' en partant du point '
+    + cas(['$' + o + '$' for o, _, _ in V4]) + '.\n\n' + CONSIGNE_IMPOSEE + '\n\n'
+    + bloc(['forme: pyramide triangle 4 3.27', 'sommets: S A B C',
+            'points: I milieu BC, J milieu AB, G centre ABC',
+            'vecteurs: u = SA, v = SB, w = SC',
+            'tracer: vecteur ' + cas([tracer(t) + ' depuis ' + o for o, t, _ in V4])]),
+    len(V4), [UVW_TETRA] + etapes_par_cas(D4)))
+SPECS += [spec('v4 : ½ v + ½ w depuis S → I', 4, 0, 'S/I', 'correct'),
+          spec('v4 : leurre, centre de gravité (S → G)', 4, 0, 'S/G', 'incorrect'),
+          spec('v4 : ⅓ (u + v + w) depuis S → G', 4, 1, 'S/G', 'correct'),
+          spec('v4 : leurre, milieu de [BC] (S → I)', 4, 1, 'S/I', 'incorrect'),
+          spec('v4 : ½ v + ½ w − u depuis A → I', 4, 2, 'A/I', 'correct'),
+          spec('v4 : leurre, centre de gravité (A → G)', 4, 2, 'A/G', 'incorrect'),
+          spec('v4 : − u + v depuis A → B', 4, 3, 'A/B', 'correct'),
+          spec('v4 : sens inversé (B vers A)', 4, 3, 'B/A', 'incorrect'),
+          spec('v4 : ½ u + ½ v − w depuis C → J', 4, 4, 'C/J', 'correct'),
+          spec('v4 : leurre, milieu de [BC] (C → I)', 4, 4, 'C/I', 'incorrect')]
+
+MODELE = {'id': '7ce9936b-7835-4b99-9e2b-f3644f2956af',
+          'title': 'Espace : tracer une combinaison linéaire de vecteurs',
+          'description': 'Sur un cube, un pavé droit ou un tétraèdre nommé, représenter une combinaison linéaire de vecteurs '
+                         'donnés (arêtes, ou u, v, w dessinés ; coefficients ±1, ½, ⅓) en touchant l\'origine et '
                          'l\'extrémité de la flèche (origine imposée ou libre ; pièges : sens, terme oublié, '
                          'milieu voisin)',
-          'grades': ['T_SPE'], 'theme': 'Géométrie', 'domain': 'Vecteurs, droites et plans de l\'espace',
-          'subdomain': 'Sur une figure', 'level': 6, 'delay': 120, 'status': 'draft',
+          'grades': ['T_SPE'], 'level': 6, 'delay': 120, 'status': 'draft',
           'variations': VARIATIONS, 'testSpecs': SPECS}
 
 os.makedirs(DOSSIER, exist_ok=True)

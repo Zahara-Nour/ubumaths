@@ -917,7 +917,7 @@ Même nœud `espace`, genre `solide`, lu par `parser/solide-parser.ts` (`SolideS
 nombres > 0, virgule ou point, au plus 1000 et 3 décimales, rapport ≤ 10 (`SOLIDE_MAX_RATIO`) ; cône : hauteur > 0,5 × rayon (`SOLIDE_FLAT_CONE`, sinon le sommet tombe dans l’ellipse). Les dimensions sont des **proportions** : le
 dessin est ramené à `SOLIDE_SIZE` = 4 cm sur son plus grand côté. `sommets:` : un nom par sommet (majuscule,
 puis `'` ou un nombre ; `-` sans nom) dans l'ordre de `solideTopology` — cube, pavé ABCD en **bas** (A devant
-gauche, sens direct), EFGH au-dessus (E sur A) ; prisme ABC devant, DEF derrière ; pyramide S puis la base ;
+gauche, sens direct), EFGH au-dessus (E sur A) ; prisme ABC devant, DEF derrière ; pyramide S puis la base ; tétraèdre (`pyramide triangle`, 2026-11-05, `tetraedre-vue.test.ts`) : base tournée, A au fond à gauche, B devant, C au fond à droite, seule AC en tirets, cote du côté sur [BC] en bas à droite (avec un sommet au fond, ce sommet tombait sur l'arête S – sommet de devant) ;
 cône S, O ; cylindre O, O' ; boule O (un centre nommé reçoit un point). `marquer:` (virgules) : `face ABCD`
 (n'importe quel ordre) ou `face dessus` (places `devant | derriere | dessus | dessous | gauche | droite` de
 `topology.places`), `arete AE`, `sommet G` ; solides ronds : sommets seulement. `cotes: cm | mm | m | oui |
