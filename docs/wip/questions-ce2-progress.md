@@ -6,14 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2408._
+_Mis à jour le 2026-11-05, migration du lot 8 en PR._
 
-- **État** : lots 1 à 7c en prod et publiés ; lot 8 (figures planes et symétrie, 9 modèles) mergé (#2408), pas encore
-  en base prod.
-- **Prochaine action** : après la création par David, relevé MCP des 9 brouillons, migration nœud + tag (branche
-  `feat/questions-ce2-lot8-rangement`), page à cocher.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-8 --publier`, lancé
-  depuis `../ubumaths-wt-questions-ce2` (écrit l'id de chaque modèle dans son fichier).
+- **État** : lots 1 à 7c publiés ; lot 8 (9 modèles) en brouillon en prod ; migration nœud + tag en PR (rouge sans,
+  vert 10/10, `security-auditor` sans finding bloquant).
+- **Prochaine action** : CI verte → `check:migrations --pr`, merge, `db:migrate` depuis le dépôt principal, relevé MCP,
+  page à cocher.
+- **En attente de David** : rien avant la page à cocher.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; `axe: à choisir` →
   la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) et
   `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance.
@@ -751,3 +750,7 @@ Réponse de David (« je te suis », 2026-11-05) : les cinq recommandations.
 - CI #2408 rouge : la garde `answer-complexity-corpus` veut chaque réponse de spec ≤ 133 caractères (limite 400,
   marge × 3) ; le château du 09 (11 segments, 189 caractères) → une tour de 6 segments (105 au plus).
 - 2026-11-05 : #2408 mergée (CI verte après la correction).
+- 2026-11-05 : `create-questions --publier` (David) : 9 brouillons en prod, relus au MCP (draft, CE2, niveaux 6 à 10,
+  3, 1 à 3 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids commités. Migration
+  `20261105201824_questions_ce2_lot8_rangement_tags` + test : rouge sans le corps (6 échecs sur 10), vert 10/10 ;
+  `security-auditor` : aucun finding bloquant (diff avec la 7c : valeurs seules ; chemins et points vérifiés en prod).
