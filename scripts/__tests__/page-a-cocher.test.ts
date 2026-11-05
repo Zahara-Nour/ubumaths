@@ -443,6 +443,83 @@ describe('dessinerBlocs', () => {
 		expect(() => dessinerBlocs('```courbe\nx: 5 ; 1\n```')).toThrow(/bloc courbe en erreur/);
 	});
 
+	it('line : axe, une graduation par pas, nombres en formules à la française, point et segment', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: 0\nend: 2\nstep: 0.5\nmajor: 2\npoints: A=1/2\nsegments: [1, 2[\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown.match(/class="nl-tick"/g)).toHaveLength(5);
+		// Nombres sous les grandes graduations seulement : 0, 1, 2
+		expect(r.markdown.match(/data-tex=/g)).toHaveLength(3);
+		expect(r.markdown).toContain('class="nl-point"');
+		expect(r.markdown).toContain('var(--color-fig-rouge)');
+		expect(r.markdown).toContain('>A<');
+		expect(r.markdown.match(/class="nl-segment"/g)).toHaveLength(1);
+		expect(r.markdown.match(/class="nl-bracket"/g)).toHaveLength(2);
+		expect(r.markdown).toContain('var(--color-fig-bleu)');
+		expect(r.solutions).toEqual([]);
+	});
+
+	it('line : étiquettes de l’auteur, décimaux à la française ; automatiques comme l’appli', () => {
+		const r = dessinerBlocs('```line\nstart: 2\nend: 3\nstep: 0.1\nlabels: 2, 2.5, 3\n```');
+		expect(r.markdown).toContain('data-tex="2{,}5"');
+		// formatAutoLabel de l'appli : 0,5 s'écrit en fraction
+		expect(dessinerBlocs('```line\nstart: 0\nend: 1\nstep: 0.5\n```').markdown).toContain(
+			'data-tex="\\frac{1}{2}"'
+		);
+	});
+
+	it('line : une étiquette cachée est un « ? », sans son nombre', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 4\nstep: 1\nhidden: 3\n```');
+		expect(r.markdown).toContain('class="nl-cache"');
+		expect(r.markdown).not.toContain('data-tex="3"');
+		expect(r.markdown).toContain('data-tex="2"');
+	});
+
+	it('line avec flèches : deux pointes ; demi-droite jusqu’à la pointe, un seul crochet', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: 0\nend: 5\nstep: 1\narrows: true\nsegments: [2, +inf[\n```'
+		);
+		expect(r.markdown.match(/class="nl-arrow"/g)).toHaveLength(2);
+		expect(r.markdown.match(/class="nl-bracket"/g)).toHaveLength(1);
+	});
+
+	it('line à placer : la droite sans les points, la construction juste les pose et les nomme', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 10\nstep: 1\nplacer: A=3 ; B=7\n```');
+		expect(r.markdown).not.toContain('class="nl-point"');
+		expect(r.solutions).toHaveLength(1);
+		expect(r.solutions[0].match(/class="nl-point"/g)).toHaveLength(2);
+		expect(r.solutions[0]).toContain('>A<');
+		expect(r.solutions[0]).toContain('>B<');
+	});
+
+	it('line à représenter : la droite nue, la construction juste trace l’intervalle', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: -5\nend: 5\nstep: 1\narrows: true\nrepresenter: ]-inf, 2]\n```'
+		);
+		expect(r.markdown).not.toContain('class="nl-segment"');
+		expect(r.solutions).toHaveLength(1);
+		expect(r.solutions[0].match(/class="nl-segment"/g)).toHaveLength(1);
+		expect(r.solutions[0].match(/class="nl-bracket"/g)).toHaveLength(1);
+	});
+
+	it('line à représenter sans intervalle lisible : signalé en alerte, pas de solution vide', () => {
+		const r = dessinerBlocs('```line\nstart: -5\nend: 5\nstep: 1\nrepresenter: ?\n```');
+		expect(r.solutions).toEqual([]);
+		expect(r.avertissements.join(' ')).toMatch(/bloc line : .*intervalle/);
+	});
+
+	it('line : une couleur inconnue remonte en alerte de fiche', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 4\nstep: 1\npoints: A=2 fuchsia\n```');
+		expect(r.avertissements.join(' ')).toMatch(/bloc line : Point A/);
+	});
+
+	it('line en erreur : la page s’arrête', () => {
+		expect(() => dessinerBlocs('```line\nstep: 1\n```')).toThrow(/bloc line en erreur/);
+	});
+
 	it('bloc inconnu de la page : sa source, échappée, et signalé', () => {
 		const r = dessinerBlocs('```operation\ncalcul: 44 + 25 <b>\n```');
 		expect(r.nonDessines).toEqual(['operation']);

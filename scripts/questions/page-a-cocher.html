@@ -488,6 +488,42 @@
 		width: 12rem;
 	}
 
+	/* Bloc line : droite graduée de NumberLine.svelte */
+	.nl {
+		display: block;
+		width: 100%;
+		height: auto;
+		margin: 0.5rem auto;
+		overflow: visible;
+	}
+	.nl .nl-axe,
+	.nl .nl-tick {
+		stroke: var(--color-foreground);
+	}
+	.nl .nl-arrow {
+		fill: var(--color-foreground);
+	}
+	.nl .nl-point {
+		stroke: var(--color-background);
+	}
+	.nl .nl-nombre {
+		text-align: center;
+		font-size: 0.75rem;
+		line-height: 1;
+		color: var(--color-foreground);
+	}
+	.nl .nl-cache {
+		font-weight: bold;
+		font-size: 0.85rem;
+		color: var(--color-fig-rouge);
+	}
+	.nl .nl-nom {
+		text-align: center;
+		font-weight: 600;
+		font-size: 0.8rem;
+		line-height: 1;
+	}
+
 	/* Bloc variation : tableau de VariationTable.svelte (signes en couleur du texte) */
 	/* Bloc de type block : seul le tableau défile sur un écran étroit, pas la page */
 	.vt {
@@ -1253,7 +1289,7 @@
 	function exemple(e) {
 		const reponse = e.choices
 			? `<ul class="choix${e.choices.some((c) => c.content.startsWith('@@HTML@@')) ? ' dessins' : ''}">${e.choices.map((c) => `<li class="${c.bon ? 'bon' : ''}">${c.bon ? '✔ ' : ''}${c.content.startsWith('@@HTML@@') ? formules(c.content.slice(8)) : enLigne(c.content)}</li>`).join('')}</ul>`
-			: `<div class="attendu">Attendu, case par case : <b>${e.answer.split(' | ').map(maths).join(' | ')}</b></div>${e.solution ? `<div class="sol"><div class="attendu">Une construction juste, le moins d'objets (celle que montre la correction) :</div><div class="m-bloc">${e.solution}</div></div>` : ''}`;
+			: `<div class="attendu">Attendu, case par case : <b>${e.answer.split(' | ').map(maths).join(' | ')}</b></div>${e.solution ? `<div class="sol"><div class="attendu">Une construction juste (monnaie, collection : le moins d'objets, celle que montre la correction) :</div><div class="m-bloc">${formules(e.solution)}</div></div>` : ''}`;
 		return `<div class="ex"><div class="var">variation ${e.variation}</div><div class="enonce">${rendu(e.statement)}</div>${reponse}<ol class="corrige">${e.steps.map((s) => `<li>${s.includes('@@HTML@@') ? rendu(s) : etape(s)}</li>`).join('')}</ol></div>`;
 	}
 
