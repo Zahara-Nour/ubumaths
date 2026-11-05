@@ -9,20 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2374._
+_Mis à jour le 2026-11-05, lot 6 : brouillons en prod, migration nœud + tag en PR._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lot 5 publié (§ 10) ; lot 6
-  (algèbre : 256, 387, 257, 258) mergé (#2374, § 11), brouillons pas encore en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/1spe-approfondissements-6 --publier` (prod), puis migration nœud + tag (aucune sous-notion
-  neuve), page à cocher, publication. Ensuite lots 7 à 9.
+  (algèbre : 256, 387, 257, 258) en brouillon en prod, migration nœud + tag en PR (§ 11, « Lot 6 en prod »).
+- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal → vérif MCP → page à cocher →
+  relecture de David → publication. Ensuite lots 7 à 9.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
-  `feat/questions-1spe-demonstrations` (rien à perdre ; `git push --delete` refusé par le classifieur le 2026-11-04).
-- **Pièges en cours** : `create-questions` lit `.env` = PROD → en local, `DOTENV_CONFIG_PATH=../ubumaths/.env.local`.
-  Spec `bad_form` → `constraintViolations: ['form']`. Port 5178 pour l'aperçu. `db:migrate` depuis le dépôt
-  principal à jour. Le journal à jour est celui de `main` après merge (celui du worktree peut retarder).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-6` (mergée ; nouvelle branche depuis `origin/main` pour la migration).
+  `feat/questions-1spe-demonstrations` (rien à perdre ; refusée au classifieur le 2026-11-04).
+- **Pièges en cours** : `create-questions --publier` vers la prod = refus du classifieur sur un simple « go » →
+  donner d'emblée la commande `!` à David. Spec `bad_form` → `constraintViolations: ['form']`. Port 5178.
+  `db:migrate` depuis le dépôt principal à jour. Le journal à jour est celui de `main` après merge.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-6-tags`.
 
 ---
 
@@ -383,3 +382,13 @@ Gardes : r, b, c non nuls (pas de « (x + 0) » ni « (c + 0)x »), s, u ≠ 0 p
 150 tirages par modèle, 38 specs vertes, 0 `\textcolor` hors `$` ; 40 aperçus par modèle relus (signes,
 coefficients nuls) ; `create-questions` simulation et brouillons en base locale ; aperçu admin du 257 : case dans
 l'exposant et x³ − a³ bien rendus.
+
+### Lot 6 en prod : brouillons, puis migration nœud + tag (2026-11-05)
+
+David a lancé `create-questions --publier` après #2374 (refusé à Claude par le classifieur sur un « go »). Relevé
+prod (MCP) : 4 brouillons {1_SPE}, sans nœud ni tag : `1b062bd5` degré 3 (factoriser), `d25bd762` degré 3
+(résoudre), `aee1b98f` xⁿ − aⁿ, `6ace8b95` somme et produit ; points 256 et 387 sur « degré 3 et factorisation »,
+257 sur « factorisation » (Calcul littéral), 258 sur « somme et produit des racines » ; aucun modèle déjà tagué sur
+ces points. Migration `20261105060921_questions_1spe_approfondissements_6_rangement_tags` (gabarit `demonstrations_3`,
+aucune sous-notion neuve), test `questions-1spe-approfondissements-6-rangement-tags` 12/12 vert, rouge sans la
+migration (7 rouges, la suite principale ne s'exécute pas). Accès : Q5 de D3, personne.
