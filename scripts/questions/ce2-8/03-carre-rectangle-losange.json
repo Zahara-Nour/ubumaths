@@ -1,0 +1,250 @@
+{
+	"title": "Propriétés du carré, du rectangle et du losange",
+	"description": "Phrase vraie ; nommer d'après les codes ; ce qui manque pour être un carré",
+	"grades": ["CE2"],
+	"level": 8,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle phrase est vraie ?\n\n```choix\n- {{if:f==1|Un carré a $4$ côtés de la même longueur et $4$ angles droits.|{{if:f==2|Les côtés opposés d'un rectangle ont la même longueur.|Les $4$ côtés d'un losange ont la même longueur.}}}}\n- {{if:f==1|Un carré a $4$ côtés de la même longueur, mais aucun angle droit.|{{if:f==2|Les $4$ côtés d'un rectangle ont toujours la même longueur.|Un losange a $4$ angles droits.}}}}\n- {{if:f==1|Un carré a $2$ angles droits.|{{if:f==2|Un rectangle a $2$ angles droits.|Un losange a deux côtés longs et deux côtés courts.}}}}\n- {{if:f==1|Un carré a deux côtés longs et deux côtés courts.|{{if:f==2|Un rectangle n'a aucun angle droit.|Un losange a $3$ côtés.}}}}\n```",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:f==1|Un $\\textcolor{{{color:primary.0}}}{\\text{carré}}$ a $4$ côtés de la même longueur et $4$ angles droits.|{{if:f==2|Un $\\textcolor{{{color:primary.0}}}{\\text{rectangle}}$ a $4$ angles droits, et ses côtés opposés ont la même longueur.|Un $\\textcolor{{{color:primary.0}}}{\\text{losange}}$ a $4$ côtés de la même longueur. Ses angles ne sont pas droits (sinon, c'est un carré).}}}}"
+				]
+			}
+		},
+		{
+			"statement": "D'après les codes, quelle est cette figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure à quatre côtés, avec ses codes.\n---\na = point({{if:k==1|3.66|{{if:k==2|5.7|{{if:k==3|3.0|{{if:k==4|7.95|{{if:k==5|7.34|3.6}}}}}}}}}}, {{if:k==1|1.17|{{if:k==2|0.9|{{if:k==3|1.39|{{if:k==4|3.41|{{if:k==5|4.85|5.92}}}}}}}}}}, visible=faux)\nb = point({{if:k==1|7.33|{{if:k==2|7.6|{{if:k==3|7.89|{{if:k==4|3.45|{{if:k==5|4.1|3.61}}}}}}}}}}, {{if:k==1|2.16|{{if:k==2|4.2|{{if:k==3|3.17|{{if:k==4|6.01|{{if:k==5|5.06|2.7}}}}}}}}}}, visible=faux)\nc = point({{if:k==1|6.34|{{if:k==2|4.3|{{if:k==3|7.0|{{if:k==4|2.05|{{if:k==5|2.66|6.4}}}}}}}}}}, {{if:k==1|5.83|{{if:k==2|6.1|{{if:k==3|5.61|{{if:k==4|3.59|{{if:k==5|2.15|1.08}}}}}}}}}}, visible=faux)\nd = point({{if:k==1|2.67|{{if:k==2|2.4|{{if:k==3|2.11|{{if:k==4|6.55|{{if:k==5|5.9|6.39}}}}}}}}}}, {{if:k==1|4.84|{{if:k==2|2.8|{{if:k==3|3.83|{{if:k==4|0.99|{{if:k==5|1.94|4.3}}}}}}}}}}, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\n{{if:f==1|m0 = marque_segment(a, b)\nm1 = marque_segment(b, c)\nm2 = marque_segment(c, d)\nm3 = marque_segment(d, a)\ng0 = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ng1 = angle(a, b, c, marque=\"carre\", couleur=\"noir\")\ng2 = angle(b, c, d, marque=\"carre\", couleur=\"noir\")\ng3 = angle(c, d, a, marque=\"carre\", couleur=\"noir\")|{{if:f==2|m0 = marque_segment(a, b)\nm1 = marque_segment(b, c, traits=2)\nm2 = marque_segment(c, d)\nm3 = marque_segment(d, a, traits=2)\ng0 = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ng1 = angle(a, b, c, marque=\"carre\", couleur=\"noir\")\ng2 = angle(b, c, d, marque=\"carre\", couleur=\"noir\")\ng3 = angle(c, d, a, marque=\"carre\", couleur=\"noir\")|m0 = marque_segment(a, b)\nm1 = marque_segment(b, c)\nm2 = marque_segment(c, d)\nm3 = marque_segment(d, a)}}}}\n```\n\n```choix\nmelanger: non\n- C'est un carré.\n- C'est un rectangle.\n- C'est un losange.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "f",
+					"expression": "eval:floor((k+1)/2)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:f-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:f==1|Les petits traits disent que les $4$ côtés ont la même longueur, les petits carrés que les $4$ angles sont droits : c'est un $\\textcolor{{{color:primary.0}}}{\\text{carré}}$.|{{if:f==2|Les petits carrés codent $4$ angles droits ; les côtés opposés ont le même code (un trait, deux traits) : c'est un $\\textcolor{{{color:primary.0}}}{\\text{rectangle}}$.|Les $4$ côtés ont le même code, et aucun angle n'est codé droit : c'est un $\\textcolor{{{color:primary.0}}}{\\text{losange}}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Que manque-t-il à ce {{if:q==1|losange|rectangle}} pour être un carré ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un {{if:q==1|losange|rectangle}} avec ses codes.\n---\na = point({{if:q==1|7.8|2.2}}, {{if:q==1|3.5|2.1}}, visible=faux)\nb = point({{if:q==1|5.0|7.8}}, {{if:q==1|5.2|2.1}}, visible=faux)\nc = point({{if:q==1|2.2|7.8}}, {{if:q==1|3.5|4.9}}, visible=faux)\nd = point({{if:q==1|5.0|2.2}}, {{if:q==1|1.8|4.9}}, visible=faux)\np = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\n{{if:q==1|m0 = marque_segment(a, b)\nm1 = marque_segment(b, c)\nm2 = marque_segment(c, d)\nm3 = marque_segment(d, a)|m0 = marque_segment(a, b)\nm1 = marque_segment(b, c, traits=2)\nm2 = marque_segment(c, d)\nm3 = marque_segment(d, a, traits=2)\ng0 = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ng1 = angle(a, b, c, marque=\"carre\", couleur=\"noir\")\ng2 = angle(b, c, d, marque=\"carre\", couleur=\"noir\")\ng3 = angle(c, d, a, marque=\"carre\", couleur=\"noir\")}}\n```\n\n```choix\nmelanger: non\n- $4$ angles droits\n- $4$ côtés de la même longueur\n- un côté de plus\n- des côtés plus longs\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "w",
+					"expression": "eval:q-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:q==1|Le losange a déjà $4$ côtés de la même longueur ; il lui manque $\\textcolor{{{color:primary.0}}}{\\text{4 angles droits}}$.|Le rectangle a déjà $4$ angles droits ; il lui manque $\\textcolor{{{color:primary.0}}}{\\text{4 côtés de la même longueur}}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré : phrase vraie",
+			"variationIndex": 0,
+			"variables": {
+				"f": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré sans angle droit",
+			"variationIndex": 0,
+			"variables": {
+				"f": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle : côtés opposés",
+			"variationIndex": 0,
+			"variables": {
+				"f": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle à 2 angles droits",
+			"variationIndex": 0,
+			"variables": {
+				"f": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Losange : 4 côtés égaux",
+			"variationIndex": 0,
+			"variables": {
+				"f": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : losange à 4 angles droits",
+			"variationIndex": 0,
+			"variables": {
+				"f": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Codes du carré",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"k": "2",
+				"f": "1",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Codes du rectangle",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"k": "3",
+				"f": "2",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Codes du losange",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "6",
+				"f": "3",
+				"w": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : losange codé pris pour un carré",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "6",
+				"f": "3",
+				"w": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au losange il manque les angles droits",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"q": "1",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Au rectangle il manque les côtés égaux",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"q": "2",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle, angles droits",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"q": "2",
+				"w": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

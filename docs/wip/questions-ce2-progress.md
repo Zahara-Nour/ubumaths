@@ -6,13 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, phase 0 du lot 8 proposée._
+_Mis à jour le 2026-11-05, lot 8 écrit (§ 14)._
 
-- **État** : lots 1 à 7c en prod et publiés ; relevé du 2026-11-05 : 28 points sans modèle ; phase 0 du lot 8
-  (figures planes et symétrie, 9 modèles, 8 points) écrite au § 14.
-- **Prochaine action** : réponses de David aux 5 questions du § 14, puis écrire `lot-ce2-8.py` (patrons : CE1 lots 9
-  et 10).
-- **En attente de David** : les 5 questions du § 14.
+- **État** : lots 1 à 7c en prod et publiés ; lot 8 (figures planes et symétrie, 9 modèles) écrit, simulé, PR ouverte.
+- **Prochaine action** : merge de la PR du lot 8, puis `create-questions --publier` par David, migration nœud + tag.
+- **En attente de David** : `create-questions --publier` du lot 8 après le merge.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; `axe: à choisir` →
   la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) et
   `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance.
@@ -683,7 +681,7 @@ avec la 2de, sur le nœud parent) ; 082 dans ce lot (outil en prod) plutôt qu'e
 - 2026-11-05 : simulation puis `--publier` (David) : 8/8 publiés ; relevé MCP : 8 `published`, `grades` CE2, rangés, un
   point chacun (074, 075, 096, 076 ×2, 083, 097, 082). Worktree retiré. **Lot 7c clos.**
 
-## 14. Relevé après le lot 7c et lot 8 — figures planes et symétrie (phase 0, proposée le 2026-11-05)
+## 14. Relevé après le lot 7c et lot 8 — figures planes et symétrie (phase 0 validée le 2026-11-05)
 
 Relevé MCP (prod, 2026-11-05) : **28 points CE2 sans modèle** — 001, 002 (`collection` `centaines:`, outil C) ;
 D : 086, 039, 043, 051, 065, 070 ; longueurs et masses : 012, 040, 041, 042, 044, 049, 050 ; solides : 061, 062,
@@ -731,3 +729,19 @@ tag ne change aucune règle.
 4. **Figures du 072** : cœur, pique, trèfle (courbes) non dessinés ; figures à côtés droits (carreau = losange,
    cerf-volant, rectangle, panneaux, lettres en segments). Recommandation : oui.
 5. **Découpage** : lot 8 ici, puis 9 (longueurs, masses), 10 (solides), puis `collection` `centaines:`. Recommandation : oui.
+
+Réponse de David (« je te suis », 2026-11-05) : les cinq recommandations.
+
+### Lot 8 — écriture (2026-11-05)
+
+- Script `docs/wip/questions/lot-ce2-8.py` → `scripts/questions/ce2-8/` : 9 modèles, 105 specs ; `create-questions`
+  en simulation (prod) : 9 « à créer » ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-figures` : 0 problème. 9 brouillons en base locale, joués dans l'aperçu admin (symétrique de la flèche tracé
+  au segment : « Juste »).
+- Rendu relu (page d'essai locale + aperçu) ; corrigé en route : un dessin dans un choix est rapetissé et le code de
+  l'angle droit y devient invisible (`arcRadiusPx` sans effet) → « Quel triangle est rectangle ? » en **une figure à
+  trois triangles numérotés** ; dessins des choix en fenêtre serrée et `taille: grande` ; trapèze codé : codes sur
+  ses côtés obliques égaux (et non sur deux côtés visiblement inégaux) ; parallélogramme du 08 plus franc.
+- Pièges : la page à cocher n'affiche pas l'italique `_…_` (l'appli oui, vu dans l'aperçu) ; la sonde ne passe pas les
+  figures d'un choix (seul le rendu les voit) ; `{{if}}` autour d'un bloc `choix` refusé (« bloc non fermé ») : faire
+  varier le contenu d'une figure, jamais le bloc.

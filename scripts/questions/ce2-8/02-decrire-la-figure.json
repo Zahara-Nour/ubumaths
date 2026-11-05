@@ -1,0 +1,230 @@
+{
+	"title": "Décrire le carré, le rectangle, le losange : côtés et angles droits",
+	"description": "Combien d'angles droits ; la phrase qui décrit la figure ; qui suis-je ?",
+	"grades": ["CE2"],
+	"level": 7,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien d'angles droits a ce {{if:k<=2|carré|{{if:k<=4|rectangle|losange}}}} ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un carré, un rectangle ou un losange.\n---\na = point({{if:k==1|3.1|{{if:k==2|4.3|{{if:k==3|2.2|{{if:k==4|3.0|{{if:k==5|7.8|7.34}}}}}}}}}}, {{if:k==1|1.6|{{if:k==2|0.9|{{if:k==3|2.1|{{if:k==4|1.39|{{if:k==5|3.5|4.85}}}}}}}}}}, visible=faux)\nb = point({{if:k==1|6.9|{{if:k==2|7.6|{{if:k==3|7.8|{{if:k==4|7.89|{{if:k==5|5.0|4.1}}}}}}}}}}, {{if:k==1|1.6|{{if:k==2|2.8|{{if:k==3|2.1|{{if:k==4|3.17|{{if:k==5|5.2|5.06}}}}}}}}}}, visible=faux)\nc = point({{if:k==1|6.9|{{if:k==2|5.7|{{if:k==3|7.8|{{if:k==4|7.0|{{if:k==5|2.2|2.66}}}}}}}}}}, {{if:k==1|5.4|{{if:k==2|6.1|{{if:k==3|4.9|{{if:k==4|5.61|{{if:k==5|3.5|2.15}}}}}}}}}}, visible=faux)\nd = point({{if:k==1|3.1|{{if:k==2|2.4|{{if:k==3|2.2|{{if:k==4|2.11|{{if:k==5|5.0|5.9}}}}}}}}}}, {{if:k==1|5.4|{{if:k==2|4.2|{{if:k==3|4.9|{{if:k==4|3.83|{{if:k==5|1.8|1.94}}}}}}}}}}, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:k<=4|4|0}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k<=4|Un {{if:k<=2|carré|{{if:k<=4|rectangle|losange}}}} a $4$ angles droits, un à chaque sommet : $\\textcolor{{{color:primary.0}}}{4}$.|Un losange n'a aucun angle droit : $\\textcolor{{{color:primary.0}}}{0}$. Ses $4$ côtés ont la même longueur, mais ses angles ne sont pas droits.}}"
+				]
+			}
+		},
+		{
+			"statement": "Quelle phrase décrit cette figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un carré, un rectangle ou un losange.\n---\na = point({{if:k==1|3.1|{{if:k==2|4.3|{{if:k==3|2.2|{{if:k==4|3.0|{{if:k==5|7.8|7.34}}}}}}}}}}, {{if:k==1|1.6|{{if:k==2|0.9|{{if:k==3|2.1|{{if:k==4|1.39|{{if:k==5|3.5|4.85}}}}}}}}}}, visible=faux)\nb = point({{if:k==1|6.9|{{if:k==2|7.6|{{if:k==3|7.8|{{if:k==4|7.89|{{if:k==5|5.0|4.1}}}}}}}}}}, {{if:k==1|1.6|{{if:k==2|2.8|{{if:k==3|2.1|{{if:k==4|3.17|{{if:k==5|5.2|5.06}}}}}}}}}}, visible=faux)\nc = point({{if:k==1|6.9|{{if:k==2|5.7|{{if:k==3|7.8|{{if:k==4|7.0|{{if:k==5|2.2|2.66}}}}}}}}}}, {{if:k==1|5.4|{{if:k==2|6.1|{{if:k==3|4.9|{{if:k==4|5.61|{{if:k==5|3.5|2.15}}}}}}}}}}, visible=faux)\nd = point({{if:k==1|3.1|{{if:k==2|2.4|{{if:k==3|2.2|{{if:k==4|2.11|{{if:k==5|5.0|5.9}}}}}}}}}}, {{if:k==1|5.4|{{if:k==2|4.2|{{if:k==3|4.9|{{if:k==4|3.83|{{if:k==5|1.8|1.94}}}}}}}}}}, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- Elle a $4$ côtés de la même longueur et $4$ angles droits.\n- Elle a $4$ angles droits ; deux côtés longs et deux côtés courts.\n- Elle a $4$ côtés de la même longueur et aucun angle droit.\n- Elle a $3$ côtés et un angle droit.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "w",
+					"expression": "{{if:k<=2|0|{{if:k<=4|1|2}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est un {{if:k<=2|carré|{{if:k<=4|rectangle|losange}}}} : il a {{if:w==0|$4$ côtés de la même longueur et $4$ angles droits|{{if:w==1|$4$ angles droits ; deux côtés longs et deux côtés courts|$4$ côtés de la même longueur et aucun angle droit}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Qui suis-je ?\n\n_{{if:q==1|J'ai $4$ côtés de la même longueur, mais aucun angle droit.|{{if:q==2|J'ai $4$ côtés de la même longueur et $4$ angles droits.|{{if:q==3|J'ai $4$ angles droits, mais mes côtés ne sont pas tous de la même longueur.|{{if:q==4|J'ai $3$ côtés et un angle droit.|J'ai $3$ côtés et aucun angle droit.}}}}}}}}_\n\n```choix\nmelanger: non\n- Je suis un losange.\n- Je suis un carré.\n- Je suis un rectangle.\n- Je suis un triangle rectangle.\n- Je suis un triangle.\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..5"
+				},
+				{
+					"name": "w",
+					"expression": "eval:q-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:q==1|C'est un $\\textcolor{{{color:primary.0}}}{\\text{losange}}$ : un carré aurait aussi $4$ angles droits.|{{if:q==2|C'est un $\\textcolor{{{color:primary.0}}}{\\text{carré}}$ : $4$ côtés de la même longueur, $4$ angles droits.|{{if:q==3|C'est un $\\textcolor{{{color:primary.0}}}{\\text{rectangle}}$.|{{if:q==4|C'est un $\\textcolor{{{color:primary.0}}}{\\text{triangle rectangle}}$.|C'est un $\\textcolor{{{color:primary.0}}}{\\text{triangle}}$, qui n'est pas rectangle.}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré : 4",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle : 4",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle, 2 (les grands côtés)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Losange : 0",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"k": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : losange, 4 (pris pour un carré)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"k": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Description du carré",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Description du rectangle",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"k": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Description du losange",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : losange décrit comme un carré",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Devinette du losange",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : losange pris pour un carré",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Devinette du triangle",
+			"variationIndex": 2,
+			"variables": {
+				"q": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

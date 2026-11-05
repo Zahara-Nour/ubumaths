@@ -1,0 +1,186 @@
+{
+	"title": "Utiliser le code de l'angle droit",
+	"description": "Quels angles sont droits ; quel triangle est rectangle ; un rectangle codé une fois",
+	"grades": ["CE2"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quels angles de la figure $ABCD$ sont droits ? Coche toutes les bonnes réponses.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un quadrilatère ABCD, des angles codés.\n---\na = point({{if:k==1|2.5|{{if:k==2|3.16|{{if:k==3|7.5|6.84}}}}}}, {{if:k==1|2.0|{{if:k==2|1.54|{{if:k==3|5.0|5.46}}}}}}, visible=faux)\nb = point({{if:k==1|7.5|{{if:k==2|7.86|{{if:k==3|2.5|2.14}}}}}}, {{if:k==1|2.0|{{if:k==2|3.25|{{if:k==3|5.0|3.75}}}}}}, visible=faux)\nc = point({{if:k==1|5.7|{{if:k==2|5.14|{{if:k==3|4.3|4.86}}}}}}, {{if:k==1|5.0|{{if:k==2|5.46|{{if:k==3|2.0|1.54}}}}}}, visible=faux)\nd = point({{if:k==1|2.5|{{if:k==2|2.14|{{if:k==3|7.5|7.86}}}}}}, {{if:k==1|5.0|{{if:k==2|4.36|{{if:k==3|2.0|2.64}}}}}}, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng0 = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ng3 = angle(c, d, a, marque=\"carre\", couleur=\"noir\")\ntexte({{if:k==1|2.1|{{if:k==2|2.88|{{if:k==3|7.9|7.12}}}}}}, {{if:k==1|1.55|{{if:k==2|0.97|{{if:k==3|5.15|5.73}}}}}}, \"A\")\ntexte({{if:k==1|7.95|{{if:k==2|8.36|{{if:k==3|2.05|1.64}}}}}}, {{if:k==1|1.62|{{if:k==2|3.04|{{if:k==3|5.08|3.66}}}}}}, \"B\")\ntexte({{if:k==1|6.0|{{if:k==2|5.29|{{if:k==3|4.0|4.71}}}}}}, {{if:k==1|5.25|{{if:k==2|5.79|{{if:k==3|1.45|0.91}}}}}}, \"C\")\ntexte({{if:k==1|2.1|{{if:k==2|1.66|{{if:k==3|7.9|8.34}}}}}}, {{if:k==1|5.15|{{if:k==2|4.35|{{if:k==3|1.55|2.35}}}}}}, \"D\")\n```\n\n```choix\nmelanger: non\nplusieurs: oui\n- l'angle en $A$\n- l'angle en $B$\n- l'angle en $C$\n- l'angle en $D$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les petits carrés sont en $\\textcolor{{{color:primary.0}}}{A}$ et en $\\textcolor{{{color:primary.0}}}{D}$ : ces deux angles sont droits.",
+					"Les angles en $B$ et en $C$ ne sont pas codés : ils ne sont pas droits."
+				]
+			}
+		},
+		{
+			"statement": "Quel triangle est rectangle ?\n\n```figure\nfenetre: 0 ; 15 ; 0 ; 6\ndescription: Trois triangles numérotés 1, 2 et 3 ; un angle codé.\n---\na = point({{if:k==1|1.25|{{if:k==2|0.73|0.73}}}}, {{if:k==1|2.18|{{if:k==2|1.83|1.83}}}}, visible=faux)\nb = point({{if:k==1|4.64|{{if:k==2|4.27|4.27}}}}, {{if:k==1|3.41|{{if:k==2|2.45|2.45}}}}, visible=faux)\nc = point({{if:k==1|0.36|{{if:k==2|2.0|2.0}}}}, {{if:k==1|4.62|{{if:k==2|4.97|4.97}}}}, visible=faux)\nq0 = polygone(a, b, c, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ntexte(2.35, 0.5, \"1\")\nd = point({{if:k==1|5.73|{{if:k==2|6.25|9.38}}}}, {{if:k==1|1.83|{{if:k==2|2.18|3.03}}}}, visible=faux)\nf = point({{if:k==1|9.27|{{if:k==2|9.64|5.62}}}}, {{if:k==1|2.45|{{if:k==2|3.41|4.4}}}}, visible=faux)\ng = point({{if:k==1|7.0|{{if:k==2|5.36|7.02}}}}, {{if:k==1|4.97|{{if:k==2|4.62|2.4}}}}, visible=faux)\nq1 = polygone(d, f, g, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ntexte(7.35, 0.5, \"2\")\nh = point({{if:k==1|14.38|{{if:k==2|14.38|11.25}}}}, {{if:k==1|3.03|{{if:k==2|3.03|2.18}}}}, visible=faux)\nj = point({{if:k==1|10.62|{{if:k==2|10.62|14.64}}}}, {{if:k==1|4.4|{{if:k==2|4.4|3.41}}}}, visible=faux)\nm = point({{if:k==1|12.02|{{if:k==2|12.02|10.36}}}}, {{if:k==1|2.4|{{if:k==2|2.4|4.62}}}}, visible=faux)\nq2 = polygone(h, j, m, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ntexte(12.35, 0.5, \"3\")\n{{if:k==1|g = angle(c, a, b, marque=\"carre\", couleur=\"noir\")|{{if:k==2|g = angle(g, d, f, marque=\"carre\", couleur=\"noir\")|g = angle(m, h, j, marque=\"carre\", couleur=\"noir\")}}}}\n```\n\n```choix\nmelanger: non\n- le triangle $1$\n- le triangle $2$\n- le triangle $3$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le petit carré est dans le triangle $\\textcolor{{{color:primary.0}}}{{{k}}}$ : il code $\\textcolor{{{color:primary.0}}}{\\text{un angle droit}}$, ce triangle est rectangle.",
+					"Les deux autres n'ont aucun angle codé : on ne peut pas dire qu'ils sont rectangles."
+				]
+			}
+		},
+		{
+			"statement": "Cette figure est un rectangle. Un seul de ses angles droits est codé. Combien d'angles droits a-t-elle ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un rectangle, un angle codé.\n---\na = point({{if:k==1|2.2|{{if:k==2|3.0|{{if:k==3|6.5|7.95}}}}}}, {{if:k==1|2.1|{{if:k==2|1.39|{{if:k==3|0.8|3.41}}}}}}, visible=faux)\nb = point({{if:k==1|7.8|{{if:k==2|7.89|{{if:k==3|6.5|3.45}}}}}}, {{if:k==1|2.1|{{if:k==2|3.17|{{if:k==3|6.2|6.01}}}}}}, visible=faux)\nc = point({{if:k==1|7.8|{{if:k==2|7.0|{{if:k==3|3.5|2.05}}}}}}, {{if:k==1|4.9|{{if:k==2|5.61|{{if:k==3|6.2|3.59}}}}}}, visible=faux)\nd = point({{if:k==1|2.2|{{if:k==2|2.11|{{if:k==3|3.5|6.55}}}}}}, {{if:k==1|4.9|{{if:k==2|3.83|{{if:k==3|0.8|0.99}}}}}}, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng1 = angle(a, b, c, marque=\"carre\", couleur=\"noir\")\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un rectangle a toujours $\\textcolor{{{color:primary.0}}}{4}$ angles droits, même quand un seul est codé."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A et D",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["0;3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B et C",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["1;2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tous les angles",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["0;1;2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le triangle codé, place 2",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"k": "2",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un triangle sans code",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"k": "2",
+				"w": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le triangle codé, place 3",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "3",
+				"w": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle : 4",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"k": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 (le seul codé)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

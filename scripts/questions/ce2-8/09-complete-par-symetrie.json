@@ -1,0 +1,243 @@
+{
+	"title": "Compléter une figure par symétrie sur quadrillage",
+	"description": "Tracer l'autre moitié (axe vertical ou horizontal) ; symétrique d'une figure écartée de l'axe",
+	"grades": ["CE2"],
+	"level": 3,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète la figure pour qu'elle soit symétrique par rapport à la droite $d$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\nverifier: symetrique par d\n---\nm = point(6, 0, visible=faux)\nn = point(6, 8, visible=faux)\ntexte(6.3, 7.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\n{{if:k==1|p0 = point(6, 1, visible=faux)\np1 = point(3, 1, visible=faux)\np2 = point(3, 4, visible=faux)\np3 = point(2, 4, visible=faux)\np4 = point(6, 7, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p3, epaisseur=3)\ns3 = segment(p3, p4, epaisseur=3)|{{if:k==2|p0 = point(6, 7, visible=faux)\np1 = point(3, 4, visible=faux)\np2 = point(4, 4, visible=faux)\np3 = point(2, 2, visible=faux)\np4 = point(5, 2, visible=faux)\np5 = point(5, 1, visible=faux)\np6 = point(6, 1, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p3, epaisseur=3)\ns3 = segment(p3, p4, epaisseur=3)\ns4 = segment(p4, p5, epaisseur=3)\ns5 = segment(p5, p6, epaisseur=3)|{{if:k==3|p0 = point(6, 7, visible=faux)\np1 = point(2, 4, visible=faux)\np2 = point(4, 4, visible=faux)\np3 = point(4, 1, visible=faux)\np4 = point(6, 1, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p3, epaisseur=3)\ns3 = segment(p3, p4, epaisseur=3)|p0 = point(6, 1, visible=faux)\np1 = point(4, 1, visible=faux)\np2 = point(3, 3, visible=faux)\np3 = point(4, 5, visible=faux)\np4 = point(3, 7, visible=faux)\np5 = point(6, 7, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p3, epaisseur=3)\ns3 = segment(p3, p4, epaisseur=3)\ns4 = segment(p4, p5, epaisseur=3)}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque sommet a son symétrique de l'autre côté de l'axe $d$, $\\textcolor{{{color:primary.0}}}{\\text{à la même distance}}$ : on compte les carreaux jusqu'à l'axe, puis autant de l'autre côté.",
+					"On relie les points dans le même ordre : la figure est $\\textcolor{{{color:primary.0}}}{\\text{retournée}}$, pas glissée."
+				]
+			}
+		},
+		{
+			"statement": "Complète la figure pour qu'elle soit symétrique par rapport à la droite $d$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\nverifier: symetrique par d\n---\nm = point(0, 4, visible=faux)\nn = point(12, 4, visible=faux)\ntexte(11.5, 4.4, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\n{{if:k==1|p0 = point(1, 4, visible=faux)\np1 = point(1, 6, visible=faux)\np2 = point(7, 6, visible=faux)\np3 = point(7, 7, visible=faux)\np4 = point(10, 4, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p3, epaisseur=3)\ns3 = segment(p3, p4, epaisseur=3)|{{if:k==2|p0 = point(2, 4, visible=faux)\np1 = point(4, 6, visible=faux)\np2 = point(8, 6, visible=faux)\np3 = point(9, 5, visible=faux)\np4 = point(11, 7, visible=faux)\np5 = point(11, 4, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p3, epaisseur=3)\ns3 = segment(p3, p4, epaisseur=3)\ns4 = segment(p4, p5, epaisseur=3)|p0 = point(1, 4, visible=faux)\np1 = point(1, 7, visible=faux)\np2 = point(3, 7, visible=faux)\np3 = point(3, 6, visible=faux)\np4 = point(5, 6, visible=faux)\np5 = point(5, 7, visible=faux)\np6 = point(7, 7, visible=faux)\np7 = point(7, 6, visible=faux)\np8 = point(9, 6, visible=faux)\np9 = point(9, 7, visible=faux)\np10 = point(11, 7, visible=faux)\np11 = point(11, 4, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p3, epaisseur=3)\ns3 = segment(p3, p4, epaisseur=3)\ns4 = segment(p4, p5, epaisseur=3)\ns5 = segment(p5, p6, epaisseur=3)\ns6 = segment(p6, p7, epaisseur=3)\ns7 = segment(p7, p8, epaisseur=3)\ns8 = segment(p8, p9, epaisseur=3)\ns9 = segment(p9, p10, epaisseur=3)\ns10 = segment(p10, p11, epaisseur=3)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque sommet a son symétrique de l'autre côté de l'axe $d$, $\\textcolor{{{color:primary.0}}}{\\text{à la même distance}}$ : on compte les carreaux jusqu'à l'axe, puis autant de l'autre côté.",
+					"On relie les points dans le même ordre : la figure est $\\textcolor{{{color:primary.0}}}{\\text{retournée}}$, pas glissée."
+				]
+			}
+		},
+		{
+			"statement": "Trace le symétrique de la figure par rapport à la droite $d$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\nverifier: symetrique par d\n---\nm = point(6, 0, visible=faux)\nn = point(6, 8, visible=faux)\ntexte(6.3, 7.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\n{{if:k==1|p0 = point(1, 2, visible=faux)\np1 = point(4, 2, visible=faux)\np2 = point(4, 6, visible=faux)\np3 = point(1, 2, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p3, epaisseur=3)|{{if:k==2|p0 = point(2, 1, visible=faux)\np1 = point(2, 7, visible=faux)\np2 = point(5, 6, visible=faux)\np3 = point(2, 5, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p3, epaisseur=3)|p0 = point(2, 1, visible=faux)\np1 = point(4, 1, visible=faux)\np2 = point(4, 2, visible=faux)\np3 = point(3, 2, visible=faux)\np4 = point(3, 6, visible=faux)\np5 = point(2, 6, visible=faux)\np6 = point(2, 1, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p3, epaisseur=3)\ns3 = segment(p3, p4, epaisseur=3)\ns4 = segment(p4, p5, epaisseur=3)\ns5 = segment(p5, p6, epaisseur=3)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque sommet a son symétrique de l'autre côté de l'axe $d$, $\\textcolor{{{color:primary.0}}}{\\text{à la même distance}}$ : on compte les carreaux jusqu'à l'axe, puis autant de l'autre côté.",
+					"On relie les points dans le même ordre : la figure est $\\textcolor{{{color:primary.0}}}{\\text{retournée}}$, pas glissée."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "une maison : symétrique juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(6;1;9;1)|segment(9;1;9;4)|segment(9;4;10;4)|segment(10;4;6;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une maison glissée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(12;1;9;1)|segment(9;1;9;4)|segment(9;4;8;4)|segment(8;4;12;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une maison, symétrique incomplet",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(6;1;9;1)|segment(9;1;9;4)|segment(9;4;10;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un sapin : symétrique juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [
+				"segment(6;7;9;4)|segment(9;4;8;4)|segment(8;4;10;2)|segment(10;2;7;2)|segment(7;2;7;1)|segment(7;1;6;1)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une flèche : symétrique juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(6;7;10;4)|segment(10;4;8;4)|segment(8;4;8;1)|segment(8;1;6;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "un vase : symétrique juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": [
+				"segment(6;1;8;1)|segment(8;1;9;3)|segment(9;3;8;5)|segment(8;5;9;7)|segment(9;7;6;7)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une flèche : symétrique juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(1;4;1;2)|segment(1;2;7;2)|segment(7;2;7;1)|segment(7;1;10;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une flèche glissée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(1;0;1;2)|segment(1;2;7;2)|segment(7;2;7;3)|segment(7;3;10;0)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une flèche, symétrique incomplet",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(1;4;1;2)|segment(1;2;7;2)|segment(7;2;7;1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un poisson : symétrique juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [
+				"segment(2;4;4;2)|segment(4;2;8;2)|segment(8;2;9;3)|segment(9;3;11;1)|segment(11;1;11;4)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "un château : symétrique juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": [
+				"segment(1;4;1;1)|segment(1;1;3;1)|segment(3;1;3;2)|segment(3;2;5;2)|segment(5;2;5;1)|segment(5;1;7;1)|segment(7;1;7;2)|segment(7;2;9;2)|segment(9;2;9;1)|segment(9;1;11;1)|segment(11;1;11;4)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "un triangle : symétrique juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(11;2;8;2)|segment(8;2;8;6)|segment(8;6;11;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un triangle glissée",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(7;2;10;2)|segment(10;2;10;6)|segment(10;6;7;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un triangle, symétrique incomplet",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(11;2;8;2)|segment(8;2;8;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un drapeau : symétrique juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(10;1;10;7)|segment(10;7;7;6)|segment(7;6;10;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "un L : symétrique juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": [
+				"segment(10;1;8;1)|segment(8;1;8;2)|segment(8;2;9;2)|segment(9;2;9;6)|segment(9;6;10;6)|segment(10;6;10;1)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
