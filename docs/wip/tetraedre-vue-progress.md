@@ -6,16 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2400._
+_Mis à jour le 2026-11-05, B3 en PR._
 
-- **État** : #2400 mergée (vue du tétraèdre + cote du côté sur [BC]), pas encore en prod ; ligne 15 de
-  `outils-manquants.md` passée dans « Livré » ; cote de la hauteur notée en nouvelle ligne (hors périmètre).
-- **Prochaine action** : B3 — variation tétraèdre de TSPE-334 (`7ce9936b-…`, encore brouillon), **après le
-  `deploy:prod`** qui livre #2392 et #2400 ; nouvelle branche depuis `origin/main` (`content/tspe-334-tetraedre`).
-  Hauteur ≤ côté (ex. `pyramide triangle 4 3.27`), sans `cotes:`.
-- **En attente de David** : `pnpm deploy:prod` (sur sa demande), puis relecture de TSPE-334.
-- **Pièges en cours** : tétraèdre plus haut que large → G et milieu de AC à ~0,3 cm.
-- **Worktree / branche** : aucun (supprimés après #2400).
+- **État** : B3 écrite — variation v4 (tétraèdre SABC, u = SA, v = SB, w = SC, I milieu BC, J milieu AB, G centre
+  ABC, 5 cas) ajoutée au script de TSPE-334 ; le script garde l'`id` et n'écrit plus le quadruplet. PR à merger.
+- **Prochaine action** : merger la PR B3 ; puis plus rien de mon côté (chantier clos au merge : journal à archiver).
+- **En attente de David** : `pnpm deploy:prod` (livre #2392 et #2400), puis `create-questions --dir
+scripts/questions/tspe-334-tracer --publier --mettre-a-jour`, relecture de TSPE-334 et publication
+  (ligne de `verifications-manuelles.md`).
+- **Pièges en cours** : un milieu de [SA], [SB] ou [SC] tombe sur le nom de u, v ou w → aucun dans v4.
+- **Worktree / branche** : `../ubumaths-wt-tetraedre-vue` · `content/tspe-334-tetraedre`.
 
 ---
 
@@ -46,3 +46,21 @@ Balayage des angles (script de session) : 55-60° est le meilleur ; au-delà, l'
   ne la dégage : il faudrait la sortir du solide (ligne de rappel). Ligne à ajouter dans `outils-manquants.md`.
 - Vérifié par la revue, sans problème : arêtes cachées (`facesEye` par le centre de gravité), `places`, sections
   (pas de pyramide), patrons (même sens de ABC), gestes (indices), PDF (consomme la scène).
+
+## B3 — variation tétraèdre de TSPE-334 (2026-11-05)
+
+- Script `docs/wip/questions/lot-tspe-334-tracer.py` : v4 `pyramide triangle 4 3.27` (tétraèdre régulier,
+  hauteur ≤ côté), `points: I milieu BC, J milieu AB, G centre ABC`, `vecteurs: u = SA, v = SB, w = SC`, origine
+  imposée. Cas : ½v + ½w depuis S (I) ; ⅓(u + v + w) depuis S (G) ; ½v + ½w − u depuis A (I) ; −u + v depuis A
+  (B) ; ½u + ½v − w depuis C (J). Extrémités et règles (milieu, centre de gravité) vérifiées par assertion.
+- Corrigé : u, v, w rappelés ; règle du milieu (SI = ½SB + ½SC) ou du centre de gravité (GA + GB + GC = 0) ;
+  Chasles depuis l'origine imposée.
+- J d'abord milieu de [SA] : collé au nom « u » (écrit au milieu de la flèche) sur la page à cocher → milieu de
+  [AB], dégagé de G et de I.
+- Le script réécrivait le quadruplet (`theme`, `domain`, `subdomain`) et perdait l'`id` (format changé par
+  `ed0cd5caf`) : corrigé, le fichier sort avec l'`id` du brouillon, sans quadruplet.
+- `create-questions` simulation (prod) : 38 specs vertes (10 nouvelles : justes, leurres I / G, sens inversé) ;
+  une spec cassée exprès → « 1 spec(s) rouge(s) sur 38 ». Fichier de `main` = brouillon en prod (pas de
+  « contenu différent ») : `--mettre-a-jour` n'ajoute que v4 et la description.
+- Base locale, aperçu admin (Chrome, port 5176) : flèches u, v, w dessinées ; G juste (« Juste », corrigé lu) ;
+  I sur ⅓(u + v + w) → « Faux », « Ta flèche représente SI, pas … », flèche juste en vert.
