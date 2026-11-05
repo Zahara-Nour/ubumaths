@@ -6,26 +6,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2373._
+_Mis à jour le 2026-11-05, après l'écriture en prod du lot « Probabilités »._
 
 - **⚠️ Note du 2026-11-05 (chantier `automaths-arbre`)** : les 6 brouillons `f5585668`, `95ee57c8`, `5397c20f`,
   `7f82d15a`, `1c86d122`, `9852d62c` n'ont ni nœud dans l'arbre ni point du programme : depuis la v0.73.0 (plus de
   thème / domaine / sous-domaine), ils sont « Non rangés ». Vérifié le 2026-11-05 : specs et tirages verts, fichiers
   identiques à la prod. À faire avant publication : migration nœud + point (points du BO de 1re, Automatismes).
   Nœuds proposés dans `docs/archive/wip/automaths-arbre-progress.md` (§ « Les 16 brouillons sans nœud ») ; pour l'axe qui ne part pas de 0, le nœud est à choisir ici avec David.
-- **État** : lot « Statistiques » livré et vérifié en prod (`d37413a3`, 0 débord) ; lot
-  « Probabilités » : composition validée par David, script
-  `scripts/create-automatismes-probabilites-1spe.ts` (aucun modèle neuf), rendu vérifié avant
-  écriture (4 PDF, 0 débord, pages relues), mergé (#2373) · **Prochaine action** : David lance
-  `pnpm tsx scripts/create-automatismes-probabilites-1spe.ts --publier` depuis le dépôt principal ;
-  ensuite régénérer la fiche depuis la base et `debord.py` = 0 · **En attente de David** :
+- **État** : lots « Statistiques » (`d37413a3`) et « Probabilités » (`84b512df`, écrit par David le
+  2026-11-05) en prod, en brouillon, vérifiés depuis la base (0 débord) · **Prochaine action** : migration
+  nœud + point pour les 6 brouillons « Non rangés » (choix du nœud de l'axe avec David), ou lot suivant
+  (§ Suite) — à décider avec David · **En attente de David** :
   publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c`
-  (+ `1bd7378d`, `9a9026fc`) et les fiches `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3` ; garder ou
+  (+ `1bd7378d`, `9a9026fc`) et les fiches `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df` ; garder ou
   non les 2 figures d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en
   cours** : écritures en prod refusées par le classifieur (David les lance) ; API plafonnée à 1 000
   lignes (`.in('id', …)` pour sonder) ; modèles d'une même famille = mêmes données à graine égale ;
   `svelte-kit sync` dans un worktree neuf avant `tsx` ; `--polices-corrige` pour un corrigé ; le venv
-  de `debord.py` est dans le dépôt principal · **Worktree / branche** : aucun (retiré après #2373).
+  de `debord.py` est `scripts/fiches/.venv` du dépôt principal · **Worktree / branche** : aucun.
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
@@ -232,6 +230,9 @@ probabilités totales, « inverse », « Parmi les… », notations (« sachant 
 - Rendu vérifié AVANT écriture (séries de la simulation → `pnpm fiche:verifier`) : fiche 3 p.,
   corrigé 5 p., 0 débord, pages relues. Q8 de la série 2 coupée entre deux colonnes (mise en page
   du générateur, acceptable).
+- **Écrit en prod par David (2026-11-05)** : fiche `84b512df` « Automatismes : probabilités (1) »,
+  brouillon. Vérifiée depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs`, `--polices-corrige`,
+  `debord.py`) : fiche 3 p., réponses 1 p., corrigé 5 p., 0 débord, pages relues.
 
 ## Questions ouvertes (à poser à David)
 
