@@ -2,27 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1809._
+_Mis à jour le 2026-11-05, PR de rangement de CP-060 (§ 14)._
 
-- **⚠️ Note du 2026-11-05 (chantier `automaths-arbre`)** : le brouillon CP-060 « Termine le carré ou le rectangle sur
-  le quadrillage » (`1cf6eaa9`) n'a ni nœud dans l'arbre ni point du programme : depuis la v0.73.0 (plus de thème /
-  domaine / sous-domaine), il est « Non rangé ». Vérifié le 2026-11-05 : 22 specs vertes, 300/300 tirages et figures,
-  fichier identique à la prod. À faire avant publication : migration nœud + point (CP-060). Nœud à trancher avec David :
-  Géométrie › Figures planes › « constructions » (proposé) ou « reconnaître et nommer des formes ». Détail : `docs/archive/wip/automaths-arbre-progress.md` (§ « Les 16 brouillons sans nœud »).
-- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages (#1805) ; côté donné
-  prolongé, carré et rectangle, message à part (#1809, § 12).
-- **Prochaine action** : aucune ici ; CP-058 attend le chantier `figure-et-choix`.
-- **En attente de David** : (1) fin de l'essai de CP-060 et CP-058 (`docs/wip/verifications-manuelles.md`) ;
-  (2) message du carré décalé qui chevauche [AB] (§ 12) ; (3) **figure de travail** (idée de David) : figure
-  manipulable NON notée dans l'énoncé (outils limités, ex. droites seules), réponse à côté, QCM compris → CP-058 en
-  QCM oui / non. À trancher : geste plus vérifié ? tracé gardé dans la copie ? un bloc figure ou un bloc à part
-  (`deplacable:` réservé aux figures stockées, ADR 0027) ? Reco : chantier à part ; **ne pas publier CP-058 en l'état**.
-  **Tranché le 2026-10-26** (§ 13) : consigne au choix du modèle (« tu peux vérifier » = figure de travail non notée,
-  « montre comment » = figure notée) ; figure déplaçable utilisable partout ; **QCM réécrit en case « choix »**,
-  TOUS les QCM migrés (« le plus propre possible, même si c'est plus de travail ») ; tracé GARDÉ, non noté.
-  → **Chantier `figure-et-choix`** (worktree `../ubumaths-wt-figure-et-choix`), ouvert le 2026-10-26.
+- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas publiés ; CP-060 rangé sur Géométrie › Figures planes
+  › constructions avec son point (§ 14, migration `20261105055111`).
+- **Prochaine action** : merge de la PR § 14 → `db:migrate` depuis la branche mergée → vérifier en prod (nœud + tag).
+  Ensuite plus rien ici : CP-058 attend le chantier `figure-et-choix`.
+- **En attente de David** : (1) fin de l'essai de CP-060 et CP-058 (`docs/wip/verifications-manuelles.md`), puis
+  publication de CP-060 ; (2) message du carré décalé qui chevauche [AB] (§ 12). **Ne pas publier CP-058 en l'état**
+  (§ 13 : figure de travail + case « choix », chantier `figure-et-choix`).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
-- **Worktree / branche** : aucun (retiré après #1809).
+- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `feat/geometrie-validation-cp060-noeud`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -513,3 +503,19 @@ et pourquoi le oui / non n'est-il pas un QCM ?
 **À trancher (là-bas)** : une réponse ou
 plusieurs ; ordre mélangé ; notation d'une question mêlant « choix » et autres cases ; copie corrigée et PDF ; nom du
 chantier et des termes dans `CONTEXT.md` ; ADR (révise la décision QCM / cases).
+
+## 14. CP-060 rangé dans l'arbre (2026-11-05)
+
+Depuis la v0.73.0 (fin de thème / domaine / sous-domaine), le brouillon CP-060 « Termine le carré ou le rectangle sur
+le quadrillage » (`1cf6eaa9-376d-43a1-a3e4-eb7d18c40099`) était « Non rangé », sans nœud et sans point.
+
+- **Relevé de la prod (2026-11-05, lecture seule)** : le point CP-060 (« Construire un carré, un rectangle, un
+  triangle ou un assemblage de ces figures sur du papier quadrillé ou pointé ») est sur Géométrie › Figures planes ›
+  **constructions**, à côté de CP-059. Il n'a aucun modèle. Le modèle : brouillon, sans nœud, 0 tag.
+- **Nœud** : « constructions » (reco suivie par David : « je suis tes recos »). L'autre nœud possible, « reconnaître
+  et nommer des formes » (CP-054, CP-055), aurait obligé à déplacer le point (trigger : point sur le nœud du modèle
+  ou sur sa notion).
+- **Question d'accès** : personne ne gagne ni ne perd d'accès (reco suivie par David).
+- Migration `20261105055111_questions_cp060_rangement_tag` (forme du lot 12 a de `questions-2de`), test
+  `tests/integration/questions-cp060-rangement-tag.test.ts` : 8/8 verts, 4 rouges sans la migration.
+- Reste : publier CP-060 (David, après son essai, `docs/wip/verifications-manuelles.md`).
