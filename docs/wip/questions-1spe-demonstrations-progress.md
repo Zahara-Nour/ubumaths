@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 8 en PR._
+_Mis à jour le 2026-11-05, lot 8 mergé (#2401)._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5, 6 et 7 publiés ; lot 8
-  (géométrie, § 13, D6) écrit, vérifié, en PR.
-- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --publier` (commande `!` du § 13),
+  (géométrie, § 13, D6) mergé (#2401), brouillons pas encore créés en prod.
+- **Prochaine action** : David lance `create-questions --publier` (commande `!` du § 13),
   relevé MCP des 6 brouillons, migration nœud + tag (1 sous-notion neuve « parabole » sous Géométrie repérée),
   page à cocher. Ensuite lot 9 (probabilités : 345, 346, 361).
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
@@ -21,7 +21,8 @@ _Mis à jour le 2026-11-05, lot 8 en PR._
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
   une notion → choisir sa sous-notion avec David. Variable `e` = Euler : jamais comme nom de variable. Job navigateur
   de la CI qui plante tests verts → `gh run rerun <run> --failed`. Port 5178.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-8`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (HEAD détaché), nouvelle branche depuis
+  `origin/main`.
 
 ---
 
@@ -480,3 +481,5 @@ case choix).
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-8 --publier`
+
+Mergée (#2401, CI verte du premier coup).
