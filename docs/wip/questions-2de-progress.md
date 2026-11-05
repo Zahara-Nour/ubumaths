@@ -8,7 +8,7 @@
 
 _Mis à jour le 2026-11-05, après la publication du lot 10 (§ 86)._
 
-- **État** : lots 1 à 10 et 12 publiés (lot 10 : 11 neufs + 16 anciens, 27/27 `published` au MCP).
+- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), 11 A en écriture.
 - **Prochaine action** : lot 11 « lire un programme » (218-223, 413, 229, 416, 228, 232, 233, 417 ;
   relevé au § 70) : relevé de l'existant puis phase 0 à faire valider, sur une branche neuve. C'est le
   dernier lot de l'ordre tranché le 2026-11-03.
@@ -2201,7 +2201,7 @@ recommandations (16 anciens sur la page et publiés avec le lot, `grades` ramen�
   anciens exportés (§ 85). `publier-lot` (simulation puis `--publier`) lancé par David sur
   `2de-ensembles-10a`, `2de-logique-10b` et le dossier des anciens ; MCP (prod) : 27/27 `published`.
 
-## 87. Lot 11 « Lire un programme » : relevé et phase 0 (proposée le 2026-11-05, à valider)
+## 87. Lot 11 « Lire un programme » : relevé et phase 0 (2026-11-05, validée)
 
 **Relevé MCP (prod, 2026-11-05)** : aucun modèle, en aucun statut, sur les 13 points du lot (218-223, 413,
 229, 416, 228, 232, 233, 417) ni sur 224 et 415 (« compléter la ligne », Q3). Voisins à ne pas refaire :
@@ -2273,3 +2273,7 @@ _11 B — Fonctions (5)_
   les deux, une page à cocher (15) ? → je recommande oui.
 - **L11-d — Langage naturel (←)** : seulement dans 2-219, ou un algorithme en langage naturel dans quelques
   variations des autres modèles ? → je recommande **2-219 seul** (le reste en Python, comme les sujets).
+
+**Réponse de David (2026-11-05)** : « je te suis » → phase 0 validée, L11-a à L11-d selon mes
+recommandations (224 et 415 dans le lot ; 233 et 417 sous Algorithmique › Fonctions Python ; 11 A puis 11 B,
+une migration, une page à cocher ; ← seulement dans 2-219).
