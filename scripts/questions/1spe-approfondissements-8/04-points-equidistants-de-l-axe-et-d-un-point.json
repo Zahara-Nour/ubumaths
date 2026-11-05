@@ -1,0 +1,209 @@
+{
+	"title": "Points équidistants de l'axe des abscisses et d'un point",
+	"description": "F(a ; b) donné : point de la droite x = a qui convient, équation 2by = (x − a)² + b² (case), l'ensemble est une parabole (case choix)",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé, on cherche l'ensemble des points $M(x\\,;\\,y)$ à égale distance de l'axe des abscisses et du point $F({{eval:a}}\\,;\\,{{eval:b}})$.\n\nSur la droite d'équation $x={{eval:a}}$, quel point convient ? Donne son ordonnée.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "b",
+					"expression": "2|4|6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La distance de $M({{eval:a}}\\,;\\,y)$ à l'axe des abscisses est $|y|$, et $MF=|y-{{eval:b}}|$.",
+					"$|y|=|y-{{eval:b}}|$ : $y$ est à égale distance de $0$ et de ${{eval:b}}$, donc $y=\\textcolor{{{color:primary.0}}}{{{eval:b/2}}}$."
+				]
+			},
+			"conditions": ["a != 0"]
+		},
+		{
+			"statement": "Dans un repère orthonormé, on cherche l'ensemble des points $M(x\\,;\\,y)$ à égale distance de l'axe des abscisses et du point $F({{eval:a}}\\,;\\,{{eval:b}})$.\n\nLa distance de $M$ à l'axe des abscisses est $|y|$ : $M$ convient si et seulement si $y^2=(x{{eval:-a;+}})^2+(y-{{eval:b}})^2$. En développant $(y-{{eval:b}})^2$, complète.\n\n${{eval:2*b}}y=(x{{eval:-a;+}})^2+?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "b",
+					"expression": "2|4|6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(y-{{eval:b}})^2=y^2-{{eval:2*b}}y+{{eval:b^2}}$ : les $y^2$ se simplifient.",
+					"Il reste $0=(x{{eval:-a;+}})^2-{{eval:2*b}}y+{{eval:b^2}}$, soit ${{eval:2*b}}y=(x{{eval:-a;+}})^2+\\textcolor{{{color:primary.0}}}{{{eval:b^2}}}$."
+				]
+			},
+			"conditions": ["a != 0"]
+		},
+		{
+			"statement": "Dans un repère orthonormé, on cherche l'ensemble des points $M(x\\,;\\,y)$ à égale distance de l'axe des abscisses et du point $F({{eval:a}}\\,;\\,{{eval:b}})$.\n\nQuel est cet ensemble ?\n\n```choix\n- La parabole d'équation $y=\\dfrac{1}{{{eval:2*b}}}(x{{eval:-a;+}})^2+{{eval:b/2}}$\n- La parabole d'équation $y=\\dfrac{1}{{{eval:2*b}}}(x{{eval:a;+}})^2+{{eval:b/2}}$\n- La parabole d'équation $y=\\dfrac{1}{{{eval:b}}}(x{{eval:-a;+}})^2+{{eval:b/2}}$\n- Le cercle de centre $F$ et de rayon ${{eval:b}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "b",
+					"expression": "2|4|6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$M$ convient si et seulement si $|y|=MF$, soit $y^2=(x{{eval:-a;+}})^2+(y-{{eval:b}})^2$.",
+					"En développant : ${{eval:2*b}}y=(x{{eval:-a;+}})^2+{{eval:b^2}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{y=\\dfrac{1}{{{eval:2*b}}}(x{{eval:-a;+}})^2+{{eval:b/2}}}$ : c'est une parabole, de sommet $({{eval:a}}\\,;\\,{{eval:b/2}})$."
+				]
+			},
+			"conditions": ["a != 0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (ordonnée de F)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "16",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −16",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["-16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "parabole",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe de a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/b",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : cercle",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
