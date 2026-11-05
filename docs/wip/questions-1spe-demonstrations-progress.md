@@ -17,8 +17,7 @@ _Mis à jour le 2026-11-05, lot 7 rangé en prod (#2397)._
   `ArtifactData`) ; tout OK → David publie (`publier-lot.ts --publier`). Ensuite lot 8 (géométrie : 324, 325, 326, 334,
   335, 420), puis 9.
 - **En attente de David** : (1) relecture du lot 7 sur la page à cocher ; (2) vérification à l'œil en prod (ligne du
-  2026-11-03 de `docs/wip/verifications-manuelles.md`) ; (3) suppression des branches distantes
-  `docs/questions-1spe-demonstrations`, `feat/questions-1spe-demonstrations` (refusée au classifieur le 2026-11-04).
+  2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Job navigateur
   de la CI qui plante tests verts → `gh run rerun <run> --failed`. Port 5178.
@@ -444,3 +443,6 @@ rouge sans la migration (6 rouges, la suite principale ne s'exécute pas). Accè
 Mergée (#2397, CI verte après relance du job navigateur planté, 2097 tests verts). `security-auditor` : aucun finding.
 `db:migrate` le 2026-11-05 (seule migration en attente, sans `--include-all`), vérifié MCP : 3 modèles sur leur nœud,
 un tag chacun, `draft`, `updated_at` inchangé. Page à cocher : https://claude.ai/artifact/LEJtGYjAorBSHC7wwCzyx1.
+
+Branches distantes `docs/questions-1spe-demonstrations` et `feat/questions-1spe-demonstrations` supprimées le
+2026-11-05 (accord de David).
