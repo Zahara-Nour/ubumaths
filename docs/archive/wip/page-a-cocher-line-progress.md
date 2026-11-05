@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, PR ouverte._
+_Mis à jour le 2026-11-05, après #2404 — chantier clos et archivé._
 
-- **État** : dessin écrit, tests verts (72), essayé sur `cm2-7b`, `cm1-3a`, `3-representer` · **Prochaine action** : revue, CI, merge, puis ligne 16 de `outils-manquants.md` passée dans « Livré » · **En attente de David** : rien · **Pièges en cours** : la ligne « Page à cocher : `line` non dessiné » du « Reprendre ici » de `questions-cm2` devient fausse au merge (journal d'une autre session : la lui laisser corriger) · **Worktree / branche** : `ubumaths-wt-page-a-cocher-line` / `feat/page-a-cocher-line`
+- **État** : livré (#2404, mergé) ; ligne 16 de `docs/wip/outils-manquants.md` passée dans « Livré » · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : le « Reprendre ici » de `questions-cm2` dit encore « `line` non dessiné » (journal d'une autre session, à corriger à sa reprise) · **Worktree / branche** : supprimés
 
 ## Phase 0 (validée par David le 2026-11-05)
 
