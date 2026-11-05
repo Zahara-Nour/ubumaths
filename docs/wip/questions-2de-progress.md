@@ -6,19 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2399 (fichiers du lot 10 A, mergée)._
+_Mis à jour le 2026-11-05, PR #2402 (lot 10 B + ids du 10 A) ouverte, CI en cours._
 
-- **État** : lots 1 à 9 et 12 publiés. Lot 10 : phase 0 validée (§ 82) ; 10 A (4 modèles : 201, 202,
-  203, 206) écrit, joué en local, **#2399 mergée** (§ 83). 10 B (7 modèles de logique) à écrire.
-- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/2de-ensembles-10a` ; relever les
-  ids. Écrire 10 B (même branche de travail neuve). Migration nœud + tag pour 10 A + 10 B, `grades` de
-  5062197a, 5b20321f ramenés à `['2']` (L10-a) ; page à cocher : 11 neufs + 16 anciens.
-- **En attente de David** : `create-questions --publier` du lot 10 A (depuis `main`).
+- **État** : lots 1 à 9 et 12 publiés. Lot 10 : 10 A en brouillon en prod (§ 84) ; 10 B (7 modèles de
+  logique) écrit, joué en local, **PR #2402 ouverte** (§ 84).
+- **Prochaine action** : #2402 verte → `gh pr merge 2402 --merge` (commande seule) ; David lance
+  `create-questions --publier` sur `scripts/questions/2de-logique-10b` ; ids commités ; migration nœud +
+  tag pour 10 A + 10 B (11 modèles, § 83-84), `grades` de 5062197a, 5b20321f ramenés à `['2']` (L10-a) ;
+  page à cocher : 11 neufs + 16 anciens ; `publier-lot` par David.
+- **En attente de David** : rien avant le merge de #2402.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
-  dossier (il écrit l'id dans le fichier) ; ensemble fini en réponse = `answerKind: intervalles` ;
-  lettre d'ensemble ≠ étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot10b` (neuve, sur origin/main).
+  dossier, variables Supabase locales passées à la main (il ne lit que `.env` = prod) ; lettre ≠
+  étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot10b`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2160,3 +2161,20 @@ recommandations (16 anciens sur la page et publiés avec le lot, `grades` ramen�
   accolades : 3 058 formules, 0 problème. Joués en local (aperçu admin, Chrome) : `{4;5;6}` tapé au
   clavier « juste » ; ∅ par le clavier « Intervalles » « juste » ; cases multiples « juste ».
 - PR #2399.
+
+## 84. Lot 10 A en brouillon en prod ; lot 10 B, fichiers (2026-11-05)
+
+- #2399 mergée. David a lancé `create-questions --publier` sur `2de-ensembles-10a` : 99af2696 (2-201),
+  e7db99fc (2-202), c22d387e (2-203), 994437aa (2-206), en brouillon, `grades = ['2']` (vérifié au MCP).
+  Ids commités sur la branche du 10 B.
+- `questions-2de/lot-logique-10b-2de.py` → `scripts/questions/2de-logique-10b/` (7 modèles, 67 specs) ;
+  nœuds visés (relevés en prod) et niveaux libres : 208 → Logique › Proposition mathématique (notion,
+  niv. 1) ; 209 → › statut des lettres et des égalités (niv. 2) ; 211 → Quantificateurs et négation ›
+  négation d'une proposition (niv. 1) ; 215 et 412 → › pour tout, il existe (niv. 1 et 2) ; 213 →
+  Implication et équivalence › implication (niv. 1) ; 409 → › équivalence (niv. 1).
+- Pièges : aucune réponse « inégalité » dans le moteur → négation de « x > a » en case choix ; cases
+  multiples incomplètes = `unoptimal_form` (pas `incorrect`) ; « donne un tel entier » = règle
+  `equation_root` (`variable: 'n'`) ; `(d')` signalé par `validateLatex` mais bien rendu par KaTeX.
+- Contrôles : 7/7 importables ; simulation prod 7 à créer ; LaTeX 150 tirages par modèle, 882 formules.
+  Joués en local : négation « juste » ; « il existe » avec −4 (réponse stockée 5) « juste ».
+- PR #2402.
