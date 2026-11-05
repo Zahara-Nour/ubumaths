@@ -11,9 +11,9 @@ _Mis à jour le 2026-11-05, après #2394._
 - **État** : lots 1 à 7b en prod (7b relu par David : 9/9 ok). Lot 7c (statistiques, 8 modèles) en brouillon en prod,
   rangé et tagué (#2394, `db:migrate` fait, vérifié : un point chacun). Page à cocher :
   https://claude.ai/artifact/UMiJFDZijXarjtMGoZZXPg.
-- **Prochaine action** : compter les verdicts de la page 7c ; puis `publier-lot.ts --dir scripts/questions/ce2-7c` en
-  simulation depuis le worktree ; ensuite figures/images fixes, puis QCM, puis outils neufs.
-- **En attente de David** : relecture du 7c sur la page à cocher ; puis `--publier` de `publier-lot`.
+- **Prochaine action** : verdicts 7c comptés (8/8 OK) ; `publier-lot.ts --dir scripts/questions/ce2-7c` en simulation
+  puis `--publier` (David : classifieur), garde `garde-niveaux-tags.ts`, relevé MCP ; ensuite figures/images fixes, puis QCM, puis outils neufs.
+- **En attente de David** : simulation puis `--publier` de `publier-lot` pour le 7c, depuis le worktree.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point (076 : nœud parent
   « Représenter des données ») ; `axe: à choisir` → la 1re réponse est l'échelle ; commitlint : sujet en minuscule.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7c-rangement` (mergée, #2394), à retirer
@@ -678,3 +678,6 @@ avec la 2de, sur le nœud parent) ; 082 dans ce lot (outil en prod) plutôt qu'e
   cachées (ligne Bus, total des filles) bien rendues ; 06 « entre deux traits » : une barre de 5 sur un axe de 100 illisible →
   effectifs 15 à 75, axe 0-80. 08 : la plus grande barre était toujours la première → toutes tirées, condition sur `max`.
 - 2026-11-05 : #2393 mergée (CI verte ; revue : aucune, contenu).
+- 2026-11-05 : relecture de David sur la page à cocher (`UMiJFDZijXarjtMGoZZXPg`) : 8 verdicts « OK », sans
+  commentaire (base `verdicts` comptée), posés en 9 s (12:12:29 à 12:12:38). Simulation `publier-lot` refusée à Claude
+  par le classifieur du mode auto (accès prod) : à lancer par David.
