@@ -6,19 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2393._
+_Mis à jour le 2026-11-05, après #2394._
 
-- **État** : lots 1 à 7b en prod (7b publié avant l'essai de 02, 03, 05-08 ; page à cocher après coup :
-  https://claude.ai/artifact/JdCbHActB2vzgTsasDxN4b). Lot 7c (statistiques, 8 modèles) écrit : simulation verte (76 specs),
-  essayé en base locale (05, 08, 04, 06 joués).
-- **Prochaine action** : David lance `create-questions --publier` (brouillons en prod) ; puis commit des `id` et migration
-  nœud + point (gabarit 7b) sur une branche neuve `feat/questions-ce2-7c-rangement`.
-- **En attente de David** : relecture du 7b sur la page à cocher ; `! cd ../ubumaths-wt-questions-ce2 && pnpm tsx
-scripts/create-questions.ts --dir scripts/questions/ce2-7c --publier` après le merge.
+- **État** : lots 1 à 7b en prod (7b relu par David : 9/9 ok). Lot 7c (statistiques, 8 modèles) en brouillon en prod,
+  rangé et tagué (#2394, `db:migrate` fait, vérifié : un point chacun). Page à cocher :
+  https://claude.ai/artifact/UMiJFDZijXarjtMGoZZXPg.
+- **Prochaine action** : compter les verdicts de la page 7c ; puis `publier-lot.ts --dir scripts/questions/ce2-7c` en
+  simulation depuis le worktree ; ensuite figures/images fixes, puis QCM, puis outils neufs.
+- **En attente de David** : relecture du 7c sur la page à cocher ; puis `--publier` de `publier-lot`.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point (076 : nœud parent
-  « Représenter des données ») ; `axe: à choisir` → la 1re réponse est l'échelle ; un axe trop haut écrase les petites barres ;
-  commitlint : sujet en minuscule.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7c` (mergée, #2393), gardé pour la suite.
+  « Représenter des données ») ; `axe: à choisir` → la 1re réponse est l'échelle ; commitlint : sujet en minuscule.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7c-rangement` (mergée, #2394), à retirer
+  après la publication du 7c.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
