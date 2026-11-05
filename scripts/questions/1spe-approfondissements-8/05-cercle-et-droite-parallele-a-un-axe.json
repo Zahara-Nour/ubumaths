@@ -1,4 +1,5 @@
 {
+	"id": "a98fd3cf-9e7e-4761-be91-c66ea087c34d",
 	"title": "Intersection d'un cercle et d'une droite parallèle à un axe",
 	"description": "Cercle (x − p)² + (y − q)² = r² : plus grande abscisse des points communs avec y = k, plus petite ordonnée avec x = k, nombre de points communs",
 	"grades": ["1_SPE"],

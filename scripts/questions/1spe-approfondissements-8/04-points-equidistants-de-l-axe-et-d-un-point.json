@@ -1,4 +1,5 @@
 {
+	"id": "64f54fc1-1222-4795-bcb9-305262667688",
 	"title": "Points équidistants de l'axe des abscisses et d'un point",
 	"description": "F(a ; b) donné : point de la droite x = a qui convient, équation 2by = (x − a)² + b² (case), l'ensemble est une parabole (case choix)",
 	"grades": ["1_SPE"],
