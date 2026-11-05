@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2386._
+_Mis à jour le 2026-11-05, après #2386 et sa livraison (v0.73.0)._
 
-- **État** : 4b **mergé (#2386)**, PAS appliqué : prod en 0.72.0, base sans la migration `20261104224856_automaths_fin_ancienne_forme`.
-- **Prochaine action** (sur go de David, depuis le dépôt principal) : `pnpm maintenance:on` → `pnpm db:migrate` → `pnpm db:types` (diff nul attendu sur `database.ts`) → `pnpm deploy:prod` → `pnpm maintenance:off` ; puis versement du chantier (journal → archive, durable → `docs/systeme/`).
-- **En attente de David** : go pour la migration destructive (ce qui sera perdu : § 4b mergé) ; décision sur les 16 brouillons rangés seulement par l'ancien quadruplet ; `deploy:prod`.
-- **Pièges en cours** : ⛔ **aucun `deploy:prod` avant `db:migrate`** : `main` lit `items`, la prod a encore `categories` → séries, séances, export RGPD et cours partagé planteraient. ⛔ et pas de `db:migrate` sans le `deploy:prod` qui suit, sous maintenance. Base locale partagée déjà migrée en 4b. Avant tout push : grep des messages (R4).
-- **Worktree / branche** : aucun (retiré après #2386).
+- **État** : **tous les lots livrés**. 4b en prod : migration `20261104224856` appliquée, v0.73.0 déployée, maintenance levée. `db:types` : diff nul. Site en 200, aucun « does not exist » dans les journaux Postgres.
+- **Prochaine action** : versement du chantier (durable → `docs/systeme/`, journal → `docs/archive/wip/`), après la relecture des vérifications manuelles.
+- **En attente de David** : rangement dans l'arbre des 16 brouillons sans nœud (ancien rangement gardé en fin de journal) ; vérification manuelle du toast « Panier d'une ancienne version vidé » (4a).
+- **Pièges en cours** : aucun. Les worktrees d'autres chantiers encore sur `categories` doivent se rebaser sur `main` (base locale migrée).
+- **Worktree / branche** : aucun.
 
 ## Origine (2026-11-04)
 
@@ -473,3 +473,8 @@ Rangement à refaire dans l'arbre (décision de David en attente ; passés dans 
 | CE2     | Nombres › Entiers › Repérage (3)                                  | Placer des nombres sur une droite graduée (de 1 en 1 à 1 000)    |
 | 1re     | Statistiques › Représenter des données › Diagramme circulaire (2) | Angle d'un secteur d'un diagramme circulaire                     |
 | 1re     | Statistiques › Représenter des données › Lire un graphique (2)    | Lire un graphique dont l'axe ne part pas de 0                    |
+
+### 4b livré (2026-11-05)
+
+- `maintenance:on` → `db:migrate` (lancé par David, session « libre 5 ») → `db:types` (diff nul)
+  → `deploy:prod` v0.73.0 (David) → `maintenance:off`. Accueil, `/automaths`, panier : 200.
