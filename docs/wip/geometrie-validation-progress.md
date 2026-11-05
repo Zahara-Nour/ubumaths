@@ -2,17 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, PR de rangement de CP-060 (§ 14)._
+_Mis à jour le 2026-11-05, après #2388._
 
-- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas publiés ; CP-060 rangé sur Géométrie › Figures planes
-  › constructions avec son point (§ 14, migration `20261105055111`).
-- **Prochaine action** : merge de la PR § 14 → `db:migrate` depuis la branche mergée → vérifier en prod (nœud + tag).
-  Ensuite plus rien ici : CP-058 attend le chantier `figure-et-choix`.
+- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), en brouillon ; CP-060 rangé en prod sur Géométrie ›
+  Figures planes › constructions avec son point (§ 14, #2388, migration passée et vérifiée le 2026-11-05).
+- **Prochaine action** : aucune ici ; CP-058 attend le chantier `figure-et-choix`.
 - **En attente de David** : (1) fin de l'essai de CP-060 et CP-058 (`docs/wip/verifications-manuelles.md`), puis
   publication de CP-060 ; (2) message du carré décalé qui chevauche [AB] (§ 12). **Ne pas publier CP-058 en l'état**
   (§ 13 : figure de travail + case « choix », chantier `figure-et-choix`).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
-- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `feat/geometrie-validation-cp060-noeud`.
+- **Worktree / branche** : aucun (retiré après #2388).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -519,3 +518,7 @@ le quadrillage » (`1cf6eaa9-376d-43a1-a3e4-eb7d18c40099`) était « Non rangé 
 - Migration `20261105055111_questions_cp060_rangement_tag` (forme du lot 12 a de `questions-2de`), test
   `tests/integration/questions-cp060-rangement-tag.test.ts` : 8/8 verts, 4 rouges sans la migration.
 - Reste : publier CP-060 (David, après son essai, `docs/wip/verifications-manuelles.md`).
+- **Livré (2026-11-05)** : #2388 mergée (CI verte) ; `security-auditor` sans finding bloquant. `db push --include-all`
+  lancé par David depuis le dépôt principal (le classifieur l'a refusé à Claude), avec 055243 (`questions-2de`) et
+  060921 (`questions-1spe-demonstrations`, audit confirmé par sa session) : `20261105055721` (déjà en prod) imposait
+  `--include-all`. Vérifié en prod : nœud « constructions », un seul point CP-060, brouillon, `updated_at` inchangé.
