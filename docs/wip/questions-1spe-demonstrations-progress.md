@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 7 écrit (PR à ouvrir sur `feat/questions-1spe-approfondissements-7`)._
+_Mis à jour le 2026-11-05, lot 7 mergé (#2396)._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 et 6 publiés ; lot 7
-  (exponentielle, § 12) écrit et vérifié, PR ouverte.
-- **Prochaine action** : CI verte → merger ; puis David lance `create-questions --publier` (commande `!` du § 12),
+  (exponentielle, § 12) mergé (#2396), brouillons pas encore créés en prod.
+- **Prochaine action** : David lance `create-questions --publier` (commande `!` du § 12),
   relevé MCP des 3 brouillons, migration nœud + tag (gabarit lot 6), page à cocher. Ensuite lots 8, 9.
 - **En attente de David** : (1) nœud du modèle 300 (point sur la NOTION Fonction exponentielle) : sous-notion
   existante « dérivée » (reco) ou neuve « définition » ? (§ 12) ; (2) vérification à l'œil en prod (ligne du 2026-11-03
@@ -22,7 +22,7 @@ _Mis à jour le 2026-11-05, lot 7 écrit (PR à ouvrir sur `feat/questions-1spe-
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. `db push` :
   `--include-all` si une migration plus récente est déjà en prod (lancé par David). Port 5178.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-7`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, nouvelle branche depuis `origin/main`.
 
 ---
 
