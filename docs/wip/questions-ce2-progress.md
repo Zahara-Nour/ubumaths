@@ -6,24 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2221._
+_Mis à jour le 2026-11-05, migration du lot 7b écrite (PR à ouvrir)._
 
-- **⚠️ Note du 2026-11-05 (chantier `automaths-arbre`)** : les 9 brouillons du lot 7b SONT en prod (`--publier`
-  fait) : `0d41a45e` (01), `71741618` (02), `c06fe751` (03), `2c94cb41` (04), `4c75f053` (05), `2370bc8d` (06),
-  `19c370bd` (07), `455b9748` (08), `ab1c22c8` (09). Depuis la v0.73.0, plus de thème / domaine / sous-domaine : sans
-  nœud ni point, ils sont « Non rangés » (liste admin, `?nonRanges=1`). Vérifié le 2026-11-05 : specs et tirages verts,
-  sonde 0 problème, fichiers identiques à la prod. Reste la migration nœud + point prévue au § 12 (nœuds confirmés dans
-  l'arbre actuel) et l'essai à l'écran de 02, 03, 05-08. Détail : `docs/archive/wip/automaths-arbre-progress.md` (§ « Les 16 brouillons sans nœud »).
-- **État** : lots 1 à 7a en prod. Lot 7b (horloge + droite graduée, 9 modèles, `scripts/questions/ce2-7b/`) : fichiers mergés
-  (#2221), **pas encore en prod**. Jouées dans l'aperçu local : 01, 04, 09 ; restent 03, 05-08 (page à cocher).
-- **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-7b --publier`
-  (brouillons en prod) ; je relève les `id`, puis migration nœud + tag (`pnpm migration:horodatage`, gabarit lot 7a) et son
-  test rouge sans la migration, `security-auditor`, merge, `db:migrate`, page à cocher, publication. Ensuite 7c.
-- **En attente de David** : la commande `--publier` ci-dessus.
+- **État** : lots 1 à 7a en prod. Lot 7b (horloge + droite graduée, 9 modèles) : brouillons EN PROD depuis le 2026-11-05,
+  « Non rangés » (v0.73.0 : plus de thème / domaine). Migration `20261105054151_questions_ce2_lot7b_rangement_tags` écrite :
+  test rouge sans elle (5/9), vert avec (9/9). Jouées dans l'aperçu : 01, 04, 09 ; restent 02, 03, 05-08.
+- **Prochaine action** : `security-auditor`, PR, merge, `check:migrations --pr`, `db:migrate`, relevé MCP, page à cocher,
+  publication (`publier-lot`). Ensuite 7c (statistiques).
+- **En attente de David** : l'essai à l'écran de 02, 03, 05-08 (page à cocher, après la migration).
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `sonde-horloges.ts` (blocs `horloge` / `line`, choix compris) à
   relancer si on retouche un modèle ; niveaux : lecture de l'heure 5-8, calcul de durées 5-7 (6e occupe déjà 5-8), droite
-  graduée 2-3 ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet en minuscule, corps ≤ 100 caractères.
-- **Worktree / branche** : aucun (retirés après #2221).
+  graduée 2-3 ; 06 reste sur « calcul de durées » (point 059, phase 0) et non « conversions » (proposé par automaths-arbre :
+  un tag doit être sur le nœud de son point) ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet en minuscule.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7b-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -635,3 +630,8 @@ de durées noté, publiés intacts) ; horloge « digitale » = texte + `cadran: 
 
 - 2026-11-02 : #2221 mergée (CI verte, revue : aucune, contenu) ; worktree retiré. 9 modèles écrits (130 specs), simulation
   verte, sonde 0 problème (300 tirages × 9). Aperçu local : 01, 04, 09 bien rendus ; 09 réponse juste → « Juste ».
+- 2026-11-05 : les 9 brouillons sont en prod (créés pendant le chantier `automaths-arbre`) ; relevé MCP : `draft`, CE2,
+  niveaux 5, 6, 7, 8, 5, 6, 7, 2, 3, sans nœud ni point. Points 057, 058 → « Durées › lecture de l'heure » ; 059, 094 →
+  « Durées › calcul de durées » ; 010 → « Entiers : numération › droite graduée » (relevé du jour). Migration
+  `20261105054151_questions_ce2_lot7b_rangement_tags` (gabarit 7a) et test
+  `tests/integration/questions-ce2-lot7b-rangement-tags.test.ts` : rouge sans le corps (5 échecs sur 9), vert avec (9/9).
