@@ -9,19 +9,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 6 publié (#2391, #2395)._
+_Mis à jour le 2026-11-05, lot 7 écrit (PR à ouvrir sur `feat/questions-1spe-approfondissements-7`)._
 
-- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 et 6 publiés (§ 10, § 11).
-- **Prochaine action** : lot 7, exponentielle (300, 301, 302) : relevé prod des points et de l'existant, écriture
-  dans `scripts/questions/1spe-approfondissements-7/`, PR, puis le même enchaînement que le lot 6. Ensuite lots 8, 9.
-- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
-  `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
-  `feat/questions-1spe-demonstrations` (rien à perdre ; refusée au classifieur le 2026-11-04).
-- **Pièges en cours** : écritures en prod (`create-questions --publier`, `publier-lot --publier`) : donner d'emblée
-  la commande `!` à David (un « go » est refusé par le classifieur). `create-questions` écrit l'`id` dans les JSON du
-  dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. `db push` : une migration
-  plus récente d'un autre chantier déjà en prod oblige à `--include-all` (lancé par David). Port 5178.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, nouvelle branche depuis `origin/main`.
+- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 et 6 publiés ; lot 7
+  (exponentielle, § 12) écrit et vérifié, PR ouverte.
+- **Prochaine action** : CI verte → merger ; puis David lance `create-questions --publier` (commande `!` du § 12),
+  relevé MCP des 3 brouillons, migration nœud + tag (gabarit lot 6), page à cocher. Ensuite lots 8, 9.
+- **En attente de David** : (1) nœud du modèle 300 (point sur la NOTION Fonction exponentielle) : sous-notion
+  existante « dérivée » (reco) ou neuve « définition » ? (§ 12) ; (2) vérification à l'œil en prod (ligne du 2026-11-03
+  de `docs/wip/verifications-manuelles.md`) ; (3) suppression des branches distantes `docs/questions-1spe-demonstrations`,
+  `feat/questions-1spe-demonstrations` (refusée au classifieur le 2026-11-04).
+- **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
+  dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. `db push` :
+  `--include-all` si une migration plus récente est déjà en prod (lancé par David). Port 5178.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-7`.
 
 ---
 
@@ -400,3 +401,31 @@ Migration appliquée le 2026-11-05 par David (`--include-all`, avec 055111 et 05
 leur nœud, un tag chacun, `draft`, `updated_at` inchangé. Ids des modèles écrits dans les JSON du lot (#2395). Page
 à cocher : https://claude.ai/artifact/SR49JgobeQAu37YCSSyazJ. Relecture (2026-11-05) : 4/4 OK, aucun commentaire.
 Publié par David (`publier-lot.ts --publier`), 4/4 `published` relus en base (MCP).
+
+## 12. Lot 7 : approfondissements, exponentielle (2026-11-05)
+
+Relevé prod (MCP, 2026-11-05) : 300 sur la **notion** Fonctions › Fonction exponentielle ; 301 sur « propriétés
+algébriques » ; 302 sur « variations ». Aucun modèle sur les 3 points. Sous-notions de la notion : courbe, croissance et
+décroissance exponentielles, dérivée, équations et inéquations, fonctions x ↦ aˣ, propriétés algébriques, variations.
+**À trancher (David)** : le modèle 300 doit aller sur une sous-notion ; reco « dérivée » (f′ = f), sinon une neuve
+« définition » posée par la migration (comme « sommes de termes » au lot 5).
+
+Chaîne des preuves (celle des manuels) : lemme exp(x)exp(−x) = 1 (dérivée nulle) → exp ne s'annule pas ; 300 :
+(g/exp)′ = 0 et g/exp = 1 en 0 ; 301 : y fixé, h(x) = exp(x + y)/exp(y) vérifie h′ = h, h(0) = 1 → unicité ; 302 :
+exp(x) = exp(x/2)² et exp(x/2) ≠ 0, puis exp′ = exp > 0. Chaque énoncé rappelle ce qui est admis ou déjà démontré.
+
+| Point | Modèle (`scripts/questions/1spe-approfondissements-7/`) | Niveau | Variations                                                                  |
+| ----- | ------------------------------------------------------- | ------ | --------------------------------------------------------------------------- |
+| 300   | `01-unicite-de-l-exponentielle`                         | 1      | exp(x)exp(−x) = ? (1), g/exp défini (choix), h′(x) = ? (0), étapes à ranger |
+| 301   | `02-exponentielle-d-une-somme`                          | 2      | h défini (choix), h(0) = ? (1), h′ = h (choix), étapes à ranger             |
+| 302   | `03-exponentielle-positive-et-croissante`               | 3      | exp(x) = (exp(?))² (x/2), exp(x) > 0 (choix), croissance (choix), à ranger  |
+
+Script : `docs/wip/questions/lot-1spe-approfondissements-7.py` (positions « ranger » par `positions-ranger.ts`).
+Ranger du 301 : « h′ = h » et « h(0) = 1 » en UNE étape (deux étapes interchangeables rendraient faux un ordre juste).
+`0.5x` = `bad_form` au juge (`\frac{1}{2}x` accepté) : spec de forme refusée. Vérifié : `question:specs` 150 tirages par
+variation, 39 specs vertes, 0 `\textcolor` hors `$` ; aperçus relus ; `create-questions` simulation prod (3 à créer) ;
+brouillons en base locale (copie hors dépôt), aperçu admin vu à l'écran : choix du 301, case dans `exp(?)`, choix et
+ranger du 302.
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-7 --publier`

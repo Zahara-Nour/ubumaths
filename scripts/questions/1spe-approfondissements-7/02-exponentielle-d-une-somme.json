@@ -1,0 +1,178 @@
+{
+	"title": "Démontrer que exp(x + y) = exp(x) exp(y)",
+	"description": "y fixé, h(x) = exp(x + y)/exp(y) : définie (case choix), h(0), h′ = h (case choix), conclusion par l'unicité, démonstration (étapes à ranger)",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On rappelle que la fonction exponentielle est dérivable sur $\\mathbb{R}$, avec $\\exp'=\\exp$ et $\\exp(0)=1$. On admet aussi que $\\exp$ ne s'annule pas, et que c'est la seule fonction $f$ dérivable sur $\\mathbb{R}$ telle que $f'=f$ et $f(0)=1$.\n\nSoit $y$ un réel fixé. Pour tout réel $x$, on pose $h(x)=\\dfrac{\\exp(x+y)}{\\exp(y)}$.\n\nPourquoi $h$ est-elle définie sur $\\mathbb{R}$ ?\n\n```choix\n- Car $\\exp(y)\\neq 0$.\n- Car $\\exp(0)=1$.\n- Car $x+y\\neq 0$.\n- Car $h(0)=1$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le dénominateur $\\exp(y)$ ne dépend pas de $x$ : c'est un nombre.",
+					"$\\exp$ ne s'annule pas, donc $\\exp(y)\\neq 0$ et $h(x)$ a un sens pour tout réel $x$.",
+					"$x+y$ peut être nul ; ce n'est pas un problème, puisque $\\exp(0)=1$."
+				]
+			}
+		},
+		{
+			"statement": "On rappelle que la fonction exponentielle est dérivable sur $\\mathbb{R}$, avec $\\exp'=\\exp$ et $\\exp(0)=1$. On admet aussi que $\\exp$ ne s'annule pas, et que c'est la seule fonction $f$ dérivable sur $\\mathbb{R}$ telle que $f'=f$ et $f(0)=1$.\n\nSoit $y$ un réel fixé. Pour tout réel $x$, on pose $h(x)=\\dfrac{\\exp(x+y)}{\\exp(y)}$.\n\nComplète.\n\n$h(0)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h(0)=\\dfrac{\\exp(0+y)}{\\exp(y)}=\\dfrac{\\exp(y)}{\\exp(y)}$.",
+					"Donc $h(0)=\\textcolor{{{color:primary.0}}}{1}$ : $h$ a la même valeur en $0$ que $\\exp$."
+				]
+			}
+		},
+		{
+			"statement": "On rappelle que la fonction exponentielle est dérivable sur $\\mathbb{R}$, avec $\\exp'=\\exp$ et $\\exp(0)=1$. On admet aussi que $\\exp$ ne s'annule pas, et que c'est la seule fonction $f$ dérivable sur $\\mathbb{R}$ telle que $f'=f$ et $f(0)=1$.\n\nSoit $y$ un réel fixé. Pour tout réel $x$, on pose $h(x)=\\dfrac{\\exp(x+y)}{\\exp(y)}$.\n\nQue vaut $h'(x)$, pour tout réel $x$ ?\n\n```choix\n- $h'(x)=\\dfrac{\\exp(x+y)}{\\exp(y)}=h(x)$\n- $h'(x)=0$, car $\\exp(y)$ est une constante.\n- $h'(x)=\\dfrac{(x+y)\\exp(x+y)}{\\exp(y)}$\n- $h'(x)=\\dfrac{\\exp(x+y)}{\\exp(y)^2}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{\\exp(y)}$ est un nombre : on dérive seulement $x\\mapsto\\exp(x+y)$.",
+					"La dérivée de $x\\mapsto\\exp(x+y)$ est $x\\mapsto 1\\times\\exp(x+y)$ (dérivée de $x\\mapsto f(ax+b)$ avec $a=1$).",
+					"Donc $\\textcolor{{{color:primary.0}}}{h'(x)=\\dfrac{\\exp(x+y)}{\\exp(y)}=h(x)}$ : $h'=h$."
+				]
+			}
+		},
+		{
+			"statement": "On rappelle que la fonction exponentielle est dérivable sur $\\mathbb{R}$, avec $\\exp'=\\exp$ et $\\exp(0)=1$. On admet que $\\exp$ ne s'annule pas et qu'elle est la seule fonction $f$ dérivable sur $\\mathbb{R}$ telle que $f'=f$ et $f(0)=1$. On démontre que, pour tous réels $x$ et $y$, $\\exp(x+y)=\\exp(x)\\exp(y)$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Soit $y$ un réel fixé ; on pose $h(x)=\\dfrac{\\exp(x+y)}{\\exp(y)}$, définie car $\\exp(y)\\neq 0$.\n- $h'(x)=\\dfrac{\\exp(x+y)}{\\exp(y)}=h(x)$ et $h(0)=\\dfrac{\\exp(y)}{\\exp(y)}=1$.\n- Par unicité, $h=\\exp$ : $\\dfrac{\\exp(x+y)}{\\exp(y)}=\\exp(x)$.\n- Donc $\\exp(x+y)=\\exp(x)\\exp(y)$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$h$ vérifie $h'=h$ et $h(0)=1$, comme $\\exp$ : par unicité, $h=\\exp$.",
+					"On multiplie par $\\exp(y)$ : $\\textcolor{{{color:primary.0}}}{\\exp(x+y)=\\exp(x)\\exp(y)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "exp(y) ≠ 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exp(0) = 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + y ≠ 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : h(0) = 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "h′ = h",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dérivée nulle",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : facteur x + y",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exp(y)²",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
