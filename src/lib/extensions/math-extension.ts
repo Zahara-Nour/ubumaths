@@ -33,6 +33,14 @@ import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
 import { Plugin, PluginKey, Selection, NodeSelection, TextSelection } from '@tiptap/pm/state';
 import { parseCustomSafe, toLatex, parseLatexSafe, toCustom } from '$lib/mathAST';
+import {
+	ajouterLigne,
+	aUneLigneVide,
+	CALCUL_ALIGNE_VIDE,
+	MARQUEUR_CURSEUR,
+	RACCOURCIS_MOTS,
+	retirerLigneVide
+} from './calcul-aligne';
 
 // ============================================================================
 // TYPE DECLARATIONS
@@ -55,6 +63,10 @@ declare module '@tiptap/core' {
 			 * Insert a block math field
 			 */
 			insertMathBlock: (latex?: string, syntax?: string, originalExpression?: string) => ReturnType;
+			/**
+			 * Insère un calcul aligné d'une ligne, le curseur dedans
+			 */
+			insertCalculAligne: () => ReturnType;
 		};
 	}
 }
@@ -65,8 +77,58 @@ declare module '@tiptap/core' {
 interface MathFieldElement extends HTMLElement {
 	value: string;
 	readOnly: boolean;
+	position: number;
+	readonly lastOffset: number;
+	readonly selectionIsCollapsed: boolean;
+	inlineShortcuts: Record<string, string | { value: string; after?: string }>;
 	focus(): void;
 	executeCommand(command: string): void;
+	insert(latex: string): boolean;
+	getValue(start: number, end: number, format: 'latex'): string;
+}
+
+/**
+ * Donne au champ un LaTeX contenant {@link MARQUEUR_CURSEUR} et pose le curseur
+ * à la place du marqueur, qui disparaît.
+ */
+function poserAvecCurseur(mathfield: MathFieldElement, latex: string): void {
+	mathfield.value = latex;
+	for (let p = 0; p < mathfield.lastOffset; p++) {
+		if (mathfield.getValue(p, p + 1, 'latex') === MARQUEUR_CURSEUR) {
+			mathfield.position = p + 1;
+			mathfield.executeCommand('deleteBackward');
+			return;
+		}
+	}
+	mathfield.value = latex.replace(MARQUEUR_CURSEUR, '');
+}
+
+/**
+ * Pose {@link MARQUEUR_CURSEUR} au curseur, sélection d'abord repliée : le
+ * marqueur ne doit rien remplacer.
+ */
+function insererMarqueur(mathfield: MathFieldElement): void {
+	const position = mathfield.position;
+	mathfield.position = position;
+	mathfield.insert(MARQUEUR_CURSEUR);
+}
+
+/** Retour arrière seul. */
+function estEffacement(event: KeyboardEvent): boolean {
+	return (
+		event.key === 'Backspace' &&
+		!event.shiftKey &&
+		!event.metaKey &&
+		!event.ctrlKey &&
+		!event.altKey
+	);
+}
+
+/** Cmd+Entrée, Ctrl+Entrée ou Alt+Entrée : nouvelle ligne de calcul aligné. */
+function estNouvelleLigne(event: KeyboardEvent): boolean {
+	return (
+		event.key === 'Enter' && !event.shiftKey && (event.metaKey || event.ctrlKey || event.altKey)
+	);
 }
 
 /**
@@ -892,8 +954,8 @@ export const MathBlock = Node.create({
 			}
 
 			// Sync changes back to node
-			mathfield.addEventListener('input', (e) => {
-				const target = e.target as MathFieldElement;
+			const synchroniser = () => {
+				const target = mathfield;
 				const pos = getPos();
 
 				if (typeof pos === 'number') {
@@ -930,7 +992,70 @@ export const MathBlock = Node.create({
 						editor.view.dispatch(tr);
 					}
 				}
-			});
+			};
+			mathfield.addEventListener('input', synchroniser);
+
+			if (editor.isEditable) {
+				// Calcul aligné : Cmd/Ctrl/Alt+Entrée ajoute une ligne. Écouté en capture,
+				// avant MathLive, dont le `addRowAfter` natif enveloppe la formule dans un
+				// `\displaylines{…}` quand le curseur est en fin de champ.
+				// Ligne vide + Retour arrière : MathLive s'y arrête, on la retire. Le
+				// marqueur ne sert qu'à savoir si le curseur y est ; sinon il est
+				// effacé et MathLive traite la touche comme d'habitude.
+				const effacerLigneVide = (event: KeyboardEvent) => {
+					insererMarqueur(mathfield);
+					const sansLigne = retirerLigneVide(mathfield.value);
+					if (sansLigne === null) {
+						mathfield.executeCommand('deleteBackward');
+						return;
+					}
+					event.preventDefault();
+					event.stopPropagation();
+					poserAvecCurseur(mathfield, sansLigne);
+				};
+
+				const nouvelleLigne = (event: KeyboardEvent) => {
+					event.preventDefault();
+					event.stopPropagation();
+					insererMarqueur(mathfield);
+					poserAvecCurseur(mathfield, ajouterLigne(mathfield.value));
+				};
+
+				mathfield.addEventListener(
+					'keydown',
+					(event: KeyboardEvent) => {
+						// Une sélection effacée reste l'affaire de MathLive : le marqueur la
+						// replierait et un seul caractère partirait.
+						const effacer =
+							estEffacement(event) &&
+							mathfield.selectionIsCollapsed &&
+							aUneLigneVide(mathfield.value);
+						if (!effacer && !estNouvelleLigne(event)) return;
+						try {
+							if (effacer) effacerLigneVide(event);
+							else nouvelleLigne(event);
+						} finally {
+							// Jamais de marqueur oublié dans le champ ni dans le nœud, même
+							// si une étape a levé.
+							if (mathfield.value.includes(MARQUEUR_CURSEUR)) {
+								mathfield.value = mathfield.value.replace(MARQUEUR_CURSEUR, '');
+							}
+							synchroniser();
+						}
+					},
+					{ capture: true }
+				);
+
+				// « ou », « et » d'un raisonnement : posés au premier focus, quand le
+				// champ est monté (avant, MathLive n'a pas encore ses raccourcis).
+				mathfield.addEventListener(
+					'focus',
+					() => {
+						mathfield.inlineShortcuts = { ...mathfield.inlineShortcuts, ...RACCOURCIS_MOTS };
+					},
+					{ once: true }
+				);
+			}
 
 			/**
 			 * Handle move-out event from MathLive
@@ -1031,6 +1156,30 @@ export const MathBlock = Node.create({
 						type: this.name,
 						attrs: { latex, syntax, originalExpression }
 					});
+				},
+			insertCalculAligne:
+				() =>
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				({ commands, editor, tr }: any) => {
+					const vide = CALCUL_ALIGNE_VIDE.replace(MARQUEUR_CURSEUR, '');
+					if (!commands.insertContent({ type: this.name, attrs: { latex: vide } })) return false;
+					// Le bloc inséré est le dernier mathBlock jusqu'à la sélection (qui peut
+					// le sélectionner lui-même), lue dans la transaction : `editor.state` ne la
+					// contient pas encore.
+					let cible = -1;
+					tr.doc.descendants((n: { type: { name: string } }, p: number) => {
+						if (n.type.name === this.name && p <= tr.selection.from) cible = p;
+					});
+					if (cible < 0) return true;
+					// Après le rendu du champ : avant, il n'existe pas.
+					requestAnimationFrame(() => {
+						const dom = editor.view.nodeDOM(cible) as { mathfield?: MathFieldElement } | null;
+						const mathfield = dom?.mathfield;
+						if (!mathfield) return;
+						mathfield.focus();
+						poserAvecCurseur(mathfield, CALCUL_ALIGNE_VIDE);
+					});
+					return true;
 				}
 		};
 	},
