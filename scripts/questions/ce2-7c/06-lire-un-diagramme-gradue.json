@@ -1,4 +1,5 @@
 {
+	"id": "77877cbe-720c-4af5-9401-f4c3b328eea8",
 	"title": "Lis le diagramme en barres (axe gradué de 2 en 2, 5 en 5, 10 en 10)",
 	"description": "Lire une barre sur un axe gradué de 2 en 2, de 5 en 5, de 10 en 10, puis une barre entre deux traits (35 sur un axe de 10 en 10)",
 	"grades": ["CE2"],
