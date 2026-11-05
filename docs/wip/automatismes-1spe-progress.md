@@ -6,20 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, PR de rangement des 6 brouillons ouverte._
+_Mis à jour le 2026-11-05, après #2390._
 
 - **État** : lots « Statistiques » (`d37413a3`) et « Probabilités » (`84b512df`) en prod, en brouillon,
-  vérifiés depuis la base (0 débord). Migration `20261105055721_automatismes_1spe_rangement_tags`
-  (nœud + point des 6 brouillons « Non rangés », § Rangement des 6 brouillons) : test d'intégration
-  rouge sans elle, vert avec · **Prochaine action** : PR → CI → merge → `db:migrate` depuis la branche
-  mergée → vérifier en prod les 6 nœuds et tags (MCP) · **En attente de David** : publier
+  vérifiés depuis la base (0 débord). Les 6 brouillons ex-« Non rangés » ont leur nœud et leur point
+  en prod (#2390, `db:migrate` fait, vérifié par MCP ; § Rangement des 6 brouillons) · **Prochaine
+  action** : lot suivant (§ Suite), à choisir avec David · **En attente de David** : publier
   `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c` (+ `1bd7378d`, `9a9026fc`) et
   les fiches `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df` ; garder ou non les 2 figures
   d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** : écritures en
   prod refusées par le classifieur (David les lance) ; API plafonnée à 1 000 lignes ; modèles d'une
   même famille = mêmes données à graine égale ; `--polices-corrige` pour un corrigé ; venv de
-  `debord.py` = `scripts/fiches/.venv` du dépôt principal · **Worktree / branche** :
-  `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-1spe-rangement`.
+  `debord.py` = `scripts/fiches/.venv` du dépôt principal ; `db:migrate` depuis un worktree : copier
+  `supabase/.temp` (lien) et, si la prod a une migration absente de la branche, reprendre CE fichier
+  seul de `origin/main` (jamais les migrations non appliquées des autres) puis `--dry-run` ·
+  **Worktree / branche** : aucun (retiré après #2390).
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
@@ -279,3 +280,6 @@ compris la question d'accès : personne ne gagne ni ne perd d'accès.
 Migration `20261105055721_automatismes_1spe_rangement_tags.sql` (forme du lot 12 b-1 de 2de, colonne
 `grade` en plus), test `tests/integration/automatismes-1spe-rangement-tags.test.ts` : 5 rouges sur 10
 sans la migration (corps retiré), 10 verts avec.
+
+Mergée (#2390, CI verte) ; `db:migrate` le 2026-11-05 depuis la branche mergée : seule cette migration
+appliquée (dry-run), les 6 modèles vérifiés en prod (nœud, point, brouillon, `updated_at` préservé).
