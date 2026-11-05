@@ -9,18 +9,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 7 rangé en prod (#2397)._
+_Mis à jour le 2026-11-05, lot 7 publié (#2396, #2397)._
 
-- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 et 6 publiés ; lot 7
-  (exponentielle, § 12) en brouillon, rangé et tagué en prod, page à cocher publiée.
-- **Prochaine action** : lire les verdicts de la page du lot 7 (https://claude.ai/artifact/LEJtGYjAorBSHC7wwCzyx1,
-  `ArtifactData`) ; tout OK → David publie (`publier-lot.ts --publier`). Ensuite lot 8 (géométrie : 324, 325, 326, 334,
-  335, 420), puis 9.
-- **En attente de David** : (1) relecture du lot 7 sur la page à cocher ; (2) vérification à l'œil en prod (ligne du
-  2026-11-03 de `docs/wip/verifications-manuelles.md`).
+- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5, 6 et 7 publiés (§ 10 à 12).
+- **Prochaine action** : lot 8, géométrie (324, 325, 326, 334, 335, 420) : relevé prod des points et de l'existant,
+  écriture dans `scripts/questions/1spe-approfondissements-8/`, PR, puis le même enchaînement que le lot 7. Ensuite
+  lot 9 (probabilités : 345, 346, 361).
+- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
-  dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Job navigateur
-  de la CI qui plante tests verts → `gh run rerun <run> --failed`. Port 5178.
+  dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
+  une notion → choisir sa sous-notion avec David. Job navigateur de la CI qui plante tests verts → `gh run rerun <run>
+--failed`. Port 5178.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (HEAD détaché), nouvelle branche depuis
   `origin/main`.
 
@@ -446,3 +445,6 @@ un tag chacun, `draft`, `updated_at` inchangé. Page à cocher : https://claude.
 
 Branches distantes `docs/questions-1spe-demonstrations` et `feat/questions-1spe-demonstrations` supprimées le
 2026-11-05 (accord de David).
+
+Relecture (2026-11-05) : 3/3 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`), 3/3 `published`
+relus en base (MCP).
