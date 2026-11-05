@@ -2286,6 +2286,10 @@ describe('convertLatexToTypstMath - Unknown LaTeX commands', () => {
 		expect(convertLatexToTypstMath('\\boxed{x}(y)')).toBe(
 			'#box(stroke: 0.5pt, inset: 2pt)[$x$];(y)'
 		);
+		// En fin de ligne de matrice, le `;` du bloc précède le `;` qui sépare les lignes
+		expect(
+			convertLatexToTypstMath('\\begin{pmatrix}\\textcolor{red}{1}\\\\3\\end{pmatrix}')
+		).toContain('[$1$];;');
 	});
 
 	it('should preserve known Typst spacing keywords', () => {

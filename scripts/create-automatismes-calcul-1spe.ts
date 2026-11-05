@@ -49,6 +49,8 @@ const PUBLIER = process.argv.includes('--publier');
 const METTRE_A_JOUR = process.argv.includes('--mettre-a-jour');
 const iSortie = process.argv.indexOf('--sortie');
 const SORTIE = iSortie > 0 ? process.argv[iSortie + 1] : null;
+if (iSortie > 0 && (!SORTIE || SORTIE.startsWith('--')))
+	throw new Error('--sortie demande un dossier : --sortie <dossier>');
 const DAVID = '97c1d5e4-5fa0-44ce-be83-ed5467f3a424';
 const ECOLE = '05668b78-e4d2-4d85-85b6-183e75d24204';
 const MODELE_FICHE_ELEVE = '00000000-0000-4000-8000-000000000012';
