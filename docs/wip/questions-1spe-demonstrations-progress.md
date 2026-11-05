@@ -14,9 +14,8 @@ _Mis à jour le 2026-11-05, lot 7 mergé (#2396)._
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 et 6 publiés ; lot 7
   (exponentielle, § 12) mergé (#2396), brouillons pas encore créés en prod.
 - **Prochaine action** : David lance `create-questions --publier` (commande `!` du § 12),
-  relevé MCP des 3 brouillons, migration nœud + tag (gabarit lot 6), page à cocher. Ensuite lots 8, 9.
-- **En attente de David** : (1) nœud du modèle 300 (point sur la NOTION Fonction exponentielle) : sous-notion
-  existante « dérivée » (reco) ou neuve « définition » ? (§ 12) ; (2) vérification à l'œil en prod (ligne du 2026-11-03
+  relevé MCP des 3 brouillons, migration nœud + tag (gabarit lot 6, D5 : 300 sur « dérivée »), page à cocher. Ensuite lots 8, 9.
+- **En attente de David** : (1) `create-questions --publier` du lot 7 ; (2) vérification à l'œil en prod (ligne du 2026-11-03
   de `docs/wip/verifications-manuelles.md`) ; (3) suppression des branches distantes `docs/questions-1spe-demonstrations`,
   `feat/questions-1spe-demonstrations` (refusée au classifieur le 2026-11-04).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
@@ -407,8 +406,9 @@ Publié par David (`publier-lot.ts --publier`), 4/4 `published` relus en base (M
 Relevé prod (MCP, 2026-11-05) : 300 sur la **notion** Fonctions › Fonction exponentielle ; 301 sur « propriétés
 algébriques » ; 302 sur « variations ». Aucun modèle sur les 3 points. Sous-notions de la notion : courbe, croissance et
 décroissance exponentielles, dérivée, équations et inéquations, fonctions x ↦ aˣ, propriétés algébriques, variations.
-**À trancher (David)** : le modèle 300 doit aller sur une sous-notion ; reco « dérivée » (f′ = f), sinon une neuve
-« définition » posée par la migration (comme « sommes de termes » au lot 5).
+**D5 (David, 2026-11-05, « tes recos ? » puis « je te suis »)** : le modèle 300 va sur la sous-notion existante
+« dérivée » (la preuve repose sur exp′ = exp ; aucune sous-notion neuve) ; 301 sur « propriétés algébriques », 302 sur
+« variations ».
 
 Chaîne des preuves (celle des manuels) : lemme exp(x)exp(−x) = 1 (dérivée nulle) → exp ne s'annule pas ; 300 :
 (g/exp)′ = 0 et g/exp = 1 en 0 ; 301 : y fixé, h(x) = exp(x + y)/exp(y) vérifie h′ = h, h(0) = 1 → unicité ; 302 :
