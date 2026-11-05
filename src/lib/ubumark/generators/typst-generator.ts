@@ -3461,8 +3461,12 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/(bracket\.[lr])(?=[a-zA-Z0-9])/g, '$1 ');
 
 	// Restore content block brackets (from \textcolor conversion)
+	// `;` final (comme `wrapInlineDetail`) : sans lui, un `(` collé après le bloc
+	// (`\textcolor{…}{(x+3)}(4x-2)`) serait lu par Typst comme la suite de l'appel
+	// (« invalid number suffix: x ») et tout le PDF échouerait. Typst consomme le `;`,
+	// en math comme en texte (compilateur de la prod, lot « Calcul » d'automatismes-1spe).
 	result = result.replace(/<<<CONTENT_L>>>/g, '[');
-	result = result.replace(/<<<CONTENT_R>>>/g, ']');
+	result = result.replace(/<<<CONTENT_R>>>/g, '];');
 
 	// ========================================================================
 	// DOUBLE QUOTE AS DOUBLE PRIME (Step 2 of 2)

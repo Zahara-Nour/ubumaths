@@ -127,7 +127,7 @@ describe('B4 — commandes courantes', () => {
 	it.each([
 		['a\\mid b', 'a divides b'],
 		['a\\simeq b', 'a tilde.eq b'],
-		['\\boxed{x=2}', '#box(stroke: 0.5pt, inset: 2pt)[$x=2$]'],
+		['\\boxed{x=2}', '#box(stroke: 0.5pt, inset: 2pt)[$x=2$];'],
 		['\\tfrac{1}{2}', 'frac(1, 2)'],
 		['\\dbinom{n}{k}', 'binom(n, k)'],
 		['\\textrm{cm}', '"cm"'],

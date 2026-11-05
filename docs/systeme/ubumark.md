@@ -1350,6 +1350,12 @@ Points à retenir :
   ligne `[…]{.type}` : calcul en gris, les autres sur fond teinté (`wrapInlineDetail`). Le bord et le
   titre portent l'information : une photocopie en noir et blanc reste lisible. Une citation `>`
   ordinaire reste un `#quote`. Test : `src/lib/ubumark/generators/__tests__/encadres-typst.test.ts`.
+- **Blocs de contenu en formule** (`\textcolor`, `\boxed` → `#text(…)[$…$];`, `#box(…)[$…$];`) :
+  `;` final, comme pour `wrapInlineDetail` — sans lui, une `(` collée après le bloc
+  (`\textcolor{…}{(x+3)}(4x-2)`) est lue par Typst comme les arguments de l'appel (« invalid number
+  suffix ») et tout le PDF échoue. Typst consomme le `;` en math, dans les arguments (`bold`,
+  `frac`) et en fin de ligne de matrice (`];;`). Tests : `typst-generator.test.ts` (« suivi d'une
+  parenthèse »).
 - **Cellule de tableau** : une chaîne (`TableCellNode.content`), relue à l'affichage. `$…$` et
   `~…~` y sont des formules, lues de gauche à droite (`$…$` d'abord : le `~` d'espace insécable
   d'un `$…$` n'ouvre rien ; `~~…~~` non plus). Un `\~` d'auteur, dés-échappé par l'extraction,
