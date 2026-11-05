@@ -1,18 +1,16 @@
 # Chantier « probtree-indices » — étiquettes indicées de l'arbre pondéré
 
-> Origine : ligne 11 de [`outils-manquants.md`](outils-manquants.md) (TSPE-506, 617, arbres du lot 5a).
+> Origine : ligne 11 de [`outils-manquants.md`](../../wip/outils-manquants.md) (TSPE-506, 617, arbres du lot 5a).
 > Phase 0 validée par David le 2026-11-05 (« je te suis »), dans la session de clôture de `solide-vecteur`.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, PR ouverte._
+_Mis à jour le 2026-11-05, après #2398. **Chantier clos** (journal archivé)._
 
-- **État** : PR `fix/probtree-indices` ouverte (écran + PDF, tests rouges sans le correctif, verts avec).
-- **Prochaine action** : CI verte → merge → ligne 11 de `outils-manquants.md` dans « Livré » (commit doc sur
-  `main`) → ligne dans `verifications-manuelles.md` → archiver ce journal ; puis chantier `tetraedre-vue`.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-probtree-indices`, `fix/probtree-indices`.
+- **État** : #2398 mergée (pas encore en prod) ; ligne 11 de `outils-manquants.md` passée dans « Livré » ; doc
+  versée dans `docs/systeme/ubumark.md` (étiquette d'un évènement) et `docs/pratiques/`.
+- **Reste à David** : vérification notée dans `verifications-manuelles.md` (après `deploy:prod`).
+- **Worktree / branche** : supprimés.
 
 ---
 
