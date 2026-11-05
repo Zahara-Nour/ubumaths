@@ -100,6 +100,20 @@ import {
 } from '../../src/lib/ubumark/utils/stat-chart-scene';
 import { parseProbTreeContent } from '../../src/lib/ubumark/parser/probability-tree-parser';
 import type { ProbTreeNode } from '../../src/lib/ubumark/types/probability-tree';
+import { parseNumberLineContent } from '../../src/lib/ubumark/parser/number-line-parser';
+import type { NumberLineNode } from '../../src/lib/ubumark/types/number-line';
+import {
+	NL_LAYOUT,
+	bracketDirection,
+	bracketPoints,
+	computeGraduations,
+	computeLineExtents,
+	numVal,
+	phoneGapWarning,
+	resolveNumberLineColors,
+	segmentLevels,
+	valueToX
+} from '../../src/lib/ubumark/utils/number-line-render';
 import { namedColorScreen, namedColorTable } from '../../src/lib/theme/named-colors';
 import { toFrenchDecimal, toLocaleDecimal } from '../../src/lib/utils/french-math';
 import type { ModeleFichier } from './lot-questions';
@@ -1390,7 +1404,147 @@ function arbre(source: string): Bloc {
 	};
 }
 
+// ---- Line : droite graduée de NumberLine.svelte (mêmes graduations, couleurs, crochets) ----
+
+/** Hauteur du SVG, comme NumberLine.svelte */
+const DROITE_HAUTEUR = 120;
+/** Demi-hauteur et becs des crochets, comme NumberLine.svelte */
+const DROITE_CROCHET = { hauteur: 9, bec: 5 };
+/** Point posé SUR la droite (construction juste d'une droite à placer), comme `pointsOnLine` */
+const DROITE_POINT_POSE = 7;
+/** Écart entre les noms de points posés au même endroit */
+const DROITE_NOMS_ECART = 14;
+/** Couleur de la correction d'une droite à placer ou à représenter (`SOLUTION_COLOR`) */
+const DROITE_SOLUTION = 'vert';
+
+/** Le SVG d'une droite graduée ; `posés` : points sur la droite (droite à placer, solution) */
+function droiteSvg(node: NumberLineNode, poses = false): string {
+	const {
+		LINE_Y,
+		MINOR_TICK_HEIGHT,
+		MAJOR_TICK_HEIGHT,
+		LABEL_Y_OFFSET,
+		POINT_RADIUS,
+		POINT_Y_OFFSET,
+		POINT_LABEL_Y_OFFSET,
+		SEGMENT_LEVEL_GAP,
+		ARROW_SIZE,
+		SVG_WIDTH: largeur
+	} = NL_LAYOUT;
+	const { config } = node;
+	const debut = numVal(config.start);
+	const fin = numVal(config.end);
+	const echelle = config.scale ?? 'linear';
+	const x = (v: number) => c2(valueToX(v, debut, fin, echelle, largeur));
+	const couleurs = resolveNumberLineColors(node);
+	const { lineStartX: x0, lineEndX: x1 } = computeLineExtents(config.arrows, largeur);
+	const niveaux = segmentLevels(node.segments);
+
+	const axe = `<line class="nl-axe" x1="${x0}" y1="${LINE_Y}" x2="${x1}" y2="${LINE_Y}" stroke-width="1.5"/>`;
+	const segments = node.segments
+		.map((s, i) => {
+			const a = s.startInfinite ? x0 : x(numVal(s.start));
+			const b = s.endInfinite ? x1 : x(numVal(s.end));
+			const y = LINE_Y - niveaux[i] * SEGMENT_LEVEL_GAP;
+			const style = `style="stroke:${couleurs.segments[i].screen}"`;
+			const crochet = (cx: number, cote: 'start' | 'end', ouvert: boolean) =>
+				`<path class="nl-bracket" d="${bracketPoints(
+					cx,
+					y,
+					bracketDirection(cote, ouvert),
+					DROITE_CROCHET.hauteur,
+					DROITE_CROCHET.bec
+				)
+					.map(([px, py], k) => `${k === 0 ? 'M' : 'L'} ${c2(px)} ${c2(py)}`)
+					.join(' ')}" fill="none" ${style} stroke-width="2.5" stroke-linejoin="miter"/>`;
+			return (
+				`<line class="nl-segment" x1="${a}" y1="${y}" x2="${b}" y2="${y}" ${style} stroke-width="4"/>` +
+				(s.startInfinite ? '' : crochet(a, 'start', s.startOpen)) +
+				(s.endInfinite ? '' : crochet(b, 'end', s.endOpen))
+			);
+		})
+		.join('');
+	const fleches = config.arrows
+		? `<path class="nl-arrow" d="M ${x0} ${LINE_Y} L ${x0 + ARROW_SIZE} ${LINE_Y - ARROW_SIZE / 2} L ${x0 + ARROW_SIZE} ${LINE_Y + ARROW_SIZE / 2} Z"/>` +
+			`<path class="nl-arrow" d="M ${x1} ${LINE_Y} L ${x1 - ARROW_SIZE} ${LINE_Y - ARROW_SIZE / 2} L ${x1 - ARROW_SIZE} ${LINE_Y + ARROW_SIZE / 2} Z"/>`
+		: '';
+	const graduations = computeGraduations(config, largeur)
+		.map((g) => {
+			const h = g.isMajor ? MAJOR_TICK_HEIGHT : MINOR_TICK_HEIGHT;
+			const gx = c2(g.x);
+			const trait = `<line class="nl-tick" x1="${gx}" y1="${LINE_Y - h / 2}" x2="${gx}" y2="${LINE_Y + h / 2}" stroke-width="${g.isMajor ? 1.5 : 1}"/>`;
+			if (g.label === null) return trait;
+			// 100 × 45 px centrés, comme le foreignObject de NumberLine.svelte
+			const contenu = g.hidden
+				? '<span class="nl-cache">?</span>'
+				: `<span class="tex" data-tex="${attr(toLocaleDecimal(g.label, 'fr'))}"></span>`;
+			return `${trait}<foreignObject x="${c2(g.x - 50)}" y="${LINE_Y + LABEL_Y_OFFSET - 5}" width="100" height="45"><div class="nl-nombre">${contenu}</div></foreignObject>`;
+		})
+		.join('');
+	const xs = node.points.map((p) => x(numVal(p.value)));
+	const points = node.points
+		.map((p, i) => {
+			const px = xs[i];
+			const memePlace = xs.filter((o) => Math.abs(o - px) < 0.5).length;
+			const rang = xs.slice(0, i).filter((o) => Math.abs(o - px) < 0.5).length;
+			const nx = px + (rang - (memePlace - 1) / 2) * DROITE_NOMS_ECART;
+			const py = poses ? LINE_Y : LINE_Y + POINT_Y_OFFSET;
+			const couleur = couleurs.points[i].screen;
+			return (
+				`<circle class="nl-point" cx="${px}" cy="${py}" r="${poses ? DROITE_POINT_POSE : POINT_RADIUS}" style="fill:${couleur}" stroke-width="1.5"/>` +
+				`<foreignObject x="${c2(nx - 25)}" y="${py + POINT_LABEL_Y_OFFSET + 5}" width="50" height="20"><div class="nl-nom" style="color:${couleur}">${attr(p.label)}</div></foreignObject>`
+			);
+		})
+		.join('');
+	return `<svg class="nl" role="img" aria-label="Droite graduée" viewBox="0 0 ${largeur} ${DROITE_HAUTEUR}" style="max-width:${largeur}px">${axe}${segments}${fleches}${graduations}${points}</svg>`;
+}
+
+function droite(source: string): Bloc {
+	const r = parseNumberLineContent(source);
+	if (!r.node)
+		throw new Error('bloc line en erreur : ' + r.errors.map((e) => e.message).join(' ; '));
+	const node = r.node;
+	const avertissements = [
+		...r.warnings.map((w) => w.message),
+		...resolveNumberLineColors(node).warnings
+	];
+	// Droite à placer, comme NumberLinePlacer.svelte : énoncé sans point (le parseur refuse
+	// `points:`, l'écran ne montre que ceux de l'élève) ; correction : points attendus, en vert
+	if (node.placer !== undefined) {
+		const ecart = phoneGapWarning(node.config);
+		if (ecart) avertissements.push(ecart);
+		const poses = node.placer.map((t) => ({
+			label: t.name,
+			value: t.value,
+			color: DROITE_SOLUTION
+		}));
+		return {
+			html: droiteSvg({ ...node, points: [] }),
+			solution: droiteSvg({ ...node, points: poses }, true),
+			avertissements: avertissements.map((a) => `bloc line : ${a}`)
+		};
+	}
+	// Droite à représenter, comme NumberLineRepresenter.svelte : énoncé sans segment (le parseur
+	// refuse `segments:`) ; correction : l'intervalle attendu, en vert
+	if (node.representer !== undefined) {
+		const intervalle = node.representer.interval;
+		if (!intervalle) avertissements.push('aucun intervalle lisible dans representer:');
+		return {
+			html: droiteSvg({ ...node, segments: [] }),
+			solution: intervalle
+				? droiteSvg({ ...node, segments: [{ ...intervalle, color: DROITE_SOLUTION }] })
+				: undefined,
+			avertissements: avertissements.map((a) => `bloc line : ${a}`)
+		};
+	}
+	return {
+		html: droiteSvg(node),
+		avertissements: avertissements.map((a) => `bloc line : ${a}`)
+	};
+}
+
 const DESSINS: Record<string, (source: string) => Bloc> = {
+	line: droite,
 	figure,
 	monnaie,
 	partage,

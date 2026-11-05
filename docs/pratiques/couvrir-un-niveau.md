@@ -278,7 +278,10 @@ niveau chacune (`idx_question_templates_unique_category`).
    en KaTeX, zéros, double barre, flèches) ; les blocs `histogramme`, `frequences-cumulees` (lignes
    de lecture), `barres`, `boite-a-moustaches`, `tableau-croise` (cases `?` ou masquées vides) et
    `simulation` en tirages sont dessinés depuis `buildStatChartScene` (la scène de l'écran), `probtree`
-   d'après la mise en page de `ProbabilityTree.svelte` (formules en KaTeX) ; une scène statistique que
+   d'après la mise en page de `ProbabilityTree.svelte` (formules en KaTeX), `line` comme
+   `NumberLine.svelte` (graduations, crochets et couleurs de `number-line-render`, nombres en KaTeX ;
+   `placer:` et `representer:` : la droite nue, et la construction juste à part — points posés ou
+   intervalle tracé) ; une scène statistique que
    la page ne dessine pas encore (`loi`, `nuage`, `circulaire`, `effectifs`) est montrée par sa source
    et signalée ; un bloc en erreur arrête la page ; un bloc `python` est montré tel quel ;
    un autre bloc (`operation`…) est montré par sa source et signalé. Les formules restent en texte quand elles n'ont que des nombres et des signes (CP) ; au-delà
