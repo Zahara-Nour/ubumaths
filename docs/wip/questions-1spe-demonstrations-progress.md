@@ -9,19 +9,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 8 : brouillons en prod, migration nœud + tag en PR._
+_Mis à jour le 2026-11-05, après #2407 (lot 8 : nœud + tag en prod)._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5, 6 et 7 publiés ; lot 8
-  (géométrie, § 13, D6) : 6 brouillons créés en prod, migration `20261105195513` (nœud + tag, sous-notion neuve
-  « parabole ») en PR.
-- **Prochaine action** : CI verte → merge → `db:migrate` (4 conditions réunies) → vérif MCP → page à cocher. Ensuite
-  lot 9 (probabilités : 345, 346, 361).
-- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
+  (géométrie, § 13, D6) : 6 brouillons rangés et tagués en prod (#2407, `db:migrate` fait), page à cocher publiée :
+  https://claude.ai/artifact/HtD5WnTWg6dvD5jgdcVsSS.
+- **Prochaine action** : relecture du lot 8 par David (page à cocher), puis `publier-lot.ts --publier` par David et
+  relevé MCP. Ensuite lot 9 (probabilités : 345, 346, 361).
+- **En attente de David** : relecture du lot 8 ; vérification à l'œil en prod (ligne du 2026-11-03 de
+  `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
   une notion → choisir sa sous-notion avec David. Variable `e` = Euler : jamais comme nom de variable. Job navigateur
-  de la CI qui plante tests verts → `gh run rerun <run> --failed`. Port 5178.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-8-db`.
+  de la CI qui plante tests verts → `gh run rerun <run> --failed`. Port 5178. **Sous-notion neuve** → ajouter aussi
+  la fixture `arbre-notions-seed.json`, le décompte de `seed-classification-nodes.test.ts` et `later-migrations.ts`
+  (oubli sur #2407, CI rouge au premier passage).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (HEAD détaché), nouvelle branche depuis
+  `origin/main`.
 
 ---
 
@@ -492,3 +496,11 @@ David a lancé `create-questions --publier` après #2401. Relevé prod (MCP) : 6
 fait dans le dépôt principal. Migration `20261105195513_questions_1spe_approfondissements_8_rangement_tags` (gabarit
 lot 5 : sous-notion neuve, tout ou rien), test `questions-1spe-approfondissements-8-rangement-tags` 11/11 vert, rouge
 sans la migration (6 rouges, la suite principale ne s'exécute pas). Accès : Q5 de D3, personne.
+
+Premier passage de la CI rouge : la sous-notion neuve manquait à la fixture de l'arbre
+(`tests/integration/fixtures/arbre-notions-seed.json`), au décompte de `seed-classification-nodes.test.ts` (481) et à
+`tests/helpers/database/later-migrations.ts` (`nettoyage-facettes` défait les migrations postérieures). Corrigé dans la
+PR (suite d'intégration locale : 5271 verts). `security-auditor` : aucun finding. Mergée (#2407, CI verte).
+`db:migrate` le 2026-11-05 (seule migration en attente, sans `--include-all`), vérifié MCP : 6 modèles sur leur nœud,
+un tag chacun, `draft`, `updated_at` inchangé ; « parabole » en fin de Géométrie repérée (position 7). Page à cocher :
+https://claude.ai/artifact/HtD5WnTWg6dvD5jgdcVsSS.
