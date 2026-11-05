@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, migration du lot 8 en PR._
+_Mis à jour le 2026-11-05, après #2409 et la page à cocher du lot 8._
 
-- **État** : lots 1 à 7c publiés ; lot 8 (9 modèles) en brouillon en prod ; migration nœud + tag en PR (rouge sans,
-  vert 10/10, `security-auditor` sans finding bloquant).
-- **Prochaine action** : CI verte → `check:migrations --pr`, merge, `db:migrate` depuis le dépôt principal, relevé MCP,
-  page à cocher.
-- **En attente de David** : rien avant la page à cocher.
+- **État** : lots 1 à 7c publiés ; lot 8 (9 modèles) en brouillon, rangé et tagué en prod (#2409) ; page à cocher
+  publiée (https://claude.ai/artifact/AkuQcXN5U1GitVZzWRbGsF).
+- **Prochaine action** : compter les verdicts en base, `publier-lot` (David), puis lot 9 (longueurs, masses : 012,
+  040, 041, 042, 044, 049, 050).
+- **En attente de David** : relecture de la page à cocher ; puis `pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/ce2-8 --publier`.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; `axe: à choisir` →
   la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) et
   `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot8-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` (branche mergée, à retirer ou à réutiliser au lot 9).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -754,3 +755,7 @@ Réponse de David (« je te suis », 2026-11-05) : les cinq recommandations.
   3, 1 à 3 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids commités. Migration
   `20261105201824_questions_ce2_lot8_rangement_tags` + test : rouge sans le corps (6 échecs sur 10), vert 10/10 ;
   `security-auditor` : aucun finding bloquant (diff avec la 7c : valeurs seules ; chemins et points vérifiés en prod).
+- 2026-11-05 : #2409 mergée (CI verte, intégration comprise ; `check:migrations --pr 2409` OK) ; `db:migrate` depuis le
+  dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 9/9 sur le nœud de leur point, un point chacun,
+  brouillons, `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/AkuQcXN5U1GitVZzWRbGsF), une
+  alerte attendue (09 non dessiné : le jouer dans l'aperçu), base `verdicts` vide.
