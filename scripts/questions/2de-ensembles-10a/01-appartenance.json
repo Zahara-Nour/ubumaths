@@ -1,0 +1,241 @@
+{
+	"title": "Élément d'un ensemble, appartenance",
+	"description": "Compléter x … D par ∈ ou ∉ (D = diviseurs de n) ; écrire en extension les entiers n tels que −2 < n ⩽ 2 (pièges : borne exclue comptée, borne comprise oubliée)",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On note $D$ l'ensemble des diviseurs positifs de ${{n}}$. Complète par $\\in$ ou $\\notin$.\n\n$${{x}}\\;\\ldots\\;D$$\n\n```choix\nmelanger: non\n- $\\in$\n- $\\notin$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "12|18|20|24|30|36"
+				},
+				{
+					"name": "x",
+					"expression": "2..12"
+				},
+				{
+					"name": "q",
+					"expression": "eval:floor((n)/(x))"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(n)-(x)*(q)"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:min(r,1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x\\in D$ se lit « $x$ **appartient** à $D$ » : $x$ est un **élément** de $D$. Sinon, on écrit $x\\notin D$.",
+					"{{if:rep==0|${{n}}={{x}}\\times{{q}}$ : ${{x}}$ divise ${{n}}$, donc $\\textcolor{{{color:primary.0}}}{{{x}}\\in D}$.|${{n}}={{x}}\\times{{q}}+{{r}}$ : le reste n'est pas nul, ${{x}}$ ne divise pas ${{n}}$, donc $\\textcolor{{{color:primary.0}}}{{{x}}\\notin D}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "On note $E$ l'ensemble des entiers relatifs $n$ tels que ${{a}}{{if:sa==1|\\leqslant |<}}n{{if:sb==1|\\leqslant|<}}{{b}}$.\n\nÉcris cet ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1;3;5\\}$) ; l'ensemble vide s'écrit $\\varnothing$.\n\n$$E=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+4"
+				},
+				{
+					"name": "sa",
+					"expression": "0|1"
+				},
+				{
+					"name": "sb",
+					"expression": "0|1"
+				},
+				{
+					"name": "f",
+					"expression": "eval:(a)+1-(sa)"
+				},
+				{
+					"name": "g4",
+					"expression": "eval:min((sa)+(sb),1)"
+				},
+				{
+					"name": "g5",
+					"expression": "eval:(sa)*(sb)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{f}};{{eval:(f)+1}};{{eval:(f)+2}}{{if:g4==1|;{{eval:(f)+3}}}}{{if:g5==1|;{{eval:(f)+4}}}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit tous les éléments de $E$, l'un après l'autre.",
+					"${{a}}$ est {{if:sa==1|compris (inégalité large)|exclu (inégalité stricte)}}, ${{b}}$ est {{if:sb==1|compris (inégalité large)|exclu (inégalité stricte)}} :",
+					"$$E=\\textcolor{{{color:primary.0}}}{\\{ {{f}};{{eval:(f)+1}};{{eval:(f)+2}}{{if:g4==1|;{{eval:(f)+3}}}}{{if:g5==1|;{{eval:(f)+4}}}} \\}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 et 24 : ∈",
+			"variationIndex": 0,
+			"variables": {
+				"n": "24",
+				"x": "4",
+				"q": "6",
+				"r": "0",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 ∉ D",
+			"variationIndex": 0,
+			"variables": {
+				"n": "24",
+				"x": "4",
+				"q": "6",
+				"r": "0",
+				"rep": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 et 18 : ∉",
+			"variationIndex": 0,
+			"variables": {
+				"n": "18",
+				"x": "5",
+				"q": "3",
+				"r": "3",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−2 < n ⩽ 2 : {−1 ; 0 ; 1 ; 2}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "2",
+				"sa": "0",
+				"sb": "1",
+				"f": "-1",
+				"g4": "1",
+				"g5": "0"
+			},
+			"answers": ["\\{-1;0;1;2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Dans le désordre",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "2",
+				"sa": "0",
+				"sb": "1",
+				"f": "-1",
+				"g4": "1",
+				"g5": "0"
+			},
+			"answers": ["\\{2;1;0;-1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −2 exclu compté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "2",
+				"sa": "0",
+				"sb": "1",
+				"f": "-1",
+				"g4": "1",
+				"g5": "0"
+			},
+			"answers": ["\\{-2;-1;0;1;2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 compris oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "2",
+				"sa": "0",
+				"sb": "1",
+				"f": "-1",
+				"g4": "1",
+				"g5": "0"
+			},
+			"answers": ["\\{-1;0;1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux bornes comprises : 5 éléments",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0",
+				"b": "4",
+				"sa": "1",
+				"sb": "1",
+				"f": "0",
+				"g4": "1",
+				"g5": "1"
+			},
+			"answers": ["\\{0;1;2;3;4\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Deux bornes exclues : 3 éléments",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0",
+				"b": "4",
+				"sa": "0",
+				"sb": "0",
+				"f": "1",
+				"g4": "0",
+				"g5": "0"
+			},
+			"answers": ["\\{1;2;3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

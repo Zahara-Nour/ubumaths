@@ -1,0 +1,172 @@
+{
+	"title": "Notations Ā et E \\ A",
+	"description": "Dé à six faces : écrire Ā en extension (pair, multiple de 3, ⩾ 5, premier, < 3) ; choisir la phrase de Ā (impair ; « < m » et non « ⩽ m » ; aucun pile)",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On lance un dé à six faces : $E=\\{1;2;3;4;5;6\\}$. On note $A$ l'événement « {{if:t==0|obtenir un nombre pair|{{if:t==1|obtenir un multiple de $3$|{{if:t==2|obtenir un nombre supérieur ou égal à $5$|{{if:t==3|obtenir un nombre premier|obtenir un nombre strictement inférieur à $3$}}}}}}}} ».\n\nÉcris cet ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1;3;5\\}$) ; l'ensemble vide s'écrit $\\varnothing$.\n\n$$\\overline{A}=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\{1;3;5\\}|{{if:t==1|\\{1;2;4;5\\}|{{if:t==2|\\{1;2;3;4\\}|{{if:t==3|\\{1;4;6\\}|\\{3;4;5;6\\}}}}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overline{A}$ (on lit « $A$ barre ») est le **complémentaire** de $A$ dans $E$ : les éléments de $E$ qui ne sont **pas** dans $A$. On le note aussi $E\\setminus A$. En probabilités, c'est l'**événement contraire** de $A$.",
+					"$A={{if:t==0|\\{2;4;6\\}|{{if:t==1|\\{3;6\\}|{{if:t==2|\\{5;6\\}|{{if:t==3|\\{2;3;5\\}|\\{1;2\\}}}}}}}}}${{if:t==0||{{if:t==1||{{if:t==2||{{if:t==3| ($1$ n'est pas premier)|}}}}}}}}.",
+					"$$\\overline{A}=E\\setminus A=\\textcolor{{{color:primary.0}}}{{{if:t==0|\\{1;3;5\\}|{{if:t==1|\\{1;2;4;5\\}|{{if:t==2|\\{1;2;3;4\\}|{{if:t==3|\\{1;4;6\\}|\\{3;4;5;6\\}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On lance {{if:t==0|un dé à six faces. $A$ est l'événement « obtenir un nombre pair »|{{if:t==1|un dé à six faces. $A$ est l'événement « obtenir un nombre supérieur ou égal à ${{m}}$ »|deux fois une pièce. $A$ est l'événement « obtenir au moins une fois pile »}}}}. Quel est l'événement $\\overline{A}$ ?\n\n```choix\n- « {{if:t==0|obtenir un nombre impair|{{if:t==1|obtenir un nombre strictement inférieur à ${{m}}$|n'obtenir aucun pile}}}} »\n- « {{if:t==0|obtenir un multiple de $3$|{{if:t==1|obtenir un nombre inférieur ou égal à ${{m}}$|obtenir exactement une fois pile}}}} »\n- « {{if:t==0|ne pas obtenir $2$|{{if:t==1|obtenir un nombre strictement supérieur à ${{m}}$|obtenir deux fois pile}}}} »\n- « {{if:t==0|obtenir un nombre premier|{{if:t==1|obtenir un nombre inférieur ou égal à ${{eval:(m)+1}}$|obtenir au plus une fois pile}}}} »\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "4|5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overline{A}$ (on lit « $A$ barre ») est le **complémentaire** de $A$ dans $E$ : les éléments de $E$ qui ne sont **pas** dans $A$. On le note aussi $E\\setminus A$. En probabilités, c'est l'**événement contraire** de $A$.",
+					"{{if:t==0|Un nombre qui n'est pas pair est impair : $\\overline{A}$ est « obtenir un nombre **impair** ».|{{if:t==1|Le contraire de « $\\geqslant{{m}}$ » est « $<{{m}}$ » (et non « $\\leqslant{{m}}$ » : ${{m}}$ est déjà dans $A$). $\\overline{A}=\\textcolor{{{color:primary.0}}}{{{if:m==4|\\{1;2;3\\}|\\{1;2;3;4\\}}}}$ : « obtenir un nombre **strictement inférieur** à ${{m}}$ ».|« Au moins une fois pile » est faux seulement si l'on obtient deux fois face : $\\overline{A}$ est « n'obtenir **aucun** pile ».}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Pair : {1 ; 3 ; 5}",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["\\{1;3;5\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Dans le désordre",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["\\{5;3;1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A au lieu de Ā",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["\\{2;4;6\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Premier : {1 ; 4 ; 6}",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["\\{1;4;6\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 oublié",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["\\{4;6\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "< 3 : {3 ; 4 ; 5 ; 6}",
+			"variationIndex": 0,
+			"variables": {
+				"t": "4"
+			},
+			"answers": ["\\{3;4;5;6\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Impair",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"m": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ⩽ m",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"m": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Aucun pile",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"m": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au plus une fois pile",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"m": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

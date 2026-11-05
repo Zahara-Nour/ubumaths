@@ -1,0 +1,264 @@
+{
+	"title": "L'ensemble vide",
+	"description": "S = ∅ pour x² = −4 ou 3x + 7 = 3x + 2, S = {0} pour x² = 0, S = ℝ pour une identité ; A ∩ B vide ou non (piège : {0} pris pour ∅)",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation\n\n$${{if:t==0|x^2=-{{k}}|{{if:t==1|{{c}}x+{{a}}={{c}}x{{if:b<0|{{b}}|+{{b}}}}|{{if:t==2|x^2=0|{{c}}(x+1)+{{d}}={{c}}x+{{a}}}}}}}}$$\n\n$$S=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "6..9"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a)-(c)"
+				}
+			],
+			"conditions": ["b != a", "b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\varnothing|{{if:t==1|\\varnothing|{{if:t==2|\\{0\\}|\\mathbb{R}}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'**ensemble vide**, noté $\\varnothing$, n'a **aucun** élément. Attention : $\\{0\\}$ n'est pas vide, il a un élément, le nombre $0$.",
+					"{{if:t==0|Un carré est toujours positif ou nul : $x^2=-{{k}}$ n'a **aucune** solution. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:t==1|On soustrait ${{c}}x$ aux deux membres : ${{a}}={{b}}$, ce qui est faux, quel que soit $x$. **Aucune** solution : $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:t==2|Un carré est nul seulement pour $x=0$ : **une** solution, $S=\\textcolor{{{color:primary.0}}}{\\{0\\}}$, qui n'est pas l'ensemble vide.|On développe : ${{c}}(x+1)+{{d}}={{c}}x+{{c}}+{{d}}={{c}}x+{{a}}$. L'égalité est vraie **pour tout** réel $x$ : $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$.}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "On note $A$ l'ensemble des entiers pairs de $1$ à $10$ et $B=\\{ {{o1}};{{z}};{{o2}} \\}$.\n\nÉcris cet ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1;3;5\\}$) ; l'ensemble vide s'écrit $\\varnothing$.\n\n$$A\\cap B=?$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "o1",
+					"expression": "1|3"
+				},
+				{
+					"name": "o2",
+					"expression": "7|9"
+				},
+				{
+					"name": "v",
+					"expression": "4|6"
+				},
+				{
+					"name": "z",
+					"expression": "eval:5+(w)*((v)-5)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==1|\\{ {{z}} \\}|\\varnothing}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'**ensemble vide**, noté $\\varnothing$, n'a **aucun** élément. Attention : $\\{0\\}$ n'est pas vide, il a un élément, le nombre $0$.",
+					"$A=\\{2;4;6;8;10\\}$. $A\\cap B$ contient les éléments **communs** à $A$ et à $B$.",
+					"{{if:w==1|Seul ${{z}}$ est pair dans $B$ : $A\\cap B=\\textcolor{{{color:primary.0}}}{\\{ {{z}} \\}}$.|Tous les éléments de $B$ sont impairs : aucun élément commun, $A\\cap B=\\textcolor{{{color:primary.0}}}{\\varnothing}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² = −4 : ∅",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"k": "4",
+				"c": "3",
+				"a": "7",
+				"b": "2",
+				"d": "4"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {0} au lieu de ∅",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"k": "4",
+				"c": "3",
+				"a": "7",
+				"b": "2",
+				"d": "4"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3x + 7 = 3x + 2 : ∅",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"k": "4",
+				"c": "3",
+				"a": "7",
+				"b": "2",
+				"d": "4"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x² = 0 : {0}",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"k": "4",
+				"c": "3",
+				"a": "7",
+				"b": "2",
+				"d": "4"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅ au lieu de {0}",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"k": "4",
+				"c": "3",
+				"a": "7",
+				"b": "2",
+				"d": "4"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Identité : ℝ",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"k": "4",
+				"c": "3",
+				"a": "7",
+				"b": "2",
+				"d": "4"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅ pour une identité",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"k": "4",
+				"c": "3",
+				"a": "7",
+				"b": "2",
+				"d": "4"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Disjoints : ∅",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"o1": "3",
+				"o2": "7",
+				"v": "4",
+				"z": "5"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {0}",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"o1": "3",
+				"o2": "7",
+				"v": "4",
+				"z": "5"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Un commun : {4}",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"o1": "3",
+				"o2": "7",
+				"v": "4",
+				"z": "4"
+			},
+			"answers": ["\\{4\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅ alors que 4 est commun",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"o1": "3",
+				"o2": "7",
+				"v": "4",
+				"z": "4"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
