@@ -1,4 +1,5 @@
 {
+	"id": "c4e19f99-9c7a-4d6b-941a-d7e6516c078a",
 	"title": "Négation d'une proposition",
 	"description": "Nier x > a, x ⩾ a, x < a, x ⩽ a (piège : x < a pour la négation de x > a) ; nier « MNP est rectangle », « n est pair », « (d) et (d') sont parallèles » (pièges : une autre propriété, double négation)",
 	"grades": ["2"],
