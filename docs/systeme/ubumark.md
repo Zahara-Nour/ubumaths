@@ -306,7 +306,7 @@ Branches imbriquées par indentation (`Pile:1/2` puis `  Face:1/2`), options `ro
 
 **Étiquette d'un évènement** (2026-11-05, `probTreeLabelLatex`, `utils/probtree-label.ts`, commune à l'écran
 et au PDF) — `src/lib/ubumark/utils/__tests__/probtree-label.test.ts`, `probability-tree-etiquettes.svelte.test.ts`,
-`probability-tree-typst.test.ts` : une lettre, indicée ou non (`A`, `G_1`, `G_{12}`), en maths ; un mot, indicé
+`probability-tree-typst.test.ts` : `$` autour retirés ; une lettre, indicée ou non (`A`, `G_1`, `G_{12}`, `G_1'`), en maths ; un mot, indicé
 ou non (`Pile`, `Malade_1`), en texte droit, l'indice en maths ; une étiquette qui contient `\`
 (`\overline{G}`, `\mathrm{G}_1`) est laissée telle quelle. Avant, `G_1` sortait « G_1 » brut à l'écran, et
 un mot sortait en lettres italiques espacées dans le PDF (`P i l e`).

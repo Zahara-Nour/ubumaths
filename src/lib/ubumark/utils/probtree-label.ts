@@ -2,27 +2,24 @@
  * Étiquette d'un évènement de l'arbre pondéré (` ```probtree `) écrite en LaTeX,
  * commune à l'écran (`ProbabilityTree.svelte`) et au PDF (`probability-tree-typst.ts`).
  *
+ * - `$` autour retirés (`$A$` → `A`) ;
  * - déjà en LaTeX (contient `\`) : intacte ;
- * - une lettre, indicée ou non (`A`, `G_1`, `G_{12}`) : variable mathématique ;
- * - un mot, indicé ou non (`Pile`, `Malade_1`) : le mot en texte droit, l'indice en maths.
+ * - une lettre, indicée ou non (`A`, `G_1`, `G_{12}`, `G_1'`) : variable mathématique ;
+ * - un mot, indicé ou non (`Pile`, `Malade_1`) : le mot en texte droit, l'indice (et ce qui
+ *   le suit) en maths.
  */
-
-// ============================================================================
-// CONSTANTES
-// ============================================================================
-
-/** Radical, puis indice éventuel (`_1`, `_{12}`) */
-const SUBSCRIPTED = /^([^_]+)(_(?:\{[^{}]*\}|[^{}]))$/;
 
 // ============================================================================
 // FONCTIONS
 // ============================================================================
 
-/** L'étiquette `label` (sans `$` autour) en LaTeX */
+/** L'étiquette `label` en LaTeX */
 export function probTreeLabelLatex(label: string): string {
-	if (label.includes('\\')) return label;
-	const match = SUBSCRIPTED.exec(label);
-	const [stem, subscript] = match ? [match[1], match[2]] : [label, ''];
-	if (stem.length === 1) return stem + subscript;
-	return `\\text{${stem}}${subscript}`;
+	const bare = label.trim().replace(/^\$|\$$/g, '');
+	if (bare.includes('\\')) return bare;
+	// Radical avant le premier `_`, puis l'indice et ce qui le suit (`_1'`), laissés en maths
+	const cut = bare.indexOf('_');
+	const [stem, rest] = cut > 0 ? [bare.slice(0, cut), bare.slice(cut)] : [bare, ''];
+	if (stem.length === 1) return stem + rest;
+	return `\\text{${stem}}${rest}`;
 }

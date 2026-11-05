@@ -21,11 +21,18 @@ describe('étiquette d’un évènement de l’arbre', () => {
 	it('lettre indicée : G_1 rendu G indice 1, pas en texte', () => {
 		expect(probTreeLabelLatex('G_1')).toBe('G_1');
 		expect(probTreeLabelLatex('G_{12}')).toBe('G_{12}');
+		expect(probTreeLabelLatex("G_1'")).toBe("G_1'");
+	});
+
+	it('dollars autour retirés, comme dans le PDF', () => {
+		expect(probTreeLabelLatex('$A_1$')).toBe('A_1');
+		expect(probTreeLabelLatex('$\\overline{B}$')).toBe('\\overline{B}');
 	});
 
 	it('mot indicé : le mot en texte, l’indice en maths', () => {
 		expect(probTreeLabelLatex('Malade_1')).toBe('\\text{Malade}_1');
 		expect(probTreeLabelLatex('Malade_{12}')).toBe('\\text{Malade}_{12}');
+		expect(probTreeLabelLatex("Malade_1'")).toBe("\\text{Malade}_1'");
 	});
 
 	it('étiquette déjà en LaTeX : intacte (contournement des modèles en prod)', () => {
