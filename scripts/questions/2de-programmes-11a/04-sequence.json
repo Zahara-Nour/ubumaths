@@ -1,0 +1,181 @@
+{
+	"title": "Séquence d'instructions",
+	"description": "Valeurs de x et y après x = 3, y = x + 4, x = y * 2, y = x - y ; a = b puis b = a (pas d'échange), échange avec une variable c",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nx = {{a}}\ny = x + {{b}}\nx = y * {{c}}\ny = x - y\n```\n\nÀ la fin, $x=?$ et $y=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:(a)+(b)"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:(c)*(y1)"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:(x2)-(y1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x2}}"
+				},
+				{
+					"expectedAnswer": "{{y2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les instructions s'exécutent **dans l'ordre**, de haut en bas ; une variable garde sa dernière valeur affectée.",
+					"`x = {{a}}` puis `y = {{a}} + {{b}} = {{y1}}`.",
+					"`x = {{y1}} * {{c}} = {{x2}}` puis `y = {{x2}} - {{y1}} = {{y2}}`.",
+					"À la fin, $\\textcolor{{{color:primary.0}}}{x={{x2}}}$ et $\\textcolor{{{color:primary.0}}}{y={{y2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n{{if:t==0|```python\na = {{a}}\nb = {{b}}\na = b\nb = a\n```|```python\na = {{a}}\nb = {{b}}\nc = a\na = b\nb = c\n```}}\n\nÀ la fin, $a=?$ et $b=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "11..19"
+				},
+				{
+					"name": "fb",
+					"expression": "eval:(t)*(a)+(1-(t))*(b)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{fb}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les instructions s'exécutent **dans l'ordre**, de haut en bas ; une variable garde sa dernière valeur affectée.",
+					"{{if:t==0|`a = b` : $a$ prend la valeur ${{b}}$ ; l'ancienne valeur ${{a}}$ est **perdue**.|`c = a` garde une copie de ${{a}}$ ; `a = b` : $a={{b}}$ ; `b = c` : $b={{a}}$.}}",
+					"{{if:t==0|`b = a` : $b$ prend la valeur actuelle de $a$, soit ${{b}}$. À la fin, $\\textcolor{{{color:primary.0}}}{a={{b}}}$ et $\\textcolor{{{color:primary.0}}}{b={{b}}}$ : les deux lignes n'échangent pas les valeurs.|À la fin, $\\textcolor{{{color:primary.0}}}{a={{b}}}$ et $\\textcolor{{{color:primary.0}}}{b={{a}}}$ : grâce à la variable `c`, les valeurs sont échangées.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x = 14 et y = 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2",
+				"y1": "7",
+				"x2": "14",
+				"y2": "7"
+			},
+			"answers": ["14", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y gardé à 7 puis x - 7 avec x = 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2",
+				"y1": "7",
+				"x2": "14",
+				"y2": "7"
+			},
+			"answers": ["14", "-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = b puis b = a : 12 et 12",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"a": "5",
+				"b": "12",
+				"fb": "12"
+			},
+			"answers": ["12", "12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeurs crues échangées",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"a": "5",
+				"b": "12",
+				"fb": "12"
+			},
+			"answers": ["12", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Avec c : 12 et 5",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"a": "5",
+				"b": "12",
+				"fb": "5"
+			},
+			"answers": ["12", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : avec c, rien ne change",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"a": "5",
+				"b": "12",
+				"fb": "5"
+			},
+			"answers": ["5", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,171 @@
+{
+	"title": "Boucle non bornée (while)",
+	"description": "Valeurs de n et s après while s < 20: n = n + 1, s = s + n ; nombre d'années pour qu'un capital qui double atteigne un seuil",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nn = 0\ns = 0\nwhile s < {{A}}:\n    n = n + 1\n    s = s + n\n```\n\nÀ la fin, $n=?$ et $s=?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "8..40"
+				},
+				{
+					"name": "N",
+					"expression": "eval:ceil((sqrt(1+8*(A))-1)/2-0.000001)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:(N)*((N)+1)/2"
+				},
+				{
+					"name": "Sp",
+					"expression": "eval:((N)-1)*(N)/2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				},
+				{
+					"expectedAnswer": "{{S}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`while condition:` répète le bloc **tant que** la condition est vraie ; la boucle s'arrête dès que la condition est fausse au moment du test.",
+					"À chaque tour, `n` augmente de $1$ et `s` reçoit $1+2+\\dots+n$.",
+					"Pour $n={{eval:(N)-1}}$ : $s={{Sp}}<{{A}}$, la boucle continue. Pour $n={{N}}$ : $s={{S}}$, et ${{S}}<{{A}}$ est faux : la boucle s'arrête.",
+					"À la fin, $\\textcolor{{{color:primary.0}}}{n={{N}}}$ et $\\textcolor{{{color:primary.0}}}{s={{S}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un capital de ${{c}}$ euros double chaque année. On exécute le programme Python suivant.\n\n```python\nc = {{c}}\nn = 0\nwhile c < {{M}}:\n    c = 2 * c\n    n = n + 1\n```\n\nÀ la fin, $n=?$ et $c=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "100|200|300|500"
+				},
+				{
+					"name": "M",
+					"expression": "1000|1500|2000|3000|5000"
+				},
+				{
+					"name": "N",
+					"expression": "eval:ceil(log((M)/(c))/log(2)-0.000001)"
+				},
+				{
+					"name": "C",
+					"expression": "eval:(c)*2^(N)"
+				}
+			],
+			"conditions": ["N >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				},
+				{
+					"expectedAnswer": "{{C}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`while condition:` répète le bloc **tant que** la condition est vraie ; la boucle s'arrête dès que la condition est fausse au moment du test.",
+					"Le programme compte les années nécessaires pour que le capital atteigne au moins ${{M}}$ euros.",
+					"Après ${{eval:(N)-1}}$ ans : $c={{eval:(c)*2^((N)-1)}}<{{M}}$, la boucle continue. Après ${{N}}$ ans : $c={{C}}$, et ${{C}}<{{M}}$ est faux : la boucle s'arrête.",
+					"À la fin, $\\textcolor{{{color:primary.0}}}{n={{N}}}$ et $\\textcolor{{{color:primary.0}}}{c={{C}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A = 20 : n = 6, s = 21",
+			"variationIndex": 0,
+			"variables": {
+				"A": "20",
+				"N": "6",
+				"S": "21",
+				"Sp": "15"
+			},
+			"answers": ["6", "21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un tour de moins",
+			"variationIndex": 0,
+			"variables": {
+				"A": "20",
+				"N": "6",
+				"S": "21",
+				"Sp": "15"
+			},
+			"answers": ["5", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A = 21 exactement : n = 6",
+			"variationIndex": 0,
+			"variables": {
+				"A": "21",
+				"N": "6",
+				"S": "21",
+				"Sp": "15"
+			},
+			"answers": ["6", "21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "300 → 3000 : n = 4, c = 4800",
+			"variationIndex": 1,
+			"variables": {
+				"c": "300",
+				"M": "3000",
+				"N": "4",
+				"C": "4800"
+			},
+			"answers": ["4", "4800"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrêt avant le seuil",
+			"variationIndex": 1,
+			"variables": {
+				"c": "300",
+				"M": "3000",
+				"N": "4",
+				"C": "4800"
+			},
+			"answers": ["3", "2400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "500 → 2000 pile : n = 2",
+			"variationIndex": 1,
+			"variables": {
+				"c": "500",
+				"M": "2000",
+				"N": "2",
+				"C": "2000"
+			},
+			"answers": ["2", "2000"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
