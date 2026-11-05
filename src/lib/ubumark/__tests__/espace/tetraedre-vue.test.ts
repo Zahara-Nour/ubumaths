@@ -13,7 +13,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { EspacePoint, SolideSpec } from '$lib/ubumark/types/espace';
+import type { SolideSpec } from '$lib/ubumark/types/espace';
+import type { EspacePoint } from '$lib/ubumark/utils/espace-scene';
 import { buildSolideScene, labelBox } from '$lib/ubumark/utils/espace-solides';
 
 // ============================================================================
