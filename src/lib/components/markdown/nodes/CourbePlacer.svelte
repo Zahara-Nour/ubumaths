@@ -26,8 +26,8 @@
 	  et la droite juste avec ses deux nœuds les plus proches de l'origine.
 	- Vecteur à tracer (`tracer: vecteur (3 ; -2)`, lot 3) : origine puis extrémité,
 	  étiquettes « Origine » / « Extrémité » ; dès qu'elles sont distinctes, une flèche
-	  les relie. Origine imposée (`depuis A`, A dessiné par `points:`) : un seul bouton
-	  « Extrémité », A ni déplaçable ni reprenable. UNE case : `x1;y1/x2;y2`. Faux : une
+	  les relie. Origine imposée (`depuis A`, A dessiné par `points:`) : aucune étiquette
+	  (il ne reste rien à choisir, l'extrémité seule bouge), A ni déplaçable ni reprenable. UNE case : `x1;y1/x2;y2`. Faux : une
 	  phrase, et la flèche juste en vert (depuis l'origine de l'élève si elle tient).
 
 	@module components/markdown/nodes/CourbePlacer
@@ -443,7 +443,8 @@
 		<Courbe node={base} {showErrors} {marks} {traces} />
 	</div>
 
-	{#if showControls && several}
+	<!-- Origine imposée : seule l'extrémité bouge, une étiquette seule ne choisirait rien -->
+	{#if showControls && several && fixedOrigin === null}
 		<div class="flex gap-1" role="group" aria-label="Point à déplacer">
 			{#each slots as slot, i (slot)}
 				{#if !isFixed(i)}

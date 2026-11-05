@@ -235,15 +235,17 @@ describe('SolideGeste — origine libre', () => {
 });
 
 describe('SolideGeste — origine imposée', () => {
-	it('A posée d’office, seul « Extrémité » ; la réponse commence par A/', async () => {
+	it('A posée d’office, ni « Origine » ni « Extrémité » ; la réponse commence par A/', async () => {
 		const { probe, answer } = answerProbe();
 		const screen = await render(SolideGeste, {
 			target: mainElement(),
 			props: { node: imposed(), answer: answer() }
 		});
 		const root = screen.container;
+		// Seule l'extrémité se pose : un bouton seul ne choisirait rien
 		expect(button(root, 'Origine')).toBeUndefined();
-		expect(button(root, 'Extrémité')).toBeDefined();
+		expect(button(root, 'Extrémité')).toBeUndefined();
+		expect(button(root, 'Effacer')).toBeDefined();
 		// Rien n'est émis tant que l'élève n'a rien touché
 		expect(probe.changes).toEqual([]);
 		expect(point(root, 'A')).toBeUndefined();

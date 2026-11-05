@@ -106,15 +106,16 @@ describe('Vecteur à tracer — le geste', () => {
 		expect(zone(root).getAttribute('aria-valuetext')).toBe('extrémité en (3 ; -2)');
 	});
 
-	it('origine imposée : A ne bouge pas, un seul bouton, la case commence par A', async () => {
+	it('origine imposée : A ne bouge pas, aucune étiquette, la case commence par A', async () => {
 		const { probe, answer } = answerProbe();
 		const screen = await render(Courbe, {
 			target: mainElement(),
 			props: { node: node(...WINDOW, ...IMPOSED), answers: [answer()] }
 		});
 		const root = screen.container;
+		// Seule l'extrémité bouge : une étiquette seule ne choisirait rien
 		expect(label(root, 'Origine')).toBeUndefined();
-		expect(label(root, 'Extrémité')?.getAttribute('aria-pressed')).toBe('true');
+		expect(label(root, 'Extrémité')).toBeUndefined();
 		// Toucher A ne le reprend pas : c'est l'extrémité qui s'y pose
 		tapAt(root, -1, 2);
 		await expect.poll(() => probe.value).toBe('-1;2/-1;2');
