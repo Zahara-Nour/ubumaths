@@ -1,0 +1,168 @@
+{
+	"title": "Écrire une proposition avec une variable",
+	"description": "Traduire « le carré d'un réel est positif », « n est pair », « n est multiple de m » avec une lettre (pièges : lettre non introduite, k réel, « pour tout » et « il existe » échangés) ; lire « il existe un entier k tel que n = 2k + 1 »",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle écriture traduit la phrase « {{if:t==0|le carré d'un nombre réel est toujours positif ou nul|{{if:t==1|l'entier $n$ est pair|l'entier $n$ est un multiple de ${{m}}$}}}} » ?\n\n```choix\n- {{if:t==0|Pour tout réel $x$, $x^2\\geqslant 0$.|{{if:t==1|Il existe un entier $k$ tel que $n=2k$.|Il existe un entier $k$ tel que $n={{m}}k$.}}}}\n- {{if:t==0|Il existe un réel $x$ tel que $x^2\\geqslant 0$.|{{if:t==1|Il existe un réel $k$ tel que $n=2k$.|Il existe un entier $k$ tel que $k={{m}}n$.}}}}\n- {{if:t==0|Pour tout réel $x$, $x\\geqslant 0$.|{{if:t==1|Pour tout entier $k$, $n=2k$.|Pour tout entier $k$, $n={{m}}k$.}}}}\n- {{if:t==0|$x^2\\geqslant 0$.|{{if:t==1|$n=2n$.|Il existe un réel $k$ tel que $n={{m}}k$.}}}}\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "3|5|7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour écrire une proposition avec une lettre, on dit **ce que représente la lettre** (« pour tout réel $x$ », « il existe un entier $k$ ») avant de l'utiliser.",
+					"{{if:t==0|« Toujours » porte sur **tous** les réels : $\\textcolor{{{color:primary.0}}}{\\text{pour tout réel } x,\\ x^2\\geqslant 0}$. « $x^2\\geqslant 0$ » seul ne dit pas ce qu'est $x$, et « il existe » ne dit pas « toujours ».|{{if:t==1|$n$ est pair s'il est le double d'un **entier** : il existe un entier $k$ tel que $\\textcolor{{{color:primary.0}}}{n=2k}$. Avec un réel $k$, tout nombre conviendrait ($3=2\\times1{,}5$).|$n$ est un multiple de ${{m}}$ s'il s'écrit ${{m}}$ fois un **entier** : il existe un entier $k$ tel que $\\textcolor{{{color:primary.0}}}{n={{m}}k}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier. Que signifie la proposition « il existe un entier $k$ tel que $n={{if:t==0|2k+1|{{if:t==1|{{m}}k|k^2}}}}$ » ?\n\n```choix\n- {{if:t==0|$n$ est impair.|{{if:t==1|$n$ est un multiple de ${{m}}$.|$n$ est le carré d'un entier.}}}}\n- {{if:t==0|$n$ est pair.|{{if:t==1|$n$ est un diviseur de ${{m}}$.|$n$ est pair.}}}}\n- {{if:t==0|$n=1$.|{{if:t==1|$n={{m}}$.|$n$ est le double d'un entier.}}}}\n- {{if:t==0|$n$ est un nombre premier.|{{if:t==1|$k$ est un multiple de ${{m}}$.|$k$ est le carré de $n$.}}}}\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "3|5|7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour écrire une proposition avec une lettre, on dit **ce que représente la lettre** (« pour tout réel $x$ », « il existe un entier $k$ ») avant de l'utiliser.",
+					"{{if:t==0|$2k$ est pair, donc $2k+1$ est le nombre qui suit un pair : $n$ est **impair** (par exemple $k=3$ donne $n=7$).|{{if:t==1|$n$ est ${{m}}$ fois un entier : $n$ est un **multiple de ${{m}}$** (par exemple $k=4$ donne $n={{eval:4*(m)}}$).|$n$ est le carré d'un entier : $n$ est un **carré parfait** (par exemple $k=5$ donne $n=25$).}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré positif",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"m": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x non introduit",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"m": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : « il existe »",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"m": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pair : k entier",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"m": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k réel",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"m": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Multiple de 5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"m": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2k + 1 : impair",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"m": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pair",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"m": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k² : carré",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"m": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

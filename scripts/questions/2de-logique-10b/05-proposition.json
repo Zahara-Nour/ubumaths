@@ -1,0 +1,250 @@
+{
+	"title": "Proposition mathématique ou non ?",
+	"description": "Reconnaître les propositions (égalité, propriété, « n est premier ») parmi une expression et une consigne ; dire si 4 × 7 = 28, « 22 est un multiple de 3 », (a + b)² = a² + b² sont vraies ou fausses",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Parmi ces écritures, lesquelles sont des propositions mathématiques (vraies ou fausses) ?\n\n```choix\nplusieurs: oui\n- ${{a}}+{{b}}={{c}}$\n- ${{a}}x+{{b}}$\n- Résoudre l'équation ${{a}}x={{b}}$.\n- Tout carré est un losange.\n- ${{n}}$ est un nombre premier.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(a)+(b)+(w)"
+				},
+				{
+					"name": "n",
+					"expression": "21..39"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;3;4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une **proposition** est une phrase mathématique dont on peut dire si elle est **vraie** ou **fausse** (même sans savoir laquelle des deux).",
+					"$\\textcolor{{{color:primary.0}}}{{{a}}+{{b}}={{c}}}$ est une proposition, {{if:w==0|vraie|fausse}}. « Tout carré est un losange » est une proposition, vraie. « ${{n}}$ est un nombre premier » est une proposition : on peut dire si elle est vraie ou fausse.",
+					"${{a}}x+{{b}}$ est une **expression** : elle n'est ni vraie ni fausse. « Résoudre… » est une **consigne** : elle n'est ni vraie ni fausse non plus."
+				]
+			}
+		},
+		{
+			"statement": "On considère la proposition « {{if:t==0|${{a}}\\times{{b}}={{c}}$|{{if:t==1|${{n}}$ est un multiple de $3$|$({{a}}+{{b}})^2={{a}}^2+{{b}}^2$}}}} ». Est-elle vraie ou fausse ?\n\n```choix\nmelanger: non\n- La proposition est vraie.\n- La proposition est fausse.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "3..9"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(a)*(b)+(w)"
+				},
+				{
+					"name": "n",
+					"expression": "20..60"
+				},
+				{
+					"name": "r3",
+					"expression": "eval:min((n)-3*floor((n)/3),1)"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(t,1))*(w)+(1-min(abs((t)-1),1))*(r3)+min(max((t)-1,0),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une **proposition** est une phrase mathématique dont on peut dire si elle est **vraie** ou **fausse** (même sans savoir laquelle des deux).",
+					"{{if:t==0|${{a}}\\times{{b}}={{eval:(a)*(b)}}${{if:w==0|, la proposition est **vraie**.| et non ${{c}}$ : la proposition est **fausse**.}}|{{if:t==1|${{n}}=3\\times{{eval:floor((n)/3)}}{{if:r3==1|+{{eval:(n)-3*floor((n)/3)}}}}$ : {{if:r3==0|${{n}}$ est un multiple de $3$, la proposition est **vraie**.|le reste n'est pas nul, la proposition est **fausse**.}}|$({{a}}+{{b}})^2={{eval:(a)+(b)}}^2={{eval:((a)+(b))^2}}$ mais ${{a}}^2+{{b}}^2={{eval:(a)^2+(b)^2}}$ : la proposition est **fausse**.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Les trois propositions",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"w": "1",
+				"c": "9",
+				"n": "23"
+			},
+			"answers": ["0;3;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'expression cochée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"w": "1",
+				"c": "9",
+				"n": "23"
+			},
+			"answers": ["0;1;3;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Incomplet : l'égalité fausse oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"w": "1",
+				"c": "9",
+				"n": "23"
+			},
+			"answers": ["3;4"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "4 × 7 = 28 : vraie",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"a": "4",
+				"b": "7",
+				"w": "0",
+				"c": "28",
+				"n": "21",
+				"r3": "0",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4 × 7 = 29 : fausse",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"a": "4",
+				"b": "7",
+				"w": "1",
+				"c": "29",
+				"n": "21",
+				"r3": "0",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "21 multiple de 3 : vraie",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"a": "4",
+				"b": "7",
+				"w": "0",
+				"c": "28",
+				"n": "21",
+				"r3": "0",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "22 multiple de 3 : fausse",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"a": "4",
+				"b": "7",
+				"w": "0",
+				"c": "28",
+				"n": "22",
+				"r3": "1",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(a + b)² = a² + b² : fausse",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"a": "4",
+				"b": "7",
+				"w": "0",
+				"c": "28",
+				"n": "21",
+				"r3": "0",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (a + b)² = a² + b² vraie",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"a": "4",
+				"b": "7",
+				"w": "0",
+				"c": "28",
+				"n": "21",
+				"r3": "0",
+				"rep": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
