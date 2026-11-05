@@ -12,7 +12,7 @@ _Mis à jour le 2026-11-05, après la publication du lot 12 b-2 (§ 81)._
   proposés (§ 82). Ensuite le lot 11.
 - **Prochaine action** : après le go de David sur la phase 0 du lot 10, écrire 10 A puis 10 B
   (worktree remis sur `origin/main`, nouvelle branche).
-- **En attente de David** : validation de la phase 0 et réponses L10-a à L10-d (§ 82).
+- **En attente de David** : rien (phase 0 validée, § 82).
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `Doc-inchangée:` dans le commit d'une
   migration ; `0..3;±` refusé (`-3..3`) ; une autre session écrit aussi dans ce journal : `git pull` ;
@@ -2080,7 +2080,7 @@ vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12
 - Page à cocher relue par David : 5/5 « ok », sans commentaire (ids du § 80). `publier-lot`
   (simulation puis `--publier`) lancé par David ; MCP (prod) : 5/5 `published` (niveaux 1, 5, 1, 7, 1).
 
-## 82. Lot 10 « Ensembles et logique » : relevé et phase 0 (proposée le 2026-11-05, à valider)
+## 82. Lot 10 « Ensembles et logique » : relevé et phase 0 (2026-11-05, validée)
 
 **Relevé MCP (prod, 2026-11-05)** : 11 points sans aucun modèle (201, 202, 203, 206, 208, 209, 211, 213,
 409, 215, 412) ; 16 anciens brouillons, tous rangés et tagués (§ 70) : 5062197a (403), 9724dc3d (404),
@@ -2137,3 +2137,7 @@ _10 B — Logique (7)_
 - **L10-d — Symboles ⇒, ⇔** : le BO 2de ne les liste pas (seuls ∀, ∃ sont dits hors programme). Dans
   2-409 : symboles ⇒ / ⇔, ou mots (« implique », « équivaut à ») ? → je recommande **les mots dans
   l'énoncé, les symboles dans le corrigé**.
+
+**Réponse de David (2026-11-05)** : « je te suis » → phase 0 validée, L10-a à L10-d selon mes
+recommandations (16 anciens sur la page et publiés avec le lot, `grades` ramenés à `['2']` ; 10 A puis
+10 B ; pas de négation de « et / ou » ; les mots dans l'énoncé, ⇒ / ⇔ dans le corrigé seulement).
