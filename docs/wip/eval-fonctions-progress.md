@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après la rédaction (aucune PR encore)._
+_Mis à jour le 2026-11-05, PR #2412 ouverte._
 
-- **État** : sujets A et B rédigés (agent Opus), `assert_all.py` + `check:ubumark` + `fiche:verifier` verts, pages relues ; script `scripts/create-evaluation-fonctions-2nde.ts` commité, **simulation OK** (6 exercices, 2 fiches `assessment` 55 min /20). Correctif du générateur vartable commité (« 0 » de borne non envoyé, plantage du corrigé B).
-- **Prochaine action** : `--publier` sur l'accord de David, puis aperçu PDF des deux fiches en prod (points, mention calculatrice) ; PR (correctif + script + doc), CI, merge.
-- **En attente de David** : accord pour `--publier`.
-- **Pièges en cours** : contenu dans le scratchpad de la session `09504a5e…/scratchpad/eval-fonctions/{A,B}` (perdu au redémarrage : publier avant) ; `fiche:verifier` rend une fiche ordinaire (« [guided] », pas de points) ; « 0 » de borne absent au PDF par choix (outils-manquants.md).
+- **État** : deux fiches publiées en prod en brouillon (A `403e458b`, B `4693b28c`), puis retouchées sur demande de David (`maj-evaluation-fonctions-2nde.ts`) : 2 exercices (« Lecture graphique », « Fonction quotient » sans h), exercice 3 retiré et supprimé, ni points ni barème. Correctif vartable (« 0 » de borne) + doc `ubumark.md` dans la PR #2412 ; relecture `code-reviewer` : rien de bloquant.
+- **Prochaine action** : CI verte → merger #2412 ; David regarde l'aperçu PDF des deux fiches.
+- **En attente de David** : retour sur l'aperçu PDF.
+- **Pièges en cours** : titres d'exercices identiques entre A et B (voulu par David) ; contenu de travail dans le scratchpad de la session `09504a5e…` (déjà en base, perdu au redémarrage sans dommage).
 - **Worktree / branche** : `../ubumaths-wt-eval-fonctions` · `feat/evaluation-fonctions-2nde`.
 
 ## Cadre (réponses de David, 2026-11-05)
@@ -67,3 +67,4 @@ Barème révisé : ex. 1 = 9 pts, ex. 2 = 5 pts, ex. 3 = 6 pts.
 
 - 2026-11-05 : cadrage, recherche des courbes (quotients de trinômes à extremums et zéros entiers), plan validé, worktree créé.
 - 2026-11-05 : rédaction par l'agent (aucun écart mathématique ; titres « Évaluation A/B : lecture graphique / fonctions quotients / étude par le calcul »). Corrigé B : plantage vartable sur le « 0 » de borne droite → David : corriger le générateur (pas de 0 en borne au PDF). Script écrit, simulation OK.
+- 2026-11-05 : `--publier` (sur l'accord de David). Retouches de David : titres sans « Évaluation A/B : », exercice 3 retiré, h retirée de l'exercice 2, points et barème retirés → `maj-evaluation-fonctions-2nde.ts`, appliqué et vérifié en base.
