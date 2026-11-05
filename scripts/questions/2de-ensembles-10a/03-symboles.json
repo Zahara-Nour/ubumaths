@@ -55,7 +55,7 @@
 			}
 		},
 		{
-			"statement": "On note $E=\\{ {{a}};{{b}};{{c}} \\}$. Quelles écritures sont justes ?\n\n```choix\nplusieurs: oui\n- ${{a}}\\in E$\n- $\\{ {{a}} \\}\\in E$\n- ${{a}}\\subset E$\n- $\\{ {{a}} \\}\\subset E$\n- $E\\in\\mathbb{N}$\n```",
+			"statement": "On note $F=\\{ {{a}};{{b}};{{c}} \\}$. Quelles écritures sont justes ?\n\n```choix\nplusieurs: oui\n- ${{a}}\\in F$\n- $\\{ {{a}} \\}\\in F$\n- ${{a}}\\subset F$\n- $\\{ {{a}} \\}\\subset F$\n- $F\\in\\mathbb{N}$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -78,9 +78,9 @@
 			"correction": {
 				"steps": [
 					"$\\in$ relie un **élément** à un ensemble ; $\\subset$ relie deux **ensembles** (tout élément du premier est dans le second) ; $\\cap$ (« inter ») donne les éléments **communs**, $\\cup$ (« union ») les éléments de l'un **ou** de l'autre.",
-					"${{a}}$ est un élément : $\\textcolor{{{color:primary.0}}}{{{a}}\\in E}$, mais pas « ${{a}}\\subset E$ ».",
-					"$\\{ {{a}} \\}$ est un ensemble : $\\textcolor{{{color:primary.0}}}{\\{ {{a}} \\}\\subset E}$, mais pas « $\\{ {{a}} \\}\\in E$ ».",
-					"$E$ est un ensemble d'entiers naturels : $E\\subset\\mathbb{N}$, et non $E\\in\\mathbb{N}$."
+					"${{a}}$ est un élément : $\\textcolor{{{color:primary.0}}}{{{a}}\\in F}$, mais pas « ${{a}}\\subset F$ ».",
+					"$\\{ {{a}} \\}$ est un ensemble : $\\textcolor{{{color:primary.0}}}{\\{ {{a}} \\}\\subset F}$, mais pas « $\\{ {{a}} \\}\\in F$ ».",
+					"$F$ est un ensemble d'entiers naturels : $F\\subset\\mathbb{N}$, et non $F\\in\\mathbb{N}$."
 				]
 			}
 		}

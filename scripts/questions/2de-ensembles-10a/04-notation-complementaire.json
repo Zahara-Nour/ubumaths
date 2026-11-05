@@ -29,7 +29,7 @@
 			}
 		},
 		{
-			"statement": "On lance {{if:t==0|un dé à six faces. $A$ est l'événement « obtenir un nombre pair »|{{if:t==1|un dé à six faces. $A$ est l'événement « obtenir un nombre supérieur ou égal à ${{m}}$ »|deux fois une pièce. $A$ est l'événement « obtenir au moins une fois pile »}}}}. Quel est l'événement $\\overline{A}$ ?\n\n```choix\n- « {{if:t==0|obtenir un nombre impair|{{if:t==1|obtenir un nombre strictement inférieur à ${{m}}$|n'obtenir aucun pile}}}} »\n- « {{if:t==0|obtenir un multiple de $3$|{{if:t==1|obtenir un nombre inférieur ou égal à ${{m}}$|obtenir exactement une fois pile}}}} »\n- « {{if:t==0|ne pas obtenir $2$|{{if:t==1|obtenir un nombre strictement supérieur à ${{m}}$|obtenir deux fois pile}}}} »\n- « {{if:t==0|obtenir un nombre premier|{{if:t==1|obtenir un nombre inférieur ou égal à ${{eval:(m)+1}}$|obtenir au plus une fois pile}}}} »\n```",
+			"statement": "On lance {{if:t==0|un dé à six faces. $M$ est l'événement « obtenir un nombre pair »|{{if:t==1|un dé à six faces. $M$ est l'événement « obtenir un nombre supérieur ou égal à ${{m}}$ »|deux fois une pièce. $M$ est l'événement « obtenir au moins une fois pile »}}}}. Quel est l'événement $\\overline{M}$ ?\n\n```choix\n- « {{if:t==0|obtenir un nombre impair|{{if:t==1|obtenir un nombre strictement inférieur à ${{m}}$|n'obtenir aucun pile}}}} »\n- « {{if:t==0|obtenir un multiple de $3$|{{if:t==1|obtenir un nombre inférieur ou égal à ${{m}}$|obtenir exactement une fois pile}}}} »\n- « {{if:t==0|ne pas obtenir $2$|{{if:t==1|obtenir un nombre strictement supérieur à ${{m}}$|obtenir deux fois pile}}}} »\n- « {{if:t==0|obtenir un nombre premier|{{if:t==1|obtenir un nombre inférieur ou égal à ${{eval:(m)+1}}$|obtenir au plus une fois pile}}}} »\n```",
 			"variables": [
 				{
 					"name": "t",
@@ -47,8 +47,8 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\overline{A}$ (on lit « $A$ barre ») est le **complémentaire** de $A$ dans $E$ : les éléments de $E$ qui ne sont **pas** dans $A$. On le note aussi $E\\setminus A$. En probabilités, c'est l'**événement contraire** de $A$.",
-					"{{if:t==0|Un nombre qui n'est pas pair est impair : $\\overline{A}$ est « obtenir un nombre **impair** ».|{{if:t==1|Le contraire de « $\\geqslant{{m}}$ » est « $<{{m}}$ » (et non « $\\leqslant{{m}}$ » : ${{m}}$ est déjà dans $A$). $\\overline{A}=\\textcolor{{{color:primary.0}}}{{{if:m==4|\\{1;2;3\\}|\\{1;2;3;4\\}}}}$ : « obtenir un nombre **strictement inférieur** à ${{m}}$ ».|« Au moins une fois pile » est faux seulement si l'on obtient deux fois face : $\\overline{A}$ est « n'obtenir **aucun** pile ».}}}}"
+					"$\\overline{M}$ (on lit « $M$ barre ») est le **complémentaire** de $M$ dans $E$ : les éléments de $E$ qui ne sont **pas** dans $M$. On le note aussi $E\\setminus M$. En probabilités, c'est l'**événement contraire** de $M$.",
+					"{{if:t==0|Un nombre qui n'est pas pair est impair : $\\overline{M}$ est « obtenir un nombre **impair** ».|{{if:t==1|Le contraire de « $\\geqslant{{m}}$ » est « $<{{m}}$ » (et non « $\\leqslant{{m}}$ » : ${{m}}$ est déjà dans $M$). $\\overline{M}=\\textcolor{{{color:primary.0}}}{{{if:m==4|\\{1;2;3\\}|\\{1;2;3;4\\}}}}$ : « obtenir un nombre **strictement inférieur** à ${{m}}$ ».|« Au moins une fois pile » est faux seulement si l'on obtient deux fois face : $\\overline{M}$ est « n'obtenir **aucun** pile ».}}}}"
 				]
 			}
 		}

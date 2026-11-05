@@ -14,6 +14,7 @@ Décisions et pièges :
 - ensemble fini en réponse : `answerKind: intervalles` (sans lui, `\\{1;3;5\\}` et `\\varnothing` sont
   refusés en `bad_form`) ; `?` dans `$…$` = une case : « … » à la place ;
 - `eval:` ne connaît ni `==` ni `>` : indicatrices `min(max(…,0),1)` ;
+- lettre d'un ensemble ou d'un événement ≠ étiquettes A-E des cases choix (F, M dans les choix) ;
 - `col()` seulement dans `$…$` ; variables `e` et `i` interdites.
 
     python3 docs/wip/questions-2de/lot-ensembles-10a-2de.py scripts/questions/2de-ensembles-10a
@@ -225,15 +226,15 @@ COMPLETER = variation(
     [case('{{rep}}')])
 
 ECRITURE = variation(
-    choix('On note $E=\\{ {{a}};{{b}};{{c}} \\}$. Quelles écritures sont justes ?',
-          ['${{a}}\\in E$', '$\\{ {{a}} \\}\\in E$', '${{a}}\\subset E$', '$\\{ {{a}} \\}\\subset E$',
-           '$E\\in' + N + '$'], plusieurs=True),
+    choix('On note $F=\\{ {{a}};{{b}};{{c}} \\}$. Quelles écritures sont justes ?',
+          ['${{a}}\\in F$', '$\\{ {{a}} \\}\\in F$', '${{a}}\\subset F$', '$\\{ {{a}} \\}\\subset F$',
+           '$F\\in' + N + '$'], plusieurs=True),
     [var('a', '1..4'), var('b', 'eval:(a)+2'), var('c', 'eval:(a)+5')],
     None,
     [SYMBOLES,
-     '${{a}}$ est un élément : $' + col('{{a}}\\in E') + '$, mais pas « ${{a}}\\subset E$ ».',
-     '$\\{ {{a}} \\}$ est un ensemble : $' + col('\\{ {{a}} \\}\\subset E') + '$, mais pas « $\\{ {{a}} \\}\\in E$ ».',
-     '$E$ est un ensemble d\'entiers naturels : $E\\subset' + N + '$, et non $E\\in' + N + '$.'],
+     '${{a}}$ est un élément : $' + col('{{a}}\\in F') + '$, mais pas « ${{a}}\\subset F$ ».',
+     '$\\{ {{a}} \\}$ est un ensemble : $' + col('\\{ {{a}} \\}\\subset F') + '$, mais pas « $\\{ {{a}} \\}\\in F$ ».',
+     '$F$ est un ensemble d\'entiers naturels : $F\\subset' + N + '$, et non $F\\in' + N + '$.'],
     [case('0;3')])
 
 SP_SY = {'t': 0, 'a': 3, 'p': -2, 'l': 1, 'q': -1, 'r': 1, 's': 2, 'rep': 0}
@@ -277,11 +278,11 @@ DE = variation(
     [case(selon('t', ABARRE_DE), 'intervalles')])
 
 MOTS = variation(
-    choix('On lance ' + selon('t', ['un dé à six faces. $A$ est l\'événement « obtenir un nombre pair »',
-                                    'un dé à six faces. $A$ est l\'événement « obtenir un nombre supérieur ou égal'
+    choix('On lance ' + selon('t', ['un dé à six faces. $M$ est l\'événement « obtenir un nombre pair »',
+                                    'un dé à six faces. $M$ est l\'événement « obtenir un nombre supérieur ou égal'
                                     ' à ${{m}}$ »',
-                                    'deux fois une pièce. $A$ est l\'événement « obtenir au moins une fois pile'
-                                    ' »']) + '. Quel est l\'événement $\\overline{A}$ ?',
+                                    'deux fois une pièce. $M$ est l\'événement « obtenir au moins une fois pile'
+                                    ' »']) + '. Quel est l\'événement $\\overline{M}$ ?',
           ['« ' + selon('t', ['obtenir un nombre impair', 'obtenir un nombre strictement inférieur à ${{m}}$',
                               'n\'obtenir aucun pile']) + ' »',
            '« ' + selon('t', ['obtenir un multiple de $3$', 'obtenir un nombre inférieur ou égal à ${{m}}$',
@@ -292,13 +293,13 @@ MOTS = variation(
                               ' ${{eval:(m)+1}}$', 'obtenir au plus une fois pile']) + ' »']),
     [var('t', '0..2'), var('m', '4|5')],
     None,
-    [CONTRAIRE,
+    [CONTRAIRE.replace('$\\overline{A}$ (on lit « $A$ barre »)', '$\\overline{M}$ (on lit « $M$ barre »)').replace('de $A$ dans $E$', 'de $M$ dans $E$').replace('dans $A$.', 'dans $M$.').replace('$E\\setminus A$', '$E\\setminus M$').replace('contraire** de $A$', 'contraire** de $M$'),
      selon('t', [
-         'Un nombre qui n\'est pas pair est impair : $\\overline{A}$ est « obtenir un nombre **impair** ».',
+         'Un nombre qui n\'est pas pair est impair : $\\overline{M}$ est « obtenir un nombre **impair** ».',
          'Le contraire de « $\\geqslant{{m}}$ » est « $<{{m}}$ » (et non « $\\leqslant{{m}}$ » : ${{m}}$ est'
-         ' déjà dans $A$). $\\overline{A}=' + col('{{if:m==4|\\{1;2;3\\}|\\{1;2;3;4\\}}}') + '$ : « obtenir un nombre'
+         ' déjà dans $M$). $\\overline{M}=' + col('{{if:m==4|\\{1;2;3\\}|\\{1;2;3;4\\}}}') + '$ : « obtenir un nombre'
          ' **strictement inférieur** à ${{m}}$ ».',
-         '« Au moins une fois pile » est faux seulement si l\'on obtient deux fois face : $\\overline{A}$ est'
+         '« Au moins une fois pile » est faux seulement si l\'on obtient deux fois face : $\\overline{M}$ est'
          ' « n\'obtenir **aucun** pile ».'])],
     [case('0')])
 
