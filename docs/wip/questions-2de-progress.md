@@ -6,18 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2389 (nœud + tag du lot 12 b-2, appliqués) et la page à cocher._
+_Mis à jour le 2026-11-05, après la publication du lot 12 b-2 (§ 81)._
 
-- **État** : lots 1 à 9, 12 a et 12 b-1 publiés. 12 b-2 : 5 brouillons en prod, rangés et tagués
-  (`db:migrate` du 2026-11-05, vérifié), page à cocher publiée (§ 80). Ordre ensuite : 10, puis 11.
-- **Prochaine action** : lire les verdicts de la page (https://claude.ai/artifact/EkrPRK4N89X3vXS8fmXu1V) ;
-  corriger les « à revoir » ; `publier-lot` par David ; vérifier `published` au MCP. Puis le lot 10.
-- **En attente de David** : la relecture de la page à cocher du 12 b-2.
+- **État** : lots 1 à 9 et 12 (a, b-1, b-2) publiés. Lot 10 « Ensembles et logique » : relevé et phase 0
+  proposés (§ 82). Ensuite le lot 11.
+- **Prochaine action** : après le go de David sur la phase 0 du lot 10, écrire 10 A puis 10 B
+  (worktree remis sur `origin/main`, nouvelle branche).
+- **En attente de David** : validation de la phase 0 et réponses L10-a à L10-d (§ 82).
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `Doc-inchangée:` dans le commit d'une
   migration ; `0..3;±` refusé (`-3..3`) ; une autre session écrit aussi dans ce journal : `git pull` ;
   `db:migrate` depuis le dépôt principal seulement (ses fichiers d'autres sessions : `merge --ff-only`).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée, en retard sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2074,3 +2074,66 @@ vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12
   (heure de création).
 - Page à cocher (`page-a-cocher.ts`, `.env` de prod ; 5 fiches, aucune alerte ; capacité `db`, `verdicts`
   vide à la publication) : https://claude.ai/artifact/EkrPRK4N89X3vXS8fmXu1V
+
+## 81. Lot 12 b-2 publié (2026-11-05)
+
+- Page à cocher relue par David : 5/5 « ok », sans commentaire (ids du § 80). `publier-lot`
+  (simulation puis `--publier`) lancé par David ; MCP (prod) : 5/5 `published` (niveaux 1, 5, 1, 7, 1).
+
+## 82. Lot 10 « Ensembles et logique » : relevé et phase 0 (proposée le 2026-11-05, à valider)
+
+**Relevé MCP (prod, 2026-11-05)** : 11 points sans aucun modèle (201, 202, 203, 206, 208, 209, 211, 213,
+409, 215, 412) ; 16 anciens brouillons, tous rangés et tagués (§ 70) : 5062197a (403), 9724dc3d (404),
+0598a535 (405), 5676627b (406), 5b20321f (204), db8b5dc8 (205), 0a1ff14f (207), 219c9470 et 6c3ee9e6
+(210), 1e9a534f et 55341e85 (408), f98164b1 (212), e05203b0 (410), 5426cead (214), bed58c24 (411),
+8c31675a (244, corrigé au lot 1). 5062197a et 5b20321f ont encore `grades = {2, 1_SPE}` (Q7 c : `['2']`
+seul). Voisins de 1re, publiés, à ne pas refaire : 0ab3faa5 (nier une proposition, 1SPE-204), dd9a33b7
+(quantification implicite, 1SPE-203), 93f9ecdf (type de raisonnement), e5205176 (CN / CS).
+Sous-notions vides en prod : Opérations › union et intersection ; Implication et équivalence ›
+implication, › équivalence, › réciproque, › contraposée.
+
+**Phase 0 proposée** : 11 modèles neufs, niveau `['2']`, brouillons, BO « en situation » : propositions
+tirées des chapitres de 2de (intervalles, équations, parité, géométrie), jamais de logique formelle.
+
+_10 A — Ensembles (4)_
+
+1. **2-201 · Appartenance** (Ensembles de nombres › appartenance et inclusion) : 3 … E (E en extension,
+   diviseurs de n, intervalle, ℕ) → case choix ∈ / ∉ ; puis écrire en extension {entiers de [−2 ; 3[}.
+   Erreurs : borne ouverte comptée ; ∈ confondu avec ⊂ ({3} ∈ E).
+2. **2-202 · Ensemble vide** : S de x² = −4, de 2x + 1 = 2x + 3, A ∩ B disjoints → `S = ∅` ; case choix
+   ∅ / {0} / {∅} / 0. Erreur : {0} pris pour ∅.
+3. **2-203 · Le bon symbole** : compléter « 3 … ℕ », « {3} … ℕ », « ℕ … ℤ », « [1 ; 4] … [2 ; 6] = [2 ; 4] »
+   par ∈, ⊂, ∩, ∪ (case choix par trou). Erreur : ∈ / ⊂ échangés.
+4. **2-206 · Notations Ā et E \ A** : dé, urne, E = {1 ; … ; 10} ; A en mots (« pair », « multiple de 3 ») →
+   Ā en extension ; E \ A lu comme Ā. Pas de doublon avec 5676627b (diviseurs, sans contexte de probas).
+
+_10 B — Logique (7)_
+
+5. **2-208 · Proposition ou non ?** : « 3 + 2 = 6 » (proposition, fausse), « x + 2 » (non), « Résoudre
+   2x = 4 » (non), « tout carré est un losange » (vraie) → case choix ; puis vrai / faux.
+6. **2-209 · Écrire avec une variable** : « le carré d'un réel est positif » → « pour tout réel x, x² ⩾ 0 » ;
+   « n est pair » → « il existe un entier k tel que n = 2k » (case choix, distracteurs : variable mal
+   quantifiée, k réel).
+7. **2-211 · Négation** : x > 3 → x ⩽ 3 (case ; erreur x < 3) ; « le triangle est rectangle », « n est
+   pair » → phrases en case choix. Sans « et / ou » (niveau de 1re, 0ab3faa5) : à trancher (L10-c).
+8. **2-213 · Formuler une implication** : propriété du cours (« un rectangle a des diagonales de même
+   longueur ») → « Si …, alors … » en case choix (distracteur : la réciproque) ; puis x = 2 ⇒ x² = 4 :
+   quel sens est vrai ?
+9. **2-409 · Équivalence** : relier deux propositions par ⇒, ⇐ ou ⇔ (x² = 9 et x = 3 ; 2x + 1 = 7 et
+   x = 3 ; ABCD carré et ABCD losange). Erreur : ⇔ mis partout.
+10. **2-215 · « Pour tout »** : proposition universelle en mots (« pour tout réel x, x² ⩾ x ») → vrai / faux,
+    puis reformuler une phrase du cours. Le contre-exemple reste à f98164b1 (2-212).
+11. **2-412 · « Il existe »** : « il existe un entier n tel que n² = 2n + 3 » → vrai / faux ; puis donner un
+    tel nombre (tout exemple valable accepté, comme f98164b1).
+
+**Questions** :
+
+- **L10-a — Anciens brouillons** : les 16 sur la page à cocher du lot et publiés avec lui (comme L8-d),
+  `grades` de 5062197a et 5b20321f ramenés à `['2']` dans la migration de rangement ? → je recommande oui.
+- **L10-b — Découpage** : 10 A (4) puis 10 B (7), une PR de fichiers chacun, une migration nœud + tag pour
+  les deux, une page à cocher (11 + 16) ? → je recommande oui.
+- **L10-c — Négation de « et », « ou »** (non A ou non B) : BO 2de « propositions simples » ; en 1re
+  (0ab3faa5). Une variation de niveau élevé dans 2-211, ou rien ? → je recommande **rien** en 2de.
+- **L10-d — Symboles ⇒, ⇔** : le BO 2de ne les liste pas (seuls ∀, ∃ sont dits hors programme). Dans
+  2-409 : symboles ⇒ / ⇔, ou mots (« implique », « équivaut à ») ? → je recommande **les mots dans
+  l'énoncé, les symboles dans le corrigé**.
