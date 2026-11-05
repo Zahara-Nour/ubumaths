@@ -102,6 +102,16 @@ function poserAvecCurseur(mathfield: MathFieldElement, latex: string): void {
 	mathfield.value = latex.replace(MARQUEUR_CURSEUR, '');
 }
 
+/**
+ * Pose {@link MARQUEUR_CURSEUR} au curseur, sélection d'abord repliée : le
+ * marqueur ne doit rien remplacer.
+ */
+function insererMarqueur(mathfield: MathFieldElement): void {
+	const position = mathfield.position;
+	mathfield.position = position;
+	mathfield.insert(MARQUEUR_CURSEUR);
+}
+
 /** Retour arrière seul. */
 function estEffacement(event: KeyboardEvent): boolean {
 	return (
@@ -992,8 +1002,7 @@ export const MathBlock = Node.create({
 				// marqueur ne sert qu'à savoir si le curseur y est ; sinon il est
 				// effacé et MathLive traite la touche comme d'habitude.
 				const effacerLigneVide = (event: KeyboardEvent) => {
-					mathfield.position = mathfield.position;
-					mathfield.insert(MARQUEUR_CURSEUR);
+					insererMarqueur(mathfield);
 					const sansLigne = retirerLigneVide(mathfield.value);
 					if (sansLigne === null) {
 						mathfield.executeCommand('deleteBackward');
@@ -1015,9 +1024,7 @@ export const MathBlock = Node.create({
 						if (!estNouvelleLigne(event)) return;
 						event.preventDefault();
 						event.stopPropagation();
-						// Sélection repliée : le marqueur ne doit rien remplacer.
-						mathfield.position = mathfield.position;
-						mathfield.insert(MARQUEUR_CURSEUR);
+						insererMarqueur(mathfield);
 						poserAvecCurseur(mathfield, ajouterLigne(mathfield.value));
 						synchroniser();
 					},
