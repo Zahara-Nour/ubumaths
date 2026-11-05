@@ -6,20 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, PR #2399 (fichiers du lot 10 A) ouverte, CI en cours._
+_Mis à jour le 2026-11-05, après #2399 (fichiers du lot 10 A, mergée)._
 
 - **État** : lots 1 à 9 et 12 publiés. Lot 10 : phase 0 validée (§ 82) ; 10 A (4 modèles : 201, 202,
-  203, 206) écrit, joué en local, **PR #2399 ouverte** (§ 83). 10 B (7 modèles de logique) à écrire.
-- **Prochaine action** : `gh pr checks 2399` → verte : `gh pr merge 2399 --merge` (commande seule) ;
-  puis David lance `create-questions --publier` sur `scripts/questions/2de-ensembles-10a` ; relever les
+  203, 206) écrit, joué en local, **#2399 mergée** (§ 83). 10 B (7 modèles de logique) à écrire.
+- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/2de-ensembles-10a` ; relever les
   ids. Écrire 10 B (même branche de travail neuve). Migration nœud + tag pour 10 A + 10 B, `grades` de
   5062197a, 5b20321f ramenés à `['2']` (L10-a) ; page à cocher : 11 neufs + 16 anciens.
-- **En attente de David** : rien.
+- **En attente de David** : `create-questions --publier` du lot 10 A (depuis `main`).
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
   dossier (il écrit l'id dans le fichier) ; ensemble fini en réponse = `answerKind: intervalles` ;
   lettre d'ensemble ≠ étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot10a`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot10b` (neuve, sur origin/main).
 
 ## 1. Relevé (prod, 2026-10-27)
 
