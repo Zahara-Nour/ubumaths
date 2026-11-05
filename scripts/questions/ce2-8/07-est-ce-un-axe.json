@@ -1,0 +1,209 @@
+{
+	"title": "Est-ce un axe de symétrie ?",
+	"description": "Une figure et une droite : axe ou non (losange, rectangle, cerf-volant, lettres) ; la figure qui a un axe",
+	"grades": ["CE2"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La droite rouge est-elle un axe de symétrie de la figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure et une droite en tirets.\n---\n{{if:s==1|a = point(5, 0.8, visible=faux)\nb = point(7.2, 3.5, visible=faux)\nc = point(5, 6.2, visible=faux)\nd = point(2.8, 3.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\nu = point(5, 0, visible=faux)\nv = point(5, 7, visible=faux)\nl = droite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:s==2|a = point(2, 1.5, visible=faux)\nb = point(8, 1.5, visible=faux)\nc = point(8, 5.5, visible=faux)\nd = point(2, 5.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\nu = point(2, 1.5, visible=faux)\nv = point(8, 5.5, visible=faux)\nl = droite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:s==3|a = point(2, 1.5, visible=faux)\nb = point(8, 1.5, visible=faux)\nc = point(8, 5.5, visible=faux)\nd = point(2, 5.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\nu = point(5, 0, visible=faux)\nv = point(5, 7, visible=faux)\nl = droite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:s==4|a = point(2.5, 1, visible=faux)\nb = point(7.5, 1, visible=faux)\nc = point(7.5, 6, visible=faux)\nd = point(2.5, 6, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\nu = point(2.5, 1, visible=faux)\nv = point(7.5, 6, visible=faux)\nl = droite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:s==5|a = point(5, 6.3, visible=faux)\nb = point(7, 4.5, visible=faux)\nc = point(5, 0.7, visible=faux)\nd = point(3, 4.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\nu = point(5, 0, visible=faux)\nv = point(5, 7, visible=faux)\nl = droite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:s==6|a = point(5, 6.3, visible=faux)\nb = point(7, 4.5, visible=faux)\nc = point(5, 0.7, visible=faux)\nd = point(3, 4.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\nu = point(0, 4.5, visible=faux)\nv = point(10, 4.5, visible=faux)\nl = droite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:s==7|a = point(3, 1, visible=faux)\nb = point(7, 1, visible=faux)\nc = point(5, 6.3, visible=faux)\nq = polygone(a, b, c, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\nu = point(5, 0, visible=faux)\nv = point(5, 7, visible=faux)\nl = droite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:s==8|a = point(1.5, 1.5, visible=faux)\nb = point(6.5, 1.5, visible=faux)\nc = point(8.5, 5.5, visible=faux)\nd = point(3.5, 5.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\nu = point(5, 0, visible=faux)\nv = point(5, 7, visible=faux)\nl = droite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:s==9|p00 = point(2.5, 1, visible=faux)\np01 = point(5, 6.2, visible=faux)\np02 = point(7.5, 1, visible=faux)\nw00 = segment(p00, p01, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=6)\nw01 = segment(p01, p02, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=6)\np10 = point(3.6, 3.3, visible=faux)\np11 = point(6.4, 3.3, visible=faux)\nw10 = segment(p10, p11, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=6)\nu = point(5, 0, visible=faux)\nv = point(5, 7, visible=faux)\nl = droite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|p00 = point(3, 1, visible=faux)\np01 = point(3, 6, visible=faux)\np02 = point(7, 1, visible=faux)\np03 = point(7, 6, visible=faux)\nw00 = segment(p00, p01, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=6)\nw01 = segment(p01, p02, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=6)\nw02 = segment(p02, p03, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=6)\nu = point(5, 0, visible=faux)\nv = point(5, 7, visible=faux)\nl = droite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)}}}}}}}}}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "s",
+					"expression": "1..10"
+				},
+				{
+					"name": "w",
+					"expression": "{{if:s==1|0|{{if:s==2|1|{{if:s==3|0|{{if:s==4|0|{{if:s==5|0|{{if:s==6|1|{{if:s==7|0|{{if:s==8|1|{{if:s==9|0|1}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|Oui. On plie le losange le long de sa diagonale : les deux moitiés se superposent.|{{if:s==2|Non. On plie le rectangle le long de sa diagonale : les deux moitiés ne se superposent pas. La diagonale d'un rectangle n'est pas un axe de symétrie.|{{if:s==3|Oui. La droite passe par les milieux des deux grands côtés : en pliant, les deux moitiés se superposent.|{{if:s==4|Oui. La diagonale d'un carré est un axe de symétrie : en pliant, les deux moitiés se superposent.|{{if:s==5|Oui. On plie le cerf-volant le long de sa grande diagonale : les deux moitiés se superposent.|{{if:s==6|Non. Au-dessus de la droite, la partie est petite ; en dessous, elle est grande : en pliant, elles ne se superposent pas.|{{if:s==7|Oui. Le triangle a deux côtés de la même longueur ; en pliant le long de la droite, les deux moitiés se superposent.|{{if:s==8|Non. En pliant le long de la droite, une moitié penche d'un côté, l'autre de l'autre : elles ne se superposent pas.|{{if:s==9|Oui. La lettre A plie en deux moitiés qui se superposent.|Non. Plions le N le long de la droite : le trait penché ne retombe pas sur lui-même. Le N n'a pas d'axe de symétrie.}}}}}}}}}}}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Quelle figure a un axe de symétrie ?\n\n````choix\n- ```figure\n  fenetre: 2.2 ; 7.8 ; 0.1 ; 6.9\n  taille: grande\n  description: Une figure.\n  ---\n  {{if:k==1|a = point(5, 6.3, visible=faux)\n  b = point(7, 4.5, visible=faux)\n  c = point(5, 0.7, visible=faux)\n  d = point(3, 4.5, visible=faux)\n  q = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)|{{if:k==2|a = point(3, 1, visible=faux)\n  b = point(7, 1, visible=faux)\n  c = point(5, 6.3, visible=faux)\n  q = polygone(a, b, c, couleur=\"noir\", epaisseur=2)|a = point(5, 0.8, visible=faux)\n  b = point(7.2, 3.5, visible=faux)\n  c = point(5, 6.2, visible=faux)\n  d = point(2.8, 3.5, visible=faux)\n  q = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)}}}}\n  ```\n- ```figure\n  fenetre: 1.4 ; 8.6 ; 0.6 ; 6.4\n  taille: grande\n  description: Une figure.\n  ---\n  a = point(2, 1.2, visible=faux)\n  b = point(8, 1.8, visible=faux)\n  c = point(6.8, 5.8, visible=faux)\n  d = point(3, 4.8, visible=faux)\n  q = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)\n  ```\n- ```figure\n  fenetre: 0.9 ; 9.1 ; 0.4 ; 6.6\n  taille: grande\n  description: Une figure.\n  ---\n  a = point(1.5, 1, visible=faux)\n  b = point(8.5, 1.8, visible=faux)\n  c = point(4, 6, visible=faux)\n  q = polygone(a, b, c, couleur=\"noir\", epaisseur=2)\n  ```\n- ```figure\n  fenetre: 0.9 ; 9.1 ; 0.9 ; 6.1\n  taille: grande\n  description: Une figure.\n  ---\n  a = point(1.5, 1.5, visible=faux)\n  b = point(6.5, 1.5, visible=faux)\n  c = point(8.5, 5.5, visible=faux)\n  d = point(3.5, 5.5, visible=faux)\n  q = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)\n  ```\n````",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{un cerf-volant}}$|{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{un triangle à deux côtés égaux}}$|$\\textcolor{{{color:primary.0}}}{\\text{un losange}}$}}}} : en le pliant en deux, les deux moitiés se superposent.",
+					"Les autres figures ont des côtés et des angles tous différents (ou penchés) : aucun pliage ne superpose leurs deux moitiés."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Losange et sa diagonale : oui",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"s": "1",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : losange, non",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"s": "1",
+				"w": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle et sa diagonale : non",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"s": "2",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : diagonale du rectangle prise pour un axe",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"s": "2",
+				"w": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle et sa médiane : oui",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"s": "3",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cerf-volant, petite diagonale : non",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4",
+				"s": "6",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Parallélogramme : non",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"s": "8",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Lettre A : oui",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"s": "9",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Lettre N : non",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"s": "10",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Le cerf-volant a un axe",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le parallélogramme",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le losange a un axe",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

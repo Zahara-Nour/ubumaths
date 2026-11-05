@@ -1,0 +1,180 @@
+{
+	"title": "Le code des longueurs égales",
+	"description": "Longueur d'un côté lue par son code ; côté de même code ; le dessin bien codé",
+	"grades": ["CE2"],
+	"level": 10,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les codes disent quels côtés ont la même longueur. La figure n'est pas en vraie grandeur.\n\n${{if:t==1|[AB]|[BC]}}$ mesure ${{if:t==1|{{a}}|{{b}}}}$ cm. Combien mesure ${{if:t==1|[CD]|[DA]}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un rectangle ABCD, côtés codés.\n---\na = point({{if:k==1|2.2|{{if:k==2|3.0|7.95}}}}, {{if:k==1|2.1|{{if:k==2|1.39|3.41}}}}, visible=faux)\nb = point({{if:k==1|7.8|{{if:k==2|7.89|3.45}}}}, {{if:k==1|2.1|{{if:k==2|3.17|6.01}}}}, visible=faux)\nc = point({{if:k==1|7.8|{{if:k==2|7.0|2.05}}}}, {{if:k==1|4.9|{{if:k==2|5.61|3.59}}}}, visible=faux)\nd = point({{if:k==1|2.2|{{if:k==2|2.11|6.55}}}}, {{if:k==1|4.9|{{if:k==2|3.83|0.99}}}}, visible=faux)\nq = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)\nm0 = marque_segment(a, b)\nm1 = marque_segment(b, c, traits=2)\nm2 = marque_segment(c, d)\nm3 = marque_segment(d, a, traits=2)\ng0 = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ng1 = angle(a, b, c, marque=\"carre\", couleur=\"noir\")\ng2 = angle(b, c, d, marque=\"carre\", couleur=\"noir\")\ng3 = angle(c, d, a, marque=\"carre\", couleur=\"noir\")\ntexte({{if:k==1|1.75|{{if:k==2|2.66|8.45}}}}, {{if:k==1|1.73|{{if:k==2|0.88|3.24}}}}, \"A\")\ntexte({{if:k==1|8.25|{{if:k==2|8.39|3.19}}}}, {{if:k==1|1.73|{{if:k==2|2.96|6.29}}}}, \"B\")\ntexte({{if:k==1|8.25|{{if:k==2|7.34|1.55}}}}, {{if:k==1|4.97|{{if:k==2|5.82|3.46}}}}, \"C\")\ntexte({{if:k==1|1.75|{{if:k==2|1.61|6.81}}}}, {{if:k==1|4.97|{{if:k==2|3.74|0.41}}}}, \"D\")\n```\n\n${{if:t==1|[CD]|[DA]}}$ mesure $?$ cm.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "6..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==1|{{a}}|{{b}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{if:t==1|[AB]|[BC]}}$ et ${{if:t==1|[CD]|[DA]}}$ ont le même code {{if:t==1|(un trait)|(deux traits)}} : ils ont la même longueur. ${{if:t==1|[CD]|[DA]}}$ mesure $\\textcolor{{{color:primary.0}}}{{{if:t==1|{{a}}|{{b}}}}}$ cm."
+				]
+			}
+		},
+		{
+			"statement": "D'après les codes, quel côté a la même longueur que $[AB]$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un quadrilatère ABCD, côtés codés.\n---\na = point({{if:k==1|5.0|{{if:k==2|2.3|5.51}}}}, {{if:k==1|6.2|{{if:k==2|3.5|0.96}}}}, visible=faux)\nb = point({{if:k==1|6.8|{{if:k==2|3.8|3.31}}}}, {{if:k==1|4.7|{{if:k==2|5.3|1.76}}}}, visible=faux)\nc = point({{if:k==1|5.0|{{if:k==2|7.7|3.67}}}}, {{if:k==1|0.8|{{if:k==2|3.5|6.04}}}}, visible=faux)\nd = point({{if:k==1|3.2|{{if:k==2|3.8|6.69}}}}, {{if:k==1|4.7|{{if:k==2|1.7|2.99}}}}, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\nm0 = marque_segment(a, b)\nm1 = marque_segment(b, c, traits=2)\nm2 = marque_segment(c, d, traits=2)\nm3 = marque_segment(d, a)\ntexte({{if:k==1|5.0|{{if:k==2|1.8|5.68}}}}, {{if:k==1|6.55|{{if:k==2|3.35|0.34}}}}, \"A\")\ntexte({{if:k==1|7.27|{{if:k==2|3.64|2.92}}}}, {{if:k==1|4.71|{{if:k==2|5.62|1.3}}}}, \"B\")\ntexte({{if:k==1|5.0|{{if:k==2|8.2|3.5}}}}, {{if:k==1|0.15|{{if:k==2|3.35|6.36}}}}, \"C\")\ntexte({{if:k==1|2.73|{{if:k==2|3.64|7.19}}}}, {{if:k==1|4.71|{{if:k==2|1.08|2.85}}}}, \"D\")\n```\n\n```choix\nmelanger: non\n- $[AD]$\n- $[BC]$\n- $[CD]$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$[AB]$ porte un trait ; le seul autre côté à un trait est $\\textcolor{{{color:primary.0}}}{[AD]}$.",
+					"$[BC]$ et $[CD]$ portent deux traits : ils ont la même longueur, entre eux."
+				]
+			}
+		},
+		{
+			"statement": "Sur quel dessin les codes disent-ils que les $4$ côtés ont la même longueur ?\n\n````choix\n- ```figure\n  fenetre: 1.6 ; 8.4 ; 1.2 ; 5.8\n  taille: grande\n  description: Une figure codée.\n  ---\n  a = point(7.8, 3.5, visible=faux)\n  b = point(5.0, 5.2, visible=faux)\n  c = point(2.2, 3.5, visible=faux)\n  d = point(5.0, 1.8, visible=faux)\n  q = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)\n  m0 = marque_segment(a, b)\n  m1 = marque_segment(b, c)\n  m2 = marque_segment(c, d)\n  m3 = marque_segment(d, a)\n  ```\n- ```figure\n  fenetre: 1.4 ; 8.6 ; 1.7 ; 5.3\n  taille: grande\n  description: Une figure codée.\n  ---\n  a = point(2.0, 2.3, visible=faux)\n  b = point(8.0, 2.3, visible=faux)\n  c = point(8.0, 4.7, visible=faux)\n  d = point(2.0, 4.7, visible=faux)\n  q = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)\n  m0 = marque_segment(a, b)\n  m1 = marque_segment(b, c, traits=2)\n  m2 = marque_segment(c, d)\n  m3 = marque_segment(d, a, traits=2)\n  ```\n- ```figure\n  fenetre: 1.9 ; 8.1 ; 1.3 ; 5.7\n  taille: grande\n  description: Une figure codée.\n  ---\n  a = point(2.5, 1.9, visible=faux)\n  b = point(7.5, 1.9, visible=faux)\n  c = point(6.6, 5.1, visible=faux)\n  d = point(3.4, 5.1, visible=faux)\n  q = polygone(a, b, c, d, couleur=\"noir\", epaisseur=2)\n  m1 = marque_segment(b, c)\n  m3 = marque_segment(d, a)\n  ```\n````",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les $4$ côtés portent $\\textcolor{{{color:primary.0}}}{\\text{le même code}}$ (un trait) : ils ont la même longueur.",
+					"Deux codes différents (un trait, deux traits) disent deux longueurs différentes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "[CD] = [AB]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"t": "1",
+				"a": "8",
+				"b": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la largeur prise",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"t": "1",
+				"a": "8",
+				"b": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[DA] = [BC]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"t": "2",
+				"a": "10",
+				"b": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la longueur prise",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"t": "2",
+				"a": "10",
+				"b": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[AD] a le même code",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le côté voisin [BC]",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le losange codé",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le rectangle codé",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

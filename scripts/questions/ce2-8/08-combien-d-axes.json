@@ -1,0 +1,169 @@
+{
+	"title": "Combien d'axes de symétrie ?",
+	"description": "Carré, rectangle, losange, cerf-volant, triangles, parallélogramme",
+	"grades": ["CE2"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien d'axes de symétrie a cette figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure.\n---\n{{if:k==1|a = point(2.5, 1, visible=faux)\nb = point(7.5, 1, visible=faux)\nc = point(7.5, 6, visible=faux)\nd = point(2.5, 6, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==2|a = point(2, 1.5, visible=faux)\nb = point(8, 1.5, visible=faux)\nc = point(8, 5.5, visible=faux)\nd = point(2, 5.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==3|a = point(5, 0.8, visible=faux)\nb = point(7.2, 3.5, visible=faux)\nc = point(5, 6.2, visible=faux)\nd = point(2.8, 3.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==4|a = point(5, 6.3, visible=faux)\nb = point(7, 4.5, visible=faux)\nc = point(5, 0.7, visible=faux)\nd = point(3, 4.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==5|a = point(3, 1, visible=faux)\nb = point(7, 1, visible=faux)\nc = point(5, 6.3, visible=faux)\nq = polygone(a, b, c, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|{{if:k==6|a = point(2.5, 1, visible=faux)\nb = point(7.5, 1, visible=faux)\nc = point(5, 5.33, visible=faux)\nq = polygone(a, b, c, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)|a = point(1.5, 1.5, visible=faux)\nb = point(6.5, 1.5, visible=faux)\nc = point(8.5, 5.5, visible=faux)\nd = point(3.5, 5.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)}}}}}}}}}}}}\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..7"
+				},
+				{
+					"name": "n",
+					"expression": "{{if:k==1|4|{{if:k==2|2|{{if:k==3|2|{{if:k==4|1|{{if:k==5|1|{{if:k==6|3|0}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Le carré a $4$ axes : ses $2$ diagonales et les $2$ droites qui passent par les milieux de ses côtés opposés.|{{if:k==2|Le rectangle a $2$ axes : les droites qui passent par les milieux de ses côtés opposés. Ses diagonales ne sont pas des axes.|{{if:k==3|Le losange a $2$ axes : ses $2$ diagonales.|{{if:k==4|Le cerf-volant a $1$ axe : sa grande diagonale.|{{if:k==5|Ce triangle a deux côtés de la même longueur : $1$ axe, qui passe par le sommet entre ces deux côtés.|{{if:k==6|Ce triangle a ses trois côtés de la même longueur : $3$ axes, un par sommet.|Aucun pliage ne superpose les deux moitiés : $0$ axe.}}}}}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré : 4",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "1",
+				"n": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré, 2 (médianes seules)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "1",
+				"n": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle : 2",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "2",
+				"n": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle, 4 (diagonales comptées)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "2",
+				"n": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Losange : 2",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"k": "3",
+				"n": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cerf-volant : 1",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4",
+				"k": "4",
+				"n": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle à deux côtés égaux : 1",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "5",
+				"n": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle à trois côtés égaux : 3",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "6",
+				"n": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Parallélogramme : 0",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"k": "7",
+				"n": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parallélogramme, 2",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"k": "7",
+				"n": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
