@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, avant la PR._
+_Mis à jour le 2026-11-05, PR ouverte._
 
 - **État** : correctif commité sur `fix/tetraedre-vue` (tests rouges sans, verts avec ; 315 tests espace verts).
-- **Prochaine action** : David regarde l'aperçu avant / après (B2 : noms A, B devant, C) → PR → merge → ligne 15 de
+- **Prochaine action** : CI verte → merge → ligne 15 de
   `outils-manquants.md` en « Livré » ; puis B3 (variation tétraèdre de TSPE-334), PR à part, après `deploy:prod`.
-- **En attente de David** : son avis sur l'aperçu (disposition des noms).
+- **En attente de David** : rien (B2 validé sur aperçu).
 - **Pièges en cours** : tétraèdre plus haut que large → G et milieu de AC à ~0,3 cm (limite de l'échelle à 4 cm,
   aucun angle ne la lève) ; préférer hauteur ≤ côté dans les modèles.
 - **Worktree / branche** : `../ubumaths-wt-tetraedre-vue`, `fix/tetraedre-vue`.
@@ -21,7 +21,7 @@ _Mis à jour le 2026-11-05, avant la PR._
 ## Phase 0 (2026-11-05, validée)
 
 - B1 : base tournée de 60° (arête du fond horizontale, comme dans les manuels), pas 64° (écart max).
-- B2 : de gauche à droite A, B (devant), C ; à confirmer sur aperçu.
+- B2 : de gauche à droite A, B (devant), C — validé par David sur l'aperçu (2026-11-05) : vue des manuels, ordre de lecture, tour ABC direct vu du dessus comme ABCD du cube.
 - B3 : variation tétraèdre de TSPE-334 dans une PR à part, après `deploy:prod`.
 - Prod (MCP, 2026-11-05) : aucun modèle n'utilise `pyramide triangle`.
 
