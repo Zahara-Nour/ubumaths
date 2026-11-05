@@ -1,0 +1,144 @@
+{
+	"title": "Lire une fonction Python qui renvoie un écart type",
+	"description": "Reconnaître ce que renvoie une fonction de quatre arguments (écart type, son carré, moyenne) ; valeur renvoyée par ecart_type(m − d, m + d, m − d, m + d)",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante (`sqrt` est la racine carrée, `x ** 2` le carré de `x`).\n\n```python\nfrom math import sqrt\n\ndef f(a, b, c, d):\n    m = (a + b + c + d) / 4\n    v = ((a - m) ** 2 + (b - m) ** 2 + (c - m) ** 2 + (d - m) ** 2) / 4\n{{if:t==0|    return sqrt(v)|{{if:t==1|    return v|    return m}}}}\n```\n\nQue renvoie `f(a, b, c, d)` ?\n\n```choix\nmelanger: non\n- l'écart type des quatre valeurs\n- le carré de l'écart type des quatre valeurs\n- la moyenne des quatre valeurs\n- l'étendue des quatre valeurs\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'écart type mesure la dispersion autour de la moyenne $m$ : on fait la moyenne des carrés des écarts $(x-m)^2$, puis on en prend la **racine carrée**.",
+					"`m` est la **moyenne** des quatre valeurs ; `v` est la moyenne des carrés des écarts à `m`, c'est-à-dire le **carré de l'écart type**.",
+					"La fonction renvoie `{{if:t==0|sqrt(v)|{{if:t==1|v|m}}}}` : {{if:t==0|l'**écart type**.|{{if:t==1|le **carré de l'écart type** (il manque la racine carrée).|la **moyenne**.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\nfrom math import sqrt\n\ndef ecart_type(a, b, c, d):\n    m = (a + b + c + d) / 4\n    v = ((a - m) ** 2 + (b - m) ** 2 + (c - m) ** 2 + (d - m) ** 2) / 4\n    return sqrt(v)\n```\n\nQue renvoie `ecart_type({{eval:(m)-(d)}}, {{eval:(m)+(d)}}, {{eval:(m)-(d)}}, {{eval:(m)+(d)}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "8..15"
+				},
+				{
+					"name": "d",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'écart type mesure la dispersion autour de la moyenne $m$ : on fait la moyenne des carrés des écarts $(x-m)^2$, puis on en prend la **racine carrée**.",
+					"`m` vaut $\\dfrac{ {{eval:(m)-(d)}}+{{eval:(m)+(d)}}+{{eval:(m)-(d)}}+{{eval:(m)+(d)}} }{4}={{m}}$.",
+					"Chaque valeur est à ${{d}}$ de ${{m}}$ : chaque écart au carré vaut ${{d}}^2={{eval:(d)^2}}$, donc `v` vaut $\\dfrac{4\\times{{eval:(d)^2}}}{4}={{eval:(d)^2}}$.",
+					"La fonction renvoie $\\sqrt{ {{eval:(d)^2}} }=\\textcolor{{{color:primary.0}}}{{{d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "sqrt(v) : écart type",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v : carré de l'écart type",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : v pris pour l'écart type",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "m : moyenne",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ecart_type(7, 13, 7, 13) = 3",
+			"variationIndex": 1,
+			"variables": {
+				"m": "10",
+				"d": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le carré 9",
+			"variationIndex": 1,
+			"variables": {
+				"m": "10",
+				"d": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la moyenne 10",
+			"variationIndex": 1,
+			"variables": {
+				"m": "10",
+				"d": "3"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	}
+}

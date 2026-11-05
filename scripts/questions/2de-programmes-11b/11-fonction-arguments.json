@@ -1,0 +1,192 @@
+{
+	"title": "Fonction Python à un ou plusieurs arguments",
+	"description": "Valeur renvoyée par aire(4, 12), f(4) avec f(x) = 3x − 5, ecart(4, 12) (ordre des arguments), prix(n, p, r) ; nombre d'arguments d'une fonction",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n{{if:t==0|```python\ndef aire(L, l):\n    return L * l\n```|{{if:t==1|```python\ndef f(x):\n    return {{k}} * x - {{p}}\n```|{{if:t==2|```python\ndef ecart(a, b):\n    return a - b\n```|```python\ndef prix(n, p, r):\n    return n * p - r\n```}}}}}}\n\nQue renvoie l'appel `{{if:t==0|aire({{a}}, {{b}})|{{if:t==1|f({{a}})|{{if:t==2|ecart({{a}}, {{b}})|prix({{a}}, {{k}}, {{p}})}}}}}}` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "11..19"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*((a)*(b))+(1-min(abs((t)-1),1))*((k)*(a)-(p))+(1-min(abs((t)-2),1))*((a)-(b))+(1-min(abs((t)-3),1))*((a)*(k)-(p))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`def nom(arguments):` définit une fonction ; `return` donne la valeur **renvoyée**. Lors d'un appel, chaque argument reçoit la valeur placée **au même rang** entre les parenthèses.",
+					"{{if:t==0|`L` reçoit ${{a}}$ et `l` reçoit ${{b}}$ : la fonction renvoie ${{a}}\\times{{b}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.|{{if:t==1|`x` reçoit ${{a}}$ : la fonction renvoie ${{k}}\\times{{a}}-{{p}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.|{{if:t==2|`a` reçoit ${{a}}$ et `b` reçoit ${{b}}$ (l'ordre compte) : la fonction renvoie ${{a}}-{{b}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.|`n` reçoit ${{a}}$, `p` reçoit ${{k}}$ et `r` reçoit ${{p}}$ : la fonction renvoie ${{a}}\\times{{k}}-{{p}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n{{if:t==0|```python\ndef perimetre(L, l):\n    return 2 * (L + l)\n```|{{if:t==1|```python\ndef carre(x):\n    return x * x\n```|{{if:t==2|```python\ndef volume(L, l, h):\n    return L * l * h\n```|```python\ndef moyenne(a, b, c, d):\n    return (a + b + c + d) / 4\n```}}}}}}\n\nCombien d'arguments faut-il donner pour l'appeler ?\n\n$?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*(2)+(1-min(abs((t)-1),1))*(1)+(1-min(abs((t)-2),1))*(3)+(1-min(abs((t)-3),1))*(4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les arguments sont les noms écrits entre les parenthèses, après le nom de la fonction, séparés par des virgules.",
+					"Ici : `{{if:t==0|L, l|{{if:t==1|x|{{if:t==2|L, l, h|a, b, c, d}}}}}}`, soit $\\textcolor{{{color:primary.0}}}{{{rep}}}$ argument{{if:t==0|s|{{if:t==1||{{if:t==2|s|s}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "aire(4, 12) = 48",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"a": "4",
+				"b": "12",
+				"k": "3",
+				"p": "5",
+				"rep": "48"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "f(4) = 7",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"a": "4",
+				"b": "12",
+				"k": "3",
+				"p": "5",
+				"rep": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ecart(4, 12) = -8",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"a": "4",
+				"b": "12",
+				"k": "3",
+				"p": "5",
+				"rep": "-8"
+			},
+			"answers": ["-8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arguments inversés",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"a": "4",
+				"b": "12",
+				"k": "3",
+				"p": "5",
+				"rep": "-8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "prix(4, 3, 5) = 7",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"a": "4",
+				"b": "12",
+				"k": "3",
+				"p": "5",
+				"rep": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "volume : 3 arguments",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"rep": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "moyenne : 4 arguments",
+			"variationIndex": 1,
+			"variables": {
+				"t": "3",
+				"rep": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne à 1 argument",
+			"variationIndex": 1,
+			"variables": {
+				"t": "3",
+				"rep": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
