@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 6 : brouillons en prod, migration nœud + tag en PR._
+_Mis à jour le 2026-11-05, après #2391._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lot 5 publié (§ 10) ; lot 6
-  (algèbre : 256, 387, 257, 258) en brouillon en prod, migration nœud + tag en PR (§ 11, « Lot 6 en prod »).
-- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal → vérif MCP → page à cocher →
+  (algèbre : 256, 387, 257, 258) en brouillon en prod, migration nœud + tag mergée (#2391), `db:migrate` en attente (§ 11, « Lot 6 en prod »).
+- **Prochaine action** : David lance `db push --include-all` (3 migrations) → vérif MCP → page à cocher →
   relecture de David → publication. Ensuite lots 7 à 9.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
@@ -392,3 +392,6 @@ prod (MCP) : 4 brouillons {1_SPE}, sans nœud ni tag : `1b062bd5` degré 3 (fact
 ces points. Migration `20261105060921_questions_1spe_approfondissements_6_rangement_tags` (gabarit `demonstrations_3`,
 aucune sous-notion neuve), test `questions-1spe-approfondissements-6-rangement-tags` 12/12 vert, rouge sans la
 migration (7 rouges, la suite principale ne s'exécute pas). Accès : Q5 de D3, personne.
+`security-auditor` : aucun finding bloquant. Mergée (#2391, CI verte). `db:migrate` en attente : `20261105055721`
+(automatismes-1spe) déjà en prod oblige à `--include-all`, qui passe aussi 055111 (CP-060) et 055243 (2de lot 12 b-2) ;
+David le lance pour les trois (refusé au classifieur pour la session geometrie-validation).
