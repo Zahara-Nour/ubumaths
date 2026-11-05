@@ -6,19 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2387._
+_Mis à jour le 2026-11-05, après la publication du lot 7b._
 
-- **État** : lots 1 à 7a en prod. Lot 7b (horloge + droite graduée, 9 modèles) : brouillons en prod, RANGÉS (#2387 mergée,
-  `db:migrate` fait, relevé MCP : nœud et point attendus, `draft`, `updated_at` intact). Jouées dans l'aperçu : 01, 04, 09.
-- **Prochaine action** : page à cocher du lot 7b (02, 03, 05-08 surtout), puis publication. Ensuite 7c (statistiques).
-- **En attente de David** : la relecture, puis `! cd ../ubumaths-wt-questions-ce2 && pnpm tsx
-scripts/questions/publier-lot.ts --dir scripts/questions/ce2-7b` (simulation ; refusée au classifieur du mode auto, elle
-  vise la prod), puis la même avec `--publier`.
-- **Pièges en cours** : jamais de variable `e` (Euler) ; `sonde-horloges.ts` à relancer si on retouche un modèle ; 06 sur
-  « calcul de durées » (point 059), pas « conversions » : un tag doit être sur le nœud de son point ; worktree sans lien
-  Supabase → copier `../ubumaths/supabase/.temp` avant `db:migrate` ; commitlint : sujet en minuscule.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7b-rangement` (mergée), gardé jusqu'à la
-  publication.
+- **État** : lots 1 à 7b en prod. Lot 7b (horloge + droite graduée, 9 modèles) rangé (#2387, `db:migrate`) et PUBLIÉ le
+  2026-11-05 à 07:07 (relevé MCP : `published`, même `updated_at` pour les 9), avant l'essai à l'écran de 02, 03, 05-08.
+- **Prochaine action** : 7c (statistiques), phase 0 à faire valider ; worktree neuf `../ubumaths-wt-questions-ce2`.
+- **En attente de David** : relecture après coup des 9 fiches sur https://claude.ai/artifact/JdCbHActB2vzgTsasDxN4b (02, 03,
+  05-08 surtout ; 08 et 09 : bloc `line` non dessiné par la page, à jouer dans l'aperçu) ; un modèle faux → repasser en brouillon.
+- **Pièges en cours** : jamais de variable `e` (Euler) ; `sonde-horloges.ts` à relancer si on retouche un modèle ; un tag
+  doit être sur le nœud de son point ; worktree sans lien Supabase → copier `../ubumaths/supabase/.temp` avant `db:migrate` ;
+  commitlint : sujet en minuscule.
+- **Worktree / branche** : aucun (worktree et `feat/questions-ce2-7b-rangement` supprimés le 2026-11-05).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -639,3 +637,7 @@ de durées noté, publiés intacts) ; horloge « digitale » = texte + `cadran: 
   tombé sur « Browser connection was closed », sans lien avec la PR) ; `check:migrations --pr 2387` ok ; `db:migrate`
   depuis le worktree (dry-run : seule la mienne ; le dépôt principal avait des fichiers modifiés d'une autre session) ;
   relevé MCP : les 9 rangés, un point chacun, `draft`, `updated_at` du 2026-11-02 inchangé.
+- 2026-11-05 : relevé MCP suivant : les 9 sont `published` (même `updated_at`, 07:07:34, quatre minutes après le merge),
+  sans que 02, 03, 05-08 aient été joués à l'écran. Page à cocher publiée après coup :
+  https://claude.ai/artifact/JdCbHActB2vzgTsasDxN4b (capacité `db`, 9 fiches ; alerte « bloc `line` non dessiné » sur 08 et
+  09). Worktree et branche supprimés.
