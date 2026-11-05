@@ -6,15 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, PR ouverte._
+_Mis à jour le 2026-11-05, après #2400._
 
-- **État** : correctif commité sur `fix/tetraedre-vue` (tests rouges sans, verts avec ; 315 tests espace verts).
-- **Prochaine action** : CI verte → merge → ligne 15 de
-  `outils-manquants.md` en « Livré » ; puis B3 (variation tétraèdre de TSPE-334), PR à part, après `deploy:prod`.
-- **En attente de David** : rien (B2 validé sur aperçu).
-- **Pièges en cours** : cote de la hauteur (`cotes:`) traversée par une arête (déjà sur `main`, en pire) → nouvelle ligne de `outils-manquants.md` à écrire au merge ; tétraèdre plus haut que large → G et milieu de AC à ~0,3 cm (limite de l'échelle à 4 cm,
-  aucun angle ne la lève) ; préférer hauteur ≤ côté dans les modèles.
-- **Worktree / branche** : `../ubumaths-wt-tetraedre-vue`, `fix/tetraedre-vue`.
+- **État** : #2400 mergée (vue du tétraèdre + cote du côté sur [BC]), pas encore en prod ; ligne 15 de
+  `outils-manquants.md` passée dans « Livré » ; cote de la hauteur notée en nouvelle ligne (hors périmètre).
+- **Prochaine action** : B3 — variation tétraèdre de TSPE-334 (`7ce9936b-…`, encore brouillon), **après le
+  `deploy:prod`** qui livre #2392 et #2400 ; nouvelle branche depuis `origin/main` (`content/tspe-334-tetraedre`).
+  Hauteur ≤ côté (ex. `pyramide triangle 4 3.27`), sans `cotes:`.
+- **En attente de David** : `pnpm deploy:prod` (sur sa demande), puis relecture de TSPE-334.
+- **Pièges en cours** : tétraèdre plus haut que large → G et milieu de AC à ~0,3 cm.
+- **Worktree / branche** : aucun (supprimés après #2400).
 
 ---
 
