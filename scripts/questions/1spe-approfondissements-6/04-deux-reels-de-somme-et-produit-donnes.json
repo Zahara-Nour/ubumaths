@@ -1,4 +1,5 @@
 {
+	"id": "6ace8b95-c146-49d1-a6d1-ff02f0a9ad81",
 	"title": "Deux réels de somme et de produit donnés",
 	"description": "Deux réels de somme s et de produit p, racines de x² − sx + p : coefficient du trinôme, plus grand des deux réels, cas Δ < 0 (case choix)",
 	"grades": ["1_SPE"],

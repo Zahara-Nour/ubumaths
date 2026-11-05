@@ -1,4 +1,5 @@
 {
+	"id": "d25bd762-1288-456d-88f8-b8087819d45e",
 	"title": "Résoudre une équation de degré 3",
 	"description": "Équation P(x) = 0 de degré 3 dont une racine est donnée : autres solutions (factorisation, discriminant du facteur du second degré), nombre de solutions quand Δ < 0 ou Δ = 0",
 	"grades": ["1_SPE"],
