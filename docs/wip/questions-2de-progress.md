@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2389 (nœud + tag du lot 12 b-2)._
+_Mis à jour le 2026-11-05, après #2389 (nœud + tag du lot 12 b-2, appliqués) et la page à cocher._
 
-- **État** : lots 1 à 9, 12 a et 12 b-1 publiés. 12 b-2 : 5 brouillons en prod (§ 80), migration nœud +
-  tag `20261105055243` mergée (#2389), **pas encore appliquée** (`db:migrate`). Ordre ensuite : 10, puis 11.
-- **Prochaine action** : `db:migrate` depuis le dépôt principal (4 conditions réunies, § 80) quand David
-  a tranché pour `20261105055111` (CP-060, autre session) ; vérifier au MCP ; page à cocher ; `publier-lot`.
-- **En attente de David** : qui applique `20261105055111` (CP-060), en attente devant la nôtre.
+- **État** : lots 1 à 9, 12 a et 12 b-1 publiés. 12 b-2 : 5 brouillons en prod, rangés et tagués
+  (`db:migrate` du 2026-11-05, vérifié), page à cocher publiée (§ 80). Ordre ensuite : 10, puis 11.
+- **Prochaine action** : lire les verdicts de la page (https://claude.ai/artifact/EkrPRK4N89X3vXS8fmXu1V) ;
+  corriger les « à revoir » ; `publier-lot` par David ; vérifier `published` au MCP. Puis le lot 10.
+- **En attente de David** : la relecture de la page à cocher du 12 b-2.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `Doc-inchangée:` dans le commit d'une
   migration ; `0..3;±` refusé (`-3..3`) ; une autre session écrit aussi dans ce journal : `git pull` ;
@@ -2069,3 +2069,8 @@ vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12
   Contenu mergé sans défaut ; la garde ne tourne que sur les PR, `main` n'en souffre pas.
 - `db:migrate` suspendu : `20261105055111_questions_cp060_rangement_tag` (#2388, autre session) attend
   aussi en prod et partirait avec la nôtre.
+- `db:migrate` lancé par David depuis le dépôt principal (avec `055111` CP-060 et `060921` 1re spé).
+  MCP (prod) : migration enregistrée ; 5 brouillons sur leur nœud, un point chacun, `updated_at` inchangé
+  (heure de création).
+- Page à cocher (`page-a-cocher.ts`, `.env` de prod ; 5 fiches, aucune alerte ; capacité `db`, `verdicts`
+  vide à la publication) : https://claude.ai/artifact/EkrPRK4N89X3vXS8fmXu1V
