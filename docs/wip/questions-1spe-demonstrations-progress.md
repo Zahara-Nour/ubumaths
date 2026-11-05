@@ -429,3 +429,12 @@ ranger du 302.
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-7 --publier`
+
+### Lot 7 en prod : brouillons, puis migration nœud + tag (2026-11-05)
+
+David a lancé `create-questions --publier` après #2396. Relevé prod (MCP) : 3 brouillons {1_SPE}, sans nœud ni tag :
+`57e21851` unicité (300), `98acee83` exp(x + y) (301), `14e1838e` positive et croissante (302) ; aucun modèle déjà
+tagué sur ces points. Ids écrits dans les JSON du lot (cette PR), `git restore` fait dans le dépôt principal. Migration
+`20261105123948_questions_1spe_approfondissements_7_rangement_tags` (gabarit lot 6, aucune sous-notion neuve ; 300 sur
+« dérivée », D5, son point restant sur la notion), test `questions-1spe-approfondissements-7-rangement-tags` 12/12 vert,
+rouge sans la migration (6 rouges, la suite principale ne s'exécute pas). Accès : Q5 de D3, personne.

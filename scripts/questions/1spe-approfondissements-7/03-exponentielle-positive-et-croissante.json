@@ -1,4 +1,5 @@
 {
+	"id": "14e1838e-7acc-4c7b-9d2b-888820e0555a",
 	"title": "Démontrer que exp est strictement positive et croissante",
 	"description": "exp(x) = (exp(x/2))² (case), exp(x/2) ≠ 0 donc exp(x) > 0 (case choix), exp′ = exp > 0 donc exp strictement croissante (case choix), démonstration (étapes à ranger)",
 	"grades": ["1_SPE"],

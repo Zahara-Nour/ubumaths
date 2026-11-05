@@ -1,4 +1,5 @@
 {
+	"id": "57e21851-913c-430d-ae8c-b18b45abe38c",
 	"title": "Démontrer l'unicité de l'exponentielle",
 	"description": "Unicité d'une fonction g dérivable sur ℝ avec g′ = g et g(0) = 1 : exp(x)exp(−x) = 1, quotient g/exp défini (case choix), de dérivée nulle, démonstration (étapes à ranger)",
 	"grades": ["1_SPE"],
