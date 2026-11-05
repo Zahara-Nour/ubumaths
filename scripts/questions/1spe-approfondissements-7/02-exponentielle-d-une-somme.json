@@ -1,4 +1,5 @@
 {
+	"id": "98acee83-c7a5-4cd3-b79f-bebfc45b0cff",
 	"title": "Démontrer que exp(x + y) = exp(x) exp(y)",
 	"description": "y fixé, h(x) = exp(x + y)/exp(y) : définie (case choix), h(0), h′ = h (case choix), conclusion par l'unicité, démonstration (étapes à ranger)",
 	"grades": ["1_SPE"],
