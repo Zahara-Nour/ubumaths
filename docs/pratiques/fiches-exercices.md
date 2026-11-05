@@ -684,7 +684,7 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   ~35 caractères ou de 2 « = » ; jamais de `\quad`.
 - Tableaux markdown : formules des cellules en `$…$` uniquement ; au plus 6 colonnes de valeurs.
 - Arbre pondéré : bloc ` ```probtree ` (une branche par ligne, `étiquette:probabilité`, enfants
-  indentés de 2 espaces) ; 3 épreuves au plus en arbre complet ; sous une sous-question, indenter
+  indentés de 2 espaces ; étiquette indicée `G_1`, mot en texte droit) ; 3 épreuves au plus en arbre complet ; sous une sous-question, indenter
   le bloc de 6 espaces.
 - Python : bloc ` ```python ` ; dans le texte, identifiants entre backticks (`` `moyenne(n)` ``).
 - **Illustrations** (2026-10-12) : schémas SVG dessinés à la main, convertis en PNG de 1 200 px

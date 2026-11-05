@@ -53,3 +53,20 @@ describe('arbre pondéré — PDF', () => {
 		expect(code).toContain('reflow: true');
 	});
 });
+
+describe('arbre pondéré — PDF, étiquettes indicées (2026-11-05)', () => {
+	it('G_1 : G indice 1', () => {
+		const code = typst(`G_1:0.4\nG_2:0.6`);
+		expect(code).toContain('$G_1$');
+		expect(code).toContain('$G_2$');
+	});
+});
+
+describe('arbre pondéré — PDF, mots (2026-11-05)', () => {
+	it('mot seul ou indicé : en texte droit, pas en lettres italiques espacées', () => {
+		const code = typst(`Pile:0.5\nMalade_1:0.5`);
+		expect(code).not.toContain('P i l e');
+		expect(code).toContain('"Pile"');
+		expect(code).toContain('"Malade"_1');
+	});
+});
