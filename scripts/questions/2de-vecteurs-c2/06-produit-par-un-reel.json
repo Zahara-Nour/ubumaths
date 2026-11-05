@@ -1,4 +1,5 @@
 {
+	"id": "8d099a87-ac26-4c0c-98fd-39cf18be69f2",
 	"title": "Produit d'un vecteur par un réel",
 	"description": "Reconnaître la flèche de ku parmi d'autres, puis lire k quand v = ku sont dessinés (pièges : signe de k oublié, une seule coordonnée multipliée, k et 1/k échangés)",
 	"grades": ["2"],

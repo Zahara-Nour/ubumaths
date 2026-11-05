@@ -1,4 +1,5 @@
 {
+	"id": "11bce2bf-3ec3-46b6-a333-8f5b1e430c89",
 	"title": "Périmètre d'un polygone",
 	"description": "Calculer le périmètre d'un triangle, d'un quadrilatère, d'un pentagone, d'un polygone régulier, puis avec des longueurs en cm et en mm (pièges : un côté oublié, nombre de côtés, unités mêlées)",
 	"grades": ["2"],
