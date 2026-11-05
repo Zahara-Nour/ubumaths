@@ -8,15 +8,15 @@
 
 _Mis à jour le 2026-11-05, après la publication du lot 10 (§ 86)._
 
-- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), 11 A écrit (§ 88, PR des fichiers).
-- **Prochaine action** : merger la PR du 11 A, puis David lance `create-questions --publier` sur
-  `2de-programmes-11a` ; écrire le 11 B (229, 416, 232, 233, 417) sur une branche neuve.
+- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), 11 A en brouillon en prod (§ 89) ; 11 B en écriture.
+- **Prochaine action** : PR des fichiers du 11 B (229, 416, 232, 233, 417), puis brouillons, migration de
+  rangement 11 A + 11 B, page à cocher.
 - **En attente de David** : rien.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
   dossier, variables Supabase locales passées à la main (il ne lit que `.env` = prod) ; lettre ≠
   étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lot11a`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lot11b`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2293,3 +2293,10 @@ une migration, une page à cocher ; ← seulement dans 2-219).
   recalculées de même (0 écart) ; LaTeX 3 599 formules, 0 problème. Joués en local (aperçu admin, Chrome) :
   `while` (n = 3, c = 1600) « juste », corrigé lisible ; condition `n % 8 = 0` « faux », bonne réponse
   montrée ; algorithme en ← bien rendu.
+
+## 89. Lot 11 A en brouillon en prod (2026-11-05)
+
+- #2411 mergée. David a lancé `create-questions --publier` sur `2de-programmes-11a` : b7785962 (2-218),
+  b3db9b3c (2-223), 1bb39e2d (2-219), bfdb42c0 (2-220), 3f4c0e5f (2-224), 5bd3323d (2-221), e2cc8a48 (2-415),
+  2ffa6d80 (2-222), 3cacefc5 (2-413), 8f0bbf63 (2-228) ; MCP : brouillons, `grades = ['2']`, niveaux du § 88,
+  sans nœud ni tag. Ids commités sur la branche du 11 B.

@@ -1,4 +1,5 @@
 {
+	"id": "b7785962-b3a1-491b-988d-fcff7707ef29",
 	"title": "Type d'une variable Python",
 	"description": "Type de x après x = 4, x = 4.5, x = 8 / 2, x = \"4\", x = 4 < 7, x = 4 * 7 (int, float, str, bool) ; reconnaître les affectations qui donnent un flottant",
 	"grades": ["2"],

@@ -1,4 +1,5 @@
 {
+	"id": "2ffa6d80-d62d-4de5-87f1-fcbb3fea7438",
 	"title": "Boucle bornée (for)",
 	"description": "Valeur de s après for i in range(5): s = s + i, range(1, 6), s = s + 3 ; x multiplié par 2 ou 3 à chaque tour",
 	"grades": ["2"],

@@ -1,4 +1,5 @@
 {
+	"id": "b3db9b3c-67e3-4031-8489-80836c988654",
 	"title": "Choisir le type d'une variable",
 	"description": "Entier, flottant ou chaîne de caractères pour un nombre d'élèves, un prix, un nom de ville, une taille, une moyenne, un mot de passe ; erreur de age = \"16\" puis age + 1",
 	"grades": ["2"],
