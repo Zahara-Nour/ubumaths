@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, PR #2410 ouverte, revue traitée._
+_Mis à jour le 2026-11-05, après #2410._
 
-- **État** : PR #2410 ouverte, revue `code-reviewer` traitée (4 findings corrigés) · **Prochaine action** : CI verte → merge ; essai par David dans l'éditeur de correction · **À trancher par David** : bouton = 1 ligne (au lieu de 2 vides) · **En attente de David** : essai réel (Cmd+Entrée dans un bloc, bouton « Calcul aligné ») · **Pièges en cours** : voir « Pièges » · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` · `feat/calcul-aligne`
+- **État** : #2410 mergée (Cmd/Ctrl/Alt+Entrée, Retour arrière sur ligne vide, bouton « Calcul aligné », `ou`/`et`) ; pas en prod tant que David ne lance pas `deploy:prod` · **Prochaine action** : selon l'essai de David · **En attente de David** : essai réel dans l'éditeur de correction ; trancher bouton = 1 ligne (fait) ou 2 lignes vides (prévu en phase 0) · **Pièges en cours** : voir « Pièges » · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` gardé (serveur de test 5176) jusqu'à l'essai ; branche distante supprimée
 
 ## Décisions de David (2026-11-05)
 
