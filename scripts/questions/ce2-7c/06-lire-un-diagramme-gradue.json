@@ -1,0 +1,472 @@
+{
+	"title": "Lis le diagramme en barres (axe gradué de 2 en 2, 5 en 5, 10 en 10)",
+	"description": "Lire une barre sur un axe gradué de 2 en 2, de 5 en 5, de 10 en 10, puis une barre entre deux traits (35 sur un axe de 10 en 10)",
+	"grades": ["CE2"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici le diagramme en barres « Sport préféré ».\n\n```barres\ntitre: Sport préféré\naxes: Sport ; Élèves\nFootball = {{a}}\nDanse = {{b}}\nJudo = {{c}}\nBasket = {{d}}\naxe: 0 à 30, de 2 en 2\n```\n\nCombien d'élèves ont choisi {{if:k==0|le football|{{if:k==1|la danse|{{if:k==2|le judo|le basket}}}}}} ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "2..15"
+				},
+				{
+					"name": "ub",
+					"expression": "2..15"
+				},
+				{
+					"name": "uc",
+					"expression": "2..15"
+				},
+				{
+					"name": "ud",
+					"expression": "2..15"
+				},
+				{
+					"name": "a",
+					"expression": "eval:2*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:2*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:2*uc"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*ud"
+				},
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre {{if:k==0|« Football »|{{if:k==1|« Danse »|{{if:k==2|« Judo »|« Basket »}}}}}}.",
+					"L'axe est gradué de $2$ en $2$ : chaque trait compte pour $2$ élèves.",
+					"Le haut de la barre arrive au trait ${{eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))}}$. {{if:k==0|Le football|{{if:k==1|La danse|{{if:k==2|Le judo|Le basket}}}}}} : ${{eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))}}$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "Voici le diagramme en barres « Fruit préféré ».\n\n```barres\ntitre: Fruit préféré\naxes: Fruit ; Élèves\nPomme = {{a}}\nBanane = {{b}}\nFraise = {{c}}\nOrange = {{d}}\naxe: 0 à 60, de 5 en 5\n```\n\nCombien d'élèves ont choisi {{if:k==0|la pomme|{{if:k==1|la banane|{{if:k==2|la fraise|l'orange}}}}}} ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "2..12"
+				},
+				{
+					"name": "ub",
+					"expression": "2..12"
+				},
+				{
+					"name": "uc",
+					"expression": "2..12"
+				},
+				{
+					"name": "ud",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "eval:5*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:5*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:5*uc"
+				},
+				{
+					"name": "d",
+					"expression": "eval:5*ud"
+				},
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre {{if:k==0|« Pomme »|{{if:k==1|« Banane »|{{if:k==2|« Fraise »|« Orange »}}}}}}.",
+					"L'axe est gradué de $5$ en $5$ : chaque trait compte pour $5$ élèves.",
+					"Le haut de la barre arrive au trait ${{eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))}}$. {{if:k==0|La pomme|{{if:k==1|La banane|{{if:k==2|La fraise|L'orange}}}}}} : ${{eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))}}$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "Voici le diagramme en barres « Animal préféré ».\n\n```barres\ntitre: Animal préféré\naxes: Animal ; Élèves\nChat = {{a}}\nChien = {{b}}\nLapin = {{c}}\nPoisson = {{d}}\nCheval = {{g}}\naxe: 0 à 100, de 10 en 10\n```\n\nCombien d'élèves ont choisi {{if:k==0|le chat|{{if:k==1|le chien|{{if:k==2|le lapin|{{if:k==3|le poisson|le cheval}}}}}}}} ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "2..10"
+				},
+				{
+					"name": "ub",
+					"expression": "2..10"
+				},
+				{
+					"name": "uc",
+					"expression": "2..10"
+				},
+				{
+					"name": "ud",
+					"expression": "2..10"
+				},
+				{
+					"name": "ug",
+					"expression": "2..10"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:10*uc"
+				},
+				{
+					"name": "d",
+					"expression": "eval:10*ud"
+				},
+				{
+					"name": "g",
+					"expression": "eval:10*ug"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((a)*(k-1)*(k-2)*(k-3)*(k-4)/(24)+(b)*(k-0)*(k-2)*(k-3)*(k-4)/(-6)+(c)*(k-0)*(k-1)*(k-3)*(k-4)/(4)+(d)*(k-0)*(k-1)*(k-2)*(k-4)/(-6)+(g)*(k-0)*(k-1)*(k-2)*(k-3)/(24))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre {{if:k==0|« Chat »|{{if:k==1|« Chien »|{{if:k==2|« Lapin »|{{if:k==3|« Poisson »|« Cheval »}}}}}}}}.",
+					"L'axe est gradué de $10$ en $10$ : chaque trait compte pour $10$ élèves.",
+					"Le haut de la barre arrive au trait ${{eval:((a)*(k-1)*(k-2)*(k-3)*(k-4)/(24)+(b)*(k-0)*(k-2)*(k-3)*(k-4)/(-6)+(c)*(k-0)*(k-1)*(k-3)*(k-4)/(4)+(d)*(k-0)*(k-1)*(k-2)*(k-4)/(-6)+(g)*(k-0)*(k-1)*(k-2)*(k-3)/(24))}}$. {{if:k==0|Le chat|{{if:k==1|Le chien|{{if:k==2|Le lapin|{{if:k==3|Le poisson|Le cheval}}}}}}}} : ${{eval:((a)*(k-1)*(k-2)*(k-3)*(k-4)/(24)+(b)*(k-0)*(k-2)*(k-3)*(k-4)/(-6)+(c)*(k-0)*(k-1)*(k-3)*(k-4)/(4)+(d)*(k-0)*(k-1)*(k-2)*(k-4)/(-6)+(g)*(k-0)*(k-1)*(k-2)*(k-3)/(24))}}$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "Voici le diagramme en barres « Fruit préféré ».\n\n```barres\ntitre: Fruit préféré\naxes: Fruit ; Élèves\nPomme = {{a}}\nBanane = {{b}}\nFraise = {{c}}\nOrange = {{d}}\naxe: 0 à 80, de 10 en 10\n```\n\nCombien d'élèves ont choisi {{if:k==0|la pomme|{{if:k==1|la banane|{{if:k==2|la fraise|l'orange}}}}}} ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "1..7"
+				},
+				{
+					"name": "ub",
+					"expression": "1..7"
+				},
+				{
+					"name": "uc",
+					"expression": "1..7"
+				},
+				{
+					"name": "ud",
+					"expression": "1..7"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*ua+5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*ub+5"
+				},
+				{
+					"name": "c",
+					"expression": "eval:10*uc+5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:10*ud+5"
+				},
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre {{if:k==0|« Pomme »|{{if:k==1|« Banane »|{{if:k==2|« Fraise »|« Orange »}}}}}}.",
+					"L'axe est gradué de $10$ en $10$ : chaque trait compte pour $10$ élèves.",
+					"Le haut de la barre est au milieu, entre deux traits : ${{eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))}}$. {{if:k==0|La pomme|{{if:k==1|La banane|{{if:k==2|La fraise|L'orange}}}}}} : ${{eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))}}$ élèves."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "De 2 en 2 : la danse, 14",
+			"variationIndex": 0,
+			"variables": {
+				"a": "22",
+				"ua": "11",
+				"b": "14",
+				"ub": "7",
+				"c": "8",
+				"uc": "4",
+				"d": "26",
+				"ud": "13",
+				"k": "1",
+				"n": "14"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : traits comptés de 1 en 1 (7)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "22",
+				"ua": "11",
+				"b": "14",
+				"ub": "7",
+				"c": "8",
+				"uc": "4",
+				"d": "26",
+				"ud": "13",
+				"k": "1",
+				"n": "14"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le basket, 26",
+			"variationIndex": 0,
+			"variables": {
+				"a": "22",
+				"ua": "11",
+				"b": "14",
+				"ub": "7",
+				"c": "8",
+				"uc": "4",
+				"d": "26",
+				"ud": "13",
+				"k": "3",
+				"n": "26"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "De 5 en 5 : la fraise, 35",
+			"variationIndex": 1,
+			"variables": {
+				"a": "20",
+				"ua": "4",
+				"b": "45",
+				"ub": "9",
+				"c": "35",
+				"uc": "7",
+				"d": "10",
+				"ud": "2",
+				"k": "2",
+				"n": "35"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 traits lus comme 7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "20",
+				"ua": "4",
+				"b": "45",
+				"ub": "9",
+				"c": "35",
+				"uc": "7",
+				"d": "10",
+				"ud": "2",
+				"k": "2",
+				"n": "35"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : barre voisine (45)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "20",
+				"ua": "4",
+				"b": "45",
+				"ub": "9",
+				"c": "35",
+				"uc": "7",
+				"d": "10",
+				"ud": "2",
+				"k": "2",
+				"n": "35"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "De 10 en 10 : le cheval, 80",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"ua": "4",
+				"b": "60",
+				"ub": "6",
+				"c": "20",
+				"uc": "2",
+				"d": "30",
+				"ud": "3",
+				"g": "80",
+				"ug": "8",
+				"k": "4",
+				"n": "80"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 (le nombre de traits)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"ua": "4",
+				"b": "60",
+				"ub": "6",
+				"c": "20",
+				"uc": "2",
+				"d": "30",
+				"ud": "3",
+				"g": "80",
+				"ug": "8",
+				"k": "4",
+				"n": "80"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Entre deux traits : la banane, 45",
+			"variationIndex": 3,
+			"variables": {
+				"a": "25",
+				"ua": "2",
+				"b": "45",
+				"ub": "4",
+				"c": "75",
+				"uc": "7",
+				"d": "15",
+				"ud": "1",
+				"k": "1",
+				"n": "45"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le trait du dessous (40)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "25",
+				"ua": "2",
+				"b": "45",
+				"ub": "4",
+				"c": "75",
+				"uc": "7",
+				"d": "15",
+				"ud": "1",
+				"k": "1",
+				"n": "45"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le trait du dessus (50)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "25",
+				"ua": "2",
+				"b": "45",
+				"ub": "4",
+				"c": "75",
+				"uc": "7",
+				"d": "15",
+				"ud": "1",
+				"k": "1",
+				"n": "45"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

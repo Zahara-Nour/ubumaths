@@ -6,17 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après la publication du lot 7b._
+_Mis à jour le 2026-11-05, lot 7c écrit (PR des fichiers à merger)._
 
-- **État** : lots 1 à 7b en prod. Lot 7b (horloge + droite graduée, 9 modèles) rangé (#2387, `db:migrate`) et PUBLIÉ le
-  2026-11-05 à 07:07 (relevé MCP : `published`, même `updated_at` pour les 9), avant l'essai à l'écran de 02, 03, 05-08.
-- **Prochaine action** : 7c (statistiques), phase 0 à faire valider ; worktree neuf `../ubumaths-wt-questions-ce2`.
-- **En attente de David** : relecture après coup des 9 fiches sur https://claude.ai/artifact/JdCbHActB2vzgTsasDxN4b (02, 03,
-  05-08 surtout ; 08 et 09 : bloc `line` non dessiné par la page, à jouer dans l'aperçu) ; un modèle faux → repasser en brouillon.
-- **Pièges en cours** : jamais de variable `e` (Euler) ; `sonde-horloges.ts` à relancer si on retouche un modèle ; un tag
-  doit être sur le nœud de son point ; worktree sans lien Supabase → copier `../ubumaths/supabase/.temp` avant `db:migrate` ;
+- **État** : lots 1 à 7b en prod (7b publié avant l'essai de 02, 03, 05-08 ; page à cocher après coup :
+  https://claude.ai/artifact/JdCbHActB2vzgTsasDxN4b). Lot 7c (statistiques, 8 modèles) écrit : simulation verte (76 specs),
+  essayé en base locale (05, 08, 04, 06 joués).
+- **Prochaine action** : merger la PR des fichiers ; puis David lance `create-questions --publier` (brouillons en prod),
+  commit des `id`, migration nœud + point (gabarit 7b).
+- **En attente de David** : relecture du 7b sur la page à cocher ; `! cd ../ubumaths-wt-questions-ce2 && pnpm tsx
+scripts/create-questions.ts --dir scripts/questions/ce2-7c --publier` après le merge.
+- **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point (076 : nœud parent
+  « Représenter des données ») ; `axe: à choisir` → la 1re réponse est l'échelle ; un axe trop haut écrase les petites barres ;
   commitlint : sujet en minuscule.
-- **Worktree / branche** : aucun (worktree et `feat/questions-ce2-7b-rangement` supprimés le 2026-11-05).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7c`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -641,3 +643,38 @@ de durées noté, publiés intacts) ; horloge « digitale » = texte + `cadran: 
   sans que 02, 03, 05-08 aient été joués à l'écran. Page à cocher publiée après coup :
   https://claude.ai/artifact/JdCbHActB2vzgTsasDxN4b (capacité `db`, 9 fiches ; alerte « bloc `line` non dessiné » sur 08 et
   09). Worktree et branche supprimés.
+
+## 13. Lot 7c — statistiques (phase 0, proposée le 2026-11-05, à valider)
+
+Points CE2-074, 075, 076, 083, 096, 097, sans modèle au relevé MCP du 2026-11-05 ; **082 aussi** (classé « outil neuf :
+barres à monter » au § 3, mais l'outil est en prod depuis le 2026-10-28 : `placer:` du bloc `barres`, et `axe: à choisir`
+pour l'échelle adaptée du BO). Nœuds existants, aucun à créer :
+« Représenter des données › tableaux » (074 ; CP 1, CE1 2, 6e 1 et 3, 5e 3-5), « › tableau à double entrée » (075, 096 ;
+CP 1-2, CE1 3-4), « › diagrammes en barres » (083, 097, 082 ; CE1 1-3, 5e 4-5), « Statistiques › Représenter des données »
+(076 : son point est sur le nœud parent ; 2de 1-2). Le CE1 (lot `ce1-7`) a déjà la cantine et le sport préféré : le CE2
+monte les nombres, gradue l'axe de 2 en 2, 5 en 5, 10 en 10, et ajoute les totaux.
+
+| Fichier                               | Point | Nœud · niveau               | Variations                                                                                |
+| ------------------------------------- | ----- | --------------------------- | ----------------------------------------------------------------------------------------- |
+| `01-ranger-les-donnees-en-tableau`    | 074   | Tableaux · 3                | liste de 15 à 25 réponses (frères et sœurs, âge) → effectifs du tableau en cases `$?$`    |
+| `02-lire-un-tableau-double-entree`    | 075   | Tableau double entrée · 5   | 3 × 4, nombres jusqu'à 200 ; une case nommée par sa ligne et sa colonne                   |
+| `03-interpreter-un-tableau`           | 096   | Tableau double entrée · 6   | le jour où il y a le plus / le moins (case choix), combien de plus, sans totaux           |
+| `04-completer-un-tableau-avec-totaux` | 076   | Représenter des données · 1 | `totaux: oui`, cases cachées : une case, un total, une case retrouvée par le total        |
+| `05-completer-une-barre-par-le-total` | 076   | Représenter des données · 2 | total donné (175 élèves, BO) ; barre manquante à construire (`placer:`), puis à calculer  |
+| `06-lire-un-diagramme-gradue`         | 083   | Diagrammes en barres · 4    | axe de 2 en 2, 5 en 5, 10 en 10 ; barre sur une graduation, puis entre deux (5 en 5 → 35) |
+| `07-comparer-sur-un-diagramme`        | 097   | Diagrammes en barres · 5    | combien de plus (BO : foot / basket), combien en tout, le plus choisi (case choix)        |
+| `08-construire-un-diagramme-echelle`  | 082   | Diagrammes en barres · 6    | tableau donné, effectifs jusqu'à 60 ; `axe: à choisir` puis barres à monter               |
+
+Erreurs typiques des `testSpecs` : graduation lue comme un pas de 1 (axe de 5 en 5 : 7 pour 35) ; total de ligne pris pour
+une case ; écart lu comme la plus grande barre ; échelle trop fine (barres qui ne rentrent pas).
+
+**Question d'accès** : personne ne lit rien de plus (brouillons, admin seul) ; la migration nœud + tag ne change aucune règle.
+
+Décisions (David, « je suis tes recos », 2026-11-05) : niveaux partagés (diagrammes 4-6 avec la 5e ; 076 aux niveaux 1-2
+avec la 2de, sur le nœud parent) ; 082 dans ce lot (outil en prod) plutôt qu'en « outils neufs ».
+
+- 2026-11-05 : 8 modèles écrits (`docs/wip/questions/lot-ce2-7c.py`, gabarit `lot-ce1-7.py`, sans theme / domain /
+  subdomain), simulation verte (76 specs). Essai en base locale (`.env.local`, copie du dossier pour ne pas écrire les `id`
+  locaux dans les fichiers), aperçu admin : 05 barre du basket montée à 45 → « Juste » ; 08 échelle 5 → axe 0-50 ; 04 deux cases
+  cachées (ligne Bus, total des filles) bien rendues ; 06 « entre deux traits » : une barre de 5 sur un axe de 100 illisible →
+  effectifs 15 à 75, axe 0-80. 08 : la plus grande barre était toujours la première → toutes tirées, condition sur `max`.

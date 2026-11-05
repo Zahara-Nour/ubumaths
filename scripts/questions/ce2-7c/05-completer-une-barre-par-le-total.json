@@ -1,0 +1,260 @@
+{
+	"title": "Retrouve la barre qui manque grâce au total",
+	"description": "Effectif total donné (175 élèves, BO) : construire la barre qui manque (axe de 5 en 5), puis calculer l'effectif d'un sport absent du diagramme (axe de 10 en 10)",
+	"grades": ["CE2"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les ${{T}}$ élèves de l'école ont tous choisi un sport. Le diagramme n'est pas fini : il manque la barre du basket.\n\n```barres\ntitre: Sport préféré\naxes: Sport ; Élèves\nFootball = {{a}}\nDanse = {{b}}\nJudo = {{c}}\nBasket = {{d}}\naxe: 0 à 80, de 5 en 5\nplacer: Basket\n```\n\nConstruis la barre du basket.",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "4..14"
+				},
+				{
+					"name": "ub",
+					"expression": "4..14"
+				},
+				{
+					"name": "uc",
+					"expression": "4..14"
+				},
+				{
+					"name": "ud",
+					"expression": "3..14"
+				},
+				{
+					"name": "a",
+					"expression": "eval:5*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:5*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:5*uc"
+				},
+				{
+					"name": "d",
+					"expression": "eval:5*ud"
+				},
+				{
+					"name": "T",
+					"expression": "eval:a+b+c+d"
+				}
+			],
+			"conditions": ["T >= 120", "T <= 200"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Les trois barres tracées : ${{a}} + {{b}} + {{c}} = {{eval:a+b+c}}$ élèves.",
+					"Le basket : ${{T}} - {{eval:a+b+c}} = {{d}}$ élèves.",
+					"La barre du basket monte jusqu'à ${{d}}$ (l'axe est gradué de $5$ en $5$)."
+				]
+			}
+		},
+		{
+			"statement": "Les ${{T}}$ élèves de l'école ont tous choisi un sport. Le diagramme montre trois sports ; les autres élèves ont choisi le basket.\n\n```barres\ntitre: Sport préféré\naxes: Sport ; Élèves\nFootball = {{a}}\nDanse = {{b}}\nJudo = {{c}}\naxe: 0 à 100, de 10 en 10\n```\n\nCombien d'élèves ont choisi le basket ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "2..10"
+				},
+				{
+					"name": "ub",
+					"expression": "2..10"
+				},
+				{
+					"name": "uc",
+					"expression": "2..10"
+				},
+				{
+					"name": "d",
+					"expression": "15..90"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:10*uc"
+				},
+				{
+					"name": "T",
+					"expression": "eval:a+b+c+d"
+				}
+			],
+			"conditions": ["T >= 150", "T <= 250"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit les trois barres : ${{a}}$, ${{b}}$ et ${{c}}$.",
+					"Ensemble : ${{a}} + {{b}} + {{c}} = {{eval:a+b+c}}$ élèves.",
+					"Le basket : ${{T}} - {{eval:a+b+c}} = {{d}}$ élèves."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 175 élèves, 50 + 35 + 60 → basket 30",
+			"variationIndex": 0,
+			"variables": {
+				"ua": "10",
+				"ub": "7",
+				"uc": "12",
+				"ud": "6",
+				"a": "50",
+				"b": "35",
+				"c": "60",
+				"d": "30",
+				"T": "175"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la barre à 35 (un trait de trop)",
+			"variationIndex": 0,
+			"variables": {
+				"ua": "10",
+				"ub": "7",
+				"uc": "12",
+				"ud": "6",
+				"a": "50",
+				"b": "35",
+				"c": "60",
+				"d": "30",
+				"T": "175"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un trait de moins (25)",
+			"variationIndex": 0,
+			"variables": {
+				"ua": "10",
+				"ub": "7",
+				"uc": "12",
+				"ud": "6",
+				"a": "50",
+				"b": "35",
+				"c": "60",
+				"d": "30",
+				"T": "175"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "190 élèves : 45 + 70 + 25 → basket 50",
+			"variationIndex": 0,
+			"variables": {
+				"ua": "9",
+				"ub": "14",
+				"uc": "5",
+				"ud": "10",
+				"a": "45",
+				"b": "70",
+				"c": "25",
+				"d": "50",
+				"T": "190"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "200 élèves : 60 + 40 + 50 → basket 50",
+			"variationIndex": 1,
+			"variables": {
+				"ua": "6",
+				"ub": "4",
+				"uc": "5",
+				"a": "60",
+				"b": "40",
+				"c": "50",
+				"d": "50",
+				"T": "200"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les trois barres (150)",
+			"variationIndex": 1,
+			"variables": {
+				"ua": "6",
+				"ub": "4",
+				"uc": "5",
+				"a": "60",
+				"b": "40",
+				"c": "50",
+				"d": "50",
+				"T": "200"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le total (200)",
+			"variationIndex": 1,
+			"variables": {
+				"ua": "6",
+				"ub": "4",
+				"uc": "5",
+				"a": "60",
+				"b": "40",
+				"c": "50",
+				"d": "50",
+				"T": "200"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "175 élèves : 70 + 30 + 40 → basket 35",
+			"variationIndex": 1,
+			"variables": {
+				"ua": "7",
+				"ub": "3",
+				"uc": "4",
+				"a": "70",
+				"b": "30",
+				"c": "40",
+				"d": "35",
+				"T": "175"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
