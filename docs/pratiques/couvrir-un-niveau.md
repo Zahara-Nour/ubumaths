@@ -356,8 +356,8 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
   coupe la condition → `\lvert x\rvert`. `{{eval:…}}` peut rendre `\dfrac{1}{2}`, illisible dans un
   ` ```courbe ` ; `round(…, 1)` est refusé par `eval`. `$i$` nu est rendu `\imaginaryI`. Sur le cercle
   ` ```trig `, `{{p}}*pi/6` s'affiche sans simplification (précalculer la fraction). Étiquette de
-  ` ```probtree ` sans `\` écrite en texte (« G_1 ») → `\mathrm{G}_1` (ligne 11 d'
-  [outils-manquants.md](../wip/outils-manquants.md)).
+  ` ```probtree ` : `G_1` s'écrit tel quel (indicé à l'écran et dans le PDF depuis le 2026-11-05) ;
+  `\mathrm{G}_1` reste juste.
 - **`sonde-courbes` ne voit pas les courbes d'une case choix** : les relire dans l'aperçu.
 - **Tag : le point doit être sur le nœud du modèle OU sur sa notion** (`question_template_points_check_rules`) :
   une migration de tags écrite sans cette règle a vu 8 tags sur 13 refusés (Tle spé, Q3). Relever les

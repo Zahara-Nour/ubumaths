@@ -25,6 +25,7 @@
 		ProbTreeBranch
 	} from '$lib/ubumark/types/probability-tree';
 	import { toLocaleDecimal } from '$lib/utils/french-math';
+	import { probTreeLabelLatex } from '$lib/ubumark/utils/probtree-label';
 	import { readContentLocale } from '../content-locale';
 
 	interface Props {
@@ -385,7 +386,7 @@
 				if (traverse(branch.child, targetId)) {
 					// Found the path - add this branch's event label
 					const cleanLabel = branch.eventLabel.replace(/^\$|\$$/g, '');
-					eventLabels.unshift(wrapTextLabel(cleanLabel)); // prepend to keep order root->leaf
+					eventLabels.unshift(probTreeLabelLatex(cleanLabel)); // prepend to keep order root->leaf
 					return true;
 				}
 			}
@@ -401,19 +402,6 @@
 	}
 
 	/**
-	 * Wrap multi-letter text labels in \text{} for proper LaTeX rendering
-	 * Single letters or already LaTeX-formatted strings are left as-is
-	 */
-	function wrapTextLabel(label: string): string {
-		// Already contains LaTeX commands - leave as-is
-		if (label.includes('\\')) return label;
-		// Single character - leave as-is (will render as math variable)
-		if (label.length === 1) return label;
-		// Multi-letter word - wrap in \text{}
-		return `\\text{${label}}`;
-	}
-
-	/**
 	 * Get conditional probability notation P_A(B) for a branch
 	 * - First level (from root): P(B)
 	 * - Deeper levels: P_A(B) where A is parent event
@@ -422,7 +410,7 @@
 		const parentBranch = parentBranchMap.get(parentId);
 		// Clean event label for notation (remove $ markers if present)
 		const cleanChild = childEventLabel.replace(/^\$|\$$/g, '');
-		const wrappedChild = wrapTextLabel(cleanChild);
+		const wrappedChild = probTreeLabelLatex(cleanChild);
 
 		if (parentBranch === null || parentBranch === undefined) {
 			// First level - simple P(B)
@@ -430,7 +418,7 @@
 		}
 		// Deeper level - conditional P_A(B)
 		const cleanParent = parentBranch.eventLabel.replace(/^\$|\$$/g, '');
-		const wrappedParent = wrapTextLabel(cleanParent);
+		const wrappedParent = probTreeLabelLatex(cleanParent);
 		return `P_{${wrappedParent}}(${wrappedChild})`;
 	}
 
@@ -599,7 +587,7 @@
 			{#if rootPos}
 				<foreignObject x={rootPos.x} y={rootPos.y - 10} width={nodeLabelWidth} height="20">
 					<div class="pt-label pt-event-label pt-root-label">
-						<math-span>{toLatex(wrapTextLabel(node.config.rootLabel))}</math-span>
+						<math-span>{toLatex(probTreeLabelLatex(node.config.rootLabel))}</math-span>
 					</div>
 				</foreignObject>
 			{/if}
@@ -712,7 +700,7 @@
 							? (e) => handleEventLabelClick(e, branchData.branch.eventLabel)
 							: undefined}
 					>
-						<math-span>{toLatex(wrapTextLabel(branchData.branch.eventLabel))}</math-span>
+						<math-span>{toLatex(probTreeLabelLatex(branchData.branch.eventLabel))}</math-span>
 					</div>
 				</foreignObject>
 			</g>

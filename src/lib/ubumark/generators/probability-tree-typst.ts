@@ -17,6 +17,7 @@
 
 import type { ProbabilityTreeNode, ProbTreeNode } from '../types/probability-tree';
 import { convertLatexToTypstMath } from './typst-generator';
+import { probTreeLabelLatex } from '../utils/probtree-label';
 
 // ============================================================================
 // CONFIGURATION
@@ -265,7 +266,11 @@ function generateBranches(
 
 		// Event label at child position (centered in NODE_LABEL_WIDTH space)
 		// Add extra gap for leaf nodes to avoid labels being too close to branch ends
-		const eventLabel = formatTypstMath(branch.eventLabel, opts.language);
+		// Même lecture qu'à l'écran : `G_1` indicé, `Pile` en texte droit
+		const eventLabel = formatTypstMath(
+			probTreeLabelLatex(branch.eventLabel.trim().replace(/^\$|\$$/g, '')),
+			opts.language
+		);
 		const leafGap = branch.child.isLeaf ? LEAF_LABEL_GAP : 0;
 		const eventLabelX = childPos.x + leafGap + NODE_LABEL_WIDTH / 2;
 		lines.push(`  content((${eventLabelX}, ${childY}), $${eventLabel}$)`);
