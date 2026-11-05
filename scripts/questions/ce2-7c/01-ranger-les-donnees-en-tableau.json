@@ -1,4 +1,5 @@
 {
+	"id": "4b2272d7-2d46-4960-bafe-d1f1b232e093",
 	"title": "Range les données dans un tableau",
 	"description": "Compter une liste de réponses (frères et sœurs, âge, pointure ; 20 à 24 élèves) et remplir la colonne des effectifs, avec une ligne Total",
 	"grades": ["CE2"],

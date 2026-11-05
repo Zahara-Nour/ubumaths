@@ -1,4 +1,5 @@
 {
+	"id": "3a8899e8-a9f0-4932-9169-669b873457fa",
 	"title": "Choisis l'échelle et construis le diagramme",
 	"description": "Tableau des effectifs donné : choisir l'échelle (2, 5 ou 10 par graduation) puis monter toutes les barres",
 	"grades": ["CE2"],

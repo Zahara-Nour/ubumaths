@@ -1,4 +1,5 @@
 {
+	"id": "7e60148e-7695-4ba3-b0e5-0e18eaea1e95",
 	"title": "Lis le tableau à double entrée (trois lignes)",
 	"description": "Cantine (filles, garçons, adultes), bibliothèque (CE1, CE2, CM1) : une case, nombres jusqu'à 200, puis le total d'une colonne",
 	"grades": ["CE2"],

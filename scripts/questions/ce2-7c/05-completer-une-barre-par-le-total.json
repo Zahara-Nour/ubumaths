@@ -1,4 +1,5 @@
 {
+	"id": "7e5c1d35-c3f3-4d57-a2a4-37eee8a95729",
 	"title": "Retrouve la barre qui manque grâce au total",
 	"description": "Effectif total donné (175 élèves, BO) : construire la barre qui manque (axe de 5 en 5), puis calculer l'effectif d'un sport absent du diagramme (axe de 10 en 10)",
 	"grades": ["CE2"],
