@@ -1,4 +1,5 @@
 {
+	"id": "09007e44-463a-4d1f-ad89-c1e3979d9c1a",
 	"title": "Base orthonormée",
 	"description": "Dire si une base (i, j) est orthonormée, orthogonale seulement, ou ni l'une ni l'autre, sur quadrillage puis d'après les normes et l'angle (pièges : orthogonale lue orthonormée, normes 1 sans angle droit)",
 	"grades": ["2"],
