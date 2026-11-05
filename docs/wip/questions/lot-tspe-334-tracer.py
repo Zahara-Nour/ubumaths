@@ -2,7 +2,7 @@
 scripts/questions/tspe-334-tracer/ (chantier solide-vecteur, lot 3).
 
 Phase 0 validée par David le 2026-11-04 (« je suis tes reco », journal
-« docs/wip/solide-vecteur-progress.md », Lot 3) : un modèle, `T_SPE`, « Vecteurs, droites et plans de
+« docs/archive/wip/solide-vecteur-progress.md », Lot 3) : un modèle, `T_SPE`, « Vecteurs, droites et plans de
 l'espace › Sur une figure », niveau 6 ; réponse = le geste ` ```solide ` `tracer: vecteur …` (une case,
 `A/G`, jugée en 3D par le bloc : aucune réponse écrite ici).
 

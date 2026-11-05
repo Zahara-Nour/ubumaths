@@ -1,26 +1,23 @@
 # Chantier « solide-vecteur » — tracer un vecteur sur un solide
 
-> Origine : ligne 13 de [`outils-manquants.md`](outils-manquants.md) (« Tracer un vecteur sur un solide »),
+> Origine : ligne 13 de [`outils-manquants.md`](../../wip/outils-manquants.md) (« Tracer un vecteur sur un solide »),
 > pour TSPE-334 « Représenter des combinaisons linéaires de vecteurs donnés » (BO Tle spé p.6 ; supports : cube,
 > pavé, tétraèdre), classé C au lot 9 de terminale spé
-> ([`questions-tspe-lot9`](../archive/wip/questions-tspe-lot9-progress.md), Q2). Bloc concerné : ` ```solide `
-> ([ADR 0034](../adr/0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md), `docs/systeme/ubumark.md`
+> ([`questions-tspe-lot9`](questions-tspe-lot9-progress.md), Q2). Bloc concerné : ` ```solide `
+> ([ADR 0034](../../adr/0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md), `docs/systeme/ubumark.md`
 > § Solide en perspective cavalière). Modèle du geste : « Vecteur à tracer » du ` ```courbe ` (même doc).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2372._
+_Mis à jour le 2026-11-05, après #2392. **Chantier clos** (journal archivé)._
 
-- **État** : v0.69.0 en prod (outil complet) ; brouillon TSPE-334 (`7ce9936b-7835-4b99-9e2b-f3644f2956af`)
-  rangé sur « Géométrie > Espace > vecteurs de l'espace », tag TSPE-334 (#2372, `db:migrate` fait, vérifié MCP :
-  `draft`, `updated_at` intact).
-- **Prochaine action** : **David** relit le modèle en prod (`/dashboard/admin/questions/7ce9936b-7835-4b99-9e2b-f3644f2956af/preview`)
-  et le publie ; ensuite, clore le chantier (ligne 13 de `outils-manquants.md`, versement, archivage du journal).
-- **En attente de David** : relecture et publication du modèle.
-- **Pièges en cours** : le geste ne vise que des points connus en 3D ; tétraèdre illisible (ligne 15 de
-  `outils-manquants.md`) ; un point déclaré peut tomber sur un pointillé (vérifier le rendu).
-- **Worktree / branche** : `../ubumaths-wt-solide-vecteur`, `fix/solide-vecteur-bouton-extremite` (PR en cours :
-  bouton « Extrémité » retiré quand l'origine est imposée, `SolideGeste` et `CourbePlacer`).
+- **État** : outil complet en prod (v0.69.0) ; #2392 (bouton « Extrémité » retiré quand l'origine est imposée)
+  mergée, **pas encore en prod**. Doc versée : `docs/systeme/ubumark.md` § Solide (points, vecteurs, vecteur à
+  tracer), `docs/systeme/questions.md` ; ligne 13 de `outils-manquants.md` passée dans « Livré ».
+- **Reste à David** (noté dans `verifications-manuelles.md`) : après le prochain `deploy:prod`, relire le brouillon
+  TSPE-334 (`7ce9936b-7835-4b99-9e2b-f3644f2956af`, encore `draft` le 2026-11-05) et le publier.
+- **Suite possible** : vue du tétraèdre (ligne 15 de `outils-manquants.md`).
+- **Worktree / branche** : aucun (supprimés).
 
 ---
 

@@ -938,7 +938,7 @@ boule coupée : sans équateur. `cotes:` écrit la **distance du plan** (pavé :
 posés en tournant autour du point jusqu'à ne toucher aucune étiquette (`overlaps`). Nom accessible : « coupé
 par un plan », noms de la section et distance — **jamais la nature de la section** (réponse de 3e-020).
 
-**Points déclarés et vecteurs donnés** (chantier [solide-vecteur](../wip/solide-vecteur-progress.md), lot 1,
+**Points déclarés et vecteurs donnés** (chantier [solide-vecteur](../archive/wip/solide-vecteur-progress.md), lot 1,
 `solide-vecteurs.test.ts`) — polyèdres seulement, sommets nommés (`sommets:`) exigés. `points: I milieu AE, O
 centre ABCD` (`SolideSpec.points`, type `SolidePoint` : `name`, `of` = indices dont il est l'isobarycentre,
 `label`) : `milieu` de deux points distincts (sommets ou points **déjà** déclarés, `J milieu IG`), `centre`
@@ -957,7 +957,7 @@ Noms des points et des vecteurs posés par `firstFree` : sans toucher une étiqu
 Nom accessible : « point I milieu de [AE] », « vecteur AB », « vecteur u égal à AI ». PDF : trait `curve`,
 pointe `polygon(fill: black)`.
 
-**Vecteur à tracer** (chantier [solide-vecteur](../wip/solide-vecteur-progress.md), lot 2,
+**Vecteur à tracer** (chantier [solide-vecteur](../archive/wip/solide-vecteur-progress.md), lot 2,
 `solide-gestes.test.ts`) — geste de l'élève, `tracer: vecteur AB + AD + AE`, puis `depuis A` facultatif
 (origine imposée ; sans lui, origine libre : tout représentant est juste). Polyèdres seulement, sommets nommés
 exigés ; `vecteurs:` peut l'accompagner (vecteurs donnés dessinés). Combinaison : au plus `SOLIDE_MAX_TERMS` = 6
