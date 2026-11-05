@@ -1,0 +1,160 @@
+{
+	"title": "Négation d'une proposition",
+	"description": "Nier x > a, x ⩾ a, x < a, x ⩽ a (piège : x < a pour la négation de x > a) ; nier « MNP est rectangle », « n est pair », « (d) et (d') sont parallèles » (pièges : une autre propriété, double négation)",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Soit $x$ un réel. Quelle est la négation de la proposition « $x{{if:r==0|>|{{if:r==1|\\geqslant |{{if:r==2|<|\\leqslant }}}}}}{{a}}$ » ?\n\n```choix\n- $x{{if:r==0|\\leqslant |{{if:r==1|<|{{if:r==2|\\geqslant |>}}}}}}{{a}}$\n- $x{{if:r==0|<|{{if:r==1|\\leqslant |{{if:r==2|>|\\geqslant }}}}}}{{a}}$\n- $x\\neq{{a}}$\n- $x={{a}}$\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "-9..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **négation** d'une proposition est vraie exactement quand la proposition est fausse. Ce n'est pas « une autre propriété » : c'est « ne pas avoir la propriété ».",
+					"La proposition est fausse quand $x$ n'est pas {{if:r==0|strictement supérieur à|{{if:r==1|supérieur ou égal à|{{if:r==2|strictement inférieur à|inférieur ou égal à}}}}}} ${{a}}$. Le nombre ${{a}}$ lui-même la rend {{if:r==1|vraie|{{if:r==3|vraie|fausse}}}} : il doit donc être {{if:r==1|exclu de|{{if:r==3|exclu de|compris dans}}}} la négation.",
+					"La négation est $\\textcolor{{{color:primary.0}}}{x{{if:r==0|\\leqslant |{{if:r==1|<|{{if:r==2|\\geqslant |>}}}}}}{{a}}}$ (et non $x{{if:r==0|<|{{if:r==1|\\leqslant |{{if:r==2|>|\\geqslant }}}}}}{{a}}$)."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la négation de la proposition « {{if:t==0|le triangle $MNP$ est rectangle|{{if:t==1|l'entier $n$ est pair|les droites $(d)$ et $(d')$ sont parallèles}}}} » ?\n\n```choix\n- {{if:t==0|Le triangle $MNP$ n'est pas rectangle.|{{if:t==1|L'entier $n$ est impair.|Les droites $(d)$ et $(d')$ ne sont pas parallèles.}}}}\n- {{if:t==0|Le triangle $MNP$ est isocèle.|{{if:t==1|L'entier $n$ n'est pas impair.|Les droites $(d)$ et $(d')$ sont perpendiculaires.}}}}\n- {{if:t==0|Le triangle $MNP$ est équilatéral.|{{if:t==1|L'entier $n$ est un multiple de $3$.|Les droites $(d)$ et $(d')$ ne sont pas perpendiculaires.}}}}\n- {{if:t==0|Aucun triangle n'est rectangle.|{{if:t==1|L'entier $n$ est nul.|Les droites $(d)$ et $(d')$ sont confondues.}}}}\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **négation** d'une proposition est vraie exactement quand la proposition est fausse. Ce n'est pas « une autre propriété » : c'est « ne pas avoir la propriété ».",
+					"{{if:t==0|Le contraire de « est rectangle » est « **n'est pas** rectangle ». Un triangle isocèle peut être rectangle : « isocèle » n'est pas la négation.|{{if:t==1|Un entier qui n'est pas pair est **impair**. « $n$ n'est pas impair » veut dire « $n$ est pair » : c'est la proposition elle-même.|Le contraire de « sont parallèles » est « **ne sont pas** parallèles » (elles sont alors sécantes). Deux droites perpendiculaires ne sont pas parallèles, mais deux droites non parallèles ne sont pas toujours perpendiculaires.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Non (x > 3) : x ⩽ 3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0",
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x < 3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0",
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non (x ⩽ −2) : x > −2",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"a": "-2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x ⩾ −2",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"a": "-2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "N'est pas rectangle",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : isocèle",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Impair",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : double négation",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : perpendiculaires",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

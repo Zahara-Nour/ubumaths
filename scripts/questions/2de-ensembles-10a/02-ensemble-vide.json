@@ -1,4 +1,5 @@
 {
+	"id": "e7db99fc-d513-4979-8084-e1caa0279735",
 	"title": "L'ensemble vide",
 	"description": "S = ∅ pour x² = −4 ou 3x + 7 = 3x + 2, S = {0} pour x² = 0, S = ℝ pour une identité ; A ∩ B vide ou non (piège : {0} pris pour ∅)",
 	"grades": ["2"],

@@ -1,0 +1,208 @@
+{
+	"title": "Formuler une implication",
+	"description": "Écrire une propriété du cours (diagonales du rectangle, multiples, carré et losange) sous la forme « si …, alors … » (piège : la réciproque) ; choisir le sens vrai de x = a ⇒ x² = a², x > g ⇒ x > b, multiple de 4 ⇒ pair",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la propriété : « {{if:t==0|les diagonales d'un rectangle ont la même longueur|{{if:t==1|tout multiple de ${{m}}$ est pair|tout carré est un losange}}}} ». Quelle phrase l'écrit sous la forme « si …, alors … » ?\n\n```choix\n- {{if:t==0|Si un quadrilatère est un rectangle, alors ses diagonales ont la même longueur.|{{if:t==1|Si un entier est un multiple de ${{m}}$, alors il est pair.|Si un quadrilatère est un carré, alors c'est un losange.}}}}\n- {{if:t==0|Si les diagonales d'un quadrilatère ont la même longueur, alors c'est un rectangle.|{{if:t==1|Si un entier est pair, alors c'est un multiple de ${{m}}$.|Si un quadrilatère est un losange, alors c'est un carré.}}}}\n- {{if:t==0|Si un quadrilatère n'est pas un rectangle, alors ses diagonales n'ont pas la même longueur.|{{if:t==1|Si un entier n'est pas un multiple de ${{m}}$, alors il n'est pas pair.|Si un quadrilatère n'est pas un carré, alors ce n'est pas un losange.}}}}\n- {{if:t==0|Un quadrilatère est un rectangle et ses diagonales ont la même longueur.|{{if:t==1|Un entier est pair et multiple de ${{m}}$.|Un quadrilatère est un carré et un losange.}}}}\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "4|6|10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans « **si** $P$, **alors** $Q$ », $P$ est l'hypothèse et $Q$ la conclusion ; on note $P\\Rightarrow Q$ (« $P$ implique $Q$ »). Échanger les deux donne la **réciproque**, qui n'est pas toujours vraie.",
+					"{{if:t==0|L'hypothèse est « être un rectangle », la conclusion « avoir des diagonales de même longueur » : **si** un quadrilatère est un rectangle, **alors** ses diagonales ont la même longueur.|{{if:t==1|L'hypothèse est « être un multiple de ${{m}}$ », la conclusion « être pair » : **si** un entier est un multiple de ${{m}}$, **alors** il est pair.|L'hypothèse est « être un carré », la conclusion « être un losange » : **si** un quadrilatère est un carré, **alors** c'est un losange.}}}}",
+					"{{if:t==0|La réciproque est fausse : un trapèze isocèle a des diagonales de même longueur sans être un rectangle.|{{if:t==1|La réciproque est fausse : $2$ est pair, mais ce n'est pas un multiple de ${{m}}$.|La réciproque est fausse : un losange dont les angles ne sont pas droits n'est pas un carré.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "{{if:t==0|Soit $x$ un réel.|{{if:t==1|Soit $x$ un réel.|Soit $n$ un entier.}}}} Laquelle de ces implications est vraie ?\n\n```choix\n- {{if:t==0|Si $x={{a}}$, alors $x^2={{eval:(a)^2}}$.|{{if:t==1|Si $x>{{g}}$, alors $x>{{b}}$.|Si $n$ est un multiple de $4$, alors $n$ est pair.}}}}\n- {{if:t==0|Si $x^2={{eval:(a)^2}}$, alors $x={{a}}$.|{{if:t==1|Si $x>{{b}}$, alors $x>{{g}}$.|Si $n$ est pair, alors $n$ est un multiple de $4$.}}}}\n- Les deux sont vraies.\n- Aucune n'est vraie.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "g",
+					"expression": "eval:(b)+(d)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans « **si** $P$, **alors** $Q$ », $P$ est l'hypothèse et $Q$ la conclusion ; on note $P\\Rightarrow Q$ (« $P$ implique $Q$ »). Échanger les deux donne la **réciproque**, qui n'est pas toujours vraie.",
+					"{{if:t==0|Si $x={{a}}$, alors $x^2={{a}}^2={{eval:(a)^2}}$ : $\\textcolor{{{color:primary.0}}}{x={{a}}\\Rightarrow x^2={{eval:(a)^2}}}$ est vraie. La réciproque est fausse : $x=-{{a}}$ vérifie $x^2={{eval:(a)^2}}$ mais $x\\neq{{a}}$.|{{if:t==1|Si $x>{{g}}$, comme ${{g}}>{{b}}$, alors $x>{{b}}$ : $\\textcolor{{{color:primary.0}}}{x>{{g}}\\Rightarrow x>{{b}}}$ est vraie. La réciproque est fausse : $x={{g}}$ vérifie $x>{{b}}$ mais pas $x>{{g}}$.|Si $n=4k$, alors $n=2\\times(2k)$ est pair : la première est vraie. La réciproque est fausse : $6$ est pair, mais ce n'est pas un multiple de $4$.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rectangle",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"m": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la réciproque",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"m": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Multiple de 6",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"m": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : réciproque, multiple de 6",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"m": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré, losange",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"m": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x = 3 ⇒ x² = 9",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "0",
+				"d": "2",
+				"g": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x² = 9 ⇒ x = 3",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "0",
+				"d": "2",
+				"g": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les deux",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "0",
+				"d": "2",
+				"g": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x > 2 ⇒ x > 0",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"a": "3",
+				"b": "0",
+				"d": "2",
+				"g": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Multiple de 4 ⇒ pair",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"a": "3",
+				"b": "0",
+				"d": "2",
+				"g": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

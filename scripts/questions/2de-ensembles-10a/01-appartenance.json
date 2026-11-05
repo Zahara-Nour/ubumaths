@@ -1,4 +1,5 @@
 {
+	"id": "99af2696-1482-43e8-bd02-714b279180ed",
 	"title": "Élément d'un ensemble, appartenance",
 	"description": "Compléter x … D par ∈ ou ∉ (D = diviseurs de n) ; écrire en extension les entiers n tels que −2 < n ⩽ 2 (pièges : borne exclue comptée, borne comprise oubliée)",
 	"grades": ["2"],
