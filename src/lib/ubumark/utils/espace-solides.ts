@@ -509,12 +509,15 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 				cotes.push({ at: middle(v[1], v[4]), value: d2, side: 'bas-droite' });
 				break;
 			case 'pyramide-carree':
-			case 'pyramide-triangle': {
 				cotes.push({ at: middle(v[1], v[2]), value: d0, side: 'dessous' });
-				const base = points3.slice(1);
-				height(v[0], project({ ...centroid(base), y: 0 }), d1);
+				height(v[0], project({ ...centroid(points3.slice(1)), y: 0 }), d1);
 				break;
-			}
+			case 'pyramide-triangle':
+				// B devant : [AB] est raide, le texte en dessous serait traversé ; [BC] monte
+				// vers le fond comme la fuyante du pavé
+				cotes.push({ at: middle(v[2], v[3]), value: d0, side: 'bas-droite' });
+				height(v[0], project({ ...centroid(points3.slice(1)), y: 0 }), d1);
+				break;
 			case 'pyramide-rectangle':
 				cotes.push({ at: middle(v[1], v[2]), value: d0, side: 'dessous' });
 				cotes.push({ at: middle(v[2], v[3]), value: d1, side: 'bas-droite' });
@@ -748,7 +751,8 @@ function roundDraft(spec: SolideSpec): Draft {
 }
 
 /** Boîte d'une étiquette centrée en `at` */
-const labelBox = (label: SolideLabel) => {
+/** Boîte d'une étiquette (coins bas-gauche, haut-droit), en cm ; exportée pour les tests */
+export const labelBox = (label: SolideLabel) => {
 	const halfWidth = (labelChars(label) * CHAR_WIDTH) / 2 + 0.03;
 	const halfHeight = SOLIDE_LABEL_SIZE / 2 + 0.03;
 	return [

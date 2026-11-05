@@ -14,7 +14,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
 import type { EspacePoint, SolideSpec } from '$lib/ubumark/types/espace';
-import { buildSolideScene } from '$lib/ubumark/utils/espace-solides';
+import { buildSolideScene, labelBox } from '$lib/ubumark/utils/espace-solides';
 
 // ============================================================================
 // OUTILS
@@ -112,5 +112,35 @@ describe('tétraèdre : disposition', () => {
 		const ends = [dashed[0].points[0], dashed[0].points[dashed[0].points.length - 1]];
 		const at = (p: EspacePoint, q: EspacePoint) => Math.hypot(p.x - q.x, p.y - q.y) < 1e-6;
 		expect(ends.some((p) => at(p, A)) && ends.some((p) => at(p, C))).toBe(true);
+	});
+});
+
+describe('tétraèdre : cotes hors des traits (revue de #2400)', () => {
+	// La cote de la hauteur, au milieu du solide, est traversée par une arête — déjà sur
+	// `main`, en pire (jusqu'à 4 traits) : ligne à part de `outils-manquants.md`
+	it('cotes: cm — aucun trait ne traverse le texte de la cote du côté', () => {
+		for (const dims of [...TETRAS, ...TALL_TETRAS]) {
+			const s = sceneOf(`forme: pyramide triangle ${dims}`, 'sommets: S A B C', 'cotes: cm');
+			// La cote du côté : son texte ; si la hauteur a le même (`4 4`), la plus basse
+			const side = `${dims.split(' ')[0]} cm`;
+			const cotes = s.labels
+				.filter((l) => l.text === side)
+				.sort((p, q) => q.at.y - p.at.y)
+				.slice(0, 1);
+			expect(cotes).toHaveLength(1);
+			for (const cote of cotes) {
+				const [lo, hi] = labelBox(cote);
+				for (const line of s.lines)
+					for (let k = 0; k + 1 < line.points.length; k++) {
+						const [a, b] = [line.points[k], line.points[k + 1]];
+						for (let t = 0; t <= 1; t += 0.01) {
+							const x = a.x + (b.x - a.x) * t;
+							const y = a.y + (b.y - a.y) * t;
+							const inside = x > lo.x && x < hi.x && y > lo.y && y < hi.y;
+							expect(inside, `${dims} : « ${cote.text} » traversée`).toBe(false);
+						}
+					}
+			}
+		}
 	});
 });
