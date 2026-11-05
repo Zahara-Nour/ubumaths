@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, avant la rédaction (aucune PR encore)._
+_Mis à jour le 2026-11-05, après la rédaction (aucune PR encore)._
 
-- **État** : plan de contenu validé par David (« je suis tes recos » + tableaux graphiques seulement, 2026-11-05) ; rien de rédigé, rien en base.
-- **Prochaine action** : lancer UN agent `pedagogy-expert` (model **opus**) avec le brief du § « Plan validé » ci-dessous → dossier scratchpad (`md/ sol/ en/ sol-en/`, `plan.json`, `verif/assert_all.py`, `pnpm check:ubumark` à 0) ; puis `pnpm fiche:verifier`, relecture des pages, script `scripts/create-evaluation-fonctions-2nde.ts` (copie de `create-fonctions-generalites-2nde.ts`, DEUX fiches `type: 'assessment'`, `points` par exercice), simulation montrée à David, `--publier` sur son accord seulement.
-- **En attente de David** : rien avant la simulation.
-- **Pièges en cours** : le bloc ` ```courbe ` ne trace que des formules → courbes choisies pour que tout se lise sur un nœud (vérifié en fractions exactes) ; titres d'exercices uniques dans le thème `Fonctions`.
+- **État** : sujets A et B rédigés (agent Opus), `assert_all.py` + `check:ubumark` + `fiche:verifier` verts, pages relues ; script `scripts/create-evaluation-fonctions-2nde.ts` commité, **simulation OK** (6 exercices, 2 fiches `assessment` 55 min /20). Correctif du générateur vartable commité (« 0 » de borne non envoyé, plantage du corrigé B).
+- **Prochaine action** : `--publier` sur l'accord de David, puis aperçu PDF des deux fiches en prod (points, mention calculatrice) ; PR (correctif + script + doc), CI, merge.
+- **En attente de David** : accord pour `--publier`.
+- **Pièges en cours** : contenu dans le scratchpad de la session `09504a5e…/scratchpad/eval-fonctions/{A,B}` (perdu au redémarrage : publier avant) ; `fiche:verifier` rend une fiche ordinaire (« [guided] », pas de points) ; « 0 » de borne absent au PDF par choix (outils-manquants.md).
 - **Worktree / branche** : `../ubumaths-wt-eval-fonctions` · `feat/evaluation-fonctions-2nde`.
 
 ## Cadre (réponses de David, 2026-11-05)
@@ -66,3 +66,4 @@ Barème révisé : ex. 1 = 9 pts, ex. 2 = 5 pts, ex. 3 = 6 pts.
 ## Historique
 
 - 2026-11-05 : cadrage, recherche des courbes (quotients de trinômes à extremums et zéros entiers), plan validé, worktree créé.
+- 2026-11-05 : rédaction par l'agent (aucun écart mathématique ; titres « Évaluation A/B : lecture graphique / fonctions quotients / étude par le calcul »). Corrigé B : plantage vartable sur le « 0 » de borne droite → David : corriger le générateur (pas de 0 en borne au PDF). Script écrit, simulation OK.
