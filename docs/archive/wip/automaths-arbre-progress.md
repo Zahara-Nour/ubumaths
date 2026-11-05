@@ -472,6 +472,27 @@ Rangement à refaire dans l'arbre (décision de David en attente ; passés dans 
 | 1re     | Statistiques › Représenter des données › Diagramme circulaire (2) | Angle d'un secteur d'un diagramme circulaire                     |
 | 1re     | Statistiques › Représenter des données › Lire un graphique (2)    | Lire un graphique dont l'axe ne part pas de 0                    |
 
+#### Proposition de nœuds pour les 16 (2026-11-05, après le versement)
+
+Laissée aux chantiers propriétaires, qui feront la migration nœud + point : `questions-ce2` (9), `geometrie-validation`
+(CP-060), `automatismes-1spe` (6). Une note est ajoutée dans le « Reprendre ici » de chacun. Vérifié le 2026-11-05 :
+`question-specs --file` vert sur les 16 (specs, tirages, importable), sonde des horloges 0 problème, fichiers
+identiques à la prod. Aucun des 16 n'a de point du programme (`question_template_points`).
+
+| Modèle (id)                             | Nœud proposé                                                              |
+| --------------------------------------- | ------------------------------------------------------------------------- |
+| CE2 01, 02, 03, 04 (heure)              | Grandeurs et mesures › Durées › lecture de l'heure                        |
+| CE2 05, 07 (deux horloges)              | Grandeurs et mesures › Durées › calcul de durées                          |
+| CE2 06 (durée en minutes)               | Grandeurs et mesures › Durées › conversions                               |
+| CE2 08, 09 (droite graduée)             | Nombres et calculs › Entiers : numération › droite graduée                |
+| CP-060 `1cf6eaa9`                       | Géométrie › Figures planes › constructions (ou « reconnaître et nommer ») |
+| 1re `95ee57c8` inéquation f(x) < k      | Fonctions › Généralités sur les fonctions › équations et inéquations      |
+| 1re `5397c20f` tableau de signes        | Fonctions › Généralités sur les fonctions › signe                         |
+| 1re `7f82d15a` tableau de variations    | Fonctions › Généralités sur les fonctions › variations                    |
+| 1re `f5585668` équation réduite         | Géométrie › Géométrie repérée › équations de droites                      |
+| 1re `9852d62c` angle d'un secteur       | Statistiques › Représenter des données › diagrammes circulaires           |
+| 1re `1c86d122` axe qui ne part pas de 0 | à choisir par `automatismes-1spe` avec David                              |
+
 ### 4b livré (2026-11-05)
 
 - `maintenance:on` → `db:migrate` (lancé par David, session « libre 5 ») → `db:types` (diff nul)

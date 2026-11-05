@@ -8,6 +8,11 @@
 
 _Mis à jour le 2026-11-04, après #2373._
 
+- **⚠️ Note du 2026-11-05 (chantier `automaths-arbre`)** : les 6 brouillons `f5585668`, `95ee57c8`, `5397c20f`,
+  `7f82d15a`, `1c86d122`, `9852d62c` n'ont ni nœud dans l'arbre ni point du programme : depuis la v0.73.0 (plus de
+  thème / domaine / sous-domaine), ils sont « Non rangés ». Vérifié le 2026-11-05 : specs et tirages verts, fichiers
+  identiques à la prod. À faire avant publication : migration nœud + point (points du BO de 1re, Automatismes).
+  Nœuds proposés dans `docs/archive/wip/automaths-arbre-progress.md` (§ « Les 16 brouillons sans nœud ») ; pour l'axe qui ne part pas de 0, le nœud est à choisir ici avec David.
 - **État** : lot « Statistiques » livré et vérifié en prod (`d37413a3`, 0 débord) ; lot
   « Probabilités » : composition validée par David, script
   `scripts/create-automatismes-probabilites-1spe.ts` (aucun modèle neuf), rendu vérifié avant

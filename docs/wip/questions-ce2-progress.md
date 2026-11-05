@@ -8,6 +8,12 @@
 
 _Mis à jour le 2026-11-02, après #2221._
 
+- **⚠️ Note du 2026-11-05 (chantier `automaths-arbre`)** : les 9 brouillons du lot 7b SONT en prod (`--publier`
+  fait) : `0d41a45e` (01), `71741618` (02), `c06fe751` (03), `2c94cb41` (04), `4c75f053` (05), `2370bc8d` (06),
+  `19c370bd` (07), `455b9748` (08), `ab1c22c8` (09). Depuis la v0.73.0, plus de thème / domaine / sous-domaine : sans
+  nœud ni point, ils sont « Non rangés » (liste admin, `?nonRanges=1`). Vérifié le 2026-11-05 : specs et tirages verts,
+  sonde 0 problème, fichiers identiques à la prod. Reste la migration nœud + point prévue au § 12 (nœuds confirmés dans
+  l'arbre actuel) et l'essai à l'écran de 02, 03, 05-08. Détail : `docs/archive/wip/automaths-arbre-progress.md` (§ « Les 16 brouillons sans nœud »).
 - **État** : lots 1 à 7a en prod. Lot 7b (horloge + droite graduée, 9 modèles, `scripts/questions/ce2-7b/`) : fichiers mergés
   (#2221), **pas encore en prod**. Jouées dans l'aperçu local : 01, 04, 09 ; restent 03, 05-08 (page à cocher).
 - **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-7b --publier`

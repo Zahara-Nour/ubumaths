@@ -4,6 +4,11 @@
 
 _Mis à jour le 2026-10-26, après #1809._
 
+- **⚠️ Note du 2026-11-05 (chantier `automaths-arbre`)** : le brouillon CP-060 « Termine le carré ou le rectangle sur
+  le quadrillage » (`1cf6eaa9`) n'a ni nœud dans l'arbre ni point du programme : depuis la v0.73.0 (plus de thème /
+  domaine / sous-domaine), il est « Non rangé ». Vérifié le 2026-11-05 : 22 specs vertes, 300/300 tirages et figures,
+  fichier identique à la prod. À faire avant publication : migration nœud + point (CP-060). Nœud à trancher avec David :
+  Géométrie › Figures planes › « constructions » (proposé) ou « reconnaître et nommer des formes ». Détail : `docs/archive/wip/automaths-arbre-progress.md` (§ « Les 16 brouillons sans nœud »).
 - **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages (#1805) ; côté donné
   prolongé, carré et rectangle, message à part (#1809, § 12).
 - **Prochaine action** : aucune ici ; CP-058 attend le chantier `figure-et-choix`.
