@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après la publication du 7c._
+_Mis à jour le 2026-11-05, après la publication du 7c et la garde des niveaux._
 
 - **État** : lots 1 à 7c en prod et publiés (7c : 8/8 relus OK, `publier-lot --publier` par David, relevé MCP : 8
   `published`, rangés, un point chacun). Worktree et branche retirés.
 - **Prochaine action** : lot suivant, dans l'ordre du § 4 bis : figures / images fixes, puis QCM, puis outils neufs ;
   relevé MCP des points encore sans modèle avant la phase 0 (nouveau worktree `ubumaths-wt-questions-ce2`).
-- **En attente de David** : `garde-niveaux-tags.ts` (lecture seule, prod) si pas encore lancé.
+- **En attente de David** : rien. Garde `garde-niveaux-tags.ts` lancée le 2026-11-05 : aucun écart CE2 (les 5
+  écarts sont des brouillons d'`automatismes-1spe`, signalés à cette session).
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; `axe: à choisir` →
-  la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) refusé à Claude
-  par le classifieur : David le lance.
+  la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) et
+  `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance.
 - **Worktree / branche** : aucun (à recréer pour le lot suivant).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
