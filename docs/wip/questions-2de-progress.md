@@ -6,19 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2375 (fichiers du lot 12 b-2)._
+_Mis à jour le 2026-11-05, après #2389 (nœud + tag du lot 12 b-2)._
 
-- **État** : lots 1 à 9, 12 a et 12 b-1 publiés. 12 b-2 (5 modèles : 289, 290, 291, 292, 401) écrit
-  et joué en local, mergé (#2375), pas encore en prod. Ordre ensuite : 10, puis 11.
-- **Prochaine action** : David lance `create-questions --publier` sur
-  `scripts/questions/2de-vecteurs-c2` (depuis le dépôt principal) ; relever les 5 ids ; migration nœud +
-  tag (nœuds du § 77 ; 401 sur la notion Périmètres) ; page à cocher.
-- **En attente de David** : le `--publier` du 12 b-2.
+- **État** : lots 1 à 9, 12 a et 12 b-1 publiés. 12 b-2 : 5 brouillons en prod (§ 80), migration nœud +
+  tag `20261105055243` mergée (#2389), **pas encore appliquée** (`db:migrate`). Ordre ensuite : 10, puis 11.
+- **Prochaine action** : `db:migrate` depuis le dépôt principal (4 conditions réunies, § 80) quand David
+  a tranché pour `20261105055111` (CP-060, autre session) ; vérifier au MCP ; page à cocher ; `publier-lot`.
+- **En attente de David** : qui applique `20261105055111` (CP-060), en attente devant la nôtre.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
-  statut au MCP ; jamais `| head` derrière un `--publier` ; noms de points ≠ lettres A-D des cases choix ;
-  `0..3;±` refusé par le tirage (`-3..3`) ; liste blanche : pas de `{{if:}}` à plus de ~6 niveaux dans une
-  réponse attendue ; corps de commit ≤ 100 caractères par ligne ; une autre session écrit aussi dans ce
-  journal : `git pull` ; `db:migrate` depuis le dépôt principal seulement.
+  statut au MCP ; jamais `; gh pr merge` derrière la CI ; `Doc-inchangée:` dans le commit d'une
+  migration ; `0..3;±` refusé (`-3..3`) ; une autre session écrit aussi dans ce journal : `git pull` ;
+  `db:migrate` depuis le dépôt principal seulement (ses fichiers d'autres sessions : `merge --ff-only`).
 - **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -2056,3 +2054,18 @@ vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12
   `sonde-figures` : 0 problème ; `validateLatex` + accolades sur 2 189 formules (40 aperçus par modèle) :
   0 problème hors `\unit` (macro de l'appli, rendu vérifié à l'écran).
 - **#2375 mergée** (CI verte) le 2026-11-04.
+
+## 80. Lot 12 b-2, brouillons en prod et migration nœud + tag (2026-11-05)
+
+- `create-questions --publier` lancé par David. Ids en prod : 06 `8d099a87` (2-289), 07 `da5554a9` (2-290),
+  08 `1422eeb1` (2-291), 09 `09007e44` (2-292), 10 `11bce2bf` (2-401). Relevé MCP : 5 brouillons, sans
+  nœud ni tag ; chaque point est sur le nœud visé (401 sur la notion Grandeurs et mesures › Périmètres).
+- Migration `20261105055243_questions_2de_lot12b2_rangement_tags` (gabarit 12 b-1 ; 401 sur une notion,
+  `sous_notion` nulle). Test d'intégration rouge sans la migration, 10/10 avec. `security-auditor` : aucun
+  point bloquant ; deux remarques pour les prochains lots : pas de garde `count = 1` par chemin (hérité),
+  pas de test d'échec propre à la branche notion. `check:migrations --pr 2389` : exit 0.
+- ⚠️ **#2389 mergée avec la CI en rouge** : `gh pr merge` enchaîné par `;` derrière la lecture des checks.
+  Seul échec : la garde « doc à jour » (`Doc-inchangée:` mis dans le corps de la PR au lieu du commit).
+  Contenu mergé sans défaut ; la garde ne tourne que sur les PR, `main` n'en souffre pas.
+- `db:migrate` suspendu : `20261105055111_questions_cp060_rangement_tag` (#2388, autre session) attend
+  aussi en prod et partirait avec la nôtre.
