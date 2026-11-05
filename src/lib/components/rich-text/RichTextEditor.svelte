@@ -686,6 +686,10 @@
 		editor?.commands.focus();
 	}
 
+	function insertCalculAligne() {
+		(editor?.commands as unknown as Record<string, () => boolean>).insertCalculAligne?.();
+	}
+
 	/**
 	 * Set Heading Level
 	 */
@@ -1896,6 +1900,18 @@
 						class="font-mono"
 					>
 						$$...$$
+					</Button>
+
+					<!-- Calcul aligné : une ligne par étape, alignées sur leur relation -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertCalculAligne}
+						{disabled}
+						title="Calcul aligné — Cmd+Entrée (Ctrl+Entrée) dans la formule pour ajouter une ligne"
+					>
+						Calcul aligné
 					</Button>
 				</div>
 			{/if}
