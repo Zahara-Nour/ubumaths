@@ -2200,3 +2200,76 @@ recommandations (16 anciens sur la page et publiés avec le lot, `grades` ramen�
 - Page à cocher relue par David : 27/27 « ok », sans commentaire ; ids = les 11 neufs (§ 84-85) et les 16
   anciens exportés (§ 85). `publier-lot` (simulation puis `--publier`) lancé par David sur
   `2de-ensembles-10a`, `2de-logique-10b` et le dossier des anciens ; MCP (prod) : 27/27 `published`.
+
+## 87. Lot 11 « Lire un programme » : relevé et phase 0 (proposée le 2026-11-05, à valider)
+
+**Relevé MCP (prod, 2026-11-05)** : aucun modèle, en aucun statut, sur les 13 points du lot (218-223, 413,
+229, 416, 228, 232, 233, 417) ni sur 224 et 415 (« compléter la ligne », Q3). Voisins à ne pas refaire :
+1re spé, publiés, tous en Python : 5192e88a (moyenne d'un échantillon, **avec liste**, Statistiques ›
+Échantillonnage › simulation), 19961e67 (seuil, `while`), 31a77ba9 (terme d'une suite) ; 4e / 3e en Scratch
+(20cb9b55, 962da675, 8b6f9e98, 6c9c9649, 9f9bddbd, 4ce8eb3c). Forme reprise de la 1re : code en
+` ```python `, question en case (`$?$`) ou en case choix (lignes de code entre accent graves).
+Nœuds (prod) : Algorithmique › Variables et instructions › types (be9a1d55, vide), › variables et affectation
+(151ff8c9), › instructions conditionnelles (195147df) ; › Boucles › boucle bornée (62ad4a4b, vide), › boucle
+non bornée (04da83a6) ; › Fonctions Python › définir une fonction (9b78f06c, vide), › appeler une fonction
+(49cf382a, vide) ; Statistiques › Indicateurs › moyenne (7855ef87), › écart-type (984cf553).
+
+**Phase 0 proposée** : 15 modèles neufs, niveau `['2']`, brouillons. Python seulement (le BO : « langage
+naturel ↔ Python » pour l'affectation), **aucune liste** (BO), entiers petits, programmes de 3 à 8 lignes.
+
+_11 A — Variables et instructions (8)_
+
+1. **2-218 · Type d'une variable** (types) : `x = 7`, `x = 7.0`, `x = 7 / 2`, `x = 6 / 2`, `x = "7"`,
+   `x = 3 < 5` → `int`, `float`, `str`, `bool` en case choix. Erreurs : `6 / 2` pris pour un entier ;
+   `"7"` pris pour un nombre.
+2. **2-223 · Choisir le type** (types) : situation (« nombre d'élèves », « prix en euros », « nom de la
+   ville », « moyenne d'une classe ») → entier, flottant, chaîne en case choix (pas de booléen, borne du BO).
+3. **2-219 · Affectation** (variables et affectation) : algorithme en langage naturel `a ← 3`, `b ← a + 2`,
+   `a ← 2 × b` → valeur finale de `a` (case) ; puis la traduction Python de `a ← a + 1` en case choix
+   (distracteurs `a + 1 = a`, `a == a + 1`).
+4. **2-220 · Séquence d'instructions** (variables et affectation) : 3 à 5 affectations en Python, valeur
+   d'une variable à la fin (case). Erreur typique : l'échange `a = b` puis `b = a` (les deux valent b).
+5. **2-224 · Compléter une affectation** (variables et affectation) : programme de calcul donné en mots,
+   une ligne `...` à compléter en case choix (`y = 3 * x + 2` contre `y = 3 * (x + 2)`, `3x + 2`).
+6. **2-221 · Instruction conditionnelle** (instructions conditionnelles) : `if … else` (puis `elif`, niv. 2)
+   → valeur affichée pour une entrée donnée (case). Erreur : les deux branches exécutées ; `<` lu `<=`
+   sur la valeur frontière.
+7. **2-415 · Compléter une condition** (instructions conditionnelles) : tarif / seuil en mots, condition
+   `if ... :` à compléter en case choix (`x >= 18`, `x > 18`, `x = 18`, `x <= 18`).
+8. **2-222 · Boucle bornée** (boucle bornée) : `for i in range(n)` puis `range(1, n)`, `range(a, b)` →
+   valeur finale (somme, produit, compteur, case). Erreur : `range(n)` compté de 1 à n.
+9. **2-413 · Boucle non bornée** (boucle non bornée) : `while` avec compteur (capital qui double, somme qui
+   dépasse un seuil) → valeur de `n` ou de la variable à la fin (case). Sans suite (c'est la 1re, 19961e67).
+10. **2-228 · Programme plus complexe** (notion Variables et instructions) : boucle + condition (compter
+    les multiples de 3 jusqu'à n, somme des pairs) → valeur (case) ; puis « que faut-il modifier pour
+    obtenir … ? » en case choix.
+
+_11 B — Fonctions (5)_
+
+11. **2-229 · Fonction à un ou plusieurs arguments** (définir une fonction) : `def aire(L, l):`,
+    `def f(x):` → nombre d'arguments, valeur de `aire(5, 3)` (case). Erreur : arguments inversés quand
+    l'ordre compte (`def d(a, b): return a - b`).
+12. **2-416 · Appeler une fonction** (appeler une fonction) : `y = f(2) + f(3)`, `f(f(1))` → valeur (case) ;
+    quelle instruction calcule l'image de 5 en case choix (`f(5)`, `f = 5`, `def f(5)`, `f[5]`).
+13. **2-232 · Fonction plus complexe** (définir une fonction) : fonction avec boucle et condition (nombre de
+    diviseurs, plus petit entier qui dépasse) → valeur renvoyée (case) ; compléter une ligne (case choix).
+14. **2-233 · Fonction moyenne** (Statistiques › Indicateurs › moyenne ou Algorithmique, L11-b) : sans liste,
+    `def moyenne(a, b, c, d)` ou boucle `for` sur des tirages → valeur renvoyée (case, décimal accepté) ;
+    « que renvoie cette fonction ? » (moyenne, somme, effectif) en case choix.
+15. **2-417 · Fonction écart type** (› écart-type ou Algorithmique, L11-b) : `from math import sqrt`, sommes
+    `s` et `s2` dans une boucle, `return sqrt(s2 / n - m ** 2)` → « que renvoie-t-elle ? » (écart type,
+    variance, moyenne) en case choix ; puis valeur pour quatre arguments choisis pour un écart type entier
+    (m − d, m − d, m + d, m + d → d).
+
+**Questions** :
+
+- **L11-a — 224 et 415** (« compléter une affectation / une condition », Q3) : dans ce lot, en case choix ?
+  → je recommande **oui** (15 modèles au lieu de 13).
+- **L11-b — Rangement de 233 et 417** : Algorithmique › Fonctions Python › définir une fonction, ou
+  Statistiques › Indicateurs › moyenne / écart-type ? → je recommande **Algorithmique** (le point est
+  « lire une fonction », sous la rubrique Algorithmique du BO ; la 1re a fait l'inverse, mais pour une
+  simulation).
+- **L11-c — Découpage** : 11 A (10) puis 11 B (5), une PR de fichiers chacun, une migration nœud + tag pour
+  les deux, une page à cocher (15) ? → je recommande oui.
+- **L11-d — Langage naturel (←)** : seulement dans 2-219, ou un algorithme en langage naturel dans quelques
+  variations des autres modèles ? → je recommande **2-219 seul** (le reste en Python, comme les sujets).
