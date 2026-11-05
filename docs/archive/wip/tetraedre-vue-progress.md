@@ -6,16 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, B3 en PR._
+_Mis à jour le 2026-11-05, après #2405. **Chantier clos** (journal archivé)._
 
-- **État** : B3 écrite — variation v4 (tétraèdre SABC, u = SA, v = SB, w = SC, I milieu BC, J milieu AB, G centre
-  ABC, 5 cas) ajoutée au script de TSPE-334 ; le script garde l'`id` et n'écrit plus le quadruplet. PR à merger.
-- **Prochaine action** : merger la PR B3 ; puis plus rien de mon côté (chantier clos au merge : journal à archiver).
-- **En attente de David** : `pnpm deploy:prod` (livre #2392 et #2400), puis `create-questions --dir
-scripts/questions/tspe-334-tracer --publier --mettre-a-jour`, relecture de TSPE-334 et publication
-  (ligne de `verifications-manuelles.md`).
-- **Pièges en cours** : un milieu de [SA], [SB] ou [SC] tombe sur le nom de u, v ou w → aucun dans v4.
-- **Worktree / branche** : `../ubumaths-wt-tetraedre-vue` · `content/tspe-334-tetraedre`.
+- **État** : #2400 (vue du tétraèdre) et #2405 (variation v4 tétraèdre de TSPE-334) mergées, pas encore en prod.
+  Doc versée par #2400 (`docs/systeme/ubumark.md` § Solide) ; ligne 15 de `outils-manquants.md` en « Livré ».
+- **Reste à David** (ligne de `verifications-manuelles.md`) : `pnpm deploy:prod`, puis `pnpm tsx
+scripts/create-questions.ts --dir scripts/questions/tspe-334-tracer --publier --mettre-a-jour`, relecture de
+  TSPE-334 (`7ce9936b-…`) et publication.
+- **Suite possible** : cote de la hauteur des pyramides (ligne 17 de `outils-manquants.md`, défaut visible en prod).
+- **Worktree / branche** : aucun (supprimés).
 
 ---
 
