@@ -1414,6 +1414,8 @@ const DROITE_CROCHET = { hauteur: 9, bec: 5 };
 const DROITE_POINT_POSE = 7;
 /** Écart entre les noms de points posés au même endroit */
 const DROITE_NOMS_ECART = 14;
+/** Couleur de la correction d'une droite à placer ou à représenter (`SOLUTION_COLOR`) */
+const DROITE_SOLUTION = 'vert';
 
 /** Le SVG d'une droite graduée ; `posés` : points sur la droite (droite à placer, solution) */
 function droiteSvg(node: NumberLineNode, poses = false): string {
@@ -1506,25 +1508,31 @@ function droite(source: string): Bloc {
 		...r.warnings.map((w) => w.message),
 		...resolveNumberLineColors(node).warnings
 	];
-	// Droite à placer : l'élève voit la droite sans les points ; la solution les pose
+	// Droite à placer, comme NumberLinePlacer.svelte : énoncé sans point (le parseur refuse
+	// `points:`, l'écran ne montre que ceux de l'élève) ; correction : points attendus, en vert
 	if (node.placer !== undefined) {
 		const ecart = phoneGapWarning(node.config);
 		if (ecart) avertissements.push(ecart);
-		const poses = node.placer.map((t) => ({ label: t.name, value: t.value }));
+		const poses = node.placer.map((t) => ({
+			label: t.name,
+			value: t.value,
+			color: DROITE_SOLUTION
+		}));
 		return {
-			html: droiteSvg(node),
-			solution: droiteSvg({ ...node, points: [...node.points, ...poses] }, true),
+			html: droiteSvg({ ...node, points: [] }),
+			solution: droiteSvg({ ...node, points: poses }, true),
 			avertissements: avertissements.map((a) => `bloc line : ${a}`)
 		};
 	}
-	// Droite à représenter : la droite nue ; la solution trace l'intervalle attendu
+	// Droite à représenter, comme NumberLineRepresenter.svelte : énoncé sans segment (le parseur
+	// refuse `segments:`) ; correction : l'intervalle attendu, en vert
 	if (node.representer !== undefined) {
 		const intervalle = node.representer.interval;
 		if (!intervalle) avertissements.push('aucun intervalle lisible dans representer:');
 		return {
-			html: droiteSvg(node),
+			html: droiteSvg({ ...node, segments: [] }),
 			solution: intervalle
-				? droiteSvg({ ...node, segments: [...node.segments, intervalle] })
+				? droiteSvg({ ...node, segments: [{ ...intervalle, color: DROITE_SOLUTION }] })
 				: undefined,
 			avertissements: avertissements.map((a) => `bloc line : ${a}`)
 		};

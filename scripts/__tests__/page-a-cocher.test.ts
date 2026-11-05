@@ -486,23 +486,47 @@ describe('dessinerBlocs', () => {
 		expect(r.markdown.match(/class="nl-bracket"/g)).toHaveLength(1);
 	});
 
-	it('line à placer : la droite sans les points, la construction juste les pose et les nomme', () => {
+	it('line à placer : énoncé sans aucun point, la correction pose les points attendus en vert', () => {
 		const r = dessinerBlocs('```line\nstart: 0\nend: 10\nstep: 1\nplacer: A=3 ; B=7\n```');
+		// `points:` est refusé avec `placer:` par le parseur : l'énoncé n'a aucun point
 		expect(r.markdown).not.toContain('class="nl-point"');
 		expect(r.solutions).toHaveLength(1);
 		expect(r.solutions[0].match(/class="nl-point"/g)).toHaveLength(2);
 		expect(r.solutions[0]).toContain('>A<');
 		expect(r.solutions[0]).toContain('>B<');
+		expect(r.solutions[0]).toContain('var(--color-fig-vert)');
+		// Posés SUR la droite (y = 50), plus gros ; x(3) = 40 + 3/10 × 520
+		expect(r.solutions[0]).toContain('cx="196" cy="50" r="7"');
 	});
 
-	it('line à représenter : la droite nue, la construction juste trace l’intervalle', () => {
+	it('line à représenter : énoncé sans segment, la correction trace l’intervalle en vert', () => {
 		const r = dessinerBlocs(
 			'```line\nstart: -5\nend: 5\nstep: 1\narrows: true\nrepresenter: ]-inf, 2]\n```'
 		);
+		// `segments:` est refusé avec `representer:` par le parseur : l'énoncé n'en a aucun
 		expect(r.markdown).not.toContain('class="nl-segment"');
 		expect(r.solutions).toHaveLength(1);
 		expect(r.solutions[0].match(/class="nl-segment"/g)).toHaveLength(1);
 		expect(r.solutions[0].match(/class="nl-bracket"/g)).toHaveLength(1);
+		expect(r.solutions[0]).toContain('var(--color-fig-vert)');
+		// Demi-droite jusqu'à la pointe gauche (40 - 10), jusqu'à x(2) = 40 + 7/10 × 520
+		expect(r.solutions[0]).toContain('x1="30" y1="50" x2="404" y2="50"');
+	});
+
+	it('line : becs des crochets vers l’intérieur (compris) ou l’extérieur (exclu)', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 2\nstep: 1\nsegments: [1, 2[\n```');
+		expect(r.markdown).toContain('d="M 305 41 L 300 41 L 300 59 L 305 59"');
+		expect(r.markdown).toContain('d="M 565 41 L 560 41 L 560 59 L 565 59"');
+	});
+
+	it('line : deux points au même endroit, noms côte à côte ; segments qui se touchent, un étage', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: 0\nend: 2\nstep: 1\npoints: A=1, B=1\nsegments: [0, 1], [1, 2]\n```'
+		);
+		expect(r.markdown).toContain('<foreignObject x="268" y="7"');
+		expect(r.markdown).toContain('<foreignObject x="282" y="7"');
+		expect(r.markdown).toContain('x1="40" y1="50" x2="300" y2="50"');
+		expect(r.markdown).toContain('x1="300" y1="40" x2="560" y2="40"');
 	});
 
 	it('line à représenter sans intervalle lisible : signalé en alerte, pas de solution vide', () => {

@@ -22,3 +22,6 @@ _Mis à jour le 2026-11-05, PR ouverte._
   KaTeX), libellé de la solution généralisé.
 - Constat : `formatAutoLabel` de l'appli écrit 0,5 en `\frac{1}{2}` ; la page fait pareil.
 - Doc : `docs/pratiques/couvrir-un-niveau.md` § 8.
+- Revue (`code-reviewer`, Sonnet) : rien de bloquant ; correction en vert comme l'écran
+  (`SOLUTION_COLOR`), tests de positions ajoutés (crochets, noms côte à côte, étages). Le parseur
+  refuse déjà `points:` avec `placer:` et `segments:` avec `representer:`.
