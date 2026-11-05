@@ -1,4 +1,5 @@
 {
+	"id": "aee1b98f-b0a4-4cd6-9265-7be87765188f",
 	"title": "Factoriser xⁿ − 1 et xⁿ − aⁿ",
 	"description": "xⁿ − 1 = (x − 1)(xⁿ⁻¹ + ⋯ + x + 1) : exposant du premier terme, x³ − a³ = (x − a)(x² + ax + a²) avec a tiré, démonstration de la factorisation de xⁿ − 1 (étapes à ranger)",
 	"grades": ["1_SPE"],
