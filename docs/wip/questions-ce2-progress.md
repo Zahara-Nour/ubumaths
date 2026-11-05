@@ -6,15 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, lot 8 écrit (§ 14)._
+_Mis à jour le 2026-11-05, après #2408._
 
-- **État** : lots 1 à 7c en prod et publiés ; lot 8 (figures planes et symétrie, 9 modèles) écrit, simulé, PR ouverte.
-- **Prochaine action** : merge de la PR du lot 8, puis `create-questions --publier` par David, migration nœud + tag.
-- **En attente de David** : `create-questions --publier` du lot 8 après le merge.
+- **État** : lots 1 à 7c en prod et publiés ; lot 8 (figures planes et symétrie, 9 modèles) mergé (#2408), pas encore
+  en base prod.
+- **Prochaine action** : après la création par David, relevé MCP des 9 brouillons, migration nœud + tag (branche
+  `feat/questions-ce2-lot8-rangement`), page à cocher.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-8 --publier`, lancé
+  depuis `../ubumaths-wt-questions-ce2` (écrit l'id de chaque modèle dans son fichier).
 - **Pièges en cours** : jamais de variable `e` (Euler) ; un tag doit être sur le nœud de son point ; `axe: à choisir` →
   la 1re réponse est l'échelle ; commitlint : sujet en minuscule ; `publier-lot` (même en simulation) et
   `garde-niveaux-tags.ts` (lecture prod) refusés à Claude par le classifieur : David les lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot8`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot8-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -747,3 +750,4 @@ Réponse de David (« je te suis », 2026-11-05) : les cinq recommandations.
   varier le contenu d'une figure, jamais le bloc.
 - CI #2408 rouge : la garde `answer-complexity-corpus` veut chaque réponse de spec ≤ 133 caractères (limite 400,
   marge × 3) ; le château du 09 (11 segments, 189 caractères) → une tour de 6 segments (105 au plus).
+- 2026-11-05 : #2408 mergée (CI verte après la correction).
