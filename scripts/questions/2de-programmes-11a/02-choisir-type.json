@@ -1,0 +1,150 @@
+{
+	"title": "Choisir le type d'une variable",
+	"description": "Entier, flottant ou chaîne de caractères pour un nombre d'élèves, un prix, un nom de ville, une taille, une moyenne, un mot de passe ; erreur de age = \"16\" puis age + 1",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un programme Python doit garder en mémoire {{if:t==0|le nombre d'élèves d'une classe|{{if:t==1|le prix d'un article en euros, centimes compris|{{if:t==2|le nom d'une ville|{{if:t==3|la taille d'une personne en mètres|{{if:t==4|le nombre de lancers d'un dé|{{if:t==5|la moyenne des notes d'un élève|un mot de passe}}}}}}}}}}}}. Quel type de variable choisir ?\n\n```choix\nmelanger: non\n- entier (`int`)\n- flottant (`float`)\n- chaîne de caractères (`str`)\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..6"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*(0)+(1-min(abs((t)-1),1))*(1)+(1-min(abs((t)-2),1))*(2)+(1-min(abs((t)-3),1))*(1)+(1-min(abs((t)-4),1))*(0)+(1-min(abs((t)-5),1))*(1)+(1-min(abs((t)-6),1))*(2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On choisit le type d'après **ce que contient** la variable : un nombre qui se compte (entier), une mesure ou un résultat de calcul à virgule (flottant), un texte (chaîne de caractères).",
+					"{{if:t==0|Un nombre d'élèves se compte : c'est un **entier**.|{{if:t==1|Un prix avec des centimes (par exemple $12{,}99$) est un nombre à virgule : c'est un **flottant**.|{{if:t==2|Un nom de ville est un texte : c'est une **chaîne de caractères**.|{{if:t==3|Une taille en mètres (par exemple $1{,}68$) est un nombre à virgule : c'est un **flottant**.|{{if:t==4|Un nombre de lancers se compte : c'est un **entier**.|{{if:t==5|Une moyenne (par exemple $13{,}5$) est un résultat de division : c'est un **flottant**.|Un mot de passe est un texte (lettres, chiffres, symboles) : c'est une **chaîne de caractères**.}}}}}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "On exécute les deux lignes Python ci-dessous.\n\n```python\nage = \"{{a}}\"\nage_suivant = age + 1\n```\n\nLa seconde ligne provoque une erreur. Pourquoi ?\n\n```choix\n- `age` est une chaîne de caractères : on ne peut pas lui ajouter un nombre.\n- `age` est un entier : on ne peut pas lui ajouter $1$.\n- `age` est un flottant : il faut écrire `age + 1.0`.\n- Un nom de variable ne peut pas contenir le caractère `_`.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "14..17"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`\"{{a}}\"` est entre guillemets : `age` est une **chaîne de caractères** (`str`), pas un nombre.",
+					"Python refuse d'ajouter le nombre $1$ à un texte. Il fallait écrire `age = {{a}}` (un entier, `int`) : `age + 1` vaudrait alors `{{eval:(a)+1}}`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Nombre d'élèves : entier",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Prix : flottant",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prix en entier",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"rep": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Nom de ville : chaîne",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"rep": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Moyenne : flottant",
+			"variationIndex": 0,
+			"variables": {
+				"t": "5",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Mot de passe : chaîne",
+			"variationIndex": 0,
+			"variables": {
+				"t": "6",
+				"rep": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "age est une chaîne",
+			"variationIndex": 1,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : age pris pour un entier",
+			"variationIndex": 1,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

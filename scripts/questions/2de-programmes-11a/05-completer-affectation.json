@@ -1,0 +1,155 @@
+{
+	"title": "Compléter une affectation",
+	"description": "Traduire « multiplier par 3 puis ajouter 5 » ou « ajouter 5 puis multiplier par 3 » en y = … ; augmenter, diminuer, doubler un score s",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un programme de calcul : « choisir un nombre $x$, {{if:t==0|le multiplier par ${{k}}$, puis ajouter ${{p}}$|lui ajouter ${{p}}$, puis multiplier le résultat par ${{k}}$}} ».\n\n```python\nx = float(input(\"x = \"))\n...\nprint(y)\n```\n\nPar quelle instruction faut-il remplacer les points de suspension ?\n\n```choix\n- {{if:t==0|`y = {{k}} * x + {{p}}`|`y = {{k}} * (x + {{p}})`}}\n- {{if:t==0|`y = {{k}} * (x + {{p}})`|`y = {{k}} * x + {{p}}`}}\n- {{if:t==0|`y = {{k}}x + {{p}}`|`y = (x + {{p}}){{k}}`}}\n- {{if:t==0|`{{k}} * x + {{p}} = y`|`y = x + {{p}} * {{k}}`}}\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["k != p"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'affectation s'écrit `variable = expression` ; en Python, le produit s'écrit avec `*` (jamais sous-entendu), et les parenthèses fixent l'ordre des calculs.",
+					"{{if:t==0|On multiplie d'abord, puis on ajoute : `y = {{k}} * x + {{p}}` (la multiplication passe avant l'addition, sans parenthèses).|On ajoute d'abord, puis on multiplie **le résultat** : il faut des parenthèses, `y = {{k}} * (x + {{p}})`.}}",
+					"Python refuse `{{k}}x` (produit sous-entendu) et une affectation dont la variable est à droite."
+				]
+			}
+		},
+		{
+			"statement": "Dans un jeu, le score `s` d'un joueur doit {{if:t==0|augmenter de ${{p}}$ points|{{if:t==1|diminuer de ${{p}}$ points|doubler}}}} à chaque bonne réponse. Quelle instruction écrire ?\n\n```choix\n- {{if:t==0|`s = s + {{p}}`|{{if:t==1|`s = s - {{p}}`|`s = 2 * s`}}}}\n- {{if:t==0|`s + {{p}}`|{{if:t==1|`s - {{p}}`|`s * 2`}}}}\n- {{if:t==0|`s = {{p}}`|{{if:t==1|`s = -{{p}}`|`s = 2`}}}}\n- {{if:t==0|`{{p}} = s + {{p}}`|{{if:t==1|`s - {{p}} = s`|`2 * s = s`}}}}\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "p",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'affectation s'écrit `variable = expression` ; en Python, le produit s'écrit avec `*` (jamais sous-entendu), et les parenthèses fixent l'ordre des calculs.",
+					"La nouvelle valeur de `s` se calcule à partir de l'ancienne : `{{if:t==0|s = s + {{p}}|{{if:t==1|s = s - {{p}}|s = 2 * s}}}}`.",
+					"{{if:t==0|`s + {{p}}`|{{if:t==1|`s - {{p}}`|`s * 2`}}}} calcule la valeur mais ne la range nulle part : `s` ne change pas."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "y = 3 * x + 5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"k": "3",
+				"p": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parenthèses en trop",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"k": "3",
+				"p": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = 3 * (x + 5)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"k": "3",
+				"p": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parenthèses oubliées",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"k": "3",
+				"p": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s = s + 10",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"p": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : s + 10 sans affectation",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"p": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s = 2 * s",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"p": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

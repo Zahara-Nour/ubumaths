@@ -1,0 +1,137 @@
+{
+	"title": "Lire et modifier un programme (boucle et condition)",
+	"description": "Compter ou additionner les multiples de d entre 1 et n (boucle for et if avec %) ; modifier la borne de range pour sommer jusqu'à n",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\ns = 0\nfor k in range(1, {{eval:(n)+1}}):\n    if k % {{d}} == 0:\n{{if:t==0|        s = s + 1|        s = s + k}}\n```\n\n(`k % {{d}}` est le reste de la division de `k` par ${{d}}$.) À la fin, $s=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "10..20"
+				},
+				{
+					"name": "m",
+					"expression": "eval:floor((n)/(d))"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-(t))*(m)+(t)*(d)*(m)*((m)+1)/2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour lire un programme, on suit les variables **tour par tour** ; on cherche ensuite ce que le programme calcule.",
+					"`k` prend les valeurs $1$ à ${{n}}$ ; la condition est vraie quand `k` est un multiple de ${{d}}$ : ${{d}}$, ${{eval:2*(d)}}$, …, ${{eval:(m)*(d)}}$, soit ${{m}}$ valeurs.",
+					"{{if:t==0|À chacune, `s` augmente de $1$ : le programme **compte** les multiples, $s=\\textcolor{{{color:primary.0}}}{{{rep}}}$.|À chacune, `s` augmente de `k` : le programme **additionne** les multiples, $s={{d}}+{{eval:2*(d)}}+\\dots+{{eval:(m)*(d)}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Le programme suivant affiche la somme des entiers de $1$ à $10$.\n\n```python\ns = 0\nfor k in range(1, 11):\n    s = s + k\nprint(s)\n```\n\nQue faut-il modifier pour qu'il affiche la somme des entiers de $1$ à ${{n}}$ ?\n\n```choix\n- remplacer `range(1, 11)` par `range(1, {{eval:(n)+1}})`\n- remplacer `range(1, 11)` par `range(1, {{n}})`\n- remplacer `range(1, 11)` par `range({{n}})`\n- remplacer `s = s + k` par `s = s + {{n}}`\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "15..50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour lire un programme, on suit les variables **tour par tour** ; on cherche ensuite ce que le programme calcule.",
+					"`range(1, 11)` donne $1$, $2$, …, $10$ : la borne $11$ est exclue.",
+					"Pour aller jusqu'à ${{n}}$, la borne doit être ${{eval:(n)+1}}$ : `range(1, {{eval:(n)+1}})`. Avec `range(1, {{n}})`, la boucle s'arrêterait à ${{eval:(n)-1}}$ ; `range({{n}})` commencerait à $0$ et s'arrêterait aussi à ${{eval:(n)-1}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Multiples de 3 jusqu'à 14 : 4",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"d": "3",
+				"n": "14",
+				"m": "4",
+				"rep": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme au lieu du compte",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"d": "3",
+				"n": "14",
+				"m": "4",
+				"rep": "4"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Somme des multiples de 3 jusqu'à 14 : 30",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"d": "3",
+				"n": "14",
+				"m": "4",
+				"rep": "30"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Borne n + 1",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : range(1, n)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

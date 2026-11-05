@@ -1,0 +1,193 @@
+{
+	"title": "Compléter une condition",
+	"description": "Écrire la condition du tarif réduit pour « moins de », « au moins », « plus de », « au plus » n ans (<, >=, >, <=) ; condition « n est pair », « n est multiple de d » avec %",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un musée accorde le tarif réduit à {{if:t==0|les moins de ${{n}}$ ans|{{if:t==1|les personnes d'au moins ${{n}}$ ans|{{if:t==2|les plus de ${{n}}$ ans|les personnes de ${{n}}$ ans au plus}}}}}}. On complète le programme :\n\n```python\nage = int(input(\"Âge : \"))\nif ... :\n    print(\"Tarif réduit\")\nelse:\n    print(\"Plein tarif\")\n```\n\nQuelle condition faut-il écrire à la place des points de suspension ?\n\n```choix\n- `age < {{n}}`\n- `age <= {{n}}`\n- `age > {{n}}`\n- `age >= {{n}}`\n- `age = {{n}}`\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "12|16|18|25|60|65"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*(0)+(1-min(abs((t)-1),1))*(3)+(1-min(abs((t)-2),1))*(2)+(1-min(abs((t)-3),1))*(1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une condition compare deux valeurs : `<` (strictement inférieur), `<=` (inférieur ou égal), `>`, `>=`, `==` (égal). Le `=` seul est une affectation, pas une comparaison.",
+					"{{if:t==0|« Moins de ${{n}}$ ans » : ${{n}}$ ans exclu, `age < {{n}}`.|{{if:t==1|« Au moins ${{n}}$ ans » : ${{n}}$ ans ou plus, ${{n}}$ compris, `age >= {{n}}`.|{{if:t==2|« Plus de ${{n}}$ ans » : ${{n}}$ ans exclu, `age > {{n}}`.|« ${{n}}$ ans au plus » : ${{n}}$ ans ou moins, ${{n}}$ compris, `age <= {{n}}`.}}}}}}",
+					"On vérifie avec la valeur frontière : une personne de ${{n}}$ ans a-t-elle le tarif réduit ? {{if:t==1|Oui.|{{if:t==3|Oui.|Non.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Le programme doit afficher « {{if:t==0|pair|multiple de {{d}}}} » quand l'entier `n` est {{if:t==0|pair|un multiple de ${{d}}$}}.\n\n```python\nn = int(input(\"n = \"))\nif ... :\n    print(\"{{if:t==0|pair|multiple de {{d}}}}\")\n```\n\nQuelle condition faut-il écrire ? (`a % b` est le reste de la division de `a` par `b`.)\n\n```choix\n- {{if:t==0|`n % 2 == 0`|`n % {{d}} == 0`}}\n- {{if:t==0|`n % 2 == 1`|`n % {{d}} == 1`}}\n- {{if:t==0|`n / 2 == 0`|`n / {{d}} == 0`}}\n- {{if:t==0|`n % 2 = 0`|`n % {{d}} = 0`}}\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "d",
+					"expression": "3..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une condition compare deux valeurs : `<` (strictement inférieur), `<=` (inférieur ou égal), `>`, `>=`, `==` (égal). Le `=` seul est une affectation, pas une comparaison.",
+					"$n$ est {{if:t==0|pair|un multiple de ${{d}}$}} quand le reste de sa division par ${{if:t==0|2|{{d}}}}$ est nul : `{{if:t==0|n % 2|n % {{d}}}}` doit être égal à $0$, ce qui s'écrit avec `==`.",
+					"`n / {{if:t==0|2|{{d}}}}` est le quotient, pas le reste ; `= 0` est une affectation, refusée après `if`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Moins de 18 : age < 18",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"n": "18",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : <= pour « moins de »",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"n": "18",
+				"rep": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au moins 65 : age >= 65",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"n": "65",
+				"rep": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : > pour « au moins »",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"n": "65",
+				"rep": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plus de 60 : age > 60",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"n": "60",
+				"rep": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Au plus 12 : age <= 12",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "12",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : = au lieu de ==",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"n": "18",
+				"rep": "0"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n pair : n % 2 == 0",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"d": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n % 2 = 0",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"d": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Multiple de 5 : n % 5 == 0",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"d": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

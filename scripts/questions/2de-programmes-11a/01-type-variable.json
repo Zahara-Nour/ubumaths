@@ -1,0 +1,249 @@
+{
+	"title": "Type d'une variable Python",
+	"description": "Type de x après x = 4, x = 4.5, x = 8 / 2, x = \"4\", x = 4 < 7, x = 4 * 7 (int, float, str, bool) ; reconnaître les affectations qui donnent un flottant",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Après l'instruction Python ci-dessous, quel est le type de la variable `x` ?\n\n```python\n{{if:t==0|x = {{a}}|{{if:t==1|x = {{a}}.5|{{if:t==2|x = {{c}} / 2|{{if:t==3|x = \"{{a}}\"|{{if:t==4|x = {{a}} < {{b}}|x = {{a}} * {{b}}}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- `int` (entier)\n- `float` (flottant)\n- `str` (chaîne de caractères)\n- `bool` (booléen)\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:2*(a)"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:min(max((b)-(a),0),1)"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*(0)+(1-min(abs((t)-1),1))*(1)+(1-min(abs((t)-2),1))*(1)+(1-min(abs((t)-3),1))*(2)+(1-min(abs((t)-4),1))*(3)+(1-min(abs((t)-5),1))*(0)"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En Python : `int` pour un **entier**, `float` pour un nombre **à virgule** (flottant), `str` pour un texte entre guillemets (**chaîne de caractères**), `bool` pour `True` ou `False` (**booléen**).",
+					"{{if:t==0|`{{a}}` est un nombre entier, écrit sans virgule : `x` est de type **`int`**.|{{if:t==1|`{{a}}.5` est écrit avec un point (la virgule de Python) : `x` est de type **`float`**.|{{if:t==2|La division `/` donne **toujours** un flottant, même quand elle « tombe juste » : `{{c}} / 2` vaut `{{a}}.0`, et `x` est de type **`float`**.|{{if:t==3|`\"{{a}}\"` est entre guillemets : c'est un **texte**, pas un nombre. `x` est de type **`str`**.|{{if:t==4|`{{a}} < {{b}}` est une comparaison, qui vaut `{{if:ab==1|True|False}}` : `x` est de type **`bool`**.|Le produit de deux entiers est un entier : `x` vaut `{{eval:(a)*(b)}}`, de type **`int`**.}}}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Parmi ces instructions Python, lesquelles donnent à `x` une valeur de type `float` ?\n\n```choix\nplusieurs: oui\n- `x = {{a}}.0`\n- `x = {{c}} / 2`\n- `x = {{a}}`\n- `x = \"{{a}}.5\"`\n- `x = {{a}} + {{b}}`\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:2*(a)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En Python : `int` pour un **entier**, `float` pour un nombre **à virgule** (flottant), `str` pour un texte entre guillemets (**chaîne de caractères**), `bool` pour `True` ou `False` (**booléen**).",
+					"`{{a}}.0` est écrit avec un point : c'est un flottant. `{{c}} / 2` aussi : la division `/` donne toujours un flottant (`{{a}}.0`).",
+					"`{{a}}` et `{{a}} + {{b}}` sont des entiers (`int`) ; `\"{{a}}.5\"` est entre guillemets, c'est une chaîne de caractères (`str`)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x = 4 : int",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"a": "4",
+				"b": "7",
+				"c": "8",
+				"ab": "1",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x = 4.5 : float",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"a": "4",
+				"b": "7",
+				"c": "8",
+				"ab": "1",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x = 8 / 2 : float",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"a": "4",
+				"b": "7",
+				"c": "8",
+				"ab": "1",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 / 2 pris pour un entier",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"a": "4",
+				"b": "7",
+				"c": "8",
+				"ab": "1",
+				"rep": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x = \"4\" : str",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"a": "4",
+				"b": "7",
+				"c": "8",
+				"ab": "1",
+				"rep": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : \"4\" pris pour un entier",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"a": "4",
+				"b": "7",
+				"c": "8",
+				"ab": "1",
+				"rep": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x = 4 < 7 : bool",
+			"variationIndex": 0,
+			"variables": {
+				"t": "4",
+				"a": "4",
+				"b": "7",
+				"c": "8",
+				"ab": "1",
+				"rep": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x = 4 * 7 : int",
+			"variationIndex": 0,
+			"variables": {
+				"t": "5",
+				"a": "4",
+				"b": "7",
+				"c": "8",
+				"ab": "1",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Les deux flottants",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "8"
+			},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la chaîne \"4.5\" cochée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "8"
+			},
+			"answers": ["0;1;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Incomplet : 8 / 2 oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		}
+	]
+}

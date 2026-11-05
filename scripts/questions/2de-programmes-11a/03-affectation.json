@@ -1,0 +1,154 @@
+{
+	"title": "Affectation en langage naturel et en Python",
+	"description": "Valeurs de a et b après a ← 3, b ← a + 4, a ← 2 × b, b ← a − b ; traduire x ← x + 5 en Python",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On exécute l'algorithme suivant.\n\n```\na ← {{a}}\nb ← a + {{p}}\na ← {{k}} × b\nb ← a − b\n```\n\nÀ la fin, $a=?$ et $b=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "b1",
+					"expression": "eval:(a)+(p)"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:(k)*(b1)"
+				},
+				{
+					"name": "b2",
+					"expression": "eval:(a2)-(b1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a2}}"
+				},
+				{
+					"expectedAnswer": "{{b2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`a ← 5` se lit « $a$ prend la valeur $5$ » : on calcule d'abord la valeur de droite, puis on la range dans la variable de gauche, **à la place** de l'ancienne valeur.",
+					"Ligne 1 : $a={{a}}$. Ligne 2 : $b={{a}}+{{p}}={{b1}}$.",
+					"Ligne 3 : $a={{k}}\\times{{b1}}={{a2}}$ (l'ancienne valeur ${{a}}$ est effacée).",
+					"Ligne 4 : $b={{a2}}-{{b1}}={{b2}}$. À la fin, $\\textcolor{{{color:primary.0}}}{a={{a2}}}$ et $\\textcolor{{{color:primary.0}}}{b={{b2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle instruction Python traduit l'instruction en langage naturel `{{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} ← {{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} + {{p}}` ?\n\n```choix\n- `{{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} = {{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} + {{p}}`\n- `{{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} + {{p}} = {{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}}`\n- `{{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} == {{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} + {{p}}`\n- `{{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} = {{p}}`\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..3"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`a ← 5` se lit « $a$ prend la valeur $5$ » : on calcule d'abord la valeur de droite, puis on la range dans la variable de gauche, **à la place** de l'ancienne valeur.",
+					"En Python, l'affectation s'écrit avec `=`, la variable **à gauche** : `{{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} = {{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} + {{p}}`. Elle augmente la valeur de `{{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}}` de ${{p}}$.",
+					"`==` compare deux valeurs (il ne change rien) ; `{{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} + {{p}} = {{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}}` est refusé par Python ; `{{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}} = {{p}}` remplace la valeur de `{{if:w==0|x|{{if:w==1|n|{{if:w==2|s|c}}}}}}` par ${{p}}$ au lieu de l'augmenter."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 14 et b = 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"p": "4",
+				"k": "2",
+				"b1": "7",
+				"a2": "14",
+				"b2": "7"
+			},
+			"answers": ["14", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a garde sa valeur de départ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"p": "4",
+				"k": "2",
+				"b1": "7",
+				"a2": "14",
+				"b2": "7"
+			},
+			"answers": ["3", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b calculé avec a = 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"p": "4",
+				"k": "2",
+				"b1": "7",
+				"a2": "14",
+				"b2": "7"
+			},
+			"answers": ["14", "11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x = x + 5",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"p": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : == au lieu de =",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"p": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

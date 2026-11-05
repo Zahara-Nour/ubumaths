@@ -1,0 +1,177 @@
+{
+	"title": "Boucle bornée (for)",
+	"description": "Valeur de s après for i in range(5): s = s + i, range(1, 6), s = s + 3 ; x multiplié par 2 ou 3 à chaque tour",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\ns = 0\n{{if:t==0|for i in range({{n}}):|{{if:t==1|for i in range(1, {{eval:(n)+1}}):|for i in range({{n}}):}}}}\n{{if:t==0|    s = s + i|{{if:t==1|    s = s + i|    s = s + {{k}}}}}}\n```\n\nÀ la fin, $s=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "n",
+					"expression": "4..8"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(1-min(abs((t)-0),1))*((n)*((n)-1)/2)+(1-min(abs((t)-1),1))*((n)*((n)+1)/2)+(1-min(abs((t)-2),1))*((k)*(n))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`for i in range(n)` répète le bloc $n$ fois, avec `i` qui vaut $0$, $1$, …, $n-1$ ; `range(a, b)` donne $a$, $a+1$, …, $b-1$ (la borne $b$ est **exclue**).",
+					"{{if:t==0|`i` prend les valeurs $0$, $1$, …, ${{eval:(n)-1}}$ (et non ${{n}}$) : la boucle tourne ${{n}}$ fois.|{{if:t==1|`i` prend les valeurs $1$, $2$, …, ${{n}}$ : la borne ${{eval:(n)+1}}$ est exclue.|La boucle tourne ${{n}}$ fois et ajoute ${{k}}$ à chaque tour (la valeur de `i` ne sert pas).}}}}",
+					"{{if:t==0|$s=0+1+\\dots+{{eval:(n)-1}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.|{{if:t==1|$s=1+2+\\dots+{{n}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.|$s={{n}}\\times{{k}}=\\textcolor{{{color:primary.0}}}{{{rep}}}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nx = {{a}}\nfor i in range({{n}}):\n    x = {{q}} * x\n```\n\nÀ la fin, $x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "2|3"
+				},
+				{
+					"name": "n",
+					"expression": "3..5"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:(a)*(q)^(n)"
+				}
+			],
+			"conditions": ["(q)^(n) <= 250"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`for i in range(n)` répète le bloc $n$ fois, avec `i` qui vaut $0$, $1$, …, $n-1$ ; `range(a, b)` donne $a$, $a+1$, …, $b-1$ (la borne $b$ est **exclue**).",
+					"La boucle tourne ${{n}}$ fois ; à chaque tour, $x$ est multiplié par ${{q}}$.",
+					"$x={{a}}\\times{{q}}^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{rep}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "range(5) : s = 10",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"n": "5",
+				"k": "3",
+				"rep": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : i de 1 à 5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"n": "5",
+				"k": "3",
+				"rep": "10"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "range(1, 6) : s = 15",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"n": "5",
+				"k": "3",
+				"rep": "15"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : borne 6 comptée",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"n": "5",
+				"k": "3",
+				"rep": "15"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s = s + 3 : s = 15",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"n": "5",
+				"k": "3",
+				"rep": "15"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 × 2⁴ = 48",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"q": "2",
+				"n": "4",
+				"rep": "48"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un tour de moins",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"q": "2",
+				"n": "4",
+				"rep": "48"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,214 @@
+{
+	"title": "Instruction conditionnelle",
+	"description": "Valeur de y après if x < s: y = 2 * x else: y = x - s ; prix selon l'âge avec if, elif, else (âges frontières 12 et 18 compris)",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nx = {{x}}\nif x < {{s}}:\n    y = 2 * x\nelse:\n    y = x - {{s}}\n```\n\nÀ la fin, $y=?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "5..12"
+				},
+				{
+					"name": "x",
+					"expression": "2..16"
+				},
+				{
+					"name": "lt",
+					"expression": "eval:min(max((s)-(x),0),1)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(lt)*2*(x)+(1-(lt))*((x)-(s))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec `if … else`, Python teste la condition : si elle est vraie, il exécute **seulement** le bloc sous `if` ; sinon, **seulement** le bloc sous `else`.",
+					"{{if:lt==1|${{x}}<{{s}}$ : la condition est **vraie**|${{x}}<{{s}}$ est **faux**}}.",
+					"{{if:lt==1|Python exécute `y = 2 * x` : $y=2\\times{{x}}=\\textcolor{{{color:primary.0}}}{{{y}}}$.|Python exécute `y = x - {{s}}` : $y={{x}}-{{s}}=\\textcolor{{{color:primary.0}}}{{{y}}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nage = {{g}}\nif age < 12:\n    prix = {{p1}}\nelif age < 18:\n    prix = {{p2}}\nelse:\n    prix = {{p3}}\n```\n\nÀ la fin, $\\mathtt{prix}=?$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "6|10|11|12|13|15|17|18|19|25|40"
+				},
+				{
+					"name": "p1",
+					"expression": "4..6"
+				},
+				{
+					"name": "p2",
+					"expression": "7..9"
+				},
+				{
+					"name": "p3",
+					"expression": "10..13"
+				},
+				{
+					"name": "m12",
+					"expression": "eval:min(max(12-(g),0),1)"
+				},
+				{
+					"name": "m18",
+					"expression": "eval:min(max(18-(g),0),1)"
+				},
+				{
+					"name": "prix",
+					"expression": "eval:(m12)*(p1)+(m18-m12)*(p2)+(1-(m18))*(p3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{prix}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Python teste les conditions **dans l'ordre** et n'exécute que le bloc de la **première** condition vraie (`else` si aucune ne l'est).",
+					"{{if:m12==1|${{g}}<12$ est vrai : `prix = {{p1}}`.|${{g}}<12$ est faux. {{if:m18==1|${{g}}<18$ est vrai : `prix = {{p2}}`.|${{g}}<18$ est faux aussi : `else`, `prix = {{p3}}`.}}}}",
+					"À la fin, $\\mathtt{prix}=\\textcolor{{{color:primary.0}}}{{{prix}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x = 5 < 8 : y = 10",
+			"variationIndex": 0,
+			"variables": {
+				"s": "8",
+				"x": "5",
+				"lt": "1",
+				"y": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : branche else prise",
+			"variationIndex": 0,
+			"variables": {
+				"s": "8",
+				"x": "5",
+				"lt": "1",
+				"y": "10"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x = 8, frontière : y = 0",
+			"variationIndex": 0,
+			"variables": {
+				"s": "8",
+				"x": "8",
+				"lt": "0",
+				"y": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 < 8 lu vrai",
+			"variationIndex": 0,
+			"variables": {
+				"s": "8",
+				"x": "8",
+				"lt": "0",
+				"y": "0"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12 ans : 8",
+			"variationIndex": 1,
+			"variables": {
+				"g": "12",
+				"p1": "5",
+				"p2": "8",
+				"p3": "11",
+				"m12": "0",
+				"m18": "1",
+				"prix": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 < 12 lu vrai",
+			"variationIndex": 1,
+			"variables": {
+				"g": "12",
+				"p1": "5",
+				"p2": "8",
+				"p3": "11",
+				"m12": "0",
+				"m18": "1",
+				"prix": "8"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 ans : 5",
+			"variationIndex": 1,
+			"variables": {
+				"g": "10",
+				"p1": "5",
+				"p2": "8",
+				"p3": "11",
+				"m12": "1",
+				"m18": "1",
+				"prix": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "18 ans : 11",
+			"variationIndex": 1,
+			"variables": {
+				"g": "18",
+				"p1": "5",
+				"p2": "8",
+				"p3": "11",
+				"m12": "0",
+				"m18": "0",
+				"prix": "11"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

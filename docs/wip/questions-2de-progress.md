@@ -8,16 +8,15 @@
 
 _Mis à jour le 2026-11-05, après la publication du lot 10 (§ 86)._
 
-- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), 11 A en écriture.
-- **Prochaine action** : lot 11 « lire un programme » (218-223, 413, 229, 416, 228, 232, 233, 417 ;
-  relevé au § 70) : relevé de l'existant puis phase 0 à faire valider, sur une branche neuve. C'est le
-  dernier lot de l'ordre tranché le 2026-11-03.
+- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), 11 A écrit (§ 88, PR des fichiers).
+- **Prochaine action** : merger la PR du 11 A, puis David lance `create-questions --publier` sur
+  `2de-programmes-11a` ; écrire le 11 B (229, 416, 232, 233, 417) sur une branche neuve.
 - **En attente de David** : rien.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
   dossier, variables Supabase locales passées à la main (il ne lit que `.env` = prod) ; lettre ≠
   étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : aucun (le lot 11 ouvre une branche neuve).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lot11a`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2277,3 +2276,20 @@ _11 B — Fonctions (5)_
 **Réponse de David (2026-11-05)** : « je te suis » → phase 0 validée, L11-a à L11-d selon mes
 recommandations (224 et 415 dans le lot ; 233 et 417 sous Algorithmique › Fonctions Python ; 11 A puis 11 B,
 une migration, une page à cocher ; ← seulement dans 2-219).
+
+## 88. Lot 11 A, fichiers (2026-11-05)
+
+- `questions-2de/lot-programmes-11a-2de.py` → `scripts/questions/2de-programmes-11a/` (10 modèles, 73 specs) :
+  2-218 « Type d'une variable Python » (niv. 1), 2-223 « Choisir le type d'une variable » (2), 2-219
+  « Affectation en langage naturel et en Python » (2), 2-220 « Séquence d'instructions » (2), 2-224
+  « Compléter une affectation » (3), 2-221 « Instruction conditionnelle » (2), 2-415 « Compléter une
+  condition » (3), 2-222 « Boucle bornée (for) » (2), 2-413 « Boucle non bornée (while) » (2), 2-228
+  « Lire et modifier un programme (boucle et condition) » (3). Nœuds visés : ceux du § 87.
+- Pièges : une variable de modèle ne vaut pas une lettre (`x|n|s|c` : « Variable "x" not found ») → indice
+  - `selon` ; `{{if:a<b|…}}` évité (indicatrice `ab`) ; l'algorithme en ← est un bloc de code sans
+    langage (texte brut, flèches rendues).
+- Contrôles : simulation prod 10 à créer, specs toutes vertes ; 60 tirages par modèle : 298 réponses
+  numériques recalculées en **exécutant le code Python affiché** (0 écart), 58 cases choix (types, conditions)
+  recalculées de même (0 écart) ; LaTeX 3 599 formules, 0 problème. Joués en local (aperçu admin, Chrome) :
+  `while` (n = 3, c = 1600) « juste », corrigé lisible ; condition `n % 8 = 0` « faux », bonne réponse
+  montrée ; algorithme en ← bien rendu.
