@@ -6,19 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, migration du lot 7b écrite (PR à ouvrir)._
+_Mis à jour le 2026-11-05, après #2387._
 
-- **État** : lots 1 à 7a en prod. Lot 7b (horloge + droite graduée, 9 modèles) : brouillons EN PROD depuis le 2026-11-05,
-  « Non rangés » (v0.73.0 : plus de thème / domaine). Migration `20261105054151_questions_ce2_lot7b_rangement_tags` écrite :
-  test rouge sans elle (5/9), vert avec (9/9). Jouées dans l'aperçu : 01, 04, 09 ; restent 02, 03, 05-08.
-- **Prochaine action** : `security-auditor`, PR, merge, `check:migrations --pr`, `db:migrate`, relevé MCP, page à cocher,
-  publication (`publier-lot`). Ensuite 7c (statistiques).
-- **En attente de David** : l'essai à l'écran de 02, 03, 05-08 (page à cocher, après la migration).
-- **Pièges en cours** : jamais de variable `e` (Euler) ; `sonde-horloges.ts` (blocs `horloge` / `line`, choix compris) à
-  relancer si on retouche un modèle ; niveaux : lecture de l'heure 5-8, calcul de durées 5-7 (6e occupe déjà 5-8), droite
-  graduée 2-3 ; 06 reste sur « calcul de durées » (point 059, phase 0) et non « conversions » (proposé par automaths-arbre :
-  un tag doit être sur le nœud de son point) ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet en minuscule.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7b-rangement`.
+- **État** : lots 1 à 7a en prod. Lot 7b (horloge + droite graduée, 9 modèles) : brouillons en prod, RANGÉS (#2387 mergée,
+  `db:migrate` fait, relevé MCP : nœud et point attendus, `draft`, `updated_at` intact). Jouées dans l'aperçu : 01, 04, 09.
+- **Prochaine action** : page à cocher du lot 7b (02, 03, 05-08 surtout), puis publication. Ensuite 7c (statistiques).
+- **En attente de David** : la relecture, puis `! cd ../ubumaths-wt-questions-ce2 && pnpm tsx
+scripts/questions/publier-lot.ts --dir scripts/questions/ce2-7b` (simulation ; refusée au classifieur du mode auto, elle
+  vise la prod), puis la même avec `--publier`.
+- **Pièges en cours** : jamais de variable `e` (Euler) ; `sonde-horloges.ts` à relancer si on retouche un modèle ; 06 sur
+  « calcul de durées » (point 059), pas « conversions » : un tag doit être sur le nœud de son point ; worktree sans lien
+  Supabase → copier `../ubumaths/supabase/.temp` avant `db:migrate` ; commitlint : sujet en minuscule.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7b-rangement` (mergée), gardé jusqu'à la
+  publication.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -635,3 +635,7 @@ de durées noté, publiés intacts) ; horloge « digitale » = texte + `cadran: 
   « Durées › calcul de durées » ; 010 → « Entiers : numération › droite graduée » (relevé du jour). Migration
   `20261105054151_questions_ce2_lot7b_rangement_tags` (gabarit 7a) et test
   `tests/integration/questions-ce2-lot7b-rangement-tags.test.ts` : rouge sans le corps (5 échecs sur 9), vert avec (9/9).
+- 2026-11-05 : `security-auditor` : aucun finding. #2387 mergée (CI verte après relance : un test client de la démo diaporama
+  tombé sur « Browser connection was closed », sans lien avec la PR) ; `check:migrations --pr 2387` ok ; `db:migrate`
+  depuis le worktree (dry-run : seule la mienne ; le dépôt principal avait des fichiers modifiés d'une autre session) ;
+  relevé MCP : les 9 rangés, un point chacun, `draft`, `updated_at` du 2026-11-02 inchangé.
