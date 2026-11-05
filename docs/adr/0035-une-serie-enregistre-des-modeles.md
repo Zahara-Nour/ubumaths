@@ -1,7 +1,7 @@
 # 0035 — Une série enregistre des modèles, plus des catégories
 
 - **Statut** : acceptée — mise en œuvre par le chantier `automaths-arbre` (journal :
-  `docs/wip/automaths-arbre-progress.md`)
+  [`docs/archive/wip/automaths-arbre-progress.md`](../archive/wip/automaths-arbre-progress.md))
 - **Date** : 2026-11-04 · **Décidée par** : David (Q1 de la phase 0 du chantier, option B)
 
 ## Contexte

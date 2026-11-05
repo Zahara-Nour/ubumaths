@@ -177,10 +177,8 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 
 - `question_templates` : le modèle de question (énoncé paramétré, `variations`, cases, correction),
   rangé dans l'arbre des notions par `classification_node_id`. Les anciens `theme` / `domain` /
-  `subdomain` sont facultatifs depuis l'[ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)
-  (`20261104160229`) et partent au lot 4 du chantier `automaths-arbre` ; l'index unique
-  `idx_question_templates_unique_category` (un ancien quadruplet = au plus un modèle publié) reste
-  jusque-là. Le sens « produit » de `AB` (matrices), jadis déduit du thème `Graphes et matrices`, est
+  `subdomain` et l'index unique `idx_question_templates_unique_category` ont été supprimés par
+  `20261104224856` ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)). Le sens « produit » de `AB` (matrices), jadis déduit du thème `Graphes et matrices`, est
   déclaré dans `shared.capitalPairs` : l'éditeur l'écrit, `20261104165734` l'a posé sur les modèles
   existants de ce thème. `question_template_points` le tague aux points du programme (**RESTRICT** côté point : pivot de
   l'acquisition).

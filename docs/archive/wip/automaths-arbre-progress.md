@@ -2,13 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2386 et sa livraison (v0.73.0)._
+_Mis à jour le 2026-11-05, après le `deploy:prod` 0.73.0. **Chantier clos, journal archivé.**_
 
-- **État** : **tous les lots livrés**. 4b en prod : migration `20261104224856` appliquée, v0.73.0 déployée, maintenance levée. `db:types` : diff nul. Site en 200, aucun « does not exist » dans les journaux Postgres.
-- **Prochaine action** : versement du chantier (durable → `docs/systeme/`, journal → `docs/archive/wip/`), après la relecture des vérifications manuelles.
-- **En attente de David** : rangement dans l'arbre des 16 brouillons sans nœud (ancien rangement gardé en fin de journal) ; vérification manuelle du toast « Panier d'une ancienne version vidé » (4a).
-- **Pièges en cours** : aucun. Les worktrees d'autres chantiers encore sur `categories` doivent se rebaser sur `main` (base locale migrée).
-- **Worktree / branche** : aucun.
+- **État** : lots 1 à 4b en prod (v0.73.0) : catalogue selon l'arbre, séries et panier en lignes de modèle (`items`), plus de thème / domaine / sous-domaine / catégorie.
+- **Versement** : décision dans l'[ADR 0035](../../adr/0035-une-serie-enregistre-des-modeles.md) ; doc durable dans `docs/systeme/questions.md` (catalogue, éditeur, liste admin), `evaluations.md` (lignes de série, anciens liens), `base-de-donnees.md`, `srs.md`, et `docs/pratiques/couvrir-un-niveau.md` (id dans les fichiers de lot).
+- **En attente de David** : rangement dans l'arbre des 16 brouillons sans nœud (table en fin de journal ; liste admin, filtre « Non rangés ») ; vérifications manuelles #2378, #2380, #2382, #2385 (`docs/wip/verifications-manuelles.md`).
 
 ## Origine (2026-11-04)
 

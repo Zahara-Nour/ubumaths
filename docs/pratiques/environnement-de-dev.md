@@ -42,7 +42,9 @@ worktree frère ──► commit ──► push ──► PR ──► CI (quali
 
 1. **Un chantier = un worktree frère** (`../ubumaths-wt-<sujet>`), une branche, une session.
 2. **Commit** : husky lance `lint-staged` (oxlint + prettier sur les fichiers indexés, ~2 s) puis
-   commitlint (header ≤ 100 caractères, conventional commits).
+   commitlint (header ≤ 100 caractères, conventional commits). Fichiers suivis sous `data/` (dossier
+   du `.gitignore`) : lint-staged affiche « paths are ignored » mais le commit passe ; les indexer par
+   `git add -u data/…`.
 3. **Push** : le hook pre-push vérifie le formatage, `lint:fast`, les liens et renvois de la doc, et la
    couverture doc.
 4. **PR → CI 100 % verte → `gh pr merge --merge` → branche supprimée.** Un merge sur `main` ne
