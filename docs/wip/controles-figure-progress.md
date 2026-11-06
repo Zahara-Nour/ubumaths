@@ -6,19 +6,21 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, #2430 (PR B) en revue après correctif (§ 26)._
+_Mis à jour le 2026-11-06, #2430 (PR B du lot 9) ouverte, CI en cours sur 457486757._
 
-- **État** : lots 1 à 8 et #2305 mergés, en prod depuis la 0.69.0. Ordre de David du 2026-11-06
-  (`outils-manquants.md`) : lot 9 « bissectrice construite + règle des médiatrices relâchée » ;
-  translation tracée pas maintenant ; angle non adjacent : pas d'outil.
-- **Prochaine action** : merger #2430 (PR B : 2 unités dans la fenêtre + Report dans la palette) quand
-  CI verte et revue du correctif sans bloquant ; puis PR A (bissectrice au compas, exception 4).
+- **État** : lots 1 à 8 en prod. Lot 9 (§ 25, phase 0 validée) : PR B = #2430 (médiatrice faisable dès
+  2 unités dans la fenêtre + Report dans la palette de `droite` et `cercle`, cercle circonscrit au Report
+  jugé, `outils: report` refusé sur quadrillage). Deux passes de revue `code-reviewer` traitées (§ 26).
+- **Prochaine action** : `gh pr checks 2430` ; CI verte → `gh pr merge 2430 --merge`, puis « Reprendre
+  ici » sur main. Ensuite PR A : bissectrice au compas (`droite d = bissectrice(A, O, B)`, exception 4,
+  messages du § 25), nouvelle branche dans le même worktree ou un neuf.
 - **En attente de David** : rien.
-- **Pièges en cours** : `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)`
-  échoue si P définit d ; plafond de 20 objets sans message ; CI qui ne part pas sur une PR en conflit ;
-  tests navigateur instables (Chromium fermé, `demo/lexique`) ; garde « doc à jour » : relancer après
+- **Pièges en cours** : le Compas ne garde pas son écartement (centre puis point de passage) : deux
+  cercles égaux à rayon libre = Report seulement ; tester avec de vrais touchers (`addTap`, écran), pas
+  des coordonnées exactes. `perpendiculaire(A, s)` échoue si A est un bout de s ; `symetrie(P, axe=d)`
+  si P définit d ; commitlint refuse un sujet en majuscule ; garde « doc à jour » : relancer après
   `git fetch`.
-- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-mediatrices` (PR B).
+- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-mediatrices` (#2430).
 
 ---
 
