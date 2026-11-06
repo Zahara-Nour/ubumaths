@@ -224,6 +224,15 @@ describe('bissectrice : faux, première cause', () => {
 		});
 	});
 
+	it('un côté repassé ou prolongé seul → « Trace la bissectrice… » (revue M1)', () => {
+		for (const objects of [[droite(O, B)], [ARC_O, droite(O, A)]]) {
+			expect(judge(BISSECTRICE, objects)).toEqual({
+				status: 'incorrect',
+				feedback: bissectriceMissingFeedback('A', 'O', 'B')
+			});
+		}
+	});
+
 	it('droite (A’B’), dans l’angle mais pas par O → « doit partir du sommet O »', () => {
 		expect(judge(BISSECTRICE, [...COMPASS, droite(A1, B1)])).toEqual({
 			status: 'incorrect',
@@ -311,6 +320,15 @@ describe('exception 4 : bornée à la bissectrice (constructionOf)', () => {
 		expect(c.built.has(1)).toBe(false);
 		const piqued = constructionOf([ARC_O, report(O, O, A1)], base, sides, { arcsOnSides: true });
 		expect(piqued.built.has(1)).toBe(false);
+	});
+
+	it('un cercle centré sur un côté, par un point construit plus tard, est construit (ordre libre, revue I1)', () => {
+		const c = constructionOf([ARC_O, cercle(A, B1)], base, sides, { arcsOnSides: true });
+		expect(c.built.has(1)).toBe(true);
+		const late = constructionOf([ARC_O, ARC_A1, ARC_B1, cercle(O, P)], base, sides, {
+			arcsOnSides: true
+		});
+		expect(late.built.has(3)).toBe(true);
 	});
 
 	it('l’écartement OA’ reporté ailleurs (en A’) reste un trait construit (le losange)', () => {

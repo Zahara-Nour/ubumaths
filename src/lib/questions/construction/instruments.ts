@@ -366,13 +366,31 @@ function isSupported(
 	isBuilt: (p: Position) => boolean,
 	traits: readonly Trait[],
 	marks: readonly DrawnRepere[],
-	eyeballed: readonly Extract<Trait, { kind: 'circle' }>[] = []
+	eyeballed: readonly EyeballedArc[] = []
 ): boolean {
 	if (object.kind === 'point' || object.kind === 'repere') return false;
 	if (object.kind === 'cercle' || object.kind === 'report') {
 		const trait = traitOf(object);
-		// Exception 4 : le cercle à l'œil, refait sur ses propres points, reste à l'œil
-		if (trait && !isStraight(trait) && eyeballed.some((c) => sameCircle(c, trait))) return false;
+		// Exception 4 : le cercle à l'œil, refait sur SES propres points (même centre, même
+		// rayon, appui sur un point qu'il a lui-même construit), reste à l'œil
+		const support =
+			object.kind === 'cercle'
+				? [{ x: object.x, y: object.y }]
+				: [
+						{ x: object.ax, y: object.ay },
+						{ x: object.bx, y: object.by }
+					];
+		if (
+			trait &&
+			!isStraight(trait) &&
+			eyeballed.some(
+				(arc) =>
+					sameCircle(arc.circle, trait) &&
+					support.some((p) => arc.points.some((q) => samePosition(p, q)))
+			)
+		) {
+			return false;
+		}
 	}
 	if (object.kind === 'cercle') {
 		const center = { x: object.cx, y: object.cy };
@@ -488,7 +506,8 @@ function sameRadiusCrossings(
  * cercle à l'œil centré sur un point construit construit ses intersections avec
  * les traits droits construits QUI PASSENT PAR SON CENTRE (l'arc piqué au sommet
  * qui coupe les deux côtés), sans devenir un trait : refait sur ces points (même
- * centre, même rayon), il reste à l'œil. Bornée à la bissectrice : ailleurs, ces
+ * centre, même rayon, appuyé sur l'un d'eux), il reste à l'œil. Bornée aux figures
+ * qui vérifient une bissectrice : ailleurs, ces
  * points rendraient « construite » une longueur prise à l'œil (un côté de
  * triangle, par exemple).
  * On recommence tant que quelque chose s'ajoute : deux traits tracés à l'œil ne
@@ -517,8 +536,8 @@ export function constructionOf(
 		return base.some(at) || crossings.some(at) || paired.some(at);
 	};
 	const marks = objects.filter((o): o is DrawnRepere => o.kind === 'repere');
-	/** Cercles à l'œil dont l'exception 4 a construit des points */
-	const eyeballed: Extract<Trait, { kind: 'circle' }>[] = [];
+	/** Cercles à l'œil dont l'exception 4 a construit des points, et ces points */
+	const eyeballed: EyeballedArc[] = [];
 	let grew = true;
 	while (grew) {
 		grew = false;
@@ -537,9 +556,9 @@ export function constructionOf(
 			grew = true;
 		}
 		if (!options.arcsOnSides) continue;
-		for (const { circle, points } of arcsOnSides(objects, built, isBuilt, traits)) {
-			if (!eyeballed.some((c) => sameCircle(c, circle))) eyeballed.push(circle);
-			for (const p of points) {
+		for (const arc of arcsOnSides(objects, built, isBuilt, traits)) {
+			eyeballed.push(arc);
+			for (const p of arc.points) {
 				if (isBuilt(p)) continue;
 				paired.push(p);
 				grew = true;
@@ -547,6 +566,16 @@ export function constructionOf(
 		}
 	}
 	return { built, traits, isBuilt };
+}
+
+/** Un cercle à l'œil et les points que l'exception 4 lui fait construire */
+interface EyeballedArc {
+	circle: Extract<Trait, { kind: 'circle' }>;
+	points: Position[];
+}
+
+function samePosition(p: Position, q: Position): boolean {
+	return Math.hypot(p.x - q.x, p.y - q.y) <= EPSILON * scaleOf(p, q);
 }
 
 /** Même centre, même rayon, au calcul flottant près */
@@ -569,7 +598,7 @@ function arcsOnSides(
 	built: ReadonlySet<number>,
 	isBuilt: (p: Position) => boolean,
 	traits: readonly Trait[]
-): { circle: Extract<Trait, { kind: 'circle' }>; points: Position[] }[] {
+): EyeballedArc[] {
 	return objects.flatMap((object, index) => {
 		if (built.has(index) || (object.kind !== 'cercle' && object.kind !== 'report')) return [];
 		const circle = traitOf(object);

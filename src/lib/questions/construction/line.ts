@@ -532,8 +532,11 @@ function judgeBissectrice(
 		);
 	};
 	const own = throughO.filter((i) => !retraces(i));
-	const tries = own.length > 0 ? own : throughO;
-	const builtTries = tries.filter(built);
+	// Seulement un côté repassé ou prolongé : pas encore d'essai de bissectrice (revue M1)
+	if (own.length === 0) {
+		return { status: 'incorrect', feedback: bissectriceMissingFeedback(...names) };
+	}
+	const builtTries = own.filter(built);
 	if (builtTries.length === 0) {
 		return { status: 'incorrect', feedback: BISSECTRICE_EYEBALLED_FEEDBACK };
 	}

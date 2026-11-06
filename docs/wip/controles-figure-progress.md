@@ -1225,3 +1225,11 @@ sévère que l'élève.
 - Tests : `construction-bissectrice.test.ts` (29, rouges avant le code, 5 gardes vertes avant),
   écran `figure-a-completer-bissectrice.svelte.test.ts` (vrais touchers : arc en O par (5 ; 1), arcs
   de A' par B' et de B' par A', règle de O au croisement → juste ; à l'œil → message et correction).
+- **Revue (`code-reviewer`, Opus)** : aucune forge trouvée. Corrigé : I1, un cercle centré sur un côté
+  était déclaré « à l'œil » avant que son point de passage soit construit (l'ordre comptait) ;
+  désormais refusé seulement s'il s'appuie sur un point que son propre arc a construit (tests rouges
+  avant, 2). M1 : un côté seulement repassé → « Trace la bissectrice… ». M2 : message d'auteur du
+  rapporteur qui cite la bissectrice. M3/M4 : doc précisée (exception 4 pour toute la figure qui
+  vérifie une bissectrice ; repère admis par le juge sans voir la palette). **M5 à trancher par
+  David** : une bissectrice dont les côtés ne sont pas tracés est acceptée à l'auteur, et l'élève qui
+  pique l'arc sans tracer les côtés reçoit « tracée à l'œil ».

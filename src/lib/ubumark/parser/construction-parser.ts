@@ -404,7 +404,7 @@ function coherenceError(
 		(check.kind === 'triangle' && check.angles.length > 0) ||
 		(check.kind === 'droite' && bissectriceOf(check.expression) !== null);
 	if (!protractorAllowed && spec.tools.includes('rapporteur')) {
-		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} »), à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») ou à construire un triangle dont un angle est donné (« verifier: ${TRIANGLE_ANGLES_EXAMPLE} ») ; le retirer de outils:`;
+		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} »), à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») à construire un triangle dont un angle est donné (« verifier: ${TRIANGLE_ANGLES_EXAMPLE} ») ou une bissectrice (« verifier: droite d = bissectrice(A, O, B) ») ; le retirer de outils:`;
 	}
 	if (!spec.tools.includes(tool))
 		return check.kind === 'point'

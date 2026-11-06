@@ -655,10 +655,10 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    Deux traits tracés à l'œil ne construisent donc rien. Exception : deux cercles (compas ou report) de
    même rayon, même pris à l'œil, centrés sur deux points construits, construisent leurs deux
    intersections (médiatrice à écartement quelconque), sans devenir des traits. Exception 4 (lot 9,
-   option `arcsOnSides`, la bissectrice seule) : un cercle à l'œil centré sur un point construit
+   option `arcsOnSides`, dans une figure qui vérifie une bissectrice) : un cercle à l'œil centré sur un point construit
    construit ses intersections avec les traits droits construits qui passent par son centre (l'arc
    piqué au sommet coupe les côtés), sans devenir un trait ; refait sur ces points (même centre, même
-   rayon), il reste à l'œil ; bornée à la bissectrice, car ailleurs elle rendrait « construite » une
+   rayon, appuyé sur l'un d'eux), il reste à l'œil ; bornée à la bissectrice, car ailleurs elle rendrait « construite » une
    longueur prise à l'œil (côté de triangle). Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas un point, nom
    déjà pris, point déjà dans la figure, hors de la fenêtre, hors des nœuds (quadrillage) ; sans
    quadrillage, autre chose que `symetrie(A, axe=d)` / `symetrie(A, centre=O)` / `milieu(A, B)` (comme
@@ -693,11 +693,12 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`). Bissectrice
    (`droite d = bissectrice(A, O, B)`, lot 9) : papier uni seulement ; O, A, B visibles, non alignés,
    au moins 2 unités de bissectrice (la demi-droite) dans la fenêtre (`bissectriceSupportError`).
-   Juste : une droite construite qui la recouvre (au compas, grâce à l'exception 4), ou, si le prof
-   ajoute le rapporteur à `outils:` (seule droite qui l'admet), un côté d'angle tiré de O à 1° près.
+   Juste : une droite construite qui la recouvre (au compas, grâce à l'exception 4), ou, au rapporteur
+   (le prof l'ajoute à `outils:`, seule droite qui l'admet ; le juge, qui ne voit pas la palette, admet
+   un repère pour toute bissectrice), un côté d'angle tiré de O à 1° près.
    Messages, première cause : pas de droite par O (« Trace la bissectrice de l'angle AOB, depuis son
    sommet O. », ou, si une droite entre dans l'angle, « Ta bissectrice doit partir du sommet O. ») ;
-   droite par O à l'œil (« Ta bissectrice est tracée à l'œil… ») ; perpendiculaire à la bissectrice
+   un côté seulement repassé ou prolongé : le même message ; droite par O à l'œil (« Ta bissectrice est tracée à l'œil… ») ; perpendiculaire à la bissectrice
    (« Ta droite partage l'angle voisin, pas l'angle AOB : pique le compas sur [OA) et [OB). ») ; sinon
    « Les deux angles ne sont pas égaux… ». Correction : les deux demi-angles codés du même signe, l'arc
    en O et les deux arcs égaux en traits fins (`solutionBissectrices`). Vérification
