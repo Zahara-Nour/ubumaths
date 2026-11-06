@@ -608,3 +608,9 @@ type). Rien à créer.
 
 Lots proposés : (10) suites et dénombrement (238, 239, 380) ; (11) analyse (279, 288, 298, 299, 309) ;
 (12) probabilités et statistiques (344, 427, 359, 431, 360).
+
+**D9 (David, 2026-11-06, « je suis tes recos »)** : Q1 les 13 algorithmes ; Q2 Python seulement, formes (a) faire
+tourner, (b) compléter une ligne (case choix), (c) interpréter, jamais « faire tourner » un programme aléatoire, 2-3
+variations ; Q3 un modèle par point, tagué sur son point P, suites (239, 380) dans « Seuil et algorithmes ›
+Algorithmes » après 378 et 369, les autres dans une catégorie neuve « Algorithmes » par domaine ; Q4 publiés comme
+les démonstrations ; Q5 accès : personne de plus. Lots 10 à 12 dans l'ordre proposé.
