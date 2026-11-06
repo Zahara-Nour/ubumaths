@@ -43,6 +43,7 @@ import {
 	MARQUEUR_CURSEUR,
 	RACCOURCIS_MOTS,
 	rangerRelation,
+	relationEnCours,
 	retirerLigneVide
 } from './calcul-aligne';
 
@@ -960,6 +961,9 @@ export const MathBlock = Node.create({
 			// Sync changes back to node
 			const synchroniser = () => {
 				const target = mathfield;
+				// Marqueur du curseur posé le temps d'un geste de calcul aligné : état
+				// transitoire, jamais écrit dans le nœud (ni dans l'historique)
+				if (target.value.includes(MARQUEUR_CURSEUR)) return;
 				const pos = getPos();
 
 				if (typeof pos === 'number') {
@@ -1054,16 +1058,21 @@ export const MathBlock = Node.create({
 
 				// Relation tapée en tête de la colonne de droite (l'ancienne effacée) :
 				// rangée au milieu dès que la suite s'écrit, pour rester centrée sous
-				// celles des autres lignes. Le drapeau écarte l'`input` que MathLive
-				// émet pour le marqueur lui-même.
+				// celles des autres lignes. Rien tant que l'atome avant le curseur peut
+				// encore devenir une autre relation (`=` puis `>` → ⇒) : poser le
+				// marqueur réécrit le champ et couperait le raccourci. Le drapeau écarte
+				// l'`input` que MathLive émet pour le marqueur lui-même.
 				let rangement = false;
 				mathfield.addEventListener('input', () => {
 					if (rangement || !aRelationARanger(mathfield.value)) return;
+					const position = mathfield.position;
+					if (relationEnCours(mathfield.getValue(position - 1, position, 'latex'))) return;
 					rangement = true;
 					try {
 						insererMarqueur(mathfield);
 						const range = rangerRelation(mathfield.value);
 						if (range !== null) poserAvecCurseur(mathfield, range);
+						else mathfield.executeCommand('deleteBackward');
 					} finally {
 						if (mathfield.value.includes(MARQUEUR_CURSEUR)) {
 							mathfield.value = mathfield.value.replace(MARQUEUR_CURSEUR, '');
@@ -1071,6 +1080,15 @@ export const MathBlock = Node.create({
 						rangement = false;
 						synchroniser();
 					}
+				});
+
+				// Champ quitté : plus de raccourci en cours, toute relation restée en tête
+				// de la colonne de droite (seule, ou retapée devant une suite) est rangée.
+				mathfield.addEventListener('blur', () => {
+					const range = rangerRelation(mathfield.value, true);
+					if (range === null) return;
+					mathfield.value = range;
+					synchroniser();
 				});
 
 				// « ou », « et » d'un raisonnement : posés au premier focus, quand le

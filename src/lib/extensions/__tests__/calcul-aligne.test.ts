@@ -14,6 +14,7 @@ import {
 	effacerRelation,
 	estCalculCentre,
 	rangerRelation,
+	relationEnCours,
 	retirerLigneVide,
 	MARQUEUR_CURSEUR as M
 } from '../calcul-aligne';
@@ -264,5 +265,46 @@ describe('estCalculCentre', () => {
 		expect(estCalculCentre('\\begin{array}{rcl}A & = & 3\\end{array}')).toBe(true);
 		expect(estCalculCentre(aligne('A&=3'))).toBe(false);
 		expect(estCalculCentre('\\begin{array}{cc}a&b\\end{array}')).toBe(false);
+	});
+});
+
+describe('revue #2422', () => {
+	it('relation hors des listes déjà au milieu : gardée, et reprise', () => {
+		expect(ajouterLigne(centre(`A&\\subset&B${M}`))).toBe(centre(`A&\\subset&B\\\\&\\subset&${M}`));
+		expect(ajouterLigne(centre(`x&\\in&E\\\\&\\equiv&F${M}`))).toBe(
+			centre(`x&\\in&E\\\\&\\equiv&F\\\\&\\equiv&${M}`)
+		);
+	});
+
+	it('\\left(0;1\\right] ne fait pas perdre la coupure', () => {
+		expect(ajouterLigne(`x\\in\\left(0;1\\right]\\iff x>0${M}`)).toBe(
+			centre(`x\\in\\left(0;1\\right]&\\iff&x>0\\\\&\\iff&${M}`)
+		);
+	});
+
+	it('relation retapée devant une suite, curseur collé derrière : pas rangée', () => {
+		expect(rangerRelation(centre(`A&=&3\\\\&&=${M}x=3`))).toBeNull();
+		expect(rangerRelation(centre(`A&=&3\\\\&&\\Rightarrow${M} x=3`))).toBeNull();
+	});
+
+	it('au repos (champ quitté) : rangée, même seule', () => {
+		expect(rangerRelation(centre('A&=&3\\\\&&\\Rightarrow x=3'), true)).toBe(
+			centre('A&=&3\\\\&\\Rightarrow&x=3')
+		);
+		expect(rangerRelation(centre('A&=&3\\\\&&\\Rightarrow'), true)).toBe(
+			centre('A&=&3\\\\&\\Rightarrow&')
+		);
+		expect(aRelationARanger(centre('A&=&3\\\\&&\\Rightarrow'), true)).toBe(true);
+		expect(rangerRelation(centre('A&=&3\\\\&=&7'), true)).toBeNull();
+	});
+
+	it('relationEnCours : un atome qui peut encore devenir une autre relation', () => {
+		expect(relationEnCours('=')).toBe(true);
+		expect(relationEnCours('<')).toBe(true);
+		expect(relationEnCours('\\le')).toBe(true);
+		expect(relationEnCours('\\Rightarrow')).toBe(true);
+		expect(relationEnCours('!')).toBe(true);
+		expect(relationEnCours('n')).toBe(false);
+		expect(relationEnCours('')).toBe(false);
 	});
 });

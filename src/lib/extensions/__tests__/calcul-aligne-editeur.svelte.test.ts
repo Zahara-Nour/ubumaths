@@ -101,6 +101,26 @@ describe('changer la relation d’une nouvelle ligne', () => {
 		await taper('=>n=0');
 		expect(latexDe(e, 'mathBlock')).toBe(centre('n=1&\\iff&n+1=2\\\\&\\Rightarrow&n=0'));
 	});
+
+	it('ligne déjà remplie : le raccourci => aboutit, rangé en quittant le champ (revue #2422)', async () => {
+		const e = await editeur([bloc(centre('n=1&\\iff&n+1=2\\\\&\\iff&x=3'))]);
+		await entrerDans('.math-block-wrapper');
+		// Début de la colonne de droite de la ligne 2 : juste avant son x
+		const champ = document.querySelector('.math-block-wrapper math-field') as HTMLElement & {
+			position: number;
+			lastOffset: number;
+			getValue(debut: number, fin: number, format: 'latex'): string;
+		};
+		for (let p = 0; p < champ.lastOffset; p++) {
+			if (champ.getValue(p, p + 1, 'latex') === 'x') champ.position = p;
+		}
+		await taper('{Backspace}');
+		await taper('=>');
+		expect(latexDe(e, 'mathBlock')).toBe(centre('n=1&\\iff&n+1=2\\\\&&\\Rightarrowx=3'));
+		champ.blur();
+		await pause(100);
+		expect(latexDe(e, 'mathBlock')).toBe(centre('n=1&\\iff&n+1=2\\\\&\\Rightarrow&x=3'));
+	});
 });
 
 describe('effacer', () => {

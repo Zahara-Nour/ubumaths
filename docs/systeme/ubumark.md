@@ -152,7 +152,12 @@ relation de la précédente, le curseur à droite ; un bloc `aligned` existant e
 **Retour arrière** sur une ligne vide la retire (`retirerLigneVide`, MathLive s'y arrêtait), et au
 début de la colonne de droite efface la relation du milieu (`effacerRelation` : MathLive ne passe
 pas d'une cellule à l'autre) ; une relation tapée en tête de la colonne de droite est **rangée au
-milieu** dès que la suite s'écrit (`rangerRelation`, pas avant : `<=>` se tape en trois touches) ;
+milieu** dès que quelque chose s'écrit après elle (`rangerRelation`), jamais tant que l'atome avant
+le curseur peut encore devenir une autre relation (`relationEnCours` : `=` puis `>` → ⇒, `<=>` en
+trois touches ; poser le marqueur couperait le raccourci), et au plus tard en quittant le champ
+(`rangerRelation(…, true)` au `blur`). Un milieu déjà rempli est gardé tel quel, même une relation
+hors des listes (`\subset`, `\in`) ; le PDF le prend aussi tel quel. Le marqueur n'est jamais écrit
+dans le nœud (`synchroniser` l'ignore) ;
 `ou` / `et` tapés deviennent `\:\mathrm{ou}\:` / `\:\mathrm{et}\:` (`RACCOURCIS_MOTS`, blocs
 seulement ; `\text{…}` laissait MathLive en mode texte). Le curseur est repéré par un marqueur
 `\maltese` posé puis retiré. Le `addRowAfter` natif de MathLive n'est pas utilisé : en fin de

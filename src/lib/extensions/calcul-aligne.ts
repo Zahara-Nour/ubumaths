@@ -111,6 +111,7 @@ function jetons(latex: string): Jeton[] {
 	// Les parenthèses comptent à part, jamais sous zéro : un intervalle `[0,1)` a une
 	// `)` sans `(`, qui ne doit pas faire croire la suite plus haut que la ligne.
 	let parentheses = 0;
+	let precedent = '';
 	let i = 0;
 	while (i < latex.length) {
 		let fin = i + 1;
@@ -124,8 +125,12 @@ function jetons(latex: string): Jeton[] {
 		resultat.push({ texte, debut: i, profondeur: structure + parentheses });
 		if (OUVRANTS.has(texte)) structure++;
 		if (FERMANTS.has(texte)) structure--;
-		if (texte === '(') parentheses++;
-		if (texte === ')') parentheses = Math.max(0, parentheses - 1);
+		// Le délimiteur d'un `\left` / `\right` est déjà compté par la structure :
+		// `\left(0;1\right]` laissait une `(` ouverte jusqu'au bout de la ligne
+		const delimiteur = precedent === '\\left' || precedent === '\\right';
+		if (texte === '(' && !delimiteur) parentheses++;
+		if (texte === ')' && !delimiteur) parentheses = Math.max(0, parentheses - 1);
+		precedent = texte;
 		i = fin;
 	}
 	return resultat;
@@ -229,12 +234,22 @@ function ligneDuCurseur(lignes: string[][]): number {
 /**
  * Ligne en trois colonnes [gauche, relation, droite]. Ce qui suit le premier `&`
  * forme la droite, la relation qui l'ouvre prend la colonne du milieu : la même
- * lecture vaut pour un `aligned` (`A &= 7`), un `a &\iff& b`, une relation tapée
- * en tête de la droite ou une suite tapée dans le milieu. Une ligne sans `&`
- * reste à gauche.
+ * lecture vaut pour un `aligned` (`A &= 7`), une relation tapée en tête de la
+ * droite ou une suite tapée dans le milieu. Un milieu déjà rempli est gardé tel
+ * quel, même une relation hors des listes (`\subset`, `\in`, `\equiv`) : seule une
+ * relation connue suivie d'une suite y est séparée. Une ligne sans `&` reste à
+ * gauche.
  */
 function enTroisColonnes(cellules: string[]): string[] {
 	if (cellules.length === 1) return [cellules[0], '', ''];
+	if (cellules.length >= 3 && cellules[1] !== '') {
+		const [relation, suite] = separerRelation(cellules[1]);
+		const droite = cellules.slice(2);
+		if (relation !== '' && suite !== '') {
+			return [cellules[0], relation, [suite, ...droite].join(' ').trim()];
+		}
+		return [cellules[0], cellules[1], droite.join(' ').trim()];
+	}
 	return [cellules[0], ...separerRelation(cellules.slice(1).join(' '))];
 }
 
@@ -333,21 +348,36 @@ export function effacerRelation(latex: string): string | null {
 }
 
 /**
- * Relation à ranger : milieu vide, droite ouverte par une relation suivie d'autre
- * chose. Seule, la relation reste où elle est : un raccourci comme `<=>` se tape
- * en trois touches (`<`, `≤`, `⇔`), le ranger dès la première le casserait.
+ * Atome juste avant le curseur qui peut encore devenir une autre relation par un
+ * raccourci MathLive (`<` → `≤` → `⇔`, `=` → `⇒`, `!` → `≠`) : tant qu'il est là,
+ * rien n'est rangé, sans quoi la touche suivante tomberait dans une autre cellule.
  */
-function relationARanger(ligne: string[]): [string, string] | null {
+export function relationEnCours(atome: string): boolean {
+	return estRelation(atome.trim()) || atome.trim() === '!';
+}
+
+/**
+ * Relation à ranger : milieu vide, droite ouverte par une relation. Pendant la
+ * frappe, seulement quand quelque chose a été écrit APRÈS elle (curseur pas
+ * collé derrière) : un raccourci comme `<=>` se tape en trois touches, le ranger
+ * dès la première le casserait. Au repos (champ quitté), toujours.
+ */
+function relationARanger(ligne: string[], auRepos: boolean): [string, string] | null {
 	if (ligne.length < 3 || ligne[1] !== '') return null;
 	const [relation, reste] = separerRelation(ligne.slice(2).join(' '));
-	if (relation === '' || sansMarqueur(reste) === '') return null;
+	if (relation === '') return null;
+	if (!auRepos && (reste.startsWith(MARQUEUR_CURSEUR) || sansMarqueur(reste) === '')) {
+		return null;
+	}
 	return [relation, reste];
 }
 
 /** Vrai si une relation est à ranger au milieu (test rapide, sans curseur). */
-export function aRelationARanger(latex: string): boolean {
+export function aRelationARanger(latex: string, auRepos = false): boolean {
 	const calcul = lireCalcul(latex);
-	return calcul?.forme === 'centre' && calcul.lignes.some((l) => relationARanger(l) !== null);
+	return (
+		calcul?.forme === 'centre' && calcul.lignes.some((l) => relationARanger(l, auRepos) !== null)
+	);
 }
 
 /**
@@ -356,14 +386,16 @@ export function aRelationARanger(latex: string): boolean {
  * gauche, décalée par rapport aux relations centrées des autres lignes.
  *
  * @param latex - LaTeX du bloc, {@link MARQUEUR_CURSEUR} à la place du curseur
+ *   pendant la frappe ; sans marqueur au repos
+ * @param auRepos - champ quitté : plus aucun raccourci en cours, tout est rangé
  * @returns le calcul rangé, le marqueur à sa place dans la droite, ou null
  */
-export function rangerRelation(latex: string): string | null {
+export function rangerRelation(latex: string, auRepos = false): string | null {
 	const calcul = lireCalcul(latex);
 	if (calcul?.forme !== 'centre') return null;
 	let range = false;
 	const lignes = calcul.lignes.map((ligne) => {
-		const separee = relationARanger(ligne);
+		const separee = relationARanger(ligne, auRepos);
 		if (!separee) return ligne;
 		range = true;
 		return [ligne[0], ...separee];

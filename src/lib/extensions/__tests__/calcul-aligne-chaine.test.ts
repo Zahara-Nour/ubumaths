@@ -68,4 +68,11 @@ describe('PDF', () => {
 		expect(typst).toContain('[$n=1$], [$<=>$], [$n+1=2$]');
 		expect(typst).toContain('[], [$=>$], [$n=0","5 med upright(o u) med n=2$]');
 	});
+
+	it('calcul centré : toute relation du milieu reste au milieu (revue #2422)', async () => {
+		const latex = '\\begin{array}{rcl}x&\\approx&3.1\\\\&\\subset&E\\end{array}';
+		const typst = await markdownToTypst(`$$${latex}$$`, { includeSetup: false, language: 'fr' });
+		expect(typst).toContain('[$x$], [$approx$], [$3","1$]');
+		expect(typst).toContain('[], [$subset$], [$E$]');
+	});
 });
