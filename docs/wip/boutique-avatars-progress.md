@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, phase 0 écrite._
+_Mis à jour le 2026-11-06, phase 0 validée._
 
-- **État** : phase 0 rédigée (ci-dessous), rien de codé · **Prochaine action** : validation de la phase 0 par David, puis question d'accès, puis tests rouges · **En attente de David** : validation des comportements, questions Q1 à Q4 · **Pièges en cours** : `avatar_url` lu par 15 fonctions SQL et ~96 fichiers ; le trigger de connexion réécrit `avatar_url` s'il est vide · **Worktree / branche** : `ubumaths-wt-boutique-avatars` / `feat/boutique-avatars`
+- **État** : phase 0 et Q1-Q4 validées par David, question d'accès tranchée ; PR 1 (migration + tests d'intégration) en cours · **Prochaine action** : tests rouges, migration, `security-auditor`, PR · **En attente de David** : rien · **Pièges en cours** : la policy « Users can update own profile » laisse écrire `avatar_url` à la main (fermée par la PR 1) ; le trigger de connexion réécrit `avatar_url` s'il est vide · **Worktree / branche** : `ubumaths-wt-boutique-avatars` / `feat/boutique-avatars`
 
 ## Décisions de David (2026-11-06)
 
@@ -15,7 +15,16 @@ _Mis à jour le 2026-11-06, phase 0 écrite._
 - Écarté pour l'instant : le blason personnel à composer (peut-être plus tard).
 - Avatars par défaut (emblèmes Galopin / Capitaine / admin) : livrés par #2436, hors de ce chantier.
 
-## Phase 0 — comportements (à valider)
+## Tranché par David (2026-11-06, « je valide »)
+
+- **Phase 0** (comportements 1 à 17 ci-dessous) validée.
+- **Q1** : l'avatar porté est écrit dans `profiles.avatar_url` (adresse de l'image du catalogue) ; la photo Google est gardée dans une nouvelle colonne et revient au retrait. Les cadres viendront dans leur propre PR (colonne propagée partout).
+- **Q2** : premier lot = 3 avatars par famille (21) + 3 cadres ; animés et série de l'Almanach au second lot.
+- **Q3** : prix 15 / 30 / 60 / 100, en base (modifiables sans déploiement).
+- **Q4** : boutique réservée aux élèves ; le prof ne peut ni offrir ni retirer un avatar.
+- **Question d'accès** : catalogue lisible par tout utilisateur connecté ; collection lisible par l'élève seul (ni prof ni admin ; elle figure dans l'export RGPD) ; avatar porté vu par ceux qui voient déjà `avatar_url`, ni plus ni moins. En miroir : plus personne ne peut réécrire sa propre `avatar_url` à la main — aucun code ne le fait, et la prod ne contient aucune adresse hors Google (mesuré le 2026-11-06 : 73 élèves + 1 prof Google, 9 vides, 0 autre).
+
+## Phase 0 — comportements (validés)
 
 ### Nominal
 
