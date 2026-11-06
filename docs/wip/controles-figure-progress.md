@@ -1189,8 +1189,13 @@ sévère que l'élève.
   rayon reproductible était AB, donc l'ancienne règle. Mon test « rayon 4 » donnait des coordonnées
   exactes qu'aucun doigt ne produit. **Décision de David (« je suis tes recos »)** : le **Report dans la
   palette** de `droite` (papier uni ; `LINE_GRID_TOOLS` sans lui sur quadrillage) et de `cercle` ; les
-  juges `line.ts` et `circle.ts` admettent le report comme trait de construction (le cercle circonscrit
-  reste tracé au Compas).
+  juges `line.ts` et `circle.ts` admettent le report comme trait de construction.
+- **2e passe de la revue** : aucun report ne forge de réponse (construit seulement si centre et écartement
+  le sont) ; **important** : le cercle circonscrit tracé au Report (écartement O → A, piqué en O) était
+  ignoré (« Trace le cercle… ») → `circleOf` (`circle.ts`) lit un report comme le cercle de même centre et
+  de même rayon ; écartement pris à l'œil pile au bon rayon → « Ton compas est ouvert à l'œil… ». Mineur
+  traité : `outils: report` sur quadrillage refusé pour une droite (erreur d'auteur). Tests rouges avant
+  (3).
 - Tests du correctif (rouges avant, 5) : palettes ; Report pris à la main (`addTap`), piqué en A et B,
   croisements dans la fenêtre → juste ; deux rayons à la main au Compas → « tracée à l'œil » ; milieu de
   [AB] au bord (A(0 ; 3), B(0 ; 5)) : deux paires de reports du même côté → juste ; cercle circonscrit

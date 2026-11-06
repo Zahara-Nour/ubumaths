@@ -471,6 +471,10 @@ function coherenceError(
 		const other = spec.tools.find((t) => !allowed.includes(t));
 		if (other)
 			return `${check.kind} ${check.name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		// Lot 9 (§ 25) : sur quadrillage, la médiatrice passe par les nœuds ; le Report garde un écartement libre
+		if (check.kind === 'droite' && grid && spec.tools.includes('report')) {
+			return `droite ${check.name} : le report se prend sur papier uni ; le retirer de outils: (ou retirer « grille: »)`;
+		}
 		// Lot 3b (§ 11, décision de David) : le centre tombe rarement sur un nœud
 		if (check.kind === 'cercle' && grid) {
 			return `cercle ${check.name} : le cercle circonscrit se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;

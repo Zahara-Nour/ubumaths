@@ -352,6 +352,36 @@ describe('vérification cercle : erreurs d’auteur', () => {
 		expect(() => assertChecks(source)).toThrow(/centre du cercle est hors de la fenêtre/);
 	});
 
+	it('le cercle lui-même au Report (écartement de O à A, piqué en O) → juste (lot 9, revue)', () => {
+		const report: DrawnObject = {
+			kind: 'report',
+			cx: O.x,
+			cy: O.y,
+			ax: O.x,
+			ay: O.y,
+			bx: A.x,
+			by: A.y
+		};
+		expect(judge(CIRCONSCRIT, [...CONSTRUCTION, report])).toEqual({ status: 'correct' });
+	});
+
+	it('le cercle au Report, écartement pris à l’œil pile au bon rayon → compas ouvert à l’œil (lot 9)', () => {
+		const r = Math.hypot(A.x - O.x, A.y - O.y);
+		const report: DrawnObject = {
+			kind: 'report',
+			cx: O.x,
+			cy: O.y,
+			ax: 0.5,
+			ay: 0.5,
+			bx: 0.5 + r,
+			by: 0.5
+		};
+		expect(judge(CIRCONSCRIT, [...CONSTRUCTION, report])).toEqual({
+			status: 'incorrect',
+			feedback: CIRCLE_THROUGH_EYEBALLED_FEEDBACK
+		});
+	});
+
 	it('médiatrices au Report (un écartement gardé), puis le cercle au compas → juste (lot 9)', () => {
 		// Écartement 3 pris à la main, piqué en A, B puis C : les arcs de [AB] et [AC]
 		const report = (center: Position): DrawnObject => ({

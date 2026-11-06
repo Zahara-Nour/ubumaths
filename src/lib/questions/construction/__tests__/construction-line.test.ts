@@ -116,6 +116,16 @@ describe('vérification droite : lecture de l’en-tête', () => {
 		]);
 	});
 
+	it('sur quadrillage, le Report est refusé dans outils: (lot 9)', () => {
+		const source = figure('droite m = mediatrice(A, B)', AB_BODY, [
+			'grille: 1',
+			'outils: droite, compas, report'
+		]);
+		expect(readConstructionHeader(source).errors[0]?.message).toMatch(
+			/le report se prend sur papier uni/
+		);
+	});
+
 	it('outils: restreint la palette', () => {
 		const source = figure('droite m = mediatrice(A, B)', AB_BODY, ['outils: droite, compas']);
 		expect(readConstructionHeader(source).spec.tools).toEqual(['droite', 'compas']);
