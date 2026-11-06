@@ -54,8 +54,8 @@ import {
 	SOLIDE_DASH,
 	SOLIDE_DOT_RADIUS,
 	SOLIDE_LABEL_SIZE,
-	SOLIDE_THICK_STROKE,
 	buildSolideScene,
+	solideLineStroke,
 	type SolideLabel
 } from '../utils/espace-solides';
 import { PATRON_FOLD_STROKE, buildPatronScene, type PatronLine } from '../utils/espace-patrons';
@@ -194,7 +194,7 @@ function solideTypst(spec: SolideSpec): string {
 	}
 	for (const line of scene.lines) {
 		const dash = line.dashed ? `, dash: (${SOLIDE_DASH.map(cm).join(', ')})` : '';
-		const thickness = cm(line.thick ? SOLIDE_THICK_STROKE : ESPACE_STROKE);
+		const thickness = cm(solideLineStroke(line));
 		const [first, ...rest] = line.points;
 		content.push(
 			`  #place(top + left, curve(stroke: (paint: black, thickness: ${thickness}, cap: "round", join: "round"${dash}), curve.move(${at(first)}), ${rest.map((p) => `curve.line(${at(p)})`).join(', ')}))`

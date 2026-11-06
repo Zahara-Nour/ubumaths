@@ -30,8 +30,8 @@
 		SOLIDE_DOT_RADIUS,
 		SOLIDE_LABEL_SIZE,
 		SOLIDE_SUB_SCALE,
-		SOLIDE_THICK_STROKE,
 		buildSolideScene,
+		solideLineStroke,
 		solideArrowBetween,
 		solideLabel
 	} from '$lib/ubumark/utils/espace-solides';
@@ -195,7 +195,7 @@
 			<polyline
 				class="solide-trait"
 				points={pointsOf(line.points)}
-				stroke-width={line.thick ? SOLIDE_THICK_STROKE : ESPACE_STROKE}
+				stroke-width={solideLineStroke(line)}
 				stroke-dasharray={line.dashed ? SOLIDE_DASH.join(' ') : undefined}
 			/>
 		{/each}
