@@ -1239,3 +1239,6 @@ sévère que l'élève.
 2. **M5** : erreur d'auteur si un côté de l'angle n'est pas tracé (« l'angle AOB doit être tracé :
    ajouter x = demidroite(O, A) et y = demidroite(O, B) ») ; un trait droit de la figure par O et A
    suffit (demi-droite, droite, segment). `bissectriceSupportError`, tests rouges avant (1).
+   Revue (Sonnet) : un trait par O qui s'en va vers A suffit, même plus court que OA (`sideDrawn`) ;
+   le message nomme le seul côté manquant (« ajouter le côté [OA) (demidroite(O, A)) ») ; tests des
+   deux branches, triangle, droite portée par d'autres points, ordre des erreurs.
