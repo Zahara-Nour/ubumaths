@@ -35,6 +35,7 @@ import {
 	angleSideVertex,
 	basePointsOf,
 	constructionOf,
+	isOnSomeTrait,
 	isStraight,
 	lineCrossesFrame,
 	type Construction,
@@ -195,7 +196,8 @@ function bisectorDirection(a: Position, o: Position, b: Position): Position | nu
 
 /**
  * Papier uni : la bissectrice de l'angle AOB se construit-elle ? O, A et B
- * visibles, distincts et non alignés (un angle saillant), et au moins 2 unités
+ * visibles, distincts et non alignés (un angle saillant), ses deux côtés tracés
+ * (un trait droit de la figure par O et A, un par O et B), et au moins 2 unités
  * de bissectrice dans la fenêtre (lot 9, § 25). Le message, ou null.
  */
 function bissectriceSupportError(
@@ -213,6 +215,12 @@ function bissectriceSupportError(
 	const lengths = Math.hypot(u.x, u.y) * Math.hypot(w.x, w.y);
 	if (lengths === 0 || Math.abs(cross(u, w)) <= 1e-9 * lengths) {
 		return `${p}, ${v} et ${q} sont alignés (ou confondus) : l’angle ${p}${v}${q} n’est pas un angle saillant`;
+	}
+	// Revue M5 : sans ses côtés tracés, l'arc piqué en O n'a rien à couper
+	const drawn = (end: Position) =>
+		shapes.traits.some((t) => isStraight(t) && isOnSomeTrait(o, [t]) && isOnSomeTrait(end, [t]));
+	if (!drawn(a) || !drawn(b)) {
+		return `l’angle ${p}${v}${q} doit être tracé : ajouter x = demidroite(${v}, ${p}) et y = demidroite(${v}, ${q})`;
 	}
 	const d = bisectorDirection(a, o, b);
 	if (!d || !shapes.window) return null;

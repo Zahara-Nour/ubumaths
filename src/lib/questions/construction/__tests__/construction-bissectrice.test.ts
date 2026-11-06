@@ -161,16 +161,60 @@ describe('vérification droite = bissectrice : lecture et erreurs d’auteur', (
 		expect(() => assertChecks(source)).toThrow(/O n’est pas visible/);
 	});
 
+	it('côtés de l’angle non tracés : refusé (l’arc en O n’aurait rien à couper, revue M5)', () => {
+		const bare = figure([], ['O = point(2, 2)', 'A = point(8, 3)', 'B = point(4, 7)']);
+		expect(() => assertChecks(bare)).toThrow(
+			/l’angle AOB doit être tracé : ajouter x = demidroite\(O, A\) et y = demidroite\(O, B\)/
+		);
+		// Un seul côté tracé : refusé aussi
+		const one = figure([], [...BODY.slice(0, 3), 'x = demidroite(O, A)']);
+		expect(() => assertChecks(one)).toThrow(/doit être tracé/);
+	});
+
+	it('côtés tracés en segments [OA] et [OB], ou en droites : admis', () => {
+		const segments = figure([], [...BODY.slice(0, 3), 'segment(O, A)', 'segment(O, B)']);
+		expect(() => assertChecks(segments)).not.toThrow();
+		const lines = figure([], [...BODY.slice(0, 3), 'droite(O, A)', 'droite(B, O)']);
+		expect(() => assertChecks(lines)).not.toThrow();
+	});
+
 	it('A, O, B alignés : refusé (pas un angle saillant)', () => {
-		const source = figure([], ['O = point(2, 2)', 'A = point(8, 2)', 'B = point(0, 2)']);
+		const source = figure(
+			[],
+			[
+				'O = point(2, 2)',
+				'A = point(8, 2)',
+				'B = point(0, 2)',
+				'x = demidroite(O, A)',
+				'y = demidroite(O, B)'
+			]
+		);
 		expect(() => assertChecks(source)).toThrow(/alignés/);
 	});
 
 	it('bissectrice qui sort de la fenêtre au bout de moins de 2 unités : refusé', () => {
 		// O dans le coin haut-droit, angle ouvert vers l'extérieur
-		const source = figure([], ['O = point(9.5, 7.5)', 'A = point(9.5, 0)', 'B = point(0, 7.5)']);
+		const source = figure(
+			[],
+			[
+				'O = point(9.5, 7.5)',
+				'A = point(9.5, 0)',
+				'B = point(0, 7.5)',
+				'x = demidroite(O, A)',
+				'y = demidroite(O, B)'
+			]
+		);
 		expect(() => assertChecks(source)).not.toThrow();
-		const out = figure([], ['O = point(9, 7)', 'A = point(10, 8)', 'B = point(9, 8)']);
+		const out = figure(
+			[],
+			[
+				'O = point(9, 7)',
+				'A = point(10, 8)',
+				'B = point(9, 8)',
+				'x = demidroite(O, A)',
+				'y = demidroite(O, B)'
+			]
+		);
 		expect(() => assertChecks(out)).toThrow(/2 unités dans la fenêtre/);
 	});
 });

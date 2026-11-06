@@ -691,7 +691,8 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    (`PLAIN_PAPER_TOOLS.droite`) ; sur quadrillage, tous ses touchers vont aux nœuds (l'équerre choisit
    d'abord sa droite). Correction : la droite en pointillés ;
    médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`). Bissectrice
-   (`droite d = bissectrice(A, O, B)`, lot 9) : papier uni seulement ; O, A, B visibles, non alignés,
+   (`droite d = bissectrice(A, O, B)`, lot 9) : papier uni seulement ; O, A, B visibles, non alignés, les deux côtés tracés (un trait droit de la
+   figure par O et A, un par O et B : sinon l'arc en O n'a rien à couper),
    au moins 2 unités de bissectrice (la demi-droite) dans la fenêtre (`bissectriceSupportError`).
    Juste : une droite construite qui la recouvre (au compas, grâce à l'exception 4), ou, au rapporteur
    (le prof l'ajoute à `outils:`, seule droite qui l'admet ; le juge, qui ne voit pas la palette, admet
