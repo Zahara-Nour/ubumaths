@@ -28,3 +28,12 @@ describe('sanitizeHtml — contenu riche autorisé conservé', () => {
 		expect(sanitizeHtml(html)).toBe(html);
 	});
 });
+
+describe('transformMathHtml — formules TipTap (navigateur)', () => {
+	it('lit la formule quelle que soit la place de latex (sortie de TipTap)', () => {
+		const output = transformMathHtml(
+			'<p>Soit <span data-math-inline="" data-math-syntax="latex" data-math-original="" latex="2x+3=11"></span>.</p>'
+		);
+		expect(output).toContain('<math-field read-only>2x+3=11</math-field>');
+	});
+});

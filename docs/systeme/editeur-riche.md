@@ -16,7 +16,7 @@ couvre:
 
 # Éditeur riche (TipTap) et affichage sûr du contenu écrit
 
-> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8).
+> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; formules du cahier (`transformMathHtml`) le 2026-11-06.
 > Voisins, non recopiés ici : l'usage de `RichTextEditor` et `RichTextDisplay` est dans
 > [composants-ui.md](../pratiques/composants-ui.md) ; la conversion TipTap ↔ markdown
 > (`markdown-import.ts`, `markdown-export.ts`) et les extensions de `src/lib/extensions/` sont
@@ -122,13 +122,14 @@ de tête retirés, tabulations et retours à la ligne supprimés partout (`java\
 
 ## Écarts connus
 
-- **Formules vides au cahier de texte** (trouvé le 2026-10-25, chantier demo-debug, PR 6h) :
-  `transformMathHtml` ne lit `latex="…"` que s'il suit directement `data-math-inline` /
-  `data-math-block`, mais l'éditeur écrit `data-math-syntax` et `data-math-original` avant
-  (depuis `6939fefb5`, 2025-12-14). L'élève reçoit des champs vides ; le prof, qui rouvre la
-  séance dans l'éditeur, voit ses formules. Les tests écrivent ce HTML à la main, dans l'ancien
-  ordre. Prod au 2026-10-25 : aucune formule au cahier. Décidé par David : le cahier de texte
-  passera à ubumark (markdown + `MarkdownRenderer`), chantier à part.
+- **Formules vides au cahier de texte — corrigé le 2026-11-06** (trouvé le 2026-10-25,
+  chantier demo-debug, PR 6h) : `transformMathHtml` ne lisait `latex="…"` que s'il suivait
+  directement `data-math-inline` / `data-math-block`, mais l'éditeur écrit `data-math-inline=""`,
+  `data-math-syntax` et `data-math-original` avant (depuis `6939fefb5`, 2025-12-14). Il lit
+  désormais `latex` où qu'il soit parmi les attributs (tests sur la vraie sortie de TipTap,
+  serveur et navigateur, et carte « cahier » de `/demo/editeur`). Prod au 2026-11-06 : aucune
+  formule au cahier (2 séances). Reste décidé par David : le cahier de texte passera à ubumark
+  (markdown + `MarkdownRenderer`), chantier à part.
 - **Énigmes : HTML enregistré, lu comme du markdown** (vu le 2026-10-25, pas mesuré) :
   `RiddleForm.svelte` enregistre `bind:htmlValue`, `RiddleCard` et `RiddleOfTheDayCard`
   l'affichent par `MarkdownRenderer`.

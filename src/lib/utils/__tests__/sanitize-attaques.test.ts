@@ -46,6 +46,26 @@ describe('transformMathHtml — formules TipTap', () => {
 		expect(findDangers(output), output).toEqual([]);
 		expect(output.replace(/="[^"]*"/g, '=""')).not.toContain('<img');
 	});
+
+	// Forme réelle de `editor.getHTML()` : `data-math-inline=""` d'abord, `latex` en
+	// dernier. La formule sortait VIDE dans le cahier de texte (élève, lien public) :
+	// l'expression ne lisait `latex` que juste après le marqueur, sans `=""`.
+	it('lit la formule quelle que soit la place de latex (sortie de TipTap)', () => {
+		const output = transformMathHtml(
+			'<p>Soit <span data-math-inline="" data-math-syntax="latex" data-math-original="" latex="2x+3=11"></span>.</p>' +
+				'<div data-math-block="" data-math-syntax="latex" data-math-original="" latex="x^2&lt;4"></div>'
+		);
+		expect(output).toContain('<math-field read-only>2x+3=11</math-field>');
+		expect(output).toContain('<math-field read-only>x^2&lt;4</math-field>');
+	});
+
+	it("n'injecte pas de balise par latex placé après le marqueur", () => {
+		const output = transformMathHtml(
+			'<span data-math-inline="" latex="&lt;img src=x onerror=alert(1)&gt;"></span>'
+		);
+		expect(findDangers(output), output).toEqual([]);
+		expect(output.replace(/="[^"]*"/g, '=""')).not.toContain('<img');
+	});
 });
 
 describe('sanitizePlainText — aucune balise', () => {

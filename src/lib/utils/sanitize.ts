@@ -205,22 +205,26 @@ export function transformMathHtml(html: string): string {
 	// First sanitize the HTML
 	let result = sanitizeHtmlWithMath(html);
 
+	// `latex` est lu où qu'il soit parmi les attributs : `editor.getHTML()` écrit
+	// `data-math-inline=""` puis `latex` en dernier, et l'ancienne expression (`latex`
+	// juste après le marqueur) rendait la formule VIDE dans le cahier de texte.
+	const latexDe = (attributs: string): string =>
+		(attributs.match(/(?:^|\s)latex="([^"]*)"/)?.[1] ?? '')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;');
+
 	// Transform inline math: <span data-math-inline latex="..."></span>
 	result = result.replace(
-		/<span\s+data-math-inline(?:\s+latex="([^"]*)")?[^>]*><\/span>/g,
-		(_match, latex) => {
-			const escapedLatex = (latex || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-			return `<span class="math-inline-wrapper"><math-field read-only>${escapedLatex}</math-field></span>`;
-		}
+		/<span\s+([^>]*?\bdata-math-inline(?=[\s=>])[^>]*)><\/span>/g,
+		(_match, attributs: string) =>
+			`<span class="math-inline-wrapper"><math-field read-only>${latexDe(attributs)}</math-field></span>`
 	);
 
 	// Transform block math: <div data-math-block latex="..."></div>
 	result = result.replace(
-		/<div\s+data-math-block(?:\s+latex="([^"]*)")?[^>]*><\/div>/g,
-		(_match, latex) => {
-			const escapedLatex = (latex || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-			return `<div class="math-block-wrapper"><math-field read-only>${escapedLatex}</math-field></div>`;
-		}
+		/<div\s+([^>]*?\bdata-math-block(?=[\s=>])[^>]*)><\/div>/g,
+		(_match, attributs: string) =>
+			`<div class="math-block-wrapper"><math-field read-only>${latexDe(attributs)}</math-field></div>`
 	);
 
 	return result;
