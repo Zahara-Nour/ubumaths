@@ -9,10 +9,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 10 (algorithmes : suites et dénombrement) en PR._
+_Mis à jour le 2026-11-06, après #2429 (lot 10 mergé)._
 
 - **État** : démonstrations (lots 1-4) et approfondissements (lots 5-9) publiés. Algorithmes (§ 15, D9) : lot 10
-  (238, 239, 380, § 16, D10) écrit et vérifié, PR ouverte.
+  (238, 239, 380, § 16, D10) mergé (#2429), brouillons à créer en prod par David.
 - **Prochaine action** : après le merge, David lance
   `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-10 --publier` (dépôt principal à
   jour) ; puis relevé MCP, ids dans les JSON (PR), migration nœud + tag (gabarit lot 9, aucune sous-notion neuve),
@@ -24,7 +24,8 @@ _Mis à jour le 2026-11-06, lot 10 (algorithmes : suites et dénombrement) en PR
   qui plante tests verts → `gh run rerun <run> --failed`. Port 5178. Brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local` (sinon `create-questions` vise la prod). Les « catégories » du journal ne sont qu'une
   étiquette : en base, seuls nœud, niveau et tag.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-algorithmes-10`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (HEAD détaché), nouvelle branche depuis
+  `origin/main`.
 
 ---
 
@@ -638,3 +639,5 @@ arrêtée à n) ; `create-questions` simulation prod (3 à créer) ; brouillons 
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-10 --publier`
+
+Mergée (#2429, CI verte du premier coup).
