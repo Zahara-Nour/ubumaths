@@ -492,6 +492,15 @@
 	}
 
 	/**
+	 * L'éditeur est-il créé ? Avant (import de MathLive en cours, ou échoué),
+	 * `getMarkdown()` rend `''` : un appelant qui lit le contenu à l'envoi doit
+	 * alors garder le sien, sous peine d'enregistrer un texte vide.
+	 */
+	export function isReady(): boolean {
+		return editor !== null && editor !== undefined;
+	}
+
+	/**
 	 * Get markdown content on-demand (exported method)
 	 */
 	export function getMarkdown(): string {

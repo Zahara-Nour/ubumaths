@@ -7,6 +7,7 @@ couvre:
   - 'src/lib/programmes/**'
   - 'static/programmes/**'
   - 'src/lib/components/{cours,journal,progression,programme}/**'
+  - 'src/lib/journal/**'
   - 'src/lib/components/templates/{Chapter,Template}*.svelte'
   - 'src/lib/components/templates/{index.ts,__tests__/**}'
   - 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
@@ -31,7 +32,7 @@ couvre:
 > [suivi du programme](../archive/wip/suivi-programme-progress.md),
 > [progression élève](../archive/wip/progression-eleve-progress.md)) et du chantier clos
 > [publication progressive](../wip/publication-progressive-progress.md).
-> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21 ; filtres de l'ancienne génération retirés (C5, après l'étape 4) le 2026-10-22 ; vue « Carte » de la page Programme le 2026-10-23 ; liste des questions du cahier de texte (ADR 0035) le 2026-11-04 ; séries relues sans ancienne forme (lot 4a) le 2026-11-04.
+> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21 ; filtres de l'ancienne génération retirés (C5, après l'étape 4) le 2026-10-22 ; vue « Carte » de la page Programme le 2026-10-23 ; liste des questions du cahier de texte (ADR 0035) le 2026-11-04 ; séries relues sans ancienne forme (lot 4a) le 2026-11-04 ; cahier de texte en ubumark (chantier cahier-ubumark, PR 1) le 2026-11-06.
 
 ## À quoi ça sert
 
@@ -177,7 +178,8 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
 `delete`, `publish`) ; `src/routes/(protected)/dashboard/student/cahier-texte/` et
 `[entryId]/` ; `src/routes/(public)/cahier/[token]/` (sans compte). Composants :
 `src/lib/components/journal/` (`JournalWeekGrid`, `JournalEntryCard`, `HomeworkCard`,
-`JournalDatePicker`).
+`JournalDatePicker`, `JournalContent`). Format du texte : `src/lib/journal/content.ts`
+(`isLegacyHtmlContent`, `journalContentPreview`).
 
 ### Programme, couverture, progression
 
@@ -398,6 +400,24 @@ Une séance (`class_journal_entries`) : une classe, une date, un texte, et `is_p
 Les **jours de cours** = jours de `class_schedules` moins les `school_holidays` de l'année
 scolaire de l'école (`getClassSessionCalendar`).
 
+**Format du texte** (séance et travaux) : **ubumark**, depuis le chantier cahier-ubumark
+(décision de David du 2026-10-25). L'éditeur de séance lit le markdown de chaque
+`RichTextEditor` **au moment de l'envoi** (`getMarkdown`, dans le `use:enhance`), pas par une
+liaison : la liaison markdown attend 150 ms après la dernière frappe. Tant qu'un éditeur n'est
+pas créé (`isReady()` faux : import de MathLive en cours ou échoué), c'est le contenu chargé qui
+part, inchangé — `getMarkdown()` rendrait `''` et effacerait la séance. Les champs cachés
+`lessonContent` / `homeworkItems` portent ce même contenu chargé (repli sans JavaScript). La lecture passe par
+`JournalContent` → `MarkdownRenderer` (jamais `{@html}`), avec le lecteur des références
+(`internalLinks` : `student` sur la page élève, `public` + jeton sur `/cahier/[token]`). Les
+aperçus (grille, cartes, liste élève) passent par `journalContentPreview` : texte brut, références
+réduites à leur libellé.
+
+⚠️ **Transitoire** : les lignes écrites avant le chantier sont en HTML (TipTap).
+`isLegacyHtmlContent` les reconnaît à leur balise de bloc d'ouverture ; `JournalContent` les rend
+alors par l'ancienne chaîne (`transformMathHtml` puis `linkifyResourceReferences`), l'éditeur les
+charge comme HTML et les réenregistre en markdown. Les lignes de prod seront converties par une
+migration de données, puis cette branche retirée.
+
 **Activités** d'une séance (`journal_entry_activities`) : cinq sortes — `exercise`, `question`,
 `assessment`, `course`, `textbook`. Sur une séance neuve, la page les garde et les envoie avec le
 formulaire (`parsePendingActivities`). Dans la liste des questions à ajouter, un modèle se lit par son titre et
@@ -616,3 +636,8 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
     le modèle s'édite sur sa page — serveur livré à l'étape 3b, interface à l'étape 3c
     ([journal](../archive/wip/refonte-modeles-chapitre-progress.md)). Le bouton « Mettre à jour depuis un
     chapitre » a disparu, et l'ancien circuit des versions a été supprimé à l'étape 5A.
+12. **Vidéo du cahier chargée depuis n'importe quel hôte** (audit de #2435, 2026-11-06, non
+    bloquant) : le cahier en ubumark est rendu en mode complet ; une vidéo `https://` écrite par le
+    prof (`VideoDisplay.svelte`, CSP `media-src … https:` de `src/hooks.server.ts`) est chargée par
+    chaque lecteur, visiteurs anonymes du lien public compris (leur adresse IP part chez l'hôte).
+    L'ancienne chaîne HTML n'autorisait pas `<video>`. À trancher par David.

@@ -17,6 +17,7 @@
 -->
 
 <script lang="ts">
+	import { journalContentPreview } from '$lib/journal/content';
 	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -33,14 +34,6 @@
 	}
 
 	let { homework, onclick }: Props = $props();
-
-	/**
-	 * Truncate HTML content
-	 */
-	function truncateContent(html: string, maxLength: number): string {
-		const text = html.replace(/<[^>]*>/g, '');
-		return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
-	}
 
 	/**
 	 * Format due date countdown (e.g., "Dans 2 jours", "Demain", "Aujourd'hui")
@@ -132,7 +125,7 @@
 		<!-- Homework content preview -->
 		<div class="rounded-md bg-muted/50 p-3">
 			<p class="text-sm">
-				{truncateContent(homework.homeworkContent, 150)}
+				{journalContentPreview(homework.homeworkContent, 150)}
 			</p>
 		</div>
 

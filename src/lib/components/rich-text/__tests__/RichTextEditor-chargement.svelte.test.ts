@@ -27,4 +27,15 @@ describe('RichTextEditor — chargement', () => {
 		).toBe(false);
 		expect(container.querySelector('.ProseMirror')).not.toBeNull();
 	});
+
+	it('isReady : faux avant la création de l’éditeur, vrai après (cahier de texte)', async () => {
+		// Le cahier lit `getMarkdown()` à l'envoi. Avant la création, `getMarkdown()`
+		// rend '' : sans `isReady`, un clic trop tôt enregistrait une séance vide.
+		const { component } = await render(RichTextEditor, { markdownValue: 'Texte **gardé**' });
+		expect(component.isReady()).toBe(false);
+		expect(component.getMarkdown()).toBe('');
+		await pause(100);
+		expect(component.isReady()).toBe(true);
+		expect(component.getMarkdown()).toContain('Texte **gardé**');
+	});
 });

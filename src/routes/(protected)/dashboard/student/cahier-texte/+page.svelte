@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { referencesToLabels } from '$lib/resources/references';
+	import { journalContentPreview } from '$lib/journal/content';
 	import { lore } from '$lib/config/lore';
 	/**
 	 * Student Class Journal (Cahier de Texte) Page
@@ -140,18 +140,6 @@
 			month: 'long'
 		});
 	}
-
-	/**
-	 * Truncate HTML content for preview
-	 */
-	function truncateContent(html: string | null, maxLength: number = 150): string {
-		if (!html) return '';
-		// Strip HTML tags for preview. Les références citées sont réduites à leur
-		// libellé : un uuid mangerait l'aperçu sans rien apprendre au lecteur.
-		const text = referencesToLabels(html).replace(/<[^>]*>/g, '');
-		if (text.length <= maxLength) return text;
-		return text.slice(0, maxLength).trim() + '...';
-	}
 </script>
 
 <svelte:head>
@@ -267,7 +255,7 @@
 								<Card.Content>
 									{#if entry.lessonContent}
 										<p class="text-sm text-muted-foreground">
-											{truncateContent(entry.lessonContent)}
+											{journalContentPreview(entry.lessonContent, 150)}
 										</p>
 									{/if}
 								</Card.Content>

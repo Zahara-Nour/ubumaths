@@ -9,13 +9,13 @@
 	Page volontairement autonome plutôt que réutilisant les composants de
 	`$lib/components/journal` : ceux-ci portent les types et les attentes de
 	l'espace authentifié, et cette page doit rester lisible même quand tout le
-	reste change.
+	reste change. Seule exception : `JournalContent`, le rendu du contenu, qui ne
+	dépend que du texte et du lecteur.
 -->
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { transformMathHtml } from '$lib/utils/sanitize';
-	import { linkifyResourceReferences } from '$lib/resources/linkify';
+	import JournalContent from '$lib/components/journal/JournalContent.svelte';
 	import { BookOpen, ClipboardList, CalendarDays } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
@@ -28,21 +28,11 @@
 	);
 
 	/**
-	 * Le cahier de texte est saisi dans TipTap et stocké en **HTML**, pas en
-	 * ubumark : le rendre avec le moteur markdown affichait les balises au lieu du
-	 * texte. On assainit puis on transforme les références `[[…]]` en liens —
-	 * inertes ici, puisqu'un lecteur sans compte n'a de page pour aucune d'elles :
-	 * il lit « Exercice 3 — Fiche : Dérivées », ce qui est l'information utile.
+	 * Lecteur sans compte : le jeton fait toute la différence. Sans lui, une fiche
+	 * citée n'a aucune adresse publique et reste du texte ; avec lui, elle s'ouvre
+	 * — à condition d'être effectivement citée, ce que la base vérifie.
 	 */
-	function renderContent(raw: string | null): string {
-		// Le jeton fait toute la différence : sans lui, une fiche citée n'a aucune
-		// adresse publique et reste du texte. Avec lui, elle s'ouvre — à condition
-		// d'être effectivement citée, ce que la base vérifie.
-		return linkifyResourceReferences(transformMathHtml(raw || ''), {
-			role: 'public',
-			shareToken: data.journal_token
-		});
-	}
+	const links = $derived({ role: 'public' as const, shareToken: data.journal_token });
 
 	/** « lundi 8 septembre » — le format long aide à se repérer sans calendrier. */
 	function formatDate(iso: string): string {
@@ -93,9 +83,7 @@
 									<BookOpen class="h-4 w-4" />
 									En classe
 								</div>
-								<div class="prose prose-sm max-w-none dark:prose-invert">
-									{@html renderContent(entry.lesson_content)}
-								</div>
+								<JournalContent content={entry.lesson_content} {links} />
 							</div>
 						{/if}
 
@@ -111,9 +99,7 @@
 										<Badge variant="secondary">{formatDueDate(travail.due_date)}</Badge>
 									{/if}
 								</div>
-								<div class="prose prose-sm max-w-none dark:prose-invert">
-									{@html renderContent(travail.content)}
-								</div>
+								<JournalContent content={travail.content} {links} />
 							</div>
 						{/each}
 					</Card.Content>

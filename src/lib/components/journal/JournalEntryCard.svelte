@@ -19,7 +19,7 @@
 -->
 
 <script lang="ts">
-	import { referencesToLabels } from '$lib/resources/references';
+	import { journalContentPreview } from '$lib/journal/content';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { FileText, BookCheck, Globe, Calendar } from '@lucide/svelte';
@@ -64,17 +64,6 @@
 		}
 		return { variant: 'secondary' as const, label: 'Prévu', color: 'text-orange-500' };
 	});
-
-	/**
-	 * Strip HTML and truncate content
-	 */
-	function truncateContent(html: string | null, maxLength: number): string {
-		if (!html) return '';
-		// Les références citées sont réduites à leur libellé : un uuid mangerait
-		// l'aperçu sans rien apprendre au lecteur.
-		const text = referencesToLabels(html).replace(/<[^>]*>/g, '');
-		return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
-	}
 
 	/**
 	 * Check if entry has class info
@@ -134,7 +123,7 @@
 		{#if entry.lessonContent}
 			<div>
 				<p class="text-sm text-muted-foreground">
-					{truncateContent(entry.lessonContent, 100)}
+					{journalContentPreview(entry.lessonContent, 100)}
 				</p>
 			</div>
 		{:else}
