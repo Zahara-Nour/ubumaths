@@ -991,6 +991,16 @@ function generateMathBlock(node: MathBlockNode, options: ResolvedTypstTranspiler
 		return generateAlignedEquation(alignMatch[2]);
 	}
 
+	// Calcul centré de l'éditeur (`array{rcl}` : gauche, relation, droite) → la même
+	// grille, dont la colonne de la relation est déjà centrée.
+	const centreMatch = latex.match(
+		/^\s*\\begin\s*\{array\}\s*\{\s*rcl\s*\}([\s\S]*)\\end\s*\{array\}\s*$/
+	);
+
+	if (centreMatch && !/\\begin\s*\{array\}/.test(centreMatch[1])) {
+		return generateAlignedEquation(centreMatch[1]);
+	}
+
 	// Convert LaTeX math to Typst math syntax
 	const typstMath = convertLatexToTypstMath(latex);
 	// DEBUG LOG: Keep for Typst debugging - logs each block math conversion

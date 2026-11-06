@@ -14,9 +14,11 @@ import { RACCOURCIS_MOTS } from '../calcul-aligne';
 
 const CALCUL = '\\begin{aligned}A&=3.5+4\\\\&=7.5\\end{aligned}';
 const RAISONNEMENT = `\\begin{aligned}x^2-1=0&\\iff x^2=1\\\\&\\iff x=1${RACCOURCIS_MOTS.ou}x=-1\\end{aligned}`;
+/** Calcul centré (`array{rcl}`) : la forme qu'écrit désormais l'éditeur. */
+const CENTRE = `\\begin{array}{rcl}n=1&\\iff&n+1=2\\\\&\\Rightarrow&n=0.5${RACCOURCIS_MOTS.ou}n=2\\end{array}`;
 
 describe('aller-retour markdown', () => {
-	it.each([CALCUL, RAISONNEMENT])('garde le bloc à l’identique : %s', (latex) => {
+	it.each([CALCUL, RAISONNEMENT, CENTRE])('garde le bloc à l’identique : %s', (latex) => {
 		const markdown = `Correction :\n\n$$${latex}$$\n\nFin.`;
 		expect(tipTapToMarkdown(markdownToTipTap(markdown))).toBe(markdown);
 	});
@@ -37,6 +39,12 @@ describe('rendu élève', () => {
 	it('garde « ou » en mot droit', () => {
 		expect(expressionToLatex(RAISONNEMENT, 'latex', null, 'fr')).toContain('\\:\\mathrm{ou}\\:');
 	});
+
+	it('calcul centré : garde le tableau rcl, ses & et ses \\\\', () => {
+		expect(expressionToLatex(CENTRE, 'latex', null, 'fr')).toBe(
+			`\\begin{array}{rcl}n=1&\\iff&n+1=2\\\\&\\Rightarrow&n=0{,}5${RACCOURCIS_MOTS.ou}n=2\\end{array}`
+		);
+	});
 });
 
 describe('PDF', () => {
@@ -53,5 +61,11 @@ describe('PDF', () => {
 		});
 		expect(typst).toContain('[$x^2-1=0$], [$<=>$], [$x^2=1$]');
 		expect(typst).toContain('[], [$<=>$], [$x=1 med upright(o u) med x=-1$]');
+	});
+
+	it('calcul centré : la même grille, relation au milieu', async () => {
+		const typst = await markdownToTypst(`$$${CENTRE}$$`, { includeSetup: false, language: 'fr' });
+		expect(typst).toContain('[$n=1$], [$<=>$], [$n+1=2$]');
+		expect(typst).toContain('[], [$=>$], [$n=0","5 med upright(o u) med n=2$]');
 	});
 });

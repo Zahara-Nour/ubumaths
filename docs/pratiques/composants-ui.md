@@ -257,7 +257,7 @@ let content = $state('');
 
 Props clés : `preset` (`'full'` par défaut), `toolbar`, `minHeight`, `maxHeight`, `disabled`, `imageUpload`, `onchange`.  
 Section « Insertion » de la barre : droite graduée, tableau de variation, arbre de probabilité, cercle trigonométrique, QR code (bloc ubumark ` ```qr ` prérempli, sans nœud TipTap dédié).  
-Section « Formule » : formule en ligne, modèles, bloc `$$...$$`, et **« Calcul aligné »** (bloc `aligned` d'une ligne, curseur dedans ; Cmd+Entrée y ajoute une ligne — voir [ubumark § Formules](../systeme/ubumark.md#formules)).  
+Section « Formule » : formule en ligne, modèles, bloc `$$...$$`, et **« Calcul aligné »** (calcul centré `array{rcl}` d'une ligne, curseur dedans ; Cmd+Entrée y ajoute une ligne — voir [ubumark § Formules](../systeme/ubumark.md#formules)).  
 Pour l'affichage seul : `RichTextDisplay.svelte` (pas d'éditeur).
 
 ---

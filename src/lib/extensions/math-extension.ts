@@ -35,10 +35,14 @@ import { Plugin, PluginKey, Selection, NodeSelection, TextSelection } from '@tip
 import { parseCustomSafe, toLatex, parseLatexSafe, toCustom } from '$lib/mathAST';
 import {
 	ajouterLigne,
+	aRelationARanger,
 	aUneLigneVide,
 	CALCUL_ALIGNE_VIDE,
+	effacerRelation,
+	estCalculCentre,
 	MARQUEUR_CURSEUR,
 	RACCOURCIS_MOTS,
+	rangerRelation,
 	retirerLigneVide
 } from './calcul-aligne';
 
@@ -999,19 +1003,21 @@ export const MathBlock = Node.create({
 				// Calcul aligné : Cmd/Ctrl/Alt+Entrée ajoute une ligne. Écouté en capture,
 				// avant MathLive, dont le `addRowAfter` natif enveloppe la formule dans un
 				// `\displaylines{…}` quand le curseur est en fin de champ.
-				// Ligne vide + Retour arrière : MathLive s'y arrête, on la retire. Le
-				// marqueur ne sert qu'à savoir si le curseur y est ; sinon il est
-				// effacé et MathLive traite la touche comme d'habitude.
-				const effacerLigneVide = (event: KeyboardEvent) => {
+				// Retour arrière : sur une ligne vide, MathLive s'y arrête, on la retire ;
+				// au début de la colonne de droite d'un calcul centré, MathLive ne fait
+				// rien, on efface la relation du milieu. Le marqueur ne sert qu'à savoir
+				// où est le curseur ; sinon il est effacé et MathLive traite la touche
+				// comme d'habitude.
+				const effacerDansLeCalcul = (event: KeyboardEvent) => {
 					insererMarqueur(mathfield);
-					const sansLigne = retirerLigneVide(mathfield.value);
-					if (sansLigne === null) {
+					const efface = retirerLigneVide(mathfield.value) ?? effacerRelation(mathfield.value);
+					if (efface === null) {
 						mathfield.executeCommand('deleteBackward');
 						return;
 					}
 					event.preventDefault();
 					event.stopPropagation();
-					poserAvecCurseur(mathfield, sansLigne);
+					poserAvecCurseur(mathfield, efface);
 				};
 
 				const nouvelleLigne = (event: KeyboardEvent) => {
@@ -1029,10 +1035,10 @@ export const MathBlock = Node.create({
 						const effacer =
 							estEffacement(event) &&
 							mathfield.selectionIsCollapsed &&
-							aUneLigneVide(mathfield.value);
+							(aUneLigneVide(mathfield.value) || estCalculCentre(mathfield.value));
 						if (!effacer && !estNouvelleLigne(event)) return;
 						try {
-							if (effacer) effacerLigneVide(event);
+							if (effacer) effacerDansLeCalcul(event);
 							else nouvelleLigne(event);
 						} finally {
 							// Jamais de marqueur oublié dans le champ ni dans le nœud, même
@@ -1045,6 +1051,27 @@ export const MathBlock = Node.create({
 					},
 					{ capture: true }
 				);
+
+				// Relation tapée en tête de la colonne de droite (l'ancienne effacée) :
+				// rangée au milieu dès que la suite s'écrit, pour rester centrée sous
+				// celles des autres lignes. Le drapeau écarte l'`input` que MathLive
+				// émet pour le marqueur lui-même.
+				let rangement = false;
+				mathfield.addEventListener('input', () => {
+					if (rangement || !aRelationARanger(mathfield.value)) return;
+					rangement = true;
+					try {
+						insererMarqueur(mathfield);
+						const range = rangerRelation(mathfield.value);
+						if (range !== null) poserAvecCurseur(mathfield, range);
+					} finally {
+						if (mathfield.value.includes(MARQUEUR_CURSEUR)) {
+							mathfield.value = mathfield.value.replace(MARQUEUR_CURSEUR, '');
+						}
+						rangement = false;
+						synchroniser();
+					}
+				});
 
 				// « ou », « et » d'un raisonnement : posés au premier focus, quand le
 				// champ est monté (avant, MathLive n'a pas encore ses raccourcis).
