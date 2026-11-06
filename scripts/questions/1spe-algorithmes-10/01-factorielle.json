@@ -1,0 +1,178 @@
+{
+	"title": "Calculer une factorielle avec Python",
+	"description": "Fonction fact(n) par une boucle for : faire tourner (n de 4 à 7), compléter la ligne de la boucle, choisir la valeur initiale du produit",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef fact(n):\n    p = 1\n    for k in range(1, n + 1):\n        p = p * k\n    return p\n```\n\nQue renvoie `fact({{eval:n}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..7"
+				},
+				{
+					"name": "f",
+					"expression": "eval:n!"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:f}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`k` prend les valeurs $1$, $2$, …, ${{eval:n}}$ : `range(1, n + 1)` s'arrête juste avant `n + 1`. À chaque tour, `p` est multiplié par `k`.",
+					"Valeurs successives de `p` après chaque tour : $1$, $2$, $6$, $24${{if:n>=5|, $120$|}}{{if:n>=6|, $720$|}}{{if:n>=7|, $5040$|}}.",
+					"`fact({{eval:n}})` renvoie $1\\times2\\times\\cdots\\times{{eval:n}}={{eval:n}}!=\\textcolor{{{color:primary.0}}}{{{eval:f}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer $n!=1\\times2\\times\\cdots\\times n$.\n\n```python\ndef fact(n):\n    p = 1\n    for k in range(1, n + 1):\n        p = ...\n    return p\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `p * k`\n- `p + k`\n- `p * n`\n- `k`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque tour, on multiplie le produit déjà calculé par le nouvel entier `k`.",
+					"Avec `p + k`, on calculerait la somme $1+1+2+\\cdots+n$ ; avec `p * n`, on multiplierait toujours par $n$ ; avec `k`, `p` ne garderait que le dernier entier.",
+					"La ligne est donc `p = p * k`."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer $n!=1\\times2\\times\\cdots\\times n$.\n\n```python\ndef fact(n):\n    p = ...\n    for k in range(1, n + 1):\n        p = p * k\n    return p\n```\n\nQuelle valeur faut-il donner à `p` au départ ?\n\n```choix\n- `1`\n- `0`\n- `n`\n- `k`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie `p` par $1$, $2$, …, $n$ : il faut partir d'une valeur qui ne change pas le produit, c'est-à-dire $1$.",
+					"En partant de $0$, le produit resterait égal à $0$ ; en partant de $n$, on obtiendrait $n\\times n!$ ; `k` n'existe pas encore avant la boucle.",
+					"On écrit donc `p = 1`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "fact(5) = 120",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"f": "120"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4! (un tour de moins)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"f": "120"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "fact(7) = 5040",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7",
+				"f": "5040"
+			},
+			"answers": ["5040"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p * k",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p + k",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p * n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p = 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p = n",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p = k",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
