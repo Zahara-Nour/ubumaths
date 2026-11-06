@@ -9,17 +9,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2419 (lot 9 : nœud + tag en prod)._
+_Mis à jour le 2026-11-06, lot 9 publié._
 
-- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 à 8 publiés ; lot 9
-  (probabilités, § 14, D7) : 3 brouillons rangés et tagués en prod (#2419, `db:migrate` fait), page à cocher publiée :
-  https://claude.ai/artifact/4fpgJnSayFhn7h9s5A5fsz.
-- **Prochaine action** : relecture du lot 9 par David (page à cocher ; compter les verdicts), puis
-  `publier-lot.ts --publier` par David et relevé MCP. Les 20 approfondissements seront alors tous publiés : faire le
-  point du chantier avec David (clôture et versement, ou suite : algorithmes, points-compétences).
-- **En attente de David** : relecture du lot 9 ; vérification à l'œil en prod (ligne du 2026-11-03 de
+- **État** : démonstrations en prod (lots 1 à 4) ; les 20 approfondissements publiés (lots 5 à 9, § 9 à 14).
+- **Prochaine action** : faire le point du chantier avec David : clôture et versement (durable vers `docs/systeme/`,
+  journal archivé), ou suite (algorithmes, points-compétences, hors chantier selon D3 Q1).
+- **En attente de David** : la décision ci-dessus ; vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`).
-- **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
+- **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David (lancée hors du dépôt principal,
+  `publier-lot` refuse : « sans id »). `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
   une notion → choisir sa sous-notion avec David. Variable `e` = Euler : jamais comme nom de variable. Job navigateur
   de la CI qui plante tests verts → `gh run rerun <run> --failed`. Port 5178. **Sous-notion neuve** → ajouter aussi
@@ -549,3 +547,7 @@ principale ne s'exécute pas). Accès : Q5 de D3, personne.
 Mergée (#2419, CI verte du premier coup). `security-auditor` : aucun finding bloquant. `db:migrate` le 2026-11-06
 (seule migration en attente, sans `--include-all`), vérifié MCP : 3 modèles sur leur nœud, un tag chacun, `draft`,
 `updated_at` inchangé, trigger `updated_at` réactivé. Page à cocher : https://claude.ai/artifact/4fpgJnSayFhn7h9s5A5fsz.
+
+Relecture (2026-11-06) : 3/3 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`, depuis le dépôt
+principal : un premier essai depuis une copie sans les `id` avait été refusé, rien d'écrit), 3/3 `published` relus en
+base (MCP). **Les 20 approfondissements sont publiés.**
