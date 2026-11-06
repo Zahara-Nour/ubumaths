@@ -1242,3 +1242,5 @@ sévère que l'élève.
    Revue (Sonnet) : un trait par O qui s'en va vers A suffit, même plus court que OA (`sideDrawn`) ;
    le message nomme le seul côté manquant (« ajouter le côté [OA) (demidroite(O, A)) ») ; tests des
    deux branches, triangle, droite portée par d'autres points, ordre des erreurs.
+   CI rouge une fois (garde « doc à jour », `utilitaires-et-demos.md` ← catalogue) : garde lancée
+   avant `git fetch` en local ; exemption `Doc-inchangée` ajoutée.
