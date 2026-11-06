@@ -161,16 +161,82 @@ describe('vérification droite = bissectrice : lecture et erreurs d’auteur', (
 		expect(() => assertChecks(source)).toThrow(/O n’est pas visible/);
 	});
 
-	it('A, O, B alignés : refusé (pas un angle saillant)', () => {
+	it('côtés de l’angle non tracés : refusé, le côté manquant nommé (revue M5)', () => {
+		const bare = figure([], ['O = point(2, 2)', 'A = point(8, 3)', 'B = point(4, 7)']);
+		expect(() => assertChecks(bare)).toThrow(
+			/l’angle AOB doit être tracé : ajouter le côté \[OA\) \(demidroite\(O, A\)\)/
+		);
+		const onlyA = figure([], [...BODY.slice(0, 3), 'x = demidroite(O, A)']);
+		expect(() => assertChecks(onlyA)).toThrow(/ajouter le côté \[OB\) \(demidroite\(O, B\)\)/);
+		const onlyB = figure([], [...BODY.slice(0, 3), 'y = demidroite(O, B)']);
+		expect(() => assertChecks(onlyB)).toThrow(/ajouter le côté \[OA\) \(demidroite\(O, A\)\)/);
+	});
+
+	it('côtés tracés en segments, en droites, par un triangle, ou plus courts que OA : admis', () => {
+		const bodies = [
+			['segment(O, A)', 'segment(O, B)'],
+			['droite(O, A)', 'droite(B, O)'],
+			['triangle(O, A, B)'],
+			// [OC] avec C entre O et A : l'arc en O, assez petit, le coupe encore
+			['C = point(5, 2.5)', 'segment(O, C)', 'segment(O, B)'],
+			// Droite portée par d'autres points, alignés avec O et A
+			['E = point(14, 4)', 'F = point(-4, 1)', 'droite(E, F)', 'segment(O, B)']
+		];
+		for (const extra of bodies) {
+			expect(() => assertChecks(figure([], [...BODY.slice(0, 3), ...extra]))).not.toThrow();
+		}
+	});
+
+	it('un trait par O qui part de l’autre côté de A ne compte pas comme le côté [OA)', () => {
+		const behind = figure(
+			[],
+			[...BODY.slice(0, 3), 'C = point(-4, 1)', 'segment(O, C)', 'segment(O, B)']
+		);
+		expect(() => assertChecks(behind)).toThrow(/ajouter le côté \[OA\)/);
+	});
+
+	it('ordre des erreurs : alignés avant côtés non tracés', () => {
 		const source = figure([], ['O = point(2, 2)', 'A = point(8, 2)', 'B = point(0, 2)']);
+		expect(() => assertChecks(source)).toThrow(/alignés/);
+	});
+
+	it('A, O, B alignés : refusé (pas un angle saillant)', () => {
+		const source = figure(
+			[],
+			[
+				'O = point(2, 2)',
+				'A = point(8, 2)',
+				'B = point(0, 2)',
+				'x = demidroite(O, A)',
+				'y = demidroite(O, B)'
+			]
+		);
 		expect(() => assertChecks(source)).toThrow(/alignés/);
 	});
 
 	it('bissectrice qui sort de la fenêtre au bout de moins de 2 unités : refusé', () => {
 		// O dans le coin haut-droit, angle ouvert vers l'extérieur
-		const source = figure([], ['O = point(9.5, 7.5)', 'A = point(9.5, 0)', 'B = point(0, 7.5)']);
+		const source = figure(
+			[],
+			[
+				'O = point(9.5, 7.5)',
+				'A = point(9.5, 0)',
+				'B = point(0, 7.5)',
+				'x = demidroite(O, A)',
+				'y = demidroite(O, B)'
+			]
+		);
 		expect(() => assertChecks(source)).not.toThrow();
-		const out = figure([], ['O = point(9, 7)', 'A = point(10, 8)', 'B = point(9, 8)']);
+		const out = figure(
+			[],
+			[
+				'O = point(9, 7)',
+				'A = point(10, 8)',
+				'B = point(9, 8)',
+				'x = demidroite(O, A)',
+				'y = demidroite(O, B)'
+			]
+		);
 		expect(() => assertChecks(out)).toThrow(/2 unités dans la fenêtre/);
 	});
 });

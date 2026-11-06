@@ -35,6 +35,7 @@ import {
 	angleSideVertex,
 	basePointsOf,
 	constructionOf,
+	isOnSomeTrait,
 	isStraight,
 	lineCrossesFrame,
 	type Construction,
@@ -194,8 +195,36 @@ function bisectorDirection(a: Position, o: Position, b: Position): Position | nu
 }
 
 /**
+ * Le côté [OA) est-il tracé dans la figure ? Un trait droit qui passe par O et
+ * s'en va vers A (au moins un de ses points, autre que O, sur la demi-droite
+ * [OA)) : demi-droite, droite, segment, même plus court que OA (l'arc en O, assez
+ * petit, le coupe encore)
+ */
+function sideDrawn(o: Position, a: Position, traits: readonly Trait[]): boolean {
+	const u = sub(a, o);
+	const length = Math.hypot(u.x, u.y);
+	const towardA = (p: Position) => {
+		const w = sub(p, o);
+		const lw = Math.hypot(w.x, w.y);
+		return lw > 1e-9 * length && Math.abs(cross(u, w)) <= 1e-9 * length * lw && dot(u, w) > 0;
+	};
+	return traits.some((t) => {
+		if (!isStraight(t) || !isOnSomeTrait(o, [t])) return false;
+		// Une droite par O, alignée avec A, passe toujours vers A ; un segment ou une
+		// demi-droite : un bout (ou la direction) du côté de A
+		if (t.kind === 'line') return isOnSomeTrait(a, [t]);
+		if (t.kind === 'ray') {
+			const ahead = { x: t.a.x + (t.b.x - t.a.x) * 1e3, y: t.a.y + (t.b.y - t.a.y) * 1e3 };
+			return towardA(t.a) || towardA(t.b) || towardA(ahead);
+		}
+		return towardA(t.a) || towardA(t.b);
+	});
+}
+
+/**
  * Papier uni : la bissectrice de l'angle AOB se construit-elle ? O, A et B
- * visibles, distincts et non alignés (un angle saillant), et au moins 2 unités
+ * visibles, distincts et non alignés (un angle saillant), ses deux côtés tracés
+ * (un trait droit de la figure par O et A, un par O et B), et au moins 2 unités
  * de bissectrice dans la fenêtre (lot 9, § 25). Le message, ou null.
  */
 function bissectriceSupportError(
@@ -213,6 +242,17 @@ function bissectriceSupportError(
 	const lengths = Math.hypot(u.x, u.y) * Math.hypot(w.x, w.y);
 	if (lengths === 0 || Math.abs(cross(u, w)) <= 1e-9 * lengths) {
 		return `${p}, ${v} et ${q} sont alignés (ou confondus) : l’angle ${p}${v}${q} n’est pas un angle saillant`;
+	}
+	// Revue M5 : sans ses côtés tracés, l'arc piqué en O n'a rien à couper
+	const missing = (
+		[
+			[a, p],
+			[b, q]
+		] as const
+	).find(([end]) => !sideDrawn(o, end, shapes.traits));
+	if (missing) {
+		const side = missing[1];
+		return `l’angle ${p}${v}${q} doit être tracé : ajouter le côté [${v}${side}) (demidroite(${v}, ${side}))`;
 	}
 	const d = bisectorDirection(a, o, b);
 	if (!d || !shapes.window) return null;

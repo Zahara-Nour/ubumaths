@@ -6,19 +6,17 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2439 (PR A du lot 9, bissectrice) mergée._
+_Mis à jour le 2026-11-06, PR « côtés de la bissectrice » (§ 28) en cours._
 
-- **État** : lots 1 à 9 mergés (lot 9 : #2430 médiatrices relâchées + Report, #2439 bissectrice).
-  Worktree retiré. Vérification manuelle ajoutée (`verifications-manuelles.md`).
-- **Prochaine action** : selon les réponses de David ; puis reste éventuel d'`outils-manquants.md`
-  § 1, ou versement du chantier (durable → `docs/systeme/`, journal archivé).
-- **En attente de David** : (1) valider l'exception 4 **bornée aux figures qui vérifient une
-  bissectrice** (§ 27, écart au § 25) ; (2) M5 : erreur d'auteur si les côtés de l'angle ne sont pas
-  tracés (aujourd'hui : l'élève reçoit « tracée à l'œil ») ?
+- **État** : lots 1 à 9 mergés (#2430, #2439). Décisions du § 28 prises ; la garde M5 est codée sur
+  `feat/controles-figure-cotes-bissectrice`.
+- **Prochaine action** : CI verte → merger ; puis reste éventuel d'`outils-manquants.md` § 1, ou
+  versement du chantier (durable → `docs/systeme/`, journal archivé).
+- **En attente de David** : rien.
 - **Pièges en cours** : le Compas ne garde pas son écartement : deux cercles égaux à rayon libre =
   Report seulement ; tester avec de vrais touchers (`addTap`, écran) ; commitlint : sujet en
   minuscule, lignes du corps ≤ 100 caractères ; garde « doc à jour » : relancer après `git fetch`.
-- **Worktree / branche** : aucun (nouvelle branche depuis `origin/main` pour la suite).
+- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-cotes-bissectrice`.
 
 ---
 
@@ -1233,3 +1231,16 @@ sévère que l'élève.
   vérifie une bissectrice ; repère admis par le juge sans voir la palette). **M5 à trancher par
   David** : une bissectrice dont les côtés ne sont pas tracés est acceptée à l'auteur, et l'élève qui
   pique l'arc sans tracer les côtés reçoit « tracée à l'œil ».
+
+## 28. Décisions de David après le lot 9 (2026-11-06, « je te suis » sur mes recos)
+
+1. **Exception 4 bornée aux figures qui vérifient une bissectrice** : validée (écart au § 25 tranché).
+   L'étendre plus tard = cas par cas, avec son test anti-forge.
+2. **M5** : erreur d'auteur si un côté de l'angle n'est pas tracé (« l'angle AOB doit être tracé :
+   ajouter x = demidroite(O, A) et y = demidroite(O, B) ») ; un trait droit de la figure par O et A
+   suffit (demi-droite, droite, segment). `bissectriceSupportError`, tests rouges avant (1).
+   Revue (Sonnet) : un trait par O qui s'en va vers A suffit, même plus court que OA (`sideDrawn`) ;
+   le message nomme le seul côté manquant (« ajouter le côté [OA) (demidroite(O, A)) ») ; tests des
+   deux branches, triangle, droite portée par d'autres points, ordre des erreurs.
+   CI rouge une fois (garde « doc à jour », `utilitaires-et-demos.md` ← catalogue) : garde lancée
+   avant `git fetch` en local ; exemption `Doc-inchangée` ajoutée.
