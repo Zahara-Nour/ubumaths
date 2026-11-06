@@ -1,15 +1,17 @@
 # Chantier « cote-hauteur » — cote de la hauteur d'une pyramide hors du solide
 
-> Origine : n° 17 de [`outils-manquants.md`](outils-manquants.md) (défaut visible en prod), relevé à la revue de #2400
-> ([`tetraedre-vue`](../archive/wip/tetraedre-vue-progress.md) § Revue). Ordre de David du 2026-11-06 : n° 17 d'abord.
+> Origine : n° 17 de [`outils-manquants.md`](../../wip/outils-manquants.md) (défaut visible en prod), relevé à la revue de #2400
+> ([`tetraedre-vue`](tetraedre-vue-progress.md) § Revue). Ordre de David du 2026-11-06 : n° 17 d'abord.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, avant la PR._
+_Mis à jour le 2026-11-06, après #2427. **Chantier clos** (journal archivé)._
 
-- **État** : correctif sur la branche, tests verts · **Prochaine action** : PR, CI, merge · **En attente de David** :
-  `deploy:prod`, puis coup d'œil au modèle « Volume d'une pyramide » (`6a770d04-…`) · **Pièges en cours** : aucun ·
-  **Worktree / branche** : `../ubumaths-wt-cote-hauteur`, `fix/cote-hauteur-pyramide`.
+- **État** : #2427 mergée, pas encore en prod. Doc versée (`docs/systeme/ubumark.md` § Solide) ; ex-ligne 17 de
+  `outils-manquants.md` en « Livré ».
+- **Reste à David** : `pnpm deploy:prod`, puis la ligne #2427 de `verifications-manuelles.md`.
+- **Revue** (`code-reviewer` Sonnet) : rien de bloquant ; repli sans place libre seulement pour `pyramide rectangle 1 4 1`.
+- **Worktree / branche** : aucun (supprimés).
 
 ---
 
