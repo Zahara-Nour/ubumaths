@@ -47,7 +47,7 @@ fait déjà (` ```figure ` + ` ```choix `, B).
 
 ## 3. À trancher par David
 
-Rien en attente au 2026-11-04.
+Rien en attente au 2026-11-06.
 
 **Tranché le 2026-11-04 (David)** :
 
@@ -58,8 +58,14 @@ Rien en attente au 2026-11-04.
 - **Ex-ligne 17 du § 1** (marque cachée d'un tableau de signes au PDF, 2-330 et 2-446 en série PDF ; vartable 0.2.1 ne dessine en un point qu'un trait, un « 0 » ou une double barre) : **ne pas patcher vartable** ; le trait nu est accepté, la consigne dit « complète les zéros et les signes » ([`tableau-signes`](../archive/wip/tableau-signes-progress.md) § PR 4). **Complété le 2026-11-05 (David)** : correctif proposé en amont, [Le-foucheur/Typst-VarTable#26](https://github.com/Le-foucheur/Typst-VarTable/pull/26) (couple `(contenu, signe)` : contenu au centre de la barre, ex. case en pointillés). ⚠️ La version suivante de vartable exige Typst 0.15 (cetz 0.5.3) ; notre typst.ts 0.6.1-rc5 = Typst 0.13.1 → à adopter avec une montée de typst.ts (0.8, encore en RC au 2026-11-05), jamais par une copie locale du paquet.
 - **« 0 » sur une borne d'un tableau de signes, au PDF** (évaluation « Fonctions » 2de, 2026-11-05) : vartable 0.2.1 ne dessine en borne que `||` (un « 0 » final faisait planter la compilation, un « 0 » initial était ignoré). Depuis `fix(ubumark)` de `feat/evaluation-fonctions-2nde`, le générateur ne l'envoie plus : borne sans marque au PDF, « 0 » affiché à l'écran (choix de David). **À reprendre avec la montée de vartable** (même chemin que la ligne ci-dessus), jamais par un patch local.
 
-**Ordre des outils du § 1** (David, 2026-11-04 ; corrigé le jour même : le rapporteur, n° 4, était déjà livré) : reliquat du n° 1
-(`controles-figure`, à décider) ; puis n° 11, 16 (livrés), 5 ; puis n° 14, 3 ; plus tard n° 6, 15 ; pas touchés : n° 12, 9, 10.
+**Ordre des outils du § 1** (David, 2026-11-06, après #2420 ; remplace celui du 2026-11-04) : **n° 17** (cote de la
+hauteur d'une pyramide, défaut en prod) ; puis un lot **« bissectrice construite + règle sévère des médiatrices »** (reliquat
+du n° 1, `controles-figure` § 12, sa phase 0 ; bissectrice pour 6-172) ; puis **n° 14**, **n° 3** ; plus tard n° 6 ; pas
+touchés : n° 12, 9, 10. Livrés depuis l'ordre du 2026-11-04 : n° 11, 15, 16, 5 (#2420).
+
+**Reliquat du n° 1 tranché (David, 2026-11-06)** : image par translation tracée (3e) **pas maintenant** (3-024 à 026
+couverts par le choix et `tracer: vecteur` ; à rouvrir si un modèle exige le tracé de l'image) ; angle non adjacent au côté
+(§ 21) **pas d'outil** (le modèle pose le calcul du 3e angle dans une case, puis la construction par les angles adjacents).
 
 Tranchés hors appli : 5-011, 040, 130, 065, 042, 043, 059, 075, 084 (David, `questions-5` l. 127) ;
 2-452, 454, 351 (Q6, `questions-2de` l. 222) ; CP-053, 063-066, 074 ; 6e (« non évaluable », `questions-6` l. 173).
