@@ -6,18 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, PR #2432 (lot « Nombres ») : défauts de mise en page corrigés._
+_Mis à jour le 2026-11-06, après #2432 (lot « Nombres » mergé)._
 
-- **État** : fiche `9bd4bcc6` « Automatismes : nombres (1) » écrite (brouillon, 2de + 1re) ; 4 défauts
-  du PDF corrigés dans le script (1 page, aucune coupure, rendu local) · **Prochaine action** : David
-  lance `--publier --mettre-a-jour` ; revérifier le PDF depuis la base ; merger #2432 ; lot suivant
-  « Calcul littéral et équations » (§ Lots « 2de ») · **En attente de David** : la mise à jour de la
-  fiche ; publication des 6 fiches de 1re (admin) · **Pièges en cours** : écritures ET simulations
-  contre la prod lancées par David ; formules en ligne coupées au PDF → choisir modèles/graines, vérifier
-  par le rendu local ; `debord.py` → venv du dépôt principal ; job CI navigateur 2/2 qui plante →
-  `gh run rerun --failed` · **Worktree / branche** : `../ubumaths-wt-automatismes-1spe` ·
-  `feat/automatismes-nombres`.
-- Fiches de 1re à publier : `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df`.
+- **État** : fiche `9bd4bcc6` « Automatismes : nombres (1) » mise à jour par David et revérifiée
+  depuis la base (1 p. / 1 p. / 3 p., 0 débord, 4 défauts corrigés) ; toujours en brouillon ·
+  **Prochaine action** : lot suivant « Calcul littéral et équations » (§ Lots « 2de »), nouveau
+  worktree + branche · **En attente de David** : publication en admin de `9bd4bcc6` et des 6 fiches de
+  1re (relevé MCP du 2026-11-06 : toutes encore `draft`, `published_at` nul) · **Pièges en cours** :
+  écritures ET simulations contre la prod lancées par David ; formules en ligne coupées au PDF →
+  choisir modèles/graines, vérifier par le rendu local ; `debord.py` → venv du dépôt principal ; job CI
+  navigateur 2/2 qui plante → `gh run rerun --failed` · **Worktree / branche** : aucun (à créer).
+- Fiches à publier : `9bd4bcc6`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df`.
   Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
 ## Décisions de David (figées)
@@ -434,3 +433,10 @@ décimale / fractionnaire / pourcentage, ordre de grandeur et vraisemblance, con
   `compile-prod.mjs` ; script jetable dans le scratchpad (non versionné).
 - **À lancer par David** : `pnpm tsx scripts/create-automatismes-nombres.ts --publier --mettre-a-jour`
   (réécrit les 2 séries de la fiche en brouillon), puis je revérifie le PDF depuis la base.
+
+### Fiche mise à jour, revérifiée, #2432 mergée (2026-11-06)
+
+- David a lancé `--publier --mettre-a-jour`. PDF depuis la base (`regen-depuis-base.ts`,
+  `compile-prod.mjs --polices-corrige`, `debord.py`) : fiche 1 p., réponses 1 p., corrigé 3 p., 6 PDF,
+  0 débord ; les 4 défauts sont corrigés sur les pages ; 16 réponses recalculées, justes.
+- #2432 mergée (CI verte). Relevé MCP : les 7 fiches (`9bd4bcc6` + 6 de 1re) sont encore `draft`.
