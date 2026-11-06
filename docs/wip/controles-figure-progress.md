@@ -6,21 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, #2430 (PR B du lot 9) ouverte, CI en cours sur 457486757._
+_Mis à jour le 2026-11-06, après #2430 (PR B du lot 9) mergée ; PR A en cours._
 
-- **État** : lots 1 à 8 en prod. Lot 9 (§ 25, phase 0 validée) : PR B = #2430 (médiatrice faisable dès
-  2 unités dans la fenêtre + Report dans la palette de `droite` et `cercle`, cercle circonscrit au Report
-  jugé, `outils: report` refusé sur quadrillage). Deux passes de revue `code-reviewer` traitées (§ 26).
-- **Prochaine action** : `gh pr checks 2430` ; CI verte → `gh pr merge 2430 --merge`, puis « Reprendre
-  ici » sur main. Ensuite PR A : bissectrice au compas (`droite d = bissectrice(A, O, B)`, exception 4,
-  messages du § 25), nouvelle branche dans le même worktree ou un neuf.
-- **En attente de David** : rien.
-- **Pièges en cours** : le Compas ne garde pas son écartement (centre puis point de passage) : deux
-  cercles égaux à rayon libre = Report seulement ; tester avec de vrais touchers (`addTap`, écran), pas
-  des coordonnées exactes. `perpendiculaire(A, s)` échoue si A est un bout de s ; `symetrie(P, axe=d)`
-  si P définit d ; commitlint refuse un sujet en majuscule ; garde « doc à jour » : relancer après
-  `git fetch`.
-- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-mediatrices` (#2430).
+- **État** : lots 1 à 8 en prod ; lot 9 PR B (médiatrices relâchées, Report) mergée #2430. PR A
+  (bissectrice, § 27) codée sur `feat/controles-figure-bissectrice` : tests verts, revue
+  `code-reviewer` (Opus) en cours.
+- **Prochaine action** : traiter la revue, pousser, ouvrir la PR, CI verte → merger. Puis versement
+  du lot 9 / fin de chantier selon David.
+- **En attente de David** : valider l'exception 4 **bornée à la bissectrice** (§ 27, écart au § 25).
+- **Pièges en cours** : le Compas ne garde pas son écartement : deux cercles égaux à rayon libre =
+  Report seulement ; tester avec de vrais touchers (`addTap`, écran). `perpendiculaire(A, s)` échoue
+  si A est un bout de s ; commitlint refuse un sujet en majuscule ; garde « doc à jour » : relancer
+  après `git fetch`.
+- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-bissectrice`.
 
 ---
 
