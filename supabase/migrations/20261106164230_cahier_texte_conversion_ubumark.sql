@@ -17,10 +17,16 @@
 --   - `</p><p>` → ligne vide (deux paragraphes ubumark) ;
 --   - `<p>` de tête et `</p>` de queue retirés.
 --
--- Garde : seule une ligne faite UNIQUEMENT de `<p>` et de texte sans caractère
--- qu'ubumark lirait autrement (`<`, `&`, `*`, `_`, `$`, `` ` ``, `\`, `#`, hors
--- des références) est convertie. Si une ligne en HTML reste après coup, la
--- migration échoue : on regarde la ligne au lieu de la deviner.
+-- Garde : seule une ligne de la forme EXACTE `<p>…</p><p>…</p>…` est
+-- convertie, et seulement si son texte ne contient rien qu'ubumark lirait
+-- autrement : ni chevron, esperluette (entité), étoile, tiret bas, dollar,
+-- accent grave, barre oblique inverse, dièse, barre verticale, tilde, accent
+-- circonflexe, crochet hors d'une référence ; ni paragraphe qui commence par
+-- une marque de liste ou par 4 espaces (bloc de code). Une référence
+-- `[[…]]` n'est tolérée que si elle ne contient ni `<` ni `&`. Le résultat ne
+-- doit pas être vide (contrainte `journal_entry_homework_content_not_blank`).
+-- Si une ligne en HTML reste après coup, la migration échoue : on regarde la
+-- ligne au lieu de la deviner.
 --
 -- Les triggers `updated_at` sont coupés : une conversion de format n'est pas
 -- une modification par le prof.
@@ -37,16 +43,7 @@
 
 begin;
 
--- Fonctions de travail, retirées en fin de migration.
-create function pg_temp.journal_html_convertible(c text) returns boolean
-language sql immutable as $$
-	select c ~ '^\s*<p>'
-		and regexp_replace(
-			regexp_replace(c, '</?p>', '', 'g'),
-			'\[\[[^\]]*\]\]', '', 'g'
-		) !~ '[<&*_$`\\#]'
-$$;
-
+-- Fonctions de travail, supprimées avant le commit.
 create function pg_temp.journal_html_to_ubumark(c text) returns text
 language sql immutable as $$
 	select btrim(
@@ -59,6 +56,18 @@ language sql immutable as $$
 		),
 		E' \n'
 	)
+$$;
+
+create function pg_temp.journal_html_convertible(c text) returns boolean
+language sql immutable as $$
+	select c ~ '^\s*(<p>[^<]*</p>\s*)+$'
+		and c !~ '<p>\s*([-+>]|[0-9]+[.)])'
+		and c !~ '<p> {4}'
+		and regexp_replace(
+			regexp_replace(c, '</?p>', '', 'g'),
+			'\[\[[^]<&]*\]\]', '', 'g'
+		) !~ '[]<&*_$`\\#|~^[]'
+		and pg_temp.journal_html_to_ubumark(c) <> ''
 $$;
 
 alter table public.class_journal_entries disable trigger update_journal_entries_updated_at;
@@ -90,5 +99,8 @@ begin
 		raise exception 'cahier-ubumark : % contenu(s) encore en HTML, non convertible(s) sans regarder', reste;
 	end if;
 end $$;
+
+drop function pg_temp.journal_html_convertible(text);
+drop function pg_temp.journal_html_to_ubumark(text);
 
 commit;

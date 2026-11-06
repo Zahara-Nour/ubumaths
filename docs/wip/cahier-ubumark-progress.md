@@ -111,6 +111,7 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 - Prod relue (MCP, lecture seule) : les 4 lignes de l'état des lieux, inchangées.
 - Migration : `<p></p>` retirés, `</p><p>` → ligne vide, `<p>`/`</p>` d'extrémité retirés. Garde : ne convertit que des `<p>` autour d'un texte sans caractère qu'ubumark lirait autrement (chevron, esperluette, étoile, tiret bas, dollar, accent grave, barre oblique inverse, dièse), hors références ; si une ligne HTML reste, `raise exception`. Triggers `updated_at` coupés. Rollback = les 4 valeurs d'avant, en commentaire.
 - Testé en local dans une transaction annulée : cas de prod convertis, ligne déjà ubumark intacte, `updated_at` gardé ; `<p>a **b**</p>` et `<ul>` → exception.
+- Revue (code-reviewer) : rien de bloquant ; garde renforcée — forme entière `<p>…</p>` exigée (du texte hors `<p>` passait), résultat vide refusé (contrainte `not_blank`), marques de liste / citation / bloc de code, `| ~ ^ [ ]` et entités dans un libellé refusées, fonctions `pg_temp` supprimées avant le commit. 4 formes de prod acceptées, 14 pièges refusés (mesuré en local).
 - Test de rendu (`JournalContent`) sur la sortie exacte pour la séance à deux références : deux paragraphes, deux liens.
 - Avant / après (prod) :
   - séance 9e9e75aa : `<p>[[…|Evaluation : Produit scalaire]]</p><p></p><p>[[…#2,4,5|… ex. 2, 4 et 5]]</p><p></p>` → `[[…|Evaluation : Produit scalaire]]` + ligne vide + `[[…#2,4,5|… ex. 2, 4 et 5]]`
