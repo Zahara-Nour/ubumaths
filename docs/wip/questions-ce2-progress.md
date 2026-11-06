@@ -927,3 +927,17 @@ Questions à David :
 
 Décision de David (2026-11-06, « je suis tes recos ») : pas de QCM de dessins ; au plus 20 centaines dans `03` ;
 question d'accès : rien de plus.
+
+### Lot 11 — écriture (2026-11-06)
+
+- `lot-ce2-11.py` → `scripts/questions/ce2-11/` (6 modèles, 46 specs) ; `create-questions` en simulation : tout vert.
+  Niveaux : 10 à 14 sur « dénombrement » (2 à 9 laissés au CP et au CE1), 20 sur « écritures ».
+- Sonde neuve `scripts/questions/sonde-collections.ts` (calquée sur `sonde-cubes`) : 1 800 blocs, 0 problème ; elle voit
+  bien un plafond dépassé (`centaines: 41`) et une valeur au-delà de 9 999 (essai à la main).
+- Mesuré : « Espaces dès 4 chiffres » rend `unoptimal_form` toute valeur posée par `construire:` à 4 chiffres (`4635`,
+  4 specs sur 7 rouges) → 04 et 05 sans l'option ; le nombre de l'énoncé de 05 est écrit groupé chiffre par chiffre
+  (`{{m}}\,{{c}}{{d}}{{u}}`, `{{m}}\,0{{d}}{{u}}`, `{{m}}\,{{c}}00`). À noter dans `outils-manquants.md` si David veut
+  que `construire:` ignore la règle des espaces.
+- Corrigé en route : « petit cubes » → « petits cubes » ; listes « a, b et c » ; 06, plus de `$$…$$ dizaines`.
+- 6 brouillons en base locale (copie du dossier dans le scratchpad). Aperçu admin : Chrome figé (défilement sans effet,
+  capture inchangée) → modèles **pas encore joués à l'écran**.
