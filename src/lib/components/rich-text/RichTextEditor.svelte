@@ -1977,9 +1977,36 @@
 
 		<!-- Editor Content Area with Split View -->
 		<div
-			class="flex min-h-0 flex-1 {isPreviewMode ? 'flex-col md:flex-row' : ''}"
+			class="relative flex min-h-0 flex-1 {isPreviewMode ? 'flex-col md:flex-row' : ''}"
 			style={isFullscreen ? '' : `min-height: ${minHeight}`}
 		>
+			<!-- Région toujours présente : un lecteur d'écran n'annonce que ce qui CHANGE
+			     dans une région déjà montée -->
+			<span role="status" class="sr-only">
+				{chargement === 'en-cours' ? 'Chargement de l’éditeur…' : ''}
+			</span>
+			<!-- Éditeur pas encore créé ou en échec. Posé ICI, sur la zone qui a la hauteur
+			     minimale : le panneau de l'éditeur, vide, fait 0 px et cachait l'indicateur -->
+			{#if chargement === 'en-cours'}
+				<div
+					aria-hidden="true"
+					data-chargement
+					class="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 text-sm text-muted-foreground"
+				>
+					<LoaderCircle class="h-4 w-4 animate-spin" />
+					Chargement de l’éditeur…
+				</div>
+			{:else if chargement === 'erreur'}
+				<div
+					role="alert"
+					class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 bg-background p-4 text-center text-sm"
+				>
+					<p>L’éditeur n’a pas pu se charger.</p>
+					<Button type="button" size="sm" variant="outline" onclick={() => location.reload()}>
+						Recharger la page
+					</Button>
+				</div>
+			{/if}
 			<!-- Editor Panel -->
 			<div
 				bind:this={editorPanelRef}
@@ -2001,33 +2028,6 @@
 				>
 					<FileCode class="h-4 w-4" />
 				</button>
-
-				<!-- Région toujours présente : un lecteur d'écran n'annonce que ce qui CHANGE
-				     dans une région déjà montée -->
-				<span role="status" class="sr-only">
-					{chargement === 'en-cours' ? 'Chargement de l’éditeur…' : ''}
-				</span>
-				<!-- Éditeur pas encore créé (rendu serveur, hydratation) ou en échec -->
-				{#if chargement === 'en-cours'}
-					<div
-						aria-hidden="true"
-						data-chargement
-						class="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 text-sm text-muted-foreground"
-					>
-						<LoaderCircle class="h-4 w-4 animate-spin" />
-						Chargement de l’éditeur…
-					</div>
-				{:else if chargement === 'erreur'}
-					<div
-						role="alert"
-						class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 bg-background p-4 text-center text-sm"
-					>
-						<p>L’éditeur n’a pas pu se charger.</p>
-						<Button type="button" size="sm" variant="outline" onclick={() => location.reload()}>
-							Recharger la page
-						</Button>
-					</div>
-				{/if}
 
 				<!-- TipTap editor - always in DOM, hidden when in markdown mode -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
