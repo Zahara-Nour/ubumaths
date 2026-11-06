@@ -6,16 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, suite choisie : automatismes de 2de (§ Lots « 2de »)._
+_Mis à jour le 2026-11-06, PR du lot « Nombres » ouverte (2de entretenue en 1re)._
 
-- **État** : 5 lots du programme de 1re clos ; suite tranchée par David : lots tirés des automatismes de 2de,
-  fiches attachées à **1re et 2de**, 1er lot « Nombres » · **Prochaine action** : validation par David de la
-  phase 0 du lot « Nombres » (§ Lots « 2de »), puis graines, script `create-automatismes-nombres.ts`, PR ·
-  **En attente de David** : cette phase 0 ; publication des brouillons ci-dessous · **Pièges en cours** :
-  écritures en prod lancées par David (même la simulation de `publier-lot.ts` est refusée au mode auto) ;
-  essais de séries en local sur une copie MCP des modèles (§ Lots « 2de ») ; worktree neuf →
-  `pnpm exec svelte-kit sync` avant `pnpm tsx` ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
-  **Worktree / branche** : aucun.
+- **État** : lot « Nombres » (1er lot des automatismes de 2de) : phase 0 validée, script
+  `create-automatismes-nombres.ts` écrit, séries vérifiées en local · **Prochaine action** : merge de la PR,
+  puis David lance la simulation et `--publier` ; vérification PDF de la fiche depuis la base ; lot suivant
+  « Calcul littéral et équations » (§ Lots « 2de ») · **En attente de David** : écriture de la fiche ;
+  publication des brouillons ci-dessous · **Pièges en cours** : écritures en prod ET simulations contre la
+  prod lancées par David (refusées au mode auto) ; essais en local sur copie MCP des modèles ; job CI
+  navigateur 2/2 qui plante → `gh run rerun --failed` · **Worktree / branche** :
+  `../ubumaths-wt-automatismes-1spe` · `feat/automatismes-nombres`.
 - Brouillons à publier : `0f673c27`, `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`,
   `9852d62c` (+ `1bd7378d`, `9a9026fc`) ; fiches `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`,
   `d37413a3`, `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
@@ -376,7 +376,7 @@ au mode auto (« Production Deploy »). Démarche suivie : modèles lus par le M
 question_templates`), copie JSON dans le scratchpad, `buildSerie` lancé en local (graines 1-3). Lot
 « Nombres » : **45 candidats, 45 passent**. Aucun modèle neuf.
 
-### Lot « Nombres » — phase 0 (proposée le 2026-11-06, à valider)
+### Lot « Nombres » — phase 0 (validée par David le 2026-11-06)
 
 Capacités du BO 2de (Calcul numérique) : comparer (différence, quotient), fractions, puissances, écritures
 décimale / fractionnaire / pourcentage, ordre de grandeur et vraisemblance, conversions d'unités.
@@ -395,3 +395,21 @@ décimale / fractionnaire / pourcentage, ordre de grandeur et vraisemblance, con
   `c1a83c8f`, `000368e1`, `6818662d`, `259a0b26`, `afebbb91`, `7abb09ef`, `b79d4cb7`, `186f05a4`.
 - Graines : la graine 1 donne souvent un cas trivial (« 1 dm² = … cm² », « 60 min = … h ») ; graines
   choisies après validation, valeurs non triviales, pas deux questions sur les mêmes données.
+
+### Fait (PR du lot « Nombres », 2026-11-06)
+
+- `scripts/create-automatismes-nombres.ts` (forme de `create-automatismes-probabilites-1spe.ts`) : fiche
+  « Automatismes : nombres (1) », séries « Nombres — série 1 / 2 », niveaux `['2', '1_SPE']` (fiche ET
+  séries) — **premières fiche et séries à deux niveaux en prod** ; base : contrainte
+  `is_valid_grade_array` seule, filtres de l'appli par `overlaps` / `contains`.
+- Graines : série 1 = différence 7 (tarifs), fractions 7 (17/18, 8/9), enchaîner 4 (somme négative),
+  puissances de 10 7, a^m/a^n 5 (7⁻⁴/7²), décimal 11 (0,6), pourcentage 10 (75 %), ordre de grandeur 8 ;
+  série 2 = rapport 7 (immeubles), interpréter une différence 7 (salaires), dénominateurs multiples 7
+  (5/4, 16/12), produit de puissances de 10 4, aires 8 (6 dm² → m²), contenances 4 (3 L → cm³), durée 8
+  (2,3 h), vitesses 10 (2 m/s → m/h).
+- Vérifié en local sur la copie MCP des modèles : 2 séries construites, Zod des séries et de la fiche ✓,
+  16 réponses recalculées à la main. **Simulation contre la prod non lancée** (refusée au mode auto) :
+  à lancer par David.
+- **À lancer par David** après le merge : `pnpm tsx scripts/create-automatismes-nombres.ts` (simulation),
+  puis `… --publier` ; ensuite vérification PDF depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs`
+  `--polices-corrige`, `debord.py`).
