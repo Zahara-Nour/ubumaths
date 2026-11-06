@@ -6,20 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2434 (lot 1 mergé)._
+_Mis à jour le 2026-11-06, lot 1 publié en brouillon par David, rangement en cours (§ 4)._
 
-- **État** : phase 0 validée (D1) ; lot 1 (239, 240, 255, 256, 282) mergé (#2434), brouillons à créer en prod.
-- **Prochaine action** : David lance, depuis le dépôt principal à jour,
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-demonstrations-1 --publier` ; puis relevé MCP,
-  ids dans les JSON (PR), `git restore` dans le dépôt principal, migration nœud + tag (gabarit `20261106050929`,
-  aucune sous-notion neuve), page à cocher. Ensuite lot 2 (géométrie : 304, 438, 320).
-- **En attente de David** : la commande `create-questions --publier` ci-dessus.
-- **Pièges en cours** (repris de la 1re spé) : écritures en prod → commande `!` donnée à David ; `create-questions`
-  écrit l'`id` dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal ;
-  brouillons locaux : copie hors dépôt + `set -a; . ./.env.local` ; positions « ranger » par
-  `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` (HEAD détachée), nouvelle branche depuis
-  `origin/main`.
+- **État** : lot 1 mergé (#2434) et créé en brouillon en prod ; ids dans les JSON, migration nœud + tag
+  `20261106130142` et son test écrits sur la branche, pas encore de PR.
+- **Prochaine action** : quand la base locale est libre (feu vert de David), lancer
+  `pnpm test:integration tests/integration/questions-2de-demonstrations-1-rangement-tags.test.ts`, le vérifier
+  rouge sans la migration, puis PR → CI → merge → `db:migrate` depuis la branche mergée → page à cocher.
+  Ensuite lot 2 (géométrie : 304, 438, 320).
+- **En attente de David** : feu vert pour la base locale (lien de partage du journal de classe `teacher@local.test`
+  en usage, 2026-11-06 12 h 49 ; la préparation des tests effacerait ce prof).
+- **Pièges en cours** : écritures en prod → commande `!` donnée à David ; `create-questions` écrit l'`id` dans les
+  JSON du dépôt d'où il tourne → les reporter sur la branche puis `git restore` dans le dépôt principal ; positions
+  « ranger » par `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-2-rangement`.
 
 ---
 
@@ -86,3 +86,27 @@ Vérifié : `question:specs` 150 tirages par variation, 5/5 importables, 0 `\tex
 ranger du 256 (fractions, places numérotées), case en fin de formule longue du 282.
 
 Mergée (#2434, CI verte du premier coup).
+
+## 4. Lot 1 : publication en brouillon et rangement (2026-11-06)
+
+David a lancé `create-questions --publier` depuis le dépôt principal : 5 brouillons. Ids reportés dans les JSON
+(branche `content/questions-2de-demonstrations-2-rangement`), dépôt principal rendu propre (`git restore`).
+
+Relevé prod (MCP, 2026-11-06) : 5 brouillons au niveau {2}, niveaux 11, 3, 5, 6, 3, sans nœud ni tag ; points
+2-239, 2-240, 2-255, 2-256, 2-282 sur leurs sous-notions actives, aucun modèle tagué dessus.
+
+| Modèle   | Sous-notion                                                 | Point |
+| -------- | ----------------------------------------------------------- | ----- |
+| 83082954 | Arithmétique › Divisibilité › multiples et diviseurs        | 2-239 |
+| ae8fc470 | Arithmétique › Divisibilité › pair ou impair                | 2-240 |
+| d8f7648f | Ensembles › Ensembles de nombres › nombres irrationnels     | 2-255 |
+| 8de4b8c9 | Ensembles › Ensembles de nombres › nombres irrationnels     | 2-256 |
+| efd6bdb4 | Nombres et calculs › Racines carrées : calculs › propriétés | 2-282 |
+
+Migration `20261106130142_questions_2de_demonstrations_1_rangement_tags.sql` (gabarit `20261106050929`, gardes et
+rollback identiques) ; test `tests/integration/questions-2de-demonstrations-1-rangement-tags.test.ts`. Accès :
+personne de plus (Q5).
+
+Piège : le test d'intégration n'a pas pu tourner — la préparation globale (suppression des profs) bute sur un lien de
+partage du journal de classe créé à 12 h 49 par `teacher@local.test` et utilisé (17 accès) ; non supprimé, en
+attente du feu vert de David.

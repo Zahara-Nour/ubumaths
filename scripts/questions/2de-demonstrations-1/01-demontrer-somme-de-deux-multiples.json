@@ -1,4 +1,5 @@
 {
+	"id": "83082954-d213-43b3-aebe-237c1f1caf92",
 	"title": "Démontrer que la somme de deux multiples de a est un multiple de a",
 	"description": "Démonstration à trous (a tiré de 2 à 9) : écrire y = am, factoriser ak + am = a(k + m), justifier la conclusion (k + m entier) ; étapes à ranger",
 	"grades": ["2"],
