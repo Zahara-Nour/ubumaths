@@ -11,13 +11,11 @@
 
 _Mis à jour le 2026-11-06, après #2415 (lot 9 : contenu mergé)._
 
-- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5, 6 et 7 publiés ; lot 8
-  (géométrie, § 13) relu par David, publication par `publier-lot.ts --publier` donnée à David ; lot 9 (probabilités,
+- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 à 8 publiés ; lot 9 (probabilités,
   § 14, D7) : 3 modèles mergés (#2415), brouillons à créer en prod.
 - **Prochaine action** : `create-questions --publier` du lot 9 par David, relevé MCP, PR de
-  migration nœud + tag (aucune sous-notion neuve), `db:migrate`, page à cocher. Relever au MCP la publication du lot 8.
-- **En attente de David** : `publier-lot.ts --publier` du lot 8 (encore `draft` au MCP le 2026-11-06) ;
-  `create-questions --publier` du lot 9 ; vérification à l'œil en prod (ligne du 2026-11-03
+  migration nœud + tag (aucune sous-notion neuve), `db:migrate`, page à cocher.
+- **En attente de David** : `create-questions --publier` du lot 9 ; vérification à l'œil en prod (ligne du 2026-11-03
   de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
@@ -507,7 +505,8 @@ un tag chacun, `draft`, `updated_at` inchangé ; « parabole » en fin de Géom�
 https://claude.ai/artifact/HtD5WnTWg6dvD5jgdcVsSS.
 
 Relecture (2026-11-06) : David, « relu » (aucun commentaire signalé). Publication : commande
-`publier-lot.ts --publier` donnée à David.
+`publier-lot.ts --publier` donnée à David. Publié par David le 2026-11-06, 6/6 `published` relus
+en base (MCP).
 
 ## 14. Lot 9 : approfondissements, probabilités (2026-11-05)
 
