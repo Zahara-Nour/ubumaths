@@ -6,19 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2414._
+_Mis à jour le 2026-11-06, après #2418._
 
-- **État** : lots 1 à 8 en prod et publiés ; lot 9 (§ 15) : fichiers mergés (#2414), pas encore en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce2-9 --publier` ; relevé MCP, commit
-  des ids ; migration nœud + tag (012 → droite graduée 1-2, 040-041 → Longueurs comparaison 5-6, 042-044 →
-  Périmètres 1-2, 049-050 → Masses comparaison 4-5) ; page à cocher ; puis lot 10 (solides : 061 à 064, 066), puis
-  `collection` `centaines:` (001, 002, 005) en chantier à part.
-- **En attente de David** : `create-questions --publier` du lot 9.
+- **État** : lots 1 à 8 en prod et publiés ; lot 9 (§ 15) : 8 brouillons en prod, rangés et tagués (#2418,
+  `db:migrate` fait), page à cocher publiée (https://claude.ai/artifact/Nkr73iMhHLraV8WjW4U7Qq).
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; `publier-lot` en simulation, puis
+  David le lance avec `--publier` ; puis lot 10 (solides : 061 à 064, 066), puis `collection` `centaines:` (001, 002, 005) en chantier à part.
+- **En attente de David** : relecture du lot 9 sur la page à cocher (le 06 aussi dans l'aperçu).
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
+  `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
   `publier-lot` et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` (branche `feat/questions-ce2-lot9` mergée, à recréer pour la
-  migration).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, détaché sur `origin/main` (aucune branche en cours).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -815,3 +814,7 @@ tag ne change aucune règle.
   résolution des 8 chemins vérifiée en prod (nœud = celui du point). « Périmètres » a trois sous-notions (carré,
   rectangle, disque) : admises par la garde, 042 et 044 vont sur la notion, où sont leurs points.
 - 2026-11-06 : `security-auditor` : aucun finding bloquant (diff avec le lot 8 : valeurs et sous-notions admises de « Périmètres » seulement ; rollback, gardes et octets de « carré » vérifiés en prod).
+- 2026-11-06 : #2418 mergée (CI verte, intégration comprise ; `check:migrations --pr 2418` OK) ; `db:migrate` depuis le
+  dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 8/8 sur le nœud de leur point, un point chacun,
+  brouillons, `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/Nkr73iMhHLraV8WjW4U7Qq), aucune
+  alerte, rendu vérifié à 390 px, base `verdicts` vide.
