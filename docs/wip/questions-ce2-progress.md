@@ -6,19 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, phase 0 du lot 11 écrite (§ 17)._
+_Mis à jour le 2026-11-06, lot 11 écrit (§ 17), pas encore joué à l'écran._
 
-- **État** : lots 1 à 10 en prod et publiés. Relevé MCP : **8 points CE2 sans modèle** — 001, 002 (`collection`
-  `centaines:`, outil neuf) et les 6 de la classe D (086, 039, 043, 051, 065, 070 : manipulation).
-- **Prochaine action** : lot 11 (§ 17 : 001, 002, matériel de 005, outil `centaines:` de #2420, en prod) — phase 0
-  validée (« je suis tes recos »), écrire `lot-ce2-11.py` dans le worktree ; ensuite 039 et 070 avec la case « figure » (comme CE1-072 / 074).
-- **En attente de David** : rien.
-- **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
-  coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
-  `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
-  `publier-lot` (même en simulation) et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance ;
-  job CI « Client Tests (browser, shard 2/2) » qui plante (`wrapDynamicImport`) : relancer `--failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, détaché sur `origin/main` (aucune branche en cours).
+- **État** : lots 1 à 10 publiés. Lot 11 (001, 002, matériel de 005) : 6 modèles dans `scripts/questions/ce2-11/`,
+  46 specs vertes, `sonde-collections` 0 problème, 6 brouillons en base locale ; commits sur la branche, rien poussé.
+- **Prochaine action** : jouer les 6 brouillons dans l'aperçu admin local (5176 ; Chrome figé le 2026-11-06), puis PR
+  des fichiers (revue : `code-reviewer` Sonnet pour `sonde-collections.ts`, le reste est du contenu).
+- **En attente de David** : reconnecter Chrome (`/chrome`) ; noter « `construire:` et Espaces dès 4 chiffres » dans
+  `outils-manquants.md` ?
+- **Pièges en cours** : `construire:` + « Espaces dès 4 chiffres » = valeur posée en forme à améliorer (04, 05 sans
+  l'option, nombre de l'énoncé groupé à la main) ; jamais de variable `e` (Euler) ; commitlint : corps ≤ 100
+  caractères par ligne ; `create-questions --publier` local depuis une copie du dossier (pas d'id local dans les
+  fichiers) ; `publier-lot` et `garde-niveaux-tags.ts` : David les lance ; job CI navigateur (`wrapDynamicImport`) :
+  relancer `--failed`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot11`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
