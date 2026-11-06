@@ -79,7 +79,7 @@ end $garde_code$;
 
 do $garde_rangs$
 begin
-	if (select display_order from public.curriculum_points where code = '2-489') <> 50 then
+	if (select display_order from public.curriculum_points where code = '2-489') is distinct from 50 then
 		raise exception 'le rang de 2-489 a changé depuis le relevé (50 attendu)';
 	end if;
 end $garde_rangs$;

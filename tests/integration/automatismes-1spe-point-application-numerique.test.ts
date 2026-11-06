@@ -37,6 +37,10 @@ interface Etat {
 	/** Le point 2-496, s'il existe : attributs et chemin du nœud. */
 	point: string | null;
 	references: string[];
+	/** Rang d'affichage des AUTRES points de 2de, par code. */
+	rangs: Map<string, number>;
+	/** Nombre de modèles rangés ou tagués (base locale : aucun ne doit l'être par la migration). */
+	modelesTouches: number;
 	/** État du trigger `updated_at` : `O` = actif */
 	trigger: string;
 }
@@ -105,6 +109,13 @@ async function lireEtat(pg: Client): Promise<Etat> {
 		`select a.grade from public.curriculum_point_automatismes a
 		   join public.curriculum_points p on p.id = a.point_id where p.code = '2-496' order by a.grade`
 	);
+	const o = await pg.query<{ code: string; display_order: number }>(
+		`select code, display_order from public.curriculum_points where grade = '2' and code <> '2-496'`
+	);
+	const m = await pg.query<{ n: string }>(
+		`select (select count(*) from public.question_templates where classification_node_id is not null)
+		      + (select count(*) from public.question_template_points) as n`
+	);
 	const g = await pg.query<{ tgenabled: string }>(
 		`select tgenabled from pg_trigger where tgname = 'update_question_templates_updated_at'`
 	);
@@ -126,7 +137,9 @@ async function lireEtat(pg: Client): Promise<Etat> {
 					chemins.get(pt.node_id) ?? '∅'
 				].join('§')
 			: null,
-		references: r.rows.map((x) => x.grade)
+		references: r.rows.map((x) => x.grade),
+		rangs: new Map(o.rows.map((x) => [x.code, x.display_order])),
+		modelesTouches: Number(m.rows[0]?.n ?? -1)
 	};
 }
 
@@ -180,6 +193,15 @@ describe('Automatismes de 1re : point 2-496 et rangement du modèle « applicati
 		expect([apres.date, annule.date]).toEqual([AVANT, AVANT]);
 	});
 
+	it('les points de 2de de rang ⩾ 51 descendent d’un rang, les autres ne bougent pas', () => {
+		expect([avant.rangs.get('2-489'), avant.rangs.get('2-490')]).toEqual([50, 51]);
+		expect([apres.rangs.get('2-489'), apres.rangs.get('2-490')]).toEqual([50, 52]);
+		const faux = [...avant.rangs].filter(
+			([code, rang]) => apres.rangs.get(code) !== (rang >= 51 ? rang + 1 : rang)
+		);
+		expect(faux).toEqual([]);
+	});
+
 	it('le rollback écrit dans la migration rend l’état d’avant', () => {
 		expect(annule).toEqual(avant);
 	});
@@ -212,9 +234,11 @@ describe('Automatismes de 1re, point 2-496 : les branches d’échec de la migra
 	it('base sans le modèle (locale) : la migration crée le point et passe', async () => {
 		await enTransaction(async () => {
 			await pg.query(extractRollback(MIGRATION));
+			const avant = await lireEtat(pg);
 			await pg.query(readFileSync(MIGRATION, 'utf-8'));
 			const etat = await lireEtat(pg);
 			expect([etat.point, etat.references]).toEqual([POINT, REFERENCES]);
+			expect(etat.modelesTouches).toBe(avant.modelesTouches);
 		});
 	});
 
@@ -240,6 +264,19 @@ describe('Automatismes de 1re, point 2-496 : les branches d’échec de la migra
 			);
 		});
 	});
+
+	it('2-489 absent ou déplacé depuis le relevé fait échouer la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(`update public.curriculum_points set display_order = 49 where code = '2-489'`);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/le rang de 2-489 a changé depuis le relevé/
+			);
+		});
+	});
+
+	// La garde « déjà tagué » ne peut pas être atteinte seule : la base refuse un tag sur un modèle
+	// sans nœud, et un modèle rangé entre-temps est arrêté par la garde « déjà rangé » (test ci-dessus).
 
 	it('le nœud « substitution » archivé fait échouer la migration (résolution stricte)', async () => {
 		await enTransaction(async () => {
