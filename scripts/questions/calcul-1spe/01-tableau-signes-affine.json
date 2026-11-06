@@ -1,4 +1,5 @@
 {
+	"id": "0f673c27-9814-445f-9643-97c5fab9ce5b",
 	"title": "Tableau de signes d'une expression du premier degré",
 	"description": "Compléter le tableau de signes de ax + b (et de b + ax, écrite constante d'abord) : valeur qui annule, signe de part et d'autre (pièges : racine −b/a écrite b/a, signe de a lu sur b quand l'expression commence par la constante, signes dans le mauvais ordre quand a < 0)",
 	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
