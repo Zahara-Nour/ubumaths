@@ -16,7 +16,7 @@ couvre:
 
 # Éditeur riche (TipTap) et affichage sûr du contenu écrit
 
-> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8).
+> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; formules du cahier (`transformMathHtml`) le 2026-11-06.
 > Voisins, non recopiés ici : l'usage de `RichTextEditor` et `RichTextDisplay` est dans
 > [composants-ui.md](../pratiques/composants-ui.md) ; la conversion TipTap ↔ markdown
 > (`markdown-import.ts`, `markdown-export.ts`) et les extensions de `src/lib/extensions/` sont
@@ -95,15 +95,15 @@ de planter. 8 appelants (messages, signalements de fiches, notebook).
 
 ### Nettoyer du HTML : `sanitize.ts`, `sanitize-configs.ts`, `html-escape.ts`
 
-| Fonction                        | Ce qu'elle fait                                                                  | Appelants                                                                          |
-| ------------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `sanitizeHtml`                  | DOMPurify (`isomorphic-dompurify`), liste blanche de balises et d'attributs      | notebook, aperçu de variante, modèles de messages                                  |
-| `transformMathHtml`             | `sanitizeHtmlWithMath`, puis `data-math-inline/block` → `<math-field read-only>` | cahier de textes (page élève, lien public `/cahier/[token]`)                       |
-| `sanitizePlainText`             | retire toute balise, garde le texte                                              | `ReportErrorDialog.svelte`                                                         |
-| `sanitizeUrl`                   | lien inchangé si schéma `http`, `https`, `mailto` ou relatif ; sinon `'#'`       | rendu markdown : `InlineRenderer`, `ParagraphNode`, `HeadingNode`, `HintReference` |
-| `containsDangerousHtml`         | détecte `<script`, `<iframe`, `on…=`, `javascript:`…                             | aucun (doublon, voir Écarts)                                                       |
-| `NOTIFICATION_SANITIZE_CONFIG`  | 13 balises, aucun attribut : config partagée serveur / client des notifications  | `server/sanitization.ts`, `utils/sanitize-notification.ts`                         |
-| `escapeHtml` (`html-escape.ts`) | échappe `< > & " '` ; `null`/`undefined` → `''`                                  | `server/notifications.ts`, `auto-notifications.ts`, marché                         |
+| Fonction                        | Ce qu'elle fait                                                                                                              | Appelants                                                                          |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `sanitizeHtml`                  | DOMPurify (`isomorphic-dompurify`), liste blanche de balises et d'attributs                                                  | notebook, aperçu de variante, modèles de messages                                  |
+| `transformMathHtml`             | DOMPurify (réglage de `sanitizeHtmlWithMath`) en arbre, puis `data-math-inline/block` → `<math-field read-only>` dans le DOM | cahier de textes (page élève, lien public `/cahier/[token]`)                       |
+| `sanitizePlainText`             | retire toute balise, garde le texte                                                                                          | `ReportErrorDialog.svelte`                                                         |
+| `sanitizeUrl`                   | lien inchangé si schéma `http`, `https`, `mailto` ou relatif ; sinon `'#'`                                                   | rendu markdown : `InlineRenderer`, `ParagraphNode`, `HeadingNode`, `HintReference` |
+| `containsDangerousHtml`         | détecte `<script`, `<iframe`, `on…=`, `javascript:`…                                                                         | aucun (doublon, voir Écarts)                                                       |
+| `NOTIFICATION_SANITIZE_CONFIG`  | 13 balises, aucun attribut : config partagée serveur / client des notifications                                              | `server/sanitization.ts`, `utils/sanitize-notification.ts`                         |
+| `escapeHtml` (`html-escape.ts`) | échappe `< > & " '` ; `null`/`undefined` → `''`                                                                              | `server/notifications.ts`, `auto-notifications.ts`, marché                         |
 
 `sanitizeUrl` décide sur la forme que lira le **navigateur** : espaces et caractères de contrôle
 de tête retirés, tabulations et retours à la ligne supprimés partout (`java\nscript:` devient
@@ -122,13 +122,19 @@ de tête retirés, tabulations et retours à la ligne supprimés partout (`java\
 
 ## Écarts connus
 
-- **Formules vides au cahier de texte** (trouvé le 2026-10-25, chantier demo-debug, PR 6h) :
-  `transformMathHtml` ne lit `latex="…"` que s'il suit directement `data-math-inline` /
-  `data-math-block`, mais l'éditeur écrit `data-math-syntax` et `data-math-original` avant
-  (depuis `6939fefb5`, 2025-12-14). L'élève reçoit des champs vides ; le prof, qui rouvre la
-  séance dans l'éditeur, voit ses formules. Les tests écrivent ce HTML à la main, dans l'ancien
-  ordre. Prod au 2026-10-25 : aucune formule au cahier. Décidé par David : le cahier de texte
-  passera à ubumark (markdown + `MarkdownRenderer`), chantier à part.
+- **Formules vides au cahier de texte — corrigé le 2026-11-06** (trouvé le 2026-10-25,
+  chantier demo-debug, PR 6h) : `transformMathHtml` ne lisait `latex="…"` que s'il suivait
+  directement `data-math-inline` / `data-math-block`, mais l'éditeur écrit `data-math-inline=""`,
+  `data-math-syntax` et `data-math-original` avant (depuis `6939fefb5`, 2025-12-14). Il lit
+  désormais les formules **dans l’arbre DOM** rendu par DOMPurify (`RETURN_DOM_FRAGMENT`, recopie
+  dans un document inerte, `getAttribute('latex')` → `textContent` du `math-field`), plus par
+  expression sur le texte HTML. L’audit de #2425 a montré que les anciennes expressions
+  (`[^>]*` sur les attributs) laissaient passer un **XSS stocké au rendu serveur** : jsdom
+  n’échappe pas `>` dans une valeur d’attribut, `title="></span><img onerror=…>"` fermait la
+  balise à tort (auteur possible : prof ou admin par l’API ; cible : élèves, lien public).
+  Charges utiles dans `sanitize-attaques.test.ts` et `.svelte.test.ts`. Prod au 2026-11-06 : aucune
+  formule au cahier (2 séances). Reste décidé par David : le cahier de texte passera à ubumark
+  (markdown + `MarkdownRenderer`), chantier à part.
 - **Énigmes : HTML enregistré, lu comme du markdown** (vu le 2026-10-25, pas mesuré) :
   `RiddleForm.svelte` enregistre `bind:htmlValue`, `RiddleCard` et `RiddleOfTheDayCard`
   l'affichent par `MarkdownRenderer`.

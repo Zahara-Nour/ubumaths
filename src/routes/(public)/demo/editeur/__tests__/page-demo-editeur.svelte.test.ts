@@ -59,8 +59,13 @@ describe('/demo/editeur', () => {
 		for (const testId of USAGES) {
 			await expect.poll(() => usageText(container, testId)).toContain('La solution de');
 		}
-		// Formules du cahier de texte : vides tant que le cahier garde du HTML (`transformMathHtml`
-		// ne lit `latex` qu'en première place). Test à ajouter avec le chantier « cahier en ubumark ».
+		// Formules du cahier de texte : `transformMathHtml` ne lisait `latex` que juste après
+		// le marqueur, et `editor.getHTML()` le met en dernier → formules vides (2026-11-06)
+		const formulesDuCahier = () =>
+			[...container.querySelectorAll('[data-testid="usage-cahier"] math-field')].map((f) =>
+				f.textContent?.trim()
+			);
+		await expect.poll(formulesDuCahier).toEqual(['2x+3=11', 'x=4']);
 	});
 
 	it('une phrase changée dans l’éditeur change les trois usages', async () => {

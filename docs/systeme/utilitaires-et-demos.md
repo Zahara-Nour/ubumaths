@@ -301,8 +301,8 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   sérialisation que `editor.getHTML()`, puis `transformMathHtml` et `linkifyResourceReferences`,
   comme la page élève) et énoncé d'exercice (`tipTapToMarkdown` puis `MarkdownRenderer`). Le HTML
   du cahier est calculé après `onMount` : l'hydratation garde le `{@html}` du serveur sans le
-  corriger. Les formules de la carte « cahier » sortent vides (écart de
-  [editeur-riche.md](editeur-riche.md)). Rien n'est envoyé ;
+  corriger. Les formules de la carte « cahier » s’affichent (vides jusqu’au 2026-11-06 :
+  écart corrigé de [editeur-riche.md](editeur-riche.md)). Rien n'est envoyé ;
 - **`/demo/diaporama`** (vitrine, PR 6i-c) : un `Deck` de 13 diapositives dans un cadre (bouton
   ou F pour le plein écran, `hash: false`) : comment avancer, pile verticale, fragments,
   transitions, $(x+1)^2$ développé tout seul (`autoSlide` de 2 s et fragments `->`), formules
