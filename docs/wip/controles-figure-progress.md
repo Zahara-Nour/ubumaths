@@ -6,13 +6,13 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, PR B du lot 9 ouverte (§ 26)._
+_Mis à jour le 2026-11-06, #2430 (PR B) en revue après correctif (§ 26)._
 
 - **État** : lots 1 à 8 et #2305 mergés, en prod depuis la 0.69.0. Ordre de David du 2026-11-06
   (`outils-manquants.md`) : lot 9 « bissectrice construite + règle des médiatrices relâchée » ;
   translation tracée pas maintenant ; angle non adjacent : pas d'outil.
-- **Prochaine action** : phase 0 du § 25 validée (« je te suis »). PR B (médiatrices, 2 unités dans la
-  fenêtre) puis PR A (bissectrice au compas, exception 4).
+- **Prochaine action** : merger #2430 (PR B : 2 unités dans la fenêtre + Report dans la palette) quand
+  CI verte et revue du correctif sans bloquant ; puis PR A (bissectrice au compas, exception 4).
 - **En attente de David** : rien.
 - **Pièges en cours** : `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)`
   échoue si P définit d ; plafond de 20 objets sans message ; CI qui ne part pas sur une PR en conflit ;
@@ -1184,3 +1184,15 @@ sévère que l'élève.
   le test « rayon 4 → juste » est une garde, vert avant (le juge l'acceptait déjà).
 - Pas de refus testé pour le cercle circonscrit : les médiatrices passent par le centre, déjà exigé dans
   la fenêtre ; le cas qui refuse (triangle presque plat dans un coin) est exotique.
+- **Revue (code-reviewer, #2430), finding important** : à l'écran, le Compas ne garde pas son écartement
+  (centre puis point de passage) et le juge veut deux rayons égaux au calcul près ; sans Report, le seul
+  rayon reproductible était AB, donc l'ancienne règle. Mon test « rayon 4 » donnait des coordonnées
+  exactes qu'aucun doigt ne produit. **Décision de David (« je suis tes recos »)** : le **Report dans la
+  palette** de `droite` (papier uni ; `LINE_GRID_TOOLS` sans lui sur quadrillage) et de `cercle` ; les
+  juges `line.ts` et `circle.ts` admettent le report comme trait de construction (le cercle circonscrit
+  reste tracé au Compas).
+- Tests du correctif (rouges avant, 5) : palettes ; Report pris à la main (`addTap`), piqué en A et B,
+  croisements dans la fenêtre → juste ; deux rayons à la main au Compas → « tracée à l'œil » ; milieu de
+  [AB] au bord (A(0 ; 3), B(0 ; 5)) : deux paires de reports du même côté → juste ; cercle circonscrit
+  par médiatrices au Report → juste ; écran (`figure-a-completer-mediatrice`) : vrais touchers Report
+  puis Règle aimantée, A(3 ; 3), B(9 ; 5) → juste.
