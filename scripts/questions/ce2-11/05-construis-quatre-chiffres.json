@@ -34,7 +34,7 @@
 			"correction": {
 				"steps": [
 					"${{m}}\\,{{c}}{{d}}{{u}}$, c'est ${{m}}$ {{if:m<=1|millier|milliers}}, ${{c}}$ {{if:c<=1|centaine|centaines}}, ${{d}}$ {{if:d<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}.",
-					"On pose ${{m}}$ {{if:m<=1|gros cube|gross cubes}}, ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+					"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}}, ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
 				]
 			}
 		},
@@ -62,7 +62,7 @@
 			"correction": {
 				"steps": [
 					"${{m}}\\,0{{d}}{{u}}$, c'est ${{m}}$ {{if:m<=1|millier|milliers}}, ${{d}}$ {{if:d<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}, aucune centaine.",
-					"On pose ${{m}}$ {{if:m<=1|gros cube|gross cubes}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+					"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
 				]
 			}
 		},
@@ -86,7 +86,7 @@
 			"correction": {
 				"steps": [
 					"${{m}}\\,{{c}}00$, c'est ${{m}}$ {{if:m<=1|millier|milliers}} et ${{c}}$ {{if:c<=1|centaine|centaines}}, ni dizaine ni unité.",
-					"On pose ${{m}}$ {{if:m<=1|gros cube|gross cubes}} et ${{c}}$ {{if:c<=1|plaque|plaques}}."
+					"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}} et ${{c}}$ {{if:c<=1|plaque|plaques}}."
 				]
 			}
 		}

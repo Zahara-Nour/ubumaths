@@ -84,7 +84,7 @@
 			"correction": {
 				"steps": [
 					"Un gros cube, c'est $100$ dizaines ; une plaque, $10$ dizaines ; une barre, $1$ dizaine.",
-					"${{m}}$ {{if:m<=1|gros cube|gross cubes}} : ${{eval:100*m}}$ dizaines ; ${{c}}$ {{if:c<=1|plaque|plaques}} : ${{eval:10*c}}$ dizaines ; ${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}.",
+					"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{eval:100*m}}$ dizaines ; ${{c}}$ {{if:c<=1|plaque|plaques}} : ${{eval:10*c}}$ dizaines ; ${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}.",
 					"En tout : ${{eval:100*m}}+{{eval:10*c}}+{{d}}={{solution}}$ dizaines, et ${{u}}$ unités."
 				]
 			}

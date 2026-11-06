@@ -38,7 +38,7 @@
 			],
 			"correction": {
 				"steps": [
-					"${{m}}$ {{if:m<=1|gros cube|gross cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+					"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
 					"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
 					"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
 					"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
@@ -69,7 +69,7 @@
 			],
 			"correction": {
 				"steps": [
-					"${{m}}$ {{if:m<=1|gros cube|gross cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+					"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
 					"Aucune plaque : $0$ centaine.",
 					"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
 					"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
@@ -96,7 +96,7 @@
 			],
 			"correction": {
 				"steps": [
-					"${{m}}$ {{if:m<=1|gros cube|gross cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+					"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
 					"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
 					"Aucune barre, aucun petit cube.",
 					"$${{eval:1000*m}}+{{eval:100*c}}={{solution}}$$"

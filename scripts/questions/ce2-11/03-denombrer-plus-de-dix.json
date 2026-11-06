@@ -101,7 +101,7 @@
 			"correction": {
 				"steps": [
 					"Une plaque vaut $100$ cubes, une barre $10$ cubes et un gros cube $1\\,000$ cubes, même quand il y en a plus de $10$.",
-					"${{m}}$ {{if:m<=1|gros cube|gross cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+					"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
 					"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
 					"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
 					"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",

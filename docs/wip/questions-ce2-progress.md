@@ -942,3 +942,8 @@ question d'accès : rien de plus.
 - Corrigé en route : « petit cubes » → « petits cubes » ; listes « a, b et c » ; 06, plus de `$$…$$ dizaines`.
 - 6 brouillons en base locale (copie du dossier dans le scratchpad). Aperçu admin : Chrome figé (défilement sans effet,
   capture inchangée) → modèles **pas encore joués à l'écran**.
+- Aperçu admin local (Chrome reconnecté) : 05 joué (4 001 → faux, « Ta collection vaut 4001. » ; 4 100 → juste,
+  correction lue) ; 03 joué (3697 sans espace → ½ point, « Les chiffres sont mal espacés ») ; 06 vu (5 cases) ; dessins
+  justes (gros cubes en perspective, plaques quadrillées). Corrigé en route : « gross cubes » → « gros cubes ».
+- Vu à l'écran : 16 plaques (03, variation 3) = 4 rangées, le dessin fait près de deux écrans à 540 px ; la carte de
+  correction le redessine dans un cadre à défilement propre.

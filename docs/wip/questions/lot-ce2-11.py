@@ -78,7 +78,7 @@ def bloc(*lignes):
 
 def accord(nom, v):
     # « 1 centaine », « 0 dizaine », « 3 unités » ; « petit cube » → « petits cubes »
-    pluriel = ' '.join(mot + 's' for mot in nom.split(' '))
+    pluriel = ' '.join(mot if mot.endswith('s') else mot + 's' for mot in nom.split(' '))  # « gros »
     return '{{if:' + v + '<=1|' + nom + '|' + pluriel + '}}'
 
 
