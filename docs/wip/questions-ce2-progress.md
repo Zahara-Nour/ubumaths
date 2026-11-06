@@ -6,20 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 11 écrit (§ 17), pas encore joué à l'écran._
+_Mis à jour le 2026-11-06, après #2433._
 
-- **État** : lots 1 à 10 publiés. Lot 11 (001, 002, matériel de 005) : 6 modèles dans `scripts/questions/ce2-11/`,
-  46 specs vertes, `sonde-collections` 0 problème, 6 brouillons en base locale ; commits sur la branche, rien poussé.
-- **Prochaine action** : jouer les 6 brouillons dans l'aperçu admin local (5176 ; Chrome figé le 2026-11-06), puis PR
-  des fichiers (revue : `code-reviewer` Sonnet pour `sonde-collections.ts`, le reste est du contenu).
-- **En attente de David** : reconnecter Chrome (`/chrome`) ; noter « `construire:` et Espaces dès 4 chiffres » dans
-  `outils-manquants.md` ?
-- **Pièges en cours** : `construire:` + « Espaces dès 4 chiffres » = valeur posée en forme à améliorer (04, 05 sans
-  l'option, nombre de l'énoncé groupé à la main) ; jamais de variable `e` (Euler) ; commitlint : corps ≤ 100
-  caractères par ligne ; `create-questions --publier` local depuis une copie du dossier (pas d'id local dans les
-  fichiers) ; `publier-lot` et `garde-niveaux-tags.ts` : David les lance ; job CI navigateur (`wrapDynamicImport`) :
-  relancer `--failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot11`.
+- **État** : lots 1 à 10 publiés. Lot 11 (001, 002, matériel de 005) : 6 modèles mergés (#2433), pas encore en prod.
+- **Prochaine action** : David lance `create-questions --publier` **depuis le worktree** (les ids s'écrivent sur la
+  branche `-db`) ; relevé MCP ; migration nœud + tag (gabarit lot 10 ; 01 à 05 → « dénombrement », 06 →
+  « écritures ») ; `security-auditor`, CI, `check:migrations`, merge, `db:migrate` ; page à cocher ; publication.
+- **En attente de David** : `create-questions --publier` (commande dans le dernier message de la session).
+- **Pièges en cours** : `construire:` + « Espaces dès 4 chiffres » = forme à améliorer (`outils-manquants.md` n° 15) ;
+  jamais de variable `e` (Euler) ; commitlint : corps ≤ 100 caractères par ligne ; `publier-lot` et
+  `garde-niveaux-tags.ts` : David les lance ; job CI navigateur (`wrapDynamicImport`) : relancer `--failed` ; la page
+  à cocher redessine des collections hautes (03 : jusqu'à 15 plaques).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot11-db`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -952,3 +950,5 @@ question d'accès : rien de plus.
 - Revue `code-reviewer` (Sonnet) de `sonde-collections.ts` : faux « 0 problème » si `--tirages` invalide ou si aucun bloc
   n'est lu → corrigé (refus de `--tirages abc`, échec à 0 bloc, essayé sur `ce2-10`) ; regex d'ouverture tolérant
   espaces et `\r` comme le parseur. Même défaut dans `sonde-cubes.ts`, hors de cette PR.
+- 2026-11-06 : #2433 mergée (CI verte ; revue : `code-reviewer` Sonnet sur la sonde, corrigé). Branche
+  `feat/questions-ce2-lot11-db` pour les ids et la migration.
