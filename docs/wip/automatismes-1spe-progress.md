@@ -6,19 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, PR du lot « Nombres » ouverte (2de entretenue en 1re)._
+_Mis à jour le 2026-11-06, PR #2432 (lot « Nombres ») : défauts de mise en page corrigés._
 
-- **État** : lot « Nombres » (1er lot des automatismes de 2de) : phase 0 validée, script
-  `create-automatismes-nombres.ts` écrit, séries vérifiées en local · **Prochaine action** : merge de la PR,
-  puis David lance la simulation et `--publier` ; vérification PDF de la fiche depuis la base ; lot suivant
-  « Calcul littéral et équations » (§ Lots « 2de ») · **En attente de David** : écriture de la fiche ;
-  publication des brouillons ci-dessous · **Pièges en cours** : écritures en prod ET simulations contre la
-  prod lancées par David (refusées au mode auto) ; essais en local sur copie MCP des modèles ; job CI
-  navigateur 2/2 qui plante → `gh run rerun --failed` · **Worktree / branche** :
-  `../ubumaths-wt-automatismes-1spe` · `feat/automatismes-nombres`.
-- Brouillons à publier : `0f673c27`, `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`,
-  `9852d62c` (+ `1bd7378d`, `9a9026fc`) ; fiches `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`,
-  `d37413a3`, `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
+- **État** : fiche `9bd4bcc6` « Automatismes : nombres (1) » écrite (brouillon, 2de + 1re) ; 4 défauts
+  du PDF corrigés dans le script (1 page, aucune coupure, rendu local) · **Prochaine action** : David
+  lance `--publier --mettre-a-jour` ; revérifier le PDF depuis la base ; merger #2432 ; lot suivant
+  « Calcul littéral et équations » (§ Lots « 2de ») · **En attente de David** : la mise à jour de la
+  fiche ; publication des 6 fiches de 1re (admin) · **Pièges en cours** : écritures ET simulations
+  contre la prod lancées par David ; formules en ligne coupées au PDF → choisir modèles/graines, vérifier
+  par le rendu local ; `debord.py` → venv du dépôt principal ; job CI navigateur 2/2 qui plante →
+  `gh run rerun --failed` · **Worktree / branche** : `../ubumaths-wt-automatismes-1spe` ·
+  `feat/automatismes-nombres`.
+- Fiches de 1re à publier : `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df`.
+  Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
 ## Décisions de David (figées)
 
@@ -413,3 +413,24 @@ décimale / fractionnaire / pourcentage, ordre de grandeur et vraisemblance, con
 - **À lancer par David** après le merge : `pnpm tsx scripts/create-automatismes-nombres.ts` (simulation),
   puis `… --publier` ; ensuite vérification PDF depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs`
   `--polices-corrige`, `debord.py`).
+
+### Fiche écrite, vérifiée, défauts de mise en page corrigés (2026-11-06)
+
+- David a publié les 9 modèles de 1re (`publier-lot.ts`, relevé MCP : tous `published`) et écrit la fiche
+  depuis le worktree (avant le merge) : **`9bd4bcc6`**, brouillon, `{2,1_SPE}`, 2 séries. Les 6 fiches de
+  1re restent en brouillon (publication par l'admin).
+- PDF depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs --polices-corrige`, `debord.py` du venv
+  du dépôt principal : `../ubumaths/scripts/fiches/.venv/bin/python`) : fiche 2 p., réponses 1 p., corrigé
+  3 p., 0 débord, maths justes. **4 défauts de mise en page**, corrigés à la demande de David :
+  (1) série 1 Q2, `514dab07` écrit ses deux fractions en blocs `$$` → `259a0b26` graine 7 (5/6 ⋯ 3/4) ;
+  (2) page 2 pour 2 questions → différence graine 10 (piste, plus courte) : fiche sur **1 page** ;
+  (3) « x − y = −360 » coupé (salaires) → interpréter une différence graine 1 (Léa et Tom) ;
+  (4) corrigé des vitesses coupé : TOUTES les graines de `1dd4d0ea` écrivent une chaîne d'égalités en
+  ligne → `6b44d220` « Calculer une vitesse moyenne » (même point 4-052), graine 5 (240 km en 3 h).
+- Cause commune des coupures : le générateur Typst ne met pas les formules en ligne dans `#box`
+  (`typst-generator.ts`, bug Typst #4796, choix documenté) : à corriger par le choix des modèles/graines.
+- **Rendu local sans écrire en prod** : séries construites sur la copie MCP des modèles, Typst par
+  `WorksheetGenerator` + modèle « fiche élève » (comme `regen-depuis-base.ts`), compilé par
+  `compile-prod.mjs` ; script jetable dans le scratchpad (non versionné).
+- **À lancer par David** : `pnpm tsx scripts/create-automatismes-nombres.ts --publier --mettre-a-jour`
+  (réécrit les 2 séries de la fiche en brouillon), puis je revérifie le PDF depuis la base.

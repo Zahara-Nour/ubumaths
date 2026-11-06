@@ -12,8 +12,11 @@
  * grandeur, conversions d'unités. Modèles du collège et de 2de déjà en base, réutilisés tels
  * quels : aucun modèle neuf. Fiche et séries attachées à la 2de ET à la 1re (décision de
  * David, 2026-11-06). Changer une graine change la copie : les graines sont la fiche ;
- * choisies pour éviter les cas triviaux (« 1 dm² = … cm² ») et deux contextes identiques
- * (différence : tarifs ; interpréter une différence : salaires).
+ * choisies pour éviter les cas triviaux (« 1 dm² = … cm² ») et pour la mise en page du
+ * PDF : fiche sur UNE page, aucune formule en ligne coupée (le générateur Typst laisse
+ * couper les formules en ligne, cf. typst-generator.ts) — d'où différence 10 (piste),
+ * interpréter une différence 1 (Léa et Tom), fractions par `259a0b26` (écrites en ligne,
+ * pas en bloc) et vitesse moyenne `6b44d220` plutôt que la conversion `1dd4d0ea`.
  *
  * Garde-fous : base = prod ; modèles tous retrouvés ; séries construites et validées
  * (Zod) AVANT la moindre écriture ; arrêt si un titre d'exercice existe déjà dans le
@@ -60,8 +63,8 @@ const MODELES = {
 	rapport: '313ae1a2-1bfb-4da6-bcdd-8487bc4a84a2',
 	/** 2de — interpréter une différence */
 	interpreterDifference: '52516a54-40e9-48e9-ac86-8a91d388dd46',
-	/** 5e — comparer deux fractions (la plus petite) */
-	comparerFractions: '514dab07-b251-432f-b79a-5a0218f59010',
+	/** 6e — comparer deux fractions avec un dénominateur commun */
+	comparerFractions: '259a0b26-9b36-4662-b1fb-13ffd0748ab6',
 	/** 6e — comparer deux fractions de dénominateurs multiples */
 	fractionsDenominateursMultiples: '228b1620-640c-4570-9c8f-2f3e960aca7d',
 	/** 4e — enchaîner des calculs de fractions */
@@ -84,8 +87,9 @@ const MODELES = {
 	contenances: '355bd41a-1589-4c25-be09-5f062bada81a',
 	/** 6e — durée décimale → minutes */
 	dureeDecimale: '65c32979-d51b-4c65-9759-f1e8fa9c676e',
-	/** 4e — convertir des vitesses */
-	vitesses: '1dd4d0ea-26d6-40a8-b804-e4dbf412c710'
+	/** 4e — calculer une vitesse moyenne (grandeur quotient) ; la conversion de vitesses
+	 *  `1dd4d0ea` est écartée : son corrigé, une seule chaîne d'égalités en ligne, se coupe au PDF */
+	vitesses: '6b44d220-2485-4d2c-aa35-70e74abec66e'
 };
 
 type Cle = keyof typeof MODELES;
@@ -95,7 +99,7 @@ const SERIES = [
 	{
 		title: 'Nombres — série 1',
 		items: [
-			q('difference', 7),
+			q('difference', 10),
 			q('comparerFractions', 7),
 			q('enchainerFractions', 4),
 			q('puissancesDeDix', 7),
@@ -109,13 +113,13 @@ const SERIES = [
 		title: 'Nombres — série 2',
 		items: [
 			q('rapport', 7),
-			q('interpreterDifference', 7),
+			q('interpreterDifference', 1),
 			q('fractionsDenominateursMultiples', 7),
 			q('produitPuissancesDeDix', 4),
 			q('aires', 8),
 			q('contenances', 4),
 			q('dureeDecimale', 8),
-			q('vitesses', 10)
+			q('vitesses', 5)
 		]
 	}
 ];
