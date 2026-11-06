@@ -9,14 +9,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2415 (lot 9 : contenu mergé)._
+_Mis à jour le 2026-11-06, après #2419 (lot 9 : nœud + tag en prod)._
 
-- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 à 8 publiés ; lot 9 (probabilités,
-  § 14, D7) : 3 modèles mergés (#2415), brouillons à créer en prod.
-- **Prochaine action** : `create-questions --publier` du lot 9 par David, relevé MCP, PR de
-  migration nœud + tag (aucune sous-notion neuve), `db:migrate`, page à cocher.
-- **En attente de David** : `create-questions --publier` du lot 9 ; vérification à l'œil en prod (ligne du 2026-11-03
-  de `docs/wip/verifications-manuelles.md`).
+- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5 à 8 publiés ; lot 9
+  (probabilités, § 14, D7) : 3 brouillons rangés et tagués en prod (#2419, `db:migrate` fait), page à cocher publiée :
+  https://claude.ai/artifact/4fpgJnSayFhn7h9s5A5fsz.
+- **Prochaine action** : relecture du lot 9 par David (page à cocher ; compter les verdicts), puis
+  `publier-lot.ts --publier` par David et relevé MCP. Les 20 approfondissements seront alors tous publiés : faire le
+  point du chantier avec David (clôture et versement, ou suite : algorithmes, points-compétences).
+- **En attente de David** : relecture du lot 9 ; vérification à l'œil en prod (ligne du 2026-11-03 de
+  `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
   une notion → choisir sa sous-notion avec David. Variable `e` = Euler : jamais comme nom de variable. Job navigateur
@@ -543,3 +545,7 @@ déjà tagué sur ces points. Ids écrits dans les JSON du lot (cette PR), `git 
 Migration `20261106050929_questions_1spe_approfondissements_9_rangement_tags` (gabarit lot 7, aucune sous-notion neuve),
 test `questions-1spe-approfondissements-9-rangement-tags` 12/12 vert, rouge sans la migration (6 rouges, la suite
 principale ne s'exécute pas). Accès : Q5 de D3, personne.
+
+Mergée (#2419, CI verte du premier coup). `security-auditor` : aucun finding bloquant. `db:migrate` le 2026-11-06
+(seule migration en attente, sans `--include-all`), vérifié MCP : 3 modèles sur leur nœud, un tag chacun, `draft`,
+`updated_at` inchangé, trigger `updated_at` réactivé. Page à cocher : https://claude.ai/artifact/4fpgJnSayFhn7h9s5A5fsz.
