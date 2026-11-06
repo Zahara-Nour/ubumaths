@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, phase 0 validée._
+_Mis à jour le 2026-11-06, PR 1 prête._
 
-- **État** : phase 0 et Q1-Q4 validées par David, question d'accès tranchée ; PR 1 (migration + tests d'intégration) en cours · **Prochaine action** : tests rouges, migration, `security-auditor`, PR · **En attente de David** : rien · **Pièges en cours** : la policy « Users can update own profile » laisse écrire `avatar_url` à la main (fermée par la PR 1) ; le trigger de connexion réécrit `avatar_url` s'il est vide · **Worktree / branche** : `ubumaths-wt-boutique-avatars` / `feat/boutique-avatars`
+- **État** : PR 1 (migration `20261106164739_boutique_avatars`, 36 tests d'intégration rouges sans / verts avec, garde des trois colonnes d'avatar, callback Google en client service) relue (`code-reviewer` Opus + `security-auditor` : rien de bloquant, corrections faites) · **Prochaine action** : PR 1 → CI → merge → `check:migrations` → `db:migrate` → `db:types` ; puis PR 2 (routes, onglet Avatars du Marché, export RGPD) · **En attente de David** : images du premier lot (`boutique-avatars-prompts.md`) · **Pièges en cours** : PR 2 — l'élève vient de la SESSION (`locals`), jamais du corps (IDOR : les fonctions font confiance à `p_student_id`) ; consentement vérifié par la route ; export RGPD doit ajouter `student_avatars` ; rafraîchir `google_avatar_url` au callback après `db:types` ; base locale : migration appliquée à la main (psql), `migration up` bloqué par une migration d'automatismes-1spe · **Worktree / branche** : `ubumaths-wt-boutique-avatars` / `feat/boutique-avatars`
 
 ## Décisions de David (2026-11-06)
 
