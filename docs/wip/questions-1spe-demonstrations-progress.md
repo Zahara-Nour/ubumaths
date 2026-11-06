@@ -9,13 +9,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 10 : brouillons en prod, migration nœud + tag en PR._
+_Mis à jour le 2026-11-06, lot 10 : migration nœud + tag en PR #2431 (CI relancée)._
 
 - **État** : démonstrations (lots 1-4) et approfondissements (lots 5-9) publiés. Algorithmes (§ 15, D9) : lot 10
   (238, 239, 380, § 16, D10) mergé (#2429), brouillons créés en prod ; migration nœud + tag en PR.
-- **Prochaine action** : PR de migration du lot 10 (nœud + tag) : `security-auditor`, CI verte, merge,
-  `check:migrations --pr`, `db:migrate` depuis le dépôt principal, vérification MCP, page à cocher. Ensuite lot 11
-  (analyse : 279, 288, 298, 299, 309), relevé prod et contenu à proposer.
+- **Prochaine action** : PR #2431 (migration du lot 10) : `security-auditor` fait, aucun finding bloquant (3 faibles,
+  hérités du lot 9) ; tests d'intégration rouges sans la migration (6) ; `check:migrations --pr 2431` vert ; CI toute
+  verte sauf le job navigateur shard 2/2 (plantage connu, tests verts), relancé par `gh run rerun 42218818035
+--failed`. Si vert → `gh pr merge 2431 --merge`, `db:migrate` depuis le dépôt principal (4 conditions réunies),
+  vérification MCP, page à cocher. Ensuite lot 11 (analyse : 279, 288, 298, 299, 309), relevé prod et contenu.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David (lancée hors du dépôt principal,
   `publier-lot` refuse : « sans id »). `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → les
@@ -23,8 +25,7 @@ _Mis à jour le 2026-11-06, lot 10 : brouillons en prod, migration nœud + tag e
   qui plante tests verts → `gh run rerun <run> --failed`. Port 5178. Brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local` (sinon `create-questions` vise la prod). Les « catégories » du journal ne sont qu'une
   étiquette : en base, seuls nœud, niveau et tag.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (HEAD détaché), nouvelle branche depuis
-  `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-algorithmes-10-rangement`.
 
 ---
 
