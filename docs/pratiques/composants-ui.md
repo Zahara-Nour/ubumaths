@@ -258,6 +258,7 @@ let content = $state('');
 Props clés : `preset` (`'full'` par défaut), `toolbar`, `minHeight`, `maxHeight`, `disabled`, `imageUpload`, `onchange`.  
 Section « Insertion » de la barre : droite graduée, tableau de variation, arbre de probabilité, cercle trigonométrique, QR code (bloc ubumark ` ```qr ` prérempli, sans nœud TipTap dédié).  
 Section « Formule » : formule en ligne, modèles, bloc `$$...$$`, et **« Calcul aligné »** (calcul centré `array{rcl}` d'une ligne, curseur dedans ; Cmd+Entrée y ajoute une ligne — voir [ubumark § Formules](../systeme/ubumark.md#formules)).  
+Création : l'éditeur TipTap naît dans `onMount`, après `await import('mathlive')` (le créer dès le montage changeait le moment où il apparaît : essayé et retiré, #2423) ; d’ici là la barre (et le bouton markdown) est inerte et « Chargement de l’éditeur… » s’affiche, annoncé par une région `role="status"` toujours présente. Import NU de MathLive en tête (`import 'mathlive'`, jamais d’import nommé) : côté serveur `mathlive` résout vers `mathlive-ssr`, sans `MathfieldElement` — garde : `__tests__/mathlive-imports-ssr.test.ts`. Si la création lève, la barre reste inerte et « L'éditeur n'a pas pu se charger » propose de recharger la page (`role="alert"`) au lieu d'un éditeur muet.  
 Pour l'affichage seul : `RichTextDisplay.svelte` (pas d'éditeur).
 
 ---
@@ -306,4 +307,4 @@ import {cn} from '$lib/utils';
 
 > Voir aussi : [best-practices.md](svelte-typescript.md) · [quality-standards.md](qualite.md) · [architecture.md](../systeme/architecture-generale.md).
 
-Vérifié contre le code le 2026-10-10 ; retour de la page d’une notion le 2026-10-21 ; bouton « Calcul aligné » le 2026-11-05.
+Vérifié contre le code le 2026-10-10 ; retour de la page d’une notion le 2026-10-21 ; bouton « Calcul aligné » le 2026-11-05 ; chargement et échec de création de l’éditeur le 2026-11-06.
