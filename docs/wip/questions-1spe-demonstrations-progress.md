@@ -9,12 +9,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 10 publié (après #2431)._
+_Mis à jour le 2026-11-06, lot 11 écrit (§ 17), PR ouverte._
 
-- **État** : démonstrations (lots 1-4), approfondissements (lots 5-9) et algorithmes du lot 10 (238, 239, 380, § 16)
-  publiés en prod.
-- **Prochaine action** : lot 11 (algorithmes d'analyse : 279, 288, 298, 299, 309) : nouvelle branche du worktree
-  depuis `origin/main`, relevé prod (MCP), proposition de contenu et de rangement à David (phase 0).
+- **État** : démonstrations (lots 1-4), approfondissements (lots 5-9) et algorithmes du lot 10 publiés. Lot 11
+  (algorithmes d'analyse : 279, 288, 298, 299, 309, § 17, D11) écrit et vérifié, en PR.
+- **Prochaine action** : CI de la PR du lot 11 → merge ; puis donner à David la commande `create-questions --publier`
+  (§ 17), relevé prod, ids dans les JSON (PR), migration nœud + tag (gabarit lot 10 ; 298 → « dérivée », 299 →
+  « propriétés algébriques », points restant sur la notion). Ensuite lot 12 (probabilités et statistiques : 344, 427,
+  359, 431, 360).
   ⚠️ Le journal de `main` peut être plus récent que celui du worktree : lire celui de `main` après un merge.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David (lancée hors du dépôt principal,
@@ -22,9 +24,8 @@ _Mis à jour le 2026-11-06, lot 10 publié (après #2431)._
   commiter (PR) puis `git restore` dans le dépôt principal. Variable `e` = Euler (ni `i`). Job navigateur de la CI
   qui plante tests verts → `gh run rerun <run> --failed`. Port 5178. Brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local` (sinon `create-questions` vise la prod). Les « catégories » du journal ne sont qu'une
-  étiquette : en base, seuls nœud, niveau et tag.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-10-rangement`
-  (mergée, branche distante supprimée) : à remplacer par celle du lot 11.
+  étiquette : en base, seuls nœud, niveau et tag. Script de lot : jamais `str.format` sur un texte qui contient `{{eval}}` ; décimaux par `{{eval:…;d}}`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-11`.
 
 ---
 
@@ -620,7 +621,7 @@ Relevé prod (MCP, 2026-11-06) : 238 sur Dénombrement › Arrangements et permu
 1re spé sur cette sous-notion) ; 239 et 380 sur la **notion** Généralités sur les suites ; 378 (`4a51f887`) sur
 « explicite ou par récurrence », niveau 3 ; 369 (`81322162`) et 236 (`31a77ba9`) sur la notion. Sous-notion « sommes
 de termes » existante (lot 5). Aucun modèle tagué sur les 3 points : **aucune sous-notion neuve**. Les « catégories »
-des tableaux précédents ne sont qu'une étiquette : en base, seuls nœud, niveau et tag.
+des tableaux précédents ne sont qu'une étiquette : en base, seuls nœud, niveau et tag. Script de lot : jamais `str.format` sur un texte qui contient `{{eval}}` ; décimaux par `{{eval:…;d}}`.
 
 **D10 (David, 2026-11-06, « je te suis »)** : contenu et rangement tels que proposés.
 
@@ -681,4 +682,9 @@ distracteur c/2 du Newton égal à 1 pour c = 2 (remplacé par c) ; **`str.forma
 `{{eval:c}}` le réduit à `{eval:c}`** (vu par le recoupement Python, pas par les specs) → `replace`. Vérifié :
 `question:specs` 150 tirages par variation, 59 specs vertes, 0 `\textcolor` hors `$`, 0 avertissement ; 55 réponses
 « faire tourner » recoupées en exécutant les programmes des énoncés (0 écart) ; `create-questions` simulation prod
-(5 à créer) ; brouillons en base locale (copie hors dépôt).
+(5 à créer) ; brouillons en base locale (copie hors dépôt), aperçu admin vu à l'écran : bloc Python, case
+« faire tourner » d'Euler (`1,728` accepté, corrigé en virgule : 1,2 ; 1,44 ; 1,728), choix en LaTeX du Newton (√10, 10,
+10², f(4)).
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-11 --publier`
