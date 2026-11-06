@@ -109,7 +109,7 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 ### 2026-11-06 — PR 2 (conversion des 4 lignes)
 
 - Prod relue (MCP, lecture seule) : les 4 lignes de l'état des lieux, inchangées.
-- Migration : `<p></p>` retirés, `</p><p>` → ligne vide, `<p>`/`</p>` d'extrémité retirés. Garde : ne convertit que des `<p>` autour d'un texte sans `< & * _ $ ` \ #`hors références ; si une ligne HTML reste,`raise exception`. Triggers `updated_at` coupés. Rollback = les 4 valeurs d'avant, en commentaire.
+- Migration : `<p></p>` retirés, `</p><p>` → ligne vide, `<p>`/`</p>` d'extrémité retirés. Garde : ne convertit que des `<p>` autour d'un texte sans caractère qu'ubumark lirait autrement (chevron, esperluette, étoile, tiret bas, dollar, accent grave, barre oblique inverse, dièse), hors références ; si une ligne HTML reste, `raise exception`. Triggers `updated_at` coupés. Rollback = les 4 valeurs d'avant, en commentaire.
 - Testé en local dans une transaction annulée : cas de prod convertis, ligne déjà ubumark intacte, `updated_at` gardé ; `<p>a **b**</p>` et `<ul>` → exception.
 - Test de rendu (`JournalContent`) sur la sortie exacte pour la séance à deux références : deux paragraphes, deux liens.
 - Avant / après (prod) :
