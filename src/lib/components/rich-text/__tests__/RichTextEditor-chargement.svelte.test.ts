@@ -18,8 +18,13 @@ describe('RichTextEditor — chargement', () => {
 		const { container } = await render(RichTextEditor, {});
 		await pause(100);
 
-		expect(container.querySelector('[role="status"]')).toBeNull();
+		expect(container.querySelector('[data-chargement]')).toBeNull();
+		// Région annoncée toujours présente, vidée une fois l'éditeur prêt
+		expect(container.querySelector('[role="status"]')?.textContent?.trim()).toBe('');
 		expect(container.querySelector('[inert]')).toBeNull();
+		expect(
+			container.querySelector<HTMLButtonElement>('[aria-label="Éditer le markdown brut"]')?.disabled
+		).toBe(false);
 		expect(container.querySelector('.ProseMirror')).not.toBeNull();
 	});
 });

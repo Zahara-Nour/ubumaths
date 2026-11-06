@@ -87,8 +87,11 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
 	// Import statique : MathLive arrive avec le composant, l'éditeur peut se créer
-	// dès le montage, sans `await import` (qui ne gagnait rien et masquait les erreurs)
-	import { MathfieldElement } from 'mathlive';
+	// dès le montage, sans `await import` (qui ne gagnait rien et masquait les erreurs).
+	// Import NU : côté serveur, `mathlive` résout vers `mathlive-ssr`, qui n'exporte pas
+	// `MathfieldElement` — un import nommé casserait le rendu serveur en build.
+	import 'mathlive';
+	import type { MathfieldElement } from 'mathlive';
 
 	// Shared configuration imports
 	import {
@@ -505,8 +508,10 @@
 		if (!editorElement) return;
 
 		try {
-			// Disable MathLive sounds globally (client-side only)
-			MathfieldElement.soundsDirectory = null;
+			// Disable MathLive sounds globally (client-side only). La classe est lue dans
+			// le registre du navigateur, où `import 'mathlive'` l'a déclarée.
+			const champMath = customElements.get('math-field') as typeof MathfieldElement | undefined;
+			if (champMath) champMath.soundsDirectory = null;
 
 			const extensions = createEditorExtensions({ headingLevels: 6 });
 			const editorProps = getEditorProps({ minHeight });
@@ -1985,24 +1990,30 @@
 						: ''}"
 					title={isMarkdownEditMode ? 'Retour à TipTap' : 'Éditer le markdown'}
 					aria-label={isMarkdownEditMode ? 'Retour à TipTap' : 'Éditer le markdown brut'}
-					{disabled}
+					disabled={disabled || chargement !== 'pret'}
 				>
 					<FileCode class="h-4 w-4" />
 				</button>
 
+				<!-- Région toujours présente : un lecteur d'écran n'annonce que ce qui CHANGE
+				     dans une région déjà montée -->
+				<span role="status" class="sr-only">
+					{chargement === 'en-cours' ? 'Chargement de l’éditeur…' : ''}
+				</span>
 				<!-- Éditeur pas encore créé (rendu serveur, hydratation) ou en échec -->
 				{#if chargement === 'en-cours'}
 					<div
-						role="status"
+						aria-hidden="true"
+						data-chargement
 						class="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 text-sm text-muted-foreground"
 					>
-						<LoaderCircle class="h-4 w-4 animate-spin" aria-hidden="true" />
+						<LoaderCircle class="h-4 w-4 animate-spin" />
 						Chargement de l’éditeur…
 					</div>
 				{:else if chargement === 'erreur'}
 					<div
 						role="alert"
-						class="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center text-sm"
+						class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 bg-background p-4 text-center text-sm"
 					>
 						<p>L’éditeur n’a pas pu se charger.</p>
 						<Button type="button" size="sm" variant="outline" onclick={() => location.reload()}>

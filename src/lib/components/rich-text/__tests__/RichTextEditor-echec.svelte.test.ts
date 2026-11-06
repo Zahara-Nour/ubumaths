@@ -27,7 +27,11 @@ describe('RichTextEditor — création impossible', () => {
 		const alerte = container.querySelector('[role="alert"]');
 		expect(alerte?.textContent).toContain('L’éditeur n’a pas pu se charger');
 		expect(alerte?.querySelector('button')?.textContent).toContain('Recharger la page');
-		expect(container.querySelector('[role="status"]')).toBeNull();
+		expect(container.querySelector('[data-chargement]')).toBeNull();
 		expect(container.querySelector('[inert]')).not.toBeNull();
+		// Le bouton markdown n'agirait sur rien : désactivé lui aussi
+		expect(
+			container.querySelector<HTMLButtonElement>('[aria-label="Éditer le markdown brut"]')?.disabled
+		).toBe(true);
 	});
 });
