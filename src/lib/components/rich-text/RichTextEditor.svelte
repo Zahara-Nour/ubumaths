@@ -75,6 +75,7 @@
 		Ruler,
 		Table2,
 		Grid3x3,
+		LoaderCircle,
 		QrCode
 	} from '@lucide/svelte';
 	import { QR_TEMPLATE } from '$lib/ubumark/parser/qr-parser';
@@ -85,7 +86,9 @@
 	import { parseMarkdown } from '$lib/ubumark/parser';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
-	import 'mathlive';
+	// Import statique : MathLive arrive avec le composant, l'éditeur peut se créer
+	// dès le montage, sans `await import` (qui ne gagnait rien et masquait les erreurs)
+	import { MathfieldElement } from 'mathlive';
 
 	// Shared configuration imports
 	import {
@@ -192,6 +195,10 @@
 	// Editor State
 	let editorElement = $state<HTMLElement | null>(null);
 	let editor = $state<Editor | null>(null);
+	// Rendu serveur et hydratation : la barre est là mais aucun éditeur derrière
+	// (plusieurs secondes sur une connexion lente) → « en-cours », barre inerte.
+	// « erreur » : la création de l'éditeur a levé — dit plutôt qu'un éditeur muet.
+	let chargement = $state<'en-cours' | 'pret' | 'erreur'>('en-cours');
 
 	// Le sélecteur `[[` lit ce niveau au moment de chaque recherche. On l'écrit
 	// dans le STOCKAGE de l'extension et non dans ses options, parce que
@@ -497,10 +504,8 @@
 	onMount(() => {
 		if (!editorElement) return;
 
-		// Async initialization wrapped in an IIFE
-		(async () => {
+		try {
 			// Disable MathLive sounds globally (client-side only)
-			const { MathfieldElement } = await import('mathlive');
 			MathfieldElement.soundsDirectory = null;
 
 			const extensions = createEditorExtensions({ headingLevels: 6 });
@@ -558,7 +563,13 @@
 					updateFormattingState();
 				}
 			});
-		})();
+			chargement = 'pret';
+		} catch (erreur) {
+			// Contenu illisible, extension qui lève… : l'éditeur ne peut pas naître
+			console.error('[RichTextEditor] création de l’éditeur impossible', erreur);
+			isUpdatingFromProp = false;
+			chargement = 'erreur';
+		}
 
 		return () => {
 			if (previewTimeout) {
@@ -1157,8 +1168,13 @@
 			? 'flex min-h-0 flex-1 flex-col overflow-y-auto'
 			: 'contents'}
 	>
-		<!-- Toolbar -->
-		<div class="border-b border-border bg-muted">
+		<!-- Toolbar : inerte tant que l'éditeur n'existe pas (ses boutons n'agiraient sur rien) -->
+		<div
+			class="border-b border-border bg-muted transition-opacity {chargement === 'pret'
+				? ''
+				: 'opacity-50'}"
+			inert={chargement !== 'pret'}
+		>
 			<!-- Main Toolbar Row -->
 			<div class="flex flex-wrap items-center gap-1 p-2">
 				<!-- Text Section Toggle -->
@@ -1973,6 +1989,27 @@
 				>
 					<FileCode class="h-4 w-4" />
 				</button>
+
+				<!-- Éditeur pas encore créé (rendu serveur, hydratation) ou en échec -->
+				{#if chargement === 'en-cours'}
+					<div
+						role="status"
+						class="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 text-sm text-muted-foreground"
+					>
+						<LoaderCircle class="h-4 w-4 animate-spin" aria-hidden="true" />
+						Chargement de l’éditeur…
+					</div>
+				{:else if chargement === 'erreur'}
+					<div
+						role="alert"
+						class="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center text-sm"
+					>
+						<p>L’éditeur n’a pas pu se charger.</p>
+						<Button type="button" size="sm" variant="outline" onclick={() => location.reload()}>
+							Recharger la page
+						</Button>
+					</div>
+				{/if}
 
 				<!-- TipTap editor - always in DOM, hidden when in markdown mode -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
