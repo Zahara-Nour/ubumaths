@@ -6,19 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2416 (questions 2 à 4 tranchées)._
+_Mis à jour le 2026-11-06, suite choisie : automatismes de 2de (§ Lots « 2de »)._
 
-- **État** : lot « Calcul » clos — modèle `0f673c27` rangé (Fonctions › Fonctions affines ›
-  variations et signe, 2-328 ; `db:migrate` fait, vérifié en prod : brouillon, `updated_at`
-  préservé, trigger à `O`), fiche `5210e1d7` vérifiée depuis la base ; 6 automatismes de 1re dans
-  `EXCEPTIONS_NIVEAUX` (décision du 2026-11-06) · **Prochaine action** : publication des
-  brouillons par David (`publier-lot.ts`, la garde des niveaux passe) ; lot suivant du programme
-  de 1re : il n'y en a plus, choix à poser (§ Suite) ; facultatif : 2 coupures du corrigé de `5210e1d7` (§ du 2026-11-06)
-  · **En attente de David** : publication, puis choix de la suite (§ Suite) ; plus aucune question ouverte · **Pièges en cours** :
-  écritures en prod lancées par David ; worktree neuf → `pnpm exec svelte-kit sync` avant
-  `pnpm tsx` ; `db:migrate` depuis le dépôt principal (worktree non relié) ; « inserted before »
-  → `--dry-run --include-all` ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
-  **Worktree / branche** : aucun (retiré après #2416).
+- **État** : 5 lots du programme de 1re clos ; suite tranchée par David : lots tirés des automatismes de 2de,
+  fiches attachées à **1re et 2de**, 1er lot « Nombres » · **Prochaine action** : validation par David de la
+  phase 0 du lot « Nombres » (§ Lots « 2de »), puis graines, script `create-automatismes-nombres.ts`, PR ·
+  **En attente de David** : cette phase 0 ; publication des brouillons ci-dessous · **Pièges en cours** :
+  écritures en prod lancées par David (même la simulation de `publier-lot.ts` est refusée au mode auto) ;
+  essais de séries en local sur une copie MCP des modèles (§ Lots « 2de ») ; worktree neuf →
+  `pnpm exec svelte-kit sync` avant `pnpm tsx` ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
+  **Worktree / branche** : aucun.
 - Brouillons à publier : `0f673c27`, `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`,
   `9852d62c` (+ `1bd7378d`, `9a9026fc`) ; fiches `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`,
   `d37413a3`, `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
@@ -359,3 +356,42 @@ appliquée (dry-run), les 6 modèles vérifiés en prod (nœud, point, brouillon
 - Mergée (#2416, CI verte) ; `db:push --include-all` le 2026-11-06 depuis `main` (dry-run : seule
   cette migration) ; vérifié en prod : nœud, point 2-328, brouillon, `updated_at` préservé,
   `tgenabled = 'O'`.
+
+## Lots « 2de » : automatismes de seconde entretenus en 1re (2026-11-06)
+
+**Tranché par David (2026-11-06)** : suite du chantier = lots tirés de la liste des automatismes de 2de
+(BO 1re : « à entretenir ») ; fiches « Automatismes : <sujet> (n) » attachées aux niveaux **1re et 2de** ;
+premier lot « Nombres ». Lots proposés, dans l'ordre : (1) Nombres, (2) Calcul littéral et équations,
+(3) Proportions et pourcentages, (4) Géométrie et repérage, (5) Fonctions et probabilités de base.
+Évolutions, images et antécédents, statistiques, développer et factoriser : déjà entretenus par les
+fiches (1) de 1re.
+
+**Relevé MCP (prod, 2026-11-06)** : `curriculum_point_automatismes` grade `2` = **97 points** (21 de 2de,
+le reste du collège et du cycle 3), tous aussi dans la liste de `1_SPE`. **90 ont un modèle publié.** Sans
+modèle publié : 5-016, 5-121 (droite graduée), 5-047, 5-128 (repère), 5-096, 5-143 (graphique cartésien) —
+lot 4 ; 3-062 (`1bd7378d`, brouillon à publier).
+
+**Essai des séries** : la simulation de `publier-lot.ts` / des scripts de fiche contre la prod est refusée
+au mode auto (« Production Deploy »). Démarche suivie : modèles lus par le MCP (`select * from
+question_templates`), copie JSON dans le scratchpad, `buildSerie` lancé en local (graines 1-3). Lot
+« Nombres » : **45 candidats, 45 passent**. Aucun modèle neuf.
+
+### Lot « Nombres » — phase 0 (proposée le 2026-11-06, à valider)
+
+Capacités du BO 2de (Calcul numérique) : comparer (différence, quotient), fractions, puissances, écritures
+décimale / fractionnaire / pourcentage, ordre de grandeur et vraisemblance, conversions d'unités.
+
+- **Série 1** (comparer, fractions, puissances, écritures) : `5ffcde13` différence (2de) · `514dab07`
+  comparer deux fractions (5e) · `a270c7aa` enchaîner des fractions (4e) · `8ac99be4` puissances de 10,
+  × et ÷ (3e) · `18761148` a^m / a^n (3e) · `81a64b0a` décimal → fraction (6e) · `5d7726eb`
+  pourcentage → fraction (6e) · `7deff4e0` ordre de grandeur (6e).
+- **Série 2** (rapport, conversions) : `313ae1a2` rapport (2de) · `52516a54` interpréter une différence
+  (2de) · `228b1620` fractions de dénominateurs multiples (6e) · `5b627bb7` produit de puissances de 10
+  (3e) · `82748db8` aires (6e) · `355bd41a` contenance ↔ volume (5e) · `65c32979` durée décimale → min
+  (6e) · `1dd4d0ea` vitesses (4e).
+- Écartés (fiche (2) possible) : relatifs `e0b6d00a`, `12e27dba` (trop faciles en lycée) ; masses
+  `f4d95001`, longueurs `e22cff99`, `da2e705f` (CE2-CM1) ; 10 autres modèles de durées (voisins) ;
+  `1d25a492` (évolution, déjà dans « évolutions (1) ») ; `bb9cff7b`, `1db08bdc`, `743c0809`, `8b213d74`,
+  `c1a83c8f`, `000368e1`, `6818662d`, `259a0b26`, `afebbb91`, `7abb09ef`, `b79d4cb7`, `186f05a4`.
+- Graines : la graine 1 donne souvent un cas trivial (« 1 dm² = … cm² », « 60 min = … h ») ; graines
+  choisies après validation, valeurs non triviales, pas deux questions sur les mêmes données.
