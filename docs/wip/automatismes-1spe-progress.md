@@ -9,16 +9,15 @@
 _Mis à jour le 2026-11-06, PR du rangement du modèle neuf ouverte._
 
 - **État** : modèle neuf `0f673c27` et fiche `5210e1d7` écrits par David (brouillons) ; fiche
-  vérifiée depuis la base (1 + 1 + 3 p., 0 débord) ; PR `feat/automatismes-1spe-rangement-affine`
-  : `id` dans le JSON + migration nœud/point (2-328, validés par David) · **Prochaine action** :
-  CI verte → merge → `db:migrate` depuis la branche mergée, vérifier le modèle en prod ·
-  **En attente de David** : **garde des niveaux des tags** — 6 modèles de 1re tagués de points de
-  2de/5e (`9852d62c`, `7f82d15a`, `f5585668`, `1c86d122`, `95ee57c8`, + `0f673c27` après cette
-  migration) : (a) ajouter `2`/`5` aux `grades` (migration) ou (b) `EXCEPTIONS_NIVEAUX`
-  (recommandé) — à trancher avant publication (`publier-lot.ts` l'exige) ; questions ouvertes 1
-  à 4 · **Pièges en cours** : écritures en prod lancées par David ; worktree neuf →
-  `pnpm exec svelte-kit sync` avant `pnpm tsx` ; job CI navigateur 2/2 qui plante →
-  `gh run rerun --failed` · **Worktree / branche** : `../ubumaths-wt-automatismes-1spe`,
+  vérifiée depuis la base (1 + 1 + 3 p., 0 débord) ; PR #2416 : `id` dans le JSON + migration
+  nœud/point (2-328, validés) + 6 exceptions de la garde des niveaux (décision du 2026-11-06) ;
+  `security-auditor` : 0 bloquant · **Prochaine action** : CI verte → merge → `db:migrate` depuis
+  la branche mergée ; vérifier en prod nœud, tag, `updated_at` ET `tgenabled = 'O'` du trigger
+  `update_question_templates_updated_at` ; puis David peut publier (`publier-lot.ts`) ·
+  **En attente de David** : publication des brouillons ; questions ouvertes 1 à 4 · **Pièges en
+  cours** : écritures en prod lancées par David ; worktree neuf → `pnpm exec svelte-kit sync`
+  avant `pnpm tsx` ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
+  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe`,
   `feat/automatismes-1spe-rangement-affine`.
 - Brouillons à publier : `0f673c27`, `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`,
   `9852d62c` (+ `1bd7378d`, `9a9026fc`) ; fiches `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`,
@@ -351,3 +350,10 @@ appliquée (dry-run), les 6 modèles vérifiés en prod (nœud, point, brouillon
   que `bba95c2d`). Migration `20261106050038_automatismes_1spe_rangement_affine.sql` (forme de
   #2390), test `tests/integration/automatismes-1spe-rangement-affine.test.ts` : 4 rouges sur 9
   sans le corps, 9 verts avec.
+- **Garde des niveaux des tags — décision de David (2026-11-06) : exceptions.** Les 6 automatismes
+  de 1re tagués d'un point de 2de ou de 5e (`0f673c27`, `1c86d122`, `7f82d15a`, `95ee57c8`,
+  `9852d62c`, `f5585668`) gardent leurs seuls niveaux de 1re : inscrits dans `EXCEPTIONS_NIVEAUX`
+  (`scripts/lib/niveaux-des-tags.ts`), test mis à jour ; `garde-niveaux-tags.ts` en prod : 0
+  niveau manquant, 5 excusés (le 6e après la migration).
+- `security-auditor` : 0 bloquant ; à vérifier après `db:migrate` : `tgenabled` du trigger
+  `updated_at` revenu à `O`.
