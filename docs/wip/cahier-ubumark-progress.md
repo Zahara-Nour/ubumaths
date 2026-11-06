@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, PR 2 ouverte._
+_Mis à jour le 2026-11-06, après #2444._
 
-- **État** : PR 1 (#2435) et 1b (#2442) mergées, **pas en prod**. PR 2 (migration `20261106164230_cahier_texte_conversion_ubumark.sql`) écrite, testée en local (transaction annulée), en PR.
-- **Prochaine action** : merger la PR 2 (CI verte) ; **ne PAS lancer `db:migrate`** avant `deploy:prod` (l'ancien code lirait le markdown en HTML) → puis `db:migrate` sur feu vert de David (perte : les paragraphes vides) → PR 3 = retrait lecture HTML (+ tests mineurs de la revue #2442) → PR 4 = énigmes.
-- **En attente de David** : `deploy:prod` (PR 1 + 1b), puis go pour `db:migrate` de la PR 2.
-- **Pièges en cours** : la migration échoue (exprès) si une ligne HTML non convertible apparaît d'ici là → relire la prod juste avant `db:migrate` ; triggers `updated_at` coupés pendant la conversion ; cookies partagés sur `localhost` → `cahier.localhost:5178` ; Supabase local partagé ; job navigateur de la CI → `gh run rerun <run> --failed`.
-- **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark-conversion`.
+- **État** : PR 1 (#2435) et 1b (#2442) **en prod** (0.76.0). PR 2 (#2444, migration `20261106164230_cahier_texte_conversion_ubumark.sql`) mergée, **migration PAS appliquée**. Prod relue après le merge : les 4 lignes HTML, inchangées.
+- **Prochaine action** : sur go de David → `pnpm exec supabase migration list --linked` puis `pnpm db:migrate` depuis `main` → relire les 4 lignes (avant/après dans l'historique PR 2) → PR 3 = retrait lecture HTML (+ tests mineurs de la revue #2442) → PR 4 = énigmes.
+- **En attente de David** : go pour `db:migrate` (perte : les paragraphes vides `<p></p>`).
+- **Pièges en cours** : la migration échoue exprès si une ligne HTML non convertible apparaît → relire la prod juste avant ; `Doc-inchangée:` dans un COMMIT (la garde locale ne lit pas l'index) ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed` ; cookies partagés sur `localhost` → `cahier.localhost:5178`.
+- **Worktree / branche** : aucun ; PR 3 → nouveau worktree `../ubumaths-wt-cahier-ubumark` depuis `origin/main`.
 
 ## Décision d'origine
 
