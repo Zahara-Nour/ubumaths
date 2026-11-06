@@ -6,19 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 11 publié._
+_Mis à jour le 2026-11-06, phase 0 du lot 12 validée (§ 18)._
 
-- **État** : lots 1 à 11 en prod et publiés. Restent au CE2 les 6 points D (086, 039, 043, 051, 065, 070).
-- **Prochaine action** : la case « figure » (` ```figure-a-completer `) est **en prod** (déjà utilisée par le lot 8,
-  `ce2-8`) : phase 0 d'un lot 12 pour 070 (carré, rectangle, cercle, triangle rectangle) et 039 (segment de longueur
-  donnée : vérifier d'abord qu'un geste permet une longueur au mm) (#2440, page à cocher qui dessine plaques et gros
-  cubes, mergée).
-- **En attente de David** : go pour la phase 0 du lot 12.
-- **Pièges en cours** : `construire:` + « Espaces dès 4 chiffres » = forme à améliorer (`outils-manquants.md` n° 15) ;
-  jamais de variable `e` (Euler) ; commitlint : corps ≤ 100 caractères par ligne ; `create-questions --publier` et
-  `publier-lot` : David, depuis le worktree ; `Doc-inchangée:` dans un COMMIT pour une migration (garde de la CI) ;
-  tests d'intégration bloqués si la base locale garde un lien `class_journal_share_tokens` du prof de démo.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, détaché sur `origin/main` (aucune branche en cours).
+- **État** : lots 1 à 11 en prod et publiés (#2440 mergée). Lot 12 (CE2-070, 2 modèles) en écriture.
+- **Prochaine action** : écrire `lot-ce2-12.py` → `scripts/questions/ce2-12/`, simulation, base locale, PR.
+- **En attente de David** : rien.
+- **Pièges en cours** : `verifier: cercle` = cercle circonscrit SEUL (cercle de centre donné : `outils-manquants.md`
+  n° 19) ; jamais de variable `e` (Euler) ; commitlint : corps ≤ 100 caractères par ligne ; `create-questions
+--publier` et `publier-lot` : David, depuis le worktree ; `Doc-inchangée:` dans un COMMIT pour une migration.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `content/questions-ce2-lot12`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -969,3 +965,40 @@ question d'accès : rien de plus.
 - 2026-11-06 : relecture de David : 6 verdicts « ok », sans commentaire (base `verdicts` comptée), posés à 13:47, après
   la version corrigée de la page (13:46:37). `publier-lot --publier` (David) ; relevé MCP : 6/6 `published`.
   **Lot 11 clos.**
+
+## 18. Lot 12 — constructions (phase 0 validée le 2026-11-06)
+
+Restaient 6 points D : 086, 039, 043, 051, 065, 070. Ce que la case « figure » vérifie (lu dans
+`src/lib/questions/construction/`) : carré et rectangle **sur quadrillage**, à terminer (un côté ou deux côtés donnés,
+obliques admis) ; triangle de deux longueurs reportées au compas (papier uni) ; cercle **circonscrit seulement**
+(`circle.ts`, refus de `cercle(O, A)` à la publication) ; pas de triangle rectangle (l'angle donné passe par le
+rapporteur) ; règle **non graduée** (aucune longueur en cm réelle à l'écran).
+
+- **039** (segment de longueur donnée au mm) : sans modèle, règle graduée → `outils-manquants.md` n° 18.
+- **070** en partie : 01 et 02 ci-dessous ; cercle de centre donné (n° 19) et triangle rectangle (n° 20) plus tard,
+  lot 12b.
+
+| Fichier                      | Point   | Catégorie · niveau                 | Variations                                                                                                                            |
+| ---------------------------- | ------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-termine-carre-rectangle` | CE2-070 | Figures planes · constructions · 3 | quadrillage : terminer un carré, un côté oblique donné (pas (3;1), (3;2), (4;1)…) ; terminer un rectangle, deux côtés obliques donnés |
+| `02-reproduis-le-triangle`   | CE2-070 | Figures planes · constructions · 4 | papier uni : triangle modèle DEF, [AB] = [DE] tracé ; construire C au compas en reportant DF et EF                                    |
+
+Niveau 1 : les brouillons du CP (`010d81a5`, `1cf6eaa9`) ; niveau 2 laissé au modèle du CE1-072 (lot 11 du CE1, en
+phase 0). Erreurs typiques des `testSpecs` : rectangle au lieu d'un carré, côté donné prolongé, trait de trop, C placé
+à l'œil, longueurs DF et EF interverties.
+
+**Question d'accès** : personne ne lit rien de plus — brouillons (admin seul) ; migration nœud + tag sans règle neuve.
+
+Décisions de David (« je suis tes recos », 2026-11-06) : report au compas au CE2 (oui) ; outils manquants en lignes
+de `outils-manquants.md` (oui) ; niveaux 3 et 4, relevés avant la publication ; publication sans attendre l'essai
+tablette (comme le 09 du lot 8). Puis, la phase 0 corrigée (cercle circonscrit seul) : lot 12 sans cercle, le cercle
+de centre donné en ligne n° 19.
+
+### Lot 12 — écriture (2026-11-06)
+
+- Script `docs/wip/questions/lot-ce2-12.py` → `scripts/questions/ce2-12/` : 2 modèles, 26 specs ; `create-questions`
+  en simulation (prod) : 2 « à créer » ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-figures` : 0 problème.
+- Base locale, aperçu admin (port 5176) : triangle construit au report (R → T piqué en A, S → T piqué en B, puis
+  [AC] et [BC]) → « Juste » ; carré mal fermé → « Ta figure n'est pas fermée », bon carré en pointillés.
+- Corrigé en route : arcs du report coupés en bas de la fenêtre → fenêtre 0 ; 15 ; 0 ; 9, [AB] relevé d'un carreau.

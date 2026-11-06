@@ -1,0 +1,120 @@
+{
+	"title": "Reproduire un triangle au compas",
+	"description": "Le côté [AB] est tracé : construire le troisième sommet au compas, en reportant les longueurs du triangle modèle",
+	"grades": ["CE2"],
+	"level": 4,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Reproduis le triangle $RST$ : le côté $[AB]$ est déjà tracé, il est aussi long que $[RS]$. Construis le point $C$ avec le compas pour que $[AC]$ soit aussi long que $[RT]$ et $[BC]$ aussi long que $[ST]$, puis trace les côtés $[AC]$ et $[BC]$.\n\n```figure-a-completer\nfenetre: 0 ; 15 ; 0 ; 9\nverifier: triangle ABC : AC = u ; BC = v\n---\n{{if:k==1|R = point(1, 5)\nS = point(6, 5)\nT = point(3, 8)\nA = point(8, 2)\nB = point(13, 2)|{{if:k==2|R = point(1, 5)\nS = point(7, 5)\nT = point(5, 8)\nA = point(8, 2)\nB = point(14, 2)|{{if:k==3|R = point(1, 5)\nS = point(6, 5)\nT = point(5, 7)\nA = point(8, 2)\nB = point(13, 2)|{{if:k==4|R = point(1, 5)\nS = point(5, 5)\nT = point(2, 8)\nA = point(8, 2)\nB = point(12, 2)|R = point(1, 5)\nS = point(7, 5)\nT = point(0.5, 8)\nA = point(8, 2)\nB = point(14, 2)}}}}}}}}\nrs = segment(R, S, couleur=\"gris\")\nu = segment(R, T, couleur=\"gris\")\nv = segment(S, T, couleur=\"gris\")\nab = segment(A, B, epaisseur=3)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On $\\textcolor{{{color:primary.0}}}{\\text{prend la longueur}}$ $RT$ avec le compas, on pique en $A$ et on trace un arc.",
+					"On prend la longueur $ST$, on pique en $B$ et on trace un autre arc.",
+					"Le point $C$ est là où les deux arcs $\\textcolor{{{color:primary.0}}}{\\text{se croisent}}$ : on trace $[AC]$ et $[BC]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Triangle 1 : construit au compas",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["report(8;2;1;5;3;8)|report(13;2;6;5;3;8)|segment(8;2;10;5)|segment(13;2;10;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : C placé à l'œil, sans compas",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(8;2;10;5)|segment(13;2;10;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : arcs justes, C pris à côté du croisement",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [
+				"report(8;2;1;5;3;8)|report(13;2;6;5;3;8)|segment(8;2;10.4;5.3)|segment(13;2;10.4;5.3)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le côté [BC] manque",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["report(8;2;1;5;3;8)|report(13;2;6;5;3;8)|segment(8;2;10;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle 2 : construit au compas",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["report(8;2;1;5;5;8)|report(14;2;7;5;5;8)|segment(8;2;12;5)|segment(14;2;12;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 3 : construit au compas",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["report(8;2;1;5;5;7)|report(13;2;6;5;5;7)|segment(8;2;12;4)|segment(13;2;12;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 4 : construit au compas",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["report(8;2;1;5;2;8)|report(12;2;5;5;2;8)|segment(8;2;9;5)|segment(12;2;9;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 5 : construit au compas",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": [
+				"report(8;2;1;5;0.5;8)|report(14;2;7;5;0.5;8)|segment(8;2;7.5;5)|segment(14;2;7.5;5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
