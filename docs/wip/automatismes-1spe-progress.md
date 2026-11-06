@@ -6,15 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2416._
+_Mis à jour le 2026-11-06, après #2416 (questions 2 à 4 tranchées)._
 
 - **État** : lot « Calcul » clos — modèle `0f673c27` rangé (Fonctions › Fonctions affines ›
   variations et signe, 2-328 ; `db:migrate` fait, vérifié en prod : brouillon, `updated_at`
   préservé, trigger à `O`), fiche `5210e1d7` vérifiée depuis la base ; 6 automatismes de 1re dans
   `EXCEPTIONS_NIVEAUX` (décision du 2026-11-06) · **Prochaine action** : publication des
   brouillons par David (`publier-lot.ts`, la garde des niveaux passe) ; lot suivant du programme
-  de 1re à choisir (§ Suite) ; facultatif : 2 coupures du corrigé de `5210e1d7` (§ du 2026-11-06)
-  · **En attente de David** : publication ; questions ouvertes 1 à 4 · **Pièges en cours** :
+  de 1re : il n'y en a plus, choix à poser (§ Suite) ; facultatif : 2 coupures du corrigé de `5210e1d7` (§ du 2026-11-06)
+  · **En attente de David** : publication, puis choix de la suite (§ Suite) ; plus aucune question ouverte · **Pièges en cours** :
   écritures en prod lancées par David ; worktree neuf → `pnpm exec svelte-kit sync` avant
   `pnpm tsx` ; `db:migrate` depuis le dépôt principal (worktree non relié) ; « inserted before »
   → `--dry-run --include-all` ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
@@ -281,33 +281,33 @@ scripts/questions/calcul-1spe --publier` (écrit l'`id` dans le fichier, à comm
   `pnpm tsx scripts/create-automatismes-calcul-1spe.ts --publier`. Ensuite : rangement du modèle
   neuf (nœud + tag, migration, comme #2390).
 
-## Questions ouvertes (à poser à David)
+## Questions ouvertes — toutes tranchées
 
 1. ~~Collision de vocabulaire « série »~~ — **tranchée le 2026-11-04** ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md),
    `CONTEXT.md`) : **Série** = composition de modèles (répétitions, durée), tirée à neuf à chaque
    usage ; l'exercice d'une fiche d'automatismes est une **série figée** (graine, ADR 0011). Dans
    ce journal, « 2 séries » d'une fiche = 2 séries figées.
-2. **Modèle 5 (évolution répétée)** : `(1+0{,}03)^5`, `(103/100)^5` sont jugés `bad_form` (calcul
-   non effectué). `requiredForm: "power"` les accepterait mais refuserait les décimaux exacts
-   (`1{,}159\,274\,074\,3`). Quelle écriture privilégier ?
-3. **Bug du moteur** : `==` ne fonctionne pas dans les `conditions` d'un modèle (`!=` oui) —
-   contourné dans le modèle 4 ; à corriger ?
-4. Séries 1 q7 (−40 % puis +10 %) et 2 q8 (+10 % puis −40 %) ont la même réponse — gardées pour
-   montrer que l'ordre ne compte pas ; changer une graine si David préfère.
+2. ~~Écriture de l'évolution répétée (`8b59ca4b`)~~ — **tranchée le 2026-11-06 : on garde.**
+   `1{,}03^5` et le décimal exact sont justes ; `(1+0{,}03)^5`, `(103/100)^5` restent `bad_form`
+   (« calcul non effectué » : pas faux, l'élève finit 1 + 0,03, l'automatisme visé).
+   `requiredForm: "power"` écarté : il refuserait le décimal exact.
+3. ~~`==` dans les `conditions`~~ — **déjà corrigé** le 2026-10-02 (`89f6e8df2`, `==` vaut `=`,
+   condition illisible = erreur). Le `!=` du modèle 4 reste juste : rien à faire.
+4. ~~Séries 1 q7 / 2 q8 de `9217dfaa`, même réponse~~ — **tranchée le 2026-11-06 : on garde**
+   (l'ordre des évolutions ne compte pas ; pas de graine changée).
 
 ## Suite
 
-Même démarche (§ 2 bis du guide) pour les autres automatismes du programme de 1re :
+Les cinq blocs « Automatismes » du BO de 1re ont leur lot et leur fiche (1) en brouillon :
+évolutions (#508), droites et lectures graphiques (« Fonctions et représentations »),
+statistiques, probabilités, calcul numérique et algébrique (#2416). **Plus aucun lot du programme
+de 1re.** Après la publication par David, choix à lui poser :
 
-1. **Droites** : coefficient directeur (deux points, lecture), ordonnée à l'origine, équation
-   réduite, droites parallèles — réutiliser les modèles de seconde « Déterminer le coefficient
-   directeur », « Déterminer l'ordonnée à l'origine » (à retrouver en base).
-2. **Lectures graphiques** : image, antécédents, signe, variations, résolution graphique
-   d'équations et d'inéquations (demande des figures : vérifier ce que le moteur de questions sait
-   afficher avant de rédiger).
-3. **Statistiques** : moyenne, médiane, écart type, fréquences conditionnelles.
+- clore le chantier (versement du durable dans `docs/systeme/`, journal archivé) ;
+- fiches (2) par bloc (autres graines, autres modèles : entraînement régulier sur l'année) ;
+- lots tirés de la liste des automatismes de 2de, à entretenir en 1re (BO).
 
-Pour chaque lot : phase 0 (liste des modèles, validation par David), modèles JSON + specs,
+Démarche d'un lot : phase 0 (liste des modèles, validation par David), modèles JSON + specs,
 `question:specs`, `create-questions.ts`, fiche par séries, vérification PDF, PR.
 
 ## Rangement des 6 brouillons « Non rangés » (2026-11-05)
