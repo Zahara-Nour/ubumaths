@@ -41,14 +41,14 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 
 - **TSPE-444** : le BO dit « de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme, et la partie exponentielle n'a aucun point en terminale.
 
-## Couverture en modèles de questions (prod, 2026-11-03)
+## Couverture en modèles de questions (prod, 2026-11-06)
 
 Chantier `questions-tspe` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), clos le
 2026-11-03 ; journaux dans `docs/archive/wip/questions-tspe*-progress.md` (index + sous-chantiers `proba`,
-`espace`, `restes`, `lot9`).
+`espace`, `restes`, `lot9`) ; 334 couvert ensuite par les chantiers `solide-vecteur` et `tetraedre-vue`.
 
-- **273 modèles publiés** de niveau `T_SPE`, aucun brouillon ; **226 points sur 326** ont au moins un modèle publié.
-- **100 points sans modèle, tous voulus** :
+- **274 modèles publiés** de niveau `T_SPE`, aucun brouillon ; **227 points sur 326** ont au moins un modèle publié.
+- **99 points sans modèle, tous voulus** :
   - **P** (68) — 19 démonstrations, 18 algorithmes, 31 savoir-faire d'approfondissement : hors questions (les
     modèles d'approfondissement déjà écrits, 322, 323, 325, 360, 375, 376, ont été publiés avec leur thème).
   - **Couverts par leur voisin** (31) — même savoir-faire sur deux lignes du BO, ou notion dont le savoir-faire
@@ -57,11 +57,12 @@ Chantier `questions-tspe` (démarche [couvrir-un-niveau.md](../../../../pratique
     398 → 404 ; 399, 574, 575 → 403 ; 581 → 415 ; 427 → 432 ; 453 → 597-601 ; 477 → 487 ; 608 → 489 ; 503, 504 →
     508 ; 523 → 524. Les faits « à connaître » des points « = » ont, eux, leur modèle « à savoir » (26, sous-domaine
     « À savoir » de chaque domaine).
-  - **C** (1) — 334 (représenter une combinaison linéaire de vecteurs) : demande un geste « tracer un vecteur »
-    sur un solide (` ```solide ` ne dessine aucune flèche), ligne 13 de `docs/wip/outils-manquants.md`.
 - **Figures de l'espace** (lot 9, publié le 2026-11-03) : 335-339, 551-553 ont chacun un modèle sur un cube ou un
   pavé nommé (bloc ` ```solide `), vecteurs et droites écrits dans l'énoncé ; sous-domaines « Sur une figure » et
   « Positions relatives » ; 339 rangé sur la notion « Espace ».
+- **Vecteurs sur un solide** (334, publié le 2026-11-06) : « Espace : tracer une combinaison linéaire de vecteurs »
+  (`7ce9936b`), réponse = geste ` ```solide ` `tracer: vecteur …` ; cube (origine imposée ou libre, milieux), pavé
+  droit (centres de faces) et tétraèdre (milieux, centre de gravité).
 - Chevauchement avec maths complémentaires : les modèles qui portent aussi `T_COMP` ont été tirés contre les deux
   bornes (`tcomp.json`, plus étroites).
 - 1cfc575d (brouillon de niveau `2`, tagué TSPE-616) reste tel quel : son tag ne vaut pas couverture, 616 a son
