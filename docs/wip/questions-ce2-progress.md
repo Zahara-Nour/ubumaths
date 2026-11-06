@@ -6,17 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2418._
+_Mis à jour le 2026-11-06, après la publication du lot 9._
 
-- **État** : lots 1 à 8 en prod et publiés ; lot 9 (§ 15) : 8 brouillons en prod, rangés et tagués (#2418,
-  `db:migrate` fait), page à cocher publiée (https://claude.ai/artifact/Nkr73iMhHLraV8WjW4U7Qq).
-- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; `publier-lot` en simulation, puis
-  David le lance avec `--publier` ; puis lot 10 (solides : 061 à 064, 066), puis `collection` `centaines:` (001, 002, 005) en chantier à part.
-- **En attente de David** : relecture du lot 9 sur la page à cocher (le 06 aussi dans l'aperçu).
+- **État** : lots 1 à 9 en prod et publiés (lot 9 : 8/8 `published`, CE2, relevé MCP). Aucune branche en cours.
+- **Prochaine action** : phase 0 du lot 10 (solides : 061 à 064, 066) — relevé MCP, rangement, tableau, questions ;
+  puis `collection` `centaines:` (001, 002, 005) en chantier à part.
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
   `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
-  `publier-lot` et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance.
+  `publier-lot` (même en simulation) et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce2`, détaché sur `origin/main` (aucune branche en cours).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -818,3 +817,6 @@ tag ne change aucune règle.
   dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 8/8 sur le nœud de leur point, un point chacun,
   brouillons, `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/Nkr73iMhHLraV8WjW4U7Qq), aucune
   alerte, rendu vérifié à 390 px, base `verdicts` vide.
+- 2026-11-06 : relecture de David sur la page à cocher : 8 verdicts « ok », sans commentaire (base `verdicts` comptée).
+  Simulation `publier-lot` refusée à Claude par le classifieur ; simulation puis `--publier` (David) ; relevé MCP :
+  8/8 `published`, `grades` CE2. **Lot 9 clos.**
