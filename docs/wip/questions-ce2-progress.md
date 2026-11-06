@@ -6,15 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, phase 0 du lot 12 validée (§ 18)._
+_Mis à jour le 2026-11-06, après #2445._
 
-- **État** : lots 1 à 11 en prod et publiés (#2440 mergée). Lot 12 (CE2-070, 2 modèles) en écriture.
-- **Prochaine action** : écrire `lot-ce2-12.py` → `scripts/questions/ce2-12/`, simulation, base locale, PR.
-- **En attente de David** : rien.
-- **Pièges en cours** : `verifier: cercle` = cercle circonscrit SEUL (cercle de centre donné : `outils-manquants.md`
-  n° 19) ; jamais de variable `e` (Euler) ; commitlint : corps ≤ 100 caractères par ligne ; `create-questions
---publier` et `publier-lot` : David, depuis le worktree ; `Doc-inchangée:` dans un COMMIT pour une migration.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `content/questions-ce2-lot12`.
+- **État** : lots 1 à 11 publiés ; lot 12 (CE2-070 en partie : `ce2-12`, 2 modèles) mergé (#2445), pas encore en base.
+- **Prochaine action** : David lance depuis le worktree `create-questions --dir scripts/questions/ce2-12 --publier`
+  (brouillons en prod) ; puis ids commités + migration nœud + tag (« constructions », niveaux 3 et 4) sur
+  `feat/questions-ce2-lot12-db`, page à cocher, publication.
+- **En attente de David** : le `create-questions --publier` ci-dessus.
+- **Pièges en cours** : `verifier: cercle` = cercle circonscrit SEUL (`outils-manquants.md` n° 19 ; n° 18 règle
+  graduée, n° 20 triangle rectangle) ; commitlint : type `feat`, sujet sans majuscule ; jamais de variable `e` ;
+  `Doc-inchangée:` dans un COMMIT pour une migration ; ne jamais pousser pendant un rebase en conflit.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot12-db`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1002,3 +1004,4 @@ de centre donné en ligne n° 19.
 - Base locale, aperçu admin (port 5176) : triangle construit au report (R → T piqué en A, S → T piqué en B, puis
   [AC] et [BC]) → « Juste » ; carré mal fermé → « Ta figure n'est pas fermée », bon carré en pointillés.
 - Corrigé en route : arcs du report coupés en bas de la fenêtre → fenêtre 0 ; 15 ; 0 ; 9, [AB] relevé d'un carreau.
+- 2026-11-06 : #2445 mergée (CI verte ; revue : aucune, contenu).
