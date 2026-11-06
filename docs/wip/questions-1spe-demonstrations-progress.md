@@ -9,13 +9,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 9 publié._
+_Mis à jour le 2026-11-06, lot 9 publié ; suite décidée : les algorithmes (§ 15, D8)._
 
-- **État** : démonstrations en prod (lots 1 à 4) ; les 20 approfondissements publiés (lots 5 à 9, § 9 à 14).
-- **Prochaine action** : faire le point du chantier avec David : clôture et versement (durable vers `docs/systeme/`,
-  journal archivé), ou suite (algorithmes, points-compétences, hors chantier selon D3 Q1).
-- **En attente de David** : la décision ci-dessus ; vérification à l'œil en prod (ligne du 2026-11-03 de
-  `docs/wip/verifications-manuelles.md`).
+- **État** : démonstrations en prod (lots 1 à 4) ; les 20 approfondissements publiés (lots 5 à 9). David garde les
+  démonstrations telles quelles (D8).
+- **Prochaine action** : phase 0 des **13 exemples d'algorithmes** (§ 15 : relevé fait, tableau des points) ;
+  regarder d'abord les modèles d'algorithmes existants (378, 369 du chantier `questions-1spe`) et le bloc `python`,
+  puis poser Q1-Q5 (périmètre, forme, rangement, publication, accès) et proposer les lots. Attendre la validation.
+- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David (lancée hors du dépôt principal,
   `publier-lot` refuse : « sans id »). `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
@@ -551,3 +552,32 @@ Mergée (#2419, CI verte du premier coup). `security-auditor` : aucun finding bl
 Relecture (2026-11-06) : 3/3 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`, depuis le dépôt
 principal : un premier essai depuis une copie sans les `id` avait été refusé, rien d'écrit), 3/3 `published` relus en
 base (MCP). **Les 20 approfondissements sont publiés.**
+
+## 15. Suite : les algorithmes (décidée le 2026-11-06)
+
+**D8 (David, 2026-11-06)** : les démonstrations restent telles quelles (« j'aime beaucoup les différentes variations » :
+à trous en case ou case choix, plus étapes à ranger) ; le chantier se prolonge vers les **exemples d'algorithmes**.
+
+Relevé prod (MCP, 2026-11-06) : aucun modèle tagué sur les 13 points (240, 241, 242, 381 sont des approfondissements,
+§ 9, publiés) :
+
+| Domaine              | Point | Algorithme (libellé des bornes)                        | Nœud du point (prod)                              |
+| -------------------- | ----- | ------------------------------------------------------ | ------------------------------------------------- |
+| Dénombrement         | 238   | Calcul de factorielle                                  | Arrangements et permutations › factorielle        |
+| Suites               | 239   | Premiers termes : Syracuse, Fibonacci                  | notion Généralités sur les suites                 |
+| Suites               | 380   | Calcul de sommes de termes                             | notion Généralités sur les suites                 |
+| Dérivation           | 279   | Coefficients directeurs des sécantes pour un pas donné | Dérivation › taux de variation                    |
+| Dérivation           | 288   | Méthode de Newton (cas favorables)                     | Dérivation › tangente                             |
+| Exponentielle        | 298   | Construction de exp par la méthode d'Euler             | notion Fonction exponentielle                     |
+| Exponentielle        | 299   | Valeur approchée de e par (1 + 1/n)ⁿ                   | notion Fonction exponentielle                     |
+| Trigonométrie        | 309   | Approximation de π par Archimède                       | Fonctions trigonométriques › cercle et radians    |
+| Probabilités         | 344   | Monte-Carlo : aire sous la parabole                    | Échantillonnage › simulation (Statistiques)       |
+| Probabilités         | 427   | Monte-Carlo : estimation de π                          | Échantillonnage › simulation (Statistiques)       |
+| Variables aléatoires | 359   | Algorithme renvoyant l'espérance                       | notion Variables aléatoires                       |
+| Variables aléatoires | 431   | Algorithme renvoyant la variance ou l'écart type       | notion Variables aléatoires                       |
+| Statistiques         | 360   | Fréquence des lettres d'un texte (français, anglais)   | Représenter des données › effectifs et fréquences |
+
+Modèles d'algorithmes déjà en 1re spé (chantier clos `questions-1spe`, lot 3-suites : 378, 369, bloc `python` +
+cases) : point de départ pour les outils. Phase 0 à proposer : périmètre, forme (lire un programme et donner ce qu'il
+renvoie, compléter une ligne, choisir le bon programme, étapes à ranger ?), rangement (catégorie « Algorithmes » par
+domaine ?), accès, lots.
