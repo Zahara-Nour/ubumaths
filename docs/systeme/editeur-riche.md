@@ -135,6 +135,9 @@ de tête retirés, tabulations et retours à la ligne supprimés partout (`java\
   Charges utiles dans `sanitize-attaques.test.ts` et `.svelte.test.ts`. Prod au 2026-11-06 : aucune
   formule au cahier (2 séances). Reste décidé par David : le cahier de texte passera à ubumark
   (markdown + `MarkdownRenderer`), chantier à part.
+- **Deux points faibles, antérieurs à #2425, notés par son audit** (non bloquants, non traités) :
+  un `<math-field>` écrit à la main dans le HTML envoyé est accepté en entrée tel quel, et la
+  commande `\href` de MathLive (lien dans une formule) n'a pas été auditée.
 - **Énigmes : HTML enregistré, lu comme du markdown** (vu le 2026-10-25, pas mesuré) :
   `RiddleForm.svelte` enregistre `bind:htmlValue`, `RiddleCard` et `RiddleOfTheDayCard`
   l'affichent par `MarkdownRenderer`.
