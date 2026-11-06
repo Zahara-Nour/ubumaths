@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, ouverture du chantier (aucune PR)._
+_Mis à jour le 2026-11-06, PR 1 en cours (pas encore mergée)._
 
-- **État** : phase 0 écrite, en attente de validation.
-- **Prochaine action** : réponses de David aux questions Q1-Q3, puis tests rouges.
-- **En attente de David** : Q1 (conversion des 4 lignes), Q2 (énigmes dedans ou à part), Q3 (ordre des PR).
-- **Pièges en cours** : `InternalLink` ne connaît pas le jeton du lien public (`linkify` si) ; `transformMathHtml` a été corrigé par #2425 (formules plus vides), le chantier reste décidé.
+- **État** : PR 1 codée (écriture markdown, lecture `JournalContent`, lecture double), testée dans le navigateur (prof, élève, lien public). Revue en cours.
+- **Prochaine action** : merge PR 1 → attendre le `deploy:prod` (David) → PR 2 = migration de conversion des 4 lignes (s'arrêter, montrer avant/après) → PR 3 = retrait lecture HTML → PR 4 = énigmes.
+- **En attente de David** : `deploy:prod` après le merge de la PR 1.
+- **Pièges en cours** : cookies partagés sur `localhost` entre ports → tester sur `cahier.localhost:5178` (prof), `eleve.localhost`, `public.localhost`.
 - **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark`.
 
 ## Décision d'origine
@@ -66,7 +66,14 @@ David, 2026-10-25 (voie 2, PR #1723) : le cahier de texte (`class_journal_entrie
 
 Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de format, pas d'accès.
 
-## Questions à David
+## Décisions de David (2026-11-06)
+
+- **Q1** : convertir les 4 lignes (migration de données, avant/après montrés au moment de l'écrire).
+- **Q2** : énigmes dans ce chantier, PR 4 à part (2 énigmes en prod, toutes deux en HTML).
+- **Q3** : ordre PR 1 code + lecture double → `deploy:prod` → PR 2 conversion → PR 3 retrait HTML → PR 4 énigmes.
+- Jeton du lien public : ajouté au rendu des références (`InternalLink`), pas de rendu à part.
+
+## Questions à David (posées le 2026-11-06, tranchées ci-dessus)
 
 - **Q1** — Les 4 lignes de prod : je propose un `UPDATE` (migration de données) qui retire les
   `<p>` et garde les références ; la chaîne HTML disparaît du cahier. Alternative : lecture double
@@ -78,3 +85,12 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
   HTML.
 
 ## Historique
+
+### 2026-11-06 — PR 1
+
+- `src/lib/journal/content.ts` : `isLegacyHtmlContent` (balise de bloc en tête), `journalContentPreview` (aperçu, 4 appelants).
+- `internal-link-context.ts` + prop `internalLinks` de `MarkdownRenderer` : le rôle n'arrivait jamais à `InternalLink` (toujours élève) ; le contexte porte rôle, classe, jeton.
+- `JournalContent.svelte` : markdown → `MarkdownRenderer` ; HTML hérité → ancienne chaîne.
+- Page prof : `getMarkdown()` de chaque éditeur dans le `use:enhance` (la liaison markdown a un délai de 150 ms) ; HTML hérité chargé par `htmlValue`, réenregistré en markdown.
+- Vérifié dans le navigateur (base locale) : saisie + enregistrement immédiat (dernier mot gardé) ; séance HTML → élève OK → réenregistrée en markdown ; formule rendue, `<b>` tapé reste du texte ; lien public → `/cahier/<jeton>/fiche/<id>`.
+- Preuve rouge : sans la modif d'`InternalLink`, 2 tests du lien public échouent.

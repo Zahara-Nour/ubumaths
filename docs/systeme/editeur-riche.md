@@ -98,7 +98,7 @@ de planter. 8 appelants (messages, signalements de fiches, notebook).
 | Fonction                        | Ce qu'elle fait                                                                                                              | Appelants                                                                          |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | `sanitizeHtml`                  | DOMPurify (`isomorphic-dompurify`), liste blanche de balises et d'attributs                                                  | notebook, aperçu de variante, modèles de messages                                  |
-| `transformMathHtml`             | DOMPurify (réglage de `sanitizeHtmlWithMath`) en arbre, puis `data-math-inline/block` → `<math-field read-only>` dans le DOM | cahier de textes (page élève, lien public `/cahier/[token]`)                       |
+| `transformMathHtml`             | DOMPurify (réglage de `sanitizeHtmlWithMath`) en arbre, puis `data-math-inline/block` → `<math-field read-only>` dans le DOM | cahier de textes, HTML hérité seulement (`JournalContent`), `/demo/editeur`        |
 | `sanitizePlainText`             | retire toute balise, garde le texte                                                                                          | `ReportErrorDialog.svelte`                                                         |
 | `sanitizeUrl`                   | lien inchangé si schéma `http`, `https`, `mailto` ou relatif ; sinon `'#'`                                                   | rendu markdown : `InlineRenderer`, `ParagraphNode`, `HeadingNode`, `HintReference` |
 | `containsDangerousHtml`         | détecte `<script`, `<iframe`, `on…=`, `javascript:`…                                                                         | aucun (doublon, voir Écarts)                                                       |
@@ -133,8 +133,9 @@ de tête retirés, tabulations et retours à la ligne supprimés partout (`java\
   n’échappe pas `>` dans une valeur d’attribut, `title="></span><img onerror=…>"` fermait la
   balise à tort (auteur possible : prof ou admin par l’API ; cible : élèves, lien public).
   Charges utiles dans `sanitize-attaques.test.ts` et `.svelte.test.ts`. Prod au 2026-11-06 : aucune
-  formule au cahier (2 séances). Reste décidé par David : le cahier de texte passera à ubumark
-  (markdown + `MarkdownRenderer`), chantier à part.
+  formule au cahier (2 séances). Le cahier de texte est écrit en ubumark depuis le chantier
+  cahier-ubumark (2026-11-06) : `transformMathHtml` ne sert plus qu'aux lignes HTML d'avant,
+  jusqu'à leur conversion.
 - **Deux points faibles, antérieurs à #2425, notés par son audit** (non bloquants, non traités) :
   un `<math-field>` écrit à la main dans le HTML envoyé est accepté en entrée tel quel, et la
   commande `\href` de MathLive (lien dans une formule) n'a pas été auditée.
