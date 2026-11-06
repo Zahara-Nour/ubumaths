@@ -9,9 +9,9 @@
 _Mis à jour le 2026-11-06, après la publication du lot 9._
 
 - **État** : lots 1 à 9 en prod et publiés (lot 9 : 8/8 `published`, CE2, relevé MCP). Aucune branche en cours.
-- **Prochaine action** : phase 0 du lot 10 écrite (§ 16, 7 modèles) ; après validation : worktree, branche, script
+- **Prochaine action** : lot 10 validé (§ 16, 7 modèles) : branche `feat/questions-ce2-lot10`, script
   `lot-ce2-10.py` ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
-- **En attente de David** : validation de la phase 0 du lot 10 (§ 16, questions 1 à 4).
+- **En attente de David** : rien (phase 0 du lot 10 validée).
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
   `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
@@ -856,4 +856,12 @@ tag ne change aucune règle.
    pas au CE2 (l'exemple de réussite du BO = dire si c'est un patron) ; oui / non et « lequel ? » seulement.
 3. 062 et 063 : arêtes cachées toujours en tirets (comme le BO : « à identifier »). Recommandation : oui, jamais
    `cachees: non`.
+4. Un seul lot de 7 modèles, puis le chantier à part `collection` `centaines:`.
+
+**Décisions (David, « tes recos ? » puis « je te suis », 2026-11-06)** :
+
+1. 063 : jamais « combien de rectangles ? » ; « combien de carrés ? », et « carré ou rectangle ? » sur un pavé
+   sans face carrée seulement.
+2. 066 : oui / non et « lequel ? » ; ni `completer:` ni `designer:`.
+3. Arêtes cachées toujours en tirets (jamais `cachees: non`).
 4. Un seul lot de 7 modèles, puis le chantier à part `collection` `centaines:`.
