@@ -657,3 +657,28 @@ bloquant. `db:migrate` lancé par David le 2026-11-06 (refusé à Claude par le 
 
 Relecture (2026-11-06) : 3/3 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`, depuis le dépôt
 principal), 3/3 `published` relus en base (MCP). **Le lot 10 (algorithmes) est publié.**
+
+## 17. Lot 11 : algorithmes, analyse (2026-11-06)
+
+Relevé prod (MCP, 2026-11-06) : aucun modèle tagué sur les 5 points. 279 sur Dérivation › taux de variation (4
+modèles, niveaux 1-4) ; 288 sur Dérivation › tangente (7 modèles, niveaux 1-4) ; 309 sur Fonctions trigonométriques ›
+cercle et radians (niveaux 1-6) ; 298 et 299 sur la **notion** Fonction exponentielle (comme au lot 7, modèle sur une
+sous-notion existante, le point restant sur la notion). **Aucune sous-notion neuve.**
+
+**D11 (David, 2026-11-06, « je valide »)** : contenu et rangement tels que proposés.
+
+| Point | Modèle (`scripts/questions/1spe-algorithmes-11/`) | Nœud, niveau                                       | Variations                                                                                 |
+| ----- | ------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 279   | `01-pentes-des-secantes`                          | Dérivation › taux de variation, 5                  | pente pour h tiré, f(x) = x² (case, 2a + h) ; ligne du taux (choix) ; limite f′(a) (choix) |
+| 288   | `02-methode-de-newton`                            | Dérivation › tangente, 5                           | une itération, x² − c, x₀ ∈ {1, 2, 4, 5} (case) ; ligne `x - f(x) / fp(x)` ; √c (choix)    |
+| 298   | `03-methode-d-euler`                              | Fonction exponentielle › dérivée, 2                | `euler(h, n)` = (1 + h)ⁿ (case) ; ligne `y = y + h * y` ; e^k (choix)                      |
+| 299   | `04-valeur-approchee-de-e`                        | Fonction exponentielle › propriétés algébriques, 8 | `u(1)`, `u(2)` (case) ; `(1 + 1/n)**n` (choix) ; croissent vers e (choix)                  |
+| 309   | `05-archimede`                                    | Fonctions trigonométriques › cercle et radians, 7  | nombre de côtés 6·2ᵏ (case) ; `return n * c / 2` (choix) ; π par défaut (choix)            |
+
+Script : `docs/wip/questions/lot-1spe-algorithmes-11.py`. Décimaux affichés par `{{eval:…;d}}` (sans `;d`, un quotient
+reste en fraction : `\dfrac{21}{2}`). Pièges trouvés : a = 2 donnait f(a) = f′(a) = 4 (deux choix égaux, 2 retiré) ;
+distracteur c/2 du Newton égal à 1 pour c = 2 (remplacé par c) ; **`str.format` sur un gabarit qui contient
+`{{eval:c}}` le réduit à `{eval:c}`** (vu par le recoupement Python, pas par les specs) → `replace`. Vérifié :
+`question:specs` 150 tirages par variation, 59 specs vertes, 0 `\textcolor` hors `$`, 0 avertissement ; 55 réponses
+« faire tourner » recoupées en exécutant les programmes des énoncés (0 écart) ; `create-questions` simulation prod
+(5 à créer) ; brouillons en base locale (copie hors dépôt).

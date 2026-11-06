@@ -1,0 +1,191 @@
+{
+	"title": "Approximation de π par Archimède en Python",
+	"description": "Polygones réguliers inscrits dans le cercle de rayon 1, nombre de côtés doublé à chaque tour : faire tourner (nombre de côtés), compléter le return n * c / 2, interpréter (valeur approchée de π par défaut)",
+	"grades": ["1_SPE"],
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un cercle de rayon $1$, on inscrit un polygone régulier à $n$ côtés de longueur $c$ : on part de l'hexagone ($n=6$, $c=1$), puis on double le nombre de côtés à chaque tour de boucle.\n\n```python\nfrom math import sqrt\n\ndef archimede(k):\n    n = 6\n    c = 1\n    for j in range(k):\n        c = sqrt(2 - sqrt(4 - c**2))\n        n = 2 * n\n    return n * c / 2\n```\n\nCombien de côtés a le polygone à la fin de l'appel `archimede({{eval:k}})`, c'est-à-dire que vaut `n` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "eval:6*2^k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`n` part de $6$ et la boucle est parcourue ${{eval:k}}$ fois.",
+					"À chaque tour, `n = 2 * n` double le nombre de côtés : $6$, $12${{if:k>=2|, $24$|}}{{if:k>=3|, $48$|}}{{if:k>=4|, $96$|}}{{if:k>=5|, $192$|}}.",
+					"À la fin, `n` vaut $6\\times2^{{{eval:k}}}=\\textcolor{{{color:primary.0}}}{{{eval:m}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un cercle de rayon $1$, on inscrit un polygone régulier à $n$ côtés de longueur $c$ : on part de l'hexagone ($n=6$, $c=1$), puis on double le nombre de côtés à chaque tour de boucle. La fonction doit renvoyer une valeur approchée de $\\pi$.\n\n```python\nfrom math import sqrt\n\ndef archimede(k):\n    n = 6\n    c = 1\n    for j in range(k):\n        c = sqrt(2 - sqrt(4 - c**2))\n        n = 2 * n\n    return ...\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `n * c / 2`\n- `n * c`\n- `c / 2`\n- `n / 2`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre du polygone, $n\\times c$, est proche de celui du cercle, $2\\pi\\times1=2\\pi$.",
+					"Donc $\\pi\\approx\\dfrac{n\\times c}{2}$ : `n * c` donnerait une valeur approchée de $2\\pi$.",
+					"On écrit donc `return n * c / 2`."
+				]
+			}
+		},
+		{
+			"statement": "Dans un cercle de rayon $1$, on inscrit un polygone régulier à $n$ côtés de longueur $c$ : on part de l'hexagone ($n=6$, $c=1$), puis on double le nombre de côtés à chaque tour de boucle.\n\n```python\nfrom math import sqrt\n\ndef archimede(k):\n    n = 6\n    c = 1\n    for j in range(k):\n        c = sqrt(2 - sqrt(4 - c**2))\n        n = 2 * n\n    return n * c / 2\n```\n\nQue renvoie `archimede({{eval:k}})` ?\n\n```choix\n- Une valeur approchée de $\\pi$ par défaut.\n- Une valeur approchée de $\\pi$ par excès.\n- Une valeur approchée de $2\\pi$.\n- La longueur d'un côté du polygone.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`n * c` est le périmètre du polygone et $2\\pi$ celui du cercle ; on renvoie la moitié du périmètre du polygone.",
+					"Le polygone est inscrit dans le cercle : chaque côté est plus court que l'arc qu'il sous-tend, donc $n\\times c<2\\pi$ et $\\dfrac{n\\times c}{2}<\\pi$. Par exemple, `archimede(0)` renvoie $3$ et `archimede(3)` environ $3{,}139$.",
+					"`archimede({{eval:k}})` renvoie $\\textcolor{{{color:primary.0}}}{\\text{une valeur approchée de }\\pi\\text{ par défaut}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "k = 3 : 48 côtés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"m": "48"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un doublement de moins",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"m": "48"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 1 : 12 côtés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"m": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n * c / 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n * c",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : c / 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n / 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "π par défaut",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : π par excès",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2π",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : côté",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
