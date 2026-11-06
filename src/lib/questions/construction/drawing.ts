@@ -38,7 +38,14 @@ import {
 	type StraightTrait
 } from './instruments';
 import { isPointCheck, pointSolution, type ExpectedPoints, type PointSolution } from './point';
-import { isLineCheck, lineCodages, lineSolution, type LineCodage } from './line';
+import {
+	bissectriceCorrections,
+	isLineCheck,
+	lineCodages,
+	lineSolution,
+	type BissectriceCorrection,
+	type LineCodage
+} from './line';
 import { circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
 import { triangleCorrection, triangleSolution, type TriangleCorrection } from './triangle';
@@ -405,6 +412,14 @@ export function solutionCodages(
 	points: ReadonlyMap<string, Position>
 ): LineCodage[] {
 	return lineCodages(checks.filter(isLineCheck), points);
+}
+
+/** Les bissectrices à construire (lot 9) : demi-angles codés, arcs de la construction */
+export function solutionBissectrices(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>
+): BissectriceCorrection[] {
+	return bissectriceCorrections(checks.filter(isLineCheck), points);
 }
 
 /** Les cercles à construire (lot 3b) : le cercle, son centre, deux médiatrices */

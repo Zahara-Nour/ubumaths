@@ -82,6 +82,23 @@ export function isCircleCheck(check: { kind: string }): check is CircleCheck {
 
 const distance = (p: Position, q: Position) => Math.hypot(p.x - q.x, p.y - q.y);
 const centerOf = (c: DrawnCircle): Position => ({ x: c.cx, y: c.cy });
+
+/**
+ * Un cercle de l'élève, compas ou Report (lot 9) : le report devient le cercle de
+ * même centre et de même rayon (point de passage = centre + écartement) ; null
+ * pour une droite. Le « construit » reste lu sur l'objet d'origine (`constructionOf`).
+ */
+function circleOf(object: DrawnObject): DrawnCircle | null {
+	if (object.kind === 'cercle') return object;
+	if (object.kind !== 'report') return null;
+	return {
+		kind: 'cercle',
+		cx: object.cx,
+		cy: object.cy,
+		x: object.cx + (object.bx - object.ax),
+		y: object.cy + (object.by - object.ay)
+	};
+}
 const radiusOf = (c: DrawnCircle) => Math.hypot(c.x - c.cx, c.y - c.cy);
 
 /** Les trois côtés d'un triangle, dans l'ordre [AB], [AC], [BC] */
@@ -93,8 +110,8 @@ const sidesOf = ([a, b, c]: Triple): [string, string][] => [
 
 /**
  * Papier uni : le centre du cercle circonscrit se construit-il dans la fenêtre ?
- * Sommets visibles, et au moins deux médiatrices constructibles au compas de
- * rayon le côté (`mediatriceSupportError`) ; sert aussi au centre seul
+ * Sommets visibles, et au moins deux médiatrices constructibles dans la fenêtre
+ * (`mediatriceSupportError`) ; sert aussi au centre seul
  * (`point.ts`). Le message, ou null.
  */
 export function circumcenterSupportError(
@@ -106,7 +123,7 @@ export function circumcenterSupportError(
 	if (hidden) return `${hidden} n’est pas visible (l’élève ne peut pas y piquer le compas)`;
 	const built = sidesOf(names).filter((side) => !mediatriceSupportError(side, points, shapes));
 	if (built.length >= 2) return null;
-	return `moins de deux médiatrices du triangle ${names.join('')} se construisent dans la fenêtre (cercles de rayon un côté qui se coupent hors de la fenêtre) : agrandir la fenêtre ou rapprocher les sommets`;
+	return `moins de deux médiatrices du triangle ${names.join('')} se construisent dans la fenêtre (moins de 2 unités de médiatrice dans la fenêtre) : agrandir la fenêtre ou rapprocher les sommets`;
 }
 
 function expectedOf(check: CircleCheck, expected: ExpectedPoints | undefined): ExpectedCircle {
@@ -214,18 +231,18 @@ function hasCenter(circle: DrawnCircle, center: Position): boolean {
 /** L'essai de l'élève parmi ses cercles (voir l'en-tête) ; null : aucun essai */
 function attempt(
 	indexes: readonly number[],
-	objects: readonly DrawnObject[],
+	circleAt: (i: number) => DrawnCircle,
 	vertices: readonly Position[],
 	target: ExpectedCircle
 ): number | null {
-	const own = indexes.filter((i) => !vertices.some((v) => hasCenter(objects[i] as DrawnCircle, v)));
+	const own = indexes.filter((i) => !vertices.some((v) => hasCenter(circleAt(i), v)));
 	if (own.length === 0) return null;
-	const centered = own.filter((i) => hasCenter(objects[i] as DrawnCircle, target.center));
+	const centered = own.filter((i) => hasCenter(circleAt(i), target.center));
 	if (centered.length > 0) return centered[centered.length - 1];
 	let best = own[0];
 	let most = -1;
 	for (const i of own) {
-		const count = vertices.filter((v) => passesThrough(objects[i] as DrawnCircle, v)).length;
+		const count = vertices.filter((v) => passesThrough(circleAt(i), v)).length;
 		if (count >= most) {
 			best = i;
 			most = count;
@@ -246,7 +263,8 @@ export function judgeCircles(
 	shapes: FigureShapes | undefined,
 	objects: readonly DrawnObject[]
 ): ConstructionVerdict {
-	if (objects.some((o) => o.kind !== 'droite' && o.kind !== 'cercle')) {
+	// Le Report (lot 9) : un trait de construction, comme un cercle
+	if (objects.some((o) => o.kind !== 'droite' && o.kind !== 'cercle' && o.kind !== 'report')) {
 		return { status: 'incorrect' };
 	}
 	// Cercle construit de proche en proche (décision de David, 2026-11-03, § 14)
@@ -255,23 +273,20 @@ export function judgeCircles(
 		basePointsOf(points, shapes?.segments ?? []),
 		shapes?.traits ?? []
 	);
-	const circleIndexes = objects.flatMap((o, i) => (o.kind === 'cercle' ? [i] : []));
-	// Centre et point de passage d'un cercle NON construit (les autres : construits) ;
-	// aucun trait non construit ne compte, lui compris
-	const parts = (i: number) => {
-		const circle = objects[i] as DrawnCircle;
-		return {
-			center: construction.isBuilt(centerOf(circle)),
-			through: construction.isBuilt({ x: circle.x, y: circle.y })
-		};
-	};
+	// Compas ou Report (lot 9, revue) : un report juste est un cercle juste
+	const circles = objects.map(circleOf);
+	const circleAt = (i: number) => circles[i] as DrawnCircle;
+	const circleIndexes = circles.flatMap((c, i) => (c ? [i] : []));
+	// Centre d'un cercle NON construit (les autres : construits) ; aucun trait non
+	// construit ne compte, lui compris
+	const centerBuilt = (i: number) => construction.isBuilt(centerOf(circleAt(i)));
 	const built = (i: number) => construction.built.has(i);
 	const taken = new Set<number>();
 	for (const check of checks) {
 		const target = expectedOf(check, expected);
 		const free = circleIndexes.filter((i) => !taken.has(i));
 		const covering = free.filter((i) => {
-			const c = objects[i] as DrawnCircle;
+			const c = circleAt(i);
 			return sameCircle({ center: centerOf(c), radius: radiusOf(c) }, target);
 		});
 		const good = covering.find(built);
@@ -281,10 +296,10 @@ export function judgeCircles(
 		}
 		if (covering.length > 0) {
 			// Centre construit, compas ouvert à l'œil pile au bon rayon (revue, finding 1)
-			const centerBuilt = covering.some((i) => parts(i).center);
+			const anyCenterBuilt = covering.some(centerBuilt);
 			return {
 				status: 'incorrect',
-				feedback: centerBuilt ? CIRCLE_THROUGH_EYEBALLED_FEEDBACK : CIRCLE_EYEBALLED_FEEDBACK
+				feedback: anyCenterBuilt ? CIRCLE_THROUGH_EYEBALLED_FEEDBACK : CIRCLE_EYEBALLED_FEEDBACK
 			};
 		}
 		const names = circumcircleOf(check.expression);
@@ -292,14 +307,14 @@ export function judgeCircles(
 		if (!names || !vertices || !vertices.every((v): v is Position => v !== undefined)) {
 			return { status: 'incorrect', feedback: `Trace le cercle ${check.name}.` };
 		}
-		const shown = attempt(free, objects, vertices, target);
+		const shown = attempt(free, circleAt, vertices, target);
 		if (shown === null) {
 			return { status: 'incorrect', feedback: circumcircleMissingFeedback(names) };
 		}
 		// Seul le centre décide du « à l'œil » : un compas ouvert à la main sur un bon
 		// centre construit a le bon centre (revue, finding 1)
-		if (!parts(shown).center) return { status: 'incorrect', feedback: CIRCLE_EYEBALLED_FEEDBACK };
-		const circle = objects[shown] as DrawnCircle;
+		if (!centerBuilt(shown)) return { status: 'incorrect', feedback: CIRCLE_EYEBALLED_FEEDBACK };
+		const circle = circleAt(shown);
 		if (hasCenter(circle, target.center)) {
 			return { status: 'incorrect', feedback: CIRCLE_GOOD_CENTER_FEEDBACK };
 		}

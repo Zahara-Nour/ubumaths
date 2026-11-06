@@ -1,0 +1,207 @@
+{
+	"title": "Démontrer que le carré d'un nombre impair est impair",
+	"description": "Démonstration à trous de n = 2k + 1 ⟹ n² impair : double produit 4k, factorisation n² = 2(2k² + 2k) + 1, justification de la conclusion ; étapes à ranger",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $n$ un entier impair. On démontre que $n^2$ est impair.\n\nComme $n$ est impair, il existe un entier $k$ tel que $n=2k+1$.\n\nOn développe avec l'identité remarquable $(a+b)^2=a^2+2ab+b^2$. Complète.\n\n$n^2=(2k+1)^2=4k^2+?+1$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "4k"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(2k+1)^2=(2k)^2+2\\times 2k\\times 1+1^2$.",
+					"Le double produit vaut $2\\times 2k\\times 1=\\textcolor{{{color:primary.0}}}{4k}$, d'où $n^2=4k^2+4k+1$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier impair. On démontre que $n^2$ est impair.\n\nComme $n$ est impair, il existe un entier $k$ tel que $n=2k+1$.\n\nOn développe : $n^2=(2k+1)^2=4k^2+4k+1$.\n\nOn met $2$ en facteur dans $4k^2+4k$. Complète.\n\n$n^2=2\\times(?)+1$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2k^2+2k",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$4k^2=2\\times 2k^2$ et $4k=2\\times 2k$.",
+					"Donc $4k^2+4k=2(2k^2+2k)$ et $n^2=2\\times(\\textcolor{{{color:primary.0}}}{2k^2+2k})+1$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier impair. On démontre que $n^2$ est impair.\n\nComme $n$ est impair, il existe un entier $k$ tel que $n=2k+1$.\n\nOn développe : $n^2=(2k+1)^2=4k^2+4k+1$.\n\nOn a $n^2=2(2k^2+2k)+1$. Pourquoi peut-on conclure que $n^2$ est impair ?\n\n```choix\n- Car $2k^2+2k$ est un entier, donc $n^2$ s'écrit $2K+1$ avec $K$ entier.\n- Car $4k^2+4k+1$ se termine par le chiffre $1$.\n- Car $n^2$ est plus grand que $n$.\n- Car tout carré est impair.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$k$ est un entier, donc $K=2k^2+2k$ est un entier.",
+					"$n^2=2K+1$ : c'est la forme d'un **nombre impair**.",
+					"Un carré n'est pas toujours impair : $4=2^2$ est pair."
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier impair. On démontre que $n^2$ est impair.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Il existe un entier $k$ tel que $n=2k+1$.\n- Donc $n^2=(2k+1)^2=4k^2+4k+1$.\n- Donc $n^2=2(2k^2+2k)+1$.\n- Or $2k^2+2k$ est un entier, donc $n^2$ est impair.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On écrit $n$ sous la forme $2k+1$, on développe son carré, puis on met $2$ en facteur.",
+					"$\\textcolor{{{color:primary.0}}}{n^2=2(2k^2+2k)+1}$ avec $2k^2+2k$ entier : $n^2$ est impair."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4k",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["4k"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2k",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4k² oublié, 2k + 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2k+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2k² + 2k",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2k^2+2k"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture 2k(k + 1)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2k(k+1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4k² + 4k",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["4k^2+4k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k² + k",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["k^2+k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2k² + 4k",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2k^2+4k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2K + 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffre des unités",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n² > n",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout carré impair",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

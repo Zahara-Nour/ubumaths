@@ -1,6 +1,8 @@
-import avatarAdmin from '$lib/assets/images/avatars/avatar-admin.jpg';
-import avatarStudent from '$lib/assets/images/avatars/avatar-student-boy.jpg';
-import avatarTeacher from '$lib/assets/images/avatars/avatar-teacher-boy.jpg';
+// Emblèmes du lore (Compendium, section XI « Avatars par défaut ») :
+// attributs d'Ubu pour l'admin, konfederatka du Capitaine, bonnet du Galopin.
+import avatarAdmin from '$lib/assets/images/avatars/avatar-admin.webp';
+import avatarTeacher from '$lib/assets/images/avatars/avatar-capitaine.webp';
+import avatarStudent from '$lib/assets/images/avatars/avatar-galopin.webp';
 
 export type UserRole = 'student' | 'teacher' | 'admin';
 

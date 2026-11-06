@@ -7,6 +7,7 @@ couvre:
   - scripts/questions/sonde-courbes.ts
   - scripts/questions/sonde-figures.ts
   - scripts/questions/sonde-cubes.ts
+  - scripts/questions/sonde-collections.ts
   - scripts/lib/page-a-cocher.ts
   - scripts/lib/lot-questions.ts
   - scripts/lib/niveaux-des-tags.ts
@@ -210,6 +211,11 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    chaque bloc `cubes, `solide et ``patron (énoncé, options d'un choix, corrigé) passé à
    `parseEspaceContent` avec son genre → **0 problème** (un bloc d'affichage en erreur, « Solide
    indisponible », échappe aux specs).
+   Lot de matériel multibase : `pnpm tsx scripts/questions/sonde-collections.ts --dir …`, même
+   principe, chaque bloc ` ```collection ` passé à `parseCollectionContent` → **0 problème** (plafond
+   d'un grand bloc dépassé, valeur au-delà de 9 999 : les specs ne le voient pas). Un modèle à
+   `construire:` ne porte pas « Espaces dès 4 chiffres » : la valeur posée (`4635`) y serait une forme
+   à améliorer ; écrire le nombre de l'énoncé groupé à la main (`{{m}}\,{{c}}{{d}}{{u}}`).
    Lot d'horloges ou de droites graduées : `pnpm tsx scripts/questions/sonde-horloges.ts --dir …`, même
    principe, chaque bloc ` ```horloge ` et ` ```line ` (énoncé, corrigé, horloges d'un choix) passé à son
    parseur → **0 problème** (heure refusée, point hors de la droite : les specs ne le voient pas).

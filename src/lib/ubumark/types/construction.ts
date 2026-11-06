@@ -49,10 +49,12 @@ export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, Constructi
 	// Lot 4 (§ 13) : le Report, pour le 4e sommet d'un parallélogramme
 	point: ['point', 'droite', 'equerre', 'compas', 'report'],
 	symetrique: ['segment', 'droite', 'equerre', 'compas'],
-	// Lot 3 (§ 9) : la même palette sur quadrillage (équerre gardée, décision de David)
-	droite: ['droite', 'equerre', 'compas'],
-	// Lot 3b (§ 11) : cercle circonscrit, papier uni seulement
-	cercle: ['droite', 'equerre', 'compas'],
+	// Lot 3 (§ 9) : la même palette sur quadrillage (équerre gardée, décision de David) ;
+	// lot 9 (§ 25) : le Report garde l'écartement des deux cercles égaux (papier uni
+	// seulement, `LINE_GRID_TOOLS` sur quadrillage)
+	droite: ['droite', 'equerre', 'compas', 'report'],
+	// Lot 3b (§ 11) : cercle circonscrit, papier uni seulement ; Report : lot 9 (§ 25)
+	cercle: ['droite', 'equerre', 'compas', 'report'],
 	// Lot 4 (§ 13) : triangle de trois longueurs, papier uni seulement ; lot 7 (§ 21) : le
 	// rapporteur s'y ajoute quand un angle est donné (`triangleTools`)
 	triangle: ['segment', 'compas', 'report', 'droite'],
@@ -61,6 +63,19 @@ export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, Constructi
 	// Lot 6 (§ 19) : mesurer un angle, le rapporteur seul
 	mesure: ['rapporteur']
 };
+
+/** `bissectrice(A, O, B)` : trois points nommés, le sommet au milieu (lot 9, § 25) */
+const BISSECTRICE_REGEX =
+	/^bissectrice\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/;
+
+/** Les trois points d'une bissectrice (A, sommet, B) ; null pour une autre expression */
+export function bissectriceOf(expression: string): [string, string, string] | null {
+	const match = BISSECTRICE_REGEX.exec(expression.trim());
+	return match ? [match[1], match[2], match[3]] : null;
+}
+
+/** Palette déduite d'une droite sur quadrillage (lot 3) : les nœuds suffisent, sans Report */
+export const LINE_GRID_TOOLS: ConstructionTool[] = ['droite', 'equerre', 'compas'];
 
 /**
  * Palette d'un triangle à construire : celle du lot 4 (trois longueurs), ou,
