@@ -9,15 +9,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2407 (lot 8 : nœud + tag en prod)._
+_Mis à jour le 2026-11-06, lot 9 en PR (contenu)._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5, 6 et 7 publiés ; lot 8
-  (géométrie, § 13, D6) : 6 brouillons rangés et tagués en prod (#2407, `db:migrate` fait), page à cocher publiée :
-  https://claude.ai/artifact/HtD5WnTWg6dvD5jgdcVsSS.
-- **Prochaine action** : relecture du lot 8 par David (page à cocher), puis `publier-lot.ts --publier` par David et
-  relevé MCP. Ensuite lot 9 (probabilités : 345, 346, 361).
-- **En attente de David** : relecture du lot 8 ; vérification à l'œil en prod (ligne du 2026-11-03 de
-  `docs/wip/verifications-manuelles.md`).
+  (géométrie, § 13) relu par David, publication par `publier-lot.ts --publier` donnée à David ; lot 9 (probabilités,
+  § 14, D7) : 3 modèles écrits, PR de contenu ouverte.
+- **Prochaine action** : merger la PR du lot 9, puis `create-questions --publier` par David, relevé MCP, PR de
+  migration nœud + tag (aucune sous-notion neuve), `db:migrate`, page à cocher. Relever au MCP la publication du lot 8.
+- **En attente de David** : `publier-lot.ts --publier` du lot 8 ; vérification à l'œil en prod (ligne du 2026-11-03
+  de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
   une notion → choisir sa sous-notion avec David. Variable `e` = Euler : jamais comme nom de variable. Job navigateur
@@ -504,3 +504,31 @@ PR (suite d'intégration locale : 5271 verts). `security-auditor` : aucun findin
 `db:migrate` le 2026-11-05 (seule migration en attente, sans `--include-all`), vérifié MCP : 6 modèles sur leur nœud,
 un tag chacun, `draft`, `updated_at` inchangé ; « parabole » en fin de Géométrie repérée (position 7). Page à cocher :
 https://claude.ai/artifact/HtD5WnTWg6dvD5jgdcVsSS.
+
+Relecture (2026-11-06) : David, « relu » (aucun commentaire signalé). Publication : commande
+`publier-lot.ts --publier` donnée à David.
+
+## 14. Lot 9 : approfondissements, probabilités (2026-11-05)
+
+Relevé prod (MCP, 2026-11-05) : 345 et 346 sur Probabilités › Probabilités conditionnelles › « épreuves indépendantes
+successives » ; 361 sur Probabilités › Variables aléatoires › « variance et écart-type ». Aucun modèle sur les 3 points.
+Les points sont déjà sur une sous-notion : **aucune sous-notion neuve**, chaque modèle sur celle de son point.
+
+**D7 (David, 2026-11-06, « ok pour le contenu »)** : contenu et rangement tels que proposés.
+
+| Point | Modèle (`scripts/questions/1spe-approfondissements-9/`) | Niveau | Variations                                                                                                   |
+| ----- | ------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------ |
+| 345   | `01-succession-d-epreuves-independantes`                | 1      | 3 tirs de probabilité p : p³, exactement un succès 3p(1 − p)² (arbre à 3 niveaux), dé · pièce · urne r/(12n) |
+| 346   | `02-marche-aleatoire`                                   | 2      | pion ±1 : en 3 après 3 étapes (p³), en 1 après 3 étapes (3p²(1 − p)), retour en O après 2 (2p(1 − p))        |
+| 361   | `03-fonction-esperance-de-x-moins-x-au-carre`           | 2      | loi donnée : b = −2E(X), minimum en E(X) ; valeur minimale V(X) (choix), étapes à ranger                     |
+
+Script : `docs/wip/questions/lot-1spe-approfondissements-9.py` (positions « ranger » par `positions-ranger.ts`).
+p = k/10, k de 2 à 8 ; `acceptDecimal` comme les modèles de probabilités de 1re spé ; moyenne `m`, jamais `E`. Piège :
+une fraction non simplifiée sort en `unoptimal_form` avec `constraintViolations: ['reducedFractions']` (pas `form`).
+Vérifié : `question:specs` 150 tirages par variation, 30 specs vertes, 0 `\textcolor` hors `$` ; 120 aperçus relus
+(signes, parenthèses des valeurs négatives, arbre) ; `create-questions` simulation prod (3 à créer) ; brouillons en
+base locale (copie hors dépôt), aperçu admin vu à l'écran : arbre à 3 niveaux (virgules), tableau de loi et minimum
+(14/5 juste), ranger du 361.
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-9 --publier`
