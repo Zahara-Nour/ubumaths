@@ -9,14 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2431 (migration du lot 10 jouée en prod)._
+_Mis à jour le 2026-11-06, lot 10 publié (après #2431)._
 
-- **État** : démonstrations (lots 1-4) et approfondissements (lots 5-9) publiés. Algorithmes (§ 15, D9) : lot 10
-  (238, 239, 380, § 16, D10) en prod, brouillons rangés et tagués (#2431, `db:migrate` fait), page à cocher publiée :
-  https://claude.ai/artifact/JpqmSVatHLqSiy7cpaTuuK.
-- **Prochaine action** : attendre la relecture de David ; lire `verdicts` (ArtifactData), compter, corriger les « à
-  revoir », puis lui donner la commande `publier-lot.ts --publier` (depuis le dépôt principal). Ensuite lot 11
-  (analyse : 279, 288, 298, 299, 309), relevé prod et contenu.
+- **État** : démonstrations (lots 1-4), approfondissements (lots 5-9) et algorithmes du lot 10 (238, 239, 380, § 16)
+  publiés en prod.
+- **Prochaine action** : lot 11 (algorithmes d'analyse : 279, 288, 298, 299, 309) : nouvelle branche du worktree
+  depuis `origin/main`, relevé prod (MCP), proposition de contenu et de rangement à David (phase 0).
+  ⚠️ Le journal de `main` peut être plus récent que celui du worktree : lire celui de `main` après un merge.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David (lancée hors du dépôt principal,
   `publier-lot` refuse : « sans id »). `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → les
@@ -24,8 +23,8 @@ _Mis à jour le 2026-11-06, après #2431 (migration du lot 10 jouée en prod)._
   qui plante tests verts → `gh run rerun <run> --failed`. Port 5178. Brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local` (sinon `create-questions` vise la prod). Les « catégories » du journal ne sont qu'une
   étiquette : en base, seuls nœud, niveau et tag.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-algorithmes-10-rangement`
-  mergée (à remplacer par celle du lot 11).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-10-rangement`
+  (mergée, branche distante supprimée) : à remplacer par celle du lot 11.
 
 ---
 
@@ -655,3 +654,6 @@ Mergée (#2431 ; CI rejouée en entier après le plantage du job navigateur, ver
 bloquant. `db:migrate` lancé par David le 2026-11-06 (refusé à Claude par le classifieur du mode auto), vérifié MCP :
 3 modèles sur leur nœud (factorielle ; explicite ou par récurrence ; sommes de termes), un tag chacun (238, 239, 380),
 `draft`, `updated_at` inchangé. Page à cocher : https://claude.ai/artifact/JpqmSVatHLqSiy7cpaTuuK.
+
+Relecture (2026-11-06) : 3/3 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`, depuis le dépôt
+principal), 3/3 `published` relus en base (MCP). **Le lot 10 (algorithmes) est publié.**
