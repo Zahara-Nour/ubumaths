@@ -1,6 +1,6 @@
 {
 	"title": "Dénombrer avec plus de dix objets d'un rang",
-	"description": "Plus de 10 barres, cubes ou plaques (comme 17 u, 8 d, 32 c, 2 milliers) ; au plus 20 plaques",
+	"description": "Plus de 10 barres, cubes ou plaques (comme 17 u, 8 d, 32 c, 2 milliers) ; au plus 15 plaques",
 	"grades": ["CE2"],
 	"level": 14,
 	"delay": 90,
@@ -82,7 +82,7 @@
 				},
 				{
 					"name": "c",
-					"expression": "11..20"
+					"expression": "11..15"
 				},
 				{
 					"name": "d",
@@ -218,15 +218,15 @@
 			}
 		},
 		{
-			"description": "borne : 3 gros cubes, 20 plaques, 9 barres, 19 cubes : 5 109",
+			"description": "borne : 3 gros cubes, 15 plaques, 9 barres, 19 cubes : 4 609",
 			"variationIndex": 2,
 			"variables": {
 				"m": "3",
-				"c": "20",
+				"c": "15",
 				"d": "9",
 				"u": "19"
 			},
-			"answers": ["5\\,109"],
+			"answers": ["4\\,609"],
 			"expected": {
 				"status": "correct"
 			}

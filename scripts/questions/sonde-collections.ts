@@ -23,7 +23,8 @@ import { readTemplateFile } from '../lib/template-file';
 import { valeurArgument } from '../lib/lot-questions';
 
 // Bloc ```collection dans une chaîne de l'instance ; `case: N` est posé par le générateur
-const BLOC_COLLECTION = /```collection\n([\s\S]*?)```/g;
+// (espaces et `\r` tolérés en fin de ligne d'ouverture, comme le parseur)
+const BLOC_COLLECTION = /```collection[ \t]*\r?\n([\s\S]*?)```/g;
 
 function lireModele(chemin: string): QuestionTemplate {
 	const nom = basename(chemin);
@@ -83,6 +84,11 @@ function sonder(dossier: string, tirages: number): number {
 	console.log(
 		`${fichiers.length} modèle(s), ${blocs} bloc(s) collection lus, ${problemes} problème(s)`
 	);
+	// Rien de lu = rien de prouvé : un dossier sans bloc n'est pas « 0 problème »
+	if (blocs === 0) {
+		console.log('⛔ aucun bloc collection lu : mauvais dossier ?');
+		return problemes + 1;
+	}
 	return problemes;
 }
 
@@ -94,4 +100,8 @@ if (!dossier) {
 	process.exit(1);
 }
 const tirages = Number(valeurArgument(process.argv, '--tirages') ?? 300);
+if (!Number.isInteger(tirages) || tirages < 1) {
+	console.error('--tirages : un entier ≥ 1 (« --tirages 300 »)');
+	process.exit(1);
+}
 process.exit(sonder(dossier, tirages) === 0 ? 0 : 1);

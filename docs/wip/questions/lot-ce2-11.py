@@ -2,7 +2,7 @@
 
 Phase 0 validée par David le 2026-11-06 (« je suis tes recos », § 17 du journal
 `docs/wip/questions-ce2-progress.md`) : pas de QCM de dessins (grand bloc illisible imprimé dans
-un choix) ; au plus 20 centaines dessinées ; brouillons neufs, migration nœud + tag sans règle
+un choix) ; au plus 20 centaines dessinées, puis 15 (vu à l'écran, 2026-11-06) ; brouillons neufs, migration nœud + tag sans règle
 neuve. Outil : bloc ```collection, `centaines:` et `milliers:` (#2420), `construire:` jusqu'à
 9 999 (réserve déduite de la valeur, seule la valeur est jugée). Bornes `cycle2.json`, CE2-001,
 002, 005 : groupes de dix, cent ou mille ; plus de dix éléments d'une unité (17 u, 8 d, 32 c et
@@ -191,12 +191,12 @@ SPECS_D_MILLE = [
 ]
 
 # --- 3. CE2-001 : plus de dix objets d'un rang ----------------------------------------------
-# Exemple du programme : 17 u, 8 d, 32 c et 2 milliers ; au plus 20 plaques dessinées (§ 17).
+# Exemple du programme : 17 u, 8 d, 32 c et 2 milliers ; au plus 15 plaques dessinées (§ 17 : 16 plaques = deux écrans).
 
 D_PLUS = [
     denombrer('cdu', {'c': '1..8', 'd': '11..19', 'u': '1..9'}, rappel=True),
     denombrer('cdu', {'c': '1..9', 'd': '1..9', 'u': '11..19'}, rappel=True),
-    denombrer('mcdu', {'m': '1..3', 'c': '11..20', 'd': '1..9', 'u': '11..19'}, rappel=True),
+    denombrer('mcdu', {'m': '1..3', 'c': '11..15', 'd': '1..9', 'u': '11..19'}, rappel=True),
 ]
 
 SPECS_D_PLUS = [
@@ -214,8 +214,8 @@ SPECS_D_PLUS = [
          {'m': '2', 'c': '18', 'd': '8', 'u': '17'}, '3897', 'correct'),
     spec('Erreur : rangs recopiés (218817)', 2, {'m': '2', 'c': '18', 'd': '8', 'u': '17'},
          '218817', 'incorrect'),
-    spec('borne : 3 gros cubes, 20 plaques, 9 barres, 19 cubes : 5 109', 2,
-         {'m': '3', 'c': '20', 'd': '9', 'u': '19'}, '5109', 'correct'),
+    spec('borne : 3 gros cubes, 15 plaques, 9 barres, 19 cubes : 4 609', 2,
+         {'m': '3', 'c': '15', 'd': '9', 'u': '19'}, '4609', 'correct'),
 ]
 
 # --- 4 et 5. CE2-002 : construire un nombre donné -------------------------------------------
@@ -337,7 +337,7 @@ MODELES = {
         13, D_MILLE, SPECS_D_MILLE),
     '03-denombrer-plus-de-dix': modele(
         'Dénombrer avec plus de dix objets d\'un rang',
-        'Plus de 10 barres, cubes ou plaques (comme 17 u, 8 d, 32 c, 2 milliers) ; au plus 20'
+        'Plus de 10 barres, cubes ou plaques (comme 17 u, 8 d, 32 c, 2 milliers) ; au plus 15'
         ' plaques',
         14, D_PLUS, SPECS_D_PLUS, delay=90),
     '04-construis-trois-chiffres': modele(

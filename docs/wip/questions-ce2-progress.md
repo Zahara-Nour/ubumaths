@@ -947,3 +947,8 @@ question d'accès : rien de plus.
   justes (gros cubes en perspective, plaques quadrillées). Corrigé en route : « gross cubes » → « gros cubes ».
 - Vu à l'écran : 16 plaques (03, variation 3) = 4 rangées, le dessin fait près de deux écrans à 540 px ; la carte de
   correction le redessine dans un cadre à défilement propre.
+- Décision de David (2026-11-06, « je suis tes recos ») : **au plus 15 plaques** dans `03` (11 à 15, 4 rangées) ; borne
+  de la spec 3 m 15 c 9 d 19 u = 4 609.
+- Revue `code-reviewer` (Sonnet) de `sonde-collections.ts` : faux « 0 problème » si `--tirages` invalide ou si aucun bloc
+  n'est lu → corrigé (refus de `--tirages abc`, échec à 0 bloc, essayé sur `ce2-10`) ; regex d'ouverture tolérant
+  espaces et `\r` comme le parseur. Même défaut dans `sonde-cubes.ts`, hors de cette PR.
