@@ -652,6 +652,19 @@
 			"sous_notion": null
 		},
 		{
+			"code": "2-496",
+			"grade": "2",
+			"display_order": 50,
+			"name": "Effectuer une application numérique d'une formule (notamment pour les formules utilisées dans les autres disciplines)",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Automatismes > Calcul numérique et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "substitution"
+		},
+		{
 			"code": "2-490",
 			"grade": "2",
 			"display_order": 51,
@@ -4183,6 +4196,10 @@
 		},
 		{
 			"code": "2-489",
+			"grade": "2"
+		},
+		{
+			"code": "2-496",
 			"grade": "2"
 		},
 		{
