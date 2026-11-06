@@ -5,19 +5,15 @@ Branche `feat/cartes-probas-stats-terminale`, worktree `ubumaths-wt-probaT`. Par
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06 (relecture des 17 brouillons `T_COMP` ouverte)._
+_Mis à jour le 2026-11-06 : chantier clos, journal archivé._
 
-- **État** : décision de David (2026-11-06) : relire et publier les 17 brouillons `T_COMP`, sans chantier de
-  couverture. Instantané prod dans `scripts/questions/tcomp-brouillons/` (17 fichiers, avec `id`). Page à cocher
-  publiée : https://claude.ai/artifact/1iwzkfN82RGt7tDAx8zxTT (collection `verdicts`). Contrôles de la page :
-  17 / 17 avec point et nœud ; seule alerte, a6cc7712 : bloc `nuage` non dessiné (le jouer dans l'aperçu).
-- **Verdicts** (relus en base le 2026-11-06) : **17 / 17 OK**, aucun commentaire, aucune retouche.
-- **Prochaine action** : `publier-lot` en simulation puis `--publier`, lancé par David ; relire `published` en base.
-- **En attente de David** : le lancement de `publier-lot`.
-- **Pièges en cours** : `publier-lot.ts`, même en simulation, est refusé à Claude (« Modify Shared Resources ») :
-  David le lance avec `!`. Ne rien lancer depuis `scripts/questions/probas-stats-terminale/` (fichiers sans `id`,
-  doublons) : travailler sur `tcomp-brouillons/`. Worktree neuf : `pnpm exec svelte-kit sync` avant les `tsx`.
-- **Worktree / branche** : `ubumaths-wt-cartes-probas-stats-terminale` · `feat/cartes-probas-stats-terminale`.
+- **État** : **clos**. Les 17 brouillons `T_COMP` relus par David (17 / 17 OK, page
+  https://claude.ai/artifact/1iwzkfN82RGt7tDAx8zxTT), publiés par `publier-lot --publier` (David). Relu en base
+  (MCP) : 17 / 17 `published`, **0 brouillon `T_COMP`**, 99 `T_COMP` publiés. Instantané :
+  `scripts/questions/tcomp-brouillons/` (statut `draft` de l'export, antérieur à la publication).
+- **Prochaine action** : aucune.
+- **Pièges** : `scripts/questions/probas-stats-terminale/` (fichiers sans `id`) reste dangereux à relancer
+  (doublons, niveaux retirés) ; `publier-lot.ts` est refusé à Claude même en simulation.
 
 ### Brouillons `T_COMP` en prod (2026-11-06)
 
