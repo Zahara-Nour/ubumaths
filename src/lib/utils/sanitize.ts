@@ -145,24 +145,27 @@ export function sanitizeHtmlWithMath(dirty: string): string {
 		return '';
 	}
 
-	return DOMPurify.sanitize(dirty, {
-		ALLOWED_TAGS: [...ALLOWED_TAGS, 'math-field'],
-		ALLOWED_ATTR: [
-			...ALLOWED_ATTR,
-			'read-only',
-			'value',
-			'mode',
-			// TipTap math extension attributes
-			'latex', // Formula content attribute
-			'data-math-inline', // Inline math marker
-			'data-math-block' // Block math marker
-		],
-		ALLOW_DATA_ATTR: false, // Keep false - we explicitly allow only data-math-* above
-		ALLOW_UNKNOWN_PROTOCOLS: false,
-		SAFE_FOR_TEMPLATES: true,
-		KEEP_CONTENT: true
-	});
+	return DOMPurify.sanitize(dirty, CONFIG_AVEC_MATH);
 }
+
+/** Réglage DOMPurify du HTML à formules (partagé avec {@link transformMathHtml}). */
+const CONFIG_AVEC_MATH = {
+	ALLOWED_TAGS: [...ALLOWED_TAGS, 'math-field'],
+	ALLOWED_ATTR: [
+		...ALLOWED_ATTR,
+		'read-only',
+		'value',
+		'mode',
+		// TipTap math extension attributes
+		'latex', // Formula content attribute
+		'data-math-inline', // Inline math marker
+		'data-math-block' // Block math marker
+	],
+	ALLOW_DATA_ATTR: false, // Keep false - we explicitly allow only data-math-* above
+	ALLOW_UNKNOWN_PROTOCOLS: false,
+	SAFE_FOR_TEMPLATES: true,
+	KEEP_CONTENT: true
+};
 
 /**
  * Sanitize plain text (strip all HTML)
@@ -202,32 +205,38 @@ export function transformMathHtml(html: string): string {
 		return '';
 	}
 
-	// First sanitize the HTML
-	let result = sanitizeHtmlWithMath(html);
+	// Assaini d'abord, rendu en ARBRE : les formules sont remplacées dans le DOM, jamais
+	// par expression sur le texte HTML. Les expressions d'avant parcouraient les attributs
+	// avec `[^>]*` ; or jsdom (rendu serveur) n'échappe pas `>` dans une valeur
+	// d'attribut — `title="></span><img onerror=…>"` fermait la balise à tort et le reste
+	// sortait en vrai HTML (XSS stocké, audit de #2425). Et `latex` n'était lu que juste
+	// après le marqueur, alors que l'éditeur l'écrit en dernier : formules vides.
+	const fragment = DOMPurify.sanitize(html, {
+		...CONFIG_AVEC_MATH,
+		RETURN_DOM_FRAGMENT: true
+	}) as DocumentFragment;
 
-	// `latex` est lu où qu'il soit parmi les attributs : `editor.getHTML()` écrit
-	// `data-math-inline=""` puis `latex` en dernier, et l'ancienne expression (`latex`
-	// juste après le marqueur) rendait la formule VIDE dans le cahier de texte.
-	const latexDe = (attributs: string): string =>
-		(attributs.match(/(?:^|\s)latex="([^"]*)"/)?.[1] ?? '')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;');
+	// Document inerte : un `math-field` créé là n'est pas un élément MathLive actif
+	const inerte = (fragment.ownerDocument ?? document).implementation.createHTMLDocument('');
+	const conteneur = inerte.createElement('div');
+	conteneur.appendChild(inerte.importNode(fragment, true));
 
-	// Transform inline math: <span data-math-inline latex="..."></span>
-	result = result.replace(
-		/<span\s+([^>]*?\bdata-math-inline(?=[\s=>])[^>]*)><\/span>/g,
-		(_match, attributs: string) =>
-			`<span class="math-inline-wrapper"><math-field read-only>${latexDe(attributs)}</math-field></span>`
-	);
+	const formules = conteneur.querySelectorAll('span[data-math-inline], div[data-math-block]');
+	for (const formule of formules) {
+		// Comme avant : seule une formule de TipTap, élément vide, est remplacée
+		if (formule.childNodes.length > 0) continue;
+		const enLigne = formule.tagName === 'SPAN';
+		const enveloppe = inerte.createElement(enLigne ? 'span' : 'div');
+		enveloppe.className = enLigne ? 'math-inline-wrapper' : 'math-block-wrapper';
+		const champ = inerte.createElement('math-field');
+		champ.setAttribute('read-only', '');
+		// Texte, pas HTML : la sérialisation échappe `<`, `>`, `&`
+		champ.textContent = formule.getAttribute('latex') ?? '';
+		enveloppe.appendChild(champ);
+		formule.replaceWith(enveloppe);
+	}
 
-	// Transform block math: <div data-math-block latex="..."></div>
-	result = result.replace(
-		/<div\s+([^>]*?\bdata-math-block(?=[\s=>])[^>]*)><\/div>/g,
-		(_match, attributs: string) =>
-			`<div class="math-block-wrapper"><math-field read-only>${latexDe(attributs)}</math-field></div>`
-	);
-
-	return result;
+	return conteneur.innerHTML;
 }
 
 /** Schémas d'URL autorisés dans un lien ; un lien relatif (sans schéma) passe aussi */
