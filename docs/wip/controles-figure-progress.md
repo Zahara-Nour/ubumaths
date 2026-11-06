@@ -6,19 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2430 (PR B du lot 9) mergée ; PR A en cours._
+_Mis à jour le 2026-11-06, après #2439 (PR A du lot 9, bissectrice) mergée._
 
-- **État** : lots 1 à 8 en prod ; lot 9 PR B (médiatrices relâchées, Report) mergée #2430. PR A
-  (bissectrice, § 27) codée sur `feat/controles-figure-bissectrice` : tests verts, revue
-  `code-reviewer` (Opus) en cours.
-- **Prochaine action** : traiter la revue, pousser, ouvrir la PR, CI verte → merger. Puis versement
-  du lot 9 / fin de chantier selon David.
-- **En attente de David** : valider l'exception 4 **bornée à la bissectrice** (§ 27, écart au § 25).
+- **État** : lots 1 à 9 mergés (lot 9 : #2430 médiatrices relâchées + Report, #2439 bissectrice).
+  Worktree retiré. Vérification manuelle ajoutée (`verifications-manuelles.md`).
+- **Prochaine action** : selon les réponses de David ; puis reste éventuel d'`outils-manquants.md`
+  § 1, ou versement du chantier (durable → `docs/systeme/`, journal archivé).
+- **En attente de David** : (1) valider l'exception 4 **bornée aux figures qui vérifient une
+  bissectrice** (§ 27, écart au § 25) ; (2) M5 : erreur d'auteur si les côtés de l'angle ne sont pas
+  tracés (aujourd'hui : l'élève reçoit « tracée à l'œil ») ?
 - **Pièges en cours** : le Compas ne garde pas son écartement : deux cercles égaux à rayon libre =
-  Report seulement ; tester avec de vrais touchers (`addTap`, écran). `perpendiculaire(A, s)` échoue
-  si A est un bout de s ; commitlint refuse un sujet en majuscule ; garde « doc à jour » : relancer
-  après `git fetch`.
-- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-bissectrice`.
+  Report seulement ; tester avec de vrais touchers (`addTap`, écran) ; commitlint : sujet en
+  minuscule, lignes du corps ≤ 100 caractères ; garde « doc à jour » : relancer après `git fetch`.
+- **Worktree / branche** : aucun (nouvelle branche depuis `origin/main` pour la suite).
 
 ---
 
