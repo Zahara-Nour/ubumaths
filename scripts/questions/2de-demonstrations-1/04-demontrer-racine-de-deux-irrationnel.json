@@ -1,0 +1,196 @@
+{
+	"title": "Démontrer que √2 est irrationnel",
+	"description": "Démonstration par l'absurde à trous : p² = 2q² (case), p² pair donc p pair (choix), contradiction avec l'irréductibilité (choix) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On démontre par l'absurde que $\\sqrt{2}$ est irrationnel.\n\nSupposons que $\\sqrt{2}$ soit rationnel : $\\sqrt{2}=\\dfrac{p}{q}$, avec $p$ et $q$ entiers naturels non nuls et la fraction $\\dfrac{p}{q}$ irréductible.\n\nOn élève au carré les deux membres de $\\sqrt{2}=\\dfrac{p}{q}$, puis on multiplie par $q^2$. Complète.\n\n$p^2=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2q^2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\left(\\sqrt{2}\\right)^2=2$ et $\\left(\\dfrac{p}{q}\\right)^2=\\dfrac{p^2}{q^2}$ : donc $2=\\dfrac{p^2}{q^2}$.",
+					"En multipliant par $q^2$ : $p^2=\\textcolor{{{color:primary.0}}}{2q^2}$."
+				]
+			}
+		},
+		{
+			"statement": "On démontre par l'absurde que $\\sqrt{2}$ est irrationnel.\n\nSupposons que $\\sqrt{2}$ soit rationnel : $\\sqrt{2}=\\dfrac{p}{q}$, avec $p$ et $q$ entiers naturels non nuls et la fraction $\\dfrac{p}{q}$ irréductible.\n\nEn élevant au carré, on obtient $p^2=2q^2$.\n\nDonc $p^2$ est pair. On en déduit que $p$ est pair. Pourquoi ?\n\n```choix\n- Car si $p$ était impair, $p^2$ serait impair.\n- Car le carré d'un nombre pair est pair.\n- Car $p=2q$.\n- Car $p^2$ est divisible par $4$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On sait que le carré d'un nombre impair est impair.",
+					"Si $p$ était impair, $p^2$ serait impair : c'est faux, donc **$p$ est pair**.",
+					"« Le carré d'un pair est pair » dit l'inverse : il part de $p$ pair, ce qu'on cherche à démontrer."
+				]
+			}
+		},
+		{
+			"statement": "On démontre par l'absurde que $\\sqrt{2}$ est irrationnel.\n\nSupposons que $\\sqrt{2}$ soit rationnel : $\\sqrt{2}=\\dfrac{p}{q}$, avec $p$ et $q$ entiers naturels non nuls et la fraction $\\dfrac{p}{q}$ irréductible.\n\nEn élevant au carré, on obtient $p^2=2q^2$.\n\nOn montre que $p$ est pair, puis, en écrivant $p=2k$, que $q^2=2k^2$ : $q$ est pair aussi. Où est la contradiction ?\n\n```choix\n- $p$ et $q$ sont tous les deux pairs, alors que la fraction $\\dfrac{p}{q}$ est irréductible.\n- $q^2=2k^2$ est impossible.\n- $p$ est à la fois pair et impair.\n- $\\sqrt{2}$ n'est pas un nombre entier.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $p$ et $q$ sont pairs, on peut simplifier $\\dfrac{p}{q}$ par $2$.",
+					"Cela contredit l'hypothèse : la fraction était **irréductible**.",
+					"Donc $\\sqrt{2}$ n'est pas rationnel : il est irrationnel."
+				]
+			}
+		},
+		{
+			"statement": "On démontre par l'absurde que $\\sqrt{2}$ est irrationnel.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Supposons que $\\sqrt{2}=\\dfrac{p}{q}$, avec $p$ et $q$ entiers naturels non nuls et $\\dfrac{p}{q}$ irréductible.\n- Alors $p^2=2q^2$ : $p^2$ est pair, donc $p$ est pair.\n- On écrit $p=2k$ : $4k^2=2q^2$, donc $q^2=2k^2$ et $q$ est pair.\n- $p$ et $q$ sont pairs : $\\dfrac{p}{q}$ n'est pas irréductible, c'est une contradiction.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On suppose $\\sqrt{2}$ rationnel, on montre que $p$ puis $q$ sont pairs, ce qui contredit l'irréductibilité.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\sqrt{2}}$ est irrationnel."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2q²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2q^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2q",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2q"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4q²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["4q^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : q²/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{q^2}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "contraposée",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : réciproque",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p = 2q",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : divisible par 4",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "irréductible",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : q² = 2k² impossible",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pair et impair",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pas entier",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
