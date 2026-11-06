@@ -31,7 +31,7 @@ import {
 	judgePoints,
 	type ExpectedPoints
 } from './point';
-import { LineAuthorError, assertLines, isLineCheck, judgeLines } from './line';
+import { LineAuthorError, assertLines, bissectriceOf, isLineCheck, judgeLines } from './line';
 import { CircleAuthorError, assertCircles, isCircleCheck, judgeCircles } from './circle';
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
@@ -274,10 +274,15 @@ export function judgeConstruction(
 	if (objects === null) return { status: 'incorrect' };
 	if (objects.length === 0) return { status: 'empty' };
 	// Repère du rapporteur (lot 5) hors d'un angle à construire (ou d'un triangle à angle
-	// donné, lot 7) : sans son outil, réponse forgée
+	// donné, lot 7, ou d'une bissectrice, lot 9) : sans son outil, réponse forgée
 	const angle = allChecks.find((c) => c.kind === 'angle');
 	const protractor =
-		angle !== undefined || allChecks.some((c) => c.kind === 'triangle' && c.angles.length > 0);
+		angle !== undefined ||
+		allChecks.some(
+			(c) =>
+				(c.kind === 'triangle' && c.angles.length > 0) ||
+				(c.kind === 'droite' && bissectriceOf(c.expression) !== null)
+		);
 	if (!protractor && objects.some((o) => o.kind === 'repere')) return { status: 'incorrect' };
 	// Angle à construire (lot 5) : seul dans la figure (garanti par le parseur)
 	if (angle) {
