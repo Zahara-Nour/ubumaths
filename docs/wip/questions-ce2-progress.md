@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 10 écrit (PR des fichiers)._
+_Mis à jour le 2026-11-06, après #2426._
 
-- **État** : lots 1 à 9 en prod et publiés ; lot 10 (solides) : 7 modèles écrits, essayés en base locale.
-- **Prochaine action** : lot 10 écrit (§ 16, 7 modèles), PR des fichiers ; après merge, David lance
-  `create-questions --dir scripts/questions/ce2-10 --publier` ; puis migration nœud + tag, page à cocher ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
-- **En attente de David** : `create-questions --publier` du lot 10, après le merge.
+- **État** : lots 1 à 9 en prod et publiés ; lot 10 (solides) : 7 modèles mergés (#2426), pas encore en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce2-10 --publier` ; relevé MCP, ids
+  commités sur une branche ; puis migration nœud + tag, page à cocher ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
+- **En attente de David** : `create-questions --publier` du lot 10.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
   `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
   `publier-lot` (même en simulation) et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot10`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` (branche `feat/questions-ce2-lot10` mergée, à recréer pour
+  la migration).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -876,3 +877,4 @@ tag ne change aucune règle.
   (« qu'est-ce que $AE$ ? ») ; 04, « dessinée penchée » faux pour la face de devant → phrase selon la face ; 05, base
   carrée : plus de renvoi aux cotes (une seule cote de base).
 - Piège : la page à cocher ne dessine pas ` ```patron ` (06, 07) : David les joue dans l'aperçu admin.
+- 2026-11-06 : #2426 mergée (CI verte ; revue : aucune, contenu).
