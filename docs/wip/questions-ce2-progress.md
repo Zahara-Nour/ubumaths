@@ -6,14 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après la publication du lot 10._
+_Mis à jour le 2026-11-06, phase 0 du lot 11 écrite (§ 17)._
 
 - **État** : lots 1 à 10 en prod et publiés. Relevé MCP : **8 points CE2 sans modèle** — 001, 002 (`collection`
   `centaines:`, outil neuf) et les 6 de la classe D (086, 039, 043, 051, 065, 070 : manipulation).
-- **Prochaine action** : chantier à part `collection` `centaines:` (001, 002, matériel de 005) — PR #2420
-  (`feat(ubumark): collection, centaines et milliers`) ouverte par une autre session : la regarder d'abord ; puis
-  039 et 070 avec la case « figure » (comme CE1-072 / 074).
-- **En attente de David** : rien.
+- **Prochaine action** : lot 11 (§ 17 : 001, 002, matériel de 005, outil `centaines:` de #2420, en prod) — phase 0 à
+  valider, puis `lot-ce2-11.py` dans le worktree ; ensuite 039 et 070 avec la case « figure » (comme CE1-072 / 074).
+- **En attente de David** : les 3 questions du § 17.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
   `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
@@ -894,3 +893,34 @@ tag ne change aucune règle.
   posés en 5 s (11:49:53 à 11:49:58). Simulation puis `--publier` (David) ; relevé MCP : 7/7 `published`, CE2, rangés,
   un point chacun (061, 062 ×2, 063, 064, 066 ×2). **Lot 10 clos.** Reste au CE2 : 001, 002 (outil `centaines:`) et
   les 6 points de la classe D.
+
+## 17. Lot 11 — dénombrer et construire avec le matériel multibase (phase 0 proposée le 2026-11-06, à valider)
+
+Outil : `collection` `centaines:` / `milliers:` (#2420, **en prod depuis 0.75.0**) : plaques et gros cubes, grand bloc
+(plafonds milliers 9, centaines 40, dizaines 30, unités 100, valeur ≤ 9 999) ; `construire:` jusqu'à 9 999, réserve
+déduite de la valeur, seule la valeur jugée. Relevé MCP (2026-11-06) : 001 et 002 sans modèle, 005 en a un
+(`03-unites-non-canoniques`, texte seul). Un seul modèle publié utilise `collection` (`ded05f7c`, CP-002). Bornes
+(`cycle2.json`) : groupes de dix, cent ou mille ; plus de dix éléments d'une unité (17 u, 8 d, 32 c et 2 milliers).
+
+| Fichier                         | Point   | Variations                                                                                      |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------- |
+| `01-denombrer-centaines`        | CE2-001 | plaques, barres, cubes rangés (100 à 999) ; un rang vide (3 c 0 d 4 u) → « Combien de cubes ? » |
+| `02-denombrer-milliers`         | CE2-001 | gros cubes, plaques, barres, cubes (1 000 à 9 999) ; zéros intérieurs (2 m 0 c 5 d 0 u)         |
+| `03-denombrer-plus-de-dix`      | CE2-001 | un ou deux rangs au-delà de 9 (17 u, 8 d, 32 c, 2 m) ; corrigé par échanges (32 c = 3 m 2 c)    |
+| `04-construis-trois-chiffres`   | CE2-002 | `construire:` 100 à 999 ; avec un zéro (305, 470)                                               |
+| `05-construis-quatre-chiffres`  | CE2-002 | `construire:` 1 000 à 9 999 ; zéros intérieurs (3 045, 6 900)                                   |
+| `06-materiel-unites-numeration` | CE2-005 | collection dessinée → 4 cases « … milliers … centaines … dizaines … unités » ; puis le nombre   |
+
+Corrigé : la valeur de chaque rang puis la somme (2 000 + 3 200 + 80 + 17 = 5 297). Espaces dès 4 chiffres, comme le
+lot 2. Faux attendus : rangs confondus (plaques comptées comme barres), zéro intérieur oublié, rang au-delà de 9 recopié
+tel quel (« 2 32 8 17 »).
+
+Questions à David :
+
+1. **QCM « Quel dessin montre 4 635 ? »** (chiffres → matériel, 005) : piège connu du chantier `collection-centaines`,
+   un grand bloc dans un choix de QCM **imprimé** (3 cm) est illisible. Reco : pas de QCM dans ce lot (le sens
+   chiffres → matériel est couvert par 04-05) ; le piège reste dans `outils-manquants.md`.
+2. **Hauteur des dessins** : 32 plaques = 8 rangées de 4. Reco : au plus 20 centaines dans `03` (5 rangées), la
+   phrase du BO (32 c) restant dans le modèle texte `03-unites-non-canoniques` déjà publié.
+3. **Question d'accès** : personne ne lit rien de plus (brouillons neufs ; la migration nœud + tag ne change aucune
+   règle).
