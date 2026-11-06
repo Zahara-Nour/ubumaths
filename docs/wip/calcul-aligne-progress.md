@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, PR « calcul centré » ouverte._
+_Mis à jour le 2026-11-06, après #2422._
 
-- **État** : #2410 mergée ; essai de David (2026-11-06) → calcul **centré** (`array{rcl}`) sur `fix/calcul-aligne-relations`, PR ouverte ; rien en prod tant que David ne lance pas `deploy:prod` · **Prochaine action** : CI verte → merge ; puis PR à part « éditeur inactif plusieurs secondes » (voir Journal 2026-11-06) · **En attente de David** : essai du calcul centré (5176) ; bouton = 1 ligne (fait) ou 2 vides, toujours pas tranché · **Pièges en cours** : voir « Pièges » · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` · `fix/calcul-aligne-relations` (serveur de test 5176)
+- **État** : #2410 puis #2422 mergées (calcul **centré** `array{rcl}`, revue traitée) ; rien en prod tant que David ne lance pas `deploy:prod` · **Prochaine action** : PR à part « éditeur inactif plusieurs secondes » (état « chargement » visible + MathLive chargé plus tôt, accord de David le 2026-11-06 — voir Journal) · **En attente de David** : essai du calcul centré (5176) ; bouton = 1 ligne (fait) ou 2 vides, pas tranché ; regarder ou non le cahier de texte de la démo sans formules · **Pièges en cours** : voir « Pièges » · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` sur `fix/calcul-aligne-relations` (mergée, distante supprimée) — gardé pour le serveur de test 5176 ; la PR suivante y part d'une nouvelle branche depuis `origin/main`
 
 ## Décisions de David (2026-11-06)
 
