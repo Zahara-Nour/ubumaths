@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, code écrit, PR en cours._
+_Mis à jour le 2026-11-06, après #2420 — chantier clos, versé dans `docs/systeme/ubumark.md`._
 
-- **État** : code et tests faits (parseur, scène, construire, PDF, écran), rendu vérifié dans l'aperçu admin local · **Prochaine action** : PR, revue `code-reviewer`, CI, merge · **En attente de David** : rien · **Pièges en cours** : un grand bloc dans un choix de QCM (3 cm) sera très petit — non traité, à voir si un modèle le demande · **Worktree / branche** : `../ubumaths-wt-collection-centaines`, `feat/collection-centaines`
+- **État** : livré (#2420, mergée ; en prod au prochain `deploy:prod`) · **Prochaine action** : aucune ici ; les modèles CE1-001 à 003, CE2-001, 002, 005 reviennent aux sessions `questions-ce1` / `questions-ce2` · **En attente de David** : vérification à l'œil (`verifications-manuelles.md`) · **Pièges en cours** : grand bloc dans un choix de QCM imprimé (3 cm) illisible, non traité · **Worktree / branche** : supprimés
 
 ---
 
 ## Contexte
 
-Ligne n° 5 de [`outils-manquants.md`](outils-manquants.md). Points servis : CE1-001, 002, 003 ;
+Ligne n° 5 de [`outils-manquants.md`](../../wip/outils-manquants.md). Points servis : CE1-001, 002, 003 ;
 CE2-001, 002, et la partie « matériel » de 005 (journaux `questions-ce1` § 3 C, `questions-ce2`
 § 3 C). Aujourd'hui, `centaines:` est une clé réservée : le parseur la refuse avec le message
 « pas encore disponible » (`collection-parser.ts`).
@@ -107,3 +107,4 @@ déduite de la valeur ; Q4 plafonds proposés.
   grand bloc au PDF bornée à 20 cm (jusqu'à 47 cm sinon, bloc insécable) ; cadre de `construire:` carré
   (12 × 12 cm) pour un grand bloc. Laissé, limite connue : grand bloc dans un choix de QCM imprimé
   (`taille: 3cm` forcée, cube < 1 mm) ; coins vides de la boîte de toucher d'un gros cube (sans effet).
+- 2026-11-06 : #2420 mergée (CI verte sur `15e3f3e`) ; journal archivé, doc versée dans `ubumark.md`.

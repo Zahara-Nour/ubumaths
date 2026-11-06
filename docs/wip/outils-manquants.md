@@ -66,7 +66,7 @@ Tranchés hors appli : 5-011, 040, 130, 065, 042, 043, 059, 075, 084 (David, `qu
 
 ## 4. Livré (pour mémoire)
 
-Plaques de cent et gros cubes de mille du bloc ` ```collection ` (`centaines:`, `milliers:`, et `construire:` jusqu'à 9 999 ; chantier [`collection-centaines`](collection-centaines-progress.md), PR à venir ; ex-ligne 5 du § 1), Contrôles de la figure à compléter `symetrique`, `point`, `droite`, `cercle`, `triangle`, `angle`, `mesure` et rapporteur posé, à poser ou à lire (chantier `controles-figure`, lots 1 à 8, #2359 ; ex-ligne 4 du § 1), droite graduée à placer (` ```line placer:`), horloge à placer et trotteuse (#2179), barres à
+Plaques de cent et gros cubes de mille du bloc ` ```collection ` (`centaines:`, `milliers:`, et `construire:` jusqu'à 9 999 ; chantier [`collection-centaines`](../archive/wip/collection-centaines-progress.md), #2420 ; ex-ligne 5 du § 1), Contrôles de la figure à compléter `symetrique`, `point`, `droite`, `cercle`, `triangle`, `angle`, `mesure` et rapporteur posé, à poser ou à lire (chantier `controles-figure`, lots 1 à 8, #2359 ; ex-ligne 4 du § 1), droite graduée à placer (` ```line placer:`), horloge à placer et trotteuse (#2179), barres à
 construire et échelle à choisir, boîte à moustaches à construire, étiquettes à ranger
 (` ```ranger `), figure à colorier (` ```partage colorier:`), cubes `dessiner:` / `retrouver:`,
 patron `designer:` / `completer:`, collection et monnaie `construire:`, opération posée à

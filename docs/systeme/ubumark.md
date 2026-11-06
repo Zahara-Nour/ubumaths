@@ -1209,7 +1209,7 @@ de `nodes/scene-marks.svelte.ts`, commune aux deux blocs. Nom accessible
 « Collection d'objets », **jamais le nombre**. PDF en Typst natif, noir sur blanc. Dans un choix d'une
 case choix : `--collection-taille: 3cm` (comme l'horloge) ; série figée : `withChoiceCollectionSize`.
 
-**Centaines et milliers** (chantier [collection-centaines](../wip/collection-centaines-progress.md),
+**Centaines et milliers** (chantier [collection-centaines](../archive/wip/collection-centaines-progress.md),
 CE1-001 à 003, CE2-001, 002, 005) — `collection-centaines.test.ts` : `centaines:` (plaques de cent) et
 `milliers:` (gros cubes de mille), écrites comme `dizaines:`, dans n'importe quel ordre. Un bloc qui en
 écrit une est **grand** (`spec.large`) : plafonds `COLLECTION_LARGE_LIMITS` (milliers 9, centaines 40,
