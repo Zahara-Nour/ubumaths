@@ -86,12 +86,10 @@
 	import { parseMarkdown } from '$lib/ubumark/parser';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
-	// Import statique : MathLive arrive avec le composant, l'éditeur peut se créer
-	// dès le montage, sans `await import` (qui ne gagnait rien et masquait les erreurs).
 	// Import NU : côté serveur, `mathlive` résout vers `mathlive-ssr`, qui n'exporte pas
-	// `MathfieldElement` — un import nommé casserait le rendu serveur en build.
+	// `MathfieldElement` — un import nommé casserait le rendu serveur en build (garde :
+	// `__tests__/mathlive-imports-ssr.test.ts`). La classe est prise dans `onMount`.
 	import 'mathlive';
-	import type { MathfieldElement } from 'mathlive';
 
 	// Shared configuration imports
 	import {
@@ -506,77 +504,86 @@
 	 */
 	onMount(() => {
 		if (!editorElement) return;
+		// Démonté avant la fin de l'import : ne pas créer un éditeur orphelin
+		let demonte = false;
 
-		try {
-			// Disable MathLive sounds globally (client-side only). La classe est lue dans
-			// le registre du navigateur, où `import 'mathlive'` l'a déclarée.
-			const champMath = customElements.get('math-field') as typeof MathfieldElement | undefined;
-			if (champMath) champMath.soundsDirectory = null;
+		// Création après l'import de MathLive, comme toujours : la créer dès le montage
+		// changeait le moment où l'éditeur apparaît (essayé, des tests cliquaient pendant
+		// que la mise en page bougeait encore).
+		(async () => {
+			try {
+				// Disable MathLive sounds globally (client-side only)
+				const { MathfieldElement } = await import('mathlive');
+				if (demonte) return;
+				MathfieldElement.soundsDirectory = null;
 
-			const extensions = createEditorExtensions({ headingLevels: 6 });
-			const editorProps = getEditorProps({ minHeight });
+				const extensions = createEditorExtensions({ headingLevels: 6 });
+				const editorProps = getEditorProps({ minHeight });
 
-			// Prevent reactive updates during initialization
-			isUpdatingFromProp = true;
+				// Prevent reactive updates during initialization
+				isUpdatingFromProp = true;
 
-			// TipTap accepts both HTML string and JSON object for content
-			// Priority: markdownValue > jsonValue (if object) > htmlValue (if string) > empty
-			const initialContent =
-				mode === 'form'
-					? markdownValue !== undefined
-						? markdownToTipTap(markdownValue, {
-								genericFunctions: genericFunctions ?? undefined
-							})
-						: jsonValue && typeof jsonValue === 'object'
-							? jsonValue
-							: htmlValue || ''
-					: '';
+				// TipTap accepts both HTML string and JSON object for content
+				// Priority: markdownValue > jsonValue (if object) > htmlValue (if string) > empty
+				const initialContent =
+					mode === 'form'
+						? markdownValue !== undefined
+							? markdownToTipTap(markdownValue, {
+									genericFunctions: genericFunctions ?? undefined
+								})
+							: jsonValue && typeof jsonValue === 'object'
+								? jsonValue
+								: htmlValue || ''
+						: '';
 
-			editor = new Editor({
-				element: editorElement,
-				extensions,
-				content: initialContent,
-				editorProps,
-				editable: !disabled,
-				onCreate: () => {
-					// TipTap signals it's fully initialized - now safe to track user changes
-					hasInitialized = true;
-					isUpdatingFromProp = false;
-					updateFormattingState();
-				},
-				onUpdate: ({ editor: ed }) => {
-					if (isUpdatingFromProp || !hasInitialized) return;
+				editor = new Editor({
+					element: editorElement,
+					extensions,
+					content: initialContent,
+					editorProps,
+					editable: !disabled,
+					onCreate: () => {
+						// TipTap signals it's fully initialized - now safe to track user changes
+						hasInitialized = true;
+						isUpdatingFromProp = false;
+						updateFormattingState();
+					},
+					onUpdate: ({ editor: ed }) => {
+						if (isUpdatingFromProp || !hasInitialized) return;
 
-					// Update bound values in form mode
-					if (mode === 'form') {
-						htmlValue = ed.getHTML();
-						if (jsonValue !== undefined) {
-							jsonValue = ed.getJSON();
+						// Update bound values in form mode
+						if (mode === 'form') {
+							htmlValue = ed.getHTML();
+							if (jsonValue !== undefined) {
+								jsonValue = ed.getJSON();
+							}
+							// Update markdown binding (debounced) - only if bound
+							if (markdownValue !== undefined) {
+								updateMarkdownDebounced();
+							}
 						}
-						// Update markdown binding (debounced) - only if bound
-						if (markdownValue !== undefined) {
-							updateMarkdownDebounced();
-						}
+						updateFormattingState();
+						updatePreviewDebounced();
+
+						// Notify parent of user-initiated change
+						onchange?.();
+					},
+					onSelectionUpdate: () => {
+						updateFormattingState();
 					}
-					updateFormattingState();
-					updatePreviewDebounced();
-
-					// Notify parent of user-initiated change
-					onchange?.();
-				},
-				onSelectionUpdate: () => {
-					updateFormattingState();
-				}
-			});
-			chargement = 'pret';
-		} catch (erreur) {
-			// Contenu illisible, extension qui lève… : l'éditeur ne peut pas naître
-			console.error('[RichTextEditor] création de l’éditeur impossible', erreur);
-			isUpdatingFromProp = false;
-			chargement = 'erreur';
-		}
+				});
+				chargement = 'pret';
+			} catch (erreur) {
+				// Import de MathLive en échec, contenu illisible, extension qui lève… :
+				// l'éditeur ne peut pas naître — le dire plutôt qu'un éditeur muet
+				console.error('[RichTextEditor] création de l’éditeur impossible', erreur);
+				isUpdatingFromProp = false;
+				if (!demonte) chargement = 'erreur';
+			}
+		})();
 
 		return () => {
+			demonte = true;
 			if (previewTimeout) {
 				clearTimeout(previewTimeout);
 				previewTimeout = null;
