@@ -28,8 +28,8 @@
 		SOLIDE_DOT_RADIUS,
 		SOLIDE_LABEL_SIZE,
 		SOLIDE_SUB_SCALE,
-		SOLIDE_THICK_STROKE,
 		buildSolideScene,
+		solideLineStroke,
 		solideLabel
 	} from '$lib/ubumark/utils/espace-solides';
 	import { readAuthoringErrors } from '../authoring-errors';
@@ -100,7 +100,7 @@
 					class="solide-trait"
 					class:solide-cache={line.dashed}
 					points={pointsOf(line.points)}
-					stroke-width={line.thick ? SOLIDE_THICK_STROKE : ESPACE_STROKE}
+					stroke-width={solideLineStroke(line)}
 					stroke-dasharray={line.dashed ? SOLIDE_DASH.join(' ') : undefined}
 				/>
 			{/each}

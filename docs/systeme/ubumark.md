@@ -960,7 +960,10 @@ arête cachée (tirets) quand toutes ses faces tournent le dos à l'œil (`TOWAR
 cylindre / cône / boule → ellipses **à plat** (`ELLIPSE_RATIO` 0,3, comme le CP), moitié arrière en tirets,
 génératrices du cône **tangentes** (`asin(ry / h)`) ; nom d'un sommet posé dans le plus grand angle libre
 entre ses arêtes (`freeDirection`), un centre à gauche ; cotes à la française, hauteurs (pyramide, cône,
-prisme isocèle) et rayons intérieurs en tirets. Ordre de dessin : face marquée (gris translucide), tirets,
+prisme isocèle) et rayons intérieurs en tirets ; cote de la hauteur d'une **pyramide** renvoyée hors du
+solide (`side: 'renvoi'`, `leaderCote`) : trait fin (`thin`, `SOLIDE_LEADER_STROKE`, épaisseur commune
+`solideLineStroke`) du milieu de la hauteur vers la droite, texte au bout, première hauteur libre de
+`LEADER_RISES` (au milieu, une arête latérale traversait le texte ; `cote-hauteur-pyramide.test.ts`). Ordre de dessin : face marquée (gris translucide), tirets,
 traits, arêtes marquées (épaisses), points, étiquettes. Nom accessible (`solideLabel`) : « Solide en
 perspective cavalière » + marques et cotes, **jamais le nom du solide** (réponse de « nommer le solide »).
 PDF : Typst natif (`curve`, `dash`, `polygon` gris). Fiche du catalogue : `src/lib/block-catalog/solide.ts`.

@@ -29,7 +29,7 @@
  */
 
 import type { SolideForm, SolidePoint, SolideSpec } from '../types/espace';
-import type { EspacePoint } from './espace-scene';
+import { ESPACE_STROKE, type EspacePoint } from './espace-scene';
 
 // ============================================================================
 // TYPES
@@ -41,6 +41,8 @@ export interface SolideLine {
 	dashed: boolean;
 	/** Arête marquée (`marquer: arete AE`) */
 	thick: boolean;
+	/** Ligne de renvoi d'une cote : trait fin, qu'on ne prend pas pour une arête */
+	thin?: boolean;
 }
 
 /**
@@ -131,6 +133,13 @@ export const SOLIDE_SIZE = 4;
 /** Épaisseur d'une arête marquée, en cm (trait courant : `ESPACE_STROKE`) */
 export const SOLIDE_THICK_STROKE = 0.07;
 
+/** Épaisseur d'une ligne de renvoi (cote de la hauteur d'une pyramide), en cm */
+export const SOLIDE_LEADER_STROKE = 0.018;
+
+/** Épaisseur d'un trait, la même à l'écran et au PDF */
+export const solideLineStroke = (line: SolideLine) =>
+	line.thick ? SOLIDE_THICK_STROKE : line.thin ? SOLIDE_LEADER_STROKE : ESPACE_STROKE;
+
 /** Tirets d'une arête cachée, en cm (trait, blanc) */
 export const SOLIDE_DASH = [0.12, 0.08] as const;
 
@@ -176,6 +185,15 @@ const LABEL_GAP = 0.28;
 
 /** Distance d'une cote à son trait, en cm */
 const COTE_GAP = 0.14;
+
+/** Ligne de renvoi : ce qu'elle dépasse à droite du solide, en cm */
+const LEADER_RUN = 0.3;
+
+/**
+ * Hauteurs essayées pour le bout du renvoi, par rapport au milieu de la hauteur
+ * (cm, vers le bas) : un peu au-dessus d'abord, puis en s'éloignant
+ */
+const LEADER_RISES = [-0.5, -0.3, -0.7, -0.1, -0.9, 0.1, -1.1, 0.3, -1.3, 0.5];
 
 /** Largeur estimée d'un caractère d'étiquette, en cm (boîte du dessin) */
 const CHAR_WIDTH = 0.21;
@@ -420,11 +438,14 @@ export const frenchNumber = (n: number) => String(Number(n.toFixed(4))).replace(
 // SCÈNE
 // ============================================================================
 
-/** Une cote à poser, en repère de calcul ; `side` : côté où écrire le texte */
+/**
+ * Une cote à poser, en repère de calcul ; `side` : côté où écrire le texte ;
+ * `renvoi` : hors du solide, à droite, relié à `at` par un trait fin
+ */
 interface Cote {
 	at: EspacePoint;
 	value: number;
-	side: 'dessous' | 'droite' | 'gauche' | 'dessus' | 'bas-droite' | 'haut-gauche';
+	side: 'dessous' | 'droite' | 'gauche' | 'dessus' | 'bas-droite' | 'haut-gauche' | 'renvoi';
 }
 
 /** Ce que la géométrie d'une forme donne, avant mise à l'échelle (repère de calcul) */
@@ -480,13 +501,23 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 		const [d0, d1, d2] = spec.dims;
 		const v = vertices;
 		/**
-		 * Hauteur en tirets ; sa cote à la fraction `along` du pied vers le sommet :
-		 * au milieu pour une pyramide, au tiers pour un prisme (sous l'arête cachée du fond)
+		 * Hauteur d'un prisme en tirets ; sa cote au tiers, sous l'arête cachée du fond
 		 */
-		const height = (apex: EspacePoint, foot: EspacePoint, value: number, along = 0.5) => {
+		const height = (apex: EspacePoint, foot: EspacePoint, value: number) => {
 			lines.push(segment(apex, foot, true));
-			const at = { x: foot.x + (apex.x - foot.x) * along, y: foot.y + (apex.y - foot.y) * along };
+			const at = { x: foot.x + (apex.x - foot.x) / 3, y: foot.y + (apex.y - foot.y) / 3 };
 			cotes.push({ at, value, side: 'droite' });
+		};
+		/**
+		 * Hauteur d'une pyramide en tirets, du sommet au centre de la base ; sa cote
+		 * renvoyée hors du solide depuis le milieu : dedans, une arête latérale
+		 * traversait le texte (n° 17 de `outils-manquants.md`)
+		 */
+		const pyramidHeight = (value: number) => {
+			const apex = v[0];
+			const foot = project({ ...centroid(points3.slice(1)), y: 0 });
+			lines.push(segment(apex, foot, true));
+			cotes.push({ at: middle(apex, foot), value, side: 'renvoi' });
 		};
 		switch (spec.form) {
 			case 'cube':
@@ -500,7 +531,7 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 				break;
 			case 'prisme-triangle':
 				cotes.push({ at: middle(v[0], v[1]), value: d0, side: 'dessous' });
-				height(v[2], middle(v[0], v[1]), d1, 1 / 3);
+				height(v[2], middle(v[0], v[1]), d1);
 				cotes.push({ at: middle(v[1], v[4]), value: d2, side: 'bas-droite' });
 				break;
 			case 'prisme-triangle-rectangle':
@@ -510,18 +541,18 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 				break;
 			case 'pyramide-carree':
 				cotes.push({ at: middle(v[1], v[2]), value: d0, side: 'dessous' });
-				height(v[0], project({ ...centroid(points3.slice(1)), y: 0 }), d1);
+				pyramidHeight(d1);
 				break;
 			case 'pyramide-triangle':
 				// B devant : [AB] est raide, le texte en dessous serait traversé ; [BC] monte
 				// vers le fond comme la fuyante du pavé
 				cotes.push({ at: middle(v[2], v[3]), value: d0, side: 'bas-droite' });
-				height(v[0], project({ ...centroid(points3.slice(1)), y: 0 }), d1);
+				pyramidHeight(d1);
 				break;
 			case 'pyramide-rectangle':
 				cotes.push({ at: middle(v[1], v[2]), value: d0, side: 'dessous' });
 				cotes.push({ at: middle(v[2], v[3]), value: d1, side: 'bas-droite' });
-				height(v[0], project({ ...centroid(points3.slice(1)), y: 0 }), d2);
+				pyramidHeight(d2);
 				break;
 		}
 	}
@@ -885,6 +916,42 @@ function firstFree(
 	);
 }
 
+/**
+ * Cote renvoyée hors du solide : un trait fin de `from` (milieu de la hauteur) à
+ * droite de tous les sommets, le texte au bout ; le premier bout (`LEADER_RISES`)
+ * dont le texte ne touche ni un trait ni une étiquette, et dont le trait ne
+ * traverse aucune étiquette ; le premier sinon
+ */
+function leaderCote(
+	from: EspacePoint,
+	text: string,
+	vertices: EspacePoint[],
+	lines: SolideLine[],
+	labels: SolideLabel[]
+): { line: SolideLine; label: SolideLabel } {
+	const right = Math.max(...vertices.map((v) => v.x));
+	const halfWidth = (text.length * CHAR_WIDTH) / 2;
+	const segments = lines.flatMap((l) =>
+		l.points.slice(1).map((p, i): [EspacePoint, EspacePoint] => [l.points[i], p])
+	);
+	const options = LEADER_RISES.map((rise) => {
+		const end = { x: right + LEADER_RUN, y: from.y + rise };
+		return {
+			line: { points: [from, end], dashed: false, thick: false, thin: true },
+			label: { at: { x: end.x + COTE_GAP / 2 + halfWidth, y: end.y }, text }
+		};
+	});
+	const clear = (o: (typeof options)[number]) => {
+		const box = labelBox(o.label);
+		const [a, b] = o.line.points;
+		return (
+			!labels.some((l) => overlaps(o.label, l) || segmentHitsBox(a, b, labelBox(l))) &&
+			!segments.some(([p, q]) => segmentHitsBox(p, q, box))
+		);
+	};
+	return options.find(clear) ?? options[0];
+}
+
 /** Le dessin d'un solide */
 export function buildSolideScene(spec: SolideSpec): SolideScene {
 	const draft = solideTopology(spec.form).curved ? roundDraft(spec) : polyhedronDraft(spec);
@@ -946,6 +1013,12 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		const halfWidth = (text.length * CHAR_WIDTH) / 2;
 		const halfHeight = SOLIDE_LABEL_SIZE / 2;
 		const p = toScreen(cote.at);
+		if (cote.side === 'renvoi') {
+			const leader = leaderCote(p, text, vertices, lines, labels);
+			lines.push(leader.line);
+			labels.push(leader.label);
+			continue;
+		}
 		const shift = {
 			dessous: { x: 0, y: COTE_GAP + halfHeight },
 			dessus: { x: 0, y: -(COTE_GAP + halfHeight) },
