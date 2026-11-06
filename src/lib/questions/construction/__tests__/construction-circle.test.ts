@@ -352,14 +352,15 @@ describe('vérification cercle : erreurs d’auteur', () => {
 		expect(() => assertChecks(source)).toThrow(/centre du cercle est hors de la fenêtre/);
 	});
 
-	it('moins de deux médiatrices constructibles dans la fenêtre', () => {
-		// Presque équilatéral, rayon 3,9 : les arcs de rayon un côté se coupent hors de la fenêtre
+	it('arcs de rayon un côté hors de la fenêtre : admis (lot 9, § 25)', () => {
+		// Presque équilatéral, rayon 3,9 : les arcs de rayon un côté se coupent hors de la
+		// fenêtre, mais des cercles égaux plus petits se coupent dedans (exception 2 du § 15)
 		const source = figure('cercle c = cercle_circonscrit(A, B, C)', [
 			'A = point(1.623, 2.05)',
 			'B = point(8.377, 2.05)',
 			'C = point(5, 7.9)'
 		]);
-		expect(() => assertChecks(source)).toThrow(/moins de deux médiatrices/);
+		expect(() => assertChecks(source)).not.toThrow();
 	});
 
 	it('centre déjà nommé dans la figure : rien à construire (revue)', () => {
@@ -395,13 +396,14 @@ describe('centre du cercle circonscrit seul (décision 1)', () => {
 		});
 	});
 
-	it('moins de deux médiatrices constructibles : refusé', () => {
+	it('arcs de rayon un côté hors de la fenêtre : admis (lot 9, § 25)', () => {
+		// Même triangle que pour le cercle : les médiatrices passent par le centre, dans la fenêtre
 		const source = figure('point O = centre(cercle_circonscrit(A, B, C))', [
 			'A = point(1.623, 2.05)',
 			'B = point(8.377, 2.05)',
 			'C = point(5, 7.9)'
 		]);
-		expect(() => assertChecks(source)).toThrow(/moins de deux médiatrices/);
+		expect(() => assertChecks(source)).not.toThrow();
 	});
 });
 

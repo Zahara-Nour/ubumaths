@@ -677,9 +677,10 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    expression : « Ta droite n'est pas à sa place. ». Un point ou un segment dans la réponse : faux, sans
    message. Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas une droite, droite
    hors de la fenêtre, deux vérifications pour la même droite ; sur quadrillage, droite sans deux nœuds
-   dans la fenêtre ; sur papier uni, autre chose qu'une médiatrice, A ou B invisible, ou cercles de
-   centres A et B de rayon AB qui se coupent hors de la fenêtre (`mediatriceSupportError`, aussi pour
-   `milieu(A, B)` : l'élève n'a pas de report de longueur). Une `droite` ne se mêle à aucune autre
+   dans la fenêtre ; sur papier uni, autre chose qu'une médiatrice, A ou B invisible, ou médiatrice
+   qui n'a pas 2 unités dans la fenêtre (`mediatriceSupportError`, aussi pour `milieu(A, B)` : l'élève y
+   croise deux cercles de même rayon, quel qu'il soit ; avant le lot 9, les cercles de rayon AB devaient
+   s'y couper). Une `droite` ne se mêle à aucune autre
    vérification, et sa palette ne prend que règle, équerre, compas (parseur : un point ou un segment
    tracé ferait une réponse forgée). Palette : règle, équerre, compas, avec ou sans quadrillage
    (`PLAIN_PAPER_TOOLS.droite`) ; sur quadrillage, tous ses touchers vont aux nœuds (l'équerre choisit

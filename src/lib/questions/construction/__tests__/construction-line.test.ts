@@ -339,14 +339,49 @@ describe('vérification droite : erreurs d’auteur', () => {
 		expect(() => assertChecks(source)).toThrow(/A n’est pas visible/);
 	});
 
-	it('papier uni : cercles de rayon AB qui se coupent hors de la fenêtre (revue)', () => {
-		// A(2 ; 3), B(7 ; 5) dans 0..10 × 0..8 : intersections (2,77 ; 8,33) et (6,23 ; −0,33)
+	it('papier uni : cercles de rayon AB qui se coupent hors de la fenêtre → admis (lot 9, § 25)', () => {
+		// A(2 ; 3), B(7 ; 5) dans 0..10 × 0..8 : les cercles de rayon AB se coupent en
+		// (2,77 ; 8,33) et (6,23 ; −0,33), hors de la fenêtre ; deux cercles égaux d'un
+		// rayon plus petit se coupent dedans (exception 2 du § 15) : la médiatrice se construit
 		const source = figure('droite m = mediatrice(A, B)', [
 			'A = point(2, 3)',
 			'B = point(7, 5)',
 			's = segment(A, B)'
 		]);
-		expect(() => assertChecks(source)).toThrow(/se coupent hors de la fenêtre/);
+		expect(() => assertChecks(source)).not.toThrow();
+	});
+
+	it('papier uni : cercles égaux d’un rayon plus petit que AB → juste (lot 9, § 25)', () => {
+		// Rayon 4 (< AB ≈ 5,39) : croisements M ± h·n, M(4,5 ; 4), h = √(16 − AB²/4), n ⟂ [AB]
+		const source = figure('droite m = mediatrice(A, B)', [
+			'A = point(2, 3)',
+			'B = point(7, 5)',
+			's = segment(A, B)'
+		]);
+		const middle = { x: 4.5, y: 4 };
+		const half = Math.sqrt(29) / 2;
+		const h = Math.sqrt(16 - half * half);
+		const n = { x: -2 / Math.sqrt(29), y: 5 / Math.sqrt(29) };
+		const top = { x: middle.x + h * n.x, y: middle.y + h * n.y };
+		const bottom = { x: middle.x - h * n.x, y: middle.y - h * n.y };
+		const answer = [
+			cercle(2, 3, 2, 7),
+			cercle(7, 5, 7, 9),
+			droite(top.x, top.y, bottom.x, bottom.y)
+		];
+		expect(judge(source, answer)).toEqual({ status: 'correct' });
+	});
+
+	it('papier uni : médiatrice qui n’a pas 2 unités dans la fenêtre → refusé (lot 9, § 25)', () => {
+		// A(9 ; 7), B(9,8 ; 7,8) : la médiatrice x + y = 16,8 coupe le coin de (8,8 ; 8) à (10 ; 6,8)
+		const source = figure('droite m = mediatrice(A, B)', [
+			'A = point(9, 7)',
+			'B = point(9.8, 7.8)',
+			's = segment(A, B)'
+		]);
+		expect(() => assertChecks(source)).toThrow(
+			/la médiatrice de \[AB\] n’a pas 2 unités dans la fenêtre/
+		);
 	});
 
 	it('papier uni : seulement une médiatrice (revue : point de passage invisible)', () => {
@@ -384,9 +419,14 @@ describe('milieu construit sur papier uni (décision 3)', () => {
 		expect(judge(MILIEU, answer)).toEqual({ status: 'correct' });
 	});
 
-	it('cercles de rayon AB hors de la fenêtre : refusé', () => {
+	it('cercles de rayon AB hors de la fenêtre : admis (lot 9, § 25)', () => {
 		const source = figure('point I = milieu(A, B)', ['A = point(2, 3)', 'B = point(7, 5)']);
-		expect(() => assertChecks(source)).toThrow(/se coupent hors de la fenêtre/);
+		expect(() => assertChecks(source)).not.toThrow();
+	});
+
+	it('médiatrice qui n’a pas 2 unités dans la fenêtre : refusé (lot 9, § 25)', () => {
+		const source = figure('point I = milieu(A, B)', ['A = point(9, 7)', 'B = point(9.8, 7.8)']);
+		expect(() => assertChecks(source)).toThrow(/n’a pas 2 unités dans la fenêtre/);
 	});
 
 	it('point posé à l’œil pile au milieu → faux', () => {

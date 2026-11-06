@@ -93,8 +93,8 @@ const sidesOf = ([a, b, c]: Triple): [string, string][] => [
 
 /**
  * Papier uni : le centre du cercle circonscrit se construit-il dans la fenêtre ?
- * Sommets visibles, et au moins deux médiatrices constructibles au compas de
- * rayon le côté (`mediatriceSupportError`) ; sert aussi au centre seul
+ * Sommets visibles, et au moins deux médiatrices constructibles dans la fenêtre
+ * (`mediatriceSupportError`) ; sert aussi au centre seul
  * (`point.ts`). Le message, ou null.
  */
 export function circumcenterSupportError(
@@ -106,7 +106,7 @@ export function circumcenterSupportError(
 	if (hidden) return `${hidden} n’est pas visible (l’élève ne peut pas y piquer le compas)`;
 	const built = sidesOf(names).filter((side) => !mediatriceSupportError(side, points, shapes));
 	if (built.length >= 2) return null;
-	return `moins de deux médiatrices du triangle ${names.join('')} se construisent dans la fenêtre (cercles de rayon un côté qui se coupent hors de la fenêtre) : agrandir la fenêtre ou rapprocher les sommets`;
+	return `moins de deux médiatrices du triangle ${names.join('')} se construisent dans la fenêtre (moins de 2 unités de médiatrice dans la fenêtre) : agrandir la fenêtre ou rapprocher les sommets`;
 }
 
 function expectedOf(check: CircleCheck, expected: ExpectedPoints | undefined): ExpectedCircle {

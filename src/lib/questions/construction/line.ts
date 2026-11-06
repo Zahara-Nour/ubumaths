@@ -27,7 +27,6 @@ import type { DrawnLine, DrawnObject } from './answer';
 import {
 	basePointsOf,
 	constructionOf,
-	isInFrame,
 	isStraight,
 	lineCrossesFrame,
 	type Trait
@@ -119,12 +118,37 @@ function gridNodesOn(line: ExpectedLine, shapes: FigureShapes): number {
 	return found;
 }
 
+/** Longueur minimale de la médiatrice dans la fenêtre (unités de la figure), comme un côté d'angle (lot 5) */
+const MEDIATRICE_MIN_ROOM = 2;
+
+/** Longueur de la droite passant par `p`, de direction unitaire `d`, dans la fenêtre (Liang-Barsky) */
+function roomInFrame(p: Position, d: Position, frame: NonNullable<FigureShapes['window']>): number {
+	let tMin = -Infinity;
+	let tMax = Infinity;
+	const sides: [number, number][] = [
+		[-d.x, p.x - frame.xMin],
+		[d.x, frame.xMax - p.x],
+		[-d.y, p.y - frame.yMin],
+		[d.y, frame.yMax - p.y]
+	];
+	for (const [direction, room] of sides) {
+		if (direction === 0) {
+			if (room < 0) return 0;
+			continue;
+		}
+		const t = room / direction;
+		if (direction < 0) tMin = Math.max(tMin, t);
+		else tMax = Math.min(tMax, t);
+	}
+	return Math.max(0, tMax - tMin);
+}
+
 /**
  * Papier uni : la médiatrice de [AB] se construit-elle dans la fenêtre ? A et B
- * visibles (le compas s'y pique), et les deux intersections des cercles de
- * centres A et B de rayon AB dans la fenêtre (l'élève n'a pas de report de
- * longueur : son rayon est AB) ; sert aussi au milieu (`point.ts`). Le message,
- * ou null.
+ * visibles (le compas s'y pique), et au moins 2 unités de médiatrice dans la
+ * fenêtre : l'élève y trouve deux croisements de cercles égaux, de n'importe quel
+ * rayon (exception 2 du § 15 ; lot 9, § 25 : plus de cercles de rayon AB exigés).
+ * Sert aussi au milieu (`point.ts`) et au cercle circonscrit. Le message, ou null.
  */
 export function mediatriceSupportError(
 	names: [string, string],
@@ -137,16 +161,13 @@ export function mediatriceSupportError(
 	const b = points.get(names[1]);
 	if (!a || !b || !shapes.window) return null;
 	const u = sub(b, a);
-	const half = Math.sqrt(3) / 2;
+	const length = Math.hypot(u.x, u.y);
+	if (length === 0) return null;
 	const middle = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-	const crossings = [1, -1].map((side) => ({
-		x: middle.x - side * half * u.y,
-		y: middle.y + side * half * u.x
-	}));
-	if (crossings.every((p) => isInFrame(p, shapes.window as NonNullable<FigureShapes['window']>))) {
-		return null;
-	}
-	return `les cercles de centres ${names[0]} et ${names[1]} de rayon ${names[0]}${names[1]} se coupent hors de la fenêtre (l’élève ne peut pas construire la médiatrice) : agrandir la fenêtre ou rapprocher ${names[0]} et ${names[1]}`;
+	const normal = { x: -u.y / length, y: u.x / length };
+	if (roomInFrame(middle, normal, shapes.window) >= MEDIATRICE_MIN_ROOM) return null;
+	const [p, q] = names;
+	return `la médiatrice de [${p}${q}] n’a pas ${MEDIATRICE_MIN_ROOM} unités dans la fenêtre (l’élève ne peut pas la construire) : agrandir la fenêtre ou déplacer ${p} et ${q}`;
 }
 
 /**
