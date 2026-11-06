@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2442._
+_Mis à jour le 2026-11-06, PR 2 ouverte._
 
-- **État** : PR 1 (#2435) et PR 1b (#2442, vidéos hors stockage → lien, YouTube compris) mergées, pas encore en prod.
-- **Prochaine action** : David : `deploy:prod` (PR 1 + 1b) → PR 2 = migration de conversion des 4 lignes (s'arrêter, montrer avant/après) → PR 3 = retrait lecture HTML (+ tests mineurs de la revue #2442) → PR 4 = énigmes.
-- **En attente de David** : `deploy:prod` (PR 1 + 1b).
-- **Pièges en cours** : cookies partagés sur `localhost` → tester sur `cahier.localhost:5178`, `eleve.localhost`, `public.localhost` ; Supabase local partagé, réinitialisé par d'autres sessions (recréer séance + jeton par l'API de service) ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed`.
-- **Worktree / branche** : aucun (worktree de la PR 1b retiré) ; PR 2 → nouveau worktree `../ubumaths-wt-cahier-ubumark` depuis `origin/main`.
+- **État** : PR 1 (#2435) et 1b (#2442) mergées, **pas en prod**. PR 2 (migration `20261106164230_cahier_texte_conversion_ubumark.sql`) écrite, testée en local (transaction annulée), en PR.
+- **Prochaine action** : merger la PR 2 (CI verte) ; **ne PAS lancer `db:migrate`** avant `deploy:prod` (l'ancien code lirait le markdown en HTML) → puis `db:migrate` sur feu vert de David (perte : les paragraphes vides) → PR 3 = retrait lecture HTML (+ tests mineurs de la revue #2442) → PR 4 = énigmes.
+- **En attente de David** : `deploy:prod` (PR 1 + 1b), puis go pour `db:migrate` de la PR 2.
+- **Pièges en cours** : la migration échoue (exprès) si une ligne HTML non convertible apparaît d'ici là → relire la prod juste avant `db:migrate` ; triggers `updated_at` coupés pendant la conversion ; cookies partagés sur `localhost` → `cahier.localhost:5178` ; Supabase local partagé ; job navigateur de la CI → `gh run rerun <run> --failed`.
+- **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark-conversion`.
 
 ## Décision d'origine
 
@@ -105,3 +105,13 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 - `provideProjectMediaOnly` (`restricted-rendering.ts`) + prop `projectMediaOnly` de `MarkdownRenderer`, passée par `JournalContent` ; `VideoDisplay` rend un lien `external-media` (`rel="noopener noreferrer nofollow"`, `target=_blank`) pour toute vidéo hors stockage Supabase, YouTube → `youtube.com/watch?v=…`.
 - Tests rouges puis verts (4) ; hors cahier, inchangé (test). Navigateur (lien public) : 0 `<video>`/`<iframe>`, 0 requête vers l'hôte tiers ou YouTube ; liens sur leur propre ligne.
 - Revue de #2442 : aucun bloquant. Mineurs non traités : lien `href="#"` si `sanitizeUrl` refuse l'adresse (inoffensif) ; pas de test pour une vidéo imbriquée (liste, citation via `StaticBlockNode`) ni pour `data:`, `//hôte`, adresse relative (le code les gère) — à ajouter à la PR 3, qui retouche ces tests.
+
+### 2026-11-06 — PR 2 (conversion des 4 lignes)
+
+- Prod relue (MCP, lecture seule) : les 4 lignes de l'état des lieux, inchangées.
+- Migration : `<p></p>` retirés, `</p><p>` → ligne vide, `<p>`/`</p>` d'extrémité retirés. Garde : ne convertit que des `<p>` autour d'un texte sans `< & * _ $ ` \ #`hors références ; si une ligne HTML reste,`raise exception`. Triggers `updated_at` coupés. Rollback = les 4 valeurs d'avant, en commentaire.
+- Testé en local dans une transaction annulée : cas de prod convertis, ligne déjà ubumark intacte, `updated_at` gardé ; `<p>a **b**</p>` et `<ul>` → exception.
+- Test de rendu (`JournalContent`) sur la sortie exacte pour la séance à deux références : deux paragraphes, deux liens.
+- Avant / après (prod) :
+  - séance 9e9e75aa : `<p>[[…|Evaluation : Produit scalaire]]</p><p></p><p>[[…#2,4,5|… ex. 2, 4 et 5]]</p><p></p>` → `[[…|Evaluation : Produit scalaire]]` + ligne vide + `[[…#2,4,5|… ex. 2, 4 et 5]]`
+  - séance 5e44b047, travaux abd84575 et 77c58e2c : `<p>[[…]]</p>` (± `<p></p>`) → `[[…]]`
