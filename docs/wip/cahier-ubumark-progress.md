@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2435 (PR 1b #2442 ouverte)._
+_Mis à jour le 2026-11-06, après #2442._
 
-- **État** : PR 1 (#2435) mergée. PR 1b (#2442, vidéos hors stockage → lien, YouTube compris) ouverte, revue sans bloquant, CI en cours.
-- **Prochaine action** : `gh pr checks 2442` sur le DERNIER commit → verte → `gh pr merge 2442 --merge` → supprimer la branche distante → mettre ce bloc à jour (commit direct sur `main`) → David : `deploy:prod` (PR 1 + 1b) → PR 2 = migration de conversion des 4 lignes (s'arrêter, montrer avant/après) → PR 3 = retrait lecture HTML (+ tests mineurs de la revue #2442) → PR 4 = énigmes.
-- **En attente de David** : `deploy:prod` après le merge de #2442.
+- **État** : PR 1 (#2435) et PR 1b (#2442, vidéos hors stockage → lien, YouTube compris) mergées, pas encore en prod.
+- **Prochaine action** : David : `deploy:prod` (PR 1 + 1b) → PR 2 = migration de conversion des 4 lignes (s'arrêter, montrer avant/après) → PR 3 = retrait lecture HTML (+ tests mineurs de la revue #2442) → PR 4 = énigmes.
+- **En attente de David** : `deploy:prod` (PR 1 + 1b).
 - **Pièges en cours** : cookies partagés sur `localhost` → tester sur `cahier.localhost:5178`, `eleve.localhost`, `public.localhost` ; Supabase local partagé, réinitialisé par d'autres sessions (recréer séance + jeton par l'API de service) ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed`.
-- **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark-videos`.
+- **Worktree / branche** : aucun (worktree de la PR 1b retiré) ; PR 2 → nouveau worktree `../ubumaths-wt-cahier-ubumark` depuis `origin/main`.
 
 ## Décision d'origine
 
