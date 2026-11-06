@@ -952,3 +952,11 @@ question d'accès : rien de plus.
   espaces et `\r` comme le parseur. Même défaut dans `sonde-cubes.ts`, hors de cette PR.
 - 2026-11-06 : #2433 mergée (CI verte ; revue : `code-reviewer` Sonnet sur la sonde, corrigé). Branche
   `feat/questions-ce2-lot11-db` pour les ids et la migration.
+- 2026-11-06 : `create-questions --publier` (David, depuis le worktree) : 6 brouillons en prod, relus au MCP (draft, CE2,
+  niveaux 10 à 14 et 20 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids sur la branche
+  `feat/questions-ce2-lot11-db`. Migration `20261106130322_questions_ce2_lot11_rangement_tags` + test, tirés du lot 10.
+- Base locale : la mise en place des tests d'intégration ne pouvait plus effacer les profs de démo (un lien
+  `class_journal_share_tokens` du prof `11111111…`, créé à 13 h 49 par une autre session) → ligne supprimée (accord de
+  David). Test : rouge sans le corps (5 échecs sur 9), vert 9/9.
+- `security-auditor` : aucun finding bloquant ; défaut du test relevé (point archivé CE2-001 = 3 modèles, message
+  « 1 point(s) » attendu) → le test archive CE2-005 (un modèle).
