@@ -1,4 +1,5 @@
 {
+	"id": "5d869c65-3ba2-49d0-86c8-4d64e1f4a747",
 	"title": "Terminer un carré ou un rectangle aux côtés obliques sur quadrillage",
 	"description": "Un côté oblique du carré, deux côtés obliques du rectangle sont tracés : terminer la figure",
 	"grades": ["CE2"],
