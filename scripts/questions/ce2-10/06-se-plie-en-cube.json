@@ -1,0 +1,172 @@
+{
+	"title": "Cet assemblage se plie-t-il en cube ?",
+	"description": "Six carrés : un des 11 patrons du cube ou un des 8 faux, tourné ou retourné → oui / non",
+	"grades": ["CE2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On découpe cet assemblage de $6$ carrés et on le plie le long des traits. Obtient-on un cube ?\n\n```patron\nsolide: cube\nforme: {{k}}\ntourner: {{eval:90*t}}\nretourner: {{if:r==1|oui|non}}\n```\n\n```choix\nmelanger: non\n- Oui, il se plie en cube.\n- Non, il ne se plie pas en cube.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..11"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "r",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On imagine une face posée au sol, puis on relève les autres autour d'elle.",
+					"Chaque carré vient sur une face différente, sans trou ni carré en double : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$, c'est un patron de cube."
+				]
+			}
+		},
+		{
+			"statement": "On découpe cet assemblage de $6$ carrés et on le plie le long des traits. Obtient-on un cube ?\n\n```patron\nsolide: cube\nforme: faux {{k}}\ntourner: {{eval:90*t}}\nretourner: {{if:r==1|oui|non}}\n```\n\n```choix\nmelanger: non\n- Oui, il se plie en cube.\n- Non, il ne se plie pas en cube.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..8"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "r",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On imagine une face posée au sol, puis on relève les autres autour d'elle.",
+					"Deux carrés arrivent au même endroit, et il reste un trou : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, ce n'est pas un patron de cube."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "La croix",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 2-3-1 tourné",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"t": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 3-3 retourné",
+			"variationIndex": 0,
+			"variables": {
+				"k": "11",
+				"t": "2",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vrai patron jugé faux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "10",
+				"t": "3",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cinq carrés en ligne",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Deux rangées de trois",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"t": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : faux patron 1-4-1 décalé jugé bon",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"t": "0",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Faux patron en T",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"t": "2",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

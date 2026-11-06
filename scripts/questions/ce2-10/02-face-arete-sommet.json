@@ -1,0 +1,192 @@
+{
+	"title": "Face, arête ou sommet ?",
+	"description": "Sur un cube, un pavé ou une pyramide, l'élément marqué : face grisée, arête épaisse, sommet pointé",
+	"grades": ["CE2"],
+	"level": 10,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Sur {{if:s==1|ce cube|{{if:s==2|ce pavé|cette pyramide}}}}, qu'est-ce que ${{if:s==1|{{if:m==1|ABFE|{{if:m==2|EFGH|BCGF}}}}|{{if:s==2|{{if:m==1|ABFE|{{if:m==2|EFGH|BCGF}}}}|{{if:m==1|SAB|{{if:m==2|SBC|SAB}}}}}}}}$ ? (marqué sur le dessin)\n\n```solide\nforme: {{if:s==1|cube 3|{{if:s==2|pave 5 2.5 2.5|pyramide carree 3.5 3.5}}}}\n{{if:s==1|sommets: A B C D E F G H|{{if:s==2|sommets: A B C D E F G H|sommets: S A B C D}}}}\nmarquer: face {{if:s==1|{{if:m==1|ABFE|{{if:m==2|EFGH|BCGF}}}}|{{if:s==2|{{if:m==1|ABFE|{{if:m==2|EFGH|BCGF}}}}|{{if:m==1|SAB|{{if:m==2|SBC|SAB}}}}}}}}\n```\n\n```choix\nmelanger: non\n- C'est une face.\n- C'est une arête.\n- C'est un sommet.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La partie grisée est une surface plane du solide : c'est une $\\textcolor{{{color:primary.0}}}{\\text{face}}$. Ici, la face ${{if:s==1|{{if:m==1|ABFE|{{if:m==2|EFGH|BCGF}}}}|{{if:s==2|{{if:m==1|ABFE|{{if:m==2|EFGH|BCGF}}}}|{{if:m==1|SAB|{{if:m==2|SBC|SAB}}}}}}}}$.",
+					"Une face est plane, une arête est un bord (un trait), un sommet est un coin (un point)."
+				]
+			}
+		},
+		{
+			"statement": "Sur {{if:s==1|ce cube|{{if:s==2|ce pavé|cette pyramide}}}}, qu'est-ce que ${{if:s==1|{{if:m==1|AE|{{if:m==2|FG|BC}}}}|{{if:s==2|{{if:m==1|AE|{{if:m==2|FG|BC}}}}|{{if:m==1|SA|{{if:m==2|SB|BC}}}}}}}}$ ? (marqué sur le dessin)\n\n```solide\nforme: {{if:s==1|cube 3|{{if:s==2|pave 5 2.5 2.5|pyramide carree 3.5 3.5}}}}\n{{if:s==1|sommets: A B C D E F G H|{{if:s==2|sommets: A B C D E F G H|sommets: S A B C D}}}}\nmarquer: arete {{if:s==1|{{if:m==1|AE|{{if:m==2|FG|BC}}}}|{{if:s==2|{{if:m==1|AE|{{if:m==2|FG|BC}}}}|{{if:m==1|SA|{{if:m==2|SB|BC}}}}}}}}\n```\n\n```choix\nmelanger: non\n- C'est une face.\n- C'est une arête.\n- C'est un sommet.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le trait épais est le bord commun à deux faces : c'est une $\\textcolor{{{color:primary.0}}}{\\text{arête}}$. Ici, l'arête ${{if:s==1|{{if:m==1|AE|{{if:m==2|FG|BC}}}}|{{if:s==2|{{if:m==1|AE|{{if:m==2|FG|BC}}}}|{{if:m==1|SA|{{if:m==2|SB|BC}}}}}}}}$.",
+					"Une face est plane, une arête est un bord (un trait), un sommet est un coin (un point)."
+				]
+			}
+		},
+		{
+			"statement": "Sur {{if:s==1|ce cube|{{if:s==2|ce pavé|cette pyramide}}}}, qu'est-ce que ${{if:s==1|{{if:m==1|F|{{if:m==2|G|E}}}}|{{if:s==2|{{if:m==1|F|{{if:m==2|G|E}}}}|{{if:m==1|S|{{if:m==2|B|C}}}}}}}}$ ? (marqué sur le dessin)\n\n```solide\nforme: {{if:s==1|cube 3|{{if:s==2|pave 5 2.5 2.5|pyramide carree 3.5 3.5}}}}\n{{if:s==1|sommets: A B C D E F G H|{{if:s==2|sommets: A B C D E F G H|sommets: S A B C D}}}}\nmarquer: sommet {{if:s==1|{{if:m==1|F|{{if:m==2|G|E}}}}|{{if:s==2|{{if:m==1|F|{{if:m==2|G|E}}}}|{{if:m==1|S|{{if:m==2|B|C}}}}}}}}\n```\n\n```choix\nmelanger: non\n- C'est une face.\n- C'est une arête.\n- C'est un sommet.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le point est un coin où se rejoignent plusieurs arêtes : c'est un $\\textcolor{{{color:primary.0}}}{\\text{sommet}}$. Ici, le sommet ${{if:s==1|{{if:m==1|F|{{if:m==2|G|E}}}}|{{if:s==2|{{if:m==1|F|{{if:m==2|G|E}}}}|{{if:m==1|S|{{if:m==2|B|C}}}}}}}}$.",
+					"Une face est plane, une arête est un bord (un trait), un sommet est un coin (un point)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Face du cube",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"m": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Face de la pyramide",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3",
+				"m": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : face prise pour une arête",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2",
+				"m": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Arête du pavé",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"m": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Arête de la pyramide",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3",
+				"m": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arête prise pour un sommet",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"m": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sommet S de la pyramide",
+			"variationIndex": 2,
+			"variables": {
+				"s": "3",
+				"m": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Sommet du cube",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"m": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sommet pris pour une arête",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"m": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

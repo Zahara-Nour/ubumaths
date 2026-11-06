@@ -1,0 +1,142 @@
+{
+	"title": "Lequel se plie en cube ?",
+	"description": "Trois assemblages : un patron de cube et deux faux ; ou 6, 5 et 7 carrés",
+	"grades": ["CE2"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Lequel de ces assemblages se plie en cube ?\n\n````choix\n- ```patron\n  solide: cube\n  forme: {{k}}\n  tourner: {{eval:90*t}}\n  ```\n- ```patron\n  solide: cube\n  forme: faux {{a}}\n  tourner: {{eval:90*t}}\n  ```\n- ```patron\n  solide: cube\n  forme: faux {{b}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un patron de cube a $6$ carrés qui, pliés, viennent chacun sur une face différente.",
+					"Dans les deux autres, deux carrés arrivent au même endroit en pliant.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{le seul qui se plie en cube}}$."
+				]
+			}
+		},
+		{
+			"statement": "Lequel de ces assemblages se plie en cube ?\n\n````choix\n- ```patron\n  solide: cube\n  forme: {{k}}\n  ```\n- ```patron\n  solide: cube\n  forme:\n    X X X .\n    . X . .\n    . X . .\n  faux: oui\n  ```\n- ```patron\n  solide: cube\n  forme:\n    X X X X\n    X . . .\n    X . . .\n    X . . .\n  faux: oui\n  ```\n````",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..11"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un cube a $6$ faces : il faut $6$ carrés, ni plus, ni moins.",
+					"L'un a $5$ carrés (il manque une face), l'autre $7$ (un de trop).",
+					"Seul $\\textcolor{{{color:primary.0}}}{\\text{l'assemblage de 6 carrés}}$ se plie en cube."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le vrai patron",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "1",
+				"b": "2",
+				"t": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : faux patron choisi",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"a": "4",
+				"b": "6",
+				"t": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'autre faux patron",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"a": "3",
+				"b": "7",
+				"t": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Six carrés",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cinq carrés",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sept carrés",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

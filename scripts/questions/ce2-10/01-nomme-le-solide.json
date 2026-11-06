@@ -1,0 +1,349 @@
+{
+	"title": "Nommer un solide : cube, pavé, boule, cône, pyramide, cylindre",
+	"description": "Un solide dessiné en perspective, à nommer parmi six ; pavé presque cube, cylindre bas",
+	"grades": ["CE2"],
+	"level": 9,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: cube 3\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cube a $6$ faces, toutes des carrés de la même taille.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{un cube}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: pave {{if:o==1|5 2.5 2|{{if:o==2|2.5 2 4.5|4.5 3 3}}}}\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le pavé a $6$ faces planes, mais elles ne sont pas toutes des carrés : il est plus long dans un sens.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{un pavé}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: boule 2\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boule est toute ronde : elle n'a ni face plane, ni sommet, ni arête.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{une boule}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: cone 1.5 {{h}}\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cône a une base ronde, un disque, et une face courbe qui finit en pointe.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{un cône}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: pyramide {{if:q==1|carree 3 3.5|{{if:q==2|rectangle 4 2.5 3.5|triangle 3.5 3.5}}}}\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La pyramide a une base ({{if:q==1|un carré|{{if:q==2|un rectangle|un triangle}}}}) et des faces en triangles qui se rejoignent en un sommet.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: cylindre {{if:q==1|1.5 {{h}}|{{if:q==2|2 1.5|1 {{h}}}}}}\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cylindre a deux disques, en haut et en bas, reliés par une face courbe ; il n'a pas de pointe.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{un cylindre}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cube",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"q": "1",
+				"h": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cube pris pour un pavé",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"q": "1",
+				"h": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé presque cube",
+			"variationIndex": 1,
+			"variables": {
+				"o": "3",
+				"q": "1",
+				"h": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pavé presque cube pris pour un cube",
+			"variationIndex": 1,
+			"variables": {
+				"o": "3",
+				"q": "1",
+				"h": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé debout",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2",
+				"q": "1",
+				"h": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Boule",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1",
+				"q": "1",
+				"h": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cône",
+			"variationIndex": 3,
+			"variables": {
+				"o": "1",
+				"q": "1",
+				"h": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cône pris pour une pyramide",
+			"variationIndex": 3,
+			"variables": {
+				"o": "1",
+				"q": "1",
+				"h": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pyramide à base rectangle",
+			"variationIndex": 4,
+			"variables": {
+				"o": "1",
+				"q": "2",
+				"h": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pyramide à base triangle prise pour un cône",
+			"variationIndex": 4,
+			"variables": {
+				"o": "1",
+				"q": "3",
+				"h": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cylindre bas (boîte de conserve)",
+			"variationIndex": 5,
+			"variables": {
+				"o": "1",
+				"q": "2",
+				"h": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cylindre pris pour un cône",
+			"variationIndex": 5,
+			"variables": {
+				"o": "1",
+				"q": "1",
+				"h": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : cylindre pris pour un pavé",
+			"variationIndex": 5,
+			"variables": {
+				"o": "1",
+				"q": "3",
+				"h": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

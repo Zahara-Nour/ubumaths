@@ -1,0 +1,252 @@
+{
+	"title": "Compter les sommets, les arêtes et les faces d'un solide",
+	"description": "Cube, pavé (8, 12, 6), pyramide à base carrée (5, 8, 5) ou triangulaire (4, 6, 4), arêtes cachées comprises",
+	"grades": ["CE2"],
+	"level": 11,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien {{if:s==1|ce cube|{{if:s==2|ce pavé|{{if:s==3|cette pyramide|cette pyramide}}}}}} a-t-{{if:s==1|il|{{if:s==2|il|{{if:s==3|elle|elle}}}}}} de sommets ?\n\n```solide\nforme: {{if:s==1|cube 3|{{if:s==2|pave 5 2.5 2|{{if:s==3|pyramide carree 3.5 3.5|pyramide triangle 3.5 3.5}}}}}}\n```\n\n[_] sommets",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:s==1|8|{{if:s==2|8|{{if:s==3|5|4}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les traits en pointillés sont les arêtes cachées, derrière le solide : elles comptent aussi.",
+					"On compte {{if:s==1|$4$ en bas et $4$ en haut|{{if:s==2|$4$ en bas et $4$ en haut|{{if:s==3|$4$ autour de la base et le sommet du haut|$3$ autour de la base et le sommet du haut}}}}}} : $\\textcolor{{{color:primary.0}}}{{{r}}}$ sommets."
+				]
+			}
+		},
+		{
+			"statement": "Combien {{if:s==1|ce cube|{{if:s==2|ce pavé|{{if:s==3|cette pyramide|cette pyramide}}}}}} a-t-{{if:s==1|il|{{if:s==2|il|{{if:s==3|elle|elle}}}}}} de arêtes ?\n\n```solide\nforme: {{if:s==1|cube 3|{{if:s==2|pave 5 2.5 2|{{if:s==3|pyramide carree 3.5 3.5|pyramide triangle 3.5 3.5}}}}}}\n```\n\n[_] arêtes",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:s==1|12|{{if:s==2|12|{{if:s==3|8|6}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les traits en pointillés sont les arêtes cachées, derrière le solide : elles comptent aussi.",
+					"On compte {{if:s==1|$4$ en bas, $4$ en haut et $4$ debout|{{if:s==2|$4$ en bas, $4$ en haut et $4$ debout|{{if:s==3|$4$ autour de la base et $4$ qui montent au sommet|$3$ autour de la base et $3$ qui montent au sommet}}}}}} : $\\textcolor{{{color:primary.0}}}{{{r}}}$ arêtes."
+				]
+			}
+		},
+		{
+			"statement": "Combien {{if:s==1|ce cube|{{if:s==2|ce pavé|{{if:s==3|cette pyramide|cette pyramide}}}}}} a-t-{{if:s==1|il|{{if:s==2|il|{{if:s==3|elle|elle}}}}}} de faces ?\n\n```solide\nforme: {{if:s==1|cube 3|{{if:s==2|pave 5 2.5 2|{{if:s==3|pyramide carree 3.5 3.5|pyramide triangle 3.5 3.5}}}}}}\n```\n\n[_] faces",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:s==1|6|{{if:s==2|6|{{if:s==3|5|4}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les traits en pointillés sont les arêtes cachées, derrière le solide : elles comptent aussi.",
+					"On compte {{if:s==1|devant, derrière, dessus, dessous, à gauche et à droite|{{if:s==2|devant, derrière, dessus, dessous, à gauche et à droite|{{if:s==3|la base carrée et $4$ triangles|la base triangulaire et $3$ triangles}}}}}} : $\\textcolor{{{color:primary.0}}}{{{r}}}$ faces."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Sommets du cube",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"r": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sommet caché oublié",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"r": "8"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sommets de la pyramide carrée",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pyramide comptée comme un cube",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3",
+				"r": "5"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sommets du tétraèdre",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Arêtes du pavé",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"r": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arêtes cachées oubliées",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"r": "12"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Arêtes de la pyramide carrée",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3",
+				"r": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Arêtes du tétraèdre",
+			"variationIndex": 1,
+			"variables": {
+				"s": "4",
+				"r": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Faces du cube",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"r": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : seules les faces vues comptées",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"r": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Faces de la pyramide carrée",
+			"variationIndex": 2,
+			"variables": {
+				"s": "3",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : base oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"s": "3",
+				"r": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Faces du tétraèdre",
+			"variationIndex": 2,
+			"variables": {
+				"s": "4",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

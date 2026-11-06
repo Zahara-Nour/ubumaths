@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après la publication du lot 9._
+_Mis à jour le 2026-11-06, lot 10 écrit (PR des fichiers)._
 
-- **État** : lots 1 à 9 en prod et publiés (lot 9 : 8/8 `published`, CE2, relevé MCP). Aucune branche en cours.
-- **Prochaine action** : lot 10 validé (§ 16, 7 modèles) : branche `feat/questions-ce2-lot10`, script
-  `lot-ce2-10.py` ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
-- **En attente de David** : rien (phase 0 du lot 10 validée).
+- **État** : lots 1 à 9 en prod et publiés ; lot 10 (solides) : 7 modèles écrits, essayés en base locale.
+- **Prochaine action** : lot 10 écrit (§ 16, 7 modèles), PR des fichiers ; après merge, David lance
+  `create-questions --dir scripts/questions/ce2-10 --publier` ; puis migration nœud + tag, page à cocher ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
+- **En attente de David** : `create-questions --publier` du lot 10, après le merge.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
   `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
   `publier-lot` (même en simulation) et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, détaché sur `origin/main` (aucune branche en cours).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot10`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -865,3 +865,14 @@ tag ne change aucune règle.
 2. 066 : oui / non et « lequel ? » ; ni `completer:` ni `designer:`.
 3. Arêtes cachées toujours en tirets (jamais `cachees: non`).
 4. Un seul lot de 7 modèles, puis le chantier à part `collection` `centaines:`.
+
+### Lot 10 — écriture (2026-11-06)
+
+- Script `docs/wip/questions/lot-ce2-10.py` → `scripts/questions/ce2-10/` : 7 modèles, 72 specs ; `create-questions` en
+  simulation (prod) : 7 « à créer » ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-cubes` : 3 600 blocs d'espace, 0 problème. 7 brouillons en base locale (copie du dossier dans le scratchpad),
+  rendu relu sur la page à cocher locale (solides) et dans l'aperçu (patrons, que la page à cocher ne dessine pas).
+- Corrigé en route : 02, l'arête marquée (trait épais) se distingue à peine → l'élément est aussi nommé dans la question
+  (« qu'est-ce que $AE$ ? ») ; 04, « dessinée penchée » faux pour la face de devant → phrase selon la face ; 05, base
+  carrée : plus de renvoi aux cotes (une seule cote de base).
+- Piège : la page à cocher ne dessine pas ` ```patron ` (06, 07) : David les joue dans l'aperçu admin.
