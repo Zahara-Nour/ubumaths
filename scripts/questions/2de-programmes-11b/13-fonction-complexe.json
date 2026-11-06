@@ -1,4 +1,5 @@
 {
+	"id": "e4784c78-13d5-49ac-b50b-b07efca03d19",
 	"title": "Lire une fonction Python plus complexe",
 	"description": "Que renvoie une fonction qui compte les diviseurs (boucle et condition), une fonction de seuil n² > A (while) ; compléter la fonction maximum ou minimum",
 	"grades": ["2"],

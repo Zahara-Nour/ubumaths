@@ -1,4 +1,5 @@
 {
+	"id": "8d46dd50-34ea-4504-b92f-d269a84f0179",
 	"title": "Appeler une fonction Python",
 	"description": "Valeur de y = f(4) + f(7), y = f(f(4)), y = 2 * f(4) avec f(x) = 3x + 2 ; écrire l'appel qui range l'image de a dans y",
 	"grades": ["2"],

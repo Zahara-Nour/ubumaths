@@ -1,4 +1,5 @@
 {
+	"id": "da04078f-0afb-4ca3-910e-45cb480e3b48",
 	"title": "Fonction Python à un ou plusieurs arguments",
 	"description": "Valeur renvoyée par aire(4, 12), f(4) avec f(x) = 3x − 5, ecart(4, 12) (ordre des arguments), prix(n, p, r) ; nombre d'arguments d'une fonction",
 	"grades": ["2"],
