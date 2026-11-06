@@ -677,16 +677,17 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    expression : « Ta droite n'est pas à sa place. ». Un point ou un segment dans la réponse : faux, sans
    message. Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas une droite, droite
    hors de la fenêtre, deux vérifications pour la même droite ; sur quadrillage, droite sans deux nœuds
-   dans la fenêtre ; sur papier uni, autre chose qu'une médiatrice, A ou B invisible, ou cercles de
-   centres A et B de rayon AB qui se coupent hors de la fenêtre (`mediatriceSupportError`, aussi pour
-   `milieu(A, B)` : l'élève n'a pas de report de longueur). Une `droite` ne se mêle à aucune autre
-   vérification, et sa palette ne prend que règle, équerre, compas (parseur : un point ou un segment
-   tracé ferait une réponse forgée). Palette : règle, équerre, compas, avec ou sans quadrillage
+   dans la fenêtre ; sur papier uni, autre chose qu'une médiatrice, A ou B invisible, ou médiatrice
+   qui n'a pas 2 unités dans la fenêtre (`mediatriceSupportError`, aussi pour `milieu(A, B)` : l'élève y
+   croise deux cercles de même rayon, quel qu'il soit ; avant le lot 9, les cercles de rayon AB devaient
+   s'y couper). Une `droite` ne se mêle à aucune autre
+   vérification, et sa palette ne prend que règle, équerre, compas, report (parseur : un point ou un segment
+   tracé ferait une réponse forgée). Palette : règle, équerre, compas, avec ou sans quadrillage, et le report sur papier uni (lot 9 : il garde l'écartement des deux cercles égaux ; `LINE_GRID_TOOLS` sur quadrillage, où `outils: report` est refusé)
    (`PLAIN_PAPER_TOOLS.droite`) ; sur quadrillage, tous ses touchers vont aux nœuds (l'équerre choisit
    d'abord sa droite). Correction : la droite en pointillés ;
    médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`). Vérification
    `cercle c = <expression>` (`construction/circle.ts`, lot 3b du chantier) : un des cercles de l'élève
-   (compas) recouvre le cercle que donne l'expression (même centre, même rayon ; `expected.circles`) ;
+   (compas, ou report depuis le lot 9 : même centre, rayon = l'écartement) recouvre le cercle que donne l'expression (même centre, même rayon ; `expected.circles`) ;
    ses autres cercles et ses droites sont des traits de construction. Le cercle doit être construit
    (règle ci-dessus) ; centre non construit : « Ton cercle est tracé à l'œil : construis son centre avec tes
    instruments. » ; le bon cercle, centre construit mais compas ouvert à l'œil (toucher libre pile au bon

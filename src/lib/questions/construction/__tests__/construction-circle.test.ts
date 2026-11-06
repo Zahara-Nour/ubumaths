@@ -114,13 +114,13 @@ const O = cross(M_AB.line, M_AC.line)[0];
 const CONSTRUCTION = [...M_AB.arcs, M_AB.line, ...M_AC.arcs, M_AC.line];
 
 describe('vérification cercle : lecture de l’en-tête', () => {
-	it('lit le nom et l’expression ; palette déduite Règle · Équerre · Compas', () => {
+	it('lit le nom et l’expression ; palette déduite Règle · Équerre · Compas · Report (lot 9)', () => {
 		const { spec, errors } = readConstructionHeader(CIRCONSCRIT);
 		expect(errors).toEqual([]);
 		expect(spec.checks).toEqual([
 			{ kind: 'cercle', name: 'c', expression: 'cercle_circonscrit(A, B, C)', line: 2 }
 		]);
-		expect(spec.tools).toEqual(['droite', 'equerre', 'compas']);
+		expect(spec.tools).toEqual(['droite', 'equerre', 'compas', 'report']);
 	});
 
 	it('quadrillage refusé (décision 2)', () => {
@@ -352,14 +352,67 @@ describe('vérification cercle : erreurs d’auteur', () => {
 		expect(() => assertChecks(source)).toThrow(/centre du cercle est hors de la fenêtre/);
 	});
 
-	it('moins de deux médiatrices constructibles dans la fenêtre', () => {
-		// Presque équilatéral, rayon 3,9 : les arcs de rayon un côté se coupent hors de la fenêtre
+	it('le cercle lui-même au Report (écartement de O à A, piqué en O) → juste (lot 9, revue)', () => {
+		const report: DrawnObject = {
+			kind: 'report',
+			cx: O.x,
+			cy: O.y,
+			ax: O.x,
+			ay: O.y,
+			bx: A.x,
+			by: A.y
+		};
+		expect(judge(CIRCONSCRIT, [...CONSTRUCTION, report])).toEqual({ status: 'correct' });
+	});
+
+	it('le cercle au Report, écartement pris à l’œil pile au bon rayon → compas ouvert à l’œil (lot 9)', () => {
+		const r = Math.hypot(A.x - O.x, A.y - O.y);
+		const report: DrawnObject = {
+			kind: 'report',
+			cx: O.x,
+			cy: O.y,
+			ax: 0.5,
+			ay: 0.5,
+			bx: 0.5 + r,
+			by: 0.5
+		};
+		expect(judge(CIRCONSCRIT, [...CONSTRUCTION, report])).toEqual({
+			status: 'incorrect',
+			feedback: CIRCLE_THROUGH_EYEBALLED_FEEDBACK
+		});
+	});
+
+	it('médiatrices au Report (un écartement gardé), puis le cercle au compas → juste (lot 9)', () => {
+		// Écartement 3 pris à la main, piqué en A, B puis C : les arcs de [AB] et [AC]
+		const report = (center: Position): DrawnObject => ({
+			kind: 'report',
+			cx: center.x,
+			cy: center.y,
+			ax: 1,
+			ay: 1,
+			bx: 4,
+			by: 1
+		});
+		const [rA, rB, rC] = [A, B, C].map(report);
+		const [p1, p2] = cross(rA, rB);
+		const [q1, q2] = cross(rA, rC);
+		const mAB = droite(p1, p2);
+		const mAC = droite(q1, q2);
+		const center = cross(mAB, mAC)[0];
+		expect(judge(CIRCONSCRIT, [rA, rB, rC, mAB, mAC, cercle(center, A)])).toEqual({
+			status: 'correct'
+		});
+	});
+
+	it('arcs de rayon un côté hors de la fenêtre : admis (lot 9, § 25)', () => {
+		// Presque équilatéral, rayon 3,9 : les arcs de rayon un côté se coupent hors de la
+		// fenêtre, mais des cercles égaux plus petits se coupent dedans (exception 2 du § 15)
 		const source = figure('cercle c = cercle_circonscrit(A, B, C)', [
 			'A = point(1.623, 2.05)',
 			'B = point(8.377, 2.05)',
 			'C = point(5, 7.9)'
 		]);
-		expect(() => assertChecks(source)).toThrow(/moins de deux médiatrices/);
+		expect(() => assertChecks(source)).not.toThrow();
 	});
 
 	it('centre déjà nommé dans la figure : rien à construire (revue)', () => {
@@ -395,13 +448,14 @@ describe('centre du cercle circonscrit seul (décision 1)', () => {
 		});
 	});
 
-	it('moins de deux médiatrices constructibles : refusé', () => {
+	it('arcs de rayon un côté hors de la fenêtre : admis (lot 9, § 25)', () => {
+		// Même triangle que pour le cercle : les médiatrices passent par le centre, dans la fenêtre
 		const source = figure('point O = centre(cercle_circonscrit(A, B, C))', [
 			'A = point(1.623, 2.05)',
 			'B = point(8.377, 2.05)',
 			'C = point(5, 7.9)'
 		]);
-		expect(() => assertChecks(source)).toThrow(/moins de deux médiatrices/);
+		expect(() => assertChecks(source)).not.toThrow();
 	});
 });
 

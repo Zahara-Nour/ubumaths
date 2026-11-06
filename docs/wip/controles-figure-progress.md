@@ -6,19 +6,21 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, phase 0 du lot 9 validée (§ 25)._
+_Mis à jour le 2026-11-06, #2430 (PR B du lot 9) ouverte, CI en cours sur 457486757._
 
-- **État** : lots 1 à 8 et #2305 mergés, en prod depuis la 0.69.0. Ordre de David du 2026-11-06
-  (`outils-manquants.md`) : lot 9 « bissectrice construite + règle des médiatrices relâchée » ;
-  translation tracée pas maintenant ; angle non adjacent : pas d'outil.
-- **Prochaine action** : phase 0 du § 25 validée (« je te suis »). PR B (médiatrices, 2 unités dans la
-  fenêtre) puis PR A (bissectrice au compas, exception 4).
+- **État** : lots 1 à 8 en prod. Lot 9 (§ 25, phase 0 validée) : PR B = #2430 (médiatrice faisable dès
+  2 unités dans la fenêtre + Report dans la palette de `droite` et `cercle`, cercle circonscrit au Report
+  jugé, `outils: report` refusé sur quadrillage). Deux passes de revue `code-reviewer` traitées (§ 26).
+- **Prochaine action** : `gh pr checks 2430` ; CI verte → `gh pr merge 2430 --merge`, puis « Reprendre
+  ici » sur main. Ensuite PR A : bissectrice au compas (`droite d = bissectrice(A, O, B)`, exception 4,
+  messages du § 25), nouvelle branche dans le même worktree ou un neuf.
 - **En attente de David** : rien.
-- **Pièges en cours** : `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)`
-  échoue si P définit d ; plafond de 20 objets sans message ; CI qui ne part pas sur une PR en conflit ;
-  tests navigateur instables (Chromium fermé, `demo/lexique`) ; garde « doc à jour » : relancer après
+- **Pièges en cours** : le Compas ne garde pas son écartement (centre puis point de passage) : deux
+  cercles égaux à rayon libre = Report seulement ; tester avec de vrais touchers (`addTap`, écran), pas
+  des coordonnées exactes. `perpendiculaire(A, s)` échoue si A est un bout de s ; `symetrie(P, axe=d)`
+  si P définit d ; commitlint refuse un sujet en majuscule ; garde « doc à jour » : relancer après
   `git fetch`.
-- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-mediatrices` (PR B).
+- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-mediatrices` (#2430).
 
 ---
 
@@ -1167,3 +1169,37 @@ sévère que l'élève.
 4. Message de **l'angle voisin gardé**.
 5. Médiatrices : faisable si la médiatrice a **au moins 2 unités dans la fenêtre**.
 6. **Deux PR** : B (médiatrices) d'abord, puis A (bissectrice).
+
+## 26. Lot 9, PR B — médiatrices relâchées (2026-11-06)
+
+- `mediatriceSupportError` (`line.ts`) : la médiatrice de [AB] est faisable si elle a **au moins 2 unités
+  dans la fenêtre** (`MEDIATRICE_MIN_ROOM`, longueur de la droite dans la fenêtre par Liang-Barsky,
+  `roomInFrame`) ; plus de cercles de rayon AB exigés. Vaut pour la médiatrice, le milieu, le cercle
+  circonscrit et son centre (`circumcenterSupportError`, message ajusté). Juge de l'élève inchangé
+  (l'exception 2 du § 15 acceptait déjà des cercles égaux de rayon quelconque).
+- Message d'auteur : « la médiatrice de [AB] n'a pas 2 unités dans la fenêtre (l'élève ne peut pas la
+  construire) : agrandir la fenêtre ou déplacer A et B ».
+- Aide du catalogue (`block-catalog/figure-a-completer.ts`) et `docs/systeme/questions.md` mis à jour.
+- Tests : `construction-line.test.ts` (A(2 ; 3), B(7 ; 5) admis pour la médiatrice et le milieu ; cercles
+  égaux de rayon 4 → juste ; coin de la fenêtre, 1,7 unité → refusé), `construction-circle.test.ts`
+  (triangle presque équilatéral admis, pour le cercle et le centre seul). Rouges avant le code (5 échecs) ;
+  le test « rayon 4 → juste » est une garde, vert avant (le juge l'acceptait déjà).
+- Pas de refus testé pour le cercle circonscrit : les médiatrices passent par le centre, déjà exigé dans
+  la fenêtre ; le cas qui refuse (triangle presque plat dans un coin) est exotique.
+- **Revue (code-reviewer, #2430), finding important** : à l'écran, le Compas ne garde pas son écartement
+  (centre puis point de passage) et le juge veut deux rayons égaux au calcul près ; sans Report, le seul
+  rayon reproductible était AB, donc l'ancienne règle. Mon test « rayon 4 » donnait des coordonnées
+  exactes qu'aucun doigt ne produit. **Décision de David (« je suis tes recos »)** : le **Report dans la
+  palette** de `droite` (papier uni ; `LINE_GRID_TOOLS` sans lui sur quadrillage) et de `cercle` ; les
+  juges `line.ts` et `circle.ts` admettent le report comme trait de construction.
+- **2e passe de la revue** : aucun report ne forge de réponse (construit seulement si centre et écartement
+  le sont) ; **important** : le cercle circonscrit tracé au Report (écartement O → A, piqué en O) était
+  ignoré (« Trace le cercle… ») → `circleOf` (`circle.ts`) lit un report comme le cercle de même centre et
+  de même rayon ; écartement pris à l'œil pile au bon rayon → « Ton compas est ouvert à l'œil… ». Mineur
+  traité : `outils: report` sur quadrillage refusé pour une droite (erreur d'auteur). Tests rouges avant
+  (3).
+- Tests du correctif (rouges avant, 5) : palettes ; Report pris à la main (`addTap`), piqué en A et B,
+  croisements dans la fenêtre → juste ; deux rayons à la main au Compas → « tracée à l'œil » ; milieu de
+  [AB] au bord (A(0 ; 3), B(0 ; 5)) : deux paires de reports du même côté → juste ; cercle circonscrit
+  par médiatrices au Report → juste ; écran (`figure-a-completer-mediatrice`) : vrais touchers Report
+  puis Règle aimantée, A(3 ; 3), B(9 ; 5) → juste.
