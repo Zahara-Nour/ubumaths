@@ -1,7 +1,7 @@
 /**
  * Case « figure » : mesurer un angle, rapporteur déjà posé
  * (`verifier: mesure AOB, rapporteur posé`, chantier `controles-figure`, lot 8,
- * phase 0 validée par David le 2026-11-03, `docs/wip/controles-figure-progress.md` § 23).
+ * phase 0 validée par David le 2026-11-03, `docs/archive/wip/controles-figure-progress.md` § 23).
  *
  * Le rapporteur apparaît posé en O, base sur le PREMIER côté nommé ([OA) pour
  * `AOB`), corps du côté de l'autre ; il est figé, l'élève n'a aucun outil et tape

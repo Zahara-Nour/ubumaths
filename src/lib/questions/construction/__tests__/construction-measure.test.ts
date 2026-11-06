@@ -1,7 +1,7 @@
 /**
  * Case « figure » : mesurer un angle au rapporteur (`verifier: mesure AOB`,
  * chantier `controles-figure`, lot 6, phase 0 validée par David le 2026-11-03,
- * `docs/wip/controles-figure-progress.md` § 19).
+ * `docs/archive/wip/controles-figure-progress.md` § 19).
  *
  * L'angle est tracé ; l'élève pose le rapporteur (jamais noté) et tape la mesure
  * sous la figure (`mesure(50)`, en dernier dans la réponse). La mesure attendue

@@ -3,7 +3,7 @@
  * ===================================================================
  *
  * Chantier `controles-figure`, lot 2b (phase 0 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 7) : sans `grille:`, une palette
+ * `docs/archive/wip/controles-figure-progress.md` § 7) : sans `grille:`, une palette
  * (Règle, Équerre, Compas, Point) ; équerre = une droite (surlignée), puis un
  * point → la perpendiculaire ; compas = le centre, puis un point → le cercle ;
  * touchers aimantés sur les points, les intersections, les traits.

@@ -7,7 +7,7 @@
  * de tout ce qui est tracé dans la figure sauf l'axe ; `par O` (un point) :
  * symétrie centrale ; `symetrique A ; B ; C par d` : seulement les traits dont
  * les deux bouts sont parmi ces points. Phase 0 validée par David le
- * 2026-11-02 (`docs/wip/controles-figure-progress.md` § 3).
+ * 2026-11-02 (`docs/archive/wip/controles-figure-progress.md` § 3).
  *
  * On juge le RÉSULTAT, comme pour le carré (`polygon.ts`) : figure de départ et
  * traits de l'élève fusionnés par droite porteuse (image en morceaux, trait

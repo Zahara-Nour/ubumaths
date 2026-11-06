@@ -8,7 +8,7 @@
  * Juste : un segment partant de O dont l'autre bout est CONSTRUIT (repère d'un
  * rapporteur centré en O, ou point construit, `constructionOf`) et qui fait avec [OA) un
  * angle de la mesure donnée, d'un côté ou de l'autre de (OA). Phase 0 validée
- * par David le 2026-11-03 (`docs/wip/controles-figure-progress.md` § 16).
+ * par David le 2026-11-03 (`docs/archive/wip/controles-figure-progress.md` § 16).
  *
  * @module questions/construction/angle
  */

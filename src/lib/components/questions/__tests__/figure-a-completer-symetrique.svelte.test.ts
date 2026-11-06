@@ -3,7 +3,7 @@
  * ====================================================================
  *
  * Chantier `controles-figure`, lot 1 (phase 0 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 3) : juste → segments en vert ;
+ * `docs/archive/wip/controles-figure-progress.md` § 3) : juste → segments en vert ;
  * figure glissée → message « Ta figure a glissé… » et l'image en pointillés,
  * de l'autre côté de l'axe.
  */

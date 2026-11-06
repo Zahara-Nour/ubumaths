@@ -3,7 +3,7 @@
  * ======================================================
  *
  * Chantier `controles-figure`, lot 3 (phase 0 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 9) : `droite m = mediatrice(A, B)`,
+ * `docs/archive/wip/controles-figure-progress.md` § 9) : `droite m = mediatrice(A, B)`,
  * palette Règle · Équerre · Compas, et Report (lot 9, § 25 : l'écartement gardé ; la règle d'abord) ; deux cercles, la droite
  * par leurs intersections → juste ; à la correction, la médiatrice en pointillés
  * et son codage.

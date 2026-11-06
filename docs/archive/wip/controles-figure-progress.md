@@ -1,22 +1,20 @@
 ---
-status: en-cours
+status: clos
 ---
 
 # Chantier `controles-figure` — nouveaux contrôles de la figure à compléter (symétrique d'abord)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2441 (côtés de la bissectrice, § 28) mergée._
+_Mis à jour le 2026-11-06 : chantier clos, journal archivé._
 
-- **État** : lots 1 à 9 mergés (#2430, #2439, #2441). Worktree et branche retirés.
-- **Prochaine action** : David choisit la suite : image par translation tracée (3e, outil n° 3),
-  angle non adjacent au côté (§ 21, décision 5), ou versement du chantier (durable →
-  `docs/systeme/`, journal archivé).
-- **En attente de David** : ce choix.
-- **Pièges en cours** : le Compas ne garde pas son écartement : deux cercles égaux à rayon libre =
-  Report seulement ; tester avec de vrais touchers (`addTap`, écran) ; commitlint : sujet en
-  minuscule, lignes du corps ≤ 100 caractères ; garde « doc à jour » : relancer après `git fetch`.
-- **Worktree / branche** : aucun (nouvelle branche depuis `origin/main` pour la suite).
+- **État** : clos. Lots 1 à 9 mergés (dernières PR : #2430, #2439, #2441). Le durable est dans
+  [questions.md](../../systeme/questions.md) (case « figure », vérifications `symetrique` à
+  `bissectrice`).
+- **Reliquat** (David, 2026-11-06, [outils-manquants.md](../../wip/outils-manquants.md) § 1) : image
+  par translation tracée **pas maintenant** (à rouvrir si un modèle exige le tracé) ; angle non
+  adjacent au côté **pas d'outil**.
+- **Historique : ce journal ne décrit plus le code actuel.**
 
 ---
 
@@ -24,7 +22,7 @@ _Mis à jour le 2026-11-06, après #2441 (côtés de la bissectrice, § 28) merg
 
 La case « figure » (` ```figure-a-completer `, `verifier:`) ne sait vérifier que `droite_par`, `carre`,
 `rectangle` (`CONSTRUCTION_CHECK_KINDS`, `src/lib/ubumark/types/construction.ts`) avec deux outils élève,
-`droite` et `segment`. Il manque, d'après [outils-manquants.md](outils-manquants.md) § 1 n° 1 et § 2 :
+`droite` et `segment`. Il manque, d'après [outils-manquants.md](../../wip/outils-manquants.md) § 1 n° 1 et § 2 :
 
 - **symétrique** (transformations, priorité) : axial — CE2-073, CM1-107, CM1-108, CM2-097 (axe vertical,
   horizontal ou diagonale du quadrillage), 6-180 (papier uni aussi) ; central — tracé en 5e ; image par
@@ -644,7 +642,7 @@ Phase 0 validée par David le 2026-11-03 (« ok »), deux exceptions tranchées 
 ## 16. Phase 0 — lot 5 : angle de mesure donnée, au rapporteur (validée le 2026-11-03)
 
 BO 6e « Mesurer un angle » (6-169), « Construire un angle de mesure donnée » (6-170) ; outil n° 4 de
-[outils-manquants.md](outils-manquants.md). Le CM2 n'utilise pas le rapporteur (BO CM2 grandeurs) : 6e
+[outils-manquants.md](../../wip/outils-manquants.md). Le CM2 n'utilise pas le rapporteur (BO CM2 grandeurs) : 6e
 d'abord. Existant : le dessin du rapporteur (`constructions-v2/instruments/components/Protractor.svelte`,
 deux échelles, rayon `PROTRACTOR_RADIUS`) et sa chorégraphie (`bissectrice @mesure`) ; aucun geste élève.
 

@@ -1,6 +1,6 @@
 /**
  * Point construit, de proche en proche (chantier `controles-figure`, décision de
- * David du 2026-11-03, `docs/wip/controles-figure-progress.md` § 14 et § 15).
+ * David du 2026-11-03, `docs/archive/wip/controles-figure-progress.md` § 14 et § 15).
  *
  * Sur papier uni, un point ne compte que s'il est un point de la figure ou
  * l'intersection de deux traits EUX-MÊMES construits : droite par deux points

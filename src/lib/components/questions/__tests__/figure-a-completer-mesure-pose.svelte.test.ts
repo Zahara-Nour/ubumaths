@@ -3,7 +3,7 @@
  * ========================================================
  *
  * Chantier `controles-figure`, lot 8 (phase 0 validée par David le 2026-11-03,
- * `docs/wip/controles-figure-progress.md` § 23) : `mesure AOB, rapporteur posé`.
+ * `docs/archive/wip/controles-figure-progress.md` § 23) : `mesure AOB, rapporteur posé`.
  * Le rapporteur est là dès le chargement, figé ; aucun outil, aucun Effacer ;
  * l'élève tape la mesure. Le rapporteur reste posé à la correction.
  */

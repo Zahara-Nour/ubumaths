@@ -1,7 +1,7 @@
 /**
  * Juge d'une case « figure » : construire un triangle de trois longueurs données
  * (`verifier: triangle ABC : AC = u ; BC = v`, chantier `controles-figure`, lot 4,
- * phase 0 validée par David le 2026-11-03, `docs/wip/controles-figure-progress.md`
+ * phase 0 validée par David le 2026-11-03, `docs/archive/wip/controles-figure-progress.md`
  * § 13).
  *
  * Le côté [AB] est tracé ; les longueurs à reporter sont des segments de la figure

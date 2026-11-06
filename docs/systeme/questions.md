@@ -814,11 +814,15 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    une droite choisie par un point (écrite `droite(…)`), compas = cercle par son centre et un point
    (`cercle(…)`), report (lot 4) = deux touchers prennent l'écartement, chaque toucher suivant pique un
    cercle de ce rayon (`report(…)`, écartement gardé pour juger s'il est construit ; reprendre Report ou
-   changer d'outil le lâche, « Effacer » sans cercle aussi) ; la palette de `point` le reçoit (4e
+   changer d'outil le lâche, « Effacer » sans cercle aussi) ; le Compas, lui, ne garde aucun écartement
+   (chaque cercle se règle par son centre et un point) : deux cercles égaux à rayon libre se tracent au
+   Report ; la palette de `point` le reçoit (4e
    sommet) ; chaque toucher s'aimante sur un point nommé, puis une intersection de deux traits ou un bout
    de segment (de la figure ou de l'élève, `SnapTargets.ends` : le plus proche du toucher l'emporte),
    puis un trait (`instruments.ts`), en pleine précision : une construction exacte arrive exacte au juge
-   (1e-9 près). Correction (point) : chaque point en pointillés avec son
+   (1e-9 près). Les tests de juge tracent par de vrais touchers (`addTap`, `drawing.ts`) et ceux
+   d'écran par des touchers sur la vue, jamais par une réponse écrite à la main : seul ce chemin passe
+   par l'aimantation et le registre des traits construits. Correction (point) : chaque point en pointillés avec son
    nom ; symétrique : [AA'] codé (angle droit pour un axe, une marque sur chaque moitié). Réponse illisible ou démesurée
    (`CONSTRUCTION_ANSWER_LIMITS`) → faux sans message. Les positions des points viennent d'un
    **registre** (`constructionPositions`), comme le PDF des figures : le juge reste léger (sans lui,

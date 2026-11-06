@@ -5,7 +5,7 @@
  * `cercle c = cercle_circonscrit(A, B, C)` : un des cercles tracés par l'élève
  * (compas) est le cercle que l'expression du langage des figures donne ; les
  * autres cercles et les droites sont des traits de construction, ignorés
- * (phase 0 validée par David le 2026-11-02, `docs/wip/controles-figure-progress.md`
+ * (phase 0 validée par David le 2026-11-02, `docs/archive/wip/controles-figure-progress.md`
  * § 11).
  *
  * Papier uni seulement (décision 2) : le cercle doit être CONSTRUIT, son centre
