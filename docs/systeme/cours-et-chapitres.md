@@ -403,7 +403,10 @@ scolaire de l'école (`getClassSessionCalendar`).
 **Format du texte** (séance et travaux) : **ubumark**, depuis le chantier cahier-ubumark
 (décision de David du 2026-10-25). L'éditeur de séance lit le markdown de chaque
 `RichTextEditor` **au moment de l'envoi** (`getMarkdown`, dans le `use:enhance`), pas par une
-liaison : la liaison markdown attend 150 ms après la dernière frappe. La lecture passe par
+liaison : la liaison markdown attend 150 ms après la dernière frappe. Tant qu'un éditeur n'est
+pas créé (`isReady()` faux : import de MathLive en cours ou échoué), c'est le contenu chargé qui
+part, inchangé — `getMarkdown()` rendrait `''` et effacerait la séance. Les champs cachés
+`lessonContent` / `homeworkItems` portent ce même contenu chargé (repli sans JavaScript). La lecture passe par
 `JournalContent` → `MarkdownRenderer` (jamais `{@html}`), avec le lecteur des références
 (`internalLinks` : `student` sur la page élève, `public` + jeton sur `/cahier/[token]`). Les
 aperçus (grille, cartes, liste élève) passent par `journalContentPreview` : texte brut, références
@@ -633,3 +636,8 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
     le modèle s'édite sur sa page — serveur livré à l'étape 3b, interface à l'étape 3c
     ([journal](../archive/wip/refonte-modeles-chapitre-progress.md)). Le bouton « Mettre à jour depuis un
     chapitre » a disparu, et l'ancien circuit des versions a été supprimé à l'étape 5A.
+12. **Vidéo du cahier chargée depuis n'importe quel hôte** (audit de #2435, 2026-11-06, non
+    bloquant) : le cahier en ubumark est rendu en mode complet ; une vidéo `https://` écrite par le
+    prof (`VideoDisplay.svelte`, CSP `media-src … https:` de `src/hooks.server.ts`) est chargée par
+    chaque lecteur, visiteurs anonymes du lien public compris (leur adresse IP part chez l'hôte).
+    L'ancienne chaîne HTML n'autorisait pas `<video>`. À trancher par David.

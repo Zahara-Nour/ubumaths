@@ -57,13 +57,19 @@
 	// une prop explicite l'emporte.
 	const reader = readInternalLinks();
 
+	// `resolve()` de SvelteKit substitue les paramètres sans les encoder : un
+	// `classId` mal formé finirait tel quel dans le `href`. Même garde que
+	// `linkifyResourceReferences`.
+	const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+
 	const resolved = $derived.by(() => {
 		const fromContext = reader();
+		const rawClassId = classId ?? fromContext.classId;
 		return resolveResource(referenceType as ResourceKind, uuid, {
 			role: role ?? fromContext.role,
 			label,
 			context: {
-				classId: classId ?? fromContext.classId,
+				classId: rawClassId && UUID.test(rawClassId) ? rawClassId : undefined,
 				shareToken: shareToken ?? fromContext.shareToken
 			}
 		});

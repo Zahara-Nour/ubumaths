@@ -76,6 +76,18 @@
 	let lessonEditor: ReturnType<typeof RichTextEditor> | null = $state(null);
 	let homeworkEditors: Record<string, ReturnType<typeof RichTextEditor> | null> = $state({});
 
+	/**
+	 * Le texte d'un éditeur à l'envoi, ou `fallback` (le contenu chargé) tant que
+	 * l'éditeur n'est pas créé : `getMarkdown()` rendrait alors `''`, et un clic
+	 * sur « Enregistrer » pendant le chargement effacerait la séance.
+	 */
+	function editorText(
+		ref: ReturnType<typeof RichTextEditor> | null | undefined,
+		fallback: string
+	): string {
+		return ref?.isReady() ? ref.getMarkdown() : fallback;
+	}
+
 	/** Ce que l'éditeur doit charger : le markdown, ou le HTML d'avant le chantier. */
 	function editorInput(content: string): { markdownValue?: string; htmlValue?: string } {
 		return isLegacyHtmlContent(content) ? { htmlValue: content } : { markdownValue: content };
@@ -209,7 +221,7 @@
 	function serializeHomework(): string {
 		return JSON.stringify(
 			homeworkItems.map((t) => ({
-				content: homeworkEditors[t.key]?.getMarkdown() ?? t.content,
+				content: editorText(homeworkEditors[t.key], t.content),
 				dueDate: t.dueDate
 			}))
 		);
@@ -614,7 +626,7 @@
 		use:enhance={({ formData }) => {
 			isSaving = true;
 			// Lu dans les éditeurs au moment de l'envoi : voir `lessonContent`.
-			formData.set('lessonContent', lessonEditor?.getMarkdown() ?? lessonContent);
+			formData.set('lessonContent', editorText(lessonEditor, lessonContent));
 			formData.set('homeworkItems', serializeHomework());
 			return async ({ result, update: formUpdate }) => {
 				isSaving = false;
@@ -656,6 +668,9 @@
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
+					<!-- Repli sans JavaScript : le contenu chargé, inchangé. Remplacé à
+					     l'envoi par le texte de l'éditeur (`use:enhance`). -->
+					<input type="hidden" name="lessonContent" value={lessonContent} />
 					<RichTextEditor
 						bind:this={lessonEditor}
 						{...editorInput(lessonContent)}
@@ -680,6 +695,13 @@
 					</Card.Description>
 				</Card.Header>
 				<Card.Content class="space-y-4">
+					<input
+						type="hidden"
+						name="homeworkItems"
+						value={JSON.stringify(
+							homeworkItems.map((t) => ({ content: t.content, dueDate: t.dueDate }))
+						)}
+					/>
 					{#if !data.hasSchedule}
 						<!-- Trois des quatre classes actives sont dans ce cas. Un menu vide
 						     bloquerait la saisie : on retombe sur une date libre, en disant

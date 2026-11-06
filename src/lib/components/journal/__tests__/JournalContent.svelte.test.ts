@@ -27,7 +27,7 @@ afterEach(() => {
 /** Rend dans un <main>, décor de l'application, et rend le conteneur. */
 async function rendre(props: {
 	content: string;
-	links: { role: 'student' | 'public'; shareToken?: string };
+	links: { role: 'student' | 'public' | 'teacher'; shareToken?: string; classId?: string };
 }): Promise<HTMLElement> {
 	const target = document.body.appendChild(document.createElement('main'));
 	cibles.push(target);
@@ -93,6 +93,18 @@ describe('JournalContent — markdown', () => {
 		});
 		expect(container.querySelector('a.internal-link')).toBeNull();
 		expect(container.textContent).toContain('Fiche second degré');
+	});
+
+	it('prof : un classId mal formé n’entre jamais dans une adresse', async () => {
+		const CLASSE = '44444444-4444-4444-8444-444444444444';
+		const chapitre = `[[chapter:${FICHE}|Chapitre]]`;
+		const valide = await rendre({ content: chapitre, links: { role: 'teacher', classId: CLASSE } });
+		expect(valide.querySelector('a.internal-link')?.getAttribute('href')).toContain(CLASSE);
+		const forge = await rendre({
+			content: chapitre,
+			links: { role: 'teacher', classId: '../../admin?x=' }
+		});
+		expect(forge.querySelector('a.internal-link')).toBeNull();
 	});
 
 	it('une balise tapée reste du texte, jamais un élément', async () => {

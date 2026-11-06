@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-06, PR 1 en cours (pas encore mergée)._
 
 - **État** : PR 1 codée (écriture markdown, lecture `JournalContent`, lecture double), testée dans le navigateur (prof, élève, lien public). Revue en cours.
 - **Prochaine action** : merge PR 1 → attendre le `deploy:prod` (David) → PR 2 = migration de conversion des 4 lignes (s'arrêter, montrer avant/après) → PR 3 = retrait lecture HTML → PR 4 = énigmes.
-- **En attente de David** : `deploy:prod` après le merge de la PR 1.
+- **En attente de David** : `deploy:prod` après le merge de la PR 1 ; vidéo d'un hôte tiers chargée par les lecteurs du lien public (écart 12 de `cours-et-chapitres.md`) : fermer ou non.
 - **Pièges en cours** : cookies partagés sur `localhost` entre ports → tester sur `cahier.localhost:5178` (prof), `eleve.localhost`, `public.localhost`.
 - **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark`.
 
@@ -94,3 +94,5 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 - Page prof : `getMarkdown()` de chaque éditeur dans le `use:enhance` (la liaison markdown a un délai de 150 ms) ; HTML hérité chargé par `htmlValue`, réenregistré en markdown.
 - Vérifié dans le navigateur (base locale) : saisie + enregistrement immédiat (dernier mot gardé) ; séance HTML → élève OK → réenregistrée en markdown ; formule rendue, `<b>` tapé reste du texte ; lien public → `/cahier/<jeton>/fiche/<id>`.
 - Preuve rouge : sans la modif d'`InternalLink`, 2 tests du lien public échouent.
+- Revue de code : 1 bloquant corrigé — `getMarkdown()` rend `''` avant la création de l'éditeur, un clic pendant le chargement effaçait la séance. `isReady()` exporté par `RichTextEditor`, repli au contenu chargé, champs cachés remis (repli sans JS). Test rouge puis vert ; réessayé dans le navigateur.
+- Audit sécurité : rien de bloquant. N2 (`classId` non validé dans `InternalLink`) corrigé, test rouge puis vert. N1 (vidéo tierce sur le lien public) → écart 12, question à David.

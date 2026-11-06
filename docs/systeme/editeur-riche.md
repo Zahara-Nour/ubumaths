@@ -16,7 +16,7 @@ couvre:
 
 # Éditeur riche (TipTap) et affichage sûr du contenu écrit
 
-> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; formules du cahier (`transformMathHtml`) le 2026-11-06.
+> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; formules du cahier (`transformMathHtml`) le 2026-11-06. `isReady()` (éditeur créé, sinon `getMarkdown()` rend `''`) le 2026-11-06.
 > Voisins, non recopiés ici : l'usage de `RichTextEditor` et `RichTextDisplay` est dans
 > [composants-ui.md](../pratiques/composants-ui.md) ; la conversion TipTap ↔ markdown
 > (`markdown-import.ts`, `markdown-export.ts`) et les extensions de `src/lib/extensions/` sont
