@@ -808,3 +808,9 @@ tag ne change aucune règle.
 - Corrigé en route : 05, dessins du choix « où voit-on le périmètre ? » — contour `gris` invisible sur fond sombre →
   `noir` (suit le thème), tour, intérieur et côté en rouge.
 - 2026-11-06 : #2414 mergée (CI verte ; merge retardé par un `deploy:prod` en cours).
+- 2026-11-06 : `create-questions --publier` (David) : 8 brouillons en prod, relus au MCP (draft, CE2, niveaux 1, 2, 5,
+  6, 1, 2, 4, 5 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids commités (les fichiers du
+  dépôt principal, où le script les avait écrits, rendus propres). Migration
+  `20261106050331_questions_ce2_lot9_rangement_tags` + test : rouge sans le corps (6 échecs sur 10), vert 10/10 ;
+  résolution des 8 chemins vérifiée en prod (nœud = celui du point). « Périmètres » a trois sous-notions (carré,
+  rectangle, disque) : admises par la garde, 042 et 044 vont sur la notion, où sont leurs points.
