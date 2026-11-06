@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après la publication du lot 10 (§ 86)._
+_Mis à jour le 2026-11-06, après #2417 et la page à cocher du lot 11 (§ 92)._
 
-- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), 11 A et 11 B en brouillon en prod ; migration de rangement des 15 (§ 91, PR).
-- **Prochaine action** : merger la PR de la migration (`check:migrations --pr`), `db:migrate` depuis le
-  dépôt principal, vérifier au MCP ; puis page à cocher des 15, publication.
-- **En attente de David** : rien.
+- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), lot 11 : 15 brouillons rangés et tagués en prod, page à cocher publiée (§ 92).
+- **Prochaine action** : lire et compter les verdicts de la page à cocher
+  (https://claude.ai/artifact/LvUUGf3FHn7RGroPjFtsPB) ; puis `publier-lot` en simulation sur
+  `2de-programmes-11a` et `2de-programmes-11b`, David lance `--publier`. Dernier lot de la seconde.
+- **En attente de David** : relecture des 15 fiches.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
   dossier, variables Supabase locales passées à la main (il ne lit que `.env` = prod) ; lettre ≠
   étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lot11-rangement`.
+- **Worktree / branche** : aucun (publication depuis le dépôt principal).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2327,3 +2328,14 @@ une migration, une page à cocher ; ← seulement dans 2-219).
 - Migration `20261106050048_questions_2de_lot11_rangement_tags` (gabarit du lot 10, sans la partie
   « anciens ») : 15 nœuds + tags. Test d'intégration 11/11, 6 rouges sans le corps de la migration ;
   `types:cliquet` tenu.
+
+## 92. Lot 11 rangé en prod, page à cocher (2026-11-06)
+
+- Audit `security-auditor` : aucun finding bloquant ; 3 faibles, communs au gabarit du lot 10 (lock_timeout
+  `set local` sans effet hors transaction explicite ; pas de garde `status = 'draft'` ; le rollback remet le
+  nœud à null sans vérifier qu'il est encore celui posé). Laissés en l'état, comme au lot 10.
+- **#2417 mergée** (CI verte, `check:migrations --pr` propre), `db:migrate` (seule migration en attente) ;
+  MCP : 15 brouillons sur leur nœud, un point chacun, `updated_at` inchangés.
+- Page à cocher : 15 fiches, aucune alerte ; capacité `db`, `verdicts` vide ;
+  https://claude.ai/artifact/LvUUGf3FHn7RGroPjFtsPB . Rendu à 390 px non vérifié (fenêtre Chrome en plein
+  écran, redimensionnement sans effet).
