@@ -10,9 +10,9 @@ _Mis à jour le 2026-11-06, phase 0 du lot 11 écrite (§ 17)._
 
 - **État** : lots 1 à 10 en prod et publiés. Relevé MCP : **8 points CE2 sans modèle** — 001, 002 (`collection`
   `centaines:`, outil neuf) et les 6 de la classe D (086, 039, 043, 051, 065, 070 : manipulation).
-- **Prochaine action** : lot 11 (§ 17 : 001, 002, matériel de 005, outil `centaines:` de #2420, en prod) — phase 0 à
-  valider, puis `lot-ce2-11.py` dans le worktree ; ensuite 039 et 070 avec la case « figure » (comme CE1-072 / 074).
-- **En attente de David** : les 3 questions du § 17.
+- **Prochaine action** : lot 11 (§ 17 : 001, 002, matériel de 005, outil `centaines:` de #2420, en prod) — phase 0
+  validée (« je suis tes recos »), écrire `lot-ce2-11.py` dans le worktree ; ensuite 039 et 070 avec la case « figure » (comme CE1-072 / 074).
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
   `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
@@ -894,7 +894,7 @@ tag ne change aucune règle.
   un point chacun (061, 062 ×2, 063, 064, 066 ×2). **Lot 10 clos.** Reste au CE2 : 001, 002 (outil `centaines:`) et
   les 6 points de la classe D.
 
-## 17. Lot 11 — dénombrer et construire avec le matériel multibase (phase 0 proposée le 2026-11-06, à valider)
+## 17. Lot 11 — dénombrer et construire avec le matériel multibase (phase 0 validée le 2026-11-06)
 
 Outil : `collection` `centaines:` / `milliers:` (#2420, **en prod depuis 0.75.0**) : plaques et gros cubes, grand bloc
 (plafonds milliers 9, centaines 40, dizaines 30, unités 100, valeur ≤ 9 999) ; `construire:` jusqu'à 9 999, réserve
@@ -924,3 +924,6 @@ Questions à David :
    phrase du BO (32 c) restant dans le modèle texte `03-unites-non-canoniques` déjà publié.
 3. **Question d'accès** : personne ne lit rien de plus (brouillons neufs ; la migration nœud + tag ne change aucune
    règle).
+
+Décision de David (2026-11-06, « je suis tes recos ») : pas de QCM de dessins ; au plus 20 centaines dans `03` ;
+question d'accès : rien de plus.
