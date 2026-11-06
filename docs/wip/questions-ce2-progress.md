@@ -993,3 +993,12 @@ Décisions de David (« je suis tes recos », 2026-11-06) : report au compas au 
 de `outils-manquants.md` (oui) ; niveaux 3 et 4, relevés avant la publication ; publication sans attendre l'essai
 tablette (comme le 09 du lot 8). Puis, la phase 0 corrigée (cercle circonscrit seul) : lot 12 sans cercle, le cercle
 de centre donné en ligne n° 19.
+
+### Lot 12 — écriture (2026-11-06)
+
+- Script `docs/wip/questions/lot-ce2-12.py` → `scripts/questions/ce2-12/` : 2 modèles, 26 specs ; `create-questions`
+  en simulation (prod) : 2 « à créer » ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-figures` : 0 problème.
+- Base locale, aperçu admin (port 5176) : triangle construit au report (R → T piqué en A, S → T piqué en B, puis
+  [AC] et [BC]) → « Juste » ; carré mal fermé → « Ta figure n'est pas fermée », bon carré en pointillés.
+- Corrigé en route : arcs du report coupés en bas de la fenêtre → fenêtre 0 ; 15 ; 0 ; 9, [AB] relevé d'un carreau.

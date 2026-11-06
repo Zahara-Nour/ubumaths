@@ -1,0 +1,240 @@
+{
+	"title": "Terminer un carré ou un rectangle aux côtés obliques sur quadrillage",
+	"description": "Un côté oblique du carré, deux côtés obliques du rectangle sont tracés : terminer la figure",
+	"grades": ["CE2"],
+	"level": 3,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un côté du carré est déjà tracé. Termine le carré en suivant les nœuds du quadrillage.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: segment\nverifier: carre A ; B\n---\n{{if:k==1|A = point(6, 4, visible=faux)\nB = point(9, 5, visible=faux)|{{if:k==2|A = point(6, 4, visible=faux)\nB = point(9, 6, visible=faux)|{{if:k==3|A = point(5, 4, visible=faux)\nB = point(9, 5, visible=faux)|{{if:k==4|A = point(6, 4, visible=faux)\nB = point(8, 7, visible=faux)|A = point(5, 4, visible=faux)\nB = point(9, 6, visible=faux)}}}}}}}}\nab = segment(A, B, epaisseur=3)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour aller d'un bout du côté à l'autre, on compte les carreaux : par exemple « 3 vers la droite, 1 vers le haut ».",
+					"Le côté suivant $\\textcolor{{{color:primary.0}}}{\\text{tourne d'un angle droit}}$ : on échange les deux nombres (« 1 vers la gauche, 3 vers le haut »). Les quatre côtés ont la $\\textcolor{{{color:primary.0}}}{\\text{même longueur}}$."
+				]
+			}
+		},
+		{
+			"statement": "Deux côtés du rectangle sont déjà tracés. Termine le rectangle en suivant les nœuds du quadrillage.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: segment\nverifier: rectangle A ; B ; C\n---\n{{if:k==1|A = point(2, 3, visible=faux)\nB = point(6, 5, visible=faux)\nC = point(5, 7, visible=faux)|{{if:k==2|A = point(3, 1, visible=faux)\nB = point(9, 3, visible=faux)\nC = point(8, 6, visible=faux)|{{if:k==3|A = point(4, 1, visible=faux)\nB = point(7, 4, visible=faux)\nC = point(5, 6, visible=faux)|{{if:k==4|A = point(2, 2, visible=faux)\nB = point(8, 5, visible=faux)\nC = point(7, 7, visible=faux)|A = point(7, 1, visible=faux)\nB = point(9, 5, visible=faux)\nC = point(3, 8, visible=faux)}}}}}}}}\nab = segment(A, B, epaisseur=3)\nbc = segment(B, C, epaisseur=3)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un rectangle, les $\\textcolor{{{color:primary.0}}}{\\text{côtés opposés}}$ sont parallèles et ont la même longueur.",
+					"On part du bout de chaque côté tracé et on refait le même chemin de carreaux que le côté d'en face."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré 1 : terminé d'un côté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(9;5;8;8)|segment(8;8;5;7)|segment(5;7;6;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carré 1 : terminé de l'autre côté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(9;5;10;2)|segment(10;2;7;1)|segment(7;1;6;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle au lieu d'un carré",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(9;5;7;11)|segment(7;11;4;10)|segment(4;10;6;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un côté manque",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(9;5;8;8)|segment(8;8;5;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un trait de trop",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(9;5;8;8)|segment(8;8;5;7)|segment(5;7;6;4)|segment(6;4;8;8)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré 2 : terminé d'un côté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(9;6;7;9)|segment(7;9;4;7)|segment(4;7;6;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : côtés sur les lignes, figure non fermée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(9;6;9;9)|segment(9;9;6;7)|segment(6;7;6;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré 3 : terminé d'un côté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(9;5;8;9)|segment(8;9;4;8)|segment(4;8;5;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carré 4 : terminé d'un côté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["segment(8;7;5;9)|segment(5;9;3;6)|segment(3;6;6;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carré 5 : terminé d'un côté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["segment(9;6;7;10)|segment(7;10;3;8)|segment(3;8;5;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle 1 : terminé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(5;7;1;5)|segment(1;5;2;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle 1 : côtés en deux morceaux",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(5;7;3;6)|segment(3;6;1;5)|segment(1;5;2;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle non fermé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(5;7;1;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quatrième sommet décalé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(5;7;2;5)|segment(2;5;2;3)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle 2 : terminé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(8;6;2;4)|segment(2;4;3;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle 3 : terminé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(5;6;2;3)|segment(2;3;4;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle 4 : terminé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["segment(7;7;1;4)|segment(1;4;2;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle 5 : terminé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["segment(3;8;1;4)|segment(1;4;7;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
