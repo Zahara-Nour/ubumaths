@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2435._
+_Mis à jour le 2026-11-06, après #2435 (PR 1b #2442 ouverte)._
 
-- **État** : PR 1 (#2435) mergée — cahier en ubumark, HTML hérité encore lu. PR 1b (vidéos hors stockage → lien, YouTube compris) ouverte.
-- **Prochaine action** : merger la PR 1b → `deploy:prod` (David, PR 1 + 1b ensemble) → PR 2 = migration de conversion des 4 lignes (s'arrêter, montrer avant/après) → PR 3 = retrait lecture HTML → PR 4 = énigmes.
-- **En attente de David** : `deploy:prod` après le merge de la PR 1b.
+- **État** : PR 1 (#2435) mergée. PR 1b (#2442, vidéos hors stockage → lien, YouTube compris) ouverte, revue sans bloquant, CI en cours.
+- **Prochaine action** : `gh pr checks 2442` sur le DERNIER commit → verte → `gh pr merge 2442 --merge` → supprimer la branche distante → mettre ce bloc à jour (commit direct sur `main`) → David : `deploy:prod` (PR 1 + 1b) → PR 2 = migration de conversion des 4 lignes (s'arrêter, montrer avant/après) → PR 3 = retrait lecture HTML (+ tests mineurs de la revue #2442) → PR 4 = énigmes.
+- **En attente de David** : `deploy:prod` après le merge de #2442.
 - **Pièges en cours** : cookies partagés sur `localhost` → tester sur `cahier.localhost:5178`, `eleve.localhost`, `public.localhost` ; Supabase local partagé, réinitialisé par d'autres sessions (recréer séance + jeton par l'API de service) ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed`.
 - **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark-videos`.
 
@@ -104,3 +104,4 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 
 - `provideProjectMediaOnly` (`restricted-rendering.ts`) + prop `projectMediaOnly` de `MarkdownRenderer`, passée par `JournalContent` ; `VideoDisplay` rend un lien `external-media` (`rel="noopener noreferrer nofollow"`, `target=_blank`) pour toute vidéo hors stockage Supabase, YouTube → `youtube.com/watch?v=…`.
 - Tests rouges puis verts (4) ; hors cahier, inchangé (test). Navigateur (lien public) : 0 `<video>`/`<iframe>`, 0 requête vers l'hôte tiers ou YouTube ; liens sur leur propre ligne.
+- Revue de #2442 : aucun bloquant. Mineurs non traités : lien `href="#"` si `sanitizeUrl` refuse l'adresse (inoffensif) ; pas de test pour une vidéo imbriquée (liste, citation via `StaticBlockNode`) ni pour `data:`, `//hôte`, adresse relative (le code les gère) — à ajouter à la PR 3, qui retouche ces tests.
