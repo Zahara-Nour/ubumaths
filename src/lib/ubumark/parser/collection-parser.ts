@@ -3,6 +3,8 @@
  * =====================================
  *
  * ```collection
+ * milliers: 1 ; 0
+ * centaines: 2 ; 4
  * dizaines: 3 ; 2
  * unités: 15 ; 8
  * dessin: barres | paquets
@@ -14,13 +16,18 @@
  * - `dizaines:` (0 à 10) et `unités:` (0 à 100) : au moins l'une des deux ;
  *   une valeur par collection, séparées par `;` (1 à 3 collections) ; une
  *   ligne absente vaut 0 pour chaque collection. 100 objets au plus en tout.
+ * - `centaines:` (plaques de cent) et `milliers:` (gros cubes de mille), CE1 et
+ *   CE2 : un bloc qui en écrit une est « grand » (`large`) — plafonds
+ *   `COLLECTION_LARGE_LIMITS` (milliers 9, centaines 40, dizaines 30, unités
+ *   100, valeur 9 999), objets dessinés plus petits, `dessin: barres` seulement.
+ *   Chantier `docs/wip/collection-centaines-progress.md`.
  * - Le reste est facultatif ; une clé inconnue ou une valeur hors liste est
- *   une erreur située, jamais un réglage ignoré. `centaines:` est réservée
- *   (CE1, plus tard).
+ *   une erreur située, jamais un réglage ignoré.
  *
- * - `construire: 34` (1 à 100) : l'élève construit la collection sur un plan
- *   vide ; `dizaines:`, `unités:`, `unités en:` et `légendes:` sont alors sans
- *   objet. `case: N` est posée par le générateur de questions, jamais par l'auteur.
+ * - `construire: 34` (1 à 9 999) : l'élève construit la collection sur un plan
+ *   vide ; les quantités, `unités en:` et `légendes:` sont alors sans objet. À
+ *   partir de 100, le bloc est grand (plaques, et gros cubes dès 1 000).
+ *   `case: N` est posée par le générateur de questions, jamais par l'auteur.
  *
  * Dans un modèle de question, `{{n}}` est résolu AVANT : le bloc ne lit que
  * des nombres. Une erreur ne fait pas disparaître le bloc (le nœud porte ses
@@ -38,6 +45,7 @@ import {
 	COLLECTION_BUILD_RANGE,
 	COLLECTION_CAPTION_MAX,
 	COLLECTION_DRAWINGS,
+	COLLECTION_LARGE_LIMITS,
 	COLLECTION_LIMITS,
 	COLLECTION_MAX_SETS,
 	COLLECTION_SIZE_CM,
@@ -79,13 +87,51 @@ const BLOCK_KEYS = [
 	'légendes',
 	'legendes',
 	'taille',
-	'centaines'
+	'centaines',
+	'milliers'
 ] as const;
 
 type Key =
-	'dizaines' | 'unités' | 'dessin' | 'unités en' | 'légendes' | 'taille' | 'construire' | 'case';
+	| 'milliers'
+	| 'centaines'
+	| 'dizaines'
+	| 'unités'
+	| 'dessin'
+	| 'unités en'
+	| 'légendes'
+	| 'taille'
+	| 'construire'
+	| 'case';
+
+/** Les lignes de quantités, du plus grand rang au plus petit */
+const COUNT_KEYS = ['milliers', 'centaines', 'dizaines', 'unités'] as const;
+type CountKey = (typeof COUNT_KEYS)[number];
+
+/** Rang d'une ligne de quantités, dans `CollectionSet` */
+const COUNT_FIELDS: Record<CountKey, keyof CollectionSet> = {
+	milliers: 'thousands',
+	centaines: 'hundreds',
+	dizaines: 'tens',
+	unités: 'units'
+};
+
+/** Valeur d'un objet de chaque rang */
+const COUNT_VALUES: Record<CountKey, number> = {
+	milliers: 1000,
+	centaines: 100,
+	dizaines: 10,
+	unités: 1
+};
+
+/** Une ligne `centaines:` ou `milliers:` fait du bloc un grand bloc */
+const LARGE_LINE_REGEX = /^\s*(centaines|milliers)\s*:/i;
+
+const LARGE_ONLY_BARS =
+	'centaines et milliers : seulement avec dessin: barres (matériel multibase)';
 
 const KEY_NAMES: Key[] = [
+	'milliers',
+	'centaines',
 	'dizaines',
 	'unités',
 	'dessin',
@@ -98,6 +144,8 @@ const KEY_NAMES: Key[] = [
 
 /** Clés sans objet sur un bloc à construire, et pourquoi */
 const NOT_WITH_BUILD: Partial<Record<Key, string>> = {
+	milliers: ' (l’élève part d’un plan vide)',
+	centaines: ' (l’élève part d’un plan vide)',
 	dizaines: ' (l’élève part d’un plan vide)',
 	unités: ' (l’élève part d’un plan vide)',
 	'unités en': ' (les objets se rangent d’office)',
@@ -155,6 +203,11 @@ export function findCollectionBlockSpans(
 
 /** Erreur d'une ligne, levée par les lecteurs de valeur */
 class LineError extends Error {}
+
+/** `9999` → `9 999`, pour les messages à l'auteur */
+function frenchInteger(value: number): string {
+	return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
 
 /** `2.5` → `2,5`, pour les messages à l'auteur */
 function frenchNumber(value: number): string {
@@ -219,11 +272,13 @@ function parseSize(value: string): number {
 	return cm;
 }
 
-/** Valeur à construire : entier de 1 à 100 */
+/** Valeur à construire : entier de 1 à 9 999 */
 function parseBuild(value: string): number {
 	const { min, max } = COLLECTION_BUILD_RANGE;
 	if (!INTEGER_REGEX.test(value) || Number(value) < min || Number(value) > max) {
-		throw new LineError(`construire « ${value} » : écris un nombre entier de ${min} à ${max}`);
+		throw new LineError(
+			`construire « ${value} » : écris un nombre entier de ${min} à ${frenchInteger(max)}`
+		);
 	}
 	return Number(value);
 }
@@ -238,10 +293,16 @@ export function parseCollectionContent(source: string): CollectionNode {
 	const fail = (line: number, message: string) =>
 		errors.push({ message: `Ligne ${line} : ${message}`, line });
 
-	let tens: number[] | null = null;
-	let tensLine = 1;
-	let units: number[] | null = null;
-	let unitsLine = 1;
+	// Un grand bloc se reconnaît avant de lire les quantités : leurs plafonds en dépendent
+	const isLarge = lines.some((line) => LARGE_LINE_REGEX.test(line));
+	const limits = isLarge ? COLLECTION_LARGE_LIMITS : COLLECTION_LIMITS;
+	const maxOf: Record<CountKey, number> = {
+		milliers: COLLECTION_LARGE_LIMITS.thousands,
+		centaines: COLLECTION_LARGE_LIMITS.hundreds,
+		dizaines: limits.tens,
+		unités: limits.units
+	};
+	const counts = new Map<CountKey, { values: number[]; line: number }>();
 	let captions: string[] | null = null;
 	let captionsLine = 1;
 	let drawing: CollectionDrawing = 'barres';
@@ -258,10 +319,6 @@ export function parseCollectionContent(source: string): CollectionNode {
 		const match = KEY_LINE_REGEX.exec(text);
 		if (!match) {
 			fail(lineNo, `ligne « ${text} » non comprise (attendu : clé: valeur, ex. unités: 23)`);
-			return;
-		}
-		if (plain(match[1]) === 'centaines') {
-			fail(lineNo, 'centaines : pas encore disponible (dizaines et unités seulement)');
 			return;
 		}
 		const key = normalizeKey(match[1]);
@@ -282,13 +339,11 @@ export function parseCollectionContent(source: string): CollectionNode {
 
 		try {
 			switch (key) {
+				case 'milliers':
+				case 'centaines':
 				case 'dizaines':
-					tens = parseCounts(value, 'dizaines', COLLECTION_LIMITS.tens);
-					tensLine = lineNo;
-					break;
 				case 'unités':
-					units = parseCounts(value, 'unités', COLLECTION_LIMITS.units);
-					unitsLine = lineNo;
+					counts.set(key, { values: parseCounts(value, key, maxOf[key]), line: lineNo });
 					break;
 				case 'légendes':
 					captions = parseCaptions(value);
@@ -324,6 +379,11 @@ export function parseCollectionContent(source: string): CollectionNode {
 	// TS les croit encore à leur valeur initiale)
 	const readBuild = build as number | undefined;
 	const readCase = caseIndex as number | undefined;
+	const readDrawing = drawing as CollectionDrawing;
+	const buildIsLarge = readBuild !== undefined && readBuild >= COLLECTION_BUILD_RANGE.large;
+	if ((isLarge || buildIsLarge) && readDrawing === 'paquets') {
+		fail(seen.get('dessin')!, LARGE_ONLY_BARS);
+	}
 	if (seen.has('construire')) {
 		for (const [key, why] of Object.entries(NOT_WITH_BUILD) as [Key, string][]) {
 			const line = seen.get(key);
@@ -335,7 +395,15 @@ export function parseCollectionContent(source: string): CollectionNode {
 		return {
 			type: 'collection',
 			source,
-			spec: { sets: [], captions: null, drawing, unitLayout: 'rangées', sizeCm, build: readBuild },
+			spec: {
+				sets: [],
+				captions: null,
+				drawing,
+				unitLayout: 'rangées',
+				sizeCm,
+				build: readBuild,
+				...(buildIsLarge && { large: true as const })
+			},
 			errors,
 			...(readCase !== undefined && { caseIndex: readCase })
 		};
@@ -343,33 +411,37 @@ export function parseCollectionContent(source: string): CollectionNode {
 	if (seen.has('case')) fail(seen.get('case')!, 'case: sans objet sans construire:');
 
 	// Les vérifications qui croisent deux lignes, une fois tout lu
-	const readTens = tens as number[] | null;
-	const readUnits = units as number[] | null;
 	const readCaptions = captions as string[] | null;
+	// Une ligne lue mais fausse a déjà son erreur : elle n'est pas « manquante »
+	const given = COUNT_KEYS.filter((key) => counts.has(key));
 	let sets: CollectionSet[] | null = null;
-	if (!seen.has('dizaines') && !seen.has('unités')) {
+	if (!COUNT_KEYS.some((key) => seen.has(key))) {
 		fail(1, 'il manque une quantité : dizaines: ou unités: (ex. unités: 23)');
 	} else if (errors.length === 0) {
-		if (readTens !== null && readUnits !== null && readTens.length !== readUnits.length) {
-			fail(
-				unitsLine,
-				`dizaines : ${readTens.length} valeur(s), unités : ${readUnits.length} : une par collection`
-			);
+		const lengths = given.map((key) => counts.get(key)!.values.length);
+		const lastLine = Math.max(...given.map((key) => counts.get(key)!.line));
+		if (new Set(lengths).size > 1) {
+			const detail = given.map((key, i) => `${key} : ${lengths[i]} valeur(s)`).join(', ');
+			fail(lastLine, `${detail} : une par collection`);
 		} else {
-			const count = (readTens ?? readUnits ?? []).length;
-			sets = Array.from({ length: count }, (_, i) => ({
-				tens: readTens?.[i] ?? 0,
-				units: readUnits?.[i] ?? 0
-			}));
+			sets = Array.from({ length: lengths[0] }, (_, i) => {
+				const set: CollectionSet = { thousands: 0, hundreds: 0, tens: 0, units: 0 };
+				for (const key of given) set[COUNT_FIELDS[key]] = counts.get(key)!.values[i];
+				return set;
+			});
 			sets.forEach((set, i) => {
-				const total = 10 * set.tens + set.units;
-				if (total > COLLECTION_LIMITS.total) {
-					const where = sets!.length > 1 ? ` (collection ${i + 1})` : '';
-					fail(
-						readUnits === null ? tensLine : unitsLine,
-						`${total} objets${where} : ${COLLECTION_LIMITS.total} au plus`
-					);
-				}
+				const total = COUNT_KEYS.reduce(
+					(sum, key) => sum + COUNT_VALUES[key] * set[COUNT_FIELDS[key]],
+					0
+				);
+				if (total <= limits.total) return;
+				const where = sets!.length > 1 ? ` (collection ${i + 1})` : '';
+				fail(
+					lastLine,
+					isLarge
+						? `valeur ${frenchInteger(total)}${where} : ${frenchInteger(limits.total)} au plus`
+						: `${total} objets${where} : ${limits.total} au plus`
+				);
 			});
 			if (readCaptions !== null && readCaptions.length !== sets.length) {
 				fail(
@@ -386,7 +458,14 @@ export function parseCollectionContent(source: string): CollectionNode {
 	return {
 		type: 'collection',
 		source,
-		spec: { sets, captions: readCaptions, drawing, unitLayout, sizeCm },
+		spec: {
+			sets,
+			captions: readCaptions,
+			drawing,
+			unitLayout,
+			sizeCm,
+			...(isLarge && { large: true as const })
+		},
 		errors
 	};
 }

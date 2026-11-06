@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, phase 0 validée._
+_Mis à jour le 2026-11-06, code écrit, PR en cours._
 
-- **État** : phase 0 validée (Q1 à Q4 : recommandations retenues) · **Prochaine action** : tests rouges (parseur, scène, construire, PDF), puis code · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-collection-centaines`, `feat/collection-centaines`
+- **État** : code et tests faits (parseur, scène, construire, PDF, écran), rendu vérifié dans l'aperçu admin local · **Prochaine action** : PR, revue `code-reviewer`, CI, merge · **En attente de David** : rien · **Pièges en cours** : un grand bloc dans un choix de QCM (3 cm) sera très petit — non traité, à voir si un modèle le demande · **Worktree / branche** : `../ubumaths-wt-collection-centaines`, `feat/collection-centaines`
 
 ---
 
@@ -97,3 +97,9 @@ déduite de la valeur ; Q4 plafonds proposés.
 - 2026-11-06 : worktree ouvert, code relu (`collection-parser.ts`, `collection-scene.ts`,
   `collection-construire.ts`), BO relu ; phase 0 écrite.
 - 2026-11-06 : phase 0 validée par David (Q1 à Q4, recommandations).
+- 2026-11-06 : tests rouges (`collection-centaines.test.ts`, 35), puis code : `CollectionSet` à quatre
+  rangs, `spec.large`, `COLLECTION_LARGE_LIMITS`, `COLLECTION_LARGE_VIEW` (objets à moitié taille),
+  plaques et gros cubes (faces et quadrillage calculés par la scène), réserve de `construire:` déduite de
+  la valeur. Choix d'exécution : 12 cm pleine largeur par défaut pour un grand bloc (sinon un cube fait
+  moins de 2 mm à l'écran) ; un petit bloc garde sa graine (dessins publiés inchangés, instantanés
+  verts). Compilation Typst réelle verte. Rendu vérifié à l'écran (aperçu de `/dashboard/admin/questions/create`, serveur 127.0.0.1:5178).

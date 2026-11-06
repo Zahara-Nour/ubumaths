@@ -4,7 +4,9 @@
 
 	L'élève construit une collection de cardinal donné (CP-002 ; chantier
 	`docs/wip/construire-progress.md` § 3, 4 bis, 5) : il pose des barres de dix
-	(ou paquets) et des cubes (ou jetons) sur un plan de travail vide.
+	(ou paquets) et des cubes (ou jetons) sur un plan de travail vide. À partir
+	de 100, aussi des plaques de cent, et des gros cubes dès 1 000 (CE1, CE2 ;
+	chantier `docs/wip/collection-centaines-progress.md`).
 
 	- Toucher la réserve pose un objet ; toucher un objet posé l'enlève (Q1) ;
 	  « Enlever » à côté de chaque objet de la réserve, pour le clavier.
@@ -31,7 +33,11 @@
 </script>
 
 <script lang="ts">
-	import type { CollectionSet, CollectionSpec } from '$lib/ubumark/types/collection';
+	import {
+		COLLECTION_SIZE_CM,
+		type CollectionSet,
+		type CollectionSpec
+	} from '$lib/ubumark/types/collection';
 	import {
 		COLLECTION_VIEW,
 		findCollectionItemAt,
@@ -39,13 +45,16 @@
 	} from '$lib/ubumark/utils/collection-scene';
 	import {
 		addToBuild,
-		BUILD_LIMITS,
 		buildAnswer,
 		buildFromAnswer,
+		buildLimits,
 		buildScene,
 		buildValue,
 		EMPTY_BUILD,
+		isLargeBuild,
+		PIECE_VALUES,
 		removeFromBuild,
+		reservePieces,
 		reserveScene,
 		solutionBuild,
 		type BuildPiece
@@ -73,9 +82,28 @@
 
 	/** Ce que dit chaque bouton, selon le matériel */
 	const NAMES = {
-		barres: { tens: 'une barre de dix', units: 'un cube' },
-		paquets: { tens: 'un paquet de dix', units: 'un jeton' }
+		barres: {
+			thousands: 'un gros cube de mille',
+			hundreds: 'une plaque de cent',
+			tens: 'une barre de dix',
+			units: 'un cube'
+		},
+		// Centaines et milliers refusés avec les paquets (parseur) : noms jamais montrés
+		paquets: {
+			thousands: 'un paquet de mille',
+			hundreds: 'un paquet de cent',
+			tens: 'un paquet de dix',
+			units: 'un jeton'
+		}
 	} as const;
+
+	/** Hauteur de l'icône de chaque pièce dans la réserve */
+	const ICON_CLASSES: Record<BuildPiece, string> = {
+		thousands: 'construire-icone-groupe',
+		hundreds: 'construire-icone-groupe',
+		tens: 'construire-icone-groupe',
+		units: 'construire-icone-unite'
+	};
 
 	/**
 	 * Construction de l'élève : gardée ici, la case ne garde que la valeur. Recalculée
@@ -88,16 +116,21 @@
 	let kept: CollectionSet = EMPTY_BUILD;
 	let current = $derived.by(() => {
 		const value = answer?.value ?? '';
-		return value === buildAnswer(kept) ? kept : buildFromAnswer(value);
+		return value === buildAnswer(kept) ? kept : buildFromAnswer(value, target);
 	});
 
 	let locked = $derived(answer?.disabled ?? false);
 	let names = $derived(NAMES[spec.drawing]);
-	let scene = $derived(buildScene(spec.drawing, current));
+	let large = $derived(isLargeBuild(target));
+	let limits = $derived(buildLimits(target));
+	let scene = $derived(buildScene(spec.drawing, current, large));
 	let planHeight = $derived(Math.max(scene.height, PLAN_MIN_HEIGHT));
-	let reserve = $derived(reserveScene(spec.drawing));
-	let solution = $derived(buildScene(spec.drawing, solutionBuild(target)));
+	let pieces = $derived(reservePieces(target));
+	/** Une pièce de chaque sorte, dans l'ordre de `pieces` */
+	let reserve = $derived(reserveScene(spec.drawing, target));
+	let solution = $derived(buildScene(spec.drawing, solutionBuild(target), large));
 	let size = $derived(spec.sizeCm == null ? undefined : `${spec.sizeCm}cm`);
+	let defaultSize = $derived(large ? `${COLLECTION_SIZE_CM.large}cm` : undefined);
 	let value = $derived(buildValue(current));
 
 	function update(next: CollectionSet) {
@@ -114,7 +147,11 @@
 		if (point === null) return;
 		const index = findCollectionItemAt(scene, point);
 		if (index === null) return;
-		update(removeFromBuild(current, scene.items[index].value === 10 ? 'tens' : 'units'));
+		const touched = scene.items[index].value;
+		const piece = (Object.keys(PIECE_VALUES) as BuildPiece[]).find(
+			(p) => PIECE_VALUES[p] === touched
+		);
+		if (piece !== undefined) update(removeFromBuild(current, piece));
 	}
 
 	/** Boîte de vue serrée autour d'un objet de la réserve */
@@ -129,13 +166,13 @@
 			type="button"
 			class="construire-ajouter flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-md border border-border bg-background px-2 py-1 hover:bg-muted disabled:opacity-40"
 			aria-label="Ajouter {names[piece]}"
-			disabled={locked || current[piece] >= BUILD_LIMITS[piece]}
-			onclick={() => update(addToBuild(current, piece))}
+			disabled={locked || current[piece] >= limits[piece]}
+			onclick={() => update(addToBuild(current, piece, limits))}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox={iconViewBox(item)}
-				class={piece === 'tens' ? 'construire-icone-groupe' : 'construire-icone-unite'}
+				class={ICON_CLASSES[piece]}
 				aria-hidden="true"
 			>
 				<CollectionObjets items={[item]} />
@@ -165,6 +202,7 @@
 		class="construire-plan"
 		class:construire-plan-verrouille={locked}
 		style:--collection-taille={size}
+		style:--collection-defaut={defaultSize}
 		onclick={handleTap}
 	>
 		<rect
@@ -182,8 +220,9 @@
 
 	{#if showReserve}
 		<div class="construire-reserve flex flex-wrap items-center justify-center gap-3">
-			{@render reserveItem('tens', reserve.items[0])}
-			{@render reserveItem('units', reserve.items[1])}
+			{#each pieces as piece, i (piece)}
+				{@render reserveItem(piece, reserve.items[i])}
+			{/each}
 			<button
 				type="button"
 				class="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground disabled:opacity-40"
@@ -215,6 +254,7 @@
 				class="construire-solution"
 				style:--collection-ratio={solution.width / COLLECTION_VIEW.fullWidth}
 				style:--collection-taille={size}
+				style:--collection-defaut={defaultSize}
 			>
 				<rect
 					class="construire-cadre"
@@ -232,7 +272,7 @@
 
 <style>
 	.construire-plan {
-		width: var(--collection-taille, 8cm);
+		width: var(--collection-taille, var(--collection-defaut, 8cm));
 		max-width: 100%;
 		height: auto;
 		/* Chrome rogne la boîte au pixel (cf. Collection.svelte) */
@@ -247,7 +287,7 @@
 	}
 
 	.construire-solution {
-		width: calc(var(--collection-taille, 8cm) * var(--collection-ratio));
+		width: calc(var(--collection-taille, var(--collection-defaut, 8cm)) * var(--collection-ratio));
 		max-width: 100%;
 		height: auto;
 		overflow: visible;

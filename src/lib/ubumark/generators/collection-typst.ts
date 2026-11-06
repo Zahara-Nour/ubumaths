@@ -6,8 +6,8 @@
  * `place`) depuis la MÊME scène que l'écran (`buildCollectionScene`) : mêmes
  * objets, mêmes positions. Ni paquet, ni image.
  *
- * Échelle : `taille:` (8 cm par défaut) est la largeur d'une collection pleine
- * largeur ; une collection plus étroite garde la même échelle. Plusieurs
+ * Échelle : `taille:` (8 cm par défaut, 12 cm pour un grand bloc à centaines
+ * ou milliers) est la largeur d'une collection pleine largeur ; une collection plus étroite garde la même échelle. Plusieurs
  * collections côte à côte, réduites ensemble si elles dépassent la page.
  *
  * Noir sur blanc (photocopie) : objets gris clair cernés de noir.
@@ -25,7 +25,9 @@
 import {
 	buildCollectionScene,
 	COLLECTION_VIEW,
-	type CollectionItem
+	type CollectionItem,
+	type CollectionLine,
+	type CollectionPoint
 } from '../utils/collection-scene';
 import { reserveScene } from '../utils/collection-construire';
 import {
@@ -49,6 +51,9 @@ const ROW_MAX_CM = 16;
 const GAP_CM = 0.6;
 
 const OBJECT_FILL = 'luma(215)';
+
+/** Gros cube : dessus plus clair, côté plus sombre (le relief se lit en noir et blanc) */
+const FACE_FILLS = ['luma(215)', 'luma(240)', 'luma(185)'] as const;
 
 /** Bloc à construire : hauteur du cadre vide (part de sa largeur), échelle de la réserve */
 const BUILD_FRAME_RATIO = 0.6;
@@ -79,9 +84,28 @@ function itemsTypst(items: CollectionItem[], k: number): string[] {
 		);
 	};
 
+	const segment = (l: CollectionLine, width: number) =>
+		`  #place(top + left, line(start: (${cm(l.x1 * k)}, ${cm(l.y1 * k)}), end: (${cm(l.x2 * k)}, ${cm(l.y2 * k)}), stroke: ${cm(width * k)} + black))`;
+	const polygon = (points: CollectionPoint[], fill: string) =>
+		`  #place(top + left, polygon(fill: ${fill}, stroke: ${stroke}, ${points.map((p) => `(${cm(p.x * k)}, ${cm(p.y * k)})`).join(', ')}))`;
+
 	const parts: string[] = [];
 	for (const item of items) {
 		switch (item.kind) {
+			case 'plaque':
+				parts.push(
+					place(
+						item.x,
+						item.y,
+						`rect(width: ${cm(item.width * k)}, height: ${cm(item.height * k)}, fill: ${OBJECT_FILL}, stroke: ${stroke})`
+					)
+				);
+				for (const l of item.lines ?? []) parts.push(segment(l, 0.3));
+				break;
+			case 'gros-cube':
+				(item.faces ?? []).forEach((face, i) => parts.push(polygon(face, FACE_FILLS[i])));
+				for (const l of item.lines ?? []) parts.push(segment(l, 0.3));
+				break;
 			case 'jeton':
 				parts.push(disc(item.cx, item.cy));
 				break;
@@ -128,8 +152,8 @@ function itemsTypst(items: CollectionItem[], k: number): string[] {
 }
 
 /** Bloc à construire : la réserve en petit, puis le cadre vide en pointillés */
-function buildTypst(spec: CollectionSpec, widthCm: number): string {
-	const reserve = reserveScene(spec.drawing);
+function buildTypst(spec: CollectionSpec, build: number, widthCm: number): string {
+	const reserve = reserveScene(spec.drawing, build);
 	const k = (widthCm / COLLECTION_VIEW.fullWidth) * RESERVE_SCALE;
 	return [
 		'#align(center)[#block(breakable: false)[',
@@ -146,12 +170,13 @@ function buildTypst(spec: CollectionSpec, widthCm: number): string {
 export function generateCollectionTypst(node: CollectionNode): string {
 	const spec = node.spec;
 	if (node.errors.length > 0 || spec === null) return UNAVAILABLE_TYPST;
+	const defaultCm = spec.large ? COLLECTION_SIZE_CM.large : COLLECTION_SIZE_CM.default;
 	if (spec.build !== undefined) {
-		return buildTypst(spec, spec.sizeCm ?? COLLECTION_SIZE_CM.default);
+		return buildTypst(spec, spec.build, spec.sizeCm ?? defaultCm);
 	}
 
 	const scenes = spec.sets.map((_, i) => buildCollectionScene(spec, i));
-	const wanted = (spec.sizeCm ?? COLLECTION_SIZE_CM.default) / COLLECTION_VIEW.fullWidth;
+	const wanted = (spec.sizeCm ?? defaultCm) / COLLECTION_VIEW.fullWidth;
 	// Plusieurs collections : réduites ensemble (même échelle), jamais plus larges que la page
 	const totalUnits = scenes.reduce((sum, s) => sum + s.width, 0);
 	const available = ROW_MAX_CM - GAP_CM * (scenes.length - 1);

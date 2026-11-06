@@ -11,7 +11,8 @@
 	- Nom accessible « Collection d'objets » : JAMAIS le nombre (ni texte, ni
 	  attribut), sinon un lecteur d'écran donnerait la réponse.
 	- Échelle : `taille:` du bloc, sinon `--collection-taille` (3 cm dans un
-	  choix de QCM), sinon 8 cm, pour une collection pleine largeur ; les plus
+	  choix de QCM), sinon 8 cm (12 cm pour un grand bloc à centaines ou
+	  milliers, `--collection-defaut`), pour une collection pleine largeur ; les plus
 	  étroites gardent la même échelle ; jamais plus large que le conteneur.
 	- Toucher pour marquer (décision 2) : un objet touché est barré, comme au
 	  crayon sur papier ; aide non jugée, rien n'est enregistré, et une nouvelle
@@ -27,6 +28,7 @@
 	import {
 		COLLECTION_ARIA_LABEL,
 		COLLECTION_DEFAULT_CAPTIONS,
+		COLLECTION_SIZE_CM,
 		COLLECTION_UNAVAILABLE,
 		type CollectionNode
 	} from '$lib/ubumark/types/collection';
@@ -67,6 +69,8 @@
 
 	/** Taille donnée par l'auteur : prioritaire sur celle du contexte (choix de QCM) */
 	let size = $derived(node.spec?.sizeCm == null ? undefined : `${node.spec.sizeCm}cm`);
+	/** Taille sans `taille:` ni contexte : plus grande pour un grand bloc (objets plus petits) */
+	let defaultSize = $derived(node.spec?.large ? `${COLLECTION_SIZE_CM.large}cm` : undefined);
 
 	/** Marques de l'élève, valables pour UNE collection (une autre repart sans marque) */
 	const marks = new SceneMarks(() => JSON.stringify(node.spec));
@@ -119,6 +123,7 @@
 						class="collection-dessin"
 						style:--collection-ratio={collection.scene.width / COLLECTION_VIEW.fullWidth}
 						style:--collection-taille={size}
+						style:--collection-defaut={defaultSize}
 						onclick={(event) => handleTap(event, c)}
 					>
 						<rect
@@ -148,7 +153,7 @@
 
 <style>
 	.collection-dessin {
-		width: calc(var(--collection-taille, 8cm) * var(--collection-ratio));
+		width: calc(var(--collection-taille, var(--collection-defaut, 8cm)) * var(--collection-ratio));
 		max-width: 100%;
 		height: auto;
 		/* Chrome rogne la boîte au pixel : sans ça, le bord droit du cadre (à un demi-trait du

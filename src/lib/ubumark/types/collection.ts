@@ -6,6 +6,8 @@
  * partie ; phase 0 : `docs/archive/wip/collection-progress.md`) :
  *
  * ```collection
+ * milliers: 1 ; 0
+ * centaines: 2 ; 4
  * dizaines: 3 ; 2
  * unités: 15 ; 8
  * dessin: barres | paquets
@@ -31,11 +33,12 @@ import type { BaseNode } from './ast';
 // ============================================================================
 
 /**
- * Largeur d'une collection « pleine largeur », en cm : 8 cm (écran et PDF), 3 cm dans
+ * Largeur d'une collection « pleine largeur », en cm : 8 cm (écran et PDF), 12 cm
+ * pour un bloc à centaines ou milliers (`large`, objets dessinés plus petits), 3 cm dans
  * un choix de QCM. Une collection plus étroite garde la même échelle : deux
  * collections comparées ont des objets de même taille.
  */
-export const COLLECTION_SIZE_CM = { min: 2, max: 12, default: 8, choice: 3 } as const;
+export const COLLECTION_SIZE_CM = { min: 2, max: 12, default: 8, choice: 3, large: 12 } as const;
 
 /** Nombre de collections d'un bloc (comparaison) */
 export const COLLECTION_MAX_SETS = 3;
@@ -43,8 +46,20 @@ export const COLLECTION_MAX_SETS = 3;
 /** Bornes des quantités (CP : nombres jusqu'à 100) */
 export const COLLECTION_LIMITS = { tens: 10, units: 100, total: 100 } as const;
 
-/** Valeur à construire (`construire:`) */
-export const COLLECTION_BUILD_RANGE = { min: 1, max: 100 } as const;
+/**
+ * Bornes d'un bloc à centaines ou milliers (CE1, CE2 : jusqu'à 9 999 ; le BO
+ * cite « 32 centaines », « 27 dizaines »). Phase 0 : `docs/wip/collection-centaines-progress.md`
+ */
+export const COLLECTION_LARGE_LIMITS = {
+	thousands: 9,
+	hundreds: 40,
+	tens: 30,
+	units: 100,
+	total: 9999
+} as const;
+
+/** Valeur à construire (`construire:`) ; à partir de `large`, plaques (et gros cubes dès 1 000) */
+export const COLLECTION_BUILD_RANGE = { min: 1, max: 9999, large: 100 } as const;
 
 /** Longueur maximale d'une légende, en caractères */
 export const COLLECTION_CAPTION_MAX = 40;
@@ -73,8 +88,10 @@ export type CollectionUnitLayout = (typeof COLLECTION_UNIT_LAYOUTS)[number];
 // NŒUD
 // ============================================================================
 
-/** Une collection : groupes de dix dessinés et objets isolés */
+/** Une collection : gros cubes de mille, plaques de cent, groupes de dix et objets isolés */
 export interface CollectionSet {
+	thousands: number;
+	hundreds: number;
 	tens: number;
 	units: number;
 }
@@ -90,6 +107,11 @@ export interface CollectionSpec {
 	sizeCm: number | null;
 	/** Valeur à construire (`construire:`) : plan vide, aucun ensemble dessiné (`sets` vide) */
 	build?: number;
+	/**
+	 * Bloc à centaines ou milliers (`centaines:` ou `milliers:` écrit, ou `construire:`
+	 * de 100 et plus) : plafonds `COLLECTION_LARGE_LIMITS`, objets dessinés plus petits
+	 */
+	large?: true;
 }
 
 /** Message situé, à destination de l'AUTEUR (jamais montré à l'élève) */
