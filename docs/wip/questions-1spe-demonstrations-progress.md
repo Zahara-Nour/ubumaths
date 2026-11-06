@@ -9,23 +9,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 9 publié ; suite décidée : les algorithmes (§ 15, D8)._
+_Mis à jour le 2026-11-06, lot 10 : migration nœud + tag en PR #2431 (CI relancée)._
 
-- **État** : démonstrations en prod (lots 1 à 4) ; les 20 approfondissements publiés (lots 5 à 9). David garde les
-  démonstrations telles quelles (D8).
-- **Prochaine action** : phase 0 des **13 exemples d'algorithmes** (§ 15 : relevé fait, tableau des points) ;
-  regarder d'abord les modèles d'algorithmes existants (378, 369 du chantier `questions-1spe`) et le bloc `python`,
-  puis poser Q1-Q5 (périmètre, forme, rangement, publication, accès) et proposer les lots. Attendre la validation.
+- **État** : démonstrations (lots 1-4) et approfondissements (lots 5-9) publiés. Algorithmes (§ 15, D9) : lot 10
+  (238, 239, 380, § 16, D10) mergé (#2429), brouillons créés en prod ; migration nœud + tag en PR.
+- **Prochaine action** : PR #2431 (migration du lot 10) : `security-auditor` fait, aucun finding bloquant (3 faibles,
+  hérités du lot 9) ; tests d'intégration rouges sans la migration (6) ; `check:migrations --pr 2431` vert ; CI toute
+  verte sauf le job navigateur shard 2/2 (plantage connu, tests verts), relancé par `gh run rerun 42218818035
+--failed`. Si vert → `gh pr merge 2431 --merge`, `db:migrate` depuis le dépôt principal (4 conditions réunies),
+  vérification MCP, page à cocher. Ensuite lot 11 (analyse : 279, 288, 298, 299, 309), relevé prod et contenu.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David (lancée hors du dépôt principal,
-  `publier-lot` refuse : « sans id »). `create-questions` écrit l'`id`
-  dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
-  une notion → choisir sa sous-notion avec David. Variable `e` = Euler : jamais comme nom de variable. Job navigateur
-  de la CI qui plante tests verts → `gh run rerun <run> --failed`. Port 5178. **Sous-notion neuve** → ajouter aussi
-  la fixture `arbre-notions-seed.json`, le décompte de `seed-classification-nodes.test.ts` et `later-migrations.ts`
-  (oubli sur #2407, CI rouge au premier passage).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (HEAD détaché), nouvelle branche depuis
-  `origin/main`.
+  `publier-lot` refuse : « sans id »). `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → les
+  commiter (PR) puis `git restore` dans le dépôt principal. Variable `e` = Euler (ni `i`). Job navigateur de la CI
+  qui plante tests verts → `gh run rerun <run> --failed`. Port 5178. Brouillons locaux : copie hors dépôt +
+  `set -a; . ./.env.local` (sinon `create-questions` vise la prod). Les « catégories » du journal ne sont qu'une
+  étiquette : en base, seuls nœud, niveau et tag.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-algorithmes-10-rangement`.
 
 ---
 
@@ -614,3 +614,39 @@ tourner, (b) compléter une ligne (case choix), (c) interpréter, jamais « fair
 variations ; Q3 un modèle par point, tagué sur son point P, suites (239, 380) dans « Seuil et algorithmes ›
 Algorithmes » après 378 et 369, les autres dans une catégorie neuve « Algorithmes » par domaine ; Q4 publiés comme
 les démonstrations ; Q5 accès : personne de plus. Lots 10 à 12 dans l'ordre proposé.
+
+## 16. Lot 10 : algorithmes, suites et dénombrement (2026-11-06)
+
+Relevé prod (MCP, 2026-11-06) : 238 sur Dénombrement › Arrangements et permutations › factorielle (aucun modèle de
+1re spé sur cette sous-notion) ; 239 et 380 sur la **notion** Généralités sur les suites ; 378 (`4a51f887`) sur
+« explicite ou par récurrence », niveau 3 ; 369 (`81322162`) et 236 (`31a77ba9`) sur la notion. Sous-notion « sommes
+de termes » existante (lot 5). Aucun modèle tagué sur les 3 points : **aucune sous-notion neuve**. Les « catégories »
+des tableaux précédents ne sont qu'une étiquette : en base, seuls nœud, niveau et tag.
+
+**D10 (David, 2026-11-06, « je te suis »)** : contenu et rangement tels que proposés.
+
+| Point | Modèle (`scripts/questions/1spe-algorithmes-10/`) | Nœud, niveau                                  | Variations                                                                         |
+| ----- | ------------------------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 238   | `01-factorielle`                                  | Arrangements et permutations › factorielle, 1 | `fact(n)` n 4..7 (case) ; ligne `p = p * k` (choix) ; valeur initiale 1 (choix)    |
+| 239   | `02-syracuse-fibonacci`                           | Généralités › explicite ou par récurrence, 4  | Syracuse 3-4 tours, a 5..30 (case) ; cas impair `3 * u + 1` ; Fibonacci `append`   |
+| 380   | `03-somme-de-termes`                              | Généralités › sommes de termes, 3             | `somme(n)` de ak + b (case) ; `s = s + u` (choix) ; somme de `range(p, m)` (choix) |
+
+Script : `docs/wip/questions/lot-1spe-algorithmes-10.py`. Syracuse par `mod` dans les variables. Vérifié :
+`question:specs` 150 tirages par variation, 33 specs vertes, 0 `\textcolor` hors `$` ; 57 réponses « faire tourner »
+recoupées par une exécution Python indépendante (0 écart) ; corrigé de la factorielle corrigé (liste des valeurs
+arrêtée à n) ; `create-questions` simulation prod (3 à créer) ; brouillons en base locale, aperçu admin vu à l'écran
+(bloc Python, case, choix en LaTeX du 380).
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-10 --publier`
+
+Mergée (#2429, CI verte du premier coup).
+
+### Lot 10 en prod : brouillons, puis migration nœud + tag (2026-11-06)
+
+David a lancé `create-questions --publier` après #2429. Relevé prod (MCP) : 3 brouillons {1_SPE}, sans nœud ni tag :
+`ff3a3a15` factorielle (238), `025ad9fa` Syracuse et Fibonacci (239), `e4eaaf16` somme de termes (380) ; aucun modèle
+déjà tagué sur ces points. Ids écrits dans les JSON du lot (cette PR), `git restore` fait dans le dépôt principal.
+Migration `20261106123332_questions_1spe_algorithmes_10_rangement_tags` (gabarit lot 9, aucune sous-notion neuve ;
+239 et 380 restent sur leur notion), test `questions-1spe-algorithmes-10-rangement-tags` 12/12 vert, rouge sans la
+migration (6 rouges). Accès : Q5 de D9, personne.

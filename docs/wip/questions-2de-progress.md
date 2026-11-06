@@ -6,18 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2417 et la page à cocher du lot 11 (§ 92)._
+_Mis à jour le 2026-11-06, ouverture de `questions-2de-demonstrations` (§ 94)._
 
-- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), lot 11 : 15 brouillons rangés et tagués en prod, page à cocher publiée (§ 92).
-- **Prochaine action** : lire et compter les verdicts de la page à cocher
-  (https://claude.ai/artifact/LvUUGf3FHn7RGroPjFtsPB) ; puis `publier-lot` en simulation sur
-  `2de-programmes-11a` et `2de-programmes-11b`, David lance `--publier`. Dernier lot de la seconde.
-- **En attente de David** : relecture des 15 fiches.
-- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
-  statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
-  dossier, variables Supabase locales passées à la main (il ne lit que `.env` = prod) ; lettre ≠
-  étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : aucun (publication depuis le dépôt principal).
+- **État** : lots 1 à 12 publiés ; **seconde couverte**. Les points P (Q2) sont repris par le chantier
+  `questions-2de-demonstrations` (D1 du 2026-11-06 : les 12 démonstrations d'abord, comme en 1re spé).
+- **Prochaine action** : aucune ici ; suivre `docs/wip/questions-2de-demonstrations-progress.md`. Versement de fin de
+  chantier une fois les P traités (Q6 de D1).
+- **En attente de David** : rien.
+- **Pièges en cours** : `--publier`, `publier-lot` → David avec `!`, puis MCP ; une autre session écrit
+  aussi dans ce journal : `git pull`.
+- **Worktree / branche** : aucun chantier ouvert ; `../ubumaths-wt-questions-2de` (HEAD détachée) garde un
+  id de 1re spé non commité (`calcul-1spe/01-tableau-signes-affine.json`), à sa session : ne pas le retirer.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2339,3 +2338,19 @@ une migration, une page à cocher ; ← seulement dans 2-219).
 - Page à cocher : 15 fiches, aucune alerte ; capacité `db`, `verdicts` vide ;
   https://claude.ai/artifact/LvUUGf3FHn7RGroPjFtsPB . Rendu à 390 px non vérifié (fenêtre Chrome en plein
   écran, redimensionnement sans effet).
+
+## 93. Lot 11 publié ; la seconde couverte (2026-11-06)
+
+- Page à cocher relue par David : 15/15 « ok », sans commentaire (ids des § 89 et 91). `publier-lot`
+  (simulation puis `--publier`) lancé par David sur `2de-programmes-11a` et `2de-programmes-11b` ; MCP : 15/15
+  `published`.
+- **Relevé MCP (prod) : 53 points de 2de sur 292 sans modèle publié**, exactement les « voulus » du § 70 :
+  - P (Q2) : 216, 217, 239-242, 255-259, 282-286, 357, 493, 494, 304, 438, 305-310, 320-324, 495, 353,
+    358-363, 387, 388 (42) ;
+  - D : 414, 225, 226, 227, 231, 234, 230 (Python à écrire, Q3), 452, 454, 351 (outil numérique, Q6), 392 (11).
+
+## 94. Points P : chantier `questions-2de-demonstrations` (2026-11-06)
+
+David : « comme pour les premières spécialités, en commençant par les démonstrations ». Phase 0 validée (D1 du journal
+`questions-2de-demonstrations-progress.md`) : les 12 démonstrations (239, 240, 255, 256, 282, 304, 438, 320, 357-360),
+puis les autres P ; ce journal sera versé une fois les P traités. Lot 1 mergé (#2434).

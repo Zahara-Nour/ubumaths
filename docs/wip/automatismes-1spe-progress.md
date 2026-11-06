@@ -6,22 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2416 (questions 2 à 4 tranchées)._
+_Mis à jour le 2026-11-06, après #2432 (lot « Nombres » mergé)._
 
-- **État** : lot « Calcul » clos — modèle `0f673c27` rangé (Fonctions › Fonctions affines ›
-  variations et signe, 2-328 ; `db:migrate` fait, vérifié en prod : brouillon, `updated_at`
-  préservé, trigger à `O`), fiche `5210e1d7` vérifiée depuis la base ; 6 automatismes de 1re dans
-  `EXCEPTIONS_NIVEAUX` (décision du 2026-11-06) · **Prochaine action** : publication des
-  brouillons par David (`publier-lot.ts`, la garde des niveaux passe) ; lot suivant du programme
-  de 1re : il n'y en a plus, choix à poser (§ Suite) ; facultatif : 2 coupures du corrigé de `5210e1d7` (§ du 2026-11-06)
-  · **En attente de David** : publication, puis choix de la suite (§ Suite) ; plus aucune question ouverte · **Pièges en cours** :
-  écritures en prod lancées par David ; worktree neuf → `pnpm exec svelte-kit sync` avant
-  `pnpm tsx` ; `db:migrate` depuis le dépôt principal (worktree non relié) ; « inserted before »
-  → `--dry-run --include-all` ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
-  **Worktree / branche** : aucun (retiré après #2416).
-- Brouillons à publier : `0f673c27`, `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`,
-  `9852d62c` (+ `1bd7378d`, `9a9026fc`) ; fiches `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`,
-  `d37413a3`, `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
+- **État** : fiche `9bd4bcc6` « Automatismes : nombres (1) » mise à jour par David et revérifiée
+  depuis la base (1 p. / 1 p. / 3 p., 0 débord, 4 défauts corrigés) ; toujours en brouillon ·
+  **Prochaine action** : lot suivant « Calcul littéral et équations » (§ Lots « 2de »), nouveau
+  worktree + branche · **En attente de David** : publication en admin de `9bd4bcc6` et des 6 fiches de
+  1re (relevé MCP du 2026-11-06 : toutes encore `draft`, `published_at` nul) · **Pièges en cours** :
+  écritures ET simulations contre la prod lancées par David ; formules en ligne coupées au PDF →
+  choisir modèles/graines, vérifier par le rendu local ; `debord.py` → venv du dépôt principal ; job CI
+  navigateur 2/2 qui plante → `gh run rerun --failed` · **Worktree / branche** : aucun (à créer).
+- Fiches à publier : `9bd4bcc6`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df`.
+  Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
 ## Décisions de David (figées)
 
@@ -359,3 +355,88 @@ appliquée (dry-run), les 6 modèles vérifiés en prod (nœud, point, brouillon
 - Mergée (#2416, CI verte) ; `db:push --include-all` le 2026-11-06 depuis `main` (dry-run : seule
   cette migration) ; vérifié en prod : nœud, point 2-328, brouillon, `updated_at` préservé,
   `tgenabled = 'O'`.
+
+## Lots « 2de » : automatismes de seconde entretenus en 1re (2026-11-06)
+
+**Tranché par David (2026-11-06)** : suite du chantier = lots tirés de la liste des automatismes de 2de
+(BO 1re : « à entretenir ») ; fiches « Automatismes : <sujet> (n) » attachées aux niveaux **1re et 2de** ;
+premier lot « Nombres ». Lots proposés, dans l'ordre : (1) Nombres, (2) Calcul littéral et équations,
+(3) Proportions et pourcentages, (4) Géométrie et repérage, (5) Fonctions et probabilités de base.
+Évolutions, images et antécédents, statistiques, développer et factoriser : déjà entretenus par les
+fiches (1) de 1re.
+
+**Relevé MCP (prod, 2026-11-06)** : `curriculum_point_automatismes` grade `2` = **97 points** (21 de 2de,
+le reste du collège et du cycle 3), tous aussi dans la liste de `1_SPE`. **90 ont un modèle publié.** Sans
+modèle publié : 5-016, 5-121 (droite graduée), 5-047, 5-128 (repère), 5-096, 5-143 (graphique cartésien) —
+lot 4 ; 3-062 (`1bd7378d`, brouillon à publier).
+
+**Essai des séries** : la simulation de `publier-lot.ts` / des scripts de fiche contre la prod est refusée
+au mode auto (« Production Deploy »). Démarche suivie : modèles lus par le MCP (`select * from
+question_templates`), copie JSON dans le scratchpad, `buildSerie` lancé en local (graines 1-3). Lot
+« Nombres » : **45 candidats, 45 passent**. Aucun modèle neuf.
+
+### Lot « Nombres » — phase 0 (validée par David le 2026-11-06)
+
+Capacités du BO 2de (Calcul numérique) : comparer (différence, quotient), fractions, puissances, écritures
+décimale / fractionnaire / pourcentage, ordre de grandeur et vraisemblance, conversions d'unités.
+
+- **Série 1** (comparer, fractions, puissances, écritures) : `5ffcde13` différence (2de) · `514dab07`
+  comparer deux fractions (5e) · `a270c7aa` enchaîner des fractions (4e) · `8ac99be4` puissances de 10,
+  × et ÷ (3e) · `18761148` a^m / a^n (3e) · `81a64b0a` décimal → fraction (6e) · `5d7726eb`
+  pourcentage → fraction (6e) · `7deff4e0` ordre de grandeur (6e).
+- **Série 2** (rapport, conversions) : `313ae1a2` rapport (2de) · `52516a54` interpréter une différence
+  (2de) · `228b1620` fractions de dénominateurs multiples (6e) · `5b627bb7` produit de puissances de 10
+  (3e) · `82748db8` aires (6e) · `355bd41a` contenance ↔ volume (5e) · `65c32979` durée décimale → min
+  (6e) · `1dd4d0ea` vitesses (4e).
+- Écartés (fiche (2) possible) : relatifs `e0b6d00a`, `12e27dba` (trop faciles en lycée) ; masses
+  `f4d95001`, longueurs `e22cff99`, `da2e705f` (CE2-CM1) ; 10 autres modèles de durées (voisins) ;
+  `1d25a492` (évolution, déjà dans « évolutions (1) ») ; `bb9cff7b`, `1db08bdc`, `743c0809`, `8b213d74`,
+  `c1a83c8f`, `000368e1`, `6818662d`, `259a0b26`, `afebbb91`, `7abb09ef`, `b79d4cb7`, `186f05a4`.
+- Graines : la graine 1 donne souvent un cas trivial (« 1 dm² = … cm² », « 60 min = … h ») ; graines
+  choisies après validation, valeurs non triviales, pas deux questions sur les mêmes données.
+
+### Fait (PR du lot « Nombres », 2026-11-06)
+
+- `scripts/create-automatismes-nombres.ts` (forme de `create-automatismes-probabilites-1spe.ts`) : fiche
+  « Automatismes : nombres (1) », séries « Nombres — série 1 / 2 », niveaux `['2', '1_SPE']` (fiche ET
+  séries) — **premières fiche et séries à deux niveaux en prod** ; base : contrainte
+  `is_valid_grade_array` seule, filtres de l'appli par `overlaps` / `contains`.
+- Graines : série 1 = différence 7 (tarifs), fractions 7 (17/18, 8/9), enchaîner 4 (somme négative),
+  puissances de 10 7, a^m/a^n 5 (7⁻⁴/7²), décimal 11 (0,6), pourcentage 10 (75 %), ordre de grandeur 8 ;
+  série 2 = rapport 7 (immeubles), interpréter une différence 7 (salaires), dénominateurs multiples 7
+  (5/4, 16/12), produit de puissances de 10 4, aires 8 (6 dm² → m²), contenances 4 (3 L → cm³), durée 8
+  (2,3 h), vitesses 10 (2 m/s → m/h).
+- Vérifié en local sur la copie MCP des modèles : 2 séries construites, Zod des séries et de la fiche ✓,
+  16 réponses recalculées à la main. **Simulation contre la prod non lancée** (refusée au mode auto) :
+  à lancer par David.
+- **À lancer par David** après le merge : `pnpm tsx scripts/create-automatismes-nombres.ts` (simulation),
+  puis `… --publier` ; ensuite vérification PDF depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs`
+  `--polices-corrige`, `debord.py`).
+
+### Fiche écrite, vérifiée, défauts de mise en page corrigés (2026-11-06)
+
+- David a publié les 9 modèles de 1re (`publier-lot.ts`, relevé MCP : tous `published`) et écrit la fiche
+  depuis le worktree (avant le merge) : **`9bd4bcc6`**, brouillon, `{2,1_SPE}`, 2 séries. Les 6 fiches de
+  1re restent en brouillon (publication par l'admin).
+- PDF depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs --polices-corrige`, `debord.py` du venv
+  du dépôt principal : `../ubumaths/scripts/fiches/.venv/bin/python`) : fiche 2 p., réponses 1 p., corrigé
+  3 p., 0 débord, maths justes. **4 défauts de mise en page**, corrigés à la demande de David :
+  (1) série 1 Q2, `514dab07` écrit ses deux fractions en blocs `$$` → `259a0b26` graine 7 (5/6 ⋯ 3/4) ;
+  (2) page 2 pour 2 questions → différence graine 10 (piste, plus courte) : fiche sur **1 page** ;
+  (3) « x − y = −360 » coupé (salaires) → interpréter une différence graine 1 (Léa et Tom) ;
+  (4) corrigé des vitesses coupé : TOUTES les graines de `1dd4d0ea` écrivent une chaîne d'égalités en
+  ligne → `6b44d220` « Calculer une vitesse moyenne » (même point 4-052), graine 5 (240 km en 3 h).
+- Cause commune des coupures : le générateur Typst ne met pas les formules en ligne dans `#box`
+  (`typst-generator.ts`, bug Typst #4796, choix documenté) : à corriger par le choix des modèles/graines.
+- **Rendu local sans écrire en prod** : séries construites sur la copie MCP des modèles, Typst par
+  `WorksheetGenerator` + modèle « fiche élève » (comme `regen-depuis-base.ts`), compilé par
+  `compile-prod.mjs` ; script jetable dans le scratchpad (non versionné).
+- **À lancer par David** : `pnpm tsx scripts/create-automatismes-nombres.ts --publier --mettre-a-jour`
+  (réécrit les 2 séries de la fiche en brouillon), puis je revérifie le PDF depuis la base.
+
+### Fiche mise à jour, revérifiée, #2432 mergée (2026-11-06)
+
+- David a lancé `--publier --mettre-a-jour`. PDF depuis la base (`regen-depuis-base.ts`,
+  `compile-prod.mjs --polices-corrige`, `debord.py`) : fiche 1 p., réponses 1 p., corrigé 3 p., 6 PDF,
+  0 débord ; les 4 défauts sont corrigés sur les pages ; 16 réponses recalculées, justes.
+- #2432 mergée (CI verte). Relevé MCP : les 7 fiches (`9bd4bcc6` + 6 de 1re) sont encore `draft`.
