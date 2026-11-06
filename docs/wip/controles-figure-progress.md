@@ -1203,3 +1203,27 @@ sévère que l'élève.
   [AB] au bord (A(0 ; 3), B(0 ; 5)) : deux paires de reports du même côté → juste ; cercle circonscrit
   par médiatrices au Report → juste ; écran (`figure-a-completer-mediatrice`) : vrais touchers Report
   puis Règle aimantée, A(3 ; 3), B(9 ; 5) → juste.
+
+## 27. Lot 9, PR A — bissectrice construite (2026-11-06)
+
+- `droite d = bissectrice(A, O, B)` (`bissectriceOf`, `ubumark/types/construction.ts`) : papier uni
+  seulement (quadrillage refusé) ; O, A, B visibles, non alignés, au moins 2 unités de bissectrice
+  (demi-droite issue de O) dans la fenêtre (`bissectriceSupportError`, `line.ts`). Palette déduite :
+  celle d'une droite ; `outils:` peut ajouter le rapporteur (parseur : seule droite qui l'admet).
+- Juge (`judgeBissectrice`, `line.ts`) : droite construite qui recouvre la bissectrice ; au
+  rapporteur, côté d'angle tiré de O (`angleSideVertex`) à 1° près. Messages dans l'ordre du § 25.
+- **Exception 4** (`constructionOf`, option `arcsOnSides`, `instruments.ts`) : **bornée à la
+  bissectrice**, pas globale (écart avec le § 25, à valider par David) : ailleurs, un arc à l'œil sur
+  un trait droit par son centre rendrait « construite » une longueur prise à l'œil (côté de triangle
+  au compas ouvert à l'œil pile à la bonne longueur). Et un cercle refait sur ses propres points
+  (même centre, même rayon) reste à l'œil ; l'écartement OA' reporté ailleurs (losange) reste admis.
+- Correction : bissectrice en pointillés (`lineSolution`), demi-angles codés d'un même trait, arc en
+  O et deux arcs égaux en traits fins (`solutionBissectrices`, `FigureACompleterView`).
+- Écarts mineurs : pas de tracé au Segment (palette de la droite sans segment) ; message de l'angle
+  voisin avec « [OA) et [OB) » (les côtés ne s'appellent pas toujours x et y) ; le juge admet un
+  repère pour une bissectrice même sans rapporteur dans la palette (il ne connaît pas les outils :
+  réponse forgée seulement) ; pas de garde « fenêtre trop allongée » pour le rapporteur de la
+  bissectrice.
+- Tests : `construction-bissectrice.test.ts` (29, rouges avant le code, 5 gardes vertes avant),
+  écran `figure-a-completer-bissectrice.svelte.test.ts` (vrais touchers : arc en O par (5 ; 1), arcs
+  de A' par B' et de B' par A', règle de O au croisement → juste ; à l'œil → message et correction).
