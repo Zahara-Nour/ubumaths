@@ -4,6 +4,7 @@ couvre:
   - src/app.d.ts
   - src/lib/server/supabase.ts
   - src/lib/server/auth.ts
+  - src/lib/server/google-photo.ts
   - src/lib/server/accountStatusHandle.ts
   - src/lib/server/redirectHandle.ts
   - 'src/lib/server/auth/**'
@@ -48,7 +49,7 @@ couvre:
 > Remplace les 11 fichiers de [`auth/`](../archive/systeme-2026-06/auth/README.md) (juin 2026, archivés, antérieurs au modèle
 > mono-professeur). En cas de désaccord, **cette page et le code font foi**.
 >
-> Vérifié contre le code le 2026-10-22 ; `MOVED_PAGES` le 2026-10-25.
+> Vérifié contre le code le 2026-10-22 ; `MOVED_PAGES` le 2026-10-25 ; photo Google du callback le 2026-11-06.
 
 ## À quoi ça sert
 
@@ -252,7 +253,10 @@ ou sous `/constructions/essais` (`/construction-demo`), sous-pages et query stri
   `GOOGLE_LOGIN_ENABLED` vaut `false` (la plateforme a quitté le domaine Google Workspace de
   l'ancienne école). La plomberie reste : domaine `@voltairedoha.com` imposé, profil manquant
   créé par le client service (`student`, `pending`, sans école), `next` passé par
-  `validateRedirectUrl`.
+  `validateRedirectUrl`. La photo n'est retenue que si elle est servie par Google
+  (`googlePhotoUrl`, `src/lib/server/google-photo.ts`) ; elle est posée par le client service, et
+  seulement si `avatar_url` est vide (la base refuse toute écriture de l'avatar par le compte
+  connecté, et un avatar porté de la boutique n'est jamais écrasé).
 - **Mot de passe oublié** : `/auth/reset-password` (Zod, limites IP + e-mail, réponse neutre
   rendue après une **durée plancher de 2 s** sur tous les chemins — `waitForResponseFloor` —
   pour que le temps ne trahisse pas un enfant à parent confirmé ; pour un identifiant d'enfant,

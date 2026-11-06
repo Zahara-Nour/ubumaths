@@ -102,11 +102,23 @@ Accès :
 - **Élève** : lit son profil, ses adhésions, ses classes, et les adhésions des classes **actives** où
   il est actif (`is_classmate`). Il lit le profil d'un autre élève seulement s'il est ami, camarade,
   demandeur d'amitié en attente ou co-participant d'un tournoi. Il modifie son profil sans pouvoir
-  changer son `role` ni son `status`, ni augmenter ses `gidouilles`. Il demande une amitié **dans son
+  changer son `role` ni son `status`, ni augmenter ses `gidouilles`, ni toucher à son avatar
+  (voir « Avatar » ci-dessous). Il demande une amitié **dans son
   école seulement** (`same_school`).
 - **Professeur / admin** : lit et gère classes et adhésions, lit tous les profils d'élèves, les
   amitiés (et peut les supprimer), les consentements parentaux.
 - **Création de profil** : par le serveur seulement (policy passée `TO service_role`, `20261001200000`).
+
+**Avatar** (migration `20261106164739`, boutique d'avatars) : `profiles.avatar_url` est l'image
+affichée partout ; `google_avatar_url` garde la photo Google (recopiée par le trigger
+`keep_google_avatar_url_trg` quand une photo `https://lh3.googleusercontent.com/…` arrive dans
+`avatar_url` sans avatar porté, et par `handle_new_user`, qui n'accepte que ces adresses) ;
+`worn_avatar` est la clé de l'avatar de la boutique porté (clé composée vers `student_avatars` du
+même élève, SET NULL). **Personne n'écrit ces trois colonnes par l'API**, ni l'élève, ni le prof,
+ni l'admin : trigger `guard_profile_avatar_fields_trg` (42501 quand `current_user` est
+`authenticated` ou `anon`), en plus de la policy d'auto-modification. Seuls le serveur
+(`service_role`, ex. `/auth/callback`) et les fonctions de la boutique les écrivent. Test :
+`tests/integration/boutique-avatars.test.ts`.
 
 **Sortie d'une classe** : retirer un élève l'**archive** (`status = 'archived'`), il n'y a plus de
 DELETE (`src/routes/api/admin/remove-from-class`). Le trigger `trg_class_members_left_at` pose
@@ -517,6 +529,17 @@ portés dans `student_mathoux.glasses` et `student_mathoux.hat` avec les mêmes 
 `buy_mathou_decoration` pose aux quatre emplacements ; `set_mathou_glasses` et `set_mathou_hat`
 posent, déplacent, remplacent ou retirent (mêmes gardes) ; les autres poses refusent ces clés. Test :
 `tests/integration/mathoux-lunettes-chapeaux.test.ts`.
+Boutique d'avatars (migration `20261106164739`) : `avatar_catalog` (clé, famille, nom, prix,
+`image_path` forcé sous `/avatars/….webp`, fenêtre de vente `available_from` / `available_until`
+pour les séries de l'Almanach, `active`) est lisible par tout compte connecté, écrite par le
+serveur seul ; `student_avatars` (achats : `avatar_key`, `price_paid`, `purchased_at`) est lisible
+par **l'élève seul** (ni prof ni admin, décision de David du 2026-11-06), cascade depuis
+`profiles`. Deux fonctions `service_role` seul, qui verrouillent la ligne `profiles` :
+`buy_avatar` (refus `unknown_avatar`, `already_owned`, `not_on_sale`, `insufficient_funds` +
+`missing` ; débit et ligne « Avatar : <nom> acheté » au journal ; n'équipe pas) et
+`set_worn_avatar` (porte un avatar possédé, même hors vente ou retiré : `avatar_url` = son image ;
+NULL : la photo Google revient ; refus `not_owned`). Changer `image_path` met à jour les porteurs
+(trigger `sync_worn_avatar_image_trg`). Test : `tests/integration/boutique-avatars.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
 jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible
@@ -677,4 +700,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21).
+Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21 ; avatar et boutique d'avatars : 2026-11-06).
