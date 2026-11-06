@@ -6,23 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2359 (lot 8 mergé)._
+_Mis à jour le 2026-11-06, phase 0 du lot 9 validée (§ 25)._
 
-- **État** : lots 1 à 8 et #2305 mergés (lot 8 = mesurer un angle, rapporteur déjà posé, § 23-24).
-  Rien en prod (`deploy:prod` sur demande de David). Vérification à l'œil de #2359 dans
-  `verifications-manuelles.md`.
-- **Prochaine action** : à décider avec David, rien n'est décidé après le lot 8. Restent ouverts : la
-  règle sévère des médiatrices (§ 12, sa propre phase 0) ; l'angle non adjacent au côté (§ 21,
-  décision 5 : calcul du 3e angle).
+- **État** : lots 1 à 8 et #2305 mergés, en prod depuis la 0.69.0. Ordre de David du 2026-11-06
+  (`outils-manquants.md`) : lot 9 « bissectrice construite + règle des médiatrices relâchée » ;
+  translation tracée pas maintenant ; angle non adjacent : pas d'outil.
+- **Prochaine action** : phase 0 du § 25 validée (« je te suis »). PR B (médiatrices, 2 unités dans la
+  fenêtre) puis PR A (bissectrice au compas, exception 4).
 - **En attente de David** : rien.
-- **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
-  `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
-  d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
-  CI ne part pas sur une PR en conflit ; tests navigateur : Chromium fermé en pleine suite (encore 2
-  fois sur #2348 et 2 sur #2359 — `grapheur-slots` —, `ConstructionPlayer-points-auxiliaires`, `atelier/serialize`) et `demo/lexique`
-  instable (« aire » absent, vert en local) ; la garde « doc à jour » peut passer en local et
-  échouer en CI : la relancer après `git fetch`.
-- **Worktree / branche** : aucun (retiré après #2359).
+- **Pièges en cours** : `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)`
+  échoue si P définit d ; plafond de 20 objets sans message ; CI qui ne part pas sur une PR en conflit ;
+  tests navigateur instables (Chromium fermé, `demo/lexique`) ; garde « doc à jour » : relancer après
+  `git fetch`.
+- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-mediatrices` (PR B).
 
 ---
 
@@ -1073,3 +1069,101 @@ vide (aucun outil, ni Effacer ni Retourner) ; `outils:` interdit avec `rapporteu
   rapporteur posé assertée à l'écran (AOB 0°, BOA 130°), rouge en inversant le sens de la pose.
 - CI : la garde « doc à jour » a demandé `utilitaires-et-demos.md` (couvre `block-catalog/**`), passée en
   local faute de `git fetch` ; doc générale du catalogue, sans liste d'exemples → `Doc-inchangée:`.
+
+## 25. Phase 0 — lot 9 : bissectrice construite + règle des médiatrices relâchée (validée le 2026-11-06)
+
+Ordre de David du 2026-11-06 (`outils-manquants.md` § 1, reliquat du n° 1). BO 6e « Bissectrice d'un angle
+saillant » (« utiliser la définition de la bissectrice pour effectuer des constructions »), point 6-172 ;
+5e « reconnaître une bissectrice ». Existant : la fonction `bissectrice(A, V, B)` du DSL (une droite) et sa
+chorégraphie (`arcs_egaux`, `arc_milieu`, `@mesure`) ; aucun juge.
+
+### Partie A — la bissectrice
+
+#### Écriture par le prof
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: droite d = bissectrice(A, O, B)
+---
+O = point(2, 2)
+A = point(8, 3)
+B = point(4, 7)
+x = demidroite(O, A)
+y = demidroite(O, B)
+```
+
+Même vérification que la médiatrice (`droite <nom> = <expression>`), `bissectrice(A, O, B)` admise sur
+papier uni. Palette déduite : Compas · Règle (recommandé, cf. question 1) ; `outils:` peut ajouter le
+Rapporteur.
+
+#### Le geste (rien de neuf à l'écran)
+
+Compas piqué en O, ouvert à l'œil → il coupe [Ox) en A' et [Oy) en B' ; deux arcs de même rayon en A' et
+B' → ils se coupent en P ; Règle de O à P. **Une exception neuve à la règle du § 15 (exception 4)** : un
+cercle centré sur un point construit, même ouvert à l'œil, construit ses intersections avec les traits
+droits construits **qui passent par son centre** (rien d'autre : il ne devient pas un trait). C'est le
+report d'une longueur quelconque sur deux côtés partant de O ; il ne forge rien que l'élève ne puisse
+faire au compas (la perpendiculaire en un point d'une droite, au compas, devient construite aussi : elle
+l'est sur le cahier).
+
+#### Comportements
+
+- **Nominal** : arc en O, deux arcs égaux en A' et B', droite (OP) → juste. Autres chemins : un tracé au
+  Segment de O à P ; deux arcs égaux de rayons différents de l'arc en O ; arcs pris au Report.
+- **Limites** (juste) : arcs et traits en trop ignorés ; la droite entière (au-delà de O) ; P de l'autre
+  côté de O (arcs qui se coupent derrière) ; au rapporteur si la palette l'a (repère à la moitié de la
+  mesure, côté d'angle du lot 7), à **1° près** (la mesure de AOB n'est pas entière en général).
+- **Erreurs** (faux, première cause) :
+  - aucun trait droit par O → « Trace la bissectrice de l'angle AOB, depuis son sommet O. » ;
+  - trait droit qui ne passe pas par O, mais dans l'angle → « Ta bissectrice doit partir du sommet O. » ;
+  - trait par O non construit → « Ta bissectrice est tracée à l'œil : construis-la avec tes
+    instruments. » ;
+  - trait par O construit, perpendiculaire à la bissectrice (arcs piqués sur [Ox) et sur le prolongement
+    de [Oy)) → « Ta droite partage l'angle voisin, pas l'angle AOB : pique le compas sur [Ox) et [Oy). » ;
+  - sinon → « Les deux angles ne sont pas égaux : ce n'est pas la bissectrice de l'angle AOB. »
+- **Erreurs d'auteur** : quadrillage (refusé) ; O, A ou B invisible ou confondus ; A, O, B alignés (angle
+  plat ou nul : pas un angle saillant) ; la bissectrice n'a pas 2 unités dans la fenêtre.
+- **Correction** : la bissectrice en pointillés, les deux angles codés du même signe, l'arc en O et les
+  deux arcs égaux en traits fins.
+
+### Partie B — la règle sévère des médiatrices (§ 12)
+
+Aujourd'hui (`mediatriceSupportError`, `line.ts`) : la médiatrice de [AB] n'est jugée faisable que si les
+cercles de centres A et B **de rayon AB** se coupent dans la fenêtre ; d'où des triangles ordinaires
+refusés au cercle circonscrit, et des segments refusés à la médiatrice et au milieu. Or le juge accepte
+depuis le § 15 (exception 2) deux cercles de même rayon **quelconque** : la règle d'auteur est plus
+sévère que l'élève.
+
+- **Proposé** : faisable si la médiatrice a **au moins 2 unités dans la fenêtre** (l'élève y trouve deux
+  croisements de cercles égaux, de part et d'autre de [AB] ou du même côté). Même mesure que les côtés
+  d'angle (lot 5) et la bissectrice.
+- **Ce qui change** : rien côté élève (le juge ne bouge pas) ; des figures aujourd'hui refusées à l'auteur
+  deviennent acceptées (médiatrice, milieu, cercle circonscrit et son centre). Message d'auteur neuf :
+  « la médiatrice de [AB] n'a pas 2 unités dans la fenêtre : agrandir la fenêtre ou déplacer A et B ».
+- **Correction** du cercle circonscrit : inchangée (deux médiatrices en traits fins).
+
+### Questions à David
+
+1. **Bissectrice : compas, rapporteur, ou les deux ?** Recommandé : **compas par défaut** (c'est la
+   construction par la définition, et la seule exacte), rapporteur **admis si le prof l'ajoute** à
+   `outils:`, jugé à 1° près.
+2. **Exception 4** (cercle ouvert à l'œil, intersections avec les traits droits construits par son
+   centre) : l'accepter (recommandé : sans elle, le geste du cahier est impossible) ?
+3. **Écriture** `droite d = bissectrice(A, O, B)` (recommandé : comme la médiatrice) ; ou une vérification
+   à part (`bissectrice AOB`) ?
+4. **Message de l'angle voisin** : le garder (recommandé : c'est l'erreur type quand un arc est piqué sur
+   le mauvais prolongement) ?
+5. **Médiatrices** : critère « 2 unités dans la fenêtre » (recommandé) ; ou garder les cercles de rayon AB
+   et seulement assouplir le cercle circonscrit ?
+6. **Un lot ou deux PR ?** Recommandé : **deux PR** (B d'abord, petite et sans geste ; puis A), même
+   phase 0.
+
+### Décisions de David (2026-11-06, « je te suis » sur mes recommandations)
+
+1. Bissectrice **au compas par défaut** ; rapporteur admis si le prof l'ajoute à `outils:`, jugé à 1° près.
+2. **Exception 4 acceptée** (cercle ouvert à l'œil centré sur un point construit : ses intersections avec
+   les traits droits construits par son centre sont construites).
+3. Écriture **`droite d = bissectrice(A, O, B)`**, comme la médiatrice.
+4. Message de **l'angle voisin gardé**.
+5. Médiatrices : faisable si la médiatrice a **au moins 2 unités dans la fenêtre**.
+6. **Deux PR** : B (médiatrices) d'abord, puis A (bissectrice).
