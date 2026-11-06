@@ -2,9 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2423._
+_Mis à jour le 2026-11-06, après #2423 ; #2424 et #2425 ouvertes._
 
-- **État** : #2410, #2422 (calcul **centré** `array{rcl}`) et #2423 (éditeur : chargement et échec affichés, garde des imports `mathlive`) mergées ; rien en prod tant que David ne lance pas `deploy:prod` · **Prochaine action** : selon l'essai de David ; sinon fin de chantier = versement (le durable est déjà dans `ubumark.md` et `composants-ui.md`), journal archivé, worktree retiré · **En attente de David** : essai du calcul centré (5176) ; bouton = 1 ligne (fait) ou 2 vides, pas tranché ; regarder ou non le cahier de texte de la démo sans formules · **Pièges en cours** : voir « Pièges » et Journal 2026-11-06 (import nommé de `mathlive` = SSR cassé ; création synchrone retirée) · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` sur `fix/editeur-chargement` (mergée, distante supprimée) — gardé pour le serveur de test 5176
+- **État** : mergées #2410, #2422 (calcul centré `array{rcl}`), #2423 (éditeur : chargement/échec, garde `mathlive-imports-ssr`). **Ouvertes, CI en cours au /clear** : #2424 `fix/editeur-indicateur-visible` (indicateur et message d'échec invisibles : panneau vide = 0 px → posés sur la zone de contenu ; 1er run tombé sur le plantage navigateur connu, relancé) ; #2425 `fix/cahier-formules` (formules vides au cahier ET **XSS stocké au rendu serveur, présent sur `main`/prod** : `transformMathHtml` réécrite en arbre DOM ; réaudit `security-auditor` sans finding bloquant ; prod : 2 séances, 0 formule, 0 charge suspecte). Rien en prod sans `deploy:prod`.
+- **Prochaine action** : `gh pr checks 2424` puis `2425` → verts : `gh pr merge --merge`, suppression des branches distantes ; ensuite ajouter au Journal l'entrée « cahier de texte » (rustine malgré la décision « cahier → ubumark », XSS fermé) et la note d'audit (faible, préexistant : `math-field` écrit à la main accepté en entrée, `\href` de MathLive non audité) ; puis versement et fin de chantier.
+- **En attente de David** : `pnpm deploy:prod` après #2425 pour fermer le XSS en prod (sur sa demande seulement) ; SSH depuis le MacBook en échec (Mac mini OK, Tailscale du MacBook à vérifier). Décidé : bouton = 1 ligne ; essai du calcul centré : OK.
+- **Pièges en cours** : import nommé de `mathlive` = SSR cassé ; créer l'éditeur dès le montage casse les tests de `/demo/editeur` (retiré) ; vérifier le RENDU (taille) d'un indicateur, pas sa présence ; jsdom n'échappe pas `>` dans les attributs.
+- **Worktree / branche** : `../ubumaths-wt-calcul-aligne` sur `fix/cahier-formules` (serveur de test 5176, lancé avant cette session, laissé tourner)
 
 ## Décisions de David (2026-11-06)
 
