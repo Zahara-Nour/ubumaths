@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, PR 1 prête._
+_Mis à jour le 2026-11-06, après #2449._
 
-- **État** : PR 1 (migration `20261106164739_boutique_avatars`, 36 tests d'intégration rouges sans / verts avec, garde des trois colonnes d'avatar, callback Google en client service) relue (`code-reviewer` Opus + `security-auditor` : rien de bloquant, corrections faites) · **Prochaine action** : PR 1 → CI → merge → `check:migrations` → `db:migrate` → `db:types` ; puis PR 2 (routes, onglet Avatars du Marché, export RGPD) · **En attente de David** : images du premier lot (`boutique-avatars-prompts.md`) · **Pièges en cours** : PR 2 — l'élève vient de la SESSION (`locals`), jamais du corps (IDOR : les fonctions font confiance à `p_student_id`) ; consentement vérifié par la route ; export RGPD doit ajouter `student_avatars` ; rafraîchir `google_avatar_url` au callback après `db:types` ; base locale : migration appliquée à la main (psql), `migration up` bloqué par une migration d'automatismes-1spe · **Worktree / branche** : `ubumaths-wt-boutique-avatars` / `feat/boutique-avatars`
+- **État** : PR 1 mergée (#2449) et **migration appliquée en prod** (`20261106164739`, via `db push --include-all` depuis `main` ; vérifié : 74/74 photos Google recopiées, 3 triggers, `buy_avatar` fermé à `authenticated`) ; catalogue vide · **Prochaine action** : PR 2 dans un nouveau worktree — d'abord `pnpm db:types` (types depuis la prod), puis routes achat / port, onglet « Avatars » du Marché, export RGPD · **En attente de David** : images du premier lot (`boutique-avatars-prompts.md`) · **Pièges en cours** : l'élève vient de la SESSION (`locals`), jamais du corps (les fonctions font confiance à `p_student_id`) ; consentement vérifié par la route ; export RGPD : ajouter `student_avatars` ; callback : rafraîchir `google_avatar_url` après `db:types` ; jusqu'au prochain `deploy:prod`, l'ancien callback de prod écrit l'avatar avec le client utilisateur → 42501 journalisé (connexion Google coupée de toute façon) ; job CI navigateur instable (2 relances sur #2449) · **Worktree / branche** : à créer pour la PR 2
 
 ## Décisions de David (2026-11-06)
 
@@ -79,3 +79,7 @@ Qui pourra lire quoi, qu'il ne pouvait pas lire avant ? Proposition : le **catal
 3. Images du premier lot (prompts Nano Banana, style Steinlen, nuancier numérique).
 4. Cadres : colonne propagée et anneau dans `UserAvatar`.
 5. Second lot : animés, série de l'Almanach.
+
+## Historique
+
+- 2026-11-06 : #2449 mergée (PR 1 : migration, garde, callback, doc) ; `db:migrate` fait.
