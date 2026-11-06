@@ -4,7 +4,8 @@
 
 	Partagé par `Collection.svelte` (collection à dénombrer) et
 	`CollectionConstruire.svelte` (plan de travail, réserve, correction) : un
-	seul dessin des jetons, cubes, barres et paquets.
+	seul dessin des jetons, cubes, barres, paquets, plaques de cent et gros
+	cubes de mille (faces et quadrillage calculés par la scène).
 
 	- Une seule couleur d'accent (le remplissage des objets) ; traits dans une
 	  teinte foncée de la même couleur. Couleurs du thème uniquement.
@@ -28,6 +29,16 @@
 	/** Trait de la marque : en travers de l'objet, du bas à gauche au haut à droite */
 	function strike(item: CollectionItem) {
 		const inset = item.kind === 'jeton' || item.kind === 'cube' ? -2 : 3;
+		// Gros cube : de la face de devant au coin arrière du dessus
+		if (item.kind === 'gros-cube' && item.faces) {
+			const [front, top] = item.faces;
+			return {
+				x1: front[3].x + inset,
+				y1: front[3].y - inset,
+				x2: top[2].x - inset,
+				y2: top[2].y + inset
+			};
+		}
 		return {
 			x1: item.x + inset,
 			y1: item.y + item.height - inset,
@@ -50,6 +61,25 @@
 				width={item.width}
 				height={item.height}
 			/>
+		{:else if item.kind === 'plaque' || item.kind === 'gros-cube'}
+			{#if item.kind === 'plaque'}
+				<rect
+					class="collection-forme"
+					x={item.x}
+					y={item.y}
+					width={item.width}
+					height={item.height}
+				/>
+			{/if}
+			{#each item.faces ?? [] as face, k (k)}
+				<polygon
+					class="collection-forme collection-face-{k}"
+					points={face.map((p) => `${p.x},${p.y}`).join(' ')}
+				/>
+			{/each}
+			{#each item.lines ?? [] as l, k (k)}
+				<line class="collection-quadrillage" x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} />
+			{/each}
 		{:else if item.kind === 'barre'}
 			<rect
 				class="collection-forme"
@@ -106,6 +136,20 @@
 	.collection-separation {
 		stroke: color-mix(in oklab, var(--color-primary) 45%, black);
 		stroke-width: 0.6;
+	}
+
+	/* Gros cube : le dessus plus clair, le côté plus sombre (relief) */
+	.collection-face-1 {
+		fill: color-mix(in oklab, var(--color-primary) 70%, white);
+	}
+
+	.collection-face-2 {
+		fill: color-mix(in oklab, var(--color-primary) 75%, black);
+	}
+
+	.collection-quadrillage {
+		stroke: color-mix(in oklab, var(--color-primary) 45%, black);
+		stroke-width: 0.3;
 	}
 
 	.collection-contour {

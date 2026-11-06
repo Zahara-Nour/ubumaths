@@ -138,7 +138,7 @@ describe('bloc ```collection à construire : la case et sa réponse', () => {
 		const result = generateInstance(template({ statement: block('construire: 0') }), 42);
 		expect(result.success).toBe(false);
 		if (result.success) return;
-		expect(result.errors.join(' ')).toMatch(/Case 1 \(bloc collection\).*1 à 100/);
+		expect(result.errors.join(' ')).toMatch(/Case 1 \(bloc collection\).*1 à 9 999/);
 	});
 
 	// Revue de la PR 1 : le bloc se délimite comme le parseur (ligne vide gardée si la

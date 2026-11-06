@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; calcul aligné des blocs `$$` le 2026-11-05 ; durée d'une variable `{{eval}}` le 2026-11-03 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03, triangle par des angles le 2026-11-03) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28, `signe: aucun` (étapes) le 2026-11-03 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; segments à crochets et demi-droites (`segments: [2, +inf[`) le 2026-11-03 ; droite à représenter (`representer:`) le 2026-11-03, réponse incomplète = case vide le 2026-11-03 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03 ; cellules cachées à l'écran (`hiddenCells`, `cell`) le 2026-11-03 ; tableau trop large (ombres, téléphone) le 2026-11-04 ; tableau révélé pour le corrigé imprimé (`revealVariationBody`) le 2026-11-03 ; points déclarés et vecteurs donnés du bloc solide (`points:`, `vecteurs:`) le 2026-11-03, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, fractions et vecteurs nommés dans `tracer:` (D-SV2) le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; calcul aligné des blocs `$$` le 2026-11-05 ; durée d'une variable `{{eval}}` le 2026-11-03 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25, centaines et milliers le 2026-11-06 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03, triangle par des angles le 2026-11-03) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28, `signe: aucun` (étapes) le 2026-11-03 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; segments à crochets et demi-droites (`segments: [2, +inf[`) le 2026-11-03 ; droite à représenter (`representer:`) le 2026-11-03, réponse incomplète = case vide le 2026-11-03 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03 ; cellules cachées à l'écran (`hiddenCells`, `cell`) le 2026-11-03 ; tableau trop large (ombres, téléphone) le 2026-11-04 ; tableau révélé pour le corrigé imprimé (`revealVariationBody`) le 2026-11-03 ; points déclarés et vecteurs donnés du bloc solide (`points:`, `vecteurs:`) le 2026-11-03, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, fractions et vecteurs nommés dans `tracer:` (D-SV2) le 2026-11-03.
 
 ## À quoi ça sert
 
@@ -1196,7 +1196,7 @@ jetons ; défaut `barres`), `unités en: vrac | rangées` (rangées de 5 + 5 ; d
 `légendes:` (une par collection, 40 caractères ; A, B, C d'office s'il y en a plusieurs), `taille:`
 (2 à 12 cm, largeur d'une collection **pleine largeur** : une plus étroite garde la même échelle,
 objets de même taille d'une collection à l'autre ; 8 cm à l'écran comme au PDF, 3 cm dans un choix
-d'une case choix). `centaines:` est réservée (« pas encore disponible »). Groupes de dix en haut, objets
+d'une case choix). Groupes de dix en haut, objets
 isolés dessous ; groupement partiel (3 dizaines et 15 unités) accepté. Le vrac est tiré d'une graine
 faite du contenu du bloc et du rang de la collection : même bloc → même dessin, à l'écran comme au
 PDF ; deux objets restent à 1,5 objet l'un de l'autre au moins. Chaque objet de la scène
@@ -1209,9 +1209,21 @@ de `nodes/scene-marks.svelte.ts`, commune aux deux blocs. Nom accessible
 « Collection d'objets », **jamais le nombre**. PDF en Typst natif, noir sur blanc. Dans un choix d'une
 case choix : `--collection-taille: 3cm` (comme l'horloge) ; série figée : `withChoiceCollectionSize`.
 
+**Centaines et milliers** (chantier [collection-centaines](../wip/collection-centaines-progress.md),
+CE1-001 à 003, CE2-001, 002, 005) — `collection-centaines.test.ts` : `centaines:` (plaques de cent) et
+`milliers:` (gros cubes de mille), écrites comme `dizaines:`, dans n'importe quel ordre. Un bloc qui en
+écrit une est **grand** (`spec.large`) : plafonds `COLLECTION_LARGE_LIMITS` (milliers 9, centaines 40,
+dizaines 30, unités 100, valeur 9 999 au plus), `dessin: paquets` refusé (matériel multibase seulement),
+objets dessinés à moitié taille (`COLLECTION_LARGE_VIEW` : 4 plaques par rangée), 12 cm pleine largeur
+par défaut (`--collection-defaut` à l'écran, sous `--collection-taille` du contexte). De haut en bas :
+gros cubes, plaques, barres, cubes, chaque zone revenant à la ligne. Plaque : carré quadrillé 10 × 10 ;
+gros cube : perspective cavalière, trois faces quadrillées — faces (`faces`) et traits (`lines`)
+calculés par la scène, pour l'écran comme pour le PDF (`polygon` Typst). Un petit bloc garde sa graine
+et son dessin d'avant (instantanés inchangés).
+
 **Collection à construire** (chantier [construire](../wip/construire-progress.md), CP-002) —
 `src/lib/ubumark/__tests__/collection/collection-construire.test.ts`,
-`CollectionConstruire.svelte.test.ts` : `construire: 34` (1 à 100) remplace les quantités ; `dessin:`
+`CollectionConstruire.svelte.test.ts` : `construire: 34` (1 à 9 999) remplace les quantités ; `dessin:`
 choisit le matériel, `taille:` reste ; `dizaines:`, `unités:`, `unités en:`, `légendes:` sont refusées
 (plan vide, objets rangés d'office). L'élève touche la réserve (« Ajouter une barre de dix », « Ajouter
 un cube », ou paquet / jeton) pour poser un objet, touche un objet posé pour l'enlever ; « Enlever »
@@ -1224,7 +1236,11 @@ une case ordinaire ; la composition (2 barres + 14 cubes) vit dans le composant,
 et unités s'il est remonté avec une seule valeur. Faux : « Ta collection vaut 32. » (ou « est vide ») et
 une construction juste à côté ; bonne réponse affichée : la construction juste seule. Hors question
 (aperçu, cours) : le même geste, rien de jugé. PDF : la réserve en petit et un cadre vide en
-pointillés, où l'enfant dessine.
+pointillés, où l'enfant dessine. **À partir de 100** (`collection-centaines`, Q3) : réserve déduite de la
+valeur (`reservePieces` : plaques dès 100, gros cubes dès 1 000 ; « Ajouter une plaque de cent », « un
+gros cube de mille »), plafonds `buildLimits` (ceux d'un grand bloc), grand dessin ; `paquets` refusé.
+Sous 100, rien ne change. Construction juste et redessin d'une réponse seule : du plus grand rang au
+plus petit (`solutionBuild`, `buildFromAnswer(réponse, valeur)`).
 
 **Pièces et billets** (chantier [monnaie](../archive/wip/monnaie-progress.md), CP-043, CP-042 ; CP-044 et
 CP-071 en partie ; centimes : chantier [monnaie-centimes](../wip/monnaie-centimes-progress.md), CE1-054 à 057, 086) — `src/lib/ubumark/__tests__/monnaie/` :
