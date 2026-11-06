@@ -9,14 +9,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 9 en PR (contenu)._
+_Mis à jour le 2026-11-06, après #2415 (lot 9 : contenu mergé)._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lots 5, 6 et 7 publiés ; lot 8
   (géométrie, § 13) relu par David, publication par `publier-lot.ts --publier` donnée à David ; lot 9 (probabilités,
-  § 14, D7) : 3 modèles écrits, PR de contenu ouverte.
-- **Prochaine action** : merger la PR du lot 9, puis `create-questions --publier` par David, relevé MCP, PR de
+  § 14, D7) : 3 modèles mergés (#2415), brouillons à créer en prod.
+- **Prochaine action** : `create-questions --publier` du lot 9 par David, relevé MCP, PR de
   migration nœud + tag (aucune sous-notion neuve), `db:migrate`, page à cocher. Relever au MCP la publication du lot 8.
-- **En attente de David** : `publier-lot.ts --publier` du lot 8 ; vérification à l'œil en prod (ligne du 2026-11-03
+- **En attente de David** : `publier-lot.ts --publier` du lot 8 (encore `draft` au MCP le 2026-11-06) ;
+  `create-questions --publier` du lot 9 ; vérification à l'œil en prod (ligne du 2026-11-03
   de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David. `create-questions` écrit l'`id`
   dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal. Point posé sur
@@ -532,3 +533,5 @@ base locale (copie hors dépôt), aperçu admin vu à l'écran : arbre à 3 nive
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-9 --publier`
+
+Mergée (#2415, CI verte du premier coup).
