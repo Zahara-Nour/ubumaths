@@ -6,19 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, PR du rangement du modèle neuf ouverte._
+_Mis à jour le 2026-11-06, après #2416._
 
-- **État** : modèle neuf `0f673c27` et fiche `5210e1d7` écrits par David (brouillons) ; fiche
-  vérifiée depuis la base (1 + 1 + 3 p., 0 débord) ; PR #2416 : `id` dans le JSON + migration
-  nœud/point (2-328, validés) + 6 exceptions de la garde des niveaux (décision du 2026-11-06) ;
-  `security-auditor` : 0 bloquant · **Prochaine action** : CI verte → merge → `db:migrate` depuis
-  la branche mergée ; vérifier en prod nœud, tag, `updated_at` ET `tgenabled = 'O'` du trigger
-  `update_question_templates_updated_at` ; puis David peut publier (`publier-lot.ts`) ·
-  **En attente de David** : publication des brouillons ; questions ouvertes 1 à 4 · **Pièges en
-  cours** : écritures en prod lancées par David ; worktree neuf → `pnpm exec svelte-kit sync`
-  avant `pnpm tsx` ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
-  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe`,
-  `feat/automatismes-1spe-rangement-affine`.
+- **État** : lot « Calcul » clos — modèle `0f673c27` rangé (Fonctions › Fonctions affines ›
+  variations et signe, 2-328 ; `db:migrate` fait, vérifié en prod : brouillon, `updated_at`
+  préservé, trigger à `O`), fiche `5210e1d7` vérifiée depuis la base ; 6 automatismes de 1re dans
+  `EXCEPTIONS_NIVEAUX` (décision du 2026-11-06) · **Prochaine action** : publication des
+  brouillons par David (`publier-lot.ts`, la garde des niveaux passe) ; lot suivant du programme
+  de 1re à choisir (§ Suite) ; facultatif : 2 coupures du corrigé de `5210e1d7` (§ du 2026-11-06)
+  · **En attente de David** : publication ; questions ouvertes 1 à 4 · **Pièges en cours** :
+  écritures en prod lancées par David ; worktree neuf → `pnpm exec svelte-kit sync` avant
+  `pnpm tsx` ; `db:migrate` depuis le dépôt principal (worktree non relié) ; « inserted before »
+  → `--dry-run --include-all` ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
+  **Worktree / branche** : aucun (retiré après #2416).
 - Brouillons à publier : `0f673c27`, `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`,
   `9852d62c` (+ `1bd7378d`, `9a9026fc`) ; fiches `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`,
   `d37413a3`, `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
@@ -357,3 +357,6 @@ appliquée (dry-run), les 6 modèles vérifiés en prod (nœud, point, brouillon
   niveau manquant, 5 excusés (le 6e après la migration).
 - `security-auditor` : 0 bloquant ; à vérifier après `db:migrate` : `tgenabled` du trigger
   `updated_at` revenu à `O`.
+- Mergée (#2416, CI verte) ; `db:push --include-all` le 2026-11-06 depuis `main` (dry-run : seule
+  cette migration) ; vérifié en prod : nœud, point 2-328, brouillon, `updated_at` préservé,
+  `tgenabled = 'O'`.
