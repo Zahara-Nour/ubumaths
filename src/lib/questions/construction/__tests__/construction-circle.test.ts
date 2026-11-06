@@ -114,13 +114,13 @@ const O = cross(M_AB.line, M_AC.line)[0];
 const CONSTRUCTION = [...M_AB.arcs, M_AB.line, ...M_AC.arcs, M_AC.line];
 
 describe('vérification cercle : lecture de l’en-tête', () => {
-	it('lit le nom et l’expression ; palette déduite Règle · Équerre · Compas', () => {
+	it('lit le nom et l’expression ; palette déduite Règle · Équerre · Compas · Report (lot 9)', () => {
 		const { spec, errors } = readConstructionHeader(CIRCONSCRIT);
 		expect(errors).toEqual([]);
 		expect(spec.checks).toEqual([
 			{ kind: 'cercle', name: 'c', expression: 'cercle_circonscrit(A, B, C)', line: 2 }
 		]);
-		expect(spec.tools).toEqual(['droite', 'equerre', 'compas']);
+		expect(spec.tools).toEqual(['droite', 'equerre', 'compas', 'report']);
 	});
 
 	it('quadrillage refusé (décision 2)', () => {
@@ -350,6 +350,28 @@ describe('vérification cercle : erreurs d’auteur', () => {
 			'0 ; 10 ; 0 ; 8'
 		);
 		expect(() => assertChecks(source)).toThrow(/centre du cercle est hors de la fenêtre/);
+	});
+
+	it('médiatrices au Report (un écartement gardé), puis le cercle au compas → juste (lot 9)', () => {
+		// Écartement 3 pris à la main, piqué en A, B puis C : les arcs de [AB] et [AC]
+		const report = (center: Position): DrawnObject => ({
+			kind: 'report',
+			cx: center.x,
+			cy: center.y,
+			ax: 1,
+			ay: 1,
+			bx: 4,
+			by: 1
+		});
+		const [rA, rB, rC] = [A, B, C].map(report);
+		const [p1, p2] = cross(rA, rB);
+		const [q1, q2] = cross(rA, rC);
+		const mAB = droite(p1, p2);
+		const mAC = droite(q1, q2);
+		const center = cross(mAB, mAC)[0];
+		expect(judge(CIRCONSCRIT, [rA, rB, rC, mAB, mAC, cercle(center, A)])).toEqual({
+			status: 'correct'
+		});
 	});
 
 	it('arcs de rayon un côté hors de la fenêtre : admis (lot 9, § 25)', () => {

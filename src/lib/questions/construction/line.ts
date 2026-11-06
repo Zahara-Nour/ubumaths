@@ -265,7 +265,8 @@ export function judgeLines(
 	shapes: FigureShapes | undefined,
 	objects: readonly DrawnObject[]
 ): ConstructionVerdict {
-	if (objects.some((o) => o.kind !== 'droite' && o.kind !== 'cercle')) {
+	// Le Report (lot 9) : un trait de construction, comme un cercle
+	if (objects.some((o) => o.kind !== 'droite' && o.kind !== 'cercle' && o.kind !== 'report')) {
 		return { status: 'incorrect' };
 	}
 	const figureTraits = shapes?.traits ?? [];

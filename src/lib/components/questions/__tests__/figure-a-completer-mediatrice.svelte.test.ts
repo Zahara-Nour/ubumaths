@@ -4,7 +4,7 @@
  *
  * Chantier `controles-figure`, lot 3 (phase 0 validée par David le 2026-11-02,
  * `docs/wip/controles-figure-progress.md` § 9) : `droite m = mediatrice(A, B)`,
- * palette Règle · Équerre · Compas (la règle d'abord) ; deux cercles, la droite
+ * palette Règle · Équerre · Compas, et Report (lot 9, § 25 : l'écartement gardé ; la règle d'abord) ; deux cercles, la droite
  * par leurs intersections → juste ; à la correction, la médiatrice en pointillés
  * et son codage.
  */
@@ -98,12 +98,17 @@ async function rendered(template?: QuestionTemplate) {
 }
 
 describe('case « figure » : construire la médiatrice', () => {
-	it('palette : Règle, Équerre, Compas ; la règle est l’outil de départ', async () => {
+	it('palette : Règle, Équerre, Compas, Report (lot 9) ; la règle est l’outil de départ', async () => {
 		const { container } = await rendered();
-		const palette = ['outil-droite', 'outil-equerre', 'outil-compas'].map(
+		const palette = ['outil-droite', 'outil-equerre', 'outil-compas', 'outil-report'].map(
 			(id) => container.querySelector(`[data-testid="${id}"]`) as HTMLButtonElement
 		);
-		expect(palette.map((b) => b?.textContent?.trim())).toEqual(['Règle', 'Équerre', 'Compas']);
+		expect(palette.map((b) => b?.textContent?.trim())).toEqual([
+			'Règle',
+			'Équerre',
+			'Compas',
+			'Report'
+		]);
 		expect(palette[0].getAttribute('aria-pressed')).toBe('true');
 		expect(container.querySelector('[data-testid="outil-point"]')).toBeNull();
 	});
@@ -119,6 +124,34 @@ describe('case « figure » : construire la médiatrice', () => {
 		button(container, 'Règle').click();
 		tap(rect, 6, 7.4);
 		tap(rect, 6, 0.6);
+		await expect.poll(() => all(container, 'droite-eleve').length).toBe(1);
+		button(container, 'Valider').click();
+		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);
+	});
+
+	it('cercles de rayon AB hors de la fenêtre : un écartement au Report, piqué en A et B → juste (lot 9)', async () => {
+		// A(3 ; 3), B(9 ; 5) : les cercles de rayon AB se coupent en y ≈ 9,2 et −1,2, hors de
+		// la fenêtre ; écartement 4 pris à la main : croisements (6 ; 4) ± 2,45 × (−0,32 ; 0,95)
+		const block = BLOCK.replace('A = point(4, 4)', 'A = point(3, 3)').replace(
+			'B = point(8, 4)',
+			'B = point(9, 5)'
+		);
+		const template = {
+			...TEMPLATE,
+			variations: [
+				{ statement: templateMarkdown(`Construis la médiatrice du segment $[AB]$.\n\n${block}`) }
+			]
+		} as unknown as QuestionTemplate;
+		const { container, rect } = await rendered(template);
+		button(container, 'Report').click();
+		tap(rect, 1, 1);
+		tap(rect, 5, 1);
+		tap(rect, 3, 3.05);
+		tap(rect, 9, 5.05);
+		await expect.poll(() => all(container, 'report-eleve').length).toBe(2);
+		button(container, 'Règle').click();
+		tap(rect, 5.25, 6.3);
+		tap(rect, 6.75, 1.7);
 		await expect.poll(() => all(container, 'droite-eleve').length).toBe(1);
 		button(container, 'Valider').click();
 		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);

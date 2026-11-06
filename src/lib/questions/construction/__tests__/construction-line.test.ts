@@ -23,8 +23,14 @@ import {
 	notPerpendicularToSegmentFeedback
 } from '../line';
 import { POINT_EYEBALLED_FEEDBACK } from '../point';
-import { perpendicularThrough } from '../instruments';
-import { solutionLines, solutionCodages } from '../drawing';
+import {
+	intersectTraits,
+	isInFrame,
+	perpendicularThrough,
+	traitOf,
+	type Trait
+} from '../instruments';
+import { addTap, solutionLines, solutionCodages, type Drawing } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject } from '../answer';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
 
@@ -93,16 +99,16 @@ const BOTTOM = { x: 4, y: 4 - H };
 const COMPASS = [cercle(2, 4, 6, 4), cercle(6, 4, 2, 4)];
 
 describe('vérification droite : lecture de l’en-tête', () => {
-	it('lit le nom et l’expression ; palette déduite Règle · Équerre · Compas', () => {
+	it('lit le nom et l’expression ; palette déduite Règle · Équerre · Compas · Report (lot 9)', () => {
 		const { spec, errors } = readConstructionHeader(MEDIATRICE);
 		expect(errors).toEqual([]);
 		expect(spec.checks).toEqual([
 			{ kind: 'droite', name: 'm', expression: 'mediatrice(A, B)', line: 2 }
 		]);
-		expect(spec.tools).toEqual(['droite', 'equerre', 'compas']);
+		expect(spec.tools).toEqual(['droite', 'equerre', 'compas', 'report']);
 	});
 
-	it('sur quadrillage aussi, la même palette (équerre gardée, décision 2)', () => {
+	it('sur quadrillage, Règle · Équerre · Compas (équerre gardée, décision 2 ; pas de Report)', () => {
 		expect(readConstructionHeader(MEDIATRICE_GRID).spec.tools).toEqual([
 			'droite',
 			'equerre',
@@ -351,24 +357,65 @@ describe('vérification droite : erreurs d’auteur', () => {
 		expect(() => assertChecks(source)).not.toThrow();
 	});
 
-	it('papier uni : cercles égaux d’un rayon plus petit que AB → juste (lot 9, § 25)', () => {
-		// Rayon 4 (< AB ≈ 5,39) : croisements M ± h·n, M(4,5 ; 4), h = √(16 − AB²/4), n ⟂ [AB]
+	it('papier uni : Report pris à la main, piqué en A et en B, règle par les croisements → juste (lot 9, § 25)', () => {
+		// Les cercles de rayon AB se coupent hors de la fenêtre ; l'écartement gardé au
+		// Report (deux touchers libres, rayon 4) se pique en A et en B : ses croisements y sont
 		const source = figure('droite m = mediatrice(A, B)', [
 			'A = point(2, 3)',
 			'B = point(7, 5)',
 			's = segment(A, B)'
 		]);
-		const middle = { x: 4.5, y: 4 };
-		const half = Math.sqrt(29) / 2;
-		const h = Math.sqrt(16 - half * half);
-		const n = { x: -2 / Math.sqrt(29), y: 5 / Math.sqrt(29) };
-		const top = { x: middle.x + h * n.x, y: middle.y + h * n.y };
-		const bottom = { x: middle.x - h * n.x, y: middle.y - h * n.y };
-		const answer = [
-			cercle(2, 3, 2, 7),
-			cercle(7, 5, 7, 9),
-			droite(top.x, top.y, bottom.x, bottom.y)
+		let drawing: Drawing = { objects: [], start: null };
+		for (const tap of [
+			{ x: 1, y: 1 },
+			{ x: 5, y: 1 },
+			{ x: 2, y: 3 },
+			{ x: 7, y: 5 }
+		]) {
+			drawing = addTap(drawing, tap, 'report');
+		}
+		const [first, second] = drawing.objects;
+		// Les deux croisements, dans la fenêtre : l'écran les aimante (touchers sur eux)
+		const crossings = intersectTraits(traitOf(first) as Trait, traitOf(second) as Trait);
+		expect(crossings).toHaveLength(2);
+		const frame = { xMin: 0, xMax: 10, yMin: 0, yMax: 8 };
+		expect(crossings.every((p) => isInFrame(p, frame))).toBe(true);
+		const [p, q] = crossings;
+		const answer = [...drawing.objects, droite(p.x, p.y, q.x, q.y)];
+		expect(judge(source, answer)).toEqual({ status: 'correct' });
+	});
+
+	it('papier uni : un rayon libre au compas, deux touchers à la main → pas des cercles égaux', () => {
+		// Sans Report, deux rayons pris à l'œil diffèrent : leurs croisements ne sont pas construits
+		const source = figure('droite m = mediatrice(A, B)', [
+			'A = point(2, 3)',
+			'B = point(7, 5)',
+			's = segment(A, B)'
+		]);
+		const first = cercle(2, 3, 2.03, 6.98);
+		const second = cercle(7, 5, 7, 9);
+		const [p, q] = intersectTraits(traitOf(first) as Trait, traitOf(second) as Trait);
+		expect(judge(source, [first, second, droite(p.x, p.y, q.x, q.y)])).toEqual({
+			status: 'incorrect',
+			feedback: LINE_EYEBALLED_FEEDBACK
+		});
+	});
+
+	it('papier uni : milieu de [AB] au bord de la fenêtre, médiatrice longue → admis (lot 9, § 25)', () => {
+		// A(0 ; 3), B(0 ; 5) : médiatrice y = 4, croisements à droite seulement (x = h) ;
+		// deux paires de reports de rayons différents donnent deux points du même côté
+		const source = figure('droite m = mediatrice(A, B)', [
+			'A = point(0, 3)',
+			'B = point(0, 5)',
+			's = segment(A, B)'
+		]);
+		expect(() => assertChecks(source)).not.toThrow();
+		const reports = (r: number): DrawnObject[] => [
+			{ kind: 'report', cx: 0, cy: 3, ax: 1, ay: 1, bx: 1 + r, by: 1 },
+			{ kind: 'report', cx: 0, cy: 5, ax: 1, ay: 1, bx: 1 + r, by: 1 }
 		];
+		const h = (r: number) => Math.sqrt(r * r - 1);
+		const answer = [...reports(2), ...reports(4), droite(h(2), 4, h(4), 4)];
 		expect(judge(source, answer)).toEqual({ status: 'correct' });
 	});
 

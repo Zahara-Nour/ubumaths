@@ -246,7 +246,8 @@ export function judgeCircles(
 	shapes: FigureShapes | undefined,
 	objects: readonly DrawnObject[]
 ): ConstructionVerdict {
-	if (objects.some((o) => o.kind !== 'droite' && o.kind !== 'cercle')) {
+	// Le Report (lot 9) : un trait de construction, comme un cercle
+	if (objects.some((o) => o.kind !== 'droite' && o.kind !== 'cercle' && o.kind !== 'report')) {
 		return { status: 'incorrect' };
 	}
 	// Cercle construit de proche en proche (décision de David, 2026-11-03, § 14)

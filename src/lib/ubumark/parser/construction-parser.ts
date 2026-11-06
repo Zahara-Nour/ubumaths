@@ -36,6 +36,7 @@ import {
 	CONSTRUCTION_CHECK_KINDS,
 	CONSTRUCTION_TOOLS,
 	INSTRUMENT_TOOLS,
+	LINE_GRID_TOOLS,
 	PLAIN_PAPER_TOOLS,
 	triangleTools,
 	type ConstructionCheck,
@@ -582,7 +583,9 @@ export function readConstructionHeader(
 				? undefined
 				: first.kind === 'triangle'
 					? triangleTools(first)
-					: PLAIN_PAPER_TOOLS[kind];
+					: kind === 'droite' && grid
+						? LINE_GRID_TOOLS
+						: PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
 	const coherent: ConstructionCheck[] = [];
