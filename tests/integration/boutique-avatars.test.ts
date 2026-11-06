@@ -85,6 +85,7 @@ let admin: Account;
 let itemCount = 0;
 let classCount = 0;
 const authUsersToDelete: string[] = [];
+const pendingEmails: string[] = [];
 
 // Functions
 async function signedIn(email: string): Promise<SupabaseClient> {
@@ -234,6 +235,14 @@ describe('Boutique d’avatars', () => {
 		for (const id of authUsersToDelete) {
 			await pg.query('delete from auth.users where id = $1', [id]).catch(() => undefined);
 		}
+		// Classes et pré-inscriptions de ce fichier, explicitement (sans compter sur
+		// la purge générale de cleanupAllTestData)
+		await pg
+			.query('delete from public.classes where name like $1', [`${TAG} classe%`])
+			.catch(() => undefined);
+		await pg
+			.query('delete from public.pending_students where email = any($1)', [pendingEmails])
+			.catch(() => undefined);
 		await cleanupAllTestData();
 	});
 
@@ -510,16 +519,94 @@ describe('Boutique d’avatars', () => {
 			expect(rows[0].n).toBe(0);
 		});
 
-		it('backfill : google_avatar_url copiée des photos Google existantes', async () => {
-			// Vérifie la règle sur la base : aucun profil dont avatar_url est une photo
-			// Google sans google_avatar_url (hors port d'un avatar).
-			const pg = await getPostgresClient();
-			const { rows } = await pg.query(
-				`select count(*)::int as n from public.profiles
-					where avatar_url like 'https://lh3.googleusercontent.com/%'
-						and google_avatar_url is distinct from avatar_url`
-			);
-			expect(rows[0].n).toBe(0);
+		it('backfill : la photo Google existante passe dans google_avatar_url, pas une autre adresse', async () => {
+			const google = await newStudent(0, null);
+			const other = await newStudent(0, null);
+			const pg = await connectPostgresClient();
+			try {
+				// Une transaction annulée à la fin : l'UPDATE du backfill (copié tel quel de
+				// la migration) touche toute la table.
+				await pg.query('begin');
+				// État d'avant la migration, posé triggers coupés (sans la recopie du § 4 ter)
+				await pg.query('set local session_replication_role = replica');
+				await pg.query(
+					'update public.profiles set avatar_url = $2, google_avatar_url = null where id = $1',
+					[google.id, GOOGLE_PHOTO]
+				);
+				await pg.query(
+					'update public.profiles set avatar_url = $2, google_avatar_url = null where id = $1',
+					[other.id, 'https://exemple.com/photo.png']
+				);
+				await pg.query('set local session_replication_role = origin');
+
+				await pg.query(`update public.profiles
+set google_avatar_url = avatar_url
+where avatar_url like 'https://lh3.googleusercontent.com/%'`);
+
+				const { rows } = await pg.query(
+					`select id, avatar_url, google_avatar_url from public.profiles where id = any($1)`,
+					[[google.id, other.id]]
+				);
+				const byId = Object.fromEntries(rows.map((r: { id: string }) => [r.id, r]));
+				expect(byId[google.id]).toMatchObject({
+					avatar_url: GOOGLE_PHOTO,
+					google_avatar_url: GOOGLE_PHOTO
+				});
+				expect(byId[other.id]).toMatchObject({
+					avatar_url: 'https://exemple.com/photo.png',
+					google_avatar_url: null
+				});
+			} finally {
+				await pg.query('rollback');
+				await pg.end();
+			}
+		});
+
+		it('une photo Google posée par le serveur (retour OAuth) est gardée dans google_avatar_url', async () => {
+			const student = await newStudent(0, null);
+
+			const { data, error } = await service
+				.from('profiles')
+				.update({ avatar_url: NEW_GOOGLE_PHOTO })
+				.eq('id', student.id)
+				.select('id');
+			expect(error).toBeNull();
+			expect(data).toHaveLength(1);
+			expect(await profileOf(student.id)).toMatchObject({
+				avatar_url: NEW_GOOGLE_PHOTO,
+				google_avatar_url: NEW_GOOGLE_PHOTO
+			});
+
+			// Une autre adresse ne remplace pas la photo gardée
+			await service
+				.from('profiles')
+				.update({ avatar_url: 'https://exemple.com/photo.png' })
+				.eq('id', student.id);
+			expect((await profileOf(student.id)).google_avatar_url).toBe(NEW_GOOGLE_PHOTO);
+		});
+
+		it('image changée au catalogue : ceux qui portent l’avatar suivent, les autres non', async () => {
+			const wearer = await newStudent(50);
+			const owner = await newStudent(50);
+			const item = await newItem({ price: 15 });
+			await buy(wearer.id, item.key);
+			await buy(owner.id, item.key);
+			await wear(wearer.id, item.key);
+			const newImage = `/avatars/galopin/${item.key}_v2.webp`;
+
+			const { error } = await service
+				.from(CATALOG)
+				.update({ image_path: newImage })
+				.eq('key', item.key);
+			expect(error).toBeNull();
+			expect(await profileOf(wearer.id)).toMatchObject({
+				worn_avatar: item.key,
+				avatar_url: newImage
+			});
+			expect(await profileOf(owner.id)).toMatchObject({
+				worn_avatar: null,
+				avatar_url: GOOGLE_PHOTO
+			});
 		});
 	});
 
@@ -723,6 +810,48 @@ describe('Boutique d’avatars', () => {
 			});
 		});
 
+		it('à la création, une adresse qui n’est pas une photo Google est écartée', async () => {
+			for (const meta of [
+				{ picture: 'https://exemple.com/photo.png' },
+				{ avatar_url: 'https://lh3.googleusercontent.com.pirate.net/a/x' },
+				{ picture: 'javascript:alert(1)' }
+			]) {
+				const id = crypto.randomUUID();
+				await signupViaAuth(id, generateTestEmail('pas-google'), meta);
+				expect(await profileOf(id)).toMatchObject({ avatar_url: null, google_avatar_url: null });
+			}
+		});
+
+		it('à la création par code de classe valide, aussi', async () => {
+			classCount += 1;
+			const code = `${TAG}${classCount}`.toUpperCase();
+			const pg = await getPostgresClient();
+			const {
+				rows: [cls]
+			} = await pg.query(
+				`insert into public.classes (name, join_code, registration_open) values ($1, $2, true)
+					returning id`,
+				[`${TAG} classe ${classCount}`, code]
+			);
+			const id = crypto.randomUUID();
+			await signupViaAuth(id, generateTestEmail('google-code-valide'), {
+				picture: GOOGLE_PHOTO,
+				class_code: code,
+				firstname: 'Ada',
+				lastname: 'L'
+			});
+
+			expect(await profileOf(id)).toMatchObject({
+				avatar_url: GOOGLE_PHOTO,
+				google_avatar_url: GOOGLE_PHOTO
+			});
+			const { rows } = await pg.query(
+				'select class_id from public.class_members where student_id = $1',
+				[id]
+			);
+			expect(rows).toEqual([{ class_id: cls.id }]);
+		});
+
 		it('à la création par code de classe invalide, aussi', async () => {
 			const id = crypto.randomUUID();
 			await signupViaAuth(id, generateTestEmail('google-code'), {
@@ -741,6 +870,7 @@ describe('Boutique d’avatars', () => {
 		it('à la création d’un élève pré-inscrit par le prof, aussi', async () => {
 			const id = crypto.randomUUID();
 			const email = generateTestEmail('google-pre');
+			pendingEmails.push(email);
 			const pg = await getPostgresClient();
 			await pg.query(
 				`insert into public.pending_students (email, firstname, lastname, grade)

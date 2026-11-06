@@ -33,13 +33,25 @@
 --
 -- EN MIROIR (qui perd quoi) : plus personne n'écrit sa propre `avatar_url` à la
 -- main (ni `google_avatar_url`, ni `worn_avatar`) par la policy « Users can update
--- own profile ». Aucun code ne le fait (updateProfileSchema n'a aucun appelant) ;
--- prod mesurée le 2026-11-06 : 73 élèves + 1 prof avec une photo Google, 9 vides,
+-- own profile ». Un seul code le faisait : le retour OAuth Google
+-- (src/routes/(public)/auth/callback/+server.ts) posait la photo Google d'un
+-- profil approuvé sans avatar, avec le client de l'utilisateur ; il passe par le
+-- client service dans la MÊME PR (updateProfileSchema, lui, n'a aucun appelant).
+-- Prod mesurée le 2026-11-06 : 73 élèves + 1 prof avec une photo Google, 9 vides,
 -- 0 autre adresse — personne ne perd une image choisie.
 -- Et (validé par David le 2026-11-06) : le prof et l'admin ne peuvent plus écrire
 -- ces trois colonnes sur le profil d'un élève par l'API (trigger
 -- guard_profile_avatar_fields, § 4 bis) ; aucun code ne le fait. Leurs autres
 -- écritures (gidouilles, bonus, niveau, statut…) sont inchangées.
+-- Enfin, une photo n'est retenue que servie par Google
+-- (https://lh3.googleusercontent.com/…), en base comme dans le retour OAuth : une
+-- adresse quelconque glissée dans les métadonnées d'inscription n'est plus
+-- affichée chez les autres (NULL : avatar par défaut).
+--
+-- ORDRE DE LIVRAISON : migration au merge (db:migrate), puis le code au
+-- deploy:prod. Entre les deux, l'ancien retour OAuth voit son écriture refusée
+-- (42501, journalisée, sans effet pour l'élève : la photo est déjà posée par
+-- handle_new_user à la création du compte).
 --
 -- Garanties tenues par la base, pas seulement par les fonctions :
 --   - « possédé » : la clé (id, worn_avatar) de `profiles` pointe vers la
@@ -55,13 +67,15 @@
 -- Trigger d'inscription (handle_new_user) : recopie exacte de 20261015090400,
 -- sauf (1) google_avatar_url renseignée aux quatre INSERT, (2) branche « profil
 -- existant » : google_avatar_url mise à jour, avatar_url jamais écrasée quand un
--- avatar est porté. Rappel : le trigger ne joue qu'à la création de la ligne
+-- avatar est porté, (3) photo retenue seulement si servie par Google
+-- (https://lh3.googleusercontent.com/…), sinon NULL. Rappel : le trigger ne joue qu'à la création de la ligne
 -- auth.users (AFTER INSERT), pas à chaque connexion.
 --
 -- Effacement RGPD : `student_avatars.student_id` en ON DELETE CASCADE.
 --
 -- Additive : deux tables neuves, deux colonnes nullables, une policy durcie,
--- un corps de trigger étendu, deux fonctions neuves ; backfill de la seule
+-- un corps de trigger étendu, deux fonctions neuves, trois triggers neufs
+-- (garde, photo gardée, image du catalogue), un index partiel ; backfill de la seule
 -- colonne neuve.
 --
 -- Preuve : tests/integration/boutique-avatars.test.ts (rouge sans la migration).
@@ -80,8 +94,15 @@
 --       and (status = get_user_status(auth.uid()))
 --       and (coalesce(gidouilles, 0) <= coalesce((select p.gidouilles from profiles p where p.id = auth.uid()), 0))
 --       and (school_id is not distinct from (select p.school_id from profiles p where p.id = auth.uid())));
---   -- trigger : rejouer le CREATE OR REPLACE de 20261015090400 (handle_new_user)
---   --   AVANT de supprimer la colonne google_avatar_url ;
+--   drop trigger if exists keep_google_avatar_url_trg on public.profiles;
+--   drop function if exists public.keep_google_avatar_url();
+--   drop trigger if exists sync_worn_avatar_image_trg on public.avatar_catalog;
+--   drop function if exists public.sync_worn_avatar_image();
+--   -- handle_new_user : rejouer la définition précédente, AVANT de supprimer la
+--   --   colonne google_avatar_url. Le fichier n'a qu'une instruction, le CREATE OR
+--   --   REPLACE FUNCTION public.handle_new_user() :
+--   --     \i supabase/migrations/20261015090400_inscription_sans_code_en_attente.sql
+--   --   (ou psql -f sur ce fichier) ;
 --   -- les élèves qui portaient un avatar retrouvent leur photo :
 --   update public.profiles set avatar_url = google_avatar_url where worn_avatar is not null;
 --   alter table public.profiles drop constraint if exists profiles_worn_avatar_fkey;
@@ -191,6 +212,10 @@ alter table public.profiles
 		foreign key (id, worn_avatar)
 		references public.student_avatars (student_id, avatar_key)
 		on delete set null (worn_avatar);
+-- ⚠️ Ce SET NULL laisse avatar_url sur l'image de l'avatar. Il ne joue que si une
+-- ligne de student_avatars est supprimée À LA MAIN (aucune fonction ne le fait ; la
+-- suppression du compte efface le profil lui-même) : la remettre alors avec
+-- `update profiles set avatar_url = google_avatar_url where id = …`.
 
 comment on column public.profiles.google_avatar_url is
 	'Photo du compte Google, gardée pour revenir quand l''élève retire son avatar. Écrite par handle_new_user (et le backfill) seulement.';
@@ -273,12 +298,54 @@ $$;
 comment on function public.guard_profile_avatar_fields() is
 	'Refuse aux rôles de l''API (authenticated, anon), prof et admin compris, toute modification de avatar_url, google_avatar_url et worn_avatar (boutique d''avatars, 2026-11-06).';
 
--- Sans clause OF : couvre aussi un futur trigger qui modifierait NEW.avatar_url
+-- Sans clause OF : couvre aussi un trigger BEFORE qui modifierait NEW.avatar_url,
+-- mais seulement s'il s'exécute AVANT celui-ci. Les triggers BEFORE d'une table
+-- s'exécutent par ordre alphabétique de nom : sont couverts ceux dont le nom
+-- précède « guard_profile_avatar_fields_trg » (audit_profiles, consent_rule_*,
+-- guard_profile_consent_fields_trg) ; ceux qui le suivent (guard_profile_reserved_*,
+-- guard_profile_role_*, keep_google_avatar_url_trg, trigger_*, update_*) voient
+-- passer leurs propres changements. keep_google_avatar_url_trg (§ 4 ter) est
+-- nommé exprès APRÈS : la garde juge ce que l'appelant a envoyé.
 create trigger guard_profile_avatar_fields_trg
 	before update
 	on public.profiles
 	for each row
 	execute function public.guard_profile_avatar_fields();
+
+-- ---------------------------------------------------------------------------
+-- 4 ter. Toute photo Google posée dans avatar_url est gardée de côté
+-- ---------------------------------------------------------------------------
+-- Le retour OAuth (et tout écrit serveur) ne nomme que avatar_url : les types
+-- TypeScript, générés depuis la prod, n'auront google_avatar_url qu'après
+-- db:types. La base complète donc d'elle-même : à l'INSERT, ou quand avatar_url
+-- CHANGE, si la nouvelle valeur est une photo Google et qu'aucun avatar n'est
+-- porté, elle est recopiée dans google_avatar_url. Sans effet sur set_worn_avatar
+-- (image /avatars/…, ou retour de la photo déjà gardée).
+-- Pas de SECURITY DEFINER : ne modifie que NEW. Nommé après la garde (§ 4 bis).
+
+create or replace function public.keep_google_avatar_url()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+	if new.worn_avatar is null
+		and starts_with(coalesce(new.avatar_url, ''), 'https://lh3.googleusercontent.com/')
+		and (tg_op = 'INSERT' or new.avatar_url is distinct from old.avatar_url) then
+		new.google_avatar_url := new.avatar_url;
+	end if;
+	return new;
+end;
+$$;
+
+comment on function public.keep_google_avatar_url() is
+	'Recopie dans google_avatar_url une photo Google posée dans avatar_url (aucun avatar porté), pour qu''elle revienne au retrait d''un avatar (boutique d''avatars, 2026-11-06).';
+
+create trigger keep_google_avatar_url_trg
+	before insert or update of avatar_url
+	on public.profiles
+	for each row
+	execute function public.keep_google_avatar_url();
 
 -- ---------------------------------------------------------------------------
 -- 5. Trigger d'inscription : photo Google gardée, avatar porté respecté
@@ -307,6 +374,11 @@ BEGIN
     NEW.raw_user_meta_data->>'picture',
     NEW.raw_user_meta_data->>'avatar_url'
   );
+  -- Boutique d'avatars : seule une photo servie par Google est retenue (les
+  -- métadonnées viennent du client) ; sinon NULL, avatar par défaut.
+  IF NOT starts_with(COALESCE(google_avatar, ''), 'https://lh3.googleusercontent.com/') THEN
+    google_avatar := NULL;
+  END IF;
 
   -- =========================================================================
   -- PRIORITY BRANCH: student self-registration by class code.
@@ -636,3 +708,40 @@ comment on function public.set_worn_avatar(uuid, text) is
 
 revoke all on function public.set_worn_avatar(uuid, text) from public, anon, authenticated;
 grant execute on function public.set_worn_avatar(uuid, text) to service_role;
+
+-- ---------------------------------------------------------------------------
+-- 8. Image d'un avatar changée au catalogue : les porteurs suivent
+-- ---------------------------------------------------------------------------
+-- avatar_url garde une COPIE de image_path : sans ce trigger, renommer ou
+-- redessiner l'image d'un avatar laisserait ses porteurs sur l'ancienne adresse.
+-- Pas de SECURITY DEFINER : seuls le serveur (service_role) et les migrations
+-- (postgres) écrivent le catalogue, et la garde guard_profile_avatar_fields les
+-- laisse passer ; un rôle de l'API n'a aucun droit d'écriture sur le catalogue.
+
+create or replace function public.sync_worn_avatar_image()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+	update public.profiles p
+	set avatar_url = new.image_path
+	where p.worn_avatar = new.key;
+	return null;
+end;
+$$;
+
+comment on function public.sync_worn_avatar_image() is
+	'Recopie la nouvelle image d''un avatar du catalogue dans avatar_url de ceux qui le portent (boutique d''avatars, 2026-11-06).';
+
+create trigger sync_worn_avatar_image_trg
+	after update of image_path
+	on public.avatar_catalog
+	for each row
+	when (old.image_path is distinct from new.image_path)
+	execute function public.sync_worn_avatar_image();
+
+-- profiles.worn_avatar n'est pas indexé seul (la clé composite commence par id) :
+-- index partiel pour ce trigger, minuscule (seuls les porteurs y figurent).
+create index profiles_worn_avatar_idx on public.profiles (worn_avatar)
+	where worn_avatar is not null;
