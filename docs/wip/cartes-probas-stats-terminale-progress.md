@@ -11,9 +11,9 @@ _Mis à jour le 2026-11-06 (relecture des 17 brouillons `T_COMP` ouverte)._
   couverture. Instantané prod dans `scripts/questions/tcomp-brouillons/` (17 fichiers, avec `id`). Page à cocher
   publiée : https://claude.ai/artifact/1iwzkfN82RGt7tDAx8zxTT (collection `verdicts`). Contrôles de la page :
   17 / 17 avec point et nœud ; seule alerte, a6cc7712 : bloc `nuage` non dessiné (le jouer dans l'aperçu).
-- **Prochaine action** : lire et compter les verdicts ; corriger les « À revoir » dans les fichiers ; puis
-  `publier-lot` (simulation, puis `--publier`) lancé par David.
-- **En attente de David** : ses verdicts sur la page.
+- **Verdicts** (relus en base le 2026-11-06) : **17 / 17 OK**, aucun commentaire, aucune retouche.
+- **Prochaine action** : `publier-lot` en simulation puis `--publier`, lancé par David ; relire `published` en base.
+- **En attente de David** : le lancement de `publier-lot`.
 - **Pièges en cours** : `publier-lot.ts`, même en simulation, est refusé à Claude (« Modify Shared Resources ») :
   David le lance avec `!`. Ne rien lancer depuis `scripts/questions/probas-stats-terminale/` (fichiers sans `id`,
   doublons) : travailler sur `tcomp-brouillons/`. Worktree neuf : `pnpm exec svelte-kit sync` avant les `tsx`.
