@@ -113,6 +113,7 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 - Testé en local dans une transaction annulée : cas de prod convertis, ligne déjà ubumark intacte, `updated_at` gardé ; `<p>a **b**</p>` et `<ul>` → exception.
 - Revue (code-reviewer) : rien de bloquant ; garde renforcée — forme entière `<p>…</p>` exigée (du texte hors `<p>` passait), résultat vide refusé (contrainte `not_blank`), marques de liste / citation / bloc de code, `| ~ ^ [ ]` et entités dans un libellé refusées, fonctions `pg_temp` supprimées avant le commit. 4 formes de prod acceptées, 14 pièges refusés (mesuré en local).
 - Test de rendu (`JournalContent`) sur la sortie exacte pour la séance à deux références : deux paragraphes, deux liens.
+- Garde doc de la CI : `docs/systeme/base-de-donnees.md` couvre les migrations → `Doc-inchangée:` (schéma inchangé, migration de données seule). En local, `docs:check-a-jour` ne voit que les commits, pas l'index.
 - Avant / après (prod) :
   - séance 9e9e75aa : `<p>[[…|Evaluation : Produit scalaire]]</p><p></p><p>[[…#2,4,5|… ex. 2, 4 et 5]]</p><p></p>` → `[[…|Evaluation : Produit scalaire]]` + ligne vide + `[[…#2,4,5|… ex. 2, 4 et 5]]`
   - séance 5e44b047, travaux abd84575 et 77c58e2c : `<p>[[…]]</p>` (± `<p></p>`) → `[[…]]`
