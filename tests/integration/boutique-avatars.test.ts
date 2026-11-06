@@ -83,6 +83,7 @@ let anon: SupabaseClient;
 let teacher: Account;
 let admin: Account;
 let itemCount = 0;
+let classCount = 0;
 const authUsersToDelete: string[] = [];
 
 // Functions
@@ -192,6 +193,23 @@ async function signupViaAuth(id: string, email: string, meta: Record<string, unk
 	authUsersToDelete.push(id);
 }
 
+/** Inscrit l'élève (actif) dans une classe neuve, posée hors RLS ; rend son id. */
+async function enrollInNewClass(studentId: string): Promise<string> {
+	classCount += 1;
+	const pg = await getPostgresClient();
+	const {
+		rows: [cls]
+	} = await pg.query(`insert into public.classes (name, join_code) values ($1, $2) returning id`, [
+		`${TAG} classe ${classCount}`,
+		`${TAG}${classCount}`.toUpperCase()
+	]);
+	await pg.query(
+		`insert into public.class_members (class_id, student_id, status) values ($1, $2, 'active')`,
+		[cls.id, studentId]
+	);
+	return cls.id as string;
+}
+
 // Tests
 describe('Boutique d’avatars', () => {
 	beforeAll(async () => {
@@ -239,24 +257,15 @@ describe('Boutique d’avatars', () => {
 		it('la ligne au journal porte la classe active de l’élève', async () => {
 			const student = await newStudent(20);
 			const item = await newItem({ price: 15 });
-			const pg = await getPostgresClient();
-			const {
-				rows: [cls]
-			} = await pg.query(
-				`insert into public.classes (name, join_code) values ($1, $2) returning id`,
-				[`${TAG} classe`, TAG.toUpperCase()]
-			);
-			await pg.query(
-				`insert into public.class_members (class_id, student_id, status) values ($1, $2, 'active')`,
-				[cls.id, student.id]
-			);
+			const classId = await enrollInNewClass(student.id);
 
 			await buy(student.id, item.key);
+			const pg = await getPostgresClient();
 			const { rows } = await pg.query(
 				'select class_id from public.gidouilles_activity where student_id = $1',
 				[student.id]
 			);
-			expect(rows).toEqual([{ class_id: cls.id }]);
+			expect(rows).toEqual([{ class_id: classId }]);
 		});
 
 		it('solde insuffisant : refus avec ce qui manque, rien ne bouge', async () => {
@@ -528,19 +537,71 @@ describe('Boutique d’avatars', () => {
 				{ google_avatar_url: 'https://exemple.com/image-choisie.png' }
 			];
 			for (const patch of attempts) {
-				const { data, error } = await student.client
+				const { error } = await student.client
 					.from('profiles')
 					.update(patch)
 					.eq('id', student.id)
 					.select('id');
-				// Refus de la policy (WITH CHECK) : erreur, ou au pire aucune ligne rendue
-				expect(error?.code ?? (data?.length === 0 ? 'zero-ligne' : 'ecrit')).not.toBe('ecrit');
+				// Refus du garde (puis de la policy) : 42501, jamais un succès muet
+				expect(error?.code).toBe(PERMISSION_DENIED);
 			}
 			expect(await profileOf(student.id)).toMatchObject({
 				avatar_url: GOOGLE_PHOTO,
 				google_avatar_url: GOOGLE_PHOTO,
 				worn_avatar: null
 			});
+		});
+
+		it('ni le prof (élève de sa classe) ni l’admin n’écrivent l’avatar d’un élève', async () => {
+			const student = await newStudent(50);
+			const item = await newItem({ price: 15 });
+			await buy(student.id, item.key);
+			await wear(student.id, item.key);
+			await enrollInNewClass(student.id);
+
+			const attempts: Record<string, string | null>[] = [
+				{ avatar_url: 'https://exemple.com/image-choisie.png' },
+				{ avatar_url: null },
+				{ worn_avatar: null },
+				{ google_avatar_url: 'https://exemple.com/image-choisie.png' }
+			];
+			for (const client of [teacher.client, admin.client]) {
+				for (const patch of attempts) {
+					const { error } = await client
+						.from('profiles')
+						.update(patch)
+						.eq('id', student.id)
+						.select('id');
+					expect(error?.code).toBe(PERMISSION_DENIED);
+				}
+			}
+			expect(await profileOf(student.id)).toMatchObject({
+				worn_avatar: item.key,
+				avatar_url: item.image_path,
+				google_avatar_url: GOOGLE_PHOTO
+			});
+		});
+
+		it('le prof donne toujours des gidouilles, l’admin modifie toujours un profil', async () => {
+			const student = await newStudent(50);
+			await enrollInNewClass(student.id);
+
+			const reward = await teacher.client
+				.from('profiles')
+				.update({ gidouilles: 70 })
+				.eq('id', student.id)
+				.select('gidouilles');
+			expect(reward.error).toBeNull();
+			expect(reward.data).toEqual([{ gidouilles: 70 }]);
+
+			const rename = await admin.client
+				.from('profiles')
+				.update({ firstname: 'Bougrelas' })
+				.eq('id', student.id)
+				.select('firstname');
+			expect(rename.error).toBeNull();
+			expect(rename.data).toEqual([{ firstname: 'Bougrelas' }]);
+			expect((await profileOf(student.id)).gidouilles).toBe(70);
 		});
 
 		it('l’élève connecté peut toujours modifier le reste de son profil', async () => {
@@ -683,7 +744,7 @@ describe('Boutique d’avatars', () => {
 			const pg = await getPostgresClient();
 			await pg.query(
 				`insert into public.pending_students (email, firstname, lastname, grade)
-					values ($1, 'Ada', 'L', '6e')`,
+					values ($1, 'Ada', 'L', '6')`,
 				[email]
 			);
 			await signupViaAuth(id, email, { picture: GOOGLE_PHOTO });

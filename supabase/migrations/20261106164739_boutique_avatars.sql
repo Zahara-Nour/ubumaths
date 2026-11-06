@@ -36,6 +36,10 @@
 -- own profile ». Aucun code ne le fait (updateProfileSchema n'a aucun appelant) ;
 -- prod mesurée le 2026-11-06 : 73 élèves + 1 prof avec une photo Google, 9 vides,
 -- 0 autre adresse — personne ne perd une image choisie.
+-- Et (validé par David le 2026-11-06) : le prof et l'admin ne peuvent plus écrire
+-- ces trois colonnes sur le profil d'un élève par l'API (trigger
+-- guard_profile_avatar_fields, § 4 bis) ; aucun code ne le fait. Leurs autres
+-- écritures (gidouilles, bonus, niveau, statut…) sont inchangées.
 --
 -- Garanties tenues par la base, pas seulement par les fonctions :
 --   - « possédé » : la clé (id, worn_avatar) de `profiles` pointe vers la
@@ -65,6 +69,8 @@
 -- ROLLBACK (à exécuter tel quel) :
 --   drop function if exists public.buy_avatar(uuid, text);
 --   drop function if exists public.set_worn_avatar(uuid, text);
+--   drop trigger if exists guard_profile_avatar_fields_trg on public.profiles;
+--   drop function if exists public.guard_profile_avatar_fields();
 --   -- policy : recréer celle de 20260902097000 (sans les trois termes avatar)
 --   drop policy if exists "Users can update own profile" on public.profiles;
 --   create policy "Users can update own profile" on public.profiles
@@ -224,6 +230,55 @@ with check (
 
 comment on policy "Users can update own profile" on public.profiles is
 	'Self-update: pins role & status (unchanged), caps gidouilles at current (award only via SECURITY DEFINER RPCs, which bypass RLS), freezes school_id (finding F2, 2026-08-30) and freezes avatar_url, google_avatar_url, worn_avatar (boutique d''avatars, 2026-11-06).';
+
+-- ---------------------------------------------------------------------------
+-- 4 bis. Garde : personne n'écrit l'avatar par l'API, prof et admin compris
+-- ---------------------------------------------------------------------------
+-- La policy ci-dessus ne couvre que l'élève sur son propre profil : les policies
+-- « Teachers can update student rewards in their classes » et « Admins can update
+-- any profile » laissaient le prof et l'admin écrire avatar_url (adresse externe
+-- comprise) et vider worn_avatar d'un élève, contre Q4. Une policy ne voit pas
+-- l'ancienne ligne : trigger BEFORE UPDATE.
+--
+-- Mécanisme : refus dès que l'instruction est exécutée par un rôle de l'API
+-- (current_user authenticated ou anon), quel que soit le profil appelant — même
+-- convention que guard_profile_reserved_fields (20261001180000). Pourquoi pas une
+-- variable de transaction (set_config('app.avatar_write', …)) : set_config est
+-- exécutable par PUBLIC, une telle variable se forge ; current_user, lui, ne
+-- change que par SECURITY DEFINER ou SET ROLE, hors de portée d'un client.
+-- Passent donc : buy_avatar, set_worn_avatar et handle_new_user (SECURITY
+-- DEFINER, exécutées en tant que propriétaire, postgres), le backfill ci-dessus
+-- (migration, postgres) et le serveur (service_role), qui est de confiance.
+-- Seul l'UPDATE est gardé : l'INSERT de profiles est réservé à service_role
+-- (policy « Allow profile creation ») et au trigger d'inscription.
+
+create or replace function public.guard_profile_avatar_fields()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+	if current_user in ('authenticated', 'anon') and (
+		new.avatar_url is distinct from old.avatar_url
+		or new.google_avatar_url is distinct from old.google_avatar_url
+		or new.worn_avatar is distinct from old.worn_avatar
+	) then
+		raise exception 'L''avatar ne se modifie que par la boutique d''avatars (serveur).'
+			using errcode = '42501';
+	end if;
+	return new;
+end;
+$$;
+
+comment on function public.guard_profile_avatar_fields() is
+	'Refuse aux rôles de l''API (authenticated, anon), prof et admin compris, toute modification de avatar_url, google_avatar_url et worn_avatar (boutique d''avatars, 2026-11-06).';
+
+-- Sans clause OF : couvre aussi un futur trigger qui modifierait NEW.avatar_url
+create trigger guard_profile_avatar_fields_trg
+	before update
+	on public.profiles
+	for each row
+	execute function public.guard_profile_avatar_fields();
 
 -- ---------------------------------------------------------------------------
 -- 5. Trigger d'inscription : photo Google gardée, avatar porté respecté
