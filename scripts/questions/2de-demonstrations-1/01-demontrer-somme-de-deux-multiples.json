@@ -1,0 +1,234 @@
+{
+	"title": "Démontrer que la somme de deux multiples de a est un multiple de a",
+	"description": "Démonstration à trous (a tiré de 2 à 9) : écrire y = am, factoriser ak + am = a(k + m), justifier la conclusion (k + m entier) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 11,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $x$ et $y$ deux entiers multiples de ${{eval:a}}$. On démontre que $x+y$ est un multiple de ${{eval:a}}$.\n\nComme $x$ est un multiple de ${{eval:a}}$, il existe un entier $k$ tel que $x={{eval:a}}k$. Complète de même pour $y$, avec un entier $m$.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}m"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un multiple de ${{eval:a}}$ est un entier qui s'écrit ${{eval:a}}\\times$ (un entier).",
+					"Donc il existe un entier $m$ tel que $y=\\textcolor{{{color:primary.0}}}{{{eval:a}}m}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $x$ et $y$ deux entiers multiples de ${{eval:a}}$. On démontre que $x+y$ est un multiple de ${{eval:a}}$.\n\nComme $x$ et $y$ sont des multiples de ${{eval:a}}$, il existe deux entiers $k$ et $m$ tels que $x={{eval:a}}k$ et $y={{eval:a}}m$.\n\nOn factorise par ${{eval:a}}$. Complète.\n\n$x+y={{eval:a}}k+{{eval:a}}m={{eval:a}}\\times(?)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "k+m"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:a}}$ est un facteur commun aux deux termes ${{eval:a}}k$ et ${{eval:a}}m$.",
+					"Donc $x+y={{eval:a}}\\times(\\textcolor{{{color:primary.0}}}{k+m})$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $x$ et $y$ deux entiers multiples de ${{eval:a}}$. On démontre que $x+y$ est un multiple de ${{eval:a}}$.\n\nComme $x$ et $y$ sont des multiples de ${{eval:a}}$, il existe deux entiers $k$ et $m$ tels que $x={{eval:a}}k$ et $y={{eval:a}}m$.\n\nOn a $x+y={{eval:a}}(k+m)$. Pourquoi peut-on conclure que $x+y$ est un multiple de ${{eval:a}}$ ?\n\n```choix\n- Car $k+m$ est un entier.\n- Car $k$ et $m$ sont égaux.\n- Car ${{eval:a}}$ divise $k+m$.\n- Car $x+y$ est positif.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La somme de deux entiers est un entier : $k+m$ est un entier.",
+					"$x+y$ s'écrit donc ${{eval:a}}\\times$ (un entier) : c'est **un multiple de ${{eval:a}}$**.",
+					"Il n'est pas nécessaire que $k$ et $m$ soient égaux, ni que ${{eval:a}}$ divise $k+m$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ un entier naturel non nul, et $x$, $y$ deux multiples de $a$. On démontre que $x+y$ est un multiple de $a$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Il existe deux entiers $k$ et $m$ tels que $x=ak$ et $y=am$.\n- Donc $x+y=ak+am$.\n- On factorise par $a$ : $x+y=a(k+m)$.\n- Or $k+m$ est un entier, donc $x+y$ est un multiple de $a$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On écrit d'abord $x$ et $y$ comme multiples de $a$, puis on additionne et on factorise.",
+					"Comme $k+m$ est un entier, $\\textcolor{{{color:primary.0}}}{x+y=a(k+m)}$ est un multiple de $a$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3m",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3m"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3k (même entier que x)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["m"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m + 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["m+3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k + m",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["k+m"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture m + k",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["m+k"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : km",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["km"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3k + 3m",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3k+3m"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k + m entier",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k = m",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a divise k + m",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + y positif",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

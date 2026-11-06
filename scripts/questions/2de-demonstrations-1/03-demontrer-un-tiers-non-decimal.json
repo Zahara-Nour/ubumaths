@@ -1,0 +1,196 @@
+{
+	"title": "Démontrer que 1/3 n'est pas un nombre décimal",
+	"description": "Démonstration par l'absurde à trous : hypothèse 1/3 = a/10ⁿ (choix), 3a = 10ⁿ (case), contradiction par la somme des chiffres (choix) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On démontre par l'absurde que le nombre rationnel $\\dfrac{1}{3}$ n'est pas décimal.\n\nQue suppose-t-on au début de la démonstration ?\n\n```choix\n- Que $\\dfrac{1}{3}$ est décimal : $\\dfrac{1}{3}=\\dfrac{a}{10^n}$ avec $a$ entier et $n$ entier naturel.\n- Que $\\dfrac{1}{3}$ n'est pas décimal.\n- Que $\\dfrac{1}{3}=0{,}333$.\n- Que $3$ est un nombre décimal.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un raisonnement par l'absurde, on suppose le **contraire** de ce qu'on veut démontrer.",
+					"On veut démontrer que $\\dfrac{1}{3}$ n'est pas décimal : on suppose donc qu'il l'est, c'est-à-dire que $\\textcolor{{{color:primary.0}}}{\\dfrac{1}{3}=\\dfrac{a}{10^n}}$.",
+					"$0{,}333$ n'est qu'une valeur approchée : $3\\times 0{,}333=0{,}999\\neq 1$."
+				]
+			}
+		},
+		{
+			"statement": "On démontre par l'absurde que le nombre rationnel $\\dfrac{1}{3}$ n'est pas décimal.\n\nSupposons que $\\dfrac{1}{3}$ soit décimal : il existe un entier $a$ et un entier naturel $n$ tels que $\\dfrac{1}{3}=\\dfrac{a}{10^n}$.\n\nOn multiplie les deux membres par $3\\times 10^n$. Complète.\n\n$?=10^n$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{3}\\times 3\\times 10^n=10^n$ et $\\dfrac{a}{10^n}\\times 3\\times 10^n=3a$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{3a}=10^n$ : $10^n$ serait un multiple de $3$."
+				]
+			}
+		},
+		{
+			"statement": "On démontre par l'absurde que le nombre rationnel $\\dfrac{1}{3}$ n'est pas décimal.\n\nSupposons que $\\dfrac{1}{3}$ soit décimal : il existe un entier $a$ et un entier naturel $n$ tels que $\\dfrac{1}{3}=\\dfrac{a}{10^n}$.\n\nOn en déduit $3a=10^n$, donc $10^n$ serait un multiple de $3$. Pourquoi est-ce impossible ?\n\n```choix\n- Car la somme des chiffres de $10^n$ vaut $1$, qui n'est pas un multiple de $3$.\n- Car $10^n$ est pair.\n- Car $10^n$ se termine par $0$.\n- Car $10$ n'est pas un nombre premier.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$10^n$ s'écrit avec un $1$ suivi de $n$ zéros : la somme de ses chiffres vaut $1$.",
+					"Un entier est multiple de $3$ si et seulement si la somme de ses chiffres l'est : $10^n$ n'est **pas un multiple de $3$**.",
+					"L'hypothèse mène à une contradiction : $\\dfrac{1}{3}$ n'est pas décimal. (Être pair ou finir par $0$ n'empêche pas d'être multiple de $3$ : pensez à $6$ ou à $30$.)"
+				]
+			}
+		},
+		{
+			"statement": "On démontre par l'absurde que $\\dfrac{1}{3}$ n'est pas un nombre décimal.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Supposons que $\\dfrac{1}{3}=\\dfrac{a}{10^n}$, avec $a$ entier et $n$ entier naturel.\n- En multipliant par $3\\times 10^n$, on obtient $3a=10^n$.\n- Donc $10^n$ serait un multiple de $3$.\n- Or la somme des chiffres de $10^n$ vaut $1$ : $10^n$ n'est pas un multiple de $3$.\n- C'est une contradiction : $\\dfrac{1}{3}$ n'est pas décimal.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On suppose le contraire, on en tire $3a=10^n$, et on aboutit à une contradiction.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\dfrac{1}{3}}$ n'est pas un nombre décimal."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "on suppose 1/3 décimal",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : on suppose la conclusion",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : valeur approchée",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 décimal",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3a",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3a"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["a"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a/3",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{a}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "somme des chiffres",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pair",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : finit par 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10 non premier",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
