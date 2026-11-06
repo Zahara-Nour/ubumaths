@@ -279,6 +279,21 @@ describe('centaines: et milliers: — PDF', () => {
 		expect(width).toBeCloseTo((12 * s.width) / COLLECTION_VIEW.fullWidth, 3);
 	});
 
+	it('un grand bloc ne dépasse jamais 20 cm de haut (revue : jusqu’à 47 cm sinon)', () => {
+		const text = generateCollectionTypst(parse('centaines: 40', 'dizaines: 30', 'unités: 100'));
+		const height = Number(/#box\(width: [\d.]+cm, height: ([\d.]+)cm/.exec(text)![1]);
+		expect(height).toBeLessThanOrEqual(20 + 1e-6);
+		expect(height).toBeGreaterThan(19);
+	});
+
+	it('construire: 2 435 : cadre carré de 12 cm, la place de dessiner la réponse', () => {
+		const text = generateCollectionTypst(parse('construire: 2435'));
+		expect(text).toMatch(/#box\(width: 12cm, height: 12cm, stroke: \(paint/);
+		expect(generateCollectionTypst(parse('construire: 34'))).toMatch(
+			/#box\(width: 8cm, height: 4.8cm, stroke: \(paint/
+		);
+	});
+
 	it('construire: 2 435 : la réserve montre gros cube, plaque, barre et cube', () => {
 		const text = generateCollectionTypst(parse('construire: 2435'));
 		expect((text.match(/polygon\(/g) ?? []).length).toBe(3);

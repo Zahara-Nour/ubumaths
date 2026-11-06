@@ -103,3 +103,7 @@ déduite de la valeur ; Q4 plafonds proposés.
   la valeur. Choix d'exécution : 12 cm pleine largeur par défaut pour un grand bloc (sinon un cube fait
   moins de 2 mm à l'écran) ; un petit bloc garde sa graine (dessins publiés inchangés, instantanés
   verts). Compilation Typst réelle verte. Rendu vérifié à l'écran (aperçu de `/dashboard/admin/questions/create`, serveur 127.0.0.1:5178).
+- 2026-11-06 : revue `code-reviewer` (Sonnet) de #2420 : rien de bloquant. Corrigé : hauteur d'un
+  grand bloc au PDF bornée à 20 cm (jusqu'à 47 cm sinon, bloc insécable) ; cadre de `construire:` carré
+  (12 × 12 cm) pour un grand bloc. Laissé, limite connue : grand bloc dans un choix de QCM imprimé
+  (`taille: 3cm` forcée, cube < 1 mm) ; coins vides de la boîte de toucher d'un gros cube (sans effet).
