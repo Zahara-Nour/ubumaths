@@ -1,0 +1,232 @@
+{
+	"id": "89e16891-1301-4b1c-af75-a8f03ba0dcdb",
+	"title": "Loi uniforme sur [a ; b] : probabilités",
+	"description": "X uniforme sur [a ; b] : P(c ⩽ X ⩽ d) = (d − c)/(b − a), P(X ⩾ c) = (b − c)/(b − a), P(X = c) = 0 (pièges : longueur non divisée, 1/(b − a) pour P(X = c))",
+	"grades": ["T_COMP"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(d-c)/(b-a)}}"
+				}
+			],
+			"statement": "$X$ suit la loi uniforme sur $\\left[{{a}}\\,;{{b}}\\right]$.\n\nCalcule $P({{c}}\\leqslant X\\leqslant {{d}})$.\n\n$P({{c}}\\leqslant X\\leqslant {{d}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..5"
+				},
+				{
+					"name": "L",
+					"expression": "5..20"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+L}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:a+1}}..{{eval:b-2}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:c+1}}..{{eval:b-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour la loi uniforme sur $[a\\,;b]$, la probabilité d'un intervalle $[c\\,;d]$ inclus dans $[a\\,;b]$ est $\\dfrac{d-c}{b-a}$ (longueur de l'intervalle sur longueur totale).",
+					"$P({{c}}\\leqslant X\\leqslant {{d}})=\\dfrac{ {{d}}-{{c}} }{ {{b}}-{{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:(d-c)/(b-a)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b-c)/(b-a)}}"
+				}
+			],
+			"statement": "$X$ suit la loi uniforme sur $\\left[{{a}}\\,;{{b}}\\right]$.\n\nCalcule $P(X\\geqslant {{c}})$.\n\n$P(X\\geqslant {{c}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..5"
+				},
+				{
+					"name": "L",
+					"expression": "5..20"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+L}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:a+1}}..{{eval:b-1}}"
+				}
+			],
+			"conditions": ["2*c != a + b"],
+			"correction": {
+				"steps": [
+					"$X\\geqslant {{c}}$ correspond à l'intervalle $\\left[{{c}}\\,;{{b}}\\right]$, de longueur ${{eval:b-c}}$.",
+					"$P(X\\geqslant {{c}})=\\dfrac{ {{b}}-{{c}} }{ {{b}}-{{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:(b-c)/(b-a)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "$X$ suit la loi uniforme sur $\\left[{{a}}\\,;{{b}}\\right]$.\n\nCalcule $P(X={{c}})$.\n\n$P(X={{c}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..5"
+				},
+				{
+					"name": "L",
+					"expression": "5..20"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+L}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:a+1}}..{{eval:b-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour une loi à densité, $P(X=c)=\\displaystyle\\int_{c}^{c}f(x)\\,\\mathrm{d}x=0$ : un point isolé a une probabilité nulle.",
+					"$P(X={{c}})=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "10",
+				"a": "0",
+				"c": "2",
+				"d": "5"
+			},
+			"description": "v0 : [0 ; 10], [2 ; 5] → 3/10",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "10",
+				"a": "0",
+				"c": "2",
+				"d": "5"
+			},
+			"description": "v0 : 0,3 accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "10",
+				"a": "0",
+				"c": "2",
+				"d": "5"
+			},
+			"description": "v0 : longueur 3 non divisée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "10",
+				"a": "0",
+				"c": "2",
+				"d": "5"
+			},
+			"description": "v0 : d/(b − a) = 1/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{7}{10}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "10",
+				"a": "2",
+				"c": "5"
+			},
+			"description": "v1 : [2 ; 12], X ⩾ 5 → 7/10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "10",
+				"a": "2",
+				"c": "5"
+			},
+			"description": "v1 : P(X ⩽ 5) = 3/10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "10",
+				"a": "0",
+				"c": "4"
+			},
+			"description": "v2 : P(X = c) = 0",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{1}{10}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "10",
+				"a": "0",
+				"c": "4"
+			},
+			"description": "v2 : 1/(b − a)",
+			"variationIndex": 2
+		}
+	]
+}

@@ -1,0 +1,83 @@
+{
+	"id": "441d7ed2-54b2-4100-a26c-25ff1913fc33",
+	"title": "Loi uniforme sur [a ; b] : temps d'attente moyen",
+	"description": "E(X) = (a + b)/2 (piège : (b − a)/2)",
+	"grades": ["T_COMP"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b)/2}}"
+				}
+			],
+			"statement": "Le temps d'attente $X$ d'un bus, en minutes, suit la loi uniforme sur $\\left[{{a}}\\,;{{b}}\\right]$.\n\nQuel est le temps d'attente moyen ?\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..10"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+5}}..{{eval:a+30}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour la loi uniforme sur $[a\\,;b]$, $E(X)=\\dfrac{a+b}{2}$ (le milieu de l'intervalle).",
+					"$E(X)=\\dfrac{ {{a}}+{{b}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:(a+b)/2;d}}}$ minutes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "15"
+			},
+			"description": "v0 : [3 ; 15] → 9",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "15"
+			},
+			"description": "v0 : (b − a)/2 = 6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "9"
+			},
+			"description": "v0 : [2 ; 9] → 5,5",
+			"variationIndex": 0
+		}
+	]
+}

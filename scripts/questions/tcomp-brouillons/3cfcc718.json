@@ -1,0 +1,113 @@
+{
+	"id": "3cfcc718-445a-42f5-8d5e-fe4d8339f4bf",
+	"title": "Loi à densité : constante de normalisation",
+	"description": "Constante k pour que f soit une densité (aire totale 1) (piège : b − a au lieu de 1/(b − a))",
+	"grades": ["T_COMP"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1/(b-a)}}"
+				}
+			],
+			"statement": "On définit sur $\\left[{{a}}\\,;{{b}}\\right]$ la fonction constante $f(x)=k$, avec $k$ réel.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[{{a}}\\,;{{b}}\\right]$ ?\n\n$k=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..5"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+2}}..{{eval:a+12}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une densité est positive et l'aire sous sa courbe vaut $1$ : $\\displaystyle\\int_{ {{a}} }^{ {{b}} }k\\,\\mathrm{d}x=k\\times({{b}}-{{a}})=1$.",
+					"$k=\\textcolor{{{color:primary.0}}}{{{eval:1/(b-a)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2/a^2}}"
+				}
+			],
+			"statement": "On définit sur $\\left[0\\,;{{a}}\\right]$ la fonction $f(x)=kx$, avec $k$ réel strictement positif.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[0\\,;{{a}}\\right]$ ?\n\n$k=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est positive ; il faut $\\displaystyle\\int_{0}^{ {{a}} }kx\\,\\mathrm{d}x=\\left[\\dfrac{kx^{2}}{2}\\right]_{0}^{ {{a}} }=\\dfrac{ {{eval:a^2}}k}{2}=1$.",
+					"$k=\\dfrac{2}{ {{eval:a^2}} }=\\textcolor{{{color:primary.0}}}{{{eval:2/a^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{1}{5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "7"
+			},
+			"description": "v0 : [2 ; 7] → 1/5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "7"
+			},
+			"description": "v0 : b − a = 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4"
+			},
+			"description": "v1 : a = 4 → 1/8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{16}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4"
+			},
+			"description": "v1 : 1/a² = 1/16",
+			"variationIndex": 1
+		}
+	]
+}

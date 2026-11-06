@@ -5,20 +5,19 @@ Branche `feat/cartes-probas-stats-terminale`, worktree `ubumaths-wt-probaT`. Par
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06 (relevé prod, MCP lecture seule)._
+_Mis à jour le 2026-11-06 (relecture des 17 brouillons `T_COMP` ouverte)._
 
-- **État** : PR #820 mergée (octobre) ; branche et worktree `ubumaths-wt-probaT` disparus. Les 22 modèles ont été
-  créés en brouillon, puis repris, découpés et renommés par le chantier `questions-tspe` (clos le 2026-11-03) :
-  **partie spé (A, B) publiée**. **Partie maths complémentaires seules (C, D) : 17 brouillons `T_COMP`** en prod
-  (82 `T_COMP` publiés), liste ci-dessous.
-- **Prochaine action** : aucune décidée. Pistes (à trancher par David) : archiver ce journal ; ouvrir un chantier
-  de couverture `T_COMP` (relevé des points, relecture des 17 brouillons, publication).
-- **En attente de David** : la suite des 17 brouillons `T_COMP`.
-- **Pièges en cours** : ne **rien lancer** depuis `scripts/questions/probas-stats-terminale/` — fichiers sans
-  `id`, titres changés en base : la simulation `create-questions` (2026-11-06) voit 14 « à créer » qui existent
-  sous d'autres titres (doublons) et 3 « contenu différent » qui retireraient des niveaux (`T_TECHNO`, `1_GEN`,
-  `1_TECHNO`). Partir d'un export (`scripts/export-question-templates.ts --ids …`).
-- **Worktree / branche** : aucun.
+- **État** : décision de David (2026-11-06) : relire et publier les 17 brouillons `T_COMP`, sans chantier de
+  couverture. Instantané prod dans `scripts/questions/tcomp-brouillons/` (17 fichiers, avec `id`). Page à cocher
+  publiée : https://claude.ai/artifact/1iwzkfN82RGt7tDAx8zxTT (collection `verdicts`). Contrôles de la page :
+  17 / 17 avec point et nœud ; seule alerte, a6cc7712 : bloc `nuage` non dessiné (le jouer dans l'aperçu).
+- **Prochaine action** : lire et compter les verdicts ; corriger les « À revoir » dans les fichiers ; puis
+  `publier-lot` (simulation, puis `--publier`) lancé par David.
+- **En attente de David** : ses verdicts sur la page.
+- **Pièges en cours** : `publier-lot.ts`, même en simulation, est refusé à Claude (« Modify Shared Resources ») :
+  David le lance avec `!`. Ne rien lancer depuis `scripts/questions/probas-stats-terminale/` (fichiers sans `id`,
+  doublons) : travailler sur `tcomp-brouillons/`. Worktree neuf : `pnpm exec svelte-kit sync` avant les `tsx`.
+- **Worktree / branche** : `ubumaths-wt-cartes-probas-stats-terminale` · `feat/cartes-probas-stats-terminale`.
 
 ### Brouillons `T_COMP` en prod (2026-11-06)
 

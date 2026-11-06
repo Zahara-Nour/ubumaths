@@ -1,0 +1,118 @@
+{
+	"id": "b71b4874-4a12-4655-b306-e56b502414e1",
+	"title": "Loi uniforme sur {1, …, n} : espérance",
+	"description": "E(X) = (n + 1)/2, gain moyen d'un dé à n faces (piège : n/2)",
+	"grades": ["T_COMP"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n+1)/2}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, {{n}}\\}$.\n\nCalcule son espérance.\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..30"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour la loi uniforme sur $\\{1, \\ldots, n\\}$ : $E(X)=\\dfrac{n+1}{2}$.",
+					"$E(X)=\\dfrac{ {{n}}+1}{2}=\\textcolor{{{color:primary.0}}}{{{eval:(n+1)/2}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"statement": "On lance un dé équilibré à ${{n}}$ faces numérotées de $1$ à ${{n}}$ et on gagne, en euros, le double du numéro obtenu.\n\nQuel est le gain moyen, en euros ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4|6|8|10|12|20"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le numéro $X$ suit la loi uniforme sur $\\{1, \\ldots, {{n}}\\}$ : $E(X)=\\dfrac{ {{n}}+1}{2}={{eval:(n+1)/2;d}}$.",
+					"Le gain est $2X$, donc $E(2X)=2E(X)=\\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$ euros."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{11}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : n = 10 → 11/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : 5,5 accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : n/2 = 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v1 : dé à 6 faces → 7",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v1 : E(X) seulement 3,5",
+			"variationIndex": 1
+		}
+	]
+}

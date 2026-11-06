@@ -1,0 +1,95 @@
+{
+	"id": "6b26aba3-ed27-43e3-97b9-3c6716b09975",
+	"title": "Loi à densité : probabilité = aire sous la courbe",
+	"description": "Lire une probabilité comme une aire sous la densité (figure) (piège : t/a au lieu de t²/a²)",
+	"grades": ["T_COMP"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t^2/a^2}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;{{a}}\\right]$ par $f(x)={{eval:2/a^2}}x$, représentée ci-dessous.\n\n```courbe\nx: -0.5 ; {{eval:a+1}}\ny: -0.1 ; {{eval:2/a+0.2;d}}\ngrille: 1 ; {{eval:1/(2*a);d}}\nf(x) = 2*x/{{eval:a^2}} sur [0 ; {{a}}]   bleu   nom=C_f\naire: f ; 0 ; {{t}}\ntaille: moyenne\ndescription: Densité triangulaire croissante sur [0 ; {{a}}], aire coloriée entre 0 et {{t}}.\n```\n\nCalcule $P(X\\leqslant {{t}})$, aire du domaine colorié.\n\n$P(X\\leqslant {{t}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "t",
+					"expression": "1..{{eval:a-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X\\leqslant {{t}})$ est l'aire du triangle de base ${{t}}$ et de hauteur $f({{t}})={{eval:2*t/a^2}}$.",
+					"$P(X\\leqslant {{t}})=\\dfrac{1}{2}\\times {{t}}\\times{{eval:2*t/a^2}}=\\textcolor{{{color:primary.0}}}{{{eval:t^2/a^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"t": "2"
+			},
+			"description": "v0 : a = 4, t = 2 → 1/4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"t": "2"
+			},
+			"description": "v0 : t/a = 1/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{4}{25}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"t": "2"
+			},
+			"description": "v0 : a = 5, t = 2 → 4/25",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"t": "2"
+			},
+			"description": "v0 : a = 5, t = 2, t/a = 2/5",
+			"variationIndex": 0
+		}
+	]
+}
