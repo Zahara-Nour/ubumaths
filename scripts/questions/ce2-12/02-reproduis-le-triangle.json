@@ -1,4 +1,5 @@
 {
+	"id": "9f5b92a2-0ffb-4952-a182-383155f20092",
 	"title": "Reproduire un triangle au compas",
 	"description": "Le côté [AB] est tracé : construire le troisième sommet au compas, en reportant les longueurs du triangle modèle",
 	"grades": ["CE2"],

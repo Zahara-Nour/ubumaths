@@ -1005,3 +1005,7 @@ de centre donné en ligne n° 19.
   [AC] et [BC]) → « Juste » ; carré mal fermé → « Ta figure n'est pas fermée », bon carré en pointillés.
 - Corrigé en route : arcs du report coupés en bas de la fenêtre → fenêtre 0 ; 15 ; 0 ; 9, [AB] relevé d'un carreau.
 - 2026-11-06 : #2445 mergée (CI verte ; revue : aucune, contenu).
+- 2026-11-06 : `create-questions --publier` (David) : 2 brouillons en prod (`5d869c65` 01, `9f5b92a2` 02), relus au
+  MCP (draft, CE2, niveaux 3 et 4, specs 18 et 8, sans nœud ni tag, `updated_at` = `created_at`) ; ids commités.
+  Migration `20261106171101_questions_ce2_lot12_rangement_tags` + test, tirés du lot 11 : rouge sans le corps
+  (5 échecs sur 9), vert 9/9.
