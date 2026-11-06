@@ -65,6 +65,20 @@ describe('JournalContent — markdown', () => {
 		expect(container.textContent).not.toContain('$x^2=4$');
 	});
 
+	it('contenu converti par la migration (séance de prod) : deux paragraphes, deux liens', async () => {
+		// Sortie de 20261106164230_cahier_texte_conversion_ubumark.sql pour
+		// `<p>[[…]]</p><p></p><p>[[…]]</p><p></p>`.
+		const container = await rendre({
+			content: `[[worksheet:${FICHE}|Evaluation : Produit scalaire]]\n\n[[worksheet:${FICHE}#2,4,5|Evaluation : Produit scalaire — ex. 2, 4 et 5]]`,
+			links: { role: 'student' }
+		});
+		const liens = container.querySelectorAll('a.internal-link');
+		expect(liens).toHaveLength(2);
+		expect(liens[0].closest('p')).not.toBe(liens[1].closest('p'));
+		expect(container.textContent).not.toContain('[[');
+		expect(container.textContent).not.toContain('<p>');
+	});
+
 	it('élève : une référence devient un lien vers SA route', async () => {
 		const attendu = urlFiche('student');
 		expect(attendu).not.toBeNull();
