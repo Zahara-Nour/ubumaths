@@ -1,0 +1,232 @@
+{
+	"title": "Méthode de Newton en Python",
+	"description": "Méthode de Newton pour f(x) = x² − c : faire tourner une itération, compléter la ligne x = x − f(x)/f′(x) (tangente), dire de quel nombre le résultat est une valeur approchée",
+	"grades": ["1_SPE"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère le programme Python suivant, où `fp` est la fonction dérivée de `f`.\n\n```python\ndef f(x):\n    return x**2 - {{eval:c}}\n\ndef fp(x):\n    return 2 * x\n\ndef newton(x, n):\n    for k in range(n):\n        x = x - f(x) / fp(x)\n    return x\n```\n\nQue renvoie `newton({{eval:p}}, 1)` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2|4|5"
+				},
+				{
+					"name": "c",
+					"expression": "2..20"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(p^2+c)/(2*p)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle est parcourue une seule fois, avec `x` égal à ${{eval:p}}$.",
+					"$f({{eval:p}})={{eval:p}}^2-{{eval:c}}={{eval:p^2-c}}$ et $f'({{eval:p}})=2\\times{{eval:p}}={{eval:2*p}}$.",
+					"`x` devient ${{eval:p}}-\\dfrac{{{eval:p}}^2-{{eval:c}}}{{{eval:2*p}}}=\\dfrac{{{eval:p}}^2+{{eval:c}}}{{{eval:2*p}}}=\\dfrac{{{eval:p^2+c}}}{{{eval:2*p}}}=\\textcolor{{{color:primary.0}}}{{{eval:r;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La méthode de Newton remplace $x$ par l'abscisse du point où la tangente à la courbe de $f$ au point d'abscisse $x$ coupe l'axe des abscisses. Dans le programme ci-dessous, `fp` est la fonction dérivée de `f`.\n\n```python\ndef f(x):\n    return x**2 - {{eval:c}}\n\ndef fp(x):\n    return 2 * x\n\ndef newton(x, n):\n    for k in range(n):\n        ...\n    return x\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `x = x - f(x) / fp(x)`\n- `x = x + f(x) / fp(x)`\n- `x = x - fp(x) / f(x)`\n- `x = f(x) / fp(x)`\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2|3|5|6|7|10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La tangente au point d'abscisse $x$ a pour équation $y=f(x)+f'(x)(t-x)$.",
+					"Elle coupe l'axe des abscisses quand $y=0$ : $f(x)+f'(x)(t-x)=0$, soit $t=x-\\dfrac{f(x)}{f'(x)}$ (si $f'(x)\\neq0$).",
+					"La ligne est donc `x = x - f(x) / fp(x)`."
+				]
+			}
+		},
+		{
+			"statement": "On considère le programme Python suivant, où `fp` est la fonction dérivée de `f`.\n\n```python\ndef f(x):\n    return x**2 - {{eval:c}}\n\ndef fp(x):\n    return 2 * x\n\ndef newton(x, n):\n    for k in range(n):\n        x = x - f(x) / fp(x)\n    return x\n\nprint(newton({{eval:p}}, 20))\n```\n\nDe quel nombre la valeur affichée est-elle une valeur approchée ?\n\n```choix\n- $\\sqrt{{{eval:c}}}$\n- ${{eval:c}}$\n- ${{eval:c}}^2$\n- $f({{eval:p}})$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2|3|5|6|7|10"
+				},
+				{
+					"name": "p",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La méthode de Newton fournit des valeurs de plus en plus proches d'une solution de $f(x)=0$, ici en partant de ${{eval:p}}>0$.",
+					"$x^2-{{eval:c}}=0$ a pour solution positive $\\sqrt{{{eval:c}}}$.",
+					"La valeur affichée est une valeur approchée de $\\textcolor{{{color:primary.0}}}{\\sqrt{{{eval:c}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 2, c = 2 : 1,5",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"c": "2",
+				"r": "1.5"
+			},
+			"answers": ["1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p = 2, c = 2 : 1,5 avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"c": "2",
+				"r": "1.5"
+			},
+			"answers": ["1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x + f(x)/f′(x)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"c": "2",
+				"r": "1.5"
+			},
+			"answers": ["2.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 4, c = 6 : 2,75",
+			"variationIndex": 0,
+			"variables": {
+				"p": "4",
+				"c": "6",
+				"r": "2.75"
+			},
+			"answers": ["2.75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x = x - f(x) / fp(x)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x = x + f(x) / fp(x)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x = x - fp(x) / f(x)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x = f(x) / fp(x)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "racine de c",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"p": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : c",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : c²",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(p)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"p": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

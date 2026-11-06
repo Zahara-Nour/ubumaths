@@ -1,0 +1,190 @@
+{
+	"title": "Valeur approchée de e avec Python",
+	"description": "Suite ((1 + 1/n)^n) : faire tourner u(1) ou u(2), compléter le return (1 + 1/n)**n, dire comment évoluent u(10), u(100), u(1000), u(10000)",
+	"grades": ["1_SPE"],
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef u(n):\n    p = 1\n    for k in range(n):\n        p = p * (1 + 1/n)\n    return p\n```\n\nQue renvoie `u({{eval:n}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1|2"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(1+1/n)^n"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle est parcourue ${{eval:n}}$ fois ; à chaque tour, `p` est multiplié par $1+\\dfrac{1}{{{eval:n}}}={{eval:1+1/n;d}}$.",
+					"`u(n)` renvoie donc $\\left(1+\\dfrac{1}{n}\\right)^n$.",
+					"`u({{eval:n}})` renvoie ${{eval:1+1/n;d}}^{{eval:n}}=\\textcolor{{{color:primary.0}}}{{{eval:r;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer le terme $u_n=\\left(1+\\dfrac{1}{n}\\right)^n$, qui donne des valeurs approchées du nombre $e$.\n\n```python\ndef u(n):\n    return ...\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `(1 + 1/n)**n`\n- `(1 + n)**(1/n)`\n- `1 + (1/n)**n`\n- `(1 + 1/n) * n`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En Python, `**` est la puissance et `*` la multiplication.",
+					"Il faut élever $1+\\dfrac{1}{n}$ (avec ses parenthèses) à la puissance $n$ : avec `1 + (1/n)**n`, seul $\\dfrac{1}{n}$ serait élevé à la puissance.",
+					"On écrit donc `return (1 + 1/n)**n`."
+				]
+			}
+		},
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\ndef u(n):\n    return (1 + 1/n)**n\n\nfor n in [10, 100, 1000, 10000]:\n    print(u(n))\n```\n\nQue peut-on dire des valeurs affichées ?\n\n```choix\n- Elles augmentent et se rapprochent de $e\\approx2{,}718$.\n- Elles augmentent sans limite.\n- Elles diminuent et se rapprochent de $1$.\n- Elles se rapprochent de $2$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les valeurs affichées sont environ $2{,}594$ ; $2{,}705$ ; $2{,}717$ ; $2{,}718$.",
+					"La suite $\\left(\\left(1+\\dfrac{1}{n}\\right)^n\\right)$ est croissante et se rapproche du nombre $e=\\exp(1)$.",
+					"Les valeurs $\\textcolor{{{color:primary.0}}}{\\text{augmentent et se rapprochent de }e\\approx2{,}718}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u(2) = 2,25",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"r": "2.25"
+			},
+			"answers": ["2.25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u(2) = 2,25 avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"r": "2.25"
+			},
+			"answers": ["2,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 + 1/2 × 2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"r": "2.25"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u(1) = 2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(1 + 1/n)**n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (1 + n)**(1/n)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 + (1/n)**n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (1 + 1/n) * n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "croissent vers e",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans limite",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : vers 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : vers 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
