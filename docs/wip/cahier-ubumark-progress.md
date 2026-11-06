@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, PR 1 en cours (pas encore mergée)._
+_Mis à jour le 2026-11-06, après #2435._
 
-- **État** : PR 1 codée (écriture markdown, lecture `JournalContent`, lecture double), testée dans le navigateur (prof, élève, lien public). Revue en cours.
-- **Prochaine action** : merge PR 1 → attendre le `deploy:prod` (David) → PR 2 = migration de conversion des 4 lignes (s'arrêter, montrer avant/après) → PR 3 = retrait lecture HTML → PR 4 = énigmes.
-- **En attente de David** : `deploy:prod` après le merge de la PR 1 ; vidéo d'un hôte tiers chargée par les lecteurs du lien public (écart 12 de `cours-et-chapitres.md`) : fermer ou non.
-- **Pièges en cours** : cookies partagés sur `localhost` entre ports → tester sur `cahier.localhost:5178` (prof), `eleve.localhost`, `public.localhost`.
-- **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark`.
+- **État** : PR 1 (#2435) mergée — cahier en ubumark, HTML hérité encore lu. PR 1b (vidéos hors stockage → lien, YouTube compris) ouverte.
+- **Prochaine action** : merger la PR 1b → `deploy:prod` (David, PR 1 + 1b ensemble) → PR 2 = migration de conversion des 4 lignes (s'arrêter, montrer avant/après) → PR 3 = retrait lecture HTML → PR 4 = énigmes.
+- **En attente de David** : `deploy:prod` après le merge de la PR 1b.
+- **Pièges en cours** : cookies partagés sur `localhost` → tester sur `cahier.localhost:5178`, `eleve.localhost`, `public.localhost` ; Supabase local partagé, réinitialisé par d'autres sessions (recréer séance + jeton par l'API de service) ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed`.
+- **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark-videos`.
 
 ## Décision d'origine
 
@@ -68,6 +68,8 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 
 ## Décisions de David (2026-11-06)
 
+- **Vidéos** (audit de #2435, N1) : au cahier, vidéos de notre stockage seulement ; les autres, **YouTube compris**, deviennent un lien.
+
 - **Q1** : convertir les 4 lignes (migration de données, avant/après montrés au moment de l'écrire).
 - **Q2** : énigmes dans ce chantier, PR 4 à part (2 énigmes en prod, toutes deux en HTML).
 - **Q3** : ordre PR 1 code + lecture double → `deploy:prod` → PR 2 conversion → PR 3 retrait HTML → PR 4 énigmes.
@@ -96,3 +98,9 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 - Preuve rouge : sans la modif d'`InternalLink`, 2 tests du lien public échouent.
 - Revue de code : 1 bloquant corrigé — `getMarkdown()` rend `''` avant la création de l'éditeur, un clic pendant le chargement effaçait la séance. `isReady()` exporté par `RichTextEditor`, repli au contenu chargé, champs cachés remis (repli sans JS). Test rouge puis vert ; réessayé dans le navigateur.
 - Audit sécurité : rien de bloquant. N2 (`classId` non validé dans `InternalLink`) corrigé, test rouge puis vert. N1 (vidéo tierce sur le lien public) → écart 12, question à David.
+- #2435 mergée le 2026-11-06 (conflit de la ligne « Vérifié » d'`ubumark.md` résolu ; job navigateur relancé une fois, plantage connu).
+
+### 2026-11-06 — PR 1b (vidéos)
+
+- `provideProjectMediaOnly` (`restricted-rendering.ts`) + prop `projectMediaOnly` de `MarkdownRenderer`, passée par `JournalContent` ; `VideoDisplay` rend un lien `external-media` (`rel="noopener noreferrer nofollow"`, `target=_blank`) pour toute vidéo hors stockage Supabase, YouTube → `youtube.com/watch?v=…`.
+- Tests rouges puis verts (4) ; hors cahier, inchangé (test). Navigateur (lien public) : 0 `<video>`/`<iframe>`, 0 requête vers l'hôte tiers ou YouTube ; liens sur leur propre ligne.

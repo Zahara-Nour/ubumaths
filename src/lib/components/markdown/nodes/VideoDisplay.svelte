@@ -147,7 +147,7 @@
 	>
 {:else if externalHref !== null}
 	<a
-		class="external-media text-sm text-primary underline underline-offset-2"
+		class="external-media my-2 block w-fit text-sm text-primary underline underline-offset-2"
 		href={externalHref}
 		target="_blank"
 		rel="noopener noreferrer nofollow">Vidéo : {alt || 'ouvrir'}</a
