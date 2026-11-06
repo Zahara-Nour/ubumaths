@@ -1,4 +1,5 @@
 {
+	"id": "c8c9746a-75e5-478f-9a57-8145626d438c",
 	"title": "Cet assemblage se plie-t-il en cube ?",
 	"description": "Six carrés : un des 11 patrons du cube ou un des 8 faux, tourné ou retourné → oui / non",
 	"grades": ["CE2"],
