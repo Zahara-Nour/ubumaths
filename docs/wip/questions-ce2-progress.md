@@ -6,17 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, migration du lot 10 en PR._
+_Mis à jour le 2026-11-06, après #2428._
 
-- **État** : lots 1 à 9 en prod et publiés ; lot 10 (solides) : 7 brouillons en prod ; migration nœud + tag en PR.
-- **Prochaine action** : PR de migration (`security-auditor`, CI, `check:migrations`), merge, `db:migrate` ; page à
-  cocher ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
-- **En attente de David** : rien.
+- **État** : lots 1 à 9 en prod et publiés ; lot 10 (solides) : 7 brouillons en prod, rangés et tagués (#2428,
+  `db:migrate` fait), page à cocher publiée (https://claude.ai/artifact/1AQfsQ8V4KDKzE44M742tB).
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; `publier-lot` (David, simulation
+  puis `--publier`) ; relevé MCP ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
+- **En attente de David** : relecture du lot 10 sur la page à cocher ; les patrons (06, 07) dans l'aperçu admin.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
   `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
-  `publier-lot` (même en simulation) et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` branche `feat/questions-ce2-lot10-db`.
+  `publier-lot` (même en simulation) et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance ;
+  job CI « Client Tests (browser, shard 2/2) » qui plante (`wrapDynamicImport`) : relancer `--failed`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, détaché sur `origin/main` (aucune branche en cours).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -882,3 +884,8 @@ tag ne change aucune règle.
   `feat/questions-ce2-lot10-db` (fichiers du dépôt principal rendus propres). Migration
   `20261106112702_questions_ce2_lot10_rangement_tags` + test : rouge sans le corps (5 échecs sur 9), vert 9/9 ;
   chemins vérifiés en prod (061 à 064 → « Géométrie › Solides › propriétés », 066 → « … › patrons », sous-notions).
+- 2026-11-06 : `security-auditor` : aucun finding bloquant (diff avec le lot 9 : ids, codes, chemins, compte 7, listes
+  du rollback fermées). CI : job navigateur planté (`wrapDynamicImport`, connu), relancé, vert. #2428 mergée
+  (`check:migrations --pr 2428` OK) ; `db:migrate` depuis le dépôt principal (dry-run : la seule migration du lot) ;
+  relevé MCP : 7/7 sur le nœud de leur point, un point chacun, brouillons, `updated_at` intact. Page à cocher publiée
+  (https://claude.ai/artifact/1AQfsQ8V4KDKzE44M742tB), base `verdicts` vide ; patrons (06, 07) non dessinés sur la page.
