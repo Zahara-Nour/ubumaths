@@ -1009,3 +1009,4 @@ de centre donné en ligne n° 19.
   MCP (draft, CE2, niveaux 3 et 4, specs 18 et 8, sans nœud ni tag, `updated_at` = `created_at`) ; ids commités.
   Migration `20261106171101_questions_ce2_lot12_rangement_tags` + test, tirés du lot 11 : rouge sans le corps
   (5 échecs sur 9), vert 9/9.
+- `security-auditor` : aucun finding (diff avec le lot 11 : valeurs seules ; ids, nœud et point vérifiés en prod).
