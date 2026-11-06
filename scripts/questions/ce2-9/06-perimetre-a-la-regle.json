@@ -1,4 +1,5 @@
 {
+	"id": "d840809a-9867-4c05-8148-bc83f9c6c1d7",
 	"title": "Le périmètre d'un polygone, mesuré à la règle",
 	"description": "Chaque côté posé sur une règle (au 0 ou non), puis la somme des côtés ; triangle, quadrilatère, maison à 5 côtés",
 	"grades": ["CE2"],
