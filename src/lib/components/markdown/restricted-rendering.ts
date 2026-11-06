@@ -47,6 +47,33 @@ export function readRestrictedRendering(): FlagGetter {
 }
 
 // ============================================================================
+// MÉDIAS DU PROJET SEULEMENT (cahier de texte)
+// ============================================================================
+
+const PROJECT_MEDIA_ONLY_KEY = Symbol('markdown-project-media-only');
+
+/**
+ * Vidéos du seul stockage du projet (décision de David du 2026-11-06, audit de
+ * #2435) : le cahier de texte est lu par des visiteurs anonymes (lien public) ;
+ * une vidéo hébergée ailleurs — YouTube compris — ferait partir leur adresse IP
+ * chez l'hébergeur au simple affichage. Elle devient un lien, à ouvrir au clic.
+ *
+ * Plus léger que le rendu restreint : blocs, formules et images inchangés. Un
+ * parent l'impose à ses descendants.
+ */
+export function provideProjectMediaOnly(get: () => boolean | undefined): void {
+	const parent = readProjectMediaOnly();
+	setContext<FlagGetter>(PROJECT_MEDIA_ONLY_KEY, () => parent() || get() === true);
+}
+
+/** Les vidéos sont-elles limitées au stockage du projet ? Repli : non. */
+export function readProjectMediaOnly(): FlagGetter {
+	return hasContext(PROJECT_MEDIA_ONLY_KEY)
+		? getContext<FlagGetter>(PROJECT_MEDIA_ONLY_KEY)
+		: () => false;
+}
+
+// ============================================================================
 // FORMULES
 // ============================================================================
 

@@ -636,8 +636,6 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
     le modèle s'édite sur sa page — serveur livré à l'étape 3b, interface à l'étape 3c
     ([journal](../archive/wip/refonte-modeles-chapitre-progress.md)). Le bouton « Mettre à jour depuis un
     chapitre » a disparu, et l'ancien circuit des versions a été supprimé à l'étape 5A.
-12. **Vidéo du cahier chargée depuis n'importe quel hôte** (audit de #2435, 2026-11-06, non
-    bloquant) : le cahier en ubumark est rendu en mode complet ; une vidéo `https://` écrite par le
-    prof (`VideoDisplay.svelte`, CSP `media-src … https:` de `src/hooks.server.ts`) est chargée par
-    chaque lecteur, visiteurs anonymes du lien public compris (leur adresse IP part chez l'hôte).
-    L'ancienne chaîne HTML n'autorisait pas `<video>`. À trancher par David.
+12. _(Résolu le 2026-11-06, décision de David : au cahier, `JournalContent` passe
+    `projectMediaOnly` ; une vidéo hors de notre stockage — YouTube compris — devient un lien
+    « Vidéo : … », aucune requête tierce à l'affichage. Le reste de l'application est inchangé.)_

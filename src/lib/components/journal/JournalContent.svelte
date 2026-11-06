@@ -7,6 +7,8 @@
 
 	Le cahier est écrit en ubumark (chantier cahier-ubumark) : rendu par
 	`MarkdownRenderer`, jamais par `{@html}` — une balise tapée reste du texte.
+	Vidéos de notre stockage seulement (`projectMediaOnly`) : les autres, YouTube
+	compris, deviennent des liens (lecteurs anonymes du lien public).
 
 	⚠️ TRANSITOIRE : une ligne encore en HTML (écrite avant le chantier, pas
 	encore convertie) garde l'ancienne chaîne — assainissement
@@ -43,5 +45,5 @@
 		{@html legacyHtml}
 	</div>
 {:else if content?.trim()}
-	<MarkdownRenderer {content} internalLinks={links} />
+	<MarkdownRenderer {content} internalLinks={links} projectMediaOnly />
 {/if}
