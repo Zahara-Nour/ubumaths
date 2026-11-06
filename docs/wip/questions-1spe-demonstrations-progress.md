@@ -9,14 +9,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2429 (lot 10 mergé)._
+_Mis à jour le 2026-11-06, lot 10 : migration nœud + tag en PR #2431 (CI relancée)._
 
 - **État** : démonstrations (lots 1-4) et approfondissements (lots 5-9) publiés. Algorithmes (§ 15, D9) : lot 10
-  (238, 239, 380, § 16, D10) mergé (#2429), brouillons à créer en prod par David.
-- **Prochaine action** : après le merge, David lance
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-10 --publier` (dépôt principal à
-  jour) ; puis relevé MCP, ids dans les JSON (PR), migration nœud + tag (gabarit lot 9, aucune sous-notion neuve),
-  page à cocher. Ensuite lot 11 (analyse : 279, 288, 298, 299, 309), relevé prod et contenu à proposer.
+  (238, 239, 380, § 16, D10) mergé (#2429), brouillons créés en prod ; migration nœud + tag en PR.
+- **Prochaine action** : PR #2431 (migration du lot 10) : `security-auditor` fait, aucun finding bloquant (3 faibles,
+  hérités du lot 9) ; tests d'intégration rouges sans la migration (6) ; `check:migrations --pr 2431` vert ; CI toute
+  verte sauf le job navigateur shard 2/2 (plantage connu, tests verts), relancé par `gh run rerun 42218818035
+--failed`. Si vert → `gh pr merge 2431 --merge`, `db:migrate` depuis le dépôt principal (4 conditions réunies),
+  vérification MCP, page à cocher. Ensuite lot 11 (analyse : 279, 288, 298, 299, 309), relevé prod et contenu.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David (lancée hors du dépôt principal,
   `publier-lot` refuse : « sans id »). `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → les
@@ -24,8 +25,7 @@ _Mis à jour le 2026-11-06, après #2429 (lot 10 mergé)._
   qui plante tests verts → `gh run rerun <run> --failed`. Port 5178. Brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local` (sinon `create-questions` vise la prod). Les « catégories » du journal ne sont qu'une
   étiquette : en base, seuls nœud, niveau et tag.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (HEAD détaché), nouvelle branche depuis
-  `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-algorithmes-10-rangement`.
 
 ---
 
@@ -641,3 +641,12 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-10 --publier`
 
 Mergée (#2429, CI verte du premier coup).
+
+### Lot 10 en prod : brouillons, puis migration nœud + tag (2026-11-06)
+
+David a lancé `create-questions --publier` après #2429. Relevé prod (MCP) : 3 brouillons {1_SPE}, sans nœud ni tag :
+`ff3a3a15` factorielle (238), `025ad9fa` Syracuse et Fibonacci (239), `e4eaaf16` somme de termes (380) ; aucun modèle
+déjà tagué sur ces points. Ids écrits dans les JSON du lot (cette PR), `git restore` fait dans le dépôt principal.
+Migration `20261106123332_questions_1spe_algorithmes_10_rangement_tags` (gabarit lot 9, aucune sous-notion neuve ;
+239 et 380 restent sur leur notion), test `questions-1spe-algorithmes-10-rangement-tags` 12/12 vert, rouge sans la
+migration (6 rouges). Accès : Q5 de D9, personne.

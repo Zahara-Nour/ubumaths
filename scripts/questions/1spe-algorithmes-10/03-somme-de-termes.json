@@ -1,4 +1,5 @@
 {
+	"id": "e4eaaf16-407c-4a8b-9ba0-a93f28312fd6",
 	"title": "Calculer une somme de termes avec Python",
 	"description": "Accumulateur s : faire tourner somme(n) pour des termes ak + b, compléter la ligne d'accumulation (suite géométrique), dire quelle somme calcule une boucle range(p, m)",
 	"grades": ["1_SPE"],
