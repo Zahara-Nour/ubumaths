@@ -145,6 +145,19 @@ describe('dessinerBlocs', () => {
 		expect(r.solutions[0].match(/<rect class="c-forme"/g)).toHaveLength(5);
 	});
 
+	it('collection à centaines : plaques quadrillées et gros cubes à trois faces, jamais un cadre vide', () => {
+		const md = dessinerBlocs('```collection\nmilliers: 2\ncentaines: 3\n```').markdown;
+		// 3 plaques (un rectangle chacune) ; 2 gros cubes (devant, dessus, côté)
+		expect(md.match(/<rect class="c-forme"/g)).toHaveLength(3);
+		expect(md.match(/<polygon class="c-forme c-face-\d"/g)).toHaveLength(6);
+		expect(md).toContain('class="c-quad"');
+		expect(md).not.toContain('c-contour');
+		// La construction juste de 1 234 pose aussi le gros cube et les plaques
+		const r = dessinerBlocs('```collection\ncase: 0\nconstruire: 1234\n```');
+		expect(r.solutions[0].match(/<polygon class="c-forme c-face-\d"/g)).toHaveLength(3);
+		expect(r.solutions[0]).not.toContain('c-contour');
+	});
+
 	it('horloge : un cadran par heure, la grande aiguille seulement si elle est montrée', () => {
 		const deux = dessinerBlocs('```horloge\nheure: 3 h ; 9 h 30\n```');
 		expect(deux.markdown.match(/class="h-cadran"/g)).toHaveLength(2);

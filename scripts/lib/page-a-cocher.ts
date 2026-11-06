@@ -305,6 +305,24 @@ function collectionObjets(items: readonly CollectionItem[]): string {
 				return `<circle class="c-forme" cx="${it.cx}" cy="${it.cy}" r="${it.width / 2}"/>`;
 			if (it.kind === 'cube')
 				return `<rect class="c-forme" x="${it.x}" y="${it.y}" width="${it.width}" height="${it.height}"/>`;
+			// Plaque et gros cube (#2420) : rectangle (plaque), faces (gros cube) et quadrillage,
+			// calculés par la scène, comme CollectionObjets.svelte
+			if (it.kind === 'plaque' || it.kind === 'gros-cube') {
+				const fond =
+					it.kind === 'plaque'
+						? `<rect class="c-forme" x="${it.x}" y="${it.y}" width="${it.width}" height="${it.height}"/>`
+						: '';
+				const faces = (it.faces ?? [])
+					.map(
+						(face, k) =>
+							`<polygon class="c-forme c-face-${k}" points="${face.map((q) => `${q.x},${q.y}`).join(' ')}"/>`
+					)
+					.join('');
+				const traits = (it.lines ?? [])
+					.map((l) => `<line class="c-quad" x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}"/>`)
+					.join('');
+				return `<g>${fond}${faces}${traits}</g>`;
+			}
 			if (it.kind === 'barre') {
 				const sep = Array.from({ length: 9 }, (_, k) => {
 					const y = +(it.y + ((k + 1) * it.height) / 10).toFixed(2);
