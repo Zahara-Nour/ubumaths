@@ -6,21 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, #2430 (PR B du lot 9) ouverte, CI en cours sur 457486757._
+_Mis à jour le 2026-11-06, après #2430 (PR B du lot 9) mergée ; PR A en cours._
 
-- **État** : lots 1 à 8 en prod. Lot 9 (§ 25, phase 0 validée) : PR B = #2430 (médiatrice faisable dès
-  2 unités dans la fenêtre + Report dans la palette de `droite` et `cercle`, cercle circonscrit au Report
-  jugé, `outils: report` refusé sur quadrillage). Deux passes de revue `code-reviewer` traitées (§ 26).
-- **Prochaine action** : `gh pr checks 2430` ; CI verte → `gh pr merge 2430 --merge`, puis « Reprendre
-  ici » sur main. Ensuite PR A : bissectrice au compas (`droite d = bissectrice(A, O, B)`, exception 4,
-  messages du § 25), nouvelle branche dans le même worktree ou un neuf.
-- **En attente de David** : rien.
-- **Pièges en cours** : le Compas ne garde pas son écartement (centre puis point de passage) : deux
-  cercles égaux à rayon libre = Report seulement ; tester avec de vrais touchers (`addTap`, écran), pas
-  des coordonnées exactes. `perpendiculaire(A, s)` échoue si A est un bout de s ; `symetrie(P, axe=d)`
-  si P définit d ; commitlint refuse un sujet en majuscule ; garde « doc à jour » : relancer après
-  `git fetch`.
-- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-mediatrices` (#2430).
+- **État** : lots 1 à 8 en prod ; lot 9 PR B (médiatrices relâchées, Report) mergée #2430. PR A
+  (bissectrice, § 27) codée sur `feat/controles-figure-bissectrice` : tests verts, revue
+  `code-reviewer` (Opus) en cours.
+- **Prochaine action** : traiter la revue, pousser, ouvrir la PR, CI verte → merger. Puis versement
+  du lot 9 / fin de chantier selon David.
+- **En attente de David** : valider l'exception 4 **bornée à la bissectrice** (§ 27, écart au § 25).
+- **Pièges en cours** : le Compas ne garde pas son écartement : deux cercles égaux à rayon libre =
+  Report seulement ; tester avec de vrais touchers (`addTap`, écran). `perpendiculaire(A, s)` échoue
+  si A est un bout de s ; commitlint refuse un sujet en majuscule ; garde « doc à jour » : relancer
+  après `git fetch`.
+- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-bissectrice`.
 
 ---
 
@@ -1203,3 +1201,35 @@ sévère que l'élève.
   [AB] au bord (A(0 ; 3), B(0 ; 5)) : deux paires de reports du même côté → juste ; cercle circonscrit
   par médiatrices au Report → juste ; écran (`figure-a-completer-mediatrice`) : vrais touchers Report
   puis Règle aimantée, A(3 ; 3), B(9 ; 5) → juste.
+
+## 27. Lot 9, PR A — bissectrice construite (2026-11-06)
+
+- `droite d = bissectrice(A, O, B)` (`bissectriceOf`, `ubumark/types/construction.ts`) : papier uni
+  seulement (quadrillage refusé) ; O, A, B visibles, non alignés, au moins 2 unités de bissectrice
+  (demi-droite issue de O) dans la fenêtre (`bissectriceSupportError`, `line.ts`). Palette déduite :
+  celle d'une droite ; `outils:` peut ajouter le rapporteur (parseur : seule droite qui l'admet).
+- Juge (`judgeBissectrice`, `line.ts`) : droite construite qui recouvre la bissectrice ; au
+  rapporteur, côté d'angle tiré de O (`angleSideVertex`) à 1° près. Messages dans l'ordre du § 25.
+- **Exception 4** (`constructionOf`, option `arcsOnSides`, `instruments.ts`) : **bornée à la
+  bissectrice**, pas globale (écart avec le § 25, à valider par David) : ailleurs, un arc à l'œil sur
+  un trait droit par son centre rendrait « construite » une longueur prise à l'œil (côté de triangle
+  au compas ouvert à l'œil pile à la bonne longueur). Et un cercle refait sur ses propres points
+  (même centre, même rayon) reste à l'œil ; l'écartement OA' reporté ailleurs (losange) reste admis.
+- Correction : bissectrice en pointillés (`lineSolution`), demi-angles codés d'un même trait, arc en
+  O et deux arcs égaux en traits fins (`solutionBissectrices`, `FigureACompleterView`).
+- Écarts mineurs : pas de tracé au Segment (palette de la droite sans segment) ; message de l'angle
+  voisin avec « [OA) et [OB) » (les côtés ne s'appellent pas toujours x et y) ; le juge admet un
+  repère pour une bissectrice même sans rapporteur dans la palette (il ne connaît pas les outils :
+  réponse forgée seulement) ; pas de garde « fenêtre trop allongée » pour le rapporteur de la
+  bissectrice.
+- Tests : `construction-bissectrice.test.ts` (29, rouges avant le code, 5 gardes vertes avant),
+  écran `figure-a-completer-bissectrice.svelte.test.ts` (vrais touchers : arc en O par (5 ; 1), arcs
+  de A' par B' et de B' par A', règle de O au croisement → juste ; à l'œil → message et correction).
+- **Revue (`code-reviewer`, Opus)** : aucune forge trouvée. Corrigé : I1, un cercle centré sur un côté
+  était déclaré « à l'œil » avant que son point de passage soit construit (l'ordre comptait) ;
+  désormais refusé seulement s'il s'appuie sur un point que son propre arc a construit (tests rouges
+  avant, 2). M1 : un côté seulement repassé → « Trace la bissectrice… ». M2 : message d'auteur du
+  rapporteur qui cite la bissectrice. M3/M4 : doc précisée (exception 4 pour toute la figure qui
+  vérifie une bissectrice ; repère admis par le juge sans voir la palette). **M5 à trancher par
+  David** : une bissectrice dont les côtés ne sont pas tracés est acceptée à l'auteur, et l'élève qui
+  pique l'arc sans tracer les côtés reçoit « tracée à l'œil ».

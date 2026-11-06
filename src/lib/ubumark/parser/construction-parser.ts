@@ -37,6 +37,7 @@ import {
 	CONSTRUCTION_TOOLS,
 	INSTRUMENT_TOOLS,
 	LINE_GRID_TOOLS,
+	bissectriceOf,
 	PLAIN_PAPER_TOOLS,
 	triangleTools,
 	type ConstructionCheck,
@@ -396,12 +397,14 @@ function coherenceError(
 	// Lot 5 (§ 16) : le rapporteur ne sert qu'à l'angle (ses repères construisent des points) ;
 	// lot 6 (§ 19) : ou à le mesurer
 	// lot 7 (§ 21) : ou à un triangle dont un angle est donné
+	// lot 9 (§ 25) : ou à une bissectrice (si le prof l'ajoute à outils:)
 	const protractorAllowed =
 		check.kind === 'angle' ||
 		check.kind === 'mesure' ||
-		(check.kind === 'triangle' && check.angles.length > 0);
+		(check.kind === 'triangle' && check.angles.length > 0) ||
+		(check.kind === 'droite' && bissectriceOf(check.expression) !== null);
 	if (!protractorAllowed && spec.tools.includes('rapporteur')) {
-		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} »), à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») ou à construire un triangle dont un angle est donné (« verifier: ${TRIANGLE_ANGLES_EXAMPLE} ») ; le retirer de outils:`;
+		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} »), à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») à construire un triangle dont un angle est donné (« verifier: ${TRIANGLE_ANGLES_EXAMPLE} ») ou une bissectrice (« verifier: droite d = bissectrice(A, O, B) ») ; le retirer de outils:`;
 	}
 	if (!spec.tools.includes(tool))
 		return check.kind === 'point'
@@ -467,7 +470,11 @@ function coherenceError(
 			return `${twins} ${check.name.replace("'", '’')}`;
 		}
 		// Un point ou un segment tracé serait jugé comme une réponse forgée (revue du lot 3)
-		const allowed = PLAIN_PAPER_TOOLS[check.kind] ?? [];
+		// Lot 9 (§ 25) : une bissectrice admet aussi le rapporteur
+		const allowed = [
+			...(PLAIN_PAPER_TOOLS[check.kind] ?? []),
+			...(protractorAllowed && check.kind === 'droite' ? (['rapporteur'] as const) : [])
+		];
 		const other = spec.tools.find((t) => !allowed.includes(t));
 		if (other)
 			return `${check.kind} ${check.name} : outil ${other} hors de la palette (${allowed.join(', ')})`;

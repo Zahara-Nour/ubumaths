@@ -64,6 +64,16 @@ export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, Constructi
 	mesure: ['rapporteur']
 };
 
+/** `bissectrice(A, O, B)` : trois points nommés, le sommet au milieu (lot 9, § 25) */
+const BISSECTRICE_REGEX =
+	/^bissectrice\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/;
+
+/** Les trois points d'une bissectrice (A, sommet, B) ; null pour une autre expression */
+export function bissectriceOf(expression: string): [string, string, string] | null {
+	const match = BISSECTRICE_REGEX.exec(expression.trim());
+	return match ? [match[1], match[2], match[3]] : null;
+}
+
 /** Palette déduite d'une droite sur quadrillage (lot 3) : les nœuds suffisent, sans Report */
 export const LINE_GRID_TOOLS: ConstructionTool[] = ['droite', 'equerre', 'compas'];
 
