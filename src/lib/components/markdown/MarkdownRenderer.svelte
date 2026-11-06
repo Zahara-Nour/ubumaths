@@ -69,6 +69,7 @@
 	import { provideAuthoringErrors } from './authoring-errors';
 	import { createRenderBudget, provideRenderBudget } from './render-budget';
 	import {
+		provideProjectMediaOnly,
 		provideRestrictedRendering,
 		readRestrictedRendering,
 		restrictDocument,
@@ -148,6 +149,12 @@
 		 * cahier. Absent : celui d'un rendu parent, sinon un élève.
 		 */
 		internalLinks?: InternalLinkReader;
+		/**
+		 * Vidéos du seul stockage du projet ; les autres (YouTube compris)
+		 * deviennent des liens. Cahier de texte, lu par des visiteurs anonymes.
+		 * Hérité par les rendus imbriqués.
+		 */
+		projectMediaOnly?: boolean;
 	}
 
 	let {
@@ -170,12 +177,14 @@
 		showAuthoringErrors,
 		restricted,
 		lexiconGrade,
-		internalLinks
+		internalLinks,
+		projectMediaOnly
 	}: Props = $props();
 
 	provideContentLocale(() => locale);
 	provideAuthoringErrors(() => showAuthoringErrors);
 	provideInternalLinks(() => internalLinks);
+	provideProjectMediaOnly(() => projectMediaOnly);
 	provideRestrictedRendering(() => restricted);
 	const isRestricted = readRestrictedRendering();
 	provideLexicon(() => lexiconGrade);

@@ -19,7 +19,13 @@
 <script lang="ts">
 	import type { ImageSizeClass, ImageAlignment } from '$lib/ubumark';
 	import { escapeHtml } from '../utils';
-	import { readRestrictedRendering } from '../restricted-rendering';
+	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+	import { sanitizeUrl } from '$lib/utils/sanitize';
+	import {
+		isProjectStorageImage,
+		readProjectMediaOnly,
+		readRestrictedRendering
+	} from '../restricted-rendering';
 
 	type VideoProvider = 'html5' | 'youtube';
 
@@ -55,6 +61,17 @@
 
 	// Mode restreint (chat élève) : aucune vidéo, aucune requête (S1)
 	const isRestricted = readRestrictedRendering();
+
+	// Cahier de texte : vidéos de notre stockage seulement ; les autres, YouTube
+	// compris, deviennent un lien — aucune requête tierce à l'affichage.
+	const projectMediaOnly = readProjectMediaOnly();
+	let externalHref = $derived.by(() => {
+		if (!projectMediaOnly()) return null;
+		if (provider === 'youtube' && videoId) {
+			return `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+		}
+		return isProjectStorageImage(src, PUBLIC_SUPABASE_URL) ? null : sanitizeUrl(src);
+	});
 
 	// Escaped values for safe rendering
 	let escapedSrc = $derived(escapeHtml(src));
@@ -127,6 +144,13 @@
 	<!-- Texte échappé par Svelte : ni <video>, ni <iframe> -->
 	<span class="restricted-media text-sm text-muted-foreground italic"
 		>[vidéo non affichée{alt ? ` : ${alt}` : ''}]</span
+	>
+{:else if externalHref !== null}
+	<a
+		class="external-media text-sm text-primary underline underline-offset-2"
+		href={externalHref}
+		target="_blank"
+		rel="noopener noreferrer nofollow">Vidéo : {alt || 'ouvrir'}</a
 	>
 {:else if provider === 'youtube' && videoId}
 	<!-- YouTube embed -->

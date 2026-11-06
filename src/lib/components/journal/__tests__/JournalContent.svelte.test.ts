@@ -14,6 +14,8 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import JournalContent from '../JournalContent.svelte';
 import { resolveResource } from '$lib/resources';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 
 const FICHE = '664fee6b-c9d0-4406-a9eb-9e0655c2b1ac';
 const JETON = 'jeton-de-partage-0123456789abcdef';
@@ -138,5 +140,56 @@ describe('JournalContent — HTML hérité (avant conversion)', () => {
 		expect(container.querySelector('a.internal-link')?.getAttribute('href')).toBe(
 			urlFiche('public', JETON)
 		);
+	});
+});
+
+/**
+ * Vidéos (décision de David du 2026-11-06, audit de #2435) : une vidéo hébergée
+ * ailleurs que dans notre stockage ferait partir l'adresse IP de chaque lecteur
+ * — visiteurs anonymes du lien public compris — chez son hébergeur. Au cahier,
+ * elle devient un lien, YouTube compris : aucune requête tierce à l'affichage.
+ */
+describe('JournalContent — vidéos', () => {
+	const EXTERNE = 'https://tiers.example/clip.mp4';
+	const STOCKAGE = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/medias/clip.mp4`;
+
+	it('vidéo d’un autre hôte : un lien, ni <video> ni requête', async () => {
+		const container = await rendre({
+			content: `!video[Démo](${EXTERNE})`,
+			links: { role: 'public', shareToken: 'jeton0123456789abcdef' }
+		});
+		expect(container.querySelector('video, iframe, source')).toBeNull();
+		const lien = container.querySelector('a.external-media');
+		expect(lien?.getAttribute('href')).toBe(EXTERNE);
+		expect(lien?.textContent).toContain('Démo');
+	});
+
+	it('YouTube : un lien vers YouTube, pas de lecteur intégré', async () => {
+		const container = await rendre({
+			content: '!video[Cours](https://youtu.be/abcDEF12345)',
+			links: { role: 'student' }
+		});
+		expect(container.querySelector('iframe, video')).toBeNull();
+		expect(container.querySelector('a.external-media')?.getAttribute('href')).toBe(
+			'https://www.youtube.com/watch?v=abcDEF12345'
+		);
+	});
+
+	it('vidéo de notre stockage : lue dans la page', async () => {
+		const container = await rendre({
+			content: `!video[Démo](${STOCKAGE})`,
+			links: { role: 'student' }
+		});
+		expect(container.querySelector('video source')?.getAttribute('src')).toBe(STOCKAGE);
+	});
+
+	it('hors cahier (cours, exercices) : rien ne change', async () => {
+		const target = document.body.appendChild(document.createElement('main'));
+		cibles.push(target);
+		const screen = await render(MarkdownRenderer, {
+			target,
+			props: { content: `!video[Démo](${EXTERNE})` }
+		});
+		expect((screen.container as HTMLElement).querySelector('video source')).not.toBeNull();
 	});
 });
