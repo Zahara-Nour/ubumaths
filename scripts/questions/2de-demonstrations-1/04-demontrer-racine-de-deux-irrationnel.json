@@ -1,4 +1,5 @@
 {
+	"id": "8de4b8c9-a2b1-4d71-9325-f03fad245b0e",
 	"title": "Démontrer que √2 est irrationnel",
 	"description": "Démonstration par l'absurde à trous : p² = 2q² (case), p² pair donc p pair (choix), contradiction avec l'irréductibilité (choix) ; étapes à ranger",
 	"grades": ["2"],
