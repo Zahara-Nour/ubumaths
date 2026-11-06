@@ -581,3 +581,30 @@ Modèles d'algorithmes déjà en 1re spé (chantier clos `questions-1spe`, lot 3
 cases) : point de départ pour les outils. Phase 0 à proposer : périmètre, forme (lire un programme et donner ce qu'il
 renvoie, compléter une ligne, choisir le bon programme, étapes à ranger ?), rangement (catégorie « Algorithmes » par
 domaine ?), accès, lots.
+
+### Phase 0 — questions à David (posées le 2026-11-06)
+
+Outils vus dans le code (2026-11-06) : bloc de code ` ```python ` (ou sans langage pour le langage naturel) avec
+valeurs tirées (`{{eval:…}}`), case ouverte, case choix (` ```choix `) ; exemples : 378 (`1spe-suites/06`), 369
+(`1spe-suites/07`), 363 (`1spe-va/07`), lots `2de-programmes-11a/11b` (compléter une condition, fonction écart
+type). Rien à créer.
+
+- **Q1 — Périmètre.** Les 13 algorithmes du tableau ; les points-compétences restent hors chantier. _Reco : oui._
+- **Q2 — Forme.** Python seulement (langage du BO). Trois formes : (a) **faire tourner** : programme donné, valeur
+  renvoyée pour une entrée tirée, en case (factorielle, Syracuse, Fibonacci, somme, une itération de Newton, deux
+  pas d'Euler à h = 0,5, (1 + 1/n)ⁿ pour n petit, espérance et variance d'une petite loi) ; (b) **compléter une
+  ligne** en case choix à 4 propositions, erreurs typiques en distracteurs (`p = p * k`, `s = s + u`,
+  `x = x - f(x) / g(x)`…) ; (c) **interpréter** : de quoi la valeur renvoyée est une approximation (Monte-Carlo : π
+  ou 1/3 ; Archimède : π ; 360 : fréquence d'une lettre). Un programme aléatoire n'est jamais « faites-le tourner ».
+  Valeurs choisies pour rester calculables à la main ; décimaux arrondis seulement si l'énoncé le dit. 2 à 3
+  variations par modèle, prises parmi (a), (b), (c). _Reco : oui._
+- **Q3 — Rangement.** Un modèle par point (ADR 0020), tagué sur son point P. Suites (239, 380) : dans la catégorie
+  existante « Seuil et algorithmes › Algorithmes », à la suite de 378 et 369. Les autres : catégorie neuve
+  **« Algorithmes »** dans chaque domaine, comme « Approfondissements ». _Reco : oui._
+- **Q4 — Publication.** Comme les démonstrations et les approfondissements. _Reco : oui._
+- **Q5 — Accès** (avant toute migration) : « qui pourra lire quoi, qu'il ne pouvait pas lire avant ? » _Reco :
+  personne de plus (brouillons ; migration de nœud et de tags seulement) ; à la publication, les élèves de 1re spé
+  voient les modèles, comme tout modèle publié._
+
+Lots proposés : (10) suites et dénombrement (238, 239, 380) ; (11) analyse (279, 288, 298, 299, 309) ;
+(12) probabilités et statistiques (344, 427, 359, 431, 360).
