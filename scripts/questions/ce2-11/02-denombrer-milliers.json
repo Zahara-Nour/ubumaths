@@ -1,0 +1,230 @@
+{
+	"title": "Dénombrer avec des gros cubes de mille",
+	"description": "Gros cubes, plaques, barres, cubes jusqu'à 9 999 ; centaines vides (2 053), ni dizaine ni unité (4 700)",
+	"grades": ["CE2"],
+	"level": 13,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\nmilliers: {{m}}\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*m+100*c+10*d+1*u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{m}}$ {{if:m<=1|gros cube|gross cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+					"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+					"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+					"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"$${{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\nmilliers: {{m}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*m+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{m}}$ {{if:m<=1|gros cube|gross cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+					"Aucune plaque : $0$ centaine.",
+					"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+					"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"$${{eval:1000*m}}+0+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\nmilliers: {{m}}\ncentaines: {{c}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*m+100*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{m}}$ {{if:m<=1|gros cube|gross cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+					"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+					"Aucune barre, aucun petit cube.",
+					"$${{eval:1000*m}}+{{eval:100*c}}={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 gros cubes, 6 plaques, 3 barres, 5 cubes : 4 635",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["4\\,635"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rangs inversés (4 365)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["4\\,365"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : objets comptés un à un (18)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : espace oubliée (4635)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["4635"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "borne : 9 999",
+			"variationIndex": 0,
+			"variables": {
+				"m": "9",
+				"c": "9",
+				"d": "9",
+				"u": "9"
+			},
+			"answers": ["9\\,999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 gros cubes, 5 barres, 3 cubes : 2 053",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"d": "5",
+				"u": "3"
+			},
+			"answers": ["2\\,053"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : zéro oublié (253)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"d": "5",
+				"u": "3"
+			},
+			"answers": ["253"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 gros cubes, 7 plaques : 4 700",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"c": "7"
+			},
+			"answers": ["4\\,700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : zéros oubliés (47)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"c": "7"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
