@@ -1,0 +1,196 @@
+{
+	"title": "Succession de plusieurs épreuves indépendantes",
+	"description": "Trois tirs indépendants de probabilité p : trois succès (p³), exactement un succès (3p(1 − p)², arbre à trois niveaux) ; dé, pièce et urne : probabilité d'une liste",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un archer tire trois flèches sur une cible. Les tirs sont indépendants et, à chaque tir, il atteint la cible avec la probabilité ${{eval:k/10;d}}$. On note $S$ l'issue « la flèche atteint la cible ».\n\nQuelle est la probabilité qu'il atteigne la cible trois fois ? Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k^3/1000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les trois tirs sont indépendants : la probabilité de la liste $(S,S,S)$ est le produit des probabilités de chaque tir.",
+					"$P={{eval:k/10;d}}\\times{{eval:k/10;d}}\\times{{eval:k/10;d}}={{eval:k/10;d}}^3=\\textcolor{{{color:primary.0}}}{{{eval:k^3/1000;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un archer tire trois flèches sur une cible. Les tirs sont indépendants et, à chaque tir, il atteint la cible avec la probabilité ${{eval:k/10;d}}$. On note $S$ l'issue « la flèche atteint la cible ».\n\nL'arbre ci-dessous représente les trois tirs.\n\n```probtree\nS:{{eval:k/10;d}}\n  S:{{eval:k/10;d}}\n    S:{{eval:k/10;d}}\n    \\overline{S}:{{eval:1-k/10;d}}\n  \\overline{S}:{{eval:1-k/10;d}}\n    S:{{eval:k/10;d}}\n    \\overline{S}:{{eval:1-k/10;d}}\n\\overline{S}:{{eval:1-k/10;d}}\n  S:{{eval:k/10;d}}\n    S:{{eval:k/10;d}}\n    \\overline{S}:{{eval:1-k/10;d}}\n  \\overline{S}:{{eval:1-k/10;d}}\n    S:{{eval:k/10;d}}\n    \\overline{S}:{{eval:1-k/10;d}}\n```\n\nQuelle est la probabilité qu'il atteigne la cible exactement une fois ? Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*k*(10-k)^2/1000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Trois chemins réalisent « exactement une fois » : $(S,\\overline{S},\\overline{S})$, $(\\overline{S},S,\\overline{S})$ et $(\\overline{S},\\overline{S},S)$.",
+					"Chacun a la probabilité ${{eval:k/10;d}}\\times{{eval:1-k/10;d}}^2={{eval:k*(10-k)^2/1000;d}}$.",
+					"Donc $P=3\\times{{eval:k*(10-k)^2/1000;d}}=\\textcolor{{{color:primary.0}}}{{{eval:3*k*(10-k)^2/1000;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à six faces, puis une pièce équilibrée, puis on tire au hasard une boule dans une urne qui contient {{eval:r}} boules rouges et {{eval:n-r}} boules noires. Les trois épreuves sont indépendantes.\n\nQuelle est la probabilité d'obtenir 6 avec le dé, « pile » avec la pièce et une boule rouge ? Réponds par une fraction irréductible.\n\n$P=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..10"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:n-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r/(12*n)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les probabilités sont $\\dfrac{1}{6}$ pour le dé, $\\dfrac{1}{2}$ pour la pièce et $\\dfrac{{{eval:r}}}{{{eval:n}}}$ pour l'urne.",
+					"Les épreuves sont indépendantes : on multiplie, $P=\\dfrac{1}{6}\\times\\dfrac{1}{2}\\times\\dfrac{{{eval:r}}}{{{eval:n}}}=\\textcolor{{{color:primary.0}}}{{{eval:r/(12*n)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,343",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["0{,}343"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["\\frac{343}{1000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3p (2,1)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["2{,}1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p (0,7)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["0{,}7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,432",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["0{,}432"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul chemin (0,144)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["0{,}144"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3p(1 − p) (0,72)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["0{,}72"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/32",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"r": "3"
+			},
+			"answers": ["\\frac{1}{32}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/8 (urne seule)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"r": "3"
+			},
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/96 non simplifiée",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"r": "3"
+			},
+			"answers": ["\\frac{3}{96}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		}
+	]
+}

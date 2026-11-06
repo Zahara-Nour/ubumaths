@@ -1,0 +1,156 @@
+{
+	"title": "Marche aléatoire sur une droite graduée",
+	"description": "Pion qui avance de 1 avec la probabilité p, recule sinon : être en 3 après trois étapes (p³), en 1 après trois étapes (3p²(1 − p)), revenu en O après deux étapes (2p(1 − p))",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un pion part de l'origine $O$ d'une droite graduée. À chaque étape, il avance de 1 avec la probabilité ${{eval:k/10;d}}$ et recule de 1 sinon ; les étapes sont indépendantes.\n\nQuelle est la probabilité que le pion soit au point d'abscisse 3 après trois étapes ? Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k^3/1000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour être en 3 après trois étapes, le pion doit avancer trois fois : un seul chemin.",
+					"Les étapes sont indépendantes : $P={{eval:k/10;d}}^3=\\textcolor{{{color:primary.0}}}{{{eval:k^3/1000;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un pion part de l'origine $O$ d'une droite graduée. À chaque étape, il avance de 1 avec la probabilité ${{eval:k/10;d}}$ et recule de 1 sinon ; les étapes sont indépendantes.\n\nQuelle est la probabilité que le pion soit au point d'abscisse 1 après trois étapes ? Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*k^2*(10-k)/1000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour être en 1 après trois étapes, le pion avance deux fois et recule une fois.",
+					"Le recul peut avoir lieu à la première, à la deuxième ou à la troisième étape : trois chemins, chacun de probabilité ${{eval:k/10;d}}^2\\times{{eval:1-k/10;d}}={{eval:k^2*(10-k)/1000;d}}$.",
+					"Donc $P=3\\times{{eval:k^2*(10-k)/1000;d}}=\\textcolor{{{color:primary.0}}}{{{eval:3*k^2*(10-k)/1000;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un pion part de l'origine $O$ d'une droite graduée. À chaque étape, il avance de 1 avec la probabilité ${{eval:k/10;d}}$ et recule de 1 sinon ; les étapes sont indépendantes.\n\nQuelle est la probabilité que le pion soit revenu en $O$ après deux étapes ? Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*k*(10-k)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour revenir en $O$ en deux étapes, le pion avance puis recule, ou recule puis avance.",
+					"Chaque chemin a la probabilité ${{eval:k/10;d}}\\times{{eval:1-k/10;d}}={{eval:k*(10-k)/100;d}}$.",
+					"Donc $P=2\\times{{eval:k*(10-k)/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:2*k*(10-k)/100;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,027",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0{,}027"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3p (0,9)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0{,}9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,432",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["0{,}432"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul chemin (0,144)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["0{,}144"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,42",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0{,}42"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul chemin (0,21)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0{,}21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p² + (1 − p)² (0,58)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0{,}58"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

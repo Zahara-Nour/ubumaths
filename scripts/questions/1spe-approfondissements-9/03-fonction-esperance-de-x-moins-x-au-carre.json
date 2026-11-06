@@ -1,0 +1,317 @@
+{
+	"title": "Étudier la fonction x ↦ E((X − x)²)",
+	"description": "f(x) = E((X − x)²) = x² + bx + c : b = −2E(X), minimum atteint en E(X), valeur minimale V(X) (case choix), démonstration (étapes à ranger)",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée par le tableau suivant.\n\n| $x_k$ | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ |\n|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:q1/10;d}}$ | ${{eval:q2/10;d}}$ | ${{eval:q3/10;d}}$ |\n\nPour tout réel $x$, on pose $f(x)=E\\left((X-x)^2\\right)$, l'espérance de la variable aléatoire $(X-x)^2$.\n\nEn développant $(X-x)^2$ et par linéarité de l'espérance, $f(x)$ s'écrit $x^2+bx+c$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$b=?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "d1",
+					"expression": "1..4"
+				},
+				{
+					"name": "d2",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "{{eval:x1+d1}}"
+				},
+				{
+					"name": "x3",
+					"expression": "{{eval:x2+d2}}"
+				},
+				{
+					"name": "q1",
+					"expression": "1..8"
+				},
+				{
+					"name": "q2",
+					"expression": "1..{{eval:9-q1}}"
+				},
+				{
+					"name": "q3",
+					"expression": "{{eval:10-q1-q2}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:q1*(x1)+q2*(x2)+q3*(x3)}}"
+				},
+				{
+					"name": "m",
+					"expression": "{{eval:S/10}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-S/5}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(X-x)^2=X^2-2xX+x^2$, donc, par linéarité, $f(x)=E(X^2)-2x\\,E(X)+x^2$ : $b=-2E(X)$.",
+					"$E(X)={{eval:q1/10;d}}\\times{{eval:x1;()}}+{{eval:q2/10;d}}\\times{{eval:x2;()}}+{{eval:q3/10;d}}\\times{{eval:x3;()}}={{eval:m;d}}$.",
+					"Donc $b=-2E(X)=\\textcolor{{{color:primary.0}}}{{{eval:-S/5;d}}}$."
+				]
+			},
+			"conditions": ["S != 0"]
+		},
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée par le tableau suivant.\n\n| $x_k$ | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ |\n|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:q1/10;d}}$ | ${{eval:q2/10;d}}$ | ${{eval:q3/10;d}}$ |\n\nPour tout réel $x$, on pose $f(x)=E\\left((X-x)^2\\right)$, l'espérance de la variable aléatoire $(X-x)^2$.\n\nOn admet que $f(x)=x^2-2E(X)\\,x+E(X^2)$. En quel réel $x$ la fonction $f$ atteint-elle son minimum ? Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "d1",
+					"expression": "1..4"
+				},
+				{
+					"name": "d2",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "{{eval:x1+d1}}"
+				},
+				{
+					"name": "x3",
+					"expression": "{{eval:x2+d2}}"
+				},
+				{
+					"name": "q1",
+					"expression": "1..8"
+				},
+				{
+					"name": "q2",
+					"expression": "1..{{eval:9-q1}}"
+				},
+				{
+					"name": "q3",
+					"expression": "{{eval:10-q1-q2}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:q1*(x1)+q2*(x2)+q3*(x3)}}"
+				},
+				{
+					"name": "m",
+					"expression": "{{eval:S/10}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un polynôme du second degré de coefficient $1>0$ : son minimum est atteint en $x=-\\dfrac{-2E(X)}{2}=E(X)$.",
+					"$E(X)={{eval:q1/10;d}}\\times{{eval:x1;()}}+{{eval:q2/10;d}}\\times{{eval:x2;()}}+{{eval:q3/10;d}}\\times{{eval:x3;()}}={{eval:m;d}}$.",
+					"Le minimum est atteint en $x=\\textcolor{{{color:primary.0}}}{{{eval:m;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire. Pour tout réel $x$, on pose $f(x)=E\\left((X-x)^2\\right)$, l'espérance de la variable aléatoire $(X-x)^2$.\n\nOn admet que $f(x)=x^2-2E(X)\\,x+E(X^2)$. Quelle est la valeur minimale de $f$ ?\n\n```choix\n- $V(X)$, la variance de $X$\n- $E(X)$, l'espérance de $X$\n- $E(X^2)$\n- $0$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme canonique : $f(x)=\\left(x-E(X)\\right)^2+E(X^2)-E(X)^2$.",
+					"Or $E(X^2)-E(X)^2=V(X)$ (formule de König-Huygens), donc $f(x)=\\left(x-E(X)\\right)^2+V(X)$.",
+					"Un carré est positif ou nul et vaut $0$ en $x=E(X)$ : la valeur minimale de $f$ est $\\textcolor{{{color:primary.0}}}{V(X)}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire. Pour tout réel $x$, on pose $f(x)=E\\left((X-x)^2\\right)$, l'espérance de la variable aléatoire $(X-x)^2$.\n\nOn démontre que $f$ atteint son minimum en $E(X)$ et que ce minimum vaut $V(X)$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour tout réel $x$, $(X-x)^2=X^2-2xX+x^2$.\n- Par linéarité de l'espérance, $f(x)=x^2-2E(X)\\,x+E(X^2)$.\n- Forme canonique : $f(x)=\\left(x-E(X)\\right)^2+E(X^2)-E(X)^2=\\left(x-E(X)\\right)^2+V(X)$.\n- Donc $f$ atteint son minimum en $x=E(X)$, et ce minimum vaut $V(X)$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On développe le carré, puis on passe à l'espérance (linéarité) : $f$ est du second degré.",
+					"Sa forme canonique fait apparaître $V(X)=E(X^2)-E(X)^2$ : le minimum, atteint en $E(X)$, vaut $\\textcolor{{{color:primary.0}}}{V(X)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−4,8",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "2",
+				"q1": "2",
+				"q2": "5"
+			},
+			"answers": ["-4{,}8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "2",
+				"q1": "2",
+				"q2": "5"
+			},
+			"answers": ["-\\frac{24}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe (4,8)",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "2",
+				"q1": "2",
+				"q2": "5"
+			},
+			"answers": ["4{,}8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −E(X) (−2,4)",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "2",
+				"q1": "2",
+				"q2": "5"
+			},
+			"answers": ["-2{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,4",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "2",
+				"q1": "2",
+				"q2": "5"
+			},
+			"answers": ["2{,}4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −2,4",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "2",
+				"q1": "2",
+				"q2": "5"
+			},
+			"answers": ["-2{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4,8",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "2",
+				"q1": "2",
+				"q2": "5"
+			},
+			"answers": ["4{,}8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "V(X)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : E(X)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : E(X²)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
