@@ -2,6 +2,72 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.75.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.74.0...v0.75.0) (2026-11-06)
+
+### ✨ Features
+
+- **db:** 1re spé, approfondissements lot 9, nœuds et tags ([8de8095](https://github.com/Zahara-Nour/ubumaths/commit/8de80950d64eee753c9b23c70366d520f2895ad7))
+- **questions:** 1re spé, approfondissements lot 9 (probabilités) ([6398f0e](https://github.com/Zahara-Nour/ubumaths/commit/6398f0e8d8a0e0a0a51f5972fd55b70d4253326e))
+- **questions:** ce2 lot 10, 7 modèles de solides ([4366200](https://github.com/Zahara-Nour/ubumaths/commit/4366200960a319ca52ec0da0e2b663f2ab2c1563))
+- **questions:** ce2 lot 10, nœud et point des 7 brouillons de solides ([ef3327b](https://github.com/Zahara-Nour/ubumaths/commit/ef3327be36b2fa4bd6ebde935584b921b02db858))
+- **questions:** ce2 lot 9, rangement et tags par migration ([2ff58f5](https://github.com/Zahara-Nour/ubumaths/commit/2ff58f5476317068f5fe9e39253dd1c60352a831))
+- **questions:** ce2, lot 9 (longueurs, fraction de l'unité, masses) ([27f8848](https://github.com/Zahara-Nour/ubumaths/commit/27f884812f4dc579697ab9a2d4faec7d784de403))
+- **questions:** exceptions de niveaux pour 6 automatismes de 1re ([acc7705](https://github.com/Zahara-Nour/ubumaths/commit/acc77058487de1431a4f62a2471651bf368457c7))
+- **questions:** nœud et point du modèle neuf « tableau de signes de ax + b » (1re) ([cbb9e5f](https://github.com/Zahara-Nour/ubumaths/commit/cbb9e5f54f20943e60a19936d57d8b4ea4518981))
+- **questions:** seconde, lot 11 rangé et tagué (15 modèles) et ids du 11 B ([3674659](https://github.com/Zahara-Nour/ubumaths/commit/367465907b052235ff80bd96cf52a618521b008c))
+- **ubumark:** collection, centaines et milliers (plaques de cent, gros cubes) ([7bbe940](https://github.com/Zahara-Nour/ubumaths/commit/7bbe940c84fcda14bc621612bda1510656f57713))
+
+### 🐛 Bug Fixes
+
+- **cahier:** formules du cahier de texte affichées ([212c05c](https://github.com/Zahara-Nour/ubumaths/commit/212c05c4e2bf493cc561d86244419541d0fbd20d))
+- **cahier:** formules transformées dans l'arbre DOM, XSS du rendu serveur fermé ([3cd8739](https://github.com/Zahara-Nour/ubumaths/commit/3cd87398a2e61f75c21c64008becafb7754f1c17)), closes [#2425](https://github.com/Zahara-Nour/ubumaths/issues/2425)
+- **editeur:** calcul aligné centré, la relation dans sa colonne (array{rcl}) ([d8b8293](https://github.com/Zahara-Nour/ubumaths/commit/d8b82937627f7232e5f9e097a28c2d21c940f5e8))
+- **editeur:** calcul centré, retours de revue (raccourci en cours, relation hors liste) ([7ea8c99](https://github.com/Zahara-Nour/ubumaths/commit/7ea8c99597fcd1d013c2c6f3c1181c0c712b9ccd))
+- **editeur:** création après l'import de MathLive, comme avant ([d22dcad](https://github.com/Zahara-Nour/ubumaths/commit/d22dcad031056796a55fc9cb93ce50e3d15a359c))
+- **editeur:** éditeur créé au montage, chargement et échec affichés ([f03b639](https://github.com/Zahara-Nour/ubumaths/commit/f03b6392e89de6890f12625d8853890f1fd570b2))
+- **editeur:** import nu de MathLive (SSR), retours de revue ([fc4f690](https://github.com/Zahara-Nour/ubumaths/commit/fc4f69023dbc5886db81cd10b970f11dc4af7f4f))
+- **editeur:** indicateur de chargement et message d'échec visibles ([b622172](https://github.com/Zahara-Nour/ubumaths/commit/b6221723c1b7478a571cd5c3263858804a884c1e))
+- **solide:** cote de la hauteur d'une pyramide renvoyée hors du solide ([f770589](https://github.com/Zahara-Nour/ubumaths/commit/f7705895f04f5d6849b443b7dd2d81872290eede))
+- **ubumark:** collection, hauteur bornée au PDF et cadre de construire agrandi ([15e3f3e](https://github.com/Zahara-Nour/ubumaths/commit/15e3f3e00b6ff9ca0a7341e5c3fc43a184e6fe4f))
+
+### 📚 Documentation
+
+- collection-centaines versé après [#2420](https://github.com/Zahara-Nour/ubumaths/issues/2420) ([06f839f](https://github.com/Zahara-Nour/ubumaths/commit/06f839f0a9c597af9d054c7a7b953dde25c968d0))
+- **programmes:** bilan T_SPE, 334 couvert (274 modèles, 227 points) ([25e1f8c](https://github.com/Zahara-Nour/ubumaths/commit/25e1f8cf599696634caf9a0bb118c31ad03578a2))
+- **wip:** automatismes-1spe après [#2416](https://github.com/Zahara-Nour/ubumaths/issues/2416) ([f31b8c1](https://github.com/Zahara-Nour/ubumaths/commit/f31b8c15e0ac49f16e273e350992a6ab8648a8d6))
+- **wip:** automatismes-1spe, question « série » tranchée par l'ADR 0035 ([d0cce69](https://github.com/Zahara-Nour/ubumaths/commit/d0cce69b3e42d86b7b2b1425c90388f07823f4b0))
+- **wip:** automatismes-1spe, questions 2 à 4 tranchées et suite à choisir ([7a7f389](https://github.com/Zahara-Nour/ubumaths/commit/7a7f389fc2394518bc0fbf503b8ecd3805ea7225))
+- **wip:** calcul-aligne après [#2422](https://github.com/Zahara-Nour/ubumaths/issues/2422) ([daee9a6](https://github.com/Zahara-Nour/ubumaths/commit/daee9a615f09a8dc4a3ebddf10e85fbb9bba8858))
+- **wip:** calcul-aligne après [#2423](https://github.com/Zahara-Nour/ubumaths/issues/2423) ([fc1e48d](https://github.com/Zahara-Nour/ubumaths/commit/fc1e48d68eced0dd0a46dad6cb00aab2023a8ddc))
+- **wip:** calcul-aligne après [#2425](https://github.com/Zahara-Nour/ubumaths/issues/2425) ([9b1f7ae](https://github.com/Zahara-Nour/ubumaths/commit/9b1f7ae8fea3d0a870a02353f2ad4ede7d4d9a9c))
+- **wip:** calcul-aligne clos après [#2424](https://github.com/Zahara-Nour/ubumaths/issues/2424), journal archivé ([08e0d9f](https://github.com/Zahara-Nour/ubumaths/commit/08e0d9fe182e09893fcd4e01960f916a47f0b20a))
+- **wip:** calcul-aligne, cause de l'éditeur lent (tunnel SSH) ([49bd82e](https://github.com/Zahara-Nour/ubumaths/commit/49bd82eb09903e5f9565bc033579f22a334bfe07))
+- **wip:** calcul-aligne, compte des tests de la revue ([31fa488](https://github.com/Zahara-Nour/ubumaths/commit/31fa4889480a6b50eaeaf1e73ef651f52c45de19))
+- **wip:** calcul-aligne, reprise avec [#2424](https://github.com/Zahara-Nour/ubumaths/issues/2424) et [#2425](https://github.com/Zahara-Nour/ubumaths/issues/2425) ouvertes ([bb42e1c](https://github.com/Zahara-Nour/ubumaths/commit/bb42e1ce3640791544663f35df0e7af84726524d))
+- **wip:** collection-centaines, phase 0 ([759647c](https://github.com/Zahara-Nour/ubumaths/commit/759647c6aa60ee55d81bd2ad37ffb9e148808fb0))
+- **wip:** collection-centaines, phase 0 (mise en forme) ([f543954](https://github.com/Zahara-Nour/ubumaths/commit/f543954230e0bca93629688541b36fb3547d946d))
+- **wip:** collection-centaines, phase 0 validée ([1097a06](https://github.com/Zahara-Nour/ubumaths/commit/1097a06a67ca00bb936ff060f7acdcd6f8a98f52))
+- **wip:** cote-hauteur clos après [#2427](https://github.com/Zahara-Nour/ubumaths/issues/2427), n° 17 livré ([3c56b66](https://github.com/Zahara-Nour/ubumaths/commit/3c56b666c12192b9693beaaf020ab6387ba4572c))
+- **wip:** outils-manquants, ordre du 2026-11-06 (n° 17 d'abord) ([cb57c73](https://github.com/Zahara-Nour/ubumaths/commit/cb57c7340d6a312c0264d28bdcfad7bfed8058c0))
+- **wip:** questions-1spe-demonstrations, D9 (algorithmes) ([12e245d](https://github.com/Zahara-Nour/ubumaths/commit/12e245daaecfb4d44244fc676afc0180558ce3e8))
+- **wip:** questions-1spe-demonstrations, lot 8 publié ([a443dba](https://github.com/Zahara-Nour/ubumaths/commit/a443dba65cca9f92663fab36d384550262abf73a))
+- **wip:** questions-1spe-demonstrations, lot 9 mergé ([#2415](https://github.com/Zahara-Nour/ubumaths/issues/2415)) ([2e26fdf](https://github.com/Zahara-Nour/ubumaths/commit/2e26fdfbdc2c36c1911fd6aa75fd00302a2aab27))
+- **wip:** questions-1spe-demonstrations, lot 9 publié ([08aa57b](https://github.com/Zahara-Nour/ubumaths/commit/08aa57b3fb7e7a22be93adfd98d50fc678db42c6))
+- **wip:** questions-1spe-demonstrations, lot 9 rangé et tagué en prod ([#2419](https://github.com/Zahara-Nour/ubumaths/issues/2419)) ([d472778](https://github.com/Zahara-Nour/ubumaths/commit/d472778ebb984da2b8ee246b3e1691d1827018b7))
+- **wip:** questions-1spe-demonstrations, phase 0 des algorithmes posée ([4df6d72](https://github.com/Zahara-Nour/ubumaths/commit/4df6d72155e600ba8ef6b5a1ce8a49ef17782beb))
+- **wip:** questions-1spe-demonstrations, suite vers les algorithmes (D8) ([1713a48](https://github.com/Zahara-Nour/ubumaths/commit/1713a48ce0cbbdd11d30a48e1ae6db48d1819d19))
+- **wip:** questions-2de, lot 11 rangé en prod, page à cocher ([f443c99](https://github.com/Zahara-Nour/ubumaths/commit/f443c99a5f369459db65a032b7593c645f9b02da))
+- **wip:** questions-ce2 après [#2414](https://github.com/Zahara-Nour/ubumaths/issues/2414) ([70f59d5](https://github.com/Zahara-Nour/ubumaths/commit/70f59d53153441fafa09005076605c2065d7f676))
+- **wip:** questions-ce2 après [#2418](https://github.com/Zahara-Nour/ubumaths/issues/2418) ([586a9ba](https://github.com/Zahara-Nour/ubumaths/commit/586a9badf761de379f30916e94bd67aac9ddbf98))
+- **wip:** questions-ce2 après [#2426](https://github.com/Zahara-Nour/ubumaths/issues/2426) ([b19f92c](https://github.com/Zahara-Nour/ubumaths/commit/b19f92cc6c0b8592540bdc74fe284fef0848c3bd))
+- **wip:** questions-ce2 après [#2428](https://github.com/Zahara-Nour/ubumaths/issues/2428) ([ca143ce](https://github.com/Zahara-Nour/ubumaths/commit/ca143cec5f50ef3821d4b8092565dcd144b7b7f3))
+- **wip:** questions-ce2, audit de la migration du lot 9 ([d91d53f](https://github.com/Zahara-Nour/ubumaths/commit/d91d53f649873c60281efcc4d5f82fec16649d35))
+- **wip:** questions-ce2, lot 9 publié ([cd9486d](https://github.com/Zahara-Nour/ubumaths/commit/cd9486d37566e51e89089c7b575db7daef1279be))
+- **wip:** questions-ce2, phase 0 du lot 10 (solides) ([c5ab34f](https://github.com/Zahara-Nour/ubumaths/commit/c5ab34f27b2dfa94845c92ab1b50a72d0058f22d))
+- **wip:** questions-ce2, phase 0 du lot 10 validée ([11cca1f](https://github.com/Zahara-Nour/ubumaths/commit/11cca1fdfbb1a810dbfcf68cb49e74ca917b30fc))
+- **wip:** questions-ce2, phase 0 du lot 9 validée ([49f6de7](https://github.com/Zahara-Nour/ubumaths/commit/49f6de76821c7cee87915dfcf4d99d6d6492f36c))
+- **wip:** vérification TSPE-334 faite (tétraèdre relu, modèle publié) ([7a0fbd1](https://github.com/Zahara-Nour/ubumaths/commit/7a0fbd1f56727af5324dbd88d7a2d001f31e8914))
+
 ## [0.74.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.73.0...v0.74.0) (2026-11-05)
 
 ### ✨ Features
