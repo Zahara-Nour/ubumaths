@@ -1,4 +1,5 @@
 {
+	"id": "aaebfe52-5740-47ab-8c5c-799023a6d906",
 	"title": "Dénombrer des plaques, des barres et des cubes",
 	"description": "Matériel multibase jusqu'à 999 → nombre de cubes ; avec une dizaine vide (304)",
 	"grades": ["CE2"],
