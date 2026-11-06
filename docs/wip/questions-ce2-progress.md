@@ -814,3 +814,4 @@ tag ne change aucune règle.
   `20261106050331_questions_ce2_lot9_rangement_tags` + test : rouge sans le corps (6 échecs sur 10), vert 10/10 ;
   résolution des 8 chemins vérifiée en prod (nœud = celui du point). « Périmètres » a trois sous-notions (carré,
   rectangle, disque) : admises par la garde, 042 et 044 vont sur la notion, où sont leurs points.
+- 2026-11-06 : `security-auditor` : aucun finding bloquant (diff avec le lot 8 : valeurs et sous-notions admises de « Périmètres » seulement ; rollback, gardes et octets de « carré » vérifiés en prod).
