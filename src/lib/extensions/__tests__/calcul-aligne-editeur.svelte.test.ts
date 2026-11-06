@@ -58,6 +58,9 @@ function latexDe(e: Editor, type: string): string {
 
 const bloc = (latex: string): JSONContent => ({ type: 'mathBlock', attrs: { latex } });
 
+/** Calcul centré, sans espaces (comme {@link latexDe}). */
+const centre = (corps: string) => `\\begin{array}{rcl}${corps}\\end{array}`;
+
 describe('Ctrl+Entrée dans un bloc', () => {
 	it('calcul : coupe sur =, reprend = à chaque ligne', async () => {
 		const e = await editeur([bloc('A=3+4')]);
@@ -66,7 +69,7 @@ describe('Ctrl+Entrée dans un bloc', () => {
 		await taper('7');
 		await nouvelleLigne();
 		await taper('8');
-		expect(latexDe(e, 'mathBlock')).toBe('\\begin{aligned}A&=3+4\\\\&=7\\\\&=8\\end{aligned}');
+		expect(latexDe(e, 'mathBlock')).toBe(centre('A&=&3+4\\\\&=&7\\\\&=&8'));
 	});
 
 	it('raisonnement : coupe sur ⇔, « ou » devient un mot', async () => {
@@ -75,8 +78,48 @@ describe('Ctrl+Entrée dans un bloc', () => {
 		await nouvelleLigne();
 		await taper('x=1oux=-1');
 		expect(latexDe(e, 'mathBlock')).toBe(
-			'\\begin{aligned}x^2-1=0&\\iffx^2=1\\\\&\\iffx=1\\:\\mathrm{ou}\\:x=-1\\end{aligned}'
+			centre('x^2-1=0&\\iff&x^2=1\\\\&\\iff&x=1\\:\\mathrm{ou}\\:x=-1')
 		);
+	});
+
+	it('bloc aligned existant : converti en calcul centré', async () => {
+		const e = await editeur([bloc('\\begin{aligned}A&=3+4\\end{aligned}')]);
+		await entrerDans('.math-block-wrapper');
+		await nouvelleLigne();
+		await taper('7');
+		expect(latexDe(e, 'mathBlock')).toBe(centre('A&=&3+4\\\\&=&7'));
+	});
+});
+
+describe('changer la relation d’une nouvelle ligne', () => {
+	it('Retour arrière efface ⇔, ⇒ tapé à la place est rangé au milieu', async () => {
+		const e = await editeur([bloc('n=1\\iff n+1=2')]);
+		await entrerDans('.math-block-wrapper');
+		await nouvelleLigne();
+		await taper('{Backspace}');
+		expect(latexDe(e, 'mathBlock')).toBe(centre('n=1&\\iff&n+1=2\\\\&&'));
+		await taper('=>n=0');
+		expect(latexDe(e, 'mathBlock')).toBe(centre('n=1&\\iff&n+1=2\\\\&\\Rightarrow&n=0'));
+	});
+
+	it('ligne déjà remplie : le raccourci => aboutit, rangé en quittant le champ (revue #2422)', async () => {
+		const e = await editeur([bloc(centre('n=1&\\iff&n+1=2\\\\&\\iff&x=3'))]);
+		await entrerDans('.math-block-wrapper');
+		// Début de la colonne de droite de la ligne 2 : juste avant son x
+		const champ = document.querySelector('.math-block-wrapper math-field') as HTMLElement & {
+			position: number;
+			lastOffset: number;
+			getValue(debut: number, fin: number, format: 'latex'): string;
+		};
+		for (let p = 0; p < champ.lastOffset; p++) {
+			if (champ.getValue(p, p + 1, 'latex') === 'x') champ.position = p;
+		}
+		await taper('{Backspace}');
+		await taper('=>');
+		expect(latexDe(e, 'mathBlock')).toBe(centre('n=1&\\iff&n+1=2\\\\&&\\Rightarrowx=3'));
+		champ.blur();
+		await pause(100);
+		expect(latexDe(e, 'mathBlock')).toBe(centre('n=1&\\iff&n+1=2\\\\&\\Rightarrow&x=3'));
 	});
 });
 
@@ -85,8 +128,9 @@ describe('effacer', () => {
 		const e = await editeur([bloc('A=3+4')]);
 		await entrerDans('.math-block-wrapper');
 		await nouvelleLigne();
+		// Le premier efface le = repris, le second la ligne devenue vide
 		await taper('{Backspace}{Backspace}');
-		expect(latexDe(e, 'mathBlock')).toBe('\\begin{aligned}A&=3+4\\end{aligned}');
+		expect(latexDe(e, 'mathBlock')).toBe(centre('A&=&3+4'));
 	});
 });
 
@@ -110,7 +154,7 @@ describe('bouton « Calcul aligné »', () => {
 		await taper('A=3+4');
 		await nouvelleLigne();
 		await taper('7');
-		expect(latexDe(e, 'mathBlock')).toBe('\\begin{aligned}A&=3+4\\\\&=7\\end{aligned}');
+		expect(latexDe(e, 'mathBlock')).toBe(centre('A&=&3+4\\\\&=&7'));
 	});
 });
 

@@ -2,9 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2410._
+_Mis à jour le 2026-11-06, PR « calcul centré » ouverte._
 
-- **État** : #2410 mergée (Cmd/Ctrl/Alt+Entrée, Retour arrière sur ligne vide, bouton « Calcul aligné », `ou`/`et`) ; pas en prod tant que David ne lance pas `deploy:prod` · **Prochaine action** : selon l'essai de David · **En attente de David** : essai réel dans l'éditeur de correction ; trancher bouton = 1 ligne (fait) ou 2 lignes vides (prévu en phase 0) · **Pièges en cours** : voir « Pièges » · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` gardé (serveur de test 5176) jusqu'à l'essai ; branche distante supprimée
+- **État** : #2410 mergée ; essai de David (2026-11-06) → calcul **centré** (`array{rcl}`) sur `fix/calcul-aligne-relations`, PR ouverte ; rien en prod tant que David ne lance pas `deploy:prod` · **Prochaine action** : CI verte → merge ; puis PR à part « éditeur inactif plusieurs secondes » (voir Journal 2026-11-06) · **En attente de David** : essai du calcul centré (5176) ; bouton = 1 ligne (fait) ou 2 vides, toujours pas tranché · **Pièges en cours** : voir « Pièges » · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` · `fix/calcul-aligne-relations` (serveur de test 5176)
+
+## Décisions de David (2026-11-06)
+
+- **Relation centrée dans sa colonne** : `\begin{array}{rcl}` (gauche alignée à droite, relation centrée, droite alignée à gauche), proposé par David après l'essai (un ⇒ tapé à la place d'un ⇔ décalait la ligne). Les raccourcis `=>` → `\implies` envisagés avant sont abandonnés.
+- **Cmd+Entrée dans un bloc `aligned` existant le convertit** en calcul centré (option a).
 
 ## Décisions de David (2026-11-05)
 
@@ -29,8 +34,13 @@ Erreur : 11 LaTeX mal formé tapé à la main → rien ne casse (le bloc n'est p
 - `typedText` (frappe simulée) applique mal les raccourcis : tester avec `userEvent.keyboard`, après une pause de ~300 ms au clic.
 - Curseur repéré par un marqueur `\maltese` inséré puis retiré (MathLive n'expose pas la ligne du curseur).
 - Dans une commande TipTap, `editor.state` n'a pas encore l'insertion : lire `tr.doc` / `tr.selection`.
+- `aligned` à 3 colonnes (`a &\iff& b`) ne centre pas : ses colonnes alternent droite / gauche / droite → `array{rcl}`.
+- Dans un `array` MathLive : Retour arrière au début d'une cellule ne fait **rien** (ne passe pas à la précédente), **Tab sort du champ** → `effacerRelation` et `rangerRelation`.
+- MathLive affiche `\implies` **sans** les espaces de `\iff` (KaTeX les met) : ne pas compter sur `\implies` pour égaliser les largeurs.
 
 ## Journal
 
 - 2026-11-05 — phase 0 validée ; `calcul-aligne.ts` (pur) + câblage `MathBlock` + bouton ; tests : 23 purs, 7 chaîne (aller-retour, rendu, PDF), 5 navigateur (preuve rouge faite sans le câblage).
 - 2026-11-05 — PR #2410. Revue : (1) marqueur retiré avec l'espace → `\alpha x` soudé en `\alphax` → `sansMarqueur` garde l'espace entre commande et lettre ; (2) Retour arrière sur une sélection n'effaçait qu'un caractère quand une ligne vide existait → laissé à MathLive si sélection ; (3) `[0,1)` faisait perdre la coupure → parenthèses comptées à part, jamais sous zéro ; (4) `try/finally` : jamais de marqueur oublié. Tests ajoutés (rouges vérifiés).
+- 2026-11-06 — Essai de David sur `/demo/editeur` (5176). (1) Changer la relation d'une nouvelle ligne (⇔ → ⇒) décalait la ligne : le LaTeX était juste, mais `aligned` aligne sur le bord gauche des flèches, de largeurs différentes. → calcul centré `array{rcl}` (`ajouterLigne` convertit, `effacerRelation`, `rangerRelation`, PDF : `generateMathBlock` envoie `array{rcl}` à la grille). Tests : 44 purs, 10 chaîne, 8 navigateur dont le scénario de David (preuve rouge faite sans le câblage). (2) « L'éditeur ne réagit pas » : **pas lié au chantier** — `RichTextEditor` n'est créé qu'après `await import('mathlive')` (ligne de 2025-12-16) ; en dev, MathLive non minifié (1,3 Mo) + ~250 modules → plusieurs secondes où la barre est là sans éditeur. David d'accord pour une PR à part : état « chargement » visible + MathLive chargé plus tôt. (3) Vu au passage : la section « cahier de texte » de la démo n'affiche aucune formule (déjà le cas avant ce chantier) — à signaler à David.
+- 2026-11-06 — PR #2422, revue `code-reviewer` (3 importants, 2 mineurs, tous traités) : (1) ligne déjà remplie, Retour arrière puis `=>` : le `=` était rangé aussitôt, le `>` tombait à droite → rien tant que l'atome avant le curseur est une relation (`relationEnCours`, lu par `getValue` sans poser de marqueur), rangement au `blur` sinon ; (2) `\subset` / `\in` au milieu rabaissés à droite → milieu gardé tel quel ; (3) PDF : relation hors motif (`\approx`, `\subset`) → la 2e cellule d'un `array{rcl}` est prise telle quelle ; (4) `\left(0;1\right]` bloquait la coupure → délimiteur de `\left`/`\right` non compté ; (5) états avec marqueur poussés dans ProseMirror → `synchroniser` les ignore. Tests : 49 purs, 11 chaîne, 9 navigateur (preuve rouge du scénario (1) faite).

@@ -991,6 +991,17 @@ function generateMathBlock(node: MathBlockNode, options: ResolvedTypstTranspiler
 		return generateAlignedEquation(alignMatch[2]);
 	}
 
+	// Calcul centré de l'éditeur (`array{rcl}` : gauche, relation, droite) → la même
+	// grille, dont la colonne de la relation est déjà centrée. La 2e colonne y EST la
+	// relation, quelle qu'elle soit (`\approx`, `\subset`…) : prise telle quelle.
+	const centreMatch = latex.match(
+		/^\s*\\begin\s*\{array\}\s*\{\s*rcl\s*\}([\s\S]*)\\end\s*\{array\}\s*$/
+	);
+
+	if (centreMatch && !/\\begin\s*\{array\}/.test(centreMatch[1])) {
+		return generateAlignedEquation(centreMatch[1], true);
+	}
+
 	// Convert LaTeX math to Typst math syntax
 	const typstMath = convertLatexToTypstMath(latex);
 	// DEBUG LOG: Keep for Typst debugging - logs each block math conversion
@@ -1012,9 +1023,11 @@ function generateMathBlock(node: MathBlockNode, options: ResolvedTypstTranspiler
  * - Column 4: Explanatory text, left-aligned
  *
  * @param content - Content inside \begin{align}...\end{align}
+ * @param relationEnColonne - calcul centré (`array{rcl}`) : la 2e cellule de chaque
+ *   ligne est la relation, sans la reconnaître par motif
  * @returns Typst grid structure
  */
-function generateAlignedEquation(content: string): string {
+function generateAlignedEquation(content: string, relationEnColonne = false): string {
 	// Protect nested environments (cases, matrix, etc.) before splitting by \\
 	// These environments contain \\ that should NOT be treated as row separators
 	const nestedEnvs: string[] = [];
@@ -1041,6 +1054,7 @@ function generateAlignedEquation(content: string): string {
 	// Check if this uses alignment symbols (implications, equivalences, equations, inequations)
 	const hasAlignmentSymbol = rows.some((row) => {
 		const parts = splitAlignCells(row);
+		if (relationEnColonne && parts.length >= 3 && parts[1] !== '') return true;
 		if (parts.length >= 2) {
 			const rightPart = parts[1];
 			return ALIGNMENT_SYMBOL_PATTERN.test(rightPart);
@@ -1049,7 +1063,7 @@ function generateAlignedEquation(content: string): string {
 	});
 
 	if (hasAlignmentSymbol) {
-		return generateAlignedGrid(rows);
+		return generateAlignedGrid(rows, relationEnColonne);
 	}
 
 	// Fallback to simple 2-column grid for other align environments
@@ -1059,7 +1073,7 @@ function generateAlignedEquation(content: string): string {
 /**
  * Generate 4-column grid for aligned equations (implications, equivalences, equations, inequations)
  */
-function generateAlignedGrid(rows: string[]): string {
+function generateAlignedGrid(rows: string[], relationEnColonne = false): string {
 	const gridRows: string[] = [];
 
 	for (const row of rows) {
@@ -1079,7 +1093,11 @@ function generateAlignedGrid(rows: string[]): string {
 			let col2 = '[]';
 			let restOfRight = rightPart;
 
-			if (symbolMatch) {
+			if (relationEnColonne && parts.length >= 3) {
+				// Calcul centré : la 2e cellule est la relation, telle quelle
+				if (parts[1]) col2 = `[$${convertLatexToTypstMath(parts[1])}$]`;
+				restOfRight = trimLatex(parts.slice(2).join(' '));
+			} else if (symbolMatch) {
 				const symbol = symbolMatch[0];
 				col2 = `[$${convertLatexToTypstMath(symbol)}$]`;
 				restOfRight = trimLatex(rightPart.slice(symbol.length));
