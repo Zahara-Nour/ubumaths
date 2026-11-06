@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, phase 0 écrite._
+_Mis à jour le 2026-11-06, phase 0 validée._
 
-- **État** : phase 0 proposée à David, questions Q1 à Q4 posées · **Prochaine action** : attendre sa validation, puis tests rouges (parseur, scène, construire, PDF) · **En attente de David** : Q1 à Q4 · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-collection-centaines`, `feat/collection-centaines`
+- **État** : phase 0 validée (Q1 à Q4 : recommandations retenues) · **Prochaine action** : tests rouges (parseur, scène, construire, PDF), puis code · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-collection-centaines`, `feat/collection-centaines`
 
 ---
 
@@ -89,7 +89,11 @@ unités: 17
   partir de 100, gros cubes à partir de 1 000), sans nouvelle clé.
 - **Q4 — Plafonds** : milliers 9, centaines 40, dizaines 30, unités 100, total 9 999.
 
+**Tranché le 2026-11-06 (David)** : Q1 collection réduite ; Q2 refus avec `paquets` ; Q3 réserve
+déduite de la valeur ; Q4 plafonds proposés.
+
 ## Journal
 
 - 2026-11-06 : worktree ouvert, code relu (`collection-parser.ts`, `collection-scene.ts`,
   `collection-construire.ts`), BO relu ; phase 0 écrite.
+- 2026-11-06 : phase 0 validée par David (Q1 à Q4, recommandations).
