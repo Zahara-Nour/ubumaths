@@ -6,7 +6,7 @@
 	`docs/wip/construire-progress.md` § 3, 4 bis, 5) : il pose des barres de dix
 	(ou paquets) et des cubes (ou jetons) sur un plan de travail vide. À partir
 	de 100, aussi des plaques de cent, et des gros cubes dès 1 000 (CE1, CE2 ;
-	chantier `docs/wip/collection-centaines-progress.md`).
+	chantier `docs/archive/wip/collection-centaines-progress.md`).
 
 	- Toucher la réserve pose un objet ; toucher un objet posé l'enlève (Q1) ;
 	  « Enlever » à côté de chaque objet de la réserve, pour le clavier.

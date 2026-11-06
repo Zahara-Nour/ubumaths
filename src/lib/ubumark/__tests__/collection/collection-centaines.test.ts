@@ -1,6 +1,6 @@
 /**
  * Bloc ```collection — centaines et milliers (plaques de cent, gros cubes de mille)
- * (phase 0 : `docs/wip/collection-centaines-progress.md`)
+ * (phase 0 : `docs/archive/wip/collection-centaines-progress.md`)
  */
 
 import { describe, expect, it } from 'vitest';
