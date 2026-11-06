@@ -9,9 +9,9 @@
 _Mis à jour le 2026-11-06, après la publication du lot 9._
 
 - **État** : lots 1 à 9 en prod et publiés (lot 9 : 8/8 `published`, CE2, relevé MCP). Aucune branche en cours.
-- **Prochaine action** : phase 0 du lot 10 (solides : 061 à 064, 066) — relevé MCP, rangement, tableau, questions ;
-  puis `collection` `centaines:` (001, 002, 005) en chantier à part.
-- **En attente de David** : rien.
+- **Prochaine action** : phase 0 du lot 10 écrite (§ 16, 7 modèles) ; après validation : worktree, branche, script
+  `lot-ce2-10.py` ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
+- **En attente de David** : validation de la phase 0 du lot 10 (§ 16, questions 1 à 4).
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
   `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
@@ -820,3 +820,40 @@ tag ne change aucune règle.
 - 2026-11-06 : relecture de David sur la page à cocher : 8 verdicts « ok », sans commentaire (base `verdicts` comptée).
   Simulation `publier-lot` refusée à Claude par le classifieur ; simulation puis `--publier` (David) ; relevé MCP :
   8/8 `published`, `grades` CE2. **Lot 9 clos.**
+
+## 16. Lot 10 — solides (phase 0 proposée le 2026-11-06, à valider)
+
+Relevé MCP (prod, 2026-11-06) : 061, 062, 063, 064, 066 sans modèle (065 reste en D). Existant sur « Solides ›
+propriétés » : CP 1 à 6 (dont 5 « Combien de faces ? » = 6 pour cube et pavé, 6 « toutes des carrés / toutes des
+rectangles », solides dessinés en ` ```figure `), CE1 7 (« Où est le solide ? », cylindre compris) et 8 (« Nommer un
+solide », **sans cylindre**). « Solides › patrons » : vide. Aucun outil neuf : ` ```solide ` (arêtes cachées en
+tirets, `marquer: face | arete | sommet`, nom accessible sans le nom du solide ; pyramide carrée, rectangle,
+triangle) et ` ```patron ` (cube : 11 vrais patrons, 8 faux, grille libre ; options d'un choix).
+
+| Fichier                       | Point | Rangement · niveau CE2   | Variations                                                                                                                                   |
+| ----------------------------- | ----- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-nomme-le-solide`          | 061   | Solides › propriétés · 9 | un solide dessiné → 6 choix (cube, pavé, boule, cône, pyramide, **cylindre**) ; pièges : pavé presque cube, cylindre couché, cône / pyramide |
+| `02-face-arete-sommet`        | 062   | propriétés · 10          | cube, pavé ou pyramide, un élément marqué (face grisée, arête épaisse, sommet pointé) → « C'est une face / une arête / un sommet »           |
+| `03-compter-faces-aretes`     | 062   | propriétés · 11          | « Combien de sommets ? d'arêtes ? de faces ? » → [_] : cube, pavé (8, 12, 6), pyramide carrée (5, 8, 5), à base triangle (4, 6, 4)           |
+| `04-faces-du-cube-et-du-pave` | 063   | propriétés · 12          | cube, pavé quelconque, pavé à base carrée : « [_] faces, dont [_] carrés » ; la face ABCD grisée est un carré / un rectangle                 |
+| `05-faces-de-la-pyramide`     | 064   | propriétés · 13          | pyramide carrée, rectangle, triangle : les faces de côté sont des… (triangles) ; la base est un… ; « [_] faces triangulaires »               |
+| `06-se-plie-en-cube`          | 066   | Solides › patrons · 1    | un assemblage de 6 carrés (vrai 1 à 11 / faux 1 à 8, tourné, retourné) → « Se plie en cube : oui / non »                                     |
+| `07-lequel-est-un-patron`     | 066   | patrons · 2              | « Lequel se plie en cube ? » : 3 assemblages, un vrai, deux faux (dont un à 5 carrés ou à 7 : le nombre de faces)                            |
+
+Erreurs typiques des `testSpecs` : faces cachées oubliées (3 au lieu de 6) ; arêtes cachées oubliées (9 au lieu de 12) ;
+sommet et arête inversés ; pyramide comptée comme un cube ; base de la pyramide prise pour un triangle ; pavé presque
+cube nommé cube ; cylindre nommé pavé ; faux patron 1-4-1 décalé jugé bon.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+**Questions à David** :
+
+1. 063, « dont [_] carrés » : un carré est aussi un rectangle. Recommandation : ne jamais demander « combien de
+   rectangles ? », seulement « combien de carrés ? » et « la face grisée est un carré / un rectangle » sur un pavé
+   quelconque (aucune face carrée), pour ne pas trancher la question à la place du maître.
+2. 066 : le geste `completer:` (ajouter la case qui manque) ou `designer: opposee` (face opposée) ? Recommandation :
+   pas au CE2 (l'exemple de réussite du BO = dire si c'est un patron) ; oui / non et « lequel ? » seulement.
+3. 062 et 063 : arêtes cachées toujours en tirets (comme le BO : « à identifier »). Recommandation : oui, jamais
+   `cachees: non`.
+4. Un seul lot de 7 modèles, puis le chantier à part `collection` `centaines:`.
