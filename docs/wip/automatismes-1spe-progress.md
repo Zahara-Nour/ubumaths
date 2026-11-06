@@ -6,18 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot « Calcul littéral et équations » en cours (PR à ouvrir)._
+_Mis à jour le 2026-11-06, après #2438 (lot « Calcul littéral et équations » mergé)._
 
-- **État** : lot 2 « Calcul littéral et équations » prêt sur `feat/automatismes-calcul-litteral` :
-  modèle neuf « Application numérique d'une formule » (12 specs, 500/500), script de fiche, rendu local
-  1 p. / 3 p., 0 débord · **Prochaine action** : PR, CI, merge ; puis David lance les écritures
-  (§ « Fait (PR du lot Calcul littéral) ») ; rangement du modèle neuf par migration ; vérif PDF depuis la
-  base · **En attente de David** : publication en admin de `9bd4bcc6` et des 6 fiches de 1re ·
-  **Pièges en cours** : écritures ET simulations contre la prod lancées par David ; formules en ligne
-  coupées au PDF → choisir modèles/graines, vérifier par le rendu local ; `debord.py` → venv du dépôt
-  principal (ne voit pas une équation centrée trop large : relire les pages) ; variable `i` = unité
-  imaginaire ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` · **Worktree / branche** :
-  `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-calcul-litteral`.
+- **État** : #2438 mergée (CI verte, `code-reviewer` sans finding) : modèle neuf « Application numérique
+  d'une formule » et script de la fiche « Automatismes : calcul littéral et équations (1) » sur `main`,
+  rien encore en base · **Prochaine action** : David lance, depuis `main`, `pnpm tsx
+scripts/create-questions.ts --dir scripts/questions/automatismes-2de-calcul-litteral --publier` (écrit
+  l'`id` dans le fichier, à commiter), puis `pnpm tsx scripts/create-automatismes-calcul-litteral.ts`
+  (simulation) et `… --publier` ; ensuite vérif PDF depuis la base et rangement du modèle neuf (nœud +
+  tag, migration, nouveau worktree) ; puis lot 3 « Proportions et pourcentages » · **En attente de
+  David** : les écritures ci-dessus ; publication en admin de `9bd4bcc6` et des 6 fiches de 1re ·
+  **Pièges en cours** : écritures ET simulations contre la prod lancées par David ; `debord.py` (venv du
+  dépôt principal) ne voit pas une équation centrée trop large : relire les pages ; variable `i` = unité
+  imaginaire ; lire les VARIANTES des modèles voisins avant de proposer un modèle neuf ; job CI
+  navigateur 2/2 qui plante → `gh run rerun --failed` · **Worktree / branche** : aucun (retiré).
 - Fiches à publier : `9bd4bcc6`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df`.
   Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
@@ -485,3 +487,4 @@ de la prod (MCP) = celui du fichier (calculé par le Postgres local, `docker exe
 scripts/questions/automatismes-2de-calcul-litteral --publier` (écrit l'`id` dans le fichier, à
   commiter) ; puis `pnpm tsx scripts/create-automatismes-calcul-litteral.ts` (simulation) et `… --publier`.
   Ensuite : rangement du modèle neuf (nœud + tag, migration, comme #2416) ; vérification PDF depuis la base.
+- #2438 mergée le 2026-11-06 (CI verte ; `code-reviewer` Sonnet : aucun finding, formules refaites à la main).
