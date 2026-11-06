@@ -9,23 +9,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 11 écrit (§ 17), PR ouverte._
+_Mis à jour le 2026-11-06, après #2447 (lot 11 mergé)._
 
-- **État** : démonstrations (lots 1-4), approfondissements (lots 5-9) et algorithmes du lot 10 publiés. Lot 11
-  (algorithmes d'analyse : 279, 288, 298, 299, 309, § 17, D11) écrit et vérifié, en PR.
-- **Prochaine action** : CI de la PR du lot 11 → merge ; puis donner à David la commande `create-questions --publier`
-  (§ 17), relevé prod, ids dans les JSON (PR), migration nœud + tag (gabarit lot 10 ; 298 → « dérivée », 299 →
-  « propriétés algébriques », points restant sur la notion). Ensuite lot 12 (probabilités et statistiques : 344, 427,
-  359, 431, 360).
-  ⚠️ Le journal de `main` peut être plus récent que celui du worktree : lire celui de `main` après un merge.
-- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
-- **Pièges en cours** : écritures en prod : donner d'emblée la commande `!` à David (lancée hors du dépôt principal,
-  `publier-lot` refuse : « sans id »). `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → les
-  commiter (PR) puis `git restore` dans le dépôt principal. Variable `e` = Euler (ni `i`). Job navigateur de la CI
-  qui plante tests verts → `gh run rerun <run> --failed`. Port 5178. Brouillons locaux : copie hors dépôt +
-  `set -a; . ./.env.local` (sinon `create-questions` vise la prod). Les « catégories » du journal ne sont qu'une
-  étiquette : en base, seuls nœud, niveau et tag. Script de lot : jamais `str.format` sur un texte qui contient `{{eval}}` ; décimaux par `{{eval:…;d}}`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-11`.
+- **État** : démonstrations (lots 1-4), approfondissements (5-9), algorithmes du lot 10 publiés. Lot 11 (algorithmes
+  d'analyse : 279, 288, 298, 299, 309, § 17) mergé (#2447), brouillons pas encore créés en prod.
+- **Prochaine action** : David lance, depuis le dépôt principal à jour,
+  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-11 --publier` ; puis relevé prod
+  (MCP), ids dans les JSON (PR, `git restore` dans le dépôt principal), migration nœud + tag (gabarit lot 10 ; 298 →
+  « dérivée », 299 → « propriétés algébriques »). Ensuite lot 12 (344, 427, 359, 431, 360).
+- **En attente de David** : la commande ci-dessus ; vérification à l'œil en prod (ligne du 2026-11-03 de
+  `docs/wip/verifications-manuelles.md`).
+- **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
+  `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
+  Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-11`
+  (mergée) : nouvelle branche depuis `origin/main` pour la migration.
 
 ---
 
