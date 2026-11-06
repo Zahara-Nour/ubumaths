@@ -6,16 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2432 (lot « Nombres » mergé)._
+_Mis à jour le 2026-11-06, lot « Calcul littéral et équations » en cours (PR à ouvrir)._
 
-- **État** : fiche `9bd4bcc6` « Automatismes : nombres (1) » mise à jour par David et revérifiée
-  depuis la base (1 p. / 1 p. / 3 p., 0 débord, 4 défauts corrigés) ; toujours en brouillon ·
-  **Prochaine action** : lot suivant « Calcul littéral et équations » (§ Lots « 2de »), nouveau
-  worktree + branche · **En attente de David** : publication en admin de `9bd4bcc6` et des 6 fiches de
-  1re (relevé MCP du 2026-11-06 : toutes encore `draft`, `published_at` nul) · **Pièges en cours** :
-  écritures ET simulations contre la prod lancées par David ; formules en ligne coupées au PDF →
-  choisir modèles/graines, vérifier par le rendu local ; `debord.py` → venv du dépôt principal ; job CI
-  navigateur 2/2 qui plante → `gh run rerun --failed` · **Worktree / branche** : aucun (à créer).
+- **État** : lot 2 « Calcul littéral et équations » prêt sur `feat/automatismes-calcul-litteral` :
+  modèle neuf « Application numérique d'une formule » (12 specs, 500/500), script de fiche, rendu local
+  1 p. / 3 p., 0 débord · **Prochaine action** : PR, CI, merge ; puis David lance les écritures
+  (§ « Fait (PR du lot Calcul littéral) ») ; rangement du modèle neuf par migration ; vérif PDF depuis la
+  base · **En attente de David** : publication en admin de `9bd4bcc6` et des 6 fiches de 1re ·
+  **Pièges en cours** : écritures ET simulations contre la prod lancées par David ; formules en ligne
+  coupées au PDF → choisir modèles/graines, vérifier par le rendu local ; `debord.py` → venv du dépôt
+  principal (ne voit pas une équation centrée trop large : relire les pages) ; variable `i` = unité
+  imaginaire ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` · **Worktree / branche** :
+  `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-calcul-litteral`.
 - Fiches à publier : `9bd4bcc6`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df`.
   Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
@@ -440,3 +442,46 @@ décimale / fractionnaire / pourcentage, ordre de grandeur et vraisemblance, con
   `compile-prod.mjs --polices-corrige`, `debord.py`) : fiche 1 p., réponses 1 p., corrigé 3 p., 6 PDF,
   0 débord ; les 4 défauts sont corrigés sur les pages ; 16 réponses recalculées, justes.
 - #2432 mergée (CI verte). Relevé MCP : les 7 fiches (`9bd4bcc6` + 6 de 1re) sont encore `draft`.
+
+### Lot « Calcul littéral et équations » — phase 0 (validée par David le 2026-11-06)
+
+Capacités du BO 2de (Calcul numérique et algébrique) : calcul littéral élémentaire (additif, multiplicatif),
+équations x² = a, ax + b = cx + d, a/x = b, inéquation du premier degré, isoler une variable, application
+numérique d'une formule. Développer / factoriser / réduire : déjà dans « calcul algébrique (1) ».
+
+**Essai** : 18 candidats. 13 ont leur fichier dans `scripts/questions/` : `md5(variations::jsonb::text)`
+de la prod (MCP) = celui du fichier (calculé par le Postgres local, `docker exec … psql`), `shared` et
+`options` relus. 5 copiés du MCP (`34e569e7`, `c32ebff9`, `843c3186`, `554496dd`, `6f196b0c` ; les copies de
+`data/corrections/` sont périmées). `buildSerie` en local, graines 1-12 : **tout passe**.
+
+- **Série 1** : `34e569e7` opposé · `c32ebff9` parenthèses · `36a37542` multiplicatif ×2 · `554496dd`
+  substituer · `ec690625` isoler une grandeur · `d7aa3f33` ax + by = c · **neuf** application numérique.
+- **Série 2** : `834c734f` ax + b = cx + d · `4563f7c5` ax = b · `ac9579d6` x² = a · `9ed8c72e` ×2 (a/x = b,
+  puis équation quotient) · `cf796fab` ax ⩾ b · `75439740` ax + b > 0 · `bb5fa6ef` ax + b ⩾ cx + d.
+- Écartés (fiche (2)) : `843c3186`, `aeb86af9`, `6f196b0c`, `3806ee3d`, `24aff7b0`, `e8ce1278`.
+- **Modèle neuf B « a/x = b » abandonné (David, 2026-11-06)** : proposé en phase 0 à tort, `9ed8c72e` a
+  déjà une variante « Résous dans ℝ∖{0} a/x = b » (graines 7, 8, 9, 12). Leçon : lire les variantes des
+  modèles voisins, pas seulement les titres.
+
+### Fait (PR du lot « Calcul littéral et équations », 2026-11-06)
+
+- Modèle neuf `scripts/questions/automatismes-2de-calcul-litteral/01-application-numerique-formule.json`
+  (2de, brouillon) : U = RI, d = vt, P = UI, ρ = m/V, Ec = ½mv² ; unité dite dans la question, réponse
+  nombre seul, décimaux par `{{eval:…;d}}`. 12 specs vertes, 500/500 tirages. ρ = 3/2 écrit en fraction
+  → `bad_form` (calcul non achevé), pas `correct`. Variable `i` renommée `n` (`i` = unité imaginaire).
+- `scripts/create-automatismes-calcul-litteral.ts` (forme de `create-automatismes-nombres.ts`, modèle neuf
+  lu dans son fichier tant qu'il n'a pas d'`id`, comme `create-automatismes-calcul-1spe.ts` ; `--sortie`).
+  Niveaux `['2', '1_SPE']`.
+- Graines : série 1 = opposé 2 (−4 − x), parenthèses 1, multiplicatif 3 (2x/5) et 4 (4x/(−1)), substituer
+  2, isoler 1 (cylindre), ax + by = c 1, formule 8 (R = 70, I = 0,3) ; série 2 = ax + b = cx + d 7, ax = b
+  4 (2/3 x = −8), x² = 27 (4), a/x 12 (−8/x = 3), quotient 11 ((x + 1)/(x + 2) = 2), ax ⩾ b 6, ax + b 11,
+  deux membres 6. 16 réponses recalculées à la main.
+- Rendu local (séries construites sur les copies, `pnpm fiche:verifier`) : fiche 1 p., corrigé 3 p.,
+  0 débord. Corrigé avant/après : multiplicatif 12 (fraction de fractions minuscule en ligne) → 4 ;
+  quotient 1 (chaîne d'équivalences hors colonne, −7/2 coupé, NON vu par `debord.py`) → 11. Restent,
+  non bloquants : la chaîne du quotient touche les bords de la colonne (même forme pour toutes les
+  graines) ; en-tête « série 2 » seul en bas de la page 1 du corrigé.
+- **À lancer par David, dans l'ordre**, après le merge : `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/automatismes-2de-calcul-litteral --publier` (écrit l'`id` dans le fichier, à
+  commiter) ; puis `pnpm tsx scripts/create-automatismes-calcul-litteral.ts` (simulation) et `… --publier`.
+  Ensuite : rangement du modèle neuf (nœud + tag, migration, comme #2416) ; vérification PDF depuis la base.

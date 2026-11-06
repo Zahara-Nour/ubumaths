@@ -1,0 +1,281 @@
+{
+	"title": "Application numérique d'une formule",
+	"description": "Calculer une grandeur avec une formule d'une autre discipline (U = RI, d = vt, P = UI, ρ = m/V, Ec = ½mv²) : remplacer, puis calculer. Unité donnée dans la question, réponse décimale exacte.",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "En électricité, la loi d'Ohm s'écrit $U=RI$ : $U$ est la tension (en volts), $R$ la résistance (en ohms) et $I$ l'intensité (en ampères).\n\nCalcule la tension $U$, en volts, pour $R={{eval:10*r}}$ et $I={{eval:n/10;d}}$.\n\n$U=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["n != 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $R$ et $I$ par leurs valeurs, puis on calcule :",
+					"$$U=RI={{eval:10*r}}\\times{{eval:n/10;d}}={{eval:r*n}}$$",
+					"La tension vaut $\\textcolor{{{color:primary.0}}}{ {{eval:r*n}} }$ volts."
+				]
+			}
+		},
+		{
+			"statement": "À vitesse constante, la distance parcourue est $d=vt$ : $d$ est la distance (en km), $v$ la vitesse (en km/h) et $t$ la durée (en heures).\n\nCalcule la distance $d$, en km, pour $v={{eval:10*k}}$ et $t={{eval:(2*j+1)/2;d}}$.\n\n$d=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "4..13"
+				},
+				{
+					"name": "j",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*k*(2*j+1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $v$ et $t$ par leurs valeurs, puis on calcule :",
+					"$$d=vt={{eval:10*k}}\\times{{eval:(2*j+1)/2;d}}={{eval:5*k*(2*j+1)}}$$",
+					"La distance parcourue est $\\textcolor{{{color:primary.0}}}{ {{eval:5*k*(2*j+1)}} }$ km."
+				]
+			}
+		},
+		{
+			"statement": "En électricité, la puissance reçue par un appareil est $P=UI$ : $P$ est la puissance (en watts), $U$ la tension (en volts) et $I$ l'intensité (en ampères).\n\nCalcule la puissance $P$, en watts, pour $U=230$ et $I={{eval:n/2;d}}$.\n\n$P=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["mod(n,2) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:115*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $U$ et $I$ par leurs valeurs, puis on calcule :",
+					"$$P=UI=230\\times{{eval:n/2;d}}={{eval:115*n}}$$",
+					"La puissance vaut $\\textcolor{{{color:primary.0}}}{ {{eval:115*n}} }$ watts."
+				]
+			}
+		},
+		{
+			"statement": "En physique-chimie, la masse volumique d'un corps est $\\rho=\\dfrac{m}{V}$ : $m$ est la masse (en g) et $V$ le volume (en cm³).\n\nCalcule la masse volumique $\\rho$, en g/cm³, pour $m={{eval:5*v*k}}$ et $V={{eval:10*v}}$.\n\n$\\rho=?$",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "3..19"
+				}
+			],
+			"conditions": ["mod(k,2) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $m$ et $V$ par leurs valeurs, puis on calcule :",
+					"$$\\rho=\\dfrac{m}{V}=\\dfrac{ {{eval:5*v*k}} }{ {{eval:10*v}} }={{eval:k/2;d}}$$",
+					"La masse volumique vaut $\\textcolor{{{color:primary.0}}}{ {{eval:k/2;d}} }$ g/cm³."
+				]
+			}
+		},
+		{
+			"statement": "En physique, l'énergie cinétique d'un objet est $E_c=\\dfrac{1}{2}mv^2$ : $m$ est la masse (en kg) et $v$ la vitesse (en m/s).\n\nCalcule l'énergie cinétique $E_c$, en joules, pour $m={{m}}$ et $v={{v}}$.\n\n$E_c=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["mod(m*v,2) = 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*v^2/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $m$ et $v$ par leurs valeurs, puis on calcule (le carré d'abord) :",
+					"$$E_c=\\dfrac{1}{2}mv^2=\\dfrac{1}{2}\\times{{m}}\\times{{v}}^2=\\dfrac{1}{2}\\times{{m}}\\times{{eval:v^2}}={{eval:m*v^2/2}}$$",
+					"L'énergie cinétique vaut $\\textcolor{{{color:primary.0}}}{ {{eval:m*v^2/2}} }$ joules."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "R = 30, I = 0,7 → U = 21",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "7"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : R + I (30,7)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "7"
+			},
+			"answers": ["30{,}7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : R / I",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "7"
+			},
+			"answers": ["\\frac{300}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v = 80, t = 1,5 → d = 120",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"j": "1"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 80 × 2 au lieu de 80 × 1,5 (160)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"j": "1"
+			},
+			"answers": ["160"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "U = 230, I = 2,5 → P = 575",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["575"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "m = 60, V = 40 → ρ = 1,5",
+			"variationIndex": 3,
+			"variables": {
+				"v": "4",
+				"k": "3"
+			},
+			"answers": ["1{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ρ = 3/2 en fraction : calcul non achevé (forme)",
+			"variationIndex": 3,
+			"variables": {
+				"v": "4",
+				"k": "3"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : V/m",
+			"variationIndex": 3,
+			"variables": {
+				"v": "4",
+				"k": "3"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "m = 4, v = 5 → Ec = 50",
+			"variationIndex": 4,
+			"variables": {
+				"m": "4",
+				"v": "5"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré oublié (½ × 4 × 5 = 10)",
+			"variationIndex": 4,
+			"variables": {
+				"m": "4",
+				"v": "5"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ½ oublié (100)",
+			"variationIndex": 4,
+			"variables": {
+				"m": "4",
+				"v": "5"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
