@@ -39,8 +39,7 @@ unités: 17
 - **Nominal** : deux nouvelles lignes, `centaines:` et `milliers:`, écrites comme `dizaines:`
   (une valeur par collection, `;` entre les collections, une ligne absente vaut 0). L'ordre des
   lignes est libre.
-- **Nominal** : la valeur d'une collection = 1 000 × milliers + 100 × centaines + 10 × dizaines
-  - unités.
+- **Nominal** : la valeur d'une collection = 1 000 × milliers + 100 × centaines + 10 × dizaines + unités.
 - **Limite** : plafonds proposés (Q4) — milliers 0 à 9, centaines 0 à 40, dizaines 0 à 30,
   unités 0 à 100, valeur totale 9 999 au plus. Un bloc sans centaines ni milliers garde les
   règles d'aujourd'hui (dizaines ≤ 10, 100 objets au plus) : aucun modèle publié ne change.
@@ -64,8 +63,7 @@ unités: 17
 ### Construire (`construire:`)
 
 - **Nominal** : `construire: 235` → l'élève dispose de plaques, de barres et de cubes ;
-  `construire: 2 435` → en plus, des gros cubes. Seule la **valeur** posée est jugée : 2 plaques
-  - 3 barres + 5 cubes, ou 23 barres + 5 cubes, valent 235.
+  `construire: 2 435` → en plus, des gros cubes. Seule la **valeur** posée est jugée : 2 plaques, 3 barres et 5 cubes, ou 23 barres + 5 cubes, valent 235.
 - **Limite** : `construire: 34` → la réserve reste celle d'aujourd'hui (barres et cubes) : les
   modèles publiés ne changent pas (Q3).
 - **Limite** : `construire:` accepte de 1 à 9 999 (aujourd'hui 1 à 100).
