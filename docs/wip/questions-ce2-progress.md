@@ -6,18 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2426._
+_Mis à jour le 2026-11-06, migration du lot 10 en PR._
 
-- **État** : lots 1 à 9 en prod et publiés ; lot 10 (solides) : 7 modèles mergés (#2426), pas encore en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce2-10 --publier` ; relevé MCP, ids
-  commités sur une branche ; puis migration nœud + tag, page à cocher ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
-- **En attente de David** : `create-questions --publier` du lot 10.
+- **État** : lots 1 à 9 en prod et publiés ; lot 10 (solides) : 7 brouillons en prod ; migration nœud + tag en PR.
+- **Prochaine action** : PR de migration (`security-auditor`, CI, `check:migrations`), merge, `db:migrate` ; page à
+  cocher ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
   `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
   `publier-lot` (même en simulation) et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` (branche `feat/questions-ce2-lot10` mergée, à recréer pour
-  la migration).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` branche `feat/questions-ce2-lot10-db`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -878,3 +877,8 @@ tag ne change aucune règle.
   carrée : plus de renvoi aux cotes (une seule cote de base).
 - Piège : la page à cocher ne dessine pas ` ```patron ` (06, 07) : David les joue dans l'aperçu admin.
 - 2026-11-06 : #2426 mergée (CI verte ; revue : aucune, contenu).
+- 2026-11-06 : `create-questions --publier` (David) : 7 brouillons en prod, relus au MCP (draft, CE2, niveaux 9 à 13,
+  1, 2 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids portés sur la branche
+  `feat/questions-ce2-lot10-db` (fichiers du dépôt principal rendus propres). Migration
+  `20261106112702_questions_ce2_lot10_rangement_tags` + test : rouge sans le corps (5 échecs sur 9), vert 9/9 ;
+  chemins vérifiés en prod (061 à 064 → « Géométrie › Solides › propriétés », 066 → « … › patrons », sous-notions).

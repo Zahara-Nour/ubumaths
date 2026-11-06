@@ -1,4 +1,5 @@
 {
+	"id": "c9d9d6d4-6306-4f39-83dd-2700e0cc9e65",
 	"title": "Compter les sommets, les arêtes et les faces d'un solide",
 	"description": "Cube, pavé (8, 12, 6), pyramide à base carrée (5, 8, 5) ou triangulaire (4, 6, 4), arêtes cachées comprises",
 	"grades": ["CE2"],

@@ -1,4 +1,5 @@
 {
+	"id": "7ed6c420-c2db-4156-8ed1-1abe122c6164",
 	"title": "Les faces d'un cube et d'un pavé",
 	"description": "6 faces, dont combien de carrés (6, 0 ou 2, d'après les cotes) ; la face penchée d'un pavé reste un rectangle",
 	"grades": ["CE2"],
