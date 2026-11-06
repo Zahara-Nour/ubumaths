@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2433._
+_Mis à jour le 2026-11-06, lot 11 publié._
 
-- **État** : lots 1 à 10 publiés. Lot 11 (001, 002, matériel de 005) : 6 modèles mergés (#2433), pas encore en prod.
-- **Prochaine action** : David lance `create-questions --publier` **depuis le worktree** (les ids s'écrivent sur la
-  branche `-db`) ; relevé MCP ; migration nœud + tag (gabarit lot 10 ; 01 à 05 → « dénombrement », 06 →
-  « écritures ») ; `security-auditor`, CI, `check:migrations`, merge, `db:migrate` ; page à cocher ; publication.
-- **En attente de David** : `create-questions --publier` (commande dans le dernier message de la session).
+- **État** : lots 1 à 11 en prod et publiés. Restent au CE2 les 6 points D (086, 039, 043, 051, 065, 070).
+- **Prochaine action** : la case « figure » (` ```figure-a-completer `) est **en prod** (déjà utilisée par le lot 8,
+  `ce2-8`) : phase 0 d'un lot 12 pour 070 (carré, rectangle, cercle, triangle rectangle) et 039 (segment de longueur
+  donnée : vérifier d'abord qu'un geste permet une longueur au mm) ; merger #2440 (page à cocher, plaques et gros
+  cubes dessinés) s'il ne l'est pas.
+- **En attente de David** : go pour la phase 0 du lot 12.
 - **Pièges en cours** : `construire:` + « Espaces dès 4 chiffres » = forme à améliorer (`outils-manquants.md` n° 15) ;
-  jamais de variable `e` (Euler) ; commitlint : corps ≤ 100 caractères par ligne ; `publier-lot` et
-  `garde-niveaux-tags.ts` : David les lance ; job CI navigateur (`wrapDynamicImport`) : relancer `--failed` ; la page
-  à cocher redessine des collections hautes (03 : jusqu'à 15 plaques).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot11-db`.
+  jamais de variable `e` (Euler) ; commitlint : corps ≤ 100 caractères par ligne ; `create-questions --publier` et
+  `publier-lot` : David, depuis le worktree ; `Doc-inchangée:` dans un COMMIT pour une migration (garde de la CI) ;
+  tests d'intégration bloqués si la base locale garde un lien `class_journal_share_tokens` du prof de démo.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `fix/page-a-cocher-centaines` (#2440).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -960,3 +961,11 @@ question d'accès : rien de plus.
   David). Test : rouge sans le corps (5 échecs sur 9), vert 9/9.
 - `security-auditor` : aucun finding bloquant ; défaut du test relevé (point archivé CE2-001 = 3 modèles, message
   « 1 point(s) » attendu) → le test archive CE2-005 (un modèle).
+- 2026-11-06 : #2437 mergée (CI verte après un commit `Doc-inchangée:` ; `check:migrations --pr 2437` OK) ;
+  `db:migrate` depuis le dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 6/6 sur le nœud de leur
+  point, un point chacun, brouillons, `updated_at` intact. Page à cocher publiée
+  (https://claude.ai/artifact/CdY516JNgduVk2UtziL6a7) ; elle dessinait plaques et gros cubes en cadres vides
+  identiques → rendu corrigé (#2440), page republiée.
+- 2026-11-06 : relecture de David : 6 verdicts « ok », sans commentaire (base `verdicts` comptée), posés à 13:47, après
+  la version corrigée de la page (13:46:37). `publier-lot --publier` (David) ; relevé MCP : 6/6 `published`.
+  **Lot 11 clos.**
