@@ -231,7 +231,7 @@ describe('Questions CE2, lot 11 : les branches d’échec de la migration', () =
 			await expect(
 				pg.query(
 					`insert into public.question_template_points (template_id, point_id)
-					 select $1, id from public.curriculum_points where grade = 'CE2' and code = 'CE2-001' and archived_at is null`,
+					 select $1, id from public.curriculum_points where grade = 'CE2' and code = 'CE2-002' and archived_at is null`,
 					[LOT[0].id]
 				)
 			).rejects.toThrow(/n'est rangé dans aucun nœud de l'arbre/);
@@ -242,7 +242,7 @@ describe('Questions CE2, lot 11 : les branches d’échec de la migration', () =
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
 			await pg.query(
-				`update public.curriculum_points set archived_at = now() where grade = 'CE2' and code = 'CE2-001' and archived_at is null`
+				`update public.curriculum_points set archived_at = now() where grade = 'CE2' and code = 'CE2-005' and archived_at is null`
 			);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
 				/chemins ou points introuvables : 0 nœud\(s\), 1 point\(s\)/
