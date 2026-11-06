@@ -283,11 +283,10 @@ scripts/questions/calcul-1spe --publier` (écrit l'`id` dans le fichier, à comm
 
 ## Questions ouvertes (à poser à David)
 
-1. **Collision de vocabulaire « série ».** `CONTEXT.md` définit désormais **Série** = exercice de
-   fiche fait d'instances figées (ADR 0011). Mais la spec en attente
-   [`series-de-questions-dans-un-chapitre-spec.md`](../archive/wip/series-de-questions-dans-un-chapitre-spec.md)
-   (2026-09-14) appelle « série » une évaluation interactive (`assessments`). Deux sens pour un même
-   mot : faire trancher lequel garde « série » et renommer l'autre (puis corriger `CONTEXT.md`).
+1. ~~Collision de vocabulaire « série »~~ — **tranchée le 2026-11-04** ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md),
+   `CONTEXT.md`) : **Série** = composition de modèles (répétitions, durée), tirée à neuf à chaque
+   usage ; l'exercice d'une fiche d'automatismes est une **série figée** (graine, ADR 0011). Dans
+   ce journal, « 2 séries » d'une fiche = 2 séries figées.
 2. **Modèle 5 (évolution répétée)** : `(1+0{,}03)^5`, `(103/100)^5` sont jugés `bad_form` (calcul
    non effectué). `requiredForm: "power"` les accepterait mais refuserait les décimaux exacts
    (`1{,}159\,274\,074\,3`). Quelle écriture privilégier ?
