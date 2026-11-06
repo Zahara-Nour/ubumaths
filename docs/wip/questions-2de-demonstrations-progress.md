@@ -6,11 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, phase 0 validée (D1)._
+_Mis à jour le 2026-11-06, lot 1 écrit (§ 3), PR ouverte._
 
-- **État** : phase 0 validée ; lot 1 (arithmétique, nombres réels, racines : 239, 240, 255, 256, 282) en écriture.
-- **Prochaine action** : écrire le lot 1 (script `docs/wip/questions/lot-2de-demonstrations-1.py`), vérifier, PR.
-- **En attente de David** : rien.
+- **État** : phase 0 validée (D1) ; lot 1 (239, 240, 255, 256, 282) écrit et vérifié, en PR.
+- **Prochaine action** : CI verte → merge ; puis David lance, depuis le dépôt principal à jour,
+  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-demonstrations-1 --publier` ; relevé MCP, ids
+  dans les JSON (PR), migration nœud + tag (gabarit `20261106050929`, aucune sous-notion neuve), page à cocher.
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** (repris de la 1re spé) : écritures en prod → commande `!` donnée à David ; `create-questions`
   écrit l'`id` dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal ;
   brouillons locaux : copie hors dépôt + `set -a; . ./.env.local` ; positions « ranger » par
@@ -58,3 +60,25 @@ dans l'ordre de la 1re spé : approfondissements, puis algorithmes.
 - **Q5** — accès : personne de plus (brouillons ; migration de nœud et de tags seulement).
 - **Q6** : chantier à part `questions-2de-demonstrations` ; le journal `questions-2de` sera versé une fois les P
   traités.
+
+## 3. Lot 1 : arithmétique, nombres réels, racines (2026-11-06)
+
+| Point | Modèle (`scripts/questions/2de-demonstrations-1/`) | Niveau | Variations                                                                          |
+| ----- | -------------------------------------------------- | ------ | ----------------------------------------------------------------------------------- |
+| 239   | `01-demontrer-somme-de-deux-multiples`             | 11     | y = am (case), a(k + m) (case), k + m entier (choix), étapes ; a de 2 à 9           |
+| 240   | `02-demontrer-carre-d-un-impair`                   | 3      | double produit 4k (case), 2(2k² + 2k) + 1 (case), 2K + 1 (choix), étapes            |
+| 255   | `03-demontrer-un-tiers-non-decimal`                | 5      | hypothèse de l'absurde (choix), 3a = 10ⁿ (case), somme des chiffres (choix), étapes |
+| 256   | `04-demontrer-racine-de-deux-irrationnel`          | 6      | p² = 2q² (case), contraposée du 240 (choix), irréductibilité (choix), étapes        |
+| 282   | `05-demontrer-racine-d-un-produit`                 | 3      | (√a√b)² = ab (case), √a√b ≥ 0 (choix), « seul positif » (choix), étapes             |
+
+Niveaux : après ceux déjà présents sur la sous-notion (relevé prod : multiples et diviseurs 9-10, pair ou impair 2,
+nombres irrationnels 4, propriétés 1-2). Script : `docs/wip/questions/lot-2de-demonstrations-1.py`.
+
+Pièges du lot : `m×3`, `a×3` sortent en `unoptimal_form` (comme `n×3` en 1re spé) → pas de spec ; `2k(k + 1)` refusé
+en `bad_form` alors que juste → `requiredForm: {pattern: 'u'}` sur cette case. Worktree neuf : `svelte-kit sync`
+avant `positions-ranger.ts` (sinon `$lib` introuvable). `create-questions` en simulation contre la prod : refusé par
+le classifieur → c'est David qui lance la commande.
+
+Vérifié : `question:specs` 150 tirages par variation, 5/5 importables, 0 `\textcolor` hors `$` ; aperçus relus
+(distracteurs, corrigés) ; brouillons en base locale (copie hors dépôt) ; aperçu admin vu à l'écran : étapes à
+ranger du 256 (fractions, places numérotées), case en fin de formule longue du 282.
