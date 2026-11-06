@@ -1,0 +1,90 @@
+{
+	"id": "88202a40-9bce-48f8-8c2c-6e1266e92a26",
+	"title": "Loi exponentielle : absence de mémoire",
+	"description": "P(X > s + t | X > s) = P(X > t) = e^(−λt) (piège : mémoire non utilisée)",
+	"grades": ["T_COMP"],
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "e^{-{{eval:k*t/10;d}}}"
+				}
+			],
+			"statement": "La durée de vie $X$, en années, d'un composant suit la loi exponentielle de paramètre $\\lambda={{eval:k/10;d}}$. Le composant fonctionne encore après ${{s}}$ ans.\n\nDonne la valeur exacte de la probabilité qu'il fonctionne encore ${{t}}$ ans de plus.\n\n$P_{(X>{{s}})}(X>{{eval:s+t}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "s",
+					"expression": "2..10"
+				},
+				{
+					"name": "t",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La loi exponentielle est **sans mémoire** : $P_{(X>s)}(X>s+t)=P(X>t)=e^{-\\lambda t}$ (l'âge déjà atteint ne compte pas).",
+					"$P_{(X>{{s}})}(X>{{eval:s+t}})=P(X>{{t}})=\\textcolor{{{color:primary.0}}}{e^{-{{eval:k*t/10;d}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["e^{-0,6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"s": "5",
+				"t": "3"
+			},
+			"description": "v0 : λ = 0,2, s = 5, t = 3 → e^(−0,6)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{-1,6}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"s": "5",
+				"t": "3"
+			},
+			"description": "v0 : sans mémoire oubliée e^(−1,6)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1-e^{-0,6}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"s": "5",
+				"t": "3"
+			},
+			"description": "v0 : 1 − e^(−0,6)",
+			"variationIndex": 0
+		}
+	]
+}

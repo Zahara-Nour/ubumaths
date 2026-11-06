@@ -1,0 +1,76 @@
+{
+	"id": "63ee5d66-5623-4020-9be4-babbe6df97e6",
+	"title": "Loi exponentielle : durée moyenne",
+	"description": "E(X) = 1/λ (piège : E = λ)",
+	"grades": ["T_COMP"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100/k}}"
+				}
+			],
+			"statement": "La durée $X$, en heures, d'une communication suit la loi exponentielle de paramètre $\\lambda={{eval:k/100;d}}$.\n\nQuelle est la durée moyenne d'une communication, en heures ?\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|4|5|8|10|20|25|40|50"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour la loi exponentielle de paramètre $\\lambda$ : $E(X)=\\dfrac{1}{\\lambda}$.",
+					"$E(X)=\\dfrac{1}{ {{eval:k/100;d}} }=\\textcolor{{{color:primary.0}}}{{{eval:100/k;d}}}$ heures."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4"
+			},
+			"description": "v0 : λ = 0,04 → 25",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,04"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4"
+			},
+			"description": "v0 : E = λ",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["12,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "8"
+			},
+			"description": "v0 : λ = 0,08 → 12,5",
+			"variationIndex": 0
+		}
+	]
+}

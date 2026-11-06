@@ -1,0 +1,231 @@
+{
+	"id": "c6b5894c-c753-4dc4-b92b-18702b1f1f81",
+	"title": "Loi exponentielle : probabilités",
+	"description": "X ~ E(λ) : P(X ⩽ t) = 1 − e^(−λt), P(X ⩾ t) = e^(−λt), P(s ⩽ X ⩽ t) = e^(−λs) − e^(−λt) (piège : P(X ⩾ t) et P(X ⩽ t) confondues)",
+	"grades": ["T_COMP"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1-e^{-{{eval:k*t/10;d}}}"
+				}
+			],
+			"statement": "$X$ suit la loi exponentielle de paramètre $\\lambda={{eval:k/10;d}}$.\n\nCalcule la valeur exacte de $P(X\\leqslant {{t}})$.\n\n$P(X\\leqslant {{t}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $X$ de loi exponentielle de paramètre $\\lambda$ : $P(X\\leqslant t)=\\displaystyle\\int_{0}^{t}\\lambda e^{-\\lambda x}\\,\\mathrm{d}x=1-e^{-\\lambda t}$.",
+					"$P(X\\leqslant {{t}})=1-e^{-{{eval:k/10;d}}\\times {{t}}}=\\textcolor{{{color:primary.0}}}{1-e^{-{{eval:k*t/10;d}}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 3
+					},
+					"expectedAnswer": "{{eval:round(1000*exp(-k*t/10))/1000;d}}"
+				}
+			],
+			"statement": "La durée de vie $X$, en années, d'un appareil suit la loi exponentielle de paramètre $\\lambda={{eval:k/10;d}}$.\n\nCalcule la probabilité que l'appareil fonctionne encore au bout de ${{t}}$ ans. Donne la valeur arrondie au millième.\n\n$P(X\\geqslant {{t}})\\approx ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..6"
+				}
+			],
+			"conditions": [
+				"abs(1000*exp(-k*t/10)-floor(1000*exp(-k*t/10))-0.5) > 0.05",
+				"mod(round(1000*exp(-k*t/10)),10) != 0",
+				"k*t <= 40"
+			],
+			"correction": {
+				"steps": [
+					"$P(X\\geqslant t)=1-P(X<t)=e^{-\\lambda t}$.",
+					"$P(X\\geqslant {{t}})=e^{-{{eval:k*t/10;d}}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:round(1000*exp(-k*t/10))/1000;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "e^{-{{eval:k*s/10;d}}}-e^{-{{eval:k*t/10;d}}}"
+				}
+			],
+			"statement": "$X$ suit la loi exponentielle de paramètre $\\lambda={{eval:k/10;d}}$.\n\nCalcule la valeur exacte de $P({{s}}\\leqslant X\\leqslant {{t}})$.\n\n$P({{s}}\\leqslant X\\leqslant {{t}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "{{eval:s+1}}..{{eval:s+4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(s\\leqslant X\\leqslant t)=P(X\\leqslant t)-P(X<s)=\\left(1-e^{-\\lambda t}\\right)-\\left(1-e^{-\\lambda s}\\right)=e^{-\\lambda s}-e^{-\\lambda t}$.",
+					"$P({{s}}\\leqslant X\\leqslant {{t}})=\\textcolor{{{color:primary.0}}}{e^{-{{eval:k*s/10;d}}}-e^{-{{eval:k*t/10;d}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1-e^{-1}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"t": "2"
+			},
+			"description": "v0 : λ = 0,5, t = 2 → 1 − e⁻¹",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1-\\frac{1}{e}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"t": "2"
+			},
+			"description": "v0 : 1 − 1/e accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{-1}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"t": "2"
+			},
+			"description": "v0 : e⁻¹ (P(X ⩾ t))",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1-e^{-0,6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"t": "2"
+			},
+			"description": "v0 : λ = 0,3, t = 2 → 1 − e^(−0,6)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1-e^{-0,15}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"t": "2"
+			},
+			"description": "v0 : λ = 0,3, t = 2 : 1 − e^(−0,15) (λ/t)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,549"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"t": "3"
+			},
+			"description": "v1 : λ = 0,2, t = 3 → 0,549",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,451"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"t": "3"
+			},
+			"description": "v1 : P(X ⩽ 3) = 0,451",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,5488"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
+			},
+			"variables": {
+				"k": "2",
+				"t": "3"
+			},
+			"description": "v1 : trop précis 0,5488",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["e^{-0,5}-e^{-1,5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"s": "1",
+				"t": "3"
+			},
+			"description": "v2 : λ = 0,5, [1 ; 3] → e^(−0,5) − e^(−1,5)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["e^{-1,5}-e^{-0,5}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"s": "1",
+				"t": "3"
+			},
+			"description": "v2 : ordre inversé",
+			"variationIndex": 2
+		}
+	]
+}

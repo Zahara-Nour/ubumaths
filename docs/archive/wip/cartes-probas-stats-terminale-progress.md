@@ -5,20 +5,15 @@ Branche `feat/cartes-probas-stats-terminale`, worktree `ubumaths-wt-probaT`. Par
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06 (relevé prod, MCP lecture seule)._
+_Mis à jour le 2026-11-06 : chantier clos, journal archivé._
 
-- **État** : PR #820 mergée (octobre) ; branche et worktree `ubumaths-wt-probaT` disparus. Les 22 modèles ont été
-  créés en brouillon, puis repris, découpés et renommés par le chantier `questions-tspe` (clos le 2026-11-03) :
-  **partie spé (A, B) publiée**. **Partie maths complémentaires seules (C, D) : 17 brouillons `T_COMP`** en prod
-  (82 `T_COMP` publiés), liste ci-dessous.
-- **Prochaine action** : aucune décidée. Pistes (à trancher par David) : archiver ce journal ; ouvrir un chantier
-  de couverture `T_COMP` (relevé des points, relecture des 17 brouillons, publication).
-- **En attente de David** : la suite des 17 brouillons `T_COMP`.
-- **Pièges en cours** : ne **rien lancer** depuis `scripts/questions/probas-stats-terminale/` — fichiers sans
-  `id`, titres changés en base : la simulation `create-questions` (2026-11-06) voit 14 « à créer » qui existent
-  sous d'autres titres (doublons) et 3 « contenu différent » qui retireraient des niveaux (`T_TECHNO`, `1_GEN`,
-  `1_TECHNO`). Partir d'un export (`scripts/export-question-templates.ts --ids …`).
-- **Worktree / branche** : aucun.
+- **État** : **clos**. Les 17 brouillons `T_COMP` relus par David (17 / 17 OK, page
+  https://claude.ai/artifact/1iwzkfN82RGt7tDAx8zxTT), publiés par `publier-lot --publier` (David). Relu en base
+  (MCP) : 17 / 17 `published`, **0 brouillon `T_COMP`**, 99 `T_COMP` publiés. Instantané :
+  `scripts/questions/tcomp-brouillons/` (statut `draft` de l'export, antérieur à la publication).
+- **Prochaine action** : aucune.
+- **Pièges** : `scripts/questions/probas-stats-terminale/` (fichiers sans `id`) reste dangereux à relancer
+  (doublons, niveaux retirés) ; `publier-lot.ts` est refusé à Claude même en simulation.
 
 ### Brouillons `T_COMP` en prod (2026-11-06)
 
