@@ -6,17 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2445._
+_Mis à jour le 2026-11-06, après #2448._
 
-- **État** : lots 1 à 11 publiés ; lot 12 (CE2-070 en partie : `ce2-12`, 2 modèles) mergé (#2445), pas encore en base.
-- **Prochaine action** : David lance depuis le worktree `create-questions --dir scripts/questions/ce2-12 --publier`
-  (brouillons en prod) ; puis ids commités + migration nœud + tag (« constructions », niveaux 3 et 4) sur
-  `feat/questions-ce2-lot12-db`, page à cocher, publication.
-- **En attente de David** : le `create-questions --publier` ci-dessus.
+- **État** : lot 12 (CE2-070 en partie, 2 modèles) en prod en brouillon, rangé (#2448, `db:migrate` fait).
+- **Prochaine action** : relecture de David sur la page à cocher (https://claude.ai/artifact/HnWZ6reTpJF5uSKTg9Cyba),
+  compter les verdicts, puis `publier-lot --dir scripts/questions/ce2-12` en simulation et `--publier` (David).
+- **En attente de David** : verdicts de la page à cocher ; jouer les 2 modèles dans l'aperçu (case « figure » non
+  dessinée sur la page).
 - **Pièges en cours** : `verifier: cercle` = cercle circonscrit SEUL (`outils-manquants.md` n° 19 ; n° 18 règle
-  graduée, n° 20 triangle rectangle) ; commitlint : type `feat`, sujet sans majuscule ; jamais de variable `e` ;
-  `Doc-inchangée:` dans un COMMIT pour une migration ; ne jamais pousser pendant un rebase en conflit.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot12-db`.
+  graduée, n° 20 triangle rectangle) ; commitlint : type `feat`, sujet sans majuscule ; jamais de variable `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `main` (aucune branche en cours).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1010,3 +1009,7 @@ de centre donné en ligne n° 19.
   Migration `20261106171101_questions_ce2_lot12_rangement_tags` + test, tirés du lot 11 : rouge sans le corps
   (5 échecs sur 9), vert 9/9.
 - `security-auditor` : aucun finding (diff avec le lot 11 : valeurs seules ; ids, nœud et point vérifiés en prod).
+- 2026-11-06 : #2448 mergée (CI verte, intégration comprise ; `check:migrations --pr 2448` OK) ; `db:migrate` depuis le
+  dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 2/2 sur « constructions », CE2-070, brouillons,
+  `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/HnWZ6reTpJF5uSKTg9Cyba), alerte attendue
+  (case « figure » non dessinée : jouer les modèles dans l'aperçu), base `verdicts` vide.
