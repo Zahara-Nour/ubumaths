@@ -1,0 +1,236 @@
+{
+	"id": "4df6c483-fb74-4f2c-a4be-d24a9d95922d",
+	"title": "Dénombrer avec plus de dix objets d'un rang",
+	"description": "Plus de 10 barres, cubes ou plaques (comme 17 u, 8 d, 32 c, 2 milliers) ; au plus 15 plaques",
+	"grades": ["CE2"],
+	"level": 14,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "d",
+					"expression": "11..19"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c+10*d+1*u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une plaque vaut $100$ cubes, une barre $10$ cubes et un gros cube $1\\,000$ cubes, même quand il y en a plus de $10$.",
+					"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+					"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+					"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"$${{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "11..19"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c+10*d+1*u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une plaque vaut $100$ cubes, une barre $10$ cubes et un gros cube $1\\,000$ cubes, même quand il y en a plus de $10$.",
+					"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+					"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+					"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"$${{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\nmilliers: {{m}}\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "11..15"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "11..19"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*m+100*c+10*d+1*u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une plaque vaut $100$ cubes, une barre $10$ cubes et un gros cube $1\\,000$ cubes, même quand il y en a plus de $10$.",
+					"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+					"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+					"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+					"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"$${{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 plaques, 14 barres, 6 cubes : 446",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "14",
+				"u": "6"
+			},
+			"answers": ["446"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rangs recopiés (3146)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "14",
+				"u": "6"
+			},
+			"answers": ["3\\,146"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 14 barres = 14 (323)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "14",
+				"u": "6"
+			},
+			"answers": ["323"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 8 plaques, 19 barres, 9 cubes : 999",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8",
+				"d": "19",
+				"u": "9"
+			},
+			"answers": ["999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5 plaques, 2 barres, 17 cubes : 537",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"d": "2",
+				"u": "17"
+			},
+			"answers": ["537"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rangs recopiés (5217)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"d": "2",
+				"u": "17"
+			},
+			"answers": ["5\\,217"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 gros cubes, 18 plaques, 8 barres, 17 cubes : 3 897",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"c": "18",
+				"d": "8",
+				"u": "17"
+			},
+			"answers": ["3\\,897"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rangs recopiés (218817)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"c": "18",
+				"d": "8",
+				"u": "17"
+			},
+			"answers": ["218\\,817"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 3 gros cubes, 15 plaques, 9 barres, 19 cubes : 4 609",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"c": "15",
+				"d": "9",
+				"u": "19"
+			},
+			"answers": ["4\\,609"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

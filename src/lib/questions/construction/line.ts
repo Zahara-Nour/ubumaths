@@ -16,20 +16,28 @@
  * uni), puis, pour une médiatrice, perpendiculaire hors du milieu, par le
  * milieu mais pas perpendiculaire, ce n'est pas la médiatrice.
  *
+ * Lot 9, PR A (§ 25) : `droite d = bissectrice(A, O, B)`, papier uni seulement.
+ * Au compas : l'arc piqué en O, ouvert à l'œil, coupe les côtés en des points
+ * construits (exception 4, `constructionOf` avec `arcsOnSides`) ; au rapporteur
+ * si le prof l'ajoute à `outils:`, à 1° près (côté d'angle tiré de O). Messages :
+ * pas de trait droit par O, trait dans l'angle qui ne part pas de O, trait par O
+ * à l'œil, l'angle voisin (perpendiculaire à la bissectrice), angles inégaux.
+ *
  * Pur : positions de la figure et droites attendues données par l'appelant
  * (registre `positions.ts`).
  *
  * @module questions/construction/line
  */
 
-import type { LineCheck } from '$lib/ubumark/types/construction';
-import type { DrawnLine, DrawnObject } from './answer';
+import { bissectriceOf, type LineCheck } from '$lib/ubumark/types/construction';
+import type { DrawnLine, DrawnObject, DrawnRepere } from './answer';
 import {
+	angleSideVertex,
 	basePointsOf,
 	constructionOf,
-	isInFrame,
 	isStraight,
 	lineCrossesFrame,
+	type Construction,
 	type Trait
 } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
@@ -50,6 +58,22 @@ export const notPerpendicularToSegmentFeedback = (a: string, b: string) =>
 	`Ta droite passe par le milieu de [${a}${b}] mais n’est pas perpendiculaire à [${a}${b}].`;
 export const notMediatriceFeedback = (a: string, b: string) =>
 	`Ce n’est pas la médiatrice de [${a}${b}].`;
+
+export const BISSECTRICE_EYEBALLED_FEEDBACK =
+	'Ta bissectrice est tracée à l’œil : construis-la avec tes instruments.';
+export const bissectriceMissingFeedback = (a: string, o: string, b: string) =>
+	`Trace la bissectrice de l’angle ${a}${o}${b}, depuis son sommet ${o}.`;
+export const bissectriceNotFromVertexFeedback = (o: string) =>
+	`Ta bissectrice doit partir du sommet ${o}.`;
+export const neighbourAngleFeedback = (a: string, o: string, b: string) =>
+	`Ta droite partage l’angle voisin, pas l’angle ${a}${o}${b} : pique le compas sur [${o}${a}) et [${o}${b}).`;
+export const notBissectriceFeedback = (a: string, o: string, b: string) =>
+	`Les deux angles ne sont pas égaux : ce n’est pas la bissectrice de l’angle ${a}${o}${b}.`;
+
+/** Au rapporteur, la bissectrice est admise à 1° près (décision 1 du § 25) */
+const BISSECTRICE_PROTRACTOR_TOLERANCE_DEG = 1;
+
+export { bissectriceOf };
 
 /** Erreur de l'AUTEUR, levée sous le nom de la classe du juge par l'appelant */
 export class LineAuthorError extends Error {}
@@ -119,12 +143,89 @@ function gridNodesOn(line: ExpectedLine, shapes: FigureShapes): number {
 	return found;
 }
 
+/** Longueur minimale de la médiatrice dans la fenêtre (unités de la figure), comme un côté d'angle (lot 5) */
+const MEDIATRICE_MIN_ROOM = 2;
+
+/**
+ * Longueur de la droite passant par `p`, de direction unitaire `d`, dans la fenêtre
+ * (Liang-Barsky) ; `from` = 0 : la demi-droite d'origine `p` seulement
+ */
+function roomInFrame(
+	p: Position,
+	d: Position,
+	frame: NonNullable<FigureShapes['window']>,
+	from = -Infinity
+): number {
+	let tMin = from;
+	let tMax = Infinity;
+	const sides: [number, number][] = [
+		[-d.x, p.x - frame.xMin],
+		[d.x, frame.xMax - p.x],
+		[-d.y, p.y - frame.yMin],
+		[d.y, frame.yMax - p.y]
+	];
+	for (const [direction, room] of sides) {
+		if (direction === 0) {
+			if (room < 0) return 0;
+			continue;
+		}
+		const t = room / direction;
+		if (direction < 0) tMin = Math.max(tMin, t);
+		else tMax = Math.min(tMax, t);
+	}
+	return Math.max(0, tMax - tMin);
+}
+
+/** Longueur, dans la fenêtre, de la demi-droite d'origine `p` et de direction unitaire `d` */
+function rayRoomInFrame(p: Position, d: Position, frame: NonNullable<FigureShapes['window']>) {
+	return roomInFrame(p, d, frame, 0);
+}
+
+/** Direction unitaire de la bissectrice intérieure de l'angle (a, o, b) ; null si un côté est nul */
+function bisectorDirection(a: Position, o: Position, b: Position): Position | null {
+	const u = sub(a, o);
+	const v = sub(b, o);
+	const lu = Math.hypot(u.x, u.y);
+	const lv = Math.hypot(v.x, v.y);
+	if (lu === 0 || lv === 0) return null;
+	const w = { x: u.x / lu + v.x / lv, y: u.y / lu + v.y / lv };
+	const lw = Math.hypot(w.x, w.y);
+	return lw === 0 ? null : { x: w.x / lw, y: w.y / lw };
+}
+
+/**
+ * Papier uni : la bissectrice de l'angle AOB se construit-elle ? O, A et B
+ * visibles, distincts et non alignés (un angle saillant), et au moins 2 unités
+ * de bissectrice dans la fenêtre (lot 9, § 25). Le message, ou null.
+ */
+function bissectriceSupportError(
+	names: [string, string, string],
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes
+): string | null {
+	const hidden = [names[1], names[0], names[2]].find((name) => !shapes.visiblePoints.has(name));
+	if (hidden) return `${hidden} n’est pas visible (l’élève ne peut pas y piquer le compas)`;
+	const [a, o, b] = names.map((name) => points.get(name));
+	if (!a || !o || !b) return null;
+	const [p, v, q] = names;
+	const u = sub(a, o);
+	const w = sub(b, o);
+	const lengths = Math.hypot(u.x, u.y) * Math.hypot(w.x, w.y);
+	if (lengths === 0 || Math.abs(cross(u, w)) <= 1e-9 * lengths) {
+		return `${p}, ${v} et ${q} sont alignés (ou confondus) : l’angle ${p}${v}${q} n’est pas un angle saillant`;
+	}
+	const d = bisectorDirection(a, o, b);
+	if (!d || !shapes.window) return null;
+	if (rayRoomInFrame(o, d, shapes.window) >= MEDIATRICE_MIN_ROOM) return null;
+	return `la bissectrice de l’angle ${p}${v}${q} n’a pas ${MEDIATRICE_MIN_ROOM} unités dans la fenêtre (l’élève ne peut pas la construire) : agrandir la fenêtre ou déplacer ${v}`;
+}
+
 /**
  * Papier uni : la médiatrice de [AB] se construit-elle dans la fenêtre ? A et B
- * visibles (le compas s'y pique), et les deux intersections des cercles de
- * centres A et B de rayon AB dans la fenêtre (l'élève n'a pas de report de
- * longueur : son rayon est AB) ; sert aussi au milieu (`point.ts`). Le message,
- * ou null.
+ * visibles (le compas s'y pique), et au moins 2 unités de médiatrice dans la
+ * fenêtre : l'élève y trouve deux croisements de cercles égaux, de n'importe quel
+ * rayon (exception 2 du § 15 ; lot 9, § 25 : plus de cercles de rayon AB exigés).
+ * Sert aussi au milieu (`point.ts`) et au cercle circonscrit. Le message, ou null.
  */
 export function mediatriceSupportError(
 	names: [string, string],
@@ -137,24 +238,23 @@ export function mediatriceSupportError(
 	const b = points.get(names[1]);
 	if (!a || !b || !shapes.window) return null;
 	const u = sub(b, a);
-	const half = Math.sqrt(3) / 2;
+	const length = Math.hypot(u.x, u.y);
+	if (length === 0) return null;
 	const middle = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-	const crossings = [1, -1].map((side) => ({
-		x: middle.x - side * half * u.y,
-		y: middle.y + side * half * u.x
-	}));
-	if (crossings.every((p) => isInFrame(p, shapes.window as NonNullable<FigureShapes['window']>))) {
-		return null;
-	}
-	return `les cercles de centres ${names[0]} et ${names[1]} de rayon ${names[0]}${names[1]} se coupent hors de la fenêtre (l’élève ne peut pas construire la médiatrice) : agrandir la fenêtre ou rapprocher ${names[0]} et ${names[1]}`;
+	const normal = { x: -u.y / length, y: u.x / length };
+	if (roomInFrame(middle, normal, shapes.window) >= MEDIATRICE_MIN_ROOM) return null;
+	const [p, q] = names;
+	return `la médiatrice de [${p}${q}] n’a pas ${MEDIATRICE_MIN_ROOM} unités dans la fenêtre (l’élève ne peut pas la construire) : agrandir la fenêtre ou déplacer ${p} et ${q}`;
 }
 
 /**
  * Les droites sont-elles faisables ? Erreur d'AUTEUR sinon : expression qui ne
  * se calcule pas ou ne donne pas une droite, droite hors de la fenêtre, deux
  * vérifications pour la même droite ; sur quadrillage, droite qui ne passe pas
- * par deux nœuds ; sur papier uni, autre chose qu'une médiatrice, ou médiatrice
- * qui ne se construit pas dans la fenêtre (`mediatriceSupportError`).
+ * par deux nœuds ; sur papier uni, autre chose qu'une médiatrice ou une
+ * bissectrice, ou qui ne se construit pas dans la fenêtre
+ * (`mediatriceSupportError`, `bissectriceSupportError`) ; une bissectrice sur
+ * quadrillage.
  */
 export function assertLines(
 	checks: readonly LineCheck[],
@@ -179,6 +279,18 @@ export function assertLines(
 		if (shapes.window && !lineCrossesFrame(line.a, line.b, shapes.window)) {
 			throw new LineAuthorError(`${label} : la droite attendue est hors de la fenêtre`);
 		}
+		const bissectrice = bissectriceOf(check.expression);
+		if (bissectrice) {
+			// Lot 9 (§ 25) : la bissectrice se construit au compas, pas sur les nœuds
+			if (shapes.grid) {
+				throw new LineAuthorError(
+					`${label} : une bissectrice se construit sur papier uni, sans quadrillage (retirer grille:)`
+				);
+			}
+			const message = bissectriceSupportError(bissectrice, points, shapes);
+			if (message) throw new LineAuthorError(`${label} : ${message}`);
+			continue;
+		}
 		if (shapes.grid && gridNodesOn(line, shapes) < 2) {
 			throw new LineAuthorError(
 				`${label} : la droite attendue ne passe pas par deux nœuds du quadrillage dans la fenêtre (l’élève ne peut pas la tracer)`
@@ -188,7 +300,7 @@ export function assertLines(
 		const mediatrice = mediatriceOf(check.expression);
 		if (!mediatrice) {
 			throw new LineAuthorError(
-				`${label} : sans quadrillage, seulement une médiatrice (mediatrice(A, B)) ; sinon ajouter « grille: 1 »`
+				`${label} : sans quadrillage, seulement une médiatrice (mediatrice(A, B)) ou une bissectrice (bissectrice(A, O, B)) ; sinon ajouter « grille: 1 »`
 			);
 		}
 		const message = mediatriceSupportError(mediatrice, points, shapes);
@@ -244,20 +356,41 @@ export function judgeLines(
 	shapes: FigureShapes | undefined,
 	objects: readonly DrawnObject[]
 ): ConstructionVerdict {
-	if (objects.some((o) => o.kind !== 'droite' && o.kind !== 'cercle')) {
-		return { status: 'incorrect' };
-	}
+	const withBissectrice = checks.some((check) => bissectriceOf(check.expression) !== null);
+	// Le Report (lot 9) : un trait de construction, comme un cercle ; le repère du
+	// rapporteur, pour une bissectrice seulement (§ 25)
+	const allowed = (o: DrawnObject) =>
+		o.kind === 'droite' ||
+		o.kind === 'cercle' ||
+		o.kind === 'report' ||
+		(withBissectrice && o.kind === 'repere');
+	if (!objects.every(allowed)) return { status: 'incorrect' };
 	const figureTraits = shapes?.traits ?? [];
-	// Papier uni : droite construite de proche en proche (décision de David, 2026-11-03, § 14)
+	// Papier uni : droite construite de proche en proche (décision de David, 2026-11-03, § 14) ;
+	// l'exception 4 (§ 25) pour la bissectrice seulement
 	const construction =
 		shapes && !shapes.grid
-			? constructionOf(objects, basePointsOf(points, shapes.segments), figureTraits)
+			? constructionOf(objects, basePointsOf(points, shapes.segments), figureTraits, {
+					arcsOnSides: withBissectrice
+				})
 			: null;
 	const lineIndexes = objects.flatMap((o, i) => (o.kind === 'droite' ? [i] : []));
 	const built = (i: number) => !construction || construction.built.has(i);
 	const taken = new Set<number>();
 	for (const check of checks) {
 		const target = expectedOf(check, expected);
+		const bissectrice = bissectriceOf(check.expression);
+		if (bissectrice) {
+			const free = lineIndexes.filter((i) => !taken.has(i));
+			const verdict = judgeBissectrice(bissectrice, target, points, objects, free, built, {
+				construction,
+				figureTraits,
+				window: shapes?.window ?? null
+			});
+			if (typeof verdict !== 'number') return verdict;
+			taken.add(verdict);
+			continue;
+		}
 		const mediatrice = mediatriceOf(check.expression);
 		const free = lineIndexes.filter((i) => !taken.has(i));
 		const covering = free.filter((i) => coincides(objects[i] as DrawnLine, target));
@@ -284,6 +417,137 @@ export function judgeLines(
 		};
 	}
 	return { status: 'correct' };
+}
+
+/** Angle (en degrés, entre 0 et 90) entre deux directions de droites */
+function angleBetweenLines(u: Position, v: Position): number {
+	const cos = Math.abs(dot(u, v)) / (Math.hypot(u.x, u.y) * Math.hypot(v.x, v.y));
+	return (Math.acos(Math.min(1, cos)) * 180) / Math.PI;
+}
+
+/**
+ * La droite (p, q) entre-t-elle dans l'angle saillant de sommet `o` (côtés vers
+ * `a` et `b`), dans la fenêtre ? Intersection d'intervalles du paramètre de la
+ * droite : les deux demi-plans de l'angle et le cadre.
+ */
+function entersAngle(
+	p: Position,
+	q: Position,
+	o: Position,
+	a: Position,
+	b: Position,
+	frame: FigureShapes['window']
+): boolean {
+	const d = sub(q, p);
+	const u = sub(a, o);
+	const v = sub(b, o);
+	const s = Math.sign(cross(u, v));
+	let tMin = -Infinity;
+	let tMax = Infinity;
+	// Contraintes c0 + c1·t > 0
+	const constraints: [number, number][] = [
+		[s * cross(u, sub(p, o)), s * cross(u, d)],
+		[s * cross(sub(p, o), v), s * cross(d, v)]
+	];
+	if (frame) {
+		constraints.push(
+			[p.x - frame.xMin, d.x],
+			[frame.xMax - p.x, -d.x],
+			[p.y - frame.yMin, d.y],
+			[frame.yMax - p.y, -d.y]
+		);
+	}
+	for (const [c0, c1] of constraints) {
+		if (c1 === 0) {
+			if (c0 <= 0) return false;
+			continue;
+		}
+		const t = -c0 / c1;
+		if (c1 > 0) tMin = Math.max(tMin, t);
+		else tMax = Math.min(tMax, t);
+	}
+	return tMin < tMax;
+}
+
+/**
+ * Une bissectrice (lot 9, § 25) : l'indice de la droite de l'élève retenue, ou le
+ * verdict faux et sa première cause. Juste : une droite construite qui recouvre
+ * la bissectrice ; ou, au rapporteur, un côté d'angle tiré de O à 1° près.
+ */
+function judgeBissectrice(
+	names: [string, string, string],
+	target: ExpectedLine,
+	points: ReadonlyMap<string, Position>,
+	objects: readonly DrawnObject[],
+	free: readonly number[],
+	built: (i: number) => boolean,
+	context: {
+		construction: Construction | null;
+		figureTraits: readonly Trait[];
+		window: FigureShapes['window'];
+	}
+): number | ConstructionVerdict {
+	const [a, o, b] = names.map((name) => points.get(name));
+	const line = (i: number) => objects[i] as DrawnLine;
+	const covering = free.filter((i) => coincides(line(i), target));
+	const good = covering.find(built);
+	if (good !== undefined) return good;
+	if (!a || !o || !b) {
+		return covering.length > 0
+			? { status: 'incorrect', feedback: BISSECTRICE_EYEBALLED_FEEDBACK }
+			: { status: 'incorrect', feedback: bissectriceMissingFeedback(...names) };
+	}
+	const direction = sub(target.b, target.a);
+	// Au rapporteur : côté d'angle tiré de O, à 1° près de la bissectrice
+	const { construction } = context;
+	const marks = objects.filter((x): x is DrawnRepere => x.kind === 'repere');
+	const eps = 1e-9 * Math.max(1, Math.abs(o.x), Math.abs(o.y));
+	const fromO = (i: number) => {
+		const vertex = construction ? angleSideVertex(line(i), marks, construction) : null;
+		return vertex !== null && Math.hypot(vertex.x - o.x, vertex.y - o.y) <= eps;
+	};
+	const measured = free.find((i) => {
+		const [p, q] = ends(line(i));
+		return (
+			fromO(i) && angleBetweenLines(sub(q, p), direction) <= BISSECTRICE_PROTRACTOR_TOLERANCE_DEG
+		);
+	});
+	if (measured !== undefined) return measured;
+	if (covering.length > 0) return { status: 'incorrect', feedback: BISSECTRICE_EYEBALLED_FEEDBACK };
+	const throughO = free.filter((i) => isOnLine(o, { a: ends(line(i))[0], b: ends(line(i))[1] }));
+	if (throughO.length === 0) {
+		const inside = free.some((i) => entersAngle(...ends(line(i)), o, a, b, context.window));
+		return {
+			status: 'incorrect',
+			feedback: inside
+				? bissectriceNotFromVertexFeedback(names[1])
+				: bissectriceMissingFeedback(...names)
+		};
+	}
+	// Une droite qui repasse un côté de l'angle n'est pas l'essai de bissectrice
+	const retraces = (i: number) => {
+		const [p, q] = ends(line(i));
+		return context.figureTraits.some(
+			(t) => isStraight(t) && isOnLine(t.a, { a: p, b: q }) && isOnLine(t.b, { a: p, b: q })
+		);
+	};
+	const own = throughO.filter((i) => !retraces(i));
+	// Seulement un côté repassé ou prolongé : pas encore d'essai de bissectrice (revue M1)
+	if (own.length === 0) {
+		return { status: 'incorrect', feedback: bissectriceMissingFeedback(...names) };
+	}
+	const builtTries = own.filter(built);
+	if (builtTries.length === 0) {
+		return { status: 'incorrect', feedback: BISSECTRICE_EYEBALLED_FEEDBACK };
+	}
+	const shown = line(builtTries[builtTries.length - 1]);
+	const [p, q] = ends(shown);
+	return {
+		status: 'incorrect',
+		feedback: isPerpendicular(sub(q, p), direction)
+			? neighbourAngleFeedback(...names)
+			: notBissectriceFeedback(...names)
+	};
 }
 
 /** Codage d'une médiatrice à la correction : [AB], son milieu (angle droit, moitiés égales) */
@@ -316,5 +580,64 @@ export function lineCodages(
 		const to = names ? points.get(names[1]) : undefined;
 		if (!from || !to) return [];
 		return [{ from, foot: { x: (from.x + to.x) / 2 + 0, y: (from.y + to.y) / 2 + 0 }, to }];
+	});
+}
+
+/**
+ * Correction d'une bissectrice (lot 9, § 25) : les deux demi-angles, codés du
+ * même signe, et les traits fins de la construction (l'arc en O, les deux arcs
+ * égaux en A' et B')
+ */
+export interface BissectriceCorrection {
+	center: Position;
+	/** Un point de [OA), de la bissectrice, de [OB) (A', le point de la bissectrice, B') */
+	from: Position;
+	middle: Position;
+	to: Position;
+	/** Sens de [OA) vers [OB) : 1 trigonométrique */
+	sens: 1 | -1;
+	arcs: { center: Position; radius: number }[];
+}
+
+/** Rayon de l'arc en O : cette part du plus court des côtés [OA] et [OB] */
+const BISSECTRICE_ARC_RATIO = 0.6;
+
+export function bissectriceCorrections(
+	checks: readonly LineCheck[],
+	points: ReadonlyMap<string, Position>
+): BissectriceCorrection[] {
+	return checks.flatMap((check): BissectriceCorrection[] => {
+		const names = bissectriceOf(check.expression);
+		if (!names) return [];
+		const [a, o, b] = names.map((name) => points.get(name));
+		if (!a || !o || !b) return [];
+		const w = bisectorDirection(a, o, b);
+		const u = sub(a, o);
+		const v = sub(b, o);
+		const lu = Math.hypot(u.x, u.y);
+		const lv = Math.hypot(v.x, v.y);
+		if (!w || cross(u, v) === 0) return [];
+		const r = BISSECTRICE_ARC_RATIO * Math.min(lu, lv);
+		const along = (d: Position, length: number) => ({
+			x: o.x + d.x * length + 0,
+			y: o.y + d.y * length + 0
+		});
+		const from = along(u, r / lu);
+		const to = along(v, r / lv);
+		const spread = Math.hypot(to.x - from.x, to.y - from.y);
+		return [
+			{
+				center: o,
+				from,
+				middle: along(w, r),
+				to,
+				sens: cross(u, v) > 0 ? 1 : -1,
+				arcs: [
+					{ center: o, radius: r },
+					{ center: from, radius: spread },
+					{ center: to, radius: spread }
+				]
+			}
+		];
 	});
 }

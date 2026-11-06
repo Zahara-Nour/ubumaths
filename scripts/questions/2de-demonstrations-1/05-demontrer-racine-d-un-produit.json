@@ -1,0 +1,205 @@
+{
+	"title": "Démontrer que √(ab) = √a × √b",
+	"description": "Démonstration à trous pour a, b ≥ 0 : carré (√a√b)² = ab (case), √a√b positif (choix), conclusion par la définition de la racine carrée (choix) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $a$ et $b$ deux réels positifs. On démontre que $\\sqrt{ab}=\\sqrt{a}\\sqrt{b}$.\n\n$\\sqrt{ab}$ est, par définition, le nombre positif dont le carré vaut $ab$.\n\nOn calcule le carré de $\\sqrt{a}\\sqrt{b}$. Complète.\n\n$\\left(\\sqrt{a}\\sqrt{b}\\right)^2=\\left(\\sqrt{a}\\right)^2\\times\\left(\\sqrt{b}\\right)^2=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "ab"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition de la racine carrée, $\\left(\\sqrt{a}\\right)^2=a$ et $\\left(\\sqrt{b}\\right)^2=b$.",
+					"Donc $\\left(\\sqrt{a}\\sqrt{b}\\right)^2=\\textcolor{{{color:primary.0}}}{ab}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ et $b$ deux réels positifs. On démontre que $\\sqrt{ab}=\\sqrt{a}\\sqrt{b}$.\n\n$\\sqrt{ab}$ est, par définition, le nombre positif dont le carré vaut $ab$.\n\nPourquoi le nombre $\\sqrt{a}\\sqrt{b}$ est-il positif ?\n\n```choix\n- Car c'est le produit de deux nombres positifs, $\\sqrt{a}$ et $\\sqrt{b}$.\n- Car son carré $\\left(\\sqrt{a}\\sqrt{b}\\right)^2$ est positif.\n- Car $\\sqrt{a}\\sqrt{b}=\\sqrt{ab}$.\n- Car $a$ est plus grand que $b$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une racine carrée est toujours positive : $\\sqrt{a}\\geqslant 0$ et $\\sqrt{b}\\geqslant 0$.",
+					"Le produit de deux nombres positifs est positif : $\\textcolor{{{color:primary.0}}}{\\sqrt{a}\\sqrt{b}\\geqslant 0}$.",
+					"Un carré est positif même si le nombre est négatif ; et utiliser $\\sqrt{a}\\sqrt{b}=\\sqrt{ab}$, c'est supposer ce qu'on veut démontrer."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ et $b$ deux réels positifs. On démontre que $\\sqrt{ab}=\\sqrt{a}\\sqrt{b}$.\n\n$\\sqrt{ab}$ est, par définition, le nombre positif dont le carré vaut $ab$.\n\nOn a montré que $\\sqrt{a}\\sqrt{b}\\geqslant 0$ et que $\\left(\\sqrt{a}\\sqrt{b}\\right)^2=ab$. Pourquoi peut-on conclure que $\\sqrt{a}\\sqrt{b}=\\sqrt{ab}$ ?\n\n```choix\n- Car $\\sqrt{ab}$ est le seul nombre positif dont le carré vaut $ab$.\n- Car tout nombre dont le carré vaut $ab$ est égal à $\\sqrt{ab}$.\n- Car $a$ et $b$ sont égaux.\n- Car la racine carrée d'une somme est la somme des racines carrées.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{a}\\sqrt{b}$ est positif et son carré vaut $ab$.",
+					"Or $\\sqrt{ab}$ est **le seul nombre positif** dont le carré vaut $ab$ : donc $\\sqrt{a}\\sqrt{b}=\\sqrt{ab}$.",
+					"Le mot « positif » compte : $-\\sqrt{ab}$ a aussi pour carré $ab$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ et $b$ deux réels positifs. On démontre que $\\sqrt{ab}=\\sqrt{a}\\sqrt{b}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- $\\sqrt{a}\\geqslant 0$ et $\\sqrt{b}\\geqslant 0$, donc $\\sqrt{a}\\sqrt{b}\\geqslant 0$.\n- $\\left(\\sqrt{a}\\sqrt{b}\\right)^2=\\left(\\sqrt{a}\\right)^2\\times\\left(\\sqrt{b}\\right)^2=ab$.\n- $\\sqrt{a}\\sqrt{b}$ est donc un nombre positif dont le carré vaut $ab$.\n- Or $\\sqrt{ab}$ est le seul nombre positif dont le carré vaut $ab$ : $\\sqrt{ab}=\\sqrt{a}\\sqrt{b}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On montre que $\\sqrt{a}\\sqrt{b}$ est positif et que son carré vaut $ab$.",
+					"Par définition de la racine carrée, $\\textcolor{{{color:primary.0}}}{\\sqrt{ab}=\\sqrt{a}\\sqrt{b}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "ab",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["ab"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture ba",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["ba"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √(ab)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\sqrt{ab}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a + b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["a+b"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a²b²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["a^2b^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "produit de positifs",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré positif",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : circulaire",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a > b",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "seul positif",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oubli du signe",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a = b",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

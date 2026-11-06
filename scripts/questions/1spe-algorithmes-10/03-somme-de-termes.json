@@ -1,0 +1,243 @@
+{
+	"id": "e4eaaf16-407c-4a8b-9ba0-a93f28312fd6",
+	"title": "Calculer une somme de termes avec Python",
+	"description": "Accumulateur s : faire tourner somme(n) pour des termes ak + b, compléter la ligne d'accumulation (suite géométrique), dire quelle somme calcule une boucle range(p, m)",
+	"grades": ["1_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef somme(n):\n    s = 0\n    for k in range(n + 1):\n        s = s + {{eval:a}} * k + {{eval:b}}\n    return s\n```\n\nQue renvoie `somme({{eval:n}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "3..5"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a*n*(n+1)/2+b*(n+1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`k` prend les valeurs $0$, $1$, …, ${{eval:n}}$ : `range(n + 1)` commence à $0$ et s'arrête juste avant ${{eval:n+1}}$.",
+					"On ajoute les termes ${{eval:a}}k+{{eval:b}}$ : ${{eval:a*0+b}}+{{eval:a*1+b}}+{{eval:a*2+b}}+{{eval:a*3+b}}{{if:n>=4|+{{eval:a*4+b}}|}}{{if:n>=5|+{{eval:a*5+b}}|}}$.",
+					"`somme({{eval:n}})` renvoie $\\textcolor{{{color:primary.0}}}{{{eval:s}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le programme Python ci-dessous doit afficher la somme $u_0+u_1+\\cdots+u_{{{eval:n-1}}}$ des termes de la suite géométrique de premier terme $u_0={{eval:u}}$ et de raison ${{eval:q}}$.\n\n```python\nu = {{eval:u}}\ns = 0\nfor k in range({{eval:n}}):\n    ...\n    u = {{eval:q}} * u\nprint(s)\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `s = s + u`\n- `s = u`\n- `s = s * u`\n- `u = s + u`\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "2|3"
+				},
+				{
+					"name": "n",
+					"expression": "5..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`s` sert d'accumulateur : il part de $0$ et, à chaque tour, on lui ajoute le terme courant `u`, avant que `u` ne passe au terme suivant.",
+					"Avec `s = u`, `s` ne garderait que le dernier terme ; avec `s = s * u`, il resterait égal à $0$ ; `u = s + u` modifierait le terme au lieu de la somme.",
+					"La ligne est donc `s = s + u`."
+				]
+			}
+		},
+		{
+			"statement": "On considère une suite $(u_n)$ et le programme Python suivant, où `u(k)` renvoie $u_k$.\n\n```python\ns = 0\nfor k in range({{eval:p}}, {{eval:m}}):\n    s = s + u(k)\n```\n\nQuelle somme la variable `s` contient-elle à la fin du programme ?\n\n```choix\n- $u_{{{eval:p}}}+u_{{{eval:p+1}}}+\\cdots+u_{{{eval:m-1}}}$\n- $u_{{{eval:p}}}+u_{{{eval:p+1}}}+\\cdots+u_{{{eval:m}}}$\n- $u_{{{eval:p+1}}}+u_{{{eval:p+2}}}+\\cdots+u_{{{eval:m}}}$\n- $u_{0}+u_{1}+\\cdots+u_{{{eval:m-1}}}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "8..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`range({{eval:p}}, {{eval:m}})` donne les entiers de ${{eval:p}}$ à ${{eval:m-1}}$ : il commence à ${{eval:p}}$ et s'arrête juste avant ${{eval:m}}$.",
+					"À chaque tour, on ajoute $u_k$ à `s`.",
+					"`s` contient donc $\\textcolor{{{color:primary.0}}}{u_{{{eval:p}}}+\\cdots+u_{{{eval:m-1}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3k + 2, n = 4 : 2 + 5 + 8 + 11 + 14",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"n": "4",
+				"s": "40"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : terme k = 0 oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"n": "4",
+				"s": "40"
+			},
+			"answers": ["38"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2k + 1, n = 3 : 16",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"n": "3",
+				"s": "16"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "s = s + u",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"q": "3",
+				"n": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : s = u",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"q": "3",
+				"n": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : s = s * u",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"q": "3",
+				"n": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u = s + u",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"q": "3",
+				"n": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "de p à m − 1",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"m": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : de p à m",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"m": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : de p + 1 à m",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"m": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : de 0 à m − 1",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"m": "10"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

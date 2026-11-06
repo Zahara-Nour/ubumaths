@@ -1,0 +1,240 @@
+{
+	"id": "025ad9fa-e109-457c-9d46-0b5467fbce0a",
+	"title": "Suite de Syracuse, suite de Fibonacci en Python",
+	"description": "Syracuse : faire tourner 3 ou 4 tours depuis un entier tiré, compléter le cas impair ; Fibonacci en liste : compléter l'élément ajouté par append",
+	"grades": ["1_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\nu = {{eval:a}}\nfor j in range({{eval:t}}):\n    if u % 2 == 0:\n        u = u // 2\n    else:\n        u = 3 * u + 1\nprint(u)\n```\n\nQuelle valeur est affichée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..30"
+				},
+				{
+					"name": "t",
+					"expression": "3|4"
+				},
+				{
+					"name": "w1",
+					"expression": "eval:(1-mod(a,2))*(a)/2+mod(a,2)*(3*(a)+1)"
+				},
+				{
+					"name": "w2",
+					"expression": "eval:(1-mod(w1,2))*(w1)/2+mod(w1,2)*(3*(w1)+1)"
+				},
+				{
+					"name": "w3",
+					"expression": "eval:(1-mod(w2,2))*(w2)/2+mod(w2,2)*(3*(w2)+1)"
+				},
+				{
+					"name": "w4",
+					"expression": "eval:(1-mod(w3,2))*(w3)/2+mod(w3,2)*(3*(w3)+1)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(4-t)*w3+(t-3)*w4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle est parcourue ${{eval:t}}$ fois. `u % 2 == 0` teste si `u` est pair ; `u // 2` est le quotient entier de `u` par $2$.",
+					"{{if:mod(a,2)==0|${{eval:a}}$ est pair|${{eval:a}}$ est impair}} : `u` devient ${{eval:w1}}$. {{if:mod(w1,2)==0|${{eval:w1}}$ est pair|${{eval:w1}}$ est impair}} : `u` devient ${{eval:w2}}$. {{if:mod(w2,2)==0|${{eval:w2}}$ est pair|${{eval:w2}}$ est impair}} : `u` devient ${{eval:w3}}$.{{if:t==4| {{if:mod(w3,2)==0|${{eval:w3}}$ est pair|${{eval:w3}}$ est impair}} : `u` devient ${{eval:w4}}$.|}}",
+					"Le programme affiche $\\textcolor{{{color:primary.0}}}{{{eval:r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans la suite de Syracuse, un terme pair est divisé par $2$, et un terme impair est multiplié par $3$, puis augmenté de $1$. Le programme Python ci-dessous affiche les termes de la suite de premier terme ${{eval:a}}$ jusqu'à obtenir $1$.\n\n```python\nu = {{eval:a}}\nwhile u != 1:\n    if u % 2 == 0:\n        u = u // 2\n    else:\n        u = ...\n    print(u)\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `3 * u + 1`\n- `u // 2`\n- `3 * (u + 1)`\n- `u + 1`\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le `else` traite le cas où `u` est impair.",
+					"Il faut multiplier par $3$ puis ajouter $1$ : `3 * u + 1`. Avec `3 * (u + 1)`, on ajouterait $1$ avant de multiplier.",
+					"La ligne est donc `u = 3 * u + 1`."
+				]
+			}
+		},
+		{
+			"statement": "La suite de Fibonacci commence par $1$, $1$, et chaque terme est la somme des deux précédents. Le programme Python ci-dessous doit construire la liste `L` de ses ${{eval:n}}$ premiers termes.\n\n```python\nL = [1, 1]\nfor k in range(2, {{eval:n}}):\n    L.append(...)\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `L[k - 1] + L[k - 2]`\n- `L[k] + L[k - 1]`\n- `L[k - 1] * L[k - 2]`\n- `L[k - 1] + 1`\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "8..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Au tour `k`, la liste contient déjà `L[0]`, …, `L[k - 1]` : `append` ajoute l'élément d'indice `k`. `L[k]` n'existe pas encore.",
+					"Le nouvel élément est la somme des deux derniers, `L[k - 1]` et `L[k - 2]`.",
+					"On écrit donc `L.append(L[k - 1] + L[k - 2])`. La liste commence par $[1, 1, 2, 3, 5, 8, 13, 21, …]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 → 22 → 11 → 34",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"t": "3",
+				"w1": "22",
+				"w2": "11",
+				"w3": "34",
+				"w4": "17",
+				"r": "34"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux tours",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"t": "3",
+				"w1": "22",
+				"w2": "11",
+				"w3": "34",
+				"w4": "17",
+				"r": "34"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "27, 4 tours → 82, 41, 124, 62",
+			"variationIndex": 0,
+			"variables": {
+				"a": "27",
+				"t": "4",
+				"w1": "82",
+				"w2": "41",
+				"w3": "124",
+				"w4": "62",
+				"r": "62"
+			},
+			"answers": ["62"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 * u + 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u // 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 * (u + 1)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u + 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "L[k - 1] + L[k - 2]",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : L[k] + L[k - 1]",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : L[k - 1] * L[k - 2]",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : L[k - 1] + 1",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

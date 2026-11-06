@@ -103,6 +103,7 @@
 		solutionLines,
 		solutionPoints,
 		solutionAngle,
+		solutionBissectrices,
 		solutionTriangle,
 		type ConstructionAnswerInput,
 		type Drawing,
@@ -390,6 +391,42 @@
 			y: c.y + (mid.y / midLength) * (r + 16)
 		};
 		return { d, label, text: `${arc.measure}°` };
+	}
+
+	/**
+	 * Demi-angle d'une bissectrice à la correction (lot 9) : son arc, et un petit
+	 * trait en travers (le même signe sur les deux demi-angles), en SVG
+	 */
+	function halfAngleCodage(
+		center: Position,
+		from: Position,
+		to: Position,
+		sens: 1 | -1,
+		scene: FigureScene,
+		width: number,
+		height: number
+	) {
+		const arc = angleArc({ center, from, to, sens, measure: 0 }, scene, width, height);
+		const transformer = createTransformer(scene.viewport, width, height);
+		const c = transformer.mathToSvg(center.x, center.y);
+		const unit = (p: Position) => {
+			const q = transformer.mathToSvg(p.x, p.y);
+			const length = Math.hypot(q.x - c.x, q.y - c.y);
+			return { x: (q.x - c.x) / length, y: (q.y - c.y) / length };
+		};
+		const u = unit(from);
+		const v = unit(to);
+		const mid = { x: u.x + v.x, y: u.y + v.y };
+		const length = Math.hypot(mid.x, mid.y) || 1;
+		const m = { x: mid.x / length, y: mid.y / length };
+		const r = ANGLE_ARC_SVG;
+		const tick = {
+			x1: c.x + m.x * (r - 5),
+			y1: c.y + m.y * (r - 5),
+			x2: c.x + m.x * (r + 5),
+			y2: c.y + m.y * (r + 5)
+		};
+		return { d: arc.d, tick };
 	}
 
 	function selectTool(next: ConstructionTool) {
@@ -927,6 +964,38 @@
 					{/each}
 				</g>
 			{/if}
+		{/if}
+		{#if corrected}
+			<!-- Bissectrice à construire (lot 9) : l'arc en O et les deux arcs égaux en traits fins,
+			     les deux demi-angles codés du même signe -->
+			{#each solutionBissectrices(checks, allPoints) as solution, i (i)}
+				<g data-testid="bonne-bissectrice" class="bon-point">
+					{#each solution.arcs as arc, j (j)}
+						{@const center = transformer.mathToSvg(arc.center.x, arc.center.y)}
+						{@const edge = transformer.mathToSvg(arc.center.x + arc.radius, arc.center.y)}
+						<circle
+							data-testid="bonne-bissectrice-arc"
+							class="bon-triangle-arc"
+							cx={center.x}
+							cy={center.y}
+							r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+						/>
+					{/each}
+					{#each [[solution.from, solution.middle], [solution.middle, solution.to]] as [from, to], j (j)}
+						{@const h = halfAngleCodage(
+							solution.center,
+							from,
+							to,
+							solution.sens,
+							scene,
+							width,
+							height
+						)}
+						<path data-testid="bonne-bissectrice-demi-angle" class="bon-point-codage" d={h.d} />
+						<line class="bon-point-codage" {...h.tick} />
+					{/each}
+				</g>
+			{/each}
 		{/if}
 		{#if corrected}
 			<!-- Angle à construire (lot 5) : l'arc de l'angle, codé de sa mesure -->

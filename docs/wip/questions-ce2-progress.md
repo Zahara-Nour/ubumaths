@@ -6,20 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après la publication du lot 10._
+_Mis à jour le 2026-11-06, après #2433._
 
-- **État** : lots 1 à 10 en prod et publiés. Relevé MCP : **8 points CE2 sans modèle** — 001, 002 (`collection`
-  `centaines:`, outil neuf) et les 6 de la classe D (086, 039, 043, 051, 065, 070 : manipulation).
-- **Prochaine action** : chantier à part `collection` `centaines:` (001, 002, matériel de 005) — PR #2420
-  (`feat(ubumark): collection, centaines et milliers`) ouverte par une autre session : la regarder d'abord ; puis
-  039 et 070 avec la case « figure » (comme CE1-072 / 074).
-- **En attente de David** : rien.
-- **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
-  coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
-  `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
-  `publier-lot` (même en simulation) et `garde-niveaux-tags.ts` refusés à Claude par le classifieur : David les lance ;
-  job CI « Client Tests (browser, shard 2/2) » qui plante (`wrapDynamicImport`) : relancer `--failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, détaché sur `origin/main` (aucune branche en cours).
+- **État** : lots 1 à 10 publiés. Lot 11 (001, 002, matériel de 005) : 6 modèles mergés (#2433), pas encore en prod.
+- **Prochaine action** : David lance `create-questions --publier` **depuis le worktree** (les ids s'écrivent sur la
+  branche `-db`) ; relevé MCP ; migration nœud + tag (gabarit lot 10 ; 01 à 05 → « dénombrement », 06 →
+  « écritures ») ; `security-auditor`, CI, `check:migrations`, merge, `db:migrate` ; page à cocher ; publication.
+- **En attente de David** : `create-questions --publier` (commande dans le dernier message de la session).
+- **Pièges en cours** : `construire:` + « Espaces dès 4 chiffres » = forme à améliorer (`outils-manquants.md` n° 15) ;
+  jamais de variable `e` (Euler) ; commitlint : corps ≤ 100 caractères par ligne ; `publier-lot` et
+  `garde-niveaux-tags.ts` : David les lance ; job CI navigateur (`wrapDynamicImport`) : relancer `--failed` ; la page
+  à cocher redessine des collections hautes (03 : jusqu'à 15 plaques).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot11-db`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -894,3 +892,71 @@ tag ne change aucune règle.
   posés en 5 s (11:49:53 à 11:49:58). Simulation puis `--publier` (David) ; relevé MCP : 7/7 `published`, CE2, rangés,
   un point chacun (061, 062 ×2, 063, 064, 066 ×2). **Lot 10 clos.** Reste au CE2 : 001, 002 (outil `centaines:`) et
   les 6 points de la classe D.
+
+## 17. Lot 11 — dénombrer et construire avec le matériel multibase (phase 0 validée le 2026-11-06)
+
+Outil : `collection` `centaines:` / `milliers:` (#2420, **en prod depuis 0.75.0**) : plaques et gros cubes, grand bloc
+(plafonds milliers 9, centaines 40, dizaines 30, unités 100, valeur ≤ 9 999) ; `construire:` jusqu'à 9 999, réserve
+déduite de la valeur, seule la valeur jugée. Relevé MCP (2026-11-06) : 001 et 002 sans modèle, 005 en a un
+(`03-unites-non-canoniques`, texte seul). Un seul modèle publié utilise `collection` (`ded05f7c`, CP-002). Bornes
+(`cycle2.json`) : groupes de dix, cent ou mille ; plus de dix éléments d'une unité (17 u, 8 d, 32 c et 2 milliers).
+
+| Fichier                         | Point   | Variations                                                                                      |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------- |
+| `01-denombrer-centaines`        | CE2-001 | plaques, barres, cubes rangés (100 à 999) ; un rang vide (3 c 0 d 4 u) → « Combien de cubes ? » |
+| `02-denombrer-milliers`         | CE2-001 | gros cubes, plaques, barres, cubes (1 000 à 9 999) ; zéros intérieurs (2 m 0 c 5 d 0 u)         |
+| `03-denombrer-plus-de-dix`      | CE2-001 | un ou deux rangs au-delà de 9 (17 u, 8 d, 32 c, 2 m) ; corrigé par échanges (32 c = 3 m 2 c)    |
+| `04-construis-trois-chiffres`   | CE2-002 | `construire:` 100 à 999 ; avec un zéro (305, 470)                                               |
+| `05-construis-quatre-chiffres`  | CE2-002 | `construire:` 1 000 à 9 999 ; zéros intérieurs (3 045, 6 900)                                   |
+| `06-materiel-unites-numeration` | CE2-005 | collection dessinée → 4 cases « … milliers … centaines … dizaines … unités » ; puis le nombre   |
+
+Corrigé : la valeur de chaque rang puis la somme (2 000 + 3 200 + 80 + 17 = 5 297). Espaces dès 4 chiffres, comme le
+lot 2. Faux attendus : rangs confondus (plaques comptées comme barres), zéro intérieur oublié, rang au-delà de 9 recopié
+tel quel (« 2 32 8 17 »).
+
+Questions à David :
+
+1. **QCM « Quel dessin montre 4 635 ? »** (chiffres → matériel, 005) : piège connu du chantier `collection-centaines`,
+   un grand bloc dans un choix de QCM **imprimé** (3 cm) est illisible. Reco : pas de QCM dans ce lot (le sens
+   chiffres → matériel est couvert par 04-05) ; le piège reste dans `outils-manquants.md`.
+2. **Hauteur des dessins** : 32 plaques = 8 rangées de 4. Reco : au plus 20 centaines dans `03` (5 rangées), la
+   phrase du BO (32 c) restant dans le modèle texte `03-unites-non-canoniques` déjà publié.
+3. **Question d'accès** : personne ne lit rien de plus (brouillons neufs ; la migration nœud + tag ne change aucune
+   règle).
+
+Décision de David (2026-11-06, « je suis tes recos ») : pas de QCM de dessins ; au plus 20 centaines dans `03` ;
+question d'accès : rien de plus.
+
+### Lot 11 — écriture (2026-11-06)
+
+- `lot-ce2-11.py` → `scripts/questions/ce2-11/` (6 modèles, 46 specs) ; `create-questions` en simulation : tout vert.
+  Niveaux : 10 à 14 sur « dénombrement » (2 à 9 laissés au CP et au CE1), 20 sur « écritures ».
+- Sonde neuve `scripts/questions/sonde-collections.ts` (calquée sur `sonde-cubes`) : 1 800 blocs, 0 problème ; elle voit
+  bien un plafond dépassé (`centaines: 41`) et une valeur au-delà de 9 999 (essai à la main).
+- Mesuré : « Espaces dès 4 chiffres » rend `unoptimal_form` toute valeur posée par `construire:` à 4 chiffres (`4635`,
+  4 specs sur 7 rouges) → 04 et 05 sans l'option ; le nombre de l'énoncé de 05 est écrit groupé chiffre par chiffre
+  (`{{m}}\,{{c}}{{d}}{{u}}`, `{{m}}\,0{{d}}{{u}}`, `{{m}}\,{{c}}00`). À noter dans `outils-manquants.md` si David veut
+  que `construire:` ignore la règle des espaces.
+- Corrigé en route : « petit cubes » → « petits cubes » ; listes « a, b et c » ; 06, plus de `$$…$$ dizaines`.
+- 6 brouillons en base locale (copie du dossier dans le scratchpad). Aperçu admin : Chrome figé (défilement sans effet,
+  capture inchangée) → modèles **pas encore joués à l'écran**.
+- Aperçu admin local (Chrome reconnecté) : 05 joué (4 001 → faux, « Ta collection vaut 4001. » ; 4 100 → juste,
+  correction lue) ; 03 joué (3697 sans espace → ½ point, « Les chiffres sont mal espacés ») ; 06 vu (5 cases) ; dessins
+  justes (gros cubes en perspective, plaques quadrillées). Corrigé en route : « gross cubes » → « gros cubes ».
+- Vu à l'écran : 16 plaques (03, variation 3) = 4 rangées, le dessin fait près de deux écrans à 540 px ; la carte de
+  correction le redessine dans un cadre à défilement propre.
+- Décision de David (2026-11-06, « je suis tes recos ») : **au plus 15 plaques** dans `03` (11 à 15, 4 rangées) ; borne
+  de la spec 3 m 15 c 9 d 19 u = 4 609.
+- Revue `code-reviewer` (Sonnet) de `sonde-collections.ts` : faux « 0 problème » si `--tirages` invalide ou si aucun bloc
+  n'est lu → corrigé (refus de `--tirages abc`, échec à 0 bloc, essayé sur `ce2-10`) ; regex d'ouverture tolérant
+  espaces et `\r` comme le parseur. Même défaut dans `sonde-cubes.ts`, hors de cette PR.
+- 2026-11-06 : #2433 mergée (CI verte ; revue : `code-reviewer` Sonnet sur la sonde, corrigé). Branche
+  `feat/questions-ce2-lot11-db` pour les ids et la migration.
+- 2026-11-06 : `create-questions --publier` (David, depuis le worktree) : 6 brouillons en prod, relus au MCP (draft, CE2,
+  niveaux 10 à 14 et 20 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids sur la branche
+  `feat/questions-ce2-lot11-db`. Migration `20261106130322_questions_ce2_lot11_rangement_tags` + test, tirés du lot 10.
+- Base locale : la mise en place des tests d'intégration ne pouvait plus effacer les profs de démo (un lien
+  `class_journal_share_tokens` du prof `11111111…`, créé à 13 h 49 par une autre session) → ligne supprimée (accord de
+  David). Test : rouge sans le corps (5 échecs sur 9), vert 9/9.
+- `security-auditor` : aucun finding bloquant ; défaut du test relevé (point archivé CE2-001 = 3 modèles, message
+  « 1 point(s) » attendu) → le test archive CE2-005 (un modèle).
