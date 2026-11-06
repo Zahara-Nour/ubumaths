@@ -1,4 +1,5 @@
 {
+	"id": "69b52906-2ba4-4659-b1e2-095109cba676",
 	"title": "Étudier la fonction x ↦ E((X − x)²)",
 	"description": "f(x) = E((X − x)²) = x² + bx + c : b = −2E(X), minimum atteint en E(X), valeur minimale V(X) (case choix), démonstration (étapes à ranger)",
 	"grades": ["1_SPE"],

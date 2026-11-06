@@ -534,3 +534,12 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-9 --publier`
 
 Mergée (#2415, CI verte du premier coup).
+
+### Lot 9 en prod : brouillons, puis migration nœud + tag (2026-11-06)
+
+David a lancé `create-questions --publier` après #2415. Relevé prod (MCP) : 3 brouillons {1_SPE}, sans nœud ni tag :
+`b535b8fd` épreuves indépendantes (345), `4bd92a32` marche aléatoire (346), `69b52906` E((X − x)²) (361) ; aucun modèle
+déjà tagué sur ces points. Ids écrits dans les JSON du lot (cette PR), `git restore` fait dans le dépôt principal.
+Migration `20261106050929_questions_1spe_approfondissements_9_rangement_tags` (gabarit lot 7, aucune sous-notion neuve),
+test `questions-1spe-approfondissements-9-rangement-tags` 12/12 vert, rouge sans la migration (6 rouges, la suite
+principale ne s'exécute pas). Accès : Q5 de D3, personne.

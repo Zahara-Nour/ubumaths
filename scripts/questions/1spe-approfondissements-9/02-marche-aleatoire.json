@@ -1,4 +1,5 @@
 {
+	"id": "4bd92a32-9a02-4420-a5e0-3975562135dc",
 	"title": "Marche aléatoire sur une droite graduée",
 	"description": "Pion qui avance de 1 avec la probabilité p, recule sinon : être en 3 après trois étapes (p³), en 1 après trois étapes (3p²(1 − p)), revenu en O après deux étapes (2p(1 − p))",
 	"grades": ["1_SPE"],
