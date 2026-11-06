@@ -8,15 +8,15 @@
 
 _Mis à jour le 2026-11-05, après la publication du lot 10 (§ 86)._
 
-- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), 11 A en brouillon en prod (§ 89) ; 11 B écrit (§ 90, PR des fichiers).
-- **Prochaine action** : merger la PR du 11 B, David lance `create-questions --publier` sur
-  `2de-programmes-11b` ; puis migration de rangement 11 A + 11 B (15 nœuds + tags), page à cocher.
+- **État** : lots 1 à 10 et 12 publiés ; lot 11 : phase 0 validée (§ 87), 11 A et 11 B en brouillon en prod ; migration de rangement des 15 (§ 91, PR).
+- **Prochaine action** : merger la PR de la migration (`check:migrations --pr`), `db:migrate` depuis le
+  dépôt principal, vérifier au MCP ; puis page à cocher des 15, publication.
 - **En attente de David** : rien.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
   statut au MCP ; jamais `; gh pr merge` derrière la CI ; `create-questions` en local sur une COPIE du
   dossier, variables Supabase locales passées à la main (il ne lit que `.env` = prod) ; lettre ≠
   étiquette de choix ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lot11b`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lot11-rangement`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -2314,3 +2314,16 @@ une migration, une page à cocher ; ← seulement dans 2-219).
   `{{eval:…;d}}` (rendu `9{,}75`) ; `acceptDecimal` partagé sur 233 et 417.
 - Contrôles : simulation prod 5 à créer, specs vertes ; 60 tirages par modèle, 169 réponses recalculées en
   exécutant le code affiché (0 écart) ; LaTeX 1 392 formules, 0 problème. Joué en local : moyenne(9, 12, 7, 17) → `11,25` tapé « juste », corrigé `45/4 = 11,25`.
+
+## 91. Lot 11 B en brouillon, migration de rangement du lot 11 (2026-11-06)
+
+- #2413 mergée. David a lancé `create-questions --publier` sur `2de-programmes-11b` : da04078f (2-229),
+  8d46dd50 (2-416), e4784c78 (2-232), 4ce02817 (2-233), f77e86cf (2-417) ; MCP : brouillons, `grades = ['2']`,
+  sans nœud ni tag. (Une commande du chantier CE2, `ce2-9 --publier`, a été lancée d'abord depuis le dépôt
+  principal par erreur : 8 brouillons CE2 créés, ids laissés non commités dans le dépôt principal, à la
+  session CE2.)
+- Relevé MCP : les 15 points sont sur le nœud visé ou sur sa notion (220, 228 sur la notion Variables et
+  instructions ; 232, 233, 416, 417 sur la notion Fonctions Python).
+- Migration `20261106050048_questions_2de_lot11_rangement_tags` (gabarit du lot 10, sans la partie
+  « anciens ») : 15 nœuds + tags. Test d'intégration 11/11, 6 rouges sans le corps de la migration ;
+  `types:cliquet` tenu.

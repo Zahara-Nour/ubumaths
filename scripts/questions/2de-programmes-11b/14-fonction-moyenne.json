@@ -1,4 +1,5 @@
 {
+	"id": "4ce02817-c5b4-4500-9d0c-0bbf7be0a662",
 	"title": "Lire une fonction Python qui renvoie une moyenne",
 	"description": "Valeur renvoyée par moyenne(a, b, c, d) ; ce que renvoie une fonction qui additionne n lancers de dé puis divise par n ; moyenne de deux notes avec coefficients",
 	"grades": ["2"],
