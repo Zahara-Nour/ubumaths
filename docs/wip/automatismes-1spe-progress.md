@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2438 ; PR du rangement de `c1c9cfc3` en cours._
+_Mis à jour le 2026-11-06, après #2446 (point 2-496 et rangement de `c1c9cfc3`, migration appliquée)._
 
-- **État** : modèle `c1c9cfc3` et fiche **`894f766e`** (brouillon) écrits en prod par David ; PDF depuis la
-  base vérifié (1 + 1 + 3 p., 0 débord, 16 réponses justes). Branche `feat/automatismes-rangement-formule` :
-  point neuf 2-496 + rangement de `c1c9cfc3`, migration et test écrits, intégration verte, preuve rouge faite ·
-  **Prochaine action** : PR, `code-reviewer` + `security-auditor`, merge, `db:migrate` ; puis lot 3 « Proportions et pourcentages » ·
-  **En attente de David** : publication en
-  admin de `9bd4bcc6`, `894f766e` et des 6 fiches de 1re · **Pièges en cours** : écritures ET simulations
-  contre la prod lancées par David ; `debord.py` ne voit pas une équation centrée trop large : relire les
-  pages ; variable `i` = unité imaginaire ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
-  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe` · `feat/automatismes-rangement-formule`.
+- **État** : lot « Calcul littéral et équations » bouclé : modèle `c1c9cfc3` rangé (Algèbre › Calcul littéral
+  › substitution, point neuf 2-496), fiche **`894f766e`** écrite en prod et vérifiée (0 débord) · **Prochaine
+  action** : lot 3 « Proportions et pourcentages » (phase 0 : capacités du BO, relevé des modèles en prod,
+  candidats par série) · **En attente de David** : publication en admin de `9bd4bcc6`, `894f766e` et des 6
+  fiches de 1re ; publication du modèle `c1c9cfc3` (brouillon) · **Pièges en cours** : écritures ET
+  simulations contre la prod lancées par David (commande donnée avec `!`) ; `debord.py` ne voit pas une
+  équation centrée trop large : relire les pages ; variable `i` = unité imaginaire ; lire les VARIANTES des
+  modèles voisins avant de proposer un modèle neuf ; un point neuf de programme décale l'ordre d'affichage du
+  niveau (1..N exigé par `passe-points-lycee.test.ts`) et entre dans `LATER` de
+  `tests/helpers/database/later-migrations.ts` · **Worktree / branche** : aucun (retiré).
 - Fiches à publier : `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
@@ -514,3 +515,8 @@ scripts/questions/automatismes-2de-calcul-litteral --publier` (écrit l'`id` dan
 - Base locale : migration appliquée (`migration up --local --include-all`, qui a rattrapé 9 migrations de
   `main` absentes en local). Le global-setup des tests d'intégration échoue sur un lien de partage
   `VideoEssaiLocal0123` (classe de démo, créé à 13 h 49 par une autre session) : David a dit d'attendre.
+- Revue (#2446) : `code-reviewer` → décalage des rangs et son rollback assertés, garde du rang de 2-489
+  stricte (`is distinct from`), garde « 2-489 déplacé » et « aucun modèle touché en local » testées ;
+  `security-auditor` : rien de bloquant (faibles déjà acceptés aux lots précédents). CI verte, #2446 mergée
+  (après la fin d'un `deploy:prod`), `db:migrate` appliqué ; relevé MCP : 2-496 au rang 51 sur substitution,
+  7 références, `c1c9cfc3` rangé et tagué, ordre de 2de 1..295 sans doublon, trigger `updated_at` actif.
