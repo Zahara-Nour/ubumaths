@@ -31,8 +31,12 @@ export const QUESTIONS_1SPE_APPRO5 =
 /** Sous-notion « Géométrie > Géométrie repérée > parabole », lot 8 de 1re spé. */
 export const QUESTIONS_1SPE_APPRO8 =
 	'supabase/migrations/20261105195513_questions_1spe_approfondissements_8_rangement_tags.sql';
+/** Point 2-496 (automatismes de 2de, rang 51 : les points de 2de suivants descendent d'un rang), chantier automatismes-1spe. */
+export const AUTOMATISMES_1SPE_POINT_2_496 =
+	'supabase/migrations/20261106162749_automatismes_1spe_point_application_numerique.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
+	AUTOMATISMES_1SPE_POINT_2_496,
 	QUESTIONS_1SPE_APPRO8,
 	QUESTIONS_1SPE_APPRO5,
 	QUESTIONS_3_LOTS7_8,

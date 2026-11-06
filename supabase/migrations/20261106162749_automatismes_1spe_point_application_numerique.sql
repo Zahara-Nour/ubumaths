@@ -6,8 +6,9 @@
 --      formules utilisées dans les autres disciplines) » : puce de la partie Automatismes du BO de
 --      2de (Calcul numérique et algébrique), absente de la base. Rubrique « Automatismes > Calcul
 --      numérique et algébrique », savoir-faire, attendu, fluence (comme 2-489), sur « Algèbre >
---      Calcul littéral > substitution ». Rang d'affichage 50, celui de 2-489 : à rang égal, l'ordre
---      est celui du code (2-489, 2-496, puis 2-490 au rang 51), sans renuméroter les autres points.
+--      Calcul littéral > substitution ». Rang d'affichage 51, juste après 2-489 (rang 50) : les points
+--      de 2de de rang ⩾ 51 descendent d'un rang (l'ordre de chaque niveau reste 1..N, sans trou ni
+--      doublon, ce qu'exige tests/integration/passe-points-lycee.test.ts).
 --   2. Références d'automatismes de 2-496 : 2, 1_SPE, 1_GEN, 1_TECHNO, T_SPE, T_COMP, T_TECHNO
 --      (comme 2-273 ; le BO de Tle techno liste la même puce).
 --   3. c1c9cfc3 (Application numérique d'une formule, brouillon de 2de) → « Algèbre > Calcul
@@ -37,8 +38,8 @@
 -- au programme de 2de et dans les automatismes des niveaux rattachés (lus par les mêmes
 -- personnes) ; le brouillon apparaît sous son nœud et sous son point dans l'admin.
 --
--- Rollback (aucune donnée d'élève). Il retire le tag, rend le modèle sans nœud, puis supprime
--- les références et le point (aucun autre contenu ne peut l'avoir tagué entre-temps sans qu'on
+-- Rollback (aucune donnée d'élève). Il retire le tag, rend le modèle sans nœud, supprime les
+-- références et le point, puis remonte d'un rang les points de 2de qui suivaient (aucun autre contenu ne peut l'avoir tagué entre-temps sans qu'on
 -- le perde : le `delete` du point échoue alors sur sa clé étrangère). Bloc éprouvé par le test
 -- d'intégration, à jouer dans UNE transaction (`psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL
 -- en un seul envoi) :
@@ -59,6 +60,8 @@
 --  using public.curriculum_points p
 --  where p.id = a.point_id and p.code = '2-496';
 -- delete from public.curriculum_points where code = '2-496';
+-- update public.curriculum_points set display_order = display_order - 1
+--  where grade = '2' and display_order > 51;
 -- ROLLBACK:END
 -- ============================================================================
 
@@ -74,11 +77,21 @@ begin
 	end if;
 end $garde_code$;
 
+do $garde_rangs$
+begin
+	if (select display_order from public.curriculum_points where code = '2-489') <> 50 then
+		raise exception 'le rang de 2-489 a changé depuis le relevé (50 attendu)';
+	end if;
+end $garde_rangs$;
+
+update public.curriculum_points set display_order = display_order + 1
+ where grade = '2' and display_order >= 51;
+
 insert into public.curriculum_points
 	(code, grade, name, kind, exigence, regime_acquisition, rubrique, display_order, node_id)
 select '2-496', '2',
 	$pt$Effectuer une application numérique d'une formule (notamment pour les formules utilisées dans les autres disciplines)$pt$,
-	'savoir_faire', 'attendu', 'fluence', $pt$Automatismes > Calcul numérique et algébrique$pt$, 50, s.id
+	'savoir_faire', 'attendu', 'fluence', $pt$Automatismes > Calcul numérique et algébrique$pt$, 51, s.id
   from public.classification_nodes b
   join public.classification_nodes n on n.parent_id = b.id and n.kind = 'notion' and n.archived_at is null
   join public.classification_nodes s on s.parent_id = n.id and s.kind = 'subnotion' and s.archived_at is null
@@ -89,6 +102,10 @@ do $point$
 begin
 	if (select count(*) from public.curriculum_points where code = '2-496') <> 1 then
 		raise exception 'point 2-496 non créé : nœud « Algèbre > Calcul littéral > substitution » introuvable';
+	end if;
+	if exists (select display_order from public.curriculum_points where grade = '2'
+	           group by display_order having count(*) > 1) then
+		raise exception 'ordre d''affichage de 2de en doublon après l''insertion';
 	end if;
 end $point$;
 

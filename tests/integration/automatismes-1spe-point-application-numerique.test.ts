@@ -57,7 +57,7 @@ const POINT = [
 	'attendu',
 	'fluence',
 	'Automatismes > Calcul numérique et algébrique',
-	'50',
+	'51',
 	NOEUD
 ].join('§');
 const REFERENCES = ['1_GEN', '1_SPE', '1_TECHNO', '2', 'T_COMP', 'T_SPE', 'T_TECHNO'];

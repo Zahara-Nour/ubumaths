@@ -10,11 +10,9 @@ _Mis à jour le 2026-11-06, après #2438 ; PR du rangement de `c1c9cfc3` en cour
 
 - **État** : modèle `c1c9cfc3` et fiche **`894f766e`** (brouillon) écrits en prod par David ; PDF depuis la
   base vérifié (1 + 1 + 3 p., 0 débord, 16 réponses justes). Branche `feat/automatismes-rangement-formule` :
-  point neuf 2-496 + rangement de `c1c9cfc3`, migration et test écrits, **tests d'intégration pas encore
-  lancés** · **Prochaine action** : tests d'intégration (le nouveau + seeds 2de/1re/Tle), preuve rouge, PR,
-  `code-reviewer` + `security-auditor`, merge, `db:migrate` ; puis lot 3 « Proportions et pourcentages » ·
-  **En attente de David** : feu vert pour la base locale (lien `VideoEssaiLocal0123` d'une autre session
-  qui bloque le global-setup des tests d'intégration : NE PAS le supprimer sans son accord) ; publication en
+  point neuf 2-496 + rangement de `c1c9cfc3`, migration et test écrits, intégration verte, preuve rouge faite ·
+  **Prochaine action** : PR, `code-reviewer` + `security-auditor`, merge, `db:migrate` ; puis lot 3 « Proportions et pourcentages » ·
+  **En attente de David** : publication en
   admin de `9bd4bcc6`, `894f766e` et des 6 fiches de 1re · **Pièges en cours** : écritures ET simulations
   contre la prod lancées par David ; `debord.py` ne voit pas une équation centrée trop large : relire les
   pages ; variable `i` = unité imaginaire ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
@@ -507,6 +505,12 @@ scripts/questions/automatismes-2de-calcul-litteral --publier` (écrit l'`id` dan
   `tests/integration/automatismes-1spe-point-application-numerique.test.ts` ; fixtures des seeds de points
   (2de : 295 points ; références de 2-496 dans les 7 fixtures) et compteurs des tests de seed mis à jour.
   Pas d'exception de niveaux (modèle en {2}, point de 2de).
+- Rang d'affichage : `passe-points-lycee.test.ts` exige 1..N sans doublon par niveau → 2-496 au rang 51, les
+  points de 2de de rang ⩾ 51 descendent d'un rang (rollback : remontent) ; migration ajoutée à `LATER` de
+  `tests/helpers/database/later-migrations.ts` (le test de la passe la défait avant de rejouer).
+- Lien `VideoEssaiLocal0123` disparu (l'autre session l'a retiré) : 13 fichiers d'intégration verts (120
+  tests : le neuf, les 7 seeds de points, passe lycée, scission, facettes, rangements, tspe lot 7). Preuve
+  rouge : corps de la migration retiré → 7 rouges sur 10.
 - Base locale : migration appliquée (`migration up --local --include-all`, qui a rattrapé 9 migrations de
   `main` absentes en local). Le global-setup des tests d'intégration échoue sur un lien de partage
   `VideoEssaiLocal0123` (classe de démo, créé à 13 h 49 par une autre session) : David a dit d'attendre.
