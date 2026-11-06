@@ -6,7 +6,7 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, phase 0 du lot 9 validée (§ 25)._
+_Mis à jour le 2026-11-06, PR B du lot 9 ouverte (§ 26)._
 
 - **État** : lots 1 à 8 et #2305 mergés, en prod depuis la 0.69.0. Ordre de David du 2026-11-06
   (`outils-manquants.md`) : lot 9 « bissectrice construite + règle des médiatrices relâchée » ;
@@ -1167,3 +1167,20 @@ sévère que l'élève.
 4. Message de **l'angle voisin gardé**.
 5. Médiatrices : faisable si la médiatrice a **au moins 2 unités dans la fenêtre**.
 6. **Deux PR** : B (médiatrices) d'abord, puis A (bissectrice).
+
+## 26. Lot 9, PR B — médiatrices relâchées (2026-11-06)
+
+- `mediatriceSupportError` (`line.ts`) : la médiatrice de [AB] est faisable si elle a **au moins 2 unités
+  dans la fenêtre** (`MEDIATRICE_MIN_ROOM`, longueur de la droite dans la fenêtre par Liang-Barsky,
+  `roomInFrame`) ; plus de cercles de rayon AB exigés. Vaut pour la médiatrice, le milieu, le cercle
+  circonscrit et son centre (`circumcenterSupportError`, message ajusté). Juge de l'élève inchangé
+  (l'exception 2 du § 15 acceptait déjà des cercles égaux de rayon quelconque).
+- Message d'auteur : « la médiatrice de [AB] n'a pas 2 unités dans la fenêtre (l'élève ne peut pas la
+  construire) : agrandir la fenêtre ou déplacer A et B ».
+- Aide du catalogue (`block-catalog/figure-a-completer.ts`) et `docs/systeme/questions.md` mis à jour.
+- Tests : `construction-line.test.ts` (A(2 ; 3), B(7 ; 5) admis pour la médiatrice et le milieu ; cercles
+  égaux de rayon 4 → juste ; coin de la fenêtre, 1,7 unité → refusé), `construction-circle.test.ts`
+  (triangle presque équilatéral admis, pour le cercle et le centre seul). Rouges avant le code (5 échecs) ;
+  le test « rayon 4 → juste » est une garde, vert avant (le juge l'acceptait déjà).
+- Pas de refus testé pour le cercle circonscrit : les médiatrices passent par le centre, déjà exigé dans
+  la fenêtre ; le cas qui refuse (triangle presque plat dans un coin) est exotique.
