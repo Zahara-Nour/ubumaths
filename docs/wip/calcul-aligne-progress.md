@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2422._
+_Mis à jour le 2026-11-06, après #2423._
 
-- **État** : #2410 puis #2422 mergées (calcul **centré** `array{rcl}`, revue traitée) ; rien en prod tant que David ne lance pas `deploy:prod` · **Prochaine action** : PR à part « éditeur inactif plusieurs secondes » (état « chargement » visible + MathLive chargé plus tôt, accord de David le 2026-11-06 — voir Journal) · **En attente de David** : essai du calcul centré (5176) ; bouton = 1 ligne (fait) ou 2 vides, pas tranché ; regarder ou non le cahier de texte de la démo sans formules · **Pièges en cours** : voir « Pièges » · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` sur `fix/calcul-aligne-relations` (mergée, distante supprimée) — gardé pour le serveur de test 5176 ; la PR suivante y part d'une nouvelle branche depuis `origin/main`
+- **État** : #2410, #2422 (calcul **centré** `array{rcl}`) et #2423 (éditeur : chargement et échec affichés, garde des imports `mathlive`) mergées ; rien en prod tant que David ne lance pas `deploy:prod` · **Prochaine action** : selon l'essai de David ; sinon fin de chantier = versement (le durable est déjà dans `ubumark.md` et `composants-ui.md`), journal archivé, worktree retiré · **En attente de David** : essai du calcul centré (5176) ; bouton = 1 ligne (fait) ou 2 vides, pas tranché ; regarder ou non le cahier de texte de la démo sans formules · **Pièges en cours** : voir « Pièges » et Journal 2026-11-06 (import nommé de `mathlive` = SSR cassé ; création synchrone retirée) · **Worktree / branche** : `../ubumaths-wt-calcul-aligne` sur `fix/editeur-chargement` (mergée, distante supprimée) — gardé pour le serveur de test 5176
 
 ## Décisions de David (2026-11-06)
 
