@@ -1,4 +1,5 @@
 {
+	"id": "ff3a3a15-6e89-4914-99f5-d059c7789f67",
 	"title": "Calculer une factorielle avec Python",
 	"description": "Fonction fact(n) par une boucle for : faire tourner (n de 4 à 7), compléter la ligne de la boucle, choisir la valeur initiale du produit",
 	"grades": ["1_SPE"],

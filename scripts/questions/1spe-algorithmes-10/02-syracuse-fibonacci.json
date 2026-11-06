@@ -1,4 +1,5 @@
 {
+	"id": "025ad9fa-e109-457c-9d46-0b5467fbce0a",
 	"title": "Suite de Syracuse, suite de Fibonacci en Python",
 	"description": "Syracuse : faire tourner 3 ou 4 tours depuis un entier tiré, compléter le cas impair ; Fibonacci en liste : compléter l'élément ajouté par append",
 	"grades": ["1_SPE"],
