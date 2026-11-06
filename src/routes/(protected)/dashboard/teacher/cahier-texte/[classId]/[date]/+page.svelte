@@ -24,6 +24,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+	import { isLegacyHtmlContent } from '$lib/journal/content';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
@@ -60,7 +61,25 @@
 	// sans remonter le composant, et un niveau périmé filtrerait sur la mauvaise classe.
 	let classGrades = $derived(data.classData.grade ? [data.classData.grade] : null);
 
-	let lessonContent = $state(initialData.entry?.lessonContent || '');
+	/**
+	 * Contenu tel qu'en base au chargement : il n'alimente que l'éditeur.
+	 *
+	 * Le cahier est écrit en ubumark. Le texte envoyé est lu dans chaque éditeur
+	 * au moment de l'envoi (`getMarkdown`), pas par une liaison : la liaison
+	 * markdown de l'éditeur attend 150 ms après la dernière frappe, un clic sur
+	 * « Enregistrer » dans ce délai perdrait les derniers caractères.
+	 *
+	 * ⚠️ TRANSITOIRE : un contenu encore en HTML (écrit avant le chantier
+	 * cahier-ubumark) est chargé comme HTML, puis enregistré en markdown.
+	 */
+	const lessonContent = initialData.entry?.lessonContent || '';
+	let lessonEditor: ReturnType<typeof RichTextEditor> | null = $state(null);
+	let homeworkEditors: Record<string, ReturnType<typeof RichTextEditor> | null> = $state({});
+
+	/** Ce que l'éditeur doit charger : le markdown, ou le HTML d'avant le chantier. */
+	function editorInput(content: string): { markdownValue?: string; htmlValue?: string } {
+		return isLegacyHtmlContent(content) ? { htmlValue: content } : { markdownValue: content };
+	}
 	let isPublished = $state(initialData.entry?.isPublished || false);
 	let isSaving = $state(false);
 	let isDeleting = $state(false);
@@ -187,9 +206,14 @@
 	 * les homeworkItems vides et résout les échéances absentes — on ne filtre donc pas
 	 * ici, pour que les deux ne puissent pas diverger.
 	 */
-	let serializedHomework = $derived(
-		JSON.stringify(homeworkItems.map((t) => ({ content: t.content, dueDate: t.dueDate })))
-	);
+	function serializeHomework(): string {
+		return JSON.stringify(
+			homeworkItems.map((t) => ({
+				content: homeworkEditors[t.key]?.getMarkdown() ?? t.content,
+				dueDate: t.dueDate
+			}))
+		);
+	}
 
 	/**
 	 * Reprend la liste telle que la base la connaît, après enregistrement.
@@ -587,8 +611,11 @@
 	<form
 		method="POST"
 		action={formAction}
-		use:enhance={() => {
+		use:enhance={({ formData }) => {
 			isSaving = true;
+			// Lu dans les éditeurs au moment de l'envoi : voir `lessonContent`.
+			formData.set('lessonContent', lessonEditor?.getMarkdown() ?? lessonContent);
+			formData.set('homeworkItems', serializeHomework());
 			return async ({ result, update: formUpdate }) => {
 				isSaving = false;
 				await formUpdate();
@@ -629,10 +656,10 @@
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
-					<input type="hidden" name="lessonContent" value={lessonContent} />
 					<RichTextEditor
+						bind:this={lessonEditor}
+						{...editorInput(lessonContent)}
 						resourceGrades={classGrades}
-						bind:htmlValue={lessonContent}
 						preset="standard"
 						minHeight="200px"
 						maxHeight="400px"
@@ -653,8 +680,6 @@
 					</Card.Description>
 				</Card.Header>
 				<Card.Content class="space-y-4">
-					<input type="hidden" name="homeworkItems" value={serializedHomework} />
-
 					{#if !data.hasSchedule}
 						<!-- Trois des quatre classes actives sont dans ce cas. Un menu vide
 						     bloquerait la saisie : on retombe sur une date libre, en disant
@@ -688,8 +713,9 @@
 							</div>
 
 							<RichTextEditor
+								bind:this={homeworkEditors[homework.key]}
+								{...editorInput(homework.content)}
 								resourceGrades={classGrades}
-								bind:htmlValue={homeworkItems[index].content}
 								preset="standard"
 								minHeight="120px"
 								maxHeight="300px"

@@ -21,6 +21,7 @@
 	import { resolveResource, type ResourceKind, type ViewerRole } from '$lib/resources';
 	import type { InternalLinkReferenceType } from '$lib/ubumark';
 	import { cn } from '$lib/utils';
+	import { readInternalLinks } from '../internal-link-context';
 
 	interface Props {
 		/** Type of the internal resource */
@@ -29,10 +30,12 @@
 		uuid: string;
 		/** Display label for the link */
 		label: string;
-		/** Viewer role, used to pick the right route (default: student) */
+		/** Viewer role, used to pick the right route (default: the reader context, else student) */
 		role?: ViewerRole;
 		/** Class the reference is read from — required to link a chapter as a teacher */
 		classId?: string;
+		/** Share token of the public journal link — opens a cited worksheet without an account */
+		shareToken?: string;
 		/** Callback when the link is clicked (for SPA navigation) */
 		onClick?: (referenceType: InternalLinkReferenceType, uuid: string) => void;
 		/** Additional CSS classes */
@@ -43,19 +46,28 @@
 		referenceType,
 		uuid,
 		label,
-		role = 'student',
+		role,
 		classId,
+		shareToken,
 		onClick,
 		class: className = ''
 	}: Props = $props();
 
-	const resolved = $derived(
-		resolveResource(referenceType as ResourceKind, uuid, {
-			role,
+	// Lecteur posé par le `MarkdownRenderer` englobant (prop `internalLinks`) ;
+	// une prop explicite l'emporte.
+	const reader = readInternalLinks();
+
+	const resolved = $derived.by(() => {
+		const fromContext = reader();
+		return resolveResource(referenceType as ResourceKind, uuid, {
+			role: role ?? fromContext.role,
 			label,
-			context: { classId }
-		})
-	);
+			context: {
+				classId: classId ?? fromContext.classId,
+				shareToken: shareToken ?? fromContext.shareToken
+			}
+		});
+	});
 	const Icon = $derived(resolved.icon);
 
 	/**

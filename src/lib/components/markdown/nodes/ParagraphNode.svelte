@@ -107,7 +107,7 @@
 		genericFunctions,
 		hints = [],
 		onHintOpen,
-		internalLinkRole = 'student',
+		internalLinkRole,
 		onInternalLinkClick
 	}: Props = $props();
 

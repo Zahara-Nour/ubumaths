@@ -78,6 +78,7 @@
 	import type { GradeCode } from '$lib/types/grades';
 	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
 	import { provideLexicon, readLexicon } from './lexicon-context';
+	import { provideInternalLinks, type InternalLinkReader } from './internal-link-context';
 
 	interface Props {
 		/** Markdown content to render (template or resolved instance) */
@@ -142,6 +143,11 @@
 		 * d'un rendu parent ou du cadre de la question ; `null` : aucun mot.
 		 */
 		lexiconGrade?: GradeCode | null;
+		/**
+		 * Qui lit les références `[[…]]` : rôle, classe, jeton du lien public du
+		 * cahier. Absent : celui d'un rendu parent, sinon un élève.
+		 */
+		internalLinks?: InternalLinkReader;
 	}
 
 	let {
@@ -163,11 +169,13 @@
 		locale,
 		showAuthoringErrors,
 		restricted,
-		lexiconGrade
+		lexiconGrade,
+		internalLinks
 	}: Props = $props();
 
 	provideContentLocale(() => locale);
 	provideAuthoringErrors(() => showAuthoringErrors);
+	provideInternalLinks(() => internalLinks);
 	provideRestrictedRendering(() => restricted);
 	const isRestricted = readRestrictedRendering();
 	provideLexicon(() => lexiconGrade);

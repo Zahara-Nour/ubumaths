@@ -13,8 +13,7 @@
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { transformMathHtml } from '$lib/utils/sanitize';
-	import { linkifyResourceReferences } from '$lib/resources/linkify';
+	import JournalContent from '$lib/components/journal/JournalContent.svelte';
 	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import {
 		BookOpen,
@@ -94,17 +93,6 @@
 		return { text: `Dans ${diffDays} jours`, isUrgent: false };
 	}
 
-	// Transformed content for safe rendering.
-	//
-	// La transformation des références vient APRÈS l'assainissement : elle
-	// réinjecte le libellé tel quel dans le document, donc il doit déjà être du
-	// texte échappé. Sans elle, l'élève lit littéralement `[[exercise:3f2a…|…]]`.
-	function renderContent(raw: string | null | undefined): string {
-		return linkifyResourceReferences(transformMathHtml(raw || ''), { role: 'student' });
-	}
-
-	let lessonHtml = $derived(renderContent(data.entry.lessonContent));
-
 	/**
 	 * Les homeworkItems de la séance, chacun avec son rendu et son décompte.
 	 *
@@ -115,7 +103,6 @@
 	let homeworkItems = $derived(
 		data.entry.homework.map((travail) => ({
 			...travail,
-			html: renderContent(travail.content),
 			echeance: travail.dueDate ? getDaysUntilDue(travail.dueDate) : null
 		}))
 	);
@@ -165,9 +152,7 @@
 					</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<div class="prose prose-sm max-w-none dark:prose-invert">
-						{@html lessonHtml}
-					</div>
+					<JournalContent content={data.entry.lessonContent} links={{ role: 'student' }} />
 				</Card.Content>
 			</Card.Root>
 		{/if}
@@ -200,9 +185,7 @@
 					{/if}
 				</Card.Header>
 				<Card.Content>
-					<div class="prose prose-sm max-w-none dark:prose-invert">
-						{@html travail.html}
-					</div>
+					<JournalContent content={travail.content} links={{ role: 'student' }} />
 				</Card.Content>
 			</Card.Root>
 		{/each}

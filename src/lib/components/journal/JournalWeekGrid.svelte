@@ -20,7 +20,7 @@
 -->
 
 <script lang="ts">
-	import { referencesToLabels } from '$lib/resources/references';
+	import { journalContentPreview } from '$lib/journal/content';
 	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -70,15 +70,6 @@
 	function handleDayClick(day: JournalWeekDay) {
 		if (readonly || day.isWeekend || !onDayClick) return;
 		onDayClick(day.date);
-	}
-
-	/**
-	 * Strip HTML tags from content
-	 */
-	function stripHtml(html: string): string {
-		// Une référence citée dans la séance est réduite à son libellé : dans un
-		// aperçu de cinquante caractères, un uuid ne dirait rien à personne.
-		return referencesToLabels(html).replace(/<[^>]*>/g, '');
 	}
 </script>
 
@@ -133,7 +124,7 @@
 						<!-- Lesson content preview -->
 						{#if day.entry.lessonContent}
 							<p class="line-clamp-2 text-xs text-muted-foreground">
-								{stripHtml(day.entry.lessonContent).slice(0, 50)}...
+								{journalContentPreview(day.entry.lessonContent, 50)}
 							</p>
 						{/if}
 
