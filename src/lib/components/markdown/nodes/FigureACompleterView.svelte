@@ -13,7 +13,7 @@
 	- outil point (chantier `controles-figure`, lot 2a) : un toucher place un
 	  point (au nœud sur quadrillage) ; la correction montre chaque point attendu
 	  avec son nom et, pour un symétrique, [AA'] codé ;
-	- instruments sur papier uni (lot 2b, `docs/wip/controles-figure-progress.md`
+	- instruments sur papier uni (lot 2b, `docs/archive/wip/controles-figure-progress.md`
 	  § 7) : plusieurs outils = une palette (Règle, Équerre, Compas…) ; équerre :
 	  toucher une droite (surlignée), puis un point → la perpendiculaire ; compas :
 	  le centre, puis un point → le cercle ; aimantation : point → intersection

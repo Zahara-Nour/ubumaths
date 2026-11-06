@@ -3,7 +3,7 @@
  * ================================================
  *
  * Chantier `controles-figure`, lot 6 (phase 0 validée par David le 2026-11-03,
- * `docs/wip/controles-figure-progress.md` § 19) : `mesure AOB`, le rapporteur
+ * `docs/archive/wip/controles-figure-progress.md` § 19) : `mesure AOB`, le rapporteur
  * seul ; l'élève le pose en O sur [OA), lit, tape 50 sous la figure → juste ;
  * 130 → « mauvaise graduation », et à la correction l'arc codé « 50° ».
  */

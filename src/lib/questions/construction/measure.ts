@@ -6,7 +6,7 @@
  * le rapporteur (geste du lot 5, jamais noté) et tape la mesure en degrés sous
  * la figure. La mesure attendue est CALCULÉE sur la figure : l'auteur ne l'écrit
  * pas. Juste : la mesure exacte. Phase 0 validée par David le 2026-11-03
- * (`docs/wip/controles-figure-progress.md` § 19).
+ * (`docs/archive/wip/controles-figure-progress.md` § 19).
  *
  * `verifier: mesure AOB, rapporteur posé` (lot 8, § 23) : le rapporteur est déjà
  * posé en O, base sur le premier côté nommé, figé (`posedProtractorOf`) ; même juge.

@@ -3,7 +3,7 @@
  * ===================================================================
  *
  * Chantier `controles-figure`, lot 4 (phase 0 validée par David le 2026-11-03,
- * `docs/wip/controles-figure-progress.md` § 13) : `triangle ABC : AC = u ; BC = v`,
+ * `docs/archive/wip/controles-figure-progress.md` § 13) : `triangle ABC : AC = u ; BC = v`,
  * palette Segment · Compas · Report · Règle ; report de u en A, de v en B, côtés
  * jusqu'à l'intersection → juste ; à la correction, les côtés, les arcs, le codage.
  */

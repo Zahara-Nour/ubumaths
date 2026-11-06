@@ -2,7 +2,7 @@
  * Juge d'une case « figure » : construire un triangle par un côté et deux angles
  * (`verifier: triangle ABC : CAB = 40 ; ABC = 65`), ou par deux côtés et l'angle
  * compris (`AC = u ; CAB = 40`) — chantier `controles-figure`, lot 7, phase 0
- * validée par David le 2026-11-03 (`docs/wip/controles-figure-progress.md` § 21).
+ * validée par David le 2026-11-03 (`docs/archive/wip/controles-figure-progress.md` § 21).
  *
  * [AB] est tracé. L'élève pose le rapporteur en A (et en B), place un repère,
  * trace à la règle la droite du sommet au repère (« côté d'angle », construit),

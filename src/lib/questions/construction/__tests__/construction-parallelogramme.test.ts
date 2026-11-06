@@ -2,7 +2,7 @@
  * Juge d'une case « figure » : placer le 4e sommet d'un parallélogramme sur papier
  * uni (`verifier: point D = sommet(parallelogramme(A, B, C), 4)`, chantier
  * `controles-figure`, lot 4, phase 0 validée par David le 2026-11-03,
- * `docs/wip/controles-figure-progress.md` § 13).
+ * `docs/archive/wip/controles-figure-progress.md` § 13).
  *
  * Vérification `point` existante ; trois chemins justes (reports, diagonales,
  * parallèles) ; l'autre intersection des deux reports donne un ABCD croisé.

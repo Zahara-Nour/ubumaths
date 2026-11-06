@@ -3,7 +3,7 @@
  * ===================================================================
  *
  * Chantier `controles-figure`, lot 7 (phase 0 validée par David le 2026-11-03,
- * `docs/wip/controles-figure-progress.md` § 21) : `triangle ABC : CAB = 40 ;
+ * `docs/archive/wip/controles-figure-progress.md` § 21) : `triangle ABC : CAB = 40 ;
  * ABC = 65`, palette Rapporteur · Règle · Segment ; repère à 40 en A, droite de A
  * au repère, repère à 65 en B (rapporteur retourné), droite, côtés jusqu'au
  * croisement → juste ; à la correction, les côtés et les deux angles codés.

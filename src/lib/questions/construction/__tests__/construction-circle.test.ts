@@ -2,7 +2,7 @@
  * Juge d'une case « figure » : construire un cercle circonscrit
  * (`verifier: cercle c = cercle_circonscrit(A, B, C)`, chantier `controles-figure`,
  * lot 3b, phase 0 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 11).
+ * `docs/archive/wip/controles-figure-progress.md` § 11).
  *
  * L'élève trace avec la règle, l'équerre et le compas, sur papier uni ; un des cercles
  * tracés doit être le cercle attendu, son centre et son point de passage construits

@@ -18,7 +18,7 @@
  * une droite par un point) et compas (cercle par son centre et un point),
  * lot 2b. Plusieurs outils : une palette (papier uni, instruments). Report :
  * prendre un écartement entre deux points, puis piquer le compas ailleurs
- * (lot 4, `docs/wip/controles-figure-progress.md` § 13). Rapporteur : poser
+ * (lot 4, `docs/archive/wip/controles-figure-progress.md` § 13). Rapporteur : poser
  * son centre et sa base, puis placer des repères aux graduations (lot 5, § 16).
  */
 export const CONSTRUCTION_TOOLS = [
@@ -42,7 +42,7 @@ export const INSTRUMENT_TOOLS: readonly ConstructionTool[] = [
 
 /**
  * Palette déduite sans `grille:` (décision de David, 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 7) : placer un point ou tracer un
+ * `docs/archive/wip/controles-figure-progress.md` § 7) : placer un point ou tracer un
  * symétrique sur papier uni demande les instruments.
  */
 export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, ConstructionTool[]>> = {

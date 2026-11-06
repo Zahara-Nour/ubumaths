@@ -1,7 +1,7 @@
 /**
  * Juge d'une case « figure » : construire la bissectrice d'un angle
  * (`verifier: droite d = bissectrice(A, O, B)`, chantier `controles-figure`, lot 9,
- * PR A, phase 0 validée par David le 2026-11-06, `docs/wip/controles-figure-progress.md` § 25).
+ * PR A, phase 0 validée par David le 2026-11-06, `docs/archive/wip/controles-figure-progress.md` § 25).
  *
  * Au compas : arc piqué en O (ouvert à l'œil) qui coupe [OA) en A' et [OB) en B'
  * (exception 4), deux arcs égaux en A' et B' qui se coupent en P, droite (OP). Au

@@ -3,7 +3,7 @@
  * =====================================================
  *
  * Chantier `controles-figure`, lot 9, PR A (phase 0 validée par David le 2026-11-06,
- * `docs/wip/controles-figure-progress.md` § 25) : `droite d = bissectrice(A, O, B)`.
+ * `docs/archive/wip/controles-figure-progress.md` § 25) : `droite d = bissectrice(A, O, B)`.
  * Vrais touchers : l'arc piqué en O, ouvert à l'œil, coupe les côtés en A' et B'
  * (exception 4) ; deux arcs au compas, de A' par B' et de B' par A' ; la règle de O
  * au croisement → juste. À la correction : la bissectrice, les deux demi-angles

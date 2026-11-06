@@ -6,7 +6,7 @@
  * l'expression du langage des figures le met ; plusieurs lignes : plusieurs
  * points, NON nommés par l'élève, jugés comme un ensemble (chaque point attendu
  * touché, aucun de trop). Traits de construction : ignorés. Phase 0 validée par
- * David le 2026-11-02 (`docs/wip/controles-figure-progress.md` § 5).
+ * David le 2026-11-02 (`docs/archive/wip/controles-figure-progress.md` § 5).
  *
  * Messages, dans l'ordre : point qui manque ou mal placé (symétrique par un
  * axe : « perpendiculaire » si le point est à la bonne distance de l'axe mais

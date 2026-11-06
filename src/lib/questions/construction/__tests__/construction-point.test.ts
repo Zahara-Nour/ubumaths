@@ -1,7 +1,7 @@
 /**
  * Juge d'une case « figure » : placer un point (`verifier: point A' = symetrie(A, axe=d)`,
  * chantier `controles-figure`, lot 2a, phase 0 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 5).
+ * `docs/archive/wip/controles-figure-progress.md` § 5).
  *
  * L'élève place des points (outil point, un toucher, réponse `point(x;y)`) ; à
  * droite du `=`, une expression du langage des figures calculée à chaque tirage.

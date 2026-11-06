@@ -3,7 +3,7 @@
  * ================================================================
  *
  * Chantier `controles-figure`, lot 3b (phase 0 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 11) : `cercle c = cercle_circonscrit(A, B, C)`,
+ * `docs/archive/wip/controles-figure-progress.md` § 11) : `cercle c = cercle_circonscrit(A, B, C)`,
  * palette Règle · Équerre · Compas ; deux médiatrices, le compas piqué à leur
  * intersection par A → juste ; à la correction, le cercle, son centre et deux
  * médiatrices.

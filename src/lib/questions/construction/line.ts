@@ -5,7 +5,7 @@
  * `droite m = mediatrice(A, B)` : une des droites tracées par l'élève (règle,
  * équerre) est la droite que l'expression du langage des figures donne ; les
  * autres droites et les cercles sont des traits de construction, ignorés
- * (décision de David, 2026-11-02, `docs/wip/controles-figure-progress.md` § 9).
+ * (décision de David, 2026-11-02, `docs/archive/wip/controles-figure-progress.md` § 9).
  *
  * Sur papier uni, la droite doit être CONSTRUITE : par deux points construits
  * (points de la figure, intersections de deux AUTRES traits), ou à l'équerre :

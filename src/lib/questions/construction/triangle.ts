@@ -10,7 +10,7 @@
  * construits (centre, point de passage ou écartement du report pris sur des
  * points de la figure). Les deux C possibles, de part et d'autre de (AB), sont
  * justes. Phase 0 validée par David le 2026-11-03
- * (`docs/wip/controles-figure-progress.md` § 13).
+ * (`docs/archive/wip/controles-figure-progress.md` § 13).
  *
  * Lot 7 (§ 21) : un angle donné (`CAB = 40`) se construit au rapporteur posé
  * en A sur [AB) ; la règle du sommet au repère porte le côté (« côté d'angle »,

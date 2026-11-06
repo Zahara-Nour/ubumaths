@@ -1,7 +1,7 @@
 /**
  * Case « figure » : construire un angle de mesure donnée au rapporteur
  * (`verifier: angle AOy = 50`, chantier `controles-figure`, lot 5, phase 0
- * validée par David le 2026-11-03, `docs/wip/controles-figure-progress.md` § 16).
+ * validée par David le 2026-11-03, `docs/archive/wip/controles-figure-progress.md` § 16).
  *
  * Le côté [OA) est donné ; l'élève pose le rapporteur (centre O, base sur [OA)),
  * place un repère à la graduation voulue, puis trace au segment le côté [Oy) de

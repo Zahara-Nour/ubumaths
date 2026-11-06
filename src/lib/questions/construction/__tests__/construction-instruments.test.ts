@@ -1,6 +1,6 @@
 /**
  * Instruments sur papier uni (chantier `controles-figure`, lot 2b, phase 0 validée
- * par David le 2026-11-02, `docs/wip/controles-figure-progress.md` § 7).
+ * par David le 2026-11-02, `docs/archive/wip/controles-figure-progress.md` § 7).
  *
  * Palette déduite sans `grille:` (Règle, Équerre, Compas, Point ; Segment en plus
  * pour un symétrique de figure) ; équerre = perpendiculaire à une droite par un

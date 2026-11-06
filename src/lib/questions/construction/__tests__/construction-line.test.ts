@@ -1,7 +1,7 @@
 /**
  * Juge d'une case « figure » : construire une droite (`verifier: droite m = mediatrice(A, B)`,
  * chantier `controles-figure`, lot 3, phase 0 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 9).
+ * `docs/archive/wip/controles-figure-progress.md` § 9).
  *
  * L'élève trace avec la règle, l'équerre et le compas ; une des droites tracées doit
  * être la droite attendue (les autres traits sont de construction). Sur papier uni,

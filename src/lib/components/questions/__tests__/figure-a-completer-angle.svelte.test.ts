@@ -3,7 +3,7 @@
  * ====================================================================
  *
  * Chantier `controles-figure`, lot 5 (phase 0 validée par David le 2026-11-03,
- * `docs/wip/controles-figure-progress.md` § 16) : `angle AOy = 50`, palette
+ * `docs/archive/wip/controles-figure-progress.md` § 16) : `angle AOy = 50`, palette
  * Rapporteur · Segment ; rapporteur posé en O sur [OA), repère à 50, côté de O au
  * repère → juste ; 130 → « mauvaise graduation », et à la correction le côté et
  * l'arc codé ; ‹ › et Retourner.

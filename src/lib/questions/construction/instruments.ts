@@ -6,7 +6,7 @@
  * rend une construction exacte : un toucher va au point nommé le plus proche,
  * sinon à l'intersection de deux traits la plus proche, sinon sur le trait le
  * plus proche (piquer le compas « sur l'axe »), sinon reste libre. Phase 0
- * validée par David le 2026-11-02 (`docs/wip/controles-figure-progress.md` § 7).
+ * validée par David le 2026-11-02 (`docs/archive/wip/controles-figure-progress.md` § 7).
  *
  * Coordonnées en pleine précision (jamais arrondies ici) : le juge compare les
  * points à 1e-9 près, une construction exacte doit arriver exacte.
@@ -494,7 +494,7 @@ function sameRadiusCrossings(
 
 /**
  * Sur papier uni, ce que l'élève a CONSTRUIT (décision de David du 2026-11-03,
- * `docs/wip/controles-figure-progress.md` § 14) : un point l'est s'il est un
+ * `docs/archive/wip/controles-figure-progress.md` § 14) : un point l'est s'il est un
  * point de départ (`base`, voir `basePointsOf`) ou l'intersection de deux traits
  * construits ; un trait de l'élève l'est quand il tient sur des points construits
  * (`isSupported`). Exception (§ 15) : deux cercles de même rayon, même pris à

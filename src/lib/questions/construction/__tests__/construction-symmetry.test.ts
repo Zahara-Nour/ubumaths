@@ -1,7 +1,7 @@
 /**
  * Juge d'une case « figure » : symétrique sur quadrillage (`verifier: symetrique par d`,
  * chantier `controles-figure`, phase 0 du lot 1 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 3).
+ * `docs/archive/wip/controles-figure-progress.md` § 3).
  *
  * L'élève trace (outil segment) l'image de tout ce qui est tracé dans la figure sauf
  * l'axe ; `par O` (un point) : symétrie centrale. On juge le RÉSULTAT : image en
