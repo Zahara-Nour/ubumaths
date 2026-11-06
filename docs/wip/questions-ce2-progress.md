@@ -11,14 +11,14 @@ _Mis à jour le 2026-11-06, lot 11 publié._
 - **État** : lots 1 à 11 en prod et publiés. Restent au CE2 les 6 points D (086, 039, 043, 051, 065, 070).
 - **Prochaine action** : la case « figure » (` ```figure-a-completer `) est **en prod** (déjà utilisée par le lot 8,
   `ce2-8`) : phase 0 d'un lot 12 pour 070 (carré, rectangle, cercle, triangle rectangle) et 039 (segment de longueur
-  donnée : vérifier d'abord qu'un geste permet une longueur au mm) ; merger #2440 (page à cocher, plaques et gros
-  cubes dessinés) s'il ne l'est pas.
+  donnée : vérifier d'abord qu'un geste permet une longueur au mm) (#2440, page à cocher qui dessine plaques et gros
+  cubes, mergée).
 - **En attente de David** : go pour la phase 0 du lot 12.
 - **Pièges en cours** : `construire:` + « Espaces dès 4 chiffres » = forme à améliorer (`outils-manquants.md` n° 15) ;
   jamais de variable `e` (Euler) ; commitlint : corps ≤ 100 caractères par ligne ; `create-questions --publier` et
   `publier-lot` : David, depuis le worktree ; `Doc-inchangée:` dans un COMMIT pour une migration (garde de la CI) ;
   tests d'intégration bloqués si la base locale garde un lien `class_journal_share_tokens` du prof de démo.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `fix/page-a-cocher-centaines` (#2440).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, détaché sur `origin/main` (aucune branche en cours).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
