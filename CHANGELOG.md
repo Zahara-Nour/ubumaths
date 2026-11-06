@@ -2,6 +2,83 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.76.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.75.0...v0.76.0) (2026-11-06)
+
+### ✨ Features
+
+- **automatismes:** fiche « Automatismes : nombres (1) », automatismes de 2de entretenus en 1re ([392b750](https://github.com/Zahara-Nour/ubumaths/commit/392b7500d5217af5f07095253520248687ada2d8))
+- **automatismes:** fiche « calcul littéral et équations (1) » et modèle « application numérique » ([d4dbd2e](https://github.com/Zahara-Nour/ubumaths/commit/d4dbd2e2c8ff5396fbe635a44d6e6014378f285e))
+- **avatars:** emblèmes du lore pour les avatars par défaut ([80f94da](https://github.com/Zahara-Nour/ubumaths/commit/80f94da100dbdeb12d6e3a9a4b1e420b3f7f161d))
+- **cahier:** écrire et lire le cahier de texte en ubumark, HTML hérité encore lu ([2c8de73](https://github.com/Zahara-Nour/ubumaths/commit/2c8de7367b38db384e375123a21b753a8293d6b1))
+- **cahier:** vidéos hors de notre stockage rendues en lien, YouTube compris ([d450077](https://github.com/Zahara-Nour/ubumaths/commit/d45007725a2f68b70c964eb0d07313ea0b8c0292))
+- **construction:** bissectrice construite au compas ou au rapporteur (lot 9, PR A) ([37da937](https://github.com/Zahara-Nour/ubumaths/commit/37da937f8aab4a9a3613a7830af3510c212495b1))
+- **construction:** bissectrice refusée à l'auteur si un côté de l'angle n'est pas tracé ([5217ee0](https://github.com/Zahara-Nour/ubumaths/commit/5217ee073b49add29327898378459d52bcd0e19d))
+- **construction:** le report dans la palette de la médiatrice et du cercle circonscrit (lot 9) ([2558eae](https://github.com/Zahara-Nour/ubumaths/commit/2558eae2bb23086b2a0a987cf0c0b87a2debcd4f))
+- **construction:** médiatrice faisable dès 2 unités dans la fenêtre (lot 9, PR B) ([ba6a3dd](https://github.com/Zahara-Nour/ubumaths/commit/ba6a3dd61160367a1990abecc63b6c7617dfde34))
+- **questions:** 1re spé, algorithmes lot 10 (suites et dénombrement) ([822a67a](https://github.com/Zahara-Nour/ubumaths/commit/822a67a86fd8ed15e26d48dfffedcfe914387828))
+- **questions:** 1spe, nœud et tags des modèles d'algorithmes du lot 10 (migration de données) ([117fe61](https://github.com/Zahara-Nour/ubumaths/commit/117fe617dcee1b9571bd1924addd1733d58c4ccc))
+- **questions:** ce2 lot 11, 6 modèles de matériel multibase ([ef98ef5](https://github.com/Zahara-Nour/ubumaths/commit/ef98ef5b5613cf2f958b73443dddaf2e5e7609bf))
+- **questions:** ce2 lot 11, rangement et tags par migration ([0096c04](https://github.com/Zahara-Nour/ubumaths/commit/0096c041865bc7a86fcfb0b0c6782972be8c453e))
+- **questions:** lot 12 du CE2, terminer un carré ou un rectangle, reproduire un triangle ([54efe32](https://github.com/Zahara-Nour/ubumaths/commit/54efe32d5fc7199fffef94b8c59addcd6e75b355))
+- **questions:** seconde, démonstrations lot 1 (arithmétique, nombres réels, racines) ([067f595](https://github.com/Zahara-Nour/ubumaths/commit/067f595d49b625115f13d6ff45673f5a397e920e))
+
+### 🐛 Bug Fixes
+
+- **automatismes:** fiche nombres sur une page, sans formule coupée au PDF ([5f2e661](https://github.com/Zahara-Nour/ubumaths/commit/5f2e6610ed7b56f82c6e9d83e3f920fe236daab6))
+- **cahier:** lien vidéo sur sa propre ligne, journal à jour ([c431451](https://github.com/Zahara-Nour/ubumaths/commit/c431451462399bd520236bebbedf952324b71868))
+- **cahier:** ne jamais enregistrer un éditeur pas encore créé, classId validé ([4b05b60](https://github.com/Zahara-Nour/ubumaths/commit/4b05b60b506afe539ce3d224b01d95b0708cc0d3))
+- **construction:** cercle circonscrit tracé au report jugé, report refusé sur quadrillage ([c33fc85](https://github.com/Zahara-Nour/ubumaths/commit/c33fc853875ec33f2db1fc9f503b2b69d5adaaf7))
+- **construction:** côté de l'angle plus court que OA admis, côté manquant nommé ([229a78d](https://github.com/Zahara-Nour/ubumaths/commit/229a78d6959a6dd6515fec2a54128200eea1fb92))
+- **construction:** revue de la bissectrice, ordre libre et côté repassé ([881412a](https://github.com/Zahara-Nour/ubumaths/commit/881412aee0463d799af9b51d7b601a8c6d96e6a8))
+- **questions:** ce2 lot 11, 15 plaques au plus et sonde qui échoue sans bloc lu ([fd999c8](https://github.com/Zahara-Nour/ubumaths/commit/fd999c8c1e1a0b72c0d6fd4caa109dc98504f30a))
+- **questions:** ce2 lot 11, pluriel de gros cube ([af1cb52](https://github.com/Zahara-Nour/ubumaths/commit/af1cb52f7b9b62451bc36aa4b27673d4fedab4da))
+- **questions:** page à cocher, plaques de cent et gros cubes dessinés ([70781de](https://github.com/Zahara-Nour/ubumaths/commit/70781de38ed8932fe5b37bce22194aa5052f6efe))
+
+### 📚 Documentation
+
+- **cahier:** cahier de texte en ubumark, lecteur des références ([efc629b](https://github.com/Zahara-Nour/ubumaths/commit/efc629bca78759ab79bf8be3c3361a15db13e210))
+- **editeur:** isReady avant getMarkdown ([144452b](https://github.com/Zahara-Nour/ubumaths/commit/144452b57be4afbaf19247eac4309df16b5d6789))
+- **questions:** ce2 lot 11, doc système inchangée ([6e40c4d](https://github.com/Zahara-Nour/ubumaths/commit/6e40c4deb715856efc5a5802472b95a2177d7137))
+- **questions:** sonde des blocs collection, journal du lot 11 ce2 ([0169b73](https://github.com/Zahara-Nour/ubumaths/commit/0169b73e2f6ebdfc15d71631a7952efc6682a2d2))
+- **realtime:** provideProjectMediaOnly voisin du mode restreint ([8e5b204](https://github.com/Zahara-Nour/ubumaths/commit/8e5b2049228b00e9e62553dad38f188c3ed0d96c))
+- **ubumark:** bissectrice dans le catalogue, la doc système et le journal ([d2fb092](https://github.com/Zahara-Nour/ubumaths/commit/d2fb092d69c2cd34459647c08f5bf8c9f141c48a))
+- **ubumark:** report dans la palette de la droite et du cercle ([4574867](https://github.com/Zahara-Nour/ubumaths/commit/457486757af585fbc3479ef51b8e199deaf7db03))
+- **wip:** automatismes-1spe, lot Calcul littéral mergé ([#2438](https://github.com/Zahara-Nour/ubumaths/issues/2438)) ([e0e19f3](https://github.com/Zahara-Nour/ubumaths/commit/e0e19f383728f0c4db655bfbebfeb85133b4c2c5))
+- **wip:** automatismes-1spe, lot Nombres mergé ([#2432](https://github.com/Zahara-Nour/ubumaths/issues/2432)) ([4890da3](https://github.com/Zahara-Nour/ubumaths/commit/4890da335cc1fc8888602fb7d12c64879954cd8b))
+- **wip:** automatismes-1spe, suite vers les automatismes de 2de et phase 0 du lot Nombres ([e244057](https://github.com/Zahara-Nour/ubumaths/commit/e2440575fb02eb9a2dad8355a5f708064ca1dbd8))
+- **wip:** avatars-lore, [#2436](https://github.com/Zahara-Nour/ubumaths/issues/2436) mergée, journal archivé ([5b2cddd](https://github.com/Zahara-Nour/ubumaths/commit/5b2cddd81412cc4a1c9c1661e2730287edfc89fb))
+- **wip:** cahier-ubumark, ouverture et phase 0 ([1cf5b90](https://github.com/Zahara-Nour/ubumaths/commit/1cf5b90b19f78591f5e6861c54b83742b263d85b))
+- **wip:** cahier-ubumark, reprendre ici après [#2435](https://github.com/Zahara-Nour/ubumaths/issues/2435) ([ba44a24](https://github.com/Zahara-Nour/ubumaths/commit/ba44a24c82bea4136eafd89b06177c81f989960d))
+- **wip:** cahier-ubumark, reprendre ici après [#2442](https://github.com/Zahara-Nour/ubumaths/issues/2442) ([d571b5f](https://github.com/Zahara-Nour/ubumaths/commit/d571b5f6df6c82c45073048a04292eb518ec451b))
+- **wip:** cartes-probas-stats-terminale, état au 2026-11-06 (17 brouillons T_COMP) ([39c439d](https://github.com/Zahara-Nour/ubumaths/commit/39c439deaca6ee38b2b1c1472ba56b7778755346))
+- **wip:** controles-figure, correctif de la revue de [#2430](https://github.com/Zahara-Nour/ubumaths/issues/2430) ([d5b4b00](https://github.com/Zahara-Nour/ubumaths/commit/d5b4b00c5fdea4a8f8b0c7851ffc1bb4197cca61))
+- **wip:** controles-figure, garde doc à jour de [#2441](https://github.com/Zahara-Nour/ubumaths/issues/2441) ([8a81c5a](https://github.com/Zahara-Nour/ubumaths/commit/8a81c5a5a3e81e9f2257dbfcf1849e1f9da33970))
+- **wip:** controles-figure, lot 9 mergé ([#2439](https://github.com/Zahara-Nour/ubumaths/issues/2439)) ([822e2ae](https://github.com/Zahara-Nour/ubumaths/commit/822e2ae22a2746d6b544c5c242b330fc8f3f4899))
+- **wip:** controles-figure, phase 0 du lot 9 validée (bissectrice, médiatrices) ([d12a83f](https://github.com/Zahara-Nour/ubumaths/commit/d12a83fc91d9eaa4d78e2a30660756a8a7b29529))
+- **wip:** controles-figure, PR B du lot 9 (médiatrices) ([39518f3](https://github.com/Zahara-Nour/ubumaths/commit/39518f3bb40f23ba59f3e1294ae1b1a191262ebe))
+- **wip:** controles-figure, reprendre ici après [#2430](https://github.com/Zahara-Nour/ubumaths/issues/2430) ([486fd91](https://github.com/Zahara-Nour/ubumaths/commit/486fd916de6ded1841f055db27b6f550d9584847))
+- **wip:** controles-figure, reprendre ici après [#2441](https://github.com/Zahara-Nour/ubumaths/issues/2441) ([7e475c5](https://github.com/Zahara-Nour/ubumaths/commit/7e475c56a82297b42c399af15fc5c87d21ad488e))
+- **wip:** controles-figure, reprendre ici avant relance ([771d530](https://github.com/Zahara-Nour/ubumaths/commit/771d530a4554a9746d538e1a2ebd7e7a0ab00b6d))
+- **wip:** outils manquants, construire et espaces dès 4 chiffres ([34a61fe](https://github.com/Zahara-Nour/ubumaths/commit/34a61fe48e03292a3cdd18978e5a76e6215218a8))
+- **wip:** questions-1spe-demonstrations, lot 10 mergé ([#2429](https://github.com/Zahara-Nour/ubumaths/issues/2429)) ([c47e91c](https://github.com/Zahara-Nour/ubumaths/commit/c47e91c4ec3168e404275f46391cac32e6b8659a))
+- **wip:** questions-1spe-demonstrations, lot 10 publié ([ec66499](https://github.com/Zahara-Nour/ubumaths/commit/ec6649938ef89c6e9adf4768a6eb63f537aa2362))
+- **wip:** questions-1spe-demonstrations, migration du lot 10 jouée ([#2431](https://github.com/Zahara-Nour/ubumaths/issues/2431)) ([b1d6508](https://github.com/Zahara-Nour/ubumaths/commit/b1d650830915ce464cac500c213a735d56838822))
+- **wip:** questions-1spe-demonstrations, reprise avec [#2431](https://github.com/Zahara-Nour/ubumaths/issues/2431) ouverte ([81c6447](https://github.com/Zahara-Nour/ubumaths/commit/81c6447a0fe5897e33591588745c3f35b759d0e1))
+- **wip:** questions-2de-demonstrations, lot 1 mergé ([#2434](https://github.com/Zahara-Nour/ubumaths/issues/2434)) ([c961c30](https://github.com/Zahara-Nour/ubumaths/commit/c961c3093b8d9af22cb620f11a8e51ce2b5c61b2))
+- **wip:** questions-2de-demonstrations, lot 1 vérifié ([636bda7](https://github.com/Zahara-Nour/ubumaths/commit/636bda7ae36c5a176df85db1c85a80022e0f6d7a))
+- **wip:** questions-2de, lot 11 publié, seconde couverte ([d32b9fc](https://github.com/Zahara-Nour/ubumaths/commit/d32b9fc0c0a81b95c8cdfabffc6d9c70eaa83ee0))
+- **wip:** questions-ce2, lot 10 publié ([8675b4f](https://github.com/Zahara-Nour/ubumaths/commit/8675b4f2a3c0568b8d8f66dc77ae55ade08bb136))
+- **wip:** questions-ce2, lot 11 publié ([be494cc](https://github.com/Zahara-Nour/ubumaths/commit/be494cce98651a522bfa6d1eaf3c3d757e391d39))
+- **wip:** questions-ce2, lot 11 validé ([cc51e5b](https://github.com/Zahara-Nour/ubumaths/commit/cc51e5b0c2661f575105eea41a70ddf3fb88340f))
+- **wip:** questions-ce2, migration du lot 11 prouvée ([95aad1f](https://github.com/Zahara-Nour/ubumaths/commit/95aad1f80bb86c3e42906364b4bb2634f78bd7fc))
+- **wip:** questions-ce2, phase 0 du lot 11 (matériel multibase) ([e447ef2](https://github.com/Zahara-Nour/ubumaths/commit/e447ef2619a9ec3223b2734642ae5cfe9381aa18))
+- **wip:** questions-ce2, phase 0 du lot 12 et trois outils manquants ([44af5d2](https://github.com/Zahara-Nour/ubumaths/commit/44af5d2d8c238950a313b2be37c1e6636486cc4a))
+- **wip:** questions-ce2, reprendre ici après [#2433](https://github.com/Zahara-Nour/ubumaths/issues/2433) ([d5100c9](https://github.com/Zahara-Nour/ubumaths/commit/d5100c9f8c2bb87bad598a6bece12cd062f1f104))
+- **wip:** questions-ce2, reprendre ici après [#2440](https://github.com/Zahara-Nour/ubumaths/issues/2440) ([2b7eb05](https://github.com/Zahara-Nour/ubumaths/commit/2b7eb051cd042fb8b2cc77baa05ade3930827f16))
+- **wip:** questions-ce2, reprendre ici après [#2445](https://github.com/Zahara-Nour/ubumaths/issues/2445) ([d994f79](https://github.com/Zahara-Nour/ubumaths/commit/d994f79b4e31dee7d5186c93759c3851fdf2849c))
+- **wip:** questions-ce2, reprendre ici après l'écriture du lot 11 ([95011a4](https://github.com/Zahara-Nour/ubumaths/commit/95011a4c99f0a06e10635a7991773cb881aac792))
+- **wip:** vérifications calcul-aligne faites ([#2410](https://github.com/Zahara-Nour/ubumaths/issues/2410) → [#2425](https://github.com/Zahara-Nour/ubumaths/issues/2425)) ([b853da6](https://github.com/Zahara-Nour/ubumaths/commit/b853da69c0bc4005932d9ffee50ce239f98bb035))
+
 ## [0.75.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.74.0...v0.75.0) (2026-11-06)
 
 ### ✨ Features
