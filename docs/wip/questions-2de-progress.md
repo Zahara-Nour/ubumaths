@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après la publication du lot 11 (§ 93)._
+_Mis à jour le 2026-11-06, ouverture de `questions-2de-demonstrations` (§ 94)._
 
-- **État** : lots 1 à 12 publiés ; **seconde couverte**. 53 points sur 292 sans modèle publié, tous voulus :
-  42 P (Q2) et 11 D (Python à écrire, outil numérique, 392), relevé du § 93.
-- **Prochaine action** : à trancher par David — versement de fin de chantier (durable vers `docs/systeme/`,
-  journal archivé) ou retour aux points P (Q2 : « une fois le reste couvert, case choix en prod »).
-- **En attente de David** : ce choix.
+- **État** : lots 1 à 12 publiés ; **seconde couverte**. Les points P (Q2) sont repris par le chantier
+  `questions-2de-demonstrations` (D1 du 2026-11-06 : les 12 démonstrations d'abord, comme en 1re spé).
+- **Prochaine action** : aucune ici ; suivre `docs/wip/questions-2de-demonstrations-progress.md`. Versement de fin de
+  chantier une fois les P traités (Q6 de D1).
+- **En attente de David** : rien.
 - **Pièges en cours** : `--publier`, `publier-lot` → David avec `!`, puis MCP ; une autre session écrit
   aussi dans ce journal : `git pull`.
 - **Worktree / branche** : aucun chantier ouvert ; `../ubumaths-wt-questions-2de` (HEAD détachée) garde un
@@ -2348,3 +2348,9 @@ une migration, une page à cocher ; ← seulement dans 2-219).
   - P (Q2) : 216, 217, 239-242, 255-259, 282-286, 357, 493, 494, 304, 438, 305-310, 320-324, 495, 353,
     358-363, 387, 388 (42) ;
   - D : 414, 225, 226, 227, 231, 234, 230 (Python à écrire, Q3), 452, 454, 351 (outil numérique, Q6), 392 (11).
+
+## 94. Points P : chantier `questions-2de-demonstrations` (2026-11-06)
+
+David : « comme pour les premières spécialités, en commençant par les démonstrations ». Phase 0 validée (D1 du journal
+`questions-2de-demonstrations-progress.md`) : les 12 démonstrations (239, 240, 255, 256, 282, 304, 438, 320, 357-360),
+puis les autres P ; ce journal sera versé une fois les P traités. Lot 1 mergé (#2434).

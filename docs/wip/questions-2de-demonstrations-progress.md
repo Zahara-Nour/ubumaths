@@ -6,18 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 1 écrit (§ 3), PR ouverte._
+_Mis à jour le 2026-11-06, après #2434 (lot 1 mergé)._
 
-- **État** : phase 0 validée (D1) ; lot 1 (239, 240, 255, 256, 282) écrit et vérifié, en PR.
-- **Prochaine action** : CI verte → merge ; puis David lance, depuis le dépôt principal à jour,
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-demonstrations-1 --publier` ; relevé MCP, ids
-  dans les JSON (PR), migration nœud + tag (gabarit `20261106050929`, aucune sous-notion neuve), page à cocher.
-- **En attente de David** : rien avant le merge.
+- **État** : phase 0 validée (D1) ; lot 1 (239, 240, 255, 256, 282) mergé (#2434), brouillons à créer en prod.
+- **Prochaine action** : David lance, depuis le dépôt principal à jour,
+  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-demonstrations-1 --publier` ; puis relevé MCP,
+  ids dans les JSON (PR), `git restore` dans le dépôt principal, migration nœud + tag (gabarit `20261106050929`,
+  aucune sous-notion neuve), page à cocher. Ensuite lot 2 (géométrie : 304, 438, 320).
+- **En attente de David** : la commande `create-questions --publier` ci-dessus.
 - **Pièges en cours** (repris de la 1re spé) : écritures en prod → commande `!` donnée à David ; `create-questions`
   écrit l'`id` dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal ;
   brouillons locaux : copie hors dépôt + `set -a; . ./.env.local` ; positions « ranger » par
   `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-1`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` (HEAD détachée), nouvelle branche depuis
+  `origin/main`.
 
 ---
 
@@ -82,3 +84,5 @@ le classifieur → c'est David qui lance la commande.
 Vérifié : `question:specs` 150 tirages par variation, 5/5 importables, 0 `\textcolor` hors `$` ; aperçus relus
 (distracteurs, corrigés) ; brouillons en base locale (copie hors dépôt) ; aperçu admin vu à l'écran : étapes à
 ranger du 256 (fractions, places numérotées), case en fin de formule longue du 282.
+
+Mergée (#2434, CI verte du premier coup).
