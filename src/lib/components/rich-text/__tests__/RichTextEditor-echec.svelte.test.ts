@@ -27,6 +27,11 @@ describe('RichTextEditor — création impossible', () => {
 		const alerte = container.querySelector('[role="alert"]');
 		expect(alerte?.textContent).toContain('L’éditeur n’a pas pu se charger');
 		expect(alerte?.querySelector('button')?.textContent).toContain('Recharger la page');
+		// VISIBLE, pas seulement présent : posé dans le panneau vide de l'éditeur (0 px de
+		// haut, défilement masqué), il était dans le DOM mais invisible (essai de David)
+		const bouton = alerte?.querySelector('button')?.getBoundingClientRect();
+		expect(alerte?.getBoundingClientRect().height ?? 0).toBeGreaterThan(60);
+		expect(bouton?.height ?? 0).toBeGreaterThan(0);
 		expect(container.querySelector('[data-chargement]')).toBeNull();
 		expect(container.querySelector('[inert]')).not.toBeNull();
 		// Le bouton markdown n'agirait sur rien : désactivé lui aussi
