@@ -6,17 +6,17 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, PR « côtés de la bissectrice » (§ 28) en cours._
+_Mis à jour le 2026-11-06, après #2441 (côtés de la bissectrice, § 28) mergée._
 
-- **État** : lots 1 à 9 mergés (#2430, #2439). Décisions du § 28 prises ; la garde M5 est codée sur
-  `feat/controles-figure-cotes-bissectrice`.
-- **Prochaine action** : CI verte → merger ; puis reste éventuel d'`outils-manquants.md` § 1, ou
-  versement du chantier (durable → `docs/systeme/`, journal archivé).
-- **En attente de David** : rien.
+- **État** : lots 1 à 9 mergés (#2430, #2439, #2441). Worktree et branche retirés.
+- **Prochaine action** : David choisit la suite : image par translation tracée (3e, outil n° 3),
+  angle non adjacent au côté (§ 21, décision 5), ou versement du chantier (durable →
+  `docs/systeme/`, journal archivé).
+- **En attente de David** : ce choix.
 - **Pièges en cours** : le Compas ne garde pas son écartement : deux cercles égaux à rayon libre =
   Report seulement ; tester avec de vrais touchers (`addTap`, écran) ; commitlint : sujet en
   minuscule, lignes du corps ≤ 100 caractères ; garde « doc à jour » : relancer après `git fetch`.
-- **Worktree / branche** : `ubumaths-wt-controles-figure`, `feat/controles-figure-cotes-bissectrice`.
+- **Worktree / branche** : aucun (nouvelle branche depuis `origin/main` pour la suite).
 
 ---
 
