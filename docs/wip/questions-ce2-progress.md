@@ -6,13 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2428._
+_Mis à jour le 2026-11-06, après la publication du lot 10._
 
-- **État** : lots 1 à 9 en prod et publiés ; lot 10 (solides) : 7 brouillons en prod, rangés et tagués (#2428,
-  `db:migrate` fait), page à cocher publiée (https://claude.ai/artifact/1AQfsQ8V4KDKzE44M742tB).
-- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; `publier-lot` (David, simulation
-  puis `--publier`) ; relevé MCP ; puis `collection` `centaines:` (001, 002, 005) en chantier à part.
-- **En attente de David** : relecture du lot 10 sur la page à cocher ; les patrons (06, 07) dans l'aperçu admin.
+- **État** : lots 1 à 10 en prod et publiés. Relevé MCP : **8 points CE2 sans modèle** — 001, 002 (`collection`
+  `centaines:`, outil neuf) et les 6 de la classe D (086, 039, 043, 051, 065, 070 : manipulation).
+- **Prochaine action** : chantier à part `collection` `centaines:` (001, 002, matériel de 005) — PR #2420
+  (`feat(ubumark): collection, centaines et milliers`) ouverte par une autre session : la regarder d'abord ; puis
+  039 et 070 avec la case « figure » (comme CE1-072 / 074).
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; `{{eval:}}` non entier = fraction LaTeX, refusée en
   coordonnée de figure (`demi()`) ; réponse de spec ≤ 133 caractères ; commitlint : corps ≤ 100 caractères par ligne ;
   `create-questions --publier` lancé depuis le dépôt principal y écrit les ids : les porter sur une branche ;
@@ -889,3 +890,7 @@ tag ne change aucune règle.
   (`check:migrations --pr 2428` OK) ; `db:migrate` depuis le dépôt principal (dry-run : la seule migration du lot) ;
   relevé MCP : 7/7 sur le nœud de leur point, un point chacun, brouillons, `updated_at` intact. Page à cocher publiée
   (https://claude.ai/artifact/1AQfsQ8V4KDKzE44M742tB), base `verdicts` vide ; patrons (06, 07) non dessinés sur la page.
+- 2026-11-06 : relecture de David sur la page à cocher : 7 verdicts « ok », sans commentaire (base `verdicts` comptée),
+  posés en 5 s (11:49:53 à 11:49:58). Simulation puis `--publier` (David) ; relevé MCP : 7/7 `published`, CE2, rangés,
+  un point chacun (061, 062 ×2, 063, 064, 066 ×2). **Lot 10 clos.** Reste au CE2 : 001, 002 (outil `centaines:`) et
+  les 6 points de la classe D.
