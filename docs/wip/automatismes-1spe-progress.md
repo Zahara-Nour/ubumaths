@@ -6,22 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2438 (lot « Calcul littéral et équations » mergé)._
+_Mis à jour le 2026-11-06, après #2438 ; PR du rangement de `c1c9cfc3` en cours._
 
-- **État** : #2438 mergée (CI verte, `code-reviewer` sans finding) : modèle neuf « Application numérique
-  d'une formule » et script de la fiche « Automatismes : calcul littéral et équations (1) » sur `main`,
-  rien encore en base · **Prochaine action** : David lance, depuis `main`, `pnpm tsx
-scripts/create-questions.ts --dir scripts/questions/automatismes-2de-calcul-litteral --publier` (écrit
-  l'`id` dans le fichier, à commiter), puis `pnpm tsx scripts/create-automatismes-calcul-litteral.ts`
-  (simulation) et `… --publier` ; ensuite vérif PDF depuis la base et rangement du modèle neuf (nœud +
-  tag, migration, nouveau worktree) ; puis lot 3 « Proportions et pourcentages » · **En attente de
-  David** : les écritures ci-dessus ; publication en admin de `9bd4bcc6` et des 6 fiches de 1re ·
-  **Pièges en cours** : écritures ET simulations contre la prod lancées par David ; `debord.py` (venv du
-  dépôt principal) ne voit pas une équation centrée trop large : relire les pages ; variable `i` = unité
-  imaginaire ; lire les VARIANTES des modèles voisins avant de proposer un modèle neuf ; job CI
-  navigateur 2/2 qui plante → `gh run rerun --failed` · **Worktree / branche** : aucun (retiré).
-- Fiches à publier : `9bd4bcc6`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`, `84b512df`.
-  Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
+- **État** : modèle `c1c9cfc3` et fiche **`894f766e`** (brouillon) écrits en prod par David ; PDF depuis la
+  base vérifié (1 + 1 + 3 p., 0 débord, 16 réponses justes). Branche `feat/automatismes-rangement-formule` :
+  point neuf 2-496 + rangement de `c1c9cfc3`, migration et test écrits, intégration verte, preuve rouge faite ·
+  **Prochaine action** : PR, `code-reviewer` + `security-auditor`, merge, `db:migrate` ; puis lot 3 « Proportions et pourcentages » ·
+  **En attente de David** : publication en
+  admin de `9bd4bcc6`, `894f766e` et des 6 fiches de 1re · **Pièges en cours** : écritures ET simulations
+  contre la prod lancées par David ; `debord.py` ne voit pas une équation centrée trop large : relire les
+  pages ; variable `i` = unité imaginaire ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
+  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe` · `feat/automatismes-rangement-formule`.
+- Fiches à publier : `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
+  `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
 ## Décisions de David (figées)
 
@@ -488,3 +485,32 @@ scripts/questions/automatismes-2de-calcul-litteral --publier` (écrit l'`id` dan
   commiter) ; puis `pnpm tsx scripts/create-automatismes-calcul-litteral.ts` (simulation) et `… --publier`.
   Ensuite : rangement du modèle neuf (nœud + tag, migration, comme #2416) ; vérification PDF depuis la base.
 - #2438 mergée le 2026-11-06 (CI verte ; `code-reviewer` Sonnet : aucun finding, formules refaites à la main).
+
+### Écrit en prod, vérifié, rangement (2026-11-06)
+
+- David a lancé `create-questions --publier` : modèle **`c1c9cfc3`** (« Application numérique d'une
+  formule », 2de, brouillon), `id` écrit dans son fichier (commité sur la branche du rangement). Puis
+  `create-automatismes-calcul-litteral.ts --publier` : fiche **`894f766e`** (brouillon, 2 séries de 8).
+- PDF depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs --polices-corrige`, `debord.py`) : fiche
+  1 p., réponses 1 p., corrigé 3 p., 0 débord ; pages relues ; 16 réponses justes. Restent les deux défauts
+  non bloquants déjà notés (chaîne du quotient au ras de la colonne, en-tête « série 2 » seul en bas de la
+  page 1 du corrigé).
+- **Rangement, décision de David (2026-11-06)** : aucun point ne portait la puce du BO de 2de « Effectuer
+  une application numérique d'une formule » → **point neuf 2-496** (Automatismes › Calcul numérique et
+  algébrique, savoir-faire, attendu, fluence, rang 50 comme 2-489), sur Algèbre › Calcul littéral ›
+  substitution, rattaché aux automatismes de 2, 1_SPE, 1_GEN, 1_TECHNO, T_SPE, T_COMP, T_TECHNO (comme
+  2-273) ; `c1c9cfc3` sur ce nœud, tag 2-496. Écarté : tag 2-273 (exprimer une variable ≠ application
+  numérique). Question d'accès : personne ne gagne ni ne perd d'accès (David).
+- Migration `20261106162749_automatismes_1spe_point_application_numerique.sql`, test
+  `tests/integration/automatismes-1spe-point-application-numerique.test.ts` ; fixtures des seeds de points
+  (2de : 295 points ; références de 2-496 dans les 7 fixtures) et compteurs des tests de seed mis à jour.
+  Pas d'exception de niveaux (modèle en {2}, point de 2de).
+- Rang d'affichage : `passe-points-lycee.test.ts` exige 1..N sans doublon par niveau → 2-496 au rang 51, les
+  points de 2de de rang ⩾ 51 descendent d'un rang (rollback : remontent) ; migration ajoutée à `LATER` de
+  `tests/helpers/database/later-migrations.ts` (le test de la passe la défait avant de rejouer).
+- Lien `VideoEssaiLocal0123` disparu (l'autre session l'a retiré) : 13 fichiers d'intégration verts (120
+  tests : le neuf, les 7 seeds de points, passe lycée, scission, facettes, rangements, tspe lot 7). Preuve
+  rouge : corps de la migration retiré → 7 rouges sur 10.
+- Base locale : migration appliquée (`migration up --local --include-all`, qui a rattrapé 9 migrations de
+  `main` absentes en local). Le global-setup des tests d'intégration échoue sur un lien de partage
+  `VideoEssaiLocal0123` (classe de démo, créé à 13 h 49 par une autre session) : David a dit d'attendre.

@@ -1,4 +1,5 @@
 {
+	"id": "c1c9cfc3-ff82-4d7d-9df8-d32853a59bee",
 	"title": "Application numérique d'une formule",
 	"description": "Calculer une grandeur avec une formule d'une autre discipline (U = RI, d = vt, P = UI, ρ = m/V, Ec = ½mv²) : remplacer, puis calculer. Unité donnée dans la question, réponse décimale exacte.",
 	"grades": ["2"],

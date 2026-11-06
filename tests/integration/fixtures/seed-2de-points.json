@@ -652,9 +652,22 @@
 			"sous_notion": null
 		},
 		{
-			"code": "2-490",
+			"code": "2-496",
 			"grade": "2",
 			"display_order": 51,
+			"name": "Effectuer une application numérique d'une formule (notamment pour les formules utilisées dans les autres disciplines)",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Automatismes > Calcul numérique et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "substitution"
+		},
+		{
+			"code": "2-490",
+			"grade": "2",
+			"display_order": 52,
 			"name": "Utiliser une proportion pour calculer le tout connaissant une partie",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -667,7 +680,7 @@
 		{
 			"code": "2-491",
 			"grade": "2",
-			"display_order": 52,
+			"display_order": 53,
 			"name": "Déterminer graphiquement des images",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -680,7 +693,7 @@
 		{
 			"code": "2-492",
 			"grade": "2",
-			"display_order": 53,
+			"display_order": 54,
 			"name": "Déterminer graphiquement des antécédents",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -693,7 +706,7 @@
 		{
 			"code": "2-401",
 			"grade": "2",
-			"display_order": 54,
+			"display_order": 55,
 			"name": "Calculer le périmètre d'un polygone.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -706,7 +719,7 @@
 		{
 			"code": "2-402",
 			"grade": "2",
-			"display_order": 55,
+			"display_order": 56,
 			"name": "Interpréter les quartiles d'une série statistique (Q1 = 12 : au moins un quart des valeurs sont inférieures ou égales à 12).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -719,7 +732,7 @@
 		{
 			"code": "2-235",
 			"grade": "2",
-			"display_order": 56,
+			"display_order": 57,
 			"name": "Notations $\\mathbb{N}$ et $\\mathbb{Z}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -732,7 +745,7 @@
 		{
 			"code": "2-236",
 			"grade": "2",
-			"display_order": 57,
+			"display_order": 58,
 			"name": "Définition de la notion de multiple : $a$ est multiple de $b$ s'il existe un entier $k$ tel que $a = kb$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -745,7 +758,7 @@
 		{
 			"code": "2-418",
 			"grade": "2",
-			"display_order": 58,
+			"display_order": 59,
 			"name": "Définition de la notion de diviseur",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -758,7 +771,7 @@
 		{
 			"code": "2-419",
 			"grade": "2",
-			"display_order": 59,
+			"display_order": 60,
 			"name": "Définition des notions de nombre pair, de nombre impair",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -771,7 +784,7 @@
 		{
 			"code": "2-237",
 			"grade": "2",
-			"display_order": 60,
+			"display_order": 61,
 			"name": "Modéliser et résoudre des problèmes mobilisant les notions de multiple, de diviseur, de nombre pair, de nombre impair",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -784,7 +797,7 @@
 		{
 			"code": "2-238",
 			"grade": "2",
-			"display_order": 61,
+			"display_order": 62,
 			"name": "Présenter les fractions sous forme irréductible",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -797,7 +810,7 @@
 		{
 			"code": "2-239",
 			"grade": "2",
-			"display_order": 62,
+			"display_order": 63,
 			"name": "Pour une valeur numérique de $a$, la somme de deux multiples de $a$ est multiple de $a$",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -810,7 +823,7 @@
 		{
 			"code": "2-240",
 			"grade": "2",
-			"display_order": 63,
+			"display_order": 64,
 			"name": "Le carré d'un nombre impair est impair",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -823,7 +836,7 @@
 		{
 			"code": "2-241",
 			"grade": "2",
-			"display_order": 64,
+			"display_order": 65,
 			"name": "Déterminer si un entier naturel $a$ est multiple d'un entier naturel $b$",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -836,7 +849,7 @@
 		{
 			"code": "2-242",
 			"grade": "2",
-			"display_order": 65,
+			"display_order": 66,
 			"name": "Pour des entiers $a$ et $b$ donnés, déterminer le plus grand multiple de $a$ inférieur ou égal à $b$",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -849,7 +862,7 @@
 		{
 			"code": "2-243",
 			"grade": "2",
-			"display_order": 66,
+			"display_order": 67,
 			"name": "Ensemble $\\mathbb{R}$ des nombres réels, droite numérique",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -862,7 +875,7 @@
 		{
 			"code": "2-244",
 			"grade": "2",
-			"display_order": 67,
+			"display_order": 68,
 			"name": "Intervalles de $\\mathbb{R}$ ; représentation graphique, notations du type $[a\\,;\\,+\\infty[$, $]-\\infty\\,;\\,a]$, $[a\\,;\\,b]$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -875,7 +888,7 @@
 		{
 			"code": "2-245",
 			"grade": "2",
-			"display_order": 68,
+			"display_order": 69,
 			"name": "Notation en valeur absolue $|a|$ pour la distance de $a$ à $0$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -888,7 +901,7 @@
 		{
 			"code": "2-420",
 			"grade": "2",
-			"display_order": 69,
+			"display_order": 70,
 			"name": "Distance entre deux nombres réels",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -901,7 +914,7 @@
 		{
 			"code": "2-246",
 			"grade": "2",
-			"display_order": 70,
+			"display_order": 71,
 			"name": "Inéquation du type $|x - a| \\leqslant r$ ; représentation graphique des solutions, intervalle $[a - r\\,;\\,a + r]$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -914,7 +927,7 @@
 		{
 			"code": "2-247",
 			"grade": "2",
-			"display_order": 71,
+			"display_order": 72,
 			"name": "Ensemble $\\mathbb{D}$ des nombres décimaux",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -927,7 +940,7 @@
 		{
 			"code": "2-421",
 			"grade": "2",
-			"display_order": 72,
+			"display_order": 73,
 			"name": "Encadrement décimal d'un nombre réel à $10^{-n}$ près",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -940,7 +953,7 @@
 		{
 			"code": "2-248",
 			"grade": "2",
-			"display_order": 73,
+			"display_order": 74,
 			"name": "Ensemble $\\mathbb{Q}$ des nombres rationnels",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -953,7 +966,7 @@
 		{
 			"code": "2-422",
 			"grade": "2",
-			"display_order": 74,
+			"display_order": 75,
 			"name": "Nombres irrationnels, exemples fournis par la géométrie comme $\\sqrt{2}$ et $\\pi$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -966,7 +979,7 @@
 		{
 			"code": "2-249",
 			"grade": "2",
-			"display_order": 75,
+			"display_order": 76,
 			"name": "Lire l'abscisse d'un nombre réel sur une droite graduée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -979,7 +992,7 @@
 		{
 			"code": "2-250",
 			"grade": "2",
-			"display_order": 76,
+			"display_order": 77,
 			"name": "Placer un nombre réel d'abscisse donnée sur une droite graduée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -992,7 +1005,7 @@
 		{
 			"code": "2-251",
 			"grade": "2",
-			"display_order": 77,
+			"display_order": 78,
 			"name": "Représenter un intervalle de la droite numérique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1005,7 +1018,7 @@
 		{
 			"code": "2-252",
 			"grade": "2",
-			"display_order": 78,
+			"display_order": 79,
 			"name": "Déterminer si un nombre réel appartient à un intervalle donné",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1018,7 +1031,7 @@
 		{
 			"code": "2-253",
 			"grade": "2",
-			"display_order": 79,
+			"display_order": 80,
 			"name": "Donner un encadrement, d'amplitude donnée, d'un nombre réel par des décimaux",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1031,7 +1044,7 @@
 		{
 			"code": "2-254",
 			"grade": "2",
-			"display_order": 80,
+			"display_order": 81,
 			"name": "Dans le cadre de la résolution de problèmes, arrondir en donnant le nombre de chiffres significatifs adapté à la situation étudiée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1044,7 +1057,7 @@
 		{
 			"code": "2-255",
 			"grade": "2",
-			"display_order": 81,
+			"display_order": 82,
 			"name": "Le nombre rationnel $\\tfrac{1}{3}$ n'est pas décimal",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1057,7 +1070,7 @@
 		{
 			"code": "2-256",
 			"grade": "2",
-			"display_order": 82,
+			"display_order": 83,
 			"name": "Le nombre réel $\\sqrt{2}$ est irrationnel",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1070,7 +1083,7 @@
 		{
 			"code": "2-257",
 			"grade": "2",
-			"display_order": 83,
+			"display_order": 84,
 			"name": "Déterminer par balayage un encadrement de $\\sqrt{2}$ d'amplitude inférieure ou égale à $10^{-n}$",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1083,7 +1096,7 @@
 		{
 			"code": "2-258",
 			"grade": "2",
-			"display_order": 84,
+			"display_order": 85,
 			"name": "Développement décimal illimité d'un nombre réel",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1096,7 +1109,7 @@
 		{
 			"code": "2-259",
 			"grade": "2",
-			"display_order": 85,
+			"display_order": 86,
 			"name": "Observation, sur des exemples, de la périodicité du développement décimal de nombres rationnels",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1109,7 +1122,7 @@
 		{
 			"code": "2-260",
 			"grade": "2",
-			"display_order": 86,
+			"display_order": 87,
 			"name": "Règles de calcul sur les puissances entières relatives",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1122,7 +1135,7 @@
 		{
 			"code": "2-261",
 			"grade": "2",
-			"display_order": 87,
+			"display_order": 88,
 			"name": "Règles de calcul sur les racines carrées",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1135,7 +1148,7 @@
 		{
 			"code": "2-423",
 			"grade": "2",
-			"display_order": 88,
+			"display_order": 89,
 			"name": "Relation $\\sqrt{a^2} = |a|$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1148,7 +1161,7 @@
 		{
 			"code": "2-262",
 			"grade": "2",
-			"display_order": 89,
+			"display_order": 90,
 			"name": "Calculer sur des expressions algébriques simples, en particulier sur des expressions fractionnaires",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1161,7 +1174,7 @@
 		{
 			"code": "2-263",
 			"grade": "2",
-			"display_order": 90,
+			"display_order": 91,
 			"name": "Somme d'inégalités",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1174,7 +1187,7 @@
 		{
 			"code": "2-424",
 			"grade": "2",
-			"display_order": 91,
+			"display_order": 92,
 			"name": "Produit d'une inégalité par un réel positif, négatif, en liaison avec le sens de variation d'une fonction affine",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1187,7 +1200,7 @@
 		{
 			"code": "2-264",
 			"grade": "2",
-			"display_order": 92,
+			"display_order": 93,
 			"name": "Comparaison additive (par différence)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1200,7 +1213,7 @@
 		{
 			"code": "2-425",
 			"grade": "2",
-			"display_order": 93,
+			"display_order": 94,
 			"name": "Comparaison multiplicative (par rapport, pour deux nombres strictement positifs)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1213,7 +1226,7 @@
 		{
 			"code": "2-265",
 			"grade": "2",
-			"display_order": 94,
+			"display_order": 95,
 			"name": "Ensemble des solutions des équations du type $ax + b = 0$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1226,7 +1239,7 @@
 		{
 			"code": "2-266",
 			"grade": "2",
-			"display_order": 95,
+			"display_order": 96,
 			"name": "Ensemble des solutions des inéquations de la forme $ax + b > 0$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1239,7 +1252,7 @@
 		{
 			"code": "2-267",
 			"grade": "2",
-			"display_order": 96,
+			"display_order": 97,
 			"name": "Équation de la forme $A(x)B(x) = 0$ (équation produit nul)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1252,7 +1265,7 @@
 		{
 			"code": "2-268",
 			"grade": "2",
-			"display_order": 97,
+			"display_order": 98,
 			"name": "En liaison avec la section « Fonctions », étude du signe des expressions de la forme $A(x)B(x)$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1265,7 +1278,7 @@
 		{
 			"code": "2-426",
 			"grade": "2",
-			"display_order": 98,
+			"display_order": 99,
 			"name": "En liaison avec la section « Fonctions », étude du signe des expressions de la forme $\\tfrac{A(x)}{B(x)}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1278,7 +1291,7 @@
 		{
 			"code": "2-269",
 			"grade": "2",
-			"display_order": 99,
+			"display_order": 100,
 			"name": "Équation $\\tfrac{A(x)}{B(x)} = k$ (équation quotient), en lien avec l'ensemble de définition d'une expression",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1291,7 +1304,7 @@
 		{
 			"code": "2-270",
 			"grade": "2",
-			"display_order": 100,
+			"display_order": 101,
 			"name": "Effectuer des calculs numériques ou littéraux mettant en jeu des puissances",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1304,7 +1317,7 @@
 		{
 			"code": "2-271",
 			"grade": "2",
-			"display_order": 101,
+			"display_order": 102,
 			"name": "Effectuer des calculs numériques ou littéraux mettant en jeu des racines carrées",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1317,7 +1330,7 @@
 		{
 			"code": "2-272",
 			"grade": "2",
-			"display_order": 102,
+			"display_order": 103,
 			"name": "Effectuer des calculs numériques ou littéraux mettant en jeu des écritures fractionnaires",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1330,7 +1343,7 @@
 		{
 			"code": "2-273",
 			"grade": "2",
-			"display_order": 103,
+			"display_order": 104,
 			"name": "Sur des cas simples de relations entre variables (par exemple $U = RI$, $d = vt$, $S = \\pi r^2$, $V = abc$, $V = \\pi r^2 h$), exprimer une variable en fonction des autres",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1343,7 +1356,7 @@
 		{
 			"code": "2-274",
 			"grade": "2",
-			"display_order": 104,
+			"display_order": 105,
 			"name": "Exprimer une variable en fonction de l'autre dans une relation du premier degré $ax + by = c$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1356,7 +1369,7 @@
 		{
 			"code": "2-275",
 			"grade": "2",
-			"display_order": 105,
+			"display_order": 106,
 			"name": "Choisir la forme la plus adaptée (factorisée, développée réduite) d'une expression en vue de la résolution d'un problème",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1369,7 +1382,7 @@
 		{
 			"code": "2-276",
 			"grade": "2",
-			"display_order": 106,
+			"display_order": 107,
 			"name": "Comparer deux quantités en utilisant leur différence",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1382,7 +1395,7 @@
 		{
 			"code": "2-427",
 			"grade": "2",
-			"display_order": 107,
+			"display_order": 108,
 			"name": "Comparer deux quantités en utilisant leur rapport (ratio) dans le cas de quantités positives",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1395,7 +1408,7 @@
 		{
 			"code": "2-277",
 			"grade": "2",
-			"display_order": 108,
+			"display_order": 109,
 			"name": "Interpréter, selon le contexte, la comparaison de deux quantités par leur différence en termes de variation additive",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1408,7 +1421,7 @@
 		{
 			"code": "2-428",
 			"grade": "2",
-			"display_order": 109,
+			"display_order": 110,
 			"name": "Interpréter, selon le contexte, la comparaison de deux quantités par leur rapport en termes de variation multiplicative",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1421,7 +1434,7 @@
 		{
 			"code": "2-278",
 			"grade": "2",
-			"display_order": 110,
+			"display_order": 111,
 			"name": "Modéliser un problème par une inéquation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1434,7 +1447,7 @@
 		{
 			"code": "2-279",
 			"grade": "2",
-			"display_order": 111,
+			"display_order": 112,
 			"name": "Donner l'ensemble des solutions d'une équation du premier degré du type $ax + b = cx + d$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1447,7 +1460,7 @@
 		{
 			"code": "2-429",
 			"grade": "2",
-			"display_order": 112,
+			"display_order": 113,
 			"name": "Donner l'ensemble des solutions d'une équation du premier degré du type $ax = b$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1460,7 +1473,7 @@
 		{
 			"code": "2-430",
 			"grade": "2",
-			"display_order": 113,
+			"display_order": 114,
 			"name": "Donner l'ensemble des solutions d'une équation du premier degré du type $a + x = b$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1473,7 +1486,7 @@
 		{
 			"code": "2-280",
 			"grade": "2",
-			"display_order": 114,
+			"display_order": 115,
 			"name": "Donner l'ensemble des solutions d'une inéquation du premier degré du type $ax + b \\geqslant cx + d$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1486,7 +1499,7 @@
 		{
 			"code": "2-431",
 			"grade": "2",
-			"display_order": 115,
+			"display_order": 116,
 			"name": "Donner l'ensemble des solutions d'une inéquation du premier degré du type $ax \\geqslant b$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1499,7 +1512,7 @@
 		{
 			"code": "2-432",
 			"grade": "2",
-			"display_order": 116,
+			"display_order": 117,
 			"name": "Donner l'ensemble des solutions d'une inéquation du premier degré du type $a + x \\geqslant b$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1512,7 +1525,7 @@
 		{
 			"code": "2-281",
 			"grade": "2",
-			"display_order": 117,
+			"display_order": 118,
 			"name": "Donner l'ensemble des solutions d'une équation du type $x^2 = a$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1525,7 +1538,7 @@
 		{
 			"code": "2-282",
 			"grade": "2",
-			"display_order": 118,
+			"display_order": 119,
 			"name": "Quels que soient les réels positifs $a$ et $b$, on a $\\sqrt{ab} = \\sqrt{a}\\,\\sqrt{b}$",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1538,7 +1551,7 @@
 		{
 			"code": "2-283",
 			"grade": "2",
-			"display_order": 119,
+			"display_order": 120,
 			"name": "Déterminer la première puissance d'un nombre positif donné supérieure ou inférieure à une valeur donnée",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1551,7 +1564,7 @@
 		{
 			"code": "2-284",
 			"grade": "2",
-			"display_order": 120,
+			"display_order": 121,
 			"name": "Développement de $(a + b + c)^2$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1564,7 +1577,7 @@
 		{
 			"code": "2-285",
 			"grade": "2",
-			"display_order": 121,
+			"display_order": 122,
 			"name": "Développement de $(a + b)^3$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1577,7 +1590,7 @@
 		{
 			"code": "2-286",
 			"grade": "2",
-			"display_order": 122,
+			"display_order": 123,
 			"name": "Inégalité entre moyennes géométrique et arithmétique de deux réels strictement positifs",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1590,7 +1603,7 @@
 		{
 			"code": "2-287",
 			"grade": "2",
-			"display_order": 123,
+			"display_order": 124,
 			"name": "Égalité de deux vecteurs ; notation $\\vec{u}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1603,7 +1616,7 @@
 		{
 			"code": "2-433",
 			"grade": "2",
-			"display_order": 124,
+			"display_order": 125,
 			"name": "Vecteur nul",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1616,7 +1629,7 @@
 		{
 			"code": "2-288",
 			"grade": "2",
-			"display_order": 125,
+			"display_order": 126,
 			"name": "Représentants d'un vecteur",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1629,7 +1642,7 @@
 		{
 			"code": "2-289",
 			"grade": "2",
-			"display_order": 126,
+			"display_order": 127,
 			"name": "Produit d'un vecteur par un nombre réel",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1642,7 +1655,7 @@
 		{
 			"code": "2-290",
 			"grade": "2",
-			"display_order": 127,
+			"display_order": 128,
 			"name": "Colinéarité de deux vecteurs",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1655,7 +1668,7 @@
 		{
 			"code": "2-291",
 			"grade": "2",
-			"display_order": 128,
+			"display_order": 129,
 			"name": "Représentation d'un vecteur comme combinaison de deux vecteurs non colinéaires",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1668,7 +1681,7 @@
 		{
 			"code": "2-292",
 			"grade": "2",
-			"display_order": 129,
+			"display_order": 130,
 			"name": "Base orthonormée",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1681,7 +1694,7 @@
 		{
 			"code": "2-434",
 			"grade": "2",
-			"display_order": 130,
+			"display_order": 131,
 			"name": "Coordonnées d'un vecteur",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1694,7 +1707,7 @@
 		{
 			"code": "2-293",
 			"grade": "2",
-			"display_order": 131,
+			"display_order": 132,
 			"name": "Expression de la norme d'un vecteur",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1707,7 +1720,7 @@
 		{
 			"code": "2-294",
 			"grade": "2",
-			"display_order": 132,
+			"display_order": 133,
 			"name": "Expression des coordonnées de $\\vec{AB}$ en fonction de celles de $A$ et de $B$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1720,7 +1733,7 @@
 		{
 			"code": "2-295",
 			"grade": "2",
-			"display_order": 133,
+			"display_order": 134,
 			"name": "Déterminant de deux vecteurs dans une base orthonormée",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1733,7 +1746,7 @@
 		{
 			"code": "2-435",
 			"grade": "2",
-			"display_order": 134,
+			"display_order": 135,
 			"name": "Déterminant de deux vecteurs, critère de colinéarité ; application à l'alignement, au parallélisme",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1746,7 +1759,7 @@
 		{
 			"code": "2-296",
 			"grade": "2",
-			"display_order": 135,
+			"display_order": 136,
 			"name": "Caractérisation vectorielle du milieu d'un segment",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1759,7 +1772,7 @@
 		{
 			"code": "2-297",
 			"grade": "2",
-			"display_order": 136,
+			"display_order": 137,
 			"name": "Représenter la somme de deux vecteurs à partir de représentants de même origine",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1772,7 +1785,7 @@
 		{
 			"code": "2-298",
 			"grade": "2",
-			"display_order": 137,
+			"display_order": 138,
 			"name": "Représenter un vecteur dont on connait les coordonnées",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1785,7 +1798,7 @@
 		{
 			"code": "2-299",
 			"grade": "2",
-			"display_order": 138,
+			"display_order": 139,
 			"name": "Lire les coordonnées d'un vecteur",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1798,7 +1811,7 @@
 		{
 			"code": "2-300",
 			"grade": "2",
-			"display_order": 139,
+			"display_order": 140,
 			"name": "Calculer les coordonnées d'une somme de vecteurs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1811,7 +1824,7 @@
 		{
 			"code": "2-436",
 			"grade": "2",
-			"display_order": 140,
+			"display_order": 141,
 			"name": "Calculer les coordonnées d'un produit d'un vecteur par un nombre réel",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1824,7 +1837,7 @@
 		{
 			"code": "2-301",
 			"grade": "2",
-			"display_order": 141,
+			"display_order": 142,
 			"name": "Calculer la distance entre deux points",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1837,7 +1850,7 @@
 		{
 			"code": "2-302",
 			"grade": "2",
-			"display_order": 142,
+			"display_order": 143,
 			"name": "Calculer les coordonnées du milieu d'un segment",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1850,7 +1863,7 @@
 		{
 			"code": "2-303",
 			"grade": "2",
-			"display_order": 143,
+			"display_order": 144,
 			"name": "Caractériser l'alignement par la colinéarité de vecteurs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1863,7 +1876,7 @@
 		{
 			"code": "2-437",
 			"grade": "2",
-			"display_order": 144,
+			"display_order": 145,
 			"name": "Caractériser le parallélisme par la colinéarité de vecteurs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1876,7 +1889,7 @@
 		{
 			"code": "2-493",
 			"grade": "2",
-			"display_order": 145,
+			"display_order": 146,
 			"name": "Résoudre des problèmes en utilisant la représentation la plus adaptée des vecteurs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1889,7 +1902,7 @@
 		{
 			"code": "2-494",
 			"grade": "2",
-			"display_order": 146,
+			"display_order": 147,
 			"name": "Résoudre des problèmes avec des méthodes diverses (méthodes vectorielles, repérées ou non, méthodes géométriques)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1902,7 +1915,7 @@
 		{
 			"code": "2-304",
 			"grade": "2",
-			"display_order": 147,
+			"display_order": 148,
 			"name": "Caractérisation de la colinéarité de deux vecteurs non nuls : nullité du déterminant",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1915,7 +1928,7 @@
 		{
 			"code": "2-438",
 			"grade": "2",
-			"display_order": 148,
+			"display_order": 149,
 			"name": "Caractérisation de la colinéarité de deux vecteurs non nuls : proportionnalité des coordonnées",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1928,7 +1941,7 @@
 		{
 			"code": "2-305",
 			"grade": "2",
-			"display_order": 149,
+			"display_order": 150,
 			"name": "Barycentre de deux ou trois points",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1941,7 +1954,7 @@
 		{
 			"code": "2-306",
 			"grade": "2",
-			"display_order": 150,
+			"display_order": 151,
 			"name": "Formule permettant le calcul des coordonnées du milieu d'un segment",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1954,7 +1967,7 @@
 		{
 			"code": "2-307",
 			"grade": "2",
-			"display_order": 151,
+			"display_order": 152,
 			"name": "Démontrer que les hauteurs d'un triangle sont concourantes",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1967,7 +1980,7 @@
 		{
 			"code": "2-308",
 			"grade": "2",
-			"display_order": 152,
+			"display_order": 153,
 			"name": "Expression de l'aire d'un triangle : $\\tfrac{1}{2}ab\\sin C$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1980,7 +1993,7 @@
 		{
 			"code": "2-309",
 			"grade": "2",
-			"display_order": 153,
+			"display_order": 154,
 			"name": "Démontrer que l'isobarycentre de trois points non alignés est l'intersection des médianes",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1993,7 +2006,7 @@
 		{
 			"code": "2-310",
 			"grade": "2",
-			"display_order": 154,
+			"display_order": 155,
 			"name": "Démontrer que le point de concours des médiatrices est le centre du cercle circonscrit",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -2006,7 +2019,7 @@
 		{
 			"code": "2-311",
 			"grade": "2",
-			"display_order": 155,
+			"display_order": 156,
 			"name": "Vecteur directeur d'une droite",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2019,7 +2032,7 @@
 		{
 			"code": "2-312",
 			"grade": "2",
-			"display_order": 156,
+			"display_order": 157,
 			"name": "Équation de droite : équation cartésienne",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2032,7 +2045,7 @@
 		{
 			"code": "2-439",
 			"grade": "2",
-			"display_order": 157,
+			"display_order": 158,
 			"name": "Équation de droite : équation réduite",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2045,7 +2058,7 @@
 		{
 			"code": "2-313",
 			"grade": "2",
-			"display_order": 158,
+			"display_order": 159,
 			"name": "Pente (ou coefficient directeur) d'une droite non parallèle à l'axe des ordonnées",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2058,7 +2071,7 @@
 		{
 			"code": "2-314",
 			"grade": "2",
-			"display_order": 159,
+			"display_order": 160,
 			"name": "Déterminer une équation de droite à partir de deux points",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2071,7 +2084,7 @@
 		{
 			"code": "2-440",
 			"grade": "2",
-			"display_order": 160,
+			"display_order": 161,
 			"name": "Déterminer une équation de droite à partir d'un point et un vecteur directeur",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2084,7 +2097,7 @@
 		{
 			"code": "2-441",
 			"grade": "2",
-			"display_order": 161,
+			"display_order": 162,
 			"name": "Déterminer une équation de droite à partir d'un point et la pente",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2097,7 +2110,7 @@
 		{
 			"code": "2-315",
 			"grade": "2",
-			"display_order": 162,
+			"display_order": 163,
 			"name": "Déterminer la pente d'une droite donnée par une représentation graphique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2110,7 +2123,7 @@
 		{
 			"code": "2-442",
 			"grade": "2",
-			"display_order": 163,
+			"display_order": 164,
 			"name": "Déterminer la pente d'une droite donnée par une équation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2123,7 +2136,7 @@
 		{
 			"code": "2-443",
 			"grade": "2",
-			"display_order": 164,
+			"display_order": 165,
 			"name": "Déterminer un vecteur directeur d'une droite donnée par une équation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2136,7 +2149,7 @@
 		{
 			"code": "2-444",
 			"grade": "2",
-			"display_order": 165,
+			"display_order": 166,
 			"name": "Déterminer un vecteur directeur d'une droite donnée par une représentation graphique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2149,7 +2162,7 @@
 		{
 			"code": "2-316",
 			"grade": "2",
-			"display_order": 166,
+			"display_order": 167,
 			"name": "Tracer une droite connaissant son équation réduite",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2162,7 +2175,7 @@
 		{
 			"code": "2-445",
 			"grade": "2",
-			"display_order": 167,
+			"display_order": 168,
 			"name": "Tracer une droite connaissant son équation cartésienne",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2175,7 +2188,7 @@
 		{
 			"code": "2-317",
 			"grade": "2",
-			"display_order": 168,
+			"display_order": 169,
 			"name": "Établir que trois points sont alignés ou non",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2188,7 +2201,7 @@
 		{
 			"code": "2-318",
 			"grade": "2",
-			"display_order": 169,
+			"display_order": 170,
 			"name": "Déterminer si deux droites sont parallèles ou sécantes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2201,7 +2214,7 @@
 		{
 			"code": "2-319",
 			"grade": "2",
-			"display_order": 170,
+			"display_order": 171,
 			"name": "Déterminer le point d'intersection de deux droites sécantes données par leur équation réduite",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2214,7 +2227,7 @@
 		{
 			"code": "2-320",
 			"grade": "2",
-			"display_order": 171,
+			"display_order": 172,
 			"name": "En utilisant le déterminant, établir la forme générale d'une équation de droite",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -2227,7 +2240,7 @@
 		{
 			"code": "2-321",
 			"grade": "2",
-			"display_order": 172,
+			"display_order": 173,
 			"name": "Étudier l'alignement de trois points dans le plan",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -2240,7 +2253,7 @@
 		{
 			"code": "2-322",
 			"grade": "2",
-			"display_order": 173,
+			"display_order": 174,
 			"name": "Déterminer une équation de droite passant par deux points donnés",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -2253,7 +2266,7 @@
 		{
 			"code": "2-323",
 			"grade": "2",
-			"display_order": 174,
+			"display_order": 175,
 			"name": "Ensemble des points équidistants d'un point et de l'axe des abscisses",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -2266,7 +2279,7 @@
 		{
 			"code": "2-324",
 			"grade": "2",
-			"display_order": 175,
+			"display_order": 176,
 			"name": "Représentation, sur des exemples, de parties du plan décrites par des inégalités sur les coordonnées",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -2279,7 +2292,7 @@
 		{
 			"code": "2-325",
 			"grade": "2",
-			"display_order": 176,
+			"display_order": 177,
 			"name": "Fonction à valeurs réelles définie sur un intervalle ou une réunion finie d'intervalles de $\\mathbb{R}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2292,7 +2305,7 @@
 		{
 			"code": "2-326",
 			"grade": "2",
-			"display_order": 177,
+			"display_order": 178,
 			"name": "Recherche de domaine d'étude (ensemble de définition)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2305,7 +2318,7 @@
 		{
 			"code": "2-327",
 			"grade": "2",
-			"display_order": 178,
+			"display_order": 179,
 			"name": "Courbe représentative : la courbe d'équation $y = f(x)$ est l'ensemble des points du plan dont les coordonnées $(x\\,;\\,y)$ vérifient $y = f(x)$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2318,7 +2331,7 @@
 		{
 			"code": "2-328",
 			"grade": "2",
-			"display_order": 179,
+			"display_order": 180,
 			"name": "Signe d'une fonction affine",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2331,7 +2344,7 @@
 		{
 			"code": "2-329",
 			"grade": "2",
-			"display_order": 180,
+			"display_order": 181,
 			"name": "Signe des fonctions de référence",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2344,7 +2357,7 @@
 		{
 			"code": "2-330",
 			"grade": "2",
-			"display_order": 181,
+			"display_order": 182,
 			"name": "Tableau de signes pour une fonction produit",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2357,7 +2370,7 @@
 		{
 			"code": "2-446",
 			"grade": "2",
-			"display_order": 182,
+			"display_order": 183,
 			"name": "Tableau de signes pour une fonction quotient",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2370,7 +2383,7 @@
 		{
 			"code": "2-331",
 			"grade": "2",
-			"display_order": 183,
+			"display_order": 184,
 			"name": "Exploiter l'équation $y = f(x)$ d'une courbe : appartenance",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2383,7 +2396,7 @@
 		{
 			"code": "2-447",
 			"grade": "2",
-			"display_order": 184,
+			"display_order": 185,
 			"name": "Exploiter l'équation $y = f(x)$ d'une courbe : calcul de coordonnées",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2396,7 +2409,7 @@
 		{
 			"code": "2-495",
 			"grade": "2",
-			"display_order": 185,
+			"display_order": 186,
 			"name": "Modéliser par des fonctions des situations issues des mathématiques, des autres disciplines ou de la vie courante ou citoyenne",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2409,7 +2422,7 @@
 		{
 			"code": "2-333",
 			"grade": "2",
-			"display_order": 186,
+			"display_order": 187,
 			"name": "Fonction valeur absolue : définition et courbe représentative",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2422,7 +2435,7 @@
 		{
 			"code": "2-334",
 			"grade": "2",
-			"display_order": 187,
+			"display_order": 188,
 			"name": "Fonction carré : définition et courbe représentative",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2435,7 +2448,7 @@
 		{
 			"code": "2-335",
 			"grade": "2",
-			"display_order": 188,
+			"display_order": 189,
 			"name": "Fonction inverse : définition et courbe représentative",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2448,7 +2461,7 @@
 		{
 			"code": "2-336",
 			"grade": "2",
-			"display_order": 189,
+			"display_order": 190,
 			"name": "Résoudre une équation du type $f(x) = k$, en choisissant une méthode adaptée : graphique, algébrique, logicielle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2461,7 +2474,7 @@
 		{
 			"code": "2-448",
 			"grade": "2",
-			"display_order": 190,
+			"display_order": 191,
 			"name": "Résoudre une inéquation du type $f(x) < k$, en choisissant une méthode adaptée : graphique, algébrique, logicielle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2474,7 +2487,7 @@
 		{
 			"code": "2-337",
 			"grade": "2",
-			"display_order": 191,
+			"display_order": 192,
 			"name": "Résoudre une équation de la forme $f(x) = 0$ à l'aide d'un tableau de signes, lorsque $f$ est un produit",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2487,7 +2500,7 @@
 		{
 			"code": "2-449",
 			"grade": "2",
-			"display_order": 192,
+			"display_order": 193,
 			"name": "Résoudre une équation de la forme $f(x) = 0$ à l'aide d'un tableau de signes, lorsque $f$ est un quotient",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2500,7 +2513,7 @@
 		{
 			"code": "2-450",
 			"grade": "2",
-			"display_order": 193,
+			"display_order": 194,
 			"name": "Résoudre une inéquation de la forme $f(x) > 0$ à l'aide d'un tableau de signes, lorsque $f$ est un produit",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2513,7 +2526,7 @@
 		{
 			"code": "2-451",
 			"grade": "2",
-			"display_order": 194,
+			"display_order": 195,
 			"name": "Résoudre une inéquation de la forme $f(x) > 0$ à l'aide d'un tableau de signes, lorsque $f$ est un quotient",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2526,7 +2539,7 @@
 		{
 			"code": "2-338",
 			"grade": "2",
-			"display_order": 195,
+			"display_order": 196,
 			"name": "Résoudre graphiquement une équation du type $f(x) = g(x)$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2539,7 +2552,7 @@
 		{
 			"code": "2-452",
 			"grade": "2",
-			"display_order": 196,
+			"display_order": 197,
 			"name": "Résoudre à l'aide d'un outil numérique une équation du type $f(x) = g(x)$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2552,7 +2565,7 @@
 		{
 			"code": "2-453",
 			"grade": "2",
-			"display_order": 197,
+			"display_order": 198,
 			"name": "Résoudre graphiquement une inéquation du type $f(x) < g(x)$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2565,7 +2578,7 @@
 		{
 			"code": "2-454",
 			"grade": "2",
-			"display_order": 198,
+			"display_order": 199,
 			"name": "Résoudre à l'aide d'un outil numérique une inéquation du type $f(x) < g(x)$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2578,7 +2591,7 @@
 		{
 			"code": "2-339",
 			"grade": "2",
-			"display_order": 199,
+			"display_order": 200,
 			"name": "Fonction affine : résoudre graphiquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2591,7 +2604,7 @@
 		{
 			"code": "2-455",
 			"grade": "2",
-			"display_order": 200,
+			"display_order": 201,
 			"name": "Fonction affine : résoudre algébriquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2604,7 +2617,7 @@
 		{
 			"code": "2-456",
 			"grade": "2",
-			"display_order": 201,
+			"display_order": 202,
 			"name": "Fonction affine : résoudre graphiquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2617,7 +2630,7 @@
 		{
 			"code": "2-457",
 			"grade": "2",
-			"display_order": 202,
+			"display_order": 203,
 			"name": "Fonction affine : résoudre algébriquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2630,7 +2643,7 @@
 		{
 			"code": "2-340",
 			"grade": "2",
-			"display_order": 203,
+			"display_order": 204,
 			"name": "Fonction valeur absolue : résoudre graphiquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2643,7 +2656,7 @@
 		{
 			"code": "2-458",
 			"grade": "2",
-			"display_order": 204,
+			"display_order": 205,
 			"name": "Fonction valeur absolue : résoudre algébriquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2656,7 +2669,7 @@
 		{
 			"code": "2-459",
 			"grade": "2",
-			"display_order": 205,
+			"display_order": 206,
 			"name": "Fonction valeur absolue : résoudre graphiquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2669,7 +2682,7 @@
 		{
 			"code": "2-460",
 			"grade": "2",
-			"display_order": 206,
+			"display_order": 207,
 			"name": "Fonction valeur absolue : résoudre algébriquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2682,7 +2695,7 @@
 		{
 			"code": "2-341",
 			"grade": "2",
-			"display_order": 207,
+			"display_order": 208,
 			"name": "Fonction carré : résoudre graphiquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2695,7 +2708,7 @@
 		{
 			"code": "2-461",
 			"grade": "2",
-			"display_order": 208,
+			"display_order": 209,
 			"name": "Fonction carré : résoudre algébriquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2708,7 +2721,7 @@
 		{
 			"code": "2-462",
 			"grade": "2",
-			"display_order": 209,
+			"display_order": 210,
 			"name": "Fonction carré : résoudre graphiquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2721,7 +2734,7 @@
 		{
 			"code": "2-463",
 			"grade": "2",
-			"display_order": 210,
+			"display_order": 211,
 			"name": "Fonction carré : résoudre algébriquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2734,7 +2747,7 @@
 		{
 			"code": "2-342",
 			"grade": "2",
-			"display_order": 211,
+			"display_order": 212,
 			"name": "Fonction inverse : résoudre graphiquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2747,7 +2760,7 @@
 		{
 			"code": "2-464",
 			"grade": "2",
-			"display_order": 212,
+			"display_order": 213,
 			"name": "Fonction inverse : résoudre algébriquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2760,7 +2773,7 @@
 		{
 			"code": "2-465",
 			"grade": "2",
-			"display_order": 213,
+			"display_order": 214,
 			"name": "Fonction inverse : résoudre graphiquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2773,7 +2786,7 @@
 		{
 			"code": "2-466",
 			"grade": "2",
-			"display_order": 214,
+			"display_order": 215,
 			"name": "Fonction inverse : résoudre algébriquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2786,7 +2799,7 @@
 		{
 			"code": "2-343",
 			"grade": "2",
-			"display_order": 215,
+			"display_order": 216,
 			"name": "Fonction racine carrée : résoudre graphiquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2799,7 +2812,7 @@
 		{
 			"code": "2-467",
 			"grade": "2",
-			"display_order": 216,
+			"display_order": 217,
 			"name": "Fonction racine carrée : résoudre algébriquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2812,7 +2825,7 @@
 		{
 			"code": "2-468",
 			"grade": "2",
-			"display_order": 217,
+			"display_order": 218,
 			"name": "Fonction racine carrée : résoudre graphiquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2825,7 +2838,7 @@
 		{
 			"code": "2-469",
 			"grade": "2",
-			"display_order": 218,
+			"display_order": 219,
 			"name": "Fonction racine carrée : résoudre algébriquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2838,7 +2851,7 @@
 		{
 			"code": "2-344",
 			"grade": "2",
-			"display_order": 219,
+			"display_order": 220,
 			"name": "Fonction cube : résoudre graphiquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2851,7 +2864,7 @@
 		{
 			"code": "2-470",
 			"grade": "2",
-			"display_order": 220,
+			"display_order": 221,
 			"name": "Fonction cube : résoudre algébriquement une équation du type $f(x) = k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2864,7 +2877,7 @@
 		{
 			"code": "2-471",
 			"grade": "2",
-			"display_order": 221,
+			"display_order": 222,
 			"name": "Fonction cube : résoudre graphiquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2877,7 +2890,7 @@
 		{
 			"code": "2-472",
 			"grade": "2",
-			"display_order": 222,
+			"display_order": 223,
 			"name": "Fonction cube : résoudre algébriquement une inéquation du type $f(x) < k$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2890,7 +2903,7 @@
 		{
 			"code": "2-345",
 			"grade": "2",
-			"display_order": 223,
+			"display_order": 224,
 			"name": "Croissance, décroissance, monotonie d'une fonction définie sur un intervalle",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2903,7 +2916,7 @@
 		{
 			"code": "2-473",
 			"grade": "2",
-			"display_order": 224,
+			"display_order": 225,
 			"name": "Tableau de variations",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2916,7 +2929,7 @@
 		{
 			"code": "2-346",
 			"grade": "2",
-			"display_order": 225,
+			"display_order": 226,
 			"name": "Maximum, minimum d'une fonction sur un intervalle",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2929,7 +2942,7 @@
 		{
 			"code": "2-347",
 			"grade": "2",
-			"display_order": 226,
+			"display_order": 227,
 			"name": "Pour une fonction affine donnée par $f(x) = mx + p$, interprétation de $m$ comme taux d'accroissement",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2942,7 +2955,7 @@
 		{
 			"code": "2-474",
 			"grade": "2",
-			"display_order": 227,
+			"display_order": 228,
 			"name": "Pour une fonction affine donnée par $f(x) = mx + p$, interprétation de $p$ comme ordonnée à l'origine",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2955,7 +2968,7 @@
 		{
 			"code": "2-348",
 			"grade": "2",
-			"display_order": 228,
+			"display_order": 229,
 			"name": "Variations d'une fonction affine selon le signe du coefficient directeur",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2968,7 +2981,7 @@
 		{
 			"code": "2-349",
 			"grade": "2",
-			"display_order": 229,
+			"display_order": 230,
 			"name": "Relier représentation graphique et tableau de variations",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2981,7 +2994,7 @@
 		{
 			"code": "2-350",
 			"grade": "2",
-			"display_order": 230,
+			"display_order": 231,
 			"name": "Déterminer graphiquement les extrémums d'une fonction sur un intervalle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2994,7 +3007,7 @@
 		{
 			"code": "2-351",
 			"grade": "2",
-			"display_order": 231,
+			"display_order": 232,
 			"name": "Exploiter un logiciel de géométrie dynamique ou de calcul formel, la calculatrice ou Python pour décrire les variations d'une fonction donnée par une formule",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3007,7 +3020,7 @@
 		{
 			"code": "2-352",
 			"grade": "2",
-			"display_order": 232,
+			"display_order": 233,
 			"name": "Pour une fonction affine, relier sens de variation, signe de la fonction et droite représentative",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3020,7 +3033,7 @@
 		{
 			"code": "2-353",
 			"grade": "2",
-			"display_order": 233,
+			"display_order": 234,
 			"name": "Traiter des problèmes d'optimisation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3033,7 +3046,7 @@
 		{
 			"code": "2-475",
 			"grade": "2",
-			"display_order": 234,
+			"display_order": 235,
 			"name": "Fonction valeur absolue : signe",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3046,7 +3059,7 @@
 		{
 			"code": "2-354",
 			"grade": "2",
-			"display_order": 235,
+			"display_order": 236,
 			"name": "Fonction valeur absolue : variations",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3059,7 +3072,7 @@
 		{
 			"code": "2-476",
 			"grade": "2",
-			"display_order": 236,
+			"display_order": 237,
 			"name": "Fonction carré : signe",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3072,7 +3085,7 @@
 		{
 			"code": "2-355",
 			"grade": "2",
-			"display_order": 237,
+			"display_order": 238,
 			"name": "Fonction carré : variations",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3085,7 +3098,7 @@
 		{
 			"code": "2-356",
 			"grade": "2",
-			"display_order": 238,
+			"display_order": 239,
 			"name": "Pour deux nombres $a$ et $b$ donnés et une fonction de référence $f$, comparer $f(a)$ et $f(b)$ numériquement",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3098,7 +3111,7 @@
 		{
 			"code": "2-477",
 			"grade": "2",
-			"display_order": 239,
+			"display_order": 240,
 			"name": "Pour deux nombres $a$ et $b$ donnés et une fonction de référence $f$, comparer $f(a)$ et $f(b)$ graphiquement",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3111,7 +3124,7 @@
 		{
 			"code": "2-357",
 			"grade": "2",
-			"display_order": 240,
+			"display_order": 241,
 			"name": "Variations des fonctions affines",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -3124,7 +3137,7 @@
 		{
 			"code": "2-358",
 			"grade": "2",
-			"display_order": 241,
+			"display_order": 242,
 			"name": "Position relative des courbes d'équation $y = x$ et $y = x^2$, pour $x \\geqslant 0$",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -3137,7 +3150,7 @@
 		{
 			"code": "2-359",
 			"grade": "2",
-			"display_order": 242,
+			"display_order": 243,
 			"name": "Variations de la fonction carré",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -3150,7 +3163,7 @@
 		{
 			"code": "2-360",
 			"grade": "2",
-			"display_order": 243,
+			"display_order": 244,
 			"name": "Variations de la fonction inverse",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -3163,7 +3176,7 @@
 		{
 			"code": "2-361",
 			"grade": "2",
-			"display_order": 244,
+			"display_order": 245,
 			"name": "Pour une fonction dont le tableau de variations est donné, algorithmes d'approximation numérique d'un extrémum (balayage, dichotomie)",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -3176,7 +3189,7 @@
 		{
 			"code": "2-362",
 			"grade": "2",
-			"display_order": 245,
+			"display_order": 246,
 			"name": "Algorithme de calcul approché de longueur d'une portion de courbe représentative de fonction",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -3189,7 +3202,7 @@
 		{
 			"code": "2-363",
 			"grade": "2",
-			"display_order": 246,
+			"display_order": 247,
 			"name": "Relier les courbes représentatives de la fonction racine carrée et de la fonction carré sur $\\mathbb{R}^+$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -3202,7 +3215,7 @@
 		{
 			"code": "2-364",
 			"grade": "2",
-			"display_order": 247,
+			"display_order": 248,
 			"name": "Ensembles de référence inclus les uns dans les autres : pourcentage de pourcentage",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3215,7 +3228,7 @@
 		{
 			"code": "2-365",
 			"grade": "2",
-			"display_order": 248,
+			"display_order": 249,
 			"name": "Évolution : variation absolue (variation additive) $V_2 - V_1$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3228,7 +3241,7 @@
 		{
 			"code": "2-366",
 			"grade": "2",
-			"display_order": 249,
+			"display_order": 250,
 			"name": "Évolution : coefficient multiplicateur (variation multiplicative) $\\tfrac{V_2}{V_1}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3241,7 +3254,7 @@
 		{
 			"code": "2-367",
 			"grade": "2",
-			"display_order": 250,
+			"display_order": 251,
 			"name": "Évolution : variation relative (taux d'évolution) $\\tfrac{V_2 - V_1}{V_1}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3254,7 +3267,7 @@
 		{
 			"code": "2-368",
 			"grade": "2",
-			"display_order": 251,
+			"display_order": 252,
 			"name": "Évolutions successives : relation sur les coefficients multiplicateurs (produit)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3267,7 +3280,7 @@
 		{
 			"code": "2-478",
 			"grade": "2",
-			"display_order": 252,
+			"display_order": 253,
 			"name": "Évolution réciproque : relation sur les coefficients multiplicateurs (inverse)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3280,7 +3293,7 @@
 		{
 			"code": "2-369",
 			"grade": "2",
-			"display_order": 253,
+			"display_order": 254,
 			"name": "Linéarité de la moyenne",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3293,7 +3306,7 @@
 		{
 			"code": "2-370",
 			"grade": "2",
-			"display_order": 254,
+			"display_order": 255,
 			"name": "Indicateurs de dispersion : écart type",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3306,7 +3319,7 @@
 		{
 			"code": "2-371",
 			"grade": "2",
-			"display_order": 255,
+			"display_order": 256,
 			"name": "Influence sur la moyenne de l'ajout ou de la suppression d'une valeur dans la série",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3319,7 +3332,7 @@
 		{
 			"code": "2-479",
 			"grade": "2",
-			"display_order": 256,
+			"display_order": 257,
 			"name": "Influence sur la médiane de l'ajout ou de la suppression d'une valeur dans la série",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3332,7 +3345,7 @@
 		{
 			"code": "2-372",
 			"grade": "2",
-			"display_order": 257,
+			"display_order": 258,
 			"name": "Représentation graphique : histogramme",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3345,7 +3358,7 @@
 		{
 			"code": "2-480",
 			"grade": "2",
-			"display_order": 258,
+			"display_order": 259,
 			"name": "Représentation graphique : polygone des fréquences cumulées",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3358,7 +3371,7 @@
 		{
 			"code": "2-373",
 			"grade": "2",
-			"display_order": 259,
+			"display_order": 260,
 			"name": "Calcul de la moyenne à partir de la moyenne et des effectifs de chaque classe (moyenne pondérée) ; cas particulier où la répartition est uniforme dans chaque classe",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3371,7 +3384,7 @@
 		{
 			"code": "2-374",
 			"grade": "2",
-			"display_order": 260,
+			"display_order": 261,
 			"name": "Détermination de la classe médiane à partir des effectifs des classes ; estimation de la médiane dans le cas de répartition uniforme dans la classe médiane",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3384,7 +3397,7 @@
 		{
 			"code": "2-375",
 			"grade": "2",
-			"display_order": 261,
+			"display_order": 262,
 			"name": "Exploiter la relation entre effectifs, proportions et pourcentages",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3397,7 +3410,7 @@
 		{
 			"code": "2-376",
 			"grade": "2",
-			"display_order": 262,
+			"display_order": 263,
 			"name": "Traiter des situations simples mettant en jeu des pourcentages de pourcentages",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3410,7 +3423,7 @@
 		{
 			"code": "2-377",
 			"grade": "2",
-			"display_order": 263,
+			"display_order": 264,
 			"name": "Exploiter la relation entre deux valeurs successives et leur taux d'évolution",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3423,7 +3436,7 @@
 		{
 			"code": "2-378",
 			"grade": "2",
-			"display_order": 264,
+			"display_order": 265,
 			"name": "Calculer le taux d'évolution global à partir des taux d'évolution successifs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3436,7 +3449,7 @@
 		{
 			"code": "2-379",
 			"grade": "2",
-			"display_order": 265,
+			"display_order": 266,
 			"name": "Calculer un taux d'évolution réciproque",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3449,7 +3462,7 @@
 		{
 			"code": "2-380",
 			"grade": "2",
-			"display_order": 266,
+			"display_order": 267,
 			"name": "Pour une série regroupée en classes, calculer la moyenne à partir de la moyenne et des effectifs de chaque classe (moyenne pondérée)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3462,7 +3475,7 @@
 		{
 			"code": "2-481",
 			"grade": "2",
-			"display_order": 267,
+			"display_order": 268,
 			"name": "Pour une série regroupée en classes, calculer la moyenne dans le cas particulier où la répartition est uniforme dans chaque classe (donc égale au centre de la classe)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3475,7 +3488,7 @@
 		{
 			"code": "2-381",
 			"grade": "2",
-			"display_order": 268,
+			"display_order": 269,
 			"name": "Pour une série regroupée en classes, déterminer la classe médiane à partir des effectifs des classes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3488,7 +3501,7 @@
 		{
 			"code": "2-482",
 			"grade": "2",
-			"display_order": 269,
+			"display_order": 270,
 			"name": "Pour une série regroupée en classes, estimer la médiane dans le cas d'une répartition uniforme dans la classe médiane",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3501,7 +3514,7 @@
 		{
 			"code": "2-382",
 			"grade": "2",
-			"display_order": 270,
+			"display_order": 271,
 			"name": "Décrire les différences entre deux séries statistiques, en s'appuyant sur le couple moyenne–écart type",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3514,7 +3527,7 @@
 		{
 			"code": "2-483",
 			"grade": "2",
-			"display_order": 271,
+			"display_order": 272,
 			"name": "Décrire les différences entre deux séries statistiques, en s'appuyant sur le couple médiane–écart interquartile",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3527,7 +3540,7 @@
 		{
 			"code": "2-484",
 			"grade": "2",
-			"display_order": 272,
+			"display_order": 273,
 			"name": "Décrire les différences entre deux séries statistiques, en s'appuyant sur des représentations graphiques données",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3540,7 +3553,7 @@
 		{
 			"code": "2-383",
 			"grade": "2",
-			"display_order": 273,
+			"display_order": 274,
 			"name": "Tableau croisé d'effectifs",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3553,7 +3566,7 @@
 		{
 			"code": "2-384",
 			"grade": "2",
-			"display_order": 274,
+			"display_order": 275,
 			"name": "Fréquence conditionnelle",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3566,7 +3579,7 @@
 		{
 			"code": "2-485",
 			"grade": "2",
-			"display_order": 275,
+			"display_order": 276,
 			"name": "Fréquence marginale",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3579,7 +3592,7 @@
 		{
 			"code": "2-385",
 			"grade": "2",
-			"display_order": 276,
+			"display_order": 277,
 			"name": "Calculer des fréquences conditionnelles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3592,7 +3605,7 @@
 		{
 			"code": "2-486",
 			"grade": "2",
-			"display_order": 277,
+			"display_order": 278,
 			"name": "Calculer des fréquences marginales",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3605,7 +3618,7 @@
 		{
 			"code": "2-386",
 			"grade": "2",
-			"display_order": 278,
+			"display_order": 279,
 			"name": "Compléter un tableau croisé par des raisonnements sur les effectifs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3618,7 +3631,7 @@
 		{
 			"code": "2-487",
 			"grade": "2",
-			"display_order": 279,
+			"display_order": 280,
 			"name": "Compléter un tableau croisé en utilisant des fréquences conditionnelles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3631,7 +3644,7 @@
 		{
 			"code": "2-387",
 			"grade": "2",
-			"display_order": 280,
+			"display_order": 281,
 			"name": "À partir de deux listes représentant deux caractères d'individus, déterminer un sous-ensemble d'individus répondant à un critère (filtre, utilisation de ET, OU, NON)",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -3644,7 +3657,7 @@
 		{
 			"code": "2-388",
 			"grade": "2",
-			"display_order": 281,
+			"display_order": 282,
 			"name": "Dresser le tableau croisé de deux variables qualitatives à partir du fichier des individus et calculer des fréquences conditionnelles ou marginales",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -3657,7 +3670,7 @@
 		{
 			"code": "2-389",
 			"grade": "2",
-			"display_order": 282,
+			"display_order": 283,
 			"name": "Version vulgarisée de la loi des grands nombres : lorsque $n$ est grand, sauf exception, la fréquence observée est proche de la probabilité",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3670,7 +3683,7 @@
 		{
 			"code": "2-390",
 			"grade": "2",
-			"display_order": 283,
+			"display_order": 284,
 			"name": "Probabilité conditionnelle d'un évènement $B$ sachant un évènement $A$ de probabilité non nulle ; notation $P_A(B)$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3683,7 +3696,7 @@
 		{
 			"code": "2-391",
 			"grade": "2",
-			"display_order": 284,
+			"display_order": 285,
 			"name": "Arbres de probabilité, application au calcul de probabilités",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3696,7 +3709,7 @@
 		{
 			"code": "2-392",
 			"grade": "2",
-			"display_order": 285,
+			"display_order": 286,
 			"name": "Observer, à l'aide d'une simulation sur Python ou tableur, que lorsque $n$ est grand la fréquence observée est proche de la probabilité (loi des grands nombres)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3709,7 +3722,7 @@
 		{
 			"code": "2-393",
 			"grade": "2",
-			"display_order": 286,
+			"display_order": 287,
 			"name": "Construire un arbre pondéré en lien avec une situation donnée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3722,7 +3735,7 @@
 		{
 			"code": "2-394",
 			"grade": "2",
-			"display_order": 287,
+			"display_order": 288,
 			"name": "Construire un tableau croisé d'effectifs en lien avec une situation donnée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3735,7 +3748,7 @@
 		{
 			"code": "2-395",
 			"grade": "2",
-			"display_order": 288,
+			"display_order": 289,
 			"name": "Traduire un énoncé en langage naturel à l'aide des notations des probabilités ($P(A)$, $\\bar{A}$, $P(A \\cap B)$, $P_A(B)$)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3748,7 +3761,7 @@
 		{
 			"code": "2-488",
 			"grade": "2",
-			"display_order": 289,
+			"display_order": 290,
 			"name": "Passer du registre symbolique ($P(A)$, $\\bar{A}$, $P(A \\cap B)$, $P_A(B)$) au registre de la langue naturelle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3761,7 +3774,7 @@
 		{
 			"code": "2-396",
 			"grade": "2",
-			"display_order": 290,
+			"display_order": 291,
 			"name": "Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3774,7 +3787,7 @@
 		{
 			"code": "2-397",
 			"grade": "2",
-			"display_order": 291,
+			"display_order": 292,
 			"name": "Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme d'arbre de probabilité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3787,7 +3800,7 @@
 		{
 			"code": "2-398",
 			"grade": "2",
-			"display_order": 292,
+			"display_order": 293,
 			"name": "Interpréter les pondérations de chaque branche d'un arbre en termes de probabilités, et notamment de probabilités conditionnelles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3800,7 +3813,7 @@
 		{
 			"code": "2-399",
 			"grade": "2",
-			"display_order": 293,
+			"display_order": 294,
 			"name": "Faire le lien entre la définition des probabilités conditionnelles et la multiplication des probabilités des branches du chemin correspondant",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3813,7 +3826,7 @@
 		{
 			"code": "2-400",
 			"grade": "2",
-			"display_order": 294,
+			"display_order": 295,
 			"name": "Distinguer en situation $P_A(B)$ et $P_B(A)$, par exemple dans des situations de type « faux positifs »",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -4183,6 +4196,10 @@
 		},
 		{
 			"code": "2-489",
+			"grade": "2"
+		},
+		{
+			"code": "2-496",
 			"grade": "2"
 		},
 		{
