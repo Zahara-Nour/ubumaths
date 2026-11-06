@@ -48,7 +48,7 @@ export const COLLECTION_LIMITS = { tens: 10, units: 100, total: 100 } as const;
 
 /**
  * Bornes d'un bloc à centaines ou milliers (CE1, CE2 : jusqu'à 9 999 ; le BO
- * cite « 32 centaines », « 27 dizaines »). Phase 0 : `docs/wip/collection-centaines-progress.md`
+ * cite « 32 centaines », « 27 dizaines »). Phase 0 : `docs/archive/wip/collection-centaines-progress.md`
  */
 export const COLLECTION_LARGE_LIMITS = {
 	thousands: 9,

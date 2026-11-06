@@ -20,7 +20,7 @@
  *   CE2 : un bloc qui en écrit une est « grand » (`large`) — plafonds
  *   `COLLECTION_LARGE_LIMITS` (milliers 9, centaines 40, dizaines 30, unités
  *   100, valeur 9 999), objets dessinés plus petits, `dessin: barres` seulement.
- *   Chantier `docs/wip/collection-centaines-progress.md`.
+ *   Chantier `docs/archive/wip/collection-centaines-progress.md`.
  * - Le reste est facultatif ; une clé inconnue ou une valeur hors liste est
  *   une erreur située, jamais un réglage ignoré.
  *

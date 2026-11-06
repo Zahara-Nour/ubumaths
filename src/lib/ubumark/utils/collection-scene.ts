@@ -16,7 +16,7 @@
  * rangées de 5 + 5).
  *
  * Grand bloc (`spec.large` : centaines ou milliers, chantier
- * `docs/wip/collection-centaines-progress.md`) : de haut en bas gros cubes,
+ * `docs/archive/wip/collection-centaines-progress.md`) : de haut en bas gros cubes,
  * plaques, barres, cubes, chaque zone revenant à la ligne quand elle est
  * pleine ; tout est dessiné à moitié taille (`COLLECTION_LARGE_VIEW`), pour
  * 4 plaques par rangée. Plaques et gros cubes portent leur dessin (`faces`,

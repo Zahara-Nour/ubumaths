@@ -11,7 +11,7 @@
  * objets se rangent d'office (Q2) : groupes de dix en haut, cubes en rangées
  * de 5 + 5 dessous — la scène de la collection, en `rangées`.
  *
- * À partir de 100 (chantier `docs/wip/collection-centaines-progress.md`, Q3) :
+ * À partir de 100 (chantier `docs/archive/wip/collection-centaines-progress.md`, Q3) :
  * la réserve a aussi des plaques de cent, et des gros cubes dès 1 000 ; tout
  * est dessiné à l'échelle d'un grand bloc. Sous 100, rien ne change.
  *
