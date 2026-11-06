@@ -6,25 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2406._
+_Mis à jour le 2026-11-06, PR du rangement du modèle neuf ouverte._
 
-- **État** : lot « Calcul numérique et algébrique » mergé (#2406) : `buildSerie` lit `<<expr:…>>`,
-  `\textcolor`/`\boxed` suivis de `(` ne cassent plus le PDF, modèle neuf ax + b, script de fiche ;
-  rendu vérifié en simulation · **Prochaine action** : après les 2 écritures de David, vérifier la
-  fiche depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs --polices-corrige`, `debord.py`),
-  commiter l'`id` écrit dans le JSON du modèle neuf, ranger ce modèle (nœud + tag, migration comme
-  #2390) · **En attente de David** : (1) `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/calcul-1spe --publier`, puis (2) `pnpm tsx scripts/create-automatismes-calcul-1spe.ts
---publier` ; correction de `dcaabf69` qui déborde au corrigé (la réécrire sur deux lignes ?) ;
-  **garde des niveaux des tags** (session `questions-ce2`) : `9852d62c`, `7f82d15a`, `f5585668`,
-  `1c86d122`, `95ee57c8` tagués hors de leurs `grades` → niveaux ajoutés aux `grades` (migration) ou
-  `EXCEPTIONS_NIVEAUX` (`scripts/lib/niveaux-des-tags.ts`), avant publication ; questions 2 à 4 ·
-  **Pièges en cours** : écritures en prod refusées par le classifieur (David les lance) ; worktree
-  neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx` ; `fiche:verifier` veut `en/`, `sol-en/` et le
-  venv `scripts/fiches/.venv` du dépôt principal ; job CI navigateur 2/2 qui plante → `gh run rerun
---failed` · **Worktree / branche** : aucun (retiré après #2406).
-- Brouillons à publier (lots précédents) : `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`,
-  `1c86d122`, `9852d62c` (+ `1bd7378d`, `9a9026fc`) ; fiches `9217dfaa`, `0f98be04`, `7ff081db`,
+- **État** : modèle neuf `0f673c27` et fiche `5210e1d7` écrits par David (brouillons) ; fiche
+  vérifiée depuis la base (1 + 1 + 3 p., 0 débord) ; PR #2416 : `id` dans le JSON + migration
+  nœud/point (2-328, validés) + 6 exceptions de la garde des niveaux (décision du 2026-11-06) ;
+  `security-auditor` : 0 bloquant · **Prochaine action** : CI verte → merge → `db:migrate` depuis
+  la branche mergée ; vérifier en prod nœud, tag, `updated_at` ET `tgenabled = 'O'` du trigger
+  `update_question_templates_updated_at` ; puis David peut publier (`publier-lot.ts`) ·
+  **En attente de David** : publication des brouillons ; questions ouvertes 1 à 4 · **Pièges en
+  cours** : écritures en prod lancées par David ; worktree neuf → `pnpm exec svelte-kit sync`
+  avant `pnpm tsx` ; job CI navigateur 2/2 qui plante → `gh run rerun --failed` ·
+  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe`,
+  `feat/automatismes-1spe-rangement-affine`.
+- Brouillons à publier : `0f673c27`, `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`,
+  `9852d62c` (+ `1bd7378d`, `9a9026fc`) ; fiches `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`,
   `d37413a3`, `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
 ## Décisions de David (figées)
@@ -337,3 +333,27 @@ sans la migration (corps retiré), 10 verts avec.
 
 Mergée (#2390, CI verte) ; `db:migrate` le 2026-11-05 depuis la branche mergée : seule cette migration
 appliquée (dry-run), les 6 modèles vérifiés en prod (nœud, point, brouillon, `updated_at` préservé).
+
+## Fiche « Automatismes : calcul algébrique (1) » et rangement du modèle neuf (2026-11-06)
+
+- David a lancé les deux écritures le 2026-11-05 : modèle `0f673c27` (brouillon) puis fiche
+  `5210e1d7` (brouillon, 2 séries). L'`id` n'avait pas été écrit dans le JSON de `main` (script
+  lancé depuis une autre copie) : ajouté à la main ; `create-questions.ts` en simulation le dit
+  « déjà en base », contenu identique.
+- Fiche vérifiée depuis la base (`regen-depuis-base.ts`, `compile-prod.mjs`, `--polices-corrige`,
+  `debord.py`) : fiche 1 p., réponses 1 p., corrigé 3 p., 6 PDF, 0 débord, pages FR relues, maths
+  justes. Deux coupures disgracieuses au corrigé, non bloquantes : série 1 Q1 « … ou 5x − 4 = » / « 0 »,
+  série 2 Q1 calcul aligné coupé dans « (1 + 3) × a ».
+- Rangement **validé par David (2026-11-06)**, question d'accès comprise (personne ne gagne ni ne
+  perd d'accès) : `0f673c27` → Fonctions › Fonctions affines › variations et signe, point **2-328**
+  (rattaché aux automatismes de 1re ; aucun point de 1re sur le signe de ax + b ; même rangement
+  que `bba95c2d`). Migration `20261106050038_automatismes_1spe_rangement_affine.sql` (forme de
+  #2390), test `tests/integration/automatismes-1spe-rangement-affine.test.ts` : 4 rouges sur 9
+  sans le corps, 9 verts avec.
+- **Garde des niveaux des tags — décision de David (2026-11-06) : exceptions.** Les 6 automatismes
+  de 1re tagués d'un point de 2de ou de 5e (`0f673c27`, `1c86d122`, `7f82d15a`, `95ee57c8`,
+  `9852d62c`, `f5585668`) gardent leurs seuls niveaux de 1re : inscrits dans `EXCEPTIONS_NIVEAUX`
+  (`scripts/lib/niveaux-des-tags.ts`), test mis à jour ; `garde-niveaux-tags.ts` en prod : 0
+  niveau manquant, 5 excusés (le 6e après la migration).
+- `security-auditor` : 0 bloquant ; à vérifier après `db:migrate` : `tgenabled` du trigger
+  `updated_at` revenu à `O`.

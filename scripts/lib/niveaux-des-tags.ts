@@ -51,6 +51,10 @@ export interface EcartExcuse {
 const Q7_SECONDE =
 	'décision de David, questions-2de Q7 (c) : brouillon de seconde, niveau `2` seul malgré son tag de Terminale';
 
+/** Raison commune des automatismes de 1re tagués d'un point de 2de ou de collège */
+const AUTOMATISMES_1RE =
+	"décision de David, automatismes-1spe (2026-11-06) : automatisme de 1re, niveaux de 1re seuls malgré son tag d'un point de 2de ou de collège (curriculum_point_automatismes)";
+
 /**
  * Écarts voulus (décision de David écrite dans un journal) : la garde les montre à part, sans
  * échouer. N'en ajouter qu'avec la décision citée.
@@ -60,7 +64,13 @@ export const EXCEPTIONS_NIVEAUX: ReadonlyMap<string, Exception> = new Map([
 	['4016b05c-f6cf-4fe1-a1e8-19067a57a931', { niveaux: ['T_COMP'], raison: Q7_SECONDE }],
 	['77d6fedc-1643-4451-a685-2451dc1616cb', { niveaux: ['T_COMP'], raison: Q7_SECONDE }],
 	['9d7c4d98-c7fe-4c2e-8993-d162294e1dde', { niveaux: ['T_COMP'], raison: Q7_SECONDE }],
-	['f3e68e4b-9855-4e91-bc0d-7363b7650b86', { niveaux: ['T_COMP'], raison: Q7_SECONDE }]
+	['f3e68e4b-9855-4e91-bc0d-7363b7650b86', { niveaux: ['T_COMP'], raison: Q7_SECONDE }],
+	['0f673c27-9814-445f-9643-97c5fab9ce5b', { niveaux: ['2'], raison: AUTOMATISMES_1RE }],
+	['1c86d122-92f8-4bee-a566-b023ffb79dda', { niveaux: ['5'], raison: AUTOMATISMES_1RE }],
+	['7f82d15a-1c46-4bd5-81bc-a9f5e21048ed', { niveaux: ['2'], raison: AUTOMATISMES_1RE }],
+	['95ee57c8-4e16-4554-add5-cb8f72ee6f28', { niveaux: ['2'], raison: AUTOMATISMES_1RE }],
+	['9852d62c-4109-4155-aa56-afef8c72d923', { niveaux: ['5'], raison: AUTOMATISMES_1RE }],
+	['f5585668-2ec1-45d1-a279-d82f45903926', { niveaux: ['2'], raison: AUTOMATISMES_1RE }]
 ]);
 
 /** PostgREST plafonne une lecture à 1000 lignes : on lit par pages */

@@ -92,14 +92,27 @@ describe('separerExceptions', () => {
 		expect(excuses).toEqual([]);
 	});
 
-	it('les exceptions du dépôt : les 5 brouillons de seconde (questions-2de Q7 c)', () => {
-		expect([...EXCEPTIONS_NIVEAUX.keys()].map((id) => id.slice(0, 8)).sort()).toEqual([
+	it('les exceptions du dépôt : 5 brouillons de seconde (Q7 c), 6 automatismes de 1re', () => {
+		const parRaison = (motif: string) =>
+			[...EXCEPTIONS_NIVEAUX]
+				.filter(([, e]) => e.raison.includes(motif))
+				.map(([id]) => id.slice(0, 8))
+				.sort();
+		expect(parRaison('questions-2de Q7')).toEqual([
 			'1cfc575d',
 			'4016b05c',
 			'77d6fedc',
 			'9d7c4d98',
 			'f3e68e4b'
 		]);
-		expect([...EXCEPTIONS_NIVEAUX.values()].every((e) => e.raison.includes('Q7'))).toBe(true);
+		expect(parRaison('automatismes-1spe')).toEqual([
+			'0f673c27',
+			'1c86d122',
+			'7f82d15a',
+			'95ee57c8',
+			'9852d62c',
+			'f5585668'
+		]);
+		expect(EXCEPTIONS_NIVEAUX.size).toBe(11);
 	});
 });
