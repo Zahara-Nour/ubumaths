@@ -4,6 +4,7 @@ couvre:
   - src/app.d.ts
   - src/lib/server/supabase.ts
   - src/lib/server/auth.ts
+  - src/lib/server/google-photo.ts
   - src/lib/server/accountStatusHandle.ts
   - src/lib/server/redirectHandle.ts
   - 'src/lib/server/auth/**'
