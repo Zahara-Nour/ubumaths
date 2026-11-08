@@ -415,13 +415,15 @@ jobs:
   # PR de contenu : sautés. Le projet `client` ne prend que src/**/*.svelte.test.*,
   # et aucun ne lit scripts/questions ni docs/ : rien ne peut changer leur verdict.
   test-client:
-    name: Client Tests (browser, shard ${{ matrix.shard }}/2)
+    name: Client Tests (browser, shard ${{ matrix.shard }}/2, essai ${{ matrix.essai }})
     needs: version
-    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' && needs.version.outputs.contenu != 'true' }}
+    # MESURE PROVISOIRE (chantier ci-navigateur-plante) : lancé aussi par workflow_dispatch, 5 essais par shard.
+    if: ${{ !cancelled() && needs.version.result == 'success' && (github.event_name == 'workflow_dispatch' || (needs.version.outputs.allegee != 'true' && needs.version.outputs.contenu != 'true')) }}
     strategy:
       fail-fast: false
       matrix:
         shard: [1, 2]
+        essai: [1, 2, 3, 4, 5]
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -462,8 +464,27 @@ jobs:
       # The real-Pyodide integration tests are excluded via vite.config.ts
       # (gated on CI=true), since the CLI --exclude flag does not propagate to
       # project configs in vitest's projects mode.
+      # MESURE PROVISOIRE : mémoire toutes les 5 s pendant les tests.
+      - name: Start memory sampler
+        run: |
+          nproc; free -m
+          (while true; do
+             echo "=== $(date -u +%T) $(free -m | awk 'NR==2{print "used="$3" free="$4" avail="$7}') swap=$(free -m | awk 'NR==3{print $3}')"
+             ps -eo rss=,comm= --sort=-rss | head -6 | awk '{printf "  %6d Mo %s\n", $1/1024, $2}'
+             echo "  chrome total: $(ps -eo rss=,comm= | awk '/chrom/{s+=$1} END{print int(s/1024)}') Mo, process: $(pgrep -c chrom)"
+           sleep 5; done) > "$RUNNER_TEMP/mem.log" 2>&1 &
+
       - name: Run client tests
+        env:
+          DEBUG: pw:browser
         run: pnpm exec vitest run --project client --shard=${{ matrix.shard }}/2
+
+      - name: Memory and kernel report
+        if: always()
+        run: |
+          echo "### dernières mesures mémoire"; tail -n 120 "$RUNNER_TEMP/mem.log"
+          echo "### pic chrome"; grep "chrome total" "$RUNNER_TEMP/mem.log" | awk '{print $3}' | sort -n | tail -1; grep "^===" "$RUNNER_TEMP/mem.log" | sed "s/.*avail=//" | awk '{print $1}' | sort -n | head -1 | sed "s/^/avail min: /"
+          echo "### dmesg"; sudo dmesg -T | grep -iE "oom|killed|out of memory|segfault|chrom" | tail -40 || true
 
   # Security gate for production dependencies (incl. transitive vulns Dependabot
   # can't auto-PR for pnpm — those need `pnpm.overrides`). Tuned to avoid locking
