@@ -9,7 +9,7 @@
 _Mis à jour le 2026-11-08, lot 2 mergé (#2458), créé en brouillon ; rangement en PR (§ 6)._
 
 - **État** : lot 1 PUBLIÉ. Lot 2 : 3 brouillons en prod ; migration nœud + tag `20261108150529` et son test verts
-  (12/12, rouges sans la migration) ; `security-auditor` lancé ; PR du rangement ouverte.
+  (12/12, rouges sans la migration) ; `security-auditor` lancé ; PR du rangement #2460.
 - **Prochaine action** : CI → `check:migrations --pr` → merge → `db:migrate` depuis le dépôt principal → page à
   cocher. Ensuite lot 3 (fonctions : 357-360).
 - **En attente de David** : rien.
