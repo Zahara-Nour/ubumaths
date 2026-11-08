@@ -35,6 +35,8 @@
 		to: { x: number; y: number };
 		color: CourbeColor;
 		arrow?: boolean;
+		/** Trait de construction de la correction (somme de vecteurs) */
+		dashed?: boolean;
 	}
 </script>
 
@@ -82,6 +84,8 @@
 	/** Pointe de la flèche d'un vecteur à tracer : longueur et demi-largeur, en px */
 	const ARROW_LENGTH = 11;
 	const ARROW_HALF_WIDTH = 5;
+	/** Écart du nom d'un vecteur donné à sa flèche, en px */
+	const VECTOR_LABEL_GAP = 10;
 
 	/** Couleurs : palette commune des figures (app.css), claire ou sombre */
 	const COLOR_VAR = namedColorTable(COURBE_COLORS, namedColorScreen);
@@ -149,7 +153,26 @@
 	 * et le pied de la pointe, où s'arrête le trait (le bout arrondi du trait ne
 	 * dépasse pas la pointe)
 	 */
-	function arrowHead(t: CourbeTrace): { base: { x: number; y: number }; points: string } {
+	/**
+	 * Nom d'un vecteur donné : près du milieu de la flèche, à gauche du sens de
+	 * parcours (comme on l'écrit à la main)
+	 */
+	function vectorLabelAt(from: ScenePoint, to: ScenePoint): { x: number; y: number } {
+		const x1 = sx(from.x);
+		const y1 = sy(from.y);
+		const x2 = sx(to.x);
+		const y2 = sy(to.y);
+		const length = Math.hypot(x2 - x1, y2 - y1) || 1;
+		return {
+			x: (x1 + x2) / 2 + ((y2 - y1) / length) * VECTOR_LABEL_GAP,
+			y: (y1 + y2) / 2 - ((x2 - x1) / length) * VECTOR_LABEL_GAP
+		};
+	}
+
+	function arrowHead(t: Pick<CourbeTrace, 'from' | 'to'>): {
+		base: { x: number; y: number };
+		points: string;
+	} {
 		const x1 = sx(t.from.x);
 		const y1 = sy(t.from.y);
 		const x2 = sx(t.to.x);
@@ -403,6 +426,31 @@
 				<text class="courbe-point-nom" x={sx(p.x) + 5} y={sy(p.y) - 5}>{p.name}</text>
 			{/each}
 
+			<!-- Vecteurs donnés (`vecteurs:`) : flèche, nom près du milieu -->
+			{#each scene.vectors as v, i (i)}
+				{@const head = arrowHead(v)}
+				{@const label = vectorLabelAt(v.from, v.to)}
+				<g class="courbe-fleche courbe-vecteur-donne">
+					<line
+						class="courbe-trace"
+						x1={sx(v.from.x)}
+						y1={sy(v.from.y)}
+						x2={head.base.x}
+						y2={head.base.y}
+					/>
+					<polygon points={head.points} stroke-linejoin="round" />
+				</g>
+				{#if v.name !== ''}
+					<text
+						class="courbe-point-nom courbe-vecteur-nom"
+						x={label.x}
+						y={label.y}
+						text-anchor="middle"
+						dominant-baseline="middle">{v.name}</text
+					>
+				{/if}
+			{/each}
+
 			<!-- Droites tracées (droite à tracer) et flèches (vecteur à tracer) -->
 			{#each traces as t, i (i)}
 				{#if t.arrow}
@@ -414,6 +462,7 @@
 					>
 						<line
 							class="courbe-trace"
+							class:pointille={t.dashed}
 							x1={sx(t.from.x)}
 							y1={sy(t.from.y)}
 							x2={head.base.x}
@@ -424,6 +473,7 @@
 				{:else}
 					<line
 						class="courbe-trace"
+						class:pointille={t.dashed}
 						x1={sx(t.from.x)}
 						y1={sy(t.from.y)}
 						x2={sx(t.to.x)}
@@ -541,6 +591,11 @@
 
 	.courbe-trace.pointille {
 		stroke-dasharray: 6 4;
+	}
+
+	.courbe-vecteur-donne {
+		stroke: var(--color-foreground);
+		fill: var(--color-foreground);
 	}
 
 	.courbe-diagonale {

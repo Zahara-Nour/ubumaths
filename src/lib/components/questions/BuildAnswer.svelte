@@ -37,6 +37,7 @@
 	import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 	import { solutionLine } from '$lib/ubumark/utils/courbe-tracer';
 	import { solutionVector } from '$lib/ubumark/utils/courbe-vecteur';
+	import { constructionTraces } from '$lib/ubumark/utils/courbe-combinaison';
 	import Horloge from '$lib/components/markdown/nodes/Horloge.svelte';
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
@@ -178,12 +179,20 @@
 	{#if lineCases}
 		<Courbe node={courbe} answers={lineCases} showControls={false} />
 	{:else}
-		<!-- Le repère avec la flèche juste, sans `tracer:` : dessiné seul -->
+		<!-- Le repère avec la flèche juste (et la construction d'une somme), sans `tracer:` -->
 		{@const vector = spec.vecteur!}
 		{@const arrow = vector.coords ? solutionVector(spec, vector.coords, null, vector.origin) : null}
+		{@const construction =
+			arrow && vector.terms
+				? constructionTraces(spec, vector.terms, arrow.from).map((t) => ({
+						...t,
+						color: 'vert' as const,
+						dashed: true
+					}))
+				: []}
 		<Courbe
 			node={{ ...courbe, spec: { ...spec, vecteur: undefined } }}
-			traces={arrow ? [{ ...arrow, color: 'vert', arrow: true }] : []}
+			traces={arrow ? [...construction, { ...arrow, color: 'vert', arrow: true }] : []}
 		/>
 	{/if}
 {:else if courbe?.spec?.placer !== undefined}

@@ -60,6 +60,7 @@ import type {
 	CourbeLabel,
 	CourbeLineToTrace,
 	CourbeVectorToTrace,
+	CourbeGivenVector,
 	CourbeNode,
 	CourbePoint,
 	CourbeSize,
@@ -80,6 +81,12 @@ import { computeSequenceTerms, PREV_TERM_VARIABLE } from '$lib/grapheur/sequence
 import { isGridNode, isInWindow, courbeGridSteps } from '../utils/courbe-placer';
 import { lineCoefficients, lineNodes } from '../utils/courbe-tracer';
 import { vectorProblem } from '../utils/courbe-vecteur';
+import {
+	combinationCoords,
+	isCombinationText,
+	readCombination,
+	readGivenVectors
+} from '../utils/courbe-combinaison';
 
 // ============================================================================
 // CONSTANTES
@@ -127,7 +134,8 @@ const KNOWN_KEYS = [
 	'placer',
 	'tracer',
 	'axes',
-	'case'
+	'case',
+	'vecteurs'
 ] as const;
 
 /** `A=(2 ; 3)`, ou `(2 ; 3)` pour un point seul : nom éventuel, coordonnées */
@@ -1010,6 +1018,14 @@ function isVectorLine(value: string): boolean {
 	return /^vecteur\b/i.test(value);
 }
 
+/** `vecteur u + v depuis A` → ce qui suit « vecteur », et l'origine imposée */
+function splitVectorLine(value: string): { text: string; from?: string } {
+	const body = value.replace(/^vecteur\b/i, '').trim();
+	const depuis = /\s+depuis\s+([A-Za-z][A-Za-z0-9']*)$/.exec(body);
+	if (depuis === null) return { text: body };
+	return { text: body.slice(0, depuis.index).trim(), from: depuis[1] };
+}
+
 /** `tracer: vecteur …` : nom, coordonnées (null si masquées), origine imposée (nom) */
 function parseVectorToTrace(value: string, line: number): CourbeVectorToTrace {
 	const match = VECTOR_REGEX.exec(value);
@@ -1095,6 +1111,10 @@ export function parseCourbeContent(source: string): CourbeNode {
 	let axisTitles: CourbeAxisTitles | undefined;
 	let tracer: CourbeLineToTrace | undefined;
 	let vecteur: CourbeVectorToTrace | undefined;
+	/** Combinaison à tracer (`tracer: vecteur u + v`), lue après points: et vecteurs: */
+	let combination: string | undefined;
+	/** `vecteurs:`, lu après points: */
+	let givenLine: { value: string; line: number } | undefined;
 	let caseIndex: number | undefined;
 	let caseLine = 0;
 
@@ -1207,8 +1227,21 @@ export function parseCourbeContent(source: string): CourbeNode {
 					axisTitles = parseAxisTitles(value);
 					break;
 				case 'tracer':
-					if (isVectorLine(value)) vecteur = parseVectorToTrace(value, line);
-					else tracer = parseLineToTrace(value, line);
+					if (isVectorLine(value)) {
+						const written = splitVectorLine(value);
+						if (isCombinationText(written.text)) {
+							combination = written.text;
+							vecteur = {
+								name: '',
+								coords: null,
+								...(written.from !== undefined && { from: written.from }),
+								line
+							};
+						} else vecteur = parseVectorToTrace(value, line);
+					} else tracer = parseLineToTrace(value, line);
+					break;
+				case 'vecteurs':
+					givenLine = { value, line };
 					break;
 				case 'case':
 					if (!/^\d+$/.test(value)) {
@@ -1334,6 +1367,27 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
+	// Vecteurs donnés : entre points de points:
+	let vecteurs: CourbeGivenVector[] | undefined;
+	if (errors.length === 0 && givenLine !== undefined) {
+		try {
+			vecteurs = readGivenVectors(givenLine.value, givenLine.line, points);
+		} catch (error) {
+			fail(givenLine.line, lines[givenLine.line - 1].trim(), error);
+		}
+	}
+
+	// Combinaison à tracer : ses coordonnées, calculées des vecteurs donnés et des points
+	if (errors.length === 0 && vecteur !== undefined && combination !== undefined) {
+		try {
+			const terms = readCombination(combination, vecteurs ?? [], points);
+			vecteur = { ...vecteur, coords: combinationCoords(terms), terms };
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			fail(vecteur.line, lines[vecteur.line - 1].trim(), new Error(`tracer : ${message}`));
+		}
+	}
+
 	// Vecteur à tracer : seul sur son repère, origine imposée prise dans points:
 	if (errors.length === 0 && vecteur !== undefined) {
 		const origin =
@@ -1372,6 +1426,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 					...(placer !== undefined && { placer }),
 					...(tracer !== undefined && { tracer }),
 					...(vecteur !== undefined && { vecteur }),
+					...(vecteurs !== undefined && { vecteurs }),
 					...(axisTitles !== undefined && { axisTitles })
 				}
 			: null;

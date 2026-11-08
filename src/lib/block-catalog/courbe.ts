@@ -188,6 +188,21 @@ export const courbeEntry: BlockCatalogEntry = {
 					defaultValue: 'aucune',
 					description:
 						'L’élève pose l’origine puis l’extrémité sur les nœuds de la grille (étiquettes Origine / Extrémité) ; une flèche les relie. Une case, juste si l’extrémité moins l’origine donne le vecteur, où qu’il soit. Avec depuis A, l’origine est A, déjà dessiné : l’élève ne pose que l’extrémité. Coordonnées multiples du pas de la grille ; le vecteur doit tenir dans la fenêtre. Le nom (une minuscule) n’apparaît que dans la phrase de correction. Jamais avec placer: dans le même repère.'
+				},
+				{
+					key: 'tracer: vecteur (combinaison)',
+					values:
+						'vecteur u + v, vecteur 2u - AC depuis A : vecteurs de vecteurs: ou couples de points de points:, coefficients entiers de -3 à 3 (pas 0), au plus 4 termes',
+					defaultValue: 'aucune',
+					description:
+						'Le même geste ; le vecteur attendu est calculé à partir des vecteurs nommés. Phrases de correction nommées pour deux termes (u⃗ seul, u⃗ − v⃗, mauvais sens) ; la correction ajoute la construction en pointillés : parallélogramme si les deux vecteurs donnés partent de l’origine de la flèche juste, sinon le second mis au bout du premier. Rien à masquer dans une évaluation : la combinaison est la tâche.'
+				},
+				{
+					key: 'vecteurs',
+					values: 'u = AB, v = AC, ou AB sans nom (au plus 4 ; points pris dans points:)',
+					defaultValue: 'aucun',
+					description:
+						'Flèches données, dessinées dans l’énoncé (écran et PDF) ; le nom (une minuscule) est écrit près du milieu de la flèche. Sert aussi de vocabulaire à tracer: vecteur u + v.'
 				}
 			]
 		}
@@ -234,6 +249,20 @@ export const courbeEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Origine imposée : A est dessiné, l’élève ne pose que l’extrémité. Le nom u sert à la phrase de correction.'
+		},
+		{
+			title: 'Tracer la somme de deux vecteurs (question)',
+			source: fence(
+				'courbe',
+				'x: -6 ; 6',
+				'y: -6 ; 6',
+				'grille: 1',
+				'points: A(-2 ; -1), B(1 ; 0), C(-1 ; 2)',
+				'vecteurs: u = AB, v = AC',
+				'tracer: vecteur u + v depuis A'
+			),
+			explanation:
+				'Les flèches u et v sont dessinées ; l’élève trace u + v depuis A. La correction nomme l’erreur (« u⃗ seul », « u⃗ − v⃗ ») et dessine le parallélogramme en pointillés.'
 		},
 		{
 			title: 'Des données dans un repère',

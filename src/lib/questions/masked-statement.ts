@@ -82,6 +82,7 @@ import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 import { unnestedLine } from '$lib/ubumark/parser/nested-line';
 import {
 	isMaskedVectorValue,
+	isCombinationVectorValue,
 	isVectorValue,
 	MASKED_VALUE,
 	maskVectorValue
@@ -606,7 +607,7 @@ export function findUnmaskedAnswers(statement: string): string[] {
 			(block) =>
 				valuesOf(block.body, ['placer']).every(allMasked) &&
 				valuesOf(block.body, ['tracer']).every((v) =>
-					isVectorValue(v) ? isMaskedVectorValue(v) : allMasked(v)
+					isVectorValue(v) ? isMaskedVectorValue(v) || isCombinationVectorValue(v) : allMasked(v)
 				)
 		),
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),

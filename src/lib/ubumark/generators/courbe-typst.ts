@@ -21,6 +21,7 @@ import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
 import { buildCourbeScene, type ScenePoint } from '../utils/courbe-scene';
 import { solutionLine } from '../utils/courbe-tracer';
 import { solutionVector } from '../utils/courbe-vecteur';
+import { constructionTraces } from '../utils/courbe-combinaison';
 
 // ============================================================================
 // CONFIGURATION
@@ -77,6 +78,9 @@ function labelToTypst(label: CourbeLabel): string {
 // ============================================================================
 // GÉNÉRATEUR
 // ============================================================================
+
+/** Écart du nom d'un vecteur donné à sa flèche, en cm */
+const VECTOR_LABEL_GAP = 0.22;
 
 export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOptions = {}): string {
 	if (!node.spec) return UNAVAILABLE;
@@ -273,6 +277,21 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 		);
 	}
 
+	// Vecteurs donnés : flèche noire, nom en italique près du milieu, à gauche du sens
+	for (const v of scene.vectors) {
+		lines.push(`  // vecteur ${v.name}`);
+		lines.push(
+			`  line(${P(v.from)}, ${P(v.to)}, stroke: 0.8pt + black, mark: (end: ">", fill: black))`
+		);
+		if (v.name === '') continue;
+		const dx = Number(X(v.to.x)) - Number(X(v.from.x));
+		const dy = Number(Y(v.to.y)) - Number(Y(v.from.y));
+		const length = Math.hypot(dx, dy);
+		const mx = (Number(X(v.from.x)) + Number(X(v.to.x))) / 2 - (dy / length) * VECTOR_LABEL_GAP;
+		const my = (Number(Y(v.from.y)) + Number(Y(v.to.y))) / 2 + (dx / length) * VECTOR_LABEL_GAP;
+		lines.push(`  content((${fmt(mx)}, ${fmt(my)}), text(size: 8pt, style: "italic")[${v.name}])`);
+	}
+
 	// Corrigé : les points attendus (jamais dans l'énoncé)
 	if (options.solved) {
 		for (const t of node.spec.placer ?? []) {
@@ -291,6 +310,15 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 			: null;
 		if (arrow) {
 			const color = TYPST_COLORS.vert;
+			for (const t of vecteur?.terms
+				? constructionTraces(node.spec, vecteur.terms, arrow.from)
+				: []) {
+				lines.push('  // construction');
+				const mark = t.arrow ? `, mark: (end: ">", fill: ${color})` : '';
+				lines.push(
+					`  line(${P(t.from)}, ${P(t.to)}, stroke: (paint: ${color}, thickness: 0.6pt, dash: "dashed")${mark})`
+				);
+			}
 			lines.push('  // solution vecteur');
 			lines.push(
 				`  line(${P(arrow.from)}, ${P(arrow.to)}, stroke: 1pt + ${color}, mark: (end: ">", fill: ${color}))`
