@@ -6,20 +6,16 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2489 (PR 1 mergée)._
+_Mis à jour le 2026-11-09, PR 2 en cours._
 
-- **État** : PR 1 mergée (#2489 : page d'édition d'un publié, « Enregistrer » / « Repasser en
-  brouillon », plus de « réponse manquante » côté client, `serverErrors`) ; vérification manuelle
-  notée ; worktree de la PR 1 supprimé · **Prochaine action** : PR 2 (liste : recherche par
-  titre/id, filtres de l'adresse ignorés) → recréer le worktree
-  `git worktree add -b fix/admin-modeles-liste ../ubumaths-wt-admin-modeles origin/main` ·
-  **En attente de David** : rien · **Pièges en cours** : la liste
-  (`dashboard/admin/questions/+page.svelte`, 1303 lignes) a un onglet « Brouillons » par défaut,
-  « Publiés » à côté ; le serveur (`+page.server.ts`) filtre déjà `?type=&grades=&branche=&notion=&nonRanges=&minLevel=&maxLevel=&courseQuestion=` ;
-  `?search=` est lu mais **jamais appliqué** (recherche plein texte désactivée, attend un index
-  tsvector) ; finding 6 de la revue de #2489 (mode JSON : refus du serveur ignoré pour
-  « Enregistrer »/« Publier ») laissé, pas de bug visible · **Worktree / branche** : aucun pour
-  l'instant (PR 2 : `fix/admin-modeles-liste`).
+- **État** : PR 2 ouverte (branche `fix/admin-modeles-liste`) : (d) cause trouvée — la garde
+  `dashboard/admin/+layout.server.ts` renvoyait vers l'élévation avec le chemin seul, les filtres
+  de l'adresse perdus au retour (David = compte professeur élevé) ; (c) recherche par titre (ILIKE)
+  ou début d'identifiant (≥ 4 caractères hexadécimaux, plage d'UUID), champ réactivé ·
+  **Prochaine action** : revue (code-reviewer + security-auditor : redirection d'élévation),
+  CI, merge ; puis `deploy:prod` sur demande de David et ligne 22 d'`outils-manquants.md` en « Livré » ·
+  **En attente de David** : rien · **Pièges en cours** : finding 6 de #2489 toujours laissé ·
+  **Worktree / branche** : `../ubumaths-wt-admin-modeles`, `fix/admin-modeles-liste`.
 
 ## Origine (2026-11-08, session `automatismes-1spe`)
 
@@ -61,3 +57,15 @@ Après les deux : `deploy:prod` sur demande de David ; passer la ligne 22 d'`out
   ajouté est une garde, vert dès l'écriture. Les 7 tests du formulaire, rouges avant.
 - `QuestionTemplateForm-publication-refusee` : « publication acceptée » clique maintenant
   « Enregistrer » (le modèle publié n'a plus « Enregistrer brouillon »).
+
+### PR 2 (2026-11-09)
+
+- (d) Le serveur filtre bien : en prod, `grades && {1_SPE}` et `level = 6` donnent 11 publiés sur 2095
+  (2095 / 50 = les 42 pages vues). La requête du 2026-11-08 est donc arrivée sans paramètres : la garde
+  de la section admin envoie un professeur non élevé vers `/dashboard/elevate?redirect=<chemin>`, sans
+  `url.search`. Corrigé (`url.pathname + url.search`) ; `safeElevationRedirect` juge la section sur le
+  chemin, plus sur la chaîne entière (`/dashboard/admin?x=1` retombait sur l'accueil).
+- (c) `search` : Zod (trim, 100 caractères au plus, sinon 400). Terme hexadécimal de 4 caractères au
+  moins → `or(title.ilike…, and(id.gte…, id.lte…))` ; sinon `ilike('title', …)` avec `%`, `_`, `\`
+  échappés. Syntaxe vérifiée contre le PostgREST local. Appliquée aux deux onglets et aux identifiants
+  de « Tout cocher (filtrés) ».

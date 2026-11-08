@@ -46,8 +46,12 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 		);
 		if (!teacherAllowed) {
 			// Admin-only page → send the teacher to the step-up screen, preserving
-			// the destination so they land back here once elevated.
-			throw redirect(303, `/dashboard/elevate?redirect=${encodeURIComponent(url.pathname)}`);
+			// the destination so they land back here once elevated. Paramètres compris :
+			// sans eux, la liste des modèles revenait sans ses filtres.
+			throw redirect(
+				303,
+				`/dashboard/elevate?redirect=${encodeURIComponent(url.pathname + url.search)}`
+			);
 		}
 		// Teacher-allowed page (friendships/users) → let the teacher through.
 	} else {

@@ -54,6 +54,22 @@ function rows(count: number, status: string, groupe: string, overrides: Row = {}
 	return Array.from({ length: count }, (_, index) => row(index, status, groupe, overrides));
 }
 
+/** Motif ILIKE de Postgres (`%`, `_`, échappement par `\`) → expression régulière */
+function likeToRegExp(pattern: string): RegExp {
+	const literal = (char: string) => char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	let source = '';
+	for (let index = 0; index < pattern.length; index++) {
+		const char = pattern[index];
+		if (char === '\\' && index + 1 < pattern.length) {
+			index++;
+			source += literal(pattern[index]);
+		} else if (char === '%') source += '.*';
+		else if (char === '_') source += '.';
+		else source += literal(char);
+	}
+	return new RegExp(`^${source}$`, 'is');
+}
+
 /** Constructeur de requête minimal, à la manière de PostgREST (1000 lignes max) */
 function fakeQuery(table: Row[]) {
 	const filters: Array<(candidate: Row) => boolean> = [];
@@ -85,9 +101,26 @@ function fakeQuery(table: Row[]) {
 			);
 			return builder;
 		},
+		ilike: (column: string, pattern: string) => {
+			filters.push((candidate) => likeToRegExp(pattern).test(String(candidate[column] ?? '')));
+			return builder;
+		},
+		// Recherche : `title.ilike.*terme*,and(id.gte.<uuid>,id.lte.<uuid>)` (terme hexadécimal)
 		// `or('type.eq.course_card,options->>courseQuestion.eq.true')` : liste de
 		// `colonne.eq.valeur`, colonne jsonb lue en texte via `->>`, comme PostgREST
 		or: (expression: string) => {
+			const search = /^title\.ilike\.\*(.*)\*,and\(id\.gte\.([^,]+),id\.lte\.([^)]+)\)$/.exec(
+				expression
+			);
+			if (search) {
+				const [, term, low, high] = search;
+				filters.push((candidate) => {
+					const id = String(candidate.id);
+					const title = String(candidate.title ?? '').toLowerCase();
+					return title.includes(term.toLowerCase()) || (id >= low && id <= high);
+				});
+				return builder;
+			}
 			const clauses = expression.split(',').map((clause) => {
 				const [path, operator, ...rest] = clause.split('.');
 				if (operator !== 'eq') throw new Error(`opérateur non simulé : ${operator}`);
@@ -332,5 +365,95 @@ describe('page admin des modèles — filtre « Questions de cours »', () => {
 
 		expect(result.drafts).toHaveLength(6);
 		expect(result.filters.courseQuestion).toBe(false);
+	});
+});
+
+describe('page admin des modèles — recherche par titre ou début d’identifiant', () => {
+	function catalogue(): Row[] {
+		return [
+			row(0, 'published', 'A', {
+				id: '7f82d15a-0000-4000-8000-000000000001',
+				title: 'Lire un tableau de variations'
+			}),
+			row(1, 'published', 'B', {
+				id: '7f83aaaa-0000-4000-8000-000000000002',
+				title: 'Dériver un polynôme'
+			}),
+			row(2, 'draft', 'C', {
+				id: '12345678-0000-4000-8000-000000000003',
+				title: 'Variations d’une fonction affine'
+			}),
+			row(3, 'published', 'D', {
+				id: 'abcdef01-0000-4000-8000-000000000004',
+				title: 'Taux de 100 % et 50_50'
+			})
+		];
+	}
+
+	it('sans recherche : tout', async () => {
+		const result = await loadPage(catalogue());
+
+		expect(result.publishedIds).toHaveLength(3);
+		expect(result.drafts).toHaveLength(1);
+	});
+
+	it('par un mot du titre, sans la casse, dans les deux onglets', async () => {
+		const result = await loadPage(catalogue(), '?search=VARIATIONS');
+
+		expect(result.publishedIds).toEqual(['7f82d15a-0000-4000-8000-000000000001']);
+		expect(result.drafts.map((draft) => draft.groupe)).toEqual(['C']);
+		expect(result.total).toBe(1);
+		expect(result.filters.search).toBe('VARIATIONS');
+	});
+
+	it('par le début de l’identifiant (8 caractères, comme dans la liste)', async () => {
+		const result = await loadPage(catalogue(), '?search=7f82d15a');
+
+		expect(result.publishedIds).toEqual(['7f82d15a-0000-4000-8000-000000000001']);
+		expect(result.drafts).toHaveLength(0);
+	});
+
+	it('par un début d’identifiant de 4 caractères au moins, sans la casse', async () => {
+		expect((await loadPage(catalogue(), '?search=7F82')).publishedIds).toEqual([
+			'7f82d15a-0000-4000-8000-000000000001'
+		]);
+		expect((await loadPage(catalogue(), '?search=7f83')).publishedIds).toEqual([
+			'7f83aaaa-0000-4000-8000-000000000002'
+		]);
+		// Moins de 4 caractères : pas une recherche d’identifiant, seulement le titre
+		expect((await loadPage(catalogue(), '?search=7f8')).publishedIds).toHaveLength(0);
+	});
+
+	it('par un identifiant complet, tirets compris', async () => {
+		const result = await loadPage(catalogue(), '?search=12345678-0000-4000-8000-000000000003');
+
+		expect(result.drafts.map((draft) => draft.groupe)).toEqual(['C']);
+	});
+
+	it('les caractères % et _ du terme sont cherchés tels quels', async () => {
+		expect((await loadPage(catalogue(), '?search=100%20%25')).publishedIds).toHaveLength(1);
+		expect((await loadPage(catalogue(), '?search=%25')).publishedIds).toHaveLength(1);
+		expect((await loadPage(catalogue(), '?search=50_50')).publishedIds).toHaveLength(1);
+		expect((await loadPage(catalogue(), '?search=50_5_')).publishedIds).toHaveLength(0);
+	});
+
+	it('se combine avec les autres filtres', async () => {
+		const result = await loadPage(catalogue(), '?search=variations&grades=1_SPE');
+
+		expect(result.publishedIds).toHaveLength(0);
+		expect(result.drafts).toHaveLength(0);
+	});
+
+	it('espaces autour ignorés ; terme vide = pas de recherche', async () => {
+		expect((await loadPage(catalogue(), '?search=%20%20polyn%C3%B4me%20')).publishedIds).toEqual([
+			'7f83aaaa-0000-4000-8000-000000000002'
+		]);
+		expect((await loadPage(catalogue(), '?search=%20%20')).publishedIds).toHaveLength(3);
+	});
+
+	it('terme trop long → 400', async () => {
+		await expect(loadPage(catalogue(), `?search=${'a'.repeat(101)}`)).rejects.toMatchObject({
+			status: 400
+		});
 	});
 });

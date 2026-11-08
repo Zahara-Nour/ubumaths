@@ -7,7 +7,7 @@
  * Features:
  * - Query parameter parsing (type, grades, search, sort, order, page)
  * - Server-side sorting with SQL injection prevention
- * - Full-text search using PostgreSQL's textSearch (French config)
+ * - Recherche par titre (ILIKE) ou par début d'identifiant (plage d'UUID)
  * - Grade filtering using JSONB array containment
  * - Pagination with 50 items per page (published tab)
  * - Same filters applied to drafts (no pagination) for bulk publication
@@ -52,6 +52,8 @@ interface TemplateFilters {
 	maxLevel: string | null;
 	/** Questions de cours seulement (`?courseQuestion=1`, Q110 b) */
 	courseQuestion: boolean;
+	/** Terme cherché dans le titre ou au début de l'identifiant ; `null` : pas de recherche */
+	search: string | null;
 }
 
 /** Ce que `applyTemplateFilters` utilise d'une requête PostgREST */
@@ -62,6 +64,7 @@ interface FilterableQuery {
 	overlaps(column: string, value: string[]): this;
 	gte(column: string, value: number): this;
 	lte(column: string, value: number): this;
+	ilike(column: string, pattern: string): this;
 	or(filters: string): this;
 }
 
@@ -77,9 +80,40 @@ const NO_NODE_ID = '00000000-0000-0000-0000-000000000000';
 
 const uuidSchema = z.string().uuid();
 
+/** Terme de recherche : espaces autour retirés, vide = pas de recherche */
+const searchSchema = z.string().trim().max(100);
+
+/** Longueur minimale d'un début d'identifiant (la liste en affiche 8) */
+const MIN_ID_PREFIX = 4;
+
+/** Terme qui peut être un début d'identifiant : chiffres hexadécimaux et tirets */
+const ID_PREFIX_PATTERN = /^[0-9a-f-]+$/i;
+
 // ============================================================================
 // FUNCTIONS
 // ============================================================================
+
+/** Échappe les jokers de LIKE (`%`, `_`) et le caractère d'échappement (`\\`) */
+function escapeLike(term: string): string {
+	return term.replace(/[\\%_]/g, (char) => `\\${char}`);
+}
+
+/** 32 chiffres hexadécimaux → UUID avec ses tirets (8-4-4-4-12) */
+function toUuid(hex: string): string {
+	return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+/**
+ * Plage d'UUID qui commencent par ce début d'identifiant ; `null` si le terme n'en est
+ * pas un. PostgREST ne sait pas convertir `id` en texte : on compare des UUID (ordre des
+ * octets = ordre des chiffres hexadécimaux), ce qui passe par l'index de la clé primaire.
+ */
+function idPrefixRange(term: string): { low: string; high: string } | null {
+	if (!ID_PREFIX_PATTERN.test(term)) return null;
+	const hex = term.replaceAll('-', '').toLowerCase();
+	if (hex.length < MIN_ID_PREFIX || hex.length > 32) return null;
+	return { low: toUuid(hex.padEnd(32, '0')), high: toUuid(hex.padEnd(32, 'f')) };
+}
 
 /**
  * Applique les filtres de la page à une requête, quel que soit l'onglet.
@@ -110,6 +144,13 @@ function applyTemplateFilters<Q extends FilterableQuery>(query: Q, filters: Temp
 	const maxLevel = filters.maxLevel ? parseInt(filters.maxLevel) : NaN;
 	if (!isNaN(maxLevel)) filtered = filtered.lte('level', maxLevel);
 	if (filters.courseQuestion) filtered = filtered.or(COURSE_QUESTION_FILTER);
+	if (filters.search) {
+		const range = idPrefixRange(filters.search);
+		// Terme hexadécimal : sans caractère spécial, il peut entrer tel quel dans `or()`
+		filtered = range
+			? filtered.or(`title.ilike.*${filters.search}*,and(id.gte.${range.low},id.lte.${range.high})`)
+			: filtered.ilike('title', `%${escapeLike(filters.search)}%`);
+	}
 	return filtered;
 }
 
@@ -134,7 +175,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const unrankedFilter = url.searchParams.get('nonRanges') === '1';
 	const minLevelFilter = url.searchParams.get('minLevel'); // Minimum difficulty level
 	const maxLevelFilter = url.searchParams.get('maxLevel'); // Maximum difficulty level
-	const searchFilter = url.searchParams.get('search'); // Full-text search term
+	// Recherche par titre ou début d'identifiant
+	const searchParsed = searchSchema.safeParse(url.searchParams.get('search') ?? '');
+	if (!searchParsed.success) throw error(400, 'Recherche trop longue (100 caractères au plus)');
+	const searchFilter = searchParsed.data || null;
 	// Questions de cours seulement : seule la valeur « 1 » active le filtre
 	const courseQuestionFilter = url.searchParams.get('courseQuestion') === '1';
 	const sortField = url.searchParams.get('sort') || 'created_at'; // Sort column
@@ -172,10 +216,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		unranked: unrankedFilter,
 		minLevel: minLevelFilter,
 		maxLevel: maxLevelFilter,
-		courseQuestion: courseQuestionFilter
+		courseQuestion: courseQuestionFilter,
+		search: searchFilter
 	};
-	// Recherche plein texte (`searchFilter`) toujours désactivée : elle attend un index
-	// tsvector sur `variations` (migration à écrire, GIN + config 'french').
 
 	try {
 		/**

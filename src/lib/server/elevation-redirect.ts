@@ -36,6 +36,6 @@ export function safeElevationRedirect(raw: string | null): string {
 	if (raw.includes('\\')) return DEFAULT_REDIRECT;
 	const path = raw.split(/[?#]/)[0];
 	if (path.split('/').some((segment) => DOT_SEGMENT.test(segment))) return DEFAULT_REDIRECT;
-	const inSection = ELEVATED_SECTIONS.some((s) => raw === s || raw.startsWith(`${s}/`));
+	const inSection = ELEVATED_SECTIONS.some((s) => path === s || path.startsWith(`${s}/`));
 	return inSection ? raw : DEFAULT_REDIRECT;
 }
