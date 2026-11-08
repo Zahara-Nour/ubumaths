@@ -9,7 +9,7 @@
 _Mis à jour le 2026-11-08, PR de rangement du modèle neuf `23751c95` ouverte._
 
 - **État** : modèle `23751c95` et fiche `f9608ee5` écrits en brouillon par David, fiche vérifiée depuis la
-  base ; PR de rangement (6-106, exception de niveaux, migration `20261108085338`) ouverte ·
+  base ; PR de rangement #2457 (6-106, exception de niveaux, migration `20261108085338`) ouverte ·
   **Prochaine action** : CI verte → merge → `db:migrate` depuis `main` (dry-run d'abord), puis vérifier en
   prod nœud, tag 6-106, brouillon, `updated_at` préservé, `tgenabled = 'O'` ; `garde-niveaux-tags.ts` ·
   **En attente de David** : publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de
@@ -585,3 +585,5 @@ scripts/questions/automatismes-2de-proportions --publier` (écrit l'`id` dans le
 - `security-auditor` : 0 bloquant (diff avec #2416 limité aux données ; gardes, rollback, trigger vérifiés).
   À vérifier en prod après `db:migrate` : nœud, un seul tag ('6', '6-106'), brouillon, `updated_at`
   inchangé, `tgenabled = 'O'`.
+- PR #2457 : premier run rouge sur la seule garde « doc à jour » (`docs/systeme/base-de-donnees.md` couvre
+  les migrations) : `Doc-inchangée:` ajouté dans un commit, le schéma ne change pas.
