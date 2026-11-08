@@ -2,6 +2,81 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.78.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.77.0...v0.78.0) (2026-11-08)
+
+### ✨ Features
+
+- **construction:** cercle de centre donné à tracer (passant par un point, rayon reporté) ([aa3e399](https://github.com/Zahara-Nour/ubumaths/commit/aa3e399287b904ecc5b23db9df7ec13ee0e63d4b))
+- **construction:** triangle rectangle à l'équerre et sur quadrillage (n° 20) ([35ed054](https://github.com/Zahara-Nour/ubumaths/commit/35ed054440e1c0e95c25e757cf42ff15db6126c9))
+- **courbe:** vecteurs donnés et somme de vecteurs à tracer ([149f070](https://github.com/Zahara-Nour/ubumaths/commit/149f070f3722315f67e8f33efd6b3d5330d642a8))
+- **questions:** 1spe, lot 12, aire sous la parabole égale à 1/3 annoncée dans la correction ([eecff4b](https://github.com/Zahara-Nour/ubumaths/commit/eecff4bb0516b5026b42b3f7645a181ba381f65b))
+- **questions:** 1spe, nœud et tags des modèles d'algorithmes du lot 12 (migration de données) ([a116eaa](https://github.com/Zahara-Nour/ubumaths/commit/a116eaa386e7e5c067904a03fa57b4f9e9d3d7a3))
+- **questions:** 2de, exemples d'algorithmes lot 4 (multiples, balayage, puissances) ([73bb13f](https://github.com/Zahara-Nour/ubumaths/commit/73bb13f50cc3e547c2f52d20169547b7e08145dd))
+- **questions:** ce2 lot 12b, cercle de centre donné et triangle rectangle (6 modèles) ([8c924c2](https://github.com/Zahara-Nour/ubumaths/commit/8c924c27b9c289e1eb7e9ec5885ae5f813925755)), closes [#2463](https://github.com/Zahara-Nour/ubumaths/issues/2463) [#2473](https://github.com/Zahara-Nour/ubumaths/issues/2473)
+- **questions:** lot 12b du CE2, ids des brouillons et rangement (nœud + tag) ([da905f1](https://github.com/Zahara-Nour/ubumaths/commit/da905f1c24b450fb0c8b2ecb3b4be811e031a66b))
+- **questions:** modèles de 5e lire / placer un point, droite graduée dans une liste ([279eedc](https://github.com/Zahara-Nour/ubumaths/commit/279eedc75a8eba5e33cb898a4b7ea15c768ae743))
+- **questions:** rangement des modèles de repérage de 5e (5-047, 5-128) ([7a82ec0](https://github.com/Zahara-Nour/ubumaths/commit/7a82ec0c49bf3437061411f57d0430730bfdc821))
+- **questions:** seconde, algorithmes lot 4, nœuds et tags des 4 modèles ([3229748](https://github.com/Zahara-Nour/ubumaths/commit/3229748401ce7e65ad12b503fdabee8e6db75ae1))
+- **questions:** seconde, démonstrations lot 3 (variations des fonctions de référence) ([a60d8c1](https://github.com/Zahara-Nour/ubumaths/commit/a60d8c15b364645c21d5470e8c73ec50b74dd083))
+- **questions:** seconde, démonstrations lot 3, nœuds et tags des 4 modèles ([b002d5a](https://github.com/Zahara-Nour/ubumaths/commit/b002d5a1a83930134632f989c10ed2171a503ab8))
+- **questions:** somme de deux vecteurs avec u et v dessinés (51192dc4, 2-297) ([ba1e185](https://github.com/Zahara-Nour/ubumaths/commit/ba1e185499b227089eab6a8bee569a34619be10c))
+- **questions:** tableau de variations à compléter lu sur la courbe (v1 de 7f82d15a) ([7203496](https://github.com/Zahara-Nour/ubumaths/commit/7203496c076e8efc35c3edfdbe27c790fd4ec5ab)), closes [#2456](https://github.com/Zahara-Nour/ubumaths/issues/2456)
+- **worksheets:** figer les points à placer (droite graduée, repère) dans une série ([05d7276](https://github.com/Zahara-Nour/ubumaths/commit/05d727684079645aef3fb175a5aca9f0675b15b3))
+
+### 🐛 Bug Fixes
+
+- **construction:** cercle de centre donné, le cercle juste d'un autre n'est pas un essai ([d2d873c](https://github.com/Zahara-Nour/ubumaths/commit/d2d873c96d498844a3bc2646ab0e79ce38c21a5e))
+- **construction:** correction du triangle rectangle et perpendiculaire hors fenêtre (revue) ([9a635b2](https://github.com/Zahara-Nour/ubumaths/commit/9a635b29b5cb29cbe3be2937c3d7249778e02cc8))
+- **courbe:** combinaison à tracer gardée en évaluation, côtés non dessinés en pointillés ([e764b5d](https://github.com/Zahara-Nour/ubumaths/commit/e764b5d8b7fe9ea9de2adfc247e3f7032b013ba9))
+- **editeur:** calcul aligné, fractions au grand format sur toutes les lignes ([646c535](https://github.com/Zahara-Nour/ubumaths/commit/646c535d452fd1cd6e1e4dbd2397f508010d698c))
+- **editeur:** revue [#2471](https://github.com/Zahara-Nour/ubumaths/issues/2471), exposant après un groupe \displaystyle, écart partagé avec le PDF ([ab4c4c1](https://github.com/Zahara-Nour/ubumaths/commit/ab4c4c112eb76c62fa42bfb858341c39954dcb9a))
+- **questions:** ce2 lot 12b, coordonnées arrondies (garde de complexité) ([c0a8f2c](https://github.com/Zahara-Nour/ubumaths/commit/c0a8f2ce1e8b3a98f03bda7246d9083b524deff6))
+- **questions:** flèches ↗ ↘ d'une réponse d'élève admises par la liste blanche ([9dec15e](https://github.com/Zahara-Nour/ubumaths/commit/9dec15eaef79122c520a268b45a24424c9152d72)), closes [#2456](https://github.com/Zahara-Nour/ubumaths/issues/2456)
+
+### 📚 Documentation
+
+- bornes 2de, les 10 exemples d'algorithmes ne sont pas des approfondissements ([6a0995e](https://github.com/Zahara-Nour/ubumaths/commit/6a0995e7d6079799b471ff63e36be4169ddd262e))
+- **courbe:** vecteurs donnés et somme à tracer, catalogue et doc système ([de5ab6d](https://github.com/Zahara-Nour/ubumaths/commit/de5ab6d0983d40ffa30833e4193d602100a9cb53))
+- points à placer dans une série, droite graduée en liste et réduite au PDF ([0aa7101](https://github.com/Zahara-Nour/ubumaths/commit/0aa71016522af5376ebf63cbb1452d1d8afd2dcc))
+- points à placer, nom d'un point sans nom et bloc en liste (revue) ([77960e0](https://github.com/Zahara-Nour/ubumaths/commit/77960e009dd4557f0c5af2078861de421cee962e))
+- **questions:** cercle de centre donné dans la case figure ([70a05ac](https://github.com/Zahara-Nour/ubumaths/commit/70a05acfd8ee908e5307103d5e5f529980398a81))
+- **systeme:** triangle rectangle de la case « figure » (n° 20) ([ec7a6b2](https://github.com/Zahara-Nour/ubumaths/commit/ec7a6b24fcc9005cdd64259a0654f98fd2dc3e0c))
+- **ubumark:** cercle de centre donné dans la figure à compléter ([fd15d61](https://github.com/Zahara-Nour/ubumaths/commit/fd15d61007e3d87139d917bb38be1d7336e3d45a))
+- versement du chantier questions-1spe-demonstrations, journal archivé ([83ee546](https://github.com/Zahara-Nour/ubumaths/commit/83ee5465a893a29ce8527ce9326cdd2e30bd68ff))
+- **wip:** automatismes-1spe, reprendre ici après [#2462](https://github.com/Zahara-Nour/ubumaths/issues/2462) ([7ccfd40](https://github.com/Zahara-Nour/ubumaths/commit/7ccfd40f736c21803a02abd7bde1420a7fa52c1d))
+- **wip:** automatismes-1spe, reprendre ici après [#2474](https://github.com/Zahara-Nour/ubumaths/issues/2474) ([232db58](https://github.com/Zahara-Nour/ubumaths/commit/232db58c0df38c30c529a44720afae80ad84e56e))
+- **wip:** automatismes-1spe, reprendre ici après [#2478](https://github.com/Zahara-Nour/ubumaths/issues/2478) ([45835c7](https://github.com/Zahara-Nour/ubumaths/commit/45835c70db53b488233f1a6ddd37ec24ad6540ac))
+- **wip:** automatismes-1spe, variante à compléter de 7f82d15a ([6eb373a](https://github.com/Zahara-Nour/ubumaths/commit/6eb373a07125db7b6a32e12a227b502e9537b72d))
+- **wip:** cahier-ubumark clos, journal archivé après la v0.77.0 ([d22e688](https://github.com/Zahara-Nour/ubumaths/commit/d22e688b65086fdea51ddebc5fcea91b3a2ccbaf))
+- **wip:** calcul-aligne-displaystyle clos après [#2471](https://github.com/Zahara-Nour/ubumaths/issues/2471), journal archivé ([9607bb8](https://github.com/Zahara-Nour/ubumaths/commit/9607bb88433dabaf450b77bbba00cca1e905a623))
+- **wip:** calcul-aligne-displaystyle, reprendre ici après [#2471](https://github.com/Zahara-Nour/ubumaths/issues/2471) ([4169658](https://github.com/Zahara-Nour/ubumaths/commit/4169658d0ee851902775254d4f66faf1513ea421))
+- **wip:** cercle-triangle-rectangle clos après [#2473](https://github.com/Zahara-Nour/ubumaths/issues/2473), journal archivé ([aaef812](https://github.com/Zahara-Nour/ubumaths/commit/aaef812a7deb149782a9ed23d659708c9612c168))
+- **wip:** cercle-triangle-rectangle, n° 19 écrit ([1450280](https://github.com/Zahara-Nour/ubumaths/commit/14502803dfbaaba4907b53f251d3c38a7470bdee))
+- **wip:** cercle-triangle-rectangle, n° 20 codé et revu ([7728827](https://github.com/Zahara-Nour/ubumaths/commit/7728827f0e470a10e60456c52ed2271602c320d3))
+- **wip:** cercle-triangle-rectangle, ouverture et phase 0 ([b135d2a](https://github.com/Zahara-Nour/ubumaths/commit/b135d2ae48c9ddbc36bdc8069d7fa21136e9532c))
+- **wip:** cercle-triangle-rectangle, phase 0 du n° 20 validée ([b055f91](https://github.com/Zahara-Nour/ubumaths/commit/b055f9118fc197840e785d611f8b6581f866106a))
+- **wip:** cercle-triangle-rectangle, phase 0 validée par David ([53306c4](https://github.com/Zahara-Nour/ubumaths/commit/53306c4afeffba6d4688da4357b9d030b8b5136d))
+- **wip:** cercle-triangle-rectangle, reprendre ici après [#2463](https://github.com/Zahara-Nour/ubumaths/issues/2463) ([3c6b50e](https://github.com/Zahara-Nour/ubumaths/commit/3c6b50ea2aae22ce14220b13694f665b092b568f))
+- **wip:** liens du journal cercle-triangle-rectangle archivé ([e458d96](https://github.com/Zahara-Nour/ubumaths/commit/e458d9629bcb1048c156b0adab9dbb4b3297dc95))
+- **wip:** questions-1spe-demonstrations, lot 12 publié ([6f5754d](https://github.com/Zahara-Nour/ubumaths/commit/6f5754d1ef3a2a1c6b0300f1c1f2f24cde4d7a7c))
+- **wip:** questions-1spe-demonstrations, lot 12 rangé en prod, page à cocher ([76495dc](https://github.com/Zahara-Nour/ubumaths/commit/76495dc321d578a197a369fc7503b803f0f65776))
+- **wip:** questions-2de-demonstrations, audit du rangement du lot 3 ([641a13c](https://github.com/Zahara-Nour/ubumaths/commit/641a13c06a6ba4b994fc73f4eb16c9d6fc8169f2))
+- **wip:** questions-2de-demonstrations, lot 3 publié, 12 démonstrations couvertes ([05e0341](https://github.com/Zahara-Nour/ubumaths/commit/05e034153c615cadd6fcf806b79252c2ff4a66bb))
+- **wip:** questions-2de-demonstrations, lot 3 rangé en prod, page à cocher ([e16d62d](https://github.com/Zahara-Nour/ubumaths/commit/e16d62dc90e52a976089bbb0c5d03d7bff61b8ba))
+- **wip:** questions-2de-demonstrations, relevé des 10 exemples d'algorithmes et phase 0 ([48679a7](https://github.com/Zahara-Nour/ubumaths/commit/48679a715370357a8de1588c0dd9ae98473583ce))
+- **wip:** questions-2de-demonstrations, reprendre ici après [#2476](https://github.com/Zahara-Nour/ubumaths/issues/2476) ([2df1ccd](https://github.com/Zahara-Nour/ubumaths/commit/2df1ccd02efb9dca400bf31c22ae4f5b4bc55895))
+- **wip:** questions-2de-demonstrations, reprendre ici après [#2479](https://github.com/Zahara-Nour/ubumaths/issues/2479) ([0179dcf](https://github.com/Zahara-Nour/ubumaths/commit/0179dcf725d3dad274082741439ad8b8311856fd))
+- **wip:** questions-2de-demonstrations, suite décidée : exemples d'algorithmes ([9f44e38](https://github.com/Zahara-Nour/ubumaths/commit/9f44e38c8067c4e93263148188ff9d9744ff8b70))
+- **wip:** questions-ce2, phase 0 du lot 12b (cercle de centre donné, triangle rectangle) ([ade0631](https://github.com/Zahara-Nour/ubumaths/commit/ade0631305a6ff9647387706bf1be4597aa9ef01))
+- **wip:** questions-ce2, reprendre ici après [#2475](https://github.com/Zahara-Nour/ubumaths/issues/2475) ([4a79895](https://github.com/Zahara-Nour/ubumaths/commit/4a79895fa51a2dab89a2025269815fc4f98e2f1e))
+- **wip:** somme-vecteurs, ouverture du chantier et phase 0 ([5cc4c61](https://github.com/Zahara-Nour/ubumaths/commit/5cc4c6174f0175f275dc918a9d796c7b71dd1560))
+- **wip:** somme-vecteurs, PR 1 faite ([93ae362](https://github.com/Zahara-Nour/ubumaths/commit/93ae36293bb6ae1497c7e0526b90e746524f4aff))
+- **wip:** somme-vecteurs, PR 2 ouverte ([#2472](https://github.com/Zahara-Nour/ubumaths/issues/2472)), vérification manuelle notée ([3b09df1](https://github.com/Zahara-Nour/ubumaths/commit/3b09df1b8eb9e5ec64dfaf83699bada68fb71e7d))
+- **wip:** somme-vecteurs, reprendre ici après [#2467](https://github.com/Zahara-Nour/ubumaths/issues/2467), n° 3 livré ([52a2fef](https://github.com/Zahara-Nour/ubumaths/commit/52a2fef3e96ab9f815952a86703b262378351101))
+- **wip:** somme-vecteurs, reprendre ici après [#2472](https://github.com/Zahara-Nour/ubumaths/issues/2472) ([d97d349](https://github.com/Zahara-Nour/ubumaths/commit/d97d349bf903945bdca95521c54d40c3df256dd1))
+- **wip:** vérification manuelle du cercle de centre donné ([#2463](https://github.com/Zahara-Nour/ubumaths/issues/2463)) ([397e9db](https://github.com/Zahara-Nour/ubumaths/commit/397e9db2474a36e9b3917cc3ee6410286335d1ca))
+- **wip:** verifications-manuelles remis à l'identique de main ([3e0fa37](https://github.com/Zahara-Nour/ubumaths/commit/3e0fa371f138fea244632e04f8e390a9c13d0be4))
+
 ## [0.77.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.76.0...v0.77.0) (2026-11-08)
 
 ### ✨ Features
