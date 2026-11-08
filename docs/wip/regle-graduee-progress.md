@@ -9,12 +9,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, phase 0 validée._
+_Mis à jour le 2026-11-08, ADR 0036 écrite, comportements de 039 proposés (§ 2)._
 
-- **État** : phase 0 tranchée (§ 1) ; pas de code.
-- **Prochaine action** : ADR « cm de la figure » (skill `domain-modeling`), puis comportements détaillés du
-  tracé d'un segment (039) et tests rouges ; après le n° 19 de `cercle-triangle-rectangle` (mêmes fichiers).
-- **En attente de David** : rien.
+- **État** : ADR 0036 commitée sur `main` (3623b957b, **push en attente** : index de `main` occupé par une autre
+  session sur `outils-manquants.md`) ; § 2 = comportements du tracé (039) ; pas de code.
+- **Prochaine action** : réponses Q5-Q8 (§ 2), puis tests rouges (`segment-length` dans `questions/construction/`).
+- **En attente de David** : Q5-Q8 du § 2.
 - **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le chantier
   `cercle-triangle-rectangle` (n° 19, 20) touche les mêmes fichiers de `src/lib/questions/construction/`.
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee`.
@@ -45,3 +45,28 @@ _Mis à jour le 2026-11-08, phase 0 validée._
 de la figure, pas d'étalonnage) ; Q2 règle posée comme le rapporteur, bout du segment aimanté au mm, loupe ; Q3 (a)
 tracer un segment (039) puis (c) constructions cotées (070), (b) mesurer après relevé des modèles existants ; Q4
 papier uni seulement.
+
+## 2. Tracer un segment de longueur donnée (CE2-039) — comportements proposés (2026-11-08)
+
+ADR [0036](../adr/0036-le-cm-de-la-figure.md) commitée sur `main` (3623b957b). Constat : la règle graduée existe déjà,
+`constructions-v2/instruments/components/Ruler.svelte` (1 grande graduation par unité, 10 petites, `pixelsPerUnit`) ;
+on la réutilise comme `Protractor.svelte` dans `FigureACompleterView.svelte`. Modèle de geste : l'angle au rapporteur
+(`angle.ts` : pose, repère, segment ; refus « tracé à l'œil »).
+
+**Comportements proposés** (nominal / limite / erreur) :
+
+- **Nominal** — `verifier: segment AB = 6 cm` (A donné et visible). Outils : `regle` + `segment`. L'élève pose la règle :
+  1er toucher = le 0 (aimanté au point le plus proche, comme le centre du rapporteur), 2e toucher = la direction ;
+  « Retourner » change le bord gradué. Outil segment : un bout en A, l'autre **aimanté à la graduation du mm** de la
+  règle posée la plus proche (cible d'aimantation en plus, `SNAP_RADIUS_PX`). Juste : un segment d'un bout en A, de
+  longueur L exacte (1e-9 relatif), dans la fenêtre. B : le nom de l'autre bout, pour les messages.
+- **Longueurs** : `6 cm`, `5 cm 3 mm`, `5,3 cm`, `72 mm` acceptés dans la vérification ; stockées en mm entiers.
+- **Limite** — longueur que la fenêtre ne peut pas contenir depuis A (aucune direction) ou plus longue que la règle →
+  **erreur d'auteur** à la publication. Papier uni seulement (quadrillage → erreur d'auteur, ADR 0036 § 3).
+- **Erreur** — aucun segment depuis A : « Trace le segment [AB] depuis le point A. » ; bout hors graduation : « Ton
+  segment est tracé à l'œil : arrête-le sur une graduation de la règle. » ; mauvaise longueur : « Ton segment mesure
+  5,8 cm au lieu de 6 cm. » (au mm, virgule).
+- **Correction** : la règle posée depuis A et le segment juste (comme le rapporteur de la correction d'un angle).
+
+**Questions ouvertes** : Q5 forme de la loupe ; Q6 0 de la règle aimanté ou libre ; Q7 direction libre ou donnée
+(demi-droite [Ax) de la figure) ; Q8 refus « tracé à l'œil » ou longueur seule. Voir le message à David du 2026-11-08.
