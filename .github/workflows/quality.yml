@@ -406,24 +406,19 @@ jobs:
   # The real-Pyodide integration tests (*-real.svelte.test.ts) are excluded
   # here — they download and run Python in headless Chromium (slow + flaky in
   # CI) and stay runnable locally.
-  # Deux navigateurs en parallèle au lieu d'un : « Browser connection was closed »
-  # a fait rougir la CI 3 fois du 6 au 8/10, chaque fois sur un fichier
-  # DIFFÉRENT (serialize, ExerciseList-modifier, liens-dangereux) et sans test
-  # qui navigue : c'est Chromium qui tombait sous 234 fichiers. Deux fois moins de
-  # charge par navigateur, et le job raccourcit. Pas parmi les checks exigés par la
-  # protection de main (vérifié le 2026-11-02) : CI Summary les porte.
+  # Deux navigateurs en parallèle au lieu d'un (#1012) : le job raccourcit. Pas parmi
+  # les checks exigés par la protection de main (vérifié le 2026-11-02) : CI Summary
+  # les porte.
   # PR de contenu : sautés. Le projet `client` ne prend que src/**/*.svelte.test.*,
   # et aucun ne lit scripts/questions ni docs/ : rien ne peut changer leur verdict.
   test-client:
-    name: Client Tests (browser, shard ${{ matrix.shard }}/2, essai ${{ matrix.essai }})
+    name: Client Tests (browser, shard ${{ matrix.shard }}/2)
     needs: version
-    # MESURE PROVISOIRE (chantier ci-navigateur-plante) : lancé aussi par workflow_dispatch, 10 essais par shard.
-    if: ${{ !cancelled() && needs.version.result == 'success' && (github.event_name == 'workflow_dispatch' || (needs.version.outputs.allegee != 'true' && needs.version.outputs.contenu != 'true')) }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' && needs.version.outputs.contenu != 'true' }}
     strategy:
       fail-fast: false
       matrix:
         shard: [1, 2]
-        essai: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -466,6 +461,14 @@ jobs:
       # project configs in vitest's projects mode.
       - name: Run client tests
         env:
+          # GC de Chromium forcé après CHAQUE fichier de test. Sans lui, ~1 shard sur 10
+          # tombait sur « Browser connection was closed », tests verts : les documents
+          # des iframes de test retirées s'accumulent et la page de l'orchestrateur se
+          # décharge (fermeture 1001), à un fichier différent chaque fois. Vitest sait
+          # faire ce GC, mais seulement sous un seuil de disque libre (4 Go) : on relève
+          # le seuil au-delà de tout disque (`VITEST_CHROMIUM_GC_FORCE` ne suffit pas,
+          # le seuil est relu après). Mesuré le 2026-11-08 : 0 plantage sur 40 jobs,
+          # ~+50 s par job. Détail : docs/archive/ci-navigateur-plante-progress.md (§ 1 quater).
           VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB: '100000'
         run: pnpm exec vitest run --project client --shard=${{ matrix.shard }}/2
 

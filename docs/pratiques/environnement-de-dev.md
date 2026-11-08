@@ -217,7 +217,8 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   (le commit local d'une autre session ne peut plus être poussé sous le verrou).
 - CI rouge (version, ou dernier commit de code de main) : si **tous** les jobs rouges, hors
   « CI Summary », sont tombés sur le plantage connu des tests navigateur (`reading
-'wrapDynamicImport'` dans `gh run view --log-failed`), le script relance lui-même les jobs rouges
+'wrapDynamicImport'` dans `gh run view --log-failed` ; rare depuis le GC forcé du 2026-11-08), le
+  script relance lui-même les jobs rouges
   (`gh run rerun --failed`), **sous le verrou**, au plus 2 fois par commit, puis attend.
   `--relancer-ci` relance aussi, une fois, un échec qu'il ne reconnaît pas. Autrement : arrêt et
   verrou rendu (la correction passe par une PR). Avant, relancer à la main se faisait hors verrou
@@ -287,6 +288,7 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 | 2026-10-11 | **auto-merge Dependabot durci, 3 jours d'âge minimal des versions**                                               | le workflow tourne avec un jeton en écriture : `github.actor` se contourne depuis un fork, et un tag d'action se déplace.                                                                                                   |
 | 2026-10-28 | **Vite 8 (Rolldown), plus de plafond de heap au build** (#1899, #1900)                                            | pic du build 7,7 → 4,9 Go dans le conteneur Vercel de 8 Go ; la rustine à 6144 (#1892) ne laissait que ~1 Go de marge.                                                                                                      |
 | 2026-10-28 | **Lightning CSS ne touche pas à `light-dark()`** (`css.lightningcss.exclude` de `vite.config.ts`, garde au build) | sous Vite 8, la compression CSS passe par Lightning CSS (SvelteKit impose `cssMinify: true`) ; il récrivait `light-dark()` en variables jamais posées (`color-scheme` vient de mode-watcher) : couleurs perdues en v0.54.0. |
+| 2026-11-08 | **GC de Chromium forcé après chaque fichier des tests client**                                                    | ~1 shard sur 10 tombait (« Browser connection was closed », tests verts) : les iframes retirées s'accumulent, l'orchestrateur se décharge ; ~+50 s par job.                                                                 |
 
 ## Écarts connus
 

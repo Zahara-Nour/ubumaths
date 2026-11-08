@@ -5,17 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après l'essai A/B du GC forcé (§ 1 quater)._
+_Mis à jour le 2026-11-08, PR du GC forcé — chantier clos à son merge._
 
-- **État** : cause trouvée (§ 1 quater) : la page de l'orchestrateur se décharge (code 1001) quand les documents de
-  test détachés s'accumulent dans Chromium ; GC forcé après chaque fichier → 0 plantage sur 40 jobs.
-- **Prochaine action** : selon le choix de David, PR = `VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB` dans `quality.yml`
-  (+ doc environnement-de-dev), instrumentation retirée, branche rebasée sur `main`.
-- **En attente de David** : accepter le coût (~+50 s par job) ou chercher un GC moins fréquent ; relance automatique
-  en dernier recours : oui/non (sans réponse).
-- **Pièges en cours** : la branche porte encore la matrice de 10 essais et le déclenchement par `workflow_dispatch`
-  (PROVISOIRE, à retirer) ; branche en retard sur `main` (rebaser avant la PR). Mesure =
-  `gh workflow run quality.yml --ref fix/ci-navigateur-plante`.
+- **État** : cause trouvée et corrigée (§ 1 quater) : GC de Chromium forcé après chaque fichier des tests client
+  (`VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB` dans `quality.yml`), décidé par David le 2026-11-08 (+50 s par job
+  acceptées). Journal versé dans `docs/archive/`, décision dans `docs/pratiques/environnement-de-dev.md`.
+- **Prochaine action** : aucune (clos). À suivre : le taux des plantages sur les PR des jours suivants.
+- **En attente de David** : rien. La relance automatique dans le job n'a plus d'objet.
+- **Laissé en l'état** : `deploy:prod` reconnaît « le plantage connu » à `wrapDynamicImport` dans les logs ; or
+  cette erreur est dans TOUS les logs du job client, verts compris (§ 1 bis) : un vrai test client rouge serait
+  relancé à tort (au plus 2 fois, puis arrêt). Signature juste : « Browser connection was closed ».
 - **Worktree / branche** : `../ubumaths-wt-ci-navigateur-plante` · `fix/ci-navigateur-plante`.
 
 ---
@@ -102,7 +101,7 @@ en détail (jobs 128795768532, 128798927656, 128798927794), même schéma à cha
   toutes les 5 s marche ») ; [vitest#9437](https://github.com/vitest-dev/vitest/issues/9437) = la fuite qui remplit
   le disque, pas notre cas.
 
-## 2. Pistes à MESURER (aucune n'est retenue) (aucune n'est retenue) (aucune n'est retenue)
+## 2. Pistes du départ (toutes tranchées au § 1 bis à 1 quater) (aucune n'est retenue) (aucune n'est retenue)
 
 - **Volume par Chromium** : #1012 parlait de Chromium qui « tombait sous 234 fichiers » ; chaque shard est revenu à
   ~225 fichiers. Mesurer : nombre de fichiers par shard au fil des plantages, rang du fichier où ça casse.
