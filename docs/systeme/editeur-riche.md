@@ -139,9 +139,9 @@ de tête retirés, tabulations et retours à la ligne supprimés partout (`java\
 - **Deux points faibles, antérieurs à #2425, notés par son audit** (non bloquants, non traités) :
   un `<math-field>` écrit à la main dans le HTML envoyé est accepté en entrée tel quel, et la
   commande `\href` de MathLive (lien dans une formule) n'a pas été auditée.
-- **Énigmes : HTML enregistré, lu comme du markdown** (vu le 2026-10-25, pas mesuré) :
-  `RiddleForm.svelte` enregistre `bind:htmlValue`, `RiddleCard` et `RiddleOfTheDayCard`
-  l'affichent par `MarkdownRenderer`.
+- **Énigmes : HTML enregistré, lu comme du markdown — corrigé le 2026-11-08** (vu le
+  2026-10-25) : `RiddleForm.svelte` écrit désormais en ubumark (chantier cahier-ubumark, PR 4).
+  Les 2 énigmes de prod, des essais en HTML, ne sont pas converties (suppression laissée à David).
 - **`isTrivialHtmlWrapper` n'est appelé nulle part** hors de ses tests
   (`git grep -n isTrivialHtmlWrapper -- src` : la définition et `__tests__/markdown-paste.test.ts`).
   `handlePaste` ne lit jamais `text/html` (`git log -S "text/html"` sur le fichier : aucun

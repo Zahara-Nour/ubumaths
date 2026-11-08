@@ -84,6 +84,11 @@ cron Vercel chaque jour à 00:05 UTC, ou bouton admin. Elle écrit avec le clien
 policy d'INSERT de `riddle_of_the_day` exige `selected_by = auth.uid()`) et ne remplace jamais
 une énigme choisie à la main. `api/riddles/auto-select-daily` ne garde que le GET de statut.
 
+Énoncé (`riddles.statement`) et correction (`riddle_solutions.correction`) sont écrits en
+**ubumark** par `RiddleForm.svelte` (lu dans chaque éditeur à l'envoi, `getMarkdown()`) et rendus
+par `MarkdownRenderer` partout (carte élève, énigme du jour, pages du prof) — chantier
+cahier-ubumark, 2026-11-08. Avant, le formulaire écrivait du HTML, affiché balises en clair.
+
 ### Démineur : tournois et multijoueur
 
 - **Tournois** — créés par le prof (`src/routes/(protected)/dashboard/teacher/minesweeper/tournaments/`),

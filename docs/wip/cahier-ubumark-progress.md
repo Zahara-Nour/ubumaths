@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2453._
+_Mis à jour le 2026-11-08, phase 0 de la PR 4._
 
-- **État** : PR 1, 1b en prod (0.76.0) ; PR 2 (#2444) mergée, migration appliquée en prod le 2026-11-08 ; PR 3 (#2453, retrait de la lecture HTML) **mergée, pas encore en prod** (sans risque : 0 ligne HTML en base).
-- **Prochaine action** : PR 4 = énigmes (`RiddleForm` écrit du HTML, `RiddleCard` le lit en markdown ; 2 énigmes en prod, en HTML) — phase 0 à écrire et faire valider.
-- **En attente de David** : vidéo dans une liste ou une citation jamais rendue (`ListNode`, `Blockquote`, partout) — PR à part avant la PR 4, ou `outils-manquants.md` ?
-- **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance ; migration plus ancienne que la dernière distante → `--include-all` (`--dry-run` d'abord) ; `Doc-inchangée:` dans un COMMIT ; job navigateur de la CI qui plante tests verts (`wrapDynamicImport`) → `gh run rerun <run> --failed` ; cookies partagés sur `localhost` → `cahier.localhost:5178`.
-- **Worktree / branche** : aucun ; PR 4 → nouveau worktree `../ubumaths-wt-cahier-ubumark` depuis `origin/main`.
+- **État** : PR 1, 1b en prod (0.76.0) ; PR 2 (#2444) mergée et appliquée en prod ; PR 3 (#2453) mergée, pas encore en prod. PR 4 (énigmes) : phase 0 écrite (§ « PR 4 — phase 0 »), pas de code.
+- **Prochaine action** : après validation de la phase 0 → tests rouges, puis `RiddleForm` en `markdownValue` + `getMarkdown()` à l'envoi.
+- **En attente de David** : validation de la phase 0 ; Q4a (les 2 énigmes de test en prod) ; vidéo dans une liste ou une citation (PR à part ou `outils-manquants.md`).
+- **Pièges en cours** : `db:migrate` refusé par le classifieur → David le lance ; migration plus ancienne que la dernière distante → `--include-all` (`--dry-run` d'abord) ; `Doc-inchangée:` dans un COMMIT ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed` ; cookies partagés sur `localhost` → `cahier.localhost:5178`.
+- **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark-enigmes`.
 
 ## Décision d'origine
 
@@ -85,6 +85,42 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 - **Q3** — Ordre : PR 1 = code (écriture + lecture markdown, lecture double le temps de la
   conversion) ; PR 2 = migration de conversion après `deploy:prod` ; PR 3 = retrait de la lecture
   HTML.
+
+## PR 4 — phase 0 (énigmes, 2026-11-08)
+
+### État des lieux
+
+- **Écriture** : `RiddleForm.svelte`, énoncé et correction en `bind:htmlValue` → `submit-riddle-form.ts` → `enigmes/new` et `enigmes/[id]/edit` (`+page.server.ts`). Énoncé dans `riddles.statement`, correction dans `riddle_solutions.correction`. Zod : `server/validation/riddles.ts` (énoncé 1–10 000).
+- **Lecture** (toutes déjà en `MarkdownRenderer`) : `RiddleCard` (élève), `RiddleOfTheDayCard`, liste prof `enigmes/+page.svelte`, page de validation prof `enigmes/validations/[id]` (énoncé + correction).
+- **Bug actuel** : une énigme écrite aujourd'hui s'affiche avec ses balises en clair (`<p>…</p>` lu comme du texte par `MarkdownRenderer`).
+- **Types** : `types/riddle.ts` l. 71-72 disent « HTML rich text ».
+- **Prod** (MCP lecture seule, 2026-11-08) : 2 énigmes, toutes deux de **test** : « potyio » (brouillon, `<p>fds;fnzlenflkz</p>`) et « jjhjh » (**publiée**, `<p>nnnnnnnn</p>`) ; corrections du même genre ; aucune image.
+
+### Comportements
+
+Nominal :
+
+1. Le prof crée une énigme (texte mis en forme, formule) → énoncé et correction enregistrés en ubumark.
+2. L'élève (carte d'énigme, énigme du jour) lit l'énoncé mis en forme, formules rendues.
+3. Le prof rouvre l'énigme : l'éditeur recharge le markdown sans perte (formule, gras, listes).
+4. Page de validation prof : énoncé et correction rendus.
+5. Clic sur « Enregistrer » juste après la dernière frappe : le dernier mot est gardé (`getMarkdown()` à l'envoi, comme au cahier) ; clic avant que l'éditeur soit prêt : le contenu chargé est gardé, rien n'est effacé (`isReady()`).
+
+Limites :
+
+6. `<script>` ou une balise tapée : affichée comme du texte, jamais exécutée.
+7. Énoncé ou correction vide (que des espaces) → bouton désactivé, comme aujourd'hui.
+
+Erreurs :
+
+8. Pas de nouvelle entrée serveur : la validation Zod existante garde ses bornes.
+
+Question d'accès : aucune — mêmes colonnes, mêmes policies, mêmes lecteurs.
+
+### Questions à David
+
+- **Q4a** — Les 2 énigmes de prod sont des essais (« potyio », « jjhjh », dont une **publiée**, que les élèves voient aujourd'hui avec `<p>` en clair). Trois choix : (1) tu les supprimes toi-même depuis la page des énigmes, sans migration (recommandé) ; (2) migration de conversion comme la PR 2 ; (3) on les laisse, elles restent affichées avec leurs balises.
+- **Q4b** (déjà posée) — vidéo dans une liste ou une citation jamais rendue : PR à part avant la PR 4, ou `outils-manquants.md` ?
 
 ## Historique
 
