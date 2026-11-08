@@ -1,0 +1,264 @@
+{
+	"title": "Tester si un entier est multiple d'un autre en Python",
+	"description": "est_multiple(a, b) par a % b == 0 : valeur renvoyée (True ou False) ; version par une boucle while, valeur de m à la sortie ; compléter la ligne return",
+	"grades": ["2"],
+	"level": 12,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef est_multiple(a, b):\n    return a % b == 0\n```\n\nQue renvoie `est_multiple({{eval:n}}, {{eval:d}})` ?\n\n```choix\nmelanger: non\n- `True`\n- `False`\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3|4|6|7|8|9"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "q",
+					"expression": "3..9"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "s",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:s*o"
+				},
+				{
+					"name": "n",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`a % b` est le reste de la division euclidienne de `a` par `b`. `a % b == 0` vaut `True` quand ce reste est nul, c'est-à-dire quand `a` est un multiple de `b`.",
+					"${{eval:n}}={{eval:d}}\\times{{eval:q}}+{{eval:r}}$ : le reste de la division de ${{eval:n}}$ par ${{eval:d}}$ est ${{eval:r}}$.",
+					"{{if:o==0|Le reste est nul : la fonction renvoie $\\textcolor{{{color:primary.0}}}{\\texttt{True}}$.|Le reste n'est pas nul : la fonction renvoie $\\textcolor{{{color:primary.0}}}{\\texttt{False}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante, qui teste si `a` est un multiple de `b` sans utiliser `%`.\n\n```python\ndef est_multiple(a, b):\n    m = 0\n    while m < a:\n        m = m + b\n    return m == a\n```\n\nOn appelle `est_multiple({{eval:n}}, {{eval:d}})`. Quelle est la valeur de `m` à la sortie de la boucle ?\n\n$?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3|4|6|7|8|9"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "q",
+					"expression": "3..9"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "s",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:s*o"
+				},
+				{
+					"name": "n",
+					"expression": "eval:d*q+r"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:d*(q+o)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mf}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`m` prend les valeurs $0$, ${{eval:d}}$, ${{eval:2*d}}$, ${{eval:3*d}}$, … : les multiples de ${{eval:d}}$. La boucle s'arrête au premier qui n'est plus strictement inférieur à ${{eval:n}}$.",
+					"${{eval:d*(q-1+o)}}<{{eval:n}}\\leqslant{{eval:mf}}$ : la boucle s'arrête avec $m=\\textcolor{{{color:primary.0}}}{{{eval:mf}}}$.",
+					"{{if:o==0|$m={{eval:n}}$ : la fonction renvoie `True`, ${{eval:n}}$ est un multiple de ${{eval:d}}$.|$m\\neq{{eval:n}}$ : la fonction renvoie `False`, ${{eval:n}}$ n'est pas un multiple de ${{eval:d}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer `True` si l'entier `a` est un multiple de l'entier `b`, et `False` sinon.\n\n```python\ndef est_multiple(a, b):\n    return ...\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `a % b == 0`\n- `a // b == 0`\n- `b % a == 0`\n- `a % b == 1`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`a` est un multiple de `b` quand le reste de la division euclidienne de `a` par `b` est nul : `a % b == 0`.",
+					"`a // b` est le quotient (nul seulement si `a < b`) ; `b % a == 0` teste si `b` est un multiple de `a` ; `a % b == 1` teste si le reste vaut $1$.",
+					"On écrit donc `return a % b == 0`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "35 multiple de 7 : True",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"o": "0",
+				"q": "5",
+				"dm": "6",
+				"s": "3",
+				"r": "0",
+				"n": "35"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : False pour 35 et 7",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"o": "0",
+				"q": "5",
+				"dm": "6",
+				"s": "3",
+				"r": "0",
+				"n": "35"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "29 n'est pas multiple de 6 : False",
+			"variationIndex": 0,
+			"variables": {
+				"d": "6",
+				"o": "1",
+				"q": "4",
+				"dm": "5",
+				"s": "5",
+				"r": "5",
+				"n": "29"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "35 et 7 : m = 35",
+			"variationIndex": 1,
+			"variables": {
+				"d": "7",
+				"o": "0",
+				"q": "5",
+				"dm": "6",
+				"s": "3",
+				"r": "0",
+				"n": "35",
+				"mf": "35"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "29 et 6 : m = 30",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6",
+				"o": "1",
+				"q": "4",
+				"dm": "5",
+				"s": "5",
+				"r": "5",
+				"n": "29",
+				"mf": "30"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier m < a",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6",
+				"o": "1",
+				"q": "4",
+				"dm": "5",
+				"s": "5",
+				"r": "5",
+				"n": "29",
+				"mf": "30"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a % b == 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a // b == 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b % a == 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a % b == 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

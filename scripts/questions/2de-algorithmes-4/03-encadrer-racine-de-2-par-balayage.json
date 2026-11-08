@@ -1,0 +1,201 @@
+{
+	"title": "Encadrer √2 par balayage en Python",
+	"description": "balayage(n), pas 10^(−n) : encadrement renvoyé pour n = 1 ou 2 (deux cases), compléter la condition de la boucle while, amplitude de l'encadrement",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef balayage(n):\n    pas = 10 ** (-n)\n    x = 1\n    while (x + pas) ** 2 <= 2:\n        x = x + pas\n    return x, x + pas\n```\n\nOn appelle `balayage({{eval:n}})`. Complète l'encadrement de $\\sqrt{2}$ renvoyé.\n\n$?\\leqslant\\sqrt{2}\\leqslant?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..2"
+				},
+				{
+					"name": "g",
+					"expression": "eval:floor(sqrt(2)*10^n)/10^n"
+				},
+				{
+					"name": "h",
+					"expression": "eval:g+10^(-n)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:h;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le pas vaut $10^{-{{eval:n}}}={{eval:10^(-n);d}}$. Partant de $1$, `x` avance d'un pas tant que le nombre suivant, `x + pas`, a un carré inférieur ou égal à $2$.",
+					"${{eval:g;d}}^2={{eval:g^2;d}}\\leqslant2$ et ${{eval:h;d}}^2={{eval:h^2;d}}>2$ : la boucle s'arrête avec $x={{eval:g;d}}$.",
+					"La fonction renvoie ${{eval:g;d}}$ et ${{eval:h;d}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:g;d}}}\\leqslant\\sqrt{2}\\leqslant\\textcolor{{{color:primary.0}}}{{{eval:h;d}}}$. (À l'écran, Python peut afficher `{{if:n==1|1.4000000000000004|1.4100000000000004}}` : il calcule avec des valeurs approchées des décimaux.)"
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer un encadrement de $\\sqrt{2}$ d'amplitude $10^{-n}$, par balayage à partir de $1$.\n\n```python\ndef balayage(n):\n    pas = 10 ** (-n)\n    x = 1\n    while ...:\n        x = x + pas\n    return x, x + pas\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `(x + pas) ** 2 <= 2`\n- `x ** 2 <= 2`\n- `(x + pas) ** 2 >= 2`\n- `x + pas <= 2`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{2}$ est le nombre positif dont le carré vaut $2$ : on avance tant que le nombre suivant, `x + pas`, a un carré inférieur ou égal à $2$. À la sortie, $x^2\\leqslant2<(x+\\text{pas})^2$, donc $x\\leqslant\\sqrt{2}<x+\\text{pas}$.",
+					"Avec `x ** 2 <= 2`, on avance un pas de trop : à la sortie, $x^2>2$. Avec `(x + pas) ** 2 >= 2`, la boucle ne tourne pas : au départ, $(1+\\text{pas})^2<2$. Avec `x + pas <= 2`, on encadrerait $2$, pas $\\sqrt{2}$.",
+					"La condition est donc `(x + pas) ** 2 <= 2`."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef balayage(n):\n    pas = 10 ** (-n)\n    x = 1\n    while (x + pas) ** 2 <= 2:\n        x = x + pas\n    return x, x + pas\n```\n\nLes deux nombres renvoyés par `balayage({{eval:n}})` encadrent $\\sqrt{2}$. Quelle est l'amplitude de cet encadrement ?\n\n```choix\n- $10^{-{{eval:n}}}$\n- $10^{{{eval:n}}}$\n- $\\dfrac{1}{{{eval:n}}}$\n- ${{eval:n}}\\times10^{-1}$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction renvoie `x` et `x + pas` : leur écart est `pas`.",
+					"`pas = 10 ** (-n)` : pour $n={{eval:n}}$, le pas vaut $10^{-{{eval:n}}}$.",
+					"L'amplitude de l'encadrement est $\\textcolor{{{color:primary.0}}}{10^{-{{eval:n}}}}$ : plus $n$ est grand, plus l'encadrement est précis (et plus la boucle fait de tours)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n = 1 : 1,4 et 1,5",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1",
+				"g": "1.4",
+				"h": "1.5"
+			},
+			"answers": ["1,4", "1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 2 : 1.41 et 1.42",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"g": "1.41",
+				"h": "1.42"
+			},
+			"answers": ["1.41", "1.42"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un pas de trop",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1",
+				"g": "1.4",
+				"h": "1.5"
+			},
+			"answers": ["1,5", "1,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x + pas) ** 2 <= 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x ** 2 <= 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (x + pas) ** 2 >= 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + pas <= 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10^-n",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10^n",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/n",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n × 10^-1",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

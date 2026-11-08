@@ -1,0 +1,185 @@
+{
+	"title": "Plus grand multiple de a inférieur ou égal à b, en Python",
+	"description": "plus_grand_multiple(a, b) par une boucle while : valeur renvoyée (a de 3 à 9, b de 20 à 80), compléter la condition ; version sans boucle par le quotient entier b // a",
+	"grades": ["2"],
+	"level": 13,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef plus_grand_multiple(a, b):\n    m = 0\n    while m + a <= b:\n        m = m + a\n    return m\n```\n\nQue renvoie `plus_grand_multiple({{eval:a}}, {{eval:b}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "20..80"
+				},
+				{
+					"name": "m",
+					"expression": "eval:b-mod(b,a)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`m` prend les valeurs $0$, ${{eval:a}}$, ${{eval:2*a}}$, … : les multiples de ${{eval:a}}$. On ajoute `a` tant que le multiple suivant, `m + a`, ne dépasse pas ${{eval:b}}$.",
+					"${{eval:m}}\\leqslant{{eval:b}}<{{eval:m+a}}$ : la boucle s'arrête avec $m={{eval:m}}$.",
+					"La fonction renvoie $\\textcolor{{{color:primary.0}}}{{{eval:m}}}$, le plus grand multiple de ${{eval:a}}$ inférieur ou égal à ${{eval:b}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer le plus grand multiple de l'entier `a` inférieur ou égal à l'entier `b` (`a` et `b` strictement positifs).\n\n```python\ndef plus_grand_multiple(a, b):\n    m = 0\n    while ...:\n        m = m + a\n    return m\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `m + a <= b`\n- `m <= b`\n- `m + a < b`\n- `m < b`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ne doit ajouter `a` que si le multiple suivant, `m + a`, reste inférieur ou égal à `b`.",
+					"Avec `m <= b` ou `m < b`, on ajoute `a` une fois de trop : on obtient un multiple qui peut dépasser `b`. Avec `m + a < b`, on s'arrête trop tôt quand `b` est lui-même un multiple de `a`.",
+					"La condition est donc `m + a <= b`."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer, sans boucle, le plus grand multiple de l'entier `a` inférieur ou égal à l'entier `b` (`a` et `b` strictement positifs).\n\n```python\ndef plus_grand_multiple(a, b):\n    return ...\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `(b // a) * a`\n- `(b / a) * a`\n- `b % a`\n- `b - a`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`b // a` est le quotient de la division euclidienne de `b` par `a` : le nombre de fois que `a` « tient » dans `b`. Le plus grand multiple de `a` inférieur ou égal à `b` est donc `(b // a) * a`.",
+					"`b / a` est le quotient décimal : `(b / a) * a` redonne `b`. `b % a` est le reste, et `b - a` n'est en général pas un multiple de `a`.",
+					"On écrit donc `return (b // a) * a`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 7, b = 50 : 49",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "50",
+				"m": "49"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : premier multiple au-dessus",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "50",
+				"m": "49"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "b multiple de a : a = 5, b = 40",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "40",
+				"m": "40"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "m + a <= b",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : m <= b",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m + a < b",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m < b",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(b // a) * a",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (b / a) * a",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b % a",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b - a",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
