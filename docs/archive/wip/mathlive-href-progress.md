@@ -2,9 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, avant la PR._
+_Mis à jour le 2026-11-08, après #2488._
 
-- **État** : correctif écrit, tests verts, PR à ouvrir · **Prochaine action** : PR, `security-auditor` + `code-reviewer`, CI, merge · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-mathlive-href`, `fix/mathlive-href`
+- **État** : ✅ mergé (#2488), pas encore en prod (`deploy:prod` sur demande de David) ; chantier clos, journal archivé · **Prochaine action** : aucune · **En attente de David** : lien public du cahier — refuser ou non les commandes à attributs dans les formules (écart de `editeur-riche.md`) · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
+
+Revues : `code-reviewer` (charge `math-span` sans preuve remplacée, attributs vérifiés, prod mesurée : 0 carnet sur 2, 0 modèle), `security-auditor` (rien de bloquant ; deux restes faibles notés dans `editeur-riche.md`).
 
 ## Demande (David, 2026-11-08)
 
