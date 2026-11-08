@@ -6,19 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2460 ; lot 2 rangé en prod, page à cocher publiée._
+_Mis à jour le 2026-11-08, lot 2 publié (3/3, relu par David : 3 ok)._
 
-- **État** : lot 1 PUBLIÉ. Lot 2 (304, 438, 320) : 3 brouillons rangés (nœud + point, #2460, migration
-  `20261108150529` appliquée) ; page à cocher : https://claude.ai/artifact/KukhKQkpLCGxXAPP3iDEmz.
-- **Prochaine action** : lire les verdicts de David (collection `verdicts`), corriger s'il y a lieu, puis
-  `publier-lot.ts --dir scripts/questions/2de-demonstrations-2` (simulation puis `--publier`, lancées par David).
-  Ensuite lot 3 (fonctions : 357-360), nouveau worktree.
-- **En attente de David** : sa relecture des 3 modèles sur la page à cocher (bloc ranger à jouer dans l'aperçu).
+- **État** : lots 1 (5 modèles) et 2 (3 modèles) PUBLIÉS en prod. Reste le lot 3 (fonctions : 357-360).
+- **Prochaine action** : lot 3, dans un worktree neuf (`git worktree add -b content/questions-2de-demonstrations-5-fonctions
+../ubumaths-wt-questions-2de-demonstrations origin/main`) : relevé des niveaux en prod, script
+  `lot-2de-demonstrations-3.py` (gabarit : celui du lot 2), specs, PR.
+- **En attente de David** : rien.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → le lancer depuis le worktree ;
   positions « ranger » par `docs/wip/questions/positions-ranger.ts` (`svelte-kit sync` avant) ; couleur jamais sur
-  du texte hors `$` ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed`.
-- **Worktree / branche** : aucun (retiré après #2460) ; lot 3 → `git worktree add -b content/questions-2de-demonstrations-5-fonctions ../ubumaths-wt-questions-2de-demonstrations origin/main`.
+  du texte hors `$` ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed` (chantier
+  `ci-navigateur-plante` ouvert).
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -171,3 +171,6 @@ relance du job navigateur (plantage connu, 1946/1946 tests verts) ; `check:migra
 depuis le dépôt principal ; vérifié en prod : les 3 brouillons sur leur sous-notion, chacun avec son seul point,
 `draft`. Page à cocher : https://claude.ai/artifact/KukhKQkpLCGxXAPP3iDEmz (3 alertes attendues : bloc ranger non
 dessiné, à jouer dans l'aperçu admin).
+
+Lot 2 relu par David sur la page à cocher (2026-11-08) : 3 « ok », sans commentaire. Publié par David
+(`publier-lot.ts --publier`) : 3/3, statut relu en base.
