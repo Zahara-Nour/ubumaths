@@ -29,7 +29,9 @@
 	  la posent, graduée à l'échelle de la figure (1 unité = 1 cm) ; au segment,
 	  le bout s'aimante à la graduation du mm la plus proche, ‹ › (ou les flèches,
 	  la règle ayant le focus) le décalent d'1 mm ; Retourner change son bord ; à
-	  la correction, la règle posée en A et le bon segment ;
+	  la correction, la règle posée en A et le bon segment ; cercle de rayon donné
+	  en cm (PR 3) : au compas, l'ouverture s'aimante à la graduation du mm, ‹ › la
+	  décalent d'1 mm ; à la correction, la règle posée au centre et le cercle ;
 	- clavier : les points nommés sont des boutons (Tab, puis Entrée ou Espace),
 	  avec les instruments les intersections aussi, et les droites pour l'équerre ;
 	  sur quadrillage, un curseur se déplace de nœud en nœud avec les flèches ;
@@ -117,7 +119,7 @@
 		solutionPoints,
 		solutionAngle,
 		solutionBissectrices,
-		solutionRuler,
+		solutionRulers,
 		solutionTriangle,
 		type ConstructionAnswerInput,
 		type Drawing,
@@ -207,13 +209,19 @@
 	let ruler = $derived(drawable ? currentRuler(drawing) : null);
 	/** Longueur de la règle (cm) : celle du refus à la publication (`rulerLengthOf`) */
 	let rulerLength = $derived(rulerLengthOf(node.header.window));
-	/** Longueur (mm) du dernier segment tracé le long de la règle */
+	/** Longueur (mm) du dernier segment tracé le long de la règle (ou rayon du dernier cercle) */
 	let rulerMm = $derived(rulerSegmentMm(drawing, rulerLength));
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
 	let tools = $derived<ConstructionTool[]>(node.construction?.tools ?? ['droite']);
+	/** Le trait que mène la règle : le cercle au compas (PR 3), sinon le segment */
+	let rulerShape = $derived<'segment' | 'cercle'>(
+		tools.includes('compas') && !tools.includes('segment') ? 'cercle' : 'segment'
+	);
 	/** Outil de départ : celui de la vérification s'il est dans la palette (le point, le segment) */
 	let firstTool = $derived.by((): ConstructionTool => {
+		// Cercle de rayon donné en cm (PR 3) : on pose la règle avant d'ouvrir le compas
+		if (rulerShape === 'cercle' && tools.includes('regle')) return 'regle';
 		const own = checks[0] ? CHECK_TOOL[checks[0].kind] : null;
 		return own && tools.includes(own) ? own : (tools[0] ?? 'droite');
 	});
@@ -235,8 +243,13 @@
 			return 'Touche où piquer le centre du rapporteur.';
 		}
 		if (tool === 'regle') {
+			if (drawing.start && rulerShape === 'cercle')
+				return 'Touche un point dans la direction où ouvrir le compas, pour y poser la règle.';
 			if (drawing.start)
 				return 'Touche un point dans la direction du segment, pour y poser la règle.';
+			if (ruler && rulerShape === 'cercle') {
+				return 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
+			}
 			if (ruler) {
 				return 'Règle posée : touche Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.';
 			}
@@ -244,6 +257,9 @@
 		}
 		if (tool === 'segment' && ruler) {
 			return 'Trace le segment le long de la règle : son bout s’arrête sur une graduation, ‹ › pour l’ajuster d’un millimètre.';
+		}
+		if (tool === 'compas' && ruler && rulerShape === 'cercle') {
+			return 'Pique le compas au 0 de la règle, puis ouvre-le sur une graduation, ‹ › pour l’ajuster d’un millimètre.';
 		}
 		if (tool !== 'report') return '';
 		if (drawing.span) return 'Touche où piquer le compas. Pour une autre longueur, touche Report.';
@@ -342,7 +358,13 @@
 	/** ‹ › et flèches : décaler d'un millimètre le bout du segment le long de la règle */
 	function nudgeRuler(delta: number) {
 		if (!drawable) return;
-		apply(nudgeRulerEnd(drawing, delta, { rulerLength, window: node.header.window }));
+		apply(
+			nudgeRulerEnd(drawing, delta, {
+				rulerLength,
+				window: node.header.window,
+				shape: rulerShape
+			})
+		);
 	}
 
 	function flipTheRuler() {
@@ -620,7 +642,7 @@
 		// Règle posée : le départ va d'abord à un point (A, le 0) ; le bout, sur le bord de la
 		// règle, à la graduation du mm la plus proche avant tout point (revue de #2485 : sinon
 		// A, tout proche, avale les petites longueurs)
-		if (tool === 'segment' && ruler) {
+		if ((tool === 'segment' || tool === 'compas') && ruler) {
 			const onRuler = rulerGraduationNear(math, ruler, rulerLength, radius, scene.viewport);
 			const onPoint = snapInstrument(
 				math,
@@ -700,8 +722,9 @@
 			if (drawing.start && tool === 'rapporteur') return 'Rapporteur : centre choisi';
 			if (drawing.start && tool === 'regle') return 'Règle : 0 choisi';
 			if (ruler) {
-				return rulerMm === null
-					? 'Règle posée'
+				if (rulerMm === null) return 'Règle posée';
+				return rulerShape === 'cercle'
+					? `Règle posée, compas ouvert à ${formatLength(rulerMm, 'cm-mm')}`
 					: `Règle posée, segment de ${formatLength(rulerMm, 'cm-mm')}`;
 			}
 			return drawing.start ? 'Départ choisi' : '';
@@ -978,7 +1001,9 @@
 				class="rapporteur"
 				role="slider"
 				tabindex="0"
-				aria-label="Règle graduée : flèches pour régler la longueur du segment"
+				aria-label={rulerShape === 'cercle'
+					? 'Règle graduée : flèches pour régler l’ouverture du compas'
+					: 'Règle graduée : flèches pour régler la longueur du segment'}
 				aria-valuemin={0}
 				aria-valuemax={rulerLength * 10}
 				aria-valuenow={rulerMm ?? 0}
@@ -1007,14 +1032,8 @@
 			{/if}
 		{/if}
 		{#if corrected}
-			<!-- Segment de longueur donnée : la règle posée en A, sous le bon segment -->
-			{@const goodRuler = solutionRuler(
-				checks,
-				allPoints,
-				figureShapes(scene, node.header),
-				objects
-			)}
-			{#if goodRuler}
+			<!-- Segment de longueur donnée (ou cercle de rayon donné en cm) : la règle posée en A (ou en O) -->
+			{#each solutionRulers(checks, allPoints, figureShapes(scene, node.header), objects) as goodRuler, i (i)}
 				{@const r = rulerOnScreen(goodRuler, scene, width, height)}
 				<g data-testid="bonne-regle" class="bonne-regle" aria-hidden="true">
 					<Ruler
@@ -1026,7 +1045,7 @@
 						mirrored={r.mirrored}
 					/>
 				</g>
-			{/if}
+			{/each}
 			{#each solutionLines(checks, allPoints, objects, figureShapes(scene, node.header), expectedOf()) as line, i (i)}
 				{@const s = toScreen(line, scene, width, height)}
 				{#if s}
@@ -1371,14 +1390,18 @@
 						variant="outline"
 						size="sm"
 						data-testid="regle-moins"
-						aria-label="Segment : un millimètre de moins"
+						aria-label={rulerShape === 'cercle'
+							? 'Compas : un millimètre de moins'
+							: 'Segment : un millimètre de moins'}
 						onclick={() => nudgeRuler(-1)}>‹ 1 mm</Button
 					>
 					<Button
 						variant="outline"
 						size="sm"
 						data-testid="regle-plus"
-						aria-label="Segment : un millimètre de plus"
+						aria-label={rulerShape === 'cercle'
+							? 'Compas : un millimètre de plus'
+							: 'Segment : un millimètre de plus'}
 						onclick={() => nudgeRuler(1)}>1 mm ›</Button
 					>
 					<Button variant="outline" size="sm" data-testid="regle-retourner" onclick={flipTheRuler}>

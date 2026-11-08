@@ -669,7 +669,7 @@ Même en-tête et même langage que ` ```figure `, plus trois lignes propres, lu
 de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS` : `droite`, `segment`, `point`, `equerre`, `compas`, `report`, `rapporteur`, `regle` (la règle graduée, ADR 0036) ; un seul pour
 `droite_par`, `carre`, `rectangle` ; plusieurs = une palette ; absent : celui de la vérification,
 `CHECK_TOOL`, ou, sans `grille:` (ou `grille: non`), les instruments pour `point` et `symetrique` (et
-pour `droite`, quadrillage ou non, sans `report` sur quadrillage (`LINE_GRID_TOOLS`, `outils: report` y est refusé) ; pour `cercle`, `triangle`, `angle` et `segment`, refusés sur quadrillage, sauf le cercle `cercle(O, passant=A)` et le triangle rectangle (palette Segment) ; un cercle de centre donné reçoit `centeredCircleTools` : le compas, plus le report pour `rayon=distance(D, E)`),
+pour `droite`, quadrillage ou non, sans `report` sur quadrillage (`LINE_GRID_TOOLS`, `outils: report` y est refusé) ; pour `cercle`, `triangle`, `angle` et `segment`, refusés sur quadrillage, sauf le cercle `cercle(O, passant=A)` et le triangle rectangle (palette Segment) ; un cercle de centre donné reçoit `centeredCircleTools` : le compas, plus le report pour `rayon=distance(D, E)`, la règle graduée et le compas pour `rayon=4 cm`),
 `PLAIN_PAPER_TOOLS` ; sans quadrillage, une palette sans `equerre`, `compas`, `report`, `rapporteur` ni `regle` est refusée), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
 `carre A ; B`, `rectangle A ; B ; C`, `symetrique par d` / `symetrique A ; B ; C par d` (`symétrique`
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
@@ -677,8 +677,9 @@ rectangle ou symétrique, jamais mêlé à `droite_par` ; `point A' = <expressio
 point à placer, expression du langage des figures au plus 200 caractères, nom unique ; `droite m = <expression>`,
 même forme, une droite à construire, jamais mêlée à une autre vérification (`bissectrice(A, O, B)`, lot 9 : `bissectriceOf`, la seule droite qui admet le rapporteur dans `outils:`) ; `cercle c = <expression>`, de même,
 un cercle à construire sur papier uni (cercle circonscrit), ou de centre donné (`cercle(O, passant=A)`, aussi
-sur quadrillage ; `cercle(O, rayon=distance(D, E))`, papier uni, `report` exigé dans `outils:` ; lecture :
-`centeredCircleOf`) ; `triangle ABC : AC = u ; BC = v`, trois sommets d'une lettre, les
+sur quadrillage ; `cercle(O, rayon=distance(D, E))`, papier uni, `report` exigé dans `outils:` ;
+`cercle(O, rayon=4 cm)`, papier uni, palette `regle, compas` exactement, mêlé seulement à d'autres
+cercles, longueur au mm près et plus de 0 (`rulerCircleError`) ; lecture : `centeredCircleOf`) ; `triangle ABC : AC = u ; BC = v`, trois sommets d'une lettre, les
 longueurs de [AC] et [BC] (dans n'importe quel ordre, `CA` admis) par un segment nommé ou deux points
 (`AC = AB`), un triangle à construire sur papier uni, seul, palette Segment · Compas · Report · Règle ; ou
 un angle par trois lettres, le sommet A ou B au milieu (`triangle ABC : CAB = 40 ; ABC = 65`, somme < 180 ;

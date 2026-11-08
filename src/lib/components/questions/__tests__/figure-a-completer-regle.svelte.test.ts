@@ -227,3 +227,56 @@ describe('case « figure » : segment sur une demi-droite donnée (PR 2)', () =>
 		await expect.poll(() => all(container, 'bon-segment').length).toBe(1);
 	});
 });
+
+// PR 3 : cercle de centre O(5 ; 4), de rayon 3 cm ; fenêtre 0..10 × 0..8, règle de 10 cm
+const CIRCLE_BLOCK = [
+	'```figure-a-completer',
+	'fenetre: 0 ; 10 ; 0 ; 8',
+	'verifier: cercle c = cercle(O, rayon=3 cm)',
+	'---',
+	'O = point(5, 4)',
+	'```'
+].join('\n');
+
+/** Règle posée en O vers la droite, puis le compas piqué en O */
+async function circleRuler() {
+	const { container, rect } = await rendered(CIRCLE_BLOCK);
+	tap(rect, 5.05, 4.05);
+	await expect
+		.poll(() => container.textContent)
+		.toContain('Touche un point dans la direction où ouvrir le compas, pour y poser la règle.');
+	tap(rect, 9, 4);
+	await expect.poll(() => all(container, 'regle').length).toBe(1);
+	await expect.poll(() => container.textContent).toContain('touche Compas');
+	tool(container, 'compas');
+	await expect.poll(() => container.textContent).toContain('Pique le compas au 0 de la règle');
+	tap(rect, 5.05, 4.05);
+	return { container, rect };
+}
+
+describe('case « figure » : cercle de rayon donné en cm (PR 3)', () => {
+	it('palette : Règle graduée, Compas ; l’ouverture s’aimante à la graduation 3 → juste', async () => {
+		const { container, rect } = await circleRuler();
+		const palette = ['regle', 'compas'].map((id) => byTestId(container, `outil-${id}`));
+		expect(palette.map((b) => b?.textContent?.trim())).toEqual(['Règle graduée', 'Compas']);
+		tap(rect, 8.03, 4.12);
+		await expect.poll(() => all(container, 'cercle-eleve').length).toBe(1);
+		await expect.poll(() => mmShown(container)).toBe('30');
+		button(container, 'Valider').click();
+		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);
+	});
+
+	it('‹ › décalent l’ouverture d’1 mm : 2,9 cm → message ; à la correction, la règle et le cercle', async () => {
+		const { container, rect } = await circleRuler();
+		tap(rect, 8.03, 4.12);
+		await expect.poll(() => mmShown(container)).toBe('30');
+		byTestId(container, 'regle-moins').click();
+		await expect.poll(() => mmShown(container)).toBe('29');
+		button(container, 'Valider').click();
+		await expect
+			.poll(() => container.textContent)
+			.toContain('Ton cercle a un rayon de 2,9 cm au lieu de 3 cm.');
+		await expect.poll(() => all(container, 'bon-cercle').length).toBe(1);
+		expect(all(container, 'bonne-regle')).toHaveLength(1);
+	});
+});

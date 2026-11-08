@@ -9,19 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR 2 commitée (09851df5c), pas encore de PR ouverte._
+_Mis à jour le 2026-11-09, PR 3 (#2494) ouverte._
 
-- **État** : phase 0 de la suite validée (§ 4 : 4 PR — 2 demi-droite, 3 cercle de rayon en cm, 4 triangle rectangle
-  coté, 5 carré et rectangle cotés ; assemblages après). PR 2 (`segment AB = 6 cm sur [Ax)`) codée, tests verts,
-  `check:incremental` 0 erreur (§ 5).
-- **Prochaine action** : revue `code-reviewer` en `model: opus` de 09851df5c (lancée, résultat perdu au `/clear` :
-  la relancer), corriger les findings (tests rouges d'abord), commit avec `Doc-inchangée: utilitaires-et-demos.md,
-un exemple de catalogue de plus`, push, PR, CI, merge. Puis PR 3 (cercle de rayon en cm).
-- **En attente de David** : vérification sur téléphone (ligne #2485 de `verifications-manuelles.md`) ; choix (1)-(3)
-  du § 5 et Q15-Q16 (findings 2 et 4 de la revue) à trancher.
-- **Pièges en cours** : le juge prend le **segment vu** (§ 3) ; `FigureLine.kind` ajouté (seul constructeur :
-  `positions-setup.ts`).
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cotes`.
+- **État** : PR 3 (#2494, `cercle c = cercle(O, rayon=4 cm)`) poussée, revue Opus faite (4 mineurs corrigés,
+  § 6) ; en attente de la CI puis merge. Serveur de la branche : port 5177.
+- **Prochaine action** : merger #2494 si la CI est verte ; puis PR 4, triangle rectangle coté
+  (`triangle ABC : CAB = 90 ; AC = 4 cm`, § 4) ; tests d'abord.
+- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494) ; choix (1)-(3) du § 5 et
+  (1)-(5) du § 6 ; Q15 (fusion à 2°, reco : serrer) et Q16 (`[AX)` par un point, reco : plus tard), § 5.
+- **Pièges en cours** : correction des réponses → revue `code-reviewer` en `model: opus` ; le juge prend le
+  **segment vu** (§ 3) ; seules les règles posées AVANT le cercle comptent (§ 6) ; sous zsh, une liste de
+  fichiers dans une variable ne se découpe pas (tableau).
+- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cercle`.
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
@@ -185,3 +184,28 @@ d'auteur (cas frère de #2485 ; pas étendu à la direction libre). Tests rouges
 segment (le trait s'écarte de ~1,7 mm) : garder, ou serrer la fusion quand la demi-droite est donnée ? (reco :
 serrer, à la tolérance de calcul, avec `ray`) ; **Q16** (finding 4) : accepter aussi `[AX)` (X un point de la
 figure) ? (reco : oui, plus tard si un auteur le demande ; le refus actuel cite la forme attendue).
+
+## 6. PR 3 — cercle de rayon donné en cm (2026-11-09)
+
+`verifier: cercle c = cercle(O, rayon=4 cm)` (aussi 3,5 cm, 3 cm 5 mm, 35 mm) : `CenteredCircle.kind = 'longueur'`,
+`readLengthText` déplacée du parseur vers `ubumark/types/construction.ts` (partagée avec le segment) ; cercle attendu
+calculé à part dans `expectedPoints` (O, longueur / 10) ; juge `judgeRuled` (`circle.ts`) ; vue : au compas, règle
+posée, l'ouverture s'aimante à la graduation du mm (même branche que le segment), ‹ › décalent l'ouverture
+(`nudgeRulerEnd`, `shape: 'cercle'`), outil de départ = Règle graduée ; correction : la règle posée en O
+(`circleLengthRuler`) et le cercle ; catalogue (1 exemple), docs `systeme/questions.md`, `systeme/ubumark.md`.
+Tests : 32 purs (rouges puis verts), 2 composant ; `construction/` + `ubumark` + `atelier` + catalogue 16 166 verts ;
+`check:incremental` 0 erreur ; cliquet tenu ; `lint:fast` propre.
+
+**Choix faits sans David (à valider)** : (1) plusieurs cercles de centre O de rayons distincts → faux, « Trace un
+seul cercle de centre O. » (l'analogue de Q9 : un éventail de rayons n'est pas un cercle juste) ; avec des cercles
+concentriques attendus, le seuil est le nombre de cercles attendus en O ; (2) palette exactement Règle graduée ·
+Compas (Report, segment, droite refusés) ; le cercle ne se mêle qu'à d'autres cercles ; (3) la règle doit avoir son
+0 en O (pas « 0 ailleurs et différence de deux graduations ») ; (4) Règle graduée = outil de départ (comme le
+segment) ; (5) pas de refus d'auteur « un point visible à 4 cm de O » (le compas s'y aimanterait, mais le juge
+exige une graduation : l'élève mesure quand même).
+
+**Revue opus (2026-11-09)** : rien de bloquant ; 4 mineurs corrigés : (1) refus d'auteur de `cercle(O, rayon=4)`
+sans unité : le message cite `cercle(O, rayon=4 cm)` ; (2) cercles concentriques attendus et un cercle de trop :
+« Trace seulement les 2 cercles de centre O demandés. » ; (3) correction : une règle par centre
+(`solutionRulers`) ; (4) faux juste : compas ouvert jusqu'à un point visible à 4 cm, règle posée APRÈS → était
+juste ; seules les règles posées avant le cercle comptent désormais (remplace un refus d'auteur, choix (5)).

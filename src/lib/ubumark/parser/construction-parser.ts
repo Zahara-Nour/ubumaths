@@ -48,7 +48,7 @@ import {
 	type ConstructionCheckKind,
 	type ConstructionSpec,
 	type ConstructionTool,
-	type LengthUnit,
+	readLengthText,
 	type TriangleAngle,
 	type TriangleLength
 } from '../types/construction';
@@ -375,29 +375,9 @@ function readMeasure(rest: string, line: number): ConstructionCheck {
 const SEGMENT_EXAMPLE = 'segment AB = 6 cm';
 /** `AB = …` : le point de départ (de la figure), le nom de l'autre bout, la longueur */
 const SEGMENT_REGEX = /^([A-Z])([A-Z])\s*=\s*(.+)$/;
-/** `6 cm`, `5,3 cm` (virgule ou point) */
-const CM_REGEX = /^(\d{1,3})(?:[,.](\d{1,3}))?\s*cm$/;
-/** `5 cm 3 mm` : des centimètres et un chiffre de millimètres */
-const CM_MM_REGEX = /^(\d{1,3})\s*cm\s*(\d)\s*mm$/;
-/** `72 mm` */
-const MM_REGEX = /^(\d{1,4})\s*mm$/;
 /** `… sur [Ax)` : la demi-droite x d'origine A (PR 2) */
 const ON_RAY_REGEX = /^(.*?)\s+sur\s+(.*)$/;
 const RAY_REGEX = /^\[([A-Z])([a-z][A-Za-z0-9]*)\)$/;
-
-/** Longueur écrite par l'auteur → millimètres (null : illisible ; NaN : pas au mm près) */
-function readLength(text: string): { length: number; unit: LengthUnit } | null {
-	const cmMm = CM_MM_REGEX.exec(text);
-	if (cmMm) return { length: Number(cmMm[1]) * 10 + Number(cmMm[2]), unit: 'cm-mm' };
-	const mm = MM_REGEX.exec(text);
-	if (mm) return { length: Number(mm[1]), unit: 'mm' };
-	const cm = CM_REGEX.exec(text);
-	if (!cm) return null;
-	const decimals = cm[2] ?? '';
-	// Plus d'un chiffre après la virgule (non nul) : pas au millimètre près
-	if (decimals.replace(/0+$/, '').length > 1) return { length: NaN, unit: 'cm' };
-	return { length: Number(cm[1]) * 10 + Number(decimals.charAt(0) || '0'), unit: 'cm' };
-}
 
 /**
  * `segment AB = 6 cm` (chantier `regle-graduee`, ADR 0036) : un segment de A, de
@@ -434,7 +414,7 @@ function readSegmentLength(rest: string, line: number): ConstructionCheck {
 		}
 		ray = rayMatch[2];
 	}
-	const read = readLength((onRay ? onRay[1] : match[3]).trim());
+	const read = readLengthText((onRay ? onRay[1] : match[3]).trim());
 	if (!read) {
 		throw new LineError(`segment ${name} : longueur en cm ou en mm : ${usage}`);
 	}
@@ -517,6 +497,43 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	return { kind, points: [points[0], points[1]], line };
 }
 
+const RULER_CIRCLE_EXAMPLE = 'cercle c = cercle(O, rayon=4 cm)';
+
+/**
+ * `cercle c = cercle(O, rayon=4 cm)` (chantier `regle-graduee`, PR 3) : longueur au
+ * mm près, plus de 0 ; papier uni ; palette Règle graduée · Compas, rien d'autre
+ * (un segment ou un Report serait jugé comme une réponse forgée). Le cercle
+ * ne se mêle qu'à d'autres cercles (règle des lots 3 et 3b).
+ */
+function rulerCircleError(
+	check: Extract<ConstructionCheck, { kind: 'cercle' }>,
+	spec: ConstructionSpec,
+	grid: boolean
+): string | null {
+	const centered = centeredCircleOf(check.expression);
+	if (centered?.kind !== 'longueur') return null;
+	const label = `cercle ${check.name}`;
+	if (Number.isNaN(centered.length)) {
+		return `${label} : rayon au millimètre près (3,5 cm, 3 cm 5 mm ou 35 mm)`;
+	}
+	if (centered.length <= 0) return `${label} : rayon plus grand que 0`;
+	if (spec.checks.some((c) => c.kind !== 'cercle')) {
+		return `${label} : un cercle à construire ne se mêle pas à d’autres vérifications`;
+	}
+	const first = spec.checks.find((c) => c.kind === 'cercle' && c.name === check.name);
+	if (first !== check) return `deux cercles nommés ${check.name.replace("'", '’')}`;
+	const allowed: ConstructionTool[] = ['regle', 'compas'];
+	const other = spec.tools.find((t) => !allowed.includes(t));
+	if (other) return `${label} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+	if (!spec.tools.includes('regle') || !spec.tools.includes('compas')) {
+		return `${label} : le rayon se prend à la règle graduée, puis au compas (outils: ${allowed.join(', ')})`;
+	}
+	if (grid) {
+		return `${label} : la règle graduée sert sur papier uni (sur quadrillage, le carreau fait l’unité) ; retirer « grille: » (ou écrire « grille: non »)`;
+	}
+	return null;
+}
+
 /**
  * Une vérification qui ne va pas avec les autres : son outil n'est pas celui
  * de la figure, ou c'est un second carré / rectangle (le juge compte les
@@ -537,9 +554,12 @@ function coherenceError(
 		check.kind === 'mesure' ||
 		(check.kind === 'triangle' && check.angles.length > 0 && !rightAngleOf(check)) ||
 		(check.kind === 'droite' && bissectriceOf(check.expression) !== null);
-	// Chantier `regle-graduee` (ADR 0036) : la règle graduée ne sert qu'au segment de longueur donnée
-	if (check.kind !== 'segment' && spec.tools.includes('regle')) {
-		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} ») ; la retirer de outils:`;
+	// Chantier `regle-graduee` (ADR 0036) : la règle graduée ne sert qu'au segment de longueur
+	// donnée et au cercle de rayon donné en cm (PR 3)
+	const rulerCircle =
+		check.kind === 'cercle' && centeredCircleOf(check.expression)?.kind === 'longueur';
+	if (check.kind !== 'segment' && !rulerCircle && spec.tools.includes('regle')) {
+		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} ») ou un cercle de rayon donné (« verifier: ${RULER_CIRCLE_EXAMPLE} ») ; la retirer de outils:`;
 	}
 	if (!protractorAllowed && spec.tools.includes('rapporteur')) {
 		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} »), à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») à construire un triangle dont un angle est donné (« verifier: ${TRIANGLE_ANGLES_EXAMPLE} ») ou une bissectrice (« verifier: droite d = bissectrice(A, O, B) ») ; le retirer de outils:`;
@@ -637,6 +657,9 @@ function coherenceError(
 		if (grid) {
 			return `triangle ${name} : le triangle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
 		}
+	} else if (check.kind === 'cercle' && rulerCircle) {
+		const message = rulerCircleError(check, spec, grid);
+		if (message) return message;
 	} else if (check.kind === 'droite' || check.kind === 'cercle') {
 		// Lots 3 et 3b : ce juge ignore les autres traits ; il ne juge rien d'autre
 		const what = check.kind === 'droite' ? 'une droite' : 'un cercle';
