@@ -8,13 +8,13 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2366._
+_Mis à jour le 2026-11-08, PR #2451 ouverte (C14)._
 
-- **État** : lot B en cours. **Faits** : M4 code (#2340, en prod), M11 (#2342, #2345), M8 (#2343), **D11 + C10 (#2366** : « capacité » → `CurriculumPoint`, liste des drapeaux anti-triche qui rend enfin le point). `ecarts-a-trier.md` remis à jour (tableaux = source unique) : **22 ouverts + 11 T**.
-- **Prochaine action** : C14 (`lexicon/` → `dictionary/`) ; V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc) ; L36 (message PostgREST brut, relevé par l'audit de #2366). **M4 `DROP worksheet_instances`** : possible depuis le `deploy:prod` du 2026-11-04 (stop + explication à David avant `db:migrate` ; retirer aussi les tests d'intégration qui la lisent : `phantom-columns`, `anon-option-b`, `eleve-inscrit-apres-publication`, `profiles-columns`, `worksheet-instance-not-writable-by-student`). Reste de C10 : colonne `capacity_point_id` (migration à part, pas planifiée).
+- **État** : lot B en cours. **Faits** : M4 code (#2340, en prod), M11 (#2342, #2345), M8 (#2343), **D11 + C10 (#2366** : « capacité » → `CurriculumPoint`, liste des drapeaux anti-triche qui rend enfin le point). `ecarts-a-trier.md` remis à jour (tableaux = source unique) : **21 ouverts + 11 T**. **C14 en cours : PR #2451** (`chore/ecarts-lexicon-vers-dictionary`), CI relancée après correction du filtre `paths` de `nightly-integration.yml` → **vérifier la CI et merger si verte**, puis nettoyer la branche.
+- **Prochaine action** : merger #2451 ; puis V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc) ; L36 (message PostgREST brut, relevé par l'audit de #2366). **M4 `DROP worksheet_instances`** : possible depuis le `deploy:prod` du 2026-11-04 (stop + explication à David avant `db:migrate` ; retirer aussi les tests d'intégration qui la lisent : `phantom-columns`, `anon-option-b`, `eleve-inscrit-apres-publication`, `profiles-columns`, `worksheet-instance-not-writable-by-student`). Reste de C10 : colonne `capacity_point_id` (migration à part, pas planifiée).
 - **En attente de David** : DPA (Drive privé, preuves d'acceptation) ; relire `conformite/violation-de-donnees.md` ; T14 ; perf `requireAuth` ; `account/delete` 1 / 24 h.
-- **Pièges en cours** : `db:migrate` refusé par le mode auto → David le lance (`! cd <worktree> && pnpm db:migrate`) ; worktree non lié → copier `../ubumaths/supabase/.temp` ; un `DROP` garde la ligne de `generate-db-doc.ts` jusqu'à `db:types` ; migration appliquée en local par `psql` sous verrou (pas de `db:reset`) ; `docs:check-a-jour --depuis` ne voit que les commits : la relancer APRÈS le commit (`Doc-inchangée:` dans un commit si besoin) ; corps de commit ≤ 100 caractères par ligne.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier`, une branche par PR du lot (aucune en cours : worktree détaché sur `origin/main`).
+- **Pièges en cours** : `db:migrate` refusé par le mode auto → David le lance (`! cd <worktree> && pnpm db:migrate`) ; worktree non lié → copier `../ubumaths/supabase/.temp` ; un `DROP` garde la ligne de `generate-db-doc.ts` jusqu'à `db:types` ; migration appliquée en local par `psql` sous verrou (pas de `db:reset`) ; `docs:check-a-jour --depuis` ne voit que les commits : la relancer APRÈS le commit (`Doc-inchangée:` dans un commit si besoin) ; corps de commit ≤ 100 caractères par ligne ; un fichier déplacé peut être cité par le filtre `paths` des workflows (`pnpm check:integration-paths`).
+- **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier`, une branche par PR du lot (en cours : `chore/ecarts-lexicon-vers-dictionary`).
 
 ---
 
