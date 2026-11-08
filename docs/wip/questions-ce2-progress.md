@@ -6,18 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08 : chantier EN PAUSE, en attente d'outils (décision de David)._
+_Mis à jour le 2026-11-08 : n° 19 et n° 20 livrés (#2463, #2473), phase 0 du lot 12b écrite (§ 19)._
 
-- **État** : lots 1 à 12 publiés. Restent au CE2 les points D sans modèle : 086, 043, 051, 065 (non évaluables
-  sans manipulation), 039 et le reste de 070 (outils manquants).
-- **En attente** des lignes de `outils-manquants.md` : n° 18 règle graduée (039, 070 coté ; « à décider avec David »),
-  n° 19 cercle de centre donné et n° 20 triangle rectangle (070, CE1-072). Vérifié le 2026-11-08 : aucun n'existe
-  dans `src/lib/questions/construction/`, aucun chantier, worktree ni PR ne les porte (`controles-figure` archivé).
-- **Prochaine action** : à la reprise, regarder la section « Livré » de `outils-manquants.md` ; n° 19 et n° 20 livrés
-  → lot 12b (070) ; n° 18 livré → 039.
-- **Pièges en cours** : `verifier: cercle` = cercle circonscrit SEUL ; commitlint : type `feat`, sujet sans
-  majuscule ; jamais de variable `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `main` (aucune branche en cours).
+- **État** : lots 1 à 12 publiés. Restent au CE2 : 086, 043, 051, 065 (non évaluables), 039 (règle graduée, n° 18)
+  et le reste de 070, débloqué par #2463 (cercle de centre donné) et #2473 (triangle rectangle).
+- **Prochaine action** : phase 0 du lot 12b (§ 19) à valider, puis écrire `lot-ce2-12b.py` sur une branche
+  `feat/questions-ce2-lot12b` du worktree.
+- **En attente de David** : Q1 à Q3 du § 19 ; #2463 et #2473 ne sont **pas en prod** (`deploy:prod` avant la publication).
+- **Pièges en cours** : n° 18 règle graduée toujours absent (aucune longueur en cm) ; commitlint : type `feat`, sujet
+  sans majuscule ; jamais de variable `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur un ancien `main` (aucune branche en cours).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1018,3 +1016,35 @@ de centre donné en ligne n° 19.
 - 2026-11-08 : relecture de David sur la page à cocher : 2 verdicts « ok », sans commentaire (base `verdicts`
   comptée). Simulation `publier-lot` (Claude) : 2 brouillons passent le contrôle ; `--publier` (David) ; relevé MCP :
   2/2 `published`. **Lot 12 clos.**
+
+## 19. Lot 12b — cercle de centre donné et triangle rectangle (phase 0, 2026-11-08)
+
+Outils livrés (`docs/systeme/questions.md`) : `verifier: cercle c = cercle(O, passant=A)` (quadrillage ou papier uni)
+et `cercle(O, rayon=distance(D, E))` (papier uni, compas + report) ; `verifier: triangle ABC : CAB = 90 ; AC = u`
+(papier uni, équerre + report), `AC = 3 carreaux` ([AB] sur une ligne) ou `AC = AB` (oblique) sur quadrillage.
+BO CE2 (`CE2-espace.md`) : « sur tout support (papier quadrillé ou pointé ou papier uni) » ; exemples de réussite en
+cm (rectangle 7 × 3, carré de 6 et cercle de rayon 4, triangle rectangle 10 et 4) → la taille réelle reste au n° 18.
+
+| Fichier                          | Point   | Catégorie · niveau                 | Variations                                                                                                    |
+| -------------------------------- | ------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `03-trace-le-cercle`             | CE2-070 | Figures planes · constructions · 3 | cercle de centre O passant par A : quadrillage (A sur une ligne du quadrillage, ou en oblique) ; papier uni   |
+| `04-cercle-de-rayon-donne`       | CE2-070 | Figures planes · constructions · 4 | papier uni : segment [DE] donné, cercle de centre O de rayon DE (Report puis compas)                          |
+| `05-triangle-rectangle-carreaux` | CE2-070 | Figures planes · constructions · 3 | quadrillage, [AB] tracé : angle droit en A, AC = 2 à 6 carreaux ([AB] sur une ligne) ; AC = AB ([AB] oblique) |
+| `06-triangle-rectangle-equerre`  | CE2-070 | Figures planes · constructions · 4 | papier uni, [AB] tracé et segment u donné : angle droit en A à l'équerre, AC reportée de u                    |
+
+Erreurs typiques des `testSpecs` : compas ouvert à l'œil, cercle centré ailleurs, mauvais rayon ; angle en A non droit,
+côté tracé à l'œil (sans équerre), C placé à l'œil, AC trop long d'un carreau, côté [BC] manquant.
+Hors lot : l'assemblage du BO (carré + cercle centré sur un sommet) — une case = une vérification ; les longueurs en cm (n° 18).
+
+**Question d'accès** : personne ne lit rien de plus — brouillons (admin seul) ; migration nœud + tag sans règle neuve
+(comme le lot 12).
+
+Questions à David :
+
+- **Q1** — CE1-072 (« cercle de centre donné passant par un point donné », triangle rectangle) : des modèles de
+  niveau 2 dans ce lot (quadrillage seul, O et A sur une ligne, AC en carreaux), rangés sur CE1-072 ? Reco : oui,
+  `07-cercle-ce1` et `08-triangle-rectangle-ce1`, comme le prévoyait l'archive `cercle-triangle-rectangle`.
+- **Q2** — Niveaux 3 (quadrillage, sans instrument ou compas seul) et 4 (papier uni, instruments enchaînés) ? Reco : oui.
+- **Q3** — Publication : #2463 et #2473 ne sont pas en prod ; les brouillons peuvent être créés tout de suite, mais
+  l'aperçu admin de prod et les élèves ont besoin du `deploy:prod`. Écrire et relire en local maintenant, publier
+  après ton `deploy:prod` ? Reco : oui.

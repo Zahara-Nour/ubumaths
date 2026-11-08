@@ -672,7 +672,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							: check.kind === 'symetrique'
 								? [...(check.points ?? []), check.by]
 								: check.kind === 'triangle'
-									? [check.points[0], check.points[1], ...check.lengths.flatMap((l) => l.source)]
+									? [
+											check.points[0],
+											check.points[1],
+											// En carreaux (n° 20), rien à nommer
+											...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
+										]
 									: check.points;
 					for (const name of names) {
 						if (!named.has(name)) {

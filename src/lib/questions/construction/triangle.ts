@@ -18,10 +18,24 @@
  * d'angle ; deux côtés et l'angle compris : au croisement du côté d'angle et
  * du report. C est alors construit au sens de `constructionOf`.
  *
+ * Triangle rectangle (chantier `cercle-triangle-rectangle`, n° 20, phase 0
+ * validée le 2026-11-08) : `CAB = 90` se construit à l'équerre le long de (AB)
+ * en A (pas au rapporteur) ; avec `AC = u`, C au croisement de la perpendiculaire
+ * et du report piqué en A ; seul, C n'importe où sur la perpendiculaire. Sur
+ * quadrillage, sans instrument : `AC = 3 carreaux` ([AB] sur une ligne) ou
+ * `AC = AB` (oblique permise), C sur un nœud.
+ *
  * @module questions/construction/triangle
  */
 
-import type { TriangleAngle, TriangleCheck, TriangleLength } from '$lib/ubumark/types/construction';
+import {
+	isSquaresLength,
+	rightAngleOf,
+	type TriangleAngle,
+	type TriangleCheck,
+	type TriangleLength
+} from '$lib/ubumark/types/construction';
+import type { FigureStep } from '$lib/ubumark/types/figure';
 import {
 	degrees,
 	protractorFits,
@@ -34,6 +48,7 @@ import {
 	angleSideVertex,
 	basePointsOf,
 	constructionOf,
+	distanceToTrait,
 	intersectTraits,
 	intersectionsOf,
 	isBuiltMark,
@@ -64,6 +79,15 @@ export const wrongScaleAngleFeedback = (name: string, measured: number, expected
 	`Ton angle ${name} mesure ${degrees(measured)} au lieu de ${degrees(expected)} : tu as lu la mauvaise graduation du rapporteur.`;
 export const wrongAngleTriangleFeedback = (name: string, measured: number, expected: number) =>
 	`Ton angle ${name} mesure ${degrees(measured)} au lieu de ${degrees(expected)}.`;
+export const sideEyeballedFeedback = (p: string, c: string) =>
+	`Ton côté [${p}${c}] est tracé à l’œil : utilise l’équerre.`;
+export const notRightFeedback = (vertex: string, base: string, grid: boolean) =>
+	grid
+		? `Ton angle en ${vertex} n’est pas droit.`
+		: `Ton angle en ${vertex} n’est pas droit : trace la perpendiculaire à (${vertex}${base}) avec l’équerre.`;
+const squaresText = (n: number) => `${n} carreau${n > 1 ? 'x' : ''}`;
+export const wrongSquaresFeedback = (p: string, c: string, measured: number, expected: number) =>
+	`Ton côté [${p}${c}] mesure ${squaresText(measured)} au lieu de ${expected}.`;
 
 /** Écart admis sur un angle (degrés) : un repère arrive exact, au calcul flottant près */
 const ANGLE_EPSILON = 1e-6;
@@ -89,6 +113,8 @@ interface TriangleSetting {
 	vertices: Vertex[];
 }
 
+const isOnGrid = (value: number, step: number, eps: number) =>
+	Math.abs(value / step - Math.round(value / step)) * step <= eps;
 const near = (p: Position, q: Position, eps: number) => Math.hypot(p.x - q.x, p.y - q.y) <= eps;
 const distance = (p: Position, q: Position) => Math.hypot(p.x - q.x, p.y - q.y);
 
@@ -122,7 +148,8 @@ function angleName(check: TriangleCheck, angle: TriangleAngle): string {
 
 function labelOf(check: TriangleCheck): string {
 	const [a, b, c] = check.points;
-	const side = (l: TriangleLength) => `${l.side.join('')} = ${l.source.join('')}`;
+	const side = (l: TriangleLength) =>
+		`${l.side.join('')} = ${isSquaresLength(l) ? squaresText(l.squares) : l.source.join('')}`;
 	const data = [
 		...check.lengths.map(side),
 		...check.angles.map((g) => `${angleName(check, g)} = ${g.measure}`)
@@ -135,9 +162,21 @@ function lengthOf(
 	length: TriangleLength,
 	label: string,
 	points: ReadonlyMap<string, Position>,
-	shapes: FigureShapes
+	shapes: FigureShapes,
+	[a, b]: [Position, Position],
+	base: string
 ): number {
 	const window = shapes.window;
+	if (isSquaresLength(length)) {
+		// N° 20 : le côté suit le quadrillage, perpendiculaire à [AB] qui suit une ligne
+		const grid = shapes.grid as FigureStep;
+		const eps = tolerance(a, b);
+		if (Math.abs(a.y - b.y) <= eps) return length.squares * grid.y;
+		if (Math.abs(a.x - b.x) <= eps) return length.squares * grid.x;
+		throw new TriangleAuthorError(
+			`${label} : [${base}] ne suit pas le quadrillage : donner la longueur par deux points (« ${length.side.join('')} = ${base} »)`
+		);
+	}
 	if (length.source.length === 2) {
 		const [p, q] = length.source.map((name) => {
 			const at = points.get(name);
@@ -181,11 +220,19 @@ function settingOf(
 			'Case « figure » : traits de la figure non fournis au juge (triangle)'
 		);
 	}
-	if (shapes.grid) {
+	const right = rightAngleOf(check);
+	// N° 20 : seul le triangle rectangle se construit sur quadrillage
+	if (shapes.grid && !right) {
 		throw new TriangleAuthorError(`${label} : le triangle se construit sur papier uni`);
 	}
 	const [nameA, nameB, nameC] = check.points;
-	const gesture = check.angles.length > 0 ? 'poser le rapporteur' : 'piquer le compas';
+	const gesture = right
+		? shapes.grid
+			? 'tracer un côté'
+			: 'poser l’équerre'
+		: check.angles.length > 0
+			? 'poser le rapporteur'
+			: 'piquer le compas';
 	const [a, b] = [nameA, nameB].map((name) => {
 		const at = points.get(name);
 		if (!at)
@@ -200,20 +247,30 @@ function settingOf(
 				`${label} : ${name} est hors de la fenêtre (l’élève ne peut pas y ${gesture})`
 			);
 		}
+		const grid = shapes.grid;
+		const eps = tolerance(at);
+		if (grid && !(isOnGrid(at.x, grid.x, eps) && isOnGrid(at.y, grid.y, eps))) {
+			throw new TriangleAuthorError(`${label} : ${name} n’est pas sur un nœud du quadrillage`);
+		}
 		return at;
 	});
 	if (points.has(nameC)) {
 		throw new TriangleAuthorError(`${label} : le point ${nameC} existe déjà dans la figure`);
 	}
-	const lengths = check.lengths.map((l) => lengthOf(l, label, points, shapes));
-	if (check.angles.length > 0) {
+	const lengths = check.lengths.map((l) =>
+		lengthOf(l, label, points, shapes, [a, b], `${nameA}${nameB}`)
+	);
+	if (check.angles.length > 0 && !right) {
 		const windowError = protractorWindowError(shapes.window);
 		if (windowError) throw new TriangleAuthorError(`${label} : ${windowError}`);
 	}
 	if (distance(a, b) <= tolerance(a, b)) {
 		throw new TriangleAuthorError(`${label} : ${nameA} et ${nameB} sont au même endroit`);
 	}
-	return { a, b, lengths, vertices: verticesOf(check, a, b, lengths, shapes.window) };
+	const vertices = right
+		? rightVertices(check, right, a, b, lengths)
+		: verticesOf(check, a, b, lengths, shapes.window);
+	return { a, b, lengths, vertices };
 }
 
 /**
@@ -278,6 +335,109 @@ function verticesOf(
 	});
 }
 
+/** Triangle rectangle (n° 20) : le sommet de l'angle droit (V) et l'autre bout de [AB] (W) */
+function rightEnds(
+	check: TriangleCheck,
+	right: TriangleAngle,
+	a: Position,
+	b: Position
+): { v: Position; w: Position } {
+	return right.vertex === check.points[0] ? { v: a, w: b } : { v: b, w: a };
+}
+
+/** Direction unitaire de la perpendiculaire à [AB] en V, du côté `sens` de (AB) (vu de A → B) */
+function normalOf(a: Position, b: Position, sens: 1 | -1): Position {
+	const d = distance(a, b);
+	return { x: (-(b.y - a.y) / d) * sens + 0, y: ((b.x - a.x) / d) * sens + 0 };
+}
+
+/** Les C d'un triangle rectangle de côté donné : un de chaque côté de (AB), sur la perpendiculaire en V */
+function rightVertices(
+	check: TriangleCheck,
+	right: TriangleAngle,
+	a: Position,
+	b: Position,
+	lengths: number[]
+): Vertex[] {
+	if (lengths.length === 0) return [];
+	const { v } = rightEnds(check, right, a, b);
+	return ([1, -1] as const).map((sens) => {
+		const n = normalOf(a, b, sens);
+		return { at: { x: v.x + n.x * lengths[0], y: v.y + n.y * lengths[0] }, sens, fits: true };
+	});
+}
+
+/** Quadrillage, angle droit seul : les nœuds de la fenêtre sur la perpendiculaire à [AB] en V (V exclu) */
+function perpendicularNodes(
+	a: Position,
+	b: Position,
+	v: Position,
+	grid: FigureStep,
+	window: NonNullable<FigureShapes['window']>
+): Vertex[] {
+	const nodes: Vertex[] = [];
+	const n = normalOf(a, b, 1);
+	for (let i = Math.ceil(window.xMin / grid.x - 1e-9); i * grid.x <= window.xMax + 1e-9; i++) {
+		for (let j = Math.ceil(window.yMin / grid.y - 1e-9); j * grid.y <= window.yMax + 1e-9; j++) {
+			const p = { x: i * grid.x, y: j * grid.y };
+			const eps = tolerance(p, v);
+			const cross = (p.x - v.x) * n.y - (p.y - v.y) * n.x;
+			if (Math.abs(cross) > eps * distance(a, b) || near(p, v, eps)) continue;
+			const sens = sideOf(a, b, p);
+			if (sens !== 0) nodes.push({ at: p, sens, fits: true });
+		}
+	}
+	return nodes;
+}
+
+/** Triangle rectangle : faisable ? Erreur d'AUTEUR sinon (C dans la fenêtre, sur un nœud du quadrillage) */
+function assertRight(
+	check: TriangleCheck,
+	right: TriangleAngle,
+	setting: TriangleSetting,
+	shapes: FigureShapes
+): void {
+	const label = labelOf(check);
+	const [nameA, nameB, nameC] = check.points;
+	const { grid, window } = shapes;
+	if (check.lengths.length === 0) {
+		if (!grid && window) {
+			const shown = aloneCandidates(check, right, setting, shapes, []);
+			if (!shown.some((p) => isInFrame(p.at, window))) {
+				throw new TriangleAuthorError(
+					`${label} : la perpendiculaire à (${nameA}${nameB}) en ${right.vertex} sort de la fenêtre : éloigner ${right.vertex} du bord ou agrandir la fenêtre`
+				);
+			}
+		}
+		if (grid && window) {
+			const { v } = rightEnds(check, right, setting.a, setting.b);
+			if (perpendicularNodes(setting.a, setting.b, v, grid, window).length === 0) {
+				throw new TriangleAuthorError(
+					`${label} : aucun nœud du quadrillage sur la perpendiculaire à (${nameA}${nameB}) en ${right.vertex} dans la fenêtre : agrandir la fenêtre`
+				);
+			}
+		}
+		return;
+	}
+	const inFrame = setting.vertices.filter((p) => !window || isInFrame(p.at, window));
+	if (inFrame.length === 0) {
+		throw new TriangleAuthorError(
+			`${label} : les deux sommets ${nameC} possibles sont hors de la fenêtre : agrandir la fenêtre`
+		);
+	}
+	if (grid) {
+		const onNode = inFrame.some(({ at }) => {
+			const eps = tolerance(at);
+			return isOnGrid(at.x, grid.x, eps) && isOnGrid(at.y, grid.y, eps);
+		});
+		if (!onNode) {
+			throw new TriangleAuthorError(
+				`${label} : le sommet ${nameC} ne tombe pas sur un nœud du quadrillage (l’élève ne peut pas le placer)`
+			);
+		}
+	}
+}
+
 /** Les vérifications sont-elles faisables ? Erreur d'AUTEUR sinon */
 export function assertTriangle(
 	check: TriangleCheck,
@@ -286,6 +446,8 @@ export function assertTriangle(
 ): void {
 	const label = labelOf(check);
 	const setting = settingOf(check, points, shapes);
+	const right = rightAngleOf(check);
+	if (right) return assertRight(check, right, setting, shapes as FigureShapes);
 	const { vertices } = setting;
 	const [a, b, c] = check.points;
 	if (check.angles.length === 0 && vertices.length < 2) {
@@ -374,27 +536,16 @@ function farEnd(line: DrawnLine, from: Position, other: Position, eps: number): 
 }
 
 /**
- * Verdict : un côté [AC] (segment partant de A) et un côté [BC] (de B) qui se
- * rejoignent en un C construit, aux longueurs données. Plusieurs paires
- * possibles : juste si l'une convient ; sinon le message d'une paire au sommet
- * construit d'abord (l'essai le plus avancé). Cercles et droites : construction.
+ * Les C de l'élève : extrémités communes d'un segment parti de A et d'un parti
+ * de B ; sinon le verdict (côté manquant, côtés qui ne se rejoignent pas)
  */
-export function judgeTriangle(
+function joinedVertices(
 	check: TriangleCheck,
-	points: ReadonlyMap<string, Position>,
-	shapes: FigureShapes | undefined,
+	a: Position,
+	b: Position,
 	objects: readonly DrawnObject[]
-): ConstructionVerdict {
-	const { a, b, lengths } = settingOf(check, points, shapes);
-	const figure = shapes as FigureShapes;
+): { vertices: Position[] } | { verdict: ConstructionVerdict } {
 	const [nameA, nameB, nameC] = check.points;
-	// Un point placé sans l'outil point : réponse forgée ; un cercle sans longueur donnée
-	// (palette Rapporteur · Règle · Segment, revue de #2348) aussi
-	if (objects.some((o) => o.kind === 'point')) return { status: 'incorrect' };
-	const circles = objects.some((o) => o.kind === 'cercle' || o.kind === 'report');
-	if (check.angles.length > 0 && check.lengths.length === 0 && circles) {
-		return { status: 'incorrect' };
-	}
 	const segments = objects.filter((o): o is DrawnLine => o.kind === 'segment');
 	const eps = tolerance(
 		a,
@@ -406,17 +557,123 @@ export function judgeTriangle(
 	);
 	const fromA = segments.flatMap((s) => farEnd(s, a, b, eps) ?? []);
 	const fromB = segments.flatMap((s) => farEnd(s, b, a, eps) ?? []);
+	const incorrect = (feedback: string) => ({ verdict: { status: 'incorrect' as const, feedback } });
 	if (fromA.length === 0 && fromB.length === 0) {
-		return { status: 'incorrect', feedback: missingSidesFeedback(nameA, nameB, nameC) };
+		return incorrect(missingSidesFeedback(nameA, nameB, nameC));
 	}
-	if (fromA.length === 0)
-		return { status: 'incorrect', feedback: missingSideFeedback(nameA, nameC) };
-	if (fromB.length === 0)
-		return { status: 'incorrect', feedback: missingSideFeedback(nameB, nameC) };
+	if (fromA.length === 0) return incorrect(missingSideFeedback(nameA, nameC));
+	if (fromB.length === 0) return incorrect(missingSideFeedback(nameB, nameC));
 	const vertices = fromA.filter((p) => fromB.some((q) => near(p, q, eps)));
-	if (vertices.length === 0) {
-		return { status: 'incorrect', feedback: notJoinedFeedback(nameA, nameB, nameC) };
+	if (vertices.length === 0) return incorrect(notJoinedFeedback(nameA, nameB, nameC));
+	return { vertices };
+}
+
+/**
+ * Triangle rectangle (n° 20). Papier uni : C sur une droite CONSTRUITE par V
+ * (l'équerre), angle droit, puis (côté donné) au croisement de cette droite et
+ * d'un cercle construit centré en V, à la bonne longueur. Quadrillage : angle
+ * droit et longueur, de nœud en nœud. Juste si un C convient ; sinon le message
+ * du C le plus avancé.
+ */
+function judgeRight(
+	check: TriangleCheck,
+	right: TriangleAngle,
+	setting: TriangleSetting,
+	points: ReadonlyMap<string, Position>,
+	figure: FigureShapes,
+	objects: readonly DrawnObject[]
+): ConstructionVerdict {
+	const grid = figure.grid;
+	const allowed: readonly DrawnObject['kind'][] = grid
+		? ['segment']
+		: ['segment', 'droite', 'report'];
+	// Hors palette (un point placé, un cercle au compas) : réponse forgée
+	if (objects.some((o) => !allowed.includes(o.kind))) return { status: 'incorrect' };
+	const joined = joinedVertices(check, setting.a, setting.b, objects);
+	if ('verdict' in joined) return joined.verdict;
+	const { v, w } = rightEnds(check, right, setting.a, setting.b);
+	const nameC = check.points[2];
+	const [length] = check.lengths;
+	const [expected] = setting.lengths;
+	let lines: Trait[] = [];
+	let circles: Trait[] = [];
+	if (!grid) {
+		const construction = constructionOf(
+			objects,
+			basePointsOf(points, figure.segments),
+			figure.traits
+		);
+		lines = objects.flatMap((o, i): Trait[] => {
+			if (o.kind !== 'droite' || !construction.built.has(i)) return [];
+			const trait = traitOf(o);
+			return trait && distanceToTrait(v, trait) <= tolerance(v, w) ? [trait] : [];
+		});
+		circles = constructedCircles(objects, construction).filter(
+			(t) => t.kind === 'circle' && near(t.center, v, tolerance(v))
+		);
 	}
+	const verdictOf = (c: Position): { rank: number; feedback: string | null } => {
+		const eps = tolerance(v, w, c);
+		const carriers = lines.filter((t) => distanceToTrait(c, t) <= eps);
+		if (!grid && carriers.length === 0) {
+			return { rank: 0, feedback: sideEyeballedFeedback(right.vertex, nameC) };
+		}
+		if (Math.abs(angleBetween(v, w, c) - 90) > ANGLE_EPSILON) {
+			return { rank: 1, feedback: notRightFeedback(right.vertex, right.base, Boolean(grid)) };
+		}
+		if (!grid && length) {
+			const crossed = carriers.some((t) =>
+				circles.some((k) => intersectTraits(t, k).some((q) => near(q, c, tolerance(q, c))))
+			);
+			if (!crossed) return { rank: 2, feedback: vertexEyeballedFeedback(nameC) };
+		}
+		if (length && Math.abs(distance(v, c) - expected) > eps) {
+			const feedback = isSquaresLength(length)
+				? wrongSquaresFeedback(
+						right.vertex,
+						nameC,
+						Math.round((distance(v, c) * length.squares) / expected),
+						length.squares
+					)
+				: wrongLengthFeedback(right.vertex, nameC);
+			return { rank: 3, feedback };
+		}
+		return { rank: 4, feedback: null };
+	};
+	const verdicts = joined.vertices.map(verdictOf);
+	if (verdicts.some((x) => x.feedback === null)) return { status: 'correct' };
+	const best = verdicts.reduce((p, q) => (q.rank > p.rank ? q : p));
+	return { status: 'incorrect', feedback: best.feedback ?? undefined };
+}
+
+/**
+ * Verdict : un côté [AC] (segment partant de A) et un côté [BC] (de B) qui se
+ * rejoignent en un C construit, aux longueurs données. Plusieurs paires
+ * possibles : juste si l'une convient ; sinon le message d'une paire au sommet
+ * construit d'abord (l'essai le plus avancé). Cercles et droites : construction.
+ */
+export function judgeTriangle(
+	check: TriangleCheck,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined,
+	objects: readonly DrawnObject[]
+): ConstructionVerdict {
+	const setting = settingOf(check, points, shapes);
+	const { a, b, lengths } = setting;
+	const figure = shapes as FigureShapes;
+	const right = rightAngleOf(check);
+	if (right) return judgeRight(check, right, setting, points, figure, objects);
+	const [nameA, nameB, nameC] = check.points;
+	// Un point placé sans l'outil point : réponse forgée ; un cercle sans longueur donnée
+	// (palette Rapporteur · Règle · Segment, revue de #2348) aussi
+	if (objects.some((o) => o.kind === 'point')) return { status: 'incorrect' };
+	const circles = objects.some((o) => o.kind === 'cercle' || o.kind === 'report');
+	if (check.angles.length > 0 && check.lengths.length === 0 && circles) {
+		return { status: 'incorrect' };
+	}
+	const joined = joinedVertices(check, a, b, objects);
+	if ('verdict' in joined) return joined.verdict;
+	const { vertices } = joined;
 	const construction = constructionOf(
 		objects,
 		basePointsOf(points, figure.segments),
@@ -506,16 +763,25 @@ export function triangleSolution(
 	}
 	const { a, b } = setting;
 	const window = shapes?.window;
-	const inFrame = setting.vertices.filter((p) => !window || isInFrame(p.at, window));
+	// Les bouts de l'élève, sauf A et B (départs des côtés : ils ne disent pas où est C,
+	// et tireraient la correction vers A ; revue du n° 20)
+	const ends = drawn
+		.flatMap((o) =>
+			o.kind === 'segment'
+				? [
+						{ x: o.x1, y: o.y1 },
+						{ x: o.x2, y: o.y2 }
+					]
+				: []
+		)
+		.filter((e) => !near(e, a, tolerance(e, a)) && !near(e, b, tolerance(e, b)));
+	const right = rightAngleOf(check);
+	const candidates =
+		right && setting.lengths.length === 0
+			? aloneCandidates(check, right, setting, shapes as FigureShapes, ends)
+			: setting.vertices;
+	const inFrame = candidates.filter((p) => !window || isInFrame(p.at, window));
 	if (inFrame.length === 0) return [];
-	const ends = drawn.flatMap((o) =>
-		o.kind === 'segment'
-			? [
-					{ x: o.x1, y: o.y1 },
-					{ x: o.x2, y: o.y2 }
-				]
-			: []
-	);
 	// Sans tracé de l'élève : un côté où le rapporteur tient, puis le plus haut
 	const score = (v: Vertex) =>
 		ends.length === 0
@@ -532,14 +798,55 @@ export function triangleSolution(
 	];
 }
 
+/**
+ * Angle droit seul (n° 20) : les C que la correction peut montrer. Papier uni :
+ * les bouts de l'élève ramenés sur la perpendiculaire, sinon à |AB| (ou |AB|/2)
+ * de V ; quadrillage : les nœuds de la perpendiculaire. Sans tracé, le plus
+ * proche du point à |AB| de V, du côté le plus haut.
+ */
+function aloneCandidates(
+	check: TriangleCheck,
+	right: TriangleAngle,
+	setting: TriangleSetting,
+	shapes: FigureShapes,
+	ends: readonly Position[]
+): Vertex[] {
+	const { a, b } = setting;
+	const { v } = rightEnds(check, right, a, b);
+	const ab = distance(a, b);
+	const at = (sens: 1 | -1, t: number): Vertex => {
+		const n = normalOf(a, b, sens);
+		return { at: { x: v.x + n.x * t, y: v.y + n.y * t }, sens, fits: true };
+	};
+	const { grid, window } = shapes;
+	if (grid && window) {
+		const nodes = perpendicularNodes(a, b, v, grid, window);
+		if (ends.length > 0) return nodes;
+		const target = [at(1, ab), at(-1, ab)].sort((p, q) => q.at.y - p.at.y)[0].at;
+		return [...nodes].sort((p, q) => distance(p.at, target) - distance(q.at, target)).slice(0, 1);
+	}
+	const projected = ends.flatMap((e) =>
+		([1, -1] as const).flatMap((sens) => {
+			const n = normalOf(a, b, sens);
+			const t = (e.x - v.x) * n.x + (e.y - v.y) * n.y;
+			return t > tolerance(e, v) ? [at(sens, t)] : [];
+		})
+	);
+	return [...projected, at(1, ab), at(-1, ab), at(1, ab / 2), at(-1, ab / 2)];
+}
+
 /** Correction, en plus des côtés : les arcs de report, le codage des longueurs et des angles */
 export interface TriangleCorrection {
 	/** Cercles centrés au bout de chaque côté donné, de sa longueur (traits fins) */
 	arcs: { center: Position; radius: number }[];
 	/** Marques de même longueur : `count` traits au milieu de chaque segment */
 	marks: { from: Position; to: Position; count: number }[];
-	/** Angles donnés (lot 7) : l'arc codé de leur mesure */
+	/** Angles donnés (lot 7) : l'arc codé de leur mesure (l'angle droit à part) */
 	angles: AngleCorrection[];
+	/** Angle droit (n° 20) : le petit carré en `center`, entre [center from) et [center to) */
+	rightAngles: { center: Position; from: Position; to: Position }[];
+	/** Papier uni, triangle rectangle (n° 20) : la perpendiculaire à l'équerre, en trait fin */
+	guides: DrawnLine[];
 }
 
 /**
@@ -560,6 +867,7 @@ export function triangleCorrection(
 	const c = { x: sides[0].x2, y: sides[0].y2 };
 	const at = (name: string) => (name === check.points[0] ? a : b);
 	const sourceOf = (length: TriangleLength): [Position, Position] | null => {
+		if (isSquaresLength(length)) return null;
 		if (length.source.length === 2) {
 			const p = points.get(length.source[0]);
 			const q = points.get(length.source[1]);
@@ -568,24 +876,38 @@ export function triangleCorrection(
 		const line = shapes.lines.get(length.source[0]);
 		return line ? [line.a, line.b] : null;
 	};
-	const same =
-		check.lengths.length === 2 && check.lengths[0].source.join() === check.lengths[1].source.join();
+	const keyOf = (l: TriangleLength) => (isSquaresLength(l) ? null : l.source.join());
+	const same = check.lengths.length === 2 && keyOf(check.lengths[0]) === keyOf(check.lengths[1]);
 	const marks: TriangleCorrection['marks'] = [];
 	check.lengths.forEach((length, i) => {
+		// En carreaux (n° 20) : rien à coder, la longueur se compte
+		if (isSquaresLength(length)) return;
 		const count = same ? 1 : i + 1;
 		marks.push({ from: at(length.side[0]), to: c, count });
 		const source = sourceOf(length);
 		if (source && !(same && i === 1)) marks.push({ from: source[0], to: source[1], count });
 	});
-	const angles = check.angles.map((g): AngleCorrection => {
+	const right = rightAngleOf(check);
+	const angles = check.angles.flatMap((g): AngleCorrection[] => {
+		if (g.measure === 90) return [];
 		const v = at(g.vertex);
 		const w = at(g.base);
 		const sens = sideOf(v, w, c) === -1 ? -1 : 1;
-		return { center: v, from: w, to: c, measure: g.measure, sens };
+		return [{ center: v, from: w, to: c, measure: g.measure, sens }];
 	});
-	return {
-		arcs: check.lengths.map((length, i) => ({ center: at(length.side[0]), radius: lengths[i] })),
-		marks,
-		angles
-	};
+	const rightAngles: TriangleCorrection['rightAngles'] = right
+		? [{ center: at(right.vertex), from: at(right.base), to: c }]
+		: [];
+	// La perpendiculaire à l'équerre (papier uni) : de V, vers C
+	const guides: DrawnLine[] =
+		right && !shapes.grid
+			? [{ kind: 'droite', x1: at(right.vertex).x, y1: at(right.vertex).y, x2: c.x, y2: c.y }]
+			: [];
+	// Arcs de report : papier uni, longueur prise sur la figure (pas en carreaux)
+	const arcs = shapes.grid
+		? []
+		: check.lengths.flatMap((length, i) =>
+				isSquaresLength(length) ? [] : [{ center: at(length.side[0]), radius: lengths[i] }]
+			);
+	return { arcs, marks, angles, rightAngles, guides };
 }
