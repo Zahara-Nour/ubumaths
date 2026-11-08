@@ -103,10 +103,6 @@ lecteur donné, et rien de plus (le droit de lire reste aux gardes des routes et
   `referencesToLabels` (aperçu en texte du cahier de texte, via `journalContentPreview`). Lus par
   `src/lib/server/curriculum-coverage.ts` (couverture du programme tirée d'une séance) et
   `src/lib/server/worksheets/citations.ts`.
-- `linkify.ts` : `linkifyResourceReferences` change les références en liens **dans du HTML**,
-  à appliquer **après** l'assainissement ; un type sans page pour ce lecteur reste du texte grisé.
-  Aucun appelant depuis le 2026-11-08 (cahier en ubumark, carte « cahier » de `/demo/editeur`
-  rendue par `JournalContent`) ; gardée, retrait non décidé.
 - `prefixes.ts` (`KIND_PREFIXES`, `parseResourceQuery`, `prefixHint`) et
   `exercise-selection.ts` (`parseExerciseSelection`, `formatExerciseSelection`,
   `describeExerciseSelection`) servent le sélecteur `[[` de

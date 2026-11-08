@@ -3,7 +3,7 @@
  * HTML de l'app (`sanitize-attaques.test.ts` côté serveur / jsdom,
  * `sanitize-attaques.svelte.test.ts` côté navigateur).
  *
- * On attaque les FONCTIONS DE L'APP (`sanitizeHtml`, `transformMathHtml`,
+ * On attaque les FONCTIONS DE L'APP (`sanitizeHtml`,
  * `sanitizeNotificationHtml`…), jamais DOMPurify nu : c'est la configuration de
  * l'app qui fait la défense, et c'est elle qu'une montée de version peut casser.
  */
@@ -174,6 +174,28 @@ export function describeAttackSuite(sanitizers: readonly NamedSanitizer[]): void
 			it.each(ATTACK_VECTORS)('$name', ({ payload }) => {
 				const output = sanitize(payload);
 				expect(findDangers(output), output).toEqual([]);
+			});
+		});
+	}
+}
+
+/**
+ * Textes à accolades doubles, ou à `${`, rendus intacts. `SAFE_FOR_TEMPLATES` effaçait tout de
+ * `{{` au dernier `}}` (2026-11-08) : il ne protège que d'un moteur de gabarits qui relirait
+ * le HTML dans le navigateur (Angular, Vue), absent de l'app — Svelte ne relit pas `{@html}`.
+ */
+export const TEXTES_ACCOLADES: readonly string[] = [
+	'<p>Bonjour {{studentName}}, ta note est {{score}}.</p>',
+	'<p>On a $\\sqrt{\\frac{1}{2}}$ et $\\frac{1+\\sqrt{91}}{2}$ : fin.</p>',
+	'<p>Prix : ${montant} euros.</p>'
+];
+
+/** Déclare, pour chaque nettoyeur, que les textes à accolades sortent inchangés. */
+export function describeTextesAccolades(sanitizers: readonly NamedSanitizer[]): void {
+	for (const { name, sanitize } of sanitizers) {
+		describe(`${name} — accolades doubles conservées`, () => {
+			it.each(TEXTES_ACCOLADES)('%s', (html) => {
+				expect(sanitize(html)).toBe(html);
 			});
 		});
 	}

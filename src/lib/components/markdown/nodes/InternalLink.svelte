@@ -58,8 +58,7 @@
 	const reader = readInternalLinks();
 
 	// `resolve()` de SvelteKit substitue les paramètres sans les encoder : un
-	// `classId` mal formé finirait tel quel dans le `href`. Même garde que
-	// `linkifyResourceReferences`.
+	// `classId` mal formé finirait tel quel dans le `href`.
 	const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 
 	const resolved = $derived.by(() => {
