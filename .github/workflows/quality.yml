@@ -464,42 +464,10 @@ jobs:
       # The real-Pyodide integration tests are excluded via vite.config.ts
       # (gated on CI=true), since the CLI --exclude flag does not propagate to
       # project configs in vitest's projects mode.
-      # MESURE PROVISOIRE : mémoire toutes les 5 s pendant les tests.
-      - name: Start memory sampler
-        run: |
-          nproc; free -m
-          (while true; do
-             echo "=== $(date -u +%T) $(free -m | awk 'NR==2{print "used="$3" free="$4" avail="$7}') swap=$(free -m | awk 'NR==3{print $3}')"
-             ps -eo rss=,comm= --sort=-rss | head -6 | awk '{printf "  %6d Mo %s\n", $1/1024, $2}'
-             echo "  disque /tmp: $(df -m /tmp | awk 'NR==2{print "dispo="$4" Mo, utilisé="$5}'), shm chrome: $(du -sm /tmp/.org.chromium.* 2>/dev/null | awk '{s+=$1} END{print s+0}') Mo"
-             echo "  chrome total: $(ps -eo rss=,comm= | awk '/chrom/{s+=$1} END{print int(s/1024)}') Mo, process: $(pgrep -c chrom)"
-           sleep 5; done) > "$RUNNER_TEMP/mem.log" 2>&1 &
-          # Tout fichier écrit dans le projet pendant les tests (store pnpm exclu).
-          sudo apt-get install -y -qq inotify-tools > /dev/null
-          inotifywait -m -r -q --timefmt '%T' --format '%T %e %w%f' -e modify,create,delete,moved_to,moved_from \
-            --exclude '/\.git/|/node_modules/\.pnpm/' . > "$RUNNER_TEMP/fs.log" 2>&1 &
-
-      # MESURE PROVISOIRE : code de fermeture des WebSocket côté serveur (1001 = la page s'en va, 1006 = coupure).
-      - name: Patch vitest browser (close codes)
-        run: |
-          f=$(ls -d node_modules/.pnpm/@vitest+browser@*/node_modules/@vitest/browser/dist/index.js | head -1)
-          sed -i 's|ws.on("close", () => {|ws.on("close", (code, reason) => { console.error("[mesure] ws close", type, rpcId, code, String(reason), new Date().toISOString());|' "$f"
-          grep -c '\[mesure\] ws close' "$f"
-
       - name: Run client tests
         env:
-          # ESSAI A/B : GC de Chromium forcé après chaque fichier (seuil disque relevé au-delà du disque réel).
           VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB: '100000'
-          DEBUG: pw:browser,pw:api,vitest:browser:api,vitest:browser:pool,vitest:browser:gc,vitest:browser:playwright
         run: pnpm exec vitest run --project client --shard=${{ matrix.shard }}/2
-
-      - name: Memory and kernel report
-        if: always()
-        run: |
-          echo "### dernières mesures mémoire"; tail -n 120 "$RUNNER_TEMP/mem.log"
-          echo "### pic chrome"; grep "chrome total" "$RUNNER_TEMP/mem.log" | awk '{print $3}' | sort -n | tail -1; grep "^===" "$RUNNER_TEMP/mem.log" | sed "s/.*avail=//" | awk '{print $1}' | sort -n | head -1 | sed "s/^/avail min: /"
-          echo "### fichiers écrits pendant les tests"; grep -v '/\.svelte-kit/output' "$RUNNER_TEMP/fs.log" | tail -n 80; wc -l < "$RUNNER_TEMP/fs.log"
-          echo "### dmesg"; sudo dmesg -T | grep -iE "oom|killed|out of memory|segfault|chrom" | tail -40 || true
 
   # Security gate for production dependencies (incl. transitive vulns Dependabot
   # can't auto-PR for pnpm — those need `pnpm.overrides`). Tuned to avoid locking
