@@ -1,4 +1,5 @@
 {
+	"id": "6564c2bf-4dbc-4558-8a1f-f2aa149991b4",
 	"title": "Tester l'alignement de trois points en Python",
 	"description": "alignes(xA, yA, xB, yB, xC, yC) par le déterminant de AB et AC : valeur de det pour trois points donnés, compléter la ligne du déterminant, valeur renvoyée (True ou False)",
 	"grades": ["2"],
