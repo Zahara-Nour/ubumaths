@@ -9,20 +9,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2452 (migration du lot 11, `db:migrate` fait)._
+_Mis à jour le 2026-11-08, après la relecture du lot 11 (5/5 OK)._
 
-- **État** : démonstrations (lots 1-4), approfondissements (5-9), algorithmes du lot 10 publiés. Lot 11 (algorithmes
-  d'analyse, § 17) : 5 brouillons en prod, rangés et tagués.
-- **Prochaine action** : relecture de David sur la page à cocher https://claude.ai/artifact/3ahzQqmkrw9CzLNRjMZuSU
-  (verdicts : `ArtifactData list verdicts`) ; corrections éventuelles ; publication par David
-  (`publier-lot.ts --publier`, depuis le dépôt principal), relue en base. Ensuite lot 12 (344, 427, 359, 431, 360).
-- **En attente de David** : relecture du lot 11 ; vérification à l'œil en prod (ligne du 2026-11-03 de
-  `docs/wip/verifications-manuelles.md`).
+- **État** : lots 1-10 publiés. Lot 11 (§ 17) relu 5/5 OK, à publier. Lot 12 (§ 18) : relevé fait, contenu proposé.
+- **Prochaine action** : David publie le lot 11 depuis le dépôt principal
+  (`! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-algorithmes-11 --publier`), relu en
+  base (MCP). Lot 12 : après validation de la proposition du § 18, script de lot, specs, PR, brouillons par David.
+- **En attente de David** : publication du lot 11 ; validation du § 18 ; vérification à l'œil en prod (ligne du
+  2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
   Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-11-rangement`
-  (mergée) : nouvelle branche depuis `origin/main` pour la suite.
+  `publier-lot.ts`, même en simulation, refusé à Claude par le classifieur (prod).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12`
+  (neuve, depuis `origin/main`).
 
 ---
 
@@ -701,3 +701,29 @@ Mergée (#2452, CI verte du premier coup). `security-auditor` : aucun finding. `
 tangente ; dérivée ; propriétés algébriques ; cercle et radians), un tag chacun (279, 288, 298, 299, 309), `draft`,
 `updated_at` inchangé. Page à cocher : https://claude.ai/artifact/3ahzQqmkrw9CzLNRjMZuSU (la page rend les décimaux du
 corrigé avec un point, l'appli avec une virgule).
+
+Relecture (2026-11-08) : 5/5 OK, aucun commentaire. Simulation de `publier-lot.ts` refusée à Claude par le classifieur
+du mode auto (elle lit la prod) : simulation et publication par David.
+
+## 18. Lot 12 : algorithmes, probabilités et statistiques (2026-11-08)
+
+Relevé prod (MCP, 2026-11-08) : aucun modèle tagué sur les 5 points. 344 et 427 sur Échantillonnage › simulation
+(1 modèle, niveau 1 : « Fonction Python : moyenne d'un échantillon ») ; 360 sur Représenter des données › effectifs et
+fréquences (3 modèles de 5e et 2de, niveaux 1, 2, 5) ; 359 et 431 sur la **notion** Variables aléatoires (comme 298 et
+299 au lot 11 : modèle sur une sous-notion existante, le point restant sur la notion). **Aucune sous-notion neuve.**
+
+**Proposition (à valider par David)** — formes de D9 ; un programme aléatoire n'est jamais « faites-le tourner » : pour
+Monte-Carlo, la case porte sur un **décompte donné** (« c points sur n vérifient… : valeur renvoyée ? »).
+
+| Point | Modèle (`scripts/questions/1spe-algorithmes-12/`) | Nœud, niveau                                         | Variations                                                                                                                                                                   |
+| ----- | ------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 344   | `01-aire-sous-la-parabole`                        | Échantillonnage › simulation, 2                      | valeur renvoyée pour c points sur n tirés (case, c/n) ; condition `y <= x**2` (choix) ; approche 1/3 (choix)                                                                 |
+| 427   | `02-estimation-de-pi`                             | Échantillonnage › simulation, 3                      | valeur renvoyée pour c sur n (case, 4c/n) ; condition `x**2 + y**2 <= 1` (choix) ; `return 4 * c / n` (choix)                                                                |
+| 359   | `03-esperance`                                    | Variables aléatoires › espérance, 5                  | `esperance(valeurs, probas)` sur une loi à 3 valeurs (case) ; ligne `s = s + valeurs[i] * probas[i]` (choix)                                                                 |
+| 431   | `04-variance-et-ecart-type`                       | Variables aléatoires › variance et écart-type, 5     | variance d'une petite loi, entière (case) ; ligne `v = v + probas[i] * (valeurs[i] - m) ** 2` (choix) ; écart type `return sqrt(v)` (choix)                                  |
+| 360   | `05-frequence-des-lettres`                        | Représenter des données › effectifs et fréquences, 6 | `frequence(texte, lettre)` sur un mot court, décimal exact (case) ; ligne `return c / len(texte)` (choix) ; « e » lettre la plus fréquente en français et en anglais (choix) |
+
+Distracteurs prévus : 344 `y >= x**2`, `x <= y**2`, `y <= 2 * x` ; 1/2, 2/3, π/4 ; 427 sans le 4, `c / n / 4`,
+`x + y <= 1` ; 359 `s = valeurs[i] * probas[i]` (écrase), `s = s + valeurs[i]`, `s = s + probas[i]` ; 431 sans
+`probas[i]`, sans le carré, `valeurs[i] ** 2 - m` ; 360 `c / 26`, `len(texte) / c`, `c`. Grades {1_SPE}. Accès : Q5
+de D9, personne.
