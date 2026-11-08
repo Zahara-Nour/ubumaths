@@ -6,17 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2434 ; rangement du lot 1 poussé, sans PR (§ 4)._
+_Mis à jour le 2026-11-08, après #2434 ; test d'intégration du rangement lot 1 vert, preuve rouge faite (§ 4)._
 
-- **État** : lot 1 mergé (#2434) et créé en brouillon en prod ; ids dans les JSON, migration nœud + tag
-  `20261106130142` et son test écrits et poussés (`check:incremental` 0 erreur) ; `security-auditor` : RAS ;
-  test d'intégration pas encore lancé ; pas de PR.
-- **Prochaine action** : quand la base locale est libre (feu vert de David), lancer
-  `pnpm test:integration tests/integration/questions-2de-demonstrations-1-rangement-tags.test.ts`, le vérifier
-  rouge sans la migration, puis PR → CI → merge → `db:migrate` depuis la branche mergée → page à cocher.
+- **État** : lot 1 mergé (#2434) et créé en brouillon en prod ; migration nœud + tag `20261106130142` et son test
+  verts (12/12, rouges sans la migration) ; `security-auditor` : RAS ; PR du rangement en cours.
+- **Prochaine action** : PR → CI → merge → `db:migrate` depuis la branche mergée → page à cocher.
   Ensuite lot 2 (géométrie : 304, 438, 320).
-- **En attente de David** : son « vas-y » pour lancer la suite d'intégration (elle supprime les profs de la base
-  locale ; le lien de partage de `teacher@local.test` qui la bloquait le 2026-11-06 a disparu depuis).
+- **En attente de David** : rien.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David ; `create-questions` écrit l'`id` dans les
   JSON du dépôt d'où il tourne → les reporter sur la branche puis `git restore` dans le dépôt principal ; positions
   « ranger » par `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
@@ -111,3 +107,8 @@ personne de plus (Q5).
 Piège : le test d'intégration n'a pas pu tourner — la préparation globale (suppression des profs) bute sur un lien de
 partage du journal de classe créé à 12 h 49 par `teacher@local.test` et utilisé (17 accès) ; non supprimé, en
 attente du feu vert de David. `security-auditor` (2026-11-06) : aucun finding ; le lien a disparu depuis.
+
+Test d'intégration (2026-11-08, feu vert de David) : **12/12 vert**. Preuve rouge (fichiers restaurés depuis une
+copie) : partie aller de la migration vidée (rollback gardé, l. 1-112) → 6 rouges (branches d'échec) et 5 sautés
+(le `beforeAll` nominal échoue au rollback, rien à défaire) ; en plus avec le rollback neutralisé dans le test → les
+2 tests d'effet (nœud, tag) rouges, les 3 invariants verts comme attendu.
