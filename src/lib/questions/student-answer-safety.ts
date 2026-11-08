@@ -36,6 +36,8 @@
  *   défaut (123, symboles, grec) et raccourcis de saisie ;
  * - `\binom` / `\dbinom` / `\tbinom` (2026-10-05) : réponse de dénombrement acceptée
  *   (`acceptCombinatorialNotation`), deux arguments comme `\frac`.
+ * - `\nearrow` / `\searrow` (2026-11-08) : flèche d'un tableau de variations à compléter
+ *   (`sign-table-case.ts`), symboles sans argument.
  */
 // prettier-ignore
 const ALLOWED_COMMANDS: ReadonlySet<string> = new Set([
@@ -60,7 +62,7 @@ const ALLOWED_COMMANDS: ReadonlySet<string> = new Set([
 	'Leftarrow', 'Leftrightarrow', 'longrightarrow', 'longleftarrow', 'Longrightarrow',
 	'implies', 'impliedby', 'iff', 'roundimplies', 'biconditional', 'uparrow', 'downarrow',
 	'lArr', 'larr', 'lrArr', 'leftrightarrows', 'twoheadrightarrow', 'twoheadrightarrowtail',
-	'rightarrowtail',
+	'rightarrowtail', 'nearrow', 'searrow',
 	// Délimiteurs
 	'left', 'right', 'lbrace', 'rbrace', 'lbrack', 'rbrack', 'langle', 'rangle', 'vert',
 	'Vert', 'lvert', 'rvert', 'lVert', 'rVert', 'lceil', 'rceil', 'lfloor', 'rfloor',
