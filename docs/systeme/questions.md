@@ -886,8 +886,16 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    palette Règle graduée · Segment (`PLAIN_PAPER_TOOLS.segment`), la règle graduée refusée dans toute
    autre vérification. Correction (`solutionRuler`, `solutionLines`) : la règle posée en A et le segment
    en pointillés, dans la direction de la dernière règle de l'élève posée en A, sinon de son segment,
-   sinon vers la droite, la gauche, le haut, le bas, le coin le plus loin (la première où il tient). Le
-   long d'une demi-droite donnée (décision Q7) : pas encore.
+   sinon vers la droite, la gauche, le haut, le bas, le coin le plus loin (la première où il tient).
+   **Le long d'une demi-droite donnée** (décision Q7, PR 2 du chantier) : `segment AB = 6 cm sur [Ax)`,
+   x le nom d'une demi-droite de la figure d'origine A (`x = demidroite(A, X)`, `SegmentLengthCheck.ray` ;
+   `FigureLine.kind` dit droite, demi-droite ou segment). Au 2e toucher, la règle s'aimante à la
+   demi-droite comme à tout trait (`snapWithInstruments`). Après « un seul segment », le bout du segment
+   vu doit être sur [Ax), au-delà de A (à la tolérance près) : sinon « Trace ton segment sur la
+   demi-droite [Ax). » (autre direction, prolongement derrière A, règle posée à l'œil) ; puis tracé à
+   l'œil, longueur. Erreurs de l'auteur en plus : demi-droite absente, pas une demi-droite d'origine A,
+   invisible, ou le segment qui n'y tient pas dans la fenêtre. Correction : la règle le long de [Ax),
+   quelle que soit celle de l'élève.
    **Papier uni (lot 2b)** : sans `grille:`, `point` et
    `symetrique` reçoivent une palette d'instruments (`PLAIN_PAPER_TOOLS`) ; équerre = perpendiculaire à
    une droite choisie par un point (écrite `droite(…)`), compas = cercle par son centre et un point

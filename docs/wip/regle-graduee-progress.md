@@ -157,3 +157,7 @@ Puis le lot de modèles CE2-070 cotés, dans `questions-ce2`.
   le triangle rectangle ? (reco : oui)
 - **Q14** — Assemblages (« carré de 6 cm + cercle de rayon 4 cm ») : plus tard, après la PR 5 (reco), ou dans le
   chantier ?
+
+**Décisions de David (« je suis tes recos », 2026-11-08)** : Q10 4 PR dans cet ordre (2 demi-droite, 3 cercle,
+4 triangle rectangle, 5 carré et rectangle) ; Q11 on part d'un côté déjà tracé ; Q12 règle posée au centre,
+ouverture du compas aimantée aux graduations ; Q13 angle droit à l'équerre exigé ; Q14 assemblages après la PR 5.

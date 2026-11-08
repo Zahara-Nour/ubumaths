@@ -118,7 +118,8 @@ export function figureShapes(scene: FigureScene, header: FigureHeader): FigureSh
 		const a = position(ends[0]);
 		const b = position(ends[1]);
 		if (!a || !b) continue;
-		const line = {
+		const line: FigureLine = {
+			kind: element.type === 'ray' ? 'ray' : element.type === 'line' ? 'line' : 'segment',
 			a,
 			b,
 			owner: element.id,

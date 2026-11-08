@@ -381,6 +381,9 @@ const CM_REGEX = /^(\d{1,3})(?:[,.](\d{1,3}))?\s*cm$/;
 const CM_MM_REGEX = /^(\d{1,3})\s*cm\s*(\d)\s*mm$/;
 /** `72 mm` */
 const MM_REGEX = /^(\d{1,4})\s*mm$/;
+/** `… sur [Ax)` : la demi-droite x d'origine A (PR 2) */
+const ON_RAY_REGEX = /^(.*?)\s+sur\s+(.*)$/;
+const RAY_REGEX = /^\[([A-Z])([a-z][A-Za-z0-9]*)\)$/;
 
 /** Longueur écrite par l'auteur → millimètres (null : illisible ; NaN : pas au mm près) */
 function readLength(text: string): { length: number; unit: LengthUnit } | null {
@@ -415,7 +418,23 @@ function readSegmentLength(rest: string, line: number): ConstructionCheck {
 			`segment ${name} : le point de départ et l’autre bout doivent être différents`
 		);
 	}
-	const read = readLength(match[3].trim());
+	const onRay = ON_RAY_REGEX.exec(match[3].trim());
+	let ray: string | undefined;
+	if (onRay) {
+		const rayMatch = RAY_REGEX.exec(onRay[2].trim());
+		if (!rayMatch) {
+			throw new LineError(
+				`segment ${name} : la demi-droite s’écrit avec son origine et son nom : « ${SEGMENT_EXAMPLE} sur [${point}x) »`
+			);
+		}
+		if (rayMatch[1] !== point) {
+			throw new LineError(
+				`segment ${name} : la demi-droite part de ${point} (« sur [${point}${rayMatch[2]}) »)`
+			);
+		}
+		ray = rayMatch[2];
+	}
+	const read = readLength((onRay ? onRay[1] : match[3]).trim());
 	if (!read) {
 		throw new LineError(`segment ${name} : longueur en cm ou en mm : ${usage}`);
 	}
@@ -427,7 +446,15 @@ function readSegmentLength(rest: string, line: number): ConstructionCheck {
 	if (read.length <= 0) {
 		throw new LineError(`segment ${name} : longueur plus grande que 0`);
 	}
-	return { kind: 'segment', point, end, length: read.length, unit: read.unit, line };
+	return {
+		kind: 'segment',
+		point,
+		end,
+		length: read.length,
+		unit: read.unit,
+		...(ray ? { ray } : {}),
+		line
+	};
 }
 
 const NAMED_EXAMPLES = {

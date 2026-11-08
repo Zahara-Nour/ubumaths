@@ -7,7 +7,8 @@
  * palette Règle graduée · Segment ; règle posée en A, segment de A jusqu'à la
  * graduation 6 (le bout s'aimante au millimètre) → juste ; ‹ › décalent le bout
  * d'1 mm (5,8 cm → message), à la correction la règle et le bon segment ;
- * Retourner, Effacer.
+ * Retourner, Effacer. PR 2 (§ 4) : `segment AB = 6 cm sur [Ax)`, la règle
+ * s'aimante à la demi-droite au 2e toucher.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -26,20 +27,33 @@ const BLOCK = [
 	'```'
 ].join('\n');
 
-const TEMPLATE = {
-	id: 'test-regle-graduee',
-	title: 'Tracer un segment',
-	status: 'draft',
-	type: 'fill_in_blanks',
-	variations: [
-		{ statement: templateMarkdown(`Trace le segment [AB] de longueur 6 cm.\n\n${BLOCK}`) }
-	],
-	grades: ['CE2'],
-	level: 1
-} as unknown as QuestionTemplate;
+// PR 2 : [Ax) de A(4 ; 4) vers X(8 ; 7), direction (0,8 ; 0,6) ; 6 cm → (8,8 ; 7,6)
+const RAY_BLOCK = [
+	'```figure-a-completer',
+	'fenetre: 0 ; 10 ; 0 ; 8',
+	'verifier: segment AB = 6 cm sur [Ax)',
+	'---',
+	'A = point(4, 4)',
+	'X = point(8, 7, visible=faux)',
+	'x = demidroite(A, X)',
+	'```'
+].join('\n');
 
-function instance(): QuestionInstance {
-	const result = generateInstance(TEMPLATE, 42);
+const templateOf = (block: string) =>
+	({
+		id: 'test-regle-graduee',
+		title: 'Tracer un segment',
+		status: 'draft',
+		type: 'fill_in_blanks',
+		variations: [
+			{ statement: templateMarkdown(`Trace le segment [AB] de longueur 6 cm.\n\n${block}`) }
+		],
+		grades: ['CE2'],
+		level: 1
+	}) as unknown as QuestionTemplate;
+
+function instance(block = BLOCK): QuestionInstance {
+	const result = generateInstance(templateOf(block), 42);
 	if (!result.success) throw new Error(result.errors.join(' ; '));
 	return result.instance;
 }
@@ -95,10 +109,10 @@ const all = (container: HTMLElement, testid: string) =>
 const mmShown = (container: HTMLElement) =>
 	container.querySelector('[data-testid="regle"]')?.getAttribute('aria-valuenow');
 
-async function rendered() {
+async function rendered(block = BLOCK) {
 	const { container } = await render(FlashCard, {
 		target: mainElement(),
-		props: { instance: instance(), interactive: true }
+		props: { instance: instance(block), interactive: true }
 	});
 	return { container, rect: await zone(container) };
 }
@@ -178,5 +192,38 @@ describe('case « figure » : tracer un segment à la règle graduée', () => {
 		await expect.poll(() => all(container, 'regle').length).toBe(1);
 		button(container, 'Effacer').click();
 		await expect.poll(() => all(container, 'regle').length).toBe(0);
+	});
+});
+
+describe('case « figure » : segment sur une demi-droite donnée (PR 2)', () => {
+	it('2e toucher à côté de [Ax) : la règle s’aimante à la demi-droite ; 6 cm le long → juste', async () => {
+		const { container, rect } = await rendered(RAY_BLOCK);
+		tap(rect, 4.05, 4.05);
+		// Sur [Ax), y = 6,25 en x = 7 : toucher un peu au-dessus
+		tap(rect, 7, 6.33);
+		await expect.poll(() => all(container, 'regle').length).toBe(1);
+		tool(container, 'segment');
+		tap(rect, 4.05, 4.05);
+		tap(rect, 8.82, 7.63);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(1);
+		await expect.poll(() => mmShown(container)).toBe('60');
+		button(container, 'Valider').click();
+		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);
+	});
+
+	it('règle posée à l’horizontale, 6 cm : « Trace ton segment sur la demi-droite [Ax). »', async () => {
+		const { container, rect } = await rendered(RAY_BLOCK);
+		tap(rect, 4.05, 4.05);
+		tap(rect, 9, 4);
+		await expect.poll(() => all(container, 'regle').length).toBe(1);
+		tool(container, 'segment');
+		tap(rect, 4.05, 4.05);
+		tap(rect, 10, 4.1);
+		await expect.poll(() => mmShown(container)).toBe('60');
+		button(container, 'Valider').click();
+		await expect
+			.poll(() => container.textContent)
+			.toContain('Trace ton segment sur la demi-droite [Ax).');
+		await expect.poll(() => all(container, 'bon-segment').length).toBe(1);
 	});
 });
