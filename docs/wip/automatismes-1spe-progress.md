@@ -620,7 +620,7 @@ normal, `toLocaleDecimal` met la virgule au rendu.
 - Écartés (fiche (2)) : carré / rectangle `060086c8`, `66f9abbf`, `01e205ed`, `fdd849f5` (trop faciles) ;
   `0761124d` pavé, `9dea9199` prisme ; π ≈ 3,14 `28d7ad74`, `55b26d32` ; triangle `f3ae46e9`, `4a1e0767`,
   `91c0f9a0`, `d006d936` ; `810fd3be` parallélogramme (hors BO).
-- **Tranché par David (2026-11-08)** : (1) apprendre à `buildSerie` à figer `line placer:` et `courbe
-placer:` (énoncé : axe / repère sans le point ; corrigé : point placé), comme `tracer:` au lot « Droites » ;
+- **Tranché par David (2026-11-08)** : (1) apprendre à `buildSerie` à figer `line placer:` et
+  `courbe placer:` (énoncé : axe / repère sans le point ; corrigé : point placé), comme `tracer:` au lot « Droites » ;
   (2) les deux modèles neufs sont **de 5e** (niveau `['5']`, rangés sur 5-047 / 5-128, sans exception de
   niveaux) ; (3) composition des séries validée telle quelle. Graines choisies après.
