@@ -1,4 +1,5 @@
 {
+	"id": "7652fee6-41c6-4170-b9e7-4a92ef3e40ca",
 	"title": "Estimation de π par Monte-Carlo",
 	"description": "Méthode de Monte-Carlo pour π (quart de disque dans le carré unité) : valeur renvoyée pour un décompte donné, compléter la condition x**2 + y**2 <= 1, compléter le return 4 * c / n",
 	"grades": ["1_SPE"],

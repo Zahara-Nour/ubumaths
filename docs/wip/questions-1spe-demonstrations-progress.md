@@ -9,20 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2461 (lot 12 mergé)._
+_Mis à jour le 2026-11-08, migration du lot 12 en PR._
 
-- **État** : lots 1-11 publiés. Lot 12 (§ 18) : mergé (#2461), brouillons pas encore créés en prod.
-- **Prochaine action** : David lance, depuis le dépôt principal à jour,
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-12 --publier` ; relevé prod (MCP),
-  ids dans les JSON, migration nœud + tag (gabarit lot 11 ; 359 → « espérance », 431 → « variance et écart-type »).
+- **État** : lots 1-11 publiés. Lot 12 (§ 18) : 5 brouillons en prod, migration nœud + tag en PR.
+- **Prochaine action** : PR mergée → `check:migrations --pr`, `db:migrate` depuis le dépôt principal, vérif MCP,
+  page à cocher, relecture et publication par David.
 - **En attente de David** : 344 (c), écart à la proposition (§ 18) ; vérification à l'œil en prod (ligne du
   2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
   Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
   `publier-lot.ts`, même en simulation, refusé à Claude par le classifieur (prod).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12`
-  (mergée) : nouvelle branche depuis `origin/main` pour la migration.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12-rangement`.
 
 ---
 
@@ -754,3 +752,13 @@ Python ; `create-questions` simulation en base locale (5 à créer). Pas d'aper�
 aucune variable, seules les cases et le code en ligne en portent (déjà vus au lot 11).
 
 Mergée (#2461, CI verte du premier coup).
+
+### Lot 12 en prod : brouillons, puis migration nœud + tag (2026-11-08)
+
+David a lancé `create-questions --publier` après #2461. Relevé prod (MCP) : 5 brouillons {1_SPE}, sans nœud ni tag :
+`e05ecec7` aire sous la parabole (344), `7652fee6` estimation de π (427), `bc59d5ce` espérance (359), `40caf131`
+variance et écart type (431), `4dc0c7df` fréquence des lettres (360). Ids écrits dans les JSON du lot (cette PR),
+`git restore` fait dans le dépôt principal. Migration `20261108152859_questions_1spe_algorithmes_12_rangement_tags`
+(gabarit lot 11, aucune sous-notion neuve ; 359 et 431 restent sur la notion Variables aléatoires ; branches
+« Statistiques » et « Probabilités »), test `questions-1spe-algorithmes-12-rangement-tags` 12/12 vert, rouge sans la
+migration (6 rouges). Accès : Q5 de D9, personne.

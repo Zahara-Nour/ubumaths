@@ -1,4 +1,5 @@
 {
+	"id": "bc59d5ce-a696-4460-91a3-ad8614de25a7",
 	"title": "Espérance avec Python",
 	"description": "Fonction esperance(valeurs, probas) : faire tourner sur une loi à trois valeurs, compléter la ligne s = s + valeurs[k] * probas[k]",
 	"grades": ["1_SPE"],

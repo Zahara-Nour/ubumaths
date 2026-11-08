@@ -1,4 +1,5 @@
 {
+	"id": "e05ecec7-216a-4ab6-89ea-5fd8f09ff731",
 	"title": "Aire sous la parabole par Monte-Carlo",
 	"description": "Méthode de Monte-Carlo pour l'aire sous y = x² dans le carré unité : valeur renvoyée pour un décompte donné, compléter la condition y <= x**2, dire de quoi la valeur est une estimation",
 	"grades": ["1_SPE"],

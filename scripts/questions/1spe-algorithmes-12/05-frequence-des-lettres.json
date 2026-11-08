@@ -1,4 +1,5 @@
 {
+	"id": "4dc0c7df-3307-4d19-9dda-0331eef586f5",
 	"title": "Fréquence d'une lettre dans un texte",
 	"description": "Fonction frequence(texte, lettre) : faire tourner sur un mot court, compléter le return c / len(texte), interpréter la valeur renvoyée (proportion des caractères, espaces compris)",
 	"grades": ["1_SPE"],
