@@ -16,9 +16,16 @@ const CALCUL = '\\begin{aligned}A&=3.5+4\\\\&=7.5\\end{aligned}';
 const RAISONNEMENT = `\\begin{aligned}x^2-1=0&\\iff x^2=1\\\\&\\iff x=1${RACCOURCIS_MOTS.ou}x=-1\\end{aligned}`;
 /** Calcul centré (`array{rcl}`) : la forme qu'écrit désormais l'éditeur. */
 const CENTRE = `\\begin{array}{rcl}n=1&\\iff&n+1=2\\\\&\\Rightarrow&n=0.5${RACCOURCIS_MOTS.ou}n=2\\end{array}`;
+/**
+ * Calcul centré au grand format : membres ouverts par `\\displaystyle` (nu, ou en
+ * groupe comme l'écrit MathLive après une frappe), lignes espacées.
+ */
+const GRAND =
+	'\\begin{array}{rcl}\\displaystyle \\frac{1}{2}&=&\\displaystyle \\frac{2}{4}' +
+	'\\\\[6pt]&=&{\\displaystyle 0.5}\\end{array}';
 
 describe('aller-retour markdown', () => {
-	it.each([CALCUL, RAISONNEMENT, CENTRE])('garde le bloc à l’identique : %s', (latex) => {
+	it.each([CALCUL, RAISONNEMENT, CENTRE, GRAND])('garde le bloc à l’identique : %s', (latex) => {
 		const markdown = `Correction :\n\n$$${latex}$$\n\nFin.`;
 		expect(tipTapToMarkdown(markdownToTipTap(markdown))).toBe(markdown);
 	});
@@ -43,6 +50,15 @@ describe('rendu élève', () => {
 	it('calcul centré : garde le tableau rcl, ses & et ses \\\\', () => {
 		expect(expressionToLatex(CENTRE, 'latex', null, 'fr')).toBe(
 			`\\begin{array}{rcl}n=1&\\iff&n+1=2\\\\&\\Rightarrow&n=0{,}5${RACCOURCIS_MOTS.ou}n=2\\end{array}`
+		);
+	});
+});
+
+describe('rendu élève — calcul centré au grand format', () => {
+	it('garde le style et l’écart, sans virgule dans l’écart', () => {
+		expect(expressionToLatex(GRAND, 'latex', null, 'fr')).toBe(
+			'\\begin{array}{rcl}\\displaystyle \\frac{1}{2}&=&\\displaystyle \\frac{2}{4}' +
+				'\\\\[6pt]&=&{\\displaystyle 0{,}5}\\end{array}'
 		);
 	});
 });
@@ -74,5 +90,12 @@ describe('PDF', () => {
 		const typst = await markdownToTypst(`$$${latex}$$`, { includeSetup: false, language: 'fr' });
 		expect(typst).toContain('[$x$], [$approx$], [$3","1$]');
 		expect(typst).toContain('[], [$subset$], [$E$]');
+	});
+
+	it('calcul centré au grand format : ni style ni écart dans la grille', async () => {
+		const typst = await markdownToTypst(`$$${GRAND}$$`, { includeSetup: false, language: 'fr' });
+		expect(typst).not.toContain('displaystyle');
+		expect(typst).not.toContain('6pt');
+		expect(typst).toContain('[], [$=$], [$0","5$]');
 	});
 });

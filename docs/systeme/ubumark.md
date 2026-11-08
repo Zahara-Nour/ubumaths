@@ -158,7 +158,18 @@ pas d'une cellule à l'autre) ; une relation tapée en tête de la colonne de dr
 milieu** dès que quelque chose s'écrit après elle (`rangerRelation`), jamais tant que l'atome avant
 le curseur peut encore devenir une autre relation (`relationEnCours` : `=` puis `>` → ⇒, `<=>` en
 trois touches ; poser le marqueur couperait le raccourci), et au plus tard en quittant le champ
-(`rangerRelation(…, true)` au `blur`). Un milieu déjà rempli est gardé tel quel, même une relation
+(`rangerRelation(…, true)` au `blur`). **Fractions au grand format** (2026-11-08) : un `array` met ses
+cellules en style texte (MathLive comme LaTeX), si bien qu'une fraction y rapetissait et que la
+taille variait d'une ligne à l'autre. Chaque membre non vide est donc écrit `\displaystyle …` (la
+relation, non) et les lignes sont séparées par `\\[6pt]` : sans cet écart, deux fractions de lignes
+voisines se touchaient (MathLive n'ajoute aucun espace entre les lignes d'un `array`, au contraire
+d'`aligned`). L'écart est en `pt`, sans décimale : le rendu français réécrirait `0.6em` en
+`0{,}6em`, que MathLive ne lit plus. La lecture accepte le `{\displaystyle …}` que MathLive
+sérialise après une frappe et l'ancienne forme (ni style, ni écart) ; `normaliserCalcul` la
+réécrit. Un ancien bloc est **affiché** dans la nouvelle forme (champ de l'éditeur, `MathBlock` de
+`components/markdown` pour l'énoncé et la messagerie), mais le nœud n'est réécrit qu'à la première
+frappe, et au `blur` pour un membre tapé dans une cellule restée vide : ouvrir un document ne le
+modifie pas. Le PDF retire le style et l'écart (grille Typst). Un milieu déjà rempli est gardé tel quel, même une relation
 hors des listes (`\subset`, `\in`) ; le PDF le prend aussi tel quel. Le marqueur n'est jamais écrit
 dans le nœud (`synchroniser` l'ignore) ;
 `ou` / `et` tapés deviennent `\:\mathrm{ou}\:` / `\:\mathrm{et}\:` (`RACCOURCIS_MOTS`, blocs
@@ -166,7 +177,9 @@ seulement ; `\text{…}` laissait MathLive en mode texte). Le curseur est repér
 `\maltese` posé puis retiré. Le `addRowAfter` natif de MathLive n'est pas utilisé : en fin de
 champ, il enveloppait la formule dans `\displaylines{…}`. Tests :
 `src/lib/extensions/__tests__/calcul-aligne.test.ts` (découpe), `calcul-aligne-chaine.test.ts`
-(aller-retour markdown, rendu, PDF), `calcul-aligne-editeur.svelte.test.ts` (navigateur).
+(aller-retour markdown, rendu, PDF), `calcul-aligne-editeur.svelte.test.ts` (navigateur, taille
+rendue d'une fraction comprise), `components/markdown/__tests__/calcul-centre-grand-format.svelte.test.ts`
+(ancien bloc affiché au grand format, mode restreint compris).
 
 Option `afterQuestion(index)` de `generateTypst` (cadres de réponse des fiches, ADR 0030 lot 3) :
 ce qu'elle rend se pose à la fin de chaque élément de **premier niveau** des listes numérotées de
