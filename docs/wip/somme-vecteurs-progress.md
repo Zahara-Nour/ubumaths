@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, ouverture du chantier (aucune PR)._
+_Mis à jour le 2026-11-08, après #2467._
 
-- **État** : outil fait (§ 3), PR 1 à ouvrir · **Prochaine action** : PR 1 (revue Opus, CI), puis PR 2 de contenu : `51192dc4` réécrit (SV5) · **En attente de David** : rien · **Pièges en cours** : 2-297 a déjà un modèle publié (`51192dc4`) qui détourne le geste « vecteur seul » (§ 1) · **Worktree / branche** : `../ubumaths-wt-somme-vecteurs`, `feat/somme-vecteurs`
+- **État** : outil mergé (#2467 : `vecteurs:`, `tracer: vecteur u + v`, phrases nommées, pointillés), **pas encore en prod** · **Prochaine action** : après le `deploy:prod` qui livre #2467 (David), PR 2 de contenu : réécrire `51192dc4` (2-297) avec l'outil (SV5), page à cocher · **En attente de David** : `deploy:prod` ; dire si le nom de A qui chevauche la flèche v⃗ gêne (§ 3) · **Pièges en cours** : ne jamais publier le modèle réécrit avant le déploiement (le bloc serait refusé en prod) ; `Vecteur u + v` (majuscule) accepté, `Vecteur (3 ; -2)` refusé — incohérence laissée (revue § 4) · **Worktree / branche** : aucun (worktree retiré après #2467) ; PR 2 → nouveau worktree `somme-vecteurs`, branche `content/somme-vecteurs-2297`
 
 ## 0. Origine
 
@@ -77,3 +77,14 @@ SV5 `51192dc4` réécrit ici (PR de contenu à part), 3-026 laissé à `question
   existante, non touchée — à voir avec David si gênant.
 - Doc : `ubumark.md`, `questions.md`, `grapheur.md`, catalogue `block-catalog/courbe.ts` (clé `vecteurs`,
   exemple « somme »).
+
+## 4. Revue et merge de #2467 (2026-11-08)
+
+- `code-reviewer` (Opus) : aucun attendu faux, aucune phrase qui accuse à tort. Corrigé (`e764b5d8b`) :
+  la garde `findUnmaskedAnswers` prenait une combinaison pour une fuite (question écartée des évaluations
+  notées) → `isCombinationVectorValue` ; pointillés : côtés d'un couple de points absent de `vecteurs:`
+  désormais tracés. Laissé : `Vecteur u + v` (majuscule) accepté alors que `Vecteur (3 ; -2)` est refusé.
+- Conflit d'en-tête « Vérifié » (`ubumark.md`, `questions.md`) résolu ; `verifications-manuelles.md`
+  reformaté par la fusion, remis à l'identique de main.
+- CI verte sur `e764b5d8b`, **#2467 mergée** le 2026-11-08. Vérification manuelle notée
+  (`verifications-manuelles.md`, prod après `deploy:prod`).
