@@ -7,14 +7,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, n° 20 codé, PR à ouvrir._
+_Mis à jour le 2026-11-08, après #2473. Chantier clos, journal archivé._
 
-- **État** : n° 19 livré (#2463) ; n° 20 (triangle rectangle) codé, testé, revu (Opus : 2 findings corrigés), § 4.
-- **Prochaine action** : PR du n° 20 → CI → merge ; puis le lot 12b du CE2 dans `questions-ce2` (CE2-070, CE1-072).
-- **En attente de David** : rien (message « mauvais rayon » du n° 19 à juger, `verifications-manuelles.md`).
-- **Pièges en cours** : dans zsh, `${=files}` pour une liste de fichiers ; `gh run list --commit` veut le SHA complet ;
-  brouillon d'essai `9c92cf8f` en base LOCALE seulement.
-- **Worktree / branche** : `../ubumaths-wt-cercle-triangle-rectangle`, `feat/triangle-rectangle`.
+- **État** : n° 19 (#2463) et n° 20 (#2473) livrés ; doc versée dans `systeme/questions.md` et `systeme/ubumark.md`.
+- **Prochaine action** : aucune ici ; le lot 12b du CE2 (CE2-070, CE1-072) se fait dans `questions-ce2`.
+- **En attente de David** : les deux vérifications manuelles (`verifications-manuelles.md`, #2463 et #2473).
+- **Pièges** : aucun en cours. Brouillon d'essai `9c92cf8f` en base LOCALE seulement.
+- **Worktree / branche** : supprimés après #2473.
 
 ## 1. Phase 0 — comportements (validée le 2026-11-08)
 
@@ -124,6 +123,6 @@ Vérifié en prod (lecture seule, 2026-11-08) : aucun modèle n'écrit `= 90` da
 - Tests : `construction-triangle-rectangle.test.ts` (41, rouges puis verts), navigateur 6 ; suites voisines
   12 668 serveur, 18 navigateur ; `check:incremental` 0 erreur ; doc `systeme/questions.md`, `systeme/ubumark.md`,
   catalogue (2 exemples).
-- Revue Opus : (1) quadrillage, angle droit seul, la correction allait vers un nœud collé à A (les bouts A et B de
+- #2473 mergée le 2026-11-08 (CI verte sur `55fce9ae4`, après fusion de `main` : conflit sur les lignes « Vérifié » des docs). Revue Opus : (1) quadrillage, angle droit seul, la correction allait vers un nœud collé à A (les bouts A et B de
   l'élève comptaient) → bouts A et B écartés ; (2) papier uni, angle droit seul, perpendiculaire hors fenêtre
   acceptée → erreur d'auteur. Tests rouges puis verts.
