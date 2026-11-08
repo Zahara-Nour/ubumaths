@@ -1,0 +1,247 @@
+{
+	"title": "Démontrer que deux vecteurs sont colinéaires si et seulement si leur déterminant est nul",
+	"description": "Démonstration à trous (coordonnées de u tirées) : déterminant nul si v = ku (case), réciproque y = kb (case), conclusion v = ku (choix) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans une base orthonormée $(\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{ux}}\\\\{{uy}}\\end{pmatrix}$ et un vecteur non nul $\\vec{v}\\begin{pmatrix}x\\\\y\\end{pmatrix}$. On démontre que $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si $\\det(\\vec{u},\\vec{v})=0$.\n\nSupposons $\\vec{u}$ et $\\vec{v}$ colinéaires : il existe un réel $k$ tel que $\\vec{v}=k\\vec{u}$, donc $\\vec{v}\\begin{pmatrix}{{ux}}k\\\\{{uy}}k\\end{pmatrix}$. Complète.\n\n$\\det(\\vec{u},\\vec{v})=\\begin{vmatrix}{{ux}}&{{ux}}k\\\\{{uy}}&{{uy}}k\\end{vmatrix}={{ux}}\\times {{uy}}k-{{ux}}k\\times {{uy}}=?$",
+			"variables": [
+				{
+					"name": "ux",
+					"expression": "2..6"
+				},
+				{
+					"name": "uy",
+					"expression": "2..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\det(\\vec{u},\\vec{v})={{ux}}\\times {{uy}}k-{{uy}}\\times {{ux}}k$ : les deux produits sont égaux.",
+					"Donc $\\det(\\vec{u},\\vec{v})=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans une base orthonormée $(\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{ux}}\\\\{{uy}}\\end{pmatrix}$ et un vecteur non nul $\\vec{v}\\begin{pmatrix}x\\\\y\\end{pmatrix}$. On démontre que $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si $\\det(\\vec{u},\\vec{v})=0$.\n\nRéciproquement, supposons $\\det(\\vec{u},\\vec{v})=0$, c'est-à-dire ${{ux}}y-{{uy}}x=0$. On pose $k=\\dfrac{x}{{{ux}}}$ : ainsi $x={{ux}}k$.\n\nDe ${{ux}}y={{uy}}x={{uy}}\\times {{ux}}k$, on tire $y$. Complète.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "ux",
+					"expression": "2..6"
+				},
+				{
+					"name": "uy",
+					"expression": "2..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{uy}}k"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise les deux membres de ${{ux}}y={{uy}}\\times {{ux}}k$ par ${{ux}}$, qui n'est pas nul.",
+					"Donc $y=\\textcolor{{{color:primary.0}}}{{{uy}}k}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans une base orthonormée $(\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{ux}}\\\\{{uy}}\\end{pmatrix}$ et un vecteur non nul $\\vec{v}\\begin{pmatrix}x\\\\y\\end{pmatrix}$. On démontre que $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si $\\det(\\vec{u},\\vec{v})=0$.\n\nRéciproquement, supposons $\\det(\\vec{u},\\vec{v})=0$, c'est-à-dire ${{ux}}y-{{uy}}x=0$. On pose $k=\\dfrac{x}{{{ux}}}$ : ainsi $x={{ux}}k$.\n\nOn obtient $x={{ux}}k$ et $y={{uy}}k$. Pourquoi peut-on conclure que $\\vec{u}$ et $\\vec{v}$ sont colinéaires ?\n\n```choix\n- Car $\\vec{v}=k\\vec{u}$ : les coordonnées de $\\vec{v}$ sont celles de $\\vec{u}$ multipliées par $k$.\n- Car $\\det(\\vec{u},\\vec{v})=0$.\n- Car $x$ et $y$ sont égaux.\n- Car $\\vec{u}$ et $\\vec{v}$ ont la même norme.\n```",
+			"variables": [
+				{
+					"name": "ux",
+					"expression": "2..6"
+				},
+				{
+					"name": "uy",
+					"expression": "2..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$k\\vec{u}$ a pour coordonnées $\\begin{pmatrix}{{ux}}k\\\\{{uy}}k\\end{pmatrix}$ : ce sont celles de $\\vec{v}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\vec{v}=k\\vec{u}}$ : $\\vec{u}$ et $\\vec{v}$ sont **colinéaires**.",
+					"« $\\det(\\vec{u},\\vec{v})=0$ » est l'hypothèse de départ : la redire ne démontre rien."
+				]
+			}
+		},
+		{
+			"statement": "Dans une base orthonormée $(\\vec{i},\\vec{j})$, soit $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}$ deux vecteurs non nuls. On démontre que $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si $\\det(\\vec{u},\\vec{v})=xy'-x'y=0$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Si $\\vec{v}=k\\vec{u}$, alors $x'=kx$ et $y'=ky$.\n- Donc $\\det(\\vec{u},\\vec{v})=x\\times ky-kx\\times y=0$.\n- Réciproquement, si $xy'-x'y=0$ et $x\\neq 0$, on pose $k=\\dfrac{x'}{x}$ : $x'=kx$.\n- Alors $xy'=x'y=kxy$, donc $y'=ky$.\n- Donc $\\vec{v}=k\\vec{u}$ : $\\vec{u}$ et $\\vec{v}$ sont colinéaires.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On démontre les deux sens : colinéaires $\\Rightarrow$ déterminant nul, puis déterminant nul $\\Rightarrow$ colinéaires.",
+					"Si $x=0$, alors $y\\neq 0$ ($\\vec{u}$ est non nul) et on raisonne de même avec $k=\\dfrac{y'}{y}$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\vec{u}}$ et $\\vec{v}$ sont colinéaires si et seulement si $\\det(\\vec{u},\\vec{v})=0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0",
+			"variationIndex": 0,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12k (somme des produits)",
+			"variationIndex": 0,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["12k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6k",
+			"variationIndex": 0,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["6k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3k",
+			"variationIndex": 1,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["3k"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2k",
+			"variationIndex": 1,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["2k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6k (division oubliée)",
+			"variationIndex": 1,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["6k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k",
+			"variationIndex": 1,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v = ku",
+			"variationIndex": 2,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hypothèse redite",
+			"variationIndex": 2,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x = y",
+			"variationIndex": 2,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : même norme",
+			"variationIndex": 2,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
