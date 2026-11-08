@@ -42,6 +42,8 @@ import {
 	centeredCircleTools,
 	PLAIN_PAPER_TOOLS,
 	triangleTools,
+	rightAngleOf,
+	isSquaresLength,
 	type ConstructionCheck,
 	type ConstructionCheckKind,
 	type ConstructionSpec,
@@ -158,6 +160,12 @@ const TRIANGLE_LENGTH_REGEX = /^([A-Z])([A-Z])\s*=\s*(\S+)$/;
 /** `CAB = 40` : un angle du triangle, le sommet au milieu, mesure entière (° permis) */
 const TRIANGLE_ANGLE_REGEX = /^([A-Z])([A-Z])([A-Z])\s*=\s*(\d{1,3})\s*°?$/;
 const POINT_PAIR_REGEX = /^([A-Z])([A-Z])$/;
+const TRIANGLE_RIGHT_EXAMPLE = 'triangle ABC : CAB = 90 ; AC = u';
+/** `AC = 3 carreaux` (n° 20) : une longueur sur quadrillage, l'unité obligatoire */
+const TRIANGLE_SQUARES_REGEX = /^([A-Z])([A-Z])\s*=\s*(\d{1,3})\s*carreaux?$/;
+/** Longueur en carreaux d'un triangle rectangle (n° 20) */
+const SQUARES_MIN = 1;
+const SQUARES_MAX = 50;
 
 /**
  * `triangle ABC : AC = u ; BC = v` (lot 4) : [AB] est tracé ; les longueurs de
@@ -170,19 +178,26 @@ const POINT_PAIR_REGEX = /^([A-Z])([A-Z])$/;
 function readTriangle(rest: string, line: number): ConstructionCheck {
 	const match = TRIANGLE_REGEX.exec(rest.trim());
 	const parts = match ? match[4].split(';').map((part) => part.trim()) : [];
-	const usage = `« ${TRIANGLE_EXAMPLE} », « ${TRIANGLE_ANGLES_EXAMPLE} » ou « triangle ABC : AC = u ; CAB = 40 »`;
-	if (!match || parts.length !== 2) {
+	const usage = `« ${TRIANGLE_EXAMPLE} », « ${TRIANGLE_ANGLES_EXAMPLE} », « triangle ABC : AC = u ; CAB = 40 » ou « ${TRIANGLE_RIGHT_EXAMPLE} »`;
+	// Triangle rectangle (n° 20) : l'angle droit peut être la seule donnée
+	const aloneRight = parts.length === 1 && Number(TRIANGLE_ANGLE_REGEX.exec(parts[0])?.[4]) === 90;
+	if (!match || (parts.length !== 2 && !aloneRight)) {
 		throw new LineError(`triangle attend ses sommets et deux données : ${usage}`);
 	}
 	const [a, b, c] = [match[1], match[2], match[3]];
 	if (new Set([a, b, c]).size !== 3)
 		throw new LineError('triangle attend trois sommets différents');
 	const name = `${a}${b}${c}`;
-	const readLength = (l: RegExpExecArray): TriangleLength | null => {
-		const ends = [l[1], l[2]];
+	/** Le sommet donné (A ou B) d'un côté qui va vers C ; null sinon */
+	const sideEnd = (p: string, q: string): string | null => {
+		const ends = [p, q];
 		if (!ends.includes(c)) return null;
 		const other = ends.find((end) => end !== c);
-		if (other !== a && other !== b) return null;
+		return other === a || other === b ? other : null;
+	};
+	const readLength = (l: RegExpExecArray): TriangleLength | null => {
+		const other = sideEnd(l[1], l[2]);
+		if (!other) return null;
 		const pair = POINT_PAIR_REGEX.exec(l[3]);
 		if (!pair && !POINT_NAME_REGEX.test(l[3])) return null;
 		return {
@@ -215,6 +230,18 @@ function readTriangle(rest: string, line: number): ConstructionCheck {
 			angles.push(readAngleOf(angle));
 			continue;
 		}
+		const squares = TRIANGLE_SQUARES_REGEX.exec(part);
+		const squaresEnd = squares ? sideEnd(squares[1], squares[2]) : null;
+		if (squares && squaresEnd) {
+			const count = Number(squares[3]);
+			if (count < SQUARES_MIN || count > SQUARES_MAX) {
+				throw new LineError(
+					`triangle ${name} : longueur en carreaux entière, de ${SQUARES_MIN} à ${SQUARES_MAX}`
+				);
+			}
+			lengths.push({ side: [squaresEnd, c], squares: count });
+			continue;
+		}
 		const length = TRIANGLE_LENGTH_REGEX.exec(part);
 		const read = length ? readLength(length) : null;
 		if (!read) {
@@ -223,6 +250,23 @@ function readTriangle(rest: string, line: number): ConstructionCheck {
 			);
 		}
 		lengths.push(read);
+	}
+	// Triangle rectangle (n° 20) : l'angle droit, seul ou avec la longueur du côté qui le porte
+	const right = angles.find((g) => g.measure === 90);
+	if (right) {
+		const vertex = right.vertex;
+		const leg = `${vertex}${c}`;
+		if (angles.length === 2) {
+			throw new LineError(
+				`triangle ${name} : l’angle droit en ${vertex} se construit à l’équerre ; il se donne seul ou avec la longueur de [${leg}], pas avec un autre angle`
+			);
+		}
+		if (lengths.length === 1 && lengths[0].side[0] !== vertex) {
+			throw new LineError(
+				`triangle ${name} : l’angle droit en ${vertex} se donne avec la longueur de [${leg}] (le côté qui le porte), pas celle de [${lengths[0].side.join('')}]`
+			);
+		}
+		return { kind: 'triangle', points: [a, b, c], lengths, angles: [right], line };
 	}
 	if (lengths.length === 2) {
 		const ac = lengths.find((l) => l.side[0] === a);
@@ -403,7 +447,7 @@ function coherenceError(
 	const protractorAllowed =
 		check.kind === 'angle' ||
 		check.kind === 'mesure' ||
-		(check.kind === 'triangle' && check.angles.length > 0) ||
+		(check.kind === 'triangle' && check.angles.length > 0 && !rightAngleOf(check)) ||
 		(check.kind === 'droite' && bissectriceOf(check.expression) !== null);
 	if (!protractorAllowed && spec.tools.includes('rapporteur')) {
 		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} »), à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») à construire un triangle dont un angle est donné (« verifier: ${TRIANGLE_ANGLES_EXAMPLE} ») ou une bissectrice (« verifier: droite d = bissectrice(A, O, B) ») ; le retirer de outils:`;
@@ -444,10 +488,36 @@ function coherenceError(
 		if (spec.checks.length > 1) {
 			return `triangle ${name} : un triangle à construire ne se mêle pas à d’autres vérifications`;
 		}
-		const allowed = triangleTools(check);
+		const right = rightAngleOf(check);
+		// N° 20 : les carreaux, pour le triangle rectangle sur quadrillage seulement
+		if (check.lengths.some(isSquaresLength)) {
+			if (!right) {
+				return `triangle ${name} : une longueur en carreaux ne sert qu’au triangle rectangle sur quadrillage (« triangle ${name} : C${check.points[0]}${check.points[1]} = 90 ; ${check.points[0]}${check.points[2]} = 3 carreaux »)`;
+			}
+			if (!grid) {
+				return `triangle ${name} : une longueur en carreaux demande un quadrillage (ajouter « grille: 1 »), sinon donner un segment à reporter`;
+			}
+		}
+		if (right && grid) {
+			const segmentLength = check.lengths.find((l) => !isSquaresLength(l) && l.source.length === 1);
+			if (segmentLength) {
+				return `triangle ${name} : sur quadrillage, la longueur se donne en carreaux (« ${segmentLength.side.join('')} = 3 carreaux ») ou par deux points (« ${segmentLength.side.join('')} = ${check.points[0]}${check.points[1]} ») : le report se fait sur papier uni`;
+			}
+		}
+		const allowed = triangleTools(check, grid);
 		const other = spec.tools.find((t) => !allowed.includes(t));
 		if (other)
 			return `triangle ${name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		if (right) {
+			// N° 20 : l'angle droit à l'équerre (papier uni), la longueur au Report ; le segment
+			const missing = allowed.find((t) => !spec.tools.includes(t));
+			if (missing) {
+				return grid
+					? `triangle ${name} : sur quadrillage, les côtés se tracent au segment (outils: segment)`
+					: `triangle ${name} : l’angle droit se construit à l’équerre${check.lengths.length > 0 ? ', la longueur au report' : ''}, puis les côtés au segment (outils: ${allowed.join(', ')})`;
+			}
+			return null;
+		}
 		// Lot 7 (§ 21) : les angles se construisent au rapporteur, leurs côtés à la règle
 		if (check.angles.length > 0) {
 			const missing = (['rapporteur', 'droite', 'segment'] as const).find(
@@ -610,7 +680,7 @@ export function readConstructionHeader(
 			grid && !keeps
 				? undefined
 				: first.kind === 'triangle'
-					? triangleTools(first)
+					? triangleTools(first, grid)
 					: centered
 						? centeredCircleTools(centered)
 						: kind === 'droite' && grid
