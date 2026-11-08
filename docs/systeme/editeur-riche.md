@@ -141,8 +141,9 @@ est {{score}}.</p>` → `<p> .</p>` ; `$\sqrt{\frac{1}{2}}$ fin` → `$ fin` (ap
   - `<math-field>` accepté dans le HTML : `sanitizeHtml` n'autorise plus aucune balise MathLive
     (`math-field`, `math-inline`, `math-display`, attributs `read-only` / `disabled`). MathLive lit
     leur texte comme du LaTeX, où `\htmlStyle`, `\class`, `\cssId`, `\htmlData`, `\href` posent
-    style, classe, identifiant, données ou lien. Aucun contenu passé par `sanitizeHtml` (sorties
-    HTML du carnet, modèles de messages) n'en contenait. Garde : `describeSansMathLive`
+    style, classe, identifiant, données ou lien. Aucun appelant de `sanitizeHtml` (sorties HTML
+    du carnet, modèles de messages) n'en produit (grep), et la prod n'en contenait pas au
+    2026-11-08 (0 carnet sur 2, 0 modèle de message). Garde : `describeSansMathLive`
     (`sanitize-attack-vectors.ts`).
   - `\href` de MathLive (0.111.1, mesuré dans son code) : au rendu, une adresse autre que `http:`
     ou `https:` lève une erreur (`javascript:` ne passe pas) ; au clic dans un `math-field`,

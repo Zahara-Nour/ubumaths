@@ -209,7 +209,7 @@ export function describeTextesAccolades(sanitizers: readonly NamedSanitizer[]): 
  */
 export const CHARGES_MATHLIVE: readonly string[] = [
 	'<math-field read-only="">\\htmlStyle{position:fixed;inset:0;background:url(https://evil.example/x.png)}{x}</math-field>',
-	'<math-span>\\href{https://evil.example}{x}</math-span>',
+	'<math-field disabled="">\\href{https://evil.example}{x}</math-field>',
 	'<math-inline>\\class{fixed inset-0}{x}</math-inline>',
 	'<math-display>\\cssId{a}{x}</math-display>'
 ];
@@ -221,6 +221,11 @@ export function describeSansMathLive(sanitizers: readonly NamedSanitizer[]): voi
 			it.each(CHARGES_MATHLIVE)('%s', (html) => {
 				const output = sanitize(html);
 				expect(output, output).not.toMatch(/<\s*math-/i);
+			});
+			// Les attributs de MathLive sont retirés de toute balise, pas seulement des siennes
+			it('ni read-only ni disabled', () => {
+				const output = sanitize('<p read-only="" disabled="">x</p>');
+				expect(output, output).not.toMatch(/read-only|disabled/i);
 			});
 		});
 	}
