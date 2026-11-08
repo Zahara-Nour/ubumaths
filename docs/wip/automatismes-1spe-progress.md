@@ -6,21 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2455 (lot 3 « Proportions et pourcentages » : modèle neuf + script de fiche)._
+_Mis à jour le 2026-11-08, PR de rangement du modèle neuf `23751c95` ouverte._
 
-- **État** : #2455 mergée (CI verte, `code-reviewer` : rien de bloquant) ; rien n'est encore écrit en prod ·
-  **Prochaine action** : David lance, dans l'ordre, `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/automatismes-2de-proportions --publier` (écrit l'`id` dans le fichier, à commiter sur la
-  branche du rangement), puis `pnpm tsx scripts/create-automatismes-proportions.ts` (simulation) et `… --publier`
-  ; ensuite vérification PDF depuis la base, et PR de rangement du modèle neuf (nœud des modèles de 6-106, tag
-  6-106, `EXCEPTIONS_NIVEAUX`, migration + test d'intégration, forme de #2416) · **En attente de David** : les
-  écritures ci-dessus ; publication en admin de `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; publication du
-  modèle `c1c9cfc3` (brouillon) · **Pièges en cours** : écritures ET simulations contre la prod lancées par
-  David (commande donnée avec `!`) ; `debord.py` ne voit pas une équation centrée trop large : relire les pages
-  ; lire les VARIANTES des modèles voisins avant de proposer un modèle neuf ; une proportion ne dépasse pas 1 ;
-  `fiche:verifier` sans EN : les étapes EN échouent, les FR suffisent
-  (`PYTHON_FICHES=../ubumaths/scripts/fiches/.venv/bin/python`) · **Worktree / branche** : aucun (retiré).
-- Fiches à publier : `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
+- **État** : modèle `23751c95` et fiche `f9608ee5` écrits en brouillon par David, fiche vérifiée depuis la
+  base ; PR de rangement (6-106, exception de niveaux, migration `20261108085338`) ouverte ·
+  **Prochaine action** : CI verte → merge → `db:migrate` depuis `main` (dry-run d'abord), puis vérifier en
+  prod nœud, tag 6-106, brouillon, `updated_at` préservé, `tgenabled = 'O'` ; `garde-niveaux-tags.ts` ·
+  **En attente de David** : publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de
+  1re ; publication des modèles `23751c95` et `c1c9cfc3` (brouillons) · **Pièges en cours** : écritures ET
+  simulations contre la prod lancées par David (commande donnée avec `!`) ; `debord.py` ne voit pas une
+  équation centrée trop large : relire les pages ; une proportion ne dépasse pas 1 · **Worktree / branche** :
+  `../ubumaths-wt-automatismes-1spe`, `content/automatismes-proportions-rangement`.
+- Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
 ## Décisions de David (figées)
@@ -569,3 +566,22 @@ scripts/questions/automatismes-2de-proportions --publier` (écrit l'`id` dans le
   modèle neuf (nœud de 6-106 + tag 6-106 + exception de niveaux, migration) ; vérification PDF depuis la base.
 - #2455 mergée le 2026-11-08 (CI verte ; `code-reviewer` Sonnet : maths des 4 variantes vérifiées sur
   toutes les valeurs, UUID justes ; formulation de la correction décimal → % reprise).
+
+### Écritures, vérification et rangement (2026-11-08)
+
+- David a lancé `create-questions.ts --publier` : modèle **`23751c95`** créé en brouillon, `id` écrit dans
+  le JSON (commité sur la branche du rangement). Puis la simulation (séries identiques à la validation)
+  et `create-automatismes-proportions.ts --publier` : fiche **`f9608ee5`**, brouillon, 2 séries.
+- PDF depuis la base (`regen-depuis-base.ts --langues fr`, `compile-prod.mjs --polices-corrige`,
+  `debord.py`) : fiche 1 p., réponses 1 p., corrigé 3 p., 0 débord, pages relues ; trois corrigés
+  coupés d'une colonne ou d'une page à l'autre (série 1 Q4, série 2 Q4 et Q8), non bloquants.
+- Rangement : nœud « Nombres et calculs › Décimaux : numération › forme fractionnaire » (celui des 4
+  modèles de 6e tagués 6-106 ; le point est sur la notion parente), tag 6-106. Question d'accès posée
+  avant le SQL, tranchée par David le 2026-11-08 : personne ne gagne ni ne perd d'accès. Migration
+  `20261108085338_automatismes_1spe_rangement_proportion.sql` (forme de #2416), test
+  `tests/integration/automatismes-1spe-rangement-proportion.test.ts` : 4 rouges sur 9 sans le corps,
+  9 verts avec. Exception `23751c95` → niveaux `['6']` (raison `AUTOMATISMES_2DE`) dans
+  `scripts/lib/niveaux-des-tags.ts`, test mis à jour (12 exceptions).
+- `security-auditor` : 0 bloquant (diff avec #2416 limité aux données ; gardes, rollback, trigger vérifiés).
+  À vérifier en prod après `db:migrate` : nœud, un seul tag ('6', '6-106'), brouillon, `updated_at`
+  inchangé, `tgenabled = 'O'`.
