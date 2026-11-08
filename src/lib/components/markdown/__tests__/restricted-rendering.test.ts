@@ -9,6 +9,8 @@ import { describe, it, expect } from 'vitest';
 import { parseMarkdown } from '$lib/ubumark';
 import type { BlockNode, DocumentNode } from '$lib/ubumark';
 import {
+	CAHIER_BLOCK_PLACEHOLDER,
+	neutralizeUnsafeBlocks,
 	hasUnsafeMathCommand,
 	isRefusedRestrictedFormula,
 	isProjectStorageImage,
@@ -156,5 +158,47 @@ describe('restrictDocument — filet sur l’AST', () => {
 	it('laisse intacts paragraphe, image, formule, code', () => {
 		const doc = parseMarkdown('Bonjour $x$\n\n```\ncode\n```\n\n$$y$$');
 		expect(restrictDocument(doc)).toEqual(doc);
+	});
+});
+
+describe('neutralizeUnsafeBlocks — cahier de texte (lecteurs anonymes)', () => {
+	const trig = parseMarkdown('```trig\npreset: custom\npoints: M = pi/3\n```').children[0];
+	// Une chaîne du bloc porte une commande MathLive à attributs (libellé, valeur…)
+	const piege = JSON.parse(
+		JSON.stringify(trig).replace(
+			'pi/3',
+			'\\\\htmlStyle{background:url(https://evil.example/x.png)}{M}'
+		)
+	) as BlockNode;
+
+	it('le décor porte bien la commande', () => {
+		expect(JSON.stringify(piege)).toContain('htmlStyle');
+	});
+
+	it('remplace un bloc spécial qui porte une commande à attributs, partout', () => {
+		const doc: DocumentNode = {
+			type: 'document',
+			children: [
+				piege,
+				{ type: 'blockquote', children: [piege] },
+				{
+					type: 'list',
+					ordered: false,
+					items: [{ type: 'list-item', children: [{ type: 'text', content: 'a' }, piege] }]
+				} as BlockNode
+			]
+		};
+		const json = JSON.stringify(neutralizeUnsafeBlocks(doc));
+		expect(json).not.toContain('htmlStyle');
+		expect(json.split(CAHIER_BLOCK_PLACEHOLDER).length - 1).toBe(3);
+		expect(JSON.stringify(doc)).toContain('htmlStyle');
+	});
+
+	it('laisse un bloc spécial ordinaire, et les formules (gardées à leur rendu)', () => {
+		const doc: DocumentNode = {
+			type: 'document',
+			children: [trig, ...parseMarkdown('Soit $\\htmlStyle{color:red}{x}$.').children]
+		};
+		expect(neutralizeUnsafeBlocks(doc)).toEqual(doc);
 	});
 });

@@ -153,10 +153,10 @@ est {{score}}.</p>` → `<p> .</p>` ; `$\sqrt{\frac{1}{2}}$ fin` → `$ fin` (ap
     commandes à attributs : chat (`RestrictedRichText`), signalements d'erreur (description),
     carnet d'élève lu par un autre (`isForeignStudentNotebook`), réponses d'élèves
     (`student-answer-safety.ts`), Atelier (`safe-latex.ts`).
-  - Restes faibles, notés par l'audit de #2488 (non traités) : (1) le lien public du cahier
-    (`JournalContent`, lecteurs anonymes) rend les formules du prof sans rendu restreint — une
-    formule `\htmlStyle{background:url(…)}` y ferait charger une adresse externe, comme les
-    vidéos écartées le 2026-11-06 ; auteur de confiance, à trancher par David ; (2) le rendu
+  - Restes faibles, notés par l'audit de #2488 : (1) le lien public du cahier
+    (`JournalContent`, lecteurs anonymes) rendait les formules du prof sans filtre — **corrigé le
+    2026-11-08** (décision de David, comme les vidéos) : formule à commande à attributs en texte,
+    bloc spécial qui en porte une remplacé (`neutralizeUnsafeBlocks`) ; (2) le rendu
     restreint refuse par liste NOIRE (`UNSAFE_MATH_COMMANDS`) : une macro par défaut de MathLive
     qui se développerait en commande à attributs n'est pas rattrapée par
     `mathlive-commandes-a-valeur.test.ts`.

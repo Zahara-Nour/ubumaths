@@ -258,24 +258,63 @@ export function restrictDocument(doc: DocumentNode): DocumentNode {
 }
 
 function restrictBlock(node: BlockNode): BlockNode {
-	if (!ALLOWED_NODE_TYPES.has(node.type)) {
-		return { type: 'code-block', code: RESTRICTED_BLOCK_PLACEHOLDER };
-	}
+	return replaceBlocks(node, (block) =>
+		ALLOWED_NODE_TYPES.has(block.type) ? null : RESTRICTED_BLOCK_PLACEHOLDER
+	);
+}
+
+/** Libellé d'un bloc spécial du cahier écarté (rendu en bloc de code, donc échappé). */
+export const CAHIER_BLOCK_PLACEHOLDER = '[bloc non affiché : mise en forme non autorisée]';
+
+/**
+ * Cahier de texte (page élève et lien public, lecteurs anonymes) : décision de David du
+ * 2026-11-08, comme les vidéos (2026-11-06). Un bloc spécial (cercle trigo, tableau de
+ * variations…) dont une chaîne porte une commande MathLive à attributs (`\htmlStyle`,
+ * `\href`… : `UNSAFE_MATH_COMMANDS`) ferait charger une adresse choisie chez le lecteur :
+ * il devient un bloc de code neutre. Les autres blocs, et les formules (refusées à leur
+ * rendu, `MathInline` / `MathBlock`), sont gardés. Copie : l'AST en cache n'est pas modifié.
+ */
+export function neutralizeUnsafeBlocks(doc: DocumentNode): DocumentNode {
+	return {
+		...doc,
+		children: doc.children.map((node) =>
+			replaceBlocks(node, (block) =>
+				!ALLOWED_NODE_TYPES.has(block.type) && hasUnsafeMathCommand(JSON.stringify(block))
+					? CAHIER_BLOCK_PLACEHOLDER
+					: null
+			)
+		)
+	};
+}
+
+/**
+ * Parcourt les conteneurs de blocs (racine, citations, items de liste) ; `placeholderFor`
+ * rend le libellé du bloc de code qui remplace un bloc, ou `null` pour le garder.
+ */
+function replaceBlocks(
+	node: BlockNode,
+	placeholderFor: (block: BlockNode) => string | null
+): BlockNode {
+	const placeholder = placeholderFor(node);
+	if (placeholder !== null) return { type: 'code-block', code: placeholder };
 	if (node.type === 'blockquote') {
-		return { ...node, children: node.children.map(restrictBlock) };
+		return {
+			...node,
+			children: node.children.map((child) => replaceBlocks(child, placeholderFor))
+		};
 	}
 	if (node.type === 'list') {
 		return {
 			...node,
-			items: node.items.map((item) => ({ ...item, children: item.children.map(restrictAny) }))
+			items: node.items.map((item) => ({
+				...item,
+				children: item.children.map((child: ASTNode) =>
+					isBlockLike(child) ? replaceBlocks(child, placeholderFor) : child
+				)
+			}))
 		};
 	}
 	return node;
-}
-
-/** Enfant d'un item de liste : bloc ou nœud en ligne. */
-function restrictAny(node: ASTNode): ASTNode {
-	return isBlockLike(node) ? restrictBlock(node) : node;
 }
 
 const INLINE_NODE_TYPES: ReadonlySet<string> = new Set([

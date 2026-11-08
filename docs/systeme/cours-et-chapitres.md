@@ -639,3 +639,7 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
 12. _(Résolu le 2026-11-06, décision de David : au cahier, `JournalContent` passe
     `projectMediaOnly` ; une vidéo hors de notre stockage — YouTube compris — devient un lien
     « Vidéo : … », aucune requête tierce à l'affichage. Le reste de l'application est inchangé.)_
+    _(Même traitement pour les formules, décision de David du 2026-11-08 : une formule qui
+    porte une commande MathLive à attributs — `\htmlStyle`, `\href`, `\color`… — s'affiche en
+    texte ; un bloc spécial qui en porte une devient un bloc de code. Prod au 2026-11-08 :
+    aucune formule au cahier.)_
