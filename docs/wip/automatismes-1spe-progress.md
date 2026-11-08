@@ -6,19 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, lot 3 « Proportions et pourcentages » : PR ouverte (branche `feat/automatismes-proportions`)._
+_Mis à jour le 2026-11-08, après #2455 (lot 3 « Proportions et pourcentages » : modèle neuf + script de fiche)._
 
-- **État** : modèle neuf « Écrire une proportion sous une autre forme » (20 specs vertes) et script de fiche
-  `create-automatismes-proportions.ts` écrits ; rendu local : fiche 1 p., corrigé 3 p., 0 débord, 16 réponses
-  justes · **Prochaine action** : CI verte → merge ; puis David lance `create-questions --publier` (modèle
-  neuf), simulation puis `--publier` de la fiche ; ensuite rangement du modèle neuf (2e PR : nœud de 6-106,
-  tag 6-106, exception de niveaux) · **En attente de David** : publication en admin de `9bd4bcc6`, `894f766e`
-  et des 6 fiches de 1re ; publication du modèle `c1c9cfc3` (brouillon) · **Pièges en cours** : écritures ET
-  simulations contre la prod lancées par David (commande donnée avec `!`) ; `debord.py` ne voit pas une
-  équation centrée trop large : relire les pages ; lire les VARIANTES des modèles voisins avant de proposer un
-  modèle neuf ; une proportion ne dépasse pas 1 (pas de « proportion 1,2 ») ; `fiche:verifier` sans EN : les
-  étapes EN échouent, les FR suffisent (`PYTHON_FICHES=../ubumaths/scripts/fiches/.venv/bin/python`) ·
-  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe` · `feat/automatismes-proportions`.
+- **État** : #2455 mergée (CI verte, `code-reviewer` : rien de bloquant) ; rien n'est encore écrit en prod ·
+  **Prochaine action** : David lance, dans l'ordre, `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/automatismes-2de-proportions --publier` (écrit l'`id` dans le fichier, à commiter sur la
+  branche du rangement), puis `pnpm tsx scripts/create-automatismes-proportions.ts` (simulation) et `… --publier`
+  ; ensuite vérification PDF depuis la base, et PR de rangement du modèle neuf (nœud des modèles de 6-106, tag
+  6-106, `EXCEPTIONS_NIVEAUX`, migration + test d'intégration, forme de #2416) · **En attente de David** : les
+  écritures ci-dessus ; publication en admin de `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; publication du
+  modèle `c1c9cfc3` (brouillon) · **Pièges en cours** : écritures ET simulations contre la prod lancées par
+  David (commande donnée avec `!`) ; `debord.py` ne voit pas une équation centrée trop large : relire les pages
+  ; lire les VARIANTES des modèles voisins avant de proposer un modèle neuf ; une proportion ne dépasse pas 1 ;
+  `fiche:verifier` sans EN : les étapes EN échouent, les FR suffisent
+  (`PYTHON_FICHES=../ubumaths/scripts/fiches/.venv/bin/python`) · **Worktree / branche** : aucun (retiré).
 - Fiches à publier : `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
@@ -566,3 +567,5 @@ graines 1-12 : **tout passe**.
 scripts/questions/automatismes-2de-proportions --publier` (écrit l'`id` dans le fichier, à commiter) ; puis
   `pnpm tsx scripts/create-automatismes-proportions.ts` (simulation) et `… --publier`. Ensuite : rangement du
   modèle neuf (nœud de 6-106 + tag 6-106 + exception de niveaux, migration) ; vérification PDF depuis la base.
+- #2455 mergée le 2026-11-08 (CI verte ; `code-reviewer` Sonnet : maths des 4 variantes vérifiées sur
+  toutes les valeurs, UUID justes ; formulation de la correction décimal → % reprise).
