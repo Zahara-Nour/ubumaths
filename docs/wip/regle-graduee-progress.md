@@ -48,7 +48,7 @@ papier uni seulement.
 
 ## 2. Tracer un segment de longueur donnée (CE2-039) — comportements proposés (2026-11-08)
 
-ADR [0036](../adr/0036-le-cm-de-la-figure.md) commitée sur `main` (3623b957b). Constat : la règle graduée existe déjà,
+ADR 0036 (`docs/adr/0036-le-cm-de-la-figure.md`) commitée sur `main` (3623b957b). Constat : la règle graduée existe déjà,
 `constructions-v2/instruments/components/Ruler.svelte` (1 grande graduation par unité, 10 petites, `pixelsPerUnit`) ;
 on la réutilise comme `Protractor.svelte` dans `FigureACompleterView.svelte`. Modèle de geste : l'angle au rapporteur
 (`angle.ts` : pose, repère, segment ; refus « tracé à l'œil »).
