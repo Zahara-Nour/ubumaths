@@ -68,8 +68,8 @@ export interface DbRiddle {
 	title: string;
 	genre: string | null;
 	difficulty: RiddleDifficulty;
-	statement: string; // HTML rich text
-	correction: string; // HTML rich text
+	statement: string; // ubumark (markdown)
+	correction: string; // ubumark (markdown)
 	image_url: string | null;
 	answer: AnswerConfig | null; // null = manual validation required
 	created_by: string;

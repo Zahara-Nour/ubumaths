@@ -6,19 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2460 ; lot 2 rangé en prod, page à cocher publiée._
+_Mis à jour le 2026-11-08, lot 3 écrit (PR à ouvrir)._
 
-- **État** : lot 1 PUBLIÉ. Lot 2 (304, 438, 320) : 3 brouillons rangés (nœud + point, #2460, migration
-  `20261108150529` appliquée) ; page à cocher : https://claude.ai/artifact/KukhKQkpLCGxXAPP3iDEmz.
-- **Prochaine action** : lire les verdicts de David (collection `verdicts`), corriger s'il y a lieu, puis
-  `publier-lot.ts --dir scripts/questions/2de-demonstrations-2` (simulation puis `--publier`, lancées par David).
-  Ensuite lot 3 (fonctions : 357-360), nouveau worktree.
-- **En attente de David** : sa relecture des 3 modèles sur la page à cocher (bloc ranger à jouer dans l'aperçu).
+- **État** : lots 1 (5 modèles) et 2 (3 modèles) PUBLIÉS en prod. Lot 3 (fonctions : 357-360) écrit, specs vertes,
+  PR en cours (branche `content/questions-2de-demonstrations-5-fonctions`).
+- **Prochaine action** : merger la PR du lot 3 ; puis David lance `create-questions --publier` DEPUIS le worktree ;
+  ensuite migration de rangement (gabarit : `20261108150529`), page à cocher.
+- **En attente de David** : après le merge, la commande de publication en brouillon (donnée au merge).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → le lancer depuis le worktree ;
   positions « ranger » par `docs/wip/questions/positions-ranger.ts` (`svelte-kit sync` avant) ; couleur jamais sur
   du texte hors `$` ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed`.
-- **Worktree / branche** : aucun (retiré après #2460) ; lot 3 → `git worktree add -b content/questions-2de-demonstrations-5-fonctions ../ubumaths-wt-questions-2de-demonstrations origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `content/questions-2de-demonstrations-5-fonctions`.
 
 ---
 
@@ -171,3 +170,23 @@ relance du job navigateur (plantage connu, 1946/1946 tests verts) ; `check:migra
 depuis le dépôt principal ; vérifié en prod : les 3 brouillons sur leur sous-notion, chacun avec son seul point,
 `draft`. Page à cocher : https://claude.ai/artifact/KukhKQkpLCGxXAPP3iDEmz (3 alertes attendues : bloc ranger non
 dessiné, à jouer dans l'aperçu admin).
+
+Lot 2 relu par David sur la page à cocher (2026-11-08) : 3 « ok », sans commentaire. Publié par David
+(`publier-lot.ts --publier`) : 3/3, statut relu en base.
+
+## 7. Lot 3 : fonctions (2026-11-08)
+
+| Point | Modèle (`scripts/questions/2de-demonstrations-3/`) | Niveau | Variations                                                                                     |
+| ----- | -------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------- |
+| 357   | `01-demontrer-variations-fonction-affine`          | 5      | f(b) − f(a) = m(b − a) (case), signe si m > 0 (choix), conclusion si m < 0 (choix), étapes     |
+| 358   | `02-demontrer-position-droite-et-parabole`         | 3      | x² − x = x(x − 1) (case), position sur [0 ; 1] (choix), pour x ≥ 1 (choix), étapes             |
+| 359   | `03-demontrer-variations-fonction-carre`           | 2      | (b − a)(b + a) (case), signe pour 0 ≤ a < b (choix), conclusion pour a < b ≤ 0 (choix), étapes |
+| 360   | `04-demontrer-variations-fonction-inverse`         | 1      | (a − b)/(ab) (case), signe pour 0 < a < b (choix), ab > 0 pour a < b < 0 (choix), étapes       |
+
+Valeurs tirées (Q3) : m de 2 à 9 et p de 1 à 9 (m > 0), m de −9 à −2 et p de −9 à −1 (m < 0) pour 357 — p jamais
+nul (sinon « +0 » à l'écran) ; lettres ailleurs. Niveaux : après ceux déjà présents, tous niveaux scolaires (relevé
+prod du 2026-11-08 : variations et signe 1-4, définition et courbe 1-2, carré › variations 1, inverse › variations
+aucun modèle). Aucun modèle tagué sur 2-357 à 2-360. Script : `docs/wip/questions/lot-2de-demonstrations-3.py`.
+
+Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (15 specs vertes chacun), 0 `\textcolor` hors
+`$` ; aperçus relus (cases dans `x(?)`, `(b − a)(?)`, `\dfrac{?}{ab}` ; étapes à ranger ; corrigés).

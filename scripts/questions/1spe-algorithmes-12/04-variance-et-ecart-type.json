@@ -1,4 +1,5 @@
 {
+	"id": "40caf131-54b9-4748-a5ee-15924d9878f0",
 	"title": "Variance et écart type avec Python",
 	"description": "Fonctions variance et ecart_type : faire tourner variance sur une loi symétrique à trois valeurs, compléter la ligne v = v + probas[k] * (valeurs[k] - m)**2, compléter le return sqrt(variance(valeurs, probas))",
 	"grades": ["1_SPE"],

@@ -1,0 +1,205 @@
+{
+	"title": "Démontrer le sens de variation de la fonction carré",
+	"description": "Démonstration à trous : b² − a² = (b − a)(b + a) (case), signe pour 0 ≤ a < b (choix), conclusion pour a < b ≤ 0 (choix) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$. On démontre son sens de variation.\n\nSoient $a$ et $b$ deux réels tels que $0\\leqslant a<b$. Complète.\n\n$f(b)-f(a)=b^2-a^2=(b-a)(?)$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "b+a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On reconnaît l'identité remarquable $b^2-a^2=(b-a)(b+a)$.",
+					"Donc $f(b)-f(a)=(b-a)(\\textcolor{{{color:primary.0}}}{b+a})$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$. On démontre son sens de variation.\n\nSoient $a$ et $b$ deux réels tels que $0\\leqslant a<b$. On a $f(b)-f(a)=b^2-a^2=(b-a)(b+a)$.\n\nPourquoi $f(b)-f(a)>0$ ?\n\n```choix\n- Car $b-a>0$ et $b+a>0$ : le produit de deux nombres positifs est positif.\n- Car $b-a>0$ et $b+a<0$.\n- Car $a<b$, donc $a^2<b^2$ pour tous réels $a$ et $b$.\n- Car $b^2-a^2=(b-a)^2$ et un carré est positif.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a<b$, donc $b-a>0$ ; $a\\geqslant 0$ et $b>0$, donc $b+a>0$.",
+					"Donc $f(b)-f(a)>0$, soit $\\textcolor{{{color:primary.0}}}{f(a)<f(b)}$ : $f$ est **croissante** sur $[0\\,;\\,+\\infty[$.",
+					"« $a<b$ donc $a^2<b^2$ » est faux pour des négatifs : $-3<-1$ mais $9>1$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$. On démontre son sens de variation.\n\nSoient $a$ et $b$ deux réels tels que $a<b\\leqslant 0$. On a $f(b)-f(a)=b^2-a^2=(b-a)(b+a)$.\n\nQue peut-on conclure ?\n\n```choix\n- $b-a>0$ et $b+a<0$, donc $f(b)-f(a)<0$ : $f$ est décroissante sur $]-\\infty\\,;\\,0]$.\n- $b-a>0$ et $b+a<0$, donc $f(b)-f(a)<0$ : $f$ est croissante sur $]-\\infty\\,;\\,0]$.\n- $b-a>0$ et $b+a>0$, donc $f(b)-f(a)>0$ : $f$ est croissante sur $]-\\infty\\,;\\,0]$.\n- $b-a<0$ et $b+a<0$, donc $f(b)-f(a)>0$ : $f$ est croissante sur $]-\\infty\\,;\\,0]$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a<b$, donc $b-a>0$ ; $a<0$ et $b\\leqslant 0$, donc $b+a<0$.",
+					"Le produit est négatif : $f(b)<f(a)$. De $a<b$ on tire $\\textcolor{{{color:primary.0}}}{f(a)>f(b)}$ : $f$ est **décroissante** sur $]-\\infty\\,;\\,0]$.",
+					"Seul le facteur $b+a$ change de signe par rapport au cas $0\\leqslant a<b$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$. On démontre que $f$ est croissante sur $[0\\,;\\,+\\infty[$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Soient $a$ et $b$ deux réels tels que $0\\leqslant a<b$.\n- $f(b)-f(a)=b^2-a^2=(b-a)(b+a)$.\n- $a<b$, donc $b-a>0$ ; $a\\geqslant 0$ et $b>0$, donc $b+a>0$.\n- Donc $f(b)-f(a)>0$, soit $f(a)<f(b)$.\n- Donc $f$ est croissante sur $[0\\,;\\,+\\infty[$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On compare $f(a)$ et $f(b)$ par le signe de leur différence, factorisée.",
+					"Conclusion : $f$ est **croissante** sur $\\textcolor{{{color:primary.0}}}{[0\\,;\\,+\\infty[}$ ; de même, elle est décroissante sur $]-\\infty\\,;\\,0]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "b + a",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["b+a"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture a + b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["a+b"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b − a",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["b-a"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a − b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["a-b"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ab",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["ab"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "produit de deux positifs",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b + a < 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a < b suffit",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (b − a)²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissante",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante (mauvais sens)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b + a > 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b − a < 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
