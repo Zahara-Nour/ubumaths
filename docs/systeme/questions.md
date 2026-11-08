@@ -412,7 +412,7 @@ N, N + 1… dans l'ordre de lecture du parseur (`cases` du nœud), seul N posé 
 (`readSignTableCases`), jamais écrite dans `blanks` (refusée : « sa réponse vient du tableau de signes ») ;
 `cellule` sur la case (`valeur` / `signe` / `marque` / `fleche`). Valeur (de x, ou d'une ligne `variation:`,
 `-2: ?4, top`) : `type: 'math'`, juge ordinaire avec `acceptDecimal` forcé (`1,5` vaut `\frac{3}{2}`) ;
-signe, marque et flèche (`-2,2: ?flèche`, chantier [variations-a-completer](../wip/variations-a-completer-progress.md)) :
+signe, marque et flèche (`-2,2: ?flèche`, chantier [variations-a-completer](../archive/wip/variations-a-completer-progress.md)) :
 `type: 'text'`, attendu `+` / `-` / `z` / `||` / `rien` / `↗` / `↘` (LaTeX du corrigé `\nearrow`, `\searrow`),
 juge à part aux deux endroits (`isSignCellCorrect` : même jeton, `0` vaut `z`, case vide jamais juste). Refus : bloc en retrait, cité ou dans un choix, non fermé, refusé par le parseur
 (son message « Ligne N : … »), `case:` écrit, `??n` ou `?` seul (formes de l'évaluation), « ordre
