@@ -1,4 +1,5 @@
 {
+	"id": "c6a96fbf-04be-44c2-a9f0-a8a91689b236",
 	"title": "Démontrer qu'une droite a une équation de la forme ax + by + c = 0",
 	"description": "Démonstration à trous (A et u tirés) : coordonnées de AM (case), M ∈ d ⟺ det(AM, u) = 0 (choix), constante c en développant le déterminant (case) ; étapes à ranger",
 	"grades": ["2"],
