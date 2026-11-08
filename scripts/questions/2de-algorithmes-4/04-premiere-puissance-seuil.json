@@ -1,4 +1,5 @@
 {
+	"id": "bcc687bb-7552-408e-9577-b5393aedb465",
 	"title": "Première puissance qui dépasse un seuil, en Python",
 	"description": "premiere_puissance(q, M) par une boucle while : valeur renvoyée (q = 2 ou 3), compléter la condition ; première puissance de 0,5 inférieure à un seuil (0,1 à 0,04)",
 	"grades": ["2"],
