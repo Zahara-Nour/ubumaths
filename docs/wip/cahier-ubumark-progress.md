@@ -106,9 +106,14 @@ Nominal :
 4. Page de validation prof : énoncé et correction rendus.
 5. Clic sur « Enregistrer » juste après la dernière frappe : le dernier mot est gardé (`getMarkdown()` à l'envoi, comme au cahier) ; clic avant que l'éditeur soit prêt : le contenu chargé est gardé, rien n'est effacé (`isReady()`).
 
-Limites : 6. `<script>` ou une balise tapée : affichée comme du texte, jamais exécutée. 7. Énoncé ou correction vide (que des espaces) → bouton désactivé, comme aujourd'hui.
+Limites :
 
-Erreurs : 8. Pas de nouvelle entrée serveur : la validation Zod existante garde ses bornes.
+6. `<script>` ou une balise tapée : affichée comme du texte, jamais exécutée.
+7. Énoncé ou correction vide (que des espaces) → bouton désactivé, comme aujourd'hui.
+
+Erreurs :
+
+8. Pas de nouvelle entrée serveur : la validation Zod existante garde ses bornes.
 
 Question d'accès : aucune — mêmes colonnes, mêmes policies, mêmes lecteurs.
 
