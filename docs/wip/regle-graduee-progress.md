@@ -9,16 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2485._
+_Mis à jour le 2026-11-08, PR 2 commitée (09851df5c), pas encore de PR ouverte._
 
-- **État** : PR 1 (#2485, CE2-039, segment de longueur donnée, direction libre) **mergée**, pas déployée ; ADR 0036
-  poussée sur `main` ; ligne #2485 dans `verifications-manuelles.md`.
-- **Prochaine action** : PR 2 : demi-droite [Ax) (Q7 b) et constructions cotées CE2-070 — phase 0 des comportements
-  d'abord (à faire valider par David).
-- **En attente de David** : vérification sur téléphone (ligne #2485 de `verifications-manuelles.md`).
-- **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le juge
-  prend le **segment vu** (§ 3) : à garder pour les côtés cotés de 070.
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cotes` (depuis `origin/main` après #2485).
+- **État** : phase 0 de la suite validée (§ 4 : 4 PR — 2 demi-droite, 3 cercle de rayon en cm, 4 triangle rectangle
+  coté, 5 carré et rectangle cotés ; assemblages après). PR 2 (`segment AB = 6 cm sur [Ax)`) codée, tests verts,
+  `check:incremental` 0 erreur (§ 5).
+- **Prochaine action** : revue `code-reviewer` en `model: opus` de 09851df5c (lancée, résultat perdu au `/clear` :
+  la relancer), corriger les findings (tests rouges d'abord), commit avec `Doc-inchangée: utilitaires-et-demos.md,
+un exemple de catalogue de plus`, push, PR, CI, merge. Puis PR 3 (cercle de rayon en cm).
+- **En attente de David** : vérification sur téléphone (ligne #2485 de `verifications-manuelles.md`) ; choix (1)-(3)
+  du § 5 à valider.
+- **Pièges en cours** : le juge prend le **segment vu** (§ 3) ; `FigureLine.kind` ajouté (seul constructeur :
+  `positions-setup.ts`).
+- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cotes`.
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
@@ -161,3 +164,16 @@ Puis le lot de modèles CE2-070 cotés, dans `questions-ce2`.
 **Décisions de David (« je suis tes recos », 2026-11-08)** : Q10 4 PR dans cet ordre (2 demi-droite, 3 cercle,
 4 triangle rectangle, 5 carré et rectangle) ; Q11 on part d'un côté déjà tracé ; Q12 règle posée au centre,
 ouverture du compas aimantée aux graduations ; Q13 angle droit à l'équerre exigé ; Q14 assemblages après la PR 5.
+
+## 5. PR 2 — segment sur une demi-droite donnée (2026-11-08)
+
+Commit 09851df5c : `segment AB = 6 cm sur [Ax)` (`SegmentLengthCheck.ray`, x = nom d'une `demidroite(A, …)` de la
+figure ; `FigureLine.kind` ajouté), juge (`onRay` après « un seul segment »), refus d'auteur, correction le long de
+[Ax), catalogue (1 exemple), docs `systeme/questions.md` et `systeme/ubumark.md`. Tests : 19 purs (rouges puis
+verts), 2 composant (le 2e toucher de la règle s'aimante déjà aux traits : vue inchangée) ; `construction/` +
+`ubumark` 6 772 verts ; `check:incremental` 0 erreur ; cliquet tenu.
+
+**Choix faits sans David** : (1) écriture `sur [Ax)` avec le NOM de la demi-droite en minuscule (convention [Ax),
+comme `x = demidroite(O, A)` des bissectrices), pas `[AX)` par un point ; (2) bout du segment sur [Ax) à la
+tolérance de calcul près (1e-9 relatif) : une règle posée à 1° est refusée — l'aimantation garantit la pose
+exacte ; (3) consigne de la règle inchangée (« Touche un point dans la direction du segment »).
