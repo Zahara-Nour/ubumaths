@@ -1,4 +1,5 @@
 {
+	"id": "d73d429b-1b4e-47b8-89bf-b2a6668c9d79",
 	"title": "Tracer un cercle de rayon donné par un segment",
 	"description": "Papier uni : reporter la longueur du segment [MN] et tracer le cercle de centre O de ce rayon",
 	"grades": ["CE2"],

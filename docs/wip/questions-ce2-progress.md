@@ -1073,3 +1073,10 @@ Décisions de David (« je suis tes recos », 2026-11-08) : Q1 oui (07 et 08 pou
   spec du 06 faisait 141 caractères à cause du bruit des flottants (`0.20000000000000018`) → `fmt` arrondit à 6
   décimales, plus longue réponse 79. **Piège** : coordonnées calculées en flottants → toujours arrondies.
 - 2026-11-08 : #2475 mergée (CI verte au 2e commit ; revue : aucune, contenu).
+- 2026-11-08 : `create-questions --publier` (David) : 6 brouillons en prod (`1c0ba52e` 03, `d73d429b` 04, `b8fb32a4` 05,
+  `f4b94b4f` 06, `d0f7d7a8` 07, `e50d512d` 08), relus au MCP (draft, niveaux 3-4-3-4-2-2, CE2 ×4 et CE1 ×2, specs
+  20/9/15/9/10/8, sans nœud ni tag, `updated_at` = `created_at`) ; ids commités. CE2-070 et CE1-072 sur le même nœud
+  « Géométrie › Figures planes › constructions ». Migration `20261108182223_questions_ce2_lot12b_rangement_tags` +
+  test, tirés du lot 12 avec une colonne `grade` (le point du CE1) : rouge sans le corps (5 échecs sur 9), vert 9/9.
+- `security-auditor` : aucun finding (diff avec le lot 12 : identifiants, `grade`, comptes ; nœud et points vérifiés
+  en prod).

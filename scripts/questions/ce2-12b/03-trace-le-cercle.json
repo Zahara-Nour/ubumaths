@@ -1,4 +1,5 @@
 {
+	"id": "1c0ba52e-698b-40c9-8e71-30068c1ed261",
 	"title": "Tracer un cercle de centre donné passant par un point",
 	"description": "Tracer au compas le cercle de centre O passant par A, sur quadrillage (A en oblique) ou sur papier uni",
 	"grades": ["CE2"],
