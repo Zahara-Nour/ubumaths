@@ -127,45 +127,13 @@ export function sanitizeHtml(dirty: string): string {
 		ALLOWED_ATTR,
 		ALLOW_DATA_ATTR: false, // Prevent data-* attributes (potential XSS vector)
 		ALLOW_UNKNOWN_PROTOCOLS: false, // Only http:, https:, mailto:
-		SAFE_FOR_TEMPLATES: true, // Extra protection for template contexts
+		// Pas de `SAFE_FOR_TEMPLATES` : il efface tout de `{{` au dernier `}}` (formules, variables
+		// de modèles) et ne protège que d'un moteur de gabarits qui relirait le HTML dans le
+		// navigateur (Angular, Vue), absent ici — Svelte ne relit pas `{@html}` (2026-11-08)
 		KEEP_CONTENT: true, // Keep text content even if tags are removed
 		RETURN_TRUSTED_TYPE: false // Return string, not TrustedHTML
 	});
 }
-
-/**
- * Sanitize HTML with relaxed math field support
- * Use for rich text editors with MathLive integration
- *
- * @param dirty - Untrusted HTML with math content
- * @returns Sanitized HTML with math field support
- */
-export function sanitizeHtmlWithMath(dirty: string): string {
-	if (!dirty || typeof dirty !== 'string') {
-		return '';
-	}
-
-	return DOMPurify.sanitize(dirty, CONFIG_AVEC_MATH);
-}
-
-/** Réglage DOMPurify du HTML à formules (partagé avec {@link transformMathHtml}). */
-const CONFIG_AVEC_MATH = {
-	ALLOWED_TAGS: [...ALLOWED_TAGS, 'math-field'],
-	ALLOWED_ATTR: [
-		...ALLOWED_ATTR,
-		'read-only',
-		'value',
-		'mode',
-		// TipTap math extension attributes
-		'latex', // Formula content attribute
-		'data-math-inline', // Inline math marker
-		'data-math-block' // Block math marker
-	],
-	ALLOW_DATA_ATTR: false, // Keep false - we explicitly allow only data-math-* above
-	ALLOW_UNKNOWN_PROTOCOLS: false,
-	SAFE_FOR_TEMPLATES: true,
-	KEEP_CONTENT: true
-};
 
 /**
  * Sanitize plain text (strip all HTML)
@@ -184,59 +152,6 @@ export function sanitizePlainText(dirty: string): string {
 		ALLOWED_ATTR: [],
 		KEEP_CONTENT: true // Keep text content
 	});
-}
-
-/**
- * Transform TipTap math HTML to renderable math-field elements
- *
- * TipTap serializes math nodes as:
- * - <span data-math-inline latex="x^2"></span>
- * - <div data-math-block latex="x^2"></div>
- *
- * This transforms them to MathLive elements:
- * - <span class="math-inline-wrapper"><math-field read-only>x^2</math-field></span>
- * - <div class="math-block-wrapper"><math-field read-only>x^2</math-field></div>
- *
- * @param html - HTML from RichTextEditor
- * @returns HTML with math-field elements for display
- */
-export function transformMathHtml(html: string): string {
-	if (!html || typeof html !== 'string') {
-		return '';
-	}
-
-	// Assaini d'abord, rendu en ARBRE : les formules sont remplacées dans le DOM, jamais
-	// par expression sur le texte HTML. Les expressions d'avant parcouraient les attributs
-	// avec `[^>]*` ; or jsdom (rendu serveur) n'échappe pas `>` dans une valeur
-	// d'attribut — `title="></span><img onerror=…>"` fermait la balise à tort et le reste
-	// sortait en vrai HTML (XSS stocké, audit de #2425). Et `latex` n'était lu que juste
-	// après le marqueur, alors que l'éditeur l'écrit en dernier : formules vides.
-	const fragment = DOMPurify.sanitize(html, {
-		...CONFIG_AVEC_MATH,
-		RETURN_DOM_FRAGMENT: true
-	}) as DocumentFragment;
-
-	// Document inerte : un `math-field` créé là n'est pas un élément MathLive actif
-	const inerte = (fragment.ownerDocument ?? document).implementation.createHTMLDocument('');
-	const conteneur = inerte.createElement('div');
-	conteneur.appendChild(inerte.importNode(fragment, true));
-
-	const formules = conteneur.querySelectorAll('span[data-math-inline], div[data-math-block]');
-	for (const formule of formules) {
-		// Comme avant : seule une formule de TipTap, élément vide, est remplacée
-		if (formule.childNodes.length > 0) continue;
-		const enLigne = formule.tagName === 'SPAN';
-		const enveloppe = inerte.createElement(enLigne ? 'span' : 'div');
-		enveloppe.className = enLigne ? 'math-inline-wrapper' : 'math-block-wrapper';
-		const champ = inerte.createElement('math-field');
-		champ.setAttribute('read-only', '');
-		// Texte, pas HTML : la sérialisation échappe `<`, `>`, `&`
-		champ.textContent = formule.getAttribute('latex') ?? '';
-		enveloppe.appendChild(champ);
-		formule.replaceWith(enveloppe);
-	}
-
-	return conteneur.innerHTML;
 }
 
 /** Schémas d'URL autorisés dans un lien ; un lien relatif (sans schéma) passe aussi */
