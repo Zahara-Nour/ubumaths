@@ -73,7 +73,9 @@ describe('construction — lecture du bloc', () => {
 		);
 		expect(
 			node.construction?.checks.map((c) =>
-				c.kind === 'point' || c.kind === 'droite' || c.kind === 'cercle' ? null : c.points
+				c.kind === 'point' || c.kind === 'droite' || c.kind === 'cercle' || c.kind === 'segment'
+					? null
+					: c.points
 			)
 		).toEqual([
 			['A', 'B'],
@@ -111,7 +113,7 @@ describe('construction — erreurs situées', () => {
 				block('fenetre: 0 ; 10 ; 0 ; 6', 'outils: crayon', 'verifier: droite_par A ; B', '---')
 			)
 		).toContain(
-			'Ligne 2 : outil « crayon » inconnu (droite, segment, point, equerre, compas, report, rapporteur)'
+			'Ligne 2 : outil « crayon » inconnu (droite, segment, point, equerre, compas, report, rapporteur, regle)'
 		);
 	});
 
@@ -119,7 +121,7 @@ describe('construction — erreurs situées', () => {
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 6', 'verifier: cercle_par A ; B', '---'))
 		).toContain(
-			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite, cercle, triangle, angle, mesure)'
+			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite, cercle, triangle, angle, mesure, segment)'
 		);
 	});
 

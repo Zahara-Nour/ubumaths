@@ -48,6 +48,7 @@ import {
 	type ConstructionCheckKind,
 	type ConstructionSpec,
 	type ConstructionTool,
+	type LengthUnit,
 	type TriangleAngle,
 	type TriangleLength
 } from '../types/construction';
@@ -111,7 +112,8 @@ function hasGrid(lines: readonly string[], headerEnd: number): boolean {
 }
 
 /** Vérifications à forme propre (pas une liste de points) */
-type NamedKind = 'symetrique' | 'point' | 'droite' | 'cercle' | 'triangle' | 'angle' | 'mesure';
+type NamedKind =
+	'symetrique' | 'point' | 'droite' | 'cercle' | 'triangle' | 'angle' | 'mesure' | 'segment';
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
@@ -370,6 +372,64 @@ function readMeasure(rest: string, line: number): ConstructionCheck {
 	return { kind: 'mesure', points: [a, o, b], posed: true, line };
 }
 
+const SEGMENT_EXAMPLE = 'segment AB = 6 cm';
+/** `AB = …` : le point de départ (de la figure), le nom de l'autre bout, la longueur */
+const SEGMENT_REGEX = /^([A-Z])([A-Z])\s*=\s*(.+)$/;
+/** `6 cm`, `5,3 cm` (virgule ou point) */
+const CM_REGEX = /^(\d{1,3})(?:[,.](\d{1,3}))?\s*cm$/;
+/** `5 cm 3 mm` : des centimètres et un chiffre de millimètres */
+const CM_MM_REGEX = /^(\d{1,3})\s*cm\s*(\d)\s*mm$/;
+/** `72 mm` */
+const MM_REGEX = /^(\d{1,4})\s*mm$/;
+
+/** Longueur écrite par l'auteur → millimètres (null : illisible ; NaN : pas au mm près) */
+function readLength(text: string): { length: number; unit: LengthUnit } | null {
+	const cmMm = CM_MM_REGEX.exec(text);
+	if (cmMm) return { length: Number(cmMm[1]) * 10 + Number(cmMm[2]), unit: 'cm-mm' };
+	const mm = MM_REGEX.exec(text);
+	if (mm) return { length: Number(mm[1]), unit: 'mm' };
+	const cm = CM_REGEX.exec(text);
+	if (!cm) return null;
+	const decimals = cm[2] ?? '';
+	// Plus d'un chiffre après la virgule (non nul) : pas au millimètre près
+	if (decimals.replace(/0+$/, '').length > 1) return { length: NaN, unit: 'cm' };
+	return { length: Number(cm[1]) * 10 + Number(decimals.charAt(0) || '0'), unit: 'cm' };
+}
+
+/**
+ * `segment AB = 6 cm` (chantier `regle-graduee`, ADR 0036) : un segment de A, de
+ * la longueur donnée (`5 cm 3 mm`, `5,3 cm`, `72 mm`), au millimètre près
+ */
+function readSegmentLength(rest: string, line: number): ConstructionCheck {
+	const usage = `« ${SEGMENT_EXAMPLE} » (ou 5 cm 3 mm, 5,3 cm, 72 mm)`;
+	const match = SEGMENT_REGEX.exec(rest.trim());
+	if (!match) {
+		throw new LineError(
+			`segment attend le point de départ, le nom de l’autre bout et une longueur : ${usage}`
+		);
+	}
+	const [point, end] = [match[1], match[2]];
+	const name = `${point}${end}`;
+	if (point === end) {
+		throw new LineError(
+			`segment ${name} : le point de départ et l’autre bout doivent être différents`
+		);
+	}
+	const read = readLength(match[3].trim());
+	if (!read) {
+		throw new LineError(`segment ${name} : longueur en cm ou en mm : ${usage}`);
+	}
+	if (Number.isNaN(read.length)) {
+		throw new LineError(
+			`segment ${name} : longueur au millimètre près (5,3 cm, 5 cm 3 mm ou 53 mm)`
+		);
+	}
+	if (read.length <= 0) {
+		throw new LineError(`segment ${name} : longueur plus grande que 0`);
+	}
+	return { kind: 'segment', point, end, length: read.length, unit: read.unit, line };
+}
+
 const NAMED_EXAMPLES = {
 	point: "point A' = symetrie(A, axe=d)",
 	droite: 'droite m = mediatrice(A, B)',
@@ -406,6 +466,7 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	if (word === 'triangle') return readTriangle(rest.join(' '), line);
 	if (word === 'angle') return readAngle(rest.join(' '), line);
 	if (word === 'mesure') return readMeasure(rest.join(' '), line);
+	if (word === 'segment') return readSegmentLength(rest.join(' '), line);
 	if (word === 'point' || word === 'droite' || word === 'cercle') {
 		return readNamed(word, rest.join(' '), line);
 	}
@@ -449,6 +510,10 @@ function coherenceError(
 		check.kind === 'mesure' ||
 		(check.kind === 'triangle' && check.angles.length > 0 && !rightAngleOf(check)) ||
 		(check.kind === 'droite' && bissectriceOf(check.expression) !== null);
+	// Chantier `regle-graduee` (ADR 0036) : la règle graduée ne sert qu'au segment de longueur donnée
+	if (check.kind !== 'segment' && spec.tools.includes('regle')) {
+		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} ») ; la retirer de outils:`;
+	}
 	if (!protractorAllowed && spec.tools.includes('rapporteur')) {
 		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} »), à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») à construire un triangle dont un angle est donné (« verifier: ${TRIANGLE_ANGLES_EXAMPLE} ») ou une bissectrice (« verifier: droite d = bissectrice(A, O, B) ») ; le retirer de outils:`;
 	}
@@ -456,7 +521,22 @@ function coherenceError(
 		return check.kind === 'point'
 			? 'point se place avec l’outil point (outils: point)'
 			: `${check.kind} se trace avec l’outil ${tool} (outils: ${tool})`;
-	if (check.kind === 'angle') {
+	if (check.kind === 'segment') {
+		// ADR 0036 : seul dans la figure, papier uni, règle graduée et segment
+		const name = `${check.point}${check.end}`;
+		if (spec.checks.length > 1) {
+			return `segment ${name} : un segment de longueur donnée ne se mêle pas à d’autres vérifications`;
+		}
+		const allowed = PLAIN_PAPER_TOOLS.segment ?? [];
+		const other = spec.tools.find((t) => !allowed.includes(t));
+		if (other) return `segment ${name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		if (!spec.tools.includes('segment')) {
+			return `segment ${name} : le segment se trace avec l’outil segment, le long de la règle (outils: ${allowed.join(', ')})`;
+		}
+		if (grid) {
+			return `segment ${name} : la règle graduée sert sur papier uni (sur quadrillage, le carreau fait l’unité) ; retirer « grille: » (ou écrire « grille: non »)`;
+		}
+	} else if (check.kind === 'angle') {
 		// Lot 5 (§ 16) : seul dans la figure, papier uni, rapporteur et segment
 		const name = `${check.points[0]}${check.points[1]}${check.side}`;
 		if (spec.checks.length > 1) {
@@ -583,7 +663,8 @@ function coherenceError(
 				c.kind !== 'cercle' &&
 				c.kind !== 'triangle' &&
 				c.kind !== 'angle' &&
-				c.kind !== 'mesure'
+				c.kind !== 'mesure' &&
+				c.kind !== 'segment'
 		);
 		if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
 			const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
@@ -672,7 +753,8 @@ export function readConstructionHeader(
 			kind === 'cercle' ||
 			kind === 'triangle' ||
 			kind === 'angle' ||
-			kind === 'mesure';
+			kind === 'mesure' ||
+			kind === 'segment';
 		const first = spec.checks[0];
 		// Cercle de centre donné (n° 19) : le compas (et le Report), sur papier uni comme sur quadrillage
 		const centered = first.kind === 'cercle' ? centeredCircleOf(first.expression) : null;

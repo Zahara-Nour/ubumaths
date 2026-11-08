@@ -20,6 +20,8 @@
  * prendre un écartement entre deux points, puis piquer le compas ailleurs
  * (lot 4, `docs/archive/wip/controles-figure-progress.md` § 13). Rapporteur : poser
  * son centre et sa base, puis placer des repères aux graduations (lot 5, § 16).
+ * Règle graduée (chantier `regle-graduee`, ADR 0036) : poser son 0 puis sa
+ * direction ; le segment s'arrête sur ses graduations du millimètre.
  */
 export const CONSTRUCTION_TOOLS = [
 	'droite',
@@ -28,7 +30,8 @@ export const CONSTRUCTION_TOOLS = [
 	'equerre',
 	'compas',
 	'report',
-	'rapporteur'
+	'rapporteur',
+	'regle'
 ] as const;
 export type ConstructionTool = (typeof CONSTRUCTION_TOOLS)[number];
 
@@ -37,7 +40,8 @@ export const INSTRUMENT_TOOLS: readonly ConstructionTool[] = [
 	'equerre',
 	'compas',
 	'report',
-	'rapporteur'
+	'rapporteur',
+	'regle'
 ];
 
 /**
@@ -61,7 +65,9 @@ export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, Constructi
 	// Lot 5 (§ 16) : angle de mesure donnée, papier uni seulement
 	angle: ['rapporteur', 'segment'],
 	// Lot 6 (§ 19) : mesurer un angle, le rapporteur seul
-	mesure: ['rapporteur']
+	mesure: ['rapporteur'],
+	// Chantier `regle-graduee` (ADR 0036) : segment de longueur donnée, papier uni seulement
+	segment: ['regle', 'segment']
 };
 
 /** `bissectrice(A, O, B)` : trois points nommés, le sommet au milieu (lot 9, § 25) */
@@ -140,7 +146,8 @@ export const CONSTRUCTION_CHECK_KINDS = [
 	'cercle',
 	'triangle',
 	'angle',
-	'mesure'
+	'mesure',
+	'segment'
 ] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
@@ -315,6 +322,27 @@ export interface MeasureCheck {
 	line: number;
 }
 
+/**
+ * Unité dans laquelle l'auteur a écrit la longueur (messages à l'élève dans la
+ * même) : `6 cm` ou `5,3 cm` → cm décimaux ; `5 cm 3 mm` → cm et mm ; `72 mm` → mm
+ */
+export type LengthUnit = 'cm' | 'cm-mm' | 'mm';
+
+/**
+ * `segment AB = 6 cm` (chantier `regle-graduee`, CE2-039, ADR 0036) : A est un
+ * point de la figure ; l'élève trace à la règle graduée un segment d'un bout en
+ * A, de la longueur donnée (B : le nom de l'autre bout, pour les messages).
+ * 1 unité de la figure = 1 cm. `length` : en millimètres entiers, plus de 0.
+ */
+export interface SegmentLengthCheck {
+	kind: 'segment';
+	point: string;
+	end: string;
+	length: number;
+	unit: LengthUnit;
+	line: number;
+}
+
 export type ConstructionCheck =
 	| DroiteParCheck
 	| SegmentFigureCheck
@@ -323,7 +351,8 @@ export type ConstructionCheck =
 	| CircleCheck
 	| TriangleCheck
 	| AngleCheck
-	| MeasureCheck;
+	| MeasureCheck
+	| SegmentLengthCheck;
 
 /** L'outil avec lequel se trace chaque vérification */
 export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
@@ -337,7 +366,9 @@ export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	triangle: 'segment',
 	// Le segment est exigé aussi (coherence du parseur) ; le rapporteur est l'outil de départ
 	angle: 'rapporteur',
-	mesure: 'rapporteur'
+	mesure: 'rapporteur',
+	// Le segment est exigé aussi (cohérence du parseur) ; la règle graduée est l'outil de départ
+	segment: 'regle'
 };
 
 export interface ConstructionSpec {

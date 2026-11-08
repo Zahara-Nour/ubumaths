@@ -38,6 +38,11 @@ import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes }
 import { TriangleAuthorError, assertTriangle, judgeTriangle } from './triangle';
 import { AngleAuthorError, assertAngle, judgeAngle } from './angle';
 import { MeasureAuthorError, assertMeasure, judgeMeasure } from './measure';
+import {
+	SegmentLengthAuthorError,
+	assertSegmentLength,
+	judgeSegmentLength
+} from './segment-length';
 
 export {
 	EXTRA_SEGMENT_FEEDBACK,
@@ -142,7 +147,8 @@ function asAuthorError(error: unknown): unknown {
 		error instanceof CircleAuthorError ||
 		error instanceof TriangleAuthorError ||
 		error instanceof AngleAuthorError ||
-		error instanceof MeasureAuthorError
+		error instanceof MeasureAuthorError ||
+		error instanceof SegmentLengthAuthorError
 	) {
 		return new ConstructionAuthorError(error.message);
 	}
@@ -192,6 +198,14 @@ export function assertConstructionChecks(
 		if (check.kind === 'mesure') {
 			try {
 				assertMeasure(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
+		if (check.kind === 'segment') {
+			try {
+				assertSegmentLength(check, points, shapes);
 			} catch (error) {
 				throw asAuthorError(error);
 			}
@@ -284,6 +298,17 @@ export function judgeConstruction(
 				(c.kind === 'droite' && bissectriceOf(c.expression) !== null)
 		);
 	if (!protractor && objects.some((o) => o.kind === 'repere')) return { status: 'incorrect' };
+	// Règle graduée posée (chantier `regle-graduee`) hors d'un segment de longueur donnée :
+	// sans son outil, réponse forgée ; le segment est seul dans la figure (garanti par le parseur)
+	const segmentLength = allChecks.find((c) => c.kind === 'segment');
+	if (!segmentLength && objects.some((o) => o.kind === 'regle')) return { status: 'incorrect' };
+	if (segmentLength) {
+		try {
+			return judgeSegmentLength(segmentLength, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
 	// Angle à construire (lot 5) : seul dans la figure (garanti par le parseur)
 	if (angle) {
 		try {

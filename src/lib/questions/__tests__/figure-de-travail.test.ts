@@ -125,7 +125,7 @@ describe('lecture du bloc ```figure-de-travail', () => {
 			['```figure-de-travail', BODY[0], 'outils: crayon', ...BODY.slice(2), '```'].join('\n')
 		);
 		expect(node.errors.map((e) => e.message)).toEqual([
-			'Ligne 2 : outil « crayon » inconnu (droite, segment, point, equerre, compas, report, rapporteur)'
+			'Ligne 2 : outil « crayon » inconnu (droite, segment, point, equerre, compas, report, rapporteur, regle)'
 		]);
 	});
 

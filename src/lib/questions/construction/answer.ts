@@ -8,7 +8,9 @@
  * et un point du cercle, lot 2b), `report(cx;cy;ax;ay;bx;by)` (report de
  * longueur : le centre, puis les deux points de l'écartement, lot 4),
  * `repere(vx;vy;ax;ay;r;deg;sens)` (repère du rapporteur : centre, point de la
- * base, rayon, graduation entière 0..180, côté ±1, lot 5), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
+ * base, rayon, graduation entière 0..180, côté ±1, lot 5), `regle(ox;oy;bx;by;sens)`
+ * (règle graduée posée : son 0, un point de sa direction, son bord ±1 ; chantier
+ * `regle-graduee`, ADR 0036), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
  * d'objets, valeurs finies et modérées) avant toute lecture ; illisible → null.
  * Angle à mesurer (lot 6) : la mesure tapée en dernier, `mesure(50)`, à part des
  * objets tracés (`splitMeasuredAnswer`).
@@ -47,6 +49,10 @@ const REPORT_REGEX = new RegExp(
 
 const REPERE_REGEX = new RegExp(
 	`^repere\\(${Array.from({ length: 7 }, () => `\\s*(${NUMBER})\\s*`).join(';')}\\)$`
+);
+
+const REGLE_REGEX = new RegExp(
+	`^regle\\(${Array.from({ length: 5 }, () => `\\s*(${NUMBER})\\s*`).join(';')}\\)$`
 );
 
 const coordinate = z
@@ -125,8 +131,28 @@ const drawnRepereSchema = z
  */
 export type DrawnRepere = z.infer<typeof drawnRepereSchema>;
 
+const drawnRegleSchema = z
+	.object({
+		kind: z.literal('regle'),
+		ox: coordinate,
+		oy: coordinate,
+		bx: coordinate,
+		by: coordinate,
+		sens: z.union([z.literal(1), z.literal(-1)])
+	})
+	.refine((r) => Math.hypot(r.bx - r.ox, r.by - r.oy) > SAME_POINT_EPSILON);
+
+/**
+ * Règle graduée posée (chantier `regle-graduee`, ADR 0036) : son 0 en (ox ; oy),
+ * graduée vers (bx ; by) ; `sens` : le côté de son corps (1 : à droite de la
+ * direction, -1 : retournée). Ni un point ni un trait : la preuve qu'un bout de
+ * segment est sur une graduation (`rulerGraduation`, `instruments.ts`).
+ */
+export type DrawnRegle = z.infer<typeof drawnRegleSchema>;
+
 /** Ce que l'élève a tracé ou placé */
-export type DrawnObject = DrawnLine | DrawnPoint | DrawnCircle | DrawnReport | DrawnRepere;
+export type DrawnObject =
+	DrawnLine | DrawnPoint | DrawnCircle | DrawnReport | DrawnRepere | DrawnRegle;
 
 export function isDrawnLine(object: DrawnObject): object is DrawnLine {
 	return object.kind === 'droite' || object.kind === 'segment';
@@ -142,6 +168,10 @@ export function isDrawnReport(object: DrawnObject): object is DrawnReport {
 
 export function isDrawnRepere(object: DrawnObject): object is DrawnRepere {
 	return object.kind === 'repere';
+}
+
+export function isDrawnRegle(object: DrawnObject): object is DrawnRegle {
+	return object.kind === 'regle';
 }
 
 export function isDrawnPoint(object: DrawnObject): object is DrawnPoint {
@@ -163,6 +193,12 @@ function parseObject(part: string): DrawnObject | null {
 	if (mark) {
 		const [vx, vy, ax, ay, r, deg, sens] = mark.slice(1).map(Number);
 		const parsed = drawnRepereSchema.safeParse({ kind: 'repere', vx, vy, ax, ay, r, deg, sens });
+		return parsed.success ? parsed.data : null;
+	}
+	const ruler = REGLE_REGEX.exec(part);
+	if (ruler) {
+		const [ox, oy, bx, by, sens] = ruler.slice(1).map(Number);
+		const parsed = drawnRegleSchema.safeParse({ kind: 'regle', ox, oy, bx, by, sens });
 		return parsed.success ? parsed.data : null;
 	}
 	const report = REPORT_REGEX.exec(part);
@@ -219,6 +255,7 @@ export function serializeConstructionAnswer(objects: readonly DrawnObject[]): st
 			if (isDrawnReport(o)) return `report(${o.cx};${o.cy};${o.ax};${o.ay};${o.bx};${o.by})`;
 			if (isDrawnRepere(o))
 				return `repere(${o.vx};${o.vy};${o.ax};${o.ay};${o.r};${o.deg};${o.sens})`;
+			if (isDrawnRegle(o)) return `regle(${o.ox};${o.oy};${o.bx};${o.by};${o.sens})`;
 			return `point(${o.x};${o.y})`;
 		})
 		.join('|');
