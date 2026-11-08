@@ -6,16 +6,15 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR 2 en cours._
+_Mis à jour le 2026-11-09, après #2492 (PR 2 mergée)._
 
-- **État** : PR 2 ouverte (branche `fix/admin-modeles-liste`) : (d) cause trouvée — la garde
-  `dashboard/admin/+layout.server.ts` renvoyait vers l'élévation avec le chemin seul, les filtres
-  de l'adresse perdus au retour (David = compte professeur élevé) ; (c) recherche par titre (ILIKE)
-  ou début d'identifiant (≥ 8 caractères hexadécimaux, choix de David, plage d'UUID), champ réactivé ·
-  **Prochaine action** : revue (code-reviewer + security-auditor : redirection d'élévation),
-  CI, merge ; puis `deploy:prod` sur demande de David et ligne 22 d'`outils-manquants.md` en « Livré » ·
-  **En attente de David** : rien · **Pièges en cours** : finding 6 de #2489 toujours laissé ·
-  **Worktree / branche** : `../ubumaths-wt-admin-modeles`, `fix/admin-modeles-liste`.
+- **État** : les deux PR mergées — #2489 (édition d'un publié) et #2492 (filtres gardés après
+  l'élévation, recherche par titre ou début d'identifiant dès 8 caractères) ; vérifications manuelles
+  notées ; worktree supprimé · **Prochaine action** : `deploy:prod` **sur demande de David**, puis
+  ligne 22 d'`outils-manquants.md` en « Livré » et versement du chantier (journal archivé) ·
+  **En attente de David** : le `deploy:prod` · **Pièges en cours** : finding 6 de #2489 (mode JSON :
+  refus du serveur ignoré pour « Enregistrer »/« Publier ») laissé, pas de bug visible ·
+  **Worktree / branche** : aucun.
 
 ## Origine (2026-11-08, session `automatismes-1spe`)
 
