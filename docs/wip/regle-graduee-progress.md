@@ -9,17 +9,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, à l'ouverture._
+_Mis à jour le 2026-11-08, phase 0 validée._
 
-- **État** : phase 0 écrite (§ 1), décision d'architecture à prendre par David ; pas de code.
-- **Prochaine action** : David tranche Q1 à Q4 du § 1 ; puis ADR (si Q1 = cm de la figure) et comportements
-  détaillés.
-- **En attente de David** : Q1 à Q4 du § 1.
+- **État** : phase 0 tranchée (§ 1) ; pas de code.
+- **Prochaine action** : ADR « cm de la figure » (skill `domain-modeling`), puis comportements détaillés du
+  tracé d'un segment (039) et tests rouges ; après le n° 19 de `cercle-triangle-rectangle` (mêmes fichiers).
+- **En attente de David** : rien.
 - **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le chantier
   `cercle-triangle-rectangle` (n° 19, 20) touche les mêmes fichiers de `src/lib/questions/construction/`.
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee`.
 
-## 1. Phase 0 — le nœud et les questions (2026-11-08, à trancher)
+## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
 **Question d'accès** : aucune — code de la case « figure », ni table, ni policy, ni route.
 
@@ -40,3 +40,8 @@ _Mis à jour le 2026-11-08, à l'ouverture._
   rectangle, triangle rectangle cotés ; cercle de rayon donné, compas ouvert sur la règle). Reco : (a) puis (c) ;
   (b) seulement si les modèles actuels en manquent.
 - **Q4** — Supports : papier uni seulement (sur quadrillage, le carreau fait déjà l'unité) ? Reco : oui.
+
+**Décisions de David (« je suis tes recos », 2026-11-08)** : Q1 cm de la figure (1 unité = 1 cm, règle à l'échelle
+de la figure, pas d'étalonnage) ; Q2 règle posée comme le rapporteur, bout du segment aimanté au mm, loupe ; Q3 (a)
+tracer un segment (039) puis (c) constructions cotées (070), (b) mesurer après relevé des modèles existants ; Q4
+papier uni seulement.
