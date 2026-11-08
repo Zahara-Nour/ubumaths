@@ -655,11 +655,11 @@ C = point(4, 5)
 
 Même en-tête et même langage que ` ```figure `, plus trois lignes propres, lues par
 `construction-parser.ts` (`readConstructionHeader`) puis effacées avant le parseur de figure (numéros
-de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS` : `droite`, `segment`, `point`, `equerre`, `compas`, `report`, `rapporteur` ; un seul pour
+de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS` : `droite`, `segment`, `point`, `equerre`, `compas`, `report`, `rapporteur`, `regle` (la règle graduée, ADR 0036) ; un seul pour
 `droite_par`, `carre`, `rectangle` ; plusieurs = une palette ; absent : celui de la vérification,
 `CHECK_TOOL`, ou, sans `grille:` (ou `grille: non`), les instruments pour `point` et `symetrique` (et
-pour `droite`, quadrillage ou non, sans `report` sur quadrillage (`LINE_GRID_TOOLS`, `outils: report` y est refusé) ; pour `cercle`, `triangle` et `angle`, refusés sur quadrillage, sauf le cercle `cercle(O, passant=A)` et le triangle rectangle (palette Segment) ; un cercle de centre donné reçoit `centeredCircleTools` : le compas, plus le report pour `rayon=distance(D, E)`),
-`PLAIN_PAPER_TOOLS` ; sans quadrillage, une palette sans `equerre`, `compas`, `report` ni `rapporteur` est refusée), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
+pour `droite`, quadrillage ou non, sans `report` sur quadrillage (`LINE_GRID_TOOLS`, `outils: report` y est refusé) ; pour `cercle`, `triangle`, `angle` et `segment`, refusés sur quadrillage, sauf le cercle `cercle(O, passant=A)` et le triangle rectangle (palette Segment) ; un cercle de centre donné reçoit `centeredCircleTools` : le compas, plus le report pour `rayon=distance(D, E)`),
+`PLAIN_PAPER_TOOLS` ; sans quadrillage, une palette sans `equerre`, `compas`, `report`, `rapporteur` ni `regle` est refusée), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
 `carre A ; B`, `rectangle A ; B ; C`, `symetrique par d` / `symetrique A ; B ; C par d` (`symétrique`
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
 rectangle ou symétrique, jamais mêlé à `droite_par` ; `point A' = <expression>`, outil point, une ligne par
@@ -682,7 +682,10 @@ quadrillage ou hors du triangle rectangle ;
 (`°` admis), un angle à construire sur papier uni, seul, palette Rapporteur · Segment ; `mesure AOB`, trois
 points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le rapporteur seul (suivi de
 `, rapporteur posé` : déjà posé sur le premier côté nommé, figé, `outils:` refusé) ; le rapporteur
-refusé ailleurs, sauf dans un triangle à angle donné (pas l'angle droit, à l'équerre) ou une bissectrice) et `case: N`, posée
+refusé ailleurs, sauf dans un triangle à angle donné (pas l'angle droit, à l'équerre) ou une bissectrice ;
+`segment AB = 6 cm` (aussi `5 cm 3 mm`, `5,3 cm`, `72 mm`, au millimètre près, plus de 0), A un point de la
+figure, B le nom de l'autre bout, un segment à tracer à la règle graduée sur papier uni, seul, palette
+Règle graduée · Segment ; la règle graduée refusée ailleurs) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
 le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `

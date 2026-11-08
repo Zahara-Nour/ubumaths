@@ -36,6 +36,11 @@
 		 * the ruler against a segment of length L reads L on the ruler.
 		 */
 		pixelsPerUnit?: number;
+		/**
+		 * Retournée : le corps passe de l'autre côté du bord gradué (local y < 0),
+		 * graduations et chiffres restent lisibles, le 0 au même endroit
+		 */
+		mirrored?: boolean;
 	}
 
 	// Props with defaults
@@ -47,8 +52,12 @@
 		scale = 1,
 		showGraduations = true,
 		visible = true,
-		pixelsPerUnit = 40
+		pixelsPerUnit = 40,
+		mirrored = false
 	}: Props = $props();
+
+	/** Côté du corps : 1 sous le bord gradué (local y > 0), -1 retournée */
+	let side = $derived(mirrored ? -1 : 1);
 
 	// Dimensions in screen pixels (all rescaled when zoom changes so the
 	// ruler stays the same math-unit size).
@@ -58,7 +67,10 @@
 	let halfTickPx = $derived(HALF_TICK_MATH * pixelsPerUnit);
 	let minorTickPx = $derived(MINOR_TICK_MATH * pixelsPerUnit);
 	let innerEdgePx = $derived((27 / 40) * pixelsPerUnit); // inner edge y-position
-	let labelYPx = $derived(((12 + 9) / 40) * pixelsPerUnit); // label y (12 + HEIGHT_FONT)
+	// Retournée : la ligne de base des chiffres juste au-delà des grandes graduations
+	let labelYPx = $derived(
+		mirrored ? -(MAJOR_TICK_MATH * pixelsPerUnit + 2) : ((12 + 9) / 40) * pixelsPerUnit
+	); // label y (12 + HEIGHT_FONT)
 
 	// Calculate internal length in pixels
 	let internalLength = $derived(length * pixelsPerUnit + 15);
@@ -68,7 +80,7 @@
 	// commence juste après et ne le recouvre pas. Lecture des graduations
 	// inchangée (décalage perpendiculaire au bord).
 	let mainTransform = $derived(
-		`scale(${scale}) translate(${x / scale}, ${y / scale}) rotate(${rotation}) translate(0, ${EDGE_GAP_PX})`
+		`scale(${scale}) translate(${x / scale}, ${y / scale}) rotate(${rotation}) translate(0, ${side * EDGE_GAP_PX})`
 	);
 
 	// Generate graduation marks
@@ -102,7 +114,7 @@
 		<!-- Main ruler body -->
 		<rect
 			x={-RAY - 1}
-			y="0"
+			y={mirrored ? -WIDTH : 0}
 			width={internalLength + RAY + 1}
 			height={WIDTH}
 			rx={RAY}
@@ -116,9 +128,9 @@
 		<!-- Inner edge line -->
 		<line
 			x1={-RAY}
-			y1={innerEdgePx}
+			y1={side * innerEdgePx}
 			x2={internalLength}
-			y2={innerEdgePx}
+			y2={side * innerEdgePx}
 			stroke="#999999"
 			stroke-width="2"
 		/>
@@ -132,7 +144,7 @@
 						x1={mark.x}
 						y1="0"
 						x2={mark.x}
-						y2={mark.height}
+						y2={side * mark.height}
 						style="stroke: var(--color-foreground)"
 						stroke-width="0.7"
 					/>
@@ -157,7 +169,7 @@
 		<text
 			pointer-events="none"
 			x={internalLength / 2 - RAY - 3}
-			y={WIDTH - 5}
+			y={mirrored ? -WIDTH + 14 : WIDTH - 5}
 			style="font-family: Arial; font-size: 8pt; font-weight: bold; fill: maroon; text-anchor: middle;"
 		>
 			Chiphre

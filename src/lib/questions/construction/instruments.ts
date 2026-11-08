@@ -14,7 +14,7 @@
  * @module questions/construction/instruments
  */
 
-import type { DrawnLine, DrawnObject, DrawnRepere } from './answer';
+import type { DrawnLine, DrawnObject, DrawnRegle, DrawnRepere } from './answer';
 import type { Position } from './judge';
 
 /** Droite (par deux points), demi-droite (origine `a`), segment, ou cercle */
@@ -42,9 +42,9 @@ export function isStraight(trait: Trait): trait is StraightTrait {
 	return trait.kind !== 'circle';
 }
 
-/** Le trait que dessine un objet de l'élève ; null pour un point (ou un repère du rapporteur) */
+/** Le trait que dessine un objet de l'élève ; null pour un point (ou un repère du rapporteur, une règle posée) */
 export function traitOf(object: DrawnObject): Trait | null {
-	if (object.kind === 'point' || object.kind === 'repere') return null;
+	if (object.kind === 'point' || object.kind === 'repere' || object.kind === 'regle') return null;
 	if (object.kind === 'cercle') {
 		const radius = Math.hypot(object.x - object.cx, object.y - object.cy);
 		return { kind: 'circle', center: { x: object.cx, y: object.cy }, radius };
@@ -68,6 +68,73 @@ export function repereAt(mark: DrawnRepere): Position {
 	const base = Math.atan2(mark.ay - mark.vy, mark.ax - mark.vx);
 	const angle = base + (mark.sens * mark.deg * Math.PI) / 180;
 	return { x: mark.vx + mark.r * Math.cos(angle) + 0, y: mark.vy + mark.r * Math.sin(angle) + 0 };
+}
+
+/** Direction (unitaire) de la règle posée, de son 0 vers ses graduations */
+export function rulerDirection(ruler: DrawnRegle): Position {
+	const length = Math.hypot(ruler.bx - ruler.ox, ruler.by - ruler.oy);
+	return { x: (ruler.bx - ruler.ox) / length, y: (ruler.by - ruler.oy) / length };
+}
+
+/**
+ * La graduation `mm` (millimètres depuis le 0) de la règle graduée posée
+ * (chantier `regle-graduee`, ADR 0036 : 1 unité = 1 cm), en pleine précision :
+ * le juge recalcule la même position
+ */
+export function rulerGraduation(ruler: DrawnRegle, mm: number): Position {
+	const u = rulerDirection(ruler);
+	return { x: ruler.ox + (mm / 10) * u.x + 0, y: ruler.oy + (mm / 10) * u.y + 0 };
+}
+
+/**
+ * Le point `p` est-il sur une graduation de la règle (sur son bord, à un
+ * millimètre entier de 0 à `rulerLength` cm) ? Rend la graduation, sinon null
+ */
+export function rulerGraduationOf(
+	p: Position,
+	ruler: DrawnRegle,
+	rulerLength: number
+): number | null {
+	const o = { x: ruler.ox, y: ruler.oy };
+	const u = rulerDirection(ruler);
+	const t = (p.x - o.x) * u.x + (p.y - o.y) * u.y;
+	const mm = Math.round(t * 10);
+	if (mm < 0 || mm > rulerLength * 10) return null;
+	const q = rulerGraduation(ruler, mm);
+	return Math.hypot(p.x - q.x, p.y - q.y) <= EPSILON * scaleOf(p, q) ? mm : null;
+}
+
+/** La plus grande graduation (mm) de la règle qui est dans la fenêtre (le 0 y est) */
+export function rulerMaxMm(ruler: DrawnRegle, rulerLength: number, frame?: Frame | null): number {
+	let mm = rulerLength * 10;
+	while (frame && mm > 0 && !isInFrame(rulerGraduation(ruler, mm), frame)) mm--;
+	return mm;
+}
+
+/**
+ * Le bout d'un segment touché près du bord de la règle posée : la graduation
+ * du millimètre la plus proche (le long du bord, dans la fenêtre) ; null si le
+ * toucher est loin du bord ou au-delà de la règle
+ *
+ * @param radius - Rayon d'aimantation, en unités de la figure
+ */
+export function rulerGraduationNear(
+	tap: Position,
+	ruler: DrawnRegle,
+	rulerLength: number,
+	radius: number,
+	frame?: Frame | null
+): Position | null {
+	const u = rulerDirection(ruler);
+	const dx = tap.x - ruler.ox;
+	const dy = tap.y - ruler.oy;
+	const t = dx * u.x + dy * u.y;
+	if (Math.abs(u.x * dy - u.y * dx) > radius) return null;
+	if (t < -radius || t > rulerLength + radius) return null;
+	const mm = Math.min(Math.max(Math.round(t * 10), 0), rulerLength * 10);
+	const graduation = rulerGraduation(ruler, mm);
+	if (frame && !isInFrame(graduation, frame)) return null;
+	return graduation;
 }
 
 /** Paramètre t (p = a + t·(b − a)) admis sur le trait droit, au jeu près */
@@ -368,7 +435,7 @@ function isSupported(
 	marks: readonly DrawnRepere[],
 	eyeballed: readonly EyeballedArc[] = []
 ): boolean {
-	if (object.kind === 'point' || object.kind === 'repere') return false;
+	if (object.kind === 'point' || object.kind === 'repere' || object.kind === 'regle') return false;
 	if (object.kind === 'cercle' || object.kind === 'report') {
 		const trait = traitOf(object);
 		// Exception 4 : le cercle à l'œil, refait sur SES propres points (même centre, même

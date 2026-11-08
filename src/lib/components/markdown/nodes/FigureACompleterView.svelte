@@ -25,6 +25,11 @@
 	  chaque toucher place un repère au degré entier le plus proche ; ‹ › (ou les
 	  flèches, le rapporteur ayant le focus) le décalent d'un degré ; Retourner
 	  passe le corps de l'autre côté ; à la correction, l'arc de l'angle codé ;
+	- règle graduée (chantier `regle-graduee`, ADR 0036) : le 0, puis la direction
+	  la posent, graduée à l'échelle de la figure (1 unité = 1 cm) ; au segment,
+	  le bout s'aimante à la graduation du mm la plus proche, ‹ › (ou les flèches,
+	  la règle ayant le focus) le décalent d'1 mm ; Retourner change son bord ; à
+	  la correction, la règle posée en A et le bon segment ;
 	- clavier : les points nommés sont des boutons (Tab, puis Entrée ou Espace),
 	  avec les instruments les intersections aussi, et les droites pour l'équerre ;
 	  sur quadrillage, un curseur se déplace de nœud en nœud avec les flèches ;
@@ -59,6 +64,9 @@
 		intersectionsOf,
 		isInFrame,
 		repereAt,
+		rulerDirection,
+		rulerGraduationNear,
+		snapInstrument,
 		isStraight,
 		straightAt,
 		traitsOfObjects,
@@ -76,7 +84,8 @@
 		serializeConstructionAnswer,
 		serializeMeasuredAnswer,
 		splitMeasuredAnswer,
-		type DrawnLine
+		type DrawnLine,
+		type DrawnRegle
 	} from '$lib/questions/construction/answer';
 	import type { Position } from '$lib/questions/construction/judge';
 	import {
@@ -91,10 +100,14 @@
 		cancelPending,
 		chooseGuide,
 		clipLineToWindow,
+		currentRuler,
 		eraseLast,
 		flipProtractor,
+		flipRuler,
 		markDegree,
 		nudgeMark,
+		nudgeRulerEnd,
+		rulerSegmentMm,
 		snapTap,
 		snapWithInstruments,
 		snapToGrid,
@@ -104,6 +117,7 @@
 		solutionPoints,
 		solutionAngle,
 		solutionBissectrices,
+		solutionRuler,
 		solutionTriangle,
 		type ConstructionAnswerInput,
 		type Drawing,
@@ -113,6 +127,8 @@
 	import { protractorRadiusOf } from '$lib/questions/construction/angle';
 	import { posedProtractorOf } from '$lib/questions/construction/measure';
 	import Protractor from '$lib/constructions-v2/instruments/components/Protractor.svelte';
+	import Ruler from '$lib/constructions-v2/instruments/components/Ruler.svelte';
+	import { formatLength, rulerLengthOf } from '$lib/questions/construction/segment-length';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import FigureBlockView from './FigureBlockView.svelte';
@@ -187,6 +203,12 @@
 		...(mine?.span && { span: mine.span }),
 		...(mine?.protractor && { protractor: mine.protractor })
 	});
+	/** Règle graduée posée (la dernière de la réponse), tant que l'élève trace */
+	let ruler = $derived(drawable ? currentRuler(drawing) : null);
+	/** Longueur de la règle (cm) : celle du refus à la publication (`rulerLengthOf`) */
+	let rulerLength = $derived(rulerLengthOf(node.header.window));
+	/** Longueur (mm) du dernier segment tracé le long de la règle */
+	let rulerMm = $derived(rulerSegmentMm(drawing, rulerLength));
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
 	let tools = $derived<ConstructionTool[]>(node.construction?.tools ?? ['droite']);
@@ -211,6 +233,17 @@
 			}
 			if (drawing.start) return 'Touche un point du côté, pour y poser la base du rapporteur.';
 			return 'Touche où piquer le centre du rapporteur.';
+		}
+		if (tool === 'regle') {
+			if (drawing.start)
+				return 'Touche un point dans la direction du segment, pour y poser la règle.';
+			if (ruler) {
+				return 'Règle posée : touche Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.';
+			}
+			return 'Touche où mettre le 0 de la règle.';
+		}
+		if (tool === 'segment' && ruler) {
+			return 'Trace le segment le long de la règle : son bout s’arrête sur une graduation, ‹ › pour l’ajuster d’un millimètre.';
 		}
 		if (tool !== 'report') return '';
 		if (drawing.span) return 'Touche où piquer le compas. Pour une autre longueur, touche Report.';
@@ -304,6 +337,50 @@
 	function flip() {
 		if (!drawable) return;
 		apply(flipProtractor(drawing));
+	}
+
+	/** ‹ › et flèches : décaler d'un millimètre le bout du segment le long de la règle */
+	function nudgeRuler(delta: number) {
+		if (!drawable) return;
+		apply(nudgeRulerEnd(drawing, delta, { rulerLength, window: node.header.window }));
+	}
+
+	function flipTheRuler() {
+		if (!drawable) return;
+		apply(flipRuler(drawing));
+	}
+
+	/** Clavier, la règle ayant le focus : flèches = ±1 mm, Maj + flèches = ±1 cm */
+	function handleRulerKey(event: KeyboardEvent) {
+		const step = event.shiftKey ? 10 : 1;
+		const delta =
+			event.key === 'ArrowRight' || event.key === 'ArrowUp'
+				? step
+				: event.key === 'ArrowLeft' || event.key === 'ArrowDown'
+					? -step
+					: 0;
+		if (delta === 0) return;
+		event.preventDefault();
+		nudgeRuler(delta);
+	}
+
+	/**
+	 * La règle posée, à l'écran : son 0, sa rotation (degrés SVG), à l'échelle de
+	 * la figure (ADR 0036 : une grande graduation par unité)
+	 */
+	function rulerOnScreen(posed: DrawnRegle, scene: FigureScene, width: number, height: number) {
+		const transformer = createTransformer(scene.viewport, width, height);
+		const o = transformer.mathToSvg(posed.ox, posed.oy);
+		const u = rulerDirection(posed);
+		const b = transformer.mathToSvg(posed.ox + u.x, posed.oy + u.y);
+		const rotation = (Math.atan2(b.y - o.y, b.x - o.x) * 180) / Math.PI;
+		return {
+			x: o.x,
+			y: o.y,
+			rotation,
+			pixelsPerUnit: Math.hypot(b.x - o.x, b.y - o.y),
+			mirrored: posed.sens === -1
+		};
 	}
 
 	/**
@@ -494,7 +571,8 @@
 		equerre: 'Équerre',
 		compas: 'Compas',
 		report: 'Report',
-		rapporteur: 'Rapporteur'
+		rapporteur: 'Rapporteur',
+		regle: 'Règle graduée'
 	};
 
 	/** Toucher (doigt, souris) : coordonnées de la fenêtre, puis de la figure */
@@ -539,6 +617,20 @@
 		}
 		if (tool === 'rapporteur') protractorRadius = radiusFor(scene);
 		const targets = snapTargets(scene);
+		// Règle posée : le départ va d'abord à un point (A, le 0) ; le bout, sur le bord de la
+		// règle, à la graduation du mm la plus proche avant tout point (revue de #2485 : sinon
+		// A, tout proche, avale les petites longueurs)
+		if (tool === 'segment' && ruler) {
+			const onRuler = rulerGraduationNear(math, ruler, rulerLength, radius, scene.viewport);
+			const onPoint = snapInstrument(
+				math,
+				{ points: targets.points, intersections: [], traits: [] },
+				radius
+			);
+			const first = drawing.start ? (onRuler ?? onPoint) : (onPoint ?? onRuler);
+			tapAt(first ?? snapWithInstruments(math, targets, radius));
+			return;
+		}
 		if (tool === 'equerre' && !drawing.guide) {
 			const guide = straightAt(math, targets.traits, radius);
 			if (guide) chooseLine(guide);
@@ -606,6 +698,12 @@
 				return last ? `Rapporteur posé, repère à ${last.deg}` : 'Rapporteur posé';
 			}
 			if (drawing.start && tool === 'rapporteur') return 'Rapporteur : centre choisi';
+			if (drawing.start && tool === 'regle') return 'Règle : 0 choisi';
+			if (ruler) {
+				return rulerMm === null
+					? 'Règle posée'
+					: `Règle posée, segment de ${formatLength(rulerMm, 'cm-mm')}`;
+			}
 			return drawing.start ? 'Départ choisi' : '';
 		}
 		const count = tool === 'point' ? placedPoints.length : lines.length;
@@ -871,6 +969,32 @@
 				<Protractor x={p.x} y={p.y} rotation={p.rotation} pixelsPerUnit={p.pixelsPerUnit} />
 			</g>
 		{/if}
+		{#if ruler}
+			{@const r = rulerOnScreen(ruler, scene, width, height)}
+			<!-- Clavier : la règle a le focus, les flèches mènent le bout du segment -->
+			<g
+				data-testid="regle"
+				data-sens={ruler.sens}
+				class="rapporteur"
+				role="slider"
+				tabindex="0"
+				aria-label="Règle graduée : flèches pour régler la longueur du segment"
+				aria-valuemin={0}
+				aria-valuemax={rulerLength * 10}
+				aria-valuenow={rulerMm ?? 0}
+				aria-valuetext={formatLength(rulerMm ?? 0, 'cm-mm')}
+				onkeydown={handleRulerKey}
+			>
+				<Ruler
+					x={r.x}
+					y={r.y}
+					rotation={r.rotation}
+					length={rulerLength}
+					pixelsPerUnit={r.pixelsPerUnit}
+					mirrored={r.mirrored}
+				/>
+			</g>
+		{/if}
 		{#if drawable && drawing.span}
 			{@const a = transformer.mathToSvg(drawing.span.a.x, drawing.span.a.y)}
 			{@const b = transformer.mathToSvg(drawing.span.b.x, drawing.span.b.y)}
@@ -883,7 +1007,27 @@
 			{/if}
 		{/if}
 		{#if corrected}
-			{#each solutionLines(checks, allPoints, lines, figureShapes(scene, node.header), expectedOf()) as line, i (i)}
+			<!-- Segment de longueur donnée : la règle posée en A, sous le bon segment -->
+			{@const goodRuler = solutionRuler(
+				checks,
+				allPoints,
+				figureShapes(scene, node.header),
+				objects
+			)}
+			{#if goodRuler}
+				{@const r = rulerOnScreen(goodRuler, scene, width, height)}
+				<g data-testid="bonne-regle" class="bonne-regle" aria-hidden="true">
+					<Ruler
+						x={r.x}
+						y={r.y}
+						rotation={r.rotation}
+						length={rulerLength}
+						pixelsPerUnit={r.pixelsPerUnit}
+						mirrored={r.mirrored}
+					/>
+				</g>
+			{/if}
+			{#each solutionLines(checks, allPoints, objects, figureShapes(scene, node.header), expectedOf()) as line, i (i)}
 				{@const s = toScreen(line, scene, width, height)}
 				{#if s}
 					<line
@@ -1221,6 +1365,27 @@
 					</Button>
 				</div>
 			{/if}
+			{#if ruler}
+				<div class="palette" role="group" aria-label="Règle graduée">
+					<Button
+						variant="outline"
+						size="sm"
+						data-testid="regle-moins"
+						aria-label="Segment : un millimètre de moins"
+						onclick={() => nudgeRuler(-1)}>‹ 1 mm</Button
+					>
+					<Button
+						variant="outline"
+						size="sm"
+						data-testid="regle-plus"
+						aria-label="Segment : un millimètre de plus"
+						onclick={() => nudgeRuler(1)}>1 mm ›</Button
+					>
+					<Button variant="outline" size="sm" data-testid="regle-retourner" onclick={flipTheRuler}>
+						Retourner
+					</Button>
+				</div>
+			{/if}
 			<Button variant="outline" size="sm" onclick={erase} disabled={!canErase(drawing)}>
 				Effacer
 			</Button>
@@ -1462,6 +1627,12 @@
 
 	.rapporteur:focus-visible {
 		filter: drop-shadow(0 0 2px var(--color-ring));
+	}
+
+	/* Règle de la correction : sous le bon segment, un peu effacée */
+	.bonne-regle {
+		pointer-events: none;
+		opacity: 0.6;
 	}
 
 	.bon-triangle-arc {

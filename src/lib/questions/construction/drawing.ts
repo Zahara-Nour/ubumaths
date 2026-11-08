@@ -10,7 +10,10 @@
  * touchers prennent l'écartement (`span`), chaque toucher suivant pique un
  * cercle de ce rayon (lot 4) ; rapporteur : le centre, puis un point de la base
  * le posent (`protractor`), chaque toucher suivant place un repère au degré
- * entier le plus proche, ‹ › le décalent, Retourner change de côté (lot 5) ; « Effacer »
+ * entier le plus proche, ‹ › le décalent, Retourner change de côté (lot 5) ; règle
+ * graduée : le 0, puis la direction la posent (`regle(…)` dans la réponse), le
+ * segment s'arrête sur ses graduations du mm, ‹ › décalent son bout d'1 mm,
+ * Retourner change son bord (chantier `regle-graduee`, ADR 0036) ; « Effacer »
  * enlève le départ ou la droite en attente, sinon le dernier objet. Comportements validés
  * par David le 2026-10-25 (`docs/wip/geometrie-validation-progress.md` § 5).
  *
@@ -28,11 +31,15 @@ import {
 	serializeConstructionAnswer,
 	type DrawnLine,
 	type DrawnObject,
+	type DrawnRegle,
 	type DrawnRepere
 } from './answer';
 import type { Position } from './judge';
 import {
 	perpendicularThrough,
+	rulerGraduation,
+	rulerGraduationOf,
+	rulerMaxMm,
 	snapInstrument,
 	type SnapTargets,
 	type StraightTrait
@@ -51,6 +58,7 @@ import { polygonSolution } from './polygon';
 import { triangleCorrection, triangleSolution, type TriangleCorrection } from './triangle';
 import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
 import { measureCorrection } from './measure';
+import { segmentLengthRuler, segmentLengthSolution } from './segment-length';
 import { symmetrySolution, type FigureShapes } from './symmetry';
 
 /** Rayon d'aimantation, en pixels À L'ÉCRAN (un doigt d'enfant sur tablette) */
@@ -260,6 +268,89 @@ export function nudgeMark(drawing: Drawing, delta: number): Drawing {
 	return withObject(drawing, markOf(p, clamp(delta)));
 }
 
+/** La règle graduée posée : la dernière de la réponse ; null sans règle */
+export function currentRuler(drawing: Pick<Drawing, 'objects'>): DrawnRegle | null {
+	for (let i = drawing.objects.length - 1; i >= 0; i--) {
+		const object = drawing.objects[i];
+		if (object.kind === 'regle') return object;
+	}
+	return null;
+}
+
+/** Retourner : le corps de la règle posée passe de l'autre côté de son bord gradué */
+export function flipRuler(drawing: Drawing): Drawing {
+	const ruler = currentRuler(drawing);
+	if (!ruler) return drawing;
+	const flipped: DrawnRegle = { ...ruler, sens: ruler.sens === 1 ? -1 : 1 };
+	return {
+		...drawing,
+		objects: drawing.objects.map((o) => (o === ruler ? flipped : o))
+	};
+}
+
+/** Réglages de l'écran pour décaler le bout le long de la règle */
+export interface RulerOptions {
+	/** Longueur de la règle, en cm (`rulerLengthOf`) */
+	rulerLength: number;
+	window?: FigureWindow | null;
+}
+
+/**
+ * Le dernier objet est-il un segment le long de la règle posée (un bout à son 0,
+ * l'autre sur une graduation) ? Rend la graduation et le bout qui la porte
+ */
+function lastAlongRuler(
+	drawing: Drawing,
+	ruler: DrawnRegle,
+	rulerLength: number
+): { mm: number; end: 1 | 2 } | null {
+	const last = drawing.objects.at(-1);
+	if (last?.kind !== 'segment') return null;
+	const atZero = (x: number, y: number) => x === ruler.ox && y === ruler.oy;
+	const end = atZero(last.x1, last.y1) ? 2 : atZero(last.x2, last.y2) ? 1 : null;
+	if (end === null) return null;
+	const p = end === 2 ? { x: last.x2, y: last.y2 } : { x: last.x1, y: last.y1 };
+	const mm = rulerGraduationOf(p, ruler, rulerLength);
+	return mm === null ? null : { mm, end };
+}
+
+/** Longueur (mm) du segment le long de la règle posée, s'il est le dernier tracé ; null sinon */
+export function rulerSegmentMm(drawing: Drawing, rulerLength: number): number | null {
+	const ruler = currentRuler(drawing);
+	return ruler ? (lastAlongRuler(drawing, ruler, rulerLength)?.mm ?? null) : null;
+}
+
+/**
+ * ‹ › (et flèches) : décale de `delta` mm le bout du dernier segment le long de
+ * la règle posée, entre 1 mm et la dernière graduation dans la fenêtre ; sans
+ * ce segment, en trace un depuis le 0 jusqu'à la graduation `delta` (1 mm au moins)
+ */
+export function nudgeRulerEnd(drawing: Drawing, delta: number, options: RulerOptions): Drawing {
+	const ruler = currentRuler(drawing);
+	if (!ruler) return drawing;
+	const max = rulerMaxMm(ruler, options.rulerLength, options.window);
+	if (max < 1) return drawing;
+	const clamp = (mm: number) => Math.min(max, Math.max(1, mm));
+	const along = lastAlongRuler(drawing, ruler, options.rulerLength);
+	if (along) {
+		const mm = clamp(along.mm + delta);
+		if (mm === along.mm) return drawing;
+		const p = rulerGraduation(ruler, mm);
+		const last = drawing.objects.at(-1) as DrawnLine;
+		const moved: DrawnLine =
+			along.end === 2 ? { ...last, x2: p.x, y2: p.y } : { ...last, x1: p.x, y1: p.y };
+		return { ...drawing, objects: [...drawing.objects.slice(0, -1), moved] };
+	}
+	const p = rulerGraduation(ruler, clamp(delta));
+	return withObject(drawing, {
+		kind: 'segment',
+		x1: ruler.ox,
+		y1: ruler.oy,
+		x2: p.x,
+		y2: p.y
+	});
+}
+
 /** Équerre, premier toucher : la droite à longer (le départ éventuel est oublié) */
 export function chooseGuide(drawing: Drawing, guide: StraightTrait): Drawing {
 	return { objects: drawing.objects, start: null, guide };
@@ -316,6 +407,20 @@ export function addTap(
 	if (Math.hypot(position.x - start.x, position.y - start.y) <= SAME_TAP_EPSILON) return drawing;
 	if (tool === 'report') {
 		return { objects: drawing.objects, start: null, span: { a: start, b: position } };
+	}
+	if (tool === 'regle') {
+		// Reposer la règle sans rien tracer depuis : elle remplace la précédente
+		const ruler: DrawnRegle = {
+			kind: 'regle',
+			ox: start.x,
+			oy: start.y,
+			bx: position.x,
+			by: position.y,
+			sens: 1
+		};
+		const unused = drawing.objects.at(-1)?.kind === 'regle';
+		const base = unused ? { ...drawing, objects: drawing.objects.slice(0, -1) } : drawing;
+		return withObject(base, ruler);
 	}
 	if (tool === 'rapporteur') {
 		// Rayon par défaut : la longueur de la base (l'écran donne le sien)
@@ -397,6 +502,7 @@ export function solutionLines(
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
 		if (check.kind === 'triangle') return triangleSolution(check, points, shapes, drawn);
 		if (check.kind === 'angle') return angleSolution(check, points, shapes, drawn);
+		if (check.kind === 'segment') return segmentLengthSolution(check, points, shapes, drawn);
 		if (check.kind !== 'droite_par')
 			return polygonSolution(check, points, drawn.filter(isDrawnLine));
 		const a = points.get(check.points[0]);
@@ -455,6 +561,17 @@ export function solutionAngle(
 	if (measure) return measureCorrection(measure, points, shapes);
 	const check = checks.find((c) => c.kind === 'angle');
 	return check ? angleCorrection(check, points, shapes, drawn) : null;
+}
+
+/** La règle graduée de la correction (segment de longueur donnée), posée en A ; null sinon */
+export function solutionRuler(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined,
+	drawn: readonly DrawnObject[]
+): DrawnRegle | null {
+	const check = checks.find((c) => c.kind === 'segment');
+	return check ? segmentLengthRuler(check, points, shapes, drawn) : null;
 }
 
 /** Les points à placer : où ils vont, avec leur nom (vérifications `point`) */
