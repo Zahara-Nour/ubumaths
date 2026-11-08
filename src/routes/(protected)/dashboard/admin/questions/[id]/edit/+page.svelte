@@ -58,6 +58,8 @@
 		options?: { silent?: boolean }
 	): Promise<boolean> {
 		isSubmitting = true;
+		// Les raisons d'un refus précédent ne valent que pour l'envoi qui les a reçues
+		serverErrors = [];
 
 		try {
 			const response = await fetch(`/api/questions/templates/${data.template.id}`, {

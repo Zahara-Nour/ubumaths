@@ -49,6 +49,8 @@
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
 	): Promise<boolean> {
 		isSubmitting = true;
+		// Les raisons d'un refus précédent ne valent que pour l'envoi qui les a reçues
+		serverErrors = [];
 
 		try {
 			const response = await fetch('/api/questions/templates', {

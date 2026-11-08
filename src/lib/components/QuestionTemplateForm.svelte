@@ -1058,6 +1058,12 @@
 		}
 		hasAttemptedPublish = true;
 		if (!isValid) return;
+		// Doublon d'hypothèse : l'enregistrement perdrait la première ligne en silence
+		const duplicate = duplicateAssumptionMessage(assumptionRows);
+		if (duplicate) {
+			toaster.error(duplicate);
+			return;
+		}
 		onSave(buildTemplate());
 	}
 
@@ -1073,24 +1079,48 @@
 	async function confirmUnpublish() {
 		showUnpublishDialog = false;
 		if (jsonMode) {
+			let parsed: Parameters<typeof onSave>[0];
 			try {
-				const parsed = JSON.parse(jsonString);
-				parsed.status = 'draft';
-				const saved = await onSave(parsed, { silent: true });
-				if (saved !== false) {
-					status = 'draft';
-					savedSnapshot = computeSnapshot();
-				}
+				parsed = JSON.parse(jsonString);
 			} catch {
 				_jsonErrors = ['JSON invalide'];
 				jsonValid = false;
+				return;
 			}
+			parsed.status = 'draft';
+			const saved = await onSave(parsed, { silent: true });
+			if (saved === false) return;
+			// Le JSON affiché dit le nouveau statut : repasser en mode formulaire le relit
+			jsonString = JSON.stringify(parsed, null, 2);
+			status = 'draft';
+			hasAttemptedPublish = false;
+			savedSnapshot = computeSnapshot();
+			return;
+		}
+		// Mêmes gardes qu'« Enregistrer brouillon » : sinon perte silencieuse ou refus sans raison
+		const duplicate = duplicateAssumptionMessage(assumptionRows);
+		if (duplicate) {
+			toaster.error(duplicate);
 			return;
 		}
 		status = 'draft';
-		const saved = await onSave(buildTemplate(), { silent: true });
-		if (saved === false) status = 'published';
-		else savedSnapshot = computeSnapshot();
+		const templateData = buildTemplate();
+		const countErrors = choiceAnswerCountErrors(templateData, { draft: true });
+		if (countErrors.length > 0) {
+			status = 'published';
+			toaster.error(countErrors[0]);
+			return;
+		}
+		// Instantané de ce qui part, pris avant l'envoi : une saisie faite pendant
+		// l'enregistrement reste « non sauvegardée »
+		const sentSnapshot = computeSnapshot();
+		const saved = await onSave(templateData, { silent: true });
+		if (saved === false) {
+			status = 'published';
+			return;
+		}
+		hasAttemptedPublish = false;
+		savedSnapshot = sentSnapshot;
 	}
 
 	// Publish question (with category validation)
@@ -2030,7 +2060,9 @@
 		</Dialog.Header>
 		<div class="flex justify-end gap-2">
 			<Button variant="outline" onclick={() => (showUnpublishDialog = false)}>Annuler</Button>
-			<Button variant="destructive" onclick={confirmUnpublish}>Repasser en brouillon</Button>
+			<Button variant="destructive" onclick={confirmUnpublish} disabled={isSubmitting}
+				>Repasser en brouillon</Button
+			>
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

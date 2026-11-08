@@ -152,4 +152,21 @@ describe('QuestionTemplateForm : modèle publié', () => {
 		await expect.poll(() => onSave.mock.calls.length).toBe(1);
 		await expect.element(page.getByText('Publié', { exact: true })).toBeInTheDocument();
 	});
+
+	it('mode JSON : après le retour en brouillon, revenir au formulaire garde « Brouillon »', async () => {
+		const onSave = await renderForm(templateWith('published', TABLEAU_A_COMPLETER));
+		await page.getByRole('button', { name: 'JSON', exact: true }).click();
+		await expect
+			.element(page.getByRole('button', { name: 'Formulaire', exact: true }))
+			.toBeInTheDocument();
+		await page.getByRole('button', { name: 'Repasser en brouillon' }).click();
+		await page.getByRole('dialog').getByRole('button', { name: 'Repasser en brouillon' }).click();
+		await expect.poll(() => onSave.mock.calls.length).toBe(1);
+		expect(savedAt(onSave, 0).status).toBe('draft');
+		await page.getByRole('button', { name: 'Formulaire', exact: true }).click();
+		await expect.element(page.getByText('Brouillon', { exact: true })).toBeInTheDocument();
+		await expect
+			.element(page.getByRole('button', { name: 'Publier', exact: true }))
+			.toBeInTheDocument();
+	});
 });
