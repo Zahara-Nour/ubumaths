@@ -216,8 +216,9 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   n'attend pas. `main` local qui diffère d'`origin/main` : arrêt, en nommant les commits en cause
   (le commit local d'une autre session ne peut plus être poussé sous le verrou).
 - CI rouge (version, ou dernier commit de code de main) : si **tous** les jobs rouges, hors
-  « CI Summary », sont tombés sur le plantage connu des tests navigateur (`reading
-'wrapDynamicImport'` dans `gh run view --log-failed` ; rare depuis le GC forcé du 2026-11-08), le
+  « CI Summary », sont tombés sur le plantage connu des tests navigateur (« Browser connection was
+  closed » dans `gh run view --log-failed` ; pas `wrapDynamicImport`, présent aussi dans les logs
+  verts du job client ; rare depuis le GC forcé du 2026-11-08), le
   script relance lui-même les jobs rouges
   (`gh run rerun --failed`), **sous le verrou**, au plus 2 fois par commit, puis attend.
   `--relancer-ci` relance aussi, une fois, un échec qu'il ne reconnaît pas. Autrement : arrêt et
