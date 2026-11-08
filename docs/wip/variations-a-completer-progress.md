@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR #2456 ouverte._
+_Mis à jour le 2026-11-08, après #2456._
 
-- **État** : PR 1 (outil) ouverte, #2456 ; revue `code-reviewer` (Opus) : 0 bloquant, 3 mineurs corrigés (Typst d'une ligne sans case inchangé, `?-\infty` refusé, `?f(-3)` caché accepté avec x caché).
-- **Prochaine action** : CI verte → merge → ligne n° 14 de `outils-manquants.md` passée dans « Livré » ; vérification à l'œil notée dans `verifications-manuelles.md` ; le modèle « courbe → tableau à compléter » revient à `automatismes-1spe`.
-- **En attente de David** : rien.
-- **Pièges en cours** : vartable 0.2.1 trace une flèche après chaque valeur (pas d'omission) → énoncé PDF à flèche cachée sans aucune flèche ; `compile-prod.mjs` + `pdftoppm` pour voir le PDF ; `deploy-prod.test.ts` instable sous la charge (vert seul).
-- **Worktree / branche** : `../ubumaths-wt-variations-a-completer`, `feat/variations-a-completer`.
+- **État** : PR 1 (outil) mergée, #2456 (`2c4ace803`), pas encore en prod. Revue Opus : 0 bloquant, 3 mineurs corrigés dans la PR. N° 14 passé dans « Livré » de `outils-manquants.md` ; vérification à l'œil notée (`verifications-manuelles.md`, 2026-11-08).
+- **Prochaine action** : rien dans ce chantier. Le modèle « courbe → tableau de variations à compléter » (variante de `7f82d15a`) revient à `automatismes-1spe` ; ensuite, versement du durable (déjà dans `docs/systeme/ubumark.md`, `questions.md`) et archivage du journal.
+- **En attente de David** : `deploy:prod`, puis la vérification à l'œil.
+- **Pièges en cours** : vartable 0.2.1 ne sait pas omettre une flèche → énoncé PDF à flèche cachée sans aucune flèche ; voir le PDF avec `node scripts/fiches/compile-prod.mjs` puis `pdftoppm`.
+- **Worktree / branche** : aucun (retiré après le merge).
 
 ## Origine
 
