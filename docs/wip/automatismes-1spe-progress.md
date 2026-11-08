@@ -6,19 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2462 (lot 4 « Géométrie et repérage », fiche écrite en prod)._
+_Mis à jour le 2026-11-08, après #2474 (rangement des 2 modèles de repérage de 5e, migration jouée en prod)._
 
-- **État** : #2462 mergée ; modèles neufs de 5e `d4f38d30` (lire les coordonnées) et `d4d56c1b` (placer un
-  point) en brouillon, **sans nœud ni tag** ; fiche `c9e0effd` « Automatismes : géométrie et repérage (1) » en
-  brouillon, PDF relu depuis la base (2 p. / 1 p. / 3 p., 0 débord) · **Prochaine action** : rangement des 2
-  modèles (5-047, 5-128 : nœud + tag, migration, comme #2457 ; question d'accès à poser à David avant le SQL),
-  nouveau worktree · **En attente de David** : **ne pas publier `c9e0effd` avant le `deploy:prod` qui livre
-  #2462** (sinon droites graduées en texte brut au PDF de prod) ; publication en admin de `f9608ee5`,
-  `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles `23751c95`, `c1c9cfc3`, `d4f38d30`, `d4d56c1b` ·
-  **Pièges en cours** : écritures ET simulations contre la prod lancées par David (`!`, depuis le worktree
-  avant le merge) ; `fiche:verifier` dans un worktree : `PYTHON_FICHES=` vers le venv du dépôt principal ;
-  job CI « Client Tests (browser) » qui plante tests verts : relancer `--failed` ; une migration exige
-  `Doc-inchangée:` dans un commit · **Worktree / branche** : aucun (retiré).
+- **État** : #2474 mergée, `db:migrate` fait : `d4f38d30` (5-047) et `d4d56c1b` (5-128) rangés sur « Géométrie ›
+  Repérage et déplacements › coordonnées dans le plan », brouillons, `updated_at` préservé · **Prochaine action** :
+  modèle « courbe → tableau de variations à compléter » (ci-dessous), nouveau worktree · **En attente de David** :
+  **ne pas publier `c9e0effd` avant le `deploy:prod` qui livre #2462** (sinon droites graduées en texte brut au
+  PDF de prod) ; publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles
+  `23751c95`, `c1c9cfc3`, `d4f38d30`, `d4d56c1b` · **Pièges en cours** : écritures ET simulations contre la prod
+  lancées par David (`!`, depuis le worktree avant le merge) ; `fiche:verifier` dans un worktree :
+  `PYTHON_FICHES=` vers le venv du dépôt principal ; `supabase migration list --linked` et `db:migrate` depuis le
+  dépôt principal (le worktree n'est pas lié) ; une migration exige `Doc-inchangée:` dans un commit ·
+  **Worktree / branche** : aucun (retiré).
 - **Après le lot 4** : modèle « courbe → tableau de variations à compléter » (variante de `7f82d15a`, cubique), avec l'outil de #2456 (`-2: ?4, top`, `-2,2: ?flèche`) ; décision B du chantier `variations-a-completer` (journal archivé), reprise ici validée par David le 2026-11-08.
 - Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
@@ -653,6 +652,13 @@ normal, `toLocaleDecimal` met la virgule au rendu.
   (série 1 finit en haut de la page 2 : figures), corrigé 3 p., 0 débord, pages relues. Non bloquants : en-tête
   « série 2 » seul en bas de la page 2 du corrigé ; point d'un `placer: 13/10` sans nom nommé « A » au corrigé ;
   les points placés d'un repère sont noirs au corrigé (`points:` du ` ```courbe ` n'a pas de couleur).
+
+### Rangement des modèles de repérage (#2474, 2026-11-08)
+
+- Migration `20261108165841` : `d4f38d30` → 5-047, `d4d56c1b` → 5-128, nœud « Géométrie › Repérage et déplacements ›
+  coordonnées dans le plan » (celui des deux points), sans exception de niveaux. Question d'accès : personne
+  (David). Test d'intégration 4 rouges sur 9 sans le corps, 9 verts avec ; `security-auditor` sans finding
+  bloquant ; CI verte ; `db:migrate` joué, vérifié par MCP.
 
 ### Écritures, vérification, merge (2026-11-08)
 
