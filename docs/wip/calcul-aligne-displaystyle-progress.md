@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR à ouvrir._
+_Mis à jour le 2026-11-08, après #2471._
 
-- **État** : correctif écrit, tests verts (serveur, navigateur), vérifié à l'écran sur `/demo/editeur` · **Prochaine action** : PR, revue `code-reviewer`, merge · **En attente de David** : rien · **Pièges en cours** : bug voisin du cahier de texte (ci-dessous), hors de cette PR · **Worktree / branche** : `../ubumaths-wt-calcul-aligne-displaystyle`, `fix/calcul-aligne-displaystyle`
+- **État** : ✅ mergé (#2471), pas encore en prod (`deploy:prod` sur demande de David) · **Prochaine action** : aucune ; journal à verser dans `docs/archive/` · **En attente de David** : lancer ou non la PR du bug voisin du cahier de texte (ci-dessous) · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
 
 ## Problème (David, 2026-11-08)
 
@@ -37,3 +37,12 @@ Cahier de texte : `transformMathHtml` (`src/lib/utils/sanitize.ts`) passe `SAFE_
 `\frac{…\sqrt{91}}{2}`) est tronquée jusqu'au dernier `}}`. Vu sur `/demo/editeur`, carte « Le
 cahier de texte ». Existait avant ce chantier ; assainisseur de sécurité → PR à part, avec
 `security-auditor`.
+
+## Après la PR (2026-11-08)
+
+- Revue `code-reviewer` : `{\displaystyle a+b}^2` perdait ses accolades (corrigé, test) ; regex de
+  l'écart partagée, rangée dans `src/lib/ubumark/utils/calcul-centre.ts` (le générateur Typst
+  importait l'éditeur, hors du filtre `paths` de la suite d'intégration).
+- La ligne « Vérifié contre le code » d'`ubumark.md` est modifiée par toutes les sessions :
+  conflits à répétition. La date du correctif est dans le paragraphe « Calcul aligné », pas sur
+  cette ligne.
