@@ -1,0 +1,194 @@
+{
+	"title": "Aire sous la parabole par Monte-Carlo",
+	"description": "Méthode de Monte-Carlo pour l'aire sous y = x² dans le carré unité : valeur renvoyée pour un décompte donné, compléter la condition y <= x**2, dire de quoi la valeur est une estimation",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On note $\\mathcal{D}$ le domaine du carré $[0\\,;1]\\times[0\\,;1]$ situé sous la parabole d'équation $y=x^2$ (entre la parabole, l'axe des abscisses et la droite d'équation $x=1$). `random()` renvoie un nombre au hasard dans $[0\\,;1[$ : le point $(x\\,;y)$ est donc pris au hasard dans le carré.\n\n```python\nfrom random import random\n\ndef aire(n):\n    c = 0\n    for k in range(n):\n        x = random()\n        y = random()\n        if y <= x**2:\n            c = c + 1\n    return c / n\n```\n\nLe programme tire des points au hasard : on ne peut pas prévoir ce que renvoie `aire(10000)`. Lors d'un appel `aire(10000)`, ${{eval:c}}$ des $10\\,000$ points tirés vérifient la condition du `if`. Quelle valeur cet appel renvoie-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "3200..3450"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/10000;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`c` compte les points tirés qui vérifient la condition : à la fin, `c` vaut ${{eval:c}}$.",
+					"La fonction renvoie `c / n`, avec `n` égal à $10\\,000$.",
+					"L'appel renvoie $\\dfrac{{{eval:c}}}{10\\,000}=\\textcolor{{{color:primary.0}}}{{{eval:c/10000;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $\\mathcal{D}$ le domaine du carré $[0\\,;1]\\times[0\\,;1]$ situé sous la parabole d'équation $y=x^2$ (entre la parabole, l'axe des abscisses et la droite d'équation $x=1$). `random()` renvoie un nombre au hasard dans $[0\\,;1[$ : le point $(x\\,;y)$ est donc pris au hasard dans le carré. La fonction ci-dessous doit renvoyer la proportion des $n$ points tirés qui sont dans $\\mathcal{D}$.\n\n```python\nfrom random import random\n\ndef aire(n):\n    c = 0\n    for k in range(n):\n        x = random()\n        y = random()\n        if ...:\n            c = c + 1\n    return c / n\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `y <= x**2`\n- `y >= x**2`\n- `x <= y**2`\n- `y <= 2 * x`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le point $(x\\,;y)$ du carré est dans $\\mathcal{D}$ quand il est sous la parabole, c'est-à-dire quand son ordonnée est inférieure à $x^2$.",
+					"En Python, `**` est la puissance : $x^2$ s'écrit `x**2` (et non `2 * x`).",
+					"La condition est donc `y <= x**2`."
+				]
+			}
+		},
+		{
+			"statement": "On note $\\mathcal{D}$ le domaine du carré $[0\\,;1]\\times[0\\,;1]$ situé sous la parabole d'équation $y=x^2$ (entre la parabole, l'axe des abscisses et la droite d'équation $x=1$). `random()` renvoie un nombre au hasard dans $[0\\,;1[$ : le point $(x\\,;y)$ est donc pris au hasard dans le carré.\n\n```python\nfrom random import random\n\ndef aire(n):\n    c = 0\n    for k in range(n):\n        x = random()\n        y = random()\n        if y <= x**2:\n            c = c + 1\n    return c / n\n```\n\nPour $n$ grand, de quoi la valeur renvoyée par `aire(n)` est-elle une estimation ?\n\n```choix\n- De l'aire du domaine $\\mathcal{D}$.\n- De l'aire du domaine situé au-dessus de la parabole dans le carré.\n- Du nombre de points situés sous la parabole.\n- De l'aire du carré.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`aire(n)` renvoie la proportion des points tirés qui sont sous la parabole.",
+					"Les points sont pris au hasard dans le carré, d'aire $1$ : pour $n$ grand, cette proportion est proche de $\\dfrac{\\text{aire de }\\mathcal{D}}{\\text{aire du carré}}=\\text{aire de }\\mathcal{D}$.",
+					"La valeur renvoyée est une estimation de $\\textcolor{{{color:primary.0}}}{\\text{l'aire de }\\mathcal{D}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "c = 3312 : 0,3312",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3312"
+			},
+			"answers": ["0.3312"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c = 3312 : 0,3312 avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3312"
+			},
+			"answers": ["0,3312"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c = 3312 : fraction, Python renvoie un décimal",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3312"
+			},
+			"answers": ["\\frac{207}{625}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : le décompte au lieu de la proportion",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3312"
+			},
+			"answers": ["3312"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c = 3400 : 0,34",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3400"
+			},
+			"answers": ["0.34"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "y <= x**2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y >= x**2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x <= y**2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : y <= 2 * x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "aire de D",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : nombre de points",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

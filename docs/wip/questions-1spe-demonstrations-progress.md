@@ -9,18 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après la publication du lot 11._
+_Mis à jour le 2026-11-08, lot 12 écrit (PR à merger)._
 
-- **État** : lots 1-11 publiés. Lot 12 (§ 18) : relevé fait, contenu proposé.
-- **Prochaine action** : après validation de la proposition du § 18, script de lot, specs, PR, brouillons par David.
-- **En attente de David** : validation du § 18 ; vérification à l'œil en prod (ligne du
+- **État** : lots 1-11 publiés. Lot 12 (§ 18) : contenu validé (D12), écrit, specs vertes, PR ouverte.
+- **Prochaine action** : CI verte → merge ; David lance
+  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-12 --publier` ; relevé prod (MCP),
+  ids dans les JSON, migration nœud + tag (gabarit lot 11 ; 359 → « espérance », 431 → « variance et écart-type »).
+- **En attente de David** : 344 (c), écart à la proposition (§ 18) ; vérification à l'œil en prod (ligne du
   2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
   Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
   `publier-lot.ts`, même en simulation, refusé à Claude par le classifieur (prod).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12`
-  (neuve, depuis `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12`.
 
 ---
 
@@ -726,3 +727,27 @@ Distracteurs prévus : 344 `y >= x**2`, `x <= y**2`, `y <= 2 * x` ; 1/2, 2/3, π
 `x + y <= 1` ; 359 `s = valeurs[i] * probas[i]` (écrase), `s = s + valeurs[i]`, `s = s + probas[i]` ; 431 sans
 `probas[i]`, sans le carré, `valeurs[i] ** 2 - m` ; 360 `c / 26`, `len(texte) / c`, `c`. Grades {1_SPE}. Accès : Q5
 de D9, personne.
+
+**D12 (David, 2026-11-08, « je te suis »)** : proposition ci-dessus et recommandations : Monte-Carlo par un décompte
+donné ; 359 et 431 sur leurs sous-notions (le point reste sur la notion) ; niveaux 2, 3, 5, 5, 6 ; 431 avec
+`from math import sqrt` et une loi dont la variance tombe juste ; 360 (c) remplacé par « que représente la valeur
+renvoyée ? » (proportion des caractères, **espaces compris** : `len(texte)` les compte).
+
+Écart à la proposition, à faire valider par David : **344 (c)** ne demande plus « elle approche 1/3 ». Que l'aire
+sous la parabole vaut 1/3 relève du calcul intégral (terminale) : en 1re, l'élève ne peut pas le justifier. La
+variation demande « de quoi la valeur renvoyée est une estimation » : de l'aire du domaine sous la parabole
+(distracteurs : aire au-dessus, nombre de points, aire du carré).
+
+Contenu (`scripts/questions/1spe-algorithmes-12/`, script `docs/wip/questions/lot-1spe-algorithmes-12.py`) : 344 et
+427, 3 variations (décompte c sur 10 000 tiré, 3200..3450 et 7800..7900) ; 359, 2 variations (loi à 3 valeurs comme
+`1spe-va/06`) ; 431, 3 variations (loi symétrique m − d, m, m + d de probabilités a/10, (10 − 2a)/10, a/10 :
+V = 2a·d²/10) ; 360, 3 variations (8 mots courts à fréquence décimale exacte, choisis par l'indice `j` et des
+`{{if}}` imbriqués, helper `selon`). Probabilités écrites `0.{{eval:a}}` dans le code (jamais `;d` dans du Python).
+Valeur négative après un signe dans la correction : entre parenthèses (helper `par`). Une fraction juste
+(`\frac{1}{2}` pour 0,5) est `bad_form` (`form`) : Python renvoie un décimal ; une fraction non réduite ajoute une
+autre contrainte, spec écrite en fraction irréductible.
+
+Vérifié : `question:specs` 150 tirages par variation, 58 specs vertes, 0 `\textcolor` hors `$` ; aperçus relus
+(code, mots tirés, corrections) ; mots et « la mer est belle » (4 « e » sur 16 caractères, 3 espaces) recomptés en
+Python ; `create-questions` simulation en base locale (5 à créer). Pas d'aperçu à l'écran : les blocs de code n'ont
+aucune variable, seules les cases et le code en ligne en portent (déjà vus au lot 11).

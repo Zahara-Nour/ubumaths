@@ -1,0 +1,182 @@
+{
+	"title": "Estimation de π par Monte-Carlo",
+	"description": "Méthode de Monte-Carlo pour π (quart de disque dans le carré unité) : valeur renvoyée pour un décompte donné, compléter la condition x**2 + y**2 <= 1, compléter le return 4 * c / n",
+	"grades": ["1_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Le quart de disque $\\mathcal{Q}$ de centre $O$ et de rayon $1$ situé dans le carré $[0\\,;1]\\times[0\\,;1]$ a pour aire $\\dfrac{\\pi}{4}$. `random()` renvoie un nombre au hasard dans $[0\\,;1[$ : le point $(x\\,;y)$ est donc pris au hasard dans le carré.\n\n```python\nfrom random import random\n\ndef estimation_pi(n):\n    c = 0\n    for k in range(n):\n        x = random()\n        y = random()\n        if x**2 + y**2 <= 1:\n            c = c + 1\n    return 4 * c / n\n```\n\nLe programme tire des points au hasard : on ne peut pas prévoir ce que renvoie `estimation_pi(10000)`. Lors d'un appel `estimation_pi(10000)`, ${{eval:c}}$ des $10\\,000$ points tirés vérifient la condition du `if`. Quelle valeur cet appel renvoie-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "7800..7900"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*c/10000;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`c` compte les points tirés qui sont dans $\\mathcal{Q}$ : à la fin, `c` vaut ${{eval:c}}$.",
+					"La fonction renvoie `4 * c / n`, avec `n` égal à $10\\,000$.",
+					"L'appel renvoie $\\dfrac{4\\times{{eval:c}}}{10\\,000}=\\dfrac{{{eval:4*c}}}{10\\,000}=\\textcolor{{{color:primary.0}}}{{{eval:4*c/10000;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le quart de disque $\\mathcal{Q}$ de centre $O$ et de rayon $1$ situé dans le carré $[0\\,;1]\\times[0\\,;1]$ a pour aire $\\dfrac{\\pi}{4}$. `random()` renvoie un nombre au hasard dans $[0\\,;1[$ : le point $(x\\,;y)$ est donc pris au hasard dans le carré. La fonction ci-dessous compte les points tirés qui sont dans $\\mathcal{Q}$.\n\n```python\nfrom random import random\n\ndef estimation_pi(n):\n    c = 0\n    for k in range(n):\n        x = random()\n        y = random()\n        if ...:\n            c = c + 1\n    return 4 * c / n\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `x**2 + y**2 <= 1`\n- `x + y <= 1`\n- `x**2 + y**2 >= 1`\n- `x**2 + y**2 <= 4`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le point $M(x\\,;y)$ du carré est dans $\\mathcal{Q}$ quand $OM\\leqslant1$.",
+					"$OM=\\sqrt{x^2+y^2}$, donc $OM\\leqslant1$ équivaut à $x^2+y^2\\leqslant1$.",
+					"La condition est donc `x**2 + y**2 <= 1`."
+				]
+			}
+		},
+		{
+			"statement": "Le quart de disque $\\mathcal{Q}$ de centre $O$ et de rayon $1$ situé dans le carré $[0\\,;1]\\times[0\\,;1]$ a pour aire $\\dfrac{\\pi}{4}$. `random()` renvoie un nombre au hasard dans $[0\\,;1[$ : le point $(x\\,;y)$ est donc pris au hasard dans le carré. La fonction ci-dessous doit renvoyer une valeur approchée de $\\pi$.\n\n```python\nfrom random import random\n\ndef estimation_pi(n):\n    c = 0\n    for k in range(n):\n        x = random()\n        y = random()\n        if x**2 + y**2 <= 1:\n            c = c + 1\n    return ...\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `4 * c / n`\n- `c / n`\n- `c / n / 4`\n- `4 * n / c`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`c / n` est la proportion des points tirés qui sont dans $\\mathcal{Q}$.",
+					"Les points sont pris au hasard dans le carré, d'aire $1$ : pour $n$ grand, cette proportion est proche de l'aire de $\\mathcal{Q}$, $\\dfrac{\\pi}{4}$. Donc $\\pi\\approx4\\times\\dfrac{c}{n}$.",
+					"On écrit donc `return 4 * c / n`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "c = 7854 : 3,1416",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7854"
+			},
+			"answers": ["3.1416"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c = 7854 : 3,1416 avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7854"
+			},
+			"answers": ["3,1416"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans le facteur 4",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7854"
+			},
+			"answers": ["0.7854"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c = 7850 : 3,14",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7850"
+			},
+			"answers": ["3.14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x**2 + y**2 <= 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x + y <= 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x**2 + y**2 >= 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x**2 + y**2 <= 4",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "return 4 * c / n",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : c / n",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : c / n / 4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 * n / c",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

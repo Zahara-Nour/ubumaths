@@ -1,0 +1,214 @@
+{
+	"title": "Variance et écart type avec Python",
+	"description": "Fonctions variance et ecart_type : faire tourner variance sur une loi symétrique à trois valeurs, compléter la ligne v = v + probas[k] * (valeurs[k] - m)**2, compléter le return sqrt(variance(valeurs, probas))",
+	"grades": ["1_SPE"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\nfrom math import sqrt\n\ndef esperance(valeurs, probas):\n    s = 0\n    for k in range(len(valeurs)):\n        s = s + valeurs[k] * probas[k]\n    return s\n\ndef variance(valeurs, probas):\n    m = esperance(valeurs, probas)\n    v = 0\n    for k in range(len(valeurs)):\n        v = v + probas[k] * (valeurs[k] - m)**2\n    return v\n\ndef ecart_type(valeurs, probas):\n    return sqrt(variance(valeurs, probas))\n```\n\nQue renvoie l'appel `variance([{{eval:m-d}}, {{eval:m}}, {{eval:m+d}}], [0.{{eval:a}}, 0.{{eval:b}}, 0.{{eval:a}}])` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..6"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10-2*a"
+				},
+				{
+					"name": "V",
+					"expression": "eval:2*a*d^2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:V/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`m` reçoit l'espérance : ${{eval:m-d}}\\times{{eval:a/10;d}}+{{eval:m}}\\times{{eval:b/10;d}}+{{eval:m+d}}\\times{{eval:a/10;d}}={{eval:m}}$.",
+					"La boucle ajoute, pour chaque valeur, sa probabilité fois le carré de son écart à `m` : $v={{eval:a/10;d}}\\times(-{{eval:d}})^2+{{eval:b/10;d}}\\times0^2+{{eval:a/10;d}}\\times{{eval:d}}^2$.",
+					"L'appel renvoie $\\textcolor{{{color:primary.0}}}{{{eval:V/10;d}}}$, la variance de la loi donnée."
+				]
+			}
+		},
+		{
+			"statement": "Une variable aléatoire $X$ prend les valeurs de la liste `valeurs`, avec les probabilités de la liste `probas` (dans le même ordre). La fonction `variance` doit renvoyer la variance de $X$.\n\n```python\nfrom math import sqrt\n\ndef esperance(valeurs, probas):\n    s = 0\n    for k in range(len(valeurs)):\n        s = s + valeurs[k] * probas[k]\n    return s\n\ndef variance(valeurs, probas):\n    m = esperance(valeurs, probas)\n    v = 0\n    for k in range(len(valeurs)):\n        ...\n    return v\n\ndef ecart_type(valeurs, probas):\n    return sqrt(variance(valeurs, probas))\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `v = v + probas[k] * (valeurs[k] - m)**2`\n- `v = v + (valeurs[k] - m)**2`\n- `v = v + probas[k] * (valeurs[k] - m)`\n- `v = v + probas[k] * valeurs[k]**2 - m`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$V(X)=p_1(x_1-m)^2+p_2(x_2-m)^2+\\dots+p_n(x_n-m)^2$, où $m=E(X)$.",
+					"Chaque carré d'écart à $m$ est multiplié par sa probabilité ; sans le carré, la somme vaudrait toujours $0$.",
+					"La ligne est donc `v = v + probas[k] * (valeurs[k] - m)**2`."
+				]
+			}
+		},
+		{
+			"statement": "Une variable aléatoire $X$ prend les valeurs de la liste `valeurs`, avec les probabilités de la liste `probas` (dans le même ordre). La fonction `ecart_type` doit renvoyer l'écart type de $X$.\n\n```python\nfrom math import sqrt\n\ndef esperance(valeurs, probas):\n    s = 0\n    for k in range(len(valeurs)):\n        s = s + valeurs[k] * probas[k]\n    return s\n\ndef variance(valeurs, probas):\n    m = esperance(valeurs, probas)\n    v = 0\n    for k in range(len(valeurs)):\n        v = v + probas[k] * (valeurs[k] - m)**2\n    return v\n\ndef ecart_type(valeurs, probas):\n    return ...\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `sqrt(variance(valeurs, probas))`\n- `variance(valeurs, probas)**2`\n- `sqrt(esperance(valeurs, probas))`\n- `variance(valeurs, probas) / 2`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'écart type est la racine carrée de la variance : $\\sigma(X)=\\sqrt{V(X)}$.",
+					"`sqrt`, importée du module `math`, calcule la racine carrée.",
+					"On écrit donc `return sqrt(variance(valeurs, probas))`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "[1, 3, 5], [0.2, 0.6, 0.2] : 1,6",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"d": "2",
+				"a": "2",
+				"b": "6",
+				"V": "16"
+			},
+			"answers": ["1.6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1,6 avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"d": "2",
+				"a": "2",
+				"b": "6",
+				"V": "16"
+			},
+			"answers": ["1,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : écart type au lieu de la variance",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"d": "2",
+				"a": "2",
+				"b": "6",
+				"V": "16"
+			},
+			"answers": ["\\sqrt{1.6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[2, 3, 4], [0.4, 0.2, 0.4] : 0,8",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"d": "1",
+				"a": "4",
+				"b": "2",
+				"V": "8"
+			},
+			"answers": ["0.8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v = v + probas[k] * (valeurs[k] - m)**2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans probas[k]",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le carré",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : valeurs[k]**2 - m",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "return sqrt(variance(valeurs, probas))",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : variance au carré",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : racine de l'espérance",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : variance / 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

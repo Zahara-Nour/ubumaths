@@ -1,0 +1,212 @@
+{
+	"title": "Fréquence d'une lettre dans un texte",
+	"description": "Fonction frequence(texte, lettre) : faire tourner sur un mot court, compléter le return c / len(texte), interpréter la valeur renvoyée (proportion des caractères, espaces compris)",
+	"grades": ["1_SPE"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef frequence(texte, lettre):\n    c = 0\n    for car in texte:\n        if car == lettre:\n            c = c + 1\n    return c / len(texte)\n```\n\nQue renvoie l'appel `frequence(\"{{if:j==1|papa|{{if:j==2|maman|{{if:j==3|kayak|{{if:j==4|radar|{{if:j==5|chocolat|{{if:j==6|papillon|{{if:j==7|tatouage|assassin}}}}}}}}}}}}}}\", \"{{if:j==1|a|{{if:j==2|m|{{if:j==3|k|{{if:j==4|d|{{if:j==5|o|{{if:j==6|i|{{if:j==7|t|s}}}}}}}}}}}}}}\")` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..8"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:j==1|2|{{if:j==2|2|{{if:j==3|2|{{if:j==4|1|{{if:j==5|2|{{if:j==6|1|{{if:j==7|2|4}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "L",
+					"expression": "{{if:j==1|4|{{if:j==2|5|{{if:j==3|5|{{if:j==4|5|{{if:j==5|8|{{if:j==6|8|{{if:j==7|8|8}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/L;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle parcourt les caractères de « {{if:j==1|papa|{{if:j==2|maman|{{if:j==3|kayak|{{if:j==4|radar|{{if:j==5|chocolat|{{if:j==6|papillon|{{if:j==7|tatouage|assassin}}}}}}}}}}}}}} » et compte ceux égaux à « {{if:j==1|a|{{if:j==2|m|{{if:j==3|k|{{if:j==4|d|{{if:j==5|o|{{if:j==6|i|{{if:j==7|t|s}}}}}}}}}}}}}} » : `c` vaut ${{eval:c}}$.",
+					"`len(\"{{if:j==1|papa|{{if:j==2|maman|{{if:j==3|kayak|{{if:j==4|radar|{{if:j==5|chocolat|{{if:j==6|papillon|{{if:j==7|tatouage|assassin}}}}}}}}}}}}}}\")` est le nombre de caractères du texte : ${{eval:L}}$.",
+					"L'appel renvoie $\\dfrac{{{eval:c}}}{{{eval:L}}}=\\textcolor{{{color:primary.0}}}{{{eval:c/L;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer la fréquence de la lettre `lettre` dans le texte `texte`.\n\n```python\ndef frequence(texte, lettre):\n    c = 0\n    for car in texte:\n        if car == lettre:\n            c = c + 1\n    return ...\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `c / len(texte)`\n- `c / 26`\n- `len(texte) / c`\n- `c`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`c` est le nombre d'apparitions de `lettre` dans le texte, c'est-à-dire son effectif.",
+					"La fréquence est l'effectif divisé par l'effectif total, ici le nombre de caractères du texte, `len(texte)` (et non $26$, le nombre de lettres de l'alphabet).",
+					"On écrit donc `return c / len(texte)`."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante, appelée avec une phrase, par exemple `frequence(\"la mer est belle\", \"e\")`.\n\n```python\ndef frequence(texte, lettre):\n    c = 0\n    for car in texte:\n        if car == lettre:\n            c = c + 1\n    return c / len(texte)\n```\n\nQue représente la valeur renvoyée ?\n\n```choix\n- La proportion des caractères du texte, espaces compris, égaux à `lettre`.\n- Le nombre de fois où `lettre` apparaît dans le texte.\n- Le pourcentage des caractères du texte égaux à `lettre`.\n- La proportion des lettres du texte, espaces non compris, égales à `lettre`.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`c` compte les caractères égaux à `lettre` ; la fonction renvoie `c` divisé par `len(texte)` : c'est une proportion, entre $0$ et $1$ (pas un pourcentage).",
+					"`len(texte)` compte TOUS les caractères, espaces et ponctuation compris : pour « la mer est belle », $16$ caractères dont $3$ espaces.",
+					"La valeur renvoyée est $\\textcolor{{{color:primary.0}}}{\\text{la proportion des caractères, espaces compris, égaux à la lettre}}$ : ici $\\dfrac{4}{16}=0{,}25$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "papa, a : 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"c": "2",
+				"L": "4"
+			},
+			"answers": ["0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "papa, a : 0,5 avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"c": "2",
+				"L": "4"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "papa, a : 1/2, Python renvoie un décimal",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"c": "2",
+				"L": "4"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : effectif au lieu de la fréquence",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"c": "2",
+				"L": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "papillon, i : 0,125",
+			"variationIndex": 0,
+			"variables": {
+				"j": "6",
+				"c": "1",
+				"L": "8"
+			},
+			"answers": ["0.125"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "return c / len(texte)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : c / 26",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : len(texte) / c",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : c",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "proportion des caractères",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nombre",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pourcentage",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : espaces non compris",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
