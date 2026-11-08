@@ -413,15 +413,29 @@ describe('page admin des modèles — recherche par titre ou début d’identifi
 		expect(result.drafts).toHaveLength(0);
 	});
 
-	it('par un début d’identifiant de 4 caractères au moins, sans la casse', async () => {
-		expect((await loadPage(catalogue(), '?search=7F82')).publishedIds).toEqual([
+	it('par un début d’identifiant de 8 caractères au moins, sans la casse', async () => {
+		expect((await loadPage(catalogue(), '?search=7F82D15A')).publishedIds).toEqual([
 			'7f82d15a-0000-4000-8000-000000000001'
 		]);
-		expect((await loadPage(catalogue(), '?search=7f83')).publishedIds).toEqual([
+		expect((await loadPage(catalogue(), '?search=7f83aaaa-00')).publishedIds).toEqual([
 			'7f83aaaa-0000-4000-8000-000000000002'
 		]);
-		// Moins de 4 caractères : pas une recherche d’identifiant, seulement le titre
-		expect((await loadPage(catalogue(), '?search=7f8')).publishedIds).toHaveLength(0);
+		// Moins de 8 caractères (« 2024 », « face ») : seulement le titre
+		expect((await loadPage(catalogue(), '?search=7f82')).publishedIds).toHaveLength(0);
+		expect((await loadPage(catalogue(), '?search=7f82d15')).publishedIds).toHaveLength(0);
+	});
+
+	it('tirets hors de leur place : pas un identifiant, seulement le titre', async () => {
+		expect((await loadPage(catalogue(), '?search=7f82-d15a')).publishedIds).toHaveLength(0);
+		expect((await loadPage(catalogue(), '?search=7f82d15a00')).publishedIds).toEqual([
+			'7f82d15a-0000-4000-8000-000000000001'
+		]);
+	});
+
+	it('se combine avec le filtre des questions de cours (deux `or`)', async () => {
+		const result = await loadPage(catalogue(), '?search=7f82d15a&courseQuestion=1');
+
+		expect(result.publishedIds).toHaveLength(0);
 	});
 
 	it('par un identifiant complet, tirets compris', async () => {
@@ -435,6 +449,9 @@ describe('page admin des modèles — recherche par titre ou début d’identifi
 		expect((await loadPage(catalogue(), '?search=%25')).publishedIds).toHaveLength(1);
 		expect((await loadPage(catalogue(), '?search=50_50')).publishedIds).toHaveLength(1);
 		expect((await loadPage(catalogue(), '?search=50_5_')).publishedIds).toHaveLength(0);
+		// `*` (joker de PostgREST) : un seul caractère, jamais une suite
+		expect((await loadPage(catalogue(), '?search=50*50')).publishedIds).toHaveLength(1);
+		expect((await loadPage(catalogue(), '?search=Taux*50')).publishedIds).toHaveLength(0);
 	});
 
 	it('se combine avec les autres filtres', async () => {

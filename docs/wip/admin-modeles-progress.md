@@ -11,7 +11,7 @@ _Mis à jour le 2026-11-09, PR 2 en cours._
 - **État** : PR 2 ouverte (branche `fix/admin-modeles-liste`) : (d) cause trouvée — la garde
   `dashboard/admin/+layout.server.ts` renvoyait vers l'élévation avec le chemin seul, les filtres
   de l'adresse perdus au retour (David = compte professeur élevé) ; (c) recherche par titre (ILIKE)
-  ou début d'identifiant (≥ 4 caractères hexadécimaux, plage d'UUID), champ réactivé ·
+  ou début d'identifiant (≥ 8 caractères hexadécimaux, choix de David, plage d'UUID), champ réactivé ·
   **Prochaine action** : revue (code-reviewer + security-auditor : redirection d'élévation),
   CI, merge ; puis `deploy:prod` sur demande de David et ligne 22 d'`outils-manquants.md` en « Livré » ·
   **En attente de David** : rien · **Pièges en cours** : finding 6 de #2489 toujours laissé ·
@@ -65,7 +65,11 @@ Après les deux : `deploy:prod` sur demande de David ; passer la ligne 22 d'`out
   de la section admin envoie un professeur non élevé vers `/dashboard/elevate?redirect=<chemin>`, sans
   `url.search`. Corrigé (`url.pathname + url.search`) ; `safeElevationRedirect` juge la section sur le
   chemin, plus sur la chaîne entière (`/dashboard/admin?x=1` retombait sur l'accueil).
-- (c) `search` : Zod (trim, 100 caractères au plus, sinon 400). Terme hexadécimal de 4 caractères au
+- (c) `search` : Zod (trim, 100 caractères au plus, sinon 400). Terme hexadécimal de 8 caractères au
   moins → `or(title.ilike…, and(id.gte…, id.lte…))` ; sinon `ilike('title', …)` avec `%`, `_`, `\`
   échappés. Syntaxe vérifiée contre le PostgREST local. Appliquée aux deux onglets et aux identifiants
   de « Tout cocher (filtrés) ».
+- Revues (code-reviewer, security-auditor) : rien de bloquant. Pris : seuil de l'identifiant porté de 4
+  à 8 caractères (David : « 2024 » ou « face » ramenaient des modèles sans rapport, cochés par « Tout
+  cocher ») ; tirets acceptés seulement à leur place d'UUID ; `*` (joker de PostgREST) changé en `_` ;
+  `safeElevationRedirect` refuse les caractères de contrôle (`.\t.` devenait `..`, défaut antérieur à la PR).

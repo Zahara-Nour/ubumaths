@@ -38,6 +38,8 @@ describe('safeElevationRedirect', () => {
 		expect(safeElevationRedirect('/dashboard/admin/../../auth/logout')).toBe('/dashboard/admin');
 		expect(safeElevationRedirect('/dev/./polices')).toBe('/dashboard/admin');
 		expect(safeElevationRedirect('/dev/%2e%2e/api/x')).toBe('/dashboard/admin');
+		expect(safeElevationRedirect('/dashboard/admin/.\t./..\t/x')).toBe('/dashboard/admin');
+		expect(safeElevationRedirect('/dashboard/admin/\t..\n/x')).toBe('/dashboard/admin');
 		expect(safeElevationRedirect('/dev/.%2E/api/x')).toBe('/dashboard/admin');
 		expect(safeElevationRedirect('/dev/\\evil.example')).toBe('/dashboard/admin');
 	});

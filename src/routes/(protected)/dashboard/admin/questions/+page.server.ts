@@ -83,8 +83,14 @@ const uuidSchema = z.string().uuid();
 /** Terme de recherche : espaces autour retirés, vide = pas de recherche */
 const searchSchema = z.string().trim().max(100);
 
-/** Longueur minimale d'un début d'identifiant (la liste en affiche 8) */
-const MIN_ID_PREFIX = 4;
+/**
+ * Longueur minimale d'un début d'identifiant : les 8 caractères affichés par la liste.
+ * Plus court, « 2024 » ou « face » ramèneraient des modèles sans rapport (David, 2026-11-09).
+ */
+const MIN_ID_PREFIX = 8;
+
+/** Forme d'un UUID : chaque `-` du début d'identifiant doit tomber à sa place */
+const UUID_SHAPE = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
 
 /** Terme qui peut être un début d'identifiant : chiffres hexadécimaux et tirets */
 const ID_PREFIX_PATTERN = /^[0-9a-f-]+$/i;
@@ -93,9 +99,12 @@ const ID_PREFIX_PATTERN = /^[0-9a-f-]+$/i;
 // FUNCTIONS
 // ============================================================================
 
-/** Échappe les jokers de LIKE (`%`, `_`) et le caractère d'échappement (`\\`) */
+/**
+ * Échappe les jokers de LIKE (`%`, `_`) et le caractère d'échappement (`\\`). PostgREST
+ * lit `*` comme `%` et ne sait pas l'échapper : il devient `_` (un caractère quelconque).
+ */
 function escapeLike(term: string): string {
-	return term.replace(/[\\%_]/g, (char) => `\\${char}`);
+	return term.replace(/[\\%_]/g, (char) => `\\${char}`).replaceAll('*', '_');
 }
 
 /** 32 chiffres hexadécimaux → UUID avec ses tirets (8-4-4-4-12) */
@@ -110,6 +119,13 @@ function toUuid(hex: string): string {
  */
 function idPrefixRange(term: string): { low: string; high: string } | null {
 	if (!ID_PREFIX_PATTERN.test(term)) return null;
+	// Tirets aux places d'un UUID (identifiant copié entier), ou aucun tiret
+	if (term.includes('-')) {
+		if (term.length > UUID_SHAPE.length) return null;
+		if ([...term].some((char, index) => (char === '-') !== (UUID_SHAPE[index] === '-'))) {
+			return null;
+		}
+	}
 	const hex = term.replaceAll('-', '').toLowerCase();
 	if (hex.length < MIN_ID_PREFIX || hex.length > 32) return null;
 	return { low: toUuid(hex.padEnd(32, '0')), high: toUuid(hex.padEnd(32, 'f')) };
