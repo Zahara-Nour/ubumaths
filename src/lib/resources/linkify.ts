@@ -10,6 +10,8 @@
  * Cette fonction est la moitié manquante côté lecture : même grammaire que
  * l'extracteur (`REFERENCE_REGEX`), mêmes URL que le registre.
  *
+ * Aucun appelant depuis le 2026-11-08 (le cahier de texte est rendu en ubumark).
+ *
  * ⚠️ À APPLIQUER APRÈS L'ASSAINISSEMENT (`transformMathHtml`). Le libellé est
  * réinjecté tel quel dans le document : il doit déjà être du texte HTML échappé.
  * L'appliquer avant laisserait passer ce que l'assainisseur aurait retiré.
