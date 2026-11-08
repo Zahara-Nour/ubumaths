@@ -935,6 +935,9 @@ question d'accès : rien de plus.
   4 specs sur 7 rouges) → 04 et 05 sans l'option ; le nombre de l'énoncé de 05 est écrit groupé chiffre par chiffre
   (`{{m}}\,{{c}}{{d}}{{u}}`, `{{m}}\,0{{d}}{{u}}`, `{{m}}\,{{c}}00`). À noter dans `outils-manquants.md` si David veut
   que `construire:` ignore la règle des espaces.
+- 2026-11-09 : **c'est fait** (#2495, `outils-manquants` ex-n° 15) : une case `construire:` n'est plus jugée sur
+  sa forme. Reste à faire ici : `04` et `05` reprennent « Espaces dès 4 chiffres » et l'énoncé de `05` perd le
+  nombre groupé à la main (`{{m}}\,{{c}}{{d}}{{u}}` → nombre écrit normalement).
 - Corrigé en route : « petit cubes » → « petits cubes » ; listes « a, b et c » ; 06, plus de `$$…$$ dizaines`.
 - 6 brouillons en base locale (copie du dossier dans le scratchpad). Aperçu admin : Chrome figé (défilement sans effet,
   capture inchangée) → modèles **pas encore joués à l'écran**.

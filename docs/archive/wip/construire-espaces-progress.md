@@ -2,12 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR ouverte._
+_Mis à jour le 2026-11-09, après #2495._
 
-- **État** : correctif écrit, tests verts, PR ouverte · **Prochaine action** : CI verte → merge ; puis
-  `outils-manquants.md` n° 15 → « Livré » · **En attente de David** : rien · **Pièges en cours** : la
-  reprise de la règle par CE2-002 (`04`, `05` du lot 11) revient à la session `questions-ce2` ·
-  **Worktree / branche** : `../ubumaths-wt-construire-espaces`, `fix/construire-espaces`
+- **État** : chantier clos, #2495 mergée (CI verte ; revue `code-reviewer` Opus : aucun finding) ·
+  **Prochaine action** : aucune ici ; `04` et `05` du lot 11 du CE2 reprennent la règle (session
+  `questions-ce2`) · **En attente de David** : rien · **Worktree / branche** : supprimés
 
 ## Journal
 
