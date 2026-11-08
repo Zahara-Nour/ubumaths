@@ -16,7 +16,7 @@ couvre:
 
 # Éditeur riche (TipTap) et affichage sûr du contenu écrit
 
-> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; formules du cahier (`transformMathHtml`) le 2026-11-06. `isReady()` (éditeur créé, sinon `getMarkdown()` rend `''`) le 2026-11-06.
+> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; formules du cahier (`transformMathHtml`) le 2026-11-06 ; `SAFE_FOR_TEMPLATES` le 2026-11-08. `isReady()` (éditeur créé, sinon `getMarkdown()` rend `''`) le 2026-11-06.
 > Voisins, non recopiés ici : l'usage de `RichTextEditor` et `RichTextDisplay` est dans
 > [composants-ui.md](../pratiques/composants-ui.md) ; la conversion TipTap ↔ markdown
 > (`markdown-import.ts`, `markdown-export.ts`) et les extensions de `src/lib/extensions/` sont
@@ -98,7 +98,7 @@ de planter. 8 appelants (messages, signalements de fiches, notebook).
 | Fonction                        | Ce qu'elle fait                                                                                                              | Appelants                                                                          |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | `sanitizeHtml`                  | DOMPurify (`isomorphic-dompurify`), liste blanche de balises et d'attributs                                                  | notebook, aperçu de variante, modèles de messages                                  |
-| `transformMathHtml`             | DOMPurify (réglage de `sanitizeHtmlWithMath`) en arbre, puis `data-math-inline/block` → `<math-field read-only>` dans le DOM | cahier de textes, HTML hérité seulement (`JournalContent`), `/demo/editeur`        |
+| `transformMathHtml`             | DOMPurify (réglage de `sanitizeHtmlWithMath`) en arbre, puis `data-math-inline/block` → `<math-field read-only>` dans le DOM | aucun depuis le 2026-11-08 (gardé, voir Écarts)                                    |
 | `sanitizePlainText`             | retire toute balise, garde le texte                                                                                          | `ReportErrorDialog.svelte`                                                         |
 | `sanitizeUrl`                   | lien inchangé si schéma `http`, `https`, `mailto` ou relatif ; sinon `'#'`                                                   | rendu markdown : `InlineRenderer`, `ParagraphNode`, `HeadingNode`, `HintReference` |
 | `containsDangerousHtml`         | détecte `<script`, `<iframe`, `on…=`, `javascript:`…                                                                         | aucun (doublon, voir Écarts)                                                       |
@@ -134,8 +134,19 @@ de tête retirés, tabulations et retours à la ligne supprimés partout (`java\
   balise à tort (auteur possible : prof ou admin par l’API ; cible : élèves, lien public).
   Charges utiles dans `sanitize-attaques.test.ts` et `.svelte.test.ts`. Prod au 2026-11-06 : aucune
   formule au cahier (2 séances). Le cahier de texte est écrit en ubumark depuis le chantier
-  cahier-ubumark (2026-11-06) : `transformMathHtml` ne sert plus qu'aux lignes HTML d'avant,
-  jusqu'à leur conversion.
+  cahier-ubumark (2026-11-06) ; depuis la conversion des lignes HTML et le passage de la carte
+  « cahier » de `/demo/editeur` à `JournalContent` (2026-11-08), `transformMathHtml` et
+  `sanitizeHtmlWithMath` n'ont plus d'appelant hors de leurs tests (gardés : retrait non décidé).
+- **`SAFE_FOR_TEMPLATES` efface les accolades doubles** (vu le 2026-11-08) : avec ce réglage,
+  DOMPurify retire tout ce qui va de `{{` au dernier `}}` d'un texte. `sanitizeHtml` (aperçus des
+  modèles de messages, prof et admin ; sorties HTML du notebook), `sanitizeHtmlWithMath`,
+  `transformMathHtml` et `NOTIFICATION_SANITIZE_CONFIG` (notifications, serveur) l'ont.
+  Mesuré : `<p>Bonjour {{studentName}}, ta note est {{score}}.</p>` → `<p> .</p>` ;
+  `$\sqrt{\frac{1}{2}}$ fin` → `$ fin`. La liste des modèles du prof passe `body_template`
+  brut, variables comprises, dans `sanitizeHtml` : son extrait serait vidé. Prod au 2026-11-08 :
+  0 modèle de message, 0 notification sur 5 avec `{{`, `}}` ou `${` — personne de touché.
+  Non traité. Le réglage ne protège que d'un moteur de gabarits côté navigateur (Angular, Vue),
+  absent ici.
 - **Deux points faibles, antérieurs à #2425, notés par son audit** (non bloquants, non traités) :
   un `<math-field>` écrit à la main dans le HTML envoyé est accepté en entrée tel quel, et la
   commande `\href` de MathLive (lien dans une formule) n'a pas été auditée.

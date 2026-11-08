@@ -297,12 +297,12 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   « Retour au panier » mènent à `/automaths/panier`.
 - **`/demo/editeur`** (vitrine, PR 6h) : un seul `RichTextEditor` (`preset="standard"`) dont le
   JSON alimente trois cartes, chacune par le vrai moteur de son usage : message privé au prof
-  (`RestrictedRichText`, comme `/messages/[id]`), cahier de texte (`generateHTML`, même
-  sérialisation que `editor.getHTML()`, puis `transformMathHtml` et `linkifyResourceReferences`,
-  comme la page élève) et énoncé d'exercice (`tipTapToMarkdown` puis `MarkdownRenderer`). Le HTML
-  du cahier est calculé après `onMount` : l'hydratation garde le `{@html}` du serveur sans le
-  corriger. Les formules de la carte « cahier » s’affichent (vides jusqu’au 2026-11-06 :
-  écart corrigé de [editeur-riche.md](editeur-riche.md)). Rien n'est envoyé ;
+  (`RestrictedRichText`, comme `/messages/[id]`), cahier de texte (`tipTapToMarkdown` puis
+  `JournalContent` en lecteur élève, comme la page élève) et énoncé d'exercice
+  (`tipTapToMarkdown` puis `MarkdownRenderer`). La carte « cahier » passait par l'ancien chemin
+  HTML (`transformMathHtml`) jusqu'au 2026-11-08 : elle montrait un rendu retiré du vrai cahier,
+  et son assainisseur tronquait toute formule contenant `}}` (écart de
+  [editeur-riche.md](editeur-riche.md)). Rien n'est envoyé ;
 - **`/demo/diaporama`** (vitrine, PR 6i-c) : un `Deck` de 13 diapositives dans un cadre (bouton
   ou F pour le plein écran, `hash: false`) : comment avancer, pile verticale, fragments,
   transitions, $(x+1)^2$ développé tout seul (`autoSlide` de 2 s et fragments `->`), formules
@@ -378,8 +378,6 @@ Notés pendant le rangement (chantier demo-debug), pas traités :
   deux) ; `dsl-builtins.md` dit « en radians », faux en mode degrés. Les courbes trigonométriques
   de l'aide à l'écriture déclarent `unite_angle("radians")`, gardé par
   `courbes-trigo-radians.test.ts`.
-- **Carte « cahier » de `/demo/editeur`** : formules vides, voir l'écart de
-  [editeur-riche.md](editeur-riche.md) (futur chantier : cahier de texte en ubumark).
 - **Révisions espacées** : `calculateNewStability` (`src/lib/srs/fsrs.ts`) ignore la note après
   la 1re révision ([srs.md](srs.md), futur chantier `fsrs`) ; `/demo/questions` n'affiche que la
   1re, non touchée.

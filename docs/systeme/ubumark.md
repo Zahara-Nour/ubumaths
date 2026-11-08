@@ -105,8 +105,8 @@ lecteur donné, et rien de plus (le droit de lire reste aux gardes des routes et
   `src/lib/server/worksheets/citations.ts`.
 - `linkify.ts` : `linkifyResourceReferences` change les références en liens **dans du HTML**,
   à appliquer **après** l'assainissement ; un type sans page pour ce lecteur reste du texte grisé.
-  ⚠️ Transitoire : seul appelant, le HTML hérité du cahier de texte (`JournalContent`) et
-  `/demo/editeur` ; le cahier est désormais en ubumark.
+  Aucun appelant depuis le 2026-11-08 (cahier en ubumark, carte « cahier » de `/demo/editeur`
+  rendue par `JournalContent`) ; gardée, retrait non décidé.
 - `prefixes.ts` (`KIND_PREFIXES`, `parseResourceQuery`, `prefixHint`) et
   `exercise-selection.ts` (`parseExerciseSelection`, `formatExerciseSelection`,
   `describeExerciseSelection`) servent le sélecteur `[[` de

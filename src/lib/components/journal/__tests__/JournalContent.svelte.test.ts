@@ -63,6 +63,19 @@ describe('JournalContent — markdown', () => {
 		expect(container.textContent).not.toContain('$x^2=4$');
 	});
 
+	it('une formule qui contient `}}` reste entière, et le texte qui la suit aussi', async () => {
+		// L'ancien rendu HTML (DOMPurify, `SAFE_FOR_TEMPLATES`) effaçait tout de `{{` au dernier `}}`
+		const container = await rendre({
+			content: 'On a $\\sqrt{\\frac{1}{2}}$ et $\\frac{1+\\sqrt{91}}{2}$ : fin.',
+			links: { role: 'student' }
+		});
+		const formules = [...container.querySelectorAll('math-span')].map((f) => f.textContent);
+		expect(formules).toHaveLength(2);
+		expect(formules[0]).toContain('\\sqrt{\\frac{1}{2}}');
+		expect(formules[1]).toContain('\\sqrt{91}}{2}');
+		expect(container.textContent).toContain(': fin.');
+	});
+
 	it('contenu converti par la migration (séance de prod) : deux paragraphes, deux liens', async () => {
 		// Sortie de 20261106164230_cahier_texte_conversion_ubumark.sql pour
 		// `<p>[[…]]</p><p></p><p>[[…]]</p><p></p>`.
