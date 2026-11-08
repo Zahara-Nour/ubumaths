@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, relevé des exemples d'algorithmes fait (§ 9)._
+_Mis à jour le 2026-11-08, phase 0 des algorithmes validée (D3, § 9)._
 
 - **État** : 12 démonstrations publiées (lots 1-3). Relevé des exemples d'algorithmes : **10 points** (241, 242,
   257, 283, 321, 322, 361, 362, 387, 388), pas 4 : le § 1 en rangeait 6 parmi les approfondissements.
-- **Prochaine action** : phase 0 des algorithmes (posée le 2026-11-08), puis lot 4 (worktree à ouvrir).
-- **En attente de David** : réponses à la phase 0 des algorithmes (périmètre 4 ou 10, formes, rangement, lots).
+- **Prochaine action** : lot 4 (241, 242, 257, 283), worktree `ubumaths-wt-questions-2de-demonstrations`.
+- **En attente de David** : rien (phase 0 des algorithmes validée, D3).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre.
 - **Worktree / branche** : aucun (en ouvrir un au premier lot de code).
@@ -38,8 +38,8 @@ Rubriques « Démonstration(s) » de `2.md` (l. 280, 312, 348, 419, 451, 536) : 
 | 3   | 359   | Variations de la fonction carré            | Fonctions › Fonction carré › variations                     |
 | 3   | 360   | Variations de la fonction inverse          | Fonctions › Fonction inverse › variations                   |
 
-**Hors chantier pour l'instant** (restent P) : approfondissements (258, 259, 284-286, 305-310, 321-324, 361-363,
-387, 388), exemples d'algorithmes (241, 242, 257, 283), compétences (216, 217, 353, 493-495). Suites possibles,
+**Hors chantier pour l'instant** (restent P) : approfondissements (258, 259, 284-286, 305-310, 323, 324, 363),
+exemples d'algorithmes (241, 242, 257, 283, 321, 322, 361, 362, 387, 388 ; relevé corrigé le 2026-11-08, § 9), compétences (216, 217, 353, 493-495). Suites possibles,
 dans l'ordre de la 1re spé : approfondissements, puis algorithmes.
 
 ## 2. Phase 0 (posée et validée le 2026-11-06)
@@ -273,3 +273,9 @@ Outils : rien à créer (bloc ` ```python ` à valeurs tirées, case, case choix
 
 Lots proposés : (4) nombres (241, 242, 257, 283) ; (5) géométrie (321, 322) ; (6) fonctions et statistiques
 (361, 362, 387, 388).
+
+**D3 (David, 2026-11-08, « je suis tes recos »)** : Q1 les 10 exemples d'algorithmes ; Q2 Python, formes (a) faire
+tourner, (b) compléter une ligne, (c) interpréter, jamais « faire tourner » un programme aléatoire, 2-3 variations ;
+Q3 un modèle par point, tagué sur son point, sur la sous-notion existante (362 : extremums ; 387 : tableau croisé
+d'effectifs), aucun nœud neuf ; Q4 publication comme les démonstrations ; Q5 accès : personne de plus ; Q6 bornes
+et § 1 corrigés (fait le 2026-11-08, `2de.json` : remarque des 10 points). Lots 4, 5, 6 dans l'ordre proposé.
