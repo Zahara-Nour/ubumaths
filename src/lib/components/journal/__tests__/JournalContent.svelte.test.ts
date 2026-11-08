@@ -165,6 +165,30 @@ describe('JournalContent — plus de lecture HTML (après conversion)', () => {
  * — visiteurs anonymes du lien public compris — chez son hébergeur. Au cahier,
  * elle devient un lien, YouTube compris : aucune requête tierce à l'affichage.
  */
+describe('JournalContent — formules sans commande à attributs (lien public anonyme)', () => {
+	// Décision de David du 2026-11-08, comme les vidéos (2026-11-06) : une formule qui pose un
+	// style, une classe ou un lien ferait charger une adresse choisie chez un lecteur anonyme
+	const PIEGE = '\\htmlStyle{background:url(https://evil.example/x.png)}{x}';
+
+	it('formule en ligne : rendue en texte, jamais par MathLive', async () => {
+		const container = await rendre({ content: `Soit $${PIEGE}$ fin.`, links: { role: 'public' } });
+		expect(container.querySelector('math-span')).toBeNull();
+		expect(container.querySelector('code.restricted-math')?.textContent).toContain('htmlStyle');
+		expect(container.textContent).toContain('fin.');
+	});
+
+	it('formule centrée : rendue en texte', async () => {
+		const container = await rendre({ content: `$$${PIEGE}$$`, links: { role: 'student' } });
+		expect(container.querySelector('math-div')).toBeNull();
+		expect(container.querySelector('code.restricted-math')?.textContent).toContain('htmlStyle');
+	});
+
+	it('formule ordinaire : rendue par MathLive', async () => {
+		const container = await rendre({ content: 'Soit $\\frac{1}{2}$.', links: { role: 'public' } });
+		expect(container.querySelector('math-span')).not.toBeNull();
+	});
+});
+
 describe('JournalContent — vidéos', () => {
 	const EXTERNE = 'https://tiers.example/clip.mp4';
 	const STOCKAGE = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/medias/clip.mp4`;

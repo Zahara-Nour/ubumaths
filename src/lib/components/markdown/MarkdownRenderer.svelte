@@ -70,7 +70,9 @@
 	import { createRenderBudget, provideRenderBudget } from './render-budget';
 	import {
 		provideProjectMediaOnly,
+		neutralizeUnsafeBlocks,
 		provideRestrictedRendering,
+		readProjectMediaOnly,
 		readRestrictedRendering,
 		restrictDocument,
 		stripFenceLanguages
@@ -187,6 +189,7 @@
 	provideProjectMediaOnly(() => projectMediaOnly);
 	provideRestrictedRendering(() => restricted);
 	const isRestricted = readRestrictedRendering();
+	const isProjectMediaOnly = readProjectMediaOnly();
 	provideLexicon(() => lexiconGrade);
 	const lexicon = readLexicon();
 
@@ -215,7 +218,12 @@
 		// Mode restreint : filet sur l'AST ; mots cliquables : repérés au niveau du
 		// lecteur (copies, le cache n'est pas modifié)
 		const finish = (doc: DocumentNode) => {
-			const safe = isRestricted() ? restrictDocument(doc) : doc;
+			// Cahier de texte : blocs spéciaux porteurs d'une commande à attributs neutralisés
+			const safe = isRestricted()
+				? restrictDocument(doc)
+				: isProjectMediaOnly()
+					? neutralizeUnsafeBlocks(doc)
+					: doc;
 			const grade = lexicon();
 			const runtime = lexiconRuntime();
 			return grade && runtime ? runtime.linkDocument(safe, grade) : safe;
