@@ -4,7 +4,7 @@
  * SECURITY: Prevents XSS (Cross-Site Scripting) attacks
  * - Uses DOMPurify for safe HTML sanitization
  * - Whitelist-based approach (only allowed tags/attributes)
- * - Supports math rendering (MathLive)
+ * - Aucune balise MathLive (2026-11-08) : une formule s'affiche par le markdown, pas par ce HTML
  * - Safe for user-generated content
  *
  * USAGE:
@@ -68,10 +68,9 @@ const ALLOWED_TAGS = [
 	'th',
 	'td',
 
-	// Math rendering (MathLive)
-	'math-field',
-	'math-inline',
-	'math-display',
+	// Pas de balise MathLive (`math-field`…) : MathLive lit leur texte comme du LaTeX, où
+	// `\htmlStyle`, `\class`, `\cssId`, `\href` posent style, classe ou lien ; aucun contenu
+	// passé ici n'en a besoin (2026-11-08)
 
 	// Structural
 	'div',
@@ -97,10 +96,6 @@ const ALLOWED_ATTR = [
 	// Styling (limited)
 	'class',
 	'style',
-
-	// MathLive specific
-	'read-only',
-	'disabled',
 
 	// Table attributes
 	'colspan',

@@ -13,6 +13,7 @@ import { sanitizeNotificationHtml as sanitizeNotificationServer } from '$lib/ser
 import {
 	ALLOWED_RICH_CONTENT,
 	describeAttackSuite,
+	describeSansMathLive,
 	describeTextesAccolades
 } from './sanitize-attack-vectors';
 
@@ -46,3 +47,9 @@ describe('sanitizePlainText — aucune balise', () => {
 		expect(sanitizePlainText('<p>a <strong>b</strong></p><script>c</script>')).toBe('a b');
 	});
 });
+
+describeSansMathLive([
+	{ name: 'sanitizeHtml', sanitize: sanitizeHtml },
+	{ name: 'sanitizeNotificationHtml (client)', sanitize: sanitizeNotificationClient },
+	{ name: 'sanitizeNotificationHtml (serveur)', sanitize: sanitizeNotificationServer }
+]);

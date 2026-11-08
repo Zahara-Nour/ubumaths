@@ -11,6 +11,7 @@ import { sanitizeNotificationHtml } from '../sanitize-notification';
 import {
 	ALLOWED_RICH_CONTENT,
 	describeAttackSuite,
+	describeSansMathLive,
 	describeTextesAccolades
 } from './sanitize-attack-vectors';
 
@@ -27,6 +28,11 @@ describe('sanitizeHtml — contenu riche autorisé conservé', () => {
 });
 
 describeTextesAccolades([
+	{ name: 'sanitizeHtml', sanitize: sanitizeHtml },
+	{ name: 'sanitizeNotificationHtml', sanitize: sanitizeNotificationHtml }
+]);
+
+describeSansMathLive([
 	{ name: 'sanitizeHtml', sanitize: sanitizeHtml },
 	{ name: 'sanitizeNotificationHtml', sanitize: sanitizeNotificationHtml }
 ]);

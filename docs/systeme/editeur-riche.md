@@ -137,9 +137,21 @@ est {{score}}.</p>` → `<p> .</p>` ; `$\sqrt{\frac{1}{2}}$ fin` → `$ fin` (ap
   Svelte ne relit pas `{@html}`. Prod au 2026-11-08 : 0 modèle de message, 0 notification
   concernée. Garde : `describeTextesAccolades` (`sanitize-attack-vectors.ts`), à côté de la suite
   d'attaque, serveur et navigateur.
-- **Deux points faibles, antérieurs à #2425, notés par son audit** (non bloquants, non traités) :
-  un `<math-field>` écrit à la main dans le HTML envoyé est accepté en entrée tel quel, et la
-  commande `\href` de MathLive (lien dans une formule) n'a pas été auditée.
+- **Deux points faibles notés par l'audit de #2425 — clos le 2026-11-08** :
+  - `<math-field>` accepté dans le HTML : `sanitizeHtml` n'autorise plus aucune balise MathLive
+    (`math-field`, `math-inline`, `math-display`, attributs `read-only` / `disabled`). MathLive lit
+    leur texte comme du LaTeX, où `\htmlStyle`, `\class`, `\cssId`, `\htmlData`, `\href` posent
+    style, classe, identifiant, données ou lien. Aucun contenu passé par `sanitizeHtml` (sorties
+    HTML du carnet, modèles de messages) n'en contenait. Garde : `describeSansMathLive`
+    (`sanitize-attack-vectors.ts`).
+  - `\href` de MathLive (0.111.1, mesuré dans son code) : au rendu, une adresse autre que `http:`
+    ou `https:` lève une erreur (`javascript:` ne passe pas) ; au clic dans un `math-field`,
+    `openUrl` n'ouvre que `http:`, `https:`, `file:`. Reste un lien externe : seuls des auteurs
+    de confiance (prof, admin) écrivent des formules rendues en mode normal. Tout contenu d'élève
+    lu par un autre passe par une liste blanche ou le rendu restreint, qui refuse `\href` et les
+    commandes à attributs : chat (`RestrictedRichText`), signalements d'erreur (description),
+    carnet d'élève lu par un autre (`isForeignStudentNotebook`), réponses d'élèves
+    (`student-answer-safety.ts`), Atelier (`safe-latex.ts`).
 - **Énigmes : HTML enregistré, lu comme du markdown — corrigé le 2026-11-08** (vu le
   2026-10-25) : `RiddleForm.svelte` écrit désormais en ubumark (chantier cahier-ubumark, PR 4).
   Les 2 énigmes de prod, des essais en HTML, n'ont pas été converties : David les a supprimées après le déploiement (v0.77.0, 2026-11-08).
