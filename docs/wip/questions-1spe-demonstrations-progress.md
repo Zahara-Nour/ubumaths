@@ -9,20 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, lot 12 relu (5/5 OK)._
+_Mis à jour le 2026-11-08, après la publication du lot 12._
 
-- **État** : lots 1-11 publiés. Lot 12 (§ 18) : relu 5/5 OK ; phrase de D13 (344) en PR.
-- **Prochaine action** : PR mergée → David lance, depuis le dépôt principal à jour,
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-12 --publier --mettre-a-jour`,
-  puis `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-algorithmes-12 --publier` ; statut
-  relu en base (MCP). Ensuite fin de chantier (versement), le lot 12 étant le dernier des algorithmes (D9).
-- **En attente de David** : les deux commandes ci-dessus ; vérification à l'œil en prod (ligne du 2026-11-03 de
+- **État** : lots 1-12 publiés : démonstrations (1-4), approfondissements (5-9), algorithmes (10-12). Plus aucun lot
+  prévu.
+- **Prochaine action** : fin de chantier, avec l'accord de David : versement (le durable vers `docs/systeme/`,
+  couverture de [1spe.md](../systeme/programmes/bornes/lycee/1spe.md) à jour, journal archivé), retrait du worktree.
+- **En attente de David** : go pour la fin de chantier ; vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
   Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
   `publier-lot.ts`, même en simulation, refusé à Claude par le classifieur (prod).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `content/questions-1spe-algorithmes-12-terminale`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, détaché sur `origin/main` (aucune branche en cours).
 
 ---
 
@@ -777,3 +776,7 @@ du domaine sous la parabole). À ajouter en fin de correction, avec les correcti
 
 Relecture (2026-11-08) : 5/5 OK, aucun commentaire. Phrase de D13 ajoutée à la correction de 344 (c) (cette PR) ;
 mise à jour en prod par David (`create-questions --publier --mettre-a-jour`), puis publication (`publier-lot.ts`).
+
+Mergée (#2468). Mise à jour par David (`create-questions --publier --mettre-a-jour` : 344 seul modifié), puis
+publication (`publier-lot.ts --publier`) : 5/5 `published` relus en base (MCP), phrase de D13 présente dans le 344.
+**Le lot 12 (algorithmes de probabilités et statistiques) est publié : les 13 algorithmes de D9 sont en prod.**
