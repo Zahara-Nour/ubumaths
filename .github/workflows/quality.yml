@@ -479,6 +479,13 @@ jobs:
           inotifywait -m -r -q --timefmt '%T' --format '%T %e %w%f' -e modify,create,delete,moved_to,moved_from \
             --exclude '/\.git/|/node_modules/\.pnpm/' . > "$RUNNER_TEMP/fs.log" 2>&1 &
 
+      # MESURE PROVISOIRE : code de fermeture des WebSocket côté serveur (1001 = la page s'en va, 1006 = coupure).
+      - name: Patch vitest browser (close codes)
+        run: |
+          f=$(ls -d node_modules/.pnpm/@vitest+browser@*/node_modules/@vitest/browser/dist/index.js | head -1)
+          sed -i 's|ws.on("close", () => {|ws.on("close", (code, reason) => { console.error("[mesure] ws close", type, rpcId, code, String(reason), new Date().toISOString());|' "$f"
+          grep -c '\[mesure\] ws close' "$f"
+
       - name: Run client tests
         env:
           DEBUG: pw:browser,pw:api,vitest:browser:api,vitest:browser:pool,vitest:browser:gc,vitest:browser:playwright
