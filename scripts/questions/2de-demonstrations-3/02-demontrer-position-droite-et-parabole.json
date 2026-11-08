@@ -1,4 +1,5 @@
 {
+	"id": "d28706b9-23f4-41f5-a35e-2e62a8b81b15",
 	"title": "Démontrer la position relative des courbes d'équation y = x et y = x² pour x ≥ 0",
 	"description": "Démonstration à trous : factorisation x² − x = x(x − 1) (case), position sur [0 ; 1] (choix), position pour x ≥ 1 (choix) ; étapes à ranger",
 	"grades": ["2"],

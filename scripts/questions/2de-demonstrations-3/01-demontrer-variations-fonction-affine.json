@@ -1,4 +1,5 @@
 {
+	"id": "6fc38e87-cafa-4ef7-bda8-c4c8e2caab28",
 	"title": "Démontrer le sens de variation d'une fonction affine",
 	"description": "Démonstration à trous (m et p tirés) : f(b) − f(a) = m(b − a) (case), signe si m > 0 (choix), conclusion si m < 0 (choix) ; étapes à ranger",
 	"grades": ["2"],
