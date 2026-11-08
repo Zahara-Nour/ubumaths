@@ -24,7 +24,6 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import { isLegacyHtmlContent } from '$lib/journal/content';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
@@ -88,10 +87,6 @@
 		return ref?.isReady() ? ref.getMarkdown() : fallback;
 	}
 
-	/** Ce que l'éditeur doit charger : le markdown, ou le HTML d'avant le chantier. */
-	function editorInput(content: string): { markdownValue?: string; htmlValue?: string } {
-		return isLegacyHtmlContent(content) ? { htmlValue: content } : { markdownValue: content };
-	}
 	let isPublished = $state(initialData.entry?.isPublished || false);
 	let isSaving = $state(false);
 	let isDeleting = $state(false);
@@ -673,7 +668,7 @@
 					<input type="hidden" name="lessonContent" value={lessonContent} />
 					<RichTextEditor
 						bind:this={lessonEditor}
-						{...editorInput(lessonContent)}
+						markdownValue={lessonContent}
 						resourceGrades={classGrades}
 						preset="standard"
 						minHeight="200px"
@@ -736,7 +731,7 @@
 
 							<RichTextEditor
 								bind:this={homeworkEditors[homework.key]}
-								{...editorInput(homework.content)}
+								markdownValue={homework.content}
 								resourceGrades={classGrades}
 								preset="standard"
 								minHeight="120px"

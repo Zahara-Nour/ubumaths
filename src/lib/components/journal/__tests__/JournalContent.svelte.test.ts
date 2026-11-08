@@ -1,11 +1,9 @@
 /**
  * Rendu du cahier de texte — `JournalContent` (chantier cahier-ubumark)
  *
- * Le cahier passe du HTML à ubumark : un contenu markdown est rendu par
- * `MarkdownRenderer`, jamais par `{@html}`. Les lignes encore en HTML (4 en
- * prod au 2026-11-06, converties ensuite) gardent l'ancienne chaîne
- * (`transformMathHtml` + `linkifyResourceReferences`) le temps de la
- * conversion.
+ * Le cahier est écrit en ubumark : rendu par `MarkdownRenderer`, jamais par
+ * `{@html}`. Les 4 lignes HTML de la prod ont été converties le 2026-11-08
+ * (migration 20261106164230) ; la lecture HTML a été retirée ensuite (PR 3).
  *
  * Les liens des références dépendent du lecteur : élève connecté (sa route) ou
  * lien public `/cahier/[token]` (la fiche citée s'ouvre par le jeton).
@@ -137,23 +135,14 @@ describe('JournalContent — markdown', () => {
 	});
 });
 
-describe('JournalContent — HTML hérité (avant conversion)', () => {
-	const HTML = `<p>[[worksheet:${FICHE}#3|Second degré — ex. 3]]</p><p></p><p>Bien <strong>relire</strong>.</p>`;
-
-	it('affiche le texte mis en forme, pas les balises', async () => {
-		const container = await rendre({ content: HTML, links: { role: 'student' } });
-		expect(container.textContent).not.toContain('<p>');
-		expect(container.querySelector('strong')?.textContent).toBe('relire');
-	});
-
-	it('garde le lien de la référence, par le jeton sur le lien public', async () => {
+describe('JournalContent — plus de lecture HTML (après conversion)', () => {
+	it('un contenu à l’ancienne forme HTML n’est plus interprété : les balises restent du texte', async () => {
 		const container = await rendre({
-			content: HTML,
-			links: { role: 'public', shareToken: JETON }
+			content: `<p>[[worksheet:${FICHE}#3|Second degré — ex. 3]]</p><p>Bien <strong>relire</strong>.</p>`,
+			links: { role: 'student' }
 		});
-		expect(container.querySelector('a.internal-link')?.getAttribute('href')).toBe(
-			urlFiche('public', JETON)
-		);
+		expect(container.querySelector('strong')).toBeNull();
+		expect(container.textContent).toContain('<strong>');
 	});
 });
 
@@ -195,6 +184,37 @@ describe('JournalContent — vidéos', () => {
 			links: { role: 'student' }
 		});
 		expect(container.querySelector('video source')?.getAttribute('src')).toBe(STOCKAGE);
+	});
+
+	it('vidéo imbriquée (liste, citation) : aucune requête vers l’hôte', async () => {
+		// ⚠️ Constat du 2026-11-08 : `ListNode` et `Blockquote` ne rendent pas le
+		// nœud `video` (ni lecteur ni lien, partout, pas seulement au cahier).
+		// Ce test garde la seule propriété exigée ici : rien n'est chargé.
+		for (const content of [`- !video[Démo](${EXTERNE})`, `> !video[Démo](${EXTERNE})`]) {
+			const container = await rendre({ content, links: { role: 'student' } });
+			expect(container.querySelector('video, iframe, source')).toBeNull();
+		}
+	});
+
+	it('adresse sans schéma (`//hôte`) ou relative : un lien, jamais une vidéo', async () => {
+		for (const src of ['//tiers.example/clip.mp4', '/medias/clip.mp4']) {
+			const container = await rendre({
+				content: `!video[Démo](${src})`,
+				links: { role: 'student' }
+			});
+			expect(container.querySelector('video, iframe, source')).toBeNull();
+			expect(container.querySelector('a.external-media')).not.toBeNull();
+		}
+	});
+
+	it('adresse `data:` : ni vidéo, ni lien qui l’ouvre', async () => {
+		const container = await rendre({
+			content: '!video[Démo](data:video/mp4;base64,AAAA)',
+			links: { role: 'student' }
+		});
+		expect(container.querySelector('video, iframe, source')).toBeNull();
+		const href = container.querySelector('a.external-media')?.getAttribute('href') ?? '';
+		expect(href.startsWith('data:')).toBe(false);
 	});
 
 	it('hors cahier (cours, exercices) : rien ne change', async () => {
