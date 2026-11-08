@@ -8,7 +8,7 @@ _Mis à jour le 2026-11-08, chantier clos et archivé._
 
 ## 0. Origine
 
-Ligne 3 du § 1 de [`outils-manquants.md`](outils-manquants.md) (point 2-297 « Représenter la somme de deux
+Ligne 3 du § 1 de [`outils-manquants.md`](../../wip/outils-manquants.md) (point 2-297 « Représenter la somme de deux
 vecteurs à partir de représentants de même origine »). Ordre du 2026-11-06 : après le n° 14 (livré, #2456).
 
 ## 1. Constat (2026-11-08)
