@@ -183,6 +183,24 @@ describe('JournalContent — formules sans commande à attributs (lien public an
 		expect(container.querySelector('code.restricted-math')?.textContent).toContain('htmlStyle');
 	});
 
+	it('formule à case à remplir : rendue en texte (MathPrompt)', async () => {
+		const container = await rendre({
+			content: `Calculer $\\placeholder[0]{}${PIEGE}$.`,
+			links: { role: 'public' }
+		});
+		expect(container.querySelector('math-field, math-span')).toBeNull();
+		expect(container.querySelector('code.restricted-math')?.textContent).toContain('htmlStyle');
+	});
+
+	it('formule dans une cellule de tableau : rendue en texte', async () => {
+		const container = await rendre({
+			content: `| a |\n| --- |\n| $${PIEGE}$ |`,
+			links: { role: 'public' }
+		});
+		expect(container.querySelector('td')).not.toBeNull();
+		expect(container.querySelector('math-span')).toBeNull();
+	});
+
 	it('formule ordinaire : rendue par MathLive', async () => {
 		const container = await rendre({ content: 'Soit $\\frac{1}{2}$.', links: { role: 'public' } });
 		expect(container.querySelector('math-span')).not.toBeNull();

@@ -22,6 +22,9 @@ cahier qui feraient charger une adresse choisie chez un lecteur anonyme ne passe
     commande → bloc de code « [bloc non affiché : mise en forme non autorisée] ».
 - Conséquence : `\color`, `\hspace`, `\kern`… (dans la liste, car leur valeur finit dans `style=`)
   sont aussi refusés au cahier. Prod au 2026-11-09 : aucune formule ni image au cahier (4 lignes).
+- Revues : `code-reviewer` et `security-auditor` ont trouvé `MathPrompt` (formule à case
+  `\placeholder[0]{}`) sans garde au cahier → garde ajoutée, test rouge puis vert. Faux positif
+  assumé : un bloc spécial dont un libellé CITE `\color` est aussi remplacé.
 - Tests : `JournalContent` (en ligne, centrée : rouges sans le correctif ; ordinaire rendue),
   `restricted-rendering.test.ts` (`neutralizeUnsafeBlocks`).
 - Docs : `ubumark.md`, `cours-et-chapitres.md`, `editeur-riche.md`.
