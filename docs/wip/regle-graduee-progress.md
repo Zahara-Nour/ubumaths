@@ -15,7 +15,7 @@ _Mis à jour le 2026-11-08, PR 1 (039) ouverte._
   attente** (index de `main` occupé par une autre session sur `outils-manquants.md`).
 - **Prochaine action** : revue `code-reviewer` (opus) + CI, vérification visuelle, puis PR 2 : demi-droite [Ax) et
   constructions cotées (070).
-- **En attente de David** : choix (1)-(9) et Q9 du § 3 ; vérification visuelle sur téléphone.
+- **En attente de David** : vérification visuelle sur téléphone (règle retournée), à noter au merge dans `verifications-manuelles.md`.
 - **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le chantier
   `cercle-triangle-rectangle` (n° 19, 20) touche les mêmes fichiers de `src/lib/questions/construction/`.
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee`.
@@ -99,3 +99,7 @@ graduation comparée en mm entiers, `constructionOf` retiré (seule une graduati
 refus d'auteur si un autre point visible est déjà à la longueur demandée de A ; graduation prioritaire sur A pour le
 bout du segment (pas pour le départ). Reste **Q9** (David) : éventail de segments dans des directions distinctes
 depuis A (5,1 … 6,9 cm), jugé juste aujourd'hui.
+
+**Décisions de David (« je suis tes recos », 2026-11-08)** : choix (1)-(9) du § 3 acceptés (le (7) « point construit »
+remplacé par la revue : seule une graduation fait foi) ; Q9 (a) : plusieurs segments vus depuis A → faux, « Trace un
+seul segment… ».
