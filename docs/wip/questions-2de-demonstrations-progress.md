@@ -6,20 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2434 (lot 1 mergé)._
+_Mis à jour le 2026-11-08, après #2434 ; test d'intégration du rangement lot 1 vert, preuve rouge faite (§ 4)._
 
-- **État** : phase 0 validée (D1) ; lot 1 (239, 240, 255, 256, 282) mergé (#2434), brouillons à créer en prod.
-- **Prochaine action** : David lance, depuis le dépôt principal à jour,
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-demonstrations-1 --publier` ; puis relevé MCP,
-  ids dans les JSON (PR), `git restore` dans le dépôt principal, migration nœud + tag (gabarit `20261106050929`,
-  aucune sous-notion neuve), page à cocher. Ensuite lot 2 (géométrie : 304, 438, 320).
-- **En attente de David** : la commande `create-questions --publier` ci-dessus.
-- **Pièges en cours** (repris de la 1re spé) : écritures en prod → commande `!` donnée à David ; `create-questions`
-  écrit l'`id` dans les JSON du dépôt d'où il tourne → les commiter (PR) puis `git restore` dans le dépôt principal ;
-  brouillons locaux : copie hors dépôt + `set -a; . ./.env.local` ; positions « ranger » par
-  `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` (HEAD détachée), nouvelle branche depuis
-  `origin/main`.
+- **État** : lot 1 mergé (#2434) et créé en brouillon en prod ; migration nœud + tag `20261108070133` et son test
+  verts (12/12, rouges sans la migration) ; `security-auditor` : RAS ; PR du rangement en cours.
+- **Prochaine action** : PR → CI → merge → `db:migrate` depuis la branche mergée → page à cocher.
+  Ensuite lot 2 (géométrie : 304, 438, 320).
+- **En attente de David** : rien.
+- **Pièges en cours** : écritures en prod → commande `!` donnée à David ; `create-questions` écrit l'`id` dans les
+  JSON du dépôt d'où il tourne → les reporter sur la branche puis `git restore` dans le dépôt principal ; positions
+  « ranger » par `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-2-rangement`.
 
 ---
 
@@ -86,3 +83,35 @@ Vérifié : `question:specs` 150 tirages par variation, 5/5 importables, 0 `\tex
 ranger du 256 (fractions, places numérotées), case en fin de formule longue du 282.
 
 Mergée (#2434, CI verte du premier coup).
+
+## 4. Lot 1 : publication en brouillon et rangement (2026-11-06)
+
+David a lancé `create-questions --publier` depuis le dépôt principal : 5 brouillons. Ids reportés dans les JSON
+(branche `content/questions-2de-demonstrations-2-rangement`), dépôt principal rendu propre (`git restore`).
+
+Relevé prod (MCP, 2026-11-06) : 5 brouillons au niveau {2}, niveaux 11, 3, 5, 6, 3, sans nœud ni tag ; points
+2-239, 2-240, 2-255, 2-256, 2-282 sur leurs sous-notions actives, aucun modèle tagué dessus.
+
+| Modèle   | Sous-notion                                                 | Point |
+| -------- | ----------------------------------------------------------- | ----- |
+| 83082954 | Arithmétique › Divisibilité › multiples et diviseurs        | 2-239 |
+| ae8fc470 | Arithmétique › Divisibilité › pair ou impair                | 2-240 |
+| d8f7648f | Ensembles › Ensembles de nombres › nombres irrationnels     | 2-255 |
+| 8de4b8c9 | Ensembles › Ensembles de nombres › nombres irrationnels     | 2-256 |
+| efd6bdb4 | Nombres et calculs › Racines carrées : calculs › propriétés | 2-282 |
+
+Migration `20261108070133_questions_2de_demonstrations_1_rangement_tags.sql` (gabarit `20261106050929`, gardes et
+rollback identiques) ; test `tests/integration/questions-2de-demonstrations-1-rangement-tags.test.ts`. Accès :
+personne de plus (Q5).
+
+Piège : le test d'intégration n'a pas pu tourner — la préparation globale (suppression des profs) bute sur un lien de
+partage du journal de classe créé à 12 h 49 par `teacher@local.test` et utilisé (17 accès) ; non supprimé, en
+attente du feu vert de David. `security-auditor` (2026-11-06) : aucun finding ; le lien a disparu depuis.
+
+Test d'intégration (2026-11-08, feu vert de David) : **12/12 vert**. Preuve rouge (fichiers restaurés depuis une
+copie) : partie aller de la migration vidée (rollback gardé, l. 1-112) → 6 rouges (branches d'échec) et 5 sautés
+(le `beforeAll` nominal échoue au rollback, rien à défaire) ; en plus avec le rollback neutralisé dans le test → les
+2 tests d'effet (nœud, tag) rouges, les 3 invariants verts comme attendu.
+
+Rebasée sur `origin/main` (2026-11-08) : `main` portait 5 migrations postérieures à `20261106130142` (déjà en prod
+pour certaines) → migration ré-horodatée `20261108070133` (`pnpm migration:horodatage`), test et journal suivis.

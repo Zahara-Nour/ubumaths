@@ -1,4 +1,5 @@
 {
+	"id": "ae8fc470-5aa6-46d6-9735-c4ed8e46d95e",
 	"title": "Démontrer que le carré d'un nombre impair est impair",
 	"description": "Démonstration à trous de n = 2k + 1 ⟹ n² impair : double produit 4k, factorisation n² = 2(2k² + 2k) + 1, justification de la conclusion ; étapes à ranger",
 	"grades": ["2"],

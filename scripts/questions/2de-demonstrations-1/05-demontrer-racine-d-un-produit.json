@@ -1,4 +1,5 @@
 {
+	"id": "efd6bdb4-5347-455d-9293-1ede6b1cebfe",
 	"title": "Démontrer que √(ab) = √a × √b",
 	"description": "Démonstration à trous pour a, b ≥ 0 : carré (√a√b)² = ab (case), √a√b positif (choix), conclusion par la définition de la racine carrée (choix) ; étapes à ranger",
 	"grades": ["2"],
