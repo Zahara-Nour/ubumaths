@@ -11,7 +11,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { isDictionaryAdmin, loadGlossary } from '$lib/server/dictionary/load';
-import { findPrincipal } from '$lib/lexicon/card';
+import { findPrincipal } from '$lib/dictionary/card';
 import {
 	glossaryDescription,
 	glossaryPath,

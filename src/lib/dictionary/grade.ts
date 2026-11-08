@@ -4,7 +4,7 @@
  * Module léger, sans le dictionnaire : le cadre d'une question le calcule sans
  * charger les 230 Ko de définitions.
  *
- * @module lexicon/grade
+ * @module dictionary/grade
  */
 
 import { GRADES, isGradeCode, type GradeCode } from '$lib/types/grades';

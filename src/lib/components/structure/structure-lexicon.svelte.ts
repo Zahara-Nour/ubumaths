@@ -11,9 +11,9 @@
  * À appeler pendant l'initialisation du composant (contexte + effet).
  */
 import { provideLexicon, readLexicon } from '$lib/components/markdown/lexicon-context';
-import { lexiconGrade } from '$lib/lexicon/grade';
-import { readReaderGrade } from '$lib/lexicon/reader-grade';
-import { loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+import { lexiconGrade } from '$lib/dictionary/grade';
+import { readReaderGrade } from '$lib/dictionary/reader-grade';
+import { loadLexiconRuntime } from '$lib/dictionary/runtime-store.svelte';
 import type { GradeCode } from '$lib/types/grades';
 
 // Constantes

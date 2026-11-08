@@ -15,7 +15,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
-	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
+	import { provideReaderGrade } from '$lib/dictionary/reader-grade';
 	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { resolvedMarkdown } from '$lib/ubumark';

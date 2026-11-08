@@ -12,7 +12,7 @@
  * forme. L'AST reçu n'est jamais modifié (il peut venir du cache des rendus).
  * Les entrées viennent de la base (`createLinker`, ADR 0022).
  *
- * @module lexicon/linker
+ * @module dictionary/linker
  */
 
 import { isTermVisibleTo, type MathTerm } from '$lib/dictionary/model';

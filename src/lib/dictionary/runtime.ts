@@ -3,7 +3,7 @@
  * runtime-store.svelte.ts, au premier énoncé à mots cliquables, avec les
  * entrées lues en base (`/api/dictionnaire`, ADR 0022).
  *
- * @module lexicon/runtime
+ * @module dictionary/runtime
  */
 
 import type { MathTerm } from '$lib/dictionary/model';

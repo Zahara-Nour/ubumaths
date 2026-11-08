@@ -18,7 +18,7 @@
  *   « −3 » d'un nombre soustrait désignent le terme.
  *
  * Les clés des mots sont les identifiants du dictionnaire (`termId` de
- * `lexicon/linker.ts` : le nom, suivi du sens pour un homonyme) : la page
+ * `dictionary/linker.ts` : le nom, suivi du sens pour un homonyme) : la page
  * les passe telles quelles à `LexiconTerm` (`ids`). Une clé absente du
  * dictionnaire donne un mot affiché sans lien. `racine cubique`, `racine n-ième`,
  * `logarithme décimal` et `différent`, absentes du jeu de référence figé, ont été

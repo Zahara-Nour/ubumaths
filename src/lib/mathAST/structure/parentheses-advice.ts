@@ -9,7 +9,7 @@
  * Spécification : `docs/systeme/mathast/structure-expression.md`, section C.
  *
  * `parenthesesAdvice` ne connaît pas le niveau : la page l'appelle seulement si
- * `needsParenthesesAdvice` (`$lib/lexicon/parentheses-advice-grade`) le dit.
+ * `needsParenthesesAdvice` (`$lib/dictionary/parentheses-advice-grade`) le dit.
  */
 import { markLatex, stripMarkers } from './markers';
 import type { ExpressionStructure, StructureNode, SumStructureNode } from './types';

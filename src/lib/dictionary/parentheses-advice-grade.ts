@@ -6,7 +6,7 @@
  * seulement si `needsParenthesesAdvice(readReaderGrade()())`.
  * Spécification : `docs/systeme/mathast/structure-expression.md`, section C.
  *
- * @module lexicon/parentheses-advice-grade
+ * @module dictionary/parentheses-advice-grade
  */
 
 import { GRADES, isGradeCode } from '$lib/types/grades';

@@ -11,7 +11,7 @@
  * Entrées PARSÉES (invariant 4 du module), coefficients ≠ 1.
  */
 import { describe, expect, it } from 'vitest';
-import { termId } from '$lib/lexicon/linker';
+import { termId } from '$lib/dictionary/linker';
 import { REFERENCE_DICTIONARY } from '../../../../../tests/fixtures/lexique/dictionnaire-reference';
 import { READING_WORDS_2026_10_11 } from '../../../../../tests/fixtures/lexique/mots-lecture-2026-10-11';
 import { READING_WORD_KEYS } from '../reading';

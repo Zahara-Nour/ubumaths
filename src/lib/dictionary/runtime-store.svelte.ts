@@ -7,7 +7,7 @@
  * chargés ensemble ; les rendus se mettent à jour quand ils arrivent (le texte
  * s'affiche d'abord sans soulignement).
  *
- * @module lexicon/runtime-store
+ * @module dictionary/runtime-store
  */
 
 import { fetchDictionary } from '$lib/dictionary/fetch-dictionary';

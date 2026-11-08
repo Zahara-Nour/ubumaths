@@ -56,7 +56,7 @@
 	import { getSkeletonType } from '$lib/utils/skeleton-detector';
 	import ModalStackRenderer from '$lib/components/modals/ModalStackRenderer.svelte';
 	import MathKeyboardClose from '$lib/components/MathKeyboardClose.svelte';
-	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
+	import { provideReaderGrade } from '$lib/dictionary/reader-grade';
 
 	let { children, data }: { children: import('svelte').Snippet; data: LayoutData } = $props();
 
