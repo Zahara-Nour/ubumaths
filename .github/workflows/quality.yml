@@ -417,13 +417,13 @@ jobs:
   test-client:
     name: Client Tests (browser, shard ${{ matrix.shard }}/2, essai ${{ matrix.essai }})
     needs: version
-    # MESURE PROVISOIRE (chantier ci-navigateur-plante) : lancé aussi par workflow_dispatch, 5 essais par shard.
+    # MESURE PROVISOIRE (chantier ci-navigateur-plante) : lancé aussi par workflow_dispatch, 10 essais par shard.
     if: ${{ !cancelled() && needs.version.result == 'success' && (github.event_name == 'workflow_dispatch' || (needs.version.outputs.allegee != 'true' && needs.version.outputs.contenu != 'true')) }}
     strategy:
       fail-fast: false
       matrix:
         shard: [1, 2]
-        essai: [1, 2, 3, 4, 5]
+        essai: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
