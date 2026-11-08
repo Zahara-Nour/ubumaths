@@ -1515,6 +1515,11 @@ function validateSingleBlank(
 		return { isCorrect: false };
 	}
 
+	// Case à construire ou à placer (`construire:`, `placer:`) : la valeur est écrite
+	// par le composant (`4635`), jamais tapée ; sa forme n'est pas jugée (espaces dès
+	// 4 chiffres compris, outils-manquants n° 15)
+	if (blank.construire) return { isCorrect: true, status: 'correct' };
+
 	// 3. Required form check (per-blank)
 	const formVerdict =
 		blank.requiredForm && userAnswerLatex
@@ -2087,6 +2092,9 @@ function matchedAnswerForm(
 			violations: roundingBadForm(roundingFeedback).constraintViolations
 		};
 	}
+
+	// Case à construire appariée : valeur écrite par le composant, forme jamais jugée
+	if (blank.construire) return { status: 'correct', violations: [] };
 
 	// Case « intervalles » appariée (valeur déjà juste) : écriture jugée par son propre module,
 	// jamais par la comparaison d'expressions (qui la dirait de mauvaise forme)

@@ -6,17 +6,18 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from '../answer-validator';
-import type { QuestionInstance } from '$lib/questions/types';
+import type { BuildKind, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
 function instanceOf(
 	expectedAnswer: string,
-	options?: QuestionInstance['options']
+	options?: QuestionInstance['options'],
+	construire?: BuildKind
 ): QuestionInstance {
 	return {
 		templateId: 'test-template',
 		statement: 'Test question' as ResolvedMarkdown,
-		blanks: [{ expectedAnswer, type: 'math' }],
+		blanks: [{ expectedAnswer, type: 'math', ...(construire && { construire }) }],
 		grades: ['6'],
 		level: 1,
 		generatedAt: new Date().toISOString(),
@@ -53,5 +54,58 @@ describe('espaces de groupement selon le réglage du modèle', () => {
 			constraints: { spaces: 'off', spacesFromFourDigits: true }
 		});
 		expect(validateAnswer('7900', instance, '7900').status).toBe('correct');
+	});
+});
+
+/**
+ * Case à construire (`construire:`, `placer:`) : la valeur est écrite par le composant
+ * (`4635`), jamais tapée par l'élève ; sa forme n'est pas jugée (outils-manquants n° 15).
+ */
+describe('espaces dès 4 chiffres : une case à construire ne juge que la valeur', () => {
+	const ecole = { constraints: { spacesFromFourDigits: true } };
+
+	it('collection construite : 4635 posé par le composant est correct', () => {
+		const result = validateAnswer('4635', instanceOf('4635', ecole, 'collection'), '4635');
+		expect(result.status).toBe('correct');
+		expect(result.constraintViolations ?? []).toEqual([]);
+	});
+
+	it('monnaie construite : 1000 € posés sont corrects', () => {
+		const result = validateAnswer('1000', instanceOf('1000', ecole, 'monnaie'), '1000');
+		expect(result.status).toBe('correct');
+	});
+
+	it('droite graduée à placer : 4500 posé est correct', () => {
+		expect(validateAnswer('4500', instanceOf('4500', ecole, 'line'), '4500').status).toBe(
+			'correct'
+		);
+	});
+
+	it('par défaut (BIPM) : 30000 posé sur une droite est correct', () => {
+		expect(validateAnswer('30000', instanceOf('30000', undefined, 'line'), '30000').status).toBe(
+			'correct'
+		);
+	});
+
+	it('collection construite à une autre valeur : toujours fausse', () => {
+		const result = validateAnswer('4001', instanceOf('4100', ecole, 'collection'), '4001');
+		expect(result.isCorrect).toBe(false);
+	});
+
+	it('deux points placés, sans ordre : 4500 et 7200 sont corrects', () => {
+		const line = { type: 'math' as const, construire: 'line' as const };
+		const instance: QuestionInstance = {
+			...instanceOf('4500'),
+			blanks: [
+				{ ...line, expectedAnswer: '4500' },
+				{ ...line, expectedAnswer: '7200' }
+			],
+			options: { ...ecole, orderIndependent: true }
+		};
+		const result = validateAnswer(['7200', '4500'], instance, ['7200', '4500']);
+		// Tout juste en ordre libre : pas de statut, aucune remarque
+		expect(result.isCorrect).toBe(true);
+		expect(result.status).toBeUndefined();
+		expect(result.constraintViolations ?? []).toEqual([]);
 	});
 });

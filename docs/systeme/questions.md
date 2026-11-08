@@ -1008,6 +1008,12 @@ juge exige alors `7 900`, et l'affichage de la question écrit `7 900` (contexte
 `CourseCardView` ; valeurs préremplies ; séries d'automatismes figées). Décision E2,
 `docs/archive/wip/simplify-carte-progress.md` § 15 et § 43.
 
+**Case à construire ou à placer** (`blank.construire` : ` ```collection ` / ` ```monnaie `
+`construire:`, ` ```line ` `placer:`, barres…) : seule la valeur est jugée, jamais la forme. La
+réponse est écrite par le composant (`4635`), pas tapée par l'élève : ni espaces de groupement, ni
+aucune autre contrainte d'écriture (`validateSingleBlank`, et `matchedAnswerForm` en ordre libre).
+Les juges à part (horloge, repère, cubes…) rendaient déjà `correct` sans forme.
+
 **Lecture des formules** : réponse de l'élève et réponse attendue sont lues par le parseur avec la
 même configuration, `readingOf(instance)` (`formula-reading.ts`) : fonctions déclarées et sens de
 `AB` (`capitalPairs`), transmis à `areEquivalent`, `checkForm`, `requiredForm` et à la règle
