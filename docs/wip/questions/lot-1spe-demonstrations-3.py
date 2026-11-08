@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-demonstrations-3/.
 
 Phase 0 validée par David le 2026-11-03 (« je te suis » sur les recos, D1 du journal
-« docs/wip/questions-1spe-demonstrations-progress.md », § 3), un point par modèle. Contenu du lot
+« docs/archive/wip/questions-1spe-demonstrations-progress.md », § 3), un point par modèle. Contenu du lot
 validé par David le 2026-11-03 (« oui » aux recos du lot 3) :
 
 | # | Point    | Titre                                    | Catégorie, niveau                                         |

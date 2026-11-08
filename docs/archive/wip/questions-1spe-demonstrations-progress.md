@@ -1,27 +1,22 @@
 # Chantier « questions-1spe-demonstrations » — première spécialité, démonstrations du BO en modèles de questions
 
-> Suite du chantier clos [`questions-1spe`](../archive/wip/questions-1spe-progress.md) (relevé § 1, classement § 3,
+> Suite du chantier clos [`questions-1spe`](questions-1spe-progress.md) (relevé § 1, classement § 3,
 > décisions D1-D7 § 5 ; D4 y mettait les points P hors chantier : ce chantier rouvre **les démonstrations seulement**).
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`). Bornes et couverture :
-> [1spe.md](../systeme/programmes/bornes/lycee/1spe.md) § Couverture. En base, le niveau est `1_SPE`.
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`). Bornes et couverture :
+> [1spe.md](../../systeme/programmes/bornes/lycee/1spe.md) § Couverture. En base, le niveau est `1_SPE`.
 > Ouvert le 2026-11-03 (David : « ouvre le chantier questions-1spe-demonstrations », après la proposition « P,
 > démonstrations : possible en questions, sous une autre forme »).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après la publication du lot 12._
+_Mis à jour le 2026-11-08 : chantier CLOS et versé._
 
-- **État** : lots 1-12 publiés : démonstrations (1-4), approfondissements (5-9), algorithmes (10-12). Plus aucun lot
-  prévu.
-- **Prochaine action** : fin de chantier, avec l'accord de David : versement (le durable vers `docs/systeme/`,
-  couverture de [1spe.md](../systeme/programmes/bornes/lycee/1spe.md) à jour, journal archivé), retrait du worktree.
-- **En attente de David** : go pour la fin de chantier ; vérification à l'œil en prod (ligne du 2026-11-03 de
-  `docs/wip/verifications-manuelles.md`).
-- **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
-  `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
-  Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
-  `publier-lot.ts`, même en simulation, refusé à Claude par le classifieur (prod).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, détaché sur `origin/main` (aucune branche en cours).
+- **État** : lots 1-12 publiés (14 démonstrations, 20 approfondissements, 13 exemples d'algorithmes : 47 points P
+  couverts). Versé dans [1spe.md](../../systeme/programmes/bornes/lycee/1spe.md) § Couverture (relevé MCP du
+  2026-11-08 : 220 points sur 237, les 17 restants voulus). Journal et dossier archivés ; worktree retiré.
+- **Prochaine action** : aucune.
+- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
+- **Suite** : chantier `questions-2de-demonstrations` (même démarche, D1, D2, D8 de ce journal).
 
 ---
 

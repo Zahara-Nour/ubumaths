@@ -10,7 +10,8 @@
  * choix), puis la correction du modèle. Une carte
  * de cours donne son recto à l'énoncé et son verso au corrigé. Les gestes à figer :
  * tableau de signes à compléter (vide / rempli), droite à tracer (repère vide / droite
- * dessinée), boîte à moustaches à construire (axe seul / boîte dessinée).
+ * dessinée), boîte à moustaches à construire (axe seul / boîte dessinée), points à
+ * placer sur une droite graduée ou dans un repère (sans eux / points posés).
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
  * fonctions déclarées par le modèle de la question (`shared.genericFunctions`). L'écran
@@ -34,6 +35,7 @@ import { withChoiceMonnaieSize } from '$lib/ubumark/parser/monnaie-parser';
 import { replaceChoiceBlocks, type ChoiceBlock } from '$lib/ubumark/parser/choix-parser';
 import { correctChoiceIndexesOf, isChoiceBlank } from '$lib/questions/choice-case';
 import { findCourbesToPlace, parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
+import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import { lineCoefficients } from '$lib/ubumark/utils/courbe-tracer';
 import {
 	findBoxPlotsToPlace,
@@ -208,12 +210,63 @@ function nombre(n: number): string {
 	return texte;
 }
 
+/** Ligne `placer:` d'un bloc (droite graduée ou repère) */
+const PLACER_LINE = /^\s*placer\s*:/i;
+/** Ligne `points:` d'un repère */
+const POINTS_LINE = /^\s*points\s*:/i;
+
+/** Noms donnés aux points à placer écrits sans nom (`placer: 13/10`) : la première lettre libre */
+function nomsDesPoints(noms: readonly string[], pris: Iterable<string>): string[] {
+	const occupes = new Set([...pris, ...noms.filter((n) => n !== '')]);
+	const libres = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].filter((l) => !occupes.has(l));
+	let k = 0;
+	return noms.map((n) => {
+		if (n !== '') return n;
+		const libre = libres[k++];
+		if (!libre) throw new Error('aucun nom libre pour un point à placer');
+		return libre;
+	});
+}
+
 /**
- * Droites à tracer (```courbe à `tracer: y = 2x - 1`) : à l'énoncé, le repère vide
- * (lignes `tracer:` et `case:` retirées) ; au corrigé (`corrige`), la ligne `tracer:`
- * devient la droite dessinée, en vert. Une case par droite. Seule une droite non
- * verticale se dessine (`f(x) = …`) : vecteur à tracer, points à placer, droite
- * masquée ou verticale, repère en retrait ou cité → refus, message à l'appui.
+ * Points à placer d'un repère (```courbe à `placer: A=(2 ; 3)`) : à l'énoncé, le repère
+ * sans eux (lignes `placer:` et `case:` retirées) ; au corrigé (`corrige`), ils
+ * rejoignent les `points:` du repère (ligne créée à la place de `placer:` s'il n'en a
+ * pas). Un point sans nom prend la première lettre libre. Une case par point.
+ */
+function pointsDuRepere(
+	corpsDuRepere: string[],
+	placer: readonly { name: string; x: number; y: number }[],
+	pris: Iterable<string>,
+	corrige: boolean
+): string[] {
+	const corps = corpsDuRepere.filter((ligne) => !CASE_LINE.test(ligne));
+	if (!corrige) return corps.filter((ligne) => !PLACER_LINE.test(ligne));
+	const noms = nomsDesPoints(
+		placer.map((t) => t.name),
+		pris
+	);
+	const attendus = placer.map((t, i) => `${noms[i]}(${nombre(t.x)} ; ${nombre(t.y)})`).join(', ');
+	const iPoints = corps.findIndex((ligne) => POINTS_LINE.test(ligne));
+	if (iPoints >= 0) {
+		const avec = `${corps[iPoints].trimEnd()}, ${attendus}`;
+		return corps
+			.map((ligne, i) => (i === iPoints ? avec : ligne))
+			.filter((ligne) => !PLACER_LINE.test(ligne));
+	}
+	return corps.map((ligne) => (PLACER_LINE.test(ligne) ? `points: ${attendus}` : ligne));
+}
+
+/**
+ * Repères à compléter (```courbe à `tracer:` ou `placer:`).
+ *
+ * Droite à tracer (`tracer: y = 2x - 1`) : à l'énoncé, le repère vide (lignes `tracer:`
+ * et `case:` retirées) ; au corrigé (`corrige`), la ligne `tracer:` devient la droite
+ * dessinée, en vert. Une case par droite. Seule une droite non verticale se dessine
+ * (`f(x) = …`) : vecteur à tracer, droite masquée ou verticale → refus.
+ *
+ * Points à placer : cf. `pointsDuRepere`. Repère en retrait ou cité → refus, message à
+ * l'appui.
  */
 function droitesATracer(
 	modele: string,
@@ -222,6 +275,7 @@ function droitesATracer(
 ): { texte: string; cases: number } {
 	const lignes = texte.split('\n');
 	const reperes = findCourbesToPlace(texte);
+	let cases = 0;
 	// Du dernier au premier : les rangs des repères précédents restent justes
 	for (const repere of [...reperes].reverse()) {
 		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
@@ -230,7 +284,14 @@ function droitesATracer(
 		if (!node.spec) {
 			throw refus(`repère illisible (${node.errors.map((e) => e.message).join(' ; ')})`);
 		}
-		if (node.spec.placer?.length) throw refus('points à placer non pris en charge');
+		const placer = node.spec.placer ?? [];
+		if (placer.length > 0) {
+			const pris = node.spec.points.map((p) => p.name);
+			const corps = pointsDuRepere(repere.body, placer, pris, corrige);
+			lignes.splice(repere.startIndex + 1, repere.body.length, ...corps);
+			cases += placer.length;
+			continue;
+		}
 		if (node.spec.vecteur) throw refus('vecteur à tracer non pris en charge');
 		const tracer = node.spec.tracer;
 		if (!tracer) throw refus('repère à compléter sans droite à tracer');
@@ -253,8 +314,62 @@ function droitesATracer(
 			.filter((ligne) => !CASE_LINE.test(ligne))
 			.flatMap((ligne) => (TRACER_LINE.test(ligne) ? (corrige ? [dessinee] : []) : [ligne]));
 		lignes.splice(repere.startIndex + 1, repere.body.length, ...corps);
+		cases += 1;
 	}
-	return { texte: lignes.join('\n'), cases: reperes.length };
+	return { texte: lignes.join('\n'), cases };
+}
+
+/** Couleur des points attendus d'une droite à placer, au corrigé (celle de la page à cocher) */
+const COULEUR_SOLUTION = 'vert';
+
+/**
+ * Droites graduées à placer (```line à `placer: 13/10` ou `placer: A=3 ; B=7`) : à
+ * l'énoncé, la droite seule (lignes `placer:` et `case:` retirées) ; au corrigé
+ * (`corrige`), `placer:` devient la ligne `points:` des points attendus, en vert (le
+ * parseur refuse `points:` avec `placer:` : il n'y en a pas d'autre). Un point sans nom
+ * prend la première lettre libre. Une case par point. Droite à représenter
+ * (`representer:`), droite en retrait ou citée, illisible → refus, message à l'appui.
+ */
+function droitesAPlacer(
+	modele: string,
+	texte: string,
+	corrige: boolean
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const droites = findLinesToPlace(texte);
+	let cases = 0;
+	// Du dernier au premier : les rangs des droites précédentes restent justes
+	for (const droite of [...droites].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (droite.nested) throw refus('droite à placer en retrait ou citée');
+		const { node, errors } = parseNumberLineContent(droite.body);
+		if (!node) {
+			throw refus(`droite à placer illisible (${errors.map((e) => e.message).join(' ; ')})`);
+		}
+		if (node.representer) throw refus('droite à représenter non prise en charge');
+		const placer = node.placer ?? [];
+		if (placer.length === 0) throw refus('droite à placer sans point à placer');
+		cases += placer.length;
+		const noms = nomsDesPoints(
+			placer.map((t) => t.name),
+			[]
+		);
+		// Écriture de l'auteur, virgule décimale mise au point (`,` sépare les points)
+		const attendus = placer
+			.map((t, i) => {
+				const valeur = t.value.expression.replace(/(\d),(\d)/g, '$1.$2');
+				if (valeur.includes(',')) throw refus(`point à placer illisible (${t.value.expression})`);
+				return `${noms[i]}=${valeur} ${COULEUR_SOLUTION}`;
+			})
+			.join(', ');
+		const corps = droite.body
+			.filter((ligne) => !CASE_LINE.test(ligne))
+			.flatMap((ligne) =>
+				PLACER_LINE.test(ligne) ? (corrige ? [`points: ${attendus}`] : []) : [ligne]
+			);
+		lignes.splice(droite.startIndex + 1, droite.body.length, ...corps);
+	}
+	return { texte: lignes.join('\n'), cases };
 }
 
 /**
@@ -379,6 +494,10 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	const boitesEnonce = boitesAConstruire(template.id, droitesEnonce.texte, false);
 	const boitesCorrige = boitesAConstruire(template.id, droitesCorrige.texte, true);
 
+	// Droite graduée à placer : droite seule à l'énoncé, points posés au corrigé ; une case par point
+	const graduationsEnonce = droitesAPlacer(template.id, boitesEnonce.texte, false);
+	const graduationsCorrige = droitesAPlacer(template.id, boitesCorrige.texte, true);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
 	const cases =
@@ -386,17 +505,18 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 		casesChoix +
 		tableauxEnonce.cases +
 		droitesEnonce.cases +
-		boitesEnonce.cases;
+		boitesEnonce.cases +
+		graduationsEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = boitesEnonce.texte
+	const enonce = graduationsEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = boitesCorrige.texte
+	const corrige = graduationsCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 

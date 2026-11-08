@@ -1,0 +1,129 @@
+{
+	"title": "Construire un triangle rectangle à l'équerre et au compas",
+	"description": "Papier uni : angle droit en A à l'équerre, longueur AC reportée au compas, puis les côtés",
+	"grades": ["CE2"],
+	"level": 4,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le côté $[AB]$ est déjà tracé. Construis le triangle $ABC$ qui a un $\\textcolor{{{color:primary.0}}}{\\text{angle droit}}$ en $A$ et dont le côté $[AC]$ est aussi long que le segment $[MN]$ : trace l'angle droit avec l'équerre, reporte la longueur $MN$ avec le compas, puis trace $[AC]$ et $[BC]$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: triangle ABC : CAB = 90 ; AC = u\n---\n{{if:k==1|A = point(3, 2)\nB = point(9, 2)\nM = point(7, 8)\nN = point(10, 8)|{{if:k==2|A = point(2, 2)\nB = point(8, 2)\nM = point(8, 8)\nN = point(11.5, 8)|{{if:k==3|A = point(9, 2)\nB = point(9, 7)\nM = point(1, 8)\nN = point(5, 8)|{{if:k==4|A = point(2, 1)\nB = point(6, 4)\nM = point(8, 8)\nN = point(11, 8)|A = point(4, 1)\nB = point(10, 1)\nM = point(7, 8)\nN = point(11.5, 8)}}}}}}}}\nab = segment(A, B, epaisseur=3)\nu = segment(M, N)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose l'équerre le long de $[AB]$, l'angle droit en $A$, et on trace la droite qui $\\textcolor{{{color:primary.0}}}{\\text{coupe}}$ $[AB]$ à angle droit.",
+					"On prend la longueur $MN$ avec le compas, on pique en $A$ et on trace un arc : $C$ est là où l'arc $\\textcolor{{{color:primary.0}}}{\\text{croise}}$ la droite.",
+					"On trace $[AC]$ et $[BC]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Triangle 1 : équerre, report, côtés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;2;3;8)|report(3;2;7;8;10;8)|segment(3;2;3;5)|segment(9;2;3;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans équerre, [AC] tracé à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["report(3;2;7;8;10;8)|segment(3;2;3;5)|segment(9;2;3;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans report, C placé à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;2;3;8)|segment(3;2;3;5)|segment(9;2;3;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : C au-delà de l'arc",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;2;3;8)|report(3;2;7;8;10;8)|segment(3;2;3;6)|segment(9;2;3;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le côté [BC] manque",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;2;3;8)|report(3;2;7;8;10;8)|segment(3;2;3;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle 2 : équerre, report, côtés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(2;2;2;8)|report(2;2;8;8;11.5;8)|segment(2;2;2;5.5)|segment(8;2;2;5.5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 3 : équerre, report, côtés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(9;2;4;2)|report(9;2;1;8;5;8)|segment(9;2;5;2)|segment(9;7;5;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 4 : équerre, report, côtés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": [
+				"droite(2;1;-1;5)|report(2;1;8;8;11;8)|segment(2;1;0.2;3.4)|segment(6;4;0.2;3.4)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 5 : équerre, report, côtés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["droite(4;1;4;7)|report(4;1;7;8;11.5;8)|segment(4;1;4;5.5)|segment(10;1;4;5.5)"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

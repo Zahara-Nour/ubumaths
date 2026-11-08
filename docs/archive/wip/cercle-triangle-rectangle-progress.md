@@ -1,21 +1,19 @@
 # Chantier « cercle-triangle-rectangle » — cercle de centre donné et triangle rectangle à construire
 
-> Lignes n° 19 et n° 20 de [outils-manquants.md](outils-manquants.md). Débouchés : CE2-070 (lot 12b de
-> [questions-ce2](questions-ce2-progress.md)), CE1-072. Code : `src/lib/questions/construction/` (`circle.ts`,
-> `triangle.ts`), suite du chantier archivé [controles-figure](../archive/wip/controles-figure-progress.md).
+> Lignes n° 19 et n° 20 de [outils-manquants.md](../../wip/outils-manquants.md). Débouchés : CE2-070 (lot 12b de
+> [questions-ce2](../../wip/questions-ce2-progress.md)), CE1-072. Code : `src/lib/questions/construction/` (`circle.ts`,
+> `triangle.ts`), suite du chantier archivé [controles-figure](controles-figure-progress.md).
 > Ouvert le 2026-11-08 depuis la session `questions-ce2`, à la demande de David.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, phase 0 validée._
+_Mis à jour le 2026-11-08, après #2473. Chantier clos, journal archivé._
 
-- **État** : n° 19 (cercle de centre donné) écrit, PR ouverte (§ 2) ; n° 20 pas commencé.
-- **Prochaine action** : revue Opus et CI de la PR du n° 19, merge ; puis tests rouges du n° 20 (triangle
-  rectangle, extension de `triangle`).
-- **En attente de David** : rien.
-- **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` sur la PR ;
-  `verifier: cercle` refuse aujourd'hui toute autre expression que `cercle_circonscrit` (à la publication).
-- **Worktree / branche** : `../ubumaths-wt-cercle-triangle-rectangle`, `feat/cercle-triangle-rectangle`.
+- **État** : n° 19 (#2463) et n° 20 (#2473) livrés ; doc versée dans `systeme/questions.md` et `systeme/ubumark.md`.
+- **Prochaine action** : aucune ici ; le lot 12b du CE2 (CE2-070, CE1-072) se fait dans `questions-ce2`.
+- **En attente de David** : les deux vérifications manuelles (`verifications-manuelles.md`, #2463 et #2473).
+- **Pièges** : aucun en cours. Brouillon d'essai `9c92cf8f` en base LOCALE seulement.
+- **Worktree / branche** : supprimés après #2473.
 
 ## 1. Phase 0 — comportements (validée le 2026-11-08)
 
@@ -88,3 +86,43 @@ n° 20, une PR chacun, revue `code-reviewer` en `model: opus`, puis le lot 12b d
   a le bon centre mais pas le bon rayon : reporte la longueur DE. ») est plus précis que celui du § 1 (« Ton cercle
   n'a pas le bon rayon. ») : gardé, signalé à David ; (b) noms à prime refusés dans `cercle(…)` : sans objet, le
   langage des figures n'a pas de prime.
+- 2026-11-08 : #2463 mergée (CI verte sur `d2d873c96`, revue Opus : 1 finding corrigé) ; branche supprimée ; vérification manuelle notée.
+
+## 3. N° 20 — triangle rectangle, phase 0 (validée le 2026-11-08, « je suis tes recos »)
+
+Vérifié en prod (lecture seule, 2026-11-08) : aucun modèle n'écrit `= 90` dans un `verifier: triangle` (seul publié :
+`AC = u ; BC = v`, « Reproduire un triangle au compas »).
+
+- **Écriture** : `triangle ABC : CAB = 90 ; AC = u` (ou `AC = AB`, `AC = DE`), `CAB = 90` seul, idem en B. Sur
+  quadrillage : `CAB = 90 ; AC = 3 carreaux` ([AB] sur une ligne du quadrillage, sinon erreur d'auteur),
+  `CAB = 90 ; AC = AB` (lignes ou oblique), `CAB = 90` seul (C sur un nœud de la perpendiculaire).
+- **Refus à la publication** : `AC = u` sur quadrillage ; `carreaux` sans quadrillage ; hypoténuse donnée
+  (`CAB = 90 ; BC = u`) ; `90` avec un autre angle (Q6).
+- **Q5** : `AC = 3 carreaux`, unité obligatoire (`AC = 3` reste libre pour les cm de la règle graduée).
+- **Q7** : `= 90` dans un triangle = l'équerre, plus le rapporteur.
+- **Q8** : palettes déduites Segment · Équerre (· Report s'il y a une longueur) sur papier uni ; Segment seul sur
+  quadrillage. Pas de Compas.
+- **Erreurs, dans l'ordre** : côté manquant / côtés disjoints (messages actuels) ; papier uni, C sur aucune droite
+  construite par A : « Ton côté [AC] est tracé à l'œil : utilise l'équerre. » ; angle non droit (papier uni : « … :
+  trace la perpendiculaire à (AB) avec l'équerre. », quadrillage : « Ton angle en A n'est pas droit. ») ; C sur la
+  perpendiculaire hors du croisement du Report : message actuel ; mauvaise longueur (message actuel ; en carreaux :
+  « Ton côté [AC] mesure 4 carreaux au lieu de 3. »).
+- **Correction** : [AC], [BC], petit carré en A ; papier uni : la perpendiculaire et l'arc de report en traits fins.
+
+## 4. N° 20 — triangle rectangle, code (2026-11-08)
+
+- Types : `TriangleLength` devient une union (`squares` pour les carreaux), `isSquaresLength`, `rightAngleOf` ;
+  `triangleTools(check, grid)` (Segment · Équerre · Report / Segment seul).
+- Parseur (`readTriangle`, `coherenceError`) : angle droit seul admis, `AC = 3 carreaux` (1..50), refus du § 3.
+- Juge (`triangle.ts`, `judgeRight`) : papier uni, C sur une droite construite par le sommet de l'angle droit,
+  angle droit, croisement avec un cercle construit centré au même sommet, longueur ; quadrillage, angle et
+  longueur. Message du C le plus avancé. `assertRight` : A et B sur des nœuds, C dans la fenêtre / sur un nœud.
+- Correction : `rightAngles` (petit carré), `guides` (perpendiculaire, papier uni), arcs sans quadrillage.
+- Bug trouvé par le test navigateur : le générateur lisait `l.source` d'une longueur en carreaux (« le point
+  undefined n'est pas nommé ») ; corrigé, test serveur rouge sans le correctif.
+- Tests : `construction-triangle-rectangle.test.ts` (41, rouges puis verts), navigateur 6 ; suites voisines
+  12 668 serveur, 18 navigateur ; `check:incremental` 0 erreur ; doc `systeme/questions.md`, `systeme/ubumark.md`,
+  catalogue (2 exemples).
+- #2473 mergée le 2026-11-08 (CI verte sur `55fce9ae4`, après fusion de `main` : conflit sur les lignes « Vérifié » des docs). Revue Opus : (1) quadrillage, angle droit seul, la correction allait vers un nœud collé à A (les bouts A et B de
+  l'élève comptaient) → bouts A et B écartés ; (2) papier uni, angle droit seul, perpendiculaire hors fenêtre
+  acceptée → erreur d'auteur. Tests rouges puis verts.

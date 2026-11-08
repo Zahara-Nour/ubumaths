@@ -6,18 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08 : chantier EN PAUSE, en attente d'outils (décision de David)._
+_Mis à jour le 2026-11-08, après #2475._
 
-- **État** : lots 1 à 12 publiés. Restent au CE2 les points D sans modèle : 086, 043, 051, 065 (non évaluables
-  sans manipulation), 039 et le reste de 070 (outils manquants).
-- **En attente** des lignes de `outils-manquants.md` : n° 18 règle graduée (039, 070 coté ; « à décider avec David »),
-  n° 19 cercle de centre donné et n° 20 triangle rectangle (070, CE1-072). Vérifié le 2026-11-08 : aucun n'existe
-  dans `src/lib/questions/construction/`, aucun chantier, worktree ni PR ne les porte (`controles-figure` archivé).
-- **Prochaine action** : à la reprise, regarder la section « Livré » de `outils-manquants.md` ; n° 19 et n° 20 livrés
-  → lot 12b (070) ; n° 18 livré → 039.
-- **Pièges en cours** : `verifier: cercle` = cercle circonscrit SEUL ; commitlint : type `feat`, sujet sans
-  majuscule ; jamais de variable `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `main` (aucune branche en cours).
+- **État** : lots 1 à 12 publiés ; lot 12b (`ce2-12b`, 6 modèles : 03-06 sur CE2-070, 07-08 `grades: CE1` sur CE1-072)
+  mergé (#2475), pas encore en base de prod.
+- **Prochaine action** : David lance depuis le worktree `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/ce2-12b --publier` (brouillons en prod) ; puis ids commités + migration nœud + tag
+  (« constructions » ; CE2-070 niveaux 3-4, CE1-072 niveau 2) sur `feat/questions-ce2-lot12b-db`, page à cocher ;
+  publication **après le `deploy:prod`** de #2463 et #2473.
+- **En attente de David** : le `create-questions --publier` ; le `deploy:prod` (outils n° 19 et 20 pas en prod).
+- **Pièges en cours** : coordonnées en flottants → arrondies (garde de complexité, CI de #2475) ; n° 18 règle graduée
+  absent ; commitlint : corps ≤ 100 caractères par ligne, sujet sans majuscule ; jamais de variable `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot12b-db` (sur `origin/main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1018,3 +1018,58 @@ de centre donné en ligne n° 19.
 - 2026-11-08 : relecture de David sur la page à cocher : 2 verdicts « ok », sans commentaire (base `verdicts`
   comptée). Simulation `publier-lot` (Claude) : 2 brouillons passent le contrôle ; `--publier` (David) ; relevé MCP :
   2/2 `published`. **Lot 12 clos.**
+
+## 19. Lot 12b — cercle de centre donné et triangle rectangle (phase 0, 2026-11-08)
+
+Outils livrés (`docs/systeme/questions.md`) : `verifier: cercle c = cercle(O, passant=A)` (quadrillage ou papier uni)
+et `cercle(O, rayon=distance(D, E))` (papier uni, compas + report) ; `verifier: triangle ABC : CAB = 90 ; AC = u`
+(papier uni, équerre + report), `AC = 3 carreaux` ([AB] sur une ligne) ou `AC = AB` (oblique) sur quadrillage.
+BO CE2 (`CE2-espace.md`) : « sur tout support (papier quadrillé ou pointé ou papier uni) » ; exemples de réussite en
+cm (rectangle 7 × 3, carré de 6 et cercle de rayon 4, triangle rectangle 10 et 4) → la taille réelle reste au n° 18.
+
+| Fichier                          | Point   | Catégorie · niveau                 | Variations                                                                                                    |
+| -------------------------------- | ------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `03-trace-le-cercle`             | CE2-070 | Figures planes · constructions · 3 | cercle de centre O passant par A : quadrillage (A sur une ligne du quadrillage, ou en oblique) ; papier uni   |
+| `04-cercle-de-rayon-donne`       | CE2-070 | Figures planes · constructions · 4 | papier uni : segment [DE] donné, cercle de centre O de rayon DE (Report puis compas)                          |
+| `05-triangle-rectangle-carreaux` | CE2-070 | Figures planes · constructions · 3 | quadrillage, [AB] tracé : angle droit en A, AC = 2 à 6 carreaux ([AB] sur une ligne) ; AC = AB ([AB] oblique) |
+| `06-triangle-rectangle-equerre`  | CE2-070 | Figures planes · constructions · 4 | papier uni, [AB] tracé et segment u donné : angle droit en A à l'équerre, AC reportée de u                    |
+
+Erreurs typiques des `testSpecs` : compas ouvert à l'œil, cercle centré ailleurs, mauvais rayon ; angle en A non droit,
+côté tracé à l'œil (sans équerre), C placé à l'œil, AC trop long d'un carreau, côté [BC] manquant.
+Hors lot : l'assemblage du BO (carré + cercle centré sur un sommet) — une case = une vérification ; les longueurs en cm (n° 18).
+
+**Question d'accès** : personne ne lit rien de plus — brouillons (admin seul) ; migration nœud + tag sans règle neuve
+(comme le lot 12).
+
+Questions à David :
+
+- **Q1** — CE1-072 (« cercle de centre donné passant par un point donné », triangle rectangle) : des modèles de
+  niveau 2 dans ce lot (quadrillage seul, O et A sur une ligne, AC en carreaux), rangés sur CE1-072 ? Reco : oui,
+  `07-cercle-ce1` et `08-triangle-rectangle-ce1`, comme le prévoyait l'archive `cercle-triangle-rectangle`.
+- **Q2** — Niveaux 3 (quadrillage, sans instrument ou compas seul) et 4 (papier uni, instruments enchaînés) ? Reco : oui.
+- **Q3** — Publication : #2463 et #2473 ne sont pas en prod ; les brouillons peuvent être créés tout de suite, mais
+  l'aperçu admin de prod et les élèves ont besoin du `deploy:prod`. Écrire et relire en local maintenant, publier
+  après ton `deploy:prod` ? Reco : oui.
+
+Décisions de David (« je suis tes recos », 2026-11-08) : Q1 oui (07 et 08 pour CE1-072, niveau 2) ; Q2 oui (niveaux
+3 et 4) ; Q3 oui (écrire et relire en local maintenant, publier après le `deploy:prod`).
+
+### Lot 12b — écriture (2026-11-08)
+
+- Script `docs/wip/questions/lot-ce2-12b.py` → `scripts/questions/ce2-12b/` : 6 modèles, 71 specs (03 : 20, 04 : 9,
+  05 : 15, 06 : 9, 07 : 10, 08 : 8) ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `create-questions` en simulation (prod) : 6 « à créer » ; `sonde-figures` : 0 problème.
+- Messages des erreurs relevés un par un (sonde `validateAnswer`) : chaque spec `incorrect` rend le message visé
+  (« Pique ton compas en O. », « Ton compas est ouvert à l'œil… », « Ton côté [AC] mesure 5 carreaux au lieu de 4. »,
+  « Ton côté [AC] est tracé à l'œil : utilise l'équerre. », « Ton sommet C est placé à l'œil… »). Corrigé en route :
+  « [AC] plus court » du 05 oblique tombait sur « angle non droit » (arrondi qui déviait la direction) → remplacé par
+  « [AC] deux fois plus long » (aucun nœud plus proche sur la perpendiculaire).
+- Base locale, aperçu admin (5176) : 06 (palette Segment · Équerre · Report, [MN] nommé) et 05 oblique (quadrillage,
+  palette Segment) rendus ; « même longueur » ramenée à la couleur d'accent unique. Pas de tracé à la souris : les
+  verdicts passent par `validateAnswer`, le même chemin que l'appli.
+- Points nommés : M et N pour le segment donné (jamais E) ; papier uni du 03, « autre point à la même distance » =
+  faux (compas ouvert à l'œil), juste sur quadrillage.
+- CI de #2475 rouge : `answer-complexity-corpus.test.ts` (marge ×3 sur la longueur des réponses, limite 400) ; une
+  spec du 06 faisait 141 caractères à cause du bruit des flottants (`0.20000000000000018`) → `fmt` arrondit à 6
+  décimales, plus longue réponse 79. **Piège** : coordonnées calculées en flottants → toujours arrondies.
+- 2026-11-08 : #2475 mergée (CI verte au 2e commit ; revue : aucune, contenu).

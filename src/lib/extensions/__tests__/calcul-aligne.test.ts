@@ -15,12 +15,60 @@ import {
 	estCalculCentre,
 	rangerRelation,
 	relationEnCours,
+	normaliserCalcul,
 	retirerLigneVide,
+	CALCUL_ALIGNE_VIDE,
 	MARQUEUR_CURSEUR as M
 } from '../calcul-aligne';
 
 const aligne = (corps: string) => `\\begin{aligned}${corps}\\end{aligned}`;
-const centre = (corps: string) => `\\begin{array}{rcl}${corps}\\end{array}`;
+
+/** Calcul centré tel qu'écrit avant les fractions au grand format : ni style, ni écart. */
+const centreBrut = (corps: string) => `\\begin{array}{rcl}${corps}\\end{array}`;
+
+/**
+ * Coupe sur `separateur` hors accolades et hors environnements imbriqués ; `\\&`
+ * reste du contenu. Volontairement naïf : il ne sert qu'aux formules des tests.
+ */
+function couper(corps: string, separateur: string): string[] {
+	const morceaux: string[] = [];
+	let profondeur = 0;
+	let debut = 0;
+	for (let i = 0; i < corps.length; i++) {
+		if (corps.startsWith('\\begin', i)) profondeur++;
+		if (corps.startsWith('\\end', i)) profondeur--;
+		if (corps[i] === '\\' && corps[i + 1] === '\\' && separateur !== '\\\\') {
+			i++;
+			continue;
+		}
+		if (corps[i] === '\\' && separateur === '&') {
+			i++;
+			continue;
+		}
+		if (profondeur === 0 && corps.startsWith(separateur, i)) {
+			morceaux.push(corps.slice(debut, i));
+			debut = i + separateur.length;
+			i += separateur.length - 1;
+		}
+	}
+	morceaux.push(corps.slice(debut));
+	return morceaux;
+}
+
+/**
+ * Calcul centré dans la forme écrite par le module : membres non vides ouverts
+ * par `\\displaystyle`, lignes séparées par `\\\\[6pt]`.
+ */
+const centre = (corps: string) =>
+	centreBrut(
+		couper(corps, '\\\\')
+			.map((ligne) =>
+				couper(ligne, '&')
+					.map((c, j) => (j === 1 || c === '' ? c : `\\displaystyle ${c}`))
+					.join('&')
+			)
+			.join('\\\\[6pt]')
+	);
 
 describe('ajouterLigne — bloc simple', () => {
 	it('coupe sur le = et reprend le = à la ligne suivante', () => {
@@ -306,5 +354,84 @@ describe('revue #2422', () => {
 		expect(relationEnCours('!')).toBe(true);
 		expect(relationEnCours('n')).toBe(false);
 		expect(relationEnCours('')).toBe(false);
+	});
+});
+
+describe('fractions au grand format — membres en \\displaystyle, lignes espacées', () => {
+	it('la forme écrite : chaque membre non vide ouvert par \\displaystyle, la relation nue', () => {
+		expect(ajouterLigne(`\\frac{1}{2}=\\frac{2}{4}${M}`)).toBe(
+			'\\begin{array}{rcl}\\displaystyle \\frac{1}{2}&=&\\displaystyle \\frac{2}{4}' +
+				`\\\\[6pt]&=&\\displaystyle ${M}\\end{array}`
+		);
+	});
+
+	it('le bloc du bouton a déjà son style : la première frappe est au grand format', () => {
+		expect(CALCUL_ALIGNE_VIDE).toBe(`\\begin{array}{rcl}\\displaystyle ${M}\\end{array}`);
+	});
+
+	it('ancienne forme (ni style, ni écart) : lue, réécrite dans la nouvelle', () => {
+		expect(ajouterLigne(centreBrut(`A&=&3+4\\\\&=&7${M}`))).toBe(
+			centre(`A&=&3+4\\\\&=&7\\\\&=&${M}`)
+		);
+		expect(effacerRelation(centreBrut(`A&=&3\\\\&=&${M}7`))).toBe(centre(`A&=&3\\\\&&${M}7`));
+	});
+
+	it('lit le groupe {\\displaystyle …} que MathLive écrit après une frappe', () => {
+		const tape =
+			'\\begin{array}{rcl}\\displaystyle\\frac{1}{2} & = & \\displaystyle\\frac{2}{4}' +
+			`\\\\[6pt] & = & {\\displaystyle\\frac36${M}}\\end{array}`;
+		expect(ajouterLigne(tape)).toBe(
+			centre(`\\frac{1}{2}&=&\\frac{2}{4}\\\\&=&\\frac36\\\\&=&${M}`)
+		);
+	});
+
+	it('groupe suivi d’une suite, marqueur devant le groupe', () => {
+		expect(retirerLigneVide(centre(`A&=&3\\\\&&${M}`))).toBe(centre(`A&=&3${M}`));
+		const tape = `\\begin{array}{rcl}A & = & {\\displaystyle x}+1\\\\[6pt] & = & ${M}{\\displaystyle 7}\\end{array}`;
+		expect(effacerRelation(tape)).toBe(centre(`A&=&x+1\\\\&&${M}7`));
+	});
+
+	it('\\displaystyle soudé à une lettre n’est pas retiré à moitié', () => {
+		expect(ajouterLigne(`\\displaystyle x=1${M}`)).toBe(centre(`x&=&1\\\\&=&${M}`));
+		const cmd = '\\displaystyles';
+		expect(ajouterLigne(`${cmd}=1${M}`)).toBe(centre(`${cmd}&=&1\\\\&=&${M}`));
+	});
+
+	it('groupe suivi d’un exposant, d’un indice ou d’un prime : accolades gardées (revue #2471)', () => {
+		const tape = (suite: string) =>
+			`\\begin{array}{rcl}{\\displaystyle a+b}${suite}&=&1\\end{array}`;
+		expect(normaliserCalcul(tape('^2'))).toBe(centre('{a+b}^2&=&1'));
+		expect(normaliserCalcul(tape('_1'))).toBe(centre('{a+b}_1&=&1'));
+		expect(normaliserCalcul(tape("'"))).toBe(centre("{a+b}'&=&1"));
+	});
+
+	it('un intervalle en tête de ligne n’est pas pris pour un écart', () => {
+		expect(ajouterLigne(centreBrut(`A&=&3\\\\[0;1]&=&B${M}`))).toBe(
+			centre(`A&=&3\\\\[0;1]&=&B\\\\&=&${M}`)
+		);
+	});
+});
+
+describe('normaliserCalcul', () => {
+	it('réécrit un calcul centré de l’ancienne forme', () => {
+		expect(normaliserCalcul(centreBrut('A&=&\\frac{1}{2}\\\\&=&0{,}5'))).toBe(
+			centre('A&=&\\frac{1}{2}\\\\&=&0{,}5')
+		);
+	});
+
+	it('réécrit un membre tapé dans une cellule restée vide', () => {
+		const tape = `\\begin{array}{rcl}\\displaystyle A & = & \\displaystyle 3\\\\[6pt]B & = & \\displaystyle 4\\end{array}`;
+		expect(normaliserCalcul(tape)).toBe(centre('A&=&3\\\\B&=&4'));
+	});
+
+	it('rien à faire : déjà en forme, même sérialisé par MathLive', () => {
+		expect(normaliserCalcul(centre('A&=&3\\\\&=&7'))).toBeNull();
+		const tape = `\\begin{array}{rcl}\\displaystyle A & = & {\\displaystyle 3+\\frac12}\\\\[6pt] & = & {\\displaystyle}\\end{array}`;
+		expect(normaliserCalcul(tape)).toBeNull();
+	});
+
+	it('ne touche ni à un aligned, ni à une formule simple', () => {
+		expect(normaliserCalcul(aligne('A&=3\\\\&=7'))).toBeNull();
+		expect(normaliserCalcul('\\frac{1}{2}')).toBeNull();
 	});
 });

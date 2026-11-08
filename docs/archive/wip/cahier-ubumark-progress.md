@@ -2,13 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2459._
+_Mis à jour le 2026-11-08 : **chantier clos**._
 
-- **État** : les 4 PR du chantier sont mergées. En prod : PR 1, 1b, 2 (+ migration). **Pas encore en prod** : PR 3 (#2453) et PR 4 (#2459, énigmes en ubumark).
-- **Prochaine action** : après le prochain `deploy:prod` (demandé par David) et la ligne #2459 de `verifications-manuelles.md` cochée → fin de chantier : verser le durable (déjà dans `editeur-riche.md`, `jeux-et-economie.md`), archiver ce journal, retirer la mémoire du chantier.
-- **En attente de David** : supprimer les 2 énigmes d'essai en prod (« potyio », « jjhjh ») depuis la page des énigmes (Q4a, option 1).
-- **Pièges en cours** : job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed`.
-- **Worktree / branche** : aucun (retiré après #2459).
+- **État** : les PR du chantier (#2435, #2442, #2444, #2453, #2459) sont en prod depuis la v0.77.0 (2026-11-08) ; vérifications de prod faites par David, énigmes d'essai supprimées.
+- **Durable versé** dans `docs/systeme/editeur-riche.md` et `docs/systeme/jeux-et-economie.md`. Reste hors chantier : n° 21 de `docs/wip/outils-manquants.md` (vidéo dans une liste).
 
 ## Décision d'origine
 

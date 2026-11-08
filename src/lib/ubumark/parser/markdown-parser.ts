@@ -2029,6 +2029,15 @@ function parseContentWithCodeBlocks(
 			if (result.node) {
 				blocks.push(result.node);
 			}
+		} else if (language === 'line') {
+			// Droite graduée dans un item de liste (sinon : code brut à l'écran et dans le PDF) ;
+			// invalide : sa source, comme au premier niveau (Q64)
+			const restoredCode = restoreMathPlaceholders(code, placeholders);
+			const lines = ['```line', ...restoredCode.split('\n'), '```'];
+			const result = parseNumberLine(lines, 0, lines.length - 1);
+			blocks.push(
+				result.node ?? { type: 'code-block', language, code: restoreRawMath(code, placeholders) }
+			);
 		} else if (language === 'scratch') {
 			// Programme Scratch dans un item de liste : toujours un nœud, même en erreur
 			blocks.push(parseScratchContent(restoreMathPlaceholders(code, placeholders)));

@@ -1,0 +1,115 @@
+{
+	"title": "Terminer un triangle rectangle en comptant les carreaux",
+	"description": "Quadrillage : le côté [AB] suit une ligne, placer C pour un angle droit en A avec AC donné en carreaux",
+	"grades": ["CE1"],
+	"level": 2,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le côté $[AB]$ est déjà tracé. Termine le triangle $ABC$ qui a un $\\textcolor{{{color:primary.0}}}{\\text{angle droit}}$ en $A$ et dont le côté $[AC]$ mesure {{if:k==1|4 carreaux|{{if:k==2|5 carreaux|{{if:k==3|6 carreaux|{{if:k==4|3 carreaux|5 carreaux}}}}}}}}. Trace les côtés $[AC]$ et $[BC]$ en suivant le quadrillage.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\ngrille: 1\nverifier: triangle ABC : CAB = 90 ; AC = {{if:k==1|4 carreaux|{{if:k==2|5 carreaux|{{if:k==3|6 carreaux|{{if:k==4|3 carreaux|5 carreaux}}}}}}}}\n---\n{{if:k==1|A = point(3, 2)\nB = point(9, 2)|{{if:k==2|A = point(3, 3)\nB = point(8, 3)|{{if:k==3|A = point(2, 2)\nB = point(2, 7)|{{if:k==4|A = point(9, 2)\nB = point(4, 2)|A = point(4, 8)\nB = point(9, 8)}}}}}}}}\nab = segment(A, B, epaisseur=3)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le côté $[AB]$ suit une ligne du quadrillage : le côté $[AC]$ part de $A$ sur la ligne qui le $\\textcolor{{{color:primary.0}}}{\\text{coupe à angle droit}}$.",
+					"On compte les carreaux depuis $A$ pour placer $C$, puis on trace $[AC]$ et $[BC]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Triangle 1 : C à 4 carreaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(3;2;3;6)|segment(9;2;3;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [AC] trop long d'un carreau",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(3;2;3;7)|segment(9;2;3;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : angle en A non droit",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(3;2;4;6)|segment(9;2;4;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le côté [BC] manque",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(3;2;3;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle 2 : C à 5 carreaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(3;3;3;8)|segment(8;3;3;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 3 : C à 6 carreaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(2;2;8;2)|segment(2;7;8;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 4 : C à 3 carreaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["segment(9;2;9;5)|segment(4;2;9;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 5 : C à 5 carreaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["segment(4;8;4;3)|segment(9;8;4;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

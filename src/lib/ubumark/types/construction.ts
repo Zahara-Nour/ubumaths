@@ -112,11 +112,18 @@ export const LINE_GRID_TOOLS: ConstructionTool[] = ['droite', 'equerre', 'compas
 /**
  * Palette d'un triangle à construire : celle du lot 4 (trois longueurs), ou,
  * avec un angle (lot 7, § 21), Rapporteur · Règle · Segment, plus le Report et
- * le Compas s'il reste une longueur à reporter
+ * le Compas s'il reste une longueur à reporter ; triangle rectangle (n° 20) :
+ * Segment · Équerre (· Report) sur papier uni, Segment seul sur quadrillage
  */
 export function triangleTools(
-	check: Pick<TriangleCheck, 'angles' | 'lengths'>
+	check: Pick<TriangleCheck, 'angles' | 'lengths'>,
+	grid = false
 ): ConstructionTool[] {
+	// Triangle rectangle (n° 20) : l'équerre et le Report sur papier uni, le segment seul sur quadrillage
+	if (rightAngleOf(check)) {
+		if (grid) return ['segment'];
+		return check.lengths.length > 0 ? ['segment', 'equerre', 'report'] : ['segment', 'equerre'];
+	}
 	if (check.angles.length === 0) return [...(PLAIN_PAPER_TOOLS.triangle ?? [])];
 	const tools: ConstructionTool[] = ['rapporteur', 'droite', 'segment'];
 	return check.lengths.length > 0 ? [...tools, 'report', 'compas'] : tools;
@@ -231,9 +238,21 @@ export interface CircleCheck {
  * donne, un segment nommé de la figure (`['u']`) ou deux points visibles
  * (`['A', 'B']`)
  */
-export interface TriangleLength {
-	side: [string, string];
-	source: [string] | [string, string];
+export type TriangleLength =
+	| { side: [string, string]; source: [string] | [string, string] }
+	/** Sur quadrillage (n° 20) : `AC = 3 carreaux`, le long d'une ligne du quadrillage */
+	| { side: [string, string]; squares: number };
+
+/** Une longueur donnée en carreaux (n° 20) */
+export function isSquaresLength(
+	length: TriangleLength
+): length is Extract<TriangleLength, { squares: number }> {
+	return 'squares' in length;
+}
+
+/** Le triangle rectangle (n° 20) : son angle droit, construit à l'équerre ; null sinon */
+export function rightAngleOf(check: Pick<TriangleCheck, 'angles'>): TriangleAngle | null {
+	return check.angles.find((g) => g.measure === 90) ?? null;
 }
 
 /**
@@ -253,6 +272,8 @@ export interface TriangleAngle {
  * Lot 7 (§ 21) : un côté et deux angles (`CAB = 40 ; ABC = 65`, au rapporteur)
  * ou deux côtés et l'angle compris (`AC = u ; CAB = 40`).
  * Deux données en tout : `lengths` ([AC] puis [BC]) et `angles` (en A puis en B).
+ * Triangle rectangle (n° 20) : un angle de 90° (construit à l'équerre), seul ou
+ * avec la longueur du côté qui le porte (`CAB = 90 ; AC = u`, `AC = 3 carreaux`).
  */
 export interface TriangleCheck {
 	kind: 'triangle';

@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-approfondissements-5/.
 
 Phase 0 validée par David le 2026-11-04 (D3 et D4 du journal
-« docs/wip/questions-1spe-demonstrations-progress.md », § 9), un point par modèle :
+« docs/archive/wip/questions-1spe-demonstrations-progress.md », § 9), un point par modèle :
 
 | # | Point    | Titre                                         | Catégorie, niveau                            | Sous-notion (rangement)                                |
 | 1 | 1SPE-240 | Tour de Hanoï                                 | Suites › Apprivoiser › Approfondissements, 1 | Généralités sur les suites › explicite ou par récurrence |

@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2469 (lot 3 rangé en prod)._
+_Mis à jour le 2026-11-08, après #2476 (lot 4 mergé)._
 
-- **État** : lots 1 (5) et 2 (3) PUBLIÉS. Lot 3 (4 modèles, 357-360) en brouillon, rangé et tagué en prod (#2469,
-  `db:migrate` fait). Page à cocher : https://claude.ai/artifact/MSfbBs793RSVxLwzv9LyPK.
-- **Prochaine action** : quand David a relu, lire les verdicts (`ArtifactData list verdicts`, compter : 4), corriger
-  un « À revoir » ; sinon simulation puis publication (`publier-lot.ts --dir scripts/questions/2de-demonstrations-3`,
-  commande `!` donnée à David). Ensuite : verser le chantier (les 12 démonstrations seront couvertes).
-- **En attente de David** : relecture du lot 3 sur la page à cocher.
+- **État** : 12 démonstrations publiées (lots 1-3). Algorithmes (D3, 10 points) : lot 4 (241, 242, 257, 283) mergé (#2476), pas encore en base.
+- **Prochaine action** : David lance `create-questions --publier` (§ 10) → migration nœud + tag
+  → page à cocher ; puis lot 5 (321, 322) et lot 6 (361, 362, 387, 388).
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-4 --publier`
+  (depuis le dépôt principal).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
-  merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre.
-- **Worktree / branche** : aucun.
+  merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre ; worktree neuf → `svelte-kit sync` avant
+  `question:specs` ; `create-questions` lit `.env` (prod) : en local, passer l'URL et la clé de `.env.local`.
+- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations` (branche du lot 4 mergée ; la migration
+  nœud + tag prendra une branche neuve).
 
 ---
 
@@ -40,8 +41,8 @@ Rubriques « Démonstration(s) » de `2.md` (l. 280, 312, 348, 419, 451, 536) : 
 | 3   | 359   | Variations de la fonction carré            | Fonctions › Fonction carré › variations                     |
 | 3   | 360   | Variations de la fonction inverse          | Fonctions › Fonction inverse › variations                   |
 
-**Hors chantier pour l'instant** (restent P) : approfondissements (258, 259, 284-286, 305-310, 321-324, 361-363,
-387, 388), exemples d'algorithmes (241, 242, 257, 283), compétences (216, 217, 353, 493-495). Suites possibles,
+**Hors chantier pour l'instant** (restent P) : approfondissements (258, 259, 284-286, 305-310, 323, 324, 363),
+exemples d'algorithmes (241, 242, 257, 283, 321, 322, 361, 362, 387, 388 ; relevé corrigé le 2026-11-08, § 9), compétences (216, 217, 353, 493-495). Suites possibles,
 dans l'ordre de la 1re spé : approfondissements, puis algorithmes.
 
 ## 2. Phase 0 (posée et validée le 2026-11-06)
@@ -221,3 +222,90 @@ Mergée (#2469, CI verte du premier coup) ; `check:migrations --pr` passé. `db:
 (seule migration en attente) ; vérifié en prod : les 4 brouillons sur leur sous-notion, chacun avec son seul point,
 `draft`. Page à cocher : https://claude.ai/artifact/MSfbBs793RSVxLwzv9LyPK (4 alertes attendues : bloc ranger non
 dessiné, à jouer dans l'aperçu admin).
+
+Lot 3 relu par David sur la page à cocher (2026-11-08) : 4 « ok », sans commentaire. Publié par David
+(`publier-lot.ts`, simulation puis `--publier`) : 4/4, statut relu en base. **Les 12 démonstrations sont couvertes.**
+
+## 9. Suite : les exemples d'algorithmes (2026-11-08)
+
+**D2 (David, 2026-11-08)** : « continuer avec les algorithmes » — les 4 exemples d'algorithmes de la seconde (241,
+242, 257, 283), dans ce chantier. Les approfondissements (§ 1) ne sont pas tranchés. Versement après.
+
+### Relevé des exemples d'algorithmes (2026-11-08)
+
+Rubriques « Exemple(s) d'algorithme » de `2.md` (l. 285, 317, 352, 455, 542, 622) : **10 points**, pas 4. Le § 1
+rangeait 321, 322, 361, 362, 387 et 388 parmi les approfondissements : ce sont des exemples d'algorithmes (même
+erreur dans `2de.json`, dont la `remarque` dit « Approfondissement possible » pour ces 10 points). Les vrais
+approfondissements restent 258, 259, 284-286, 305-310, 323, 324, 363.
+
+Relevé prod (MCP, 2026-11-08) : aucun modèle tagué sur les 10 points.
+
+| Domaine       | Point | Algorithme                                                       | Nœud du point (prod)                               |
+| ------------- | ----- | ---------------------------------------------------------------- | -------------------------------------------------- |
+| Arithmétique  | 241   | a est-il multiple de b ?                                         | Divisibilité › multiples et diviseurs (16 modèles) |
+| Arithmétique  | 242   | Plus grand multiple de a inférieur ou égal à b                   | Divisibilité › multiples et diviseurs              |
+| Nombres réels | 257   | Encadrement de √2 par balayage, amplitude 10⁻ⁿ                   | Algorithmique › Boucles › boucle bornée (1 modèle) |
+| Algèbre       | 283   | Première puissance d'un nombre au-dessus (au-dessous) d'un seuil | Algorithmique › Boucles › boucle non bornée (2)    |
+| Géométrie     | 321   | Alignement de trois points                                       | Vecteurs › colinéarité                             |
+| Géométrie     | 322   | Équation de la droite passant par deux points                    | Géométrie repérée › équations de droites           |
+| Fonctions     | 361   | Approximation d'un extremum (balayage, dichotomie)               | Généralités sur les fonctions › extremums          |
+| Fonctions     | 362   | Longueur approchée d'une portion de courbe                       | notion Généralités sur les fonctions               |
+| Statistiques  | 387   | Filtrer des individus (ET, OU, NON) dans deux listes             | notion Tableaux croisés                            |
+| Statistiques  | 388   | Tableau croisé et fréquences à partir des listes                 | Tableaux croisés › tableau croisé d'effectifs      |
+
+Outils : rien à créer (bloc ` ```python ` à valeurs tirées, case, case choix ; exemples 2de : lots
+`2de-programmes-11a/11b` ; 1re spé : `1spe-algorithmes-10` à `12`). Phase 0 posée à David (ci-dessous).
+
+### Phase 0 — questions à David (posées le 2026-11-08)
+
+- **Q1 — Périmètre.** Les 10 exemples d'algorithmes ; compétences et approfondissements restent hors chantier.
+  _Reco : oui (D2 visait « les algorithmes » ; les 4 du § 1 venaient d'un relevé faux)._
+- **Q2 — Forme.** Comme D9 en 1re spé : Python seulement ; (a) faire tourner (valeur renvoyée pour une entrée
+  tirée, en case), (b) compléter une ligne (case choix à 4 propositions, erreurs typiques en distracteurs),
+  (c) interpréter ce que renvoie le programme ; jamais « faire tourner » un programme aléatoire ; 2-3 variations.
+  Valeurs calculables à la main (362 : points choisis pour des racines exactes). _Reco : oui._
+- **Q3 — Rangement.** Un modèle par point, tagué sur son point P, sur la sous-notion existante du point (241, 242 :
+  multiples et diviseurs ; 257 : boucle bornée ; 283 : boucle non bornée ; 321 : colinéarité ; 322 : équations de
+  droites ; 361 : extremums ; 388 : tableau croisé d'effectifs) ; 362 et 387, points sur une notion : sur une
+  sous-notion existante de cette notion (extremums ; tableau croisé d'effectifs), à vérifier au lot. Aucun nœud
+  neuf ; niveau après ceux déjà présents. _Reco : oui._
+- **Q4 — Publication.** Comme les démonstrations (brouillons, migration nœud + tag, page à cocher). _Reco : oui._
+- **Q5 — Accès** : « qui pourra lire quoi, qu'il ne pouvait pas lire avant ? » _Reco : personne de plus._
+- **Q6 — Bornes.** Corriger la `remarque` des 10 points dans `2de.json` (« Exemple d'algorithme », pas
+  « Approfondissement ») et le § 1, en commit de doc direct. _Reco : oui._
+
+Lots proposés : (4) nombres (241, 242, 257, 283) ; (5) géométrie (321, 322) ; (6) fonctions et statistiques
+(361, 362, 387, 388).
+
+**D3 (David, 2026-11-08, « je suis tes recos »)** : Q1 les 10 exemples d'algorithmes ; Q2 Python, formes (a) faire
+tourner, (b) compléter une ligne, (c) interpréter, jamais « faire tourner » un programme aléatoire, 2-3 variations ;
+Q3 un modèle par point, tagué sur son point, sur la sous-notion existante (362 : extremums ; 387 : tableau croisé
+d'effectifs), aucun nœud neuf ; Q4 publication comme les démonstrations ; Q5 accès : personne de plus ; Q6 bornes
+et § 1 corrigés (fait le 2026-11-08, `2de.json` : remarque des 10 points). Lots 4, 5, 6 dans l'ordre proposé.
+
+## 10. Lot 4 : exemples d'algorithmes, nombres (2026-11-08)
+
+Relevé prod (MCP, 2026-11-08) : 241 et 242 sur Arithmétique › Divisibilité › multiples et diviseurs (16 modèles,
+niveaux 1-11, dont « Est-ce un multiple ? » en Oui/Non sans programme) ; 257 sur Algorithmique › Boucles › boucle
+bornée (1 modèle, niveau 2) ; 283 sur Algorithmique › Boucles › boucle non bornée (2 modèles, niveaux 1-2 ; le
+« capital qui double » de `3cacefc5` est un cas de seuil, sans fonction ni exposant demandé). Aucun modèle tagué sur
+les 4 points ; aucune sous-notion neuve.
+
+| Point | Modèle (`scripts/questions/2de-algorithmes-4/`) | Nœud, niveau                              | Variations                                                                                                       |
+| ----- | ----------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 241   | `01-tester-un-multiple`                         | Divisibilité › multiples et diviseurs, 12 | `a % b == 0` : True ou False (choix non mélangé) ; version `while`, valeur de `m` (case) ; `return` (choix)      |
+| 242   | `02-plus-grand-multiple`                        | Divisibilité › multiples et diviseurs, 13 | faire tourner, a 3..9, b 20..80 (case) ; condition `m + a <= b` (choix) ; sans boucle `(b // a) * a` (choix)     |
+| 257   | `03-encadrer-racine-de-2-par-balayage`          | Boucles › boucle bornée, 3                | `balayage(1)` ou `(2)` : deux cases ; condition `(x + pas) ** 2 <= 2` (choix) ; amplitude `10^{-n}` (choix)      |
+| 283   | `04-premiere-puissance-seuil`                   | Boucles › boucle non bornée, 3            | premier n tel que qⁿ > M, q = 2 ou 3 (case) ; condition `q ** n <= M` (choix) ; 0,5ⁿ < s, s de 0,01 à 0,4 (case) |
+
+Script : `docs/wip/questions/lot-2de-algorithmes-4.py`. 257 : le programme utilise `while` (le point est rangé sur
+« boucle bornée » en prod, rangement gardé) ; la correction dit que Python affiche `1.4000000000000004` (valeur
+vérifiée en Python). Vérifié : `question:specs` 150 tirages par variation, 4/4 importables, toutes les specs vertes,
+0 `\textcolor` hors `$` ; 246 réponses « faire tourner » recoupées par une exécution Python des programmes de
+l'énoncé (0 écart) ; une correction fausse pour n ⩾ 2 corrigée (« 1,1² ») ; brouillons en base locale (copie hors
+dépôt), aperçu admin du 257 vu à l'écran (bloc Python, deux cases autour de √2, « 1,41 » et « 1,42 » acceptés).
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-4 --publier`
+
+Mergée (#2476, CI verte du premier coup).

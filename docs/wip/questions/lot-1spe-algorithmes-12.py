@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-algorithmes-12/.
 
 Phase 0 validée par David le 2026-11-06 (D9 du journal
-« docs/wip/questions-1spe-demonstrations-progress.md », § 15) ; contenu et rangement validés le
+« docs/archive/wip/questions-1spe-demonstrations-progress.md », § 15) ; contenu et rangement validés le
 2026-11-08 (D12, « je te suis » : proposition du § 18 et recommandations), un point par modèle,
 chacun sur une sous-notion existante :
 

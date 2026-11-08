@@ -26,6 +26,7 @@
 	import { readCapitalPairs } from '../content-capital-pairs';
 	import { readDigitGrouping } from '../content-digit-grouping';
 	import { isRefusedRestrictedFormula, readRestrictedRendering } from '../restricted-rendering';
+	import { normaliserCalcul } from '$lib/extensions/calcul-aligne';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	interface Props {
@@ -46,7 +47,7 @@
 	const digitGrouping = readDigitGrouping();
 
 	// Convert to LaTeX for rendering
-	let latex = $derived(
+	let converti = $derived(
 		expressionToLatex(
 			expression,
 			syntax,
@@ -56,6 +57,8 @@
 			digitGrouping()
 		)
 	);
+	// Calcul centré écrit avant les fractions au grand format : affiché comme un neuf
+	let latex = $derived(normaliserCalcul(converti) ?? converti);
 
 	// Mode restreint (chat élève) : une commande MathLive de style, classe,
 	// identifiant, données ou lien ne part pas dans MathLive — texte (S1) ; une

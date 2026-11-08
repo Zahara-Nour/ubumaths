@@ -1,0 +1,262 @@
+{
+	"title": "Tracer un cercle de centre donné passant par un point",
+	"description": "Tracer au compas le cercle de centre O passant par A, sur quadrillage (A en oblique) ou sur papier uni",
+	"grades": ["CE2"],
+	"level": 3,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trace le cercle de centre $O$ qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\ngrille: 1\nverifier: cercle c = cercle(O, passant=A)\n---\nO = point(6, 5)\n{{if:k==1|A = point(8, 6)|{{if:k==2|A = point(9, 7)|{{if:k==3|A = point(5, 8)|{{if:k==4|A = point(9, 4)|A = point(4, 3)}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pique la pointe du compas sur le $\\textcolor{{{color:primary.0}}}{\\text{centre}}$ $O$.",
+					"On ouvre le compas jusqu'au point $A$ et on trace le cercle : il $\\textcolor{{{color:primary.0}}}{\\text{passe par}}$ $A$."
+				]
+			}
+		},
+		{
+			"statement": "Trace le cercle de centre $O$ qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\nverifier: cercle c = cercle(O, passant=A)\n---\nO = point(6, 5)\n{{if:k==1|A = point(8.5, 6.5)|{{if:k==2|A = point(3, 7)|{{if:k==3|A = point(7, 1.5)|{{if:k==4|A = point(3.5, 3)|A = point(9.5, 6)}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pique la pointe du compas sur le $\\textcolor{{{color:primary.0}}}{\\text{centre}}$ $O$.",
+					"On ouvre le compas jusqu'au point $A$ et on trace le cercle : il $\\textcolor{{{color:primary.0}}}{\\text{passe par}}$ $A$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cercle 1 : centre O, ouvert jusqu'à A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(6;5;8;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compas piqué en A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(8;6;6;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : compas trop ouvert",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(6;5;9;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien de tracé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Cercle juste, plus un cercle d'essai",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(8;6;6;5)|cercle(6;5;8;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 2 : centre O, ouvert jusqu'à A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["cercle(6;5;9;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 2 : passe par un autre point à la même distance",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["cercle(6;5;4;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 3 : centre O, ouvert jusqu'à A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["cercle(6;5;5;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 4 : centre O, ouvert jusqu'à A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["cercle(6;5;9;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 5 : centre O, ouvert jusqu'à A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["cercle(6;5;4;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 1 : centre O, ouvert jusqu'à A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(6;5;8.5;6.5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compas piqué en A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(8.5;6.5;6;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : compas trop ouvert",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(6;5;9.5;6.5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien de tracé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Cercle juste, plus un cercle d'essai",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(8.5;6.5;6;5)|cercle(6;5;8.5;6.5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 2 : centre O, ouvert jusqu'à A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["cercle(6;5;3;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 2 : passe par un autre point à la même distance",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["cercle(6;5;4;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cercle 3 : centre O, ouvert jusqu'à A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["cercle(6;5;7;1.5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 4 : centre O, ouvert jusqu'à A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["cercle(6;5;3.5;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 5 : centre O, ouvert jusqu'à A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["cercle(6;5;9.5;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

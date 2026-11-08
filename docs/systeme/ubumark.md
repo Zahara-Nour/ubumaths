@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; calcul aligné des blocs `$$` le 2026-11-05, centré (`array{rcl}`) le 2026-11-06 ; durée d'une variable `{{eval}}` le 2026-11-03 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; lecteur des références (`internalLinks`, `internal-link-context.ts`) le 2026-11-06 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25, centaines et milliers le 2026-11-06 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03, triangle par des angles le 2026-11-03, report dans la palette de la droite et du cercle le 2026-11-06, bissectrice le 2026-11-06, cercle de centre donné le 2026-11-08) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28, `signe: aucun` (étapes) le 2026-11-03 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, vecteurs donnés (`vecteurs:`) et somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; segments à crochets et demi-droites (`segments: [2, +inf[`) le 2026-11-03 ; droite à représenter (`representer:`) le 2026-11-03, réponse incomplète = case vide le 2026-11-03 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03 ; cellules cachées à l'écran (`hiddenCells`, `cell`) le 2026-11-03 ; tableau trop large (ombres, téléphone) le 2026-11-04 ; tableau révélé pour le corrigé imprimé (`revealVariationBody`) le 2026-11-03 ; valeur et flèche cachées d'une ligne `variation:` (`variationRowForDisplay`, PDF sans flèche) le 2026-11-08 ; points déclarés et vecteurs donnés du bloc solide (`points:`, `vecteurs:`) le 2026-11-03, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, fractions et vecteurs nommés dans `tracer:` (D-SV2) le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; calcul aligné des blocs `$$` le 2026-11-05, centré (`array{rcl}`) le 2026-11-06 ; durée d'une variable `{{eval}}` le 2026-11-03 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; lecteur des références (`internalLinks`, `internal-link-context.ts`) le 2026-11-06 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25, centaines et milliers le 2026-11-06 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03, triangle par des angles le 2026-11-03, report dans la palette de la droite et du cercle le 2026-11-06, bissectrice le 2026-11-06, cercle de centre donné le 2026-11-08, triangle rectangle le 2026-11-08) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28, `signe: aucun` (étapes) le 2026-11-03 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, vecteurs donnés (`vecteurs:`) et somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; segments à crochets et demi-droites (`segments: [2, +inf[`) le 2026-11-03 ; droite à représenter (`representer:`) le 2026-11-03, réponse incomplète = case vide le 2026-11-03 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03 ; cellules cachées à l'écran (`hiddenCells`, `cell`) le 2026-11-03 ; tableau trop large (ombres, téléphone) le 2026-11-04 ; tableau révélé pour le corrigé imprimé (`revealVariationBody`) le 2026-11-03 ; valeur et flèche cachées d'une ligne `variation:` (`variationRowForDisplay`, PDF sans flèche) le 2026-11-08 ; droite graduée fermée dans un item de liste et droite PDF réduite à la colonne le 2026-11-08 ; points déclarés et vecteurs donnés du bloc solide (`points:`, `vecteurs:`) le 2026-11-03, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, fractions et vecteurs nommés dans `tracer:` (D-SV2) le 2026-11-03.
 
 ## À quoi ça sert
 
@@ -158,7 +158,18 @@ pas d'une cellule à l'autre) ; une relation tapée en tête de la colonne de dr
 milieu** dès que quelque chose s'écrit après elle (`rangerRelation`), jamais tant que l'atome avant
 le curseur peut encore devenir une autre relation (`relationEnCours` : `=` puis `>` → ⇒, `<=>` en
 trois touches ; poser le marqueur couperait le raccourci), et au plus tard en quittant le champ
-(`rangerRelation(…, true)` au `blur`). Un milieu déjà rempli est gardé tel quel, même une relation
+(`rangerRelation(…, true)` au `blur`). **Fractions au grand format** (2026-11-08) : un `array` met ses
+cellules en style texte (MathLive comme LaTeX), si bien qu'une fraction y rapetissait et que la
+taille variait d'une ligne à l'autre. Chaque membre non vide est donc écrit `\displaystyle …` (la
+relation, non) et les lignes sont séparées par `\\[6pt]` : sans cet écart, deux fractions de lignes
+voisines se touchaient (MathLive n'ajoute aucun espace entre les lignes d'un `array`, au contraire
+d'`aligned`). L'écart est en `pt`, sans décimale : le rendu français réécrirait `0.6em` en
+`0{,}6em`, que MathLive ne lit plus. La lecture accepte le `{\displaystyle …}` que MathLive
+sérialise après une frappe et l'ancienne forme (ni style, ni écart) ; `normaliserCalcul` la
+réécrit. Un ancien bloc est **affiché** dans la nouvelle forme (champ de l'éditeur, `MathBlock` de
+`components/markdown` pour l'énoncé et la messagerie), mais le nœud n'est réécrit qu'à la première
+frappe, et au `blur` pour un membre tapé dans une cellule restée vide : ouvrir un document ne le
+modifie pas. Le PDF retire le style et l'écart (grille Typst). Un milieu déjà rempli est gardé tel quel, même une relation
 hors des listes (`\subset`, `\in`) ; le PDF le prend aussi tel quel. Le marqueur n'est jamais écrit
 dans le nœud (`synchroniser` l'ignore) ;
 `ou` / `et` tapés deviennent `\:\mathrm{ou}\:` / `\:\mathrm{et}\:` (`RACCOURCIS_MOTS`, blocs
@@ -166,7 +177,9 @@ seulement ; `\text{…}` laissait MathLive en mode texte). Le curseur est repér
 `\maltese` posé puis retiré. Le `addRowAfter` natif de MathLive n'est pas utilisé : en fin de
 champ, il enveloppait la formule dans `\displaylines{…}`. Tests :
 `src/lib/extensions/__tests__/calcul-aligne.test.ts` (découpe), `calcul-aligne-chaine.test.ts`
-(aller-retour markdown, rendu, PDF), `calcul-aligne-editeur.svelte.test.ts` (navigateur).
+(aller-retour markdown, rendu, PDF), `calcul-aligne-editeur.svelte.test.ts` (navigateur, taille
+rendue d'une fraction comprise), `components/markdown/__tests__/calcul-centre-grand-format.svelte.test.ts`
+(ancien bloc affiché au grand format, mode restreint compris).
 
 Option `afterQuestion(index)` de `generateTypst` (cadres de réponse des fiches, ADR 0030 lot 3) :
 ce qu'elle rend se pose à la fin de chaque élément de **premier niveau** des listes numérotées de
@@ -219,7 +232,10 @@ oui, ` ```linear ` non : bloc de code ordinaire). Ils sont reconnus au premier n
 dans un item de liste : en retrait sous l'item, ou ouverts sur la ligne même de l'item
 (`- ```cubes`, corps en retrait). Cette seconde forme vaut pour tout bloc de code : `parseList`
 y joint l'ouverture à son corps (avant le correctif de 2026-11, le bloc était lu vide, « bloc non
-fermé »). Test : `__tests__/blocs-speciaux-listes.test.ts`.
+fermé »). Test : `__tests__/blocs-speciaux-listes.test.ts`. Dans un item, chaque langage a sa
+branche dans `parseContentWithCodeBlocks` (`markdown-parser.ts`) : un langage oublié y est lu
+comme du code brut, à l'écran et dans le PDF (` ```line ` FERMÉ l'était jusqu'au 2026-11-08 ;
+une droite illisible y garde sa source en bloc de code, Q64).
 
 | Fence                                                                                                                                           | Nœud (`type`)               | Parseur (`src/lib/ubumark/parser/`)                           | Rendu écran                                                                                                                              | Générateur PDF                               |
 | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
@@ -437,6 +453,9 @@ réduite : marges, chiffres, points et traits gardent leur taille, seul l'écart
 resserre ; pas de défilement horizontal (il se battrait avec le glisser). `valueToX`, `xToValue`,
 `computeGraduations`, `computeLineExtents` prennent la largeur (défaut 600 : PDF et
 inchangés) ; `NumberLinePlacer` lit le doigt en px (`xToValue(…, rect.width)`).
+PDF (`number-line-typst.ts`) : droite de 12 cm, **réduite** à la largeur disponible si elle la
+dépasse (colonne de fiche ≈ 8,7 cm ; `layout` + `measure` + `scale(reflow: true)`, comme l'arbre de
+probabilités ; jamais agrandie) — `number-line-typst.test.ts`.
 Droite à placer : le prof (aperçu, éditeur) est averti quand, sur un téléphone (conteneur de référence
 `NL_PHONE_WIDTH` = 320 px), deux graduations voisines seraient à moins de 20 px
 (`phoneGapWarning`, plus petit écart, échelle log comprise) : une droite de 0 à 20 au pas de 1 en
@@ -643,7 +662,7 @@ Même en-tête et même langage que ` ```figure `, plus trois lignes propres, lu
 de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS` : `droite`, `segment`, `point`, `equerre`, `compas`, `report`, `rapporteur` ; un seul pour
 `droite_par`, `carre`, `rectangle` ; plusieurs = une palette ; absent : celui de la vérification,
 `CHECK_TOOL`, ou, sans `grille:` (ou `grille: non`), les instruments pour `point` et `symetrique` (et
-pour `droite`, quadrillage ou non, sans `report` sur quadrillage (`LINE_GRID_TOOLS`, `outils: report` y est refusé) ; pour `cercle`, `triangle` et `angle`, refusés sur quadrillage, sauf le cercle `cercle(O, passant=A)` ; un cercle de centre donné reçoit `centeredCircleTools` : le compas, plus le report pour `rayon=distance(D, E)`),
+pour `droite`, quadrillage ou non, sans `report` sur quadrillage (`LINE_GRID_TOOLS`, `outils: report` y est refusé) ; pour `cercle`, `triangle` et `angle`, refusés sur quadrillage, sauf le cercle `cercle(O, passant=A)` et le triangle rectangle (palette Segment) ; un cercle de centre donné reçoit `centeredCircleTools` : le compas, plus le report pour `rayon=distance(D, E)`),
 `PLAIN_PAPER_TOOLS` ; sans quadrillage, une palette sans `equerre`, `compas`, `report` ni `rapporteur` est refusée), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
 `carre A ; B`, `rectangle A ; B ; C`, `symetrique par d` / `symetrique A ; B ; C par d` (`symétrique`
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
@@ -657,12 +676,17 @@ longueurs de [AC] et [BC] (dans n'importe quel ordre, `CA` admis) par un segment
 (`AC = AB`), un triangle à construire sur papier uni, seul, palette Segment · Compas · Report · Règle ; ou
 un angle par trois lettres, le sommet A ou B au milieu (`triangle ABC : CAB = 40 ; ABC = 65`, somme < 180 ;
 `triangle ABC : AC = u ; CAB = 40`, l'angle au bout du côté donné), palette `triangleTools` (Rapporteur ·
-Règle · Segment, plus Report · Compas avec une longueur) ;
+Règle · Segment, plus Report · Compas avec une longueur) ; ou le triangle rectangle (n° 20) : un angle de 90°
+(`rightAngleOf`), seul ou avec la longueur du côté qui le porte (`triangle ABC : CAB = 90 ; AC = u`), palette
+Segment · Équerre (· Report) sur papier uni, Segment seul sur quadrillage, où la longueur s'écrit
+`AC = 3 carreaux` (`TRIANGLE_SQUARES_REGEX`, unité obligatoire, 1..50, `TriangleLength.squares`) ou par deux
+points ; refusés : l'hypoténuse, 90° avec un autre angle, `AC = u` sur quadrillage, les carreaux sans
+quadrillage ou hors du triangle rectangle ;
 `angle AOy = 50`, un point du côté donné, le sommet, le nom du côté à tracer, une mesure entière de 1 à 179
 (`°` admis), un angle à construire sur papier uni, seul, palette Rapporteur · Segment ; `mesure AOB`, trois
 points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le rapporteur seul (suivi de
 `, rapporteur posé` : déjà posé sur le premier côté nommé, figé, `outils:` refusé) ; le rapporteur
-refusé ailleurs, sauf dans un triangle à angle donné ou une bissectrice) et `case: N`, posée
+refusé ailleurs, sauf dans un triangle à angle donné (pas l'angle droit, à l'équerre) ou une bissectrice) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
 le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `
