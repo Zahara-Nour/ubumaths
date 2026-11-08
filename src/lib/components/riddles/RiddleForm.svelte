@@ -110,12 +110,18 @@
 	function handleSubmit() {
 		if (!isValid || loading) return;
 
+		// `isValid` lit la liaison (150 ms de retard) : un champ vidé juste avant le
+		// clic n'est vu qu'ici.
+		const sentStatement = editorText(statementEditor, statement).trim();
+		const sentCorrection = editorText(correctionEditor, correction).trim();
+		if (!sentStatement || !sentCorrection) return;
+
 		const data: CreateRiddleData = {
 			title: title.trim(),
 			genre: genre.trim() || undefined,
 			difficulty,
-			statement: editorText(statementEditor, statement).trim(),
-			correction: editorText(correctionEditor, correction).trim(),
+			statement: sentStatement,
+			correction: sentCorrection,
 			image_url: imageUrl.trim() || undefined,
 			answer: answerConfig || undefined,
 			status

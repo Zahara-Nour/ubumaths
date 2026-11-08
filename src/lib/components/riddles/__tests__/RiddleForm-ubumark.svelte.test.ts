@@ -113,9 +113,8 @@ describe('RiddleForm : énoncé et correction en ubumark', () => {
 		submitButton(container).click();
 
 		const data = sent(onSubmit);
-		expect(data.statement).not.toMatch(/^<p>/);
-		expect(data.statement).toContain('Un');
-		expect(data.statement).toContain('texte');
+		// Texte brut ubumark : la balise tapée reste du texte (le rendu ne fait pas de `{@html}`)
+		expect(data.statement).toBe('Un <b>texte</b>');
 		expect(data.correction).toBe('La solution');
 	});
 });
