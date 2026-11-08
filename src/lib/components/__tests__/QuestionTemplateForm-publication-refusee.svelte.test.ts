@@ -6,6 +6,7 @@
  * serveur refuse (contrôle de publication : spec rouge, tirage en échec…),
  * `onSave` rend `false` et le statut doit revenir à `draft` : sinon
  * « Enregistrer brouillon » renverrait `published` et serait refusé à son tour.
+ * Acceptée : le modèle est publié, son bouton d'enregistrement devient « Enregistrer ».
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -45,11 +46,12 @@ async function renderForm(saved: boolean) {
 	return onSave;
 }
 
-async function publishThenSaveDraft(onSave: ReturnType<typeof vi.fn>) {
+/** Publie, puis enregistre : « Enregistrer brouillon » si refusé, « Enregistrer » si publié */
+async function publishThenSave(onSave: ReturnType<typeof vi.fn>, saveButton: string) {
 	await page.getByRole('button', { name: 'Publier', exact: true }).click();
 	await expect.poll(() => onSave.mock.calls.length).toBe(1);
 	expect((onSave.mock.calls[0][0] as SavedTemplate).status).toBe('published');
-	await page.getByRole('button', { name: 'Enregistrer brouillon' }).click();
+	await page.getByRole('button', { name: saveButton, exact: true }).click();
 	await expect.poll(() => onSave.mock.calls.length).toBe(2);
 	return onSave.mock.calls[1][0] as SavedTemplate;
 }
@@ -57,13 +59,13 @@ async function publishThenSaveDraft(onSave: ReturnType<typeof vi.fn>) {
 describe('QuestionTemplateForm : publication refusée', () => {
 	it('refus du serveur → le statut revient à draft pour l’enregistrement suivant', async () => {
 		const onSave = await renderForm(false);
-		const next = await publishThenSaveDraft(onSave);
+		const next = await publishThenSave(onSave, 'Enregistrer brouillon');
 		expect(next.status).toBe('draft');
 	});
 
 	it('publication acceptée → le statut reste published', async () => {
 		const onSave = await renderForm(true);
-		const next = await publishThenSaveDraft(onSave);
+		const next = await publishThenSave(onSave, 'Enregistrer');
 		expect(next.status).toBe('published');
 	});
 });

@@ -16,9 +16,13 @@
 
 	PROPS:
 	- template?: QuestionTemplate (for editing)
-	- onSave: (template) => void
+	- onSave: (template) => void | Promise<boolean> (`false` = refusé par le serveur)
 	- onCancel: () => void
 	- isSubmitting: boolean
+	- serverErrors?: string[] (raisons du dernier refus, dans « Erreurs à corriger »)
+
+	BOUTONS : brouillon → « Enregistrer brouillon », « Publier » ; publié → « Enregistrer »
+	(reste publié, contrôle complet du serveur), « Repasser en brouillon » (confirmation).
 -->
 
 <script lang="ts">
@@ -140,9 +144,11 @@
 		isSubmitting: boolean;
 		/** Nœuds non archivés de l'arbre des notions (champ « Rangé dans ») */
 		nodes?: TreeNode[];
+		/** Raisons du dernier refus du serveur (contrôle de publication), affichées avec les erreurs */
+		serverErrors?: string[];
 	}
 
-	let { template, onSave, onCancel, isSubmitting, nodes = [] }: Props = $props();
+	let { template, onSave, onCancel, isSubmitting, nodes = [], serverErrors = [] }: Props = $props();
 
 	// Snapshot of the initial template prop for $state initializers.
 	// This form initializes once from the prop and then evolves independently;
@@ -1041,6 +1047,52 @@
 		if (saved === false) status = previousStatus;
 	}
 
+	/**
+	 * « Enregistrer » d'un modèle publié : il reste publié, donc mêmes contrôles
+	 * que « Publier » (le serveur repasse le contrôle complet).
+	 */
+	function handleSavePublished() {
+		if (jsonMode) {
+			handleSaveDraft();
+			return;
+		}
+		hasAttemptedPublish = true;
+		if (!isValid) return;
+		onSave(buildTemplate());
+	}
+
+	// Même texte que la confirmation de la liste (onglet « Publiés »)
+	const UNPUBLISH_CONFIRM_TEXT =
+		'Ce modèle ne sera plus proposé aux élèves. Le republier repassera le contrôle complet.';
+	let showUnpublishDialog = $state(false);
+
+	/**
+	 * Repasse en brouillon, modifications en cours comprises ; on reste sur la page
+	 * (`silent`) pour voir le nouveau statut. Refus du serveur → le statut revient.
+	 */
+	async function confirmUnpublish() {
+		showUnpublishDialog = false;
+		if (jsonMode) {
+			try {
+				const parsed = JSON.parse(jsonString);
+				parsed.status = 'draft';
+				const saved = await onSave(parsed, { silent: true });
+				if (saved !== false) {
+					status = 'draft';
+					savedSnapshot = computeSnapshot();
+				}
+			} catch {
+				_jsonErrors = ['JSON invalide'];
+				jsonValid = false;
+			}
+			return;
+		}
+		status = 'draft';
+		const saved = await onSave(buildTemplate(), { silent: true });
+		if (saved === false) status = 'published';
+		else savedSnapshot = computeSnapshot();
+	}
+
 	// Publish question (with category validation)
 	function handlePublish() {
 		if (jsonMode) {
@@ -1089,9 +1141,10 @@
 	}
 
 	// Capture initial snapshot once (all $state vars are already initialized above)
-	const initialSnapshot = computeSnapshot();
+	// Repris après un enregistrement qui garde la page ouverte (retour en brouillon)
+	let savedSnapshot = $state(computeSnapshot());
 
-	let isDirty = $derived(computeSnapshot() !== initialSnapshot);
+	let isDirty = $derived(computeSnapshot() !== savedSnapshot);
 
 	// Warn before leaving with unsaved changes
 	$effect(() => {
@@ -1116,21 +1169,22 @@
 		hasAttemptedPublish && level <= 0 ? 'Le niveau doit être supérieur à 0' : ''
 	);
 
+	// Pas de contrôle « réponse manquante » ici : les réponses peuvent être écrites dans
+	// le texte (`?4`, `?flèche`), que seul le serveur (`checkTemplate`) sait lire ; il
+	// refuse une version sans réponse et ses raisons arrivent par `serverErrors`.
 	function getVariationErrors(v: QuestionVariation, index: number): string[] {
 		if (!hasAttemptedPublish) return [];
 		const errors: string[] = [];
 		if (!(v.statement ?? '').trim() && !sharedStatement.trim())
 			errors.push(`Variation ${index + 1} : énoncé manquant`);
-		const hasAnswer =
-			v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim());
-		if (!hasAnswer) errors.push(`Variation ${index + 1} : réponse manquante`);
 		return errors;
 	}
 	// Case choix (V1) : exactement une bonne réponse, au moins une avec `plusieurs: oui`
 	let answerCountErrors = $derived(choiceAnswerCountErrors(previewTemplate));
 	let variationErrors = $derived([
 		...variations.flatMap((v, i) => getVariationErrors(v, i)),
-		...(hasAttemptedPublish ? answerCountErrors : [])
+		...(hasAttemptedPublish ? answerCountErrors : []),
+		...serverErrors
 	]);
 
 	// Variables tirées (partagées + variations) : une hypothèse ne peut pas les viser
@@ -1148,11 +1202,7 @@
 		title.trim().length > 0 &&
 			variations.length > 0 &&
 			variations.every(
-				(v) =>
-					((v.statement ?? '').trim().length > 0 || sharedStatement.trim().length > 0) &&
-					v.blanks &&
-					v.blanks.length > 0 &&
-					v.blanks.some((b) => b.expectedAnswer?.trim())
+				(v) => (v.statement ?? '').trim().length > 0 || sharedStatement.trim().length > 0
 			) &&
 			grades.length > 0 &&
 			level > 0 &&
@@ -1908,7 +1958,7 @@
 	{/if}
 
 	<!-- Validation Errors Summary -->
-	{#if hasAttemptedPublish && variationErrors.length > 0}
+	{#if (hasAttemptedPublish || serverErrors.length > 0) && variationErrors.length > 0}
 		<div class="rounded-lg border border-destructive/50 bg-destructive/5 p-3">
 			<p class="mb-1 text-sm font-medium text-destructive">Erreurs à corriger :</p>
 			<ul class="space-y-1 text-xs text-destructive">
@@ -1930,26 +1980,60 @@
 			<Button variant="outline" onclick={handleCancel} disabled={isSubmitting}>
 				<X class="mr-2 h-4 w-4" />{lore.actions.cancel}</Button
 			>
-			<Button
-				variant="secondary"
-				onclick={handleSaveDraft}
-				disabled={isSubmitting || (jsonMode && !jsonValid)}
-				class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
-			>
-				<FileText class="mr-2 h-4 w-4" />
-				{isSubmitting ? 'Enregistrement...' : 'Enregistrer brouillon'}
-			</Button>
-			<Button
-				onclick={handlePublish}
-				disabled={isSubmitting || (jsonMode && !jsonValid)}
-				class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
-			>
-				<CheckCircle2 class="mr-2 h-4 w-4" />
-				{isSubmitting ? 'Publication...' : 'Publier'}
-			</Button>
+			{#if status === 'published'}
+				<Button
+					variant="secondary"
+					onclick={() => (showUnpublishDialog = true)}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
+				>
+					<FileText class="mr-2 h-4 w-4" />
+					Repasser en brouillon
+				</Button>
+				<Button
+					onclick={handleSavePublished}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+				>
+					<CheckCircle2 class="mr-2 h-4 w-4" />
+					{isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+				</Button>
+			{:else}
+				<Button
+					variant="secondary"
+					onclick={() => handleSaveDraft()}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
+				>
+					<FileText class="mr-2 h-4 w-4" />
+					{isSubmitting ? 'Enregistrement...' : 'Enregistrer brouillon'}
+				</Button>
+				<Button
+					onclick={handlePublish}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+				>
+					<CheckCircle2 class="mr-2 h-4 w-4" />
+					{isSubmitting ? 'Publication...' : 'Publier'}
+				</Button>
+			{/if}
 		</div>
 	</div>
 </div>
+
+<!-- Confirmation du retour en brouillon (même texte que la liste) -->
+<Dialog.Root bind:open={showUnpublishDialog}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Repasser en brouillon</Dialog.Title>
+			<Dialog.Description>{UNPUBLISH_CONFIRM_TEXT}</Dialog.Description>
+		</Dialog.Header>
+		<div class="flex justify-end gap-2">
+			<Button variant="outline" onclick={() => (showUnpublishDialog = false)}>Annuler</Button>
+			<Button variant="destructive" onclick={confirmUnpublish}>Repasser en brouillon</Button>
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
 
 <!-- Duplicate Variation Dialog -->
 <Dialog.Root bind:open={showDuplicateDialog}>
