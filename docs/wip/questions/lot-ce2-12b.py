@@ -67,7 +67,10 @@ def mul(v, k):
 
 
 def fmt(x):
-    return str(int(x)) if float(x).is_integer() else str(x)
+    # arrondi : le bruit des flottants (0.20000000000000018) allonge la réponse au-delà de la
+    # garde de complexité (`answer-complexity-corpus.test.ts`, marge ×3 sur 400 caractères)
+    x = round(float(x), 6)
+    return str(int(x)) if x.is_integer() else str(x)
 
 
 def pt(nom, p, visible=True):

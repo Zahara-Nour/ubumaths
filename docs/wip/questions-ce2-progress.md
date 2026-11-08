@@ -1068,3 +1068,6 @@ Décisions de David (« je suis tes recos », 2026-11-08) : Q1 oui (07 et 08 pou
   verdicts passent par `validateAnswer`, le même chemin que l'appli.
 - Points nommés : M et N pour le segment donné (jamais E) ; papier uni du 03, « autre point à la même distance » =
   faux (compas ouvert à l'œil), juste sur quadrillage.
+- CI de #2475 rouge : `answer-complexity-corpus.test.ts` (marge ×3 sur la longueur des réponses, limite 400) ; une
+  spec du 06 faisait 141 caractères à cause du bruit des flottants (`0.20000000000000018`) → `fmt` arrondit à 6
+  décimales, plus longue réponse 79. **Piège** : coordonnées calculées en flottants → toujours arrondies.
