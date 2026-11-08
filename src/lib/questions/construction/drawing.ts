@@ -53,7 +53,7 @@ import {
 	type BissectriceCorrection,
 	type LineCodage
 } from './line';
-import { circleLengthRuler, circleSolution, isCircleCheck, type CircleSolution } from './circle';
+import { circleLengthRulers, circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
 import { triangleCorrection, triangleSolution, type TriangleCorrection } from './triangle';
 import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
@@ -591,9 +591,22 @@ export function solutionRuler(
 	shapes: FigureShapes | undefined,
 	drawn: readonly DrawnObject[]
 ): DrawnRegle | null {
+	return solutionRulers(checks, points, shapes, drawn)[0] ?? null;
+}
+
+/** Toutes les règles graduées de la correction (cercles de rayon donné en cm : une par centre) */
+export function solutionRulers(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined,
+	drawn: readonly DrawnObject[]
+): DrawnRegle[] {
 	const check = checks.find((c) => c.kind === 'segment');
-	if (check) return segmentLengthRuler(check, points, shapes, drawn);
-	return circleLengthRuler(checks.filter(isCircleCheck), points, drawn);
+	if (check) {
+		const ruler = segmentLengthRuler(check, points, shapes, drawn);
+		return ruler ? [ruler] : [];
+	}
+	return circleLengthRulers(checks.filter(isCircleCheck), points, drawn);
 }
 
 /** Les points à placer : où ils vont, avec leur nom (vérifications `point`) */

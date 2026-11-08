@@ -9,18 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2490._
+_Mis à jour le 2026-11-09, PR 3 (#2494) ouverte._
 
-- **État** : PR 2 (#2490, `segment AB = 6 cm sur [Ax)`) **mergée**, pas déployée ; revue Opus : findings 1 et 3
-  corrigés (§ 5) ; ligne #2490 dans `verifications-manuelles.md`.
-- **Prochaine action** : PR 3, cercle de rayon donné en cm (`cercle c = cercle(O, rayon=4 cm)`, comportements du
-  § 4, Q12 : règle posée en O, ouverture du compas aimantée aux graduations) ; tests d'abord.
-- **En attente de David** : vérifications sur téléphone (#2485, #2490) ; choix (1)-(3) du § 5 ; Q15 (fusion à 2°
-  quand la demi-droite est donnée, reco : serrer) et Q16 (`[AX)` par un point, reco : plus tard), § 5.
+- **État** : PR 3 (#2494, `cercle c = cercle(O, rayon=4 cm)`) poussée, revue Opus faite (4 mineurs corrigés,
+  § 6) ; en attente de la CI puis merge. Serveur de la branche : port 5177.
+- **Prochaine action** : merger #2494 si la CI est verte ; puis PR 4, triangle rectangle coté
+  (`triangle ABC : CAB = 90 ; AC = 4 cm`, § 4) ; tests d'abord.
+- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494) ; choix (1)-(3) du § 5 et
+  (1)-(5) du § 6 ; Q15 (fusion à 2°, reco : serrer) et Q16 (`[AX)` par un point, reco : plus tard), § 5.
 - **Pièges en cours** : correction des réponses → revue `code-reviewer` en `model: opus` ; le juge prend le
-  **segment vu** (§ 3) ; sous zsh, une liste de fichiers dans une variable ne se découpe pas (tableau).
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cercle` (depuis `origin/main` après
-  #2490).
+  **segment vu** (§ 3) ; seules les règles posées AVANT le cercle comptent (§ 6) ; sous zsh, une liste de
+  fichiers dans une variable ne se découpe pas (tableau).
+- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cercle`.
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
@@ -203,3 +203,9 @@ Compas (Report, segment, droite refusés) ; le cercle ne se mêle qu'à d'autres
 0 en O (pas « 0 ailleurs et différence de deux graduations ») ; (4) Règle graduée = outil de départ (comme le
 segment) ; (5) pas de refus d'auteur « un point visible à 4 cm de O » (le compas s'y aimanterait, mais le juge
 exige une graduation : l'élève mesure quand même).
+
+**Revue opus (2026-11-09)** : rien de bloquant ; 4 mineurs corrigés : (1) refus d'auteur de `cercle(O, rayon=4)`
+sans unité : le message cite `cercle(O, rayon=4 cm)` ; (2) cercles concentriques attendus et un cercle de trop :
+« Trace seulement les 2 cercles de centre O demandés. » ; (3) correction : une règle par centre
+(`solutionRulers`) ; (4) faux juste : compas ouvert jusqu'à un point visible à 4 cm, règle posée APRÈS → était
+juste ; seules les règles posées avant le cercle comptent désormais (remplace un refus d'auteur, choix (5)).

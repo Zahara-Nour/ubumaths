@@ -753,9 +753,9 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    posée, le 2e toucher (l'ouverture) s'aimante à la graduation du mm la plus proche avant tout point, ‹ ›
    décalent l'ouverture du dernier cercle piqué au 0 (`nudgeRulerEnd`, `shape: 'cercle'`). Juste : un cercle
    de centre O dont le point d'ouverture est sur une graduation (1 mm au moins) d'une règle posée avec son
-   0 en O, égale au rayon demandé (`judgeRuled`). Messages, dans l'ordre : « Trace le cercle de centre O
+   0 en O **posée avant le cercle** (revue de #2494 : sinon un compas aimanté à un point visible à 4 cm, puis une règle posée après, serait juste), égale au rayon demandé (`judgeRuled`). Messages, dans l'ordre : « Trace le cercle de centre O
    et de rayon 4 cm. », « Pique ton compas en O. », « Trace un seul cercle de centre O. » (plus de rayons
-   distincts en O que de cercles attendus en O, comme Q9 ; le même cercle tracé deux fois n'en fait
+   distincts en O que de cercles attendus en O, comme Q9 ; « Trace seulement les 2 cercles de centre O demandés. » s'il y en a plusieurs ; le même cercle tracé deux fois n'en fait
    qu'un), « Ton compas est ouvert à l'œil : ouvre-le sur une graduation de la règle. », « Ton cercle a un
    rayon de 3,8 cm au lieu de 4 cm. » (unité de l'auteur). Cercles concentriques attendus (une ligne par
    cercle) : chacun juge le cercle de l'élève qui a son rayon, sinon celui qui n'a le rayon d'aucun cercle
@@ -763,8 +763,8 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    Report : faux, sans message. Erreurs de l'auteur : quadrillage, fenêtre absente, O absent ou invisible,
    rayon plus grand que la règle (`rulerLengthOf`), cercle qui sort de la fenêtre ; au parseur : longueur
    pas au mm près ou nulle, outil hors de la palette, règle graduée ou compas absents, mélange avec une
-   autre vérification qu'un cercle. Correction (`solutionRuler` → `circleLengthRuler`, `solutionCircles`) :
-   la règle posée en O, dans la direction de la dernière règle de l'élève posée en O, sinon vers la
+   autre vérification qu'un cercle. Correction (`solutionRulers` → `circleLengthRulers`, `solutionCircles`) :
+   une règle par centre, posée en O, dans la direction de la dernière règle de l'élève posée en O, sinon vers la
    droite, et le cercle.
    Vérification `triangle ABC : AC = u ; BC = v` (`construction/triangle.ts`, lot 4 du chantier) : [AB]
    est tracé, les longueurs de [AC] et [BC] viennent d'un segment nommé de la figure ou de deux points

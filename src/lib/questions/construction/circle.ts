@@ -88,8 +88,10 @@ export const centeredRadiusEyeballedFeedback = (radius: string) =>
 	`Ton compas est ouvert à l’œil : prends l’écartement ${radius} avec le Report.`;
 export const centeredRulerEyeballedFeedback = () =>
 	'Ton compas est ouvert à l’œil : ouvre-le sur une graduation de la règle.';
-export const severalCirclesFeedback = (center: string) =>
-	`Trace un seul cercle de centre ${center}.`;
+export const severalCirclesFeedback = (center: string, expected = 1) =>
+	expected > 1
+		? `Trace seulement les ${expected} cercles de centre ${center} demandés.`
+		: `Trace un seul cercle de centre ${center}.`;
 export const wrongRadiusFeedback = (
 	measured: number,
 	radius: { length: number; unit: LengthUnit }
@@ -244,7 +246,7 @@ export function assertCircles(
 		const centered = vertices ? null : centeredCircleOf(check.expression);
 		if (!vertices && !centered) {
 			throw new CircleAuthorError(
-				`${label} : seulement un cercle circonscrit (cercle_circonscrit(A, B, C)) ou de centre donné (cercle(O, passant=A), cercle(O, rayon=distance(D, E)))`
+				`${label} : seulement un cercle circonscrit (cercle_circonscrit(A, B, C)) ou de centre donné (cercle(O, passant=A), cercle(O, rayon=distance(D, E)), cercle(O, rayon=4 cm))`
 			);
 		}
 		if (centered) {
@@ -426,7 +428,9 @@ export function judgeCircles(
 	) {
 		return { status: 'incorrect' };
 	}
-	const rulers = objects.filter((o): o is DrawnRegle => o.kind === 'regle');
+	// Revue de #2494 : seule une règle posée AVANT le cercle a pu guider le compas
+	const rulersBefore = (i: number) =>
+		objects.slice(0, i).filter((o): o is DrawnRegle => o.kind === 'regle');
 	const rulerLength = rulerLengthOf(shapes?.window ?? null);
 	// Cercle construit de proche en proche (décision de David, 2026-11-03, § 14)
 	const construction = constructionOf(
@@ -462,7 +466,7 @@ export function judgeCircles(
 					{ free, all: circleIndexes },
 					circleAt,
 					others,
-					(c) => graduationOf(c, rulers, rulerLength)
+					(i) => graduationOf(circleAt(i), rulersBefore(i), rulerLength)
 				);
 				if (typeof verdict !== 'number') return verdict;
 				taken.add(verdict);
@@ -608,7 +612,7 @@ function judgeRuled(
 	indexes: { free: readonly number[]; all: readonly number[] },
 	circleAt: (i: number) => DrawnCircle,
 	others: readonly ExpectedCircle[],
-	graduation: (circle: DrawnCircle) => number | null
+	graduation: (i: number) => number | null
 ): number | ConstructionVerdict {
 	const shapeOf = (i: number): ExpectedCircle => ({
 		center: centerOf(circleAt(i)),
@@ -638,13 +642,16 @@ function judgeRuled(
 			(other) => distance(other.center, target.center) <= tolerance(other.center, target.center)
 		).length;
 	if (distinct.length > expectedHere) {
-		return { status: 'incorrect', feedback: severalCirclesFeedback(centered.center) };
+		return {
+			status: 'incorrect',
+			feedback: severalCirclesFeedback(centered.center, expectedHere)
+		};
 	}
 	const own = attempts.filter(atCenter);
 	const matching = own.filter((i) => sameCircle(shapeOf(i), target));
 	const shown = matching.length > 0 ? matching : own;
 	const opened = shown
-		.map((i) => ({ i, mm: graduation(circleAt(i)) }))
+		.map((i) => ({ i, mm: graduation(i) }))
 		.filter((g): g is { i: number; mm: number } => g.mm !== null);
 	if (opened.length === 0) {
 		return { status: 'incorrect', feedback: centeredRulerEyeballedFeedback() };
@@ -655,27 +662,30 @@ function judgeRuled(
 }
 
 /**
- * La règle de la correction d'un cercle de rayon donné en cm (PR 3) : posée en O,
- * dans la direction de la dernière règle que l'élève y a posée, sinon vers la
- * droite (le cercle tient dans la fenêtre : toute direction depuis O y tient) ;
- * null pour un autre cercle
+ * Les règles de la correction des cercles de rayon donné en cm (PR 3) : une par
+ * centre, posée en O, dans la direction de la dernière règle que l'élève y a
+ * posée, sinon vers la droite (le cercle tient dans la fenêtre : toute direction
+ * depuis O y tient) ; aucune pour les autres cercles
  */
-export function circleLengthRuler(
+export function circleLengthRulers(
 	checks: readonly CircleCheck[],
 	points: ReadonlyMap<string, Position>,
 	drawn: readonly DrawnObject[]
-): DrawnRegle | null {
+): DrawnRegle[] {
+	const rulers: DrawnRegle[] = [];
+	const centers: Position[] = [];
 	for (const check of checks) {
 		const centered = centeredCircleOf(check.expression);
 		const o = centered?.kind === 'longueur' ? points.get(centered.center) : undefined;
-		if (!o) continue;
+		if (!o || centers.some((c) => distance(c, o) <= tolerance(c, o))) continue;
+		centers.push(o);
 		const own = drawn
 			.filter((obj): obj is DrawnRegle => obj.kind === 'regle')
 			.filter((r) => distance({ x: r.ox, y: r.oy }, o) <= tolerance(o))
 			.at(-1);
-		return own ?? { kind: 'regle', ox: o.x, oy: o.y, bx: o.x + 1, by: o.y, sens: 1 };
+		rulers.push(own ?? { kind: 'regle', ox: o.x, oy: o.y, bx: o.x + 1, by: o.y, sens: 1 });
 	}
-	return null;
+	return rulers;
 }
 
 /** Correction d'un cercle : le cercle, son centre, deux médiatrices (décision 4) */

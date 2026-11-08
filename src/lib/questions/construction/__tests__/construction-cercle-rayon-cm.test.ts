@@ -26,6 +26,7 @@ import {
 	rulerSegmentMm,
 	solutionCircles,
 	solutionRuler,
+	solutionRulers,
 	type Drawing
 } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject, type DrawnRegle } from '../answer';
@@ -254,7 +255,19 @@ describe('juge : cercle de rayon 4 cm', () => {
 		// Trois rayons distincts pour deux cercles attendus : un éventail
 		expect(
 			judge(both, [regle(), opened(regle(), 20), opened(regle(), 38), opened(regle(), 39)])
-		).toEqual({ status: 'incorrect', feedback: severalCirclesFeedback('O') });
+		).toEqual({ status: 'incorrect', feedback: severalCirclesFeedback('O', 2) });
+		expect(severalCirclesFeedback('O', 2)).toBe(
+			'Trace seulement les 2 cercles de centre O demandés.'
+		);
+	});
+
+	it('règle posée APRÈS le cercle (compas aimanté à un point à 4 cm) → ouvert à l’œil (revue de #2494)', () => {
+		const withP = figure('cercle c = cercle(O, rayon=4 cm)', [...BODY, 'P = point(9, 5)']);
+		expect(judge(withP, [cercle(O, { x: 9, y: 5 }), regle()])).toEqual({
+			status: 'incorrect',
+			feedback: centeredRulerEyeballedFeedback()
+		});
+		expect(judge(withP, [regle(), cercle(O, { x: 9, y: 5 })])).toEqual({ status: 'correct' });
 	});
 
 	it('un segment, un point, une droite, un Report : réponse forgée', () => {
@@ -308,6 +321,10 @@ describe('erreurs de l’auteur', () => {
 		expect(() => assertChecks(hidden)).toThrow(/visible/);
 	});
 
+	it('rayon sans unité : le refus cite la forme en cm (revue de #2494)', () => {
+		expect(() => assertChecks(figure('cercle c = cercle(O, rayon=4)'))).toThrow(/rayon=4 cm/);
+	});
+
 	it('nominal : pas d’erreur', () => {
 		expect(() => assertChecks(FOUR)).not.toThrow();
 	});
@@ -337,6 +354,20 @@ describe('correction : la règle posée en O et le cercle', () => {
 		expect(solutionRuler(checks, points, shapes, [])).toEqual(regle({ x: 6, y: 5 }));
 		const [circle] = solutionCircles(checks, constructionExpected(FOUR), points, shapes);
 		expect(circle).toMatchObject({ name: 'c', center: O, radius: 4, mediatrices: [] });
+	});
+
+	it('deux centres : une règle par centre (revue de #2494)', () => {
+		const two = figure(
+			['cercle c = cercle(O, rayon=2 cm)', 'cercle d = cercle(Q, rayon=2 cm)'],
+			[...BODY, 'Q = point(9, 5)']
+		);
+		const rulers = solutionRulers(
+			checksOf(two),
+			constructionPositions(two),
+			constructionShapes(two),
+			[]
+		);
+		expect(rulers).toEqual([regle({ x: 6, y: 5 }), regle({ x: 10, y: 5 }, { x: 9, y: 5 })]);
 	});
 
 	it('dans la direction de la règle que l’élève a posée en O', () => {

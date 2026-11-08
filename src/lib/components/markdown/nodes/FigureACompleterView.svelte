@@ -119,7 +119,7 @@
 		solutionPoints,
 		solutionAngle,
 		solutionBissectrices,
-		solutionRuler,
+		solutionRulers,
 		solutionTriangle,
 		type ConstructionAnswerInput,
 		type Drawing,
@@ -1033,13 +1033,7 @@
 		{/if}
 		{#if corrected}
 			<!-- Segment de longueur donnée (ou cercle de rayon donné en cm) : la règle posée en A (ou en O) -->
-			{@const goodRuler = solutionRuler(
-				checks,
-				allPoints,
-				figureShapes(scene, node.header),
-				objects
-			)}
-			{#if goodRuler}
+			{#each solutionRulers(checks, allPoints, figureShapes(scene, node.header), objects) as goodRuler, i (i)}
 				{@const r = rulerOnScreen(goodRuler, scene, width, height)}
 				<g data-testid="bonne-regle" class="bonne-regle" aria-hidden="true">
 					<Ruler
@@ -1051,7 +1045,7 @@
 						mirrored={r.mirrored}
 					/>
 				</g>
-			{/if}
+			{/each}
 			{#each solutionLines(checks, allPoints, objects, figureShapes(scene, node.header), expectedOf()) as line, i (i)}
 				{@const s = toScreen(line, scene, width, height)}
 				{#if s}
