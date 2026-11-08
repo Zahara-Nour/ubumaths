@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2448._
+_Mis à jour le 2026-11-08, après la publication du lot 12._
 
-- **État** : lot 12 (CE2-070 en partie, 2 modèles) en prod en brouillon, rangé (#2448, `db:migrate` fait).
-- **Prochaine action** : relecture de David sur la page à cocher (https://claude.ai/artifact/HnWZ6reTpJF5uSKTg9Cyba),
-  compter les verdicts, puis `publier-lot --dir scripts/questions/ce2-12` en simulation et `--publier` (David).
-- **En attente de David** : verdicts de la page à cocher ; jouer les 2 modèles dans l'aperçu (case « figure » non
-  dessinée sur la page).
+- **État** : lots 1 à 12 publiés (lot 12 : 2/2 `published`, relevé MCP du 2026-11-08). Restent au CE2 les points D
+  sans modèle : 086, 043, 051, 065 (non évaluables sans manipulation), 039 et le reste de 070 (outils manquants).
+- **Prochaine action** : à choisir avec David : lot 12b (070 : cercle de centre donné, triangle rectangle) dès que
+  `outils-manquants.md` n° 19 et n° 20 existent, 039 après le n° 18 ; ou clore le chantier (versement).
+- **En attente de David** : la suite du chantier (lot 12b quand les outils existeront, ou clôture).
 - **Pièges en cours** : `verifier: cercle` = cercle circonscrit SEUL (`outils-manquants.md` n° 19 ; n° 18 règle
   graduée, n° 20 triangle rectangle) ; commitlint : type `feat`, sujet sans majuscule ; jamais de variable `e`.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `main` (aucune branche en cours).
@@ -1013,3 +1013,6 @@ de centre donné en ligne n° 19.
   dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 2/2 sur « constructions », CE2-070, brouillons,
   `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/HnWZ6reTpJF5uSKTg9Cyba), alerte attendue
   (case « figure » non dessinée : jouer les modèles dans l'aperçu), base `verdicts` vide.
+- 2026-11-08 : relecture de David sur la page à cocher : 2 verdicts « ok », sans commentaire (base `verdicts`
+  comptée). Simulation `publier-lot` (Claude) : 2 brouillons passent le contrôle ; `--publier` (David) ; relevé MCP :
+  2/2 `published`. **Lot 12 clos.**
