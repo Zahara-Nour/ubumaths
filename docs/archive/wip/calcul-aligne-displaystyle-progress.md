@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-08, après #2471._
 
-- **État** : ✅ mergé (#2471), pas encore en prod (`deploy:prod` sur demande de David) · **Prochaine action** : aucune ; journal à verser dans `docs/archive/` · **En attente de David** : lancer ou non la PR du bug voisin du cahier de texte (ci-dessous) · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
+- **État** : ✅ mergé (#2471), pas encore en prod (`deploy:prod` sur demande de David) · **Prochaine action** : aucune ; chantier clos, journal archivé · **En attente de David** : lancer ou non la PR du bug voisin du cahier de texte (ci-dessous) · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
 
 ## Problème (David, 2026-11-08)
 
