@@ -1,0 +1,271 @@
+{
+	"title": "Démontrer le sens de variation d'une fonction affine",
+	"description": "Démonstration à trous (m et p tirés) : f(b) − f(a) = m(b − a) (case), signe si m > 0 (choix), conclusion si m < 0 (choix) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction affine définie sur $\\mathbb{R}$ par $f(x)={{m}}x{{p;+}}$. On démontre le sens de variation de $f$.\n\nSoient $a$ et $b$ deux réels tels que $a<b$.\n\nComplète.\n\n$f(b)-f(a)=({{m}}b{{p;+}})-({{m}}a{{p;+}})={{m}}(?)$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "b-a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le terme constant ${{p}}$ s'élimine : $f(b)-f(a)={{m}}b-{{m}}a$.",
+					"On factorise par ${{m}}$ : $f(b)-f(a)={{m}}(\\textcolor{{{color:primary.0}}}{b-a})$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction affine définie sur $\\mathbb{R}$ par $f(x)={{m}}x{{p;+}}$. On démontre que $f$ est croissante sur $\\mathbb{R}$.\n\nSoient $a$ et $b$ deux réels tels que $a<b$.\n\nOn a $f(b)-f(a)={{m}}(b-a)$. Pourquoi $f(b)-f(a)>0$ ?\n\n```choix\n- Car ${{m}}>0$ et $b-a>0$ : le produit de deux nombres positifs est positif.\n- Car $a<b$, donc $f(a)<f(b)$ pour toute fonction.\n- Car $b-a<0$ et ${{m}}>0$.\n- Car $f(b)$ et $f(a)$ sont positifs.\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a<b$, donc $b-a>0$ ; et le coefficient directeur ${{m}}$ est positif.",
+					"Donc $f(b)-f(a)={{m}}(b-a)>0$, soit $\\textcolor{{{color:primary.0}}}{f(a)<f(b)}$ : $f$ est **croissante** sur $\\mathbb{R}$.",
+					"« $a<b$ donc $f(a)<f(b)$ » n'est vrai que pour une fonction croissante : c'est ce qu'on démontre."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction affine définie sur $\\mathbb{R}$ par $f(x)={{m}}x{{p;+}}$. On démontre le sens de variation de $f$.\n\nSoient $a$ et $b$ deux réels tels que $a<b$.\n\nOn a $f(b)-f(a)={{m}}(b-a)$, avec $b-a>0$. Que peut-on conclure ?\n\n```choix\n- $f(b)-f(a)<0$, donc $f(a)>f(b)$ : $f$ est décroissante sur $\\mathbb{R}$.\n- $f(b)-f(a)<0$, donc $f(a)>f(b)$ : $f$ est croissante sur $\\mathbb{R}$.\n- $f(b)-f(a)>0$, donc $f(a)<f(b)$ : $f$ est croissante sur $\\mathbb{R}$.\n- On ne peut pas conclure : le signe dépend aussi de l'ordonnée à l'origine ${{p}}$.\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-9..-2"
+				},
+				{
+					"name": "p",
+					"expression": "-9..-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{m}}<0$ et $b-a>0$ : le produit ${{m}}(b-a)$ est négatif.",
+					"Donc $f(b)<f(a)$ : de $a<b$ on tire $\\textcolor{{{color:primary.0}}}{f(a)>f(b)}$, $f$ est **décroissante** sur $\\mathbb{R}$.",
+					"L'ordonnée à l'origine ${{p}}$ s'élimine : elle ne joue aucun rôle dans les variations."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction affine définie sur $\\mathbb{R}$ par $f(x)=mx+p$. On démontre que $f$ est croissante si $m>0$ et décroissante si $m<0$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Soient $a$ et $b$ deux réels tels que $a<b$.\n- $f(b)-f(a)=(mb+p)-(ma+p)=m(b-a)$.\n- Comme $a<b$, on a $b-a>0$ : $f(b)-f(a)$ a le signe de $m$.\n- Si $m>0$, alors $f(b)-f(a)>0$, soit $f(a)<f(b)$ : $f$ est croissante sur $\\mathbb{R}$.\n- Si $m<0$, alors $f(b)-f(a)<0$, soit $f(a)>f(b)$ : $f$ est décroissante sur $\\mathbb{R}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On compare $f(a)$ et $f(b)$ par le signe de leur différence.",
+					"Conclusion : le sens de variation de $f$ est donné par le signe de $\\textcolor{{{color:primary.0}}}{m}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "b − a",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"answers": ["b-a"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture −a + b",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"answers": ["-a+b"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a − b",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"answers": ["a-b"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b + a",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"answers": ["b+a"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"answers": ["b"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "produit de deux positifs",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a < b suffit",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b − a < 0",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(a), f(b) > 0",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"p": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissante",
+			"variationIndex": 2,
+			"variables": {
+				"m": "-3",
+				"p": "-5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante (mauvais sens)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "-3",
+				"p": "-5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe positif",
+			"variationIndex": 2,
+			"variables": {
+				"m": "-3",
+				"p": "-5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dépend de p",
+			"variationIndex": 2,
+			"variables": {
+				"m": "-3",
+				"p": "-5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
