@@ -692,6 +692,26 @@
 		};
 	}
 
+	/** Codage d'un angle droit (triangle rectangle, n° 20) : le petit carré en `center`, en SVG */
+	function rightCorner(
+		corner: { center: Position; from: Position; to: Position },
+		scene: FigureScene,
+		width: number,
+		height: number
+	): string | null {
+		const transformer = createTransformer(scene.viewport, width, height);
+		const o = transformer.mathToSvg(corner.center.x, corner.center.y);
+		const unit = (p: Position) => {
+			const q = transformer.mathToSvg(p.x, p.y);
+			const length = Math.hypot(q.x - o.x, q.y - o.y);
+			return length === 0 ? null : { x: (q.x - o.x) / length, y: (q.y - o.y) / length };
+		};
+		const u = unit(corner.from);
+		const v = unit(corner.to);
+		if (!u || !v) return null;
+		return `M ${o.x + u.x * MARK} ${o.y + u.y * MARK} L ${o.x + (u.x + v.x) * MARK} ${o.y + (u.y + v.y) * MARK} L ${o.x + v.x * MARK} ${o.y + v.y * MARK}`;
+	}
+
 	/** Codage d'une longueur (triangle) : `count` petits traits au milieu du segment, en SVG */
 	function lengthTicks(
 		mark: { from: Position; to: Position; count: number },
@@ -961,6 +981,27 @@
 								>{a.text}</text
 							>
 						</g>
+					{/each}
+					<!-- Triangle rectangle (n° 20) : la perpendiculaire à l'équerre en trait fin,
+					     l'angle droit codé d'un petit carré -->
+					{#each triangle.guides as guide, i (i)}
+						{@const s = toScreen(guide, scene, width, height)}
+						{#if s}
+							<line
+								data-testid="bon-triangle-perpendiculaire"
+								class="bon-cercle-mediatrice"
+								x1={s.x1}
+								y1={s.y1}
+								x2={s.x2}
+								y2={s.y2}
+							/>
+						{/if}
+					{/each}
+					{#each triangle.rightAngles as corner, i (i)}
+						{@const d = rightCorner(corner, scene, width, height)}
+						{#if d}
+							<path data-testid="bon-triangle-angle-droit" class="bon-point-codage" {d} />
+						{/if}
 					{/each}
 				</g>
 			{/if}

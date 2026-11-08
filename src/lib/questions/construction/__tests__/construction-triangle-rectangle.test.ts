@@ -462,3 +462,22 @@ describe('aide à l’écriture : les exemples du n° 20 se construisent', () =>
 		expect(() => assertChecks(source)).not.toThrow();
 	});
 });
+
+describe('triangle rectangle : génération d’une question', () => {
+	it('une longueur en carreaux n’a aucun point à nommer', async () => {
+		const { generateInstance } = await import('$lib/questions/generator/instance-generator');
+		const { templateMarkdown } = await import('$lib/ubumark');
+		const block = ['```figure-a-completer', SQUARES, '```'].join('\n');
+		const template = {
+			id: 'test-triangle-rectangle',
+			title: 'Triangle rectangle',
+			status: 'draft',
+			type: 'fill_in_blanks',
+			variations: [{ statement: templateMarkdown(`Construis le triangle.\n\n${block}`) }],
+			grades: ['CE2'],
+			level: 1
+		} as unknown as import('$lib/questions/types').QuestionTemplate;
+		const result = generateInstance(template, 42);
+		expect(result.success ? [] : result.errors).toEqual([]);
+	});
+});
