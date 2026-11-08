@@ -480,7 +480,7 @@ jobs:
 
       - name: Run client tests
         env:
-          DEBUG: pw:browser,vite:deps,vite:hmr,vite:config
+          DEBUG: pw:browser,vite:deps,vite:hmr,vite:config,vitest:browser:api
         run: pnpm exec vitest run --project client --shard=${{ matrix.shard }}/2
 
       - name: Memory and kernel report
