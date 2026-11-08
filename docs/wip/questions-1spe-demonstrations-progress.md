@@ -9,10 +9,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, lot 12 écrit (PR à merger)._
+_Mis à jour le 2026-11-08, après #2461 (lot 12 mergé)._
 
-- **État** : lots 1-11 publiés. Lot 12 (§ 18) : contenu validé (D12), écrit, specs vertes, PR ouverte.
-- **Prochaine action** : CI verte → merge ; David lance
+- **État** : lots 1-11 publiés. Lot 12 (§ 18) : mergé (#2461), brouillons pas encore créés en prod.
+- **Prochaine action** : David lance, depuis le dépôt principal à jour,
   `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-12 --publier` ; relevé prod (MCP),
   ids dans les JSON, migration nœud + tag (gabarit lot 11 ; 359 → « espérance », 431 → « variance et écart-type »).
 - **En attente de David** : 344 (c), écart à la proposition (§ 18) ; vérification à l'œil en prod (ligne du
@@ -21,7 +21,8 @@ _Mis à jour le 2026-11-08, lot 12 écrit (PR à merger)._
   `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
   Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
   `publier-lot.ts`, même en simulation, refusé à Claude par le classifieur (prod).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12`
+  (mergée) : nouvelle branche depuis `origin/main` pour la migration.
 
 ---
 
@@ -751,3 +752,5 @@ Vérifié : `question:specs` 150 tirages par variation, 58 specs vertes, 0 `\tex
 (code, mots tirés, corrections) ; mots et « la mer est belle » (4 « e » sur 16 caractères, 3 espaces) recomptés en
 Python ; `create-questions` simulation en base locale (5 à créer). Pas d'aperçu à l'écran : les blocs de code n'ont
 aucune variable, seules les cases et le code en ligne en portent (déjà vus au lot 11).
+
+Mergée (#2461, CI verte du premier coup).
