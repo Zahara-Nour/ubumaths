@@ -103,3 +103,57 @@ depuis A (5,1 … 6,9 cm), jugé juste aujourd'hui.
 **Décisions de David (« je suis tes recos », 2026-11-08)** : choix (1)-(9) du § 3 acceptés (le (7) « point construit »
 remplacé par la revue : seule une graduation fait foi) ; Q9 (a) : plusieurs segments vus depuis A → faux, « Trace un
 seul segment… ».
+
+## 4. Phase 0 de la suite — demi-droite et constructions cotées (CE2-070), proposée le 2026-11-08
+
+**Question d'accès** : aucune — code de la case « figure », ni table, ni policy, ni route.
+
+**Constats** (code de `main` après #2485) : `carre` et `rectangle` ne vivent que sur quadrillage (`polygon.ts`, côtés
+donnés, CP-060) ; le cercle de centre donné prend son rayon sur un point ou un segment (`cercle(O, rayon=distance(D, E))`,
+n° 19) ; le triangle rectangle prend `AC` sur un segment au Report ou en carreaux (n° 20, `AC = 3` laissé libre pour
+les cm) ; `segment AB = 6 cm` juge un bout sur une graduation d'une règle posée avec son 0 en A, quelle que soit la
+direction — la même règle sert à tout côté coté qui part d'un sommet.
+
+**Découpage proposé** (une PR chacune, revue `code-reviewer` en `model: opus`, tests d'abord) :
+
+- **PR 2 — segment sur une demi-droite donnée** : `verifier: segment AB = 6 cm sur [Ax)`, où `[Ax)` est une
+  `demidroite(A, X)` de la figure.
+  - Nominal : la règle posée, 0 en A ; au 2e toucher, la direction **s'aimante à la demi-droite** si on est près ;
+    segment de A jusqu'à une graduation → « Juste ».
+  - Erreurs : segment hors de [Ax) ou du mauvais côté de A : « Trace ton segment sur la demi-droite [Ax). » ; puis
+    les messages de la PR 1 (tracé à l'œil, mauvaise longueur, plusieurs segments).
+  - Limite (refus d'auteur) : la demi-droite ne tient pas 6 cm dans la fenêtre ; X déjà à 6 cm de A.
+  - Correction : la règle le long de [Ax), le segment.
+- **PR 3 — cercle de rayon donné en cm** : `verifier: cercle c = cercle(O, rayon=4 cm)`.
+  - Nominal : la règle posée, 0 en O ; le compas piqué en O, son ouverture **s'aimante aux graduations** → « Juste ».
+  - Erreurs, dans l'ordre : il manque le cercle ; mauvais centre (messages du n° 19) ; ouvert à l'œil : « Ton compas
+    est ouvert à l'œil : ouvre-le sur une graduation de la règle. » ; mauvais rayon : « Ton cercle a un rayon de
+    3,8 cm au lieu de 4 cm. »
+  - Limite : le cercle ne tient pas dans la fenêtre → refus d'auteur.
+- **PR 4 — triangle rectangle coté** : `verifier: triangle ABC : CAB = 90 ; AC = 4 cm` ([AB] = 10 cm déjà tracé).
+  - Nominal : perpendiculaire à l'équerre en A, règle posée en A le long d'elle, C sur la graduation de 4 cm,
+    [AC] et [BC] → « Juste ». Les deux côtés de (AB) sont justes.
+  - Erreurs : celles du n° 20 (côté manquant, côté tracé à l'œil sans l'équerre, angle non droit), puis C hors
+    graduation : « Ton point C est placé à l'œil : arrête [AC] sur une graduation de la règle. », mauvaise longueur
+    en cm.
+- **PR 5 — carré et rectangle cotés, papier uni** : `verifier: carre A ; B` sans grille ([AB] = 6 cm tracé),
+  `verifier: rectangle A ; B : BC = 3 cm` ([AB] = 7 cm tracé). Outils : Segment · Équerre · Règle graduée.
+  - Nominal : perpendiculaires à l'équerre en A et en B, longueurs à la règle graduée posée en A et en B, 4e côté.
+  - Erreurs : les messages actuels de `polygon.ts` (pas fermé, pas un carré, trait de trop, côté prolongé), plus
+    angle non droit / tracé sans l'équerre, sommet placé à l'œil, mauvaise longueur.
+
+Puis le lot de modèles CE2-070 cotés, dans `questions-ce2`.
+
+### Questions à David
+
+- **Q10** — Découpage en 4 PR (2 demi-droite, 3 cercle, 4 triangle rectangle, 5 carré et rectangle), dans cet
+  ordre ? (reco : oui ; chaque PR est petite et réutilise le juge de la PR 1)
+- **Q11** — Figures cotées : on part d'un **côté déjà tracé** ([AB] = 10 cm, 6 cm, 7 cm), comme les triangles et
+  les carrés actuels (reco), ou de rien (l'élève trace aussi [AB], direction libre : le juge ne sait plus où regarder) ?
+- **Q12** — Cercle de rayon 4 cm : règle posée au centre, ouverture du compas aimantée aux graduations (reco ; même
+  geste que le segment), ou « prendre l'écartement sur la règle puis piquer en O » (un Report depuis la règle, plus
+  proche du geste réel mais deux étapes de plus) ?
+- **Q13** — Carré et rectangle sur papier uni : angle droit à l'équerre **exigé** (« tracé à l'œil » refusé), comme
+  le triangle rectangle ? (reco : oui)
+- **Q14** — Assemblages (« carré de 6 cm + cercle de rayon 4 cm ») : plus tard, après la PR 5 (reco), ou dans le
+  chantier ?
