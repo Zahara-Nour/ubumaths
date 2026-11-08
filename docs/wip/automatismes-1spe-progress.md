@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2478 (variante v1 « à compléter » de `7f82d15a`)._
+_Mis à jour le 2026-11-08, après #2478 et le `deploy:prod` v0.78.1._
 
-- **État** : #2478 mergée (v1 de `7f82d15a` + flèches ↗ ↘ admises par `student-answer-safety.ts`) ; `deploy:prod`
-  lancé le 2026-11-08 à la demande de David · **Prochaine action** : David, une fois #2478 en prod :
+- **État** : #2478 mergée et **en prod** (v0.78.1, `deploy:prod` du 2026-11-08 ; #2462 aussi) · **Prochaine
+  action** : David peut lancer
   `pnpm tsx scripts/create-questions.ts --dir scripts/questions/lectures-graphiques-1spe --publier --mettre-a-jour`
-  (met à jour `7f82d15a` en base) · **En attente de David** : `c9e0effd` publiable une fois #2462 en prod ;
+  (met à jour `7f82d15a` en base) · **En attente de David** : `c9e0effd` publiable (#2462 en prod) ;
   publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles `23751c95`,
   `c1c9cfc3`, `d4f38d30`, `d4d56c1b` · **Pièges en cours** : écritures ET simulations contre la prod lancées par
   David (`!`) ; worktree neuf : `pnpm exec svelte-kit sync` avant tout script `tsx` ; `fiche:verifier` dans un
