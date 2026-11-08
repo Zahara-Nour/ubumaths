@@ -9,16 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR 1 (039) ouverte._
+_Mis à jour le 2026-11-08, après #2485._
 
-- **État** : PR 1 « segment de longueur donnée » ouverte (§ 3) ; ADR 0036 commitée sur `main` (3623b957b), **push en
-  attente** (index de `main` occupé par une autre session sur `outils-manquants.md`).
-- **Prochaine action** : revue `code-reviewer` (opus) + CI, vérification visuelle, puis PR 2 : demi-droite [Ax) et
-  constructions cotées (070).
-- **En attente de David** : vérification visuelle sur téléphone (règle retournée), à noter au merge dans `verifications-manuelles.md`.
-- **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le chantier
-  `cercle-triangle-rectangle` (n° 19, 20) touche les mêmes fichiers de `src/lib/questions/construction/`.
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee`.
+- **État** : PR 1 (#2485, CE2-039, segment de longueur donnée, direction libre) **mergée** ; pas déployée. ADR 0036
+  commitée sur `main` local (1c4a333f2), **push en attente** : index de `main` occupé par une autre session
+  (`outils-manquants.md`, plus son commit db22307cf).
+- **Prochaine action** : (1) dès `main` libre : pull --rebase, push de l'ADR, ligne « règle graduée (#2485) : rendu
+  sur téléphone, règle retournée » dans `verifications-manuelles.md`, lien vers l'ADR rétabli dans `questions.md` ;
+  (2) PR 2 : demi-droite [Ax) (Q7 b) et constructions cotées CE2-070 — phase 0 des comportements d'abord.
+- **En attente de David** : vérification sur téléphone (règle retournée) ; feu vert `--autostash` si `main` reste bloqué.
+- **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le juge
+  prend le **segment vu** (§ 3) : à garder pour les côtés cotés de 070.
+- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cotes` (depuis `origin/main` après #2485).
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
