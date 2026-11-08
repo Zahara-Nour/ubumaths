@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, lot 1 publié en brouillon par David, rangement en cours (§ 4)._
+_Mis à jour le 2026-11-08, après #2434 ; rangement du lot 1 poussé, sans PR (§ 4)._
 
 - **État** : lot 1 mergé (#2434) et créé en brouillon en prod ; ids dans les JSON, migration nœud + tag
-  `20261106130142` et son test écrits sur la branche, pas encore de PR.
+  `20261106130142` et son test écrits et poussés (`check:incremental` 0 erreur) ; `security-auditor` : RAS ;
+  test d'intégration pas encore lancé ; pas de PR.
 - **Prochaine action** : quand la base locale est libre (feu vert de David), lancer
   `pnpm test:integration tests/integration/questions-2de-demonstrations-1-rangement-tags.test.ts`, le vérifier
   rouge sans la migration, puis PR → CI → merge → `db:migrate` depuis la branche mergée → page à cocher.
   Ensuite lot 2 (géométrie : 304, 438, 320).
-- **En attente de David** : feu vert pour la base locale (lien de partage du journal de classe `teacher@local.test`
-  en usage, 2026-11-06 12 h 49 ; la préparation des tests effacerait ce prof).
+- **En attente de David** : son « vas-y » pour lancer la suite d'intégration (elle supprime les profs de la base
+  locale ; le lien de partage de `teacher@local.test` qui la bloquait le 2026-11-06 a disparu depuis).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David ; `create-questions` écrit l'`id` dans les
   JSON du dépôt d'où il tourne → les reporter sur la branche puis `git restore` dans le dépôt principal ; positions
   « ranger » par `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
@@ -109,4 +110,4 @@ personne de plus (Q5).
 
 Piège : le test d'intégration n'a pas pu tourner — la préparation globale (suppression des profs) bute sur un lien de
 partage du journal de classe créé à 12 h 49 par `teacher@local.test` et utilisé (17 accès) ; non supprimé, en
-attente du feu vert de David.
+attente du feu vert de David. `security-auditor` (2026-11-06) : aucun finding ; le lien a disparu depuis.
