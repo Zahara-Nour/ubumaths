@@ -16,7 +16,13 @@
  * @module ubumark/generators/courbe-typst
  */
 
-import { COURBE_COLORS, type CourbeLabel, type CourbeNode, type CourbeSize } from '../types/courbe';
+import {
+	COURBE_COLORS,
+	COURBE_DATA_COLOR,
+	type CourbeLabel,
+	type CourbeNode,
+	type CourbeSize
+} from '../types/courbe';
 import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
 import { buildCourbeScene, type ScenePoint } from '../utils/courbe-scene';
 import { solutionLine } from '../utils/courbe-tracer';
@@ -197,6 +203,20 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 				`  line(${path(poly)}, stroke: (paint: ${TYPST_COLORS[curve.color]}, thickness: 1.1pt, join: "round"${dash}))`
 			);
 		}
+	}
+
+	// Courbe de données : ligne brisée, un disque par point visible
+	for (const poly of scene.data.polylines) {
+		lines.push('  // données');
+		lines.push(
+			`  line(${path(poly)}, stroke: (paint: ${TYPST_COLORS[COURBE_DATA_COLOR]}, thickness: 1.1pt, join: "round"))`
+		);
+	}
+	for (const p of scene.data.marks) {
+		lines.push('  // point de données');
+		lines.push(
+			`  circle(${P(p)}, radius: 0.06, fill: ${TYPST_COLORS[COURBE_DATA_COLOR]}, stroke: none)`
+		);
 	}
 
 	// Tangentes : droite en pointillés (couleur de la courbe) et point de contact

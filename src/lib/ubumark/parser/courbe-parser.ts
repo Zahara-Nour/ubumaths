@@ -50,6 +50,7 @@ import type {
 	CourbeAsymptote,
 	CourbeAxisTitles,
 	CourbeBlockRange,
+	CourbeData,
 	CourbeColor,
 	CourbeDomain,
 	CourbeFunction,
@@ -135,8 +136,12 @@ const KNOWN_KEYS = [
 	'tracer',
 	'axes',
 	'case',
-	'vecteurs'
+	'vecteurs',
+	'données'
 ] as const;
+
+/** Clé écrite sans accent, lue comme la clé accentuée */
+const KEY_ALIASES: Record<string, string> = { donnees: 'données' };
 
 /** `A=(2 ; 3)`, ou `(2 ; 3)` pour un point seul : nom éventuel, coordonnées */
 const TARGET_REGEX = /^(?:([^=\s()]+)\s*=\s*)?\((.*)\)$/;
@@ -178,7 +183,11 @@ function looksLikeCourbeLine(line: string): boolean {
 	const trimmed = line.trim();
 	if (FUNCTION_LINE_REGEX.test(trimmed) || SEQUENCE_TERM_LINE_REGEX.test(trimmed)) return true;
 	const kv = KEY_LINE_REGEX.exec(trimmed);
-	return kv !== null && (KNOWN_KEYS as readonly string[]).includes(kv[1].toLowerCase());
+	if (kv === null) return false;
+	const key = canonicalKey(kv[1]);
+	// « Données : voir le tableau » est de la prose : la clé n'est reconnue que suivie d'un point
+	if (key === 'données') return kv[2].trim().startsWith('(');
+	return (KNOWN_KEYS as readonly string[]).includes(key);
 }
 
 /**
@@ -575,6 +584,49 @@ function parsePoints(value: string, functions: FunctionTable, line: number): Cou
 		});
 	}
 	return points;
+}
+
+/** Clé en minuscules, alias sans accent ramené à la clé accentuée */
+function canonicalKey(raw: string): string {
+	const lower = raw.toLowerCase();
+	return KEY_ALIASES[lower] ?? lower;
+}
+
+/**
+ * `données: (6 ; 8) ; (8 ; 11) ; …` : 2 à `COURBE_LIMITS.dataPoints` points, abscisses
+ * distinctes, rendus triés par abscisse (une courbe de données se lit de gauche à droite).
+ */
+function parseData(value: string, line: number): CourbeData {
+	const items = splitTopLevel(decimalPoint(value), ';').filter((item) => item !== '');
+	if (items.length > COURBE_LIMITS.dataPoints) {
+		throw new LineError(`données : au plus ${COURBE_LIMITS.dataPoints} points`);
+	}
+	const points = items.map((item) => {
+		if (!item.startsWith('(') || !item.endsWith(')')) {
+			throw new LineError(`données : point « ${item} » mal écrit (ex. (6 ; 8))`);
+		}
+		const coords = splitTopLevel(item.slice(1, -1), ';');
+		if (coords.length !== 2 || coords.some((c) => c === '')) {
+			throw new LineError(`données : point « ${item} » : deux coordonnées séparées par « ; »`);
+		}
+		// Arrondi à 12 chiffres : `0,1+0,2` et `0,3` sont la même abscisse
+		return {
+			x: Number(evaluateConstant(coords[0]).toPrecision(12)),
+			y: Number(evaluateConstant(coords[1]).toPrecision(12))
+		};
+	});
+	if (points.length < 2) {
+		throw new LineError('données : au moins deux points à relier (ex. (6 ; 8) ; (8 ; 11))');
+	}
+	points.sort((a, b) => a.x - b.x);
+	for (let i = 1; i < points.length; i++) {
+		if (points[i].x === points[i - 1].x) {
+			throw new LineError(
+				`données : deux points de même abscisse (${formatPlain(points[i].x)}) : une courbe de données n'en a qu'un par abscisse`
+			);
+		}
+	}
+	return { points, line };
 }
 
 function parseAsymptotes(value: string, line: number): CourbeAsymptote[] {
@@ -1115,6 +1167,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 	let combination: string | undefined;
 	/** `vecteurs:`, lu après points: */
 	let givenLine: { value: string; line: number } | undefined;
+	let donnees: CourbeData | undefined;
 	let caseIndex: number | undefined;
 	let caseLine = 0;
 
@@ -1164,7 +1217,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 
 			const kv = KEY_LINE_REGEX.exec(content);
 			if (!kv) throw new LineError(`ligne incomprise « ${content} »`);
-			const key = kv[1].toLowerCase();
+			const key = canonicalKey(kv[1]);
 			const value = kv[2].trim();
 			if (!(KNOWN_KEYS as readonly string[]).includes(key)) {
 				throw new LineError(
@@ -1242,6 +1295,9 @@ export function parseCourbeContent(source: string): CourbeNode {
 					break;
 				case 'vecteurs':
 					givenLine = { value, line };
+					break;
+				case 'données':
+					donnees = parseData(value, line);
 					break;
 				case 'case':
 					if (!/^\d+$/.test(value)) {
@@ -1367,6 +1423,18 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
+	// Courbe de données : toute faite, jamais avec un geste (Q2 de `relier-points`)
+	if (errors.length === 0 && donnees !== undefined) {
+		const gesture = placer !== undefined ? 'placer:' : seenKeys.has('tracer') ? 'tracer:' : null;
+		if (gesture !== null) {
+			errors.push({
+				message: `Ligne ${donnees.line} : données: et ${gesture} ne vont pas ensemble : la courbe de données se lit, elle ne se construit pas`,
+				line: donnees.line,
+				content: lines[donnees.line - 1].trim()
+			});
+		}
+	}
+
 	// Vecteurs donnés : entre points de points:
 	let vecteurs: CourbeGivenVector[] | undefined;
 	if (errors.length === 0 && givenLine !== undefined) {
@@ -1427,7 +1495,8 @@ export function parseCourbeContent(source: string): CourbeNode {
 					...(tracer !== undefined && { tracer }),
 					...(vecteur !== undefined && { vecteur }),
 					...(vecteurs !== undefined && { vecteurs }),
-					...(axisTitles !== undefined && { axisTitles })
+					...(axisTitles !== undefined && { axisTitles }),
+					...(donnees !== undefined && { donnees })
 				}
 			: null;
 
