@@ -3,7 +3,7 @@
  * tag des 5 modèles (Supabase local requis)
  * =====================================================================================================
  *
- * Migration `20261106130142_questions_2de_demonstrations_1_rangement_tags` : les brouillons 83082954,
+ * Migration `20261108070133_questions_2de_demonstrations_1_rangement_tags` : les brouillons 83082954,
  * ae8fc470, d8f7648f, 8de4b8c9, efd6bdb4, créés le 2026-11-06 par scripts/create-questions.ts (sans
  * nœud ni tag), vont sur la sous-notion de leur point (2-239, 2-240, 2-255, 2-256, 2-282) et reçoivent
  * ce seul point.
@@ -42,7 +42,7 @@ interface Etat {
 // ============================================================================
 
 const MIGRATION =
-	'supabase/migrations/20261106130142_questions_2de_demonstrations_1_rangement_tags.sql';
+	'supabase/migrations/20261108070133_questions_2de_demonstrations_1_rangement_tags.sql';
 /** Les modèles : identifiants créés en prod le 2026-11-06, nœud et point attendus (« niveau§code »). */
 const LOT: { id: string; noeud: string; points: string[] }[] = [
 	{

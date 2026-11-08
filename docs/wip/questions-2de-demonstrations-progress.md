@@ -8,7 +8,7 @@
 
 _Mis à jour le 2026-11-08, après #2434 ; test d'intégration du rangement lot 1 vert, preuve rouge faite (§ 4)._
 
-- **État** : lot 1 mergé (#2434) et créé en brouillon en prod ; migration nœud + tag `20261106130142` et son test
+- **État** : lot 1 mergé (#2434) et créé en brouillon en prod ; migration nœud + tag `20261108070133` et son test
   verts (12/12, rouges sans la migration) ; `security-auditor` : RAS ; PR du rangement en cours.
 - **Prochaine action** : PR → CI → merge → `db:migrate` depuis la branche mergée → page à cocher.
   Ensuite lot 2 (géométrie : 304, 438, 320).
@@ -100,7 +100,7 @@ Relevé prod (MCP, 2026-11-06) : 5 brouillons au niveau {2}, niveaux 11, 3, 5, 6
 | 8de4b8c9 | Ensembles › Ensembles de nombres › nombres irrationnels     | 2-256 |
 | efd6bdb4 | Nombres et calculs › Racines carrées : calculs › propriétés | 2-282 |
 
-Migration `20261106130142_questions_2de_demonstrations_1_rangement_tags.sql` (gabarit `20261106050929`, gardes et
+Migration `20261108070133_questions_2de_demonstrations_1_rangement_tags.sql` (gabarit `20261106050929`, gardes et
 rollback identiques) ; test `tests/integration/questions-2de-demonstrations-1-rangement-tags.test.ts`. Accès :
 personne de plus (Q5).
 
@@ -112,3 +112,6 @@ Test d'intégration (2026-11-08, feu vert de David) : **12/12 vert**. Preuve rou
 copie) : partie aller de la migration vidée (rollback gardé, l. 1-112) → 6 rouges (branches d'échec) et 5 sautés
 (le `beforeAll` nominal échoue au rollback, rien à défaire) ; en plus avec le rollback neutralisé dans le test → les
 2 tests d'effet (nœud, tag) rouges, les 3 invariants verts comme attendu.
+
+Rebasée sur `origin/main` (2026-11-08) : `main` portait 5 migrations postérieures à `20261106130142` (déjà en prod
+pour certaines) → migration ré-horodatée `20261108070133` (`pnpm migration:horodatage`), test et journal suivis.
