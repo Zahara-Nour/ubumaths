@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après 3 runs de mesure instrumentés (§ 1 ter)._
+_Mis à jour le 2026-11-08, après l'essai A/B du GC forcé (§ 1 quater)._
 
-- **État** : phase 0 validée. Mémoire, plantage de Chromium et redémarrage de Vite écartés : toutes les connexions
-  de la page vers le serveur tombent d'un coup. Run 42503958313 en cours : journal des navigations (setup client).
-- **Prochaine action** : lire les plantages de 42503958313 (`[mesure] navigate`, `vitest:browser:api`) ; si une
-  navigation apparaît → trouver le test ; sinon, piste suivante.
-- **En attente de David** : relance automatique en dernier recours, limitée aux plantages du navigateur : oui/non ?
-- **Pièges en cours** : la branche porte de l'instrumentation PROVISOIRE (quality.yml : 10 essais/shard, mémoire,
-  inotify, DEBUG ; `vitest-setup-client.ts` : journal des navigations) → à retirer avant la PR. Mesure =
-  `gh workflow run quality.yml --ref fix/ci-navigateur-plante` ; logs d'un job fini avant la fin du run : `curl -L`
-  sur `/actions/jobs/<id>/logs` avec `gh auth token`.
+- **État** : cause trouvée (§ 1 quater) : la page de l'orchestrateur se décharge (code 1001) quand les documents de
+  test détachés s'accumulent dans Chromium ; GC forcé après chaque fichier → 0 plantage sur 40 jobs.
+- **Prochaine action** : selon le choix de David, PR = `VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB` dans `quality.yml`
+  (+ doc environnement-de-dev), instrumentation retirée, branche rebasée sur `main`.
+- **En attente de David** : accepter le coût (~+50 s par job) ou chercher un GC moins fréquent ; relance automatique
+  en dernier recours : oui/non (sans réponse).
+- **Pièges en cours** : la branche porte encore la matrice de 10 essais et le déclenchement par `workflow_dispatch`
+  (PROVISOIRE, à retirer) ; branche en retard sur `main` (rebaser avant la PR). Mesure =
+  `gh workflow run quality.yml --ref fix/ci-navigateur-plante`.
 - **Worktree / branche** : `../ubumaths-wt-ci-navigateur-plante` · `fix/ci-navigateur-plante`.
 
 ---
@@ -83,7 +83,26 @@ en détail (jobs 128795768532, 128798927656, 128798927794), même schéma à cha
   `results.json` à la fin) ; `vite:deps`/`vite:hmr`/`vite:config` muets pendant les tests.
 - **Fichier en cours** : `derivative-everywhere`, et d'autres : toujours dispersé.
 
-## 2. Pistes à MESURER (aucune n'est retenue) (aucune n'est retenue)
+## 1 quater. Cause et remède (2026-11-08)
+
+- **Codes de fermeture** (`ws.on("close")` patché dans le CI, run 42506033619, 5 plantages) : la PREMIÈRE connexion
+  fermée est toujours celle d'un **orchestrateur, code 1001** (la page s'en va, fermeture propre côté navigateur) ;
+  son testeur suit en 1001, puis les autres pages en 1006 quand Vitest ferme le navigateur.
+- **Ni navigation ni `beforeunload`** sur la page principale avant la coupure (écouteurs posés par chaque iframe).
+- **Le taux suit les documents retenus** : poser des écouteurs sur `window.top` depuis chaque iframe (qui retient
+  donc chaque iframe retirée) fait passer le taux à **15/20** (run 42506955972).
+- **Remède : GC de Chromium forcé après chaque fichier.** Vitest 4.1.12 l'a (`maybeCollectChromiumGarbage`,
+  `HeapProfiler.collectGarbage` par CDP) mais seulement sous un seuil de disque libre (4 Go ; `/tmp` en a 86) ;
+  `VITEST_CHROMIUM_GC_FORCE` ne suffit pas (le seuil est relu après) → `VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB=100000`.
+  - même instrumentation qui fuit + GC : **20/20 verts** (run 42507785612) contre 15/20 rouges ;
+  - sans instrumentation + GC : **20/20 verts** (run 42509298715).
+- **Coût** : job 291 s (shard 1) et 322 s (shard 2) contre 242 s et 271 s sur des PR récentes, soit **~+50 s par
+  job**. Le GC prend ~2 s par fichier (mesuré avec instrumentation), en parallèle sur 3 pages.
+- Même mécanisme que [vitest#10300](https://github.com/vitest-dev/vitest/pull/10300) (Mapbox : « seul un GC forcé
+  toutes les 5 s marche ») ; [vitest#9437](https://github.com/vitest-dev/vitest/issues/9437) = la fuite qui remplit
+  le disque, pas notre cas.
+
+## 2. Pistes à MESURER (aucune n'est retenue) (aucune n'est retenue) (aucune n'est retenue)
 
 - **Volume par Chromium** : #1012 parlait de Chromium qui « tombait sous 234 fichiers » ; chaque shard est revenu à
   ~225 fichiers. Mesurer : nombre de fichiers par shard au fil des plantages, rang du fichier où ça casse.
