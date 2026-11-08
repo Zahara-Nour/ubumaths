@@ -166,9 +166,9 @@ describe('refus avec message en français', () => {
 		['? sur +inf', 'variable: x\ndomain: -inf, 0, ?+inf\n\nsign: f(x)', /infini/],
 		['? dans une étiquette', 'variable: x\ndomain: -inf, 0, +inf\n\nsign: ?f(x)', /étiquette/],
 		[
-			'? dans une ligne variation',
-			'variable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  0: ?3, top',
-			/variation/
+			'? sur un infini dans une ligne variation',
+			'variable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  -inf: ?-inf, bottom\n  0: 3, top',
+			/infini/
 		],
 		['?|h|', [...BASE, '  -3: ?|h|'].join('\n'), /\|h\|/],
 		['?d', [...BASE, '  -3: ?d'].join('\n'), /discontinuité|« d »|\bd\b/],
@@ -216,11 +216,11 @@ describe('un ? hors tête de cellule reste du texte (revue #2267)', () => {
 		expect(result.errors.filter((e) => e.message.startsWith('Ligne'))).toEqual([]);
 	});
 
-	it('refuse toujours un ? en tête de valeur dans une ligne variation:', () => {
-		const result = parse(
+	it('lit un ? en tête de valeur dans une ligne variation: comme une case (variations-a-completer)', () => {
+		const node = parseOk(
 			'variable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  -inf: ?1, top\n  0: 0, bottom'
 		);
-		expect(result.node).toBeNull();
+		expect(node.cases?.[0]).toMatchObject({ row: 0, key: '-inf', kind: 'valeur', answer: '1' });
 	});
 
 	it('accepte une clé ??1 (valeur masquée) dans une ligne variation:, pas ?1', () => {

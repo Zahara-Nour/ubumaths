@@ -245,6 +245,20 @@ describe('dessinerBlocs', () => {
 		expect(t).toContain('<td class="vt-intervalle"><span class="vt-signe">−</span></td>');
 	});
 
+	it('variation à compléter, ligne variation: : valeur et flèche cachées encadrées, remplies', () => {
+		const r = dessinerBlocs(
+			'```variation\ncase: 0\nvariable: x\ndomain: -4, 1, 5\n\nvariation: f(x)\n  -4: 2, bottom\n  1: ?7, top\n  5: -3, bottom\n  1,5: ?flèche\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		const t = r.markdown.slice(HTML.length);
+		expect(t.match(/class="vt-cache"/g)).toHaveLength(2);
+		// La valeur garde sa hauteur : encadrée dans son bloc « en haut »
+		expect(t).toContain(
+			'<div class="vt-val vt-haut"><span class="vt-cache"><span class="tex" data-tex="7"></span></span></div>'
+		);
+		expect(t).toMatch(/<span class="vt-cache">[^]*?aria-label="décroissante"/);
+	});
+
 	it('variation : une formule échappée pour l’attribut (\\dfrac)', () => {
 		const r = dessinerBlocs(
 			'```variation\nvariable: x\ndomain: -inf, \\dfrac{1}{2}, +inf\n\nsign: f(x)\n  -inf,\\dfrac{1}{2}: -\n  \\dfrac{1}{2}: z\n  \\dfrac{1}{2},+inf: +\n```'

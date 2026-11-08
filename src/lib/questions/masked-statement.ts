@@ -24,10 +24,14 @@
  * - ```figure-a-completer : `verifier: ?`, l'outil écrit (`outils:`). Les points
  *   restent : un point invisible posé sur la réponse fuirait (aucun modèle).
  *   `verifier: mesure AOB` reste tel quel ; ses points calculés passent en coordonnées.
- * Tableau de signes à compléter (```variation à `?`, chantier `tableau-signes`) : chaque
- * valeur de x cachée devient un jeton `??1`, `??2`… dans `domain:` ET dans les clés des
- * lignes (`-inf,-3` → `-inf,??1`, sinon la clé dirait la valeur) ; chaque signe ou
- * marque cachés devient `?` seul. Le parseur lit ces formes comme des cases sans réponse.
+ * Tableau à compléter (```variation à `?`, chantiers `tableau-signes`,
+ * `variations-a-completer`) : chaque valeur de x cachée devient un jeton `??1`, `??2`…
+ * dans `domain:` ET dans les clés des lignes (`-inf,-3` → `-inf,??1`, sinon la clé
+ * dirait la valeur) ; chaque signe, marque ou flèche cachés devient `?` seul, une valeur
+ * cachée d'une ligne `variation:` `?, position`. Les valeurs qui encadrent une flèche
+ * cachée passent au milieu (`center`) et les bornes implicites de la ligne sont écrites
+ * (`-inf: , top`) : la flèche donnée voisine reste dessinée, la cachée ne se lit pas.
+ * Le parseur lit ces formes comme des cases sans réponse.
  * Un bloc dans une option d'un ```choix n'est pas un geste (le générateur met le
  * choix à l'abri avant de repérer les gestes) : il reste tel quel, sinon les options
  * deviendraient identiques.
@@ -68,7 +72,13 @@ import {
 	constructionShapes,
 	hasConstructionPositions
 } from '$lib/questions/construction/positions';
-import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
+import {
+	findVariationsToFill,
+	variationRowForDisplay,
+	withImplicitEndpoints,
+	type VariationToFill
+} from '$lib/ubumark/parser/variation-table-parser';
+import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 import { unnestedLine } from '$lib/ubumark/parser/nested-line';
 import {
 	isMaskedVectorValue,
@@ -158,10 +168,10 @@ function keyLine(pattern: RegExp, mask: (value: string) => string): MaskLine {
 }
 
 /** Réécrire les lignes du corps de chaque bloc, en gardant ce qui les imbrique */
-function maskLines(
+function maskLines<T extends FoundBlock>(
 	lines: string[],
-	blocks: FoundBlock[],
-	maskFor: (block: FoundBlock) => MaskLine
+	blocks: T[],
+	maskFor: (block: T) => MaskLine
 ): void {
 	for (const block of blocks) {
 		const mask = maskFor(block);
@@ -403,12 +413,54 @@ const HIDDEN_DOMAIN_POINT = /^(\s*[[\]]?\s*)\?(.*?)(\s*[[\]]?\s*)$/;
 /** Cellule d'une ligne du tableau (`  -inf,-3: ?-`) : retrait, clé, séparateur, valeur */
 const TABLE_ENTRY = /^(\s{2,})(.+?)(\s*:\s*)(.+?)\s*$/;
 
+/** En-tête d'une ligne du tableau (`sign: …`, `variation: …`) */
+const ROW_HEADER = /^\s*(sign|variation)\s*:/i;
+
 /**
- * Tableau de signes à compléter : valeurs de x cachées → `??n` (dans `domain:` et dans
- * les clés), signes et marques cachés → `?`. Les lignes sont réécrites d'après tout le
- * corps (les clés dépendent du domaine).
+ * Rang de la ligne du tableau (dans `rows`) qui porte chaque ligne du corps, -1 hors
+ * de toute ligne ; mêmes en-têtes que le parseur.
  */
-function maskVariation(block: FoundBlock): MaskLine {
+function rowRanks(body: readonly string[]): number[] {
+	let row = -1;
+	return body.map((line) => {
+		if (ROW_HEADER.test(line)) row++;
+		return row;
+	});
+}
+
+/**
+ * Lignes `variation:` à flèches cachées : par rang de ligne, les points qui encadrent
+ * une flèche cachée (au milieu dans l'énoncé masqué) et les bornes implicites qui
+ * restent dessinées, à écrire (`clé`, position)
+ */
+function hiddenArrowRows(
+	node: VariationTableNode | null
+): Map<number, { centered: Set<string>; implicit: [string, string][] }> {
+	const result = new Map<number, { centered: Set<string>; implicit: [string, string][] }>();
+	if (node === null) return result;
+	node.rows.forEach((row, rank) => {
+		if (row.type !== 'variation') return;
+		const arrows = (node.cases ?? []).filter((c) => c.kind === 'fleche' && c.row === rank);
+		if (arrows.length === 0) return;
+		const shown = variationRowForDisplay(node, rank);
+		result.set(rank, {
+			centered: new Set(arrows.flatMap((cell) => cell.key.split(','))),
+			implicit: [...shown.values.entries()]
+				.filter(([key]) => !row.values.has(key))
+				.map(([key, value]) => [key, value.position])
+		});
+	});
+	return result;
+}
+
+/**
+ * Tableau à compléter : valeurs de x cachées → `??n` (dans `domain:` et dans les clés),
+ * signes, marques et flèches cachés → `?`, valeur cachée d'une ligne `variation:` →
+ * `?, position` ; les valeurs qui encadrent une flèche cachée passent au milieu, les
+ * bornes implicites de leur ligne sont écrites. Les lignes sont réécrites d'après tout
+ * le corps (les clés dépendent du domaine, les hauteurs des flèches).
+ */
+function maskVariation(block: VariationToFill): MaskLine {
 	const tokens = new Map<string, string>();
 	const masked = block.body.map((line) => {
 		const domain = DOMAIN_LINE.exec(line);
@@ -423,30 +475,71 @@ function maskVariation(block: FoundBlock): MaskLine {
 		// Sans retrait : `maskLines` remet ce qui précédait la ligne
 		return `${domain[1].trimStart()}${points.join(',')}`;
 	});
+	const ranks = rowRanks(block.body);
+	const arrowRows = hiddenArrowRows(block.node);
+	const rename = (key: string) =>
+		key
+			.split(',')
+			.map((part) => tokens.get(part.trim()) ?? part.trim())
+			.join(',');
 	return (line, rank) => {
 		if (masked[rank] !== null) return masked[rank];
+		const arrows = arrowRows.get(ranks[rank]);
+		// En-tête d'une ligne à flèche cachée : ses bornes implicites, écrites
+		if (arrows && ROW_HEADER.test(line) && arrows.implicit.length > 0) {
+			return [
+				line.trim(),
+				...arrows.implicit.map(([key, position]) => `  ${rename(key)}: , ${position}`)
+			];
+		}
 		const entry = TABLE_ENTRY.exec(line);
 		if (!entry) return null;
 		const [, , key, separator, value] = entry;
-		const parts = key.split(',').map((part) => part.trim());
-		const renamed = parts.map((part) => tokens.get(part) ?? part).join(',');
-		const shownValue = value.trim().startsWith('?') ? MASKED_VALUE : value;
-		if (renamed === parts.join(',') && shownValue === value) return null;
+		const plainKey = key
+			.split(',')
+			.map((part) => part.trim())
+			.join(',');
+		const renamed = rename(key);
+		const parts = value.split(',').map((part) => part.trim());
+		const isPoint = !plainKey.includes(',');
+		const inVariationRow = block.node?.rows[ranks[rank]]?.type === 'variation';
+		let shownValue = value;
+		if (inVariationRow && isPoint && parts.length === 2) {
+			// Valeur d'une ligne variation: (cachée ou non) : hauteur gardée, sauf à côté
+			// d'une flèche cachée
+			const position = arrows?.centered.has(plainKey) ? 'center' : parts[1];
+			const expression = parts[0].startsWith('?') ? MASKED_VALUE : parts[0];
+			shownValue = `${expression}, ${position}`;
+		} else if (value.trim().startsWith('?')) {
+			shownValue = MASKED_VALUE;
+		}
+		if (renamed === plainKey && shownValue === value) return null;
 		return `${renamed}${separator}${shownValue}`;
 	};
 }
 
 /**
- * Tableau à compléter masqué : chaque case sans réponse, et aucune clé de ligne qui
- * ne soit une valeur du domaine (une clé `-3` dirait la valeur cachée `??1`)
+ * Tableau à compléter masqué : chaque case sans réponse, aucune clé de ligne qui ne
+ * soit une valeur du domaine (une clé `-3` dirait la valeur cachée `??1`), et aucune
+ * hauteur à côté d'une flèche cachée (elle dirait la flèche)
  */
 function variationMasked(node: ReturnType<typeof findVariationsToFill>[number]['node']): boolean {
 	if (node === null) return false;
 	if ((node.cases ?? []).some((cell) => cell.answer !== '')) return false;
 	const domain = new Set(node.domain.map((point) => point.expression));
-	return node.rows.every((row) =>
+	const keysInDomain = node.rows.every((row) =>
 		[...row.values.keys()].every((key) => key.split(',').every((part) => domain.has(part)))
 	);
+	if (!keysInDomain) return false;
+	return (node.cases ?? []).every((cell) => {
+		const row = cell.row === 'domain' ? undefined : node.rows[cell.row];
+		if (cell.kind !== 'fleche' || row?.type !== 'variation') return true;
+		const filled = withImplicitEndpoints(row, node.domain);
+		return cell.key.split(',').every((point) => {
+			const value = filled.values.get(point);
+			return value === undefined || value.position === 'center';
+		});
+	});
 }
 
 /** `A=? ; B=?`, `?` : chaque cible de la ligne est masquée */
@@ -556,7 +649,7 @@ export function maskGestureAnswers(statement: string): string {
 	const choices = findChoiceBlocks(lines);
 	const inChoice = (block: FoundBlock) =>
 		choices.some((c) => block.startIndex > c.startIndex && block.startIndex <= c.endIndex);
-	const maskBlocks = (found: FoundBlock[], maskFor: (block: FoundBlock) => MaskLine) =>
+	const maskBlocks = <T extends FoundBlock>(found: T[], maskFor: (block: T) => MaskLine) =>
 		maskLines(
 			lines,
 			found.filter((block) => !inChoice(block)),

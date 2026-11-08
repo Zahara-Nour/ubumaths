@@ -769,8 +769,8 @@ function placeLines(
 	return [line];
 }
 
-/** Jetons d'un signe ou d'une marque, montrés tels quels (le rendu les dessine) */
-const SIGN_TOKENS = new Set(['+', '-', 'z', '||', 'rien']);
+/** Jetons d'un signe, d'une marque ou d'une flèche, montrés tels quels (le rendu les dessine) */
+const SIGN_TOKENS = new Set(['+', '-', 'z', '||', 'rien', '↗', '↘']);
 
 /** Réponse de l'élève dans une cellule : jeton connu, sinon texte neutralisé */
 function signCellStudent(view: BlankView, blank: InstanceBlank): string | null {

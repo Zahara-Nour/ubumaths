@@ -9,6 +9,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateVariationTableTypst } from '../../generators/variation-table-typst';
+import { parseVariationTableContent } from '../../parser/variation-table-parser';
 import type { VariationTableNode, SignRow, DomainPoint } from '../../types/variation-table';
 
 // ============================================================================
@@ -1058,5 +1059,80 @@ describe('cellules cachées', () => {
 		expect(blank).toContain('$-$');
 		expect(blank).not.toContain('$+$');
 		expect(blank).toContain('box(');
+	});
+});
+
+describe('ligne variation: à compléter (variations-a-completer)', () => {
+	/** Cubique : ↗ jusqu'à 4 en -2, ↘ jusqu'à -4 en 2, ↗ */
+	function cubique(...hidden: string[]): string {
+		return [
+			'variable: x',
+			'domain: -inf, -2, 2, +inf',
+			'',
+			'variation: f(x)',
+			'  -inf: -inf, bottom',
+			hidden.includes('valeur') ? '  -2: ?4, top' : '  -2: 4, top',
+			'  2: -4, bottom',
+			'  +inf: +inf, top',
+			...(hidden.includes('fleche') ? ['  -2,2: ?flèche'] : [])
+		].join('\n');
+	}
+	const nodeOf = (text: string) => {
+		const { node } = parseVariationTableContent(text.split('\n'));
+		if (!node) throw new Error('tableau illisible');
+		return node;
+	};
+
+	it('valeur cachée : case vide à sa hauteur, rien de la réponse', () => {
+		const typst = generateVariationTableTypst(nodeOf(cubique('valeur')));
+		expect(typst).toContain('(top, box(');
+		expect(typst).not.toContain('$4$');
+	});
+
+	it('valeur cachée, corrigé (filled) : le tableau sans ?', () => {
+		const typst = generateVariationTableTypst(nodeOf(cubique('valeur')), {
+			hiddenCells: 'filled'
+		});
+		expect(typst).toBe(generateVariationTableTypst(nodeOf(cubique())));
+	});
+
+	it('flèche cachée : les deux valeurs qui l’encadrent au milieu', () => {
+		const typst = generateVariationTableTypst(nodeOf(cubique('fleche')));
+		expect(typst).toContain('(center, $4$)');
+		expect(typst).toContain('(center, $-4$)');
+		expect(typst).toContain('(bottom, $-infinity$)');
+		expect(typst).not.toContain('(top, $4$)');
+	});
+
+	it('flèche cachée : aucune flèche dessinée à l’énoncé (vartable n’en omet pas une seule)', () => {
+		const typst = generateVariationTableTypst(nodeOf(cubique('fleche')));
+		expect(typst).toContain('arrow-style: (stroke: none)');
+		expect(typst).toContain('arrow-mark: (end: none)');
+	});
+
+	it('tableau sans ? : sortie identique en blank et filled (valeur centrée en borne comprise)', () => {
+		const plain = nodeOf('variable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  0: 1, center');
+		expect(generateVariationTableTypst(plain)).toBe(
+			generateVariationTableTypst(plain, { hiddenCells: 'filled' })
+		);
+	});
+
+	it('flèches gardées : corrigé, et énoncé sans flèche cachée', () => {
+		const filled = generateVariationTableTypst(nodeOf(cubique('fleche')), {
+			hiddenCells: 'filled'
+		});
+		expect(filled).not.toContain('arrow-style');
+		expect(generateVariationTableTypst(nodeOf(cubique('valeur')))).not.toContain('arrow-style');
+	});
+
+	it('borne implicite à côté d’une flèche cachée : colonne non vide (vartable planterait)', () => {
+		const typst = generateVariationTableTypst(
+			nodeOf(
+				'variable: x\ndomain: -inf, 1, +inf\n\nvariation: f(x)\n  1: -3, bottom\n  1,+inf: ?flèche'
+			)
+		);
+		expect(typst).not.toMatch(/\(\)\s*\)/);
+		expect(typst).toContain('(center, $-3$)');
+		expect(typst).toContain('(top, $$)');
 	});
 });

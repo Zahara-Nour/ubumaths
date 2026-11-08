@@ -345,3 +345,55 @@ describe('tableau de signes à compléter — évaluation notée', () => {
 		expect(shown).toEqual(['-3', '+', '0', '+']);
 	});
 });
+
+describe('tableau de variations à compléter (variations-a-completer)', () => {
+	/** Cubique : flèche ↗ cachée, valeur 4 cachée, flèche ↘ cachée */
+	const CUBIQUE = [
+		'```variation',
+		'variable: x',
+		'domain: -inf, -2, 2, +inf',
+		'',
+		'variation: f(x)',
+		'  -inf: -inf, bottom',
+		'  -2: ?4, top',
+		'  2: -4, bottom',
+		'  +inf: +inf, top',
+		'  -inf,-2: ?flèche',
+		'  -2,2: ?flèche',
+		'```'
+	].join('\n');
+
+	it('une case à menu par flèche, une case MathLive pour la valeur, aucune flèche dessinée', async () => {
+		const instance = generated(CUBIQUE);
+		expect(instance.blanks?.map((b) => b.cellule)).toEqual(['fleche', 'valeur', 'fleche']);
+		const { root } = await screenOf(instance);
+		expect(pickers(root).map((p) => p.getAttribute('aria-label'))).toEqual([
+			'Case 1 : flèche, vide',
+			'Case 3 : flèche, vide'
+		]);
+		expect(root.querySelectorAll('.variation-table math-field')).toHaveLength(1);
+		// Seule la flèche donnée (2 → +∞) est dessinée
+		expect(root.querySelectorAll('svg.vt-arrow')).toHaveLength(1);
+	});
+
+	it('flèche : « croissante » envoie ↗, une flèche ne propose pas + / −', async () => {
+		const { root, values } = await screenOf(generated(CUBIQUE));
+		await userEvent.click(pickers(root)[0]);
+		const menu = await waitForMenu();
+		const labels = [...menu.querySelectorAll('button')].map((b) => b.getAttribute('aria-label'));
+		expect(labels).toEqual(['croissante', 'décroissante']);
+		await choose('croissante');
+		expect(values[0]).toBe('↗');
+	});
+
+	it('énoncé masqué : aucune hauteur ne dit la flèche, la saisie marche', async () => {
+		const full = generated(CUBIQUE);
+		const masked = toDisplayInstance(toPublicQuestion(full, { position: 0, delaySeconds: 20 }));
+		expect(masked.statement).not.toContain('flèche');
+		const { root, values } = await screenOf(masked);
+		expect(pickers(root)).toHaveLength(2);
+		await userEvent.click(pickers(root)[1]);
+		await choose('décroissante');
+		expect(values[2]).toBe('↘');
+	});
+});
