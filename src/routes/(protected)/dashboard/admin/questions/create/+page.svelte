@@ -33,6 +33,8 @@
 	let { data }: { data: PageData } = $props();
 
 	let isSubmitting = $state(false);
+	// Raisons du dernier refus du serveur, affichées dans « Erreurs à corriger » du formulaire
+	let serverErrors = $state<string[]>([]);
 	let QuestionTemplateForm = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let isLoading = $state(true);
 
@@ -47,6 +49,8 @@
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
 	): Promise<boolean> {
 		isSubmitting = true;
+		// Les raisons d'un refus précédent ne valent que pour l'envoi qui les a reçues
+		serverErrors = [];
 
 		try {
 			const response = await fetch('/api/questions/templates', {
@@ -66,6 +70,7 @@
 			} else {
 				// Raisons du refus (contrôle de publication, nœud de l'arbre invalide…)
 				const errors: string[] = Array.isArray(result.errors) ? result.errors : [];
+				serverErrors = errors;
 				toaster.error('Erreur lors de la création', {
 					description: errors.slice(0, 5).join('\n') || undefined
 				});
@@ -112,6 +117,7 @@
 					onSave={handleSave}
 					onCancel={handleCancel}
 					{isSubmitting}
+					{serverErrors}
 					nodes={data.nodes}
 				/>
 			{/if}

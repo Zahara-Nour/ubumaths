@@ -41,6 +41,8 @@
 	let { data }: { data: PageData } = $props();
 
 	let isSubmitting = $state(false);
+	// Raisons du dernier refus du serveur, affichées dans « Erreurs à corriger » du formulaire
+	let serverErrors = $state<string[]>([]);
 	let QuestionTemplateForm = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let isLoading = $state(true);
 
@@ -56,6 +58,8 @@
 		options?: { silent?: boolean }
 	): Promise<boolean> {
 		isSubmitting = true;
+		// Les raisons d'un refus précédent ne valent que pour l'envoi qui les a reçues
+		serverErrors = [];
 
 		try {
 			const response = await fetch(`/api/questions/templates/${data.template.id}`, {
@@ -68,6 +72,7 @@
 			const result = await response.json();
 
 			if (result.success) {
+				serverErrors = [];
 				// Invalidate caches to force refresh
 				questionTemplatesCache.invalidate();
 
@@ -79,6 +84,7 @@
 			}
 			// Raisons du refus (contrôle de publication : spec rouge, tirage en échec…)
 			const errors: string[] = Array.isArray(result.errors) ? result.errors : [];
+			serverErrors = errors;
 			toaster.error('Erreur lors de la mise à jour', {
 				description: errors.slice(0, 5).join('\n') || undefined
 			});
@@ -227,6 +233,7 @@
 					onSave={handleSave}
 					onCancel={handleCancel}
 					{isSubmitting}
+					{serverErrors}
 					nodes={data.nodes}
 				/>
 			{/if}

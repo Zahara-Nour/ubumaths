@@ -1136,8 +1136,14 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
 - `PUT` d'un modèle dont le statut fusionné est `published` (publication, **ou toute modification
   d'un modèle déjà publié**) : `templatePublicationErrors`. Un modèle publié qui échoue ne se modifie plus qu'en
   le repassant en brouillon. Refus 400 : messages détaillés, puis raisons résumées ; l'éditeur
-  (`questions/[id]/edit`, `questions/create`) les affiche dans le toast d'erreur (5 au plus) et,
-  si la publication est refusée, `QuestionTemplateForm` remet le statut d'avant.
+  (`questions/[id]/edit`, `questions/create`) les affiche dans le toast d'erreur (5 au plus) et
+  toutes dans l'encadré « Erreurs à corriger » (prop `serverErrors`) ; si la publication est
+  refusée, `QuestionTemplateForm` remet le statut d'avant.
+- **Boutons de l'éditeur selon le statut** : brouillon → « Enregistrer brouillon », « Publier » ;
+  publié → « Enregistrer » (reste publié, donc contrôle complet) et « Repasser en brouillon »
+  (même confirmation que l'onglet « Publiés » de la liste ; on reste sur la page, refus → statut
+  remis). Le contrôle côté client ne cherche plus de réponse dans `blanks` : les réponses écrites
+  dans le texte (`?4`, `?flèche`) ne se lisent qu'au serveur, qui refuse une version sans réponse.
 - **Publication par lot** (`POST /api/questions/templates/bulk-status`, 1 à 100 modèles par envoi, `MAX_BULK_TEMPLATE_IDS` ; l’en-tête de la route dit encore 700) : chaque
   modèle repasse `templatePublicationErrors` (le même contrôle que le `PUT`) ; un échec le laisse en brouillon avec sa raison, sans contrôle de catégorie. Seules les lignes **rendues** par
   `.update().select()` comptent (RLS silencieuse).

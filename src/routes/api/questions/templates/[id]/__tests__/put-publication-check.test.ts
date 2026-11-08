@@ -71,6 +71,22 @@ describe('PUT : publication contrôlée par checkTemplate', () => {
 		expect(db.updates).toEqual([]);
 	});
 
+	// L'éditeur ne refuse plus « réponse manquante » (il ne lisait que `blanks`) :
+	// c'est ce contrôle-ci qui refuse une version sans aucune réponse, avec ses raisons
+	it('version sans aucune réponse (ni case, ni ? dans le texte) → publication refusée (400)', async () => {
+		const db = fakeDb();
+		const variations = structuredClone(db.question_templates[0].variations) as Array<
+			Record<string, unknown>
+		>;
+		variations[0] = { statement: 'Combien font $2+2$ ?' };
+		const response = await callPut(db, { variations, status: 'published' });
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		expect(body.errors.join(' ')).toMatch(/requires blanks/);
+		expect(db.updates).toEqual([]);
+	});
+
 	it('le même modèle cassé reste enregistrable en BROUILLON', async () => {
 		const db = fakeDb();
 		const variations = structuredClone(db.question_templates[0].variations) as Array<{
