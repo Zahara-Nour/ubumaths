@@ -57,7 +57,13 @@
 		type LineCoefficients,
 		type TracedLineMistake
 	} from '$lib/ubumark/utils/courbe-tracer';
-	import { solutionVector, tracedVectorMistake } from '$lib/ubumark/utils/courbe-vecteur';
+	import {
+		solutionVector,
+		tracedVectorMistake,
+		type TracedVectorMistake
+	} from '$lib/ubumark/utils/courbe-vecteur';
+	import { constructionTraces } from '$lib/ubumark/utils/courbe-combinaison';
+	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import Courbe, { type CourbeMark, type CourbeTrace } from './Courbe.svelte';
 	import MathInline from './MathInline.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
@@ -79,7 +85,7 @@
 	/** Le point de l'élève : la couleur d'accent, jamais le rouge de l'erreur */
 	const STUDENT_COLOR = 'bleu';
 	/** Le point juste, dans la correction */
-	const SOLUTION_COLOR = 'vert';
+	const SOLUTION_COLOR = 'vert' as const;
 	/** Distance (px) sous laquelle toucher un point posé le reprend */
 	const GRAB_DISTANCE = 18;
 
@@ -209,7 +215,16 @@
 		if (verdict !== false) return [];
 		if (vector?.coords) {
 			const arrow = solutionVector(spec, vector.coords, positions[0], vector.origin);
-			return arrow === null ? [] : [{ ...arrow, color: SOLUTION_COLOR, arrow: true }];
+			if (arrow === null) return [];
+			// Somme de vecteurs : la construction en pointillés, sous la flèche juste
+			const construction = vector.terms
+				? constructionTraces(spec, vector.terms, arrow.from).map((t) => ({
+						...t,
+						color: SOLUTION_COLOR,
+						dashed: true
+					}))
+				: [];
+			return [...construction, { ...arrow, color: SOLUTION_COLOR, arrow: true }];
 		}
 		if (knownEquation === null) return [];
 		const line = lineCoefficients(knownEquation);
@@ -217,7 +232,7 @@
 	});
 
 	/** Phrases de la correction : une par point faux ; droite à tracer, une (équation en formule) */
-	let mistakes = $derived<TracedLineMistake[]>(
+	let mistakes = $derived<(TracedLineMistake | TracedVectorMistake)[]>(
 		vectoring
 			? vectorMistakes()
 			: tracing
@@ -241,13 +256,14 @@
 	}
 
 	/** Vecteur à tracer : la phrase de la correction (aucune si les coordonnées sont masquées) */
-	function vectorMistakes(): TracedLineMistake[] {
+	function vectorMistakes(): TracedVectorMistake[] {
 		const coords = vector?.coords;
 		if (answers?.[0]?.isCorrect !== false || !coords) return [];
 		const sentence = tracedVectorMistake(answers[0].value, {
 			u: coords,
 			name: vector?.name ?? '',
-			...(vector?.origin !== undefined && { origin: vector.origin })
+			...(vector?.origin !== undefined && { origin: vector.origin }),
+			...(vector?.terms !== undefined && { terms: vector.terms })
 		});
 		return sentence === null ? [] : [sentence];
 	}
@@ -474,12 +490,17 @@
 	{#if verdict === false}
 		{#each mistakes as mistake (mistake.text)}
 			<p class="text-sm">
-				<!-- Espace insécable écrite avant la formule : Svelte retire celle du gabarit,
-				     et « pas » ne se sépare pas de u⃗ en fin de ligne -->
-				{mistake.text}{#if mistake.latex !== undefined}&nbsp;<MathInline
-						expression={mistake.latex}
-						syntax="latex"
-					/>.{/if}
+				{#if 'markdown' in mistake && mistake.markdown}
+					<!-- Somme de vecteurs : formules `$…$` dans la phrase -->
+					<InlineMarkdown content={mistake.text} />
+				{:else}
+					<!-- Espace insécable écrite avant la formule : Svelte retire celle du gabarit,
+					     et « pas » ne se sépare pas de u⃗ en fin de ligne -->
+					{mistake.text}{#if mistake.latex !== undefined}&nbsp;<MathInline
+							expression={mistake.latex}
+							syntax="latex"
+						/>.{/if}
+				{/if}
 			</p>
 		{/each}
 		<div class="placer-correction flex w-full flex-col items-center gap-1">

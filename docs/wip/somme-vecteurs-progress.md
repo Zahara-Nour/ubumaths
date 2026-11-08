@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-08, ouverture du chantier (aucune PR)._
 
-- **État** : phase 0 proposée (§ 2), **à valider par David** · **Prochaine action** : réponses aux questions SV1 à SV5, puis tests rouges · **En attente de David** : SV1 à SV5 · **Pièges en cours** : 2-297 a déjà un modèle publié (`51192dc4`) qui détourne le geste « vecteur seul » (§ 1) · **Worktree / branche** : `../ubumaths-wt-somme-vecteurs`, `feat/somme-vecteurs`
+- **État** : phase 0 validée (§ 2) · **Prochaine action** : tests rouges du parseur et du juge · **En attente de David** : rien · **Pièges en cours** : 2-297 a déjà un modèle publié (`51192dc4`) qui détourne le geste « vecteur seul » (§ 1) · **Worktree / branche** : `../ubumaths-wt-somme-vecteurs`, `feat/somme-vecteurs`
 
 ## 0. Origine
 
@@ -57,3 +57,8 @@ Questions à David :
   3-026 reste à la session `questions-3` ? → Je recommande **oui aux deux**.
 
 Question d'accès : personne (aucune migration, outil d'affichage et de geste).
+
+**Décisions de David (2026-11-08)** : phase 0 validée avec mes cinq recommandations (« je valide ») — SV1
+représentants n'importe où (parallélogramme si même origine, sinon v⃗ au bout de u⃗) ; SV2 coefficients entiers
+de −3 à 3, pas de fractions ; SV3 phrases nommées pour deux vecteurs ; SV4 pointillés sur le repère de l'élève ;
+SV5 `51192dc4` réécrit ici (PR de contenu à part), 3-026 laissé à `questions-3`.

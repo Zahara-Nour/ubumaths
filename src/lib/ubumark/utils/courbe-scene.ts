@@ -109,6 +109,8 @@ export interface CourbeScene {
 	endpoints: SceneEndpoint[];
 	sequences: SceneSequence[];
 	points: { name: string; x: number; y: number }[];
+	/** Vecteurs donnés (`vecteurs:`) : flèches entre points de la fenêtre, nom '' sans nom */
+	vectors: { name: string; from: ScenePoint; to: ScenePoint }[];
 	asymptotes: { from: ScenePoint; to: ScenePoint }[];
 	areas: { color: CourbeColor; polygon: ScenePoint[] }[];
 	tangents: SceneTangent[];
@@ -572,6 +574,7 @@ function emptyScene(spec: CourbeSpec, width: number, height: number, message: st
 		endpoints: [],
 		sequences: [],
 		points: [],
+		vectors: [],
 		asymptotes: [],
 		areas: [],
 		tangents: [],
@@ -656,6 +659,15 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 				line: p.line
 			});
 		}
+	}
+
+	// Vecteurs donnés : entre deux points dessinés (un bout hors fenêtre : pas de flèche)
+	const vectors: CourbeScene['vectors'] = [];
+	for (const v of (spec.vecteurs ?? []).slice(0, COURBE_LIMITS.vectors)) {
+		const from = points.find((p) => p.name === v.from);
+		const to = points.find((p) => p.name === v.to);
+		if (from === undefined || to === undefined) continue;
+		vectors.push({ name: v.name, from: { x: from.x, y: from.y }, to: { x: to.x, y: to.y } });
 	}
 
 	// Positions à éviter : points nommés ET noms déjà placés (sinon deux courbes proches
@@ -819,6 +831,7 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		endpoints,
 		sequences,
 		points,
+		vectors,
 		asymptotes,
 		areas,
 		tangents,

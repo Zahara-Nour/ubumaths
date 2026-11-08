@@ -30,6 +30,8 @@ import {
 	type CourbePlacedPoint
 } from './courbe-placer';
 import { decimalString } from './number-line-placer';
+import { combinationMistake } from './courbe-combinaison';
+import type { CourbeVectorTerm } from '../types/courbe';
 
 // Types
 
@@ -43,12 +45,18 @@ export interface ExpectedVector {
 export interface VectorForMistake extends ExpectedVector {
 	/** Nom du vecteur (`u`), '' sans nom */
 	name: string;
+	/** Combinaison écrite (`tracer: vecteur u + v`) : la phrase la nomme */
+	terms?: CourbeVectorTerm[];
 }
 
-/** Phrase de la correction ; `latex` : à écrire en formule après le texte, puis « . » */
+/**
+ * Phrase de la correction ; `latex` : à écrire en formule après le texte, puis
+ * « . » ; `markdown` : le texte est de l'ubumark en ligne (formules `$…$`)
+ */
 export interface TracedVectorMistake {
 	text: string;
 	latex?: string;
+	markdown?: boolean;
 }
 
 // Constantes
@@ -129,6 +137,9 @@ export function tracedVectorMistake(
 	const { u } = vector;
 	const fromOrigin = vector.origin === undefined || sameVector(p, vector.origin);
 	if (sameVector(d, u)) return fromOrigin ? null : { text: WRONG_ORIGIN };
+	if (vector.terms !== undefined) {
+		return { text: combinationMistake(d, vector.terms), markdown: true };
+	}
 	const drawn = `Ta flèche représente le vecteur ${pointText(d.x, d.y)}`;
 	if (sameVector(d, { x: -u.x, y: -u.y })) {
 		return {
