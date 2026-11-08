@@ -214,6 +214,28 @@ describe('cercle de centre donné, passant= : verdicts', () => {
 	});
 });
 
+describe('cercle de centre donné : deux cercles dans la figure (revue)', () => {
+	// Rosace : c de centre O passant par A, k de centre A passant par O (rayon 2 chacun)
+	const TWO = [
+		'fenetre: 0 ; 12 ; 0 ; 8',
+		'verifier: cercle c = cercle(O, passant=A)',
+		'verifier: cercle k = cercle(A, passant=O)',
+		'---',
+		...BODY
+	].join('\n');
+
+	it('les deux cercles justes → juste', () => {
+		expect(judge(TWO, [cercle(A, O), cercle(O, A)])).toEqual({ status: 'correct' });
+	});
+
+	it('seul le second est tracé → il manque le premier (pas « mauvais centre »)', () => {
+		expect(judge(TWO, [cercle(A, O)])).toEqual({
+			status: 'incorrect',
+			feedback: centeredMissingFeedback('O', 'passant', 'A')
+		});
+	});
+});
+
 describe('cercle de centre donné, rayon= : verdicts', () => {
 	it('Report de [DE] piqué en O → juste', () => {
 		expect(judge(RAYON, [report(O2, D, E)])).toEqual({ status: 'correct' });

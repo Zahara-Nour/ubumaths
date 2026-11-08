@@ -82,3 +82,9 @@ n° 20, une PR chacun, revue `code-reviewer` en `model: opus`, puis le lot 12b d
   piqué en O → « Juste » ; quadrillage, compas ouvert jusqu'au mauvais nœud → « Faux », « Ton cercle a le bon
   centre mais ne passe pas par A. », correction en pointillés.
 - Doc : `systeme/questions.md`, `systeme/ubumark.md`, fiche du catalogue (2 exemples).
+- Revue Opus (2026-11-08) : 1 finding important corrigé — figure à deux cercles (rosace), seul le second tracé →
+  « Pique ton compas en O. » au lieu de « il manque le cercle » ; un cercle qui recouvre un AUTRE cercle attendu
+  n'est plus un essai (test ajouté, rouge puis vert). Mineurs : (a) le message « mauvais rayon » du code (« Ton cercle
+  a le bon centre mais pas le bon rayon : reporte la longueur DE. ») est plus précis que celui du § 1 (« Ton cercle
+  n'a pas le bon rayon. ») : gardé, signalé à David ; (b) noms à prime refusés dans `cercle(…)` : sans objet, le
+  langage des figures n'a pas de prime.

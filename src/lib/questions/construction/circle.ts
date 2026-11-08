@@ -386,7 +386,19 @@ export function judgeCircles(
 		if (centered) {
 			// Quadrillage : chaque toucher est aimanté à un nœud, tout cercle tracé est construit
 			const onGrid = Boolean(shapes?.grid);
-			const verdict = judgeCentered(centered, target, free, circleAt, (i) => onGrid || built(i));
+			// Les cercles qui recouvrent un AUTRE cercle attendu ne sont pas des essais de
+			// celui-ci (rosace : le second cercle juste ne dit pas « mauvais centre », revue)
+			const others = checks
+				.filter((other) => other !== check)
+				.map((other) => expectedOf(other, expected));
+			const verdict = judgeCentered(
+				centered,
+				target,
+				free,
+				circleAt,
+				(i) => onGrid || built(i),
+				others
+			);
 			if (typeof verdict !== 'number') return verdict;
 			taken.add(verdict);
 			continue;
@@ -443,7 +455,8 @@ function judgeCentered(
 	target: ExpectedCircle,
 	free: readonly number[],
 	circleAt: (i: number) => DrawnCircle,
-	built: (i: number) => boolean
+	built: (i: number) => boolean,
+	others: readonly ExpectedCircle[] = []
 ): number | ConstructionVerdict {
 	const radiusWord = radiusWordOf(centered);
 	const covering = free.filter((i) => {
@@ -462,13 +475,18 @@ function judgeCentered(
 					: centeredRadiusEyeballedFeedback(radiusWord)
 		};
 	}
-	if (free.length === 0) {
+	const attempts = free.filter((i) => {
+		const c = circleAt(i);
+		const drawn = { center: centerOf(c), radius: radiusOf(c) };
+		return !others.some((other) => sameCircle(drawn, other));
+	});
+	if (attempts.length === 0) {
 		return {
 			status: 'incorrect',
 			feedback: centeredMissingFeedback(centered.center, centered.kind, radiusWord)
 		};
 	}
-	if (!free.some((i) => hasCenter(circleAt(i), target.center))) {
+	if (!attempts.some((i) => hasCenter(circleAt(i), target.center))) {
 		return { status: 'incorrect', feedback: wrongCenterFeedback(centered.center) };
 	}
 	return {
