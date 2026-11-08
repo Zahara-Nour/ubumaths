@@ -2,9 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, avant la PR._
+_Mis à jour le 2026-11-08, après #2482._
 
-- **État** : code et tests verts, PR à ouvrir · **Prochaine action** : PR, revues `code-reviewer` + `security-auditor`, CI, merge · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-sanitize-accolades`, `fix/sanitize-accolades`
+- **État** : ✅ mergé (#2482), pas encore en prod (`deploy:prod` sur demande de David) ; chantier clos, journal archivé · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
+
+Revues : `code-reviewer` (commentaire de `REFERENCE_REGEX` corrigé), `security-auditor` (rien de bloquant ; `{{#if}}` bruts visibles dans la liste des modèles du prof, voulu).
 
 ## Origine et décisions (David, 2026-11-08)
 

@@ -851,7 +851,7 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    mêmes messages. En plus : `outils:` refusé ; la pose demandée qui sort de la figure, l'autre tenant →
    « écrire « mesure BOA, rapporteur posé » ». La garde du masquage admet le suffixe.
    Vérification `segment AB = 6 cm` (`construction/segment-length.ts`, chantier `regle-graduee`,
-   CE2-039, ADR 0036) : A est un point de la figure (nommé, visible,
+   CE2-039, [ADR 0036](../adr/0036-le-cm-de-la-figure.md)) : A est un point de la figure (nommé, visible,
    dans la fenêtre), B nomme l'autre bout (messages seulement, absent de la figure) ; la longueur
    s'écrit `6 cm`, `5,3 cm`, `5 cm 3 mm` ou `72 mm`, lue en millimètres entiers (`SegmentLengthCheck.length`,
    plus de 0 ; `unit` garde la forme de l'auteur pour les messages, `formatLength`). **1 unité de la
