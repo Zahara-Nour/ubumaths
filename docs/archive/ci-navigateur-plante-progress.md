@@ -5,12 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR du GC forcé — chantier clos à son merge._
+_Mis à jour le 2026-11-08, #2480 ouverte (CI en cours) — chantier clos à son merge._
 
 - **État** : cause trouvée et corrigée (§ 1 quater) : GC de Chromium forcé après chaque fichier des tests client
   (`VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB` dans `quality.yml`), décidé par David le 2026-11-08 (+50 s par job
   acceptées). Journal versé dans `docs/archive/`, décision dans `docs/pratiques/environnement-de-dev.md`.
-- **Prochaine action** : aucune (clos). À suivre : le taux des plantages sur les PR des jours suivants.
+- **Prochaine action** : CI de #2480 verte → `gh pr merge 2480 --merge`, puis `git worktree remove` + `git branch -d`,
+  mémoire `project_chantier-ci-navigateur-plante` à clore. Ensuite : suivre le taux des plantages sur les PR.
+  Journal ici, dans `docs/archive/` (versé par la PR), plus dans `docs/wip/`.
 - **En attente de David** : rien. La relance automatique dans le job n'a plus d'objet.
 - **Laissé en l'état** : `deploy:prod` reconnaît « le plantage connu » à `wrapDynamicImport` dans les logs ; or
   cette erreur est dans TOUS les logs du job client, verts compris (§ 1 bis) : un vrai test client rouge serait
