@@ -6,18 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2479 (lot 4 rangé en prod)._
+_Mis à jour le 2026-11-08, après la publication du lot 4._
 
-- **État** : 12 démonstrations publiées (lots 1-3). Algorithmes (D3, 10 points) : lot 4 (241, 242, 257, 283)
-  en brouillon en prod, rangé (nœud + tag, #2479, `db:migrate` fait) ; page à cocher publiée (§ 10).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`), compter ; 4 « ok » → simulation
-  `publier-lot` donnée à David ; puis lot 5 (321, 322) et lot 6 (361, 362, 387, 388).
-- **En attente de David** : relecture du lot 4 sur https://claude.ai/artifact/3Y7diWpyKuCsBgEPX4REaL
+- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lot 4 (241, 242, 257, 283)
+  publié (4/4, relu par David). Restent 6 points d'algorithmes.
+- **Prochaine action** : lot 5 (321, 322) dans un worktree neuf, sur le modèle du lot 4 (§ 10) ; puis lot 6
+  (361, 362, 387, 388).
+- **En attente de David** : rien.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf →
   `svelte-kit sync` avant `question:specs` ; `create-questions` lit `.env` (prod) : en local, `.env.local`.
-- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations` retiré après #2479 ; le lot 5 prendra
-  un worktree neuf.
+- **Worktree / branche** : aucun (le lot 5 prendra `ubumaths-wt-questions-2de-demonstrations`).
 
 ---
 
@@ -317,3 +316,6 @@ Mergée (#2479 ; job navigateur planté tests verts, relancé, vert) ; `check:mi
 (seule migration en attente) ; vérifié en prod : les 4 brouillons sur leur sous-notion, chacun avec son seul point,
 `updated_at` inchangé. Page à cocher : https://claude.ai/artifact/3Y7diWpyKuCsBgEPX4REaL (aucune alerte ; les
 accents graves du code en ligne y restent bruts, l'appli les rend en code via `parseMarkdown`).
+
+Lot 4 relu par David sur la page à cocher (2026-11-08) : 4 « ok », sans commentaire. Publié par David
+(`publier-lot.ts`, simulation puis `--publier`) : 4/4, statut relu en base.
