@@ -5,7 +5,7 @@
 
 	Features:
 	- Title, genre, difficulty inputs
-	- Rich text editors for statement and correction
+	- Rich text editors for statement and correction (ubumark)
 	- Image upload (optional)
 	- Automatic validation configuration (Phase 2)
 	- Draft/published status
@@ -57,8 +57,13 @@
 	let title = $state(initialRiddle?.title || '');
 	let genre = $state(initialRiddle?.genre || '');
 	let difficulty = $state<RiddleDifficulty>(initialRiddle?.difficulty || 1);
+	// Énoncé et correction sont écrits en ubumark (chantier cahier-ubumark) : la liaison
+	// `markdownValue` ne sert qu'à activer le bouton ; le texte envoyé est lu dans chaque
+	// éditeur à l'envoi (`editorText`), la liaison attendant 150 ms après la dernière frappe.
 	let statement = $state(initialRiddle?.statement || '');
 	let correction = $state(initialRiddle?.correction || '');
+	let statementEditor: ReturnType<typeof RichTextEditor> | null = $state(null);
+	let correctionEditor: ReturnType<typeof RichTextEditor> | null = $state(null);
 	let imageUrl = $state(initialRiddle?.image_url || '');
 	let answerConfig = $state<AnswerConfig | null>(initialRiddle?.answer || null);
 	let status = $state<'draft' | 'published'>(initialRiddle?.status || 'draft');
@@ -93,6 +98,15 @@
 	// HANDLERS
 	// ============================================================================
 
+	/**
+	 * Le texte d'un éditeur à l'envoi, ou `fallback` (le contenu chargé) tant que
+	 * l'éditeur n'est pas créé : `getMarkdown()` rendrait alors `''`, et un clic
+	 * sur « Enregistrer » pendant le chargement effacerait l'énoncé.
+	 */
+	function editorText(ref: ReturnType<typeof RichTextEditor> | null, fallback: string): string {
+		return ref?.isReady() ? ref.getMarkdown() : fallback;
+	}
+
 	function handleSubmit() {
 		if (!isValid || loading) return;
 
@@ -100,8 +114,8 @@
 			title: title.trim(),
 			genre: genre.trim() || undefined,
 			difficulty,
-			statement: statement.trim(),
-			correction: correction.trim(),
+			statement: editorText(statementEditor, statement).trim(),
+			correction: editorText(correctionEditor, correction).trim(),
 			image_url: imageUrl.trim() || undefined,
 			answer: answerConfig || undefined,
 			status
@@ -197,7 +211,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<RichTextEditor bind:htmlValue={statement} />
+			<RichTextEditor bind:this={statementEditor} bind:markdownValue={statement} />
 		</Card.Content>
 	</Card.Root>
 
@@ -210,7 +224,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<RichTextEditor bind:htmlValue={correction} />
+			<RichTextEditor bind:this={correctionEditor} bind:markdownValue={correction} />
 		</Card.Content>
 	</Card.Root>
 
