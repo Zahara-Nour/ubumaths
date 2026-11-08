@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, avant la PR._
+_Mis à jour le 2026-11-09, après #2493._
 
-- **État** : correctif écrit, tests verts, PR à ouvrir · **Prochaine action** : PR, `security-auditor` + `code-reviewer`, CI, merge · **En attente de David** : images externes au cahier, même traitement ou non (question posée) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-cahier-formules`, `fix/cahier-formules-externes`
+- **État** : ✅ mergé (#2493), pas encore en prod (`deploy:prod` sur demande de David) · **Prochaine action** : selon la réponse de David sur les images · **En attente de David** : images externes au cahier, même traitement que les vidéos ou non (aucune en prod) · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
 
 ## Décision (David, 2026-11-08)
 
