@@ -1,0 +1,221 @@
+{
+	"title": "Approcher un maximum par balayage, en Python",
+	"description": "f croissante puis décroissante ; maximum(a, pas) avance tant que f(x + pas) > f(x) : valeur renvoyée avec un pas de 1, compléter la condition du while, interpréter la valeur renvoyée (abscisse du maximum à pas près)",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La fonction $f$ est définie sur $[0\\,;5]$ par $f(x)=-x^2+{{eval:s;d}}x$. D'après son tableau de variations, $f$ est croissante, puis décroissante sur $[0\\,;5]$. On considère le programme Python suivant.\n\n```python\ndef f(x):\n    return -x**2 + {{eval:q}}.{{eval:u}}*x\n\ndef maximum(a, pas):\n    x = a\n    while f(x + pas) > f(x):\n        x = x + pas\n    return x\n```\n\nQue renvoie l'appel `maximum(0, 1)` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..8"
+				},
+				{
+					"name": "u",
+					"expression": "2|4|6|8"
+				},
+				{
+					"name": "s",
+					"expression": "eval:q+u/10"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((s+1)/2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle avance $x$ de $1$ en $1$ à partir de $0$, tant que $f(x+1)>f(x)$, c'est-à-dire tant que $f$ augmente encore.",
+					"Tant que $x<{{eval:r}}$, $f(x+1)>f(x)$ : par exemple $f({{eval:r-1}})={{eval:-(r-1)^2+s*(r-1);d}}$ et $f({{eval:r}})={{eval:-(r)^2+s*(r);d}}$.",
+					"Pour $x={{eval:r}}$ : $f({{eval:r+1}})={{eval:-(r+1)^2+s*(r+1);d}}$ n'est pas supérieur à $f({{eval:r}})={{eval:-(r)^2+s*(r);d}}$, la boucle s'arrête et l'appel renvoie $\\textcolor{{{color:primary.0}}}{{{eval:r}}}$.",
+					"$f$ atteint son maximum en $x=\\dfrac{{{eval:s;d}}}{2}={{eval:s/2;d}}$ : le balayage de pas $1$ en donne une valeur approchée à $1$ près."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est croissante, puis décroissante. La fonction Python `maximum` doit avancer $x$ de `pas` en `pas` à partir de `a`, tant que $f$ augmente, pour approcher l'abscisse où $f$ atteint son maximum.\n\n```python\ndef f(x):\n    return -x**2 + 4.6*x\n\ndef maximum(a, pas):\n    x = a\n    while ...:\n        x = x + pas\n    return x\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `f(x + pas) > f(x)`\n- `f(x + pas) < f(x)`\n- `f(x) > 0`\n- `x + pas > x`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Tant que $f$ est croissante, la valeur suivante $f(x+\\text{pas})$ est plus grande que $f(x)$ : on avance.",
+					"Dès que $f(x+\\text{pas})$ n'est plus supérieure à $f(x)$, $f$ a cessé de croître : on est près du maximum, on s'arrête.",
+					"La condition est donc `f(x + pas) > f(x)`. `f(x + pas) < f(x)` s'arrêterait tout de suite ; `f(x) > 0` cherche où $f$ change de signe ; `x + pas > x` est toujours vraie (la boucle ne s'arrêterait jamais)."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est croissante, puis décroissante. On considère le programme Python suivant.\n\n```python\ndef f(x):\n    return -x**2 + 4.6*x\n\ndef maximum(a, pas):\n    x = a\n    while f(x + pas) > f(x):\n        x = x + pas\n    return x\n```\n\nOn appelle `maximum(0, 0.01)`. Que représente la valeur renvoyée ?\n\n```choix\n- Une valeur approchée, à $0{,}01$ près, de l'abscisse où $f$ atteint son maximum.\n- Une valeur approchée, à $0{,}01$ près, du maximum de $f$.\n- La valeur exacte de l'abscisse où $f$ atteint son maximum.\n- Le premier nombre $x$ à partir de $0$ pour lequel $f(x)$ est négatif.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle s'arrête au premier $x$ (de $0{,}01$ en $0{,}01$) après lequel $f$ ne croît plus : le maximum est atteint à moins de $0{,}01$ de ce $x$.",
+					"La fonction renvoie `x`, une ABSCISSE, pas la valeur $f(x)$ du maximum. Et c'est une valeur approchée : le pas fixe la précision.",
+					"Ici le maximum est atteint en $x=2{,}3$ : l'appel renvoie environ $\\textcolor{{{color:primary.0}}}{2{,}3}$ (Python peut afficher `2.299999…`, à cause des calculs sur les nombres à virgule)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "s = 4,6 : 2",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"u": "6",
+				"s": "23/5",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un pas de trop (3)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"u": "6",
+				"s": "23/5",
+				"r": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : abscisse exacte 2,3",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"u": "6",
+				"s": "23/5",
+				"r": "2"
+			},
+			"answers": ["2,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s = 5,2 : 3",
+			"variationIndex": 0,
+			"variables": {
+				"q": "5",
+				"u": "2",
+				"s": "26/5",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "s = 2,2 : 1",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"u": "2",
+				"s": "11/5",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "f(x + pas) > f(x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(x + pas) < f(x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(x) > 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + pas > x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "abscisse à 0,01 près",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : maximum de f",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : valeur exacte",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(x) négatif",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

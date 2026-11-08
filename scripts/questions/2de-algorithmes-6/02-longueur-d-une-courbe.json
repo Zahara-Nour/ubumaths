@@ -1,0 +1,239 @@
+{
+	"title": "Longueur approchée d'une portion de courbe, en Python",
+	"description": "longueur(a, b, n) additionne les longueurs des segments d'une ligne brisée inscrite dans la courbe : valeur renvoyée pour n = 2 (longueurs entières), compléter la ligne de la somme, interpréter quand n grandit",
+	"grades": ["2"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Pour approcher la longueur de la courbe de $f$ entre les abscisses $a$ et $b$, on la remplace par une ligne brisée : on découpe $[a\\,;b]$ en $n$ intervalles de même longueur $h$ et on relie les points de la courbe d'abscisses $a$, $a+h$, $a+2h$, …, $b$. Ici $f(x)=\\dfrac{{{eval:w}}}{{{eval:h*h}}}(x-{{eval:c}})^2+{{eval:z}}$.\n\n```python\nfrom math import sqrt\n\ndef f(x):\n    return {{eval:w}} * (x - {{eval:c}})**2 / {{eval:h*h}} + {{eval:z}}\n\ndef longueur(a, b, n):\n    h = (b - a) / n\n    L = 0\n    for k in range(n):\n        x = a + k * h\n        L = L + sqrt(h**2 + (f(x + h) - f(x))**2)\n    return L\n```\n\nQue renvoie l'appel `longueur({{eval:a}}, {{eval:b}}, 2)` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..6"
+				},
+				{
+					"name": "h",
+					"expression": "{{if:j==1|3|{{if:j==2|4|{{if:j==3|6|{{if:j==4|8|{{if:j==5|5|12}}}}}}}}}}"
+				},
+				{
+					"name": "w",
+					"expression": "{{if:j==1|4|{{if:j==2|3|{{if:j==3|8|{{if:j==4|6|{{if:j==5|12|5}}}}}}}}}}"
+				},
+				{
+					"name": "L",
+					"expression": "{{if:j==1|5|{{if:j==2|5|{{if:j==3|10|{{if:j==4|10|{{if:j==5|13|13}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "z",
+					"expression": "1..5"
+				},
+				{
+					"name": "a",
+					"expression": "eval:c-h"
+				},
+				{
+					"name": "b",
+					"expression": "eval:c+h"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*L}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h=\\dfrac{{{eval:b}}-{{eval:a;d;()}}}{2}={{eval:h}}$ : la ligne brisée relie les points d'abscisses ${{eval:a}}$, ${{eval:c}}$ et ${{eval:b}}$.",
+					"$f({{eval:a}})={{eval:w+z}}$, $f({{eval:c}})={{eval:z}}$ et $f({{eval:b}})={{eval:w+z}}$.",
+					"Pour $k=0$ : $\\sqrt{{{eval:h}}^2+({{eval:z}}-{{eval:w+z}})^2}=\\sqrt{{{eval:h*h+w*w}}}={{eval:L}}$ ; pour $k=1$ : $\\sqrt{{{eval:h}}^2+({{eval:w+z}}-{{eval:z}})^2}={{eval:L}}$.",
+					"L'appel renvoie ${{eval:L}}+{{eval:L}}=\\textcolor{{{color:primary.0}}}{{{eval:2*L}}}$ (Python affiche `{{eval:2*L}}.0`)."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit approcher la longueur de la courbe de $f$ entre les abscisses $a$ et $b$ par celle de la ligne brisée qui relie les points de la courbe d'abscisses $a$, $a+h$, …, $b$, avec $h=\\dfrac{b-a}{n}$.\n\n```python\nfrom math import sqrt\n\ndef f(x):\n    return x**2\n\ndef longueur(a, b, n):\n    h = (b - a) / n\n    L = 0\n    for k in range(n):\n        x = a + k * h\n        ...\n    return L\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `L = L + sqrt(h**2 + (f(x + h) - f(x))**2)`\n- `L = L + sqrt(h**2 + f(x)**2)`\n- `L = L + h**2 + (f(x + h) - f(x))**2`\n- `L = L + sqrt(h + (f(x + h) - f(x)))`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le segment ajouté relie les points $\\big(x\\,;f(x)\\big)$ et $\\big(x+h\\,;f(x+h)\\big)$.",
+					"Sa longueur est $\\sqrt{(x+h-x)^2+\\big(f(x+h)-f(x)\\big)^2}=\\sqrt{h^2+\\big(f(x+h)-f(x)\\big)^2}$ (formule de la distance, ou théorème de Pythagore).",
+					"On l'ajoute à `L` : `L = L + sqrt(h**2 + (f(x + h) - f(x))**2)`. Les autres propositions oublient la racine, les carrés, ou prennent $f(x)$ au lieu de l'écart $f(x+h)-f(x)$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante, qui approche la longueur de la courbe de $f$ entre les abscisses $a$ et $b$ par celle d'une ligne brisée à $n$ segments.\n\n```python\nfrom math import sqrt\n\ndef f(x):\n    return x**2\n\ndef longueur(a, b, n):\n    h = (b - a) / n\n    L = 0\n    for k in range(n):\n        x = a + k * h\n        L = L + sqrt(h**2 + (f(x + h) - f(x))**2)\n    return L\n```\n\nQue se passe-t-il quand on appelle `longueur(0, 2, n)` avec des valeurs de `n` de plus en plus grandes ?\n\n```choix\n- La valeur renvoyée se rapproche de la longueur de la courbe de $f$ entre $0$ et $2$.\n- La valeur renvoyée se rapproche de l'aire sous la courbe de $f$ entre $0$ et $2$.\n- La valeur renvoyée ne change pas : la ligne brisée a toujours la même longueur.\n- La valeur renvoyée se rapproche de $2$, la longueur de l'intervalle $[0\\,;2]$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Plus `n` est grand, plus les segments sont courts et plus la ligne brisée « colle » à la courbe.",
+					"La somme des longueurs des segments se rapproche alors de la $\\textcolor{{{color:primary.0}}}{\\text{longueur de la courbe}}$.",
+					"Ce n'est pas une aire (on additionne des longueurs de segments), et la valeur dépend de `n` : avec $n=1$, un seul segment, de longueur $\\sqrt{2^2+4^2}=\\sqrt{20}\\approx4{,}47$ ; avec $n=2$, $\\sqrt{2}+\\sqrt{10}\\approx4{,}58$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(3, 4, 5) : 10",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"h": "3",
+				"w": "4",
+				"L": "5",
+				"c": "1",
+				"z": "2",
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul segment (5)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"h": "3",
+				"w": "4",
+				"L": "5",
+				"c": "1",
+				"z": "2",
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans racine ni carrés (14)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"h": "3",
+				"w": "4",
+				"L": "5",
+				"c": "1",
+				"z": "2",
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(12, 5, 13) : 26",
+			"variationIndex": 0,
+			"variables": {
+				"j": "6",
+				"h": "12",
+				"w": "5",
+				"L": "13",
+				"c": "3",
+				"z": "1",
+				"a": "-9",
+				"b": "15"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "L = L + sqrt(h**2 + (f(x + h) - f(x))**2)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(x) au lieu de l'écart",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans racine",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans carrés",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "longueur de la courbe",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aire",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ne change pas",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : longueur de [0 ; 2]",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

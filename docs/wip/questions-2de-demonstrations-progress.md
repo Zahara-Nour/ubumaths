@@ -6,19 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après la publication du lot 5._
+_Mis à jour le 2026-11-09, lot 6 écrit, PR à ouvrir._
 
-- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lots 4 et 5 publiés
-  (6 points sur 10) ; reste le lot 6 (361, 362, 387, 388 : fonctions et statistiques, tableau du § 9).
-- **Prochaine action** : lot 6, branche neuve depuis `origin/main` dans le worktree (`pnpm install`, puis
-  `svelte-kit sync`) : relevé prod des 4 sous-notions, specs, modèles, PR, comme les lots 4 et 5 (§ 10-11).
-- **En attente de David** : rien.
+- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lots 4 et 5 publiés ;
+  lot 6 (361, 362, 387, 388) écrit et vérifié (§ 12), en PR sur `feat/questions-2de-algorithmes-6`.
+- **Prochaine action** : PR du lot 6 → CI verte → merge → commande `create-questions --publier` pour David
+  (§ 12) → ids commités → migration nœud + tag calquée sur `20261108222224_…_algorithmes_5_…` → page à cocher.
+- **En attente de David** : rien (la commande de création viendra après le merge).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf →
-  `svelte-kit sync` avant `question:specs` ; `create-questions` en local : `export` des 2 variables de
-  `.env.local` (dotenv n'écrase pas), et il ÉCRIT l'id local dans les JSON → régénérer par le script après.
-- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, branche `feat/questions-2de-algorithmes-5-rangement`
-  mergée (#2487), à remplacer par la branche du lot 6.
+  `svelte-kit sync` avant `question:specs` ; `create-questions` en local : exporter `PUBLIC_SUPABASE_URL` ET
+  `SUPABASE_SERVICE_ROLE_KEY` de `.env.local` (avec `SUPABASE_URL` seul, il vise la PROD : refusé par la clé
+  locale le 2026-11-09, rien écrit), sur une COPIE des JSON (il y écrit l'id local).
+- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-algorithmes-6`.
 
 ---
 
@@ -360,3 +360,35 @@ point, `updated_at` inchangé. Page à cocher (aucune alerte) : https://claude.a
 
 Lot 5 relu par David sur la page à cocher (2026-11-08) : 2 « ok », sans commentaire. Publié par David
 (`publier-lot.ts`, simulation puis `--publier`, 2026-11-09) : 2/2, statut relu en base.
+
+## 12. Lot 6 : exemples d'algorithmes, fonctions et statistiques (2026-11-09)
+
+Relevé prod (MCP, 2026-11-09) : 361 sur Fonctions › Généralités sur les fonctions › extremums (2 modèles,
+niveaux 1-2) ; 362 sur la notion Généralités sur les fonctions → rangé sur « extremums » (D3, Q3) ; 387 sur la
+notion Tableaux croisés → rangé sur « tableau croisé d'effectifs » (D3, Q3) ; 388 sur Tableaux croisés ›
+tableau croisé d'effectifs (3 modèles, niveaux 1-3). Aucun modèle tagué sur les 4 points ; aucune sous-notion
+neuve.
+
+| Point | Modèle (`scripts/questions/2de-algorithmes-6/`) | Nœud, niveau                  | Variations                                                                                                                                                                   |
+| ----- | ----------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 361   | `01-maximum-par-balayage`                       | extremums, 3                  | `maximum(0, 1)` pour f(x) = −x² + s·x, s à une décimale (case) ; condition du `while` (choix) ; pas 0,01 : abscisse du maximum à 0,01 près (choix)                           |
+| 362   | `02-longueur-d-une-courbe`                      | extremums, 4                  | `longueur(a, b, 2)`, f parabole calée sur un triplet pythagoricien, longueur entière (case) ; ligne `L = L + sqrt(…)` (choix) ; n grandit : longueur de la courbe (choix)    |
+| 387   | `03-filtrer-et-ou-non`                          | tableau croisé d'effectifs, 4 | `compter` sur 8 élèves tirés, condition `and` / `or` / `and not` tirée (case) ; condition ET NON (choix) ; `or` inclusif (choix)                                             |
+| 388   | `04-frequence-conditionnelle-listes`            | tableau croisé d'effectifs, 5 | `frequence` sur 10 élèves (6 jeux fixes, fréquence décimale), tableau croisé en correction (case) ; `return bus_sport / bus` (choix) ; conditionnelle, pas l'inverse (choix) |
+
+Script : `docs/wip/questions/lot-2de-algorithmes-6.py`. Mêmes listes `transport` (`"bus"` / `"vélo"`) et
+`sport` (`"oui"` / `"non"`) pour 387 et 388, valeurs tirées élément par élément (`{{if:…}}` dans le bloc
+Python). 361 : le programme s'appuie sur le sens de variation (avance tant que f croît) ; s jamais entier impair,
+donc jamais d'égalité f(x + 1) = f(x). La dichotomie n'est pas traitée (le BO dit « balayage, dichotomie » ; une
+seule méthode par modèle, comme les lots 4-5). 388 : « dresser le tableau croisé » est dans la correction (bloc
+` ```tableau-croise `, totaux compris) ; un `\begin{array}` avec `\hline` s'affichait en LaTeX brut (`\hline`
+rouge), remplacé.
+
+Vérifié : `question:specs` 150 tirages par variation, 4/4 importables, 53 specs vertes, 0 `\textcolor` hors
+`$` ; 800 réponses « faire tourner » recoupées par une exécution Python des programmes de l'énoncé (0 écart) ;
+`maximum(0, 0.01)` et `longueur(0, 2, n)` exécutés pour les textes des corrections (`2.299999999999995` ;
+4,47 et 4,58) ; brouillons en base locale (copie hors dépôt), aperçu admin des 4 « faire tourner » vu à l'écran,
+face correction comprise (formules à virgule, code à point, tableau croisé, ✓/✗ élève par élève).
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-6 --publier`
