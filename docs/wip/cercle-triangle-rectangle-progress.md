@@ -92,3 +92,24 @@ n° 20, une PR chacun, revue `code-reviewer` en `model: opus`, puis le lot 12b d
   n'a pas le bon rayon. ») : gardé, signalé à David ; (b) noms à prime refusés dans `cercle(…)` : sans objet, le
   langage des figures n'a pas de prime.
 - 2026-11-08 : #2463 mergée (CI verte sur `d2d873c96`, revue Opus : 1 finding corrigé) ; branche supprimée ; vérification manuelle notée.
+
+## 3. N° 20 — triangle rectangle, phase 0 (validée le 2026-11-08, « je suis tes recos »)
+
+Vérifié en prod (lecture seule, 2026-11-08) : aucun modèle n'écrit `= 90` dans un `verifier: triangle` (seul publié :
+`AC = u ; BC = v`, « Reproduire un triangle au compas »).
+
+- **Écriture** : `triangle ABC : CAB = 90 ; AC = u` (ou `AC = AB`, `AC = DE`), `CAB = 90` seul, idem en B. Sur
+  quadrillage : `CAB = 90 ; AC = 3 carreaux` ([AB] sur une ligne du quadrillage, sinon erreur d'auteur),
+  `CAB = 90 ; AC = AB` (lignes ou oblique), `CAB = 90` seul (C sur un nœud de la perpendiculaire).
+- **Refus à la publication** : `AC = u` sur quadrillage ; `carreaux` sans quadrillage ; hypoténuse donnée
+  (`CAB = 90 ; BC = u`) ; `90` avec un autre angle (Q6).
+- **Q5** : `AC = 3 carreaux`, unité obligatoire (`AC = 3` reste libre pour les cm de la règle graduée).
+- **Q7** : `= 90` dans un triangle = l'équerre, plus le rapporteur.
+- **Q8** : palettes déduites Segment · Équerre (· Report s'il y a une longueur) sur papier uni ; Segment seul sur
+  quadrillage. Pas de Compas.
+- **Erreurs, dans l'ordre** : côté manquant / côtés disjoints (messages actuels) ; papier uni, C sur aucune droite
+  construite par A : « Ton côté [AC] est tracé à l'œil : utilise l'équerre. » ; angle non droit (papier uni : « … :
+  trace la perpendiculaire à (AB) avec l'équerre. », quadrillage : « Ton angle en A n'est pas droit. ») ; C sur la
+  perpendiculaire hors du croisement du Report : message actuel ; mauvaise longueur (message actuel ; en carreaux :
+  « Ton côté [AC] mesure 4 carreaux au lieu de 3. »).
+- **Correction** : [AC], [BC], petit carré en A ; papier uni : la perpendiculaire et l'arc de report en traits fins.
