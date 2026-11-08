@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, pendant le lot 5._
+_Mis à jour le 2026-11-08, après #2484._
 
-- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lot 4 publié ; lot 5 (321, 322) écrit et vérifié (§ 11), PR ouverte.
-- **Prochaine action** : CI verte → merge → David crée les brouillons (commande au § 11) → migration nœud + tag
-  (calquée sur le lot 4) → page à cocher ; puis lot 6 (361, 362, 387, 388).
-- **En attente de David** : rien avant le merge.
+- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lot 4 publié ; lot 5 (321, 322) mergé (#2484), brouillons pas encore créés en prod.
+- **Prochaine action** : David lance la commande du § 11 → migration nœud + tag (calquée sur le lot 4, worktree
+  neuf) → page à cocher ; puis lot 6 (361, 362, 387, 388).
+- **En attente de David** : création des 2 brouillons (commande `!` du § 11).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf →
   `svelte-kit sync` avant `question:specs` ; `create-questions` en local : `export` des 2 variables de
   `.env.local` (dotenv n'écrase pas), et il ÉCRIT l'id local dans les JSON → régénérer par le script après.
-- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-demonstrations-lot5`.
+- **Worktree / branche** : aucun (la migration du lot 5 prendra `ubumaths-wt-questions-2de-demonstrations`).
 
 ---
 
@@ -343,3 +343,5 @@ notation (`\overrightarrow{AB}\begin{pmatrix}…\end{pmatrix}`) est celle de 115
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-5 --publier`
+
+Mergée (#2484, CI verte du premier coup).
