@@ -59,10 +59,11 @@ describe('/demo/editeur', () => {
 		for (const testId of USAGES) {
 			await expect.poll(() => usageText(container, testId)).toContain('La solution de');
 		}
-		// Formules du cahier de texte : `transformMathHtml` ne lisait `latex` que juste après
-		// le marqueur, et `editor.getHTML()` le met en dernier → formules vides (2026-11-06)
+		// Carte du cahier : son vrai moteur, `JournalContent` (ubumark), comme la page élève
+		// depuis le chantier cahier-ubumark — plus le HTML de `transformMathHtml`, dont
+		// l'assainisseur tronquait toute formule contenant `}}` (2026-11-08)
 		const formulesDuCahier = () =>
-			[...container.querySelectorAll('[data-testid="usage-cahier"] math-field')].map((f) =>
+			[...container.querySelectorAll('[data-testid="usage-cahier"] math-span')].map((f) =>
 				f.textContent?.trim()
 			);
 		await expect.poll(formulesDuCahier).toEqual(['2x+3=11', 'x=4']);
