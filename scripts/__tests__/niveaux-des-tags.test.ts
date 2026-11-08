@@ -92,7 +92,7 @@ describe('separerExceptions', () => {
 		expect(excuses).toEqual([]);
 	});
 
-	it('les exceptions du dépôt : 5 brouillons de seconde (Q7 c), 6 automatismes de 1re', () => {
+	it('les exceptions du dépôt : 5 brouillons de seconde (Q7 c), 7 automatismes (6 de 1re, 1 de 2de)', () => {
 		const parRaison = (motif: string) =>
 			[...EXCEPTIONS_NIVEAUX]
 				.filter(([, e]) => e.raison.includes(motif))
@@ -108,11 +108,12 @@ describe('separerExceptions', () => {
 		expect(parRaison('automatismes-1spe')).toEqual([
 			'0f673c27',
 			'1c86d122',
+			'23751c95',
 			'7f82d15a',
 			'95ee57c8',
 			'9852d62c',
 			'f5585668'
 		]);
-		expect(EXCEPTIONS_NIVEAUX.size).toBe(11);
+		expect(EXCEPTIONS_NIVEAUX.size).toBe(12);
 	});
 });

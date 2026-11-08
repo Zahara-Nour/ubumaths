@@ -55,6 +55,10 @@ const Q7_SECONDE =
 const AUTOMATISMES_1RE =
 	"décision de David, automatismes-1spe (2026-11-06) : automatisme de 1re, niveaux de 1re seuls malgré son tag d'un point de 2de ou de collège (curriculum_point_automatismes)";
 
+/** Raison des automatismes de 2de entretenus en 1re, tagués d'un point de collège */
+const AUTOMATISMES_2DE =
+	"décision de David, automatismes-1spe (2026-11-08) : automatisme de 2de entretenu en 1re, niveau `2` seul malgré son tag d'un point de collège (pas de point de 2de sur ce passage)";
+
 /**
  * Écarts voulus (décision de David écrite dans un journal) : la garde les montre à part, sans
  * échouer. N'en ajouter qu'avec la décision citée.
@@ -70,7 +74,8 @@ export const EXCEPTIONS_NIVEAUX: ReadonlyMap<string, Exception> = new Map([
 	['7f82d15a-1c46-4bd5-81bc-a9f5e21048ed', { niveaux: ['2'], raison: AUTOMATISMES_1RE }],
 	['95ee57c8-4e16-4554-add5-cb8f72ee6f28', { niveaux: ['2'], raison: AUTOMATISMES_1RE }],
 	['9852d62c-4109-4155-aa56-afef8c72d923', { niveaux: ['5'], raison: AUTOMATISMES_1RE }],
-	['f5585668-2ec1-45d1-a279-d82f45903926', { niveaux: ['2'], raison: AUTOMATISMES_1RE }]
+	['f5585668-2ec1-45d1-a279-d82f45903926', { niveaux: ['2'], raison: AUTOMATISMES_1RE }],
+	['23751c95-61ce-4e06-b77d-141b91f38307', { niveaux: ['6'], raison: AUTOMATISMES_2DE }]
 ]);
 
 /** PostgREST plafonne une lecture à 1000 lignes : on lit par pages */
