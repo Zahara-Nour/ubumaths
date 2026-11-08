@@ -397,6 +397,14 @@ describe('fractions au grand format — membres en \\displaystyle, lignes espac�
 		expect(ajouterLigne(`${cmd}=1${M}`)).toBe(centre(`${cmd}&=&1\\\\&=&${M}`));
 	});
 
+	it('groupe suivi d’un exposant, d’un indice ou d’un prime : accolades gardées (revue #2471)', () => {
+		const tape = (suite: string) =>
+			`\\begin{array}{rcl}{\\displaystyle a+b}${suite}&=&1\\end{array}`;
+		expect(normaliserCalcul(tape('^2'))).toBe(centre('{a+b}^2&=&1'));
+		expect(normaliserCalcul(tape('_1'))).toBe(centre('{a+b}_1&=&1'));
+		expect(normaliserCalcul(tape("'"))).toBe(centre("{a+b}'&=&1"));
+	});
+
 	it('un intervalle en tête de ligne n’est pas pris pour un écart', () => {
 		expect(ajouterLigne(centreBrut(`A&=&3\\\\[0;1]&=&B${M}`))).toBe(
 			centre(`A&=&3\\\\[0;1]&=&B\\\\&=&${M}`)

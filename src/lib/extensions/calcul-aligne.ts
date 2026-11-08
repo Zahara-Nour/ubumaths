@@ -59,8 +59,11 @@ const STYLE = '\\displaystyle';
 /** Écart entre deux lignes d'un calcul centré, posé après chaque `\\`. */
 const ECART = '[6pt]';
 
-/** Écart lu en tête d'une ligne : `[6pt]`, `[0.5em]`… */
-const MOTIF_ECART = /^\s*\[\s*-?(?:\d+\.?\d*|\.\d+)\s*(?:em|ex|pt|mm|cm|mu)\s*\]/;
+/**
+ * Écart lu en tête d'une ligne : `[6pt]`, `[0.5em]`… Une unité est exigée : un
+ * intervalle `[0;1]` en tête de ligne reste du contenu. Partagé avec la grille du PDF.
+ */
+export const MOTIF_ECART = /^\s*\[\s*-?(?:\d+\.?\d*|\.\d+)\s*(?:em|ex|pt|mm|cm|mu)\s*\]/;
 
 /** Bloc inséré par le bouton « Calcul aligné » : une ligne, le curseur dedans. */
 export const CALCUL_ALIGNE_VIDE = `${DEBUT_CENTRE}${STYLE} ${MARQUEUR_CURSEUR}${FIN_CENTRE}`;
@@ -244,7 +247,11 @@ function sansStyle(cellule: string): { texte: string; style: boolean } {
 		} else if (texte.startsWith('{') && commencePar(texte.slice(1), STYLE)) {
 			const fin = accoladeFermante(texte);
 			if (fin < 0) break;
-			texte = coller(texte.slice(1 + STYLE.length, fin).trim(), texte.slice(fin + 1).trim());
+			const dedans = texte.slice(1 + STYLE.length, fin).trim();
+			const suite = texte.slice(fin + 1).trim();
+			// Groupe suivi d'un exposant, d'un indice ou d'un prime : il porte sur tout
+			// le groupe (`{a+b}^2`), les accolades restent
+			texte = /^[\^_']/.test(suite) ? `{${dedans}}${suite}` : coller(dedans, suite);
 		} else break;
 		style = true;
 	}

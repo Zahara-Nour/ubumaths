@@ -58,6 +58,7 @@ import { toLocaleDecimal } from '$lib/utils/french-math';
 import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import { generateTrigCircleTypst } from './trig-circle-typst';
+import { MOTIF_ECART } from '$lib/extensions/calcul-aligne';
 import { generateNumberLineTypst } from './number-line-typst';
 import { generateCourbeTypst } from './courbe-typst';
 import { generateStatChartTypst } from './stat-chart-typst';
@@ -1043,7 +1044,7 @@ function generateAlignedEquation(content: string, relationEnColonne = false): st
 	const rows = protectedContent
 		.split(/\\\\/)
 		// Écart entre deux lignes (`\\[6pt]` du calcul centré) : la grille a le sien
-		.map((row) => row.replace(/^\s*\[\s*-?(?:\d+\.?\d*|\.\d+)\s*(?:em|ex|pt|mm|cm|mu)\s*\]/, ''))
+		.map((row) => row.replace(MOTIF_ECART, ''))
 		.map(trimLatex)
 		.filter((row) => row.length > 0)
 		// Restore nested environments
