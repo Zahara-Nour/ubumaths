@@ -9,18 +9,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, migration du lot 12 en PR._
+_Mis à jour le 2026-11-08, après #2464 (migration du lot 12, `db:migrate` fait)._
 
-- **État** : lots 1-11 publiés. Lot 12 (§ 18) : 5 brouillons en prod, migration nœud + tag en PR.
-- **Prochaine action** : PR mergée → `check:migrations --pr`, `db:migrate` depuis le dépôt principal, vérif MCP,
-  page à cocher, relecture et publication par David.
-- **En attente de David** : 344 (c), écart à la proposition (§ 18) ; vérification à l'œil en prod (ligne du
-  2026-11-03 de `docs/wip/verifications-manuelles.md`).
+- **État** : lots 1-11 publiés. Lot 12 (algorithmes de probabilités et statistiques, § 18) : 5 brouillons en prod,
+  rangés et tagués.
+- **Prochaine action** : relecture de David sur la page à cocher https://claude.ai/artifact/2ZA3EzDZtwFsbfUDYoCccV
+  (verdicts : `ArtifactData list verdicts`) ; corrections, dont la phrase de D13 sur le 344 (`create-questions
+--publier --mettre-a-jour`, lancé par David) ; publication par David (`publier-lot.ts --publier`). Le lot 12 est
+  le dernier des algorithmes (D9) : ensuite, fin de chantier (versement).
+- **En attente de David** : relecture du lot 12 ; vérification à l'œil en prod (ligne du 2026-11-03 de
+  `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
   Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
   `publier-lot.ts`, même en simulation, refusé à Claude par le classifieur (prod).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12-rangement`
+  (mergée) : nouvelle branche depuis `origin/main` pour les corrections.
 
 ---
 
@@ -762,3 +766,13 @@ variance et écart type (431), `4dc0c7df` fréquence des lettres (360). Ids écr
 (gabarit lot 11, aucune sous-notion neuve ; 359 et 431 restent sur la notion Variables aléatoires ; branches
 « Statistiques » et « Probabilités »), test `questions-1spe-algorithmes-12-rangement-tags` 12/12 vert, rouge sans la
 migration (6 rouges). Accès : Q5 de D9, personne.
+
+Mergée (#2464 ; merge retenu le temps d'un `deploy:prod` en cours). `security-auditor` : aucun finding bloquant (2
+faibles, identiques au lot 11). `check:migrations --pr 2464` vert. `db:migrate` le 2026-11-08 (seule migration en
+attente), vérifié MCP : 5 modèles sur leur nœud (simulation ×2 ; espérance ; variance et écart-type ; effectifs et
+fréquences), un tag chacun (344, 427, 359, 431, 360), `draft`, `updated_at` inchangé. Page à cocher :
+https://claude.ai/artifact/2ZA3EzDZtwFsbfUDYoCccV.
+
+**D13 (David, 2026-11-08, « je te suis »)** : 344 (c) reste « de quoi la valeur renvoyée est une estimation » (aire
+du domaine sous la parabole). À ajouter en fin de correction, avec les corrections éventuelles de la relecture
+(`--mettre-a-jour`) : « On démontrera en terminale que cette aire vaut 1/3 : les valeurs renvoyées en sont proches. »
