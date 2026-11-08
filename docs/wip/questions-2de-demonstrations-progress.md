@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, lot 2 écrit (§ 5), PR en cours._
+_Mis à jour le 2026-11-08, lot 2 mergé (#2458), créé en brouillon ; rangement en PR (§ 6)._
 
-- **État** : lot 1 PUBLIÉ (5/5). Lot 2 (304, 438, 320) : 3 modèles écrits, specs vertes, PR ouverte.
-- **Prochaine action** : CI → merge → David lance `create-questions --publier` DEPUIS LE WORKTREE → ids sur une
-  branche de rangement → migration nœud + tag → page à cocher. Ensuite lot 3 (fonctions : 357-360).
+- **État** : lot 1 PUBLIÉ. Lot 2 : 3 brouillons en prod ; migration nœud + tag `20261108150529` et son test verts
+  (12/12, rouges sans la migration) ; `security-auditor` lancé ; PR du rangement ouverte.
+- **Prochaine action** : CI → `check:migrations --pr` → merge → `db:migrate` depuis le dépôt principal → page à
+  cocher. Ensuite lot 3 (fonctions : 357-360).
 - **En attente de David** : rien.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → le lancer depuis le worktree ;
   positions « ranger » par `docs/wip/questions/positions-ranger.ts` (`svelte-kit sync` avant) ; couleur jamais sur
   du texte hors `$`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-3-geometrie`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-4-rangement`.
 
 ---
 
@@ -139,3 +140,27 @@ de droites 1-9). Script : `docs/wip/questions/lot-2de-demonstrations-2.py`.
 
 Vérifié : `question:specs` 150 tirages par variation, 3/3 importables (13, 14, 15 specs vertes), 0 `\textcolor` hors
 `$` ; aperçus relus (énoncés, corrigés, signes de la constante c).
+
+Mergée (#2458, CI verte du premier coup).
+
+## 6. Lot 2 : publication en brouillon et rangement (2026-11-08)
+
+David a lancé `create-questions --publier` depuis le worktree : 3 brouillons, ids écrits dans les JSON (branche
+`content/questions-2de-demonstrations-4-rangement`).
+
+Relevé prod (MCP, 2026-11-08) : 3 brouillons au niveau {2}, niveaux 6, 7, 10, sans nœud ni tag ; points 2-304,
+2-438 (colinéarité) et 2-320 (équations de droites) sur leurs sous-notions actives, aucun modèle tagué dessus.
+
+| Modèle   | Sous-notion                                          | Point |
+| -------- | ---------------------------------------------------- | ----- |
+| 835b0d8b | Géométrie › Vecteurs › colinéarité                   | 2-304 |
+| bd2b748e | Géométrie › Vecteurs › colinéarité                   | 2-438 |
+| c6a96fbf | Géométrie › Géométrie repérée › équations de droites | 2-320 |
+
+Migration `20261108150529_questions_2de_demonstrations_2_rangement_tags.sql` (gabarit : celle du lot 1, gardes et
+rollback identiques) ; test `tests/integration/questions-2de-demonstrations-2-rangement-tags.test.ts`. Accès :
+personne de plus (Q5).
+
+Test d'intégration : **12/12 vert**. Preuve rouge (fichiers restaurés depuis une copie, `cmp` identique) : partie
+aller vidée (rollback gardé) → 6 rouges, 5 sautés ; en plus rollback neutralisé dans le test → 8 rouges dont les 2
+tests d'effet (nœud, tag), les invariants verts.

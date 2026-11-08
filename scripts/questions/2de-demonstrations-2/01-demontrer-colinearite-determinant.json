@@ -1,4 +1,5 @@
 {
+	"id": "835b0d8b-c83d-47d0-a9f3-5b6dc7224727",
 	"title": "Démontrer que deux vecteurs sont colinéaires si et seulement si leur déterminant est nul",
 	"description": "Démonstration à trous (coordonnées de u tirées) : déterminant nul si v = ku (case), réciproque y = kb (case), conclusion v = ku (choix) ; étapes à ranger",
 	"grades": ["2"],

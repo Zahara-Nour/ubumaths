@@ -1,4 +1,5 @@
 {
+	"id": "bd2b748e-af03-4841-b9d2-5b14f39f9b2e",
 	"title": "Démontrer que deux vecteurs sont colinéaires si et seulement si leurs coordonnées sont proportionnelles",
 	"description": "Démonstration à trous (coordonnées de u tirées) : coordonnées de ku (case), égalité de deux vecteurs (choix), produits en croix (case) ; étapes à ranger",
 	"grades": ["2"],
