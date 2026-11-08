@@ -1,0 +1,222 @@
+{
+	"title": "Première puissance qui dépasse un seuil, en Python",
+	"description": "premiere_puissance(q, M) par une boucle while : valeur renvoyée (q = 2 ou 3), compléter la condition ; première puissance de 0,5 inférieure à un seuil (0,1 à 0,04)",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef premiere_puissance(q, M):\n    n = 0\n    while q ** n <= M:\n        n = n + 1\n    return n\n```\n\nQue renvoie `premiere_puissance({{eval:q}}, {{eval:M}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|3"
+				},
+				{
+					"name": "N",
+					"expression": "3..5"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:q^(N-1)"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:q^N-1"
+				},
+				{
+					"name": "M",
+					"expression": "{{lo}}..{{hi}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle augmente `n` tant que ${{eval:q}}^n\\leqslant{{eval:M}}$ : elle renvoie le premier exposant $n$ tel que ${{eval:q}}^n>{{eval:M}}$.",
+					"${{eval:q}}^{{{eval:N-1}}}={{eval:lo}}\\leqslant{{eval:M}}$ et ${{eval:q}}^{{{eval:N}}}={{eval:q^N}}>{{eval:M}}$.",
+					"La fonction renvoie $\\textcolor{{{color:primary.0}}}{{{eval:N}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer le premier entier $n$ tel que $q^n>M$ (avec $q>1$).\n\n```python\ndef premiere_puissance(q, M):\n    n = 0\n    while ...:\n        n = n + 1\n    return n\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `q ** n <= M`\n- `q ** n > M`\n- `q * n <= M`\n- `n <= M`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On augmente `n` **tant que** la puissance n'a pas encore dépassé $M$, c'est-à-dire tant que $q^n\\leqslant M$. En Python, $q^n$ s'écrit `q ** n`.",
+					"Avec `q ** n > M`, la boucle ne tourne pas (au départ $q^0=1$). `q * n` est un produit, pas une puissance ; `n <= M` compare l'exposant à $M$.",
+					"La condition est donc `q ** n <= M`."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante, qui renvoie le premier entier $n$ tel que $0{,}5^n<s$.\n\n```python\ndef premiere_puissance(s):\n    n = 0\n    while 0.5 ** n >= s:\n        n = n + 1\n    return n\n```\n\nQue renvoie `premiere_puissance(0.{{if:t==1|0|}}{{eval:c}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "c",
+					"expression": "1|2|3|4"
+				},
+				{
+					"name": "s",
+					"expression": "eval:c/10^(t+1)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:floor(ln(s)/ln(0.5))+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les puissances de $0{,}5$ diminuent : $1$ ; $0{,}5$ ; $0{,}25$ ; $0{,}125$ ; $0{,}0625$ ; $0{,}03125$ ; $0{,}015625$ ; $0{,}0078125$ ; …",
+					"$0{,}5^{{{eval:N-1}}}={{eval:0.5^(N-1);d}}\\geqslant{{eval:s;d}}$ et $0{,}5^{{{eval:N}}}={{eval:0.5^N;d}}<{{eval:s;d}}$.",
+					"La fonction renvoie $\\textcolor{{{color:primary.0}}}{{{eval:N}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "q = 2, M = 20 : 5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"N": "5",
+				"lo": "16",
+				"hi": "31",
+				"M": "20"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier exposant sous le seuil",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"N": "5",
+				"lo": "16",
+				"hi": "31",
+				"M": "20"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "q = 3, M = 9 : 3",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"N": "3",
+				"lo": "9",
+				"hi": "26",
+				"M": "9"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "q ** n <= M",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : q ** n > M",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : q * n <= M",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n <= M",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s = 0,1 : 4",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"c": "1",
+				"s": "0.1",
+				"N": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "s = 0,03 : 6",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"c": "3",
+				"s": "0.03",
+				"N": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier exposant au-dessus",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"c": "1",
+				"s": "0.1",
+				"N": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

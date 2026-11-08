@@ -6,15 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, phase 0 des algorithmes validée (D3, § 9)._
+_Mis à jour le 2026-11-08, lot 4 (algorithmes, nombres) en PR (§ 10)._
 
-- **État** : 12 démonstrations publiées (lots 1-3). Relevé des exemples d'algorithmes : **10 points** (241, 242,
-  257, 283, 321, 322, 361, 362, 387, 388), pas 4 : le § 1 en rangeait 6 parmi les approfondissements.
-- **Prochaine action** : lot 4 (241, 242, 257, 283), worktree `ubumaths-wt-questions-2de-demonstrations`.
-- **En attente de David** : rien (phase 0 des algorithmes validée, D3).
+- **État** : 12 démonstrations publiées (lots 1-3). Algorithmes (D3, 10 points) : lot 4 (241, 242, 257, 283) en PR.
+- **Prochaine action** : merge du lot 4 → David lance `create-questions --publier` (§ 10) → migration nœud + tag
+  → page à cocher ; puis lot 5 (321, 322) et lot 6 (361, 362, 387, 388).
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
-  merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre.
-- **Worktree / branche** : aucun (en ouvrir un au premier lot de code).
+  merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre ; worktree neuf → `svelte-kit sync` avant
+  `question:specs` ; `create-questions` lit `.env` (prod) : en local, passer l'URL et la clé de `.env.local`.
+- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, `content/questions-2de-algorithmes-4`.
 
 ---
 
@@ -279,3 +280,28 @@ tourner, (b) compléter une ligne, (c) interpréter, jamais « faire tourner » 
 Q3 un modèle par point, tagué sur son point, sur la sous-notion existante (362 : extremums ; 387 : tableau croisé
 d'effectifs), aucun nœud neuf ; Q4 publication comme les démonstrations ; Q5 accès : personne de plus ; Q6 bornes
 et § 1 corrigés (fait le 2026-11-08, `2de.json` : remarque des 10 points). Lots 4, 5, 6 dans l'ordre proposé.
+
+## 10. Lot 4 : exemples d'algorithmes, nombres (2026-11-08)
+
+Relevé prod (MCP, 2026-11-08) : 241 et 242 sur Arithmétique › Divisibilité › multiples et diviseurs (16 modèles,
+niveaux 1-11, dont « Est-ce un multiple ? » en Oui/Non sans programme) ; 257 sur Algorithmique › Boucles › boucle
+bornée (1 modèle, niveau 2) ; 283 sur Algorithmique › Boucles › boucle non bornée (2 modèles, niveaux 1-2 ; le
+« capital qui double » de `3cacefc5` est un cas de seuil, sans fonction ni exposant demandé). Aucun modèle tagué sur
+les 4 points ; aucune sous-notion neuve.
+
+| Point | Modèle (`scripts/questions/2de-algorithmes-4/`) | Nœud, niveau                              | Variations                                                                                                       |
+| ----- | ----------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 241   | `01-tester-un-multiple`                         | Divisibilité › multiples et diviseurs, 12 | `a % b == 0` : True ou False (choix non mélangé) ; version `while`, valeur de `m` (case) ; `return` (choix)      |
+| 242   | `02-plus-grand-multiple`                        | Divisibilité › multiples et diviseurs, 13 | faire tourner, a 3..9, b 20..80 (case) ; condition `m + a <= b` (choix) ; sans boucle `(b // a) * a` (choix)     |
+| 257   | `03-encadrer-racine-de-2-par-balayage`          | Boucles › boucle bornée, 3                | `balayage(1)` ou `(2)` : deux cases ; condition `(x + pas) ** 2 <= 2` (choix) ; amplitude `10^{-n}` (choix)      |
+| 283   | `04-premiere-puissance-seuil`                   | Boucles › boucle non bornée, 3            | premier n tel que qⁿ > M, q = 2 ou 3 (case) ; condition `q ** n <= M` (choix) ; 0,5ⁿ < s, s de 0,01 à 0,4 (case) |
+
+Script : `docs/wip/questions/lot-2de-algorithmes-4.py`. 257 : le programme utilise `while` (le point est rangé sur
+« boucle bornée » en prod, rangement gardé) ; la correction dit que Python affiche `1.4000000000000004` (valeur
+vérifiée en Python). Vérifié : `question:specs` 150 tirages par variation, 4/4 importables, toutes les specs vertes,
+0 `\textcolor` hors `$` ; 246 réponses « faire tourner » recoupées par une exécution Python des programmes de
+l'énoncé (0 écart) ; une correction fausse pour n ⩾ 2 corrigée (« 1,1² ») ; brouillons en base locale (copie hors
+dépôt), aperçu admin du 257 vu à l'écran (bloc Python, deux cases autour de √2, « 1,41 » et « 1,42 » acceptés).
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-4 --publier`
