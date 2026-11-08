@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, lot 12b écrit (§ 19), PR à merger._
+_Mis à jour le 2026-11-08, après #2475._
 
-- **État** : lots 1 à 12 publiés ; lot 12b (`ce2-12b`, 6 modèles : 4 CE2-070, 2 CE1-072) écrit, specs et sondes vertes,
-  relu dans l'aperçu local (5176).
-- **Prochaine action** : merger la PR du lot 12b ; puis David lance `create-questions --dir scripts/questions/ce2-12b
---publier` (brouillons en prod) ; ids commités + migration nœud + tag sur `feat/questions-ce2-lot12b-db`, page à
-  cocher, publication **après le `deploy:prod`** de #2463 et #2473.
-- **En attente de David** : `deploy:prod` (outils n° 19 et 20 pas encore en prod) ; le `create-questions --publier`.
-- **Pièges en cours** : n° 18 règle graduée toujours absent ; 07 et 08 ont `grades: CE1` (rangés sur CE1-072) ;
-  commitlint : type `feat`, sujet sans majuscule ; jamais de variable `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot12b`.
+- **État** : lots 1 à 12 publiés ; lot 12b (`ce2-12b`, 6 modèles : 03-06 sur CE2-070, 07-08 `grades: CE1` sur CE1-072)
+  mergé (#2475), pas encore en base de prod.
+- **Prochaine action** : David lance depuis le worktree `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/ce2-12b --publier` (brouillons en prod) ; puis ids commités + migration nœud + tag
+  (« constructions » ; CE2-070 niveaux 3-4, CE1-072 niveau 2) sur `feat/questions-ce2-lot12b-db`, page à cocher ;
+  publication **après le `deploy:prod`** de #2463 et #2473.
+- **En attente de David** : le `create-questions --publier` ; le `deploy:prod` (outils n° 19 et 20 pas en prod).
+- **Pièges en cours** : coordonnées en flottants → arrondies (garde de complexité, CI de #2475) ; n° 18 règle graduée
+  absent ; commitlint : corps ≤ 100 caractères par ligne, sujet sans majuscule ; jamais de variable `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot12b-db` (sur `origin/main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1071,3 +1072,4 @@ Décisions de David (« je suis tes recos », 2026-11-08) : Q1 oui (07 et 08 pou
 - CI de #2475 rouge : `answer-complexity-corpus.test.ts` (marge ×3 sur la longueur des réponses, limite 400) ; une
   spec du 06 faisait 141 caractères à cause du bruit des flottants (`0.20000000000000018`) → `fmt` arrondit à 6
   décimales, plus longue réponse 79. **Piège** : coordonnées calculées en flottants → toujours arrondies.
+- 2026-11-08 : #2475 mergée (CI verte au 2e commit ; revue : aucune, contenu).
