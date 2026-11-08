@@ -18,7 +18,7 @@ _Mis à jour le 2026-11-08, PR 2 commitée (09851df5c), pas encore de PR ouverte
   la relancer), corriger les findings (tests rouges d'abord), commit avec `Doc-inchangée: utilitaires-et-demos.md,
 un exemple de catalogue de plus`, push, PR, CI, merge. Puis PR 3 (cercle de rayon en cm).
 - **En attente de David** : vérification sur téléphone (ligne #2485 de `verifications-manuelles.md`) ; choix (1)-(3)
-  du § 5 à valider.
+  du § 5 et Q15-Q16 (findings 2 et 4 de la revue) à trancher.
 - **Pièges en cours** : le juge prend le **segment vu** (§ 3) ; `FigureLine.kind` ajouté (seul constructeur :
   `positions-setup.ts`).
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cotes`.
@@ -177,3 +177,11 @@ verts), 2 composant (le 2e toucher de la règle s'aimante déjà aux traits : vu
 comme `x = demidroite(O, A)` des bissectrices), pas `[AX)` par un point ; (2) bout du segment sur [Ax) à la
 tolérance de calcul près (1e-9 relatif) : une règle posée à 1° est refusée — l'aimantation garantit la pose
 exacte ; (3) consigne de la règle inchangée (« Touche un point dans la direction du segment »).
+
+**Revue opus (2026-11-08)** : (1) Important, demi-droite de longueur nulle (X sur A) publiée, direction NaN, tout
+faux → refus d'auteur ; (3) croisement (ou bout) de traits de la figure sur [Ax) à la longueur demandée → refus
+d'auteur (cas frère de #2485 ; pas étendu à la direction libre). Tests rouges puis verts (21). Restent à David :
+**Q15** (finding 2) : la fusion à 2° de `seenSegments` accepte un trait de 5 cm à 1,9° de [Ax) superposé au bon
+segment (le trait s'écarte de ~1,7 mm) : garder, ou serrer la fusion quand la demi-droite est donnée ? (reco :
+serrer, à la tolérance de calcul, avec `ray`) ; **Q16** (finding 4) : accepter aussi `[AX)` (X un point de la
+figure) ? (reco : oui, plus tard si un auteur le demande ; le refus actuel cite la forme attendue).

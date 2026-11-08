@@ -894,7 +894,8 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    vu doit être sur [Ax), au-delà de A (à la tolérance près) : sinon « Trace ton segment sur la
    demi-droite [Ax). » (autre direction, prolongement derrière A, règle posée à l'œil) ; puis tracé à
    l'œil, longueur. Erreurs de l'auteur en plus : demi-droite absente, pas une demi-droite d'origine A,
-   invisible, ou le segment qui n'y tient pas dans la fenêtre. Correction : la règle le long de [Ax),
+   invisible, de longueur nulle (second point sur A), le segment qui n'y tient pas dans la fenêtre, ou
+   un croisement (ou un bout) de traits de la figure sur [Ax) à la longueur demandée de A (revue). Correction : la règle le long de [Ax),
    quelle que soit celle de l'élève.
    **Papier uni (lot 2b)** : sans `grille:`, `point` et
    `symetrique` reçoivent une palette d'instruments (`PLAIN_PAPER_TOOLS`) ; équerre = perpendiculaire à

@@ -335,7 +335,7 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 				'x = demidroite(A, X)'
 			),
 			explanation:
-				'« sur [Ax) » : le segment de 6 cm se trace le long de la demi-droite x de la figure, d’origine A (« x = demidroite(A, X) », X peut rester invisible). En posant la règle, le second toucher s’aimante à la demi-droite. Un segment dans une autre direction, ou derrière A : « Trace ton segment sur la demi-droite [Ax) » ; ensuite les messages du segment de longueur donnée (tracé à l’œil, mauvaise longueur). Refusés à la publication, en plus : demi-droite absente, qui ne part pas de A, invisible, ou trop courte dans la fenêtre pour la longueur demandée. À la correction, la règle le long de [Ax) et le segment en pointillés.'
+				'« sur [Ax) » : le segment de 6 cm se trace le long de la demi-droite x de la figure, d’origine A (« x = demidroite(A, X) », X peut rester invisible). En posant la règle, le second toucher s’aimante à la demi-droite. Un segment dans une autre direction, ou derrière A : « Trace ton segment sur la demi-droite [Ax) » ; ensuite les messages du segment de longueur donnée (tracé à l’œil, mauvaise longueur). Refusés à la publication, en plus : demi-droite absente, qui ne part pas de A, invisible, sans direction, coupée par un trait de la figure à la longueur demandée, ou trop courte dans la fenêtre pour la longueur demandée. À la correction, la règle le long de [Ax) et le segment en pointillés.'
 		},
 		{
 			title: 'Construire un angle de mesure donnée (rapporteur)',

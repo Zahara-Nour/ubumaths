@@ -18,7 +18,14 @@
 
 import type { LengthUnit, SegmentLengthCheck } from '$lib/ubumark/types/construction';
 import type { DrawnLine, DrawnObject, DrawnRegle } from './answer';
-import { isInFrame, rulerDirection, rulerGraduationOf } from './instruments';
+import {
+	intersectTraits,
+	isInFrame,
+	isStraight,
+	rulerDirection,
+	rulerGraduationOf,
+	type Trait
+} from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import { tolerance } from './polygon';
 import type { FigureShapes } from './symmetry';
@@ -169,7 +176,41 @@ function settingOf(
 			`${label} : le segment ne tient pas sur la demi-droite [${check.point}${check.ray}) dans la fenêtre ; rapprocher ${check.point} du bord opposé, changer la direction de [${check.point}${check.ray}) ou agrandir la fenêtre`
 		);
 	}
+	if (ray) assertNoCrossingAt(check, a, ray, length, shapes, label);
 	return { a, length, rulerLength, ray };
+}
+
+/**
+ * Revue : un croisement de traits, ou un bout de trait, sur [Ax) à la longueur
+ * demandée de A donnerait le bout sans mesurer (cas frère du point visible, #2485)
+ */
+function assertNoCrossingAt(
+	check: SegmentLengthCheck,
+	a: Position,
+	u: Position,
+	length: number,
+	shapes: FigureShapes,
+	label: string
+): void {
+	const eps = tolerance(a);
+	const rayTrait: Trait = { kind: 'ray', a, b: { x: a.x + u.x, y: a.y + u.y } };
+	const others = shapes.traits.filter(
+		(t) => !(t.kind === 'ray' && distance(t.a, a) <= eps && onRay(t.b, a, u, eps))
+	);
+	const candidates = others.flatMap((t) => [
+		...intersectTraits(rayTrait, t),
+		...(isStraight(t) && t.kind === 'segment' ? [t.a, t.b] : [])
+	]);
+	const at = candidates.find(
+		(p) =>
+			onRay(p, a, u, eps) &&
+			Math.abs(distance(a, p) - length) <= LENGTH_EPSILON * Math.max(1, length)
+	);
+	if (at) {
+		throw new SegmentLengthAuthorError(
+			`${label} : un croisement (ou un bout) de traits sur [${check.point}${check.ray}) est déjà à ${formatLength(check.length, check.unit)} de ${check.point}, l’élève n’aurait qu’à y arrêter son segment ; déplacer le trait ou changer la longueur`
+		);
+	}
 }
 
 /** Direction (unitaire) de la demi-droite `name` d'origine A ; erreur d'AUTEUR sinon */
@@ -198,6 +239,12 @@ function rayOf(
 		);
 	}
 	const r = distance(line.a, line.b);
+	// Revue : X sur A, la direction serait NaN (toutes les réponses fausses)
+	if (r <= tolerance(a)) {
+		throw new SegmentLengthAuthorError(
+			`${label} : la demi-droite ${ray} n’a pas de direction (son second point est sur ${check.point})`
+		);
+	}
 	return { x: (line.b.x - line.a.x) / r, y: (line.b.y - line.a.y) / r };
 }
 

@@ -184,6 +184,24 @@ describe('erreurs de l’auteur', () => {
 		);
 	});
 
+	it('demi-droite de longueur nulle (X sur A) : refusée (revue)', () => {
+		const flat = ['A = point(4, 4)', 'X = point(4, 4, visible=faux)', 'x = demidroite(A, X)'];
+		expect(() => assertChecks(figure('segment AB = 6 cm sur [Ax)', flat))).toThrow(
+			/\[Ax\) n’a pas de direction/
+		);
+	});
+
+	it('un croisement de traits sur [Ax) à la longueur demandée : refusé (revue)', () => {
+		// [CD] (vertical en x = 8,8) coupe [Ax) en (8,8 ; 7,6), à 6 cm de A
+		const crossing = [...BODY, 'C = point(8.8, 0)', 'D = point(8.8, 8)', 's = segment(C, D)'];
+		expect(() => assertChecks(figure('segment AB = 6 cm sur [Ax)', crossing))).toThrow(
+			/croisement .* déjà à 6 cm de A/
+		);
+		// Ailleurs qu'à la longueur demandée : admis
+		const elsewhere = [...BODY, 'C = point(8, 0)', 'D = point(8, 8)', 's = segment(C, D)'];
+		expect(() => assertChecks(figure('segment AB = 6 cm sur [Ax)', elsewhere))).not.toThrow();
+	});
+
 	it('demi-droite invisible', () => {
 		const hidden = [...BODY.slice(0, 2), 'x = demidroite(A, X, visible=faux)'];
 		expect(() => assertChecks(figure('segment AB = 6 cm sur [Ax)', hidden))).toThrow(
