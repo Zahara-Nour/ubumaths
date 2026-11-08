@@ -28,7 +28,7 @@
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
  *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de,
- *          resoudre-graphique-droite-3
+ *          resoudre-graphique-droite-3, somme-vecteurs-2de
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -195,6 +195,10 @@ const RESOUDRE_GRAPHIQUE_DROITE_3: readonly string[] = [
 	'320f5ac7-b16a-48a7-b136-704d62854138' // Inéquations › Résoudre ax ⩾ b graphiquement (droite graduée au corrigé, 3-057)
 ];
 
+const SOMME_VECTEURS_2DE: readonly string[] = [
+	'51192dc4-78df-4d5d-b6be-7062f456cef3' // Vecteurs › Représenter la somme de deux vecteurs (flèches u et v données, 2-297)
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -223,6 +227,10 @@ const LOTS: Record<string, Lot> = {
 	'resoudre-graphique-droite-3': {
 		dossier: 'scripts/questions/3-resoudre-graphique-existants',
 		cibles: RESOUDRE_GRAPHIQUE_DROITE_3
+	},
+	'somme-vecteurs-2de': {
+		dossier: 'scripts/questions/2de-somme-vecteurs-existants',
+		cibles: SOMME_VECTEURS_2DE
 	}
 };
 
