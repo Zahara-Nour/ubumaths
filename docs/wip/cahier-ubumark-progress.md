@@ -5,10 +5,10 @@
 _Mis à jour le 2026-11-08, après le `db:migrate` de #2444._
 
 - **État** : PR 1 (#2435) et 1b (#2442) en prod (0.76.0). PR 2 (#2444) mergée et **migration appliquée en prod le 2026-11-08** : 4 lignes converties, `updated_at` intacts, 0 ligne HTML restante.
-- **Prochaine action** : PR 3 = retrait de la lecture HTML (`isLegacyHtmlContent` et ce qui en dépend) + tests mineurs de la revue #2442 (vidéo imbriquée, `data:`, `//hôte`, adresse relative) → PR 4 = énigmes.
-- **En attente de David** : rien.
+- **Prochaine action** : PR 3 (`feat/cahier-ubumark-retrait-html`) ouverte : CI + revue → merge → PR 4 = énigmes.
+- **En attente de David** : vidéo dans une liste ou une citation jamais rendue (`ListNode`, `Blockquote`, partout) — la corriger, et où ?
 - **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance (`! pnpm db:migrate`) ; migration plus ancienne que la dernière distante → `--include-all` (essai `--dry-run` d'abord) ; `Doc-inchangée:` dans un COMMIT ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed` ; cookies partagés sur `localhost` → `cahier.localhost:5178`.
-- **Worktree / branche** : aucun ; PR 3 → `git worktree add -b feat/cahier-ubumark-retrait-html ../ubumaths-wt-cahier-ubumark origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark-retrait-html`.
 
 ## Décision d'origine
 
@@ -122,3 +122,9 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 
 - Prod relue juste avant (MCP) : les 4 lignes du rollback, aucune autre ligne HTML. `migration list --linked` : seule `20261106164230` en attente, plus ancienne que deux distantes → `--dry-run --include-all` (elle seule), puis `pnpm db:migrate --include-all` lancé par David (refusé au classifieur).
 - Après : 4 lignes en ubumark, identiques à l'avant/après prévu ; `updated_at` inchangés ; 0 ligne contenant une balise.
+
+### 2026-11-08 — PR 3 (retrait de la lecture HTML)
+
+- Retirés : `isLegacyHtmlContent` et la branche HTML de `journalContentPreview` (`content.ts`), la branche `{@html}` de `JournalContent`, `editorInput` de l'éditeur de séance (l'éditeur charge `markdownValue`). `linkifyResourceReferences` reste (page `/demo/editeur`).
+- Tests rouges puis verts : une ligne à l'ancienne forme HTML s'affiche en texte (`<strong>` littéral) ; module sans détection HTML. Mineurs de la revue #2442 ajoutés : `//hôte`, adresse relative → lien, `data:` → ni vidéo ni lien `data:`.
+- ⚠️ Constat : une vidéo dans une liste ou une citation n'est **jamais rendue** — l'arbre ubumark la porte (`list-item` / `blockquote` → `video`), mais `ListNode` et `Blockquote` n'ont pas de cas `video`. Vrai partout (cours compris). Côté cahier, rien n'est chargé (testé). Question à David.
