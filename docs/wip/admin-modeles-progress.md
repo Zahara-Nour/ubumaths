@@ -6,14 +6,14 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, ouverture du chantier (phase 0 validée par David)._
+_Mis à jour le 2026-11-08, PR 1 codée (branche `fix/admin-modeles-edition`), avant ouverture de la PR._
 
-- **État** : phase 0 validée (« je veux que tu fasses les 2 PR »), rien de codé · **Prochaine action** : PR 1
-  (page d'édition), tests d'abord ; puis PR 2 (liste) · **En attente de David** : rien · **Pièges en cours** :
-  le contrôle client `getVariationErrors` (`QuestionTemplateForm.svelte`) ne lit que `blanks` ; le serveur
-  (`checkTemplate`) lit aussi les réponses du texte ; « Enregistrer brouillon » envoie le `status` courant ;
-  la liste (`dashboard/admin/questions/+page.svelte`) a un onglet « Brouillons » par défaut, « Publiés » à
-  côté ; le serveur filtre déjà `?grades=&minLevel=&maxLevel=` (`+page.server.ts`) · **Worktree / branche** :
+- **État** : PR 1 codée et testée (7 tests navigateur `QuestionTemplateForm-statut`, garde serveur
+  « version sans réponse » dans `put-publication-check`), doc `questions.md` § 8 à jour · **Prochaine
+  action** : ouvrir la PR 1, revue `code-reviewer` (Sonnet), merger ; puis PR 2 (liste) · **En attente
+  de David** : rien · **Pièges en cours** : la liste (`dashboard/admin/questions/+page.svelte`) a un
+  onglet « Brouillons » par défaut, « Publiés » à côté ; le serveur filtre déjà
+  `?grades=&minLevel=&maxLevel=` (`+page.server.ts`) · **Worktree / branche** :
   `../ubumaths-wt-admin-modeles`, `fix/admin-modeles-edition` (PR 1).
 
 ## Origine (2026-11-08, session `automatismes-1spe`)
@@ -43,3 +43,16 @@ Mettre à jour `7f82d15a` (publié) a demandé cinq allers-retours. David : « l
   page les ignore (vu le 2026-11-08 : 11 modèles attendus en base, 42 pages affichées).
 
 Après les deux : `deploy:prod` sur demande de David ; passer la ligne 22 d'`outils-manquants.md` en « Livré ».
+
+## Journal
+
+### PR 1 (2026-11-08)
+
+- `QuestionTemplateForm` : boutons selon `status` ; « Repasser en brouillon » envoie la version en
+  cours avec `status: draft` en `silent` (on reste sur la page) et reprend l'instantané « non
+  sauvegardé » ; refus → statut remis. Contrôle client « réponse manquante » retiré (`isValid` et
+  `getVariationErrors`). Prop `serverErrors` passée par `[id]/edit` et `create`.
+- Le serveur refuse déjà une version sans réponse (`fill_in_blanks requires blanks[]`) : le test
+  ajouté est une garde, vert dès l'écriture. Les 7 tests du formulaire, rouges avant.
+- `QuestionTemplateForm-publication-refusee` : « publication acceptée » clique maintenant
+  « Enregistrer » (le modèle publié n'a plus « Enregistrer brouillon »).

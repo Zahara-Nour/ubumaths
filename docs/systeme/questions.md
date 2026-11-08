@@ -1142,8 +1142,8 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
 - **Boutons de l'éditeur selon le statut** : brouillon → « Enregistrer brouillon », « Publier » ;
   publié → « Enregistrer » (reste publié, donc contrôle complet) et « Repasser en brouillon »
   (même confirmation que l'onglet « Publiés » de la liste ; on reste sur la page, refus → statut
-  remis). Le contrôle côté client ne vérifie ni réponse ni case : les réponses écrites dans le
-  texte (`?4`, `?flèche`) ne se lisent qu'au serveur, qui refuse une version sans réponse.
+  remis). Le contrôle côté client ne cherche plus de réponse dans `blanks` : les réponses écrites
+  dans le texte (`?4`, `?flèche`) ne se lisent qu'au serveur, qui refuse une version sans réponse.
 - **Publication par lot** (`POST /api/questions/templates/bulk-status`, 1 à 100 modèles par envoi, `MAX_BULK_TEMPLATE_IDS` ; l’en-tête de la route dit encore 700) : chaque
   modèle repasse `templatePublicationErrors` (le même contrôle que le `PUT`) ; un échec le laisse en brouillon avec sa raison, sans contrôle de catégorie. Seules les lignes **rendues** par
   `.update().select()` comptent (RLS silencieuse).
