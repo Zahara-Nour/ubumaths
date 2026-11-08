@@ -58,7 +58,7 @@ import { toLocaleDecimal } from '$lib/utils/french-math';
 import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import { generateTrigCircleTypst } from './trig-circle-typst';
-import { MOTIF_ECART } from '$lib/extensions/calcul-aligne';
+import { MOTIF_ECART } from '../utils/calcul-centre';
 import { generateNumberLineTypst } from './number-line-typst';
 import { generateCourbeTypst } from './courbe-typst';
 import { generateStatChartTypst } from './stat-chart-typst';

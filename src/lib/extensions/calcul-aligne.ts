@@ -35,6 +35,8 @@
  * @module extensions/calcul-aligne
  */
 
+import { MOTIF_ECART } from '$lib/ubumark/utils/calcul-centre';
+
 /**
  * Marqueur posé à la place du curseur dans le LaTeX du champ : MathLive le garde
  * tel quel, en un seul atome, et il n'apparaît jamais dans une formule de cours.
@@ -58,12 +60,6 @@ const STYLE = '\\displaystyle';
 
 /** Écart entre deux lignes d'un calcul centré, posé après chaque `\\`. */
 const ECART = '[6pt]';
-
-/**
- * Écart lu en tête d'une ligne : `[6pt]`, `[0.5em]`… Une unité est exigée : un
- * intervalle `[0;1]` en tête de ligne reste du contenu. Partagé avec la grille du PDF.
- */
-export const MOTIF_ECART = /^\s*\[\s*-?(?:\d+\.?\d*|\.\d+)\s*(?:em|ex|pt|mm|cm|mu)\s*\]/;
 
 /** Bloc inséré par le bouton « Calcul aligné » : une ligne, le curseur dedans. */
 export const CALCUL_ALIGNE_VIDE = `${DEBUT_CENTRE}${STYLE} ${MARQUEUR_CURSEUR}${FIN_CENTRE}`;
