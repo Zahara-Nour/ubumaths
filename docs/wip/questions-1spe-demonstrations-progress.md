@@ -9,13 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après la relecture du lot 11 (5/5 OK)._
+_Mis à jour le 2026-11-08, après la publication du lot 11._
 
-- **État** : lots 1-10 publiés. Lot 11 (§ 17) relu 5/5 OK, à publier. Lot 12 (§ 18) : relevé fait, contenu proposé.
-- **Prochaine action** : David publie le lot 11 depuis le dépôt principal
-  (`! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-algorithmes-11 --publier`), relu en
-  base (MCP). Lot 12 : après validation de la proposition du § 18, script de lot, specs, PR, brouillons par David.
-- **En attente de David** : publication du lot 11 ; validation du § 18 ; vérification à l'œil en prod (ligne du
+- **État** : lots 1-11 publiés. Lot 12 (§ 18) : relevé fait, contenu proposé.
+- **Prochaine action** : après validation de la proposition du § 18, script de lot, specs, PR, brouillons par David.
+- **En attente de David** : validation du § 18 ; vérification à l'œil en prod (ligne du
   2026-11-03 de `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
@@ -702,8 +700,9 @@ tangente ; dérivée ; propriétés algébriques ; cercle et radians), un tag ch
 `updated_at` inchangé. Page à cocher : https://claude.ai/artifact/3ahzQqmkrw9CzLNRjMZuSU (la page rend les décimaux du
 corrigé avec un point, l'appli avec une virgule).
 
-Relecture (2026-11-08) : 5/5 OK, aucun commentaire. Simulation de `publier-lot.ts` refusée à Claude par le classifieur
-du mode auto (elle lit la prod) : simulation et publication par David.
+Relecture (2026-11-08) : 5/5 OK, aucun commentaire. Simulation et publication par David (`publier-lot.ts`, la
+simulation est refusée à Claude par le classifieur du mode auto), 5/5 `published` relus en base (MCP). **Le lot 11
+(algorithmes d'analyse) est publié.**
 
 ## 18. Lot 12 : algorithmes, probabilités et statistiques (2026-11-08)
 
