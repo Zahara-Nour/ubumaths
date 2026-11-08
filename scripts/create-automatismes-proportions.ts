@@ -3,7 +3,7 @@
 /**
  * Automatismes de 2de entretenus en 1re : proportions et pourcentages — fiche de séries figées
  * (2026-11-08, ADR 0011)
- * ==========================================================================================
+ * ============================================================================================
  *
  * Fiche « Automatismes : proportions et pourcentages (1) » : 2 séries de 8 questions, chacune un
  * exercice ordinaire fait d'instances de modèles de questions tirées avec une graine fixe (même

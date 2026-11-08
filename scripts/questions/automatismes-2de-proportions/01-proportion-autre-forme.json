@@ -21,7 +21,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Un pourcentage est une proportion écrite sur $100$ : on multiplie par $100$.",
+					"Un pourcentage est une proportion écrite sur $100$ : le nombre de pour cent est la proportion multipliée par $100$.",
 					"$$ {{eval:m/1000;d}}=\\dfrac{ {{eval:m/10;d}} }{100}=\\textcolor{{{color:primary.0}}}{ {{eval:m/10;d}}\\,\\% } $$"
 				]
 			}
