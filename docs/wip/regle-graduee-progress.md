@@ -9,19 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR 2 commitée (09851df5c), pas encore de PR ouverte._
+_Mis à jour le 2026-11-08, après #2490._
 
-- **État** : phase 0 de la suite validée (§ 4 : 4 PR — 2 demi-droite, 3 cercle de rayon en cm, 4 triangle rectangle
-  coté, 5 carré et rectangle cotés ; assemblages après). PR 2 (`segment AB = 6 cm sur [Ax)`) codée, tests verts,
-  `check:incremental` 0 erreur (§ 5).
-- **Prochaine action** : revue `code-reviewer` en `model: opus` de 09851df5c (lancée, résultat perdu au `/clear` :
-  la relancer), corriger les findings (tests rouges d'abord), commit avec `Doc-inchangée: utilitaires-et-demos.md,
-un exemple de catalogue de plus`, push, PR, CI, merge. Puis PR 3 (cercle de rayon en cm).
-- **En attente de David** : vérification sur téléphone (ligne #2485 de `verifications-manuelles.md`) ; choix (1)-(3)
-  du § 5 et Q15-Q16 (findings 2 et 4 de la revue) à trancher.
-- **Pièges en cours** : le juge prend le **segment vu** (§ 3) ; `FigureLine.kind` ajouté (seul constructeur :
-  `positions-setup.ts`).
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cotes`.
+- **État** : PR 2 (#2490, `segment AB = 6 cm sur [Ax)`) **mergée**, pas déployée ; revue Opus : findings 1 et 3
+  corrigés (§ 5) ; ligne #2490 dans `verifications-manuelles.md`.
+- **Prochaine action** : PR 3, cercle de rayon donné en cm (`cercle c = cercle(O, rayon=4 cm)`, comportements du
+  § 4, Q12 : règle posée en O, ouverture du compas aimantée aux graduations) ; tests d'abord.
+- **En attente de David** : vérifications sur téléphone (#2485, #2490) ; choix (1)-(3) du § 5 ; Q15 (fusion à 2°
+  quand la demi-droite est donnée, reco : serrer) et Q16 (`[AX)` par un point, reco : plus tard), § 5.
+- **Pièges en cours** : correction des réponses → revue `code-reviewer` en `model: opus` ; le juge prend le
+  **segment vu** (§ 3) ; sous zsh, une liste de fichiers dans une variable ne se découpe pas (tableau).
+- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cercle` (depuis `origin/main` après
+  #2490).
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
