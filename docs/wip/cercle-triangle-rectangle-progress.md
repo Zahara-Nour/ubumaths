@@ -7,18 +7,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2463._
+_Mis à jour le 2026-11-08, n° 20 codé, PR à ouvrir._
 
-- **État** : n° 19 (cercle de centre donné) livré, #2463 mergée (§ 2) ; n° 20 pas commencé.
-- **Prochaine action** : n° 20, triangle rectangle — étendre `triangle` (`CAB = 90` construit à l'équerre, pas au
-  rapporteur) ; sur quadrillage (aujourd'hui refusé par `triangle.ts`), longueurs en carreaux sur les lignes,
-  `AC = AB` seul sur les obliques (décisions Q2, Q3 du § 1). D'abord fixer l'écriture d'une longueur en carreaux
-  (pas de syntaxe aujourd'hui : `AC = u` ou `AC = AB`) et les messages, tests rouges, puis le code.
-- **En attente de David** : rien (message « mauvais rayon » du n° 19 à juger, ligne de `verifications-manuelles.md`).
-- **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; dans zsh,
-  `${=files}` pour passer une liste de fichiers à vitest ; `gh run list --commit` veut le SHA complet ; brouillon
-  d'essai `9c92cf8f` en base LOCALE seulement.
-- **Worktree / branche** : `../ubumaths-wt-cercle-triangle-rectangle`, `feat/triangle-rectangle` (depuis `main`).
+- **État** : n° 19 livré (#2463) ; n° 20 (triangle rectangle) codé, testé, revu (Opus : 2 findings corrigés), § 4.
+- **Prochaine action** : PR du n° 20 → CI → merge ; puis le lot 12b du CE2 dans `questions-ce2` (CE2-070, CE1-072).
+- **En attente de David** : rien (message « mauvais rayon » du n° 19 à juger, `verifications-manuelles.md`).
+- **Pièges en cours** : dans zsh, `${=files}` pour une liste de fichiers ; `gh run list --commit` veut le SHA complet ;
+  brouillon d'essai `9c92cf8f` en base LOCALE seulement.
+- **Worktree / branche** : `../ubumaths-wt-cercle-triangle-rectangle`, `feat/triangle-rectangle`.
 
 ## 1. Phase 0 — comportements (validée le 2026-11-08)
 
@@ -113,3 +109,21 @@ Vérifié en prod (lecture seule, 2026-11-08) : aucun modèle n'écrit `= 90` da
   perpendiculaire hors du croisement du Report : message actuel ; mauvaise longueur (message actuel ; en carreaux :
   « Ton côté [AC] mesure 4 carreaux au lieu de 3. »).
 - **Correction** : [AC], [BC], petit carré en A ; papier uni : la perpendiculaire et l'arc de report en traits fins.
+
+## 4. N° 20 — triangle rectangle, code (2026-11-08)
+
+- Types : `TriangleLength` devient une union (`squares` pour les carreaux), `isSquaresLength`, `rightAngleOf` ;
+  `triangleTools(check, grid)` (Segment · Équerre · Report / Segment seul).
+- Parseur (`readTriangle`, `coherenceError`) : angle droit seul admis, `AC = 3 carreaux` (1..50), refus du § 3.
+- Juge (`triangle.ts`, `judgeRight`) : papier uni, C sur une droite construite par le sommet de l'angle droit,
+  angle droit, croisement avec un cercle construit centré au même sommet, longueur ; quadrillage, angle et
+  longueur. Message du C le plus avancé. `assertRight` : A et B sur des nœuds, C dans la fenêtre / sur un nœud.
+- Correction : `rightAngles` (petit carré), `guides` (perpendiculaire, papier uni), arcs sans quadrillage.
+- Bug trouvé par le test navigateur : le générateur lisait `l.source` d'une longueur en carreaux (« le point
+  undefined n'est pas nommé ») ; corrigé, test serveur rouge sans le correctif.
+- Tests : `construction-triangle-rectangle.test.ts` (41, rouges puis verts), navigateur 6 ; suites voisines
+  12 668 serveur, 18 navigateur ; `check:incremental` 0 erreur ; doc `systeme/questions.md`, `systeme/ubumark.md`,
+  catalogue (2 exemples).
+- Revue Opus : (1) quadrillage, angle droit seul, la correction allait vers un nœud collé à A (les bouts A et B de
+  l'élève comptaient) → bouts A et B écartés ; (2) papier uni, angle droit seul, perpendiculaire hors fenêtre
+  acceptée → erreur d'auteur. Tests rouges puis verts.
