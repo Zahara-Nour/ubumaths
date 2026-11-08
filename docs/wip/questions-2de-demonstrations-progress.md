@@ -6,16 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, lot 3 publié : les 12 démonstrations sont couvertes._
+_Mis à jour le 2026-11-08, lot 3 publié : les 12 démonstrations sont couvertes ; suite décidée (§ 9)._
 
 - **État** : lots 1 (5), 2 (3) et 3 (4) PUBLIÉS : les 12 démonstrations (Q1) ont chacune leur modèle publié.
-- **Prochaine action** : selon la réponse de David, soit les autres points P (approfondissements, puis exemples
-  d'algorithmes, § 1 ; § 94 du journal `questions-2de`), soit le versement (couverture dans
-  `docs/systeme/programmes/bornes/lycee/2de.md`, journaux `questions-2de` et celui-ci archivés).
-- **En attente de David** : suite du chantier (autres P ou versement).
+- **Prochaine action** : **exemples d'algorithmes** (241, 242, 257, 283 ; D2, § 9) — relevé des 4 points (BO, nœud
+  en prod), puis phase 0 à poser à David (modèle : les algorithmes de la 1re spé, journal archivé
+  `docs/archive/wip/questions-1spe-demonstrations-progress.md` ; versement : `2de.md` comme `1spe.md`).
+- **En attente de David** : rien (phase 0 des algorithmes à poser) ; approfondissements : pas tranchés.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : aucun (en ouvrir un au premier lot de code).
 
 ---
 
@@ -223,3 +223,8 @@ dessiné, à jouer dans l'aperçu admin).
 
 Lot 3 relu par David sur la page à cocher (2026-11-08) : 4 « ok », sans commentaire. Publié par David
 (`publier-lot.ts`, simulation puis `--publier`) : 4/4, statut relu en base. **Les 12 démonstrations sont couvertes.**
+
+## 9. Suite : les exemples d'algorithmes (2026-11-08)
+
+**D2 (David, 2026-11-08)** : « continuer avec les algorithmes » — les 4 exemples d'algorithmes de la seconde (241,
+242, 257, 283), dans ce chantier. Les approfondissements (§ 1) ne sont pas tranchés. Versement après.
