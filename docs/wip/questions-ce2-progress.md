@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08 : n° 19 et n° 20 livrés (#2463, #2473), phase 0 du lot 12b écrite (§ 19)._
+_Mis à jour le 2026-11-08, lot 12b écrit (§ 19), PR à merger._
 
-- **État** : lots 1 à 12 publiés. Restent au CE2 : 086, 043, 051, 065 (non évaluables), 039 (règle graduée, n° 18)
-  et le reste de 070, débloqué par #2463 (cercle de centre donné) et #2473 (triangle rectangle).
-- **Prochaine action** : phase 0 du lot 12b (§ 19) à valider, puis écrire `lot-ce2-12b.py` sur une branche
-  `feat/questions-ce2-lot12b` du worktree.
-- **En attente de David** : Q1 à Q3 du § 19 ; #2463 et #2473 ne sont **pas en prod** (`deploy:prod` avant la publication).
-- **Pièges en cours** : n° 18 règle graduée toujours absent (aucune longueur en cm) ; commitlint : type `feat`, sujet
-  sans majuscule ; jamais de variable `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur un ancien `main` (aucune branche en cours).
+- **État** : lots 1 à 12 publiés ; lot 12b (`ce2-12b`, 6 modèles : 4 CE2-070, 2 CE1-072) écrit, specs et sondes vertes,
+  relu dans l'aperçu local (5176).
+- **Prochaine action** : merger la PR du lot 12b ; puis David lance `create-questions --dir scripts/questions/ce2-12b
+--publier` (brouillons en prod) ; ids commités + migration nœud + tag sur `feat/questions-ce2-lot12b-db`, page à
+  cocher, publication **après le `deploy:prod`** de #2463 et #2473.
+- **En attente de David** : `deploy:prod` (outils n° 19 et 20 pas encore en prod) ; le `create-questions --publier`.
+- **Pièges en cours** : n° 18 règle graduée toujours absent ; 07 et 08 ont `grades: CE1` (rangés sur CE1-072) ;
+  commitlint : type `feat`, sujet sans majuscule ; jamais de variable `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot12b`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1048,3 +1049,22 @@ Questions à David :
 - **Q3** — Publication : #2463 et #2473 ne sont pas en prod ; les brouillons peuvent être créés tout de suite, mais
   l'aperçu admin de prod et les élèves ont besoin du `deploy:prod`. Écrire et relire en local maintenant, publier
   après ton `deploy:prod` ? Reco : oui.
+
+Décisions de David (« je suis tes recos », 2026-11-08) : Q1 oui (07 et 08 pour CE1-072, niveau 2) ; Q2 oui (niveaux
+3 et 4) ; Q3 oui (écrire et relire en local maintenant, publier après le `deploy:prod`).
+
+### Lot 12b — écriture (2026-11-08)
+
+- Script `docs/wip/questions/lot-ce2-12b.py` → `scripts/questions/ce2-12b/` : 6 modèles, 71 specs (03 : 20, 04 : 9,
+  05 : 15, 06 : 9, 07 : 10, 08 : 8) ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `create-questions` en simulation (prod) : 6 « à créer » ; `sonde-figures` : 0 problème.
+- Messages des erreurs relevés un par un (sonde `validateAnswer`) : chaque spec `incorrect` rend le message visé
+  (« Pique ton compas en O. », « Ton compas est ouvert à l'œil… », « Ton côté [AC] mesure 5 carreaux au lieu de 4. »,
+  « Ton côté [AC] est tracé à l'œil : utilise l'équerre. », « Ton sommet C est placé à l'œil… »). Corrigé en route :
+  « [AC] plus court » du 05 oblique tombait sur « angle non droit » (arrondi qui déviait la direction) → remplacé par
+  « [AC] deux fois plus long » (aucun nœud plus proche sur la perpendiculaire).
+- Base locale, aperçu admin (5176) : 06 (palette Segment · Équerre · Report, [MN] nommé) et 05 oblique (quadrillage,
+  palette Segment) rendus ; « même longueur » ramenée à la couleur d'accent unique. Pas de tracé à la souris : les
+  verdicts passent par `validateAnswer`, le même chemin que l'appli.
+- Points nommés : M et N pour le segment donné (jamais E) ; papier uni du 03, « autre point à la même distance » =
+  faux (compas ouvert à l'œil), juste sur quadrillage.
