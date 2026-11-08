@@ -1,4 +1,5 @@
 {
+	"id": "d4d56c1b-d411-49fc-a314-dc2bf14bf05e",
 	"title": "Placer un point de coordonnées données",
 	"description": "Placer dans un repère orthogonal gradué de 1 en 1 un point de coordonnées relatives données : un point quelconque (coordonnées distinctes pour repérer l'inversion), ou deux points dont l'un est sur un axe.",
 	"grades": ["5"],

@@ -1,4 +1,5 @@
 {
+	"id": "d4f38d30-3575-472f-827c-cc2d8ad6c651",
 	"title": "Lire les coordonnées d'un point",
 	"description": "Lire les coordonnées d'un point dans un repère orthogonal gradué de 1 en 1 : point quelconque (coordonnées relatives, distinctes pour repérer l'inversion), point sur l'axe des abscisses, point sur l'axe des ordonnées.",
 	"grades": ["5"],
