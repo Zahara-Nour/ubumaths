@@ -488,6 +488,8 @@ jobs:
 
       - name: Run client tests
         env:
+          # ESSAI A/B : GC de Chromium forcé après chaque fichier (seuil disque relevé au-delà du disque réel).
+          VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB: '100000'
           DEBUG: pw:browser,pw:api,vitest:browser:api,vitest:browser:pool,vitest:browser:gc,vitest:browser:playwright
         run: pnpm exec vitest run --project client --shard=${{ matrix.shard }}/2
 
