@@ -6,17 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, phase 0 du lot 4 « Géométrie et repérage » validée._
+_Mis à jour le 2026-11-08, PR du lot 4 « Géométrie et repérage » ouverte._
 
-- **État** : lot 4 en phase 0 validée (section « Lot « Géométrie et repérage » — phase 0 » en bas) ;
-  lots 1-3 de 2de faits · **Prochaine action** : worktree `ubumaths-wt-automatismes-1spe`, branche
-  `feat/automatismes-geometrie` : `buildSerie` fige `line placer:` et `courbe placer:` (tests d'abord), deux
-  modèles neufs de 5e (5-047 lire, 5-128 placer), script de fiche, graines, rendu local, PR ·
-  **En attente de David** : publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de
-  1re ; publication des modèles `23751c95` et `c1c9cfc3` (brouillons) · **Pièges en cours** : écritures ET
-  simulations contre la prod lancées par David (commande donnée avec `!`) ; `debord.py` ne voit pas une
-  équation centrée trop large : relire les pages ; essai local : script `.mts` (tsx en CJS sinon) ; garde
-  « doc à jour » : une migration exige `Doc-inchangée:` dans un commit · **Worktree / branche** : `ubumaths-wt-automatismes-1spe`, `feat/automatismes-geometrie`.
+- **État** : lot 4 codé sur `feat/automatismes-geometrie` (buildSerie fige les points à placer ; 2 modèles neufs de
+  5e ; script `create-automatismes-geometrie.ts` ; 2 trous d'ubumark corrigés) ; revue `code-reviewer` : 0 bloquant ·
+  **Prochaine action** : CI verte → merge ; puis David lance
+  `create-questions.ts --dir scripts/questions/automatismes-2de-geometrie --publier` (écrit les 2 `id`, à commiter), la simulation et
+  `create-automatismes-geometrie.ts --publier` ; rangement des 2 modèles neufs (5-047, 5-128 : nœud + tag,
+  migration) ; vérification PDF depuis la base · **En attente de David** : publication en admin de `f9608ee5`,
+  `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles `23751c95`, `c1c9cfc3` (brouillons) · **Pièges en
+  cours** : écritures ET simulations contre la prod lancées par David (`!`) ; `fiche:verifier` dans un worktree :
+  `PYTHON_FICHES=` vers le venv du dépôt principal ; essai local : script `.mts` ; une migration exige
+  `Doc-inchangée:` dans un commit · **Worktree / branche** : `ubumaths-wt-automatismes-1spe`,
+  `feat/automatismes-geometrie`.
 - **Après le lot 4** : modèle « courbe → tableau de variations à compléter » (variante de `7f82d15a`, cubique), avec l'outil de #2456 (`-2: ?4, top`, `-2,2: ?flèche`) ; décision B du chantier `variations-a-completer` (journal archivé), reprise ici validée par David le 2026-11-08.
 - Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
