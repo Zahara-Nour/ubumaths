@@ -44,6 +44,30 @@ describe('Q66 dans une liste — un ``` lointain ne ferme pas un bloc séparé p
 	});
 });
 
+describe('droite graduée FERMÉE dans un item de liste (chantier automatismes-1spe, lot 4)', () => {
+	it('une droite, pas un bloc de code brut (« start: … » affiché tel quel)', () => {
+		const nodes = inItem([
+			'```line',
+			'start: -3',
+			'end: -1',
+			'step: 1/10',
+			'major: 10',
+			'points: A=-11/10',
+			'```'
+		]);
+
+		expect(nodes.map((n) => n.type)).toEqual(['paragraph', 'number-line']);
+		expect(nodes.some((n) => n.type === 'code-block')).toBe(false);
+	});
+
+	it('droite illisible : sa source en bloc de code, rien de perdu (Q64)', () => {
+		const nodes = inItem(['```line', 'start: 5', 'end: 1', '```']);
+
+		const code = nodes.find((n) => n.type === 'code-block') as { code: string } | undefined;
+		expect(code?.code).toContain('start: 5');
+	});
+});
+
 describe('bloc spécial non fermé, sans ``` plus loin (Q63 en liste)', () => {
 	it('un cercle, puis le texte — plus de ```trig affiché brut', () => {
 		const nodes = inItem(['```trig', 'preset: quarters', '', 'Voici la suite']);
