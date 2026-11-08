@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, phase 0 de la PR 4._
+_Mis à jour le 2026-11-08, après #2459._
 
-- **État** : PR 1, 1b en prod (0.76.0) ; PR 2 (#2444) mergée et appliquée en prod ; PR 3 (#2453) mergée, pas encore en prod. PR 4 (énigmes) : phase 0 écrite (§ « PR 4 — phase 0 »), pas de code.
-- **Prochaine action** : après validation de la phase 0 → tests rouges, puis `RiddleForm` en `markdownValue` + `getMarkdown()` à l'envoi.
-- **En attente de David** : validation de la phase 0 ; Q4a (les 2 énigmes de test en prod) ; vidéo dans une liste ou une citation (PR à part ou `outils-manquants.md`).
-- **Pièges en cours** : `db:migrate` refusé par le classifieur → David le lance ; migration plus ancienne que la dernière distante → `--include-all` (`--dry-run` d'abord) ; `Doc-inchangée:` dans un COMMIT ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed` ; cookies partagés sur `localhost` → `cahier.localhost:5178`.
-- **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark-enigmes`.
+- **État** : les 4 PR du chantier sont mergées. En prod : PR 1, 1b, 2 (+ migration). **Pas encore en prod** : PR 3 (#2453) et PR 4 (#2459, énigmes en ubumark).
+- **Prochaine action** : après le prochain `deploy:prod` (demandé par David) et la ligne #2459 de `verifications-manuelles.md` cochée → fin de chantier : verser le durable (déjà dans `editeur-riche.md`, `jeux-et-economie.md`), archiver ce journal, retirer la mémoire du chantier.
+- **En attente de David** : supprimer les 2 énigmes d'essai en prod (« potyio », « jjhjh ») depuis la page des énigmes (Q4a, option 1).
+- **Pièges en cours** : job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed`.
+- **Worktree / branche** : aucun (retiré après #2459).
 
 ## Décision d'origine
 
@@ -165,3 +165,11 @@ Question d'accès : aucune — mêmes colonnes, mêmes policies, mêmes lecteurs
 - Tests rouges puis verts : une ligne à l'ancienne forme HTML s'affiche en texte (`<strong>` littéral) ; module sans détection HTML. Mineurs de la revue #2442 ajoutés : `//hôte`, adresse relative → lien, `data:` → ni vidéo ni lien `data:`.
 - ⚠️ Constat : une vidéo dans une liste ou une citation n'est **jamais rendue** — l'arbre ubumark la porte (`list-item` / `blockquote` → `video`), mais `ListNode` et `Blockquote` n'ont pas de cas `video`. Vrai partout (cours compris). Côté cahier, rien n'est chargé (testé). Question à David.
 - Mergée (#2453) le 2026-11-08 ; revue (code-reviewer) sans bloquant ; job navigateur relancé une fois (plantage connu).
+
+### 2026-11-08 — PR 4 (énigmes en ubumark)
+
+- Phase 0 validée par David ; Q4a = option 1 (David supprime les 2 énigmes d'essai, pas de migration) ; Q4b = vidéo dans une liste ou une citation → `outils-manquants.md` ligne 21.
+- `RiddleForm.svelte` : `bind:markdownValue` (bouton) + `getMarkdown()` à l'envoi, repli au contenu chargé tant que `isReady()` est faux ; envoi refusé si le texte lu à l'envoi est vide (champ vidé dans les 150 ms). Commentaires de `types/riddle.ts` → ubumark.
+- Tests (`RiddleForm-ubumark.svelte.test.ts`) : 2 rouges avant (HTML envoyé ; `**gras**` non rendu), verts après ; le test « clic avant la création » est rouge sans `isReady()` (mesuré, contre un doute de la revue).
+- Revue (code-reviewer, Sonnet) : aucun bloquant ; 2 mineurs corrigés (test exact, garde d'envoi vide).
+- Mergée (#2459) le 2026-11-08, CI verte au premier passage.
