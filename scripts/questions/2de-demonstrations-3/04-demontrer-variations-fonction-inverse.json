@@ -1,0 +1,205 @@
+{
+	"title": "Démontrer le sens de variation de la fonction inverse",
+	"description": "Démonstration à trous : 1/b − 1/a = (a − b)/(ab) (case), signe pour 0 < a < b (choix), ab > 0 pour a < b < 0 (choix) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction inverse, définie sur $\\mathbb{R}^*$ par $f(x)=\\dfrac{1}{x}$. On démontre son sens de variation.\n\nSoient $a$ et $b$ deux réels tels que $0<a<b$. On réduit au même dénominateur. Complète.\n\n$f(b)-f(a)=\\dfrac{1}{b}-\\dfrac{1}{a}=\\dfrac{?}{ab}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "a-b"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Au dénominateur commun $ab$ : $\\dfrac{1}{b}=\\dfrac{a}{ab}$ et $\\dfrac{1}{a}=\\dfrac{b}{ab}$.",
+					"Donc $f(b)-f(a)=\\dfrac{\\textcolor{{{color:primary.0}}}{a-b}}{ab}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction inverse, définie sur $\\mathbb{R}^*$ par $f(x)=\\dfrac{1}{x}$. On démontre son sens de variation.\n\nSoient $a$ et $b$ deux réels tels que $0<a<b$. On a $f(b)-f(a)=\\dfrac{1}{b}-\\dfrac{1}{a}=\\dfrac{a-b}{ab}$.\n\nPourquoi $f(b)-f(a)<0$ ?\n\n```choix\n- Car $a-b<0$ et $ab>0$ : le quotient d'un négatif par un positif est négatif.\n- Car $a$ et $b$ sont positifs, donc $\\dfrac{1}{a}$ et $\\dfrac{1}{b}$ aussi.\n- Car $a-b<0$ et $ab<0$.\n- Car $a<b$, donc $f(b)<f(a)$ pour toute fonction.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a<b$, donc $a-b<0$ ; $a>0$ et $b>0$, donc $ab>0$.",
+					"Donc $f(b)-f(a)<0$, soit $\\textcolor{{{color:primary.0}}}{f(a)>f(b)}$ : $f$ est **décroissante** sur $]0\\,;\\,+\\infty[$.",
+					"Le signe de $\\dfrac{1}{a}$ et de $\\dfrac{1}{b}$ ne dit rien de leur différence."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction inverse, définie sur $\\mathbb{R}^*$ par $f(x)=\\dfrac{1}{x}$. On démontre son sens de variation.\n\nSoient $a$ et $b$ deux réels tels que $a<b<0$. On a $f(b)-f(a)=\\dfrac{1}{b}-\\dfrac{1}{a}=\\dfrac{a-b}{ab}$.\n\nOn a $a-b<0$. Pourquoi a-t-on encore $ab>0$ ?\n\n```choix\n- Car $a$ et $b$ sont tous deux négatifs : leur produit est positif.\n- Car $a<b$, donc $ab>0$.\n- Car $a-b<0$, donc $ab>0$.\n- Car un produit de deux réels non nuls est toujours positif.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a<0$ et $b<0$ : le produit de deux nombres négatifs est positif, donc $\\textcolor{{{color:primary.0}}}{ab>0}$.",
+					"Donc $f(b)-f(a)=\\dfrac{a-b}{ab}<0$ : $f$ est aussi **décroissante** sur $]-\\infty\\,;\\,0[$.",
+					"Attention : $f$ n'est pas décroissante sur $\\mathbb{R}^*$ tout entier : $-1<1$ et $f(-1)<f(1)$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction inverse, définie sur $\\mathbb{R}^*$ par $f(x)=\\dfrac{1}{x}$. On démontre que $f$ est décroissante sur $]0\\,;\\,+\\infty[$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Soient $a$ et $b$ deux réels tels que $0<a<b$.\n- $f(b)-f(a)=\\dfrac{1}{b}-\\dfrac{1}{a}=\\dfrac{a-b}{ab}$.\n- $a<b$, donc $a-b<0$ ; $a>0$ et $b>0$, donc $ab>0$.\n- Donc $f(b)-f(a)<0$, soit $f(a)>f(b)$.\n- Donc $f$ est décroissante sur $]0\\,;\\,+\\infty[$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On compare $f(a)$ et $f(b)$ par le signe de leur différence, réduite au même dénominateur.",
+					"Conclusion : $f$ est **décroissante** sur $\\textcolor{{{color:primary.0}}}{]0\\,;\\,+\\infty[}$ ; de même, elle est décroissante sur $]-\\infty\\,;\\,0[$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a − b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["a-b"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture −b + a",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["-b+a"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b − a",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["b-a"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a + b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["a+b"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "négatif sur positif",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/a, 1/b positifs",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ab < 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a < b suffit",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "deux négatifs",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a < b",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a − b < 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout produit positif",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

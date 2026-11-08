@@ -1,0 +1,205 @@
+{
+	"title": "Démontrer la position relative des courbes d'équation y = x et y = x² pour x ≥ 0",
+	"description": "Démonstration à trous : factorisation x² − x = x(x − 1) (case), position sur [0 ; 1] (choix), position pour x ≥ 1 (choix) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On démontre la position relative de la droite $\\mathcal{D}$ d'équation $y=x$ et de la courbe $\\mathcal{C}$ d'équation $y=x^2$, pour $x\\geqslant 0$. Pour cela, on étudie le signe de la différence $x^2-x$.\n\nComplète la factorisation.\n\n$x^2-x=x(?)$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "x-1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x$ est un facteur commun : $x^2-x=x\\times x-x\\times 1$.",
+					"Donc $x^2-x=x(\\textcolor{{{color:primary.0}}}{x-1})$."
+				]
+			}
+		},
+		{
+			"statement": "On démontre la position relative de la droite $\\mathcal{D}$ d'équation $y=x$ et de la courbe $\\mathcal{C}$ d'équation $y=x^2$, pour $x\\geqslant 0$. Pour cela, on étudie le signe de la différence $x^2-x$.\n\nOn a factorisé : $x^2-x=x(x-1)$.\n\nPour $0\\leqslant x\\leqslant 1$, quelle est la position de $\\mathcal{C}$ par rapport à $\\mathcal{D}$ ?\n\n```choix\n- $x\\geqslant 0$ et $x-1\\leqslant 0$, donc $x^2-x\\leqslant 0$ : $\\mathcal{C}$ est en dessous de $\\mathcal{D}$.\n- $x\\geqslant 0$ et $x-1\\leqslant 0$, donc $x^2-x\\leqslant 0$ : $\\mathcal{C}$ est au-dessus de $\\mathcal{D}$.\n- Un carré est toujours positif, donc $x^2-x\\geqslant 0$ : $\\mathcal{C}$ est au-dessus de $\\mathcal{D}$.\n- $x\\geqslant 0$, donc $x^2-x\\geqslant 0$ : $\\mathcal{C}$ est au-dessus de $\\mathcal{D}$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $0\\leqslant x\\leqslant 1$ : $x\\geqslant 0$ et $x-1\\leqslant 0$, donc le produit $x(x-1)$ est négatif ou nul.",
+					"Donc $x^2\\leqslant x$ : $\\textcolor{{{color:primary.0}}}{\\mathcal{C}}$ est **en dessous** de $\\mathcal{D}$ sur $[0\\,;\\,1]$.",
+					"$x^2$ est positif, mais c'est le signe de la **différence** $x^2-x$ qui compte."
+				]
+			}
+		},
+		{
+			"statement": "On démontre la position relative de la droite $\\mathcal{D}$ d'équation $y=x$ et de la courbe $\\mathcal{C}$ d'équation $y=x^2$, pour $x\\geqslant 0$. Pour cela, on étudie le signe de la différence $x^2-x$.\n\nOn a factorisé : $x^2-x=x(x-1)$.\n\nPour $x\\geqslant 1$, quelle est la position de $\\mathcal{C}$ par rapport à $\\mathcal{D}$ ?\n\n```choix\n- $x\\geqslant 0$ et $x-1\\geqslant 0$, donc $x^2-x\\geqslant 0$ : $\\mathcal{C}$ est au-dessus de $\\mathcal{D}$.\n- $x\\geqslant 0$ et $x-1\\geqslant 0$, donc $x^2-x\\geqslant 0$ : $\\mathcal{C}$ est en dessous de $\\mathcal{D}$.\n- $x\\geqslant 1$ et $x-1\\leqslant 0$, donc $x^2-x\\leqslant 0$ : $\\mathcal{C}$ est en dessous de $\\mathcal{D}$.\n- $\\mathcal{C}$ et $\\mathcal{D}$ sont confondues, car elles passent toutes deux par le point de coordonnées $(1\\,;\\,1)$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $x\\geqslant 1$ : $x\\geqslant 0$ et $x-1\\geqslant 0$, donc le produit $x(x-1)$ est positif ou nul.",
+					"Donc $x^2\\geqslant x$ : $\\textcolor{{{color:primary.0}}}{\\mathcal{C}}$ est **au-dessus** de $\\mathcal{D}$ sur $[1\\,;\\,+\\infty[$.",
+					"$\\mathcal{C}$ et $\\mathcal{D}$ se coupent en $(0\\,;\\,0)$ et $(1\\,;\\,1)$ : un point commun ne les rend pas confondues."
+				]
+			}
+		},
+		{
+			"statement": "On démontre la position relative de la droite $\\mathcal{D}$ d'équation $y=x$ et de la courbe $\\mathcal{C}$ d'équation $y=x^2$, pour $x\\geqslant 0$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On étudie le signe de la différence $x^2-x$.\n- On factorise : $x^2-x=x(x-1)$.\n- Pour $0\\leqslant x\\leqslant 1$ : $x\\geqslant 0$ et $x-1\\leqslant 0$, donc $x^2-x\\leqslant 0$.\n- Pour $x\\geqslant 1$ : $x\\geqslant 0$ et $x-1\\geqslant 0$, donc $x^2-x\\geqslant 0$.\n- Donc $\\mathcal{C}$ est en dessous de $\\mathcal{D}$ sur $[0\\,;\\,1]$ et au-dessus sur $[1\\,;\\,+\\infty[$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Comparer deux courbes, c'est étudier le signe de la différence de leurs équations.",
+					"Conclusion : $x^2\\leqslant x$ sur $[0\\,;\\,1]$ et $\\textcolor{{{color:primary.0}}}{x^2\\geqslant x}$ sur $[1\\,;\\,+\\infty[$ ; les courbes se coupent en $x=0$ et $x=1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x − 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["x-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture −1 + x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["-1+x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1-x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["x+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "en dessous",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus (mauvaise lecture)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré positif",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x ≥ 0 suffit",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "au-dessus",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : en dessous (mauvaise lecture)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x − 1 ≤ 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : confondues",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
