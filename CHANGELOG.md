@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.78.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.78.0...v0.78.1) (2026-11-08)
+
+### 🐛 Bug Fixes
+
+- **ci:** forcer le GC de Chromium après chaque fichier des tests client ([63240b9](https://github.com/Zahara-Nour/ubumaths/commit/63240b92508313ad05370472f09ed94adc69cd99))
+
+### 📚 Documentation
+
+- **wip:** ci-navigateur-plante, cause et essai du GC forcé ([574fa7b](https://github.com/Zahara-Nour/ubumaths/commit/574fa7bc73def413f5368feb1c2a04a93a7c1e30))
+- **wip:** ci-navigateur-plante, mesures instrumentées ([e3a6aba](https://github.com/Zahara-Nour/ubumaths/commit/e3a6aba042e0a12c1ec6f5c10528491334ee0006))
+- **wip:** ci-navigateur-plante, mesures sur les logs de la semaine ([82e450b](https://github.com/Zahara-Nour/ubumaths/commit/82e450bc1bb62caeccda2efdd91ec9c357836107))
+- **wip:** ci-navigateur-plante, ouverture du chantier ([19d52cc](https://github.com/Zahara-Nour/ubumaths/commit/19d52ccac4f1dc54bc53f0459b55513b8277683c))
+- **wip:** ci-navigateur-plante, reprendre ici avec [#2480](https://github.com/Zahara-Nour/ubumaths/issues/2480) ouverte ([b74e1b4](https://github.com/Zahara-Nour/ubumaths/commit/b74e1b40485272f4039f3539726450742e2bc098))
+
 ## [0.78.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.77.0...v0.78.0) (2026-11-08)
 
 ### ✨ Features
