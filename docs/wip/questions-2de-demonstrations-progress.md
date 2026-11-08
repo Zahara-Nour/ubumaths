@@ -6,14 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, lot 1 publié (5/5, relu par David : 5 ok)._
+_Mis à jour le 2026-11-08, lot 2 écrit (§ 5), PR en cours._
 
-- **État** : lot 1 (5 modèles) PUBLIÉ en prod, rangé (#2454, migration `20261108070133`).
-- **Prochaine action** : lot 2 (géométrie : 304, 438, 320) — relevé, modèles, brouillons, rangement, page à cocher.
+- **État** : lot 1 PUBLIÉ (5/5). Lot 2 (304, 438, 320) : 3 modèles écrits, specs vertes, PR ouverte.
+- **Prochaine action** : CI → merge → David lance `create-questions --publier` DEPUIS LE WORKTREE → ids sur une
+  branche de rangement → migration nœud + tag → page à cocher. Ensuite lot 3 (fonctions : 357-360).
 - **En attente de David** : rien.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → le lancer depuis le worktree ;
-  positions « ranger » par `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
+  positions « ranger » par `docs/wip/questions/positions-ranger.ts` (`svelte-kit sync` avant) ; couleur jamais sur
+  du texte hors `$`.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-3-geometrie`.
 
 ---
@@ -118,3 +120,22 @@ Mergée (#2454, CI verte du premier coup). `db:migrate` depuis le dépôt princi
 vérifié en prod : les 5 brouillons sur un nœud, chacun avec son seul point, `draft`. Page à cocher :
 https://claude.ai/artifact/2T6PYa1jHeoQRWFsERRJor (5 alertes attendues : bloc ranger non dessiné, à jouer dans
 l'aperçu admin).
+
+Lot 1 relu par David sur la page à cocher (2026-11-08) : 5 « ok », sans commentaire. Publié par David
+(`publier-lot.ts --publier`) : 5/5, statut relu en base.
+
+## 5. Lot 2 : géométrie (2026-11-08)
+
+| Point | Modèle (`scripts/questions/2de-demonstrations-2/`) | Niveau | Variations                                                                                   |
+| ----- | -------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------- |
+| 304   | `01-demontrer-colinearite-determinant`             | 6      | det nul si v = ku (case), réciproque y = bk (case), conclusion v = ku (choix), étapes        |
+| 438   | `02-demontrer-colinearite-proportionnalite`        | 7      | coordonnées de ku (case), égalité de deux vecteurs (choix), produits en croix (case), étapes |
+| 320   | `03-demontrer-equation-cartesienne-de-droite`      | 10     | coordonnées de AM (case), M ∈ d ⟺ det nul (choix), constante c (case), étapes                |
+
+Valeurs tirées (Q3) : u(a ; b) avec a de 2 à 6, b de 2 à 7 (304, 438), v(x ; y) en lettres ; A(1..6 ; 1..6) et
+u(2..5 ; 2..5) pour 320, c = αy_A − βx_A. Étapes à ranger en lettres (u(x ; y), v(x' ; y') ; A(x_A ; y_A), u(α ; β)).
+Niveaux : après ceux déjà présents, tous niveaux scolaires (relevé prod du 2026-11-08 : colinéarité 1-5, équations
+de droites 1-9). Script : `docs/wip/questions/lot-2de-demonstrations-2.py`.
+
+Vérifié : `question:specs` 150 tirages par variation, 3/3 importables (13, 14, 15 specs vertes), 0 `\textcolor` hors
+`$` ; aperçus relus (énoncés, corrigés, signes de la constante c).

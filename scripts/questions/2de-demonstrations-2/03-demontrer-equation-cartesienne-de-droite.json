@@ -1,0 +1,346 @@
+{
+	"title": "Démontrer qu'une droite a une équation de la forme ax + by + c = 0",
+	"description": "Démonstration à trous (A et u tirés) : coordonnées de AM (case), M ∈ d ⟺ det(AM, u) = 0 (choix), constante c en développant le déterminant (case) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 10,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé, soit $d$ la droite passant par $A({{xa}}\\,;\\,{{ya}})$ et de vecteur directeur $\\vec{u}\\begin{pmatrix}{{al}}\\\\{{be}}\\end{pmatrix}$. On démontre que $d$ a une équation de la forme $ax+by+c=0$.\n\nSoit $M(x\\,;\\,y)$ un point du plan.\n\nComplète les coordonnées du vecteur $\\overrightarrow{AM}$.\n\n$\\overrightarrow{AM}\\begin{pmatrix}x-{{xa}}\\\\?\\end{pmatrix}$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "1..6"
+				},
+				{
+					"name": "ya",
+					"expression": "1..6"
+				},
+				{
+					"name": "al",
+					"expression": "2..5"
+				},
+				{
+					"name": "be",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(al)*(ya)-(be)*(xa)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "y-{{ya}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AM}$ a pour coordonnées $\\begin{pmatrix}x_M-x_A\\\\y_M-y_A\\end{pmatrix}$.",
+					"Donc $\\overrightarrow{AM}\\begin{pmatrix}x-{{xa}}\\\\\\textcolor{{{color:primary.0}}}{y-{{ya}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé, soit $d$ la droite passant par $A({{xa}}\\,;\\,{{ya}})$ et de vecteur directeur $\\vec{u}\\begin{pmatrix}{{al}}\\\\{{be}}\\end{pmatrix}$. On démontre que $d$ a une équation de la forme $ax+by+c=0$.\n\nSoit $M(x\\,;\\,y)$ un point du plan.\n\nPourquoi $M$ appartient-il à $d$ si et seulement si $\\det(\\overrightarrow{AM},\\vec{u})=0$ ?\n\n```choix\n- Car $M\\in d$ si et seulement si $\\overrightarrow{AM}$ et $\\vec{u}$ sont colinéaires.\n- Car $M\\in d$ si et seulement si $\\overrightarrow{AM}=\\vec{u}$.\n- Car $M\\in d$ si et seulement si $\\overrightarrow{AM}$ et $\\vec{u}$ sont orthogonaux.\n- Car la droite $d$ passe par l'origine du repère.\n```",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "1..6"
+				},
+				{
+					"name": "ya",
+					"expression": "1..6"
+				},
+				{
+					"name": "al",
+					"expression": "2..5"
+				},
+				{
+					"name": "be",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(al)*(ya)-(be)*(xa)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$d$ est la droite qui passe par $A$ et dirigée par $\\vec{u}$ : $M\\in d$ si et seulement si $\\overrightarrow{AM}$ et $\\vec{u}$ sont **colinéaires**.",
+					"Et deux vecteurs sont colinéaires si et seulement si leur déterminant est nul : $\\textcolor{{{color:primary.0}}}{\\det(\\overrightarrow{AM},\\vec{u})=0}$.",
+					"$\\overrightarrow{AM}=\\vec{u}$ ne donne qu'un seul point de $d$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé, soit $d$ la droite passant par $A({{xa}}\\,;\\,{{ya}})$ et de vecteur directeur $\\vec{u}\\begin{pmatrix}{{al}}\\\\{{be}}\\end{pmatrix}$. On démontre que $d$ a une équation de la forme $ax+by+c=0$.\n\nSoit $M(x\\,;\\,y)$ un point du plan.\n\nOn a $\\overrightarrow{AM}\\begin{pmatrix}x-{{xa}}\\\\y-{{ya}}\\end{pmatrix}$. On développe le déterminant. Complète.\n\n$\\det(\\overrightarrow{AM},\\vec{u})=(x-{{xa}})\\times {{be}}-(y-{{ya}})\\times {{al}}={{be}}x-{{al}}y+?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "1..6"
+				},
+				{
+					"name": "ya",
+					"expression": "1..6"
+				},
+				{
+					"name": "al",
+					"expression": "2..5"
+				},
+				{
+					"name": "be",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(al)*(ya)-(be)*(xa)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(x-{{xa}})\\times {{be}}={{be}}x-{{eval:(be)*(xa)}}$ et $(y-{{ya}})\\times {{al}}={{al}}y-{{eval:(al)*(ya)}}$.",
+					"Donc $\\det(\\overrightarrow{AM},\\vec{u})={{be}}x-{{al}}y-{{eval:(be)*(xa)}}+{{eval:(al)*(ya)}}={{be}}x-{{al}}y+\\textcolor{{{color:primary.0}}}{{{c;()}}}$.",
+					"$M\\in d$ si et seulement si ${{be}}x-{{al}}y+{{c;()}}=0$ : c'est une équation de la forme $ax+by+c=0$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé, soit $d$ la droite passant par $A(x_A\\,;\\,y_A)$, de vecteur directeur non nul $\\vec{u}\\begin{pmatrix}\\alpha\\\\\\beta\\end{pmatrix}$, et $M(x\\,;\\,y)$ un point du plan. On démontre que $d$ a une équation de la forme $ax+by+c=0$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- $M\\in d$ si et seulement si $\\overrightarrow{AM}$ et $\\vec{u}$ sont colinéaires.\n- Si et seulement si $\\det(\\overrightarrow{AM},\\vec{u})=0$, soit $(x-x_A)\\beta-(y-y_A)\\alpha=0$.\n- Si et seulement si $\\beta x-\\alpha y+(\\alpha y_A-\\beta x_A)=0$.\n- On pose $a=\\beta$, $b=-\\alpha$ et $c=\\alpha y_A-\\beta x_A$ : $ax+by+c=0$, avec $(a\\,;\\,b)\\neq(0\\,;\\,0)$ car $\\vec{u}$ est non nul.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On traduit l'appartenance de $M$ à $d$ par la colinéarité, puis par le déterminant, et on développe.",
+					"Conclusion : $d$ a une équation de la forme $\\textcolor{{{color:primary.0}}}{ax+by+c=0}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "y − 3",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["y-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture −3 + y",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["-3+y"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y + 3",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["y+3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 − y",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["3-y"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : y",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["y"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "colinéaires",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AM = u",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : orthogonaux",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : origine",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2",
+			"variationIndex": 2,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 (signe)",
+			"variationIndex": 2,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −14 (deux signes moins)",
+			"variationIndex": 2,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["-14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 14",
+			"variationIndex": 2,
+			"variables": {
+				"xa": "2",
+				"ya": "3",
+				"al": "2",
+				"be": "4",
+				"c": "-2"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

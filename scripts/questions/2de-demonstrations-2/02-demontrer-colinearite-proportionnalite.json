@@ -1,0 +1,258 @@
+{
+	"title": "Démontrer que deux vecteurs sont colinéaires si et seulement si leurs coordonnées sont proportionnelles",
+	"description": "Démonstration à trous (coordonnées de u tirées) : coordonnées de ku (case), égalité de deux vecteurs (choix), produits en croix (case) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans une base orthonormée $(\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{ux}}\\\\{{uy}}\\end{pmatrix}$ et un vecteur non nul $\\vec{v}\\begin{pmatrix}x\\\\y\\end{pmatrix}$. On démontre que $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si leurs coordonnées sont proportionnelles.\n\nOn a $\\vec{u}={{ux}}\\vec{i}+{{uy}}\\vec{j}$. Soit $k$ un réel. Complète.\n\n$k\\vec{u}=(?)\\,\\vec{i}+{{uy}}k\\,\\vec{j}$",
+			"variables": [
+				{
+					"name": "ux",
+					"expression": "2..6"
+				},
+				{
+					"name": "uy",
+					"expression": "2..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ux}}k"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On distribue : $k\\vec{u}=k({{ux}}\\vec{i}+{{uy}}\\vec{j})={{ux}}k\\,\\vec{i}+{{uy}}k\\,\\vec{j}$.",
+					"Donc $k\\vec{u}$ a pour abscisse $\\textcolor{{{color:primary.0}}}{{{ux}}k}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans une base orthonormée $(\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{ux}}\\\\{{uy}}\\end{pmatrix}$ et un vecteur non nul $\\vec{v}\\begin{pmatrix}x\\\\y\\end{pmatrix}$. On démontre que $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si leurs coordonnées sont proportionnelles.\n\nPour tout réel $k$, $k\\vec{u}={{ux}}k\\,\\vec{i}+{{uy}}k\\,\\vec{j}$, donc $k\\vec{u}\\begin{pmatrix}{{ux}}k\\\\{{uy}}k\\end{pmatrix}$.\n\nPourquoi $\\vec{v}=k\\vec{u}$ équivaut-il à $x={{ux}}k$ et $y={{uy}}k$ ?\n\n```choix\n- Car deux vecteurs sont égaux si et seulement s'ils ont les mêmes coordonnées.\n- Car $\\det(\\vec{u},\\vec{v})=0$.\n- Car $x$ et $y$ sont des multiples de $k$.\n- Car $\\vec{u}$ et $\\vec{v}$ ont la même direction.\n```",
+			"variables": [
+				{
+					"name": "ux",
+					"expression": "2..6"
+				},
+				{
+					"name": "uy",
+					"expression": "2..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans une base, un vecteur a des coordonnées uniques.",
+					"$\\vec{v}=k\\vec{u}$ signifie donc que $\\vec{v}$ et $k\\vec{u}$ ont les **mêmes coordonnées** : $\\textcolor{{{color:primary.0}}}{x={{ux}}k}$ et $\\textcolor{{{color:primary.0}}}{y={{uy}}k}$.",
+					"Le déterminant donne un autre critère de colinéarité ; il ne justifie pas cette égalité."
+				]
+			}
+		},
+		{
+			"statement": "Dans une base orthonormée $(\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{ux}}\\\\{{uy}}\\end{pmatrix}$ et un vecteur non nul $\\vec{v}\\begin{pmatrix}x\\\\y\\end{pmatrix}$. On démontre que $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si leurs coordonnées sont proportionnelles.\n\nPour tout réel $k$, $k\\vec{u}={{ux}}k\\,\\vec{i}+{{uy}}k\\,\\vec{j}$, donc $k\\vec{u}\\begin{pmatrix}{{ux}}k\\\\{{uy}}k\\end{pmatrix}$.\n\nAinsi $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si les coordonnées $x$ et $y$ de $\\vec{v}$ sont proportionnelles à ${{ux}}$ et ${{uy}}$, c'est-à-dire si les produits en croix sont égaux. Complète.\n\n${{ux}}y=?$",
+			"variables": [
+				{
+					"name": "ux",
+					"expression": "2..6"
+				},
+				{
+					"name": "uy",
+					"expression": "2..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{uy}}x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les couples $({{ux}}\\,;\\,{{uy}})$ et $(x\\,;\\,y)$ sont proportionnels si et seulement si les produits en croix sont égaux.",
+					"Donc ${{ux}}y=\\textcolor{{{color:primary.0}}}{{{uy}}x}$ (c'est la nullité du déterminant)."
+				]
+			}
+		},
+		{
+			"statement": "Dans une base orthonormée $(\\vec{i},\\vec{j})$, soit $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}$ deux vecteurs non nuls. On démontre que $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si leurs coordonnées sont proportionnelles.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- $\\vec{u}=x\\vec{i}+y\\vec{j}$, donc pour tout réel $k$, $k\\vec{u}=kx\\,\\vec{i}+ky\\,\\vec{j}$.\n- Donc $k\\vec{u}$ a pour coordonnées $\\begin{pmatrix}kx\\\\ky\\end{pmatrix}$.\n- Deux vecteurs égaux ont les mêmes coordonnées : $\\vec{v}=k\\vec{u}$ si et seulement si $x'=kx$ et $y'=ky$.\n- Donc $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si leurs coordonnées sont proportionnelles (de coefficient $k$).\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On calcule les coordonnées de $k\\vec{u}$, puis on les compare à celles de $\\vec{v}$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\vec{v}=k\\vec{u}}$ si et seulement si $x'=kx$ et $y'=ky$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2k",
+			"variationIndex": 0,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["2k"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2",
+			"variationIndex": 0,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3k",
+			"variationIndex": 0,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["3k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 + k",
+			"variationIndex": 0,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["2+k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "mêmes coordonnées",
+			"variationIndex": 1,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : déterminant",
+			"variationIndex": 1,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : multiples de k",
+			"variationIndex": 1,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : même direction",
+			"variationIndex": 1,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3x",
+			"variationIndex": 2,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["3x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2x",
+			"variationIndex": 2,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["2x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3y",
+			"variationIndex": 2,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["3y"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x",
+			"variationIndex": 2,
+			"variables": {
+				"ux": "2",
+				"uy": "3"
+			},
+			"answers": ["x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
