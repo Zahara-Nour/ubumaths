@@ -482,7 +482,7 @@ au plus, `spec.axisTitles`), au bout de chaque axe, à l'écran (`Courbe.svelte`
 (`courbe-typst.ts`, chaîne Typst entre guillemets : un `#` ou un `[` ne casse pas la fiche). Refusé :
 titre vide, axe nommé deux fois, autre axe que x ou y.
 
-**Courbe de données** (chantier [relier-points](../wip/relier-points-progress.md), CM2-125, CM2-159) —
+**Courbe de données** (chantier [relier-points](../archive/wip/relier-points-progress.md), CM2-125, CM2-159) —
 `src/lib/ubumark/__tests__/courbe/courbe-donnees.test.ts`, `Courbe.svelte.test.ts` :
 `données: (6 ; 8) ; (8 ; 11) ; (10 ; 15)` (ou `donnees:`, virgule décimale permise ; nœud : `spec.donnees`,
 `CourbeData`, points triés par abscisse). Une ligne brisée bleue (`COURBE_DATA_COLOR`) relie les points, un disque

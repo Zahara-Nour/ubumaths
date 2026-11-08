@@ -1,18 +1,17 @@
 # Chantier « relier-points » — courbe de données (points reliés)
 
-> Ligne n° 6 de [outils-manquants.md](outils-manquants.md). Débouchés : **CM2-125** (« Lire une donnée sur une
+> Ligne n° 6 de [outils-manquants.md](../../wip/outils-manquants.md). Débouchés : **CM2-125** (« Lire une donnée sur une
 > courbe : quelle température à 14 h ? ») et **CM2-159** (« Interpréter les données d'une courbe : entre quelles
 > heures la température augmente-t-elle ? ») ; aussi CM2-108 (problèmes sur une courbe). Ouvert le 2026-11-08 à la
 > demande de David (« fait le 6 »).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR ouverte._
+_Mis à jour le 2026-11-09, après #2491 : chantier clos, journal archivé._
 
-- **État** : clé `données:` codée (parseur, scène, écran, PDF, doc `ubumark.md`), PR ouverte (§ 2) ·
-  **Prochaine action** : revue `code-reviewer` + CI, merge ; puis ligne n° 6 de `outils-manquants.md` en « Livré » ;
-  les modèles CM2-125, 159 reviennent à la session `questions-cm2` · **En attente de David** : rien · **Pièges en cours** : rien encore · **Worktree / branche** :
-  `../ubumaths-wt-relier-points`, `feat/relier-points`.
+- **État** : clé `données:` de ` ```courbe ` mergée (#2491) · **Prochaine action** : aucune ; modèles CM2-125, 159
+  à écrire par la session `questions-cm2` · **En attente de David** : vérification visuelle
+  (`verifications-manuelles.md`) · **Plus tard** (Q3) : plusieurs séries.
 
 ## 1. Phase 0 (validée par David le 2026-11-08)
 
