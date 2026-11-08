@@ -6,14 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2469 (lot 3 rangé en prod)._
+_Mis à jour le 2026-11-08, lot 3 publié : les 12 démonstrations sont couvertes._
 
-- **État** : lots 1 (5) et 2 (3) PUBLIÉS. Lot 3 (4 modèles, 357-360) en brouillon, rangé et tagué en prod (#2469,
-  `db:migrate` fait). Page à cocher : https://claude.ai/artifact/MSfbBs793RSVxLwzv9LyPK.
-- **Prochaine action** : quand David a relu, lire les verdicts (`ArtifactData list verdicts`, compter : 4), corriger
-  un « À revoir » ; sinon simulation puis publication (`publier-lot.ts --dir scripts/questions/2de-demonstrations-3`,
-  commande `!` donnée à David). Ensuite : verser le chantier (les 12 démonstrations seront couvertes).
-- **En attente de David** : relecture du lot 3 sur la page à cocher.
+- **État** : lots 1 (5), 2 (3) et 3 (4) PUBLIÉS : les 12 démonstrations (Q1) ont chacune leur modèle publié.
+- **Prochaine action** : selon la réponse de David, soit les autres points P (approfondissements, puis exemples
+  d'algorithmes, § 1 ; § 94 du journal `questions-2de`), soit le versement (couverture dans
+  `docs/systeme/programmes/bornes/lycee/2de.md`, journaux `questions-2de` et celui-ci archivés).
+- **En attente de David** : suite du chantier (autres P ou versement).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre.
 - **Worktree / branche** : aucun.
@@ -221,3 +220,6 @@ Mergée (#2469, CI verte du premier coup) ; `check:migrations --pr` passé. `db:
 (seule migration en attente) ; vérifié en prod : les 4 brouillons sur leur sous-notion, chacun avec son seul point,
 `draft`. Page à cocher : https://claude.ai/artifact/MSfbBs793RSVxLwzv9LyPK (4 alertes attendues : bloc ranger non
 dessiné, à jouer dans l'aperçu admin).
+
+Lot 3 relu par David sur la page à cocher (2026-11-08) : 4 « ok », sans commentaire. Publié par David
+(`publier-lot.ts`, simulation puis `--publier`) : 4/4, statut relu en base. **Les 12 démonstrations sont couvertes.**
