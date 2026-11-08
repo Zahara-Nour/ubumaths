@@ -15,7 +15,7 @@ _Mis à jour le 2026-11-08, PR 1 (039) ouverte._
   attente** (index de `main` occupé par une autre session sur `outils-manquants.md`).
 - **Prochaine action** : revue `code-reviewer` (opus) + CI, vérification visuelle, puis PR 2 : demi-droite [Ax) et
   constructions cotées (070).
-- **En attente de David** : choix (1)-(9) du § 3 ; vérification visuelle sur téléphone.
+- **En attente de David** : choix (1)-(9) et Q9 du § 3 ; vérification visuelle sur téléphone.
 - **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le chantier
   `cercle-triangle-rectangle` (n° 19, 20) touche les mêmes fichiers de `src/lib/questions/construction/`.
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee`.
@@ -49,7 +49,7 @@ papier uni seulement.
 
 ## 2. Tracer un segment de longueur donnée (CE2-039) — comportements proposés (2026-11-08)
 
-ADR 0036 (`docs/adr/0036-le-cm-de-la-figure.md`) commitée sur `main` (3623b957b). Constat : la règle graduée existe déjà,
+ADR 0036 commitée sur `main` (3623b957b). Constat : la règle graduée existe déjà,
 `constructions-v2/instruments/components/Ruler.svelte` (1 grande graduation par unité, 10 petites, `pixelsPerUnit`) ;
 on la réutilise comme `Protractor.svelte` dans `FigureACompleterView.svelte`. Modèle de geste : l'angle au rapporteur
 (`angle.ts` : pose, repère, segment ; refus « tracé à l'œil »).
@@ -92,3 +92,10 @@ posée en A dans la direction de la règle de l'élève, sinon de son segment, s
 
 **Douteux** : règle posée ailleurs qu'en A → message « tracé à l'œil » trompeur (rare : le 0 s'aimante) ; rendu de la
 règle retournée et lisibilité sur téléphone non vus.
+
+**Revue opus (2026-11-08)** : 2 faux juste (segments superposés ; prolongement) → corrigés en 840688610 : le juge prend
+le **segment vu** (segments alignés depuis A, à 2° près, qui se touchent = un seul, jugé par son bout le plus loin),
+graduation comparée en mm entiers, `constructionOf` retiré (seule une graduation d'une règle posée en A fait foi),
+refus d'auteur si un autre point visible est déjà à la longueur demandée de A ; graduation prioritaire sur A pour le
+bout du segment (pas pour le départ). Reste **Q9** (David) : éventail de segments dans des directions distinctes
+depuis A (5,1 … 6,9 cm), jugé juste aujourd'hui.
