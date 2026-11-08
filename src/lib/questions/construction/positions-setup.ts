@@ -169,8 +169,14 @@ export function expectedPoints(
 				continue;
 			}
 		} else if (scene) {
-			const element = scene.figure.getAllElements().find((e) => e.label === EXPECTED_NAME);
-			const circle = element ? circleOf(element, scene) : null;
+			// `cercle(O, rayon=distance(D, E))` : la distance intérieure porte aussi le nom
+			// interne ; on prend l'élément qui est un cercle (n° 19)
+			const circle =
+				scene.figure
+					.getAllElements()
+					.filter((e) => e.label === EXPECTED_NAME)
+					.map((e) => circleOf(e, scene))
+					.find((c) => c !== null) ?? null;
 			if (circle) {
 				circles.set(check.name, circle);
 				continue;

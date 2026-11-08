@@ -38,6 +38,8 @@ import {
 	INSTRUMENT_TOOLS,
 	LINE_GRID_TOOLS,
 	bissectriceOf,
+	centeredCircleOf,
+	centeredCircleTools,
 	PLAIN_PAPER_TOOLS,
 	triangleTools,
 	type ConstructionCheck,
@@ -482,9 +484,22 @@ function coherenceError(
 		if (check.kind === 'droite' && grid && spec.tools.includes('report')) {
 			return `droite ${check.name} : le report se prend sur papier uni ; le retirer de outils: (ou retirer « grille: »)`;
 		}
-		// Lot 3b (§ 11, décision de David) : le centre tombe rarement sur un nœud
+		// N° 19 : un rayon pris sur un segment se reporte au Report
+		const radiusTaken = check.kind === 'cercle' ? centeredCircleOf(check.expression) : null;
+		if (radiusTaken?.kind === 'rayon' && !spec.tools.includes('report')) {
+			return `cercle ${check.name} : le rayon ${radiusTaken.from}${radiusTaken.to} se prend au Report (outils: compas, report)`;
+		}
+		// Lot 3b (§ 11, décision de David) : le centre tombe rarement sur un nœud ; le cercle
+		// de centre donné (n° 19, 2026-11-08) se trace sur quadrillage s'il passe par un point,
+		// pas si son rayon se reporte (le Report se prend sur papier uni)
 		if (check.kind === 'cercle' && grid) {
-			return `cercle ${check.name} : le cercle circonscrit se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+			const centered = centeredCircleOf(check.expression);
+			if (!centered) {
+				return `cercle ${check.name} : le cercle circonscrit se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+			}
+			if (centered.kind === 'rayon' || spec.tools.includes('report')) {
+				return `cercle ${check.name} : le rayon se reporte sur papier uni ; retirer « grille: » (ou écrire « grille: non »), ou écrire cercle(${centered.center}, passant=…)`;
+			}
 		}
 	} else if (check.kind === 'point') {
 		const first = spec.checks.find((c) => c.kind === 'point' && c.name === check.name);
@@ -589,14 +604,18 @@ export function readConstructionHeader(
 			kind === 'angle' ||
 			kind === 'mesure';
 		const first = spec.checks[0];
+		// Cercle de centre donné (n° 19) : le compas (et le Report), sur papier uni comme sur quadrillage
+		const centered = first.kind === 'cercle' ? centeredCircleOf(first.expression) : null;
 		const plainPaper =
 			grid && !keeps
 				? undefined
 				: first.kind === 'triangle'
 					? triangleTools(first)
-					: kind === 'droite' && grid
-						? LINE_GRID_TOOLS
-						: PLAIN_PAPER_TOOLS[kind];
+					: centered
+						? centeredCircleTools(centered)
+						: kind === 'droite' && grid
+							? LINE_GRID_TOOLS
+							: PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
 	const coherent: ConstructionCheck[] = [];

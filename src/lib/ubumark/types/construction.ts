@@ -74,6 +74,38 @@ export function bissectriceOf(expression: string): [string, string, string] | nu
 	return match ? [match[1], match[2], match[3]] : null;
 }
 
+/**
+ * Cercle de centre donné (chantier `cercle-triangle-rectangle`, n° 19, 2026-11-08) :
+ * `cercle(O, passant=A)` (centre O passant par A) ou `cercle(O, rayon=distance(D, E))`
+ * (rayon pris sur [DE], au Report)
+ */
+export type CenteredCircle =
+	| { center: string; kind: 'passant'; through: string }
+	| { center: string; kind: 'rayon'; from: string; to: string };
+
+const CIRCLE_NAME = '([A-Za-z][A-Za-z0-9_]*)';
+const CENTERED_THROUGH_REGEX = new RegExp(
+	`^cercle\\(\\s*${CIRCLE_NAME}\\s*,\\s*passant\\s*=\\s*${CIRCLE_NAME}\\s*\\)$`
+);
+const CENTERED_RADIUS_REGEX = new RegExp(
+	`^cercle\\(\\s*${CIRCLE_NAME}\\s*,\\s*rayon\\s*=\\s*distance\\(\\s*${CIRCLE_NAME}\\s*,\\s*${CIRCLE_NAME}\\s*\\)\\s*\\)$`
+);
+
+/** Le centre et le point de passage (ou les bouts du rayon) ; null pour une autre expression */
+export function centeredCircleOf(expression: string): CenteredCircle | null {
+	const text = expression.trim();
+	const through = CENTERED_THROUGH_REGEX.exec(text);
+	if (through) return { center: through[1], kind: 'passant', through: through[2] };
+	const radius = CENTERED_RADIUS_REGEX.exec(text);
+	if (radius) return { center: radius[1], kind: 'rayon', from: radius[2], to: radius[3] };
+	return null;
+}
+
+/** Palette d'un cercle de centre donné : le compas, et le Report si le rayon est pris sur un segment */
+export function centeredCircleTools(circle: CenteredCircle): ConstructionTool[] {
+	return circle.kind === 'passant' ? ['compas'] : ['compas', 'report'];
+}
+
 /** Palette déduite d'une droite sur quadrillage (lot 3) : les nœuds suffisent, sans Report */
 export const LINE_GRID_TOOLS: ConstructionTool[] = ['droite', 'equerre', 'compas'];
 

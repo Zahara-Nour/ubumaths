@@ -153,8 +153,12 @@ describe('cercle de centre donné, passant= : verdicts', () => {
 		});
 	});
 
-	it('rien de tracé → il manque le cercle', () => {
-		expect(judge(PASSANT, [])).toEqual({
+	it('réponse vide → vide (rien à envoyer)', () => {
+		expect(judge(PASSANT, [])).toEqual({ status: 'empty' });
+	});
+
+	it('une droite seule, aucun cercle → il manque le cercle', () => {
+		expect(judge(PASSANT, [droite(O, A)])).toEqual({
 			status: 'incorrect',
 			feedback: centeredMissingFeedback('O', 'passant', 'A')
 		});
@@ -219,8 +223,8 @@ describe('cercle de centre donné, rayon= : verdicts', () => {
 		expect(judge(RAYON, [report(O2, E, D)])).toEqual({ status: 'correct' });
 	});
 
-	it('rien de tracé → il manque le cercle', () => {
-		expect(judge(RAYON, [])).toEqual({
+	it('une droite seule, aucun cercle → il manque le cercle', () => {
+		expect(judge(RAYON, [droite(O2, D)])).toEqual({
 			status: 'incorrect',
 			feedback: centeredMissingFeedback('O', 'rayon', 'DE')
 		});
