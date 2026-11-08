@@ -1,0 +1,435 @@
+{
+	"title": "Fréquence conditionnelle à partir de deux listes, en Python",
+	"description": "Deux listes (transport, sport) ; frequence(transport, sport) renvoie la fréquence des sportifs parmi les élèves venant en bus : valeur renvoyée (tableau croisé en correction), compléter le return, interpréter (conditionnelle, pas l'inverse)",
+	"grades": ["2"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On a relevé, pour 10 élèves, leur moyen de transport (`\"bus\"` ou `\"vélo\"`) et s'ils pratiquent un sport en club (`\"oui\"` ou `\"non\"`). Les deux listes sont dans le même ordre : l'élève numéro `k` a pour réponses `transport[k]` et `sport[k]`.\n\n```python\ntransport = [{{if:t1==1|\"bus\"|\"vélo\"}}, {{if:t2==1|\"bus\"|\"vélo\"}}, {{if:t3==1|\"bus\"|\"vélo\"}}, {{if:t4==1|\"bus\"|\"vélo\"}}, {{if:t5==1|\"bus\"|\"vélo\"}}, {{if:t6==1|\"bus\"|\"vélo\"}}, {{if:t7==1|\"bus\"|\"vélo\"}}, {{if:t8==1|\"bus\"|\"vélo\"}}, {{if:t9==1|\"bus\"|\"vélo\"}}, {{if:t10==1|\"bus\"|\"vélo\"}}]\nsport = [{{if:p1==1|\"oui\"|\"non\"}}, {{if:p2==1|\"oui\"|\"non\"}}, {{if:p3==1|\"oui\"|\"non\"}}, {{if:p4==1|\"oui\"|\"non\"}}, {{if:p5==1|\"oui\"|\"non\"}}, {{if:p6==1|\"oui\"|\"non\"}}, {{if:p7==1|\"oui\"|\"non\"}}, {{if:p8==1|\"oui\"|\"non\"}}, {{if:p9==1|\"oui\"|\"non\"}}, {{if:p10==1|\"oui\"|\"non\"}}]\n\ndef frequence(transport, sport):\n    bus = 0\n    bus_sport = 0\n    for k in range(len(transport)):\n        if transport[k] == \"bus\":\n            bus = bus + 1\n            if sport[k] == \"oui\":\n                bus_sport = bus_sport + 1\n    return bus_sport / bus\n```\n\nQue renvoie l'appel `frequence(transport, sport)` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..6"
+				},
+				{
+					"name": "t1",
+					"expression": "{{if:j==1|1|{{if:j==2|1|{{if:j==3|0|{{if:j==4|0|{{if:j==5|0|0}}}}}}}}}}"
+				},
+				{
+					"name": "t2",
+					"expression": "{{if:j==1|1|{{if:j==2|1|{{if:j==3|0|{{if:j==4|1|{{if:j==5|0|0}}}}}}}}}}"
+				},
+				{
+					"name": "t3",
+					"expression": "{{if:j==1|1|{{if:j==2|0|{{if:j==3|0|{{if:j==4|1|{{if:j==5|0|0}}}}}}}}}}"
+				},
+				{
+					"name": "t4",
+					"expression": "{{if:j==1|0|{{if:j==2|0|{{if:j==3|1|{{if:j==4|0|{{if:j==5|0|1}}}}}}}}}}"
+				},
+				{
+					"name": "t5",
+					"expression": "{{if:j==1|0|{{if:j==2|0|{{if:j==3|1|{{if:j==4|1|{{if:j==5|0|0}}}}}}}}}}"
+				},
+				{
+					"name": "t6",
+					"expression": "{{if:j==1|1|{{if:j==2|0|{{if:j==3|0|{{if:j==4|1|{{if:j==5|1|1}}}}}}}}}}"
+				},
+				{
+					"name": "t7",
+					"expression": "{{if:j==1|0|{{if:j==2|1|{{if:j==3|1|{{if:j==4|0|{{if:j==5|0|1}}}}}}}}}}"
+				},
+				{
+					"name": "t8",
+					"expression": "{{if:j==1|0|{{if:j==2|1|{{if:j==3|0|{{if:j==4|0|{{if:j==5|1|1}}}}}}}}}}"
+				},
+				{
+					"name": "t9",
+					"expression": "{{if:j==1|1|{{if:j==2|0|{{if:j==3|0|{{if:j==4|1|{{if:j==5|1|0}}}}}}}}}}"
+				},
+				{
+					"name": "t10",
+					"expression": "{{if:j==1|0|{{if:j==2|0|{{if:j==3|1|{{if:j==4|0|{{if:j==5|1|1}}}}}}}}}}"
+				},
+				{
+					"name": "p1",
+					"expression": "{{if:j==1|1|{{if:j==2|0|{{if:j==3|1|{{if:j==4|0|{{if:j==5|1|1}}}}}}}}}}"
+				},
+				{
+					"name": "p2",
+					"expression": "{{if:j==1|0|{{if:j==2|0|{{if:j==3|1|{{if:j==4|1|{{if:j==5|0|0}}}}}}}}}}"
+				},
+				{
+					"name": "p3",
+					"expression": "{{if:j==1|0|{{if:j==2|1|{{if:j==3|0|{{if:j==4|0|{{if:j==5|0|0}}}}}}}}}}"
+				},
+				{
+					"name": "p4",
+					"expression": "{{if:j==1|0|{{if:j==2|0|{{if:j==3|1|{{if:j==4|1|{{if:j==5|1|1}}}}}}}}}}"
+				},
+				{
+					"name": "p5",
+					"expression": "{{if:j==1|0|{{if:j==2|0|{{if:j==3|0|{{if:j==4|0|{{if:j==5|0|1}}}}}}}}}}"
+				},
+				{
+					"name": "p6",
+					"expression": "{{if:j==1|0|{{if:j==2|0|{{if:j==3|0|{{if:j==4|1|{{if:j==5|1|0}}}}}}}}}}"
+				},
+				{
+					"name": "p7",
+					"expression": "{{if:j==1|1|{{if:j==2|0|{{if:j==3|1|{{if:j==4|1|{{if:j==5|1|1}}}}}}}}}}"
+				},
+				{
+					"name": "p8",
+					"expression": "{{if:j==1|1|{{if:j==2|1|{{if:j==3|0|{{if:j==4|1|{{if:j==5|0|1}}}}}}}}}}"
+				},
+				{
+					"name": "p9",
+					"expression": "{{if:j==1|0|{{if:j==2|0|{{if:j==3|1|{{if:j==4|0|{{if:j==5|0|0}}}}}}}}}}"
+				},
+				{
+					"name": "p10",
+					"expression": "{{if:j==1|1|{{if:j==2|1|{{if:j==3|1|{{if:j==4|1|{{if:j==5|1|1}}}}}}}}}}"
+				},
+				{
+					"name": "nb",
+					"expression": "{{if:j==1|5|{{if:j==2|4|{{if:j==3|4|{{if:j==4|5|{{if:j==5|4|5}}}}}}}}}}"
+				},
+				{
+					"name": "nbs",
+					"expression": "{{if:j==1|1|{{if:j==2|1|{{if:j==3|3|{{if:j==4|2|{{if:j==5|2|4}}}}}}}}}}"
+				},
+				{
+					"name": "ns",
+					"expression": "{{if:j==1|4|{{if:j==2|3|{{if:j==3|6|{{if:j==4|6|{{if:j==5|5|6}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:nbs/nb;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tableau croisé des deux listes :",
+					"```tableau-croise\nlignes: bus ; vélo\ncolonnes: sport ; pas de sport\nbus = {{eval:nbs}} ; {{eval:nb-nbs}}\nvélo = {{eval:ns-nbs}} ; {{eval:10-nb-ns+nbs}}\ncoin: Transport \\ Sport\n```",
+					"`bus` compte les élèves qui viennent en bus : ${{eval:nb}}$ ; `bus_sport` compte, parmi eux, ceux qui pratiquent un sport en club : ${{eval:nbs}}$.",
+					"L'appel renvoie $\\dfrac{{{eval:nbs}}}{{{eval:nb}}}=\\textcolor{{{color:primary.0}}}{{{eval:nbs/nb;d}}}$ : la fréquence des sportifs PARMI les élèves qui viennent en bus."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé, pour 30 élèves, leur moyen de transport (`\"bus\"` ou `\"vélo\"`) et s'ils pratiquent un sport en club (`\"oui\"` ou `\"non\"`). Les deux listes sont dans le même ordre : l'élève numéro `k` a pour réponses `transport[k]` et `sport[k]`. La fonction ci-dessous doit renvoyer la fréquence des élèves qui pratiquent un sport en club parmi ceux qui viennent en bus.\n\n```python\ndef frequence(transport, sport):\n    bus = 0\n    bus_sport = 0\n    for k in range(len(transport)):\n        if transport[k] == \"bus\":\n            bus = bus + 1\n            if sport[k] == \"oui\":\n                bus_sport = bus_sport + 1\n    ...\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `return bus_sport / bus`\n- `return bus_sport / len(transport)`\n- `return bus / bus_sport`\n- `return bus / len(transport)`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Parmi ceux qui viennent en bus » : l'effectif de référence est le nombre d'élèves qui viennent en bus, `bus`.",
+					"On divise l'effectif des élèves qui viennent en bus ET font du sport, `bus_sport`, par cet effectif de référence : `return bus_sport / bus`.",
+					"`bus_sport / len(transport)` donne la fréquence parmi TOUS les élèves ; `bus / len(transport)` la fréquence (marginale) des élèves qui viennent en bus ; `bus / bus_sport` est supérieur à $1$."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé, pour 30 élèves, leur moyen de transport (`\"bus\"` ou `\"vélo\"`) et s'ils pratiquent un sport en club (`\"oui\"` ou `\"non\"`). Les deux listes sont dans le même ordre : l'élève numéro `k` a pour réponses `transport[k]` et `sport[k]`. On considère la fonction suivante.\n\n```python\ndef frequence(transport, sport):\n    bus = 0\n    bus_sport = 0\n    for k in range(len(transport)):\n        if transport[k] == \"bus\":\n            bus = bus + 1\n            if sport[k] == \"oui\":\n                bus_sport = bus_sport + 1\n    return bus_sport / bus\n```\n\nQue renvoie l'appel `frequence(transport, sport)` ?\n\n```choix\n- La fréquence des élèves qui pratiquent un sport en club parmi ceux qui viennent en bus.\n- La fréquence des élèves qui viennent en bus parmi ceux qui pratiquent un sport en club.\n- La fréquence des élèves qui viennent en bus et pratiquent un sport en club, parmi tous les élèves.\n- La fréquence des élèves qui viennent en bus, parmi tous les élèves.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`bus` ne compte que les élèves qui viennent en bus ; `bus_sport` compte, PARMI EUX, ceux qui font du sport (le second `if` est dans le premier).",
+					"La fonction divise `bus_sport` par `bus` : l'effectif de référence est celui des élèves qui viennent en bus, pas l'effectif total.",
+					"C'est la $\\textcolor{{{color:primary.0}}}{\\text{fréquence des sportifs parmi les élèves qui viennent en bus}}$ (fréquence conditionnelle). L'inverse, « bus parmi les sportifs », diviserait par le nombre de sportifs."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Jeu 1 : 1/5",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"t1": "1",
+				"t2": "1",
+				"t3": "1",
+				"t4": "0",
+				"t5": "0",
+				"t6": "1",
+				"t7": "0",
+				"t8": "0",
+				"t9": "1",
+				"t10": "0",
+				"p1": "1",
+				"p2": "0",
+				"p3": "0",
+				"p4": "0",
+				"p5": "0",
+				"p6": "0",
+				"p7": "1",
+				"p8": "1",
+				"p9": "0",
+				"p10": "1",
+				"nb": "5",
+				"nbs": "1",
+				"ns": "4"
+			},
+			"answers": ["0,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Jeu 1 : erreur, parmi tous les élèves",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"t1": "1",
+				"t2": "1",
+				"t3": "1",
+				"t4": "0",
+				"t5": "0",
+				"t6": "1",
+				"t7": "0",
+				"t8": "0",
+				"t9": "1",
+				"t10": "0",
+				"p1": "1",
+				"p2": "0",
+				"p3": "0",
+				"p4": "0",
+				"p5": "0",
+				"p6": "0",
+				"p7": "1",
+				"p8": "1",
+				"p9": "0",
+				"p10": "1",
+				"nb": "5",
+				"nbs": "1",
+				"ns": "4"
+			},
+			"answers": ["0,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Jeu 1 : erreur, bus parmi les sportifs",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"t1": "1",
+				"t2": "1",
+				"t3": "1",
+				"t4": "0",
+				"t5": "0",
+				"t6": "1",
+				"t7": "0",
+				"t8": "0",
+				"t9": "1",
+				"t10": "0",
+				"p1": "1",
+				"p2": "0",
+				"p3": "0",
+				"p4": "0",
+				"p5": "0",
+				"p6": "0",
+				"p7": "1",
+				"p8": "1",
+				"p9": "0",
+				"p10": "1",
+				"nb": "5",
+				"nbs": "1",
+				"ns": "4"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Jeu 2 : 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"j": "2",
+				"t1": "1",
+				"t2": "1",
+				"t3": "0",
+				"t4": "0",
+				"t5": "0",
+				"t6": "0",
+				"t7": "1",
+				"t8": "1",
+				"t9": "0",
+				"t10": "0",
+				"p1": "0",
+				"p2": "0",
+				"p3": "1",
+				"p4": "0",
+				"p5": "0",
+				"p6": "0",
+				"p7": "0",
+				"p8": "1",
+				"p9": "0",
+				"p10": "1",
+				"nb": "4",
+				"nbs": "1",
+				"ns": "3"
+			},
+			"answers": ["0,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Jeu 2 : erreur, parmi tous les élèves",
+			"variationIndex": 0,
+			"variables": {
+				"j": "2",
+				"t1": "1",
+				"t2": "1",
+				"t3": "0",
+				"t4": "0",
+				"t5": "0",
+				"t6": "0",
+				"t7": "1",
+				"t8": "1",
+				"t9": "0",
+				"t10": "0",
+				"p1": "0",
+				"p2": "0",
+				"p3": "1",
+				"p4": "0",
+				"p5": "0",
+				"p6": "0",
+				"p7": "0",
+				"p8": "1",
+				"p9": "0",
+				"p10": "1",
+				"nb": "4",
+				"nbs": "1",
+				"ns": "3"
+			},
+			"answers": ["0,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Jeu 2 : erreur, bus parmi les sportifs",
+			"variationIndex": 0,
+			"variables": {
+				"j": "2",
+				"t1": "1",
+				"t2": "1",
+				"t3": "0",
+				"t4": "0",
+				"t5": "0",
+				"t6": "0",
+				"t7": "1",
+				"t8": "1",
+				"t9": "0",
+				"t10": "0",
+				"p1": "0",
+				"p2": "0",
+				"p3": "1",
+				"p4": "0",
+				"p5": "0",
+				"p6": "0",
+				"p7": "0",
+				"p8": "1",
+				"p9": "0",
+				"p10": "1",
+				"nb": "4",
+				"nbs": "1",
+				"ns": "3"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "return bus_sport / bus",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parmi tous les élèves",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quotient inversé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : fréquence marginale",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sportifs parmi les élèves en bus",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bus parmi les sportifs",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : parmi tous les élèves",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : fréquence marginale",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
