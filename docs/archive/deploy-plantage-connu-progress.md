@@ -4,13 +4,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR ouverte._
+_Mis à jour le 2026-11-08, après #2486 — chantier clos._
 
-- **État** : correctif de `plantage_connu()` dans `scripts/deploy-prod.sh`, tests verts (33/33).
-- **Prochaine action** : CI verte → merge → archiver ce journal.
+- **État** : #2486 mergée : correctif de `plantage_connu()` dans `scripts/deploy-prod.sh`, tests verts (33/33).
+- **Prochaine action** : aucune ; à vérifier au prochain plantage en `deploy:prod` (relance automatique).
 - **En attente de David** : rien.
 - **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-deploy-plantage-connu` · `fix/deploy-plantage-connu`.
+- **Worktree / branche** : aucun (retirés après le merge).
 
 ---
 
