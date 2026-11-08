@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2467._
+_Mis à jour le 2026-11-08, PR 2 ouverte (#2472)._
 
-- **État** : outil mergé (#2467 : `vecteurs:`, `tracer: vecteur u + v`, phrases nommées, pointillés), **pas encore en prod** · **Prochaine action** : après le `deploy:prod` qui livre #2467 (David), PR 2 de contenu : réécrire `51192dc4` (2-297) avec l'outil (SV5), page à cocher · **En attente de David** : `deploy:prod` ; dire si le nom de A qui chevauche la flèche v⃗ gêne (§ 3) · **Pièges en cours** : ne jamais publier le modèle réécrit avant le déploiement (le bloc serait refusé en prod) ; `Vecteur u + v` (majuscule) accepté, `Vecteur (3 ; -2)` refusé — incohérence laissée (revue § 4) · **Worktree / branche** : aucun (worktree retiré après #2467) ; PR 2 → nouveau worktree `somme-vecteurs`, branche `content/somme-vecteurs-2297`
+- **État** : outil #2467 mergé, **pas encore en prod** ; PR 2 #2472 (réécriture de `51192dc4`, lot `somme-vecteurs-2de` de `update-published-questions.ts`) ouverte · **Prochaine action** : après le `deploy:prod` qui livre #2467 (David) : `pnpm tsx scripts/update-published-questions.ts --lot somme-vecteurs-2de` (simulation), puis `--publier`, relire en prod ; ensuite versement du chantier (journal archivé, ligne 3 de `outils-manquants.md` déjà rayée) · **En attente de David** : `deploy:prod` ; dire si le nom de A qui chevauche la flèche v⃗ gêne (§ 3) · **Pièges en cours** : ne JAMAIS `--publier` avant le déploiement (le bloc serait refusé en prod) ; le modèle est PUBLIÉ : `create-questions` ne le touche pas, c'est `update-published-questions` · **Worktree / branche** : `../ubumaths-wt-somme-vecteurs`, `content/somme-vecteurs-2297`
 
 ## 0. Origine
 
@@ -88,3 +88,13 @@ SV5 `51192dc4` réécrit ici (PR de contenu à part), 3-026 laissé à `question
   reformaté par la fusion, remis à l'identique de main.
 - CI verte sur `e764b5d8b`, **#2467 mergée** le 2026-11-08. Vérification manuelle notée
   (`verifications-manuelles.md`, prod après `deploy:prod`).
+
+## 5. PR 2 — réécriture de 51192dc4 (2026-11-08)
+
+- Le modèle est **publié** en prod : `create-questions --mettre-a-jour` ne le touche pas → lot
+  `somme-vecteurs-2de` de `update-published-questions.ts`, dossier `scripts/questions/2de-somme-vecteurs-existants/`
+  (instantané de prod commité d'abord, identique au fichier du lot 12 b-1 au statut près).
+- Énoncé : `vecteurs: u = AB, v = AC`, `tracer: vecteur u + v depuis A` ; correction : l'étape ` ```figure `
+  retirée (pointillés sur le repère, SV4), la première étape le dit. Variables, conditions, specs inchangées.
+- Simulation sur la prod : 6/6 specs vertes, 100 tirages. Pas de page à cocher (un seul modèle) : ligne de
+  `verifications-manuelles.md` à la place. #2472 ouverte.
