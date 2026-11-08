@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR « courbe → tableau de variations à compléter » ouverte._
+_Mis à jour le 2026-11-08, après #2478 (variante v1 « à compléter » de `7f82d15a`)._
 
-- **État** : variante v1 de `7f82d15a` écrite (`03-tableau-variations-sur-courbe.json`) : 12 specs vertes, 600 tirages,
-  `buildSerie` 23/23, PDF vérifié · **Prochaine action** : CI verte → merge ; puis David, **après le `deploy:prod`
-  qui livre #2456** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/lectures-graphiques-1spe --publier --mettre-a-jour`
-  (met à jour `7f82d15a` en base) · **En attente de David** : **ne pas publier `c9e0effd` avant le `deploy:prod`
-  qui livre #2462** ; publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles
-  `23751c95`, `c1c9cfc3`, `d4f38d30`, `d4d56c1b` · **Pièges en cours** : écritures ET simulations contre la prod
-  lancées par David (`!`) ; worktree neuf : `pnpm exec svelte-kit sync` avant tout script `tsx` ; `fiche:verifier`
-  dans un worktree : `PYTHON_FICHES=` vers le venv du dépôt principal ; `db:migrate` depuis le dépôt principal ·
-  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-1spe-courbe-variations`.
+- **État** : #2478 mergée (v1 de `7f82d15a` + flèches ↗ ↘ admises par `student-answer-safety.ts`) ; `deploy:prod`
+  lancé le 2026-11-08 à la demande de David · **Prochaine action** : David, une fois #2478 en prod :
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/lectures-graphiques-1spe --publier --mettre-a-jour`
+  (met à jour `7f82d15a` en base) · **En attente de David** : `c9e0effd` publiable une fois #2462 en prod ;
+  publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles `23751c95`,
+  `c1c9cfc3`, `d4f38d30`, `d4d56c1b` · **Pièges en cours** : écritures ET simulations contre la prod lancées par
+  David (`!`) ; worktree neuf : `pnpm exec svelte-kit sync` avant tout script `tsx` ; `fiche:verifier` dans un
+  worktree : `PYTHON_FICHES=` vers le venv du dépôt principal ; `db:migrate` depuis le dépôt principal ·
+  **Worktree / branche** : aucun (retiré).
 - Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
