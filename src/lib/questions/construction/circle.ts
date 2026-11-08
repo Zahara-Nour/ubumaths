@@ -19,13 +19,25 @@
  * sommet (arcs de construction des médiatrices), celui qui a le bon centre,
  * sinon celui qui passe par le plus de sommets, à égalité le dernier tracé.
  *
+ * Cercle de centre donné (chantier `cercle-triangle-rectangle`, n° 19, phase 0
+ * validée par David le 2026-11-08) : `cercle(O, passant=A)` (compas piqué en O,
+ * ouvert jusqu'à A ; papier uni ou quadrillage) et `cercle(O, rayon=distance(D, E))`
+ * (Report de [DE] piqué en O ; papier uni). Messages, dans l'ordre : il manque le
+ * cercle, compas ouvert à l'œil (bon cercle, point de passage non construit), mauvais
+ * centre, bon centre mais mauvais rayon. L'essai : le dernier cercle centré en O.
+ * Sur quadrillage, les nœuds suffisent (tout cercle tracé est aimanté aux nœuds).
+ *
  * Pur : positions de la figure et cercles attendus donnés par l'appelant
  * (registre `positions.ts`).
  *
  * @module questions/construction/circle
  */
 
-import type { CircleCheck } from '$lib/ubumark/types/construction';
+import {
+	centeredCircleOf,
+	type CenteredCircle,
+	type CircleCheck
+} from '$lib/ubumark/types/construction';
 import type { DrawnCircle, DrawnLine, DrawnObject } from './answer';
 import { basePointsOf, constructionOf, isInFrame } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
@@ -48,6 +60,23 @@ export const twoVerticesFeedback = (on: readonly string[], off: string) =>
 	`Ton cercle passe par ${on[0]} et ${on[1]} mais pas par ${off}.`;
 export const notCircumcircleFeedback = (names: readonly string[]) =>
 	`Ce n’est pas le cercle circonscrit au triangle ${names.join('')}.`;
+
+/** Ce que dit l'élève du rayon : « passant par A » ou « de rayon DE » */
+type RadiusKind = CenteredCircle['kind'];
+
+export const centeredMissingFeedback = (center: string, kind: RadiusKind, what: string) =>
+	kind === 'passant'
+		? `Trace le cercle de centre ${center} passant par ${what}.`
+		: `Trace le cercle de centre ${center} et de rayon ${what}.`;
+export const wrongCenterFeedback = (center: string) => `Pique ton compas en ${center}.`;
+export const goodCenterThroughFeedback = (center: string, through: string) =>
+	`Ton cercle a le bon centre mais ne passe pas par ${through}.`;
+export const goodCenterRadiusFeedback = (radius: string) =>
+	`Ton cercle a le bon centre mais pas le bon rayon : reporte la longueur ${radius}.`;
+export const centeredThroughEyeballedFeedback = (through: string) =>
+	`Ton compas est ouvert à l’œil : ouvre-le jusqu’à ${through}.`;
+export const centeredRadiusEyeballedFeedback = (radius: string) =>
+	`Ton compas est ouvert à l’œil : prends l’écartement ${radius} avec le Report.`;
 
 /** Erreur de l'AUTEUR, levée sous le nom de la classe du juge par l'appelant */
 export class CircleAuthorError extends Error {}
@@ -81,6 +110,19 @@ export function isCircleCheck(check: { kind: string }): check is CircleCheck {
 }
 
 const distance = (p: Position, q: Position) => Math.hypot(p.x - q.x, p.y - q.y);
+
+const isOnGrid = (value: number, step: number, eps: number) =>
+	Math.abs(value / step - Math.round(value / step)) * step <= eps;
+
+/** Les points que l'élève touche pour tracer un cercle de centre donné */
+const namesOfCentered = (circle: CenteredCircle): string[] =>
+	circle.kind === 'passant'
+		? [circle.center, circle.through]
+		: [circle.center, circle.from, circle.to];
+
+/** Ce que disent les messages du rayon : « A » (passant par A) ou « DE » (de rayon DE) */
+const radiusWordOf = (circle: CenteredCircle): string =>
+	circle.kind === 'passant' ? circle.through : `${circle.from}${circle.to}`;
 const centerOf = (c: DrawnCircle): Position => ({ x: c.cx, y: c.cy });
 
 /**
@@ -174,11 +216,17 @@ export function assertCircles(
 		}
 		seen.push({ name: check.name, circle });
 		const vertices = circumcircleOf(check.expression);
-		if (!vertices) {
+		const centered = vertices ? null : centeredCircleOf(check.expression);
+		if (!vertices && !centered) {
 			throw new CircleAuthorError(
-				`${label} : seulement un cercle circonscrit (cercle_circonscrit(A, B, C))`
+				`${label} : seulement un cercle circonscrit (cercle_circonscrit(A, B, C)) ou de centre donné (cercle(O, passant=A), cercle(O, rayon=distance(D, E)))`
 			);
 		}
+		if (centered) {
+			assertCentered(label, centered, circle, points, shapes);
+			continue;
+		}
+		if (!vertices) continue;
 		if (shapes.grid) {
 			throw new CircleAuthorError(
 				`${label} : le cercle circonscrit se construit sur papier uni ; retirer « grille: »`
@@ -186,15 +234,11 @@ export function assertCircles(
 		}
 		const { window } = shapes;
 		if (window) {
-			const { center, radius } = circle;
+			const { center } = circle;
 			if (!isInFrame(center, window)) {
 				throw new CircleAuthorError(`${label} : le centre du cercle est hors de la fenêtre`);
 			}
-			const box = [
-				{ x: center.x - radius, y: center.y - radius },
-				{ x: center.x + radius, y: center.y + radius }
-			];
-			if (!box.every((p) => isInFrame(p, window))) {
+			if (!fitsInFrame(circle, window)) {
 				throw new CircleAuthorError(
 					`${label} : le cercle sort de la fenêtre (l’élève doit le voir passer par les trois sommets) : agrandir la fenêtre`
 				);
@@ -214,6 +258,59 @@ export function assertCircles(
 				`${label} : le centre du cercle est déjà dans la figure (${where}) : rien à construire`
 			);
 		}
+	}
+}
+
+/** Le cercle entier tient-il dans la fenêtre ? */
+function fitsInFrame(
+	{ center, radius }: ExpectedCircle,
+	window: NonNullable<FigureShapes['window']>
+): boolean {
+	return [
+		{ x: center.x - radius, y: center.y - radius },
+		{ x: center.x + radius, y: center.y + radius }
+	].every((p) => isInFrame(p, window));
+}
+
+/**
+ * Cercle de centre donné faisable ? Points visibles (l'élève y pique le compas ou
+ * y prend l'écartement), cercle dans la fenêtre ; sur quadrillage, centre et point
+ * de passage sur des nœuds, et pas de rayon à reporter (le parseur l'a déjà refusé).
+ */
+function assertCentered(
+	label: string,
+	centered: CenteredCircle,
+	circle: ExpectedCircle,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes
+): void {
+	const names = namesOfCentered(centered);
+	const hidden = names.find((name) => !shapes.visiblePoints.has(name));
+	if (hidden) {
+		throw new CircleAuthorError(
+			`${label} : ${hidden} n’est pas visible (l’élève ne peut pas y piquer le compas)`
+		);
+	}
+	const { grid, window } = shapes;
+	if (grid) {
+		if (centered.kind === 'rayon') {
+			throw new CircleAuthorError(`${label} : le rayon se reporte sur papier uni`);
+		}
+		const eps = tolerance(...names.flatMap((n) => points.get(n) ?? []));
+		const off = names.find((name) => {
+			const p = points.get(name);
+			return p && !(isOnGrid(p.x, grid.x, eps) && isOnGrid(p.y, grid.y, eps));
+		});
+		if (off) {
+			throw new CircleAuthorError(
+				`${label} : ${off} n’est pas sur un nœud du quadrillage (le compas s’y aimante)`
+			);
+		}
+	}
+	if (window && !fitsInFrame(circle, window)) {
+		throw new CircleAuthorError(
+			`${label} : le cercle sort de la fenêtre (l’élève doit le voir en entier) : agrandir la fenêtre`
+		);
 	}
 }
 
@@ -285,6 +382,27 @@ export function judgeCircles(
 	for (const check of checks) {
 		const target = expectedOf(check, expected);
 		const free = circleIndexes.filter((i) => !taken.has(i));
+		const centered = centeredCircleOf(check.expression);
+		if (centered) {
+			// Quadrillage : chaque toucher est aimanté à un nœud, tout cercle tracé est construit
+			const onGrid = Boolean(shapes?.grid);
+			// Les cercles qui recouvrent un AUTRE cercle attendu ne sont pas des essais de
+			// celui-ci (rosace : le second cercle juste ne dit pas « mauvais centre », revue)
+			const others = checks
+				.filter((other) => other !== check)
+				.map((other) => expectedOf(other, expected));
+			const verdict = judgeCentered(
+				centered,
+				target,
+				free,
+				circleAt,
+				(i) => onGrid || built(i),
+				others
+			);
+			if (typeof verdict !== 'number') return verdict;
+			taken.add(verdict);
+			continue;
+		}
 		const covering = free.filter((i) => {
 			const c = circleAt(i);
 			return sameCircle({ center: centerOf(c), radius: radiusOf(c) }, target);
@@ -326,6 +444,58 @@ export function judgeCircles(
 		return { status: 'incorrect', feedback: notCircumcircleFeedback(names) };
 	}
 	return { status: 'correct' };
+}
+
+/**
+ * Un cercle de centre donné : l'indice du cercle juste de l'élève, ou le verdict
+ * (voir l'en-tête pour l'ordre des messages)
+ */
+function judgeCentered(
+	centered: CenteredCircle,
+	target: ExpectedCircle,
+	free: readonly number[],
+	circleAt: (i: number) => DrawnCircle,
+	built: (i: number) => boolean,
+	others: readonly ExpectedCircle[] = []
+): number | ConstructionVerdict {
+	const radiusWord = radiusWordOf(centered);
+	const covering = free.filter((i) => {
+		const c = circleAt(i);
+		return sameCircle({ center: centerOf(c), radius: radiusOf(c) }, target);
+	});
+	const good = covering.find(built);
+	if (good !== undefined) return good;
+	if (covering.length > 0) {
+		// Le centre est un point de la figure : seul le rayon a pu être pris à l'œil
+		return {
+			status: 'incorrect',
+			feedback:
+				centered.kind === 'passant'
+					? centeredThroughEyeballedFeedback(radiusWord)
+					: centeredRadiusEyeballedFeedback(radiusWord)
+		};
+	}
+	const attempts = free.filter((i) => {
+		const c = circleAt(i);
+		const drawn = { center: centerOf(c), radius: radiusOf(c) };
+		return !others.some((other) => sameCircle(drawn, other));
+	});
+	if (attempts.length === 0) {
+		return {
+			status: 'incorrect',
+			feedback: centeredMissingFeedback(centered.center, centered.kind, radiusWord)
+		};
+	}
+	if (!attempts.some((i) => hasCenter(circleAt(i), target.center))) {
+		return { status: 'incorrect', feedback: wrongCenterFeedback(centered.center) };
+	}
+	return {
+		status: 'incorrect',
+		feedback:
+			centered.kind === 'passant'
+				? goodCenterThroughFeedback(centered.center, radiusWord)
+				: goodCenterRadiusFeedback(radiusWord)
+	};
 }
 
 /** Correction d'un cercle : le cercle, son centre, deux médiatrices (décision 4) */
