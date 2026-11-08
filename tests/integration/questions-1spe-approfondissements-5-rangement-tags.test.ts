@@ -7,7 +7,7 @@
  * neuves (« sommes de termes » sous Généralités sur les suites, « emprunt » sous Modèles
  * d'évolution) ; les 4 brouillons du lot 5, créés le 2026-11-04 par scripts/create-questions.ts
  * (sans nœud ni tag), vont sur leur sous-notion et reçoivent leur point (1SPE-240, 241, 381, 242).
- * Décisions de David du 2026-11-04 (journal docs/wip/questions-1spe-demonstrations-progress.md
+ * Décisions de David du 2026-11-04 (journal docs/archive/wip/questions-1spe-demonstrations-progress.md
  * § 9 D3, § 10 D4).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
