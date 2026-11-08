@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2478 et le `deploy:prod` v0.78.1._
+_Mis à jour le 2026-11-08, après #2478, le `deploy:prod` v0.78.1 et la publication de `7f82d15a`._
 
-- **État** : #2478 mergée et **en prod** (v0.78.1, `deploy:prod` du 2026-11-08 ; #2462 aussi) · **Prochaine
-  action** : David peut lancer
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/lectures-graphiques-1spe --publier --mettre-a-jour`
-  (met à jour `7f82d15a` en base) · **En attente de David** : `c9e0effd` publiable (#2462 en prod) ;
-  publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles `23751c95`,
-  `c1c9cfc3`, `d4f38d30`, `d4d56c1b` · **Pièges en cours** : écritures ET simulations contre la prod lancées par
-  David (`!`) ; worktree neuf : `pnpm exec svelte-kit sync` avant tout script `tsx` ; `fiche:verifier` dans un
-  worktree : `PYTHON_FICHES=` vers le venv du dépôt principal ; `db:migrate` depuis le dépôt principal ·
-  **Worktree / branche** : aucun (retiré).
+- **État** : `7f82d15a` mis à jour en prod (v0 + v1 « à compléter », 12 specs) et **republié** (2026-11-08) ·
+  **Prochaine action** : aucune dans ce chantier ; la suite de la soirée (UX de l'admin des modèles) est le chantier
+  `admin-modeles` · **En attente de David** : `c9e0effd` publiable (#2462 en prod) ; publication en admin de
+  `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles `23751c95`, `c1c9cfc3`, `d4f38d30`,
+  `d4d56c1b` · **Pièges en cours** : `create-questions.ts --mettre-a-jour` ne touche jamais un modèle publié :
+  le repasser en brouillon (onglet « Publiés » de la liste), relancer, republier depuis l'onglet « Brouillons »
+  (la page d'édition refuse les réponses écrites dans le texte, `outils-manquants.md` n° 22) ; écritures contre
+  la prod lancées par David (`!`) ; `fiche:verifier` dans un worktree : `PYTHON_FICHES=` vers le venv du dépôt
+  principal · **Worktree / branche** : aucun.
 - Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
