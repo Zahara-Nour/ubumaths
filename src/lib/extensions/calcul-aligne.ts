@@ -15,6 +15,14 @@
  * de droite partent tous du même bord (un `aligned` les alignait sur le bord
  * gauche des flèches, décalés dès que deux flèches n'ont pas la même largeur).
  *
+ * Forme écrite : chaque membre ouvert par `\displaystyle`, les lignes séparées par
+ * `\\[6pt]`. Un `array` met ses cellules en style texte (MathLive comme LaTeX) :
+ * une fraction y rapetissait, les lignes sans fraction non, et la taille variait
+ * d'une ligne à l'autre. Au grand format, les fractions de deux lignes voisines se
+ * touchaient : MathLive n'ajoute aucun écart entre les lignes d'un `array`.
+ * L'ancienne forme (sans l'un ni l'autre) est lue, et réécrite par
+ * {@link normaliserCalcul}.
+ *
  * Cmd+Entrée (ou Ctrl/Alt+Entrée) dans un bloc ajoute une ligne : le bloc entier
  * passe par {@link ajouterLigne}, le curseur repéré par {@link MARQUEUR_CURSEUR}.
  * Un bloc `aligned` (écrit à la main, ou par l'éditeur de #2410) y est converti
@@ -45,8 +53,17 @@ export const RACCOURCIS_MOTS = {
 const DEBUT_CENTRE = '\\begin{array}{rcl}';
 const FIN_CENTRE = '\\end{array}';
 
+/** Ouvre chaque membre d'un calcul centré : fractions au grand format. */
+const STYLE = '\\displaystyle';
+
+/** Écart entre deux lignes d'un calcul centré, posé après chaque `\\`. */
+const ECART = '[6pt]';
+
+/** Écart lu en tête d'une ligne : `[6pt]`, `[0.5em]`… */
+const MOTIF_ECART = /^\s*\[\s*-?(?:\d+\.?\d*|\.\d+)\s*(?:em|ex|pt|mm|cm|mu)\s*\]/;
+
 /** Bloc inséré par le bouton « Calcul aligné » : une ligne, le curseur dedans. */
-export const CALCUL_ALIGNE_VIDE = `${DEBUT_CENTRE}${MARQUEUR_CURSEUR}${FIN_CENTRE}`;
+export const CALCUL_ALIGNE_VIDE = `${DEBUT_CENTRE}${STYLE} ${MARQUEUR_CURSEUR}${FIN_CENTRE}`;
 
 /** Connecteurs logiques : la coupure les préfère aux relations. */
 const CONNECTEURS = new Set([
@@ -90,8 +107,10 @@ type Forme = 'aligned' | 'centre';
 
 interface Calcul {
 	forme: Forme;
-	/** Cellules de chaque ligne, rognées. */
+	/** Cellules de chaque ligne, rognées, sans `\displaystyle` ni écart. */
 	lignes: string[][];
+	/** Calcul centré déjà écrit dans la forme de {@link ecrire}. */
+	enForme: boolean;
 }
 
 interface Jeton {
@@ -186,6 +205,52 @@ const MOTIF_ALIGNED = /^(\\maltese)?\s*\\begin\{aligned\}([\s\S]*)\\end\{aligned
 const MOTIF_CENTRE =
 	/^(\\maltese)?\s*\\begin\{array\}\s*\{\s*rcl\s*\}([\s\S]*)\\end\{array\}\s*(\\maltese)?$/;
 
+/** Indice de l'accolade qui ferme celle ouverte en 0, ou -1. */
+function accoladeFermante(texte: string): number {
+	let profondeur = 0;
+	for (const { texte: t, debut } of jetons(texte)) {
+		if (t === '{') profondeur++;
+		if (t === '}' && --profondeur === 0) return debut;
+	}
+	return -1;
+}
+
+/** Vrai si `texte` commence par la commande `commande` entière (`\displaystyle`, pas `\displaystyles`). */
+function commencePar(texte: string, commande: string): boolean {
+	return texte.startsWith(commande) && !/[a-zA-Z]/.test(texte[commande.length] ?? '');
+}
+
+/** Colle deux morceaux sans souder une commande à la lettre qui suit. */
+function coller(avant: string, apres: string): string {
+	const souderait = /\\[a-zA-Z]+$/.test(avant) && /^[a-zA-Z]/.test(apres);
+	return avant + (souderait ? ' ' : '') + apres;
+}
+
+/**
+ * Membre sans son `\displaystyle` d'en tête : nu (`\displaystyle x`, la forme
+ * écrite) ou en groupe (`{\displaystyle x}+y`, la forme sérialisée par MathLive
+ * après une frappe). Un marqueur posé devant est gardé devant.
+ *
+ * @returns le membre nettoyé, et s'il avait son style
+ */
+function sansStyle(cellule: string): { texte: string; style: boolean } {
+	let texte = cellule.trim();
+	const marqueur = texte.startsWith(MARQUEUR_CURSEUR) ? MARQUEUR_CURSEUR : '';
+	texte = texte.slice(marqueur.length).trim();
+	let style = false;
+	for (;;) {
+		if (commencePar(texte, STYLE)) {
+			texte = texte.slice(STYLE.length).trim();
+		} else if (texte.startsWith('{') && commencePar(texte.slice(1), STYLE)) {
+			const fin = accoladeFermante(texte);
+			if (fin < 0) break;
+			texte = coller(texte.slice(1 + STYLE.length, fin).trim(), texte.slice(fin + 1).trim());
+		} else break;
+		style = true;
+	}
+	return { texte: coller(marqueur, texte).trim(), style };
+}
+
 /**
  * Lignes d'un bloc qui n'est QU'un calcul aligné (`aligned` ou `array{rcl}`),
  * chaque ligne en cellules, sinon null. Un marqueur collé avant ou après
@@ -198,18 +263,35 @@ function lireCalcul(latex: string): Calcul | null {
 	const m = centre ?? t.match(MOTIF_ALIGNED);
 	if (!m || !equilibre(m[2])) return null;
 	const corps = (m[1] ?? '') + m[2] + (m[3] ?? '');
-	return {
-		forme: centre ? 'centre' : 'aligned',
-		lignes: decouper(corps, LIGNE).map((ligne) => decouper(ligne, CELLULE).map((c) => c.trim()))
-	};
+	let enForme = centre !== null;
+	const lignes = decouper(corps, LIGNE).map((ligne, i) => {
+		const ecart = ligne.match(MOTIF_ECART);
+		if (i > 0 && !ecart) enForme = false;
+		const cellules = decouper(ecart ? ligne.slice(ecart[0].length) : ligne, CELLULE);
+		if (cellules.length !== 3) enForme = false;
+		return cellules.map((cellule, j) => {
+			const { texte, style } = sansStyle(cellule);
+			if (j !== 1 && texte !== '' && !style) enForme = false;
+			return texte;
+		});
+	});
+	return { forme: centre ? 'centre' : 'aligned', lignes, enForme };
 }
 
-/** Remet des lignes de cellules dans leur environnement. */
+/**
+ * Remet des lignes de cellules dans leur environnement. Calcul centré : chaque
+ * membre non vide ouvert par `\displaystyle`, la relation telle quelle, un écart
+ * entre les lignes.
+ */
 function ecrire(lignes: string[][], forme: Forme): string {
-	const corps = lignes.map((l) => l.join(CELLULE)).join(LIGNE);
-	return forme === 'centre'
-		? `${DEBUT_CENTRE}${corps}${FIN_CENTRE}`
-		: `\\begin{aligned}${corps}\\end{aligned}`;
+	if (forme === 'aligned') {
+		const corps = lignes.map((l) => l.join(CELLULE)).join(LIGNE);
+		return `\\begin{aligned}${corps}\\end{aligned}`;
+	}
+	const corps = lignes
+		.map((l) => l.map((c, j) => (j === 1 || c === '' ? c : `${STYLE} ${c}`)).join(CELLULE))
+		.join(LIGNE + ECART);
+	return `${DEBUT_CENTRE}${corps}${FIN_CENTRE}`;
 }
 
 /**
@@ -280,7 +362,7 @@ function remettreLigneDuCurseur(cellules: string[]): string[] {
  *   de la nouvelle ligne, la relation de la ligne du dessus reprise au milieu
  */
 export function ajouterLigne(latex: string): string {
-	const lignes = lireCalcul(latex)?.lignes ?? [[latex.trim()]];
+	const lignes = lireCalcul(latex)?.lignes ?? [[sansStyle(latex).texte]];
 	const indice = ligneDuCurseur(lignes);
 
 	const remises = lignes.map((l, i) =>
@@ -294,6 +376,19 @@ export function ajouterLigne(latex: string): string {
 /** Vrai si le bloc est un calcul centré (`array{rcl}`). */
 export function estCalculCentre(latex: string): boolean {
 	return lireCalcul(latex)?.forme === 'centre';
+}
+
+/**
+ * Calcul centré réécrit dans la forme de {@link ecrire} : un membre tapé dans une
+ * cellule restée vide, ou un bloc écrit avant les fractions au grand format.
+ *
+ * @returns le calcul réécrit, ou null s'il est déjà en forme (ou n'est pas un
+ *   calcul centré)
+ */
+export function normaliserCalcul(latex: string): string | null {
+	const calcul = lireCalcul(latex);
+	if (calcul?.forme !== 'centre' || calcul.enForme) return null;
+	return ecrire(calcul.lignes, 'centre');
 }
 
 /** Vrai si le bloc est un calcul aligné dont une ligne est vide (test rapide, sans curseur). */

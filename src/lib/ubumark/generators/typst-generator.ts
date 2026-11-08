@@ -1042,6 +1042,8 @@ function generateAlignedEquation(content: string, relationEnColonne = false): st
 	// Split by \\ to get rows
 	const rows = protectedContent
 		.split(/\\\\/)
+		// Écart entre deux lignes (`\\[6pt]` du calcul centré) : la grille a le sien
+		.map((row) => row.replace(/^\s*\[\s*-?(?:\d+\.?\d*|\.\d+)\s*(?:em|ex|pt|mm|cm|mu)\s*\]/, ''))
 		.map(trimLatex)
 		.filter((row) => row.length > 0)
 		// Restore nested environments

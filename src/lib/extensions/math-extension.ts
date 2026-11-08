@@ -41,6 +41,7 @@ import {
 	effacerRelation,
 	estCalculCentre,
 	MARQUEUR_CURSEUR,
+	normaliserCalcul,
 	RACCOURCIS_MOTS,
 	rangerRelation,
 	relationEnCours,
@@ -943,8 +944,11 @@ export const MathBlock = Node.create({
 			// Create MathLive field
 			const mathfield = document.createElement('math-field') as MathFieldElement;
 
-			// Set initial value
-			mathfield.value = node.attrs.latex as string;
+			// Valeur initiale. Un calcul centré écrit avant les fractions au grand format
+			// est affiché dans la nouvelle forme ; le nœud, lui, n'est réécrit qu'à la
+			// prochaine modification (aucune transaction à l'ouverture d'un document).
+			let latexRecu = node.attrs.latex as string;
+			mathfield.value = normaliserCalcul(latexRecu) ?? latexRecu;
 
 			// Use display mode for block math (renders fractions vertically, not inline)
 			mathfield.setAttribute('math-style', 'display');
@@ -1083,9 +1087,10 @@ export const MathBlock = Node.create({
 				});
 
 				// Champ quitté : plus de raccourci en cours, toute relation restée en tête
-				// de la colonne de droite (seule, ou retapée devant une suite) est rangée.
+				// de la colonne de droite (seule, ou retapée devant une suite) est rangée,
+				// et un membre tapé dans une cellule restée vide passe au grand format.
 				mathfield.addEventListener('blur', () => {
-					const range = rangerRelation(mathfield.value, true);
+					const range = rangerRelation(mathfield.value, true) ?? normaliserCalcul(mathfield.value);
 					if (range === null) return;
 					mathfield.value = range;
 					synchroniser();
@@ -1154,10 +1159,14 @@ export const MathBlock = Node.create({
 					if (updatedNode.type.name !== 'mathBlock') return false;
 
 					// Only update mathfield if the value actually differs
-					// (avoid updating when we're the source of the change)
-					if (updatedNode.attrs.latex !== mathfield.value) {
-						mathfield.value = updatedNode.attrs.latex as string;
+					// (avoid updating when we're the source of the change).
+					// Comparé aussi au dernier LaTeX reçu : un calcul affiché dans sa
+					// nouvelle forme diffère du nœud tant qu'il n'a pas été modifié.
+					const latex = updatedNode.attrs.latex as string;
+					if (latex !== mathfield.value && latex !== latexRecu) {
+						mathfield.value = normaliserCalcul(latex) ?? latex;
 					}
+					latexRecu = latex;
 
 					return true; // View can be reused
 				},

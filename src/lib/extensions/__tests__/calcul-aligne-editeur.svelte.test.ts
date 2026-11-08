@@ -9,6 +9,7 @@ import { Editor, type JSONContent } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import 'mathlive';
 import { MathInline, MathBlock } from '../math-extension';
+import { normaliserCalcul } from '../calcul-aligne';
 
 const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -47,13 +48,53 @@ async function taper(texte: string): Promise<void> {
 
 const nouvelleLigne = () => taper('{Control>}{Enter}{/Control}');
 
-/** LaTeX du premier nœud du type, sans espaces (MathLive en sème autour des &). */
-function latexDe(e: Editor, type: string): string {
+/** LaTeX brut du premier nœud du type. */
+function latexBrut(e: Editor, type: string): string {
 	let latex = '';
 	e.state.doc.descendants((n) => {
 		if (!latex && n.type.name === type) latex = String(n.attrs.latex);
 	});
-	return latex.replace(/\s+/g, '');
+	return latex;
+}
+
+/**
+ * Retire les `\displaystyle` d'en tête de membre, nus ou en groupe
+ * (`{\displaystyle …}`, écrit par MathLive après une frappe).
+ */
+function sansStyle(latex: string): string {
+	let resultat = latex;
+	for (;;) {
+		const debut = resultat.indexOf('{\\displaystyle');
+		if (debut < 0) break;
+		let profondeur = 0;
+		let fin = debut;
+		for (; fin < resultat.length; fin++) {
+			if (resultat[fin] === '\\') {
+				fin++;
+				continue;
+			}
+			if (resultat[fin] === '{') profondeur++;
+			if (resultat[fin] === '}' && --profondeur === 0) break;
+		}
+		resultat =
+			resultat.slice(0, debut) +
+			resultat.slice(debut + '{\\displaystyle'.length, fin) +
+			resultat.slice(fin + 1);
+	}
+	return resultat.replace(/\\displaystyle(?![a-zA-Z])/g, '');
+}
+
+/**
+ * LaTeX du premier nœud du type, sans espaces (MathLive en sème autour des &),
+ * ni le style ni l'écart du calcul centré : vérifiés à part par {@link enForme}.
+ */
+function latexDe(e: Editor, type: string): string {
+	return sansStyle(latexBrut(e, type)).replace(/\s+/g, '').replaceAll('\\\\[6pt]', '\\\\');
+}
+
+/** Calcul centré du nœud dans la forme écrite : membres au grand format, lignes espacées. */
+function enForme(e: Editor): boolean {
+	return normaliserCalcul(latexBrut(e, 'mathBlock')) === null;
 }
 
 const bloc = (latex: string): JSONContent => ({ type: 'mathBlock', attrs: { latex } });
@@ -70,6 +111,7 @@ describe('Ctrl+Entrée dans un bloc', () => {
 		await nouvelleLigne();
 		await taper('8');
 		expect(latexDe(e, 'mathBlock')).toBe(centre('A&=&3+4\\\\&=&7\\\\&=&8'));
+		expect(enForme(e)).toBe(true);
 	});
 
 	it('raisonnement : coupe sur ⇔, « ou » devient un mot', async () => {
@@ -88,6 +130,7 @@ describe('Ctrl+Entrée dans un bloc', () => {
 		await nouvelleLigne();
 		await taper('7');
 		expect(latexDe(e, 'mathBlock')).toBe(centre('A&=&3+4\\\\&=&7'));
+		expect(enForme(e)).toBe(true);
 	});
 });
 
@@ -100,6 +143,7 @@ describe('changer la relation d’une nouvelle ligne', () => {
 		expect(latexDe(e, 'mathBlock')).toBe(centre('n=1&\\iff&n+1=2\\\\&&'));
 		await taper('=>n=0');
 		expect(latexDe(e, 'mathBlock')).toBe(centre('n=1&\\iff&n+1=2\\\\&\\Rightarrow&n=0'));
+		expect(enForme(e)).toBe(true);
 	});
 
 	it('ligne déjà remplie : le raccourci => aboutit, rangé en quittant le champ (revue #2422)', async () => {
@@ -120,6 +164,7 @@ describe('changer la relation d’une nouvelle ligne', () => {
 		champ.blur();
 		await pause(100);
 		expect(latexDe(e, 'mathBlock')).toBe(centre('n=1&\\iff&n+1=2\\\\&\\Rightarrow&x=3'));
+		expect(enForme(e)).toBe(true);
 	});
 });
 
@@ -155,6 +200,7 @@ describe('bouton « Calcul aligné »', () => {
 		await nouvelleLigne();
 		await taper('7');
 		expect(latexDe(e, 'mathBlock')).toBe(centre('A&=&3+4\\\\&=&7'));
+		expect(enForme(e)).toBe(true);
 	});
 });
 
@@ -171,5 +217,45 @@ describe('Retour arrière sur une sélection (revue #2410)', () => {
 		champ.selection = { ranges: [[2, 5]] };
 		await taper('{Backspace}');
 		expect(latexDe(e, 'mathBlock')).toBe('\\begin{aligned}A&+4\\\\&\\end{aligned}');
+	});
+});
+
+describe('fractions au grand format', () => {
+	/** Hauteur rendue de la première fraction du champ. */
+	function hauteurFraction(champ: Element): number {
+		const fraction = champ.shadowRoot?.querySelector('.ML__mfrac');
+		if (!fraction) throw new Error('aucune fraction rendue');
+		return fraction.getBoundingClientRect().height;
+	}
+
+	it('une fraction du calcul a la taille d’une fraction seule dans un bloc', async () => {
+		await editeur([bloc('\\begin{array}{rcl}\\frac{1}{2}&=&x\\end{array}'), bloc('\\frac{1}{2}')]);
+		await pause(200);
+		const [calcul, seule] = document.querySelectorAll('.math-block-wrapper math-field');
+		expect(hauteurFraction(calcul)).toBeCloseTo(hauteurFraction(seule), 0);
+	});
+
+	it('ancien calcul : affiché au grand format sans toucher au nœud, réécrit à la première frappe', async () => {
+		const ancien = '\\begin{array}{rcl}A&=&\\frac{1}{2}\\\\&=&0{,}5\\end{array}';
+		const e = await editeur([bloc(ancien)]);
+		const champ = document.querySelector('.math-block-wrapper math-field') as HTMLElement & {
+			position: number;
+			lastOffset: number;
+			getValue(debut: number, fin: number, format: 'latex'): string;
+		};
+		await userEvent.click(champ);
+		await pause(200);
+		champ.blur();
+		await pause(100);
+		// Ouvrir et quitter ne modifie pas le document
+		expect(latexBrut(e, 'mathBlock')).toBe(ancien);
+		await userEvent.click(champ);
+		await pause(200);
+		for (let p = 0; p < champ.lastOffset; p++) {
+			if (champ.getValue(p, p + 1, 'latex') === '5') champ.position = p + 1;
+		}
+		await taper('1');
+		expect(enForme(e)).toBe(true);
+		expect(latexDe(e, 'mathBlock')).toBe(centre('A&=&\\frac{1}{2}\\\\&=&0{,}51'));
 	});
 });
