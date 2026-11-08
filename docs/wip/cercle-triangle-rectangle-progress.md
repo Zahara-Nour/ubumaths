@@ -7,16 +7,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, à l'ouverture._
+_Mis à jour le 2026-11-08, phase 0 validée._
 
-- **État** : phase 0 écrite (§ 1), pas de code.
-- **Prochaine action** : David valide la phase 0 (questions Q1 à Q4) ; puis tests rouges du n° 19.
-- **En attente de David** : Q1 à Q4 du § 1.
+- **État** : phase 0 validée (§ 1) ; n° 19 en cours (tests rouges).
+- **Prochaine action** : tests rouges du cercle de centre donné, puis implémentation dans `circle.ts`.
+- **En attente de David** : rien.
 - **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` sur la PR ;
   `verifier: cercle` refuse aujourd'hui toute autre expression que `cercle_circonscrit` (à la publication).
 - **Worktree / branche** : `../ubumaths-wt-cercle-triangle-rectangle`, `feat/cercle-triangle-rectangle`.
 
-## 1. Phase 0 — comportements (2026-11-08, à valider)
+## 1. Phase 0 — comportements (validée le 2026-11-08)
 
 **Question d'accès** : aucune — code pur de la case « figure », ni table, ni policy, ni route.
 
@@ -61,3 +61,7 @@ hors cycle 2), plutôt qu'une vérification neuve.
 - **Q3** — Triangle rectangle sur quadrillage : comment donner la longueur de AC ? (reco : en carreaux, côtés sur les
   lignes ; sur les obliques, `AC = AB` seulement, le triangle rectangle isocèle)
 - **Q4** — Ordre : n° 19 puis n° 20, une PR chacun, puis le lot 12b du CE2 dans `questions-ce2` (reco : oui)
+
+**Décisions de David (« je suis tes recos », 2026-11-08)** : Q1 quadrillage et papier uni ; Q2 extension de
+`triangle` (`CAB = 90` à l'équerre) ; Q3 carreaux sur les lignes, `AC = AB` seul sur les obliques ; Q4 n° 19 puis
+n° 20, une PR chacun, revue `code-reviewer` en `model: opus`, puis le lot 12b du CE2.
