@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2434 ; test d'intégration du rangement lot 1 vert, preuve rouge faite (§ 4)._
+_Mis à jour le 2026-11-08, après #2454._
 
-- **État** : lot 1 mergé (#2434) et créé en brouillon en prod ; migration nœud + tag `20261108070133` et son test
-  verts (12/12, rouges sans la migration) ; `security-auditor` : RAS ; PR du rangement en cours.
-- **Prochaine action** : PR → CI → merge → `db:migrate` depuis la branche mergée → page à cocher.
+- **État** : lot 1 en brouillon en prod, rangé (nœud + point, #2454, migration `20261108070133` appliquée) ;
+  page à cocher publiée : https://claude.ai/artifact/2T6PYa1jHeoQRWFsERRJor.
+- **Prochaine action** : lire et compter les verdicts de David (collection `verdicts`), corriger s'il y a lieu,
+  puis `publier-lot.ts --dir scripts/questions/2de-demonstrations-1` en simulation, David lance `--publier`.
   Ensuite lot 2 (géométrie : 304, 438, 320).
-- **En attente de David** : rien.
+- **En attente de David** : sa relecture des 5 modèles sur la page à cocher (bloc ranger à jouer dans l'aperçu).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David ; `create-questions` écrit l'`id` dans les
   JSON du dépôt d'où il tourne → les reporter sur la branche puis `git restore` dans le dépôt principal ; positions
   « ranger » par `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-2-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-2-rangement` (mergée ; nouvelle branche pour le lot 2).
 
 ---
 
@@ -115,3 +116,8 @@ copie) : partie aller de la migration vidée (rollback gardé, l. 1-112) → 6 r
 
 Rebasée sur `origin/main` (2026-11-08) : `main` portait 5 migrations postérieures à `20261106130142` (déjà en prod
 pour certaines) → migration ré-horodatée `20261108070133` (`pnpm migration:horodatage`), test et journal suivis.
+
+Mergée (#2454, CI verte du premier coup). `db:migrate` depuis le dépôt principal (seule migration en attente) ;
+vérifié en prod : les 5 brouillons sur un nœud, chacun avec son seul point, `draft`. Page à cocher :
+https://claude.ai/artifact/2T6PYa1jHeoQRWFsERRJor (5 alertes attendues : bloc ranger non dessiné, à jouer dans
+l'aperçu admin).
