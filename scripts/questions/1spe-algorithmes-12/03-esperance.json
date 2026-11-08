@@ -1,0 +1,194 @@
+{
+	"title": "Espérance avec Python",
+	"description": "Fonction esperance(valeurs, probas) : faire tourner sur une loi à trois valeurs, compléter la ligne s = s + valeurs[k] * probas[k]",
+	"grades": ["1_SPE"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef esperance(valeurs, probas):\n    s = 0\n    for k in range(len(valeurs)):\n        s = s + valeurs[k] * probas[k]\n    return s\n```\n\nQue renvoie l'appel `esperance([{{eval:x1}}, {{eval:x2}}, {{eval:x3}}], [0.{{eval:a}}, 0.{{eval:b}}, 0.{{eval:c}}])` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "d1",
+					"expression": "1..4"
+				},
+				{
+					"name": "d2",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+d1"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:x2+d2"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:9-a}}"
+				},
+				{
+					"name": "c",
+					"expression": "eval:10-a-b"
+				},
+				{
+					"name": "S",
+					"expression": "eval:a*x1+b*x2+c*x3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:S/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle ajoute à `s`, pour chaque valeur, le produit de la valeur par sa probabilité.",
+					"$s={{eval:x1}}\\times{{eval:a/10;d}}+{{if:x2<0|({{eval:x2}})|{{eval:x2}}}}\\times{{eval:b/10;d}}+{{if:x3<0|({{eval:x3}})|{{eval:x3}}}}\\times{{eval:c/10;d}}$.",
+					"L'appel renvoie $\\textcolor{{{color:primary.0}}}{{{eval:S/10;d}}}$, l'espérance de la loi donnée."
+				]
+			}
+		},
+		{
+			"statement": "Une variable aléatoire $X$ prend les valeurs de la liste `valeurs`, avec les probabilités de la liste `probas` (dans le même ordre). La fonction ci-dessous doit renvoyer l'espérance de $X$.\n\n```python\ndef esperance(valeurs, probas):\n    s = 0\n    for k in range(len(valeurs)):\n        ...\n    return s\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `s = s + valeurs[k] * probas[k]`\n- `s = valeurs[k] * probas[k]`\n- `s = s + valeurs[k]`\n- `s = s + probas[k]`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$E(X)=x_1\\,p_1+x_2\\,p_2+\\dots+x_n\\,p_n$ : chaque valeur est multipliée par sa probabilité.",
+					"Il faut AJOUTER chaque produit à la somme `s` : `s = valeurs[k] * probas[k]` remplacerait la somme par le dernier produit.",
+					"La ligne est donc `s = s + valeurs[k] * probas[k]`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "[1, 2, 5], [0.2, 0.5, 0.3] : 2,7",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "3",
+				"x2": "2",
+				"x3": "5",
+				"a": "2",
+				"b": "5",
+				"c": "3",
+				"S": "27"
+			},
+			"answers": ["2.7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2,7 avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "3",
+				"x2": "2",
+				"x3": "5",
+				"a": "2",
+				"b": "5",
+				"c": "3",
+				"S": "27"
+			},
+			"answers": ["2,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne des valeurs (8/3)",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "3",
+				"x2": "2",
+				"x3": "5",
+				"a": "2",
+				"b": "5",
+				"c": "3",
+				"S": "27"
+			},
+			"answers": ["\\frac{8}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[-2, 0, 3], [0.5, 0.3, 0.2] : -0,4",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "-2",
+				"d1": "2",
+				"d2": "3",
+				"x2": "0",
+				"x3": "3",
+				"a": "5",
+				"b": "3",
+				"c": "2",
+				"S": "-4"
+			},
+			"answers": ["-0.4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "s = s + valeurs[k] * probas[k]",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : s = valeurs[k] * probas[k]",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : s = s + valeurs[k]",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : s = s + probas[k]",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
