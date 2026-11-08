@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après le `db:migrate` de #2444._
+_Mis à jour le 2026-11-08, après #2453._
 
-- **État** : PR 1 (#2435) et 1b (#2442) en prod (0.76.0). PR 2 (#2444) mergée et **migration appliquée en prod le 2026-11-08** : 4 lignes converties, `updated_at` intacts, 0 ligne HTML restante.
-- **Prochaine action** : PR 3 (`feat/cahier-ubumark-retrait-html`) ouverte : CI + revue → merge → PR 4 = énigmes.
-- **En attente de David** : vidéo dans une liste ou une citation jamais rendue (`ListNode`, `Blockquote`, partout) — la corriger, et où ?
-- **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance (`! pnpm db:migrate`) ; migration plus ancienne que la dernière distante → `--include-all` (essai `--dry-run` d'abord) ; `Doc-inchangée:` dans un COMMIT ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed` ; cookies partagés sur `localhost` → `cahier.localhost:5178`.
-- **Worktree / branche** : `../ubumaths-wt-cahier-ubumark` · `feat/cahier-ubumark-retrait-html`.
+- **État** : PR 1, 1b en prod (0.76.0) ; PR 2 (#2444) mergée, migration appliquée en prod le 2026-11-08 ; PR 3 (#2453, retrait de la lecture HTML) **mergée, pas encore en prod** (sans risque : 0 ligne HTML en base).
+- **Prochaine action** : PR 4 = énigmes (`RiddleForm` écrit du HTML, `RiddleCard` le lit en markdown ; 2 énigmes en prod, en HTML) — phase 0 à écrire et faire valider.
+- **En attente de David** : vidéo dans une liste ou une citation jamais rendue (`ListNode`, `Blockquote`, partout) — PR à part avant la PR 4, ou `outils-manquants.md` ?
+- **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance ; migration plus ancienne que la dernière distante → `--include-all` (`--dry-run` d'abord) ; `Doc-inchangée:` dans un COMMIT ; job navigateur de la CI qui plante tests verts (`wrapDynamicImport`) → `gh run rerun <run> --failed` ; cookies partagés sur `localhost` → `cahier.localhost:5178`.
+- **Worktree / branche** : aucun ; PR 4 → nouveau worktree `../ubumaths-wt-cahier-ubumark` depuis `origin/main`.
 
 ## Décision d'origine
 
@@ -128,3 +128,4 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 - Retirés : `isLegacyHtmlContent` et la branche HTML de `journalContentPreview` (`content.ts`), la branche `{@html}` de `JournalContent`, `editorInput` de l'éditeur de séance (l'éditeur charge `markdownValue`). `linkifyResourceReferences` reste (page `/demo/editeur`).
 - Tests rouges puis verts : une ligne à l'ancienne forme HTML s'affiche en texte (`<strong>` littéral) ; module sans détection HTML. Mineurs de la revue #2442 ajoutés : `//hôte`, adresse relative → lien, `data:` → ni vidéo ni lien `data:`.
 - ⚠️ Constat : une vidéo dans une liste ou une citation n'est **jamais rendue** — l'arbre ubumark la porte (`list-item` / `blockquote` → `video`), mais `ListNode` et `Blockquote` n'ont pas de cas `video`. Vrai partout (cours compris). Côté cahier, rien n'est chargé (testé). Question à David.
+- Mergée (#2453) le 2026-11-08 ; revue (code-reviewer) sans bloquant ; job navigateur relancé une fois (plantage connu).
