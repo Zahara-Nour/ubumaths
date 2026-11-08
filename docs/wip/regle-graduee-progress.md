@@ -9,12 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, ADR 0036 écrite, comportements de 039 proposés (§ 2)._
+_Mis à jour le 2026-11-08, PR 1 (039) ouverte._
 
-- **État** : ADR 0036 commitée sur `main` (3623b957b, **push en attente** : index de `main` occupé par une autre
-  session sur `outils-manquants.md`) ; § 2 = comportements du tracé (039) ; pas de code.
-- **Prochaine action** : tests rouges (`segment-length` dans `questions/construction/`).
-- **En attente de David** : rien (Q5-Q8 tranchées).
+- **État** : PR 1 « segment de longueur donnée » ouverte (§ 3) ; ADR 0036 commitée sur `main` (3623b957b), **push en
+  attente** (index de `main` occupé par une autre session sur `outils-manquants.md`).
+- **Prochaine action** : revue `code-reviewer` (opus) + CI, vérification visuelle, puis PR 2 : demi-droite [Ax) et
+  constructions cotées (070).
+- **En attente de David** : choix (1)-(9) du § 3 ; vérification visuelle sur téléphone.
 - **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le chantier
   `cercle-triangle-rectangle` (n° 19, 20) touche les mêmes fichiers de `src/lib/questions/construction/`.
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee`.
@@ -75,3 +76,19 @@ on la réutilise comme `Protractor.svelte` dans `FigureACompleterView.svelte`. M
 (comme le repère du rapporteur ; vraie loupe plus tard) ; Q6 le 0 de la règle s'aimante au point le plus proche au
 1er toucher ; Q7 l'auteur choisit : direction libre depuis A (défaut, 039) ou le long d'une demi-droite [Ax) de la
 figure (070) ; Q8 un bout hors graduation est refusé (« tracé à l'œil »), comme l'angle.
+
+## 3. PR 1 — segment de longueur donnée (039), direction libre (2026-11-08)
+
+Commit 7643c129c : `segment-length.ts`, parseur, `drawing.ts` (pose, ‹ ›, Retourner), `instruments.ts` (aimantation au mm),
+juge, vue, `Ruler.svelte` (`mirrored`), catalogue, docs. Tests rouges vérifiés puis verts (55 purs, 4 composant).
+
+**Choix faits sans David (à valider)** : (1) `fenetre:` exigée, B absent de la figure ; (2) longueur de la règle =
+plus grand côté de la fenêtre en cm entiers, 20 cm au plus (`rulerLengthOf`) ; (3) pose stockée dans la réponse,
+`regle(ox;oy;bx;by;sens)`, la dernière fait foi ; Effacer retire le segment puis la règle ; (4) aimantation : point
+nommé, sinon graduation du mm, sinon instruments ; (5) ‹ › sans segment en tracent un depuis le 0 ; Maj ±1 cm ;
+(6) messages dans l'unité de l'auteur (« 5 cm 8 mm » pour `5 cm 3 mm`, « 58 mm » pour `72 mm`) ; (7) bout sur un point
+construit accepté (`constructionOf`) ; (8) libellé « Règle graduée » (`droite` = « Règle ») ; (9) correction : règle
+posée en A dans la direction de la règle de l'élève, sinon de son segment, sinon la 1re qui tient.
+
+**Douteux** : règle posée ailleurs qu'en A → message « tracé à l'œil » trompeur (rare : le 0 s'aimante) ; rendu de la
+règle retournée et lisibilité sur téléphone non vus.
