@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2484._
+_Mis à jour le 2026-11-08, après #2484 et la création des brouillons du lot 5._
 
-- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lot 4 publié ; lot 5 (321, 322) mergé (#2484), brouillons pas encore créés en prod.
-- **Prochaine action** : David lance la commande du § 11 → migration nœud + tag (calquée sur le lot 4, worktree
-  neuf) → page à cocher ; puis lot 6 (361, 362, 387, 388).
-- **En attente de David** : création des 2 brouillons (commande `!` du § 11).
+- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lot 4 publié ; lot 5 (321, 322) mergé (#2484), brouillons créés en prod par David (6564c2bf, 9a05a09f), sans nœud ni tag.
+- **Prochaine action** : migration nœud + tag du lot 5 (calquée sur `20261108192038_…_algorithmes_4_…` et son
+  test d'intégration), sur la branche déjà ouverte (ids commités) → page à cocher ; puis lot 6 (361, 362, 387, 388).
+- **En attente de David** : rien.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf →
   `svelte-kit sync` avant `question:specs` ; `create-questions` en local : `export` des 2 variables de
   `.env.local` (dotenv n'écrase pas), et il ÉCRIT l'id local dans les JSON → régénérer par le script après.
-- **Worktree / branche** : aucun (la migration du lot 5 prendra `ubumaths-wt-questions-2de-demonstrations`).
+- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-algorithmes-5-rangement`
+  (ids des brouillons commités, `pnpm install` à faire).
 
 ---
 
@@ -345,3 +346,10 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-5 --publier`
 
 Mergée (#2484, CI verte du premier coup).
+
+Créés en brouillon par David (2026-11-08) : 6564c2bf (321), 9a05a09f (322) ; ids commités sur la branche de la
+migration.
+Relevé prod (MCP, 2026-11-08, avant la migration) : 2 brouillons au niveau {2}, sans nœud ni tag ; 2-321 et
+2-322 actifs sur leur sous-notion, aucun modèle déjà tagué dessus.
+Migration `20261108222224_questions_2de_algorithmes_5_rangement_tags` (calquée sur le lot 4, seules les données
+changent, diff relu) : test d'intégration 12/12 vert, rouge sans les écritures (2 échecs, 5 sautés). PR #2487.

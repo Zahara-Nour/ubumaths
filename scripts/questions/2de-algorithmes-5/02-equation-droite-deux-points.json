@@ -1,4 +1,5 @@
 {
+	"id": "9a05a09f-636c-4079-9a8c-210a960644d3",
 	"title": "Équation réduite d'une droite par deux points, en Python",
 	"description": "equation(xA, yA, xB, yB) renvoie la pente m et l'ordonnée à l'origine p : valeurs renvoyées (deux cases), compléter la ligne de p, cas d'erreur (xA == xB, division par zéro)",
 	"grades": ["2"],
