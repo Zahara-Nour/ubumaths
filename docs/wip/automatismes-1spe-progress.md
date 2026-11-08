@@ -16,7 +16,7 @@ _Mis à jour le 2026-11-08, phase 0 du lot 4 « Géométrie et repérage » vali
   1re ; publication des modèles `23751c95` et `c1c9cfc3` (brouillons) · **Pièges en cours** : écritures ET
   simulations contre la prod lancées par David (commande donnée avec `!`) ; `debord.py` ne voit pas une
   équation centrée trop large : relire les pages ; essai local : script `.mts` (tsx en CJS sinon) ; garde
-  « doc à jour » : une migration exige `Doc-inchangée:` dans un commit · **Worktree / branche** : à créer.
+  « doc à jour » : une migration exige `Doc-inchangée:` dans un commit · **Worktree / branche** : `ubumaths-wt-automatismes-1spe`, `feat/automatismes-geometrie`.
 - **Après le lot 4** : modèle « courbe → tableau de variations à compléter » (variante de `7f82d15a`, cubique), avec l'outil de #2456 (`-2: ?4, top`, `-2,2: ?flèche`) ; décision B du chantier `variations-a-completer` (journal archivé), reprise ici validée par David le 2026-11-08.
 - Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
@@ -625,3 +625,11 @@ normal, `toLocaleDecimal` met la virgule au rendu.
   `courbe placer:` (énoncé : axe / repère sans le point ; corrigé : point placé), comme `tracer:` au lot « Droites » ;
   (2) les deux modèles neufs sont **de 5e** (niveau `['5']`, rangés sur 5-047 / 5-128, sans exception de
   niveaux) ; (3) composition des séries validée telle quelle. Graines choisies après.
+
+### Fait (branche `feat/automatismes-geometrie`, 2026-11-08)
+
+- `buildSerie` fige les points à placer : `droitesAPlacer` (``line `placer:` → droite seule à l'énoncé,
+`points: A=… vert` au corrigé) et `pointsDuRepere` (``courbe `placer:` → repère sans eux à l'énoncé,
+  ajoutés aux `points:` au corrigé) ; point sans nom → première lettre libre ; une case par point. Tests
+  `serie-automatismes-placer.test.ts` (8, rouges avant le code) ; le cas « points à placer refusés » du test
+  de `tracer:` retiré. Bloc en retrait : déjà refusé par le générateur, garde gardée.
