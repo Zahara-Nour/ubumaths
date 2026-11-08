@@ -6,18 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2476 (lot 4 mergé)._
+_Mis à jour le 2026-11-08, après #2479 (lot 4 rangé en prod)._
 
-- **État** : 12 démonstrations publiées (lots 1-3). Algorithmes (D3, 10 points) : lot 4 (241, 242, 257, 283) mergé (#2476), pas encore en base.
-- **Prochaine action** : David lance `create-questions --publier` (§ 10) → migration nœud + tag
-  → page à cocher ; puis lot 5 (321, 322) et lot 6 (361, 362, 387, 388).
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-4 --publier`
-  (depuis le dépôt principal).
+- **État** : 12 démonstrations publiées (lots 1-3). Algorithmes (D3, 10 points) : lot 4 (241, 242, 257, 283)
+  en brouillon en prod, rangé (nœud + tag, #2479, `db:migrate` fait) ; page à cocher publiée (§ 10).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`), compter ; 4 « ok » → simulation
+  `publier-lot` donnée à David ; puis lot 5 (321, 322) et lot 6 (361, 362, 387, 388).
+- **En attente de David** : relecture du lot 4 sur https://claude.ai/artifact/3Y7diWpyKuCsBgEPX4REaL
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
-  merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre ; worktree neuf → `svelte-kit sync` avant
-  `question:specs` ; `create-questions` lit `.env` (prod) : en local, passer l'URL et la clé de `.env.local`.
-- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations` (branche du lot 4 mergée ; la migration
-  nœud + tag prendra une branche neuve).
+  job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf →
+  `svelte-kit sync` avant `question:specs` ; `create-questions` lit `.env` (prod) : en local, `.env.local`.
+- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations` retiré après #2479 ; le lot 5 prendra
+  un worktree neuf.
 
 ---
 
@@ -309,3 +309,11 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-4 --publier`
 
 Mergée (#2476, CI verte du premier coup).
+
+Créés en brouillon par David (2026-11-08) : 76ada660 (241), 2806f748 (242), 66cd841d (257), bcc687bb (283).
+Migration `20261108192038_questions_2de_algorithmes_4_rangement_tags` (calquée sur le lot 3, seules les données
+changent) : test d'intégration 12/12 vert, rouge sans les écritures ; `security-auditor` : 0 finding bloquant.
+Mergée (#2479 ; job navigateur planté tests verts, relancé, vert) ; `check:migrations --pr` passé ; `db:migrate`
+(seule migration en attente) ; vérifié en prod : les 4 brouillons sur leur sous-notion, chacun avec son seul point,
+`updated_at` inchangé. Page à cocher : https://claude.ai/artifact/3Y7diWpyKuCsBgEPX4REaL (aucune alerte ; les
+accents graves du code en ligne y restent bruts, l'appli les rend en code via `parseMarkdown`).
