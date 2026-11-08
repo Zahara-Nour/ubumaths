@@ -6,15 +6,17 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR 1 codée (branche `fix/admin-modeles-edition`), avant ouverture de la PR._
+_Mis à jour le 2026-11-08, PR #2489 ouverte (PR 1), CI en cours au moment du /clear._
 
-- **État** : PR 1 codée et testée (7 tests navigateur `QuestionTemplateForm-statut`, garde serveur
-  « version sans réponse » dans `put-publication-check`), doc `questions.md` § 8 à jour · **Prochaine
-  action** : ouvrir la PR 1, revue `code-reviewer` (Sonnet), merger ; puis PR 2 (liste) · **En attente
-  de David** : rien · **Pièges en cours** : la liste (`dashboard/admin/questions/+page.svelte`) a un
-  onglet « Brouillons » par défaut, « Publiés » à côté ; le serveur filtre déjà
-  `?grades=&minLevel=&maxLevel=` (`+page.server.ts`) · **Worktree / branche** :
-  `../ubumaths-wt-admin-modeles`, `fix/admin-modeles-edition` (PR 1).
+- **État** : #2489 ouverte (page d'édition : « Enregistrer » / « Repasser en brouillon » pour un publié,
+  plus de « réponse manquante » côté client, `serverErrors`) ; revue `code-reviewer` faite, findings 1-5
+  et 7 corrigés (`77b42ec79`) ; CI de `77b42ec79` en cours · **Prochaine action** : `gh pr checks 2489`
+  → verte : `gh pr merge 2489 --merge`, puis nettoyage du worktree ; puis PR 2 (liste : recherche par
+  titre/id, filtres de l'adresse ignorés) · **En attente de David** : rien · **Pièges en cours** : la
+  liste (`dashboard/admin/questions/+page.svelte`) a un onglet « Brouillons » par défaut, « Publiés » à
+  côté ; le serveur filtre déjà `?grades=&minLevel=&maxLevel=` (`+page.server.ts`) ; finding 6 de la
+  revue (mode JSON : refus du serveur ignoré pour « Enregistrer »/« Publier ») laissé, pas de bug
+  visible · **Worktree / branche** : `../ubumaths-wt-admin-modeles`, `fix/admin-modeles-edition`.
 
 ## Origine (2026-11-08, session `automatismes-1spe`)
 
