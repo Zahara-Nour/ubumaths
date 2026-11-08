@@ -1,4 +1,5 @@
 {
+	"id": "b8fb32a4-2469-49dc-974d-0387c6d184cf",
 	"title": "Terminer un triangle rectangle sur quadrillage",
 	"description": "Le côté [AB] est tracé : placer C pour un angle droit en A, AC donné en carreaux ou égal à AB (côté oblique)",
 	"grades": ["CE2"],

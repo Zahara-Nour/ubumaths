@@ -1,4 +1,5 @@
 {
+	"id": "e50d512d-e163-4dd0-aec1-864b078e626a",
 	"title": "Terminer un triangle rectangle en comptant les carreaux",
 	"description": "Quadrillage : le côté [AB] suit une ligne, placer C pour un angle droit en A avec AC donné en carreaux",
 	"grades": ["CE1"],
