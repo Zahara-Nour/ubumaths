@@ -36,7 +36,10 @@
 		DomainPoint,
 		VariationMarker
 	} from '$lib/ubumark/types/variation-table';
-	import { withImplicitEndpoints } from '$lib/ubumark/parser/variation-table-parser';
+	import {
+		variationRowForDisplay,
+		withImplicitEndpoints
+	} from '$lib/ubumark/parser/variation-table-parser';
 
 	interface Props {
 		node: VariationTableNode;
@@ -131,10 +134,22 @@
 	);
 	// Bornes sans valeur (tableau de 1re, sans limites) : position déduite de la
 	// valeur voisine, sinon aucune flèche n'était dessinée vers ±∞
+	// Flèche cachée (saisie, case vide) : les valeurs qui l'encadrent au milieu, rien
+	// ne la dit ; cases remplies (bonne réponse) : le tableau juste
+	let showsAnswers = $derived(!cell && hiddenCells === 'filled');
 	let variationRows = $derived(
-		node.rows
-			.filter((row): row is VariationRow => row.type === 'variation')
-			.map((row) => withImplicitEndpoints(row, node.domain))
+		node.rows.flatMap((row, rowIndex) =>
+			row.type === 'variation'
+				? [
+						{
+							row: showsAnswers
+								? withImplicitEndpoints(row, node.domain)
+								: variationRowForDisplay(node, rowIndex),
+							rowIndex
+						}
+					]
+				: []
+		)
 	);
 
 	/**
@@ -323,6 +338,10 @@
 		{:else if hiddenCells === 'filled' && answer !== ''}
 			{#if hidden.kind === 'valeur'}
 				<math-span>{toLatex(answer)}</math-span>
+			{:else if hidden.kind === 'fleche'}
+				<span class="vt-fleche" aria-label={answer === '↗' ? 'croissante' : 'décroissante'}>
+					{answer}
+				</span>
 			{:else if answer === 'z'}
 				<span class="vt-zero">0</span>
 			{:else if answer === '||'}
@@ -438,7 +457,7 @@
 				{/each}
 
 				<!-- Variation rows -->
-				{#each variationRows as row, rowIdx (`var-${rowIdx}`)}
+				{#each variationRows as { row, rowIndex }, rowIdx (`var-${rowIdx}`)}
 					<tr class="vt-variation-row">
 						<!-- Label column -->
 						<td class="vt-label-cell">
@@ -448,9 +467,15 @@
 						{#each node.domain as point, idx (idx)}
 							{@const value = getVariationValue(row, point)}
 							{@const arrowData = getArrowData(row, point, idx)}
+							{@const hiddenValue = hiddenAt(rowIndex, point.expression)}
 							<!-- Value cell at domain point -->
 							<td class="vt-variation-value-cell">
-								{#if value}
+								{#if hiddenValue && value}
+									<!-- Valeur cachée : la case, à la hauteur affichée -->
+									<div class="vt-value-container {getPositionClass(value.position)}">
+										{@render hiddenCell(hiddenValue)}
+									</div>
+								{:else if value}
 									{#if value.marker === 'asymptote' && value.limits}
 										<!-- Asymptote with two limits -->
 										<div class="vt-asymptote-limits">
@@ -495,8 +520,15 @@
 							</td>
 							<!-- Arrow cell between points -->
 							{#if arrowData}
+								{@const hiddenArrow = hiddenAt(
+									rowIndex,
+									getIntervalKey(point, arrowData.nextPoint)
+								)}
 								<td class="vt-arrow-cell">
-									{#if !isForbiddenZone(arrowData.currentValue) && !isForbiddenZone(arrowData.nextValue) && arrowData.arrowDir}
+									{#if hiddenArrow}
+										<!-- Flèche cachée : la case (choix ↗ / ↘), aucune flèche dessinée -->
+										{@render hiddenCell(hiddenArrow)}
+									{:else if !isForbiddenZone(arrowData.currentValue) && !isForbiddenZone(arrowData.nextValue) && arrowData.arrowDir}
 										<svg
 											class="vt-arrow vt-arrow-{arrowData.arrowDir}"
 											viewBox="0 0 100 60"
@@ -756,6 +788,12 @@
 		padding: 0 0.2em;
 		border: 1.5px dashed var(--color-muted-foreground);
 		border-radius: 0.25rem;
+	}
+
+	/* Flèche cachée remplie (bonne réponse) : la flèche en grand, comme celles dessinées */
+	.vt-fleche {
+		font-size: 1.6em;
+		line-height: 1;
 	}
 
 	/* Petite case MathLive de la valeur de x : sans menu, à la taille de la cellule */

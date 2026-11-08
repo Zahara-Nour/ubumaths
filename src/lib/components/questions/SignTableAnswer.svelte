@@ -47,7 +47,9 @@
 		['-', '−'],
 		['z', '0'],
 		['||', '‖'],
-		['rien', 'rien']
+		['rien', 'rien'],
+		['↗', '↗'],
+		['↘', '↘']
 	]);
 
 	/** Ce qu'un lecteur d'écran entend d'un signe ou d'une marque */
@@ -56,7 +58,9 @@
 		['-', 'moins'],
 		['z', 'zéro'],
 		['||', 'double barre'],
-		['rien', 'rien']
+		['rien', 'rien'],
+		['↗', 'croissante'],
+		['↘', 'décroissante']
 	]);
 
 	/** Une valeur de x lue à voix haute : `\frac{3}{2}` → « 3 sur 2 », sans commande LaTeX */

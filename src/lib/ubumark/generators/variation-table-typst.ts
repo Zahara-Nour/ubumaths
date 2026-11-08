@@ -21,7 +21,7 @@ import type {
 	DomainPoint
 } from '../types/variation-table';
 import { convertLatexToTypstMath } from './typst-generator';
-import { withImplicitEndpoints } from '../parser/variation-table-parser';
+import { variationRowForDisplay, withImplicitEndpoints } from '../parser/variation-table-parser';
 import { toLocaleDecimal } from '$lib/utils/french-math';
 
 // ============================================================================
@@ -43,6 +43,9 @@ interface VariationTableTypstOptions {
 
 /** Case vide dessinée à la place d'une valeur de x ou d'un signe caché (garde la largeur) */
 const BLANK_CELL = 'box(width: 1.4em, height: 1.1em, stroke: 0.4pt)';
+
+/** Options de `tabvar` qui ne dessinent aucune flèche (énoncé à flèche cachée) */
+const HIDDEN_ARROWS_OPTIONS = '    arrow-style: (stroke: none),\n    arrow-mark: (end: none),\n';
 
 /** Cellules de lignes de signes à laisser vides : par indice de ligne, les clés cachées */
 type BlankSignCells = Map<number, Set<string>>;
@@ -135,7 +138,11 @@ export function generateVariationTableTypst(
 		const blank = (options.hiddenCells ?? 'blank') === 'blank';
 		const domain = generateDomain(node.domain, language, blank);
 		const labels = generateLabels(node.rows);
-		const content = generateContent(node, language, blankSignCells(node, blank));
+		const content = generateContent(node, language, blankSignCells(node, blank), blank);
+		// Flèche cachée à l'énoncé : vartable 0.2.1 n'en omet pas une seule (il tracerait
+		// une flèche horizontale entre les deux valeurs centrées, lue « constante ») ;
+		// aucune flèche du tableau n'est dessinée (choix de David, 2026-11-08)
+		const hidesArrows = blank && (node.cases ?? []).some((cell) => cell.kind === 'fleche');
 
 		// Wrap in a scaled block to fit column width
 		// Text enlarged then scaled down = readable text but reduced padding
@@ -151,7 +158,7 @@ export function generateVariationTableTypst(
 ${ZERO_ON_BAR_SHOW_RULE}
 #layout(size => {
   let table = tabvar(
-    variable: ${variable},
+${hidesArrows ? HIDDEN_ARROWS_OPTIONS : ''}    variable: ${variable},
     domain: ${domain},
     label: ${labels},
     contents: (
@@ -319,7 +326,8 @@ function blankSignCells(node: VariationTableNode, blank: boolean): BlankSignCell
 function generateContent(
 	node: VariationTableNode,
 	language: string,
-	blankCells: BlankSignCells
+	blankCells: BlankSignCells,
+	blank = false
 ): string {
 	const lines: string[] = [];
 
@@ -336,7 +344,9 @@ function generateContent(
 			const line = generateSignRow(row, node.domain, blankCells.get(i) ?? new Set());
 			lines.push(`    ${line}${needsComma ? ',' : ''}`);
 		} else {
-			const line = generateVariationRow(row, node.domain, language);
+			const line = blank
+				? generateHiddenVariationRow(node, i, language, blankCells.get(i) ?? new Set())
+				: generateVariationRow(row, node.domain, language);
 			lines.push(`    ${line}${needsComma ? ',' : ''}`);
 		}
 	}
@@ -490,6 +500,32 @@ function generateVariationRow(row: VariationRow, domain: DomainPoint[], language
 		elements.push(formatted);
 	}
 
+	return formatTypstTuple(elements);
+}
+
+/**
+ * Ligne `variation:` de l'énoncé (cellules cachées vides) : la ligne telle que l'élève
+ * la voit (`variationRowForDisplay` : valeurs qui encadrent une flèche cachée au
+ * milieu), chaque valeur cachée en case vide à sa hauteur. Une colonne sans valeur en
+ * bout de ligne (borne implicite voisine d'une flèche cachée) reçoit une valeur vide
+ * au milieu : `()` en bout de ligne fait planter vartable.
+ */
+function generateHiddenVariationRow(
+	node: VariationTableNode,
+	rowIndex: number,
+	language: string,
+	blankKeys: Set<string>
+): string {
+	const shown = variationRowForDisplay(node, rowIndex);
+	const last = node.domain.length - 1;
+	const elements = node.domain.map((point, i) => {
+		const value = shown.values.get(point.expression);
+		if (value && blankKeys.has(point.expression) && !value.marker) {
+			return `(${convertPositionForVartable(value.position)}, ${BLANK_CELL})`;
+		}
+		if (!value && (i === 0 || i === last)) return '(center, $$)';
+		return formatPointVariation(value, language);
+	});
 	return formatTypstTuple(elements);
 }
 

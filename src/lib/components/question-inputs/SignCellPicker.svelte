@@ -1,16 +1,19 @@
 <!--
-	Case signe / marque d'un tableau de signes à compléter
-	=======================================================
+	Case signe / marque / flèche d'un tableau à compléter
+	=====================================================
 
 	Chantier `docs/archive/wip/tableau-signes-progress.md`, PR 3. Une case vide en pointillés ;
-	un toucher ouvre juste en dessous les choix (+ / −, ou 0 / ‖ / rien), le choix
+	un toucher ouvre juste en dessous les choix (+ / −, 0 / ‖ / rien, ou ↗ / ↘ pour une
+	flèche d'une ligne `variation:`, chantier `variations-a-completer`), le choix
 	s'écrit dans la case et le menu se referme. Le tableau garde sa taille : rien de
 	plus large qu'une cellule n'y est posé (390 px).
 
 	Au clavier, sur la case focalisée : `+` `-` (signe), `0` `z` `|` `r` (marque),
+	`↑` `↓` ou `c` `d` (flèche : croissante, décroissante),
 	Retour arrière / Suppr pour la vider ; Entrée / Espace ouvrent le menu.
 
-	La valeur envoyée est le jeton du juge (`isSignCellCorrect`) : `+` `-` `z` `||` `rien`.
+	La valeur envoyée est le jeton du juge (`isSignCellCorrect`) : `+` `-` `z` `||` `rien`
+	`↗` `↘`.
 -->
 <script lang="ts">
 	import * as Popover from '$lib/components/ui/popover';
@@ -47,10 +50,26 @@
 		{ token: '||', display: '‖', label: 'double barre' },
 		{ token: 'rien', display: 'rien', label: 'rien' }
 	];
+	const ARROW_CHOICES: Choice[] = [
+		{ token: '↗', display: '↗', label: 'croissante' },
+		{ token: '↘', display: '↘', label: 'décroissante' }
+	];
+	const CHOICES: Record<Props['kind'], Choice[]> = {
+		signe: SIGN_CHOICES,
+		marque: MARK_CHOICES,
+		fleche: ARROW_CHOICES
+	};
+	/** Nom de la nature de case, dit au lecteur d'écran */
+	const KIND_SPOKEN: Record<Props['kind'], string> = {
+		signe: 'signe',
+		marque: 'marque',
+		fleche: 'flèche'
+	};
 	/** Touches qui écrivent directement un jeton, par nature de case */
 	const KEYS: Record<Props['kind'], Record<string, string>> = {
 		signe: { '+': '+', '-': '-', '−': '-' },
-		marque: { '0': 'z', z: 'z', '|': '||', r: 'rien' }
+		marque: { '0': 'z', z: 'z', '|': '||', r: 'rien' },
+		fleche: { ArrowUp: '↗', ArrowDown: '↘', c: '↗', d: '↘' }
 	};
 
 	let { kind, value, caseNumber, isCorrect, disabled, onChange }: Props = $props();
@@ -58,11 +77,11 @@
 	// Variables
 	let open = $state(false);
 
-	let choices = $derived(kind === 'signe' ? SIGN_CHOICES : MARK_CHOICES);
+	let choices = $derived(CHOICES[kind]);
 	let chosen = $derived(choices.find((choice) => choice.token === value));
 	let verdict = $derived(isCorrect === true ? 'juste' : isCorrect === false ? 'fausse' : undefined);
 	let ariaLabel = $derived(
-		`Case ${caseNumber} : ${kind}, ${chosen?.label ?? 'vide'}${verdict ? `, ${verdict}` : ''}`
+		`Case ${caseNumber} : ${KIND_SPOKEN[kind]}, ${chosen?.label ?? 'vide'}${verdict ? `, ${verdict}` : ''}`
 	);
 
 	// Functions

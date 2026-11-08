@@ -6,8 +6,10 @@
  * et préfixe d'un `?` chaque cellule cachée : la réponse attendue de chaque case
  * est tirée du bloc (`cases` du nœud), jamais écrite dans `blanks`.
  *
- * - valeur de x : case `math`, juge ordinaire (`3/2` = `1,5`) ;
- * - signe (`+`, `-`) et marque (`z`, `||`, `rien`) : case `text`, égalité exacte
+ * - valeur (de x dans `domain:`, ou d'une ligne `variation:`) : case `math`, juge
+ *   ordinaire (`3/2` = `1,5`) ;
+ * - signe (`+`, `-`), marque (`z`, `||`, `rien`) et flèche d'une ligne `variation:`
+ *   (`↗`, `↘`, chantier `variations-a-completer`) : case `text`, égalité exacte
  *   (`0` ramené à `z`, `−` à `-`).
  *
  * `??n` (valeur) et `?` seul (signe, marque) sont les formes de l'énoncé envoyé
@@ -24,7 +26,7 @@ import type { InstanceBlank } from './types';
 /** Réponse attendue d'une case de tableau, et la nature de sa cellule */
 export interface SignTableAnswer {
 	kind: HiddenCellKind;
-	/** LaTeX de la valeur de x, ou `+` | `-` | `z` | `||` | `rien` */
+	/** LaTeX de la valeur, ou `+` | `-` | `z` | `||` | `rien` | `↗` | `↘` */
 	answer: string;
 }
 
@@ -37,11 +39,13 @@ const CELL_DISPLAY: Record<string, string> = {
 	'-': '-',
 	z: '0',
 	'||': '\\|',
-	rien: '\\text{rien}'
+	rien: '\\text{rien}',
+	'↗': '\\nearrow',
+	'↘': '\\searrow'
 };
 
 const MASKED_FORM_MESSAGE =
-	'??n et ? seul sont réservés à l’énoncé envoyé pendant une évaluation : écrire la réponse après le ? (?-3, ?+, ?z, ?||, ?rien)';
+	'??n et ? seul sont réservés à l’énoncé envoyé pendant une évaluation : écrire la réponse après le ? (?-3, ?+, ?z, ?||, ?rien, ?4, top, ?flèche)';
 
 // Functions
 /** Préfixe des messages d'une case de tableau */
@@ -81,9 +85,9 @@ export function readSignTableCases(
 		return { errors: [`${prefixOf(first)} ${errors.map((e) => e.message).join(' ; ')}`] };
 	}
 	const cells = node.cases ?? [];
-	// Valeur cachée évaluée dans une ligne de variations (`f(-3)`) : elle partirait en clair
+	// Valeur de x cachée évaluée dans une ligne de variations (`f(-3)`) : elle partirait en clair
 	for (const cell of cells) {
-		if (cell.kind !== 'valeur') continue;
+		if (cell.kind !== 'valeur' || cell.row !== 'domain') continue;
 		const shown = node.rows.some(
 			(row) =>
 				row.type === 'variation' &&
@@ -116,12 +120,12 @@ export function signCellToken(answer: string): string {
 	return token === '0' ? 'z' : token;
 }
 
-/** Case d'un signe ou d'une marque de tableau (jugée au jeton, pas comme une formule) */
+/** Case d'un signe, d'une marque ou d'une flèche de tableau (jugée au jeton, pas comme une formule) */
 export function isSignTableCell(blank: InstanceBlank): boolean {
-	return blank.cellule === 'signe' || blank.cellule === 'marque';
+	return blank.cellule === 'signe' || blank.cellule === 'marque' || blank.cellule === 'fleche';
 }
 
-/** Signe ou marque : le même jeton (une case vide n'est jamais juste, même pour « rien ») */
+/** Signe, marque ou flèche : le même jeton (une case vide n'est jamais juste, même pour « rien ») */
 export function isSignCellCorrect(userAnswer: string, expected: string): boolean {
 	return userAnswer.trim() !== '' && signCellToken(userAnswer) === signCellToken(expected);
 }

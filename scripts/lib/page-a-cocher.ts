@@ -721,11 +721,20 @@ function variation(source: string): Bloc {
 		return ligne(
 			'vt-ligne-variation',
 			r.label,
-			(i) => valeurDeVariation(v(i)),
+			(i) => {
+				const html = valeurDeVariation(v(i));
+				if (!cachees.has(`${rang}|${d[i].expression}`)) return html;
+				// Valeur cachée : encadrée DANS son bloc de hauteur (haut / bas), qui garde sa place
+				const bloc = /^(<div class="vt-val[^"]*">)([^]*)(<\/div>)$/.exec(html);
+				return bloc
+					? `${bloc[1]}<span class="vt-cache">${bloc[2]}</span>${bloc[3]}`
+					: cache(rang, d[i].expression, html);
+			},
 			(i) => {
 				if (interdite(v(i)) || interdite(v(i + 1))) return MARQUE_LARGE;
 				const s = sens(v(i), v(i + 1));
-				return s === 0 ? '' : fleche(s);
+				// Flèche cachée (variations-a-completer) : encadrée comme les autres cases
+				return cache(rang, `${d[i].expression},${d[i + 1].expression}`, s === 0 ? '' : fleche(s));
 			}
 		);
 	});
