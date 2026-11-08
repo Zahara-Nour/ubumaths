@@ -6,16 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, lot 4 (algorithmes, nombres) en PR (§ 10)._
+_Mis à jour le 2026-11-08, après #2476 (lot 4 mergé)._
 
-- **État** : 12 démonstrations publiées (lots 1-3). Algorithmes (D3, 10 points) : lot 4 (241, 242, 257, 283) en PR.
-- **Prochaine action** : merge du lot 4 → David lance `create-questions --publier` (§ 10) → migration nœud + tag
+- **État** : 12 démonstrations publiées (lots 1-3). Algorithmes (D3, 10 points) : lot 4 (241, 242, 257, 283) mergé (#2476), pas encore en base.
+- **Prochaine action** : David lance `create-questions --publier` (§ 10) → migration nœud + tag
   → page à cocher ; puis lot 5 (321, 322) et lot 6 (361, 362, 387, 388).
-- **En attente de David** : rien avant le merge.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-4 --publier`
+  (depuis le dépôt principal).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre ; worktree neuf → `svelte-kit sync` avant
   `question:specs` ; `create-questions` lit `.env` (prod) : en local, passer l'URL et la clé de `.env.local`.
-- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, `content/questions-2de-algorithmes-4`.
+- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations` (branche du lot 4 mergée ; la migration
+  nœud + tag prendra une branche neuve).
 
 ---
 
@@ -305,3 +307,5 @@ dépôt), aperçu admin du 257 vu à l'écran (bloc Python, deux cases autour de
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-4 --publier`
+
+Mergée (#2476, CI verte du premier coup).
