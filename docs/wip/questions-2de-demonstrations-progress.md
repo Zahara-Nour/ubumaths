@@ -6,18 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, lot 3 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-08, lot 3 publié : les 12 démonstrations sont couvertes._
 
-- **État** : lots 1 (5 modèles) et 2 (3 modèles) PUBLIÉS en prod. Lot 3 (fonctions : 357-360) écrit, specs vertes,
-  PR en cours (branche `content/questions-2de-demonstrations-5-fonctions`).
-- **Prochaine action** : merger la PR du lot 3 ; puis David lance `create-questions --publier` DEPUIS le worktree ;
-  ensuite migration de rangement (gabarit : `20261108150529`), page à cocher.
-- **En attente de David** : après le merge, la commande de publication en brouillon (donnée au merge).
+- **État** : lots 1 (5), 2 (3) et 3 (4) PUBLIÉS : les 12 démonstrations (Q1) ont chacune leur modèle publié.
+- **Prochaine action** : selon la réponse de David, soit les autres points P (approfondissements, puis exemples
+  d'algorithmes, § 1 ; § 94 du journal `questions-2de`), soit le versement (couverture dans
+  `docs/systeme/programmes/bornes/lycee/2de.md`, journaux `questions-2de` et celui-ci archivés).
+- **En attente de David** : suite du chantier (autres P ou versement).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
-  `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → le lancer depuis le worktree ;
-  positions « ranger » par `docs/wip/questions/positions-ranger.ts` (`svelte-kit sync` avant) ; couleur jamais sur
-  du texte hors `$` ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `content/questions-2de-demonstrations-5-fonctions`.
+  merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre.
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -190,3 +188,38 @@ aucun modèle). Aucun modèle tagué sur 2-357 à 2-360. Script : `docs/wip/ques
 
 Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (15 specs vertes chacun), 0 `\textcolor` hors
 `$` ; aperçus relus (cases dans `x(?)`, `(b − a)(?)`, `\dfrac{?}{ab}` ; étapes à ranger ; corrigés).
+
+Mergée (#2466, CI verte du premier coup ; merge retardé par un `deploy:prod` en cours).
+
+## 8. Lot 3 : publication en brouillon et rangement (2026-11-08)
+
+David a lancé `create-questions --publier` depuis le worktree : 4 brouillons, ids écrits dans les JSON (branche
+`content/questions-2de-demonstrations-6-rangement`).
+
+Relevé prod (MCP, 2026-11-08) : 4 brouillons au niveau {2}, niveaux 5, 3, 2, 1, sans nœud ni tag ; points 2-357 à
+2-360 sur leurs sous-notions actives, aucun modèle tagué dessus.
+
+| Modèle   | Sous-notion                                         | Point |
+| -------- | --------------------------------------------------- | ----- |
+| 6fc38e87 | Fonctions › Fonctions affines › variations et signe | 2-357 |
+| d28706b9 | Fonctions › Fonction carré › définition et courbe   | 2-358 |
+| a3f25691 | Fonctions › Fonction carré › variations             | 2-359 |
+| b0a94f05 | Fonctions › Fonction inverse › variations           | 2-360 |
+
+Migration `20261108155933_questions_2de_demonstrations_3_rangement_tags.sql` (gabarit : celle du lot 2, gardes et
+rollback identiques) ; test `tests/integration/questions-2de-demonstrations-3-rangement-tags.test.ts`. Accès :
+personne de plus (Q5).
+
+Test d'intégration : **12/12 vert**. Preuve rouge (fichiers restaurés depuis une copie, `cmp` identique) : partie
+aller vidée (rollback gardé) → 6 rouges, 5 sautés ; en plus rollback neutralisé dans le test → 8 rouges dont les 2
+tests d'effet (nœud, tag), les invariants verts.
+
+`security-auditor` (2026-11-08) : aucun finding (diff avec le lot 2 limité aux données ; prod relue en lecture).
+
+Mergée (#2469, CI verte du premier coup) ; `check:migrations --pr` passé. `db:migrate` depuis le dépôt principal
+(seule migration en attente) ; vérifié en prod : les 4 brouillons sur leur sous-notion, chacun avec son seul point,
+`draft`. Page à cocher : https://claude.ai/artifact/MSfbBs793RSVxLwzv9LyPK (4 alertes attendues : bloc ranger non
+dessiné, à jouer dans l'aperçu admin).
+
+Lot 3 relu par David sur la page à cocher (2026-11-08) : 4 « ok », sans commentaire. Publié par David
+(`publier-lot.ts`, simulation puis `--publier`) : 4/4, statut relu en base. **Les 12 démonstrations sont couvertes.**

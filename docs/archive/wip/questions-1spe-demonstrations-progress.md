@@ -1,26 +1,22 @@
 # Chantier « questions-1spe-demonstrations » — première spécialité, démonstrations du BO en modèles de questions
 
-> Suite du chantier clos [`questions-1spe`](../archive/wip/questions-1spe-progress.md) (relevé § 1, classement § 3,
+> Suite du chantier clos [`questions-1spe`](questions-1spe-progress.md) (relevé § 1, classement § 3,
 > décisions D1-D7 § 5 ; D4 y mettait les points P hors chantier : ce chantier rouvre **les démonstrations seulement**).
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`). Bornes et couverture :
-> [1spe.md](../systeme/programmes/bornes/lycee/1spe.md) § Couverture. En base, le niveau est `1_SPE`.
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`). Bornes et couverture :
+> [1spe.md](../../systeme/programmes/bornes/lycee/1spe.md) § Couverture. En base, le niveau est `1_SPE`.
 > Ouvert le 2026-11-03 (David : « ouvre le chantier questions-1spe-demonstrations », après la proposition « P,
 > démonstrations : possible en questions, sous une autre forme »).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, migration du lot 12 en PR._
+_Mis à jour le 2026-11-08 : chantier CLOS et versé._
 
-- **État** : lots 1-11 publiés. Lot 12 (§ 18) : 5 brouillons en prod, migration nœud + tag en PR.
-- **Prochaine action** : PR mergée → `check:migrations --pr`, `db:migrate` depuis le dépôt principal, vérif MCP,
-  page à cocher, relecture et publication par David.
-- **En attente de David** : 344 (c), écart à la proposition (§ 18) ; vérification à l'œil en prod (ligne du
-  2026-11-03 de `docs/wip/verifications-manuelles.md`).
-- **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
-  `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
-  Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
-  `publier-lot.ts`, même en simulation, refusé à Claude par le classifieur (prod).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12-rangement`.
+- **État** : lots 1-12 publiés (14 démonstrations, 20 approfondissements, 13 exemples d'algorithmes : 47 points P
+  couverts). Versé dans [1spe.md](../../systeme/programmes/bornes/lycee/1spe.md) § Couverture (relevé MCP du
+  2026-11-08 : 220 points sur 237, les 17 restants voulus). Journal et dossier archivés ; worktree retiré.
+- **Prochaine action** : aucune.
+- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de `docs/wip/verifications-manuelles.md`).
+- **Suite** : chantier `questions-2de-demonstrations` (même démarche, D1, D2, D8 de ce journal).
 
 ---
 
@@ -762,3 +758,20 @@ variance et écart type (431), `4dc0c7df` fréquence des lettres (360). Ids écr
 (gabarit lot 11, aucune sous-notion neuve ; 359 et 431 restent sur la notion Variables aléatoires ; branches
 « Statistiques » et « Probabilités »), test `questions-1spe-algorithmes-12-rangement-tags` 12/12 vert, rouge sans la
 migration (6 rouges). Accès : Q5 de D9, personne.
+
+Mergée (#2464 ; merge retenu le temps d'un `deploy:prod` en cours). `security-auditor` : aucun finding bloquant (2
+faibles, identiques au lot 11). `check:migrations --pr 2464` vert. `db:migrate` le 2026-11-08 (seule migration en
+attente), vérifié MCP : 5 modèles sur leur nœud (simulation ×2 ; espérance ; variance et écart-type ; effectifs et
+fréquences), un tag chacun (344, 427, 359, 431, 360), `draft`, `updated_at` inchangé. Page à cocher :
+https://claude.ai/artifact/2ZA3EzDZtwFsbfUDYoCccV.
+
+**D13 (David, 2026-11-08, « je te suis »)** : 344 (c) reste « de quoi la valeur renvoyée est une estimation » (aire
+du domaine sous la parabole). À ajouter en fin de correction, avec les corrections éventuelles de la relecture
+(`--mettre-a-jour`) : « On démontrera en terminale que cette aire vaut 1/3 : les valeurs renvoyées en sont proches. »
+
+Relecture (2026-11-08) : 5/5 OK, aucun commentaire. Phrase de D13 ajoutée à la correction de 344 (c) (cette PR) ;
+mise à jour en prod par David (`create-questions --publier --mettre-a-jour`), puis publication (`publier-lot.ts`).
+
+Mergée (#2468). Mise à jour par David (`create-questions --publier --mettre-a-jour` : 344 seul modifié), puis
+publication (`publier-lot.ts --publier`) : 5/5 `published` relus en base (MCP), phrase de D13 présente dans le 344.
+**Le lot 12 (algorithmes de probabilités et statistiques) est publié : les 13 algorithmes de D9 sont en prod.**

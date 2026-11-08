@@ -10,7 +10,7 @@ Le résultat doit être EXACTEMENT la source `scripts/questions/1spe-demonstrati
 sont exigées intactes dans le nouveau contenu. Ni tag, ni nœud, ni niveau, ni statut ne changent.
 Instantané : `etat_prod_releve.py` (relevé MCP, empreintes vérifiées).
 
-    python3 docs/wip/questions-1spe-demonstrations/lot4-contenu.py
+    python3 docs/archive/wip/questions-1spe-demonstrations/lot4-contenu.py
 """
 
 import json
@@ -19,11 +19,11 @@ import sys
 
 sys.path.insert(0, 'docs/archive/wip/arbre-notions/analyse')
 sys.path.insert(0, 'docs/archive/wip/passe-lycee/analyse')
-sys.path.insert(0, 'docs/wip/questions-1spe-demonstrations')
+sys.path.insert(0, 'docs/archive/wip/questions-1spe-demonstrations')
 from scissions_outils import generer  # noqa: E402
 from etat_prod_releve import RELEVE  # noqa: E402
 
-ETAT = 'docs/wip/questions-1spe-demonstrations/etat-prod-2026-11-03-etapes/'
+ETAT = 'docs/archive/wip/questions-1spe-demonstrations/etat-prod-2026-11-03-etapes/'
 
 
 def chemin_source(court_fichier: str) -> str:
@@ -93,8 +93,8 @@ ENTETE = """-- =================================================================
 -- Ni tag, ni nœud, ni niveau, ni statut, ni titre ne changent ici.
 -- Exige en prod le code de #2341 (`signe: aucun` du bloc ranger), livré par `deploy:prod` AVANT.
 -- ============================================================================
--- Décision de David le 2026-11-03 (journal docs/wip/questions-1spe-demonstrations-progress.md § 7,
--- D2). Fichier GÉNÉRÉ par docs/wip/questions-1spe-demonstrations/lot4-contenu.py — ne pas éditer à
+-- Décision de David le 2026-11-03 (journal docs/archive/wip/questions-1spe-demonstrations-progress.md § 7,
+-- D2). Fichier GÉNÉRÉ par docs/archive/wip/questions-1spe-demonstrations/lot4-contenu.py — ne pas éditer à
 -- la main.
 --
 -- Les modèles n'existent qu'en production : en base locale (vide), la migration ne touche aucun

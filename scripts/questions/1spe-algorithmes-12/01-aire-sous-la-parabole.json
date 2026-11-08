@@ -57,7 +57,8 @@
 				"steps": [
 					"`aire(n)` renvoie la proportion des points tirés qui sont sous la parabole.",
 					"Les points sont pris au hasard dans le carré, d'aire $1$ : pour $n$ grand, cette proportion est proche de $\\dfrac{\\text{aire de }\\mathcal{D}}{\\text{aire du carré}}=\\text{aire de }\\mathcal{D}$.",
-					"La valeur renvoyée est une estimation de $\\textcolor{{{color:primary.0}}}{\\text{l'aire de }\\mathcal{D}}$."
+					"La valeur renvoyée est une estimation de $\\textcolor{{{color:primary.0}}}{\\text{l'aire de }\\mathcal{D}}$.",
+					"On démontrera en terminale que cette aire vaut $\\dfrac{1}{3}$ : les valeurs renvoyées en sont proches."
 				]
 			}
 		}

@@ -116,7 +116,11 @@ export function generateNumberLineTypst(
 		}
 
 		const body = parts.join('\n');
-		return `#import "@preview/cetz:0.3.0"\n\n#cetz.canvas({\n${body}\n})`;
+		// Échelle AJUSTÉE, comme l'arbre de probabilités : 12 cm de droite débordaient d'une
+		// colonne de fiche (~8,7 cm) sur la voisine. `layout` donne la largeur disponible,
+		// `measure` celle de la droite ; on ne réduit que si elle dépasse (jamais
+		// d'agrandissement). `reflow: true` : la mise en page suit la taille réduite.
+		return `#import "@preview/cetz:0.3.0"\n\n#layout(size => {\nlet droite = cetz.canvas({\n${body}\n})\nlet k = calc.min(1, size.width / measure(droite).width) * 100%\nscale(x: k, y: k, origin: top + left, reflow: true, droite)\n})`;
 	} catch (error) {
 		return `// Error: ${error instanceof Error ? error.message : 'Failed to generate number line'}`;
 	}

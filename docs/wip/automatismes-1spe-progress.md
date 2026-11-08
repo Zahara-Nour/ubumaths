@@ -6,17 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, phase 0 du lot 4 « Géométrie et repérage » validée._
+_Mis à jour le 2026-11-08, après #2462 (lot 4 « Géométrie et repérage », fiche écrite en prod)._
 
-- **État** : lot 4 en phase 0 validée (section « Lot « Géométrie et repérage » — phase 0 » en bas) ;
-  lots 1-3 de 2de faits · **Prochaine action** : worktree `ubumaths-wt-automatismes-1spe`, branche
-  `feat/automatismes-geometrie` : `buildSerie` fige `line placer:` et `courbe placer:` (tests d'abord), deux
-  modèles neufs de 5e (5-047 lire, 5-128 placer), script de fiche, graines, rendu local, PR ·
-  **En attente de David** : publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de
-  1re ; publication des modèles `23751c95` et `c1c9cfc3` (brouillons) · **Pièges en cours** : écritures ET
-  simulations contre la prod lancées par David (commande donnée avec `!`) ; `debord.py` ne voit pas une
-  équation centrée trop large : relire les pages ; essai local : script `.mts` (tsx en CJS sinon) ; garde
-  « doc à jour » : une migration exige `Doc-inchangée:` dans un commit · **Worktree / branche** : à créer.
+- **État** : #2462 mergée ; modèles neufs de 5e `d4f38d30` (lire les coordonnées) et `d4d56c1b` (placer un
+  point) en brouillon, **sans nœud ni tag** ; fiche `c9e0effd` « Automatismes : géométrie et repérage (1) » en
+  brouillon, PDF relu depuis la base (2 p. / 1 p. / 3 p., 0 débord) · **Prochaine action** : rangement des 2
+  modèles (5-047, 5-128 : nœud + tag, migration, comme #2457 ; question d'accès à poser à David avant le SQL),
+  nouveau worktree · **En attente de David** : **ne pas publier `c9e0effd` avant le `deploy:prod` qui livre
+  #2462** (sinon droites graduées en texte brut au PDF de prod) ; publication en admin de `f9608ee5`,
+  `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles `23751c95`, `c1c9cfc3`, `d4f38d30`, `d4d56c1b` ·
+  **Pièges en cours** : écritures ET simulations contre la prod lancées par David (`!`, depuis le worktree
+  avant le merge) ; `fiche:verifier` dans un worktree : `PYTHON_FICHES=` vers le venv du dépôt principal ;
+  job CI « Client Tests (browser) » qui plante tests verts : relancer `--failed` ; une migration exige
+  `Doc-inchangée:` dans un commit · **Worktree / branche** : aucun (retiré).
 - **Après le lot 4** : modèle « courbe → tableau de variations à compléter » (variante de `7f82d15a`, cubique), avec l'outil de #2456 (`-2: ?4, top`, `-2,2: ?flèche`) ; décision B du chantier `variations-a-completer` (journal archivé), reprise ici validée par David le 2026-11-08.
 - Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
@@ -625,3 +627,41 @@ normal, `toLocaleDecimal` met la virgule au rendu.
   `courbe placer:` (énoncé : axe / repère sans le point ; corrigé : point placé), comme `tracer:` au lot « Droites » ;
   (2) les deux modèles neufs sont **de 5e** (niveau `['5']`, rangés sur 5-047 / 5-128, sans exception de
   niveaux) ; (3) composition des séries validée telle quelle. Graines choisies après.
+
+### Fait (branche `feat/automatismes-geometrie`, 2026-11-08)
+
+- `buildSerie` fige les points à placer : `droitesAPlacer` (``line `placer:` → droite seule à l'énoncé,
+`points: A=… vert` au corrigé) et `pointsDuRepere` (``courbe `placer:` → repère sans eux à l'énoncé,
+  ajoutés aux `points:` au corrigé) ; point sans nom → première lettre libre ; une case par point. Tests
+  `serie-automatismes-placer.test.ts` (8, rouges avant le code) ; le cas « points à placer refusés » du test
+  de `tracer:` retiré. Bloc en retrait : déjà refusé par le générateur, garde gardée.
+- Modèles neufs de 5e `scripts/questions/automatismes-2de-geometrie/` : 01 « Lire les coordonnées d'un point »
+  (point quelconque à coordonnées distinctes, sur l'axe des abscisses, sur l'axe des ordonnées ; 8 specs) et 02
+  « Placer un point de coordonnées données » (un point ; deux points dont un sur un axe ; 7 specs) ; 900/900
+  tirages chacun ; correction en « unité(s) ».
+- `scripts/create-automatismes-geometrie.ts` (forme du lot proportions, DEUX modèles neufs lus dans leur fichier
+  tant qu'ils n'ont pas d'`id`). Graines : série 1 = abscisse 7 (−1,1), placer un réel 20 (−5/4), lire 15
+  (A(−1 ; −3)), placer 17 (A(−3 ; 1), B(0 ; −3)), Pythagore 17 (√27 ≈ 5,2), Thalès 7 (MN = 5,6 ; graine 9
+  écartée : réponse = une donnée), sin 14, angle 4 (43°) ; série 2 = polygone 4 (74 mm → 23,9 cm), disque 14
+  (34,54), triangle 10 (31,5 m²), aire du disque 10 (d = 20 → 100π), cylindre 8 (175π), pyramide 5 (44), cône
+  11 (≈ 377), boule 8 (288π ; graine 4 = demi-boule, corrigé sur 4 pages). 16 réponses recalculées à la main.
+- **Deux trous d'ubumark trouvés au rendu, corrigés** (tests rouges d'abord) : (1) ` ```line ` FERMÉ dans un item de
+  liste lu comme code brut (`parseContentWithCodeBlocks` sans branche `line`) — à l'écran ET au PDF, pour toute
+  liste ; (2) droite graduée PDF de 12 cm qui débordait d'une colonne de fiche → réduite à la largeur disponible
+  (`layout` + `measure` + `scale`, comme l'arbre). Docs `ubumark.md`, `fiches-et-pdf.md` mises à jour.
+- Rendu local (copies, `pnpm fiche:verifier`, `PYTHON_FICHES=` vers le venv du dépôt principal) : fiche 2 p.
+  (série 1 finit en haut de la page 2 : figures), corrigé 3 p., 0 débord, pages relues. Non bloquants : en-tête
+  « série 2 » seul en bas de la page 2 du corrigé ; point d'un `placer: 13/10` sans nom nommé « A » au corrigé ;
+  les points placés d'un repère sont noirs au corrigé (`points:` du ` ```courbe ` n'a pas de couleur).
+
+### Écritures, vérification, merge (2026-11-08)
+
+- David a lancé, depuis le worktree avant le merge : `create-questions.ts --publier` → `d4f38d30` « Lire les
+  coordonnées d'un point », `d4d56c1b` « Placer un point de coordonnées données » (5e, brouillons, sans nœud ;
+  `md5` des variantes = fichiers ; `id` commités sur la branche) ; la simulation (16 modèles en base, séries
+  identiques) ; `create-automatismes-geometrie.ts --publier` → fiche **`c9e0effd`**, brouillon, 2 séries.
+- PDF depuis la base (`regen-depuis-base.ts --langues fr`, `compile-prod.mjs --polices-corrige`, `debord.py`) :
+  fiche 2 p., réponses 1 p., corrigé 3 p., 0 débord, pages relues — rendu avec le code de la branche :
+  la prod ne l'a qu'après `deploy:prod`.
+- #2462 mergée (CI verte ; job navigateur relancé deux fois : plantage connu, tests verts ; rebase sur la
+  ligne « Vérifié » de `ubumark.md`). Vérification manuelle notée (`verifications-manuelles.md`).

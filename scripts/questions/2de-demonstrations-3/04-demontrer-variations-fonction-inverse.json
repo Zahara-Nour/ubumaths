@@ -1,4 +1,5 @@
 {
+	"id": "b0a94f05-cd9d-437d-8481-79f619d3d2ac",
 	"title": "Démontrer le sens de variation de la fonction inverse",
 	"description": "Démonstration à trous : 1/b − 1/a = (a − b)/(ab) (case), signe pour 0 < a < b (choix), ab > 0 pour a < b < 0 (choix) ; étapes à ranger",
 	"grades": ["2"],

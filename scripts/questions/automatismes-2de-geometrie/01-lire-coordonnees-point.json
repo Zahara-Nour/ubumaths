@@ -1,0 +1,179 @@
+{
+	"id": "d4f38d30-3575-472f-827c-cc2d8ad6c651",
+	"title": "Lire les coordonnées d'un point",
+	"description": "Lire les coordonnées d'un point dans un repère orthogonal gradué de 1 en 1 : point quelconque (coordonnées relatives, distinctes pour repérer l'inversion), point sur l'axe des abscisses, point sur l'axe des ordonnées.",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Lis les coordonnées du point $A$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\npoints: A({{x}} ; {{y}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −5 à 5 sur chaque axe, et le point A.\n```\n\n$A(?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "y",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["x != y"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				},
+				{
+					"expectedAnswer": "{{y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de l'origine du repère : l'**abscisse** se lit sur l'axe horizontal (positive vers la droite), l'**ordonnée** sur l'axe vertical (positive vers le haut). On écrit toujours l'abscisse en premier.",
+					"Depuis l'origine, on va de ${{eval:abs(x)}}$ unité{{if:x*x>1|s}} vers la {{if:x>0|droite|gauche}} puis de ${{eval:abs(y)}}$ unité{{if:y*y>1|s}} vers le {{if:y>0|haut|bas}} : $A(\\textcolor{{{color:primary.0}}}{ {{x}} }\\,;\\,\\textcolor{{{color:primary.1}}}{ {{y}} })$."
+				]
+			}
+		},
+		{
+			"statement": "Lis les coordonnées du point $A$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\npoints: A({{x}} ; 0)\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −5 à 5 sur chaque axe, et le point A sur l'axe des abscisses.\n```\n\n$A(?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..4;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de l'origine du repère : l'**abscisse** se lit sur l'axe horizontal (positive vers la droite), l'**ordonnée** sur l'axe vertical (positive vers le haut). On écrit toujours l'abscisse en premier.",
+					"$A$ est sur l'axe des abscisses : son ordonnée est $0$. Il est à ${{eval:abs(x)}}$ unité{{if:x*x>1|s}} {{if:x>0|à droite|à gauche}} de l'origine : $A(\\textcolor{{{color:primary.0}}}{ {{x}} }\\,;\\,\\textcolor{{{color:primary.1}}}{0})$."
+				]
+			}
+		},
+		{
+			"statement": "Lis les coordonnées du point $A$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\npoints: A(0 ; {{y}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −5 à 5 sur chaque axe, et le point A sur l'axe des ordonnées.\n```\n\n$A(?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "y",
+					"expression": "1..4;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de l'origine du repère : l'**abscisse** se lit sur l'axe horizontal (positive vers la droite), l'**ordonnée** sur l'axe vertical (positive vers le haut). On écrit toujours l'abscisse en premier.",
+					"$A$ est sur l'axe des ordonnées : son abscisse est $0$. Il est à ${{eval:abs(y)}}$ unité{{if:y*y>1|s}} {{if:y>0|au-dessus|au-dessous}} de l'origine : $A(\\textcolor{{{color:primary.0}}}{0}\\,;\\,\\textcolor{{{color:primary.1}}}{ {{y}} })$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(3 ; −2)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "-2"
+			},
+			"answers": ["3", "-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : abscisse et ordonnée échangées",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "-2"
+			},
+			"answers": ["-2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "-2"
+			},
+			"answers": ["3", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(−4 ; 1)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "-4",
+				"y": "1"
+			},
+			"answers": ["-4", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A(−3 ; 0) sur l'axe des abscisses",
+			"variationIndex": 1,
+			"variables": {
+				"x": "-3"
+			},
+			"answers": ["-3", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A(0 ; −3), coordonnées échangées",
+			"variationIndex": 1,
+			"variables": {
+				"x": "-3"
+			},
+			"answers": ["0", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(0 ; 2) sur l'axe des ordonnées",
+			"variationIndex": 2,
+			"variables": {
+				"y": "2"
+			},
+			"answers": ["0", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A(2 ; 0), coordonnées échangées",
+			"variationIndex": 2,
+			"variables": {
+				"y": "2"
+			},
+			"answers": ["2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

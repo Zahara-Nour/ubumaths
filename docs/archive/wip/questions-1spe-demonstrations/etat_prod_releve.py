@@ -7,7 +7,7 @@ ont été comparés à ceux de la prod, un à un (14/14 identiques). Le reste (c
 chemin des nœuds) est recopié du relevé MCP ; l'empreinte complète (titre, description, variations,
 shared, specs) relevée au MCP est vérifiée ici contre l'ancienne source.
 
-    python3 docs/wip/questions-1spe-demonstrations/etat_prod_releve.py
+    python3 docs/archive/wip/questions-1spe-demonstrations/etat_prod_releve.py
 """
 
 import json
@@ -19,7 +19,7 @@ sys.path.insert(0, 'docs/archive/wip/arbre-notions/analyse')
 sys.path.insert(0, 'docs/archive/wip/passe-lycee/analyse')
 from scissions_outils import md5  # noqa: E402
 
-ETAT = 'docs/wip/questions-1spe-demonstrations/etat-prod-2026-11-03-etapes/'
+ETAT = 'docs/archive/wip/questions-1spe-demonstrations/etat-prod-2026-11-03-etapes/'
 
 # id → (fichier source, theme, domain, level, nœud, empreinte md5 relevée, point_id, code)
 RELEVE = {

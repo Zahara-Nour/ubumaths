@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-approfondissements-8/.
 
 Phase 0 validée par David le 2026-11-04 (D3 du journal
-« docs/wip/questions-1spe-demonstrations-progress.md », § 9) ; rangement D6 (2026-11-05), un point
+« docs/archive/wip/questions-1spe-demonstrations-progress.md », § 9) ; rangement D6 (2026-11-05), un point
 par modèle :
 
 | # | Point    | Titre                                                  | Niv. | Nœud du modèle (D6)                         |

@@ -196,6 +196,39 @@ export interface CourbeVectorToTrace {
 	coords: { x: number; y: number } | null;
 	from?: string;
 	origin?: { x: number; y: number };
+	/**
+	 * Combinaison écrite (`tracer: vecteur 2u - AC`, chantier `somme-vecteurs`) :
+	 * ses termes, dans l'ordre écrit ; `coords` en est la somme. Absent quand le
+	 * vecteur est donné par ses coordonnées.
+	 */
+	terms?: CourbeVectorTerm[];
+	line: number;
+}
+
+/**
+ * Un terme d'une combinaison à tracer : `coef` × le vecteur de `from` à `to`
+ * (points de `points:`) ; `name` : le nom écrit (`u`, un vecteur de `vecteurs:`),
+ * '' pour un couple de points (`AC`). `at` : l'origine du représentant donné,
+ * `u` : ses coordonnées (sans le coefficient).
+ */
+export interface CourbeVectorTerm {
+	coef: number;
+	name: string;
+	from: string;
+	to: string;
+	at: { x: number; y: number };
+	u: { x: number; y: number };
+}
+
+/**
+ * Vecteur donné (`vecteurs: u = AB, AC`), dessiné en flèche de `from` à `to`
+ * (points de `points:`) ; nom facultatif (une minuscule, '' sans nom), écrit près
+ * du milieu de la flèche.
+ */
+export interface CourbeGivenVector {
+	name: string;
+	from: string;
+	to: string;
 	line: number;
 }
 
@@ -246,6 +279,8 @@ export interface CourbeSpec {
 	 * attendue, jamais dessinée ni écrite dans le DOM avant la correction
 	 */
 	vecteur?: CourbeVectorToTrace;
+	/** Vecteurs donnés (`vecteurs:`), dessinés en flèches ; absent sans la clé */
+	vecteurs?: CourbeGivenVector[];
 	/** Titres des axes (`axes:`) ; absent sans la clé */
 	axisTitles?: CourbeAxisTitles;
 }
@@ -312,6 +347,12 @@ export const COURBE_LIMITS = {
 	asymptotes: 20,
 	areas: 10,
 	tangents: 10,
+	/** Vecteurs donnés (`vecteurs:`) */
+	vectors: 4,
+	/** Termes d'une combinaison à tracer (`tracer: vecteur u + v`) */
+	terms: 4,
+	/** Plus grand coefficient d'un terme, en valeur absolue (entiers seulement) */
+	coefficient: 3,
 	/** Points à placer par l'élève (`placer:`) */
 	targets: 6,
 	/** Longueur de l'équation d'une droite à tracer (`tracer:`) */

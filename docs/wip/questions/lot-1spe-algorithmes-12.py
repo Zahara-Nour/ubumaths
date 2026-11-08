@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-algorithmes-12/.
 
 Phase 0 validée par David le 2026-11-06 (D9 du journal
-« docs/wip/questions-1spe-demonstrations-progress.md », § 15) ; contenu et rangement validés le
+« docs/archive/wip/questions-1spe-demonstrations-progress.md », § 15) ; contenu et rangement validés le
 2026-11-08 (D12, « je te suis » : proposition du § 18 et recommandations), un point par modèle,
 chacun sur une sous-notion existante :
 
@@ -160,7 +160,9 @@ V344_INTERPRETER = ligne(
      'Les points sont pris au hasard dans le carré, d\'aire $1$ : pour $n$ grand, cette'
      ' proportion est proche de $\\dfrac{\\text{aire de }\\mathcal{D}}{\\text{aire du carré}}'
      '=\\text{aire de }\\mathcal{D}$.',
-     'La valeur renvoyée est une estimation de $' + col('\\text{l\'aire de }\\mathcal{D}') + '$.'])
+     'La valeur renvoyée est une estimation de $' + col('\\text{l\'aire de }\\mathcal{D}') + '$.',
+     'On démontrera en terminale que cette aire vaut $\\dfrac{1}{3}$ : les valeurs renvoyées en'
+     ' sont proches.'])
 
 MODELES.append(modele(
     '01-aire-sous-la-parabole', 'Aire sous la parabole par Monte-Carlo',
