@@ -10,7 +10,7 @@ _Mis à jour le 2026-11-08, après #2466 (lot 3 mergé, brouillons créés)._
 
 - **État** : lots 1 et 2 PUBLIÉS. Lot 3 (357-360) mergé (#2466), 4 brouillons créés par David ; migration de
   rangement écrite, test d'intégration 12/12 vert, preuve rouge faite.
-- **Prochaine action** : `security-auditor`, PR, `check:migrations --pr`, merge, `db:migrate` depuis le dépôt
+- **Prochaine action** : PR, `check:migrations --pr`, merge, `db:migrate` depuis le dépôt
   principal, vérif en prod, page à cocher.
 - **En attente de David** : rien (puis relecture sur la page à cocher et `publier-lot`).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David ; job navigateur de la CI qui plante tests
@@ -213,3 +213,5 @@ personne de plus (Q5).
 Test d'intégration : **12/12 vert**. Preuve rouge (fichiers restaurés depuis une copie, `cmp` identique) : partie
 aller vidée (rollback gardé) → 6 rouges, 5 sautés ; en plus rollback neutralisé dans le test → 8 rouges dont les 2
 tests d'effet (nœud, tag), les invariants verts.
+
+`security-auditor` (2026-11-08) : aucun finding (diff avec le lot 2 limité aux données ; prod relue en lecture).
