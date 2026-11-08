@@ -1,0 +1,334 @@
+{
+	"title": "Écrire une proportion sous une autre forme",
+	"description": "Passer d'une écriture d'une proportion à une autre : décimale → pourcentage, pourcentage → décimale, fraction → pourcentage, fraction → décimale. Valeurs choisies pour les pièges usuels (0,035 ; 0,5 % ; 8 % → 0,08 ; 1/8).",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris la proportion $ {{eval:m/1000;d}} $ sous forme de pourcentage.\n\n$ {{eval:m/1000;d}}=?\\,\\% $",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "5|8|20|35|45|75|80|125|350|400|650|990"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un pourcentage est une proportion écrite sur $100$ : le nombre de pour cent est la proportion multipliée par $100$.",
+					"$$ {{eval:m/1000;d}}=\\dfrac{ {{eval:m/10;d}} }{100}=\\textcolor{{{color:primary.0}}}{ {{eval:m/10;d}}\\,\\% } $$"
+				]
+			}
+		},
+		{
+			"statement": "Écris la proportion $ {{eval:m/10;d}}\\,\\% $ sous forme décimale.\n\n$ {{eval:m/10;d}}\\,\\%=? $",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "5|8|20|35|45|75|80|125|350|400|650|990"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m/1000;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$p\\,\\%$ signifie $\\dfrac{p}{100}$ : on divise par $100$.",
+					"$$ {{eval:m/10;d}}\\,\\%=\\dfrac{ {{eval:m/10;d}} }{100}=\\textcolor{{{color:primary.0}}}{ {{eval:m/1000;d}} } $$"
+				]
+			}
+		},
+		{
+			"statement": "Écris la proportion $\\dfrac{ {{a}} }{ {{b}} }$ sous forme de pourcentage.\n\n$\\dfrac{ {{a}} }{ {{b}} }=?\\,\\%$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "4|5|8|20|25|40|50"
+				},
+				{
+					"name": "a",
+					"expression": "1..19"
+				}
+			],
+			"conditions": ["a < b", "gcd(a,b) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a/b;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit la proportion sur $100$ (ou on calcule son écriture décimale, puis on multiplie par $100$).",
+					"$$\\dfrac{ {{a}} }{ {{b}} }={{eval:a/b;d}}=\\dfrac{ {{eval:100*a/b;d}} }{100}=\\textcolor{{{color:primary.0}}}{ {{eval:100*a/b;d}}\\,\\% }$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris la proportion $\\dfrac{ {{a}} }{ {{b}} }$ sous forme décimale.\n\n$\\dfrac{ {{a}} }{ {{b}} }=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "4|5|8|20|25|40|50"
+				},
+				{
+					"name": "a",
+					"expression": "1..19"
+				}
+			],
+			"conditions": ["a < b", "gcd(a,b) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/b;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise le numérateur par le dénominateur (ou on écrit la fraction sur $10$, $100$ ou $1\\,000$).",
+					"$$\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{eval:1000*a/b}} }{1\\,000}=\\textcolor{{{color:primary.0}}}{ {{eval:a/b;d}} }$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,035 → 3,5 %",
+			"variationIndex": 0,
+			"variables": {
+				"m": "35"
+			},
+			"answers": ["3{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,035 → 35 % (une puissance de 10 de trop)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "35"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,035 → 0,035 % (pas multiplié)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "35"
+			},
+			"answers": ["0{,}035"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,4 → 40 %",
+			"variationIndex": 0,
+			"variables": {
+				"m": "400"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,4 → 4 %",
+			"variationIndex": 0,
+			"variables": {
+				"m": "400"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,5 % → 0,005",
+			"variationIndex": 1,
+			"variables": {
+				"m": "5"
+			},
+			"answers": ["0{,}005"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,5 % → 0,5 (pas divisé)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "5"
+			},
+			"answers": ["0{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8 % → 0,8",
+			"variationIndex": 1,
+			"variables": {
+				"m": "80"
+			},
+			"answers": ["0{,}8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8 % → 0,08",
+			"variationIndex": 1,
+			"variables": {
+				"m": "80"
+			},
+			"answers": ["0{,}08"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "8 % → 8/100 : pas l'écriture décimale demandée (forme)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "80"
+			},
+			"answers": ["\\frac{8}{100}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
+			}
+		},
+		{
+			"description": "8 % → 2/25 (fraction irréductible) : pas l’écriture décimale demandée (forme)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "80"
+			},
+			"answers": ["\\frac{2}{25}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "1/8 → 12,5 %",
+			"variationIndex": 2,
+			"variables": {
+				"b": "8",
+				"a": "1"
+			},
+			"answers": ["12{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/8 → 0,125 % (pas multiplié)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "8",
+				"a": "1"
+			},
+			"answers": ["0{,}125"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/8 → 8 % (dénominateur lu comme pourcentage)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "8",
+				"a": "1"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7/20 → 35 %",
+			"variationIndex": 2,
+			"variables": {
+				"b": "20",
+				"a": "7"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3/8 → 0,375",
+			"variationIndex": 3,
+			"variables": {
+				"b": "8",
+				"a": "3"
+			},
+			"answers": ["0{,}375"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/8 → 0,38 (arrondi)",
+			"variationIndex": 3,
+			"variables": {
+				"b": "8",
+				"a": "3"
+			},
+			"answers": ["0{,}38"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/8 → 3,8 (numérateur et dénominateur accolés)",
+			"variationIndex": 3,
+			"variables": {
+				"b": "8",
+				"a": "3"
+			},
+			"answers": ["3{,}8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/8 → 375/1000 : pas l'écriture décimale demandée (forme)",
+			"variationIndex": 3,
+			"variables": {
+				"b": "8",
+				"a": "3"
+			},
+			"answers": ["\\frac{375}{1000}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
+			}
+		},
+		{
+			"description": "7/40 → 0,175",
+			"variationIndex": 3,
+			"variables": {
+				"b": "40",
+				"a": "7"
+			},
+			"answers": ["0{,}175"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2446 (point 2-496 et rangement de `c1c9cfc3`, migration appliquée)._
+_Mis à jour le 2026-11-08, lot 3 « Proportions et pourcentages » : PR ouverte (branche `feat/automatismes-proportions`)._
 
-- **État** : lot « Calcul littéral et équations » bouclé : modèle `c1c9cfc3` rangé (Algèbre › Calcul littéral
-  › substitution, point neuf 2-496), fiche **`894f766e`** écrite en prod et vérifiée (0 débord) · **Prochaine
-  action** : lot 3 « Proportions et pourcentages » (phase 0 : capacités du BO, relevé des modèles en prod,
-  candidats par série) · **En attente de David** : publication en admin de `9bd4bcc6`, `894f766e` et des 6
-  fiches de 1re ; publication du modèle `c1c9cfc3` (brouillon) · **Pièges en cours** : écritures ET
+- **État** : modèle neuf « Écrire une proportion sous une autre forme » (20 specs vertes) et script de fiche
+  `create-automatismes-proportions.ts` écrits ; rendu local : fiche 1 p., corrigé 3 p., 0 débord, 16 réponses
+  justes · **Prochaine action** : CI verte → merge ; puis David lance `create-questions --publier` (modèle
+  neuf), simulation puis `--publier` de la fiche ; ensuite rangement du modèle neuf (2e PR : nœud de 6-106,
+  tag 6-106, exception de niveaux) · **En attente de David** : publication en admin de `9bd4bcc6`, `894f766e`
+  et des 6 fiches de 1re ; publication du modèle `c1c9cfc3` (brouillon) · **Pièges en cours** : écritures ET
   simulations contre la prod lancées par David (commande donnée avec `!`) ; `debord.py` ne voit pas une
-  équation centrée trop large : relire les pages ; variable `i` = unité imaginaire ; lire les VARIANTES des
-  modèles voisins avant de proposer un modèle neuf ; un point neuf de programme décale l'ordre d'affichage du
-  niveau (1..N exigé par `passe-points-lycee.test.ts`) et entre dans `LATER` de
-  `tests/helpers/database/later-migrations.ts` · **Worktree / branche** : aucun (retiré).
+  équation centrée trop large : relire les pages ; lire les VARIANTES des modèles voisins avant de proposer un
+  modèle neuf ; une proportion ne dépasse pas 1 (pas de « proportion 1,2 ») ; `fiche:verifier` sans EN : les
+  étapes EN échouent, les FR suffisent (`PYTHON_FICHES=../ubumaths/scripts/fiches/.venv/bin/python`) ·
+  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe` · `feat/automatismes-proportions`.
 - Fiches à publier : `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
@@ -520,3 +521,48 @@ scripts/questions/automatismes-2de-calcul-litteral --publier` (écrit l'`id` dan
   `security-auditor` : rien de bloquant (faibles déjà acceptés aux lots précédents). CI verte, #2446 mergée
   (après la fin d'un `deploy:prod`), `db:migrate` appliqué ; relevé MCP : 2-496 au rang 51 sur substitution,
   7 références, `c1c9cfc3` rangé et tagué, ordre de 2de 1..295 sans doublon, trigger `updated_at` actif.
+
+### Lot « Proportions et pourcentages » — phase 0 (validée par David le 2026-11-08)
+
+Capacités du BO 2de (Proportions et pourcentages) : calculer, appliquer, exprimer une proportion sous
+différentes formes (décimale, fractionnaire, pourcentage) ; utiliser une proportion pour calculer une partie
+connaissant le tout, ou le tout connaissant une partie. Seul point de 2de du bloc : 2-490 (le tout), modèle
+`39b4823d` ; le reste porté par des points du collège (4-056, 5-086, 5-140, 6-106, 6-140, 6-141).
+
+**Essai** : 13 candidats, 12 avec leur fichier dans `scripts/questions/` (`md5` des variantes = prod,
+calculé par le Postgres local avec `$J$…$J$::jsonb::text`), `0be55013` copié du MCP. `buildSerie` en local,
+graines 1-12 : **tout passe**.
+
+- **Série 1** : `ade95ae4` proportion → % · `5c8a6da6` tout multiple de 100 · `5b3bef9f` écriture décimale ·
+  **neuf** autre forme · `11f91d46` pourcentage d'un pourcentage · `afbfa8c6` trois proportions emboîtées ·
+  `a635df43` fraction d'une fraction · `f4f0d076` probabilité en décimal.
+- **Série 2** : `4f599434` t % de c · `950cfa36` par 1 % · `5b3bef9f` effectif de la partie · `0be55013`
+  fraction d'une quantité · `afbfa8c6` effectif par deux pourcentages · `39b4823d` ×2 (fraction, %) ·
+  `4f599434` le tout connaissant t %.
+- Écartés (fiche (2)) : 6-141 ×6 (« 25 % de 48 », trop faciles), `35754c24`, `62590cd3`, `8fd459da`,
+  `f9e9637c` (définition), `9293eb9a`, `8ffdbdb1` (calcul nu), `0c5f6039` (ratio, hors capacité), évolutions
+  (`ef08a256`, `2562438e`, `e05bb79b`, `c4372fd8`), `5d7726eb`, `81a64b0a` (déjà dans « nombres (1) »).
+- **Modèle neuf validé** : aucun modèle ne passe décimal ↔ % ni fraction non décimale → % (variantes lues,
+  recherche dans les énoncés de prod). **Rangement décidé (David, 2026-11-08)** : point **6-106** avec
+  exception de niveaux (`EXCEPTIONS_NIVEAUX`), pas de point neuf (6-106 couvre la puce ; un point 2de la
+  recopierait).
+
+### Fait (PR du lot « Proportions et pourcentages », 2026-11-08)
+
+- Modèle neuf `scripts/questions/automatismes-2de-proportions/01-proportion-autre-forme.json` (2de,
+  brouillon) : décimal → %, % → décimal, fraction → %, fraction → décimal ; valeurs ≤ 1 seulement (une
+  proportion ne dépasse pas 1 : 1,2 et 1,5 retirés après le premier essai) ; 20 specs vertes, 2000/2000 tirages.
+  Fraction donnée pour une écriture décimale → `bad_form` (`form`, plus `reducedFractions` si réductible).
+- `scripts/create-automatismes-proportions.ts` (forme de `create-automatismes-calcul-litteral.ts`, modèle neuf
+  lu dans son fichier tant qu'il n'a pas d'`id`). Niveaux `['2', '1_SPE']`.
+- Graines : série 1 = proportion 10 (56/80), sur 100 8 (207/300), décimale 17 (22/40), neuf 12 (0,5 % →
+  0,005), % de % 8 (25 % × 40 %), emboîtés 10 (60 × 50 × 80 %), fraction de fraction 2 (3/5 × 3/4),
+  probabilité 8 (8/25) ; série 2 = t % de c 10 (60 % de 220), par 1 % 5 (8 % de 300), partie 14 (35 % de 120),
+  fraction d'une quantité 10 (7/8 de 72), successifs 14 (5000, 60 %, 25 %), tout 18 (28 = 7/8) et 5 (49 =
+  87,5 %), le tout 2 (20 % → 13). 16 réponses recalculées à la main.
+- Rendu local (séries construites sur les copies, `pnpm fiche:verifier`) : fiche 1 p., corrigé 3 p., 0 débord,
+  pages relues. Non bloquant : deux corrigés passent d'une colonne à l'autre (série 1 Q4, série 2 Q4).
+- **À lancer par David, dans l'ordre**, après le merge : `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/automatismes-2de-proportions --publier` (écrit l'`id` dans le fichier, à commiter) ; puis
+  `pnpm tsx scripts/create-automatismes-proportions.ts` (simulation) et `… --publier`. Ensuite : rangement du
+  modèle neuf (nœud de 6-106 + tag 6-106 + exception de niveaux, migration) ; vérification PDF depuis la base.
