@@ -9,8 +9,9 @@
 
 _Mis à jour le 2026-11-08, phase 0 validée._
 
-- **État** : phase 0 validée (§ 1) ; n° 19 en cours (tests rouges).
-- **Prochaine action** : tests rouges du cercle de centre donné, puis implémentation dans `circle.ts`.
+- **État** : n° 19 (cercle de centre donné) écrit, PR ouverte (§ 2) ; n° 20 pas commencé.
+- **Prochaine action** : revue Opus et CI de la PR du n° 19, merge ; puis tests rouges du n° 20 (triangle
+  rectangle, extension de `triangle`).
 - **En attente de David** : rien.
 - **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` sur la PR ;
   `verifier: cercle` refuse aujourd'hui toute autre expression que `cercle_circonscrit` (à la publication).
@@ -65,3 +66,19 @@ hors cycle 2), plutôt qu'une vérification neuve.
 **Décisions de David (« je suis tes recos », 2026-11-08)** : Q1 quadrillage et papier uni ; Q2 extension de
 `triangle` (`CAB = 90` à l'équerre) ; Q3 carreaux sur les lignes, `AC = AB` seul sur les obliques ; Q4 n° 19 puis
 n° 20, une PR chacun, revue `code-reviewer` en `model: opus`, puis le lot 12b du CE2.
+
+## 2. N° 19 — cercle de centre donné (2026-11-08)
+
+- `centeredCircleOf` / `centeredCircleTools` (`ubumark/types/construction.ts`) : lecture de `cercle(O, passant=A)` et
+  `cercle(O, rayon=distance(D, E))`, palette déduite (compas ; compas + report).
+- Parseur : quadrillage admis pour `passant=`, refusé pour `rayon=` (et pour `report` dans `outils:`) ; `rayon=`
+  exige le report.
+- Juge (`circle.ts`, `judgeCentered`) : messages du § 1 ; sur quadrillage, tout cercle tracé est construit.
+- Piège trouvé : `cercle(O, rayon=distance(D, E))` donne le nom interne AUSSI à la distance intérieure ;
+  `expectedPoints` prenait la distance (aucun cercle attendu). Corrigé : il prend l'élément qui est un cercle.
+- Tests : `construction-circle-centre.test.ts` (33, rouges puis verts) ; `construction/` 562 verts, catalogue,
+  parseur et rendu 231 verts, navigateur cercle + quadrillage 8 verts ; `check:incremental` 0 erreur.
+- Essai dans l'appli (port 5176, base LOCALE, brouillon d'essai `9c92cf8f`, jamais en prod) : Report de [DE]
+  piqué en O → « Juste » ; quadrillage, compas ouvert jusqu'au mauvais nœud → « Faux », « Ton cercle a le bon
+  centre mais ne passe pas par A. », correction en pointillés.
+- Doc : `systeme/questions.md`, `systeme/ubumark.md`, fiche du catalogue (2 exemples).
