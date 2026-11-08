@@ -1,4 +1,5 @@
 {
+	"id": "76ada660-ed67-4c27-b25d-c8676a1530ae",
 	"title": "Tester si un entier est multiple d'un autre en Python",
 	"description": "est_multiple(a, b) par a % b == 0 : valeur renvoyée (True ou False) ; version par une boucle while, valeur de m à la sortie ; compléter la ligne return",
 	"grades": ["2"],

@@ -1,4 +1,5 @@
 {
+	"id": "66cd841d-ddcb-474a-a0fd-c3ab85f25774",
 	"title": "Encadrer √2 par balayage en Python",
 	"description": "balayage(n), pas 10^(−n) : encadrement renvoyé pour n = 1 ou 2 (deux cases), compléter la condition de la boucle while, amplitude de l'encadrement",
 	"grades": ["2"],
