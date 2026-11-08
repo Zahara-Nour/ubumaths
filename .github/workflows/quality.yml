@@ -471,6 +471,7 @@ jobs:
           (while true; do
              echo "=== $(date -u +%T) $(free -m | awk 'NR==2{print "used="$3" free="$4" avail="$7}') swap=$(free -m | awk 'NR==3{print $3}')"
              ps -eo rss=,comm= --sort=-rss | head -6 | awk '{printf "  %6d Mo %s\n", $1/1024, $2}'
+             echo "  disque /tmp: $(df -m /tmp | awk 'NR==2{print "dispo="$4" Mo, utilisé="$5}'), shm chrome: $(du -sm /tmp/.org.chromium.* 2>/dev/null | awk '{s+=$1} END{print s+0}') Mo"
              echo "  chrome total: $(ps -eo rss=,comm= | awk '/chrom/{s+=$1} END{print int(s/1024)}') Mo, process: $(pgrep -c chrom)"
            sleep 5; done) > "$RUNNER_TEMP/mem.log" 2>&1 &
           # Tout fichier écrit dans le projet pendant les tests (store pnpm exclu).
@@ -480,7 +481,7 @@ jobs:
 
       - name: Run client tests
         env:
-          DEBUG: pw:browser,vite:deps,vite:hmr,vite:config,vitest:browser:api
+          DEBUG: pw:browser,pw:api,vitest:browser:api,vitest:browser:pool,vitest:browser:gc,vitest:browser:playwright
         run: pnpm exec vitest run --project client --shard=${{ matrix.shard }}/2
 
       - name: Memory and kernel report
