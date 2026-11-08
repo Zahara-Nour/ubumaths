@@ -349,3 +349,7 @@ Mergée (#2484, CI verte du premier coup).
 
 Créés en brouillon par David (2026-11-08) : 6564c2bf (321), 9a05a09f (322) ; ids commités sur la branche de la
 migration.
+Relevé prod (MCP, 2026-11-08, avant la migration) : 2 brouillons au niveau {2}, sans nœud ni tag ; 2-321 et
+2-322 actifs sur leur sous-notion, aucun modèle déjà tagué dessus.
+Migration `20261108222224_questions_2de_algorithmes_5_rangement_tags` (calquée sur le lot 4, seules les données
+changent, diff relu) : test d'intégration 12/12 vert, rouge sans les écritures (2 échecs, 5 sautés). PR #2487.
