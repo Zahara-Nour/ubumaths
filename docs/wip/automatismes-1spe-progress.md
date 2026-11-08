@@ -633,3 +633,21 @@ normal, `toLocaleDecimal` met la virgule au rendu.
   ajoutés aux `points:` au corrigé) ; point sans nom → première lettre libre ; une case par point. Tests
   `serie-automatismes-placer.test.ts` (8, rouges avant le code) ; le cas « points à placer refusés » du test
   de `tracer:` retiré. Bloc en retrait : déjà refusé par le générateur, garde gardée.
+- Modèles neufs de 5e `scripts/questions/automatismes-2de-geometrie/` : 01 « Lire les coordonnées d'un point »
+  (point quelconque à coordonnées distinctes, sur l'axe des abscisses, sur l'axe des ordonnées ; 8 specs) et 02
+  « Placer un point de coordonnées données » (un point ; deux points dont un sur un axe ; 7 specs) ; 900/900
+  tirages chacun ; correction en « unité(s) ».
+- `scripts/create-automatismes-geometrie.ts` (forme du lot proportions, DEUX modèles neufs lus dans leur fichier
+  tant qu'ils n'ont pas d'`id`). Graines : série 1 = abscisse 7 (−1,1), placer un réel 20 (−5/4), lire 15
+  (A(−1 ; −3)), placer 17 (A(−3 ; 1), B(0 ; −3)), Pythagore 17 (√27 ≈ 5,2), Thalès 7 (MN = 5,6 ; graine 9
+  écartée : réponse = une donnée), sin 14, angle 4 (43°) ; série 2 = polygone 4 (74 mm → 23,9 cm), disque 14
+  (34,54), triangle 10 (31,5 m²), aire du disque 10 (d = 20 → 100π), cylindre 8 (175π), pyramide 5 (44), cône
+  11 (≈ 377), boule 8 (288π ; graine 4 = demi-boule, corrigé sur 4 pages). 16 réponses recalculées à la main.
+- **Deux trous d'ubumark trouvés au rendu, corrigés** (tests rouges d'abord) : (1) ` ```line ` FERMÉ dans un item de
+  liste lu comme code brut (`parseContentWithCodeBlocks` sans branche `line`) — à l'écran ET au PDF, pour toute
+  liste ; (2) droite graduée PDF de 12 cm qui débordait d'une colonne de fiche → réduite à la largeur disponible
+  (`layout` + `measure` + `scale`, comme l'arbre). Docs `ubumark.md`, `fiches-et-pdf.md` mises à jour.
+- Rendu local (copies, `pnpm fiche:verifier`, `PYTHON_FICHES=` vers le venv du dépôt principal) : fiche 2 p.
+  (série 1 finit en haut de la page 2 : figures), corrigé 3 p., 0 débord, pages relues. Non bloquants : en-tête
+  « série 2 » seul en bas de la page 2 du corrigé ; point d'un `placer: 13/10` sans nom nommé « A » au corrigé ;
+  les points placés d'un repère sont noirs au corrigé (`points:` du ` ```courbe ` n'a pas de couleur).
