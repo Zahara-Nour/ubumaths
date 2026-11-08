@@ -874,9 +874,9 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    puis 7 cm superposés, ou une rafale de longueurs : le plus long ; A → 5 cm puis 5 → 6 cm : 6 cm) ; deux
    directions opposées ou un segment qui passe au-delà de A : A au milieu, pas un segment depuis A. Juste :
    ce bout sur une graduation (1 mm au moins, la règle entière au plus) d'une règle posée avec son 0 en A
-   (`rulerGraduationOf`), égale à la longueur demandée en millimètres entiers ; plusieurs directions
-   distinctes depuis A : juste si l'une convient. Messages, dans l'ordre : « Trace le segment [AB] depuis
-   le point A. », « Ton segment est tracé à l'œil : arrête-le sur une graduation de la règle. », « Ton
+   (`rulerGraduationOf`), égale à la longueur demandée en millimètres entiers ; plusieurs segments vus
+   depuis A, dans des directions distinctes : faux (décision Q9 de David). Messages, dans l'ordre : « Trace
+   le segment [AB] depuis le point A. », « Trace un seul segment [AB] depuis le point A. », « Ton segment est tracé à l'œil : arrête-le sur une graduation de la règle. », « Ton
    segment mesure 5,8 cm au lieu de 6 cm. » (dans l'unité de l'auteur : `58 mm`, `5 cm 8 mm`). Une droite,
    un point, un bout hors de la fenêtre : faux, sans message ; une règle dans une autre vérification :
    faux, sans message (`judgeConstruction`). Erreurs de l'auteur : quadrillage, fenêtre absente, A absent,

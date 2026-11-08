@@ -53,6 +53,8 @@ export function formatLength(mm: number, unit: LengthUnit): string {
 
 export const missingSegmentFeedback = (a: string, b: string) =>
 	`Trace le segment [${a}${b}] depuis le point ${a}.`;
+export const severalSegmentsFeedback = (a: string, b: string) =>
+	`Trace un seul segment [${a}${b}] depuis le point ${a}.`;
 export const segmentEyeballedFeedback = () =>
 	'Ton segment est tracé à l’œil : arrête-le sur une graduation de la règle.';
 export const wrongLengthFeedback = (
@@ -255,8 +257,8 @@ function seenSegments(segments: readonly DrawnLine[], a: Position, eps: number):
 /**
  * Verdict, sur les segments que l'élève voit depuis A (`seenSegments`) : le bout
  * le plus loin sur une graduation d'une règle posée avec son 0 en A, à la
- * longueur donnée en millimètres entiers. Plusieurs directions : juste si l'une
- * convient ; sinon le message du premier segment sur une graduation. Une droite,
+ * longueur donnée en millimètres entiers. Plusieurs segments vus depuis A (des
+ * directions distinctes) : faux (Q9). Une droite,
  * un point (sans leur outil), un bout hors de la fenêtre (l'écran ne l'atteint
  * pas) : réponse forgée.
  */
@@ -285,6 +287,11 @@ export function judgeSegmentLength(
 	const seen = seenSegments(segments, a, eps).filter((s) => !s.throughA);
 	if (seen.length === 0) {
 		return { status: 'incorrect', feedback: missingSegmentFeedback(check.point, check.end) };
+	}
+	// Q9 (David, 2026-11-08) : plusieurs segments vus depuis A, dans des directions distinctes →
+	// faux (un éventail de longueurs n'est pas un segment de la bonne longueur)
+	if (seen.length > 1) {
+		return { status: 'incorrect', feedback: severalSegmentsFeedback(check.point, check.end) };
 	}
 	// Règles posées avec leur 0 en A : la graduation (mm) où s'arrête chaque segment vu
 	const rulers = objects.filter(

@@ -15,6 +15,7 @@ import { ConstructionAuthorError, assertConstructionChecks, judgeConstruction } 
 import {
 	formatLength,
 	missingSegmentFeedback,
+	severalSegmentsFeedback,
 	rulerLengthOf,
 	segmentEyeballedFeedback,
 	wrongLengthFeedback
@@ -251,10 +252,27 @@ describe('juge : segment AB = 6 cm', () => {
 		});
 	});
 
-	it('deux directions distinctes depuis A : juste si l’une convient', () => {
+	it('deux directions distinctes depuis A → « Trace un seul segment [AB] depuis le point A. » (Q9)', () => {
+		const feedback = severalSegmentsFeedback('A', 'B');
+		expect(feedback).toBe('Trace un seul segment [AB] depuis le point A.');
 		const other = regle({ x: 2, y: 8 });
 		expect(judge(SIX, [other, along(other, 40), regle(), along(regle(), 60)])).toEqual({
-			status: 'correct'
+			status: 'incorrect',
+			feedback
+		});
+	});
+
+	it('un éventail de 5,1 à 6,9 cm, chacun dans sa direction sur sa règle → faux (Q9)', () => {
+		// 5,1 ; 5,3 ; … ; 6,9 cm, chacun sur sa règle (10 règles et 10 segments : le plafond
+		// de 20 objets de la réponse), de -22,5° à 22,5° tous les 5° (au-delà des 2° de fusion)
+		const fan = Array.from({ length: 10 }, (_, i) => {
+			const angle = ((i - 4.5) * 5 * Math.PI) / 180;
+			const ruler = regle({ x: 2 + Math.cos(angle), y: 4 + Math.sin(angle) });
+			return [ruler, along(ruler, 51 + 2 * i)];
+		}).flat();
+		expect(judge(SIX, fan)).toEqual({
+			status: 'incorrect',
+			feedback: severalSegmentsFeedback('A', 'B')
 		});
 	});
 
