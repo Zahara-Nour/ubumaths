@@ -7,7 +7,7 @@
  * neuve (« parabole » sous Géométrie repérée) ; les 6 brouillons du lot 8, créés le 2026-11-05 par
  * scripts/create-questions.ts (sans nœud ni tag), vont sur leur sous-notion et reçoivent leur point
  * (1SPE-324, 325, 326, 334, 335, 420). Décisions de David (journal
- * docs/wip/questions-1spe-demonstrations-progress.md § 9 D3, § 13 D6).
+ * docs/archive/wip/questions-1spe-demonstrations-progress.md § 9 D3, § 13 D6).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en [1_SPE], sans nœud ni tag — puis rejoue la migration
