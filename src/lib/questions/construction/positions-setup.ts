@@ -19,7 +19,7 @@ import { registerConstructionPositions, type ConstructionGeometry } from './posi
 import type { ExpectedCircle, ExpectedLine, ExpectedPoints } from './point';
 import type { FigureLine, FigureSegment, FigureShapes } from './symmetry';
 import type { FigureHeader } from '$lib/ubumark/types/figure';
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
+import { centeredCircleOf, type ConstructionCheck } from '$lib/ubumark/types/construction';
 
 /** Position de chaque point NOMMÉ d'une scène (le nom affiché : A, B…) */
 export function namedPointPositions(scene: FigureScene): Map<string, Position> {
@@ -155,6 +155,16 @@ export function expectedPoints(
 	const errors = new Map<string, string>();
 	for (const check of checks) {
 		if (check.kind !== 'point' && check.kind !== 'droite' && check.kind !== 'cercle') continue;
+		// `cercle(O, rayon=4 cm)` (chantier `regle-graduee`, PR 3) : le langage des figures
+		// n'a pas d'unité ; 1 unité = 1 cm (ADR 0036), le centre est un point de la figure
+		const ruled = check.kind === 'cercle' ? centeredCircleOf(check.expression) : null;
+		if (ruled?.kind === 'longueur') {
+			const { scene } = buildFigureScene(parseFigureContent(figureSource));
+			const center = scene ? allNamedPointPositions(scene).get(ruled.center) : undefined;
+			if (center) circles.set(check.name, { center, radius: ruled.length / 10 });
+			else errors.set(check.name, `le point ${ruled.center} n’existe pas dans la figure`);
+			continue;
+		}
 		const node = parseFigureContent(`${figureSource}\n${EXPECTED_NAME} = ${check.expression}`);
 		const { scene, errors: sceneErrors } = buildFigureScene(node);
 		if (check.kind === 'point') {

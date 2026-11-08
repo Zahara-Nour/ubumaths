@@ -744,6 +744,28 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    point nommé invisible, cercle qui sort de la fenêtre, centre ou point de passage hors des nœuds sur
    quadrillage. Correction : le cercle et son centre, sans médiatrice. Le cercle attendu de `rayon=` : la
    distance intérieure porte aussi le nom interne, `expectedPoints` prend l'élément qui est un cercle.
+   **Rayon donné en cm** (chantier `regle-graduee`, PR 3, décision Q12) : `cercle c = cercle(O, rayon=4 cm)`
+   (aussi `3,5 cm`, `3 cm 5 mm`, `35 mm`, au mm près ; `CenteredCircle.kind = 'longueur'`, lu par
+   `readLengthText`, partagée avec le segment de longueur donnée). Palette Règle graduée · Compas
+   (`centeredCircleTools`), rien d'autre ; la Règle graduée est l'outil de départ. Le cercle attendu : O de
+   la figure, rayon = longueur / 10 (1 unité = 1 cm, ADR 0036 ; le langage des figures n'a pas d'unité,
+   `expectedPoints` le calcule à part). La règle se pose comme pour le segment ; au compas, avec la règle
+   posée, le 2e toucher (l'ouverture) s'aimante à la graduation du mm la plus proche avant tout point, ‹ ›
+   décalent l'ouverture du dernier cercle piqué au 0 (`nudgeRulerEnd`, `shape: 'cercle'`). Juste : un cercle
+   de centre O dont le point d'ouverture est sur une graduation (1 mm au moins) d'une règle posée avec son
+   0 en O, égale au rayon demandé (`judgeRuled`). Messages, dans l'ordre : « Trace le cercle de centre O
+   et de rayon 4 cm. », « Pique ton compas en O. », « Trace un seul cercle de centre O. » (plus de rayons
+   distincts en O que de cercles attendus en O, comme Q9 ; le même cercle tracé deux fois n'en fait
+   qu'un), « Ton compas est ouvert à l'œil : ouvre-le sur une graduation de la règle. », « Ton cercle a un
+   rayon de 3,8 cm au lieu de 4 cm. » (unité de l'auteur). Cercles concentriques attendus (une ligne par
+   cercle) : chacun juge le cercle de l'élève qui a son rayon, sinon celui qui n'a le rayon d'aucun cercle
+   attendu. Les cercles d'un autre centre : traits de construction. Un segment, une droite, un point, un
+   Report : faux, sans message. Erreurs de l'auteur : quadrillage, fenêtre absente, O absent ou invisible,
+   rayon plus grand que la règle (`rulerLengthOf`), cercle qui sort de la fenêtre ; au parseur : longueur
+   pas au mm près ou nulle, outil hors de la palette, règle graduée ou compas absents, mélange avec une
+   autre vérification qu'un cercle. Correction (`solutionRuler` → `circleLengthRuler`, `solutionCircles`) :
+   la règle posée en O, dans la direction de la dernière règle de l'élève posée en O, sinon vers la
+   droite, et le cercle.
    Vérification `triangle ABC : AC = u ; BC = v` (`construction/triangle.ts`, lot 4 du chantier) : [AB]
    est tracé, les longueurs de [AC] et [BC] viennent d'un segment nommé de la figure ou de deux points
    visibles (`AC = AB`). L'élève trace [AC] et [BC] (segments partant de A et de B) ; C = leur bout
@@ -884,7 +906,7 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    demandée de A (l'élève n'aurait qu'à tracer [AC]), longueur plus grande que la règle, ou
    qui ne tient dans la fenêtre depuis A dans aucune direction (coin le plus loin). Seul dans la figure ;
    palette Règle graduée · Segment (`PLAIN_PAPER_TOOLS.segment`), la règle graduée refusée dans toute
-   autre vérification. Correction (`solutionRuler`, `solutionLines`) : la règle posée en A et le segment
+   autre vérification, sauf le cercle de rayon donné en cm (PR 3, ci-dessus). Correction (`solutionRuler`, `solutionLines`) : la règle posée en A et le segment
    en pointillés, dans la direction de la dernière règle de l'élève posée en A, sinon de son segment,
    sinon vers la droite, la gauche, le haut, le bas, le coin le plus loin (la première où il tient).
    **Le long d'une demi-droite donnée** (décision Q7, PR 2 du chantier) : `segment AB = 6 cm sur [Ax)`,

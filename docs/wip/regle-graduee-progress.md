@@ -184,3 +184,22 @@ d'auteur (cas frère de #2485 ; pas étendu à la direction libre). Tests rouges
 segment (le trait s'écarte de ~1,7 mm) : garder, ou serrer la fusion quand la demi-droite est donnée ? (reco :
 serrer, à la tolérance de calcul, avec `ray`) ; **Q16** (finding 4) : accepter aussi `[AX)` (X un point de la
 figure) ? (reco : oui, plus tard si un auteur le demande ; le refus actuel cite la forme attendue).
+
+## 6. PR 3 — cercle de rayon donné en cm (2026-11-09)
+
+`verifier: cercle c = cercle(O, rayon=4 cm)` (aussi 3,5 cm, 3 cm 5 mm, 35 mm) : `CenteredCircle.kind = 'longueur'`,
+`readLengthText` déplacée du parseur vers `ubumark/types/construction.ts` (partagée avec le segment) ; cercle attendu
+calculé à part dans `expectedPoints` (O, longueur / 10) ; juge `judgeRuled` (`circle.ts`) ; vue : au compas, règle
+posée, l'ouverture s'aimante à la graduation du mm (même branche que le segment), ‹ › décalent l'ouverture
+(`nudgeRulerEnd`, `shape: 'cercle'`), outil de départ = Règle graduée ; correction : la règle posée en O
+(`circleLengthRuler`) et le cercle ; catalogue (1 exemple), docs `systeme/questions.md`, `systeme/ubumark.md`.
+Tests : 32 purs (rouges puis verts), 2 composant ; `construction/` + `ubumark` + `atelier` + catalogue 16 166 verts ;
+`check:incremental` 0 erreur ; cliquet tenu ; `lint:fast` propre.
+
+**Choix faits sans David (à valider)** : (1) plusieurs cercles de centre O de rayons distincts → faux, « Trace un
+seul cercle de centre O. » (l'analogue de Q9 : un éventail de rayons n'est pas un cercle juste) ; avec des cercles
+concentriques attendus, le seuil est le nombre de cercles attendus en O ; (2) palette exactement Règle graduée ·
+Compas (Report, segment, droite refusés) ; le cercle ne se mêle qu'à d'autres cercles ; (3) la règle doit avoir son
+0 en O (pas « 0 ailleurs et différence de deux graduations ») ; (4) Règle graduée = outil de départ (comme le
+segment) ; (5) pas de refus d'auteur « un point visible à 4 cm de O » (le compas s'y aimanterait, mais le juge
+exige une graduation : l'élève mesure quand même).

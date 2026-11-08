@@ -53,7 +53,7 @@ import {
 	type BissectriceCorrection,
 	type LineCodage
 } from './line';
-import { circleSolution, isCircleCheck, type CircleSolution } from './circle';
+import { circleLengthRuler, circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
 import { triangleCorrection, triangleSolution, type TriangleCorrection } from './triangle';
 import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
@@ -293,11 +293,15 @@ export interface RulerOptions {
 	/** Longueur de la règle, en cm (`rulerLengthOf`) */
 	rulerLength: number;
 	window?: FigureWindow | null;
+	/** Sans trait le long de la règle, ‹ › en tracent un : segment (défaut) ou cercle (compas, PR 3) */
+	shape?: 'segment' | 'cercle';
 }
 
 /**
  * Le dernier objet est-il un segment le long de la règle posée (un bout à son 0,
- * l'autre sur une graduation) ? Rend la graduation et le bout qui la porte
+ * l'autre sur une graduation), ou un cercle piqué au 0, ouvert sur une
+ * graduation (PR 3 ; `end` = 2 : son point d'ouverture) ? Rend la graduation et
+ * le bout qui la porte
  */
 function lastAlongRuler(
 	drawing: Drawing,
@@ -305,8 +309,13 @@ function lastAlongRuler(
 	rulerLength: number
 ): { mm: number; end: 1 | 2 } | null {
 	const last = drawing.objects.at(-1);
-	if (last?.kind !== 'segment') return null;
 	const atZero = (x: number, y: number) => x === ruler.ox && y === ruler.oy;
+	if (last?.kind === 'cercle') {
+		if (!atZero(last.cx, last.cy)) return null;
+		const mm = rulerGraduationOf({ x: last.x, y: last.y }, ruler, rulerLength);
+		return mm === null || mm === 0 ? null : { mm, end: 2 };
+	}
+	if (last?.kind !== 'segment') return null;
 	const end = atZero(last.x1, last.y1) ? 2 : atZero(last.x2, last.y2) ? 1 : null;
 	if (end === null) return null;
 	const p = end === 2 ? { x: last.x2, y: last.y2 } : { x: last.x1, y: last.y1 };
@@ -322,8 +331,9 @@ export function rulerSegmentMm(drawing: Drawing, rulerLength: number): number | 
 
 /**
  * ‹ › (et flèches) : décale de `delta` mm le bout du dernier segment le long de
- * la règle posée, entre 1 mm et la dernière graduation dans la fenêtre ; sans
- * ce segment, en trace un depuis le 0 jusqu'à la graduation `delta` (1 mm au moins)
+ * la règle posée (ou l'ouverture du dernier cercle piqué au 0, PR 3), entre 1 mm
+ * et la dernière graduation dans la fenêtre ; sans ce trait, en trace un
+ * (`options.shape`) depuis le 0 jusqu'à la graduation `delta` (1 mm au moins)
  */
 export function nudgeRulerEnd(drawing: Drawing, delta: number, options: RulerOptions): Drawing {
 	const ruler = currentRuler(drawing);
@@ -336,12 +346,20 @@ export function nudgeRulerEnd(drawing: Drawing, delta: number, options: RulerOpt
 		const mm = clamp(along.mm + delta);
 		if (mm === along.mm) return drawing;
 		const p = rulerGraduation(ruler, mm);
-		const last = drawing.objects.at(-1) as DrawnLine;
+		const previous = drawing.objects.at(-1);
+		if (previous?.kind === 'cercle') {
+			const turned = { ...previous, x: p.x, y: p.y };
+			return { ...drawing, objects: [...drawing.objects.slice(0, -1), turned] };
+		}
+		const last = previous as DrawnLine;
 		const moved: DrawnLine =
 			along.end === 2 ? { ...last, x2: p.x, y2: p.y } : { ...last, x1: p.x, y1: p.y };
 		return { ...drawing, objects: [...drawing.objects.slice(0, -1), moved] };
 	}
 	const p = rulerGraduation(ruler, clamp(delta));
+	if (options.shape === 'cercle') {
+		return withObject(drawing, { kind: 'cercle', cx: ruler.ox, cy: ruler.oy, x: p.x, y: p.y });
+	}
 	return withObject(drawing, {
 		kind: 'segment',
 		x1: ruler.ox,
@@ -563,7 +581,10 @@ export function solutionAngle(
 	return check ? angleCorrection(check, points, shapes, drawn) : null;
 }
 
-/** La règle graduée de la correction (segment de longueur donnée), posée en A ; null sinon */
+/**
+ * La règle graduée de la correction : posée en A (segment de longueur donnée) ou
+ * au centre O (cercle de rayon donné en cm, PR 3) ; null sinon
+ */
 export function solutionRuler(
 	checks: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>,
@@ -571,7 +592,8 @@ export function solutionRuler(
 	drawn: readonly DrawnObject[]
 ): DrawnRegle | null {
 	const check = checks.find((c) => c.kind === 'segment');
-	return check ? segmentLengthRuler(check, points, shapes, drawn) : null;
+	if (check) return segmentLengthRuler(check, points, shapes, drawn);
+	return circleLengthRuler(checks.filter(isCircleCheck), points, drawn);
 }
 
 /** Les points à placer : où ils vont, avec leur nom (vérifications `point`) */

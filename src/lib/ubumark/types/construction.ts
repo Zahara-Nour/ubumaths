@@ -83,15 +83,22 @@ export function bissectriceOf(expression: string): [string, string, string] | nu
 /**
  * Cercle de centre donné (chantier `cercle-triangle-rectangle`, n° 19, 2026-11-08) :
  * `cercle(O, passant=A)` (centre O passant par A) ou `cercle(O, rayon=distance(D, E))`
- * (rayon pris sur [DE], au Report)
+ * (rayon pris sur [DE], au Report) ; `cercle(O, rayon=4 cm)` (chantier
+ * `regle-graduee`, PR 3 : compas ouvert sur la règle graduée ; `length` en mm,
+ * NaN si pas au mm près — le parseur refuse NaN et 0)
  */
 export type CenteredCircle =
 	| { center: string; kind: 'passant'; through: string }
-	| { center: string; kind: 'rayon'; from: string; to: string };
+	| { center: string; kind: 'rayon'; from: string; to: string }
+	| { center: string; kind: 'longueur'; length: number; unit: LengthUnit };
 
 const CIRCLE_NAME = '([A-Za-z][A-Za-z0-9_]*)';
 const CENTERED_THROUGH_REGEX = new RegExp(
 	`^cercle\\(\\s*${CIRCLE_NAME}\\s*,\\s*passant\\s*=\\s*${CIRCLE_NAME}\\s*\\)$`
+);
+/** `cercle(O, rayon=4 cm)` : le texte de la longueur, lu par `readLengthText` */
+const CENTERED_LENGTH_REGEX = new RegExp(
+	`^cercle\\(\\s*${CIRCLE_NAME}\\s*,\\s*rayon\\s*=\\s*(\\d[^)]*?)\\s*\\)$`
 );
 const CENTERED_RADIUS_REGEX = new RegExp(
 	`^cercle\\(\\s*${CIRCLE_NAME}\\s*,\\s*rayon\\s*=\\s*distance\\(\\s*${CIRCLE_NAME}\\s*,\\s*${CIRCLE_NAME}\\s*\\)\\s*\\)$`
@@ -104,11 +111,18 @@ export function centeredCircleOf(expression: string): CenteredCircle | null {
 	if (through) return { center: through[1], kind: 'passant', through: through[2] };
 	const radius = CENTERED_RADIUS_REGEX.exec(text);
 	if (radius) return { center: radius[1], kind: 'rayon', from: radius[2], to: radius[3] };
+	const length = CENTERED_LENGTH_REGEX.exec(text);
+	const read = length ? readLengthText(length[2]) : null;
+	if (length && read) return { center: length[1], kind: 'longueur', ...read };
 	return null;
 }
 
-/** Palette d'un cercle de centre donné : le compas, et le Report si le rayon est pris sur un segment */
+/**
+ * Palette d'un cercle de centre donné : le compas, et le Report si le rayon est
+ * pris sur un segment, la règle graduée s'il est donné en cm
+ */
 export function centeredCircleTools(circle: CenteredCircle): ConstructionTool[] {
+	if (circle.kind === 'longueur') return ['regle', 'compas'];
 	return circle.kind === 'passant' ? ['compas'] : ['compas', 'report'];
 }
 
@@ -327,6 +341,30 @@ export interface MeasureCheck {
  * même) : `6 cm` ou `5,3 cm` → cm décimaux ; `5 cm 3 mm` → cm et mm ; `72 mm` → mm
  */
 export type LengthUnit = 'cm' | 'cm-mm' | 'mm';
+
+/** `6 cm`, `5,3 cm` (virgule ou point) */
+const CM_REGEX = /^(\d{1,3})(?:[,.](\d{1,3}))?\s*cm$/;
+/** `5 cm 3 mm` : des centimètres et un chiffre de millimètres */
+const CM_MM_REGEX = /^(\d{1,3})\s*cm\s*(\d)\s*mm$/;
+/** `72 mm` */
+const MM_REGEX = /^(\d{1,4})\s*mm$/;
+
+/**
+ * Longueur écrite par l'auteur → millimètres (null : illisible ; NaN : pas au mm
+ * près) ; segment de longueur donnée et cercle de rayon donné en cm
+ */
+export function readLengthText(text: string): { length: number; unit: LengthUnit } | null {
+	const cmMm = CM_MM_REGEX.exec(text);
+	if (cmMm) return { length: Number(cmMm[1]) * 10 + Number(cmMm[2]), unit: 'cm-mm' };
+	const mm = MM_REGEX.exec(text);
+	if (mm) return { length: Number(mm[1]), unit: 'mm' };
+	const cm = CM_REGEX.exec(text);
+	if (!cm) return null;
+	const decimals = cm[2] ?? '';
+	// Plus d'un chiffre après la virgule (non nul) : pas au millimètre près
+	if (decimals.replace(/0+$/, '').length > 1) return { length: NaN, unit: 'cm' };
+	return { length: Number(cm[1]) * 10 + Number(decimals.charAt(0) || '0'), unit: 'cm' };
+}
 
 /**
  * `segment AB = 6 cm` (chantier `regle-graduee`, CE2-039, ADR 0036) : A est un

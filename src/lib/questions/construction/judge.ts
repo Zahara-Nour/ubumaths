@@ -13,10 +13,11 @@
  * @module questions/construction/judge
  */
 
-import type {
-	ConstructionCheck,
-	DroiteParCheck,
-	PolygonCheck
+import {
+	centeredCircleOf,
+	type ConstructionCheck,
+	type DroiteParCheck,
+	type PolygonCheck
 } from '$lib/ubumark/types/construction';
 import {
 	isDrawnLine,
@@ -301,7 +302,13 @@ export function judgeConstruction(
 	// Règle graduée posée (chantier `regle-graduee`) hors d'un segment de longueur donnée :
 	// sans son outil, réponse forgée ; le segment est seul dans la figure (garanti par le parseur)
 	const segmentLength = allChecks.find((c) => c.kind === 'segment');
-	if (!segmentLength && objects.some((o) => o.kind === 'regle')) return { status: 'incorrect' };
+	// … ou d'un cercle de rayon donné en cm (PR 3), seul avec d'autres cercles (garanti par le parseur)
+	const rulerCircle = allChecks.some(
+		(c) => c.kind === 'cercle' && centeredCircleOf(c.expression)?.kind === 'longueur'
+	);
+	if (!segmentLength && !rulerCircle && objects.some((o) => o.kind === 'regle')) {
+		return { status: 'incorrect' };
+	}
 	if (segmentLength) {
 		try {
 			return judgeSegmentLength(segmentLength, points, shapes, objects);
