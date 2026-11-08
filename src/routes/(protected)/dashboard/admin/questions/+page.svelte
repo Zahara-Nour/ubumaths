@@ -6,7 +6,7 @@
 	 * Features:
 	 * - List all question templates with pagination
 	 * - Server-side sorting (Created date, Last updated date, Question type)
-	 * - Server-side full-text search with PostgreSQL (French config)
+	 * - Recherche côté serveur par titre ou début d'identifiant
 	 * - Filter by type and grade level (multi-select)
 	 * - Debounced search input (500ms delay)
 	 * - View mode toggle (Table / Card grid)
@@ -680,14 +680,14 @@
 											class="absolute top-2.5 right-2 h-4 w-4 animate-spin text-muted-foreground"
 										/>
 									{/if}
-									<!-- Désactivée : le serveur ne filtre pas encore sur le texte (index
-									     tsvector à créer). Active, elle laisserait croire que
-									     « Tout cocher (filtrés) » ne coche que les résultats. -->
+									<!-- Filtrée par le serveur, dans les deux onglets : « Tout cocher
+									     (filtrés) » ne coche que les résultats. -->
 									<Input
 										value={searchTerm}
 										oninput={(e) => handleSearchInput(e.currentTarget.value)}
-										placeholder="Recherche indisponible pour l'instant"
-										disabled
+										placeholder="Titre ou début d'identifiant"
+										aria-label="Rechercher un modèle par titre ou début d'identifiant"
+										maxlength={100}
 										class="pr-8 pl-8"
 									/>
 								</div>
