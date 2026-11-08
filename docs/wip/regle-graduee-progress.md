@@ -13,8 +13,8 @@ _Mis à jour le 2026-11-08, ADR 0036 écrite, comportements de 039 proposés (§
 
 - **État** : ADR 0036 commitée sur `main` (3623b957b, **push en attente** : index de `main` occupé par une autre
   session sur `outils-manquants.md`) ; § 2 = comportements du tracé (039) ; pas de code.
-- **Prochaine action** : réponses Q5-Q8 (§ 2), puis tests rouges (`segment-length` dans `questions/construction/`).
-- **En attente de David** : Q5-Q8 du § 2.
+- **Prochaine action** : tests rouges (`segment-length` dans `questions/construction/`).
+- **En attente de David** : rien (Q5-Q8 tranchées).
 - **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le chantier
   `cercle-triangle-rectangle` (n° 19, 20) touche les mêmes fichiers de `src/lib/questions/construction/`.
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee`.
@@ -70,3 +70,8 @@ on la réutilise comme `Protractor.svelte` dans `FigureACompleterView.svelte`. M
 
 **Questions ouvertes** : Q5 forme de la loupe ; Q6 0 de la règle aimanté ou libre ; Q7 direction libre ou donnée
 (demi-droite [Ax) de la figure) ; Q8 refus « tracé à l'œil » ou longueur seule. Voir le message à David du 2026-11-08.
+
+**Décisions de David (« je suis tes recos », 2026-11-08)** : Q5 loupe = boutons ‹ › qui décalent le bout d'1 mm
+(comme le repère du rapporteur ; vraie loupe plus tard) ; Q6 le 0 de la règle s'aimante au point le plus proche au
+1er toucher ; Q7 l'auteur choisit : direction libre depuis A (défaut, 039) ou le long d'une demi-droite [Ax) de la
+figure (070) ; Q8 un bout hors graduation est refusé (« tracé à l'œil »), comme l'angle.
