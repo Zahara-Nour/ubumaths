@@ -9,18 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR 3 (#2494) ouverte._
+_Mis à jour le 2026-11-09, après #2494._
 
-- **État** : PR 3 (#2494, `cercle c = cercle(O, rayon=4 cm)`) poussée, revue Opus faite (4 mineurs corrigés,
-  § 6) ; en attente de la CI puis merge. Serveur de la branche : port 5177.
-- **Prochaine action** : merger #2494 si la CI est verte ; puis PR 4, triangle rectangle coté
-  (`triangle ABC : CAB = 90 ; AC = 4 cm`, § 4) ; tests d'abord.
-- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494) ; choix (1)-(3) du § 5 et
-  (1)-(5) du § 6 ; Q15 (fusion à 2°, reco : serrer) et Q16 (`[AX)` par un point, reco : plus tard), § 5.
+- **État** : PR 3 (#2494, `cercle c = cercle(O, rayon=4 cm)`) **mergée**, pas déployée ; revue Opus : 4 mineurs
+  corrigés (§ 6) ; ligne #2494 dans `verifications-manuelles.md`.
+- **Prochaine action** : PR 4, triangle rectangle coté (`triangle ABC : CAB = 90 ; AC = 4 cm`, [AB] tracé, § 4) ;
+  tests d'abord.
+- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494) ; choix (1)-(3) du § 5 et (1)-(4)
+  du § 6 ; Q15 (fusion à 2°, reco : serrer) et Q16 (`[AX)` par un point, reco : plus tard), § 5.
 - **Pièges en cours** : correction des réponses → revue `code-reviewer` en `model: opus` ; le juge prend le
   **segment vu** (§ 3) ; seules les règles posées AVANT le cercle comptent (§ 6) ; sous zsh, une liste de
   fichiers dans une variable ne se découpe pas (tableau).
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cercle`.
+- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-triangle` (depuis `origin/main`
+  après #2494).
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
