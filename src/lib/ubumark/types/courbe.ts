@@ -89,6 +89,16 @@ export interface CourbePoint {
 	line: number;
 }
 
+/** Couleur de la courbe de données (une seule série, Q3 de `relier-points`) */
+export const COURBE_DATA_COLOR: CourbeColor = 'bleu';
+
+/** Courbe de données (`données:`) : points donnés, reliés dans l'ordre des abscisses */
+export interface CourbeData {
+	/** Triés par abscisse croissante, abscisses distinctes, 2 à `COURBE_LIMITS.dataPoints` */
+	points: { x: number; y: number }[];
+	line: number;
+}
+
 export interface CourbeAsymptote {
 	/** `x=2` → verticale ; `y=1` → horizontale */
 	kind: 'vertical' | 'horizontal';
@@ -283,6 +293,8 @@ export interface CourbeSpec {
 	vecteurs?: CourbeGivenVector[];
 	/** Titres des axes (`axes:`) ; absent sans la clé */
 	axisTitles?: CourbeAxisTitles;
+	/** Courbe de données (`données:`, jamais avec `placer:` ni `tracer:`) ; absente sans la clé */
+	donnees?: CourbeData;
 }
 
 // ============================================================================
@@ -344,6 +356,8 @@ export const COURBE_LIMITS = {
 	gridLines: 200,
 	functions: 10,
 	points: 50,
+	/** Points d'une courbe de données (`données:`) */
+	dataPoints: 25,
 	asymptotes: 20,
 	areas: 10,
 	tangents: 10,

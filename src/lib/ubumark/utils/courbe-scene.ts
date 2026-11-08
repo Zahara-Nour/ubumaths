@@ -114,6 +114,8 @@ export interface CourbeScene {
 	asymptotes: { from: ScenePoint; to: ScenePoint }[];
 	areas: { color: CourbeColor; polygon: ScenePoint[] }[];
 	tangents: SceneTangent[];
+	/** Courbe de données (`données:`) : ligne brisée découpée à la fenêtre, repères des points visibles */
+	data: { polylines: ScenePoint[][]; marks: ScenePoint[] };
 	curveLabels: { label: CourbeLabel; x: number; y: number; color: CourbeColor }[];
 	ariaLabel: string;
 	warnings: CourbeIssue[];
@@ -535,6 +537,12 @@ function defaultAriaLabel(spec: CourbeSpec): string {
 	const cloudNames = sequences.filter((s) => !s.staircase).map((s) => s.name);
 	const staircaseNames = sequences.filter((s) => s.staircase).map((s) => s.name);
 	const parts: string[] = [];
+	// Courbe de données : les valeurs elles-mêmes (sans elles, la question ne se lit pas)
+	if (spec.donnees) {
+		const given = spec.donnees.points.slice(0, COURBE_LIMITS.dataPoints);
+		const values = given.map((p) => `(${formatTick(p.x)} ; ${formatTick(p.y)})`).join(', ');
+		parts.push(`courbe de données de ${given.length} points : ${values}`);
+	}
 	if (names.length > 0) {
 		parts.push(`${names.length === 1 ? 'courbe de' : 'courbes de'} ${joinNames(names)}`);
 	}
@@ -578,6 +586,7 @@ function emptyScene(spec: CourbeSpec, width: number, height: number, message: st
 		asymptotes: [],
 		areas: [],
 		tangents: [],
+		data: { polylines: [], marks: [] },
 		curveLabels: [],
 		ariaLabel: spec.description ?? 'Figure indisponible',
 		warnings: [{ message }]
@@ -820,6 +829,26 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		});
 	}
 
+	// Courbe de données : segments coupés au bord, repère seulement pour un point de la fenêtre
+	const data: CourbeScene['data'] = { polylines: [], marks: [] };
+	if (input.donnees) {
+		const given = input.donnees.points.slice(0, COURBE_LIMITS.dataPoints);
+		data.polylines = clipPolyline(given, w);
+		data.marks = given
+			.filter((p) => inside(p.x, p.y))
+			.map((p) => ({ x: clean(p.x), y: clean(p.y) }));
+		if (data.marks.length < given.length) {
+			const hidden = given.length - data.marks.length;
+			warnings.push({
+				message:
+					hidden === 1
+						? `Ligne ${input.donnees.line} : 1 point de données est hors de la fenêtre, la courbe est coupée au bord`
+						: `Ligne ${input.donnees.line} : ${hidden} points de données sont hors de la fenêtre, la courbe est coupée au bord`,
+				line: input.donnees.line
+			});
+		}
+	}
+
 	return {
 		window: { ...w },
 		pixelSize: { width, height },
@@ -835,6 +864,7 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		asymptotes,
 		areas,
 		tangents,
+		data,
 		curveLabels,
 		ariaLabel: spec.description ?? defaultAriaLabel(spec),
 		warnings

@@ -7,13 +7,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, phase 0 proposée._
+_Mis à jour le 2026-11-08, PR ouverte._
 
-- **État** : phase 0 écrite (§ 1), rien de codé · **Prochaine action** : réponses de David à Q1-Q4, puis tests
-  rouges · **En attente de David** : Q1-Q4 · **Pièges en cours** : rien encore · **Worktree / branche** :
+- **État** : clé `données:` codée (parseur, scène, écran, PDF, doc `ubumark.md`), PR ouverte (§ 2) ·
+  **Prochaine action** : revue `code-reviewer` + CI, merge ; puis ligne n° 6 de `outils-manquants.md` en « Livré » ;
+  les modèles CM2-125, 159 reviennent à la session `questions-cm2` · **En attente de David** : rien · **Pièges en cours** : rien encore · **Worktree / branche** :
   `../ubumaths-wt-relier-points`, `feat/relier-points`.
 
-## 1. Phase 0 (proposée le 2026-11-08)
+## 1. Phase 0 (validée par David le 2026-11-08)
 
 **Question d'accès** : aucune — rendu d'un bloc ubumark, ni table, ni policy, ni route.
 
@@ -55,3 +56,14 @@ Erreur (refus à la publication, message en français) :
   demande au CM2), ou tout de suite ?
 - **Q4 — correction** : rien de plus que la case (recommandé), ou des traits de lecture en pointillés vers les
   axes (`lecture: x = 14`) dans le corrigé ?
+
+**Tranché (David, 2026-11-08)** : Q1 (a) clé `données:` de ` ```courbe ` ; Q2 `placer:` refusé pour l'instant ;
+Q3 une seule série ; Q4 la case seulement.
+
+## 2. PR 1 — clé `données:` (2026-11-08)
+
+- Tests : `courbe-donnees.test.ts` (15, 13 rouges avant le code) ; `Courbe.svelte.test.ts` (rendu dans un document,
+  rouge prouvé avec `Courbe.svelte` d'`origin/main`).
+- Description accessible : les valeurs elles-mêmes (`Courbe de données de 8 points : (6 ; 8), …`), sinon la question
+  ne se lit pas au lecteur d'écran.
+- Couleur fixe `COURBE_DATA_COLOR` (bleu), une seule série (Q3).

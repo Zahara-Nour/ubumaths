@@ -41,7 +41,12 @@
 </script>
 
 <script lang="ts">
-	import { COURBE_COLORS, type CourbeLabel, type CourbeNode } from '$lib/ubumark/types/courbe';
+	import {
+		COURBE_COLORS,
+		COURBE_DATA_COLOR,
+		type CourbeLabel,
+		type CourbeNode
+	} from '$lib/ubumark/types/courbe';
 	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
 	import { buildCourbeScene, COURBE_PAD, type ScenePoint } from '$lib/ubumark/utils/courbe-scene';
 	import CourbePlacer from './CourbePlacer.svelte';
@@ -333,6 +338,24 @@
 				{/each}
 			{/each}
 
+			<!-- Courbe de données (`données:`) : ligne brisée, un disque par point -->
+			{#each scene.data.polylines as poly, i (i)}
+				<polyline
+					class="courbe-donnees"
+					points={pointsAttr(poly)}
+					style:stroke={COLOR_VAR[COURBE_DATA_COLOR]}
+				/>
+			{/each}
+			{#each scene.data.marks as p, i (i)}
+				<circle
+					class="courbe-donnee"
+					cx={sx(p.x)}
+					cy={sy(p.y)}
+					r="3"
+					style:fill={COLOR_VAR[COURBE_DATA_COLOR]}
+				/>
+			{/each}
+
 			<!-- Escaliers : droite y = x, relation, rappels, escalier, rangs u_k -->
 			{#each scene.sequences as seq, s (s)}
 				{#if seq.staircase}
@@ -583,6 +606,13 @@
 	}
 
 	.courbe-trace {
+		fill: none;
+		stroke-width: 2;
+		stroke-linejoin: round;
+		stroke-linecap: round;
+	}
+
+	.courbe-donnees {
 		fill: none;
 		stroke-width: 2;
 		stroke-linejoin: round;
