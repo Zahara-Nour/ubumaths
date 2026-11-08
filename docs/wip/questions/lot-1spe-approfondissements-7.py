@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-approfondissements-7/.
 
 Phase 0 validée par David le 2026-11-04 (D3 du journal
-« docs/wip/questions-1spe-demonstrations-progress.md », § 9), un point par modèle :
+« docs/archive/wip/questions-1spe-demonstrations-progress.md », § 9), un point par modèle :
 
 | # | Point    | Titre                                                 | Niveau | Point en prod (relevé 2026-11-05)            |
 | 1 | 1SPE-300 | Démontrer l'unicité de l'exponentielle                | 1      | notion Fonction exponentielle                |

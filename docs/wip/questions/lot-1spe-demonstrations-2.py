@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-demonstrations-2/.
 
 Phase 0 validée par David le 2026-11-03 (« je te suis » sur les recos, D1 du journal
-« docs/wip/questions-1spe-demonstrations-progress.md », § 3), un point par modèle :
+« docs/archive/wip/questions-1spe-demonstrations-progress.md », § 3), un point par modèle :
 
 | # | Point    | Titre                                          | Catégorie, niveau                     |
 | 1 | 1SPE-275 | Démontrer l'équation de la tangente            | Fonctions › Dérivation › Démonstrations, 4 |

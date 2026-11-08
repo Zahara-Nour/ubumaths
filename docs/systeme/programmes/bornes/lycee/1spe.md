@@ -42,18 +42,34 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **l1s-6** — Linéarité de l'espérance : E(aX + b) seulement, ou aussi E(X + Y) ? → **affine** (2026-10-23)
 - **l1s-7** — Automatismes « privilégiant l'activité mentale » : bornent-ils les valeurs numériques ? → **mental** (2026-10-23)
 
-## Couverture en modèles de questions (prod, 2026-11-03)
+## Couverture en modèles de questions (prod, 2026-11-08)
 
 Chantier `questions-1spe` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), clos le
-2026-11-02, complété le 2026-11-03 par `questions-1spe-tracer-droite` et `questions-1spe-tangente` ; journaux dans
-`docs/archive/wip/` (`questions-1spe*-progress.md` : index + sous-chantiers `geometrie`, `analyse`, `logique`,
-`tracer-droite`, `tangente` ; journaux par thème `*-1spe-progress.md` de septembre-octobre 2026).
+2026-11-02, complété le 2026-11-03 par `questions-1spe-tracer-droite` et `questions-1spe-tangente`, puis du
+2026-11-03 au 2026-11-08 par `questions-1spe-demonstrations` (démonstrations, approfondissements, exemples
+d'algorithmes) ; journaux dans `docs/archive/wip/` (`questions-1spe*-progress.md` : index + sous-chantiers
+`geometrie`, `analyse`, `logique`, `tracer-droite`, `tangente`, `demonstrations` ; journaux par thème
+`*-1spe-progress.md` de septembre-octobre 2026).
 
-- **275 modèles publiés** de niveau `1_SPE` ; **173 points sur 237** ont au moins un modèle publié, aucun n'a que
-  des brouillons (relevé MCP du 2026-11-03).
-- **64 points sans modèle, tous voulus** :
-  - **P** (52) — démonstrations, points-compétences (205, 435, 436, 437…), approfondissements « en aucun cas
-    obligatoires » (BO p.3) : hors questions. 5a89b292 couvre déjà le résultat de 308 / 411.
+- **332 modèles publiés** de niveau `1_SPE` ; **220 points sur 237** ont au moins un modèle publié, aucun n'a que
+  des brouillons (relevé MCP du 2026-11-08).
+- **Points P couverts par `questions-1spe-demonstrations`** (47, un modèle par point, tagué sur son point,
+  ADR 0020) :
+  - **14 démonstrations** (232-235, 255, 275-278, 398, 308, 411, 322, 323) : démonstration à trous (étape clé en
+    case, ou justification en case choix à 4 propositions), plus une variation « étapes à ranger » (bloc
+    ` ```ranger ` avec `signe: aucun`, #2341). Catégorie « Démonstrations » dans chaque domaine.
+  - **20 approfondissements** (240-242, 381, 256-258, 387, 300-302, 324-326, 334, 335, 420, 345, 346, 361) :
+    preuves (300-302, 325, 326, en partie 257 et 361) traitées comme les démonstrations, les autres en exercices
+    d'application à valeurs tirées ; formule donnée dans l'énoncé pour 241 et 381 (le BO ne demande pas de la
+    connaître). Catégorie « Approfondissements » dans chaque domaine (facultatifs au BO, p.3).
+  - **13 exemples d'algorithmes** (238, 239, 380, 279, 288, 298, 299, 309, 344, 427, 359, 431, 360) : Python
+    seulement ; faire tourner un programme (jamais un programme aléatoire), compléter une ligne (case choix),
+    interpréter la valeur renvoyée. 239 et 380 dans « Seuil et algorithmes › Algorithmes » (après 378 et 369), les
+    autres dans une catégorie « Algorithmes » par domaine.
+  - Au BO, 300-302 sont des approfondissements (rubrique Fonction exponentielle sans « Démonstrations ») et
+    240-242, 381 aussi (rubrique Suites), pas des démonstrations ni des algorithmes.
+- **17 points sans modèle, tous voulus** :
+  - **Points-compétences** (5) — 205, 284, 435, 436, 437 : hors questions.
   - **Couverts par leur voisin** (10) — même savoir-faire sur deux lignes du BO : 211 → 223, 220 → 231,
     328 → 331, 368 → 377, 371 → 224, 373 → 225, 382 → 251, 389 → 272, 417 → 327, 421 → 340. Les faits « à
     connaître » de ces doublons ont, eux, leur modèle « à savoir ».
@@ -63,10 +79,10 @@ Chantier `questions-1spe` (démarche [couvrir-un-niveau.md](../../../../pratique
   tangente connaissant le nombre dérivé » (niveau 4 de « Fonctions > Dérivation > tangente », tagué aussi
   1TECHNO-078, `grades = ['1_SPE', '1_TECHNO']`, #2275, #2277). Les trois voisins tagués 1TECHNO-079 (05387201,
   ed8444bb, f52395d1) ont reçu `1_TECHNO` par #2280 (migration `20261103082130`, appliquée).
-- **10 brouillons `1_SPE` laissés tels quels** : 5 tagués d'un point de seconde, `grades = ['2', '1_SPE']`
-  (5b20321f, 8c31675a, db8b5dc8, 5062197a, f98164b1 — le cahier de texte filtre `grades` par égalité exacte —),
-  qui relèvent de la seconde ; 174e202b, dc4b8d08 (angles associés : hors l1s-3) ; 0495289a (hors borne 377, pour la
-  terminale) ; c90fa022, d2067413 (tagués de 1TECHNO).
+- **5 brouillons `1_SPE` laissés tels quels** : 174e202b, dc4b8d08 (angles associés : hors l1s-3) ; 0495289a (hors
+  borne 377, pour la terminale) ; c90fa022, d2067413 (tagués de 1TECHNO). Les 5 brouillons `grades = ['2', '1_SPE']`
+  du relevé du 2026-11-03 sont publiés depuis (chantiers de seconde) : 8c31675a, db8b5dc8, f98164b1 gardent `1_SPE`,
+  5b20321f et 5062197a ne l'ont plus.
 - Hors 1re spé (voulu) : 8b599a53 (`g(ax + b)`, TSPE-408) et fece187e, afd9b3ff (cos x = a, TSPE-457) n'ont plus
   `1_SPE` dans leurs niveaux (l1s-1, pas d'équation trigonométrique en 1re).
 

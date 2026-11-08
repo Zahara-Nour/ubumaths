@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-approfondissements-6/.
 
 Phase 0 validée par David le 2026-11-04 (D3 du journal
-« docs/wip/questions-1spe-demonstrations-progress.md », § 9), un point par modèle :
+« docs/archive/wip/questions-1spe-demonstrations-progress.md », § 9), un point par modèle :
 
 | # | Point    | Titre                                               | Catégorie, niveau                                         | Sous-notion (rangement)                                    |
 | 1 | 1SPE-256 | Factoriser un polynôme de degré 3                   | Fonctions › Polynôme du second degré › Approfondissements, 1 | Nombres complexes › Équations polynomiales › degré 3 et factorisation |

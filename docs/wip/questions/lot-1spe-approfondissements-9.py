@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-approfondissements-9/.
 
 Phase 0 validée par David le 2026-11-04 (D3 du journal
-« docs/wip/questions-1spe-demonstrations-progress.md », § 9) ; contenu validé le 2026-11-05 (D7,
+« docs/archive/wip/questions-1spe-demonstrations-progress.md », § 9) ; contenu validé le 2026-11-05 (D7,
 « ok pour le contenu »), un point par modèle, chacun sur la sous-notion de son point (aucune neuve) :
 
 | # | Point    | Titre                                                | Niv. | Nœud du modèle                                          |

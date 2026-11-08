@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-demonstrations-1/.
 
 Phase 0 validée par David le 2026-11-03 (« je te suis » sur les recos, D1 du journal
-« docs/wip/questions-1spe-demonstrations-progress.md », § 3), un point par modèle :
+« docs/archive/wip/questions-1spe-demonstrations-progress.md », § 3), un point par modèle :
 
 | # | Point    | Titre                                        | Catégorie, niveau                                       |
 | 1 | 1SPE-232 | Démontrer le terme général (arithmétique)    | Suites › Suites arithmétiques › Démonstrations, 1       |
