@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-08, ouverture du chantier (aucune PR)._
 
-- **État** : phase 0 validée (§ 2) · **Prochaine action** : tests rouges du parseur et du juge · **En attente de David** : rien · **Pièges en cours** : 2-297 a déjà un modèle publié (`51192dc4`) qui détourne le geste « vecteur seul » (§ 1) · **Worktree / branche** : `../ubumaths-wt-somme-vecteurs`, `feat/somme-vecteurs`
+- **État** : outil fait (§ 3), PR 1 à ouvrir · **Prochaine action** : PR 1 (revue Opus, CI), puis PR 2 de contenu : `51192dc4` réécrit (SV5) · **En attente de David** : rien · **Pièges en cours** : 2-297 a déjà un modèle publié (`51192dc4`) qui détourne le geste « vecteur seul » (§ 1) · **Worktree / branche** : `../ubumaths-wt-somme-vecteurs`, `feat/somme-vecteurs`
 
 ## 0. Origine
 
@@ -62,3 +62,18 @@ Question d'accès : personne (aucune migration, outil d'affichage et de geste).
 représentants n'importe où (parallélogramme si même origine, sinon v⃗ au bout de u⃗) ; SV2 coefficients entiers
 de −3 à 3, pas de fractions ; SV3 phrases nommées pour deux vecteurs ; SV4 pointillés sur le repère de l'élève ;
 SV5 `51192dc4` réécrit ici (PR de contenu à part), 3-026 laissé à `questions-3`.
+
+## 3. PR 1 — l'outil (2026-11-08)
+
+- Tests d'abord : `courbe-somme.test.ts` (35, rouges sans le module), `CourbeSomme.svelte.test.ts` (4).
+- Moteur : `utils/courbe-combinaison.ts` (`readGivenVectors`, `readCombination`, `combinationCoords`,
+  `combinationLatex`, `combinationMistake`, `constructionTraces`) ; parseur : clé `vecteurs:`, `tracer: vecteur`
+  à combinaison (lue après `points:`), types `CourbeGivenVector`, `CourbeVectorTerm` ; juge et case inchangés.
+- Écran : flèches données (`scene.vectors`, `Courbe.svelte`), phrase en inline markdown (`CourbePlacer`),
+  pointillés (`dashed`) dans la correction et `BuildAnswer`. PDF : flèches de l'énoncé, pointillés du corrigé ;
+  compilé avec `scripts/fiches/compile-prod.mjs` (typst.ts de la prod) : OK, vu à l'œil.
+- Vu à l'œil (capture des tests navigateur) : juste. **Défaut connu** : le nom d'un point (posé en haut à
+  droite) peut chevaucher une flèche qui en part (A et v⃗ dans l'exemple) ; règle de placement des noms
+  existante, non touchée — à voir avec David si gênant.
+- Doc : `ubumark.md`, `questions.md`, `grapheur.md`, catalogue `block-catalog/courbe.ts` (clé `vecteurs`,
+  exemple « somme »).
