@@ -17,6 +17,7 @@ _Mis à jour le 2026-11-08, phase 0 du lot 4 « Géométrie et repérage » vali
   simulations contre la prod lancées par David (commande donnée avec `!`) ; `debord.py` ne voit pas une
   équation centrée trop large : relire les pages ; essai local : script `.mts` (tsx en CJS sinon) ; garde
   « doc à jour » : une migration exige `Doc-inchangée:` dans un commit · **Worktree / branche** : à créer.
+- **Après le lot 4** : modèle « courbe → tableau de variations à compléter » (variante de `7f82d15a`, cubique), avec l'outil de #2456 (`-2: ?4, top`, `-2,2: ?flèche`) ; décision B du chantier `variations-a-completer` (journal archivé), reprise ici validée par David le 2026-11-08.
 - Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
