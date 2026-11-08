@@ -481,3 +481,27 @@ describe('triangle rectangle : génération d’une question', () => {
 		expect(result.success ? [] : result.errors).toEqual([]);
 	});
 });
+
+describe('triangle rectangle : revue', () => {
+	it('quadrillage, angle droit seul : la correction va vers le nœud proche du C de l’élève, pas collé à A', () => {
+		const source = figure('triangle ABC : CAB = 90', GRID_BODY, GRID, GRID_WINDOW);
+		const c = { x: 4, y: 6 };
+		const sides = solutionLines(
+			checksOf(source),
+			constructionPositions(source),
+			[segment(GA, c), segment(GB, c)],
+			constructionShapes(source)
+		);
+		expect(sides[0].x2).toBeCloseTo(2, 9);
+		expect(sides[0].y2).toBeCloseTo(6, 9);
+	});
+
+	it('papier uni, angle droit seul : refuse une perpendiculaire qui sort de la fenêtre', () => {
+		const source = figure('triangle ABC : CAB = 90', [
+			'A = point(0, 0)',
+			'B = point(5, 5)',
+			's = segment(A, B)'
+		]);
+		expect(() => assertChecks(source)).toThrow(/perpendiculaire.*sort de la fenêtre/);
+	});
+});

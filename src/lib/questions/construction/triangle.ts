@@ -401,6 +401,14 @@ function assertRight(
 	const [nameA, nameB, nameC] = check.points;
 	const { grid, window } = shapes;
 	if (check.lengths.length === 0) {
+		if (!grid && window) {
+			const shown = aloneCandidates(check, right, setting, shapes, []);
+			if (!shown.some((p) => isInFrame(p.at, window))) {
+				throw new TriangleAuthorError(
+					`${label} : la perpendiculaire à (${nameA}${nameB}) en ${right.vertex} sort de la fenêtre : éloigner ${right.vertex} du bord ou agrandir la fenêtre`
+				);
+			}
+		}
 		if (grid && window) {
 			const { v } = rightEnds(check, right, setting.a, setting.b);
 			if (perpendicularNodes(setting.a, setting.b, v, grid, window).length === 0) {
@@ -755,14 +763,18 @@ export function triangleSolution(
 	}
 	const { a, b } = setting;
 	const window = shapes?.window;
-	const ends = drawn.flatMap((o) =>
-		o.kind === 'segment'
-			? [
-					{ x: o.x1, y: o.y1 },
-					{ x: o.x2, y: o.y2 }
-				]
-			: []
-	);
+	// Les bouts de l'élève, sauf A et B (départs des côtés : ils ne disent pas où est C,
+	// et tireraient la correction vers A ; revue du n° 20)
+	const ends = drawn
+		.flatMap((o) =>
+			o.kind === 'segment'
+				? [
+						{ x: o.x1, y: o.y1 },
+						{ x: o.x2, y: o.y2 }
+					]
+				: []
+		)
+		.filter((e) => !near(e, a, tolerance(e, a)) && !near(e, b, tolerance(e, b)));
 	const right = rightAngleOf(check);
 	const candidates =
 		right && setting.lengths.length === 0
