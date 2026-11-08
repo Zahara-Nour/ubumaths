@@ -1,4 +1,5 @@
 {
+	"id": "a3f25691-9a4c-4b45-87e1-51c898687f92",
 	"title": "Démontrer le sens de variation de la fonction carré",
 	"description": "Démonstration à trous : b² − a² = (b − a)(b + a) (case), signe pour 0 ≤ a < b (choix), conclusion pour a < b ≤ 0 (choix) ; étapes à ranger",
 	"grades": ["2"],
