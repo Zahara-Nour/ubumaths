@@ -9,21 +9,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2447 (lot 11 mergé)._
+_Mis à jour le 2026-11-08, après #2452 (migration du lot 11, `db:migrate` fait)._
 
 - **État** : démonstrations (lots 1-4), approfondissements (5-9), algorithmes du lot 10 publiés. Lot 11 (algorithmes
-  d'analyse : 279, 288, 298, 299, 309, § 17) mergé (#2447), brouillons pas encore créés en prod.
-- **Prochaine action** : David lance, depuis le dépôt principal à jour,
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-11 --publier` ; puis relevé prod
-  (MCP), ids dans les JSON (PR, `git restore` dans le dépôt principal), migration nœud + tag (gabarit lot 10 ; 298 →
-  « dérivée », 299 → « propriétés algébriques »). Ensuite lot 12 (344, 427, 359, 431, 360).
-- **En attente de David** : la commande ci-dessus ; vérification à l'œil en prod (ligne du 2026-11-03 de
+  d'analyse, § 17) : 5 brouillons en prod, rangés et tagués.
+- **Prochaine action** : relecture de David sur la page à cocher https://claude.ai/artifact/3ahzQqmkrw9CzLNRjMZuSU
+  (verdicts : `ArtifactData list verdicts`) ; corrections éventuelles ; publication par David
+  (`publier-lot.ts --publier`, depuis le dépôt principal), relue en base. Ensuite lot 12 (344, 427, 359, 431, 360).
+- **En attente de David** : relecture du lot 11 ; vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
   Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-11`
-  (mergée) : nouvelle branche depuis `origin/main` pour la migration.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-11-rangement`
+  (mergée) : nouvelle branche depuis `origin/main` pour la suite.
 
 ---
 
@@ -696,3 +695,9 @@ branche « Fonctions ». Ids écrits dans les JSON du lot (cette PR), `git resto
 `20261108065741_questions_1spe_algorithmes_11_rangement_tags` (gabarit lot 10, aucune sous-notion neuve ; 298 et 299
 restent sur leur notion), test `questions-1spe-algorithmes-11-rangement-tags` 12/12 vert, rouge sans la migration
 (6 rouges). Accès : Q5 de D9, personne.
+
+Mergée (#2452, CI verte du premier coup). `security-auditor` : aucun finding. `check:migrations --pr 2452` vert.
+`db:migrate` le 2026-11-08 (seule migration en attente), vérifié MCP : 5 modèles sur leur nœud (taux de variation ;
+tangente ; dérivée ; propriétés algébriques ; cercle et radians), un tag chacun (279, 288, 298, 299, 309), `draft`,
+`updated_at` inchangé. Page à cocher : https://claude.ai/artifact/3ahzQqmkrw9CzLNRjMZuSU (la page rend les décimaux du
+corrigé avec un point, l'appli avec une virgule).
