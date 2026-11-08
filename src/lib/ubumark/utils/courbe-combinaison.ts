@@ -2,7 +2,7 @@
  * Vecteurs donnés et combinaison à tracer dans un repère
  * ======================================================
  *
- * Bloc ```courbe (chantier `docs/wip/somme-vecteurs-progress.md`, phase 0 validée le
+ * Bloc ```courbe (chantier `docs/archive/wip/somme-vecteurs-progress.md`, phase 0 validée le
  * 2026-11-08) :
  *
  * - `vecteurs: u = AB, AC` : flèches données, entre points de `points:` ;

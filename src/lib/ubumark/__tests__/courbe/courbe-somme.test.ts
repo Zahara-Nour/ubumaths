@@ -2,7 +2,7 @@
  * Bloc ```courbe — vecteurs donnés (`vecteurs:`) et somme à tracer
  * (`tracer: vecteur u + v depuis A`) : analyse et calcul pur
  *
- * Phase 0 validée par David le 2026-11-08 (`docs/wip/somme-vecteurs-progress.md` § 2) :
+ * Phase 0 validée par David le 2026-11-08 (`docs/archive/wip/somme-vecteurs-progress.md` § 2) :
  * représentants n'importe où (SV1), coefficients entiers de −3 à 3 (SV2), phrases
  * nommées pour deux vecteurs (SV3), pointillés de construction sur le repère (SV4).
  */
