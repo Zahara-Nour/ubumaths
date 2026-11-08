@@ -9,22 +9,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2464 (migration du lot 12, `db:migrate` fait)._
+_Mis à jour le 2026-11-08, lot 12 relu (5/5 OK)._
 
-- **État** : lots 1-11 publiés. Lot 12 (algorithmes de probabilités et statistiques, § 18) : 5 brouillons en prod,
-  rangés et tagués.
-- **Prochaine action** : relecture de David sur la page à cocher https://claude.ai/artifact/2ZA3EzDZtwFsbfUDYoCccV
-  (verdicts : `ArtifactData list verdicts`) ; corrections, dont la phrase de D13 sur le 344 (`create-questions
---publier --mettre-a-jour`, lancé par David) ; publication par David (`publier-lot.ts --publier`). Le lot 12 est
-  le dernier des algorithmes (D9) : ensuite, fin de chantier (versement).
-- **En attente de David** : relecture du lot 12 ; vérification à l'œil en prod (ligne du 2026-11-03 de
+- **État** : lots 1-11 publiés. Lot 12 (§ 18) : relu 5/5 OK ; phrase de D13 (344) en PR.
+- **Prochaine action** : PR mergée → David lance, depuis le dépôt principal à jour,
+  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-12 --publier --mettre-a-jour`,
+  puis `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-algorithmes-12 --publier` ; statut
+  relu en base (MCP). Ensuite fin de chantier (versement), le lot 12 étant le dernier des algorithmes (D9).
+- **En attente de David** : les deux commandes ci-dessus ; vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : `create-questions` vise la prod sans `.env.local` sourcé (brouillons locaux : copie hors dépôt +
   `set -a; . ./.env.local`). Script de lot : jamais `str.format` sur un texte à `{{eval}}` ; décimaux `{{eval:…;d}}`.
   Variable `e` = Euler. Job navigateur de la CI planté → `gh run rerun <run> --failed`. Merge bloqué pendant `deploy:prod`.
   `publier-lot.ts`, même en simulation, refusé à Claude par le classifieur (prod).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `feat/questions-1spe-algorithmes-12-rangement`
-  (mergée) : nouvelle branche depuis `origin/main` pour les corrections.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, sur `content/questions-1spe-algorithmes-12-terminale`.
 
 ---
 
@@ -776,3 +774,6 @@ https://claude.ai/artifact/2ZA3EzDZtwFsbfUDYoCccV.
 **D13 (David, 2026-11-08, « je te suis »)** : 344 (c) reste « de quoi la valeur renvoyée est une estimation » (aire
 du domaine sous la parabole). À ajouter en fin de correction, avec les corrections éventuelles de la relecture
 (`--mettre-a-jour`) : « On démontrera en terminale que cette aire vaut 1/3 : les valeurs renvoyées en sont proches. »
+
+Relecture (2026-11-08) : 5/5 OK, aucun commentaire. Phrase de D13 ajoutée à la correction de 344 (c) (cette PR) ;
+mise à jour en prod par David (`create-questions --publier --mettre-a-jour`), puis publication (`publier-lot.ts`).
