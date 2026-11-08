@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR 2 ouverte (#2472)._
+_Mis à jour le 2026-11-08, après #2472._
 
-- **État** : outil #2467 mergé, **pas encore en prod** ; PR 2 #2472 (réécriture de `51192dc4`, lot `somme-vecteurs-2de` de `update-published-questions.ts`) ouverte · **Prochaine action** : après le `deploy:prod` qui livre #2467 (David) : `pnpm tsx scripts/update-published-questions.ts --lot somme-vecteurs-2de` (simulation), puis `--publier`, relire en prod ; ensuite versement du chantier (journal archivé, ligne 3 de `outils-manquants.md` déjà rayée) · **En attente de David** : `deploy:prod` ; dire si le nom de A qui chevauche la flèche v⃗ gêne (§ 3) · **Pièges en cours** : ne JAMAIS `--publier` avant le déploiement (le bloc serait refusé en prod) ; le modèle est PUBLIÉ : `create-questions` ne le touche pas, c'est `update-published-questions` · **Worktree / branche** : `../ubumaths-wt-somme-vecteurs`, `content/somme-vecteurs-2297`
+- **État** : outil #2467 et réécriture de `51192dc4` #2472 mergés, **rien en prod** (ni le code, ni le modèle) · **Prochaine action** : après le `deploy:prod` qui livre #2467 (David), depuis le dépôt principal à jour : `pnpm tsx scripts/update-published-questions.ts --lot somme-vecteurs-2de` (simulation), puis `--publier`, relire en prod ; ensuite versement du chantier (journal archivé) · **En attente de David** : `deploy:prod` ; dire si le nom de A qui chevauche la flèche v⃗ gêne (§ 3) · **Pièges en cours** : ne JAMAIS `--publier` avant le déploiement (le bloc serait refusé en prod) ; le modèle est PUBLIÉ : `create-questions` ne le touche pas, c'est `update-published-questions` · **Worktree / branche** : aucun (retiré après #2472)
 
 ## 0. Origine
 
@@ -97,4 +97,5 @@ SV5 `51192dc4` réécrit ici (PR de contenu à part), 3-026 laissé à `question
 - Énoncé : `vecteurs: u = AB, v = AC`, `tracer: vecteur u + v depuis A` ; correction : l'étape ` ```figure `
   retirée (pointillés sur le repère, SV4), la première étape le dit. Variables, conditions, specs inchangées.
 - Simulation sur la prod : 6/6 specs vertes, 100 tirages. Pas de page à cocher (un seul modèle) : ligne de
-  `verifications-manuelles.md` à la place. #2472 ouverte.
+  `verifications-manuelles.md` à la place. **#2472 mergée** le 2026-11-08 (conflit de table reformatée dans
+  `verifications-manuelles.md` : version de main reprise + ma ligne).
