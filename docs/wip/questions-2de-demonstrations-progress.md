@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2484 et la création des brouillons du lot 5._
+_Mis à jour le 2026-11-08, après #2487 et le `db:migrate` du lot 5._
 
-- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lot 4 publié ; lot 5 (321, 322) mergé (#2484), brouillons créés en prod par David (6564c2bf, 9a05a09f), sans nœud ni tag.
-- **Prochaine action** : migration nœud + tag du lot 5 (calquée sur `20261108192038_…_algorithmes_4_…` et son
-  test d'intégration), sur la branche déjà ouverte (ids commités) → page à cocher ; puis lot 6 (361, 362, 387, 388).
-- **En attente de David** : rien.
+- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lot 4 publié ; lot 5 (321, 322) rangé et tagué en prod (#2487, `db:migrate` fait, vérifié), page à cocher publiée :
+  https://claude.ai/artifact/VHZwMcAdsf5jY37b6A2M1f (0 verdict à 23 h 40).
+- **Prochaine action** : lire les verdicts du lot 5 (`ArtifactData list verdicts`) → si tout « ok », commande
+  `publier-lot` pour David (simulation puis `--publier`) ; puis lot 6 (361, 362, 387, 388), branche neuve.
+- **En attente de David** : relecture du lot 5 sur la page à cocher.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf →
   `svelte-kit sync` avant `question:specs` ; `create-questions` en local : `export` des 2 variables de
   `.env.local` (dotenv n'écrase pas), et il ÉCRIT l'id local dans les JSON → régénérer par le script après.
-- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-algorithmes-5-rangement`
-  (ids des brouillons commités, `pnpm install` à faire).
+- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, branche `feat/questions-2de-algorithmes-5-rangement`
+  mergée (#2487) ; lot 6 → nouvelle branche depuis `origin/main` dans ce worktree.
 
 ---
 
@@ -353,3 +354,6 @@ Relevé prod (MCP, 2026-11-08, avant la migration) : 2 brouillons au niveau {2},
 2-322 actifs sur leur sous-notion, aucun modèle déjà tagué dessus.
 Migration `20261108222224_questions_2de_algorithmes_5_rangement_tags` (calquée sur le lot 4, seules les données
 changent, diff relu) : test d'intégration 12/12 vert, rouge sans les écritures (2 échecs, 5 sautés). PR #2487.
+Audit `security-auditor` : 0 finding. Mergée (#2487, CI verte) ; `check:migrations --pr` passé ; `db:migrate`
+(seule migration en attente) ; vérifié en prod : les 2 brouillons sur leur sous-notion, chacun avec son seul
+point, `updated_at` inchangé. Page à cocher (aucune alerte) : https://claude.ai/artifact/VHZwMcAdsf5jY37b6A2M1f
