@@ -44,6 +44,7 @@ contourner en silence.
 | 0033 | [Le QCM est une case : la case choix remplace `multiple_choice`](0033-le-qcm-est-une-case.md)                                            | 2026-10-26 |
 | 0034 | [Solides : trois blocs, un nœud, une scène cavalière](0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)                          | 2026-10-30 |
 | 0035 | [Une série enregistre des modèles, plus des catégories](0035-une-serie-enregistre-des-modeles.md)                                        | 2026-11-04 |
+| 0036 | [Le centimètre d'une figure à compléter est celui de la figure](0036-le-cm-de-la-figure.md)                                              | 2026-11-08 |
 
 ## Écrire un ADR
 
