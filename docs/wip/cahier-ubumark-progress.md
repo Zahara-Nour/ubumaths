@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-06, après #2444._
+_Mis à jour le 2026-11-08, après le `db:migrate` de #2444._
 
-- **État** : PR 1 (#2435) et 1b (#2442) **en prod** (0.76.0). PR 2 (#2444, migration `20261106164230_cahier_texte_conversion_ubumark.sql`) mergée, **migration PAS appliquée**. Prod relue après le merge : les 4 lignes HTML, inchangées.
-- **Prochaine action** : sur go de David → `pnpm exec supabase migration list --linked` puis `pnpm db:migrate` depuis `main` → relire les 4 lignes (avant/après dans l'historique PR 2) → PR 3 = retrait lecture HTML (+ tests mineurs de la revue #2442) → PR 4 = énigmes.
-- **En attente de David** : go pour `db:migrate` (perte : les paragraphes vides `<p></p>`).
-- **Pièges en cours** : la migration échoue exprès si une ligne HTML non convertible apparaît → relire la prod juste avant ; `Doc-inchangée:` dans un COMMIT (la garde locale ne lit pas l'index) ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed` ; cookies partagés sur `localhost` → `cahier.localhost:5178`.
-- **Worktree / branche** : aucun ; PR 3 → nouveau worktree `../ubumaths-wt-cahier-ubumark` depuis `origin/main`.
+- **État** : PR 1 (#2435) et 1b (#2442) en prod (0.76.0). PR 2 (#2444) mergée et **migration appliquée en prod le 2026-11-08** : 4 lignes converties, `updated_at` intacts, 0 ligne HTML restante.
+- **Prochaine action** : PR 3 = retrait de la lecture HTML (`isLegacyHtmlContent` et ce qui en dépend) + tests mineurs de la revue #2442 (vidéo imbriquée, `data:`, `//hôte`, adresse relative) → PR 4 = énigmes.
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance (`! pnpm db:migrate`) ; migration plus ancienne que la dernière distante → `--include-all` (essai `--dry-run` d'abord) ; `Doc-inchangée:` dans un COMMIT ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed` ; cookies partagés sur `localhost` → `cahier.localhost:5178`.
+- **Worktree / branche** : aucun ; PR 3 → `git worktree add -b feat/cahier-ubumark-retrait-html ../ubumaths-wt-cahier-ubumark origin/main`.
 
 ## Décision d'origine
 
@@ -117,3 +117,8 @@ Aucune : mêmes colonnes, mêmes policies, mêmes lecteurs. Le changement est de
 - Avant / après (prod) :
   - séance 9e9e75aa : `<p>[[…|Evaluation : Produit scalaire]]</p><p></p><p>[[…#2,4,5|… ex. 2, 4 et 5]]</p><p></p>` → `[[…|Evaluation : Produit scalaire]]` + ligne vide + `[[…#2,4,5|… ex. 2, 4 et 5]]`
   - séance 5e44b047, travaux abd84575 et 77c58e2c : `<p>[[…]]</p>` (± `<p></p>`) → `[[…]]`
+
+### 2026-11-08 — PR 2 appliquée en prod
+
+- Prod relue juste avant (MCP) : les 4 lignes du rollback, aucune autre ligne HTML. `migration list --linked` : seule `20261106164230` en attente, plus ancienne que deux distantes → `--dry-run --include-all` (elle seule), puis `pnpm db:migrate --include-all` lancé par David (refusé au classifieur).
+- Après : 4 lignes en ubumark, identiques à l'avant/après prévu ; `updated_at` inchangés ; 0 ligne contenant une balise.
