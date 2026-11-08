@@ -127,19 +127,27 @@ const MASKED_KEY_REGEX = /^\?\?\d{1,3}$/;
 /** Les infinis ne se cachent pas : ce ne sont pas des valeurs à calculer */
 const INFINITY_EXPRESSIONS = ['-inf', '+inf', 'inf', '-∞', '+∞', '∞'];
 
+/** Mot d'une flèche cachée dans une ligne `variation:` (`-2,2: ?flèche`) */
+const ARROW_WORDS = ['flèche', 'fleche'];
+
+/** Marques d'une ligne `variation:` (asymptote, valeur interdite, discontinuité) */
+const VARIATION_MARKERS = ['||', '|h|', 'd'];
+
 /**
  * Déclare un refus lié à un `?` : erreur située, en français. Le bloc entier est
  * alors invalide (nœud nul) plutôt que rendu avec une case en moins.
  */
 type Refuse = (line: number, content: string, message: string) => void;
 
-/** Case cachée lue dans une ligne `sign:`, validée une fois le domaine connu */
+/** Case cachée lue dans une ligne, validée une fois le domaine connu */
 interface PendingCell {
 	key: string;
 	kind: HiddenCellKind;
 	answer: string;
 	line: number;
 	content: string;
+	/** Flèche dont la réponse se lit sur les positions de la ligne (`?flèche`) */
+	derive?: boolean;
 }
 
 /**
@@ -665,22 +673,71 @@ function parseVariationRowEntries(
 	startLine: number,
 	errors: VariationTableParseError[],
 	refuse: Refuse
-): Map<string, VariationValue> {
+): { values: Map<string, VariationValue>; hidden: PendingCell[] } {
 	const values = new Map<string, VariationValue>();
+	const hidden: PendingCell[] = [];
+	// Clés écrites : une cellule cachée ne s'écrit qu'une fois (sinon elle partirait en clair)
+	const written = new Set<string>();
+	const hiddenKeys = new Set<string>();
 
 	for (let i = 0; i < lines.length; i++) {
-		// `?` en tête de clé ou de valeur = cellule cachée ; ailleurs, simple texte. Une
-		// clé `??1` est une valeur de x masquée (énoncé d'évaluation), pas une cellule
+		// `?` en tête de valeur = cellule cachée ; ailleurs, simple texte. Une clé `??1`
+		// est une valeur de x masquée (énoncé d'évaluation), pas une cellule
 		const entry = lines[i].match(ROW_ENTRY_REGEX);
 		const entryKey = entry?.[1].trim() ?? '';
 		const maskedKey = MASKED_KEY_REGEX.test(entryKey);
-		if (entry && ((entryKey.startsWith('?') && !maskedKey) || entry[2].trim().startsWith('?'))) {
+		const lineNumber = startLine + i;
+		if (entry && entryKey.startsWith('?') && !maskedKey) {
 			refuse(
-				startLine + i,
+				lineNumber,
 				lines[i],
-				'on ne peut pas cacher une cellule d’une ligne variation: (seul le tableau de signes a des cases)'
+				'on ne peut pas cacher une clé de ligne variation: (écrire le ? devant la valeur : -2: ?4, top)'
 			);
 			continue;
+		}
+		if (entry) {
+			const key = entryKey
+				.split(',')
+				.map((p) => p.trim())
+				.join(',');
+			const value = entry[2].trim();
+			if (value.startsWith('?')) {
+				const read = readHiddenVariationCell(key, value.slice(1).trim(), (m) =>
+					refuse(lineNumber, lines[i], m)
+				);
+				if (!read) continue;
+				if (written.has(key)) {
+					refuse(lineNumber, lines[i], hiddenTwiceMessage(key));
+					continue;
+				}
+				written.add(key);
+				hiddenKeys.add(key);
+				if (read.value) values.set(key, read.value);
+				hidden.push({
+					key,
+					kind: read.kind,
+					answer: read.answer,
+					line: lineNumber,
+					content: lines[i],
+					...(read.derive ? { derive: true } : {})
+				});
+				continue;
+			}
+			// Limite d'une asymptote cachée (`||, ?-inf, +inf`) : pas une case
+			const parts = value.split(',').map((p) => p.trim());
+			if (VARIATION_MARKERS.includes(parts[0]) && parts.slice(1).some((p) => p.startsWith('?'))) {
+				refuse(
+					lineNumber,
+					lines[i],
+					`on ne peut pas cacher une limite autour de « ${parts[0]} » : seules une valeur (?4, top) et une flèche (?flèche) se cachent`
+				);
+				continue;
+			}
+			if (hiddenKeys.has(key)) {
+				refuse(lineNumber, lines[i], hiddenTwiceMessage(key));
+				continue;
+			}
+			written.add(key);
 		}
 		const match = lines[i].match(ROW_ENTRY_REGEX);
 		if (!match) {
@@ -707,7 +764,77 @@ function parseVariationRowEntries(
 		values.set(parsed[0], parsed[1]);
 	}
 
-	return values;
+	return { values, hidden };
+}
+
+/** Une cellule écrite deux fois, l'une cachée */
+const hiddenTwiceMessage = (key: string) =>
+	`la cellule « ${key} » est écrite deux fois, l’une cachée : n’en garder qu’une`;
+
+/**
+ * Lit une cellule cachée d'une ligne `variation:` (`rest` = ce qui suit le `?`) :
+ * - sur un intervalle : `flèche` (réponse déduite des positions, `derive`) ou rien
+ *   (énoncé d'évaluation, réponse inconnue) ;
+ * - sur un point : `valeur, position` (ou `, position` en évaluation).
+ *
+ * @returns null si refusée (le refus est déjà déclaré)
+ */
+function readHiddenVariationCell(
+	key: string,
+	rest: string,
+	refuse: (message: string) => void
+): { value?: VariationValue; kind: HiddenCellKind; answer: string; derive?: boolean } | null {
+	const isArrowWord = ARROW_WORDS.includes(rest);
+	if (key.includes(',')) {
+		if (rest === '') return { kind: 'fleche', answer: '' };
+		if (isArrowWord) return { kind: 'fleche', answer: '', derive: true };
+		refuse(`sur un intervalle, seule la flèche se cache : écrire ?flèche (et non « ?${rest} »)`);
+		return null;
+	}
+	if (isArrowWord) {
+		refuse(`une flèche se cache sur un intervalle (-2,2: ?flèche), pas sur un point (${key})`);
+		return null;
+	}
+	const parts = rest.split(',').map((p) => p.trim());
+	if (VARIATION_MARKERS.includes(parts[0])) {
+		refuse(
+			`on ne peut pas cacher « ${parts[0]} » : seules une valeur (?4, top) et une flèche (?flèche) se cachent`
+		);
+		return null;
+	}
+	const position = parts.length === 2 ? parsePosition(parts[1]) : null;
+	if (position === null) {
+		refuse(`valeur cachée : attendu ?valeur, position (par exemple ?4, top), et non « ?${rest} »`);
+		return null;
+	}
+	if (INFINITY_EXPRESSIONS.includes(parts[0])) {
+		refuse(`on ne peut pas cacher ${parts[0]} : un infini n'est pas une valeur à calculer`);
+		return null;
+	}
+	return { value: { expression: parts[0], position }, kind: 'valeur', answer: parts[0] };
+}
+
+/** Hauteur d'une valeur pour lire une flèche : 1 en haut, -1 en bas, null sinon */
+function heightOf(value: VariationValue | undefined): 1 | -1 | null {
+	if (!value || value.marker) return null;
+	if (value.position === 'top' || value.position === 'limit-top') return 1;
+	if (value.position === 'bottom' || value.position === 'limit-bottom') return -1;
+	return null;
+}
+
+/**
+ * Réponse d'une flèche cachée, lue sur les positions écrites (bornes implicites
+ * comprises) : ↗ si l'arrivée est plus haute que le départ, ↘ si plus basse.
+ *
+ * @returns null s'il n'y a pas de flèche sur l'intervalle
+ */
+function arrowAnswer(row: VariationRow, domain: DomainPoint[], key: string): '↗' | '↘' | null {
+	const filled = withImplicitEndpoints(row, domain);
+	const [from, to] = key.split(',');
+	const start = heightOf(filled.values.get(from));
+	const end = heightOf(filled.values.get(to));
+	if (start === null || end === null || start === end) return null;
+	return end > start ? '↗' : '↘';
 }
 
 // ============================================================================
@@ -716,13 +843,15 @@ function parseVariationRowEntries(
 
 /**
  * Numérote les cases cachées dans l'ORDRE DE LECTURE : le domaine de gauche à
- * droite, puis chaque ligne `sign:` dans son ordre, ses cellules par colonne
- * (point, intervalle, point…). L'ordre d'écriture de l'auteur ne compte pas.
+ * droite, puis chaque ligne (`sign:` ou `variation:`) dans son ordre, ses cellules
+ * par colonne (point, intervalle, point…). L'ordre d'écriture de l'auteur ne compte pas.
  *
- * Refuse (via `refuse`) une clé cachée qui n'est pas une cellule du domaine.
+ * Refuse (via `refuse`) une clé cachée qui n'est pas une cellule du domaine, et une
+ * flèche cachée là où la ligne n'en dessine pas.
  */
 function buildHiddenCells(
 	domain: DomainPoint[],
+	rows: TableRow[],
 	hiddenByRow: Map<number, PendingCell[]>,
 	refuse: Refuse,
 	domainLine: number
@@ -775,7 +904,22 @@ function buildHiddenCells(
 		}
 		for (const key of columnKeys) {
 			const cell = pending.find((p) => p.key === key);
-			if (cell) push({ row: rowIndex, key, kind: cell.kind, answer: cell.answer });
+			if (!cell) continue;
+			let answer = cell.answer;
+			const row = rows[rowIndex];
+			if (cell.derive && row.type === 'variation') {
+				const arrow = arrowAnswer(row, domain, key);
+				if (arrow === null) {
+					refuse(
+						cell.line,
+						cell.content,
+						`pas de flèche à cacher sur « ${key} » : les deux valeurs doivent être l’une en haut, l’autre en bas (ni centrée, ni asymptote)`
+					);
+					continue;
+				}
+				answer = arrow;
+			}
+			push({ row: rowIndex, key, kind: cell.kind, answer });
 		}
 	}
 
@@ -917,7 +1061,13 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 			i++;
 			const entryStartLine = i + 1;
 			const entryLines = collectEntryLines();
-			const values = parseVariationRowEntries(entryLines, entryStartLine, errors, refuse);
+			const { values, hidden } = parseVariationRowEntries(
+				entryLines,
+				entryStartLine,
+				errors,
+				refuse
+			);
+			if (hidden.length > 0) hiddenByRow.set(rows.length, hidden);
 
 			const variationRow: VariationRow = {
 				type: 'variation',
@@ -968,7 +1118,7 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 
 	const hasHidden = hiddenByRow.size > 0 || domain.some((point) => point.hidden);
 	const cases =
-		refused || !hasHidden ? [] : buildHiddenCells(domain, hiddenByRow, refuse, domainLine);
+		refused || !hasHidden ? [] : buildHiddenCells(domain, rows, hiddenByRow, refuse, domainLine);
 
 	// If we have critical errors, return null node
 	if (!variable || domain.length === 0 || refused) {
@@ -1120,7 +1270,8 @@ const HIDDEN_ENTRY = /^(\s{2,}[^:]+:\s*)\?(?!\?)\s*(.*)$/;
 
 /**
  * Le même tableau, cellules cachées révélées : sans `case:`, sans `?` ; une marque
- * « rien » cachée (`?rien`) n'a pas de ligne (aucune marque à ce point). Pour le
+ * « rien » cachée (`?rien`) n'a pas de ligne (aucune marque à ce point), une flèche
+ * cachée (`?flèche`) non plus (les positions dessinent la flèche). Pour le
  * corrigé imprimé, qui dessine le tableau rempli comme un tableau ordinaire.
  */
 export function revealVariationBody(body: readonly string[]): string[] {
@@ -1129,7 +1280,9 @@ export function revealVariationBody(body: readonly string[]): string[] {
 		if (DOMAIN_REGEX.test(line)) return [line.replace(HIDDEN_DOMAIN_MARK, '$1')];
 		const entry = HIDDEN_ENTRY.exec(line);
 		if (!entry) return [line];
-		return entry[2].trim() === 'rien' ? [] : [`${entry[1]}${entry[2]}`];
+		const rest = entry[2].trim();
+		// Ni marque « rien », ni flèche cachée : la ligne n'a pas de cellule à écrire
+		return rest === 'rien' || ARROW_WORDS.includes(rest) ? [] : [`${entry[1]}${entry[2]}`];
 	});
 }
 
@@ -1222,6 +1375,35 @@ export function withImplicitEndpoints(row: VariationRow, domain: DomainPoint[]):
 	fill(domain[domain.length - 1], domain.slice(0, -1).reverse());
 
 	return { ...row, values };
+}
+
+/**
+ * La ligne `variation:` n° `rowIndex` telle qu'on la dessine pour l'élève : bornes
+ * implicites posées (`withImplicitEndpoints`), et rien qui dise une flèche cachée —
+ * les deux valeurs qui l'encadrent passent au milieu, une borne implicite qui la
+ * toucherait n'est pas posée. Sans flèche cachée, c'est `withImplicitEndpoints`.
+ *
+ * Les bornes implicites se lisent sur les VRAIES positions (avant le centrage) : une
+ * flèche donnée à côté d'une flèche cachée reste dessinée.
+ *
+ * @returns une nouvelle ligne ; l'arbre (la correction) n'est pas modifié
+ */
+export function variationRowForDisplay(node: VariationTableNode, rowIndex: number): VariationRow {
+	const row = node.rows[rowIndex];
+	if (row?.type !== 'variation') throw new Error(`ligne ${rowIndex} : pas une ligne variation:`);
+	const filled = withImplicitEndpoints(row, node.domain);
+	const arrows = (node.cases ?? []).filter(
+		(cell) => cell.kind === 'fleche' && cell.row === rowIndex
+	);
+	if (arrows.length === 0) return filled;
+
+	const values = new Map(filled.values);
+	for (const point of arrows.flatMap((cell) => cell.key.split(','))) {
+		const value = row.values.get(point);
+		if (value === undefined) values.delete(point);
+		else if (!value.marker) values.set(point, { ...value, position: 'center' });
+	}
+	return { ...filled, values };
 }
 
 /** Position opposée (haut ↔ bas), ou null pour une valeur centrée */

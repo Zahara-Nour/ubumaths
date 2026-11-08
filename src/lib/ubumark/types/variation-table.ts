@@ -203,15 +203,19 @@ export interface DomainPoint {
 	hidden?: boolean;
 }
 
-/** Nature d'une case cachée */
-export type HiddenCellKind = 'valeur' | 'signe' | 'marque';
+/**
+ * Nature d'une case cachée : `valeur` (valeur de x du domaine ou valeur d'une ligne
+ * `variation:`, case math), `signe` / `marque` (ligne `sign:`), `fleche` (flèche d'une
+ * ligne `variation:` sur un intervalle, choix ↗ / ↘)
+ */
+export type HiddenCellKind = 'valeur' | 'signe' | 'marque' | 'fleche';
 
 /**
  * Case cachée d'un tableau (`?` devant la cellule dans le bloc).
  *
  * Numérotées 0..n-1 dans l'ORDRE DE LECTURE : le domaine de gauche à droite, puis
- * chaque ligne `sign:` dans son ordre, ses cellules par position de colonne
- * (point, intervalle, point…) — jamais l'ordre d'écriture de l'auteur.
+ * chaque ligne (`sign:` ou `variation:`) dans son ordre, ses cellules par position de
+ * colonne (point, intervalle, point…) — jamais l'ordre d'écriture de l'auteur.
  */
 export interface HiddenCell {
 	/** Numéro de la case (0..n-1), dans l'ordre de lecture */
@@ -221,7 +225,10 @@ export interface HiddenCell {
 	/** Clé de la cellule : valeur du domaine, point (`-3`) ou intervalle (`-inf,-3`) */
 	key: string;
 	kind: HiddenCellKind;
-	/** Réponse attendue : expression | '+' | '-' | 'z' | '||' | 'rien' ; '' si masquée (évaluation) */
+	/**
+	 * Réponse attendue : expression | '+' | '-' | 'z' | '||' | 'rien' | '↗' | '↘' ;
+	 * '' si masquée (évaluation)
+	 */
 	answer: string;
 }
 
