@@ -1,4 +1,5 @@
 {
+	"id": "a6d5ec1e-4683-4001-8366-fc9898a6546f",
 	"title": "Méthode d'Euler pour l'exponentielle en Python",
 	"description": "Méthode d'Euler (exp′ = exp, exp(0) = 1) : faire tourner deux ou trois pas, compléter la ligne y = y + h * y, dire de quel nombre euler(0.01, n) est une valeur approchée",
 	"grades": ["1_SPE"],

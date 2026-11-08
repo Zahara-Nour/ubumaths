@@ -1,4 +1,5 @@
 {
+	"id": "3762e1e9-c6fa-4c6f-a422-690f8d1c8dff",
 	"title": "Valeur approchée de e avec Python",
 	"description": "Suite ((1 + 1/n)^n) : faire tourner u(1) ou u(2), compléter le return (1 + 1/n)**n, dire comment évoluent u(10), u(100), u(1000), u(10000)",
 	"grades": ["1_SPE"],

@@ -686,3 +686,13 @@ distracteur c/2 du Newton égal à 1 pour c = 2 (remplacé par c) ; **`str.forma
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-algorithmes-11 --publier`
+
+### Lot 11 en prod : brouillons, puis migration nœud + tag (2026-11-08)
+
+David a lancé `create-questions --publier` après #2447. Relevé prod (MCP) : 5 brouillons {1_SPE}, sans nœud ni tag :
+`3020b065` sécantes (279), `2286c302` Newton (288), `a6d5ec1e` Euler (298), `3762e1e9` valeur approchée de e (299),
+`4b607cdd` Archimède (309) ; aucun modèle déjà tagué sur ces points ; sous-notions visées actives, toutes dans la
+branche « Fonctions ». Ids écrits dans les JSON du lot (cette PR), `git restore` fait dans le dépôt principal. Migration
+`20261108065741_questions_1spe_algorithmes_11_rangement_tags` (gabarit lot 10, aucune sous-notion neuve ; 298 et 299
+restent sur leur notion), test `questions-1spe-algorithmes-11-rangement-tags` 12/12 vert, rouge sans la migration
+(6 rouges). Accès : Q5 de D9, personne.

@@ -1,4 +1,5 @@
 {
+	"id": "4b607cdd-b051-4b3d-97d5-d0ddb7d5173a",
 	"title": "Approximation de π par Archimède en Python",
 	"description": "Polygones réguliers inscrits dans le cercle de rayon 1, nombre de côtés doublé à chaque tour : faire tourner (nombre de côtés), compléter le return n * c / 2, interpréter (valeur approchée de π par défaut)",
 	"grades": ["1_SPE"],
