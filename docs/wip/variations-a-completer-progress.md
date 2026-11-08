@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, ouverture._
+_Mis à jour le 2026-11-08, PR #2456 ouverte._
 
-- **État** : phase 0 validée (David, 2026-11-08, « go » sur les recos A, B, C) ; PR 1 (outil) en cours.
-- **Prochaine action** : tests rouges du parseur → parseur → générateur de questions et saisie → rendu écran / PDF → masquage d'évaluation → correction.
+- **État** : PR 1 (outil) ouverte, #2456 : parseur, juge, saisie, rendu écran, PDF, masquage d'évaluation, page à cocher, doc système ; revue `code-reviewer` (Opus) en cours.
+- **Prochaine action** : correctifs de revue → CI verte → merge → ligne n° 14 de `outils-manquants.md` passée dans « Livré » ; vérification à l'œil notée dans `verifications-manuelles.md` ; le modèle « courbe → tableau à compléter » revient à `automatismes-1spe`.
 - **En attente de David** : rien.
-- **Pièges en cours** : —
+- **Pièges en cours** : vartable 0.2.1 trace une flèche après chaque valeur (pas d'omission) → énoncé PDF à flèche cachée sans aucune flèche ; `compile-prod.mjs` + `pdftoppm` pour voir le PDF ; `deploy-prod.test.ts` instable sous la charge (vert seul).
 - **Worktree / branche** : `../ubumaths-wt-variations-a-completer`, `feat/variations-a-completer`.
 
 ## Origine
@@ -44,3 +44,17 @@ Décisions (David, 2026-11-08, « go » sur les recommandations) :
 - **C** : pas de flèche horizontale (aucun point ne la demande).
 
 Pas de question d'accès (ni base ni droits). Revue : `code-reviewer` en Opus (correction des réponses).
+
+## Fait (PR #2456, 2026-11-08)
+
+- Parseur (`variation-table-parser.ts`) : `readHiddenVariationCell`, `arrowAnswer` (positions, bornes
+  implicites), `variationRowForDisplay` ; genre `fleche` (`HiddenCellKind`) ; `revealVariationBody` retire
+  les lignes `?flèche`.
+- Questions : `sign-table-case.ts` (jetons `↗` `↘`, LaTeX `\nearrow` `\searrow`), `masked-statement.ts`
+  (`?` seul, `?, position`, hauteurs voisines en `center`, bornes implicites écrites ; garde
+  `variationMasked`), corrigé (`SignTableAnswer`, `expected-result`).
+- Écran : `VariationTable.svelte`, `SignCellPicker.svelte` (choix ↗ / ↘, touches `↑` `↓` `c` `d`).
+- PDF : valeur cachée = case vide ; **flèche cachée → aucune flèche du tableau** (David, 2026-11-08 :
+  vartable 0.2.1 traçait une flèche horizontale entre les deux valeurs centrées, lue « constante ») ;
+  vérifié avec `compile-prod.mjs`.
+- Page à cocher : valeur et flèche cachées encadrées.
