@@ -6,17 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR de rangement du modèle neuf `23751c95` ouverte._
+_Mis à jour le 2026-11-08, après #2457 (rangement du modèle neuf `23751c95`, migration appliquée)._
 
-- **État** : modèle `23751c95` et fiche `f9608ee5` écrits en brouillon par David, fiche vérifiée depuis la
-  base ; PR de rangement #2457 (6-106, exception de niveaux, migration `20261108085338`) ouverte ·
-  **Prochaine action** : CI verte → merge → `db:migrate` depuis `main` (dry-run d'abord), puis vérifier en
-  prod nœud, tag 6-106, brouillon, `updated_at` préservé, `tgenabled = 'O'` ; `garde-niveaux-tags.ts` ·
+- **État** : lot 3 « Proportions et pourcentages » terminé : modèle `23751c95` rangé (6-106) et fiche
+  `f9608ee5`, tous deux en brouillon ; migration `20261108085338` appliquée et vérifiée en prod ·
+  **Prochaine action** : demander à David la suite (autre lot de 2de, fiches (2), ou clôture du chantier) ·
   **En attente de David** : publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de
   1re ; publication des modèles `23751c95` et `c1c9cfc3` (brouillons) · **Pièges en cours** : écritures ET
   simulations contre la prod lancées par David (commande donnée avec `!`) ; `debord.py` ne voit pas une
-  équation centrée trop large : relire les pages ; une proportion ne dépasse pas 1 · **Worktree / branche** :
-  `../ubumaths-wt-automatismes-1spe`, `content/automatismes-proportions-rangement`.
+  équation centrée trop large : relire les pages ; une proportion ne dépasse pas 1 ; garde « doc à jour »
+  : une migration exige `Doc-inchangée:` dans un commit · **Worktree / branche** : aucun (retiré).
 - Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
@@ -587,3 +586,6 @@ scripts/questions/automatismes-2de-proportions --publier` (écrit l'`id` dans le
   inchangé, `tgenabled = 'O'`.
 - PR #2457 : premier run rouge sur la seule garde « doc à jour » (`docs/systeme/base-de-donnees.md` couvre
   les migrations) : `Doc-inchangée:` ajouté dans un commit, le schéma ne change pas.
+- #2457 mergée (CI verte) ; `db:push` le 2026-11-08 depuis `main` (dry-run : seule cette migration) ;
+  vérifié en prod : nœud « forme fractionnaire », un seul tag 6-106, brouillon, `updated_at` = création,
+  `tgenabled = 'O'` ; `garde-niveaux-tags.ts` : aucun niveau manquant, 12 écarts excusés.
