@@ -6,15 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après la publication du lot 12._
+_Mis à jour le 2026-11-08 : chantier EN PAUSE, en attente d'outils (décision de David)._
 
-- **État** : lots 1 à 12 publiés (lot 12 : 2/2 `published`, relevé MCP du 2026-11-08). Restent au CE2 les points D
-  sans modèle : 086, 043, 051, 065 (non évaluables sans manipulation), 039 et le reste de 070 (outils manquants).
-- **Prochaine action** : à choisir avec David : lot 12b (070 : cercle de centre donné, triangle rectangle) dès que
-  `outils-manquants.md` n° 19 et n° 20 existent, 039 après le n° 18 ; ou clore le chantier (versement).
-- **En attente de David** : la suite du chantier (lot 12b quand les outils existeront, ou clôture).
-- **Pièges en cours** : `verifier: cercle` = cercle circonscrit SEUL (`outils-manquants.md` n° 19 ; n° 18 règle
-  graduée, n° 20 triangle rectangle) ; commitlint : type `feat`, sujet sans majuscule ; jamais de variable `e`.
+- **État** : lots 1 à 12 publiés. Restent au CE2 les points D sans modèle : 086, 043, 051, 065 (non évaluables
+  sans manipulation), 039 et le reste de 070 (outils manquants).
+- **En attente** des lignes de `outils-manquants.md` : n° 18 règle graduée (039, 070 coté ; « à décider avec David »),
+  n° 19 cercle de centre donné et n° 20 triangle rectangle (070, CE1-072). Vérifié le 2026-11-08 : aucun n'existe
+  dans `src/lib/questions/construction/`, aucun chantier, worktree ni PR ne les porte (`controles-figure` archivé).
+- **Prochaine action** : à la reprise, regarder la section « Livré » de `outils-manquants.md` ; n° 19 et n° 20 livrés
+  → lot 12b (070) ; n° 18 livré → 039.
+- **Pièges en cours** : `verifier: cercle` = cercle circonscrit SEUL ; commitlint : type `feat`, sujet sans
+  majuscule ; jamais de variable `e`.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `main` (aucune branche en cours).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
