@@ -13,6 +13,7 @@ import { constructionTraces } from '../../utils/courbe-combinaison';
 import { buildCourbeScene } from '../../utils/courbe-scene';
 import { generateCourbeTypst } from '../../generators/courbe-typst';
 import { maskVectorValue } from '../../utils/masked-value';
+import { findUnmaskedAnswers, maskGestureAnswers } from '$lib/questions/masked-statement';
 import type { CourbeNode, CourbeSpec } from '../../types/courbe';
 
 const WINDOW = ['x: -6 ; 6', 'y: -6 ; 6', 'grille: 1'];
@@ -290,5 +291,48 @@ describe('tracer: vecteur u + v — pointillés de la correction', () => {
 		expect(solved).toContain('// solution vecteur');
 		expect(solved).toContain('// construction');
 		expect(solved).toMatch(/dash: "dashed"/);
+	});
+});
+
+describe('tracer: vecteur u + v — évaluation notée (revue de #2467)', () => {
+	it('la combinaison n’est pas une fuite : la question reste dans l’évaluation', () => {
+		const source = [
+			'Trace u + v.',
+			'',
+			'```courbe',
+			...WINDOW,
+			POINTS,
+			GIVEN,
+			'tracer: vecteur u + v depuis A',
+			'case: 1',
+			'```'
+		].join('\n');
+		expect(findUnmaskedAnswers(maskGestureAnswers(source))).toEqual([]);
+	});
+
+	it('des coordonnées non masquées restent une fuite', () => {
+		const source = ['```courbe', ...WINDOW, 'tracer: vecteur (3 ; -2)', 'case: 1', '```'].join(
+			'\n'
+		);
+		expect(findUnmaskedAnswers(source)).toEqual(['courbe']);
+	});
+});
+
+describe('tracer: vecteur AB + AC — pointillés sans vecteurs: (revue de #2467)', () => {
+	it('couples de points non dessinés : les quatre côtés du parallélogramme', () => {
+		const s = spec(block(...WINDOW, POINTS, 'tracer: vecteur AB + AC depuis A'));
+		expect(constructionTraces(s, s.vecteur!.terms!, { x: -2, y: -1 })).toEqual([
+			{ from: { x: -2, y: -1 }, to: { x: 1, y: 0 }, arrow: true },
+			{ from: { x: -2, y: -1 }, to: { x: -1, y: 2 }, arrow: true },
+			{ from: { x: 1, y: 0 }, to: { x: 2, y: 3 }, arrow: false },
+			{ from: { x: -1, y: 2 }, to: { x: 2, y: 3 }, arrow: false }
+		]);
+	});
+
+	it('couple dessiné par vecteurs: (sans nom) : son côté n’est pas redoublé', () => {
+		const s = spec(
+			block(...WINDOW, POINTS, 'vecteurs: AB, AC', 'tracer: vecteur AB + AC depuis A')
+		);
+		expect(constructionTraces(s, s.vecteur!.terms!, { x: -2, y: -1 })).toHaveLength(2);
 	});
 });

@@ -45,6 +45,20 @@ export function isVectorValue(value: string): boolean {
 	return VECTOR_VALUE.test(value);
 }
 
+/**
+ * Vecteur à tracer écrit en combinaison (`vecteur u + v depuis A`, chantier
+ * `somme-vecteurs`) : la combinaison est la tâche, il n'y a rien à masquer
+ */
+export function isCombinationVectorValue(value: string): boolean {
+	if (!isVectorValue(value)) return false;
+	const body = value
+		.trim()
+		.replace(VECTOR_VALUE, '')
+		.replace(/\s+depuis\s+\S+$/, '')
+		.trim();
+	return body !== '' && !/^(?:[a-z]\s*=\s*)?[(?]/.test(body);
+}
+
 /** Les coordonnées d'un vecteur à tracer sont-elles masquées ? */
 export function isMaskedVectorValue(value: string): boolean {
 	return isVectorValue(value) && !value.includes('(') && MASKED_VECTOR_COORDS.test(value);

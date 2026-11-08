@@ -245,12 +245,12 @@ export function combinationMistake(drawn: CourbePlacedPoint, terms: CourbeVector
 /**
  * Les pointillés de la correction, pour la flèche juste partie de `from` (deux
  * termes seulement) : les côtés du parallélogramme qui manquent quand les deux
- * représentants donnés partent de `from` (avec le côté `k·u` quand k ≠ 1, la
- * flèche donnée ne le montrant pas) ; sinon le premier terme depuis `from`, puis
+ * représentants partent de `from` (avec le côté d'un terme que l'énoncé ne
+ * dessine pas : coefficient ≠ 1, ou couple de points absent de `vecteurs:`) ; sinon le premier terme depuis `from`, puis
  * le second à son bout. Un trait dont un bout sort de la fenêtre est laissé.
  */
 export function constructionTraces(
-	spec: Pick<CourbeSpec, 'window' | 'grid' | 'size'>,
+	spec: Pick<CourbeSpec, 'window' | 'grid' | 'size' | 'vecteurs'>,
 	terms: CourbeVectorTerm[],
 	from: CourbePlacedPoint
 ): ConstructionTrace[] {
@@ -258,10 +258,13 @@ export function constructionTraces(
 	const [first, second] = terms.map((t) => add(from, t.u, t.coef));
 	const end = add(first, terms[1].u, terms[1].coef);
 	const sameOrigin = terms.every((t) => samePoint(t.at, from));
+	// Côté déjà dessiné : un vecteur de `vecteurs:` pris une fois (`u`, ou un couple `AB` qui y figure)
+	const drawn = (t: CourbeVectorTerm) =>
+		t.coef === 1 && (spec.vecteurs ?? []).some((v) => v.from === t.from && v.to === t.to);
 	const traces: ConstructionTrace[] = sameOrigin
 		? [
 				...terms.flatMap((t, i) =>
-					t.coef === 1 ? [] : [{ from, to: i === 0 ? first : second, arrow: true }]
+					drawn(t) ? [] : [{ from, to: i === 0 ? first : second, arrow: true }]
 				),
 				{ from: first, to: end, arrow: false },
 				{ from: second, to: end, arrow: false }

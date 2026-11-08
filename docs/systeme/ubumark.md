@@ -554,15 +554,16 @@ coefficients **entiers de −3 à 3, sauf 0** (`COURBE_LIMITS.coefficient`), au 
 (`COURBE_LIMITS.terms`) ; `spec.vecteur.terms` (`CourbeVectorTerm` : `coef`, `name`, `from`, `to`, `at`, `u`),
 `coords` = la somme ; ensuite les mêmes refus que le vecteur seul (nul, hors fenêtre). Refusé aussi : nom absent de
 `vecteurs:` (« w : aucun vecteur de ce nom dans vecteurs: »), un nom devant la combinaison (`w = u + v`).
-`tracer: vecteur (3 ; -2)` reste permis. Masquage d'évaluation : rien (la combinaison est la tâche). Même case,
+`tracer: vecteur (3 ; -2)` reste permis. Masquage d'évaluation : rien (la combinaison est la tâche), et la garde `findUnmaskedAnswers` ne la
+prend pas pour une fuite (`isCombinationVectorValue`, `utils/masked-value.ts`). Même case,
 même juge. Phrases (`combinationMistake`, inline markdown, formules `$…$`, `markdown: true`) : mauvais sens
 « Ta flèche va dans le mauvais sens : elle représente $-(\vec{u}+\vec{v})$. » ; pour deux termes, un terme
 seul « Ta flèche représente $\vec{u}$ seul, pas $\vec{u}+\vec{v}$. », signe d'un terme changé
 « Ta flèche représente $\vec{u}-\vec{v}$, pas $\vec{u}+\vec{v}$. » ; sinon « Ta flèche représente le
 vecteur (2 ; 2), pas $\vec{u}+\vec{v}$. » (un couple s'écrit `\overrightarrow{AC}`). Correction
 (`constructionTraces`, deux termes) : en pointillés verts sous la flèche juste, les deux côtés du
-parallélogramme qui manquent quand les deux représentants donnés partent de l'origine de la flèche juste (plus le
-côté `k·u` quand k ≠ 1), sinon le premier terme depuis cette origine puis le second à son bout (Chasles) ; un
+parallélogramme qui manquent quand les deux représentants partent de l'origine de la flèche juste (plus le côté d'un
+terme que l'énoncé ne dessine pas : coefficient ≠ 1, ou couple de points absent de `vecteurs:`), sinon le premier terme depuis cette origine puis le second à son bout (Chasles) ; un
 trait dont un bout sort de la fenêtre est laissé. PDF `solved` : les mêmes pointillés (`dash: "dashed"`).
 Défaut connu : le nom d'un point (en haut à droite) peut chevaucher une flèche qui en part.
 
