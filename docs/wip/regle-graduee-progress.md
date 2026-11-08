@@ -17,7 +17,7 @@ _Mis à jour le 2026-11-08, après #2485._
 - **Prochaine action** : (1) dès `main` libre : pull --rebase, push de l'ADR, ligne « règle graduée (#2485) : rendu
   sur téléphone, règle retournée » dans `verifications-manuelles.md`, lien vers l'ADR rétabli dans `questions.md` ;
   (2) PR 2 : demi-droite [Ax) (Q7 b) et constructions cotées CE2-070 — phase 0 des comportements d'abord.
-- **En attente de David** : vérification sur téléphone (règle retournée) ; feu vert `--autostash` si `main` reste bloqué.
+- **En attente de David** : vérification sur téléphone (règle retournée) . David (2026-11-08) : pas d’`--autostash`, attendre que l’autre session commite.
 - **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le juge
   prend le **segment vu** (§ 3) : à garder pour les côtés cotés de 070.
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cotes` (depuis `origin/main` après #2485).
