@@ -103,13 +103,13 @@ export const ALLOWED_RICH_CONTENT: readonly string[] = [
 	'<a href="/dashboard/student">relatif</a>',
 	'<img src="https://chiph.re/a.png" alt="figure" width="10" height="20">',
 	'<table><thead><tr><th colspan="2">T</th></tr></thead><tbody><tr><td rowspan="1">1</td></tr></tbody></table>',
-	'<math-field read-only="">x^2</math-field>',
 	'<p class="note" style="color: red;">rouge</p>',
 	'<ul><li>a</li></ul><ol><li>b</li></ol><blockquote>c</blockquote><pre><code>d</code></pre>'
 ];
 
 // Balises qui ne doivent JAMAIS ressortir d'un nettoyeur de l'app
-// (`math-field` est autorisé : on n'interdit que `<math` suivi d'un blanc ou de `>`).
+// (`<math` suivi d'un blanc ou de `>` : MathML ; les balises MathLive, retirées le
+// 2026-11-08, sont gardées par `describeSansMathLive`).
 const FORBIDDEN_TAG =
 	/<\s*(script|iframe|object|embed|svg|math|mglyph|style|form|button|input|meta|base|link|template|noscript|frame|frameset|details)(\s|>|\/)/i;
 // Attribut gestionnaire d'événement (`onerror=`, `onload=`…)
@@ -196,6 +196,36 @@ export function describeTextesAccolades(sanitizers: readonly NamedSanitizer[]): 
 		describe(`${name} — accolades doubles conservées`, () => {
 			it.each(TEXTES_ACCOLADES)('%s', (html) => {
 				expect(sanitize(html)).toBe(html);
+			});
+		});
+	}
+}
+
+/**
+ * Balises MathLive refusées (2026-11-08) : MathLive lit le texte d'un `math-field` comme du
+ * LaTeX, et `\htmlStyle`, `\class`, `\cssId`, `\htmlData`, `\href` y posent style, classe,
+ * identifiant, données ou lien. Aucun contenu passé par `sanitizeHtml` n'en a besoin (sorties
+ * du carnet, modèles de messages) : la balise part, son texte reste, inerte.
+ */
+export const CHARGES_MATHLIVE: readonly string[] = [
+	'<math-field read-only="">\\htmlStyle{position:fixed;inset:0;background:url(https://evil.example/x.png)}{x}</math-field>',
+	'<math-field disabled="">\\href{https://evil.example}{x}</math-field>',
+	'<math-inline>\\class{fixed inset-0}{x}</math-inline>',
+	'<math-display>\\cssId{a}{x}</math-display>'
+];
+
+/** Déclare, pour chaque nettoyeur, qu'aucune balise MathLive ne ressort. */
+export function describeSansMathLive(sanitizers: readonly NamedSanitizer[]): void {
+	for (const { name, sanitize } of sanitizers) {
+		describe(`${name} — aucune balise MathLive`, () => {
+			it.each(CHARGES_MATHLIVE)('%s', (html) => {
+				const output = sanitize(html);
+				expect(output, output).not.toMatch(/<\s*math-/i);
+			});
+			// Les attributs de MathLive sont retirés de toute balise, pas seulement des siennes
+			it('ni read-only ni disabled', () => {
+				const output = sanitize('<p read-only="" disabled="">x</p>');
+				expect(output, output).not.toMatch(/read-only|disabled/i);
 			});
 		});
 	}
