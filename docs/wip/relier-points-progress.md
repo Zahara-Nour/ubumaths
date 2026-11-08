@@ -67,3 +67,6 @@ Q3 une seule série ; Q4 la case seulement.
 - Description accessible : les valeurs elles-mêmes (`Courbe de données de 8 points : (6 ; 8), …`), sinon la question
   ne se lit pas au lecteur d'écran.
 - Couleur fixe `COURBE_DATA_COLOR` (bleu), une seule série (Q3).
+- Revue `code-reviewer` (sonnet) : aucun bloquant ; corrigés : abscisses égales à l'arrondi près (`toPrecision(12)`),
+  « Données : … » en prose hors d'un bloc non fermé (clé reconnue seulement suivie de `(`). Laissés : virgule
+  décimale et séparatrice dans la description accessible, « é » décomposé (clé inconnue, diagnosticable).

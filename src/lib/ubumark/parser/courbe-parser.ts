@@ -183,7 +183,11 @@ function looksLikeCourbeLine(line: string): boolean {
 	const trimmed = line.trim();
 	if (FUNCTION_LINE_REGEX.test(trimmed) || SEQUENCE_TERM_LINE_REGEX.test(trimmed)) return true;
 	const kv = KEY_LINE_REGEX.exec(trimmed);
-	return kv !== null && (KNOWN_KEYS as readonly string[]).includes(canonicalKey(kv[1]));
+	if (kv === null) return false;
+	const key = canonicalKey(kv[1]);
+	// « Données : voir le tableau » est de la prose : la clé n'est reconnue que suivie d'un point
+	if (key === 'données') return kv[2].trim().startsWith('(');
+	return (KNOWN_KEYS as readonly string[]).includes(key);
 }
 
 /**
@@ -605,7 +609,11 @@ function parseData(value: string, line: number): CourbeData {
 		if (coords.length !== 2 || coords.some((c) => c === '')) {
 			throw new LineError(`données : point « ${item} » : deux coordonnées séparées par « ; »`);
 		}
-		return { x: evaluateConstant(coords[0]), y: evaluateConstant(coords[1]) };
+		// Arrondi à 12 chiffres : `0,1+0,2` et `0,3` sont la même abscisse
+		return {
+			x: Number(evaluateConstant(coords[0]).toPrecision(12)),
+			y: Number(evaluateConstant(coords[1]).toPrecision(12))
+		};
 	});
 	if (points.length < 2) {
 		throw new LineError('données : au moins deux points à relier (ex. (6 ; 8) ; (8 ; 11))');

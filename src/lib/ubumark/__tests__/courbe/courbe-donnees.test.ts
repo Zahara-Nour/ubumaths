@@ -6,7 +6,7 @@
  * plus que la case à la correction (Q4). Débouchés : CM2-125, CM2-159.
  */
 import { describe, it, expect } from 'vitest';
-import { parseCourbeContent } from '../../parser/courbe-parser';
+import { findCourbeBlocks, parseCourbeContent } from '../../parser/courbe-parser';
 import { buildCourbeScene } from '../../utils/courbe-scene';
 import { generateCourbeTypst } from '../../generators/courbe-typst';
 import { COURBE_LIMITS, type CourbeNode, type CourbeSpec } from '../../types/courbe';
@@ -70,6 +70,19 @@ describe('données: — analyse', () => {
 
 	it('refuse deux points de même abscisse', () => {
 		expect(errorsOf(block(...WINDOW, 'données: (6 ; 8) ; (6 ; 9)'))).toMatch(/même abscisse/);
+	});
+
+	it('refuse deux abscisses égales à l’arrondi près', () => {
+		expect(errorsOf(block(...WINDOW, 'données: (0,1+0,2 ; 8) ; (0,3 ; 9)'))).toMatch(
+			/même abscisse/
+		);
+	});
+
+	it('bloc non fermé : « Données : … » en prose n’est pas avalé', () => {
+		const lines = ['```courbe', ...WINDOW, TEMPERATURES, '', 'Données : voir le tableau.'];
+		const [range] = findCourbeBlocks(lines);
+		expect(range.closed).toBe(false);
+		expect(range.endIndex).toBe(5);
 	});
 
 	it('refuse une coordonnée qui n’est pas un nombre', () => {
