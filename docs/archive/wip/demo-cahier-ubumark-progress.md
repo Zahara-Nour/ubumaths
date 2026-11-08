@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, avant la PR._
+_Mis à jour le 2026-11-08, après #2481._
 
-- **État** : correctif écrit, tests verts, PR à ouvrir · **Prochaine action** : PR, CI, merge · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-demo-cahier-ubumark`, `fix/demo-cahier-ubumark`
+- **État** : ✅ mergé (#2481), pas encore en prod (`deploy:prod` sur demande de David) ; chantier clos, journal archivé · **Prochaine action** : aucune · **En attente de David** : ouvrir ou non une PR pour le bug de `SAFE_FOR_TEMPLATES` dans `sanitizeHtml` (avec `security-auditor`) ; retirer ou non `transformMathHtml`, `sanitizeHtmlWithMath`, `linkifyResourceReferences` (sans appelant) · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
 
 ## Origine (2026-11-08)
 
