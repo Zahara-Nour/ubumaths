@@ -5,7 +5,7 @@
  * question pour choisir le niveau de lecture des mots cliquables. Sans
  * fournisseur (visiteur, tests) : `null`.
  *
- * @module lexicon/reader-grade
+ * @module dictionary/reader-grade
  */
 
 import { getContext, hasContext, setContext } from 'svelte';

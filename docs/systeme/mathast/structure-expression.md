@@ -2,7 +2,7 @@
 couvre:
   - 'src/lib/mathAST/structure/**'
   - 'src/lib/components/structure/**'
-  - src/lib/lexicon/parentheses-advice-grade.ts
+  - src/lib/dictionary/parentheses-advice-grade.ts
 ---
 
 # Structure d'une expression
@@ -163,7 +163,7 @@ appliquée (A8) ; cadres englobants en pointillés gris (A10).
   `image (fonction)`…), passée telle quelle à `LexiconTerm`.
 - **Message « 6e ou avant »** : `parenthesesAdvice` (un message à la fois, première
   sous-expression en ordre préfixe, « − » en tête avant la suite), appelé seulement si
-  `needsParenthesesAdvice(readReaderGrade()())` (`src/lib/lexicon/parentheses-advice-grade.ts` :
+  `needsParenthesesAdvice(readReaderGrade()())` (`src/lib/dictionary/parentheses-advice-grade.ts` :
   élève de 6e ou avant ; visiteur ou niveau inconnu : jamais).
 - **Longueurs** : deux majuscules collées se lisent comme une longueur (« la longueur AB »,
   `capitalPairs: 'length'`), voir [convention-equivalence.md](convention-equivalence.md).

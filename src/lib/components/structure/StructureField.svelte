@@ -23,8 +23,8 @@
 	import '$lib/utils/mathlive-styles';
 	import { onMount, untrack } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { needsParenthesesAdvice } from '$lib/lexicon/parentheses-advice-grade';
-	import { readReaderGrade } from '$lib/lexicon/reader-grade';
+	import { needsParenthesesAdvice } from '$lib/dictionary/parentheses-advice-grade';
+	import { readReaderGrade } from '$lib/dictionary/reader-grade';
 	import type { CapitalPairs } from '$lib/mathAST/parser';
 	import { parenthesesAdvice, readingOf, structureFromLatex } from '$lib/mathAST/structure';
 	import InteractiveFormula from './InteractiveFormula.svelte';

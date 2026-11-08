@@ -1,7 +1,6 @@
 ---
 couvre:
   - 'src/lib/dictionary/**'
-  - 'src/lib/lexicon/**'
   - 'src/lib/server/dictionary/**'
   - src/lib/components/markdown/lexicon-context.ts
   - src/lib/components/markdown/nodes/LexiconTerm.svelte
@@ -30,8 +29,8 @@ cliquables** des énoncés (un clic ouvre la fiche du mot, au niveau de l'élèv
 
 Termes ([CONTEXT.md](../../CONTEXT.md), § « Le dictionnaire ») : Dictionnaire, Glossaire, Mot
 cliquable. ⚠️ « lexique » désigne le **lore** (`src/lib/config/lore.ts`, voir
-[univers-chiphre.md](univers-chiphre.md)), pas les mots mathématiques — même si le module des mots
-cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique »).
+[univers-chiphre.md](univers-chiphre.md)), pas les mots mathématiques. Les mots cliquables vivent dans `src/lib/dictionary/` (ex-`src/lib/dictionary/`,
+renommé le 2026-11-08).
 
 ## Carte du code
 
@@ -47,10 +46,10 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `src/lib/dictionary/glossary-page.ts`                                 | `termKey`, `pageSlugFor`, `isBareRedirect`, `glossaryDescription` (pages du glossaire)   |
 | `src/lib/server/sitemap-glossary.ts`                                  | `fetchGlossaryPages` : les pages du glossaire du plan du site, lues en anonyme           |
 | `src/routes/(public)/games/mathemo/dictionary-words.ts`               | `playableTerms` : mots jouables réduits à nom / niveau / filières                        |
-| `src/lib/lexicon/linker.ts`                                           | `createLinker` : repérage des mots dans l'AST d'ubumark (`TextNode.terms`)               |
-| `src/lib/lexicon/card.ts`                                             | `lexiconCard`, `findPrincipal` : contenu de la fiche d'un mot                            |
-| `src/lib/lexicon/runtime.ts`, `runtime-store.svelte.ts`               | Chargement à la demande (dictionnaire + repérage) au premier énoncé qui en a besoin      |
-| `src/lib/lexicon/grade.ts`, `reader-grade.ts`                         | Niveau de lecture (`lexiconGrade`, `provideReaderGrade`)                                 |
+| `src/lib/dictionary/linker.ts`                                        | `createLinker` : repérage des mots dans l'AST d'ubumark (`TextNode.terms`)               |
+| `src/lib/dictionary/card.ts`                                          | `lexiconCard`, `findPrincipal` : contenu de la fiche d'un mot                            |
+| `src/lib/dictionary/runtime.ts`, `runtime-store.svelte.ts`            | Chargement à la demande (dictionnaire + repérage) au premier énoncé qui en a besoin      |
+| `src/lib/dictionary/grade.ts`, `reader-grade.ts`                      | Niveau de lecture (`lexiconGrade`, `provideReaderGrade`)                                 |
 | `src/lib/components/markdown/lexicon-context.ts`                      | `provideLexicon`, `provideQuestionLexicon` : qui active les mots cliquables              |
 | `src/lib/components/markdown/nodes/LexiconTerm.svelte`                | Le mot souligné et sa fiche (dialogue accessible)                                        |
 | `src/lib/dictionary/consistency.ts`                                   | `checkDictionary`, `newProblems` : règles de cohérence (enregistrement admin et tests)   |
@@ -200,7 +199,7 @@ personne n'écrit directement dans l'historique.
 | `src/lib/dictionary/__tests__/entry-schema.test.ts`                               | Toutes les entrées relues à l'identique par le schéma                     |
 | `src/lib/dictionary/__tests__/reference*.test.ts`                                 | Jeu de référence : cohérence, lots 0b → 0h au mot près, chiffrement       |
 | `src/lib/dictionary/__tests__/consistency.test.ts`                                | Règles de cohérence : référence sans problème, chaque refus 10 → 16       |
-| `src/lib/lexicon/__tests__/`                                                      | Repérage (`linker`), fiche (`card`), chargement à la demande              |
+| `src/lib/dictionary/__tests__/`                                                   | Repérage (`linker`), fiche (`card`), chargement à la demande              |
 | `src/lib/components/questions/__tests__/QuestionCard-champ-stable.svelte.test.ts` | Le champ de réponse n'est pas recréé à l'arrivée du repérage              |
 
 Copies figées des lots validés par David : `tests/fixtures/lexique/` (aucun test ne lit `docs/`).

@@ -37,7 +37,7 @@
 <script lang="ts">
 	import '$lib/utils/mathlive-styles';
 	import { parseMarkdown } from '$lib/ubumark';
-	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import { lexiconRuntime, loadLexiconRuntime } from '$lib/dictionary/runtime-store.svelte';
 	import { readLexicon } from '$lib/components/markdown/lexicon-context';
 	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import type { GradeLevel, InstanceBlank, QuestionInstance } from '$lib/questions/types';

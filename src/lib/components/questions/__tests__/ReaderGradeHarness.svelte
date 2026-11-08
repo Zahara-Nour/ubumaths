@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import QuestionCard from '../QuestionCard.svelte';
-	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
+	import { provideReaderGrade } from '$lib/dictionary/reader-grade';
 	import type { QuestionInstance } from '$lib/questions/types';
 
 	interface Props {

@@ -9,14 +9,14 @@
 	Le niveau vient du contexte « lexique » (lexicon-context.ts). La fiche
 	coupe ce contexte : ses définitions ne soulignent pas leurs propres mots.
 
-	@see lexicon/linker.ts pour le repérage
+	@see dictionary/linker.ts pour le repérage
 	@see HintReference.svelte pour le même motif bouton + popover
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { resolve } from '$app/paths';
 	import * as Popover from '$lib/components/ui/popover';
-	import { lexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import { lexiconRuntime } from '$lib/dictionary/runtime-store.svelte';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import { provideLexicon, readLexicon } from '../lexicon-context';
 	import { keepOutsideFocus } from '../outside-focus';

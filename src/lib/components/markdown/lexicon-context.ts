@@ -14,8 +14,8 @@
 
 import { getContext, hasContext, setContext } from 'svelte';
 import type { GradeCode } from '$lib/types/grades';
-import { lexiconGrade } from '$lib/lexicon/grade';
-import { readReaderGrade } from '$lib/lexicon/reader-grade';
+import { lexiconGrade } from '$lib/dictionary/grade';
+import { readReaderGrade } from '$lib/dictionary/reader-grade';
 
 const LEXICON_KEY = Symbol('markdown-lexicon');
 

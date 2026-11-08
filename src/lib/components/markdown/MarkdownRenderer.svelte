@@ -77,7 +77,7 @@
 	} from './restricted-rendering';
 	import type { ContentLocale } from '$lib/types/locale';
 	import type { GradeCode } from '$lib/types/grades';
-	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import { lexiconRuntime, loadLexiconRuntime } from '$lib/dictionary/runtime-store.svelte';
 	import { provideLexicon, readLexicon } from './lexicon-context';
 	import { provideInternalLinks, type InternalLinkReader } from './internal-link-context';
 

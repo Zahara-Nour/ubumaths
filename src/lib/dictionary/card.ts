@@ -5,7 +5,7 @@
  * Ce que l'élève lit en cliquant sur un mot repéré : chaque sens visible, ses
  * définitions à son niveau, et pour un renvoi la définition du mot cité.
  *
- * @module lexicon/card
+ * @module dictionary/card
  */
 
 import { resolveGradedField, type MathTerm } from '$lib/dictionary/model';
