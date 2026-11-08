@@ -33,8 +33,17 @@ describe('generateNumberLineTypst', () => {
 		const typst = generateNumberLineTypst(node);
 
 		expect(typst).toContain('#import "@preview/cetz:0.3.0"');
-		expect(typst).toContain('#cetz.canvas({');
+		expect(typst).toContain('cetz.canvas({');
 		expect(typst).toContain('})');
+	});
+
+	it('réduite à la largeur de la colonne si elle la dépasse, jamais agrandie (lot 4 automatismes-1spe)', () => {
+		// 12 cm de droite pour une colonne de fiche de ~8,7 cm : elle débordait sur la colonne voisine
+		const typst = generateNumberLineTypst(createNode(['start: -3', 'end: 1', 'step: 1/4']));
+
+		expect(typst).toContain('#layout(size => {');
+		expect(typst).toContain('let k = calc.min(1, size.width / measure(droite).width) * 100%');
+		expect(typst).toContain('scale(x: k, y: k, origin: top + left, reflow: true, droite)');
 	});
 
 	it('should draw the main horizontal line', () => {
@@ -224,7 +233,7 @@ describe('generateNumberLineTypst', () => {
 		]);
 		const typst = generateNumberLineTypst(node);
 
-		expect(typst).toContain('#cetz.canvas({');
+		expect(typst).toContain('cetz.canvas({');
 		expect(typst).toContain('$1$');
 		expect(typst).toContain('$100$');
 	});

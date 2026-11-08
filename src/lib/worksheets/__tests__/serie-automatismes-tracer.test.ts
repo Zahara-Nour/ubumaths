@@ -4,8 +4,7 @@
  *
  * Phase 0 validée le 2026-11-03 : à l'énoncé, le repère reste vide (ligne `tracer:`
  * retirée) ; au corrigé, la droite y est dessinée. Le tracé compte pour une case.
- * Refusés, message à l'appui : droite verticale, vecteur à tracer, points à placer,
- * droite masquée (`tracer: ?`), repère en retrait ou cité.
+ * Refusés, message à l'appui : droite verticale, vecteur à tracer, droite masquée (`tracer: ?`), repère en retrait ou cité.
  */
 import { describe, it, expect } from 'vitest';
 import type { QuestionTemplate } from '$lib/questions/types';
@@ -67,7 +66,6 @@ const cartesienneTiers = modele(
 );
 const verticale = modele('verticale', `Trace la droite.\n\n${repere('tracer: x = 3')}`);
 const vecteur = modele('vecteur', `Trace le vecteur.\n\n${repere('tracer: vecteur (3 ; -2)')}`);
-const placer = modele('placer', `Place le point.\n\n${repere('placer: A=(2 ; 3)')}`);
 const deuxReperes = modele(
 	'deux-reperes',
 	`Trace $d$.\n\n${repere('tracer: y = {{m}}x + {{p}}')}\n\nTrace $d'$.\n\n${repere('tracer: y = -x + 4')}`
@@ -83,7 +81,6 @@ const modeles = new Map(
 		avecCase,
 		verticale,
 		vecteur,
-		placer,
 		deuxReperes
 	].map((t) => [t.id, t])
 );
@@ -180,8 +177,7 @@ describe('buildSerie — droite à tracer', () => {
 
 	it.each([
 		['verticale', /droite verticale/],
-		['vecteur', /vecteur à tracer/],
-		['placer', /points à placer/]
+		['vecteur', /vecteur à tracer/]
 	])('%s : refusé, message à l’appui', (id, message) => {
 		expect(() => buildSerie(modeles, [{ templateId: id, seed: 1 }])).toThrow(message);
 	});
