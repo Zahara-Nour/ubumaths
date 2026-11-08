@@ -6,17 +6,20 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR #2489 ouverte (PR 1), CI en cours au moment du /clear._
+_Mis à jour le 2026-11-08, après #2489 (PR 1 mergée)._
 
-- **État** : #2489 ouverte (page d'édition : « Enregistrer » / « Repasser en brouillon » pour un publié,
-  plus de « réponse manquante » côté client, `serverErrors`) ; revue `code-reviewer` faite, findings 1-5
-  et 7 corrigés (`77b42ec79`) ; CI de `77b42ec79` en cours · **Prochaine action** : `gh pr checks 2489`
-  → verte : `gh pr merge 2489 --merge`, puis nettoyage du worktree ; puis PR 2 (liste : recherche par
-  titre/id, filtres de l'adresse ignorés) · **En attente de David** : rien · **Pièges en cours** : la
-  liste (`dashboard/admin/questions/+page.svelte`) a un onglet « Brouillons » par défaut, « Publiés » à
-  côté ; le serveur filtre déjà `?grades=&minLevel=&maxLevel=` (`+page.server.ts`) ; finding 6 de la
-  revue (mode JSON : refus du serveur ignoré pour « Enregistrer »/« Publier ») laissé, pas de bug
-  visible · **Worktree / branche** : `../ubumaths-wt-admin-modeles`, `fix/admin-modeles-edition`.
+- **État** : PR 1 mergée (#2489 : page d'édition d'un publié, « Enregistrer » / « Repasser en
+  brouillon », plus de « réponse manquante » côté client, `serverErrors`) ; vérification manuelle
+  notée ; worktree de la PR 1 supprimé · **Prochaine action** : PR 2 (liste : recherche par
+  titre/id, filtres de l'adresse ignorés) → recréer le worktree
+  `git worktree add -b fix/admin-modeles-liste ../ubumaths-wt-admin-modeles origin/main` ·
+  **En attente de David** : rien · **Pièges en cours** : la liste
+  (`dashboard/admin/questions/+page.svelte`, 1303 lignes) a un onglet « Brouillons » par défaut,
+  « Publiés » à côté ; le serveur (`+page.server.ts`) filtre déjà `?type=&grades=&branche=&notion=&nonRanges=&minLevel=&maxLevel=&courseQuestion=` ;
+  `?search=` est lu mais **jamais appliqué** (recherche plein texte désactivée, attend un index
+  tsvector) ; finding 6 de la revue de #2489 (mode JSON : refus du serveur ignoré pour
+  « Enregistrer »/« Publier ») laissé, pas de bug visible · **Worktree / branche** : aucun pour
+  l'instant (PR 2 : `fix/admin-modeles-liste`).
 
 ## Origine (2026-11-08, session `automatismes-1spe`)
 
