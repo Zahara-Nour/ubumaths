@@ -5,7 +5,7 @@
 	Renders an ordered or unordered list with support for:
 	- Nested lists (recursive rendering)
 	- Custom starting number for ordered lists
-	- Rich content in list items (paragraphs, nested lists, etc.)
+	- Rich content in list items (paragraphs, nested lists, images, videos, etc.)
 	- Configurable numbering schemes via CSS classes
 
 	The component handles recursive rendering by importing BlockRenderer
@@ -26,6 +26,7 @@
 	import ParagraphNode from './ParagraphNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
+	import VideoDisplay from './VideoDisplay.svelte';
 	import HorizontalRule from './HorizontalRule.svelte';
 	import HeadingNode from './HeadingNode.svelte';
 	import TableNode from './TableNode.svelte';
@@ -319,6 +320,7 @@
 			'code-block',
 			'list',
 			'image',
+			'video',
 			'table',
 			'horizontal-rule',
 			'variation-table',
@@ -437,6 +439,20 @@
 							originalWidth={child.originalWidth}
 							originalHeight={child.originalHeight}
 						/>
+					{:else if child.type === 'video'}
+						<VideoDisplay
+							src={child.src}
+							alt={child.alt}
+							provider={child.provider}
+							videoId={child.videoId}
+							sizeClass={child.sizeClass}
+							widthPercent={child.widthPercent}
+							alignment={child.alignment}
+							controls={child.controls}
+							autoplay={child.autoplay}
+							loop={child.loop}
+							muted={child.muted}
+						/>
 					{:else if isTableNode(child)}
 						<TableNode
 							header={child.header}
@@ -534,6 +550,20 @@
 							caption={child.caption}
 							originalWidth={child.originalWidth}
 							originalHeight={child.originalHeight}
+						/>
+					{:else if child.type === 'video'}
+						<VideoDisplay
+							src={child.src}
+							alt={child.alt}
+							provider={child.provider}
+							videoId={child.videoId}
+							sizeClass={child.sizeClass}
+							widthPercent={child.widthPercent}
+							alignment={child.alignment}
+							controls={child.controls}
+							autoplay={child.autoplay}
+							loop={child.loop}
+							muted={child.muted}
 						/>
 					{:else if isTableNode(child)}
 						<TableNode
