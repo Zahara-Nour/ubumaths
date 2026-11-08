@@ -6,18 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2475._
+_Mis à jour le 2026-11-08, après #2477 : lot 12b publié. Chantier EN PAUSE, en attente d'outil._
 
-- **État** : lots 1 à 12 publiés ; lot 12b (`ce2-12b`, 6 modèles : 03-06 sur CE2-070, 07-08 `grades: CE1` sur CE1-072)
-  mergé (#2475), pas encore en base de prod.
-- **Prochaine action** : David lance depuis le worktree `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/ce2-12b --publier` (brouillons en prod) ; puis ids commités + migration nœud + tag
-  (« constructions » ; CE2-070 niveaux 3-4, CE1-072 niveau 2) sur `feat/questions-ce2-lot12b-db`, page à cocher ;
-  publication **après le `deploy:prod`** de #2463 et #2473.
-- **En attente de David** : le `create-questions --publier` ; le `deploy:prod` (outils n° 19 et 20 pas en prod).
-- **Pièges en cours** : coordonnées en flottants → arrondies (garde de complexité, CI de #2475) ; n° 18 règle graduée
-  absent ; commitlint : corps ≤ 100 caractères par ligne, sujet sans majuscule ; jamais de variable `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot12b-db` (sur `origin/main`).
+- **État** : lots 1 à 12b publiés (12b : 4 modèles CE2-070, 2 modèles CE1-072). Restent au CE2 : 086, 043, 051, 065
+  (non évaluables sans manipulation) et 039, plus les constructions cotées en cm de 070 (règle graduée, n° 18).
+- **En attente** : `outils-manquants.md` n° 18, règle graduée (« à décider avec David » ; `feat/regle-graduee` citée).
+- **Prochaine action** : à la reprise, regarder la section « Livré » de `outils-manquants.md` ; n° 18 livré → 039 et
+  070 coté. Vérification manuelle du lot 12b dans `verifications-manuelles.md` (relecture non prouvée).
+- **Pièges en cours** : coordonnées en flottants → arrondies (garde de complexité) ; `db:migrate` depuis un worktree :
+  copier `supabase/.temp/{project-ref,linked-project.json,pooler-url}` ; commitlint : corps ≤ 100 caractères par ligne.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `origin/main` (aucune branche en cours).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1080,3 +1078,12 @@ Décisions de David (« je suis tes recos », 2026-11-08) : Q1 oui (07 et 08 pou
   test, tirés du lot 12 avec une colonne `grade` (le point du CE1) : rouge sans le corps (5 échecs sur 9), vert 9/9.
 - `security-auditor` : aucun finding (diff avec le lot 12 : identifiants, `grade`, comptes ; nœud et points vérifiés
   en prod).
+- 2026-11-08 : #2477 mergée (CI verte, intégration comprise ; `check:migrations --pr 2477` OK) ; `db:migrate` depuis
+  le worktree sur `origin/main` (dépôt principal bloqué par le travail d'autres sessions ; dry-run : la seule migration
+  du lot) ; relevé MCP : 6/6 sur « constructions », un point chacun (CE2-070 ×4, CE1-072 ×2), brouillons, `updated_at`
+  intact. Page à cocher publiée (https://claude.ai/artifact/1uRvdQ8m99jjW3piU3J8dw), alerte attendue (case « figure »
+  non dessinée).
+- 2026-11-08 : relecture de David : 6 verdicts « ok », sans commentaire (base `verdicts` comptée), posés en 3,5 s →
+  relecture du tracé non prouvée, ligne ajoutée à `verifications-manuelles.md`. `deploy:prod` (v0.78.1, livre #2463 et
+  #2473, vérifié sur `origin/production`) ; `publier-lot` simulation puis `--publier` (David) ; relevé MCP : 6/6
+  `published`. **Lot 12b clos.**
