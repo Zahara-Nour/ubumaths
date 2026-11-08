@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2457 (rangement du modèle neuf `23751c95`, migration appliquée)._
+_Mis à jour le 2026-11-08, phase 0 du lot 4 « Géométrie et repérage » validée._
 
-- **État** : lot 3 « Proportions et pourcentages » terminé : modèle `23751c95` rangé (6-106) et fiche
-  `f9608ee5`, tous deux en brouillon ; migration `20261108085338` appliquée et vérifiée en prod ·
-  **Prochaine action** : demander à David la suite (autre lot de 2de, fiches (2), ou clôture du chantier) ·
+- **État** : lot 4 en phase 0 validée (section « Lot « Géométrie et repérage » — phase 0 » en bas) ;
+  lots 1-3 de 2de faits · **Prochaine action** : worktree `ubumaths-wt-automatismes-1spe`, branche
+  `feat/automatismes-geometrie` : `buildSerie` fige `line placer:` et `courbe placer:` (tests d'abord), deux
+  modèles neufs de 5e (5-047 lire, 5-128 placer), script de fiche, graines, rendu local, PR ·
   **En attente de David** : publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de
   1re ; publication des modèles `23751c95` et `c1c9cfc3` (brouillons) · **Pièges en cours** : écritures ET
   simulations contre la prod lancées par David (commande donnée avec `!`) ; `debord.py` ne voit pas une
-  équation centrée trop large : relire les pages ; une proportion ne dépasse pas 1 ; garde « doc à jour »
-  : une migration exige `Doc-inchangée:` dans un commit · **Worktree / branche** : aucun (retiré).
+  équation centrée trop large : relire les pages ; essai local : script `.mts` (tsx en CJS sinon) ; garde
+  « doc à jour » : une migration exige `Doc-inchangée:` dans un commit · **Worktree / branche** : à créer.
 - Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
@@ -589,3 +590,37 @@ scripts/questions/automatismes-2de-proportions --publier` (écrit l'`id` dans le
 - #2457 mergée (CI verte) ; `db:push` le 2026-11-08 depuis `main` (dry-run : seule cette migration) ;
   vérifié en prod : nœud « forme fractionnaire », un seul tag 6-106, brouillon, `updated_at` = création,
   `tgenabled = 'O'` ; `garde-niveaux-tags.ts` : aucun niveau manquant, 12 écarts excusés.
+
+### Lot « Géométrie et repérage » — phase 0 (validée par David le 2026-11-08)
+
+Capacités du BO 2de (Automatismes › Géométrie) : repérer / placer un point sur une droite graduée (abscisse
+relative) ; lire / placer un point dans un repère orthogonal ; périmètres (polygone, cercle), aires
+(rectangle, triangle, disque), volumes (pavé, prisme, cylindre, pyramide, cône, boule) ; Pythagore, Thalès ;
+cosinus, sinus, tangente.
+
+**Relevé MCP (prod, 2026-11-08)** : 23 points des automatismes de 2 portent ces capacités. Sans aucun
+modèle : 5-016, 5-121 (droite graduée ; couverts par les modèles de 2de `a692569a` « Lire l'abscisse d'un
+point », 2-249, et `3b0a04c0` « Placer un réel sur une droite graduée », 2-250), **5-047, 5-128** (repère :
+aucun modèle ne lit ni ne place les coordonnées d'un point ; seul `46ca97e7` (4-063) emploie
+` ```courbe placer:`). Rattachement des modèles aux points : table `question_template_points` (pas
+`resource_tags`).
+
+**Essai** : 14 modèles existants ; 13 avec leur fichier (`md5` des variantes, `shared`, `options` = prod,
+Postgres local), `72ac333e` copié du MCP (`md5` vérifié). `buildSerie` en local, graines 1-12 : 13 passent ;
+**`3b0a04c0` refusé sur les 12 graines** (« 0 case pour 1 réponse » : `line placer:` non figé ; `courbe
+placer:` est refusé explicitement par `droitesATracer`). Décimaux à point dans le markdown des séries :
+normal, `toLocaleDecimal` met la virgule au rendu.
+
+- **Série 1** (repérage, triangles) : `a692569a` lire une abscisse · `3b0a04c0` placer un réel · **neuf**
+  lire les coordonnées d'un point (5-047) · **neuf** placer un point (5-128) · `22d947f4` Pythagore ·
+  `f55d07b0` Thalès · `dbd5debf` écrire cos / sin / tan (QCM) · `57c73be1` longueur ou angle (trigo).
+- **Série 2** (périmètres, aires, volumes) : `11bce2bf` polygone · `cfb4c692` périmètre du disque ·
+  `72ac333e` aire du triangle (très facile, faute de mieux) · `8db109a5` aire du disque (exacte) ·
+  `47971d3d` cylindre (exact) · `6a770d04` pyramide · `35002b15` cône · `87f79961` boule.
+- Écartés (fiche (2)) : carré / rectangle `060086c8`, `66f9abbf`, `01e205ed`, `fdd849f5` (trop faciles) ;
+  `0761124d` pavé, `9dea9199` prisme ; π ≈ 3,14 `28d7ad74`, `55b26d32` ; triangle `f3ae46e9`, `4a1e0767`,
+  `91c0f9a0`, `d006d936` ; `810fd3be` parallélogramme (hors BO).
+- **Tranché par David (2026-11-08)** : (1) apprendre à `buildSerie` à figer `line placer:` et `courbe
+placer:` (énoncé : axe / repère sans le point ; corrigé : point placé), comme `tracer:` au lot « Droites » ;
+  (2) les deux modèles neufs sont **de 5e** (niveau `['5']`, rangés sur 5-047 / 5-128, sans exception de
+  niveaux) ; (3) composition des séries validée telle quelle. Graines choisies après.
