@@ -1,0 +1,207 @@
+{
+	"title": "Terminer un triangle rectangle sur quadrillage",
+	"description": "Le côté [AB] est tracé : placer C pour un angle droit en A, AC donné en carreaux ou égal à AB (côté oblique)",
+	"grades": ["CE2"],
+	"level": 3,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le côté $[AB]$ est déjà tracé. Termine le triangle $ABC$ qui a un $\\textcolor{{{color:primary.0}}}{\\text{angle droit}}$ en $A$ et dont le côté $[AC]$ mesure {{if:k==1|4 carreaux|{{if:k==2|5 carreaux|{{if:k==3|6 carreaux|{{if:k==4|3 carreaux|5 carreaux}}}}}}}}. Trace les côtés $[AC]$ et $[BC]$ en suivant le quadrillage.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\ngrille: 1\nverifier: triangle ABC : CAB = 90 ; AC = {{if:k==1|4 carreaux|{{if:k==2|5 carreaux|{{if:k==3|6 carreaux|{{if:k==4|3 carreaux|5 carreaux}}}}}}}}\n---\n{{if:k==1|A = point(3, 2)\nB = point(9, 2)|{{if:k==2|A = point(3, 3)\nB = point(8, 3)|{{if:k==3|A = point(2, 2)\nB = point(2, 7)|{{if:k==4|A = point(9, 2)\nB = point(4, 2)|A = point(4, 8)\nB = point(9, 8)}}}}}}}}\nab = segment(A, B, epaisseur=3)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le côté $[AB]$ suit une ligne du quadrillage : le côté $[AC]$ part de $A$ sur la ligne qui le $\\textcolor{{{color:primary.0}}}{\\text{coupe à angle droit}}$.",
+					"On compte les carreaux depuis $A$ pour placer $C$, puis on trace $[AC]$ et $[BC]$."
+				]
+			}
+		},
+		{
+			"statement": "Le côté $[AB]$ est déjà tracé. Termine le triangle $ABC$ qui a un $\\textcolor{{{color:primary.0}}}{\\text{angle droit}}$ en $A$ et dont les côtés $[AC]$ et $[AB]$ ont la $\\textcolor{{{color:primary.0}}}{\\text{même longueur}}$. Place $C$ sur un nœud du quadrillage, puis trace $[AC]$ et $[BC]$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\ngrille: 1\nverifier: triangle ABC : CAB = 90 ; AC = AB\n---\n{{if:k==1|A = point(4, 3)\nB = point(7, 4)|{{if:k==2|A = point(3, 2)\nB = point(7, 3)|{{if:k==3|A = point(5, 2)\nB = point(8, 4)|{{if:k==4|A = point(7, 3)\nB = point(4, 4)|A = point(3, 3)\nB = point(5, 6)}}}}}}}}\nab = segment(A, B, epaisseur=3)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour aller de $A$ à $B$, on compte les carreaux : par exemple « 3 vers la droite, 1 vers le haut ».",
+					"Le côté $[AC]$ $\\textcolor{{{color:primary.0}}}{\\text{tourne d'un angle droit}}$ : on échange les deux nombres (« 1 vers la gauche, 3 vers le haut ») et on place $C$ au bout, puis on trace $[BC]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Triangle 1 : C à 4 carreaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(3;2;3;6)|segment(9;2;3;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [AC] trop long d'un carreau",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(3;2;3;7)|segment(9;2;3;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : angle en A non droit",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(3;2;4;6)|segment(9;2;4;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le côté [BC] manque",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(3;2;3;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle 2 : C à 5 carreaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(3;3;3;8)|segment(8;3;3;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 3 : C à 6 carreaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(2;2;8;2)|segment(2;7;8;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 4 : C à 3 carreaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["segment(9;2;9;5)|segment(4;2;9;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 5 : C à 5 carreaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["segment(4;8;4;3)|segment(9;8;4;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle oblique 1 : AC = AB",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(4;3;3;6)|segment(7;4;3;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nombres échangés, angle non droit",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(4;3;5;6)|segment(7;4;5;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [AC] deux fois plus long que [AB]",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(4;3;2;9)|segment(7;4;2;9)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle oblique 2 : AC = AB",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(3;2;2;6)|segment(7;3;2;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle oblique 3 : AC = AB",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(5;2;3;5)|segment(8;4;3;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle oblique 4 : AC = AB",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["segment(7;3;6;0)|segment(4;4;6;0)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle oblique 5 : AC = AB",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["segment(3;3;0;5)|segment(5;6;0;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

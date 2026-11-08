@@ -1,0 +1,126 @@
+{
+	"title": "Tracer un cercle de rayon donné par un segment",
+	"description": "Papier uni : reporter la longueur du segment [MN] et tracer le cercle de centre O de ce rayon",
+	"grades": ["CE2"],
+	"level": 4,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trace le cercle de centre $O$ dont le rayon est aussi long que le segment $[MN]$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: cercle c = cercle(O, rayon=distance(M, N))\n---\n{{if:k==1|O = point(4, 4.5)\nM = point(8, 8)\nN = point(11, 8)|{{if:k==2|O = point(4.5, 4)\nM = point(8, 1)\nN = point(10.5, 1)|{{if:k==3|O = point(4, 4)\nM = point(7.5, 8)\nN = point(11, 8)|{{if:k==4|O = point(3.5, 4.5)\nM = point(8.5, 1)\nN = point(11, 2)|O = point(4, 5)\nM = point(8, 1.5)\nN = point(11, 1.5)}}}}}}}}\nmn = segment(M, N)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On $\\textcolor{{{color:primary.0}}}{\\text{prend la longueur}}$ $MN$ avec le compas : une pointe sur $M$, l'autre sur $N$.",
+					"Sans changer l'écartement, on pique en $O$ et on trace le cercle : son $\\textcolor{{{color:primary.0}}}{\\text{rayon}}$ est aussi long que $[MN]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cercle 1 : longueur MN reportée en O",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["report(4;4.5;8;8;11;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 1 : longueur prise de N vers M",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["report(4;4.5;11;8;8;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compas ouvert à l'œil, sans report",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(4;4.5;7;4.5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : longueur reportée en M",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["report(8;8;8;8;11;8)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : compas trop ouvert",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(4;4.5;8;4.5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cercle 2 : longueur MN reportée en O",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["report(4.5;4;8;1;10.5;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 3 : longueur MN reportée en O",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["report(4;4;7.5;8;11;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 4 : longueur MN reportée en O",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["report(3.5;4.5;8.5;1;11;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 5 : longueur MN reportée en O",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["report(4;5;8;1.5;11;1.5)"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
