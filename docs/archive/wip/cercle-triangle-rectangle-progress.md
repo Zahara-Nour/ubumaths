@@ -1,8 +1,8 @@
 # Chantier « cercle-triangle-rectangle » — cercle de centre donné et triangle rectangle à construire
 
-> Lignes n° 19 et n° 20 de [outils-manquants.md](outils-manquants.md). Débouchés : CE2-070 (lot 12b de
-> [questions-ce2](questions-ce2-progress.md)), CE1-072. Code : `src/lib/questions/construction/` (`circle.ts`,
-> `triangle.ts`), suite du chantier archivé [controles-figure](../archive/wip/controles-figure-progress.md).
+> Lignes n° 19 et n° 20 de [outils-manquants.md](../../wip/outils-manquants.md). Débouchés : CE2-070 (lot 12b de
+> [questions-ce2](../../wip/questions-ce2-progress.md)), CE1-072. Code : `src/lib/questions/construction/` (`circle.ts`,
+> `triangle.ts`), suite du chantier archivé [controles-figure](controles-figure-progress.md).
 > Ouvert le 2026-11-08 depuis la session `questions-ce2`, à la demande de David.
 
 ## Reprendre ici
