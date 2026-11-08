@@ -1,7 +1,7 @@
 {
 	"id": "51192dc4-78df-4d5d-b6be-7062f456cef3",
 	"title": "Représenter la somme de deux vecteurs",
-	"description": "Tracer u + v depuis A quand u = AB et v = AC ont la même origine (règle du parallélogramme) (pièges : u − v, v − u, u seul, la diagonale BC)",
+	"description": "Tracer u + v depuis A quand u = AB et v = AC, dessinés, ont la même origine (règle du parallélogramme) (pièges : u − v, v − u, u seul, la diagonale BC)",
 	"grades": ["2"],
 	"level": 1,
 	"delay": 120,
@@ -13,7 +13,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Dans le repère ci-dessous, on note $\\vec{u}=\\overrightarrow{AB}$ et $\\vec{v}=\\overrightarrow{AC}$.\n\nTrace le représentant d'origine $A$ du vecteur $\\vec{u}+\\vec{v}$ : place son extrémité.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\npoints: A({{xa}} ; {{ya}}), B({{eval:(xa)+(a)}} ; {{eval:(ya)+(b)}}), C({{eval:(xa)+(c)}} ; {{eval:(ya)+(d)}})\ntracer: vecteur ({{eval:(a)+(c)}} ; {{eval:(b)+(d)}}) depuis A\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −6 à 6 ; les points A, B et C.\n```",
+			"statement": "Dans le repère ci-dessous, les vecteurs $\\vec{u}=\\overrightarrow{AB}$ et $\\vec{v}=\\overrightarrow{AC}$ sont tracés.\n\nTrace le représentant d'origine $A$ du vecteur $\\vec{u}+\\vec{v}$ : place son extrémité.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\npoints: A({{xa}} ; {{ya}}), B({{eval:(xa)+(a)}} ; {{eval:(ya)+(b)}}), C({{eval:(xa)+(c)}} ; {{eval:(ya)+(d)}})\nvecteurs: u = AB, v = AC\ntracer: vecteur u + v depuis A\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −6 à 6 ; les points A, B et C, les flèches u (de A à B) et v (de A à C).\n```",
 			"variables": [
 				{
 					"name": "xa",
@@ -51,8 +51,7 @@
 			],
 			"correction": {
 				"steps": [
-					"**Règle du parallélogramme** : $\\vec{u}$ et $\\vec{v}$ ont la même origine $A$ ; on construit le parallélogramme $ABDC$. Alors $\\overrightarrow{AB}+\\overrightarrow{AC}=\\overrightarrow{AD}$ : la somme est la **diagonale** issue de $A$.",
-					"```figure\nfenetre: -6 ; 6 ; -6 ; 6\naxes: oui\ngrille: 1\ntaille: moyenne\ndescription: Repère : le parallélogramme ABDC, les flèches AB, AC et la diagonale AD.\n---\nA = point({{xa}}, {{ya}}, etiquette=\"bas\")\nB = point({{eval:(xa)+(a)}}, {{eval:(ya)+(b)}}, etiquette=\"droite\")\nC = point({{eval:(xa)+(c)}}, {{eval:(ya)+(d)}}, etiquette=\"gauche\")\nD = point({{eval:(xa)+(a)+(c)}}, {{eval:(ya)+(b)+(d)}}, etiquette=\"haut\")\nvecteur(A, B)\nvecteur(A, C)\nsegment(B, D, trait=\"tirets\")\nsegment(C, D, trait=\"tirets\")\nvecteur(A, D, couleur=\"rouge\")\n```",
+					"**Règle du parallélogramme** : $\\vec{u}$ et $\\vec{v}$ ont la même origine $A$ ; on complète le parallélogramme $ABDC$ (en pointillés sur le repère). Alors $\\overrightarrow{AB}+\\overrightarrow{AC}=\\overrightarrow{AD}$ : la somme est la **diagonale** issue de $A$.",
 					"En coordonnées, on ajoute les déplacements : $\\vec{u}+\\vec{v}$ avance de ${{a}}{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{eval:(a)+(c)}}}$ horizontalement et de ${{b}}{{eval:d;+}}=\\textcolor{{{color:primary.1}}}{{{eval:(b)+(d)}}}$ verticalement : $D(\\textcolor{{{color:primary.0}}}{{{eval:(xa)+(a)+(c)}}}\\,;\\,\\textcolor{{{color:primary.1}}}{{{eval:(ya)+(b)+(d)}}})$."
 				]
 			}
