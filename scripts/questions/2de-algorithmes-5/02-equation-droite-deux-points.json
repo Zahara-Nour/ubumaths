@@ -1,0 +1,260 @@
+{
+	"title": "Équation réduite d'une droite par deux points, en Python",
+	"description": "equation(xA, yA, xB, yB) renvoie la pente m et l'ordonnée à l'origine p : valeurs renvoyées (deux cases), compléter la ligne de p, cas d'erreur (xA == xB, division par zéro)",
+	"grades": ["2"],
+	"level": 11,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante, où `(xA, yA)` et `(xB, yB)` sont les coordonnées de deux points $A$ et $B$ d'abscisses différentes.\n\n```python\ndef equation(xA, yA, xB, yB):\n    m = (yB - yA) / (xB - xA)\n    p = yA - m * xA\n    return m, p\n```\n\nQue renvoie `equation({{eval:xa}}, {{eval:ya}}, {{eval:xb}}, {{eval:yb}})` ?\n\n$m=?$ et $p=?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ya",
+					"expression": "-4..4"
+				},
+				{
+					"name": "dx",
+					"expression": "1|2"
+				},
+				{
+					"name": "dy",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xb",
+					"expression": "eval:xa+dx"
+				},
+				{
+					"name": "yb",
+					"expression": "eval:ya+dy"
+				},
+				{
+					"name": "m",
+					"expression": "eval:dy/dx"
+				},
+				{
+					"name": "p",
+					"expression": "eval:ya-m*xa"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`m` est la pente de la droite $(AB)$ : $m=\\dfrac{y_B-y_A}{x_B-x_A}=\\dfrac{{{eval:yb}}-{{eval:ya;()}}}{{{eval:xb}}-{{eval:xa;()}}}=\\dfrac{{{eval:dy}}}{{{eval:dx}}}=\\textcolor{{{color:primary.0}}}{{{eval:m;d}}}$.",
+					"`p` est l'ordonnée à l'origine : $A$ est sur la droite, donc $y_A=mx_A+p$ et $p=y_A-mx_A={{eval:ya}}-{{eval:m;d;()}}\\times{{eval:xa;()}}=\\textcolor{{{color:primary.0}}}{{{eval:p;d}}}$.",
+					"La fonction renvoie $m=\\textcolor{{{color:primary.0}}}{{{eval:m;d}}}$ et $p=\\textcolor{{{color:primary.0}}}{{{eval:p;d}}}$ : la droite $(AB)$ a pour équation réduite $y=mx+p$ avec ces valeurs. (À l'écran, Python écrit des nombres à virgule, avec un point : la division `/` donne `2.0` pour $2$.)"
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer la pente $m$ et l'ordonnée à l'origine $p$ de la droite $(AB)$, d'équation réduite $y=mx+p$, où $A(x_A\\,;y_A)$ et $B(x_B\\,;y_B)$ ont des abscisses différentes.\n\n```python\ndef equation(xA, yA, xB, yB):\n    m = (yB - yA) / (xB - xA)\n    ...\n    return m, p\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `p = yA - m * xA`\n- `p = yA + m * xA`\n- `p = m * xA - yA`\n- `p = yA - xA`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ est sur la droite d'équation $y=mx+p$ : $y_A=mx_A+p$.",
+					"Donc $p=y_A-mx_A$, qui s'écrit `p = yA - m * xA` en Python.",
+					"`yA + m * xA` et `m * xA - yA` se trompent de signe ; `yA - xA` oublie la pente."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante, où `(xA, yA)` et `(xB, yB)` sont les coordonnées de deux points $A$ et $B$ distincts.\n\n```python\ndef equation(xA, yA, xB, yB):\n    m = (yB - yA) / (xB - xA)\n    p = yA - m * xA\n    return m, p\n```\n\nDans quel cas l'appel `equation(xA, yA, xB, yB)` provoque-t-il une erreur ?\n\n```choix\n- Quand `xA == xB`\n- Quand `yA == yB`\n- Quand `xA == yA`\n- Quand `xA == 0`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La seule opération qui peut échouer est la division `(yB - yA) / (xB - xA)` : Python refuse de diviser par $0$ (erreur `ZeroDivisionError`).",
+					"Elle échoue quand $x_B-x_A=0$, c'est-à-dire quand `xA == xB` : la droite $(AB)$ est alors parallèle à l'axe des ordonnées. Elle n'a pas de pente ni d'équation réduite, mais une équation de la forme $x=x_A$.",
+					"Quand `yA == yB`, la pente vaut $0$ (droite parallèle à l'axe des abscisses) : aucune erreur. `xA == yA` ou `xA == 0` ne rendent pas le dénominateur nul."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(1 ; 2), B(3 ; 5) : 1,5 et 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "2",
+				"dx": "2",
+				"dy": "3",
+				"xb": "3",
+				"yb": "5",
+				"m": "3/2",
+				"p": "1/2"
+			},
+			"answers": ["1,5", "0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Fractions : forme décimale demandée (Python renvoie 1.5)",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "2",
+				"dx": "2",
+				"dy": "3",
+				"xb": "3",
+				"yb": "5",
+				"m": "3/2",
+				"p": "1/2"
+			},
+			"answers": ["\\frac{3}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form", "form"]
+			}
+		},
+		{
+			"description": "Négatifs : −4 et −7",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "-2",
+				"ya": "1",
+				"dx": "1",
+				"dy": "-4",
+				"xb": "-1",
+				"yb": "-3",
+				"m": "-4",
+				"p": "-7"
+			},
+			"answers": ["-4", "-7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p = yA + m·xA",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "-2",
+				"ya": "1",
+				"dx": "1",
+				"dy": "-4",
+				"xb": "-1",
+				"yb": "-3",
+				"m": "-4",
+				"p": "-7"
+			},
+			"answers": ["-4", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pente inversée",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "2",
+				"dx": "2",
+				"dy": "3",
+				"xb": "3",
+				"yb": "5",
+				"m": "3/2",
+				"p": "1/2"
+			},
+			"answers": ["2/3", "0,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = yA - m * xA",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : yA + m * xA",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m * xA - yA",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : yA - xA",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "xA == xB",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : yA == yB",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : xA == yA",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : xA == 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
