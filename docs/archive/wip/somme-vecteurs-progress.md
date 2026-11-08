@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2472._
+_Mis à jour le 2026-11-08, chantier clos et archivé._
 
-- **État** : outil #2467 et réécriture de `51192dc4` #2472 mergés, **rien en prod** (ni le code, ni le modèle) · **Prochaine action** : après le `deploy:prod` qui livre #2467 (David), depuis le dépôt principal à jour : `pnpm tsx scripts/update-published-questions.ts --lot somme-vecteurs-2de` (simulation), puis `--publier`, relire en prod ; ensuite versement du chantier (journal archivé) · **En attente de David** : `deploy:prod` ; dire si le nom de A qui chevauche la flèche v⃗ gêne (§ 3) · **Pièges en cours** : ne JAMAIS `--publier` avant le déploiement (le bloc serait refusé en prod) ; le modèle est PUBLIÉ : `create-questions` ne le touche pas, c'est `update-published-questions` · **Worktree / branche** : aucun (retiré après #2472)
+- **État** : **clos**. #2467 (outil) en prod en v0.78.1 ; `51192dc4` republié en prod le 2026-11-08 (`update-published-questions --lot somme-vecteurs-2de --publier` : relu conforme, toujours publié) · **Reste** : la vérification manuelle de #2467 (`verifications-manuelles.md`), qui pose la question du nom de A qui chevauche la flèche v⃗ · **Worktree / branche** : aucun
 
 ## 0. Origine
 
@@ -99,3 +99,10 @@ SV5 `51192dc4` réécrit ici (PR de contenu à part), 3-026 laissé à `question
 - Simulation sur la prod : 6/6 specs vertes, 100 tirages. Pas de page à cocher (un seul modèle) : ligne de
   `verifications-manuelles.md` à la place. **#2472 mergée** le 2026-11-08 (conflit de table reformatée dans
   `verifications-manuelles.md` : version de main reprise + ma ligne).
+
+## 6. Publication et versement (2026-11-08)
+
+- #2467 livré par `deploy:prod` (v0.78.1). Simulation sur la prod : diff attendu, 6/6 specs vertes ; `--publier`
+  lancé par David (le classifieur du mode auto bloque l'écriture en prod) : `51192dc4` relu conforme, toujours publié.
+- Versement : la doc durable est déjà dans `ubumark.md`, `questions.md` et `grapheur.md` (#2467) ; ligne de
+  `outils-manquants.md` mise à jour ; journal archivé sous `docs/archive/wip/`.
