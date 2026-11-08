@@ -6,18 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2454._
+_Mis à jour le 2026-11-08, lot 1 publié (5/5, relu par David : 5 ok)._
 
-- **État** : lot 1 en brouillon en prod, rangé (nœud + point, #2454, migration `20261108070133` appliquée) ;
-  page à cocher publiée : https://claude.ai/artifact/2T6PYa1jHeoQRWFsERRJor.
-- **Prochaine action** : lire et compter les verdicts de David (collection `verdicts`), corriger s'il y a lieu,
-  puis `publier-lot.ts --dir scripts/questions/2de-demonstrations-1` en simulation, David lance `--publier`.
-  Ensuite lot 2 (géométrie : 304, 438, 320).
-- **En attente de David** : sa relecture des 5 modèles sur la page à cocher (bloc ranger à jouer dans l'aperçu).
-- **Pièges en cours** : écritures en prod → commande `!` donnée à David ; `create-questions` écrit l'`id` dans les
-  JSON du dépôt d'où il tourne → les reporter sur la branche puis `git restore` dans le dépôt principal ; positions
-  « ranger » par `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-2-rangement` (mergée ; nouvelle branche pour le lot 2).
+- **État** : lot 1 (5 modèles) PUBLIÉ en prod, rangé (#2454, migration `20261108070133`).
+- **Prochaine action** : lot 2 (géométrie : 304, 438, 320) — relevé, modèles, brouillons, rangement, page à cocher.
+- **En attente de David** : rien.
+- **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
+  `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → le lancer depuis le worktree ;
+  positions « ranger » par `docs/wip/questions/positions-ranger.ts` ; couleur jamais sur du texte hors `$`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-3-geometrie`.
 
 ---
 
