@@ -1,4 +1,5 @@
 {
+	"id": "3020b065-2be5-4541-beda-1115718121c5",
 	"title": "Pentes des sécantes avec Python",
 	"description": "Liste des coefficients directeurs des sécantes pour f(x) = x² : faire tourner pour un pas donné, compléter la ligne du taux de variation, dire de quoi les pentes se rapprochent",
 	"grades": ["1_SPE"],
