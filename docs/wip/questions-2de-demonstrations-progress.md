@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après la publication du lot 4._
+_Mis à jour le 2026-11-08, pendant le lot 5._
 
-- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lot 4 (241, 242, 257, 283)
-  publié (4/4, relu par David). Restent 6 points d'algorithmes.
-- **Prochaine action** : lot 5 (321, 322) dans un worktree neuf, sur le modèle du lot 4 (§ 10) ; puis lot 6
-  (361, 362, 387, 388).
-- **En attente de David** : rien.
+- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lot 4 publié ; lot 5 (321, 322) écrit et vérifié (§ 11), PR ouverte.
+- **Prochaine action** : CI verte → merge → David crée les brouillons (commande au § 11) → migration nœud + tag
+  (calquée sur le lot 4) → page à cocher ; puis lot 6 (361, 362, 387, 388).
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf →
-  `svelte-kit sync` avant `question:specs` ; `create-questions` lit `.env` (prod) : en local, `.env.local`.
-- **Worktree / branche** : aucun (le lot 5 prendra `ubumaths-wt-questions-2de-demonstrations`).
+  `svelte-kit sync` avant `question:specs` ; `create-questions` en local : `export` des 2 variables de
+  `.env.local` (dotenv n'écrase pas), et il ÉCRIT l'id local dans les JSON → régénérer par le script après.
+- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-demonstrations-lot5`.
 
 ---
 
@@ -319,3 +319,27 @@ accents graves du code en ligne y restent bruts, l'appli les rend en code via `p
 
 Lot 4 relu par David sur la page à cocher (2026-11-08) : 4 « ok », sans commentaire. Publié par David
 (`publier-lot.ts`, simulation puis `--publier`) : 4/4, statut relu en base.
+
+## 11. Lot 5 : exemples d'algorithmes, géométrie (2026-11-08)
+
+Relevé prod (MCP, 2026-11-08) : 321 sur Géométrie › Vecteurs › colinéarité (8 modèles, niveaux 1-7, dont « Trois
+points alignés ? » sans programme) ; 322 sur Géométrie › Géométrie repérée › équations de droites (10 modèles,
+niveaux 1-10, dont « Équation d'une droite passant par deux points » sans programme). Aucun modèle tagué sur les
+2 points ; aucune sous-notion neuve.
+
+| Point | Modèle (`scripts/questions/2de-algorithmes-5/`) | Nœud, niveau              | Variations                                                                                                          |
+| ----- | ----------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 321   | `01-tester-alignement-trois-points`             | Vecteurs › colinéarité, 8 | valeur de `det` (case) ; compléter la ligne du déterminant (choix) ; valeur renvoyée True/False (choix non mélangé) |
+| 322   | `02-equation-droite-deux-points`                | équations de droites, 11  | `m` et `p` renvoyés (deux cases, décimaux) ; compléter `p = yA - m * xA` (choix) ; cas d'erreur `xA == xB` (choix)  |
+
+Script : `docs/wip/questions/lot-2de-algorithmes-5.py`. 321 : C = A + k·AB, décalé de (0 ; p) une fois sur deux,
+donc det = 0 ou ±p·(xB − xA), jamais nul par hasard. 322 : xB − xA ∈ {1, 2}, pente entière ou demi-entière ;
+une fraction (`3/2`) y est en « mauvaise forme » (Python renvoie un décimal), spec `bad_form` avec une violation
+`form` par case. Vérifié : `question:specs` 150 tirages par variation, 2/2 importables, 24 specs vertes,
+0 `\textcolor` hors `$` ; 390 réponses « faire tourner » et True/False recoupées par une exécution Python des
+programmes de l'énoncé (0 écart) ; brouillons en base locale, aperçu admin vu à l'écran (énoncés, bloc Python,
+propositions, carte « Juste »). La face « correction » de la carte n'a pas pu être affichée par l'automate ; sa
+notation (`\overrightarrow{AB}\begin{pmatrix}…\end{pmatrix}`) est celle de 115 modèles déjà en base.
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-5 --publier`

@@ -1,0 +1,378 @@
+{
+	"title": "Tester l'alignement de trois points en Python",
+	"description": "alignes(xA, yA, xB, yB, xC, yC) par le déterminant de AB et AC : valeur de det pour trois points donnés, compléter la ligne du déterminant, valeur renvoyée (True ou False)",
+	"grades": ["2"],
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante, où `(xA, yA)`, `(xB, yB)` et `(xC, yC)` sont les coordonnées de trois points $A$, $B$, $C$ dans un repère.\n\n```python\ndef alignes(xA, yA, xB, yB, xC, yC):\n    det = (xB - xA) * (yC - yA) - (yB - yA) * (xC - xA)\n    return det == 0\n```\n\nOn appelle `alignes({{eval:xa}}, {{eval:ya}}, {{eval:xb}}, {{eval:yb}}, {{eval:xc}}, {{eval:yc}})`. Quelle est la valeur de `det` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ya",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ux",
+					"expression": "1|2|-1|-2"
+				},
+				{
+					"name": "uy",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|-1"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "p",
+					"expression": "1|2|-1"
+				},
+				{
+					"name": "xb",
+					"expression": "eval:xa+ux"
+				},
+				{
+					"name": "yb",
+					"expression": "eval:ya+uy"
+				},
+				{
+					"name": "dx",
+					"expression": "eval:k*ux"
+				},
+				{
+					"name": "dy",
+					"expression": "eval:k*uy+o*p"
+				},
+				{
+					"name": "xc",
+					"expression": "eval:xa+dx"
+				},
+				{
+					"name": "yc",
+					"expression": "eval:ya+dy"
+				},
+				{
+					"name": "det",
+					"expression": "eval:ux*dy-uy*dx"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:det}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`det` est le déterminant des vecteurs $\\overrightarrow{AB}\\begin{pmatrix}x_B-x_A\\\\y_B-y_A\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}x_C-x_A\\\\y_C-y_A\\end{pmatrix}$.",
+					"Ici $\\overrightarrow{AB}\\begin{pmatrix}{{eval:ux}}\\\\{{eval:uy}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{eval:dx}}\\\\{{eval:dy}}\\end{pmatrix}$, donc $\\text{det}={{eval:ux}}\\times{{eval:dy;()}}-{{eval:uy;()}}\\times{{eval:dx;()}}=\\textcolor{{{color:primary.0}}}{{{eval:det}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer `True` si les points $A(x_A\\,;y_A)$, $B(x_B\\,;y_B)$ et $C(x_C\\,;y_C)$ sont alignés, et `False` sinon.\n\n```python\ndef alignes(xA, yA, xB, yB, xC, yC):\n    det = ...\n    return det == 0\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `(xB - xA) * (yC - yA) - (yB - yA) * (xC - xA)`\n- `(xB - xA) * (xC - xA) - (yB - yA) * (yC - yA)`\n- `(xB - xA) * (yC - yA) + (yB - yA) * (xC - xA)`\n- `(xB - xA) * (yB - yA) - (xC - xA) * (yC - yA)`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$, $B$, $C$ sont alignés si et seulement si les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont colinéaires, c'est-à-dire si leur déterminant est nul.",
+					"Le déterminant de $\\begin{pmatrix}x\\\\y\\end{pmatrix}$ et $\\begin{pmatrix}x'\\\\y'\\end{pmatrix}$ est $xy'-yx'$ : on multiplie « en croix » l'abscisse de l'un par l'ordonnée de l'autre, puis on soustrait.",
+					"Avec $\\overrightarrow{AB}\\begin{pmatrix}x_B-x_A\\\\y_B-y_A\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}x_C-x_A\\\\y_C-y_A\\end{pmatrix}$ : `det = (xB - xA) * (yC - yA) - (yB - yA) * (xC - xA)`. Les autres propositions multiplient abscisse par abscisse, ou additionnent au lieu de soustraire."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante, où `(xA, yA)`, `(xB, yB)` et `(xC, yC)` sont les coordonnées de trois points $A$, $B$, $C$ dans un repère.\n\n```python\ndef alignes(xA, yA, xB, yB, xC, yC):\n    det = (xB - xA) * (yC - yA) - (yB - yA) * (xC - xA)\n    return det == 0\n```\n\nQue renvoie `alignes({{eval:xa}}, {{eval:ya}}, {{eval:xb}}, {{eval:yb}}, {{eval:xc}}, {{eval:yc}})` ?\n\n```choix\nmelanger: non\n- `True` : les points sont alignés\n- `False` : les points ne sont pas alignés\n```",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ya",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ux",
+					"expression": "1|2|-1|-2"
+				},
+				{
+					"name": "uy",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|-1"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "p",
+					"expression": "1|2|-1"
+				},
+				{
+					"name": "xb",
+					"expression": "eval:xa+ux"
+				},
+				{
+					"name": "yb",
+					"expression": "eval:ya+uy"
+				},
+				{
+					"name": "dx",
+					"expression": "eval:k*ux"
+				},
+				{
+					"name": "dy",
+					"expression": "eval:k*uy+o*p"
+				},
+				{
+					"name": "xc",
+					"expression": "eval:xa+dx"
+				},
+				{
+					"name": "yc",
+					"expression": "eval:ya+dy"
+				},
+				{
+					"name": "det",
+					"expression": "eval:ux*dy-uy*dx"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`det` est le déterminant des vecteurs $\\overrightarrow{AB}\\begin{pmatrix}x_B-x_A\\\\y_B-y_A\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}x_C-x_A\\\\y_C-y_A\\end{pmatrix}$.",
+					"Ici $\\overrightarrow{AB}\\begin{pmatrix}{{eval:ux}}\\\\{{eval:uy}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{eval:dx}}\\\\{{eval:dy}}\\end{pmatrix}$, donc $\\text{det}={{eval:ux}}\\times{{eval:dy;()}}-{{eval:uy;()}}\\times{{eval:dx;()}}=\\textcolor{{{color:primary.0}}}{{{eval:det}}}$.",
+					"{{if:o==0|Le déterminant est nul : $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont colinéaires, la fonction renvoie `True` : $A$, $B$, $C$ sont alignés.|Le déterminant n'est pas nul : $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas colinéaires, la fonction renvoie `False` : $A$, $B$, $C$ ne sont pas alignés.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Alignés : det = 0",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "2",
+				"ux": "2",
+				"uy": "1",
+				"k": "2",
+				"o": "0",
+				"p": "1",
+				"xb": "3",
+				"yb": "3",
+				"dx": "4",
+				"dy": "2",
+				"xc": "5",
+				"yc": "4",
+				"det": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Non alignés : det = 2",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "2",
+				"ux": "2",
+				"uy": "1",
+				"k": "2",
+				"o": "1",
+				"p": "1",
+				"xb": "3",
+				"yb": "3",
+				"dx": "4",
+				"dy": "3",
+				"xc": "5",
+				"yc": "5",
+				"det": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Négatifs : det = 1",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "-1",
+				"ya": "0",
+				"ux": "-1",
+				"uy": "2",
+				"k": "-1",
+				"o": "1",
+				"p": "-1",
+				"xb": "-2",
+				"yb": "2",
+				"dx": "1",
+				"dy": "-3",
+				"xc": "0",
+				"yc": "-3",
+				"det": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme au lieu de différence",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "-1",
+				"ya": "0",
+				"ux": "-1",
+				"uy": "2",
+				"k": "-1",
+				"o": "1",
+				"p": "-1",
+				"xb": "-2",
+				"yb": "2",
+				"dx": "1",
+				"dy": "-3",
+				"xc": "0",
+				"yc": "-3",
+				"det": "1"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(xB - xA) * (yC - yA) - (yB - yA) * (xC - xA)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : abscisse × abscisse",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : mauvais vecteurs",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Alignés : True",
+			"variationIndex": 2,
+			"variables": {
+				"xa": "1",
+				"ya": "2",
+				"ux": "2",
+				"uy": "1",
+				"k": "2",
+				"o": "0",
+				"p": "1",
+				"xb": "3",
+				"yb": "3",
+				"dx": "4",
+				"dy": "2",
+				"xc": "5",
+				"yc": "4",
+				"det": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : False pour des points alignés",
+			"variationIndex": 2,
+			"variables": {
+				"xa": "1",
+				"ya": "2",
+				"ux": "2",
+				"uy": "1",
+				"k": "2",
+				"o": "0",
+				"p": "1",
+				"xb": "3",
+				"yb": "3",
+				"dx": "4",
+				"dy": "2",
+				"xc": "5",
+				"yc": "4",
+				"det": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non alignés : False",
+			"variationIndex": 2,
+			"variables": {
+				"xa": "1",
+				"ya": "2",
+				"ux": "2",
+				"uy": "1",
+				"k": "2",
+				"o": "1",
+				"p": "1",
+				"xb": "3",
+				"yb": "3",
+				"dx": "4",
+				"dy": "3",
+				"xc": "5",
+				"yc": "5",
+				"det": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
