@@ -17,11 +17,11 @@
 import { isResourceKind, type ResourceKind } from './kinds';
 
 /**
- * Même grammaire que le parser : type, uuid canonique, libellé sans `]`.
+ * Grammaire : type, uuid canonique, libellé sans `]`.
  *
- * Exportée pour que `linkify.ts` reconnaisse exactement les mêmes références que
- * la couverture du programme : un lien affiché qui ne compterait pas — ou un
- * point compté sans lien visible — serait indétectable à la lecture.
+ * Même grammaire que le parser, pour que la couverture du programme reconnaisse
+ * exactement les références affichées : un lien affiché qui ne compterait pas — ou
+ * un point compté sans lien visible — serait indétectable à la lecture.
  */
 export const REFERENCE_REGEX =
 	/\[\[(\w+):([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(#[\d,-]{1,60})?\|([^\]]+)\]\]/gi;
