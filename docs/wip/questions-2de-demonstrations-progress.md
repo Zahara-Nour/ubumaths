@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, lot 2 mergé (#2458), créé en brouillon ; rangement en PR (§ 6)._
+_Mis à jour le 2026-11-08, après #2460 ; lot 2 rangé en prod, page à cocher publiée._
 
-- **État** : lot 1 PUBLIÉ. Lot 2 : 3 brouillons en prod ; migration nœud + tag `20261108150529` et son test verts
-  (12/12, rouges sans la migration) ; `security-auditor` lancé ; PR du rangement #2460.
-- **Prochaine action** : CI → `check:migrations --pr` → merge → `db:migrate` depuis le dépôt principal → page à
-  cocher. Ensuite lot 3 (fonctions : 357-360).
-- **En attente de David** : rien.
+- **État** : lot 1 PUBLIÉ. Lot 2 (304, 438, 320) : 3 brouillons rangés (nœud + point, #2460, migration
+  `20261108150529` appliquée) ; page à cocher : https://claude.ai/artifact/KukhKQkpLCGxXAPP3iDEmz.
+- **Prochaine action** : lire les verdicts de David (collection `verdicts`), corriger s'il y a lieu, puis
+  `publier-lot.ts --dir scripts/questions/2de-demonstrations-2` (simulation puis `--publier`, lancées par David).
+  Ensuite lot 3 (fonctions : 357-360), nouveau worktree.
+- **En attente de David** : sa relecture des 3 modèles sur la page à cocher (bloc ranger à jouer dans l'aperçu).
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
   `create-questions` écrit l'`id` dans les JSON du dépôt d'où il tourne → le lancer depuis le worktree ;
   positions « ranger » par `docs/wip/questions/positions-ranger.ts` (`svelte-kit sync` avant) ; couleur jamais sur
-  du texte hors `$`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` · `content/questions-2de-demonstrations-4-rangement`.
+  du texte hors `$` ; job navigateur de la CI qui plante tests verts → `gh run rerun <run> --failed`.
+- **Worktree / branche** : aucun (retiré après #2460) ; lot 3 → `git worktree add -b content/questions-2de-demonstrations-5-fonctions ../ubumaths-wt-questions-2de-demonstrations origin/main`.
 
 ---
 
@@ -164,3 +165,9 @@ personne de plus (Q5).
 Test d'intégration : **12/12 vert**. Preuve rouge (fichiers restaurés depuis une copie, `cmp` identique) : partie
 aller vidée (rollback gardé) → 6 rouges, 5 sautés ; en plus rollback neutralisé dans le test → 8 rouges dont les 2
 tests d'effet (nœud, tag), les invariants verts.
+
+`security-auditor` (2026-11-08) : aucun finding (diff avec le lot 1 limité aux données). Mergée (#2460) après une
+relance du job navigateur (plantage connu, 1946/1946 tests verts) ; `check:migrations --pr` passé. `db:migrate`
+depuis le dépôt principal ; vérifié en prod : les 3 brouillons sur leur sous-notion, chacun avec son seul point,
+`draft`. Page à cocher : https://claude.ai/artifact/KukhKQkpLCGxXAPP3iDEmz (3 alertes attendues : bloc ranger non
+dessiné, à jouer dans l'aperçu admin).
