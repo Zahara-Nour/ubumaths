@@ -1,5 +1,5 @@
 /**
- * Somme de vecteurs à tracer à l'écran (chantier `docs/wip/somme-vecteurs-progress.md`,
+ * Somme de vecteurs à tracer à l'écran (chantier `docs/archive/wip/somme-vecteurs-progress.md`,
  * phase 0 validée le 2026-11-08) : flèches données, phrase nommée, pointillés.
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
