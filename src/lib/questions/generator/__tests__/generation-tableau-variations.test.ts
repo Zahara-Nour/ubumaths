@@ -190,3 +190,21 @@ describe('tableau de variations : évaluation notée, énoncé masqué', () => {
 		expect(findUnmaskedAnswers(leaky)).toEqual(['variation']);
 	});
 });
+
+describe('revue #2456', () => {
+	it('valeur cachée f(-3) d’une ligne variation: avec x caché : acceptée (elle part masquée)', () => {
+		const t = template({
+			statement: variation(
+				'variable: x',
+				'domain: -inf, ?-3, +inf',
+				'',
+				'variation: f(x)',
+				'  -inf: 1, bottom',
+				'  -3: ?f(-3), top',
+				'  +inf: 0, bottom'
+			)
+		});
+		const result = generateInstance(t, 42);
+		expect(result.success).toBe(true);
+	});
+});

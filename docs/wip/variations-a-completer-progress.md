@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-11-08, PR #2456 ouverte._
 
-- **État** : PR 1 (outil) ouverte, #2456 : parseur, juge, saisie, rendu écran, PDF, masquage d'évaluation, page à cocher, doc système ; revue `code-reviewer` (Opus) en cours.
-- **Prochaine action** : correctifs de revue → CI verte → merge → ligne n° 14 de `outils-manquants.md` passée dans « Livré » ; vérification à l'œil notée dans `verifications-manuelles.md` ; le modèle « courbe → tableau à compléter » revient à `automatismes-1spe`.
+- **État** : PR 1 (outil) ouverte, #2456 ; revue `code-reviewer` (Opus) : 0 bloquant, 3 mineurs corrigés (Typst d'une ligne sans case inchangé, `?-\infty` refusé, `?f(-3)` caché accepté avec x caché).
+- **Prochaine action** : CI verte → merge → ligne n° 14 de `outils-manquants.md` passée dans « Livré » ; vérification à l'œil notée dans `verifications-manuelles.md` ; le modèle « courbe → tableau à compléter » revient à `automatismes-1spe`.
 - **En attente de David** : rien.
 - **Pièges en cours** : vartable 0.2.1 trace une flèche après chaque valeur (pas d'omission) → énoncé PDF à flèche cachée sans aucune flèche ; `compile-prod.mjs` + `pdftoppm` pour voir le PDF ; `deploy-prod.test.ts` instable sous la charge (vert seul).
 - **Worktree / branche** : `../ubumaths-wt-variations-a-completer`, `feat/variations-a-completer`.

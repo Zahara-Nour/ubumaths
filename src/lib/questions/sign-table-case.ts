@@ -86,14 +86,20 @@ export function readSignTableCases(
 	}
 	const cells = node.cases ?? [];
 	// Valeur de x cachée évaluée dans une ligne de variations (`f(-3)`) : elle partirait en clair
+	// (une valeur elle-même cachée part masquée, `?, top` : elle ne compte pas)
+	const hiddenValues = new Set(
+		cells.filter((c) => c.row !== 'domain' && c.kind === 'valeur').map((c) => `${c.row}|${c.key}`)
+	);
 	for (const cell of cells) {
 		if (cell.kind !== 'valeur' || cell.row !== 'domain') continue;
 		const shown = node.rows.some(
-			(row) =>
+			(row, rowIndex) =>
 				row.type === 'variation' &&
-				[...row.values.values()].some((value) =>
-					// Même échappement des deux côtés (`\\frac` dans le JSON)
-					JSON.stringify(value).includes(JSON.stringify(`(${cell.answer})`).slice(1, -1))
+				[...row.values.entries()].some(
+					([key, value]) =>
+						!hiddenValues.has(`${rowIndex}|${key}`) &&
+						// Même échappement des deux côtés (`\\frac` dans le JSON)
+						JSON.stringify(value).includes(JSON.stringify(`(${cell.answer})`).slice(1, -1))
 				)
 		);
 		if (shown) {

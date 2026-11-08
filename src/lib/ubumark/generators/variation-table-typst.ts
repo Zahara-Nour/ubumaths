@@ -344,9 +344,11 @@ function generateContent(
 			const line = generateSignRow(row, node.domain, blankCells.get(i) ?? new Set());
 			lines.push(`    ${line}${needsComma ? ',' : ''}`);
 		} else {
-			const line = blank
-				? generateHiddenVariationRow(node, i, language, blankCells.get(i) ?? new Set())
-				: generateVariationRow(row, node.domain, language);
+			// Ligne sans case : la sortie d'un tableau sans `?` (revue #2456)
+			const line =
+				blank && blankCells.has(i)
+					? generateHiddenVariationRow(node, i, language, blankCells.get(i) ?? new Set())
+					: generateVariationRow(row, node.domain, language);
 			lines.push(`    ${line}${needsComma ? ',' : ''}`);
 		}
 	}

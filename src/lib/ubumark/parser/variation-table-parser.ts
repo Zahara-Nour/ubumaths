@@ -125,7 +125,17 @@ const MASK_TOKEN_REGEX = /^\?\d{1,3}$/;
 const MASKED_KEY_REGEX = /^\?\?\d{1,3}$/;
 
 /** Les infinis ne se cachent pas : ce ne sont pas des valeurs à calculer */
-const INFINITY_EXPRESSIONS = ['-inf', '+inf', 'inf', '-∞', '+∞', '∞'];
+const INFINITY_EXPRESSIONS = [
+	'-inf',
+	'+inf',
+	'inf',
+	'-∞',
+	'+∞',
+	'∞',
+	'-\\infty',
+	'+\\infty',
+	'\\infty'
+];
 
 /** Mot d'une flèche cachée dans une ligne `variation:` (`-2,2: ?flèche`) */
 const ARROW_WORDS = ['flèche', 'fleche'];

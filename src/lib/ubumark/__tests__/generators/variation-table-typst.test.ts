@@ -1110,6 +1110,13 @@ describe('ligne variation: à compléter (variations-a-completer)', () => {
 		expect(typst).toContain('arrow-mark: (end: none)');
 	});
 
+	it('tableau sans ? : sortie identique en blank et filled (valeur centrée en borne comprise)', () => {
+		const plain = nodeOf('variable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  0: 1, center');
+		expect(generateVariationTableTypst(plain)).toBe(
+			generateVariationTableTypst(plain, { hiddenCells: 'filled' })
+		);
+	});
+
 	it('flèches gardées : corrigé, et énoncé sans flèche cachée', () => {
 		const filled = generateVariationTableTypst(nodeOf(cubique('fleche')), {
 			hiddenCells: 'filled'

@@ -126,6 +126,7 @@ describe('refus avec message en français', () => {
 	const refus: [string, string, RegExp][] = [
 		['valeur cachée sur -inf', withRow('  -inf: ?-inf, bottom', ...ROW.slice(1)), /infini/],
 		['valeur cachée sur +inf', withRow(...ROW.slice(0, 3), '  +inf: ?+inf, top'), /infini/],
+		['valeur cachée sur -\\infty', withRow('  -inf: ?-\\infty, bottom', ...ROW.slice(1)), /infini/],
 		['? sur une asymptote', withRow(ROW[0], '  -2: ?||, -inf, +inf', ROW[2], ROW[3]), /\|\|/],
 		[
 			'? sur une limite double',
