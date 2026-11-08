@@ -333,6 +333,8 @@ export type LengthUnit = 'cm' | 'cm-mm' | 'mm';
  * point de la figure ; l'élève trace à la règle graduée un segment d'un bout en
  * A, de la longueur donnée (B : le nom de l'autre bout, pour les messages).
  * 1 unité de la figure = 1 cm. `length` : en millimètres entiers, plus de 0.
+ * `segment AB = 6 cm sur [Ax)` (PR 2, § 4 du journal) : le segment se trace le
+ * long de la demi-droite x de la figure, d'origine A (`x = demidroite(A, X)`).
  */
 export interface SegmentLengthCheck {
 	kind: 'segment';
@@ -340,6 +342,8 @@ export interface SegmentLengthCheck {
 	end: string;
 	length: number;
 	unit: LengthUnit;
+	/** Nom de la demi-droite d'origine A le long de laquelle tracer ; absent : direction libre */
+	ray?: string;
 	line: number;
 }
 

@@ -61,6 +61,8 @@ export interface FigureSegment extends Segment {
 
 /** Droite, segment ou demi-droite NOMMÉ de la figure (un axe possible) */
 export interface FigureLine extends Segment {
+	/** Droite, demi-droite (d'origine `a`) ou segment */
+	kind: 'line' | 'ray' | 'segment';
 	owner: string;
 	/** Tracé (les instruments s'y appuient) ; un axe `visible=faux` ne l'est pas */
 	visible: boolean;

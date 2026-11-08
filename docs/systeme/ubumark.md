@@ -685,7 +685,8 @@ points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le ra
 refusé ailleurs, sauf dans un triangle à angle donné (pas l'angle droit, à l'équerre) ou une bissectrice ;
 `segment AB = 6 cm` (aussi `5 cm 3 mm`, `5,3 cm`, `72 mm`, au millimètre près, plus de 0), A un point de la
 figure, B le nom de l'autre bout, un segment à tracer à la règle graduée sur papier uni, seul, palette
-Règle graduée · Segment ; la règle graduée refusée ailleurs) et `case: N`, posée
+Règle graduée · Segment ; suivi de `sur [Ax)`, le long de la demi-droite x d'origine A de la figure ; la
+règle graduée refusée ailleurs) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
 le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `

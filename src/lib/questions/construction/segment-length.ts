@@ -9,15 +9,23 @@
  * règle posée avec son 0 en A, jugé sur le segment que l'élève voit ; sinon
  * « tracé à l'œil ». 1 unité de la figure = 1 cm, la règle est graduée à
  * l'échelle de la figure (ADR 0036). Comportements validés par David le
- * 2026-11-08 (`docs/wip/regle-graduee-progress.md` § 2). Direction libre ; le
- * long d'une demi-droite donnée (Q7) : plus tard, avec CE2-070.
+ * 2026-11-08 (`docs/wip/regle-graduee-progress.md` § 2). Direction libre, ou
+ * le long d'une demi-droite donnée (`segment AB = 6 cm sur [Ax)`, Q7, § 4) : le
+ * bout doit alors être sur [Ax) ; la correction pose la règle le long d'elle.
  *
  * @module questions/construction/segment-length
  */
 
 import type { LengthUnit, SegmentLengthCheck } from '$lib/ubumark/types/construction';
 import type { DrawnLine, DrawnObject, DrawnRegle } from './answer';
-import { isInFrame, rulerDirection, rulerGraduationOf } from './instruments';
+import {
+	intersectTraits,
+	isInFrame,
+	isStraight,
+	rulerDirection,
+	rulerGraduationOf,
+	type Trait
+} from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import { tolerance } from './polygon';
 import type { FigureShapes } from './symmetry';
@@ -55,6 +63,8 @@ export const missingSegmentFeedback = (a: string, b: string) =>
 	`Trace le segment [${a}${b}] depuis le point ${a}.`;
 export const severalSegmentsFeedback = (a: string, b: string) =>
 	`Trace un seul segment [${a}${b}] depuis le point ${a}.`;
+export const offRayFeedback = (a: string, ray: string) =>
+	`Trace ton segment sur la demi-droite [${a}${ray}).`;
 export const segmentEyeballedFeedback = () =>
 	'Ton segment est tracé à l’œil : arrête-le sur une graduation de la règle.';
 export const wrongLengthFeedback = (
@@ -69,7 +79,8 @@ export class SegmentLengthAuthorError extends Error {}
 const distance = (p: Position, q: Position) => Math.hypot(p.x - q.x, p.y - q.y);
 
 function labelOf(check: SegmentLengthCheck): string {
-	return `verifier: segment ${check.point}${check.end} = ${formatLength(check.length, check.unit)}`;
+	const onRay = check.ray ? ` sur [${check.point}${check.ray})` : '';
+	return `verifier: segment ${check.point}${check.end} = ${formatLength(check.length, check.unit)}${onRay}`;
 }
 
 /** Longueur de la demi-droite issue de `o`, de direction `d` (unitaire), dans la fenêtre */
@@ -94,12 +105,16 @@ function farthestCorner(a: Position, window: NonNullable<FigureShapes['window']>
 	return corners.reduce((best, c) => (distance(a, c) > distance(a, best) ? c : best));
 }
 
-/** Le point de départ, la longueur (unités) et la règle ; erreur d'AUTEUR si le segment ne se trace pas */
+/**
+ * Le point de départ, la longueur (unités), la règle et la direction de la
+ * demi-droite donnée (null : direction libre) ; erreur d'AUTEUR si le segment ne
+ * se trace pas
+ */
 function settingOf(
 	check: SegmentLengthCheck,
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined
-): { a: Position; length: number; rulerLength: number } {
+): { a: Position; length: number; rulerLength: number; ray: Position | null } {
 	const label = labelOf(check);
 	if (!shapes) {
 		throw new SegmentLengthAuthorError(
@@ -155,7 +170,82 @@ function settingOf(
 			`${label} : le segment ne tient pas dans la fenêtre depuis ${check.point}, dans aucune direction ; éloigner ${check.point} du bord ou agrandir la fenêtre`
 		);
 	}
-	return { a, length, rulerLength };
+	const ray = check.ray ? rayOf(check, check.ray, a, shapes, label) : null;
+	if (ray && roomAlong(a, ray, window) < length - tolerance(a)) {
+		throw new SegmentLengthAuthorError(
+			`${label} : le segment ne tient pas sur la demi-droite [${check.point}${check.ray}) dans la fenêtre ; rapprocher ${check.point} du bord opposé, changer la direction de [${check.point}${check.ray}) ou agrandir la fenêtre`
+		);
+	}
+	if (ray) assertNoCrossingAt(check, a, ray, length, shapes, label);
+	return { a, length, rulerLength, ray };
+}
+
+/**
+ * Revue : un croisement de traits, ou un bout de trait, sur [Ax) à la longueur
+ * demandée de A donnerait le bout sans mesurer (cas frère du point visible, #2485)
+ */
+function assertNoCrossingAt(
+	check: SegmentLengthCheck,
+	a: Position,
+	u: Position,
+	length: number,
+	shapes: FigureShapes,
+	label: string
+): void {
+	const eps = tolerance(a);
+	const rayTrait: Trait = { kind: 'ray', a, b: { x: a.x + u.x, y: a.y + u.y } };
+	const others = shapes.traits.filter(
+		(t) => !(t.kind === 'ray' && distance(t.a, a) <= eps && onRay(t.b, a, u, eps))
+	);
+	const candidates = others.flatMap((t) => [
+		...intersectTraits(rayTrait, t),
+		...(isStraight(t) && t.kind === 'segment' ? [t.a, t.b] : [])
+	]);
+	const at = candidates.find(
+		(p) =>
+			onRay(p, a, u, eps) &&
+			Math.abs(distance(a, p) - length) <= LENGTH_EPSILON * Math.max(1, length)
+	);
+	if (at) {
+		throw new SegmentLengthAuthorError(
+			`${label} : un croisement (ou un bout) de traits sur [${check.point}${check.ray}) est déjà à ${formatLength(check.length, check.unit)} de ${check.point}, l’élève n’aurait qu’à y arrêter son segment ; déplacer le trait ou changer la longueur`
+		);
+	}
+}
+
+/** Direction (unitaire) de la demi-droite `name` d'origine A ; erreur d'AUTEUR sinon */
+function rayOf(
+	check: SegmentLengthCheck,
+	name: string,
+	a: Position,
+	shapes: FigureShapes,
+	label: string
+): Position {
+	const ray = `[${check.point}${name})`;
+	const line = shapes.lines.get(name);
+	if (!line) {
+		throw new SegmentLengthAuthorError(
+			`${label} : la demi-droite ${ray} n’existe pas dans la figure (« ${name} = demidroite(${check.point}, …) »)`
+		);
+	}
+	if (line.kind !== 'ray' || distance(line.a, a) > tolerance(a)) {
+		throw new SegmentLengthAuthorError(
+			`${label} : ${name} n’est pas une demi-droite d’origine ${check.point} (« ${name} = demidroite(${check.point}, …) »)`
+		);
+	}
+	if (!line.visible) {
+		throw new SegmentLengthAuthorError(
+			`${label} : la demi-droite ${ray} n’est pas tracée (l’élève ne peut pas y poser la règle)`
+		);
+	}
+	const r = distance(line.a, line.b);
+	// Revue : X sur A, la direction serait NaN (toutes les réponses fausses)
+	if (r <= tolerance(a)) {
+		throw new SegmentLengthAuthorError(
+			`${label} : la demi-droite ${ray} n’a pas de direction (son second point est sur ${check.point})`
+		);
+	}
+	return { x: (line.b.x - line.a.x) / r, y: (line.b.y - line.a.y) / r };
 }
 
 /** La vérification est-elle faisable ? Erreur d'AUTEUR sinon */
@@ -165,6 +255,13 @@ export function assertSegmentLength(
 	shapes: FigureShapes | undefined
 ): void {
 	settingOf(check, points, shapes);
+}
+
+/** `p` sur la demi-droite d'origine `a`, de direction `u` (unitaire), hors de `a` */
+function onRay(p: Position, a: Position, u: Position, eps: number): boolean {
+	const t = (p.x - a.x) * u.x + (p.y - a.y) * u.y;
+	const off = Math.abs((p.x - a.x) * u.y - (p.y - a.y) * u.x);
+	return t > eps && off <= eps;
 }
 
 /** L'autre bout d'un segment qui part de `a`, sinon null */
@@ -268,7 +365,7 @@ export function judgeSegmentLength(
 	shapes: FigureShapes | undefined,
 	objects: readonly DrawnObject[]
 ): ConstructionVerdict {
-	const { a, rulerLength } = settingOf(check, points, shapes);
+	const { a, rulerLength, ray } = settingOf(check, points, shapes);
 	const figure = shapes as FigureShapes;
 	if (objects.some((obj) => obj.kind !== 'segment' && obj.kind !== 'regle')) {
 		return { status: 'incorrect' };
@@ -293,6 +390,10 @@ export function judgeSegmentLength(
 	if (seen.length > 1) {
 		return { status: 'incorrect', feedback: severalSegmentsFeedback(check.point, check.end) };
 	}
+	// Demi-droite donnée (§ 4) : le bout du segment vu sur [Ax), au-delà de A
+	if (ray && check.ray && !onRay(seen[0].end, a, ray, eps)) {
+		return { status: 'incorrect', feedback: offRayFeedback(check.point, check.ray) };
+	}
 	// Règles posées avec leur 0 en A : la graduation (mm) où s'arrête chaque segment vu
 	const rulers = objects.filter(
 		(obj): obj is DrawnRegle => obj.kind === 'regle' && distance({ x: obj.ox, y: obj.oy }, a) <= eps
@@ -310,7 +411,8 @@ export function judgeSegmentLength(
 }
 
 /**
- * La règle de la correction : posée en A, dans la direction de la dernière règle
+ * La règle de la correction : posée en A, le long de la demi-droite donnée
+ * s'il y en a une ; sinon dans la direction de la dernière règle
  * que l'élève a posée en A, sinon de son premier segment partant de A, sinon
  * vers la droite, la gauche, le haut, le bas, le coin le plus loin — la
  * première où le segment tient ; null si le segment ne se trace pas
@@ -327,7 +429,9 @@ export function segmentLengthRuler(
 	} catch {
 		return null;
 	}
-	const { a, length } = setting;
+	const { a, length, ray } = setting;
+	// Demi-droite donnée (§ 4) : la règle le long d'elle, quelle que soit celle de l'élève
+	if (ray) return { kind: 'regle', ox: a.x, oy: a.y, bx: a.x + ray.x, by: a.y + ray.y, sens: 1 };
 	const window = shapes?.window ?? null;
 	const eps = tolerance(a);
 	const unit = (p: Position): Position | null => {

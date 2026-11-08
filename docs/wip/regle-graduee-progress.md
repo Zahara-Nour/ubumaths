@@ -9,16 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, PR 1 (039) ouverte._
+_Mis à jour le 2026-11-08, PR 2 commitée (09851df5c), pas encore de PR ouverte._
 
-- **État** : PR 1 « segment de longueur donnée » ouverte (§ 3) ; ADR 0036 commitée sur `main` (3623b957b), **push en
-  attente** (index de `main` occupé par une autre session sur `outils-manquants.md`).
-- **Prochaine action** : revue `code-reviewer` (opus) + CI, vérification visuelle, puis PR 2 : demi-droite [Ax) et
-  constructions cotées (070).
-- **En attente de David** : vérification visuelle sur téléphone (règle retournée), à noter au merge dans `verifications-manuelles.md`.
-- **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; le chantier
-  `cercle-triangle-rectangle` (n° 19, 20) touche les mêmes fichiers de `src/lib/questions/construction/`.
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee`.
+- **État** : phase 0 de la suite validée (§ 4 : 4 PR — 2 demi-droite, 3 cercle de rayon en cm, 4 triangle rectangle
+  coté, 5 carré et rectangle cotés ; assemblages après). PR 2 (`segment AB = 6 cm sur [Ax)`) codée, tests verts,
+  `check:incremental` 0 erreur (§ 5).
+- **Prochaine action** : revue `code-reviewer` en `model: opus` de 09851df5c (lancée, résultat perdu au `/clear` :
+  la relancer), corriger les findings (tests rouges d'abord), commit avec `Doc-inchangée: utilitaires-et-demos.md,
+un exemple de catalogue de plus`, push, PR, CI, merge. Puis PR 3 (cercle de rayon en cm).
+- **En attente de David** : vérification sur téléphone (ligne #2485 de `verifications-manuelles.md`) ; choix (1)-(3)
+  du § 5 et Q15-Q16 (findings 2 et 4 de la revue) à trancher.
+- **Pièges en cours** : le juge prend le **segment vu** (§ 3) ; `FigureLine.kind` ajouté (seul constructeur :
+  `positions-setup.ts`).
+- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-cotes`.
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
@@ -103,3 +106,82 @@ depuis A (5,1 … 6,9 cm), jugé juste aujourd'hui.
 **Décisions de David (« je suis tes recos », 2026-11-08)** : choix (1)-(9) du § 3 acceptés (le (7) « point construit »
 remplacé par la revue : seule une graduation fait foi) ; Q9 (a) : plusieurs segments vus depuis A → faux, « Trace un
 seul segment… ».
+
+## 4. Phase 0 de la suite — demi-droite et constructions cotées (CE2-070), proposée le 2026-11-08
+
+**Question d'accès** : aucune — code de la case « figure », ni table, ni policy, ni route.
+
+**Constats** (code de `main` après #2485) : `carre` et `rectangle` ne vivent que sur quadrillage (`polygon.ts`, côtés
+donnés, CP-060) ; le cercle de centre donné prend son rayon sur un point ou un segment (`cercle(O, rayon=distance(D, E))`,
+n° 19) ; le triangle rectangle prend `AC` sur un segment au Report ou en carreaux (n° 20, `AC = 3` laissé libre pour
+les cm) ; `segment AB = 6 cm` juge un bout sur une graduation d'une règle posée avec son 0 en A, quelle que soit la
+direction — la même règle sert à tout côté coté qui part d'un sommet.
+
+**Découpage proposé** (une PR chacune, revue `code-reviewer` en `model: opus`, tests d'abord) :
+
+- **PR 2 — segment sur une demi-droite donnée** : `verifier: segment AB = 6 cm sur [Ax)`, où `[Ax)` est une
+  `demidroite(A, X)` de la figure.
+  - Nominal : la règle posée, 0 en A ; au 2e toucher, la direction **s'aimante à la demi-droite** si on est près ;
+    segment de A jusqu'à une graduation → « Juste ».
+  - Erreurs : segment hors de [Ax) ou du mauvais côté de A : « Trace ton segment sur la demi-droite [Ax). » ; puis
+    les messages de la PR 1 (tracé à l'œil, mauvaise longueur, plusieurs segments).
+  - Limite (refus d'auteur) : la demi-droite ne tient pas 6 cm dans la fenêtre ; X déjà à 6 cm de A.
+  - Correction : la règle le long de [Ax), le segment.
+- **PR 3 — cercle de rayon donné en cm** : `verifier: cercle c = cercle(O, rayon=4 cm)`.
+  - Nominal : la règle posée, 0 en O ; le compas piqué en O, son ouverture **s'aimante aux graduations** → « Juste ».
+  - Erreurs, dans l'ordre : il manque le cercle ; mauvais centre (messages du n° 19) ; ouvert à l'œil : « Ton compas
+    est ouvert à l'œil : ouvre-le sur une graduation de la règle. » ; mauvais rayon : « Ton cercle a un rayon de
+    3,8 cm au lieu de 4 cm. »
+  - Limite : le cercle ne tient pas dans la fenêtre → refus d'auteur.
+- **PR 4 — triangle rectangle coté** : `verifier: triangle ABC : CAB = 90 ; AC = 4 cm` ([AB] = 10 cm déjà tracé).
+  - Nominal : perpendiculaire à l'équerre en A, règle posée en A le long d'elle, C sur la graduation de 4 cm,
+    [AC] et [BC] → « Juste ». Les deux côtés de (AB) sont justes.
+  - Erreurs : celles du n° 20 (côté manquant, côté tracé à l'œil sans l'équerre, angle non droit), puis C hors
+    graduation : « Ton point C est placé à l'œil : arrête [AC] sur une graduation de la règle. », mauvaise longueur
+    en cm.
+- **PR 5 — carré et rectangle cotés, papier uni** : `verifier: carre A ; B` sans grille ([AB] = 6 cm tracé),
+  `verifier: rectangle A ; B : BC = 3 cm` ([AB] = 7 cm tracé). Outils : Segment · Équerre · Règle graduée.
+  - Nominal : perpendiculaires à l'équerre en A et en B, longueurs à la règle graduée posée en A et en B, 4e côté.
+  - Erreurs : les messages actuels de `polygon.ts` (pas fermé, pas un carré, trait de trop, côté prolongé), plus
+    angle non droit / tracé sans l'équerre, sommet placé à l'œil, mauvaise longueur.
+
+Puis le lot de modèles CE2-070 cotés, dans `questions-ce2`.
+
+### Questions à David
+
+- **Q10** — Découpage en 4 PR (2 demi-droite, 3 cercle, 4 triangle rectangle, 5 carré et rectangle), dans cet
+  ordre ? (reco : oui ; chaque PR est petite et réutilise le juge de la PR 1)
+- **Q11** — Figures cotées : on part d'un **côté déjà tracé** ([AB] = 10 cm, 6 cm, 7 cm), comme les triangles et
+  les carrés actuels (reco), ou de rien (l'élève trace aussi [AB], direction libre : le juge ne sait plus où regarder) ?
+- **Q12** — Cercle de rayon 4 cm : règle posée au centre, ouverture du compas aimantée aux graduations (reco ; même
+  geste que le segment), ou « prendre l'écartement sur la règle puis piquer en O » (un Report depuis la règle, plus
+  proche du geste réel mais deux étapes de plus) ?
+- **Q13** — Carré et rectangle sur papier uni : angle droit à l'équerre **exigé** (« tracé à l'œil » refusé), comme
+  le triangle rectangle ? (reco : oui)
+- **Q14** — Assemblages (« carré de 6 cm + cercle de rayon 4 cm ») : plus tard, après la PR 5 (reco), ou dans le
+  chantier ?
+
+**Décisions de David (« je suis tes recos », 2026-11-08)** : Q10 4 PR dans cet ordre (2 demi-droite, 3 cercle,
+4 triangle rectangle, 5 carré et rectangle) ; Q11 on part d'un côté déjà tracé ; Q12 règle posée au centre,
+ouverture du compas aimantée aux graduations ; Q13 angle droit à l'équerre exigé ; Q14 assemblages après la PR 5.
+
+## 5. PR 2 — segment sur une demi-droite donnée (2026-11-08)
+
+Commit 09851df5c : `segment AB = 6 cm sur [Ax)` (`SegmentLengthCheck.ray`, x = nom d'une `demidroite(A, …)` de la
+figure ; `FigureLine.kind` ajouté), juge (`onRay` après « un seul segment »), refus d'auteur, correction le long de
+[Ax), catalogue (1 exemple), docs `systeme/questions.md` et `systeme/ubumark.md`. Tests : 19 purs (rouges puis
+verts), 2 composant (le 2e toucher de la règle s'aimante déjà aux traits : vue inchangée) ; `construction/` +
+`ubumark` 6 772 verts ; `check:incremental` 0 erreur ; cliquet tenu.
+
+**Choix faits sans David** : (1) écriture `sur [Ax)` avec le NOM de la demi-droite en minuscule (convention [Ax),
+comme `x = demidroite(O, A)` des bissectrices), pas `[AX)` par un point ; (2) bout du segment sur [Ax) à la
+tolérance de calcul près (1e-9 relatif) : une règle posée à 1° est refusée — l'aimantation garantit la pose
+exacte ; (3) consigne de la règle inchangée (« Touche un point dans la direction du segment »).
+
+**Revue opus (2026-11-08)** : (1) Important, demi-droite de longueur nulle (X sur A) publiée, direction NaN, tout
+faux → refus d'auteur ; (3) croisement (ou bout) de traits de la figure sur [Ax) à la longueur demandée → refus
+d'auteur (cas frère de #2485 ; pas étendu à la direction libre). Tests rouges puis verts (21). Restent à David :
+**Q15** (finding 2) : la fusion à 2° de `seenSegments` accepte un trait de 5 cm à 1,9° de [Ax) superposé au bon
+segment (le trait s'écarte de ~1,7 mm) : garder, ou serrer la fusion quand la demi-droite est donnée ? (reco :
+serrer, à la tolérance de calcul, avec `ray`) ; **Q16** (finding 4) : accepter aussi `[AX)` (X un point de la
+figure) ? (reco : oui, plus tard si un auteur le demande ; le refus actuel cite la forme attendue).
