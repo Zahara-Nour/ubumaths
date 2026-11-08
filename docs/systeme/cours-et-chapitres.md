@@ -32,7 +32,7 @@ couvre:
 > [suivi du programme](../archive/wip/suivi-programme-progress.md),
 > [progression élève](../archive/wip/progression-eleve-progress.md)) et du chantier clos
 > [publication progressive](../wip/publication-progressive-progress.md).
-> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21 ; filtres de l'ancienne génération retirés (C5, après l'étape 4) le 2026-10-22 ; vue « Carte » de la page Programme le 2026-10-23 ; liste des questions du cahier de texte (ADR 0035) le 2026-11-04 ; séries relues sans ancienne forme (lot 4a) le 2026-11-04 ; cahier de texte en ubumark (chantier cahier-ubumark, PR 1) le 2026-11-06.
+> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21 ; filtres de l'ancienne génération retirés (C5, après l'étape 4) le 2026-10-22 ; vue « Carte » de la page Programme le 2026-10-23 ; liste des questions du cahier de texte (ADR 0035) le 2026-11-04 ; séries relues sans ancienne forme (lot 4a) le 2026-11-04 ; cahier de texte en ubumark (chantier cahier-ubumark, PR 1) le 2026-11-06 ; lecture HTML retirée (PR 3) le 2026-11-08.
 
 ## À quoi ça sert
 
@@ -179,7 +179,7 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
 `[entryId]/` ; `src/routes/(public)/cahier/[token]/` (sans compte). Composants :
 `src/lib/components/journal/` (`JournalWeekGrid`, `JournalEntryCard`, `HomeworkCard`,
 `JournalDatePicker`, `JournalContent`). Format du texte : `src/lib/journal/content.ts`
-(`isLegacyHtmlContent`, `journalContentPreview`).
+(`journalContentPreview`).
 
 ### Programme, couverture, progression
 
@@ -412,11 +412,11 @@ part, inchangé — `getMarkdown()` rendrait `''` et effacerait la séance. Les 
 aperçus (grille, cartes, liste élève) passent par `journalContentPreview` : texte brut, références
 réduites à leur libellé.
 
-⚠️ **Transitoire** : les lignes écrites avant le chantier sont en HTML (TipTap).
-`isLegacyHtmlContent` les reconnaît à leur balise de bloc d'ouverture ; `JournalContent` les rend
-alors par l'ancienne chaîne (`transformMathHtml` puis `linkifyResourceReferences`), l'éditeur les
-charge comme HTML et les réenregistre en markdown. Les lignes de prod seront converties par une
-migration de données, puis cette branche retirée.
+Plus de lecture HTML : les 4 lignes écrites avant le chantier en HTML (TipTap) ont été
+converties le 2026-11-08 (migration `20261106164230_cahier_texte_conversion_ubumark.sql`), puis
+la branche HTML retirée (PR 3). Une balise saisie est du texte. ⚠️ Une vidéo dans une liste ou
+une citation n'est pas rendue (`ListNode` et `Blockquote` n'ont pas de cas `video`) : rien n'est
+chargé, rien n'est affiché non plus.
 
 **Activités** d'une séance (`journal_entry_activities`) : cinq sortes — `exercise`, `question`,
 `assessment`, `course`, `textbook`. Sur une séance neuve, la page les garde et les envoie avec le
