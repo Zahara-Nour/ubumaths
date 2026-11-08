@@ -6,19 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2474 (rangement des 2 modèles de repérage de 5e, migration jouée en prod)._
+_Mis à jour le 2026-11-08, PR « courbe → tableau de variations à compléter » ouverte._
 
-- **État** : #2474 mergée, `db:migrate` fait : `d4f38d30` (5-047) et `d4d56c1b` (5-128) rangés sur « Géométrie ›
-  Repérage et déplacements › coordonnées dans le plan », brouillons, `updated_at` préservé · **Prochaine action** :
-  modèle « courbe → tableau de variations à compléter » (ci-dessous), nouveau worktree · **En attente de David** :
-  **ne pas publier `c9e0effd` avant le `deploy:prod` qui livre #2462** (sinon droites graduées en texte brut au
-  PDF de prod) ; publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles
+- **État** : variante v1 de `7f82d15a` écrite (`03-tableau-variations-sur-courbe.json`) : 12 specs vertes, 600 tirages,
+  `buildSerie` 23/23, PDF vérifié · **Prochaine action** : CI verte → merge ; puis David, **après le `deploy:prod`
+  qui livre #2456** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/lectures-graphiques-1spe --publier --mettre-a-jour`
+  (met à jour `7f82d15a` en base) · **En attente de David** : **ne pas publier `c9e0effd` avant le `deploy:prod`
+  qui livre #2462** ; publication en admin de `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles
   `23751c95`, `c1c9cfc3`, `d4f38d30`, `d4d56c1b` · **Pièges en cours** : écritures ET simulations contre la prod
-  lancées par David (`!`, depuis le worktree avant le merge) ; `fiche:verifier` dans un worktree :
-  `PYTHON_FICHES=` vers le venv du dépôt principal ; `supabase migration list --linked` et `db:migrate` depuis le
-  dépôt principal (le worktree n'est pas lié) ; une migration exige `Doc-inchangée:` dans un commit ·
-  **Worktree / branche** : aucun (retiré).
-- **Après le lot 4** : modèle « courbe → tableau de variations à compléter » (variante de `7f82d15a`, cubique), avec l'outil de #2456 (`-2: ?4, top`, `-2,2: ?flèche`) ; décision B du chantier `variations-a-completer` (journal archivé), reprise ici validée par David le 2026-11-08.
+  lancées par David (`!`) ; worktree neuf : `pnpm exec svelte-kit sync` avant tout script `tsx` ; `fiche:verifier`
+  dans un worktree : `PYTHON_FICHES=` vers le venv du dépôt principal ; `db:migrate` depuis le dépôt principal ·
+  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-1spe-courbe-variations`.
 - Fiches à publier : `f9608ee5`, `9bd4bcc6`, `894f766e`, `5210e1d7`, `9217dfaa`, `0f98be04`, `7ff081db`, `d37413a3`,
   `84b512df`. Hors chantier : 18 fiches de 1re spé en brouillon depuis septembre.
 
@@ -671,3 +669,23 @@ normal, `toLocaleDecimal` met la virgule au rendu.
   la prod ne l'a qu'après `deploy:prod`.
 - #2462 mergée (CI verte ; job navigateur relancé deux fois : plantage connu, tests verts ; rebase sur la
   ligne « Vérifié » de `ubumark.md`). Vérification manuelle notée (`verifications-manuelles.md`).
+
+## Modèle « courbe → tableau de variations à compléter » (2026-11-08)
+
+Phase 0 validée par David (« je suis tes recos ») : **variante v1 de `7f82d15a`** (pas un modèle à part ; même
+rangement 2-349, mêmes niveaux) ; même cubique, mêmes variables $a$, $h$, $k$ ; l'élève complète **9 cases** :
+abscisses des 2 extremums (`domain: h-4, ?h-2, ?h+2, h+4`), 4 valeurs, 3 flèches (`?flèche`, outil de #2456).
+
+- Specs v1 (7) : juste $a > 0$, $a < 0$ ; `10/2` → `unoptimal_form` (`reducedFractions`, ½) ; flèches inversées,
+  abscisse au lieu de l'ordonnée du maximum, abscisse d'extremum fausse → `incorrect` ; une flèche vide, le reste
+  juste → `unoptimal_form` (barème A1-A3 : cases vides ≤ moitié = ½ partiel, `statusFromBlankStatuses`).
+- Correction v1 : les 2 premières étapes de v0 ; la 3e (tableau juste) retirée : le corrigé imprimé révèle déjà
+  le tableau de l'énoncé (doublon vu au rendu).
+- `buildSerie` : 23 graines sur 1-40 tirent la v1, toutes passent. PDF (`fiche:verifier`, 2 questions) : 1 p.,
+  0 débord ; énoncé : valeurs en cases vides centrées, **aucune flèche ni case de flèche** (décision de #2456 :
+  l'élève trace les flèches) ; corrigé : tableau juste, sans doublon.
+- ⚠️ La variante est tirée par la graine : les graines 1 et 2 de `tableauVariations` dans
+  `create-automatismes-lectures-graphiques-1spe.ts` tombent maintenant sur la v1. La fiche `7ff081db` en base
+  est figée (énoncé stocké) : inchangée ; seul un nouveau lancement du script la changerait.
+- Publication du modèle : **après le `deploy:prod` qui livre #2456** (jusque-là, la prod refuse `?` dans une
+  ligne `variation:`).
