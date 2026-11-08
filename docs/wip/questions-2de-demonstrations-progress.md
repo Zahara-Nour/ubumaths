@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2466 (lot 3 mergé, brouillons créés)._
+_Mis à jour le 2026-11-08, après #2469 (lot 3 rangé en prod)._
 
-- **État** : lots 1 et 2 PUBLIÉS. Lot 3 (357-360) mergé (#2466), 4 brouillons créés par David ; migration de
-  rangement écrite, test d'intégration 12/12 vert, preuve rouge faite.
-- **Prochaine action** : PR, `check:migrations --pr`, merge, `db:migrate` depuis le dépôt
-  principal, vérif en prod, page à cocher.
-- **En attente de David** : rien (puis relecture sur la page à cocher et `publier-lot`).
-- **Pièges en cours** : écritures en prod → commande `!` donnée à David ; job navigateur de la CI qui plante tests
-  verts → `gh run rerun <run> --failed` ; merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `content/questions-2de-demonstrations-6-rangement`.
+- **État** : lots 1 (5) et 2 (3) PUBLIÉS. Lot 3 (4 modèles, 357-360) en brouillon, rangé et tagué en prod (#2469,
+  `db:migrate` fait). Page à cocher : https://claude.ai/artifact/MSfbBs793RSVxLwzv9LyPK.
+- **Prochaine action** : quand David a relu, lire les verdicts (`ArtifactData list verdicts`, compter : 4), corriger
+  un « À revoir » ; sinon simulation puis publication (`publier-lot.ts --dir scripts/questions/2de-demonstrations-3`,
+  commande `!` donnée à David). Ensuite : verser le chantier (les 12 démonstrations seront couvertes).
+- **En attente de David** : relecture du lot 3 sur la page à cocher.
+- **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
+  merge refusé pendant un `deploy:prod` (verrou « deploy ») → attendre.
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -215,3 +216,8 @@ aller vidée (rollback gardé) → 6 rouges, 5 sautés ; en plus rollback neutra
 tests d'effet (nœud, tag), les invariants verts.
 
 `security-auditor` (2026-11-08) : aucun finding (diff avec le lot 2 limité aux données ; prod relue en lecture).
+
+Mergée (#2469, CI verte du premier coup) ; `check:migrations --pr` passé. `db:migrate` depuis le dépôt principal
+(seule migration en attente) ; vérifié en prod : les 4 brouillons sur leur sous-notion, chacun avec son seul point,
+`draft`. Page à cocher : https://claude.ai/artifact/MSfbBs793RSVxLwzv9LyPK (4 alertes attendues : bloc ranger non
+dessiné, à jouer dans l'aperçu admin).
