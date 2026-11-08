@@ -7,15 +7,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, phase 0 validée._
+_Mis à jour le 2026-11-08, après #2463._
 
-- **État** : n° 19 (cercle de centre donné) écrit, PR ouverte (§ 2) ; n° 20 pas commencé.
-- **Prochaine action** : revue Opus et CI de la PR du n° 19, merge ; puis tests rouges du n° 20 (triangle
-  rectangle, extension de `triangle`).
-- **En attente de David** : rien.
-- **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` sur la PR ;
-  `verifier: cercle` refuse aujourd'hui toute autre expression que `cercle_circonscrit` (à la publication).
-- **Worktree / branche** : `../ubumaths-wt-cercle-triangle-rectangle`, `feat/cercle-triangle-rectangle`.
+- **État** : n° 19 (cercle de centre donné) livré, #2463 mergée (§ 2) ; n° 20 pas commencé.
+- **Prochaine action** : n° 20, triangle rectangle — étendre `triangle` (`CAB = 90` construit à l'équerre, pas au
+  rapporteur) ; sur quadrillage (aujourd'hui refusé par `triangle.ts`), longueurs en carreaux sur les lignes,
+  `AC = AB` seul sur les obliques (décisions Q2, Q3 du § 1). D'abord fixer l'écriture d'une longueur en carreaux
+  (pas de syntaxe aujourd'hui : `AC = u` ou `AC = AB`) et les messages, tests rouges, puis le code.
+- **En attente de David** : rien (message « mauvais rayon » du n° 19 à juger, ligne de `verifications-manuelles.md`).
+- **Pièges en cours** : correction des réponses → tests d'abord, revue `code-reviewer` en `model: opus` ; dans zsh,
+  `${=files}` pour passer une liste de fichiers à vitest ; `gh run list --commit` veut le SHA complet ; brouillon
+  d'essai `9c92cf8f` en base LOCALE seulement.
+- **Worktree / branche** : `../ubumaths-wt-cercle-triangle-rectangle`, `feat/triangle-rectangle` (depuis `main`).
 
 ## 1. Phase 0 — comportements (validée le 2026-11-08)
 
@@ -88,3 +91,4 @@ n° 20, une PR chacun, revue `code-reviewer` en `model: opus`, puis le lot 12b d
   a le bon centre mais pas le bon rayon : reporte la longueur DE. ») est plus précis que celui du § 1 (« Ton cercle
   n'a pas le bon rayon. ») : gardé, signalé à David ; (b) noms à prime refusés dans `cercle(…)` : sans objet, le
   langage des figures n'a pas de prime.
+- 2026-11-08 : #2463 mergée (CI verte sur `d2d873c96`, revue Opus : 1 finding corrigé) ; branche supprimée ; vérification manuelle notée.
