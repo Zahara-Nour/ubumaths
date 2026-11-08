@@ -851,7 +851,7 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    mêmes messages. En plus : `outils:` refusé ; la pose demandée qui sort de la figure, l'autre tenant →
    « écrire « mesure BOA, rapporteur posé » ». La garde du masquage admet le suffixe.
    Vérification `segment AB = 6 cm` (`construction/segment-length.ts`, chantier `regle-graduee`,
-   CE2-039, ADR 0036 (`docs/adr/0036-le-cm-de-la-figure.md`)) : A est un point de la figure (nommé, visible,
+   CE2-039, ADR 0036) : A est un point de la figure (nommé, visible,
    dans la fenêtre), B nomme l'autre bout (messages seulement, absent de la figure) ; la longueur
    s'écrit `6 cm`, `5,3 cm`, `5 cm 3 mm` ou `72 mm`, lue en millimètres entiers (`SegmentLengthCheck.length`,
    plus de 0 ; `unit` garde la forme de l'auteur pour les messages, `formatLength`). **1 unité de la
@@ -861,20 +861,27 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    l'écran et au refus. L'élève pose la règle (outil `regle` : le 0, puis un point de la direction,
    aimantés comme le centre du rapporteur), qui entre dans la réponse (`regle(ox;oy;bx;by;sens)`,
    `DrawnRegle` : la dernière est la règle posée, `currentRuler` ; la reposer sans rien tracer depuis la
-   remplace) ; au segment, un toucher va à un point nommé, sinon à la graduation du millimètre la plus
-   proche du bord (`rulerGraduationNear`, dans la fenêtre), sinon à l'aimantation des instruments ;
+   remplace) ; au segment, le départ va à un point nommé (A, le 0), sinon à une graduation ; le bout, près
+   du bord, va d'abord à la graduation du millimètre la plus proche (`rulerGraduationNear`, dans la
+   fenêtre : les petites longueurs se tracent au toucher), sinon à un point, sinon à l'aimantation des
+   instruments ;
    ‹ › (et les flèches, la règle ayant le focus, Maj ±1 cm) décalent d'1 mm le bout du dernier segment
    le long de la règle, entre 1 mm et la dernière graduation dans la fenêtre (sans segment, en tracent
    un depuis le 0, `nudgeRulerEnd`) ; Retourner change le bord (`flipRuler`, `sens`) ; « Effacer » retire
-   le segment, puis la règle. Direction libre. Juste : un segment d'un bout en A, l'autre bout sur une
-   graduation (1 mm au moins, la règle entière au plus) d'une règle posée avec son 0 en A
-   (`rulerGraduationOf`) ou point construit (`constructionOf`), de la longueur exacte (1e-9 relatif) ;
-   plusieurs segments : juste si l'un convient. Messages, dans l'ordre : « Trace le segment [AB] depuis
+   le segment, puis la règle. Direction libre. On juge **le segment que l'élève voit** (`seenSegments`,
+   revue de #2485) : les segments partant de A dans une même direction (à 2° près) et ceux qui les
+   prolongent ou les recouvrent de proche en proche n'en font qu'un, jugé par son bout le plus loin (6 cm
+   puis 7 cm superposés, ou une rafale de longueurs : le plus long ; A → 5 cm puis 5 → 6 cm : 6 cm) ; deux
+   directions opposées ou un segment qui passe au-delà de A : A au milieu, pas un segment depuis A. Juste :
+   ce bout sur une graduation (1 mm au moins, la règle entière au plus) d'une règle posée avec son 0 en A
+   (`rulerGraduationOf`), égale à la longueur demandée en millimètres entiers ; plusieurs directions
+   distinctes depuis A : juste si l'une convient. Messages, dans l'ordre : « Trace le segment [AB] depuis
    le point A. », « Ton segment est tracé à l'œil : arrête-le sur une graduation de la règle. », « Ton
    segment mesure 5,8 cm au lieu de 6 cm. » (dans l'unité de l'auteur : `58 mm`, `5 cm 8 mm`). Une droite,
    un point, un bout hors de la fenêtre : faux, sans message ; une règle dans une autre vérification :
    faux, sans message (`judgeConstruction`). Erreurs de l'auteur : quadrillage, fenêtre absente, A absent,
-   invisible ou hors de la fenêtre, B déjà un point de la figure, longueur plus grande que la règle, ou
+   invisible ou hors de la fenêtre, B déjà un point de la figure, un autre point visible déjà à la longueur
+   demandée de A (l'élève n'aurait qu'à tracer [AC]), longueur plus grande que la règle, ou
    qui ne tient dans la fenêtre depuis A dans aucune direction (coin le plus loin). Seul dans la figure ;
    palette Règle graduée · Segment (`PLAIN_PAPER_TOOLS.segment`), la règle graduée refusée dans toute
    autre vérification. Correction (`solutionRuler`, `solutionLines`) : la règle posée en A et le segment

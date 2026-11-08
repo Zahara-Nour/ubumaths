@@ -6,7 +6,7 @@
  * règle graduée (le 0 en A, puis la direction : `regle(…)` dans la réponse), puis
  * trace au segment de A jusqu'à une graduation du millimètre. Juste : un segment
  * d'un bout en A, de la longueur exacte, l'autre bout sur une graduation d'une
- * règle posée avec son 0 en A (ou un point construit, `constructionOf`) ; sinon
+ * règle posée avec son 0 en A, jugé sur le segment que l'élève voit ; sinon
  * « tracé à l'œil ». 1 unité de la figure = 1 cm, la règle est graduée à
  * l'échelle de la figure (ADR 0036). Comportements validés par David le
  * 2026-11-08 (`docs/wip/regle-graduee-progress.md` § 2). Direction libre ; le
@@ -17,13 +17,7 @@
 
 import type { LengthUnit, SegmentLengthCheck } from '$lib/ubumark/types/construction';
 import type { DrawnLine, DrawnObject, DrawnRegle } from './answer';
-import {
-	basePointsOf,
-	constructionOf,
-	isInFrame,
-	rulerDirection,
-	rulerGraduationOf
-} from './instruments';
+import { isInFrame, rulerDirection, rulerGraduationOf } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import { tolerance } from './polygon';
 import type { FigureShapes } from './symmetry';
@@ -41,7 +35,10 @@ export function rulerLengthOf(window: FigureShapes['window']): number {
 	return Math.max(1, Math.min(RULER_MAX_LENGTH, Math.floor(side + 1e-9)));
 }
 
-/** Écart admis (relatif) sur la longueur : une graduation arrive exacte, au calcul flottant près */
+/**
+ * Écart admis (relatif) entre un point de la figure et la longueur demandée
+ * (refus de l'auteur) ; l'élève, lui, est jugé en millimètres entiers
+ */
 const LENGTH_EPSILON = 1e-9;
 
 /** Une longueur (mm entiers) dans l'unité de l'auteur : « 5,8 cm », « 5 cm 8 mm », « 58 mm » */
@@ -142,6 +139,15 @@ function settingOf(
 			`${label} : plus long que la règle (${rulerLength} cm : le plus grand côté de la fenêtre, ${RULER_MAX_LENGTH} cm au plus) ; agrandir la fenêtre`
 		);
 	}
+	// Revue de #2485 : [AC] donnerait la réponse sans mesurer (C s'aimante au toucher)
+	for (const [name, p] of points) {
+		if (name === check.point || !shapes.visiblePoints.has(name)) continue;
+		if (Math.abs(distance(a, p) - length) <= LENGTH_EPSILON * Math.max(1, length)) {
+			throw new SegmentLengthAuthorError(
+				`${label} : ${name} est déjà à ${formatLength(check.length, check.unit)} de ${check.point}, l’élève n’aurait qu’à tracer [${check.point}${name}] ; déplacer ${name} ou changer la longueur`
+			);
+		}
+	}
 	if (distance(a, farthestCorner(a, window)) < length - tolerance(a)) {
 		throw new SegmentLengthAuthorError(
 			`${label} : le segment ne tient pas dans la fenêtre depuis ${check.point}, dans aucune direction ; éloigner ${check.point} du bord ou agrandir la fenêtre`
@@ -169,11 +175,90 @@ function farEnd(line: DrawnLine, a: Position, eps: number): Position | null {
 }
 
 /**
- * Verdict : un segment partant de A, l'autre bout sur une graduation d'une règle
- * posée avec son 0 en A (ou construit), de la longueur donnée. Plusieurs
- * segments : juste si l'un convient ; sinon le message du premier bout construit.
- * Une droite, un point (sans leur outil), un bout hors de la fenêtre (l'écran
- * ne l'atteint pas) : réponse forgée.
+ * Deux directions depuis A plus proches que ça (radians, 2°) : à l'écran, un seul
+ * segment (deux règles reposées presque pareil, revue de #2485)
+ */
+const SAME_DIRECTION = (2 * Math.PI) / 180;
+
+/** Un segment vu depuis A : sa direction, son bout le plus loin ; `throughA` si A est au milieu */
+interface SeenSegment {
+	direction: Position;
+	end: Position;
+	throughA: boolean;
+}
+
+/**
+ * Les segments que l'élève VOIT depuis A (revue de #2485) : les segments qui
+ * partent de A dans une même direction (à 2° près), et ceux qui les prolongent ou
+ * les recouvrent de proche en proche, n'en font qu'un, jugé par son bout le plus
+ * loin. Deux directions opposées, ou un segment qui passe au-delà de A : A est au
+ * milieu du trait vu, ce n'est pas un segment depuis A (`throughA`).
+ */
+function seenSegments(segments: readonly DrawnLine[], a: Position, eps: number): SeenSegment[] {
+	const groups: { direction: Position; reach: number; end: Position; behind: boolean }[] = [];
+	for (const s of segments) {
+		const far = farEnd(s, a, eps);
+		if (!far) continue;
+		const r = distance(a, far);
+		const direction = { x: (far.x - a.x) / r, y: (far.y - a.y) / r };
+		const group = groups.find(
+			(g) =>
+				Math.acos(Math.min(1, g.direction.x * direction.x + g.direction.y * direction.y)) <
+				SAME_DIRECTION
+		);
+		if (!group) groups.push({ direction, reach: r, end: far, behind: false });
+		else if (r > group.reach) Object.assign(group, { reach: r, end: far });
+	}
+	// Prolongements et recouvrements : un segment le long du trait vu, qui le touche
+	for (const group of groups) {
+		const u = group.direction;
+		const along = (p: Position) => {
+			const t = (p.x - a.x) * u.x + (p.y - a.y) * u.y;
+			const off = Math.abs((p.x - a.x) * u.y - (p.y - a.y) * u.x);
+			return { t, on: off <= Math.max(eps, Math.abs(t) * Math.sin(SAME_DIRECTION)) };
+		};
+		let grew = true;
+		while (grew) {
+			grew = false;
+			for (const s of segments) {
+				const ends = [
+					{ x: s.x1, y: s.y1 },
+					{ x: s.x2, y: s.y2 }
+				];
+				const [p, q] = ends.map(along);
+				if (!p.on || !q.on || Math.min(p.t, q.t) > group.reach + eps) continue;
+				if (Math.min(p.t, q.t) < -eps) group.behind = true;
+				const farther = p.t >= q.t ? 0 : 1;
+				const t = Math.max(p.t, q.t);
+				if (t > group.reach + eps) {
+					group.reach = t;
+					group.end = ends[farther];
+					grew = true;
+				}
+			}
+		}
+	}
+	return groups.map((g) => ({
+		direction: g.direction,
+		end: g.end,
+		throughA:
+			g.behind ||
+			groups.some(
+				(h) =>
+					h !== g &&
+					Math.acos(Math.max(-1, h.direction.x * g.direction.x + h.direction.y * g.direction.y)) >
+						Math.PI - SAME_DIRECTION
+			)
+	}));
+}
+
+/**
+ * Verdict, sur les segments que l'élève voit depuis A (`seenSegments`) : le bout
+ * le plus loin sur une graduation d'une règle posée avec son 0 en A, à la
+ * longueur donnée en millimètres entiers. Plusieurs directions : juste si l'une
+ * convient ; sinon le message du premier segment sur une graduation. Une droite,
+ * un point (sans leur outil), un bout hors de la fenêtre (l'écran ne l'atteint
+ * pas) : réponse forgée.
  */
 export function judgeSegmentLength(
 	check: SegmentLengthCheck,
@@ -181,47 +266,40 @@ export function judgeSegmentLength(
 	shapes: FigureShapes | undefined,
 	objects: readonly DrawnObject[]
 ): ConstructionVerdict {
-	const { a, length, rulerLength } = settingOf(check, points, shapes);
+	const { a, rulerLength } = settingOf(check, points, shapes);
 	const figure = shapes as FigureShapes;
 	if (objects.some((obj) => obj.kind !== 'segment' && obj.kind !== 'regle')) {
 		return { status: 'incorrect' };
 	}
 	const eps = tolerance(a);
 	const segments = objects.filter((obj): obj is DrawnLine => obj.kind === 'segment');
-	const ends = segments.flatMap((s) => farEnd(s, a, eps) ?? []);
-	if (ends.length === 0) {
-		return { status: 'incorrect', feedback: missingSegmentFeedback(check.point, check.end) };
-	}
 	const window = figure.window;
-	if (window && ends.some((p) => !isInFrame(p, window))) {
+	if (
+		window &&
+		segments.some(
+			(s) => !isInFrame({ x: s.x1, y: s.y1 }, window) || !isInFrame({ x: s.x2, y: s.y2 }, window)
+		)
+	) {
 		return { status: 'incorrect' };
 	}
-	// Règles posées avec leur 0 en A : leurs graduations sont des bouts construits
+	const seen = seenSegments(segments, a, eps).filter((s) => !s.throughA);
+	if (seen.length === 0) {
+		return { status: 'incorrect', feedback: missingSegmentFeedback(check.point, check.end) };
+	}
+	// Règles posées avec leur 0 en A : la graduation (mm) où s'arrête chaque segment vu
 	const rulers = objects.filter(
 		(obj): obj is DrawnRegle => obj.kind === 'regle' && distance({ x: obj.ox, y: obj.oy }, a) <= eps
 	);
-	const construction = constructionOf(
-		objects,
-		basePointsOf(points, figure.segments),
-		figure.traits
-	);
-	const built = ends.filter(
-		(p) =>
-			construction.isBuilt(p) ||
-			rulers.some((ruler) => {
-				const mm = rulerGraduationOf(p, ruler, rulerLength);
-				return mm !== null && mm > 0;
-			})
-	);
-	if (built.length === 0) return { status: 'incorrect', feedback: segmentEyeballedFeedback() };
-	const lengths = built.map((p) => distance(a, p));
-	if (lengths.some((l) => Math.abs(l - length) <= LENGTH_EPSILON * Math.max(1, length))) {
-		return { status: 'correct' };
-	}
-	return {
-		status: 'incorrect',
-		feedback: wrongLengthFeedback(Math.round(lengths[0] * 10), check)
-	};
+	const graduations = seen.flatMap((s) => {
+		const mm = rulers
+			.map((ruler) => rulerGraduationOf(s.end, ruler, rulerLength))
+			.find((g) => g !== null && g > 0);
+		return mm === undefined || mm === null ? [] : [mm];
+	});
+	if (graduations.length === 0)
+		return { status: 'incorrect', feedback: segmentEyeballedFeedback() };
+	if (graduations.includes(check.length)) return { status: 'correct' };
+	return { status: 'incorrect', feedback: wrongLengthFeedback(graduations[0], check) };
 }
 
 /**

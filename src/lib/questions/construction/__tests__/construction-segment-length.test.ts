@@ -251,10 +251,78 @@ describe('juge : segment AB = 6 cm', () => {
 		});
 	});
 
-	it('plusieurs règles et segments : juste si l’un convient', () => {
+	it('deux directions distinctes depuis A : juste si l’une convient', () => {
 		const other = regle({ x: 2, y: 8 });
 		expect(judge(SIX, [other, along(other, 40), regle(), along(regle(), 60)])).toEqual({
 			status: 'correct'
+		});
+	});
+
+	describe('on juge le segment que l’élève voit (revue de #2485)', () => {
+		const seg = (from: number, to: number, ruler: DrawnRegle = regle()) =>
+			segment(rulerGraduation(ruler, from), rulerGraduation(ruler, to));
+
+		it('6 cm puis 7 cm superposés depuis A : l’écran montre 7 cm → faux', () => {
+			expect(judge(SIX, [regle(), along(regle(), 60), along(regle(), 70)])).toEqual({
+				status: 'incorrect',
+				feedback: 'Ton segment mesure 7 cm au lieu de 6 cm.'
+			});
+			// Dans l'autre ordre aussi
+			expect(judge(SIX, [regle(), along(regle(), 70), along(regle(), 60)])).toEqual({
+				status: 'incorrect',
+				feedback: 'Ton segment mesure 7 cm au lieu de 6 cm.'
+			});
+		});
+
+		it('une rafale de segments de 5,1 à 6,9 cm depuis A : le plus long est jugé → faux', () => {
+			const burst = Array.from({ length: 19 }, (_, i) => along(regle(), 51 + i));
+			expect(judge(SIX, [regle(), ...burst])).toEqual({
+				status: 'incorrect',
+				feedback: 'Ton segment mesure 6,9 cm au lieu de 6 cm.'
+			});
+		});
+
+		it('prolongé : A → 6 cm puis 6 → 7 cm = 7 cm → faux ; A → 5 puis 5 → 6 cm = 6 cm → juste', () => {
+			expect(judge(SIX, [regle(), along(regle(), 60), seg(60, 70)])).toEqual({
+				status: 'incorrect',
+				feedback: 'Ton segment mesure 7 cm au lieu de 6 cm.'
+			});
+			expect(judge(SIX, [regle(), along(regle(), 50), seg(50, 60)])).toEqual({
+				status: 'correct'
+			});
+			// Recouvrement : A → 4, puis 3 → 6
+			expect(judge(SIX, [regle(), along(regle(), 40), seg(30, 60)])).toEqual({
+				status: 'correct'
+			});
+		});
+
+		it('un segment détaché, sur la même droite, ne prolonge pas le segment de A', () => {
+			expect(judge(SIX, [regle(), along(regle(), 60), seg(65, 75)])).toEqual({
+				status: 'correct'
+			});
+		});
+
+		it('deux règles presque dans la même direction (moins de 2°) : un seul segment vu', () => {
+			const tilted = regle({ x: 9, y: 4.1 });
+			expect(judge(SIX, [regle(), along(regle(), 60), tilted, along(tilted, 70)])).toEqual({
+				status: 'incorrect',
+				feedback: 'Ton segment mesure 7 cm au lieu de 6 cm.'
+			});
+		});
+
+		it('A au milieu (segments de part et d’autre de A sur une droite) : pas un segment depuis A', () => {
+			const left = regle({ x: 0, y: 4 });
+			expect(judge(SIX, [regle(), along(regle(), 60), left, along(left, 15)])).toEqual({
+				status: 'incorrect',
+				feedback: missingSegmentFeedback('A', 'B')
+			});
+			// Un segment qui traverse A
+			expect(
+				judge(SIX, [regle(), segment(rulerGraduation(left, 15), rulerGraduation(regle(), 60))])
+			).toEqual({
+				status: 'incorrect',
+				feedback: missingSegmentFeedback('A', 'B')
+			});
 		});
 	});
 
@@ -370,6 +438,16 @@ describe('erreurs de l’auteur', () => {
 	it('sans fenêtre : refusé (la règle et la longueur se règlent sur la fenêtre)', () => {
 		const source = ['verifier: segment AB = 6 cm', '---', ...BODY].join('\n');
 		expect(() => assertChecks(source)).toThrow(/fenetre:/);
+	});
+
+	it('un autre point de la figure déjà à la longueur demandée depuis A : refusé', () => {
+		expect(() => assertChecks(figure('segment AB = 6 cm', [...BODY, 'C = point(8, 4)']))).toThrow(
+			/C est déjà à 6 cm de A/
+		);
+		// Ailleurs qu'à la longueur demandée : admis
+		expect(() =>
+			assertChecks(figure('segment AB = 6 cm', [...BODY, 'C = point(7, 4)']))
+		).not.toThrow();
 	});
 
 	it('A invisible', () => {

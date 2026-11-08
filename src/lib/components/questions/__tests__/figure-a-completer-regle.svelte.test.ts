@@ -157,6 +157,15 @@ describe('case « figure » : tracer un segment à la règle graduée', () => {
 		expect(all(container, 'bonne-regle')).toHaveLength(1);
 	});
 
+	it('un petit segment (1 mm) se trace au toucher : sur le bord de la règle, la graduation passe avant A', async () => {
+		const { container, rect } = await posed();
+		tool(container, 'segment');
+		tap(rect, 2.05, 4.05);
+		tap(rect, 2.1, 4.03);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(1);
+		await expect.poll(() => mmShown(container)).toBe('1');
+	});
+
 	it('Retourner ; Effacer le segment puis la règle', async () => {
 		const { container, rect } = await posed();
 		await drawSix(container, rect);

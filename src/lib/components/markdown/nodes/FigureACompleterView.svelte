@@ -617,17 +617,18 @@
 		}
 		if (tool === 'rapporteur') protractorRadius = radiusFor(scene);
 		const targets = snapTargets(scene);
-		// Règle posée : un point d'abord (le 0 en A), sinon la graduation du mm la plus proche
+		// Règle posée : le départ va d'abord à un point (A, le 0) ; le bout, sur le bord de la
+		// règle, à la graduation du mm la plus proche avant tout point (revue de #2485 : sinon
+		// A, tout proche, avale les petites longueurs)
 		if (tool === 'segment' && ruler) {
+			const onRuler = rulerGraduationNear(math, ruler, rulerLength, radius, scene.viewport);
 			const onPoint = snapInstrument(
 				math,
 				{ points: targets.points, intersections: [], traits: [] },
 				radius
 			);
-			const onRuler = onPoint
-				? null
-				: rulerGraduationNear(math, ruler, rulerLength, radius, scene.viewport);
-			tapAt(onPoint ?? onRuler ?? snapWithInstruments(math, targets, radius));
+			const first = drawing.start ? (onRuler ?? onPoint) : (onPoint ?? onRuler);
+			tapAt(first ?? snapWithInstruments(math, targets, radius));
 			return;
 		}
 		if (tool === 'equerre' && !drawing.guide) {
