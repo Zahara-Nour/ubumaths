@@ -1,4 +1,5 @@
 {
+	"id": "5394f049-d2f5-4b46-a7e9-6e0c964c77f6",
 	"title": "Cours : formule du terme général d'une suite géométrique",
 	"description": "Compléter uₙ = u₀ × qⁿ, uₙ = u₁ × qⁿ⁻¹, uₙ = uₚ × qⁿ⁻ᵖ",
 	"grades": ["1_SPE"],

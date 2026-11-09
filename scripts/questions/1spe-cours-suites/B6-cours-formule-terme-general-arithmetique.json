@@ -1,4 +1,5 @@
 {
+	"id": "74333045-1969-4a61-85d2-6627e2956f3b",
 	"title": "Cours : formule du terme général d'une suite arithmétique",
 	"description": "Compléter uₙ = u₀ + nr, uₙ = u₁ + (n − 1)r, uₙ = uₚ + (n − p)r",
 	"grades": ["1_SPE"],
