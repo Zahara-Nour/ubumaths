@@ -1,0 +1,196 @@
+{
+	"title": "Démontrer que $\\sqrt{ab}\\leqslant\\frac{a+b}{2}$",
+	"description": "Démonstration à trous pour a, b > 0 : coefficient 2 du double produit de (√a − √b)² (case), un carré est positif (case choix), exemple a = p², b = q² (case) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $a$ et $b$ deux réels strictement positifs. On démontre que leur moyenne géométrique $\\sqrt{ab}$ est inférieure ou égale à leur moyenne arithmétique $\\frac{a+b}{2}$.\n\nOn développe $(\\sqrt{a}-\\sqrt{b})^2$, avec $(\\sqrt{a})^2=a$ et $\\sqrt{a}\\sqrt{b}=\\sqrt{ab}$. Complète.\n\n$(\\sqrt{a}-\\sqrt{b})^2=a+b-?\\,\\sqrt{ab}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(\\sqrt{a}-\\sqrt{b})^2=(\\sqrt{a})^2-2\\sqrt{a}\\sqrt{b}+(\\sqrt{b})^2$ : c'est le double produit de $(u-v)^2=u^2-2uv+v^2$.",
+					"Donc $(\\sqrt{a}-\\sqrt{b})^2=a+b-\\textcolor{{{color:primary.0}}}{2}\\sqrt{ab}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ et $b$ deux réels strictement positifs. On démontre que leur moyenne géométrique $\\sqrt{ab}$ est inférieure ou égale à leur moyenne arithmétique $\\frac{a+b}{2}$.\n\nOn a $(\\sqrt{a}-\\sqrt{b})^2=a+b-2\\sqrt{ab}$. Pourquoi a-t-on $a+b-2\\sqrt{ab}\\geqslant 0$ ?\n\n```choix\n- Car un carré est positif ou nul.\n- Car $a$ et $b$ sont strictement positifs.\n- Car $\\sqrt{a}\\geqslant\\sqrt{b}$.\n- Car $a+b$ est positif.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a+b-2\\sqrt{ab}$ est le carré de $\\sqrt{a}-\\sqrt{b}$ : **un carré est positif ou nul**.",
+					"On ne sait pas si $\\sqrt{a}\\geqslant\\sqrt{b}$, et le carré est positif même si $\\sqrt{a}-\\sqrt{b}<0$.",
+					"Que $a+b$ soit positif ne suffit pas : on lui retire $2\\sqrt{ab}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a={{eval:p^2}}$ et $b={{eval:q^2}}$. Leur moyenne arithmétique est $\\frac{a+b}{2}={{eval:(p^2+q^2)/2;d}}$.\n\nCalcule leur moyenne géométrique.\n\n$\\sqrt{ab}=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..6"
+				},
+				{
+					"name": "q",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{ab}=\\sqrt{{{eval:p^2}}}\\times\\sqrt{{{eval:q^2}}}={{eval:p}}\\times {{eval:q}}=\\textcolor{{{color:primary.0}}}{{{eval:p*q}}}$.",
+					"On vérifie : ${{eval:p*q}}\\leqslant {{eval:(p^2+q^2)/2;d}}$, comme le dit l'inégalité."
+				]
+			},
+			"conditions": ["p < q"]
+		},
+		{
+			"statement": "Soit $a$ et $b$ deux réels strictement positifs. On démontre que $\\sqrt{ab}\\leqslant\\frac{a+b}{2}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On développe : $(\\sqrt{a}-\\sqrt{b})^2=a-2\\sqrt{ab}+b$.\n- Un carré est positif ou nul, donc $a-2\\sqrt{ab}+b\\geqslant 0$.\n- Donc $a+b\\geqslant 2\\sqrt{ab}$.\n- On divise par $2$ : $\\frac{a+b}{2}\\geqslant\\sqrt{ab}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On part du carré $(\\sqrt{a}-\\sqrt{b})^2$, positif, puis on isole $\\sqrt{ab}$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\sqrt{ab}\\leqslant\\frac{a+b}{2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 (double produit oublié)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "carré positif",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a, b positifs",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √a ≥ √b",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a + b positif",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 4, b = 25 : 10",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ab = 100",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : moyenne arithmétique 14,5",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["14.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

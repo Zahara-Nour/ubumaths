@@ -1,0 +1,204 @@
+{
+	"title": "Développement décimal illimité d'un nombre réel",
+	"description": "x = 0,ddd… = d/9 par 10x − x (case, d de 1 à 8) ; 0,999… = 1 (case choix) ; troncature de π à 10⁻ⁿ (case, n de 1 à 6)",
+	"grades": ["2"],
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Tout nombre réel a un développement décimal illimité. On cherche l'écriture fractionnaire de $x=0{,}{{eval:d}}{{eval:d}}{{eval:d}}{{eval:d}}\\ldots$ (le chiffre ${{eval:d}}$ se répète indéfiniment).\n\nOn a $10x={{eval:d}}{,}{{eval:d}}{{eval:d}}{{eval:d}}\\ldots$, donc $10x-x={{eval:d}}$.\n\nComplète.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:d}}}{9}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$10x-x=9x$ : les décimales s'annulent, il reste $9x={{eval:d}}$.",
+					"Donc $x=\\textcolor{{{color:primary.0}}}{\\frac{{{eval:d}}}{9}}$."
+				]
+			}
+		},
+		{
+			"statement": "On pose $x=0{,}999\\ldots$ (le chiffre $9$ se répète indéfiniment). Alors $10x=9{,}999\\ldots$ et $10x-x=9$.\n\nQue vaut $x$ ?\n\n```choix\n- $x=1$ : $1$ a deux développements décimaux, $1{,}000\\ldots$ et $0{,}999\\ldots$\n- $x$ est le plus grand nombre strictement inférieur à $1$.\n- $x=0{,}9$\n- $x$ n'existe pas : on ne peut pas écrire une infinité de chiffres.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$10x-x=9x=9$, donc $\\textcolor{{{color:primary.0}}}{x=1}$.",
+					"Il n'existe pas de plus grand nombre strictement inférieur à $1$ : entre un tel nombre et $1$, on en trouverait toujours un autre.",
+					"Un nombre décimal a deux développements : l'un finit par des $0$, l'autre par des $9$."
+				]
+			}
+		},
+		{
+			"statement": "Le développement décimal de $\\pi$ commence par $\\pi=3{,}14159265\\ldots$\n\nDonne la troncature de $\\pi$ à $10^{-{{eval:n}}}$ (on garde {{eval:n}} chiffre(s) après la virgule, sans arrondir).\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(10^n*\\pi)/10^n;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On garde les ${{eval:n}}$ premiers chiffres après la virgule et on supprime les suivants.",
+					"La troncature de $\\pi$ à $10^{-{{eval:n}}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:floor(10^n*\\pi)/10^n;d}}}$, et ${{eval:floor(10^n*\\pi)/10^n;d}}\\leqslant \\pi<{{eval:(floor(10^n*\\pi)+1)/10^n;d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4/9",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4"
+			},
+			"answers": ["\\frac{4}{9}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4/10",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4"
+			},
+			"answers": ["\\frac{4}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4"
+			},
+			"answers": ["0.4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4"
+			},
+			"answers": ["\\frac{9}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6/9 simplifié en 2/3",
+			"variationIndex": 0,
+			"variables": {
+				"d": "6"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x = 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus grand nombre < 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,9",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n'existe pas",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,141",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["3.141"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrondi 3,142",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["3.142"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,1415",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["3.1415"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,14 (deux chiffres)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["3.14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

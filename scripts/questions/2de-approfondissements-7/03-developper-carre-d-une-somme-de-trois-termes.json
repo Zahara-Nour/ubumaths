@@ -1,0 +1,182 @@
+{
+	"title": "Développer $(a+b+c)^2$",
+	"description": "Formule (a + b + c)² : double produit 2bc (case) ; (x + y + k)² développé et réduit (case, k de 2 à 6) ; oubli des doubles produits (case choix)",
+	"grades": ["2"],
+	"level": 11,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On développe $(a+b+c)^2=(a+b+c)(a+b+c)$. Complète.\n\n$(a+b+c)^2=a^2+b^2+c^2+2ab+2ac+?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2bc"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque terme de la première parenthèse est multiplié par chaque terme de la seconde : $9$ produits.",
+					"Les produits croisés vont par deux : $ab+ba=2ab$, $ac+ca=2ac$, $bc+cb=\\textcolor{{{color:primary.0}}}{2bc}$."
+				]
+			}
+		},
+		{
+			"statement": "Développe et réduis.\n\n$(x+y+{{eval:k}})^2=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x^2+y^2+{{eval:k^2}}+2xy+{{eval:2*k}}x+{{eval:2*k}}y"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On applique $(a+b+c)^2=a^2+b^2+c^2+2ab+2ac+2bc$ avec $a=x$, $b=y$ et $c={{eval:k}}$.",
+					"$(x+y+{{eval:k}})^2=\\textcolor{{{color:primary.0}}}{x^2+y^2+{{eval:k^2}}+2xy+{{eval:2*k}}x+{{eval:2*k}}y}$."
+				]
+			}
+		},
+		{
+			"statement": "Un élève écrit $(a+b+c)^2=a^2+b^2+c^2$.\n\nQu'a-t-il oublié ?\n\n```choix\n- Les doubles produits $2ab+2ac+2bc$.\n- Rien : son égalité est juste.\n- Le terme $2abc$.\n- Le terme $3abc$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a=b=c=1$ : $(1+1+1)^2=9$, mais $1^2+1^2+1^2=3$.",
+					"Il manque **les doubles produits $2ab+2ac+2bc$** : $3+2+2+2=9$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2bc",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2bc"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bc",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["bc"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2abc",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2abc"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["x^2+y^2+9+2xy+6x+6y"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "k = 3, autre ordre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["x^2+2xy+y^2+6x+6y+9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans doubles produits",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["x^2+y^2+9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 au lieu de 9",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["x^2+y^2+3+2xy+6x+6y"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non développé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["(x+y+3)^2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "doubles produits",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rien",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2abc",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3abc",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

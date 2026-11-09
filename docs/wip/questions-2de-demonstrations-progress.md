@@ -6,16 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, phase 0 des approfondissements validée (D5)._
+_Mis à jour le 2026-11-09, lot 7 écrit._
 
-- **État** : 12 démonstrations et 10 exemples d'algorithmes publiés (lots 1-6). D4 : approfondissements (14 points,
-  § 13) avant le versement ; D5 : phase 0 validée.
-- **Prochaine action** : lot 7 (258, 259, 284, 285, 286) dans le worktree `ubumaths-wt-questions-2de-approfondissements-7`.
-- **En attente de David** : rien.
+- **État** : lots 1-6 publiés. Lot 7 (258, 259, 284-286, § 14) écrit et vérifié, PR en cours.
+- **Prochaine action** : merge du lot 7, puis création des brouillons par David (commande au § 14), migration de
+  rangement (nœud + tag), page à cocher ; ensuite lot 8 (305-310, réemploi `d4db2207`, points 307 et 310 déplacés).
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** : écritures en prod (`db:migrate`, `publier-lot.ts`, même en simulation) refusées par le
   classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) » qui plante tests verts
   → `gh run rerun <run> --failed`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `ubumaths-wt-questions-2de-approfondissements-7`, `content/questions-2de-approfondissements-7`.
 
 ---
 
@@ -455,3 +455,32 @@ Géométrie repérée › équations de droites ; 307 → Figures planes › tri
 bissectrice, **points 2-307 et 2-310 déplacés sous Figures planes** par la migration du lot 8. Q5 publication comme
 les démonstrations. Q6 accès : personne de plus aux migrations ; à la publication, les élèves de seconde voient les
 modèles (dont les 2 de 1re spé réemployés, déjà publiés). Lots 7, 8, 9 dans l'ordre du tableau.
+
+## 14. Lot 7 : approfondissements, nombres et algèbre (2026-11-09)
+
+Relevé prod (MCP, 2026-11-09) : 258, 259 sur Ensembles de nombres › ℕ, ℤ, 𝔻, ℚ, ℝ (niveaux 1-6) ; 284, 285 sur
+Calcul littéral › identités remarquables (1-10) ; 286 sur la notion Inégalités, rangé sur « comparaison et
+encadrement » (1-6, D5). Aucun modèle tagué sur les 5 points ; aucun modèle existant ne développe (a + b + c)² ou
+(a + b)³.
+
+| Point | Modèle (`scripts/questions/2de-approfondissements-7/`) | Nœud, niveau                               | Variations                                                                                              |
+| ----- | ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| 258   | `01-developpement-decimal-illimite`                    | ℕ, ℤ, 𝔻, ℚ, ℝ, 7                           | 0,ddd… = d/9 par 10x − x (case, d 1..8) ; 0,999… = 1 (choix) ; troncature de π à 10⁻ⁿ (case)            |
+| 259   | `02-developpement-decimal-periodique`                  | ℕ, ℤ, 𝔻, ℚ, ℝ, 8                           | n-ième chiffre de a/7 (case, n 20..60) ; 0,uvuv… = uv/99 (case) ; restes de la division (choix)         |
+| 284   | `03-developper-carre-d-une-somme-de-trois-termes`      | identités remarquables, 11                 | terme 2bc (case) ; (x + y + k)² développé (case, k 2..6) ; doubles produits oubliés (choix)             |
+| 285   | `04-developper-cube-d-une-somme`                       | identités remarquables, 12                 | terme 3ab² (case) ; (x + k)³ développé (case, k −4..4 non nul) ; (a − b)³ (choix)                       |
+| 286   | `05-demontrer-inegalite-des-moyennes`                  | Inégalités › comparaison et encadrement, 7 | coefficient 2 du double produit (case) ; carré positif (choix) ; exemple a = p², b = q² (case) ; étapes |
+
+Script : `docs/wip/questions/lot-2de-approfondissements-7.py`. Pièges du lot : `pi` dans un `eval` se lit p × i →
+`\pi` ; `2\sqrt{a}\sqrt{b}` refusé comme réponse à « a + b − ? » (le moteur ne sait pas a, b ⩾ 0) → la case du 286
+demande le coefficient 2 devant `\sqrt{ab}`. `create-questions` ne lit que `.env` (la prod), pas `.env.local` : la
+simulation a visé la prod (lecture seule) ; pour la base locale, `PUBLIC_SUPABASE_URL` et
+`SUPABASE_SERVICE_ROLE_KEY` locaux passés en variables d'environnement, cible « LOCAL » vérifiée en simulation
+avant `--publier`.
+
+Vérifié : `question:specs` 150 tirages par variation, 5/5 importables, 60 specs vertes, 0 `\textcolor` hors `$` ;
+aperçus relus (périodes de a/7, 0,uvuv…, exemple du 286) ; 5 brouillons créés en base locale (copie hors dépôt).
+Non vu à l'écran : rien de neuf à l'affichage (étapes à ranger avec fractions déjà vues au lot 1).
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-7 --publier`
