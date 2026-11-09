@@ -9,19 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR 4 commitée, Q17/Q18 tranchées (§ 7), pas encore poussée._
+_Mis à jour le 2026-11-09, après #2499._
 
-- **État** : PR 4 (triangle rectangle coté en cm, § 7) commitée sur la branche, PR pas ouverte ; revue Opus :
-  2 faux justes, preuves rouges commitées (`construction-triangle-rectangle-cm.revue.test.ts`).
-- **Prochaine action** : corriger `judgeRight` selon Q17/Q18 (§ 7, décisions de David), côté en cm seulement ;
-  fondre les sondes dans `construction-triangle-rectangle-cm.test.ts` (tests rouges → verts) ; `git merge
-origin/main`, push, PR (dans un commit, la ligne Doc-inchangée de la PR 3 pour utilitaires-et-demos.md), CI,
-  merge ; doc `systeme/questions.md` et catalogue (nouveaux messages).
-- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494) ; choix (1)-(3) du § 5, (1)-(4) du
-  § 6 ; Q15 (reco : serrer) et Q16 (reco : plus tard), § 5.
-- **Pièges en cours** : le juge prend le **segment vu** (§ 3) ; seules les règles posées AVANT le trait comptent
-  (§ 6, § 7) ; tests de composant : toucher pile sur une graduation ; zsh : listes de fichiers en tableau.
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-triangle`.
+- **État** : PR 4 (triangle rectangle coté en cm, § 7) mergée (#2499), Q17/Q18 corrigées. Les débouchés de
+  la ligne n° 18 (CE2-039, CE2-070 coté) ont leurs outils ; reste à voir CP-035 / CE1-044 (mesurer à la règle).
+- **Prochaine action** : avec David, décider la suite (mesurer un segment à la règle, ou clore le chantier :
+  versement dans `docs/systeme/`, ligne n° 18 de `outils-manquants.md`, journal archivé).
+- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494, #2499) ; choix (1)-(3) du § 5,
+  (1)-(4) du § 6 ; Q15 (reco : serrer) et Q16 (reco : plus tard), § 5.
+- **Pièges en cours** : le juge prend le **segment vu** (§ 3, et § 7 depuis Q18) ; seules les règles posées
+  AVANT le trait comptent (§ 6, § 7) ; tests de composant : toucher pile sur une graduation ; commitlint :
+  lignes du corps ≤ 100 caractères.
+- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, branche à recréer depuis `origin/main`.
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
@@ -244,3 +243,9 @@ plusieurs C distincts → faux, « Trace un seul triangle ABC. », un C de chaqu
 même C atteint deux fois pour un ; **Q18** : côté en cm, [AC] jugé sur le trait vu depuis A (`seenSegments` de la
 PR 1, bout le plus loin) : prolongé au-delà de C → « Ton côté [AC] mesure 4,5 cm au lieu de 4 cm. » (ou « placé à
 l'œil » hors graduation) ; le n° 20 (report) inchangé.
+
+**Correction Q17/Q18 (2026-11-09, #2499)** : `judgeRight`, côté en cm : C distincts dédoublonnés,
+plus d'un → `severalTrianglesFeedback` ; la graduation est lue au bout du trait vu depuis le sommet
+(`seenSegments` exportée de `segment-length.ts`). Sondes de la revue fondues dans
+`construction-triangle-rectangle-cm.test.ts` (5 rouges → verts, plus « même C deux fois : juste ») ;
+fichier `.revue.test.ts` retiré.
