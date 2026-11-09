@@ -6,14 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, phase 0 des approfondissements posée._
+_Mis à jour le 2026-11-09, phase 0 des approfondissements validée (D5)._
 
 - **État** : 12 démonstrations et 10 exemples d'algorithmes publiés (lots 1-6). D4 : approfondissements (14 points,
-  § 13) avant le versement. Relevé prod fait.
-- **Prochaine action** : réponse de David à la phase 0 du § 13, puis lot 7 (258, 259, 284-286) dans un nouveau
-  worktree.
-- **En attente de David** : phase 0 du § 13 (périmètre, forme, réemploi des 2 modèles de 1re spé, rangement,
-  publication, accès).
+  § 13) avant le versement ; D5 : phase 0 validée.
+- **Prochaine action** : lot 7 (258, 259, 284, 285, 286) dans le worktree `ubumaths-wt-questions-2de-approfondissements-7`.
+- **En attente de David** : rien.
 - **Pièges en cours** : écritures en prod (`db:migrate`, `publier-lot.ts`, même en simulation) refusées par le
   classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) » qui plante tests verts
   → `gh run rerun <run> --failed`.
@@ -444,5 +442,16 @@ Géométrie repérée › parabole) utilise distance et développement, égaleme
 pas pour 2-307.
 
 Outils : ceux des lots 1-3 (case, case choix, ` ```ranger ` `signe: aucun`), `figure` / `courbe` ; pour 324, un
-polygone rempli (`fillColor`) dans une figure, à vérifier au lot. Phase 0 posée à David (2026-11-09) : voir la
-réponse dans D5.
+polygone rempli (`fillColor`) dans une figure, à vérifier au lot.
+
+**D5 (David, 2026-11-09, « je suis tes recos »)** : Q1 les 14 points ; points-compétences hors chantier. Q2 preuves
+(286, 306, 307, 309, 310, 308 en partie) à trous + variation « étapes à ranger », autres points en exercices
+d'application à valeurs tirées (2-3 variations) ; 307 par la preuve vectorielle de seconde (ABC triangle des milieux
+d'un grand triangle : hauteurs de ABC = médiatrices du grand, renvoi au 310). Q3 réemploi : `d4db2207` (médianes) et
+`64f54fc1` (équidistance) reçoivent le niveau seconde et le tag 2-309 / 2-323, pas de nouveau modèle. Q4 un modèle
+par point sur une sous-notion existante : celle du point (258, 259, 284, 285, 306, 308, 363) ; 286 → Inégalités ›
+comparaison et encadrement ; 305, 309 → Vecteurs › combinaison linéaire ; 323 → Géométrie repérée › parabole ; 324 →
+Géométrie repérée › équations de droites ; 307 → Figures planes › triangles et 310 → Figures planes › médiatrice et
+bissectrice, **points 2-307 et 2-310 déplacés sous Figures planes** par la migration du lot 8. Q5 publication comme
+les démonstrations. Q6 accès : personne de plus aux migrations ; à la publication, les élèves de seconde voient les
+modèles (dont les 2 de 1re spé réemployés, déjà publiés). Lots 7, 8, 9 dans l'ordre du tableau.
