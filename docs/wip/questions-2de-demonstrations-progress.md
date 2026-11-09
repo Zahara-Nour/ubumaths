@@ -6,17 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2513._
+_Mis à jour le 2026-11-09, après la publication du lot 7._
 
-- **État** : lots 1-6 publiés. Lot 7 (§ 14) en brouillon, rangé en prod (#2513), page à cocher publiée
-  (https://claude.ai/artifact/U7YmhGzeFyQ1dB8u3fsft6).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 5) ; « À revoir » → corriger ;
-  sinon publication par David (`publier-lot.ts`, simulation puis `--publier`). Ensuite lot 8 (305-310, réemploi
-  `d4db2207`, points 307 et 310 déplacés sous Figures planes).
-- **En attente de David** : relecture du lot 7 sur la page à cocher.
-- **Pièges en cours** : écritures en prod (`db:migrate`, `publier-lot.ts`, même en simulation) refusées par le
-  classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) » qui plante tests verts
-  → `gh run rerun <run> --failed`.
+- **État** : lots 1-7 publiés (lot 7 relu 5/5 « ok », publié par David, statut relu en base).
+- **Prochaine action** : lot 8 (§ 13 : points 305-310) dans un nouveau worktree. Réemploi de `d4db2207` (2-309, niveau
+  seconde + tag) ; points 2-307 et 2-310 déplacés sous Figures planes par la migration du lot. Puis lot 9 (323, 324, 363).
+- **En attente de David** : rien.
+- **Pièges en cours** : écritures en prod (`db:migrate`, `create-questions --publier`, `publier-lot.ts`, même en
+  simulation) refusées par le classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) »
+  qui plante tests verts → `gh run rerun <run> --failed`.
 - **Worktree / branche** : aucun ; lot 8 → nouveau worktree.
 
 ---
@@ -503,3 +501,6 @@ Mergée (#2513, CI verte) ; `check:migrations --pr` passé ; `db:migrate` lancé
 attente) ; vérifié en prod : les 5 brouillons sur leur sous-notion, chacun avec son seul point, `updated_at` inchangé
 (09:28, création). Page à cocher (1 alerte attendue : bloc ranger du 286 non dessiné, à jouer dans l'aperçu admin) :
 https://claude.ai/artifact/U7YmhGzeFyQ1dB8u3fsft6
+
+Lot 7 relu par David sur la page à cocher (2026-11-09) : 5 « ok », sans commentaire. Publié par David
+(`publier-lot.ts`, simulation puis `--publier`, 2026-11-09) : 5/5, statut relu en base.
