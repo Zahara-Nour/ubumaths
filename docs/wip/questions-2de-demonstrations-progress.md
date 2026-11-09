@@ -6,21 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2496._
+_Mis à jour le 2026-11-09, migration du lot 6 en PR._
 
-- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes (D3, 10 points) : lots 4 et 5 publiés ;
-  lot 6 (361, 362, 387, 388) mergé (#2496, § 12), brouillons pas encore créés en prod.
-- **Prochaine action** : une fois les brouillons créés par David, ids commités sur une branche neuve → migration
-  nœud + tag calquée sur `20261108222224_…_algorithmes_5_…` (4 modèles, 2 sous-notions) → page à cocher.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-6 --publier`
-  depuis le dépôt principal à jour.
+- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes : lots 4 et 5 publiés ; lot 6 (361, 362, 387, 388) mergé (#2496), brouillons créés en prod ; migration nœud + tag écrite, testée (12/12, rouge sans
+  écritures), auditée (0 finding), en PR sur `feat/questions-2de-algorithmes-6-rangement` (§ 12, fin).
+- **Prochaine action** : CI de la PR verte → `pnpm check:migrations --pr <n>` → merge → `db:migrate` depuis le
+  dépôt principal (4 conditions réunies) → vérif prod (4 modèles sur leur sous-notion, 1 point chacun,
+  `updated_at` inchangé) → page à cocher (comme lot 5) → publication par David.
+- **En attente de David** : rien.
 - **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
-  job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf →
-  `svelte-kit sync` avant `question:specs` ; `create-questions` en local : exporter `PUBLIC_SUPABASE_URL` ET
-  `SUPABASE_SERVICE_ROLE_KEY` de `.env.local` (avec `SUPABASE_URL` seul, il vise la PROD : refusé par la clé
-  locale le 2026-11-09, rien écrit), sur une COPIE des JSON (il y écrit l'id local).
-- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, branche `feat/questions-2de-algorithmes-6`
-  mergée (#2496), à remplacer par celle de la migration.
+  job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; `create-questions` en
+  local : exporter `PUBLIC_SUPABASE_URL` ET `SUPABASE_SERVICE_ROLE_KEY` de `.env.local` (sinon il vise la PROD),
+  sur une COPIE des JSON ; après le `create-questions` de David, les ids restent écrits dans `main` → les
+  reporter sur la branche puis `git restore` dans le dépôt principal.
+- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-algorithmes-6-rangement`.
 
 ---
 
@@ -396,3 +395,13 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-algorithmes-6 --publier`
 
 Mergée (#2496, CI verte du premier coup).
+
+Créés en brouillon par David (2026-11-09) : d01cf16b (361), f34d0f5f (362), 82101744 (387), e5da67bb (388) ;
+ids commités sur la branche de la migration (`feat/questions-2de-algorithmes-6-rangement`), `main` remis propre.
+Relevé prod (MCP, 2026-11-09, avant la migration) : 4 brouillons de seconde, sans nœud ni tag ; chemins
+Fonctions › Généralités sur les fonctions › extremums et Statistiques › Tableaux croisés › tableau croisé
+d'effectifs uniques et actifs.
+Migration `20261109002041_questions_2de_algorithmes_6_rangement_tags` (calquée sur le lot 5, seules les données
+changent ; 362 et 387 tagués d'un point posé sur la notion, accepté par la règle du nœud) : test d'intégration
+12/12 vert, rouge sans les écritures (2 échecs, 5 sautés).
+Audit `security-auditor` : 0 finding (bloquant ou non).
