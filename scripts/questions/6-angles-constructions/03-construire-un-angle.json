@@ -1,0 +1,129 @@
+{
+	"title": "Construire un angle de mesure donnée",
+	"description": "Au rapporteur : poser le centre sur le sommet et la base sur le côté donné, marquer la graduation voulue, tracer le second côté",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Construis la demi-droite $[Oy)$ telle que $\\widehat{AOy} = {{a}}^\\circ$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: angle AOy = {{a}}\n---\nO = point(4, 3)\nA = point(9, 3)\nx = demidroite(O, A)\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..16"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*r"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**Poser le rapporteur** : son centre sur le sommet $O$, sa base le long de $[OA)$.",
+					"Partir du $0$ qui est sur $[OA)$, marquer un repère à la graduation ${{a}}^\\circ$, puis tracer à la règle la demi-droite $\\textcolor{{{color:primary.0}}}{[Oy)}$ de $O$ au repère."
+				]
+			}
+		},
+		{
+			"statement": "Construis la demi-droite $[Oy)$ telle que $\\widehat{AOy} = {{a}}^\\circ$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: angle AOy = {{a}}\n---\nO = point(5, 4)\nA = point(1, 3)\nx = demidroite(O, A)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "15..165"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**Poser le rapporteur** : son centre sur le sommet $O$, sa base le long de $[OA)$.",
+					"Partir du $0$ qui est sur $[OA)$, marquer un repère à la graduation ${{a}}^\\circ$, puis tracer à la règle la demi-droite $\\textcolor{{{color:primary.0}}}{[Oy)}$ de $O$ au repère."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "50°, au-dessus de [OA)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5",
+				"a": "50"
+			},
+			"answers": ["repere(4;3;9;3;3;50;1)|segment(4;3;5.928362829059618;5.298133329356935)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "50°, au-dessous de [OA)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5",
+				"a": "50"
+			},
+			"answers": ["repere(4;3;9;3;3;50;-1)|segment(4;3;5.928362829059618;0.7018666706430658)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 130° (mauvaise graduation)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5",
+				"a": "50"
+			},
+			"answers": ["repere(4;3;9;3;3;130;1)|segment(4;3;2.071637170940382;5.298133329356935)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : côté tracé à l'œil, sans repère",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5",
+				"a": "50"
+			},
+			"answers": ["segment(4;3;5.928362829059618;5.298133329356935)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Oblique : 37°",
+			"variationIndex": 1,
+			"variables": {
+				"a": "37"
+			},
+			"answers": ["repere(5;4;1;3;3;37;1)|segment(5;4;3.1135139971229426;1.6673683186261612)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Oblique : 128°, de l'autre côté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "128"
+			},
+			"answers": ["repere(5;4;1;3;3;128;-1)|segment(5;4;6.218476046762719;6.741407690122995)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 143° au lieu de 37°",
+			"variationIndex": 1,
+			"variables": {
+				"a": "37"
+			},
+			"answers": ["repere(5;4;1;3;3;143;1)|segment(5;4;7.762255499655681;2.829553694259346)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
