@@ -1,0 +1,284 @@
+{
+	"title": "Le vocabulaire des angles",
+	"description": "Nommer un angle d'après sa mesure (aigu, droit, obtus, plat), reconnaître des angles adjacents ou opposés par le sommet, calculer le supplémentaire d'un angle, lire la notation",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un angle.\n\n```figure\nfenetre: -5 ; 5 ; -1.5 ; 5\ndescription: Un angle AOB de sommet O, codé par un arc, qui mesure {{a}} degrés.\n---\nO = point(0, 0, etiquette=\"bas\")\nA = point(4, 0, etiquette=\"bas\")\nB = rotation(A, angle={{a}}, centre=O)\ndemidroite(O, A)\ndemidroite(O, B)\narc(O, rayon=0.8, debut=0, fin={{a}})\nH = point(1.5, 0, visible=faux)\nT = rotation(H, angle={{eval:a/2;d}}, centre=O, visible=faux)\ntexte(T, \"{{a}}°\")\n```\n\nComment s'appelle cet angle ?\n\n```choix\nmelanger: non\n- un angle aigu\n- un angle droit\n- un angle obtus\n- un angle plat\n- un angle nul\n- un angle plein\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "2..8"
+				},
+				{
+					"name": "a",
+					"expression": "eval:((10*r))*(k-2)*(k-3)*(k-4)/(-6)+(90)*(k-1)*(k-3)*(k-4)/(2)+((90+10*r))*(k-1)*(k-2)*(k-4)/(-2)+(180)*(k-1)*(k-2)*(k-3)/(6)"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les noms des angles.** Un angle **aigu** mesure moins de $90^\\circ$ ; un angle **droit** mesure $90^\\circ$ ; un angle **obtus** mesure entre $90^\\circ$ et $180^\\circ$ ; un angle **plat** mesure $180^\\circ$ (ses côtés forment une droite).",
+					"Cet angle mesure ${{a}}^\\circ$ : c'est un angle $\\textcolor{{{color:primary.0}}}{\\text{{{if:k==1|aigu|{{if:k==2|droit|{{if:k==3|obtus|plat}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici deux angles, l'un en bleu, l'autre en rouge.\n\n```figure\nfenetre: -5 ; 5 ; -4.5 ; 4.5\ndescription: {{if:k==1|Deux angles AOB (bleu) et BOC (rouge) de même sommet O, de part et d'autre du côté [OB).|{{if:k==2|Deux droites qui se coupent en O ; un angle bleu et un angle rouge face à face.|Deux angles AOB (bleu) et AOC (rouge) de même sommet O et de même côté [OA) ; le bleu est dans le rouge.}}}}\n---\nO = point(0, 0, etiquette=\"bas-gauche\")\n{{if:k==1|A = point(4, 0, etiquette=\"bas\")\nB = point(2.2943, 3.2766, etiquette=\"haut\")\nC = point(-2.2943, 3.2766, etiquette=\"haut\")\ndemidroite(O, A)\ndemidroite(O, B)\ndemidroite(O, C)\narc(O, rayon=1, debut=0, fin=55, couleur=\"bleu\")\narc(O, rayon=1.3, debut=55, fin=125, couleur=\"rouge\")|{{if:k==2|A = point(3.4641, 2, etiquette=\"haut\")\nB = point(-3.4641, 2, etiquette=\"haut\")\nC = point(-3.4641, -2, etiquette=\"bas\")\nD = point(3.4641, -2, etiquette=\"bas\")\ndroite(A, C)\ndroite(B, D)\narc(O, rayon=1, debut=30, fin=150, couleur=\"bleu\")\narc(O, rayon=1, debut=210, fin=330, couleur=\"rouge\")|A = point(4, 0, etiquette=\"bas\")\nB = point(2, 3.4641, etiquette=\"haut\")\nC = point(-2.5712, 3.0642, etiquette=\"haut\")\ndemidroite(O, A)\ndemidroite(O, B)\ndemidroite(O, C)\narc(O, rayon=1, debut=0, fin=60, couleur=\"bleu\")\narc(O, rayon=1.5, debut=0, fin=130, couleur=\"rouge\")}}}}\n```\n\nQue peut-on dire de ces deux angles ?\n\n```choix\nmelanger: non\n- ils sont adjacents\n- ils sont opposés par le sommet\n- ils ne sont ni adjacents, ni opposés par le sommet\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Adjacents** : même sommet, un côté commun, et ils sont **de part et d'autre** de ce côté. **Opposés par le sommet** : même sommet, et les côtés de l'un prolongent ceux de l'autre (deux droites qui se coupent).",
+					"{{if:k==1|Les angles ont le sommet $O$ et le côté $[OB)$ en commun, de part et d'autre de $[OB)$ : ils sont $\\textcolor{{{color:primary.0}}}{\\text{adjacents}}$.|{{if:k==2|Les deux droites se coupent en $O$ ; les angles sont face à face : ils sont $\\textcolor{{{color:primary.0}}}{\\text{opposés par le sommet}}$.|Les angles ont le sommet $O$ et le côté $[OA)$ en commun, mais l'angle bleu est **dans** l'angle rouge : ils ne sont $\\textcolor{{{color:primary.0}}}{\\text{ni adjacents, ni opposés par le sommet}}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Deux angles sont **supplémentaires**. L'un mesure ${{a}}^\\circ$.\n\nCombien mesure l'autre ?\n\n$?^\\circ$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..70"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:180-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux angles supplémentaires** : la somme de leurs mesures est $180^\\circ$ (ensemble, ils forment un angle plat).",
+					"$180 - {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:180-a}}}$ : l'autre angle mesure $\\textcolor{{{color:primary.0}}}{{{eval:180-a}}^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un triangle $ABC$, comment note-t-on l'angle de **sommet ${{if:k==1|A|{{if:k==2|B|C}}}}$** ?\n\n```choix\n- $\\widehat{{{if:k==1|B|{{if:k==2|A|A}}}}{{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|C|{{if:k==2|C|B}}}}}$\n- $\\widehat{{{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|B|{{if:k==2|A|A}}}}{{if:k==1|C|{{if:k==2|C|B}}}}}$\n- $\\widehat{{{if:k==1|B|{{if:k==2|A|A}}}}{{if:k==1|C|{{if:k==2|C|B}}}}{{if:k==1|A|{{if:k==2|B|C}}}}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La notation d'un angle** : la lettre du **sommet** s'écrit **au milieu**, entre les lettres d'un point de chaque côté.",
+					"L'angle de sommet ${{if:k==1|A|{{if:k==2|B|C}}}}$ se note $\\textcolor{{{color:primary.0}}}{\\widehat{{{if:k==1|B|{{if:k==2|A|A}}}}{{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|C|{{if:k==2|C|B}}}}}}$ (ou $\\widehat{{{if:k==1|C|{{if:k==2|C|B}}}}{{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|B|{{if:k==2|A|A}}}}}$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Aigu",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "4",
+				"a": "40",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : obtus pour un aigu",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "4",
+				"a": "40",
+				"j": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Droit",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "4",
+				"a": "90",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Obtus",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"r": "4",
+				"a": "130",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Plat",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "4",
+				"a": "180",
+				"j": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nul pour un plat",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "4",
+				"a": "180",
+				"j": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Adjacents",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Opposés par le sommet",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Ni l'un ni l'autre (l'un dans l'autre)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : adjacents quand l'un est dans l'autre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "180 − 35 = 145",
+			"variationIndex": 2,
+			"variables": {
+				"a": "35"
+			},
+			"answers": ["145"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 55 (complémentaire)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "35"
+			},
+			"answers": ["55"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sommet au milieu",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sommet en premier",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
