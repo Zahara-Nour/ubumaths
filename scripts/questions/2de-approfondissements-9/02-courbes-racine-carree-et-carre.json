@@ -1,0 +1,224 @@
+{
+	"title": "Relier les courbes de la fonction racine carrée et de la fonction carré",
+	"description": "Symétrique de A(a ; a²) par rapport à y = x (deux cases, a de 2 à 9) ; y = √x équivaut à x = y² (case choix) ; symétrie d'axe y = x (case choix, figure) ; x² < x < √x sur ]0 ; 1[ (case choix, figure)",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Le point $A({{eval:a}}\\,;\\,{{eval:a^2}})$ est sur la courbe de la fonction carré $x\\mapsto x^2$. On note $A'$ son symétrique par rapport à la droite d'équation $y=x$.\n\nDonne les coordonnées de $A'$.\n\n$$A'(?\\,;\\,?)$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La symétrie d'axe la droite $y=x$ échange l'abscisse et l'ordonnée : $\\textcolor{{{color:primary.0}}}{A'({{eval:a^2}}\\,;\\,{{eval:a}})}$.",
+					"$\\sqrt{{{eval:a^2}}}={{eval:a}}$ : $A'$ est sur la courbe de la fonction racine carrée."
+				]
+			}
+		},
+		{
+			"statement": "Soit $x\\geqslant 0$ et $y\\geqslant 0$. On démontre que $y=\\sqrt{x}$ équivaut à $x=y^2$ : $M(x\\,;\\,y)$ est sur la courbe de la racine carrée si et seulement si $M'(y\\,;\\,x)$ est sur celle de la fonction carré.\n\nPourquoi $y=\\sqrt{x}$ équivaut-il à $x=y^2$ ?\n\n```choix\n- Par définition, $\\sqrt{x}$ est le nombre positif dont le carré est $x$, et $y\\geqslant 0$.\n- Car $\\sqrt{x^2}=x$ pour tout réel $x$.\n- Car la fonction racine carrée est croissante.\n- Car $x=y^2$ donne toujours $y=\\sqrt{x}$, même si $y<0$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{x}$ est **l'unique nombre positif dont le carré est $x$** : si $y\\geqslant 0$ et $y^2=x$, alors $y=\\sqrt{x}$ ; réciproquement, $(\\sqrt{x})^2=x$.",
+					"La condition $y\\geqslant 0$ est indispensable : $(-2)^2=4$ mais $\\sqrt{4}=2$.",
+					"$\\sqrt{x^2}=|x|$, et non $x$, pour un réel $x$ quelconque."
+				]
+			}
+		},
+		{
+			"statement": "On a tracé, sur $[0\\,;+\\infty[$, la courbe $\\mathcal{C}_f$ de la fonction carré $f:x\\mapsto x^2$ (en bleu), la courbe $\\mathcal{C}_g$ de la fonction racine carrée $g:x\\mapsto\\sqrt{x}$ (en rouge) et la droite d'équation $y=x$ (en pointillés).\n\n```courbe\nx: -0.5 ; 5.5\ny: -0.5 ; 4\ngrille: 1 ; 1\nf(x) = x^2 sur [0 ; 3]   bleu   nom=C_f\ng(x) = sqrt(x)   rouge   nom=C_g\nd(x) = x   gris pointillé\ntaille: moyenne\ndescription: Courbes de la fonction carré et de la fonction racine carrée sur les réels positifs, et la droite d'équation y = x.\n```\n\nQuelle transformation échange les courbes $\\mathcal{C}_f$ et $\\mathcal{C}_g$ ?\n\n```choix\n- La symétrie d'axe la droite d'équation $y=x$.\n- La symétrie d'axe l'axe des abscisses.\n- La symétrie d'axe l'axe des ordonnées.\n- La symétrie de centre l'origine du repère.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $x\\geqslant 0$ et $y\\geqslant 0$, $y=\\sqrt{x}$ équivaut à $x=y^2$ : $M(x\\,;\\,y)$ est sur $\\mathcal{C}_g$ si et seulement si $M'(y\\,;\\,x)$ est sur $\\mathcal{C}_f$.",
+					"Échanger abscisse et ordonnée, c'est la **symétrie d'axe la droite d'équation $y=x$**."
+				]
+			}
+		},
+		{
+			"statement": "On a tracé, sur $[0\\,;+\\infty[$, la courbe $\\mathcal{C}_f$ de la fonction carré $f:x\\mapsto x^2$ (en bleu), la courbe $\\mathcal{C}_g$ de la fonction racine carrée $g:x\\mapsto\\sqrt{x}$ (en rouge) et la droite d'équation $y=x$ (en pointillés).\n\n```courbe\nx: -0.5 ; 5.5\ny: -0.5 ; 4\ngrille: 1 ; 1\nf(x) = x^2 sur [0 ; 3]   bleu   nom=C_f\ng(x) = sqrt(x)   rouge   nom=C_g\nd(x) = x   gris pointillé\ntaille: moyenne\ndescription: Courbes de la fonction carré et de la fonction racine carrée sur les réels positifs, et la droite d'équation y = x.\n```\n\nPour $0<x<1$, comment se rangent $x$, $x^2$ et $\\sqrt{x}$ ?\n\n```choix\n- $x^2<x<\\sqrt{x}$\n- $\\sqrt{x}<x<x^2$\n- $x<x^2<\\sqrt{x}$\n- $x^2<\\sqrt{x}<x$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $]0\\,;1[$, $\\mathcal{C}_f$ est sous la droite $y=x$ et $\\mathcal{C}_g$ au-dessus.",
+					"Par exemple, pour $x=0{,}25$ : $x^2=0{,}0625$ et $\\sqrt{x}=0{,}5$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{x^2<x<\\sqrt{x}}$ ; l'ordre s'inverse pour $x>1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 3 : A'(9 ; 3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["9", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A inchangé (3 ; 9)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : symétrie par rapport à (Ox) (3 ; −9)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3", "-9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "définition de √x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √(x²) = x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans y ⩾ 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "axe y = x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : axe (Ox)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : axe (Oy)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : centre O",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² < x < √x",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre inversé",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x < x²",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √x < x",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

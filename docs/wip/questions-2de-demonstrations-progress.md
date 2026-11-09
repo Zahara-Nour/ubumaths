@@ -6,19 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, lot 8 publié (après #2520)._
+_Mis à jour le 2026-11-09, lot 9 écrit (PR des modèles, voir § 16)._
 
-- **État** : lots 1-8 publiés (lot 8 : 5 « ok », publié par David, statut relu en base). `d4db2207` porte 2-309.
-- **Prochaine action** : lot 9 (§ 13, D5) sur une nouvelle branche depuis `origin/main` : 323 → réemploi de
-  `64f54fc1` (niveau seconde + tag 2-323, Géométrie repérée › parabole), 324 → nouveau modèle (Géométrie repérée ›
-  équations de droites, polygone rempli `fillColor` à vérifier), 363 → nouveau modèle (Fonction racine carrée ›
-  définition et courbe). Puis versement du chantier.
-- **En attente de David** : rien.
+- **État** : lots 1-8 publiés. Lot 9 : 2 modèles neufs (324, 363) vérifiés, PR des modèles sur
+  `feat/questions-2de-approfondissements-9` ; 323 = réemploi de `64f54fc1` (dans la migration).
+- **Prochaine action** : CI verte → merge → David crée les brouillons (commande au § 16) → relevé prod → migration
+  de rangement (2 nœuds, tags 2-324 / 2-363, `64f54fc1` `{1_SPE,2}` + tag 2-323) → page à cocher → publication →
+  versement du chantier.
+- **En attente de David** : `create-questions --publier` après le merge de la PR des modèles.
 - **Pièges en cours** : `db:migrate` depuis le dépôt principal à jour (le worktree n'est pas lié à Supabase) ;
   garde « Doc à jour » → `Doc-inchangée:` (≤ 100 caractères) dans un commit pour une migration de données ;
   écritures en prod → commande `!` ; « Client Tests (browser) » qui plante tests verts → `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` (branche `feat/…-8-rangement` mergée, à
-  remplacer par la branche du lot 9 puis `git branch -d`).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-approfondissements-9`.
 
 ---
 
@@ -561,3 +560,31 @@ https://claude.ai/artifact/Lpa2BhqspTx3fM7s4frbAu
 Lot 8 relu par David sur la page à cocher (2026-11-09) : 5 « ok », sans commentaire. Publié par David
 (`publier-lot.ts`, simulation puis `--publier`, 2026-11-09) : 5/5, statut relu en base ; garde des niveaux : aucun
 niveau manquant.
+
+## 16. Lot 9 : approfondissements, géométrie repérée et racine carrée (2026-11-09)
+
+Relevé prod (MCP, 2026-11-09) : 323, 324 sur la notion Géométrie repérée ; 363 sur Fonction racine carrée ›
+définition et courbe ; tous actifs, aucun modèle tagué. Niveaux déjà présents : Géométrie repérée › équations de
+droites 1-11, Fonction racine carrée › définition et courbe aucun. `64f54fc1` (équidistance) : publié, grades
+`1_SPE`, niveau 2, sur Géométrie repérée › parabole, tag 1SPE-334.
+
+| Point | Modèle (`scripts/questions/2de-approfondissements-9/`) | Nœud, niveau                                     | Variations                                                                                                                                               |
+| ----- | ------------------------------------------------------ | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 323   | réemploi `64f54fc1` (migration : niveau seconde + tag) | Géométrie repérée › parabole (inchangé)          | —                                                                                                                                                        |
+| 324   | `01-partie-du-plan-decrite-par-des-inegalites`         | Géométrie repérée › équations de droites, 12     | triangle x + y ⩽ k (case, k 2..5) ; rectangle a ⩽ x ⩽ a', 0 ⩽ y ⩽ b (trois cases) ; trapèze sous y = mx + p (choix)                                      |
+| 363   | `02-courbes-racine-carree-et-carre`                    | Fonction racine carrée › définition et courbe, 1 | symétrique de A(a ; a²) par rapport à y = x (deux cases) ; y = √x ⇔ x = y² (choix) ; axe y = x (choix, figure) ; x² < x < √x sur ]0 ; 1[ (choix, figure) |
+
+Script : `docs/wip/questions/lot-2de-approfondissements-9.py`. Outil : aucun neuf. Les parties du plan du 324 sont
+dessinées par la ligne `aire:` du bloc `courbe` (surface entre une courbe et l'axe des abscisses) : triangle,
+rectangle, trapèze ; le polygone rempli (`fillColor`) pressenti au § 13 n'est pas nécessaire. Pièges du lot : le
+cadre du bloc `courbe` est au rapport 3:4, donc repère orthonormé seulement si la fenêtre fait 4 de large pour 3 de
+haut (363 : x de −0,5 à 5,5, y de −0,5 à 4) ; sinon la droite y = x n'est pas à 45° et la symétrie ne se voit pas ;
+une borne `sur [a ; b]` dans le cadre dessine un point plein à l'extrémité de la courbe → borne hors du cadre.
+
+Vérifié : `question:specs` 150 tirages par variation, 2/2 importables (10 et 15 specs vertes), 0 `\textcolor` hors
+`$` ; blocs `courbe` analysés sans erreur ni avertissement aux bornes des tirages ; 2 brouillons créés en base locale
+(copie hors dépôt, cible « LOCAL » vérifiée en simulation) ; vus à l'écran sur l'aperçu admin (port 5176) :
+rectangle coloré du 324, courbes du 363 en repère orthonormé.
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-9 --publier`
