@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, migration du lot 7 écrite._
+_Mis à jour le 2026-11-09, après #2513._
 
-- **État** : lots 1-6 publiés. Lot 7 (§ 14) créé en brouillon par David ; migration de rangement écrite et testée,
-  PR en cours.
-- **Prochaine action** : merge de la migration, `db:migrate` (par David), vérif prod, page à cocher ; ensuite lot 8
-  (305-310, réemploi `d4db2207`, points 307 et 310 déplacés sous Figures planes).
-- **En attente de David** : rien avant le merge.
+- **État** : lots 1-6 publiés. Lot 7 (§ 14) en brouillon, rangé en prod (#2513), page à cocher publiée
+  (https://claude.ai/artifact/U7YmhGzeFyQ1dB8u3fsft6).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 5) ; « À revoir » → corriger ;
+  sinon publication par David (`publier-lot.ts`, simulation puis `--publier`). Ensuite lot 8 (305-310, réemploi
+  `d4db2207`, points 307 et 310 déplacés sous Figures planes).
+- **En attente de David** : relecture du lot 7 sur la page à cocher.
 - **Pièges en cours** : écritures en prod (`db:migrate`, `publier-lot.ts`, même en simulation) refusées par le
   classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) » qui plante tests verts
   → `gh run rerun <run> --failed`.
-- **Worktree / branche** : `ubumaths-wt-questions-2de-approfondissements-7-rangement`, `feat/questions-2de-approfondissements-7-rangement`.
+- **Worktree / branche** : aucun ; lot 8 → nouveau worktree.
 
 ---
 
@@ -498,3 +499,7 @@ données changent ; 286 tagué d'un point posé sur la notion) : test d'intégra
 écritures (6 échecs, 5 sautés).
 Audit `security-auditor` : 0 finding (bloquant ou non).
 PR #2513.
+Mergée (#2513, CI verte) ; `check:migrations --pr` passé ; `db:migrate` lancé par David (seule migration en
+attente) ; vérifié en prod : les 5 brouillons sur leur sous-notion, chacun avec son seul point, `updated_at` inchangé
+(09:28, création). Page à cocher (1 alerte attendue : bloc ranger du 286 non dessiné, à jouer dans l'aperçu admin) :
+https://claude.ai/artifact/U7YmhGzeFyQ1dB8u3fsft6
