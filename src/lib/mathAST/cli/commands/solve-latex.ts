@@ -37,8 +37,31 @@ import { toLatex } from '../../latex-generator';
 import { toCustom } from '../../custom-generator';
 import { findNodes } from '../../transforms';
 import { exactValueToShow } from '../../eval/exact-value';
-import { approximateSolutionsLatex } from '../approximation';
+import {
+	approximateDigitsOf,
+	approximateSolutionsLatex,
+	isWrittenNumber,
+	type ApproximateDigits
+} from '../approximation';
 import { computeNumericValue } from '../../eval/numeric-value';
+
+// =============================================================================
+// Types
+// =============================================================================
+
+/**
+ * L'écriture des valeurs d'une réponse, d'après la ligne tapée (registre-reference,
+ * PR 2c, David, 2026-11-09) : `decimal`, un décimal tapé garde les solutions à
+ * écriture décimale finie en décimal (Q46 : `x + 0,5 = 2` → `S = \{1,5\}`) ;
+ * `angles`, un angle tapé en degrés reste en degrés (`anglesAsTyped`).
+ */
+export interface SolutionWriting {
+	readonly decimal: boolean;
+	readonly angles: (node: MathNode) => MathNode;
+}
+
+/** Sans décimal ni degré tapé : les valeurs telles que le solveur les rend. */
+export const PLAIN_WRITING: SolutionWriting = { decimal: false, angles: (node) => node };
 
 /** Plus grand coefficient de période écrit (`1000k\pi`) : au-delà, la famille n’est pas écrite. */
 const MAX_PERIOD_INTEGER = 1000;
@@ -75,6 +98,15 @@ function hasLogarithm(node: MathNode): boolean {
 /** Les décimaux d'une écriture LaTeX, à la française : `0.8` → `0{,}8`. */
 function frenchDecimals(latex: string): string {
 	return latex.replace(/(\d)\.(\d)/g, '$1{,}$2');
+}
+
+/**
+ * Une valeur de la réponse en LaTeX : angles et registre décimal de la ligne
+ * tapée, décimaux à la française (`1{,}5`).
+ */
+export function solutionValueLatex(value: MathNode, writing: SolutionWriting): string {
+	const shown = writing.angles(value);
+	return frenchDecimals(toLatex(exactValueToShow(shown, { decimal: writing.decimal })));
 }
 
 /** La valeur approchée à 2 décimales, point décimal (`10.32`). */
@@ -229,11 +261,10 @@ function sorted(solutions: readonly Solution[]): readonly Solution[] {
 }
 
 /**
- * Les membres d'UNE famille, en LaTeX sans l'inconnue (`a + 2k\pi`, élément de
- * S) et en texte avec (`x = a + 2kπ`) — ou `null`.
+ * Les membres d'UNE famille, éléments de S, en LaTeX (`a + 2k\pi`) et en
+ * texte (`a + 2kπ`) — ou `null`.
  */
 function familyMembers(
-	variable: string,
 	periodic: PeriodicSolutionFamily
 ): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
 	const family = shortestFamily(periodic);
@@ -248,9 +279,7 @@ function familyMembers(
 		isZero ? k : `${written} + ${k}`;
 	return {
 		latex: bases.map(({ base, isZero }) => member(toLatex(base), isZero, term.latex)),
-		text: bases.map(
-			({ base, isZero }) => `${variable} = ${member(toCustom(base), isZero, term.text)}`
-		)
+		text: bases.map(({ base, isZero }) => member(toCustom(base), isZero, term.text))
 	};
 }
 
@@ -264,7 +293,7 @@ function periodicMembers(
 ): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
 	if (result.periodicSolutions === undefined) return null;
 	if (result.displayFamilies !== undefined && result.displayFamilies.length > 0) {
-		const parts = result.displayFamilies.map((f) => familyMembers(result.variable, f));
+		const parts = result.displayFamilies.map((f) => familyMembers(f));
 		if (parts.every((p) => p !== null)) {
 			return {
 				latex: parts.flatMap((p) => p?.latex ?? []),
@@ -272,7 +301,7 @@ function periodicMembers(
 			};
 		}
 	}
-	return familyMembers(result.variable, result.periodicSolutions);
+	return familyMembers(result.periodicSolutions);
 }
 
 /**
@@ -286,14 +315,57 @@ function periodicLatex(result: SolveResult): string | null {
 }
 
 /**
- * La même famille en texte, période comprise : `x = 3k\pi, k ∈ ℤ`. Le texte
+ * La même famille en texte, période comprise : `S = {3k\pi, k ∈ ℤ}`. Le texte
  * disait « x = 0 ou x = 3\pi » — deux solutions pour une infinité
- * (2026-10-09). `null` sans famille, ou si elle ne s'écrit pas.
+ * (2026-10-09) ; l'ensemble, comme le LaTeX, depuis la PR 2c (Q2).
+ * `null` sans famille, ou si elle ne s'écrit pas.
  */
 export function periodicSolutionsText(result: SolveResult): string | null {
 	const members = periodicMembers(result);
 	if (members === null) return null;
-	return `${members.text.join(' ou ')}, k ∈ ℤ`;
+	return `S = {${members.text.join(' ; ')}, k ∈ ℤ}`;
+}
+
+/**
+ * L'ensemble des solutions en texte du terminal, dans l'ordre et l'écriture
+ * du LaTeX (Q2, texte compris — David, 2026-11-04 ; PR 2c) : `S = {3}`,
+ * `S = {-2 ; 2}`, `S = {ln(3)}` (sa valeur approchée va au mode décimal),
+ * `S = {1.5}` pour un décimal tapé. Point décimal : la syntaxe du terminal.
+ */
+export function solutionsSetText(
+	solutions: readonly Solution[],
+	writing: SolutionWriting = PLAIN_WRITING
+): string {
+	const ordered = sorted(solutions);
+	const common = commonCondition(ordered);
+	const values = ordered.map(
+		(s) =>
+			toCustom(exactValueToShow(writing.angles(s.value), { decimal: writing.decimal })) +
+			(common === undefined && s.condition ? ` si ${toCustom(s.condition)}` : '')
+	);
+	return `S = {${values.join(' ; ')}}` + (common ? `, si ${toCustom(common)}` : '');
+}
+
+/**
+ * Les mêmes solutions en valeurs approchées, pour le mode décimal du
+ * terminal : `S ≈ {1.0986}`, `S = {0.5}` (règle du bouton ≈ : 4 décimales,
+ * « = » quand l'écriture décimale est exacte). `null` quand il n'y a rien à
+ * montrer de plus (solutions déjà écrites en nombres, paramètre).
+ */
+export function approximateSolutionsText(solutions: readonly Solution[]): string | null {
+	const values = sorted(solutions).map((s) => exactValueToShow(s.value));
+	if (values.every(isWrittenNumber)) return null;
+	const approximations: ApproximateDigits[] = [];
+	for (const value of values) {
+		const approximation = approximateDigitsOf(value);
+		if (approximation === null) return null;
+		approximations.push(approximation);
+	}
+	const relation = approximations.every((a) => a.exact) ? '=' : '≈';
+	const written = approximations.map(({ digits, exponent }) =>
+		exponent === null ? digits : `${digits} × 10^${exponent}`
+	);
+	return `S ${relation} {${written.join(' ; ')}}`;
 }
 
 /**
@@ -315,7 +387,10 @@ export function commonCondition(solutions: readonly Solution[]): MathNode | unde
  * rien de sûr à écrire (échec du solveur, statut inconnu) : l'appelant garde
  * alors le texte, qui EXPLIQUE l'échec.
  */
-export function solutionsLatex(result: SolveResult): string | null {
+export function solutionsLatex(
+	result: SolveResult,
+	writing: SolutionWriting = PLAIN_WRITING
+): string | null {
 	switch (result.status) {
 		case 'unique':
 		case 'multiple': {
@@ -330,7 +405,7 @@ export function solutionsLatex(result: SolveResult): string | null {
 			// Une solution en ln garde ses décimaux (`\ln(0{,}5)`, S1), qu'elle soit
 			// seule ou non (revue de la PR 2b)
 			const written = (value: MathNode) =>
-				logarithmicExactLatex(value) ?? toLatex(exactValueToShow(value));
+				logarithmicExactLatex(value) ?? solutionValueLatex(value, writing);
 			const values = ordered.map(
 				(s) =>
 					written(s.value) +
@@ -343,7 +418,7 @@ export function solutionsLatex(result: SolveResult): string | null {
 			// Une identité sur un domaine (`x²/x = x`) : tout le domaine, pas ℝ
 			return result.domain === undefined
 				? 'S = \\mathbb{R}'
-				: inequalitySolutionLatex(result.domain);
+				: inequalitySolutionLatex(result.domain, undefined, writing);
 		case 'no-solution':
 			return isSolverFailure(result) ? null : 'S = \\emptyset';
 		case 'no-real-solution':
@@ -373,11 +448,13 @@ export function solutionsApproximationLatex(result: SolveResult): string | null 
 }
 
 /** Une borne d'intervalle : `+\infty`, `-\infty`, sinon la valeur mise au propre. */
-function boundLatex(value: MathNode): string {
+function boundLatex(value: MathNode, writing: SolutionWriting): string {
 	if (isInfinity(value)) return value.sign === 'negative' ? '-\\infty' : '+\\infty';
 	// Décimaux gardés dans les ln (`\ln(0{,}1)`, S1), à la française comme un seuil
 	const tidied = exactValueToShow(value);
-	return hasLogarithm(tidied) ? frenchDecimals(toLatex(tidied)) : toLatex(tidied);
+	return hasLogarithm(tidied)
+		? frenchDecimals(toLatex(tidied))
+		: solutionValueLatex(value, writing);
 }
 
 /**
@@ -454,7 +531,11 @@ export function withRealLineWritten(domain: Domain): Domain {
  * points exclus s'écrivent `\setminus \left\{ … \right\}`. `null` pour un
  * domaine qui n'est pas une réunion d'intervalles (condition, périodique).
  */
-export function inequalitySolutionLatex(domain: Domain, variable?: string): string | null {
+export function inequalitySolutionLatex(
+	domain: Domain,
+	variable?: string,
+	writing: SolutionWriting = PLAIN_WRITING
+): string | null {
 	const threshold = variable === undefined ? null : thresholdLatex(domain, variable);
 	if (threshold !== null) return threshold;
 	switch (domain.kind) {
@@ -467,19 +548,19 @@ export function inequalitySolutionLatex(domain: Domain, variable?: string): stri
 			const whole = realLineExclusions(domain);
 			if (whole !== null) {
 				if (whole.length === 0) return 'S = \\mathbb{R}';
-				const points = whole.map((p) => toLatex(exactValueToShow(p)));
+				const points = whole.map((p) => solutionValueLatex(p, writing));
 				return `S = \\mathbb{R} \\setminus \\left\\{ ${points.join(' \\,;\\, ')} \\right\\}`;
 			}
 			const intervals = domain.intervals.map((i) => {
 				const open = i.lower.type === 'open' ? ']' : '[';
 				const close = i.upper.type === 'open' ? '[' : ']';
-				const lower = boundLatex(i.lower.value);
-				const upper = boundLatex(i.upper.value);
+				const lower = boundLatex(i.lower.value, writing);
+				const upper = boundLatex(i.upper.value, writing);
 				// [a ; a] est le singleton {a} (√x ≤ x : {0} ∪ [1 ; +∞[)
 				if (open === '[' && close === ']' && lower === upper) return `\\{${lower}\\}`;
 				return `${open}${lower} ; ${upper}${close}`;
 			});
-			const excluded = domain.excludedPoints.map((p) => toLatex(exactValueToShow(p.value)));
+			const excluded = domain.excludedPoints.map((p) => solutionValueLatex(p.value, writing));
 			const minus =
 				excluded.length === 0
 					? ''

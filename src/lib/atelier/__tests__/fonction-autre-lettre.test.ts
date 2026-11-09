@@ -352,7 +352,7 @@ describe('f(t) = t^2 : les commandes répondent en t', () => {
 			const s = session();
 			runInput(s, 'f(t) = 2t-4');
 			const r = runInput(s, input);
-			expect(r.kind === 'commande' ? r.output : '', input).toMatch(/\nt = 2$/);
+			expect(r.kind === 'commande' ? r.output : '', input).toMatch(/\nS = \{2\}$/);
 		}
 	});
 

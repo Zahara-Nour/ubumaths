@@ -35,18 +35,24 @@ import { nodesEqual } from '../normal/hash';
 // Fonctions
 // =============================================================================
 
-/** Les étapes d'une équation ou d'une inéquation écrites comme sa réponse. */
+/**
+ * Les étapes d'une équation ou d'une inéquation écrites comme sa réponse.
+ *
+ * @param angles - L'écriture des angles (`anglesAsTyped` : `cos(π/9)` du calcul
+ *   réécrit `cos(20°)` quand l'élève a tapé des degrés — PR 2c de registre-reference)
+ */
 export function stepsAsShown(
 	steps: readonly EquationStep[],
-	equation: RelationNode
+	equation: RelationNode,
+	angles: (node: MathNode) => MathNode = (node) => node
 ): readonly EquationStep[] {
 	const decimal = hasDecimalLiteral(equation);
 	// L'écriture tapée reste, jusque dans les branches d'une valeur absolue
 	// (`\dfrac{x}{2} - 0,5 = 1`) : les pipelines y reprennent les nœuds tapés
 	const typed = new Set(findNodes(equation, () => true));
 	const options = { keep: (node: MathNode) => typed.has(node), roots: true };
-	const write = (node: MathNode): MathNode => (decimal ? inRegister(node, options) : node);
-	const value = (node: MathNode): MathNode => exactValueToShow(node, { decimal });
+	const write = (node: MathNode): MathNode => angles(decimal ? inRegister(node, options) : node);
+	const value = (node: MathNode): MathNode => exactValueToShow(angles(node), { decimal });
 
 	const rewrite = (step: EquationStep): EquationStep => ({
 		...step,

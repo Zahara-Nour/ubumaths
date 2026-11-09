@@ -54,6 +54,8 @@ export type ErrorCode =
 	| 'INEQUALITY_UNSOLVED'
 	/** Équation lue mais pas résolue (aucun solveur, ou un paramètre) : message en français, destiné à l'élève */
 	| 'EQUATION_UNSOLVED'
+	/** Résolution qui dépend d'un paramètre non posé (V57) : message en français, destiné à l'élève */
+	| 'PARAMETER_DEPENDS'
 	/** `.eval` : valeur interdite (dénominateur nul, racine d'un négatif…) — message en français, destiné à l'élève */
 	| 'VALUE_FORBIDDEN'
 	/** Comparaison que le calcul ne tranche pas (`2 ≈ 2`, `x > 1` sans valeur) : message en français, destiné à l'élève */

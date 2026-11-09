@@ -13,7 +13,7 @@
 import type { Atelier, Created, Refused } from './atelier.svelte';
 import type { AtelierObject, ObjectKind } from './types';
 import { dependsOnMessage, isList, isQualitative, parametersOf } from './types';
-import type { MathNode, RelationNode } from '$lib/mathAST/types';
+import type { MathNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
 import { RELATION_UNDECIDABLE, WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
@@ -91,7 +91,6 @@ import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-dom
 import { add, divide, number, opposite } from '$lib/mathAST/factory';
 import { compile } from '$lib/mathAST/eval/compile';
 import { computeDomain } from '$lib/mathAST/domain/compute';
-import { solve as solveRelation } from '$lib/mathAST/solve';
 import { formatInterval } from '$lib/mathAST/domain/format';
 import type { Domain } from '$lib/mathAST/domain/types';
 import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
@@ -105,7 +104,6 @@ import {
 	withValueInRegister
 } from '$lib/mathAST/integration/coefficient-register';
 import { getPolynomialDegree } from '$lib/mathAST/analysis/expression-classify';
-import { differentiateN } from '$lib/mathAST/differentiation/differentiate';
 import { findNodes, mapNode } from '$lib/mathAST/transforms';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import {
@@ -191,7 +189,11 @@ import {
 } from '$lib/mathAST/cli/core/degrees';
 import { radiansInLatex, radiansInText } from './angle-radians';
 import { quantityProblem } from '$lib/mathAST/cli/quantities';
-import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
+import {
+	EQUATION_UNSOLVED,
+	INEQUALITY_UNSOLVED,
+	PARAMETER_DEPENDS
+} from '$lib/mathAST/cli/commands/solve.command';
 import { VALUE_FORBIDDEN, typedValueLatex } from '$lib/mathAST/cli/commands/eval.command';
 import { isBoolean, isNumber, isOpposite, isRelation, isUnit } from '$lib/mathAST/guards';
 import { deriveSteps } from './derive-steps';
@@ -2474,16 +2476,9 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		finalArgs = { ...finalArgs, interval: formatInterval(studied) };
 	}
 	const commandArgument = finalArgs === null ? argument : writeCommandArguments(finalArgs);
-	// Le moteur ne calcule pas le cosinus d'une grandeur : il reçoit les radians,
-	// partie par partie — jamais sur le texte entier, où `pour x` se collerait à
-	// l'équation (`x^4=1pourx`, revue)
-	const toRadians = (text: string) => radiansInText(text, session.atelier.functionNames);
-	const engineArgument =
-		name !== 'solve'
-			? commandArgument
-			: finalArgs === null
-				? toRadians(argument)
-				: writeCommandArguments(substituteArguments(finalArgs, toRadians) ?? finalArgs);
+	// `.résoudre` reçoit les degrés tels quels : le registre les lit (valeur
+	// remarquable calculée, angle quelconque gardé — registre-reference, PR 2c)
+	const engineArgument = commandArgument;
 	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${engineArgument}`;
 
 	// `.évaluer sin(x) en x=30°` : le moteur remplace x et rend `sin((π/6)[rad])`,
@@ -2491,21 +2486,11 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const executedResult = engine.execute(executed);
 	const result = name === 'eval' ? evaluatedInRadians(executedResult) : executedResult;
 	// V57 : une résolution qui DIVISE par un paramètre (`a x = 0` → x = 0, faux
-	// pour a = 0) refuse plutôt que de répondre (Q5, David, 2026-10-14). Les
-	// refus du moteur passent avant : il dit déjà ce qu'il ne sait pas faire
-	const parameterRefusal =
-		name === 'solve' &&
-		finalArgs !== null &&
-		(result.success || result.error?.code === INEQUALITY_UNSOLVED)
-			? parameterSolveRefusal(
-					session,
-					finalArgs.expression,
-					finalArgs.variable ?? DEFAULT_VARIABLE,
-					result.success ? result.latex : undefined
-				)
-			: null;
-	if (parameterRefusal !== null) {
-		return { kind: 'refus', message: parameterRefusal, ...notesOf(letterNote) };
+	// pour a = 0) refuse plutôt que de répondre (Q5, David, 2026-10-14). Le refus
+	// vit dans le registre depuis la PR 2c (registre-reference) : l'Atelier dit le
+	// sien, avant les étapes — les valeurs posées sont celles du même moteur
+	if (name === 'solve' && !result.success && result.error?.code === PARAMETER_DEPENDS) {
+		return { kind: 'refus', message: result.error.message, ...notesOf(letterNote) };
 	}
 	// Une borne à paramètre sur un pôle (`1/x de 1 à a` → ln|a|, faux si
 	// a ⩽ 0), un pôle qui dépend du paramètre (`1/(x-a) de 0 à 1`), ou `x^a`
@@ -2743,7 +2728,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			kind: 'commande',
 			input,
 			output: rendered.text,
-			latex: result.latex,
+			// `cos(20°)`, gardé en degrés depuis que `.résoudre` les lit lui-même (PR 2c)
+			latex: degreeSignWritten(displayUnitsInLatex(result.latex)),
 			...solutionsAlternative(result),
 			...noted
 		};
@@ -3316,85 +3302,6 @@ function combinedRelation(
 	return null;
 }
 
-/**
- * Q5 (V57) : `.résoudre` refuse quand la résolution DIVISE par une expression
- * d'un paramètre — `a x = 0` répondait x = 0, faux pour a = 0.
- * - polynôme en l'inconnue : son coefficient dominant contient un paramètre
- *   (`a x + b = 0`, `x/a = 1`, `a x^2 = 1`, et `a x > 1`, dont le sens dépend
- *   du signe de a) ; `(x-a)(x-1) = 0`, `x + a = 0` restent résolus ;
- * - sinon, l'inconnue multipliée par un paramètre (`e^{a x} = 1`), ou un
- *   paramètre au dénominateur de la réponse (`1/x = a` → 1/a) — sauf si le
- *   moteur a écrit la condition (`u_0 \cdot 0{,}5^n = 1` : « si u₀ > 0 »).
- * ⚠️ `x^2 = a` reste : pas de division, et la réponse dit « si a ⩾ 0 ».
- *
- * @param latex - La réponse du moteur, `undefined` s'il n'a pas conclu
- */
-function parameterSolveRefusal(
-	session: CalcSession,
-	typed: string,
-	unknown: string,
-	latex: string | undefined
-): string | null {
-	const ast = parseCommandExpression(typed).ast;
-	if (ast === undefined || !isRelation(ast) || isRelation(ast.left)) return null;
-	const parameters = freeParameters(session, ast, unknown);
-	if (parameters.length === 0) return null;
-	const rational = ast.relation === '=' ? forbiddenSolutions(ast, unknown, parameters) : [];
-	if (rational.length > 0) return dependsOnMessage(rational);
-	const difference: MathNode = { type: 'subtraction', left: ast.left, right: ast.right };
-	const degree = getPolynomialDegree(difference, unknown);
-	if (degree === 0) return null;
-	if (degree !== null) {
-		const leading = leadingParameters(difference, degree, unknown, parameters);
-		if (leading.length > 0) return dependsOnMessage(leading);
-	}
-	const conditioned = latex?.includes('\\text{si') ?? false;
-	if (conditioned) return null;
-	const multiplied = degree === null ? multipliedParameters(difference, unknown, parameters) : [];
-	if (multiplied.length > 0) return dependsOnMessage(multiplied);
-	if (latex === undefined) return null;
-	const cites = (chunk: string, p: string) =>
-		new RegExp(`(?<![A-Za-z\\\\])${p}(?![A-Za-z])`).test(chunk);
-	const denominators = latexDenominators(latex);
-	const divisors = parameters.filter((p) => denominators.some((d) => cites(d, p)));
-	return divisors.length === 0 ? null : dependsOnMessage(divisors);
-}
-
-/**
- * Équation rationnelle (revue de 0d3d9beea) : les paramètres pour lesquels une
- * solution tombe sur une valeur interdite. `x/(x-a) = 0` → x = 0, interdite si
- * a = 0 ; `(x-a)/(x-1) = 0` → x = a, interdite si a = 1 ; `a/x = 1` → x = a.
- * `1/(x-a) = 1` → x = a + 1 n'annule jamais x − a : gardée.
- */
-function forbiddenSolutions(
-	relation: RelationNode,
-	unknown: string,
-	parameters: readonly string[]
-): string[] {
-	const denominators: MathNode[] = [];
-	mapNode(relation, (node) => {
-		if (node.type === 'division' && getVariables(node.denominator).has(unknown)) {
-			denominators.push(node.denominator);
-		}
-		return node;
-	});
-	if (denominators.length === 0) return [];
-	let solutions: readonly { readonly value: MathNode }[];
-	try {
-		solutions = solveRelation(relation, { variable: unknown }).solutions;
-	} catch {
-		return [];
-	}
-	const found = new Set<string>();
-	for (const solution of solutions) {
-		for (const denominator of denominators) {
-			const at = simplify(substitute(denominator, { [unknown]: solution.value })).result;
-			for (const p of citedParameters(at, parameters)) found.add(p);
-		}
-	}
-	return parameters.filter((p) => found.has(p));
-}
-
 /** Positif ou nul quelle que soit la valeur des lettres : `a^2`, `a^2 + b^2`, 3. */
 function isNonNegative(node: MathNode): boolean {
 	if (node.type === 'delimiter') return isNonNegative(node.content);
@@ -3687,70 +3594,6 @@ function positiveOn(node: MathNode, variable: string, segment: Segment): boolean
 	} catch {
 		return false;
 	}
-}
-
-/** Les paramètres du coefficient dominant d'un polynôme en `unknown`. */
-function leadingParameters(
-	polynomial: MathNode,
-	degree: number,
-	unknown: string,
-	parameters: readonly string[]
-): string[] {
-	try {
-		const leading = simplify(differentiateN(polynomial, degree, { variable: unknown })).result;
-		return citedParameters(leading, parameters);
-	} catch {
-		return [];
-	}
-}
-
-/** Les paramètres qui multiplient (ou divisent) l'inconnue : `a x`, `x/a`. */
-function multipliedParameters(
-	ast: MathNode,
-	unknown: string,
-	parameters: readonly string[]
-): string[] {
-	const found = new Set<string>();
-	const withUnknown = (n: MathNode) => getVariables(n).has(unknown);
-	mapNode(ast, (node) => {
-		const pairs: (readonly [MathNode, MathNode])[] =
-			node.type === 'multiplication'
-				? [
-						[node.left, node.right],
-						[node.right, node.left]
-					]
-				: node.type === 'division'
-					? [[node.numerator, node.denominator]]
-					: [];
-		for (const [carrier, factor] of pairs) {
-			if (withUnknown(carrier) && !withUnknown(factor)) {
-				for (const p of citedParameters(factor, parameters)) found.add(p);
-			}
-		}
-		return node;
-	});
-	return parameters.filter((p) => found.has(p));
-}
-
-/** Les dénominateurs `\dfrac{…}{…}` d'une réponse en LaTeX. */
-function latexDenominators(latex: string): string[] {
-	const denominators: string[] = [];
-	// La fin du groupe `{…}` ouvert en `from`, -1 s'il ne se ferme pas
-	const groupEnd = (from: number): number => {
-		let depth = 0;
-		for (let i = from; i < latex.length; i++) {
-			if (latex[i] === '{') depth++;
-			else if (latex[i] === '}' && --depth === 0) return i;
-		}
-		return -1;
-	};
-	for (const match of latex.matchAll(/\\d?frac\{/g)) {
-		const numeratorEnd = groupEnd(match.index + match[0].length - 1);
-		if (numeratorEnd === -1 || latex[numeratorEnd + 1] !== '{') continue;
-		const denominatorEnd = groupEnd(numeratorEnd + 1);
-		if (denominatorEnd !== -1) denominators.push(latex.slice(numeratorEnd + 2, denominatorEnd));
-	}
-	return denominators;
 }
 
 /**

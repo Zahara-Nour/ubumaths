@@ -190,7 +190,7 @@ describe('chaque commande de la vue Calcul écrit la virgule', () => {
 	it('.résoudre (mode décimal) : la valeur approchée', () => {
 		const result = commande(runInput(decimalSession(), '.résoudre e^x=3'));
 
-		expect(result.output).toContain('x ≈ 1,0986');
+		expect(result.output).toContain('S ≈ {1,0986}');
 		expectNoDotDecimal(result);
 	});
 

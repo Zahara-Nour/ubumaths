@@ -271,10 +271,10 @@ describe('.résoudre dans Calcul', () => {
 		expect(latexOf(`.résoudre ${equation}`)).toBe(expected);
 	});
 
-	it('le texte aussi : x = 2kπ ou x = π/3 + {2kπ}/3', () => {
+	it('le texte aussi : S = {2kπ ; π/3 + {2kπ}/3, k ∈ ℤ}', () => {
 		const result = runInput(session(), '.résoudre sin(2x)=sin(x)');
 		expect(result.kind === 'commande' && result.output).toContain(
-			'x = 2k\\pi ou x = \\pi/3 + {2k\\pi}/3, k ∈ ℤ'
+			'S = {2k\\pi ; \\pi/3 + {2k\\pi}/3, k ∈ ℤ}'
 		);
 	});
 

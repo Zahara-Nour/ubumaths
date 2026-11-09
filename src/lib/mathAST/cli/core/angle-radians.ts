@@ -20,6 +20,7 @@ import { divide, multiply, number as mathNumber, parentheses, piConstant } from 
 import { transformAST } from '../../visitor';
 import { findNodes } from '../../transforms';
 import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
+import { nodesEqual } from '../../normal/hash';
 
 /** Les fonctions qui prennent un angle et rendent un nombre. */
 const TRIGONOMETRIC = new Set(['sin', 'cos', 'tan']);
@@ -96,4 +97,38 @@ export function remarkableValuesInTrigonometry(ast: MathNode): MathNode {
 /** Un appel à sin, cos ou tan. */
 function isTrigonometric(node: MathNode): boolean {
 	return node.type === 'function' && TRIGONOMETRIC.has(node.name);
+}
+
+/** Un angle en degrés : `20 °`. */
+function isDegreeAngle(node: MathNode): boolean {
+	return isUnit(node) && formatUnit(node.unit, 'original') === '°';
+}
+
+/**
+ * L'écriture des angles d'une RÉPONSE, d'après la ligne tapée (Q1 de la PR 2c,
+ * David, 2026-11-09) : un sin, cos, tan d'un angle tapé en degrés, sans valeur
+ * remarquable, se réécrit tel qu'il a été tapé — `cos(20°)`, comme
+ * `.simplify cos(20°)x`. Le solveur, lui, calcule en radians : sa réponse dit
+ * `cos((π/9) rad)` (registre) ou `cos(π/9)` (étapes de l'Atelier). Tout autre
+ * angle mesuré devient un nombre de radians (`radiansInTrigonometry`).
+ *
+ * Sans degrés tapés : l'identité.
+ *
+ * @param typed - La ligne lue, valeurs remarquables déjà calculées
+ */
+export function anglesAsTyped(typed: MathNode): (tree: MathNode) => MathNode {
+	const typedAngles = findNodes(
+		typed,
+		(node) => isTrigonometric(node) && findNodes(node, isDegreeAngle).length > 0
+	).map((node) => ({ node, radians: radiansInTrigonometry(node) }));
+	if (typedAngles.length === 0) return (tree) => tree;
+	return (tree) =>
+		transformAST(tree, {
+			enterFunction: (node) => {
+				if (!isTrigonometric(node)) return undefined;
+				const radians = radiansInTrigonometry(node);
+				const typedAngle = typedAngles.find((angle) => nodesEqual(angle.radians, radians));
+				return { node: typedAngle?.node ?? radians, skip: true };
+			}
+		});
 }

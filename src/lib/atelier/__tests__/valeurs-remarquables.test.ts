@@ -219,11 +219,10 @@ describe('.développer et .résoudre — en degrés', () => {
 		]);
 	});
 
-	it('hors table : .résoudre en radians exacts, comme avant', () => {
+	// Q1 de la PR 2c (registre-reference, David, 2026-11-09) : en degrés, comme tapé
+	it('hors table : .résoudre garde les degrés, comme .simplifier', () => {
 		const { latex, titles } = line('.résoudre cos(20°)x=1');
-		expect(latex).toBe(
-			String.raw`S = \left\{ \dfrac{1}{\cos\left( \dfrac{\pi}{9} \right)} \right\}`
-		);
+		expect(latex).toBe(String.raw`S = \left\{ \dfrac{1}{\cos\left( 20{}^{\circ} \right)} \right\}`);
 		expect(titles[0]).toBe('Équation du premier degré');
 	});
 
@@ -234,8 +233,8 @@ describe('.développer et .résoudre — en degrés', () => {
 	});
 });
 
-// Revue (2026-10-27) : le moteur de `.résoudre` reçoit les radians PARTIE par
-// partie — sur le texte entier, `pour x` se collait à l'équation (`x^4=1pourx`)
+// Revue (2026-10-27) : `pour x` ne se colle pas à l'équation (`x^4=1pourx`) ; le
+// registre lit les degrés lui-même depuis la PR 2c (registre-reference)
 describe('.résoudre — degrés, mots-clés et repli du moteur', () => {
 	it.each([
 		['.résoudre x^4 = cos(0°) pour x', String.raw`S = \left\{ -1 \,;\, 1 \right\}`],
@@ -247,7 +246,7 @@ describe('.résoudre — degrés, mots-clés et repli du moteur', () => {
 		],
 		[
 			'.résoudre x^2 = cos(20°) dans [0;5]',
-			String.raw`S = \left\{ \sqrt{\cos\left( \dfrac{\pi}{9} \right)} \right\}`
+			String.raw`S = \left\{ \sqrt{\cos\left( 20{}^{\circ} \right)} \right\}`
 		]
 	])('%s → %s', (input, expected) => {
 		expect(line(input).latex).toBe(expected);
