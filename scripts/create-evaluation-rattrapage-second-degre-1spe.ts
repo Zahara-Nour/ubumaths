@@ -332,9 +332,24 @@ async function main() {
 		console.log('\n✅ Terminé.');
 	} catch (err) {
 		// Rien de partiel : fiche (lignes en cascade), puis exercices neufs. Les images restent.
-		if (ficheId) await supabase.from('worksheets').delete().eq('id', ficheId);
-		if (creesExercices.length) await supabase.from('exercises').delete().in('id', creesExercices);
-		throw new Error(`${err instanceof Error ? err.message : String(err)} — tout a été défait`);
+		const restes: string[] = [];
+		if (ficheId) {
+			const { data } = await supabase.from('worksheets').delete().eq('id', ficheId).select('id');
+			if (data?.length !== 1) restes.push(`fiche ${ficheId}`);
+		}
+		if (creesExercices.length) {
+			const { data } = await supabase
+				.from('exercises')
+				.delete()
+				.in('id', creesExercices)
+				.select('id');
+			const supprimes = new Set((data ?? []).map((l) => l.id));
+			for (const id of creesExercices) if (!supprimes.has(id)) restes.push(`exercice ${id}`);
+		}
+		const bilan = restes.length
+			? `⚠️ NON défait, à supprimer à la main : ${restes.join(', ')}`
+			: 'tout a été défait';
+		throw new Error(`${err instanceof Error ? err.message : String(err)} — ${bilan}`);
 	}
 }
 

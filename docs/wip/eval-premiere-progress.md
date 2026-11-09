@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, avant la PR._
+_Mis à jour le 2026-11-09, PR #2509 ouverte (revue Sonnet : aucun bloquant, nettoyage vérifié ajouté)._
 
 - **État** : 3 exercices (dauphin, massif de fleurs, atelier de bougies) rédigés FR/EN, calculs vérifiés (sympy), rendu vérifié (`check:ubumark`, `fiche:verifier`), script de création en simulation OK.
-- **Prochaine action** : PR → CI verte → merge ; puis `--publier` **sur feu vert de David** (écriture en prod).
+- **Prochaine action** : CI de #2509 verte → merge ; puis `--publier` **sur feu vert de David** (écriture en prod).
 - **En attente de David** : feu vert pour `--publier` ; barème (il le fixe lui-même dans l'appli).
 - **Pièges en cours** : `data/` est dans `.gitignore` → `git add -f` ; heredoc non quoté = `$…` mangés (énoncés réécrits).
 - **Worktree / branche** : `../ubumaths-wt-eval-premiere` · `feat/eval-premiere`.
