@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2498._
+_Mis à jour le 2026-11-09, après la publication du lot 6._
 
-- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes : lots 4 et 5 publiés ; lot 6 (361, 362, 387, 388)
-  en brouillon, rangé en prod (#2498 mergée, `db:migrate` fait, vérifié) ; page à cocher publiée :
-  https://claude.ai/artifact/Xa6NaZXLSGiz8NxXghiSjz (§ 12, fin).
-- **Prochaine action** : lire et compter les verdicts de la page (collection `verdicts`) → si 4 « ok »,
-  simulation `publier-lot.ts --dir scripts/questions/2de-algorithmes-6` → David lance `--publier`.
-- **En attente de David** : relecture du lot 6 sur la page à cocher.
-- **Pièges en cours** : écritures en prod (`db:migrate` compris, refusé par le classifieur le 2026-11-09) →
-  commande `!` donnée à David ; job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed`.
-- **Worktree / branche** : aucun (worktree du lot 6 retiré après #2498) ; prochain lot → nouveau worktree.
+- **État** : 12 démonstrations (lots 1-3) et 10 exemples d'algorithmes (lots 4-6) **tous publiés** ; aucun
+  brouillon ni PR en cours.
+- **Prochaine action** : selon David — soit les approfondissements (258, 259, 284-286, 305-310, 323, 324, 363 ;
+  non tranchés, § 1 et § 9), soit le versement (journal `questions-2de` et celui-ci versés, chantier clos).
+- **En attente de David** : approfondissements ou versement ?
+- **Pièges en cours** : écritures en prod (`db:migrate`, `publier-lot.ts`, même en simulation) refusées par le
+  classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) » qui plante tests verts
+  → `gh run rerun <run> --failed`.
+- **Worktree / branche** : aucun ; prochain lot → nouveau worktree.
 
 ---
 
@@ -406,3 +406,7 @@ Mergée (#2498, CI verte) ; `check:migrations --pr` passé ; `db:migrate` lancé
 attente, refusée au classifieur du mode auto) ; vérifié en prod : les 4 brouillons sur leur sous-notion, chacun
 avec son seul point, `updated_at` inchangé (00:18, création). Page à cocher (aucune alerte) :
 https://claude.ai/artifact/Xa6NaZXLSGiz8NxXghiSjz
+
+Lot 6 relu par David sur la page à cocher (2026-11-09) : 4 « ok », sans commentaire. Publié par David
+(`publier-lot.ts`, simulation puis `--publier`, 2026-11-09) : 4/4, statut relu en base. **Les 10 exemples
+d'algorithmes sont couverts** (lots 4-6), en plus des 12 démonstrations (lots 1-3).
