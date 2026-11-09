@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2509._
+_Mis à jour le 2026-11-09, après la publication en prod._
 
-- **État** : #2509 mergée (script + contenu sur `main`) ; rien d'écrit en prod.
-- **Prochaine action** : sur feu vert de David, depuis le dépôt principal à jour : `pnpm tsx scripts/create-evaluation-rattrapage-second-degre-1spe.ts` (simulation) puis `--publier` ; vérifier ensuite la fiche dans l'appli (aperçu PDF avec l'en-tête d'évaluation).
-- **En attente de David** : feu vert pour `--publier` ; barème (il le fixe lui-même dans l'appli).
+- **État** : fiche publiée en prod (`f337aa82-b020-4348-bf05-f99f4782f99b`, 3 exercices, vérifiée en base) ; aucun code applicatif, donc rien à déployer.
+- **Prochaine action** : quand David a regardé la fiche (ligne dans `verifications-manuelles.md`) et fixé son barème → fin de chantier : archiver ce journal (`docs/archive/`).
+- **En attente de David** : coup d'œil à la fiche et à l'aperçu PDF ; barème (il le fixe dans l'appli).
 - **Pièges en cours** : `data/` est dans `.gitignore` → `git add -f` ; heredoc non quoté = `$…` mangés.
 - **Worktree / branche** : supprimés après le merge ; tout se fait depuis le dépôt principal.
 
@@ -36,3 +36,4 @@ fiche d'applications `d6c03510`.
 ## Journal
 
 - 2026-11-09 : rédaction, vérifications, figures, script (`scripts/create-evaluation-rattrapage-second-degre-1spe.ts`), simulation OK. `data/fiches/` ajouté à `.prettierignore` (prettier abîme l'ubumark).
+- 2026-11-09 : #2509 mergée ; `--publier` lancé par David (refusé au classifieur du mode auto) → fiche `f337aa82` en prod, contrôlée par SQL (3 exercices dans l'ordre).
