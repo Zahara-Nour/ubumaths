@@ -268,6 +268,8 @@ possible.
   lissage (`bezier.ts`) ; courbes implicites par `marchingSquares`.
 - **PDF découpé** : `exportToTypst({ clipToViewport: true, underlay })` met traits et remplissages
   dans une boîte découpée à la fenêtre ; noms et textes restent au-dessus, jamais coupés.
+  `overlay` : lignes cetz dessinées après tout (rapporteur posé d'une figure à compléter,
+  `ubumark/generators/protractor-typst.ts`).
 - **Noms de points** : `etiquette=` → `rendering/label-placement.ts` (bloc ` ```figure `, écran et
   PDF) ; `GeometryCanvas` et les exports SVG/TikZ écrivent toujours en haut à droite. Le nom
   masqué (`etiquette="aucune"`, `labelHidden`, `Figure.setLabelHidden`) est respecté pour les

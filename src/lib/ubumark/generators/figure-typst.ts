@@ -26,6 +26,10 @@ import { buildFigureScene, type FigureFrame } from '../utils/figure-scene';
 import { exportToTypst } from '$lib/geometry-core/rendering/export-typst';
 import { localizeFigureText } from '../utils/figure-text-locale';
 import { FIGURE_TYPST_UNAVAILABLE, type FigureTypstOptions } from './figure-typst-registry';
+import { protractorTypst } from './protractor-typst';
+import { posedProtractorOf } from '$lib/questions/construction/measure';
+import { allNamedPointPositions, figureShapes } from '$lib/questions/construction/positions-setup';
+import type { FigureScene } from '../utils/figure-scene';
 
 /**
  * Mesures du repère sur la page, en cm : celles de `courbe-typst.ts` (traits
@@ -100,6 +104,22 @@ function frameToTypst(frame: FigureFrame, w: FigureWindow, cm: number): string[]
 	return out;
 }
 
+/**
+ * Rapporteur déjà posé d'une figure à compléter (`verifier: mesure AOB,
+ * rapporteur posé`) : la pose de l'écran (`posedProtractorOf`) ; aucune ligne
+ * sans pose ou si l'angle ne se mesure pas
+ */
+function posedProtractorLines(node: FigureNode, scene: FigureScene, unitCm: number): string[] {
+	const check = node.construction?.checks.find((c) => c.kind === 'mesure');
+	if (!check?.posed) return [];
+	const posed = posedProtractorOf(
+		check,
+		allNamedPointPositions(scene),
+		figureShapes(scene, node.header)
+	);
+	return posed ? protractorTypst(posed, unitCm) : [];
+}
+
 export function generateFigureTypst(node: FigureNode, options: FigureTypstOptions = {}): string {
 	const { scene } = buildFigureScene(node, {
 		locale: options.language === 'en' ? 'en' : 'fr'
@@ -108,8 +128,12 @@ export function generateFigureTypst(node: FigureNode, options: FigureTypstOption
 
 	const v = scene.viewport;
 	const unitCm = Math.round((FIGURE_WIDTH_CM[node.header.size] / (v.xMax - v.xMin)) * 1e4) / 1e4;
+	// Rapporteur posé AU-DESSUS des objets, translucide, comme l'écran : le nombre à
+	// lire n'est jamais caché par un côté de l'angle
+	const overlay = posedProtractorLines(node, scene, unitCm);
 	const canvas = exportToTypst(scene.figure, scene.viewport, {
 		...(scene.frame ? { underlay: frameToTypst(scene.frame, v, 1 / unitCm) } : {}),
+		...(overlay.length > 0 ? { overlay } : {}),
 		scale: unitCm,
 		markScale: 1 / unitCm,
 		includeImport: false,

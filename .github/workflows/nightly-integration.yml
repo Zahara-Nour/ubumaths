@@ -63,6 +63,8 @@ on:
       - 'src/lib/ubumark/**'
       # Bloc ```figure : les producteurs de PDF importent l'interpréteur du DSL
       - 'src/lib/geometry-core/**'
+      # Rapporteur posé imprimé (protractor-typst.ts) : rayon de référence du dessin
+      - 'src/lib/constructions-v2/constants.ts'
       # Bloc ```courbe : suites (parseur)
       - 'src/lib/grapheur/sequence.ts'
       # Bloc ```qr : adresse (parseur) et matrice (générateur Typst)
