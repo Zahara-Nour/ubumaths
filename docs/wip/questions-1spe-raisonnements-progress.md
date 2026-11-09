@@ -10,8 +10,8 @@ _Mis à jour le 2026-11-09, relecture faite (aucune PR)._
 
 - **État** : relecture faite (§ 3), phase 0 écrite (§ 4) et soumise.
 - **Prochaine action** : selon les réponses, worktree `questions-1spe-raisonnements`, modèles, migration nœud + tag.
-- **En attente de David** : Q1-Q4 du § 4 (disjonction/absurde, `1_SPE` sur les modèles de 2de, 435, logique
-  en chapitre ou transversal).
+- **En attente de David** : Q1-Q4 tranchées (§ 4) ; reste le go sur la liste des 6 modèles, `93f9ecdf` sans tag,
+  et les 2 modèles de quantificateurs (61d0571e, 24fd6a10) dans l'ajout de `1_SPE`.
 - **Pièges en cours** : relevé MCP en prod (lecture seule) ; nouveaux points ou tags = migration (question d'accès
   d'abord) ; un modèle porte au plus UN point (ADR 0020).
 - **Worktree / branche** : aucun (lecture seule pour l'instant).
@@ -94,3 +94,12 @@ Relevé MCP du 2026-11-09 (modèles publiés) : 201 `e5205176`, 202 `536c01bb`, 
 Questions à David : Q1 disjonction et absurde (points 1SPE neufs ou points de 2de + `1_SPE`) ; Q2 `1_SPE` sur les
 9 modèles de 2de ; Q3 435 voisins ou modèle ; Q4 logique en chapitre ou en transversal (fiches). `93f9ecdf` :
 reco le laisser sans tag (5 types, aucun point ne le porte seul).
+
+**Réponses de David (2026-11-09)** :
+
+- **Q1** : disjonction et absurde sur les **points de 2de 2-216 et 2-217**, `grades = ['2', '1_SPE']`, pas de point
+  1SPE neuf.
+- **Q2** : **ajouter `1_SPE`** aux 9 modèles de 2de (219c9470, 6c3ee9e6, 1e9a534f, 55341e85, 214f7500,
+  75d0fc89, e05203b0, 5426cead, bed58c24 ; plus 61d0571e, 24fd6a10 pour les quantificateurs, à confirmer).
+- **Q3** : 435 **couvert par ses voisins**, pas de modèle ; reclasser dans `1spe.md`.
+- **Q4** : logique **transversale**, modèles seuls, pas de fiches « Logique ».
