@@ -7,8 +7,9 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
 - **État** : analyse faite. David repart **de zéro**, avec un **nouveau nom** et le **lore de Chiphre**. Le principe reste le même : chaque sort ou coup se valide par une question, et les questions viennent du système de questions de Chiphre.
 - **Tranché** : avatar combattant, accompagné d'un Mathou familier ; une magie ajoutée au lore (§ « Tranché »).
 - **Tranché aussi** : la magie par étapes (recrue, apprenti, mage), avec un seul moteur. Voir § « Tranché ».
-- **Prochaine action** : réfléchir point par point avec David, en commençant par la **question 2, les adversaires**.
-- **En attente de David** : les questions 2 (adversaires), 4 (nom) et 5 (progression). La question 3 (public) est réglée : du primaire au lycée.
+- **Tranché aussi** : les adversaires sont des **Bêtes imprévues**, un bestiaire imaginaire par Province ; le Czar ne vient qu'aux grandes batailles. Voir § « Tranché ».
+- **Prochaine action** : la **riposte** (une frappe simple, ou une esquive par une question ?), puis les questions 4 (nom) et 5 (progression).
+- **En attente de David** : la riposte, puis les questions 4 et 5. La question 3 (public) est réglée : du primaire au lycée.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
   - Le Compendium n'interdit que les **mots** anglais affichés (XP, level, boss, score, leaderboard ; `lore-pataphysique.md:968,1776`), **pas les mécaniques**.
@@ -27,10 +28,18 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
   - **Le niveau scolaire** (`profiles.grade`) **ouvre l'étape** ; jouer en débloque le contenu progressivement.
   - **Le verbe donne l'effet en combat** (soigner, frapper, entraver, transformer, révéler) ; **la matière seule décide du domaine** de la question. Pas d'étiquetage par compétence.
 
+- **2026-11-09 — Adversaires : les Bêtes imprévues, et le Czar pour les grandes batailles** (choix de David). David préfère les monstres imaginaires de Navadra aux troupes du Czar :
+  - **Combats courants** : un bestiaire imaginaire, chaque Province ayant sa faune ; la Province décide du domaine des questions.
+  - **Origine dans le lore** : la « bête imprévue Clinamen » de Jarry (_Faustroll_, livre VI ; `lore-pataphysique.md:152`). Les bêtes naissent du **Clinamen en général**, la déviation qui fait exister les choses. Le rot du Père Ubu qui a révélé la dimension pataphysique de la Pologne (`lore-pataphysique.md:189`) en est le premier. **Elles ne naissent pas des erreurs des élèves** : David a écarté cette lecture, qui ferait de l'erreur un mal.
+  - **La remédiation se fait en coulisse** : le jeu envoie plus souvent les bêtes des points à remédier, sans que le lore le raconte.
+  - **Le Czar et ses troupes** ne viennent qu'aux grandes batailles (fin de campagne, Mobilisation Générale).
+  - **Pas de catalogue d'erreurs** : rien dans Chiphre ne reconnaît quelle erreur l'élève a faite (statuts juste, faux, mal écrit seulement ; aucune mauvaise réponse étiquetée dans les QCM).
+  - **À surveiller** : distinguer les bêtes des Mathoux au premier coup d'œil ; des bêtes drôles, pas effrayantes, puisque le primaire est inclus ; environ 3 ou 4 bêtes par Province pour la v1. Les images de Navadra ne sont pas réutilisables, faute de licence.
+
 ## À trancher (posé à David le 2026-11-09)
 
 1. **Combattants** : les **Mathoux** servent-ils de combattants (équipe de 3, chaque attaque est une question de la notion du Mathou), à la place des sorts et du grimoire ? C'est la décision du 2026-10-18 (`mathoux-conception.md:98-109`) : la confirmer ou la rouvrir.
-2. **Adversaires** : des **erreurs typiques** (« le Carré Fourbe ») au service du **Czar Alexis**, ou autre chose ? Cela engage un catalogue d'erreurs rattachées aux modèles de questions, et des illustrations.
+2. ✅ _Tranché le 2026-11-09 (Bêtes imprévues, voir § « Tranché »)._ **Adversaires** : des **erreurs typiques** (« le Carré Fourbe ») au service du **Czar Alexis**, ou autre chose ? Cela engage un catalogue d'erreurs rattachées aux modèles de questions, et des illustrations.
 3. **Public de la première version** : quels niveaux ? Navadra visait la 6e.
 4. **Nom du jeu** : David en a-t-il un, ou faut-il des propositions tirées du lore ?
 5. Question rattachée à la 1 : faut-il une progression propre au jeu (niveau, prestige personnel ou limité au Bataillon), ou le stade des Mathoux suffit-il ?
