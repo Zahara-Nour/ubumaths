@@ -1,0 +1,213 @@
+{
+	"title": "Étudier une configuration dans un repère",
+	"description": "Carré ABCD, I milieu de [CD], J sur [BC] avec BJ = ¾BC : repère (A ; AB, AD) orthonormé à justifier, ordonnée de J et IJ² à calculer, conclusion par la réciproque de Pythagore",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "$ABCD$ est un carré. $I$ est le milieu de $[CD]$, et $J$ est le point de $[BC]$ tel que $BJ=\\dfrac{3}{4}BC$. On veut démontrer que le triangle $AIJ$ est rectangle en $I$.\n\nOn choisit le repère $\\left(A\\,;\\overrightarrow{AB},\\overrightarrow{AD}\\right)$ pour calculer des longueurs. Pourquoi est-il orthonormé ?\n\n```choix\n- Parce que $ABCD$ est un carré : $(AB)\\perp(AD)$ et $AB=AD$.\n- Parce que $A$ est un sommet du carré.\n- Parce qu'on choisit $AB=1$.\n- Tout repère est orthonormé.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un repère $\\left(A\\,;\\overrightarrow{AB},\\overrightarrow{AD}\\right)$ est orthonormé quand les deux vecteurs sont **orthogonaux** et de **même norme**, prise pour unité.",
+					"Dans le carré $ABCD$, $(AB)\\perp(AD)$ et $AB=AD$ : c'est le cas.",
+					"Dans un rectangle non carré, ce repère ne serait pas orthonormé, et la formule de la distance ne s'appliquerait pas."
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un carré. $I$ est le milieu de $[CD]$, et $J$ est le point de $[BC]$ tel que $BJ=\\dfrac{3}{4}BC$. On veut démontrer que le triangle $AIJ$ est rectangle en $I$.\n\nOn se place dans le repère $\\left(A\\,;\\overrightarrow{AB},\\overrightarrow{AD}\\right)$ : $A(0\\,;0)$, $B(1\\,;0)$, $C(1\\,;1)$, $D(0\\,;1)$.\n\nComplète l'ordonnée de $J$.\n\n$y_J=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{3}{4}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$J$ est sur $[BC]$, segment vertical d'abscisse $1$ qui va de $B(1\\,;0)$ à $C(1\\,;1)$.",
+					"$BJ=\\dfrac{3}{4}BC=\\dfrac{3}{4}$, donc $J\\left(1\\,;\\textcolor{{{color:primary.0}}}{\\dfrac{3}{4}}\\right)$."
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un carré. $I$ est le milieu de $[CD]$, et $J$ est le point de $[BC]$ tel que $BJ=\\dfrac{3}{4}BC$. On veut démontrer que le triangle $AIJ$ est rectangle en $I$.\n\nOn se place dans le repère $\\left(A\\,;\\overrightarrow{AB},\\overrightarrow{AD}\\right)$ : $A(0\\,;0)$, $B(1\\,;0)$, $C(1\\,;1)$, $D(0\\,;1)$. Alors $I\\left(\\dfrac{1}{2}\\,;1\\right)$ et $J\\left(1\\,;\\dfrac{3}{4}\\right)$.\n\nComplète.\n\n$IJ^2=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{5}{16}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le repère est orthonormé : $IJ^2=(x_J-x_I)^2+(y_J-y_I)^2$.",
+					"$IJ^2=\\left(1-\\dfrac{1}{2}\\right)^2+\\left(\\dfrac{3}{4}-1\\right)^2=\\dfrac{1}{4}+\\dfrac{1}{16}=\\textcolor{{{color:primary.0}}}{\\dfrac{5}{16}}$."
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un carré. $I$ est le milieu de $[CD]$, et $J$ est le point de $[BC]$ tel que $BJ=\\dfrac{3}{4}BC$. On veut démontrer que le triangle $AIJ$ est rectangle en $I$.\n\nOn se place dans le repère $\\left(A\\,;\\overrightarrow{AB},\\overrightarrow{AD}\\right)$ : $A(0\\,;0)$, $B(1\\,;0)$, $C(1\\,;1)$, $D(0\\,;1)$. On a calculé $AI^2=\\dfrac{5}{4}=\\dfrac{20}{16}$, $IJ^2=\\dfrac{5}{16}$ et $AJ^2=\\dfrac{25}{16}$.\n\nQue peut-on conclure ?\n\n```choix\n- $AI^2+IJ^2=AJ^2$ : d'après la réciproque du théorème de Pythagore, $AIJ$ est rectangle en $I$.\n- $AI^2+AJ^2\\neq IJ^2$ : le triangle $AIJ$ n'est pas rectangle.\n- $AI^2+IJ^2=AJ^2$ : d'après la réciproque du théorème de Pythagore, $AIJ$ est rectangle en $A$.\n- $AI=IJ$ : le triangle $AIJ$ est isocèle en $I$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$AI^2+IJ^2=\\dfrac{20}{16}+\\dfrac{5}{16}=\\dfrac{25}{16}=AJ^2$.",
+					"$[AJ]$ est le plus grand côté : d'après la réciproque du théorème de Pythagore, le triangle $AIJ$ est **rectangle en $I$**, le sommet opposé à $[AJ]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "carré",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sommet",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AB = 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout repère",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0,75",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0,75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/4",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/16",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{5}{16}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/16",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{3}{16}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5/4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{5}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "rectangle en I",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pas rectangle",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rectangle en A",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : isocèle",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,262 @@
+{
+	"title": "Démontrer par contraposée",
+	"description": "Raisonnement par contraposée sur la parité (si n² + c est pair, alors n est impair) : contraposée à choisir, calcul n² + c = 2(2k² + …) + 1 à compléter, pourquoi cela suffit, étapes à ranger",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On veut démontrer la proposition : « pour tout entier naturel $n$, si $n^2+{{eval:c}}$ est pair, alors $n$ est impair ».\n\nOn choisit de raisonner par contraposée. Quelle implication démontre-t-on ?\n\n```choix\n- Pour tout entier naturel $n$, si $n$ est pair, alors $n^2+{{eval:c}}$ est impair.\n- Pour tout entier naturel $n$, si $n$ est impair, alors $n^2+{{eval:c}}$ est pair.\n- Pour tout entier naturel $n$, si $n$ est pair, alors $n^2+{{eval:c}}$ est pair.\n- Pour tout entier naturel $n$, si $n^2+{{eval:c}}$ est impair, alors $n$ est pair.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La contraposée de « si $A$, alors $B$ » est « si non $B$, alors non $A$ ».",
+					"Ici, $A$ : « $n^2+{{eval:c}}$ est pair » et $B$ : « $n$ est impair ». Non $B$ : « $n$ est pair » ; non $A$ : « $n^2+{{eval:c}}$ est impair ».",
+					"On démontre donc : **si $n$ est pair, alors $n^2+{{eval:c}}$ est impair**.",
+					"« Si $n$ est impair, alors $n^2+{{eval:c}}$ est pair » est la **réciproque** : elle n'est pas équivalente à la proposition de départ."
+				]
+			},
+			"conditions": ["c % 2 = 1"]
+		},
+		{
+			"statement": "On veut démontrer la proposition : « pour tout entier naturel $n$, si $n^2+{{eval:c}}$ est pair, alors $n$ est impair ».\n\nOn démontre sa contraposée : « si $n$ est pair, alors $n^2+{{eval:c}}$ est impair ».\n\nSoit $n$ un entier naturel pair : $n=2k$ avec $k$ entier naturel. Complète.\n\n$n^2+{{eval:c}}=2\\times\\left(?\\right)+1$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2k^2+{{eval:(c-1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$n^2=(2k)^2=4k^2$, donc $n^2+{{eval:c}}=4k^2+{{eval:c-1}}+1$.",
+					"On factorise $2$ dans $4k^2+{{eval:c-1}}$ : $n^2+{{eval:c}}=2\\times\\left(\\textcolor{{{color:primary.0}}}{2k^2+{{eval:(c-1)/2}}}\\right)+1$.",
+					"C'est un nombre impair : la contraposée est démontrée."
+				]
+			},
+			"conditions": ["c % 2 = 1"]
+		},
+		{
+			"statement": "On veut démontrer la proposition : « pour tout entier naturel $n$, si $n^2+{{eval:c}}$ est pair, alors $n$ est impair ».\n\nOn a démontré : « pour tout entier naturel $n$, si $n$ est pair, alors $n^2+{{eval:c}}$ est impair ».\n\nPourquoi la proposition de départ est-elle alors démontrée ?\n\n```choix\n- Une implication et sa contraposée sont toujours vraies ou fausses en même temps.\n- Une implication et sa réciproque sont toujours vraies ou fausses en même temps.\n- On a vérifié la proposition pour tous les entiers pairs, ce qui suffit.\n- Elle n'est pas démontrée : il faudrait encore traiter le cas où $n$ est impair.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'implication « si $A$, alors $B$ » et sa contraposée « si non $B$, alors non $A$ » sont **équivalentes** : démontrer l'une, c'est démontrer l'autre.",
+					"Ce n'est pas vrai de la réciproque « si $B$, alors $A$ », qui peut être fausse quand l'implication est vraie.",
+					"Il n'y a pas d'autre cas à traiter : la contraposée a été démontrée pour tout $n$."
+				]
+			},
+			"conditions": ["c % 2 = 1"]
+		},
+		{
+			"statement": "On veut démontrer : « pour tout entier naturel $n$, si $n^2+{{eval:c}}$ est pair, alors $n$ est impair ».\n\nRemets les étapes du raisonnement dans l'ordre.\n\n```ranger\nsigne: aucun\n- On démontre la contraposée : si $n$ est pair, alors $n^2+{{eval:c}}$ est impair.\n- Soit $n$ un entier naturel pair : $n=2k$ avec $k$ entier naturel.\n- Alors $n^2+{{eval:c}}=2\\left(2k^2+{{eval:(c-1)/2}}\\right)+1$.\n- Donc $n^2+{{eval:c}}$ est impair : la contraposée est vraie.\n- Une implication et sa contraposée sont équivalentes : la proposition est démontrée.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..15"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On annonce d'abord la contraposée à démontrer, puis on part de son hypothèse ($n$ pair).",
+					"Soit $n$ un entier naturel pair : $n=2k$ avec $k$ entier naturel. Alors $n^2+{{eval:c}}=4k^2+{{eval:c}}=2\\left(2k^2+{{eval:(c-1)/2}}\\right)+1$.",
+					"La contraposée est démontrée, donc la proposition de départ aussi."
+				]
+			},
+			"conditions": ["c % 2 = 1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "contraposée",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : réciproque",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n pair ⇒ pair",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : négations dans le mauvais ordre",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2k² + 2",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["2k^2+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture 2 + 2k²",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["2+2k^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2k² + 5",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["2k^2+5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4k² + 4",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["4k^2+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k² + 2",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["k^2+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "contraposée équivalente",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : réciproque",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : cas pairs suffisent",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : cas impair",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

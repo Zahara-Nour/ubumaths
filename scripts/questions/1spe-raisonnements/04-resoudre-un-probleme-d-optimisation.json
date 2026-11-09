@@ -1,0 +1,258 @@
+{
+	"title": "Résoudre un problème d'optimisation",
+	"description": "Problèmes guidés : enclos contre un mur (aire A(x) = x(m − 2x) à exprimer, largeur optimale m/4) ; boîte sans couvercle (V′ donnée, côté optimal a/6, volume maximal 2a³/27)",
+	"grades": ["1_SPE"],
+	"level": 9,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On dispose de ${{eval:m}}~\\unit{m}$ de clôture pour fermer un enclos rectangulaire adossé à un mur : la clôture forme les trois autres côtés. On note $x$ la largeur de l'enclos (en mètres), c'est-à-dire la longueur des deux côtés perpendiculaires au mur, avec $0<x<{{eval:m/2}}$.\n\nExprime l'aire $A(x)$ de l'enclos (en $\\unit{m^2}$) en fonction de $x$.\n\n$A(x)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "20..80"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x({{eval:m}}-2x)",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux côtés perpendiculaires au mur mesurent $x$ : il reste ${{eval:m}}-2x$ mètres de clôture pour le côté parallèle au mur.",
+					"L'aire est longueur fois largeur : $A(x)=\\textcolor{{{color:primary.0}}}{x({{eval:m}}-2x)}$."
+				]
+			},
+			"conditions": ["m % 4 = 0"]
+		},
+		{
+			"statement": "On dispose de ${{eval:m}}~\\unit{m}$ de clôture pour fermer un enclos rectangulaire adossé à un mur : la clôture forme les trois autres côtés. On note $x$ la largeur de l'enclos (en mètres), c'est-à-dire la longueur des deux côtés perpendiculaires au mur, avec $0<x<{{eval:m/2}}$.\n\nL'aire de l'enclos est $A(x)=x({{eval:m}}-2x)$, et sa dérivée est $A'(x)={{eval:m}}-4x$.\n\nPour quelle largeur $x$ (en mètres) l'aire de l'enclos est-elle maximale ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "20..80"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m/4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A'(x)={{eval:m}}-4x$ s'annule en $x={{eval:m/4}}$ ; elle est positive avant et négative après.",
+					"$A$ est donc croissante sur $\\left]0\\,;{{eval:m/4}}\\right]$ puis décroissante sur $\\left[{{eval:m/4}}\\,;{{eval:m/2}}\\right[$ : elle atteint son maximum en $x=\\textcolor{{{color:primary.0}}}{{{eval:m/4}}}$.",
+					"L'enclos mesure alors ${{eval:m/4}}~\\unit{m}$ sur ${{eval:m/2}}~\\unit{m}$, pour une aire de ${{eval:m^2/8}}~\\unit{m^2}$."
+				]
+			},
+			"conditions": ["m % 4 = 0"]
+		},
+		{
+			"statement": "Dans une plaque carrée de côté ${{eval:a}}~\\unit{cm}$, on découpe à chaque coin un carré de côté $x$ (en centimètres), avec $0<x<{{eval:a/2}}$, puis on replie les bords pour former une boîte sans couvercle.\n\nSon volume est $V(x)=x({{eval:a}}-2x)^2$ (en $\\unit{cm^3}$), et sa dérivée est $V'(x)=({{eval:a}}-2x)({{eval:a}}-6x)$.\n\nPour quelle valeur de $x$ (en centimètres) le volume de la boîte est-il maximal ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "6..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left]0\\,;{{eval:a/2}}\\right[$, ${{eval:a}}-2x>0$ : $V'(x)$ a le signe de ${{eval:a}}-6x$, positif avant ${{eval:a/6}}$ et négatif après.",
+					"$V$ est donc croissante puis décroissante : son maximum est atteint en $x={{eval:a/6}}$.",
+					"La valeur $x={{eval:a/2}}$, qui annule aussi $V'$, n'est pas dans l'intervalle : la boîte n'existe plus. Réponse : $x=\\textcolor{{{color:primary.0}}}{{{eval:a/6}}}$."
+				]
+			},
+			"conditions": ["a % 6 = 0"]
+		},
+		{
+			"statement": "Dans une plaque carrée de côté ${{eval:a}}~\\unit{cm}$, on découpe à chaque coin un carré de côté $x$ (en centimètres), avec $0<x<{{eval:a/2}}$, puis on replie les bords pour former une boîte sans couvercle.\n\nSon volume est $V(x)=x({{eval:a}}-2x)^2$ (en $\\unit{cm^3}$), et sa dérivée est $V'(x)=({{eval:a}}-2x)({{eval:a}}-6x)$.\n\nQuel est le volume maximal de la boîte (en $\\unit{cm^3}$) ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "6..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a^3/27}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left]0\\,;{{eval:a/2}}\\right[$, ${{eval:a}}-2x>0$ : $V'(x)$ a le signe de ${{eval:a}}-6x$, positif avant ${{eval:a/6}}$ et négatif après.",
+					"$V$ est donc croissante puis décroissante : son maximum est atteint en $x={{eval:a/6}}$.",
+					"$V\\left({{eval:a/6}}\\right)={{eval:a/6}}\\times({{eval:a}}-{{eval:a/3}})^2={{eval:a/6}}\\times{{eval:2*a/3}}^2=\\textcolor{{{color:primary.0}}}{{{eval:2*a^3/27}}}$.",
+					"Le volume maximal est de ${{eval:2*a^3/27}}~\\unit{cm^3}$."
+				]
+			},
+			"conditions": ["a % 6 = 0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x(40 − 2x)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "40"
+			},
+			"answers": ["x(40-2x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme développée 40x − 2x²",
+			"variationIndex": 0,
+			"variables": {
+				"m": "40"
+			},
+			"answers": ["40x-2x^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x(40 − x)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "40"
+			},
+			"answers": ["x(40-x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x(20 − x)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "40"
+			},
+			"answers": ["x(20-x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2x + 40",
+			"variationIndex": 0,
+			"variables": {
+				"m": "40"
+			},
+			"answers": ["2x+40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10",
+			"variationIndex": 1,
+			"variables": {
+				"m": "40"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 20 (borne de l'intervalle)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "40"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 200 (l'aire au lieu de x)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "40"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (racine hors intervalle)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 128 (le volume au lieu de x)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12"
+			},
+			"answers": ["128"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "128",
+			"variationIndex": 3,
+			"variables": {
+				"a": "12"
+			},
+			"answers": ["128"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 (x au lieu du volume)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "12"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 200",
+			"variationIndex": 3,
+			"variables": {
+				"a": "12"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
