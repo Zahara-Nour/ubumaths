@@ -9,14 +9,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2499._
+_Mis à jour le 2026-11-09, après #2499 ; PR 5 (Q15) en cours._
 
 - **État** : PR 4 (triangle rectangle coté en cm, § 7) mergée (#2499), Q17/Q18 corrigées. Les débouchés de
   la ligne n° 18 (CE2-039, CE2-070 coté) ont leurs outils ; reste à voir CP-035 / CE1-044 (mesurer à la règle).
 - **Prochaine action** : avec David, décider la suite (mesurer un segment à la règle, ou clore le chantier :
   versement dans `docs/systeme/`, ligne n° 18 de `outils-manquants.md`, journal archivé).
-- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494, #2499) ; choix (1)-(3) du § 5,
-  (1)-(4) du § 6 ; Q15 (reco : serrer) et Q16 (reco : plus tard), § 5.
+- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494, #2499) ; la suite du chantier
+  (mesurer un segment à la règle, ou clore).
 - **Pièges en cours** : le juge prend le **segment vu** (§ 3, et § 7 depuis Q18) ; seules les règles posées
   AVANT le trait comptent (§ 6, § 7) ; tests de composant : toucher pile sur une graduation ; commitlint :
   lignes du corps ≤ 100 caractères.
@@ -249,3 +249,8 @@ plus d'un → `severalTrianglesFeedback` ; la graduation est lue au bout du trai
 (`seenSegments` exportée de `segment-length.ts`). Sondes de la revue fondues dans
 `construction-triangle-rectangle-cm.test.ts` (5 rouges → verts, plus « même C deux fois : juste ») ;
 fichier `.revue.test.ts` retiré.
+
+**Décisions de David (« je suis tes recos », 2026-11-09)** : choix (1)-(3) du § 5 et (1)-(4) du § 6 validés ;
+**Q15** : serrer — sur demi-droite donnée, les segments depuis A ne fusionnent qu'à la tolérance de calcul
+(`SAME_DIRECTION_ON_RAY` = 1e-6 rad, paramètre `sameDirection` de `seenSegments`) ; **Q16** : `[AX)` plus tard,
+si un auteur le demande. PR 5 (`fix/regle-graduee-demi-droite`) : Q15, test rouge puis vert.

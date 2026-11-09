@@ -139,6 +139,21 @@ describe('juge : segment AB = 6 cm sur [Ax)', () => {
 		});
 	});
 
+	it('un trait de 5 cm à 1,9° de [Ax), superposé au bon segment : deux segments (Q15)', () => {
+		const angle = Math.atan2(3, 4) + (1.9 * Math.PI) / 180;
+		const tilted = regle({ x: 4 + Math.cos(angle), y: 4 + Math.sin(angle) });
+		expect(judge(SIX, [ON_RAY, along(ON_RAY, 60), tilted, along(tilted, 50)])).toEqual({
+			status: 'incorrect',
+			feedback: severalSegmentsFeedback('A', 'B')
+		});
+	});
+
+	it('le bon segment repassé (même direction, plus court) : un seul segment, juste', () => {
+		expect(judge(SIX, [ON_RAY, along(ON_RAY, 40), along(ON_RAY, 60)])).toEqual({
+			status: 'correct'
+		});
+	});
+
 	it('sur [Ax) mais sans règle : tracé à l’œil', () => {
 		expect(judge(SIX, [segment(A, { x: 8.8, y: 7.6 })])).toEqual({
 			status: 'incorrect',

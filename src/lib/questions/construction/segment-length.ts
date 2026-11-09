@@ -279,6 +279,12 @@ function farEnd(line: DrawnLine, a: Position, eps: number): Position | null {
  */
 export const SAME_DIRECTION = (2 * Math.PI) / 180;
 
+/**
+ * Demi-droite donnée (Q15, David, 2026-11-09) : la règle s'y aimante exactement ;
+ * deux traits ne fusionnent qu'à la tolérance de calcul près (radians)
+ */
+const SAME_DIRECTION_ON_RAY = 1e-6;
+
 /** Un segment vu depuis A : sa direction, son bout le plus loin ; `throughA` si A est au milieu */
 export interface SeenSegment {
 	direction: Position;
@@ -296,7 +302,8 @@ export interface SeenSegment {
 export function seenSegments(
 	segments: readonly DrawnLine[],
 	a: Position,
-	eps: number
+	eps: number,
+	sameDirection: number = SAME_DIRECTION
 ): SeenSegment[] {
 	const groups: { direction: Position; reach: number; end: Position; behind: boolean }[] = [];
 	for (const s of segments) {
@@ -307,7 +314,7 @@ export function seenSegments(
 		const group = groups.find(
 			(g) =>
 				Math.acos(Math.min(1, g.direction.x * direction.x + g.direction.y * direction.y)) <
-				SAME_DIRECTION
+				sameDirection
 		);
 		if (!group) groups.push({ direction, reach: r, end: far, behind: false });
 		else if (r > group.reach) Object.assign(group, { reach: r, end: far });
@@ -318,7 +325,7 @@ export function seenSegments(
 		const along = (p: Position) => {
 			const t = (p.x - a.x) * u.x + (p.y - a.y) * u.y;
 			const off = Math.abs((p.x - a.x) * u.y - (p.y - a.y) * u.x);
-			return { t, on: off <= Math.max(eps, Math.abs(t) * Math.sin(SAME_DIRECTION)) };
+			return { t, on: off <= Math.max(eps, Math.abs(t) * Math.sin(sameDirection)) };
 		};
 		let grew = true;
 		while (grew) {
@@ -350,7 +357,7 @@ export function seenSegments(
 				(h) =>
 					h !== g &&
 					Math.acos(Math.max(-1, h.direction.x * g.direction.x + h.direction.y * g.direction.y)) >
-						Math.PI - SAME_DIRECTION
+						Math.PI - sameDirection
 			)
 	}));
 }
@@ -385,7 +392,9 @@ export function judgeSegmentLength(
 	) {
 		return { status: 'incorrect' };
 	}
-	const seen = seenSegments(segments, a, eps).filter((s) => !s.throughA);
+	const seen = seenSegments(segments, a, eps, ray ? SAME_DIRECTION_ON_RAY : SAME_DIRECTION).filter(
+		(s) => !s.throughA
+	);
 	if (seen.length === 0) {
 		return { status: 'incorrect', feedback: missingSegmentFeedback(check.point, check.end) };
 	}
