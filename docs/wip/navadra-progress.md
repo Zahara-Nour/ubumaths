@@ -11,8 +11,9 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
 - **Tranché aussi** : la riposte. La recrue l'esquive par une question ; l'apprenti et le mage se défendent par leurs sorts.
 - **Tranché aussi** : pas de nom de produit. Le jeu s'appelle **La Descente de la Vistule**, un voyage initiatique à travers le Royaume, et c'est une activité de Chiphre, pas son cadre. Voir § « Tranché ».
 - **Tranché aussi** : la descente ne suit aucun ordre. Les Bêtes surgissent n'importe où dans le Royaume, et le joueur va les combattre là où elles sont.
-- **Prochaine action** : confirmer qui choisit le domaine des questions (le joueur pour l'apprenti et le mage ; et la recrue ?), puis la question 5 (progression).
-- **En attente de David** : ces deux points. La question 3 (public) est réglée : du primaire au lycée.
+- **Tranché aussi** : les Bêtes naissent des besoins de l'élève et sont vulnérables à ce domaine ; le joueur choisit le domaine par son coup ou son sort, la recrue comprise.
+- **Prochaine action** : la question 5 (progression et règles d'apparition des Bêtes).
+- **En attente de David** : la question 5. La question 3 (public) est réglée : du primaire au lycée.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
   - Le Compendium n'interdit que les **mots** anglais affichés (XP, level, boss, score, leaderboard ; `lore-pataphysique.md:968,1776`), **pas les mécaniques**.
@@ -32,7 +33,7 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
   - **Le verbe donne l'effet en combat** (soigner, frapper, entraver, transformer, révéler) ; **la matière seule décide du domaine** de la question. Pas d'étiquetage par compétence.
 
 - **2026-11-09 — Adversaires : les Bêtes imprévues, et le Czar pour les grandes batailles** (choix de David). David préfère les monstres imaginaires de Navadra aux troupes du Czar :
-  - **Combats courants** : un bestiaire imaginaire, chaque Province ayant sa faune. La Province de la Bête donne son allure et ses faiblesses. Le domaine de la question vient du coup ou du sort que choisit le joueur, comme le dit la décision sur l'avatar. _(Correction du 2026-11-09, à confirmer par David.)_
+  - **Combats courants** : un bestiaire imaginaire, chaque Province ayant sa faune. La Province de la Bête donne son allure et ses faiblesses. Le domaine de la question vient du coup ou du sort que choisit le joueur, comme le dit la décision sur l'avatar. _(Correction du 2026-11-09, confirmée par David le même jour.)_
   - **Origine dans le lore** : la « bête imprévue Clinamen » de Jarry (_Faustroll_, livre VI ; `lore-pataphysique.md:152`). Les bêtes naissent du **Clinamen en général**, la déviation qui fait exister les choses. Le rot du Père Ubu qui a révélé la dimension pataphysique de la Pologne (`lore-pataphysique.md:189`) en est le premier. **Elles ne naissent pas des erreurs des élèves** : David a écarté cette lecture, qui ferait de l'erreur un mal.
   - **La remédiation se fait en coulisse** : le jeu envoie plus souvent les bêtes des points à remédier, sans que le lore le raconte.
   - **Le Czar et ses troupes** ne viennent qu'aux grandes batailles (fin de campagne, Mobilisation Générale).
@@ -55,7 +56,13 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
   - les Bêtes surgissent **n'importe où dans le Royaume**, et le joueur va combattre celle qu'il veut, là où elle se trouve, comme sur la carte de Navadra ;
   - le tracé du fleuve (`lore-pataphysique.md:568`) ne change pas, mais il n'impose **aucun ordre aux Provinces** ;
   - cela règle le problème de l'ordre des domaines et celui des Provinces vides au primaire ;
-  - **reste à écrire** : les règles d'apparition des Bêtes (combien, où, combien de temps). Dans Navadra, il y avait 3 nouveaux monstres par jour et les gros fuyaient au bout de 3 à 6 jours. Cela relève de la question 5.
+  - **Reste à écrire** : les règles d'apparition des Bêtes (combien, où, combien de temps). Dans Navadra, il y avait 3 nouveaux monstres par jour et les gros fuyaient au bout de 3 à 6 jours. Cela relève de la question 5.
+
+- **2026-11-09 — Les Bêtes portent le besoin pédagogique** (David a validé mes 4 recommandations). Le problème : si le joueur choisit le domaine de chaque coup ou sort, il peut ne travailler que ses domaines favoris. Navadra ne s'en protégeait presque pas : faiblesses à ±15 %, et seul le mode classe imposait des notions.
+  - **Les Bêtes naissent des besoins de l'élève**, d'après le sélecteur (`student_point_state`) : d'abord les points à remédier, puis les non acquis, puis ceux à revoir.
+  - **Chaque Bête est nettement vulnérable au domaine à travailler**, sans y être limitée. Ordre de grandeur : ×2 avec le bon domaine, ×0,75 avec les autres, à régler à l'équilibrage. Avec le mauvais domaine, elle reste battable, mais le combat est plus long.
+  - **Le joueur choisit toujours le domaine** par son coup ou son sort. **La recrue aussi** : elle choisit ses coups par Province, et la Bête l'oriente.
+  - **Mode classe** (le prof impose les notions du moment, comme les créneaux de Navadra) : **plus tard**, pas en v1, avec la Bataille de Bataillon (idée n° 3).
 
 ## À trancher (posé à David le 2026-11-09)
 
