@@ -217,6 +217,22 @@ compilation) : `generators/__tests__/coupures-colonnes.test.ts`. Le texte d'aute
 contenu `[…]`, un intervalle écrit en texte (`]2 ; 3[`) le fermait trop tôt et le PDF ne compilait
 plus (déjà vrai avant, selon la place du crochet).
 
+**Titre d'exercice jamais seul en bas de page** (chantier coupures-pdf, PR 2, 2026-11-09). Le titre
+(`sticky`) ne suit le début de l'énoncé parti sur la page suivante que si le **premier morceau** du
+bloc de l'énoncé est vide (Typst 0.13, mesuré au compilateur de prod). Deux choses y laissaient une
+trace : un `block` qui enveloppe le contenu, et un `context` (un dessin `cetz` en est un) devant un
+bloc qui part en entier. D'où `ubu-item` / `ubu-item-bloc` : `context` puis `pad` (sans trace),
+précédés d'un bloc vide collé qui emmène la trace du `context` ; l'espacement de l'item (1,5em, le
+plus grand l'emporte sur celui du voisin) porté par deux blocs vides de hauteur nulle, `v(0pt, weak:
+true)` annulant l'espacement du gabarit entre eux et le contenu ; `ubu-item-bloc` pose son numéro par
+`place` (la grille laissait une trace). La tête collée (`tete:`) reste dans le même `pad` que le
+corps : un dessin en tête d'un `pad` à part ne la laissait pas le suivre. En tête d'un document qui
+suit un titre d'exercice (`chainedStart`) : bloc vide collé (`CHAINED_START_TYPST`) pour un énoncé
+qui commence par un dessin. Espacements identiques au point près (test contre l'ancienne
+définition). Effet de bord accepté par David : le texte des questions est désormais justifié comme
+le reste de la fiche (l'ancienne définition le laissait souvent en drapeau). Tests :
+`coupures-colonnes.test.ts`, le dessin `cetz` y est imité par un `layout` centré (hors réseau).
+
 ### Marques en ligne propres à ubumark
 
 | Écriture                                 | Nœud / effet                                   | Test                                                                              |

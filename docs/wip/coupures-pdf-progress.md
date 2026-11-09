@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2518._
+_Mis à jour le 2026-11-09, PR 2 en cours._
 
-- **État** : PR 1 mergée (#2518) : introduction collée en fin de page seulement, titres `##` et grilles compris après relecture ; 455 → 451 pages sur la base. Pas encore en prod.
-- **Prochaine action** : PR 2 — titre d'exercice seul en bas de page quand l'énoncé commence par une question à tête collée (§ 5, déjà en prod) ; nouveau worktree `ubumaths-wt-coupures-pdf`, branche `fix/coupures-pdf-titre-seul`.
-- **En attente de David** : `deploy:prod` (sur sa demande) ; ensuite retouche de `eval-premiere` (carré à 65 %), écriture en prod sur sa demande.
-- **Pièges en cours** : marqueur = `place`, pas un bloc de hauteur nulle (+18 pt en haut de colonne) ; jamais de marqueur entre deux blocs collés ; mesurer avec `regen-depuis-base --toutes --modele-de-la-fiche` avant / après ; typst.ts 0.6.1-rc5 = Typst 0.13.1.
-- **Worktree / branche** : supprimés après #2518 ; à recréer pour la PR 2.
+- **État** : PR 1 mergée (#2518). PR 2 (`fix/coupures-pdf-titre-seul`) : titre d'exercice / numéro de question jamais seul en bas de page quand l'énoncé commence par un dessin (§ 6). Mesure 451 → 452 pages, ~25 titres ou numéros seuls corrigés. Questions désormais justifiées (David, deux fois). Rien en prod.
+- **Prochaine action** : merger la PR 2 (CI verte), puis clore le chantier (versement dans `docs/systeme/`, journal archivé).
+- **En attente de David** : `deploy:prod` (sur sa demande) ; retouche de `eval-premiere` (carré à 65 %), écriture en prod sur sa demande.
+- **Pièges en cours** : un titre `sticky` ne suit l'énoncé que si son PREMIER MORCEAU est vide : ni `block` enveloppant, ni `context` (dessin `cetz`) devant un bloc qui part ; `v(…, weak: true)` l'emporte sur l'espacement des blocs (≠ `block(spacing:)`) ; tests avec `cetz` imité par `align(center, layout(…))` (hors réseau) ; mesurer x ET y (`pdftotext -bbox`).
+- **Worktree / branche** : `../ubumaths-wt-coupures-pdf` · `fix/coupures-pdf-titre-seul`.
 
 ---
 
@@ -119,3 +119,28 @@ premier morceau vide en bas de page. Règle A « titre jamais seul » violée �
 Relecture de #2518 (`code-reviewer`) : titre `##` sans marqueur (décision lue sur un marqueur
 périmé, test rouge puis vert) et marqueurs dans les cellules d'une grille `:colonnes` (largeur de
 cellule) → corrigés dans la PR ; forme « Réponses » ajoutée aux tests. Mesure inchangée.
+
+## 6. PR 2 : titre seul en bas de page (2026-11-09)
+
+Cause (mesurée au compilateur de prod, typst.ts 0.6.1-rc5) : le titre d'exercice (`sticky`) ne suit
+le bloc de l'énoncé que si le premier morceau de ce bloc est **vide**. Y laissaient une trace : un
+`block` qui enveloppe le contenu (bloc de `ubu-item`, grille de `ubu-item-bloc`) et un `context`
+(celui de `ubu-item`, et le dessin `cetz`) devant un bloc qui part en entier. Le `pad`, lui, n'en
+laisse pas. Cas en échec avant : question à tête collée (fiche 41737393), question qui commence
+par un dessin, énoncé qui commence par un dessin, exercice indispensable (filet).
+
+Correctif : `ubu-item` / `ubu-item-bloc` = bloc vide collé + `v(0pt, weak: true)` + `context` →
+`pad` + `v(0pt, weak: true)` + bloc vide (espacement 1,5em porté par les blocs vides : le plus grand
+l'emporte, comme `block(spacing:)` ; un `v` faible, lui, l'emporte toujours, −3 pt mesurés).
+`ubu-item-bloc` : numéro par `place`. Tête et corps dans le même `pad` (un `pad` à part pour le
+corps empêchait la tête de suivre un dessin, régression vue sur 41737393 puis corrigée).
+`chainedStart` : bloc vide collé en tête de l'énoncé (`CHAINED_START_TYPST`).
+
+Tests : `coupures-colonnes.test.ts`, 7 cas de titre (rouges sur `main`) et un test d'espacement contre
+l'ancienne définition (au centième de point, gabarit `block(spacing: 1.8em)`).
+
+Mesure (48 fiches, fiche + corrigé) : 451 → 452 pages (corrigé c9e0effd : titre « 2 » qui restait
+seul en bas de page 2, une ligne repoussée en page 4). 29 PDF avec un écart vertical, 25 commencent
+par un titre, un « Partie B » ou un numéro seul en bas de page. Effet de bord : le texte des
+questions est justifié partout (l'ancienne définition en laissait une partie en drapeau) ; David :
+« justifier » (2 fois, après avoir vu le pire cas, un corrigé à formules, 64acbbf3).

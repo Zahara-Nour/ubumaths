@@ -199,7 +199,11 @@ export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 
 	const setup = opts.includeSetup ? generateSetup(opts) : '';
-	const body = generateBody(ast, opts);
+	const generated = generateBody(ast, opts);
+	// Après un titre d'exercice : bloc vide collé en tête (cf. `ubu-item`), pour
+	// qu'un dessin (`context`) qui part sur la page suivante emmène le titre
+	const body =
+		opts.chainedStart && generated.trim() ? `${CHAINED_START_TYPST}\n${generated}` : generated;
 
 	// Document vide : pas d'en-tête (rien à rendre lisible)
 	return setup + (body.trim() ? PDF_READABILITY_HEADER : '') + body;
@@ -219,7 +223,19 @@ export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions
  *    `tete` = premier paragraphe collé au bloc qui le suit, numéro compris (sinon
  *    le numéro resterait seul sur sa ligne, au-dessus du bloc collé) ;
  *  - `ubu-item-bloc` : item qui commence par un bloc (formule centrée, cercle…),
- *    numéro à côté du bloc comme avant ;
+ *    numéro posé (`place`) à gauche de ce bloc, à sa hauteur ;
+ *  - un titre d'exercice collé à l'énoncé ne suit le début de l'énoncé, parti sur
+ *    la page suivante, que si le premier morceau de l'énoncé est VIDE (Typst 0.13,
+ *    mesuré au compilateur de prod, chantier coupures-pdf § 5). Un `block` qui
+ *    enveloppe le contenu, ou un `context` (dessin `cetz` compris) devant un bloc
+ *    qui part en entier, y laissent une trace : le titre restait seul en bas de
+ *    page. D'où, pour les deux items : `context` puis `pad` (qui ne laisse pas de
+ *    trace), précédés d'un bloc vide collé (`sticky`) qui emmène avec lui la trace
+ *    du `context` ; l'espacement de l'item (1,5em, le plus grand l'emporte sur
+ *    celui du voisin, comme `block(spacing: 1.5em)`) porté par deux blocs vides de
+ *    hauteur nulle, `v(0pt, weak: true)` annulant l'espacement du gabarit entre
+ *    eux et le contenu. Rendu identique au point près (mesuré). La tête collée
+ *    (`tete`) reste dans le même `pad` que le corps, pour emmener un dessin ;
  *  - `ubu-colle()` (dans un `context`) : un paragraphe d'introduction reste collé
  *    au bloc qui le suit seulement si la coupure tomberait en fin de PAGE (chantier
  *    coupures-pdf, David, 2026-11-09) : vrai quand le dernier marqueur de coupure
@@ -230,8 +246,8 @@ export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions
 const PDF_READABILITY_HEADER = [
 	'#show math.equation.where(block: false): set text(top-edge: "bounds", bottom-edge: "bounds")',
 	'#let ubu-colle() = { let m = query(selector(<ubu-coupure>).before(here())); if m.len() == 0 { return true }; let d = m.last(); let w = if page.flipped { page.height } else { page.width }; type(w) != length or d.location().position().x + 2 * d.value > w }',
-	'#let ubu-item(num, body, w: "a)", tete: none) = context { let n = measure(w).width + 0.5em; let ligne(x) = [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#x]; block(spacing: 1.5em, pad(left: n, if tete == none { ligne(body) } else { block(sticky: ubu-colle(), ligne(tete)); body })) }',
-	'#let ubu-item-bloc(num, body, w: "a)") = context { let n = measure(w).width + 0.5em; block(spacing: 1.5em, grid(columns: (n, 1fr), box(width: n - 0.5em, align(end, num)), body)) }',
+	'#let ubu-item(num, body, w: "a)", tete: none) = { block(sticky: true, above: 1.5em, below: 0pt); v(0pt, weak: true); context { let n = measure(w).width + 0.5em; let ligne(x) = [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#x]; pad(left: n, if tete == none { ligne(body) } else { block(sticky: ubu-colle(), ligne(tete)); body }) }; v(0pt, weak: true); block(above: 0pt, below: 1.5em) }',
+	'#let ubu-item-bloc(num, body, w: "a)") = { block(sticky: true, above: 1.5em, below: 0pt); v(0pt, weak: true); context { let n = measure(w).width + 0.5em; pad(left: n, { block(sticky: true, above: 0pt, below: 0pt, place(top + left, dx: -n, box(width: n - 0.5em, align(end, num)))); v(0pt, weak: true); body }) }; v(0pt, weak: true); block(above: 0pt, below: 1.5em) }',
 	'// ubumark: fin de l’en-tête',
 	''
 ].join('\n');
@@ -403,6 +419,17 @@ function stickyBlock(
 function keepWithNext(typst: string, spacing = ''): string {
 	return `#block(width: 100%, sticky: true${spacing})[\n${typst}\n]`;
 }
+
+/**
+ * Tête d'un énoncé qui suit un titre d'exercice (`chainedStart`) : bloc vide de
+ * hauteur nulle, collé à ce qui le suit. Si le premier bloc de l'énoncé part sur
+ * la page suivante, il l'emmène avec la trace d'un `context` (dessin `cetz`) qui
+ * le précède : le premier morceau de l'énoncé reste vide, le titre suit. `v(0pt,
+ * weak: true)` : l'espace au-dessus du premier bloc reste supprimé, comme en tête
+ * de l'énoncé.
+ */
+export const CHAINED_START_TYPST =
+	'#block(sticky: true, above: 0pt, below: 0pt)\n#v(0pt, weak: true)';
 
 /**
  * Marqueur de coupure (chantier coupures-pdf) : posé AVANT une chaîne de blocs

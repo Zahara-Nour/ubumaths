@@ -531,7 +531,13 @@ de chaque exercice ; l'énoncé, et la correction juste sous le titre (Réponses
 cette chaîne (`chainedStart`) ; la correction posée après l'énoncé (fiche + corrigé) a son propre
 marqueur. Mesure sur les 48 fiches en base (fiche + corrigé, 96 PDF) : 455 → 451 pages, aucun PDF
 plus long, trous de plus d'un quart de colonne 13 → 7. Test : `worksheet-document.test.ts`
-(§ marqueur de coupure).
+(§ marqueur de coupure). PR 2 (titre d'exercice seul en bas de page quand l'énoncé commence par une question collée à un
+dessin, ou par un dessin) : mécanisme dans [ubumark](ubumark.md) § Titre d'exercice jamais seul ;
+même mesure : 451 → 452 pages (un corrigé dont le titre « 2 » restait seul en bas de page 2 repousse
+une ligne sur une page 4). Écarts verticaux : 29 PDF sur 96 ; dans 25, le premier est en bas de page
+(titre d'exercice, « Partie B » ou numéro de question qui y restait seul et suit désormais son
+énoncé) ; dans 4, des retours à la ligne changés par la justification, désormais appliquée au
+texte des questions (choix de David).
 
 **Cadres en lignes, réglés par le prof** (ADR 0030, lot 4 ;
 `worksheets/document/answer-frame-lines.ts`) : unité = la **ligne** de 0,8 cm
