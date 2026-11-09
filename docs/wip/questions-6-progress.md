@@ -5,19 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, phase 0 du lot 11 proposée (§ 26)._
+_Mis à jour le 2026-11-09, lot 11a écrit (§ 26.1), PR des fichiers ouverte._
 
-- **État** : lot 10 (160-167) : 8 verdicts « ok » sur 8, simulation `publier-lot` verte, **toujours en brouillon**
-  (publication par David). Lot 11 : phase 0 écrite au § 26 (11a angles + 4 témoins, 11b triangles, symétrie,
-  périmètres). 6e : 165 publiés + 1 brouillon (3a7a5711) + 8 du lot 10.
-- **Prochaine action** : vérifier en base que le lot 10 est `published` après le `--publier` de David ; puis, phase 0
-  validée, écrire le lot 11a (§ 2 du skill `couvrir-niveau`, script `docs/wip/questions/lot-11a-….py`).
-- **En attente de David** : `publier-lot.ts --dir scripts/questions/6-distances-cercle-mediatrice --publier` ;
-  réponses aux 5 questions du § 26.
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. `{{eval:…/10}}` = fraction : toujours `;d`. Mot coloré hors
-  `$…$` : `colt`. Choix multiple incomplet = `unoptimal_form`. `Doc-inchangée:` dans un commit, corps ≤ 100 car.
-  Migrations en attente : lire `schema_migrations` (MCP), pas un JSON parsé. `publier-lot` : David avec `!`.
-- **Worktree / branche** : aucun (worktree à créer pour la PR des fichiers du lot 11a).
+- **État** : lot 10 relu (8/8 « ok »), simulation `publier-lot` verte, publication par David. Lot 11 : phase 0
+  validée (§ 26) ; 11a (6 modèles dont 4 témoins des contrôles de la figure) écrit, tout vert, essayé en local.
+- **Prochaine action** : PR des fichiers du 11a mergée → David lance `create-questions --dir
+scripts/questions/6-angles-constructions --publier` → commiter les `id` → migration nœud + tag → page à cocher.
+  Ensuite 11b (174-179, 148), puis lot 12 « Constructions » (173, 180, 207).
+- **En attente de David** : `publier-lot.ts … 6-distances-cercle-mediatrice --publier` (lot 10).
+- **Pièges en cours** : 3a7a5711 : NE PAS publier. `{{eval:…/10}}` = fraction : toujours `;d`. Variable à valeur
+  lettre impossible (`{{if:}}` dans le texte). `couleur="bleu"` entre guillemets. Point interne d'un `rotation(point(…))`
+  visible : le nommer `visible=faux`. `Doc-inchangée:` dans un commit, corps ≤ 100 car. `publier-lot` : David avec `!`.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `content/questions-6-lot11a` ; serveur local 5176.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1596,3 +1595,21 @@ l'admin et de l'auteur seuls jusqu'à la publication, la migration ne fait que r
    modèle dessus), ou plus tard ?
 4. 148 : π ≈ 3,14 et résultat au dixième (recommandé, exemples de réussite) ?
 5. Valider la phase 0 (variations, niveaux, formes de réponse) ?
+
+**Réponses de David (2026-11-09)** : « je suis tes recos ». (1) Deux lots : 11a (6, témoins) puis 11b (7). (2)
+Médiatrice construite = modèle neuf tagué 6-166 ; 9e90342c publié tel quel. (3) Lot 12 « Constructions » (173, 180, 207) juste après le lot 11. (4) 148 : π ≈ 3,14, résultat au dixième. (5) Phase 0 validée.
+
+### 26.1 Lot 11a : écriture (2026-11-09)
+
+Script `docs/wip/questions/lot-11a-angles-constructions.py` → `scripts/questions/6-angles-constructions/` (6 modèles,
+47 specs ; niveaux : 168 → 1, 169 → 1, 170 → 1, 171 → 1, 172 → 2, médiatrice construite → 4). `question:specs` 6/6
+importables, `sonde-figures` à 0 problème, simulation `create-questions` verte, essai en base locale et aperçu admin
+(figures de 168, 169, 171, 172 regardées).
+
+Pièges rencontrés :
+
+- Variable de modèle à valeur lettre (`s = {{if:k==1|A|…}}`) : « Variable "B" not found » ; écrire le `{{if:}}` dans
+  le texte.
+- `couleur=bleu` dans une figure : « Variable inconnue » ; écrire `couleur="bleu"`.
+- `texte(rotation(point(1.5, 0), …), "…")` dessine le point interne : points auxiliaires nommés, `visible=faux`.
+- Réponses d'essai des figures calculées dans le script en pleine précision (`repereAt`, intersections de cercles).
