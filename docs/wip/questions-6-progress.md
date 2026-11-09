@@ -12,8 +12,8 @@ _Mis à jour le 2026-11-09, après #2522 (lot 11a, rangement)._
 - **Prochaine action** : après `db:migrate`, vérifier en prod (MCP) les 6 nœuds et tags + `tgenabled = 'O'`, puis la
   page à cocher du 11a. Ensuite 11b (174-179, 148), puis lot 12 « Constructions » (173, 180, 207).
 - **En attente de David** : (1) `db:migrate`, qui jouera aussi `20261109110745` (questions-2de, approfondissements
-  lot 8) : à lancer quand l'autre chantier est d'accord ; (2) `publier-lot.ts … 6-distances-cercle-mediatrice
---publier` (lot 10). Un `git stash` du dépôt principal porte les `id` du 11a (déjà commités, jetable).
+  lot 8) : à lancer quand l'autre chantier est d'accord ; (2) la publication du lot 10
+  (`publier-lot.ts … 6-distances-cercle-mediatrice --publier`). Un `git stash` du dépôt principal porte les `id` du 11a (déjà commités, jetable).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. Variable à valeur lettre impossible (`{{if:}}` dans le texte).
   `couleur="bleu"` entre guillemets. Point interne d'un `rotation(point(…))` visible : `visible=faux`. Réponses de
   figure : pleine précision. Archiver une notion à enfants actifs : refusé par trigger (test : triggers coupés).
