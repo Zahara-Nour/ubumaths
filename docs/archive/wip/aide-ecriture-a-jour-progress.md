@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR ouverte._
+_Mis à jour le 2026-11-09, après #2506._
 
-- **État** : fiches et doc écrites, PR ouverte · **Prochaine action** : revue `code-reviewer`, CI, merge, puis ligne 25 → « Livré » (commit direct sur main) et journal archivé · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-aide-ecriture-a-jour`, `docs/aide-ecriture-a-jour`
+- **État** : chantier clos, #2506 mergée, ligne 25 d'outils-manquants passée en « Livré », journal archivé · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : prettier mange un ``ranger collé dans un paragraphe de doc : écrire ` ``ranger ` · **Worktree / branche** : supprimés
 
 ## Vérifié dans le code (2026-11-09)
 
