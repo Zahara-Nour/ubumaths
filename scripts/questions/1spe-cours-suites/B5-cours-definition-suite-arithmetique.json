@@ -1,0 +1,26 @@
+{
+	"title": "Cours : définition d'une suite arithmétique",
+	"description": "Carte de cours : définition d'une suite arithmétique",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true,
+		"courseCard": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Quand dit-on qu'une suite $(u_n)$ est **arithmétique** ?",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On passe d'un terme au suivant en **ajoutant toujours le même nombre** $r$, appelé la **raison** : pour tout entier naturel $n$, $u_{n+1}=u_n+r$.",
+					"Exemple : $5$, $8$, $11$, $14$, … est arithmétique de raison $3$."
+				]
+			}
+		}
+	],
+	"testSpecs": []
+}

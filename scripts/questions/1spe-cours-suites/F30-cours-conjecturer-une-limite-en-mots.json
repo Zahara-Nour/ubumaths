@@ -1,0 +1,139 @@
+{
+	"title": "Cours : conjecturer une limite à partir d'une description",
+	"description": "Tend vers +∞, converge ou n'a pas de limite, en mots",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Quand $n$ augmente, les termes d'une suite deviennent aussi grands qu'on veut et le restent. On conjecture que…\n\n```choix\nmelanger: non\n- la suite tend vers $+\\infty$\n- la suite converge vers ${{l}}$\n- la suite n'a pas de limite\n- la suite est constante\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Des termes qui dépassent tout nombre, à partir d'un certain rang : la suite tend vers $+\\infty$."
+				]
+			}
+		},
+		{
+			"statement": "Quand $n$ augmente, les termes d'une suite se rapprochent autant qu'on veut de ${{l}}$. On conjecture que…\n\n```choix\nmelanger: non\n- la suite tend vers $+\\infty$\n- la suite converge vers ${{l}}$\n- la suite n'a pas de limite\n- la suite est constante\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Des termes aussi proches qu'on veut de ${{l}}$ : la suite converge vers ${{l}}$. Elle n'a pas besoin de valoir ${{l}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les termes d'une suite valent alternativement ${{l}}$ et $-{{l}}$. On conjecture que…\n\n```choix\nmelanger: non\n- la suite tend vers $+\\infty$\n- la suite converge vers ${{l}}$\n- la suite n'a pas de limite\n- la suite est constante\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les termes ne se rapprochent d'aucun nombre et ne grandissent pas : la suite n'a pas de limite."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "+∞",
+			"variationIndex": 0,
+			"variables": {
+				"l": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans limite",
+			"variationIndex": 0,
+			"variables": {
+				"l": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "converge",
+			"variationIndex": 1,
+			"variables": {
+				"l": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : constante",
+			"variationIndex": 1,
+			"variables": {
+				"l": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pas de limite",
+			"variationIndex": 2,
+			"variables": {
+				"l": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : converge",
+			"variationIndex": 2,
+			"variables": {
+				"l": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

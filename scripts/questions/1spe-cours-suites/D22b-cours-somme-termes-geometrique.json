@@ -1,0 +1,26 @@
+{
+	"title": "Cours : somme de termes consécutifs d'une suite géométrique",
+	"description": "Carte de cours : somme de termes, suite géométrique",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true,
+		"courseCard": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Comment calcule-t-on une somme de termes consécutifs d'une suite **géométrique** de raison $q\\neq1$ ?",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$$S=\\text{(premier terme)}\\times\\dfrac{1-q^{\\text{nombre de termes}}}{1-q}$$",
+					"Exemple : $u_0+u_1+\\cdots+u_{9}$ compte $10$ termes, donc $S=u_0\\times\\dfrac{1-q^{10}}{1-q}$."
+				]
+			}
+		}
+	],
+	"testSpecs": []
+}

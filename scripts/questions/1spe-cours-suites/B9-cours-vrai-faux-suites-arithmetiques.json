@@ -1,0 +1,158 @@
+{
+	"title": "Cours : vrai ou faux sur les suites arithmétiques",
+	"description": "Vrai/faux : définition et terme général d'une suite arithmétique",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une suite vérifie $u_1-u_0=u_2-u_1={{r}}$. Elle est forcément arithmétique.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : deux écarts égaux ne suffisent pas, il faut que $u_{n+1}-u_n$ soit le même pour **tout** $n$. Par exemple, $u_n={{r}}n+n(n-1)(n-2)$ donne $u_0=0$, $u_1={{r}}$, $u_2={{eval:2*r}}$, mais $u_3={{eval:3*r+6}}$."
+				]
+			}
+		},
+		{
+			"statement": "Si $(u_n)$ est arithmétique de raison $r$, alors $u_{10}-u_4=6r$.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": ["{{solution:html}} : de $u_4$ à $u_{10}$, on ajoute $6$ fois la raison."]
+			}
+		},
+		{
+			"statement": "Si $(u_n)$ est arithmétique de raison $r$, alors $u_n=u_1+nr$.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : de $u_1$ à $u_n$, on ajoute $n-1$ fois la raison, donc $u_n=u_1+(n-1)r$. C'est $u_n=u_0+nr$ qui part de $u_0$."
+				]
+			}
+		},
+		{
+			"statement": "La suite définie, pour tout entier naturel $n$, par $u_n={{a}}n^2$ est arithmétique.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": ["{{solution:html}} : $u_{n+1}-u_n={{a}}(2n+1)$ dépend de $n$."]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Réponse Faux",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Vrai",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Vrai",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Faux",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Vrai",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Faux",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Vrai",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,221 @@
+{
+	"title": "Cours : notations uₙ₊₁, uₙ + 1, (uₙ)",
+	"description": "Notations : u(n+1) et u(n) + 1, (uₙ) et uₙ",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Pour tout entier naturel $n$, $u_n=n^2$. Que vaut $u_{n+1}$ ?\n\n```choix\n- $(n+1)^2$\n- $n^2+1$\n- $n^2+n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}$ est le terme de rang $n+1$ : on remplace $n$ par $n+1$ dans $u_n=n^2$, donc $u_{n+1}=(n+1)^2$.",
+					"$n^2+1$, c'est $u_n+1$ : un autre nombre."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, $u_n=n^2$. Que vaut $u_n+1$ ?\n\n```choix\n- $n^2+1$\n- $(n+1)^2$\n- $2n+1$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_n+1$, c'est le terme $u_n$ auquel on ajoute $1$ : $n^2+1$.",
+					"$(n+1)^2$, c'est $u_{n+1}$ : un autre nombre."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, $u_n=\\dfrac{1}{n+1}$. Que vaut $u_{n+1}$ ?\n\n```choix\n- $\\dfrac{1}{n+2}$\n- $\\dfrac{1}{n+1}+1$\n- $\\dfrac{2}{n+1}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": ["On remplace $n$ par $n+1$ : $u_{n+1}=\\dfrac{1}{(n+1)+1}=\\dfrac{1}{n+2}$."]
+			}
+		},
+		{
+			"statement": "Que désigne la notation $(u_n)$ ?\n\n```choix\n- la suite tout entière\n- le terme de rang $n$\n- le terme de rang $n$ augmenté de $1$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$, avec les parenthèses, désigne la **suite** ; $u_n$, sans parenthèses, désigne **un terme**, celui de rang $n$."
+				]
+			}
+		},
+		{
+			"statement": "Que désigne la notation $u_n$ ?\n\n```choix\n- le terme de rang $n$\n- la suite tout entière\n- la somme des $n$ premiers termes\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_n$, sans parenthèses, est **un nombre** : le terme de rang $n$. La suite se note $(u_n)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(n+1)²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n² + 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n² + n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n² + 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (n+1)²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2n+1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/(n+2)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/(n+1) + 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2/(n+1)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "la suite",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un terme",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : terme + 1",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "le terme",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la suite",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une somme",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

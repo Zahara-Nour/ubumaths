@@ -1,0 +1,25 @@
+{
+	"title": "Cours : méthodes pour le sens de variation d'une suite",
+	"description": "Carte de cours : trois méthodes pour le sens de variation",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true,
+		"courseCard": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Quelles méthodes permettent d'étudier le sens de variation d'une suite $(u_n)$ ?",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"- Étudier le **signe de $u_{n+1}-u_n$** : positif pour tout $n$, la suite est croissante ; négatif, elle est décroissante.\n- Si **tous les termes sont strictement positifs**, comparer $\\dfrac{u_{n+1}}{u_n}$ à $1$ : supérieur à $1$, la suite est croissante.\n- Si $u_n=f(n)$, étudier les **variations de $f$** sur $[0\\,;+\\infty[$ : si $f$ est croissante, la suite aussi."
+				]
+			}
+		}
+	],
+	"testSpecs": []
+}

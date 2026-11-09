@@ -1,0 +1,26 @@
+{
+	"title": "Cours : définition d'une suite géométrique",
+	"description": "Carte de cours : définition d'une suite géométrique",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true,
+		"courseCard": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Quand dit-on qu'une suite $(u_n)$ est **géométrique** ?",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On passe d'un terme au suivant en **multipliant toujours par le même nombre** $q$, appelé la **raison** : pour tout entier naturel $n$, $u_{n+1}=q\\times u_n$.",
+					"Exemple : $3$, $6$, $12$, $24$, … est géométrique de raison $2$."
+				]
+			}
+		}
+	],
+	"testSpecs": []
+}

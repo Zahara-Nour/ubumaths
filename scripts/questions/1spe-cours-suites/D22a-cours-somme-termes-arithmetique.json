@@ -1,0 +1,26 @@
+{
+	"title": "Cours : somme de termes consécutifs d'une suite arithmétique",
+	"description": "Carte de cours : somme de termes, suite arithmétique",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true,
+		"courseCard": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Comment calcule-t-on une somme de termes consécutifs d'une suite **arithmétique** ?",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$$S=\\text{(nombre de termes)}\\times\\dfrac{\\text{premier terme}+\\text{dernier terme}}{2}$$",
+					"Exemple : $u_0+u_1+\\cdots+u_{9}$ compte $10$ termes, donc $S=10\\times\\dfrac{u_0+u_9}{2}$."
+				]
+			}
+		}
+	],
+	"testSpecs": []
+}

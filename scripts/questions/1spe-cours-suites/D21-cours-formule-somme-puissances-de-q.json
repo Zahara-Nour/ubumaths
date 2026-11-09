@@ -1,0 +1,84 @@
+{
+	"title": "Cours : formule de 1 + q + ⋯ + qⁿ",
+	"description": "Compléter la formule de 1 + q + ⋯ + qⁿ",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Complète, pour tout réel $q\\neq1$ et tout entier naturel $n$.\n\n$1+q+q^2+\\cdots+q^n=\\dfrac{?}{1-q}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1-q^{n+1}",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1+q+\\cdots+q^n=\\dfrac{1-q^{n+1}}{1-q}$ : l'exposant est $n+1$, le nombre de termes."
+				]
+			}
+		},
+		{
+			"statement": "Complète, pour tout réel $q\\neq1$ et tout entier naturel $n$.\n\n$1+q+q^2+\\cdots+q^n=\\dfrac{1-q^{?}}{1-q}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "n+1",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": ["La somme compte $n+1$ termes ($q^0$ à $q^n$) : l'exposant est $n+1$."]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 − qⁿ⁺¹",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1-q^{n+1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − qⁿ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1-q^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n + 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["n+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

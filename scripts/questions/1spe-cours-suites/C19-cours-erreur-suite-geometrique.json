@@ -1,0 +1,137 @@
+{
+	"title": "Cours : trouver l'erreur (suite géométrique)",
+	"description": "Repérer l'erreur dans une preuve qu'une suite est géométrique",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Tom calcule les premiers termes d'une suite : $u_0=1$, $u_1=2$, $u_2=4$. Il écrit : « $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=2$, donc la suite est géométrique de raison $2$. » Où est l'erreur ?\n\n```choix\n- Deux quotients égaux ne suffisent pas : il faut que $\\dfrac{u_{n+1}}{u_n}$ soit le même pour tout $n$.\n- Les quotients sont mal calculés.\n- La raison est $\\dfrac{1}{2}$.\n- Il n'y a pas d'erreur.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Trois termes ne disent rien des suivants. Par exemple, $u_n=2^n+n(n-1)(n-2)$ donne $u_0=1$, $u_1=2$, $u_2=4$, mais $u_3=14$, et non $8$."
+				]
+			}
+		},
+		{
+			"statement": "Léna lit : « pour tout entier naturel $n$, $u_{n+1}={{b}}u_n+{{c}}$ ». Elle conclut : « la suite $(u_n)$ est géométrique de raison ${{b}}$ ». A-t-elle raison ?\n\n```choix\n- Non : à cause du $+{{c}}$, $u_{n+1}$ n'est pas de la forme $q\\times u_n$.\n- Oui, la raison est ${{b}}$.\n- Oui, la raison est ${{eval:b+c}}$.\n- Non, elle est arithmétique de raison ${{c}}$.\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une suite géométrique vérifie $u_{n+1}=q\\times u_n$, sans terme ajouté. Ici, avec $u_0=1$ : $u_1={{eval:b+c}}$, $u_2={{eval:b*(b+c)+c}}$, et $\\dfrac{u_1}{u_0}\\neq\\dfrac{u_2}{u_1}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "pour tout n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : calcul",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : raison 1/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pas d'erreur",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "non, à cause du + c",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : raison b",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : raison b + c",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : arithmétique",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

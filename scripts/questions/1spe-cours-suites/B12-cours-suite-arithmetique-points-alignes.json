@@ -1,0 +1,169 @@
+{
+	"title": "Cours : représentation graphique d'une suite arithmétique",
+	"description": "Suite arithmétique, fonction affine, points alignés",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un repère, les points de coordonnées $(n\\,;u_n)$ d'une suite arithmétique sont…\n\n```choix\n- alignés\n- sur une parabole\n- sur une courbe exponentielle\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_n=u_0+nr$ : les points $(n\\,;u_n)$ sont sur la droite d'équation $y=rx+u_0$."
+				]
+			}
+		},
+		{
+			"statement": "La suite arithmétique de premier terme $u_0={{b}}$ et de raison ${{a}}$ vérifie $u_n=f(n)$ pour la fonction affine…\n\n```choix\n- $f(x)={{a}}x+{{b}}$\n- $f(x)={{b}}x+{{a}}$\n- $f(x)={{a}}x$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_n=u_0+nr={{b}}+{{a}}n$ : c'est $f(n)$ avec $f(x)={{a}}x+{{b}}$. La raison est le coefficient directeur, le premier terme l'ordonnée à l'origine."
+				]
+			},
+			"conditions": ["a != b"]
+		},
+		{
+			"statement": "Les points $(n\\,;u_n)$ d'une suite sont sur une droite de coefficient directeur ${{a}}$. La suite $(u_n)$ est…\n\n```choix\n- arithmétique de raison ${{a}}$\n- géométrique de raison ${{a}}$\n- arithmétique de premier terme ${{a}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_n=an+b$ avec $a={{a}}$ : $u_{n+1}-u_n={{a}}$, la suite est arithmétique de raison ${{a}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "alignés",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parabole",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exponentielle",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ax + b",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bx + a",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ax",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "raison a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : géométrique",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : premier terme a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
