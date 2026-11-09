@@ -1,0 +1,227 @@
+{
+	"title": "Partie du plan décrite par des inégalités",
+	"description": "Triangle x ⩾ 0, y ⩾ 0, x + y ⩽ k (case, k de 2 à 5) ; rectangle a ⩽ x ⩽ a', 0 ⩽ y ⩽ b (trois cases) ; trapèze sous la droite y = mx + p (case choix)",
+	"grades": ["2"],
+	"level": 12,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un repère, on a coloré une partie du plan.\n\n```courbe\nx: -1 ; 6\ny: -1 ; 6\ngrille: 1 ; 1\nf(x) = {{eval:k}}-x sur [0 ; {{eval:k}}]   bleu\naire: f ; 0 ; {{eval:k}}\ntaille: moyenne\ndescription: Triangle coloré limité par les deux axes et une droite.\n```\n\nLa partie colorée est l'ensemble des points $M(x\\,;\\,y)$ tels que $x\\geqslant 0$, $y\\geqslant 0$ et :\n\n$x+y\\leqslant ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le bord oblique passe par $({{eval:k}}\\,;\\,0)$ et $(0\\,;\\,{{eval:k}})$ : c'est la droite d'équation $y={{eval:k}}-x$, soit $x+y={{eval:k}}$.",
+					"Les points colorés sont sous cette droite : $y\\leqslant {{eval:k}}-x$, soit $\\textcolor{{{color:primary.0}}}{x+y\\leqslant {{eval:k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère, on a coloré une partie du plan.\n\n```courbe\nx: -4 ; 5\ny: -1 ; 5\ngrille: 1 ; 1\nf(x) = {{eval:b}} sur [{{eval:a1}} ; {{eval:a2}}]   bleu\naire: f ; {{eval:a1}} ; {{eval:a2}}\ntaille: moyenne\ndescription: Rectangle coloré posé sur l'axe des abscisses.\n```\n\nComplète les inégalités qui décrivent la partie colorée.\n\n$$?\\leqslant x\\leqslant ?\\quad\\text{et}\\quad 0\\leqslant y\\leqslant ?$$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-3..1"
+				},
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:(a1)+(w)"
+				},
+				{
+					"name": "b",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les abscisses des points colorés vont de ${{eval:a1}}$ à ${{eval:a2}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:a1}}\\leqslant x\\leqslant {{eval:a2}}}$.",
+					"Leurs ordonnées vont de $0$ à ${{eval:b}}$ : $\\textcolor{{{color:primary.0}}}{0\\leqslant y\\leqslant {{eval:b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère, on a coloré une partie du plan, limitée par l'axe des abscisses, l'axe des ordonnées, la droite d'équation $x={{eval:c}}$ et la droite d'équation $y={{eval:m}}x+{{eval:p}}$.\n\n```courbe\nx: -1 ; 5\ny: -1 ; 12\ngrille: 1 ; 2\nf(x) = {{eval:m}}*x+{{eval:p}}   bleu\naire: f ; 0 ; {{eval:c}}\ntaille: moyenne\ndescription: Trapèze coloré sous une droite, entre l'axe des ordonnées et une verticale.\n```\n\nQuelle condition décrit la partie colorée ?\n\n```choix\n- $0\\leqslant x\\leqslant {{eval:c}}$ et $0\\leqslant y\\leqslant {{eval:m}}x+{{eval:p}}$\n- $0\\leqslant x\\leqslant {{eval:c}}$ et $y\\geqslant {{eval:m}}x+{{eval:p}}$\n- $x\\geqslant 0$ et $0\\leqslant y\\leqslant {{eval:m}}x+{{eval:p}}$\n- $0\\leqslant x\\leqslant {{eval:c}}$ et $0\\leqslant y\\leqslant {{eval:c}}$\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "p",
+					"expression": "1..2"
+				},
+				{
+					"name": "c",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points colorés sont entre l'axe des ordonnées et la verticale $x={{eval:c}}$ : $0\\leqslant x\\leqslant {{eval:c}}$.",
+					"Ils sont au-dessus de l'axe des abscisses et sous la droite : $0\\leqslant y\\leqslant {{eval:m}}x+{{eval:p}}$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{0\\leqslant x\\leqslant {{eval:c}}\\text{ et }0\\leqslant y\\leqslant {{eval:m}}x+{{eval:p}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "k = 3 : 3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 5 : 5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a = −1, a' = 2, b = 3",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "-1",
+				"w": "3",
+				"a2": "2",
+				"b": "3"
+			},
+			"answers": ["-1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bornes échangées",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "-1",
+				"w": "3",
+				"a2": "2",
+				"b": "3"
+			},
+			"answers": ["2", "-1", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : largeur au lieu de la borne",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "-1",
+				"w": "3",
+				"a2": "2",
+				"b": "3"
+			},
+			"answers": ["-1", "3", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sous la droite",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"c": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans borne à droite",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"c": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"c": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
