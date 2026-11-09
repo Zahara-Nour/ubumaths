@@ -311,6 +311,9 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - Toute notification passe par `sanitizeNotificationHtml` (`src/lib/server/sanitization.ts`)
   avant l'écriture, et de nouveau côté client avant `{@html}`. Configuration partagée
   `NOTIFICATION_SANITIZE_CONFIG` (voir [editeur-riche.md](editeur-riche.md)).
+- `notifications.ts` importe `sanitization.ts` **à l'écriture seulement** (`sanitizeMessage`) :
+  il tire jsdom (~650 modules), et `hooks.server.ts` importe `notifications` via
+  `errorMonitoring`. Test : `notifications-chargement-paresseux.test.ts`.
 - `auto-notifications.ts` échappe (`escapeHtml`) les textes saisis avant de les insérer dans
   le gabarit.
 - Bannière et menu déroulant n'affichent que `title` et `action_label` en texte, sans `{@html}`.

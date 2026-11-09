@@ -150,6 +150,14 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 		 * - Automatic splitting of routes and dynamic imports
 		 * - Better compatibility with serverless functions
 		 */
+		// date-fns embarqué dans la build serveur, donc élagué comme côté client. Laissé
+		// externe, Node chargeait ses barrels entiers (`date-fns`, `date-fns/locale`) :
+		// ~826 fichiers, ~0,6 s au premier appel de `/dashboard` en local, même pour une
+		// simple redirection vers la connexion (mesuré le 2026-11-09, chantier amelioration).
+		ssr: {
+			noExternal: ['date-fns']
+		},
+
 		build: {
 			// Increase chunk size warning limit
 			chunkSizeWarningLimit: 1000,
