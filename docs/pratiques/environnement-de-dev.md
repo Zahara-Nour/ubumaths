@@ -290,6 +290,7 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 | 2026-10-28 | **Vite 8 (Rolldown), plus de plafond de heap au build** (#1899, #1900)                                            | pic du build 7,7 → 4,9 Go dans le conteneur Vercel de 8 Go ; la rustine à 6144 (#1892) ne laissait que ~1 Go de marge.                                                                                                      |
 | 2026-10-28 | **Lightning CSS ne touche pas à `light-dark()`** (`css.lightningcss.exclude` de `vite.config.ts`, garde au build) | sous Vite 8, la compression CSS passe par Lightning CSS (SvelteKit impose `cssMinify: true`) ; il récrivait `light-dark()` en variables jamais posées (`color-scheme` vient de mode-watcher) : couleurs perdues en v0.54.0. |
 | 2026-11-08 | **GC de Chromium forcé après chaque fichier des tests client**                                                    | ~1 shard sur 10 tombait (« Browser connection was closed », tests verts) : les iframes retirées s'accumulent, l'orchestrateur se décharge ; ~+50 s par job.                                                                 |
+| 2026-11-09 | **`date-fns` embarqué dans la build serveur** (`ssr.noExternal` de `vite.config.ts`, #2515)                       | externe, Node chargeait ses barrels entiers (826 fichiers) au démarrage à froid : ~0,6 s en local pour la simple redirection de `/dashboard`.                                                                               |
 
 ## Écarts connus
 
