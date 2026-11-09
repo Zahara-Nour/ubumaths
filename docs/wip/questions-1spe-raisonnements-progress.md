@@ -6,20 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR des fichiers ouverte._
+_Mis à jour le 2026-11-09, après #2511._
 
-- **État** : phase 0 validée par David (§ 5, question d'accès : personne ne gagne de lecture). 6 modèles écrits
-  (`scripts/questions/1spe-raisonnements/`), simulation verte (83 specs, 1 100 tirages), essai en base locale et
-  rendu vu dans l'aperçu admin (modèles 1, 4, 5, 6). PR des fichiers ouverte.
-- **Prochaine action** : PR mergée → David lance `create-questions --publier` (brouillons prod) → commit des `id` →
-  migration nœud + tag des 6 + `1_SPE` sur les 11 modèles de 2de (test d'intégration rouge puis vert,
-  `security-auditor`) → corriger `1spe.md` (205, 284, 436, 437 couverts ; 435 couvert par ses voisins) → page à
-  cocher → publication.
-- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier`.
-- **Pièges en cours** : `create-questions --publier` en LOCAL écrit des `id` locaux dans les fichiers → relancer
-  le script Python avant de commiter ; formes développées justes refusées en `bad_form` sans
-  `requiredForm: {pattern: 'u'}` ; `positions-ranger.ts` prend les variables de la spec (3e argument).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-raisonnements`, `feat/questions-1spe-raisonnements`.
+- **État** : 6 modèles en fichiers sur `main` (#2511 mergée), pas encore en prod. Worktree retiré.
+- **Prochaine action** : nouveau worktree `../ubumaths-wt-questions-1spe-raisonnements`, branche
+  `feat/questions-1spe-raisonnements-tags` ; David y lance
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-raisonnements --publier` (brouillons prod, `id`
+  écrits dans les fichiers) ; commit des `id` ; migration nœud + tag des 6 + `1_SPE` sur les 11 modèles de 2de (§ 5 ;
+  test d'intégration rouge puis vert, `security-auditor`) ; `1spe.md` corrigé (205, 284, 436, 437 couverts ; 435
+  couvert par ses voisins) ; page à cocher ; publication.
+- **En attente de David** : `create-questions --publier` dans le nouveau worktree.
+- **Pièges en cours** : `--publier` en LOCAL écrit des `id` locaux → relancer le script Python avant de commiter ;
+  question d'accès déjà tranchée (personne ne gagne de lecture) ; un modèle = un point (ADR 0020).
+- **Worktree / branche** : aucun pour l'instant.
 
 ## 1. Pourquoi ce chantier (2026-11-09)
 
@@ -160,7 +159,7 @@ sous-notion) sauf si le nœud en a déjà (à vérifier à l'écriture).
 11 modèles publiés de 2de (219c9470, 6c3ee9e6, 1e9a534f, 55341e85, 214f7500, 75d0fc89, e05203b0, 5426cead,
 bed58c24, 61d0571e, 24fd6a10). **Question d'accès** posée à David.
 
-## 6. Écriture du lot (2026-11-09)
+## 6. Écriture du lot (2026-11-09, #2511 mergée)
 
 - Script `docs/wip/questions/lot-1spe-raisonnements.py` → 6 fichiers ; niveaux numérotés : 1 partout, 9 pour
   l'optimisation (dernier niveau du nœud « variations et extremums » : 8).
