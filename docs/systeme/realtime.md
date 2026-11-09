@@ -149,7 +149,8 @@ INSERT sur `student_achievements`, filtre `student_id=eq.<moi>`. Valide le paylo
   restreint** (`src/lib/components/markdown/restricted-rendering.ts`) — chantier vivant :
   [chat-rendu-restreint](../wip/chat-rendu-restreint-progress.md).
   Le même module porte aussi `provideProjectMediaOnly` (vidéos du seul stockage du projet ; depuis le
-  2026-11-08, formules et blocs à commande à attributs écartés, `neutralizeUnsafeBlocks`), qui ne
+  2026-11-08, formules et blocs à commande à attributs écartés, `neutralizeUnsafeBlocks` ; depuis le 2026-11-09,
+  images hors de notre stockage en lien), qui ne
   sert pas au chat mais au cahier de texte ([cours-et-chapitres.md](cours-et-chapitres.md)) ; le
   mode restreint du chat n'en dépend pas (il n'affiche aucune vidéo).
 

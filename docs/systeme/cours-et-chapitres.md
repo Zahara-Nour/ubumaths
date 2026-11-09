@@ -643,3 +643,6 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
     porte une commande MathLive à attributs — `\htmlStyle`, `\href`, `\color`… — s'affiche en
     texte ; un bloc spécial qui en porte une devient un bloc de code. Prod au 2026-11-08 :
     aucune formule au cahier.)_
+    _(Et pour les images, décision de David du 2026-11-09 : une image hors de notre stockage
+    devient un lien « Image : … » (`ImageDisplay`). Un nom de fichier seul reste une image du
+    stockage des questions. Prod au 2026-11-09 : aucune image au cahier.)_
