@@ -1613,3 +1613,10 @@ Pièges rencontrés :
 - `couleur=bleu` dans une figure : « Variable inconnue » ; écrire `couleur="bleu"`.
 - `texte(rotation(point(1.5, 0), …), "…")` dessine le point interne : points auxiliaires nommés, `visible=faux`.
 - Réponses d'essai des figures calculées dans le script en pleine précision (`repereAt`, intersections de cercles).
+- CI rouge sur #2516 : la garde de complexité du corpus (`answer-complexity-corpus.test.ts`) mesure aussi les specs des
+  figures à compléter (bissectrice construite : 266 caractères, la marge ×3 exige ≤ 133). En prod ces réponses ne
+  passent pas par la garde (`validateSingleBlank` les juge avant, `answer-validator.ts`) ; arrondir les coordonnées
+  rend les réponses justes fausses (le juge veut la pleine précision). Test corrigé : figure à compléter exclue comme
+  la figure à colorier (`isJudgedBeforeGuard`).
+- L'événement `pull_request` de #2516 n'a déclenché aucun run (fermer / rouvrir n'y a rien fait) : CI lancée par
+  `gh workflow run quality.yml --ref <branche>`.
