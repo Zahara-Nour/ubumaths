@@ -1,4 +1,5 @@
 {
+	"id": "b1b7bfc1-af33-44c8-93dd-e7f18acf405d",
 	"title": "Démontrer que les hauteurs d'un triangle sont concourantes",
 	"description": "Démonstration par le triangle PQR dont ABC est le triangle des milieux : vecteurs d'un parallélogramme (case choix), AR = −AQ (case), hauteur = médiatrice de [QR] (case choix) ; étapes à ranger",
 	"grades": ["2"],

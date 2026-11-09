@@ -33,6 +33,11 @@
  * `20261106162749_automatismes_1spe_point_application_numerique`, validée le 2026-11-06,
  * chantier automatismes-1spe) → 295 points ; ajouté à la main dans la fixture.
  *
+ * Puis 2-307 et 2-310 passent de la notion Géométrie repérée à Figures planes › triangles et
+ * Figures planes › médiatrice et bissectrice (migration
+ * `20261109110745_questions_2de_approfondissements_8_rangement_tags`, validée le 2026-11-09,
+ * chantier questions-2de-demonstrations) ; fixture modifiée à la main.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll } from 'vitest';

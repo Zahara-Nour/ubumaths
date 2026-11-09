@@ -1,4 +1,5 @@
 {
+	"id": "31177044-256b-43e2-8a61-5003dea31b4e",
 	"title": "Aire d'un triangle : $\\frac{1}{2}ab\\sin\\widehat{C}$",
 	"description": "Démonstration à trous (C aigu) : AH = b sin C (case choix), pourquoi C aigu (case choix) ; aire avec C = 30° (case, a et b de 2 à 12) ; étapes à ranger",
 	"grades": ["2"],

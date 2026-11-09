@@ -1,4 +1,5 @@
 {
+	"id": "13908afe-a957-4af1-974c-5e743adcc233",
 	"title": "Démontrer que les médiatrices d'un triangle sont concourantes",
 	"description": "Démonstration à trous : médiatrices de [AB] et [AC] sécantes (case choix), OB = OC donc O sur la médiatrice de [BC] (case choix), centre du cercle circonscrit (case choix) ; étapes à ranger",
 	"grades": ["2"],

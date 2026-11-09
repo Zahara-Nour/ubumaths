@@ -6,16 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après la publication du lot 7._
+_Mis à jour le 2026-11-09, migration du lot 8 poussée (PR de rangement ouverte, voir § 15)._
 
-- **État** : lots 1-7 publiés (lot 7 relu 5/5 « ok », publié par David, statut relu en base).
-- **Prochaine action** : lot 8 (§ 13 : points 305-310) dans un nouveau worktree. Réemploi de `d4db2207` (2-309, niveau
-  seconde + tag) ; points 2-307 et 2-310 déplacés sous Figures planes par la migration du lot. Puis lot 9 (323, 324, 363).
-- **En attente de David** : rien.
-- **Pièges en cours** : écritures en prod (`db:migrate`, `create-questions --publier`, `publier-lot.ts`, même en
-  simulation) refusées par le classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) »
-  qui plante tests verts → `gh run rerun <run> --failed`.
-- **Worktree / branche** : aucun ; lot 8 → nouveau worktree.
+- **État** : lots 1-7 publiés. Lot 8 : 5 brouillons en prod (#2517), migration de rangement
+  `20261109110745` écrite, test 16/16, audit 0 bloquant, PR #2520 ouverte (branche
+  `feat/questions-2de-approfondissements-8-rangement`).
+- **Prochaine action** : suivre la CI de la PR (`gh pr checks 2520 --watch`, l'intégration nocturne tourne aussi :
+  elle valide la fixture `seed-2de-points.json`) → verte : `pnpm check:migrations --pr 2520` puis merge → `db:migrate`
+  par David (`!`) → vérifier en prod (nœuds, tags, points 2-307/2-310, `d4db2207` `{1_SPE,2}`, `updated_at`) →
+  page à cocher du lot 8.
+- **En attente de David** : `db:migrate` après le merge.
+- **Pièges en cours** : la garde « Doc à jour » (job Lint) exige `Doc-inchangée:` dans un commit pour toute
+  migration de données ; écritures en prod refusées par le classifieur du mode auto → commande `!` ; « Client Tests
+  (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf → `pnpm exec svelte-kit sync`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-approfondissements-8-rangement`.
 
 ---
 
@@ -531,3 +535,18 @@ avertissement ; 5 brouillons créés en base locale (copie hors dépôt, cible �
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-8 --publier`
+
+Mergée (#2517, CI verte du premier coup).
+
+Créés en brouillon par David (2026-11-09) : 6bd8366f (305), 574142b3 (306), b1b7bfc1 (307), 31177044 (308),
+13908afe (310) ; ids commités sur la branche de la migration (`feat/questions-2de-approfondissements-8-rangement`),
+`main` remis propre. Relevé prod (MCP, 2026-11-09, avant la migration) : 5 brouillons de seconde, niveaux 3, 4, 3,
+4, 4, sans nœud ni tag ; `d4db2207` publié, `{1_SPE}`, sur Vecteurs › combinaison linéaire ; 2-305 à 2-310 sans tag ;
+chemins visés uniques et actifs.
+Migration `20261109110745_questions_2de_approfondissements_8_rangement_tags` (lot 7 + déplacement des points
+2-307 / 2-310 sous Figures planes + réemploi de `d4db2207`, `array_append` du grade `2` et tag 2-309) : test
+d'intégration 16/16 vert, rouge sans les écritures (5 échecs, 8 sautés). Le déplacement des points joue aussi en
+base locale : fixture `seed-2de-points.json` (2-307, 2-310) et en-tête de `seed-curriculum-points-2de.test.ts`
+mis à jour.
+Audit `security-auditor` : 0 finding bloquant (une note faible : la garde du rollback ne vérifie pas que les
+5 modèles sont encore des brouillons, sans effet sur les accès).

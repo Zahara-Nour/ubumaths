@@ -1974,8 +1974,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Géométrie repérée",
-			"sous_notion": null
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
 		},
 		{
 			"code": "2-308",
@@ -2013,8 +2013,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Géométrie repérée",
-			"sous_notion": null
+			"notion": "Figures planes",
+			"sous_notion": "médiatrice et bissectrice"
 		},
 		{
 			"code": "2-311",
