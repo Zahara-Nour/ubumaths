@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-09, après la publication en prod._
 
 - **État** : fiche publiée en prod (`f337aa82-b020-4348-bf05-f99f4782f99b`, 3 exercices, vérifiée en base) ; aucun code applicatif, donc rien à déployer.
 - **Prochaine action** : quand David a regardé la fiche (ligne dans `verifications-manuelles.md`) et fixé son barème → fin de chantier : archiver ce journal (`docs/archive/`).
-- **En attente de David** : coup d'œil à la fiche et à l'aperçu PDF ; barème (il le fixe dans l'appli). Deux pages au PDF : réglé par le chantier `coupures-pdf` (#2518, à déployer) + carré de l'exercice 2 ramené à 65 % (écriture en prod, sur demande de David, après le `deploy:prod`).
+- **En attente de David** : coup d'œil à la fiche et à l'aperçu PDF ; barème (il le fixe dans l'appli). Deux pages au PDF : réglé par le chantier `coupures-pdf` (#2518, à déployer) + carré de l'exercice 2 ramené à 65 % (écrit en prod le 2026-11-09, avec la durée passée à 30 min). « Choisir un seul exercice » : consigne du devoir, pas de la fiche.
 - **Pièges en cours** : `data/` est dans `.gitignore` → `git add -f` ; heredoc non quoté = `$…` mangés.
 - **Worktree / branche** : supprimés après le merge ; tout se fait depuis le dépôt principal.
 
