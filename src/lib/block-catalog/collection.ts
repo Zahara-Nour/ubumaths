@@ -26,7 +26,7 @@ export const collectionEntry: BlockCatalogEntry = {
 					values: '0 à 100 par collection',
 					defaultValue: '0',
 					description:
-						'Les objets isolés (cubes ou jetons). Plus de 9 est admis : 3 dizaines et 15 unités.'
+						'Les objets isolés (cubes ou jetons). Plus de 9 est admis : 3 dizaines et 15 unités. Sans centaines ni milliers, une collection vaut 100 au plus.'
 				},
 				{
 					key: 'dizaines',
@@ -57,7 +57,7 @@ export const collectionEntry: BlockCatalogEntry = {
 					values: 'barres | paquets',
 					defaultValue: 'barres',
 					description:
-						'barres : barres de dix et cubes ; paquets : jetons entourés par dix et jetons (sans centaines ni milliers).'
+						'barres : barres de dix et cubes ; paquets : jetons entourés par dix et jetons (sans centaines ni milliers, ni construire: à partir de 100).'
 				},
 				{
 					key: 'unités en',
