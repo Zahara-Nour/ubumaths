@@ -1,4 +1,5 @@
 {
+	"id": "ea999fe0-0831-41bc-bc63-7ab0da4fef26",
 	"title": "Démontrer que $\\sqrt{ab}\\leqslant\\frac{a+b}{2}$",
 	"description": "Démonstration à trous pour a, b > 0 : coefficient 2 du double produit de (√a − √b)² (case), un carré est positif (case choix), exemple a = p², b = q² (case) ; étapes à ranger",
 	"grades": ["2"],

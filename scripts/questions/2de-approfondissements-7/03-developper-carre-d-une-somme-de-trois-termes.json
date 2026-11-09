@@ -1,4 +1,5 @@
 {
+	"id": "f44a9209-32b5-467a-a2c2-2569b00f787d",
 	"title": "Développer $(a+b+c)^2$",
 	"description": "Formule (a + b + c)² : double produit 2bc (case) ; (x + y + k)² développé et réduit (case, k de 2 à 6) ; oubli des doubles produits (case choix)",
 	"grades": ["2"],

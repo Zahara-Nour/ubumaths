@@ -1,4 +1,5 @@
 {
+	"id": "f5cc8558-5bca-437a-beef-e79d0f141b88",
 	"title": "Développer $(a+b)^3$",
 	"description": "Formule (a + b)³ par (a + b)(a + b)² : terme 3ab² (case) ; (x + k)³ développé et réduit (case, k de −4 à 4, non nul) ; (a − b)³ (case choix)",
 	"grades": ["2"],
