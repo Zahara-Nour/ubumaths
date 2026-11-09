@@ -3,6 +3,7 @@
 	import { goto, replaceState } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { buildSeriesItems } from '$lib/questions/series-items';
+	import { isCourseCard, seriesFormExcludesCourseCards } from '$lib/questions/course-card';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
@@ -181,8 +182,15 @@
 	 * Lance une série libre (panier ou lien) sous la forme choisie
 	 */
 	function startSeries(mode: TestMode, series: SeriesItem[], timeLimit?: number) {
-		// Course aux nombres : pas de carte de cours (décision 2026-09-28)
-		const items = generateSeriesItems(series, { excludeCourseCards: mode === 'course' });
+		// Entraînement, Course aux nombres : pas de carte de cours (non évaluable)
+		const excludeCourseCards = seriesFormExcludesCourseCards(mode);
+		const items = generateSeriesItems(series, { excludeCourseCards });
+		// Série vide parce que toutes ses lignes sont des cartes : le dire (pas une panne)
+		if (items.length === 0 && excludeCourseCards && onlyCourseCards(series)) {
+			throw new Error(
+				'Cette série ne contient que des cartes de cours, sans réponse à corriger : choisir la forme « En classe » ou « Flash ».'
+			);
+		}
 		const instances = items.map((item) => item.instance);
 		// « En classe », « Entraînement » : chaque question garde sa durée et son modèle
 		if (mode === 'display' || mode === 'interactive') seriesItems = items;
@@ -197,6 +205,17 @@
 			currentQuestionIndex: 0,
 			isPaused: false
 		};
+	}
+
+	/** Toutes les lignes de la série sont-elles des cartes de cours ? */
+	function onlyCourseCards(series: SeriesItem[]): boolean {
+		const byId = new Map(
+			questionTemplatesCache.templates.map((template) => [template.id, template])
+		);
+		return series.every((item) => {
+			const template = byId.get(item.templateId);
+			return template !== undefined && isCourseCard(template);
+		});
 	}
 
 	/**
@@ -220,7 +239,7 @@
 
 	/**
 	 * « En classe », « Entraînement » : Recommencer tire de nouvelles questions
-	 * (évaluation : toujours sans carte de cours)
+	 * (Entraînement et évaluation : sans carte de cours)
 	 */
 	function handleSeriesRestart() {
 		if (!testSession) return;
@@ -229,7 +248,7 @@
 		newsRequest += 1;
 		try {
 			seriesItems = generateSeriesItems(testSession.items, {
-				excludeCourseCards: !!assignmentId
+				excludeCourseCards: !!assignmentId || seriesFormExcludesCourseCards(testSession.mode)
 			});
 			testSession.instances = seriesItems.map((item) => item.instance);
 			testSession.startTime = Date.now();

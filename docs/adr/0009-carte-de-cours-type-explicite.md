@@ -13,7 +13,11 @@ révision SRS savait déjà retourner une carte et auto-évaluer.
 - Nom : **« Carte de cours »**, type **explicite** `course_card` dans `question_templates.type`
   (marqueur `options.courseCard: true`).
 - Recto = énoncé, verso = correction ; ni `blanks` ni `choices` ; variables et variations permises.
-- **Exclue des tests et évaluations notés.**
+- **Exclue des tests et évaluations notés.** Précisé le 2026-11-09 (David) : une carte, non
+  évaluable, est retirée des formes qui **corrigent** les réponses (Entraînement, Course aux
+  nombres) et des contrôles ; elle reste en Flash-cards et En classe
+  (`seriesFormExcludesCourseCards`). Une question de cours **évaluable** (QCM, vrai/faux, étapes à
+  ranger…) n'est jamais retirée.
 - **Entraînement libre : auto-évaluation enregistrée** (`skill_attempts`, source `student_self`),
   comme en SRS.
 

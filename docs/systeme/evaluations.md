@@ -114,7 +114,7 @@ chantier `automaths-arbre`.
 | ----------------------------- | ----------------- | --------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------- |
 | En classe (`display`)         | `ClassroomSeries` | oui             | Par question ; ±5 s change tout le modèle (min. 5 s) ; Espace = pause               | Aucune note ; grilles des questions puis des corrections | **Rien**                                          |
 | Flash-cards (`flash`)         | `FlashSeries`     | oui             | Aucun                                                                               | L'élève dit s'il avait trouvé (auto-évaluation)          | `test_sessions` + traces `student_self`, pas d'XP |
-| Entraînement (`interactive`)  | `TestInteractive` | oui, hors score | Par question ; à 0, ce qui est saisi est validé, rien = faux ; pas de chrono global | Navigateur (ADR 0001), score sur 10 (`computeTestScore`) | `test_sessions`, `test_answers`, SRS, XP          |
+| Entraînement (`interactive`)  | `TestInteractive` | **non**         | Par question ; à 0, ce qui est saisi est validé, rien = faux ; pas de chrono global | Navigateur (ADR 0001), score sur 10 (`computeTestScore`) | `test_sessions`, `test_answers`, SRS, XP          |
 | Course aux nombres (`course`) | `TestCourse`      | **non**         | Global, toutes les questions à l'écran ; 1 à 60 min (5 min proposées)               | Navigateur, score sur 10                                 | Comme l'entraînement                              |
 
 Lancement (`resolveTestLaunch`) : `?assignment=<id>` → contrôle (forme et temps viennent du serveur,
@@ -132,8 +132,8 @@ en contrôle) quittent vers le panier. Les boutons de l'écran de fin gardent `o
 
 Séance libre enregistrée : `POST /api/tests/save` écrit `test_sessions` puis `test_answers` et appelle
 `recordSeriesReviews` (`src/lib/server/srs/record-series-reviews.ts`) avec le **verdict du navigateur**.
-Le score envoyé par le client est gardé, sauf s'il y a des cartes de cours : il est alors recalculé
-hors cartes. Hors flash et hors cartes de cours, chaque réponse rapporte au Palotin
+Le score envoyé par le client est gardé, sauf s'il y a des cartes de cours (séance d'avant le
+2026-11-09, ou client ancien) : il est alors recalculé hors cartes. Hors flash et hors cartes de cours, chaque réponse rapporte au Palotin
 (`addBuddyXpFromTest`, réponse `buddy_xp`) ; son thème, pour le bonus « nouveau thème », est la branche
 de l'arbre des notions où se range le point que valide la question (`fetchTemplateThemeIds`,
 `src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Une fois la séance enregistrée (Entraînement, Course ; ni flash, ni
@@ -268,7 +268,10 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 3. **Une tentative compte dès son démarrage** ; une tentative ouverte se reprend sans en coûter une.
 4. **Le verrou de série est tenu par la base**, pas par l'application : le drapeau `locked` de
    `getTeacherSeries` sert à l'affichage seulement.
-5. **Pas de carte de cours** dans un contrôle ni dans une course aux nombres.
+5. **Pas de carte de cours** (non évaluable) dans une forme qui corrige : contrôle, course aux
+   nombres, entraînement (`seriesFormExcludesCourseCards`, ADR 0009 précisée le 2026-11-09). Une
+   série faite seulement de cartes, lancée sous l'une de ces formes, s'arrête sur un message. Une
+   question de cours évaluable (QCM, vrai/faux…) n'est jamais retirée.
 6. **Lire avec le client de l'utilisateur, écrire avec service_role** dans `evaluation-attempts.ts`,
    après vérification explicite de l'identité et des droits.
 7. **Le mode test sépare** : un prof ne voit jamais vrais élèves et élèves de test ensemble.
