@@ -6,7 +6,7 @@ couvre:
   - 'src/routes/(protected)/dev/erreurs/surveillance/**'
   - 'src/routes/(protected)/dashboard/bug-reports/**'
   - 'src/lib/components/bug-reports/**'
-  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version}.ts'
+  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite}.ts'
   - src/lib/stores/bugReportsConfig.svelte.ts
   - src/lib/types/bug-reports.ts
   - 'src/lib/server/{errorMonitoring,healthStats,bug-report-errors,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
