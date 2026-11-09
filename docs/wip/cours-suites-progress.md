@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, migration en PR (pas encore mergée)._
+_Mis à jour le 2026-11-10, après #2531._
 
-- **État** : migration `20261109224738_questions_1spe_cours_suites_rangement_tags` écrite (30 modèles rangés et tagués, marqueur sur 5fbb9a04 et b554a47f) ; test d'intégration 14/14, rouge sans elle ; résolution 30/30 vérifiée en prod (MCP) · **Prochaine action** : `security-auditor`, PR, CI verte, merge, `pnpm db:migrate` depuis la branche mergée, puis vérifier en prod (30 nœuds, 30 tags, 2 marqueurs) · **En attente de David** : rien · **Pièges en cours** : A4 (1SPE-212, point sur la notion) va sur « explicite ou par récurrence », comme « Exprimer le terme suivant » ; les points sur une notion (214, 217, 228, 229, 372) rangent le modèle sur la notion (précédent 20261101215000) · **Worktree / branche** : `../ubumaths-wt-cours-suites`, `feat/rangement-cours-suites-1spe`
+- **État** : 30 brouillons « Cours : … » rangés et tagués en prod (migration `20261109224738` appliquée le 2026-11-10, vérifiée : 30 nœuds, 30 tags) ; marqueur « question de cours » posé sur « Démontrer la somme 1 + 2 + ⋯ + n » et « … 1 + q + ⋯ + qⁿ » (`updated_at` intact) · **Prochaine action** : relecture des 30 brouillons par David (page à cocher), puis publication · **En attente de David** : go pour la page à cocher · **Pièges en cours** : réponses des étapes à ranger = places dans l'ordre affiché (`scripts/questions/ranger-attendus.ts`) ; le hook du commit reformate les JSON · **Worktree / branche** : aucun (retiré après #2531) ; prochaine PR → nouveau worktree `ubumaths-wt-cours-suites`
 
 ## Décisions (David, 2026-11-09)
 
@@ -65,3 +65,6 @@ _Mis à jour le 2026-11-09, migration en PR (pas encore mergée)._
 - 2026-11-09 : migration nœud + tag + marqueur (branche `feat/rangement-cours-suites-1spe`) ; aucune
   carte de révision d'élève sur les deux « Démontrer la somme… » (relevé MCP) ; `.tmp-sonde/` trié :
   `scripts/questions/ranger-attendus.ts` gardé, le reste jeté.
+- 2026-11-10 : #2531 mergée, `db:migrate` depuis le dépôt principal (le worktree n'est pas lié à
+  Supabase), vérification en prod par MCP. `security-auditor` : aucun finding bloquant (deux points
+  faibles notés : `lock_timeout` sans effet hors bloc de transaction, statut brouillon des 30 non gardé).
