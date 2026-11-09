@@ -1,0 +1,142 @@
+{
+	"title": "Cours : vrai ou faux sur les modes de génération d'une suite",
+	"description": "Vrai/faux : forme explicite et relation de récurrence",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Si une suite est définie par une relation de récurrence, on peut calculer $u_{100}$ sans calculer les termes précédents.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : il faut en général calculer $u_1$, $u_2$, …, $u_{99}$ de proche en proche (ou trouver d'abord une forme explicite)."
+				]
+			}
+		},
+		{
+			"statement": "Si $u_n=f(n)$ pour tout entier naturel $n$, on peut calculer $u_{100}$ directement.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": ["{{solution:html}} : $u_{100}=f(100)$, sans calculer les termes précédents."]
+			}
+		},
+		{
+			"statement": "Une suite définie par une relation de récurrence $u_{n+1}=f(u_n)$ a besoin d'un premier terme.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : sans $u_0$, on ne peut pas calculer $u_1=f(u_0)$, ni les termes suivants."
+				]
+			}
+		},
+		{
+			"statement": "Si $u_{n+1}=f(u_n)$ pour tout entier naturel $n$, alors $u_n=f(n)$.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : avec $f(x)=2x$ et $u_0=1$, on a $u_1=2$, $u_2=4$, $u_3=8$, mais $f(3)=6\\neq u_3$. La relation $u_{n+1}=f(u_n)$ ne dit pas que $u_n=f(n)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Réponse Faux",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Vrai",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Vrai",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Faux",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Vrai",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Faux",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Vrai",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

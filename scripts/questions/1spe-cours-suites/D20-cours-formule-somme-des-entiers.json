@@ -1,0 +1,93 @@
+{
+	"title": "Cours : formule de 1 + 2 + ⋯ + n",
+	"description": "Compléter la formule de la somme des n premiers entiers",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Complète, pour tout entier naturel $n$ non nul.\n\n$1+2+\\cdots+n=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{n(n+1)}{2}",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": ["$1+2+\\cdots+n=\\dfrac{n(n+1)}{2}$."]
+			}
+		},
+		{
+			"statement": "Complète, pour tout entier naturel $n$ non nul.\n\n$1+2+\\cdots+n=\\dfrac{n\\times(?)}{2}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "n+1",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1+2+\\cdots+n=\\dfrac{n(n+1)}{2}$ : le nombre de termes, $n$, fois le premier plus le dernier, $1+n$, divisé par $2$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n(n+1)/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{n(n+1)}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n(n−1)/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{n(n-1)}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans diviser par 2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["n(n+1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n + 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["n+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n − 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["n-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,137 @@
+{
+	"title": "Cours : choisir la méthode pour le sens de variation",
+	"description": "Choisir entre différence, quotient et fonction associée",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}=u_n+n^2+{{c}}$. Pour étudier son sens de variation, la méthode la plus adaptée est de…\n\n```choix\nmelanger: non\n- étudier le signe de $u_{n+1}-u_n$\n- comparer $\\dfrac{u_{n+1}}{u_n}$ à $1$\n- étudier les variations d'une fonction $f$ telle que $u_n=f(n)$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}-u_n=n^2+{{c}}$ se lit directement : c'est strictement positif, la suite est strictement croissante.",
+					"Pas de forme explicite ici, donc pas de fonction $f$ ; et rien ne dit que les termes sont positifs pour le quotient… même s'ils le sont."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{a}}\\times{{q}}^n$. Pour étudier son sens de variation, la méthode la plus adaptée est de…\n\n```choix\nmelanger: non\n- étudier le signe de $u_{n+1}-u_n$\n- comparer $\\dfrac{u_{n+1}}{u_n}$ à $1$\n- étudier les variations d'une fonction $f$ telle que $u_n=f(n)$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Tous les termes sont strictement positifs et $\\dfrac{u_{n+1}}{u_n}={{q}}>1$ : la suite est strictement croissante.",
+					"Le quotient se simplifie tout de suite, alors que la différence demande une factorisation."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n=\\sqrt{n+{{c}}}$. Pour étudier son sens de variation, la méthode la plus adaptée est de…\n\n```choix\nmelanger: non\n- étudier le signe de $u_{n+1}-u_n$\n- comparer $\\dfrac{u_{n+1}}{u_n}$ à $1$\n- étudier les variations d'une fonction $f$ telle que $u_n=f(n)$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_n=f(n)$ avec $f(x)=\\sqrt{x+{{c}}}$, croissante sur $[0\\,;+\\infty[$ : la suite est croissante."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "différence",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : fonction",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "quotient",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : différence",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "fonction",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quotient",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

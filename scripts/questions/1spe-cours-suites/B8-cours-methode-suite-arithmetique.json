@@ -1,0 +1,193 @@
+{
+	"title": "Cours : quelle méthode pour une suite arithmétique ?",
+	"description": "Choisir le calcul qui montre qu'une suite est arithmétique, et conclure",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Pour démontrer qu'une suite $(u_n)$ est arithmétique, on calcule, pour tout entier naturel $n$ :\n\n```choix\n- $u_{n+1}-u_n$\n- $\\dfrac{u_{n+1}}{u_n}$\n- $u_1-u_0$\n- $u_{n+1}+u_n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une suite est arithmétique quand $u_{n+1}-u_n$ est le même nombre pour **tout** $n$ : on calcule cette différence.",
+					"$u_1-u_0$ ne regarde que les deux premiers termes : cela ne suffit pas."
+				]
+			}
+		},
+		{
+			"statement": "On a montré que, pour tout entier naturel $n$, $u_{n+1}-u_n={{r}}$. Que peut-on conclure ?\n\n```choix\n- $(u_n)$ est arithmétique de raison ${{r}}$.\n- $(u_n)$ est géométrique de raison ${{r}}$.\n- $(u_n)$ est arithmétique de raison $u_0+{{r}}$.\n- On ne peut rien conclure.\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La différence de deux termes consécutifs vaut toujours ${{r}}$ : la suite est arithmétique de raison ${{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a calculé, pour tout entier naturel $n$, $u_{n+1}-u_n=2n+{{c}}$. La suite $(u_n)$ est-elle arithmétique ?\n\n```choix\n- Non, car cette différence dépend de $n$.\n- Oui, de raison $2n+{{c}}$.\n- Oui, de raison $2$.\n- Oui, de raison ${{c}}$.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La raison est un **nombre fixe** : ici $u_{n+1}-u_n$ change avec $n$ (${{c}}$ pour $n=0$, ${{eval:c+2}}$ pour $n=1$), donc la suite n'est pas arithmétique."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "différence",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quotient",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u₁ − u₀",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "arithmétique de raison r",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : géométrique",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : raison u₀ + r",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "non",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : raison 2n + c",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : raison 2",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : raison c",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,91 @@
+{
+	"title": "Cours : quand une suite géométrique est-elle croissante ?",
+	"description": "Plusieurs réponses : signe de u₀ et position de q par rapport à 1",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une suite géométrique a pour premier terme $u_0$ et pour raison $q$. Coche tous les cas où elle est **strictement croissante**.\n\n```choix\nplusieurs: oui\n- $u_0>0$ et $q>1$\n- $u_0<0$ et $0<q<1$\n- $u_0>0$ et $0<q<1$\n- $u_0<0$ et $q>1$\n- $q<0$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}-u_n=u_0q^n(q-1)$ ; pour $q>0$, $q^n>0$, donc ce signe est celui de $u_0(q-1)$ : positif quand $u_0$ et $q-1$ ont le même signe.",
+					"Si $q<0$, les termes changent de signe à chaque rang : la suite n'est pas monotone."
+				]
+			}
+		},
+		{
+			"statement": "Une suite géométrique a pour premier terme $u_0$ et pour raison $q$. Coche tous les cas où elle est **strictement décroissante**.\n\n```choix\nplusieurs: oui\n- $u_0>0$ et $q>1$\n- $u_0<0$ et $0<q<1$\n- $u_0>0$ et $0<q<1$\n- $u_0<0$ et $q>1$\n- $q<0$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}-u_n=u_0q^n(q-1)$ ; pour $q>0$, ce signe est celui de $u_0(q-1)$ : négatif quand $u_0$ et $q-1$ sont de signes contraires.",
+					"Si $q<0$, les termes changent de signe à chaque rang : la suite n'est pas monotone."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "croissante : 0 et 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Incomplet : seulement le premier cas",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : q > 1 sans regarder u₀",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissante : 2 et 3",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2;3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : q < 0 coché",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2;3;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

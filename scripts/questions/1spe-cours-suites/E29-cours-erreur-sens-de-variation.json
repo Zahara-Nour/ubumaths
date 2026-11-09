@@ -1,0 +1,142 @@
+{
+	"title": "Cours : trouver l'erreur (sens de variation)",
+	"description": "Repérer l'erreur dans une étude de sens de variation",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Inès étudie la suite définie par $u_n=(-{{q}})^n$. Elle calcule $\\dfrac{u_{n+1}}{u_n}=-{{q}}$, puis écrit : « $-{{q}}<1$, donc la suite est décroissante ». Où est l'erreur ?\n\n```choix\n- On ne compare le quotient à $1$ que si tous les termes sont strictement positifs.\n- Le quotient est mal calculé.\n- Il fallait comparer le quotient à $0$.\n- Il n'y a pas d'erreur.\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ici les termes changent de signe : $1$, $-{{q}}$, ${{eval:q*q}}$, … La suite n'est ni croissante ni décroissante."
+				]
+			}
+		},
+		{
+			"statement": "Inès étudie une suite qui vérifie, pour tout entier naturel $n$, $u_{n+1}-u_n=n-{{k}}$. Elle conclut : « la suite est croissante ». Où est l'erreur ?\n\n```choix\n- $n-{{k}}$ est négatif pour $n<{{k}}$ : la suite n'est croissante qu'à partir du rang ${{k}}$.\n- La différence est mal calculée.\n- Il fallait calculer le quotient.\n- Il n'y a pas d'erreur.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $n<{{k}}$, $u_{n+1}-u_n<0$ : les premiers termes diminuent. Le signe doit être étudié pour **tout** $n$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "termes positifs",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : calcul",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : comparer à 0",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pas d'erreur",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe selon n",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : calcul",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quotient",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pas d'erreur",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

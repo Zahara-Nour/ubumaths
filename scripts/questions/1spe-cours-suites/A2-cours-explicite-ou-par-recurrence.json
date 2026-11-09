@@ -1,0 +1,181 @@
+{
+	"title": "Cours : suite définie explicitement ou par récurrence ?",
+	"description": "Reconnaître une forme explicite ou une relation de récurrence",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une suite $(u_n)$ est définie ainsi :\n\n$$u_0={{a}}\\ \\text{ et, pour tout entier naturel } n,\\ u_{n+1}={{b}}u_n-{{c}}$$\n\nElle est définie…\n\n```choix\nmelanger: non\n- de façon explicite : $u_n$ est donné en fonction de $n$\n- par une relation de récurrence : $u_{n+1}$ est donné en fonction de $u_n$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": ["$u_{n+1}$ est calculé à partir de $u_n$ : c'est une **relation de récurrence**."]
+			}
+		},
+		{
+			"statement": "Une suite $(u_n)$ est définie ainsi :\n\n$$u_n={{b}}n^2-{{c}}\\ \\text{ pour tout entier naturel } n$$\n\nElle est définie…\n\n```choix\nmelanger: non\n- de façon explicite : $u_n$ est donné en fonction de $n$\n- par une relation de récurrence : $u_{n+1}$ est donné en fonction de $u_n$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": ["$u_n$ est donné directement en fonction de $n$ : c'est une **forme explicite**."]
+			}
+		},
+		{
+			"statement": "Une suite $(u_n)$ est définie ainsi :\n\n$$u_n=\\dfrac{n+{{a}}}{n+{{c}}}\\ \\text{ pour tout entier naturel } n$$\n\nElle est définie…\n\n```choix\nmelanger: non\n- de façon explicite : $u_n$ est donné en fonction de $n$\n- par une relation de récurrence : $u_{n+1}$ est donné en fonction de $u_n$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": ["$u_n$ est donné directement en fonction de $n$ : c'est une **forme explicite**."]
+			}
+		},
+		{
+			"statement": "Une suite $(u_n)$ est définie ainsi :\n\n$$u_0={{a}}\\ \\text{ et, pour tout entier naturel } n,\\ u_{n+1}=u_n+n+{{c}}$$\n\nElle est définie…\n\n```choix\nmelanger: non\n- de façon explicite : $u_n$ est donné en fonction de $n$\n- par une relation de récurrence : $u_{n+1}$ est donné en fonction de $u_n$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}$ est calculé à partir de $u_n$ (et de $n$) : c'est une **relation de récurrence**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "récurrence",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : explicite",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "explicite",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : récurrence",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "explicite (quotient)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "récurrence avec n",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : explicite",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,104 @@
+{
+	"title": "Cours : démontrer qu'une suite est arithmétique (étapes)",
+	"description": "Remettre dans l'ordre les étapes de la méthode",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On veut démontrer que la suite définie, pour tout entier naturel $n$, par $u_n={{a}}n+{{b}}$ est arithmétique. Remets les étapes dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour tout entier naturel $n$, on calcule $u_{n+1}-u_n$.\n- $u_{n+1}-u_n={{a}}(n+1)+{{b}}-({{a}}n+{{b}})$\n- $u_{n+1}-u_n={{a}}$\n- Cette différence ne dépend pas de $n$ : la suite est arithmétique de raison ${{a}}$.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule la différence de deux termes consécutifs, on la simplifie, puis on conclut : elle ne dépend pas de $n$."
+				]
+			}
+		},
+		{
+			"statement": "Remets dans l'ordre les étapes de la méthode pour démontrer qu'une suite $(u_n)$ est arithmétique.\n\n```ranger\nsigne: aucun\n- Exprimer $u_{n+1}$ en fonction de $n$.\n- Calculer la différence $u_{n+1}-u_n$ et la simplifier.\n- Constater que le résultat est un nombre $r$ qui ne dépend pas de $n$.\n- Conclure : $(u_n)$ est arithmétique de raison $r$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": ["La conclusion vient en dernier : elle s'appuie sur le calcul de $u_{n+1}-u_n$."]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Étapes dans l'ordre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre affiché recopié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["0", "1", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l'ordre",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre affiché recopié",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0", "1", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

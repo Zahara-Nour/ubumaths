@@ -1,0 +1,147 @@
+{
+	"title": "Cours : nombre de termes d'une somme",
+	"description": "Compter les termes d'une somme (piège du premier terme)",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Combien de termes compte la somme $u_{ {{p}} }+u_{ {{eval:p+1}} }+\\cdots+u_{ {{m}} }$ ?\n\n```choix\n- ${{eval:m-p+1}}$\n- ${{eval:m-p}}$\n- ${{m}}$\n- ${{eval:m+1}}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "5..20"
+				},
+				{
+					"name": "m",
+					"expression": "eval:p+d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De $u_{ {{p}} }$ à $u_{ {{m}} }$, il y a ${{m}}-{{p}}+1={{eval:m-p+1}}$ termes : on n'oublie pas de compter le premier."
+				]
+			}
+		},
+		{
+			"statement": "Combien de termes compte la somme $u_0+u_1+\\cdots+u_{ {{m}} }$ ?\n\n```choix\n- ${{eval:m+1}}$\n- ${{m}}$\n- ${{eval:m-1}}$\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "8..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De $u_0$ à $u_{ {{m}} }$, il y a ${{m}}+1={{eval:m+1}}$ termes, car on part de $0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "m − p + 1",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"d": "10",
+				"m": "13"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : m − p",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"d": "10",
+				"m": "13"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"d": "10",
+				"m": "13"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m + 1",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"d": "10",
+				"m": "13"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "m + 1",
+			"variationIndex": 1,
+			"variables": {
+				"m": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : m",
+			"variationIndex": 1,
+			"variables": {
+				"m": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m − 1",
+			"variationIndex": 1,
+			"variables": {
+				"m": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

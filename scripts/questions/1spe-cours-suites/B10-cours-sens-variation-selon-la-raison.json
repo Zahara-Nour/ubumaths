@@ -1,0 +1,124 @@
+{
+	"title": "Cours : sens de variation d'une suite arithmétique selon sa raison",
+	"description": "Signe de la raison et sens de variation, sans valeurs",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "$(u_n)$ est une suite arithmétique de raison $r>0$. Alors $(u_n)$ est…\n\n```choix\nmelanger: non\n- strictement croissante\n- strictement décroissante\n- constante\n- on ne peut pas savoir\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": ["$u_{n+1}-u_n=r>0$ : chaque terme est plus grand que le précédent."]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est une suite arithmétique de raison $r<0$. Alors $(u_n)$ est…\n\n```choix\nmelanger: non\n- strictement croissante\n- strictement décroissante\n- constante\n- on ne peut pas savoir\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": ["$u_{n+1}-u_n=r<0$ : chaque terme est plus petit que le précédent."]
+			}
+		},
+		{
+			"statement": "Le sens de variation d'une suite arithmétique dépend…\n\n```choix\n- du signe de sa raison seulement\n- de son premier terme seulement\n- de son premier terme et de sa raison\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": ["$u_{n+1}-u_n=r$ : seul le signe de $r$ compte, quel que soit $u_0$."]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "croissante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décroissante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : on ne sait pas",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissante",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "raison",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : premier terme",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les deux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

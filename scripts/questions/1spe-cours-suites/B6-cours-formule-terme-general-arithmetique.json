@@ -1,0 +1,133 @@
+{
+	"title": "Cours : formule du terme général d'une suite arithmétique",
+	"description": "Compléter uₙ = u₀ + nr, uₙ = u₁ + (n − 1)r, uₙ = uₚ + (n − p)r",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "$(u_n)$ est une suite arithmétique de raison $r$. Complète la formule, valable pour tout entier naturel $n$.\n\n$u_n=u_0+?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "nr",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": ["De $u_0$ à $u_n$, on ajoute $n$ fois la raison : $u_n=u_0+nr$."]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est une suite arithmétique de raison $r$. Complète la formule, valable pour tout entier naturel $n$.\n\n$u_n=u_1+?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "(n-1)r",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": ["De $u_1$ à $u_n$, on ajoute $n-1$ fois la raison : $u_n=u_1+(n-1)r$."]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est une suite arithmétique de raison $r$, et $p$ un entier naturel. Complète la formule, valable pour tout entier naturel $n$.\n\n$u_n=u_p+?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "(n-p)r",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": ["De $u_p$ à $u_n$, on ajoute $n-p$ fois la raison : $u_n=u_p+(n-p)r$."]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "nr",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["nr"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "rn",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["rn"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (n−1)r",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["(n-1)r"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : r",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["r"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(n−1)r",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["(n-1)r"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nr",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["nr"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(n−p)r",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["(n-p)r"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nr",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["nr"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,128 @@
+{
+	"title": "Cours : formule du terme général d'une suite géométrique",
+	"description": "Compléter uₙ = u₀ × qⁿ, uₙ = u₁ × qⁿ⁻¹, uₙ = uₚ × qⁿ⁻ᵖ",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "$(u_n)$ est une suite géométrique de raison $q$. Complète la formule, valable pour tout entier naturel $n$.\n\n$u_n=u_0\\times ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "q^n",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": ["De $u_0$ à $u_n$, on multiplie $n$ fois par la raison : $u_n=u_0\\times q^n$."]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est une suite géométrique de raison $q$. Complète la formule, valable pour tout entier naturel $n$.\n\n$u_n=u_1\\times ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "q^{n-1}",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"De $u_1$ à $u_n$, on multiplie $n-1$ fois par la raison : $u_n=u_1\\times q^{n-1}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est une suite géométrique de raison $q$, et $p$ un entier naturel. Complète la formule, valable pour tout entier naturel $n$.\n\n$u_n=u_p\\times ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "q^{n-p}",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"De $u_p$ à $u_n$, on multiplie $n-p$ fois par la raison : $u_n=u_p\\times q^{n-p}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "qⁿ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["q^n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nq",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["nq"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : qⁿ⁻¹",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["q^{n-1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "qⁿ⁻¹",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["q^{n-1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : qⁿ",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["q^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "qⁿ⁻ᵖ",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["q^{n-p}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : qⁿ",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["q^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

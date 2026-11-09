@@ -1,0 +1,34 @@
+{
+	"title": "Cours : deux façons de définir une suite",
+	"description": "Carte de cours : forme explicite, relation de récurrence",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true,
+		"courseCard": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Quelles sont les deux façons les plus courantes de définir une suite $(u_n)$ ?",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"- **Forme explicite** : $u_n$ est donné en fonction de $n$, $u_n=f(n)$. On calcule directement n'importe quel terme : avec $u_n=3n+1$, $u_{10}=31$.\n- **Relation de récurrence** : on donne le premier terme et la façon de passer d'un terme au suivant, $u_{n+1}=f(u_n)$. Avec $u_0=2$ et $u_{n+1}=3u_n-1$, on calcule $u_1=5$, puis $u_2=14$, de proche en proche."
+				]
+			}
+		},
+		{
+			"statement": "Quelle différence y a-t-il entre une suite définie **explicitement** et une suite définie **par récurrence** ?",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"- **Forme explicite** : $u_n$ est donné en fonction de $n$, $u_n=f(n)$. On calcule directement n'importe quel terme : avec $u_n=3n+1$, $u_{10}=31$.\n- **Relation de récurrence** : on donne le premier terme et la façon de passer d'un terme au suivant, $u_{n+1}=f(u_n)$. Avec $u_0=2$ et $u_{n+1}=3u_n-1$, on calcule $u_1=5$, puis $u_2=14$, de proche en proche."
+				]
+			}
+		}
+	],
+	"testSpecs": []
+}

@@ -1,0 +1,151 @@
+{
+	"title": "Cours : vrai ou faux sur le sens de variation d'une suite géométrique",
+	"description": "Vrai/faux : signe du premier terme, raison et sens de variation",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une suite géométrique de raison $q={{q}}$ est croissante.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : tout dépend du signe du premier terme. Avec $u_0=-1$, les termes $-1$, $-{{q}}$, $-{{eval:q*q}}$, … diminuent."
+				]
+			}
+		},
+		{
+			"statement": "Si $u_0>0$ et $q>1$, la suite géométrique de premier terme $u_0$ et de raison $q$ est strictement croissante.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : $u_{n+1}-u_n=u_0q^n(q-1)$, produit de nombres strictement positifs."
+				]
+			}
+		},
+		{
+			"statement": "Si $u_0>0$ et $0<q<1$, la suite géométrique de premier terme $u_0$ et de raison $q$ est strictement décroissante.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": ["{{solution:html}} : $u_{n+1}-u_n=u_0q^n(q-1)$, avec $u_0q^n>0$ et $q-1<0$."]
+			}
+		},
+		{
+			"statement": "Une suite géométrique de raison $q=-2$ et de premier terme $u_0=1$ est croissante.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : ses termes $1$, $-2$, $4$, $-8$, … changent de signe à chaque rang : elle n'est ni croissante ni décroissante."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Réponse Faux",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Vrai",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Vrai",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Faux",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Vrai",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Faux",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Vrai",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,205 @@
+{
+	"title": "Cours : coefficient multiplicateur d'une évolution",
+	"description": "Hausse, baisse en pourcentage et suite géométrique",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Augmenter une quantité de ${{t}}\\,\\%$ revient à la multiplier par…\n\n```choix\n- $1{,}0{{t}}$\n- $0{,}0{{t}}$\n- $1{,}{{t}}$\n- $0{,}9{{eval:10-t}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Augmenter de ${{t}}\\,\\%$ : $x+\\dfrac{ {{t}} }{100}x=\\left(1+\\dfrac{ {{t}} }{100}\\right)x=1{,}0{{t}}\\,x$."
+				]
+			}
+		},
+		{
+			"statement": "Diminuer une quantité de ${{t}}\\,\\%$ revient à la multiplier par…\n\n```choix\n- $0{,}9{{eval:10-t}}$\n- $1{,}0{{t}}$\n- $0{,}0{{t}}$\n- $-0{,}0{{t}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diminuer de ${{t}}\\,\\%$ : $x-\\dfrac{ {{t}} }{100}x=\\left(1-\\dfrac{ {{t}} }{100}\\right)x=0{,}9{{eval:10-t}}\\,x$."
+				]
+			}
+		},
+		{
+			"statement": "Une quantité augmente de ${{t}}\\,\\%$ chaque année. La suite de ses valeurs annuelles est…\n\n```choix\n- géométrique de raison $1{,}0{{t}}$\n- arithmétique de raison ${{t}}$\n- géométrique de raison ${{t}}$\n- géométrique de raison $0{,}0{{t}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, on multiplie par $1+\\dfrac{ {{t}} }{100}=1{,}0{{t}}$ : la suite est géométrique de raison $1{,}0{{t}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1,0t",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,0t",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1,t",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : baisse",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,9(10−t)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hausse",
+			"variationIndex": 1,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,0t",
+			"variationIndex": 1,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : négatif",
+			"variationIndex": 1,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "géométrique 1,0t",
+			"variationIndex": 2,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arithmétique",
+			"variationIndex": 2,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : raison t",
+			"variationIndex": 2,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : raison 0,0t",
+			"variationIndex": 2,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

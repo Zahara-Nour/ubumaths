@@ -1,0 +1,162 @@
+{
+	"title": "Cours : vrai ou faux sur la limite d'une suite",
+	"description": "Vrai/faux : limite, croissance, absence de limite",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une suite croissante tend forcément vers $+\\infty$.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : $u_n=1-\\dfrac{1}{n+1}$ est croissante et ses termes se rapprochent de $1$ sans jamais le dépasser."
+				]
+			}
+		},
+		{
+			"statement": "Une suite peut n'avoir aucune limite.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : $u_n=(-1)^n$ vaut alternativement $1$ et $-1$, sans se rapprocher d'aucun nombre."
+				]
+			}
+		},
+		{
+			"statement": "Une suite qui converge vers ${{l}}$ peut avoir des termes supérieurs à ${{l}}$.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : $u_n={{l}}+\\dfrac{1}{n+1}$ converge vers ${{l}}$ et tous ses termes sont supérieurs à ${{l}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite géométrique de premier terme $1$ et de raison ${{q}}$ tend vers $+\\infty$.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : ses termes $1$, ${{q}}$, ${{eval:q*q}}$, … deviennent aussi grands qu'on veut."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Réponse Faux",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Vrai",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Vrai",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Faux",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Vrai",
+			"variationIndex": 2,
+			"variables": {
+				"l": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Faux",
+			"variationIndex": 2,
+			"variables": {
+				"l": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réponse Vrai",
+			"variationIndex": 3,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Faux",
+			"variationIndex": 3,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
