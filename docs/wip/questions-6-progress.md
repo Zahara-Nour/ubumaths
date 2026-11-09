@@ -5,17 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, lot 11b écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-09, après #2524 (lot 11b, fichiers)._
 
-- **État** : lots 10 et 11a publiés. Lot 11b (174-179, 148) : 7 modèles écrits, vérifiés en local (§ 26.4), PR des
-  fichiers sur `content/questions-6-lot11b`.
-- **Prochaine action** : merger la PR du 11b ; David lance `create-questions --publier` (brouillons) ; commiter les `id` ;
-  migration nœud + tag (patron `20261109132820`) ; page à cocher ; puis lot 12 « Constructions » (173, 180, 207).
-- **En attente de David** : rien avant le merge.
+- **État** : lots 10 et 11a publiés. Lot 11b (174-179, 148) : 7 modèles en fichiers sur `main` (#2524, § 26.4), pas
+  encore en base de prod.
+- **Prochaine action** : après le `--publier` de David, commiter les `id` (commit direct, fichiers de `scripts/` → non :
+  branche + PR avec la migration) ; migration nœud + tag (patron `20261109132820` : 174-178 sur « triangles », 179 sur
+  la notion « Symétrie axiale », 148 sur la notion « Périmètres ») ; page à cocher ; puis lot 12 « Constructions »
+  (173, 180, 207).
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-triangles-symetrie-perimetres
+--publier` depuis le dépôt principal (brouillons en prod).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
-ancre="centre"`. `\pi` dans `eval:`. Variable à valeur lettre impossible (`{{if:}}` dans le texte). `couleur="bleu"`
-  entre guillemets. Réponses de figure : pleine précision.
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `content/questions-6-lot11b`.
+ancre="centre"`. `\pi` dans `eval:`. 179 et 148 sur une NOTION : vérifier la garde « notion sans sous-notion ».
+  Réponses de figure : pleine précision.
+- **Worktree / branche** : aucun (retiré après #2524).
 
 ## 1. Relevé (prod, 2026-10-26)
 
