@@ -14,8 +14,8 @@ _Mis à jour le 2026-11-09, PR 4 commitée (3233b329f), pas encore poussée._
 - **État** : PR 4 (triangle rectangle coté en cm, § 7) commitée sur la branche ; tests verts, `check:incremental`
   0, cliquet, `lint:fast` ; PR pas ouverte. Revue `code-reviewer` Opus lancée, résultat non lu.
 - **Prochaine action** : relancer la revue Opus sur `git diff origin/main...HEAD` (le résultat de la 1re est
-  perdu au `/clear`), corriger, puis `git merge origin/main`, push, PR (ligne `Doc-inchangée:
-utilitaires-et-demos.md décrit le mécanisme du catalogue, pas ses exemples` dans un commit), CI, merge.
+  perdu au `/clear`), corriger, puis `git merge origin/main`, push, PR (dans un commit, la ligne Doc-inchangée
+  de la PR 3 pour utilitaires-et-demos.md), CI, merge.
 - **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494) ; choix (1)-(3) du § 5, (1)-(4)
   du § 6, (1)-(4) du § 7 ; Q15 (fusion à 2°, reco : serrer) et Q16 (`[AX)` par un point, reco : plus tard).
 - **Pièges en cours** : le juge prend le **segment vu** (§ 3) ; seules les règles posées AVANT le trait comptent
