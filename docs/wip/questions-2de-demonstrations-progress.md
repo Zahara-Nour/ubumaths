@@ -497,3 +497,4 @@ Migration `20261109093006_questions_2de_approfondissements_7_rangement_tags` (ca
 données changent ; 286 tagué d'un point posé sur la notion) : test d'intégration 12/12 vert, rouge sans les
 écritures (6 échecs, 5 sautés).
 Audit `security-auditor` : 0 finding (bloquant ou non).
+PR #2513.
