@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2512._
+_Mis à jour le 2026-11-09, après #2515._
 
-- **État** : PR 1 mergée (#2512) ; PR 2 (point 3) en cours : jsdom chargé à la demande, date-fns embarqué dans la build serveur · **Prochaine action** : PR 2 ouverte, CI, merge · **En attente de David** : rien · **Pièges en cours** : commitlint refuse un corps de commit à lignes > 100 caractères · **Worktree / branche** : `../ubumaths-wt-amelioration`, `perf/amelioration-demarrage`
+- **État** : PR 1 (#2512) et PR 2 (#2515, jsdom à la demande, date-fns élagué : démarrage local 155 → 48 ms, `/dashboard` 303 637 → 20 ms) mergées, pas encore en prod · **Prochaine action** : après le `deploy:prod`, remesurer le 1er appel en prod (`curl` sur `/auth/login` et `/dashboard` après une heure d'inactivité, comparer à 2,4 s / 4,0 s) ; puis décider du point 4 (ping) selon le résultat · **En attente de David** : un `deploy:prod` (livre #2512 et #2515) · **Pièges en cours** : commitlint refuse un corps de commit à lignes > 100 caractères ; `docs:check-a-jour` ne voit que les fichiers COMMITÉS · **Worktree / branche** : aucun
 
 ## Diagnostic de la connexion lente (2026-11-09)
 
