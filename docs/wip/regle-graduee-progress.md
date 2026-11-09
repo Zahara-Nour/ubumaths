@@ -9,18 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR 4 commitée (3233b329f), pas encore poussée._
+_Mis à jour le 2026-11-09, PR 4 commitée, revue Opus lue (§ 7), pas encore poussée._
 
-- **État** : PR 4 (triangle rectangle coté en cm, § 7) commitée sur la branche ; tests verts, `check:incremental`
-  0, cliquet, `lint:fast` ; PR pas ouverte. Revue `code-reviewer` Opus lancée, résultat non lu.
-- **Prochaine action** : relancer la revue Opus sur `git diff origin/main...HEAD` (le résultat de la 1re est
-  perdu au `/clear`), corriger, puis `git merge origin/main`, push, PR (dans un commit, la ligne Doc-inchangée
-  de la PR 3 pour utilitaires-et-demos.md), CI, merge.
-- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494) ; choix (1)-(3) du § 5, (1)-(4)
-  du § 6, (1)-(4) du § 7 ; Q15 (fusion à 2°, reco : serrer) et Q16 (`[AX)` par un point, reco : plus tard).
+- **État** : PR 4 (triangle rectangle coté en cm, § 7) commitée sur la branche, PR pas ouverte. Revue Opus :
+  1 faux juste bloquant (éventail de triangles) + 1 important ([AC] prolongé), preuves rouges commitées
+  (`construction-triangle-rectangle-cm.revue.test.ts`).
+- **Prochaine action** : après la réponse de David à Q17/Q18 (§ 7), corriger `judgeRight`, intégrer les sondes au
+  test de la PR, `git merge origin/main`, push, PR (dans un commit, la ligne Doc-inchangée de la PR 3 pour
+  utilitaires-et-demos.md), CI, merge.
+- **En attente de David** : **Q17, Q18 (§ 7)** ; vérifications sur téléphone (#2485, #2490, #2494) ; choix
+  (1)-(3) du § 5, (1)-(4) du § 6, (1)-(4) du § 7 ; Q15 (reco : serrer) et Q16 (reco : plus tard).
 - **Pièges en cours** : le juge prend le **segment vu** (§ 3) ; seules les règles posées AVANT le trait comptent
-  (§ 6, § 7) ; tests de composant : toucher pile sur une graduation (x,x5 arrondit au mm d'à côté) ; zsh :
-  listes de fichiers en tableau.
+  (§ 6, § 7) ; tests de composant : toucher pile sur une graduation ; zsh : listes de fichiers en tableau.
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-triangle`.
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
@@ -227,3 +227,14 @@ du report (`ruledGraduationOf`) ; refus d'auteur : côté plus long que la règl
 de la règle s'aimante à la perpendiculaire, le bout de [BC] s'aimante à la graduation de C ; (3) les cm
 seulement pour le triangle rectangle (pas le lot 4 ni l'angle quelconque) ; (4) palette exactement Segment ·
 Équerre · Règle graduée (Report refusé).
+
+**Revue opus (2026-11-09)** : (1) **bloquant, faux juste** : un éventail de triangles (règle restée en A, C à 3 cm
+et à 4 cm, chacun fermé par [B…]) est juste dès qu'un C convient ; aussi un C juste au-dessus de (AB) et un faux
+en dessous ; (2) **important** : [AC] prolongé au-delà de C (trait vu de 4,5 cm, C au milieu) est juste. Preuves
+rouges : `construction-triangle-rectangle-cm.revue.test.ts` (4 rouges sur 5, commité exprès, à intégrer au test
+de la PR). Vérifié sans défaut : ordre de la règle, règle ailleurs, croisement, côté trop long, réponse forgée,
+parseur, correction. Questions à David :
+
+- **Q17** : plusieurs C distincts (côté en cm) → faux, « Trace un seul triangle ABC. » ? Un C de chaque côté de
+  (AB) compte-t-il pour deux ? (reco : oui et oui, comme Q9 du segment et le cercle)
+- **Q18** : [AC] prolongé au-delà de C → faux, jugé sur le trait vu (`seenSegments` de la PR 1) ? (reco : oui)
