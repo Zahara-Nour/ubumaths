@@ -9,8 +9,8 @@
 _Mis à jour le 2026-11-09, migration du lot 6 en PR._
 
 - **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes : lots 4 et 5 publiés ; lot 6 (361, 362, 387, 388) mergé (#2496), brouillons créés en prod ; migration nœud + tag écrite, testée (12/12, rouge sans
-  écritures), auditée (0 finding), en PR sur `feat/questions-2de-algorithmes-6-rangement` (§ 12, fin).
-- **Prochaine action** : CI de la PR verte → `pnpm check:migrations --pr <n>` → merge → `db:migrate` depuis le
+  écritures), auditée (0 finding), en PR #2498 (§ 12, fin).
+- **Prochaine action** : CI de la PR verte → `pnpm check:migrations --pr 2498` → merge → `db:migrate` depuis le
   dépôt principal (4 conditions réunies) → vérif prod (4 modèles sur leur sous-notion, 1 point chacun,
   `updated_at` inchangé) → page à cocher (comme lot 5) → publication par David.
 - **En attente de David** : rien.
