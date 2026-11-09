@@ -1,4 +1,5 @@
 {
+	"id": "85e575ea-bdb6-4358-a920-e7f70bc53334",
 	"title": "Développement décimal périodique d'un rationnel",
 	"description": "n-ième chiffre de a/7 par la période de 6 chiffres (case, a de 1 à 6, n de 20 à 60) ; 0,uvuv… = uv/99 (case) ; périodicité par les restes de la division (case choix)",
 	"grades": ["2"],

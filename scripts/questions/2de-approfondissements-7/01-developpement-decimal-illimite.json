@@ -1,4 +1,5 @@
 {
+	"id": "726d42bd-ec32-4718-ab05-5c26da9c1f72",
 	"title": "Développement décimal illimité d'un nombre réel",
 	"description": "x = 0,ddd… = d/9 par 10x − x (case, d de 1 à 8) ; 0,999… = 1 (case choix) ; troncature de π à 10⁻ⁿ (case, n de 1 à 6)",
 	"grades": ["2"],
