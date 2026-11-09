@@ -379,31 +379,75 @@ describe('parseVariationTableContent - Multiple sign rows', () => {
 // ============================================================================
 
 describe('parseVariationTableContent - Open/closed bounds', () => {
-	it('should parse open bounds with bracket notation', () => {
-		const content = [
-			'variable: x',
-			'domain: ]-inf, 0[, ]0, +inf[',
-			'',
-			'sign: f(x)',
-			'  -inf,0: +'
-		];
+	/** Points du domaine lus : expression, `open` et `hidden` seulement s'ils valent true. */
+	function domaine(domain: string) {
+		const result = parseVariationTableContent(['variable: x', `domain: ${domain}`, 'sign: f(x)']);
+		expect(result.errors).toHaveLength(0);
+		return result.node!.domain.map((p) => ({
+			expression: p.expression,
+			...(p.open ? { open: true } : {}),
+			...(p.hidden ? { hidden: true } : {})
+		}));
+	}
 
-		const result = parseVariationTableContent(content);
-		const node = result.node!;
-
-		// Note: The current simple parser splits by comma, so bounds might need adjustment
-		// The domain parsing handles individual points with their bounds
-		expect(node.domain.length).toBeGreaterThan(0);
+	// Notation par intervalles (outils manquants n° 12, 2026-11-09) : un point commun à
+	// deux intervalles n'est écrit qu'une fois, ouvert s'il est exclu des deux.
+	it('réunion ]-inf, 0[, ]0, +inf[ : trois points, 0 exclu', () => {
+		expect(domaine(']-inf, 0[, ]0, +inf[')).toEqual([
+			{ expression: '-inf', open: true },
+			{ expression: '0', open: true },
+			{ expression: '+inf', open: true }
+		]);
 	});
 
-	it('should parse mixed open/closed bounds', () => {
-		const content = ['variable: x', 'domain: [-1, 0[, [0, 1]', '', 'sign: f(x)', '  -1,0: +'];
+	it('réunion [-1, 0[, [0, 1] : 0 appartient au domaine (fermé)', () => {
+		expect(domaine('[-1, 0[, [0, 1]')).toEqual([
+			{ expression: '-1' },
+			{ expression: '0' },
+			{ expression: '1' }
+		]);
+	});
 
-		const result = parseVariationTableContent(content);
-		const node = result.node!;
+	it('[-3, 0[, ]0, 4] : bornes fermées gardées, 0 exclu', () => {
+		expect(domaine('[-3, 0[, ]0, 4]')).toEqual([
+			{ expression: '-3' },
+			{ expression: '0', open: true },
+			{ expression: '4' }
+		]);
+	});
 
-		expect(result.errors).toHaveLength(0);
-		expect(node.domain.length).toBeGreaterThan(0);
+	it(']a[, +inf : deux points, a exclu', () => {
+		expect(domaine(']2[, +inf')).toEqual([{ expression: '2', open: true }, { expression: '+inf' }]);
+	});
+
+	it('un crochet par point (modèle publié 3fa3af6c) : inchangé', () => {
+		expect(domaine(']0, [2, [+inf[')).toEqual([
+			{ expression: '0', open: true },
+			{ expression: '2' },
+			{ expression: '+inf', open: true }
+		]);
+	});
+
+	it('case à compléter derrière un crochet : ]0, [?2, [+inf[ et ]?2[, +inf', () => {
+		expect(domaine(']0, [?2, [+inf[')[1]).toEqual({ expression: '2', hidden: true });
+		expect(domaine(']?2[, +inf')[0]).toEqual({ expression: '2', open: true, hidden: true });
+	});
+
+	it('jeton invalide après une borne : une seule erreur', () => {
+		const result = parseVariationTableContent([
+			'variable: x',
+			'domain: ]-inf, 0[, ]??x, +inf[',
+			'sign: f(x)'
+		]);
+		expect(result.errors).toHaveLength(1);
+	});
+
+	it('virgule dans des parenthèses ou accolades : pas de coupure', () => {
+		expect(domaine(']-inf, \\frac{1}{2}, f(1,2)[').map((p) => p.expression)).toEqual([
+			'-inf',
+			'\\frac{1}{2}',
+			'f(1,2)'
+		]);
 	});
 });
 
