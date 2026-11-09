@@ -16,7 +16,8 @@ _Mis à jour le 2026-11-09, migration du lot 8 poussée (PR de rangement ouverte
   par David (`!`) → vérifier en prod (nœuds, tags, points 2-307/2-310, `d4db2207` `{1_SPE,2}`, `updated_at`) →
   page à cocher du lot 8.
 - **En attente de David** : `db:migrate` après le merge.
-- **Pièges en cours** : écritures en prod refusées par le classifieur du mode auto → commande `!` ; « Client Tests
+- **Pièges en cours** : la garde « Doc à jour » (job Lint) exige `Doc-inchangée:` dans un commit pour toute
+  migration de données ; écritures en prod refusées par le classifieur du mode auto → commande `!` ; « Client Tests
   (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf → `pnpm exec svelte-kit sync`.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-approfondissements-8-rangement`.
 
