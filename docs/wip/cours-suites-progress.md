@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2530._
+_Mis à jour le 2026-11-09, migration en PR (pas encore mergée)._
 
-- **État** : 30 brouillons créés en prod le 2026-11-09 (vérifiés : 30 `draft`), ids commités (#2530) · **Prochaine action** : migration nœud + tag (gabarit `20261026210000_questions_cp_c_rangement_tags.sql`), test d'intégration rouge sans elle, `security-auditor`, PR, `db:migrate` · **Validé par David (2026-11-09, à appliquer sans redemander)** : accès = personne ; B11 un seul modèle sous 1SPE-214, tableau de rangement tel quel ; marqueur « question de cours » sur les deux « Démontrer la somme… » (dans la même migration s'ils sont publiés, vérifier leur statut) ; `.tmp-sonde/` : garder `ranger-attendus.ts` sous `scripts/questions/` (branche de la migration), jeter le reste · **Pièges en cours** : réponses des étapes à ranger = places dans l'ordre affiché sous le tirage fixe des specs (`['3','0','1','2']`) ; le hook du commit reformate les JSON · **Worktree / branche** : `../ubumaths-wt-cours-suites`, branche `chore/ids-cours-suites-1spe` (mergée, gardée pour `.tmp-sonde/`)
+- **État** : migration `20261109224738_questions_1spe_cours_suites_rangement_tags` écrite (30 modèles rangés et tagués, marqueur sur 5fbb9a04 et b554a47f) ; test d'intégration 14/14, rouge sans elle ; résolution 30/30 vérifiée en prod (MCP) · **Prochaine action** : `security-auditor`, PR, CI verte, merge, `pnpm db:migrate` depuis la branche mergée, puis vérifier en prod (30 nœuds, 30 tags, 2 marqueurs) · **En attente de David** : rien · **Pièges en cours** : A4 (1SPE-212, point sur la notion) va sur « explicite ou par récurrence », comme « Exprimer le terme suivant » ; les points sur une notion (214, 217, 228, 229, 372) rangent le modèle sur la notion (précédent 20261101215000) · **Worktree / branche** : `../ubumaths-wt-cours-suites`, `feat/rangement-cours-suites-1spe`
 
 ## Décisions (David, 2026-11-09)
 
@@ -62,3 +62,6 @@ _Mis à jour le 2026-11-09, après #2530._
 - 2026-11-09 : script `docs/wip/questions/lot-1spe-cours-suites.py` ; `create-questions` en simulation :
   30 fichiers verts ; sonde des formules (40 tirages par modèle) : 0 problème ; créés en base locale
   (copie des fichiers), rendu vérifié dans l'aperçu admin (carte, étapes à ranger, choix multiples).
+- 2026-11-09 : migration nœud + tag + marqueur (branche `feat/rangement-cours-suites-1spe`) ; aucune
+  carte de révision d'élève sur les deux « Démontrer la somme… » (relevé MCP) ; `.tmp-sonde/` trié :
+  `scripts/questions/ranger-attendus.ts` gardé, le reste jeté.
