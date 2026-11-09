@@ -749,3 +749,27 @@ corrigée, à confirmer).
 - **Q3 virgule décimale** : le registre lit `2x = 0,6` comme l'Atelier, dans cette PR.
 - **Limites** : `x + a = 0`, `x^2 = a` (« si a ⩾ 0 »), `(x−a)(x−1)=0`, `ln x = a` restent résolus.
 - **Erreurs** : aucun autre refus ne change.
+
+### PR 2c — écriture (2026-11-09)
+
+- **Registre** (`solve.command.ts`) : virgule décimale lue (`decimalCommaInput`, importée de
+  `atelier/decimal-comma.ts` comme `cosmetic-transforms.ts`) ; valeurs remarquables
+  (`remarkableValuesInTrigonometry`) ; lettre posée remplacée (`a := 2`, `a x = 4` → `S = {2}`) ;
+  écriture des solutions `SolutionWriting` (`solve-latex.ts`) : registre décimal (Q46) et
+  `anglesAsTyped` (`core/angle-radians.ts`, Q1). Refus V57 : `core/parameter-refusal.ts`
+  (descendu de `calcul.ts`, avec `dependsOnMessage`/`lettersText` de `atelier/types.ts`, qui les
+  réexporte), code `PARAMETER_DEPENDS`, après le moteur comme avant. Texte (Q2) :
+  `solutionsSetText`, `approximateSolutionsText` (mode décimal), familles `S = {…, k ∈ ℤ}`, `dans`
+  compris. Laissés tels quels : « Pas de solution… », « Solutions infinies… ».
+- **Atelier** : l'argument de `.résoudre` n'est plus converti en radians (`engineArgument`) ; le
+  refus V57 est celui du registre ; `solveSteps` passe ses étapes par `anglesAsTyped`
+  (`stepsAsShown`, nouveau paramètre) et écrit les unités comme `.simplifier`
+  (`degreeSignWritten(displayUnitsInLatex(…))`) — `cos(20°)x=1` : étapes et réponse en degrés.
+- **Garde R5** (`resoudre-registre.test.ts`) : `READ_DIFFERENTLY` retiré ; contrôle dans les deux
+  sens (l'Atelier répond ⇒ le registre aussi). Registre : `solve-lecture.test.ts` (30 cas).
+  Preuve rouge : 37 échecs avec les sources de `main`.
+- ~45 attendus de texte mis à jour (`x = 3` → `S = {3}`) ; `ax+e=0 x` (solve-euler) devient
+  `2x+e=0` : la première divise par a, refusée maintenant (V57).
+- Suites : `atelier` + `mathAST/cli` (8 666), `mathAST` + `questions` + `geometry-core` + `routes`
+  (38 699), reste du projet serveur (65 622 ; `deploy-prod` en délai dépassé sous charge, vert
+  seul), client `atelier` + `routes` (749) vertes.
