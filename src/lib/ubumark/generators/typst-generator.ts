@@ -219,11 +219,18 @@ export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions
  *    `tete` = premier paragraphe collé au bloc qui le suit, numéro compris (sinon
  *    le numéro resterait seul sur sa ligne, au-dessus du bloc collé) ;
  *  - `ubu-item-bloc` : item qui commence par un bloc (formule centrée, cercle…),
- *    numéro à côté du bloc comme avant.
+ *    numéro à côté du bloc comme avant ;
+ *  - `ubu-colle()` (dans un `context`) : un paragraphe d'introduction reste collé
+ *    au bloc qui le suit seulement si la coupure tomberait en fin de PAGE (chantier
+ *    coupures-pdf, David, 2026-11-09) : vrai quand le dernier marqueur de coupure
+ *    (`TYPST_BREAK_MARKER`, posé avant la chaîne collée) est dans la dernière
+ *    colonne de sa page — x + 2 × largeur dépasse la largeur de la page. Une seule
+ *    colonne : toujours vrai. Pas encore de marqueur (premier passage) : vrai.
  */
 const PDF_READABILITY_HEADER = [
 	'#show math.equation.where(block: false): set text(top-edge: "bounds", bottom-edge: "bounds")',
-	'#let ubu-item(num, body, w: "a)", tete: none) = context { let n = measure(w).width + 0.5em; let ligne(x) = [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#x]; block(spacing: 1.5em, pad(left: n, if tete == none { ligne(body) } else { block(sticky: true, ligne(tete)); body })) }',
+	'#let ubu-colle() = { let m = query(selector(<ubu-coupure>).before(here())); if m.len() == 0 { return true }; let d = m.last(); let w = if page.flipped { page.height } else { page.width }; type(w) != length or d.location().position().x + 2 * d.value > w }',
+	'#let ubu-item(num, body, w: "a)", tete: none) = context { let n = measure(w).width + 0.5em; let ligne(x) = [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#x]; block(spacing: 1.5em, pad(left: n, if tete == none { ligne(body) } else { block(sticky: ubu-colle(), ligne(tete)); body })) }',
 	'#let ubu-item-bloc(num, body, w: "a)") = context { let n = measure(w).width + 0.5em; block(spacing: 1.5em, grid(columns: (n, 1fr), box(width: n - 0.5em, align(end, num)), body)) }',
 	'// ubumark: fin de l’en-tête',
 	''
@@ -303,7 +310,9 @@ function generateBody(ast: DocumentNode, options: ResolvedTypstTranspilerOptions
 		const last = ast.children.length - 1;
 		return ast.children
 			.map((node, index) =>
-				index === last ? stickyBlock(node, options) : generateTopBlock(ast, index, options)
+				index === last
+					? stickyBlock(node, options, isChained(ast, index, options))
+					: generateTopBlock(ast, index, options)
 			)
 			.join('\n\n');
 	}
@@ -318,7 +327,14 @@ function generateBody(ast: DocumentNode, options: ResolvedTypstTranspilerOptions
 			if (node.type !== 'list' || !node.ordered) return generateTopBlock(ast, index, options);
 			const first = questionIndex;
 			questionIndex += node.items.length;
-			return generateList(node, options, 0, (index) => afterQuestion(first + index));
+			return generateList(
+				node,
+				options,
+				0,
+				(index) => afterQuestion(first + index),
+				false,
+				isChained(ast, index, options)
+			);
 		})
 		.join('\n\n');
 }
@@ -330,8 +346,28 @@ function generateTopBlock(
 	options: ResolvedTypstTranspilerOptions
 ): string {
 	const node = ast.children[index];
+	const chained = isChained(ast, index, options);
+	if (node.type === 'list') return generateList(node, options, 0, undefined, false, chained);
 	const typst = generateBlock(node, options);
-	return keepsWithNext(node, ast.children[index + 1]) ? keepWithNext(typst) : typst;
+	// Titre : collé par Typst à ce qui le suit, il ouvre une chaîne → son marqueur
+	if (node.type === 'heading') return chained ? typst : `${TYPST_BREAK_MARKER}\n${typst}`;
+	return keepsWithNext(node, ast.children[index + 1]) ? keepWithNextOnPage(typst, chained) : typst;
+}
+
+/**
+ * Le bloc de premier niveau `index` continue-t-il une chaîne de blocs collés ?
+ * Après un titre (collé par Typst) ou un paragraphe collé à lui ; le premier bloc,
+ * si le document suit un titre d'exercice (`chainedStart`). Un bloc qui continue
+ * une chaîne n'a pas de marqueur de coupure : celui du début de la chaîne sert.
+ */
+function isChained(
+	ast: DocumentNode,
+	index: number,
+	options: ResolvedTypstTranspilerOptions
+): boolean {
+	if (index === 0) return options.chainedStart === true;
+	const previous = ast.children[index - 1];
+	return previous.type === 'heading' || keepsWithNext(previous, ast.children[index]);
 }
 
 /** Blocs qu'un paragraphe ne quitte pas en bas de page (décision de David, 2026-10-26) */
@@ -354,14 +390,38 @@ function keepsWithNext(
  * fin de colonne, le suivant (cadre de réponse) ne part pas seul. Une liste :
  * seul son dernier élément est collé, le reste peut se couper.
  */
-function stickyBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions): string {
-	if (node.type === 'list') return generateList(node, options, 0, undefined, true);
+function stickyBlock(
+	node: BlockNode,
+	options: ResolvedTypstTranspilerOptions,
+	chained: boolean
+): string {
+	if (node.type === 'list') return generateList(node, options, 0, undefined, true, chained);
 	return keepWithNext(generateBlock(node, options));
 }
 
 /** Typst collé à ce qui le suit */
 function keepWithNext(typst: string, spacing = ''): string {
 	return `#block(width: 100%, sticky: true${spacing})[\n${typst}\n]`;
+}
+
+/**
+ * Marqueur de coupure (chantier coupures-pdf) : posé AVANT une chaîne de blocs
+ * collés, il reste là où finit le contenu précédent, quoi que la chaîne devienne :
+ * `ubu-colle()` y lit la colonne (sans oscillation de la mise en page). Sa valeur :
+ * la largeur disponible. `place` sans alignement vertical : à la position courante,
+ * hors du flux — un bloc de hauteur nulle, premier bloc d'une colonne, empêchait
+ * Typst d'y supprimer l'espace au-dessus du titre (+ 18 pt en haut de chaque
+ * colonne, mesuré sur les fiches en base). Jamais entre deux blocs collés.
+ */
+export const TYPST_BREAK_MARKER = '#place(left, layout(r => [#metadata(r.width) <ubu-coupure>]))';
+
+/**
+ * Paragraphe d'introduction collé au bloc qui le suit, en fin de page seulement
+ * (`ubu-colle()`). Marqueur devant lui, sauf s'il continue une chaîne (`chained`).
+ */
+function keepWithNextOnPage(typst: string, chained: boolean): string {
+	const marker = chained ? '' : `${TYPST_BREAK_MARKER}\n`;
+	return `${marker}#context block(width: 100%, sticky: ubu-colle())[\n${typst}\n]`;
 }
 
 /** Espacement d'un élément de liste (celui de `ubu-item`), pour un élément enveloppé */
@@ -678,7 +738,8 @@ function generateList(
 	options: ResolvedTypstTranspilerOptions,
 	enumerateDepth: number = 0,
 	afterItem?: (index: number) => string,
-	stickyLast = false
+	stickyLast = false,
+	chained = false
 ): string {
 	// Calculate new depth: only ordered lists increment enumerate depth
 	const newDepth = node.ordered ? enumerateDepth + 1 : enumerateDepth;
@@ -706,30 +767,43 @@ function generateList(
 			head ? { ...item, children: item.children.slice(1) } : item,
 			options,
 			newDepth,
-			after !== '' && !unbreakable
+			after !== '' && !unbreakable,
+			head !== ''
 		);
 		const content = after ? `${itemContent}\n${after}` : itemContent;
 		// Item qui commence par un bloc (formule centrée, cercle…) : numéro à côté du bloc
 		const helper =
 			item.children[0] && item.children[0].type !== 'paragraph' ? 'ubu-item-bloc' : 'ubu-item';
 		const sticky = stickyLast && index === node.items.length - 1;
-		return { helper, num: label + head, content, unbreakable, sticky };
+		// Numéro et première phrase collés au bloc qui suit (`tete`) : marqueur de
+		// coupure devant l'élément, sauf pour le premier d'une liste qui continue
+		// une chaîne (liste collée au paragraphe qui l'introduit)
+		const marker = head !== '' && !(index === 0 && chained);
+		return { helper, num: label + head, content, unbreakable, sticky, marker };
 	});
 
 	// `:colonnes N` : grille lue en lignes (a) b) / c) d)). `columns()` de Typst ne se
 	// répartit pas dans une page déjà en deux colonnes.
 	if (node.columns && node.columns > 1) {
-		const cells = items.map(({ helper, num, content }) => `${helper}(${num})[${content}]`);
+		// Marqueurs de coupure hors des cellules (largeur de cellule, pas de colonne) :
+		// un seul, avant la grille, si une cellule a un bloc collé en fin de page
+		const cells = items.map(({ helper, num, content }) =>
+			`${helper}(${num})[${content}]`.split(`${TYPST_BREAK_MARKER}\n`).join('')
+		);
 		const fractions = Array(node.columns).fill('1fr').join(', ');
 		const grid = `#grid(columns: (${fractions}), column-gutter: 1em, row-gutter: 1.5em,\n  ${cells.join(',\n  ')}\n)`;
-		return stickyLast ? keepWithNext(grid) : grid;
+		const glued = cells.some((cell) => cell.includes('ubu-colle()') || cell.includes('tete: ['));
+		const marker = glued && !chained ? `${TYPST_BREAK_MARKER}\n` : '';
+		return marker + (stickyLast ? keepWithNext(grid) : grid);
 	}
 
 	return items
-		.map(({ helper, num, content, unbreakable, sticky }) => {
+		.map(({ helper, num, content, unbreakable, sticky, marker }) => {
 			const typst = `#${helper}(${num})[${content}]`;
-			if (unbreakable) return `#block(width: 100%, breakable: false${ITEM_SPACING})[${typst}]`;
-			return sticky ? keepWithNext(typst, ITEM_SPACING) : typst;
+			const before = marker ? `${TYPST_BREAK_MARKER}\n` : '';
+			if (unbreakable)
+				return `${before}#block(width: 100%, breakable: false${ITEM_SPACING})[${typst}]`;
+			return before + (sticky ? keepWithNext(typst, ITEM_SPACING) : typst);
 		})
 		.join('\n');
 }
@@ -741,7 +815,8 @@ function generateListItemContent(
 	item: ListItemNode,
 	options: ResolvedTypstTranspilerOptions,
 	currentDepth: number,
-	stickyLast = false
+	stickyLast = false,
+	afterHead = false
 ): string {
 	const blocks: string[] = [];
 
@@ -749,10 +824,17 @@ function generateListItemContent(
 		const child = item.children[i];
 		// Dernier bloc collé à ce qui suit l'élément (cadre de réponse)
 		const sticky = stickyLast && i === item.children.length - 1;
+		// Bloc qui continue une chaîne collée : après la tête de l'élément, un titre
+		// ou un paragraphe collé à lui (pas de marqueur de coupure à lui)
+		const previous = item.children[i - 1];
+		const chained =
+			i === 0 ? afterHead : previous.type === 'heading' || keepsWithNext(previous, child);
+
+		if (child.type === 'heading' && !chained) blocks.push(TYPST_BREAK_MARKER);
 
 		if (child.type === 'list') {
 			// Nested list - generate with current depth
-			const listContent = generateList(child, options, currentDepth, undefined, sticky);
+			const listContent = generateList(child, options, currentDepth, undefined, sticky, chained);
 			// Add blank line before nested list if there's content before it
 			if (blocks.length > 0) {
 				blocks.push('\n' + listContent);
@@ -762,8 +844,11 @@ function generateListItemContent(
 		} else {
 			// Regular block (paragraph, math, etc.)
 			const generated = generateBlock(child as BlockNode, options);
-			const blockContent =
-				sticky || keepsWithNext(child, item.children[i + 1]) ? keepWithNext(generated) : generated;
+			const blockContent = sticky
+				? keepWithNext(generated)
+				: keepsWithNext(child, item.children[i + 1])
+					? keepWithNextOnPage(generated, chained)
+					: generated;
 
 			// Add blank line between paragraphs to preserve line breaks
 			if (i > 0 && item.children[i - 1].type !== 'list') {
