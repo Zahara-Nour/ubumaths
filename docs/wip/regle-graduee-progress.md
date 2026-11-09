@@ -9,19 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2494._
+_Mis à jour le 2026-11-09, PR 4 commitée (3233b329f), pas encore poussée._
 
-- **État** : PR 3 (#2494, `cercle c = cercle(O, rayon=4 cm)`) **mergée**, pas déployée ; revue Opus : 4 mineurs
-  corrigés (§ 6) ; ligne #2494 dans `verifications-manuelles.md`.
-- **Prochaine action** : PR 4, triangle rectangle coté (`triangle ABC : CAB = 90 ; AC = 4 cm`, [AB] tracé, § 4) ;
-  tests d'abord.
-- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494) ; choix (1)-(3) du § 5 et (1)-(4)
-  du § 6 ; Q15 (fusion à 2°, reco : serrer) et Q16 (`[AX)` par un point, reco : plus tard), § 5.
-- **Pièges en cours** : correction des réponses → revue `code-reviewer` en `model: opus` ; le juge prend le
-  **segment vu** (§ 3) ; seules les règles posées AVANT le cercle comptent (§ 6) ; sous zsh, une liste de
-  fichiers dans une variable ne se découpe pas (tableau).
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-triangle` (depuis `origin/main`
-  après #2494).
+- **État** : PR 4 (triangle rectangle coté en cm, § 7) commitée sur la branche ; tests verts, `check:incremental`
+  0, cliquet, `lint:fast` ; PR pas ouverte. Revue `code-reviewer` Opus lancée, résultat non lu.
+- **Prochaine action** : relancer la revue Opus sur `git diff origin/main...HEAD` (le résultat de la 1re est
+  perdu au `/clear`), corriger, puis `git merge origin/main`, push, PR (ligne `Doc-inchangée:
+utilitaires-et-demos.md décrit le mécanisme du catalogue, pas ses exemples` dans un commit), CI, merge.
+- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494) ; choix (1)-(3) du § 5, (1)-(4)
+  du § 6, (1)-(4) du § 7 ; Q15 (fusion à 2°, reco : serrer) et Q16 (`[AX)` par un point, reco : plus tard).
+- **Pièges en cours** : le juge prend le **segment vu** (§ 3) ; seules les règles posées AVANT le trait comptent
+  (§ 6, § 7) ; tests de composant : toucher pile sur une graduation (x,x5 arrondit au mm d'à côté) ; zsh :
+  listes de fichiers en tableau.
+- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-triangle`.
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
@@ -210,3 +210,20 @@ sans unité : le message cite `cercle(O, rayon=4 cm)` ; (2) cercles concentrique
 « Trace seulement les 2 cercles de centre O demandés. » ; (3) correction : une règle par centre
 (`solutionRulers`) ; (4) faux juste : compas ouvert jusqu'à un point visible à 4 cm, règle posée APRÈS → était
 juste ; seules les règles posées avant le cercle comptent désormais (remplace un refus d'auteur, choix (5)).
+
+## 7. PR 4 — triangle rectangle coté en cm (2026-11-09)
+
+Commit 3233b329f : `triangle ABC : CAB = 90 ; AC = 4 cm` (aussi 3,5 cm, 3 cm 5 mm, 35 mm) : `TriangleLength`
+`{ length, unit }` + `isRuledLength` ; parseur `TRIANGLE_RULED_REGEX` (lue par `readLengthText`), refus des cm
+sans angle droit ou sur quadrillage, refus d'une longueur hors du mm ; palette Segment · Équerre · Règle graduée
+(`triangleTools`) ; `judge.ts` laisse passer la règle ; juge `judgeRight` : la graduation remplace le croisement
+du report (`ruledGraduationOf`) ; refus d'auteur : côté plus long que la règle ; correction : `triangleRuler`
+(par `solutionRulers`), sans arc ni codage de longueur ; catalogue (1 exemple), docs `systeme/questions.md`,
+`systeme/ubumark.md`. Tests : 22 purs (rouges puis verts), 2 composant ; `construction/` + `ubumark` + catalogue
+7 151 verts ; `check:incremental` 0 erreur ; cliquet tenu ; `lint:fast` propre.
+
+**Choix faits sans David (à valider)** : (1) seule une règle posée AVANT le premier côté qui arrive en C compte
+(comme le cercle de #2494) ; (2) la vue est inchangée : outil de départ = Segment (comme le n° 20), le 2e toucher
+de la règle s'aimante à la perpendiculaire, le bout de [BC] s'aimante à la graduation de C ; (3) les cm
+seulement pour le triangle rectangle (pas le lot 4 ni l'angle quelconque) ; (4) palette exactement Segment ·
+Équerre · Règle graduée (Report refusé).
