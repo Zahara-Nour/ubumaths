@@ -280,3 +280,67 @@ describe('case « figure » : cercle de rayon donné en cm (PR 3)', () => {
 		expect(all(container, 'bonne-regle')).toHaveLength(1);
 	});
 });
+
+// PR 4 : triangle rectangle en A(2 ; 2), B(8 ; 2), AC = 4 cm → C(2 ; 6) ; règle de 10 cm
+const TRIANGLE_BLOCK = [
+	'```figure-a-completer',
+	'fenetre: 0 ; 10 ; 0 ; 8',
+	'verifier: triangle ABC : CAB = 90 ; AC = 4 cm',
+	'---',
+	'A = point(2, 2)',
+	'B = point(8, 2)',
+	's = segment(A, B)',
+	'```'
+].join('\n');
+
+/** L'équerre le long de [AB] en A, puis la règle posée en A, aimantée à la perpendiculaire */
+async function squareAndRuler() {
+	const { container, rect } = await rendered(TRIANGLE_BLOCK);
+	tool(container, 'equerre');
+	tap(rect, 5, 2.05);
+	await expect.poll(() => all(container, 'droite-choisie').length).toBe(1);
+	tap(rect, 2.05, 2.05);
+	await expect.poll(() => all(container, 'droite-eleve').length).toBe(1);
+	tool(container, 'regle');
+	tap(rect, 2.05, 2.05);
+	tap(rect, 2.12, 5);
+	await expect.poll(() => all(container, 'regle').length).toBe(1);
+	tool(container, 'segment');
+	return { container, rect };
+}
+
+describe('case « figure » : triangle rectangle coté en cm (PR 4)', () => {
+	it('palette : Segment, Équerre, Règle graduée ; [AC] arrêté sur 4 cm, puis [BC] → juste', async () => {
+		const { container, rect } = await squareAndRuler();
+		const palette = ['segment', 'equerre', 'regle'].map((id) => byTestId(container, `outil-${id}`));
+		expect(palette.map((b) => b?.textContent?.trim())).toEqual([
+			'Segment',
+			'Équerre',
+			'Règle graduée'
+		]);
+		tap(rect, 2.05, 2.05);
+		tap(rect, 2.1, 6);
+		await expect.poll(() => mmShown(container)).toBe('40');
+		tap(rect, 8.05, 2.05);
+		// Le bout de [BC] s'aimante aussi à la graduation la plus proche (C, à 40 mm)
+		tap(rect, 2.05, 6);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(2);
+		button(container, 'Valider').click();
+		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);
+	});
+
+	it('[AC] arrêté sur 3,8 cm : message ; à la correction, la règle posée en A', async () => {
+		const { container, rect } = await squareAndRuler();
+		tap(rect, 2.05, 2.05);
+		tap(rect, 2.1, 5.8);
+		await expect.poll(() => mmShown(container)).toBe('38');
+		tap(rect, 8.05, 2.05);
+		tap(rect, 2.05, 5.8);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(2);
+		button(container, 'Valider').click();
+		await expect
+			.poll(() => container.textContent)
+			.toContain('Ton côté [AC] mesure 3,8 cm au lieu de 4 cm.');
+		await expect.poll(() => all(container, 'bonne-regle').length).toBe(1);
+	});
+});

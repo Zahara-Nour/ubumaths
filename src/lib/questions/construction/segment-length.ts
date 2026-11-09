@@ -277,10 +277,10 @@ function farEnd(line: DrawnLine, a: Position, eps: number): Position | null {
  * Deux directions depuis A plus proches que ça (radians, 2°) : à l'écran, un seul
  * segment (deux règles reposées presque pareil, revue de #2485)
  */
-const SAME_DIRECTION = (2 * Math.PI) / 180;
+export const SAME_DIRECTION = (2 * Math.PI) / 180;
 
 /** Un segment vu depuis A : sa direction, son bout le plus loin ; `throughA` si A est au milieu */
-interface SeenSegment {
+export interface SeenSegment {
 	direction: Position;
 	end: Position;
 	throughA: boolean;
@@ -293,7 +293,11 @@ interface SeenSegment {
  * loin. Deux directions opposées, ou un segment qui passe au-delà de A : A est au
  * milieu du trait vu, ce n'est pas un segment depuis A (`throughA`).
  */
-function seenSegments(segments: readonly DrawnLine[], a: Position, eps: number): SeenSegment[] {
+export function seenSegments(
+	segments: readonly DrawnLine[],
+	a: Position,
+	eps: number
+): SeenSegment[] {
 	const groups: { direction: Position; reach: number; end: Position; behind: boolean }[] = [];
 	for (const s of segments) {
 		const far = farEnd(s, a, eps);

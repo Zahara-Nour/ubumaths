@@ -15,6 +15,7 @@
 
 import {
 	centeredCircleOf,
+	isRuledLength,
 	type ConstructionCheck,
 	type DroiteParCheck,
 	type PolygonCheck
@@ -306,7 +307,11 @@ export function judgeConstruction(
 	const rulerCircle = allChecks.some(
 		(c) => c.kind === 'cercle' && centeredCircleOf(c.expression)?.kind === 'longueur'
 	);
-	if (!segmentLength && !rulerCircle && objects.some((o) => o.kind === 'regle')) {
+	// … ou d'un triangle rectangle coté en cm (PR 4), seul dans la figure (garanti par le parseur)
+	const rulerTriangle = allChecks.some(
+		(c) => c.kind === 'triangle' && c.lengths.some(isRuledLength)
+	);
+	if (!segmentLength && !rulerCircle && !rulerTriangle && objects.some((o) => o.kind === 'regle')) {
 		return { status: 'incorrect' };
 	}
 	if (segmentLength) {

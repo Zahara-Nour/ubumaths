@@ -133,7 +133,8 @@ export const LINE_GRID_TOOLS: ConstructionTool[] = ['droite', 'equerre', 'compas
  * Palette d'un triangle à construire : celle du lot 4 (trois longueurs), ou,
  * avec un angle (lot 7, § 21), Rapporteur · Règle · Segment, plus le Report et
  * le Compas s'il reste une longueur à reporter ; triangle rectangle (n° 20) :
- * Segment · Équerre (· Report) sur papier uni, Segment seul sur quadrillage
+ * Segment · Équerre (· Report, ou · Règle graduée pour un côté en cm) sur papier
+ * uni, Segment seul sur quadrillage
  */
 export function triangleTools(
 	check: Pick<TriangleCheck, 'angles' | 'lengths'>,
@@ -142,6 +143,8 @@ export function triangleTools(
 	// Triangle rectangle (n° 20) : l'équerre et le Report sur papier uni, le segment seul sur quadrillage
 	if (rightAngleOf(check)) {
 		if (grid) return ['segment'];
+		// Côté coté en cm (PR 4 de `regle-graduee`) : la règle graduée à la place du Report
+		if (check.lengths.some(isRuledLength)) return ['segment', 'equerre', 'regle'];
 		return check.lengths.length > 0 ? ['segment', 'equerre', 'report'] : ['segment', 'equerre'];
 	}
 	if (check.angles.length === 0) return [...(PLAIN_PAPER_TOOLS.triangle ?? [])];
@@ -262,13 +265,25 @@ export interface CircleCheck {
 export type TriangleLength =
 	| { side: [string, string]; source: [string] | [string, string] }
 	/** Sur quadrillage (n° 20) : `AC = 3 carreaux`, le long d'une ligne du quadrillage */
-	| { side: [string, string]; squares: number };
+	| { side: [string, string]; squares: number }
+	/**
+	 * À la règle graduée (chantier `regle-graduee`, PR 4) : `AC = 4 cm`, en
+	 * millimètres entiers ; triangle rectangle sur papier uni seulement
+	 */
+	| { side: [string, string]; length: number; unit: LengthUnit };
 
 /** Une longueur donnée en carreaux (n° 20) */
 export function isSquaresLength(
 	length: TriangleLength
 ): length is Extract<TriangleLength, { squares: number }> {
 	return 'squares' in length;
+}
+
+/** Une longueur donnée en cm ou mm, à la règle graduée (PR 4 de `regle-graduee`) */
+export function isRuledLength(
+	length: TriangleLength
+): length is Extract<TriangleLength, { length: number }> {
+	return 'length' in length;
 }
 
 /** Le triangle rectangle (n° 20) : son angle droit, construit à l'équerre ; null sinon */
@@ -294,7 +309,8 @@ export interface TriangleAngle {
  * ou deux côtés et l'angle compris (`AC = u ; CAB = 40`).
  * Deux données en tout : `lengths` ([AC] puis [BC]) et `angles` (en A puis en B).
  * Triangle rectangle (n° 20) : un angle de 90° (construit à l'équerre), seul ou
- * avec la longueur du côté qui le porte (`CAB = 90 ; AC = u`, `AC = 3 carreaux`).
+ * avec la longueur du côté qui le porte (`CAB = 90 ; AC = u`, `AC = 3 carreaux`,
+ * ou `AC = 4 cm` à la règle graduée, PR 4 de `regle-graduee`).
  */
 export interface TriangleCheck {
 	kind: 'triangle';
