@@ -9,8 +9,9 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
 - **Tranché aussi** : la magie par étapes (recrue, apprenti, mage), avec un seul moteur. Voir § « Tranché ».
 - **Tranché aussi** : les adversaires sont des **Bêtes imprévues**, un bestiaire imaginaire par Province ; le Czar ne vient qu'aux grandes batailles. Voir § « Tranché ».
 - **Tranché aussi** : la riposte. La recrue l'esquive par une question ; l'apprenti et le mage se défendent par leurs sorts.
-- **Prochaine action** : les questions 4 (nom) et 5 (progression).
-- **En attente de David** : les questions 4 et 5. La question 3 (public) est réglée : du primaire au lycée.
+- **Tranché aussi** : pas de nom de produit. Le jeu s'appelle **La Descente de la Vistule**, un voyage initiatique à travers le Royaume, et c'est une activité de Chiphre, pas son cadre. Voir § « Tranché ».
+- **Prochaine action** : l'ordre de la descente (voir § « À trancher »), puis la question 5 (progression).
+- **En attente de David** : l'ordre de la descente, puis la question 5. La question 3 (public) est réglée : du primaire au lycée.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
   - Le Compendium n'interdit que les **mots** anglais affichés (XP, level, boss, score, leaderboard ; `lore-pataphysique.md:968,1776`), **pas les mécaniques**.
@@ -42,6 +43,13 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
   - **Apprenti et mage** : la bête frappe, comme dans Navadra. Pour se défendre, il faut avoir lancé des sorts (entraver, protéger). Cela fait 3 questions par round.
   - Raison : sans esquive, la recrue regarderait la bête frapper sans rien pouvoir faire. À partir de l'apprenti, se défendre devient un choix tactique.
 
+- **2026-11-09 — Nom : La Descente de la Vistule, un voyage initiatique** (choix de David ; mes recommandations sur le reste) :
+  - **Pas de nom de produit.** L'entrée du menu s'appelle « La Descente de la Vistule ». Elle se présente comme un **voyage initiatique à travers le Royaume**.
+  - **Appuis dans le Compendium** : « Le voyage Chiphre » (`lore-pataphysique.md:106`) ; l'Ordre de la Grande Passoire, ordre initiatique de navigateurs (l. 1058) ; la flottille de bateaux-passoires de Faustroll sur la Vistule (l. 1387) ; la Vistule traverse les 6 Provinces (l. 568) ; les quêtes principales, une par Province (l. 1185).
+  - **Portée : une activité de Chiphre**, un lieu du menu à côté des exercices et des Mathoux, **pas le cadre de toute l'appli**. On pourra l'étendre plus tard.
+  - « Tour du Royaume » est déjà pris par la page `/royaume`.
+  - **À faire au moment du code** : ajouter le terme à `CONTEXT.md`.
+
 ## À trancher (posé à David le 2026-11-09)
 
 1. **Combattants** : les **Mathoux** servent-ils de combattants (équipe de 3, chaque attaque est une question de la notion du Mathou), à la place des sorts et du grimoire ? C'est la décision du 2026-10-18 (`mathoux-conception.md:98-109`) : la confirmer ou la rouvrir.
@@ -49,6 +57,8 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
 3. **Public de la première version** : quels niveaux ? Navadra visait la 6e.
 4. **Nom du jeu** : David en a-t-il un, ou faut-il des propositions tirées du lore ?
 5. Question rattachée à la 1 : faut-il une progression propre au jeu (niveau, prestige personnel ou limité au Bataillon), ou le stade des Mathoux suffit-il ?
+
+6. **Ordre de la descente** (posé le 2026-11-09). D'après le Compendium (l. 568), le fleuve passe par Bedonstan (géométrie, source), Glitchistan (algorithmique), Patatovie (logique), Nombrilie (nombres), Pifométrie (probabilités et statistiques), puis Yoyolande (fonctions, delta). Faut-il suivre cet ordre, une Province après l'autre, ou chaque étape mêle-t-elle les domaines ?
 
 ## Existant dans Chiphre (portage d'octobre 2025, en pause depuis le 2026-10-13)
 
