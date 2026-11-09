@@ -519,8 +519,10 @@ de lecture vers les axes (décision Q6). Calcul pur `utils/courbe-placer.ts` : r
 faux (« Tu as placé A en (3 ; 1). », « Tu n'as pas placé C. », et quand x et y sont échangés « … : tu
 as échangé l'abscisse et l'ordonnée. ») ; cadre rouge dès qu'un point est faux, vert si tous sont
 justes ; le repère juste à côté, points nommés en vert. Hors question : le même geste, rien de jugé.
-PDF : le repère sans les points (l'enfant fait ses croix) ; option `solved` de `courbe-typst.ts` qui
-dessine les points attendus, qu'aucun corrigé imprimé n'appelle encore.
+PDF : le repère sans les points (l'enfant fait ses croix). Corrigé imprimé d'une série d'automatismes :
+les points attendus y sont dessinés, mais par réécriture du bloc (`placer:` → `points:`,
+`pointsDuRepere` de `worksheets/serie-automatismes.ts`), pas par l'option `solved` de
+`courbe-typst.ts`, qu'aucun appel de production ne passe.
 
 **Droite à tracer** (même chantier, lot 2, 2-316, 2-445) — `courbe-tracer.test.ts`,
 `CourbeTracer.svelte.test.ts` : `tracer: y = 2x - 1` dans un ` ```courbe ` (nœud : `spec.tracer`,
@@ -1670,8 +1672,12 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
   ambiguë) ; tolérance de `isGridNode` (1e-9 × pas) : un pas irrationnel avec de grandes valeurs
   (`grille: pi/2`, `y: 1000 ; 1010`) peut refuser au prof une cible écrite en décimal, le juge n'est pas
   touché ; les juges de la droite et du vecteur ne vérifient pas que les points sont des nœuds (l'écran
-  n'en pose pas d'autres) ; le corrigé PDF (`solved`) n'est appelé par aucun corrigé imprimé (comme la
-  droite graduée, l'horloge et les barres à placer) ; `\frac` refusé dans `tracer:` (écrire `1/2x`).
+  n'en pose pas d'autres) ; l'option `solved` de `courbe-typst.ts` n'est passée par aucun appel de
+  production : le corrigé imprimé d'une série d'automatismes dessine points et droite par réécriture du
+  bloc (`serie-automatismes.ts`, comme la droite graduée à placer et la boîte à moustaches), et refuse le
+  vecteur à tracer et la droite verticale ; l'horloge et les barres à placer n'ont pas de corrigé
+  imprimé (`generateHorlogeTypst`, `generateStatChartTypst` sans option `solved`) ; `\frac` refusé dans
+  `tracer:` (écrire `1/2x`). Suivi : ligne 24 de [outils-manquants.md](../wip/outils-manquants.md).
 - ` ```ranger ` dans une liste sort en bloc de code (absent de `SPECIAL_BLOCK_KINDS`) : ne touche que
   le cours ; dans une question, il est refusé de toute façon.
 - Blocs d'espace, laissés tels quels : la cote d'un cylindre coupé parallèlement à l'axe est posée sous
