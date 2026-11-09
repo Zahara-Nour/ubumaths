@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR 1 ouverte (avant merge)._
+_Mis à jour le 2026-11-09, après #2518._
 
-- **État** : PR 1 (règle B en fin de page seulement, § 4) : tests, doc, mesure sur la base faits ; revue + CI en cours.
-- **Prochaine action** : après le merge, PR 2 — titre d'exercice seul en bas de page quand l'énoncé commence par une question à tête collée (§ 5, déjà en prod).
-- **En attente de David** : `deploy:prod` (sur sa demande) ; ensuite, retouche de `eval-premiere` (carré à 65 %) sur sa demande, écriture en prod.
-- **Pièges en cours** : marqueur = `place`, pas un bloc de hauteur nulle (+18 pt en haut de colonne) ; jamais de marqueur entre deux blocs collés ; typst.ts 0.6.1-rc5 = Typst 0.13.1.
-- **Worktree / branche** : `../ubumaths-wt-coupures-pdf` · `feat/coupures-pdf`.
+- **État** : PR 1 mergée (#2518) : introduction collée en fin de page seulement, titres `##` et grilles compris après relecture ; 455 → 451 pages sur la base. Pas encore en prod.
+- **Prochaine action** : PR 2 — titre d'exercice seul en bas de page quand l'énoncé commence par une question à tête collée (§ 5, déjà en prod) ; nouveau worktree `ubumaths-wt-coupures-pdf`, branche `fix/coupures-pdf-titre-seul`.
+- **En attente de David** : `deploy:prod` (sur sa demande) ; ensuite retouche de `eval-premiere` (carré à 65 %), écriture en prod sur sa demande.
+- **Pièges en cours** : marqueur = `place`, pas un bloc de hauteur nulle (+18 pt en haut de colonne) ; jamais de marqueur entre deux blocs collés ; mesurer avec `regen-depuis-base --toutes --modele-de-la-fiche` avant / après ; typst.ts 0.6.1-rc5 = Typst 0.13.1.
+- **Worktree / branche** : supprimés après #2518 ; à recréer pour la PR 2.
 
 ---
 
@@ -115,3 +115,7 @@ de la fiche `eval-premiere` (carré à 65 %) après livraison, sur sa demande.
 Fiche `41737393` : « 4 Lire les variations » seul en bas de page. L'énoncé commence par une
 question dont la tête est collée à un dessin : le titre est collé au bloc de l'énoncé, qui laisse un
 premier morceau vide en bas de page. Règle A « titre jamais seul » violée → PR 2.
+
+Relecture de #2518 (`code-reviewer`) : titre `##` sans marqueur (décision lue sur un marqueur
+périmé, test rouge puis vert) et marqueurs dans les cellules d'une grille `:colonnes` (largeur de
+cellule) → corrigés dans la PR ; forme « Réponses » ajoutée aux tests. Mesure inchangée.
