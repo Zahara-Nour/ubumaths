@@ -6,19 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2511._
+_Mis à jour le 2026-11-09, PR de migration ouverte._
 
-- **État** : 6 modèles en fichiers sur `main` (#2511 mergée), pas encore en prod. Worktree retiré.
-- **Prochaine action** : nouveau worktree `../ubumaths-wt-questions-1spe-raisonnements`, branche
-  `feat/questions-1spe-raisonnements-tags` ; David y lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-raisonnements --publier` (brouillons prod, `id`
-  écrits dans les fichiers) ; commit des `id` ; migration nœud + tag des 6 + `1_SPE` sur les 11 modèles de 2de (§ 5 ;
-  test d'intégration rouge puis vert, `security-auditor`) ; `1spe.md` corrigé (205, 284, 436, 437 couverts ; 435
-  couvert par ses voisins) ; page à cocher ; publication.
-- **En attente de David** : `create-questions --publier` dans le nouveau worktree.
-- **Pièges en cours** : `--publier` en LOCAL écrit des `id` locaux → relancer le script Python avant de commiter ;
-  question d'accès déjà tranchée (personne ne gagne de lecture) ; un modèle = un point (ADR 0020).
-- **Worktree / branche** : aucun pour l'instant.
+- **État** : 6 brouillons en prod (créés par David, `id` commités) ; migration `20261109092945` écrite (nœud +
+  tag des 6, niveaux 7 et 3 pour 436 et 437, `1_SPE` sur 11 modèles de 2de), test d'intégration 17 verts / 13
+  rouges sans la migration ; `1spe.md` et `1spe.json` corrigés. PR de migration ouverte.
+- **Prochaine action** : `security-auditor` sans bloquant + CI verte → `pnpm check:migrations --pr <n>` → merge →
+  `db:migrate` depuis le dépôt principal → vérification en prod (nœuds, tags, niveaux, grades) → garde
+  `garde-niveaux-tags` → page à cocher → publication par David.
+- **En attente de David** : rien jusqu'à la page à cocher.
+- **Pièges en cours** : 436 et 437 sont posés sur des NOTIONS → modèles rangés sur une sous-notion (« propriétés »,
+  « milieu et distance », tranché par David le 2026-11-09) ; `--publier` lancé depuis le dépôt principal y écrit
+  les `id` → les copier sur la branche puis `git restore` dans le dépôt principal.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-raisonnements`, `feat/questions-1spe-raisonnements-tags`.
 
 ## 1. Pourquoi ce chantier (2026-11-09)
 
@@ -170,3 +170,16 @@ bed58c24, 61d0571e, 24fd6a10). **Question d'accès** posée à David.
 - Base locale : 6 brouillons créés ; aperçu admin vu pour les modèles 1 (choix juste reconnu, étapes à ranger), 4,
   5 et 6 : formules, vecteurs, unités, fractions rendus. La saisie MathLive ne se pilote pas depuis Chrome :
   jugement couvert par les specs.
+
+## 7. En prod : brouillons et migration (2026-11-09)
+
+- David a lancé `create-questions --publier` depuis le dépôt principal : 6 brouillons en prod (ab663da7, 6cd78094,
+  d9a627e4, b7b0c27b, 6058963e, 9f4c4a19), sans nœud ni tag, vérifiés par MCP. `id` copiés sur
+  `feat/questions-1spe-raisonnements-tags`, fichiers du dépôt principal remis par `git restore`.
+- **Rangement de 436 et 437** (David, 2026-11-09) : « Produit scalaire › propriétés », niveau 7 (après 6) ;
+  « Géométrie repérée › milieu et distance », niveau 3 (après 2). Fichiers et script mis à jour.
+- `1_SPE` reporté aussi dans les 4 fichiers de `2de-logique-10b` (08 à 11) ; les 7 autres modèles n'ont pas de
+  fichier dans le dépôt.
+- Migration `20261109092945_questions_1spe_raisonnements_rangement_tags.sql` et
+  `tests/integration/questions-1spe-raisonnements-rangement-tags.test.ts` : 17 verts ; migration remplacée par
+  `select 1` → 13 rouges.
