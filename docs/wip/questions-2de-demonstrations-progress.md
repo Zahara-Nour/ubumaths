@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2510._
+_Mis à jour le 2026-11-09, migration du lot 7 écrite._
 
-- **État** : lots 1-6 publiés. Lot 7 (258, 259, 284-286, § 14) mergé (#2510), pas encore créé en prod.
-- **Prochaine action** : David crée les 5 brouillons (commande au § 14) ; puis migration de rangement (nœud + tag,
-  calquée sur le lot 6) dans un nouveau worktree, page à cocher ; ensuite lot 8 (305-310).
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-7 --publier`
-  depuis le dépôt principal.
+- **État** : lots 1-6 publiés. Lot 7 (§ 14) créé en brouillon par David ; migration de rangement écrite et testée,
+  PR en cours.
+- **Prochaine action** : merge de la migration, `db:migrate` (par David), vérif prod, page à cocher ; ensuite lot 8
+  (305-310, réemploi `d4db2207`, points 307 et 310 déplacés sous Figures planes).
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** : écritures en prod (`db:migrate`, `publier-lot.ts`, même en simulation) refusées par le
   classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) » qui plante tests verts
   → `gh run rerun <run> --failed`.
-- **Worktree / branche** : aucun (celui du lot 7 supprimé après #2510).
+- **Worktree / branche** : `ubumaths-wt-questions-2de-approfondissements-7-rangement`, `feat/questions-2de-approfondissements-7-rangement`.
 
 ---
 
@@ -487,3 +487,12 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-7 --publier`
 
 Mergée (#2510, CI verte du premier coup).
+
+Créés en brouillon par David (2026-11-09) : 726d42bd (258), 85e575ea (259), f44a9209 (284), f5cc8558 (285),
+ea999fe0 (286) ; ids commités sur la branche de la migration (`feat/questions-2de-approfondissements-7-rangement`),
+`main` remis propre. Relevé prod (MCP, 2026-11-09, avant la migration) : 5 brouillons de seconde, niveaux 7, 8, 11,
+12, 7, sans nœud ni tag ; chemins Ensembles › Ensembles de nombres › ℕ, ℤ, 𝔻, ℚ, ℝ, Algèbre › Calcul littéral ›
+identités remarquables et Algèbre › Inégalités › comparaison et encadrement uniques et actifs.
+Migration `20261109093006_questions_2de_approfondissements_7_rangement_tags` (calquée sur le lot 6, seules les
+données changent ; 286 tagué d'un point posé sur la notion) : test d'intégration 12/12 vert, rouge sans les
+écritures (6 échecs, 5 sautés).
