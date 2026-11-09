@@ -243,6 +243,10 @@ describe('JournalContent — images', () => {
 		]) {
 			const container = await rendre({ content, links: { role: 'student' } });
 			expect(container.querySelector('img'), content).toBeNull();
+			// Un tableau n'affiche pas d'image (texte brut) : le lien, dans la liste et la citation
+			if (!content.startsWith('|')) {
+				expect(container.querySelector('a.external-media'), content).not.toBeNull();
+			}
 		}
 	});
 
@@ -262,8 +266,9 @@ describe('JournalContent — images', () => {
 					)
 				);
 			}
-			const href = container.querySelector('a.external-media')?.getAttribute('href') ?? '';
-			expect(href.startsWith('data:'), src).toBe(false);
+			const lien = container.querySelector('a.external-media');
+			if (src.startsWith('/\\')) expect(lien, src).not.toBeNull();
+			expect(lien?.getAttribute('href')?.startsWith('data:') ?? false, src).toBe(false);
 		}
 	});
 
