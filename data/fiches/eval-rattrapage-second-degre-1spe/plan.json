@@ -1,0 +1,8 @@
+{
+  "sections": [],
+  "exercises": [
+    { "key": "dauphin", "section": "", "title": "Le saut du dauphin", "en_title": "The dolphin's jump", "category": "application" },
+    { "key": "massif", "section": "", "title": "Le massif de fleurs", "en_title": "The flower beds", "category": "application" },
+    { "key": "bougies", "section": "", "title": "L'atelier de bougies", "en_title": "The candle workshop", "category": "application" }
+  ]
+}

@@ -1,0 +1,3 @@
+dauphin: h
+massif: S,F
+bougies: C,R,B
