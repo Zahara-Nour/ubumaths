@@ -174,8 +174,10 @@ describe('marqueur de coupure : au début de chaque chaîne collée, jamais au m
 		expect(isSticky(out, 'INTRO :')).toBe(true);
 	});
 
-	it('après un titre (collé par Typst) : pas de marqueur', () => {
-		expect(markers(body('## Titre\n\nINTRO :\n\n$$x^2=4$$'))).toBe(0);
+	it('titre (collé par Typst) : marqueur avant lui, aucun entre lui et l’introduction', () => {
+		const out = body('## Titre\n\nINTRO :\n\n$$x^2=4$$');
+		expect(markers(out)).toBe(1);
+		expect(out.indexOf(TYPST_BREAK_MARKER)).toBeLessThan(out.indexOf('Titre'));
 	});
 
 	it('paragraphe collé à une liste dont la 1re question a une tête : un seul marqueur', () => {

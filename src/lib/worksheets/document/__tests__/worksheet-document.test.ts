@@ -282,6 +282,20 @@ describe('marqueur de coupure de chaque exercice', () => {
 		expectChainedToTitle(out, doc.exercises.length);
 	});
 
+	it('réponses : les réponses sous le titre continuent sa chaîne', () => {
+		const base = withIntro('Énoncé.', null);
+		const doc = {
+			...base,
+			exercises: base.exercises.map((e) => ({
+				...e,
+				correction: { solution: null, answers: INTRO }
+			}))
+		};
+		const out = renderExercises(doc, 'answers', 'badge');
+		expect(markers(out)).toBe(doc.exercises.length);
+		expectChainedToTitle(out, doc.exercises.length);
+	});
+
 	it('fiche + corrigé : la correction après l’énoncé a son propre marqueur', () => {
 		const doc = withIntro('Énoncé.', INTRO);
 		const out = renderExercises(doc, 'worksheet', 'badge', { inlineCorrections: true });

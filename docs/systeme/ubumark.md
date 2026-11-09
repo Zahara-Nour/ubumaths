@@ -206,7 +206,9 @@ suivante (même feuille). Typst : `#context block(sticky: ubu-colle())` (`keepWi
 dernière colonne si x + 2 × largeur dépasse la largeur de la page ; une colonne → toujours collé ;
 pas de marqueur (premier passage de Typst) → collé. Le marqueur est posé **avant** la chaîne collée
 et jamais entre deux de ses blocs (`isChained` : après un titre, un paragraphe collé, ou en tête
-d'un document qui suit un titre d'exercice, option `chainedStart`) : il reste où finit le contenu
+d'un document qui suit un titre d'exercice, option `chainedStart`). Un titre markdown (`## …`),
+collé par Typst à ce qui le suit, ouvre une chaîne : marqueur avant lui. Liste `:colonnes` : aucun
+marqueur dans les cellules (la largeur lue serait celle de la cellule), un seul avant la grille : il reste où finit le contenu
 précédent, quoi que devienne la chaîne, donc la mise en page converge. `place` et non un bloc de
 hauteur nulle : premier bloc d'une colonne, celui-ci empêchait Typst d'y supprimer l'espace
 au-dessus du titre. Les autres collages (titre d'exercice, cadre de réponse, `keepWithNext`)

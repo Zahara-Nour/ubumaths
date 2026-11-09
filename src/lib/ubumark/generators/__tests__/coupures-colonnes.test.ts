@@ -153,6 +153,45 @@ describe('question : numéro et première phrase, puis une formule', () => {
 	}, 120_000);
 });
 
+describe('titre de partie dans un énoncé (relecture de #2518)', () => {
+	// La 1re chaîne est en haut de la colonne 1 ; « Partie B », son introduction et
+	// sa formule tombent en bas de la colonne 2 (dernière) : ils doivent partir
+	// ensemble, d'après un marqueur posé avant le titre, pas d'après celui, périmé,
+	// de la colonne 1
+	it('fin de page : titre, introduction et formule ensemble sur la page suivante', async () => {
+		let source = generateTypst(
+			parseMarkdown(
+				['ZERO :', '', '$$FIG$$', '', '## Partie B', '', 'INTRO :', '', '$$FORM$$'].join('\n')
+			)
+		);
+		source = remplacer(source, PAGE_A4, '#set page(paper: "a4", columns: 2)');
+		source = source.replace(
+			/(#place\(left[^\n]*\n)?== Partie B/,
+			'#colbreak()\n#v(21cm)\n$1== Partie B'
+		);
+		source = source.replace('$ F I G $', `#${BLOC_HAUT}`);
+		source = remplacer(source, '$ F O R M $', `#metadata("FORM") <sonde>\n#${BLOC_HAUT}`);
+		source = remplacer(source, 'INTRO :', '#metadata("INTRO") <sonde>INTRO :');
+		source +=
+			'\n#context for m in query(<sonde>) [#metadata((m.value, m.location().page())) <place>]\n';
+		const page = Object.fromEntries(await interroger<[string, number]>(source));
+		expect(page.FORM).toBe(2);
+		expect(page.INTRO).toBe(2);
+	}, 120_000);
+});
+
+describe('liste en grille (`:colonnes`, relecture de #2518)', () => {
+	it('un seul marqueur, avant la grille, aucun dans ses cellules', () => {
+		const source = generateTypst(
+			parseMarkdown([':colonnes 2', '1. A :', '', '   $$x$$', '2. B :', '', '   $$y$$'].join('\n'))
+		);
+		const grille = source.indexOf('#grid(');
+		expect(grille).toBeGreaterThan(-1);
+		expect(source.slice(grille)).not.toContain('<ubu-coupure>');
+		expect(source.slice(0, grille).trimEnd().endsWith('<ubu-coupure>]))')).toBe(true);
+	});
+});
+
 describe('beaucoup de décisions dans un même document', () => {
 	it("jamais d'introduction séparée de son dessin par un changement de page", async () => {
 		const morceaux = Array.from({ length: 12 }, (_, k) =>

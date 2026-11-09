@@ -349,6 +349,8 @@ function generateTopBlock(
 	const chained = isChained(ast, index, options);
 	if (node.type === 'list') return generateList(node, options, 0, undefined, false, chained);
 	const typst = generateBlock(node, options);
+	// Titre : collé par Typst à ce qui le suit, il ouvre une chaîne → son marqueur
+	if (node.type === 'heading') return chained ? typst : `${TYPST_BREAK_MARKER}\n${typst}`;
 	return keepsWithNext(node, ast.children[index + 1]) ? keepWithNextOnPage(typst, chained) : typst;
 }
 
@@ -783,10 +785,16 @@ function generateList(
 	// `:colonnes N` : grille lue en lignes (a) b) / c) d)). `columns()` de Typst ne se
 	// répartit pas dans une page déjà en deux colonnes.
 	if (node.columns && node.columns > 1) {
-		const cells = items.map(({ helper, num, content }) => `${helper}(${num})[${content}]`);
+		// Marqueurs de coupure hors des cellules (largeur de cellule, pas de colonne) :
+		// un seul, avant la grille, si une cellule a un bloc collé en fin de page
+		const cells = items.map(({ helper, num, content }) =>
+			`${helper}(${num})[${content}]`.split(`${TYPST_BREAK_MARKER}\n`).join('')
+		);
 		const fractions = Array(node.columns).fill('1fr').join(', ');
 		const grid = `#grid(columns: (${fractions}), column-gutter: 1em, row-gutter: 1.5em,\n  ${cells.join(',\n  ')}\n)`;
-		return stickyLast ? keepWithNext(grid) : grid;
+		const glued = cells.some((cell) => cell.includes('ubu-colle()') || cell.includes('tete: ['));
+		const marker = glued && !chained ? `${TYPST_BREAK_MARKER}\n` : '';
+		return marker + (stickyLast ? keepWithNext(grid) : grid);
 	}
 
 	return items
@@ -821,6 +829,8 @@ function generateListItemContent(
 		const previous = item.children[i - 1];
 		const chained =
 			i === 0 ? afterHead : previous.type === 'heading' || keepsWithNext(previous, child);
+
+		if (child.type === 'heading' && !chained) blocks.push(TYPST_BREAK_MARKER);
 
 		if (child.type === 'list') {
 			// Nested list - generate with current depth
