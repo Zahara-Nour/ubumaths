@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR 1 ouverte._
+_Mis à jour le 2026-11-09, après #2512._
 
-- **État** : PR 1 (Web Vitals d'onglet caché écartés) en cours · **Prochaine action** : merger la PR 1 · **En attente de David** : vérifier que « Fluid compute » est activé (Vercel → Settings → Functions) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-amelioration`, `fix/amelioration-web-vitals`
+- **État** : PR 1 mergée (#2512, FCP/LCP d'onglet caché écartés ; attend un `deploy:prod`) ; Fluid compute activé sur Vercel (David, 2026-11-09) · **Prochaine action** : point 3, alléger le démarrage du serveur (build fraîche, mesurer ce que charge `hooks.server.ts`) · **En attente de David** : rien · **Pièges en cours** : commitlint refuse un corps de commit à lignes > 100 caractères · **Worktree / branche** : aucun (nouveau worktree pour la PR 2)
 
 ## Diagnostic de la connexion lente (2026-11-09)
 
@@ -21,8 +21,9 @@ Relevé #2094 : `/auth/login` LCP 5,8 s, TTFB 2,4 s au p75 (10 mesures).
 
 ## Pistes, dans l'ordre recommandé
 
-1. **PR 1** : écarter FCP/LCP mesurés après le passage en arrière-plan.
-2. **Fluid compute** sur Vercel (réglage du tableau de bord, David).
+1. **PR 1 (#2512, mergée)** : écarter FCP/LCP mesurés après le passage en arrière-plan.
+2. **Fluid compute** sur Vercel : activé (David, 2026-11-09). Sur Hobby, le préchauffage garanti
+   est réservé aux offres payantes : le réveil du matin reste probable.
 3. **Alléger le démarrage du serveur** : build fraîche (`pnpm build`), mesurer ce que chargent
    `hooks.server.ts` et ses dix handles, ne charger les gros modules qu'à la demande.
 4. Ping planifié à 7 h 30 en semaine : dernier recours (masque le symptôme).
