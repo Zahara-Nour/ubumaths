@@ -10,7 +10,8 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; égalité tapée seule → vrai / faux, `≈` refusé, 2026-11-03 ; `.dériver` affiche la réponse du registre, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27 ; `.résoudre` répond par l'ensemble des solutions, 2026-11-03).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; égalité tapée seule → vrai / faux, `≈` refusé, 2026-11-03 ; `.dériver` affiche la réponse du registre, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27 ; `.résoudre` répond par l'ensemble des solutions, 2026-11-03 ; degrés et refus V57 lus par le
+> registre, 2026-11-09).
 
 ## À quoi ça sert
 
@@ -387,13 +388,13 @@ typographique des angles), et `60{}^{\circ}` en LaTeX (`degreeSignWritten`, appl
 `runInput` : mesures d'angle comprises, `≈ 36,8699°`, la valeur approchée aussi). Un angle écrit
 en degrés pris par un sin, cos, tan devient un nombre de radians exact dans l'arbre substitué
 (`h(x) = cos(90°)·x` → `h(1) = 0`, `.variations h` constante, `f(x) = sin(30°) + x` → `f(0) = 1/2`)
-et dans l'argument d'une commande (`radiansInText` : `.résoudre h(x)=1` → `x = 2`, `.évaluer
-cos(60°)*x en x=2` → 1). Sauf pour `.simplifier`, `.développer` et `.résoudre` (`DEGREES_READ`,
+et dans l'argument d'une commande (`radiansInText` : `.évaluer cos(60°)*x en x=2` → 1). Sauf pour `.simplifier`, `.développer` et `.résoudre` (`DEGREES_READ`,
 `calcul.ts`, chantier valeurs-remarquables, 2026-10-27) : leurs étapes lisent les degrés et disent
 la valeur remarquable (« On utilise une valeur remarquable : cos(60°) = 1/2 ») ; un angle hors
-table reste en degrés (`.simplifier cos(20°)x`, `.développer x(cos(20°)+1)`), sauf dans
-`.résoudre`, dont les étapes passent ensuite en radians exacts (`radiansInTrigonometry`,
-`cos(π/9)`) et dont le moteur reçoit l'argument converti. **Une variable en degrés** (choix prudent, à trancher par David) :
+table reste en degrés (`.simplifier cos(20°)x`, `.développer x(cos(20°)+1)`, et `.résoudre
+cos(20°)x=1` → `S = {1/cos(20°)}` depuis la PR 2c de registre-reference, 2026-11-09 : ses étapes
+calculent en radians exacts, `radiansInTrigonometry`, puis `anglesAsTyped` remet l'angle tapé).
+Le moteur de `.résoudre` reçoit les degrés tels quels : le registre les lit lui-même. **Une variable en degrés** (choix prudent, à trancher par David) :
 `f(x) = cos(x°)` est acceptée — exacte, `cos(πx/180)`, et c'est l'arbre que trace le Graphe ; un
 angle BRUT écrit dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`, `u(n) = n°`) est en erreur
 avec le message des mesures (« Une mesure d'angle est une grandeur… », `WRITTEN_ANGLE`,
@@ -2634,8 +2635,9 @@ recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer
   saisie. « a ⩾ v » et « a ≠ v » ensemble → « a > v » (`mergedConditions`, décision Q2 de David,
   2026-11-01) : `\sqrt{a}\ln(a)`, `x/\sqrt{a}` de 0 à 1 → (a > 0). `1/\ln(a)` garde
   « ln(a) ≠ 0 » brut (Q4, laissé).
-- **`.résoudre` tapé avec une lettre non posée** (V57, Q5 — `parameterSolveRefusal`, après le
-  moteur, ses refus d'abord) : refus « Le résultat dépend de a… » quand la résolution DIVISE par
+- **`.résoudre` tapé avec une lettre non posée** (V57, Q5 — refus du REGISTRE depuis la PR 2c de
+  registre-reference, 2026-11-09 : `parameterSolveRefusal` de `mathAST/cli/core/parameter-refusal.ts`,
+  code `PARAMETER_DEPENDS`, que l'Atelier affiche tel quel ; après le moteur, ses refus d'abord) : refus « Le résultat dépend de a… » quand la résolution DIVISE par
   le paramètre — polynôme dont le coefficient dominant en contient un (`a x = 0`, `a x + b = 0`,
   `x/a = 1`, `a x^2 = 1`, `a x > 1`) ; sinon l'inconnue multipliée par un paramètre
   (`e^{a x} = 1`) ou un paramètre au dénominateur de la réponse (`1/x = a`), sauf si le moteur

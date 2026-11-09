@@ -35,6 +35,9 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
+import { displayUnitsInLatex } from '$lib/mathAST/units/display';
+import { degreeSignWritten } from '$lib/mathAST/cli/core/degrees';
+import type { SolutionWriting } from '$lib/mathAST/cli/commands/solve-latex';
 import { stepsAsShown } from '$lib/mathAST/pedagogical-solve/shown-steps';
 import {
 	DEFAULT_VARIABLE,
@@ -43,6 +46,7 @@ import {
 } from '$lib/mathAST/cli/core/variable-argument';
 import { astOf, variablesOf } from './parse';
 import { radiansInTrigonometry } from './angle-radians';
+import { anglesAsTyped } from '$lib/mathAST/cli/core/angle-radians';
 import { concludedSolutions, conclusionAgrees } from './solve-steps-check';
 import { summaryOf } from './steps-summary';
 import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
@@ -204,6 +208,36 @@ export function solveSteps(
 	within?: Domain,
 	conditions: readonly ComposedCondition[] = []
 ): SolvedSteps | null {
+	const solved = solvedSteps(argument, within, conditions);
+	return solved === null ? null : withUnitsShown(solved);
+}
+
+/**
+ * Les angles en degrés écrits pour l'écran, comme la réponse de `.simplifier` :
+ * `20~\unit{°}` → `20{}^{\circ}` (PR 2c : les étapes gardent les degrés tapés).
+ */
+function withUnitsShown(solved: SolvedSteps): SolvedSteps {
+	const shown = (latex: string) => degreeSignWritten(displayUnitsInLatex(latex));
+	const step = (s: RenderedStep): RenderedStep => ({
+		...s,
+		title: shown(s.title),
+		...(s.explanation !== undefined && { explanation: shown(s.explanation) }),
+		...(s.expressionLatex !== undefined && { expressionLatex: shown(s.expressionLatex) }),
+		...(s.subSteps !== undefined && { subSteps: s.subSteps.map(step) })
+	});
+	return {
+		...solved,
+		steps: solved.steps.map(step),
+		...(solved.summary !== undefined && { summary: solved.summary.map(step) }),
+		answer: shown(solved.answer)
+	};
+}
+
+function solvedSteps(
+	argument: string,
+	within: Domain | undefined,
+	conditions: readonly ComposedCondition[]
+): SolvedSteps | null {
 	try {
 		// ⚠️ **On lit l'argument comme des MATHÉMATIQUES, pas comme une ligne de
 		// commande.** Le moteur, lui, appliquait deux conventions de terminal qui
@@ -241,6 +275,9 @@ export function solveSteps(
 		// Un angle en degrés sans valeur remarquable (`cos(20°)`) se résout en
 		// radians, exact (`cos(π/9)`), comme avant : le solveur ne lit pas les unités
 		const solvable = radiansInTrigonometry(remarkable.result);
+		// … et s'écrit en degrés, comme tapé (Q1 de la PR 2c, David, 2026-11-09) :
+		// étapes et réponse disent `cos(20°)`, comme le registre et `.simplifier`
+		const angles = anglesAsTyped(remarkable.result);
 		if (solvable.type !== 'relation') return null;
 		const relation: RelationNode = solvable;
 		const valueRenderer = new PedagogicalSimplifyRenderer();
@@ -266,7 +303,7 @@ export function solveSteps(
 		const { renderer, schoolLevel } = rendererFor(kind);
 		// Les étapes écrites comme la réponse (lot 5f-4) ; `steps` garde les
 		// valeurs du calcul, lues par le garde-fou et la réponse
-		const shown = stepsAsShown(steps, relation);
+		const shown = stepsAsShown(steps, relation, angles);
 		const rendered = numbered([
 			...valuesIn('detailed'),
 			...renderer.renderAll(shown, { schoolLevel, verbosity: 'detailed' })
@@ -292,11 +329,11 @@ export function solveSteps(
 			...valuesIn('summarized'),
 			...renderer.renderAll(shown, { schoolLevel, verbosity: 'summarized' })
 		]);
-		const decimal = hasDecimalLiteral(typedRelation);
+		const writing: SolutionWriting = { decimal: hasDecimalLiteral(typedRelation), angles };
 		if (within !== undefined) {
 			return solutions === null
 				? null
-				: restrictedSteps(rendered, summarized, solutions, variable, within, decimal, conditions);
+				: restrictedSteps(rendered, summarized, solutions, variable, within, writing, conditions);
 		}
 		const values =
 			relation.relation !== '='
@@ -307,7 +344,7 @@ export function solveSteps(
 		// passent par `x = 3` ou `x < 3`, et concluent sur S
 		const line =
 			ordered !== null
-				? shownAnswer(answer, ordered, decimal)
+				? shownAnswer(answer, ordered, writing)
 				: (inequalitySet(shown[shown.length - 1].after, variable) ?? answer);
 		const approximate = solutions === null ? null : approximateSolutionsLatex(ascending(solutions));
 		const detailed = concludedOn(rendered, line, 'detailed');
@@ -418,15 +455,21 @@ function solvedValue(after: MathNode, variable: string): readonly MathNode[] | n
  * l'ensemble des solutions (Q2) ; les étapes suivent la même écriture
  * (`stepsAsShown`, lot 5f-4).
  */
-function shownAnswer(answer: string, values: readonly MathNode[], decimal: boolean): string {
+function shownAnswer(
+	answer: string,
+	values: readonly MathNode[],
+	writing: SolutionWriting
+): string {
 	if (values.length === 0) return answer;
-	return solutionsLine(values, decimal);
+	return solutionsLine(values, writing);
 }
 
 /** `S = ∅` ou `S = {… ; …}`, chaque valeur écrite pour être lue (Q2 : une solution comprise). */
-function solutionsLine(values: readonly MathNode[], decimal: boolean): string {
+function solutionsLine(values: readonly MathNode[], writing: SolutionWriting): string {
 	if (values.length === 0) return 'S = \\emptyset';
-	const written = values.map((value) => toLatex(exactValueToShow(value, { decimal })));
+	const written = values.map((value) =>
+		toLatex(exactValueToShow(writing.angles(value), { decimal: writing.decimal }))
+	);
 	return `S = \\left\\{ ${written.join(' \\,;\\, ')} \\right\\}`;
 }
 
@@ -440,7 +483,7 @@ function restrictedSteps(
 	solutions: readonly MathNode[],
 	variable: string,
 	within: Domain,
-	decimal: boolean,
+	writing: SolutionWriting,
 	conditions: readonly ComposedCondition[]
 ): SolvedSteps | null {
 	const kept: MathNode[] = [];
@@ -449,7 +492,7 @@ function restrictedSteps(
 		if (value === null) return null;
 		if (containsValue(within, value)) kept.push(solution);
 	}
-	const answer = solutionsLine(ascending(kept), decimal);
+	const answer = solutionsLine(ascending(kept), writing);
 	const last = (steps: readonly RenderedStep[]): RenderedStep => ({
 		id: steps.length,
 		rule: 'keep-in-interval',

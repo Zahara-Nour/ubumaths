@@ -54,7 +54,7 @@ describe('équations trigonométriques : la période n’est jamais perdue', () 
 		['sin(x/3)=0', '3k\\pi'],
 		['cos(x/3)=1/2', '6k\\pi'],
 		['sin(2x)=1/2', 'k\\pi'],
-		['sin(\\pi x)=0', 'x = k']
+		['sin(\\pi x)=0', 'S = {k, k']
 	])('le texte de %s dit aussi la période (%s) et k ∈ ℤ', (equation, term) => {
 		const text = conclusion(solved(`.résoudre ${equation}`).output);
 		expect(text).toContain(term);
@@ -180,10 +180,12 @@ describe('revue : un refus du moteur reste un refus du moteur avec « dans »', 
 describe('revue : la période s’écrit comme les solutions', () => {
 	it('texte : kπ/2 (pas {1/2}kπ), comme \\pi/4', () => {
 		const text = conclusion(solved('.résoudre cos(-2x)=0').output);
-		expect(text).toBe('x = \\pi/4 + k\\pi/2, k ∈ ℤ');
+		expect(text).toBe('S = {\\pi/4 + k\\pi/2, k ∈ ℤ}');
 	});
 
 	it('texte : {2k\\pi}/3', () => {
-		expect(conclusion(solved('.résoudre sin(3x)=1').output)).toBe('x = \\pi/6 + {2k\\pi}/3, k ∈ ℤ');
+		expect(conclusion(solved('.résoudre sin(3x)=1').output)).toBe(
+			'S = {\\pi/6 + {2k\\pi}/3, k ∈ ℤ}'
+		);
 	});
 });

@@ -38,13 +38,13 @@ describe('.solve : x par défaut, une autre variable après « ; »', () => {
 	it('`3 = 2 x` : le x final fait partie de l’équation', () => {
 		const result = run('.solve 3 = 2 x');
 		expect(result.success).toBe(true);
-		expect(conclusion(result.output)).toBe('x = 3/2');
+		expect(conclusion(result.output)).toBe('S = {3/2}');
 	});
 
 	it('`3 = 2t ; t`', () => {
 		const result = run('.solve 3 = 2t ; t');
 		expect(result.success).toBe(true);
-		expect(conclusion(result.output)).toBe('t = 3/2');
+		expect(conclusion(result.output)).toBe('S = {3/2}');
 	});
 
 	it('`x^2 = 4` : ±2', () => {
@@ -161,15 +161,15 @@ describe('les options ne mangent jamais l’expression', () => {
 	// « 3 = 1 » et répondait « contradictoire ». Une option n'est reconnue que
 	// séparée par des espaces, connue de la commande, en tête ou en fin.
 	it('`.solve 3-v=1 ; v` → v = 2', () => {
-		expect(conclusion(run('.solve 3-v=1 ; v').output)).toBe('v = 2');
+		expect(conclusion(run('.solve 3-v=1 ; v').output)).toBe('S = {2}');
 	});
 
 	it('`.solve 3-x=1` → x = 2', () => {
-		expect(conclusion(run('.solve 3-x=1').output)).toBe('x = 2');
+		expect(conclusion(run('.solve 3-x=1').output)).toBe('S = {2}');
 	});
 
 	it('`.solve 3-q=1 ; q` → q = 2', () => {
-		expect(conclusion(run('.solve 3-q=1 ; q').output)).toBe('q = 2');
+		expect(conclusion(run('.solve 3-q=1 ; q').output)).toBe('S = {2}');
 	});
 
 	it('`.diff 3-v ; v` → -1', () => {
@@ -185,7 +185,7 @@ describe('les options ne mangent jamais l’expression', () => {
 
 		const verbose = run('.solve --verbose 2x+1=5');
 		expect(verbose.success).toBe(true);
-		expect(conclusion(verbose.output)).toBe('x = 2');
+		expect(conclusion(verbose.output)).toBe('S = {2}');
 		expect(run('.solve -v 2x+1=5').output).toBe(verbose.output);
 		expect(verbose.output).not.toBe(run('.solve 2x+1=5').output);
 	});
@@ -194,15 +194,15 @@ describe('les options ne mangent jamais l’expression', () => {
 describe('revue #888 : les options seulement EN TÊTE', () => {
 	// ⚠️ Un `-v` en fin de saisie était encore pris pour l'option « verbeux »
 	it('`.solve x = -v` → x = -v', () => {
-		expect(conclusion(run('.solve x = -v').output)).toBe('x = -v');
+		expect(conclusion(run('.solve x = -v').output)).toBe('S = {-v}');
 	});
 
 	it('`.solve x + v = 0` → x = -v', () => {
-		expect(conclusion(run('.solve x + v = 0').output)).toBe('x = -v');
+		expect(conclusion(run('.solve x + v = 0').output)).toBe('S = {-v}');
 	});
 
 	it('`.solve x = -q` → x = -q', () => {
-		expect(conclusion(run('.solve x = -q').output)).toBe('x = -q');
+		expect(conclusion(run('.solve x = -q').output)).toBe('S = {-q}');
 	});
 
 	it('une option en tête marche toujours', () => {

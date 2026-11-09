@@ -24,16 +24,24 @@ import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../custom-generator';
 import {
 	solutionsLatex,
-	commonCondition,
 	solutionsApproximationLatex,
 	periodicSolutionsText,
 	inequalitySolutionLatex,
 	inequalityThresholdText,
 	logarithmicExactLatex,
-	logarithmicValueText,
 	logarithmicBounds,
-	withRealLineWritten
+	withRealLineWritten,
+	solutionValueLatex,
+	domainWritten,
+	solutionsSetText,
+	approximateSolutionsText,
+	type SolutionWriting
 } from './solve-latex';
+import { anglesAsTyped, remarkableValuesInTrigonometry } from '../core/angle-radians';
+import { parameterSolveRefusal } from '../core/parameter-refusal';
+import { hasDecimalLiteral } from '../../tidy/decimal';
+// La virgule décimale lue comme dans l'Atelier (registre-reference, PR 2c, Q3)
+import { decimalCommaInput } from '$lib/atelier/decimal-comma';
 import { solveInequality } from '../../solve/inequality';
 import { formatInterval } from '../../domain/format';
 import { parse } from '../core/pipeline';
@@ -50,10 +58,10 @@ import { normalizeExcludedPoints } from '../../domain/compute';
 import type { Domain } from '../../domain/types';
 import { parseStudentDomain } from '../../domain/validation/parse-student-domain';
 import { toLatex } from '../../latex-generator';
-import { exactValueToShow } from '../../eval/exact-value';
 
 import { flattenSumShallow, unflattenSum } from '../../flatten';
-import { getVariables } from '../../eval/substitute';
+import { getVariables, substitute } from '../../eval/substitute';
+import { exactValueToShow } from '../../eval/exact-value';
 import { evaluate } from '../../eval/evaluate';
 import { approximateSolutionsLatex } from '../approximation';
 import {
@@ -74,6 +82,9 @@ export const INEQUALITY_UNSOLVED = 'INEQUALITY_UNSOLVED' satisfies ErrorCode;
 
 /** Ce qu'on dit alors — jamais « pas su lire » : l'inéquation a été lue. */
 export const INEQUALITY_UNSOLVED_MESSAGE = 'Je ne sais pas encore résoudre cette inéquation.';
+
+/** Code d'une résolution qui dépend d'un paramètre non posé (V57). */
+export const PARAMETER_DEPENDS = 'PARAMETER_DEPENDS' satisfies ErrorCode;
 
 /** Code de l'équation lue que le moteur ne sait pas (encore) résoudre. */
 export const EQUATION_UNSOLVED = 'EQUATION_UNSOLVED' satisfies ErrorCode;
@@ -850,7 +861,10 @@ export class SolveCommand extends BaseCommand {
 	}
 
 	private solveInput(ctx: CommandContext): CommandResult {
-		const { input, verbosity } = this.parseOptions(ctx);
+		const options = this.parseOptions(ctx);
+		const { verbosity } = options;
+		// `2x = 0,6` : la virgule entre deux chiffres est décimale (règle de #983)
+		const input = decimalCommaInput(options.input);
 
 		if (!input) {
 			return {
@@ -901,13 +915,15 @@ export class SolveCommand extends BaseCommand {
 			};
 		}
 
+		// Les degrés lus comme par les autres commandes du registre (PR 2c) : une
+		// valeur remarquable est calculée (`cos(60°)x = 1` → `½x = 1`), un angle
+		// quelconque reste écrit (`cos(20°)`) — le solveur ne lisait que `ctx.input`
+		const read = remarkableValuesInTrigonometry(parseResult.ast);
+
 		// Une inéquation est résolue elle aussi (plus bas, `solveInequalityRelation`) :
 		// toute inéquation tapée dans l'atelier répondait « Je n'ai pas su lire
 		// cette expression » (2026-10-08), alors que `solveInequality` sait faire
-		if (
-			!isRelation(parseResult.ast) ||
-			(parseResult.ast.relation !== '=' && !INEQUALITY_RELATIONS.has(parseResult.ast.relation))
-		) {
+		if (!isRelation(read) || (read.relation !== '=' && !INEQUALITY_RELATIONS.has(read.relation))) {
 			return {
 				success: false,
 				output: '',
@@ -923,8 +939,8 @@ export class SolveCommand extends BaseCommand {
 		// variable était devinée sur l'arbre réécrit (`u_n`) et le solveur
 		// recevait l'arbre BRUT, où `u_n` est un indice de base `u` : `.résoudre
 		// u_n+1=3` répondait « Type d'equation non supporte » (2026-10-08).
-		const flattened = indexVariables(parseResult.ast).node;
-		const relation: RelationNode = isRelation(flattened) ? flattened : parseResult.ast;
+		const flattened = indexVariables(read).node;
+		let relation: RelationNode = isRelation(flattened) ? flattened : read;
 
 		const chosen = chosenVariable(explicitVariable, parserOptions, {
 			node: relation,
@@ -957,19 +973,54 @@ export class SolveCommand extends BaseCommand {
 		// est devinée ou exigée (décision de David, 2026-10-08, Q1)
 		const hint: string | null = null;
 
+		// Une lettre posée (`a := 2`) est une valeur : `a x = 4` se résout en
+		// `2x = 4` (PR 2c ; l'Atelier remplace ses noms avant d'appeler le registre)
+		const values = Object.fromEntries(
+			[...(ctx.evalState?.bindings ?? [])].filter(([name]) => name !== chosen.variable)
+		);
+		const given = substitute(relation, values);
+		if (isRelation(given)) relation = given;
+		const writing: SolutionWriting = {
+			decimal: hasDecimalLiteral(relation),
+			angles: anglesAsTyped(relation)
+		};
+		const solved = this.solveRead(relation, chosen.variable, reading.args.interval, {
+			parserOptions,
+			verbosity,
+			ctx,
+			hint,
+			writing
+		});
+		return this.refusedForParameter(solved, relation, chosen.variable, ctx);
+	}
+
+	/** La relation lue, résolue : dans un intervalle, inéquation, équation. */
+	private solveRead(
+		relation: RelationNode,
+		variable: string,
+		interval: string | null,
+		how: {
+			readonly parserOptions: Parameters<typeof parse>[1];
+			readonly verbosity: SolvingVerbosity;
+			readonly ctx: CommandContext;
+			readonly hint: string | null;
+			readonly writing: SolutionWriting;
+		}
+	): CommandResult {
+		const { parserOptions, verbosity, ctx, hint, writing } = how;
 		// `dans [a ; b]` : les solutions dans l'intervalle (décision de David, 2026-10-08)
-		if (reading.args.interval !== null) {
-			return this.solveInInterval(relation, chosen.variable, reading.args.interval, parserOptions);
+		if (interval !== null) {
+			return this.solveInInterval(relation, variable, interval, parserOptions, writing);
 		}
 
 		if (relation.relation !== '=') {
-			return this.withHint(this.solveInequalityRelation(relation, chosen.variable), hint);
+			return this.withHint(this.solveInequalityRelation(relation, variable, writing), hint);
 		}
 
 		try {
 			// Solve the equation
 			const result = solve(relation, {
-				variable: chosen.variable,
+				variable: variable,
 				verbosity
 			});
 
@@ -978,7 +1029,7 @@ export class SolveCommand extends BaseCommand {
 			// 2026-10-09 : `.résoudre u_0*q^n=10 pour n`). Une absence de solution
 			// DÉMONTRÉE n'est pas un échec (`isSolverFailure`).
 			if (isSolverFailure(result)) {
-				const letters = parameterLetters(relation, chosen.variable, ctx.evalState?.bindings.keys());
+				const letters = parameterLetters(relation, variable, ctx.evalState?.bindings.keys());
 				return {
 					success: false,
 					output: '',
@@ -1000,10 +1051,10 @@ export class SolveCommand extends BaseCommand {
 			}
 
 			// Format output with toggle support
-			const formatted = this.formatOutputWithToggle(relation, result, verbosity, ctx);
+			const formatted = this.formatOutputWithToggle(relation, result, verbosity, ctx, writing);
 			// Les solutions en LaTeX, bâties sur le résultat STRUCTURÉ : le texte
 			// (`{1/2}sqrt(2)`) ne se relit pas, et `ast` ne porte que la première
-			const latex = solutionsLatex(result);
+			const latex = solutionsLatex(result, writing);
 			// Leurs valeurs approchées, pour le bouton ≈ de l'atelier
 			const approximateLatex = latex === null ? null : solutionsApproximationLatex(result);
 			return this.withHint(
@@ -1032,11 +1083,42 @@ export class SolveCommand extends BaseCommand {
 	}
 
 	/**
+	 * V57 (Q5, David, 2026-10-14) : la résolution qui DIVISE par un paramètre
+	 * non posé est refusée — `a x = 4` ne répond pas `4/a`, faux pour a = 0.
+	 * Après le moteur, ses refus d'abord ; une inéquation qu'il ne sait pas
+	 * résoudre (`a x > 1`) reçoit ce refus-là, qui dit pourquoi. Descendu de
+	 * l'Atelier le 2026-11-09 (registre-reference, PR 2c).
+	 */
+	private refusedForParameter(
+		result: CommandResult,
+		relation: RelationNode,
+		variable: string,
+		ctx: CommandContext
+	): CommandResult {
+		if (!result.success && result.error?.code !== INEQUALITY_UNSOLVED) return result;
+		if (isRelation(relation.left)) return result;
+		const parameters = parameterLetters(relation, variable, ctx.evalState?.bindings.keys());
+		const message = parameterSolveRefusal(
+			relation,
+			variable,
+			parameters,
+			result.success ? result.latex : undefined
+		);
+		return message === null
+			? result
+			: { success: false, output: '', error: { code: PARAMETER_DEPENDS, message } };
+	}
+
+	/**
 	 * Une inéquation : l'ensemble de `solveInequality` (tableau de signes, domaine
 	 * de définition compris — √x < 2 donne [0 ; 4[, pas ]-∞ ; 4[). Un signe
 	 * qu'on n'a pas pu établir sur un morceau : on le DIT, sans ensemble faux.
 	 */
-	private solveInequalityRelation(inequality: RelationNode, variable: string): CommandResult {
+	private solveInequalityRelation(
+		inequality: RelationNode,
+		variable: string,
+		writing: SolutionWriting
+	): CommandResult {
 		const unsolved: CommandResult = {
 			success: false,
 			output: '',
@@ -1045,13 +1127,15 @@ export class SolveCommand extends BaseCommand {
 		try {
 			const result = solveInequality(inequality, { variable });
 			if (result.status === 'partial') return unsolved;
-			const latex = inequalitySolutionLatex(result.solution, variable);
+			const latex = inequalitySolutionLatex(result.solution, variable, writing);
 			if (latex === null) return unsolved;
 			// Un seuil en ln (`0.8^n < 0.1`) : `n > ln(0.1)/ln(0.8) ≈ 10.32`, comme le LaTeX
 			const threshold = inequalityThresholdText(result.solution, variable);
 			return {
 				success: true,
-				output: threshold ?? `S = ${formatInterval(withRealLineWritten(result.solution))}`,
+				output:
+					threshold ??
+					`S = ${formatInterval(domainWritten(withRealLineWritten(result.solution), writing))}`,
 				latex
 			};
 		} catch {
@@ -1068,7 +1152,8 @@ export class SolveCommand extends BaseCommand {
 	private solveInequalityInInterval(
 		inequality: RelationNode,
 		variable: string,
-		domain: Domain
+		domain: Domain,
+		writing: SolutionWriting
 	): CommandResult {
 		const unsolved: CommandResult = {
 			success: false,
@@ -1079,7 +1164,7 @@ export class SolveCommand extends BaseCommand {
 			const result = solveInequality(inequality, { variable });
 			if (result.status === 'partial') return unsolved;
 			const restricted = intersect(result.solution, domain);
-			const set = inequalitySolutionLatex(restricted);
+			const set = inequalitySolutionLatex(restricted, undefined, writing);
 			if (set === null) return unsolved;
 			if (isEmpty(restricted)) {
 				return { success: true, output: 'Pas de solution dans cet intervalle', latex: set };
@@ -1087,7 +1172,7 @@ export class SolveCommand extends BaseCommand {
 			const bounds = logarithmicBounds(restricted);
 			return {
 				success: true,
-				output: `S = ${formatInterval(restricted)}${bounds.map((b) => ` avec ${b.text}`).join('')}`,
+				output: `S = ${formatInterval(domainWritten(restricted, writing))}${bounds.map((b) => ` avec ${b.text}`).join('')}`,
 				latex: `${set}${bounds.map((b) => ` \\text{ avec } ${b.latex}`).join('')}`
 			};
 		} catch {
@@ -1196,7 +1281,8 @@ export class SolveCommand extends BaseCommand {
 		equation: RelationNode,
 		variable: string,
 		text: string,
-		parserOptions: Parameters<typeof parse>[1]
+		parserOptions: Parameters<typeof parse>[1],
+		writing: SolutionWriting
 	): CommandResult {
 		const fail = (message: string): CommandResult => ({
 			success: false,
@@ -1208,7 +1294,7 @@ export class SolveCommand extends BaseCommand {
 		const { domain, intervalLatex, intervalText, bounded } = read;
 		// Une inéquation : son ensemble solution, restreint à l'intervalle
 		if (equation.relation !== '=') {
-			return this.solveInequalityInInterval(equation, variable, domain);
+			return this.solveInequalityInInterval(equation, variable, domain, writing);
 		}
 		// Identité (`x = x`, `0 = 0`) : tout l'intervalle ; impossible : ∅ — comme
 		// sans `dans`, puis restreint à l'intervalle
@@ -1242,7 +1328,7 @@ export class SolveCommand extends BaseCommand {
 						latex: `S = ${intervalLatex}`
 					};
 				}
-				const set = inequalitySolutionLatex(restricted) ?? 'S = \\emptyset';
+				const set = inequalitySolutionLatex(restricted, undefined, writing) ?? 'S = \\emptyset';
 				return isEmpty(restricted)
 					? { success: true, output: 'Pas de solution dans cet intervalle', latex: set }
 					: { success: true, output: `S = ${formatInterval(restricted)}`, latex: set };
@@ -1283,8 +1369,7 @@ export class SolveCommand extends BaseCommand {
 			.map((zero) => zero.value);
 		// Les solutions en ln : décimaux gardés, comme sans `dans` ; l'ensemble des
 		// solutions toujours (Q2), la valeur approchée au bouton ≈
-		const only = zeros.length === 1 ? zeros[0] : null;
-		const written = (v: MathNode) => logarithmicExactLatex(v) ?? toLatex(exactValueToShow(v));
+		const written = (v: MathNode) => logarithmicExactLatex(v) ?? solutionValueLatex(v, writing);
 		const latex =
 			values.length === 0
 				? 'S = \\emptyset'
@@ -1292,12 +1377,7 @@ export class SolveCommand extends BaseCommand {
 		const output =
 			values.length === 0
 				? 'Pas de solution dans cet intervalle'
-				: values
-						.map(
-							(v) =>
-								`${variable} = ${(only && logarithmicValueText(only.value, only.approximate)) ?? toCustom(v)}`
-						)
-						.join(' ou ');
+				: `S = {${values.map((v) => toCustom(exactValueToShow(writing.angles(v), { decimal: writing.decimal }))).join(' ; ')}}`;
 		// Leurs valeurs approchées, pour le bouton ≈ de l'atelier
 		const approximateLatex = approximateSolutionsLatex(values);
 		return { success: true, output, latex, ...(approximateLatex !== null && { approximateLatex }) };
@@ -1358,7 +1438,8 @@ export class SolveCommand extends BaseCommand {
 		equation: import('../../types').MathNode,
 		result: import('../../solve').SolveResult,
 		verbosity: SolvingVerbosity,
-		ctx: CommandContext
+		ctx: CommandContext,
+		writing: SolutionWriting
 	): CommandResult {
 		// Check current mode from eval state
 		const currentMode = ctx.evalState?.mode ?? 'exact';
@@ -1429,86 +1510,15 @@ export class SolveCommand extends BaseCommand {
 		switch (result.status) {
 			case 'unique':
 			case 'multiple': {
-				// Build exact and decimal solution strings
-				// Une seule solution en ln : sa valeur approchée, comme le LaTeX
-				// La condition sur un paramètre (y = eˣ : x = ln(y) si y > 0), une
-				// seule fois quand toutes les solutions la partagent
-				const common = commonCondition(result.solutions);
-				const exactSolutions =
-					result.solutions
-						.map(
-							(sol) =>
-								`${result.variable} = ${(result.solutions.length === 1 && logarithmicValueText(sol.value, sol.approximate)) || toCustom(sol.value)}` +
-								(common === undefined && sol.condition ? ` si ${toCustom(sol.condition)}` : '')
-						)
-						.join(result.solutions.length > 1 ? ' ou ' : '') +
-					(common ? `, si ${toCustom(common)}` : '');
-
-				// Check if a fraction has a terminating decimal representation
-				// A fraction in lowest terms has terminating decimal iff denominator only has factors 2 and 5
-				const hasTerminatingDecimal = (n: bigint, d: bigint): boolean => {
-					// Reduce to lowest terms using GCD
-					const gcd = (a: bigint, b: bigint): bigint => (b === 0n ? a : gcd(b, a % b));
-					const g = gcd(n < 0n ? -n : n, d < 0n ? -d : d);
-					let denom = (d < 0n ? -d : d) / g;
-					// Remove factors of 2 and 5
-					while (denom % 2n === 0n) denom /= 2n;
-					while (denom % 5n === 0n) denom /= 5n;
-					return denom === 1n;
-				};
-
-				// Helper to check if exact value has a terminating decimal
-				const isTerminatingDecimal = (evalResult: ReturnType<typeof evaluate>): boolean => {
-					if (evalResult.status !== 'value' || !evalResult.exact) return false;
-					const val = evalResult.value;
-					if (typeof val === 'number') return Number.isInteger(val);
-					// Handle BigInt fraction { n: bigint, d: bigint }
-					if (val && typeof val === 'object' && 'n' in val && 'd' in val) {
-						return hasTerminatingDecimal(val.n as bigint, val.d as bigint);
-					}
-					return false;
-				};
-
-				// Check if any solution benefits from showing a decimal approximation
-				// True if exact and decimal representations are visually different
-				const hasUsefulApproximate = result.solutions.some((sol) => {
-					if (sol.approximate === undefined) return false;
-					const exactStr = toCustom(sol.value);
-					const decimalStr = sol.approximate.toString();
-					// Toggle is useful only if representations differ
-					return exactStr !== decimalStr;
-				});
-
-				// Format decimal solutions - use = for terminating decimals, ≈ for approximations
-				const decimalSolutions = hasUsefulApproximate
-					? result.solutions
-							.map((sol) => {
-								if (sol.approximate !== undefined) {
-									// Check if this specific solution has terminating decimal
-									let isExact = false;
-									try {
-										const evalResult = evaluate(sol.value);
-										isExact = isTerminatingDecimal(evalResult);
-									} catch {
-										// Evaluation failed
-									}
-									// Format without trailing zeros
-									const formatted = sol.approximate.toString();
-									const symbol = isExact ? '=' : '≈';
-									return `${result.variable} ${symbol} ${formatted}`;
-								}
-								return `${result.variable} = ${toCustom(sol.value)}`;
-							})
-							.join(result.solutions.length > 1 ? ' ou ' : '')
-					: exactSolutions;
-
-				// Only toggle if decimal provides different/useful info
-				// Une famille périodique : la période fait partie de la réponse — le
-				// texte disait « x = 0 ou x = 3\\pi » pour sin(x/3) = 0 (2026-10-09)
-				const periodicText = periodicSolutionsText(result);
-				const exactText = periodicText ?? exactSolutions;
-				const decimalText = periodicText ?? decimalSolutions;
-				const canToggle = periodicText === null && hasUsefulApproximate;
+				// L'ensemble des solutions, comme le LaTeX (Q2 ; texte du terminal
+				// compris, David, 2026-11-04) : `S = {-2 ; 2}`, `S = {ln(3)}` ; la
+				// valeur approchée au mode décimal, `S ≈ {1.0986}` (PR 2c)
+				const exactSet = solutionsSetText(result.solutions, writing);
+				const approximateSet = approximateSolutionsText(result.solutions);
+				const periodicText = periodicSolutionsText(result, writing);
+				const exactText = periodicText ?? exactSet;
+				const decimalText = periodicText ?? approximateSet ?? exactSet;
+				const canToggle = periodicText === null && approximateSet !== null;
 
 				// Build full output strings
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';

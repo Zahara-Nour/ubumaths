@@ -24,13 +24,13 @@ function conclusion(output: string): string {
 
 describe('`.solve` du moteur — la constante e hors d’un exposant', () => {
 	it.each([
-		['e^x=e', 'x = 1'],
-		['e^{2x}=e', 'x = 1/2'],
-		['2e^x=2e', 'x = 1'],
-		['e^x=e^{-x}', 'x = 0'],
-		['e^x=e^2', 'x = 2'],
-		['e^{x+1}=e^3', 'x = 2'],
-		['e^x=1', 'x = 0']
+		['e^x=e', 'S = {1}'],
+		['e^{2x}=e', 'S = {1/2}'],
+		['2e^x=2e', 'S = {1}'],
+		['e^x=e^{-x}', 'S = {0}'],
+		['e^x=e^2', 'S = {2}'],
+		['e^{x+1}=e^3', 'S = {2}'],
+		['e^x=1', 'S = {0}']
 	])('%s conclut %s', (input, expected) => {
 		const result = new WebReplEngine().execute(`.solve ${input}`);
 		expect(result.success).toBe(true);
@@ -45,7 +45,7 @@ describe('`.résoudre` de l’atelier — la constante e hors d’un exposant', 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
 		expect(result.output).not.toContain('contradictoire');
-		expect(conclusion(result.output)).toBe('x = 1');
+		expect(conclusion(result.output)).toBe('S = {1}');
 	});
 
 	it('après f(x)=e^x, `.résoudre f(x)=e` conclut x = 1', () => {
@@ -57,14 +57,15 @@ describe('`.résoudre` de l’atelier — la constante e hors d’un exposant', 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
 		expect(result.output).not.toContain('contradictoire');
-		expect(conclusion(result.output)).toBe('x = 1');
+		expect(conclusion(result.output)).toBe('S = {1}');
 	});
 });
 
 describe('`.solve` du moteur — e seul sans exponentielle : inchangé', () => {
-	it('ax+e=0 x garde la lettre e', () => {
-		const result = new WebReplEngine().execute('.solve ax+e=0 x');
+	// `ax+e=0` divise par le paramètre a : refusée depuis la PR 2c (V57)
+	it('2x+e=0 garde la lettre e', () => {
+		const result = new WebReplEngine().execute('.solve 2x+e=0');
 		expect(result.success).toBe(true);
-		expect(conclusion(result.output)).toBe('x = {-e}/a');
+		expect(conclusion(result.output)).toBe('S = {-e/2}');
 	});
 });

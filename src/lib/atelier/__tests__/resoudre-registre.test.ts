@@ -15,6 +15,8 @@ import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { resolveCommand } from '../commands';
 import { Atelier } from '../atelier.svelte';
 import { runInput } from '../calcul';
+import { displayUnitsInLatex } from '$lib/mathAST/units/display';
+import { degreeSignWritten } from '$lib/mathAST/cli/core/degrees';
 
 const LINES: readonly string[] = [
 	'-x^2+x+1=0',
@@ -109,47 +111,22 @@ const LINES: readonly string[] = [
 	'x+0.5=2',
 	'x+cos(π/3)=1',
 	'x+cos(420°)=1',
+	// Revue de la PR 2c : angle opposé, famille venue de degrés, inéquation décimale
+	'sin(-20°)x=1',
+	'cos(x) = cos(20°)',
+	'x^2>0.25',
 	'x=x',
 	'x=x dans [0;1]',
 	'x=x+1 dans [0;1]'
 ];
 
 /**
- * Lues autrement par les deux outils, à reprendre en PR 2c (lecture et
- * refus) : décimaux tapés (Q46), degrés, paramètre (V57). Valeur : la
- * réponse du registre.
+ * La réponse du registre telle que l'Atelier l'écrit : unités en LaTeX lisible,
+ * degré en exposant (`20~\\unit{°}` → `20{}^{\\circ}`), comme `.simplifier`.
  */
-const READ_DIFFERENTLY: Readonly<Record<string, string>> = {
-	// paramètre (V57)
-	'a t = 3 pour t': 'S = \\left\\{ \\dfrac{3}{a} \\right\\}',
-	// paramètre (V57)
-	'a x = 4': 'S = \\left\\{ \\dfrac{4}{a} \\right\\}',
-	// paramètre (V57)
-	'b*x+5=14': 'S = \\left\\{ \\dfrac{9}{b} \\right\\}',
-	// degrés : `.solve` relit `ctx.input`
-	'cos(-60°)x=1':
-		'S = \\left\\{ \\dfrac{1}{\\cos\\left( \\dfrac{\\pi}{3}~\\unit{rad} \\right)} \\right\\}',
-	// degrés : `.solve` relit `ctx.input`
-	'cos(60°)t = 1':
-		'S = \\left\\{ \\dfrac{1}{\\cos\\left( \\dfrac{\\pi}{3}~\\unit{rad} \\right)} \\right\\}',
-	// degrés : `.solve` relit `ctx.input`
-	'cos(60°)x=1':
-		'S = \\left\\{ \\dfrac{1}{\\cos\\left( \\dfrac{\\pi}{3}~\\unit{rad} \\right)} \\right\\}',
-	// degrés : `.solve` relit `ctx.input`
-	'cos(20°)x=1':
-		'S = \\left\\{ \\dfrac{1}{\\cos\\left( \\dfrac{\\pi}{9}~\\unit{rad} \\right)} \\right\\}',
-	// degrés : `.solve` relit `ctx.input`
-	'x^2 = cos(20°) dans [0;5]':
-		'S = \\left\\{ \\sqrt{\\cos\\left( \\dfrac{\\pi}{9}~\\unit{rad} \\right)} \\right\\}',
-	// degrés : `.solve` relit `ctx.input`
-	'x^3 = cos(60°) pour x':
-		'S = \\left\\{ \\sqrt[3]{\\cos\\left( \\dfrac{\\pi}{3}~\\unit{rad} \\right)} \\right\\}',
-	// décimal tapé (Q46)
-	'x+0.5=2': 'S = \\left\\{ \\dfrac{3}{2} \\right\\}',
-	// degrés : `.solve` relit `ctx.input`
-	'x+cos(420°)=1':
-		'S = \\left\\{ 1 - \\cos\\left( \\dfrac{7 \\pi}{3}~\\unit{rad} \\right) \\right\\}'
-};
+function asShown(answer: string): string {
+	return degreeSignWritten(displayUnitsInLatex(answer));
+}
 
 function flat(latex: string | undefined): string {
 	return (latex ?? '').replace(/\s+/g, '');
@@ -160,19 +137,15 @@ describe('.résoudre : l’Atelier conclut sur la réponse du registre', () => {
 		const typed = `.résoudre ${line}`;
 		const registre = new WebReplEngine().execute(resolveCommand(typed));
 		const shown = runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, typed);
-		// L'écart connu ne change pas sans qu'on le voie (PR 2c le retire)
-		const known = READ_DIFFERENTLY[line];
-		if (known !== undefined) {
-			expect(flat(registre.answer)).toBe(flat(known));
-			return;
-		}
 		const answered = registre.success && registre.answer !== undefined;
+		// L'Atelier répond : le registre aussi (PR 2c — virgule, degrés, décimaux lus)
+		if (shown.kind === 'commande') expect(answered, 'l’Atelier répond, le registre non').toBe(true);
 		if (shown.kind !== 'commande') {
 			expect(answered, 'le registre répond, l’Atelier refuse').toBe(false);
 			return;
 		}
 		const last = shown.steps?.at(-1);
 		if (last !== undefined) expect(flat(last.expressionLatex)).toBe(flat(shown.latex));
-		if (answered) expect(flat(shown.latex)).toBe(flat(registre.answer));
+		if (answered) expect(flat(shown.latex)).toBe(flat(asShown(registre.answer ?? '')));
 	});
 });
