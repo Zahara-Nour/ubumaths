@@ -241,13 +241,13 @@ describe('JournalContent — vidéos', () => {
 		expect(container.querySelector('video source')?.getAttribute('src')).toBe(STOCKAGE);
 	});
 
-	it('vidéo imbriquée (liste, citation) : aucune requête vers l’hôte', async () => {
-		// ⚠️ Constat du 2026-11-08 : `ListNode` et `Blockquote` ne rendent pas le
-		// nœud `video` (ni lecteur ni lien, partout, pas seulement au cahier).
-		// Ce test garde la seule propriété exigée ici : rien n'est chargé.
+	it('vidéo imbriquée (liste, citation) : un lien, aucune requête vers l’hôte', async () => {
+		// `ListNode` et `Blockquote` rendent le nœud `video` par `VideoDisplay`
+		// (outils manquants n° 21) : même règle qu'au premier niveau.
 		for (const content of [`- !video[Démo](${EXTERNE})`, `> !video[Démo](${EXTERNE})`]) {
 			const container = await rendre({ content, links: { role: 'student' } });
 			expect(container.querySelector('video, iframe, source')).toBeNull();
+			expect(container.querySelector('a.external-media')?.getAttribute('href')).toBe(EXTERNE);
 		}
 	});
 
