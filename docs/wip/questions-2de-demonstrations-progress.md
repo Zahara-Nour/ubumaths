@@ -6,20 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, migration du lot 6 en PR._
+_Mis à jour le 2026-11-09, après #2498._
 
-- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes : lots 4 et 5 publiés ; lot 6 (361, 362, 387, 388) mergé (#2496), brouillons créés en prod ; migration nœud + tag écrite, testée (12/12, rouge sans
-  écritures), auditée (0 finding), en PR #2498 (§ 12, fin).
-- **Prochaine action** : CI de la PR verte → `pnpm check:migrations --pr 2498` → merge → `db:migrate` depuis le
-  dépôt principal (4 conditions réunies) → vérif prod (4 modèles sur leur sous-notion, 1 point chacun,
-  `updated_at` inchangé) → page à cocher (comme lot 5) → publication par David.
-- **En attente de David** : rien.
-- **Pièges en cours** : écritures en prod → commande `!` donnée à David (même la simulation de `publier-lot`) ;
-  job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; `create-questions` en
-  local : exporter `PUBLIC_SUPABASE_URL` ET `SUPABASE_SERVICE_ROLE_KEY` de `.env.local` (sinon il vise la PROD),
-  sur une COPIE des JSON ; après le `create-questions` de David, les ids restent écrits dans `main` → les
-  reporter sur la branche puis `git restore` dans le dépôt principal.
-- **Worktree / branche** : `ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-algorithmes-6-rangement`.
+- **État** : 12 démonstrations publiées (lots 1-3) ; algorithmes : lots 4 et 5 publiés ; lot 6 (361, 362, 387, 388)
+  en brouillon, rangé en prod (#2498 mergée, `db:migrate` fait, vérifié) ; page à cocher publiée :
+  https://claude.ai/artifact/Xa6NaZXLSGiz8NxXghiSjz (§ 12, fin).
+- **Prochaine action** : lire et compter les verdicts de la page (collection `verdicts`) → si 4 « ok »,
+  simulation `publier-lot.ts --dir scripts/questions/2de-algorithmes-6` → David lance `--publier`.
+- **En attente de David** : relecture du lot 6 sur la page à cocher.
+- **Pièges en cours** : écritures en prod (`db:migrate` compris, refusé par le classifieur le 2026-11-09) →
+  commande `!` donnée à David ; job « Client Tests (browser) » qui plante tests verts → `gh run rerun <run> --failed`.
+- **Worktree / branche** : aucun (worktree du lot 6 retiré après #2498) ; prochain lot → nouveau worktree.
 
 ---
 
@@ -405,3 +402,7 @@ Migration `20261109002041_questions_2de_algorithmes_6_rangement_tags` (calquée 
 changent ; 362 et 387 tagués d'un point posé sur la notion, accepté par la règle du nœud) : test d'intégration
 12/12 vert, rouge sans les écritures (2 échecs, 5 sautés).
 Audit `security-auditor` : 0 finding (bloquant ou non).
+Mergée (#2498, CI verte) ; `check:migrations --pr` passé ; `db:migrate` lancé par David (seule migration en
+attente, refusée au classifieur du mode auto) ; vérifié en prod : les 4 brouillons sur leur sous-notion, chacun
+avec son seul point, `updated_at` inchangé (00:18, création). Page à cocher (aucune alerte) :
+https://claude.ai/artifact/Xa6NaZXLSGiz8NxXghiSjz
