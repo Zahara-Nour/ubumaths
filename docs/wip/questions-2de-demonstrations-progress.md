@@ -9,10 +9,10 @@
 _Mis à jour le 2026-11-09, migration du lot 8 poussée (PR de rangement ouverte, voir § 15)._
 
 - **État** : lots 1-7 publiés. Lot 8 : 5 brouillons en prod (#2517), migration de rangement
-  `20261109110745` écrite, test 16/16, audit 0 bloquant, PR ouverte (branche
+  `20261109110745` écrite, test 16/16, audit 0 bloquant, PR #2520 ouverte (branche
   `feat/questions-2de-approfondissements-8-rangement`).
-- **Prochaine action** : suivre la CI de la PR (`gh pr checks <n> --watch`, l'intégration nocturne tourne aussi :
-  elle valide la fixture `seed-2de-points.json`) → verte : `pnpm check:migrations --pr <n>` puis merge → `db:migrate`
+- **Prochaine action** : suivre la CI de la PR (`gh pr checks 2520 --watch`, l'intégration nocturne tourne aussi :
+  elle valide la fixture `seed-2de-points.json`) → verte : `pnpm check:migrations --pr 2520` puis merge → `db:migrate`
   par David (`!`) → vérifier en prod (nœuds, tags, points 2-307/2-310, `d4db2207` `{1_SPE,2}`, `updated_at`) →
   page à cocher du lot 8.
 - **En attente de David** : `db:migrate` après le merge.
