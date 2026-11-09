@@ -1,4 +1,5 @@
 {
+	"id": "e5da67bb-79db-47c0-986e-02f99c195ecb",
 	"title": "Fréquence conditionnelle à partir de deux listes, en Python",
 	"description": "Deux listes (transport, sport) ; frequence(transport, sport) renvoie la fréquence des sportifs parmi les élèves venant en bus : valeur renvoyée (tableau croisé en correction), compléter le return, interpréter (conditionnelle, pas l'inverse)",
 	"grades": ["2"],

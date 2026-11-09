@@ -1,4 +1,5 @@
 {
+	"id": "d01cf16b-5e0b-49e6-b950-0f1cf18462ef",
 	"title": "Approcher un maximum par balayage, en Python",
 	"description": "f croissante puis décroissante ; maximum(a, pas) avance tant que f(x + pas) > f(x) : valeur renvoyée avec un pas de 1, compléter la condition du while, interpréter la valeur renvoyée (abscisse du maximum à pas près)",
 	"grades": ["2"],

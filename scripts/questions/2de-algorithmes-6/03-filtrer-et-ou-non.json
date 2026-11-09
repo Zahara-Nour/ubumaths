@@ -1,4 +1,5 @@
 {
+	"id": "82101744-ff4a-432e-bd5d-fb55cb16287b",
 	"title": "Filtrer des individus avec ET, OU, NON, en Python",
 	"description": "Deux listes (transport, sport) ; compter(transport, sport) compte les élèves qui vérifient un critère : valeur renvoyée (and, or, and not), compléter la condition (ET NON), interpréter or (ou inclusif)",
 	"grades": ["2"],

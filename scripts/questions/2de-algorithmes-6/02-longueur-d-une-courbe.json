@@ -1,4 +1,5 @@
 {
+	"id": "f34d0f5f-08fc-40ee-b102-ab835f93681b",
 	"title": "Longueur approchée d'une portion de courbe, en Python",
 	"description": "longueur(a, b, n) additionne les longueurs des segments d'une ligne brisée inscrite dans la courbe : valeur renvoyée pour n = 2 (longueurs entières), compléter la ligne de la somme, interpréter quand n grandit",
 	"grades": ["2"],
