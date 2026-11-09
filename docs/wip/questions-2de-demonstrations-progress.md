@@ -6,20 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2523 (modèles du lot 9 mergés)._
+_Mis à jour le 2026-11-09, migration du lot 9 poussée (PR de rangement ouverte, voir § 16)._
 
-- **État** : lots 1-8 publiés. Lot 9 : 2 modèles neufs (324, 363) mergés (#2523), pas encore en prod ;
-  323 = réemploi de `64f54fc1` (dans la migration).
-- **Prochaine action** : David crée les brouillons (commande au § 16) → relevé prod → migration de rangement
-  (2 nœuds, tags 2-324 / 2-363, `64f54fc1` `{1_SPE,2}` + tag 2-323), sur une nouvelle branche depuis `origin/main`
-  → page à cocher → publication → versement du chantier.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-9 --publier`
-  depuis le dépôt principal à jour.
-- **Pièges en cours** : `db:migrate` depuis le dépôt principal à jour (le worktree n'est pas lié à Supabase) ;
-  garde « Doc à jour » → `Doc-inchangée:` (≤ 100 caractères) dans un commit pour une migration de données ;
-  écritures en prod → commande `!` ; « Client Tests (browser) » qui plante tests verts → `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` (branche `feat/…-9` mergée, à remplacer
-  par celle de la migration puis `git branch -d`).
+- **État** : lots 1-8 publiés. Lot 9 : 2 brouillons en prod (#2523), migration de rangement `20261109180421`
+  écrite, test 13/13, audit 0 finding, PR ouverte (branche `feat/questions-2de-approfondissements-9-rangement`).
+- **Prochaine action** : CI verte → `pnpm check:migrations --pr <n>` puis merge → `db:migrate` par David (`!`,
+  depuis le dépôt principal à jour) → vérifier en prod (nœuds, tags, `64f54fc1` `{1_SPE,2}`, `updated_at`) → page à
+  cocher du lot 9 → publication → versement du chantier.
+- **En attente de David** : `db:migrate` après le merge.
+- **Pièges en cours** : garde « Doc à jour » → `Doc-inchangée:` dans un commit (fait) ; écritures en prod → commande
+  `!` ; « Client Tests (browser) » qui plante tests verts → `gh run rerun --failed`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-approfondissements-9-rangement`.
 
 ---
 
@@ -592,3 +589,14 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-9 --publier`
 
 Mergée (#2523, CI verte du premier coup ; merge retardé par un `deploy:prod` en cours).
+
+Créés en brouillon par David (2026-11-09) : 8009fb19 (324), 4014a007 (363) ; ids commités sur la branche de la
+migration (`feat/questions-2de-approfondissements-9-rangement`), `main` remis propre. Relevé prod (MCP, 2026-11-09,
+avant la migration) : 2 brouillons de seconde, niveaux 12 et 1, sans nœud ni tag ; `64f54fc1` publié, `{1_SPE}`,
+sur Géométrie repérée › parabole, tag 1SPE-334 ; 2-323 et 2-324 sur la notion Géométrie repérée, 2-363 sur
+définition et courbe, aucun tagué ; chemins visés uniques et actifs.
+Migration `20261109180421_questions_2de_approfondissements_9_rangement_tags` (calque du lot 8 sans le déplacement de
+points : 2 brouillons rangés et tagués, `64f54fc1` `{1_SPE,2}` + tag 2-323) : test d'intégration 13/13 vert, rouge
+sans les écritures (2 échecs, 6 sautés).
+Audit `security-auditor` : 0 finding (bloquant ou non) ; accès inchangés (aucune policy ne lit `grades`), trigger
+`updated_at` réactivé même en échec (transaction implicite), points vérifiés en prod contre la règle des tags.

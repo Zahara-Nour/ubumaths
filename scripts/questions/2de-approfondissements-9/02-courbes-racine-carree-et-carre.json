@@ -1,4 +1,5 @@
 {
+	"id": "4014a007-61cf-41a4-aa5d-963ebf8636c8",
 	"title": "Relier les courbes de la fonction racine carrée et de la fonction carré",
 	"description": "Symétrique de A(a ; a²) par rapport à y = x (deux cases, a de 2 à 9) ; y = √x équivaut à x = y² (case choix) ; symétrie d'axe y = x (case choix, figure) ; x² < x < √x sur ]0 ; 1[ (case choix, figure)",
 	"grades": ["2"],
