@@ -6,16 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après la publication du lot 7._
+_Mis à jour le 2026-11-09, après #2517._
 
-- **État** : lots 1-7 publiés (lot 7 relu 5/5 « ok », publié par David, statut relu en base).
-- **Prochaine action** : lot 8 (§ 13 : points 305-310) dans un nouveau worktree. Réemploi de `d4db2207` (2-309, niveau
-  seconde + tag) ; points 2-307 et 2-310 déplacés sous Figures planes par la migration du lot. Puis lot 9 (323, 324, 363).
-- **En attente de David** : rien.
-- **Pièges en cours** : écritures en prod (`db:migrate`, `create-questions --publier`, `publier-lot.ts`, même en
-  simulation) refusées par le classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) »
-  qui plante tests verts → `gh run rerun <run> --failed`.
-- **Worktree / branche** : aucun ; lot 8 → nouveau worktree.
+- **État** : lots 1-7 publiés. Lot 8 (§ 15) : 5 modèles mergés (#2517), pas encore créés en prod.
+- **Prochaine action** : David crée les brouillons (`! pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/2de-approfondissements-8 --publier`, depuis le dépôt principal à jour) ; puis migration de
+  rangement : nœuds + tags des 5, points 2-307 / 2-310 déplacés sous Figures planes (patron : migration
+  `20261102070008`), `d4db2207` + grade `2` et tag 2-309 (patron : `20261109092945`, `array_append`).
+- **En attente de David** : création des 5 brouillons en prod.
+- **Pièges en cours** : écritures en prod refusées par le classifieur du mode auto → commande `!` ; ids écrits
+  dans les fichiers par `create-questions` → à commiter sur la branche de la migration ; « Client Tests
+  (browser) » qui plante tests verts → `gh run rerun <run> --failed`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, branche à recréer pour la migration.
 
 ---
 
@@ -531,3 +533,5 @@ avertissement ; 5 brouillons créés en base locale (copie hors dépôt, cible �
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-8 --publier`
+
+Mergée (#2517, CI verte du premier coup).
