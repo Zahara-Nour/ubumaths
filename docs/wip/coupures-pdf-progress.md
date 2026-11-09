@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-09, après #2521._
 
 - **État** : PR 1 (#2518) et PR 2 (#2521, titre / numéro jamais seul en bas de page devant un dessin, § 6) mergées. Questions désormais justifiées (David). **En prod depuis la v0.80.0** (2026-11-09).
 - **Prochaine action** : clore le chantier — versement du durable dans `docs/systeme/` (déjà fait dans `ubumark.md` et `fiches-et-pdf.md`, à relire), journal archivé.
-- **En attente de David** : `deploy:prod` (sur sa demande) . Fiche `eval-premiere` écrite en prod le 2026-11-09 (carré `width=65%` FR + EN, durée 30 min) ; « Choisir un seul exercice » ne peut pas aller dans l'en-tête de la fiche (les consignes imprimées viennent du **devoir**, `assignment.instructions`) → à mettre en consigne au moment de donner le devoir.
+- **En attente de David** : rien. Fiche `eval-premiere` écrite en prod le 2026-11-09 (carré `width=65%` FR + EN, durée 30 min) ; « Choisir un seul exercice » ne peut pas aller dans l'en-tête de la fiche (les consignes imprimées viennent du **devoir**, `assignment.instructions`) → à mettre en consigne au moment de donner le devoir.
 - **Pièges en cours** : un titre `sticky` ne suit l'énoncé que si son PREMIER MORCEAU est vide ; tests de forme du Typst aussi dans `src/lib/typst` (pas seulement ubumark/worksheets) ; mesurer x ET y.
 - **Worktree / branche** : supprimés après #2521.
 
