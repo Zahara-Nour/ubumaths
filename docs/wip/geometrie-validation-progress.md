@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-05, après #2388._
+_Mis à jour le 2026-11-09, après #2388 (bloc corrigé : `figure-et-choix` est clos depuis le 2026-10-30)._
 
-- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), en brouillon ; CP-060 rangé en prod sur Géométrie ›
-  Figures planes › constructions avec son point (§ 14, #2388, migration passée et vérifiée le 2026-11-05).
-- **Prochaine action** : aucune ici ; CP-058 attend le chantier `figure-et-choix`.
-- **En attente de David** : (1) fin de l'essai de CP-060 et CP-058 (`docs/wip/verifications-manuelles.md`), puis
-  publication de CP-060 ; (2) message du carré décalé qui chevauche [AB] (§ 12). **Ne pas publier CP-058 en l'état**
-  (§ 13 : figure de travail + case « choix », chantier `figure-et-choix`).
+- **État** : CP-059, CP-060, CP-058 mergés, en brouillon ; CP-060 rangé en prod sur Géométrie › Figures planes ›
+  constructions avec son point (§ 14, #2388). CP-058 réécrit par `figure-et-choix` (#1840 : figure de travail + case
+  choix Oui / Non, brouillon `a7dfe502`) ; ce chantier est clos (journal `docs/archive/wip/figure-et-choix-progress.md`).
+- **Prochaine action** : aucune ici.
+- **En attente de David** : (1) essai de CP-060 et de CP-058 (sur tablette) (`docs/wip/verifications-manuelles.md`),
+  puis publication des deux ; (2) message du carré décalé qui chevauche [AB] (§ 12).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
 - **Worktree / branche** : aucun (retiré après #2388).
 
