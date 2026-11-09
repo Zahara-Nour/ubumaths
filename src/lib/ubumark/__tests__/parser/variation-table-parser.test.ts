@@ -433,6 +433,15 @@ describe('parseVariationTableContent - Open/closed bounds', () => {
 		expect(domaine(']?2[, +inf')[0]).toEqual({ expression: '2', open: true, hidden: true });
 	});
 
+	it('jeton invalide après une borne : une seule erreur', () => {
+		const result = parseVariationTableContent([
+			'variable: x',
+			'domain: ]-inf, 0[, ]??x, +inf[',
+			'sign: f(x)'
+		]);
+		expect(result.errors).toHaveLength(1);
+	});
+
 	it('virgule dans des parenthèses ou accolades : pas de coupure', () => {
 		expect(domaine(']-inf, \\frac{1}{2}, f(1,2)[').map((p) => p.expression)).toEqual([
 			'-inf',

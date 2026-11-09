@@ -329,7 +329,9 @@ function parseDomainContent(content: string, refuse: Refuse, line: number): Doma
 
 			const next = segments[i + 1];
 			if (next && endsWithBracket(segments[i]) && startsWithBracket(next)) {
-				const nextPoint = parseDomainPoint(next, refuse, line);
+				// Lecture muette : le segment suivant, s'il n'est pas fusionné, est lu
+				// (et ses erreurs signalées) au tour suivant
+				const nextPoint = parseDomainPoint(next, () => {}, line);
 				if (nextPoint.expression === point.expression) {
 					// Exclu à gauche (`0[`) ET à droite (`]0`) : ouvert ; sinon dans le domaine
 					const open = segments[i].endsWith('[') && next.startsWith(']');
