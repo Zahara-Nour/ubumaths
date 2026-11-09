@@ -1,19 +1,22 @@
+---
+status: clos
+---
+
 # Chantier `rapporteur-pdf` — rapporteur posé dans l'énoncé PDF
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR ouverte._
+_Mis à jour le 2026-11-09, après #2504 : chantier clos, journal archivé._
 
-- **État** : PR ouverte (branche `fix/rapporteur-pose-pdf`) · **Prochaine action** : CI verte → merge,
-  ligne 23 d'[outils-manquants.md](outils-manquants.md) versée en « livré » · **En attente de David** :
-  rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-rapporteur-pdf`,
-  `fix/rapporteur-pose-pdf`.
+- **État** : clos, #2504 mergée. Le durable est dans [questions.md](../../systeme/questions.md) (rapporteur
+  posé) et [geometrie/README.md](../../systeme/geometrie/README.md) (option `overlay`) · **Prochaine
+  action** : aucune · **En attente de David** : rien.
 
 ---
 
 ## Origine
 
-[outils-manquants.md](outils-manquants.md) § 1 n° 23 : `posedProtractorOf` n'était appelé que par
+[outils-manquants.md](../../wip/outils-manquants.md) § 1 n° 23 : `posedProtractorOf` n'était appelé que par
 `FigureACompleterView.svelte` ; une question `verifier: mesure AOB, rapporteur posé` imprimée n'avait
 pas de rapporteur.
 
