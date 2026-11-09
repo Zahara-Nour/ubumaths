@@ -1,29 +1,29 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: PR 2b mergée (#2360), PR 2c à préparer
+status: PR 2c mergée (#2501), .intégrer à préparer
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2360._
+_Mis à jour le 2026-11-09, après #2501._
 
-- **État** : PR 2b (`.résoudre` répond par S) mergée (#2360). Détail : § PR 2b.
-- **Prochaine action** : PR 2c, phase 0 d'abord. Au programme : lecture et refus (V57 paramètre,
-  Q46 décimaux, degrés : `READ_DIFFERENTLY` de `resoudre-registre.test.ts`), plus le texte brut de
-  `.résoudre` aligné sur S (terminal `pnpm math`, David, 2026-11-04). Ensuite `.intégrer`.
+- **État** : PR 2c (`.résoudre` lit comme l'Atelier : V57, Q46, degrés, virgule, texte en S)
+  mergée (#2501). Détail : § PR 2c.
+- **Prochaine action** : `.intégrer`, phase 0 d'abord. À poser aussi à David : `.solve x^2=a dans
+[0;1]` → `S = ∅`, FAUX, déjà sur main (§ PR 2c — revue) — PR à part ou dans le lot ?
 - **En attente de David** : rien.
 - **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
   ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
   reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3`.
-  `.simplifier` : calcul descendu, `avec`/`dans` à l'étape H. `.résoudre` (2026-11-03) : S partout,
-  texte brut compris (2026-11-04), périodique `S = {a + kπ, k ∈ ℤ}`, seuil gardé avec `≈`.
+  `.simplifier` : calcul descendu, `avec`/`dans` à l'étape H. `.résoudre` : S partout, texte
+  compris ; angle quelconque en degrés (`1/cos(20°)`), texte au point décimal, virgule lue
+  (PR 2c, 2026-11-09).
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; commitlint refuse « merge … »
-  et un corps > 100 colonnes ; le hook laisse parfois l'index ≠ HEAD (`MM`, disque = HEAD) →
-  `git restore --staged` ; la garde R5 envoie au registre une ligne au POINT (virgule = refus de
-  lecture, test sans assertion) ; le juge du corpus confond `{,}` et `.` ; limites connues :
-  `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`, `2×π`.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `feat/registre-reference-lecture` (créée, vide).
+  et un corps > 100 colonnes ; le juge du corpus confond `{,}` et `.` ; limites connues :
+  `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`, `2×π` ; mineurs de la
+  revue 2c (M2-M4) dans § PR 2c.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · nouvelle branche à créer.
 
 ---
 
