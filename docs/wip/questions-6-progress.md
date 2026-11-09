@@ -9,8 +9,7 @@ _Mis à jour le 2026-11-09, après #2524 (lot 11b, fichiers)._
 
 - **État** : lots 10 et 11a publiés. Lot 11b (174-179, 148) : 7 modèles en fichiers sur `main` (#2524, § 26.4), pas
   encore en base de prod.
-- **Prochaine action** : après le `--publier` de David, commiter les `id` (commit direct, fichiers de `scripts/` → non :
-  branche + PR avec la migration) ; migration nœud + tag (patron `20261109132820` : 174-178 sur « triangles », 179 sur
+- **Prochaine action** : après le `--publier` de David, commiter les `id` sur la branche de la PR de migration ; migration nœud + tag (patron `20261109132820` : 174-178 sur « triangles », 179 sur
   la notion « Symétrie axiale », 148 sur la notion « Périmètres ») ; page à cocher ; puis lot 12 « Constructions »
   (173, 180, 207).
 - **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-triangles-symetrie-perimetres
