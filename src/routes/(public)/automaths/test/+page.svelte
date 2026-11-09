@@ -3,7 +3,7 @@
 	import { goto, replaceState } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { buildSeriesItems } from '$lib/questions/series-items';
-	import { seriesFormExcludesCourseCards } from '$lib/questions/course-card';
+	import { isCourseCard, seriesFormExcludesCourseCards } from '$lib/questions/course-card';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
@@ -185,7 +185,8 @@
 		// Entraînement, Course aux nombres : pas de carte de cours (non évaluable)
 		const excludeCourseCards = seriesFormExcludesCourseCards(mode);
 		const items = generateSeriesItems(series, { excludeCourseCards });
-		if (items.length === 0 && excludeCourseCards) {
+		// Série vide parce que toutes ses lignes sont des cartes : le dire (pas une panne)
+		if (items.length === 0 && excludeCourseCards && onlyCourseCards(series)) {
 			throw new Error(
 				'Cette série ne contient que des cartes de cours : à lancer en Flash-cards ou En classe.'
 			);
@@ -204,6 +205,17 @@
 			currentQuestionIndex: 0,
 			isPaused: false
 		};
+	}
+
+	/** Toutes les lignes de la série sont-elles des cartes de cours ? */
+	function onlyCourseCards(series: SeriesItem[]): boolean {
+		const byId = new Map(
+			questionTemplatesCache.templates.map((template) => [template.id, template])
+		);
+		return series.every((item) => {
+			const template = byId.get(item.templateId);
+			return template !== undefined && isCourseCard(template);
+		});
 	}
 
 	/**
