@@ -294,7 +294,8 @@ export interface SeenSegment {
 
 /**
  * Les segments que l'élève VOIT depuis A (revue de #2485) : les segments qui
- * partent de A dans une même direction (à 2° près), et ceux qui les prolongent ou
+ * partent de A dans une même direction (à `sameDirection` près : 2°, ou la
+ * tolérance de calcul sur une demi-droite donnée, Q15), et ceux qui les prolongent ou
  * les recouvrent de proche en proche, n'en font qu'un, jugé par son bout le plus
  * loin. Deux directions opposées, ou un segment qui passe au-delà de A : A est au
  * milieu du trait vu, ce n'est pas un segment depuis A (`throughA`).
