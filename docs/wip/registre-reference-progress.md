@@ -722,3 +722,30 @@ corrigée, à confirmer).
   `.résoudre` reste `x = 3`, `x = ln(3) ≈ 1.10`, `x = π/6 + 2kπ ou …`. Seul le terminal de
   `pnpm math` l'affiche ; l'Atelier montre toujours le LaTeX.
 - Mergée : #2360.
+
+## PR 2c — `.résoudre` lit comme l'Atelier (2026-11-09)
+
+Étape 3 du découpage (lecture et refus), plus le texte brut. Branche
+`feat/registre-reference-lecture`.
+
+- **Sonde** (21 lignes, registre contre Atelier, branche rebasée sur `main`) : paramètre (`a x = 4`)
+  registre `S = {4/a}`, Atelier refuse ; `x+0.5=2` registre `3/2`, Atelier `1,5` ; `cos(60°)x=1`
+  registre `1/cos(π/3 rad)`, Atelier `2` ; `cos(20°)x=1` registre `1/cos(π/9 rad)`, Atelier
+  `1/cos(π/9)` ; `2x = 0,6` registre refuse la lecture, Atelier `S = {0,3}` ; texte de `2x+1=7` :
+  `x = 3`.
+
+### Phase 0 de la PR 2c — comportements (validée par David le 2026-11-09 : « je suis tes recos »)
+
+- **Nominal** : (1) paramètre (V57 descend) : le registre refuse `a x = 4`, `a t = 3 pour t`,
+  `b*x+5=14` avec le message de l'Atelier ; une lettre posée (`.let a = 2`) compte comme donnée ;
+  (2) décimaux (Q46 descend) : `x+0.5=2` → `S = {1,5}`, `0.5x+3=1` → `S = {−4}` ;
+  (3) degrés : `.solve` passe par les valeurs remarquables — `cos(60°)x=1` → `S = {2}`,
+  `x+cos(420°)=1` → `S = {1/2}`, `x^3=cos(60°)` → `S = {∛(1/2)}` ; `READ_DIFFERENTLY` disparaît.
+- **Q1 angle non remarquable** : `cos(20°)x=1` → `S = {1/cos(20°)}`, degrés gardés comme
+  `.simplifier` (l'Atelier change : il écrivait `1/cos(π/9)`).
+- **Q2 texte brut** (terminal) : étapes inchangées, dernière ligne `x = 3` → `S = {3}` ;
+  `e^x=3` → `S = {ln(3)}`, mode décimal `S ≈ {1.0986}` ; deux solutions `S = {−2 ; 2}` ; seuil
+  `n > … ≈ …` gardé ; point décimal dans le texte (le LaTeX garde la virgule).
+- **Q3 virgule décimale** : le registre lit `2x = 0,6` comme l'Atelier, dans cette PR.
+- **Limites** : `x + a = 0`, `x^2 = a` (« si a ⩾ 0 »), `(x−a)(x−1)=0`, `ln x = a` restent résolus.
+- **Erreurs** : aucun autre refus ne change.
