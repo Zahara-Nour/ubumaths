@@ -539,6 +539,13 @@ une ligne sur une page 4). Écarts verticaux : 29 PDF sur 96 ; dans 25, le premi
 énoncé) ; dans 4, des retours à la ligne changés par la justification, désormais appliquée au
 texte des questions (choix de David).
 
+Écarté (David, 2026-11-09) : un **garde-fou** qui couperait quand même en fin de page quand garder
+ensemble laisserait un trou de plus d'un tiers de colonne. Mesuré sur 12 fiches de 24 exercices
+avec un dessin chacune : 1 page gagnée sur 104, pour 4 introductions séparées de leur dessin par
+un changement de page. Les gros trous restants viennent des dessins insécables eux-mêmes, qu'aucune
+règle de coupure ne résout. Pièges Typst vus à l'étude : un `sticky` posé dans `layout(…)` est
+perdu (`layout` crée son propre bloc) ; un `metadata` seul part avec le bloc collé qui le suit.
+
 **Cadres en lignes, réglés par le prof** (ADR 0030, lot 4 ;
 `worksheets/document/answer-frame-lines.ts`) : unité = la **ligne** de 0,8 cm
 (`ANSWER_FRAME_LINE_CM`). L'estimation ci-dessus devient le départ « auto » : petit 3 lignes,
