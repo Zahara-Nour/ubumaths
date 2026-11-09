@@ -59,7 +59,9 @@ Trois boucles distinctes :
   - `initWebVitals` : observe LCP, CLS, INP, etc. ; une valeur au-dessus du seuil part
     en `performance` (rien n'est envoyé si la sévérité vaut `info`) ; l'URL passe par
     `sanitizeUrl` (paramètres `token`, `key`, `secret`, `password`, `auth`, `session`,
-    `code` remplacés par `[REDACTED]`) ;
+    `code` remplacés par `[REDACTED]`) ; un FCP ou un LCP mesuré après le premier passage
+    de la page en arrière-plan est écarté (`web-vitals-visibilite.ts`, même règle que
+    `web-vitals` : un onglet ouvert en arrière-plan donnait des « LCP » de plusieurs heures) ;
   - garde-fous (objet `CONFIG`) : 10 erreurs par minute au plus, file envoyée toutes
     les 10 s ou dès 5 erreurs. « Lot » ne veut dire que regroupement dans le temps :
     chaque erreur part dans son propre `POST` ;

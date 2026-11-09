@@ -14,6 +14,11 @@
  */
 
 import { browser } from '$app/environment';
+import {
+	firstHiddenTime,
+	isPaintAfterHidden,
+	type VisibilityEntry
+} from '$lib/utils/web-vitals-visibilite';
 
 // =====================================================
 // TYPES
@@ -610,6 +615,17 @@ function reportWebVital(
 	queueError(errorData);
 }
 
+/** Premier passage en arrière-plan, lu dans l'historique de visibilité s'il existe */
+function readFirstHiddenTime(): number {
+	let entries: VisibilityEntry[] | undefined;
+	try {
+		entries = performance.getEntriesByType('visibility-state');
+	} catch {
+		entries = undefined; // historique non pris en charge
+	}
+	return firstHiddenTime(entries, document.visibilityState);
+}
+
 /**
  * Initialize Web Vitals collection using PerformanceObserver
  * Captures LCP, FID, CLS, FCP, TTFB, INP metrics
@@ -627,12 +643,21 @@ export function initWebVitals(): void {
 	// Track INP across session
 	let inpValue = 0;
 
+	// Premier passage en arrière-plan : FCP et LCP mesurés après lui sont écartés
+	// (onglet ouvert en arrière-plan → « LCP » de plusieurs heures, cf. web-vitals-visibilite.ts)
+	let hiddenTime = readFirstHiddenTime();
+	document.addEventListener('visibilitychange', (event) => {
+		if (document.visibilityState === 'hidden') {
+			hiddenTime = Math.min(hiddenTime, event.timeStamp);
+		}
+	});
+
 	// LCP (Largest Contentful Paint)
 	try {
 		const lcpObserver = new PerformanceObserver((entryList) => {
 			const entries = entryList.getEntries();
 			const lastEntry = entries[entries.length - 1] as PerformanceEntry & { startTime: number };
-			if (lastEntry) {
+			if (lastEntry && !isPaintAfterHidden(lastEntry.startTime, hiddenTime)) {
 				reportWebVital('LCP', lastEntry.startTime);
 			}
 		});
@@ -683,7 +708,7 @@ export function initWebVitals(): void {
 		const fcpObserver = new PerformanceObserver((entryList) => {
 			const entries = entryList.getEntries();
 			const fcpEntry = entries.find((e) => e.name === 'first-contentful-paint');
-			if (fcpEntry) {
+			if (fcpEntry && !isPaintAfterHidden(fcpEntry.startTime, hiddenTime)) {
 				reportWebVital('FCP', fcpEntry.startTime);
 			}
 		});
