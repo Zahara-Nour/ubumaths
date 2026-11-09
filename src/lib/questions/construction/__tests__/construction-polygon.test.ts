@@ -235,6 +235,18 @@ describe('carre A ; B — tableau de la phase 0', () => {
 				'segment(2;6;2;7)|segment(2;7;5;7)|segment(5;7;5;4)|segment(5;4;2;4)'
 			)
 		).toEqual({ status: 'incorrect', feedback: SHIFTED_SIDE_FEEDBACK });
+		// Côté donné oblique, décalé d'un tiers vers B (revue)
+		const oblique = new Map([
+			['A', { x: 0, y: 0 }],
+			['B', { x: 6, y: 3 }]
+		]);
+		expect(
+			judgeConstruction(
+				SQUARE,
+				oblique,
+				'segment(6;3;8;4)|segment(8;4;5;10)|segment(5;10;-1;7)|segment(-1;7;2;1)'
+			)
+		).toEqual({ status: 'incorrect', feedback: SHIFTED_SIDE_FEEDBACK });
 	});
 
 	it('carré décalé mais ouvert, ou à l’intérieur de [AB] : pas fermée', () => {
