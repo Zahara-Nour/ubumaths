@@ -9,10 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2499 ; PR 5 (Q15) en cours._
+_Mis à jour le 2026-11-09, après #2503._
 
-- **État** : PR 4 (triangle rectangle coté en cm, § 7) mergée (#2499), Q17/Q18 corrigées. Les débouchés de
-  la ligne n° 18 (CE2-039, CE2-070 coté) ont leurs outils ; reste à voir CP-035 / CE1-044 (mesurer à la règle).
+- **État** : PR 4 (triangle rectangle coté en cm, #2499) et PR 5 (Q15, fusion serrée sur demi-droite, #2503)
+  mergées ; tous les choix et questions des § 5-7 tranchés. Les débouchés de la ligne n° 18 (CE2-039, CE2-070
+  coté) ont leurs outils ; restent CP-035 / CE1-044 (mesurer un segment à la règle).
 - **Prochaine action** : avec David, décider la suite (mesurer un segment à la règle, ou clore le chantier :
   versement dans `docs/systeme/`, ligne n° 18 de `outils-manquants.md`, journal archivé).
 - **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494, #2499) ; la suite du chantier
@@ -20,7 +21,7 @@ _Mis à jour le 2026-11-09, après #2499 ; PR 5 (Q15) en cours._
 - **Pièges en cours** : le juge prend le **segment vu** (§ 3, et § 7 depuis Q18) ; seules les règles posées
   AVANT le trait comptent (§ 6, § 7) ; tests de composant : toucher pile sur une graduation ; commitlint :
   lignes du corps ≤ 100 caractères.
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, branche à recréer depuis `origin/main`.
+- **Worktree / branche** : aucun (à recréer depuis `origin/main`).
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
@@ -254,3 +255,6 @@ fichier `.revue.test.ts` retiré.
 **Q15** : serrer — sur demi-droite donnée, les segments depuis A ne fusionnent qu'à la tolérance de calcul
 (`SAME_DIRECTION_ON_RAY` = 1e-6 rad, paramètre `sameDirection` de `seenSegments`) ; **Q16** : `[AX)` plus tard,
 si un auteur le demande. PR 5 (`fix/regle-graduee-demi-droite`) : Q15, test rouge puis vert.
+PR 5 mergée (#2503) ; revue Opus : rien de bloquant, 3 mineurs traités (règle reposée sur [Ax), trait presque
+opposé → deux segments, JSDoc de `seenSegments`). Limite connue, non visée par Q15 : un trait qui ne part pas de
+A (du milieu de [AB]) est ignoré.
