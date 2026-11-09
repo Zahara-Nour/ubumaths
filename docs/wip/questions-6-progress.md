@@ -5,18 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, lot 11a écrit (§ 26.1), PR des fichiers ouverte._
+_Mis à jour le 2026-11-09, après #2519 (lot 11a, fichiers)._
 
-- **État** : lot 10 relu (8/8 « ok »), simulation `publier-lot` verte, publication par David. Lot 11 : phase 0
-  validée (§ 26) ; 11a (6 modèles dont 4 témoins des contrôles de la figure) écrit, tout vert, essayé en local.
-- **Prochaine action** : PR des fichiers du 11a mergée → David lance `create-questions --dir
-scripts/questions/6-angles-constructions --publier` → commiter les `id` → migration nœud + tag → page à cocher.
-  Ensuite 11b (174-179, 148), puis lot 12 « Constructions » (173, 180, 207).
-- **En attente de David** : `publier-lot.ts … 6-distances-cercle-mediatrice --publier` (lot 10).
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. `{{eval:…/10}}` = fraction : toujours `;d`. Variable à valeur
-  lettre impossible (`{{if:}}` dans le texte). `couleur="bleu"` entre guillemets. Point interne d'un `rotation(point(…))`
-  visible : le nommer `visible=faux`. `Doc-inchangée:` dans un commit, corps ≤ 100 car. `publier-lot` : David avec `!`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `content/questions-6-lot11a` ; serveur local 5176.
+- **État** : lot 10 relu (8/8 « ok »), simulation `publier-lot` verte, toujours en brouillon. Lot 11a (6 modèles dont
+  4 témoins) mergé (#2519, #2516 doublon mergé avec), pas encore en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/6-angles-constructions --publier` depuis
+  le dépôt principal → worktree `questions-6`, y commiter les `id` + migration nœud + tag du 11a (patron
+  `20261102090404`) → page à cocher. Ensuite 11b (174-179, 148), puis lot 12 « Constructions » (173, 180, 207).
+- **En attente de David** : ces deux commandes (`!`) : `create-questions … 6-angles-constructions --publier` ;
+  `publier-lot.ts … 6-distances-cercle-mediatrice --publier` (lot 10).
+- **Pièges en cours** : 3a7a5711 : NE PAS publier. Variable à valeur lettre impossible (`{{if:}}` dans le texte).
+  `couleur="bleu"` entre guillemets. Point interne d'un `rotation(point(…))` visible : le nommer `visible=faux`.
+  Réponses de figure : pleine précision (le juge refuse l'arrondi). PR sans CI : GitHub a fini par la lancer, avec
+  ~30 min de retard. `Doc-inchangée:` dans un commit. `publier-lot` / `create-questions --publier` : David avec `!`.
+- **Worktree / branche** : aucun (retiré après #2519).
 
 ## 1. Relevé (prod, 2026-10-26)
 
