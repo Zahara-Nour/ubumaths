@@ -2,15 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR du carré décalé en cours._
+_Mis à jour le 2026-11-09, après #2526._
 
-- **État** : CP-059, CP-060, CP-058 en brouillon ; essais de CP-060 et CP-058 sur iPad PASSÉS (2026-11-09, § 15).
-  Message du carré décalé tranché et codé (§ 15), PR `fix/geometrie-validation-carre-decale`.
-- **Prochaine action** : merger la PR (CI verte), puis clore le chantier (versement dans `docs/systeme/`).
-- **En attente de David** : publication de CP-060 et CP-058 (brouillons `1cf6eaa9…`, `a7dfe502…`) ; le nouveau
-  message n'atteint la prod qu'au prochain `deploy:prod`.
+- **État** : CP-059, CP-060, CP-058 en brouillon ; essais de CP-060 et CP-058 sur iPad passés (§ 15). Message du
+  carré décalé livré (#2526, mergée ; en prod au prochain `deploy:prod`).
+- **Prochaine action** : selon la réponse de David aux deux questions ci-dessous (une petite PR), puis clore le
+  chantier (versement dans `docs/systeme/`, journal archivé).
+- **En attente de David** : (1) publication de CP-060 et CP-058 (brouillons `1cf6eaa9…`, `a7dfe502…`) ;
+  (2) carré qui touche [AB] par un seul sommet (et séparé par un trou) → même message « décalé » ? ;
+  (3) petit carré posé sur une partie de [AB] → « Ton carré doit avoir pour côté le côté déjà tracé. » ou garder
+  « pas fermée » ? (questions de la revue de #2526, § 15).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
-- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `fix/geometrie-validation-carre-decale`.
+- **Worktree / branche** : aucun (retiré après #2526).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -532,4 +535,5 @@ le quadrillage » (`1cf6eaa9-376d-43a1-a3e4-eb7d18c40099`) était « Non rangé 
   de [AB] seulement (contenu dedans) et la figure en L gardent « pas fermée ».
 - **Codé** : `closedOnLineOfSide` (`construction/polygon.ts`) généralise `closedOnProlongedSide` ; deux filtres,
   `prolongsSide` et `shiftsSide`. Tests : décalé vers B / vers A, rectangle décalé, côté vertical (rouges avant) ;
-  décalé ouvert et carré intérieur → « pas fermée ». 805 tests de `construction/` verts.
+  décalé ouvert et carré intérieur → « pas fermée ». 805 tests de `construction/` verts.- **Livré** : #2526 mergée (CI verte, revue Opus sans finding bloquant ; test oblique ajouté à sa demande).
+  Restent à trancher : le carré accolé par un sommet et le petit carré intérieur (toujours « pas fermée »).
