@@ -1,0 +1,185 @@
+{
+	"title": "Démontrer que les hauteurs d'un triangle sont concourantes",
+	"description": "Démonstration par le triangle PQR dont ABC est le triangle des milieux : vecteurs d'un parallélogramme (case choix), AR = −AQ (case), hauteur = médiatrice de [QR] (case choix) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $ABC$ un triangle. Par $A$, on trace la parallèle à $(BC)$ ; par $B$, la parallèle à $(AC)$ ; par $C$, la parallèle à $(AB)$. Elles forment un triangle $PQR$ tel que $ABCQ$, $ACBR$ et $ABPC$ sont des parallélogrammes. On démontre que les trois hauteurs de $ABC$ sont concourantes.\n\n$ABCQ$ est un parallélogramme. Quelle égalité de vecteurs en déduit-on ?\n\n```choix\n- $\\overrightarrow{AQ}=\\overrightarrow{BC}$\n- $\\overrightarrow{AQ}=\\overrightarrow{CB}$\n- $\\overrightarrow{AB}=\\overrightarrow{CQ}$\n- $\\overrightarrow{AC}=\\overrightarrow{BQ}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$ABCQ$ parallélogramme : ses côtés opposés $[AQ]$ et $[BC]$ donnent $\\textcolor{{{color:primary.0}}}{\\overrightarrow{AQ}=\\overrightarrow{BC}}$, et aussi $\\overrightarrow{AB}=\\overrightarrow{QC}$.",
+					"$[AC]$ et $[BQ]$ sont les diagonales : elles ont le même milieu, mais $\\overrightarrow{AC}\\neq\\overrightarrow{BQ}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. Par $A$, on trace la parallèle à $(BC)$ ; par $B$, la parallèle à $(AC)$ ; par $C$, la parallèle à $(AB)$. Elles forment un triangle $PQR$ tel que $ABCQ$, $ACBR$ et $ABPC$ sont des parallélogrammes. On démontre que les trois hauteurs de $ABC$ sont concourantes.\n\nOn a $\\overrightarrow{AQ}=\\overrightarrow{BC}$ (parallélogramme $ABCQ$) et $\\overrightarrow{AR}=\\overrightarrow{CB}$ (parallélogramme $ACBR$). Complète.\n\n$\\overrightarrow{AR}=?\\,\\overrightarrow{AQ}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{CB}=-\\overrightarrow{BC}$, donc $\\overrightarrow{AR}=\\textcolor{{{color:primary.0}}}{-1}\\,\\overrightarrow{AQ}$.",
+					"$\\overrightarrow{AR}=-\\overrightarrow{AQ}$ : $A$ est le milieu de $[QR]$. De même, $B$ est le milieu de $[PR]$ et $C$ celui de $[PQ]$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. Par $A$, on trace la parallèle à $(BC)$ ; par $B$, la parallèle à $(AC)$ ; par $C$, la parallèle à $(AB)$. Elles forment un triangle $PQR$ tel que $ABCQ$, $ACBR$ et $ABPC$ sont des parallélogrammes. On démontre que les trois hauteurs de $ABC$ sont concourantes.\n\n$A$ est le milieu de $[QR]$ et $(QR)$ est parallèle à $(BC)$. Pourquoi la hauteur de $ABC$ issue de $A$ est-elle la médiatrice de $[QR]$ ?\n\n```choix\n- Elle passe par $A$, milieu de $[QR]$, et elle est perpendiculaire à $(BC)$, donc à $(QR)$.\n- Car elle passe par $A$, milieu de $[QR]$.\n- Car elle est perpendiculaire à $(BC)$.\n- Car $ABC$ et $PQR$ sont des triangles.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La médiatrice de $[QR]$ est **la perpendiculaire à $(QR)$ passant par son milieu** : il faut les deux conditions.",
+					"La hauteur issue de $A$ passe par $A$ et est perpendiculaire à $(BC)$, donc à sa parallèle $(QR)$ : c'est **la médiatrice de $[QR]$**."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. Par $A$, on trace la parallèle à $(BC)$ ; par $B$, la parallèle à $(AC)$ ; par $C$, la parallèle à $(AB)$. Elles forment un triangle $PQR$ tel que $ABCQ$, $ACBR$ et $ABPC$ sont des parallélogrammes. On démontre que les trois hauteurs de $ABC$ sont concourantes.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Avec les parallélogrammes $ABCQ$ et $ACBR$ : $\\overrightarrow{AQ}=\\overrightarrow{BC}$ et $\\overrightarrow{AR}=\\overrightarrow{CB}$.\n- Donc $\\overrightarrow{AR}=-\\overrightarrow{AQ}$ : $A$ est le milieu de $[QR]$ ; de même, $B$ est le milieu de $[PR]$ et $C$ celui de $[PQ]$.\n- La hauteur issue de $A$ est perpendiculaire à $(BC)$, donc à $(QR)$, et passe par $A$ : c'est la médiatrice de $[QR]$ ; de même pour les deux autres hauteurs.\n- Les médiatrices du triangle $PQR$ sont concourantes, donc les hauteurs de $ABC$ aussi.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Les hauteurs de $ABC$ sont les médiatrices du grand triangle $PQR$.",
+					"Les médiatrices d'un triangle sont concourantes (centre du cercle circonscrit) : **les trois hauteurs de $ABC$ sont concourantes**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AQ = BC",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AQ = CB",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AB = CQ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : diagonales",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "milieu et perpendiculaire",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : milieu seul",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : perpendiculaire seule",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : triangles",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,218 @@
+{
+	"title": "Démontrer la formule des coordonnées du milieu",
+	"description": "Démonstration à trous : AI = IB en vecteurs (case choix), coefficient 2 de 2x_I = x_A + x_B (case) ; coordonnées du milieu (deux cases) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un repère, soit $A(x_A\\,;\\,y_A)$ et $B(x_B\\,;\\,y_B)$, et $I$ le milieu de $[AB]$. On démontre que $x_I=\\frac{x_A+x_B}{2}$ et $y_I=\\frac{y_A+y_B}{2}$.\n\nPourquoi a-t-on $\\overrightarrow{AI}=\\overrightarrow{IB}$ ?\n\n```choix\n- Car $I$ est le milieu de $[AB]$ : $\\overrightarrow{AI}$ et $\\overrightarrow{IB}$ ont même direction, même sens et même longueur.\n- Car $AI=IB$ : des longueurs égales suffisent.\n- Car $\\overrightarrow{AI}$ et $\\overrightarrow{IB}$ sont colinéaires.\n- Car les points $A$, $I$ et $B$ sont alignés.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est la caractérisation vectorielle du milieu : **$I$ milieu de $[AB]$ équivaut à $\\overrightarrow{AI}=\\overrightarrow{IB}$**.",
+					"$AI=IB$ ne suffit pas : tout point de la médiatrice de $[AB]$ la vérifie.",
+					"Colinéaires ou alignés ne suffit pas : $I$ pourrait être n'importe où sur $(AB)$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère, soit $A(x_A\\,;\\,y_A)$ et $B(x_B\\,;\\,y_B)$, et $I$ le milieu de $[AB]$. On démontre que $x_I=\\frac{x_A+x_B}{2}$ et $y_I=\\frac{y_A+y_B}{2}$.\n\nDeux vecteurs égaux ont les mêmes coordonnées : $\\overrightarrow{AI}=\\overrightarrow{IB}$ donne $x_I-x_A=x_B-x_I$. Complète.\n\n$?\\,x_I=x_A+x_B$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute $x_I+x_A$ aux deux membres de $x_I-x_A=x_B-x_I$.",
+					"On obtient $\\textcolor{{{color:primary.0}}}{2}\\,x_I=x_A+x_B$, puis $x_I=\\frac{x_A+x_B}{2}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère, on considère les points $A({{eval:xa}}\\,;\\,{{eval:ya}})$ et $B({{eval:xb}}\\,;\\,{{eval:yb}})$, et $I$ le milieu de $[AB]$.\n\nDonne les coordonnées de $I$.\n\n$$I(?\\,;\\,?)$$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-6..6"
+				},
+				{
+					"name": "ya",
+					"expression": "-6..6"
+				},
+				{
+					"name": "m1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "m2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "xb",
+					"expression": "eval:(xa)+2*(m1)"
+				},
+				{
+					"name": "yb",
+					"expression": "eval:(ya)+2*(m2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:xa+m1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:ya+m2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x_I=\\frac{x_A+x_B}{2}=\\frac{{{eval:2*xa+2*m1}}}{2}={{eval:xa+m1}}$ et $y_I=\\frac{y_A+y_B}{2}=\\frac{{{eval:2*ya+2*m2}}}{2}={{eval:ya+m2}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{I({{eval:xa+m1}}\\,;\\,{{eval:ya+m2}})}$."
+				]
+			},
+			"conditions": ["m1 != 0"]
+		},
+		{
+			"statement": "Dans un repère, soit $A(x_A\\,;\\,y_A)$ et $B(x_B\\,;\\,y_B)$, et $I$ le milieu de $[AB]$. On démontre que $x_I=\\frac{x_A+x_B}{2}$ et $y_I=\\frac{y_A+y_B}{2}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- $I$ est le milieu de $[AB]$, donc $\\overrightarrow{AI}=\\overrightarrow{IB}$.\n- Ces vecteurs égaux ont les mêmes coordonnées : $x_I-x_A=x_B-x_I$ et $y_I-y_A=y_B-y_I$.\n- Donc $2x_I=x_A+x_B$ et $2y_I=y_A+y_B$.\n- On divise par $2$ : $x_I=\\frac{x_A+x_B}{2}$ et $y_I=\\frac{y_A+y_B}{2}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On traduit le milieu par une égalité de vecteurs, puis cette égalité en coordonnées.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{I\\left(\\frac{x_A+x_B}{2}\\,;\\,\\frac{y_A+y_B}{2}\\right)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "caractérisation vectorielle",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AI = IB",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : colinéaires",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : alignés",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(1;−3), B(5;1) : I(3;−1)",
+			"variationIndex": 2,
+			"variables": {
+				"xa": "1",
+				"ya": "-3",
+				"m1": "2",
+				"m2": "2",
+				"xb": "5",
+				"yb": "1"
+			},
+			"answers": ["3", "-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : demi-différence (2;2)",
+			"variationIndex": 2,
+			"variables": {
+				"xa": "1",
+				"ya": "-3",
+				"m1": "2",
+				"m2": "2",
+				"xb": "5",
+				"yb": "1"
+			},
+			"answers": ["2", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme sans diviser (6;−2)",
+			"variationIndex": 2,
+			"variables": {
+				"xa": "1",
+				"ya": "-3",
+				"m1": "2",
+				"m2": "2",
+				"xb": "5",
+				"yb": "1"
+			},
+			"answers": ["6", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

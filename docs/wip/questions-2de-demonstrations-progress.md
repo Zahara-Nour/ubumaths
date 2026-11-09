@@ -504,3 +504,30 @@ https://claude.ai/artifact/U7YmhGzeFyQ1dB8u3fsft6
 
 Lot 7 relu par David sur la page à cocher (2026-11-09) : 5 « ok », sans commentaire. Publié par David
 (`publier-lot.ts`, simulation puis `--publier`, 2026-11-09) : 5/5, statut relu en base.
+
+## 15. Lot 8 : approfondissements, géométrie (2026-11-09)
+
+Relevé prod (MCP, 2026-11-09) : 305, 309 sur la notion Vecteurs ; 306 sur Géométrie repérée › milieu et distance ;
+307, 310 sur la notion Géométrie repérée ; 308 sur Aires › triangle quelconque ; tous actifs, aucun modèle tagué.
+Niveaux déjà présents : Vecteurs › combinaison linéaire 1-2, milieu et distance 1-3, Figures planes › triangles 1-2,
+Aires › triangle quelconque 1-3, Figures planes › médiatrice et bissectrice 1-3. `d4db2207` (médianes) : publié,
+grades `1_SPE`, niveau 2, sur Vecteurs › combinaison linéaire, tag 1SPE-326.
+
+| Point | Modèle (`scripts/questions/2de-approfondissements-8/`) | Nœud, niveau                                  | Variations                                                                                                      |
+| ----- | ------------------------------------------------------ | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| 305   | `01-barycentre-de-deux-ou-trois-points`                | Vecteurs › combinaison linéaire, 3            | AG = k/(k+1) AB (case, k 2..5) ; G de GA + 2GB = 0 (deux cases) ; isobarycentre (deux cases) ; position (choix) |
+| 306   | `02-demontrer-formule-du-milieu`                       | Géométrie repérée › milieu et distance, 4     | AI = IB en vecteurs (choix) ; 2x_I = x_A + x_B (case) ; coordonnées du milieu (deux cases) ; étapes             |
+| 307   | `03-demontrer-hauteurs-concourantes`                   | Figures planes › triangles, 3                 | AQ = BC (choix) ; AR = −AQ (case) ; hauteur = médiatrice de [QR] (choix) ; étapes                               |
+| 308   | `04-aire-d-un-triangle-par-le-sinus`                   | Aires › triangle quelconque, 4                | AH = b sin C (choix) ; pourquoi C aigu (choix) ; aire avec C = 30° (case) ; étapes (3)                          |
+| 309   | réemploi `d4db2207` (migration : niveau seconde + tag) | Vecteurs › combinaison linéaire (inchangé)    | —                                                                                                               |
+| 310   | `05-demontrer-mediatrices-concourantes`                | Figures planes › médiatrice et bissectrice, 4 | sécantes (choix) ; OB = OC (choix) ; cercle circonscrit (choix) ; étapes                                        |
+
+Script : `docs/wip/questions/lot-2de-approfondissements-8.py`. Pièges du lot : couleur (`\textcolor`) sur une
+phrase en `\text{…}` hors `$` refusée par `question:specs` → gras ; k = 1 affichait « 1 GB » → k de 2 à 5 ; worktree
+neuf → `pnpm exec svelte-kit sync` avant `positions-ranger.ts` (alias `$lib`).
+
+Vérifié : `question:specs` 150 tirages par variation, 5/5 importables, 65 specs vertes, 0 `\textcolor` hors `$`, 0
+avertissement ; 5 brouillons créés en base locale (copie hors dépôt, cible « LOCAL » vérifiée en simulation).
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-8 --publier`
