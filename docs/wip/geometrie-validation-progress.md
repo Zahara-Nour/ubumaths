@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR du carré accolé en cours._
+_Mis à jour le 2026-11-09, après #2527._
 
-- **État** : CP-059, CP-060, CP-058 en brouillon ; essais iPad passés (§ 15). #2526 (carré décalé) mergée ; PR
-  `fix/geometrie-validation-carre-accole` (carré accolé, séparé, sur une partie de [AB], § 16) en cours.
-- **Prochaine action** : merger cette PR, puis clore le chantier (versement dans `docs/systeme/`, journal archivé).
-- **En attente de David** : publication de CP-060 et CP-058 (brouillons `1cf6eaa9…`, `a7dfe502…`) ; les messages
-  n'atteignent la prod qu'au prochain `deploy:prod`.
+- **État** : CP-059, CP-060, CP-058 en brouillon ; essais iPad passés (§ 15). Messages du carré décalé (#2526), accolé,
+  séparé, sur une partie de [AB] (#2527) mergés ; en prod au prochain `deploy:prod`.
+- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, journal archivé).
+- **En attente de David** : publication de CP-060 et CP-058 (brouillons `1cf6eaa9…`, `a7dfe502…`).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
-- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `fix/geometrie-validation-carre-accole`.
+- **Worktree / branche** : aucun (retiré après #2527).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -546,3 +545,7 @@ Questions de la revue de #2526, **décisions de David** (« oui pour les deux, j
   (`PART_OF_SIDE_FEEDBACK`, filtre `partOfSide`), après « prolongé » et « décalé ».
 - Tests rouges avant : accolé en A, en B, séparé d'un carreau ; petit carré intérieur, calé sur A au-dessous.
   Ouverts → toujours « pas fermée ». 807 tests de `construction/` verts.
+- **Livré** : #2527 mergée (CI verte). Revue Opus : partition exacte des trois filtres, aucun finding bloquant ;
+  cas mineurs laissés (le message reçu reste vrai) : carré pas fini + trait intérieur qui ferme un rectangle sur une
+  partie de [AB] → « partie » (avant « pas fermée ») ; rectangle sur une partie de [AB] → « partie » sans « pas un
+  carré ».
