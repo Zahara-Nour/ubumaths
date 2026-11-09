@@ -592,3 +592,12 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-9 --publier`
 
 Mergée (#2523, CI verte du premier coup ; merge retardé par un `deploy:prod` en cours).
+
+Créés en brouillon par David (2026-11-09) : 8009fb19 (324), 4014a007 (363) ; ids commités sur la branche de la
+migration (`feat/questions-2de-approfondissements-9-rangement`), `main` remis propre. Relevé prod (MCP, 2026-11-09,
+avant la migration) : 2 brouillons de seconde, niveaux 12 et 1, sans nœud ni tag ; `64f54fc1` publié, `{1_SPE}`,
+sur Géométrie repérée › parabole, tag 1SPE-334 ; 2-323 et 2-324 sur la notion Géométrie repérée, 2-363 sur
+définition et courbe, aucun tagué ; chemins visés uniques et actifs.
+Migration `20261109180421_questions_2de_approfondissements_9_rangement_tags` (calque du lot 8 sans le déplacement de
+points : 2 brouillons rangés et tagués, `64f54fc1` `{1_SPE,2}` + tag 2-323) : test d'intégration 13/13 vert, rouge
+sans les écritures (2 échecs, 6 sautés).
