@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR 2 en cours._
+_Mis à jour le 2026-11-09, après #2521._
 
-- **État** : PR 1 mergée (#2518). PR 2 (`fix/coupures-pdf-titre-seul`) : titre d'exercice / numéro de question jamais seul en bas de page quand l'énoncé commence par un dessin (§ 6). Mesure 451 → 452 pages, ~25 titres ou numéros seuls corrigés. Questions désormais justifiées (David, deux fois). Rien en prod.
-- **Prochaine action** : merger la PR 2 (CI verte), puis clore le chantier (versement dans `docs/systeme/`, journal archivé).
-- **En attente de David** : `deploy:prod` (sur sa demande) ; retouche de `eval-premiere` (carré à 65 %), écriture en prod sur sa demande.
-- **Pièges en cours** : un titre `sticky` ne suit l'énoncé que si son PREMIER MORCEAU est vide : ni `block` enveloppant, ni `context` (dessin `cetz`) devant un bloc qui part ; `v(…, weak: true)` l'emporte sur l'espacement des blocs (≠ `block(spacing:)`) ; tests avec `cetz` imité par `align(center, layout(…))` (hors réseau) ; mesurer x ET y (`pdftotext -bbox`).
-- **Worktree / branche** : `../ubumaths-wt-coupures-pdf` · `fix/coupures-pdf-titre-seul`.
+- **État** : PR 1 (#2518) et PR 2 (#2521, titre / numéro jamais seul en bas de page devant un dessin, § 6) mergées. Questions désormais justifiées (David). Rien en prod.
+- **Prochaine action** : clore le chantier — versement du durable dans `docs/systeme/` (déjà fait dans `ubumark.md` et `fiches-et-pdf.md`, à relire), journal archivé.
+- **En attente de David** : `deploy:prod` (sur sa demande) ; écriture en prod de `eval-premiere` (carré à 65 %, et en-tête « Calculatrice interdite. Choisir un seul exercice. Durée 30 minutes. ») sur sa demande. PDF local déjà envoyé (`~/Downloads/evaluation-rattrapage-second-degre*.pdf`).
+- **Pièges en cours** : un titre `sticky` ne suit l'énoncé que si son PREMIER MORCEAU est vide ; tests de forme du Typst aussi dans `src/lib/typst` (pas seulement ubumark/worksheets) ; mesurer x ET y.
+- **Worktree / branche** : supprimés après #2521.
 
 ---
 
