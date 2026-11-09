@@ -1,0 +1,183 @@
+{
+	"title": "Raisonner par disjonction des cas",
+	"description": "Disjonction des cas sur la parité (n(n + 1) + 2c est pair) : cas à choisir, cas n impair à compléter, étapes à ranger",
+	"grades": ["2", "1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On veut démontrer : « pour tout entier naturel $n$, $n(n+1)+{{eval:2*c}}$ est pair ».\n\nOn raisonne par disjonction des cas. Quels cas distingue-t-on ?\n\n```choix\n- $n$ est pair, ou $n$ est impair.\n- $n<{{eval:c}}$, ou $n\\geqslant{{eval:c}}$.\n- $n=0$, ou $n\\neq 0$.\n- $n$ est premier, ou $n$ n'est pas premier.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La parité de $n(n+1)$ dépend de la parité de $n$ : on distingue **$n$ pair** et **$n$ impair**.",
+					"Ces deux cas couvrent tous les entiers naturels, et dans chacun on sait écrire $n$ ($n=2k$ ou $n=2k+1$).",
+					"Les autres découpages couvrent aussi tous les entiers, mais ne disent rien de la parité de $n(n+1)$."
+				]
+			}
+		},
+		{
+			"statement": "On veut démontrer : « pour tout entier naturel $n$, $n(n+1)+{{eval:2*c}}$ est pair ».\n\nPremier cas : $n$ est pair, $n=2k$ avec $k$ entier naturel, et $n(n+1)=2k(2k+1)$ est pair.\n\nSecond cas : $n$ est impair, $n=2k+1$ avec $k$ entier naturel. Complète.\n\n$n(n+1)=(2k+1)(2k+2)=2\\times\\left(?\\right)$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "(2k+1)(k+1)",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$2k+2=2(k+1)$, donc $(2k+1)(2k+2)=2\\times\\textcolor{{{color:primary.0}}}{(2k+1)(k+1)}$.",
+					"Donc $n(n+1)$ est pair, et $n(n+1)+{{eval:2*c}}$ aussi (somme de deux nombres pairs).",
+					"Dans les deux cas, $n(n+1)+{{eval:2*c}}$ est pair : la proposition est démontrée."
+				]
+			}
+		},
+		{
+			"statement": "On veut démontrer : « pour tout entier naturel $n$, $n(n+1)+{{eval:2*c}}$ est pair ».\n\nRemets les étapes du raisonnement dans l'ordre.\n\n```ranger\nsigne: aucun\n- On distingue deux cas : $n$ pair, ou $n$ impair.\n- Si $n$ est pair, $n=2k$, et $n(n+1)=2k(2k+1)$ est pair.\n- Si $n$ est impair, $n=2k+1$, et $n(n+1)=2(2k+1)(k+1)$ est pair.\n- Dans les deux cas, $n(n+1)$ est pair, donc $n(n+1)+{{eval:2*c}}$ aussi.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On annonce les cas, on les traite l'un après l'autre, puis on conclut pour tous les entiers.",
+					"La conclusion vient en dernier : elle s'appuie sur les deux cas."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "pair / impair",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n < c",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n = 0",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : premier",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2k + 1)(k + 1)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["(2k+1)(k+1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme développée 2k² + 3k + 1",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["2k^2+3k+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (2k + 1)(2k + 2)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["(2k+1)(2k+2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (k + 1)(k + 2)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["(k+1)(k+2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

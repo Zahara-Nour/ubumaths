@@ -1,13 +1,19 @@
 // Positions affichées d'une variation « étapes à ranger » (graine 0, celle des specs) :
 // réponses d'une spec « ordre juste ». Utilisé par lot-1spe-approfondissements-6.py.
-//   pnpm exec tsx docs/wip/questions/positions-ranger.ts <modèle.json> <indice de variation>
+//   pnpm exec tsx docs/wip/questions/positions-ranger.ts <modèle.json> <indice de variation> [variables JSON]
+// Variables fixées (3e argument, facultatif) : celles de la spec, pour une variation à variables
+// (lot-1spe-raisonnements.py).
 import { readFileSync } from 'node:fs';
 import { generateInstanceWithFixedVariables } from '../../../src/lib/questions/generator/test-instance-builder';
 import type { QuestionTemplate } from '../../../src/lib/questions/types';
 
-const [file, vi] = process.argv.slice(2);
+const [file, vi, variables] = process.argv.slice(2);
 const template = JSON.parse(readFileSync(file, 'utf8')) as QuestionTemplate;
-const result = generateInstanceWithFixedVariables(template, {}, Number(vi));
+const result = generateInstanceWithFixedVariables(
+	template,
+	variables ? (JSON.parse(variables) as Record<string, string>) : {},
+	Number(vi)
+);
 if (!result.success) {
 	console.error(result.errors);
 	process.exit(1);

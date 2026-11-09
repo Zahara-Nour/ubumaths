@@ -1,0 +1,308 @@
+{
+	"title": "Raisonner par l'absurde",
+	"description": "Raisonnement par l'absurde (aucun entier n tel que n² = p, p entre deux carrés consécutifs) : hypothèse de départ à choisir, encadrement à compléter, contradiction à nommer, étapes à ranger",
+	"grades": ["2", "1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On veut démontrer : « il n'existe aucun entier naturel $n$ tel que $n^2={{eval:p}}$ ».\n\nOn raisonne par l'absurde. Par quoi commence-t-on ?\n\n```choix\n- Supposons qu'il existe un entier naturel $n$ tel que $n^2={{eval:p}}$.\n- Supposons que, pour tout entier naturel $n$, $n^2\\neq{{eval:p}}$.\n- Prenons $n={{eval:q}}$ et calculons $n^2$.\n- Vérifions que $n^2\\neq{{eval:p}}$ pour $n=0$, $n=1$ et $n=2$.\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..18"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:q^2+t}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un raisonnement par l'absurde suppose **le contraire de ce qu'on veut démontrer**, puis aboutit à une impossibilité.",
+					"Le contraire de « il n'existe aucun $n$ tel que $n^2={{eval:p}}$ » est « **il existe** un entier naturel $n$ tel que $n^2={{eval:p}}$ ».",
+					"Supposer « pour tout $n$, $n^2\\neq{{eval:p}}$ », c'est supposer ce qu'on veut démontrer ; essayer quelques valeurs ne démontre rien pour tous les entiers."
+				]
+			},
+			"conditions": ["t <= 2*q"]
+		},
+		{
+			"statement": "On veut démontrer : « il n'existe aucun entier naturel $n$ tel que $n^2={{eval:p}}$ ».\n\nSupposons qu'il existe un entier naturel $n$ tel que $n^2={{eval:p}}$.\n\nComme ${{eval:q}}^2={{eval:q^2}}<{{eval:p}}<{{eval:(q+1)^2}}={{eval:q+1}}^2$, on a ${{eval:q}}^2<n^2<{{eval:q+1}}^2$. Complète.\n\n${{eval:q}}<n<?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..18"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:q^2+t}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres ${{eval:q}}$, $n$ et ${{eval:q+1}}$ sont positifs, et la fonction carré est strictement croissante sur $[0\\,;+\\infty[$ : elle conserve l'ordre.",
+					"De ${{eval:q}}^2<n^2<{{eval:q+1}}^2$, on déduit ${{eval:q}}<n<\\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$.",
+					"Or il n'y a aucun entier strictement entre ${{eval:q}}$ et ${{eval:q+1}}$ : c'est impossible."
+				]
+			},
+			"conditions": ["t <= 2*q"]
+		},
+		{
+			"statement": "On veut démontrer : « il n'existe aucun entier naturel $n$ tel que $n^2={{eval:p}}$ ».\n\nSupposons qu'il existe un entier naturel $n$ tel que $n^2={{eval:p}}$. Comme ${{eval:q}}^2={{eval:q^2}}<{{eval:p}}<{{eval:(q+1)^2}}={{eval:q+1}}^2$, on obtient ${{eval:q}}<n<{{eval:q+1}}$.\n\nOù est la contradiction ?\n\n```choix\n- Aucun entier n'est strictement compris entre deux entiers consécutifs.\n- $n^2$ ne peut pas être égal à ${{eval:p}}$ car ${{eval:p}}$ est impair.\n- Un carré est toujours positif.\n- Il n'y a pas de contradiction : $n$ est un nombre décimal.\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..18"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:q^2+t}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:q}}$ et ${{eval:q+1}}$ sont deux entiers consécutifs : aucun entier n'est strictement entre eux.",
+					"Or $n$ est un entier, par hypothèse : l'encadrement ${{eval:q}}<n<{{eval:q+1}}$ est **impossible**.",
+					"L'hypothèse de départ est donc fausse : aucun entier naturel $n$ ne vérifie $n^2={{eval:p}}$."
+				]
+			},
+			"conditions": ["t <= 2*q"]
+		},
+		{
+			"statement": "On veut démontrer : « il n'existe aucun entier naturel $n$ tel que $n^2={{eval:p}}$ ».\n\nRemets les étapes du raisonnement dans l'ordre.\n\n```ranger\nsigne: aucun\n- Supposons qu'il existe un entier naturel $n$ tel que $n^2={{eval:p}}$.\n- Comme ${{eval:q}}^2={{eval:q^2}}<{{eval:p}}<{{eval:(q+1)^2}}={{eval:q+1}}^2$, on a ${{eval:q}}<n<{{eval:q+1}}$.\n- Or aucun entier n'est strictement compris entre ${{eval:q}}$ et ${{eval:q+1}}$ : c'est impossible.\n- L'hypothèse est fausse : il n'existe aucun entier naturel $n$ tel que $n^2={{eval:p}}$.\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..18"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:q^2+t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On suppose le contraire, on en déduit une impossibilité, puis on conclut que la supposition était fausse."
+				]
+			},
+			"conditions": ["t <= 2*q"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "supposer le contraire",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : supposer la conclusion",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un exemple",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quelques valeurs",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 19",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 25",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "entiers consécutifs",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p impair",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré positif",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n décimal",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {
+				"q": "4",
+				"t": "3",
+				"p": "19"
+			},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

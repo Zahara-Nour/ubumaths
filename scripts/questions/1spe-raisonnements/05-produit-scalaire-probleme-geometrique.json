@@ -1,0 +1,274 @@
+{
+	"title": "Produit scalaire : résoudre un problème géométrique",
+	"description": "Carré ABCD, I et J milieux de [AB] et [BC] : (DI) ⊥ (AJ) par Chasles (DA·BJ, AI·AB à calculer, DA·AB = 0 à justifier) ; rectangle : AC·BD = AD² − AB²",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "$ABCD$ est un carré de côté ${{eval:a}}$. $I$ est le milieu de $[AB]$ et $J$ le milieu de $[BC]$. On veut démontrer que les droites $(DI)$ et $(AJ)$ sont perpendiculaires.\n\nPar la relation de Chasles, $\\overrightarrow{DI}=\\overrightarrow{DA}+\\overrightarrow{AI}$ et $\\overrightarrow{AJ}=\\overrightarrow{AB}+\\overrightarrow{BJ}$, donc :\n\n$$\\overrightarrow{DI}\\cdot\\overrightarrow{AJ}=\\overrightarrow{DA}\\cdot\\overrightarrow{AB}+\\overrightarrow{DA}\\cdot\\overrightarrow{BJ}+\\overrightarrow{AI}\\cdot\\overrightarrow{AB}+\\overrightarrow{AI}\\cdot\\overrightarrow{BJ}$$\n\nComplète.\n\n$\\overrightarrow{DA}\\cdot\\overrightarrow{BJ}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-a^2/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{DA}$ et $\\overrightarrow{BJ}$ sont colinéaires et de **sens contraires** ($\\overrightarrow{BJ}$ va de $B$ vers $C$, comme $\\overrightarrow{AD}$).",
+					"$\\overrightarrow{DA}\\cdot\\overrightarrow{BJ}=-DA\\times BJ=-{{eval:a}}\\times{{eval:a/2}}=\\textcolor{{{color:primary.0}}}{{{eval:-a^2/2}}}$.",
+					"Donc $\\overrightarrow{DI}\\cdot\\overrightarrow{AJ}=0-{{eval:a^2/2}}+{{eval:a^2/2}}+0=0$ : les droites $(DI)$ et $(AJ)$ sont perpendiculaires."
+				]
+			},
+			"conditions": ["a % 2 = 0"]
+		},
+		{
+			"statement": "$ABCD$ est un carré de côté ${{eval:a}}$. $I$ est le milieu de $[AB]$ et $J$ le milieu de $[BC]$. On veut démontrer que les droites $(DI)$ et $(AJ)$ sont perpendiculaires.\n\nPar la relation de Chasles, $\\overrightarrow{DI}=\\overrightarrow{DA}+\\overrightarrow{AI}$ et $\\overrightarrow{AJ}=\\overrightarrow{AB}+\\overrightarrow{BJ}$, donc :\n\n$$\\overrightarrow{DI}\\cdot\\overrightarrow{AJ}=\\overrightarrow{DA}\\cdot\\overrightarrow{AB}+\\overrightarrow{DA}\\cdot\\overrightarrow{BJ}+\\overrightarrow{AI}\\cdot\\overrightarrow{AB}+\\overrightarrow{AI}\\cdot\\overrightarrow{BJ}$$\n\nComplète.\n\n$\\overrightarrow{AI}\\cdot\\overrightarrow{AB}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AI}$ et $\\overrightarrow{AB}$ sont colinéaires et de **même sens**.",
+					"$\\overrightarrow{AI}\\cdot\\overrightarrow{AB}=AI\\times AB={{eval:a/2}}\\times{{eval:a}}=\\textcolor{{{color:primary.0}}}{{{eval:a^2/2}}}$.",
+					"Donc $\\overrightarrow{DI}\\cdot\\overrightarrow{AJ}=0-{{eval:a^2/2}}+{{eval:a^2/2}}+0=0$ : les droites $(DI)$ et $(AJ)$ sont perpendiculaires."
+				]
+			},
+			"conditions": ["a % 2 = 0"]
+		},
+		{
+			"statement": "$ABCD$ est un carré de côté ${{eval:a}}$. $I$ est le milieu de $[AB]$ et $J$ le milieu de $[BC]$. On veut démontrer que les droites $(DI)$ et $(AJ)$ sont perpendiculaires.\n\nPar la relation de Chasles, $\\overrightarrow{DI}=\\overrightarrow{DA}+\\overrightarrow{AI}$ et $\\overrightarrow{AJ}=\\overrightarrow{AB}+\\overrightarrow{BJ}$, donc :\n\n$$\\overrightarrow{DI}\\cdot\\overrightarrow{AJ}=\\overrightarrow{DA}\\cdot\\overrightarrow{AB}+\\overrightarrow{DA}\\cdot\\overrightarrow{BJ}+\\overrightarrow{AI}\\cdot\\overrightarrow{AB}+\\overrightarrow{AI}\\cdot\\overrightarrow{BJ}$$\n\nPourquoi $\\overrightarrow{DA}\\cdot\\overrightarrow{AB}=0$ ?\n\n```choix\n- Car les droites $(DA)$ et $(AB)$ sont perpendiculaires.\n- Car $DA=AB$.\n- Car $A$ est un point commun aux deux vecteurs.\n- Car les vecteurs $\\overrightarrow{DA}$ et $\\overrightarrow{AB}$ sont colinéaires.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$ABCD$ est un carré : l'angle $\\widehat{DAB}$ est droit.",
+					"Le produit scalaire de deux vecteurs orthogonaux est **nul** : $\\overrightarrow{DA}\\cdot\\overrightarrow{AB}=0$. De même, $\\overrightarrow{AI}\\cdot\\overrightarrow{BJ}=0$.",
+					"Des longueurs égales ne rendent pas un produit scalaire nul : $\\overrightarrow{AB}\\cdot\\overrightarrow{AB}={{eval:a^2}}$."
+				]
+			},
+			"conditions": ["a % 2 = 0"]
+		},
+		{
+			"statement": "$ABCD$ est un rectangle tel que $AB={{eval:L}}$ et $AD={{eval:l}}$. On étudie l'angle de ses diagonales $[AC]$ et $[BD]$.\n\nPar la relation de Chasles, $\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{BC}$ et $\\overrightarrow{BD}=-\\overrightarrow{AB}+\\overrightarrow{BC}$, avec $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=0$.\n\nComplète.\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "3..9"
+				},
+				{
+					"name": "l",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:l^2-L^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=-\\overrightarrow{AB}\\cdot\\overrightarrow{AB}+\\overrightarrow{AB}\\cdot\\overrightarrow{BC}-\\overrightarrow{BC}\\cdot\\overrightarrow{AB}+\\overrightarrow{BC}\\cdot\\overrightarrow{BC}=-AB^2+BC^2$.",
+					"Avec $BC=AD={{eval:l}}$ : $\\overrightarrow{AC}\\cdot\\overrightarrow{BD}={{eval:l^2}}-{{eval:L^2}}=\\textcolor{{{color:primary.0}}}{{{eval:l^2-L^2}}}$.",
+					"Ce produit scalaire n'est pas nul : les diagonales ne sont pas perpendiculaires. Elles le sont seulement quand $AB=AD$, c'est-à-dire quand le rectangle est un carré."
+				]
+			},
+			"conditions": ["l < L"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−18",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["-18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 18 (sens oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −36",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["-36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "18",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 36",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "orthogonaux",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : longueurs égales",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : point commun",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : colinéaires",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−16",
+			"variationIndex": 3,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"answers": ["-16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 16",
+			"variationIndex": 3,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 3,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 34",
+			"variationIndex": 3,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
