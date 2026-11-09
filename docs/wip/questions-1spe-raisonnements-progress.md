@@ -6,19 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR de migration ouverte._
+_Mis à jour le 2026-11-09, après #2514 et `db:migrate`._
 
-- **État** : 6 brouillons en prod (créés par David, `id` commités) ; migration `20261109092945` écrite (nœud +
-  tag des 6, niveaux 7 et 3 pour 436 et 437, `1_SPE` sur 11 modèles de 2de), test d'intégration 17 verts / 13
-  rouges sans la migration ; `1spe.md` et `1spe.json` corrigés. PR de migration ouverte.
-- **Prochaine action** : `security-auditor` sans bloquant + CI verte → `pnpm check:migrations --pr <n>` → merge →
-  `db:migrate` depuis le dépôt principal → vérification en prod (nœuds, tags, niveaux, grades) → garde
-  `garde-niveaux-tags` → page à cocher → publication par David.
-- **En attente de David** : rien jusqu'à la page à cocher.
-- **Pièges en cours** : 436 et 437 sont posés sur des NOTIONS → modèles rangés sur une sous-notion (« propriétés »,
-  « milieu et distance », tranché par David le 2026-11-09) ; `--publier` lancé depuis le dépôt principal y écrit
-  les `id` → les copier sur la branche puis `git restore` dans le dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-raisonnements`, `feat/questions-1spe-raisonnements-tags`.
+- **État** : 6 modèles en prod, en BROUILLON, rangés et tagués ; `1_SPE` sur les 11 modèles de logique de 2de
+  (#2514, migration `20261109092945` appliquée, vérifiée par MCP ; garde `garde-niveaux-tags` verte). Page à
+  cocher publiée : https://claude.ai/artifact/FDC2nM722wdaUJ75L36LcS (0 verdict au 2026-11-09).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 6) ; « À revoir » → correction
+  (§ 7 de couvrir-un-niveau) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/1spe-raisonnements` en simulation, puis David avec `--publier` ; puis versement (journal
+  archivé, `1spe.md` « Couverture » recompté).
+- **En attente de David** : la relecture sur la page à cocher.
+- **Pièges en cours** : bloc « ranger » non dessiné par la page (montré en source) → à jouer dans l'aperçu ;
+  `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all`.
+- **Worktree / branche** : aucun (retiré après #2514).
 
 ## 1. Pourquoi ce chantier (2026-11-09)
 
@@ -183,3 +183,14 @@ bed58c24, 61d0571e, 24fd6a10). **Question d'accès** posée à David.
 - Migration `20261109092945_questions_1spe_raisonnements_rangement_tags.sql` et
   `tests/integration/questions-1spe-raisonnements-rangement-tags.test.ts` : 17 verts ; migration remplacée par
   `select 1` → 13 rouges.
+
+## 8. Migration en prod et page à cocher (2026-11-09)
+
+- #2514 mergée (CI lancée seulement après fermeture / réouverture de la PR : aucun run à l'ouverture).
+  `security-auditor` : aucun bloquant, 4 remarques sans correction (pas de garde « encore brouillon »).
+- `db:migrate` : « inserted before » (une autre session avait appliqué une migration plus récente) →
+  `db push --dry-run --include-all` (seule `20261109092945`) puis `--include-all`. Vérifié par MCP : 6 nœuds,
+  6 tags, niveaux 7, 3, 9 ; 11 modèles de 2de en `{2, 1_SPE}`, `updated_at` préservé (2026-11-05).
+- Garde `garde-niveaux-tags` (prod) : 2 119 modèles tagués, aucun niveau manquant.
+- Page à cocher : https://claude.ai/artifact/FDC2nM722wdaUJ75L36LcS, capacité `db`, collection `verdicts` vide
+  après publication ; rendu vu en largeur étroite. 3 alertes « bloc ranger non dessiné » (attendues).
