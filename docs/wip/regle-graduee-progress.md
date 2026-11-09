@@ -300,3 +300,21 @@ droite construite à l'équerre par le sommet, graduation d'une règle posée en
 `rectangle A ; B ; C ; D : BC = 3 cm`), formes du quadrillage inchangées ; **Q20** D accepté de deux façons :
 perpendiculaire en A + règle posée en A, ou croisement de deux droites construites (perpendiculaire en A et
 perpendiculaire à (BC) en C).
+
+## 9. PR 6 — carré et rectangle cotés sur papier uni (2026-11-09)
+
+`ruled-polygon.ts` (`judgeRuledPolygon`, `assertRuledPolygon`, correction : `ruledPolygonSolution`,
+`ruledPolygonRulers`, `ruledPolygonCorrection` rendue par `solutionTriangle`) ; `RuledPolygonCheck`
+(`ruled: true`, `isRuledPolygonCheck`, `RULED_POLYGON_TOOLS`) ; parseur `readRuledPolygon` et
+`ruledPolygonError` ; `instance-generator.ts` ne demande que A et B nommés (le test de composant l'a
+révélé) ; catalogue (1 exemple) ; docs `systeme/questions.md`, `systeme/ubumark.md`. Tests : 40 purs
+(`construction-carre-rectangle-cm.test.ts` ; rouges = module absent, pas assertion par assertion), 2 composant
+(`figure-a-completer-regle.svelte.test.ts`) ; `construction/` + `ubumark` + catalogue 7 239 verts ;
+`check:incremental` 0 erreur ; cliquet tenu ; `lint:fast` propre.
+
+**Choix faits sans David (à valider)** : (1) deux côtés opposés depuis B (un carré de chaque côté) sont deux
+côtés vus (`throughA` de `seenSegments` ignoré), d'où « Trace un seul carré ABCD. » ; (2) C et D doivent
+être du même côté de (AB) pour fermer la figure (un quadrilatère croisé = « pas fermée ») ; (3) l'arité
+fautive (`carre A ; B ; C`) cite aussi la forme du papier uni ; (4) unité des messages du carré : cm
+(« 5,8 cm »), le côté [AB] n'ayant pas d'unité écrite ; (5) correction : du côté où l'élève a le plus
+tracé, sinon le plus haut.

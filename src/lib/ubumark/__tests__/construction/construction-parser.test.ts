@@ -191,11 +191,13 @@ describe('carré et rectangle sur quadrillage (CP-060, § 7 et § 9)', () => {
 
 	it('carre attend deux points, rectangle trois, tous différents', () => {
 		expect(messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: carre A', '---'))).toContain(
-			'Ligne 2 : carre attend deux points : « carre A ; B »'
+			'Ligne 2 : carre attend deux points : « carre A ; B » (sur papier uni : « carre A ; B ; C ; D »)'
 		);
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: rectangle A ; B', '---'))
-		).toContain('Ligne 2 : rectangle attend trois points : « rectangle A ; B ; C »');
+		).toContain(
+			'Ligne 2 : rectangle attend trois points : « rectangle A ; B ; C » (sur papier uni : « rectangle A ; B ; C ; D : BC = 3 cm »)'
+		);
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: rectangle A ; B ; A', '---'))
 		).toContain('Ligne 2 : rectangle attend trois points différents');

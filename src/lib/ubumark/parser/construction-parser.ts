@@ -44,12 +44,15 @@ import {
 	triangleTools,
 	rightAngleOf,
 	isRuledLength,
+	isRuledPolygonCheck,
 	isSquaresLength,
+	RULED_POLYGON_TOOLS,
 	type ConstructionCheck,
 	type ConstructionCheckKind,
 	type ConstructionSpec,
 	type ConstructionTool,
 	readLengthText,
+	type RuledPolygonCheck,
 	type TriangleAngle,
 	type TriangleLength
 } from '../types/construction';
@@ -482,6 +485,60 @@ function readNamed(
 	return { kind, name: match[1], expression, line };
 }
 
+const RULED_SQUARE_EXAMPLE = 'carre A ; B ; C ; D';
+const RULED_RECTANGLE_EXAMPLE = 'rectangle A ; B ; C ; D : BC = 3 cm';
+
+/**
+ * Carré / rectangle cotés sur papier uni (chantier `regle-graduee`, PR 6, Q19) :
+ * quatre sommets nommés, `: BC = 3 cm` pour le rectangle ; null pour les formes
+ * du quadrillage (`carre A ; B`, `rectangle A ; B ; C`), lues par l'appelant
+ */
+function readRuledPolygon(
+	kind: 'carre' | 'rectangle',
+	text: string,
+	line: number
+): RuledPolygonCheck | null {
+	const colon = text.indexOf(':');
+	const pointsText = colon === -1 ? text : text.slice(0, colon);
+	const lengthText = colon === -1 ? null : text.slice(colon + 1).trim();
+	const points = splitPoints(pointsText);
+	if (points.length !== 4 && lengthText === null) return null;
+	const example = kind === 'carre' ? RULED_SQUARE_EXAMPLE : RULED_RECTANGLE_EXAMPLE;
+	if (points.length !== 4 || !points.every((name) => POINT_NAME_REGEX.test(name))) {
+		throw new LineError(`${kind} sur papier uni attend quatre sommets : « ${example} »`);
+	}
+	if (new Set(points).size !== 4) {
+		throw new LineError(`${kind} attend quatre sommets différents`);
+	}
+	const [a, b, c, d] = points;
+	if (kind === 'carre') {
+		if (lengthText !== null) {
+			throw new LineError(
+				`carré ${a}${b}${c}${d} : le côté est [${a}${b}], déjà tracé : pas de longueur à donner (« ${RULED_SQUARE_EXAMPLE} »)`
+			);
+		}
+		return { kind, points: [a, b, c, d], ruled: true, line };
+	}
+	const usage = `« rectangle ${a} ; ${b} ; ${c} ; ${d} : ${b}${c} = 3 cm »`;
+	if (lengthText === null) {
+		throw new LineError(`rectangle ${a}${b}${c}${d} : donner la longueur de [${b}${c}], ${usage}`);
+	}
+	const match = /^([A-Z])([A-Z])\s*=\s*(.+)$/.exec(lengthText);
+	if (!match || match[1] + match[2] !== b + c) {
+		throw new LineError(
+			`rectangle ${a}${b}${c}${d} : la longueur donnée est celle de [${b}${c}], ${usage}`
+		);
+	}
+	const read = readLengthText(match[3].trim());
+	if (!read) throw new LineError(`rectangle ${a}${b}${c}${d} : longueur en cm ou en mm, ${usage}`);
+	if (!Number.isInteger(read.length) || read.length <= 0) {
+		throw new LineError(
+			`rectangle ${a}${b}${c}${d} : une longueur à la règle graduée se donne au millimètre près (3 cm, 3 cm 5 mm ou 35 mm)`
+		);
+	}
+	return { kind, points: [a, b, c, d], ruled: true, height: read, line };
+}
+
 function readCheck(value: string, line: number): ConstructionCheck {
 	const [rawWord = '', ...rest] = value.split(/\s+/);
 	// `symétrique` accentué, comme `vérifier:`
@@ -491,6 +548,10 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	if (word === 'angle') return readAngle(rest.join(' '), line);
 	if (word === 'mesure') return readMeasure(rest.join(' '), line);
 	if (word === 'segment') return readSegmentLength(rest.join(' '), line);
+	if (word === 'carre' || word === 'rectangle') {
+		const ruled = readRuledPolygon(word, rest.join(' '), line);
+		if (ruled) return ruled;
+	}
 	if (word === 'point' || word === 'droite' || word === 'cercle') {
 		return readNamed(word, rest.join(' '), line);
 	}
@@ -503,7 +564,14 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	const { count, example, word: countWord } = CHECK_ARITY[kind];
 	const points = splitPoints(rest.join(' '));
 	if (points.length !== count || !points.every((name) => POINT_NAME_REGEX.test(name))) {
-		throw new LineError(`${kind} attend ${countWord} points : « ${example} »`);
+		// PR 6 de `regle-graduee` : la forme du papier uni, à quatre sommets
+		const plain =
+			kind === 'carre'
+				? ` (sur papier uni : « ${RULED_SQUARE_EXAMPLE} »)`
+				: kind === 'rectangle'
+					? ` (sur papier uni : « ${RULED_RECTANGLE_EXAMPLE} »)`
+					: '';
+		throw new LineError(`${kind} attend ${countWord} points : « ${example} »${plain}`);
 	}
 	if (new Set(points).size !== count) {
 		throw new LineError(`${kind} attend ${countWord} points différents`);
@@ -511,6 +579,8 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	if (kind === 'rectangle') {
 		return { kind, points: [points[0], points[1], points[2]], line };
 	}
+	// `carre` désigne aussi le carré coté (PR 6) : le discriminant seul ne suffit plus au typage
+	if (kind === 'carre') return { kind, points: [points[0], points[1]], line };
 	return { kind, points: [points[0], points[1]], line };
 }
 
@@ -552,6 +622,38 @@ function rulerCircleError(
 }
 
 /**
+ * Carré / rectangle coté (PR 6 de `regle-graduee`) : seul dans la figure, papier
+ * uni, palette Segment · Équerre · Règle graduée exactement (Q13 : l'angle droit à
+ * l'équerre)
+ */
+function ruledPolygonError(
+	check: RuledPolygonCheck,
+	spec: ConstructionSpec,
+	grid: boolean
+): string | null {
+	const name = `${check.kind === 'carre' ? 'carré' : 'rectangle'} ${check.points.join('')}`;
+	if (spec.checks.length > 1) {
+		return `${name} : un carré ou un rectangle coté ne se mêle pas à d’autres vérifications`;
+	}
+	if (grid) {
+		return `${name} : la règle graduée sert sur papier uni (sur quadrillage : « carre A ; B » ou « rectangle A ; B ; C ») ; retirer « grille: » (ou écrire « grille: non »)`;
+	}
+	const other = spec.tools.find((t) => !RULED_POLYGON_TOOLS.includes(t));
+	if (other)
+		return `${name} : outil ${other} hors de la palette (${RULED_POLYGON_TOOLS.join(', ')})`;
+	const labels: Record<string, string> = {
+		segment: 'le segment',
+		equerre: 'l’équerre',
+		regle: 'la règle graduée'
+	};
+	const missing = RULED_POLYGON_TOOLS.find((t) => !spec.tools.includes(t));
+	if (missing) {
+		return `${name} : il faut ${labels[missing]} (outils: ${RULED_POLYGON_TOOLS.join(', ')})`;
+	}
+	return null;
+}
+
+/**
  * Une vérification qui ne va pas avec les autres : son outil n'est pas celui
  * de la figure, ou c'est un second carré / rectangle (le juge compte les
  * segments en trop sur UN polygone).
@@ -576,6 +678,8 @@ function coherenceError(
 	const rulerCircle =
 		check.kind === 'cercle' && centeredCircleOf(check.expression)?.kind === 'longueur';
 	const rulerTriangle = check.kind === 'triangle' && check.lengths.some(isRuledLength);
+	// … et au carré / rectangle coté (PR 6), qui a ses propres règles ci-dessous
+	if (isRuledPolygonCheck(check)) return ruledPolygonError(check, spec, grid);
 	if (check.kind !== 'segment' && !rulerCircle && !rulerTriangle && spec.tools.includes('regle')) {
 		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} »), un cercle de rayon donné (« verifier: ${RULER_CIRCLE_EXAMPLE} ») ou un triangle rectangle coté (« verifier: ${RULER_TRIANGLE_EXAMPLE} ») ; la retirer de outils:`;
 	}
@@ -840,13 +944,15 @@ export function readConstructionHeader(
 		const plainPaper =
 			grid && !keeps
 				? undefined
-				: first.kind === 'triangle'
-					? triangleTools(first, grid)
-					: centered
-						? centeredCircleTools(centered)
-						: kind === 'droite' && grid
-							? LINE_GRID_TOOLS
-							: PLAIN_PAPER_TOOLS[kind];
+				: isRuledPolygonCheck(first)
+					? RULED_POLYGON_TOOLS
+					: first.kind === 'triangle'
+						? triangleTools(first, grid)
+						: centered
+							? centeredCircleTools(centered)
+							: kind === 'droite' && grid
+								? LINE_GRID_TOOLS
+								: PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
 	const coherent: ConstructionCheck[] = [];

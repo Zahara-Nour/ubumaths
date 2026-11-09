@@ -46,6 +46,7 @@ import {
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
 import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import { isRuledPolygonCheck } from '$lib/ubumark/types/construction';
 import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
 import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
@@ -667,21 +668,24 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					// triangle (lot 4) : A, B et ce qui donne les longueurs, C est à construire
 					// angle (lot 5) : A et O (`check.points`), le côté est à tracer
 					// segment de longueur donnée (ADR 0036) : A seulement, B est à tracer
+					// carré / rectangle coté (PR 6 de `regle-graduee`) : A et B, C et D sont à construire
 					const names =
 						check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle'
 							? []
-							: check.kind === 'segment'
-								? [check.point]
-								: check.kind === 'symetrique'
-									? [...(check.points ?? []), check.by]
-									: check.kind === 'triangle'
-										? [
-												check.points[0],
-												check.points[1],
-												// En carreaux (n° 20), rien à nommer
-												...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
-											]
-										: check.points;
+							: isRuledPolygonCheck(check)
+								? check.points.slice(0, 2)
+								: check.kind === 'segment'
+									? [check.point]
+									: check.kind === 'symetrique'
+										? [...(check.points ?? []), check.by]
+										: check.kind === 'triangle'
+											? [
+													check.points[0],
+													check.points[1],
+													// En carreaux (n° 20), rien à nommer
+													...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
+												]
+											: check.points;
 					for (const name of names) {
 						if (!named.has(name)) {
 							errors.push({

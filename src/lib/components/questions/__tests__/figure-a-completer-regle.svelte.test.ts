@@ -344,3 +344,71 @@ describe('case « figure » : triangle rectangle coté en cm (PR 4)', () => {
 		await expect.poll(() => all(container, 'bonne-regle').length).toBe(1);
 	});
 });
+
+// PR 6 : rectangle coté en A(2 ; 2), B(8 ; 2), BC = 3 cm → C(8 ; 5), D(2 ; 5)
+const RECTANGLE_BLOCK = [
+	'```figure-a-completer',
+	'fenetre: 0 ; 10 ; 0 ; 8',
+	'verifier: rectangle A ; B ; C ; D : BC = 3 cm',
+	'---',
+	'A = point(2, 2)',
+	'B = point(8, 2)',
+	's = segment(A, B)',
+	'```'
+].join('\n');
+
+/** Équerre le long de [AB] en `x` ; règle posée en `x`, aimantée à la perpendiculaire ; côté jusqu'à `top` */
+async function rightSide(container: HTMLElement, rect: SVGRectElement, x: number, top: number) {
+	const droites = all(container, 'droite-eleve').length;
+	tool(container, 'equerre');
+	tap(rect, 5, 2.05);
+	await expect.poll(() => all(container, 'droite-choisie').length).toBe(1);
+	tap(rect, x + 0.05, 2.05);
+	await expect.poll(() => all(container, 'droite-eleve').length).toBe(droites + 1);
+	tool(container, 'regle');
+	tap(rect, x + 0.05, 2.05);
+	tap(rect, x + 0.12, 6);
+	await expect.poll(() => all(container, 'regle').length).toBe(1);
+	tool(container, 'segment');
+	const segments = all(container, 'segment-eleve').length;
+	tap(rect, x + 0.05, 2.05);
+	tap(rect, x + 0.1, top);
+	await expect.poll(() => all(container, 'segment-eleve').length).toBe(segments + 1);
+}
+
+describe('case « figure » : rectangle coté en cm (PR 6)', () => {
+	it('palette : Segment, Équerre, Règle graduée ; 3 cm en B et en A, puis [CD] → juste', async () => {
+		const { container, rect } = await rendered(RECTANGLE_BLOCK);
+		const palette = ['segment', 'equerre', 'regle'].map((id) => byTestId(container, `outil-${id}`));
+		expect(palette.map((b) => b?.textContent?.trim())).toEqual([
+			'Segment',
+			'Équerre',
+			'Règle graduée'
+		]);
+		await rightSide(container, rect, 8, 5);
+		await expect.poll(() => mmShown(container)).toBe('30');
+		await rightSide(container, rect, 2, 5);
+		await expect.poll(() => mmShown(container)).toBe('30');
+		// [CD] : toucher pile sur C et D (le bout s'aimante d'abord aux graduations de la règle posée)
+		tap(rect, 8, 5);
+		tap(rect, 2, 5);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(3);
+		button(container, 'Valider').click();
+		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);
+	});
+
+	it('[BC] arrêté sur 2,8 cm : message ; à la correction, deux règles', async () => {
+		const { container, rect } = await rendered(RECTANGLE_BLOCK);
+		await rightSide(container, rect, 8, 4.8);
+		await expect.poll(() => mmShown(container)).toBe('28');
+		await rightSide(container, rect, 2, 4.8);
+		tap(rect, 8, 4.8);
+		tap(rect, 2, 4.8);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(3);
+		button(container, 'Valider').click();
+		await expect
+			.poll(() => container.textContent)
+			.toContain('Ton côté [BC] mesure 2,8 cm au lieu de 3 cm.');
+		await expect.poll(() => all(container, 'bonne-regle').length).toBe(2);
+	});
+});

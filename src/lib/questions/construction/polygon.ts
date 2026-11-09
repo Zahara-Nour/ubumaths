@@ -120,7 +120,7 @@ function isPresent(vertices: readonly Position[], pieces: readonly Carrier[], ep
 }
 
 /** Trait de trop (hors de la figure), sinon trait qui la prolonge, sinon rien */
-function leftoverFeedback(
+export function leftoverFeedback(
 	vertices: readonly Position[],
 	pieces: readonly Carrier[],
 	eps: number
