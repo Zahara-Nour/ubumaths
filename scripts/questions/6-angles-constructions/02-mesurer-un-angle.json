@@ -1,0 +1,128 @@
+{
+	"title": "Mesurer un angle au rapporteur",
+	"description": "Lire la mesure d'un angle sur un rapporteur déjà posé, puis poser soi-même le rapporteur (centre au sommet, base sur un côté) et lire la bonne graduation",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le rapporteur est posé sur l'angle $\\widehat{AOB}$. Quelle est sa mesure, en degrés ?\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: mesure AOB, rapporteur posé\n---\nO = point(5, 2.5)\nA = point(9, 2.5)\nP = point(8.6, 2.5, visible=faux)\nB = rotation(P, angle={{a}}, centre=O)\nx = demidroite(O, A)\ny = demidroite(O, B)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "15..165"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**Lire la bonne graduation.** Le centre du rapporteur est sur le sommet $O$, sa base sur le côté $[OA)$. On part du $0$ qui est **sur le côté $[OA)$** et on suit cette graduation jusqu'au côté $[OB)$.",
+					"L'angle est {{if:a<90|aigu|obtus}} : sa mesure est {{if:a<90|plus petite|plus grande}} que $90^\\circ$. $\\widehat{AOB} = \\textcolor{{{color:primary.0}}}{{{a}}^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Mesure l'angle $\\widehat{AOB}$ avec le rapporteur, puis écris sa mesure, en degrés.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: mesure AOB\n---\nO = point(5, 4)\nP = point(8.6, 4, visible=faux)\nA = rotation(P, angle={{t}}, centre=O)\nB = rotation(P, angle={{eval:t+a}}, centre=O)\nx = demidroite(O, A)\ny = demidroite(O, B)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "15..165"
+				},
+				{
+					"name": "t",
+					"expression": "0..50"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**Lire la bonne graduation.** Le centre du rapporteur est sur le sommet $O$, sa base sur le côté $[OA)$. On part du $0$ qui est **sur le côté $[OA)$** et on suit cette graduation jusqu'au côté $[OB)$.",
+					"L'angle est {{if:a<90|aigu|obtus}} : sa mesure est {{if:a<90|plus petite|plus grande}} que $90^\\circ$. $\\widehat{AOB} = \\textcolor{{{color:primary.0}}}{{{a}}^\\circ}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rapporteur posé : 50",
+			"variationIndex": 0,
+			"variables": {
+				"a": "50"
+			},
+			"answers": ["mesure(50)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 130 (mauvaise graduation)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "50"
+			},
+			"answers": ["mesure(130)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rapporteur posé : 124",
+			"variationIndex": 0,
+			"variables": {
+				"a": "124"
+			},
+			"answers": ["mesure(124)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 56 (mauvaise graduation)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "124"
+			},
+			"answers": ["mesure(56)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Angle tourné : 72",
+			"variationIndex": 1,
+			"variables": {
+				"a": "72",
+				"t": "30"
+			},
+			"answers": ["mesure(72)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 102 (lu depuis l'horizontale)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "72",
+				"t": "30"
+			},
+			"answers": ["mesure(102)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 108 (mauvaise graduation)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "72",
+				"t": "30"
+			},
+			"answers": ["mesure(108)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

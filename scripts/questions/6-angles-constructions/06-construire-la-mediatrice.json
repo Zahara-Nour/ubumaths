@@ -1,0 +1,88 @@
+{
+	"title": "Construire la médiatrice d'un segment",
+	"description": "Au compas et à la règle : deux cercles de même rayon centrés aux extrémités du segment se coupent en deux points de la médiatrice",
+	"grades": ["6"],
+	"level": 4,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Construis la médiatrice du segment $[AB]$ avec le compas et la règle.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: droite m = mediatrice(A, B)\n---\n{{if:k==1|A = point(3, 4)\nB = point(6, 5)|{{if:k==2|A = point(2.5, 3)\nB = point(7, 3)|A = point(4, 2)\nB = point(5.5, 6)}}}}\nsegment(A, B)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux cercles de même rayon**, centrés en $A$ et en $B$ (par exemple de rayon $AB$), se coupent en deux points $P$ et $Q$.",
+					"$P$ et $Q$ sont chacun à égale distance de $A$ et de $B$ : ils sont sur la médiatrice. La droite $\\textcolor{{{color:primary.0}}}{(PQ)}$ est la médiatrice de $[AB]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Segment 1 : deux cercles de rayon AB, droite (PQ)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [
+				"cercle(3;4;6;5)|cercle(6;5;3;4)|droite(3.633974596215561;7.098076211353316;5.366025403784438;1.901923788646684)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Segment 2 : construite",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [
+				"cercle(2.5;3;7;3)|cercle(7;3;2.5;3)|droite(4.75;6.897114317029974;4.75;-0.897114317029974)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Segment 3 : construite",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": [
+				"cercle(4;2;5.5;6)|cercle(5.5;6;4;2)|droite(1.2858983848622456;5.299038105676658;8.214101615137753;2.700961894323342)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : perpendiculaire par A, à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(2.5;3;2.5000000000000004;7.5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les cercles sans la droite",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(3;4;6;5)|cercle(6;5;3;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

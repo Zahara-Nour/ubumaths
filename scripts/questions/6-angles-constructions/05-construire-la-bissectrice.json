@@ -1,0 +1,89 @@
+{
+	"title": "Construire la bissectrice d'un angle",
+	"description": "Au compas et à la règle : un arc de centre le sommet coupe les deux côtés, deux arcs de même rayon centrés en ces points se coupent sur la bissectrice",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Construis la bissectrice de l'angle $\\widehat{AOB}$ avec le compas et la règle.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: droite d = bissectrice(A, O, B)\n---\n{{if:k==1|O = point(2, 2)\nA = point(8, 3)\nB = point(4, 7)|{{if:k==2|O = point(2, 1.5)\nA = point(8.5, 1.5)\nB = point(1, 6.5)|O = point(1.5, 5.5)\nA = point(8, 6.5)\nB = point(6, 1.5)}}}}\nx = demidroite(O, A)\ny = demidroite(O, B)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un arc de centre $O$** (compas ouvert comme on veut) coupe $[OA)$ en $M$ et $[OB)$ en $N$ : $OM = ON$.",
+					"**Deux arcs de même rayon**, centrés en $M$ et en $N$, se coupent en un point $P$ : $PM = PN$.",
+					"La demi-droite $\\textcolor{{{color:primary.0}}}{[OP)}$ est la bissectrice : elle partage $\\widehat{AOB}$ en deux angles de même mesure."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Angle 1 : arc en O, deux arcs égaux, droite (OP)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [
+				"cercle(2;2;3.9727878476642875;2.3287979746107146)|cercle(3.9727878476642875;2.3287979746107146;2.7427813527082074;3.856953381770519)|cercle(2.7427813527082074;3.856953381770519;3.9727878476642875;2.3287979746107146)|droite(2;2;4.6812060037171905;4.158092549642438)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Angle 2 : construite",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [
+				"cercle(2;1.5;4.5;1.5)|cercle(4.5;1.5;1.5097096621545398;3.9514516892273006)|cercle(1.5097096621545398;3.9514516892273006;4.5;1.5)|droite(2;1.5;5.1278742700983875;5.31539324187897)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Angle 3 : construite",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": [
+				"cercle(1.5;5.5;3.4767433953012343;5.804114368507882)|cercle(3.4767433953012343;5.804114368507882;2.9948186373673193;4.17127232234016)|cercle(2.9948186373673193;4.17127232234016;3.4767433953012343;5.804114368507882)|droite(1.5;5.5;4.649863708682887;4.570334262340585)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : droite par O et le milieu de [AB], à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(2;2;6;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien de tracé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		}
+	]
+}

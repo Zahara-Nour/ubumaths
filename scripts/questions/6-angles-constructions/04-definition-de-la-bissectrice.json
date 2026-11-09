@@ -1,0 +1,186 @@
+{
+	"title": "Définition de la bissectrice d'un angle",
+	"description": "La bissectrice d'un angle est la demi-droite qui part du sommet et le partage en deux angles de même mesure : la reconnaître, choisir sa définition, s'en servir pour une mesure",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La demi-droite tracée dans l'angle $\\widehat{AOB}$ est-elle sa bissectrice ?\n\n```figure\nfenetre: -3 ; 8 ; -0.5 ; 7\ndescription: {{if:k==1|Un angle AOB et une demi-droite [Oz) qui le partage en deux angles de {{h}} degrés.|{{if:k==2|Un angle AOB et une demi-droite [Oz) qui le partage en un angle de {{eval:h+d}} degrés et un angle de {{eval:h-d}} degrés.|Un angle AOB et une demi-droite [Mz) qui part d'un point M du côté [OA), parallèle à la bissectrice.}}}}\n---\nO = point(0, 0, etiquette=\"bas\")\nA = point(7, 0, etiquette=\"bas\")\nB = rotation(A, angle={{eval:2*h}}, centre=O)\ndemidroite(O, A)\ndemidroite(O, B)\nH6 = point(6, 0, visible=faux)\nH7 = point(7, 0, visible=faux)\nH2 = point(2.4, 0, visible=faux)\nZ = rotation(H6, angle={{eval:(h)*(k-2)*(k-3)/(2)+((h+d))*(k-1)*(k-3)/(-1)+(h)*(k-1)*(k-2)/(2)}}, centre=O, visible=faux)\nM = point(2, 0, etiquette=\"bas\", visible={{if:k==3|vrai|faux}})\nW = rotation(H7, angle={{h}}, centre=M, visible=faux)\ndemidroite(O, Z, visible={{if:k==3|faux|vrai}})\ndemidroite(M, W, visible={{if:k==3|vrai|faux}})\ntexte(Z, \"z\", dx=0.2, dy=0.2, visible={{if:k==3|faux|vrai}})\ntexte(W, \"z\", dx=0.2, dy=0.2, visible={{if:k==3|vrai|faux}})\nT1 = rotation(H2, angle={{eval:((h)*(k-2)*(k-3)/(2)+((h+d))*(k-1)*(k-3)/(-1)+(h)*(k-1)*(k-2)/(2))/2;d}}, centre=O, visible=faux)\nT2 = rotation(H2, angle={{eval:h+((h)*(k-2)*(k-3)/(2)+((h+d))*(k-1)*(k-3)/(-1)+(h)*(k-1)*(k-2)/(2))/2;d}}, centre=O, visible=faux)\ntexte(T1, \"{{eval:(h)*(k-2)*(k-3)/(2)+((h+d))*(k-1)*(k-3)/(-1)+(h)*(k-1)*(k-2)/(2)}}°\", visible={{if:k==3|faux|vrai}})\ntexte(T2, \"{{eval:2*h-((h)*(k-2)*(k-3)/(2)+((h+d))*(k-1)*(k-3)/(-1)+(h)*(k-1)*(k-2)/(2))}}°\", visible={{if:k==3|faux|vrai}})\n```\n\n\n\n```choix\nmelanger: non\n- oui\n- non, les deux angles n'ont pas la même mesure\n- non, elle ne part pas du sommet de l'angle\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "25..55"
+				},
+				{
+					"name": "d",
+					"expression": "6..12"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La bissectrice** d'un angle part de son **sommet** et le partage en **deux angles de même mesure**.",
+					"{{if:k==1|Elle part de $O$ et les deux angles mesurent ${{h}}^\\circ$ : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$, c'est la bissectrice.|{{if:k==2|Elle part bien de $O$, mais ${{eval:h+d}}^\\circ \\neq {{eval:h-d}}^\\circ$ : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, les deux angles ne sont pas égaux.|Elle part de $M$, pas du sommet $O$ : $\\textcolor{{{color:primary.0}}}{\\text{non}}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Qu'est-ce que la bissectrice d'un angle ?\n\n```choix\n- la demi-droite qui part du sommet et partage l'angle en deux angles de même mesure\n- la demi-droite qui part du sommet et passe par le milieu du segment qui joint deux points des côtés\n- la droite perpendiculaire à un côté, qui passe par le sommet\n- la droite qui passe par le milieu d'un côté de l'angle\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition.** La bissectrice d'un angle est $\\textcolor{{{color:primary.0}}}{\\text{la demi-droite qui part du sommet}}$ et $\\textcolor{{{color:primary.0}}}{\\text{partage l'angle en deux angles de même mesure}}$.",
+					"Le milieu d'un segment $[AB]$ joignant les côtés n'est sur la bissectrice que si $OA = OB$."
+				]
+			}
+		},
+		{
+			"statement": "La demi-droite $[Oz)$ est la bissectrice de l'angle $\\widehat{AOB}$, et $\\widehat{AOz} = {{c}}^\\circ$.\n\nCombien mesure l'angle $\\widehat{AOB}$ ?\n\n$\\widehat{AOB} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "20..80"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La bissectrice** partage $\\widehat{AOB}$ en deux angles de même mesure : $\\widehat{AOz} = \\widehat{zOB} = {{c}}^\\circ$.",
+					"$\\widehat{AOB} = 2 \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:2*c}}^\\circ}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bissectrice",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "35",
+				"d": "8",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Angles inégaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"h": "35",
+				"d": "8",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui quand les angles sont inégaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"h": "35",
+				"d": "8",
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ne part pas du sommet",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"h": "35",
+				"d": "8",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Définition",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : par le milieu de [AB]",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 × 35 = 70",
+			"variationIndex": 2,
+			"variables": {
+				"c": "35"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 35 (sans doubler)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "35"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 17,5 (moitié)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "35"
+			},
+			"answers": ["17,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
