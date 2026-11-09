@@ -926,7 +926,9 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    **Le long d'une demi-droite donnée** (décision Q7, PR 2 du chantier) : `segment AB = 6 cm sur [Ax)`,
    x le nom d'une demi-droite de la figure d'origine A (`x = demidroite(A, X)`, `SegmentLengthCheck.ray` ;
    `FigureLine.kind` dit droite, demi-droite ou segment). Au 2e toucher, la règle s'aimante à la
-   demi-droite comme à tout trait (`snapWithInstruments`). Après « un seul segment », le bout du segment
+   demi-droite comme à tout trait (`snapWithInstruments`). Les segments depuis A n'y fusionnent qu'à la
+   tolérance de calcul (`SAME_DIRECTION_ON_RAY`, Q15) : un trait à 1,9° superposé au bon segment fait
+   deux segments. Après « un seul segment », le bout du segment
    vu doit être sur [Ax), au-delà de A (à la tolérance près) : sinon « Trace ton segment sur la
    demi-droite [Ax). » (autre direction, prolongement derrière A, règle posée à l'œil) ; puis tracé à
    l'œil, longueur. Erreurs de l'auteur en plus : demi-droite absente, pas une demi-droite d'origine A,

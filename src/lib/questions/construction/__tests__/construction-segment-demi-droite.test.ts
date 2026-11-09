@@ -139,6 +139,38 @@ describe('juge : segment AB = 6 cm sur [Ax)', () => {
 		});
 	});
 
+	it('un trait de 5 cm à 1,9° de [Ax), superposé au bon segment : deux segments (Q15)', () => {
+		const angle = Math.atan2(3, 4) + (1.9 * Math.PI) / 180;
+		const tilted = regle({ x: 4 + Math.cos(angle), y: 4 + Math.sin(angle) });
+		expect(judge(SIX, [ON_RAY, along(ON_RAY, 60), tilted, along(tilted, 50)])).toEqual({
+			status: 'incorrect',
+			feedback: severalSegmentsFeedback('A', 'B')
+		});
+	});
+
+	it('le bon segment repassé (même direction, plus court) : un seul segment, juste', () => {
+		expect(judge(SIX, [ON_RAY, along(ON_RAY, 40), along(ON_RAY, 60)])).toEqual({
+			status: 'correct'
+		});
+	});
+
+	it('règle reposée vers un autre point de [Ax) : les deux traits fusionnent, juste', () => {
+		const u = { x: 0.8, y: 0.6 };
+		const again = regle({ x: A.x + 0.123456789 * u.x, y: A.y + 0.123456789 * u.y });
+		expect(judge(SIX, [ON_RAY, along(ON_RAY, 40), again, along(again, 60)])).toEqual({
+			status: 'correct'
+		});
+	});
+
+	it('un trait depuis A presque opposé (à 1,9° de l’opposé) : deux segments (Q15)', () => {
+		const angle = Math.atan2(3, 4) + Math.PI + (1.9 * Math.PI) / 180;
+		const back = regle({ x: 4 + Math.cos(angle), y: 4 + Math.sin(angle) });
+		expect(judge(SIX, [ON_RAY, along(ON_RAY, 60), back, along(back, 30)])).toEqual({
+			status: 'incorrect',
+			feedback: severalSegmentsFeedback('A', 'B')
+		});
+	});
+
 	it('sur [Ax) mais sans règle : tracé à l’œil', () => {
 		expect(judge(SIX, [segment(A, { x: 8.8, y: 7.6 })])).toEqual({
 			status: 'incorrect',
