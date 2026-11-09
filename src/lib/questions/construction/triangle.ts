@@ -68,7 +68,7 @@ import {
 } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import { tolerance } from './polygon';
-import { formatLength, rulerLengthOf } from './segment-length';
+import { SAME_DIRECTION, formatLength, rulerLengthOf, seenSegments } from './segment-length';
 import type { FigureShapes } from './symmetry';
 
 export const missingSidesFeedback = (a: string, b: string, c: string) =>
@@ -103,6 +103,8 @@ export const wrongRuledLengthFeedback = (
 	expected: { length: number; unit: LengthUnit }
 ) =>
 	`Ton côté [${p}${c}] mesure ${formatLength(measured, expected.unit)} au lieu de ${formatLength(expected.length, expected.unit)}.`;
+export const severalTrianglesFeedback = (a: string, b: string, c: string) =>
+	`Trace un seul triangle ${a}${b}${c}.`;
 const squaresText = (n: number) => `${n} carreau${n > 1 ? 'x' : ''}`;
 export const wrongSquaresFeedback = (p: string, c: string, measured: number, expected: number) =>
 	`Ton côté [${p}${c}] mesure ${squaresText(measured)} au lieu de ${expected}.`;
@@ -607,7 +609,8 @@ function joinedVertices(
  * (l'équerre), angle droit, puis (côté donné) au croisement de cette droite et
  * d'un cercle construit centré en V, à la bonne longueur. Quadrillage : angle
  * droit et longueur, de nœud en nœud. Juste si un C convient ; sinon le message
- * du C le plus avancé.
+ * du C le plus avancé. Côté en cm (PR 4) : un seul C (Q17), [VC] lu à la
+ * graduation du bout du trait vu depuis V (Q18).
  */
 function judgeRight(
 	check: TriangleCheck,
@@ -650,6 +653,34 @@ function judgeRight(
 			(t) => t.kind === 'circle' && near(t.center, v, tolerance(v))
 		);
 	}
+	// Côté en cm (Q17, David, 2026-11-09) : plusieurs C distincts → faux ; un C de chaque
+	// côté de (AB) compte pour deux, un même C atteint deux fois pour un
+	if (ruled) {
+		const distinct = joined.vertices.filter(
+			(c, i) => !joined.vertices.slice(0, i).some((d) => near(c, d, tolerance(c, d)))
+		);
+		if (distinct.length > 1) {
+			const [nameA, nameB] = check.points;
+			return { status: 'incorrect', feedback: severalTrianglesFeedback(nameA, nameB, nameC) };
+		}
+	}
+	// Côté en cm (Q18, David, 2026-11-09) : [VC] jugé sur le trait vu depuis V, par son
+	// bout le plus loin (un [VC] prolongé au-delà de C mesure ce qu'il montre)
+	const seen = ruled
+		? seenSegments(
+				objects.filter((o): o is DrawnLine => o.kind === 'segment'),
+				v,
+				tolerance(v, w)
+			)
+		: [];
+	const seenEnd = (c: Position): Position => {
+		const r = distance(v, c);
+		const u = { x: (c.x - v.x) / r, y: (c.y - v.y) / r };
+		const group = seen.find(
+			(s) => Math.acos(Math.min(1, s.direction.x * u.x + s.direction.y * u.y)) < SAME_DIRECTION
+		);
+		return group && distance(v, group.end) > r ? group.end : c;
+	};
 	const verdictOf = (c: Position): { rank: number; feedback: string | null } => {
 		const eps = tolerance(v, w, c);
 		const carriers = lines.filter((t) => distanceToTrait(c, t) <= eps);
@@ -660,7 +691,7 @@ function judgeRight(
 			return { rank: 1, feedback: notRightFeedback(right.vertex, right.base, Boolean(grid)) };
 		}
 		if (ruled) {
-			const mm = ruledGraduationOf(c, v, objects, rulerLength);
+			const mm = ruledGraduationOf(seenEnd(c), v, objects, rulerLength);
 			if (mm === null)
 				return { rank: 2, feedback: vertexOffGraduationFeedback(right.vertex, nameC) };
 			if (mm !== ruled.length) {

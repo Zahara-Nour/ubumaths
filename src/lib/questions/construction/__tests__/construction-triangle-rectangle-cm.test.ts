@@ -11,6 +11,7 @@ import '../positions-setup';
 import { constructionExpected, constructionPositions, constructionShapes } from '../positions';
 import { ConstructionAuthorError, assertConstructionChecks, judgeConstruction } from '../judge';
 import {
+	severalTrianglesFeedback,
 	sideEyeballedFeedback,
 	vertexOffGraduationFeedback,
 	wrongRuledLengthFeedback
@@ -239,6 +240,79 @@ describe('triangle rectangle coté en cm : verdict', () => {
 		const mixed = figure('triangle ABC : CAB = 90 ; AC = 3 cm 5 mm');
 		expect(judge(mixed, objects)).toMatchObject({
 			feedback: 'Ton côté [AC] mesure 2 cm 8 mm au lieu de 3 cm 5 mm.'
+		});
+	});
+
+	describe('un seul triangle (Q17, David, 2026-11-09)', () => {
+		const at = (y: number) => ({ x: 3, y });
+		const several = { status: 'incorrect', feedback: severalTrianglesFeedback('A', 'B', 'C') };
+
+		it('éventail : deux triangles, 3 cm et 4 cm, depuis la même règle → faux', () => {
+			const objects = [
+				SQUARE_A,
+				regle(UP),
+				segment(A, at(6)),
+				segment(B, at(6)),
+				segment(A, at(7)),
+				segment(B, at(7))
+			];
+			expect(judge(RIGHT, objects)).toMatchObject(several);
+			expect(severalTrianglesFeedback('A', 'B', 'C')).toBe('Trace un seul triangle ABC.');
+		});
+
+		it('un C à chaque graduation, [B…] à chacun → faux', () => {
+			const objects: DrawnObject[] = [
+				SQUARE_A,
+				regle(UP),
+				...[5, 6, 7, 7.5].flatMap((y) => [segment(A, at(y)), segment(B, at(y))])
+			];
+			expect(judge(RIGHT, objects)).toMatchObject(several);
+		});
+
+		it('un C de chaque côté de (AB) compte pour deux → faux', () => {
+			const objects = [
+				SQUARE_A,
+				regle(UP),
+				segment(A, C),
+				segment(B, C),
+				regle({ x: 3, y: 2 }),
+				segment(A, C_BELOW),
+				segment(B, C_BELOW)
+			];
+			expect(judge(RIGHT, objects)).toMatchObject(several);
+		});
+
+		it('un même C atteint deux fois compte pour un : juste', () => {
+			expect(judge(RIGHT, [...NOMINAL, segment(A, C), segment(C, B)])).toEqual({
+				status: 'correct'
+			});
+		});
+	});
+
+	describe('[AC] jugé sur le trait vu depuis A (Q18, David, 2026-11-09)', () => {
+		it('[AC] prolongé au-delà de C : la longueur du trait vu', () => {
+			const beyond = { x: 3, y: 7.5 };
+			const objects = [SQUARE_A, regle(UP), segment(A, beyond), segment(A, C), segment(B, C)];
+			expect(judge(RIGHT, objects)).toMatchObject({
+				status: 'incorrect',
+				feedback: 'Ton côté [AC] mesure 4,5 cm au lieu de 3 cm.'
+			});
+		});
+
+		it('prolongé par un segment collé au bout, hors graduation : placé à l’œil', () => {
+			const beyond = { x: 3, y: 7.53 };
+			const objects = [SQUARE_A, regle(UP), segment(A, C), segment(C, beyond), segment(B, C)];
+			expect(judge(RIGHT, objects)).toMatchObject({
+				status: 'incorrect',
+				feedback: vertexOffGraduationFeedback('A', 'C')
+			});
+		});
+	});
+
+	it('[BC] à l’œil avant la règle, puis [AC] à la règle : placé à l’œil', () => {
+		expect(judge(RIGHT, [SQUARE_A, segment(B, C), regle(UP), segment(A, C)])).toMatchObject({
+			status: 'incorrect',
+			feedback: vertexOffGraduationFeedback('A', 'C')
 		});
 	});
 

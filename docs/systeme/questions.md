@@ -827,8 +827,11 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    `3,5 cm`, `3 cm 5 mm`, `35 mm`, au mm près ; `TriangleLength` `{ length, unit }`, `isRuledLength`),
    papier uni, palette Segment · Équerre · Règle graduée exactement (`triangleTools`) ; les cm sans
    l'angle droit ou sur quadrillage sont refusés par le parseur, un côté plus long que la règle
-   (`rulerLengthOf`) à la publication. Même ordre que ci-dessus, le croisement du report remplacé par la
-   graduation : C sur une graduation d'une règle posée avec son 0 au sommet de l'angle droit **avant le
+   (`rulerLengthOf`) à la publication. Un seul triangle (Q17) : plusieurs C distincts (un de chaque côté
+   de (AB) compte pour deux, un même C atteint deux fois pour un) → « Trace un seul triangle ABC. ».
+   Même ordre que ci-dessus, le croisement du report remplacé par la graduation, lue au bout du trait
+   vu depuis le sommet (`seenSegments` du segment de longueur donnée, Q18 : [AC] prolongé au-delà de C
+   mesure ce qu'il montre) : C sur une graduation d'une règle posée avec son 0 au sommet de l'angle droit **avant le
    premier côté qui arrive en C** (`ruledGraduationOf`, comme le cercle de #2494), sinon « Ton point C
    est placé à l'œil : arrête [AC] sur une graduation de la règle. » ; puis « Ton côté [AC] mesure
    3,8 cm au lieu de 4 cm. » (dans l'unité de l'auteur). Report : hors palette, faux sans message.
