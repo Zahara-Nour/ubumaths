@@ -823,6 +823,17 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    perpendiculaire (`guides`) et l'arc de report en traits fins ; angle droit seul : vers le C de
    l'élève ramené sur la perpendiculaire. Le générateur ne demande aucun nom pour une longueur en
    carreaux.
+   **Côté coté en cm** (chantier `regle-graduee`, PR 4) : `triangle ABC : CAB = 90 ; AC = 4 cm` (aussi
+   `3,5 cm`, `3 cm 5 mm`, `35 mm`, au mm près ; `TriangleLength` `{ length, unit }`, `isRuledLength`),
+   papier uni, palette Segment · Équerre · Règle graduée exactement (`triangleTools`) ; les cm sans
+   l'angle droit ou sur quadrillage sont refusés par le parseur, un côté plus long que la règle
+   (`rulerLengthOf`) à la publication. Même ordre que ci-dessus, le croisement du report remplacé par la
+   graduation : C sur une graduation d'une règle posée avec son 0 au sommet de l'angle droit **avant le
+   premier côté qui arrive en C** (`ruledGraduationOf`, comme le cercle de #2494), sinon « Ton point C
+   est placé à l'œil : arrête [AC] sur une graduation de la règle. » ; puis « Ton côté [AC] mesure
+   3,8 cm au lieu de 4 cm. » (dans l'unité de l'auteur). Report : hors palette, faux sans message.
+   Correction : la règle posée au sommet le long de la perpendiculaire, vers le C de la correction
+   (`triangleRuler`, par `solutionRulers`), sans arc ni codage de longueur.
    Vérification `angle AOy = 50` (`construction/angle.ts`, lot 5 du chantier) : [OA) est donné (A, O
    nommés et visibles, `points` = A puis O) ; y nomme le côté à tracer (messages seulement) ; mesure
    entière de 1 à 179 (parseur). L'élève pose le rapporteur (outil `rapporteur` : centre, puis un point

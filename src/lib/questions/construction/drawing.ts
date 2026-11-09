@@ -55,7 +55,12 @@ import {
 } from './line';
 import { circleLengthRulers, circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
-import { triangleCorrection, triangleSolution, type TriangleCorrection } from './triangle';
+import {
+	triangleCorrection,
+	triangleRuler,
+	triangleSolution,
+	type TriangleCorrection
+} from './triangle';
 import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
 import { measureCorrection } from './measure';
 import { segmentLengthRuler, segmentLengthSolution } from './segment-length';
@@ -582,8 +587,9 @@ export function solutionAngle(
 }
 
 /**
- * La règle graduée de la correction : posée en A (segment de longueur donnée) ou
- * au centre O (cercle de rayon donné en cm, PR 3) ; null sinon
+ * La règle graduée de la correction : posée en A (segment de longueur donnée), au
+ * centre O (cercle de rayon donné en cm, PR 3) ou au sommet de l'angle droit
+ * (triangle rectangle coté en cm, PR 4) ; null sinon
  */
 export function solutionRuler(
 	checks: readonly ConstructionCheck[],
@@ -604,6 +610,12 @@ export function solutionRulers(
 	const check = checks.find((c) => c.kind === 'segment');
 	if (check) {
 		const ruler = segmentLengthRuler(check, points, shapes, drawn);
+		return ruler ? [ruler] : [];
+	}
+	// Triangle rectangle coté en cm (PR 4) : la règle posée au sommet de l'angle droit
+	const triangle = checks.find((c) => c.kind === 'triangle');
+	if (triangle) {
+		const ruler = triangleRuler(triangle, points, shapes, drawn);
 		return ruler ? [ruler] : [];
 	}
 	return circleLengthRulers(checks.filter(isCircleCheck), points, drawn);

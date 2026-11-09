@@ -43,6 +43,7 @@ import {
 	PLAIN_PAPER_TOOLS,
 	triangleTools,
 	rightAngleOf,
+	isRuledLength,
 	isSquaresLength,
 	type ConstructionCheck,
 	type ConstructionCheckKind,
@@ -163,8 +164,11 @@ const TRIANGLE_LENGTH_REGEX = /^([A-Z])([A-Z])\s*=\s*(\S+)$/;
 const TRIANGLE_ANGLE_REGEX = /^([A-Z])([A-Z])([A-Z])\s*=\s*(\d{1,3})\s*°?$/;
 const POINT_PAIR_REGEX = /^([A-Z])([A-Z])$/;
 const TRIANGLE_RIGHT_EXAMPLE = 'triangle ABC : CAB = 90 ; AC = u';
+const RULER_TRIANGLE_EXAMPLE = 'triangle ABC : CAB = 90 ; AC = 4 cm';
 /** `AC = 3 carreaux` (n° 20) : une longueur sur quadrillage, l'unité obligatoire */
 const TRIANGLE_SQUARES_REGEX = /^([A-Z])([A-Z])\s*=\s*(\d{1,3})\s*carreaux?$/;
+/** `AC = 4 cm`, `AC = 3 cm 5 mm`, `AC = 35 mm` (PR 4 de `regle-graduee`) : lue par `readLengthText` */
+const TRIANGLE_RULED_REGEX = /^([A-Z])([A-Z])\s*=\s*(\d.*(?:cm|mm))$/;
 /** Longueur en carreaux d'un triangle rectangle (n° 20) */
 const SQUARES_MIN = 1;
 const SQUARES_MAX = 50;
@@ -242,6 +246,19 @@ function readTriangle(rest: string, line: number): ConstructionCheck {
 				);
 			}
 			lengths.push({ side: [squaresEnd, c], squares: count });
+			continue;
+		}
+		// À la règle graduée (PR 4 de `regle-graduee`) : en millimètres entiers
+		const ruled = TRIANGLE_RULED_REGEX.exec(part);
+		const ruledEnd = ruled ? sideEnd(ruled[1], ruled[2]) : null;
+		const ruledText = ruled ? readLengthText(ruled[3].trim()) : null;
+		if (ruledEnd && ruledText) {
+			if (!Number.isInteger(ruledText.length) || ruledText.length <= 0) {
+				throw new LineError(
+					`triangle ${name} : « ${part} » : une longueur à la règle graduée se donne au millimètre près (« ${ruledEnd}${c} = 4 cm », « ${ruledEnd}${c} = 3 cm 5 mm »)`
+				);
+			}
+			lengths.push({ side: [ruledEnd, c], ...ruledText });
 			continue;
 		}
 		const length = TRIANGLE_LENGTH_REGEX.exec(part);
@@ -555,11 +572,12 @@ function coherenceError(
 		(check.kind === 'triangle' && check.angles.length > 0 && !rightAngleOf(check)) ||
 		(check.kind === 'droite' && bissectriceOf(check.expression) !== null);
 	// Chantier `regle-graduee` (ADR 0036) : la règle graduée ne sert qu'au segment de longueur
-	// donnée et au cercle de rayon donné en cm (PR 3)
+	// donnée, au cercle de rayon donné en cm (PR 3) et au triangle rectangle coté en cm (PR 4)
 	const rulerCircle =
 		check.kind === 'cercle' && centeredCircleOf(check.expression)?.kind === 'longueur';
-	if (check.kind !== 'segment' && !rulerCircle && spec.tools.includes('regle')) {
-		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} ») ou un cercle de rayon donné (« verifier: ${RULER_CIRCLE_EXAMPLE} ») ; la retirer de outils:`;
+	const rulerTriangle = check.kind === 'triangle' && check.lengths.some(isRuledLength);
+	if (check.kind !== 'segment' && !rulerCircle && !rulerTriangle && spec.tools.includes('regle')) {
+		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} »), un cercle de rayon donné (« verifier: ${RULER_CIRCLE_EXAMPLE} ») ou un triangle rectangle coté (« verifier: ${RULER_TRIANGLE_EXAMPLE} ») ; la retirer de outils:`;
 	}
 	if (!protractorAllowed && spec.tools.includes('rapporteur')) {
 		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} »), à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») à construire un triangle dont un angle est donné (« verifier: ${TRIANGLE_ANGLES_EXAMPLE} ») ou une bissectrice (« verifier: droite d = bissectrice(A, O, B) ») ; le retirer de outils:`;
@@ -616,6 +634,15 @@ function coherenceError(
 			return `triangle ${name} : un triangle à construire ne se mêle pas à d’autres vérifications`;
 		}
 		const right = rightAngleOf(check);
+		// PR 4 de `regle-graduee` : les cm, pour le triangle rectangle sur papier uni seulement
+		if (check.lengths.some(isRuledLength)) {
+			if (!right) {
+				return `triangle ${name} : une longueur en cm ne sert qu’au triangle rectangle, avec l’angle droit (« triangle ${name} : C${check.points[0]}${check.points[1]} = 90 ; ${check.points[0]}${check.points[2]} = 4 cm »)`;
+			}
+			if (grid) {
+				return `triangle ${name} : une longueur en cm se construit sur papier uni (sur quadrillage : « ${right.vertex}${check.points[2]} = 3 carreaux »)`;
+			}
+		}
 		// N° 20 : les carreaux, pour le triangle rectangle sur quadrillage seulement
 		if (check.lengths.some(isSquaresLength)) {
 			if (!right) {
@@ -626,7 +653,9 @@ function coherenceError(
 			}
 		}
 		if (right && grid) {
-			const segmentLength = check.lengths.find((l) => !isSquaresLength(l) && l.source.length === 1);
+			const segmentLength = check.lengths.find(
+				(l) => !isSquaresLength(l) && !isRuledLength(l) && l.source.length === 1
+			);
 			if (segmentLength) {
 				return `triangle ${name} : sur quadrillage, la longueur se donne en carreaux (« ${segmentLength.side.join('')} = 3 carreaux ») ou par deux points (« ${segmentLength.side.join('')} = ${check.points[0]}${check.points[1]} ») : le report se fait sur papier uni`;
 			}
@@ -641,7 +670,7 @@ function coherenceError(
 			if (missing) {
 				return grid
 					? `triangle ${name} : sur quadrillage, les côtés se tracent au segment (outils: segment)`
-					: `triangle ${name} : l’angle droit se construit à l’équerre${check.lengths.length > 0 ? ', la longueur au report' : ''}, puis les côtés au segment (outils: ${allowed.join(', ')})`;
+					: `triangle ${name} : l’angle droit se construit à l’équerre${check.lengths.length === 0 ? '' : check.lengths.some(isRuledLength) ? ', la longueur à la règle graduée' : ', la longueur au report'}, puis les côtés au segment (outils: ${allowed.join(', ')})`;
 			}
 			return null;
 		}

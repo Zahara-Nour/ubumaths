@@ -25,12 +25,19 @@
  * quadrillage, sans instrument : `AC = 3 carreaux` ([AB] sur une ligne) ou
  * `AC = AB` (oblique permise), C sur un nœud.
  *
+ * Côté coté en cm (chantier `regle-graduee`, PR 4, § 4 du journal) :
+ * `CAB = 90 ; AC = 4 cm`, papier uni. Palette Segment · Équerre · Règle graduée :
+ * C sur la perpendiculaire construite, sur une graduation d'une règle posée avec
+ * son 0 en A AVANT le premier côté qui arrive en C, à la longueur au mm près.
+ *
  * @module questions/construction/triangle
  */
 
 import {
+	isRuledLength,
 	isSquaresLength,
 	rightAngleOf,
+	type LengthUnit,
 	type TriangleAngle,
 	type TriangleCheck,
 	type TriangleLength
@@ -43,7 +50,7 @@ import {
 	protractorWindowError,
 	type AngleCorrection
 } from './angle';
-import type { DrawnLine, DrawnObject, DrawnRepere } from './answer';
+import type { DrawnLine, DrawnObject, DrawnRegle, DrawnRepere } from './answer';
 import {
 	angleSideVertex,
 	basePointsOf,
@@ -54,12 +61,14 @@ import {
 	isBuiltMark,
 	isInFrame,
 	repereAt,
+	rulerGraduationOf,
 	traitOf,
 	type Construction,
 	type Trait
 } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import { tolerance } from './polygon';
+import { formatLength, rulerLengthOf } from './segment-length';
 import type { FigureShapes } from './symmetry';
 
 export const missingSidesFeedback = (a: string, b: string, c: string) =>
@@ -85,6 +94,15 @@ export const notRightFeedback = (vertex: string, base: string, grid: boolean) =>
 	grid
 		? `Ton angle en ${vertex} n’est pas droit.`
 		: `Ton angle en ${vertex} n’est pas droit : trace la perpendiculaire à (${vertex}${base}) avec l’équerre.`;
+export const vertexOffGraduationFeedback = (p: string, c: string) =>
+	`Ton point ${c} est placé à l’œil : arrête [${p}${c}] sur une graduation de la règle.`;
+export const wrongRuledLengthFeedback = (
+	p: string,
+	c: string,
+	measured: number,
+	expected: { length: number; unit: LengthUnit }
+) =>
+	`Ton côté [${p}${c}] mesure ${formatLength(measured, expected.unit)} au lieu de ${formatLength(expected.length, expected.unit)}.`;
 const squaresText = (n: number) => `${n} carreau${n > 1 ? 'x' : ''}`;
 export const wrongSquaresFeedback = (p: string, c: string, measured: number, expected: number) =>
 	`Ton côté [${p}${c}] mesure ${squaresText(measured)} au lieu de ${expected}.`;
@@ -148,8 +166,13 @@ function angleName(check: TriangleCheck, angle: TriangleAngle): string {
 
 function labelOf(check: TriangleCheck): string {
 	const [a, b, c] = check.points;
-	const side = (l: TriangleLength) =>
-		`${l.side.join('')} = ${isSquaresLength(l) ? squaresText(l.squares) : l.source.join('')}`;
+	const valueOf = (l: TriangleLength) =>
+		isSquaresLength(l)
+			? squaresText(l.squares)
+			: isRuledLength(l)
+				? formatLength(l.length, l.unit)
+				: l.source.join('');
+	const side = (l: TriangleLength) => `${l.side.join('')} = ${valueOf(l)}`;
 	const data = [
 		...check.lengths.map(side),
 		...check.angles.map((g) => `${angleName(check, g)} = ${g.measure}`)
@@ -176,6 +199,17 @@ function lengthOf(
 		throw new TriangleAuthorError(
 			`${label} : [${base}] ne suit pas le quadrillage : donner la longueur par deux points (« ${length.side.join('')} = ${base} »)`
 		);
+	}
+	if (isRuledLength(length)) {
+		// PR 4 de `regle-graduee` : 1 unité = 1 cm (ADR 0036), la règle de l'écran au plus
+		const cm = length.length / 10;
+		const rulerLength = rulerLengthOf(window);
+		if (cm > rulerLength) {
+			throw new TriangleAuthorError(
+				`${label} : [${length.side.join('')}] est plus long que la règle graduée (${rulerLength} cm) : raccourcir le côté ou agrandir la fenêtre`
+			);
+		}
+		return cm;
 	}
 	if (length.source.length === 2) {
 		const [p, q] = length.source.map((name) => {
@@ -584,17 +618,21 @@ function judgeRight(
 	objects: readonly DrawnObject[]
 ): ConstructionVerdict {
 	const grid = figure.grid;
+	const [length] = check.lengths;
+	const ruled = length && isRuledLength(length) ? length : null;
 	const allowed: readonly DrawnObject['kind'][] = grid
 		? ['segment']
-		: ['segment', 'droite', 'report'];
+		: ruled
+			? ['segment', 'droite', 'regle']
+			: ['segment', 'droite', 'report'];
 	// Hors palette (un point placé, un cercle au compas) : réponse forgée
 	if (objects.some((o) => !allowed.includes(o.kind))) return { status: 'incorrect' };
 	const joined = joinedVertices(check, setting.a, setting.b, objects);
 	if ('verdict' in joined) return joined.verdict;
 	const { v, w } = rightEnds(check, right, setting.a, setting.b);
 	const nameC = check.points[2];
-	const [length] = check.lengths;
 	const [expected] = setting.lengths;
+	const rulerLength = rulerLengthOf(figure.window);
 	let lines: Trait[] = [];
 	let circles: Trait[] = [];
 	if (!grid) {
@@ -621,6 +659,15 @@ function judgeRight(
 		if (Math.abs(angleBetween(v, w, c) - 90) > ANGLE_EPSILON) {
 			return { rank: 1, feedback: notRightFeedback(right.vertex, right.base, Boolean(grid)) };
 		}
+		if (ruled) {
+			const mm = ruledGraduationOf(c, v, objects, rulerLength);
+			if (mm === null)
+				return { rank: 2, feedback: vertexOffGraduationFeedback(right.vertex, nameC) };
+			if (mm !== ruled.length) {
+				return { rank: 3, feedback: wrongRuledLengthFeedback(right.vertex, nameC, mm, ruled) };
+			}
+			return { rank: 4, feedback: null };
+		}
 		if (!grid && length) {
 			const crossed = carriers.some((t) =>
 				circles.some((k) => intersectTraits(t, k).some((q) => near(q, c, tolerance(q, c))))
@@ -644,6 +691,36 @@ function judgeRight(
 	if (verdicts.some((x) => x.feedback === null)) return { status: 'correct' };
 	const best = verdicts.reduce((p, q) => (q.rank > p.rank ? q : p));
 	return { status: 'incorrect', feedback: best.feedback ?? undefined };
+}
+
+/**
+ * Côté coté en cm (PR 4) : la graduation (mm, plus de 0) où est C, sur une règle
+ * posée avec son 0 en V avant le premier côté qui arrive en C (comme le cercle de
+ * #2494 : une règle posée après n'a pas guidé le trait) ; null sinon
+ */
+function ruledGraduationOf(
+	c: Position,
+	v: Position,
+	objects: readonly DrawnObject[],
+	rulerLength: number
+): number | null {
+	const reaches = (o: DrawnObject) =>
+		o.kind === 'segment' &&
+		[
+			{ x: o.x1, y: o.y1 },
+			{ x: o.x2, y: o.y2 }
+		].some((p) => near(p, c, tolerance(p, c)));
+	const first = objects.findIndex(reaches);
+	const rulers = objects
+		.slice(0, first < 0 ? objects.length : first)
+		.filter(
+			(o): o is DrawnRegle => o.kind === 'regle' && near({ x: o.ox, y: o.oy }, v, tolerance(v))
+		);
+	for (const ruler of rulers) {
+		const mm = rulerGraduationOf(c, ruler, rulerLength);
+		if (mm !== null && mm > 0) return mm;
+	}
+	return null;
 }
 
 /**
@@ -867,7 +944,7 @@ export function triangleCorrection(
 	const c = { x: sides[0].x2, y: sides[0].y2 };
 	const at = (name: string) => (name === check.points[0] ? a : b);
 	const sourceOf = (length: TriangleLength): [Position, Position] | null => {
-		if (isSquaresLength(length)) return null;
+		if (isSquaresLength(length) || isRuledLength(length)) return null;
 		if (length.source.length === 2) {
 			const p = points.get(length.source[0]);
 			const q = points.get(length.source[1]);
@@ -876,12 +953,13 @@ export function triangleCorrection(
 		const line = shapes.lines.get(length.source[0]);
 		return line ? [line.a, line.b] : null;
 	};
-	const keyOf = (l: TriangleLength) => (isSquaresLength(l) ? null : l.source.join());
+	const keyOf = (l: TriangleLength) =>
+		isSquaresLength(l) || isRuledLength(l) ? null : l.source.join();
 	const same = check.lengths.length === 2 && keyOf(check.lengths[0]) === keyOf(check.lengths[1]);
 	const marks: TriangleCorrection['marks'] = [];
 	check.lengths.forEach((length, i) => {
-		// En carreaux (n° 20) : rien à coder, la longueur se compte
-		if (isSquaresLength(length)) return;
+		// En carreaux (n° 20) : rien à coder, la longueur se compte ; en cm (PR 4) : elle se lit
+		if (isSquaresLength(length) || isRuledLength(length)) return;
 		const count = same ? 1 : i + 1;
 		marks.push({ from: at(length.side[0]), to: c, count });
 		const source = sourceOf(length);
@@ -907,7 +985,30 @@ export function triangleCorrection(
 	const arcs = shapes.grid
 		? []
 		: check.lengths.flatMap((length, i) =>
-				isSquaresLength(length) ? [] : [{ center: at(length.side[0]), radius: lengths[i] }]
+				isSquaresLength(length) || isRuledLength(length)
+					? []
+					: [{ center: at(length.side[0]), radius: lengths[i] }]
 			);
 	return { arcs, marks, angles, rightAngles, guides };
+}
+
+/**
+ * Côté coté en cm (PR 4 de `regle-graduee`) : la règle graduée de la correction,
+ * posée en V (le sommet de l'angle droit), le long de la perpendiculaire, vers le
+ * C de la correction ; null sinon
+ */
+export function triangleRuler(
+	check: TriangleCheck,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined,
+	drawn: readonly DrawnObject[]
+): DrawnRegle | null {
+	const right = rightAngleOf(check);
+	if (!right || !check.lengths.some(isRuledLength)) return null;
+	const sides = triangleSolution(check, points, shapes, drawn);
+	if (sides.length !== 2) return null;
+	const v = points.get(right.vertex);
+	if (!v) return null;
+	const c = { x: sides[0].x2, y: sides[0].y2 };
+	return { kind: 'regle', ox: v.x, oy: v.y, bx: c.x, by: c.y, sens: 1 };
 }
