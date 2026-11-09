@@ -1,0 +1,195 @@
+{
+	"title": "Démontrer que les médiatrices d'un triangle sont concourantes",
+	"description": "Démonstration à trous : médiatrices de [AB] et [AC] sécantes (case choix), OB = OC donc O sur la médiatrice de [BC] (case choix), centre du cercle circonscrit (case choix) ; étapes à ranger",
+	"grades": ["2"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $ABC$ un triangle. On démontre que ses trois médiatrices sont concourantes, en un point $O$ qui est le centre du cercle circonscrit au triangle.\n\nPourquoi les médiatrices de $[AB]$ et de $[AC]$ se coupent-elles en un point $O$ ?\n\n```choix\n- Car $(AB)$ et $(AC)$ ne sont pas parallèles : leurs perpendiculaires ne le sont pas non plus.\n- Car deux droites se coupent toujours.\n- Car elles passent toutes les deux par $A$.\n- Car $AB=AC$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$ABC$ est un triangle : $(AB)$ et $(AC)$ sont sécantes en $A$.",
+					"Les médiatrices sont perpendiculaires à ces droites : si elles étaient parallèles, $(AB)$ et $(AC)$ le seraient aussi. Elles sont donc **sécantes**.",
+					"Les médiatrices ne passent pas par $A$ (le milieu de $[AB]$ n'est pas $A$)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. On démontre que ses trois médiatrices sont concourantes, en un point $O$ qui est le centre du cercle circonscrit au triangle.\n\n$O$ est sur la médiatrice de $[AB]$ et sur celle de $[AC]$, donc $OA=OB$ et $OA=OC$. Qu'en déduit-on ?\n\n```choix\n- $OB=OC$, donc $O$ est sur la médiatrice de $[BC]$.\n- $O$ est le milieu de $[BC]$.\n- $O$ est sur la droite $(BC)$.\n- Le triangle $ABC$ est isocèle en $A$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$OB=OA=OC$ : $O$ est à égale distance de $B$ et de $C$.",
+					"**La médiatrice de $[BC]$ est l'ensemble des points équidistants de $B$ et $C$** : $O$ est sur la médiatrice de $[BC]$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. On démontre que ses trois médiatrices sont concourantes, en un point $O$ qui est le centre du cercle circonscrit au triangle.\n\nLes trois médiatrices passent par $O$, et $OA=OB=OC$. Pourquoi $O$ est-il le centre du cercle circonscrit à $ABC$ ?\n\n```choix\n- Le cercle de centre $O$ et de rayon $OA$ passe par $A$, $B$ et $C$.\n- Car $O$ est à l'intérieur du triangle.\n- Car $O$ est le milieu d'un côté.\n- Car $O$ est sur les trois hauteurs.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$OA=OB=OC$ : $A$, $B$ et $C$ sont sur **le cercle de centre $O$ et de rayon $OA$**.",
+					"$O$ peut être hors du triangle (angle obtus), ou au milieu de l'hypoténuse (triangle rectangle) : sa position n'est pas la raison."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. On démontre que ses trois médiatrices sont concourantes, en un point $O$ qui est le centre du cercle circonscrit au triangle.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Les médiatrices de $[AB]$ et $[AC]$ se coupent en un point $O$, car $(AB)$ et $(AC)$ ne sont pas parallèles.\n- $O$ est sur la médiatrice de $[AB]$, donc $OA=OB$ ; sur celle de $[AC]$, donc $OA=OC$.\n- Donc $OB=OC$ : $O$ est aussi sur la médiatrice de $[BC]$.\n- $OA=OB=OC$ : le cercle de centre $O$ passant par $A$ passe aussi par $B$ et $C$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On caractérise la médiatrice par l'égalité des distances, dans les deux sens.",
+					"Conclusion : **les médiatrices sont concourantes en $O$**, centre du cercle circonscrit."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(AB), (AC) non parallèles",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : toujours sécantes",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : passent par A",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AB = AC",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "OB = OC",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : milieu de [BC]",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sur (BC)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : isocèle",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cercle de rayon OA",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : intérieur",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : milieu d'un côté",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : hauteurs",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
