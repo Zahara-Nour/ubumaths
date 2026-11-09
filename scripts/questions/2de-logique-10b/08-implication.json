@@ -2,7 +2,7 @@
 	"id": "214f7500-0e36-4208-b688-44ddabde06d8",
 	"title": "Formuler une implication",
 	"description": "Écrire une propriété du cours (diagonales du rectangle, multiples, carré et losange) sous la forme « si …, alors … » (piège : la réciproque) ; choisir le sens vrai de x = a ⇒ x² = a², x > g ⇒ x > b, multiple de 4 ⇒ pair",
-	"grades": ["2"],
+	"grades": ["2", "1_SPE"],
 	"level": 1,
 	"delay": 90,
 	"status": "draft",
