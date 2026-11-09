@@ -5,19 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après la relecture du lot 11a._
+_Mis à jour le 2026-11-09, lot 11b écrit (PR à ouvrir)._
 
-- **État** : lot 10 publié (8/8). Lot 11a : 6 brouillons rangés en prod, relus (6/6 « ok »), simulation
-  `publier-lot` verte (§ 26.3).
-- **Prochaine action** : vérifier la publication du 11a, puis 11b (174-179, 148, phase 0 au § 26), nouveau worktree ;
-  puis lot 12 « Constructions » (173, 180, 207).
-- **En attente de David** : publication du 11a
-  (`pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-angles-constructions --publier`). Un
-  `git stash` du dépôt principal porte les `id` du 11a (déjà commités, jetable).
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. Variable à valeur lettre impossible (`{{if:}}` dans le texte).
-  `couleur="bleu"` entre guillemets. Point interne d'un `rotation(point(…))` visible : `visible=faux`. Réponses de
-  figure : pleine précision. Archiver une notion à enfants actifs : refusé par trigger (test : triggers coupés).
-- **Worktree / branche** : aucun.
+- **État** : lots 10 et 11a publiés. Lot 11b (174-179, 148) : 7 modèles écrits, vérifiés en local (§ 26.4), PR des
+  fichiers sur `content/questions-6-lot11b`.
+- **Prochaine action** : merger la PR du 11b ; David lance `create-questions --publier` (brouillons) ; commiter les `id` ;
+  migration nœud + tag (patron `20261109132820`) ; page à cocher ; puis lot 12 « Constructions » (173, 180, 207).
+- **En attente de David** : rien avant le merge.
+- **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
+ancre="centre"`. `\pi` dans `eval:`. Variable à valeur lettre impossible (`{{if:}}` dans le texte). `couleur="bleu"`
+  entre guillemets. Réponses de figure : pleine précision.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `content/questions-6-lot11b`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1648,3 +1646,27 @@ Pièges rencontrés :
 - Relecture de David : 6 verdicts « ok » sur 6, aucun commentaire (`ArtifactData list verdicts`). Simulation
   `publier-lot` verte (6 brouillons passent le contrôle). Publication `--publier` laissée à David.
 - Lot 10 publié par David : 8 modèles `published` en prod (MCP, 2026-11-09).
+- Lot 11a publié par David : 6 modèles `published` en prod (MCP, 2026-11-09).
+
+### 26.4 Lot 11b : écriture (2026-11-09)
+
+Script `docs/wip/questions/lot-11b-triangles-symetrie-perimetres.py` → `scripts/questions/6-triangles-symetrie-perimetres/`
+(7 modèles, 52 specs ; niveau 1 partout, le plus petit de la plage de la phase 0 comme au 11a ; aucun modèle de 6e encore
+rangé sur « triangles », « Symétrie axiale » ni « Périmètres »). Simulation `create-questions` verte, `sonde-figures`
+à 0 problème, `answer-complexity-corpus` et `student-answer-safety` verts, essai en base locale et aperçu admin (toutes
+les figures regardées : 07 v1 et v2 et v4, 09 v1 à v3, 10 v1 dans les trois triangles, 12 v2 dans les trois cas, 13 v1 à
+v3 ; 13 v2 joué juste en « 18,3 »).
+
+Pièges rencontrés :
+
+- `texte(P, "…")` pose le texte en haut à droite du point : une étiquette dans un angle aigu tombe sur le côté →
+  `texte(P, "…", dx=0, dy=0, ancre="centre")`.
+- Étiquette dans l'angle au sommet : point sur [AB] à 1,7 de A (`point(A, longueur=1.7, direction=B)`), tourné de la
+  moitié de l'angle en A.
+- `pi` dans un `eval:` est lu p × i : écrire `\pi` (fenêtre réglée sur la hauteur du triangle, `tan(…*\pi/180)`).
+- 12 v2 (« (AA') non perpendiculaire ») : A' glissé de 1,6 le long de d ne penchait que de 13°, illisible ; glissé de 3
+  (24°).
+- `rendu="croquis"` sur le `polygone` de 176 : pas de trait à main levée visible à l'écran ; figure à l'échelle,
+  sans gêne.
+- Essai local : un fichier réécrit par le script perd son `id` local ; recopie avec les `id` locaux dans le scratchpad
+  puis `--mettre-a-jour --publier` (jamais d'`id` local commité).

@@ -1,0 +1,126 @@
+{
+	"title": "Le symétrique d'un point par rapport à une droite",
+	"description": "A' est le symétrique de A par rapport à la droite d quand d est la médiatrice du segment [AA'] : perpendiculaire à [AA'] en son milieu",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Que veut dire « $A'$ est le symétrique de $A$ par rapport à la droite $d$ » ?\n\n```choix\n- la droite $d$ est la médiatrice du segment $[AA']$\n- la droite $d$ passe par le milieu du segment $[AA']$\n- la droite $(AA')$ est perpendiculaire à $d$\n- les points $A$ et $A'$ sont de part et d'autre de $d$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition.** $A'$ est le symétrique de $A$ par rapport à $d$ quand $\\textcolor{{{color:primary.0}}}{\\text{d est la médiatrice de [AA']}}$ : $d$ est perpendiculaire à $[AA']$ **et** passe par son milieu.",
+					"Une seule des deux conditions ne suffit pas."
+				]
+			}
+		},
+		{
+			"statement": "Le point $A'$ est-il le symétrique du point $A$ par rapport à la droite $d$ ?\n\n```figure\nfenetre: -0.5 ; 10.5 ; -0.5 ; 7.5\ndescription: {{if:k==1|Une droite d oblique, un point A au-dessus et un point A' au-dessous, le segment [AA'] en pointillés, perpendiculaire à d et coupé en son milieu par d.|{{if:k==2|Une droite d oblique, un point A au-dessus et un point A' au-dessous, à la même distance de d, mais le segment [AA'] n'est pas perpendiculaire à d.|Une droite d oblique, un point A au-dessus et un point A' au-dessous, le segment [AA'] perpendiculaire à d, mais A' est deux fois plus près de d que A.}}}}\n---\nD1 = point(0.5, 1, visible=faux)\nD2 = point(9.5, 6, visible=faux)\nd = droite(D1, D2, couleur=\"bleu\", epaisseur=2)\ntexte(9.3, 5.2, \"d\")\nA = point(2.5, 6, etiquette=\"haut\")\n{{if:k==1|Ap = point(5.802, 0.057, etiquette=\"aucune\")|{{if:k==2|Ap = point(8.424, 1.514, etiquette=\"aucune\")|Ap = point(4.976, 1.542, etiquette=\"aucune\")}}}}\ntexte(Ap, \"A'\", dx=0.25, dy=-0.25)\nsegment(A, Ap, trait=\"tirets\")\n```\n\n\n\n```choix\nmelanger: non\n- oui\n- non, la droite $(AA')$ n'est pas perpendiculaire à $d$\n- non, $A$ et $A'$ ne sont pas à la même distance de $d$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A'$ est le symétrique de $A$ quand $d$ est **perpendiculaire** à $[AA']$ **et** passe par son **milieu** (les deux points sont à la même distance de $d$).",
+					"{{if:k==1|$[AA']$ est perpendiculaire à $d$ et coupé en son milieu : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$.|{{if:k==2|$A$ et $A'$ sont bien à la même distance de $d$, mais $[AA']$ penche : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, $(AA')$ n'est pas perpendiculaire à $d$.|$[AA']$ est perpendiculaire à $d$, mais $A'$ est plus près de $d$ que $A$ : $\\textcolor{{{color:primary.0}}}{\\text{non}}$.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Médiatrice",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : seulement le milieu",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : seulement perpendiculaire",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Symétrique",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Non perpendiculaire",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui quand (AA') penche",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pas à la même distance",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

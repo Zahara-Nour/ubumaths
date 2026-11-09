@@ -1,0 +1,141 @@
+{
+	"title": "La somme des angles d'un triangle",
+	"description": "Dans tout triangle, la somme des mesures des trois angles vaut 180° : la connaître, s'en servir pour dire si un triangle est possible",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans un triangle, combien vaut la somme des mesures des trois angles ?\n\n```choix\n- $180^\\circ$\n- $360^\\circ$\n- $90^\\circ$\n- ça dépend du triangle\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Dans tout triangle**, quelle que soit sa forme, la somme des mesures des trois angles vaut $\\textcolor{{{color:primary.0}}}{180^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Un triangle peut-il avoir trois angles qui mesurent ${{a}}^\\circ$, ${{b}}^\\circ$ et ${{c}}^\\circ$ ?\n\n```choix\nmelanger: non\n- oui\n- non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "40..80"
+				},
+				{
+					"name": "b",
+					"expression": "30..60"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "eval:180-a-b+10*d*(k-1)"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La somme des angles d'un triangle** vaut toujours $180^\\circ$.",
+					"${{a}} + {{b}} + {{c}} = {{eval:a+b+c}}$ : {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{oui}}$, ce triangle est possible.|$\\textcolor{{{color:primary.0}}}{\\text{non}}$, ${{eval:a+b+c}} \\neq 180$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "180°",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 360°",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ça dépend du triangle",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Somme 180 : oui",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "70",
+				"b": "50",
+				"d": "2",
+				"c": "60",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Somme 200 : non",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "70",
+				"b": "50",
+				"d": "2",
+				"c": "80",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui quand la somme vaut 200",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "70",
+				"b": "50",
+				"d": "2",
+				"c": "80",
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
