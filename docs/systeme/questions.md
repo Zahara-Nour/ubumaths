@@ -644,9 +644,12 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    graduation d'une règle posée avec son 0 en B (A) AVANT le premier côté qui arrive au sommet
    (`ruledGraduationOf` du triangle) → « Ton point C est placé à l'œil… », mauvaise longueur, lue au bout
    du trait vu (Q18) → « Ton côté [BC] mesure 5,8 cm au lieu de 6 cm. » ; puis trait de trop, trait qui
-   dépasse (`leftoverFeedback`). Q20 : D est aussi juste sans règle en A s'il est au croisement d'une
-   droite construite par A et d'une droite construite par C (C juste compte alors comme point construit :
-   `constructionOf` reçoit C en plus des points de départ). Hors palette (compas, point) : faux, sans
+   dépasse (`leftoverFeedback`). Q20 et Q22 : le premier sommet se prend à la règle ; l'autre, à la
+   règle ou au croisement d'une droite construite par son pied (A pour D, B pour C) et d'une droite
+   construite par le premier sommet, dans les deux ordres (C d'abord ou D d'abord ; le sommet juste compte
+   alors comme point construit : `constructionOf` le reçoit en plus des points de départ) ; un côté
+   prolongé au-delà d'un sommet pris au croisement mesure ce qu'il montre. [AB] doit être un trait de la
+   figure (erreur de l'auteur sinon). Hors palette (compas, point) : faux, sans
    message. Erreurs de l'auteur : A ou B absents ou confondus, C ou D déjà dans la figure, [AB] pas au mm
    près, fenêtre absente, côté plus long que la règle, la figure hors de la fenêtre des deux côtés ;
    quadrillage, autre vérification, palette autre : refus du parseur. Correction : [BC], [CD], [DA] du

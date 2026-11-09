@@ -318,3 +318,13 @@ côtés vus (`throughA` de `seenSegments` ignoré), d'où « Trace un seul carr�
 fautive (`carre A ; B ; C`) cite aussi la forme du papier uni ; (4) unité des messages du carré : cm
 (« 5,8 cm »), le côté [AB] n'ayant pas d'unité écrite ; (5) correction : du côté où l'élève a le plus
 tracé, sinon le plus haut.
+
+**Revue opus (2026-11-09)** : aucun faux juste (14 sondes). (1) **Important**, faux faux : A d'abord, puis C
+au croisement de la perpendiculaire en B et de la perpendiculaire à (AD) en D → refusé « à l'œil » →
+**Q22** (David, 2026-11-09) : accepté dans les deux ordres ; le premier sommet à la règle, l'autre à la
+règle ou au croisement. Mineurs traités : Q20 le long de la droite de l'équerre testé ; côté prolongé au
+croisement → longueur du trait vu (pas « à l'œil ») ; [AB] exigé dans la figure (erreur d'auteur) ;
+`rectangle A ; B ; C : BC = 3 cm` → message d'arité (pas « quatre sommets »). Assumés (messages seuls,
+verdict faux juste) : carré + diagonales → « Trace un seul carré » ; [BC] tracé d'un trait qui passe par
+B → « Il manque le côté [BC] » ; [AB] prolongé → « dépasse » (le quadrillage dit « ne doit pas être
+prolongé »).

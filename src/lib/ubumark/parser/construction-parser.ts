@@ -502,7 +502,9 @@ function readRuledPolygon(
 	const pointsText = colon === -1 ? text : text.slice(0, colon);
 	const lengthText = colon === -1 ? null : text.slice(colon + 1).trim();
 	const points = splitPoints(pointsText);
-	if (points.length !== 4 && lengthText === null) return null;
+	// Pas quatre sommets : la forme du quadrillage, dont le message d'arité cite aussi celle-ci
+	// (revue de #2508 : `rectangle A ; B ; C : BC = 3 cm` n'est pas « quatre sommets attendus »)
+	if (points.length !== 4) return null;
 	const example = kind === 'carre' ? RULED_SQUARE_EXAMPLE : RULED_RECTANGLE_EXAMPLE;
 	if (points.length !== 4 || !points.every((name) => POINT_NAME_REGEX.test(name))) {
 		throw new LineError(`${kind} sur papier uni attend quatre sommets : « ${example} »`);

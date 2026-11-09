@@ -25,7 +25,7 @@ import {
 	wrongRuledLengthFeedback
 } from '../triangle';
 import { severalPolygonsFeedback } from '../ruled-polygon';
-import { isStraight, perpendicularThrough, type StraightTrait } from '../instruments';
+import { isStraight, perpendicularThrough, traitOf, type StraightTrait } from '../instruments';
 import { solutionLines, solutionRulers, solutionTriangle } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject, type DrawnRegle } from '../answer';
 import type { Position } from '../judge';
@@ -181,6 +181,12 @@ describe('carré et rectangle cotés : lecture de l’en-tête', () => {
 		expect(grid.spec.checks).toEqual([{ kind: 'carre', points: ['A', 'B'], line: 3 }]);
 	});
 
+	it('trois sommets et une longueur : le message d’arité, qui cite la forme du papier uni', () => {
+		expect(errorOf(figure('rectangle A ; B ; C : BC = 3 cm', RECT_BODY))).toMatch(
+			/attend trois points.*rectangle A ; B ; C ; D : BC = 3 cm/
+		);
+	});
+
 	it('refuse un rectangle à quatre sommets sans la longueur de [BC]', () => {
 		expect(errorOf(figure('rectangle A ; B ; C ; D', RECT_BODY))).toMatch(/BC = 3 cm/);
 	});
@@ -235,6 +241,11 @@ describe('carré et rectangle cotés : refus de l’auteur', () => {
 	it('accepte les figures nominales', () => {
 		expect(() => assertChecks(SQUARE)).not.toThrow();
 		expect(() => assertChecks(RECT)).not.toThrow();
+	});
+
+	it('refuse un [AB] qui n’est pas tracé dans la figure (revue de #2508)', () => {
+		const bare = figure('carre A ; B ; C ; D', ['A = point(3, 1)', 'B = point(9, 1)']);
+		expect(() => assertChecks(bare)).toThrow(/\[AB\] doit être tracé/);
 	});
 
 	it('refuse C ou D déjà dans la figure', () => {
@@ -304,6 +315,64 @@ describe('carré coté : verdict', () => {
 			segment(C, D)
 		];
 		expect(judge(SQUARE, objects)).toEqual({ status: 'correct' });
+	});
+
+	it('Q20 : la perpendiculaire en C prise le long de la droite tracée à l’équerre en B', () => {
+		const objects = [
+			SQUARE_B,
+			regle(B, { x: 9, y: 2 }),
+			segment(B, C),
+			perpendicularThrough(traitOf(SQUARE_B) as StraightTrait, C),
+			SQUARE_A,
+			segment(A, D),
+			segment(C, D)
+		];
+		expect(judge(SQUARE, objects)).toEqual({ status: 'correct' });
+	});
+
+	it('Q22 : A d’abord, puis C au croisement de la perpendiculaire en B et de la perpendiculaire à (AD) en D', () => {
+		const objects = [
+			SQUARE_A,
+			regle(A, { x: 3, y: 2 }),
+			segment(A, D),
+			perpendicularThrough(straight(A, D), D),
+			SQUARE_B,
+			segment(B, C),
+			segment(C, D)
+		];
+		expect(judge(SQUARE, objects)).toEqual({ status: 'correct' });
+	});
+
+	it('Q22 : C au croisement, mais [BC] prolongé : la longueur du trait vu', () => {
+		const objects = [
+			SQUARE_A,
+			regle(A, { x: 3, y: 2 }),
+			segment(A, D),
+			perpendicularThrough(straight(A, D), D),
+			SQUARE_B,
+			segment(B, { x: 9, y: 8 }),
+			segment(C, D)
+		];
+		expect(judge(SQUARE, objects)).toMatchObject({
+			status: 'incorrect',
+			feedback: 'Ton côté [BC] mesure 7 cm au lieu de 6 cm.'
+		});
+	});
+
+	it('Q20 avec [AD] prolongé au-delà de D : la longueur du trait vu, pas « à l’œil »', () => {
+		const objects = [
+			SQUARE_B,
+			regle(B, { x: 9, y: 2 }),
+			segment(B, C),
+			perpendicularThrough(straight(B, C), C),
+			SQUARE_A,
+			segment(A, { x: 3, y: 8 }),
+			segment(C, D)
+		];
+		expect(judge(SQUARE, objects)).toMatchObject({
+			status: 'incorrect',
+			feedback: 'Ton côté [AD] mesure 7 cm au lieu de 6 cm.'
+		});
 	});
 
 	it('Q20 : la perpendiculaire en C tracée avant que C soit placé ne construit rien', () => {

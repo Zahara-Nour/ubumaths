@@ -124,6 +124,18 @@ function settingOf(
 		expected = { length: mm, unit: 'cm' };
 	}
 	const height = expected.length / 10;
+	// [AB] doit être tracé (revue de #2508) : l'équerre s'y appuie, la correction ne le refait pas
+	const traced = (shapes?.traits ?? []).some(
+		(t) =>
+			t.kind !== 'circle' &&
+			distanceToTrait(a, t) <= tolerance(a, b) &&
+			distanceToTrait(b, t) <= tolerance(a, b)
+	);
+	if (!traced) {
+		throw new RuledPolygonAuthorError(
+			`${label} : le côté [${nameA}${nameB}] doit être tracé dans la figure (« s = segment(${nameA}, ${nameB}) »)`
+		);
+	}
 	const window = shapes?.window ?? null;
 	if (!window) throw new RuledPolygonAuthorError(`${label} : la fenêtre est exigée (fenetre: …)`);
 	const rulerLength = rulerLengthOf(window);
@@ -228,11 +240,13 @@ function vertexVerdict(
 	const end = distance(v, corner.end) > distance(v, p) + eps ? corner.end : p;
 	const mm = ruledGraduationOf(end, v, objects, rulerLength);
 	if (mm === null) {
-		if (end === p && crossed(p)) {
-			const measured = Math.round(distance(v, p) * 10);
-			return Math.abs(distance(v, p) - setting.height) <= eps
+		// Q20 : sommet au croisement de deux droites construites ; le côté jugé sur le trait vu
+		// (revue de #2508 : un côté prolongé n'est pas « placé à l'œil », il mesure ce qu'il montre)
+		if (crossed(p)) {
+			const seen = distance(v, end);
+			return Math.abs(seen - setting.height) <= eps
 				? null
-				: wrongRuledLengthFeedback(nameV, nameP, measured, setting.expected);
+				: wrongRuledLengthFeedback(nameV, nameP, Math.round(seen * 10), setting.expected);
 		}
 		return vertexOffGraduationFeedback(nameV, nameP);
 	}
@@ -301,41 +315,63 @@ export function judgeRuledPolygon(
 	};
 	const lines = builtLines([]);
 	const rulerLength = rulerLengthOf(figure.window);
-	const cVerdict = vertexVerdict(
-		setting,
-		b,
-		a,
-		[nameB, nameA, nameC],
-		c,
-		lines,
-		objects,
-		rulerLength,
-		() => false
-	);
-	if (cVerdict) return { status: 'incorrect', feedback: cVerdict };
-	const withC = builtLines([c.at]);
-	const crossed = (p: Position) => {
-		const e = tolerance(p, c.at, a);
-		const throughA = withC.filter((t) => distanceToTrait(a, t) <= e && distanceToTrait(p, t) <= e);
-		const throughC = withC.filter(
-			(t) => distanceToTrait(c.at, t) <= e && distanceToTrait(p, t) <= e
-		);
-		return (
-			throughA.some((t) => !throughC.includes(t)) && throughC.some((t) => !throughA.includes(t))
-		);
+	// Q20 et Q22 (David, 2026-11-09) : le premier sommet à la règle ; l'autre à la règle, ou
+	// au croisement d'une droite construite par son pied (A ou B) et d'une droite construite
+	// par le premier sommet, devenu point construit
+	const C_SIDE = {
+		v: b,
+		w: a,
+		names: [nameB, nameA, nameC] as [string, string, string],
+		corner: c
 	};
-	const dVerdict = vertexVerdict(
-		setting,
-		a,
-		b,
-		[nameA, nameB, nameD],
-		d,
-		withC,
-		objects,
-		rulerLength,
-		crossed
-	);
-	if (dVerdict) return { status: 'incorrect', feedback: dVerdict };
+	const D_SIDE = {
+		v: a,
+		w: b,
+		names: [nameA, nameB, nameD] as [string, string, string],
+		corner: d
+	};
+	const inOrder = (first: typeof C_SIDE, second: typeof C_SIDE) => {
+		const firstVerdict = vertexVerdict(
+			setting,
+			first.v,
+			first.w,
+			first.names,
+			first.corner,
+			lines,
+			objects,
+			rulerLength,
+			() => false
+		);
+		if (firstVerdict) return { firstOk: false, feedback: firstVerdict };
+		const withFirst = builtLines([first.corner.at]);
+		const crossed = (p: Position) => {
+			const e = tolerance(p, first.corner.at, second.v);
+			const through = (q: Position) =>
+				withFirst.filter((t) => distanceToTrait(q, t) <= e && distanceToTrait(p, t) <= e);
+			const atFoot = through(second.v);
+			const atFirst = through(first.corner.at);
+			return atFoot.some((t) => !atFirst.includes(t)) && atFirst.some((t) => !atFoot.includes(t));
+		};
+		const feedback = vertexVerdict(
+			setting,
+			second.v,
+			second.w,
+			second.names,
+			second.corner,
+			withFirst,
+			objects,
+			rulerLength,
+			crossed
+		);
+		return { firstOk: true, feedback };
+	};
+	const cFirst = inOrder(C_SIDE, D_SIDE);
+	if (cFirst.feedback) {
+		// C refusé à la règle : l'autre ordre (D d'abord), dont le message vaut si D y est juste
+		const dFirst = cFirst.firstOk ? null : inOrder(D_SIDE, C_SIDE);
+		const verdict = dFirst?.firstOk ? dFirst : cFirst;
+		if (verdict.feedback) return { status: 'incorrect', feedback: verdict.feedback };
+	}
 	const feedback = leftoverFeedback([a, b, c.at, d.at], pieces, eps);
 	return feedback ? { status: 'incorrect', feedback } : { status: 'correct' };
 }
