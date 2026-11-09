@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-09, après #2512._
 
-- **État** : PR 1 mergée (#2512, FCP/LCP d'onglet caché écartés ; attend un `deploy:prod`) ; Fluid compute activé sur Vercel (David, 2026-11-09) · **Prochaine action** : point 3, alléger le démarrage du serveur (build fraîche, mesurer ce que charge `hooks.server.ts`) · **En attente de David** : rien · **Pièges en cours** : commitlint refuse un corps de commit à lignes > 100 caractères · **Worktree / branche** : aucun (nouveau worktree pour la PR 2)
+- **État** : PR 1 mergée (#2512) ; PR 2 (point 3) en cours : jsdom chargé à la demande, date-fns embarqué dans la build serveur · **Prochaine action** : PR 2 ouverte, CI, merge · **En attente de David** : rien · **Pièges en cours** : commitlint refuse un corps de commit à lignes > 100 caractères · **Worktree / branche** : `../ubumaths-wt-amelioration`, `perf/amelioration-demarrage`
 
 ## Diagnostic de la connexion lente (2026-11-09)
 
@@ -27,3 +27,28 @@ Relevé #2094 : `/auth/login` LCP 5,8 s, TTFB 2,4 s au p75 (10 mesures).
 3. **Alléger le démarrage du serveur** : build fraîche (`pnpm build`), mesurer ce que chargent
    `hooks.server.ts` et ses dix handles, ne charger les gros modules qu'à la demande.
 4. Ping planifié à 7 h 30 en semaine : dernier recours (masque le symptôme).
+
+## PR 2 — démarrage du serveur (2026-11-09)
+
+Mesuré sur une build locale (`pnpm build`), fonction `catchall.func` lancée telle que Vercel la
+lance (`new Server(manifest)`, `init`, puis `respond`), Mac mini M6 : les durées sont à
+multiplier sur Vercel (CPU plus lent, disque froid), le nombre de fichiers lus ne change pas.
+
+| Mesure                                       | Avant                | Après              |
+| -------------------------------------------- | -------------------- | ------------------ |
+| Modules chargés par `init` (hooks)           | 826 (7,5 Mo)         | 217                |
+| Durée import + `init` (médiane de 7)         | ~155 ms              | ~48 ms             |
+| `/dashboard` sans session (303), 1re requête | 854 modules, ~637 ms | 30 modules, ~20 ms |
+| `/auth/login`, 1re requête                   | ~70 ms               | ~58 ms             |
+| Taille de la fonction                        | 88 Mo                | 83 Mo              |
+
+- **jsdom** (~650 modules, ~110 ms sur 155) : `hooks.server` → `errorMonitoring` →
+  `notifications` → `sanitization` → `isomorphic-dompurify`. Désormais `notifications.ts` importe
+  `./sanitization` à l'écriture d'une notification seulement. Test :
+  `notifications-chargement-paresseux.test.ts` (rouge sans le changement).
+- **date-fns** : laissé externe en SSR, Node chargeait les barrels `date-fns` et `date-fns/locale`
+  (826 fichiers). `ssr.noExternal: ['date-fns']` dans `vite.config.ts` : élagué comme côté client.
+- **Reste, hors PR** : les composants markdown assainissent en SSR avec `isomorphic-dompurify`
+  (`$lib/utils/sanitize.ts`, synchrone) : jsdom se charge à la première page qui en rend. Le
+  remplacer côté serveur par un DOM plus léger serait un autre chantier. Pages connectées non
+  mesurées (il faut une session).
