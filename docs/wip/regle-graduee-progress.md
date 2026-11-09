@@ -15,8 +15,8 @@ _Mis à jour le 2026-11-09, après #2503 (bloc corrigé : la PR « carré et rec
   rectangle) et le correctif Q15 (#2503). **Reste la PR 6 : carré et rectangle cotés sur papier uni** (Q10,
   Q11, Q13 ; `polygon.ts` ne juge que sur quadrillage). Mesurer (CP-035, CE1-044) : déjà couvert par des modèles
   à règle dessinée ; le geste « poser la règle pour mesurer » ira dans `outils-manquants.md` à la clôture (David).
-- **Prochaine action** : phase 0 de la PR 6 (§ 8) → réponses de David à Q19-Q21 → tests rouges → code.
-- **En attente de David** : Q19-Q21 (§ 8) ; vérifications sur téléphone (#2485, #2490, #2494, #2499).
+- **Prochaine action** : PR 6 (§ 8, Q19-Q20 tranchées) : tests rouges → code → revue Opus.
+- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494, #2499).
 - **Pièges en cours** : le juge prend le **segment vu** (§ 3, § 7) ; seules les règles posées AVANT le trait
   comptent (§ 6, § 7) ; tests de composant : toucher pile sur une graduation ; commitlint : corps ≤ 100 car.
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-carre`.
@@ -294,5 +294,9 @@ droite construite à l'équerre par le sommet, graduation d'une règle posée en
 - **Q20** — Le 4e sommet D : seulement « perpendiculaire en A + règle posée en A » (comme C en B), ou aussi D au
   croisement de deux droites construites (perpendiculaire en A et perpendiculaire à (BC) en C, sans mesurer
   [AD]) ? (reco : accepter les deux — la seconde est une construction exacte qu'un élève fait aussi)
-- **Q21** — Un trait commun : l'élève trace [BC] et [AD] SANS la perpendiculaire (règle seule, à l'œil) mais pile
-  juste grâce à l'aimantation : refusé « tracé à l'œil » comme le triangle (Q13) ? (reco : oui, Q13 l'exige)
+- ~~Q21~~ — tracé sans l'équerre : déjà tranché par **Q13** (angle droit à l'équerre exigé), pas reposé.
+
+**Décisions de David (2026-11-09)** : **Q19** quatre sommets nommés sur papier uni (`carre A ; B ; C ; D`,
+`rectangle A ; B ; C ; D : BC = 3 cm`), formes du quadrillage inchangées ; **Q20** D accepté de deux façons :
+perpendiculaire en A + règle posée en A, ou croisement de deux droites construites (perpendiculaire en A et
+perpendiculaire à (BC) en C).
