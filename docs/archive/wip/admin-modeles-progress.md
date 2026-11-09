@@ -1,20 +1,18 @@
 ---
-status: en cours
+status: clos
 ---
 
 # Admin des modèles de questions — UX de publication et de recherche
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2492 (PR 2 mergée)._
+_Mis à jour le 2026-11-09, après #2492 ; chantier clos et versé._
 
-- **État** : les deux PR mergées — #2489 (édition d'un publié) et #2492 (filtres gardés après
-  l'élévation, recherche par titre ou début d'identifiant dès 8 caractères) ; vérifications manuelles
-  notées ; worktree supprimé · **Prochaine action** : `deploy:prod` **sur demande de David**, puis
-  ligne 22 d'`outils-manquants.md` en « Livré » et versement du chantier (journal archivé) ·
-  **En attente de David** : le `deploy:prod` · **Pièges en cours** : finding 6 de #2489 (mode JSON :
-  refus du serveur ignoré pour « Enregistrer »/« Publier ») laissé, pas de bug visible ·
-  **Worktree / branche** : aucun.
+- **État** : chantier clos — #2489 et #2492 mergées, ligne 22 d'`outils-manquants.md` passée en
+  « Livré » · **Prochaine action** : aucune (le `deploy:prod` reste à la main de David) ·
+  **En attente de David** : rien ici · **Pièges laissés** : finding 6 de #2489 (mode JSON : refus du
+  serveur ignoré pour « Enregistrer »/« Publier »), pas de bug visible ·
+  **Worktree / branche** : supprimés.
 
 ## Origine (2026-11-08, session `automatismes-1spe`)
 

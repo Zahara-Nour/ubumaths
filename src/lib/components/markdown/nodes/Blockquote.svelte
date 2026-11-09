@@ -21,6 +21,7 @@
 	import HeadingNode from './HeadingNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
+	import VideoDisplay from './VideoDisplay.svelte';
 	import ListNode from './ListNode.svelte';
 	import TableNode from './TableNode.svelte';
 	import HorizontalRule from './HorizontalRule.svelte';
@@ -138,6 +139,20 @@
 				caption={child.caption}
 				originalWidth={child.originalWidth}
 				originalHeight={child.originalHeight}
+			/>
+		{:else if child.type === 'video'}
+			<VideoDisplay
+				src={child.src}
+				alt={child.alt}
+				provider={child.provider}
+				videoId={child.videoId}
+				sizeClass={child.sizeClass}
+				widthPercent={child.widthPercent}
+				alignment={child.alignment}
+				controls={child.controls}
+				autoplay={child.autoplay}
+				loop={child.loop}
+				muted={child.muted}
 			/>
 		{:else if isBlockquoteNode(child)}
 			<!-- Recursive blockquote rendering -->

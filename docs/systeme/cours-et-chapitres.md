@@ -414,9 +414,9 @@ réduites à leur libellé.
 
 Plus de lecture HTML : les 4 lignes écrites avant le chantier en HTML (TipTap) ont été
 converties le 2026-11-08 (migration `20261106164230_cahier_texte_conversion_ubumark.sql`), puis
-la branche HTML retirée (PR 3). Une balise saisie est du texte. ⚠️ Une vidéo dans une liste ou
-une citation n'est pas rendue (`ListNode` et `Blockquote` n'ont pas de cas `video`) : rien n'est
-chargé, rien n'est affiché non plus.
+la branche HTML retirée (PR 3). Une balise saisie est du texte. Une vidéo dans une liste ou une
+citation passe par `VideoDisplay` comme au premier niveau : au cahier, un lien hors de notre
+stockage, jamais de lecteur tiers.
 
 **Activités** d'une séance (`journal_entry_activities`) : cinq sortes — `exercise`, `question`,
 `assessment`, `course`, `textbook`. Sur une séance neuve, la page les garde et les envoie avec le
