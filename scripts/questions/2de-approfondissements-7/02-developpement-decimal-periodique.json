@@ -1,0 +1,199 @@
+{
+	"title": "Développement décimal périodique d'un rationnel",
+	"description": "n-ième chiffre de a/7 par la période de 6 chiffres (case, a de 1 à 6, n de 20 à 60) ; 0,uvuv… = uv/99 (case) ; périodicité par les restes de la division (case choix)",
+	"grades": ["2"],
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Le développement décimal de $\\frac{{{eval:a}}}{7}$ est périodique :\n\n$$\\frac{{{eval:a}}}{7}=0{,}{{eval:floor(10^6*a/7)}}{{eval:floor(10^6*a/7)}}\\ldots$$\n\nle bloc ${{eval:floor(10^6*a/7)}}$ se répète indéfiniment.\n\nQuel est le ${{eval:n}}^\\text{e}$ chiffre après la virgule ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "n",
+					"expression": "20..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(floor(10^(mod(n-1,6)+1)*a/7),10)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La période a $6$ chiffres : les chiffres de rang $1$ à $6$, puis de $7$ à $12$, etc. sont les mêmes.",
+					"${{eval:n}}=6\\times {{eval:floor((n-1)/6)}}+{{eval:mod(n-1,6)+1}}$ : le ${{eval:n}}^\\text{e}$ chiffre est le ${{eval:mod(n-1,6)+1}}^\\text{e}$ chiffre du bloc ${{eval:floor(10^6*a/7)}}$.",
+					"C'est $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(10^(mod(n-1,6)+1)*a/7),10)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On pose $x=0{,}{{eval:u}}{{eval:v}}{{eval:u}}{{eval:v}}{{eval:u}}{{eval:v}}\\ldots$ (le bloc ${{eval:10*u+v}}$ se répète indéfiniment).\n\nOn a $100x={{eval:10*u+v}}{,}{{eval:u}}{{eval:v}}{{eval:u}}{{eval:v}}\\ldots$, donc $100x-x={{eval:10*u+v}}$.\n\nComplète.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "v",
+					"expression": "0..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:10*u+v}}}{99}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$100x-x=99x$ : les décimales s'annulent, il reste $99x={{eval:10*u+v}}$.",
+					"Donc $x=\\textcolor{{{color:primary.0}}}{\\frac{{{eval:10*u+v}}}{99}}$ : $x$ est un nombre rationnel."
+				]
+			},
+			"conditions": ["u != v"]
+		},
+		{
+			"statement": "On pose la division de $1$ par $7$ : à chaque étape, le reste est un entier compris entre $0$ et $6$, et dès qu'un reste revient, les chiffres du quotient se répètent.\n\nPourquoi le développement décimal de $\\frac{1}{7}$ est-il forcément périodique ?\n\n```choix\n- Car il n'y a que $7$ restes possibles : un reste finit par revenir.\n- Car $7$ est un nombre premier.\n- Car la division ne s'arrête jamais.\n- Car $\\frac{1}{7}$ est plus petit que $1$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les restes sont pris parmi $0$, $1$, …, $6$ : au bout de $7$ étapes au plus, un reste revient.",
+					"À partir de là, la division recommence de la même façon : les chiffres se répètent.",
+					"C'est vrai pour tout quotient d'entiers : **le développement décimal d'un rationnel est périodique**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/7, rang 26 : 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "26"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 26 mod 6 compté à partir de 0 (8)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "26"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/7, rang 30 : 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"n": "30"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "37/99",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3",
+				"v": "7"
+			},
+			"answers": ["\\frac{37}{99}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 37/100",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3",
+				"v": "7"
+			},
+			"answers": ["\\frac{37}{100}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 37/9",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3",
+				"v": "7"
+			},
+			"answers": ["\\frac{37}{9}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12/99 simplifié en 4/33",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"v": "2"
+			},
+			"answers": ["\\frac{4}{33}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7 restes possibles",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 premier",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : division infinie",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : plus petit que 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
