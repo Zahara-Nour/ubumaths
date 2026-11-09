@@ -82,7 +82,7 @@ const VARIABLE_REGEX = /^\s*variable\s*:\s*(.+?)\s*$/;
 
 /**
  * Regex to parse domain line with potential bounds
- * Supports: domain: -inf, 0, +inf OR domain: ]-inf, 0[, ]0, +inf[
+ * Supports: domain: -inf, 0, +inf OR domain: ]-inf, 0[, ]0, +inf[ OR domain: ]0, [2, [+inf[
  */
 const DOMAIN_REGEX = /^\s*domain\s*:\s*(.+?)\s*$/;
 
@@ -272,6 +272,35 @@ function parseDomainPoint(expr: string, refuse: Refuse, line: number): DomainPoi
 	return point;
 }
 
+/** Le segment se termine par un crochet de borne (`0[`, `4]`). */
+function endsWithBracket(segment: string): boolean {
+	return segment.endsWith('[') || segment.endsWith(']');
+}
+
+/** Le segment commence par un crochet de borne (`]0`, `[0`). */
+function startsWithBracket(segment: string): boolean {
+	return segment.startsWith('[') || segment.startsWith(']');
+}
+
+/** Coupe aux virgules hors parenthèses et accolades (`f(1,2)`, `{{eval:min(a,b)}}`). */
+function splitTopLevelCommas(content: string): string[] {
+	const parts: string[] = [];
+	let depth = 0;
+	let current = '';
+	for (const char of content) {
+		if (char === '(' || char === '{') depth++;
+		else if ((char === ')' || char === '}') && depth > 0) depth--;
+		if (char === ',' && depth === 0) {
+			parts.push(current);
+			current = '';
+		} else {
+			current += char;
+		}
+	}
+	parts.push(current);
+	return parts;
+}
+
 /**
  * Parse the domain line content
  *
@@ -285,22 +314,34 @@ function parseDomainPoint(expr: string, refuse: Refuse, line: number): DomainPoi
 function parseDomainContent(content: string, refuse: Refuse, line: number): DomainPoint[] {
 	const points: DomainPoint[] = [];
 
-	// Try to detect bound-style notation (contains [ or ])
+	// Notation à crochets : un crochet par point (`]0, [2, [+inf[`) ou réunion
+	// d'intervalles (`]-inf, 0[, ]0, +inf[`). Coupure à chaque virgule hors
+	// parenthèses et accolades ; un point commun à deux intervalles (`0[, ]0`)
+	// n'est gardé qu'une fois, ouvert s'il est exclu des deux.
 	if (content.includes('[') || content.includes(']')) {
-		// Split by comma but be careful with bounds notation
-		// The pattern ], [ indicates a boundary between intervals
-		const segments = content.split(/,\s*(?=[[\]])/);
+		const segments = splitTopLevelCommas(content)
+			.map((segment) => segment.trim())
+			.filter((segment) => segment !== '');
 
-		for (const segment of segments) {
-			const trimmed = segment.trim();
-			if (!trimmed) continue;
+		for (let i = 0; i < segments.length; i++) {
+			const point = parseDomainPoint(segments[i], refuse, line);
+			if (!point.expression) continue;
 
-			// Each segment may contain bounds at start/end
-			// e.g., ]-inf or 0[ or ]0
-			const point = parseDomainPoint(trimmed, refuse, line);
-			if (point.expression) {
-				points.push(point);
+			const next = segments[i + 1];
+			if (next && endsWithBracket(segments[i]) && startsWithBracket(next)) {
+				const nextPoint = parseDomainPoint(next, refuse, line);
+				if (nextPoint.expression === point.expression) {
+					// Exclu à gauche (`0[`) ET à droite (`]0`) : ouvert ; sinon dans le domaine
+					const open = segments[i].endsWith('[') && next.startsWith(']');
+					const merged: DomainPoint = { ...point, ...nextPoint };
+					if (open) merged.open = true;
+					else delete merged.open;
+					points.push(merged);
+					i++;
+					continue;
+				}
 			}
+			points.push(point);
 		}
 	} else {
 		// Simple comma-separated format

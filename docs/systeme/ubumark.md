@@ -302,6 +302,10 @@ Une ligne `variation: f(x)` suivie de `-1: 3, top` / `0: 0, bottom` ajoute les f
 (`src/lib/ubumark/__tests__/parser/variation-table-parser.test.ts`). Un tableau de signes **est**
 un ` ```variation ` sans ligne `variation:`. Une borne ±∞ sans entrée est complétée au rendu
 par `withImplicitEndpoints`. Les virgules séparent les valeurs : écrire `11/2`, pas `5,5`.
+**Domaine à crochets** (`parseDomainContent`) : un crochet par point (`]0, [2, [+inf[`, `]a[, +inf`) ou
+réunion d'intervalles (`]-inf, 0[, ]0, +inf[`) ; coupure à chaque virgule hors parenthèses et accolades,
+un point commun à deux intervalles n'est gardé qu'une fois, ouvert (`open`) s'il est exclu des deux
+(`[-1, 0[, [0, 1]` : 0 fermé). `open` ne se voit pas au PDF (vartable 0.2.1 n'a pas de `]a[`).
 **Marque sur une borne du domaine** (`-3: z` quand le domaine commence en −3) : l'écran affiche le « 0 » ;
 au PDF, `generateVariationTableTypst` n'envoie à vartable 0.2.1 que `||` en borne (un « 0 » final y
 faisait planter la compilation, un « 0 » initial était ignoré) : la borne reste sans marque, en attendant
