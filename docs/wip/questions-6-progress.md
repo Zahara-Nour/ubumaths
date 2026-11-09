@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09 (décision de David : témoins des contrôles dans le lot 11, voir § 25) ; état du lot 10 daté du 2026-11-02, à revérifier._
+_Mis à jour le 2026-11-09, phase 0 du lot 11 proposée (§ 26)._
 
-- **État** : lot 10 (160-167) : 8 brouillons en prod, rangés et tagués (§ 24.2) ; page à cocher publiée (§ 24.3,
-  https://claude.ai/artifact/CBDvnDQFzMr8XRw7Cm3tBC). 6e : 165 publiés + 1 brouillon (3a7a5711) + 8 du lot 10.
-- **Prochaine action** : lire et **compter** les verdicts (`ArtifactData list verdicts`) ; corriger les « À revoir »
-  (§ 7 de la doc) ; `publier-lot.ts --dir scripts/questions/6-distances-cercle-mediatrice` en simulation, puis
-  David avec `--publier`. Ensuite lot 11 (angles, triangles, symétrie : 148, 168, 171, 174-179), **avec les
-  modèles témoins des contrôles de la figure** (§ 25). Relevé du niveau déjà fait (§ 1) : ne pas le refaire,
-  seulement le § 2 « un lot » du skill `couvrir-niveau`.
-- **En attente de David** : relecture de la page à cocher.
+- **État** : lot 10 (160-167) : 8 verdicts « ok » sur 8, simulation `publier-lot` verte, **toujours en brouillon**
+  (publication par David). Lot 11 : phase 0 écrite au § 26 (11a angles + 4 témoins, 11b triangles, symétrie,
+  périmètres). 6e : 165 publiés + 1 brouillon (3a7a5711) + 8 du lot 10.
+- **Prochaine action** : vérifier en base que le lot 10 est `published` après le `--publier` de David ; puis, phase 0
+  validée, écrire le lot 11a (§ 2 du skill `couvrir-niveau`, script `docs/wip/questions/lot-11a-….py`).
+- **En attente de David** : `publier-lot.ts --dir scripts/questions/6-distances-cercle-mediatrice --publier` ;
+  réponses aux 5 questions du § 26.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `{{eval:…/10}}` = fraction : toujours `;d`. Mot coloré hors
   `$…$` : `colt`. Choix multiple incomplet = `unoptimal_form`. `Doc-inchangée:` dans un commit, corps ≤ 100 car.
   Migrations en attente : lire `schema_migrations` (MCP), pas un JSON parsé. `publier-lot` : David avec `!`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : aucun (worktree à créer pour la PR des fichiers du lot 11a).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1526,3 +1525,74 @@ Décidé par David (session `aide-ecriture-a-jour`, après #2506) :
   sessions des niveaux concernés, pas à ce lot.
 - **Avant le lot 11** : le bloc « Reprendre ici » date du 2026-11-02 (lot 10 en attente de relecture) ; revérifier
   l'état réel du lot 10 en prod (brouillons, verdicts de la page à cocher) avant d'avancer.
+
+## 26. Lot 11 « Angles, triangles, symétrie » : phase 0 (proposée le 2026-11-09, à valider)
+
+État du lot 10 revérifié le 2026-11-09 (§ 25) : 8 verdicts « ok » sur 8 sur la page à cocher, aucun commentaire ;
+`publier-lot.ts` en simulation : les 8 brouillons passent le contrôle. Publication `--publier` laissée à David.
+
+Relevé prod (MCP, 2026-11-09) : **aucun modèle** sur 148, 168 à 180, 207 (166 : le seul 9e90342c, lot 10). Aucun
+modèle n'emploie `verifier: angle`, `mesure`, `bissectrice` ni une droite à construire (`symetrique`, `cercle`,
+`triangle`, `carre`, `rectangle` sont déjà employés par d'autres niveaux). Nœuds en prod : « Grandeurs et mesures >
+Angles > (comparaison · construction · mesure en degrés) », « Géométrie > Figures planes > (triangles · médiatrice et
+bissectrice · angles droits) », « Géométrie > Symétrie axiale » (sans enfant), « Grandeurs et mesures > Périmètres >
+(carré · disque · rectangle) ». Depuis le § 14, les contrôles de la figure à compléter sont en prod : 169, 170, 172 ne
+sont plus classés C ni « contrôles manquants ».
+
+13 modèles, en **deux lots** (3 à 10 chacun), les témoins d'abord (§ 25) :
+
+### Lot 11a « Angles et constructions » (6 modèles, dont les 4 témoins)
+
+1. **Lexique des angles** (168, niveaux 1-3) — v1 un angle dessiné, sa mesure écrite : aigu / droit / obtus / plat /
+   nul / plein (choix) ; v2 deux angles dessinés, figure tirée parmi trois : adjacents / opposés par le sommet / ni
+   l'un ni l'autre (choix) ; v3 angles supplémentaires : l'un mesure a, l'autre ? (case, 180 − a) ; v4 notation :
+   « l'angle de sommet O » parmi AOB, OAB, ABO (choix).
+2. **Mesurer un angle — témoin `mesure`** (169, 1-2) — v1 rapporteur déjà posé, lire la mesure (`mesure AOB,
+rapporteur posé`) ; v2 poser le rapporteur et mesurer (`mesure AOB`). Angle saillant entier de 10 à 170°, jamais
+   90 ; le leurre 180 − a est jugé par le contrôle (« mauvaise graduation »).
+3. **Construire un angle de mesure donnée — témoin `angle`** (170, 1-2) — [OA) donné, tracer [Oy) avec AOy = a ;
+   niveau 1 a multiple de 10, niveau 2 entier ; de 10 à 170°.
+4. **Définition de la bissectrice** (171, 1-2) — v1 [Oz) dessinée dans l'angle AOB, figure tirée parmi trois : « est-ce
+   la bissectrice ? » (oui / non, les deux angles ne sont pas égaux / non, elle ne part pas du sommet) ; v2 la
+   définition (choix, trois leurres incomplets) ; v3 [Oz) bissectrice, AOz = 35° : AOB = ? (case).
+5. **Construire la bissectrice — témoin `bissectrice`** (172, 2-3) — papier uni, angle AOB tracé (mesure de 40 à
+   140°), construire au compas et à la règle.
+6. **Construire la médiatrice — témoin droite à construire** (166, 2-3) — papier uni, [AB] tracé, construire la
+   médiatrice au compas et à la règle (la variation construite promise au § 24, question 3). **Modèle neuf**, pas une
+   variation de 9e90342c (relu et publié tel quel).
+
+### Lot 11b « Triangles, symétrie, périmètres » (7 modèles)
+
+7. **Propriétés angulaires des triangles particuliers** (174, 1-3) — v1 isocèle codé, un angle à la base : l'autre
+   (case) ; v2 équilatéral : chaque angle (case, 60) ; v3 « deux angles égaux → quel triangle ? » (choix) ; v4
+   rectangle, un angle aigu : l'autre (case, 90 − a).
+8. **Somme des angles d'un triangle** (175, 1) — v1 la somme (choix : 180° / 360° / 90° / ça dépend du triangle) ; v2
+   « un triangle peut-il avoir des angles de 100°, 50° et 40° ? » (choix oui / non, somme ≠ 180).
+9. **Calculer un angle d'un triangle** (176, 1-3) — v1 deux angles → le troisième (case) ; v2 isocèle, angle au
+   sommet → angles à la base (case) ; v3 isocèle, angle à la base → angle au sommet (case). Mesures entières ; figure
+   à main levée codée, mesures écrites.
+10. **Médiatrices concourantes** (177, 1-2) — v1 triangle, deux médiatrices tracées se coupant en O : la troisième
+    (choix : passe par O / ne passe pas par O / ça dépend) ; v2 vrai / faux sur l'énoncé.
+11. **Cercle circonscrit** (178, 1-2) — v1 son centre (choix : point de concours des médiatrices / des bissectrices /
+    milieu d'un côté) ; v2 O centre du cercle circonscrit, OA = 4,5 cm : OB, OC (case).
+12. **Symétrique d'un point par rapport à une droite** (179, 1-2) — v1 la définition (choix : d est la médiatrice de
+    [AA'] et leurres) ; v2 figure, A' tiré parmi trois candidats : (AA') non perpendiculaire à d / pas à égale distance
+    / juste (choix).
+13. **Périmètres de figures composées** (148, 1-3) — contours de segments et de demi-cercles ou quarts de cercle,
+    longueurs écrites ; v1 segments seuls (case) ; v2 un demi-cercle, π ≈ 3,14, résultat au dixième (case) ; v3 deux
+    portions de cercle (case). Corrigé : contour décomposé.
+
+Hors lot 11 : **173** (construire un triangle), **180** (symétrique construit), **207** (cercle circonscrit construit) :
+contrôles en prod, aucun modèle 6e (question 3).
+
+**Question d'accès** (migration nœud + tag de chaque sous-lot) : personne ne lit rien de plus ; brouillons visibles de
+l'admin et de l'auteur seuls jusqu'à la publication, la migration ne fait que ranger et taguer.
+
+**Questions** :
+
+1. Deux lots, 11a (6, témoins) puis 11b (7) ?
+2. Médiatrice construite en **modèle neuf** tagué 6-166 (recommandé : 9e90342c est relu et prêt à publier) ?
+3. 173, 180, 207 : un lot 12 « Constructions » juste après (recommandé : les contrôles sont en prod, la 6e n'a aucun
+   modèle dessus), ou plus tard ?
+4. 148 : π ≈ 3,14 et résultat au dixième (recommandé, exemples de réussite) ?
+5. Valider la phase 0 (variations, niveaux, formes de réponse) ?
