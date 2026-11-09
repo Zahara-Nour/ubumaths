@@ -9,8 +9,8 @@ Phase 0 validée par David le 2026-11-09 (journal « docs/wip/questions-1spe-rai
 | 2 | 2-216    | Raisonner par disjonction des cas                   | Logique › Raisonnements › disjonction de cas, 1   | 2, 1_SPE       |
 | 3 | 2-217    | Raisonner par l'absurde                             | Logique › Raisonnements › par l'absurde, 1        | 2, 1_SPE       |
 | 4 | 1SPE-284 | Résoudre un problème d'optimisation                 | Fonctions › Dérivation › variations et extremums, 9 | 1_SPE        |
-| 5 | 1SPE-436 | Produit scalaire : résoudre un problème géométrique | Géométrie › Produit scalaire, 1                   | 1_SPE          |
-| 6 | 1SPE-437 | Étudier une configuration dans un repère            | Géométrie › Géométrie repérée, 1                  | 1_SPE          |
+| 5 | 1SPE-436 | Produit scalaire : résoudre un problème géométrique | Géométrie › Produit scalaire › propriétés, 7      | 1_SPE          |
+| 6 | 1SPE-437 | Étudier une configuration dans un repère            | Géométrie › Géométrie repérée › milieu et distance, 3 | 1_SPE      |
 
 Forme : celle des démonstrations (lot-1spe-demonstrations-1.py) : le raisonnement est écrit,
 l'élève complète une étape (case), choisit une justification (case choix à 4 propositions, la
@@ -503,7 +503,7 @@ MODELES.append(modele(
     'Produit scalaire : résoudre un problème géométrique',
     'Carré ABCD, I et J milieux de [AB] et [BC] : (DI) ⊥ (AJ) par Chasles (DA·BJ, AI·AB à'
     ' calculer, DA·AB = 0 à justifier) ; rectangle : AC·BD = AD² − AB²',
-    1,
+    7,
     [V436_DABJ, V436_AIAB, V436_NUL, V436_RECT],
     [spec('−18', 0, '-18', 'correct', VARS_436),
      spec('Erreur : 18 (sens oublié)', 0, '18', 'incorrect', VARS_436),
@@ -576,7 +576,7 @@ MODELES.append(modele(
     '06-configuration-dans-un-repere', 'Étudier une configuration dans un repère',
     'Carré ABCD, I milieu de [CD], J sur [BC] avec BJ = ¾BC : repère (A ; AB, AD) orthonormé à'
     ' justifier, ordonnée de J et IJ² à calculer, conclusion par la réciproque de Pythagore',
-    1,
+    3,
     [V437_REPERE, V437_J, V437_IJ, V437_CONCLURE],
     specs_choix(0, 'carré', ['sommet', 'AB = 1', 'tout repère'])
     + [spec('3/4', 1, '\\frac{3}{4}', 'correct'),

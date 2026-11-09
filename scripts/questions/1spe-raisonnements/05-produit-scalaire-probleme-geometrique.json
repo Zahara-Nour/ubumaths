@@ -1,8 +1,9 @@
 {
+	"id": "6058963e-3c10-4140-94a4-26f008dbe11f",
 	"title": "Produit scalaire : résoudre un problème géométrique",
 	"description": "Carré ABCD, I et J milieux de [AB] et [BC] : (DI) ⊥ (AJ) par Chasles (DA·BJ, AI·AB à calculer, DA·AB = 0 à justifier) ; rectangle : AC·BD = AD² − AB²",
 	"grades": ["1_SPE"],
-	"level": 1,
+	"level": 7,
 	"delay": 90,
 	"status": "draft",
 	"shared": {},

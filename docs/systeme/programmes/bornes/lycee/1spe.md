@@ -68,9 +68,15 @@ d'algorithmes) ; journaux dans `docs/archive/wip/` (`questions-1spe*-progress.md
     autres dans une catégorie « Algorithmes » par domaine.
   - Au BO, 300-302 sont des approfondissements (rubrique Fonction exponentielle sans « Démonstrations ») et
     240-242, 381 aussi (rubrique Suites), pas des démonstrations ni des algorithmes.
-- **17 points sans modèle, tous voulus** :
-  - **Points-compétences** (5) — 205, 284, 435, 436, 437 : hors questions.
-  - **Couverts par leur voisin** (10) — même savoir-faire sur deux lignes du BO : 211 → 223, 220 → 231,
+- **Points-compétences relus par `questions-1spe-raisonnements`** (2026-11-09) : 205, 284, 436, 437 sont
+  questionnables, un modèle chacun (contraposée, optimisation, produit scalaire, repère), en brouillon jusqu'à
+  la publication ; 435 est couvert par ses voisins. Le même lot ajoute la disjonction des cas et l'absurde
+  (points de seconde 2-216, 2-217, `grades = ['2', '1_SPE']`) et `1_SPE` à 11 modèles de logique de seconde
+  (« et », « ou », implication, équivalence, réciproque, contraposée, quantificateurs), que le BO de 1re reprend
+  sans point propre.
+- **13 points sans modèle, tous voulus** :
+  - **Couverts par leur voisin** (11) — même savoir-faire sur deux lignes du BO : 435 → 370, 222, 376, 230, 379,
+    297 ; 211 → 223, 220 → 231,
     328 → 331, 368 → 377, 371 → 224, 373 → 225, 382 → 251, 389 → 272, 417 → 327, 421 → 340. Les faits « à
     connaître » de ces doublons ont, eux, leur modèle « à savoir ».
   - **D** (2) — 362, 365 (simuler avec Python ou un tableur) : exercices Python, pas des questions.
@@ -237,7 +243,7 @@ d'algorithmes) ; journaux dans `docs/archive/wip/` (`questions-1spe*-progress.md
   - Somme des n premiers cubes. — _BO 1re spé p.6_ (BO)
   - ⚠ Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3).
 - **1SPE-435** — Proposer, modéliser une situation permettant de générer une suite de nombres — _hérite des bornes générales_
-  - ⚠ Point-compétence (modéliser) : « Proposer, modéliser une situation permettant de générer une suite de nombres » (BO p.6) ; aucun grain questionnable propre.
+  - ⚠ Point-compétence (modéliser) : « Proposer, modéliser une situation permettant de générer une suite de nombres » (BO p.6) ; couvert par ses voisins (370, 222, 376 : motifs ; 230, 379, 297 : modéliser une évolution), pas de modèle propre.
 
 ### Algèbre > Équations, fonctions polynômes du second degré
 
@@ -460,7 +466,7 @@ d'algorithmes) ; journaux dans `docs/archive/wip/` (`questions-1spe*-progress.md
   - Fonctions dérivables à l'aide des dérivées et opérations du programme ; variations par le signe de la dérivée. — _BO 1re spé p.8_ (déduite)
   - ⚠ Lecture déduite (texte implicite) : la capacité « étudier les variations d'une fonction » (p.8) ne liste pas les fonctions ; elles sont bornées par ce que l'élève sait dériver (bornes générales).
 - **1SPE-284** — Résoudre un problème d'optimisation — _hérite des bornes générales_
-  - ⚠ Point-compétence (modéliser, résoudre un problème) : « Résoudre un problème d'optimisation » (BO p.8) ; les fonctions en jeu restent bornées par les bornes générales.
+  - ⚠ Point-compétence (modéliser, résoudre un problème), questionnable : problème guidé (aire, volume), fonction à exprimer ou dérivée donnée, valeur optimale et optimum en cases ; les fonctions en jeu restent bornées par les bornes générales.
 - **1SPE-285** — Exploiter les variations d'une fonction pour établir une inégalité
   - Inégalité établie par l'étude des variations d'une fonction (signe d'une différence). — _BO 1re spé p.8_ (BO)
 - **1SPE-286** — Étudier la position relative de deux courbes représentatives
@@ -545,7 +551,7 @@ d'algorithmes) ; journaux dans `docs/archive/wip/` (`questions-1spe*-progress.md
 - **1SPE-416** — Développement de $\lVert\vec{u} - \vec{v}\rVert^2$
   - ‖u − v‖² = ‖u‖² − 2u·v + ‖v‖². — _BO 1re spé p.9_ (BO)
 - **1SPE-436** — Utiliser le produit scalaire pour résoudre un problème géométrique — _hérite des bornes générales_
-  - ⚠ Point-compétence (résoudre un problème géométrique) : « Utiliser le produit scalaire pour résoudre un problème géométrique » (BO p.9) ; aucun grain questionnable propre, plan seulement.
+  - ⚠ Point-compétence (résoudre un problème géométrique), questionnable : problème guidé à trous (carré, rectangle ; relation de Chasles, produits scalaires en cases, justification en case choix), plan seulement.
 
 ### Géométrie > Géométrie repérée
 
@@ -581,7 +587,7 @@ d'algorithmes) ; journaux dans `docs/archive/wip/` (`questions-1spe*-progress.md
   - Parabole y = ax² + bx + c et droite parallèle à un axe seulement. — _BO 1re spé p.9_ (BO)
   - ⚠ Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3).
 - **1SPE-437** — Utiliser un repère pour étudier une configuration — _hérite des bornes générales_
-  - ⚠ Point-compétence (choisir un cadre) : « Utiliser un repère pour étudier une configuration » (BO p.9) ; aucun grain questionnable propre, plan en repère orthonormé.
+  - ⚠ Point-compétence (choisir un cadre), questionnable : problème guidé dans un repère orthonormé choisi sur la figure (carré, coordonnées et distances en cases, conclusion en case choix), plan seulement.
 
 ### Probabilités et statistiques > Expérimentations
 
@@ -702,6 +708,6 @@ d'algorithmes) ; journaux dans `docs/archive/wip/` (`questions-1spe*-progress.md
   - Négation de propositions quantifiées, formulée en langage naturel (∀ et ∃ non exigibles). — _BO 1re spé p.4_ (déduite)
   - ⚠ Lecture déduite (texte implicite) : les symboles ∀ et ∃ n'étant « pas exigibles » (BO p.4), la négation attendue est formulée en mots ; un modèle peut afficher les symboles dans l'énoncé sans les exiger dans la réponse.
 - **1SPE-205** — Produire un raisonnement par contraposée — _hérite des bornes générales_
-  - ⚠ Point-compétence (raisonner) : « les élèves produisent des raisonnements … par contraposée » (BO p.4) ; aucun grain questionnable propre, au mieux une question sur la contraposée d'une implication donnée (voir aussi la puce « formuler la réciproque d'une implication, la contraposée »).
+  - ⚠ Point-compétence (raisonner), questionnable : raisonnement par contraposée écrit à trous (contraposée à choisir, étape clé en case, étapes à ranger), sur la parité des entiers ; sous les bornes générales.
 - **1SPE-366** — Identifier le statut des lettres utilisées (variable, inconnue, paramètre)
   - Statut d'une lettre : variable, inconnue ou paramètre. — _BO 1re spé p.4_ (BO)

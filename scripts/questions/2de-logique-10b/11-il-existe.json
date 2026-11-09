@@ -2,7 +2,7 @@
 	"id": "24fd6a10-7843-4b7c-9e7c-7a05b1696bc9",
 	"title": "Propositions « il existe »",
 	"description": "Dire si « il existe un réel x tel que x² = −4 », « x² = 4 », « 2n = 7 », « 5n = 15 », « x² < x » est vraie ou fausse ; donner un entier n tel que n² = 2n + 3 (toute solution acceptée)",
-	"grades": ["2"],
+	"grades": ["2", "1_SPE"],
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

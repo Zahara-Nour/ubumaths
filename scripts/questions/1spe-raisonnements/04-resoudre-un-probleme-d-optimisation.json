@@ -1,4 +1,5 @@
 {
+	"id": "b7b0c27b-0c30-4297-b707-53f328d36f7a",
 	"title": "Résoudre un problème d'optimisation",
 	"description": "Problèmes guidés : enclos contre un mur (aire A(x) = x(m − 2x) à exprimer, largeur optimale m/4) ; boîte sans couvercle (V′ donnée, côté optimal a/6, volume maximal 2a³/27)",
 	"grades": ["1_SPE"],
