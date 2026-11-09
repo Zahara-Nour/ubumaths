@@ -6,15 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, relecture faite (aucune PR)._
+_Mis à jour le 2026-11-09, phase 0 du lot écrite (aucune PR)._
 
-- **État** : relecture faite (§ 3), phase 0 écrite (§ 4) et soumise.
-- **Prochaine action** : selon les réponses, worktree `questions-1spe-raisonnements`, modèles, migration nœud + tag.
-- **En attente de David** : Q1-Q4 tranchées (§ 4) ; reste le go sur la liste des 6 modèles, `93f9ecdf` sans tag,
-  et les 2 modèles de quantificateurs (61d0571e, 24fd6a10) dans l'ajout de `1_SPE`.
-- **Pièges en cours** : relevé MCP en prod (lecture seule) ; nouveaux points ou tags = migration (question d'accès
-  d'abord) ; un modèle porte au plus UN point (ADR 0020).
-- **Worktree / branche** : aucun (lecture seule pour l'instant).
+- **État** : relecture (§ 3), liste validée (§ 4), phase 0 détaillée du lot écrite (§ 5) et soumise.
+- **Prochaine action** : sur go, script `docs/wip/questions/lot-1spe-raisonnements.py` → `scripts/questions/1spe-raisonnements/`,
+  simulation `create-questions`, essai en base locale, PR des fichiers.
+- **En attente de David** : go sur le § 5 et la question d'accès (reco : personne ne gagne de lecture, la RLS de
+  `question_templates` ne regarde pas les niveaux).
+- **Pièges en cours** : un modèle = un point (ADR 0020) ; pas de `theme`/`domain` dans les fichiers (ADR 0035) ;
+  écritures en prod lancées par David seul.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-raisonnements`, `feat/questions-1spe-raisonnements`.
 
 ## 1. Pourquoi ce chantier (2026-11-09)
 
@@ -103,3 +104,54 @@ reco le laisser sans tag (5 types, aucun point ne le porte seul).
   75d0fc89, e05203b0, 5426cead, bed58c24 ; plus 61d0571e, 24fd6a10 pour les quantificateurs, à confirmer).
 - **Q3** : 435 **couvert par ses voisins**, pas de modèle ; reclasser dans `1spe.md`.
 - **Q4** : logique **transversale**, modèles seuls, pas de fiches « Logique ».
+
+**Go de David sur la liste (2026-11-09, « je suis tes recos »)** : 6 modèles ; `1_SPE` ajouté aux 11 modèles de 2de
+(quantificateurs compris) ; `93f9ecdf` reste sans tag.
+
+## 5. Phase 0 du lot (worktree `questions-1spe-raisonnements`, branche `feat/questions-1spe-raisonnements`)
+
+Forme commune : celle des démonstrations (`lot-1spe-demonstrations-1.py`) : démonstration écrite, une étape en case,
+une justification en case choix (4 propositions, la bonne en premier, l'affichage mélange), une variation « étapes
+à ranger » (` ```ranger ` `signe: aucun`). Statut brouillon, `delay: 90`, pas de `theme`/`domain` (ADR 0035).
+Nœuds = ceux des points (relevé du 2026-11-09).
+
+| #   | Point    | Titre                                               | Nœud                                             | Niveaux      |
+| --- | -------- | --------------------------------------------------- | ------------------------------------------------ | ------------ |
+| 1   | 1SPE-205 | Démontrer par contraposée                           | Logique › Raisonnements › par contraposée        | `1_SPE`      |
+| 2   | 2-216    | Raisonner par disjonction des cas                   | Logique › Raisonnements › disjonction de cas     | `2`, `1_SPE` |
+| 3   | 2-217    | Raisonner par l'absurde                             | Logique › Raisonnements › par l'absurde          | `2`, `1_SPE` |
+| 4   | 1SPE-284 | Résoudre un problème d'optimisation                 | Fonctions › Dérivation › variations et extremums | `1_SPE`      |
+| 5   | 1SPE-436 | Produit scalaire : résoudre un problème géométrique | Géométrie › Produit scalaire                     | `1_SPE`      |
+| 6   | 1SPE-437 | Étudier une configuration dans un repère            | Géométrie › Géométrie repérée                    | `1_SPE`      |
+
+1. **Contraposée** — « pour tout entier naturel n, si n² + c est pair, alors n est impair », c impair 1..15.
+   V1 choix : l'implication à démontrer (contraposée ✓ ; réciproque ; « si n impair, alors n² + c pair » ; « si n
+   pair, alors n² + c pair »). V2 case : n = 2k, n² + c = 2(?) + 1 → 2k² + (c − 1)/2. V3 choix : pourquoi cela
+   suffit (une implication et sa contraposée sont vraies ou fausses ensemble). V4 ranger.
+2. **Disjonction des cas** — « pour tout entier naturel n, n(n + 1) + 2c est pair », c 1..9. V1 choix : quels cas
+   (n pair / n impair ✓ ; n < c / n ≥ c ; n = 0 / n ≠ 0 ; n premier / non premier). V2 case : n = 2k + 1,
+   n(n + 1) = 2(?) → (2k + 1)(k + 1). V3 ranger.
+3. **Absurde** — « il n'existe aucun entier naturel n tel que n² = p », q 2..9, p = q² + t (1 ≤ t ≤ 2q). V1 choix :
+   par quoi commencer (« supposons qu'un tel n existe » ✓ ; « supposons n² ≠ p » ; « prenons n = q » ; « vérifions
+   pour n = 0, 1, 2 »). V2 case : q < n < ? → q + 1. V3 choix : la contradiction (aucun entier strictement entre
+   deux entiers consécutifs ✓ …). V4 ranger. (√2 irrationnel est déjà une démonstration de 2de : pas repris.)
+4. **Optimisation** — guidé, une étape par variation. V1 enclos rectangulaire contre un mur, P mètres de clôture
+   (P pair 20..80) : aire A(x) = ? → x(P − 2x). V2 même enclos : x qui rend l'aire maximale → P/4 (A′(x) = P − 4x
+   donné). V3 boîte sans couvercle dans un carré de côté L (L ∈ {6, 12, 18, 24, 30}), V(x) = x(L − 2x)² et
+   V′(x) = (L − 2x)(L − 6x) donnés : x qui rend le volume maximal → L/6. V4 même boîte : volume maximal →
+   2L³/27. Erreurs : x = L/2 (racine hors intervalle), valeur de x au lieu du volume.
+5. **Produit scalaire, problème** — carré ABCD de côté a (a pair 2..10), I milieu de [AB], J milieu de [BC] :
+   montrer (DI) ⊥ (AJ) par DI·AJ = (DA + AI)·(AB + BJ). V1 case : DA·BJ = ? → −a²/2. V2 case : AI·AB = ? → a²/2.
+   V3 choix : pourquoi DA·AB = 0. V4 rectangle de côtés L ≠ l : AC·BD = ? → l² − L² (diagonales perpendiculaires
+   seulement si carré).
+6. **Configuration en repère** — carré ABCD, I milieu de [CD], J sur [BC] avec BJ = ¾ BC : montrer que AIJ est
+   rectangle en I. V1 choix : le repère (A ; AB, AD) est orthonormé parce que ABCD est un carré (✓ ; parce que A
+   est un sommet ; parce que AB = 1 ; tout repère convient). V2 case : coordonnées de J → (1 ; 3/4). V3 case :
+   IJ² = ? → 5/16. V4 choix : conclusion (Pythagore, AI² + IJ² = AJ²). Configuration fixe (valeurs en lettres).
+
+testSpecs : la bonne réponse et les erreurs typiques de chaque case. Niveaux numérotés : 1 partout (un modèle par
+sous-notion) sauf si le nœud en a déjà (à vérifier à l'écriture).
+
+**Migration** (après `create-questions --publier` par David) : nœud + tag des 6 brouillons ; `1_SPE` ajouté aux
+11 modèles publiés de 2de (219c9470, 6c3ee9e6, 1e9a534f, 55341e85, 214f7500, 75d0fc89, e05203b0, 5426cead,
+bed58c24, 61d0571e, 24fd6a10). **Question d'accès** posée à David.
