@@ -1,4 +1,5 @@
 {
+	"id": "ab663da7-ede6-4575-896f-4cad52753252",
 	"title": "Démontrer par contraposée",
 	"description": "Raisonnement par contraposée sur la parité (si n² + c est pair, alors n est impair) : contraposée à choisir, calcul n² + c = 2(2k² + …) + 1 à compléter, pourquoi cela suffit, étapes à ranger",
 	"grades": ["1_SPE"],
