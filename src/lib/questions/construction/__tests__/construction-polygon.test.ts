@@ -15,6 +15,7 @@ import {
 	OVERSHOOT_FEEDBACK,
 	PROLONGED_RECTANGLE_SIDES_FEEDBACK,
 	PROLONGED_SIDE_FEEDBACK,
+	SHIFTED_SIDE_FEEDBACK,
 	judgeConstruction
 } from '../judge';
 import { parseConstructionAnswer } from '../answer';
@@ -204,6 +205,60 @@ describe('carre A ; B — tableau de la phase 0', () => {
 				'segment(5;4;8;5)|segment(8;5;7;8)|segment(7;8;1;6)|segment(1;6;2;3)'
 			)
 		).toEqual({ status: 'incorrect', feedback: PROLONGED_SIDE_FEEDBACK });
+	});
+
+	it('carré décalé qui chevauche [AB] sans le contenir : faux, il doit être bâti sur [AB] (essai de David)', () => {
+		// Décalé d'un carreau vers B, au-dessus
+		expect(square('segment(5;3;6;3)|segment(6;3;6;6)|segment(6;6;3;6)|segment(3;6;3;3)')).toEqual({
+			status: 'incorrect',
+			feedback: SHIFTED_SIDE_FEEDBACK
+		});
+		// Décalé d'un carreau vers A, au-dessous
+		expect(square('segment(2;3;1;3)|segment(1;3;1;0)|segment(1;0;4;0)|segment(4;0;4;3)')).toEqual({
+			status: 'incorrect',
+			feedback: SHIFTED_SIDE_FEEDBACK
+		});
+		// Un rectangle décalé : même message (« pas un carré » serait vrai mais ne dit pas l'essentiel)
+		expect(square('segment(5;3;6;3)|segment(6;3;6;5)|segment(6;5;3;5)|segment(3;5;3;3)')).toEqual({
+			status: 'incorrect',
+			feedback: SHIFTED_SIDE_FEEDBACK
+		});
+		// Côté donné vertical
+		const vertical = new Map([
+			['A', { x: 2, y: 3 }],
+			['B', { x: 2, y: 6 }]
+		]);
+		expect(
+			judgeConstruction(
+				SQUARE,
+				vertical,
+				'segment(2;6;2;7)|segment(2;7;5;7)|segment(5;7;5;4)|segment(5;4;2;4)'
+			)
+		).toEqual({ status: 'incorrect', feedback: SHIFTED_SIDE_FEEDBACK });
+		// Côté donné oblique, décalé d'un tiers vers B (revue)
+		const oblique = new Map([
+			['A', { x: 0, y: 0 }],
+			['B', { x: 6, y: 3 }]
+		]);
+		expect(
+			judgeConstruction(
+				SQUARE,
+				oblique,
+				'segment(6;3;8;4)|segment(8;4;5;10)|segment(5;10;-1;7)|segment(-1;7;2;1)'
+			)
+		).toEqual({ status: 'incorrect', feedback: SHIFTED_SIDE_FEEDBACK });
+	});
+
+	it('carré décalé mais ouvert, ou à l’intérieur de [AB] : pas fermée', () => {
+		expect(square('segment(5;3;6;3)|segment(6;3;6;6)|segment(6;6;3;6)')).toEqual({
+			status: 'incorrect',
+			feedback: NOT_CLOSED_FEEDBACK
+		});
+		// Petit carré posé sur une partie de [AB] : pas « décalé »
+		expect(square('segment(3;3;3;4)|segment(3;4;4;4)|segment(4;4;4;3)')).toEqual({
+			status: 'incorrect',
+			feedback: NOT_CLOSED_FEEDBACK
+		});
 	});
 
 	it('trait dans l’alignement de [AB] mais séparé par un trou : pas fermée', () => {

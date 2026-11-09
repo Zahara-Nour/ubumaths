@@ -626,7 +626,9 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    donné : sans effet) ; un rectangle est présent si ses quatre côtés sont couverts ; le carré, d'un
    côté ou de l'autre de [AB]. Messages, dans l'ordre : trait hors des lignes du quadrillage (si les
    côtés donnés les suivent), figure non fermée (ou fermée sur un côté donné prolongé : « Le côté déjà tracé ne doit pas être
-   prolongé… », « Les côtés déjà tracés ne doivent pas être prolongés… » pour le rectangle), pas un carré, trait de trop, trait qui dépasse.
+   prolongé… », « Les côtés déjà tracés ne doivent pas être prolongés… » pour le rectangle ; carré fermé décalé le long de
+   (AB), qui chevauche [AB] sans le contenir : « Ton carré doit être construit sur le côté déjà tracé. »), pas un carré,
+   trait de trop, trait qui dépasse.
    Rectangle sans angle droit en B : erreur de l'auteur.
    **Carré et rectangle cotés sur papier uni** (chantier `regle-graduee`, PR 6, décisions Q11, Q13, Q19,
    Q20 ; `construction/ruled-polygon.ts`) : `carre A ; B ; C ; D` et `rectangle A ; B ; C ; D : BC = 3 cm`

@@ -2,16 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2388 (bloc corrigé : `figure-et-choix` est clos depuis le 2026-10-30)._
+_Mis à jour le 2026-11-09, PR du carré décalé en cours._
 
-- **État** : CP-059, CP-060, CP-058 mergés, en brouillon ; CP-060 rangé en prod sur Géométrie › Figures planes ›
-  constructions avec son point (§ 14, #2388). CP-058 réécrit par `figure-et-choix` (#1840 : figure de travail + case
-  choix Oui / Non, brouillon `a7dfe502`) ; ce chantier est clos (journal `docs/archive/wip/figure-et-choix-progress.md`).
-- **Prochaine action** : aucune ici.
-- **En attente de David** : (1) essai de CP-060 et de CP-058 (sur tablette) (`docs/wip/verifications-manuelles.md`),
-  puis publication des deux ; (2) message du carré décalé qui chevauche [AB] (§ 12).
+- **État** : CP-059, CP-060, CP-058 en brouillon ; essais de CP-060 et CP-058 sur iPad PASSÉS (2026-11-09, § 15).
+  Message du carré décalé tranché et codé (§ 15), PR `fix/geometrie-validation-carre-decale`.
+- **Prochaine action** : merger la PR (CI verte), puis clore le chantier (versement dans `docs/systeme/`).
+- **En attente de David** : publication de CP-060 et CP-058 (brouillons `1cf6eaa9…`, `a7dfe502…`) ; le nouveau
+  message n'atteint la prod qu'au prochain `deploy:prod`.
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
-- **Worktree / branche** : aucun (retiré après #2388).
+- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `fix/geometrie-validation-carre-decale`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -522,3 +521,15 @@ le quadrillage » (`1cf6eaa9-376d-43a1-a3e4-eb7d18c40099`) était « Non rangé 
   lancé par David depuis le dépôt principal (le classifieur l'a refusé à Claude), avec 055243 (`questions-2de`) et
   060921 (`questions-1spe-demonstrations`, audit confirmé par sa session) : `20261105055721` (déjà en prod) imposait
   `--include-all`. Vérifié en prod : nœud « constructions », un seul point CP-060, brouillon, `updated_at` inchangé.
+
+## 15. Essais sur iPad et carré décalé (2026-11-09)
+
+- **Essais de David sur iPad** (Tailscale Serve, `/dev/carte-question`) : CP-060 et CP-058, toutes les lignes de
+  `verifications-manuelles.md` passent (lignes retirées).
+- **Carré décalé** (limite du § 12) : un carré fermé le long de (AB), qui chevauche [AB] sans le contenir, disait
+  « Ta figure n'est pas fermée. ». **Décision de David** (reco suivie) : « Ton carré doit être construit sur le côté
+  déjà tracé. » — vrai que la figure soit un carré ou non. Placé après « prolongé ». Un carré posé sur une partie
+  de [AB] seulement (contenu dedans) et la figure en L gardent « pas fermée ».
+- **Codé** : `closedOnLineOfSide` (`construction/polygon.ts`) généralise `closedOnProlongedSide` ; deux filtres,
+  `prolongsSide` et `shiftsSide`. Tests : décalé vers B / vers A, rectangle décalé, côté vertical (rouges avant) ;
+  décalé ouvert et carré intérieur → « pas fermée ». 805 tests de `construction/` verts.
