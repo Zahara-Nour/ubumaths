@@ -111,6 +111,10 @@ const LINES: readonly string[] = [
 	'x+0.5=2',
 	'x+cos(π/3)=1',
 	'x+cos(420°)=1',
+	// Revue de la PR 2c : angle opposé, famille venue de degrés, inéquation décimale
+	'sin(-20°)x=1',
+	'cos(x) = cos(20°)',
+	'x^2>0.25',
 	'x=x',
 	'x=x dans [0;1]',
 	'x=x+1 dans [0;1]'

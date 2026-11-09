@@ -120,7 +120,13 @@ export function anglesAsTyped(typed: MathNode): (tree: MathNode) => MathNode {
 	const typedAngles = findNodes(
 		typed,
 		(node) => isTrigonometric(node) && findNodes(node, isDegreeAngle).length > 0
-	).map((node) => ({ node, radians: radiansInTrigonometry(node) }));
+	).flatMap((node) => {
+		const opposite = withOppositeAngle(node);
+		return [node, ...(opposite === null ? [] : [opposite])].map((angle) => ({
+			node: angle,
+			radians: radiansInTrigonometry(angle)
+		}));
+	});
 	if (typedAngles.length === 0) return (tree) => tree;
 	return (tree) =>
 		transformAST(tree, {
@@ -131,4 +137,25 @@ export function anglesAsTyped(typed: MathNode): (tree: MathNode) => MathNode {
 				return { node: typedAngle?.node ?? radians, skip: true };
 			}
 		});
+}
+
+/**
+ * Le même sin, cos, tan de l'angle OPPOSÉ, quand l'angle tapé est négatif :
+ * `sin(-20°)` → `sin(20°)`. Le moteur sort le signe (`sin(-π/9)` → `-sin(π/9)`,
+ * `cos(-π/9)` → `cos(π/9)`) : sans lui, la réponse perdait les degrés (revue de
+ * la PR 2c). `null` pour un angle positif ou qui n'est pas un nombre de degrés.
+ */
+function withOppositeAngle(node: MathNode): MathNode | null {
+	if (node.type !== 'function' || node.args.length !== 1) return null;
+	const [argument] = node.args;
+	const angle = argument.type === 'delimiter' ? argument.content : argument;
+	if (!isUnit(angle) || !isDegreeAngle(angle)) return null;
+	const measure = angle.expression;
+	const positive =
+		measure.type === 'opposite'
+			? measure.operand
+			: measure.type === 'number' && measure.value.startsWith('-')
+				? mathNumber(measure.value.slice(1))
+				: null;
+	return positive === null ? null : { ...node, args: [{ ...angle, expression: positive }] };
 }

@@ -773,3 +773,18 @@ corrigée, à confirmer).
 - Suites : `atelier` + `mathAST/cli` (8 666), `mathAST` + `questions` + `geometry-core` + `routes`
   (38 699), reste du projet serveur (65 622 ; `deploy-prod` en délai dépassé sous charge, vert
   seul), client `atelier` + `routes` (749) vertes.
+
+### PR 2c — revue (2026-11-09)
+
+- Revue `code-reviewer` (opus), rien de bloquant, aucune réponse fausse introduite. Corrigé :
+  (I1) famille périodique venue de degrés : `rad` affiché (`cos(x) = cos(20°)`) → `writing` passé
+  aux familles, LaTeX et texte ; (I2) `sin(-20°)x=1` perdait les degrés (le moteur sort le
+  signe) → `anglesAsTyped` reconnaît l'angle opposé (`withOppositeAngle`) ; (M1) texte d'une
+  inéquation écrit comme son LaTeX (`domainWritten`, `x^2>0.25` → `]-∞ ; -0.5[ ∪ …`). Gardes :
+  3 cas dans `solve-lecture.test.ts`, 3 lignes dans `resoudre-registre.test.ts`.
+- Laissés (mineurs, notés) : (M2) `cos(20°)x = cos(π/9)` → `cos(20°)/cos(20°)` (angle tapé en
+  radians réécrit en degrés, fraction non réduite) ; (M3) `x = max(1,5 ; 2)` → `max(3/2, 2)` non
+  évalué ; (M4) `a := 2` puis `.solve a^2 = 4` → « Solutions infinies » (main : refus).
+- **Hors PR, déjà sur main, FAUX** : `.solve x^2=a dans [0;1]` → `S = ∅` (a = 0,25 : x = 0,5) ;
+  V57 ne le voit pas (coefficient dominant 1, ni condition ni dénominateur). À traiter. Aussi :
+  le message de `dans [-3,3]` cite « [-3.3] ».

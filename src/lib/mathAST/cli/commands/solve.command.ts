@@ -32,6 +32,7 @@ import {
 	logarithmicBounds,
 	withRealLineWritten,
 	solutionValueLatex,
+	domainWritten,
 	solutionsSetText,
 	approximateSolutionsText,
 	type SolutionWriting
@@ -1132,7 +1133,9 @@ export class SolveCommand extends BaseCommand {
 			const threshold = inequalityThresholdText(result.solution, variable);
 			return {
 				success: true,
-				output: threshold ?? `S = ${formatInterval(withRealLineWritten(result.solution))}`,
+				output:
+					threshold ??
+					`S = ${formatInterval(domainWritten(withRealLineWritten(result.solution), writing))}`,
 				latex
 			};
 		} catch {
@@ -1169,7 +1172,7 @@ export class SolveCommand extends BaseCommand {
 			const bounds = logarithmicBounds(restricted);
 			return {
 				success: true,
-				output: `S = ${formatInterval(restricted)}${bounds.map((b) => ` avec ${b.text}`).join('')}`,
+				output: `S = ${formatInterval(domainWritten(restricted, writing))}${bounds.map((b) => ` avec ${b.text}`).join('')}`,
 				latex: `${set}${bounds.map((b) => ` \\text{ avec } ${b.latex}`).join('')}`
 			};
 		} catch {
@@ -1512,7 +1515,7 @@ export class SolveCommand extends BaseCommand {
 				// valeur approchée au mode décimal, `S ≈ {1.0986}` (PR 2c)
 				const exactSet = solutionsSetText(result.solutions, writing);
 				const approximateSet = approximateSolutionsText(result.solutions);
-				const periodicText = periodicSolutionsText(result);
+				const periodicText = periodicSolutionsText(result, writing);
 				const exactText = periodicText ?? exactSet;
 				const decimalText = periodicText ?? approximateSet ?? exactSet;
 				const canToggle = periodicText === null && approximateSet !== null;

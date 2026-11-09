@@ -265,14 +265,15 @@ function sorted(solutions: readonly Solution[]): readonly Solution[] {
  * texte (`a + 2kπ`) — ou `null`.
  */
 function familyMembers(
-	periodic: PeriodicSolutionFamily
+	periodic: PeriodicSolutionFamily,
+	writing: SolutionWriting
 ): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
 	const family = shortestFamily(periodic);
 	if (family.baseSolutions.length === 0) return null;
 	const term = periodTerm(family.period);
 	if (term === null) return null;
 	const bases = sorted(family.baseSolutions).map((solution) => {
-		const base = exactValueToShow(solution.value);
+		const base = exactValueToShow(writing.angles(solution.value));
 		return { base, isZero: isNumber(base) && base.value === '0' };
 	});
 	const member = (written: string, isZero: boolean, k: string) =>
@@ -289,11 +290,12 @@ function familyMembers(
  * `sin 2x = sin x` → 2kπ ou π/3 + 2kπ/3), sinon la famille réunie.
  */
 function periodicMembers(
-	result: SolveResult
+	result: SolveResult,
+	writing: SolutionWriting
 ): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
 	if (result.periodicSolutions === undefined) return null;
 	if (result.displayFamilies !== undefined && result.displayFamilies.length > 0) {
-		const parts = result.displayFamilies.map((f) => familyMembers(f));
+		const parts = result.displayFamilies.map((f) => familyMembers(f, writing));
 		if (parts.every((p) => p !== null)) {
 			return {
 				latex: parts.flatMap((p) => p?.latex ?? []),
@@ -301,15 +303,18 @@ function periodicMembers(
 			};
 		}
 	}
-	return familyMembers(result.periodicSolutions);
+	return familyMembers(result.periodicSolutions, writing);
 }
 
 /**
  * La famille périodique, `S = \left\{ a + 2k\pi \,;\, … ,\; k \in \mathbb{Z} \right\}`
  * — ou `null`.
  */
-function periodicLatex(result: SolveResult): string | null {
-	const members = periodicMembers(result);
+function periodicLatex(
+	result: SolveResult,
+	writing: SolutionWriting = PLAIN_WRITING
+): string | null {
+	const members = periodicMembers(result, writing);
 	if (members === null) return null;
 	return `S = \\left\\{ ${members.latex.join(' \\,;\\, ')} ,\\; k \\in \\mathbb{Z} \\right\\}`;
 }
@@ -320,10 +325,32 @@ function periodicLatex(result: SolveResult): string | null {
  * (2026-10-09) ; l'ensemble, comme le LaTeX, depuis la PR 2c (Q2).
  * `null` sans famille, ou si elle ne s'écrit pas.
  */
-export function periodicSolutionsText(result: SolveResult): string | null {
-	const members = periodicMembers(result);
+export function periodicSolutionsText(
+	result: SolveResult,
+	writing: SolutionWriting = PLAIN_WRITING
+): string | null {
+	const members = periodicMembers(result, writing);
 	if (members === null) return null;
 	return `S = {${members.text.join(' ; ')}, k ∈ ℤ}`;
+}
+
+/**
+ * Un ensemble aux bornes écrites comme la réponse (angles, registre décimal) :
+ * le texte d'une inéquation dit ce que dit son LaTeX (revue de la PR 2c).
+ */
+export function domainWritten(domain: Domain, writing: SolutionWriting): Domain {
+	if (domain.kind !== 'interval_set') return domain;
+	const value = (node: MathNode) =>
+		isInfinity(node) ? node : exactValueToShow(writing.angles(node), { decimal: writing.decimal });
+	return {
+		...domain,
+		intervals: domain.intervals.map((i) => ({
+			...i,
+			lower: { ...i.lower, value: value(i.lower.value) },
+			upper: { ...i.upper, value: value(i.upper.value) }
+		})),
+		excludedPoints: domain.excludedPoints.map((p) => ({ ...p, value: value(p.value) }))
+	};
 }
 
 /**
@@ -395,7 +422,7 @@ export function solutionsLatex(
 		case 'unique':
 		case 'multiple': {
 			if (result.solutions.length === 0) return null;
-			const periodic = periodicLatex(result);
+			const periodic = periodicLatex(result, writing);
 			if (periodic !== null) return periodic;
 			// Une famille qu'on ne sait pas écrire : ne pas la faire passer pour
 			// un nombre fini de solutions

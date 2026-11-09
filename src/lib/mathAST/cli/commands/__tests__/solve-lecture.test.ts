@@ -95,6 +95,13 @@ describe('.solve : les degrés sont lus', () => {
 		[
 			'x^2 = cos(20°) dans [0;5]',
 			'S = \\left\\{ \\sqrt{\\cos\\left( 20~\\unit{°} \\right)} \\right\\}'
+		],
+		// Revue : le moteur sort le signe d'un angle opposé (`-sin(π/9)`)
+		['sin(-20°)x=1', 'S = \\left\\{ -\\dfrac{1}{\\sin\\left( 20~\\unit{°} \\right)} \\right\\}'],
+		// Revue : une famille périodique aussi
+		[
+			'cos(x) = cos(20°)',
+			'S = \\left\\{ -\\arccos\\left( \\cos\\left( 20~\\unit{°} \\right) \\right) + 2k\\pi \\,;\\, \\arccos\\left( \\cos\\left( 20~\\unit{°} \\right) \\right) + 2k\\pi ,\\; k \\in \\mathbb{Z} \\right\\}'
 		]
 	])('angle quelconque : %s', (line, answer) => {
 		expect(flat(solved(line).answer)).toBe(flat(answer));
@@ -108,7 +115,9 @@ describe('.solve : le texte du terminal conclut sur S (Q2)', () => {
 		['e^x=3', 'S = {ln(3)}'],
 		['x+0.5=2', 'S = {1.5}'],
 		['2x+1<7', 'S = ]-∞ ; 3['],
-		['0.8^n<0.1 ; n', 'n > ln(0.1)/ln(0.8) ≈ 10.32']
+		['0.8^n<0.1 ; n', 'n > ln(0.1)/ln(0.8) ≈ 10.32'],
+		// Revue : le texte d'une inéquation s'écrit comme son LaTeX
+		['x^2>0.25', 'S = ]-∞ ; -0.5[ ∪ ]0.5 ; +∞[']
 	])('%s', (line, text) => {
 		expect(lastLine(solved(line).output)).toBe(text);
 	});
