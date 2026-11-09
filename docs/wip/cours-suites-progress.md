@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, avant la PR des fichiers._
+_Mis à jour le 2026-11-09, après #2529._
 
-- **État** : 30 modèles écrits (`scripts/questions/1spe-cours-suites/`), simulation verte, essayés en base locale · **Prochaine action** : PR des fichiers, merge ; puis David lance `create-questions --publier` (brouillons en prod) ; puis migration nœud + tag · **En attente de David** : rangement ci-dessous (un point par modèle), n° 24-25 non écrites, n° 22 dédoublée · **Pièges en cours** : réponses des étapes à ranger = places dans l'ordre affiché sous le tirage fixe des specs (`['3','0','1','2']`) · **Worktree / branche** : `../ubumaths-wt-cours-suites`, `feat/questions-cours-suites-1spe`
+- **État** : 30 modèles mergés (#2529), PAS encore en prod · **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-cours-suites --publier` (brouillons), puis commiter les `id` écrits dans les fichiers, puis migration nœud + tag · **En attente de David** : rangement (tableau ci-dessous, B11 : 1SPE-214 ou deux modèles), marqueur « question de cours » sur les deux « Démontrer la somme… », sort de `.tmp-sonde/` (sondes jetables du worktree) · **Pièges en cours** : réponses des étapes à ranger = places dans l'ordre affiché sous le tirage fixe des specs (`['3','0','1','2']`) ; le hook du commit reformate les JSON (index désynchronisé après un `commit -- <chemins>` : `git add` des fichiers) · **Worktree / branche** : `../ubumaths-wt-cours-suites`, `feat/questions-cours-suites-1spe` (mergée, gardée pour `.tmp-sonde/`)
 
 ## Décisions (David, 2026-11-09)
 
