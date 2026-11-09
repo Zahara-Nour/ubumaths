@@ -12,8 +12,9 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
 - **Tranché aussi** : pas de nom de produit. Le jeu s'appelle **La Descente de la Vistule**, un voyage initiatique à travers le Royaume, et c'est une activité de Chiphre, pas son cadre. Voir § « Tranché ».
 - **Tranché aussi** : la descente ne suit aucun ordre. Les Bêtes surgissent n'importe où dans le Royaume, et le joueur va les combattre là où elles sont.
 - **Tranché aussi** : les Bêtes naissent des besoins de l'élève et sont vulnérables à ce domaine ; le joueur choisit le domaine par son coup ou son sort, la recrue comprise.
-- **Prochaine action** : la question 5 (progression et règles d'apparition des Bêtes).
-- **En attente de David** : la question 5. La question 3 (public) est réglée : du primaire au lycée.
+- **Tranché aussi** : le grade de l'Ordre de la Grande Passoire se fondera sur le travail réel, pas sur les gidouilles ; c'est le chantier à part `ordre-grande-passoire`.
+- **Prochaine action** : la question 5, point par point, en commençant par **5a** (la puissance de l'avatar). Les propositions 5a à 5e sont dans § « À trancher ».
+- **En attente de David** : 5a à 5e. La question 3 (public) est réglée : du primaire au lycée.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
   - Le Compendium n'interdit que les **mots** anglais affichés (XP, level, boss, score, leaderboard ; `lore-pataphysique.md:968,1776`), **pas les mécaniques**.
@@ -73,6 +74,14 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
 5. Question rattachée à la 1 : faut-il une progression propre au jeu (niveau, prestige personnel ou limité au Bataillon), ou le stade des Mathoux suffit-il ?
 
 6. ✅ _Tranché le 2026-11-09 : aucun ordre, voir § « Tranché »._ **Ordre de la descente** (posé le 2026-11-09). D'après le Compendium (l. 568), le fleuve passe par Bedonstan (géométrie, source), Glitchistan (algorithmique), Patatovie (logique), Nombrilie (nombres), Pifométrie (probabilités et statistiques), puis Yoyolande (fonctions, delta). Faut-il suivre cet ordre, une Province après l'autre, ou chaque étape mêle-t-elle les domaines ?
+
+7. **Progression (question 5)**, proposée le 2026-11-09. On n'ajoute pas de grade propre au jeu.
+   - **5a. Puissance de l'avatar** : pas de niveau ni de chiffres qui gonflent ; on progresse par déblocage (coups, sorts, cases de la grille).
+   - **5b. Récompenses** : gidouilles seulement, plafonnées côté serveur.
+   - **5c. Carnet de route** : les Bêtes vaincues, Province par Province.
+   - **5d. Le Mathou familier** : un appui modeste qui grandit avec son stade.
+   - **5e. Apparition des Bêtes** : 3 par jour, 5 en stock au plus. Une Bête née d'un point à remédier reste jusqu'à sa défaite. Une grosse Bête par semaine.
+   - **Hors du jeu** : le grade de l'Ordre se fondera sur le travail réel, pas sur les gidouilles (décision de David du 2026-11-09). C'est le chantier à part `docs/wip/ordre-grande-passoire-progress.md`. La Descente ne doit pas être le moyen le plus rapide de monter dans l'Ordre.
 
 ## Existant dans Chiphre (portage d'octobre 2025, en pause depuis le 2026-10-13)
 
