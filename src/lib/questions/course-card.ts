@@ -6,7 +6,9 @@
  * verso = correction. L'élève retourne la carte puis s'auto-évalue.
  *
  * - marqueur explicite `options.courseCard === true` (cf. `isCourseCard`) ;
- * - exclue des tests et évaluations notés (`excludeCourseCards`) ;
+ * - non évaluable : retirée des formes qui corrigent les réponses (Entraînement,
+ *   Course aux nombres) et des contrôles (`excludeCourseCards`,
+ *   `seriesFormExcludesCourseCards`) ; gardée en Flash-cards et En classe ;
  * - pas de spec de test : la vérification se limite à la génération et à un
  *   recto / verso non vides.
  *
@@ -15,6 +17,7 @@
 
 import { isCourseCard } from './types';
 import type { QuestionCorrection, QuestionInstance, ResolvedCorrection } from './types';
+import type { TestMode } from '$lib/types/test';
 
 // ============================================================================
 // TYPES
@@ -32,7 +35,17 @@ export { isCourseCard };
 // FUNCTIONS
 // ============================================================================
 
-/** Retire les cartes de cours d'une liste de modèles (tests et évaluations notés). */
+/**
+ * Une forme de série retire-t-elle les cartes de cours ? Oui quand elle corrige
+ * les réponses (Entraînement, Course aux nombres) : une carte n'a pas de réponse
+ * à vérifier. Non en Flash-cards et En classe, où l'on retourne la carte.
+ * Un contrôle les retire toujours, quelle que soit sa forme.
+ */
+export function seriesFormExcludesCourseCards(mode: TestMode): boolean {
+	return mode === 'interactive' || mode === 'course';
+}
+
+/** Retire les cartes de cours d'une liste de modèles (formes qui corrigent, contrôles). */
 export function excludeCourseCards<T extends { options?: unknown }>(templates: T[]): T[] {
 	return templates.filter((template) => !isCourseCard(template));
 }

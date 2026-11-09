@@ -3,6 +3,7 @@
 	import { goto, replaceState } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { buildSeriesItems } from '$lib/questions/series-items';
+	import { seriesFormExcludesCourseCards } from '$lib/questions/course-card';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
@@ -181,8 +182,14 @@
 	 * Lance une série libre (panier ou lien) sous la forme choisie
 	 */
 	function startSeries(mode: TestMode, series: SeriesItem[], timeLimit?: number) {
-		// Course aux nombres : pas de carte de cours (décision 2026-09-28)
-		const items = generateSeriesItems(series, { excludeCourseCards: mode === 'course' });
+		// Entraînement, Course aux nombres : pas de carte de cours (non évaluable)
+		const excludeCourseCards = seriesFormExcludesCourseCards(mode);
+		const items = generateSeriesItems(series, { excludeCourseCards });
+		if (items.length === 0 && excludeCourseCards) {
+			throw new Error(
+				'Cette série ne contient que des cartes de cours : à lancer en Flash-cards ou En classe.'
+			);
+		}
 		const instances = items.map((item) => item.instance);
 		// « En classe », « Entraînement » : chaque question garde sa durée et son modèle
 		if (mode === 'display' || mode === 'interactive') seriesItems = items;
@@ -220,7 +227,7 @@
 
 	/**
 	 * « En classe », « Entraînement » : Recommencer tire de nouvelles questions
-	 * (évaluation : toujours sans carte de cours)
+	 * (Entraînement et évaluation : sans carte de cours)
 	 */
 	function handleSeriesRestart() {
 		if (!testSession) return;
@@ -229,7 +236,7 @@
 		newsRequest += 1;
 		try {
 			seriesItems = generateSeriesItems(testSession.items, {
-				excludeCourseCards: !!assignmentId
+				excludeCourseCards: !!assignmentId || seriesFormExcludesCourseCards(testSession.mode)
 			});
 			testSession.instances = seriesItems.map((item) => item.instance);
 			testSession.startTime = Date.now();
