@@ -12,6 +12,7 @@ import {
 	NOT_A_SQUARE_FEEDBACK,
 	NOT_CLOSED_FEEDBACK,
 	NOT_ON_GRID_LINES_FEEDBACK,
+	PART_OF_SIDE_FEEDBACK,
 	OVERSHOOT_FEEDBACK,
 	PROLONGED_RECTANGLE_SIDES_FEEDBACK,
 	PROLONGED_SIDE_FEEDBACK,
@@ -249,13 +250,44 @@ describe('carre A ; B — tableau de la phase 0', () => {
 		).toEqual({ status: 'incorrect', feedback: SHIFTED_SIDE_FEEDBACK });
 	});
 
-	it('carré décalé mais ouvert, ou à l’intérieur de [AB] : pas fermée', () => {
+	it('carré accolé à [AB] par un sommet, ou séparé par un trou : même message (décision de David)', () => {
+		// Accolé en A, au-dessus
+		expect(
+			square('segment(2;3;-1;3)|segment(-1;3;-1;6)|segment(-1;6;2;6)|segment(2;6;2;3)')
+		).toEqual({
+			status: 'incorrect',
+			feedback: SHIFTED_SIDE_FEEDBACK
+		});
+		// Accolé en B, au-dessus
+		expect(square('segment(5;3;8;3)|segment(8;3;8;6)|segment(8;6;5;6)|segment(5;6;5;3)')).toEqual({
+			status: 'incorrect',
+			feedback: SHIFTED_SIDE_FEEDBACK
+		});
+		// Sur la droite (AB), séparé de [AB] par un carreau
+		expect(square('segment(6;3;9;3)|segment(9;3;9;6)|segment(9;6;6;6)|segment(6;6;6;3)')).toEqual({
+			status: 'incorrect',
+			feedback: SHIFTED_SIDE_FEEDBACK
+		});
+	});
+
+	it('petit carré posé sur une partie de [AB] : faux, son côté doit être [AB] (décision de David)', () => {
+		expect(square('segment(3;3;3;4)|segment(3;4;4;4)|segment(4;4;4;3)')).toEqual({
+			status: 'incorrect',
+			feedback: PART_OF_SIDE_FEEDBACK
+		});
+		// Calé sur A, au-dessous
+		expect(square('segment(2;3;2;2)|segment(2;2;3;2)|segment(3;2;3;3)')).toEqual({
+			status: 'incorrect',
+			feedback: PART_OF_SIDE_FEEDBACK
+		});
+	});
+
+	it('carré décalé ou intérieur mais ouvert : pas fermée', () => {
 		expect(square('segment(5;3;6;3)|segment(6;3;6;6)|segment(6;6;3;6)')).toEqual({
 			status: 'incorrect',
 			feedback: NOT_CLOSED_FEEDBACK
 		});
-		// Petit carré posé sur une partie de [AB] : pas « décalé »
-		expect(square('segment(3;3;3;4)|segment(3;4;4;4)|segment(4;4;4;3)')).toEqual({
+		expect(square('segment(3;3;3;4)|segment(3;4;4;4)')).toEqual({
 			status: 'incorrect',
 			feedback: NOT_CLOSED_FEEDBACK
 		});

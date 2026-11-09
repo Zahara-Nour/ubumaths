@@ -2,18 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2526._
+_Mis à jour le 2026-11-09, PR du carré accolé en cours._
 
-- **État** : CP-059, CP-060, CP-058 en brouillon ; essais de CP-060 et CP-058 sur iPad passés (§ 15). Message du
-  carré décalé livré (#2526, mergée ; en prod au prochain `deploy:prod`).
-- **Prochaine action** : selon la réponse de David aux deux questions ci-dessous (une petite PR), puis clore le
-  chantier (versement dans `docs/systeme/`, journal archivé).
-- **En attente de David** : (1) publication de CP-060 et CP-058 (brouillons `1cf6eaa9…`, `a7dfe502…`) ;
-  (2) carré qui touche [AB] par un seul sommet (et séparé par un trou) → même message « décalé » ? ;
-  (3) petit carré posé sur une partie de [AB] → « Ton carré doit avoir pour côté le côté déjà tracé. » ou garder
-  « pas fermée » ? (questions de la revue de #2526, § 15).
+- **État** : CP-059, CP-060, CP-058 en brouillon ; essais iPad passés (§ 15). #2526 (carré décalé) mergée ; PR
+  `fix/geometrie-validation-carre-accole` (carré accolé, séparé, sur une partie de [AB], § 16) en cours.
+- **Prochaine action** : merger cette PR, puis clore le chantier (versement dans `docs/systeme/`, journal archivé).
+- **En attente de David** : publication de CP-060 et CP-058 (brouillons `1cf6eaa9…`, `a7dfe502…`) ; les messages
+  n'atteignent la prod qu'au prochain `deploy:prod`.
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
-- **Worktree / branche** : aucun (retiré après #2526).
+- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `fix/geometrie-validation-carre-accole`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -537,3 +534,15 @@ le quadrillage » (`1cf6eaa9-376d-43a1-a3e4-eb7d18c40099`) était « Non rangé 
   `prolongsSide` et `shiftsSide`. Tests : décalé vers B / vers A, rectangle décalé, côté vertical (rouges avant) ;
   décalé ouvert et carré intérieur → « pas fermée ». 805 tests de `construction/` verts.- **Livré** : #2526 mergée (CI verte, revue Opus sans finding bloquant ; test oblique ajouté à sa demande).
   Restent à trancher : le carré accolé par un sommet et le petit carré intérieur (toujours « pas fermée »).
+
+## 16. Carré accolé, séparé, ou sur une partie de [AB] (2026-11-09)
+
+Questions de la revue de #2526, **décisions de David** (« oui pour les deux, je suis tes recos ») :
+
+- Carré fermé sur la droite (AB), **accolé** à [AB] par un sommet ou **séparé** par un trou : même message que le
+  décalé, « Ton carré doit être construit sur le côté déjà tracé. » (`shiftsSide` élargi : ni contient [AB], ni
+  contenu dedans).
+- Petit carré fermé sur une **partie** de [AB] : « Ton carré doit avoir pour côté le côté déjà tracé. »
+  (`PART_OF_SIDE_FEEDBACK`, filtre `partOfSide`), après « prolongé » et « décalé ».
+- Tests rouges avant : accolé en A, en B, séparé d'un carreau ; petit carré intérieur, calé sur A au-dessous.
+  Ouverts → toujours « pas fermée ». 807 tests de `construction/` verts.
