@@ -6,19 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2520 (rangement du lot 8)._
+_Mis à jour le 2026-11-09, lot 8 publié (après #2520)._
 
-- **État** : lots 1-7 publiés. Lot 8 rangé et tagué en prod (#2520, `db:migrate` fait, vérifié) ; page à cocher
-  publiée : https://claude.ai/artifact/Lpa2BhqspTx3fM7s4frbAu (0 verdict au départ).
-- **Prochaine action** : David relit le lot 8 → compter les verdicts (`ArtifactData list verdicts`, 5 attendus) →
-  « À revoir » : corriger ; sinon commande de publication pour David (`publier-lot.ts`, simulation puis
-  `--publier`) → lot 9 (323 réemploi `64f54fc1`, 324, 363 ; § 13, D5).
-- **En attente de David** : la relecture du lot 8 sur la page à cocher.
+- **État** : lots 1-8 publiés (lot 8 : 5 « ok », publié par David, statut relu en base). `d4db2207` porte 2-309.
+- **Prochaine action** : lot 9 (§ 13, D5) sur une nouvelle branche depuis `origin/main` : 323 → réemploi de
+  `64f54fc1` (niveau seconde + tag 2-323, Géométrie repérée › parabole), 324 → nouveau modèle (Géométrie repérée ›
+  équations de droites, polygone rempli `fillColor` à vérifier), 363 → nouveau modèle (Fonction racine carrée ›
+  définition et courbe). Puis versement du chantier.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` depuis le dépôt principal à jour (le worktree n'est pas lié à Supabase) ;
   garde « Doc à jour » → `Doc-inchangée:` (≤ 100 caractères) dans un commit pour une migration de données ;
   écritures en prod → commande `!` ; « Client Tests (browser) » qui plante tests verts → `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` (branche `feat/…-8-rangement` mergée ;
-  lot 9 sur une nouvelle branche depuis `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` (branche `feat/…-8-rangement` mergée, à
+  remplacer par la branche du lot 9 puis `git branch -d`).
 
 ---
 
@@ -557,3 +557,7 @@ inchangé (10:50, création) ; `d4db2207` publié, `{1_SPE,2}`, tags 1SPE-326 et
 2-307 sous Figures planes › triangles, 2-310 sous Figures planes › médiatrice et bissectrice. Page à cocher (4 alertes
 attendues : bloc ranger non dessiné pour 306, 307, 308, 310, à jouer dans l'aperçu admin) :
 https://claude.ai/artifact/Lpa2BhqspTx3fM7s4frbAu
+
+Lot 8 relu par David sur la page à cocher (2026-11-09) : 5 « ok », sans commentaire. Publié par David
+(`publier-lot.ts`, simulation puis `--publier`, 2026-11-09) : 5/5, statut relu en base ; garde des niveaux : aucun
+niveau manquant.
