@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, avant la PR._
+_Mis à jour le 2026-11-09, après #2528 : chantier clos._
 
-- **État** : PR ouverte (cartes de cours retirées de l'Entraînement) · **Prochaine action** : merge, puis liste des questions de cours sur les suites (1re spé) à proposer à David · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-cartes-entrainement`, `fix/cartes-hors-entrainement`
+- **État** : mergé (#2528), en attente du prochain `deploy:prod` · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : « cards » est refusé par le test des messages en français (`messages-erreur-en-francais.test.ts`) · **Worktree / branche** : retirés
 
 ## Décision (David, 2026-11-09)
 
