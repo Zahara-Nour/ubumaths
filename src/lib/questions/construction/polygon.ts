@@ -7,7 +7,7 @@
  * ne changent rien (on juge le résultat, pas la manière). Un rectangle est
  * « présent » quand ses quatre côtés sont couverts. Ordre des messages : trait
  * hors des lignes, figure non fermée (ou fermée sur un côté donné prolongé,
- * ou décalée le long de ce côté), pas un carré, trait de trop, trait qui dépasse. Décisions de David du 2026-10-26
+ * à côté de ce côté sur sa droite, ou sur une partie de ce côté), pas un carré, trait de trop, trait qui dépasse. Décisions de David du 2026-10-26
  * (`docs/wip/geometrie-validation-progress.md` § 7 et § 9).
  *
  * @module questions/construction/polygon
@@ -26,6 +26,7 @@ export const OVERSHOOT_FEEDBACK = 'Un de tes traits dépasse de la figure.';
 export const PROLONGED_SIDE_FEEDBACK =
 	'Le côté déjà tracé ne doit pas être prolongé : ton carré doit avoir ce côté-là.';
 export const SHIFTED_SIDE_FEEDBACK = 'Ton carré doit être construit sur le côté déjà tracé.';
+export const PART_OF_SIDE_FEEDBACK = 'Ton carré doit avoir pour côté le côté déjà tracé.';
 export const PROLONGED_RECTANGLE_SIDES_FEEDBACK =
 	'Les côtés déjà tracés ne doivent pas être prolongés : ton rectangle doit avoir ces côtés-là.';
 
@@ -236,11 +237,19 @@ const prolongsSide = (eps: number) => (t0: number, t1: number) =>
 	t0 <= eps && t1 >= 1 - eps && (t0 < -eps || t1 > 1 + eps);
 
 /**
- * Figure fermée sur la droite (AB), DÉCALÉE : un côté du rectangle chevauche
- * [AB] sans le contenir ni y être contenu (essai de David du 2026-11-09)
+ * Figure fermée sur la droite (AB), À CÔTÉ de [AB] : un côté du rectangle ne
+ * contient pas [AB] et n'y est pas contenu — décalé, accolé par un sommet ou
+ * séparé par un trou (essai de David du 2026-11-09)
  */
 const shiftsSide = (eps: number) => (t0: number, t1: number) =>
-	(t0 < -eps && t1 > eps && t1 < 1 - eps) || (t0 > eps && t0 < 1 - eps && t1 > 1 + eps);
+	(t0 < -eps || t1 > 1 + eps) && (t0 > eps || t1 < 1 - eps);
+
+/**
+ * Figure fermée sur une PARTIE de [AB] : un côté du rectangle est contenu
+ * dans [AB] en étant plus court (décision de David du 2026-11-09)
+ */
+const partOfSide = (eps: number) => (t0: number, t1: number) =>
+	t0 >= -eps && t1 <= 1 + eps && (t0 > eps || t1 < 1 - eps);
 
 /**
  * Rectangle fermé sur les côtés donnés [BA] et [BC] PROLONGÉS au-delà de A ou
@@ -317,6 +326,8 @@ export function judgePolygon(
 				feedback = PROLONGED_SIDE_FEEDBACK;
 			else if (closedOnLineOfSide(a, b, drawn, pieces, eps, shiftsSide(eps)))
 				feedback = SHIFTED_SIDE_FEEDBACK;
+			else if (closedOnLineOfSide(a, b, drawn, pieces, eps, partOfSide(eps)))
+				feedback = PART_OF_SIDE_FEEDBACK;
 			return { status: 'incorrect', feedback };
 		}
 		expected = squares[0];
