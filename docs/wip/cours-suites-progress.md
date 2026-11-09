@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, après #2531._
+_Mis à jour le 2026-11-10, après #2531 (page à cocher publiée)._
 
-- **État** : 30 brouillons « Cours : … » rangés et tagués en prod (migration `20261109224738` appliquée le 2026-11-10, vérifiée : 30 nœuds, 30 tags) ; marqueur « question de cours » posé sur « Démontrer la somme 1 + 2 + ⋯ + n » et « … 1 + q + ⋯ + qⁿ » (`updated_at` intact) · **Prochaine action** : relecture des 30 brouillons par David (page à cocher), puis publication · **En attente de David** : go pour la page à cocher · **Pièges en cours** : réponses des étapes à ranger = places dans l'ordre affiché (`scripts/questions/ranger-attendus.ts`) ; le hook du commit reformate les JSON · **Worktree / branche** : aucun (retiré après #2531) ; prochaine PR → nouveau worktree `ubumaths-wt-cours-suites`
+- **État** : 30 brouillons « Cours : … » rangés et tagués en prod (migration `20261109224738` appliquée le 2026-11-10, vérifiée : 30 nœuds, 30 tags) ; marqueur « question de cours » posé sur « Démontrer la somme 1 + 2 + ⋯ + n » et « … 1 + q + ⋯ + qⁿ » (`updated_at` intact) · **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`, 30 attendus), corriger les « À revoir », puis `publier-lot.ts --dir scripts/questions/1spe-cours-suites` en simulation · **En attente de David** : relecture sur la page à cocher https://claude.ai/artifact/LBN4FL6QfnvYKBpg4du6AZ (B7, C15 : étapes à ranger non dessinées, à jouer dans l'aperçu) · **Pièges en cours** : réponses des étapes à ranger = places dans l'ordre affiché (`scripts/questions/ranger-attendus.ts`) ; le hook du commit reformate les JSON · **Worktree / branche** : aucun (retiré après #2531) ; prochaine PR → nouveau worktree `ubumaths-wt-cours-suites`
 
 ## Décisions (David, 2026-11-09)
 
@@ -68,3 +68,4 @@ _Mis à jour le 2026-11-10, après #2531._
 - 2026-11-10 : #2531 mergée, `db:migrate` depuis le dépôt principal (le worktree n'est pas lié à
   Supabase), vérification en prod par MCP. `security-auditor` : aucun finding bloquant (deux points
   faibles notés : `lock_timeout` sans effet hors bloc de transaction, statut brouillon des 30 non gardé).
+- 2026-11-10 : page à cocher générée (`page-a-cocher.ts`, base prod, 30 fiches, 2 alertes « bloc ranger non dessiné ») et publiée : https://claude.ai/artifact/LBN4FL6QfnvYKBpg4du6AZ (capacité `db`, collection `verdicts` vide au départ).
