@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2515._
+_Mis à jour le 2026-11-09, après le `deploy:prod` 0.80.0 (livre #2512 et #2515)._
 
-- **État** : PR 1 (#2512) et PR 2 (#2515, jsdom à la demande, date-fns élagué : démarrage local 155 → 48 ms, `/dashboard` 303 637 → 20 ms) mergées, pas encore en prod · **Prochaine action** : après le `deploy:prod`, remesurer le 1er appel en prod (`curl` sur `/auth/login` et `/dashboard` après une heure d'inactivité, comparer à 2,4 s / 4,0 s) ; puis décider du point 4 (ping) selon le résultat · **En attente de David** : un `deploy:prod` (livre #2512 et #2515) · **Pièges en cours** : commitlint refuse un corps de commit à lignes > 100 caractères ; `docs:check-a-jour` ne voit que les fichiers COMMITÉS · **Worktree / branche** : aucun
+- **État** : #2512 et #2515 en prod (0.80.0, 16 h 53). Une mesure à 17 h 36 : `/auth/login` 1,71 s au 1er appel (avant : 2,4 s), puis 0,12 s ; un seul échantillon, froid non garanti · **Prochaine action** : mesurer un vrai réveil (tôt le matin, avant 7 h, `curl` sur `https://www.chiph.re/auth/login` PUIS `/dashboard` dans des appels séparés) et relire le TTFB p75 de `/auth/login` dans les web vitals après quelques jours ; puis décider du point 4 (ping) · **En attente de David** : rien · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` (mesurer `www`) ; commitlint refuse un corps de commit à lignes > 100 caractères ; `docs:check-a-jour` ne voit que les fichiers COMMITÉS · **Worktree / branche** : aucun
 
 ## Diagnostic de la connexion lente (2026-11-09)
 
@@ -52,3 +52,15 @@ multiplier sur Vercel (CPU plus lent, disque froid), le nombre de fichiers lus n
   (`$lib/utils/sanitize.ts`, synchrone) : jsdom se charge à la première page qui en rend. Le
   remplacer côté serveur par un DOM plus léger serait un autre chantier. Pages connectées non
   mesurées (il faut une session).
+
+## Après le déploiement 0.80.0 (2026-11-09)
+
+Mesure au `curl`, 17 h 36, 43 min après le déploiement (instance froide non garantie) :
+
+| Appel                    | Avant (même méthode) | Après                                                                            |
+| ------------------------ | -------------------- | -------------------------------------------------------------------------------- |
+| `/auth/login`, 1er appel | 2,4 s                | 1,71 s                                                                           |
+| `/auth/login`, suivants  | 0,12-0,16 s          | 0,12 s                                                                           |
+| `/dashboard` (303)       | 4,0 s (1er appel)    | 0,69 s, mais juste après `/auth/login` : instance déjà réveillée, pas comparable |
+
+Un seul échantillon : à confirmer par un réveil du matin et par le TTFB p75 des web vitals.
