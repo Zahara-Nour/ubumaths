@@ -1,4 +1,5 @@
 {
+	"id": "03bf0d26-9b40-4908-827e-b679a6eebfaf",
 	"title": "Construire la bissectrice d'un angle",
 	"description": "Au compas et à la règle : un arc de centre le sommet coupe les deux côtés, deux arcs de même rayon centrés en ces points se coupent sur la bissectrice",
 	"grades": ["6"],

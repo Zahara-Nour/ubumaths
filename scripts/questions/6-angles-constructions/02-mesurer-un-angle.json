@@ -1,4 +1,5 @@
 {
+	"id": "3be08965-fb6c-4e2a-8878-f06dd04a54d3",
 	"title": "Mesurer un angle au rapporteur",
 	"description": "Lire la mesure d'un angle sur un rapporteur déjà posé, puis poser soi-même le rapporteur (centre au sommet, base sur un côté) et lire la bonne graduation",
 	"grades": ["6"],

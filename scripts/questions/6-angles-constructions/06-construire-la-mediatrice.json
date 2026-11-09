@@ -1,4 +1,5 @@
 {
+	"id": "ed444b1d-6cba-402a-99f7-6dee2f5fc1dd",
 	"title": "Construire la médiatrice d'un segment",
 	"description": "Au compas et à la règle : deux cercles de même rayon centrés aux extrémités du segment se coupent en deux points de la médiatrice",
 	"grades": ["6"],
