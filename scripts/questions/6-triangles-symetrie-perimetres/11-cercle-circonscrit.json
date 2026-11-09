@@ -1,0 +1,106 @@
+{
+	"title": "Le cercle circonscrit à un triangle",
+	"description": "Le cercle circonscrit passe par les trois sommets ; son centre est le point de concours des médiatrices, à la même distance des trois sommets",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le cercle circonscrit à un triangle passe par ses trois sommets. Quel est son centre ?\n\n```choix\n- le point de concours des médiatrices du triangle\n- le point de concours des bissectrices du triangle\n- le milieu d'un côté du triangle\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le centre $O$ est **à la même distance des trois sommets** : $OA = OB$, donc $O$ est sur la médiatrice de $[AB]$ ; $OB = OC$, donc sur celle de $[BC]$.",
+					"Le centre du cercle circonscrit est $\\textcolor{{{color:primary.0}}}{\\text{le point de concours des médiatrices}}$."
+				]
+			}
+		},
+		{
+			"statement": "$O$ est le centre du cercle circonscrit au triangle $ABC$, et $OA = {{eval:u/2;d}}~\\unit{cm}$.\n\nCompléter : $OB = ?~\\unit{cm}$ et $OC = ?~\\unit{cm}$.",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "5..19"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u/2;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:u/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cercle circonscrit passe par $A$, $B$ et $C$ : $OA$, $OB$ et $OC$ sont trois **rayons** de ce cercle.",
+					"$OB = OC = OA = \\textcolor{{{color:primary.0}}}{{{eval:u/2;d}}~\\unit{cm}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Médiatrices",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bissectrices",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "OA = 4,5 : OB = OC = 4,5",
+			"variationIndex": 1,
+			"variables": {
+				"u": "9"
+			},
+			"answers": ["4,5", "4,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le diamètre (9)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "9"
+			},
+			"answers": ["9", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "OA = 6 : OB = OC = 6",
+			"variationIndex": 1,
+			"variables": {
+				"u": "12"
+			},
+			"answers": ["6", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

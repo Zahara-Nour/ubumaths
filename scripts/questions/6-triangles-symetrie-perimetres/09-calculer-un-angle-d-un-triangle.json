@@ -1,0 +1,167 @@
+{
+	"title": "Calculer un angle d'un triangle",
+	"description": "Avec la somme des angles (180°) : le troisième angle à partir de deux, les trois angles d'un triangle isocèle à partir d'un seul",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans le triangle $ABC$, $\\widehat{ABC} = {{b}}^\\circ$ et $\\widehat{ACB} = {{c}}^\\circ$.\n\n```figure\nfenetre: -1.5 ; 8.5 ; -1 ; {{eval:floor(10*(7*tan((b)*\\pi/180)*tan((c)*\\pi/180)/(tan((b)*\\pi/180)+tan((c)*\\pi/180))+1.3))/10;d}}\ndescription: Un triangle ABC à main levée ; l'angle en B mesure {{b}} degrés, l'angle en C {{c}} degrés, l'angle en A est marqué d'un point d'interrogation.\n---\nB = point(0, 0, etiquette=\"bas-gauche\")\nC = point(7, 0, etiquette=\"bas-droite\")\nP = rotation(C, angle={{eval:b}}, centre=B, visible=faux)\nQ = rotation(B, angle={{eval:-(c)}}, centre=C, visible=faux)\nd1 = droite(B, P, visible=faux)\nd2 = droite(C, Q, visible=faux)\nA = intersection(d1, d2, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2, rendu=\"croquis\")\nHB = point(1.4, 0, visible=faux)\nHC = point(5.6, 0, visible=faux)\nangle(C, B, A)\nTB = rotation(HB, angle={{eval:(b)/2;d}}, centre=B, visible=faux)\ntexte(TB, \"{{b}}°\", dx=0, dy=0, ancre=\"centre\")\nangle(A, C, B)\nTC = rotation(HC, angle={{eval:-(c)/2;d}}, centre=C, visible=faux)\ntexte(TC, \"{{c}}°\", dx=0, dy=0, ancre=\"centre\")\nangle(B, A, C)\nHA = point(A, longueur=1.7, direction=B, visible=faux)\nTA = rotation(HA, angle={{eval:(180-(b)-(c))/2;d}}, centre=A, visible=faux)\ntexte(TA, \"?\", dx=0, dy=0, ancre=\"centre\")\n```\n\nCombien mesure l'angle $\\widehat{BAC}$ ?\n\n$\\widehat{BAC} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "35..70"
+				},
+				{
+					"name": "c",
+					"expression": "35..65"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:180-b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La somme des angles** d'un triangle vaut $180^\\circ$.",
+					"$\\widehat{BAC} = 180 - {{b}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:180-b-c}}^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $ABC$ est isocèle en $A$ et $\\widehat{BAC} = {{eval:2*r}}^\\circ$.\n\n```figure\nfenetre: -1.5 ; 7.5 ; -1 ; {{eval:floor(10*(6*tan((90-r)*\\pi/180)*tan((90-r)*\\pi/180)/(tan((90-r)*\\pi/180)+tan((90-r)*\\pi/180))+1.3))/10;d}}\ndescription: Un triangle ABC isocèle en A, à main levée ; l'angle en A mesure {{eval:2*r}} degrés, l'angle en B est marqué d'un point d'interrogation.\n---\nB = point(0, 0, etiquette=\"bas-gauche\")\nC = point(6, 0, etiquette=\"bas-droite\")\nP = rotation(C, angle={{eval:90-r}}, centre=B, visible=faux)\nQ = rotation(B, angle={{eval:-(90-r)}}, centre=C, visible=faux)\nd1 = droite(B, P, visible=faux)\nd2 = droite(C, Q, visible=faux)\nA = intersection(d1, d2, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2, rendu=\"croquis\")\nmarque_segment(A, B)\nmarque_segment(A, C)\nHB = point(1.4, 0, visible=faux)\nHC = point(4.6, 0, visible=faux)\nangle(C, B, A)\nTB = rotation(HB, angle={{eval:(90-r)/2;d}}, centre=B, visible=faux)\ntexte(TB, \"?\", dx=0, dy=0, ancre=\"centre\")\nangle(B, A, C)\nHA = point(A, longueur=1.7, direction=B, visible=faux)\nTA = rotation(HA, angle={{eval:(180-(90-r)-(90-r))/2;d}}, centre=A, visible=faux)\ntexte(TA, \"{{eval:2*r}}°\", dx=0, dy=0, ancre=\"centre\")\n```\n\nCombien mesure l'angle $\\widehat{ABC}$ ?\n\n$\\widehat{ABC} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "20..55"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:90-r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les angles à la base** $\\widehat{ABC}$ et $\\widehat{ACB}$ ont la même mesure ; avec $\\widehat{BAC}$, la somme vaut $180^\\circ$.",
+					"Les deux angles à la base mesurent ensemble $180 - {{eval:2*r}} = {{eval:180-2*r}}$, donc chacun $\\dfrac{{{eval:180-2*r}}}{2} = \\textcolor{{{color:primary.0}}}{{{eval:90-r}}^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $ABC$ est isocèle en $A$ et $\\widehat{ABC} = {{b}}^\\circ$.\n\n```figure\nfenetre: -1.5 ; 7.5 ; -1 ; {{eval:floor(10*(6*tan((b)*\\pi/180)*tan((b)*\\pi/180)/(tan((b)*\\pi/180)+tan((b)*\\pi/180))+1.3))/10;d}}\ndescription: Un triangle ABC isocèle en A, à main levée ; l'angle en B mesure {{b}} degrés, l'angle en A est marqué d'un point d'interrogation.\n---\nB = point(0, 0, etiquette=\"bas-gauche\")\nC = point(6, 0, etiquette=\"bas-droite\")\nP = rotation(C, angle={{eval:b}}, centre=B, visible=faux)\nQ = rotation(B, angle={{eval:-(b)}}, centre=C, visible=faux)\nd1 = droite(B, P, visible=faux)\nd2 = droite(C, Q, visible=faux)\nA = intersection(d1, d2, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2, rendu=\"croquis\")\nmarque_segment(A, B)\nmarque_segment(A, C)\nHB = point(1.4, 0, visible=faux)\nHC = point(4.6, 0, visible=faux)\nangle(C, B, A)\nTB = rotation(HB, angle={{eval:(b)/2;d}}, centre=B, visible=faux)\ntexte(TB, \"{{b}}°\", dx=0, dy=0, ancre=\"centre\")\nangle(B, A, C)\nHA = point(A, longueur=1.7, direction=B, visible=faux)\nTA = rotation(HA, angle={{eval:(180-(b)-(b))/2;d}}, centre=A, visible=faux)\ntexte(TA, \"?\", dx=0, dy=0, ancre=\"centre\")\n```\n\nCombien mesure l'angle $\\widehat{BAC}$ ?\n\n$\\widehat{BAC} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "30..70"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:180-2*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Isocèle en $A$** : $\\widehat{ACB} = \\widehat{ABC} = {{b}}^\\circ$.",
+					"$\\widehat{BAC} = 180 - {{b}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:180-2*b}}^\\circ}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "180 − 50 − 60 = 70",
+			"variationIndex": 0,
+			"variables": {
+				"b": "50",
+				"c": "60"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 110 (somme des deux angles)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "50",
+				"c": "60"
+			},
+			"answers": ["110"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 250 (360 − …)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "50",
+				"c": "60"
+			},
+			"answers": ["250"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sommet 40 : base 70",
+			"variationIndex": 1,
+			"variables": {
+				"r": "20"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 140 (sans partager en deux)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "20"
+			},
+			"answers": ["140"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sommet 100 : base 40",
+			"variationIndex": 1,
+			"variables": {
+				"r": "50"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Base 65 : sommet 50",
+			"variationIndex": 2,
+			"variables": {
+				"b": "65"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 115 (180 − 65 une seule fois)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "65"
+			},
+			"answers": ["115"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

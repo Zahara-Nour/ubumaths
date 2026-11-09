@@ -1,0 +1,200 @@
+{
+	"title": "Les angles des triangles particuliers",
+	"description": "Triangle isocèle : deux angles de même mesure ; triangle équilatéral : trois angles de 60° ; triangle rectangle : les deux angles aigus ont pour somme 90°",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le triangle $ABC$ est isocèle en $A$.\n\n```figure\nfenetre: -1.5 ; 7.5 ; -1 ; {{eval:floor(10*(6*tan((b)*\\pi/180)*tan((b)*\\pi/180)/(tan((b)*\\pi/180)+tan((b)*\\pi/180))+1.3))/10;d}}\ndescription: Un triangle ABC isocèle en A (AB = AC codés) ; l'angle en B mesure {{b}} degrés, l'angle en C est marqué d'un point d'interrogation.\n---\nB = point(0, 0, etiquette=\"bas-gauche\")\nC = point(6, 0, etiquette=\"bas-droite\")\nP = rotation(C, angle={{eval:b}}, centre=B, visible=faux)\nQ = rotation(B, angle={{eval:-(b)}}, centre=C, visible=faux)\nd1 = droite(B, P, visible=faux)\nd2 = droite(C, Q, visible=faux)\nA = intersection(d1, d2, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nmarque_segment(A, B)\nmarque_segment(A, C)\nHB = point(1.4, 0, visible=faux)\nHC = point(4.6, 0, visible=faux)\nangle(C, B, A)\nTB = rotation(HB, angle={{eval:(b)/2;d}}, centre=B, visible=faux)\ntexte(TB, \"{{b}}°\", dx=0, dy=0, ancre=\"centre\")\nangle(A, C, B)\nTC = rotation(HC, angle={{eval:-(b)/2;d}}, centre=C, visible=faux)\ntexte(TC, \"?\", dx=0, dy=0, ancre=\"centre\")\n```\n\nCombien mesure l'angle $\\widehat{ACB}$ ?\n\n$\\widehat{ACB} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "30..70"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Triangle isocèle** : ses deux angles **à la base** ont la même mesure. Ici, la base est $[BC]$ (le côté opposé au sommet $A$).",
+					"$\\widehat{ACB} = \\widehat{ABC} = \\textcolor{{{color:primary.0}}}{{{b}}^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $ABC$ est équilatéral.\n\n```figure\nfenetre: -1.5 ; 7.5 ; -1 ; 6.5\ndescription: Un triangle ABC équilatéral, ses trois côtés codés égaux.\n---\nB = point(0, 0, etiquette=\"bas-gauche\")\nC = point(6, 0, etiquette=\"bas-droite\")\nP = rotation(C, angle={{eval:60}}, centre=B, visible=faux)\nQ = rotation(B, angle={{eval:-(60)}}, centre=C, visible=faux)\nd1 = droite(B, P, visible=faux)\nd2 = droite(C, Q, visible=faux)\nA = intersection(d1, d2, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nmarque_segment(A, B)\nmarque_segment(A, C)\nmarque_segment(B, C)\nHB = point(1.4, 0, visible=faux)\nHC = point(4.6, 0, visible=faux)\n```\n\nCombien mesure chacun de ses angles ?\n\n$?^\\circ$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "60"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Triangle équilatéral** : ses trois angles ont la même mesure, et leur somme vaut $180^\\circ$.",
+					"$180 \\div 3 = 60$ : chaque angle mesure $\\textcolor{{{color:primary.0}}}{60^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Un triangle a **{{if:k==1|deux|trois}} angles de même mesure**. Que peut-on dire de ce triangle ?\n\n```choix\nmelanger: non\n- il est isocèle\n- il est équilatéral\n- il est rectangle\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un triangle qui a **deux** angles de même mesure est **isocèle** ; un triangle qui a ses **trois** angles de même mesure ($60^\\circ$ chacun) est **équilatéral**.",
+					"Ce triangle est {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{isocèle}}$|$\\textcolor{{{color:primary.0}}}{\\text{équilatéral}}$}}."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $ABC$ est rectangle en $B$.\n\n```figure\nfenetre: -1.5 ; 7 ; -1 ; {{eval:floor(10*(5*tan((c)*\\pi/180)+1.3))/10;d}}\ndescription: Un triangle ABC rectangle en B ; l'angle en C mesure {{c}} degrés, l'angle en A est marqué d'un point d'interrogation.\n---\nB = point(0, 0, etiquette=\"bas-gauche\")\nC = point(5, 0, etiquette=\"bas-droite\")\nP = rotation(C, angle={{eval:90}}, centre=B, visible=faux)\nQ = rotation(B, angle={{eval:-(c)}}, centre=C, visible=faux)\nd1 = droite(B, P, visible=faux)\nd2 = droite(C, Q, visible=faux)\nA = intersection(d1, d2, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nangle(C, B, A, marque=\"carre\")\nHB = point(1.4, 0, visible=faux)\nHC = point(3.6, 0, visible=faux)\nangle(A, C, B)\nTC = rotation(HC, angle={{eval:-(c)/2;d}}, centre=C, visible=faux)\ntexte(TC, \"{{c}}°\", dx=0, dy=0, ancre=\"centre\")\nangle(B, A, C)\nHA = point(A, longueur=1.7, direction=B, visible=faux)\nTA = rotation(HA, angle={{eval:(180-(90)-(c))/2;d}}, centre=A, visible=faux)\ntexte(TA, \"?\", dx=0, dy=0, ancre=\"centre\")\n```\n\nCombien mesure l'angle $\\widehat{BAC}$ ?\n\n$\\widehat{BAC} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "25..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:90-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Triangle rectangle** : l'angle droit mesure $90^\\circ$, donc les deux autres angles ont pour somme $180 - 90 = 90^\\circ$.",
+					"$\\widehat{BAC} = 90 - {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:90-c}}^\\circ}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Isocèle : 52",
+			"variationIndex": 0,
+			"variables": {
+				"b": "52"
+			},
+			"answers": ["52"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 76 (180 − 2 × 52)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "52"
+			},
+			"answers": ["76"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 128 (180 − 52)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "52"
+			},
+			"answers": ["128"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Équilatéral : 60",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 90",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux angles égaux : isocèle",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : équilatéral pour deux angles",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Trois angles égaux : équilatéral",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle : 90 − 35 = 55",
+			"variationIndex": 3,
+			"variables": {
+				"c": "35"
+			},
+			"answers": ["55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 145 (180 − 35)",
+			"variationIndex": 3,
+			"variables": {
+				"c": "35"
+			},
+			"answers": ["145"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
