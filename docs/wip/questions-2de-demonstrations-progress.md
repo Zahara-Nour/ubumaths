@@ -6,18 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, lot 9 écrit (PR des modèles, voir § 16)._
+_Mis à jour le 2026-11-09, après #2523 (modèles du lot 9 mergés)._
 
-- **État** : lots 1-8 publiés. Lot 9 : 2 modèles neufs (324, 363) vérifiés, PR des modèles sur
-  `feat/questions-2de-approfondissements-9` ; 323 = réemploi de `64f54fc1` (dans la migration).
-- **Prochaine action** : CI verte → merge → David crée les brouillons (commande au § 16) → relevé prod → migration
-  de rangement (2 nœuds, tags 2-324 / 2-363, `64f54fc1` `{1_SPE,2}` + tag 2-323) → page à cocher → publication →
-  versement du chantier.
-- **En attente de David** : `create-questions --publier` après le merge de la PR des modèles.
+- **État** : lots 1-8 publiés. Lot 9 : 2 modèles neufs (324, 363) mergés (#2523), pas encore en prod ;
+  323 = réemploi de `64f54fc1` (dans la migration).
+- **Prochaine action** : David crée les brouillons (commande au § 16) → relevé prod → migration de rangement
+  (2 nœuds, tags 2-324 / 2-363, `64f54fc1` `{1_SPE,2}` + tag 2-323), sur une nouvelle branche depuis `origin/main`
+  → page à cocher → publication → versement du chantier.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-9 --publier`
+  depuis le dépôt principal à jour.
 - **Pièges en cours** : `db:migrate` depuis le dépôt principal à jour (le worktree n'est pas lié à Supabase) ;
   garde « Doc à jour » → `Doc-inchangée:` (≤ 100 caractères) dans un commit pour une migration de données ;
   écritures en prod → commande `!` ; « Client Tests (browser) » qui plante tests verts → `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-approfondissements-9`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` (branche `feat/…-9` mergée, à remplacer
+  par celle de la migration puis `git branch -d`).
 
 ---
 
@@ -588,3 +590,5 @@ rectangle coloré du 324, courbes du 363 en repère orthonormé.
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-9 --publier`
+
+Mergée (#2523, CI verte du premier coup ; merge retardé par un `deploy:prod` en cours).
