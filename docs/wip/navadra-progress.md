@@ -6,16 +6,9 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
 
 - **État** : analyse faite. David repart **de zéro**, avec un **nouveau nom** et le **lore de Chiphre**. Le principe reste le même : chaque sort ou coup se valide par une question, et les questions viennent du système de questions de Chiphre.
 - **Tranché** : avatar combattant, accompagné d'un Mathou familier ; une magie ajoutée au lore (§ « Tranché »).
-- **Prochaine action** : obtenir les réponses de David sur la **magie par étapes**, proposée le 2026-11-09 :
-  - **Recrue**, au primaire : des coups seulement ;
-  - **Apprenti**, au collège : des sorts tout faits par Province, façon Navadra ;
-  - **Mage**, au lycée : la grille verbe × matière composée par l'élève ;
-  - c'est **un seul moteur** : un sort tout fait est une case cachée de la grille.
-- **En attente de David** : 3 questions.
-  1. Le primaire est-il inclus (étape « recrue ») ?
-  2. Qu'est-ce qui fixe l'étape ? Ma recommandation : le niveau scolaire l'ouvre, le jeu en débloque le contenu.
-  3. Le verbe donne-t-il l'effet en combat (la matière décidant seule du domaine de la question), ou une compétence du programme ? La seconde voie demande d'étiqueter environ 1 900 modèles.
-- **Restent ensuite** : la question 2 (adversaires), la question 3 (public), la question 4 (nom) et la question 5 (progression).
+- **Tranché aussi** : la magie par étapes (recrue, apprenti, mage), avec un seul moteur. Voir § « Tranché ».
+- **Prochaine action** : réfléchir point par point avec David, en commençant par la **question 2, les adversaires**.
+- **En attente de David** : les questions 2 (adversaires), 4 (nom) et 5 (progression). La question 3 (public) est réglée : du primaire au lycée.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
   - Le Compendium n'interdit que les **mots** anglais affichés (XP, level, boss, score, leaderboard ; `lore-pataphysique.md:968,1776`), **pas les mécaniques**.
@@ -25,6 +18,14 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
 
 - **2026-11-09 — Combattant = l'avatar du joueur, accompagné d'un Mathou familier** (décision de David). Les Mathoux ne combattent pas façon Pokémon. Raison : un Mathou = une notion, ce qui empêchait de travailler tout le programme. Le jeu choisit la notion, le joueur ne choisit que la Province ou la Forme du sort.
 - **2026-11-09 — Ajouter une magie au lore** (idée de David), inspirée d'Ars Magica : grille verbe × matière. ⚠️ Le texte d'Ars Magica est sous CC BY-SA 4.0 (partage à l'identique, https://atlas-games.com/openars) : on s'inspire de la mécanique, **sans copier ni texte ni noms**. Piste de David : **adapter le système à l'âge**, avec la grille pour le lycée et un système simple, façon Navadra, pour le collège. En discussion.
+
+- **2026-11-09 — La magie s'apprend par étapes, avec un seul moteur.** David a retenu mes recommandations :
+  - **Recrue**, au primaire : des coups seulement, sans magie. **Le primaire est inclus.**
+  - **Apprenti**, au collège : des sorts tout faits, rattachés à une Province, façon Navadra.
+  - **Mage**, au lycée : la grille verbe × matière, composée par l'élève.
+  - Un sort tout fait est une case cachée de la grille.
+  - **Le niveau scolaire** (`profiles.grade`) **ouvre l'étape** ; jouer en débloque le contenu progressivement.
+  - **Le verbe donne l'effet en combat** (soigner, frapper, entraver, transformer, révéler) ; **la matière seule décide du domaine** de la question. Pas d'étiquetage par compétence.
 
 ## À trancher (posé à David le 2026-11-09)
 
