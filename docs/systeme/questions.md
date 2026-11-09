@@ -1385,8 +1385,8 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
   glisser qui suit la pose d'un point absent sur une droite attend un peu (relâcher et reprendre) ;
   CP-058 (alignement à la règle) relève de la figure de travail (`figure-et-choix`), pas d'un geste à
   placer. Contenu à faire par les sessions « questions » : les deux modèles « ranger » encore en case,
-  `cp-a2/04` et `ce1-2/04`, à réécrire en `ranger (au moins 3 étiquettes) ; 6e 06, 07 et CM2 sont
-réécrits (46 modèles publiés à `ranger en prod le 2026-11-09). `axe: à choisir` est utilisé par
+  `cp-a2/04` et `ce1-2/04`, à réécrire en ` ```ranger ` (au moins 3 étiquettes) ; 6e 06, 07 et CM2
+  sont réécrits (46 modèles publiés à ` ```ranger ` en prod le 2026-11-09). `axe: à choisir` est utilisé par
   `ce2-7c/08` (CE2-082, publié). Liste tenue à jour : [outils-manquants.md](../wip/outils-manquants.md).
 - `question_templates.type` existe en base, mais le code déduit le type de la structure
   (`getQuestionType`). CONTEXT.md liste encore des types TinyMath (`numerical_exact`…) absents de

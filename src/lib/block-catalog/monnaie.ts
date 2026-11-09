@@ -55,7 +55,7 @@ export const monnaieEntry: BlockCatalogEntry = {
 				{
 					key: 'légendes',
 					values: 'un texte par ensemble, séparés par ; (40 caractères au plus)',
-					defaultValue: 'aucune',
+					defaultValue: 'A, B, C s’il y a plusieurs ensembles',
 					description: 'Écrites sous chaque ensemble.'
 				},
 				{
