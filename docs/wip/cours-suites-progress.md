@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2529._
+_Mis à jour le 2026-11-09, après #2530._
 
-- **État** : 30 modèles mergés (#2529), PAS encore en prod · **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-cours-suites --publier` (brouillons), puis commiter les `id` écrits dans les fichiers, puis migration nœud + tag · **En attente de David** : rangement (tableau ci-dessous, B11 : 1SPE-214 ou deux modèles), marqueur « question de cours » sur les deux « Démontrer la somme… », sort de `.tmp-sonde/` (sondes jetables du worktree) · **Pièges en cours** : réponses des étapes à ranger = places dans l'ordre affiché sous le tirage fixe des specs (`['3','0','1','2']`) ; le hook du commit reformate les JSON (index désynchronisé après un `commit -- <chemins>` : `git add` des fichiers) · **Worktree / branche** : `../ubumaths-wt-cours-suites`, `feat/questions-cours-suites-1spe` (mergée, gardée pour `.tmp-sonde/`)
+- **État** : 30 brouillons créés en prod le 2026-11-09 (vérifiés : 30 `draft`), ids commités (#2530) · **Prochaine action** : migration nœud + tag (gabarit `20261026210000_questions_cp_c_rangement_tags.sql`), test d'intégration rouge sans elle, `security-auditor`, PR, `db:migrate` · **En attente de David** : « ok » sur mes recos (accès : personne ; B11 un seul modèle sous 1SPE-214, tableau validé tel quel ; marqueur « question de cours » sur les deux « Démontrer la somme… », dans la même migration s'ils sont publiés ; `.tmp-sonde/` : garder `ranger-attendus.ts` sous `scripts/questions/`, jeter le reste) · **Pièges en cours** : réponses des étapes à ranger = places dans l'ordre affiché sous le tirage fixe des specs (`['3','0','1','2']`) ; le hook du commit reformate les JSON · **Worktree / branche** : `../ubumaths-wt-cours-suites`, branche `chore/ids-cours-suites-1spe` (mergée, gardée pour `.tmp-sonde/`)
 
 ## Décisions (David, 2026-11-09)
 
