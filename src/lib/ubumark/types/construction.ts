@@ -200,6 +200,31 @@ export interface RectangleCheck {
 export type PolygonCheck = CarreCheck | RectangleCheck;
 
 /**
+ * Carré ou rectangle coté sur papier uni (chantier `regle-graduee`, PR 6, Q19) :
+ * `carre A ; B ; C ; D` ou `rectangle A ; B ; C ; D : BC = 3 cm`. [AB] est tracé
+ * dans la figure, C et D n'y sont pas (leurs noms servent aux messages). L'élève
+ * construit les angles droits à l'équerre et prend les longueurs à la règle
+ * graduée. Carré : le côté est [AB] ; rectangle : `height`, la longueur de [BC]
+ * en millimètres entiers. Seul dans la figure.
+ */
+export interface RuledPolygonCheck {
+	kind: 'carre' | 'rectangle';
+	points: [string, string, string, string];
+	ruled: true;
+	/** Rectangle seulement : la longueur de [BC] (= [AD]) */
+	height?: { length: number; unit: LengthUnit };
+	line: number;
+}
+
+/** Palette d'un carré ou d'un rectangle coté (PR 6 de `regle-graduee`) */
+export const RULED_POLYGON_TOOLS: ConstructionTool[] = ['segment', 'equerre', 'regle'];
+
+/** Carré ou rectangle coté sur papier uni (PR 6), pas la forme du quadrillage */
+export function isRuledPolygonCheck(check: ConstructionCheck): check is RuledPolygonCheck {
+	return 'ruled' in check;
+}
+
+/**
  * `symetrique par d` : l'élève trace l'image de tout ce qui est tracé dans la
  * figure sauf l'axe ; `par O` (un point) : symétrie centrale.
  * `symetrique A ; B ; C par d` : seulement les traits dont les deux bouts sont
@@ -404,6 +429,7 @@ export interface SegmentLengthCheck {
 export type ConstructionCheck =
 	| DroiteParCheck
 	| SegmentFigureCheck
+	| RuledPolygonCheck
 	| PointCheck
 	| LineCheck
 	| CircleCheck

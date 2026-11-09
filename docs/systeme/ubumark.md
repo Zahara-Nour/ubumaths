@@ -678,7 +678,10 @@ de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS` : `droite`, `segment`, `poin
 `CHECK_TOOL`, ou, sans `grille:` (ou `grille: non`), les instruments pour `point` et `symetrique` (et
 pour `droite`, quadrillage ou non, sans `report` sur quadrillage (`LINE_GRID_TOOLS`, `outils: report` y est refusé) ; pour `cercle`, `triangle`, `angle` et `segment`, refusés sur quadrillage, sauf le cercle `cercle(O, passant=A)` et le triangle rectangle (palette Segment) ; un cercle de centre donné reçoit `centeredCircleTools` : le compas, plus le report pour `rayon=distance(D, E)`, la règle graduée et le compas pour `rayon=4 cm`),
 `PLAIN_PAPER_TOOLS` ; sans quadrillage, une palette sans `equerre`, `compas`, `report`, `rapporteur` ni `regle` est refusée), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
-`carre A ; B`, `rectangle A ; B ; C`, `symetrique par d` / `symetrique A ; B ; C par d` (`symétrique`
+`carre A ; B`, `rectangle A ; B ; C` (sur papier uni, cotés : `carre A ; B ; C ; D`,
+`rectangle A ; B ; C ; D : BC = 3 cm`, chantier `regle-graduee`, PR 6 : quatre sommets, C et D absents de la
+figure, palette Segment · Équerre · Règle graduée exactement, seul dans la figure, quadrillage refusé),
+`symetrique par d` / `symetrique A ; B ; C par d` (`symétrique`
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
 rectangle ou symétrique, jamais mêlé à `droite_par` ; `point A' = <expression>`, outil point, une ligne par
 point à placer, expression du langage des figures au plus 200 caractères, nom unique ; `droite m = <expression>`,

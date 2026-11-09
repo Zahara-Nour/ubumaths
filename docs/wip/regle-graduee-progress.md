@@ -9,19 +9,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2503._
+_Mis à jour le 2026-11-09, après #2503 (bloc corrigé : la PR « carré et rectangle » du découpage Q10 n'était pas faite)._
 
-- **État** : PR 4 (triangle rectangle coté en cm, #2499) et PR 5 (Q15, fusion serrée sur demi-droite, #2503)
-  mergées ; tous les choix et questions des § 5-7 tranchés. Les débouchés de la ligne n° 18 (CE2-039, CE2-070
-  coté) ont leurs outils ; restent CP-035 / CE1-044 (mesurer un segment à la règle).
-- **Prochaine action** : avec David, décider la suite (mesurer un segment à la règle, ou clore le chantier :
-  versement dans `docs/systeme/`, ligne n° 18 de `outils-manquants.md`, journal archivé).
-- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494, #2499) ; la suite du chantier
-  (mesurer un segment à la règle, ou clore).
-- **Pièges en cours** : le juge prend le **segment vu** (§ 3, et § 7 depuis Q18) ; seules les règles posées
-  AVANT le trait comptent (§ 6, § 7) ; tests de composant : toucher pile sur une graduation ; commitlint :
-  lignes du corps ≤ 100 caractères.
-- **Worktree / branche** : aucun (à recréer depuis `origin/main`).
+- **État** : PR 1-4 du découpage mergées (#2485 segment, #2490 demi-droite, #2494 cercle, #2499 triangle
+  rectangle) et le correctif Q15 (#2503). **Reste la PR 6 : carré et rectangle cotés sur papier uni** (Q10,
+  Q11, Q13 ; `polygon.ts` ne juge que sur quadrillage). Mesurer (CP-035, CE1-044) : déjà couvert par des modèles
+  à règle dessinée ; le geste « poser la règle pour mesurer » ira dans `outils-manquants.md` à la clôture (David).
+- **Prochaine action** : PR 6 (§ 8, Q19-Q20 tranchées) : tests rouges → code → revue Opus.
+- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494, #2499).
+- **Pièges en cours** : le juge prend le **segment vu** (§ 3, § 7) ; seules les règles posées AVANT le trait
+  comptent (§ 6, § 7) ; tests de composant : toucher pile sur une graduation ; commitlint : corps ≤ 100 car.
+- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-carre`.
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
@@ -258,3 +256,75 @@ si un auteur le demande. PR 5 (`fix/regle-graduee-demi-droite`) : Q15, test roug
 PR 5 mergée (#2503) ; revue Opus : rien de bloquant, 3 mineurs traités (règle reposée sur [Ax), trait presque
 opposé → deux segments, JSDoc de `seenSegments`). Limite connue, non visée par Q15 : un trait qui ne part pas de
 A (du milieu de [AB]) est ignoré.
+
+## 8. Phase 0 de la PR 6 — carré et rectangle cotés sur papier uni (2026-11-09)
+
+**Question d'accès** : aucune (case « figure », ni table, ni policy, ni route).
+
+**Constat** : `carre A ; B` et `rectangle A ; B ; C` (`polygon.ts`, CP-060) ne jugent que la figure fermée
+(côtés fusionnés), outil Segment seul, sans instruments ni longueur : c'est le quadrillage qui fait l'angle droit
+et la longueur. Rien ne vérifie l'équerre ni la règle. Le triangle rectangle coté (§ 7) a déjà tout le reste :
+droite construite à l'équerre par le sommet, graduation d'une règle posée en ce sommet AVANT le trait, trait vu.
+
+**Comportements proposés** (papier uni ; quadrillage inchangé) :
+
+- **Nominal, carré** : `verifier: carre A ; B ; C ; D`, [AB] tracé dans la figure (6 cm). Palette Segment ·
+  Équerre · Règle graduée. L'élève trace la perpendiculaire à (AB) en B à l'équerre, pose la règle 0 en B, trace
+  [BC] jusqu'à la graduation de 6 cm ; de même en A pour D ; trace [CD] → « Juste ». Les deux côtés de (AB) sont
+  justes.
+- **Nominal, rectangle** : `verifier: rectangle A ; B ; C ; D : BC = 3 cm`, [AB] tracé (7 cm) ; même geste,
+  3 cm en B et en A.
+- **Erreurs, dans l'ordre** : hors palette → faux sans message ; figure pas fermée (« Ta figure n'est pas
+  fermée. », messages actuels de `polygon.ts`, côté donné prolongé compris) ; plusieurs figures (un C de chaque
+  côté) → « Trace un seul carré ABCD. » (comme Q17) ; côté [BC] (ou [AD]) hors d'une droite construite par B
+  (A) → « Ton côté [BC] est tracé à l'œil : utilise l'équerre. » ; C hors graduation → « Ton point C est placé à
+  l'œil : arrête [BC] sur une graduation de la règle. » ; mauvaise longueur → « Ton côté [BC] mesure 5,8 cm au
+  lieu de 6 cm. » (trait vu, Q18) ; trait de trop / trait qui dépasse (messages actuels).
+- **Limites (erreurs d'auteur)** : quadrillage avec des cm ; [AB] pas au mm près ; C ou D déjà dans la figure ;
+  carré (rectangle) qui ne tient dans la fenêtre d'aucun côté ; côté plus long que la règle ; `BC = 3 cm` sur un
+  carré.
+- **Correction** : les perpendiculaires en A et B (traits fins), les règles posées en A et en B, les trois côtés
+  du côté où l'élève a le plus tracé.
+
+### Questions à David
+
+- **Q19** — Écriture : sur papier uni, nommer les quatre sommets (`carre A ; B ; C ; D`,
+  `rectangle A ; B ; C ; D : BC = 3 cm`, C et D absents de la figure, pour les messages), les formes du
+  quadrillage (`carre A ; B`, `rectangle A ; B ; C`) inchangées ? (reco : oui)
+- **Q20** — Le 4e sommet D : seulement « perpendiculaire en A + règle posée en A » (comme C en B), ou aussi D au
+  croisement de deux droites construites (perpendiculaire en A et perpendiculaire à (BC) en C, sans mesurer
+  [AD]) ? (reco : accepter les deux — la seconde est une construction exacte qu'un élève fait aussi)
+- ~~Q21~~ — tracé sans l'équerre : déjà tranché par **Q13** (angle droit à l'équerre exigé), pas reposé.
+
+**Décisions de David (2026-11-09)** : **Q19** quatre sommets nommés sur papier uni (`carre A ; B ; C ; D`,
+`rectangle A ; B ; C ; D : BC = 3 cm`), formes du quadrillage inchangées ; **Q20** D accepté de deux façons :
+perpendiculaire en A + règle posée en A, ou croisement de deux droites construites (perpendiculaire en A et
+perpendiculaire à (BC) en C).
+
+## 9. PR 6 — carré et rectangle cotés sur papier uni (2026-11-09)
+
+`ruled-polygon.ts` (`judgeRuledPolygon`, `assertRuledPolygon`, correction : `ruledPolygonSolution`,
+`ruledPolygonRulers`, `ruledPolygonCorrection` rendue par `solutionTriangle`) ; `RuledPolygonCheck`
+(`ruled: true`, `isRuledPolygonCheck`, `RULED_POLYGON_TOOLS`) ; parseur `readRuledPolygon` et
+`ruledPolygonError` ; `instance-generator.ts` ne demande que A et B nommés (le test de composant l'a
+révélé) ; catalogue (1 exemple) ; docs `systeme/questions.md`, `systeme/ubumark.md`. Tests : 40 purs
+(`construction-carre-rectangle-cm.test.ts` ; rouges = module absent, pas assertion par assertion), 2 composant
+(`figure-a-completer-regle.svelte.test.ts`) ; `construction/` + `ubumark` + catalogue 7 239 verts ;
+`check:incremental` 0 erreur ; cliquet tenu ; `lint:fast` propre.
+
+**Choix faits sans David (à valider)** : (1) deux côtés opposés depuis B (un carré de chaque côté) sont deux
+côtés vus (`throughA` de `seenSegments` ignoré), d'où « Trace un seul carré ABCD. » ; (2) C et D doivent
+être du même côté de (AB) pour fermer la figure (un quadrilatère croisé = « pas fermée ») ; (3) l'arité
+fautive (`carre A ; B ; C`) cite aussi la forme du papier uni ; (4) unité des messages du carré : cm
+(« 5,8 cm »), le côté [AB] n'ayant pas d'unité écrite ; (5) correction : du côté où l'élève a le plus
+tracé, sinon le plus haut.
+
+**Revue opus (2026-11-09)** : aucun faux juste (14 sondes). (1) **Important**, faux faux : A d'abord, puis C
+au croisement de la perpendiculaire en B et de la perpendiculaire à (AD) en D → refusé « à l'œil » →
+**Q22** (David, 2026-11-09) : accepté dans les deux ordres ; le premier sommet à la règle, l'autre à la
+règle ou au croisement. Mineurs traités : Q20 le long de la droite de l'équerre testé ; côté prolongé au
+croisement → longueur du trait vu (pas « à l'œil ») ; [AB] exigé dans la figure (erreur d'auteur) ;
+`rectangle A ; B ; C : BC = 3 cm` → message d'arité (pas « quatre sommets »). Assumés (messages seuls,
+verdict faux juste) : carré + diagonales → « Trace un seul carré » ; [BC] tracé d'un trait qui passe par
+B → « Il manque le côté [BC] » ; [AB] prolongé → « dépasse » (le quadrillage dit « ne doit pas être
+prolongé »).

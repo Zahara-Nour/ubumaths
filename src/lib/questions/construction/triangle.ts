@@ -729,7 +729,7 @@ function judgeRight(
  * posée avec son 0 en V avant le premier côté qui arrive en C (comme le cercle de
  * #2494 : une règle posée après n'a pas guidé le trait) ; null sinon
  */
-function ruledGraduationOf(
+export function ruledGraduationOf(
 	c: Position,
 	v: Position,
 	objects: readonly DrawnObject[],

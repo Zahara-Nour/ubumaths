@@ -16,6 +16,7 @@
 import {
 	centeredCircleOf,
 	isRuledLength,
+	isRuledPolygonCheck,
 	type ConstructionCheck,
 	type DroiteParCheck,
 	type PolygonCheck
@@ -36,6 +37,7 @@ import {
 import { LineAuthorError, assertLines, bissectriceOf, isLineCheck, judgeLines } from './line';
 import { CircleAuthorError, assertCircles, isCircleCheck, judgeCircles } from './circle';
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
+import { RuledPolygonAuthorError, assertRuledPolygon, judgeRuledPolygon } from './ruled-polygon';
 import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
 import { TriangleAuthorError, assertTriangle, judgeTriangle } from './triangle';
 import { AngleAuthorError, assertAngle, judgeAngle } from './angle';
@@ -136,13 +138,15 @@ function droiteParFeedback(
 }
 
 function isPolygonCheck(check: ConstructionCheck): check is PolygonCheck {
-	return check.kind === 'carre' || check.kind === 'rectangle';
+	// Carré / rectangle cotés sur papier uni (PR 6 de `regle-graduee`) : `ruled-polygon.ts`
+	return (check.kind === 'carre' || check.kind === 'rectangle') && !isRuledPolygonCheck(check);
 }
 
 /** Erreur d'auteur d'un module de vérification → celle du juge ; le reste passe */
 function asAuthorError(error: unknown): unknown {
 	if (
 		error instanceof PolygonAuthorError ||
+		error instanceof RuledPolygonAuthorError ||
 		error instanceof SymmetryAuthorError ||
 		error instanceof PointAuthorError ||
 		error instanceof LineAuthorError ||
@@ -216,6 +220,14 @@ export function assertConstructionChecks(
 		if (check.kind === 'angle') {
 			try {
 				assertAngle(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
+		if (isRuledPolygonCheck(check)) {
+			try {
+				assertRuledPolygon(check, points, shapes);
 			} catch (error) {
 				throw asAuthorError(error);
 			}
@@ -311,8 +323,23 @@ export function judgeConstruction(
 	const rulerTriangle = allChecks.some(
 		(c) => c.kind === 'triangle' && c.lengths.some(isRuledLength)
 	);
-	if (!segmentLength && !rulerCircle && !rulerTriangle && objects.some((o) => o.kind === 'regle')) {
+	// … ou d'un carré / rectangle coté (PR 6), seul dans la figure (garanti par le parseur)
+	const rulerPolygon = allChecks.find(isRuledPolygonCheck);
+	if (
+		!segmentLength &&
+		!rulerCircle &&
+		!rulerTriangle &&
+		!rulerPolygon &&
+		objects.some((o) => o.kind === 'regle')
+	) {
 		return { status: 'incorrect' };
+	}
+	if (rulerPolygon) {
+		try {
+			return judgeRuledPolygon(rulerPolygon, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
 	}
 	if (segmentLength) {
 		try {

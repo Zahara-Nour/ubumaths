@@ -23,7 +23,11 @@
  * @module questions/construction/drawing
  */
 
-import type { ConstructionCheck, ConstructionTool } from '$lib/ubumark/types/construction';
+import {
+	isRuledPolygonCheck,
+	type ConstructionCheck,
+	type ConstructionTool
+} from '$lib/ubumark/types/construction';
 import type { FigureStep } from '$lib/ubumark/types/figure';
 import {
 	CONSTRUCTION_ANSWER_LIMITS,
@@ -55,6 +59,7 @@ import {
 } from './line';
 import { circleLengthRulers, circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
+import { ruledPolygonCorrection, ruledPolygonRulers, ruledPolygonSolution } from './ruled-polygon';
 import {
 	triangleCorrection,
 	triangleRuler,
@@ -526,6 +531,7 @@ export function solutionLines(
 		if (check.kind === 'triangle') return triangleSolution(check, points, shapes, drawn);
 		if (check.kind === 'angle') return angleSolution(check, points, shapes, drawn);
 		if (check.kind === 'segment') return segmentLengthSolution(check, points, shapes, drawn);
+		if (isRuledPolygonCheck(check)) return ruledPolygonSolution(check, points, shapes, drawn);
 		if (check.kind !== 'droite_par')
 			return polygonSolution(check, points, drawn.filter(isDrawnLine));
 		const a = points.get(check.points[0]);
@@ -568,6 +574,9 @@ export function solutionTriangle(
 	shapes: FigureShapes | undefined,
 	drawn: readonly DrawnObject[]
 ): TriangleCorrection | null {
+	// Carré / rectangle coté (PR 6 de `regle-graduee`) : les perpendiculaires et les angles droits
+	const ruled = checks.find(isRuledPolygonCheck);
+	if (ruled) return ruledPolygonCorrection(ruled, points, shapes, drawn);
 	const check = checks.find((c) => c.kind === 'triangle');
 	return check ? triangleCorrection(check, points, shapes, drawn) : null;
 }
@@ -612,6 +621,9 @@ export function solutionRulers(
 		const ruler = segmentLengthRuler(check, points, shapes, drawn);
 		return ruler ? [ruler] : [];
 	}
+	// Carré / rectangle coté (PR 6) : une règle en B (vers C), une en A (vers D)
+	const ruled = checks.find(isRuledPolygonCheck);
+	if (ruled) return ruledPolygonRulers(ruled, points, shapes, drawn);
 	// Triangle rectangle coté en cm (PR 4) : la règle posée au sommet de l'angle droit
 	const triangle = checks.find((c) => c.kind === 'triangle');
 	if (triangle) {
