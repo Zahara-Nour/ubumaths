@@ -58,8 +58,9 @@ const PROJECT_MEDIA_ONLY_KEY = Symbol('markdown-project-media-only');
  * une vidéo hébergée ailleurs — YouTube compris — ferait partir leur adresse IP
  * chez l'hébergeur au simple affichage. Elle devient un lien, à ouvrir au clic.
  *
- * Plus léger que le rendu restreint : blocs, formules et images inchangés. Un
- * parent l'impose à ses descendants.
+ * Étendu aux formules à commande à attributs (2026-11-08) et aux images
+ * (2026-11-09, `ImageDisplay` : lien). Plus léger que le rendu restreint : les
+ * autres blocs et formules restent rendus. Un parent l'impose à ses descendants.
  */
 export function provideProjectMediaOnly(get: () => boolean | undefined): void {
 	const parent = readProjectMediaOnly();

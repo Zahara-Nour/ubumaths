@@ -207,6 +207,82 @@ describe('JournalContent — formules sans commande à attributs (lien public an
 	});
 });
 
+/**
+ * Images (décision de David du 2026-11-09, comme les vidéos) : une image hébergée
+ * ailleurs que dans notre stockage ferait partir l'adresse IP de chaque lecteur
+ * chez son hébergeur au simple affichage. Au cahier, elle devient un lien.
+ */
+describe('JournalContent — images', () => {
+	const EXTERNE = 'https://tiers.example/figure.png';
+	const STOCKAGE = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/medias/figure.png`;
+
+	it('image d’un autre hôte : un lien, aucune <img>', async () => {
+		const container = await rendre({
+			content: `![Figure](${EXTERNE})`,
+			links: { role: 'public', shareToken: 'jeton0123456789abcdef' }
+		});
+		expect(container.querySelector('img')).toBeNull();
+		const lien = container.querySelector('a.external-media');
+		expect(lien?.getAttribute('href')).toBe(EXTERNE);
+		expect(lien?.textContent).toContain('Figure');
+	});
+
+	it('image de notre stockage : affichée', async () => {
+		const container = await rendre({
+			content: `![Figure](${STOCKAGE})`,
+			links: { role: 'student' }
+		});
+		expect(container.querySelector('img')?.getAttribute('src')).toBe(STOCKAGE);
+	});
+
+	it('image imbriquée (liste, citation, tableau) : un lien, aucune <img>', async () => {
+		for (const content of [
+			`- ![Figure](${EXTERNE})`,
+			`> ![Figure](${EXTERNE})`,
+			`| a |\n| --- |\n| ![Figure](${EXTERNE}) |`
+		]) {
+			const container = await rendre({ content, links: { role: 'student' } });
+			expect(container.querySelector('img'), content).toBeNull();
+			// Un tableau n'affiche pas d'image (texte brut) : le lien, dans la liste et la citation
+			if (!content.startsWith('|')) {
+				expect(container.querySelector('a.external-media'), content).not.toBeNull();
+			}
+		}
+	});
+
+	it('adresses biaisées (`//hôte`, `/\\hôte`, `data:`) : aucune <img> hors de notre stockage', async () => {
+		// `//hôte` et `data:` sont lus comme des noms de fichier du stockage des
+		// questions ; `/\hôte`, que le navigateur lirait `//hôte`, devient un lien
+		for (const src of [
+			'//tiers.example/figure.png',
+			'/\\tiers.example/figure.png',
+			'data:image/png;base64,AAAA'
+		]) {
+			const container = await rendre({ content: `![Figure](${src})`, links: { role: 'student' } });
+			for (const img of container.querySelectorAll('img')) {
+				expect(img.getAttribute('src'), src).toMatch(
+					new RegExp(
+						`^${PUBLIC_SUPABASE_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/storage/v1/object/`
+					)
+				);
+			}
+			const lien = container.querySelector('a.external-media');
+			if (src.startsWith('/\\')) expect(lien, src).not.toBeNull();
+			expect(lien?.getAttribute('href')?.startsWith('data:') ?? false, src).toBe(false);
+		}
+	});
+
+	it('hors cahier (cours, exercices) : rien ne change', async () => {
+		const target = document.body.appendChild(document.createElement('main'));
+		cibles.push(target);
+		const screen = await render(MarkdownRenderer, {
+			target,
+			props: { content: `![Figure](${EXTERNE})` }
+		});
+		expect((screen.container as HTMLElement).querySelector('img')).not.toBeNull();
+	});
+});
+
 describe('JournalContent — vidéos', () => {
 	const EXTERNE = 'https://tiers.example/clip.mp4';
 	const STOCKAGE = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/medias/clip.mp4`;
