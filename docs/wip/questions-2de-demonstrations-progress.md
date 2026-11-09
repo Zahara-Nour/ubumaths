@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après la publication du lot 6._
+_Mis à jour le 2026-11-09, phase 0 des approfondissements posée._
 
-- **État** : 12 démonstrations (lots 1-3) et 10 exemples d'algorithmes (lots 4-6) **tous publiés** ; aucun
-  brouillon ni PR en cours.
-- **Prochaine action** : selon David — soit les approfondissements (258, 259, 284-286, 305-310, 323, 324, 363 ;
-  non tranchés, § 1 et § 9), soit le versement (journal `questions-2de` et celui-ci versés, chantier clos).
-- **En attente de David** : approfondissements ou versement ?
+- **État** : 12 démonstrations et 10 exemples d'algorithmes publiés (lots 1-6). D4 : approfondissements (14 points,
+  § 13) avant le versement. Relevé prod fait.
+- **Prochaine action** : réponse de David à la phase 0 du § 13, puis lot 7 (258, 259, 284-286) dans un nouveau
+  worktree.
+- **En attente de David** : phase 0 du § 13 (périmètre, forme, réemploi des 2 modèles de 1re spé, rangement,
+  publication, accès).
 - **Pièges en cours** : écritures en prod (`db:migrate`, `publier-lot.ts`, même en simulation) refusées par le
   classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) » qui plante tests verts
   → `gh run rerun <run> --failed`.
-- **Worktree / branche** : aucun ; prochain lot → nouveau worktree.
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -410,3 +411,38 @@ https://claude.ai/artifact/Xa6NaZXLSGiz8NxXghiSjz
 Lot 6 relu par David sur la page à cocher (2026-11-09) : 4 « ok », sans commentaire. Publié par David
 (`publier-lot.ts`, simulation puis `--publier`, 2026-11-09) : 4/4, statut relu en base. **Les 10 exemples
 d'algorithmes sont couverts** (lots 4-6), en plus des 12 démonstrations (lots 1-3).
+
+## 13. Suite : les approfondissements (ouverte le 2026-11-09)
+
+**D4 (David, 2026-11-09)** : « Approfondissements » (choisis contre le versement immédiat) ; versement après.
+
+Rubriques « Approfondissements possibles » de `2.md` (l. 321, 356, 423, 460 ; « en aucun cas obligatoires », l. 97) :
+**14 points**. Relevé prod (MCP, 2026-11-09) : aucun modèle tagué sur les 14 points ; points et nœuds actifs.
+
+| Lot | Point | Approfondissement                               | Nœud du point (prod)                                     | Forme pressentie              |
+| --- | ----- | ----------------------------------------------- | -------------------------------------------------------- | ----------------------------- |
+| 7   | 258   | Développement décimal illimité d'un réel        | Ensembles de nombres › ℕ, ℤ, 𝔻, ℚ, ℝ                     | application                   |
+| 7   | 259   | Périodicité du développement décimal (exemples) | Ensembles de nombres › ℕ, ℤ, 𝔻, ℚ, ℝ                     | application, valeurs tirées   |
+| 7   | 284   | Développement de (a + b + c)²                   | Calcul littéral › identités remarquables                 | application, valeurs tirées   |
+| 7   | 285   | Développement de (a + b)³                       | Calcul littéral › identités remarquables                 | application, valeurs tirées   |
+| 7   | 286   | Moyennes géométrique et arithmétique (a, b > 0) | **notion** Inégalités                                    | preuve                        |
+| 8   | 305   | Barycentre de deux ou trois points              | **notion** Vecteurs                                      | application, valeurs tirées   |
+| 8   | 306   | Établir la formule du milieu                    | Géométrie repérée › milieu et distance                   | preuve                        |
+| 8   | 307   | Hauteurs concourantes                           | **notion** Géométrie repérée                             | preuve (vecteurs, sans p. s.) |
+| 8   | 308   | Aire = ½ ab sin C (C aigu)                      | Aires › triangle quelconque                              | preuve + application          |
+| 8   | 309   | Isobarycentre = intersection des médianes       | **notion** Vecteurs                                      | preuve                        |
+| 8   | 310   | Médiatrices : centre du cercle circonscrit      | **notion** Géométrie repérée                             | preuve                        |
+| 9   | 323   | Points équidistants d'un point et de l'axe (Ox) | **notion** Géométrie repérée                             | application, valeurs tirées   |
+| 9   | 324   | Parties du plan décrites par des inégalités     | **notion** Géométrie repérée                             | application (figure)          |
+| 9   | 363   | Courbes de √x et de x² sur ℝ⁺                   | Fonction racine carrée › définition et courbe (0 modèle) | application + preuve courte   |
+
+**Déjà en base (1re spé, publiés)** : `d4db2207` « Démontrer que les médianes concourent au centre de gravité »
+(1SPE-326, Vecteurs › combinaison linéaire) ne s'appuie que sur Chasles, le milieu et la colinéarité, donc
+utilisable en seconde (2-309) ; `64f54fc1` « Points équidistants de l'axe des abscisses et d'un point » (1SPE-334,
+Géométrie repérée › parabole) utilise distance et développement, également utilisable en seconde (2-323).
+`d33f98d5` (hauteurs, 1SPE-325) passe par le produit scalaire, qui n'est pas au programme de seconde : il ne sert
+pas pour 2-307.
+
+Outils : ceux des lots 1-3 (case, case choix, ` ```ranger ` `signe: aucun`), `figure` / `courbe` ; pour 324, un
+polygone rempli (`fillColor`) dans une figure, à vérifier au lot. Phase 0 posée à David (2026-11-09) : voir la
+réponse dans D5.
