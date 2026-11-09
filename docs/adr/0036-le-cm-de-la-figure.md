@@ -1,7 +1,7 @@
 # 0036 — Le centimètre d'une figure à compléter est le centimètre de la figure
 
 - **Statut** : acceptée — mise en œuvre en cours (chantier regle-graduee ; journal :
-  `docs/wip/regle-graduee-progress.md`)
+  `docs/archive/wip/regle-graduee-progress.md`)
 - **Date** : 2026-11-08 · **Décidée par** : David (questions Q1, Q2 et Q4 du chantier, « je suis tes recos »)
 
 ## Contexte

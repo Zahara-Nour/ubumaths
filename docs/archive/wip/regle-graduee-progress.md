@@ -1,6 +1,6 @@
 # Chantier « regle-graduee » — règle graduée (cm, mm) dans la case « figure »
 
-> Ligne n° 18 de [outils-manquants.md](outils-manquants.md) (« à décider avec David : la taille réelle à l'écran est
+> Ligne n° 18 de [outils-manquants.md](../../wip/outils-manquants.md) (« à décider avec David : la taille réelle à l'écran est
 > le nœud »). Débouchés : CE2-039 (tracer un segment de 6 cm, 5 cm 3 mm, 72 mm), CE2-070 coté (rectangle 7 cm × 3 cm,
 > carré de 6 cm, cercle de rayon 4 cm, triangle rectangle 10 cm et 4 cm), peut-être CP-035 et CE1-044 (mesurer un
 > segment à la règle graduée). Ouvert le 2026-11-08 depuis la session `questions-ce2`, à la demande de David.
@@ -9,17 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2503 (bloc corrigé : la PR « carré et rectangle » du découpage Q10 n'était pas faite)._
+_Mis à jour le 2026-11-09, après #2508. **Chantier clos**, journal archivé._
 
-- **État** : PR 1-4 du découpage mergées (#2485 segment, #2490 demi-droite, #2494 cercle, #2499 triangle
-  rectangle) et le correctif Q15 (#2503). **Reste la PR 6 : carré et rectangle cotés sur papier uni** (Q10,
-  Q11, Q13 ; `polygon.ts` ne juge que sur quadrillage). Mesurer (CP-035, CE1-044) : déjà couvert par des modèles
-  à règle dessinée ; le geste « poser la règle pour mesurer » ira dans `outils-manquants.md` à la clôture (David).
-- **Prochaine action** : PR 6 (§ 8, Q19-Q20 tranchées) : tests rouges → code → revue Opus.
-- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494, #2499).
-- **Pièges en cours** : le juge prend le **segment vu** (§ 3, § 7) ; seules les règles posées AVANT le trait
-  comptent (§ 6, § 7) ; tests de composant : toucher pile sur une graduation ; commitlint : corps ≤ 100 car.
-- **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-carre`.
+- **État** : clos. Livré : segment de longueur donnée (#2485), sur une demi-droite (#2490, #2503), cercle de rayon
+  en cm (#2494), triangle rectangle coté (#2499), carré et rectangle cotés sur papier uni (#2508, Q19-Q22).
+  Doc durable : `docs/systeme/questions.md`, `docs/systeme/ubumark.md`, ADR 0036. Ligne n° 18 de
+  `outils-manquants.md` passée dans « Livré » ; le geste « poser la règle pour mesurer » (CP-035, CE1-044,
+  couverts par des modèles à règle dessinée) y est la ligne n° 26.
+- **Prochaine action** : aucune ici. Les modèles CE2-039 / CE2-070 cotés se font dans `questions-ce2`.
+- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494, #2499, #2508), dans
+  `docs/wip/verifications-manuelles.md`.
+- **Pièges durables** : le juge prend le **segment vu** ; seules les règles posées AVANT le trait comptent ;
+  tests de composant : toucher pile sur une graduation (le bout s'aimante d'abord aux graduations).
+- **Worktree / branche** : aucun.
 
 ## 1. Phase 0 — le nœud et les questions (tranchée le 2026-11-08)
 
