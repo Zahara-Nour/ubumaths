@@ -883,7 +883,10 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    posé (`posedProtractorOf`) en O, base sur le **premier côté nommé** ([OA) pour `AOB`, [OB) pour
    `BOA`), corps du côté de l'autre, rayon du § 18 ; figé : ni palette, ni Effacer, ni zone de tracé
    (`drawable` faux dans `FigureACompleterView`), la consigne « Lis la mesure sur le rapporteur, puis
-   tape-la sous la figure. » ; il reste dessiné à la correction et dans la réponse attendue. Même juge,
+   tape-la sous la figure. » ; il reste dessiné à la correction et dans la réponse attendue, et il est
+   imprimé dans l'énoncé PDF (`ubumark/generators/protractor-typst.ts`, appelé par `figure-typst.ts`
+   avec la même pose ; option `overlay` de `exportToTypst` : au-dessus des objets, corps translucide
+   comme à l'écran, pour qu'aucun côté ne cache le nombre à lire). Même juge,
    mêmes messages. En plus : `outils:` refusé ; la pose demandée qui sort de la figure, l'autre tenant →
    « écrire « mesure BOA, rapporteur posé » ». La garde du masquage admet le suffixe.
    Vérification `segment AB = 6 cm` (`construction/segment-length.ts`, chantier `regle-graduee`,
