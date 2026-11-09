@@ -15,7 +15,7 @@ export const variationEntry: BlockCatalogEntry = {
 	nodeType: 'variation-table',
 	summary: 'Tableau de signes, tableau de variations, ou les deux dans le même tableau.',
 	intro:
-		'Le bloc décrit la variable, les valeurs importantes du domaine, puis une ou plusieurs lignes. Une ligne « sign » donne des signes, une ligne « variation » donne des flèches. Un tableau de signes est simplement un bloc sans ligne « variation ». Les virgules séparent les valeurs : écrire 11/2 et non 5,5.',
+		'Le bloc décrit la variable, les valeurs importantes du domaine, puis une ou plusieurs lignes. Une ligne « sign » donne des signes, une ligne « variation » donne des flèches. Un tableau de signes est simplement un bloc sans ligne « variation ». Les virgules séparent les valeurs : écrire 11/2 et non 5,5. Dans une question, un ? devant une case la laisse vide pour l’élève : le tableau s’écrit juste, la réponse attendue est tirée du bloc.',
 	settingGroups: [
 		{
 			title: 'En-tête du tableau',
@@ -89,6 +89,52 @@ export const variationEntry: BlockCatalogEntry = {
 					values: 'left | right',
 					defaultValue: null,
 					description: 'Valeur interdite avec une seule limite, du côté indiqué.'
+				}
+			]
+		},
+		{
+			title: 'Dans une question : cases à compléter (un ? devant la case)',
+			settings: [
+				{
+					key: 'domain: …, ?valeur, …',
+					values: 'une valeur de x : ?-3, ?{{r}}, ]?3[',
+					defaultValue: 'aucune',
+					description:
+						'L’élève écrit la valeur de x. Les clés des lignes gardent la vraie valeur (-inf,-3). -inf et +inf ne se cachent pas.'
+				},
+				{
+					key: 'a,b: ?signe',
+					values: '?+ | ?-',
+					defaultValue: 'aucune',
+					description: 'Dans une ligne « sign » : l’élève écrit le signe sur l’intervalle.'
+				},
+				{
+					key: 'a: ?marqueur',
+					values: '?z (ou ?0) | ?|| | ?rien',
+					defaultValue: 'aucune',
+					description:
+						'Dans une ligne « sign » : l’élève écrit ce qui se passe en a. ?rien = ni zéro ni double barre (la bonne réponse est de ne rien mettre).'
+				},
+				{
+					key: 'a: ?valeur, position',
+					values: 'position : top | bottom | center',
+					defaultValue: 'aucune',
+					description:
+						'Dans une ligne « variation » : l’élève écrit la valeur de f en a (-2: ?4, top). Ni un infini ni une limite autour de || ne se cachent.'
+				},
+				{
+					key: 'a,b: ?flèche',
+					values: '?flèche (ou ?fleche)',
+					defaultValue: 'aucune',
+					description:
+						'Dans une ligne « variation », entre deux valeurs voisines du domaine : l’élève choisit ↗ ou ↘. La réponse se lit sur les positions écrites : l’une en haut, l’autre en bas.'
+				},
+				{
+					key: '??1, ??2…',
+					values: 'ne pas écrire',
+					defaultValue: 'aucune',
+					description:
+						'Posé par Chiphre dans l’énoncé d’une évaluation notée, à la place des valeurs de x cachées, pour que l’énoncé ne dise pas la réponse. Écrit à la main, la case n’a pas de réponse attendue : écrire ?-3.'
 				}
 			]
 		}
@@ -201,6 +247,38 @@ export const variationEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Après « || », la limite à gauche de 0 puis la limite à droite, chacune avec sa position.'
+		},
+		{
+			title: 'Tableau de signes à compléter (question)',
+			source: fence(
+				'variation',
+				'variable: x',
+				'domain: -inf, ?2, +inf',
+				'',
+				'sign: 2x-4',
+				'  -inf,2: ?-',
+				'  2: ?z',
+				'  2,+inf: ?+'
+			),
+			explanation:
+				'Le tableau est écrit juste ; chaque ? fait une case vide. Les clés gardent la vraie valeur 2. Les cases sont numérotées dans l’ordre de lecture : domaine, puis chaque ligne de gauche à droite.'
+		},
+		{
+			title: 'Tableau de variations à compléter (question)',
+			source: fence(
+				'variation',
+				'variable: x',
+				'domain: -inf, -1, 3, +inf',
+				'',
+				'variation: f(x)',
+				'  -inf: -inf, bottom',
+				'  -1: ?4, top',
+				'  -1,3: ?flèche',
+				'  3: -12, bottom',
+				'  +inf: +inf, top'
+			),
+			explanation:
+				'L’élève écrit le maximum 4 et choisit la flèche entre −1 et 3 (↘, lue sur les positions top puis bottom). Sur la fiche PDF, aucune flèche du tableau n’est dessinée dès qu’une flèche est cachée.'
 		}
 	],
 	mistakes: [
@@ -222,6 +300,21 @@ export const variationEntry: BlockCatalogEntry = {
 			source: fence('variation', 'variable: x', '', 'sign: f(x)', '  0,1: +'),
 			explanation:
 				'Sans « domain: », le bloc n’est pas un tableau : le prof voit le texte du bloc dans un cadre de code, sans message. Ajouter la ligne « domain: » (ou « variable: » si c’est elle qui manque).'
+		},
+		{
+			title: 'Infini caché',
+			source: fence(
+				'variation',
+				'variable: x',
+				'domain: -inf, 2, ?+inf',
+				'',
+				'sign: 2x-4',
+				'  -inf,2: -',
+				'  2: z',
+				'  2,+inf: +'
+			),
+			explanation:
+				'Un infini n’est pas une valeur à calculer : le bloc est refusé et le prof voit son texte dans un cadre de code. Retirer le ? devant +inf. Même effet pour un ? sur une marque || d’une ligne « variation », ou une flèche cachée entre deux valeurs à la même hauteur.'
 		}
 	],
 	tryIt: fence(

@@ -28,7 +28,9 @@ export type CatalogNodeType =
 	| 'partage'
 	| 'espace'
 	| 'operation'
-	| 'ranger';
+	| 'ranger'
+	| 'collection'
+	| 'monnaie';
 
 /** Une ligne du tableau des réglages */
 export interface BlockSetting {

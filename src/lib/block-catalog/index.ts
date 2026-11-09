@@ -5,11 +5,13 @@
  *
  * @module block-catalog
  */
+import { collectionEntry } from './collection';
 import { courbeEntry } from './courbe';
 import { figureEntry } from './figure';
 import { figureACompleterEntry } from './figure-a-completer';
 import { figureDeTravailEntry } from './figure-de-travail';
 import { horlogeEntry } from './horloge';
+import { monnaieEntry } from './monnaie';
 import { numberLineEntry } from './number-line';
 import { partageEntry } from './partage';
 import { cubesEntry } from './cubes';
@@ -39,6 +41,8 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	boxPlotEntry,
 	qrEntry,
 	horlogeEntry,
+	collectionEntry,
+	monnaieEntry,
 	partageEntry,
 	cubesEntry,
 	solideEntry,
