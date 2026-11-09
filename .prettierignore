@@ -25,3 +25,6 @@ src/lib/server/shtam/articles/
 
 # Transcriptions des programmes officiels : ubumark, que prettier abîme
 src/lib/server/programmes/transcriptions/
+
+# Contenu de fiches en rédaction (ubumark), lu par les scripts de création : prettier l'abîme
+data/fiches/
