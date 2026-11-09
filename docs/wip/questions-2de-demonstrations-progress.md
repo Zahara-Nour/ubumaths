@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, lot 7 écrit._
+_Mis à jour le 2026-11-09, après #2510._
 
-- **État** : lots 1-6 publiés. Lot 7 (258, 259, 284-286, § 14) écrit et vérifié, PR en cours.
-- **Prochaine action** : merge du lot 7, puis création des brouillons par David (commande au § 14), migration de
-  rangement (nœud + tag), page à cocher ; ensuite lot 8 (305-310, réemploi `d4db2207`, points 307 et 310 déplacés).
-- **En attente de David** : rien avant le merge.
+- **État** : lots 1-6 publiés. Lot 7 (258, 259, 284-286, § 14) mergé (#2510), pas encore créé en prod.
+- **Prochaine action** : David crée les 5 brouillons (commande au § 14) ; puis migration de rangement (nœud + tag,
+  calquée sur le lot 6) dans un nouveau worktree, page à cocher ; ensuite lot 8 (305-310).
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-7 --publier`
+  depuis le dépôt principal.
 - **Pièges en cours** : écritures en prod (`db:migrate`, `publier-lot.ts`, même en simulation) refusées par le
   classifieur du mode auto → commande `!` donnée à David ; job « Client Tests (browser) » qui plante tests verts
   → `gh run rerun <run> --failed`.
-- **Worktree / branche** : `ubumaths-wt-questions-2de-approfondissements-7`, `content/questions-2de-approfondissements-7`.
+- **Worktree / branche** : aucun (celui du lot 7 supprimé après #2510).
 
 ---
 
@@ -484,3 +485,5 @@ Non vu à l'écran : rien de neuf à l'affichage (étapes à ranger avec fractio
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-approfondissements-7 --publier`
+
+Mergée (#2510, CI verte du premier coup).
