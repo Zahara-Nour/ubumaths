@@ -214,3 +214,140 @@ describe('beaucoup de décisions dans un même document', () => {
 		for (let n = 0; n < 12; n++) expect(page[`FIG${n}`], `FIG${n}`).toBe(page[`INTRO${n}`]);
 	}, 120_000);
 });
+
+describe("titre d'exercice : jamais seul en bas de page (§ 5 du journal)", () => {
+	// Fiche 41737393 : « 4 Lire les variations » seul en bas de page. Titre et bloc de
+	// l'énoncé tels que les pose `render-exercise.ts` ; le début de l'énoncé part sur
+	// la page suivante (bloc insécable de 8 cm), le titre doit le suivre. Typst ne
+	// fait suivre le titre que si le premier morceau de l'énoncé est vide : un dessin
+	// `cetz` (un `layout` centré, imité ici) y laissait une trace.
+	const TITRE =
+		'#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[#metadata("TITRE") <sonde>Exercice 4]';
+	const ENONCE = '#block(width: 100%, inset: 0pt, above: 0.5em)[';
+	const ENONCE_INDISPENSABLE =
+		'#block(width: 100%, inset: (left: 8pt), above: 0.5em, stroke: (left: 2pt + rgb("#f97316")))[';
+	const DESSIN = `align(center, layout(ly => ${BLOC_HAUT}))`;
+
+	async function pagesApresTitre(
+		markdown: string,
+		{ enonce = ENONCE, bloc = BLOC_HAUT }: { enonce?: string; bloc?: string } = {}
+	): Promise<Record<string, number>> {
+		const genere = generateTypst(parseMarkdown(markdown), { chainedStart: true });
+		const [enTete, corps] = genere.split(FIN_EN_TETE);
+		let source =
+			remplacer(enTete, PAGE_A4, '#set page(paper: "a4", columns: 2)') +
+			`${FIN_EN_TETE}#colbreak()\n#v(22cm)\n${TITRE}\n${enonce}\n${corps}\n]\n`;
+		source = remplacer(source, '$ F O R M $', `#metadata("FORM") <sonde>\n#${bloc}`);
+		source = source.replace(/\b(PHRASE|INTRO)\b/, '#metadata("$1") <sonde>$1');
+		source +=
+			'\n#context for m in query(<sonde>) [#metadata((m.value, m.location().page())) <place>]\n';
+		return Object.fromEntries(await interroger<[string, number]>(source));
+	}
+
+	const QUESTION_BLOC = ['1. $$FORM$$', '', '   Suite', '', '2. Autre'].join('\n');
+	const INTRO_QUESTION_BLOC = ['INTRO :', '', QUESTION_BLOC].join('\n');
+	const CAS: [string, string, string][] = [
+		['question dont la tête est collée à une formule', QUESTION_FORMULE, BLOC_HAUT],
+		['question dont la tête est collée à un dessin', QUESTION_FORMULE, DESSIN],
+		['question qui commence par une formule', QUESTION_BLOC, BLOC_HAUT],
+		['question qui commence par un dessin', QUESTION_BLOC, DESSIN],
+		['énoncé qui commence par un dessin', ['$$FORM$$', '', 'Suite.'].join('\n'), DESSIN],
+		[
+			"paragraphe d'introduction collé à une formule",
+			INTRO_DESSIN.replace('FIG', 'FORM'),
+			BLOC_HAUT
+		],
+		['introduction, puis une question qui commence par un dessin', INTRO_QUESTION_BLOC, DESSIN]
+	];
+	for (const [nom, markdown, bloc] of CAS) {
+		it(`${nom} : le titre suit sur la page suivante`, async () => {
+			const page = await pagesApresTitre(markdown, { bloc });
+			expect(page.FORM).toBe(2);
+			expect(page.TITRE).toBe(2);
+			if (page.PHRASE !== undefined) expect(page.PHRASE).toBe(2);
+			if (page.INTRO !== undefined) expect(page.INTRO).toBe(2);
+		}, 120_000);
+	}
+
+	it('exercice indispensable (filet à gauche), tête collée à un dessin : idem', async () => {
+		const page = await pagesApresTitre(QUESTION_FORMULE, {
+			enonce: ENONCE_INDISPENSABLE,
+			bloc: DESSIN
+		});
+		expect(page.FORM).toBe(2);
+		expect(page.PHRASE).toBe(2);
+		expect(page.TITRE).toBe(2);
+	}, 120_000);
+});
+
+describe('espacement des items : identique à leur ancienne définition', () => {
+	// Les items ont été réécrits (blocs vides, `v` faible) pour que le titre suive ;
+	// leur espacement doit rester celui de `block(spacing: 1.5em)`, le plus grand
+	// l'emportant sur celui du voisin (gabarit : `block(spacing: 1.8em)`)
+	const ANCIENS = [
+		'#let ubu-item(num, body, w: "a)", tete: none) = context { let n = measure(w).width + 0.5em; let ligne(x) = [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#x]; block(spacing: 1.5em, pad(left: n, if tete == none { ligne(body) } else { block(sticky: ubu-colle(), ligne(tete)); body })) }',
+		'#let ubu-item-bloc(num, body, w: "a)") = context { let n = measure(w).width + 0.5em; block(spacing: 1.5em, grid(columns: (n, 1fr), box(width: n - 0.5em, align(end, num)), body)) }'
+	];
+
+	it('paragraphes, têtes collées, blocs, sous-items, introduction collée', async () => {
+		const markdown = [
+			'Paragraphe S1.',
+			'',
+			'1. S2 question',
+			'2. S3 tête :',
+			'',
+			'   $$FORM$$',
+			'',
+			'   S4 suite',
+			'3. $$FORM$$',
+			'4. S5 question',
+			'   1. S6 sous-question',
+			'   2. S7 sous-tête :',
+			'',
+			'      $$FORM$$',
+			'',
+			'S8 introduction :',
+			'',
+			'1. S9 question',
+			'',
+			'$$FORM$$',
+			'',
+			'1. S10 après un bloc',
+			'2. $$FORM$$',
+			'3. S11 dernière'
+		].join('\n');
+		const genere = remplacer(
+			remplacer(
+				generateTypst(parseMarkdown(markdown)),
+				PAGE_A4,
+				'#set page(paper: "a4", columns: 2)\n#set block(spacing: 1.8em)'
+			),
+			'$ F O R M $',
+			'#block(breakable: false, rect(width: 100%, height: 2cm))'
+		);
+		const sonde = (source: string) =>
+			source
+				.replace(/\b(S\d+)\b/g, '#metadata("$1") <sonde>$1')
+				// Numéro d'un item qui commence par un bloc (posé par `place`) : sondé aussi
+				.replace(
+					/#ubu-item-bloc\(numbering\("([^"]+)", (\d+)\)/g,
+					'#ubu-item-bloc([#metadata("N$2") <sonde>#numbering("$1", $2)]'
+				) +
+			'\n#context for m in query(<sonde>) [#metadata((m.value, m.location().page(), calc.round(m.location().position().x / 1pt, digits: 2), calc.round(m.location().position().y / 1pt, digits: 2))) <place>]\n';
+		const lignes = genere.split('\n');
+		const ancien = lignes
+			.map((l) =>
+				l.startsWith('#let ubu-item(')
+					? ANCIENS[0]
+					: l.startsWith('#let ubu-item-bloc(')
+						? ANCIENS[1]
+						: l
+			)
+			.join('\n');
+		expect(ancien).not.toBe(genere);
+		const nouveau = await interroger<[string, number, number, number]>(sonde(genere));
+		const reference = await interroger<[string, number, number, number]>(sonde(ancien));
+		expect(nouveau).toHaveLength(13);
+		expect(nouveau).toEqual(reference);
+	}, 120_000);
+});
