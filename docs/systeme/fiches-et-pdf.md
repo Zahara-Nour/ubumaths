@@ -24,7 +24,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03.
 
 ## À quoi ça sert
 
@@ -520,6 +520,18 @@ l'énoncé est `sticky` (option `keepEndWithNext` du générateur ; une liste : 
 seulement). Un énoncé long reste sécable.
 Tests : `worksheets/document/__tests__/cadres-de-reponse.test.ts`,
 `typst/generators/__tests__/cadres-de-reponse-pdf.test.ts` (prof et élève).
+
+**Coupures de colonne et de page** (chantier coupures-pdf, David, 2026-11-09). Toujours
+interdites : titre d'exercice ou de section seul en bas de colonne, numéro de question séparé de sa
+première phrase, cadre seul en haut de colonne, dessin coupé. Interdite en fin de **page**
+seulement : paragraphe d'introduction séparé du bloc qui le suit (en fin de colonne, les deux
+morceaux restent sur la même feuille) — mécanisme dans [ubumark](ubumark.md) § Paragraphe collé.
+`renderExercises` pose le marqueur de coupure (`TYPST_BREAK_MARKER`) avant la section ou le titre
+de chaque exercice ; l'énoncé, et la correction juste sous le titre (Réponses, Corrigé), continuent
+cette chaîne (`chainedStart`) ; la correction posée après l'énoncé (fiche + corrigé) a son propre
+marqueur. Mesure sur les 48 fiches en base (fiche + corrigé, 96 PDF) : 455 → 451 pages, aucun PDF
+plus long, trous de plus d'un quart de colonne 13 → 7. Test : `worksheet-document.test.ts`
+(§ marqueur de coupure).
 
 **Cadres en lignes, réglés par le prof** (ADR 0030, lot 4 ;
 `worksheets/document/answer-frame-lines.ts`) : unité = la **ligne** de 0,8 cm
