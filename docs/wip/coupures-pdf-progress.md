@@ -5,8 +5,8 @@
 _Mis à jour le 2026-11-09, ouverture du chantier._
 
 - **État** : trois niveaux validés (§ 1) ; étude typst faite (§ 3) : mécanisme fiable, trous divisés par deux ; garde-fou presque sans gain.
-- **Prochaine action** : selon la réponse de David, phase 0 (comportements) puis tests rouges et implémentation dans `typst-generator.ts` + `render-exercise.ts`.
-- **En attente de David** : (1) garde-fou abandonné ? (2) règle aussi dans les questions (numéro + 1re phrase + formule) ? (3) fiche `eval-premiere` : comment gagner les deux lignes.
+- **Prochaine action** : validation des comportements de phase 0 par David, puis tests rouges et implémentation dans `typst-generator.ts` + `render-exercise.ts`.
+- **En attente de David** : garde-fou abandonné (tranché) ; reposées : (a) règle aussi dans les questions ? (b) carré de `eval-premiere` à 65 % ? ; comportements de phase 0.
 - **Pièges en cours** : `sticky` de typst ne distingue pas colonne et page ; typst.ts 0.6.1-rc5 = Typst 0.13.1 (CLI local = 0.14, pas témoin : `scripts/fiches/compile-prod.mjs`).
 - **Worktree / branche** : `../ubumaths-wt-coupures-pdf` · `feat/coupures-pdf`.
 
@@ -36,6 +36,9 @@ deux morceaux sur la même feuille ; une coupure de page oblige à tourner la fe
 Idée : couper quand même quand garder ensemble laisserait un trou de plus d'une fraction de
 colonne (un tiers ?). Plus souple, moins prévisible, plus dur en typst. À étudier avant toute
 décision : faisabilité, convergence, cas réels mesurés sur les fiches en base.
+
+**Décision de David (2026-11-09, « je suis tes recos »)** : garde-fou **abandonné** (gain d'une
+page sur 104 pour 4 introductions séparées de leur dessin par un changement de page, § 3.2).
 
 ## 3. Étude typst (2026-11-09)
 
@@ -88,3 +91,6 @@ dernière page exclue, en fraction de colonne.
 - Avec un en-tête équivalent à celui de l'appli : **toujours 2 pages**, il manque environ deux
   lignes (question 4 de l'exercice 3). La règle comble le trou de la colonne 1, mais la fiche
   reste un peu trop longue.
+- Dessin du carré (exercice 2) ramené de 75 % à **65 %** de la colonne : **1 page** avec la nouvelle
+  règle ; avec la règle actuelle, toujours 2 pages (même à 40 %) → la fiche attend la livraison
+  de ce chantier.
