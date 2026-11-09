@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2519 (lot 11a, fichiers)._
+_Mis à jour le 2026-11-09, après #2522 (lot 11a, rangement)._
 
-- **État** : lot 10 relu (8/8 « ok »), simulation `publier-lot` verte, toujours en brouillon. Lot 11a (6 modèles dont
-  4 témoins) mergé (#2519, #2516 doublon mergé avec), pas encore en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/6-angles-constructions --publier` depuis
-  le dépôt principal → worktree `questions-6`, y commiter les `id` + migration nœud + tag du 11a (patron
-  `20261102090404`) → page à cocher. Ensuite 11b (174-179, 148), puis lot 12 « Constructions » (173, 180, 207).
-- **En attente de David** : ces deux commandes (`!`) : `create-questions … 6-angles-constructions --publier` ;
-  `publier-lot.ts … 6-distances-cercle-mediatrice --publier` (lot 10).
+- **État** : lot 10 relu (8/8 « ok »), simulation `publier-lot` verte, toujours en brouillon. Lot 11a : 6 brouillons
+  en prod, `id` commités, migration `20261109132820` (nœud + tag) mergée (#2522), **pas encore jouée en prod**.
+- **Prochaine action** : après `db:migrate`, vérifier en prod (MCP) les 6 nœuds et tags + `tgenabled = 'O'`, puis la
+  page à cocher du 11a. Ensuite 11b (174-179, 148), puis lot 12 « Constructions » (173, 180, 207).
+- **En attente de David** : (1) `db:migrate`, qui jouera aussi `20261109110745` (questions-2de, approfondissements
+  lot 8) : à lancer quand l'autre chantier est d'accord ; (2) `publier-lot.ts … 6-distances-cercle-mediatrice
+--publier` (lot 10). Un `git stash` du dépôt principal porte les `id` du 11a (déjà commités, jetable).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. Variable à valeur lettre impossible (`{{if:}}` dans le texte).
-  `couleur="bleu"` entre guillemets. Point interne d'un `rotation(point(…))` visible : le nommer `visible=faux`.
-  Réponses de figure : pleine précision (le juge refuse l'arrondi). PR sans CI : GitHub a fini par la lancer, avec
-  ~30 min de retard. `Doc-inchangée:` dans un commit. `publier-lot` / `create-questions --publier` : David avec `!`.
-- **Worktree / branche** : aucun (retiré après #2519).
+  `couleur="bleu"` entre guillemets. Point interne d'un `rotation(point(…))` visible : `visible=faux`. Réponses de
+  figure : pleine précision. Archiver une notion à enfants actifs : refusé par trigger (test : triggers coupés).
+- **Worktree / branche** : aucun (retiré après #2522).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1622,3 +1621,17 @@ Pièges rencontrés :
   la figure à colorier (`isJudgedBeforeGuard`).
 - L'événement `pull_request` de #2516 n'a déclenché aucun run (fermer / rouvrir n'y a rien fait) : CI lancée par
   `gh workflow run quality.yml --ref <branche>`.
+
+### 26.2 Lot 11a : rangement (2026-11-09)
+
+- David a lancé `create-questions --publier` : 6 brouillons créés en prod (12:03), `id` écrits dans les fichiers.
+  Relevé MCP : en 6e, brouillons, sans nœud ni tag ; points 6-166, 6-168 à 6-172 actifs, 6-168 sur la NOTION
+  « Grandeurs et mesures > Angles », les autres sur leur sous-notion.
+- `20261109132820_questions_6_lot11a_rangement_tags.sql` (patron du lot 10), test
+  `questions-6-lot11a-rangement-tags.test.ts` 17/17, rouge vérifié (migration réduite au rollback : 10 échecs).
+  Branche d'échec en plus : notion « Angles » archivée (triggers de `classification_nodes` coupés, la garde refuse
+  d'archiver une notion dont des enfants sont actifs). `security-auditor` : aucun bloquant (non bloquant hérité :
+  `lock_timeout` peut-être sans effet sous `db push`).
+- #2522 mergée (CI verte, `check:migrations --pr` passé), worktree retiré.
+- **`db:migrate` NON lancé** : `migration list --linked` montre aussi `20261109110745` (questions-2de) en attente ;
+  `db push` jouerait les deux. Laissé à David.
