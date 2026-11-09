@@ -6,20 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, migration du lot 8 poussée (PR de rangement ouverte, voir § 15)._
+_Mis à jour le 2026-11-09, après #2520 (rangement du lot 8)._
 
-- **État** : lots 1-7 publiés. Lot 8 : 5 brouillons en prod (#2517), migration de rangement
-  `20261109110745` écrite, test 16/16, audit 0 bloquant, PR #2520 ouverte (branche
-  `feat/questions-2de-approfondissements-8-rangement`).
-- **Prochaine action** : suivre la CI de la PR (`gh pr checks 2520 --watch`, l'intégration nocturne tourne aussi :
-  elle valide la fixture `seed-2de-points.json`) → verte : `pnpm check:migrations --pr 2520` puis merge → `db:migrate`
-  par David (`!`) → vérifier en prod (nœuds, tags, points 2-307/2-310, `d4db2207` `{1_SPE,2}`, `updated_at`) →
-  page à cocher du lot 8.
-- **En attente de David** : `db:migrate` après le merge.
-- **Pièges en cours** : la garde « Doc à jour » (job Lint) exige `Doc-inchangée:` dans un commit pour toute
-  migration de données ; écritures en prod refusées par le classifieur du mode auto → commande `!` ; « Client Tests
-  (browser) » qui plante tests verts → `gh run rerun <run> --failed` ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-approfondissements-8-rangement`.
+- **État** : lots 1-7 publiés. Lot 8 rangé et tagué en prod (#2520, `db:migrate` fait, vérifié) ; page à cocher
+  publiée : https://claude.ai/artifact/Lpa2BhqspTx3fM7s4frbAu (0 verdict au départ).
+- **Prochaine action** : David relit le lot 8 → compter les verdicts (`ArtifactData list verdicts`, 5 attendus) →
+  « À revoir » : corriger ; sinon commande de publication pour David (`publier-lot.ts`, simulation puis
+  `--publier`) → lot 9 (323 réemploi `64f54fc1`, 324, 363 ; § 13, D5).
+- **En attente de David** : la relecture du lot 8 sur la page à cocher.
+- **Pièges en cours** : `db:migrate` depuis le dépôt principal à jour (le worktree n'est pas lié à Supabase) ;
+  garde « Doc à jour » → `Doc-inchangée:` (≤ 100 caractères) dans un commit pour une migration de données ;
+  écritures en prod → commande `!` ; « Client Tests (browser) » qui plante tests verts → `gh run rerun --failed`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations` (branche `feat/…-8-rangement` mergée ;
+  lot 9 sur une nouvelle branche depuis `origin/main`).
 
 ---
 
@@ -550,3 +549,11 @@ base locale : fixture `seed-2de-points.json` (2-307, 2-310) et en-tête de `seed
 mis à jour.
 Audit `security-auditor` : 0 finding bloquant (une note faible : la garde du rollback ne vérifie pas que les
 5 modèles sont encore des brouillons, sans effet sur les accès).
+
+Mergée (#2520) après correction de la garde « Doc à jour » (`Doc-inchangée:` dans un commit) ; `check:migrations
+--pr` passé ; `db:migrate` lancé par David depuis le dépôt principal (le worktree n'est pas lié). Vérifié en prod
+(MCP) : les 5 brouillons sur leur sous-notion, chacun avec son seul point (2-305 à 2-308, 2-310), `{2}`, `updated_at`
+inchangé (10:50, création) ; `d4db2207` publié, `{1_SPE,2}`, tags 1SPE-326 et 2-309, `updated_at` du 2026-11-06 ;
+2-307 sous Figures planes › triangles, 2-310 sous Figures planes › médiatrice et bissectrice. Page à cocher (4 alertes
+attendues : bloc ranger non dessiné pour 306, 307, 308, 310, à jouer dans l'aperçu admin) :
+https://claude.ai/artifact/Lpa2BhqspTx3fM7s4frbAu
