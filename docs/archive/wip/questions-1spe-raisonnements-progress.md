@@ -1,24 +1,16 @@
 # Chantier « questions-1spe-raisonnements » — relire les points « compétence » et la logique de 1re spé
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`). Bilan de départ :
-> [1spe.md](../systeme/programmes/bornes/lycee/1spe.md) § « Couverture en modèles de questions ». Journaux clos :
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`). Bilan de départ :
+> [1spe.md](../../systeme/programmes/bornes/lycee/1spe.md) § « Couverture en modèles de questions ». Journaux clos :
 > `docs/archive/wip/questions-1spe-progress.md`, `questions-1spe-logique-progress.md`, `logique-1spe-progress.md`.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2514 et `db:migrate`._
+_Mis à jour le 2026-11-09, chantier clos et versé._
 
-- **État** : 6 modèles en prod, en BROUILLON, rangés et tagués ; `1_SPE` sur les 11 modèles de logique de 2de
-  (#2514, migration `20261109092945` appliquée, vérifiée par MCP ; garde `garde-niveaux-tags` verte). Page à
-  cocher publiée : https://claude.ai/artifact/FDC2nM722wdaUJ75L36LcS (0 verdict au 2026-11-09).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 6) ; « À revoir » → correction
-  (§ 7 de couvrir-un-niveau) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/1spe-raisonnements` en simulation, puis David avec `--publier` ; puis versement (journal
-  archivé, `1spe.md` « Couverture » recompté).
-- **En attente de David** : la relecture sur la page à cocher.
-- **Pièges en cours** : bloc « ranger » non dessiné par la page (montré en source) → à jouer dans l'aperçu ;
-  `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all`.
-- **Worktree / branche** : aucun (retiré après #2514).
+- **État** : CLOS. 6 modèles relus (6/6 OK sur la page à cocher) et publiés le 2026-11-09 ; versé dans
+  [1spe.md](../../systeme/programmes/bornes/lycee/1spe.md) § Couverture (349 modèles, 224 points sur 237).
+- **Prochaine action** : aucune · **En attente de David** : rien · **Worktree / branche** : aucun.
 
 ## 1. Pourquoi ce chantier (2026-11-09)
 
@@ -194,3 +186,13 @@ bed58c24, 61d0571e, 24fd6a10). **Question d'accès** posée à David.
 - Garde `garde-niveaux-tags` (prod) : 2 119 modèles tagués, aucun niveau manquant.
 - Page à cocher : https://claude.ai/artifact/FDC2nM722wdaUJ75L36LcS, capacité `db`, collection `verdicts` vide
   après publication ; rendu vu en largeur étroite. 3 alertes « bloc ranger non dessiné » (attendues).
+
+## 9. Relecture, publication, versement (2026-11-09)
+
+- Page à cocher : 6 verdicts « OK », aucun commentaire.
+- Simulation de `publier-lot.ts` refusée à Claude par le classifieur du mode auto (base prod) : lancée par David,
+  puis `--publier`. Vérifié par MCP : les 6 modèles `published`.
+- Relevé MCP : 349 modèles `1_SPE` publiés ; 224 points sur 237 couverts ; les 13 sans modèle sont les 13 voulus
+  de `1spe.md` (11 couverts par un voisin, 362 et 365 en D). 5 brouillons `1_SPE` hors chantier notés dans
+  `1spe.md`.
+- Versement : `1spe.md` § Couverture recompté, journal archivé.

@@ -42,17 +42,19 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **l1s-6** — Linéarité de l'espérance : E(aX + b) seulement, ou aussi E(X + Y) ? → **affine** (2026-10-23)
 - **l1s-7** — Automatismes « privilégiant l'activité mentale » : bornent-ils les valeurs numériques ? → **mental** (2026-10-23)
 
-## Couverture en modèles de questions (prod, 2026-11-08)
+## Couverture en modèles de questions (prod, 2026-11-09)
 
 Chantier `questions-1spe` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), clos le
 2026-11-02, complété le 2026-11-03 par `questions-1spe-tracer-droite` et `questions-1spe-tangente`, puis du
 2026-11-03 au 2026-11-08 par `questions-1spe-demonstrations` (démonstrations, approfondissements, exemples
-d'algorithmes) ; journaux dans `docs/archive/wip/` (`questions-1spe*-progress.md` : index + sous-chantiers
-`geometrie`, `analyse`, `logique`, `tracer-droite`, `tangente`, `demonstrations` ; journaux par thème
+d'algorithmes) et le 2026-11-09 par `questions-1spe-raisonnements` (points-compétences, logique) ; journaux dans
+`docs/archive/wip/` (`questions-1spe*-progress.md` : index + sous-chantiers `geometrie`, `analyse`, `logique`,
+`tracer-droite`, `tangente`, `demonstrations`, `raisonnements` ; journaux par thème
 `*-1spe-progress.md` de septembre-octobre 2026).
 
-- **332 modèles publiés** de niveau `1_SPE` ; **220 points sur 237** ont au moins un modèle publié, aucun n'a que
-  des brouillons (relevé MCP du 2026-11-08).
+- **349 modèles publiés** de niveau `1_SPE` ; **224 points sur 237** ont au moins un modèle publié, aucun n'a que
+  des brouillons (relevé MCP du 2026-11-09). 5 brouillons `1_SPE` restent hors de ces chantiers (c90fa022,
+  dc4b8d08, 174e202b, 0495289a, d2067413 : suites et angles associés, dont 3 partagés avec `1_TECHNO`).
 - **Points P couverts par `questions-1spe-demonstrations`** (47, un modèle par point, tagué sur son point,
   ADR 0020) :
   - **14 démonstrations** (232-235, 255, 275-278, 398, 308, 411, 322, 323) : démonstration à trous (étape clé en
@@ -69,8 +71,8 @@ d'algorithmes) ; journaux dans `docs/archive/wip/` (`questions-1spe*-progress.md
   - Au BO, 300-302 sont des approfondissements (rubrique Fonction exponentielle sans « Démonstrations ») et
     240-242, 381 aussi (rubrique Suites), pas des démonstrations ni des algorithmes.
 - **Points-compétences relus par `questions-1spe-raisonnements`** (2026-11-09) : 205, 284, 436, 437 sont
-  questionnables, un modèle chacun (contraposée, optimisation, produit scalaire, repère), en brouillon jusqu'à
-  la publication ; 435 est couvert par ses voisins. Le même lot ajoute la disjonction des cas et l'absurde
+  questionnables, un modèle chacun (contraposée, optimisation, produit scalaire, repère), publiés le
+  2026-11-09 ; 435 est couvert par ses voisins. Le même lot ajoute la disjonction des cas et l'absurde
   (points de seconde 2-216, 2-217, `grades = ['2', '1_SPE']`) et `1_SPE` à 11 modèles de logique de seconde
   (« et », « ou », implication, équivalence, réciproque, contraposée, quantificateurs), que le BO de 1re reprend
   sans point propre.
