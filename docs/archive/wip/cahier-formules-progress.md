@@ -2,9 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2493._
+_Mis à jour le 2026-11-09, après #2505._
 
-- **État** : ✅ mergé (#2493), pas encore en prod (`deploy:prod` sur demande de David) · **Prochaine action** : selon la réponse de David sur les images · **En attente de David** : images externes au cahier, même traitement que les vidéos ou non (aucune en prod) · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
+- **État** : clos. Question des images externes tranchée (« oui ») et livrée par #2505
+  ([journal](cahier-images-externes-progress.md)) · pas encore en prod (`deploy:prod` sur
+  demande de David) · **Worktree / branche** : supprimés
 
 ## Décision (David, 2026-11-08)
 

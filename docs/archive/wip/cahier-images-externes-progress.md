@@ -1,16 +1,16 @@
 ---
-status: en-cours
+status: clos
 ---
 
 # Cahier : images externes en lien
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR ouverte._
+_Mis à jour le 2026-11-09, après #2505._
 
-- **État** : correctif écrit, tests verts · **Prochaine action** : revues, CI, merge ·
-  **En attente de David** : rien · **Worktree / branche** :
-  `ubumaths-wt-cahier-images-externes` / `fix/cahier-images-externes`
+- **État** : clos, mergé (#2505), pas encore en prod (`deploy:prod` sur demande de David) ·
+  **Reste noté** : échappement en trop de `src` dans `ImageDisplay` (voir Revues) ·
+  **Worktree / branche** : supprimés
 
 ---
 
