@@ -326,7 +326,13 @@ describe('espacement des items : identique à leur ancienne définition', () => 
 			'#block(breakable: false, rect(width: 100%, height: 2cm))'
 		);
 		const sonde = (source: string) =>
-			source.replace(/\b(S\d+)\b/g, '#metadata("$1") <sonde>$1') +
+			source
+				.replace(/\b(S\d+)\b/g, '#metadata("$1") <sonde>$1')
+				// Numéro d'un item qui commence par un bloc (posé par `place`) : sondé aussi
+				.replace(
+					/#ubu-item-bloc\(numbering\("([^"]+)", (\d+)\)/g,
+					'#ubu-item-bloc([#metadata("N$2") <sonde>#numbering("$1", $2)]'
+				) +
 			'\n#context for m in query(<sonde>) [#metadata((m.value, m.location().page(), calc.round(m.location().position().x / 1pt, digits: 2), calc.round(m.location().position().y / 1pt, digits: 2))) <place>]\n';
 		const lignes = genere.split('\n');
 		const ancien = lignes
@@ -341,7 +347,7 @@ describe('espacement des items : identique à leur ancienne définition', () => 
 		expect(ancien).not.toBe(genere);
 		const nouveau = await interroger<[string, number, number, number]>(sonde(genere));
 		const reference = await interroger<[string, number, number, number]>(sonde(ancien));
-		expect(nouveau).toHaveLength(11);
+		expect(nouveau).toHaveLength(13);
 		expect(nouveau).toEqual(reference);
 	}, 120_000);
 });
