@@ -9,16 +9,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, PR 4 commitée, revue Opus lue (§ 7), pas encore poussée._
+_Mis à jour le 2026-11-09, PR 4 commitée, Q17/Q18 tranchées (§ 7), pas encore poussée._
 
-- **État** : PR 4 (triangle rectangle coté en cm, § 7) commitée sur la branche, PR pas ouverte. Revue Opus :
-  1 faux juste bloquant (éventail de triangles) + 1 important ([AC] prolongé), preuves rouges commitées
-  (`construction-triangle-rectangle-cm.revue.test.ts`).
-- **Prochaine action** : après la réponse de David à Q17/Q18 (§ 7), corriger `judgeRight`, intégrer les sondes au
-  test de la PR, `git merge origin/main`, push, PR (dans un commit, la ligne Doc-inchangée de la PR 3 pour
-  utilitaires-et-demos.md), CI, merge.
-- **En attente de David** : **Q17, Q18 (§ 7)** ; vérifications sur téléphone (#2485, #2490, #2494) ; choix
-  (1)-(3) du § 5, (1)-(4) du § 6, (1)-(4) du § 7 ; Q15 (reco : serrer) et Q16 (reco : plus tard).
+- **État** : PR 4 (triangle rectangle coté en cm, § 7) commitée sur la branche, PR pas ouverte ; revue Opus :
+  2 faux justes, preuves rouges commitées (`construction-triangle-rectangle-cm.revue.test.ts`).
+- **Prochaine action** : corriger `judgeRight` selon Q17/Q18 (§ 7, décisions de David), côté en cm seulement ;
+  fondre les sondes dans `construction-triangle-rectangle-cm.test.ts` (tests rouges → verts) ; `git merge
+origin/main`, push, PR (dans un commit, la ligne Doc-inchangée de la PR 3 pour utilitaires-et-demos.md), CI,
+  merge ; doc `systeme/questions.md` et catalogue (nouveaux messages).
+- **En attente de David** : vérifications sur téléphone (#2485, #2490, #2494) ; choix (1)-(3) du § 5, (1)-(4) du
+  § 6 ; Q15 (reco : serrer) et Q16 (reco : plus tard), § 5.
 - **Pièges en cours** : le juge prend le **segment vu** (§ 3) ; seules les règles posées AVANT le trait comptent
   (§ 6, § 7) ; tests de composant : toucher pile sur une graduation ; zsh : listes de fichiers en tableau.
 - **Worktree / branche** : `../ubumaths-wt-regle-graduee`, `feat/regle-graduee-triangle`.
@@ -238,3 +238,9 @@ parseur, correction. Questions à David :
 - **Q17** : plusieurs C distincts (côté en cm) → faux, « Trace un seul triangle ABC. » ? Un C de chaque côté de
   (AB) compte-t-il pour deux ? (reco : oui et oui, comme Q9 du segment et le cercle)
 - **Q18** : [AC] prolongé au-delà de C → faux, jugé sur le trait vu (`seenSegments` de la PR 1) ? (reco : oui)
+
+**Décisions de David (« je te suis », 2026-11-09)** : choix (1)-(4) du § 7 acceptés ; **Q17** : côté en cm,
+plusieurs C distincts → faux, « Trace un seul triangle ABC. », un C de chaque côté de (AB) compte pour deux, un
+même C atteint deux fois pour un ; **Q18** : côté en cm, [AC] jugé sur le trait vu depuis A (`seenSegments` de la
+PR 1, bout le plus loin) : prolongé au-delà de C → « Ton côté [AC] mesure 4,5 cm au lieu de 4 cm. » (ou « placé à
+l'œil » hors graduation) ; le n° 20 (report) inchangé.
