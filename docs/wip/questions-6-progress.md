@@ -5,13 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2229 et le `db:migrate` (lot 10 rangé, page à cocher publiée)._
+_Mis à jour le 2026-11-09 (décision de David : témoins des contrôles dans le lot 11, voir § 25) ; état du lot 10 daté du 2026-11-02, à revérifier._
 
 - **État** : lot 10 (160-167) : 8 brouillons en prod, rangés et tagués (§ 24.2) ; page à cocher publiée (§ 24.3,
   https://claude.ai/artifact/CBDvnDQFzMr8XRw7Cm3tBC). 6e : 165 publiés + 1 brouillon (3a7a5711) + 8 du lot 10.
 - **Prochaine action** : lire et **compter** les verdicts (`ArtifactData list verdicts`) ; corriger les « À revoir »
   (§ 7 de la doc) ; `publier-lot.ts --dir scripts/questions/6-distances-cercle-mediatrice` en simulation, puis
-  David avec `--publier`. Ensuite lot 11 (angles, triangles, symétrie : 148, 168, 171, 174-179).
+  David avec `--publier`. Ensuite lot 11 (angles, triangles, symétrie : 148, 168, 171, 174-179), **avec les
+  modèles témoins des contrôles de la figure** (§ 25). Relevé du niveau déjà fait (§ 1) : ne pas le refaire,
+  seulement le § 2 « un lot » du skill `couvrir-niveau`.
 - **En attente de David** : relecture de la page à cocher.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `{{eval:…/10}}` = fraction : toujours `;d`. Mot coloré hors
   `$…$` : `colt`. Choix multiple incomplet = `unoptimal_form`. `Doc-inchangée:` dans un commit, corps ≤ 100 car.
@@ -1502,3 +1504,25 @@ Pièges rencontrés :
 Page générée depuis la prod (aucune alerte) et publiée avec la capacité `db` :
 https://claude.ai/artifact/CBDvnDQFzMr8XRw7Cm3tBC — collection `verdicts` vide à la publication. Rendu à 390 px vérifié
 sur l'essai local (même gabarit).
+
+## 25. Modèles témoins des contrôles de la figure (décision de David, 2026-11-09)
+
+Contexte : [outils-manquants.md](outils-manquants.md), paragraphe « Contenu restant aux sessions questions »,
+recommandation du 2026-11-09 : aucun modèle n'utilise encore les contrôles `point`, `droite`, `angle`, `mesure`,
+`bissectrice` de la figure à compléter (chantier [`controles-figure`](../archive/wip/controles-figure-progress.md),
+clos le 2026-11-06), ni le patron `designer:` / `completer:`, ni la trotteuse. Un modèle témoin par contrôle est le
+seul moyen de les exercer de bout en bout chez un élève.
+
+Décidé par David (session `aide-ecriture-a-jour`, après #2506) :
+
+- **Ordre** : les témoins d'abord, puis le n° 24 d'outils-manquants (corrigé PDF des gestes de tracé), dans une
+  autre session. Raisons : les contrôles sont en prod sans aucun usage (un défaut se voit tout de suite), lot de
+  contenu court ; le n° 24 est un chantier moyen à phase 0. Les deux ne touchent pas les mêmes fichiers.
+- **Où** : pas de chantier à part ; les témoins 6e entrent dans le **lot 11** (angles, triangles, symétrie) :
+  `angle`, `mesure`, `bissectrice` (6-172), médiatrice — un modèle par contrôle.
+- **Pas de nouveau relevé** : le § 1 du skill `couvrir-niveau` (relevé du niveau) est fait (§ 1 de ce journal,
+  2026-10-26) ; seul son § 2 « un lot » s'applique.
+- **Hors 6e** : trotteuse (cycle 3 primaire) et patron à geste (6e ou 5e selon le point, non vérifié en base) vont aux
+  sessions des niveaux concernés, pas à ce lot.
+- **Avant le lot 11** : le bloc « Reprendre ici » date du 2026-11-02 (lot 10 en attente de relecture) ; revérifier
+  l'état réel du lot 10 en prod (brouillons, verdicts de la page à cocher) avant d'avancer.
