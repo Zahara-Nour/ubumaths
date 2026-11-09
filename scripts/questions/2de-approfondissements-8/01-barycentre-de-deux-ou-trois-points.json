@@ -1,4 +1,5 @@
 {
+	"id": "6bd8366f-028b-4619-afc1-db1aaa24113f",
 	"title": "Barycentre de deux ou trois points",
 	"description": "G tel que GA + kGB = 0 : AG = k/(k+1) AB (case, k de 2 à 5) ; coordonnées de G tel que GA + 2GB = 0 (deux cases) ; isobarycentre de trois points (deux cases) ; position de G tel que 2GA + GB = 0 (case choix)",
 	"grades": ["2"],
