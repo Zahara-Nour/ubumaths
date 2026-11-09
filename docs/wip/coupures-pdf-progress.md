@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, ouverture du chantier._
+_Mis à jour le 2026-11-09, PR 1 ouverte (avant merge)._
 
-- **État** : trois niveaux validés (§ 1) ; étude typst faite (§ 3) : mécanisme fiable, trous divisés par deux ; garde-fou presque sans gain.
-- **Prochaine action** : validation des comportements de phase 0 par David, puis tests rouges et implémentation dans `typst-generator.ts` + `render-exercise.ts`.
-- **En attente de David** : garde-fou abandonné (tranché) ; reposées : (a) règle aussi dans les questions ? (b) carré de `eval-premiere` à 65 % ? ; comportements de phase 0.
-- **Pièges en cours** : `sticky` de typst ne distingue pas colonne et page ; typst.ts 0.6.1-rc5 = Typst 0.13.1 (CLI local = 0.14, pas témoin : `scripts/fiches/compile-prod.mjs`).
+- **État** : PR 1 (règle B en fin de page seulement, § 4) : tests, doc, mesure sur la base faits ; revue + CI en cours.
+- **Prochaine action** : après le merge, PR 2 — titre d'exercice seul en bas de page quand l'énoncé commence par une question à tête collée (§ 5, déjà en prod).
+- **En attente de David** : `deploy:prod` (sur sa demande) ; ensuite, retouche de `eval-premiere` (carré à 65 %) sur sa demande, écriture en prod.
+- **Pièges en cours** : marqueur = `place`, pas un bloc de hauteur nulle (+18 pt en haut de colonne) ; jamais de marqueur entre deux blocs collés ; typst.ts 0.6.1-rc5 = Typst 0.13.1.
 - **Worktree / branche** : `../ubumaths-wt-coupures-pdf` · `feat/coupures-pdf`.
 
 ---
@@ -94,3 +94,24 @@ dernière page exclue, en fraction de colonne.
 - Dessin du carré (exercice 2) ramené de 75 % à **65 %** de la colonne : **1 page** avec la nouvelle
   règle ; avec la règle actuelle, toujours 2 pages (même à 40 %) → la fiche attend la livraison
   de ce chantier.
+
+## 4. Phase 0 et PR 1 (2026-11-09)
+
+David (« je valide », réponse au message qui recommandait chaque point) : comportements de phase 0
+validés ; la règle s'applique aussi **dans les questions** (numéro + 1re phrase + formule) ; retouche
+de la fiche `eval-premiere` (carré à 65 %) après livraison, sur sa demande.
+
+- Code : `typst-generator.ts` (`ubu-colle()`, `TYPST_BREAK_MARKER`, `keepWithNextOnPage`,
+  `isChained`, option `chainedStart`), `render-exercise.ts` (marqueur avant section / titre).
+- Tests de mise en page réelle : `coupures-colonnes.test.ts` (compilation + `query` des positions ;
+  `$typst.query` seul ne compile pas → `createTypstCompiler` + `runWithWorld`).
+- Piège trouvé à la mesure : un marqueur en bloc de hauteur nulle, premier bloc d'une colonne,
+  empêchait Typst d'y supprimer l'espace au-dessus du titre → 455 → 476 pages. Avec `place` (sans
+  alignement vertical) : **455 → 451 pages, aucun PDF plus long, trous > ¼ col 13 → 7**, 0
+  diagnostic (48 fiches × fiche + corrigé, `regen-depuis-base --toutes --modele-de-la-fiche`).
+
+## 5. Écart vu à la mesure (déjà en prod, avant ce chantier)
+
+Fiche `41737393` : « 4 Lire les variations » seul en bas de page. L'énoncé commence par une
+question dont la tête est collée à un dessin : le titre est collé au bloc de l'énoncé, qui laisse un
+premier morceau vide en bas de page. Règle A « titre jamais seul » violée → PR 2.
