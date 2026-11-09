@@ -5,19 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2522 (lot 11a, rangement)._
+_Mis à jour le 2026-11-09, après `db:migrate` du lot 11a (#2522)._
 
 - **État** : lot 10 relu (8/8 « ok »), simulation `publier-lot` verte, toujours en brouillon. Lot 11a : 6 brouillons
-  en prod, `id` commités, migration `20261109132820` (nœud + tag) mergée (#2522), **pas encore jouée en prod**.
-- **Prochaine action** : après `db:migrate`, vérifier en prod (MCP) les 6 nœuds et tags + `tgenabled = 'O'`, puis la
-  page à cocher du 11a. Ensuite 11b (174-179, 148), puis lot 12 « Constructions » (173, 180, 207).
-- **En attente de David** : (1) `db:migrate`, qui jouera aussi `20261109110745` (questions-2de, approfondissements
-  lot 8) : à lancer quand l'autre chantier est d'accord ; (2) la publication du lot 10
-  (`publier-lot.ts … 6-distances-cercle-mediatrice --publier`). Un `git stash` du dépôt principal porte les `id` du 11a (déjà commités, jetable).
+  rangés en prod (nœud + tag vérifiés, § 26.3), page à cocher publiée (0 verdict) :
+  https://claude.ai/artifact/RDYxmHCDZuqLdKNXSNJRDu.
+- **Prochaine action** : 11b (174-179, 148, phase 0 au § 26), nouveau worktree ; puis lot 12 « Constructions »
+  (173, 180, 207). Lire et compter les verdicts du 11a quand David a relu.
+- **En attente de David** : (1) relecture du 11a (page à cocher, blocs figure à jouer dans l'aperçu) ; (2) la
+  publication du lot 10 (`publier-lot.ts … 6-distances-cercle-mediatrice --publier`). Un `git stash` du dépôt
+  principal porte les `id` du 11a (déjà commités, jetable).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. Variable à valeur lettre impossible (`{{if:}}` dans le texte).
   `couleur="bleu"` entre guillemets. Point interne d'un `rotation(point(…))` visible : `visible=faux`. Réponses de
   figure : pleine précision. Archiver une notion à enfants actifs : refusé par trigger (test : triggers coupés).
-- **Worktree / branche** : aucun (retiré après #2522).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1635,3 +1636,13 @@ Pièges rencontrés :
 - #2522 mergée (CI verte, `check:migrations --pr` passé), worktree retiré.
 - **`db:migrate` NON lancé** : `migration list --linked` montre aussi `20261109110745` (questions-2de) en attente ;
   `db push` jouerait les deux. Laissé à David.
+
+### 26.3 Lot 11a : en prod et page à cocher (2026-11-09)
+
+- **`db:migrate` lancé par David** : `20261109132820` (et `20261109110745` de questions-2de) enregistrées dans
+  `supabase_migrations.schema_migrations`. Vérifié (MCP) : les 6 brouillons en 6e, en brouillon, sur le nœud de leur
+  point, un tag chacun (6-166, 6-168 à 6-172) ; triggers de `question_template_points` et `question_templates`
+  `tgenabled = 'O'`.
+- Page à cocher générée depuis `main` (38ba7db61), publiée (`db`, 0 verdict) :
+  https://claude.ai/artifact/RDYxmHCDZuqLdKNXSNJRDu. Alerte sur 02, 03, 05, 06 : bloc `figure-a-completer` non
+  dessiné (le jouer dans l'aperçu admin).
