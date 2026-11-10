@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, après #2532._
+_Mis à jour le 2026-11-10, PR « consigne sur les cartes Automaths » en cours._
 
-- **État** : #2512 et #2515 en prod (réveil 0,73 s au lieu de 2,4 s). #2532 mergée, pas en prod : liste des modèles sans `test_specs` (−31 %), type `CatalogueTemplate` · **Prochaine action** : décision de David sur la consigne d'exercice perdue dans Automaths (ci-dessous) ; sinon choisir entre Atelier, bug du suivi (INP enregistré plusieurs fois), `$$<$$` brut du QCM et « Mon cours » ; relire dans quelques jours le TTFB p75 de `/auth/login` (2,4 s avant) · **En attente de David** : (1) PR suivante pour la consigne perdue ? (2) retirer `created_by` de la liste publique ? · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; le cache des modèles garde les lignes BRUTES (snake_case) · **Worktree / branche** : aucun
+- **État** : #2512 et #2515 en prod ; #2532 mergée (pas en prod). PR 4 en cours : la consigne d'exercice s'affiche sur les cartes Automaths (`mapDbTemplateToForm` dans le cache) · **Prochaine action** : merger la PR 4, puis PR 5 = consigne UNE fois par groupe dans le PDF des séries (décisions ci-dessous) · **En attente de David** : retirer `created_by` de la liste publique ? · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; serveur de dev : vérifier dans son journal qu'il a bien pris le port (un ancien peut le tenir) · **Worktree / branche** : `../ubumaths-wt-amelioration`, `fix/amelioration-consigne-automaths`
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -143,3 +143,19 @@ Sources : Speed Insights #2094 (Atelier 17 mesures, Automaths 2), `error_logs` d
   auteur, l'admin) ; la policy anon « Anon can view published templates » laisse lire toutes les
   colonnes des modèles publiés par PostgREST, `test_specs` compris : la PR allège la réponse,
   elle ne cache rien. Protéger des colonnes = migration à part.
+
+## Consigne d'exercice (2026-11-10)
+
+But du champ (David) : consigne partagée par toutes les variations, affichée **une seule fois**
+dans un PDF pour les questions du même genre. Jamais fait : le seul PDF qui la lit
+(`serie-automatismes.ts:452-456`, ajouté le 2026-09-28) la colle devant CHAQUE question ; le PDF
+du panier Automaths n'existe pas (« Fonctionnalité à venir »).
+
+- **PR 4** (validée « go ») : cartes Automaths. Cause : le cache garde les lignes de la base
+  (`exercise_instruction`), le générateur lit `exerciseInstruction`. Correctif :
+  `mapDbTemplateToForm` dans `questionTemplatesCache`. Test de rendu
+  `catalogue-consigne.svelte.test.ts` (rouge avant). Vu à l'écran avec la liste de prod :
+  « Calcule. » sur les « Table d'addition' ».
+- **PR 5, décisions de David** : (1a) dans une série qui mélange des modèles, chaque consigne une
+  fois au début de chaque groupe de questions CONSÉCUTIVES qui la partagent ; placée **au début
+  de l'exercice** (première ligne du groupe), le titre de l'exercice (donné par le prof) inchangé.

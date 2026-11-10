@@ -229,8 +229,9 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   liste est typée `CatalogueTemplate` (`Omit<QuestionTemplate, 'testSpecs'>`) : lire `testSpecs`
   ou `test_specs` dans le cache ne compile pas, mais un modèle du cache passé à une fonction qui
   attend un `QuestionTemplate` reste accepté — la protection, c'est la liste de colonnes.
-  L'éditeur, seul lecteur des cas de test, charge le modèle complet par son id. ⚠️ Le cache garde
-  les lignes brutes (snake_case), sans `mapDbTemplateToForm`.
+  L'éditeur, seul lecteur des cas de test, charge le modèle complet par son id. Le cache passe
+  chaque ligne par `mapDbTemplateToForm` (`exercise_instruction` → `exerciseInstruction`…) : sans
+  elle, la consigne d'exercice disparaissait des cartes Automaths (corrigé en novembre 2026).
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
   `generate/[id]`), admin `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`
