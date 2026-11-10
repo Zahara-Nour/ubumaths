@@ -64,3 +64,8 @@ Mesure au `curl`, 17 h 36, 43 min après le déploiement (instance froide non ga
 | `/dashboard` (303)       | 4,0 s (1er appel)    | 0,69 s, mais juste après `/auth/login` : instance déjà réveillée, pas comparable |
 
 Un seul échantillon : à confirmer par un réveil du matin et par le TTFB p75 des web vitals.
+
+Réveil du matin, 2026-11-10 à 5 h 41 (nuit sans élèves) : `/auth/login` **0,31 s** au 1er appel,
+puis 0,11 et 0,09 s ; `/dashboard` 0,23 s juste après. Avant : 2,4 s. On ne peut pas savoir au
+`curl` si l'instance était vraiment froide (Fluid compute, activé le 2026-11-09, la garde
+peut-être plus longtemps) : le TTFB p75 des web vitals tranchera.
