@@ -174,9 +174,13 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   rangés programme > branche > notion > sous-notion (`buildReviewTree`, `$lib/questions/template-review`).
   Le programme est le `grade` des points tagués (un modèle de deux programmes apparaît dans les deux ;
   sans point → « Hors programme » ; sans nœud → « Non rangé »). Chaque étage compte ✅ validé · 🔶 à
-  revoir · ⚪ sans verdict ; filtres dans l'adresse (`verdict`, `statut`, `alertes`, `noeud`). Les fiches
-  (`components/dev/TemplateReviewSheet.svelte`) ne se chargent que pour le nœud choisi, ou pour tout ce
-  que les filtres retiennent, 80 au plus (`MAX_SHEETS`). Une fiche : statut, niveau, rangement, point
+  revoir · ⚪ sans verdict ; filtres dans l'adresse (`verdict`, `statut`, `alertes`, `noeud`, `titre` —
+  sans casse ni accents, `normalizeSearch` —, `point` — code exact, « Point inconnu » s'il n'est pas en
+  base —, `serie`), bornés par Zod (400). Une **série** enregistrée (`loadReviewSeries`, composition lue
+  par `series-lines`) remplace le nœud : ses modèles dans son ordre, doublons compris, « × quantité ·
+  délai s » sur chaque fiche, « Modèle introuvable » pour un modèle disparu (`seriesSelection`). Les
+  fiches (`components/dev/TemplateReviewSheet.svelte`) ne se chargent que pour la série ou le nœud
+  choisi, ou pour tout ce que les filtres retiennent, 80 au plus (`MAX_SHEETS`). Une fiche : statut, niveau, rangement, point
   et ses bornes (`docs/systeme/programmes/bornes/*.json`, intégrés au build par `$lib/server/point-bounds`),
   plages et conditions, specs, un aperçu par variation tiré dans le navigateur par `generateInstance`
   sur le modèle réduit à cette variation (`VariationPreview`, graine 7 + i, « ↻ » en tire une autre,
