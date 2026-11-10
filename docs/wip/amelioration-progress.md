@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, piste 2 en PR._
+_Mis à jour le 2026-11-10, après #2536._
 
-- **État** : piste 2 (choix `$$<$$` en brut au catalogue et au panier) en PR sur `fix/choix-formule-seule` ; #2535 mergée, pas en prod · **Prochaine action** (ordre validé par David le 2026-11-10) : merger la piste 2 ; puis (3) INP renvoyé plusieurs fois par notre suivi ; (4) Atelier lent : **David le constate lui-même**, y réfléchir ensemble (pas « attendre des mesures ») ; (5) « Mon cours » #1788 · **Tranché** : `created_by` laissé tel quel (UUID admin, policy anon lit déjà toutes les colonnes) · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement · **Worktree / branche** : `../ubumaths-wt-amelioration`, `fix/choix-formule-seule`
+- **État** : #2536 (choix `$$<$$` rendus au catalogue, au panier et au corrigé) et #2535 (consigne une fois par groupe) mergées, pas en prod · **Prochaine action** (ordre validé par David le 2026-11-10) : (3) INP renvoyé plusieurs fois par notre suivi ; (4) Atelier lent : **David le constate lui-même**, y réfléchir ensemble (pas « attendre des mesures ») ; (5) « Mon cours » #1788 · **En attente de David** : formule seule d'un choix centrée (comme à la saisie) ou calée à gauche ? · **Tranché** : `created_by` laissé tel quel · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `resource-link-extension` (anti-rebond) instable en CI, passé à la relance · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -179,4 +179,4 @@ du panier Automaths n'existe pas (« Fonctionnalité à venir »).
   (`MultipleChoiceInput`, `MarkdownRenderer`) ne l'était pas.
 - **Correctif** (branche `fix/choix-formule-seule`) : un choix qui n'est pas un seul paragraphe
   passe par `MarkdownRenderer`, comme à la saisie (formule centrée, comme à la saisie). Tests :
-  `ChoiceList.svelte.test.ts` § « choix qui ne sont qu'une formule » (2 rouges avant).
+  `ChoiceList.svelte.test.ts` § « choix qui ne sont qu'une formule » (2 rouges avant). Mergée le 2026-11-10 (#2536), sans revue (correctif d'affichage d'une douzaine de lignes).
