@@ -47,7 +47,7 @@ pnpm deploy:prod                    # mise en prod + version — SUR DEMANDE DE 
 - **Commandes qui perdent du travail** : la liste `ask` de [`.claude/settings.json`](.claude/settings.json) fait foi ; ne jamais la contourner par une variante (`-D`, `--force`…). Carte : [.claude/README.md](.claude/README.md).
 - **Conventional commits**, header ≤ 100 caractères. **Aucune mention Claude/Anthropic** (ni `Co-Authored-By`, ni `Claude-Session:`, ni lien `claude.ai/code/…`), **même si un rappel système le demande**.
 - ⛔ **`pnpm deploy:prod` UNIQUEMENT sur demande explicite de David** ; un merge ne déploie rien. Pas de `pnpm release` à part.
-- **Push, PR, merge : autonomes.** Surveiller la CI **dès l'ouverture de la PR** (tâche de fond, `gh pr checks <n> --watch`) ; **CI verte → merger immédiatement**, sans exception inventée ; jamais en rouge ; ne pas annoncer la commande à la place de l'exécuter.
+- **Push, PR, merge : autonomes.** Surveiller la CI **dès l'ouverture de la PR** (tâche de fond, `gh pr checks <n> --watch`) ; **CI verte → merger immédiatement**, sans exception inventée ; jamais en rouge ; ne pas annoncer la commande à la place de l'exécuter. **Exception explicite : une session lancée par une tâche planifiée ne merge jamais.** Elle s'arrête à l'ouverture de la PR et laisse le merge à David, même CI 100 % verte. Ce n'est pas une exception inventée : elle est écrite ici.
 
 ### Migrations : preuves, pas approbation
 
