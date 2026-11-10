@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-10, après #2535._
 
-- **État** : #2512, #2515, #2532, #2534 mergées (0.81.0 publiée depuis, non vérifié) ; #2535 (consigne une fois par groupe dans les séries) mergée, pas en prod · **Prochaine action** (recos du 2026-11-10, ordre à valider par David) : (2) QCM « Comparer deux nombres entiers », choix affichés `$$<$$` en brut au catalogue et au panier ; (3) INP renvoyé plusieurs fois par notre suivi ; (4) Atelier : attendre des mesures ; (5) « Mon cours » #1788 · **En attente de David** : ordre ci-dessus ; `created_by` : reco = ne rien faire (UUID admin, policy anon lit déjà toutes les colonnes ; vraie fermeture = migration de droits par colonne) · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement · **Worktree / branche** : aucun
+- **État** : #2535 (consigne une fois par groupe dans les séries) mergée, pas en prod ; 0.81.0 publiée avant (#2532, #2534 dedans, non vérifié) · **Prochaine action** (ordre validé par David le 2026-11-10) : (2) QCM « Comparer deux nombres entiers », choix affichés `$$<$$` en brut au catalogue et au panier ; (3) INP renvoyé plusieurs fois par notre suivi ; (4) Atelier lent : **David le constate lui-même**, y réfléchir ensemble (pas « attendre des mesures ») ; (5) « Mon cours » #1788 · **Tranché** : `created_by` laissé tel quel (UUID admin, policy anon lit déjà toutes les colonnes) · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
