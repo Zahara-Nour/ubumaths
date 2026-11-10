@@ -93,3 +93,30 @@ puis 0,11 et 0,09 s ; `/dashboard` 0,23 s juste après. Avant : 2,4 s. On ne peu
 1er appel est nettement plus lent que les suivants : c'est bien un réveil, et il coûte 0,7 s
 au lieu de 2,4 s. Fluid compute était déjà activé lors de la mesure à 2,4 s : le gain vient du déploiement 0.80.0,
 vraisemblablement de #2515.
+
+## Piste 1 suite — Atelier et Automaths (diagnostic du 2026-11-10, rien de modifié)
+
+Sources : Speed Insights #2094 (Atelier 17 mesures, Automaths 2), `error_logs` de prod (60 j),
+`curl` et Playwright sur la prod (Mac mini, réseau rapide ; le bridage réseau n'a pas pris).
+
+**Automaths : le problème est la liste des modèles, pas la page.**
+
+- La page n'a rien côté serveur ; au montage, elle lit `/api/questions/templates/all`
+  (`questionTemplatesCache`) : **2 131 modèles, 11 Mo de JSON (1,7 Mo compressé)**, `select('*')`.
+  `variations` = 61 %, **`test_specs` = 31 % (3,5 Mo), inutile au catalogue**.
+- Cache CDN 5 min (`s-maxage=300`) : hors cache, le serveur met 1,1-1,6 s (mesuré), 10,6 s en
+  médiane dans les logs (10 cas, 27 s au pire).
+- Le navigateur parse 11 Mo puis range le catalogue : tâches longues de 1,1 s en médiane (13 cas,
+  5,9 s au pire), un INP de 5,9 s le 2026-11-04.
+- `GET /automaths` lui-même : 78 « Slow request » en 30 j (médiane 4,1 s, 70 sans compte, à toute
+  heure) ; reproduit : 2,3 s au 1er appel sur une instance chaude, puis 0,07 s. Hypothèse à
+  vérifier sur une build (méthode de la PR 2) : le 1er rendu charge les modules de la route.
+
+**Atelier : peu de données, cause probable le poids du JavaScript.**
+
+- 1,7 Mo de JS en 199 fichiers (accueil : 0,3 Mo, 86 fichiers) ; la zone de l'atelier reste
+  vide tant que tout n'est pas chargé (`opened` = null au rendu serveur).
+- `error_logs` : ~6 visites lentes réelles en octobre (FCP 3,4-3,7 s, LCP 3,4-5,0 s), rien
+  depuis le 2026-10-28. Les FCP/LCP absurdes (382 604 ms) = onglet en arrière-plan (#2512).
+- ⚠️ Bug de notre suivi : le même INP est renvoyé plusieurs fois (616 ms ×15, 304 ms ×9) :
+  les comptes d'INP de `error_logs` sont gonflés.
