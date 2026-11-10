@@ -79,7 +79,7 @@
 	{:else if isInlineChoice(item.content)}
 		<span class="min-w-0 flex-1"><InlineMarkdown content={item.content} /></span>
 	{:else}
-		<div class="min-w-0 flex-1"><MarkdownRenderer content={item.content} /></div>
+		<div class="choice-formula min-w-0 flex-1"><MarkdownRenderer content={item.content} /></div>
 	{/if}
 {/snippet}
 
@@ -201,6 +201,13 @@
 	.choice.tone-unoptimal {
 		border-color: var(--choice-unoptimal);
 		border-style: dashed;
+	}
+
+	/* Formule seule ($$<$$) : contre la lettre, comme un choix de texte, pas centrée au
+	   milieu de la ligne (l'écran de réponse, lui, la garde centrée) */
+	.choice-formula :global(.math-block-container) {
+		justify-content: flex-start;
+		margin: 0;
 	}
 
 	:global(.choice-box) {
