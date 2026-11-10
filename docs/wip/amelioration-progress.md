@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, PR « consigne sur les cartes Automaths » en cours._
+_Mis à jour le 2026-11-10, après #2534._
 
-- **État** : #2512 et #2515 en prod ; #2532 mergée (pas en prod). PR 4 en cours : la consigne d'exercice s'affiche sur les cartes Automaths (`mapDbTemplateToForm` dans le cache) · **Prochaine action** : merger la PR 4, puis PR 5 = consigne UNE fois par groupe dans le PDF des séries (décisions ci-dessous) · **En attente de David** : retirer `created_by` de la liste publique ? · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; serveur de dev : vérifier dans son journal qu'il a bien pris le port (un ancien peut le tenir) · **Worktree / branche** : `../ubumaths-wt-amelioration`, `fix/amelioration-consigne-automaths`
+- **État** : #2512 et #2515 en prod ; #2532 (liste sans `test_specs`) et #2534 (consigne sur les cartes Automaths) mergées, pas en prod · **Prochaine action** : PR 5 = consigne d'exercice UNE fois par groupe de questions consécutives, au début de l'exercice, dans le PDF des séries (`serie-automatismes.ts:452-456`) ; décisions prises (§ « Consigne d'exercice »), écrire la phase 0 (comportements) avant de coder · **En attente de David** : retirer `created_by` de la liste publique ? · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; serveur de dev : vérifier dans son journal qu'il a bien pris le port · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -151,7 +151,7 @@ dans un PDF pour les questions du même genre. Jamais fait : le seul PDF qui la 
 (`serie-automatismes.ts:452-456`, ajouté le 2026-09-28) la colle devant CHAQUE question ; le PDF
 du panier Automaths n'existe pas (« Fonctionnalité à venir »).
 
-- **PR 4** (validée « go ») : cartes Automaths. Cause : le cache garde les lignes de la base
+- **PR 4** (#2534, mergée le 2026-11-10, revue sans bloquant) : cartes Automaths. Cause : le cache garde les lignes de la base
   (`exercise_instruction`), le générateur lit `exerciseInstruction`. Correctif :
   `mapDbTemplateToForm` dans `questionTemplatesCache`. Test de rendu
   `catalogue-consigne.svelte.test.ts` (rouge avant). Vu à l'écran avec la liste de prod :
