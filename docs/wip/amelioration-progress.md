@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-10, après #2534._
 
-- **État** : #2512 et #2515 en prod ; #2532 (liste sans `test_specs`) et #2534 (consigne sur les cartes Automaths) mergées, pas en prod · **Prochaine action** : PR 5 = consigne d'exercice UNE fois par groupe de questions consécutives, au début de l'exercice, dans le PDF des séries (`serie-automatismes.ts:452-456`) ; décisions prises (§ « Consigne d'exercice »), écrire la phase 0 (comportements) avant de coder · **En attente de David** : retirer `created_by` de la liste publique ? · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; serveur de dev : vérifier dans son journal qu'il a bien pris le port · **Worktree / branche** : aucun
+- **État** : #2512, #2515, #2532, #2534 mergées (0.81.0 publiée depuis) ; PR 5 codée sur `feat/amelioration-consigne-serie`, tests verts · **Prochaine action** : PR 5 → revue, PR, CI, merge · **En attente de David** : retirer `created_by` de la liste publique ? · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement · **Worktree / branche** : `../ubumaths-wt-amelioration`, `feat/amelioration-consigne-serie`
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -159,3 +159,13 @@ du panier Automaths n'existe pas (« Fonctionnalité à venir »).
 - **PR 5, décisions de David** : (1a) dans une série qui mélange des modèles, chaque consigne une
   fois au début de chaque groupe de questions CONSÉCUTIVES qui la partagent ; placée **au début
   de l'exercice** (première ligne du groupe), le titre de l'exercice (donné par le prof) inchangé.
+- **PR 5, phase 0 validée le 2026-11-10** (branche `feat/amelioration-consigne-serie`) : consigne
+  en **paragraphe au-dessus du groupe**, hors numérotation (la liste reprend à « 3. ») ; **mêmes
+  places au corrigé** ; groupe = même TEXTE de consigne (deux modèles, une consigne → un groupe) ;
+  une question sans consigne coupe le groupe ; doublons comparés consigne comprise (inchangé).
+  **Séries existantes non touchées** (figées en base, `buildSerie` n'est appelé que par les
+  scripts `create-automatismes-*`) : les recréer se décidera série par série.
+  Vérifié sans rien changer : `questionItems` (cadres de réponse) et `generateBody` numérotent
+  d'une liste à l'autre ; un paragraphe reste collé à la liste qui le suit (`keepsWithNext`).
+  Tests : `serie-automatismes.test.ts` § « consigne d'exercice, une fois par groupe » (6 rouges
+  avant).

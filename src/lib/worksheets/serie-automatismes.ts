@@ -7,7 +7,8 @@
  * (même copie pour toute la classe). L'énoncé montre les cases en pointillés,
  * une case choix la liste de ses choix à la place de son bloc ; le corrigé met
  * les réponses à la place des cases (sous la liste, la bonne réponse d'une case
- * choix), puis la correction du modèle. Une carte
+ * choix), puis la correction du modèle. La consigne d'exercice d'un modèle s'écrit une
+ * fois, au-dessus de chaque groupe de questions consécutives qui la partagent. Une carte
  * de cours donne son recto à l'énoncé et son verso au corrigé. Les gestes à figer :
  * tableau de signes à compléter (vide / rempli), droite à tracer (repère vide / droite
  * dessinée), boîte à moustaches à construire (axe seul / boîte dessinée), points à
@@ -427,8 +428,14 @@ function listeDeChoix(contenus: readonly string[], bons: ReadonlySet<number>) {
 	return { liste, reponse: `Réponse : ${reponses.join(' ; ')}` };
 }
 
-/** Énoncé et corrigé d'une instance, en markdown libre (avant mise en liste) */
-function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
+/**
+ * Une question figée : énoncé et corrigé, en markdown libre (avant mise en liste), et
+ * la consigne d'exercice de son modèle, à part (`buildSerie` la pose une fois par groupe)
+ */
+type QuestionFigee = Serie & { consigne?: string };
+
+/** Énoncé et corrigé d'une instance, consigne à part */
+function figer(template: QuestionTemplate, instance: QuestionInstance): QuestionFigee {
 	// Formules maison lues avec les fonctions DE CE MODÈLE (cf. en-tête)
 	const fonctions = templateGenericFunctions(template.shared?.genericFunctions);
 	// … et avec le sens de `AB` résolu pour l'instance (longueur ou produit, lot 5 des
@@ -449,13 +456,11 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	if (etapes.length === 0 && instance.correction?.generatedSteps) {
 		throw new Error(`${template.id} : correction générée (mode B) non prise en charge`);
 	}
-	// La consigne du modèle précède l'énoncé (sinon la question perd son contexte)
-	const enonceBrut = deplierExpressions(instance.statement, instance);
-	const texte = enLatex(
-		instance.exerciseInstruction ? `${instance.exerciseInstruction}\n\n${enonceBrut}` : enonceBrut
-	);
+	// Consigne du modèle : lue avec SES fonctions, posée au-dessus du groupe par `buildSerie`
+	const consigne = instance.exerciseInstruction ? enLatex(instance.exerciseInstruction) : undefined;
+	const texte = enLatex(deplierExpressions(instance.statement, instance));
 	if (isCourseCard(template)) {
-		return { statement: texte, solution: [texte, ...etapes].join('\n\n') };
+		return { statement: texte, solution: [texte, ...etapes].join('\n\n'), consigne };
 	}
 
 	// Cases choix (bloc ```choix, choix déjà dans l'ordre affiché) : la liste a) b) à
@@ -520,7 +525,7 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 
-	return { statement: enonce, solution: [corrige, ...etapes].join('\n\n') };
+	return { statement: enonce, solution: [corrige, ...etapes].join('\n\n'), consigne };
 }
 
 /**
@@ -535,6 +540,22 @@ function item(numero: number, texte: string): string {
 		`${numero}. ${premiere}`,
 		...suite.map((ligne) => (ligne.trim() === '' ? '' : `${RETRAIT}${ligne}`))
 	].join('\n');
+}
+
+/**
+ * Liste numérotée des questions, la consigne d'exercice posée UNE fois au-dessus de chaque
+ * groupe de questions consécutives qui la partagent (même texte) : la liste s'interrompt,
+ * puis reprend à son numéro (« 3. », lu tel quel par l'écran et le PDF). Une question
+ * sans consigne coupe le groupe.
+ */
+function enListe(figees: readonly QuestionFigee[], texteDe: (q: QuestionFigee) => string): string {
+	return figees
+		.map((q, i) => {
+			const question = item(i + 1, texteDe(q));
+			const debutDeGroupe = q.consigne !== undefined && q.consigne !== figees[i - 1]?.consigne;
+			return debutDeGroupe ? `${q.consigne}\n\n${question}` : question;
+		})
+		.join('\n\n');
 }
 
 /**
@@ -555,24 +576,25 @@ export function buildSerie(modeles: Map<string, QuestionTemplate>, items: SerieI
 			);
 		}
 		const serie = figer(template, genere.instance);
-		const residu = `${serie.statement}\n${serie.solution}`.match(
+		const residu = `${serie.consigne ?? ''}\n${serie.statement}\n${serie.solution}`.match(
 			/\{\{[^}]*\}\}|\\placeholder|<<[^>]*>>/
 		);
 		if (residu) throw new Error(`marqueur non résolu dans ${templateId} : ${residu[0]}`);
 		return serie;
 	});
 	// Deux graines peuvent tomber sur le même tirage : une série ne pose jamais deux
-	// fois la même question
+	// fois la même question (consigne comprise : deux consignes, deux questions)
 	const vus = new Map<string, number>();
 	figees.forEach((s, i) => {
-		const deja = vus.get(s.statement);
+		const cle = `${s.consigne ?? ''}\n\n${s.statement}`;
+		const deja = vus.get(cle);
 		if (deja !== undefined) {
 			throw new Error(`questions ${deja + 1} et ${i + 1} identiques : changer une graine`);
 		}
-		vus.set(s.statement, i);
+		vus.set(cle, i);
 	});
 	return {
-		statement: figees.map((s, i) => item(i + 1, s.statement)).join('\n\n'),
-		solution: figees.map((s, i) => item(i + 1, s.solution)).join('\n\n')
+		statement: enListe(figees, (s) => s.statement),
+		solution: enListe(figees, (s) => s.solution)
 	};
 }
