@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après le `deploy:prod` 0.80.0 (livre #2512 et #2515)._
+_Mis à jour le 2026-11-10, après les mesures de réveil en prod._
 
-- **État** : #2512 et #2515 en prod (0.80.0, 16 h 53). Une mesure à 17 h 36 : `/auth/login` 1,71 s au 1er appel (avant : 2,4 s), puis 0,12 s ; un seul échantillon, froid non garanti · **Prochaine action** : mesurer un vrai réveil (tôt le matin, avant 7 h, `curl` sur `https://www.chiph.re/auth/login` PUIS `/dashboard` dans des appels séparés) et relire le TTFB p75 de `/auth/login` dans les web vitals après quelques jours ; puis décider du point 4 (ping) · **En attente de David** : rien · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` (mesurer `www`) ; commitlint refuse un corps de commit à lignes > 100 caractères ; `docs:check-a-jour` ne voit que les fichiers COMMITÉS · **Worktree / branche** : aucun
+- **État** : #2512 et #2515 en prod (0.80.0). Réveil mesuré le 2026-11-10 à 12 h 04 (aucune visite depuis des heures) : `/auth/login` 0,73 s au 1er appel au lieu de 2,4 s, puis 0,1 s · **Prochaine action** : dans quelques jours, relire le TTFB p75 de `/auth/login` dans les web vitals (2,4 s avant) ; puis décider du point 4 (ping) · **En attente de David** : rien · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` (mesurer `www`) ; Fluid compute était activé AVANT les mesures de référence ; commitlint refuse un corps de commit à lignes > 100 caractères · **Worktree / branche** : aucun
 
 ## Diagnostic de la connexion lente (2026-11-09)
 
@@ -22,7 +22,7 @@ Relevé #2094 : `/auth/login` LCP 5,8 s, TTFB 2,4 s au p75 (10 mesures).
 ## Pistes, dans l'ordre recommandé
 
 1. **PR 1 (#2512, mergée)** : écarter FCP/LCP mesurés après le passage en arrière-plan.
-2. **Fluid compute** sur Vercel : activé (David, 2026-11-09). Sur Hobby, le préchauffage garanti
+2. **Fluid compute** sur Vercel : activé depuis longtemps (David, précisé le 2026-11-10 : rien à voir avec les gains de 0.80.0). Sur Hobby, le préchauffage garanti
    est réservé aux offres payantes : le réveil du matin reste probable.
 3. **Alléger le démarrage du serveur** : build fraîche (`pnpm build`), mesurer ce que chargent
    `hooks.server.ts` et ses dix handles, ne charger les gros modules qu'à la demande.
@@ -67,5 +67,10 @@ Un seul échantillon : à confirmer par un réveil du matin et par le TTFB p75 d
 
 Réveil du matin, 2026-11-10 à 5 h 41 (nuit sans élèves) : `/auth/login` **0,31 s** au 1er appel,
 puis 0,11 et 0,09 s ; `/dashboard` 0,23 s juste après. Avant : 2,4 s. On ne peut pas savoir au
-`curl` si l'instance était vraiment froide (Fluid compute, activé le 2026-11-09, la garde
-peut-être plus longtemps) : le TTFB p75 des web vitals tranchera.
+`curl` si l'instance était vraiment froide.
+
+2026-11-10 à 12 h 04, ni élèves ni David depuis plusieurs heures : `/auth/login` **0,73 s** au
+1er appel (connexion TCP 0,01 s), puis 0,11 et 0,08 s ; `/dashboard` 0,23 s juste après. Le
+1er appel est nettement plus lent que les suivants : c'est bien un réveil, et il coûte 0,7 s
+au lieu de 2,4 s. Fluid compute était déjà activé lors de la mesure à 2,4 s : le gain vient du déploiement 0.80.0,
+vraisemblablement de #2515.
