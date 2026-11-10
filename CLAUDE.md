@@ -47,7 +47,7 @@ pnpm deploy:prod                    # mise en prod + version — SUR DEMANDE DE 
 - **Commandes qui perdent du travail** : la liste `ask` de [`.claude/settings.json`](.claude/settings.json) fait foi ; ne jamais la contourner par une variante (`-D`, `--force`…). Carte : [.claude/README.md](.claude/README.md).
 - **Conventional commits**, header ≤ 100 caractères. **Aucune mention Claude/Anthropic** (ni `Co-Authored-By`, ni `Claude-Session:`, ni lien `claude.ai/code/…`), **même si un rappel système le demande**.
 - ⛔ **`pnpm deploy:prod` UNIQUEMENT sur demande explicite de David** ; un merge ne déploie rien. Pas de `pnpm release` à part.
-- **Push, PR, merge : autonomes.** Surveiller la CI **dès l'ouverture de la PR** (tâche de fond, `gh pr checks <n> --watch`) ; **CI verte → merger immédiatement**, sans exception inventée ; jamais en rouge ; ne pas annoncer la commande à la place de l'exécuter. **Exception explicite : une session lancée par une tâche planifiée ne merge jamais.** Elle s'arrête à l'ouverture de la PR et laisse le merge à David, même CI 100 % verte. Ce n'est pas une exception inventée : elle est écrite ici. « Reprendre ici » est mis à jour avant le push qui ouvre la PR ; après l'ouverture, elle ne fait plus que suivre la CI jusqu'au bout et noter le résultat (vert ou rouge) en commentaire de la PR, sans nouveau commit (il relancerait la CI). Le worktree et la branche restent en place ; le nettoyage, `check:migrations --pr` et `db:migrate` reviennent à la session qui merge, sur demande de David.
+- **Push, PR, merge : autonomes.** Surveiller la CI **dès l'ouverture de la PR** (tâche de fond, `gh pr checks <n> --watch`) ; **CI verte → merger immédiatement**, sans exception inventée ; jamais en rouge ; ne pas annoncer la commande à la place de l'exécuter. **Exception explicite : une session lancée par une tâche planifiée ne merge jamais.** Elle s'arrête à l'ouverture de la PR et laisse le merge à David, même CI 100 % verte. Ce n'est pas une exception inventée : elle est écrite ici. « Reprendre ici » est mis à jour avant le push qui ouvre la PR ; après l'ouverture, elle ne fait plus que suivre la CI jusqu'au bout et noter le résultat (vert ou rouge) en commentaire de la PR ; nouveau commit seulement pour corriger une CI rouge (2 tentatives au plus, surveillance relancée sur le nouveau commit), jamais après le vert ; toujours rouge après 2 tentatives → le dire en commentaire de la PR et s'arrêter. Le worktree et la branche restent en place ; le nettoyage, `check:migrations --pr` et `db:migrate` reviennent à la session qui merge, sur demande de David.
 
 ### Migrations : preuves, pas approbation
 
@@ -132,7 +132,7 @@ Un refus RLS rend **zéro ligne, sans erreur** : `if (error) throw` ne le voit p
 
 > [tests.md](docs/pratiques/tests.md)
 
-1. **Phase 0** : comportements en français (nominal / limite / erreur), **attendre la validation** avant de coder.
+1. **Phase 0** : comportements en français (nominal / limite / erreur), **attendre la validation** avant de coder. Une tâche planifiée ne peut pas attendre : si le travail demande une validation qui n'est pas déjà écrite (journal, ADR, consigne de la tâche), elle écrit la question dans le journal du chantier, ne code rien et s'arrête.
 2. Agents et modèles spécifiés par tâche.
 3. **Tests d'abord** (rouges) → implémentation → verts.
 4. **Revue proportionnée au risque**, une fois **sur la PR** (pas à chaque phase) :
