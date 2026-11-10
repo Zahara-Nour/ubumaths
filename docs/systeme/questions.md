@@ -219,6 +219,14 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   jamais par la session ; un échec répond 500, sans cache. Le hook passe en `private, no-store`
   toute réponse qui pose un cookie. Vercel retire `s-maxage` de l'en-tête rendu au client (on y lit
   `public, max-age=0`) : le cache se vérifie à `x-vercel-cache` (`MISS` puis `HIT`).
+  Les modèles y sont **sans leurs cas de test** (`test_specs`, ~31 % du poids : 11 → 7,7 Mo bruts
+  en novembre 2026) : colonnes listées dans le `+server.ts`, avec une garde de compilation qui
+  échoue si une colonne ajoutée à `question_templates` n'y est pas rangée. Côté navigateur, la
+  liste est typée `CatalogueTemplate` (`Omit<QuestionTemplate, 'testSpecs'>`) : lire `testSpecs`
+  ou `test_specs` dans le cache ne compile pas, mais un modèle du cache passé à une fonction qui
+  attend un `QuestionTemplate` reste accepté — la protection, c'est la liste de colonnes.
+  L'éditeur, seul lecteur des cas de test, charge le modèle complet par son id. ⚠️ Le cache garde
+  les lignes brutes (snake_case), sans `mapDbTemplateToForm`.
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
   `generate/[id]`), admin `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`

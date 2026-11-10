@@ -16,6 +16,10 @@
  * ⚠️ Une réponse en cache est servie à TOUS les visiteurs : elle est lue par un
  * client ANONYME, jamais par la session de l'appelant. Un échec répond 500,
  * sans en-tête de cache (une liste vide ne doit pas être servie 5 min).
+ *
+ * Les cas de test des modèles (`test_specs`, ~31 % du poids) ne sont pas lus :
+ * seul l'éditeur s'en sert, et il charge le modèle complet par son id. Type de
+ * la liste côté navigateur : `CatalogueTemplate`.
  */
 
 import { error, json } from '@sveltejs/kit';
@@ -23,6 +27,44 @@ import type { RequestHandler } from './$types';
 import { createServerLogger } from '$lib/utils/logger';
 import { readAllRows } from '$lib/server/read-all-rows';
 import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
+import type { Database } from '$lib/types/database';
+
+type TemplateColumn = keyof Database['public']['Tables']['question_templates']['Row'];
+
+/** Colonnes du modèle que la liste envoie : toutes, sauf les cas de test */
+const TEMPLATE_COLUMN_LIST = [
+	'id',
+	'title',
+	'description',
+	'type',
+	'status',
+	'grades',
+	'level',
+	'classification_node_id',
+	'shared',
+	'variations',
+	'options',
+	'precision',
+	'delay',
+	'default_display_options',
+	'exercise_instruction',
+	'created_at',
+	'updated_at',
+	'created_by'
+] as const satisfies readonly TemplateColumn[];
+
+/**
+ * Garde de compilation : une colonne ajoutée à `question_templates` doit être
+ * rangée ici, dans la liste ou parmi les exclues — sinon `pnpm check` échoue.
+ */
+type ForgottenColumn = Exclude<
+	TemplateColumn,
+	(typeof TEMPLATE_COLUMN_LIST)[number] | 'test_specs'
+>;
+const NO_FORGOTTEN_COLUMN: [ForgottenColumn] extends [never] ? true : ForgottenColumn = true;
+void NO_FORGOTTEN_COLUMN;
+
+const TEMPLATE_COLUMNS = TEMPLATE_COLUMN_LIST.join(', ');
 
 /** Colonnes de l'arbre dont le catalogue a besoin (`CatalogueNode`) */
 const NODE_COLUMNS = 'id, kind, name, parent_id, position';
@@ -50,7 +92,7 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 				(from, to) =>
 					supabase
 						.from('question_templates')
-						.select('*')
+						.select(TEMPLATE_COLUMNS)
 						.eq('status', 'published')
 						.order('id')
 						.range(from, to),

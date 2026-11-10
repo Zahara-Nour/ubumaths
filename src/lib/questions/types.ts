@@ -637,6 +637,21 @@ export interface QuestionTemplate {
 }
 
 /**
+ * Modèle de la liste publique `/api/questions/templates/all`
+ * (`questionTemplatesCache` : catalogue Automaths, panier, test).
+ *
+ * La liste n'envoie pas les cas de test (colonnes listées dans son
+ * `+server.ts` : c'est là qu'est la vraie protection) ; seul l'éditeur les lit,
+ * et il charge le modèle complet par son id. Le type refuse de les lire sous
+ * leurs deux noms : `testSpecs` (retiré ici) et `test_specs` (jamais déclaré).
+ *
+ * ⚠️ Le cache garde les lignes BRUTES de la base (snake_case), sans
+ * `mapDbTemplateToForm` : ce type ne les décrit pas exactement (cf. le
+ * commentaire de `classification_node_id` ci-dessus).
+ */
+export type CatalogueTemplate = Omit<QuestionTemplate, 'testSpecs'>;
+
+/**
  * Map a raw Supabase question_templates row (snake_case) to QuestionTemplate (camelCase).
  *
  * Supabase returns column names as-is (snake_case), but our TypeScript

@@ -117,4 +117,17 @@ describe('questionTemplatesCache', () => {
 		expect(questionTemplatesCache.error).not.toBeNull();
 		expect(questionTemplatesCache.isLoaded).toBe(false);
 	});
+
+	it('le type de la liste refuse de lire les cas de test, sous leurs deux noms', async () => {
+		await questionTemplatesCache.fetchTemplates();
+		const modele = questionTemplatesCache.templates[0];
+		expect(modele).toBeDefined();
+
+		// La vraie protection est côté API (colonnes listées) ; le type empêche
+		// seulement un lecteur du cache de compter sur ces champs.
+		// @ts-expect-error — nom de l'éditeur, absent de `CatalogueTemplate`
+		void modele?.testSpecs;
+		// @ts-expect-error — nom de la colonne (lignes brutes), absent aussi
+		void modele?.test_specs;
+	});
 });

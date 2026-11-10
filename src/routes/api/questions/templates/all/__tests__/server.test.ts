@@ -87,6 +87,34 @@ describe('GET /api/questions/templates/all', () => {
 		expect(filtres).toContainEqual(['classification_nodes', 'is:archived_at', null]);
 	});
 
+	it('ne lit pas les cas de test des modèles (`test_specs`) : inutiles à Automaths, 31 % du poids', async () => {
+		const { event } = evenement();
+
+		await GET(event as never);
+
+		const selection = filtres.find(
+			([table, op]) => table === 'question_templates' && op === 'select'
+		);
+		const colonnes = String(selection?.[2])
+			.split(',')
+			.map((c) => c.trim());
+		expect(colonnes).not.toContain('*');
+		expect(colonnes).not.toContain('test_specs');
+		// Ce que lisent le catalogue, le panier et le test
+		expect(colonnes).toEqual(
+			expect.arrayContaining([
+				'id',
+				'title',
+				'variations',
+				'shared',
+				'options',
+				'default_display_options',
+				'exercise_instruction',
+				'classification_node_id'
+			])
+		);
+	});
+
 	it('gardée 5 min par Vercel, servie périmée pendant la relecture', async () => {
 		const { setHeaders, event } = evenement();
 
