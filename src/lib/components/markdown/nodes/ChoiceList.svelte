@@ -18,6 +18,7 @@
 	import { Circle, CircleDot, Square, SquareCheck } from '@lucide/svelte';
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
+	import { parseMarkdown } from '$lib/ubumark';
 	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
 	import { choiceLetter } from '$lib/questions/choices';
 	import type { ExpectedStatus } from '$lib/questions/expected-result';
@@ -47,6 +48,16 @@
 		return content.trimStart().startsWith('```');
 	}
 
+	/**
+	 * Choix qui tient sur une ligne de texte (un seul paragraphe). Sinon (formule seule
+	 * `$$<$$`, plusieurs paragraphes…), InlineMarkdown ne trouverait pas de paragraphe et
+	 * afficherait le code : rendu complet, comme à la saisie (`MultipleChoiceInput`).
+	 */
+	function isInlineChoice(content: string): boolean {
+		const nodes = parseMarkdown(content).children;
+		return nodes.length === 1 && nodes[0].type === 'paragraph';
+	}
+
 	/** Libellé d'un choix corrigé, selon son statut et s'il est coché */
 	function choiceLabel(item: Item): string {
 		if (item.status === 'correct') return 'coché, juste';
@@ -65,8 +76,10 @@
 		>
 			<MarkdownRenderer content={item.content} />
 		</div>
-	{:else}
+	{:else if isInlineChoice(item.content)}
 		<span class="min-w-0 flex-1"><InlineMarkdown content={item.content} /></span>
+	{:else}
+		<div class="min-w-0 flex-1"><MarkdownRenderer content={item.content} /></div>
 	{/if}
 {/snippet}
 

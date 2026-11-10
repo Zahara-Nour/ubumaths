@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, après #2535._
+_Mis à jour le 2026-11-10, piste 2 en PR._
 
-- **État** : #2535 (consigne une fois par groupe dans les séries) mergée, pas en prod ; 0.81.0 publiée avant (#2532, #2534 dedans, non vérifié) · **Prochaine action** (ordre validé par David le 2026-11-10) : (2) QCM « Comparer deux nombres entiers », choix affichés `$$<$$` en brut au catalogue et au panier ; (3) INP renvoyé plusieurs fois par notre suivi ; (4) Atelier lent : **David le constate lui-même**, y réfléchir ensemble (pas « attendre des mesures ») ; (5) « Mon cours » #1788 · **Tranché** : `created_by` laissé tel quel (UUID admin, policy anon lit déjà toutes les colonnes) · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement · **Worktree / branche** : aucun
+- **État** : piste 2 (choix `$$<$$` en brut au catalogue et au panier) en PR sur `fix/choix-formule-seule` ; #2535 mergée, pas en prod · **Prochaine action** (ordre validé par David le 2026-11-10) : merger la piste 2 ; puis (3) INP renvoyé plusieurs fois par notre suivi ; (4) Atelier lent : **David le constate lui-même**, y réfléchir ensemble (pas « attendre des mesures ») ; (5) « Mon cours » #1788 · **Tranché** : `created_by` laissé tel quel (UUID admin, policy anon lit déjà toutes les colonnes) · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement · **Worktree / branche** : `../ubumaths-wt-amelioration`, `fix/choix-formule-seule`
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -169,3 +169,14 @@ du panier Automaths n'existe pas (« Fonctionnalité à venir »).
   d'une liste à l'autre ; un paragraphe reste collé à la liste qui le suit (`keepsWithNext`).
   Tests : `serie-automatismes.test.ts` § « consigne d'exercice, une fois par groupe » (6 rouges
   avant).
+
+## Piste 2 — choix `$$<$$` affichés en brut (2026-11-10)
+
+- **Cause** : un choix qui n'est qu'une formule `$$…$$` est lu comme un bloc de formule, pas comme
+  un paragraphe ; `ChoiceList` (liste A, B, C du catalogue, du panier, et liste corrigée) le
+  passait à `InlineMarkdown`, qui ne garde que le premier paragraphe et retombe sur le texte brut.
+  Les 4 modèles publiés « Comparer deux nombres entiers » (niveaux 1 à 4) sont touchés ; la saisie
+  (`MultipleChoiceInput`, `MarkdownRenderer`) ne l'était pas.
+- **Correctif** (branche `fix/choix-formule-seule`) : un choix qui n'est pas un seul paragraphe
+  passe par `MarkdownRenderer`, comme à la saisie (formule centrée, comme à la saisie). Tests :
+  `ChoiceList.svelte.test.ts` § « choix qui ne sont qu'une formule » (2 rouges avant).
