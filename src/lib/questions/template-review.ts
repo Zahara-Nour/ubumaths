@@ -252,18 +252,53 @@ export interface ReviewFilters {
 	verdict: VerdictFilter;
 	status: StatusFilter;
 	alertsOnly: boolean;
+	/** Texte cherché dans le titre, rogné ; vide = pas de filtre */
+	title: string;
+	/** Code d'un point du programme, en majuscules ; null = pas de filtre */
+	point: string | null;
 }
 
 export const DEFAULT_FILTERS: ReviewFilters = {
 	verdict: 'tous',
 	status: 'tous',
-	alertsOnly: false
+	alertsOnly: false,
+	title: '',
+	point: null
 };
+
+/** Longueur maximale du texte cherché dans les titres */
+export const MAX_TITLE_SEARCH = 100;
+/** Forme des codes de point : programme, tiret, numéro (`1SPE-213`, `CP-058`, `6-001`) */
+const POINT_CODE = /^[A-Z0-9]{1,10}-\d{1,4}$/;
+
+/** Texte comparable : sans casse, sans accents, espaces resserrés */
+export function normalizeSearch(text: string): string {
+	return text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+/** Le code de point en majuscules, ou null s'il n'a pas la forme d'un code */
+export function parsePointCode(raw: string): string | null {
+	const code = raw.trim().toUpperCase();
+	return POINT_CODE.test(code) ? code : null;
+}
+
+/** Aucun filtre posé ? */
+export function isDefaultFilters(f: ReviewFilters): boolean {
+	return (
+		f.verdict === DEFAULT_FILTERS.verdict &&
+		f.status === DEFAULT_FILTERS.status &&
+		f.alertsOnly === DEFAULT_FILTERS.alertsOnly &&
+		f.title === DEFAULT_FILTERS.title &&
+		f.point === DEFAULT_FILTERS.point
+	);
+}
 
 /** Le modèle passe-t-il les filtres de la vue ? */
 export function matchesFilters(t: TemplateSummary, f: ReviewFilters): boolean {
 	if (f.status !== 'tous' && t.status !== f.status) return false;
 	if (f.alertsOnly && summaryAlerts(t).length === 0) return false;
+	if (f.title && !normalizeSearch(t.title).includes(normalizeSearch(f.title))) return false;
+	if (f.point && !t.points.some((p) => p.code === f.point)) return false;
 	switch (f.verdict) {
 		case 'tous':
 			return true;
@@ -276,16 +311,75 @@ export function matchesFilters(t: TemplateSummary, f: ReviewFilters): boolean {
 	}
 }
 
-/** Les filtres lus dans l'adresse ; une valeur inconnue vaut le défaut */
+/**
+ * Les filtres lus dans l'adresse ; une valeur inconnue vaut le défaut. Les bornes (longueur du
+ * titre, forme du point) sont vérifiées avant, par le chargement serveur (400).
+ */
 export function parseFilters(params: URLSearchParams): ReviewFilters {
 	const verdict = params.get('verdict');
 	const status = params.get('statut');
+	const point = params.get('point');
 	return {
 		verdict:
 			verdict === 'valide' || verdict === 'a_revoir' || verdict === 'sans' || verdict === 'modifie'
 				? verdict
 				: 'tous',
 		status: status === 'draft' || status === 'published' ? status : 'tous',
-		alertsOnly: params.get('alertes') === '1'
+		alertsOnly: params.get('alertes') === '1',
+		title: (params.get('titre') ?? '').trim().slice(0, MAX_TITLE_SEARCH),
+		point: point ? parsePointCode(point) : null
 	};
+}
+
+// Série
+
+/** Une ligne de série : un modèle, ses répétitions, sa durée (secondes) */
+export interface SeriesLine {
+	templateId: string;
+	quantity: number;
+	delay: number;
+}
+
+/** Une ligne de série telle que la vue la montre */
+export interface SeriesSheetEntry extends SeriesLine {
+	/** Clé d'affichage : un modèle peut figurer deux fois dans une série */
+	key: string;
+	/** Faux si le modèle n'est plus en base */
+	found: boolean;
+}
+
+/**
+ * Les lignes d'une série, dans son ordre, qui passent les filtres. Un modèle disparu de la base
+ * reste dans la liste (`found: false`) pour être signalé, quels que soient les filtres.
+ */
+export function seriesSelection(
+	items: readonly SeriesLine[],
+	byId: ReadonlyMap<string, TemplateSummary>,
+	f: ReviewFilters
+): SeriesSheetEntry[] {
+	const entries: SeriesSheetEntry[] = [];
+	items.forEach((item, i) => {
+		const t = byId.get(item.templateId);
+		if (t && !matchesFilters(t, f)) return;
+		entries.push({
+			templateId: item.templateId,
+			quantity: item.quantity,
+			delay: item.delay,
+			key: `${i}-${item.templateId}`,
+			found: t !== undefined
+		});
+	});
+	return entries;
+}
+
+/** Le sélecteur des séries : « titre · niveau », par année scolaire puis titre */
+export function seriesOptions(
+	rows: readonly { id: string; title: string; grade: string }[]
+): { value: string; label: string }[] {
+	return [...rows]
+		.sort(
+			(a, b) =>
+				programmeRank(a.grade) - programmeRank(b.grade) || a.title.localeCompare(b.title, 'fr')
+		)
+		.map((r) => ({ value: r.id, label: `${r.title} · ${programmeName(r.grade)}` }));
 }

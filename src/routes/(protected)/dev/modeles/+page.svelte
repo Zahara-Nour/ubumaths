@@ -4,8 +4,9 @@
 
 	Vue globale de tous les modèles en base : à gauche l'arbre programme > branche > notion >
 	sous-notion et ses comptes de verdicts ; en haut les totaux et les filtres ; au centre les
-	fiches du nœud choisi (ou de tout ce que les filtres retiennent), chacune avec l'aperçu de
-	ses variations et son verdict « validé / à revoir » + commentaire.
+	fiches de la série choisie (dans son ordre), du nœud choisi, ou de tout ce que les filtres
+	retiennent (titre, point, verdict, statut, alertes), chacune avec l'aperçu de ses variations et
+	son verdict « validé / à revoir » + commentaire.
 	Chantier revue-modeles : docs/wip/revue-modeles-progress.md.
 -->
 <script lang="ts">
@@ -19,6 +20,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
 	import ReviewTree from '$lib/components/dev/ReviewTree.svelte';
 	import TemplateReviewSheet from '$lib/components/dev/TemplateReviewSheet.svelte';
 
@@ -44,8 +46,13 @@
 
 	const totals = $derived(data.totals);
 	const openKeys = $derived(new Set(data.path.map((p) => p.key)));
+	const seriesItems = $derived([{ value: 'tous', label: 'Aucune série' }, ...data.seriesItems]);
 	const hasFilter = $derived(
-		data.filters.verdict !== 'tous' || data.filters.status !== 'tous' || data.filters.alertsOnly
+		data.filters.verdict !== 'tous' ||
+			data.filters.status !== 'tous' ||
+			data.filters.alertsOnly ||
+			data.filters.title !== '' ||
+			data.filters.point !== null
 	);
 
 	// Functions
@@ -69,7 +76,7 @@
 
 	function setAllSheets(open: boolean) {
 		// Chaque fiche ouverte tire ses aperçus dans le navigateur : on n'en déplie que les premières
-		openSheets = Object.fromEntries(data.sheets.map((s, i) => [s.row.id, open && i < MAX_UNFOLD]));
+		openSheets = Object.fromEntries(data.sheets.map((s, i) => [s.key, open && i < MAX_UNFOLD]));
 	}
 </script>
 
@@ -115,7 +122,35 @@
 			onchange={(c) => setFilter('alertes', c ? '1' : null)}
 			label="Avec alerte seulement"
 		/>
-		{#if hasFilter || data.nodeKey}
+		<Input
+			class="w-56"
+			type="search"
+			placeholder="Chercher dans le titre"
+			aria-label="Chercher dans le titre (Entrée pour filtrer)"
+			maxlength={100}
+			value={data.filters.title}
+			onchange={(e) => setFilter('titre', e.currentTarget.value.trim())}
+		/>
+		<Input
+			class="w-36"
+			type="search"
+			placeholder="Point (1SPE-213)"
+			aria-label="Code du point du programme (Entrée pour filtrer)"
+			maxlength={20}
+			value={data.filters.point ?? ''}
+			onchange={(e) => setFilter('point', e.currentTarget.value.trim())}
+		/>
+		{#if data.seriesItems.length > 0}
+			<MySelect
+				items={seriesItems}
+				value={data.seriesId ?? 'tous'}
+				onValueChange={(v: string) => setFilter('serie', v)}
+				triggerAriaLabel="Série : {seriesItems.find((i) => i.value === (data.seriesId ?? 'tous'))
+					?.label}"
+				fitContent
+			/>
+		{/if}
+		{#if hasFilter || data.nodeKey || data.seriesId}
 			<a class="text-sm underline" href={resolve('/(protected)/dev/modeles')}>Tout effacer</a>
 		{/if}
 	</div>
@@ -131,7 +166,26 @@
 		</nav>
 
 		<main class="min-w-0 space-y-3">
-			{#if !data.nodeFound}
+			{#if data.pointUnknown}
+				<p class="rounded bg-warning/10 p-2 text-sm">
+					Point inconnu : {data.filters.point} n'est pas un point du programme en base.
+				</p>
+			{/if}
+			{#if data.seriesId}
+				{#if !data.series}
+					<p class="text-sm text-destructive">Cette série n'existe plus : en choisir une autre.</p>
+				{:else if !data.series.readable}
+					<p class="text-sm text-destructive">
+						La composition de la série « {data.series.title} » est illisible.
+					</p>
+				{:else}
+					<p class="text-sm">
+						Série « {data.series.title} » — {data.selectedCount} modèle(s){hasFilter
+							? ' retenus par les filtres'
+							: ''}
+					</p>
+				{/if}
+			{:else if !data.nodeFound}
 				<p class="text-sm text-destructive">Ce nœud n'existe plus : choisir dans l'arbre.</p>
 			{:else if data.path.length > 0}
 				<p class="text-sm">
@@ -153,6 +207,14 @@
 				<p class="text-sm text-muted-foreground">
 					Choisir un programme ou une notion dans l'arbre, ou poser un filtre (par exemple « À
 					revoir ») pour lister les modèles de tous les programmes.
+				</p>
+			{/if}
+
+			{#if data.selectedCount === 0 && (hasFilter || data.nodeKey || data.series?.readable)}
+				<p class="text-sm text-muted-foreground">
+					{data.filters.point && !data.pointUnknown
+						? `Aucun modèle sur le point ${data.filters.point}${data.nodeKey || data.seriesId ? ' ici' : ''}.`
+						: 'Aucun modèle ne correspond.'}
 				</p>
 			{/if}
 
@@ -184,15 +246,24 @@
 					>
 				</div>
 			{/if}
-			{#each data.sheets as sheet (sheet.row.id)}
-				<TemplateReviewSheet
-					row={sheet.row}
-					points={sheet.points}
-					review={sheet.review}
-					alerts={sheet.alerts}
-					nodePath={sheet.nodePath}
-					bind:open={() => openSheets[sheet.row.id] ?? false, (v) => (openSheets[sheet.row.id] = v)}
-				/>
+			{#each data.sheets as entry (entry.key)}
+				{#if entry.sheet}
+					<TemplateReviewSheet
+						row={entry.sheet.row}
+						points={entry.sheet.points}
+						review={entry.sheet.review}
+						alerts={entry.sheet.alerts}
+						nodePath={entry.sheet.nodePath}
+						seriesLine={entry.seriesLine}
+						bind:open={() => openSheets[entry.key] ?? false, (v) => (openSheets[entry.key] = v)}
+					/>
+				{:else if !data.sheetsError}
+					<p class="rounded-lg border border-dashed p-3 text-sm text-destructive">
+						Modèle introuvable ({entry.templateId.slice(0, 8)}…){entry.seriesLine
+							? ` — × ${entry.seriesLine.quantity} · ${entry.seriesLine.delay} s`
+							: ''}
+					</p>
+				{/if}
 			{/each}
 		</main>
 	</div>
