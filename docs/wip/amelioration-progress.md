@@ -99,18 +99,17 @@ vraisemblablement de #2515.
 Sources : Speed Insights #2094 (Atelier 17 mesures, Automaths 2), `error_logs` de prod (60 j),
 `curl` et Playwright sur la prod (Mac mini, réseau rapide ; le bridage réseau n'a pas pris).
 
-**Automaths : le problème est la liste des modèles, pas la page.**
+**Automaths : déjà traité par le chantier `automaths-apercus` (#2376, en prod 0.70.0 le
+2026-11-04 à 12 h 29 ; journal : `docs/archive/wip/automaths-apercus-progress.md`).**
 
-- La page n'a rien côté serveur ; au montage, elle lit `/api/questions/templates/all`
-  (`questionTemplatesCache`) : **2 131 modèles, 11 Mo de JSON (1,7 Mo compressé)**, `select('*')`.
-  `variations` = 61 %, **`test_specs` = 31 % (3,5 Mo), inutile au catalogue**.
-- Cache CDN 5 min (`s-maxage=300`) : hors cache, le serveur met 1,1-1,6 s (mesuré), 10,6 s en
-  médiane dans les logs (10 cas, 27 s au pire).
-- Le navigateur parse 11 Mo puis range le catalogue : tâches longues de 1,1 s en médiane (13 cas,
-  5,9 s au pire), un INP de 5,9 s le 2026-11-04.
-- `GET /automaths` lui-même : 78 « Slow request » en 30 j (médiane 4,1 s, 70 sans compte, à toute
-  heure) ; reproduit : 2,3 s au 1er appel sur une instance chaude, puis 0,07 s. Hypothèse à
-  vérifier sur une build (méthode de la PR 2) : le 1er rendu charge les modules de la route.
+- ⚠️ Premier diagnostic faux : il mélangeait les logs d'avant et d'après 0.70.0. Relu après
+  0.70.0 : **aucun** « Slow request » sur `/automaths`, **aucune** tâche longue ni INP lent.
+- Les lenteurs restantes de `/api/questions/templates/all` et `/automaths/test` tombent toutes
+  le 2026-11-06 vers 13 h, avec 41 requêtes lentes sur tout le site en une heure : incident
+  général, pas Automaths.
+- Reste mineur : la liste publique pèse 11 Mo bruts (1,7 Mo compressés, 2 131 modèles), dont
+  `test_specs` = 31 % (3,5 Mo), a priori inutile au catalogue, au panier et au test (à vérifier).
+- Les relevés Speed Insights de #2094 (2 mesures Automaths) datent en partie d'avant 0.70.0.
 
 **Atelier : peu de données, cause probable le poids du JavaScript.**
 
