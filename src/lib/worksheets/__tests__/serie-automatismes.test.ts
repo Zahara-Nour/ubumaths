@@ -13,6 +13,7 @@ import { describe, it, expect } from 'vitest';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { buildSerie, BLANK_TEXT } from '../serie-automatismes';
 import { correctionForPrint } from '$lib/questions/correction-detail';
+import { questionItems } from '../document/answer-frames';
 import { parseMarkdown, type ListNode } from '$lib/ubumark';
 import { serializeTemplateChoiceBlock } from '$lib/ubumark/parser/choix-parser';
 import {
@@ -261,19 +262,87 @@ describe('buildSerie — cas nominaux', () => {
 	});
 });
 
-describe('buildSerie — consigne et longues séries', () => {
-	it('la consigne du modèle précède l’énoncé', () => {
-		const consigne = {
-			...coefficient,
-			id: 'consigne',
-			exerciseInstruction: 'Sans calculatrice.'
-		} as QuestionTemplate;
-		const serie = buildSerie(new Map([['consigne', consigne]]), [
-			{ templateId: 'consigne', seed: 7 }
-		]);
-		expect(serie.statement).toMatch(/^1\. Sans calculatrice\.\n\n {3}Donne le coefficient/);
+/**
+ * Consigne d'exercice (validé par David le 2026-11-10) : une seule fois, sur une ligne
+ * au-dessus de chaque groupe de questions CONSÉCUTIVES qui la partagent (même texte),
+ * aux mêmes places au corrigé ; la numérotation continue d'un groupe à l'autre.
+ */
+describe('buildSerie — consigne d’exercice, une fois par groupe', () => {
+	const avecConsigne = (id: string, exerciseInstruction?: string) =>
+		({ ...coefficient, id, exerciseInstruction }) as QuestionTemplate;
+	const consignes = new Map([
+		['calcule', avecConsigne('calcule', 'Calcule.')],
+		['calcule-bis', avecConsigne('calcule-bis', 'Calcule.')],
+		['developpe', avecConsigne('developpe', 'Développe.')],
+		['sans', avecConsigne('sans')],
+		['formule', avecConsigne('formule', 'Calcule ~2x~.')]
+	]);
+	const serieDe = (...ids: string[]) =>
+		buildSerie(
+			consignes,
+			ids.map((templateId, i) => ({ templateId, seed: i + 1 }))
+		);
+	/** Blocs de premier niveau, tels que l'écran et le PDF les lisent : texte d'un
+	 *  paragraphe (consigne), numéros des questions d'une liste */
+	const plan = (texte: string) =>
+		parseMarkdown(texte).children.map((n) => {
+			if (n.type === 'list') return n.items.map((_item, i) => (n.start ?? 1) + i);
+			if (n.type === 'paragraph') {
+				return n.children.map((c) => (c.type === 'text' ? c.content : `<${c.type}>`)).join('');
+			}
+			return n.type;
+		});
+
+	it('un groupe : la consigne une fois, au-dessus de la liste, plus dans les questions', () => {
+		const serie = serieDe('calcule', 'calcule', 'calcule');
+		expect(plan(serie.statement)).toEqual(['Calcule.', [1, 2, 3]]);
+		expect(serie.statement.match(/Calcule\./g)).toHaveLength(1);
 	});
 
+	it('groupes consécutifs : une consigne au début de chacun, numérotation continue', () => {
+		const serie = serieDe('calcule', 'calcule', 'developpe', 'developpe', 'calcule');
+		expect(plan(serie.statement)).toEqual([
+			'Calcule.',
+			[1, 2],
+			'Développe.',
+			[3, 4],
+			'Calcule.',
+			[5]
+		]);
+	});
+
+	it('deux modèles qui ont la même consigne et se suivent : un seul groupe', () => {
+		const serie = serieDe('calcule', 'calcule-bis');
+		expect(plan(serie.statement)).toEqual(['Calcule.', [1, 2]]);
+	});
+
+	it('le corrigé porte les mêmes consignes, aux mêmes places', () => {
+		const serie = serieDe('calcule', 'developpe', 'developpe');
+		expect(plan(serie.solution)).toEqual(['Calcule.', [1], 'Développe.', [2, 3]]);
+	});
+
+	it('une question sans consigne coupe le groupe : la consigne revient après elle', () => {
+		const serie = serieDe('calcule', 'sans', 'calcule');
+		expect(plan(serie.statement)).toEqual(['Calcule.', [1, 2], 'Calcule.', [3]]);
+	});
+
+	it('série sans aucune consigne : une seule liste, comme avant', () => {
+		const serie = serieDe('sans', 'sans');
+		expect(plan(serie.statement)).toEqual([[1, 2]]);
+	});
+
+	it('consigne avec formule maison : écrite en LaTeX', () => {
+		const serie = serieDe('formule');
+		expect(serie.statement).toMatch(/^Calcule \$[^$~]+\$\.\n\n1\. Donne/);
+	});
+
+	it('les cadres de réponse comptent toutes les questions, d’une liste à l’autre', () => {
+		const serie = serieDe('calcule', 'developpe', 'calcule');
+		expect(questionItems(parseMarkdown(serie.statement))).toHaveLength(3);
+	});
+});
+
+describe('buildSerie — longues séries', () => {
 	it('à partir de l’item 10, le retrait suit la largeur du numéro', () => {
 		// 10 graines qui donnent 10 questions différentes
 		const graines: number[] = [];
