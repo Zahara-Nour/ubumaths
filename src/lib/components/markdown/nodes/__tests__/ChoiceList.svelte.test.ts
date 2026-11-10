@@ -109,4 +109,21 @@ describe('choix qui ne sont qu’une formule $$…$$ (QCM « Comparer deux nombr
 		await expect.poll(() => container.querySelectorAll('li math-div, li math-span').length).toBe(3);
 		expect(text(container)).not.toContain('$$');
 	});
+
+	it('formule seule calée à gauche, contre la lettre, comme un choix de texte', async () => {
+		const main = document.body.appendChild(document.createElement('main'));
+		main.style.width = '600px';
+		const { container } = await render(ChoiceList, {
+			target: main,
+			props: { items: [...symboles, { content: 'Texte' }] }
+		});
+		await expect.poll(() => container.querySelectorAll('li math-div, li math-span').length).toBe(3);
+		const lis = [...container.querySelectorAll('li')];
+		for (const li of lis.slice(0, 3)) {
+			const lettre = li.querySelector('[data-letter]')!.getBoundingClientRect();
+			const formule = li.querySelector('math-div, math-span')!.getBoundingClientRect();
+			// écart lettre → formule : celui d'un choix de texte (gap 0,5 rem), pas le milieu de la ligne
+			expect(formule.left - lettre.right).toBeLessThan(24);
+		}
+	});
 });

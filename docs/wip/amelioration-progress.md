@@ -180,3 +180,8 @@ du panier Automaths n'existe pas (« Fonctionnalité à venir »).
 - **Correctif** (branche `fix/choix-formule-seule`) : un choix qui n'est pas un seul paragraphe
   passe par `MarkdownRenderer`, comme à la saisie (formule centrée, comme à la saisie). Tests :
   `ChoiceList.svelte.test.ts` § « choix qui ne sont qu'une formule » (2 rouges avant). Mergée le 2026-11-10 (#2536), sans revue (correctif d'affichage d'une douzaine de lignes).
+- **(2b) Formule calée à gauche** (branche `fix/choix-formule-gauche`, 2026-11-10) : dans
+  `ChoiceList` (catalogue, panier, corrigé), une formule seule était centrée au milieu de la ligne,
+  à ~280 px de sa lettre ; elle est désormais contre la lettre, comme un choix de texte
+  (`.choice-formula` : `justify-content: flex-start`). L'écran de réponse (`MultipleChoiceInput`)
+  est inchangé. Test : « formule seule calée à gauche » (rouge avant : écart 278 px).
