@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, PR « liste des modèles sans test_specs » en cours._
+_Mis à jour le 2026-11-10, après #2532._
 
-- **État** : #2512 et #2515 en prod (réveil 0,73 s au lieu de 2,4 s). PR en cours : `/api/questions/templates/all` sans `test_specs` (−31 %), type `CatalogueTemplate` · **Prochaine action** : merger la PR ; puis choisir entre Atelier (JS lourd, peu de visites), bug du suivi (INP enregistré plusieurs fois) et « Mon cours » ; relire dans quelques jours le TTFB p75 de `/auth/login` (2,4 s avant) · **En attente de David** : rien · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` (mesurer `www`) ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; commitlint refuse un corps de commit à lignes > 100 caractères · **Worktree / branche** : `../ubumaths-wt-amelioration`, `perf/amelioration-liste-modeles`
+- **État** : #2512 et #2515 en prod (réveil 0,73 s au lieu de 2,4 s). #2532 mergée, pas en prod : liste des modèles sans `test_specs` (−31 %), type `CatalogueTemplate` · **Prochaine action** : décision de David sur la consigne d'exercice perdue dans Automaths (ci-dessous) ; sinon choisir entre Atelier, bug du suivi (INP enregistré plusieurs fois), `$$<$$` brut du QCM et « Mon cours » ; relire dans quelques jours le TTFB p75 de `/auth/login` (2,4 s avant) · **En attente de David** : (1) PR suivante pour la consigne perdue ? (2) retirer `created_by` de la liste publique ? · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; le cache des modèles garde les lignes BRUTES (snake_case) · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -132,3 +132,14 @@ Sources : Speed Insights #2094 (Atelier 17 mesures, Automaths 2), `error_logs` d
   injectée à la place de l'API : catalogue rangé, rubrique « ordre » avec aperçus, panier.
 - Vu au passage, sans lien (même rendu en prod) : les choix du QCM « Comparer deux nombres
   entiers » s'affichent `$$<$$` en brut dans le catalogue et le panier.
+- Mergée le 2026-11-10 (#2532), revues sans bloquant.
+- **Revue de code** : le cache garde les lignes brutes (snake_case) ; le type refuse `testSpecs` et
+  `test_specs`, la vraie protection est la liste de colonnes (commentaire et doc corrigés).
+- **Bug ancien découvert, non corrigé** : le générateur lit `template.exerciseInstruction`
+  (`instance-generator.ts:1348`) mais le cache n'a que `exercise_instruction` : les 19 modèles
+  publiés qui ont une consigne d'exercice la perdraient dans Automaths (panier, test). Correctif
+  probable : `mapDbTemplateToForm` à la lecture du cache. Pas encore vu à l'écran.
+- **Revue de sécurité** (hors PR, déjà vrai avant) : `created_by` sort publiquement (UUID du seul
+  auteur, l'admin) ; la policy anon « Anon can view published templates » laisse lire toutes les
+  colonnes des modèles publiés par PostgREST, `test_specs` compris : la PR allège la réponse,
+  elle ne cache rien. Protéger des colonnes = migration à part.
