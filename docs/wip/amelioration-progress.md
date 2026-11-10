@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-10, après #2536._
 
-- **État** : #2536 (choix `$$<$$` rendus au catalogue, au panier et au corrigé) et #2535 (consigne une fois par groupe) mergées, pas en prod · **Prochaine action** (ordre validé par David le 2026-11-10) : (3) INP renvoyé plusieurs fois par notre suivi ; (4) Atelier lent : **David le constate lui-même**, y réfléchir ensemble (pas « attendre des mesures ») ; (5) « Mon cours » #1788 · **En attente de David** : formule seule d'un choix centrée (comme à la saisie) ou calée à gauche ? · **Tranché** : `created_by` laissé tel quel · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `resource-link-extension` (anti-rebond) instable en CI, passé à la relance · **Worktree / branche** : aucun
+- **État** : #2536 (choix `$$<$$` rendus au catalogue, au panier et au corrigé) et #2535 (consigne une fois par groupe) mergées, pas en prod · **Prochaine action** (décidé par David le 2026-11-10) : (2b) formule seule d'un choix **calée à gauche** dans `ChoiceList` (catalogue, panier, corrigé), **écran de réponse inchangé** ; capture du catalogue d'abord pour confirmer, petite PR ; puis (3) INP renvoyé plusieurs fois par notre suivi ; (4) Atelier lent : **David le constate lui-même**, lui demander sur quel geste, profiler celui-là ; (5) « Mon cours » #1788 · **Tranché** : `created_by` laissé tel quel · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `resource-link-extension` (anti-rebond) instable en CI, passé à la relance · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
