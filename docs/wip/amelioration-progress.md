@@ -4,7 +4,26 @@
 
 _Mis à jour le 2026-11-10, après les mesures de réveil en prod._
 
-- **État** : #2512 et #2515 en prod (0.80.0). Réveil mesuré le 2026-11-10 à 12 h 04 (aucune visite depuis des heures) : `/auth/login` 0,73 s au 1er appel au lieu de 2,4 s, puis 0,1 s · **Prochaine action** : dans quelques jours, relire le TTFB p75 de `/auth/login` dans les web vitals (2,4 s avant) ; puis décider du point 4 (ping) · **En attente de David** : rien · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` (mesurer `www`) ; Fluid compute était activé AVANT les mesures de référence ; commitlint refuse un corps de commit à lignes > 100 caractères · **Worktree / branche** : aucun
+- **État** : #2512 et #2515 en prod (0.80.0). Réveil mesuré le 2026-11-10 à 12 h 04 (aucune visite depuis des heures) : `/auth/login` 0,73 s au 1er appel au lieu de 2,4 s, puis 0,1 s · **Prochaine action** : choisir la piste suivante (§ « Pistes proposées au départ » : Mon cours recommandé) ; dans quelques jours, relire le TTFB p75 de `/auth/login` dans les web vitals (2,4 s avant) ; puis décider du point 4 (ping) · **En attente de David** : rien · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` (mesurer `www`) ; Fluid compute était activé AVANT les mesures de référence ; commitlint refuse un corps de commit à lignes > 100 caractères · **Worktree / branche** : aucun
+
+## Pistes proposées au départ (2026-11-09)
+
+David a demandé des idées d'amélioration du site ; il a choisi de commencer par la connexion (1).
+Le reste n'est pas commencé. Sources : relevé Web Vitals #2094, issues ouvertes, `docs/wip/`.
+
+1. **Ce que vivent les élèves en premier** : connexion lente (→ traitée, sections suivantes) ;
+   Atelier affiché en 4,3 s (17 mesures, MathLive + moteur chargés d'un bloc) ; `/automaths`
+   lent à répondre aux clics, 648 ms (2 mesures, à confirmer).
+2. **« Mon cours »** (`/cours/[token]`, 85 mesures sur 210) : une fiche distribuée apparaît à trois
+   endroits (Mon travail, onglet Fiches, cahier de texte), point mis de côté dans #1788 (ouverte)
+   en attendant un vrai chapitre — il existe depuis le 2026-09-14. Même issue : objectif
+   réinséré en double, pas d'unicité `chapter_id` (migration).
+3. **Voir où les élèves bloquent** (réponses d'élèves) : gros chantier, RGPD ; phase 0 d'abord.
+4. **Confort de développement** : test de CI qui échoue au hasard (navigateur qui plante en fin
+   de lot) → 7 issues « Nightly CI triage » ouvertes ; #71 et #74 (mots de passe des comptes de
+   prod à changer, David) ; #2191 (bumps risqués) ; tri des ~100 journaux de `docs/wip/`.
+5. **Contenu** (`outils-manquants.md`) : n° 26 (règle graduée posée par l'élève), n° 24
+   (corrigé PDF des gestes de tracé).
 
 ## Diagnostic de la connexion lente (2026-11-09)
 
