@@ -37,7 +37,7 @@ pnpm deploy:prod                    # mise en prod + version — SUR DEMANDE DE 
 
 > [git-workflow.md](docs/pratiques/git-workflow.md)
 
-- **Code** : branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche après lecture de `MERGED`, dans une commande séparée. **Jamais de code direct sur `main`.**
+- **Code** : branche → PR → CI 100 % verte → `gh pr merge --merge` (sauf session lancée par une tâche planifiée, cf. ci-dessous) → suppression de branche après lecture de `MERGED`, dans une commande séparée. **Jamais de code direct sur `main`.**
 - **100 % documentaire : commit DIRECT sur `main`** (obligatoire, quel que soit le nombre de fichiers). Test mécanique avant de commiter :
   ```bash
   git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs → branche + PR" || echo "✅ docs pur → commit direct"
