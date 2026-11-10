@@ -637,9 +637,17 @@ export interface QuestionTemplate {
 }
 
 /**
- * Modèle tel que l'envoie la liste publique `/api/questions/templates/all`
- * (`questionTemplatesCache` : catalogue Automaths, panier, test) : sans ses cas
- * de test, que seul l'éditeur lit (il charge le modèle complet par son id).
+ * Modèle de la liste publique `/api/questions/templates/all`
+ * (`questionTemplatesCache` : catalogue Automaths, panier, test).
+ *
+ * La liste n'envoie pas les cas de test (colonnes listées dans son
+ * `+server.ts` : c'est là qu'est la vraie protection) ; seul l'éditeur les lit,
+ * et il charge le modèle complet par son id. Le type refuse de les lire sous
+ * leurs deux noms : `testSpecs` (retiré ici) et `test_specs` (jamais déclaré).
+ *
+ * ⚠️ Le cache garde les lignes BRUTES de la base (snake_case), sans
+ * `mapDbTemplateToForm` : ce type ne les décrit pas exactement (cf. le
+ * commentaire de `classification_node_id` ci-dessus).
  */
 export type CatalogueTemplate = Omit<QuestionTemplate, 'testSpecs'>;
 

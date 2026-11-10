@@ -223,8 +223,10 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   en novembre 2026) : colonnes listées dans le `+server.ts`, avec une garde de compilation qui
   échoue si une colonne ajoutée à `question_templates` n'y est pas rangée. Côté navigateur, la
   liste est typée `CatalogueTemplate` (`Omit<QuestionTemplate, 'testSpecs'>`) : lire `testSpecs`
-  dans le cache ne compile pas. L'éditeur, seul lecteur des cas de test, charge le modèle
-  complet par son id.
+  ou `test_specs` dans le cache ne compile pas, mais un modèle du cache passé à une fonction qui
+  attend un `QuestionTemplate` reste accepté — la protection, c'est la liste de colonnes.
+  L'éditeur, seul lecteur des cas de test, charge le modèle complet par son id. ⚠️ Le cache garde
+  les lignes brutes (snake_case), sans `mapDbTemplateToForm`.
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
   `generate/[id]`), admin `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`
