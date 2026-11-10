@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, après #2531 (page à cocher publiée)._
+_Mis à jour le 2026-11-10 : relecture déplacée dans `/dev/modeles`._
 
-- **État** : 30 brouillons « Cours : … » rangés et tagués en prod (migration `20261109224738` appliquée le 2026-11-10, vérifiée : 30 nœuds, 30 tags) ; marqueur « question de cours » posé sur « Démontrer la somme 1 + 2 + ⋯ + n » et « … 1 + q + ⋯ + qⁿ » (`updated_at` intact) · **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`, 30 attendus), corriger les « À revoir », puis `publier-lot.ts --dir scripts/questions/1spe-cours-suites` en simulation · **En attente de David** : relecture sur la page à cocher https://claude.ai/artifact/LBN4FL6QfnvYKBpg4du6AZ (B7, C15 : étapes à ranger non dessinées, à jouer dans l'aperçu) · **Pièges en cours** : réponses des étapes à ranger = places dans l'ordre affiché (`scripts/questions/ranger-attendus.ts`) ; le hook du commit reformate les JSON · **Worktree / branche** : aucun (retiré après #2531) ; prochaine PR → nouveau worktree `ubumaths-wt-cours-suites`
+- **État** : 30 brouillons « Cours : … » rangés et tagués en prod (migration `20261109224738` appliquée le 2026-11-10, vérifiée : 30 nœuds, 30 tags) ; marqueur « question de cours » posé sur « Démontrer la somme 1 + 2 + ⋯ + n » et « … 1 + q + ⋯ + qⁿ » (`updated_at` intact) · **Prochaine action** : lire les verdicts de `/dev/modeles` sur la série temporaire (30 attendus), corriger les « À revoir », puis `publier-lot.ts --dir scripts/questions/1spe-cours-suites` en simulation · **En attente de David** : relecture dans `/dev/modeles?serie=501be155-59d9-4cc2-b6bd-d39e6fd366e8`, série prod « ⏳ TEMPORAIRE — relecture cours suites 1re spé », À SUPPRIMER après validation (la page à cocher LBN4FL6QfnvYKBpg4du6AZ est abandonnée) (B7, C15 : étapes à ranger non dessinées, à jouer dans l'aperçu) · **Pièges en cours** : réponses des étapes à ranger = places dans l'ordre affiché (`scripts/questions/ranger-attendus.ts`) ; le hook du commit reformate les JSON · **Worktree / branche** : aucun (retiré après #2531) ; prochaine PR → nouveau worktree `ubumaths-wt-cours-suites`
 
 ## Décisions (David, 2026-11-09)
 
