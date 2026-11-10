@@ -2,6 +2,62 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.81.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.80.0...v0.81.0) (2026-11-10)
+
+### ✨ Features
+
+- **dev:** filtres titre, point et série dans la revue des modèles ([aa174c8](https://github.com/Zahara-Nour/ubumaths/commit/aa174c82bad9871d31528ed56b380820f3c0748f))
+- **questions:** 2de, approfondissements lot 9, parties du plan et courbes de √x et x² ([a0d5aef](https://github.com/Zahara-Nour/ubumaths/commit/a0d5aef5f321908d834839bea0ff67a496181c2a))
+- **questions:** 30 questions de cours sur les suites (1re spé) ([f94f179](https://github.com/Zahara-Nour/ubumaths/commit/f94f1796c0bd2b0622cd832bde3448cc813e491b))
+- **questions:** lot 11b de la 6e, triangles, symétrie et périmètres (7 modèles) ([510ffb5](https://github.com/Zahara-Nour/ubumaths/commit/510ffb5d1086b353a2b1d28de998d3d9e73f6dff))
+- **questions:** nœud, tag et marqueur de cours des 30 questions sur les suites (1re spé) ([c2e8d16](https://github.com/Zahara-Nour/ubumaths/commit/c2e8d16c4a574583876e796f096243861006d675))
+
+### 🐛 Bug Fixes
+
+- **automaths:** cartes de cours retirées de l'Entraînement ([031aa25](https://github.com/Zahara-Nour/ubumaths/commit/031aa258f0c3627b8ce2f4fc1b14629e8348e790))
+- **automaths:** la consigne d'exercice du modèle s'affiche sur les cartes ([6e002b8](https://github.com/Zahara-Nour/ubumaths/commit/6e002b858531727354e60d86bb63954d45860a4a))
+- **automaths:** message « que des cartes » seulement si c'est la cause ([b44494d](https://github.com/Zahara-Nour/ubumaths/commit/b44494d7b66fd542b2f10d9be33fcb619036f6dc))
+- **automaths:** message sans mot anglais, doc questions à jour ([496767b](https://github.com/Zahara-Nour/ubumaths/commit/496767b7f8fe689acf6884636a13a75b5d74e723))
+- **automaths:** type de la liste des modèles décrit sans le surestimer ([75f07f5](https://github.com/Zahara-Nour/ubumaths/commit/75f07f547ae55ae51e1763c97fd3a84efc1ab2fc))
+- **dev:** suites de la revue des filtres de /dev/modeles ([fa1dcd1](https://github.com/Zahara-Nour/ubumaths/commit/fa1dcd102f9340d7c48b86a08344481f399a70f1))
+- **questions:** carré accolé, séparé ou sur une partie de [AB], messages dédiés (CP-060) ([4b61fb2](https://github.com/Zahara-Nour/ubumaths/commit/4b61fb23f34dbcad3a08586af8811bd38084aeba))
+- **questions:** carré décalé le long de [AB], message dédié (CP-060) ([756fd6e](https://github.com/Zahara-Nour/ubumaths/commit/756fd6ee42a45a56f5bcc8e8333f9615097cf5a6))
+
+### ⚡ Performance Improvements
+
+- **automaths:** liste publique des modèles sans leurs cas de test ([c0c9a35](https://github.com/Zahara-Nour/ubumaths/commit/c0c9a356b3705f5baf59c626f9420f3356e9cda8))
+
+### 📚 Documentation
+
+- **git-workflow:** relancer la surveillance de CI apres un push de correctif ([4329337](https://github.com/Zahara-Nour/ubumaths/commit/43293379784a3b0c36e1291f86dc9bf53e54679c))
+- **questions:** filtres titre, point et série de la revue des modèles ([5003106](https://github.com/Zahara-Nour/ubumaths/commit/50031066a85dec987534cfc608e35b39e5565a07))
+- versement du chantier coupures-pdf, journal archivé ([e63a736](https://github.com/Zahara-Nour/ubumaths/commit/e63a736e72684a3c66f5ae504d2cbd69b5df92f6))
+- **wip:** amelioration, Automaths deja traite par automaths-apercus ([7fc4610](https://github.com/Zahara-Nour/ubumaths/commit/7fc46103862e6eacc8d8a27ab2158cb636b91f68))
+- **wip:** amelioration, diagnostic Atelier et Automaths ([8ae8ad3](https://github.com/Zahara-Nour/ubumaths/commit/8ae8ad32a6c29991e3e8cd6b1b7c6229d57ee824))
+- **wip:** amelioration, mesure apres le deploiement 0.80.0 ([15a5834](https://github.com/Zahara-Nour/ubumaths/commit/15a5834253311b0dc0b1171f2ba60c97f5f022f7))
+- **wip:** amelioration, mesure du reveil a 5 h 41 ([c6c9981](https://github.com/Zahara-Nour/ubumaths/commit/c6c99816dcf83b7e9262bbf3630f392318306b33))
+- **wip:** amelioration, pistes proposees au depart ([8110c80](https://github.com/Zahara-Nour/ubumaths/commit/8110c8011c0a845dd1173660640f14123e178011))
+- **wip:** amelioration, reprendre ici apres [#2532](https://github.com/Zahara-Nour/ubumaths/issues/2532) ([43d7b0c](https://github.com/Zahara-Nour/ubumaths/commit/43d7b0c95b3ca8b60204327194adb43f964e2969))
+- **wip:** amelioration, reprendre ici apres [#2534](https://github.com/Zahara-Nour/ubumaths/issues/2534) ([3371d7b](https://github.com/Zahara-Nour/ubumaths/commit/3371d7b94081b44b16a3ca113c162a8b481e1b0c))
+- **wip:** amelioration, reveil mesure a 0,73 s en prod ([8cd9e28](https://github.com/Zahara-Nour/ubumaths/commit/8cd9e28e4030c3db8e339dad8d9e05a6d4411ef0))
+- **wip:** cartes-entrainement clos après [#2528](https://github.com/Zahara-Nour/ubumaths/issues/2528), journal archivé ([017942a](https://github.com/Zahara-Nour/ubumaths/commit/017942aabf1a5e4e6f73f1fdf91e7278b40cdfc9))
+- **wip:** coupures-pdf, en prod avec la v0.80.0 ([bf9f09d](https://github.com/Zahara-Nour/ubumaths/commit/bf9f09dd3d1f64c1cffbb3b787c03b327c392554))
+- **wip:** coupures-pdf, plus rien en attente ([a9b1880](https://github.com/Zahara-Nour/ubumaths/commit/a9b1880fd850dd010a7581e9b959713e22f37d3c))
+- **wip:** cours-suites, migration de rangement en PR ([75e6c68](https://github.com/Zahara-Nour/ubumaths/commit/75e6c6886ecc92f5b89a3ce0a36ce248ae7deb81))
+- **wip:** cours-suites, page à cocher publiée ([6e6c91b](https://github.com/Zahara-Nour/ubumaths/commit/6e6c91b5e7d8b5c4754cab61311b995550938d4f))
+- **wip:** cours-suites, recos validées par David ([aff1f80](https://github.com/Zahara-Nour/ubumaths/commit/aff1f808b9750fea6f41ff70594d90541aeddd64))
+- **wip:** cours-suites, reprendre ici après [#2529](https://github.com/Zahara-Nour/ubumaths/issues/2529) ([a938a13](https://github.com/Zahara-Nour/ubumaths/commit/a938a13c4c45d21c51acb8006348383d7d3d63c2))
+- **wip:** cours-suites, reprendre ici après [#2530](https://github.com/Zahara-Nour/ubumaths/issues/2530) ([e41e725](https://github.com/Zahara-Nour/ubumaths/commit/e41e72557ca9a8aae26729f9241b78af32dd0020))
+- **wip:** cours-suites, reprendre ici après [#2531](https://github.com/Zahara-Nour/ubumaths/issues/2531) ([63be506](https://github.com/Zahara-Nour/ubumaths/commit/63be506562be6c6248dd0beaa2793075fe86c2f5))
+- **wip:** filtres-modeles clos et archivé, cours-suites renvoie au filtre ([dc7b9cb](https://github.com/Zahara-Nour/ubumaths/commit/dc7b9cbb0e0ff0336108af6858e6dbb290fc076e))
+- **wip:** geometrie-validation, reprendre ici après [#2526](https://github.com/Zahara-Nour/ubumaths/issues/2526) ([d581e81](https://github.com/Zahara-Nour/ubumaths/commit/d581e81526ee152705fa61191ad83949cddfcf0c))
+- **wip:** geometrie-validation, reprendre ici après [#2527](https://github.com/Zahara-Nour/ubumaths/issues/2527) ([a0fdd55](https://github.com/Zahara-Nour/ubumaths/commit/a0fdd55229967bb4cbb2c74fb400d3b8365d1d06))
+- **wip:** geometrie-validation, reprendre ici corrigé (figure-et-choix clos) ([83bdab7](https://github.com/Zahara-Nour/ubumaths/commit/83bdab782fd569e0aa5be6ff72b8d402ed0c88a3))
+- **wip:** outils manquants, geste associer deux colonnes ([109f708](https://github.com/Zahara-Nour/ubumaths/commit/109f708f38033ec069d18ec9e5dbed59181a56c2))
+- **wip:** questions-2de-demonstrations, lot 9 mergé ([#2523](https://github.com/Zahara-Nour/ubumaths/issues/2523)) ([26a19d3](https://github.com/Zahara-Nour/ubumaths/commit/26a19d33b087c4c0d8b7801c081c06f378ad9024))
+- **wip:** questions-6, lot 11b mergé ([#2524](https://github.com/Zahara-Nour/ubumaths/issues/2524)), brouillons à créer ([5ea0bf5](https://github.com/Zahara-Nour/ubumaths/commit/5ea0bf579e5d6b14771cbbce187b4a1d89a7bb29))
+- **wip:** questions-6, reprendre ici clarifié ([df9122d](https://github.com/Zahara-Nour/ubumaths/commit/df9122dcc9859eedcd888a147c6c556e01f2e9bf))
+
 ## [0.80.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.79.0...v0.80.0) (2026-11-09)
 
 ### ✨ Features
