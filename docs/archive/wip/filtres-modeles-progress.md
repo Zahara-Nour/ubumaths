@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, phase 0 validée._
+_Mis à jour le 2026-11-10, après #2533._
 
-- **État** : code, tests, doc et revue (Sonnet, aucun bloquant, points 1-5 corrigés) faits ; PR ouverte · **Prochaine action** : CI verte → merge, puis nettoyage du worktree · **En attente de David** : rien · **Pièges en cours** : un modèle deux fois dans une série → deux fiches (clé d'affichage ≠ id du modèle) · **Worktree / branche** : `ubumaths-wt-filtres-modeles`, `feat/filtres-modeles`
+- **État** : chantier clos — #2533 mergée (filtres titre, point, série dans `/dev/modeles`), doc dans `docs/systeme/questions.md`, journal archivé · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : retirés
 
 ## Origine
 
@@ -41,3 +41,4 @@ créateur (mono-professeur) → le sélecteur liste toutes les séries.
   rognés avant Zod, champs texte (la croix des champs « search » ne déclenche pas `change`), composition
   lue pour la seule série choisie, longueurs en constantes. Laissés : « œ » non décomposé, compte des
   lignes introuvables (conforme à la phase 0). Non vérifié : un point réellement tagué (base locale sans tags).
+- 2026-11-10 : #2533 mergée (CI verte), worktree et branche retirés, journal archivé.

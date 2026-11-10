@@ -69,3 +69,4 @@ _Mis à jour le 2026-11-10, après #2531 (page à cocher publiée)._
   Supabase), vérification en prod par MCP. `security-auditor` : aucun finding bloquant (deux points
   faibles notés : `lock_timeout` sans effet hors bloc de transaction, statut brouillon des 30 non gardé).
 - 2026-11-10 : page à cocher générée (`page-a-cocher.ts`, base prod, 30 fiches, 2 alertes « bloc ranger non dessiné ») et publiée : https://claude.ai/artifact/LBN4FL6QfnvYKBpg4du6AZ (capacité `db`, collection `verdicts` vide au départ).
+- 2026-11-10 : `/dev/modeles` filtre désormais par titre, point et série (#2533) : « ?titre=Cours » montre le rendu des 30 brouillons.
