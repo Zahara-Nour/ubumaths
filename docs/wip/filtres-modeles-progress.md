@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-10, phase 0 validée._
 
-- **État** : phase 0 validée par David ; tests puis code en cours · **Prochaine action** : tests rouges (`src/lib/questions/__tests__/template-review.test.ts`), code, PR · **En attente de David** : rien · **Pièges en cours** : un modèle deux fois dans une série → deux fiches (clé d'affichage ≠ id du modèle) · **Worktree / branche** : `ubumaths-wt-filtres-modeles`, `feat/filtres-modeles`
+- **État** : code, tests, doc et revue (Sonnet, aucun bloquant, points 1-5 corrigés) faits ; PR ouverte · **Prochaine action** : CI verte → merge, puis nettoyage du worktree · **En attente de David** : rien · **Pièges en cours** : un modèle deux fois dans une série → deux fiches (clé d'affichage ≠ id du modèle) · **Worktree / branche** : `ubumaths-wt-filtres-modeles`, `feat/filtres-modeles`
 
 ## Origine
 
@@ -35,3 +35,9 @@ créateur (mono-professeur) → le sélecteur liste toutes les séries.
 ## Journal
 
 - 2026-11-10 : worktree créé ; phase 0 validée.
+- 2026-11-10 : tests (19 verts), code, doc `docs/systeme/questions.md` ; rendu vérifié en local (série d'essai
+  avec doublon et modèle disparu, supprimée ensuite ; 400 ; point inconnu ; recherche). Revue
+  `code-reviewer` : corrigés — code de point mal tapé = aide sous la case (plus de page 400), paramètres
+  rognés avant Zod, champs texte (la croix des champs « search » ne déclenche pas `change`), composition
+  lue pour la seule série choisie, longueurs en constantes. Laissés : « œ » non décomposé, compte des
+  lignes introuvables (conforme à la phase 0). Non vérifié : un point réellement tagué (base locale sans tags).

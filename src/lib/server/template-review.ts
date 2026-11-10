@@ -35,12 +35,11 @@ export interface ReviewOverview {
 	pointCodes: Set<string>;
 }
 
-/** Une série enregistrée ; `lines` vaut null si sa composition est illisible */
+/** Une série enregistrée, telle que le sélecteur la montre */
 export interface ReviewSeries {
 	id: string;
 	title: string;
 	grade: string;
-	lines: SeriesLine[] | null;
 }
 
 // Constantes
@@ -157,19 +156,29 @@ export async function loadReviewOverview(supabase: Client): Promise<ReviewOvervi
 	};
 }
 
-/** Toutes les séries enregistrées, leur composition lue par `series-lines` */
+/** Toutes les séries enregistrées, sans leur composition (le sélecteur) */
 export async function loadReviewSeries(supabase: Client): Promise<ReviewSeries[]> {
-	const rows = await readAll(
-		(from, to) =>
-			supabase.from('series').select('id, title, grade, items').order('id').range(from, to),
+	return readAll(
+		(from, to) => supabase.from('series').select('id, title, grade').order('id').range(from, to),
 		'des séries'
 	);
-	return rows.map((r) => ({
-		id: r.id,
-		title: r.title,
-		grade: r.grade,
-		lines: parseStoredSeries(r.id, r.items)
-	}));
+}
+
+/**
+ * La composition d'une série, lue par `series-lines` ; `null` si la série n'existe pas,
+ * `lines: null` si sa composition est illisible.
+ */
+export async function loadSeriesLines(
+	supabase: Client,
+	seriesId: string
+): Promise<{ lines: SeriesLine[] | null } | null> {
+	const { data, error } = await supabase
+		.from('series')
+		.select('id, items')
+		.eq('id', seriesId)
+		.maybeSingle();
+	if (error) throw new Error(`lecture de la série impossible — ${error.message}`);
+	return data ? { lines: parseStoredSeries(data.id, data.items) } : null;
 }
 
 /** Les lignes complètes des modèles `ids` (dans cet ordre) et les points de chacun */

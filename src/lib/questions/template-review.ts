@@ -268,6 +268,8 @@ export const DEFAULT_FILTERS: ReviewFilters = {
 
 /** Longueur maximale du texte cherché dans les titres */
 export const MAX_TITLE_SEARCH = 100;
+/** Longueur maximale d'un code de point saisi */
+export const MAX_POINT_INPUT = 20;
 /** Forme des codes de point : programme, tiret, numéro (`1SPE-213`, `CP-058`, `6-001`) */
 const POINT_CODE = /^[A-Z0-9]{1,10}-\d{1,4}$/;
 

@@ -22,6 +22,7 @@ import {
 	loadReviewOverview,
 	loadReviewSeries,
 	loadReviewSheets,
+	loadSeriesLines,
 	MAX_SHEETS,
 	saveReview
 } from '$lib/server/template-review';
@@ -31,6 +32,7 @@ import {
 	findReviewNode,
 	isDefaultFilters,
 	matchesFilters,
+	MAX_POINT_INPUT,
 	MAX_TITLE_SEARCH,
 	nodeChain,
 	parseFilters,
@@ -56,7 +58,7 @@ const QUERY_SCHEMA = z.object({
 	titre: z.string().max(MAX_TITLE_SEARCH).nullable(),
 	point: z
 		.string()
-		.max(20)
+		.max(MAX_POINT_INPUT)
 		.refine((v) => parsePointCode(v) !== null)
 		.nullable(),
 	serie: z.string().uuid().nullable()
@@ -77,10 +79,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const params = url.searchParams;
 	const query = QUERY_SCHEMA.safeParse({
 		noeud: params.get('noeud'),
-		titre: params.get('titre'),
-		// Un point vide vaut « pas de filtre »
-		point: params.get('point') || null,
-		serie: params.get('serie') || null
+		// Rognés comme dans `parseFilters` : vide ou espaces = pas de filtre
+		titre: params.get('titre')?.trim() || null,
+		point: params.get('point')?.trim() || null,
+		serie: params.get('serie')?.trim() || null
 	});
 	if (!query.success) {
 		const field = query.error.issues[0]?.path[0];
@@ -106,13 +108,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const tree = buildReviewTree(overview.templates, overview.nodes);
 	const byId = new Map(overview.templates.map((t) => [t.id, t]));
 	const series = seriesId ? (allSeries.find((s) => s.id === seriesId) ?? null) : null;
+	const seriesLines = series ? await loadSeriesLines(supabase, series.id) : null;
 
 	// Ce que la page montre : la série choisie (dans son ordre), sinon le nœud choisi, sinon tout
 	// ce que les filtres retiennent. La série remplace le nœud, gardé dans l'adresse.
 	const node = nodeKey ? findReviewNode(tree, nodeKey) : null;
 	let entries: SeriesSheetEntry[];
 	if (seriesId) {
-		entries = series?.lines ? seriesSelection(series.lines, byId, filters) : [];
+		entries = seriesLines?.lines ? seriesSelection(seriesLines.lines, byId, filters) : [];
 	} else {
 		const candidates = node
 			? templatesUnder(node)
@@ -148,7 +151,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		pointUnknown: filters.point !== null && !overview.pointCodes.has(filters.point),
 		seriesItems: seriesOptions(allSeries),
 		seriesId,
-		series: series ? { title: series.title, readable: series.lines !== null } : null,
+		series: series ? { title: series.title, readable: Boolean(seriesLines?.lines) } : null,
 		nodeKey,
 		nodeFound: nodeKey === null || node !== null,
 		path: nodeKey ? reviewNodePath(tree, nodeKey).map((n) => ({ key: n.key, name: n.name })) : [],

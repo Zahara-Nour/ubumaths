@@ -21,6 +21,11 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import {
+		MAX_POINT_INPUT,
+		MAX_TITLE_SEARCH,
+		parsePointCode
+	} from '$lib/questions/template-review';
 	import ReviewTree from '$lib/components/dev/ReviewTree.svelte';
 	import TemplateReviewSheet from '$lib/components/dev/TemplateReviewSheet.svelte';
 
@@ -43,6 +48,8 @@
 	let { data }: { data: PageData } = $props();
 
 	let openSheets = $state<Record<string, boolean>>({});
+	// Code de point mal formé : aide sous la case, sans quitter la page (le serveur le refuserait)
+	let pointHelp = $state<string | null>(null);
 
 	const totals = $derived(data.totals);
 	const openKeys = $derived(new Set(data.path.map((p) => p.key)));
@@ -72,6 +79,16 @@
 			keepFocus: true,
 			noScroll: true
 		});
+	}
+
+	function setPoint(raw: string) {
+		const value = raw.trim();
+		if (value !== '' && parsePointCode(value) === null) {
+			pointHelp = `« ${value} » n'est pas un code de point (forme attendue : 1SPE-213)`;
+			return;
+		}
+		pointHelp = null;
+		setFilter('point', value);
 	}
 
 	function setAllSheets(open: boolean) {
@@ -124,21 +141,21 @@
 		/>
 		<Input
 			class="w-56"
-			type="search"
 			placeholder="Chercher dans le titre"
 			aria-label="Chercher dans le titre (Entrée pour filtrer)"
-			maxlength={100}
+			maxlength={MAX_TITLE_SEARCH}
 			value={data.filters.title}
 			onchange={(e) => setFilter('titre', e.currentTarget.value.trim())}
 		/>
 		<Input
 			class="w-36"
-			type="search"
 			placeholder="Point (1SPE-213)"
 			aria-label="Code du point du programme (Entrée pour filtrer)"
-			maxlength={20}
+			maxlength={MAX_POINT_INPUT}
 			value={data.filters.point ?? ''}
-			onchange={(e) => setFilter('point', e.currentTarget.value.trim())}
+			aria-invalid={pointHelp !== null}
+			aria-describedby={pointHelp ? 'point-help' : undefined}
+			onchange={(e) => setPoint(e.currentTarget.value)}
 		/>
 		{#if data.seriesItems.length > 0}
 			<MySelect
@@ -154,6 +171,9 @@
 			<a class="text-sm underline" href={resolve('/(protected)/dev/modeles')}>Tout effacer</a>
 		{/if}
 	</div>
+	{#if pointHelp}
+		<p id="point-help" class="text-sm text-destructive">{pointHelp}</p>
+	{/if}
 
 	<div class="grid gap-4 md:grid-cols-[minmax(16rem,22rem)_1fr]">
 		<nav aria-label="Arbre des modèles" class="max-h-[80vh] overflow-y-auto rounded-lg border p-2">
