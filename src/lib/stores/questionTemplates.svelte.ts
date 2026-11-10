@@ -32,7 +32,7 @@
  * ```
  */
 
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { CatalogueTemplate } from '$lib/questions/types';
 import type { CatalogueNode } from '$lib/questions/catalogue';
 
 /** Liste publique des modèles publiés (gardée 5 min par Vercel) */
@@ -42,7 +42,7 @@ const TEMPLATES_URL = '/api/questions/templates/all';
  * Cache storage structure
  */
 interface TemplatesCache {
-	templates: QuestionTemplate[];
+	templates: CatalogueTemplate[];
 	/** Arbre des notions (nœuds non archivés), qui range le catalogue */
 	nodes: CatalogueNode[];
 	lastFetched: number | null;
@@ -71,7 +71,7 @@ class QuestionTemplatesStore {
 	/**
 	 * Get all cached templates
 	 */
-	get templates(): QuestionTemplate[] {
+	get templates(): CatalogueTemplate[] {
 		return this.cache.templates;
 	}
 
@@ -143,7 +143,7 @@ class QuestionTemplatesStore {
 			}
 
 			const data = (await response.json()) as {
-				templates?: QuestionTemplate[];
+				templates?: CatalogueTemplate[];
 				nodes?: CatalogueNode[];
 			};
 
@@ -173,7 +173,7 @@ class QuestionTemplatesStore {
 	 * @param id - Template ID to find
 	 * @returns Template or undefined if not found
 	 */
-	getTemplateById(id: string): QuestionTemplate | undefined {
+	getTemplateById(id: string): CatalogueTemplate | undefined {
 		return this.cache.templates.find((t) => t.id === id);
 	}
 

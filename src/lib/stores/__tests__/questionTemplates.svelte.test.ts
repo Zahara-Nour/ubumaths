@@ -117,4 +117,12 @@ describe('questionTemplatesCache', () => {
 		expect(questionTemplatesCache.error).not.toBeNull();
 		expect(questionTemplatesCache.isLoaded).toBe(false);
 	});
+
+	it('la liste n’a pas les cas de test : le compilateur refuse de les y lire', () => {
+		const lireLesCasDeTest = () =>
+			// @ts-expect-error — `testSpecs` n'est pas envoyé par la liste (`CatalogueTemplate`)
+			questionTemplatesCache.templates[0]?.testSpecs;
+
+		expect(lireLesCasDeTest()).toBeUndefined();
+	});
 });

@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, après les mesures de réveil en prod._
+_Mis à jour le 2026-11-10, PR « liste des modèles sans test_specs » en cours._
 
-- **État** : #2512 et #2515 en prod (0.80.0). Réveil mesuré le 2026-11-10 à 12 h 04 (aucune visite depuis des heures) : `/auth/login` 0,73 s au 1er appel au lieu de 2,4 s, puis 0,1 s · **Prochaine action** : choisir la piste suivante (§ « Pistes proposées au départ » : Mon cours recommandé) ; dans quelques jours, relire le TTFB p75 de `/auth/login` dans les web vitals (2,4 s avant) ; puis décider du point 4 (ping) · **En attente de David** : rien · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` (mesurer `www`) ; Fluid compute était activé AVANT les mesures de référence ; commitlint refuse un corps de commit à lignes > 100 caractères · **Worktree / branche** : aucun
+- **État** : #2512 et #2515 en prod (réveil 0,73 s au lieu de 2,4 s). PR en cours : `/api/questions/templates/all` sans `test_specs` (−31 %), type `CatalogueTemplate` · **Prochaine action** : merger la PR ; puis choisir entre Atelier (JS lourd, peu de visites), bug du suivi (INP enregistré plusieurs fois) et « Mon cours » ; relire dans quelques jours le TTFB p75 de `/auth/login` (2,4 s avant) · **En attente de David** : rien · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` (mesurer `www`) ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; commitlint refuse un corps de commit à lignes > 100 caractères · **Worktree / branche** : `../ubumaths-wt-amelioration`, `perf/amelioration-liste-modeles`
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -119,3 +119,16 @@ Sources : Speed Insights #2094 (Atelier 17 mesures, Automaths 2), `error_logs` d
   depuis le 2026-10-28. Les FCP/LCP absurdes (382 604 ms) = onglet en arrière-plan (#2512).
 - ⚠️ Bug de notre suivi : le même INP est renvoyé plusieurs fois (616 ms ×15, 304 ms ×9) :
   les comptes d'INP de `error_logs` sont gonflés.
+
+## PR 3 — liste des modèles sans `test_specs` (2026-11-10)
+
+- Décision de David : retirer `test_specs` de la liste publique, avec un type dédié.
+- `+server.ts` : colonnes listées (`TEMPLATE_COLUMN_LIST`) au lieu de `*`, garde de compilation
+  (`ForgottenColumn`) vérifiée en retirant `delay` : `check:incremental` échoue en la nommant.
+- `CatalogueTemplate = Omit<QuestionTemplate, 'testSpecs'>` pour `questionTemplatesCache` ;
+  `check:incremental` = 0 erreur sans autre changement : aucun lecteur du cache ne lisait
+  `testSpecs`. Test `@ts-expect-error` dans le test du cache.
+- Vérifié en local avec la vraie liste de prod sans `test_specs` (8,45 Mo au lieu de 11,2 Mo),
+  injectée à la place de l'API : catalogue rangé, rubrique « ordre » avec aperçus, panier.
+- Vu au passage, sans lien (même rendu en prod) : les choix du QCM « Comparer deux nombres
+  entiers » s'affichent `$$<$$` en brut dans le catalogue et le panier.

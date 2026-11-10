@@ -637,6 +637,13 @@ export interface QuestionTemplate {
 }
 
 /**
+ * Modèle tel que l'envoie la liste publique `/api/questions/templates/all`
+ * (`questionTemplatesCache` : catalogue Automaths, panier, test) : sans ses cas
+ * de test, que seul l'éditeur lit (il charge le modèle complet par son id).
+ */
+export type CatalogueTemplate = Omit<QuestionTemplate, 'testSpecs'>;
+
+/**
  * Map a raw Supabase question_templates row (snake_case) to QuestionTemplate (camelCase).
  *
  * Supabase returns column names as-is (snake_case), but our TypeScript
