@@ -32,7 +32,7 @@
  * ```
  */
 
-import type { CatalogueTemplate } from '$lib/questions/types';
+import { mapDbTemplateToForm, type CatalogueTemplate } from '$lib/questions/types';
 import type { CatalogueNode } from '$lib/questions/catalogue';
 
 /** Liste publique des modèles publiés (gardée 5 min par Vercel) */
@@ -143,7 +143,7 @@ class QuestionTemplatesStore {
 			}
 
 			const data = (await response.json()) as {
-				templates?: CatalogueTemplate[];
+				templates?: Record<string, unknown>[];
 				nodes?: CatalogueNode[];
 			};
 
@@ -154,7 +154,10 @@ class QuestionTemplatesStore {
 				return await this.load(true);
 			}
 
-			this.cache.templates = data.templates ?? [];
+			// L'API envoie les lignes de la base (`exercise_instruction`…) ; le
+			// générateur lit les noms de l'éditeur (`exerciseInstruction`…) : sans
+			// cette conversion, la consigne d'exercice disparaissait des cartes.
+			this.cache.templates = (data.templates ?? []).map(mapDbTemplateToForm);
 			this.cache.nodes = data.nodes ?? [];
 			this.cache.lastFetched = Date.now();
 			// Invalidée pendant la lecture : la liste reçue peut être antérieure

@@ -645,9 +645,9 @@ export interface QuestionTemplate {
  * et il charge le modèle complet par son id. Le type refuse de les lire sous
  * leurs deux noms : `testSpecs` (retiré ici) et `test_specs` (jamais déclaré).
  *
- * ⚠️ Le cache garde les lignes BRUTES de la base (snake_case), sans
- * `mapDbTemplateToForm` : ce type ne les décrit pas exactement (cf. le
- * commentaire de `classification_node_id` ci-dessus).
+ * Le cache passe chaque ligne par `mapDbTemplateToForm` : les noms de
+ * l'éditeur (`exerciseInstruction`, `defaultDisplayOptions`) s'ajoutent à
+ * ceux de la base, que le catalogue lit encore (`classification_node_id`).
  */
 export type CatalogueTemplate = Omit<QuestionTemplate, 'testSpecs'>;
 
