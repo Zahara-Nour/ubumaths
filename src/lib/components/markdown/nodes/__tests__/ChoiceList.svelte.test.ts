@@ -86,3 +86,27 @@ describe('choix d’horloges (chantier horloge, décision 5)', () => {
 		expect(text(items[1])).toContain('coché à tort');
 	});
 });
+
+describe('choix qui ne sont qu’une formule $$…$$ (QCM « Comparer deux nombres entiers »)', () => {
+	const symboles: Item[] = [{ content: '$$<$$' }, { content: '$$=$$' }, { content: '$$>$$' }];
+
+	it('liste non cliquable (catalogue, panier) : formules rendues, jamais le code', async () => {
+		const main = document.body.appendChild(document.createElement('main'));
+		const { container } = await render(ChoiceList, { target: main, props: { items: symboles } });
+		await expect.poll(() => container.querySelectorAll('li math-div, li math-span').length).toBe(3);
+		expect(text(container)).not.toContain('$$');
+	});
+
+	it('liste corrigée : formules rendues, jamais le code', async () => {
+		const { container } = await show(
+			symboles.map((item, i) => ({
+				...item,
+				checked: i === 0,
+				status: i === 0 ? 'correct' : 'neutral'
+			})),
+			false
+		);
+		await expect.poll(() => container.querySelectorAll('li math-div, li math-span').length).toBe(3);
+		expect(text(container)).not.toContain('$$');
+	});
+});
