@@ -10,17 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, migration de rangement du lot 2 écrite (§ 7), PR pas encore ouverte._
+_Mis à jour le 2026-11-11, après #2563 (lot 2 rangé et tagué en prod)._
 
-- **État** : lot 1 publié (§ 5) ; lot 2 : 5 brouillons en prod (§ 7), migration + test sur la branche, audit sans
-  finding.
-- **Prochaine action** : PR, CI → merge →
-  `check:migrations --pr` → `db:migrate` depuis le dépôt principal → vérif prod → page à cocher → publication ; puis
-  lot 3 (421, 448, 449, 471, 472).
-- **En attente de David** : rien.
+- **État** : lot 1 publié (§ 5) ; lot 2 (388, 389, 390, 391, 405) en brouillon en prod, rangé et tagué (§ 7).
+- **Prochaine action** : page à cocher du lot 2 (modèle : celle du lot 1, https://claude.ai/artifact/YPeen4p6oK8DdJs1hkhC6d,
+  à relire avec `Artifact read`) → David relit → verdicts → `publier-lot.ts` (David) ; puis lot 3 (421, 448, 449, 471,
+  472).
+- **En attente de David** : rien pour l'instant (la page à cocher est à faire).
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
   simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-demonstrations-2-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` en HEAD détachée sur `origin/main` ; nouvelle
+  branche pour le lot 3.
 
 ---
 
@@ -219,3 +219,7 @@ l'en-tête, les données et les compteurs changent) ; test
 `tests/integration/questions-tspe-demonstrations-2-rangement-tags.test.ts` 12/12 vert, rouge sans la migration
 (partie aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie, vert relancé après le pre-commit. `security-auditor` :
 aucun finding. Accès : personne de plus (Q5).
+
+Mergée (#2563, CI verte du premier coup) ; `check:migrations --pr` vert ; `db:migrate` depuis le dépôt principal (seule
+migration en attente) ; vérifié en prod : 5 brouillons, chacun sur sa sous-notion avec son seul point, `updated_at`
+inchangé. Garde des niveaux : aucun niveau manquant.
