@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après le `deploy:prod` 0.82.0 (mesure de l'atelier à froid)._
+_Mis à jour le 2026-11-11, après #2564._
 
-- **État** : 0.82.0 en prod (#2535 à #2556 compris) ; atelier à froid mesuré (section « Après 0.82.0 ») : 164 JS / 1,44 Mio, console utilisable en 3,1 s en 4G, quel que soit le bridage CPU ; silhouette à 0,27 s · **Prochaine action** : David choisit la suite — rien, A/B local ancien/nouveau build, ou piste 3 (INP) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **À vérifier quand des élèves auront utilisé le site** : dans `error_logs`, qu'un même message INP ne revient plus ×10 pour un élève (aucune ligne INP depuis le 2026-11-08) ; lignes #2545, #2553 et #2555 de `verifications-manuelles.md` (David) · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard ; garde de version de l'image Playwright = avertissement, pas échec · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence — garde = test serveur ; `chalk` cité par les seuls `cli.ts`/`repl.ts`/`terminal-palette.ts` (garde) ; `db:migrate` refusé par le classifieur du mode auto → `! pnpm db:migrate` ; dimensions de la silhouette recopiées de `AtelierContainer`/`ObjectPanel`/`ToolButton` ; tag de l'image Playwright (`quality.yml`) à monter avec `playwright` · **Worktree / branche** : aucun
+- **État** : 0.82.0 en prod ; atelier à froid mesuré (3,1 s en 4G, réseau limitant) ; piste 3 close : INP compté sur les seules interactions, adresse de l'interaction, `event_name` + `target` (#2564, **pas encore en prod**) · **Prochaine action** : rien d'engagé ; à David de choisir une nouvelle piste · **Après le prochain `deploy:prod`** : dans `error_logs`, les lignes INP portent `event_name`, `target` (sans `aria-label`) et l'adresse de la page de l'interaction ; un même INP ne revient plus ×10 pour un élève ; lignes #2545, #2553, #2555 et #2564 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé, pas `web-vitals` ; cible = balise + `id` + `role`, jamais d'`aria-label` (noms d'élèves) ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un `id` construit sur du texte saisi part dans `error_logs` (cible INP) ; un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence ; `db:migrate` refusé par le classifieur du mode auto → `! pnpm db:migrate` ; tag de l'image Playwright (`quality.yml`) à monter avec `playwright` · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -469,3 +469,27 @@ essai, 1280×800, 3 essais par case. 4G = CDP `emulateNetworkConditions` 9 Mbit/
 - `error_logs` depuis le déploiement : aucune ligne INP (aucune depuis le 2026-11-08) ; seule
   erreur, `Cannot read properties of undefined (reading 'id')` sur `/dev/modeles?noeud=…&statut=draft`
   (admin, 4 fois, chunk `MLmtAr99` de l'ancien build) — hors de ce chantier.
+
+## PR piste 3 — INP compté sur les seules interactions (2026-11-11)
+
+- Phase 0 validée (10 comportements, option (a) : notre code corrigé). Point 5 révisé avec
+  David : la cible ne porte **jamais d'`aria-label`** (`assign/+page.svelte:317`,
+  `AssigneeAvatars.svelte:39`, `MarketplaceListingCard.svelte:102` y mettent un nom
+  d'élève) → balise + `id` + `role`.
+- `src/lib/utils/inp-tracker.ts` (pur) : interactions seules (`interactionId`), une valeur par
+  interaction (son événement le plus lent), 10 plus lentes gardées, la plus lente écartée par
+  tranche de 50 (`performance.interactionCount`, à défaut les ids vus) ; adresse = dernier
+  `pointerdown`/`keydown` qui précède l'entrée (`event.timeStamp` et `startTime` partagent
+  l'horloge).
+- `errorMonitoring.ts` : `reportWebVital` prend l'adresse en paramètre ; `context` reçoit
+  `event_name` et `target`. L'API (`logErrorSchema`) accepte déjà tout `context` ≤ 10 000 car.
+- Tests : `inp-tracker.test.ts` (16, serveur) ; `errorMonitoring-web-vitals.svelte.test.ts`
+  +3 (non-interaction ignorée, adresse du début, contexte) — **rouges avant le branchement**.
+- **Revue** : `code-reviewer` (Sonnet) et `security-auditor` (Opus), rien de bloquant. Retenu :
+  écouteurs `pointerdown`/`keydown` retirés au `beforeunload` (sinon empilés à la
+  réinitialisation) ; tolérance de 1 ms dans l'appariement de l'adresse ; tests d'éviction
+  (interaction sortie des 10 gardées puis revenue) et de réinitialisation (chemin `keydown`).
+  `DataView.svelte` : les `id` d'aperçu et de diagramme reprenaient le nom de liste tapé
+  (`atelier-apercu-${list.name}`) → `${$props.id()}-apercu-<numéro>`. Non retenu (notes) :
+  `sanitizeUrl` ne masque pas les UUID du chemin (déjà le cas avant) ; Zod du `context` non typé
+  (route ouverte : la garde est côté client).

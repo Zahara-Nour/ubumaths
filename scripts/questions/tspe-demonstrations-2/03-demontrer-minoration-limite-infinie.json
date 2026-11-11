@@ -1,4 +1,5 @@
 {
+	"id": "0a9babf6-665e-43d9-b07d-fe6306f2a592",
 	"title": "Démontrer qu'une suite minorée par une suite qui tend vers +∞ tend vers +∞",
 	"description": "Démonstration à trous : définition de la limite de (vₙ) (choix), rang max(n₀ ; N₁) (choix), conclusion (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],

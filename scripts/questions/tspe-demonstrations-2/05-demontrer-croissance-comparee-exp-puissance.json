@@ -1,4 +1,5 @@
 {
+	"id": "c8571d78-ed50-4e25-b055-5acef075b591",
 	"title": "Démontrer la croissance comparée de xⁿ et de l'exponentielle en +∞",
 	"description": "Démonstration à trous : cas n = 1 (choix), X = x/n (case), conclusion (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],
