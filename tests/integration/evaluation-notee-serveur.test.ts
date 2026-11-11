@@ -470,8 +470,9 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			const instances = await oracle(first.attemptId);
 			const result = await submitEvaluationAttempt(actors(student), first.attemptId, {
 				answers: [
-					{ position: 0, ...rightAnswer(instances[0]) },
-					{ position: 1, ...wrongAnswer(instances[1]) },
+					// PR 4 bis : fin et durée de chaque question, pour sa trace
+					{ position: 0, ...rightAnswer(instances[0]), timeSpent: 5, endReason: 'validated' },
+					{ position: 1, ...wrongAnswer(instances[1]), timeSpent: 99, endReason: 'timeout' },
 					{ position: 2, ...rightAnswer(instances[2]) }
 				]
 			});
@@ -547,6 +548,39 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(traces).toHaveLength(3);
 			expect(traces!.every((t) => t.source === 'auto')).toBe(true);
 			expect(traces!.filter((t) => t.success)).toHaveLength(2);
+		});
+
+		it('PR 4 bis : traces au lieu « contrôle », avec durées, sans graine ni réponse', async () => {
+			const { data: traces, error } = await service
+				.from('skill_attempts')
+				.select(
+					'template_id, success, place, response_ms, allotted_ms, end_reason, seed, answer_parts, part_verdicts'
+				)
+				.eq('student_id', student.id);
+			expect(error).toBeNull();
+			const shown = (traces ?? [])
+				.map((t) => [
+					t.template_id,
+					t.success,
+					t.place,
+					t.response_ms,
+					t.allotted_ms,
+					t.end_reason,
+					t.seed,
+					t.answer_parts,
+					t.part_verdicts
+				])
+				.sort((a, b) => String(a).localeCompare(String(b)));
+			expect(shown).toEqual(
+				[
+					// Validée en 5 s sur 20 s allouées
+					[FILL_ID, true, 'evaluation', 5000, 20_000, 'validated', null, null, null],
+					// Temps écoulé : durée = durée allouée (99 s envoyées, ignorées)
+					[FILL_ID, false, 'evaluation', 20_000, 20_000, 'timeout', null, null, null],
+					// Ni fin ni durée envoyées : lieu seul
+					[QCM_ID, true, 'evaluation', null, null, null, null, null, null]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
 		});
 
 		it('C11 : renvoyer une tentative terminée → 409 AVEC la copie déjà notée, rien d’écrit', async () => {

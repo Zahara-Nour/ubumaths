@@ -82,6 +82,8 @@
 
 	// State
 	let answers = $state<Map<number, AnswerData>>(new Map());
+	// Questions validées : fin envoyée avec la copie d'un contrôle (PR 4 bis)
+	const validated = new Set<number>();
 	// Cartes des questions : en évaluation, ce qui est tapé sans « Valider » part aussi
 	let cards = $state<Array<ReturnType<typeof QuestionCard> | undefined>>([]);
 	let isCompleted = $state(false);
@@ -97,6 +99,7 @@
 	 */
 	function handleAnswerSubmit(index: number, answerData: AnswerData) {
 		if (!answers.has(index)) {
+			validated.add(index);
 			recordTrace(index, answerData, {
 				responseMs: Date.now() - session.startTime,
 				allottedMs: timeLimit * 1000,
@@ -185,7 +188,13 @@
 				userAnswer,
 				isCorrect: userAnswer?.isCorrect || false,
 				timeSpent: userAnswer?.timeSpent,
-				attempts: userAnswer?.attempts
+				attempts: userAnswer?.attempts,
+				// Non validée : temps écoulé au chrono ; laissée par « Terminer » : aucune fin
+				endReason: validated.has(index)
+					? ('validated' as const)
+					: reason === 'timeout'
+						? ('timeout' as const)
+						: undefined
 			};
 		});
 

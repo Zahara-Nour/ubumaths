@@ -214,7 +214,9 @@ const submittedAnswerSchema = z.object({
 		.min(0)
 		.max(MAX_ATTEMPT_ANSWERS - 1),
 	values: z.array(answerPartSchema).max(MAX_ANSWER_PARTS).optional(),
-	timeSpent: z.number().int().min(0).max(MAX_SECONDS).optional()
+	timeSpent: z.number().int().min(0).max(MAX_SECONDS).optional(),
+	/** Fin de la question, déclarée par la page (comme `timeSpent`), pour sa trace (PR 4 bis) */
+	endReason: z.enum(['validated', 'timeout']).optional()
 });
 
 export const submitAttemptSchema = z.object({

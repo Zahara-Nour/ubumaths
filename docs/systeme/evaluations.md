@@ -230,7 +230,14 @@ dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'un contrôle co
    (`is('completed_at', null)`) — un envoi concurrent retire ses réponses et rend la copie existante.
 5. Durée mesurée par le serveur (démarrage → envoi). `score` = note / 2 pour les anciens écrans.
 6. Si pas en retard : SRS nourri par le **verdict serveur** (`srsReviewsOf`, « su » = juste ou forme
-   non optimale non partielle, Q40), puis XP du compagnon (non bloquant).
+   non optimale non partielle, Q40), puis XP du compagnon (non bloquant). Une trace `auto` par
+   question, **lieu `evaluation`**, écrite au client **service** (la policy élève refuse ce lieu) ;
+   FSRS et paquet Programme au client de l'élève. Colonnes (`evaluationTraceOf`,
+   `src/lib/server/evaluation-trace.ts`) : durée allouée = délai de la question (Contrôle blanc) ou
+   durée de la course (Course) ; fin `validated` / `timeout` et durée de réponse (plafonnée ; temps
+   écoulé → la durée allouée) **déclarées par la page** (`endReason`, `timeSpent`, envoyés même pour
+   une question vide) ; fin absente (laissée par « Terminer », ancien onglet) → ni durée ni fin. Ni
+   graine (D18), ni réponse ni verdict par case (dans `test_answers`). Copie en retard : aucune trace.
 
 `EvaluationResults` affiche la réponse telle quelle : rien n'est recalculé dans le navigateur.
 

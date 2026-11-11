@@ -302,3 +302,24 @@ Réalisé (2026-11-11) :
      aussi `student_self` hors `review`, ou les badges ignorent le déclaré hors carte.
   2. _Doublon_ : une coupure réseau après l'écriture fait renvoyer la trace (2 lignes, 2 révisions
      FSRS). Pistes : pas de nouvel essai après une exception réseau, ou clé d'idempotence (migration).
+
+### PR 4 bis — traces d'un contrôle assigné (2026-11-11)
+
+Phase 0 validée par David (option A) :
+
+- **Nominal** : copie envoyée à temps → une trace `auto` par question, lieu `evaluation`, réussie
+  selon le verdict du serveur (Q40), écrite **au client service** (policy élève : `evaluation`
+  refusé, #2548). FSRS et paquet Programme : client de l'élève, inchangés.
+- **Ni graine** (D18 : l'élève lit ses traces ; la graine reste dans la copie, Q-A) **ni réponse /
+  verdict par case** (refusés en base pour `evaluation`, déjà dans `test_answers`).
+- **Contrôle blanc** : durée allouée = `delay_seconds` ; durée de réponse = durée envoyée plafonnée ;
+  fin `validated` / `timeout`.
+- **Course** : durée allouée = durée de la course ; validée → `validated` ; non validée au chrono →
+  `timeout`, durée de réponse = durée allouée ; laissée par « Terminer » → ratée, sans durée ni fin.
+- **Option A** : la page envoie `endReason` + `timeSpent` par question, **même vide** (Zod,
+  facultatifs) ; ancien onglet sans ces champs → trace sans durée ni fin. Une réponse vide reste
+  jugée vide.
+- **Limites** : copie en retard (Q37) → aucune trace ; 409 → rien de neuf ; aperçu → pas de tentative.
+- **Erreur** : traces non écrites → journal serveur, la copie reste notée. Jamais de blocage.
+- **Accès** : personne ne lit rien de neuf (durées déjà dans `test_answers.time_spent`) ; seul
+  l'écrivain change (serveur au lieu du jeton de l'élève). Pas de migration.
