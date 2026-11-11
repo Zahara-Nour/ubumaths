@@ -29,7 +29,13 @@ export type ReviewSource =
 
 /** Une carte de la séance, quelle que soit sa source. */
 export type SessionCard =
-	| { key: string; kind: 'template'; instance: QuestionInstance }
+	| {
+			key: string;
+			kind: 'template';
+			instance: QuestionInstance;
+			/** Notion du modèle, `null` si inconnue (réactions du Palotin en séance) */
+			notionId: string | null;
+	  }
 	| { key: string; kind: 'custom'; frontContent: TemplateMarkdown; backContent: TemplateMarkdown };
 
 export interface SessionPayload {
@@ -44,9 +50,17 @@ const instanceSchema = z.custom<QuestionInstance>(
 	(value) => typeof value === 'object' && value !== null
 );
 
+/** Notion du modèle ; absente ou mal formée : inconnue (la carte reste) */
+const notionIdSchema = z.string().max(100).nullable().optional().catch(null);
+
 /** `GET /api/srs/review/due` : une carte de paquet (modèle ou carte libre). */
 const deckCardSchema = z.discriminatedUnion('cardType', [
-	z.object({ cardId: z.string(), cardType: z.literal('template'), instance: instanceSchema }),
+	z.object({
+		cardId: z.string(),
+		cardType: z.literal('template'),
+		instance: instanceSchema,
+		notionId: notionIdSchema
+	}),
 	z.object({
 		cardId: z.string(),
 		cardType: z.literal('custom'),
@@ -56,7 +70,11 @@ const deckCardSchema = z.discriminatedUnion('cardType', [
 ]);
 
 /** `GET /api/srs/chapters/[id]/due` : une question du paquet du chapitre. */
-const chapterCardSchema = z.object({ templateId: z.string(), instance: instanceSchema });
+const chapterCardSchema = z.object({
+	templateId: z.string(),
+	instance: instanceSchema,
+	notionId: notionIdSchema
+});
 
 // Functions
 
@@ -117,13 +135,23 @@ function toSessionCard(source: ReviewSource, rawCard: unknown): SessionCard | nu
 	if (source.kind === 'chapter') {
 		const parsed = chapterCardSchema.safeParse(rawCard);
 		return parsed.success
-			? { key: parsed.data.templateId, kind: 'template', instance: parsed.data.instance }
+			? {
+					key: parsed.data.templateId,
+					kind: 'template',
+					instance: parsed.data.instance,
+					notionId: parsed.data.notionId ?? null
+				}
 			: null;
 	}
 	const parsed = deckCardSchema.safeParse(rawCard);
 	if (!parsed.success) return null;
 	if (parsed.data.cardType === 'template') {
-		return { key: parsed.data.cardId, kind: 'template', instance: parsed.data.instance };
+		return {
+			key: parsed.data.cardId,
+			kind: 'template',
+			instance: parsed.data.instance,
+			notionId: parsed.data.notionId ?? null
+		};
 	}
 	return {
 		key: parsed.data.cardId,

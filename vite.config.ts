@@ -6,6 +6,7 @@ import { readFileSync } from 'fs';
 import { Features } from 'lightningcss';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { baseTestConfig } from './vitest.base.config';
+import { moduleSideEffects } from './scripts/side-effect-modules';
 
 // Read version from package.json at build time
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
@@ -46,7 +47,7 @@ function mathliveFontDisplay(): Plugin {
 
 // Retour typé explicitement : sur une fonction `async`, l'inférence ne
 // retrouve pas la bonne surcharge de `defineConfig` (TS2769).
-export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
+export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig> => {
 	// Load environment variables for server-side code
 	const env = loadEnv(mode, process.cwd(), '');
 	Object.assign(process.env, env);
@@ -169,7 +170,13 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 			// hooks.server.ts) la bloquerait. KaTeX_Size3 (3,6 Ko, sous le seuil de
 			// 4 Ko) l'était depuis `mathlive/static.css`, sur toute page à maths.
 			// `undefined` : la règle par défaut de Vite pour les autres fichiers.
-			assetsInlineLimit: (filePath) => (FONT_FILE.test(filePath) ? false : undefined)
+			assetsInlineLimit: (filePath) => (FONT_FILE.test(filePath) ? false : undefined),
+			// Build client : les modules `.ts` de `src/lib` sont déclarés sans effet de
+			// bord, sauf la liste de `scripts/side-effect-modules.ts` (garde : son test).
+			// Sans ça, une constante construite par un appel garde son module entier :
+			// ~210 Ko gzip de trop sur 67 pages à markdown (mesuré le 2026-11-11).
+			// Le serveur n'est pas concerné : son poids ne se télécharge pas.
+			...(isSsrBuild ? {} : { rolldownOptions: { treeshake: { moduleSideEffects } } })
 		},
 
 		// Sous Vite 8, le CSS du build est compressé par Lightning CSS (SvelteKit impose

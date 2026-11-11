@@ -20,7 +20,7 @@ couvre:
 
 > Remplace les sept fichiers de [`srs/`](../archive/systeme-2026-06/srs/README.md) (juin 2026, archivés), écrits au temps de la
 > « famille A » du référentiel, abandonnée ([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)).
-> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04 ; composition relue sans ancienne forme (lot 4a) le 2026-11-04 ; contenu d'une trace de `api/skill-attempts` (ADR 0038) le 2026-11-11.
+> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04 ; composition relue sans ancienne forme (lot 4a) le 2026-11-04 ; contenu d'une trace de `api/skill-attempts` (ADR 0038) le 2026-11-11 ; notion des cartes dues (réactions du Palotin) le 2026-11-11.
 
 ## À quoi ça sert
 
@@ -272,6 +272,12 @@ Une écriture faite à son client rend 42501 (INSERT) ou 0 ligne sans erreur (UP
 En fin de séance, une fois la dernière carte enregistrée, `ReviewSession` demande les nouveautés de
 la Chatterie (`fetchMathouNews`) et les affiche sous le gain du Palotin (`MathouNewsCard`) : voir
 [mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).
+
+Pendant la séance, le Palotin peut réagir une fois (5 réussites d'affilée, note ≥ 3 ; 3 erreurs sur
+une même notion) : la carte suivante attend son départ. Pour cela, les deux `due` joignent à chaque
+carte de modèle la notion du modèle (`notionId`, `classification_node_id`), lue par
+`toSessionPayload` (absente ou mal formée : `null`). Voir
+[buddy-palotins.md § Réactions en séance](buddy-palotins.md#reactions-en-seance-2026-11-11).
 
 « Quitter », en tête de séance (`BackLink kind="quit"`, [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)), ramène là
 où elle a commencé : la page du paquet, ou le Programme si elle en part (`?depuis=programme`, posé par

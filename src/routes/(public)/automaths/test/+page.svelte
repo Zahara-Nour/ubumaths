@@ -63,6 +63,22 @@
 	let newsRequest = 0;
 
 	/**
+	 * Réactions du Palotin pendant l'Entraînement libre d'un élève connecté
+	 * (chantier `palotins`, partie C) ; jamais en contrôle. La notion d'une
+	 * question est celle de son modèle. Sans Palotin (prof, Palotin illisible),
+	 * personne ne réagit et rien n'attend.
+	 */
+	const palotinReactions = $derived(
+		data.user && !assignmentId
+			? {
+					notionOf: (templateId: string) =>
+						questionTemplatesCache.templates.find((template) => template.id === templateId)
+							?.classification_node_id ?? null
+				}
+			: null
+	);
+
+	/**
 	 * Parse URL parameters and initialize test session
 	 */
 	async function initializeTest() {
@@ -521,6 +537,7 @@
 					showResults={!attemptId}
 					{buddyGain}
 					{mathouNews}
+					{palotinReactions}
 				/>
 			{/key}
 		{:else if testSession.mode === 'course'}

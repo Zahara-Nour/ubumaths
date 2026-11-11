@@ -30,10 +30,10 @@
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import { answerToCopy } from '$lib/atelier/copy-text';
 	import { insertProposal, proposalsFor, type Proposal } from '$lib/atelier/completion';
-	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import FormulaText from './FormulaText.svelte';
+	import StepsOnDemand from './StepsOnDemand.svelte';
 	import { definedName } from '$lib/atelier/desk.svelte';
 	import {
 		readStepsVerbosity,
@@ -741,7 +741,7 @@
 								>
 							</div>
 						{/if}
-						<GeneratedStepsCorrection
+						<StepsOnDemand
 							steps={shownSteps(entry, { steps: lineSteps.steps, summary: lineSteps.summary })}
 						/>
 					</div>
