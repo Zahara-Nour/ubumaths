@@ -110,7 +110,10 @@ Deux `load` racine, dans l'ordre :
 vérifiée) ; il appelle `invalidate('supabase:auth')`, qui relance le `load` racine et la
 vérification serveur. `SIGNED_IN` du même utilisateur (HMR, retour sur l'onglet) est ignoré, et
 `TOKEN_REFRESHED` n'invalide que toutes les 30 min au plus (`REFRESH_INTERVAL_MS`), via
-`sessionStorage`.
+`sessionStorage`, et jamais quand une nouvelle version de l'appli a été déployée depuis le
+chargement de l'onglet ([coquille-et-caches.md](coquille-et-caches.md#onglet-resté-ouvert-pendant-un-déploiement)).
+Si l'import de `$app/navigation` échoue (fichier supprimé par un déploiement), la connexion ou la
+déconnexion recharge la page entière.
 
 ### ⚠️ Safari/WebKit TDZ — le chunk du layout racine
 
