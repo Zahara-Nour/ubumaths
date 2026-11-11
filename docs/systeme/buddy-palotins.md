@@ -331,8 +331,9 @@ le visiteur ni le prof ne telechargent son code). La zone se lit dans l'adresse
   enchaine la suivante s'il y en a, puis repart. Changer de page vers une seance ou la maison
   l'interrompt ; ce qui reste en file attend la page de passage suivante.
   - **importants**, une fois chacun, hors plafond : « tu m'as manque » (acquitte a l'affichage),
-    sinon Constance perdue (deja remise a zero par la lecture de presence : jamais perdue, elle
-    attend la premiere page de passage), puis nouveautes de la Chatterie (avec le lien) ;
+    sinon Constance perdue (deja remise a zero par la lecture de presence : jamais bloquee par le
+    plafond ni par une seance, elle attend la premiere page de passage ; gardee en memoire de
+    l'onglet seulement, un rechargement avant cette page la perd), puis nouveautes de la Chatterie (avec le lien) ;
   - **spontanes**, au plus un toutes les **10 minutes** (`PASSAGE_COOLDOWN`), tous onglets
     confondus : Mathoux en sieste (avec le lien). Heure du dernier passage
     dans `localStorage` (`chiphre:palotin:dernier-passage`, `createPassageClock`) ; stockage

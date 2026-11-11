@@ -142,7 +142,9 @@
 	 * (retour d'absence ou Constance perdue, nouveautés de la Chatterie), puis le
 	 * passage spontané si le plafond le permet (Mathoux en sieste).
 	 * La Constance perdue est importante : la lecture de présence l'a déjà remise
-	 * à zéro, sa réplique ne reviendrait jamais (décision de David, 2026-11-11).
+	 * à zéro, sa réplique ne reviendrait pas au chargement suivant (décision de
+	 * David, 2026-11-11). Elle reste en mémoire de l'onglet : un rechargement
+	 * avant la première page de passage la perd encore (pas d'acquittement serveur).
 	 */
 	async function planPassages() {
 		if (planning || !buddy) return;

@@ -137,9 +137,10 @@
 	}
 
 	/**
-	 * Réplique du retour : « tu m'as manqué » après une longue absence ; la
-	 * Constance perdue pendant cette absence reste remise à zéro, mais sa
-	 * réplique ne s'affiche pas (décision du 2026-10-21).
+	 * Réplique du retour : « tu m'as manqué » après une longue absence, sinon
+	 * la Constance perdue. Une Constance perdue pendant l'absence reste remise
+	 * à zéro, mais sa réplique ne s'affiche pas : « tu m'as manqué » la remplace
+	 * (décision du 2026-10-21).
 	 */
 	function welcomeBackContext(): BuddyMessageContext | null {
 		if (longAbsence) return 'long_absence';
