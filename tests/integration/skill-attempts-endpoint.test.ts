@@ -125,12 +125,14 @@ function buildLocals(
 	};
 }
 
-// Lieu exigé par l'API (ADR 0038) : Flash-cards par défaut, sauf lieu donné.
+// Lieu exigé par l'API (ADR 0038) : Saisie par défaut (corrigée par l'application,
+// source `auto`), sauf lieu donné. `flash_cards` est « déclaré » (`student_self`) :
+// couvert par `srs-memoire-serveur.test.ts`.
 function buildRequest(body: Record<string, unknown>): Request {
 	return new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ place: 'flash_cards', ...body })
+		body: JSON.stringify({ place: 'typing', ...body })
 	});
 }
 
