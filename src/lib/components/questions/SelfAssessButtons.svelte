@@ -42,6 +42,8 @@
 	// Functions
 	function isTyping(target: EventTarget | null): boolean {
 		if (!(target instanceof HTMLElement)) return false;
+		// Champ MathLive : son hôte n'est pas `contentEditable`
+		if (target.closest('math-field')) return true;
 		return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
 	}
 
