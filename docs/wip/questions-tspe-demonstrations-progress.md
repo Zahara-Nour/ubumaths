@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2563 (lot 2 rangé et tagué en prod)._
+_Mis à jour le 2026-11-11, page à cocher du lot 2 publiée._
 
-- **État** : lot 1 publié (§ 5) ; lot 2 (388, 389, 390, 391, 405) en brouillon en prod, rangé et tagué (§ 7).
-- **Prochaine action** : page à cocher du lot 2 (modèle : celle du lot 1, https://claude.ai/artifact/YPeen4p6oK8DdJs1hkhC6d,
-  à relire avec `Artifact read`) → David relit → verdicts → `publier-lot.ts` (David) ; puis lot 3 (421, 448, 449, 471,
-  472).
-- **En attente de David** : rien pour l'instant (la page à cocher est à faire).
+- **État** : lot 1 publié (§ 5) ; lot 2 (388, 389, 390, 391, 405) en brouillon en prod, rangé et tagué (§ 7) ; page à
+  cocher du lot 2 publiée (§ 8).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts` sur https://claude.ai/artifact/DCDGpXzdqBKuo28RztAXG7,
+  compter 5) → `publier-lot.ts --dir scripts/questions/tspe-demonstrations-2` (David) ; puis lot 3 (421, 448, 449, 471, 472).
+- **En attente de David** : relecture de la page à cocher du lot 2.
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
   simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` en HEAD détachée sur `origin/main` ; nouvelle
@@ -223,3 +223,9 @@ aucun finding. Accès : personne de plus (Q5).
 Mergée (#2563, CI verte du premier coup) ; `check:migrations --pr` vert ; `db:migrate` depuis le dépôt principal (seule
 migration en attente) ; vérifié en prod : 5 brouillons, chacun sur sa sous-notion avec son seul point, `updated_at`
 inchangé. Garde des niveaux : aucun niveau manquant.
+
+## 8. Lot 2 : page à cocher (2026-11-11)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-demonstrations-2`, lu en base prod : 5 brouillons `draft`, chacun sur son
+point. Page : https://claude.ai/artifact/DCDGpXzdqBKuo28RztAXG7 (capacité `db`) ; 5 alertes attendues (bloc ranger non
+dessiné, à jouer dans l'aperçu admin) ; base `verdicts` vide à la publication.
