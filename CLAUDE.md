@@ -12,11 +12,10 @@ Règles seulement. Carte de la doc : [docs/README.md](docs/README.md) (`docs/sys
 
 ## ⚠️ Gros process : un seul à la fois — LIRE
 
-- `pnpm check`, `pnpm build`, `pnpm lint` : **un seul à la fois**, sous le même verrou que `check:incremental` → **exit 2** = un autre le tient : **attendre, ne pas contourner**. `pnpm lint` (~9 min) **en arrière-plan**.
-- ⛔ `npx tsc --noEmit` et `svelte-check` sans `--tsgo`/`--incremental` : meurent sur le tas de Node (exit 134).
-- **Check du quotidien : `pnpm check:incremental`** (tsgo, ~18 s, **0 erreur exigée** ; `FRESH=1` à froid, `FORCE=1` pour rejouer). En cas de désaccord, la CI (`pnpm check`) fait foi.
-- `pnpm lint:fast` (~2,5 s, règles d'erreur de la CI, lancé au `pre-push`). Pre-commit = `oxlint` + `prettier` (~2 s) : **pas de `--no-verify`**. Typecheck hors hook → `check:incremental` avant de pousser.
-- ⚠️ Un hook qui crashe peut **stasher** le travail : commiter tôt ; après un crash, `git stash list`.
+- `pnpm check` / `build` / `lint` : un seul à la fois, verrou partagé avec `check:incremental` → **exit 2 = attendre, ne pas contourner**. `pnpm lint` (~9 min) en arrière-plan.
+- ⛔ `npx tsc --noEmit` et `svelte-check` sans `--tsgo`/`--incremental` : exit 134 (tas de Node).
+- **Quotidien : `pnpm check:incremental`** (~18 s, 0 erreur ; `FRESH=1` à froid, `FORCE=1` pour rejouer) ; la CI (`pnpm check`) fait foi.
+- Pre-commit = oxlint + prettier, pre-push = `lint:fast` : **pas de `--no-verify`**. Un hook qui crashe peut **stasher** : commiter tôt, puis `git stash list`.
 
 ## Commandes
 

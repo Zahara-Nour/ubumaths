@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, après `063254c48` (commits de doc directs sur `main`, pas de PR)._
+_Mis à jour le 2026-11-11 (commits de doc directs sur `main`, pas de PR)._
 
-- **État** : `CLAUDE.md` 15 966 o (plafond 15 Ko), `MEMORY.md` 13 176 o (plafond 10 Ko) : tous deux encore au-dessus. Les points 1, 4, 9, 10, 11 et 12 du ménage sont appliqués.
-- **Prochaine action** : appliquer ce que David tranchera sur les points 2, 6, 7 et 8, puis proposer ligne par ligne d'alléger « Projets — en cours » de `MEMORY.md` (lignes 82-102).
-- **En attente de David** : (2) raccourcir « Gros process » de `CLAUDE.md` (~0,5 Ko) ? (6) sortir de l'index « Références métier » et « Pièges techniques », en gardant la ligne du BO (~1,2 Ko) ? (7) passer la ligne « Aussi : … » dans `archives.md` ? (8) « Mode décimal » et « Dépendances retenues » sont-ils clos ?
-- **Pièges en cours** : points 3 et 5 écartés, car leur prémisse était fausse (règles absentes de `CLAUDE.md` ; liste des modèles d'agents absente de `.claude/agents/README.md`). Sauvegarde de la mémoire d'avant le ménage dans le dossier temporaire de la session (perdue au redémarrage).
+- **État** : `CLAUDE.md` 15 701 o (plafond 15 Ko), `MEMORY.md` 11 883 o (plafond 10 Ko) : tous deux encore au-dessus. Points 1, 2, 4, 6, 7, 8, 9, 10, 11 et 12 appliqués (2 : « Gros process » en 4 lignes ; 6 : « Références métier » sauf le BO et « Pièges techniques » → `archives.md` § « Sortis de l'index le 2026-11-11 » ; 7 : ligne « Aussi » idem ; 8 : « Mode décimal » clos, « Dépendances retenues » gardé).
+- **Prochaine action** : proposer ligne par ligne d'alléger « Projets — en cours » de `MEMORY.md`, puis chercher ~0,4 Ko de plus dans `CLAUDE.md`.
+- **En attente de David** : rien.
+- **Pièges en cours** : points 3 et 5 écartés (prémisse fausse). Copie de `MEMORY.md` et `archives.md` d'avant le 2026-11-11 dans le dossier temporaire de la session (perdue au redémarrage).
 - **Worktree / branche** : aucun (dépôt principal, `main`, doc seule).
 
 ## Historique
