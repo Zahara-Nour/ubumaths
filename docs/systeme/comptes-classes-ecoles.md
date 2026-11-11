@@ -7,7 +7,7 @@ couvre:
   - 'src/routes/(protected)/dashboard/admin/{classes,schools,users,import-students,settings,backup}/**'
   - 'src/routes/(protected)/dashboard/teacher/{classes,students,welcome-email,settings}/**'
   - 'src/routes/(protected)/dashboard/profile/**'
-  - 'src/lib/server/{students,staff-directory}.ts'
+  - 'src/lib/server/{students,staff-directory,school-year-errors}.ts'
   - 'src/lib/server/validation/{classes,schools,school-config,admin,backup}.ts'
   - 'src/lib/components/admin/**'
   - 'src/lib/server/admin/**'
@@ -85,7 +85,10 @@ de 2nde de répondre une fois à la question d'âge.
 - Organisation d'une école (années, trimestres, vacances, grille horaire, duplication d'une année) :
   `src/routes/(protected)/dashboard/admin/schools/[schoolId]/organisation/+page.server.ts`. Les
   schémas viennent de `src/lib/server/validation/academic.ts`, décrit dans
-  [cours-et-chapitres.md](cours-et-chapitres.md).
+  [cours-et-chapitres.md](cours-et-chapitres.md). Un doublon refusé par la base (nom déjà pris,
+  `unique_school_year` ; autre année déjà active, `idx_one_active_year_per_school`) rend un 409 au
+  message clair, via `schoolYearConflictMessage` (`src/lib/server/school-year-errors.ts`), dans
+  les actions qui créent, modifient ou dupliquent une année.
 
 ### Admin : classes
 
