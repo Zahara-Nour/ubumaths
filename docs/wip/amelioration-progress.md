@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2555 et #2556._
+_Mis à jour le 2026-11-11, après le `deploy:prod` 0.82.0 (mesure de l'atelier à froid)._
 
-- **État** : piste 4 (c) close (#2545, #2552, #2553) ; débordement de l'atelier sur bureau corrigé (#2555) ; tests navigateur de la CI dans l'image Playwright, plus d'`apt-get` (#2556) ; rien de #2535 à #2555 en prod · **Prochaine action** : mesure de l'atelier à froid après `deploy:prod` (banc 4G ×4/×6) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; lignes #2545, #2553 et #2555 de `verifications-manuelles.md` · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard ; garde de version de l'image Playwright = avertissement, pas échec (groupe Dependabot fusionné seul) · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence — garde = test serveur ; `chalk` cité par les seuls `cli.ts`/`repl.ts`/`terminal-palette.ts` (garde) ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; les dimensions de la silhouette recopient `AtelierContainer`/`ObjectPanel`/`ToolButton` ; tag de l'image `mcr.microsoft.com/playwright` (`quality.yml`) à monter avec `playwright` (avertissement « Image Playwright en retard ») · **Worktree / branche** : aucun
+- **État** : 0.82.0 en prod (#2535 à #2556 compris) ; atelier à froid mesuré (section « Après 0.82.0 ») : 164 JS / 1,44 Mio, console utilisable en 3,1 s en 4G, quel que soit le bridage CPU ; silhouette à 0,27 s · **Prochaine action** : David choisit la suite — rien, A/B local ancien/nouveau build, ou piste 3 (INP) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **À vérifier quand des élèves auront utilisé le site** : dans `error_logs`, qu'un même message INP ne revient plus ×10 pour un élève (aucune ligne INP depuis le 2026-11-08) ; lignes #2545, #2553 et #2555 de `verifications-manuelles.md` (David) · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard ; garde de version de l'image Playwright = avertissement, pas échec · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence — garde = test serveur ; `chalk` cité par les seuls `cli.ts`/`repl.ts`/`terminal-palette.ts` (garde) ; `db:migrate` refusé par le classifieur du mode auto → `! pnpm db:migrate` ; dimensions de la silhouette recopiées de `AtelierContainer`/`ObjectPanel`/`ToolButton` ; tag de l'image Playwright (`quality.yml`) à monter avec `playwright` · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -440,3 +440,32 @@ Relevé (code + prod en lecture seule) puis décisions de David :
 - `security-auditor` : aucun finding bloquant (suppression de compte et cascades en service-role,
   aucun DELETE de `class_members` dans `src`). `code-reviewer` : rien de bloquant.
 - Appliquée en **local** seulement (psql sous verrou). Prod : en attente de l'accord de David.
+
+## Après 0.82.0 — atelier à froid (2026-11-11, rien de modifié)
+
+Banc Playwright sur la prod (`https://www.chiph.re/atelier`), contexte neuf et cache coupé à chaque
+essai, 1280×800, 3 essais par case. 4G = CDP `emulateNetworkConditions` 9 Mbit/s descendant,
+1,5 Mbit/s montant, 165 ms de latence (« Fast 4G » de Chrome). « Console utilisable » = champ
+« Calcul, définition ou commande » visible, cliqué et rempli. Script jetable (scratchpad).
+
+| Réseau | CPU | Silhouette | Console utilisable | JS chargé                               |
+| ------ | --- | ---------- | ------------------ | --------------------------------------- |
+| 4G     | ×1  | 0,28 s     | 3,08 s             | 164 fichiers, 1 475 Kio (avec en-têtes) |
+| 4G     | ×4  | 0,25-0,29  | 3,07-3,10          | idem                                    |
+| 4G     | ×6  | 0,27-0,31  | 3,11-3,14          | idem                                    |
+| rapide | ×1  | 0,10       | 0,89               | 166 fichiers, 1 482 Kio                 |
+| rapide | ×4  | 0,15-0,17  | 1,0-1,5            | idem                                    |
+| rapide | ×6  | 0,14-0,22  | 1,04-1,11          | idem                                    |
+
+- (1er essai de la série 4G ×1 écarté : 5,4 s, démarrage à froid du serveur.)
+- JS : 199 → 164 fichiers ; 1,7 Mo → 1,44 Mio. La silhouette apparaît dès 0,3 s en 4G (avant :
+  écran vide jusqu'à la fin du JS).
+- **En 4G, le bridage CPU ne change rien** (×1 = ×6 = 3,1 s) : c'est le réseau qui borne
+  (octets et allers-retours), plus le calcul.
+- ⚠️ Le temps de la console n'est **pas comparable** aux 3,0-3,7 s du premier banc : ses réglages
+  4G n'avaient pas été notés, et les anciens déploiements Vercel sont protégés (SSO). Une vraie
+  comparaison demanderait de construire l'ancien et le nouveau commit en local et de les servir
+  au même banc.
+- `error_logs` depuis le déploiement : aucune ligne INP (aucune depuis le 2026-11-08) ; seule
+  erreur, `Cannot read properties of undefined (reading 'id')` sur `/dev/modeles?noeud=…&statut=draft`
+  (admin, 4 fois, chunk `MLmtAr99` de l'ancien build) — hors de ce chantier.
