@@ -24,7 +24,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import CustomFlashCard from './CustomFlashCard.svelte';
 	import FSRSButtons from './FSRSButtons.svelte';
@@ -107,6 +107,8 @@
 	const currentCard = $derived(cards[currentIndex]);
 	// Réactions du Palotin : une séance par composant
 	const seanceReactions = createSeanceReactions();
+	// Séance quittée pendant le passage du Palotin : rien ne continue
+	let destroyed = false;
 	const totalCards = $derived(cards.length);
 	const progressPercent = $derived(totalCards > 0 ? (currentIndex / totalCards) * 100 : 0);
 	const remainingCards = $derived(totalCards - currentIndex);
@@ -115,6 +117,10 @@
 	// ============================================================================
 	// INITIALIZATION
 	// ============================================================================
+
+	onDestroy(() => {
+		destroyed = true;
+	});
 
 	onMount(async () => {
 		sessionStartTime = Date.now();
@@ -209,6 +215,7 @@
 			// Le Palotin peut réagir : la carte suivante attend son départ
 			const waiting = reactTo(currentCard, grade);
 			if (waiting) await waiting;
+			if (destroyed) return;
 
 			// Move to next card
 			await moveToNextCard();

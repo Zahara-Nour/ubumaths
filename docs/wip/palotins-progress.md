@@ -138,6 +138,11 @@ Concerne toutes les pages connectées de l'élève hors maison : `/dashboard/stu
   - **Réponse de David (2026-11-11)** : passage important, hors plafond (B5). Petite PR `fix/palotins-constance`.
   - Même PR (#2546) : les 2 tests d'intégration `palotin-boucle` sur la Constance perdue appelaient encore le layout de l'espace élève (rouges sur `main` depuis #2544, signalé par la session `amelioration`) ; ils passent par `GET /api/student/buddy/presence`, ajoutée au filtre `paths` de `nightly-integration.yml`.
 
+## Revues de la PR 2 (2026-11-11)
+
+- `security-auditor` : aucun bloquant. `notionId` (= `classification_node_id`) déjà public par `/api/questions/templates/all` ; aucune réaction en contrôle (garde de la page et `collectOnly`).
+- `code-reviewer` (Sonnet) : aucun bloquant. Corrigé : garde de démontage dans `ReviewSession` après l'attente. Gardés tels quels : une réaction qui ne peut pas être jouée (état ouvert, présence pas encore lue) est perdue pour la séance (conforme à « une au plus ») ; le chrono de la question répondue continue pendant la pause (à voir en essai manuel).
+
 ## Historique
 
 - 2026-11-11 : discussion, recommandations validées par David, phase 0 écrite puis validée (quiz sur l'accueil, aucun passage pendant la Course aux nombres) ; indices et rappels renvoyés à un autre chantier.
