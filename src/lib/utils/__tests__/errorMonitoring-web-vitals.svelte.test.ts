@@ -17,6 +17,8 @@ import { captureError, flushErrors, initWebVitals } from '../errorMonitoring';
 
 /** Les messages réellement envoyés à l'API */
 let sent: string[] = [];
+/** Les corps complets envoyés (adresse, contexte) */
+let bodies: { message: string; url: string; context?: Record<string, unknown> }[] = [];
 
 /** Rappels des PerformanceObserver, par type observé */
 const observers = new Map<string, (list: { getEntries: () => unknown[] }) => void>();
@@ -55,12 +57,15 @@ function waitSixMinutes() {
 beforeEach(() => {
 	vi.useFakeTimers();
 	sent = [];
+	bodies = [];
 	observers.clear();
 	vi.stubGlobal('PerformanceObserver', FakeObserver);
 	vi.stubGlobal(
 		'fetch',
 		vi.fn(async (_url: string, init?: { body?: string }) => {
-			sent.push(JSON.parse(init?.body ?? '{}').message);
+			const body = JSON.parse(init?.body ?? '{}');
+			sent.push(body.message);
+			bodies.push(body);
 			return new Response(null, { status: 200 });
 		})
 	);
@@ -122,5 +127,48 @@ describe('Web Vitals — INP et CLS une fois par valeur', () => {
 		await hideAndShow();
 
 		expect(sent).toContain('Web Vital INP: 1234ms (threshold: 200ms)');
+	});
+});
+
+describe('Web Vitals — INP compté sur les seules interactions', () => {
+	it("n'envoie rien pour un événement lent qui n'est pas une interaction", async () => {
+		emit('event', [{ duration: 1500, interactionId: 0, name: 'pointerover', startTime: 1 }]);
+		await hideAndShow();
+
+		expect(sent).toEqual([]);
+	});
+
+	it("rattache l'INP à la page où l'interaction a commencé", async () => {
+		const initial = window.location.href;
+		try {
+			history.pushState(null, '', '/atelier-inp-test');
+			const start = new PointerEvent('pointerdown', { bubbles: true });
+			window.dispatchEvent(start);
+			history.pushState(null, '', '/dashboard-inp-test');
+			emit('event', [
+				{ duration: 1700, interactionId: 41, name: 'pointerup', startTime: start.timeStamp + 3 }
+			]);
+			await hideAndShow();
+		} finally {
+			history.replaceState(null, '', initial);
+		}
+
+		expect(sent).toEqual(['Web Vital INP: 1700ms (threshold: 200ms)']);
+		expect(new URL(bodies[0].url).pathname).toBe('/atelier-inp-test');
+	});
+
+	it("joint le type d'événement et la cible, sans aria-label ni contenu saisi", async () => {
+		const button = document.createElement('button');
+		button.setAttribute('aria-label', "Sélectionner l'élève Léa Martin");
+		button.id = 'zoom-avant';
+		emit('event', [
+			{ duration: 1900, interactionId: 42, name: 'click', startTime: 1, target: button }
+		]);
+		await hideAndShow();
+
+		expect(bodies[0].context).toMatchObject({
+			event_name: 'click',
+			target: 'button#zoom-avant'
+		});
 	});
 });
