@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, PR 3 en cours (branche `feat/formes-de-serie-boutons`)._
+_Mis à jour le 2026-11-11, après #2551._
 
-- **État** : PR 1 (#2543), PR 2 (#2547), #2548 mergées (migration en prod) ; **PR 3** (deux boutons « Pas réussi / Réussi » partout, révision écrite `student_self` + lieu `review`, widget D retiré) codée, en revue · **Prochaine action** : PR 3 → CI → merge ; puis PR 4 = trace par question (Flash-cards, Contrôle blanc, Course) · **En attente de David** : rien · **Pour la PR 4** : traces d'un contrôle (lieu `evaluation`, durées) écrites par le **client service** (la policy élève les refuse) ; plafonner `response_ms` à `allotted_ms` côté client · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; une trace `student_self` n'est plus forcément une carte de cours (révision = lieu `review`) · **Worktree / branche** : `../ubumaths-wt-formes-de-serie`, `feat/formes-de-serie-boutons`
+- **État** : PR 1 (#2543), PR 2 (#2547), #2548 (migration en prod) et **PR 3 (#2551)** mergées : deux boutons « Pas réussi / Réussi » partout, révision écrite `student_self` + lieu `review`, widget D retiré · **Prochaine action** : PR 4 = trace par question dans Flash-cards, Contrôle blanc (renommage d'Entraînement), Course ; fin de série sans séance libre (gain du Palotin gardé) ; nouveau worktree `ubumaths-wt-formes-de-serie` depuis `origin/main` · **En attente de David** : rien · **Pour la PR 4** : traces d'un contrôle (lieu `evaluation`, durées) écrites par le **client service** (la policy élève les refuse) ; plafonner `response_ms` à `allotted_ms` côté client · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; une trace `student_self` n'est plus forcément une carte de cours (révision = lieu `review`, heatmap et anti-fraude la comptent comme l'ancienne `srs`) ; la séance de révision fait réagir le Palotin (#2550) · **Worktree / branche** : aucun (retirés après #2551)
 
 ## Décisions de David (2026-11-11)
 
