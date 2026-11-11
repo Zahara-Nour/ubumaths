@@ -10,13 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, page à cocher du lot 2 publiée._
+_Mis à jour le 2026-11-11, lot 2 publié._
 
-- **État** : lot 1 publié (§ 5) ; lot 2 (388, 389, 390, 391, 405) en brouillon en prod, rangé et tagué (§ 7) ; page à
-  cocher du lot 2 publiée (§ 8).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts` sur https://claude.ai/artifact/DCDGpXzdqBKuo28RztAXG7,
-  compter 5) → `publier-lot.ts --dir scripts/questions/tspe-demonstrations-2` (David) ; puis lot 3 (421, 448, 449, 471, 472).
-- **En attente de David** : relecture de la page à cocher du lot 2.
+- **État** : lots 1 et 2 publiés (§ 5, § 9).
+- **Prochaine action** : lot 3 (421, 448, 449, 471, 472), sur le modèle du lot 2 (§ 6) : fichiers sur une nouvelle branche.
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
   simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` en HEAD détachée sur `origin/main` ; nouvelle
@@ -229,3 +227,8 @@ inchangé. Garde des niveaux : aucun niveau manquant.
 `page-a-cocher.ts --dir scripts/questions/tspe-demonstrations-2`, lu en base prod : 5 brouillons `draft`, chacun sur son
 point. Page : https://claude.ai/artifact/DCDGpXzdqBKuo28RztAXG7 (capacité `db`) ; 5 alertes attendues (bloc ranger non
 dessiné, à jouer dans l'aperçu admin) ; base `verdicts` vide à la publication.
+
+## 9. Lot 2 : publication (2026-11-11)
+
+Verdicts lus : 5/5 « ok », sans commentaire. `publier-lot.ts` en simulation (5 brouillons passent le contrôle), puis
+`--publier` lancé par David : 5/5 publiés, statut relu en base (MCP).
