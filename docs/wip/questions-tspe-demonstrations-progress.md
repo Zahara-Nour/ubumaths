@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11 : lot 1 écrit, #2557 ouverte._
+_Mis à jour le 2026-11-11, après #2557 (fichiers du lot 1 mergés)._
 
-- **État** : phase 0 validée (D1, § 2) ; lot 1 écrit (§ 3), PR des fichiers #2557 ouverte.
-- **Prochaine action** : #2557 verte → merge ; puis David crée les brouillons en prod, migration de rangement.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-demonstrations-1 --publier` depuis le dépôt principal à jour, après le merge.
+- **État** : phase 0 validée (D1, § 2) ; lot 1 : fichiers mergés (#2557), pas encore en prod.
+- **Prochaine action** : David crée les brouillons → relevé prod → migration de rangement (4 nœuds, tags TSPE-321/548/359/373), nouvelle branche depuis `origin/main` → page à cocher → publication ; puis lot 2.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-demonstrations-1 --publier` depuis le dépôt principal à jour.
 - **Pièges en cours** : aucun.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-demonstrations-1`.
 
@@ -142,4 +142,4 @@ Pièges du lot : une case à réponse nombre seul demande un `?` dans une formul
 « Blank count mismatch » ; dans l'aperçu admin, la graine fixe la variation (graines 7, 12, 1, 4 → variations 1 à 4
 pour un modèle à 4 variations) ; la saisie dans le champ MathLive ne passe pas par l'automatisation de Chrome.
 
-PR des fichiers : #2557.
+PR des fichiers : #2557, mergée (CI verte du premier coup).
