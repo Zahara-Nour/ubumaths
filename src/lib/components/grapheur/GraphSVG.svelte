@@ -266,6 +266,25 @@
 	const CLICK_TOLERANCE = 4;
 
 	/**
+	 * Silence après le dernier cran de molette au-delà duquel le geste est fini.
+	 *
+	 * La molette est une interaction, comme le glisser : pendant qu'elle tourne,
+	 * les analyses (points remarquables, intersections) dorment, et ne tournent
+	 * qu'une fois à l'arrêt. Sans cela, chaque cran relançait l'analyse de toutes
+	 * les courbes et les intersections de toutes les paires — ~150 ms par cran
+	 * avec dix courbes sur un appareil modeste (mesures du 2026-11-11).
+	 */
+	const WHEEL_END_DELAY = 150;
+
+	/** Minuteur de fin de molette, relancé à chaque cran. */
+	let wheelEndTimer: ReturnType<typeof setTimeout> | null = null;
+
+	/** Un démontage pendant la molette ne laisse pas de minuteur derrière lui. */
+	$effect(() => () => {
+		if (wheelEndTimer !== null) clearTimeout(wheelEndTimer);
+	});
+
+	/**
 	 * Handle pointer down - initiate dragging (pan or axis scale)
 	 */
 	function handlePointerDown(e: PointerEvent): void {
@@ -400,7 +419,16 @@
 
 		// Zoom factor: scroll up = zoom in, scroll down = zoom out
 		const factor = e.deltaY < 0 ? 0.9 : 1.1;
+		grapheurStore.setInteracting(true);
 		grapheurStore.zoom(factor, mathPoint.x, mathPoint.y);
+
+		if (wheelEndTimer !== null) clearTimeout(wheelEndTimer);
+		wheelEndTimer = setTimeout(() => {
+			wheelEndTimer = null;
+			// Un glisser commencé pendant la molette garde la main : c'est son
+			// relâchement qui clôt l'interaction.
+			if (!isDragging) grapheurStore.setInteracting(false);
+		}, WHEEL_END_DELAY);
 	}
 
 	// ==========================================================================
