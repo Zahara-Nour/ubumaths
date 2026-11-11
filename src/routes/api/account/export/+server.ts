@@ -85,11 +85,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 				)
 				.eq('student_id', userId),
 
-			// Évaluation — tentatives évaluées (couche brute commune aux deux référentiels)
+			// Évaluation — traces (couche brute commune aux deux référentiels), avec lieu,
+			// durées, graine, réponse tapée et verdict par case (ADR 0038, N15)
 			supabase
 				.from('skill_attempts')
 				.select(
-					'observable_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at'
+					'observable_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at, place, response_ms, allotted_ms, end_reason, seed, answer_parts, part_verdicts'
 				)
 				.eq('student_id', userId)
 				.order('created_at', { ascending: false })

@@ -279,7 +279,9 @@
 			await fetch('/api/skill-attempts', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ template_id, success, with_help: false })
+				// Lieu exigé par l'API (ADR 0038) : une carte interactive = Saisie. Graine,
+				// réponse et verdict par case viendront avec la forme Saisie (PR 5).
+				body: JSON.stringify({ template_id, success, with_help: false, place: 'typing' })
 			});
 			// Response is intentionally ignored — fail-silent strategy
 		} catch (err) {

@@ -654,6 +654,27 @@ describe('GET /api/account/export', () => {
 			expect(fromCalls).toContain('notifications');
 		});
 
+		test('N15 — les traces exportent lieu, durées, graine, réponse et verdicts (ADR 0038)', async () => {
+			await GET(createMockEvent() as never);
+
+			const index = mockSupabase.from.mock.calls.findIndex((call) => call[0] === 'skill_attempts');
+			expect(index).toBeGreaterThanOrEqual(0);
+			const columns = String(
+				mockSupabase.from.mock.results[index].value.select.mock.calls[0][0]
+			).split(/,\s*/);
+			for (const column of [
+				'place',
+				'response_ms',
+				'allotted_ms',
+				'end_reason',
+				'seed',
+				'answer_parts',
+				'part_verdicts'
+			]) {
+				expect(columns).toContain(column);
+			}
+		});
+
 		test('never queries tables removed/renamed by schema drift', async () => {
 			const event = createMockEvent();
 

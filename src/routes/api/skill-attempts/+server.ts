@@ -12,6 +12,12 @@
  *
  * Famille B : non gérée ici (passe par evaluation_tasks côté prof).
  *
+ * Contenu d'une trace (ADR 0038) : lieu exigé (flash_cards, typing, mock_test,
+ * number_race — jamais `evaluation` ni `review`), graine, durées et fin (formes
+ * chronométrées), réponse et verdict par case (formes où l'on tape). Les règles
+ * du Zod reprennent les CHECK de la base. `answer_parts` est du texte libre
+ * écrit par un mineur : toujours affiché échappé.
+ *
  * Réponse :
  *   200 { inserted: 1, point_ids: [...points tagués...] }
  *   200 { success: true, recorded: false } — compte non élève (admin, prof) :
@@ -61,7 +67,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { template_id, success, with_help, phase_blocage } = validation.data;
+	const {
+		template_id,
+		success,
+		with_help,
+		phase_blocage,
+		place,
+		seed,
+		response_ms,
+		allotted_ms,
+		end_reason,
+		answer_parts,
+		part_verdicts
+	} = validation.data;
 
 	// Seul un élève laisse une trace. L'aperçu admin d'un modèle et les pages de
 	// démo passent par la même `FlashCard` : un admin ou un professeur y répond
@@ -150,7 +168,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			with_help,
 			// Carte de cours (#617) : auto-évaluation → `student_self`
 			source: attemptSourceForTemplate(templateRow),
-			...(phase_blocage !== undefined ? { phase_blocage } : {})
+			...(phase_blocage !== undefined ? { phase_blocage } : {}),
+			// Contenu d'une trace (ADR 0038) : absent → NULL ; aucune case → NULL
+			place,
+			seed: seed ?? null,
+			response_ms: response_ms ?? null,
+			allotted_ms: allotted_ms ?? null,
+			end_reason: end_reason ?? null,
+			answer_parts,
+			part_verdicts
 		})
 		.select('id');
 

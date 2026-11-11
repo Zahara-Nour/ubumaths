@@ -382,6 +382,42 @@ export type Database = {
         }
         Relationships: []
       }
+      avatar_catalog: {
+        Row: {
+          active: boolean
+          available_from: string | null
+          available_until: string | null
+          family: string
+          image_path: string
+          key: string
+          name: string
+          price: number
+          sort_order: number
+        }
+        Insert: {
+          active?: boolean
+          available_from?: string | null
+          available_until?: string | null
+          family: string
+          image_path: string
+          key: string
+          name: string
+          price: number
+          sort_order?: number
+        }
+        Update: {
+          active?: boolean
+          available_from?: string | null
+          available_until?: string | null
+          family?: string
+          image_path?: string
+          key?: string
+          name?: string
+          price?: number
+          sort_order?: number
+        }
+        Relationships: []
+      }
       background_job_runs: {
         Row: {
           completed_at: string | null
@@ -8253,6 +8289,7 @@ export type Database = {
           firstname: string | null
           full_name: string | null
           gidouilles: number
+          google_avatar_url: string | null
           grade: string | null
           id: string
           is_test: boolean
@@ -8267,6 +8304,7 @@ export type Database = {
           updated_at: string
           vip_cards: Json
           vip_cards_history: Json
+          worn_avatar: string | null
         }
         Insert: {
           age_declaration?: string | null
@@ -8283,6 +8321,7 @@ export type Database = {
           firstname?: string | null
           full_name?: string | null
           gidouilles?: number
+          google_avatar_url?: string | null
           grade?: string | null
           id: string
           is_test?: boolean
@@ -8297,6 +8336,7 @@ export type Database = {
           updated_at?: string
           vip_cards?: Json
           vip_cards_history?: Json
+          worn_avatar?: string | null
         }
         Update: {
           age_declaration?: string | null
@@ -8313,6 +8353,7 @@ export type Database = {
           firstname?: string | null
           full_name?: string | null
           gidouilles?: number
+          google_avatar_url?: string | null
           grade?: string | null
           id?: string
           is_test?: boolean
@@ -8327,6 +8368,7 @@ export type Database = {
           updated_at?: string
           vip_cards?: Json
           vip_cards_history?: Json
+          worn_avatar?: string | null
         }
         Relationships: [
           {
@@ -8356,6 +8398,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "profiles_worn_avatar_fkey"
+            columns: ["id", "worn_avatar"]
+            isOneToOne: false
+            referencedRelation: "student_avatars"
+            referencedColumns: ["student_id", "avatar_key"]
           },
         ]
       }
@@ -10293,12 +10342,19 @@ export type Database = {
       }
       skill_attempts: {
         Row: {
+          allotted_ms: number | null
+          answer_parts: string[] | null
           code: string | null
           created_at: string
+          end_reason: string | null
           grade: number | null
           id: string
           observable_id: string | null
+          part_verdicts: boolean[] | null
           phase_blocage: string | null
+          place: string | null
+          response_ms: number | null
+          seed: number | null
           source: string
           source_ref: string | null
           student_id: string
@@ -10308,12 +10364,19 @@ export type Database = {
           with_help: boolean
         }
         Insert: {
+          allotted_ms?: number | null
+          answer_parts?: string[] | null
           code?: string | null
           created_at?: string
+          end_reason?: string | null
           grade?: number | null
           id?: string
           observable_id?: string | null
+          part_verdicts?: boolean[] | null
           phase_blocage?: string | null
+          place?: string | null
+          response_ms?: number | null
+          seed?: number | null
           source: string
           source_ref?: string | null
           student_id: string
@@ -10323,12 +10386,19 @@ export type Database = {
           with_help?: boolean
         }
         Update: {
+          allotted_ms?: number | null
+          answer_parts?: string[] | null
           code?: string | null
           created_at?: string
+          end_reason?: string | null
           grade?: number | null
           id?: string
           observable_id?: string | null
+          part_verdicts?: boolean[] | null
           phase_blocage?: string | null
+          place?: string | null
+          response_ms?: number | null
+          seed?: number | null
           source?: string
           source_ref?: string | null
           student_id?: string
@@ -10980,6 +11050,56 @@ export type Database = {
           {
             foreignKeyName: "student_achievements_unlocked_by_fkey"
             columns: ["unlocked_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      student_avatars: {
+        Row: {
+          avatar_key: string
+          price_paid: number
+          purchased_at: string
+          student_id: string
+        }
+        Insert: {
+          avatar_key: string
+          price_paid: number
+          purchased_at?: string
+          student_id: string
+        }
+        Update: {
+          avatar_key?: string
+          price_paid?: number
+          purchased_at?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_avatars_avatar_key_fkey"
+            columns: ["avatar_key"]
+            isOneToOne: false
+            referencedRelation: "avatar_catalog"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "student_avatars_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_avatars_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_avatars_student_id_fkey"
+            columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
@@ -14508,6 +14628,10 @@ export type Database = {
           updated_count: number
         }[]
       }
+      buy_avatar: {
+        Args: { p_avatar: string; p_student_id: string }
+        Returns: Json
+      }
       buy_mathou_decoration: {
         Args: {
           p_decoration: string
@@ -16214,6 +16338,10 @@ export type Database = {
         Args: { p_date: string; p_riddle_id: string; p_selected_by: string }
         Returns: string
       }
+      set_worn_avatar: {
+        Args: { p_avatar: string; p_student_id: string }
+        Returns: Json
+      }
       shared_coursework_is_restricted: {
         Args: { p_shared_coursework_id: string }
         Returns: boolean
@@ -16278,6 +16406,10 @@ export type Database = {
       }
       toggle_reaction: {
         Args: { p_emoji: string; p_message_id: string }
+        Returns: boolean
+      }
+      trace_answer_parts_valid: {
+        Args: { p_parts: string[] }
         Returns: boolean
       }
       unaccent: { Args: { "": string }; Returns: string }
