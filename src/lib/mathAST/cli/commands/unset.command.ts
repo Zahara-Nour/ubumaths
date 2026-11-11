@@ -4,7 +4,7 @@
  * Removes a single variable binding from the evaluation state.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { unsetBinding, hasBinding } from '../core/eval-state';
@@ -89,7 +89,7 @@ export class UnsetCommand extends BaseCommand {
 		// Remove the binding
 		unsetBinding(ctx.evalState, varName);
 
-		const output = chalk.green('Removed variable:') + ' ' + chalk.bold(varName);
+		const output = colors.green('Removed variable:') + ' ' + colors.bold(varName);
 
 		return {
 			success: true,

@@ -7,7 +7,7 @@
  * 2. Single expression with === operator: "2x + 3x === 5x"
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import { readCommandArguments } from '../core/variable-argument';
 import type { CommandContext, CommandResult } from '../types';
@@ -270,17 +270,17 @@ export class EquivCommand extends BaseCommand {
 
 			// Format output
 			const equivLabel = isEquivalent
-				? chalk.bold.green('Equivalent: true')
-				: chalk.bold.red('Equivalent: false');
+				? colors.boldGreen('Equivalent: true')
+				: colors.boldRed('Equivalent: false');
 
 			const lines = [
 				equivLabel,
 				'',
-				chalk.dim('Expression 1:') + ' ' + expr1Str,
-				'  ' + chalk.dim('Hash:') + ' ' + chalk.cyan(hash1),
+				colors.dim('Expression 1:') + ' ' + expr1Str,
+				'  ' + colors.dim('Hash:') + ' ' + colors.cyan(hash1),
 				'',
-				chalk.dim('Expression 2:') + ' ' + expr2Str,
-				'  ' + chalk.dim('Hash:') + ' ' + chalk.cyan(hash2)
+				colors.dim('Expression 2:') + ' ' + expr2Str,
+				'  ' + colors.dim('Hash:') + ' ' + colors.cyan(hash2)
 			];
 
 			return {

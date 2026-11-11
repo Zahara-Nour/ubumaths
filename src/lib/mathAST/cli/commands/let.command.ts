@@ -5,7 +5,7 @@
  * and storing the value in the evaluation state.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../index';
@@ -87,7 +87,7 @@ export class LetCommand extends BaseCommand {
 		// Format output
 		const valueStr = toCustom(parseResult.ast);
 		const output =
-			chalk.green('Defined:') + ' ' + chalk.bold(varName) + ' = ' + chalk.cyan(valueStr);
+			colors.green('Defined:') + ' ' + colors.bold(varName) + ' = ' + colors.cyan(valueStr);
 
 		return {
 			success: true,

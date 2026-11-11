@@ -4,7 +4,7 @@
  * Lists all defined variables and their values from the evaluation state.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../index';
@@ -52,11 +52,11 @@ export class VarsCommand extends BaseCommand {
 		if (bindings.size === 0) {
 			return {
 				success: true,
-				output: chalk.dim('No variables defined')
+				output: colors.dim('No variables defined')
 			};
 		}
 
-		const lines: string[] = [chalk.bold('Variables:')];
+		const lines: string[] = [colors.bold('Variables:')];
 
 		// Sort variable names alphabetically
 		const sortedNames = Array.from(bindings.keys()).sort();
@@ -64,7 +64,7 @@ export class VarsCommand extends BaseCommand {
 		for (const name of sortedNames) {
 			const node = bindings.get(name)!;
 			const valueStr = toCustom(node);
-			lines.push('  ' + chalk.yellow(name) + ' = ' + chalk.cyan(valueStr));
+			lines.push('  ' + colors.yellow(name) + ' = ' + colors.cyan(valueStr));
 		}
 
 		return {

@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2545._
+_Mis à jour le 2026-11-11, PR 8 (volet 3) en cours._
 
-- **État** : #2545 mergée (volets 1 et 2 de la piste 4 (c) : modules de `src/lib` sans effet de bord sauf une liste gardée, étapes chargées au premier dépliage) — atelier 1 467 → 1 308 Ko gzip, 67 pages à markdown −210 Ko ; pas encore en prod, ni #2542, #2541, #2540, #2539, #2538, #2536, #2535 · **Prochaine action** : volet 3 (`chalk` hors des 23 fichiers de `mathAST/cli` : les commandes renvoient du texte brut, seul le REPL du terminal colore), nouveau worktree ; puis volet 4 (silhouette rendue par le serveur) ; mesure de l'atelier à froid après `deploy:prod` (banc 4G ×4/×6) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; ligne #2545 de `verifications-manuelles.md` · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence (vitest n'élague pas) — garde = test serveur, à 30 s de délai en CI ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; manifeste Vite : clés = `.svelte-kit/generated/client-optimized/nodes/N.js` (atelier = 273) · **Worktree / branche** : aucun
+- **État** : #2545 mergée (volets 1 et 2) ; volet 3 (`chalk` hors du code client, palette texte brut, terminal seul colore) codé et vérifié, PR à ouvrir ; rien de #2545, #2542, #2541, #2540, #2539, #2538, #2536, #2535 en prod · **Prochaine action** : merger la PR du volet 3 ; puis volet 4 (silhouette rendue par le serveur) ; mesure de l'atelier à froid après `deploy:prod` (banc 4G ×4/×6) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; ligne #2545 de `verifications-manuelles.md` · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence (vitest n'élague pas) — garde = test serveur, à 30 s de délai en CI ; `chalk` seulement dans `cli.ts`/`repl.ts`/`terminal-palette.ts` (garde) ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; manifeste Vite : clés = `.svelte-kit/generated/client-optimized/nodes/N.js` (atelier = 273) · **Worktree / branche** : `ubumaths-wt-amelioration` / `refactor/cli-sans-chalk`
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -346,6 +346,22 @@ terminal ; volet 4 : silhouette inerte).
 - **CI** : bloquée un temps par 2 tests d'intégration `palotin-boucle` rouges sur `main` depuis
   #2544 (réparés par la session palotins, #2546) ; puis la garde des imports nus dépassait 5 s en
   CI → tri par regex avant l'AST (161 ms) et délai de 30 s. Mergée le 2026-11-11.
+
+## Piste 4 (c) — volet 3 : `chalk` hors du code client (PR 8, 2026-11-11)
+
+- **Remède** : palette `mathAST/cli/core/terminal-colors.ts` (`colors.bold`, `colors.boldRed`…),
+  texte brut par défaut ; `cli.ts` et `startRepl()` y branchent `chalk` (`useChalkColors()`,
+  `cli/terminal-palette.ts`). Les 21 commandes et `output-formatter.ts` n'importent plus `chalk`.
+- **Piège vu** : `colorFn.bold(…)` (chaîne de styles chalk) dans `eval.command.ts` levait une
+  exception une fois `colorFn` devenu une palette → `.évaluer x>2 en x=3` refusé. Attrapé par
+  `evaluer-formule.test.ts` et le typecheck ; remplacé par `boldGreen` / `boldRed`.
+- **Garde** : `cli/__tests__/core/terminal-colors.test.ts` — `chalk` importé par les seuls `cli.ts`,
+  `repl.ts`, `terminal-palette.ts` (rouge vérifié en remettant l'ancien `hash.command.ts`) ; aucune
+  séquence ANSI dans ce que reçoit l'atelier.
+- **Vérifié** : 9 750 tests serveur (cli, atelier, variations, garde des effets de bord) + test
+  client `render-ansi` verts ; `pnpm math repl` colore toujours (`FORCE_COLOR=1`) ; build : plus
+  de `chalk` dans `.svelte-kit/output/client` (`FORCE_COLOR`/`supportsColor` absents).
+- `atelier/render.ts` retire toujours les séquences ANSI, par prudence (commentaire mis à jour).
 
 ## Piste 5 — « Mon cours », #1788 (phase 0, 2026-11-11)
 
