@@ -38,7 +38,11 @@ describe('GraphSVG — la molette est une interaction', () => {
 		const svg = screen.container.querySelector('svg');
 		expect(svg).not.toBeNull();
 		vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
-		return Object.assign(svg!, { unmount: () => screen.unmount() });
+		return Object.assign(svg!, {
+			unmount: async () => {
+				await screen.unmount();
+			}
+		});
 	}
 
 	function wheel(svg: Element, deltaY = -120) {
@@ -108,7 +112,7 @@ describe('GraphSVG — la molette est une interaction', () => {
 		wheel(svg);
 		expect(grapheurStore.isInteracting).toBe(true);
 
-		svg.unmount();
+		await svg.unmount();
 		expect(grapheurStore.isInteracting).toBe(false);
 	});
 });
