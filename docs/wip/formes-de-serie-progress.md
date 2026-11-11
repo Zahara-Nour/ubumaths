@@ -7,7 +7,7 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 _Mis à jour le 2026-11-11, phase 0 en cours (aucune PR, rien de codé)._
 
-- **État** : ADR 0037/0038 écrits ; **comportements de phase 0 + découpage rédigés** (§ « Comportements de phase 0 — à valider ») · **Prochaine action** : faire valider les comportements, puis PR 1 (migration) · **En attente de David** : validation des comportements + Q-A (les contrôles écrivent des traces aujourd'hui, l'ADR 0038 dit non), Q-B, Q-C ; N11 (durée : chronos + contrôle) et Q-D (widget D retiré) tranchés · **Pièges en cours** : « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`) ; ne pas relancer ce qui est validé · **Worktree / branche** : aucun (doc sur `main`) ; un worktree au premier code
+- **État** : phase 0 **validée** (comportements N/L/E + Q-A à Q-D tranchées, § « Comportements de phase 0 ») ; rien de codé · **Prochaine action** : PR 1 = migration additive `skill_attempts` (worktree `ubumaths-wt-formes-de-serie`), tests d'intégration RLS d'abord · **En attente de David** : rien · **Suite** : chantier à part P5 (heatmap + Palotin de régularité) après celui-ci · **Pièges en cours** : « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` ; ADR 0038 corrigé (les contrôles écrivent des traces) ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`) · **Worktree / branche** : aucun encore
 
 ## Décisions de David (2026-11-11)
 
@@ -114,7 +114,7 @@ Questions tranchées par David avant l'écriture (recommandations suivies) :
   série (`FlashCard.maxAttempts` : démo seulement ; tuteur : exercices de fiche) → `with_help` gardé ;
   une trace par essai ; numéro d'essai ajouté le jour où le second essai existe.
 
-## Comportements de phase 0 — à valider (rédigés le 2026-11-11)
+## Comportements de phase 0 — validés (David, 2026-11-11)
 
 Constats du code relus pour les écrire : Flash-cards, Entraînement et Course libres écrivent en fin
 de série par `/api/tests/save` (séance libre + traces via `recordSeriesReviews` + gain du Palotin) ;
@@ -182,17 +182,13 @@ une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit d
 
 ### Questions ouvertes (à trancher avant de coder)
 
-- **Q-A — Les contrôles écrivent-ils encore des traces ?** Aujourd'hui **oui** (« corrigé », chaque
-  contrôle envoyé à l'heure alimente la grille point × élève et l'état de mémorisation). L'ADR 0038
-  écrit le contraire. Les arrêter retirerait les contrôles des bilans existants. Reco : **les garder**
-  comme aujourd'hui (sans réponse ni temps : le contrôle les a dans `test_answers`), lieu « contrôle »
-  ajouté, ADR 0038 corrigé.
-- **Q-B — Origine des anciennes traces** : réécrire `srs` → `student_self` en base (réécriture de
-  données) ou ne plus écrire `srs` et lire les deux comme « déclaré » ? Reco : **ne rien réécrire**,
-  garder `auto` / `student_self` / `teacher` comme valeurs (affichées corrigé / déclaré / prof).
-- **Q-C — P5 (heatmap de régularité) et le Palotin de régularité** : validés dans le détail, mais
-  dans ce chantier ou dans un chantier à part ? Reco : **chantier à part**, après celui-ci (ils lisent
-  les nouvelles traces).
+- **Q-A — tranchée** (2026-11-11) : les contrôles **gardent leurs traces** « corrigé », lieu
+  « contrôle », avec durée de réponse, durée allouée et fin ; réponse, verdict par case et graine
+  restent dans la copie (`test_answers`). ADR 0038 corrigé.
+- **Q-B — tranchée** : aucune réécriture ; `auto` / `student_self` / `teacher` gardés en base
+  (affichés corrigé / déclaré / prof) ; `srs` n'est plus écrit, les anciennes `srs` se lisent « déclaré ».
+- **Q-C — tranchée** : heatmap de régularité (P5) et Palotin de régularité = **chantier à part**, juste
+  après celui-ci (ils lisent les nouvelles traces).
 - **Q-D — tranchée** (2026-11-11) : widget D retiré sans remplacement.
 
 ### Découpage proposé (une PR chacune)

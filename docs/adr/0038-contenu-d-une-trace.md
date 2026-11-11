@@ -26,9 +26,11 @@ leur graine.
 Une trace **par question, écrite dès la réponse** :
 
 - **gardé** : élève, modèle, réussi, date ; **origine** à trois valeurs : **corrigé** (par l'appli) ·
-  **déclaré** (auto-évaluation) · **prof** ;
-- **lieu** de la réponse : Flash-cards, Saisie, Contrôle blanc, Course aux nombres ou révision (En
-  classe ne laisse pas de trace d'élève) ;
+  **déclaré** (auto-évaluation) · **prof** ; en base, les valeurs `auto` / `student_self` / `teacher`
+  restent, `srs` n'est plus écrit et les anciennes traces `srs` se lisent « déclaré », sans réécriture
+  (2026-11-11) ;
+- **lieu** de la réponse : Flash-cards, Saisie, Contrôle blanc, Course aux nombres, révision ou
+  **contrôle** (En classe ne laisse pas de trace d'élève) ;
 - pour les formes chronométrées (Contrôle blanc, Course aux nombres) et le contrôle : **durée de
   réponse**, **durée allouée** et **fin** (validée / temps écoulé) ; pas de durée en Flash-cards, Saisie
   ni révision, où l'élève peut retourner la carte pour voir la réponse (précisé le 2026-11-11) ;
@@ -62,12 +64,16 @@ existe.
   celles que P4 et E4 cherchent.
 - **Supprimer `with_help`** : gardé pour l'aide à venir. `phase_blocage` reste à supprimer, dans un
   temps à part (destructif).
-- **Rattacher la trace au contrôle** (P6) : les contrôles n'écrivent pas de trace ; leur bilan se lit
-  dans leurs réponses (`test_answers`). **Identifiant de séance** : aucun besoin ne l'exige.
+- **Rattacher la trace au contrôle** (P6) : le bilan d'un contrôle se lit dans ses réponses
+  (`test_answers`). **Identifiant de séance** : aucun besoin ne l'exige.
+- **Arrêter les traces des contrôles** : corrigé le 2026-11-11. Une première version de cet ADR disait
+  « les contrôles n'écrivent pas de trace » : faux, un contrôle envoyé à l'heure écrit des traces
+  « corrigé » (`evaluation-attempts.ts`, `recordSeriesReviews`). Elles restent, lieu « contrôle », avec
+  les durées ; réponse, verdict par case et graine sont déjà dans la copie (`test_answers`).
 
 ## Conséquences
 
-- Migration additive sur `skill_attempts` (colonnes et valeurs d'origine) ; question d'accès tranchée
+- Migration additive sur `skill_attempts` (colonnes ; aucune nouvelle valeur d'origine) ; question d'accès tranchée
   ci-dessus.
 - Le prof lit du texte libre écrit par des mineurs : borné en longueur, purgé en fin d'année scolaire.
 - Une trace « corrigé » reste falsifiable par un élève qui écrit lui-même ses traces, comme aujourd'hui.
