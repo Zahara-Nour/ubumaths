@@ -52,17 +52,18 @@ sous-traitants **incomplet** (IA tierce non listée) + des **docts datés** à r
 
 ### 1. Rétention des données (`run_cleanup_expired_data()`, cron `rgpd-retention-cleanup`, dim. 03:00 UTC)
 
-| Donnée                                  | Doc janv.             | **Code actuel** | Drift                                       |
-| --------------------------------------- | --------------------- | --------------- | ------------------------------------------- |
-| error_logs                              | 90 j (resolved)       | **30 j (tous)** | modifié (24/05)                             |
-| user_presence                           | 30 j                  | 30 j            | ✓                                           |
-| friendships (rejected)                  | 2 ans                 | 2 ans           | ✓                                           |
-| messages                                | 3 ans (hard delete)   | 3 ans           | ✓                                           |
-| private_messages                        | 3 ans                 | 3 ans           | ✓                                           |
-| audit_logs                              | —                     | **60 j**        | ajouté (24/05)                              |
-| error_occurrences                       | —                     | **30 j**        | ajouté                                      |
-| background_job_runs                     | —                     | **7 j**         | ajouté                                      |
-| **student_attempts / student_progress** | 5 ans + inactif 2 ans | **🔴 RETIRÉS**  | tables « mortes », cleanup supprimé (24/05) |
+| Donnée                                       | Doc janv.             | **Code actuel**                                    | Drift                                          |
+| -------------------------------------------- | --------------------- | -------------------------------------------------- | ---------------------------------------------- |
+| error_logs                                   | 90 j (resolved)       | **30 j (tous)**                                    | modifié (24/05)                                |
+| user_presence                                | 30 j                  | 30 j                                               | ✓                                              |
+| friendships (rejected)                       | 2 ans                 | 2 ans                                              | ✓                                              |
+| messages                                     | 3 ans (hard delete)   | 3 ans                                              | ✓                                              |
+| private_messages                             | 3 ans                 | 3 ans                                              | ✓                                              |
+| audit_logs                                   | —                     | **60 j**                                           | ajouté (24/05)                                 |
+| error_occurrences                            | —                     | **30 j**                                           | ajouté                                         |
+| background_job_runs                          | —                     | **7 j**                                            | ajouté                                         |
+| **student_attempts / student_progress**      | 5 ans + inactif 2 ans | **🔴 RETIRÉS**                                     | tables « mortes », cleanup supprimé (24/05)    |
+| skill_attempts : réponse et verdict par case | —                     | **avant le 1er août de l'année scolaire en cours** | ajouté (L6, 2026-11-11, `purge_trace_answers`) |
 
 > 🔴 **Trou n°1 — rétention pédagogique non appliquée.** Le cron ne nettoie **plus aucune donnée
 > pédagogique**. Les tables ont été renommées (`exercise_completions`, `student_exercise_mastery`

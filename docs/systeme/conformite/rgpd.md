@@ -314,6 +314,12 @@ CRON_SECRET                   # Secret taches planifiees
 > sans ligne en base (message purge apres 3 ans, piece jointe retiree). Autres durees reelles :
 > `error_logs` 30 j, `audit_logs` 60 j, `user_presence` 30 j, `friendships` refusees 2 ans,
 > `messages` / `private_messages` 3 ans.
+>
+> **L6 (2026-11-11, chantier `formes-de-serie`, migration `20261111224115`)** : la meme purge appelle
+> `purge_trace_answers()`, qui efface la reponse case par case et le verdict par case des traces
+> (`skill_attempts.answer_parts`, `part_verdicts`) creees avant le 1er aout de l'annee scolaire en
+> cours (minuit, heure de Paris). Le reste de la trace (reussi/rate, lieu, durees, graine, date)
+> est garde ; les copies de controle (`test_answers`) ne sont pas touchees.
 
 **Situation actuelle** (historique, 2026-01) :
 

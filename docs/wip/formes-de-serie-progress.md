@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2570._
+_Mis à jour le 2026-11-11, PR 6 (purge) en cours._
 
-- **État** : PR 1 à 5 mergées (#2543, #2547, #2548, #2551, #2554, #2559, #2565) + **PR doublon #2570** (plus de nouvel essai d'envoi de trace après une coupure réseau ; 5xx/429/408 toujours réessayés) · **Prochaine action** : (a) David vérifie la Saisie à la main (`verifications-manuelles.md`, #2565) ; (c) PR 6 = **purge** de fin d'année (cron L6) : destructive → s'arrêter et dire à David ce qui sera perdu avant tout SQL ; (d) Saisie en séries de chapitre : attendre l'usage réel · **En attente de David** : rien (4 points tranchés le 2026-11-11, cf. « Décisions sur les points à trancher ») · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces en FILE (FSRS sans verrou) ; « Flash-cards » dans un message d'erreur fait échouer la garde de langue (`cards`) ; corps de commit ≤ 100 caractères par ligne (`Doc-inchangée:` compris) · **Worktree / branche** : aucun (nouveau worktree depuis `origin/main` pour la PR 6)
+- **État** : PR 1 à 5 + doublon mergées (#2543, #2547, #2548, #2551, #2554, #2559, #2565, #2570) · **PR 6 purge** : migration `20261111224115_purge_reponses_traces.sql` + tests (rouges sans, verts avec, en local) · **Prochaine action** : revue security-auditor → PR → CI → merge → `db:migrate` depuis la branche mergée ; puis (a) David vérifie la Saisie à la main ; (d) Saisie en séries de chapitre selon l'usage · **En attente de David** : rien (purge tranchée le 2026-11-11) · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; « Flash-cards » dans un message d'erreur fait échouer la garde de langue ; corps de commit ≤ 100 caractères par ligne · **Worktree / branche** : `../ubumaths-wt-formes-de-serie` · `feat/formes-de-serie-purge`
 
 ## Décisions de David (2026-11-11)
 
@@ -380,3 +380,28 @@ Réalisé (2026-11-11) :
 - `FlashCard` n'envoie plus de trace elle-même (seuls appelants interactifs : aperçus prof / admin,
   que la route ignorait) : une seule voie, la forme de série.
 - `/api/tests/save` : gain en Saisie. Vitrine `/demo/questions` : onglet Saisie (« six formes »).
+
+### PR 6 — purge de fin d'année des réponses (L6, 2026-11-11)
+
+Décisions de David (recommandations suivies) :
+
+- **Quand** : chaque dimanche, dans la purge RGPD existante (`run_cleanup_expired_data`, cron
+  `rgpd-retention-cleanup`, 3 h UTC), bloc isolé après C11 ; pas de nouveau cron.
+- **Quoi** : `answer_parts` et `part_verdicts` → NULL pour les traces créées **avant le 1er août de
+  l'année scolaire en cours** (minuit, heure de Paris) ; date fixe, élèves hors classe compris.
+  Gardés : réussi/raté, origine, lieu, durées, fin, graine, date.
+- **Périmètre** : les traces seulement ; `test_answers` (copies de contrôle, anciennes séances
+  libres) non touché.
+- **Perdu** (dit à David avant le SQL) : l'élève et son prof ne liront plus les réponses des années
+  passées ; l'export RGPD ne les contiendra plus. Mesuré en prod le 2026-11-11 : 0 trace avec
+  réponse (PR 4 et 5 pas encore déployées).
+
+Réalisé :
+
+- `trace_answers_cutoff(date)` (coupure) et `purge_trace_answers()` (SECURITY DEFINER, serveur seul,
+  journalisée `trace_answers_purge` dans `background_job_runs`) ; `run_cleanup_expired_data` repris
+  de la prod (md5 vérifié) + appel.
+- Tests `tests/integration/purge-reponses-traces.test.ts` : coupure (6 dates), trace ancienne
+  purgée et reste gardé, trace récente intacte, second passage à 0, droits, appel par la purge.
+  Rouges sans la migration, verts avec ; C11, traces et garde SECURITY DEFINER verts.
+- Doc : `docs/systeme/conformite/README.md`, `rgpd.md`.
