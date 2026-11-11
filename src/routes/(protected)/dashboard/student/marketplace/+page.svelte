@@ -4,7 +4,15 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import ConsentButton from '$lib/components/ConsentButton.svelte';
-	import { Plus, ShoppingBag, Package, Store, Bell, RefreshCw } from '@lucide/svelte';
+	import {
+		Plus,
+		ShoppingBag,
+		Package,
+		Store,
+		Bell,
+		RefreshCw,
+		CircleUserRound
+	} from '@lucide/svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 
@@ -15,6 +23,7 @@
 	import CreateListingModal from '$lib/components/marketplace/CreateListingModal.svelte';
 	import VipCardShopSection from '$lib/components/vip-cards/VipCardShopSection.svelte';
 	import MathouDecorationsShowcase from '$lib/components/mathoux/MathouDecorationsShowcase.svelte';
+	import AvatarShopSection from '$lib/components/avatars/AvatarShopSection.svelte';
 
 	// Props from server
 	let { data } = $props();
@@ -74,20 +83,24 @@
 		</div>
 	</div>
 
-	<!-- 3 Flat Tabs -->
+	<!-- 4 Flat Tabs -->
 	<Tabs.Root bind:value={activeTab} class="w-full">
-		<Tabs.List class="grid w-full grid-cols-3">
+		<Tabs.List class="grid w-full grid-cols-4">
 			<Tabs.Trigger value="shop" class="gap-2">
 				<Store class="h-4 w-4" />
-				Boutique
+				<span class="hidden sm:inline">Boutique</span>
+			</Tabs.Trigger>
+			<Tabs.Trigger value="avatars" class="gap-2">
+				<CircleUserRound class="h-4 w-4" />
+				<span class="hidden sm:inline">Avatars</span>
 			</Tabs.Trigger>
 			<Tabs.Trigger value="annonces" class="gap-2">
 				<Package class="h-4 w-4" />
-				Annonces
+				<span class="hidden sm:inline">Annonces</span>
 			</Tabs.Trigger>
 			<Tabs.Trigger value="activity" class="relative gap-2">
 				<Bell class="h-4 w-4" />
-				Activité
+				<span class="hidden sm:inline">Activité</span>
 				{#if totalPending > 0}
 					<Badge variant="destructive" class="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
 						{totalPending}
@@ -104,7 +117,16 @@
 			</div>
 		</Tabs.Content>
 
-		<!-- Tab 2: Annonces -->
+		<!-- Tab 2: Avatars -->
+		<Tabs.Content value="avatars" class="mt-6">
+			<AvatarShopSection
+				avatarUrl={data.profile?.avatar_url ?? null}
+				firstname={data.profile?.firstname ?? null}
+				lastname={data.profile?.lastname ?? null}
+			/>
+		</Tabs.Content>
+
+		<!-- Tab 3: Annonces -->
 		<Tabs.Content value="annonces" class="mt-6">
 			<!-- Header: pills + action button -->
 			<div class="mb-4 flex items-center justify-between gap-3">
@@ -160,7 +182,7 @@
 			{/if}
 		</Tabs.Content>
 
-		<!-- Tab 3: Activité -->
+		<!-- Tab 4: Activité -->
 		<Tabs.Content value="activity" class="mt-6">
 			<StudentActivityFeed userId={data.user!.id} />
 		</Tabs.Content>
