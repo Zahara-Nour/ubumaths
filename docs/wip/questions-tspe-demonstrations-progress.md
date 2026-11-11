@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11 : relevé fait, phase 0 posée._
+_Mis à jour le 2026-11-11 : phase 0 validée (D1)._
 
-- **État** : relevé prod des 68 points P (§ 1) ; phase 0 posée (§ 2), sans réponse.
-- **Prochaine action** : réponses de David à la phase 0, puis lot 1 (worktree `../ubumaths-wt-questions-tspe-demonstrations`).
-- **En attente de David** : Q1 à Q6 du § 2.
+- **État** : relevé prod des 68 points P (§ 1) ; phase 0 validée (D1, § 2) ; Q6 faite.
+- **Prochaine action** : lot 1 (321, 548, 359, 373), worktree `../ubumaths-wt-questions-tspe-demonstrations`.
+- **En attente de David** : rien.
 - **Pièges en cours** : aucun.
 - **Worktree / branche** : aucun pour l'instant.
 
@@ -112,3 +112,10 @@ Newton (1SPE-288 → 434, 396), Euler (1SPE-298 → 474), Monte-Carlo (1SPE-344 
 Lots proposés : (1) dénombrement et géométrie (321, 548, 359, 373) ; (2) suites et limites (388, 389, 390, 391, 405) ;
 (3) dérivation, logarithme, primitives (421, 448, 449, 471, 472) ; (4) intégration et loi binomiale (494, 495, 512,
 528, 623).
+
+**D1 (David, 2026-11-11, « je suis tes recos »)** : Q1 les 19 démonstrations d'abord, puis les algorithmes, puis les
+approfondissements (chaque suite avec sa phase 0) ; Q2 2-3 variations à trous (case, ou case choix à 4 propositions,
+erreurs typiques en distracteurs) + une variation « étapes à ranger » (` ```ranger `, `signe: aucun`, 4 à 6 étapes) ;
+Q3 valeurs tirées là où la preuve s'y prête, lettres ailleurs ; Q4 un modèle par point, tagué sur son point P, sur la
+sous-notion existante du point, aucun nœud neuf (321 et 548 : deux modèles) ; Q5 accès : personne de plus ; Q6
+`tspe.md` corrigé (1cfc575d publié), commit de doc direct. Lots 1 à 4 dans l'ordre du § 2.
