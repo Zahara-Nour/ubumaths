@@ -5,7 +5,8 @@
 	Les étapes d'une ligne de la console, dont le composant
 	(`GeneratedStepsCorrection`) n'est téléchargé qu'au premier dépliage
 	(`$lib/atelier/steps-loader`). Une fois chargé, il s'affiche aussitôt, sur
-	toutes les lignes.
+	toutes les lignes — y compris celles qui avaient échoué : `loaded` est
+	réactif, le « Réessayer » réussi d'une ligne les rétablit toutes.
 
 	- pendant le chargement : « Chargement des étapes… » ;
 	- en cas d'échec (réseau coupé, nouvelle version déployée) : un message et
@@ -22,14 +23,16 @@
 
 	let { steps }: Props = $props();
 
-	let Steps = $state(stepsCorrection.loaded);
+	/** Le composant obtenu par CETTE ligne (le chargeur partagé peut être un double, en test) */
+	let own = $state<typeof stepsCorrection.loaded>(undefined);
+	const Steps = $derived(stepsCorrection.loaded ?? own);
 	let failed = $state(false);
 
 	function load(): void {
 		failed = false;
 		stepsCorrection.load().then(
 			(component) => {
-				Steps = component;
+				own = component;
 			},
 			() => {
 				failed = true;

@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { lazyLoader } from '../lazy-loader';
+import { lazyLoader } from '../lazy-loader.svelte';
 
 describe('lazyLoader', () => {
 	it('ne charge rien avant la première demande', () => {

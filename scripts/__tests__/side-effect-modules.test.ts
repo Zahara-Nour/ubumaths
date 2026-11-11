@@ -12,9 +12,15 @@ import { describe, it, expect } from 'vitest';
 import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { MODULES_WITH_SIDE_EFFECTS, moduleSideEffects } from '../side-effect-modules';
-import { findTopLevelEffects, listModulesWithTopLevelEffects } from '../find-top-level-effects';
+import {
+	findBareImports,
+	findTopLevelEffects,
+	listBareImportTargets,
+	listModulesWithTopLevelEffects
+} from '../find-top-level-effects';
 
-const LIB = resolve(__dirname, '../../src/lib');
+const SRC = resolve(__dirname, '../../src');
+const LIB = join(SRC, 'lib');
 
 describe('findTopLevelEffects', () => {
 	it('voit un appel nu, une affectation, une boucle, un if, un try', () => {
@@ -51,6 +57,13 @@ describe('findTopLevelEffects', () => {
 	});
 });
 
+describe('findBareImports', () => {
+	it('rend la cible des imports nus, pas celle des imports nommés', () => {
+		const src = ["import '$lib/utils/mathlive-styles';", "import { x } from './x';"].join('\n');
+		expect(findBareImports(src)).toEqual(['$lib/utils/mathlive-styles']);
+	});
+});
+
 describe('moduleSideEffects', () => {
 	it('déclare sans effet un module .ts de src/lib hors liste', () => {
 		expect(moduleSideEffects('/repo/src/lib/mathAST/tidy/collect.ts')).toBe(false);
@@ -75,6 +88,15 @@ describe('moduleSideEffects', () => {
 describe('la liste face au code', () => {
 	it('contient chaque module de src/lib qui agit au chargement', () => {
 		const missing = listModulesWithTopLevelEffects(LIB).filter(
+			(path) => !MODULES_WITH_SIDE_EFFECTS.has(path)
+		);
+		expect(missing, 'à ajouter dans scripts/side-effect-modules.ts').toEqual([]);
+	});
+
+	it('contient chaque module de src/lib visé par un import nu, .svelte et routes compris', () => {
+		// `import '$lib/utils/mathlive-styles'` est écrit dans des composants : un
+		// module ainsi importé n'a aucun export utilisé, le build le retirerait.
+		const missing = listBareImportTargets(SRC).filter(
 			(path) => !MODULES_WITH_SIDE_EFFECTS.has(path)
 		);
 		expect(missing, 'à ajouter dans scripts/side-effect-modules.ts').toEqual([]);

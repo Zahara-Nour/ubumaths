@@ -5,7 +5,7 @@ couvre:
   - src/lib/mathAST/cli/web/web-repl-engine.ts
   - 'src/routes/(public)/atelier/**'
   - 'src/routes/(public)/grapheur/**'
-  - src/lib/utils/lazy-loader.ts
+  - src/lib/utils/lazy-loader.svelte.ts
 ---
 
 # L'atelier (et `/grapheur`)
@@ -115,33 +115,33 @@ Ceux du code et de l'interface :
 
 **Vue Calcul** (saisie, commandes, historique) :
 
-| Fichier                                 | Rôle                                                                                                                                |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/atelier/calcul.ts`             | **Aiguillage de la saisie** (`runInput`) : définition, calcul ou commande ; actions de carte (`runAction`)                          |
-| `src/lib/atelier/desk.svelte.ts`        | `CalcDesk`, le pupitre : historique, actions venues du panneau, garder une ligne, rejeu                                             |
-| `src/lib/atelier/commands.ts`           | Catalogue français des commandes (`commandCatalog`, `resolveCommand`, `suggestFor`)                                                 |
-| `src/lib/atelier/help.ts`               | `.aide` pour l'élève (`studentHelpText`) ; l'aide du moteur derrière `.aide dev`                                                    |
-| `src/lib/atelier/listing.ts`            | `.valeurs` et `.fonctions` : les cartes du panneau, en français (`valuesListing`, `functionsListing`)                               |
-| `src/lib/atelier/render.ts`             | Rendu d'un résultat du moteur en LaTeX, sans jamais reparser la sortie texte                                                        |
-| `src/lib/atelier/decimal-comma.ts`      | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                                             |
-| `src/lib/atelier/simplify-steps.ts`     | `.simplifier` par étapes (`simplifySteps`)                                                                                          |
-| `src/lib/atelier/factor-steps.ts`       | `.factoriser` par étapes (`factorSteps`)                                                                                            |
-| `src/lib/atelier/expand.ts`             | `.développer` : refus et messages (`expandExpression`) ; réponse et « Comment ? » par `explainExpansion`                            |
-| `src/lib/atelier/derive-steps.ts`       | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                                                 |
-| `src/lib/atelier/solve-steps.ts`        | `.résoudre` par étapes (`solveSteps`)                                                                                               |
-| `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                                                     |
-| `src/lib/atelier/variations-steps.ts`   | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                                         |
-| `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                                                   |
-| `src/lib/atelier/steps-loader.ts`       | Le composant des étapes (`GeneratedStepsCorrection`) chargé au premier « Comment ? » (`lazyLoader`, `src/lib/utils/lazy-loader.ts`) |
-| `src/lib/atelier/copy-text.ts`          | « Copier » d'une ligne : la réponse en texte lisible depuis son LaTeX (`readableText`, `answerToCopy`)                              |
-| `src/lib/atelier/point-drag-mode.ts`    | Réglage « Déplacement des points » (aimanté / fluide), retenu dans le navigateur                                                    |
-| `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                                           |
-| `src/lib/atelier/console-key.ts`        | Raccourcis de la console : touche sous Échap (par `event.code`, hors d'un champ), Ctrl+Entrée                                       |
-| `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)                                |
-| `src/lib/atelier/virtual-keyboard.ts`   | Clavier virtuel de l'écriture mathématique : onglets « Calcul » et « Commandes »                                                    |
-| `src/lib/atelier/domain-steps.ts`       | `.domaine` : réponse `D = …` et « Comment ? » (`domainLine`)                                                                        |
-| `src/lib/atelier/domain-steps-check.ts` | Garde-fou : l'ensemble conclu par les étapes est, par valeur, le domaine du moteur (`sameDomainByValue`)                            |
-| `src/lib/atelier/tidy-terms.ts`         | Ré-export de `tidyTerms` (vit dans `src/lib/mathAST/tidy/terms.ts`)                                                                 |
+| Fichier                                 | Rôle                                                                                                                                       |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/atelier/calcul.ts`             | **Aiguillage de la saisie** (`runInput`) : définition, calcul ou commande ; actions de carte (`runAction`)                                 |
+| `src/lib/atelier/desk.svelte.ts`        | `CalcDesk`, le pupitre : historique, actions venues du panneau, garder une ligne, rejeu                                                    |
+| `src/lib/atelier/commands.ts`           | Catalogue français des commandes (`commandCatalog`, `resolveCommand`, `suggestFor`)                                                        |
+| `src/lib/atelier/help.ts`               | `.aide` pour l'élève (`studentHelpText`) ; l'aide du moteur derrière `.aide dev`                                                           |
+| `src/lib/atelier/listing.ts`            | `.valeurs` et `.fonctions` : les cartes du panneau, en français (`valuesListing`, `functionsListing`)                                      |
+| `src/lib/atelier/render.ts`             | Rendu d'un résultat du moteur en LaTeX, sans jamais reparser la sortie texte                                                               |
+| `src/lib/atelier/decimal-comma.ts`      | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                                                    |
+| `src/lib/atelier/simplify-steps.ts`     | `.simplifier` par étapes (`simplifySteps`)                                                                                                 |
+| `src/lib/atelier/factor-steps.ts`       | `.factoriser` par étapes (`factorSteps`)                                                                                                   |
+| `src/lib/atelier/expand.ts`             | `.développer` : refus et messages (`expandExpression`) ; réponse et « Comment ? » par `explainExpansion`                                   |
+| `src/lib/atelier/derive-steps.ts`       | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                                                        |
+| `src/lib/atelier/solve-steps.ts`        | `.résoudre` par étapes (`solveSteps`)                                                                                                      |
+| `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                                                            |
+| `src/lib/atelier/variations-steps.ts`   | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                                                |
+| `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                                                          |
+| `src/lib/atelier/steps-loader.ts`       | Le composant des étapes (`GeneratedStepsCorrection`) chargé au premier « Comment ? » (`lazyLoader`, `src/lib/utils/lazy-loader.svelte.ts`) |
+| `src/lib/atelier/copy-text.ts`          | « Copier » d'une ligne : la réponse en texte lisible depuis son LaTeX (`readableText`, `answerToCopy`)                                     |
+| `src/lib/atelier/point-drag-mode.ts`    | Réglage « Déplacement des points » (aimanté / fluide), retenu dans le navigateur                                                           |
+| `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                                                  |
+| `src/lib/atelier/console-key.ts`        | Raccourcis de la console : touche sous Échap (par `event.code`, hors d'un champ), Ctrl+Entrée                                              |
+| `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)                                       |
+| `src/lib/atelier/virtual-keyboard.ts`   | Clavier virtuel de l'écriture mathématique : onglets « Calcul » et « Commandes »                                                           |
+| `src/lib/atelier/domain-steps.ts`       | `.domaine` : réponse `D = …` et « Comment ? » (`domainLine`)                                                                               |
+| `src/lib/atelier/domain-steps-check.ts` | Garde-fou : l'ensemble conclu par les étapes est, par valeur, le domaine du moteur (`sameDomainByValue`)                                   |
+| `src/lib/atelier/tidy-terms.ts`         | Ré-export de `tidyTerms` (vit dans `src/lib/mathAST/tidy/terms.ts`)                                                                        |
 
 **Statistiques et probabilités** (commandes servies par l'atelier, pas par le moteur) :
 
@@ -2521,7 +2521,7 @@ il n'est téléchargé qu'au premier « Comment ? » de la session : ~160 Ko gzi
 l'ouverture de l'atelier (1 467 → 1 308 Ko, avec l'élagage des modules de `src/lib`, voir
 [environnement-de-dev.md](../pratiques/environnement-de-dev.md)). Pendant le chargement, la ligne
 dépliée dit « Chargement des étapes… » ; une fois chargé, le composant s'affiche aussitôt sur
-toutes les lignes (`lazyLoader` : un seul téléchargement, `loaded` lu sans promesse). Un échec
+toutes les lignes, y compris celles qui avaient échoué (`lazyLoader` : un seul téléchargement, `loaded` réactif, lu sans promesse). Un échec
 (réseau, nouvelle version déployée) affiche « Les étapes n'ont pas pu se charger. » et
 « Réessayer » ; la ligne de calcul reste au-dessus. Les tests qui déplient puis lisent le rendu
 appellent `stepsCorrection.load()` dans un `beforeAll`.
