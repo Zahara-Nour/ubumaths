@@ -10,17 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2573 (fichiers du lot 3 mergés)._
+_Mis à jour le 2026-11-11, lot 3 en brouillons, PR de rangement en cours (§ 11)._
 
-- **État** : lots 1 et 2 publiés (§ 5, § 9) ; lot 3 (421, 448, 449, 471, 472) mergé (#2573, § 10), pas encore en prod.
-- **Prochaine action** : David lance `create-questions --publier` du lot 3 depuis le dépôt principal → migration de
-  rangement + tags (472 va sur une NOTION, sans sous-notion : adapter le gabarit du lot 2) → page à cocher → publication.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-demonstrations-3 --publier`.
+- **État** : lots 1 et 2 publiés (§ 5, § 9) ; lot 3 en 5 brouillons en prod (#2573 mergée), migration de rangement écrite
+  et prouvée (§ 11).
+- **Prochaine action** : PR de rangement verte → merge → `check:migrations --pr` → `db:migrate` → vérif prod → page à
+  cocher du lot 3.
+- **En attente de David** : rien avant la page à cocher.
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
-  simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer ; CI restée en file
-  1 h 46 → fermer/rouvrir la PR la relance.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` ; branche du lot 3 mergée et supprimée,
-  nouvelle branche à créer depuis `origin/main` pour la migration.
+  simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer ; TSPE-472 se range sur
+  une NOTION (sous-notion nulle dans la migration).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche
+  `feat/questions-tspe-demonstrations-3-rangement`.
 
 ---
 
@@ -255,3 +256,26 @@ Vérifié : `create-questions` en simulation 5/5 (69 specs vertes) ; `question:s
 importables, 0 `\textcolor` hors `$` ; 4 848 formules des aperçus passées à `validateLatex` + accolades, 0 problème ;
 brouillons en base locale (copie hors dépôt) ; aperçu admin vu à l'écran (case et étapes à ranger de 472, choix de
 448). Le `C` de `$Ce^{ax}$` sort en romain dans l'appli, comme dans les modèles déjà publiés (rien de propre au lot).
+
+PR des fichiers : #2573, mergée.
+
+## 11. Lot 3 : brouillons en prod, rangement (2026-11-11)
+
+David a lancé `create-questions --publier` depuis le dépôt principal : 5 brouillons. Ids reportés dans les JSON (branche
+de rangement), dépôt principal rendu propre (`git restore`). Relevé prod (MCP) : 5 brouillons `{T_SPE}`, sans nœud ni
+tag ; les 5 points actifs, aucun déjà tagué ; sur la notion « y′ = ay », le modèle publié 968f4295 est déjà rangé et
+tagué (TSPE-464, TCOMP-253) : un modèle sur une notion est accepté par la règle des tags.
+
+| Modèle   | Nœud                                                           | Point    |
+| -------- | -------------------------------------------------------------- | -------- |
+| aa8e1716 | Fonctions › Convexité › inégalités de convexité                | TSPE-421 |
+| 2d8d1efd | Fonctions › Logarithmes › dérivée                              | TSPE-448 |
+| f68e6a98 | Fonctions › Limites de fonctions › croissances comparées       | TSPE-449 |
+| eaf0f7f5 | Équations différentielles › y′ = f › primitives : notion       | TSPE-471 |
+| 3885e298 | Équations différentielles › y′ = ay (notion, sans sous-notion) | TSPE-472 |
+
+Migration `20261111224848_questions_tspe_demonstrations_3_rangement_tags.sql` (celle du lot 2, plus : sous-notion
+facultative et seconde passe de résolution sur la notion, aller et rollback) ; test
+`tests/integration/questions-tspe-demonstrations-3-rangement-tags.test.ts` 12/12 vert, rouge sans la migration (partie
+aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie. `security-auditor` : aucun finding bloquant (non bloquant : pas de cas « notion
+de 472 introuvable », couvert par la même garde que « point archivé »). Accès : personne de plus (Q5).

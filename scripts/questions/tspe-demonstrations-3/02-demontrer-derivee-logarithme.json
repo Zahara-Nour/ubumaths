@@ -1,4 +1,5 @@
 {
+	"id": "2d8d1efd-3882-4797-b7ed-adf3b3e40b31",
 	"title": "Démontrer la dérivée de la fonction logarithme népérien",
 	"description": "Démonstration à trous : e^(ln x) = x (case), dérivée de e^(ln x) (choix), ln′(x) = 1/x (case) ; étapes à ranger",
 	"grades": ["T_SPE"],

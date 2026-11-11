@@ -1,4 +1,5 @@
 {
+	"id": "3885e298-197d-4813-a368-993b045e3495",
 	"title": "Démontrer la résolution de l'équation différentielle y′ = ay",
 	"description": "Démonstration à trous : dérivée de e^(ax) (case, a tiré), z′ = 0 (choix), y = Ce^(ax) (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],

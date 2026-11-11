@@ -1,4 +1,5 @@
 {
+	"id": "eaf0f7f5-3c73-407c-8fa7-d5233b461e3f",
 	"title": "Démontrer que deux primitives d'une même fonction diffèrent d'une constante",
 	"description": "Démonstration à trous : H′ = 0 (case), dérivée nulle sur un intervalle (choix), F = G + c (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],
