@@ -51,3 +51,22 @@ _Mis à jour le 2026-11-11, phase 0 en cours (aucune PR)._
   garder `srs_card_stats` ; arrêter d'écrire les séances libres ; contrôles inchangés.
 - Futurs chantiers : taux de réussite par point/notion pour la classe ; page de suivi d'un élève
   côté prof ; bilan par question/notion des contrôles ; durées ajustées (mécanisme du Démineur).
+
+## Besoins de suivi validés (David, 2026-11-11)
+
+Point de départ pour décider du contenu d'une trace : on garde ce qu'un besoin validé exige, rien d'autre.
+
+- **Prof, classe** : P1 top des points à remédier (existe) · P2 grille point × élève (existe) ·
+  P3 taux de réussite par point et par notion · P4 erreurs fréquentes d'une question / d'un point ·
+  **P5 régularité seulement** : qui utilise le site plus ou moins régulièrement, **sans dates précises**
+  (vie privée ; la carte « activité par jour et par élève » actuelle va trop loin) ·
+  P6 (à réexpliquer : résultats d'un contrôle par question et par notion) ·
+  **P7 durées manifestement trop courtes** : repérer les questions où la majorité n'a rien répondu
+  dans le temps imparti.
+- **Prof, élève** : P8 page de suivi d'un élève · P9 distinguer prouvé (corrigé par l'appli) et
+  déclaré (auto-évaluation).
+- **Élève** : E1 ce que je sais faire (existe) · E2 quoi revoir et quand (existe) · E3 mes notes (existe) ·
+  E4 mes erreurs récurrentes.
+- **Appli** : A1 durées ajustées au temps observé · A2 anti-triche (existe).
+- **Trace écrite question par question** dès que possible (une série abandonnée ne laisse rien aujourd'hui :
+  Flash-cards et Entraînement n'écrivent qu'en fin de série).
