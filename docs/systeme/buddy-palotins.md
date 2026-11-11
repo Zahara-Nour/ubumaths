@@ -22,7 +22,7 @@ couvre:
 
 Chaque eleve choisit un **Palotin** comme compagnon. Les Palotins sont les hommes de main du Pere Ubu dans l'oeuvre d'Alfred Jarry (_Ubu Roi_, 1896). Leurs noms viennent du vocabulaire heraldique (blason).
 
-Le buddy est **toujours visible** (coin de l'ecran), reagit aux actions de l'eleve, donne des encouragements et des indices, et **evolue avec l'activite de l'eleve** via un systeme d'XP permanent.
+Le buddy est **toujours la dans sa maison** (accueil eleve, Chatterie) et **passe** ailleurs (voir [Maison et passages](#maison-et-passages-2026-11-11)), reagit aux actions de l'eleve, donne des encouragements et des indices, et **evolue avec l'activite de l'eleve** via un systeme d'XP permanent.
 
 ---
 
@@ -256,8 +256,9 @@ Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`)
   (`buddy-queries.ts`) ecrit en UNE fois `constance_week_start`, `constance_days_this_week`,
   `current_streak`, `longest_streak` et `last_activity_date` (dernier jour compte), sous verrou
   optimiste : de deux credits simultanes, un seul compte le jour et touche la recompense.
-- Au chargement du tableau de bord eleve, `resetLostConstance` remet la Constance a 0 si la derniere
-  semaine enregistree est finie sans etre tenue (`streakLost` → replique).
+- A la lecture de presence (`GET /api/student/buddy/presence`, premiere page d'une zone du Palotin),
+  `resetLostConstance` remet la Constance a 0 si la derniere semaine enregistree est finie sans etre
+  tenue (`streakLost` → replique, dans la maison ou en passage spontane).
 - **Ancienne serie en jours** (ligne sans `constance_week_start`, tout Palotin d'avant le
   2026-10-18) : `current_streak` et `longest_streak` comptaient des jours. Ils sont remis a 0 (record
   compris) au premier chargement du tableau de bord ou au premier jour travaille, sans replique ; le
@@ -299,32 +300,47 @@ Le buddy ne remplace pas les cartes VIP, il les **enrichit** :
 
 ---
 
-## Presence permanente
+## Maison et passages (2026-11-11)
 
-### Position et affichage
+Decide par David le 2026-11-11 (chantier `palotins`, journal `docs/wip/palotins-progress.md`) :
+le Palotin n'est plus affiche en permanence. **Un seul composant**, `PalotinPresence.svelte`, monte
+par le layout racine (`src/routes/+layout.svelte`, import dynamique, eleve connecte seulement : ni
+le visiteur ni le prof ne telechargent son code). La zone se lit dans l'adresse
+(`palotinZone`, `src/lib/components/buddy/palotin-presence.ts`) :
 
-**Desktop (>768px) :**
+| Zone        | Pages                                                                                             | Ce que voit l'eleve                                    |
+| ----------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| **maison**  | accueil eleve `/dashboard`, Chatterie `/dashboard/student/chatterie`                              | `BuddyWidget` : le Palotin toujours la, comme avant    |
+| **passage** | reste de `/dashboard/student/*`, `/dashboard/revisions/*` hors seance                             | l'ecusson ; le Palotin entre, dit une replique, repart |
+| **seance**  | `/automaths/test`, `/dashboard/revisions/decks/<id>/study`, `/dashboard/revisions/chapitres/<id>` | l'ecusson seul, aucun passage                          |
+| ailleurs    | tout le reste (site public, prof…)                                                                | rien, aucune requete                                   |
 
-- Buddy visible en bas a droite, ~80-100px
-- Bulle de parole au-dessus, disparait apres 4-5s
-- Animation idle quand inactif
-
-**Mobile (<768px) :**
-
-- Icone reduite ~60px en bas a droite (zone tactile 64px)
-- Bulle de parole au-dessus, largeur max ~70% de l'ecran, disparait apres 4-5s
-- Tap sur l'icone = affiche la derniere bulle ou l'etat du buddy (streak, niveau)
-
-**Les deux :**
-
-- Reactions pendant les exercices (correct/incorrect/hint)
-
-### Interactions
-
-- Reactions aux reponses de l'eleve (expressions, messages)
-- Indices contextuels (debloques par niveau)
-- Encouragements adaptes a la personnalite du Palotin
-- Remarques entre Palotins (dans des contextes speciaux)
+- **Lecture apres l'affichage** : a la premiere page d'une zone, `GET /api/student/buddy/presence`
+  (`loadBuddyPresence`, `src/lib/server/buddy-presence.ts`) rend le Palotin, la Constance perdue
+  (remise a zero par cette lecture) et le retour a feter, valides par Zod (`parseBuddyPresence`).
+  Le Palotin va dans `studentCache` (`hydrateBuddy`). Lecture en echec : pas de passage ; l'ecusson
+  reste si le Palotin est deja en cache (layout de l'espace eleve).
+- **Maison** : `BuddyWidget` (recree en passant de l'accueil a la Chatterie) : replique du retour,
+  annonce de la Chatterie ou salutation, repliques `idle` / `idle_lore` toutes les 45 a 90 s, etat
+  au clic. La replique du retour dite, `onWelcomeBackSaid` l'efface : elle ne sera pas redite.
+- **Ecusson** (`PalotinBadge.svelte`) : blason immobile a la piece heraldique du Palotin (giron,
+  pile, cotice), bouton « Appeler <nom> » de 44 px. Un clic fait entrer le Palotin avec son etat
+  (`BuddyStatusPanel`) ; fermer, ou changer de page, le fait repartir.
+- **Passages** (pages de passage seulement) : le Palotin entre (glissement, aucun si
+  `prefers-reduced-motion`), dit sa replique pendant la duree de la bulle (`buddy-timing.ts`),
+  enchaine la suivante s'il y en a, puis repart. Changer de page vers une seance ou la maison
+  l'interrompt ; ce qui reste en file attend la page de passage suivante.
+  - **importants**, une fois chacun, hors plafond : « tu m'as manque » (acquitte a l'affichage),
+    nouveautes de la Chatterie (avec le lien) ;
+  - **spontanes**, au plus un toutes les **10 minutes** (`PASSAGE_COOLDOWN`), tous onglets
+    confondus : Mathoux en sieste (avec le lien), sinon Constance perdue. Heure du dernier passage
+    dans `localStorage` (`chiphre:palotin:dernier-passage`, `createPassageClock`) ; stockage
+    illisible : le plafond tient pour la page ouverte, jamais d'erreur.
+- L'annonce de la Chatterie est lue une fois par chargement, a la premiere page de passage
+  (`fetchChatterieAnnouncement`, `chatterie-announcement.ts`, partagee avec `BuddyWidget`) ; jamais
+  en seance (l'ecran de fin de seance montre deja les nouveautes).
+- Hors perimetre, chantier suivant : reactions pendant les seances (PR 2 du chantier), indices et
+  rappels (devoirs, revisions dues).
 
 ### Gain visible en fin de seance (2026-10-18)
 
@@ -350,7 +366,8 @@ Le Compendium interdit d'afficher « XP » et « niveau ». Mots choisis par Dav
 
 ### Gardien de la Chatterie
 
-Au montage, `BuddyWidget` demande `GET /api/student/mathoux` (après l'affichage, pas dans le
+Dans la maison, au montage, `BuddyWidget` demande `GET /api/student/mathoux` ; sur les pages de
+passage, `PalotinPresence` le demande une fois par chargement (voir [Maison et passages](#maison-et-passages-2026-11-11)) ; toujours après l'affichage, pas dans le
 layout : environ 39 requêtes pour un parcours de Tle spé). S'il y a une nouveauté (naissance,
 croissance, étoile qu'aucun écran de fin de séance n'a montrée), la bulle l'annonce d'abord, avec
 le même lien. Sinon, si au moins un Mathou fait la sieste,
@@ -377,11 +394,12 @@ Decide par David le 2026-10-21 (presence notee partout : meme jour, apres #1588)
   souvent detecte loin du Palotin : il reste **a feter pendant 7 jours** (`WELCOME_BACK_DAYS`,
   `isWelcomeBackDue`), puis il est oublie : **efface** au premier passage d'un jour suivant
   (`recordStudentPresence`, `welcome_back_on <= lastExpiredWelcomeBackDay`), sans tache planifiee.
-- **Bulle** : le layout `dashboard/student/+layout.server.ts` **lit** le retour a feter
+- **Bulle** : `GET /api/student/buddy/presence` (`loadBuddyPresence`) **lit** le retour a feter
   (`isWelcomeBackPending`, sans rien ecrire : un prechargement au survol ne consomme rien) et ne
   transmet que `longAbsence` (oui/non), jamais un jour ; faux sans Palotin (celui choisi ensuite
   est tout neuf). Le Palotin est **triste** (`sad`) et dit « tu m'as manque » (contexte
-  `long_absence`, trois repliques par Palotin, neutres en genre), puis `BuddyWidget` l'acquitte
+  `long_absence`, trois repliques par Palotin, neutres en genre), dans la maison (`BuddyWidget`)
+  ou en passage important (`PalotinPresence`), puis l'acquitte
   (`POST /api/student/buddy/welcome-back`, `acknowledgeWelcomeBack` : `welcome_back_on` remis a
   NULL) : **une seule fois**. Acquittement en echec : la bulle revient au prochain chargement.
 - La Constance perdue pendant l'absence est remise a zero comme d'habitude, mais sa replique
@@ -545,7 +563,7 @@ student_buddies
 Toutes les ecritures de `student_buddies` passent par le client service (`src/lib/server/buddy-queries.ts`),
 avec l'identifiant de l'eleve tire de la SESSION, jamais du corps de la requete : choix
 (`createStudentBuddy`), changement (`changeStudentPalotin`), Constance Royale (`recordWorkedDay`,
-`resetLostConstance` depuis le layout du tableau de bord eleve), themes (`addExploredThemes`,
+`resetLostConstance` depuis `loadBuddyPresence`), themes (`addExploredThemes`,
 `removeExploredThemes`), XP (`add_buddy_xp`). Les fonctions d'ecriture ne recoivent pas le client de
 l'eleve ; la lecture (`getStudentBuddy`) reste sur son client (sa RLS).
 
@@ -712,6 +730,9 @@ Jarry joue sur ces noms (quand Bougrelas coupe Giron en quatre, il devient un "g
 ### Quand
 
 A la **premiere connexion**, avant d'acceder au dashboard. Le choix du buddy est un moment fun qui cree un lien immediat.
+
+Depuis le 2026-11-11 (chantier `palotins`), le quiz `PalotinQuiz` s'ouvre **sur l'accueil eleve
+seulement** (`PalotinPresence`), plus sur toutes les pages de l'espace eleve.
 
 ### Comment — Quiz de personnalite + presentation
 

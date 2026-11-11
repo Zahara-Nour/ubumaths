@@ -629,8 +629,9 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
 **Données de travail dans le navigateur** (constat T17 étendu, décision de David du 2026-10-13 :
 effacées à la déconnexion). `localStorage` garde le travail de l'élève : conversation avec le
 Père Ubu, code Python et Blockly, atelier, console de calcul, calculatrice, grapheur, tableur,
-tableau blanc, parties de jeux (démineur, 2048, Mathémo, Evoland, Cabinet Noir) et profil de
-joueur. La liste des clés vit dans `src/lib/utils/work-data.ts` ; **une nouvelle clé de travail
+tableau blanc, parties de jeux (démineur, 2048, Mathémo, Evoland, Cabinet Noir), profil de
+joueur et heure du dernier passage du Palotin (`chiphre:palotin:dernier-passage`, un horodatage
+sans identifiant, effacé pour que le plafond d'un élève ne fasse pas taire le Palotin du suivant). La liste des clés vit dans `src/lib/utils/work-data.ts` ; **une nouvelle clé de travail
 s'y ajoute**, sinon elle survit au changement de compte. Le navigateur retient à qui ces données
 appartiennent ; le layout racine (`src/routes/+layout.ts`) le vérifie à chaque page et à chaque
 changement de session :

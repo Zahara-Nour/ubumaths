@@ -130,6 +130,17 @@ describe('BuddyWidget — retour après une longue absence', () => {
 		expect(avatarSrc()).toContain('pile-determined');
 	});
 
+	it('accueil quitté avant la bulle : rien n’est acquitté', async () => {
+		mockSummary({ born: 0, napping: 0, toDiscover: 0, news: NO_NEWS });
+		const onWelcomeBackSaid = vi.fn();
+		const widget = await render(BuddyWidget, { props: { longAbsence: true, onWelcomeBackSaid } });
+
+		await widget.unmount();
+		await new Promise((resolve) => setTimeout(resolve, 1500));
+		expect(acknowledgements()).toHaveLength(0);
+		expect(onWelcomeBackSaid).not.toHaveBeenCalled();
+	});
+
 	it('la bulle montrée, le retour est acquitté une fois auprès du serveur', async () => {
 		mockSummary({ born: 0, napping: 0, toDiscover: 0, news: NO_NEWS });
 		await render(BuddyWidget, { props: { longAbsence: true } });
