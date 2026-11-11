@@ -283,14 +283,17 @@ async function sendErrorBatch(): Promise<void> {
 
 /**
  * Queue error for sending
+ *
+ * Rend `true` si l'erreur est en file ou déjà envoyée (doublon), `false` si elle
+ * est abandonnée (suivi désactivé, limite par minute atteinte).
  */
-function queueError(error: ClientErrorData): void {
-	if (!CONFIG.ENABLED) return;
+function queueError(error: ClientErrorData): boolean {
+	if (!CONFIG.ENABLED) return false;
 
 	// Check rate limit
 	if (!isWithinRateLimit()) {
 		console.warn('[Error Monitoring] Rate limit exceeded, skipping error');
-		return;
+		return false;
 	}
 
 	const hash = generateErrorHash(error);
@@ -298,7 +301,7 @@ function queueError(error: ClientErrorData): void {
 	// Check for duplicates
 	if (isDuplicate(hash)) {
 		console.debug('[Error Monitoring] Duplicate error, skipping');
-		return;
+		return true;
 	}
 
 	// Add to queue
@@ -319,6 +322,7 @@ function queueError(error: ClientErrorData): void {
 			batchTimer = setTimeout(sendErrorBatch, CONFIG.BATCH_TIMEOUT);
 		}
 	}
+	return true;
 }
 
 // =====================================================
@@ -583,18 +587,21 @@ function getWebVitalSeverity(metric: WebVitalMetric, value: number): 'info' | 'w
 
 /**
  * Report a Web Vital metric
+ *
+ * Rend `true` si la mesure est partie (en file), `false` sinon (sous le seuil,
+ * ou abandonnée par `queueError`).
  */
 function reportWebVital(
 	metric: WebVitalMetric,
 	value: number,
 	context?: Record<string, unknown>
-): void {
+): boolean {
 	const severity = getWebVitalSeverity(metric, value);
 	const threshold = WEB_VITALS_THRESHOLDS[metric];
 
 	// Only report metrics that need improvement or are poor
 	// Good metrics are not worth logging to reduce noise
-	if (severity === 'info') return;
+	if (severity === 'info') return false;
 
 	const errorData: ClientErrorData = {
 		error_type: 'performance',
@@ -612,7 +619,7 @@ function reportWebVital(
 		tags: ['web_vitals', metric.toLowerCase()]
 	};
 
-	queueError(errorData);
+	return queueError(errorData);
 }
 
 /** Premier passage en arrière-plan, lu dans l'historique de visibilité s'il existe */
@@ -642,6 +649,12 @@ export function initWebVitals(): void {
 
 	// Track INP across session
 	let inpValue = 0;
+
+	// Dernières valeurs envoyées : INP et CLS partent à chaque passage en arrière-plan,
+	// mais une valeur déjà envoyée ne repart pas (un onglet ouvert des jours renvoyait
+	// sinon le même INP toutes les 5 minutes d'absence, fin de la fenêtre anti-doublon)
+	let reportedCls = 0;
+	let reportedInp = 0;
 
 	// Premier passage en arrière-plan : FCP et LCP mesurés après lui sont écartés
 	// (onglet ouvert en arrière-plan → « LCP » de plusieurs heures, cf. web-vitals-visibilite.ts)
@@ -761,14 +774,17 @@ export function initWebVitals(): void {
 	// Report on page hide (when user leaves or switches tabs)
 	document.addEventListener('visibilitychange', () => {
 		if (document.visibilityState === 'hidden') {
-			// Report CLS if any shifts occurred
-			if (clsValue > 0) {
-				reportWebVital('CLS', clsValue, { shift_count: clsShiftCount });
+			// Report CLS if it grew since the last report (une mesure abandonnée retente)
+			if (
+				clsValue > reportedCls &&
+				reportWebVital('CLS', clsValue, { shift_count: clsShiftCount })
+			) {
+				reportedCls = clsValue;
 			}
 
-			// Report INP if any interactions occurred
-			if (inpValue > 0) {
-				reportWebVital('INP', inpValue);
+			// Report INP if a slower interaction occurred since the last report
+			if (inpValue > reportedInp && reportWebVital('INP', inpValue)) {
+				reportedInp = inpValue;
 			}
 
 			// Note: We don't reset values - cumulative metrics continue across tab switches

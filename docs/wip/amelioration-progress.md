@@ -185,3 +185,26 @@ du panier Automaths n'existe pas (« Fonctionnalité à venir »).
   à ~280 px de sa lettre ; elle est désormais contre la lettre, comme un choix de texte
   (`.choice-formula` : `justify-content: flex-start`). L'écran de réponse (`MultipleChoiceInput`)
   est inchangé. Test : « formule seule calée à gauche » (rouge avant : écart 278 px).
+
+## Piste 3 — INP renvoyé plusieurs fois par notre suivi (2026-11-11)
+
+- **Mesure** (`error_logs`, 60 j, messages INP reçus plus de 2 fois) : « INP 1688ms » ×28,
+  « 616ms » ×18, « 408ms » ×14, « 1080ms » ×13, « 2024ms » ×12… chaque fois **un seul
+  élève**, une ou deux pages, sur un à trois jours : un onglet laissé ouvert.
+- **Cause** : `initWebVitals` envoyait INP et CLS à **chaque** passage en arrière-plan, avec la
+  pire valeur depuis l'ouverture ; seule la fenêtre anti-doublon de 5 minutes les retenait.
+- **Correctif** (branche `fix/inp-renvoye`, PR #2539) : une valeur ne repart que si elle a grandi
+  depuis le dernier envoi (`reportedInp`, `reportedCls`), et n'est marquée envoyée que si
+  `queueError` l'a prise (sinon, limite par minute atteinte, elle retente au passage suivant :
+  `queueError` et `reportWebVital` rendent un booléen). Tests :
+  `errorMonitoring-web-vitals.svelte.test.ts` (INP et CLS non renvoyés : rouges sans la garde ;
+  INP abandonné renvoyé : rouge si on marque sans condition ; INP plus lent renvoyé). Piège :
+  `vi.resetModules()` ne recharge pas le module en mode navigateur → valeurs distinctes par test.
+- **Revue** (`code-reviewer`, Sonnet) : 2 points retenus. (1) valeur marquée envoyée alors que
+  l'envoi a été abandonné → corrigé ; (2) un premier jet détachait les écouteurs au
+  `beforeunload` (`AbortController`), ce qui coupait INP et CLS après un retour du bfcache
+  ou un `beforeunload` annulé → retiré.
+- **Non traité** (à proposer) : notre « INP » est la durée de l'événement le plus lent de toute
+  la session, y compris les événements sans `interactionId` (pas des interactions) ; le vrai
+  INP ne compte que les interactions. Et l'URL envoyée est celle de la page au moment du
+  passage en arrière-plan, pas celle où l'interaction lente a eu lieu.
