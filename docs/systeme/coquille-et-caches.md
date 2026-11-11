@@ -256,9 +256,10 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 - `version.pollInterval` (`svelte.config.js`) : toutes les 5 min, l'onglet lit
   `/_app/version.json` ; `updated.current` (`$app/state`) passe à vrai s'il a changé.
 - `beforeNavigate` du `+layout.svelte` racine : nouvelle version + lien ou Précédent / Suivant →
-  la page suivante se charge en entier (`location.href`, ou `location.replace` pour Précédent /
-  Suivant). **Jamais sur un `goto` ni un formulaire** : ce sont des navigations du code, souvent
-  en pleine activité.
+  la page suivante se charge en entier. Lien : `cancel()` puis `location.href` (sans `cancel()`,
+  Kit charge la page en parallèle avec l'ancien code). Précédent / Suivant : `location.reload()`,
+  **sans** `cancel()` (Kit annulerait le déplacement dans l'historique). **Jamais sur un `goto` ni
+  un formulaire** : ce sont des navigations du code, souvent en pleine activité.
 - Rafraîchissement horaire du jeton (`+layout.ts`, `TOKEN_REFRESHED`) : `checkAppVersion` lit
   `version.json` sans cache ; nouvelle version → on ne recharge pas les données, la page
   suivante le fera. Fichier illisible (hors ligne, dev où il n'existe pas) → comme avant.

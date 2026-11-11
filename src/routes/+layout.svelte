@@ -68,10 +68,17 @@
 
 	// Onglet resté ouvert pendant un déploiement : sur un lien ou Précédent / Suivant, la page
 	// suivante se charge en entier avec le nouveau code (jamais sur un `goto` : en pleine activité)
-	beforeNavigate(({ willUnload, type, to }) => {
+	// Lien : `cancel()` arrête la navigation de Kit (sinon l'ancien code charge la page en parallèle).
+	// Précédent / Suivant : surtout pas de `cancel()` (Kit annulerait le déplacement dans
+	// l'historique) ; l'adresse a déjà changé, on recharge.
+	beforeNavigate(({ willUnload, type, to, cancel }) => {
 		if (!to || !shouldReloadOnNavigate({ updated: updated.current, willUnload, type, to })) return;
-		if (type === 'popstate') location.replace(to.url.href);
-		else location.href = to.url.href;
+		if (type === 'popstate') {
+			location.reload();
+			return;
+		}
+		cancel();
+		location.href = to.url.href;
 	});
 
 	// Check if we're in a dashboard route

@@ -118,13 +118,15 @@ function setLastRefresh(timestamp: number): void {
  * rechargée en entier, sinon elle montrerait l'ancien compte.
  */
 async function invalidateAuth() {
+	let invalidate: (typeof import('$app/navigation'))['invalidate'];
 	try {
-		const { invalidate } = await import('$app/navigation');
-		await invalidate('supabase:auth');
+		({ invalidate } = await import('$app/navigation'));
 	} catch (err) {
-		console.warn('🔐 [AUTH] Invalidation failed, full reload', err);
+		console.warn('🔐 [AUTH] $app/navigation unavailable, full reload', err);
 		location.reload();
+		return;
 	}
+	await invalidate('supabase:auth');
 }
 
 /**
