@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2539 et les mesures de la piste 4._
+_Mis à jour le 2026-11-11, après #2540._
 
-- **État** : #2539, #2538, #2536, #2535 mergées, pas en prod ; piste 4 (Atelier lent) **mesurée** (section « Piste 4 », rien de modifié) : le graphe à 10 courbes gèle à la molette (~150 ms par cran au ×6) · **Prochaine action** : David choisit parmi (a) molette = interaction, (b) intersections calculées une fois, (c) chargement à froid ; puis (5) « Mon cours » #1788 · **À proposer** (piste 3, « Non traité ») : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur ; une PR peut ne pas déclencher « Code Quality » à l'ouverture → fermer/rouvrir la PR · **Worktree / branche** : aucun
+- **État** : #2540 (molette = interaction, intersections en cache par paire), #2539, #2538, #2536, #2535 mergées, pas en prod · **Prochaine action** : (5) « Mon cours » #1788 ; piste 4 restante, à proposer : (c) chargement à froid de l'atelier (3-3,7 s en 4G, 1,7 Mo de JS), et zoom clavier/boutons qui recalcule tout à chaque appui (revue de #2540) · **À proposer** (piste 3, « Non traité ») : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel ; pendant la molette, points remarquables et étiquettes épinglées disparaissent comme au glisser · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur ; « Code Quality » peut rester en file d'attente plusieurs minutes ; un nom de fonction de l'atelier ne prend pas de chiffre (`g1(x)` refusé) · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -239,3 +239,17 @@ versionnés. ⚠️ Un nom de fonction ne prend pas de chiffre (`g1(x)` refusé)
   froid, chantier plus gros (découpage du JS de l'atelier).
 - Vu en passant : message d'erreur `g9(x)=…` en mode texte avec du LaTeX brut
   (« utilise \cdot (x\cdot 9) »).
+
+## PR 4 — molette et intersections (#2540, mergée le 2026-11-11)
+
+- David a suivi les recommandations (a) et (b) ; (c) reste à proposer.
+- (a) `GraphSVG.svelte` : la molette pose `isInteracting`, retombé 150 ms après le dernier cran
+  (`WHEEL_END_DELAY`) ; un glisser en cours garde la main ; un démontage pendant la molette clôt
+  le geste (trouvé par la revue : le magasin survit au graphe).
+- (b) `intersections.ts` : cache par paire d'expressions (WeakMap ×2) puis par fenêtre, vidé au-delà
+  de 200 fenêtres par paire ; restriction après le cache.
+- Profil (dev, ×6, 10 courbes) : 5 crans de molette 659 → 145 ms ; intersections au glisser 47 → 28 ms.
+- Tests : `GraphSVGWheel.svelte.test.ts` en minuteurs simulés (en temps réel : 1 échec sur 4 sur
+  machine chargée) ; `unmount()` doit être attendu (`lint:fast` au pre-push).
+- Revue, non traité : zoom clavier (`KeyboardHandler.svelte`) et boutons (`ViewportControls`)
+  recalculent tout à chaque appui ; pas de test `bindParameters` du cache.
