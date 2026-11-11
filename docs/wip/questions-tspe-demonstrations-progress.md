@@ -10,16 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2558 (lot 1 rangé et tagué en prod)._
+_Mis à jour le 2026-11-11, après la publication du lot 1._
 
-- **État** : lot 1 (321, 548, 359, 373) en brouillon en prod, rangé et tagué (§ 4) ; page à cocher publiée.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 4) → `publier-lot.ts --dir
-scripts/questions/tspe-demonstrations-1` en simulation → David publie ; puis lot 2 (388, 389, 390, 391, 405).
-- **En attente de David** : relecture sur https://claude.ai/artifact/YPeen4p6oK8DdJs1hkhC6d (jouer les étapes à ranger
-  dans l'aperçu admin).
-- **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` (branche de rangement mergée et supprimée ;
-  nouvelle branche depuis `origin/main` pour le lot 2).
+- **État** : lot 1 (321, 548, 359, 373) publié en prod (§ 5) ; 4 verdicts « ok ».
+- **Prochaine action** : lot 2 (388, 389, 390, 391, 405), nouvelle branche depuis `origin/main` dans le worktree.
+- **En attente de David** : rien.
+- **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
+  simulation `publier-lot.ts` lit la prod → refusée au mode auto, David la lance.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` (branche de rangement mergée ; à recréer).
 
 ---
 
@@ -170,3 +168,8 @@ Piège : commitlint refuse le type `content` (types admis : feat, fix, docs…).
 
 Page à cocher : https://claude.ai/artifact/YPeen4p6oK8DdJs1hkhC6d (4 alertes attendues : bloc ranger non dessiné, à
 jouer dans l'aperçu admin) ; base `verdicts` vide à la publication.
+
+## 5. Lot 1 : publication (2026-11-11)
+
+Verdicts lus : 4/4 « ok », sans commentaire. `publier-lot.ts` en simulation (4 brouillons passent le contrôle), puis
+`--publier` lancé par David : 4/4 publiés, statut relu en base.
