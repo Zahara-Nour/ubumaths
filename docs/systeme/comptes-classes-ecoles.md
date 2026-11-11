@@ -193,7 +193,8 @@ de 2nde de répondre une fois à la question d'âge.
 - **Annuaire du personnel** : `src/lib/server/staff-directory.ts` (`fetchStaffDirectory`,
   `soleTeacher`, `indexStaffById`), sur la fonction SQL `get_staff_directory`. C'est ainsi qu'un
   élève lit le nom et l'avatar du prof.
-- Page « Mon profil » : `src/routes/(protected)/dashboard/profile/+page.svelte` (préférences,
+- Page « Mon profil » : `src/routes/(protected)/dashboard/profile/+page.svelte` (pour un élève, la
+  boutique d'avatars, voir [jeux-et-economie.md](jeux-et-economie.md) ; préférences,
   « Changer mon mot de passe » → `/auth/update-password?depuis=profil`, export des données,
   suppression du compte, déconnexion). Pour un enfant inscrit par son parent, elle affiche
   « Identifiant : noelie042 » au lieu de l'adresse fictive (`childLoginIdOf`).
