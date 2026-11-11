@@ -10,9 +10,9 @@
 	  - séance (Entraînement, révision en cours) : l'écusson seul ;
 	  - ailleurs : rien.
 	Le Palotin est lu APRÈS l'affichage (`GET /api/student/buddy/presence`).
-	Passages importants (retour d'absence, nouveautés de la Chatterie) : une fois
-	chacun, hors plafond. Passages spontanés (Mathoux en sieste, Constance perdue) :
-	un toutes les 10 minutes au plus, tous onglets confondus.
+	Passages importants (retour d'absence, Constance perdue, nouveautés de la
+	Chatterie) : une fois chacun, hors plafond. Passage spontané (Mathoux en
+	sieste) : un toutes les 10 minutes au plus, tous onglets confondus.
 	Sans Palotin : le quiz de choix s'ouvre sur l'accueil seulement.
 -->
 
@@ -139,8 +139,10 @@
 
 	/**
 	 * Ce que le Palotin a à dire en passant : d'abord les passages importants
-	 * (retour d'absence, nouveautés de la Chatterie), puis au plus un passage
-	 * spontané si le plafond le permet (Mathoux en sieste, sinon Constance perdue).
+	 * (retour d'absence ou Constance perdue, nouveautés de la Chatterie), puis le
+	 * passage spontané si le plafond le permet (Mathoux en sieste).
+	 * La Constance perdue est importante : la lecture de présence l'a déjà remise
+	 * à zéro, sa réplique ne reviendrait jamais (décision de David, 2026-11-11).
 	 */
 	async function planPassages() {
 		if (planning || !buddy) return;
@@ -158,6 +160,9 @@
 			longAbsence = false;
 			streakLost = false;
 			enqueueContext('long_absence', acknowledgeWelcomeBack);
+		} else if (streakLost) {
+			streakLost = false;
+			enqueueContext('streak_lost');
 		}
 
 		if (!announcementPromise) {
@@ -181,10 +186,6 @@
 			const { message, expression } = announcement;
 			announcement = null;
 			queue = [...queue, { message, expression, link: CHATTERIE_LINK }];
-			clock.record(now);
-		} else if (streakLost) {
-			streakLost = false;
-			enqueueContext('streak_lost');
 			clock.record(now);
 		}
 	}

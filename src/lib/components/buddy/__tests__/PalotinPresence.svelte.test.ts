@@ -5,8 +5,8 @@
  * Ce que l'élève VOIT, page par page (docs/wip/palotins-progress.md) :
  *   - maison (accueil, Chatterie) : le Palotin, toujours là ;
  *   - passage (reste de l'espace élève) : l'écusson ; le Palotin entre pour les
- *     passages importants (retour, nouveautés) et, au plus un toutes les
- *     10 minutes, pour les spontanés (sieste, Constance perdue) ;
+ *     passages importants (retour, Constance perdue, nouveautés) et, au plus
+ *     un toutes les 10 minutes, pour le spontané (Mathoux en sieste) ;
  *   - séance : l'écusson seul, aucun passage ;
  *   - ailleurs : rien, et rien n'est demandé au serveur.
  * Sans Palotin : le quiz de choix, sur l'accueil seulement.
@@ -176,7 +176,7 @@ describe('PalotinPresence — pages de passage', () => {
 		await first.unmount();
 
 		// Nouvel onglet, même navigateur : le plafond tient
-		mockServer({ napping: 2, presence: { buddy, streakLost: true, longAbsence: false } });
+		mockServer({ napping: 2 });
 		await render(PalotinPresence);
 		await vi.waitFor(() => expect(badge()).not.toBeNull());
 		await settle(800);
@@ -184,11 +184,19 @@ describe('PalotinPresence — pages de passage', () => {
 		expect(avatarButton()).toBeNull();
 	});
 
-	it('Constance perdue : passage spontané si le plafond le permet', async () => {
-		mockServer({ presence: { buddy, streakLost: true, longAbsence: false } });
+	it('Constance perdue : passage important, dit même si le plafond est atteint', async () => {
+		// Un passage spontané vient d'avoir lieu (autre onglet) : la remise à zéro est déjà faite
+		// par la lecture de présence, la réplique ne reviendra jamais si elle n'est pas dite ici
+		const lastPassage = Date.now();
+		localStorage.setItem(LAST_PASSAGE_KEY, String(lastPassage));
+		mockServer({ napping: 2, presence: { buddy, streakLost: true, longAbsence: false } });
 		await render(PalotinPresence);
 
 		await vi.waitFor(() => expect(STREAK_LOST).toContain(bubbleText()), { timeout: 3000 });
+		// Hors plafond : elle ne le consomme pas, et la sieste attend toujours
+		expect(Number(localStorage.getItem(LAST_PASSAGE_KEY))).toBe(lastPassage);
+		await settle(800);
+		expect(bubbleText().startsWith(NAPPING)).toBe(false);
 	});
 
 	it('clic sur l’écusson : le Palotin entre avec son état', async () => {
