@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2539._
+_Mis à jour le 2026-11-11, après #2539 et les mesures de la piste 4._
 
-- **État** : #2539 (INP et CLS ne repartent plus à chaque passage en arrière-plan, mesure abandonnée retentée), #2538, #2536 et #2535 mergées, pas en prod · **Prochaine action** : (4) Atelier lent : **David le constate lui-même**, lui demander sur quel geste, profiler celui-là ; (5) « Mon cours » #1788 · **À proposer** (piste 3, « Non traité ») : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur ; une PR peut ne pas déclencher « Code Quality » à l'ouverture → fermer/rouvrir la PR · **Worktree / branche** : aucun
+- **État** : #2539, #2538, #2536, #2535 mergées, pas en prod ; piste 4 (Atelier lent) **mesurée** (section « Piste 4 », rien de modifié) : le graphe à 10 courbes gèle à la molette (~150 ms par cran au ×6) · **Prochaine action** : David choisit parmi (a) molette = interaction, (b) intersections calculées une fois, (c) chargement à froid ; puis (5) « Mon cours » #1788 · **À proposer** (piste 3, « Non traité ») : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur ; une PR peut ne pas déclencher « Code Quality » à l'ouverture → fermer/rouvrir la PR · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -208,3 +208,34 @@ du panier Automaths n'existe pas (« Fonctionnalité à venir »).
   la session, y compris les événements sans `interactionId` (pas des interactions) ; le vrai
   INP ne compte que les interactions. Et l'URL envoyée est celle de la page au moment du
   passage en arrière-plan, pas celle où l'interaction lente a eu lieu.
+
+## Piste 4 — Atelier lent : mesures du 2026-11-11 (rien de modifié)
+
+David ne se rappelait plus le geste lent → mesures larges. Banc Playwright sur la **prod**
+(`/atelier`, public), processeur bridé ×1/×4/×6 (CDP), réseau rapide ou 4G simulée ; profil CPU
+sur le serveur de dev (noms lisibles, la prod n'a pas de sourcemaps). Scripts jetables, non
+versionnés. ⚠️ Un nom de fonction ne prend pas de chiffre (`g1(x)` refusé) : un premier
+« 10 courbes » n'en traçait qu'une.
+
+- **Calculs de la console : rapides.** Au ×6, toutes les commandes (`.dériver`, `.résoudre`,
+  `.variations`, `.intégrer`, `.taylor`, `.binomiale`…) répondent en < 140 ms, la plupart
+  < 70 ms. Frappe : 24 ms par touche, en mode texte comme en mode math (MathLive).
+- **Chargement à froid** : console utilisable après 3,0-3,7 s (4G, ×4/×6), 0,9 s sur réseau
+  rapide ; 199 fichiers JS, 1,7 Mo compressés (5,3 Mo décodés). À chaud : 0,3-0,7 s.
+- **Le graphe avec 10 courbes (×6) — le vrai point lent :**
+  - molette : **860 ms de gel pour 5 crans** (~150 ms par cran) ;
+  - glisser : 173 ms au lâcher ; bouton zoom : 200 ms ; retour sur la vue Graphe : 144 ms ;
+  - chaque fonction ajoutée coûte un peu plus (55 → 84 ms de la 2e à la 10e).
+- **Cause (profil)** : à chaque changement de fenêtre, analyse de chaque fonction (points
+  critiques, `solve` exact, racines — `analyzeAllFunctions`, ~280 ms sur 5 crans) et
+  intersections de toutes les paires (`findAllIntersections`, 45 paires, ~290 ms).
+  1. `handleWheel` (`GraphSVG.svelte:393`) ne pose pas `isInteracting` : le glisser saute ces
+     calculs pendant le geste, la molette les refait à **chaque cran**.
+  2. Les intersections sont calculées **deux fois** : `IntersectionPoints.svelte:71` et
+     `CurveHover.svelte:131`, sans cache (l'analyse, elle, a `analyzeCached` : partagée entre
+     `AsymptoteLines`, `SpecialPoints`, `CurveHover`).
+- **À proposer à David** : (a) molette = interaction, calculs une fois ~150 ms après le dernier
+  cran ; (b) intersections calculées une fois (cache comme `analyzeCached`) ; (c) chargement à
+  froid, chantier plus gros (découpage du JS de l'atelier).
+- Vu en passant : message d'erreur `g9(x)=…` en mode texte avec du LaTeX brut
+  (« utilise \cdot (x\cdot 9) »).
