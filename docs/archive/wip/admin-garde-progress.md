@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, à l'ouverture de la PR._
+_Mis à jour le 2026-11-12, après #2575._
 
-- **État** : 8 routes passées à `requireAdmin` + périmètre de l'élévation élargi, PR ouverte · **Prochaine action** : revue code + sécurité, CI verte → merge · **En attente de David** : `deploy:prod`, puis supprimer le brouillon `3a7a5711` depuis `/dashboard/admin/questions` (ou me le redemander) · **Pièges** : `requireAdmin` lit `locals.user`/`locals.profile` (posés par les hooks), pas `safeGetSession` · **Worktree / branche** : `../ubumaths-wt-admin-garde` / `fix/admin-garde-elevation`
+- **État** : ✅ clos — #2575 mergée (8 routes admin en `requireAdmin`, périmètre de l'élévation élargi, `/api/questions/templates/all` exclu) · **Prochaine action** : aucune · **En attente de David** : `pnpm deploy:prod`, puis supprimer le brouillon doublon `3a7a5711` (« Trouver la largeur d'un rectangle. », 6e) depuis `/dashboard/admin/questions` en mode administration (ligne dans `docs/wip/verifications-manuelles.md`) · **Pièges** : voir « Piège CI » ci-dessous · **Worktree / branche** : supprimés
 
 ## Constat (2026-11-11)
 
