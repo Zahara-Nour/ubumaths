@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, PR 2 en cours (branche `feat/formes-de-serie-api`)._
+_Mis à jour le 2026-11-11, après #2547 et #2548._
 
-- **État** : PR 1 mergée (#2543), migration en prod. PR 2 codée : `db:types`, `/api/skill-attempts` (Zod = CHECK de la base, lieu exigé parmi `flash_cards`/`typing`/`mock_test`/`number_race`, aucune case → NULL), export RGPD, `FlashCard` envoie `place: 'typing'` · **Prochaine action** : revue, PR, merge ; puis la migration « trace `evaluation` réservée au serveur » (PR à part) et la PR 3 (deux boutons) · **En attente de David** : question d'accès sur les traces `evaluation` (ci-dessous § « PR 2 ») · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse aussi `review` (la révision écrit par `/api/srs/review/submit`) · **Worktree / branche** : `ubumaths-wt-formes-de-serie` · `feat/formes-de-serie-api`
+- **État** : PR 1 (#2543) et PR 2 (#2547 : `db:types`, `/api/skill-attempts` étendu, export RGPD) mergées ; traces `evaluation` réservées au serveur (#2548), **migration appliquée en prod** (policy vérifiée) · **Prochaine action** : PR 3 = deux boutons « Réussi / Pas réussi » (révision, Flash-cards, cartes de cours) + widget D retiré ; nouveau worktree `ubumaths-wt-formes-de-serie` depuis `origin/main` · **En attente de David** : rien · **Pour la PR 4** : traces d'un contrôle (lieu `evaluation`, durées) écrites par le **client service** (la policy élève les refuse) ; plafonner `response_ms` à `allotted_ms` côté client · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` · **Worktree / branche** : aucun (retirés après #2548)
 
 ## Décisions de David (2026-11-11)
 
@@ -235,9 +235,13 @@ une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit d
   l'API : `flash_cards`, `typing`, `mock_test`, `number_race` (ni `evaluation` ni `review`).
 - `FlashCard` (seul appelant, aujourd'hui l'aperçu `/dev/carte-question`, admin : rien d'écrit)
   envoie `place: 'typing'` ; graine, réponse et verdicts viendront avec la Saisie (PR 5).
-- **Question d'accès en attente** (traces `evaluation`) : aujourd'hui un élève peut insérer
+- **Question d'accès tranchée** (David, 2026-11-11, recommandation suivie) — traces `evaluation` : avant #2548, un élève peut insérer
   directement (PostgREST) une trace `place = 'evaluation'`, que le prof lirait « faite en contrôle ».
   Correctif proposé : la policy d'insertion élève refuse `place = 'evaluation'`, et le serveur écrit
   les traces d'un contrôle avec le client service. Qui ne pourra plus écrire ce qu'il écrivait :
   l'élève, ses traces « contrôle » (aujourd'hui aucune n'existe avec un lieu : le code n'en écrit pas
   encore).
+- **#2548** (migration `20261111111212`) : la policy `skill_attempts_insert_own_student` refuse
+  `place = 'evaluation'` ; traces sans lieu et autres lieux inchangés. `db:migrate` le 2026-11-11.
+  Audit : un élève peut toujours écrire `mock_test` / `number_race` avec des durées inventées
+  (voulu, ADR 0038) — à revoir seulement si ces lieux comptent un jour dans une note.
