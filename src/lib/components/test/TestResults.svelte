@@ -90,7 +90,7 @@
 	<div class="text-center">
 		<h1 class="text-3xl font-bold">Résultats du test</h1>
 		<p class="mt-2 text-muted-foreground">
-			{result.mode === 'interactive' ? 'Entraînement' : 'Course aux nombres'}
+			{result.mode === 'interactive' ? 'Contrôle blanc' : 'Course aux nombres'}
 		</p>
 	</div>
 

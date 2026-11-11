@@ -18,6 +18,9 @@
 	- onComplete: (result: TestResult) => void - Appelé une seule fois, à la fin du premier tour
 	- onRestart: () => void - Nouvelles questions (la page régénère)
 	- onBack: () => void - Retour au panier
+	- traceRecorder: élève connecté → une trace par carte du premier tour, envoyée
+	  au clic « Réussi / Pas réussi » (lieu `flash_cards`, trace « déclarée »,
+	  ADR 0038) ; `null` → rien (visiteur, vitrine). « Revoir » n'en laisse pas.
 -->
 
 <script lang="ts">
@@ -32,6 +35,7 @@
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { TestAnswerResult, TestResult } from '$lib/types/test';
 	import { ArrowLeft, LogIn, RefreshCw, RotateCcw } from '@lucide/svelte';
+	import { buildSeriesTrace, type TraceRecorder } from '$lib/questions/series-trace';
 
 	// Types
 	interface Props {
@@ -41,9 +45,18 @@
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
 		onBack: () => void;
+		traceRecorder?: TraceRecorder | null;
 	}
 
-	let { instances, isLoggedIn, loginNote = true, onComplete, onRestart, onBack }: Props = $props();
+	let {
+		instances,
+		isLoggedIn,
+		loginNote = true,
+		onComplete,
+		onRestart,
+		onBack,
+		traceRecorder = null
+	}: Props = $props();
 
 	// Variables
 	// Indices (dans `instances`) des cartes du tour en cours : toutes, puis les ratées
@@ -105,6 +118,21 @@
 			timeSpent: Math.round((Date.now() - cardStart) / 1000),
 			attempts: 1
 		});
+		// Trace « déclarée » de la carte, tout de suite (premier tour seulement)
+		if (isFirstRound && traceRecorder) {
+			const trace = buildSeriesTrace({
+				place: 'flash_cards',
+				instance: currentInstance,
+				answer: {
+					value: isCorrect ? 'knew' : 'did_not_know',
+					isCorrect,
+					timeSpent: 0,
+					attempts: 1,
+					submittedAt: new Date().toISOString()
+				}
+			});
+			if (trace) traceRecorder.record(trace);
+		}
 
 		if (position + 1 < round.length) {
 			position += 1;

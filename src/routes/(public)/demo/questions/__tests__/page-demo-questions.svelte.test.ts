@@ -18,7 +18,7 @@ vi.mock('$lib/dictionary/fetch-dictionary', () => ({ fetchDictionary: async () =
 
 const TABS = [
 	'En classe',
-	'Entraînement',
+	'Contrôle blanc',
 	'Flash-cards',
 	'Course aux nombres',
 	'Révisions espacées'
@@ -61,10 +61,10 @@ describe('/demo/questions', () => {
 		await expect.element(page.getByText('Question 1 / 4').first()).toBeInTheDocument();
 	});
 
-	it('monte l’Entraînement et les Flash-cards sans bandeau « Connecte-toi »', async () => {
+	it('monte le Contrôle blanc et les Flash-cards sans bandeau « Connecte-toi »', async () => {
 		await render(Page);
 
-		await openTab('Entraînement');
+		await openTab('Contrôle blanc');
 		await expect.element(page.getByText('Question 1 sur 4')).toBeInTheDocument();
 		expect(page.getByText(/Connecte-toi/).elements()).toHaveLength(0);
 

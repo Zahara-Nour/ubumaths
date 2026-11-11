@@ -39,8 +39,8 @@
 		},
 		{
 			value: 'interactive',
-			label: 'Entraînement',
-			who: 'L’élève, seul, répond question par question ; la correction et le score arrivent à la fin.'
+			label: 'Contrôle blanc',
+			who: 'L’élève, seul, prépare un contrôle : il répond question par question ; la correction et la note arrivent à la fin.'
 		},
 		{
 			value: 'flash',

@@ -282,3 +282,51 @@ describe('FlashSeries — clavier et série vide', () => {
 		expect(onComplete).not.toHaveBeenCalled();
 	});
 });
+
+// Une trace « déclarée » par carte du premier tour (ADR 0038, N9)
+describe('FlashSeries — traces', () => {
+	const MODELES = ['22222222-2222-4222-8222-222222222222', '33333333-3333-4333-8333-333333333333'];
+
+	async function openTraced() {
+		const record = vi.fn();
+		const instances = MODELES.map((templateId, index) => ({
+			...makeInstance(`Énoncé ${index}`),
+			templateId,
+			seed: index + 10
+		}));
+		const result = await render(FlashSeries, {
+			instances,
+			isLoggedIn: true,
+			onComplete: vi.fn(),
+			onRestart: vi.fn(),
+			onBack: vi.fn(),
+			traceRecorder: { record, settle: async () => ({ failed: 0 }) }
+		});
+		flushSync();
+		await tick();
+		return { ...result, record };
+	}
+
+	it('chaque clic « Réussi / Pas réussi » envoie sa trace aussitôt, lieu flash_cards', async () => {
+		const { container, record } = await openTraced();
+		await answer(container, true);
+		expect(record).toHaveBeenCalledTimes(1);
+		expect(record.mock.calls[0][0]).toEqual({
+			template_id: MODELES[0],
+			success: true,
+			place: 'flash_cards',
+			seed: 10
+		});
+		await answer(container, false);
+		expect(record.mock.calls[1][0]).toMatchObject({ template_id: MODELES[1], success: false });
+	});
+
+	it('« Revoir » les cartes ratées : aucune nouvelle trace', async () => {
+		const { container, record } = await openTraced();
+		await answer(container, true);
+		await answer(container, false);
+		await click(container, REVIEW);
+		await answer(container, true);
+		expect(record).toHaveBeenCalledTimes(2);
+	});
+});

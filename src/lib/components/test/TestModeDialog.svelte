@@ -59,9 +59,9 @@
 		},
 		{
 			mode: 'interactive' as TestMode,
-			title: 'Entraînement',
+			title: 'Contrôle blanc',
 			icon: BrainCircuit,
-			description: 'Répondez aux questions une par une, chacune chronométrée.',
+			description: 'Pour préparer un contrôle : les questions une par une, chacune chronométrée.',
 			features: ['Une question à la fois', 'Score sur 10', 'Correction détaillée à la fin']
 		},
 		{

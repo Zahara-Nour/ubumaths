@@ -134,7 +134,7 @@ const testResultSchema = z.object({
 // ============================================================================
 
 /**
- * Schema for saving test results (POST /api/tests/save)
+ * Schema for the end of a free series (POST /api/tests/save : gain du Palotin)
  * Résultat, composition jouée (`items`, ADR 0035) et assignation éventuelle.
  */
 export const saveTestSchema = z

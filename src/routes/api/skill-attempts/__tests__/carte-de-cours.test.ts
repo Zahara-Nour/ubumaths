@@ -84,7 +84,8 @@ async function poster(body: Record<string, unknown>) {
 	const request = new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ place: 'flash_cards', ...body })
+		// Lieu par défaut : une forme corrigée par l'application (Saisie)
+		body: JSON.stringify({ place: 'typing', ...body })
 	});
 	const response = await POST({ request, locals: { supabase: fauxSupabase() } } as never);
 	expect(response.status).toBe(200);
@@ -155,6 +156,47 @@ describe('POST /api/skill-attempts — source', () => {
 		await poster({ template_id: MODELE, success: true });
 		expect(attemptsInseres[0]).toMatchObject({ source: 'auto' });
 		expect(ensureProgrammeDeckCard).not.toHaveBeenCalled();
+	});
+
+	// Flash-cards (ADR 0038, N8) : l'élève retourne la carte et dit s'il a réussi —
+	// une trace « déclarée », comme une carte de cours, au meilleur résultat du jour.
+	it('flash-cards, question ordinaire : source student_self', async () => {
+		await poster({ template_id: MODELE, success: true, place: 'flash_cards' });
+		expect(attemptsInseres[0]).toMatchObject({
+			source: 'student_self',
+			success: true,
+			grade: 3,
+			place: 'flash_cards'
+		});
+	});
+
+	it('flash-cards : FSRS garde le meilleur résultat du jour, écriture vérifiée', async () => {
+		await poster({ template_id: MODELE, success: false, place: 'flash_cards' });
+		const options = applyFsrsReview.mock.calls[0][7] as {
+			bestOfDay?: { now: Date };
+			verifyWrite?: boolean;
+		};
+		expect(options.bestOfDay?.now).toBeInstanceOf(Date);
+		expect(options.verifyWrite).toBe(true);
+	});
+
+	it('flash-cards, question taguée : ajoutée au paquet Programme (comme avant)', async () => {
+		pointsDuModele = [{ point_id: '33333333-3333-4333-8333-333333333333' }];
+		await poster({ template_id: MODELE, success: true, place: 'flash_cards' });
+		expect(ensureProgrammeDeckCard).toHaveBeenCalledTimes(1);
+	});
+
+	it('contrôle blanc : source auto, révision ordinaire', async () => {
+		await poster({
+			template_id: MODELE,
+			success: true,
+			place: 'mock_test',
+			allotted_ms: 30000,
+			end_reason: 'validated',
+			response_ms: 1200
+		});
+		expect(attemptsInseres[0]).toMatchObject({ source: 'auto', place: 'mock_test' });
+		expect(applyFsrsReview.mock.calls[0][7]).toBeUndefined();
 	});
 
 	it('question publiée taguée : ajoutée au paquet Programme (inchangé)', async () => {

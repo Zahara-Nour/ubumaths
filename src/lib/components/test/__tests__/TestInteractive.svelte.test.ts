@@ -1,5 +1,5 @@
 /**
- * Forme « Entraînement » d'une série (spécification de David, 2026-09-30) :
+ * Forme « Contrôle blanc » d'une série (ex-« Entraînement », spécification de David, 2026-09-30) :
  * une question à la fois, chacune avec SON chrono ; l'élève valide, ou le
  * chrono expire. À l'expiration, ce qui est tapé ou coché est validé (Q18).
  */
@@ -120,7 +120,7 @@ function clickQuit(container: HTMLElement): boolean {
 	return cancelledByLink;
 }
 
-describe('TestInteractive — Entraînement', () => {
+describe('TestInteractive — Contrôle blanc', () => {
 	beforeEach(() => {
 		vi.useFakeTimers({
 			toFake: [
@@ -379,5 +379,116 @@ describe('TestInteractive — réactions du Palotin (chantier palotins, partie C
 		for (let i = 0; i < 5; i++) answer(off.container, true);
 		expect(handler).not.toHaveBeenCalled();
 		expect(position(off.container)).toBe('Question 6 sur 7');
+	});
+});
+
+// Une trace par question, envoyée dès la réponse (ADR 0038, N9, N12)
+describe('TestInteractive — traces du Contrôle blanc', () => {
+	const MODELE = '22222222-2222-4222-8222-222222222222';
+
+	function tracedItem(statement: string, delaySeconds: number): ClassroomItem {
+		return {
+			instance: { ...choiceQuestion(statement), templateId: MODELE, seed: 77 },
+			delaySeconds,
+			templateId: MODELE
+		};
+	}
+
+	async function openTraced(items: ClassroomItem[], collectOnly = false) {
+		const record = vi.fn();
+		const traceRecorder = { record, settle: async () => ({ failed: 0 }) };
+		const result = await render(TestInteractive, {
+			items,
+			isLoggedIn: true,
+			onComplete: vi.fn(),
+			onRestart: vi.fn(),
+			onBack: vi.fn(),
+			collectOnly,
+			inEvaluation: collectOnly,
+			traceRecorder
+		});
+		flushSync();
+		await tick();
+		return { ...result, record };
+	}
+
+	beforeEach(() => {
+		vi.useFakeTimers({
+			toFake: [
+				'setTimeout',
+				'clearTimeout',
+				'Date',
+				'requestAnimationFrame',
+				'cancelAnimationFrame',
+				'performance'
+			]
+		});
+	});
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	it('« Valider » : trace aussitôt, lieu mock_test, durées, réponse et verdict par case', async () => {
+		const { container, record } = await openTraced([
+			tracedItem('Énoncé A', 10),
+			tracedItem('Énoncé B', 10)
+		]);
+		elapse(2000);
+		choose(container, 1);
+		clickButton(currentCard(container), 'Valider');
+
+		expect(record).toHaveBeenCalledTimes(1);
+		const trace = record.mock.calls[0][0];
+		expect(trace).toMatchObject({
+			template_id: MODELE,
+			success: true,
+			place: 'mock_test',
+			seed: 77,
+			allotted_ms: 10000,
+			end_reason: 'validated',
+			answer_parts: ['1'],
+			part_verdicts: [true]
+		});
+		expect(trace.response_ms).toBeGreaterThanOrEqual(2000);
+		expect(trace.response_ms).toBeLessThan(2500);
+	});
+
+	it('chrono écoulé sans réponse : trace ratée, fin « temps écoulé », sans case', async () => {
+		const { record } = await openTraced([tracedItem('Énoncé A', 1)]);
+		elapse(1200);
+		expect(record).toHaveBeenCalledTimes(1);
+		const trace = record.mock.calls[0][0];
+		expect(trace).toMatchObject({
+			success: false,
+			end_reason: 'timeout',
+			allotted_ms: 1000,
+			response_ms: 1000
+		});
+		expect(trace).not.toHaveProperty('answer_parts');
+	});
+
+	it('la durée de réponse repart de zéro à chaque question', async () => {
+		const { container, record } = await openTraced([
+			tracedItem('Énoncé A', 10),
+			tracedItem('Énoncé B', 10)
+		]);
+		elapse(3000);
+		choose(container, 1);
+		clickButton(currentCard(container), 'Valider');
+		elapse(400);
+		elapse(1000);
+		choose(container, 0);
+		clickButton(currentCard(container), 'Valider');
+		expect(record).toHaveBeenCalledTimes(2);
+		expect(record.mock.calls[1][0].response_ms).toBeLessThan(1500);
+		expect(record.mock.calls[1][0]).toMatchObject({ success: false, part_verdicts: [false] });
+	});
+
+	it('contrôle (copie collectée) : aucune trace par cette voie', async () => {
+		const { container, record } = await openTraced([tracedItem('Énoncé A', 10)], true);
+		choose(container, 1);
+		clickButton(currentCard(container), 'Valider');
+		elapse(400);
+		expect(record).not.toHaveBeenCalled();
 	});
 });

@@ -59,7 +59,7 @@
 
 <SeoHead
 	title="Automaths - Banque de questions | Chiphre"
-	description="Banque de questions de mathématiques : composez une série d’exercices et lancez-la en classe, en entraînement, en flash-cards ou en course aux nombres."
+	description="Banque de questions de mathématiques : composez une série d’exercices et lancez-la en classe, en contrôle blanc, en flash-cards ou en course aux nombres."
 />
 
 <div class="container mx-auto max-w-7xl px-4 py-8">

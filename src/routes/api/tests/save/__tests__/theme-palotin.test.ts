@@ -114,7 +114,7 @@ async function enregistrer(answers: ReturnType<typeof reponse>[], mode = 'intera
 		}
 	} as never);
 	// Un corps refusé par Zod rendrait 400 : tous les cas seraient rouges pour rien.
-	expect(response.status, 'statut de la route').toBe(201);
+	expect(response.status, 'statut de la route').toBe(200);
 	return response;
 }
 

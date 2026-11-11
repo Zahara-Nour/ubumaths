@@ -96,7 +96,7 @@
 <Tabs.Root value={activeTab} onValueChange={handleTabChange} class="space-y-4">
 	<Tabs.List class="grid w-full grid-cols-3">
 		<Tabs.Trigger value="flashcard">Flash-card</Tabs.Trigger>
-		<Tabs.Trigger value="training">Entraînement</Tabs.Trigger>
+		<Tabs.Trigger value="training">Contrôle blanc</Tabs.Trigger>
 		<Tabs.Trigger value="classroom">En classe</Tabs.Trigger>
 	</Tabs.List>
 

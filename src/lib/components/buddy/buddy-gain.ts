@@ -2,7 +2,7 @@
  * Gain du Palotin en fin de séance
  * ================================
  *
- * `POST /api/tests/save` (Entraînement, Course aux nombres) et
+ * `POST /api/tests/save` (fin d'un Contrôle blanc ou d'une Course aux nombres) et
  * `POST /api/srs/review/submit` (fin d'une séance de révision) renvoient le
  * gain du Palotin dans le champ `buddy_xp` (forme `BuddyXpFromExerciseResult`
  * du serveur), ou `null`. Ce module :

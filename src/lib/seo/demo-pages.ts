@@ -46,7 +46,7 @@ export const DEMO_PAGES: DemoPage[] = [
 		path: '/demo/questions',
 		title: 'Les questions',
 		description:
-			'La même série de questions projetée en classe, en entraînement, en flash-cards, en course aux nombres et en révisions espacées.'
+			'La même série de questions projetée en classe, en contrôle blanc, en flash-cards, en course aux nombres et en révisions espacées.'
 	},
 	{
 		path: '/demo/corriges',

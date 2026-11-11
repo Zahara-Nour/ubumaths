@@ -14,13 +14,13 @@ import { isDeadlinePassed as isDeadlinePassedUtil } from '$lib/utils/dates';
 // FORMES, STATUTS, BORNES
 // ===========================================================================
 
-/** Forme d'une évaluation : `interactive` = Entraînement, `course` = Course aux nombres */
+/** Forme d'une évaluation : `interactive` = Contrôle blanc, `course` = Course aux nombres */
 export type EvaluationForm = 'interactive' | 'course';
 
 export const EVALUATION_FORMS: readonly EvaluationForm[] = ['interactive', 'course'];
 
 export const EVALUATION_FORM_LABELS: Record<EvaluationForm, string> = {
-	interactive: 'Entraînement',
+	interactive: 'Contrôle blanc',
 	course: 'Course aux nombres'
 };
 
