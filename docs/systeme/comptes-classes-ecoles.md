@@ -91,7 +91,9 @@ de 2nde de répondre une fois à la question d'âge.
 
 - Page `src/routes/(protected)/dashboard/admin/classes/+page.server.ts` : actions `create`,
   `update`, `deactivate`, `activate`. Le code d'inscription est saisi ou tiré par la fonction SQL
-  `generate_join_code`.
+  `generate_join_code`. À la création, la classe prend l'**année active de son école**
+  (`school_year_id`) ; une école sans année active donne une classe sans année et un avertissement
+  à l'admin, une classe sans école reste sans année. `update` ne touche pas à l'année.
 - **Composer une classe** pour une nouvelle année : page
   `src/routes/(protected)/dashboard/admin/classes/composer/+page.server.ts` (destinations = classes
   actives d'une année non terminée), candidats lus par
