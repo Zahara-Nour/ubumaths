@@ -35,6 +35,11 @@ Référence synthétique pour Claude : **composants UI obligatoires**, imports S
 | `onchange`                                                                   | `(value) => void`                                        | —             | Alias rétro-compatible                   |
 | `disabled`, `required`, `name`, `id`, `open`, `onOpenChange`, `contentProps` | —                                                        | —             | Passés à Bits UI                         |
 
+**Nom accessible et tests.** Le déclencheur a le rôle `combobox` (Bits UI ≥ 2.20) : son nom ne vient
+jamais de son contenu. Il vaut `triggerAriaLabel`, sinon `placeholder`, sinon la valeur affichée.
+`triggerAriaLabel` doit contenir la valeur choisie (« Avec la liste M ») : le `placeholder` seul ne
+l'annonce pas. Dans un test : `page.getByRole('combobox', { name: … })`, jamais `'button'`.
+
 ### Usages canoniques
 
 ```svelte
