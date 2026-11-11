@@ -7,7 +7,7 @@ couvre:
   - 'src/routes/(protected)/dashboard/admin/{classes,schools,users,import-students,settings,backup}/**'
   - 'src/routes/(protected)/dashboard/teacher/{classes,students,welcome-email,settings}/**'
   - 'src/routes/(protected)/dashboard/profile/**'
-  - 'src/lib/server/{students,staff-directory}.ts'
+  - 'src/lib/server/{students,staff-directory,school-year-errors}.ts'
   - 'src/lib/server/validation/{classes,schools,school-config,admin,backup}.ts'
   - 'src/lib/components/admin/**'
   - 'src/lib/server/admin/**'
@@ -85,13 +85,18 @@ de 2nde de répondre une fois à la question d'âge.
 - Organisation d'une école (années, trimestres, vacances, grille horaire, duplication d'une année) :
   `src/routes/(protected)/dashboard/admin/schools/[schoolId]/organisation/+page.server.ts`. Les
   schémas viennent de `src/lib/server/validation/academic.ts`, décrit dans
-  [cours-et-chapitres.md](cours-et-chapitres.md).
+  [cours-et-chapitres.md](cours-et-chapitres.md). Un doublon refusé par la base (nom déjà pris,
+  `unique_school_year` ; autre année déjà active, `idx_one_active_year_per_school`) rend un 409 au
+  message clair, via `schoolYearConflictMessage` (`src/lib/server/school-year-errors.ts`), dans
+  les actions qui créent, modifient ou dupliquent une année.
 
 ### Admin : classes
 
 - Page `src/routes/(protected)/dashboard/admin/classes/+page.server.ts` : actions `create`,
   `update`, `deactivate`, `activate`. Le code d'inscription est saisi ou tiré par la fonction SQL
-  `generate_join_code`.
+  `generate_join_code`. À la création, la classe prend l'**année active de son école**
+  (`school_year_id`) ; une école sans année active donne une classe sans année et un avertissement
+  à l'admin, une classe sans école reste sans année. `update` ne touche pas à l'année.
 - **Composer une classe** pour une nouvelle année : page
   `src/routes/(protected)/dashboard/admin/classes/composer/+page.server.ts` (destinations = classes
   actives d'une année non terminée), candidats lus par

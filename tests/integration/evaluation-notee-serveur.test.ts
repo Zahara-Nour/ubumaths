@@ -470,8 +470,9 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			const instances = await oracle(first.attemptId);
 			const result = await submitEvaluationAttempt(actors(student), first.attemptId, {
 				answers: [
-					{ position: 0, ...rightAnswer(instances[0]) },
-					{ position: 1, ...wrongAnswer(instances[1]) },
+					// PR 4 bis : fin et durée de chaque question, pour sa trace
+					{ position: 0, ...rightAnswer(instances[0]), timeSpent: 5, endReason: 'validated' },
+					{ position: 1, ...wrongAnswer(instances[1]), timeSpent: 99, endReason: 'timeout' },
 					{ position: 2, ...rightAnswer(instances[2]) }
 				]
 			});
@@ -547,6 +548,39 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(traces).toHaveLength(3);
 			expect(traces!.every((t) => t.source === 'auto')).toBe(true);
 			expect(traces!.filter((t) => t.success)).toHaveLength(2);
+		});
+
+		it('PR 4 bis : traces au lieu « contrôle », avec durées, sans graine ni réponse', async () => {
+			const { data: traces, error } = await service
+				.from('skill_attempts')
+				.select(
+					'template_id, success, place, response_ms, allotted_ms, end_reason, seed, answer_parts, part_verdicts'
+				)
+				.eq('student_id', student.id);
+			expect(error).toBeNull();
+			const shown = (traces ?? [])
+				.map((t) => [
+					t.template_id,
+					t.success,
+					t.place,
+					t.response_ms,
+					t.allotted_ms,
+					t.end_reason,
+					t.seed,
+					t.answer_parts,
+					t.part_verdicts
+				])
+				.sort((a, b) => String(a).localeCompare(String(b)));
+			expect(shown).toEqual(
+				[
+					// Validée en 5 s sur 20 s allouées
+					[FILL_ID, true, 'evaluation', 5000, 20_000, 'validated', null, null, null],
+					// Temps écoulé : durée = durée allouée (99 s envoyées, ignorées)
+					[FILL_ID, false, 'evaluation', 20_000, 20_000, 'timeout', null, null, null],
+					// Ni fin ni durée envoyées : lieu seul
+					[QCM_ID, true, 'evaluation', null, null, null, null, null, null]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
 		});
 
 		it('C11 : renvoyer une tentative terminée → 409 AVEC la copie déjà notée, rien d’écrit', async () => {
@@ -686,6 +720,68 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				}
 			);
 			expect(result).toMatchObject({ late: false, grade: 20 });
+		});
+
+		it('PR 4 bis : Course — validée, vide au chrono, laissée par « Terminer »', async () => {
+			// Élève neuf : ses traces ne viennent que de cette copie
+			const racer = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: racer.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			const attempt = await start(racer, assignmentId);
+			const instances = await oracle(attempt.attemptId);
+			const result = await submitEvaluationAttempt(actors(racer), attempt.attemptId, {
+				answers: [
+					{ position: 0, ...rightAnswer(instances[0]), timeSpent: 12, endReason: 'validated' },
+					// Rien de tapé, chrono écoulé : fin et durée seules
+					{ position: 1, timeSpent: 60, endReason: 'timeout' }
+					// Position 2 : laissée par « Terminer », rien d'envoyé
+				]
+			});
+			expect(result.questions.map((q) => [q.status, q.points])).toEqual([
+				['correct', 1],
+				['empty', 0],
+				['empty', 0]
+			]);
+
+			// Question vide : jugée vide, sans réponse rangée, sa durée gardée
+			const { data: empty } = await service
+				.from('test_answers')
+				.select('status, points, user_answer, time_spent, question_instance')
+				.eq('test_session_id', attempt.attemptId);
+			const second = (empty ?? []).find(
+				(a) => (a.question_instance as { attemptPosition: number }).attemptPosition === 1
+			);
+			expect(second).toMatchObject({ status: 'empty', user_answer: null, time_spent: 60 });
+			expect(Number(second!.points)).toBe(0);
+
+			const { data: traces, error } = await service
+				.from('skill_attempts')
+				.select('template_id, success, place, response_ms, allotted_ms, end_reason, seed')
+				.eq('student_id', racer.id);
+			expect(error).toBeNull();
+			const shown = (traces ?? [])
+				.map((t) => [
+					t.template_id,
+					t.success,
+					t.place,
+					t.response_ms,
+					t.allotted_ms,
+					t.end_reason,
+					t.seed
+				])
+				.sort((a, b) => String(a).localeCompare(String(b)));
+			expect(shown).toEqual(
+				[
+					// Durée allouée = durée de la course (60 s)
+					[FILL_ID, true, 'evaluation', 12_000, 60_000, 'validated', null],
+					[FILL_ID, false, 'evaluation', 60_000, 60_000, 'timeout', null],
+					// « Terminer » : ratée, sans durée ni fin
+					[QCM_ID, false, 'evaluation', null, null, null, null]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
 		});
 	});
 

@@ -64,6 +64,11 @@ import {
 	isAssignmentRecipient
 } from '$lib/server/evaluations';
 import { recordSeriesReviews } from '$lib/server/srs/record-series-reviews';
+import {
+	evaluationTraceOf,
+	type EvaluationEndReason,
+	type EvaluationTraceColumns
+} from '$lib/server/evaluation-trace';
 import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -111,7 +116,13 @@ export type StartResult =
 	  };
 
 export interface SubmitInput {
-	answers: Array<SubmittedAnswer & { position: number; timeSpent?: number }>;
+	answers: Array<
+		SubmittedAnswer & {
+			position: number;
+			timeSpent?: number;
+			endReason?: EvaluationEndReason;
+		}
+	>;
 }
 
 export type { CorrectedQuestion };
@@ -148,12 +159,14 @@ export class AttemptAlreadySubmittedError extends EvaluationError {
  */
 export function srsReviewsOf(
 	questions: ReadonlyArray<{ status: ValidationStatus; partial: boolean }>,
-	templateIds: readonly string[]
+	templateIds: readonly string[],
+	traces?: readonly EvaluationTraceColumns[]
 ): SeriesReview[] {
 	return questions.map((question, index) => ({
 		templateId: templateIds[index],
 		success: isKnownForSrs(question),
-		selfAssessed: false
+		selfAssessed: false,
+		...(traces?.[index] && { trace: traces[index] })
 	}));
 }
 
@@ -626,7 +639,9 @@ export async function submitEvaluationAttempt(
 		// D18 : la graine ne quitte jamais le serveur, ni dans la réponse ni dans
 		// `test_answers.question_instance` (lisible par l'élève et le prof)
 		const { seed: _seed, ...instance } = full;
-		const sent = late ? null : (answersByPosition.get(stored.position) ?? null);
+		const received = late ? null : (answersByPosition.get(stored.position) ?? null);
+		// Question vide (fin et durée seules, PR 4 bis) : jugée vide, comme sans réponse
+		const sent = received?.values ? received : null;
 		// Cases choix : positions AFFICHÉES reçues → indices d'origine (corrigés et
 		// enregistrés) ; illisibles → refus de l'envoi, rien n'est écrit
 		let answer = sent;
@@ -725,15 +740,26 @@ export async function submitEvaluationAttempt(
 
 	if (!late) {
 		// Q39 : le verdict du SERVEUR alimente le SRS (révision corrigée par
-		// l'application : ni meilleur-du-jour ni auto-évaluation, ADR 0016)
+		// l'application : ni meilleur-du-jour ni auto-évaluation, ADR 0016).
+		// PR 4 bis : traces au lieu `evaluation`, écrites au client service (la
+		// policy élève refuse ce lieu) ; FSRS et paquet au client de l'élève.
+		const form = session.mode === 'course' ? 'course' : 'interactive';
 		await recordSeriesReviews(
 			userClient,
 			userId,
 			srsReviewsOf(
 				corrected,
-				questions.map(({ stored }) => stored.template_id)
+				questions.map(({ stored }) => stored.template_id),
+				questions.map(({ stored }) =>
+					evaluationTraceOf({
+						form,
+						delaySeconds: stored.delay_seconds,
+						timeLimitSeconds: session.time_limit,
+						sent: answersByPosition.get(stored.position) ?? null
+					})
+				)
 			),
-			{ logLabel: '[evaluation-attempts]' }
+			{ logLabel: '[evaluation-attempts]', attemptsClient: service }
 		);
 		try {
 			await addBuddyXpFromTest(

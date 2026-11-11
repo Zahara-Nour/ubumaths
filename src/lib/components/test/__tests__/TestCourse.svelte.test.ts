@@ -151,6 +151,8 @@ describe('TestCourse — évaluation, réponses non validées', () => {
 		const result = onComplete.mock.calls[0][0];
 		expect(result.answers[0].userAnswer?.value).toEqual(['1']);
 		expect(result.answers[1].userAnswer?.value).toEqual(['0']);
+		// PR 4 bis : laissée par « Terminer » → aucune fin ; validée → validated
+		expect(result.answers.map((a) => a.endReason)).toEqual([undefined, 'validated']);
 		confirmSpy.mockRestore();
 	});
 
@@ -317,5 +319,21 @@ describe('TestCourse — traces de la Course aux nombres', () => {
 				response_ms: 1000
 			});
 		}
+	});
+
+	it('contrôle, chrono écoulé : chaque question non validée part avec la fin « temps écoulé »', async () => {
+		const onComplete = vi.fn<(result: TestResult) => void>();
+		await render(TestCourse, {
+			session: tracedSession(1),
+			onComplete,
+			onBack: vi.fn(),
+			inEvaluation: true,
+			collectOnly: true,
+			showResults: false
+		});
+		await vi.waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1), { timeout: 4000 });
+		const { answers } = onComplete.mock.calls[0][0];
+		expect(answers.length).toBeGreaterThan(0);
+		expect(answers.every((a) => a.endReason === 'timeout')).toBe(true);
 	});
 });

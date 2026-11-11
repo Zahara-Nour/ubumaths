@@ -34,7 +34,8 @@ Une trace **par question, écrite dès la réponse** :
 - pour les formes chronométrées (Contrôle blanc, Course aux nombres) et le contrôle : **durée de
   réponse**, **durée allouée** et **fin** (validée / temps écoulé) ; pas de durée en Flash-cards, Saisie
   ni révision, où l'élève peut retourner la carte pour voir la réponse (précisé le 2026-11-11) ;
-- **graine** ;
+- **graine** — sauf pour le contrôle, dont la graine ne quitte jamais le serveur (D18) : elle reste
+  dans la copie (précisé le 2026-11-11, PR 4 bis) ;
 - **réponse** case par case (pas en Flash-cards) ; pour une figure à compléter, **pas le tracé** ;
 - **verdict par case** (juste / faux).
 

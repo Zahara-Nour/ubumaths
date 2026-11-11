@@ -1,0 +1,219 @@
+{
+	"title": "Démontrer la limite de qⁿ pour q > 1 avec l'inégalité de Bernoulli",
+	"description": "Démonstration à trous : développement de l'hérédité, na² (case), 1 + a > 0 (choix), q = 1 + a (case, q tiré) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $a$ un réel strictement positif. On démontre par récurrence que, pour tout entier naturel $n$, $(1+a)^n\\geqslant 1+na$ (inégalité de Bernoulli).\n\nInitialisation : $(1+a)^0=1\\geqslant 1+0\\times a$.\n\nHérédité : on suppose $(1+a)^n\\geqslant 1+na$ pour un entier $n$.\n\nOn en déduit $(1+a)^{n+1}\\geqslant(1+na)(1+a)$. Complète le développement.\n\n$(1+na)(1+a)=1+(n+1)a+?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "na^2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(1+na)(1+a)=1+a+na+na^2$.",
+					"Or $a+na=(n+1)a$, donc $(1+na)(1+a)=1+(n+1)a+\\textcolor{{{color:primary.0}}}{na^2}$.",
+					"Comme $na^2\\geqslant 0$, on obtient $(1+a)^{n+1}\\geqslant 1+(n+1)a$ : la propriété est héréditaire."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ un réel strictement positif. On démontre par récurrence que, pour tout entier naturel $n$, $(1+a)^n\\geqslant 1+na$ (inégalité de Bernoulli).\n\nInitialisation : $(1+a)^0=1\\geqslant 1+0\\times a$.\n\nHérédité : on suppose $(1+a)^n\\geqslant 1+na$ pour un entier $n$.\n\nOn multiplie les deux membres de $(1+a)^n\\geqslant 1+na$ par $1+a$. Pourquoi le sens de l'inégalité est-il conservé ?\n\n```choix\n- Car $1+a>0$.\n- Car $(1+a)^n>0$.\n- Car $n\\geqslant 0$.\n- Car $a^2\\geqslant 0$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie les deux membres d'une inégalité par un même nombre : le sens est conservé si ce nombre est strictement positif.",
+					"Ici on multiplie par $1+a$, et $\\textcolor{{{color:primary.0}}}{1+a>0}$ car $a>0$.",
+					"C'est le signe du **multiplicateur** qui compte, pas celui des membres."
+				]
+			}
+		},
+		{
+			"statement": "On sait que, pour tout réel $a>0$ et tout entier naturel $n$, $(1+a)^n\\geqslant 1+na$ (inégalité de Bernoulli). On en déduit la limite de $({{q}}^n)$.\n\nOn écrit ${{q}}=1+a$. Complète l'inégalité obtenue.\n\n${{q}}^n\\geqslant 1+?\\,n$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{q}}=1+a$ avec $a={{q}}-1=\\textcolor{{{color:primary.0}}}{{{eval:q-1}}}$, et $a>0$.",
+					"Par l'inégalité de Bernoulli, ${{q}}^n\\geqslant 1+{{eval:q-1}}n$.",
+					"Or $\\displaystyle\\lim_{n\\to+\\infty}(1+{{eval:q-1}}n)=+\\infty$ : par comparaison, $\\displaystyle\\lim_{n\\to+\\infty}{{q}}^n=+\\infty$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $q>1$. On démontre que $\\displaystyle\\lim_{n\\to+\\infty}q^n=+\\infty$, après avoir démontré par récurrence l'inégalité de Bernoulli : pour tout réel $a>0$ et tout entier naturel $n$, $(1+a)^n\\geqslant 1+na$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Initialisation : $(1+a)^0=1\\geqslant 1+0\\times a$.\n- Hérédité : si $(1+a)^n\\geqslant 1+na$, alors, comme $1+a>0$, $(1+a)^{n+1}\\geqslant(1+na)(1+a)=1+(n+1)a+na^2\\geqslant 1+(n+1)a$.\n- On pose $a=q-1>0$ : pour tout $n$, $q^n\\geqslant 1+n(q-1)$.\n- Comme $q-1>0$, $\\displaystyle\\lim_{n\\to+\\infty}\\big(1+n(q-1)\\big)=+\\infty$ ; par comparaison, $\\displaystyle\\lim_{n\\to+\\infty}q^n=+\\infty$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On démontre d'abord l'inégalité de Bernoulli, puis on l'applique avec $a=q-1$.",
+					"Conclusion : pour $q>1$, $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}q^n=+\\infty}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "na²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["na^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture a²n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["a^2n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["a^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n²a²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["n^2a^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 + a > 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (1 + a)ⁿ > 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n ⩾ 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a² ⩾ 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = q − 1 = 2",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : q, 3",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : q + 1, 4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

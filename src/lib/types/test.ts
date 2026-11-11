@@ -101,6 +101,11 @@ export interface TestAnswerResult {
 	isCorrect: boolean;
 	timeSpent?: number; // Time spent on this question (seconds)
 	attempts?: number;
+	/**
+	 * Fin de la question (contrôle, PR 4 bis) : validée, ou temps écoulé ; absente
+	 * pour une question laissée par « Terminer »
+	 */
+	endReason?: 'validated' | 'timeout';
 }
 
 // ===========================================================================

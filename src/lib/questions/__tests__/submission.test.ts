@@ -47,9 +47,29 @@ describe('toSubmission', () => {
 		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
 	});
 
-	it('rien tapé (chrono écoulé) ou pas de réponse : question vide', () => {
+	it('rien tapé (chrono écoulé) ou pas de réponse : question vide, sa durée part quand même', () => {
 		const submission = toSubmission([0, 1], [data(''), answer(undefined)]);
-		expect(submission.answers).toEqual([{ position: 0 }, { position: 1 }]);
+		expect(submission.answers).toEqual([{ position: 0, timeSpent: 13 }, { position: 1 }]);
+		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
+	});
+
+	it('fin de la question (PR 4 bis) : envoyée avec la réponse, même vide', () => {
+		const typed = { ...data(['7']), endReason: 'validated' as const };
+		const empty = { ...data(''), endReason: 'timeout' as const };
+		const left = { ...answer(undefined), endReason: 'timeout' as const };
+		const submission = toSubmission([0, 1, 2], [typed, empty, left]);
+		expect(submission.answers).toEqual([
+			{ position: 0, values: ['7'], timeSpent: 13, endReason: 'validated' },
+			{ position: 1, timeSpent: 13, endReason: 'timeout' },
+			{ position: 2, endReason: 'timeout' }
+		]);
+		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
+	});
+
+	it('fin inconnue refusée par le schéma', () => {
+		expect(
+			submitAttemptSchema.safeParse({ answers: [{ position: 0, endReason: 'abandon' }] }).success
+		).toBe(false);
 	});
 
 	it('case choix : sa valeur (indices « 0;2 ») part telle quelle ; temps arrondi', () => {

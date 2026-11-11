@@ -106,6 +106,8 @@
 	// Variables
 	let currentIndex = $state(0);
 	let answers = new SvelteMap<number, AnswerData>();
+	// Fin de chaque question (validée, temps écoulé) : envoyée avec la copie d'un contrôle (PR 4 bis)
+	const endReasons = new SvelteMap<number, 'validated' | 'timeout'>();
 	let testResult = $state<TestResult | null>(null);
 	// Carte en cours : sa réponse tapée est validée à l'expiration du chrono
 	let currentCard = $state<ReturnType<typeof QuestionCard>>();
@@ -189,6 +191,7 @@
 		const index = currentIndex;
 		if (answers.has(index)) return;
 		answers.set(index, answerData);
+		endReasons.set(index, 'validated');
 		recordTrace(index, answerData, 'validated');
 		afterReaction(reactTo(index, answerData), () => {
 			pendingAdvance = setTimeout(() => advanceFrom(index), ADVANCE_DELAY_MS);
@@ -212,6 +215,7 @@
 			submittedAt: new Date().toISOString()
 		};
 		answers.set(index, answerData);
+		endReasons.set(index, 'timeout');
 		recordTrace(index, answerData, 'timeout');
 		afterReaction(reactTo(index, answerData), () => advanceFrom(index));
 	}
@@ -227,7 +231,8 @@
 				userAnswer,
 				isCorrect: userAnswer?.isCorrect || false,
 				timeSpent: userAnswer?.timeSpent,
-				attempts: userAnswer?.attempts
+				attempts: userAnswer?.attempts,
+				endReason: endReasons.get(index)
 			};
 		});
 

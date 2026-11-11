@@ -223,6 +223,8 @@ describe('TestInteractive — Contrôle blanc', () => {
 		expect(answers).toHaveLength(2);
 		expect(answers[0].isCorrect).toBe(true);
 		expect(answers[1].isCorrect).toBe(false);
+		// Fin de chaque question, envoyée avec la copie d'un contrôle (PR 4 bis)
+		expect(answers.map((a) => a.endReason)).toEqual(['validated', 'timeout']);
 	});
 
 	it('« Recommencer » demande de nouvelles questions à la page', async () => {
