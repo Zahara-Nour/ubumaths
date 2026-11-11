@@ -17,6 +17,11 @@
  *   question de cours ou brouillon (`entersProgrammeDeck`, Q113) et les modèles
  *   de `neverInDeck` (cartes de cours lues par le serveur, décision 2026-09-28).
  *
+ * - Traces d'un contrôle (PR 4 bis) : colonnes du lieu `evaluation` (durées,
+ *   fin) portées par chaque révision, écrites au client `attemptsClient`
+ *   (service : la policy élève refuse ce lieu). FSRS et paquet restent au
+ *   client passé en premier.
+ *
  * Non bloquant : la séance est déjà enregistrée ; les échecs se journalisent.
  */
 
@@ -27,6 +32,7 @@ import { Grade } from '$lib/srs/types';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
+import type { EvaluationTraceColumns } from '$lib/server/evaluation-trace';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/srs/record-series-reviews');
@@ -37,6 +43,8 @@ export interface SeriesReview {
 	success: boolean;
 	/** Auto-évaluation de l'élève (flash-cards, carte de cours) */
 	selfAssessed: boolean;
+	/** Colonnes de trace d'une question de contrôle (lieu, durées, fin) */
+	trace?: EvaluationTraceColumns;
 }
 
 // Functions
@@ -44,7 +52,12 @@ export async function recordSeriesReviews(
 	supabase: SupabaseClient<Database>,
 	userId: string,
 	reviews: readonly SeriesReview[],
-	options: { neverInDeck?: ReadonlySet<string>; logLabel?: string } = {}
+	options: {
+		neverInDeck?: ReadonlySet<string>;
+		logLabel?: string;
+		/** Client qui écrit les traces (défaut : `supabase`) ; service pour un contrôle */
+		attemptsClient?: SupabaseClient<Database>;
+	} = {}
 ): Promise<void> {
 	const label = options.logLabel ?? '[series-reviews]';
 	const templateIds = [...new Set(reviews.map((review) => review.templateId))];
@@ -70,14 +83,16 @@ export async function recordSeriesReviews(
 
 	const now = new Date();
 	const fsrs = new FSRS();
-	const attemptsToInsert: {
-		student_id: string;
-		template_id: string;
-		success: boolean;
-		grade: Grade;
-		source: 'auto' | 'student_self';
-		with_help: boolean;
-	}[] = [];
+	const attemptsToInsert: Array<
+		{
+			student_id: string;
+			template_id: string;
+			success: boolean;
+			grade: Grade;
+			source: 'auto' | 'student_self';
+			with_help: boolean;
+		} & Partial<EvaluationTraceColumns>
+	> = [];
 
 	for (const review of reviews) {
 		const grade: Grade = review.success ? Grade.GOOD : Grade.AGAIN;
@@ -113,13 +128,14 @@ export async function recordSeriesReviews(
 			success: review.success,
 			grade,
 			source: review.selfAssessed ? 'student_self' : 'auto',
-			with_help: false
+			with_help: false,
+			...review.trace
 		});
 	}
 
 	if (attemptsToInsert.length > 0) {
 		// `.select()` : vérifie que toutes les lignes ont été écrites
-		const { data: attemptsRows, error: attemptsError } = await supabase
+		const { data: attemptsRows, error: attemptsError } = await (options.attemptsClient ?? supabase)
 			.from('skill_attempts')
 			.insert(attemptsToInsert)
 			.select('id');

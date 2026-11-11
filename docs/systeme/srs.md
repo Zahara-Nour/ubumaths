@@ -155,13 +155,16 @@ s'affichait « toutes capacités ».
 | Question interactive (`api/skill-attempts`)     | juste → Good (3), faux → Again (1)                    | `success`, source `auto`               |
 | Carte de cours, lieu `flash_cards` (même route) | idem, **meilleur du jour**                            | source `student_self` (toutes gardées) |
 | Révision d'un paquet / d'un chapitre            | Réussi → Good (3), Pas réussi → Again (1)             | `student_self`, lieu `review` (¹)      |
-| Évaluation (`recordSeriesReviews`)              | juste → Good, faux → Again ; carte = meilleur du jour | `auto` ou `student_self`               |
+| Évaluation (`recordSeriesReviews`)              | juste → Good, faux → Again ; carte = meilleur du jour | `auto`, lieu `evaluation` (²)          |
 
 (¹) `success = note ≥ 2`, note gardée dans `grade` (`recordSrsReviewAttempt`). Avant l'ADR 0038, la
 révision écrivait la source `srs` ; ces anciennes traces se lisent « déclaré », sans réécriture.
 L'API accepte encore les notes 2 et 4 (onglet ouvert avant la mise en prod) ; l'écran n'envoie plus
 que 1 ou 3. La heatmap d'activité et l'anti-triche (`srs_vs_quiz_gap`) traitent `student_self` au lieu
 `review` comme une ancienne trace `srs`.
+
+(²) Écrite au client service (`attemptsClient`) : la policy élève refuse le lieu `evaluation`. Durées
+et fin calculées par `evaluationTraceOf` ([evaluations.md](evaluations.md), envoi d'une copie).
 
 **Contenu d'une trace posée par `api/skill-attempts`** (ADR 0038) : le **lieu** est exigé
 (`flash_cards`, `typing` = Saisie, `mock_test` = Contrôle blanc, `number_race` = Course aux nombres ;
