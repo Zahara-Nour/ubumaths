@@ -23,13 +23,13 @@ vi.mock('$lib/server/errorMonitoring', async (importActual) => ({
 	deleteAllResolvedErrors: vi.fn(async () => ({ success: true, count: 0 }))
 }));
 
-import * as modele from '../../../../routes/api/questions/templates/[id]/+server';
-import * as modeles from '../../../../routes/api/questions/templates/+server';
-import * as lot from '../../../../routes/api/questions/templates/bulk-status/+server';
-import * as approbation from '../../../../routes/api/messages/templates/[id]/approve/+server';
-import * as signalements from '../../../../routes/api/bug-reports/config/+server';
-import * as resoudre from '../../../../routes/api/errors/bulk-resolve/+server';
-import * as purger from '../../../../routes/api/errors/delete-resolved/+server';
+import * as modele from '../questions/templates/[id]/+server';
+import * as modeles from '../questions/templates/+server';
+import * as lot from '../questions/templates/bulk-status/+server';
+import * as approbation from '../messages/templates/[id]/approve/+server';
+import * as signalements from '../bug-reports/config/+server';
+import * as resoudre from '../errors/bulk-resolve/+server';
+import * as purger from '../errors/delete-resolved/+server';
 
 // ============================================================================
 // CONSTANTES

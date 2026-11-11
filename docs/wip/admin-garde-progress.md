@@ -16,3 +16,7 @@ _Mis à jour le 2026-11-11, à l'ouverture de la PR._
 
 - Élargir le périmètre de l'élévation à ces préfixes d'API (aucune adresse ni RLS ne change), routes passées à `requireAdmin` + client admin. Rejeté : déplacer sous `/api/admin` ; donner l'écriture des modèles au prof (migration RLS).
 - Question d'accès : personne ne gagne d'accès. Le prof **en mode administration** (mot de passe admin saisi) obtient sur ces routes ce que le compte admin avait déjà ; sans élévation, toujours 403.
+
+## Piège CI (2026-11-11)
+
+- Le cliquet des types (`tsgo`) comptait 2 erreurs sur `navadra/combat/[combatId]/+page.server.ts` (fichier non touché) quand le test transversal vivait sous `src/lib/server/middleware/__tests__/` et importait 7 routes par `../../../../routes/api/…`. Prouvé : sans ce test, cliquet tenu ; `origin/main` seul, tenu. Test déplacé sous `src/routes/api/__tests__/routes-admin-elevation.test.ts` → cliquet tenu.
