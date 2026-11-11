@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2552._
+_Mis à jour le 2026-11-11, volet 4 en PR (PR 9)._
 
-- **État** : volets 1, 2 (#2545) et 3 (#2552, `chalk` hors du code client : palette texte brut, seul le terminal colore) de la piste 4 (c) mergés ; rien de #2552, #2545, #2542, #2541, #2540, #2539, #2538, #2536, #2535 en prod · **Prochaine action** : volet 4 (silhouette de l'atelier rendue par le serveur, inerte), nouveau worktree ; puis mesure de l'atelier à froid après `deploy:prod` (banc 4G ×4/×6) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; ligne #2545 de `verifications-manuelles.md` · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence — garde = test serveur ; `chalk` cité par les seuls `cli.ts`/`repl.ts`/`terminal-palette.ts` (garde) ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; manifeste Vite : clés = `.svelte-kit/generated/client-optimized/nodes/N.js` (atelier = 273) · **Worktree / branche** : aucun
+- **État** : volets 1, 2 (#2545), 3 (#2552) de la piste 4 (c) mergés ; volet 4 (silhouette de l'atelier rendue par le serveur, `AtelierSilhouette.svelte`) en PR ; rien de #2552, #2545, #2542, #2541, #2540, #2539, #2538, #2536, #2535 en prod · **Prochaine action** : merger le volet 4 ; puis mesure de l'atelier à froid après `deploy:prod` (banc 4G ×4/×6) · **Défaut relevé, à proposer** : bureau 1280×800, « Mes objets » et la zone débordent de la grille (777 px pour 736) → la 2e rangée « + Point / + Courbe » est coupée sous l'écran (atelier chargé, avant ce volet aussi) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; ligne #2545 de `verifications-manuelles.md` · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence — garde = test serveur ; `chalk` cité par les seuls `cli.ts`/`repl.ts`/`terminal-palette.ts` (garde) ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; les dimensions de la silhouette recopient `AtelierContainer`/`ObjectPanel`/`ToolButton` · **Worktree / branche** : `ubumaths-wt-amelioration` · `perf/atelier-silhouette`
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -366,6 +366,21 @@ terminal ; volet 4 : silhouette inerte).
   de `'chalk'` (sous-chemins, `require`), 10 commandes au test ANSI, test du branchement chalk
   (rouge vérifié en câblant `boldGreen` sur `chalk.green`) ; laissé : double appel de
   `useChalkColors()` (`startRepl` est aussi exporté par l'index de `cli`).
+
+## Piste 4 (c) — volet 4 : silhouette de l'atelier (PR 9, 2026-11-11)
+
+- **Remède** : `AtelierSilhouette.svelte`, dans le `{:else}` de `routes/(public)/atelier/+page.svelte`
+  (rendu tant que `opened` est nul : au serveur, puis jusqu'à `openLink(…)`). « Mes objets »,
+  barre d'outils en blocs, onglets en texte, « Chargement de l'atelier… » (`role="status"`),
+  `<h1>` sr-only ; « Mes objets », la barre et les onglets `inert`, aucun bouton ni champ.
+- **Test** : `silhouette-serveur.test.ts`, rendu serveur de la page (`svelte/server`, `page` de
+  `$app/state` simulée) ; 3/3 rouges sans la silhouette, verts avec.
+- **Mesuré au banc Playwright** (JS coupé contre JS actif, 1280×800 et 390×844) : en-tête, barre
+  (49 px), onglets (44 px), pastilles (28 px) aux mêmes positions. Pièges : `ObjectPanel` met son
+  titre dans un `<header>` (styles globaux des `header`, `strong` à 16 px) → même élément ; sur
+  téléphone, pas de bouton « replier » quand l'atelier est vide (en-tête de 33 px).
+- **Défaut relevé (existant, non corrigé)** : à 1280×800, l'atelier chargé déborde de sa grille
+  (panneau et zone 777 px pour 736) ; la 2e rangée « + Point / + Courbe » est sous l'écran.
 
 ## Piste 5 — « Mon cours », #1788 (phase 0, 2026-11-11)
 
