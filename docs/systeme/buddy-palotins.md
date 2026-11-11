@@ -374,7 +374,7 @@ Decide par David (journal `palotins`, C1 a C14). Logique pure dans
 
 ### Gain visible en fin de seance (2026-10-18)
 
-`api/tests/save` et `api/srs/review/submit` renvoient `buddy_xp` (meme forme, ou `null`).
+`api/tests/save` (fin d'un Contrôle blanc ou d'une Course : il ne fait plus que ce calcul) et `api/srs/review/submit` renvoient `buddy_xp` (meme forme, ou `null`).
 `parseBuddyGain` (`src/lib/components/buddy/buddy-gain.ts`) le valide avec Zod : absent, `null`,
 mal forme ou `xp_gained` = 0 → rien n'est affiche. `BuddyGainCard.svelte` montre l'avatar (`happy`,
 `excited` si montee), « Giron a gagne 12 pansees », une replique (`session_gain`, ou `daily_cap`

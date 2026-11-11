@@ -27,18 +27,18 @@ couvre:
 
 Le code nomme `evaluation*` **quatre choses sans lien de code entre elles**, plus deux faux amis ;
 le glossaire leur donne des noms distincts (« évaluation » seule est bannie). Vocabulaire :
-[CONTEXT.md](../../CONTEXT.md) (série, en classe, flash-cards, entraînement, course aux nombres,
+[CONTEXT.md](../../CONTEXT.md) (série, en classe, flash-cards, contrôle blanc, course aux nombres,
 contrôle, observation, presque évaluation, auto-évaluation, compétence mathématique, composante,
 observable, mode test).
 
-| Chose                               | Ce que c'est                                                                                                    | Tables                                                                  |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| **Série** passée sous une **forme** | Composition de questions lancée en classe, en flash-cards, en entraînement ou en course aux nombres. Non notée. | `series` (si enregistrée), `test_sessions`, `test_answers`              |
-| **Contrôle** (noté)                 | Une série + une forme (entraînement ou course) + réglages, assignée ; **corrigée et notée par le serveur**.     | `evaluations`, `evaluation_assignments`, `evaluation_attempt_questions` |
-| **Observation** (compétences)       | Séance où le prof coche, élève par élève, les **observables** réussis d'une compétence mathématique.            | `evaluation_tasks`, `evaluation_task_perimeter`, `skill_attempts`       |
-| **Presque évaluation**              | PDF parodique déposé par le prof, lisible par tous, même sans compte.                                           | `parody_evaluations` + bucket Storage `parody-evaluations`              |
-| _faux ami_ : **mode test** du prof  | Interrupteur « voir les élèves de test / les vrais ». Rien à voir avec `TestMode` (= forme de série).           | `user_preferences.test_mode_enabled`, `profiles.is_test`                |
-| _faux ami_ : **reports** (élève)    | Signalements d'erreur sur un exercice de **fiche**, pas des bulletins.                                          | `worksheet_error_reports` → [fiches-et-pdf.md](fiches-et-pdf.md)        |
+| Chose                               | Ce que c'est                                                                                                      | Tables                                                                  |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Série** passée sous une **forme** | Composition de questions lancée en classe, en flash-cards, en contrôle blanc ou en course aux nombres. Non notée. | `series` (si enregistrée), traces `skill_attempts` (ADR 0038)           |
+| **Contrôle** (noté)                 | Une série + une forme (contrôle blanc ou course) + réglages, assignée ; **corrigée et notée par le serveur**.     | `evaluations`, `evaluation_assignments`, `evaluation_attempt_questions` |
+| **Observation** (compétences)       | Séance où le prof coche, élève par élève, les **observables** réussis d'une compétence mathématique.              | `evaluation_tasks`, `evaluation_task_perimeter`, `skill_attempts`       |
+| **Presque évaluation**              | PDF parodique déposé par le prof, lisible par tous, même sans compte.                                             | `parody_evaluations` + bucket Storage `parody-evaluations`              |
+| _faux ami_ : **mode test** du prof  | Interrupteur « voir les élèves de test / les vrais ». Rien à voir avec `TestMode` (= forme de série).             | `user_preferences.test_mode_enabled`, `profiles.is_test`                |
+| _faux ami_ : **reports** (élève)    | Signalements d'erreur sur un exercice de **fiche**, pas des bulletins.                                            | `worksheet_error_reports` → [fiches-et-pdf.md](fiches-et-pdf.md)        |
 
 Dans le code et les URL, l'ancien nom subsiste : `assessments` et `evaluations` = contrôles, `evaluation_tasks` = observations, `test` = séance de série.
 Le moteur de questions (génération, validation, barème) est décrit dans [questions.md](questions.md) ;
@@ -49,7 +49,7 @@ par les séances dans [srs.md](srs.md).
 
 | Fichier                                                             | Rôle                                                                                                                                                                                      |
 | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/types/test.ts`                                             | `TestMode` (`display` en classe, `flash`, `interactive` entraînement, `course`), `ClassroomItem`, `TestResult`.                                                                           |
+| `src/lib/types/test.ts`                                             | `TestMode` (`display` en classe, `flash`, `interactive` contrôle blanc, `course`), `ClassroomItem`, `TestResult`.                                                                         |
 | `src/lib/utils/test-launch.ts`                                      | `resolveTestLaunch` : que faire d'une URL `/automaths/test?…` (assignation, panier, démarrage, erreur).                                                                                   |
 | `src/lib/utils/test-score.ts`                                       | `computeTestScore` : score sur 10 d'une séance libre, cartes de cours hors score.                                                                                                         |
 | `src/lib/components/test/`                                          | Une forme = un composant : `ClassroomSeries`, `FlashSeries`, `TestInteractive`, `TestCourse` ; `TestResults`, `EvaluationResults`, `TestTimer`, `TestModeDialog`.                         |
@@ -62,7 +62,7 @@ par les séances dans [srs.md](srs.md).
 | `src/lib/server/grading-budget.ts`                                  | Budget de temps de la correction d'un envoi → [questions.md](questions.md).                                                                                                               |
 | `src/lib/server/chapter-series.ts`                                  | Série rattachée à un chapitre de « Mon cours » (forme flash ou entraînement, sans note).                                                                                                  |
 | `src/lib/server/validation/evaluations.ts`                          | Zod : `createSeriesSchema`, `evaluationSettingsSchema`, `submitAttemptSchema`, `classIdsFieldSchema`…                                                                                     |
-| `src/lib/server/validation/tests.ts`                                | `validateSaveTest` : corps de `POST /api/tests/save`.                                                                                                                                     |
+| `src/lib/server/validation/tests.ts`                                | `validateSaveTest` : corps de `POST /api/tests/save` (fin de série, gain du Palotin).                                                                                                     |
 | `src/lib/types/skills.ts`                                           | Types famille B : `MathCompetenceCode`, `SubdimensionLetter`, `SkillAttemptCode` (`plus`/`minus`), `isCompetenceObserved` ; aussi `notionLevel` (niveau d'une notion, progression élève). |
 | `src/lib/server/test-mode.ts`, `src/lib/stores/test-mode.svelte.ts` | Mode test du prof : `getTeacherTestMode` / `setTeacherTestMode` (serveur), store `testMode` (navigateur).                                                                                 |
 | `src/lib/server/validation/parody-evaluations.ts`                   | Zod du dépôt de presques évaluations (PDF ≤ 10 Mo, `MAX_FILE_SIZE_BYTES`).                                                                                                                |
@@ -77,7 +77,7 @@ pas des notes.
 | -------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/automaths/test` (couverte par [questions.md](questions.md))                          | tous          | Page unique qui joue toutes les formes, libres ou contrôle.                                                                                                                        |
 | `POST /api/series`                                                                     | prof, admin   | Enregistrer le panier comme série. Liste et édition : `/dashboard/teacher/series`.                                                                                                 |
-| `POST /api/tests/save`                                                                 | connecté      | Enregistrer une séance **libre** (entraînement, course, flash). Refuse un contrôle.                                                                                                |
+| `POST /api/tests/save`                                                                 | connecté      | Fin d'une série **libre** : gain du Palotin seulement, rien d'écrit. Refuse un contrôle.                                                                                           |
 | `/dashboard/teacher/assessments` (+ `new`, `[id]/edit`, `[id]/assign`, `[id]/results`) | prof, admin   | Créer depuis une série, régler (brouillon seulement), publier, assigner, résultats.                                                                                                |
 | `/dashboard/student/assessments` (+ `[id]/results`)                                    | élève         | Ses contrôles ; ses tentatives (`[id]` = identifiant de l'**assignation**). S'ouvre depuis « Mon travail » (« Tous mes contrôles »), y revient (`BackLink`).                       |
 | `POST /api/evaluations/assignments/[id]/start`                                         | élève, prof   | Démarrer / reprendre (élève) ou aperçu (propriétaire, admin). 20 appels/min.                                                                                                       |
@@ -110,12 +110,12 @@ catégories en est vidé de ces lignes au chargement, réécrit, avec un message
 `series.items` (et `test_sessions.items` pour une séance), ex-`categories`, renommées au lot 4b du
 chantier `automaths-arbre`.
 
-| Forme (`TestMode`)            | Composant         | Cartes de cours | Chrono                                                                              | Correction et score                                      | Enregistré                                        |
-| ----------------------------- | ----------------- | --------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------- |
-| En classe (`display`)         | `ClassroomSeries` | oui             | Par question ; ±5 s change tout le modèle (min. 5 s) ; Espace = pause               | Aucune note ; grilles des questions puis des corrections | **Rien**                                          |
-| Flash-cards (`flash`)         | `FlashSeries`     | oui             | Aucun                                                                               | « Pas réussi / Réussi » (auto-évaluation)                | `test_sessions` + traces `student_self`, pas d'XP |
-| Entraînement (`interactive`)  | `TestInteractive` | **non**         | Par question ; à 0, ce qui est saisi est validé, rien = faux ; pas de chrono global | Navigateur (ADR 0001), score sur 10 (`computeTestScore`) | `test_sessions`, `test_answers`, SRS, XP          |
-| Course aux nombres (`course`) | `TestCourse`      | **non**         | Global, toutes les questions à l'écran ; 1 à 60 min (5 min proposées)               | Navigateur, score sur 10                                 | Comme l'entraînement                              |
+| Forme (`TestMode`)             | Composant         | Cartes de cours | Chrono                                                                              | Correction et score                                      | Enregistré                                |
+| ------------------------------ | ----------------- | --------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------- |
+| En classe (`display`)          | `ClassroomSeries` | oui             | Par question ; ±5 s change tout le modèle (min. 5 s) ; Espace = pause               | Aucune note ; grilles des questions puis des corrections | **Rien**                                  |
+| Flash-cards (`flash`)          | `FlashSeries`     | oui             | Aucun                                                                               | « Pas réussi / Réussi » (auto-évaluation)                | Trace `student_self` par carte, pas d'XP  |
+| Contrôle blanc (`interactive`) | `TestInteractive` | **non**         | Par question ; à 0, ce qui est saisi est validé, rien = faux ; pas de chrono global | Navigateur (ADR 0001), score sur 10 (`computeTestScore`) | Trace `auto` par question, SRS, XP en fin |
+| Course aux nombres (`course`)  | `TestCourse`      | **non**         | Global, toutes les questions à l'écran ; 1 à 60 min (5 min proposées)               | Navigateur, score sur 10                                 | Comme le Contrôle blanc                   |
 
 Lancement (`resolveTestLaunch`) : `?assignment=<id>` → contrôle (forme et temps viennent du serveur,
 le `mode` de l'URL est ignoré) ; `?modeles=…` (ou un ancien `?categories=…`, signalé sans être relu) sans `mode` → le panier ;
@@ -123,24 +123,37 @@ le `mode` de l'URL est ignoré) ; `?modeles=…` (ou un ancien `?categories=…`
 rien n'est enregistré.
 
 **Quitter** ([composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)) : pendant la série, l'en-tête porte un lien « Quitter »
-(`BackLink kind="quit"`). Entraînement et course y mènent au panier, ou à « Mes contrôles »
+(`BackLink kind="quit"`). Contrôle blanc et course y mènent au panier, ou à « Mes contrôles »
 (`/dashboard/student/assessments`) en contrôle : `automathsQuitLink` (`src/lib/navigation/return-links.ts`).
 En contrôle **avec une tentative ouverte**, le lien demande confirmation : les réponses tapées seront
 perdues (voir « Démarrer », étape 3) et, en course, le temps continue de courir (`remainingSeconds`).
-Pas de confirmation en entraînement ni dans l'aperçu du prof. « En classe » et les flash-cards (jamais
+Pas de confirmation en Contrôle blanc libre ni dans l'aperçu du prof. « En classe » et les flash-cards (jamais
 en contrôle) quittent vers le panier. Les boutons de l'écran de fin gardent `onBack`.
 
-Séance libre enregistrée : `POST /api/tests/save` écrit `test_sessions` puis `test_answers` et appelle
-`recordSeriesReviews` (`src/lib/server/srs/record-series-reviews.ts`) avec le **verdict du navigateur**.
-Le score envoyé par le client est gardé, sauf s'il y a des cartes de cours (séance d'avant le
-2026-11-09, ou client ancien) : il est alors recalculé hors cartes. Hors flash et hors cartes de cours, chaque réponse rapporte au Palotin
+**Traces d'une série libre** (ADR 0038, chantier `formes-de-serie`, PR 4) : chaque question laisse
+sa trace **dès la réponse**, avec le **verdict du navigateur** : `buildSeriesTrace` et
+`createTraceRecorder` (`src/lib/questions/series-trace.ts`) postent à `api/skill-attempts`
+(voir [srs.md](srs.md#note--réussite)). Flash-cards : au clic « Réussi / Pas réussi » du premier tour
+(lieu `flash_cards`, « Revoir » n'écrit rien). Contrôle blanc : à « Valider » ou au chrono écoulé
+(lieu `mock_test`, durée de réponse depuis l'affichage, plafonnée à la durée de la question, fin
+`validated` / `timeout`, réponse et verdict par case — `computeBlankColors`, figure sans son tracé).
+Course : à « Valider » (lieu `number_race`, durée depuis le début de la course, durée allouée = celle
+de la course) ; en fin de course, une question jamais validée est ratée, fin `timeout` au chrono,
+**sans durée ni fin** après « Terminer » (décision du 2026-11-11). Une trace refusée ou perdue est
+réessayée deux fois en silence ; en fin de série, la page attend les dernières (`settle`) et affiche
+au plus un message « Certaines réponses n'ont pas été enregistrées ». Jamais en contrôle, ni pour un
+visiteur (`traceRecorder` nul) ; un prof n'écrit rien (la route l'ignore).
+
+**Fin de série** : `POST /api/tests/save` n'écrit **plus rien** — ni `test_sessions`, ni `test_answers`
+(les séances libres anciennes restent lues par l'export RGPD), ni trace : il calcule seulement le gain
+du Palotin (Contrôle blanc, Course ; jamais pour les flash-cards, que la page n'envoie plus). Hors cartes de cours, chaque réponse rapporte au Palotin
 (`addBuddyXpFromTest`, réponse `buddy_xp`) ; son thème, pour le bonus « nouveau thème », est la branche
 de l'arbre des notions où se range le point que valide la question (`fetchTemplateThemeIds`,
-`src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Une fois la séance enregistrée (Entraînement, Course ; ni flash, ni
+`src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Une fois le gain reçu (Contrôle blanc, Course ; ni flash, ni
 évaluation, ni aperçu du prof), la page demande les nouveautés de la Chatterie
 (`fetchMathouNews`) et `TestResults` les affiche sous le gain du Palotin (`MathouNewsCard`, jamais
 en évaluation) : voir [mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).
-Pendant un Entraînement libre d'un élève connecté (jamais en contrôle), le Palotin peut réagir une
+Pendant un Contrôle blanc libre d'un élève connecté (jamais en contrôle), le Palotin peut réagir une
 fois (5 réussites d'affilée, 3 erreurs sur une même notion) : `TestInteractive` reçoit
 `palotinReactions` de la page, et la question suivante attend son départ. Voir
 [buddy-palotins.md § Réactions en séance](buddy-palotins.md#reactions-en-seance-2026-11-11).
@@ -266,14 +279,14 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 ## Invariants
 
 1. **Un contrôle n'est corrigé que par le serveur** ; `/api/tests/save` refuse un
-   `assignmentId` (400). Les séances libres restent corrigées par le navigateur (ADR 0001).
+   `assignmentId` (400). Les séries libres restent corrigées par le navigateur (ADR 0001).
 2. **La graine et l'attendu ne quittent jamais le serveur** pendant une tentative : seules les
    questions publiques partent ; la correction arrive avec la note.
 3. **Une tentative compte dès son démarrage** ; une tentative ouverte se reprend sans en coûter une.
 4. **Le verrou de série est tenu par la base**, pas par l'application : le drapeau `locked` de
    `getTeacherSeries` sert à l'affichage seulement.
 5. **Pas de carte de cours** (non évaluable) dans une forme qui corrige : contrôle, course aux
-   nombres, entraînement (`seriesFormExcludesCourseCards`, ADR 0009 précisée le 2026-11-09). Une
+   nombres, contrôle blanc (`seriesFormExcludesCourseCards`, ADR 0009 précisée le 2026-11-09). Une
    série faite seulement de cartes, lancée sous l'une de ces formes, s'arrête sur un message. Une
    question de cours évaluable (QCM, vrai/faux…) n'est jamais retirée.
 6. **Lire avec le client de l'utilisateur, écrire avec service_role** dans `evaluation-attempts.ts`,
@@ -354,4 +367,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11.
