@@ -10,15 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, lot 3 écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-11-11, après #2573 (fichiers du lot 3 mergés)._
 
-- **État** : lots 1 et 2 publiés (§ 5, § 9) ; lot 3 (421, 448, 449, 471, 472) écrit et vérifié (§ 10).
-- **Prochaine action** : merge de la PR des fichiers du lot 3 → David lance `create-questions --publier` → migration de
-  rangement (472 va sur une NOTION, sans sous-notion).
-- **En attente de David** : `create-questions --publier` du lot 3 après le merge.
+- **État** : lots 1 et 2 publiés (§ 5, § 9) ; lot 3 (421, 448, 449, 471, 472) mergé (#2573, § 10), pas encore en prod.
+- **Prochaine action** : David lance `create-questions --publier` du lot 3 depuis le dépôt principal → migration de
+  rangement + tags (472 va sur une NOTION, sans sous-notion : adapter le gabarit du lot 2) → page à cocher → publication.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-demonstrations-3 --publier`.
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
-  simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-demonstrations-3`.
+  simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer ; CI restée en file
+  1 h 46 → fermer/rouvrir la PR la relance.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` ; branche du lot 3 mergée et supprimée,
+  nouvelle branche à créer depuis `origin/main` pour la migration.
 
 ---
 
