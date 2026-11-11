@@ -1,3 +1,4 @@
 bash scripts/garde-deploy-en-cours.sh commit
 bash scripts/garde-main-a-jour.sh
+pnpm --silent garde:donnees --staged || exit 1
 pnpm lint-staged
