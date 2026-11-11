@@ -1,4 +1,4 @@
-# Chantier `palotins` — où et quand le Palotin se montre
+# Chantier `palotins` (clos le 2026-11-11, archive) — où et quand le Palotin se montre
 
 ## Reprendre ici
 

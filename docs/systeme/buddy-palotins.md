@@ -302,7 +302,7 @@ Le buddy ne remplace pas les cartes VIP, il les **enrichit** :
 
 ## Maison et passages (2026-11-11)
 
-Decide par David le 2026-11-11 (chantier `palotins`, journal `docs/wip/palotins-progress.md`) :
+Decide par David le 2026-11-11 (chantier `palotins`, journal archive `docs/archive/palotins-progress.md`) :
 le Palotin n'est plus affiche en permanence. **Un seul composant**, `PalotinPresence.svelte`, monte
 par le layout racine (`src/routes/+layout.svelte`, import dynamique, eleve connecte seulement : ni
 le visiteur ni le prof ne telechargent son code). La zone se lit dans l'adresse
@@ -368,6 +368,9 @@ Decide par David (journal `palotins`, C1 a C14). Logique pure dans
   `GET /api/srs/review/due` et `GET /api/srs/chapters/<id>/due`, champ `notionId`). Jamais en
   controle, en flash-cards de l'Entrainement, en Course aux nombres, ni sur une carte de cours.
 - Les passages de la partie « passages » (sieste, Constance…) restent interdits en seance.
+- **Limites connues** (revue de la PR 2, gardees telles quelles) : une reaction qui ne peut pas etre
+  jouee (etat ouvert, presence pas encore lue) est perdue pour la seance, conforme a « une au plus » ;
+  le chrono de la question repondue continue pendant la pause du Palotin.
 
 ### Gain visible en fin de seance (2026-10-18)
 
