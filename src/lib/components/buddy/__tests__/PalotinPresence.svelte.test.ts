@@ -16,6 +16,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import PalotinPresence from '../PalotinPresence.svelte';
 import { LAST_PASSAGE_KEY } from '../palotin-presence';
+import { playSeanceReaction, SEANCE_PASSAGE_DURATION } from '../seance-reactions';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import { buddyMessages } from '$lib/config/buddy-messages';
 import type { BuddyState } from '$lib/types/buddy';
@@ -49,6 +50,8 @@ const buddy: BuddyState = {
 };
 const MISSED = buddyMessages.pile.long_absence;
 const STREAK_LOST = buddyMessages.pile.streak_lost;
+const CORRECT = buddyMessages.pile.correct;
+const INCORRECT = buddyMessages.pile.incorrect;
 const NAPPING = '2 Mathoux font la sieste.';
 const NEWS: MathouNews = {
 	firstVisit: false,
@@ -232,6 +235,76 @@ describe('PalotinPresence — séances', () => {
 		expect(avatarButton()).toBeNull();
 		expect(calls(MATHOUX_URL)).toHaveLength(0);
 		expect(calls(WELCOME_BACK_URL)).toHaveLength(0);
+	});
+});
+
+describe('PalotinPresence — réactions en séance', () => {
+	it('5 réussites : il entre, s’exclame, repart ; la séance attend son départ (C2, C11)', async () => {
+		at('/automaths/test');
+		mockServer({});
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(badge()).not.toBeNull());
+
+		let done = false;
+		const started = Date.now();
+		const played = playSeanceReaction('streak').then(() => {
+			done = true;
+		});
+		await vi.waitFor(() => expect(CORRECT).toContain(bubbleText()));
+		expect(avatarButton()).not.toBeNull();
+		expect(done).toBe(false);
+
+		await played;
+		expect(Date.now() - started).toBeGreaterThanOrEqual(SEANCE_PASSAGE_DURATION - 50);
+		await vi.waitFor(() => expect(badge()).not.toBeNull());
+	}, 8000);
+
+	it('3 erreurs sur une notion : un encouragement (C3)', async () => {
+		at('/dashboard/revisions/decks/d1/study');
+		mockServer({});
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(badge()).not.toBeNull());
+
+		const played = playSeanceReaction('struggle');
+		await vi.waitFor(() => expect(INCORRECT).toContain(bubbleText()));
+		await played;
+	}, 8000);
+
+	it('hors séance : il ne réagit pas, rien n’attend', async () => {
+		mockServer({});
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(badge()).not.toBeNull());
+
+		const started = Date.now();
+		await playSeanceReaction('streak');
+		expect(Date.now() - started).toBeLessThan(200);
+		expect(CORRECT).not.toContain(bubbleText());
+	});
+
+	it('Palotin illisible au début de la séance : séance normale, rien n’attend (C10)', async () => {
+		at('/automaths/test');
+		mockServer({ presence: 'panne' });
+		await render(PalotinPresence);
+		await settle();
+
+		const started = Date.now();
+		await playSeanceReaction('streak');
+		expect(Date.now() - started).toBeLessThan(200);
+		expect(avatarButton()).toBeNull();
+	});
+
+	it('Palotin démonté pendant son passage : la séance n’attend pas pour rien', async () => {
+		at('/automaths/test');
+		mockServer({});
+		const view = await render(PalotinPresence);
+		await vi.waitFor(() => expect(badge()).not.toBeNull());
+
+		const played = playSeanceReaction('streak');
+		await vi.waitFor(() => expect(CORRECT).toContain(bubbleText()));
+		await view.unmount();
+		const started = Date.now();
+		await played;
+		expect(Date.now() - started).toBeLessThan(200);
 	});
 });
 

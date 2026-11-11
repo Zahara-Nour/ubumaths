@@ -44,7 +44,7 @@ describe('dueUrl', () => {
 });
 
 describe('submitRequest', () => {
-	const card: SessionCard = { key: 'k1', kind: 'template', instance };
+	const card: SessionCard = { key: 'k1', kind: 'template', instance, notionId: null };
 
 	it('paquet : carte et deck', () => {
 		expect(submitRequest(deck, card, 3, 12)).toEqual({
@@ -65,7 +65,7 @@ describe('toSessionPayload', () => {
 	it('paquet : cartes PLATES du serveur (modèle et carte libre)', () => {
 		const response: DueCardsResponse = {
 			cards: [
-				{ cardId: 'c-t', cardType: 'template', templateId: 't', instance, stats },
+				{ cardId: 'c-t', cardType: 'template', templateId: 't', instance, notionId: 'n1', stats },
 				{
 					cardId: 'c-c',
 					cardType: 'custom',
@@ -79,7 +79,7 @@ describe('toSessionPayload', () => {
 		const payload = toSessionPayload(deck, response);
 		expect(payload.skipped).toBe(1);
 		expect(payload.cards).toEqual([
-			{ key: 'c-t', kind: 'template', instance },
+			{ key: 'c-t', kind: 'template', instance, notionId: 'n1' },
 			{ key: 'c-c', kind: 'custom', frontContent: 'Q', backContent: 'R' }
 		]);
 	});
@@ -87,11 +87,19 @@ describe('toSessionPayload', () => {
 	it('chapitre : la clé est le modèle', () => {
 		const response: ChapterDueResponse = {
 			chapter: { id: 'c1', title: 'Fonctions' },
-			cards: [{ templateId: 't1', instance, isNew: true }],
+			cards: [{ templateId: 't1', instance, notionId: 'n2', isNew: true }],
 			skipped: 0
 		};
 		const payload = toSessionPayload(chapter, response);
-		expect(payload).toEqual({ cards: [{ key: 't1', kind: 'template', instance }], skipped: 0 });
+		expect(payload).toEqual({
+			cards: [{ key: 't1', kind: 'template', instance, notionId: 'n2' }],
+			skipped: 0
+		});
+	});
+
+	it('carte sans notion (serveur plus ancien) : notion inconnue, carte gardée', () => {
+		const payload = toSessionPayload(chapter, { cards: [{ templateId: 't1', instance }] });
+		expect(payload.cards).toEqual([{ key: 't1', kind: 'template', instance, notionId: null }]);
 	});
 
 	it('carte mal formée : écartée et comptée, pas de plantage', () => {

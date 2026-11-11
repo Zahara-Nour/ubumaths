@@ -27,6 +27,10 @@
 	  la correction du serveur) ; « Envoi de ta copie… » en attendant
 	- buddyGain: gain du Palotin, affiché sur l'écran de résultats (`null` → rien)
 	- mathouNews: nouveautés de la Chatterie, affichées sur l'écran de résultats (`null` → rien)
+	- palotinReactions: Entraînement libre d'un élève connecté → le Palotin réagit
+	  (5 réussites d'affilée, 3 erreurs sur une notion), une fois au plus, et la
+	  question suivante attend son départ ; `null` → jamais (contrôle, visiteur).
+	  Chantier `palotins`, partie C (docs/wip/palotins-progress.md).
 -->
 
 <script lang="ts">
@@ -46,6 +50,8 @@
 	import { ArrowLeft, LogIn } from '@lucide/svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { slideFromRight, slideToLeft } from '$lib/transitions/slide-transition';
+	import { isCourseCard } from '$lib/questions/types';
+	import { createSeanceReactions } from '$lib/components/buddy/seance-reactions';
 
 	// Types
 	interface Props {
@@ -61,6 +67,7 @@
 		showResults?: boolean;
 		buddyGain?: BuddyGainView | null;
 		mathouNews?: MathouNews | null;
+		palotinReactions?: { notionOf: (templateId: string) => string | null } | null;
 	}
 
 	// Constants
@@ -79,7 +86,8 @@
 		collectOnly = false,
 		showResults = true,
 		buddyGain = null,
-		mathouNews = null
+		mathouNews = null,
+		palotinReactions = null
 	}: Props = $props();
 
 	let backLabel = $derived(inEvaluation ? 'Mes contrôles' : 'Retour au panier');
@@ -95,6 +103,9 @@
 	// Carte en cours : sa réponse tapée est validée à l'expiration du chrono
 	let currentCard = $state<ReturnType<typeof QuestionCard>>();
 	let pendingAdvance: ReturnType<typeof setTimeout> | undefined;
+	// Réactions du Palotin : une série (Recommencer = nouveau composant)
+	const seanceReactions = createSeanceReactions();
+	let destroyed = false;
 
 	const startTime = Date.now();
 
@@ -118,11 +129,38 @@
 		currentIndex += 1;
 	}
 
+	/**
+	 * Le Palotin réagit-il à cette réponse ? `null` : non, la suite arrive
+	 * aussitôt. Jamais en contrôle, ni sur une carte de cours (hors score).
+	 */
+	function reactTo(index: number, answerData: AnswerData): Promise<void> | null {
+		const item = items[index];
+		if (!palotinReactions || collectOnly || isCourseCard(item.instance)) return null;
+		return seanceReactions.afterAnswer({
+			correct: answerData.isCorrect,
+			notionId: palotinReactions.notionOf(item.templateId),
+			isLast: index + 1 >= items.length
+		});
+	}
+
+	/** Lance `next` une fois le Palotin reparti (aussitôt s'il ne passe pas). */
+	function afterReaction(waiting: Promise<void> | null, next: () => void) {
+		if (!waiting) {
+			next();
+			return;
+		}
+		void waiting.then(() => {
+			if (!destroyed) next();
+		});
+	}
+
 	function handleAnswerSubmit(answerData: AnswerData) {
 		const index = currentIndex;
 		if (answers.has(index)) return;
 		answers.set(index, answerData);
-		pendingAdvance = setTimeout(() => advanceFrom(index), ADVANCE_DELAY_MS);
+		afterReaction(reactTo(index, answerData), () => {
+			pendingAdvance = setTimeout(() => advanceFrom(index), ADVANCE_DELAY_MS);
+		});
 	}
 
 	/**
@@ -134,17 +172,15 @@
 		if (answers.has(index)) return;
 
 		const pending = currentCard?.submitPendingAnswer() ?? null;
-		answers.set(
-			index,
-			pending ?? {
-				value: '',
-				isCorrect: false,
-				timeSpent: items[index].delaySeconds,
-				attempts: 0,
-				submittedAt: new Date().toISOString()
-			}
-		);
-		advanceFrom(index);
+		const answerData = pending ?? {
+			value: '',
+			isCorrect: false,
+			timeSpent: items[index].delaySeconds,
+			attempts: 0,
+			submittedAt: new Date().toISOString()
+		};
+		answers.set(index, answerData);
+		afterReaction(reactTo(index, answerData), () => advanceFrom(index));
 	}
 
 	function completeTest() {
@@ -185,7 +221,10 @@
 
 	// Une avance en attente ne doit pas survivre au composant
 	$effect(() => {
-		return () => clearTimeout(pendingAdvance);
+		return () => {
+			destroyed = true;
+			clearTimeout(pendingAdvance);
+		};
 	});
 </script>
 

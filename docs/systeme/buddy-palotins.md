@@ -312,7 +312,7 @@ le visiteur ni le prof ne telechargent son code). La zone se lit dans l'adresse
 | ----------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | **maison**  | accueil eleve `/dashboard`, Chatterie `/dashboard/student/chatterie`                              | `BuddyWidget` : le Palotin toujours la, comme avant    |
 | **passage** | reste de `/dashboard/student/*`, `/dashboard/revisions/*` hors seance                             | l'ecusson ; le Palotin entre, dit une replique, repart |
-| **seance**  | `/automaths/test`, `/dashboard/revisions/decks/<id>/study`, `/dashboard/revisions/chapitres/<id>` | l'ecusson seul, aucun passage                          |
+| **seance**  | `/automaths/test`, `/dashboard/revisions/decks/<id>/study`, `/dashboard/revisions/chapitres/<id>` | l'ecusson ; une reaction au plus (voir ci-dessous)     |
 | ailleurs    | tout le reste (site public, prof…)                                                                | rien, aucune requete                                   |
 
 - **Lecture apres l'affichage** : a la premiere page d'une zone, `GET /api/student/buddy/presence`
@@ -341,8 +341,33 @@ le visiteur ni le prof ne telechargent son code). La zone se lit dans l'adresse
 - L'annonce de la Chatterie est lue une fois par chargement, a la premiere page de passage
   (`fetchChatterieAnnouncement`, `chatterie-announcement.ts`, partagee avec `BuddyWidget`) ; jamais
   en seance (l'ecran de fin de seance montre deja les nouveautes).
-- Hors perimetre, chantier suivant : reactions pendant les seances (PR 2 du chantier), indices et
-  rappels (devoirs, revisions dues).
+- Hors perimetre, chantier suivant : indices et rappels (devoirs, revisions dues).
+
+### Reactions en seance (2026-11-11)
+
+Decide par David (journal `palotins`, C1 a C14). Logique pure dans
+`src/lib/components/buddy/seance-reactions.ts` :
+
+- **Declencheurs** (`createSeanceTracker`) : **5 reussites d'affilee** (`STREAK_LENGTH`) →
+  exclamation, banque `correct` ; **3 erreurs sur la meme notion** (`STRUGGLE_COUNT`), pas
+  forcement consecutives → encouragement, banque `incorrect`, jamais d'indice. Notion = celle du
+  modele de questions (`classification_node_id`) ; question sans notion, carte personnelle : pas
+  comptee pour les erreurs (elle compte pour la serie). **Une reaction au plus par seance**, le
+  premier declencheur gagne ; **jamais sur la derniere question** (la fin de seance = `BuddyGainCard`).
+- **Jamais pendant une question** : la question suivante attend que le Palotin soit reparti
+  (`SEANCE_PASSAGE_DURATION`, 3 s, plus l'entree et la sortie). La seance appelle
+  `createSeanceReactions().afterAnswer(...)`, qui rend `null` (rien a jouer, la suite arrive
+  aussitot) ou une promesse resolue au depart du Palotin.
+- **Qui joue** : `PalotinPresence` s'inscrit au montage (`registerSeanceReactionHandler`) et ne
+  joue qu'en zone **seance**, Palotin lu, etat ferme, aucun autre passage en cours ; sinon la
+  promesse se resout aussitot. Demonte (changement de page) : la seance n'attend plus. Visiteur,
+  prof, Palotin illisible : personne n'est inscrit, rien n'attend.
+- **Ou** : Entrainement libre (`TestInteractive`, prop `palotinReactions` passee par
+  `/automaths/test` a un eleve connecte hors controle ; notion lue dans `questionTemplatesCache`)
+  et revisions (`ReviewSession` : reussite = note >= 3, notion jointe a chaque carte par
+  `GET /api/srs/review/due` et `GET /api/srs/chapters/<id>/due`, champ `notionId`). Jamais en
+  controle, en flash-cards de l'Entrainement, en Course aux nombres, ni sur une carte de cours.
+- Les passages de la partie « passages » (sieste, Constance…) restent interdits en seance.
 
 ### Gain visible en fin de seance (2026-10-18)
 
