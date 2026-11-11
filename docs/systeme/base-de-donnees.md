@@ -176,6 +176,9 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   seulement en `mock_test` / `number_race` / `evaluation` ; réponse seulement en `typing` /
   `mock_test` / `number_race`, avec autant de verdicts que de cases ; sans lieu, aucune de ces
   colonnes (anciennes traces). Mêmes lecteurs que le reste de la ligne : l'élève, le professeur.
+  Une trace `evaluation` (contrôle) est **écrite par le serveur seulement** : la policy
+  `skill_attempts_insert_own_student` la refuse à l'élève (`place is distinct from 'evaluation'`,
+  `20261111111212`) ; ses traces sans lieu restent acceptées.
 - **Position d'affichage** : `display_order` est local à la fratrie ; un nœud créé sans position va en
   dernier (triggers `*_place_last`) ; `reorder_curriculum_points` / `_themes` / `_objectives` renumérotent 1..N et refusent une liste
   incomplète (en **INVOKER** pour que la RLS s'applique) ; plus aucun appelant depuis la C5 étape 3 :
@@ -709,4 +712,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21 ; avatar et boutique d'avatars : 2026-11-06 ; contenu d'une trace : 2026-11-11).
+Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21 ; avatar et boutique d'avatars : 2026-11-06 ; contenu d'une trace et traces d'un contrôle réservées au serveur : 2026-11-11).
