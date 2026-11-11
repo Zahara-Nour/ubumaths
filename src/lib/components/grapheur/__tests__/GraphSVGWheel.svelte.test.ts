@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import GraphSVG from '../GraphSVG.svelte';
 import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -10,7 +10,11 @@ let grapheurStore = new GrapheurStore();
 /** Plus long que le délai de fin de molette (150 ms). */
 const AFTER_WHEEL = 300;
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+/**
+ * Minuteurs simulés, posés APRÈS le montage : le temps réel rendait le test
+ * fragile sur une machine chargée (60 ms d'attente qui en durent 150).
+ */
+const wait = (ms: number) => vi.advanceTimersByTime(ms);
 
 /**
  * La molette est une interaction, comme le glisser : pendant le geste, les
@@ -25,11 +29,16 @@ describe('GraphSVG — la molette est une interaction', () => {
 		grapheurStore.setInteracting(false);
 	});
 
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
 	async function mount() {
-		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
-		const svg = container.querySelector('svg');
+		const screen = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
+		const svg = screen.container.querySelector('svg');
 		expect(svg).not.toBeNull();
-		return svg!;
+		vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+		return Object.assign(svg!, { unmount: () => screen.unmount() });
 	}
 
 	function wheel(svg: Element, deltaY = -120) {
@@ -54,7 +63,7 @@ describe('GraphSVG — la molette est une interaction', () => {
 		expect(grapheurStore.viewport.xMax - grapheurStore.viewport.xMin).toBeLessThan(before);
 		expect(grapheurStore.isInteracting).toBe(true);
 
-		await wait(AFTER_WHEEL);
+		wait(AFTER_WHEEL);
 		expect(grapheurStore.isInteracting).toBe(false);
 	});
 
@@ -63,11 +72,11 @@ describe('GraphSVG — la molette est une interaction', () => {
 
 		for (let i = 0; i < 4; i++) {
 			wheel(svg);
-			await wait(60);
+			wait(60);
 			expect(grapheurStore.isInteracting).toBe(true);
 		}
 
-		await wait(AFTER_WHEEL);
+		wait(AFTER_WHEEL);
 		expect(grapheurStore.isInteracting).toBe(false);
 	});
 
@@ -84,10 +93,22 @@ describe('GraphSVG — la molette est une interaction', () => {
 
 		svg.dispatchEvent(new PointerEvent('pointerdown', options));
 		wheel(svg);
-		await wait(AFTER_WHEEL);
+		wait(AFTER_WHEEL);
 		expect(grapheurStore.isInteracting).toBe(true);
 
 		svg.dispatchEvent(new PointerEvent('pointerup', options));
+		expect(grapheurStore.isInteracting).toBe(false);
+	});
+
+	// Le magasin survit au graphe (changement de vue de l'atelier) : un geste
+	// interrompu par le démontage ne doit pas laisser les analyses endormies.
+	it('clôt l’interaction quand le graphe est démonté pendant la molette', async () => {
+		const svg = await mount();
+
+		wheel(svg);
+		expect(grapheurStore.isInteracting).toBe(true);
+
+		svg.unmount();
 		expect(grapheurStore.isInteracting).toBe(false);
 	});
 });

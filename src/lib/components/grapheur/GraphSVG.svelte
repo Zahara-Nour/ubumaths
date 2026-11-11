@@ -279,9 +279,16 @@
 	/** Minuteur de fin de molette, relancé à chaque cran. */
 	let wheelEndTimer: ReturnType<typeof setTimeout> | null = null;
 
-	/** Un démontage pendant la molette ne laisse pas de minuteur derrière lui. */
+	/**
+	 * Un démontage pendant la molette clôt le geste : le magasin survit au
+	 * graphe (changement de vue de l'atelier), et un `isInteracting` resté vrai
+	 * laisserait les analyses endormies pour de bon.
+	 */
 	$effect(() => () => {
-		if (wheelEndTimer !== null) clearTimeout(wheelEndTimer);
+		if (wheelEndTimer === null) return;
+		clearTimeout(wheelEndTimer);
+		wheelEndTimer = null;
+		if (!isDragging) grapheurStore.setInteracting(false);
 	});
 
 	/**

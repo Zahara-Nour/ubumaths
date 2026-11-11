@@ -204,7 +204,9 @@ Pendant un geste (`isInteracting`), `FunctionCurve` passe à 100 points et à un
 couches d'analyse (zéros, extremums, asymptotes, intersections, survol) dorment : elles ne tournent
 qu'une fois, à la fin du geste. Glisser marque le geste de l'appui au relâchement ; la **molette**
 aussi, jusqu'à 150 ms après le dernier cran (`GraphSVG.svelte`, `WHEEL_END_DELAY`), sans clore un
-glisser en cours. Sans cela, chaque cran relançait toutes les analyses : ~150 ms par cran avec dix
+glisser en cours ; un démontage pendant la molette clôt aussi le geste. Comme pendant un glisser,
+les points remarquables et les étiquettes épinglées disparaissent le temps du geste (choix assumé :
+les garder imposerait l'analyse à chaque cran). Sans cela, chaque cran relançait toutes les analyses : ~150 ms par cran avec dix
 courbes sur un processeur bridé ×6 (mesures du 2026-11-11).
 
 `sampleCached`, le cache d'analyse (`analyzeAllFunctions`) et celui des intersections
