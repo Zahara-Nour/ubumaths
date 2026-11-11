@@ -84,7 +84,7 @@ async function poster(body: Record<string, unknown>) {
 	const request = new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body)
+		body: JSON.stringify({ place: 'flash_cards', ...body })
 	});
 	const response = await POST({ request, locals: { supabase: fauxSupabase() } } as never);
 	expect(response.status).toBe(200);

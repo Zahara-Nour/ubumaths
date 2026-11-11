@@ -20,7 +20,7 @@ couvre:
 
 > Remplace les sept fichiers de [`srs/`](../archive/systeme-2026-06/srs/README.md) (juin 2026, archivés), écrits au temps de la
 > « famille A » du référentiel, abandonnée ([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)).
-> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04 ; composition relue sans ancienne forme (lot 4a) le 2026-11-04.
+> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04 ; composition relue sans ancienne forme (lot 4a) le 2026-11-04 ; contenu d'une trace de `api/skill-attempts` (ADR 0038) le 2026-11-11.
 
 ## À quoi ça sert
 
@@ -152,6 +152,16 @@ s'affichait « toutes capacités ».
 | Carte de cours (même route)                 | idem, **meilleur du jour**                                  | source `student_self` (toutes gardées) |
 | Révision d'un paquet / d'un chapitre        | note choisie (1-4)                                          | `success = note ≥ 2`, source `srs`     |
 | Série, évaluation (`recordSeriesReviews`)   | juste → Good, faux → Again ; flash-cards = meilleur du jour | `auto` ou `student_self`               |
+
+**Contenu d'une trace posée par `api/skill-attempts`** (ADR 0038) : le **lieu** est exigé
+(`flash_cards`, `typing` = Saisie, `mock_test` = Contrôle blanc, `number_race` = Course aux nombres ;
+jamais `evaluation` ni `review`, écrits par le serveur), la **graine** est facultative ; durée de
+réponse, durée allouée et fin (`validated` / `timeout`) seulement en formes chronométrées
+(`mock_test`, `number_race`) ; réponse case par case (`answer_parts`) et verdict par case
+(`part_verdicts`) seulement là où l'on tape (`typing`, `mock_test`, `number_race`), autant de verdicts
+que de cases, aucune case → NULL. Le Zod (`skillAttemptInputSchema`) reprend les CHECK de la base
+(50 cases, 2 000 caractères par case, 10 000 en tout) : un corps hors règle rend 400, pas 500.
+`answer_parts` est du texte libre de mineur, toujours affiché échappé.
 
 Le trigger `skill_attempts_after_insert` recalcule ensuite `student_point_state` pour chaque
 point tagué du modèle (`question_template_points`) via `update_student_point_state`. Il ne

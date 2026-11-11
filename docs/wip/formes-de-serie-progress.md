@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2543._
+_Mis à jour le 2026-11-11, PR 2 en cours (branche `feat/formes-de-serie-api`)._
 
-- **État** : PR 1 mergée (#2543) et migration **appliquée en prod** (7 colonnes, 12 CHECK, policies inchangées) · **Prochaine action** : PR 2 = `db:types` + `/api/skill-attempts` étendu (Zod, lieu exigé, aucune case → NULL) + export RGPD ; nouveau worktree `ubumaths-wt-formes-de-serie` (branche neuve depuis `origin/main`) · **En attente de David** : rien · **À trancher en PR 2** : traces « contrôle » écrites par l'élève (§ « Colonnes de la PR 1 ») — question d'accès à poser · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé (jamais `{@html}` ni KaTeX brut) ; `[]` refusé, écrire NULL ; « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` · **Worktree / branche** : aucun (retiré après #2543)
+- **État** : PR 1 mergée (#2543), migration en prod. PR 2 codée : `db:types`, `/api/skill-attempts` (Zod = CHECK de la base, lieu exigé parmi `flash_cards`/`typing`/`mock_test`/`number_race`, aucune case → NULL), export RGPD, `FlashCard` envoie `place: 'typing'` · **Prochaine action** : revue, PR, merge ; puis la migration « trace `evaluation` réservée au serveur » (PR à part) et la PR 3 (deux boutons) · **En attente de David** : question d'accès sur les traces `evaluation` (ci-dessous § « PR 2 ») · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse aussi `review` (la révision écrit par `/api/srs/review/submit`) · **Worktree / branche** : `ubumaths-wt-formes-de-serie` · `feat/formes-de-serie-api`
 
 ## Décisions de David (2026-11-11)
 
@@ -226,3 +226,18 @@ une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit d
    série sans séance libre (gain du Palotin gardé).
 5. **Forme Saisie** (`TestMode` neuf, `FlashCard` en saisie côté élève).
 6. **Purge** de fin d'année (cron) — après la PR 1.
+
+### PR 2 — API et export (2026-11-11)
+
+- `db:types` depuis la prod : amène aussi les colonnes de la boutique d'avatars (`google_avatar_url`,
+  `worn_avatar`, migration déjà sur `main`) → un fixture de test complété.
+- Zod (`skillAttemptInputSchema`) = CHECK de la migration : 400 plutôt que 500. Lieux acceptés par
+  l'API : `flash_cards`, `typing`, `mock_test`, `number_race` (ni `evaluation` ni `review`).
+- `FlashCard` (seul appelant, aujourd'hui l'aperçu `/dev/carte-question`, admin : rien d'écrit)
+  envoie `place: 'typing'` ; graine, réponse et verdicts viendront avec la Saisie (PR 5).
+- **Question d'accès en attente** (traces `evaluation`) : aujourd'hui un élève peut insérer
+  directement (PostgREST) une trace `place = 'evaluation'`, que le prof lirait « faite en contrôle ».
+  Correctif proposé : la policy d'insertion élève refuse `place = 'evaluation'`, et le serveur écrit
+  les traces d'un contrôle avec le client service. Qui ne pourra plus écrire ce qu'il écrivait :
+  l'élève, ses traces « contrôle » (aujourd'hui aucune n'existe avec un lieu : le code n'en écrit pas
+  encore).

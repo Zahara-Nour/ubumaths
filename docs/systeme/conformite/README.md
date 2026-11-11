@@ -118,6 +118,9 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > (`student_buddies`, décision de David) ; une lecture en échec rend 500, jamais un export
 > incomplet. `format_version` inchangé (`1.4`). Tableau des catégories : [rgpd.md § 7.3](rgpd.md).
 >
+> ➕ **2026-11-11.** Les traces (`skill_attempts`) exportent aussi lieu, durées, graine, réponse
+> tapée et verdict par case (ADR 0038, chantier `formes-de-serie`). `format_version` inchangé.
+>
 > ➕ **2026-10-22.** `gaming` exporte aussi la présence de l'élève (`student_last_visits` :
 > `dernier_passage`, jour de la dernière page vue, et `retour_a_feter`, retour après une longue
 > absence pas encore salué par le Palotin), lisible par le serveur seul. Décrite en

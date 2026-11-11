@@ -617,7 +617,13 @@ export type SkillAttemptsEndpointResult = {
 export async function callSkillAttemptsEndpoint(
 	supabase: SupabaseClient<Database>,
 	user: import('@supabase/supabase-js').User,
-	body: { template_id: string; success: boolean; with_help?: boolean; phase_blocage?: string }
+	body: {
+		template_id: string;
+		success: boolean;
+		with_help?: boolean;
+		phase_blocage?: string;
+		place?: string;
+	}
 ): Promise<SkillAttemptsEndpointResult> {
 	const { vi } = await import('vitest');
 	const { POST } = await import('../../src/routes/api/skill-attempts/+server');
@@ -633,7 +639,8 @@ export async function callSkillAttemptsEndpoint(
 	const request = new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body)
+		// Lieu exigé par l'API (ADR 0038) : Flash-cards par défaut
+		body: JSON.stringify({ place: 'flash_cards', ...body })
 	});
 
 	try {
