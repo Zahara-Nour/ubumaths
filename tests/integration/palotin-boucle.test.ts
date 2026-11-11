@@ -17,8 +17,8 @@
  *   payé qu'une fois ;
  * - Constance Royale hebdomadaire (PR 4) : le 3e jour travaillé de la semaine
  *   (Entraînement ou forfait de révision) tient la semaine, +30 une seule fois ;
- *   une semaine finie à 2 jours remet la Constance à 0 au chargement suivant du
- *   tableau de bord (avec la réplique). Les dates passées sont posées sur la
+ *   une semaine finie à 2 jours remet la Constance à 0 à la lecture de présence
+ *   suivante (`GET /api/student/buddy/presence`, avec la réplique). Les dates passées sont posées sur la
  *   ligne `student_buddies` au client service.
  *
  * @vitest-environment node
@@ -50,7 +50,7 @@ import { POST as testsSaveRoute } from '../../src/routes/api/tests/save/+server'
 import { POST as reviewSubmitRoute } from '../../src/routes/api/srs/review/submit/+server';
 import { addExploredThemes } from '$lib/server/buddy-queries';
 import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
-import { load as studentLayoutLoad } from '../../src/routes/(protected)/dashboard/student/+layout.server';
+import { GET as presenceRoute } from '../../src/routes/api/student/buddy/presence/+server';
 import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
 
 // Types
@@ -99,6 +99,18 @@ function buildLocals(p: Person): App.Locals {
 		user,
 		requestId: crypto.randomUUID()
 	} as unknown as App.Locals;
+}
+
+/** Lecture de présence du Palotin (première page d'une zone du Palotin) */
+async function readPresence(
+	locals: App.Locals
+): Promise<{ buddy: { current_streak: number } | null; streakLost: boolean }> {
+	const response = await presenceRoute({ locals } as never);
+	expect(response.status, 'statut de /api/student/buddy/presence').toBe(200);
+	return (await response.json()) as {
+		buddy: { current_streak: number } | null;
+		streakLost: boolean;
+	};
 }
 
 function postRequest(body: unknown): Request {
@@ -565,7 +577,7 @@ describe('la boucle du Palotin tourne', () => {
 			});
 		});
 
-		it('semaine finie à 2 jours : Constance à 0 au chargement suivant du tableau de bord', async () => {
+		it('semaine finie à 2 jours : Constance à 0 à la lecture de présence suivante', async () => {
 			const p = await studentWithBuddy();
 			await setConstance(p, {
 				current_streak: 3,
@@ -581,16 +593,14 @@ describe('la boucle du Palotin tourne', () => {
 				.single();
 			expect(error).toBeNull();
 
-			const data = (await studentLayoutLoad({
-				locals: { ...buildLocals(p), profile }
-			} as never)) as { buddy: { current_streak: number } | null; streakLost: boolean };
+			const data = await readPresence({ ...buildLocals(p), profile } as App.Locals);
 
 			expect(data.streakLost).toBe(true);
 			expect(data.buddy?.current_streak).toBe(0);
 			expect(await constanceOf(p)).toMatchObject({ current_streak: 0, longest_streak: 5 });
 		});
 
-		it('semaine d’avant tenue, semaine en cours pas finie : rien ne casse au chargement', async () => {
+		it('semaine d’avant tenue, semaine en cours pas finie : rien ne casse à la lecture de présence', async () => {
 			const p = await studentWithBuddy();
 			await setConstance(p, {
 				current_streak: 3,
@@ -601,9 +611,7 @@ describe('la boucle du Palotin tourne', () => {
 			});
 			const { data: profile } = await service.from('profiles').select('*').eq('id', p.id).single();
 
-			const data = (await studentLayoutLoad({
-				locals: { ...buildLocals(p), profile }
-			} as never)) as { buddy: { current_streak: number } | null; streakLost: boolean };
+			const data = await readPresence({ ...buildLocals(p), profile } as App.Locals);
 
 			expect(data.streakLost).toBe(false);
 			expect(data.buddy?.current_streak).toBe(3);
