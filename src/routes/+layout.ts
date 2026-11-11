@@ -37,7 +37,9 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 // Module sans dépendance : son import statique ne crée pas de chaîne (Safari TDZ)
 import { browserCookieMethods } from '$lib/utils/session-cookies';
-import { browser } from '$app/environment';
+import { browser, version } from '$app/environment';
+// Module sans dépendance, comme `session-cookies`
+import { checkAppVersion } from '$lib/utils/app-version';
 import { enforceWorkDataOwner, watchWorkDataOwnerOnce } from '$lib/utils/work-data';
 import type { LayoutLoad } from './$types';
 
@@ -108,10 +110,42 @@ function setLastRefresh(timestamp: number): void {
 	sessionStorage.setItem(STORAGE_KEY_LAST_REFRESH, timestamp.toString());
 }
 
-/** Dynamic invalidate to avoid circular dependency with route entry module */
+/**
+ * Dynamic invalidate to avoid circular dependency with route entry module.
+ *
+ * Onglet resté ouvert pendant un déploiement : l'ancien fichier de `$app/navigation` n'existe
+ * plus, l'import échoue. Connexion ou déconnexion (le compte change) : la page est alors
+ * rechargée en entier, sinon elle montrerait l'ancien compte.
+ */
 async function invalidateAuth() {
-	const { invalidate } = await import('$app/navigation');
-	invalidate('supabase:auth');
+	let invalidate: (typeof import('$app/navigation'))['invalidate'];
+	try {
+		({ invalidate } = await import('$app/navigation'));
+	} catch (err) {
+		console.warn('🔐 [AUTH] $app/navigation unavailable, full reload', err);
+		location.reload();
+		return;
+	}
+	await invalidate('supabase:auth');
+}
+
+/**
+ * Rafraîchissement horaire du jeton : rien ne change pour l'utilisateur. Si une nouvelle version
+ * a été déployée, on ne recharge pas les données (elles peuvent avoir changé de forme pour
+ * l'ancien code) : la page suivante se chargera en entier (`+layout.svelte`). Version
+ * illisible → comme avant.
+ */
+async function refreshAfterTokenRefresh() {
+	if ((await checkAppVersion(version)) === 'new') {
+		console.log('🔐 [AUTH] Skipping invalidation (new app version deployed)');
+		return;
+	}
+	try {
+		const { invalidate } = await import('$app/navigation');
+		await invalidate('supabase:auth');
+	} catch (err) {
+		console.warn('🔐 [AUTH] Invalidation failed', err);
+	}
 }
 
 export const load: LayoutLoad = async ({ data, depends, fetch }) => {
@@ -279,7 +313,7 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 					console.log(
 						`🔐 [AUTH] Invalidating (token refresh after ${Math.round(timeSinceLastRefresh / 60000)} min)`
 					);
-					invalidateAuth();
+					refreshAfterTokenRefresh();
 					setLastRefresh(Date.now());
 				} else {
 					console.log(
