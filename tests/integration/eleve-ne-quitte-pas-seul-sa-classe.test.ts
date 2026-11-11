@@ -67,6 +67,8 @@ describe('class_members — un élève ne quitte pas seul sa classe', () => {
 		await cleanupAllTestData();
 
 		const teacherProfile = await TestData.profile().withRole('teacher').create();
+		// Mono-professeur : aucun lien prof-classe à poser, `is_class_teacher`
+		// vaut vrai pour tout professeur (ou admin).
 		teacher = await clientFor(teacherProfile.email);
 		const klass = await TestData.class().withName('5e C départ YY').create();
 		classId = klass.id;
