@@ -10,13 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2557 (fichiers du lot 1 mergés)._
+_Mis à jour le 2026-11-11, après #2558 (lot 1 rangé et tagué en prod)._
 
-- **État** : phase 0 validée (D1, § 2) ; lot 1 : fichiers mergés (#2557), pas encore en prod.
-- **Prochaine action** : David crée les brouillons → relevé prod → migration de rangement (4 nœuds, tags TSPE-321/548/359/373), nouvelle branche depuis `origin/main` → page à cocher → publication ; puis lot 2.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-demonstrations-1 --publier` depuis le dépôt principal à jour.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-demonstrations-1`.
+- **État** : lot 1 (321, 548, 359, 373) en brouillon en prod, rangé et tagué (§ 4) ; page à cocher publiée.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 4) → `publier-lot.ts --dir
+scripts/questions/tspe-demonstrations-1` en simulation → David publie ; puis lot 2 (388, 389, 390, 391, 405).
+- **En attente de David** : relecture sur https://claude.ai/artifact/YPeen4p6oK8DdJs1hkhC6d (jouer les étapes à ranger
+  dans l'aperçu admin).
+- **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` (branche de rangement mergée et supprimée ;
+  nouvelle branche depuis `origin/main` pour le lot 2).
 
 ---
 
@@ -143,3 +146,27 @@ Pièges du lot : une case à réponse nombre seul demande un `?` dans une formul
 pour un modèle à 4 variations) ; la saisie dans le champ MathLive ne passe pas par l'automatisation de Chrome.
 
 PR des fichiers : #2557, mergée (CI verte du premier coup).
+
+## 4. Lot 1 : brouillons en prod, rangement, page à cocher (2026-11-11)
+
+David a lancé `create-questions --publier` depuis le dépôt principal : 4 brouillons. Ids reportés dans les JSON (branche
+de rangement), dépôt principal rendu propre (`git restore`).
+
+| Modèle   | Sous-notion                                                                          | Point    |
+| -------- | ------------------------------------------------------------------------------------ | -------- |
+| 185496e9 | Dénombrement › Combinaisons › triangle de Pascal                                     | TSPE-321 |
+| 3ca56be0 | Dénombrement › Combinaisons › triangle de Pascal                                     | TSPE-548 |
+| 274804ba | Géométrie › Orthogonalité et distances dans l'espace › projeté orthogonal            | TSPE-359 |
+| 0dacdcc5 | Géométrie › Orthogonalité et distances dans l'espace › vecteur normal et équation c. | TSPE-373 |
+
+Migration `20261111163622_questions_tspe_demonstrations_1_rangement_tags.sql` (gabarit `20261108155933`, gardes et
+rollback identiques) ; test `tests/integration/questions-tspe-demonstrations-1-rangement-tags.test.ts` 12/12 vert,
+rouge sans la migration (partie aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie. `security-auditor` :
+aucun finding. Accès : personne de plus (Q5). Mergée (#2558, CI verte du premier coup) ; `check:migrations --pr`
+vert ; `db:migrate` depuis le dépôt principal (seule migration en attente) ; vérifié en prod : 4 brouillons, chacun sur
+sa sous-notion avec son seul point, `updated_at` inchangé. Garde des niveaux : aucun niveau manquant.
+
+Piège : commitlint refuse le type `content` (types admis : feat, fix, docs…).
+
+Page à cocher : https://claude.ai/artifact/YPeen4p6oK8DdJs1hkhC6d (4 alertes attendues : bloc ranger non dessiné, à
+jouer dans l'aperçu admin) ; base `verdicts` vide à la publication.
