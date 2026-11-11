@@ -10,7 +10,8 @@
  *   réponse ni verdict par case (refusés en base, déjà dans `test_answers`).
  * - Durée allouée : délai de la question (Contrôle blanc) ou durée de la
  *   course (Course). Durée de réponse : celle envoyée par la page, plafonnée ;
- *   temps écoulé → la durée allouée.
+ *   temps écoulé → la durée allouée. La page envoie des secondes entières :
+ *   précision d'une seconde (les séries libres mesurent à la milliseconde).
  * - Fin inconnue (question laissée par « Terminer », onglet antérieur à la
  *   PR 4 bis) ou durée introuvable → ni durée ni fin : la trace ne fausse pas
  *   la mesure du temps par question.

@@ -721,6 +721,68 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			);
 			expect(result).toMatchObject({ late: false, grade: 20 });
 		});
+
+		it('PR 4 bis : Course — validée, vide au chrono, laissée par « Terminer »', async () => {
+			// Élève neuf : ses traces ne viennent que de cette copie
+			const racer = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: racer.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			const attempt = await start(racer, assignmentId);
+			const instances = await oracle(attempt.attemptId);
+			const result = await submitEvaluationAttempt(actors(racer), attempt.attemptId, {
+				answers: [
+					{ position: 0, ...rightAnswer(instances[0]), timeSpent: 12, endReason: 'validated' },
+					// Rien de tapé, chrono écoulé : fin et durée seules
+					{ position: 1, timeSpent: 60, endReason: 'timeout' }
+					// Position 2 : laissée par « Terminer », rien d'envoyé
+				]
+			});
+			expect(result.questions.map((q) => [q.status, q.points])).toEqual([
+				['correct', 1],
+				['empty', 0],
+				['empty', 0]
+			]);
+
+			// Question vide : jugée vide, sans réponse rangée, sa durée gardée
+			const { data: empty } = await service
+				.from('test_answers')
+				.select('status, points, user_answer, time_spent, question_instance')
+				.eq('test_session_id', attempt.attemptId);
+			const second = (empty ?? []).find(
+				(a) => (a.question_instance as { attemptPosition: number }).attemptPosition === 1
+			);
+			expect(second).toMatchObject({ status: 'empty', user_answer: null, time_spent: 60 });
+			expect(Number(second!.points)).toBe(0);
+
+			const { data: traces, error } = await service
+				.from('skill_attempts')
+				.select('template_id, success, place, response_ms, allotted_ms, end_reason, seed')
+				.eq('student_id', racer.id);
+			expect(error).toBeNull();
+			const shown = (traces ?? [])
+				.map((t) => [
+					t.template_id,
+					t.success,
+					t.place,
+					t.response_ms,
+					t.allotted_ms,
+					t.end_reason,
+					t.seed
+				])
+				.sort((a, b) => String(a).localeCompare(String(b)));
+			expect(shown).toEqual(
+				[
+					// Durée allouée = durée de la course (60 s)
+					[FILL_ID, true, 'evaluation', 12_000, 60_000, 'validated', null],
+					[FILL_ID, false, 'evaluation', 60_000, 60_000, 'timeout', null],
+					// « Terminer » : ratée, sans durée ni fin
+					[QCM_ID, false, 'evaluation', null, null, null, null]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
+		});
 	});
 
 	describe('Q59 : copie hostile, budget de correction de 5 s', () => {

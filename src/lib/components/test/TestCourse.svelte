@@ -31,6 +31,7 @@
 -->
 
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { computeTestScore } from '$lib/utils/test-score';
 	import type { TestSession, TestResult, TestAnswerResult } from '$lib/types/test';
 	import type { AnswerData } from '$lib/types/question-display';
@@ -83,7 +84,7 @@
 	// State
 	let answers = $state<Map<number, AnswerData>>(new Map());
 	// Questions validées : fin envoyée avec la copie d'un contrôle (PR 4 bis)
-	const validated = new Set<number>();
+	const validated = new SvelteSet<number>();
 	// Cartes des questions : en évaluation, ce qui est tapé sans « Valider » part aussi
 	let cards = $state<Array<ReturnType<typeof QuestionCard> | undefined>>([]);
 	let isCompleted = $state(false);
@@ -235,6 +236,7 @@
 	function handleRestart() {
 		// Reset state
 		answers = new Map();
+		validated.clear();
 		isCompleted = false;
 		testResult = null;
 		session.startTime = Date.now();

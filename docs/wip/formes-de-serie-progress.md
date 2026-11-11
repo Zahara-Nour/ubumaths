@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2554._
+_Mis à jour le 2026-11-11, PR 4 bis ouverte._
 
-- **État** : PR 1 à 4 mergées (#2543, #2547, #2548, #2551, **#2554**) : trace par question en Flash-cards, Contrôle blanc, Course ; `/api/tests/save` réduit au gain ; libellé « Contrôle blanc » · **Prochaine action** : PR 4 bis = traces d'un contrôle assigné côté serveur (lieu `evaluation`, durées, client service), nouveau worktree depuis `origin/main` · **En attente de David** : deux points de revue non bloquants (§ PR 4, « À trancher ») : évasion anti-fraude par `flash_cards`, doublon après coupure réseau · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces envoyées en FILE (FSRS lit puis écrit sans verrou) ; au-delà des bornes, refus serveur (L3), rien de tronqué · **Worktree / branche** : aucun (retirés après #2554)
+- **État** : PR 1 à 4 mergées (#2543, #2547, #2548, #2551, #2554) ; **PR 4 bis** (traces d'un contrôle, lieu `evaluation`, client service, durées et fin déclarées par la page) ouverte, revues faites · **Prochaine action** : merger la PR 4 bis à la CI verte, puis PR 5 = forme Saisie · **En attente de David** : 4 points non bloquants (§ PR 4 et § PR 4 bis, « À trancher ») : évasion anti-fraude par `flash_cards`, doublon après coupure réseau, durées déclarées d'un contrôle, policy prof sur `evaluation` · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces en FILE (FSRS sans verrou) ; au-delà des bornes, refus serveur (L3) ; pas de graine dans une trace de contrôle (D18) · **Worktree / branche** : `ubumaths-wt-formes-de-serie` / `feat/formes-de-serie-evaluation`
 
 ## Décisions de David (2026-11-11)
 
@@ -323,3 +323,20 @@ Phase 0 validée par David (option A) :
 - **Erreur** : traces non écrites → journal serveur, la copie reste notée. Jamais de blocage.
 - **Accès** : personne ne lit rien de neuf (durées déjà dans `test_answers.time_spent`) ; seul
   l'écrivain change (serveur au lieu du jeton de l'élève). Pas de migration.
+
+Réalisé (2026-11-11) :
+
+- `src/lib/server/evaluation-trace.ts` (`evaluationTraceOf`) ; `recordSeriesReviews` prend
+  `attemptsClient` (service) et les colonnes de trace par révision ; `submitEvaluationAttempt` les
+  calcule (`delay_seconds`, `time_limit`, fin et durée envoyées). Une question sans `values` est
+  jugée vide (avant : `user_answer = {value: []}`, désormais NULL ; `time_spent` renseigné).
+- Page : `TestInteractive` / `TestCourse` portent `endReason` dans le résultat ; `toSubmission`
+  envoie durée et fin même pour une question vide ; Zod `endReason` facultatif.
+- Tests : unitaires (`evaluation-trace`, `submission`, composants) ; intégration Contrôle blanc
+  (preuve rouge : traces sans lieu) et Course (validée / vide au chrono / « Terminer »).
+- Revues (code-reviewer + security-auditor, Opus) : aucun bloquant ; corrigés : test de la question
+  vide en Course, `SvelteSet`, remise à zéro au « Recommencer », précision d'une seconde notée.
+- **À trancher par David (non bloquant)** : 3. _Durées déclarées_ : un élève qui forge sa requête peut afficher des réponses instantanées
+  (bornées, sans effet sur la note ; même confiance que `test_answers.time_spent`). 4. _Constat hors PR_ : `skill_attempts_insert_teacher` n'empêche pas `place = 'evaluation'` (un
+  prof peut écrire une trace « en contrôle » pour son élève). À aligner seulement si
+  « `evaluation` ⇒ écrit par le serveur » doit être strict.
