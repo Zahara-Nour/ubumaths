@@ -1,7 +1,9 @@
 <!--
 	BuddyWidget
 	=============
-	The always-visible Palotin companion.
+	Le Palotin chez lui : accueil élève et Chatterie, sa « maison » (chantier
+	`palotins`, docs/wip/palotins-progress.md). Ailleurs, `PalotinPresence`
+	montre l'écusson et les passages. Monté par `PalotinPresence`.
 	Fixed position bottom-right, above BugReportFAB.
 	Shows speech bubbles and status panel on click.
 -->
@@ -16,21 +18,29 @@
 	import BuddyStatusPanel from './BuddyStatusPanel.svelte';
 	import { onMount } from 'svelte';
 	import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
-	import { nappingPhrase } from '$lib/mathoux/collection-logic';
-	import { mathouxSummarySchema } from '$lib/mathoux/summary';
-	import { newsSummaryPhrase } from '$lib/mathoux/news';
-	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { BUBBLE_DURATION, GREETING_DELAY, LINK_BUBBLE_DURATION } from './buddy-timing';
+	import {
+		CHATTERIE_HREF,
+		CHATTERIE_LINK,
+		fetchChatterieAnnouncement
+	} from './chatterie-announcement';
 
 	interface Props {
 		streakLost?: boolean;
 		/** Retour après une longue absence : « tu m'as manqué » remplace la Constance perdue */
 		longAbsence?: boolean;
 		onChangePalotin?: () => void;
+		/** La réplique du retour (absence, Constance perdue) a été dite : ne plus la redire */
+		onWelcomeBackSaid?: () => void;
 	}
 
-	let { streakLost = false, longAbsence = false, onChangePalotin }: Props = $props();
+	let {
+		streakLost = false,
+		longAbsence = false,
+		onChangePalotin,
+		onWelcomeBackSaid
+	}: Props = $props();
 
 	const buddy = $derived(studentCache.getBuddySync());
 	// Constance Royale (semaines tenues d'affilée), 0 si elle est perdue
@@ -53,7 +63,6 @@
 	let idleTimer: ReturnType<typeof setTimeout> | null = null;
 	const IDLE_INTERVAL_MIN = 45_000; // 45s
 	const IDLE_INTERVAL_MAX = 90_000; // 90s
-	const CHATTERIE_HREF = resolve('/dashboard/student/chatterie');
 
 	/**
 	 * Show a message in the speech bubble.
@@ -101,33 +110,6 @@
 	}
 
 	/**
-	 * Ce que le Palotin a à dire de la Chatterie : les nouveautés d'abord
-	 * (naissance, croissance, étoile : celles qu'aucun écran de fin de séance
-	 * n'a montrées, après une évaluation par exemple), sinon les Mathoux en
-	 * sieste ; `null` si rien, ou si la réponse est en échec ou inattendue.
-	 *
-	 * Demandé APRÈS l'affichage, une fois par montage du widget : le calcul de
-	 * la collection n'alourdit pas le layout de chaque page.
-	 */
-	async function fetchChatterieAnnouncement(): Promise<{
-		message: string;
-		expression: BuddyExpression;
-	} | null> {
-		try {
-			const response = await fetch('/api/student/mathoux');
-			if (!response.ok) return null;
-			const parsed = mathouxSummarySchema.safeParse(await response.json());
-			if (!parsed.success) return null;
-			const news = newsSummaryPhrase(parsed.data.news);
-			if (news) return { message: news, expression: 'happy' };
-			const { napping } = parsed.data;
-			return napping > 0 ? { message: `${nappingPhrase(napping)}.`, expression: 'thinking' } : null;
-		} catch {
-			return null;
-		}
-	}
-
-	/**
 	 * Le Palotin, gardien de la Chatterie : annonce les nouveautés ou les
 	 * Mathoux en sieste, sinon salue. La salutation attend la réponse : arrivée
 	 * tard, l'annonce aurait sinon été précédée d'une salutation qu'elle aurait
@@ -145,10 +127,7 @@
 			return;
 		}
 		nappingTimer = setTimeout(() => {
-			speak(announcement.message, announcement.expression, {
-				href: CHATTERIE_HREF,
-				label: 'Aller à la Chatterie'
-			});
+			speak(announcement.message, announcement.expression, CHATTERIE_LINK);
 		}, wait);
 	}
 
@@ -211,6 +190,7 @@
 				setTimeout(() => {
 					showMessage(welcomeBack);
 					if (welcomeBack === 'long_absence') acknowledgeWelcomeBack();
+					onWelcomeBackSaid?.();
 				}, 1000);
 			}
 			if (!isOnChatterie()) {
