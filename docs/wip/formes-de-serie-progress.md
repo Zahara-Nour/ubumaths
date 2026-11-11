@@ -7,7 +7,7 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 _Mis à jour le 2026-11-11, après #2551._
 
-- **État** : PR 1 (#2543), PR 2 (#2547), #2548 (migration en prod) et **PR 3 (#2551)** mergées : deux boutons « Pas réussi / Réussi » partout, révision écrite `student_self` + lieu `review`, widget D retiré · **Prochaine action** : PR 4 = trace par question dans Flash-cards, Contrôle blanc (renommage d'Entraînement), Course ; fin de série sans séance libre (gain du Palotin gardé) ; nouveau worktree `ubumaths-wt-formes-de-serie` depuis `origin/main` · **En attente de David** : rien · **Pour la PR 4** : traces d'un contrôle (lieu `evaluation`, durées) écrites par le **client service** (la policy élève les refuse) ; plafonner `response_ms` à `allotted_ms` côté client · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; une trace `student_self` n'est plus forcément une carte de cours (révision = lieu `review`, heatmap et anti-fraude la comptent comme l'ancienne `srs`) ; la séance de révision fait réagir le Palotin (#2550) · **Worktree / branche** : aucun (retirés après #2551)
+- **État** : PR 4 en cours (branche `feat/formes-de-serie-traces`, décisions notées en § PR 4) ; PR 1 (#2543), PR 2 (#2547), #2548 (migration en prod) et **PR 3 (#2551)** mergées : deux boutons « Pas réussi / Réussi » partout, révision écrite `student_self` + lieu `review`, widget D retiré · **Prochaine action** : PR 4 = trace par question dans Flash-cards, Contrôle blanc (renommage d'Entraînement), Course ; fin de série sans séance libre (gain du Palotin gardé) ; nouveau worktree `ubumaths-wt-formes-de-serie` depuis `origin/main` · **En attente de David** : rien · **Pour la PR 4** : traces d'un contrôle (lieu `evaluation`, durées) écrites par le **client service** (la policy élève les refuse) ; plafonner `response_ms` à `allotted_ms` côté client · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; une trace `student_self` n'est plus forcément une carte de cours (révision = lieu `review`, heatmap et anti-fraude la comptent comme l'ancienne `srs`) ; la séance de révision fait réagir le Palotin (#2550) · **Worktree / branche** : `ubumaths-wt-formes-de-serie`, `feat/formes-de-serie-traces`
 
 ## Décisions de David (2026-11-11)
 
@@ -267,3 +267,17 @@ une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit d
 - Widget D retiré : composant, route `knowledge-grades/[studentId]`, `getStudentGradeHistogram`,
   `gradesQuerySchema` ; « Détail par élève » n'a plus que la courbe de rétention (pleine largeur).
 - Docs : `srs.md`, `analytique-prof.md`, `CONTEXT.md` (Auto-évaluation).
+
+### PR 4 — trace par question, séries libres (2026-11-11)
+
+Décisions de David (recommandations suivies) :
+
+- **Gain du Palotin** : l'appel de fin `/api/tests/save` est **réduit au gain** — il n'écrit plus ni
+  séance libre (`test_sessions`, `test_answers`) ni traces ; il calcule le gain à partir des
+  réponses de la série, comme aujourd'hui. Flash-cards : aucun appel de fin (pas d'XP).
+- **Course aux nombres** (un chrono global) : question validée → trace, durée = du début de la course
+  à « Valider », durée allouée = durée de la course, fin `validated` ; question non validée au
+  **chrono écoulé** → trace ratée, fin `timeout` ; question laissée par **« Terminer »** → trace
+  ratée **sans durée ni fin** (abandon : ne fausse pas P7).
+- **Découpage** : PR 4 = séries libres (Flash-cards, Contrôle blanc, Course) + renommage ;
+  **PR 4 bis** = traces d'un contrôle assigné côté serveur (client service, lieu `evaluation`).
