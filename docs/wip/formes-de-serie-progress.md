@@ -350,6 +350,14 @@ Réalisé (2026-11-11) :
 
 Ordre ensuite : vérification manuelle de la Saisie → PR doublon → PR 6 purge → Saisie en séries de chapitre selon l'usage.
 
+### PR « doublon » — plus de nouvel essai après une coupure réseau (2026-11-11)
+
+- `createTraceRecorder` (`series-trace.ts`) : une exception de `fetch` (réseau coupé) arrête les
+  essais, la trace compte parmi les non enregistrées ; nouveaux essais gardés pour 5xx / 429 / 408.
+  Pas de migration, pas de clé d'idempotence (décision 2 du 2026-11-11).
+- Tests : coupure seule, coupure après une panne, trace suivante envoyée quand même (rouges avant) ;
+  panne 503 / 429 / 408 réessayée. Doc : `docs/systeme/evaluations.md`.
+
 ### PR 5 — forme Saisie (2026-11-11)
 
 Décisions de David (recommandations suivies) :
