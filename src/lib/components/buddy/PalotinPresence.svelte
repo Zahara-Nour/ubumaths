@@ -24,7 +24,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import type { BuddyMessageContext, PalotinType } from '$lib/config/buddy-messages';
-	import type { BuddyExpression } from '$lib/types/buddy';
+	import type { BuddyExpression, BuddyState } from '$lib/types/buddy';
 	import { buddyMessageEngine } from './buddy-message-engine';
 	import { BUBBLE_DURATION, LINK_BUBBLE_DURATION } from './buddy-timing';
 	import {
@@ -75,9 +75,15 @@
 	let loaded = $state(false);
 	let streakLost = $state(false);
 	let longAbsence = $state(false);
-	/** Annonce de la Chatterie : lue une fois, au premier passage possible */
-	let announcementRequested = false;
+	/** Palotin selon le serveur : `null` tant qu'il n'a pas répondu (décide seul du quiz) */
+	let serverHasBuddy = $state<boolean | null>(null);
+	/** Palotin lu par la présence : repli quand le cache a expiré (TTL de 10 min) */
+	let presenceBuddy = $state<BuddyState | null>(null);
+	/** Annonce de la Chatterie : lue une fois (la même promesse pour tous les appels) */
+	let announcementPromise: Promise<ChatterieAnnouncement | null> | null = null;
 	let announcement: ChatterieAnnouncement | null = null;
+	/** `planPassages` en cours : un second appel attendrait la même lecture, il est ignoré */
+	let planning = false;
 	let queue = $state<Passage[]>([]);
 	/** Passage en cours : le Palotin est là et parle */
 	let current = $state<Passage | null>(null);
@@ -86,11 +92,11 @@
 	let statusOpen = $state(false);
 	let showChangeModal = $state(false);
 
-	const buddy = $derived(studentCache.getBuddySync());
+	const buddy = $derived(studentCache.getBuddySync() ?? presenceBuddy);
 	const zone = $derived(palotinZone(page.url.pathname));
 	// Maison : le widget est recréé en passant de l'accueil à la Chatterie (salutation, annonce)
 	const homeKey = $derived(page.url.pathname.startsWith(CHATTERIE_HREF) ? 'chatterie' : 'accueil');
-	const showQuiz = $derived(loaded && !buddy && page.url.pathname === HOME_PATH);
+	const showQuiz = $derived(serverHasBuddy === false && !buddy && page.url.pathname === HOME_PATH);
 	const moveDuration = $derived(prefersReducedMotion.current ? 0 : MOVE_DURATION);
 
 	// Functions
@@ -98,11 +104,15 @@
 	async function requestPresence() {
 		if (presenceRequested) return;
 		presenceRequested = true;
+		// Cache réécrit pendant la lecture (gain de fin de séance) : il est plus récent, on le garde
+		const cachedBefore = studentCache.getBuddySync();
 		try {
 			const response = await fetch('/api/student/buddy/presence');
 			const view = response.ok ? parseBuddyPresence(await response.json()) : null;
 			if (view) {
-				studentCache.hydrateBuddy(view.buddy);
+				serverHasBuddy = view.buddy !== null;
+				presenceBuddy = view.buddy;
+				if (studentCache.getBuddySync() === cachedBefore) studentCache.hydrateBuddy(view.buddy);
 				streakLost = view.streakLost;
 				longAbsence = view.longAbsence;
 			}
@@ -110,6 +120,7 @@
 			// Lecture en échec : pas de passage ; l'écusson reste si le Palotin est déjà connu
 		}
 		loaded = true;
+		if (palotinZone(page.url.pathname) === 'passage') void planPassages();
 	}
 
 	/** Met une réplique du Palotin dans la file des passages. */
@@ -132,6 +143,16 @@
 	 * spontané si le plafond le permet (Mathoux en sieste, sinon Constance perdue).
 	 */
 	async function planPassages() {
+		if (planning || !buddy) return;
+		planning = true;
+		try {
+			await planPassagesNow();
+		} finally {
+			planning = false;
+		}
+	}
+
+	async function planPassagesNow() {
 		if (longAbsence) {
 			// « Tu m'as manqué » remplace la Constance perdue
 			longAbsence = false;
@@ -139,10 +160,13 @@
 			enqueueContext('long_absence', acknowledgeWelcomeBack);
 		}
 
-		if (!announcementRequested) {
-			announcementRequested = true;
-			announcement = await fetchChatterieAnnouncement();
+		if (!announcementPromise) {
+			announcementPromise = fetchChatterieAnnouncement().then((result) => {
+				announcement = result;
+				return result;
+			});
 		}
+		await announcementPromise;
 		if (announcement?.kind === 'news') {
 			const { message, expression } = announcement;
 			announcement = null;
@@ -176,7 +200,8 @@
 		passageTimer = setTimeout(
 			() => {
 				passageTimer = null;
-				if (queue.length > 0 && palotinZone(page.url.pathname) === 'passage') {
+				// État ouvert : la bulle est masquée, la suite attend sa fermeture (rien d'acquitté sans être vu)
+				if (queue.length > 0 && !statusOpen && palotinZone(page.url.pathname) === 'passage') {
 					playNext();
 				} else {
 					current = null;
@@ -206,11 +231,6 @@
 		if (zone !== null) untrack(() => void requestPresence());
 	});
 
-	// Passages : à chaque arrivée sur une page de passage
-	$effect(() => {
-		if (zone === 'passage' && loaded && buddy) untrack(() => void planPassages());
-	});
-
 	// File des passages : jamais hors des pages de passage, ni pendant l'état ouvert
 	$effect(() => {
 		if (zone !== 'passage' || current || statusOpen || queue.length === 0) return;
@@ -218,9 +238,14 @@
 	});
 
 	// Changement de page : l'état ouvert se ferme ; hors des pages de passage, le Palotin repart
+	// Arrivée sur une page de passage (la première est traitée à la fin de la lecture de présence)
 	afterNavigate(() => {
 		statusOpen = false;
-		if (palotinZone(page.url.pathname) !== 'passage') stopPassage();
+		if (palotinZone(page.url.pathname) !== 'passage') {
+			stopPassage();
+		} else if (loaded) {
+			void planPassages();
+		}
 	});
 
 	onDestroy(() => {
@@ -232,6 +257,7 @@
 	{#if zone === 'maison'}
 		{#key homeKey}
 			<BuddyWidget
+				fallbackBuddy={presenceBuddy}
 				{streakLost}
 				{longAbsence}
 				onWelcomeBackSaid={() => {
@@ -290,7 +316,7 @@
 
 {#if showQuiz}
 	<!-- Le quiz enregistre le Palotin dans le cache : il se ferme de lui-même -->
-	<PalotinQuiz onComplete={() => {}} />
+	<PalotinQuiz onComplete={() => (serverHasBuddy = true)} />
 {/if}
 
 {#if showChangeModal && buddy}

@@ -11,7 +11,7 @@
 <script lang="ts">
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import type { BuddyMessageContext } from '$lib/config/buddy-messages';
-	import type { BuddyExpression } from '$lib/types/buddy';
+	import type { BuddyExpression, BuddyState } from '$lib/types/buddy';
 	import { buddyMessageEngine } from './buddy-message-engine';
 	import BuddyAvatar from './BuddyAvatar.svelte';
 	import BuddySpeechBubble from './BuddySpeechBubble.svelte';
@@ -33,16 +33,19 @@
 		onChangePalotin?: () => void;
 		/** La réplique du retour (absence, Constance perdue) a été dite : ne plus la redire */
 		onWelcomeBackSaid?: () => void;
+		/** Palotin lu par la présence : repli quand le cache a expiré (TTL de 10 min) */
+		fallbackBuddy?: BuddyState | null;
 	}
 
 	let {
 		streakLost = false,
 		longAbsence = false,
 		onChangePalotin,
-		onWelcomeBackSaid
+		onWelcomeBackSaid,
+		fallbackBuddy = null
 	}: Props = $props();
 
-	const buddy = $derived(studentCache.getBuddySync());
+	const buddy = $derived(studentCache.getBuddySync() ?? fallbackBuddy);
 	// Constance Royale (semaines tenues d'affilée), 0 si elle est perdue
 	const constanceWeeks = $derived(buddy ? displayedConstance(buddy, utcDay()) : 0);
 
@@ -55,6 +58,8 @@
 	let bubbleTimer: ReturnType<typeof setTimeout> | null = null;
 	let greetingTimer: ReturnType<typeof setTimeout> | null = null;
 	let nappingTimer: ReturnType<typeof setTimeout> | null = null;
+	// Réplique du retour : nettoyée au démontage (quitter l'accueil avant elle ne l'acquitte pas)
+	let welcomeTimer: ReturnType<typeof setTimeout> | null = null;
 
 	// Status panel
 	let showStatus = $state(false);
@@ -187,7 +192,7 @@
 		if (buddy) {
 			const welcomeBack = welcomeBackContext();
 			if (welcomeBack) {
-				setTimeout(() => {
+				welcomeTimer = setTimeout(() => {
 					showMessage(welcomeBack);
 					if (welcomeBack === 'long_absence') acknowledgeWelcomeBack();
 					onWelcomeBackSaid?.();
@@ -207,6 +212,7 @@
 			if (idleTimer) clearTimeout(idleTimer);
 			if (nappingTimer) clearTimeout(nappingTimer);
 			if (greetingTimer) clearTimeout(greetingTimer);
+			if (welcomeTimer) clearTimeout(welcomeTimer);
 		};
 	});
 </script>

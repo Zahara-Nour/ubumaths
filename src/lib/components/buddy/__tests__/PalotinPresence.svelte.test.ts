@@ -256,6 +256,19 @@ describe('PalotinPresence — maison et ailleurs', () => {
 		await vi.waitFor(() => expect(document.body.textContent).toContain('Choisis ton Palotin !'));
 	});
 
+	it('cache du Palotin expiré ou vidé : pas de quiz, le Palotin reste là', async () => {
+		at('/dashboard');
+		mockServer({});
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(avatarButton()).not.toBeNull());
+
+		// Comme après le TTL de 10 min du cache : le serveur a dit que le Palotin existe
+		studentCache.hydrateBuddy(null);
+		await settle();
+		expect(document.body.textContent).not.toContain('Choisis ton Palotin !');
+		expect(avatarButton()).not.toBeNull();
+	});
+
 	it('sans Palotin, ailleurs : ni quiz ni écusson', async () => {
 		mockServer({ presence: { buddy: null, streakLost: false, longAbsence: false } });
 		await render(PalotinPresence);
