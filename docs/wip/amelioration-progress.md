@@ -2,9 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2564._
+_Mis à jour le 2026-11-11, après le bilan de la CI instable (aucune PR)._
 
-- **État** : 0.82.0 en prod ; atelier à froid mesuré (3,1 s en 4G, réseau limitant) ; piste 3 close : INP compté sur les seules interactions, adresse de l'interaction, `event_name` + `target` (#2564, **pas encore en prod**) · **Prochaine action** : rien d'engagé ; à David de choisir une nouvelle piste · **Après le prochain `deploy:prod`** : dans `error_logs`, les lignes INP portent `event_name`, `target` (sans `aria-label`) et l'adresse de la page de l'interaction ; un même INP ne revient plus ×10 pour un élève ; lignes #2545, #2553, #2555 et #2564 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé, pas `web-vitals` ; cible = balise + `id` + `role`, jamais d'`aria-label` (noms d'élèves) ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un `id` construit sur du texte saisi part dans `error_logs` (cible INP) ; un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence ; `db:migrate` refusé par le classifieur du mode auto → `! pnpm db:migrate` ; tag de l'image Playwright (`quality.yml`) à monter avec `playwright` · **Worktree / branche** : aucun
+- **État** : 0.82.0 en prod ; atelier à froid mesuré (3,1 s en 4G, réseau limitant) ; piste 3 close : INP compté sur les seules interactions, adresse de l'interaction, `event_name` + `target` (#2564, **pas encore en prod**) · piste 4 « CI instable » close (bilan ci-dessous, 7 issues « Nightly CI triage » fermées) · **Prochaine action** : rien d'engagé ; à David de choisir une nouvelle piste · **Après le prochain `deploy:prod`** : dans `error_logs`, les lignes INP portent `event_name`, `target` (sans `aria-label`) et l'adresse de la page de l'interaction ; un même INP ne revient plus ×10 pour un élève ; lignes #2545, #2553, #2555 et #2564 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé, pas `web-vitals` ; cible = balise + `id` + `role`, jamais d'`aria-label` (noms d'élèves) ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un `id` construit sur du texte saisi part dans `error_logs` (cible INP) ; un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence ; `db:migrate` refusé par le classifieur du mode auto → `! pnpm db:migrate` ; tag de l'image Playwright (`quality.yml`) à monter avec `playwright` · **Worktree / branche** : aucun
+
+## Piste 4 — CI instable : bilan (2026-11-11, aucune PR)
+
+- Les 7 issues « Nightly CI triage » ouvertes (#1622, #1801, #1851, #2006, #2044, #2072, #2502)
+  décrivaient surtout « Browser connection was closed » en fin de shard navigateur.
+- Déjà corrigé par #2480 (chantier `ci-navigateur-plante`, mergée le 2026-11-08 à 19 h 59 UTC) :
+  GC forcé de Chromium après chaque fichier. #2502 est un run de 19 h 50, d'avant le correctif.
+- Depuis #2480 : 223 runs `Code Quality` (toutes branches), 20 échecs, **0** de cette signature.
+  Les échecs : 3 DNS `apt-get` (corrigé par #2556), 4 bumps Dependabot, 7 Lint, et des tests
+  réellement rouges sur leur branche, corrigés avant le merge.
+- Les 7 issues ont été fermées avec ce bilan. À rouvrir si `expect.poll` (`page-demo-lexique`,
+  `page-demo-editeur`) ou le timeout de `forfait-palotin` reviennent sur `main`.
 
 ## Pistes proposées au départ (2026-11-09)
 
