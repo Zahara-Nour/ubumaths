@@ -140,6 +140,10 @@ de l'arbre des notions où se range le point que valide la question (`fetchTempl
 évaluation, ni aperçu du prof), la page demande les nouveautés de la Chatterie
 (`fetchMathouNews`) et `TestResults` les affiche sous le gain du Palotin (`MathouNewsCard`, jamais
 en évaluation) : voir [mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).
+Pendant un Entraînement libre d'un élève connecté (jamais en contrôle), le Palotin peut réagir une
+fois (5 réussites d'affilée, 3 erreurs sur une même notion) : `TestInteractive` reçoit
+`palotinReactions` de la page, et la question suivante attend son départ. Voir
+[buddy-palotins.md § Réactions en séance](buddy-palotins.md#reactions-en-seance-2026-11-11).
 
 **Série de chapitre** (`chapter_series`, `chapter-series.ts`) : un chapitre de « Mon cours » pointe une
 série du prof sous la forme `flash` (défaut) ou `interactive` ; l'élève la lance comme une séance libre.
@@ -350,4 +354,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11.

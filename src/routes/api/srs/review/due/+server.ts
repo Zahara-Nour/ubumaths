@@ -179,6 +179,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 						cardType: 'template',
 						templateId: dueCard.template_id,
 						instance: result.instance,
+						notionId: template.classification_node_id,
 						stats: {
 							state: asCardState(dueCard.state),
 							difficulty: dueCard.difficulty,

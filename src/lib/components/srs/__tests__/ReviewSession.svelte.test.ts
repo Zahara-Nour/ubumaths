@@ -15,6 +15,10 @@ import ReviewSession from '../ReviewSession.svelte';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import { toaster } from '$lib/stores/toaster.svelte';
 import type { BuddyState } from '$lib/types/buddy';
+import {
+	registerSeanceReactionHandler,
+	type SeanceReaction
+} from '$lib/components/buddy/seance-reactions';
 
 const source = { kind: 'chapter', chapterId: 'c1' } as const;
 const texte = (container: HTMLElement) => container.textContent!.replace(/\s+/g, ' ').trim();
@@ -231,5 +235,73 @@ describe('ReviewSession — nouveautés de la Chatterie en fin de séance', () =
 		await page.getByRole('button', { name: /Bien/ }).click();
 		await expect.poll(() => texte(container)).toContain('Session terminée');
 		expect(texte(container)).not.toContain('Chatterie');
+	});
+});
+
+describe('ReviewSession — réactions du Palotin (chantier palotins, partie C)', () => {
+	const deck = { kind: 'deck', deckId: 'd1' } as const;
+	const customCards = (count: number) =>
+		Array.from({ length: count }, (_, i) => ({
+			cardId: `k${i + 1}`,
+			cardType: 'custom',
+			frontContent: `Recto ${i + 1}`,
+			backContent: `Verso ${i + 1}`
+		}));
+
+	async function openSession(count: number) {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (url: string) => {
+				if (url.startsWith('/api/srs/review/due')) {
+					return respond(200, { cards: customCards(count), skipped: 0 });
+				}
+				if (url === '/api/srs/review/submit') return respond(200, { success: true });
+				return respond(404, {});
+			})
+		);
+		return await render(ReviewSession, { source: deck });
+	}
+
+	async function grade(container: HTMLElement, label: string, position: number, count: number) {
+		await expect.poll(() => texte(container)).toContain(`Carte ${position} sur ${count}`);
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await page.getByRole('button', { name: new RegExp(label) }).click();
+	}
+
+	it('5 « Bien » d’affilée : le Palotin passe, la carte suivante attend son départ', async () => {
+		let finishPassage: () => void = () => {};
+		const handler = vi.fn(
+			(_reaction: SeanceReaction) =>
+				new Promise<void>((resolve) => {
+					finishPassage = resolve;
+				})
+		);
+		const unregister = registerSeanceReactionHandler(handler);
+		try {
+			const { container } = await openSession(7);
+			for (let i = 1; i <= 5; i++) await grade(container, 'Bien', i, 7);
+
+			await expect.poll(() => handler.mock.calls).toEqual([['streak']]);
+			await new Promise((resolve) => setTimeout(resolve, 300));
+			expect(texte(container)).toContain('Carte 5 sur 7');
+
+			finishPassage();
+			await expect.poll(() => texte(container)).toContain('Carte 6 sur 7');
+		} finally {
+			unregister();
+		}
+	});
+
+	it('cartes personnelles (sans notion) : 3 « Encore » ne déclenchent rien', async () => {
+		const handler = vi.fn(() => Promise.resolve());
+		const unregister = registerSeanceReactionHandler(handler);
+		try {
+			const { container } = await openSession(5);
+			for (let i = 1; i <= 3; i++) await grade(container, 'Encore', i, 5);
+			await expect.poll(() => texte(container)).toContain('Carte 4 sur 5');
+			expect(handler).not.toHaveBeenCalled();
+		} finally {
+			unregister();
+		}
 	});
 });

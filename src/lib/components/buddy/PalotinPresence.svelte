@@ -7,7 +7,10 @@
 	  - maison (accueil élève, Chatterie) : `BuddyWidget`, toujours là ;
 	  - passage (reste de l'espace élève, révisions hors séance) : un écusson ;
 	    le Palotin entre, dit une réplique, repart ;
-	  - séance (Entraînement, révision en cours) : l'écusson seul ;
+	  - séance (Entraînement, révision en cours) : l'écusson ; le Palotin entre
+	    une fois au plus, quand la séance le demande (5 réussites d'affilée,
+	    3 erreurs sur une notion : `seance-reactions.ts`), et la séance attend
+	    qu'il soit reparti ;
 	  - ailleurs : rien.
 	Le Palotin est lu APRÈS l'affichage (`GET /api/student/buddy/presence`).
 	Passages importants (retour d'absence, Constance perdue, nouveautés de la
@@ -17,7 +20,7 @@
 -->
 
 <script lang="ts">
-	import { onDestroy, untrack } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { page } from '$app/state';
@@ -39,6 +42,11 @@
 		palotinZone,
 		parseBuddyPresence
 	} from './palotin-presence';
+	import {
+		registerSeanceReactionHandler,
+		SEANCE_PASSAGE_DURATION,
+		type SeanceReaction
+	} from './seance-reactions';
 	import BuddyWidget from './BuddyWidget.svelte';
 	import BuddyAvatar from './BuddyAvatar.svelte';
 	import BuddySpeechBubble from './BuddySpeechBubble.svelte';
@@ -67,6 +75,11 @@
 	/** Durée de l'entrée et de la sortie du Palotin */
 	const MOVE_DURATION = 300;
 	const WELCOME_BACK_URL = '/api/student/buddy/welcome-back';
+	/** Réplique de chaque réaction en séance : exclamation, encouragement (C14) */
+	const SEANCE_CONTEXTS: Record<SeanceReaction, BuddyMessageContext> = {
+		streak: 'correct',
+		struggle: 'incorrect'
+	};
 
 	// Variables
 	const clock = createPassageClock(browserStorage);
@@ -88,6 +101,8 @@
 	/** Passage en cours : le Palotin est là et parle */
 	let current = $state<Passage | null>(null);
 	let passageTimer: ReturnType<typeof setTimeout> | null = null;
+	/** Passage de séance en cours : la séance attend son départ */
+	let seanceDone: (() => void) | null = null;
 	/** État ouvert par l'élève (clic sur l'écusson ou sur le Palotin) */
 	let statusOpen = $state(false);
 	let showChangeModal = $state(false);
@@ -218,6 +233,38 @@
 		if (passageTimer) clearTimeout(passageTimer);
 		passageTimer = null;
 		current = null;
+		releaseSeance();
+	}
+
+	/** La séance n'attend plus : question suivante. */
+	function releaseSeance() {
+		const done = seanceDone;
+		seanceDone = null;
+		done?.();
+	}
+
+	/**
+	 * Réaction en séance : le Palotin entre, dit sa réplique, repart ; la
+	 * promesse se résout à son départ. Rien à jouer (pas en séance, Palotin
+	 * inconnu, état ouvert, passage déjà en cours) : elle se résout aussitôt.
+	 */
+	function playSeanceReaction(reaction: SeanceReaction): Promise<void> {
+		if (!loaded || !buddy || statusOpen || current || palotinZone(page.url.pathname) !== 'seance') {
+			return Promise.resolve();
+		}
+		const context = SEANCE_CONTEXTS[reaction];
+		const message = buddyMessageEngine.getMessage(buddy.palotin_type, context);
+		if (!message) return Promise.resolve();
+
+		current = { message, expression: buddyMessageEngine.getExpression(context), link: null };
+		return new Promise((resolve) => {
+			seanceDone = resolve;
+			passageTimer = setTimeout(() => {
+				passageTimer = null;
+				current = null;
+				releaseSeance();
+			}, SEANCE_PASSAGE_DURATION);
+		});
 	}
 
 	function handleAvatarClick() {
@@ -251,8 +298,12 @@
 		}
 	});
 
+	// Prêt à réagir en séance ; démonté, la séance n'attend plus
+	onMount(() => registerSeanceReactionHandler(playSeanceReaction));
+
 	onDestroy(() => {
 		if (passageTimer) clearTimeout(passageTimer);
+		releaseSeance();
 	});
 </script>
 

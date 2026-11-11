@@ -11,6 +11,10 @@ import TestInteractive from '../TestInteractive.svelte';
 import type { ClassroomItem, TestResult } from '$lib/types/test';
 import type { QuestionInstance } from '$lib/questions/types';
 import { resolvedMarkdown } from '$lib/ubumark';
+import {
+	registerSeanceReactionHandler,
+	type SeanceReaction
+} from '$lib/components/buddy/seance-reactions';
 
 const RESTART = 'Recommencer avec de nouvelles questions';
 const VISITOR_NOTE = 'Connecte-toi pour que tes réponses comptent dans tes révisions.';
@@ -42,7 +46,8 @@ async function open(
 	items: ClassroomItem[],
 	isLoggedIn = true,
 	inEvaluation = false,
-	collectOnly = false
+	collectOnly = false,
+	palotinReactions: { notionOf: (templateId: string) => string | null } | null = null
 ) {
 	const onComplete = vi.fn<(result: TestResult) => void>();
 	const onRestart = vi.fn();
@@ -54,7 +59,8 @@ async function open(
 		onRestart,
 		onBack,
 		inEvaluation,
-		collectOnly
+		collectOnly,
+		palotinReactions
 	});
 	flushSync();
 	await tick();
@@ -285,5 +291,93 @@ describe('TestInteractive — Entraînement', () => {
 	it('élève connecté : pas d’avertissement', async () => {
 		const { container } = await open([item('Énoncé A', 10)], true);
 		expect(container.textContent).not.toContain(VISITOR_NOTE);
+	});
+});
+
+describe('TestInteractive — réactions du Palotin (chantier palotins, partie C)', () => {
+	let unregister: () => void = () => {};
+	let finishPassage: () => void = () => {};
+	const handler = vi.fn<(reaction: SeanceReaction) => Promise<void>>();
+	const notions = { notionOf: () => 'notion-1' };
+
+	beforeEach(() => {
+		vi.useFakeTimers({
+			toFake: [
+				'setTimeout',
+				'clearTimeout',
+				'Date',
+				'requestAnimationFrame',
+				'cancelAnimationFrame',
+				'performance'
+			]
+		});
+		handler.mockReset();
+		handler.mockImplementation(
+			() =>
+				new Promise<void>((resolve) => {
+					finishPassage = resolve;
+				})
+		);
+		unregister = registerSeanceReactionHandler(handler);
+	});
+	afterEach(() => {
+		unregister();
+		vi.useRealTimers();
+	});
+
+	/** Valide la réponse « 4 » (juste) ou « 3 » (faux) de la question en cours, puis l'avance. */
+	function answer(container: HTMLElement, correct: boolean) {
+		choose(container, correct ? 1 : 0);
+		clickButton(currentCard(container), 'Valider');
+		elapse(350);
+	}
+
+	const series = (count: number) =>
+		Array.from({ length: count }, (_, i) => item(`Énoncé ${i + 1}`, 60));
+
+	it('5 réussites : la question suivante attend que le Palotin soit reparti (C2, C11)', async () => {
+		const { container } = await open(series(7), true, false, false, notions);
+		for (let i = 0; i < 5; i++) answer(container, true);
+
+		expect(handler).toHaveBeenCalledExactlyOnceWith('streak');
+		elapse(5000);
+		expect(position(container)).toBe('Question 5 sur 7');
+
+		finishPassage();
+		await tick();
+		elapse(350);
+		expect(position(container)).toBe('Question 6 sur 7');
+	});
+
+	it('3 erreurs sur la même notion : encouragement (C3)', async () => {
+		const { container } = await open(series(5), true, false, false, notions);
+		for (let i = 0; i < 3; i++) answer(container, false);
+		expect(handler).toHaveBeenCalledExactlyOnceWith('struggle');
+	});
+
+	it('chrono écoulé sans réponse : l’erreur compte aussi', async () => {
+		const { container } = await open(series(5), true, false, false, notions);
+		for (let i = 0; i < 2; i++) answer(container, false);
+		elapse(60_100);
+		expect(handler).toHaveBeenCalledExactlyOnceWith('struggle');
+		expect(position(container)).toBe('Question 3 sur 5');
+	});
+
+	it('jamais sur la dernière question : la fin de séance reste au gain (C11)', async () => {
+		const { container, onComplete } = await open(series(5), true, false, false, notions);
+		for (let i = 0; i < 5; i++) answer(container, true);
+		expect(handler).not.toHaveBeenCalled();
+		expect(onComplete).toHaveBeenCalledTimes(1);
+	});
+
+	it('contrôle noté ou réactions coupées : jamais de réaction (C13)', async () => {
+		const graded = await open(series(7), true, true, true, notions);
+		for (let i = 0; i < 5; i++) answer(graded.container, true);
+		await graded.unmount();
+
+		const off = await open(series(7));
+		for (let i = 0; i < 5; i++) answer(off.container, true);
+		expect(handler).not.toHaveBeenCalled();
+		expect(position(off.container)).toBe('Question 6 sur 7');
 	});
 });
