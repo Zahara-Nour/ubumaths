@@ -16,12 +16,12 @@
 		open = $bindable(false),
 		onclose = () => {},
 		isOwner = false
-	} = $props<{
+	}: {
 		listing: MarketplaceListing;
 		open?: boolean;
 		onclose?: () => void;
 		isOwner?: boolean;
-	}>();
+	} = $props();
 
 	// State for proposal modal
 	let showProposalModal = $state(false);

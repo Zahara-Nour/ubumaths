@@ -21,11 +21,11 @@
 		listing,
 		open = $bindable(false),
 		onSuccess = () => {}
-	} = $props<{
+	}: {
 		listing: MarketplaceListing;
 		open?: boolean;
 		onSuccess?: () => void;
-	}>();
+	} = $props();
 
 	// Form state
 	let offeredCardIds = $state<string[]>([]);

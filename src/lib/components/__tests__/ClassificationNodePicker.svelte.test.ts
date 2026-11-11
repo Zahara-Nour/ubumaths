@@ -34,17 +34,17 @@ describe('ClassificationNodePicker', () => {
 	it('relit une sous-notion enregistrée dans les trois champs', async () => {
 		await renderPicker('s1');
 
-		await expect.element(page.getByRole('button', { name: 'Branche : Calcul' })).toBeVisible();
-		await expect.element(page.getByRole('button', { name: 'Notion : Fractions' })).toBeVisible();
+		await expect.element(page.getByRole('combobox', { name: 'Branche : Calcul' })).toBeVisible();
+		await expect.element(page.getByRole('combobox', { name: 'Notion : Fractions' })).toBeVisible();
 		await expect
-			.element(page.getByRole('button', { name: 'Sous-notion : Additionner' }))
+			.element(page.getByRole('combobox', { name: 'Sous-notion : Additionner' }))
 			.toBeVisible();
 	});
 
 	it('ne propose que les notions de la branche choisie', async () => {
 		await renderPicker('n1');
 
-		await page.getByRole('button', { name: /^Notion/ }).click();
+		await page.getByRole('combobox', { name: /^Notion/ }).click();
 		await expect.element(page.getByRole('option', { name: 'Décimaux' })).toBeVisible();
 		expect(optionNames()).toEqual(['Aucune notion', 'Fractions', 'Décimaux']);
 	});
@@ -52,30 +52,30 @@ describe('ClassificationNodePicker', () => {
 	it('modèle non rangé : notion et sous-notion sont fermées', async () => {
 		await renderPicker(null);
 
-		await expect.element(page.getByRole('button', { name: 'Branche : aucune' })).toBeVisible();
-		await expect.element(page.getByRole('button', { name: /^Notion/ })).toBeDisabled();
-		await expect.element(page.getByRole('button', { name: /^Sous-notion/ })).toBeDisabled();
+		await expect.element(page.getByRole('combobox', { name: 'Branche : aucune' })).toBeVisible();
+		await expect.element(page.getByRole('combobox', { name: /^Notion/ })).toBeDisabled();
+		await expect.element(page.getByRole('combobox', { name: /^Sous-notion/ })).toBeDisabled();
 	});
 
 	it('suit `value` quand il change de l’extérieur (retour du mode JSON)', async () => {
 		const screen = await renderPicker('n1');
-		await expect.element(page.getByRole('button', { name: 'Notion : Fractions' })).toBeVisible();
+		await expect.element(page.getByRole('combobox', { name: 'Notion : Fractions' })).toBeVisible();
 
 		await screen.rerender({ nodes: NODES, value: 'n3' });
 
-		await expect.element(page.getByRole('button', { name: 'Branche : Géométrie' })).toBeVisible();
-		await expect.element(page.getByRole('button', { name: 'Notion : Triangles' })).toBeVisible();
+		await expect.element(page.getByRole('combobox', { name: 'Branche : Géométrie' })).toBeVisible();
+		await expect.element(page.getByRole('combobox', { name: 'Notion : Triangles' })).toBeVisible();
 
 		await screen.rerender({ nodes: NODES, value: null });
-		await expect.element(page.getByRole('button', { name: 'Branche : aucune' })).toBeVisible();
+		await expect.element(page.getByRole('combobox', { name: 'Branche : aucune' })).toBeVisible();
 	});
 
 	it('une branche choisie seule reste affichée (aucun nœud à écrire)', async () => {
 		await renderPicker(null);
 
-		await page.getByRole('button', { name: /^Branche/ }).click();
+		await page.getByRole('combobox', { name: /^Branche/ }).click();
 		await page.getByRole('option', { name: 'Calcul' }).click();
 
-		await expect.element(page.getByRole('button', { name: 'Branche : Calcul' })).toBeVisible();
+		await expect.element(page.getByRole('combobox', { name: 'Branche : Calcul' })).toBeVisible();
 	});
 });

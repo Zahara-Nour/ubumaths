@@ -61,7 +61,7 @@ describe('le style affiché', () => {
 		const onFieldChange = vi.fn();
 		await renderCards({}, onFieldChange);
 		await page.getByText('Fiche élève (par défaut)').click();
-		await page.getByRole('button', { name: 'Choisir le style' }).click();
+		await page.getByRole('combobox', { name: 'Choisir le style' }).click();
 		await page.getByRole('option', { name: 'Mes contrôles' }).click();
 		expect(onFieldChange).toHaveBeenCalledWith('style_id', PROF_STYLE.id);
 	});
@@ -71,9 +71,9 @@ describe('la création d’une fiche', () => {
 	it('« Fiche élève » présélectionné, plus d’option « Aucun »', async () => {
 		await render(NewWorksheetPage, { props: { data: { styles: STYLES } } as never });
 		await expect
-			.element(page.getByRole('button', { name: 'Choisir le style' }))
+			.element(page.getByRole('combobox', { name: 'Choisir le style' }))
 			.toHaveTextContent('Fiche élève');
-		await page.getByRole('button', { name: 'Choisir le style' }).click();
+		await page.getByRole('combobox', { name: 'Choisir le style' }).click();
 		await expect.element(page.getByRole('option', { name: 'Mes contrôles' })).toBeInTheDocument();
 		expect(document.body.textContent).not.toMatch(/Aucun template/i);
 	});

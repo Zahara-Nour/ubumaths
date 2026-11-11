@@ -88,6 +88,10 @@
 		return items.find((item) => item.value === value)?.label ?? placeholder ?? 'Select...';
 	});
 
+	// bits-ui 2.20 donne au déclencheur le rôle `combobox`, dont le nom ne vient
+	// jamais du contenu : sans nom fourni, la valeur affichée le porte (comme avant)
+	const triggerName = $derived(triggerAriaLabel ?? placeholder ?? selectedLabel);
+
 	// Compute trigger class based on variant (if not explicitly provided)
 	// Note: height stays h-9 on desktop, touch devices get 44px via @media (pointer: coarse)
 	// When fitContent is true, we use w-auto instead of w-full
@@ -151,7 +155,7 @@
 			>
 				<Select.Trigger
 					class="{computedTriggerClass} col-start-1 row-start-1"
-					aria-label={triggerAriaLabel ?? placeholder}
+					aria-label={triggerName}
 				>
 					{selectedLabel}
 				</Select.Trigger>
@@ -166,7 +170,7 @@
 			>
 				<Select.Trigger
 					class="{computedTriggerClass} col-start-1 row-start-1"
-					aria-label={triggerAriaLabel ?? placeholder}
+					aria-label={triggerName}
 				>
 					{selectedLabel}
 				</Select.Trigger>
@@ -183,7 +187,7 @@
 			onValueChange={handleMultipleValueChange}
 			{...restProps}
 		>
-			<Select.Trigger class={computedTriggerClass} aria-label={triggerAriaLabel ?? placeholder}>
+			<Select.Trigger class={computedTriggerClass} aria-label={triggerName}>
 				{selectedLabel}
 			</Select.Trigger>
 			{@render selectContent()}
@@ -195,7 +199,7 @@
 			onValueChange={handleSingleValueChange}
 			{...restProps}
 		>
-			<Select.Trigger class={computedTriggerClass} aria-label={triggerAriaLabel ?? placeholder}>
+			<Select.Trigger class={computedTriggerClass} aria-label={triggerName}>
 				{selectedLabel}
 			</Select.Trigger>
 			{@render selectContent()}

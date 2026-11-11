@@ -104,7 +104,7 @@ describe('Panier — série (C18)', () => {
 
 	it('Q44 : forme « Flash-cards » → lien qui lance la série sous cette forme', async () => {
 		await renderPanier('student');
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Flash-cards' }).click();
 		await page.getByRole('button', { name: 'Copier le lien' }).click();
 
@@ -117,7 +117,7 @@ describe('Panier — série (C18)', () => {
 
 	it('Q44 : « Course aux nombres » → le lien porte le temps limite réglé', async () => {
 		await renderPanier('student');
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 		await expect.element(page.getByLabelText('Temps limite (minutes)')).toHaveValue(5);
 		await page.getByLabelText('Temps limite (minutes)').fill('8');
@@ -132,7 +132,7 @@ describe('Panier — série (C18)', () => {
 
 	it('Q44 : temps limite hors de 1 à 60 min → rien n’est copié, message', async () => {
 		await renderPanier('student');
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 		await page.getByLabelText('Temps limite (minutes)').fill('90');
 		await page.getByRole('button', { name: 'Copier le lien' }).click();

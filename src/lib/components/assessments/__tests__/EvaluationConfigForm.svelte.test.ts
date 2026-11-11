@@ -48,7 +48,7 @@ describe('EvaluationConfigForm — forme et temps limite', () => {
 		const onSubmit = vi.fn<OnSubmit>();
 		const { container } = await renderForm({ onSubmit });
 
-		await page.getByRole('button', { name: 'Choisir une forme' }).click();
+		await page.getByRole('combobox', { name: 'Choisir une forme' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 
 		await expect.element(page.getByLabelText('Temps limite (minutes)')).toHaveValue(7);
@@ -83,7 +83,7 @@ describe('EvaluationConfigForm — forme et temps limite', () => {
 			initialData: { form: 'course', time_limit_minutes: 12 }
 		});
 
-		await page.getByRole('button', { name: 'Choisir une forme' }).click();
+		await page.getByRole('combobox', { name: 'Choisir une forme' }).click();
 		await page.getByRole('option', { name: 'Contrôle blanc' }).click();
 
 		expect(container.querySelector('#timeLimit')).toBeNull();

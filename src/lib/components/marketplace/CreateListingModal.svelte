@@ -17,9 +17,11 @@
 	import { cn } from '$lib/utils';
 
 	// Props
-	let { open = $bindable(false) } = $props<{
+	let {
+		open = $bindable(false)
+	}: {
 		open?: boolean;
-	}>();
+	} = $props();
 
 	// Form state
 	let listingType = $state<'sell' | 'buy'>('sell');
