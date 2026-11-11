@@ -142,7 +142,8 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   `FlashCard.svelte` (appellent `validateAnswer`), `CorrectionCard.svelte`, `CorrectionView.svelte`,
   `ExpectedResultView.svelte`, `GeneratedStepsCorrection.svelte` (étapes générées : titre et
   explication rendus par `InlineMarkdown`, formules entre `$…$` depuis V25), `CourseCardView.svelte`,
-  `TestSpecEditor.svelte`.
+  `SelfAssessButtons.svelte` (« Pas réussi / Réussi », auto-évaluation commune aux cartes de cours,
+  Flash-cards et révisions ; raccourcis 1 / 2 sur option), `TestSpecEditor.svelte`.
 - Éditeur : `src/lib/components/QuestionTemplateForm.svelte`, `SharedFieldsEditor.svelte`,
   `exercises/VariationEditor.svelte`. Ses sous-composants, à la racine de `src/lib/components/`
   (vérifié le 2026-10-13) : `questions/ClassificationNodePicker` (« Rangé dans » : branche →

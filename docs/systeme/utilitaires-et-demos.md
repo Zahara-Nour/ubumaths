@@ -291,7 +291,7 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   `questions.ts`, sans base) sous ses cinq formes, en onglets, avec une phrase « qui, quand » par
   forme : En classe, Entraînement, Flash-cards et Course aux nombres sont les vrais composants
   d'Automaths (`$lib/components/test/`) ; les révisions espacées sont simulées
-  (`SpacedReviewDemo.svelte` : carte, 4 notes et la prochaine date d'une carte neuve, calculée
+  (`SpacedReviewDemo.svelte` : carte, deux boutons « Pas réussi / Réussi » et la prochaine date d'une carte neuve, calculée
   par `$lib/srs/fsrs`). Rien n'est enregistré : la fin de série n'appelle rien, et le bandeau
   « Connecte-toi… » d'Entraînement et Flash-cards est coupé par `loginNote={false}`. Les boutons
   « Retour au panier » mènent à `/automaths/panier`.
