@@ -1,4 +1,5 @@
 {
+	"id": "9ca26a84-84e2-4beb-9ff9-8824b4c12776",
 	"title": "Démontrer la limite de qⁿ pour q > 1 avec l'inégalité de Bernoulli",
 	"description": "Démonstration à trous : développement de l'hérédité, na² (case), 1 + a > 0 (choix), q = 1 + a (case, q tiré) ; étapes à ranger",
 	"grades": ["T_SPE"],

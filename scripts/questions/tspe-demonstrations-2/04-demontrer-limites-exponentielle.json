@@ -1,4 +1,5 @@
 {
+	"id": "2a86b496-aec3-4a49-a403-b6002e3cdcd4",
 	"title": "Démontrer les limites de la fonction exponentielle en +∞ et en −∞",
 	"description": "Démonstration à trous : dérivée de eˣ − x (case), minimum f(0) = 1 (choix), passage à l'inverse en −∞ (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],
