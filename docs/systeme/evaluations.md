@@ -145,8 +145,10 @@ carte ne se retourne qu'après « Valider » (`FlashCard` `flipOnSubmit`, `flipp
 Course : à « Valider » (lieu `number_race`, durée depuis le début de la course, durée allouée = celle
 de la course) ; en fin de course, une question jamais validée est ratée, fin `timeout` au chrono,
 **sans durée ni fin** après « Terminer » (décision du 2026-11-11). Les traces partent **une à la fois, dans l'ordre** (deux révisions FSRS
-parallèles sur un même modèle perdraient une mise à jour) ; une trace perdue (réseau, 5xx) est
-réessayée deux fois en silence, une trace refusée (400 : au-delà des bornes, L3) ne l'est pas ; en fin
+parallèles sur un même modèle perdraient une mise à jour) ; une trace que le serveur dit en panne
+(5xx, 429, 408) est réessayée deux fois en silence ; une coupure réseau ne l'est **pas** (la trace a pu
+être écrite avant : la renvoyer ferait un doublon, deux révisions FSRS ; mieux vaut en perdre une,
+décision du 2026-11-11), ni une trace refusée (400 : au-delà des bornes, L3) ; en fin
 de série, la page attend les dernières (`settle`) et affiche au plus un message « Certaines réponses
 n'ont pas été enregistrées ». Jamais en contrôle, ni pour un
 visiteur (`traceRecorder` nul) ; un prof n'écrit rien (la route l'ignore).

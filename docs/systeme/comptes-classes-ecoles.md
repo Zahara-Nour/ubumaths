@@ -12,6 +12,7 @@ couvre:
   - 'src/lib/components/admin/**'
   - 'src/lib/server/admin/**'
   - src/lib/email-templates/welcome.ts
+  - src/lib/utils/welcome-email-state.ts
   - 'src/lib/utils/{age-declaration,timezones}.ts'
   - src/lib/components/AgeQuestionDialog.svelte
   - src/lib/components/MyPasswordInput.svelte
@@ -172,6 +173,12 @@ de 2nde de répondre une fois à la question d'âge.
   (aperçu), envoi par `src/routes/api/teacher/send-welcome-email/+server.ts` via Brevo
   (`sendWelcomeEmail` dans `src/lib/server/email/brevo.ts`). Texte unique :
   `src/lib/email-templates/welcome.ts`. Chaque envoi est noté dans `welcome_emails_sent`.
+  **Enfant inscrit par son parent** (adresse fictive du domaine `CHILD_ACCOUNT_DOMAIN`) : jamais de
+  courriel de bienvenue. Dans la liste des classes, `welcomeEmailState`
+  (`src/lib/utils/welcome-email-state.ts`) affiche son identifiant et un bouton « Lien au parent »
+  vers `dashboard/teacher/consent` ; la page d'aperçu redirige (303) vers cette même page.
+  L'en-tête de « Mes classes » porte aussi un lien « Consentements parentaux », seul accès à cette
+  page depuis l'interface.
 - Journal d'un élève : `src/routes/(protected)/dashboard/teacher/students/[studentId]/journal/+page.server.ts`.
 - Chatterie d'un élève (lecture seule) : `src/routes/(protected)/dashboard/teacher/students/[studentId]/chatterie/`,
   même garde que le journal (`verifyTeacherStudentWithRole`) ; voir [mathoux.md](mathoux.md#vue-du-professeur).
