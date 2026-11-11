@@ -186,7 +186,9 @@ function fakeDb(
 
 function fakeLocals(db: FakeDb) {
 	return {
-		safeGetSession: async () => ({ user: { id: USER_ID } }),
+		// Ce que posent les hooks : session et profil du compte connecté
+		user: { id: USER_ID },
+		profile: db.profiles.find((p) => p.id === USER_ID) ?? null,
 		supabase: {
 			from: (table: 'question_templates' | 'profiles') => fakeQuery(db, table)
 		}

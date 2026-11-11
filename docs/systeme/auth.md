@@ -475,8 +475,15 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
    **sans** jeton de rafraîchissement). Pas de chiffrement : l'intégrité vient de la signature
    du JWT, revérifiée à chaque requête. Le nom ne commence pas par `sb-` : `@supabase/ssr`
    l'ignore et la racine ne le transmet pas au client.
-3. `adminElevationHandle` ne travaille que sous `/dashboard/admin*`, `/api/admin*` et `/dev`
-   (pages de dev, gardées par l'élévation : `reservedAreasHandle`).
+3. `adminElevationHandle` ne travaille que sous `/dashboard/admin*`, `/api/admin*`, `/dev`
+   (pages de dev, gardées par l'élévation : `reservedAreasHandle`) et les routes d'écriture
+   admin restées hors de `/api/admin` (`ADMIN_WRITE_API_PREFIXES` : `/api/questions/templates`,
+   `/api/errors/bulk-resolve`, `/api/errors/delete-resolved`, `/api/bug-reports/config`,
+   `/api/messages/templates`). Elles vérifiaient `requireRole(locals, 'admin')`, qui lit le rôle
+   du compte **connecté** (toujours `teacher` en mode administration) : 403 au prof élevé
+   (2026-11-11). Sans cookie, le handle rend la main avant toute requête ; `/api/errors/log` et
+   `/api/questions/templates/all` (liste publique, anonyme), appelés par tous, restent hors
+   périmètre.
    **Sans session, ou avec la session d'un autre compte que `elevatedBy`, jamais d'élévation** :
    le cookie est effacé, le jeton n'est pas vérifié (poste partagé : logout, session expirée,
    élève connecté ensuite sur le même navigateur ; constat B4, 2026-10-10). Sinon : décode,
@@ -567,7 +574,9 @@ Attention aux deux modules homonymes : `$lib/server/auth` (pages, prend `user`/`
 401/403). Toujours vérifier lequel est importé.
 
 **Une route admin** : sous `/dashboard/admin/` ou `/api/admin/` (sinon le handle d'élévation
-ne s'y exécute pas), garde `requireAdmin`, écritures avec le client rendu.
+ne s'y exécute pas : l'ajouter à `ADMIN_WRITE_API_PREFIXES`), garde `requireAdmin` — jamais
+`requireRole(locals, 'admin')`, qui refuse le prof en mode administration —, écritures avec le
+client rendu.
 
 **Une policy sur `profiles`** : poser d'abord la question d'accès à David (CLAUDE.md), tests
 d'intégration obligatoires, et relire [rls-echecs-silencieux](../pratiques/rls-echecs-silencieux.md).

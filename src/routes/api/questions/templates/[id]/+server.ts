@@ -14,7 +14,7 @@ import { getQuestionType, mapDbTemplateToForm } from '$lib/questions/types';
 import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
 import { classificationNodeErrorMessage } from '$lib/server/classification-node-error';
 import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
-import { requireRoles, requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin, requireRoles } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { toJson } from '$lib/types/database-helpers';
 import type { Database } from '$lib/types/database';
@@ -131,7 +131,8 @@ function buildTemplateUpdate(
  */
 export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	const id = validateUuidParam(params.id);
-	await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin : la RLS réserve l'écriture à l'admin
+	const { supabase } = await requireAdmin(locals);
 
 	try {
 		// ====================================================================
@@ -158,7 +159,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		// ====================================================================
 		// Ligne actuelle : absente (ou masquée par la RLS, zéro ligne) → 404
 		// ====================================================================
-		const { data: currentRow, error: readError } = await locals.supabase
+		const { data: currentRow, error: readError } = await supabase
 			.from('question_templates')
 			.select('*')
 			.eq('id', id)
@@ -214,7 +215,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 		// Écriture des seules colonnes envoyées ; zéro ligne rendue = refus RLS
 		// silencieux ou ligne disparue entre-temps → 404
-		const { data: template, error: updateError } = await locals.supabase
+		const { data: template, error: updateError } = await supabase
 			.from('question_templates')
 			.update(update)
 			.eq('id', id)
@@ -259,11 +260,12 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const id = validateUuidParam(params.id);
-	await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin : la RLS réserve l'écriture à l'admin
+	const { supabase } = await requireAdmin(locals);
 
 	try {
 		// Check if template exists first
-		const { data: existing, error: existingError } = await locals.supabase
+		const { data: existing, error: existingError } = await supabase
 			.from('question_templates')
 			.select('id')
 			.eq('id', id)
@@ -282,10 +284,12 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 
 		// Delete template
-		const { error: deleteError } = await locals.supabase
+		// `.select()` : un refus RLS ne lève aucune erreur, il ne supprime rien
+		const { data: deleted, error: deleteError } = await supabase
 			.from('question_templates')
 			.delete()
-			.eq('id', id);
+			.eq('id', id)
+			.select('id');
 
 		// Modèle déjà servi à des élèves : la base refuse, on dit quoi faire.
 		// - 23503 : tiré dans une tentative d'évaluation (NO ACTION) ; sans lui, la
@@ -306,6 +310,9 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		if (deleteError) {
 			logger.error('Error deleting template:', deleteError);
 			throw error(500, 'Failed to delete template');
+		}
+		if (!deleted || deleted.length === 0) {
+			throw error(404, 'Template not found');
 		}
 
 		return json({ success: true }, { status: 200 });

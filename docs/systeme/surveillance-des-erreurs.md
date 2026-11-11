@@ -115,8 +115,11 @@ Trois boucles distinctes :
 | Route                              | Qui                             | Rôle                                                                                                                          |
 | ---------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `POST /api/errors/log`             | tout le monde, même sans compte | écrit une erreur ; 20 par minute et par IP ; sans compte approuvé, `critical` devient `error` ; `context` ≤ 10 000 caractères |
-| `POST /api/errors/bulk-resolve`    | admin                           | résout par empreinte tout ce qui correspond aux filtres                                                                       |
-| `POST /api/errors/delete-resolved` | admin                           | supprime toutes les erreurs résolues (client service)                                                                         |
+| `POST /api/errors/bulk-resolve`    | admin (ou prof élevé)           | résout par empreinte tout ce qui correspond aux filtres                                                                       |
+| `POST /api/errors/delete-resolved` | admin (ou prof élevé)           | supprime toutes les erreurs résolues (client service)                                                                         |
+
+Les deux routes admin se gardent par `requireAdmin` (vrai compte admin, ou prof en mode
+administration : [auth.md](auth.md) § Élévation admin) ; `bulk-resolve` écrit avec le client rendu.
 
 Pages admin : `/dashboard/admin/errors` (statistiques 24 h et occurrences, filtres
 `type`, `severity`, `resolved`, `search` dans l'adresse), `/dashboard/admin/errors/[id]`
@@ -193,7 +196,8 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
 
 Table singleton `bug_reports_config` (`singleton_key = 'global'`), quatre drapeaux :
 `fab_enabled`, `freeze_detection_enabled`, `freeze_prompt_enabled`, `auto_report_enabled`.
-`/api/bug-reports/config` : `GET` pour tout compte connecté, `PATCH` admin. Côté client,
+`/api/bug-reports/config` : `GET` pour tout compte connecté, `PATCH` admin (`requireAdmin` : le prof en
+mode administration passe aussi, [auth.md](auth.md)). Côté client,
 `bugReportsConfigStore` (`src/lib/stores/bugReportsConfig.svelte.ts`), valeurs par
 défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsConfigCard`, sur
 `/dashboard/admin/bug-reports` et `/dashboard/admin/settings`.

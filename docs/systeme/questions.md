@@ -238,7 +238,11 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   chaque ligne par `mapDbTemplateToForm` (`exercise_instruction` → `exerciseInstruction`…) : sans
   elle, la consigne d'exercice disparaissait des cartes Automaths (corrigé en novembre 2026).
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
-  `generate/[id]`), admin `src/routes/(protected)/dashboard/admin/questions/`
+  `generate/[id]`) ; leurs écritures (`POST`, `PUT`, `DELETE`, `bulk-status`) se gardent par
+  `requireAdmin` et écrivent avec le client rendu (vrai compte admin, ou prof en mode
+  administration : [auth.md](auth.md) § Élévation admin ; la RLS réserve l'écriture des modèles
+  au compte admin) ; un `DELETE` qui ne supprime aucune ligne répond 404. Admin
+  `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`
   (catalogue, `panier`, `test`), séries du prof `src/routes/(protected)/dashboard/teacher/series/`.
 - Lecture de **tous** les modèles (`templates/all`, brouillons et arbre des

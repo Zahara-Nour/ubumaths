@@ -182,7 +182,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `dashboard/admin/message-templates/` (+ `stats/`), avec `FiltersHelp`, `TagsInput` et
   `VariableAutocomplete` de `src/lib/components/templates/` (`TagsInput` sert aussi à
   `src/routes/(protected)/constructions/conversion/+page.svelte`).
-- API : `src/routes/api/messages/templates/` — CRUD, `[id]/approve/` (admin seul),
+- API : `src/routes/api/messages/templates/` — CRUD, `[id]/approve/` (admin seul :
+  `requireAdmin`, prof en mode administration compris),
   `[id]/duplicate/`, `[id]/preview/`, `[id]/versions/`, `favorites/`, `match/`, `stats/`.
 - Moteur de variables : `src/lib/templates/` (vérifié le 2026-10-13) — `templateVariables.ts`
   (variables par déclencheur, `VARIABLES_BY_TRIGGER`), `templateEngine.ts` (`renderTemplate`,

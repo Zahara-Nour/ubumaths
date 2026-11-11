@@ -8,7 +8,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import type { RequestHandler } from './$types';
 import { approveTemplateSchema } from '$lib/server/validation/message-templates';
 import { createServerLogger } from '$lib/utils/logger';
@@ -16,10 +16,10 @@ import { createServerLogger } from '$lib/utils/logger';
 const logger = createServerLogger('api/messages/templates/[id]/approve/+server');
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	const { supabase } = locals;
 	const { id } = params;
 
-	const { user } = await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin
+	const { supabase, adminUserId } = await requireAdmin(locals);
 
 	// ✅ SECURITY: Validate input with Zod
 	const body = await request.json();
@@ -46,7 +46,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.from('message_templates')
 		.update({
 			approval_status: action === 'approve' ? 'approved' : 'rejected',
-			reviewed_by: user.id,
+			reviewed_by: adminUserId,
 			reviewed_at: new Date().toISOString(),
 			review_notes: notes || null
 		})
@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	await supabase.rpc('log_template_action', {
 		p_template_id: id,
 		p_action: action === 'approve' ? 'approved' : 'rejected',
-		p_performed_by: user.id,
+		p_performed_by: adminUserId,
 		p_metadata: notes ? { notes: notes } : null
 	});
 

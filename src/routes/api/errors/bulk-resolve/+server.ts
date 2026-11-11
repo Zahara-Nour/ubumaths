@@ -11,7 +11,7 @@ import {
 	type ErrorFilters
 } from '$lib/server/errorMonitoring';
 import { bulkResolveErrorsSchema } from '$lib/server/validation/errors';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/errors/bulk-resolve/+server');
@@ -41,7 +41,8 @@ const logger = createServerLogger('api/errors/bulk-resolve/+server');
  * }
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin
+	const { supabase, adminUserId } = await requireAdmin(locals);
 
 	try {
 		// SECURITY: Validate request body with Zod schema
@@ -66,7 +67,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		};
 
 		// Fetch all error occurrences matching the filters
-		const occurrencesResult = await getErrorOccurrences(locals.supabase, filters);
+		const occurrencesResult = await getErrorOccurrences(supabase, filters);
 
 		if (!occurrencesResult.success) {
 			throw error(500, occurrencesResult.error || 'Failed to fetch error occurrences');
@@ -89,9 +90,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		for (const occurrence of occurrences) {
 			const resolveResult = await resolveErrorBySignature(
-				locals.supabase,
+				supabase,
 				occurrence.error_signature,
-				user.id,
+				adminUserId,
 				notes
 			);
 
