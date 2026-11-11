@@ -42,9 +42,11 @@
 	// ==========================================================================
 
 	/**
-	 * Zoom in by 50%
+	 * Zoom in by 50%. Geste bref : des clics enchaînés ne relancent les
+	 * analyses (points remarquables, intersections) qu'une fois, après le dernier.
 	 */
 	function handleZoomIn(): void {
+		grapheurStore.briefGesture();
 		grapheurStore.zoom(1 / 1.5); // factor < 1 = zoom in
 	}
 
@@ -52,6 +54,7 @@
 	 * Zoom out by 50%
 	 */
 	function handleZoomOut(): void {
+		grapheurStore.briefGesture();
 		grapheurStore.zoom(1.5); // factor > 1 = zoom out
 	}
 
