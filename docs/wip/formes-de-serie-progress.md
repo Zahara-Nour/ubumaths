@@ -7,7 +7,7 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 _Mis à jour le 2026-11-11, phase 0 en cours (aucune PR, rien de codé)._
 
-- **État** : ADR 0037/0038 écrits ; **comportements de phase 0 + découpage rédigés** (§ « Comportements de phase 0 — à valider ») · **Prochaine action** : faire valider les comportements, puis PR 1 (migration) · **En attente de David** : validation des comportements + Q-A (les contrôles écrivent des traces aujourd'hui, l'ADR 0038 dit non), Q-B, Q-C, Q-D · **Pièges en cours** : « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`) ; ne pas relancer ce qui est validé · **Worktree / branche** : aucun (doc sur `main`) ; un worktree au premier code
+- **État** : ADR 0037/0038 écrits ; **comportements de phase 0 + découpage rédigés** (§ « Comportements de phase 0 — à valider ») · **Prochaine action** : faire valider les comportements, puis PR 1 (migration) · **En attente de David** : validation des comportements + Q-A (les contrôles écrivent des traces aujourd'hui, l'ADR 0038 dit non), Q-B, Q-C ; N11 (durée : chronos + contrôle) et Q-D (widget D retiré) tranchés · **Pièges en cours** : « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`) ; ne pas relancer ce qui est validé · **Worktree / branche** : aucun (doc sur `main`) ; un worktree au premier code
 
 ## Décisions de David (2026-11-11)
 
@@ -153,8 +153,11 @@ une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit d
   chronométré (Contrôle blanc, Course) : durée allouée + fin (validée / temps écoulé) ; Saisie,
   Contrôle blanc, Course : réponse case par case + verdict par case ; Flash-cards et révision : ni
   réponse ni verdict par case.
-- **N11 — Durée de réponse** : de l'affichage de la question à « Valider » (ou au temps écoulé) ;
-  Flash-cards et cartes de cours : de l'affichage au bouton « Voir la réponse ».
+- **N11 — Durée de réponse** (David, 2026-11-11) : **seulement là où il y a un chrono** : Contrôle
+  blanc, Course aux nombres **et contrôle** ; de l'affichage de la question à « Valider » (ou au temps
+  écoulé). **Pas de durée** en Flash-cards, Saisie ni révision : l'élève peut retourner la carte ou
+  valider à vide pour voir la réponse, la durée n'y mesure rien (l'anti-triche lit le temps de
+  l'état de mémorisation, pas la trace : rien de perdu).
 - **N12 — Contrôle blanc** : la trace part à chaque question validée, la note reste invisible jusqu'à
   la fin (le verdict ne s'affiche pas plus tôt).
 - **N13 — Fin de série** : le gain du Palotin et les nouvelles de la Chatterie restent montrés comme
@@ -175,7 +178,7 @@ une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit d
 
 ### Prof : analyse de classe
 
-- **N16 — Widget D** (histogramme des notes 1-4) : retiré, remplacé par la part de « Réussi » déclarés.
+- **N16 — Widget D** (histogramme des notes 1-4, `StudentGradeHistogram.svelte`) : **retiré, sans remplacement** (David, 2026-11-11 ; la grille point × élève donne déjà réussi / raté).
 
 ### Questions ouvertes (à trancher avant de coder)
 
@@ -190,14 +193,14 @@ une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit d
 - **Q-C — P5 (heatmap de régularité) et le Palotin de régularité** : validés dans le détail, mais
   dans ce chantier ou dans un chantier à part ? Reco : **chantier à part**, après celui-ci (ils lisent
   les nouvelles traces).
-- **Q-D — Widget D** (N16) : remplacer par la part de « Réussi » déclarés, ou retirer sans remplacement ?
+- **Q-D — tranchée** (2026-11-11) : widget D retiré sans remplacement.
 
 ### Découpage proposé (une PR chacune)
 
 1. **Migration additive** `skill_attempts` (lieu, durées, fin, graine, réponse, verdicts par case ;
    bornes en base) + tests d'intégration RLS (élève : les siennes ; prof : ses élèves) + `db:migrate`.
 2. `db:types` + `/api/skill-attempts` étendu (Zod, nouvelles colonnes) ; export RGPD.
-3. **Deux boutons** : révision + Flash-cards + cartes de cours ; widget D (selon Q-D).
+3. **Deux boutons** : révision + Flash-cards + cartes de cours ; widget D retiré.
 4. **Trace par question** dans Flash-cards, Contrôle blanc (renommage d'Entraînement), Course ; fin de
    série sans séance libre (gain du Palotin gardé).
 5. **Forme Saisie** (`TestMode` neuf, `FlashCard` en saisie côté élève).

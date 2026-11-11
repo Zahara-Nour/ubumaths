@@ -29,8 +29,9 @@ Une trace **par question, écrite dès la réponse** :
   **déclaré** (auto-évaluation) · **prof** ;
 - **lieu** de la réponse : Flash-cards, Saisie, Contrôle blanc, Course aux nombres ou révision (En
   classe ne laisse pas de trace d'élève) ;
-- **durée de réponse** ; pour les formes chronométrées, **durée allouée** et **fin** (validée / temps
-  écoulé) ;
+- pour les formes chronométrées (Contrôle blanc, Course aux nombres) et le contrôle : **durée de
+  réponse**, **durée allouée** et **fin** (validée / temps écoulé) ; pas de durée en Flash-cards, Saisie
+  ni révision, où l'élève peut retourner la carte pour voir la réponse (précisé le 2026-11-11) ;
 - **graine** ;
 - **réponse** case par case (pas en Flash-cards) ; pour une figure à compléter, **pas le tracé** ;
 - **verdict par case** (juste / faux).
