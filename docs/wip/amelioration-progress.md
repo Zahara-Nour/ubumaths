@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après l'exploration de la piste 4 (c)._
+_Mis à jour le 2026-11-11, PR 7 (volets 1 et 2 de la piste 4 (c)) ouverte._
 
-- **État** : #2542 (zoom clavier/boutons en geste bref) mergée ; migration de #2541 appliquée en prod (vérifiée) ; #2542, #2541, #2540, #2539, #2538, #2536, #2535 : code pas encore en prod · **Piste 4 (c) explorée** (§ « Piste 4 (c) — exploration ») : gain réaliste ~160-220 Ko compressés sur 1 424 (11-15 %) · **En attente de David** : choix parmi les options A (étapes à la demande + import ciblé du parseur, petite PR), B (+ commandes à étapes), C (MathLive hors du chargement initial, plus gros), D (silhouette) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; manifeste Vite : clés = `.svelte-kit/generated/client-optimized/nodes/N.js` (atelier = 273, cf. `app.js`) ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur · **Worktree / branche** : aucun
+- **État** : phase 0 de la piste 4 (c) validée (4 volets ; B et C écartés) ; PR 7 = volets 1 (modules de `src/lib` sans effet de bord sauf une liste gardée) + 2 (étapes au premier dépliage) : atelier 1 467 → 1 308 Ko gzip, 67 pages à markdown −210 Ko · **Prochaine action** : PR 7 → revue, CI, merge ; puis volet 3 (`chalk` hors des 23 fichiers de `mathAST/cli`), volet 4 (silhouette), mesure après `deploy:prod` · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; mesurer l'atelier à froid (banc 4G ×4/×6) · **Tranché** : `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence (vitest n'élague pas) — la garde est un test serveur ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; manifeste Vite : clés = `.svelte-kit/generated/client-optimized/nodes/N.js` (atelier = 273) · **Worktree / branche** : `ubumaths-wt-amelioration` / `perf/atelier-barils`
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -315,6 +315,29 @@ module = 2 346 Ko, ramenée aux 1 424 Ko réels de l'atelier). Scripts jetables 
   faut rendre `calcul.ts` asynchrone sur ces commandes) ; C = MathLive (~146 Ko, refonte de 6
   composants) ; D = silhouette (perçu seulement). `chalk` : à sortir du code client dans tous
   les cas (3 Ko, mais du code de terminal dans le navigateur).
+
+## Piste 4 (c) — phase 0 validée et PR 7 (2026-11-11)
+
+David : « la solution la plus propre même s'il y a plus de travail » → 4 volets, B et C écartés.
+Comportements validés tels que proposés (volet 1 : rendre les barils élagables ; volet 2 :
+« Chargement des étapes… », échec → message + « Réessayer » ; volet 3 : couleurs au seul REPL du
+terminal ; volet 4 : silhouette inerte).
+
+- **Volet 1, cause** : les barils n'y sont pour rien en soi. Rolldown garde un module entier dès
+  qu'une constante de niveau module est construite par un appel (`P.add(…)`, `createRule`,
+  `new Set`) : il ne prouve pas l'absence d'effet. Banc : `parseMarkdown` seul = 1 843 Ko non
+  minifiés (220 modules), par `$lib/ubumark` = 2 318 Ko ; tout déclaré sans effet → 1 229 / 1 174.
+- **Remède** : `treeshake.moduleSideEffects` du build client (`scripts/side-effect-modules.ts`) :
+  `.ts` de `src/lib` sans effet sauf 22 modules qui agissent au chargement (enregistrements,
+  `z.config`, imports nus de CSS, workers). Garde = test serveur qui relit `src/lib`.
+- ⚠️ Premier essai : `utils/mathlive-styles.ts` (rien qu'un `import 'mathlive/static.css'`) élagué
+  → polices de MathLive en 404. Vu au banc Playwright, pas par les tests. La détection compte
+  depuis les imports nus (+7 modules).
+- **Vérifié** : build complet avant / après, 334 routes ; 29 commandes de console identiques à la
+  référence (16 « Comment ? » dépliés) ; 63 pages publiques sans erreur, mêmes textes (3 écarts =
+  contenu tiré au hasard) ; CSS identique (689 842 / 689 843 octets, 75 `@font-face`).
+- **Volet 2** : `StepsOnDemand.svelte` + `lazyLoader` ; 9 fichiers de tests préchargent dans un
+  `beforeAll`. Atelier 1 409 → 1 308 Ko.
 
 ## Piste 5 — « Mon cours », #1788 (phase 0, 2026-11-11)
 
