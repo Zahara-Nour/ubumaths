@@ -1,0 +1,197 @@
+{
+	"title": "Démontrer qu'une suite minorée par une suite qui tend vers +∞ tend vers +∞",
+	"description": "Démonstration à trous : définition de la limite de (vₙ) (choix), rang max(n₀ ; N₁) (choix), conclusion (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soient $(u_n)$ et $(v_n)$ deux suites telles que $u_n\\geqslant v_n$ pour tout $n\\geqslant n_0$, et $\\displaystyle\\lim_{n\\to+\\infty}v_n=+\\infty$. On démontre que $\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty$.\n\nSoit $A$ un nombre réel.\n\nQue donne $\\displaystyle\\lim_{n\\to+\\infty}v_n=+\\infty$ ?\n\n```choix\n- Il existe un rang $N_1$ tel que, pour tout $n\\geqslant N_1$, $v_n>A$.\n- Il existe un rang $N_1$ tel que $v_{N_1}>A$.\n- Pour tout entier $n$, $v_n>A$.\n- La suite $(v_n)$ est croissante.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, l'intervalle $]A\\,;\\,+\\infty[$ contient tous les termes de $(v_n)$ à partir d'un certain rang.",
+					"Donc **il existe $N_1$ tel que, pour tout $n\\geqslant N_1$, $v_n>A$**.",
+					"Un seul terme au-dessus de $A$ ne suffit pas ; et une suite qui tend vers $+\\infty$ n'est pas forcément croissante."
+				]
+			}
+		},
+		{
+			"statement": "Soient $(u_n)$ et $(v_n)$ deux suites telles que $u_n\\geqslant v_n$ pour tout $n\\geqslant n_0$, et $\\displaystyle\\lim_{n\\to+\\infty}v_n=+\\infty$. On démontre que $\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty$.\n\nSoit $A$ un nombre réel.\n\nPour tout $n\\geqslant N_1$, $v_n>A$. À partir de quel rang $N$ a-t-on à la fois $u_n\\geqslant v_n$ et $v_n>A$ ?\n\n```choix\n- $N$ est le plus grand des deux entiers $n_0$ et $N_1$.\n- $N$ est le plus petit des deux entiers $n_0$ et $N_1$.\n- $N=n_0$.\n- $N=N_1$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_n\\geqslant v_n$ vaut pour $n\\geqslant n_0$ ; $v_n>A$ vaut pour $n\\geqslant N_1$.",
+					"Les deux valent dès que $n$ dépasse les deux rangs : $N=\\textcolor{{{color:primary.0}}}{\\max(n_0\\,;\\,N_1)}$.",
+					"Avec le plus petit des deux, l'une des deux inégalités peut être fausse."
+				]
+			}
+		},
+		{
+			"statement": "Soient $(u_n)$ et $(v_n)$ deux suites telles que $u_n\\geqslant v_n$ pour tout $n\\geqslant n_0$, et $\\displaystyle\\lim_{n\\to+\\infty}v_n=+\\infty$. On démontre que $\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty$.\n\nSoit $A$ un nombre réel.\n\nPour tout $n\\geqslant N$, $u_n\\geqslant v_n>A$. Pourquoi peut-on conclure ?\n\n```choix\n- L'intervalle $]A\\,;\\,+\\infty[$ contient tous les $u_n$ à partir du rang $N$, et $A$ était un réel quelconque.\n- La suite $(u_n)$ est minorée par $A$, donc elle tend vers $+\\infty$.\n- La suite $(u_n)$ est croissante.\n- Par le théorème des gendarmes.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À partir du rang $N$, tous les termes de $(u_n)$ sont dans $]A\\,;\\,+\\infty[$.",
+					"Comme $A$ est quelconque, c'est la définition de $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty}$.",
+					"Le théorème des gendarmes demande un encadrement par deux suites de même limite finie."
+				]
+			}
+		},
+		{
+			"statement": "Soient $(u_n)$ et $(v_n)$ deux suites telles que $u_n\\geqslant v_n$ pour tout $n\\geqslant n_0$, et $\\displaystyle\\lim_{n\\to+\\infty}v_n=+\\infty$. On démontre que $\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Soit $A$ un nombre réel.\n- Comme $(v_n)$ tend vers $+\\infty$, il existe $N_1$ tel que, pour tout $n\\geqslant N_1$, $v_n>A$.\n- Pour tout $n\\geqslant\\max(n_0\\,;\\,N_1)$, $u_n\\geqslant v_n>A$.\n- Tout intervalle $]A\\,;\\,+\\infty[$ contient donc tous les $u_n$ à partir d'un certain rang.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On revient à la définition d'une suite qui tend vers $+\\infty$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "à partir d'un rang",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul terme",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pour tout n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "max",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : min",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n₀",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : N₁",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "définition",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : minorée",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : gendarmes",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

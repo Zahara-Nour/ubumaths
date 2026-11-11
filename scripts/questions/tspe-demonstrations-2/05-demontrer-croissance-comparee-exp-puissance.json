@@ -1,0 +1,205 @@
+{
+	"title": "Démontrer la croissance comparée de xⁿ et de l'exponentielle en +∞",
+	"description": "Démonstration à trous : cas n = 1 (choix), X = x/n (case), conclusion (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $n$ un entier naturel non nul. On démontre que $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty$.\n\nOn admet que, pour tout réel $x\\geqslant 0$, $e^x\\geqslant\\dfrac{x^2}{2}$ (étude de $x\\mapsto e^x-\\dfrac{x^2}{2}$).\n\nOn commence par $n=1$. Pourquoi $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x}=+\\infty$ ?\n\n```choix\n- Pour $x>0$, $\\dfrac{e^x}{x}\\geqslant\\dfrac{x}{2}$, et $\\dfrac{x}{2}$ tend vers $+\\infty$ : on conclut par comparaison.\n- $e^x$ et $x$ tendent vers $+\\infty$, donc leur quotient aussi.\n- $e^x>x$, donc $\\dfrac{e^x}{x}>1$, d'où la limite $+\\infty$.\n- $\\dfrac{e^x}{x}\\geqslant\\dfrac{x^2}{2}$, et $\\dfrac{x^2}{2}$ tend vers $+\\infty$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $x>0$, on divise $e^x\\geqslant\\dfrac{x^2}{2}$ par $x>0$ : $\\dfrac{e^x}{x}\\geqslant\\dfrac{x}{2}$.",
+					"Comme $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{x}{2}=+\\infty$, par comparaison $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x}=+\\infty}$.",
+					"« $\\dfrac{+\\infty}{+\\infty}$ » est une forme indéterminée ; et $\\dfrac{e^x}{x}>1$ ne donne aucune limite."
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier naturel non nul. On démontre que $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty$.\n\nOn admet que, pour tout réel $x\\geqslant 0$, $e^x\\geqslant\\dfrac{x^2}{2}$ (étude de $x\\mapsto e^x-\\dfrac{x^2}{2}$).\n\nOn a démontré que $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x}=+\\infty$. Pour $x>0$, on écrit $\\dfrac{e^x}{x^n}=\\dfrac{1}{n^n}\\left(\\dfrac{e^{X}}{X}\\right)^n$.\n\nComplète.\n\n$X=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{x}{n}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$e^x=\\left(e^{x/n}\\right)^n$ et $x^n=n^n\\left(\\dfrac{x}{n}\\right)^n$.",
+					"Donc $\\dfrac{e^x}{x^n}=\\dfrac{1}{n^n}\\left(\\dfrac{e^{x/n}}{x/n}\\right)^n$ : $X=\\textcolor{{{color:primary.0}}}{\\dfrac{x}{n}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier naturel non nul. On démontre que $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty$.\n\nOn admet que, pour tout réel $x\\geqslant 0$, $e^x\\geqslant\\dfrac{x^2}{2}$ (étude de $x\\mapsto e^x-\\dfrac{x^2}{2}$).\n\nPour $x>0$, $\\dfrac{e^x}{x^n}=\\dfrac{1}{n^n}\\left(\\dfrac{e^{X}}{X}\\right)^n$ avec $X=\\dfrac{x}{n}$. Pourquoi $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty$ ?\n\n```choix\n- $X\\to+\\infty$, donc $\\dfrac{e^X}{X}\\to+\\infty$, sa puissance $n$-ième aussi, et $\\dfrac{1}{n^n}$ est une constante strictement positive.\n- $\\dfrac{1}{n^n}$ tend vers $0$, donc la limite est $0$.\n- C'est une forme indéterminée « $0\\times\\infty$ » : on ne peut pas conclure.\n- $\\dfrac{e^X}{X}$ tend vers $1$, donc la limite est $\\dfrac{1}{n^n}$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $x\\to+\\infty$, $X=\\dfrac{x}{n}\\to+\\infty$ ($n$ est fixé), donc $\\dfrac{e^X}{X}\\to+\\infty$ et $\\left(\\dfrac{e^X}{X}\\right)^n\\to+\\infty$.",
+					"$n$ ne dépend pas de $x$ : $\\dfrac{1}{n^n}$ est une constante strictement positive, donc $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty}$.",
+					"Seul $x$ tend vers $+\\infty$ : $\\dfrac{1}{n^n}$ ne tend vers rien, il n'y a pas de forme indéterminée."
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier naturel non nul. On démontre que $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty$, en admettant que $e^x\\geqslant\\dfrac{x^2}{2}$ pour tout $x\\geqslant 0$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour $x>0$, $\\dfrac{e^x}{x}\\geqslant\\dfrac{x}{2}$, donc par comparaison $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x}=+\\infty$.\n- Pour $x>0$, on écrit $\\dfrac{e^x}{x^n}=\\dfrac{1}{n^n}\\left(\\dfrac{e^{X}}{X}\\right)^n$ avec $X=\\dfrac{x}{n}$.\n- Quand $x\\to+\\infty$, $X\\to+\\infty$, donc $\\left(\\dfrac{e^X}{X}\\right)^n\\to+\\infty$.\n- Comme $\\dfrac{1}{n^n}>0$ est une constante, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On traite d'abord $n=1$, puis on s'y ramène par le changement de variable $X=\\dfrac{x}{n}$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "eˣ/x ⩾ x/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∞/∞",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : eˣ/x > 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : eˣ/x ⩾ x²/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x/n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\dfrac{x}{n}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture \\frac (saisie MathLive)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{x}{n}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nx",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["nx"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : xⁿ",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["x^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "constante positive",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/nⁿ → 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0 × ∞",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : eˣ/X → 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
