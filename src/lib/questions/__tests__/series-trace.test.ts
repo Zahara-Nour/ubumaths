@@ -123,34 +123,18 @@ describe('buildSeriesTrace — contenu', () => {
 		expect(trace).not.toHaveProperty('answer_parts');
 	});
 
-	it('bornes de la base : 2 000 caractères par case, 10 000 en tout', () => {
+	// L3 (validé) : au-delà des bornes, le SERVEUR refuse la trace (400) ; rien n'est tronqué ici
+	it('au-delà des bornes : la réponse part telle quelle (le serveur la refusera)', () => {
 		const longue = 'x'.repeat(2500);
-		const blanks = Array.from({ length: 6 }, () => ({ expectedAnswer: '1', type: 'text' }));
-		const trace = buildSeriesTrace({
-			place: 'mock_test',
-			instance: instance({ blanks: blanks as QuestionInstance['blanks'] }),
-			answer: reponse(Array(6).fill(longue), false),
-			timing: { responseMs: 1, allottedMs: 30000, endReason: 'validated' }
-		});
-		const parts = trace?.answer_parts ?? [];
-		expect(parts).toHaveLength(6);
-		expect(parts.every((part) => part.length <= 2000)).toBe(true);
-		expect(parts.join('').length).toBeLessThanOrEqual(10000);
-	});
-
-	it('émojis : chaque case tient dans 2 000 unités UTF-16 (borne du Zod)', () => {
 		const trace = buildSeriesTrace({
 			place: 'mock_test',
 			instance: instance({
 				blanks: [{ expectedAnswer: '1', type: 'text' }] as QuestionInstance['blanks']
 			}),
-			answer: reponse(['😀'.repeat(1500)], false),
+			answer: reponse([longue], false),
 			timing: { responseMs: 1, allottedMs: 30000, endReason: 'validated' }
 		});
-		const [part] = trace?.answer_parts ?? [];
-		expect(part.length).toBeLessThanOrEqual(2000);
-		// Jamais un émoji coupé en deux
-		expect(part).toBe('😀'.repeat(1000));
+		expect(trace?.answer_parts).toEqual([longue]);
 	});
 
 	it('graine absente ou hors bornes : pas de graine', () => {
@@ -176,6 +160,8 @@ describe('createTraceRecorder — envoi (N9, E1)', () => {
 		const fetchFn = vi.fn(async () => new Response('{}', { status: 200 }));
 		const recorder = createTraceRecorder({ fetchFn, retryDelaysMs: [0, 0] });
 		recorder.record(trace);
+		// Sans attendre la fin de la série : au plus tard au microtask suivant
+		await Promise.resolve();
 		expect(fetchFn).toHaveBeenCalledTimes(1);
 		const [url, init] = fetchFn.mock.calls[0] as unknown as [string, RequestInit];
 		expect(url).toBe('/api/skill-attempts');
@@ -209,6 +195,30 @@ describe('createTraceRecorder — envoi (N9, E1)', () => {
 		recorder.record(trace);
 		expect(await recorder.settle()).toEqual({ failed: 1 });
 		expect(fetchFn).toHaveBeenCalledTimes(1);
+	});
+
+	// Deux révisions FSRS en parallèle sur un même modèle perdraient une mise à jour
+	it('une trace à la fois, dans l’ordre : la suivante part quand la précédente a fini', async () => {
+		const order: string[] = [];
+		let release: (() => void) | undefined;
+		const fetchFn = vi.fn(async (_url: string, init: RequestInit) => {
+			const { success } = JSON.parse(init.body as string) as { success: boolean };
+			order.push(`start-${success}`);
+			if (success) await new Promise<void>((resolve) => (release = resolve));
+			order.push(`end-${success}`);
+			return new Response('{}', { status: 200 });
+		});
+		const recorder = createTraceRecorder({
+			fetchFn: fetchFn as unknown as typeof fetch,
+			retryDelaysMs: [0, 0]
+		});
+		recorder.record({ ...trace, success: true });
+		recorder.record({ ...trace, success: false });
+		await vi.waitFor(() => expect(release).toBeDefined());
+		expect(fetchFn).toHaveBeenCalledTimes(1);
+		release?.();
+		expect(await recorder.settle()).toEqual({ failed: 0 });
+		expect(order).toEqual(['start-true', 'end-true', 'start-false', 'end-false']);
 	});
 
 	it('settle remet le compte à zéro (série suivante)', async () => {

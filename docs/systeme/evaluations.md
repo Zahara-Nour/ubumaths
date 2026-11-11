@@ -139,9 +139,11 @@ sa trace **dès la réponse**, avec le **verdict du navigateur** : `buildSeriesT
 `validated` / `timeout`, réponse et verdict par case — `computeBlankColors`, figure sans son tracé).
 Course : à « Valider » (lieu `number_race`, durée depuis le début de la course, durée allouée = celle
 de la course) ; en fin de course, une question jamais validée est ratée, fin `timeout` au chrono,
-**sans durée ni fin** après « Terminer » (décision du 2026-11-11). Une trace refusée ou perdue est
-réessayée deux fois en silence ; en fin de série, la page attend les dernières (`settle`) et affiche
-au plus un message « Certaines réponses n'ont pas été enregistrées ». Jamais en contrôle, ni pour un
+**sans durée ni fin** après « Terminer » (décision du 2026-11-11). Les traces partent **une à la fois, dans l'ordre** (deux révisions FSRS
+parallèles sur un même modèle perdraient une mise à jour) ; une trace perdue (réseau, 5xx) est
+réessayée deux fois en silence, une trace refusée (400 : au-delà des bornes, L3) ne l'est pas ; en fin
+de série, la page attend les dernières (`settle`) et affiche au plus un message « Certaines réponses
+n'ont pas été enregistrées ». Jamais en contrôle, ni pour un
 visiteur (`traceRecorder` nul) ; un prof n'écrit rien (la route l'ignore).
 
 **Fin de série** : `POST /api/tests/save` n'écrit **plus rien** — ni `test_sessions`, ni `test_answers`

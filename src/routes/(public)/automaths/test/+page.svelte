@@ -418,8 +418,11 @@
 			});
 
 			if (response.ok) {
-				// Gain du Palotin : montré sur l'écran de résultats, widget mis à jour
-				buddyGain = await receiveBuddyGain(await response.json());
+				// Gain du Palotin : montré sur l'écran de résultats, widget mis à jour.
+				// Une série relancée entre-temps ne reçoit pas le gain de la précédente.
+				const gain = await receiveBuddyGain(await response.json());
+				if (request !== newsRequest) return;
+				buddyGain = gain;
 				// La Chatterie a-t-elle du nouveau ?
 				const news = await fetchMathouNews();
 				if (request === newsRequest) mathouNews = news;

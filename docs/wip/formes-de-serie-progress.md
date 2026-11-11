@@ -7,7 +7,7 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 _Mis à jour le 2026-11-11, après #2551._
 
-- **État** : PR 4 en cours (branche `feat/formes-de-serie-traces`, décisions notées en § PR 4) ; PR 1 (#2543), PR 2 (#2547), #2548 (migration en prod) et **PR 3 (#2551)** mergées : deux boutons « Pas réussi / Réussi » partout, révision écrite `student_self` + lieu `review`, widget D retiré · **Prochaine action** : PR 4 = trace par question dans Flash-cards, Contrôle blanc (renommage d'Entraînement), Course ; fin de série sans séance libre (gain du Palotin gardé) ; nouveau worktree `ubumaths-wt-formes-de-serie` depuis `origin/main` · **En attente de David** : rien · **Pour la PR 4** : traces d'un contrôle (lieu `evaluation`, durées) écrites par le **client service** (la policy élève les refuse) ; plafonner `response_ms` à `allotted_ms` côté client · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; une trace `student_self` n'est plus forcément une carte de cours (révision = lieu `review`, heatmap et anti-fraude la comptent comme l'ancienne `srs`) ; la séance de révision fait réagir le Palotin (#2550) · **Worktree / branche** : `ubumaths-wt-formes-de-serie`, `feat/formes-de-serie-traces`
+- **État** : PR 4 ouverte (branche `feat/formes-de-serie-traces`) : trace par question en Flash-cards, Contrôle blanc, Course ; `/api/tests/save` réduit au gain ; renommage « Contrôle blanc » ; revues faites (§ PR 4) · **Prochaine action** : CI verte → merge, puis PR 4 bis (traces d'un contrôle côté serveur, lieu `evaluation`, client service) · **En attente de David** : deux points de revue notés en § PR 4 (évasion anti-fraude par `flash_cards`, double trace possible après une coupure réseau) — à trancher, non bloquants · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces envoyées en FILE (FSRS lit puis écrit sans verrou) · **Worktree / branche** : `ubumaths-wt-formes-de-serie`, `feat/formes-de-serie-traces`
 
 ## Décisions de David (2026-11-11)
 
@@ -281,3 +281,24 @@ Décisions de David (recommandations suivies) :
   ratée **sans durée ni fin** (abandon : ne fausse pas P7).
 - **Découpage** : PR 4 = séries libres (Flash-cards, Contrôle blanc, Course) + renommage ;
   **PR 4 bis** = traces d'un contrôle assigné côté serveur (client service, lieu `evaluation`).
+
+Réalisé (2026-11-11) :
+
+- `src/lib/questions/series-trace.ts` : `buildSeriesTrace` (graine, durées plafonnées, réponse et
+  verdict par case via `computeBlankColors`, figure sans tracé) et `createTraceRecorder` (une trace à
+  la fois, deux nouveaux essais sur réseau / 5xx, `settle()` → message unique). Branché dans
+  `FlashSeries`, `TestInteractive`, `TestCourse` ; nul en contrôle et pour un visiteur.
+- `/api/skill-attempts` : lieu `flash_cards` → `student_self`, FSRS au meilleur du jour.
+- `/api/tests/save` : gain du Palotin seulement (plus de `test_sessions`, `test_answers`, traces).
+- Libellés « Entraînement » → « Contrôle blanc » (forme d'un contrôle comprise, CONTEXT.md).
+- Revues (code-reviewer + security-auditor, Opus) : corrigés — envois en file (FSRS parallèle sur un
+  même modèle perdait des mises à jour), L3 respectée (plus de troncature : le serveur refuse au-delà
+  des bornes), gain d'une série relancée, test « jamais en contrôle » de la Course.
+- **À trancher par David (non bloquant)** :
+  1. _Anti-fraude_ : un élève peut envoyer `place: 'flash_cards'` pour une question de Contrôle
+     blanc → trace `student_self`, ignorée par le détecteur (`anti-fraud/runner.ts` ne lit que
+     `auto`) mais comptée dans les badges. Pas un accès neuf (l'ancien `/api/tests/save` prenait
+     déjà `mode: 'flash'` du client ; la policy permet l'insertion directe). Pistes : le détecteur lit
+     aussi `student_self` hors `review`, ou les badges ignorent le déclaré hors carte.
+  2. _Doublon_ : une coupure réseau après l'écriture fait renvoyer la trace (2 lignes, 2 révisions
+     FSRS). Pistes : pas de nouvel essai après une exception réseau, ou clé d'idempotence (migration).

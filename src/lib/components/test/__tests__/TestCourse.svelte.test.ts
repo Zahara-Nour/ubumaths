@@ -286,6 +286,26 @@ describe('TestCourse — traces de la Course aux nombres', () => {
 		confirmSpy.mockRestore();
 	});
 
+	it('contrôle (copie collectée) : aucune trace, ni à « Valider », ni en fin de course', async () => {
+		const record = vi.fn();
+		const { container } = await render(TestCourse, {
+			session: tracedSession(),
+			onComplete: vi.fn(),
+			onBack: vi.fn(),
+			inEvaluation: true,
+			collectOnly: true,
+			showResults: false,
+			traceRecorder: { record, settle: async () => ({ failed: 0 }) }
+		});
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+		const cards = container.querySelectorAll('.question-card-wrapper');
+		await validate(cards[1], 1);
+		await page.getByRole('button', { name: 'Terminer' }).click();
+		await vi.waitFor(() => expect(container.textContent).toContain('Envoi de ta copie'));
+		expect(record).not.toHaveBeenCalled();
+		confirmSpy.mockRestore();
+	});
+
 	it('chrono écoulé : la question jamais validée est ratée, fin « temps écoulé »', async () => {
 		const { record } = await openTraced(1);
 		await vi.waitFor(() => expect(record).toHaveBeenCalledTimes(2), { timeout: 4000 });

@@ -16,10 +16,13 @@
  *   valeur : le vert ou l'ambre de la carte). Figure à compléter : son verdict,
  *   jamais le tracé (case vide). Aucune case → rien (la base refuse `[]`).
  *
- * Bornes de la base : 50 cases, 2 000 caractères par case, 10 000 en tout ; une
- * réponse plus longue est tronquée ici plutôt que refusée (la trace est gardée).
+ * Bornes de la base (50 cases, 2 000 caractères par case, 10 000 en tout) : rien
+ * n'est tronqué ici ; au-delà, le serveur refuse la trace (400, décision L3) et
+ * elle compte parmi les traces non enregistrées.
  *
- * Envoi (E1) : réessayé en silence ; `settle()` dit en fin de série combien de
+ * Envoi (E1) : une trace à la fois, dans l'ordre (deux révisions FSRS en
+ * parallèle sur un même modèle perdraient une mise à jour : lecture puis
+ * écriture, sans verrou) ; réessayé en silence ; `settle()` dit en fin de série combien de
  * traces n'ont pas pu être enregistrées, pour un message unique. Jamais de
  * blocage de la série. `answer_parts` est du texte libre de mineur : affiché
  * échappé partout où il sera relu.
@@ -61,9 +64,6 @@ export interface TraceRecorder {
 }
 
 // Constantes (bornes de la base, CHECK de `skill_attempts`)
-const MAX_PARTS = 50;
-const MAX_PART_CHARS = 2000;
-const MAX_TOTAL_CHARS = 10000;
 const MAX_DURATION_MS = 86_400_000;
 const MAX_SEED = 2_147_483_647;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -77,25 +77,10 @@ function clampDuration(ms: number): number {
 	return Math.min(MAX_DURATION_MS, Math.max(0, Math.round(ms)));
 }
 
-/** Cases tapées, tronquées aux bornes de la base ; la figure n'envoie pas son tracé */
+/** Cases tapées ; la figure n'envoie pas son tracé, seulement son verdict */
 function answerPartsOf(values: string[], instance: QuestionInstance): string[] {
 	const blanks = instance.blanks ?? [];
-	let budget = MAX_TOTAL_CHARS;
-	return values.slice(0, MAX_PARTS).map((value, index) => {
-		if (blanks[index]?.type === 'graphical') return '';
-		// Coupée entre deux points de code (jamais un émoji en deux) ; bornes : 2 000
-		// unités UTF-16 par case (Zod, plus strict que `char_length`) et 10 000 points
-		// de code en tout (`char_length` en base)
-		let part = '';
-		let points = 0;
-		for (const point of value.replaceAll('\u0000', '')) {
-			if (points >= budget || part.length + point.length > MAX_PART_CHARS) break;
-			part += point;
-			points += 1;
-		}
-		budget -= points;
-		return part;
-	});
+	return values.map((value, index) => (blanks[index]?.type === 'graphical' ? '' : value));
 }
 
 /** Réponse et verdicts par case ; null quand il n'y a aucune case tapée */
@@ -111,8 +96,7 @@ function answerOf(
 	// Rien de tapé (cases vides) : comme une question sans réponse
 	if (values.every((value) => value.trim() === '')) return null;
 	const { verdicts } = computeBlankColors(values, instance);
-	const parts = answerPartsOf(values, instance);
-	return { parts, verdicts: verdicts.slice(0, parts.length) };
+	return { parts: answerPartsOf(values, instance), verdicts };
 }
 
 /**
@@ -171,7 +155,8 @@ export function createTraceRecorder(
 ): TraceRecorder {
 	const fetchFn = options.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
 	const retryDelays = options.retryDelaysMs ?? DEFAULT_RETRY_DELAYS_MS;
-	const pending = new Set<Promise<void>>();
+	// File : chaque envoi attend la fin du précédent
+	let queue: Promise<void> = Promise.resolve();
 	let failed = 0;
 
 	async function send(trace: SeriesTraceBody): Promise<void> {
@@ -195,11 +180,10 @@ export function createTraceRecorder(
 
 	return {
 		record(trace) {
-			const sending = send(trace).finally(() => pending.delete(sending));
-			pending.add(sending);
+			queue = queue.then(() => send(trace));
 		},
 		async settle() {
-			await Promise.allSettled(pending);
+			await queue;
 			const lost = failed;
 			failed = 0;
 			return { failed: lost };
