@@ -10,17 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, lot 2 écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-11-11, après #2561 (fichiers du lot 2 mergés)._
 
-- **État** : lot 1 publié (§ 5) ; lot 2 (388, 389, 390, 391, 405) : 5 fichiers vérifiés (§ 6), PR des fichiers.
-- **Prochaine action** : CI verte → merge ; puis David crée les brouillons → migration de rangement (3 sous-notions,
+- **État** : lot 1 publié (§ 5) ; lot 2 (388, 389, 390, 391, 405) : 5 fichiers vérifiés (§ 6), mergés (#2561), pas encore en prod.
+- **Prochaine action** : David crée les brouillons → migration de rangement (3 sous-notions,
   tags TSPE-388/389/390/391/405) → page à cocher → publication ; puis lot 3.
-- **En attente de David** : après le merge, `! pnpm tsx scripts/create-questions.ts --dir
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir
 scripts/questions/tspe-demonstrations-2 --publier` depuis le dépôt principal à jour.
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
   simulation `publier-lot.ts` lit la prod → refusée au mode auto, David la lance ; `x/n` saisi en ligne = forme à
   améliorer (spec en `\frac`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-demonstrations-2`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-demonstrations-2` mergée ; rangement sur une nouvelle branche.
 
 ---
 
@@ -197,3 +197,5 @@ locale (copie hors dépôt) ; aperçu admin vu à l'écran (étapes à ranger 38
 
 Piège du lot : `x/n` saisi en ligne sort en « forme à améliorer » (bad_form) ; MathLive donne `\frac{x}{n}`, seule
 écriture alternative retenue en spec.
+
+PR des fichiers : #2561, mergée (CI verte du premier coup).
