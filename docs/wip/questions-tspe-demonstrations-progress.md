@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11 : phase 0 validée (D1)._
+_Mis à jour le 2026-11-11 : lot 1 écrit, #2557 ouverte._
 
-- **État** : relevé prod des 68 points P (§ 1) ; phase 0 validée (D1, § 2) ; Q6 faite.
-- **Prochaine action** : lot 1 (321, 548, 359, 373), worktree `../ubumaths-wt-questions-tspe-demonstrations`.
-- **En attente de David** : rien.
+- **État** : phase 0 validée (D1, § 2) ; lot 1 écrit (§ 3), PR des fichiers #2557 ouverte.
+- **Prochaine action** : #2557 verte → merge ; puis David crée les brouillons en prod, migration de rangement.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-demonstrations-1 --publier` depuis le dépôt principal à jour, après le merge.
 - **Pièges en cours** : aucun.
-- **Worktree / branche** : aucun pour l'instant.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-demonstrations-1`.
 
 ---
 
@@ -119,3 +119,27 @@ erreurs typiques en distracteurs) + une variation « étapes à ranger » (` ```
 Q3 valeurs tirées là où la preuve s'y prête, lettres ailleurs ; Q4 un modèle par point, tagué sur son point P, sur la
 sous-notion existante du point, aucun nœud neuf (321 et 548 : deux modèles) ; Q5 accès : personne de plus ; Q6
 `tspe.md` corrigé (1cfc575d publié), commit de doc direct. Lots 1 à 4 dans l'ordre du § 2.
+
+## 3. Lot 1 : dénombrement et géométrie (2026-11-11)
+
+| Point | Modèle (`scripts/questions/tspe-demonstrations-1/`) | Niveau | Variations                                                                                                          |
+| ----- | --------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------- |
+| 321   | `01-demontrer-relation-de-pascal-par-le-calcul`     | 5      | facteur k + 1 (case), facteur n − k (case), (n + 1) − (k + 1) = n − k (choix), étapes (5)                           |
+| 548   | `02-demontrer-relation-de-pascal-par-denombrement`  | 6      | exemple : parties à 3 éléments contenant a, C(n, 2) (case, n de 4 à 8), sans a (choix), additif (choix), étapes (4) |
+| 359   | `03-demontrer-projete-orthogonal-plus-proche`       | 6      | MH·HN = 0 (case), pourquoi (choix), MN > MH (choix), étapes (4)                                                     |
+| 373   | `04-demontrer-equation-cartesienne-plan`            | 4      | M ∈ P ⟺ AM·n = 0 (choix), d (case, A et n tirés de 1 à 6 / 2 à 5), repère orthonormé (choix), étapes (4)            |
+
+Niveaux : après ceux déjà présents sur la sous-notion (relevé prod : triangle de Pascal 3-4, projeté orthogonal 2-5,
+vecteur normal et équation cartésienne 1-3). Script : `docs/wip/questions/lot-tspe-demonstrations-1.py`. Étapes
+interchangeables évitées : « Soit N » (359) et « Soit M » (373) passés dans l'énoncé, « Les autres… » (548) et « Or… »
+(359) pour fixer l'ordre.
+
+Vérifié : `question:specs` 150 tirages par variation, 4/4 importables, 57 specs vertes, 0 `\textcolor` hors `$` ;
+3 714 formules des aperçus passées à `validateLatex` + accolades, 0 problème ; brouillons en base locale (copie hors
+dépôt) ; aperçu admin vu à l'écran (choix 321, étapes à ranger 321, case de 373).
+
+Pièges du lot : une case à réponse nombre seul demande un `?` dans une formule de l'énoncé (`Il y en a $?$.`), sinon
+« Blank count mismatch » ; dans l'aperçu admin, la graine fixe la variation (graines 7, 12, 1, 4 → variations 1 à 4
+pour un modèle à 4 variations) ; la saisie dans le champ MathLive ne passe pas par l'automatisation de Chrome.
+
+PR des fichiers : #2557.
