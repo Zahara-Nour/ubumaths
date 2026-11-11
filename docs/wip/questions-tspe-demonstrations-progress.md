@@ -12,9 +12,9 @@
 
 _Mis à jour le 2026-11-11, migration de rangement du lot 2 écrite (§ 7), PR pas encore ouverte._
 
-- **État** : lot 1 publié (§ 5) ; lot 2 : 5 brouillons en prod (§ 7), migration + test commités sur la branche, non
-  poussés.
-- **Prochaine action** : `security-auditor` sur la migration (relancer s'il n'a pas rendu) → push, PR, CI → merge →
+- **État** : lot 1 publié (§ 5) ; lot 2 : 5 brouillons en prod (§ 7), migration + test sur la branche, audit sans
+  finding.
+- **Prochaine action** : PR, CI → merge →
   `check:migrations --pr` → `db:migrate` depuis le dépôt principal → vérif prod → page à cocher → publication ; puis
   lot 3 (421, 448, 449, 471, 472).
 - **En attente de David** : rien.
@@ -217,5 +217,5 @@ tag ; les 5 points actifs sur leurs sous-notions actives.
 Migration `20261111174042_questions_tspe_demonstrations_2_rangement_tags.sql` (copie de celle du lot 1, seuls
 l'en-tête, les données et les compteurs changent) ; test
 `tests/integration/questions-tspe-demonstrations-2-rangement-tags.test.ts` 12/12 vert, rouge sans la migration
-(partie aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie, vert relancé après le pre-commit. Accès :
-personne de plus (Q5).
+(partie aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie, vert relancé après le pre-commit. `security-auditor` :
+aucun finding. Accès : personne de plus (Q5).
