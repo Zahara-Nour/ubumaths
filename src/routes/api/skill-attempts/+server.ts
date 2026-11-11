@@ -3,7 +3,7 @@
  *
  * Crée une row `skill_attempts` (régime per-template) à chaque réponse d'une
  * série libre, envoyée dès la réponse : Flash-cards, Contrôle blanc, Course aux
- * nombres (`series-trace.ts`), et `FlashCard.svelte`.
+ * nombres, Saisie (`series-trace.ts`).
  * Source : `student_self` (déclaré) pour une carte de cours ou le lieu
  * `flash_cards`, `auto` (corrigé par l'application) sinon.
  *

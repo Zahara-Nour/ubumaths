@@ -6,9 +6,10 @@
  * verso = correction. L'élève retourne la carte puis s'auto-évalue.
  *
  * - marqueur explicite `options.courseCard === true` (cf. `isCourseCard`) ;
- * - non évaluable : retirée des formes qui corrigent les réponses (Entraînement,
- *   Course aux nombres) et des contrôles (`excludeCourseCards`,
- *   `seriesFormExcludesCourseCards`) ; gardée en Flash-cards et En classe ;
+ * - non évaluable : retirée des formes chronométrées (Contrôle blanc, Course aux
+ *   nombres) et des contrôles (`excludeCourseCards`,
+ *   `seriesFormExcludesCourseCards`) ; gardée en Flash-cards, Saisie (N3) et En
+ *   classe ;
  * - pas de spec de test : la vérification se limite à la génération et à un
  *   recto / verso non vides.
  *
@@ -36,9 +37,10 @@ export { isCourseCard };
 // ============================================================================
 
 /**
- * Une forme de série retire-t-elle les cartes de cours ? Oui quand elle corrige
- * les réponses (Entraînement, Course aux nombres) : une carte n'a pas de réponse
- * à vérifier. Non en Flash-cards et En classe, où l'on retourne la carte.
+ * Une forme de série retire-t-elle les cartes de cours ? Oui dans les formes
+ * chronométrées (Contrôle blanc, Course aux nombres) : une carte n'a pas de
+ * réponse à vérifier. Non en Flash-cards, Saisie (N3) et En classe, où l'on
+ * retourne la carte.
  * Un contrôle les retire toujours, quelle que soit sa forme.
  */
 export function seriesFormExcludesCourseCards(mode: TestMode): boolean {

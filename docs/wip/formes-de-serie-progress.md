@@ -340,3 +340,26 @@ Réalisé (2026-11-11) :
   (bornées, sans effet sur la note ; même confiance que `test_answers.time_spent`). 4. _Constat hors PR_ : `skill_attempts_insert_teacher` n'empêche pas `place = 'evaluation'` (un
   prof peut écrire une trace « en contrôle » pour son élève). À aligner seulement si
   « `evaluation` ⇒ écrit par le serveur » doit être strict.
+
+### PR 5 — forme Saisie (2026-11-11)
+
+Décisions de David (recommandations suivies) :
+
+- **Fin de série** : comme les Flash-cards : bilan « k questions réussies sur n », « Revoir » les
+  ratées (en saisie, sans trace), « Recommencer », « Retour au panier ».
+- **Gain du Palotin** : oui, comme le Contrôle blanc (réponses corrigées par l'appli ; cartes de
+  cours exclues, calcul de `/api/tests/save`).
+- **Séries de chapitre** (forme choisie par le prof : Flash-cards / Contrôle blanc, CHECK en base) :
+  Saisie **pas dans cette PR** (migration additive à faire plus tard si besoin).
+
+Réalisé (2026-11-11) :
+
+- `TestMode` `typing` (lancement, liens partagés, Zod de fin de série, `TestModeDialog` : carte
+  « Saisie »). Cartes de cours gardées (`seriesFormExcludesCourseCards` inchangé).
+- `TypingSeries.svelte` : `FlashCard` `interactive` + `flipOnSubmit` (neuf) ; retournement offert
+  seulement après « Valider » ; « Suivante » / « Terminer » ; carte de cours = Flash-cards ; bilan,
+  « Revoir » (sans trace), gain du Palotin et nouvelles de la Chatterie sous le bilan.
+- Trace `typing` (`series-trace.ts`) : réponse et verdict par case, jamais de durée (N11).
+- `FlashCard` n'envoie plus de trace elle-même (seuls appelants interactifs : aperçus prof / admin,
+  que la route ignorait) : une seule voie, la forme de série.
+- `/api/tests/save` : gain en Saisie. Vitrine `/demo/questions` : onglet Saisie (« six formes »).

@@ -2,7 +2,7 @@
  * Vitrine — les questions (`/demo/questions`)
  * Comportements validés par David le 2026-10-25 (docs/wip/demo-debug-progress.md, PR 6g).
  *
- * - un visiteur voit le titre, le retour vers `/demo`, 5 onglets et le lien vers Automaths ;
+ * - un visiteur voit le titre, le retour vers `/demo`, 6 onglets et le lien vers Automaths ;
  * - chaque onglet monte sa forme sur les 4 questions de la page ;
  * - pas de bandeau « Connecte-toi… », une ligne « Rien n'est enregistré » ;
  * - révisions espacées simulées : après le retournement, « Pas réussi / Réussi » et la prochaine date ;
@@ -20,6 +20,7 @@ const TABS = [
 	'En classe',
 	'Contrôle blanc',
 	'Flash-cards',
+	'Saisie',
 	'Course aux nombres',
 	'Révisions espacées'
 ];
@@ -39,7 +40,7 @@ describe('/demo/questions', () => {
 
 		await expect
 			.element(page.getByRole('heading', { level: 1 }))
-			.toHaveTextContent('Une série, cinq formes');
+			.toHaveTextContent('Une série, six formes');
 		await expect
 			.element(page.getByRole('link', { name: /démonstrations/ }))
 			.toHaveAttribute('href', '/demo');
@@ -72,6 +73,10 @@ describe('/demo/questions', () => {
 		await expect
 			.element(page.getByRole('button', { name: 'Voir la correction' }))
 			.toBeInTheDocument();
+		expect(page.getByText(/Connecte-toi/).elements()).toHaveLength(0);
+
+		await openTab('Saisie');
+		await expect.element(page.getByTestId('typing-position')).toHaveTextContent('Question 1 / 4');
 		expect(page.getByText(/Connecte-toi/).elements()).toHaveLength(0);
 	});
 

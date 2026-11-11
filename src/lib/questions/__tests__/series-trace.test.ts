@@ -64,6 +64,32 @@ describe('buildSeriesTrace — contenu', () => {
 		});
 	});
 
+	it('Saisie : réponse et verdict case par case, jamais de durée (N11)', () => {
+		const trace = buildSeriesTrace({
+			place: 'typing',
+			instance: instance(),
+			answer: reponse(['4', '7'], false),
+			timing: { responseMs: 4200, allottedMs: 30000, endReason: 'validated' }
+		});
+		expect(trace).toEqual({
+			template_id: MODELE,
+			success: false,
+			place: 'typing',
+			seed: 1234,
+			answer_parts: ['4', '7'],
+			part_verdicts: [true, false]
+		});
+	});
+
+	it('Saisie, carte de cours : auto-évaluée, ni réponse ni verdicts', () => {
+		const trace = buildSeriesTrace({
+			place: 'typing',
+			instance: instance({ options: { courseCard: true } }),
+			answer: reponse('knew', true)
+		});
+		expect(trace).toEqual({ template_id: MODELE, success: true, place: 'typing', seed: 1234 });
+	});
+
 	it('durée de réponse plafonnée à la durée allouée', () => {
 		const trace = buildSeriesTrace({
 			place: 'mock_test',

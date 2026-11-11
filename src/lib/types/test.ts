@@ -17,8 +17,9 @@ import type { AnswerData } from '$lib/types/question-display';
  * - interactive: Quiz mode with answer validation and scoring
  * - course: "Course aux nombres" - all questions displayed at once with time limit
  * - flash: « Flash-cards » - l'élève retourne chaque carte et s'auto-évalue, sans chrono
+ * - typing: « Saisie » - l'élève tape sa réponse, la carte se retourne après « Valider », sans chrono
  */
-export type TestMode = 'display' | 'interactive' | 'course' | 'flash';
+export type TestMode = 'display' | 'interactive' | 'course' | 'flash' | 'typing';
 
 // ===========================================================================
 // TEST CONFIGURATION

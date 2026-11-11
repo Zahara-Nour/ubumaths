@@ -3,7 +3,7 @@
  * ==============================================
  *
  * Une trace par question, envoyée dès la réponse (N9) à `/api/skill-attempts` :
- * Flash-cards, Contrôle blanc, Course aux nombres. Une série abandonnée garde
+ * Flash-cards, Saisie, Contrôle blanc, Course aux nombres. Une série abandonnée garde
  * les réponses données.
  *
  * Contenu (N10, N11) :
@@ -34,7 +34,7 @@ import type { AnswerData } from '$lib/types/question-display';
 
 // Types
 /** Lieux d'une série libre qui laissent une trace par cette voie */
-export type SeriesTracePlace = 'flash_cards' | 'mock_test' | 'number_race';
+export type SeriesTracePlace = 'flash_cards' | 'typing' | 'mock_test' | 'number_race';
 
 export interface SeriesTraceTiming {
 	/** De l'affichage de la question à « Valider » (ou au temps écoulé) */
@@ -68,7 +68,9 @@ const MAX_DURATION_MS = 86_400_000;
 const MAX_SEED = 2_147_483_647;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** Lieux où l'élève tape sa réponse */
-const ANSWERED_PLACES: readonly SeriesTracePlace[] = ['mock_test', 'number_race'];
+const ANSWERED_PLACES: readonly SeriesTracePlace[] = ['typing', 'mock_test', 'number_race'];
+/** Formes chronométrées : durées et fin (N11) ; jamais Flash-cards ni Saisie */
+const TIMED_PLACES: readonly SeriesTracePlace[] = ['mock_test', 'number_race'];
 /** Attentes avant chaque nouvel essai (deux essais de plus) */
 const DEFAULT_RETRY_DELAYS_MS = [1000, 3000];
 
@@ -121,7 +123,7 @@ export function buildSeriesTrace(input: {
 	if (typeof seed === 'number' && Number.isInteger(seed) && seed >= 0 && seed <= MAX_SEED) {
 		trace.seed = seed;
 	}
-	if (timing && place !== 'flash_cards') {
+	if (timing && TIMED_PLACES.includes(place)) {
 		const allotted = Math.max(1, clampDuration(timing.allottedMs));
 		trace.response_ms = Math.min(clampDuration(timing.responseMs), allotted);
 		trace.allotted_ms = allotted;
