@@ -7,7 +7,7 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 _Mis à jour le 2026-11-11, phase 0 en cours (aucune PR, rien de codé)._
 
-- **État** : phase 0 de conception **close** : [ADR 0037](../adr/0037-cinq-formes-de-serie-deux-boutons.md) (formes, deux boutons) et [ADR 0038](../adr/0038-contenu-d-une-trace.md) (trace) écrits, `CONTEXT.md` à jour (forme de série, Saisie, Contrôle blanc, état de mémorisation, trace) · **Prochaine action** : comportements de phase 0 en français (nominal / limite / erreur) et découpage en PR, à faire valider · **En attente de David** : rien d'ouvert · **Pièges en cours** : « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` ; widget D (histogramme 1-4) et heatmap actuelle à remplacer ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`) ; ne pas relancer ce qui est validé · **Worktree / branche** : aucun (doc sur `main`) ; un worktree au premier code
+- **État** : ADR 0037/0038 écrits ; **comportements de phase 0 + découpage rédigés** (§ « Comportements de phase 0 — à valider ») · **Prochaine action** : faire valider les comportements, puis PR 1 (migration) · **En attente de David** : validation des comportements + Q-A (les contrôles écrivent des traces aujourd'hui, l'ADR 0038 dit non), Q-B, Q-C, Q-D · **Pièges en cours** : « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`) ; ne pas relancer ce qui est validé · **Worktree / branche** : aucun (doc sur `main`) ; un worktree au premier code
 
 ## Décisions de David (2026-11-11)
 
@@ -113,3 +113,92 @@ Questions tranchées par David avant l'écriture (recommandations suivies) :
 - **Q5** : second essai et aide (tuteur, pouvoirs des Mathoux) n'existent pas sur les questions de
   série (`FlashCard.maxAttempts` : démo seulement ; tuteur : exercices de fiche) → `with_help` gardé ;
   une trace par essai ; numéro d'essai ajouté le jour où le second essai existe.
+
+## Comportements de phase 0 — à valider (rédigés le 2026-11-11)
+
+Constats du code relus pour les écrire : Flash-cards, Entraînement et Course libres écrivent en fin
+de série par `/api/tests/save` (séance libre + traces via `recordSeriesReviews` + gain du Palotin) ;
+la révision écrit **carte par carte** (`/api/srs/review/submit`, 4 notes) ; `FlashCard` sait poster
+une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit des traces « corrigé »**
+(`evaluation-attempts.ts:729`, `recordSeriesReviews`), contrairement à ce que dit l'ADR 0038 (voir Q-A).
+
+### Formes de série (élève)
+
+- **N1 — Choix** : l'élève choisit parmi Flash-cards, Saisie, Contrôle blanc, Course aux nombres ;
+  « Entraînement » n'apparaît plus nulle part. En classe reste côté prof.
+- **N2 — Saisie, question** : énoncé + champ(s) ; pas de chrono ; « Valider » → la carte se retourne :
+  sa réponse face à la bonne, verdict juste/faux, puis la correction ; « Suivante ».
+- **N3 — Saisie, carte de cours** : montrée comme en Flash-cards (retourner, puis Réussi / Pas réussi).
+- **N4 — Contrôle blanc** : l'actuel Entraînement, tel quel (chrono par question, correction et note
+  à la fin) ; la note s'affiche, **n'est pas enregistrée** ; cartes de cours retirées.
+- **N5 — Flash-cards** : inchangées, sauf l'écriture de la trace (N9).
+- **N6 — Course aux nombres, En classe** : inchangées à l'écran.
+- **L1 — Série sans question après retrait des cartes de cours** (Contrôle blanc ou Course d'une série
+  de cours) : comme aujourd'hui.
+- **L2 — Visiteur non connecté** : les cinq formes jouables, rien d'écrit, annoncé à l'écran (comme
+  aujourd'hui).
+
+### Auto-évaluation
+
+- **N7 — Deux boutons partout** : « Réussi / Pas réussi » en Flash-cards, cartes de cours (toutes
+  formes) et révisions (les 4 boutons FSRS disparaissent ; raccourcis clavier 1 / 2 au lieu de 1-4).
+  FSRS reçoit Good / Again.
+- **N8 — Meilleur résultat du jour** (ADR 0016) : inchangé, appliqué aux traces « déclaré ».
+
+### Traces
+
+- **N9 — Une trace par question, envoyée dès la réponse** (Valider, Réussi/Pas réussi, temps écoulé),
+  dans toutes les formes autonomes et la révision ; une série abandonnée garde les réponses données.
+- **N10 — Contenu** (ADR 0038) : origine (corrigé / déclaré / prof), lieu, durée de réponse, graine ;
+  chronométré (Contrôle blanc, Course) : durée allouée + fin (validée / temps écoulé) ; Saisie,
+  Contrôle blanc, Course : réponse case par case + verdict par case ; Flash-cards et révision : ni
+  réponse ni verdict par case.
+- **N11 — Durée de réponse** : de l'affichage de la question à « Valider » (ou au temps écoulé) ;
+  Flash-cards et cartes de cours : de l'affichage au bouton « Voir la réponse ».
+- **N12 — Contrôle blanc** : la trace part à chaque question validée, la note reste invisible jusqu'à
+  la fin (le verdict ne s'affiche pas plus tôt).
+- **N13 — Fin de série** : le gain du Palotin et les nouvelles de la Chatterie restent montrés comme
+  aujourd'hui ; **aucune séance libre** (`test_sessions`, `test_answers`) n'est plus écrite.
+- **N14 — Prof** : lit, pour chacun de ses élèves, réponses, temps et lieu (lecture seule ; aucun
+  écran neuf dans ce chantier — les écrans P3, P4, P8 sont des chantiers futurs).
+- **N15 — Export RGPD** : contient les nouvelles colonnes des traces (réponses comprises) ; les
+  anciennes séances libres y restent.
+- **L3 — Réponse au-delà des bornes** (> 50 cases ou > 2 000 caractères) : la trace est **refusée par le
+  serveur** (400), comme une séance libre aujourd'hui ; l'élève n'est pas bloqué (la série continue).
+- **L4 — Modèle repassé en brouillon pendant la série** : la trace est gardée (règle du 2026-09-28).
+- **L5 — Compte prof / admin** (aperçu) : rien d'écrit, comme aujourd'hui.
+- **L6 — Purge** : à la fin de l'année scolaire, réponses et verdicts par case effacés ; réussi/raté,
+  durées, lieu et graine gardés.
+- **E1 — Réseau coupé** : la trace est réessayée en silence ; si elle échoue encore en fin de série,
+  un message unique « Certaines réponses n'ont pas été enregistrées ». Jamais de blocage de la série.
+- **E2 — Corps invalide** (Zod) : 400, rien d'écrit, journal serveur.
+
+### Prof : analyse de classe
+
+- **N16 — Widget D** (histogramme des notes 1-4) : retiré, remplacé par la part de « Réussi » déclarés.
+
+### Questions ouvertes (à trancher avant de coder)
+
+- **Q-A — Les contrôles écrivent-ils encore des traces ?** Aujourd'hui **oui** (« corrigé », chaque
+  contrôle envoyé à l'heure alimente la grille point × élève et l'état de mémorisation). L'ADR 0038
+  écrit le contraire. Les arrêter retirerait les contrôles des bilans existants. Reco : **les garder**
+  comme aujourd'hui (sans réponse ni temps : le contrôle les a dans `test_answers`), lieu « contrôle »
+  ajouté, ADR 0038 corrigé.
+- **Q-B — Origine des anciennes traces** : réécrire `srs` → `student_self` en base (réécriture de
+  données) ou ne plus écrire `srs` et lire les deux comme « déclaré » ? Reco : **ne rien réécrire**,
+  garder `auto` / `student_self` / `teacher` comme valeurs (affichées corrigé / déclaré / prof).
+- **Q-C — P5 (heatmap de régularité) et le Palotin de régularité** : validés dans le détail, mais
+  dans ce chantier ou dans un chantier à part ? Reco : **chantier à part**, après celui-ci (ils lisent
+  les nouvelles traces).
+- **Q-D — Widget D** (N16) : remplacer par la part de « Réussi » déclarés, ou retirer sans remplacement ?
+
+### Découpage proposé (une PR chacune)
+
+1. **Migration additive** `skill_attempts` (lieu, durées, fin, graine, réponse, verdicts par case ;
+   bornes en base) + tests d'intégration RLS (élève : les siennes ; prof : ses élèves) + `db:migrate`.
+2. `db:types` + `/api/skill-attempts` étendu (Zod, nouvelles colonnes) ; export RGPD.
+3. **Deux boutons** : révision + Flash-cards + cartes de cours ; widget D (selon Q-D).
+4. **Trace par question** dans Flash-cards, Contrôle blanc (renommage d'Entraînement), Course ; fin de
+   série sans séance libre (gain du Palotin gardé).
+5. **Forme Saisie** (`TestMode` neuf, `FlashCard` en saisie côté élève).
+6. **Purge** de fin d'année (cron) — après la PR 1.
