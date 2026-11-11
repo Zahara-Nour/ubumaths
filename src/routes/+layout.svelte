@@ -42,7 +42,9 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { initializeTemplates } from '$lib/stores/vipCardTemplates.svelte';
-	import { page } from '$app/state';
+	import { page, updated } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
+	import { shouldReloadOnNavigate } from '$lib/utils/app-version';
 	import { showsInfoButton } from '$lib/utils/footer';
 	import InfoPanel from '$lib/components/InfoPanel.svelte';
 	import { navigating } from '$app/stores';
@@ -63,6 +65,14 @@
 
 	// Niveau de l'élève connecté : lu par les mots cliquables des questions
 	provideReaderGrade(() => data.profile?.grade);
+
+	// Onglet resté ouvert pendant un déploiement : sur un lien ou Précédent / Suivant, la page
+	// suivante se charge en entier avec le nouveau code (jamais sur un `goto` : en pleine activité)
+	beforeNavigate(({ willUnload, type, to }) => {
+		if (!to || !shouldReloadOnNavigate({ updated: updated.current, willUnload, type, to })) return;
+		if (type === 'popstate') location.replace(to.url.href);
+		else location.href = to.url.href;
+	});
 
 	// Check if we're in a dashboard route
 	let isDashboardRoute = $derived(page.url.pathname.startsWith('/dashboard'));
