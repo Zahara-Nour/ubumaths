@@ -16,12 +16,13 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
 import { isBrevoConfigured } from '$lib/server/email/brevo';
 import { createServerLogger } from '$lib/utils/logger';
+import { isChildAccountEmail } from '$lib/utils/child-account';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/welcome-email/+page.server');
 
@@ -63,6 +64,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	if (studentError || !student) {
 		logger.error('[Welcome Email] Error fetching student:', studentError);
 		throw error(404, 'Élève introuvable');
+	}
+
+	// Enfant inscrit par son parent : adresse fictive, on n'écrit qu'au parent,
+	// depuis la page des consentements.
+	if (student.email && isChildAccountEmail(student.email)) {
+		redirect(303, '/dashboard/teacher/consent');
 	}
 
 	// Check the transactional email service (Brevo) is configured. The email is sent

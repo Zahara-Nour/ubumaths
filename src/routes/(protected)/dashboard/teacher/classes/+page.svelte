@@ -38,6 +38,7 @@
 <script lang="ts">
 	import { studentJournalHref } from '$lib/navigation/return-links';
 	import { lore } from '$lib/config/lore';
+	import { welcomeEmailState } from '$lib/utils/welcome-email-state';
 	import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
 	import type { PageData } from './$types';
 	import type { Tables } from '$lib/types/database';
@@ -64,6 +65,7 @@
 	import {
 		Mail,
 		CheckCircle2,
+		ShieldCheck,
 		BookOpen,
 		Gauge,
 		GraduationCap,
@@ -482,11 +484,17 @@
 
 <div class="space-y-6">
 	<!-- Page Header -->
-	<div>
-		<h1 class="text-3xl font-bold text-foreground">Mes {lore.entities.class}s</h1>
-		<p class="mt-2 text-muted-foreground">
-			Gérez vos {lore.entities.class}s et leurs emplois du temps
-		</p>
+	<div class="flex flex-wrap items-start justify-between gap-4">
+		<div>
+			<h1 class="text-3xl font-bold text-foreground">Mes {lore.entities.class}s</h1>
+			<p class="mt-2 text-muted-foreground">
+				Gérez vos {lore.entities.class}s et leurs emplois du temps
+			</p>
+		</div>
+		<Button variant="outline" href="/dashboard/teacher/consent">
+			<ShieldCheck class="mr-2 h-4 w-4" />
+			Consentements parentaux
+		</Button>
 	</div>
 
 	<!-- Warning if no timetable configured -->
@@ -694,6 +702,7 @@
 							{:else}
 								<div class="divide-y divide-border">
 									{#each students as student (student.id)}
+										{@const emailState = welcomeEmailState(student)}
 										<div class="flex items-center justify-between py-3">
 											<div class="flex items-center gap-3">
 												<UserAvatar
@@ -707,7 +716,11 @@
 													<p class="font-medium text-foreground">
 														{getStudentDisplayName(student)}
 													</p>
-													{#if student.email}
+													{#if emailState.kind === 'parent-link'}
+														<p class="text-sm text-muted-foreground">
+															Identifiant : {emailState.loginId}
+														</p>
+													{:else if student.email}
 														<p class="text-sm text-muted-foreground">{student.email}</p>
 													{:else}
 														<p class="text-sm text-muted-foreground italic">Pas d'email</p>
@@ -723,12 +736,22 @@
 												>
 													<ScrollText class="h-4 w-4" />
 												</Button>
-												{#if student.welcomeEmailSentAt}
+												{#if emailState.kind === 'parent-link'}
+													<Button
+														variant="outline"
+														size="sm"
+														href="/dashboard/teacher/consent"
+														title="Compte créé par le parent : le contact passe par lui"
+													>
+														<ShieldCheck class="mr-2 h-4 w-4" />
+														Lien au parent
+													</Button>
+												{:else if emailState.kind === 'sent'}
 													<Badge variant="outline" class="gap-1 text-green-600">
 														<CheckCircle2 class="h-3 w-3" />
-														Envoyé le {formatDate(student.welcomeEmailSentAt)}
+														Envoyé le {formatDate(emailState.sentAt)}
 													</Badge>
-												{:else if student.email}
+												{:else if emailState.kind === 'send'}
 													<Button
 														variant="outline"
 														size="sm"
