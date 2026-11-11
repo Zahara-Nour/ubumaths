@@ -185,6 +185,38 @@ describe('traces : formes acceptées', () => {
 		[
 			'evaluation',
 			{ place: 'evaluation', response_ms: 8_000, allotted_ms: 20_000, end_reason: 'validated' }
+		],
+		// Chrono écoulé sans rien taper : ni réponse ni verdict (`toAnswer`, submission.ts)
+		[
+			'mock_test (temps écoulé, aucune réponse)',
+			{
+				place: 'mock_test',
+				response_ms: 30_000,
+				allotted_ms: 30_000,
+				end_reason: 'timeout',
+				seed: 5
+			}
+		],
+		[
+			'number_race (temps écoulé, aucune réponse)',
+			{
+				place: 'number_race',
+				response_ms: 10_000,
+				allotted_ms: 10_000,
+				end_reason: 'timeout',
+				seed: 6
+			}
+		],
+		// Contrôle : durée de réponse seule, ou au plafond (MAX_ANSWER_SECONDS × 1 000)
+		['evaluation (durée de réponse seule)', { place: 'evaluation', response_ms: 4_000 }],
+		[
+			'evaluation (24 h)',
+			{
+				place: 'evaluation',
+				response_ms: 86_400_000,
+				allotted_ms: 86_400_000,
+				end_reason: 'timeout'
+			}
 		]
 	];
 
@@ -208,61 +240,130 @@ describe('traces : formes acceptées', () => {
 });
 
 describe('traces : refusées par la base', () => {
-	const refused: Array<[string, TraceColumns]> = [
+	// Chaque cas ne viole qu'UNE contrainte, nommée : un cas qui en violerait deux
+	// passerait même si l'une manquait. Seule exception : la réponse vide, où une
+	// liste vide de verdicts viole forcément aussi la borne des verdicts.
+	const refused: Array<[string, TraceColumns, string[]]> = [
 		// Bornes
-		['lieu inconnu', { ...MOCK_TEST_TRACE, place: 'interactive' }],
+		['lieu inconnu', { place: 'interactive', seed: 1 }, ['chk_trace_place_values']],
 		[
 			'51 cases',
 			{
 				...MOCK_TEST_TRACE,
 				answer_parts: Array.from({ length: 51 }, () => '1'),
 				part_verdicts: Array.from({ length: 51 }, () => true)
-			}
+			},
+			['chk_trace_answer_parts_bounds']
 		],
-		['case de 2 001 caractères', { ...MOCK_TEST_TRACE, answer_parts: ['x'.repeat(2_001), '1'] }],
-		['réponse vide (aucune case)', { ...MOCK_TEST_TRACE, answer_parts: [], part_verdicts: [] }],
+		[
+			'case de 2 001 caractères',
+			{ ...MOCK_TEST_TRACE, answer_parts: ['x'.repeat(2_001), '1'] },
+			['chk_trace_answer_parts_bounds']
+		],
+		[
+			'réponse vide (aucune case : écrire NULL, pas [])',
+			{ ...MOCK_TEST_TRACE, answer_parts: [], part_verdicts: [] },
+			['chk_trace_answer_parts_bounds', 'chk_trace_part_verdicts_bounds']
+		],
 		[
 			'case NULL dans la réponse',
-			{
-				...MOCK_TEST_TRACE,
-				part_verdicts: [true, false],
-				answer_parts: ['1', null as unknown as string]
-			}
+			{ ...MOCK_TEST_TRACE, answer_parts: ['1', null as unknown as string] },
+			['chk_trace_answer_parts_bounds']
 		],
-		['verdict NULL', { ...MOCK_TEST_TRACE, part_verdicts: [true, null as unknown as boolean] }],
-		['durée négative', { ...MOCK_TEST_TRACE, response_ms: -1 }],
-		['durée au-delà de 24 h', { ...MOCK_TEST_TRACE, response_ms: 86_400_001 }],
-		['durée allouée nulle', { ...MOCK_TEST_TRACE, allotted_ms: 0 }],
-		['durée allouée au-delà de 24 h', { ...MOCK_TEST_TRACE, allotted_ms: 86_400_001 }],
-		['graine négative', { ...MOCK_TEST_TRACE, seed: -1 }],
-		['fin inconnue', { ...MOCK_TEST_TRACE, end_reason: 'abandoned' }],
-		// Cohérence par lieu
-		['colonne neuve sans lieu', { seed: 3 }],
-		['durée en Flash-cards', { place: 'flash_cards', response_ms: 1_000 }],
-		['durée en Saisie', { place: 'typing', response_ms: 1_000 }],
-		['durée allouée en révision', { place: 'review', allotted_ms: 1_000 }],
-		['fin en Saisie', { place: 'typing', end_reason: 'validated' }],
+		[
+			'verdict NULL',
+			{ ...MOCK_TEST_TRACE, part_verdicts: [true, null as unknown as boolean] },
+			['chk_trace_part_verdicts_bounds']
+		],
+		['durée négative', { ...MOCK_TEST_TRACE, response_ms: -1 }, ['chk_trace_response_ms_range']],
+		[
+			'durée au-delà de 24 h',
+			{ ...MOCK_TEST_TRACE, response_ms: 86_400_001 },
+			['chk_trace_response_ms_range']
+		],
+		[
+			'durée allouée nulle',
+			{ ...MOCK_TEST_TRACE, allotted_ms: 0 },
+			['chk_trace_allotted_ms_range']
+		],
+		[
+			'durée allouée au-delà de 24 h',
+			{ ...MOCK_TEST_TRACE, allotted_ms: 86_400_001 },
+			['chk_trace_allotted_ms_range']
+		],
+		['graine négative', { ...MOCK_TEST_TRACE, seed: -1 }, ['chk_trace_seed_range']],
+		[
+			'fin inconnue',
+			{ ...MOCK_TEST_TRACE, end_reason: 'abandoned' },
+			['chk_trace_end_reason_values']
+		],
+		// Cohérence
+		['colonne neuve sans lieu', { seed: 3 }, ['chk_trace_columns_need_place']],
+		[
+			'durée en Flash-cards',
+			{ place: 'flash_cards', response_ms: 1_000 },
+			['chk_trace_timing_by_place']
+		],
+		['durée en Saisie', { place: 'typing', response_ms: 1_000 }, ['chk_trace_timing_by_place']],
+		[
+			'durée allouée et fin en révision',
+			{ place: 'review', allotted_ms: 1_000, end_reason: 'timeout' },
+			['chk_trace_timing_by_place']
+		],
+		[
+			'durée allouée et fin en Saisie',
+			{ place: 'typing', allotted_ms: 1_000, end_reason: 'validated' },
+			['chk_trace_timing_by_place']
+		],
 		[
 			'réponse en Flash-cards',
-			{ place: 'flash_cards', answer_parts: ['1'], part_verdicts: [true] }
+			{ place: 'flash_cards', answer_parts: ['1'], part_verdicts: [true] },
+			['chk_trace_answer_by_place']
 		],
-		['réponse en révision', { place: 'review', answer_parts: ['1'], part_verdicts: [true] }],
+		[
+			'réponse en révision',
+			{ place: 'review', answer_parts: ['1'], part_verdicts: [true] },
+			['chk_trace_answer_by_place']
+		],
 		[
 			'réponse dans un contrôle',
-			{ place: 'evaluation', answer_parts: ['1'], part_verdicts: [true] }
+			{ place: 'evaluation', answer_parts: ['1'], part_verdicts: [true] },
+			['chk_trace_answer_by_place']
 		],
-		['réponse sans verdicts', { ...MOCK_TEST_TRACE, part_verdicts: null }],
-		['verdicts sans réponse', { ...MOCK_TEST_TRACE, answer_parts: null }],
-		['moins de verdicts que de cases', { ...MOCK_TEST_TRACE, part_verdicts: [true] }],
-		['durée allouée sans fin', { ...MOCK_TEST_TRACE, end_reason: null }],
-		['fin sans durée allouée', { ...MOCK_TEST_TRACE, allotted_ms: null }]
+		[
+			'réponse sans verdicts',
+			{ ...MOCK_TEST_TRACE, part_verdicts: null },
+			['chk_trace_parts_match']
+		],
+		[
+			'verdicts sans réponse',
+			{ ...MOCK_TEST_TRACE, answer_parts: null },
+			['chk_trace_parts_match']
+		],
+		[
+			'moins de verdicts que de cases',
+			{ ...MOCK_TEST_TRACE, part_verdicts: [true] },
+			['chk_trace_parts_match']
+		],
+		[
+			'durée allouée sans fin',
+			{ ...MOCK_TEST_TRACE, end_reason: null },
+			['chk_trace_allotted_with_end']
+		],
+		[
+			'fin sans durée allouée',
+			{ ...MOCK_TEST_TRACE, allotted_ms: null },
+			['chk_trace_allotted_with_end']
+		]
 	];
 
-	it.each(refused)('%s', async (_label, columns) => {
+	it.each(refused)('%s', async (_label, columns, constraints) => {
 		const { studentId, client, templateId } = await studentWithTemplate();
-		const { id, code } = await insertTrace(client, studentId, templateId, columns);
+		const { id, code, error } = await insertTrace(client, studentId, templateId, columns);
 		// 23514 : violation d'une contrainte CHECK (pas une colonne inconnue ni la RLS)
 		expect(code).toBe('23514');
+		const violated = /check constraint "([^"]+)"/.exec(error ?? '')?.[1];
+		expect(constraints).toContain(violated);
 		expect(id).toBeNull();
 	});
 });
