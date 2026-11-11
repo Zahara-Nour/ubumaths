@@ -5,12 +5,13 @@ couvre:
   - src/lib/mathAST/cli/web/web-repl-engine.ts
   - 'src/routes/(public)/atelier/**'
   - 'src/routes/(public)/grapheur/**'
+  - src/lib/utils/lazy-loader.svelte.ts
 ---
 
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; égalité tapée seule → vrai / faux, `≈` refusé, 2026-11-03 ; `.dériver` affiche la réponse du registre, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27 ; `.résoudre` répond par l'ensemble des solutions, 2026-11-03 ; degrés et refus V57 lus par le
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (étapes chargées au premier dépliage, 2026-11-11 ; outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; égalité tapée seule → vrai / faux, `≈` refusé, 2026-11-03 ; `.dériver` affiche la réponse du registre, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27 ; `.résoudre` répond par l'ensemble des solutions, 2026-11-03 ; degrés et refus V57 lus par le
 > registre, 2026-11-09).
 
 ## À quoi ça sert
@@ -114,32 +115,33 @@ Ceux du code et de l'interface :
 
 **Vue Calcul** (saisie, commandes, historique) :
 
-| Fichier                                 | Rôle                                                                                                       |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `src/lib/atelier/calcul.ts`             | **Aiguillage de la saisie** (`runInput`) : définition, calcul ou commande ; actions de carte (`runAction`) |
-| `src/lib/atelier/desk.svelte.ts`        | `CalcDesk`, le pupitre : historique, actions venues du panneau, garder une ligne, rejeu                    |
-| `src/lib/atelier/commands.ts`           | Catalogue français des commandes (`commandCatalog`, `resolveCommand`, `suggestFor`)                        |
-| `src/lib/atelier/help.ts`               | `.aide` pour l'élève (`studentHelpText`) ; l'aide du moteur derrière `.aide dev`                           |
-| `src/lib/atelier/listing.ts`            | `.valeurs` et `.fonctions` : les cartes du panneau, en français (`valuesListing`, `functionsListing`)      |
-| `src/lib/atelier/render.ts`             | Rendu d'un résultat du moteur en LaTeX, sans jamais reparser la sortie texte                               |
-| `src/lib/atelier/decimal-comma.ts`      | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                    |
-| `src/lib/atelier/simplify-steps.ts`     | `.simplifier` par étapes (`simplifySteps`)                                                                 |
-| `src/lib/atelier/factor-steps.ts`       | `.factoriser` par étapes (`factorSteps`)                                                                   |
-| `src/lib/atelier/expand.ts`             | `.développer` : refus et messages (`expandExpression`) ; réponse et « Comment ? » par `explainExpansion`   |
-| `src/lib/atelier/derive-steps.ts`       | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                        |
-| `src/lib/atelier/solve-steps.ts`        | `.résoudre` par étapes (`solveSteps`)                                                                      |
-| `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                            |
-| `src/lib/atelier/variations-steps.ts`   | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                |
-| `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                          |
-| `src/lib/atelier/copy-text.ts`          | « Copier » d'une ligne : la réponse en texte lisible depuis son LaTeX (`readableText`, `answerToCopy`)     |
-| `src/lib/atelier/point-drag-mode.ts`    | Réglage « Déplacement des points » (aimanté / fluide), retenu dans le navigateur                           |
-| `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                  |
-| `src/lib/atelier/console-key.ts`        | Raccourcis de la console : touche sous Échap (par `event.code`, hors d'un champ), Ctrl+Entrée              |
-| `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)       |
-| `src/lib/atelier/virtual-keyboard.ts`   | Clavier virtuel de l'écriture mathématique : onglets « Calcul » et « Commandes »                           |
-| `src/lib/atelier/domain-steps.ts`       | `.domaine` : réponse `D = …` et « Comment ? » (`domainLine`)                                               |
-| `src/lib/atelier/domain-steps-check.ts` | Garde-fou : l'ensemble conclu par les étapes est, par valeur, le domaine du moteur (`sameDomainByValue`)   |
-| `src/lib/atelier/tidy-terms.ts`         | Ré-export de `tidyTerms` (vit dans `src/lib/mathAST/tidy/terms.ts`)                                        |
+| Fichier                                 | Rôle                                                                                                                                       |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/atelier/calcul.ts`             | **Aiguillage de la saisie** (`runInput`) : définition, calcul ou commande ; actions de carte (`runAction`)                                 |
+| `src/lib/atelier/desk.svelte.ts`        | `CalcDesk`, le pupitre : historique, actions venues du panneau, garder une ligne, rejeu                                                    |
+| `src/lib/atelier/commands.ts`           | Catalogue français des commandes (`commandCatalog`, `resolveCommand`, `suggestFor`)                                                        |
+| `src/lib/atelier/help.ts`               | `.aide` pour l'élève (`studentHelpText`) ; l'aide du moteur derrière `.aide dev`                                                           |
+| `src/lib/atelier/listing.ts`            | `.valeurs` et `.fonctions` : les cartes du panneau, en français (`valuesListing`, `functionsListing`)                                      |
+| `src/lib/atelier/render.ts`             | Rendu d'un résultat du moteur en LaTeX, sans jamais reparser la sortie texte                                                               |
+| `src/lib/atelier/decimal-comma.ts`      | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                                                    |
+| `src/lib/atelier/simplify-steps.ts`     | `.simplifier` par étapes (`simplifySteps`)                                                                                                 |
+| `src/lib/atelier/factor-steps.ts`       | `.factoriser` par étapes (`factorSteps`)                                                                                                   |
+| `src/lib/atelier/expand.ts`             | `.développer` : refus et messages (`expandExpression`) ; réponse et « Comment ? » par `explainExpansion`                                   |
+| `src/lib/atelier/derive-steps.ts`       | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                                                        |
+| `src/lib/atelier/solve-steps.ts`        | `.résoudre` par étapes (`solveSteps`)                                                                                                      |
+| `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                                                            |
+| `src/lib/atelier/variations-steps.ts`   | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                                                |
+| `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                                                          |
+| `src/lib/atelier/steps-loader.ts`       | Le composant des étapes (`GeneratedStepsCorrection`) chargé au premier « Comment ? » (`lazyLoader`, `src/lib/utils/lazy-loader.svelte.ts`) |
+| `src/lib/atelier/copy-text.ts`          | « Copier » d'une ligne : la réponse en texte lisible depuis son LaTeX (`readableText`, `answerToCopy`)                                     |
+| `src/lib/atelier/point-drag-mode.ts`    | Réglage « Déplacement des points » (aimanté / fluide), retenu dans le navigateur                                                           |
+| `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                                                  |
+| `src/lib/atelier/console-key.ts`        | Raccourcis de la console : touche sous Échap (par `event.code`, hors d'un champ), Ctrl+Entrée                                              |
+| `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)                                       |
+| `src/lib/atelier/virtual-keyboard.ts`   | Clavier virtuel de l'écriture mathématique : onglets « Calcul » et « Commandes »                                                           |
+| `src/lib/atelier/domain-steps.ts`       | `.domaine` : réponse `D = …` et « Comment ? » (`domainLine`)                                                                               |
+| `src/lib/atelier/domain-steps-check.ts` | Garde-fou : l'ensemble conclu par les étapes est, par valeur, le domaine du moteur (`sameDomainByValue`)                                   |
+| `src/lib/atelier/tidy-terms.ts`         | Ré-export de `tidyTerms` (vit dans `src/lib/mathAST/tidy/terms.ts`)                                                                        |
 
 **Statistiques et probabilités** (commandes servies par l'atelier, pas par le moteur) :
 
@@ -200,6 +202,7 @@ Ceux du code et de l'interface :
 | `SliderSettings.svelte`      | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                                                                                                                                                                                                                       |
 | `CurveSettings.svelte`       | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls                                                                                                                                                                                                     |
 | `CalculView.svelte`          | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                                                                                                                                                                                                                       |
+| `StepsOnDemand.svelte`       | Les étapes d'une ligne dépliée : « Chargement des étapes… » au premier dépliage, puis le rendu ; échec → message et « Réessayer »                                                                                                                                                                                             |
 | `NaturalField.svelte`        | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel                                                                                                                                                                                                             |
 | `AtelierSettings.svelte`     | Le bouton « Réglages » (icône seule) et sa fenêtre : saisie dans Calcul, angles, déplacement des points                                                                                                                                                                                                                       |
 | `FormulaText.svelte`         | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)                                                                                                                                                                                                       |
@@ -2512,6 +2515,17 @@ Une inéquation dont l'écriture a une valeur interdite que la forme canonique e
 second degré la refusent (`rejectForbiddenValues`, V47 puis V48), `solveSteps` rend `null` et
 l'atelier affiche la réponse du moteur sans « Comment ? ».
 
+**Étapes chargées au premier dépliage** (`StepsOnDemand.svelte`, `steps-loader.ts`, chantier
+amelioration, 2026-11-11). Le composant des étapes tire le rendu markdown (DOMPurify compris) ;
+il n'est téléchargé qu'au premier « Comment ? » de la session : ~160 Ko gzip de moins à
+l'ouverture de l'atelier (1 467 → 1 308 Ko, avec l'élagage des modules de `src/lib`, voir
+[environnement-de-dev.md](../pratiques/environnement-de-dev.md)). Pendant le chargement, la ligne
+dépliée dit « Chargement des étapes… » ; une fois chargé, le composant s'affiche aussitôt sur
+toutes les lignes, y compris celles qui avaient échoué (`lazyLoader` : un seul téléchargement, `loaded` réactif, lu sans promesse). Un échec
+(réseau, nouvelle version déployée) affiche « Les étapes n'ont pas pu se charger. » et
+« Réessayer » ; la ligne de calcul reste au-dessus. Les tests qui déplient puis lisent le rendu
+appellent `stepsCorrection.load()` dans un `beforeAll`.
+
 **« Résumé / Détaillé »** (`steps-summary.ts`, 2026-10-13). Les commandes qui rédigent
 (simplifier, factoriser, dériver, résoudre, intégrer, domaine — tapées, ou Résoudre / Dériver sur une carte ; `.évaluer` construit le sien, voir plus bas) rendent le même
 calcul DEUX fois : `steps` en `verbosity: 'detailed'`, `summary` en `'summarized'`. Le moteur
@@ -3176,4 +3190,4 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 ---
 
-Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3).
+Vérifié contre le code le 2026-10-19 (étapes chargées au premier dépliage, 2026-11-11 ; outils de construction de la géométrie, lot 3, PR 3).
