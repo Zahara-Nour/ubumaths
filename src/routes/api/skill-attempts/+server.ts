@@ -1,8 +1,11 @@
 /**
  * API Route: POST /api/skill-attempts
  *
- * Crée une row `skill_attempts` (régime per-template) à chaque réponse
- * d'un quiz interactif (Monde 1 — `FlashCard.svelte`).
+ * Crée une row `skill_attempts` (régime per-template) à chaque réponse d'une
+ * série libre, envoyée dès la réponse : Flash-cards, Contrôle blanc, Course aux
+ * nombres (`series-trace.ts`), et `FlashCard.svelte`.
+ * Source : `student_self` (déclaré) pour une carte de cours ou le lieu
+ * `flash_cards`, `auto` (corrigé par l'application) sinon.
  *
  * Effets cumulés (Phase 2 refonte 2026-06-10) :
  *   1. UPSERT `srs_card_stats` via FSRS-6 (le grade est dérivé de `success`).
@@ -120,11 +123,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Fail-loud : si FSRS UPSERT échoue, on n'insère PAS skill_attempts pour
 	// éviter une désynchro durable srs_card_stats ↔ student_point_state.
 	// Le client peut retenter ; un échec persistant signale un vrai bug à fixer.
-	// Carte de cours (#617) : fiche mise à jour au plus une fois par jour,
-	// écriture vérifiée ; la trace ci-dessous est TOUJOURS insérée.
-	const isCard = attemptSourceForTemplate(templateRow) === 'student_self';
+	// Auto-évaluation (« déclaré ») : carte de cours (#617), lue en base, ou forme
+	// Flash-cards (l'élève retourne la carte et dit s'il a réussi, ADR 0038).
+	// Fiche : meilleur résultat du jour (ADR 0016), écriture vérifiée ; la trace
+	// ci-dessous est TOUJOURS insérée.
+	const selfAssessed =
+		place === 'flash_cards' || attemptSourceForTemplate(templateRow) === 'student_self';
 	try {
-		if (isCard) {
+		if (selfAssessed) {
 			const now = new Date();
 			await applyFsrsReview(
 				locals.supabase,
@@ -166,8 +172,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			success,
 			grade,
 			with_help,
-			// Carte de cours (#617) : auto-évaluation → `student_self`
-			source: attemptSourceForTemplate(templateRow),
+			// Auto-évaluation (carte de cours, Flash-cards) → `student_self`
+			source: selfAssessed ? 'student_self' : 'auto',
 			...(phase_blocage !== undefined ? { phase_blocage } : {}),
 			// Contenu d'une trace (ADR 0038) : absent → NULL ; aucune case → NULL
 			place,

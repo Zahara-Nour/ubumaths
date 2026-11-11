@@ -29,7 +29,7 @@
 
 	const FORM_LABELS: Record<ChapterSeries['form'], string> = {
 		flash: 'Flash-cards',
-		interactive: 'Entraînement'
+		interactive: 'Contrôle blanc'
 	};
 
 	let title = $derived(series.title ?? 'Série');

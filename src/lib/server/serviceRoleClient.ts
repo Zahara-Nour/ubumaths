@@ -75,6 +75,7 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/api/messages/attachments/[attachmentId]/+server',
 	// Nature d'un modèle (carte de cours, statut) lue même en brouillon — lecture seule
 	'/api/skill-attempts',
+	// Fin de série : nature « carte » lue même en brouillon (pas d'XP pour une carte)
 	'/api/tests/save',
 	// Évaluation notée (ADR 0015) : séance, graines, réponses et note écrites par le serveur
 	'/api/evaluations/',

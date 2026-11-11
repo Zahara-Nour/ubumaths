@@ -342,6 +342,14 @@ describe('mémoire de révision écrite par le serveur seul (Q171)', () => {
 		} as never);
 		expect(response.status).toBe(200);
 		expect((await memory('template', T.skill))?.total_reviews).toBe(1);
+		// Flash-cards : trace « déclarée » acceptée par la RLS de l'élève (ADR 0038)
+		const { data: traces, error } = await service
+			.from('skill_attempts')
+			.select('source, place')
+			.eq('student_id', student.id)
+			.eq('template_id', T.skill);
+		expect(error).toBeNull();
+		expect(traces).toEqual([{ source: 'student_self', place: 'flash_cards' }]);
 	});
 
 	it('recordSeriesReviews (séries et évaluations) écrit les fiches, auto-évaluation comprise', async () => {

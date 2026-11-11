@@ -188,18 +188,15 @@ describe('POST /api/tests/save — plus aucune évaluation', () => {
 		expect(fake.on('test_sessions')).toHaveLength(0);
 	});
 
-	it('entraînement libre : evaluation_id nul, aucune lecture d’assignation, FSRS et XP comme avant', async () => {
-		const { response, fake } = await enregistrer({ mode: 'interactive' });
-		expect(response.status).toBe(201);
-		expect(sessionInseree).toMatchObject({ evaluation_id: null });
-		expect(fake.on('evaluation_assignments')).toHaveLength(0);
-		expect(applyFsrsReview).toHaveBeenCalledTimes(1);
-		expect(addBuddyXpFromTest).toHaveBeenCalledTimes(1);
-	});
-
-	it('course libre : enregistrée comme avant', async () => {
-		const { response } = await enregistrer({ mode: 'course' });
-		expect(response.status).toBe(201);
-		expect(sessionInseree).toMatchObject({ evaluation_id: null, mode: 'course' });
-	});
+	it.each(['interactive', 'course'] as const)(
+		'%s libre : aucune lecture d’assignation, gain calculé, aucune séance écrite',
+		async (mode) => {
+			const { response, fake } = await enregistrer({ mode });
+			expect(response.status).toBe(200);
+			expect(sessionInseree).toBeNull();
+			expect(fake.on('evaluation_assignments')).toHaveLength(0);
+			expect(applyFsrsReview).not.toHaveBeenCalled();
+			expect(addBuddyXpFromTest).toHaveBeenCalledTimes(1);
+		}
+	);
 });

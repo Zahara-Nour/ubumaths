@@ -44,11 +44,11 @@ describe('ChapterSeriesCard', () => {
 		expect(texte(container as HTMLElement)).toContain('4 questions');
 	});
 
-	it('affiche « Entraînement » pour la forme interactive', async () => {
+	it('affiche « Contrôle blanc » pour la forme interactive', async () => {
 		const { container } = await render(ChapterSeriesCard, {
 			series: serie({ form: 'interactive', launchHref: '/automaths/test?mode=interactive' })
 		});
-		expect(texte(container as HTMLElement)).toContain('Entraînement');
+		expect(texte(container as HTMLElement)).toContain('Contrôle blanc');
 		expect(texte(container as HTMLElement)).not.toContain('Flash-cards');
 	});
 

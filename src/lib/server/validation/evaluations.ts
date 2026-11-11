@@ -68,7 +68,7 @@ export type UpdateSeriesInput = z.infer<typeof updateSeriesSchema>;
 // ============================================================================
 
 export const evaluationFormSchema = z.enum(['interactive', 'course'], {
-	error: 'Forme inconnue : Entraînement ou Course aux nombres'
+	error: 'Forme inconnue : Contrôle blanc ou Course aux nombres'
 });
 
 export const evaluationStatusSchema = z.enum(['draft', 'published', 'archived']);
@@ -124,7 +124,7 @@ export const evaluationSettingsSchema = z
 			ctx.addIssue({
 				code: 'custom',
 				path: ['time_limit_minutes'],
-				message: "Un Entraînement n'a pas de temps limite"
+				message: "Un Contrôle blanc n'a pas de temps limite"
 			});
 		}
 	})

@@ -30,12 +30,13 @@
 	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
 	import { fetchMathouNews } from '$lib/components/mathoux/mathou-news';
 	import type { MathouNews } from '$lib/mathoux/news';
+	import { createTraceRecorder } from '$lib/questions/series-trace';
 
 	let { data }: { data: PageData } = $props();
 
 	// State
 	let testSession = $state<TestSession | null>(null);
-	// « En classe » et « Entraînement » : chaque question porte sa durée et son modèle
+	// « En classe » et « Contrôle blanc » : chaque question porte sa durée et son modèle
 	let seriesItems = $state<ClassroomItem[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
@@ -61,9 +62,15 @@
 	let mathouNews = $state<MathouNews | null>(null);
 	// Séance à qui revient la réponse attendue : une relance avant son arrivée la rend caduque
 	let newsRequest = 0;
+	/**
+	 * Traces d'une série libre, question par question (ADR 0038, N9) : seulement
+	 * pour un élève connecté hors contrôle (le serveur n'écrit rien pour un prof).
+	 */
+	const traceRecorder = createTraceRecorder();
+	const seriesTraceRecorder = $derived(data.user && !assignmentId ? traceRecorder : null);
 
 	/**
-	 * Réactions du Palotin pendant l'Entraînement libre d'un élève connecté
+	 * Réactions du Palotin pendant le Contrôle blanc libre d'un élève connecté
 	 * (chantier `palotins`, partie C) ; jamais en contrôle. La notion d'une
 	 * question est celle de son modèle. Sans Palotin (prof, Palotin illisible),
 	 * personne ne réagit et rien n'attend.
@@ -198,7 +205,7 @@
 	 * Lance une série libre (panier ou lien) sous la forme choisie
 	 */
 	function startSeries(mode: TestMode, series: SeriesItem[], timeLimit?: number) {
-		// Entraînement, Course aux nombres : pas de carte de cours (non évaluable)
+		// Contrôle blanc, Course aux nombres : pas de carte de cours (non évaluable)
 		const excludeCourseCards = seriesFormExcludesCourseCards(mode);
 		const items = generateSeriesItems(series, { excludeCourseCards });
 		// Série vide parce que toutes ses lignes sont des cartes : le dire (pas une panne)
@@ -208,7 +215,7 @@
 			);
 		}
 		const instances = items.map((item) => item.instance);
-		// « En classe », « Entraînement » : chaque question garde sa durée et son modèle
+		// « En classe », « Contrôle blanc » : chaque question garde sa durée et son modèle
 		if (mode === 'display' || mode === 'interactive') seriesItems = items;
 
 		testSession = {
@@ -254,8 +261,8 @@
 	}
 
 	/**
-	 * « En classe », « Entraînement » : Recommencer tire de nouvelles questions
-	 * (Entraînement et évaluation : sans carte de cours)
+	 * « En classe », « Contrôle blanc » : Recommencer tire de nouvelles questions
+	 * (Contrôle blanc et évaluation : sans carte de cours)
 	 */
 	function handleSeriesRestart() {
 		if (!testSession) return;
@@ -368,7 +375,8 @@
 	}
 
 	/**
-	 * Handle test completion - save results to database
+	 * Fin de série : contrôle → envoi de la copie ; série libre → dernières
+	 * traces, puis gain du Palotin
 	 */
 	async function handleTestComplete(result: TestResult) {
 		// Nouvelle fin de séance : le gain précédent ne vaut plus
@@ -383,48 +391,47 @@
 			return;
 		}
 		// Visiteur non connecté : rien à enregistrer (l'API répondrait 401) ; les formes
-		// Flash-cards et Entraînement l'annoncent à l'écran
-		if (!data.user) return;
-		// Save to database (interactive, course, et flash : même sauvegarde que l'Entraînement).
-		// Aperçu d'une évaluation par le prof : enregistré comme un entraînement libre
-		// (jamais d'assignation : une évaluation ne s'enregistre que par son envoi)
-		if (result.mode === 'interactive' || result.mode === 'course' || result.mode === 'flash') {
-			try {
-				const response = await fetch('/api/tests/save', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						result,
-						items: testSession?.items || []
-					})
-				});
+		// le disent à l'écran. Aperçu d'un contrôle par le prof : rien non plus.
+		if (!data.user || assignmentId) return;
 
-				if (response.ok) {
-					const data = await response.json();
-					// Update result with session ID
-					result.sessionId = data.sessionId;
-					// Gain du Palotin : montré sur l'écran de résultats, widget mis à jour
-					buddyGain = await receiveBuddyGain(data);
-					// Séance enregistrée, acquisition à jour : la Chatterie a-t-elle du nouveau ?
-					// Pas pour les flash-cards (aucun écran pour l'afficher : la demander la
-					// consommerait, le Palotin la dira) ni l'aperçu d'évaluation du prof
-					if (!assignmentId && result.mode !== 'flash') {
-						const news = await fetchMathouNews();
-						if (request === newsRequest) mathouNews = news;
-					}
-				} else {
-					console.error('Failed to save test results:', await response.text());
-					// 401 = visiteur non connecté : rien à enregistrer, rien à signaler
-					if (response.status !== 401) {
-						toaster.error("Tes résultats n'ont pas pu être enregistrés.");
-					}
-				}
-			} catch (error) {
-				console.error('Error saving test results:', error);
-				toaster.error("Tes résultats n'ont pas pu être enregistrés.");
+		// Traces envoyées question par question : attendre les dernières (E1),
+		// le gain et les nouvelles de la Chatterie lisent l'acquisition à jour
+		const { failed } = await traceRecorder.settle();
+		if (failed > 0) {
+			toaster.warning("Certaines réponses n'ont pas été enregistrées.");
+		}
+
+		// Flash-cards : auto-évaluées, aucun gain (et aucune séance écrite, N13)
+		if (result.mode !== 'interactive' && result.mode !== 'course') return;
+
+		// Fin de série : le gain du Palotin seulement (plus de séance libre, N13)
+		try {
+			const response = await fetch('/api/tests/save', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					result,
+					items: testSession?.items || []
+				})
+			});
+
+			if (response.ok) {
+				// Gain du Palotin : montré sur l'écran de résultats, widget mis à jour.
+				// Une série relancée entre-temps ne reçoit pas le gain de la précédente.
+				const gain = await receiveBuddyGain(await response.json());
+				if (request !== newsRequest) return;
+				buddyGain = gain;
+				// La Chatterie a-t-elle du nouveau ?
+				const news = await fetchMathouNews();
+				if (request === newsRequest) mathouNews = news;
+			} else {
+				// Les réponses sont déjà enregistrées : seul le gain manque
+				console.error('Failed to compute buddy gain:', await response.text());
 			}
+		} catch (error) {
+			console.error('Error computing buddy gain:', error);
 		}
 	}
 
@@ -523,7 +530,7 @@
 				onRestart={handleSeriesRestart}
 			/>
 		{:else if testSession.mode === 'interactive'}
-			<!-- Forme « Entraînement » : nouvelles questions = nouveau composant -->
+			<!-- Forme « Contrôle blanc » : nouvelles questions = nouveau composant -->
 			{#key seriesItems}
 				<TestInteractive
 					items={seriesItems}
@@ -538,6 +545,7 @@
 					{buddyGain}
 					{mathouNews}
 					{palotinReactions}
+					traceRecorder={seriesTraceRecorder}
 				/>
 			{/key}
 		{:else if testSession.mode === 'course'}
@@ -552,6 +560,7 @@
 				unitKeys={attemptUnitKeys}
 				{buddyGain}
 				{mathouNews}
+				traceRecorder={seriesTraceRecorder}
 			/>
 		{:else if testSession.mode === 'flash' && !assignmentId}
 			<!-- Forme « Flash-cards » : nouvelles questions = nouveau composant -->
@@ -562,6 +571,7 @@
 					onComplete={handleTestComplete}
 					onRestart={handleFlashRestart}
 					onBack={handleBackToCart}
+					traceRecorder={seriesTraceRecorder}
 				/>
 			{/key}
 		{/if}

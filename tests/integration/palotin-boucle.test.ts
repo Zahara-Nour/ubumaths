@@ -219,8 +219,8 @@ async function save(p: Person, mode: 'interactive' | 'flash') {
 		locals: buildLocals(p),
 		request: postRequest(saveBody(mode))
 	} as never);
-	expect(response.status, 'statut de /api/tests/save').toBe(201);
-	return (await response.json()) as { sessionId: string; buddy_xp: unknown };
+	expect(response.status, 'statut de /api/tests/save').toBe(200);
+	return (await response.json()) as { buddy_xp: unknown };
 }
 
 async function review(p: Person, deckId: string, cardId: string) {
@@ -395,17 +395,17 @@ describe('la boucle du Palotin tourne', () => {
 		expect((await buddyOf(withBuddy))?.xp).toBe(before?.xp);
 	});
 
-	it('élève sans Palotin : séance enregistrée, aucune ligne Palotin créée', async () => {
+	// Fin de série = gain seulement (chantier `formes-de-serie`, PR 4) : plus de séance libre
+	it('élève sans Palotin : aucun gain, aucune séance libre, aucune ligne Palotin créée', async () => {
 		const body = await save(withoutBuddy, 'interactive');
 		expect(body.buddy_xp).toBeNull();
 
-		const { data: session, error } = await service
+		const { data: sessions, error } = await service
 			.from('test_sessions')
-			.select('id, user_id')
-			.eq('id', body.sessionId)
-			.single();
+			.select('id')
+			.eq('user_id', withoutBuddy.id);
 		expect(error).toBeNull();
-		expect(session?.user_id).toBe(withoutBuddy.id);
+		expect(sessions).toEqual([]);
 		expect(await buddyOf(withoutBuddy)).toBeNull();
 	});
 

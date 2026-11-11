@@ -2,15 +2,16 @@
  * Révisions d'une séance de série → FSRS, traces, paquet Programme
  * =================================================================
  *
- * Chemin commun à `/api/tests/save` (verdict du navigateur : Entraînement libre,
- * Course libre, flash-cards, ADR 0001) et à l'envoi d'une évaluation (verdict du
- * SERVEUR, Q39, ADR 0015). Extrait tel quel de `/api/tests/save`.
+ * Chemin de l'envoi d'une évaluation (verdict du SERVEUR, Q39, ADR 0015).
+ * Extrait de l'ancien `/api/tests/save`, qui ne l'appelle plus : depuis le
+ * chantier `formes-de-serie` (PR 4), une série libre envoie une trace par
+ * question à `/api/skill-attempts` (ADR 0038).
  *
  * - FSRS AVANT la trace, par réponse : pas de FSRS, pas d'attempt (invariant de
  *   `/api/skill-attempts`). Une carte qui échoue n'empêche pas les autres.
  * - Auto-évaluation (flash-cards, carte de cours) : la fiche ne garde que le
  *   MEILLEUR résultat du jour (ADR 0016), trace `student_self`. Réponse corrigée
- *   par l'application (Entraînement, Course, évaluation) : révision ordinaire,
+ *   par l'application (évaluation) : révision ordinaire,
  *   trace `auto`.
  * - Modèle tagué à un point de programme → ajouté au paquet Programme, sauf
  *   question de cours ou brouillon (`entersProgrammeDeck`, Q113) et les modèles

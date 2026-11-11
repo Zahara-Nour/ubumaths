@@ -1,9 +1,9 @@
 /**
  * Formulaire d'évaluation (C20, chantier 4, Q30).
  *
- * - Choix de la forme : Entraînement ou Course aux nombres.
+ * - Choix de la forme : Contrôle blanc ou Course aux nombres.
  * - Temps limite affiché SEULEMENT pour une Course aux nombres : 1 à 60 min,
- *   7 min par défaut ; un Entraînement n'en envoie aucun.
+ *   7 min par défaut ; un Contrôle blanc n'en envoie aucun.
  * - Plus de champ catégories (ni titre, ni niveau) : tout vient de la série.
  * - Ordre aléatoire par MyCheckbox.
  */
@@ -30,7 +30,7 @@ async function submit() {
 }
 
 describe('EvaluationConfigForm — forme et temps limite', () => {
-	it('Entraînement par défaut : aucun champ de temps, rien de tel envoyé', async () => {
+	it('Contrôle blanc par défaut : aucun champ de temps, rien de tel envoyé', async () => {
 		const onSubmit = vi.fn<OnSubmit>();
 		const { container } = await renderForm({ onSubmit });
 
@@ -76,7 +76,7 @@ describe('EvaluationConfigForm — forme et temps limite', () => {
 		expect(onSubmit).not.toHaveBeenCalled();
 	});
 
-	it('repasser en Entraînement retire le temps limite de ce qui est envoyé', async () => {
+	it('repasser en Contrôle blanc retire le temps limite de ce qui est envoyé', async () => {
 		const onSubmit = vi.fn<OnSubmit>();
 		const { container } = await renderForm({
 			onSubmit,
@@ -84,7 +84,7 @@ describe('EvaluationConfigForm — forme et temps limite', () => {
 		});
 
 		await page.getByRole('button', { name: 'Choisir une forme' }).click();
-		await page.getByRole('option', { name: 'Entraînement' }).click();
+		await page.getByRole('option', { name: 'Contrôle blanc' }).click();
 
 		expect(container.querySelector('#timeLimit')).toBeNull();
 		await submit();

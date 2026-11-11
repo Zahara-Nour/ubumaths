@@ -4,24 +4,28 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { validateSaveTest } from '$lib/server/validation/tests';
 import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
 import { fetchTemplateThemeIds } from '$lib/server/buddy-themes';
-import { recordSeriesReviews } from '$lib/server/srs/record-series-reviews';
 import {
 	CourseCardLookupError,
 	fetchCourseCardTemplateIds
 } from '$lib/server/course-card-attempts';
-import { computeTestScore } from '$lib/utils/test-score';
-import { toJson } from '$lib/types/database-helpers';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/tests/save/+server');
 
 /**
- * API route to save test results to database
+ * Fin d'une série libre : gain du Palotin
  * POST /api/tests/save
  *
+ * Chaque question laisse sa trace dès la réponse (`/api/skill-attempts`,
+ * ADR 0038, N9). Cet appel de fin n'écrit plus ni séance libre
+ * (`test_sessions`, `test_answers`), ni trace, ni fiche FSRS (N13, décision de
+ * David du 2026-11-11) : il calcule seulement le gain du Palotin à partir des
+ * réponses de la série, comme avant (Contrôle blanc, Course aux nombres).
+ * Flash-cards : auto-évaluées de bout en bout, aucun gain.
+ *
  * Body: TestResult + items (composition jouée)
- * Returns: { sessionId: string }
+ * Returns: { buddy_xp }
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
@@ -38,17 +42,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const { result, assignmentId } = validation.data;
-		const playedSeries = validation.data.items;
-		// Forme « Flash-cards » (2026-09-30) : chaque réponse est une
-		// auto-évaluation de l'élève (« J'avais trouvé » / « Je n'avais pas
-		// trouvé ») — tentatives `student_self`, pas d'XP.
-		const isFlash = result.mode === 'flash';
 
 		// Évaluation (chantier 5, ADR 0015) : le SERVEUR tire, corrige et note, par
 		// `/api/evaluations/assignments/[id]/start` puis `/api/evaluations/attempts/[id]/submit`.
-		// Une sauvegarde qui cible une évaluation est refusée AVANT toute écriture ;
-		// la base la refuserait de toute façon (Q38). L'aperçu du prof s'enregistre
-		// comme un entraînement libre, sans assignation.
+		// Une fin de série qui cible une évaluation est refusée.
 		if (assignmentId) {
 			return json(
 				{ error: "Un contrôle s'enregistre par l'envoi du contrôle, pas ici" },
@@ -56,23 +53,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		}
 
-		const reponsesAvecTemplate = result.answers.filter((answer) => answer.instance.templateId);
+		// Flash-cards : auto-évaluées de bout en bout, donc sans XP (comme une carte)
+		if (result.mode === 'flash') {
+			return json({ buddy_xp: null });
+		}
+
 		const templateIds = [
-			...new Set(reponsesAvecTemplate.map((answer) => answer.instance.templateId as string))
+			...new Set(
+				result.answers.flatMap((answer) =>
+					answer.instance.templateId ? [answer.instance.templateId] : []
+				)
+			)
 		];
 
-		// Cartes de cours (#617) : la « réponse » est une auto-évaluation de
-		// l'élève. Lu en BASE, jamais dans l'instance envoyée par le client.
-		// Décisions de David (2026-09-28) : trace `student_self` à chaque
-		// utilisation, fiche FSRS au plus une fois par jour, hors score, sans XP,
-		// jamais ajoutée à un paquet.
-		// Illisible après 3 tentatives → 503 AVANT toute écriture (R2) : une panne
-		// passagère coûte une session, jamais un score faux.
+		// Cartes de cours (#617) : pas d'XP (décision 2026-09-28). Nature lue en
+		// BASE, avec les droits du SERVEUR (une carte repassée en brouillon pendant
+		// la série reste une carte), jamais dans l'instance envoyée par le client.
+		// Illisible après 3 tentatives → 503 : un gain manqué, jamais un gain faux.
 		let courseCardIds: Set<string>;
 		try {
-			// Droits du SERVEUR : la RLS cache à l'élève une carte repassée en brouillon
-			// pendant sa série — elle serait comptée comme une question (décision de
-			// David, 2026-09-28). Seuls id et options sont lus.
 			courseCardIds = await fetchCourseCardTemplateIds(createServiceRoleClient(), templateIds);
 		} catch (lookupError) {
 			if (!(lookupError instanceof CourseCardLookupError)) throw lookupError;
@@ -81,114 +80,34 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				{ status: 503 }
 			);
 		}
-		const isCardAnswer = (answer: { instance: { templateId?: string | null } }) =>
-			!!answer.instance.templateId && courseCardIds.has(answer.instance.templateId);
 
-		// Score : recalculé côté serveur hors cartes dès qu'il y en a ; sinon celui
-		// du client, inchangé.
-		const sessionScore =
-			courseCardIds.size > 0
-				? computeTestScore(result.answers, isCardAnswer)
-				: { score: result.score, gradedQuestions: result.totalQuestions };
-
-		// Insert test session
-		const { data: testSession, error: sessionError } = await supabase
-			.from('test_sessions')
-			.insert({
-				user_id: user.id,
-				mode: result.mode,
-				items: toJson(playedSeries),
-				score: sessionScore.score,
-				total_questions: sessionScore.gradedQuestions,
-				time_spent: result.timeSpent,
-				time_limit: null,
-				completed_at: result.completedAt,
-				evaluation_id: null
-			})
-			.select('id')
-			.single();
-
-		if (sessionError || !testSession) {
-			logger.error('Error inserting test session:', sessionError);
-			return json({ error: 'Failed to save test session' }, { status: 500 });
-		}
-
-		// Insert test answers
-		const answersToInsert = result.answers.map((answer) => ({
-			test_session_id: testSession.id,
-			template_id: answer.instance.templateId || null,
-			question_instance: toJson(answer.instance),
-			user_answer: answer.userAnswer || null,
-			is_correct: answer.isCorrect,
-			time_spent: answer.timeSpent || null,
-			attempts: answer.attempts || 1
-		}));
-
-		// `.select()` : vérifie que toutes les lignes ont été écrites
-		const { data: answersRows, error: answersError } = await supabase
-			.from('test_answers')
-			.insert(answersToInsert)
-			.select('id');
-
-		if (answersError) {
-			logger.error('Error inserting test answers:', answersError);
-			// Note: session is already saved, so we return success but log the error
-		} else if ((answersRows?.length ?? 0) !== answersToInsert.length) {
-			logger.error('[tests/save] test_answers : lignes écrites ≠ lignes envoyées', {
-				sent: answersToInsert.length,
-				written: answersRows?.length ?? 0
-			});
-		}
-
-		// ----- Alimentation du référentiel (régime contenus) --------------------
-		// Une ligne par réponse portant un template ; FSRS avant la trace ;
-		// auto-évaluation (flash, carte de cours) = meilleur résultat du jour
-		// (ADR 0016). Chemin partagé avec l'envoi d'une évaluation (Q39).
-		// Non bloquant : la session est déjà enregistrée.
-		await recordSeriesReviews(
-			supabase,
-			user.id,
-			reponsesAvecTemplate.map((answer) => {
-				const templateId = answer.instance.templateId as string;
-				return {
-					templateId,
-					success: answer.isCorrect,
-					selfAssessed: isFlash || courseCardIds.has(templateId)
-				};
-			}),
-			{ neverInDeck: courseCardIds, logLabel: '[tests/save]' }
-		);
-
-		// Award buddy XP for each answer
 		let buddyXp = null;
-		// Séance flash : auto-évaluée de bout en bout, donc sans XP (comme une carte)
-		if (!isFlash) {
-			try {
-				// Pas d'XP pour une carte de cours (décision 2026-09-28)
-				const xpAnswers = result.answers.filter((answer) => !isCardAnswer(answer));
-				// Thème d'une réponse = thème du programme du point que valide la
-				// question (bonus « nouveau thème ») : une lecture pour la séance.
-				const themeByTemplate = await fetchTemplateThemeIds(supabase, [
-					...new Set(
-						xpAnswers.flatMap((answer) =>
-							answer.instance.templateId ? [answer.instance.templateId] : []
-						)
+		try {
+			const xpAnswers = result.answers.filter(
+				(answer) => !answer.instance.templateId || !courseCardIds.has(answer.instance.templateId)
+			);
+			// Thème d'une réponse = thème du programme du point que valide la
+			// question (bonus « nouveau thème ») : une lecture pour la série.
+			const themeByTemplate = await fetchTemplateThemeIds(supabase, [
+				...new Set(
+					xpAnswers.flatMap((answer) =>
+						answer.instance.templateId ? [answer.instance.templateId] : []
 					)
-				]);
-				const answers = xpAnswers.map((answer) => ({
-					isCorrect: answer.isCorrect,
-					theme: answer.instance.templateId
-						? themeByTemplate.get(answer.instance.templateId)
-						: undefined
-				}));
-				buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
-			} catch (buddyError) {
-				// Non-critical: buddy XP failure should not fail the test save
-				logger.error('⚠️ [API] Error awarding buddy XP:', buddyError);
-			}
+				)
+			]);
+			const answers = xpAnswers.map((answer) => ({
+				isCorrect: answer.isCorrect,
+				theme: answer.instance.templateId
+					? themeByTemplate.get(answer.instance.templateId)
+					: undefined
+			}));
+			buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
+		} catch (buddyError) {
+			// Non bloquant : les traces sont déjà enregistrées, question par question
+			logger.error('⚠️ [API] Error awarding buddy XP:', buddyError);
 		}
 
-		return json({ sessionId: testSession.id, buddy_xp: buddyXp }, { status: 201 });
+		return json({ buddy_xp: buddyXp });
 	} catch (error) {
 		logger.error('Error saving test results:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });
