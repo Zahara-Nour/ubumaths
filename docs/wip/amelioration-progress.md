@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2542._
+_Mis à jour le 2026-11-11, après l'exploration de la piste 4 (c)._
 
-- **État** : #2542 (zoom clavier/boutons en geste bref) mergée ; migration de #2541 appliquée en prod (vérifiée) ; #2542, #2541, #2540, #2539, #2538, #2536, #2535 : code pas encore en prod · **Prochaine action** : piste 4 (c), chargement à froid de l'atelier — mesure faite (§ « Piste 4 (c) ») : le grapheur ne pèse que ~50 Ko, découper par vue ne vaut rien ; proposé à David : explorer sans rien modifier le chargement à la demande des commandes lourdes de la console (ubumark/markdown ~450 Ko, mathAST lourd), puis MathLive en mode math seulement, silhouette rendue côté serveur · **En attente de David** : go pour cette exploration · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; manifeste Vite : clés = `.svelte-kit/generated/client-optimized/nodes/N.js` (atelier = 273, cf. `app.js`) ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur · **Worktree / branche** : aucun
+- **État** : #2542 (zoom clavier/boutons en geste bref) mergée ; migration de #2541 appliquée en prod (vérifiée) ; #2542, #2541, #2540, #2539, #2538, #2536, #2535 : code pas encore en prod · **Piste 4 (c) explorée** (§ « Piste 4 (c) — exploration ») : gain réaliste ~160-220 Ko compressés sur 1 424 (11-15 %) · **En attente de David** : choix parmi les options A (étapes à la demande + import ciblé du parseur, petite PR), B (+ commandes à étapes), C (MathLive hors du chargement initial, plus gros), D (silhouette) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; manifeste Vite : clés = `.svelte-kit/generated/client-optimized/nodes/N.js` (atelier = 273, cf. `app.js`) ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -279,6 +279,42 @@ versionnés. ⚠️ Un nom de fonction ne prend pas de chiffre (`g1(x)` refusé)
 - ⇒ découper « par vue » (grapheur, figures) ne gagne que ~0,1-0,15 Mo. Les vrais postes :
   ubumark/markdown (commandes de stats, variations, simulations), MathLive (inutile en mode
   texte ?), les modules lourds de mathAST attachés à des commandes précises.
+
+## Piste 4 (c) — exploration du chargement à la demande (2026-11-11, rien de modifié)
+
+Méthode : graphe des imports statiques depuis `routes/(public)/atelier/+page.svelte` (hors
+`import type`) ; on simule « ce fichier devient `import()` » et on compte ce qui sort, en tailles
+**réelles après tree-shaking** lues dans `stats.html` du build `ANALYZE=1` du matin (somme par
+module = 2 346 Ko, ramenée aux 1 424 Ko réels de l'atelier). Scripts jetables dans le scratchpad.
+
+- **Les barils ne sont pas élagués.** `GeometryCanvas.svelte:7` importe `parseMarkdown` depuis
+  `$lib/ubumark` (index) : l'atelier embarque les générateurs Typst (`typst-generator` 16 Ko,
+  `stat-chart-typst`, `courbe-typst`…), l'importeur LaTeX, `uqr` (QR code). Même chose côté
+  `components/markdown/index.ts` (via `GeneratedStepsCorrection`) : `dompurify`, `ImageDisplay` →
+  `exercises/types`. Et `chalk` (couleurs de terminal, 3 Ko) via `cli/commands/eval.command.ts`.
+- **Gains mesurés** (Ko compressés retirés du chargement initial, sur 1 424) :
+  | Changement                                                                                                    | Gain                       |
+  | ------------------------------------------------------------------------------------------------------------- | -------------------------- |
+  | `GeometryCanvas` → `ubumark/parser/markdown-parser` direct                                                    | ~49                        |
+  | `GeneratedStepsCorrection` à la demande (`CalculView.svelte:744`, déjà dans un `{#if}` : les étapes dépliées) | ~108                       |
+  | les deux                                                                                                      | ~164                       |
+  | + `solve-steps`, `integrate-steps`, `limit` (`calcul.ts`) à la demande                                        | ~217                       |
+  | MathLive hors du chargement initial                                                                           | ~146                       |
+  | `VariationTable`, `StatChart`, `derive-/variations-/simplify-/factor-steps` seuls                             | < 20 chacun : ne vaut rien |
+- **MathLive** : pas seulement le champ de saisie. `convertLatexToMarkup` affiche **chaque**
+  formule (6 composants : `CalculView`, `ValueCard`, `FunctionCard`, `FormulaText`, `DataView`,
+  `ObjectProperties`). Mode de saisie par défaut = `text` (`input-mode.ts:29`). Le sortir du
+  chargement initial = charger MathLive juste après le premier affichage et faire attendre
+  l'affichage des formules : refonte de ces 6 composants, PR plus grosse.
+- **Silhouette** : la page ne rend rien côté serveur (`opened` n'est posé qu'après
+  `openLink(…)`, asynchrone, dans un `$effect`) → écran vide jusqu'à la fin du JS. Une silhouette
+  (onglets, barre de saisie inerte) rassure sans rendre la console utilisable plus tôt.
+- Ordre de grandeur : 1,7 Mo → 3,0-3,7 s en 4G ×4/×6 ; −160 à −220 Ko ≈ −0,3 à −0,5 s.
+- **Options proposées à David** : A = étapes à la demande + import ciblé du parseur (~164 Ko,
+  petite PR, `CalculView` + `GeometryCanvas`) ; B = A + commandes à étapes lourdes (~217 Ko, il
+  faut rendre `calcul.ts` asynchrone sur ces commandes) ; C = MathLive (~146 Ko, refonte de 6
+  composants) ; D = silhouette (perçu seulement). `chalk` : à sortir du code client dans tous
+  les cas (3 Ko, mais du code de terminal dans le navigateur).
 
 ## Piste 5 — « Mon cours », #1788 (phase 0, 2026-11-11)
 
