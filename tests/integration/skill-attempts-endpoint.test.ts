@@ -125,11 +125,12 @@ function buildLocals(
 	};
 }
 
-function buildRequest(body: unknown): Request {
+// Lieu exigé par l'API (ADR 0038) : Flash-cards par défaut, sauf lieu donné.
+function buildRequest(body: Record<string, unknown>): Request {
 	return new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body)
+		body: JSON.stringify({ place: 'flash_cards', ...body })
 	});
 }
 
@@ -392,6 +393,66 @@ describe('POST /api/skill-attempts — comportement', () => {
 		expect(row.source).toBe('auto');
 		// Mapping success → grade : false → 1 (Again)
 		expect(row.grade).toBe(1);
+	});
+
+	it('ADR 0038 : écrit lieu, graine, durées, fin, réponse et verdict par case (CHECK de la base passés)', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const request = buildRequest({
+			template_id: templateId,
+			success: false,
+			place: 'number_race',
+			seed: 2147483647,
+			response_ms: 10000,
+			allotted_ms: 10000,
+			end_reason: 'timeout',
+			answer_parts: ['12', ''],
+			part_verdicts: [true, false]
+		});
+		const response = await POST({ request, locals } as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('place, seed, response_ms, allotted_ms, end_reason, answer_parts, part_verdicts')
+			.eq('template_id', templateId)
+			.eq('student_id', student.id);
+		expect(rows).toEqual([
+			{
+				place: 'number_race',
+				seed: 2147483647,
+				response_ms: 10000,
+				allotted_ms: 10000,
+				end_reason: 'timeout',
+				answer_parts: ['12', ''],
+				part_verdicts: [true, false]
+			}
+		]);
+	});
+
+	it('ADR 0038 : aucune case → answer_parts et part_verdicts NULL (la base refuse `[]`)', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const request = buildRequest({
+			template_id: templateId,
+			success: false,
+			place: 'typing',
+			answer_parts: [],
+			part_verdicts: []
+		});
+		const response = await POST({ request, locals } as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('place, answer_parts, part_verdicts')
+			.eq('template_id', templateId)
+			.eq('student_id', student.id);
+		expect(rows).toEqual([{ place: 'typing', answer_parts: null, part_verdicts: null }]);
 	});
 
 	it('stores phase_blocage when provided', async () => {

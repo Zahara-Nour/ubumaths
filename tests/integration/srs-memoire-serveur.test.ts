@@ -338,7 +338,7 @@ describe('mémoire de révision écrite par le serveur seul (Q171)', () => {
 	it('POST /api/skill-attempts écrit la fiche', async () => {
 		const response = await skillAttemptsRoute({
 			locals: buildLocals(student),
-			request: postRequest({ template_id: T.skill, success: true })
+			request: postRequest({ template_id: T.skill, success: true, place: 'flash_cards' })
 		} as never);
 		expect(response.status).toBe(200);
 		expect((await memory('template', T.skill))?.total_reviews).toBe(1);
