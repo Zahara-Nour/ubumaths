@@ -10,17 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2561 (fichiers du lot 2 mergés)._
+_Mis à jour le 2026-11-11, migration de rangement du lot 2 écrite (§ 7), PR pas encore ouverte._
 
-- **État** : lot 1 publié (§ 5) ; lot 2 (388, 389, 390, 391, 405) : 5 fichiers vérifiés (§ 6), mergés (#2561), pas encore en prod.
-- **Prochaine action** : David crée les brouillons → migration de rangement (3 sous-notions,
-  tags TSPE-388/389/390/391/405) → page à cocher → publication ; puis lot 3.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/tspe-demonstrations-2 --publier` depuis le dépôt principal à jour.
+- **État** : lot 1 publié (§ 5) ; lot 2 : 5 brouillons en prod (§ 7), migration + test commités sur la branche, non
+  poussés.
+- **Prochaine action** : `security-auditor` sur la migration (relancer s'il n'a pas rendu) → push, PR, CI → merge →
+  `check:migrations --pr` → `db:migrate` depuis le dépôt principal → vérif prod → page à cocher → publication ; puis
+  lot 3 (421, 448, 449, 471, 472).
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
-  simulation `publier-lot.ts` lit la prod → refusée au mode auto, David la lance ; `x/n` saisi en ligne = forme à
-  améliorer (spec en `\frac`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-demonstrations-2` mergée ; rangement sur une nouvelle branche.
+  simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-demonstrations-2-rangement`.
 
 ---
 
@@ -199,3 +199,23 @@ Piège du lot : `x/n` saisi en ligne sort en « forme à améliorer » (bad_form
 écriture alternative retenue en spec.
 
 PR des fichiers : #2561, mergée (CI verte du premier coup).
+
+## 7. Lot 2 : brouillons en prod, rangement (2026-11-11)
+
+David a lancé `create-questions --publier` depuis le dépôt principal : 5 brouillons. Ids reportés dans les JSON (branche
+de rangement), dépôt principal rendu propre (`git restore`). Relevé prod (MCP) : 5 brouillons `{T_SPE}`, sans nœud ni
+tag ; les 5 points actifs sur leurs sous-notions actives.
+
+| Modèle   | Sous-notion                                              | Point    |
+| -------- | -------------------------------------------------------- | -------- |
+| 1b7b322a | Suites › Limites de suites › convergence monotone        | TSPE-388 |
+| 9ca26a84 | Suites › Limites de suites › suites géométriques         | TSPE-389 |
+| 0a9babf6 | Suites › Limites de suites › comparaison et encadrement  | TSPE-390 |
+| 2a86b496 | Fonctions › Limites de fonctions › croissances comparées | TSPE-391 |
+| c8571d78 | Fonctions › Limites de fonctions › croissances comparées | TSPE-405 |
+
+Migration `20261111174042_questions_tspe_demonstrations_2_rangement_tags.sql` (copie de celle du lot 1, seuls
+l'en-tête, les données et les compteurs changent) ; test
+`tests/integration/questions-tspe-demonstrations-2-rangement-tags.test.ts` 12/12 vert, rouge sans la migration
+(partie aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie, vert relancé après le pre-commit. Accès :
+personne de plus (Q5).
