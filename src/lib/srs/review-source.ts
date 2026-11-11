@@ -94,7 +94,8 @@ export function dueUrl(source: ReviewSource): string {
 export function submitRequest(
 	source: ReviewSource,
 	card: SessionCard,
-	grade: 1 | 2 | 3 | 4,
+	/** Again (1) ou Good (3) : deux boutons « Pas réussi / Réussi » */
+	grade: 1 | 3,
 	timeSpent: number
 ): { url: string; body: Record<string, unknown> } {
 	if (source.kind === 'chapter') {

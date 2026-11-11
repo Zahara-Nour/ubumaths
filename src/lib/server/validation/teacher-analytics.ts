@@ -37,11 +37,6 @@ export const heatmapQuerySchema = z.object({
 	alertThresholdDays: z.coerce.number().int().min(1).max(30).default(5)
 });
 
-/** Query : ?days=7 (1..30) pour Widget D. */
-export const gradesQuerySchema = z.object({
-	days: z.coerce.number().int().min(1).max(30).default(7)
-});
-
 /** Query : ?topN=10 (1..30) pour Widgets E & G. */
 export const topNQuerySchema = z.object({
 	topN: z.coerce.number().int().min(1).max(30).default(10)

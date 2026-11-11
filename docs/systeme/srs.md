@@ -27,7 +27,10 @@ couvre:
 Faire revenir une question au moment où l'élève est sur le point de l'oublier. Chaque
 **modèle de question** répondu par un élève a une **mémoire de révision** (difficulté,
 stabilité, prochaine échéance) calculée par l'algorithme **FSRS-6**. Les révisions se font par
-**paquets** (decks) de cartes, notées Again / Hard / Good / Easy (1 à 4).
+**paquets** (decks) de cartes. L'élève retourne la carte et répond par deux boutons, « Pas réussi » /
+« Réussi » (raccourcis 1 / 2), que FSRS reçoit comme Again (1) / Good (3) ; les mêmes boutons
+(`SelfAssessButtons.svelte`) servent en Flash-cards et sur les cartes de cours (chantier
+`formes-de-serie`, 2026-11-11 ; avant : quatre notes Again / Hard / Good / Easy).
 
 Termes ([CONTEXT.md](../../CONTEXT.md)) : **SRS / révision**, **Deck** (paquet), **Auto-évaluation**,
 **Question de cours**, **Carte de cours**, **Flash-cards**, **Tentative**, **Point du programme**.
@@ -60,7 +63,7 @@ Quatre sortes de paquets :
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `fsrs-actions.ts`           | **Seul écrivain de la mémoire** : `applyFsrsReview` (lit → `reviewCard` → écrit), `loadOrInitCardStats`, `upsertCardStats` (client service).                        |
 | `best-of-day.ts`            | `reviewBestOfDay` : auto-évaluation, un seul résultat par jour et par question, le meilleur ([ADR 0016](../adr/0016-auto-evaluation-meilleur-resultat-du-jour.md)). |
-| `srs-attempt.ts`            | `recordSrsReviewAttempt` : la trace `skill_attempts` (source `srs`) d'une révision de modèle.                                                                       |
+| `srs-attempt.ts`            | `recordSrsReviewAttempt` : la trace `skill_attempts` (`student_self`, lieu `review`) d'une révision de modèle.                                                      |
 | `record-series-reviews.ts`  | `recordSeriesReviews` : FSRS + Programme pour une séance de série (`/api/tests/save`) ou une évaluation (`evaluation-attempts.ts`).                                 |
 | `programme-deck.ts`         | `ensureProgrammeDeck`, `ensureProgrammeDeckCard` : crée le paquet Programme et y ajoute une carte, au client service, idempotent (23505 = déjà là).                 |
 | `programme-deck-rule.ts`    | `entersProgrammeDeck` : la règle unique d'entrée au Programme (modèle publié, jamais une question de cours — décision Q113).                                        |
@@ -81,7 +84,8 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 
 ### Composants — `src/lib/components/srs/`
 
-`ReviewSession.svelte` (la séance, pour toute `ReviewSource`) · `FSRSButtons.svelte` (les 4 notes) ·
+`ReviewSession.svelte` (la séance, pour toute `ReviewSource` ; boutons « Pas réussi / Réussi » de
+`src/lib/components/questions/SelfAssessButtons.svelte`) ·
 `CustomFlashCard.svelte` / `CustomCardEditor.svelte` (cartes libres recto/verso) ·
 `TemplateSelector.svelte` (ajouter un modèle à un paquet) · `DeckCard.svelte` (liste des paquets) ·
 `CurriculumPointFsrsBadge.svelte` (badge de mémoire, utilisé par `NotionsPanel.svelte` et
@@ -91,17 +95,17 @@ sinon son nom reste sans lien.
 
 ### Routes API
 
-| Route                                          | Méthodes                     | Rôle                                                                                                                   |
-| ---------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `api/skill-attempts`                           | POST                         | Réponse à une question interactive : FSRS **puis** trace (`auto` ou `student_self`), puis Programme.                   |
-| `api/srs/review/due`                           | GET                          | Cartes dues d'un paquet (RPC `get_due_cards_for_deck`), filtres `states` et `all` (révision forcée).                   |
-| `api/srs/review/submit`                        | POST                         | Révision d'une carte de paquet : FSRS, trace `srs`, Programme, statistiques `srs_review_sessions`, forfait du Palotin. |
-| `api/srs/chapters/[chapterId]/due`             | GET                          | Séance du paquet calculé d'un chapitre (élève seul).                                                                   |
-| `api/srs/chapters/[chapterId]/submit`          | POST                         | Réponse dans ce paquet : recalcul du paquet (modèle hors paquet → 403), FSRS meilleur-du-jour, trace.                  |
-| `api/srs/decks`, `api/srs/decks/[id]`          | GET, POST / GET, PUT, DELETE | Paquets ; un paquet assigné ne se modifie ni ne se supprime. Statistiques par RPC `get_deck_stats`.                    |
-| `api/srs/decks/[id]/assign`                    | POST                         | Prof : copie le paquet pour chaque élève (cartes, sections, mémoire), au client service.                               |
-| `api/srs/decks/[id]/sections`, `…/[sectionId]` | GET, POST / PATCH, DELETE    | Sections manuelles d'un paquet personnel.                                                                              |
-| `api/srs/cards`, `api/srs/cards/[id]`          | GET, POST / GET, PUT, DELETE | Cartes ; 403 sur un paquet assigné (création et modification : aussi sur le Programme).                                |
+| Route                                          | Méthodes                     | Rôle                                                                                                                                         |
+| ---------------------------------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api/skill-attempts`                           | POST                         | Réponse à une question interactive : FSRS **puis** trace (`auto` ou `student_self`), puis Programme.                                         |
+| `api/srs/review/due`                           | GET                          | Cartes dues d'un paquet (RPC `get_due_cards_for_deck`), filtres `states` et `all` (révision forcée).                                         |
+| `api/srs/review/submit`                        | POST                         | Révision d'une carte de paquet : FSRS, trace « déclaré » (lieu `review`), Programme, statistiques `srs_review_sessions`, forfait du Palotin. |
+| `api/srs/chapters/[chapterId]/due`             | GET                          | Séance du paquet calculé d'un chapitre (élève seul).                                                                                         |
+| `api/srs/chapters/[chapterId]/submit`          | POST                         | Réponse dans ce paquet : recalcul du paquet (modèle hors paquet → 403), FSRS meilleur-du-jour, trace.                                        |
+| `api/srs/decks`, `api/srs/decks/[id]`          | GET, POST / GET, PUT, DELETE | Paquets ; un paquet assigné ne se modifie ni ne se supprime. Statistiques par RPC `get_deck_stats`.                                          |
+| `api/srs/decks/[id]/assign`                    | POST                         | Prof : copie le paquet pour chaque élève (cartes, sections, mémoire), au client service.                                                     |
+| `api/srs/decks/[id]/sections`, `…/[sectionId]` | GET, POST / PATCH, DELETE    | Sections manuelles d'un paquet personnel.                                                                                                    |
+| `api/srs/cards`, `api/srs/cards/[id]`          | GET, POST / GET, PUT, DELETE | Cartes ; 403 sur un paquet assigné (création et modification : aussi sur le Programme).                                                      |
 
 ### Pages
 
@@ -150,8 +154,14 @@ s'affichait « toutes capacités ».
 | ------------------------------------------- | ----------------------------------------------------------- | -------------------------------------- |
 | Question interactive (`api/skill-attempts`) | juste → Good (3), faux → Again (1)                          | `success`, source `auto`               |
 | Carte de cours (même route)                 | idem, **meilleur du jour**                                  | source `student_self` (toutes gardées) |
-| Révision d'un paquet / d'un chapitre        | note choisie (1-4)                                          | `success = note ≥ 2`, source `srs`     |
+| Révision d'un paquet / d'un chapitre        | Réussi → Good (3), Pas réussi → Again (1)                   | `student_self`, lieu `review` (¹)      |
 | Série, évaluation (`recordSeriesReviews`)   | juste → Good, faux → Again ; flash-cards = meilleur du jour | `auto` ou `student_self`               |
+
+(¹) `success = note ≥ 2`, note gardée dans `grade` (`recordSrsReviewAttempt`). Avant l'ADR 0038, la
+révision écrivait la source `srs` ; ces anciennes traces se lisent « déclaré », sans réécriture.
+L'API accepte encore les notes 2 et 4 (onglet ouvert avant la mise en prod) ; l'écran n'envoie plus
+que 1 ou 3. La heatmap d'activité et l'anti-triche (`srs_vs_quiz_gap`) traitent `student_self` au lieu
+`review` comme une ancienne trace `srs`.
 
 **Contenu d'une trace posée par `api/skill-attempts`** (ADR 0038) : le **lieu** est exigé
 (`flash_cards`, `typing` = Saisie, `mock_test` = Contrôle blanc, `number_race` = Course aux nombres ;
@@ -287,7 +297,7 @@ Ce qu'il détecte (passif : un drapeau pour le prof, aucun effet côté élève)
 
 | Signal            | Déclenche si                                    | Gravité | Score | Échantillon min.  |
 | ----------------- | ----------------------------------------------- | ------- | ----- | ----------------- |
-| `high_easy_ratio` | > 90 % de Easy                                  | 2       | 0,5   | 20 révisions      |
+| `high_easy_ratio` | > 90 % de Easy (muet : plus de bouton Easy)     | 2       | 0,5   | 20 révisions      |
 | `no_again`        | ≥ 30 révisions consécutives sans Again          | 3       | 0,7   | 30                |
 | `fast_timeSpent`  | médiane du temps < 2 s                          | 3       | 0,7   | 10 avec temps     |
 | `burst`           | > 15 révisions en 60 s                          | 4       | 0,85  | 16                |

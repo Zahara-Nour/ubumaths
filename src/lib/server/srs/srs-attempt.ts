@@ -3,8 +3,11 @@
  * ==============================================
  *
  * Une révision d'un modèle (Programme, paquet calculé d'un chapitre) laisse la
- * même trace : source `srs`, note brute conservée, réussite = « Difficile » ou
- * mieux (note ≥ 2). Le trigger de `skill_attempts` recalcule ensuite le suivi
+ * même trace : origine « déclaré » (`student_self`), lieu `review`, note FSRS
+ * conservée, réussite = note ≥ 2. Depuis les deux boutons « Pas réussi /
+ * Réussi » (ADR 0038, chantier `formes-de-serie`), la note vaut 1 (Again) ou
+ * 3 (Good) ; `srs` n'est plus écrit, les anciennes traces `srs` se lisent
+ * « déclaré ». Le trigger de `skill_attempts` recalcule ensuite le suivi
  * des points du programme liés au modèle (ADR 0016 : les traces auto-évaluées
  * alimentent le référentiel ; Q169 a pour le chapitre).
  *
@@ -35,7 +38,8 @@ export async function recordSrsReviewAttempt(
 		template_id: templateId,
 		success: grade >= 2,
 		grade,
-		source: 'srs',
+		source: 'student_self',
+		place: 'review',
 		with_help: false
 	});
 	if (error) {

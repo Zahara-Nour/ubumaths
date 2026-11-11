@@ -271,7 +271,7 @@
 	}
 
 	/**
-	 * Carte de cours : l'auto-évaluation tient lieu de réponse (« Je savais » =
+	 * Carte de cours : l'auto-évaluation tient lieu de réponse (« Réussi » =
 	 * réussite). L'enregistrement (source `student_self`) est fait par
 	 * `/api/tests/save`, qui lit la nature « carte » en base.
 	 */

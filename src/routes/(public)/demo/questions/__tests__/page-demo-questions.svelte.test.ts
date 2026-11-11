@@ -5,7 +5,7 @@
  * - un visiteur voit le titre, le retour vers `/demo`, 5 onglets et le lien vers Automaths ;
  * - chaque onglet monte sa forme sur les 4 questions de la page ;
  * - pas de bandeau « Connecte-toi… », une ligne « Rien n'est enregistré » ;
- * - révisions espacées simulées : après le retournement, 4 notes et leur prochaine date ;
+ * - révisions espacées simulées : après le retournement, « Pas réussi / Réussi » et la prochaine date ;
  * - rien n'est enregistré : aucune requête d'écriture (le lexique lit `/api/dictionnaire`).
  */
 import { afterEach, describe, it, expect, vi } from 'vitest';
@@ -83,17 +83,19 @@ describe('/demo/questions', () => {
 		expect(page.getByText(/Calcule/).elements().length).toBeGreaterThanOrEqual(3);
 	});
 
-	it('révisions espacées : après le retournement, 4 notes et la prochaine date', async () => {
+	it('révisions espacées : après le retournement, deux boutons et la prochaine date', async () => {
 		await render(Page);
 
 		await openTab('Révisions espacées');
 		await expect.element(page.getByText('Carte 1 sur 4')).toBeInTheDocument();
-		expect(page.getByRole('button', { name: /^Bien/ }).elements()).toHaveLength(0);
+		expect(page.getByRole('button', { name: 'Réussi', exact: true }).elements()).toHaveLength(0);
 
 		await page.getByRole('button', { name: 'Voir la correction' }).click();
-		await page.getByRole('button', { name: /^Bien/ }).click();
+		expect(page.getByRole('button', { name: 'Bien' }).elements()).toHaveLength(0);
+		await expect.element(page.getByRole('button', { name: 'Pas réussi' })).toBeVisible();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
 		await expect
-			.element(page.getByText(/« Bien » : cette carte reviendra/))
+			.element(page.getByText(/« Réussi » : cette carte reviendra/))
 			.toHaveTextContent(/dans \d+ jours/);
 
 		await page.getByRole('button', { name: 'Carte suivante' }).click();

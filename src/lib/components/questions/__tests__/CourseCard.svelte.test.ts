@@ -11,7 +11,7 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 /**
  * Carte de cours (#617) : recto = énoncé, verso = correction, sans case.
  * Entraînement libre (QuestionCard) : recto → « Voir la réponse » → verso →
- * auto-évaluation « Je savais / Je ne savais pas », transmise comme réponse.
+ * auto-évaluation « Réussi / Pas réussi », transmise comme réponse.
  */
 function card(): QuestionInstance {
 	return {
@@ -53,9 +53,9 @@ describe('carte de cours — entraînement libre (QuestionCard)', () => {
 
 		// Verso
 		expect(container.textContent).toContain('On détermine son ensemble de définition.');
-		const knew = buttonByText(container, 'Je savais');
+		const knew = buttonByText(container, 'Réussi');
 		expect(knew).toBeDefined();
-		expect(buttonByText(container, 'Je ne savais pas')).toBeDefined();
+		expect(buttonByText(container, 'Pas réussi')).toBeDefined();
 
 		knew?.click();
 		await tick();
@@ -63,10 +63,10 @@ describe('carte de cours — entraînement libre (QuestionCard)', () => {
 		expect(submitted).toHaveLength(1);
 		expect(submitted[0].isCorrect).toBe(true);
 		// Une seule auto-évaluation
-		expect(buttonByText(container, 'Je savais')).toBeUndefined();
+		expect(buttonByText(container, 'Réussi')).toBeUndefined();
 	});
 
-	it('« Je ne savais pas » transmet un échec', async () => {
+	it('« Pas réussi » transmet un échec', async () => {
 		const submitted: AnswerData[] = [];
 		const { container } = await render(QuestionCard, {
 			instance: card(),
@@ -75,7 +75,7 @@ describe('carte de cours — entraînement libre (QuestionCard)', () => {
 		});
 		buttonByText(container, 'Voir la réponse')?.click();
 		await tick();
-		buttonByText(container, 'Je ne savais pas')?.click();
+		buttonByText(container, 'Pas réussi')?.click();
 		await tick();
 		expect(submitted.map((a) => a.isCorrect)).toEqual([false]);
 	});

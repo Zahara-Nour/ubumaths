@@ -54,9 +54,9 @@ describe('submitRequest', () => {
 	});
 
 	it('chapitre : le modèle, jamais une carte', () => {
-		expect(submitRequest(chapter, card, 4, 5)).toEqual({
+		expect(submitRequest(chapter, card, 1, 5)).toEqual({
 			url: '/api/srs/chapters/c1/submit',
-			body: { templateId: 'k1', grade: 4, timeSpent: 5 }
+			body: { templateId: 'k1', grade: 1, timeSpent: 5 }
 		});
 	});
 });

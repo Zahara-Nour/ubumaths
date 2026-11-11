@@ -304,7 +304,7 @@
 
 							{#if isCourseCard}
 								<Badge variant={answerResult.isCorrect ? 'default' : 'secondary'}>
-									{answerResult.isCorrect ? 'Je savais' : 'À revoir'}
+									{answerResult.isCorrect ? 'Réussi' : 'Pas réussi'}
 								</Badge>
 							{:else if globalVerdict}
 								<span

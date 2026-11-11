@@ -121,7 +121,7 @@ describe('ReviewSession — gain du Palotin en fin de séance', () => {
 		);
 		const { container } = await render(ReviewSession, { source: deck });
 		await page.getByRole('button', { name: 'Voir la réponse' }).click();
-		await page.getByRole('button', { name: /Bien/ }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
 		await expect.poll(() => texte(container)).toContain('Session terminée');
 		return container;
 	}
@@ -211,7 +211,7 @@ describe('ReviewSession — nouveautés de la Chatterie en fin de séance', () =
 		);
 		const { container } = await render(ReviewSession, { source: deck });
 		await page.getByRole('button', { name: 'Voir la réponse' }).click();
-		await page.getByRole('button', { name: /Bien/ }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
 		await expect
 			.poll(() => texte(container))
 			.toContain('Un chaton est né à la Chatterie : Pile-Poil !');
@@ -232,9 +232,71 @@ describe('ReviewSession — nouveautés de la Chatterie en fin de séance', () =
 		);
 		const { container } = await render(ReviewSession, { source: deck });
 		await page.getByRole('button', { name: 'Voir la réponse' }).click();
-		await page.getByRole('button', { name: /Bien/ }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
 		await expect.poll(() => texte(container)).toContain('Session terminée');
 		expect(texte(container)).not.toContain('Chatterie');
+	});
+});
+
+describe('ReviewSession — deux boutons « Pas réussi / Réussi » (formes-de-serie, N7)', () => {
+	const deck = { kind: 'deck', deckId: 'd1' } as const;
+	const dueBody = {
+		cards: [
+			{ cardId: 'k1', cardType: 'custom', frontContent: 'Recto 1', backContent: 'Verso 1' },
+			{ cardId: 'k2', cardType: 'custom', frontContent: 'Recto 2', backContent: 'Verso 2' },
+			{ cardId: 'k3', cardType: 'custom', frontContent: 'Recto 3', backContent: 'Verso 3' }
+		],
+		skipped: 0
+	};
+
+	/** Notes envoyées au serveur, dans l'ordre. */
+	function stubSubmits(): number[] {
+		const grades: number[] = [];
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (url: string, init?: RequestInit) => {
+				if (url.startsWith('/api/srs/review/due')) return respond(200, dueBody);
+				if (url === '/api/srs/review/submit') {
+					const body = JSON.parse(String(init?.body)) as { grade: number };
+					grades.push(body.grade);
+					return respond(200, { success: true });
+				}
+				return respond(404, {});
+			})
+		);
+		return grades;
+	}
+
+	it('après retournement : exactement deux boutons, plus aucun des quatre de FSRS', async () => {
+		stubSubmits();
+		const { container } = await render(ReviewSession, { source: deck });
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await expect.element(page.getByRole('button', { name: 'Réussi', exact: true })).toBeVisible();
+		await expect.element(page.getByRole('button', { name: 'Pas réussi' })).toBeVisible();
+		for (const ancien of ['Encore', 'Difficile', 'Bien', 'Facile']) {
+			expect(texte(container)).not.toContain(ancien);
+		}
+	});
+
+	it('« Réussi » envoie Good (3), « Pas réussi » Again (1), clavier 1 / 2 compris', async () => {
+		const grades = stubSubmits();
+		const { container } = await render(ReviewSession, { source: deck });
+
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
+		await expect.poll(() => grades.length).toBe(1);
+
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await page.getByRole('button', { name: 'Pas réussi' }).click();
+		await expect.poll(() => grades.length).toBe(2);
+
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await expect.element(page.getByRole('button', { name: 'Pas réussi' })).toBeVisible();
+		window.dispatchEvent(new KeyboardEvent('keydown', { key: '2' }));
+		await expect.poll(() => grades.length).toBe(3);
+
+		expect(grades).toEqual([3, 1, 3]);
+		await expect.poll(() => texte(container)).toContain('Session terminée');
 	});
 });
 
@@ -268,7 +330,7 @@ describe('ReviewSession — réactions du Palotin (chantier palotins, partie C)'
 		await page.getByRole('button', { name: new RegExp(label) }).click();
 	}
 
-	it('5 « Bien » d’affilée : le Palotin passe, la carte suivante attend son départ', async () => {
+	it('5 « Réussi » d’affilée : le Palotin passe, la carte suivante attend son départ', async () => {
 		let finishPassage: () => void = () => {};
 		const handler = vi.fn(
 			(_reaction: SeanceReaction) =>
@@ -279,7 +341,7 @@ describe('ReviewSession — réactions du Palotin (chantier palotins, partie C)'
 		const unregister = registerSeanceReactionHandler(handler);
 		try {
 			const { container } = await openSession(7);
-			for (let i = 1; i <= 5; i++) await grade(container, 'Bien', i, 7);
+			for (let i = 1; i <= 5; i++) await grade(container, '^Réussi$', i, 7);
 
 			await expect.poll(() => handler.mock.calls).toEqual([['streak']]);
 			await new Promise((resolve) => setTimeout(resolve, 300));
@@ -292,12 +354,12 @@ describe('ReviewSession — réactions du Palotin (chantier palotins, partie C)'
 		}
 	});
 
-	it('cartes personnelles (sans notion) : 3 « Encore » ne déclenchent rien', async () => {
+	it('cartes personnelles (sans notion) : 3 « Pas réussi » ne déclenchent rien', async () => {
 		const handler = vi.fn(() => Promise.resolve());
 		const unregister = registerSeanceReactionHandler(handler);
 		try {
 			const { container } = await openSession(5);
-			for (let i = 1; i <= 3; i++) await grade(container, 'Encore', i, 5);
+			for (let i = 1; i <= 3; i++) await grade(container, '^Pas réussi$', i, 5);
 			await expect.poll(() => texte(container)).toContain('Carte 4 sur 5');
 			expect(handler).not.toHaveBeenCalled();
 		} finally {

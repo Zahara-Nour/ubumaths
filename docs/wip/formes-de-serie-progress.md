@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2547 et #2548._
+_Mis à jour le 2026-11-11, PR 3 en cours (branche `feat/formes-de-serie-boutons`)._
 
-- **État** : PR 1 (#2543) et PR 2 (#2547 : `db:types`, `/api/skill-attempts` étendu, export RGPD) mergées ; traces `evaluation` réservées au serveur (#2548), **migration appliquée en prod** (policy vérifiée) · **Prochaine action** : PR 3 = deux boutons « Réussi / Pas réussi » (révision, Flash-cards, cartes de cours) + widget D retiré ; nouveau worktree `ubumaths-wt-formes-de-serie` depuis `origin/main` · **En attente de David** : rien · **Pour la PR 4** : traces d'un contrôle (lieu `evaluation`, durées) écrites par le **client service** (la policy élève les refuse) ; plafonner `response_ms` à `allotted_ms` côté client · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` · **Worktree / branche** : aucun (retirés après #2548)
+- **État** : PR 1 (#2543), PR 2 (#2547), #2548 mergées (migration en prod) ; **PR 3** (deux boutons « Pas réussi / Réussi » partout, révision écrite `student_self` + lieu `review`, widget D retiré) codée, en revue · **Prochaine action** : PR 3 → CI → merge ; puis PR 4 = trace par question (Flash-cards, Contrôle blanc, Course) · **En attente de David** : rien · **Pour la PR 4** : traces d'un contrôle (lieu `evaluation`, durées) écrites par le **client service** (la policy élève les refuse) ; plafonner `response_ms` à `allotted_ms` côté client · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; une trace `student_self` n'est plus forcément une carte de cours (révision = lieu `review`) · **Worktree / branche** : `../ubumaths-wt-formes-de-serie`, `feat/formes-de-serie-boutons`
 
 ## Décisions de David (2026-11-11)
 
@@ -245,3 +245,25 @@ une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit d
   `place = 'evaluation'` ; traces sans lieu et autres lieux inchangés. `db:migrate` le 2026-11-11.
   Audit : un élève peut toujours écrire `mock_test` / `number_race` avec des durées inventées
   (voulu, ADR 0038) — à revoir seulement si ces lieux comptent un jour dans une note.
+
+### PR 3 — deux boutons (2026-11-11)
+
+- `SelfAssessButtons.svelte` (`src/lib/components/questions/`) : « Pas réussi » (gauche, touche 1) puis
+  « Réussi » (droite, touche 2), partout : révision (`ReviewSession`, raccourcis actifs), Flash-cards
+  (`FlashSeries`, raccourcis actifs), cartes de cours (`CourseCardView`, sans raccourcis : plusieurs
+  cartes peuvent être à l'écran) ; badge de `CorrectionCard` : « Réussi / Pas réussi ». Ordre choisi
+  pour suivre les touches (1 = Again comme avant) ; les Flash-cards montraient « J'avais trouvé » en
+  premier, en vert.
+- Révision : FSRS reçoit Good (3) / Again (1). L'API accepte encore 1-4 (onglet ouvert pendant la mise
+  en prod) ; l'écran n'envoie plus que 1 ou 3. `FSRSButtons.svelte` supprimé ; vitrine `/demo/questions`
+  à deux boutons (intervalles Again / Good).
+- Trace de révision (paquet et chapitre, `recordSrsReviewAttempt`) : `student_self`, lieu `review`
+  (Q-B : `srs` n'est plus écrit). Test d'intégration `paquet-revision-chapitre` : rouge sans, vert avec
+  (la policy élève accepte `student_self` + `review`).
+- **Comportement gardé** : la heatmap prof (widget C) sortait du taux de réussite toute trace
+  `student_self` (cartes de cours… et Flash-cards depuis le 2026-09-30) mais y comptait les révisions
+  `srs` ; `student_self` + `review` y compte toujours. Même règle dans l'anti-fraude
+  (`srs_vs_quiz_gap`, éteinte en prod). Le détecteur `high_easy_ratio` (> 90 % de Easy) devient muet.
+- Widget D retiré : composant, route `knowledge-grades/[studentId]`, `getStudentGradeHistogram`,
+  `gradesQuerySchema` ; « Détail par élève » n'a plus que la courbe de rétention (pleine largeur).
+- Docs : `srs.md`, `analytique-prof.md`, `CONTEXT.md` (Auto-évaluation).
