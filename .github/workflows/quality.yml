@@ -421,6 +421,16 @@ jobs:
         shard: [1, 2]
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # L'image officielle de Playwright : Chromium et ses dépendances système déjà
+    # installés. Avant, `playwright install --with-deps` passait par `apt-get` à
+    # chaque exécution, et une panne d'un dépôt tiers rendait le job rouge sans
+    # que le code y soit pour rien : « Hash Sum mismatch » du dépôt Google Chrome
+    # le 2026-09-09, `security.ubuntu.com` introuvable (DNS) le 2026-11-11, trois
+    # fois de suite. Ici, plus aucun `apt-get`.
+    # ⚠️ Tag = version de `playwright` du lockfile. Un écart ne casse rien (l'étape
+    # « Chromium » retélécharge le seul navigateur) mais l'étape le signale.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.0-noble
 
     steps:
       - name: Checkout code
@@ -441,20 +451,18 @@ jobs:
       - name: Create CI env (placeholders)
         run: cp .github/ci.env .env
 
-      - name: Install Playwright browsers
+      - name: Chromium (fourni par l'image)
         run: |
-          # Le dépôt apt de Google Chrome est préinstallé sur les runners et ne
-          # nous sert à RIEN : Playwright télécharge Chromium lui-même, et ses
-          # dépendances système viennent des dépôts Ubuntu. Mais `--with-deps`
-          # déclenche un `apt-get update` qui le lit — et le 2026-09-09 son index
-          # était incohérent côté CDN Google (« Hash Sum mismatch »), ce qui a
-          # fait échouer tout le job, deux fois.
-          #
-          # On retire une source inutile plutôt que de dépendre de la santé d'un
-          # dépôt tiers à chaque exécution.
-          sudo rm -f /etc/apt/sources.list.d/google-chrome.list \
-            /etc/apt/sources.list.d/google-chrome.sources
-          npx playwright install chromium --with-deps
+          # Pas de `--with-deps` : les dépendances système sont dans l'image. Versions
+          # égales → rien à faire ; sinon, seul le navigateur est téléchargé (CDN de
+          # Playwright), sans `apt-get`. Une montée de `playwright` par Dependabot
+          # (groupe minor-and-patch, fusionné seul) reste donc verte.
+          installee="$(node -p "require('playwright/package.json').version")"
+          image="$(grep -o 'mcr.microsoft.com/playwright:v[0-9.]*' .github/workflows/quality.yml | head -1 | sed 's/.*:v//')"
+          if [ "$installee" != "$image" ]; then
+            echo "::warning title=Image Playwright en retard::playwright $installee, image $image : monter le tag de l'image du job test-client (quality.yml)."
+          fi
+          pnpm exec playwright install chromium
 
       # The real-Pyodide integration tests are excluded via vite.config.ts
       # (gated on CI=true), since the CLI --exclude flag does not propagate to
