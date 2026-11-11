@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2553._
+_Mis à jour le 2026-11-11, après #2555 et #2556._
 
-- **État** : piste 4 (c) close : volets 1, 2 (#2545), 3 (#2552), 4 (#2553, silhouette de l'atelier rendue par le serveur) mergés ; rien de #2553, #2552, #2545, #2542, #2541, #2540, #2539, #2538, #2536, #2535 en prod · **Prochaine action** : mesure de l'atelier à froid après `deploy:prod` (banc 4G ×4/×6) · **Défaut relevé, à proposer** : bureau 1280×800, « Mes objets » et la zone débordent de la grille (777 px pour 736) → la 2e rangée « + Point / + Courbe » est coupée sous l'écran (existait avant #2553) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; lignes #2545 et #2553 de `verifications-manuelles.md` · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence — garde = test serveur ; `chalk` cité par les seuls `cli.ts`/`repl.ts`/`terminal-palette.ts` (garde) ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; les dimensions de la silhouette recopient `AtelierContainer`/`ObjectPanel`/`ToolButton` · **Worktree / branche** : aucun
+- **État** : piste 4 (c) close (#2545, #2552, #2553) ; débordement de l'atelier sur bureau corrigé (#2555) ; tests navigateur de la CI dans l'image Playwright, plus d'`apt-get` (#2556) ; rien de #2535 à #2555 en prod · **Prochaine action** : mesure de l'atelier à froid après `deploy:prod` (banc 4G ×4/×6) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; lignes #2545, #2553 et #2555 de `verifications-manuelles.md` · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard ; garde de version de l'image Playwright = avertissement, pas échec (groupe Dependabot fusionné seul) · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence — garde = test serveur ; `chalk` cité par les seuls `cli.ts`/`repl.ts`/`terminal-palette.ts` (garde) ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; les dimensions de la silhouette recopient `AtelierContainer`/`ObjectPanel`/`ToolButton` ; tag de l'image `mcr.microsoft.com/playwright` (`quality.yml`) à monter avec `playwright` (avertissement « Image Playwright en retard ») · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -384,6 +384,33 @@ terminal ; volet 4 : silhouette inerte).
   JS qui ne charge pas → la silhouette reste : limite écrite dans la doc. CI verte, mergée.
 - **Défaut relevé (existant, non corrigé)** : à 1280×800, l'atelier chargé déborde de sa grille
   (panneau et zone 777 px pour 736) ; la 2e rangée « + Point / + Courbe » est sous l'écran.
+
+## Débordement de l'atelier sur bureau (#2555, mergée le 2026-11-11)
+
+- **Cause** : la grille de `.atelier` n'avait que des colonnes ; sa rangée implicite (`auto`)
+  suivait le contenu de la zone (la `.zone` n'a pas de `min-height: 0`), 777 px pour 736.
+- **Remède** : `grid-template-rows: minmax(0, 1fr)` sur `.atelier` et `.silhouette` (déjà là sur
+  téléphone et pour le graphe agrandi).
+- **Test** : `atelier-tient-dans-la-page.svelte.test.ts` (navigateur, 1280×800, conteneur de
+  736 px) ; rouge sans le remède pour les vues graphe et données, vert avec ; vue figure et
+  silhouette passent des deux façons (garde). Piège du décor : `render(…, { target })` monte
+  quand même dans son propre conteneur → hauteur posée sur `container`.
+- **Mesuré au banc Playwright** (vraie page, vue graphe) : bas de « + Courbe » à 793 / 800
+  (1280×800), 761 / 768 (1366×768 et 1024×768), 1073 / 1080 (1920×1080) ; téléphone inchangé.
+- **Laissé** : 1 px de trop sous la page (en-tête du site de 65 px, `.page` compte `4rem`),
+  existant, invisible (`overflow: hidden` sur le `body`).
+
+## CI : tests navigateur dans l'image Playwright (#2556, mergée le 2026-11-11)
+
+- **Cause** : `playwright install chromium --with-deps` faisait un `apt-get` à chaque exécution ;
+  `security.ubuntu.com` puis `archive.ubuntu.com` introuvables (DNS du runner) → #2555 rouge 3 fois,
+  avant tout test (déjà vu le 2026-09-09 avec le dépôt Google Chrome).
+- **Remède** : job `test-client` dans `mcr.microsoft.com/playwright:v1.64.0-noble` ;
+  `playwright install chromium` sans `--with-deps` (rien à faire si les versions concordent).
+  Écart de version → avertissement, pas échec : Dependabot monte `playwright` dans le groupe
+  `minor-and-patch`, fusionné seul.
+- **Mesuré** : 3 passages verts, shards de 4,8 à 6,2 min (avant : 4,3 à 6,1 sur 10 jobs) ; image
+  tirée en 16 s ; aucun Chromium retéléchargé. `nightly-pyodide.yml` garde l'ancienne installation.
 
 ## Piste 5 — « Mon cours », #1788 (phase 0, 2026-11-11)
 

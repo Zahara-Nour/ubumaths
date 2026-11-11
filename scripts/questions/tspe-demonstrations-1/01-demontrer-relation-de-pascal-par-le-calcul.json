@@ -1,0 +1,213 @@
+{
+	"title": "Démontrer la relation de Pascal par le calcul",
+	"description": "Démonstration à trous : facteur k + 1 (case), facteur n − k (case), (n + 1)!/((k + 1)!(n − k)!) = C(n + 1, k + 1) (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soient $n$ et $k$ deux entiers naturels tels que $0\\leqslant k\\leqslant n-1$. On démontre par le calcul la relation de Pascal : $\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}$.\n\nOn part de $\\binom{n}{k}+\\binom{n}{k+1}=\\dfrac{n!}{k!\\,(n-k)!}+\\dfrac{n!}{(k+1)!\\,(n-k-1)!}$ et on réduit au dénominateur commun $(k+1)!\\,(n-k)!$.\n\nComplète.\n\n$\\dfrac{n!}{k!\\,(n-k)!}=\\dfrac{n!\\times(?)}{(k+1)!\\,(n-k)!}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "k+1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(k+1)!\\,=(k+1)\\times k!$ : pour passer de $k!$ à $(k+1)!$, on multiplie par $k+1$.",
+					"On multiplie le numérateur par le même nombre : $\\dfrac{n!}{k!\\,(n-k)!}=\\dfrac{n!\\times\\textcolor{{{color:primary.0}}}{(k+1)}}{(k+1)!\\,(n-k)!}$."
+				]
+			}
+		},
+		{
+			"statement": "Soient $n$ et $k$ deux entiers naturels tels que $0\\leqslant k\\leqslant n-1$. On démontre par le calcul la relation de Pascal : $\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}$.\n\nOn part de $\\binom{n}{k}+\\binom{n}{k+1}=\\dfrac{n!}{k!\\,(n-k)!}+\\dfrac{n!}{(k+1)!\\,(n-k-1)!}$ et on réduit au dénominateur commun $(k+1)!\\,(n-k)!$.\n\nComplète.\n\n$\\dfrac{n!}{(k+1)!\\,(n-k-1)!}=\\dfrac{n!\\times(?)}{(k+1)!\\,(n-k)!}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "n-k"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(n-k)!\\,=(n-k)\\times(n-k-1)!$ : pour passer de $(n-k-1)!$ à $(n-k)!$, on multiplie par $n-k$.",
+					"On multiplie le numérateur par le même nombre : $\\dfrac{n!}{(k+1)!\\,(n-k-1)!}=\\dfrac{n!\\times\\textcolor{{{color:primary.0}}}{(n-k)}}{(k+1)!\\,(n-k)!}$."
+				]
+			}
+		},
+		{
+			"statement": "Soient $n$ et $k$ deux entiers naturels tels que $0\\leqslant k\\leqslant n-1$. On démontre par le calcul la relation de Pascal : $\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}$.\n\nOn part de $\\binom{n}{k}+\\binom{n}{k+1}=\\dfrac{n!}{k!\\,(n-k)!}+\\dfrac{n!}{(k+1)!\\,(n-k-1)!}$ et on réduit au dénominateur commun $(k+1)!\\,(n-k)!$.\n\nOn obtient $\\binom{n}{k}+\\binom{n}{k+1}=\\dfrac{n!\\,(k+1)+n!\\,(n-k)}{(k+1)!\\,(n-k)!}=\\dfrac{(n+1)!}{(k+1)!\\,(n-k)!}$. Pourquoi ce quotient est-il égal à $\\binom{n+1}{k+1}$ ?\n\n```choix\n- Car $(n+1)-(k+1)=n-k$ : c'est $\\dfrac{(n+1)!}{(k+1)!\\,\\big((n+1)-(k+1)\\big)!}$.\n- Car $(n+1)!\\,=n!+1$.\n- Car $\\binom{n+1}{k+1}=\\binom{n}{k}\\times\\binom{n}{k+1}$.\n- Car $(k+1)!\\,=k!+1$ et $(n-k)!\\,=(n-k-1)!+1$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le numérateur se factorise : $n!\\,(k+1+n-k)=n!\\,(n+1)=(n+1)!$.",
+					"Par définition, $\\binom{n+1}{k+1}=\\dfrac{(n+1)!}{(k+1)!\\,\\big((n+1)-(k+1)\\big)!}$, et $(n+1)-(k+1)=\\textcolor{{{color:primary.0}}}{n-k}$.",
+					"Attention : $(n+1)!\\,=(n+1)\\times n!$, et non $n!+1$."
+				]
+			}
+		},
+		{
+			"statement": "Soient $n$ et $k$ deux entiers naturels tels que $0\\leqslant k\\leqslant n-1$. On démontre par le calcul que $\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On écrit $\\binom{n}{k}+\\binom{n}{k+1}=\\dfrac{n!}{k!\\,(n-k)!}+\\dfrac{n!}{(k+1)!\\,(n-k-1)!}$.\n- On réduit au dénominateur commun : la somme vaut $\\dfrac{n!\\,(k+1)+n!\\,(n-k)}{(k+1)!\\,(n-k)!}$.\n- On factorise le numérateur : $n!\\,(k+1+n-k)=n!\\,(n+1)=(n+1)!$.\n- La somme vaut donc $\\dfrac{(n+1)!}{(k+1)!\\,(n-k)!}$.\n- Comme $(n+1)-(k+1)=n-k$, ce quotient est $\\binom{n+1}{k+1}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On écrit les deux coefficients avec les factorielles, puis on les ajoute.",
+					"Conclusion : $\\binom{n}{k}+\\binom{n}{k+1}=\\textcolor{{{color:primary.0}}}{\\binom{n+1}{k+1}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "k + 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["k+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture 1 + k",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1+k"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n − k",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["n-k"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k − 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["k-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n − k",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["n-k"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture −k + n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-k+n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n − k − 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["n-k-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k + 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["k+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k − n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["k-n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(n + 1) − (k + 1) = n − k",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (n + 1)! = n! + 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (k + 1)! = k! + 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

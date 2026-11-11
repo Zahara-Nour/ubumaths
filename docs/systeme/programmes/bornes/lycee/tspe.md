@@ -65,8 +65,8 @@ Chantier `questions-tspe` (démarche [couvrir-un-niveau.md](../../../../pratique
   droit (centres de faces) et tétraèdre (milieux, centre de gravité).
 - Chevauchement avec maths complémentaires : les modèles qui portent aussi `T_COMP` ont été tirés contre les deux
   bornes (`tcomp.json`, plus étroites).
-- 1cfc575d (brouillon de niveau `2`, tagué TSPE-616) reste tel quel : son tag ne vaut pas couverture, 616 a son
-  modèle `T_SPE` (ea48f760).
+- 1cfc575d (modèle de niveau `2`, tagué TSPE-616, publié depuis ; constaté en prod le 2026-11-11) reste tel quel :
+  son tag ne vaut pas couverture, 616 a son modèle `T_SPE` (ea48f760).
 
 ## Terminale spécialité (326 points, 319 avec une borne propre)
 

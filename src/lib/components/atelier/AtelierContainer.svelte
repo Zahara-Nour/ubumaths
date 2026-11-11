@@ -1475,9 +1475,13 @@
 </div>
 
 <style>
+	/* Une rangée bornée à la hauteur de la page : sans elle, la rangée implicite
+	   (`auto`) suivait le contenu de la zone et « Mes objets » passait sous le bas
+	   de l'écran (777 px pour 736 à 1280×800) */
 	.atelier {
 		display: grid;
 		grid-template-columns: minmax(14rem, 18rem) 1fr;
+		grid-template-rows: minmax(0, 1fr);
 		height: 100%;
 		min-height: 0;
 	}

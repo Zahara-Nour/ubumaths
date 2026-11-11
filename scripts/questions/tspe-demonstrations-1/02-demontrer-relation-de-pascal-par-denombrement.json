@@ -1,0 +1,209 @@
+{
+	"title": "Démontrer la relation de Pascal par dénombrement",
+	"description": "Démonstration à trous : exemple chiffré, parties à 3 éléments contenant a (case, n tiré), parties sans a (choix), principe additif (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On démontre la relation de Pascal par dénombrement. On commence par un exemple.\n\nSoit $E$ un ensemble à ${{eval:n+1}}$ éléments et $a$ un élément de $E$.\n\nCombien de parties à $3$ éléments de $E$ contiennent $a$ ?\n\nIl y en a $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une partie à $3$ éléments qui contient $a$ est déterminée par ses $2$ autres éléments, choisis parmi les ${{n}}$ éléments de $E$ autres que $a$.",
+					"Il y en a donc $\\binom{{{n}}}{2}=\\dfrac{{{n}}\\times{{eval:n-1}}}{2}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)/2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $E$ un ensemble à $n+1$ éléments ($n\\geqslant 1$), $a$ un élément de $E$ et $k$ un entier tel que $0\\leqslant k\\leqslant n-1$. On démontre que $\\binom{n+1}{k+1}=\\binom{n}{k}+\\binom{n}{k+1}$ en comptant les parties de $E$ à $k+1$ éléments : celles qui contiennent $a$, puis celles qui ne le contiennent pas.\n\nCombien de parties de $E$ à $k+1$ éléments ne contiennent pas $a$ ?\n\n```choix\n- $\\binom{n}{k+1}$ : ce sont les parties à $k+1$ éléments de $E$ privé de $a$, qui a $n$ éléments.\n- $\\binom{n+1}{k+1}$ : ce sont des parties à $k+1$ éléments de $E$.\n- $\\binom{n}{k}$ : on choisit $k$ éléments parmi les $n$ autres que $a$.\n- $\\binom{n+1}{k}$ : on retire $a$ des $k+1$ éléments.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une partie qui ne contient pas $a$ est une partie de $E$ privé de $a$, ensemble à $n$ éléments.",
+					"Il y en a donc $\\textcolor{{{color:primary.0}}}{\\binom{n}{k+1}}$ à $k+1$ éléments.",
+					"$\\binom{n}{k}$ compte, lui, les parties qui **contiennent** $a$ : $a$ plus $k$ autres éléments."
+				]
+			}
+		},
+		{
+			"statement": "Soit $E$ un ensemble à $n+1$ éléments ($n\\geqslant 1$), $a$ un élément de $E$ et $k$ un entier tel que $0\\leqslant k\\leqslant n-1$. On démontre que $\\binom{n+1}{k+1}=\\binom{n}{k}+\\binom{n}{k+1}$ en comptant les parties de $E$ à $k+1$ éléments : celles qui contiennent $a$, puis celles qui ne le contiennent pas.\n\nIl y a $\\binom{n}{k}$ parties qui contiennent $a$ et $\\binom{n}{k+1}$ qui ne le contiennent pas. Pourquoi peut-on conclure que $\\binom{n+1}{k+1}=\\binom{n}{k}+\\binom{n}{k+1}$ ?\n\n```choix\n- Les deux familles sont disjointes et leur réunion est l'ensemble des parties de $E$ à $k+1$ éléments : on applique le principe additif.\n- On applique le principe multiplicatif : on choisit une partie dans chaque famille.\n- Les deux familles ont le même nombre d'éléments.\n- Toute partie de $E$ à $k+1$ éléments contient $a$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une partie de $E$ à $k+1$ éléments contient $a$ ou ne le contient pas, jamais les deux : les deux familles sont disjointes et, réunies, donnent toutes ces parties.",
+					"Par le principe additif, $\\binom{n+1}{k+1}=\\textcolor{{{color:primary.0}}}{\\binom{n}{k}+\\binom{n}{k+1}}$.",
+					"Le principe multiplicatif compte des couples (une partie de chaque famille), pas des parties."
+				]
+			}
+		},
+		{
+			"statement": "Soit $E$ un ensemble à $n+1$ éléments ($n\\geqslant 1$), $a$ un élément de $E$ et $k$ un entier tel que $0\\leqslant k\\leqslant n-1$. On démontre que $\\binom{n+1}{k+1}=\\binom{n}{k}+\\binom{n}{k+1}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On sépare les parties de $E$ à $k+1$ éléments en deux familles : celles qui contiennent $a$ et celles qui ne le contiennent pas.\n- Une partie qui contient $a$ est déterminée par ses $k$ autres éléments, pris parmi les $n$ éléments autres que $a$ : il y en a $\\binom{n}{k}$.\n- Les autres, qui ne contiennent pas $a$, sont les parties à $k+1$ éléments de $E$ privé de $a$ : il y en a $\\binom{n}{k+1}$.\n- Les deux familles sont disjointes : par le principe additif, $\\binom{n+1}{k+1}=\\binom{n}{k}+\\binom{n}{k+1}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On compte de deux façons les parties de $E$ à $k+1$ éléments.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\binom{n+1}{k+1}=\\binom{n}{k}+\\binom{n}{k+1}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "C(6, 2) = 15",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : C(7, 3) = 35, toutes les parties",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : C(6, 3) = 20, trois éléments parmi les autres",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 × 5 = 30, ordre compté",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "C(n, k + 1)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : C(n + 1, k + 1)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : C(n, k)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : C(n + 1, k)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "principe additif",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : principe multiplicatif",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : même cardinal",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : toutes contiennent a",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
