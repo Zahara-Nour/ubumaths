@@ -1,4 +1,5 @@
 {
+	"id": "274804ba-fc76-47aa-93c9-d271a0cf64f6",
 	"title": "Démontrer que le projeté orthogonal sur un plan est le point le plus proche",
 	"description": "Démonstration à trous : produit scalaire MH·HN = 0 (case), sa justification (choix), conclusion MN > MH (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],

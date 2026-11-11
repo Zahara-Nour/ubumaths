@@ -1,4 +1,5 @@
 {
+	"id": "0dacdcc5-da3b-49ae-bba5-f795d5e1301b",
 	"title": "Démontrer l'équation cartésienne d'un plan dont on connaît un vecteur normal et un point",
 	"description": "Démonstration à trous : M ∈ P ⟺ AM·n = 0 (choix), calcul de d (case, A et n tirés), repère orthonormé (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],
