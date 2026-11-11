@@ -64,12 +64,15 @@ comment on column public.skill_attempts.end_reason is
 comment on column public.skill_attempts.seed is
 	'Graine du tirage : avec le modèle, reproduit valeurs, ordre des choix d''un QCM et mélange des étiquettes (generateInstance).';
 comment on column public.skill_attempts.answer_parts is
-	'Réponse de l''élève, une chaîne par case (50 cases, 2 000 caractères par case au plus). Saisie, Contrôle blanc, Course aux nombres seulement. Purgée en fin d''année scolaire.';
+	'Réponse de l''élève, une chaîne par case (50 cases, 2 000 caractères par case, 10 000 en tout au plus). Saisie, Contrôle blanc, Course aux nombres seulement. Purgée en fin d''année scolaire.';
 comment on column public.skill_attempts.part_verdicts is
 	'Verdict par case (juste / faux), autant que de cases dans answer_parts. Purgé avec elle.';
 
 -- -----------------------------------------------------------------------------
--- 2. Contrôle d'une réponse : 1 à 50 cases, aucune NULL, 2 000 caractères au plus
+-- 2. Contrôle d'une réponse : 1 à 50 cases, aucune NULL, 2 000 caractères par case
+--    au plus (borne commune du code, `submission.ts`) et 10 000 en tout : un élève
+--    insère directement, sans limite de nombre ; ce plafond garde une trace sous
+--    ~40 Ko (David, 2026-11-11, audit de sécurité de la PR 1).
 --    (un CHECK n'accepte pas de sous-requête : la boucle sur les cases vit ici)
 -- -----------------------------------------------------------------------------
 
@@ -86,11 +89,12 @@ as $$
 			select 1
 			from unnest(p_parts) as part
 			where part is null or char_length(part) > 2000
-		);
+		)
+		and char_length(array_to_string(p_parts, '')) <= 10000;
 $$;
 
 comment on function public.trace_answer_parts_valid(text[]) is
-	'CHECK de skill_attempts.answer_parts : 1 à 50 cases, aucune NULL, 2 000 caractères par case au plus (ADR 0038).';
+	'CHECK de skill_attempts.answer_parts : 1 à 50 cases, aucune NULL, 2 000 caractères par case et 10 000 en tout au plus (ADR 0038).';
 
 -- Le CHECK s'évalue avec les droits de l'élève qui insère : l'exécution est
 -- donnée explicitement, sans compter sur les droits par défaut.

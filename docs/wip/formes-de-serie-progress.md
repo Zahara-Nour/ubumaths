@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, PR 1 en cours (migration additive `skill_attempts`)._
+_Mis à jour le 2026-11-11, PR 1 prête (migration additive `skill_attempts`), PR à ouvrir._
 
-- **État** : phase 0 validée ; PR 1 commencée (tests d'intégration d'abord, puis migration) · **Prochaine action** : tests rouges → migration → verts → revue (`code-reviewer` + `security-auditor`) → PR → `db:migrate` au merge · **En attente de David** : rien · **Suite** : chantier à part P5 (heatmap + Palotin de régularité) après celui-ci · **Pièges en cours** : « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`) · **Worktree / branche** : `../ubumaths-wt-formes-de-serie` · `feat/formes-de-serie`
+- **État** : PR 1 écrite et relue (`code-reviewer` + `security-auditor` : aucun bloquant), 42 tests d'intégration verts, rouges sans la migration · **Prochaine action** : PR ouverte → CI verte → merge → `db:migrate` depuis la branche mergée → PR 2 · **En attente de David** : rien · **À trancher en PR 2** : traces « contrôle » écrites par l'élève (voir § « Colonnes de la PR 1 ») · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé (jamais `{@html}` ni KaTeX brut) ; aucune case → écrire NULL, pas `[]` ; « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` · **Worktree / branche** : `../ubumaths-wt-formes-de-serie` · `feat/formes-de-serie`
 
 ## Décisions de David (2026-11-11)
 
@@ -206,6 +206,15 @@ une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit d
   `number_race`, `evaluation` ; réponse et verdicts seulement en `typing`, `mock_test`,
   `number_race` ; autant de verdicts que de cases ; sans lieu, aucune colonne neuve.
 - **Lieu facultatif en base** (anciennes traces) ; l'API l'exigera (PR 2).
+- **Plafond total** (David, 2026-11-11, audit de sécurité) : **10 000 caractères par trace**, en plus
+  des 2 000 par case — un élève insère sans limite de nombre ; une trace reste sous ~40 Ko.
+- **Reporté en PR 2** (David, 2026-11-11) : un élève peut insérer une trace `place = 'evaluation'`
+  (le prof lirait « fait en contrôle »). Le serveur écrit aujourd'hui les traces d'un contrôle avec
+  le **jeton de l'élève** (`evaluation-attempts.ts`, `recordSeriesReviews(userClient, …)`). Correctif
+  envisagé : écriture par le client service + policy d'insertion élève qui refuse `evaluation`
+  (question d'accès à poser). Intégrité inchangée d'ici là (« réussi » est déjà falsifiable, ADR 0038).
+- **Aucune case** (question sans réponse, temps écoulé) : `answer_parts` et `part_verdicts` NULL ;
+  `[]` est refusé.
 
 ### Découpage proposé (une PR chacune)
 

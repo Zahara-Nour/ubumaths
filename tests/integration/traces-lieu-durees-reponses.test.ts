@@ -226,14 +226,24 @@ describe('traces : formes acceptées', () => {
 		expect(error).toBeNull();
 	});
 
-	it('bornes atteintes : 50 cases de 2 000 caractères, 24 h', async () => {
+	it('bornes atteintes : 50 cases, 10 000 caractères en tout, 24 h', async () => {
 		const { studentId, client, templateId } = await studentWithTemplate();
 		const { error } = await insertTrace(client, studentId, templateId, {
 			...MOCK_TEST_TRACE,
 			response_ms: 86_400_000,
 			allotted_ms: 86_400_000,
-			answer_parts: Array.from({ length: 50 }, () => 'x'.repeat(2_000)),
+			answer_parts: Array.from({ length: 50 }, () => 'x'.repeat(200)),
 			part_verdicts: Array.from({ length: 50 }, () => true)
+		});
+		expect(error).toBeNull();
+	});
+
+	it('bornes atteintes : 5 cases de 2 000 caractères (10 000 en tout)', async () => {
+		const { studentId, client, templateId } = await studentWithTemplate();
+		const { error } = await insertTrace(client, studentId, templateId, {
+			...MOCK_TEST_TRACE,
+			answer_parts: Array.from({ length: 5 }, () => 'x'.repeat(2_000)),
+			part_verdicts: Array.from({ length: 5 }, () => true)
 		});
 		expect(error).toBeNull();
 	});
@@ -252,6 +262,15 @@ describe('traces : refusées par la base', () => {
 				...MOCK_TEST_TRACE,
 				answer_parts: Array.from({ length: 51 }, () => '1'),
 				part_verdicts: Array.from({ length: 51 }, () => true)
+			},
+			['chk_trace_answer_parts_bounds']
+		],
+		[
+			'10 001 caractères en tout (6 cases)',
+			{
+				...MOCK_TEST_TRACE,
+				answer_parts: [...Array.from({ length: 5 }, () => 'x'.repeat(1_667)), 'x'.repeat(1_666)],
+				part_verdicts: Array.from({ length: 6 }, () => true)
 			},
 			['chk_trace_answer_parts_bounds']
 		],

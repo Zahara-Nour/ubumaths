@@ -172,7 +172,7 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   `evaluation`), `response_ms`, `allotted_ms`, `end_reason` (`validated` / `timeout`), `seed`,
   `answer_parts` (une chaîne par case) et `part_verdicts` (juste / faux par case). Bornes **et**
   cohérence par lieu en CHECK, parce que l'élève insère ses traces directement par PostgREST :
-  50 cases, 2 000 caractères par case (`trace_answer_parts_valid`), durées 0-24 h ; durées et fin
+  50 cases, 2 000 caractères par case et 10 000 en tout (`trace_answer_parts_valid`), durées 0-24 h ; durées et fin
   seulement en `mock_test` / `number_race` / `evaluation` ; réponse seulement en `typing` /
   `mock_test` / `number_race`, avec autant de verdicts que de cases ; sans lieu, aucune de ces
   colonnes (anciennes traces). Mêmes lecteurs que le reste de la ligne : l'élève, le professeur.
