@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2544._
+_Mis à jour le 2026-11-11, après #2546._
 
-- **État** : PR 1 mergée (#2544), pas encore en prod. Petite PR « Constance perdue = passage important » en cours (décision de David du 2026-11-11, § Revues).
-- **Prochaine action** : merger la petite PR ; puis PR 2 = partie C (réactions en séance), branche `feat/palotins-seances`.
+- **État** : PR 1 (#2544) et petite PR Constance perdue = passage important (#2546) **mergées**, pas encore en prod. #2546 a aussi réparé les 2 tests d'intégration `palotin-boucle` cassés par #2544.
+- **Prochaine action** : PR 2 = partie C (réactions en séance), nouveau worktree `../ubumaths-wt-palotins`, branche `feat/palotins-seances`.
 - **En attente de David** : vérification visuelle de l'écusson et des passages (à noter dans `verifications-manuelles.md`).
-- **Pièges en cours** : `GET /api/student/buddy/presence` ÉCRIT (Constance) ; un passage acquitte le retour à l'AFFICHAGE ; `palotinZone` range déjà les séances (PR 2 n'a qu'à y brancher les réactions).
-- **Worktree / branche** : `../ubumaths-wt-palotins` · `fix/palotins-constance`.
+- **Pièges en cours** : `GET /api/student/buddy/presence` ÉCRIT (Constance) ; la Constance perdue est gardée en mémoire de l'onglet seulement (un rechargement avant la première page de passage la perd) ; `palotinZone` range déjà les séances (PR 2 n'a qu'à y brancher les réactions).
+- **Worktree / branche** : aucun.
 
 ---
 
