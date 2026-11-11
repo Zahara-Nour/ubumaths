@@ -2,9 +2,27 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après le bilan de la CI instable (aucune PR)._
+_Mis à jour le 2026-11-11, après #2572._
 
-- **État** : 0.82.0 en prod ; atelier à froid mesuré (3,1 s en 4G, réseau limitant) ; piste 3 close : INP compté sur les seules interactions, adresse de l'interaction, `event_name` + `target` (#2564, **pas encore en prod**) · piste 4 « CI instable » close (bilan ci-dessous, 7 issues « Nightly CI triage » fermées) · **Prochaine action** : rien d'engagé ; à David de choisir une nouvelle piste · **Après le prochain `deploy:prod`** : dans `error_logs`, les lignes INP portent `event_name`, `target` (sans `aria-label`) et l'adresse de la page de l'interaction ; un même INP ne revient plus ×10 pour un élève ; lignes #2545, #2553, #2555 et #2564 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé, pas `web-vitals` ; cible = balise + `id` + `role`, jamais d'`aria-label` (noms d'élèves) ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un `id` construit sur du texte saisi part dans `error_logs` (cible INP) ; un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence ; `db:migrate` refusé par le classifieur du mode auto → `! pnpm db:migrate` ; tag de l'image Playwright (`quality.yml`) à monter avec `playwright` · **Worktree / branche** : aucun
+- **État** : 0.82.0 en prod ; piste 3 close (#2564, pas encore en prod) ; piste 4 « CI instable » close (7 issues fermées) ; erreur `/dev/modeles` = onglet d'avant 0.81.0 face au nouveau serveur → corrigée par #2572 (mergée, pas encore en prod : `version.pollInterval` 5 min, garde de version au rafraîchissement horaire du jeton, rechargement complet sur lien et Précédent / Suivant) · **Prochaine action** : David choisit la piste suivante (« où les élèves bloquent », outils manquants n°24 / n°26, #2191 et PR Dependabot, tri des journaux wip, #1788 point 1) · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 plus tard ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement, jamais sur `goto` · **Pièges en cours** : un `id` construit sur du texte saisi part dans `error_logs` ; un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build ; `db:migrate` → `! pnpm db:migrate` · **Worktree / branche** : aucun (worktree retiré après #2572)
+
+## Onglet resté ouvert pendant un déploiement (2026-11-11)
+
+- **Erreur `/dev/modeles`** (`reading 'id'`, 5 fois le 2026-11-11, admin) : onglet chargé avant 0.81.0
+  (clé `sheet.row.id`) ; #2533 a changé la forme des fiches (`{ key, sheet: { row } }`). Le
+  rafraîchissement horaire du jeton (`invalidate('supabase:auth')`) rechargeait les données du NOUVEAU
+  serveur dans l'ANCIEN code. Preuve : build local de v0.81.0, ligne 5 identique à la prod, colonne
+  780 = clé du `{#each}` ; la version d'avant #2533 y lit `sheet.row.id`. Code actuel sain.
+- **Mesure** (`error_logs`, 30 j, 113 lignes `client_js`) : prof 49, admin 20 (vos onglets), visiteurs
+  33 (~12 imports ratés après déploiement), élève 11 (un compte, `ResizeObserver` seulement). **Aucun
+  élève touché.** Rafales toutes les ~59 min : `invalidateAuth()` importe `$app/navigation` à la
+  demande, fichier supprimé par le déploiement → « Unhandled Promise Rejection ».
+- **Kit 2.70.3** : `updated.check()` seulement après un échec de chargement ; rien avant.
+- **Phase 0 validée par David (« je te suis », sur mes deux recommandations)** : `version.pollInterval`
+  5 min ; rafraîchissement horaire sauté si nouvelle version (`checkAppVersion`, `version.json` sans
+  cache ; illisible → comme avant) ; `beforeNavigate` → chargement complet sur lien et
+  Précédent / Suivant, jamais sur `goto` ni formulaire. Connexion / déconnexion : pas de garde de
+  version (le compte change), import en échec → `location.reload()`.
 
 ## Piste 4 — CI instable : bilan (2026-11-11, aucune PR)
 

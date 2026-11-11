@@ -1,0 +1,204 @@
+{
+	"title": "Démontrer la dérivée de la fonction logarithme népérien",
+	"description": "Démonstration à trous : e^(ln x) = x (case), dérivée de e^(ln x) (choix), ln′(x) = 1/x (case) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On admet que la fonction $\\ln$ est dérivable sur $]0\\,;\\,+\\infty[$. On démontre que, pour tout $x>0$, $\\ln'(x)=\\dfrac{1}{x}$.\n\nOn part d'une égalité vraie pour tout $x>0$. Complète.\n\n$e^{\\ln x}=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln x$ est le réel dont l'exponentielle vaut $x$.",
+					"Donc, pour tout $x>0$, $e^{\\ln x}=\\textcolor{{{color:primary.0}}}{x}$."
+				]
+			}
+		},
+		{
+			"statement": "On admet que la fonction $\\ln$ est dérivable sur $]0\\,;\\,+\\infty[$. On démontre que, pour tout $x>0$, $\\ln'(x)=\\dfrac{1}{x}$.\n\nPour tout $x>0$, $e^{\\ln x}=x$. On dérive les deux membres. Quelle est la dérivée de $x\\mapsto e^{\\ln x}$ ?\n\n```choix\n- $x\\mapsto\\ln'(x)\\,e^{\\ln x}$\n- $x\\mapsto e^{\\ln x}$\n- $x\\mapsto e^{\\ln'(x)}$\n- $x\\mapsto\\ln'(x)\\,\\ln x$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x\\mapsto e^{u(x)}$ est $x\\mapsto u'(x)\\,e^{u(x)}$.",
+					"Avec $u=\\ln$, la dérivée de $x\\mapsto e^{\\ln x}$ est $x\\mapsto\\textcolor{{{color:primary.0}}}{\\ln'(x)\\,e^{\\ln x}}$.",
+					"On n'oublie pas le facteur $u'(x)$ : $e^{\\ln x}$ seul serait la dérivée si $u'=1$."
+				]
+			}
+		},
+		{
+			"statement": "On admet que la fonction $\\ln$ est dérivable sur $]0\\,;\\,+\\infty[$. On démontre que, pour tout $x>0$, $\\ln'(x)=\\dfrac{1}{x}$.\n\nEn dérivant $e^{\\ln x}=x$, on obtient $\\ln'(x)\\,e^{\\ln x}=1$, c'est-à-dire $\\ln'(x)\\times x=1$. Complète.\n\n$\\ln'(x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{1}{x}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$e^{\\ln x}=x$, donc l'égalité s'écrit $\\ln'(x)\\times x=1$.",
+					"Comme $x>0$, on divise par $x$ : $\\ln'(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{x}}$."
+				]
+			}
+		},
+		{
+			"statement": "On admet que la fonction $\\ln$ est dérivable sur $]0\\,;\\,+\\infty[$. On démontre que, pour tout $x>0$, $\\ln'(x)=\\dfrac{1}{x}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour tout $x>0$, $e^{\\ln x}=x$.\n- On dérive les deux membres : $\\ln'(x)\\,e^{\\ln x}=1$.\n- Comme $e^{\\ln x}=x$, cela s'écrit $\\ln'(x)\\times x=1$.\n- On divise par $x>0$ : $\\ln'(x)=\\dfrac{1}{x}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On dérive l'égalité $e^{\\ln x}=x$, la dérivabilité de $\\ln$ étant admise.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\ln'(x)=\\dfrac{1}{x}}$ pour tout $x>0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : eˣ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["e^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\ln(x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ln′(x) e^(ln x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : e^(ln x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : e^(ln′(x))",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln′(x) ln x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\dfrac{1}{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture \\frac (saisie MathLive)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{1}{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1/x²",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["-\\dfrac{1}{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

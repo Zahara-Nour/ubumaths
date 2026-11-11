@@ -8,6 +8,7 @@ couvre:
   - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,modalStack,input-capability,auth}.svelte.ts'
   - 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts'
   - src/lib/utils/cache-sync.ts
+  - src/lib/utils/app-version.ts
   - 'src/routes/(protected)/dashboard/teacher/{wheel,recherche,documents}/**'
 ---
 
@@ -245,6 +246,27 @@ annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`)
 - `ExerciseSkeleton` : squelette de `student/exercises`.
 - `skeleton/` : `SkeletonPage`, `SkeletonDashboard`, `SkeletonList`, `SkeletonForm` sont utilisés
   (layouts, marché) ; `SkeletonAvatar`, `SkeletonButton`, `SkeletonIcon`, `SkeletonNavItem` non.
+
+### Onglet resté ouvert pendant un déploiement
+
+Après un `deploy:prod`, un onglet ouvert garde l'ancien code. Ses fichiers JS chargés à la
+demande n'existent plus, et les données du nouveau serveur peuvent avoir changé de forme (cas réel
+du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
+
+- `version.pollInterval` (`svelte.config.js`) : toutes les 5 min, l'onglet lit
+  `/_app/version.json` ; `updated.current` (`$app/state`) passe à vrai s'il a changé.
+- `beforeNavigate` du `+layout.svelte` racine : nouvelle version + lien ou Précédent / Suivant →
+  la page suivante se charge en entier. Lien : `cancel()` puis `location.href` (sans `cancel()`,
+  Kit charge la page en parallèle avec l'ancien code). Précédent / Suivant : `location.reload()`,
+  **sans** `cancel()` (Kit annulerait le déplacement dans l'historique). **Jamais sur un `goto` ni
+  un formulaire** : ce sont des navigations du code, souvent en pleine activité.
+- Rafraîchissement horaire du jeton (`+layout.ts`, `TOKEN_REFRESHED`) : `checkAppVersion` lit
+  `version.json` sans cache ; nouvelle version → on ne recharge pas les données, la page
+  suivante le fera. Fichier illisible (hors ligne, dev où il n'existe pas) → comme avant.
+- Règles dans `src/lib/utils/app-version.ts` (sans dépendance, import statique sans risque TDZ),
+  testées par `src/lib/utils/__tests__/app-version.test.ts`.
+- Kit seul ne vérifie la version qu'après un échec de chargement de page (il recharge alors de
+  lui-même) ; il ne voit pas l'échec d'un `await import()` de notre code.
 
 ## Pièges
 

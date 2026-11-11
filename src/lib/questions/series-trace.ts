@@ -22,7 +22,11 @@
  *
  * Envoi (E1) : une trace à la fois, dans l'ordre (deux révisions FSRS en
  * parallèle sur un même modèle perdraient une mise à jour : lecture puis
- * écriture, sans verrou) ; réessayé en silence ; `settle()` dit en fin de série combien de
+ * écriture, sans verrou) ; réessayé en silence quand le serveur répond qu'il est
+ * en panne (5xx, 429, 408), jamais après une coupure réseau : la trace a pu être
+ * écrite avant la coupure, la renvoyer ferait un doublon (deux lignes, deux
+ * révisions FSRS) ; mieux vaut en perdre une (décision du 2026-11-11, sans clé
+ * d'idempotence). `settle()` dit en fin de série combien de
  * traces n'ont pas pu être enregistrées, pour un message unique. Jamais de
  * blocage de la série. `answer_parts` est du texte libre de mineur : affiché
  * échappé partout où il sera relu.
@@ -139,7 +143,7 @@ export function buildSeriesTrace(input: {
 	return trace;
 }
 
-/** Un essai mérite-t-il d'être refait ? Réseau, serveur en panne, trop de requêtes */
+/** Un essai mérite-t-il d'être refait ? Serveur en panne, trop de requêtes, délai dépassé */
 function isRetryable(status: number): boolean {
 	return status >= 500 || status === 429 || status === 408;
 }
@@ -174,7 +178,8 @@ export function createTraceRecorder(
 				// Refusée (400, 404, 401) : un nouvel essai serait refusé aussi
 				if (!isRetryable(response.status)) break;
 			} catch {
-				// Réseau coupé : nouvel essai
+				// Réseau coupé : la trace a peut-être été écrite ; pas de nouvel essai (doublon)
+				break;
 			}
 		}
 		failed += 1;

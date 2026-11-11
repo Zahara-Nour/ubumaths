@@ -1,0 +1,209 @@
+{
+	"title": "Démontrer la résolution de l'équation différentielle y′ = ay",
+	"description": "Démonstration à trous : dérivée de e^(ax) (case, a tiré), z′ = 0 (choix), y = Ce^(ax) (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $a$ un réel. On démontre que les solutions sur $\\mathbb{R}$ de l'équation différentielle $y'=ay$ sont les fonctions $x\\mapsto Ce^{ax}$, où $C$ est un réel.\n\nOn vérifie d'abord, sur un exemple, que $x\\mapsto e^{ax}$ est solution. Complète la dérivée de $x\\mapsto e^{ {{a}}x}$.\n\n$\\left(e^{ {{a}}x}\\right)'=?\\,e^{ {{a}}x}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6!0,1,-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x\\mapsto e^{kx}$ est $x\\mapsto ke^{kx}$.",
+					"Ici $k={{a}}$ : $\\left(e^{ {{a}}x}\\right)'=\\textcolor{{{color:primary.0}}}{{{a}}}\\,e^{ {{a}}x}$, donc $x\\mapsto e^{ {{a}}x}$ est solution de $y'={{a}}y$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ un réel. On démontre que les solutions sur $\\mathbb{R}$ de l'équation différentielle $y'=ay$ sont les fonctions $x\\mapsto Ce^{ax}$, où $C$ est un réel.\n\nSoit $y$ une solution. On pose $z(x)=y(x)e^{-ax}$ ; on calcule $z'(x)=\\big(y'(x)-ay(x)\\big)e^{-ax}$. Pourquoi $z'(x)=0$ pour tout réel $x$ ?\n\n```choix\n- Car $y$ est solution : $y'(x)=ay(x)$, donc $y'(x)-ay(x)=0$.\n- Car $e^{-ax}\\neq 0$.\n- Car $z$ est constante.\n- Car $y(0)=0$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$y$ est solution de $y'=ay$ : pour tout $x$, $y'(x)=ay(x)$.",
+					"Donc $y'(x)-ay(x)=0$ et $\\textcolor{{{color:primary.0}}}{z'(x)=0}$.",
+					"« $z$ est constante » est ce qu'on cherche à établir : on ne peut pas s'en servir."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ un réel. On démontre que les solutions sur $\\mathbb{R}$ de l'équation différentielle $y'=ay$ sont les fonctions $x\\mapsto Ce^{ax}$, où $C$ est un réel.\n\nSoit $y$ une solution et $z(x)=y(x)e^{-ax}$. On a $z'=0$ sur $\\mathbb{R}$. Que peut-on conclure ?\n\n```choix\n- $z$ est constante, égale à un réel $C$ : $y(x)=Ce^{ax}$ pour tout réel $x$.\n- $z$ est nulle, donc $y$ est la fonction nulle.\n- $z$ est constante, égale à $C$ : $y(x)=Ce^{-ax}$.\n- $z$ est constante, égale à $C$ : $y(x)=C+e^{ax}$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$z'=0$ sur l'intervalle $\\mathbb{R}$ : $z$ est constante, égale à un réel $C$.",
+					"$y(x)e^{-ax}=C$, et on multiplie par $e^{ax}$ : $\\textcolor{{{color:primary.0}}}{y(x)=Ce^{ax}}$.",
+					"Diviser par $e^{-ax}$, c'est multiplier par $e^{ax}$ : l'exposant change de signe."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ un réel. On démontre que les solutions sur $\\mathbb{R}$ de $y'=ay$ sont les fonctions $x\\mapsto Ce^{ax}$, où $C$ est un réel.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour tout réel $C$, $x\\mapsto Ce^{ax}$ a pour dérivée $x\\mapsto aCe^{ax}$ : c'est une solution.\n- Réciproquement, soit $y$ une solution ; on pose $z(x)=y(x)e^{-ax}$.\n- $z'(x)=\\big(y'(x)-ay(x)\\big)e^{-ax}=0$, donc $z$ est constante, égale à un réel $C$.\n- Donc $y(x)=Ce^{ax}$ pour tout réel $x$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On vérifie que ces fonctions sont solutions, puis que toute solution est de cette forme.",
+					"Conclusion : les solutions de $y'=ay$ sont les fonctions $\\textcolor{{{color:primary.0}}}{x\\mapsto Ce^{ax}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = −3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −3x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["-3x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y′ = ay",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : e^(−ax) ≠ 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : circulaire",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : y(0) = 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = Ce^(ax)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y nulle",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : Ce^(−ax)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : C + e^(ax)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

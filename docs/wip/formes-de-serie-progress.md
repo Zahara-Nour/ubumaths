@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2565._
+_Mis à jour le 2026-11-11, après #2570._
 
-- **État** : PR 1 à 5 mergées (#2543, #2547, #2548, #2551, #2554, #2559, **#2565**) : traces par question partout ; forme **Saisie** livrée (`TestMode` `typing`, `TypingSeries`, gain du Palotin) · **Prochaine action** : (a) David vérifie la Saisie à la main (`verifications-manuelles.md`, #2565) ; (b) **petite PR « doublon »** : `createTraceRecorder` (`series-trace.ts`) ne renvoie plus après une exception réseau, nouveaux essais gardés pour 5xx/429/408 seulement, test à l'appui, sans migration ; (c) PR 6 = **purge** de fin d'année (cron L6) : destructive → s'arrêter et dire à David ce qui sera perdu avant tout SQL ; (d) Saisie en séries de chapitre : attendre l'usage réel · **En attente de David** : rien (4 points tranchés le 2026-11-11, cf. « Décisions sur les points à trancher ») · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces en FILE (FSRS sans verrou) ; « Flash-cards » dans un message d'erreur fait échouer la garde de langue (`cards`) · **Worktree / branche** : aucun (nouveau worktree depuis `origin/main` pour la PR doublon)
+- **État** : PR 1 à 5 mergées (#2543, #2547, #2548, #2551, #2554, #2559, #2565) + **PR doublon #2570** (plus de nouvel essai d'envoi de trace après une coupure réseau ; 5xx/429/408 toujours réessayés) · **Prochaine action** : (a) David vérifie la Saisie à la main (`verifications-manuelles.md`, #2565) ; (c) PR 6 = **purge** de fin d'année (cron L6) : destructive → s'arrêter et dire à David ce qui sera perdu avant tout SQL ; (d) Saisie en séries de chapitre : attendre l'usage réel · **En attente de David** : rien (4 points tranchés le 2026-11-11, cf. « Décisions sur les points à trancher ») · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces en FILE (FSRS sans verrou) ; « Flash-cards » dans un message d'erreur fait échouer la garde de langue (`cards`) ; corps de commit ≤ 100 caractères par ligne (`Doc-inchangée:` compris) · **Worktree / branche** : aucun (nouveau worktree depuis `origin/main` pour la PR 6)
 
 ## Décisions de David (2026-11-11)
 
@@ -349,6 +349,14 @@ Réalisé (2026-11-11) :
 4. _Policy prof sur `evaluation`_ : **rien à faire** (mono-professeur ; ne pas retoucher la RLS pour un gain nul).
 
 Ordre ensuite : vérification manuelle de la Saisie → PR doublon → PR 6 purge → Saisie en séries de chapitre selon l'usage.
+
+### PR « doublon » — plus de nouvel essai après une coupure réseau (2026-11-11)
+
+- `createTraceRecorder` (`series-trace.ts`) : une exception de `fetch` (réseau coupé) arrête les
+  essais, la trace compte parmi les non enregistrées ; nouveaux essais gardés pour 5xx / 429 / 408.
+  Pas de migration, pas de clé d'idempotence (décision 2 du 2026-11-11).
+- Tests : coupure seule, coupure après une panne, trace suivante envoyée quand même (rouges avant) ;
+  panne 503 / 429 / 408 réessayée. Doc : `docs/systeme/evaluations.md`.
 
 ### PR 5 — forme Saisie (2026-11-11)
 

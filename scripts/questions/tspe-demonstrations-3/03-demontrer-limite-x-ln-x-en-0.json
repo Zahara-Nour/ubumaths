@@ -1,0 +1,196 @@
+{
+	"title": "Démontrer la limite en 0 de x ln x",
+	"description": "Démonstration à trous : x ln x = X e^X (case), X → −∞ (choix), composition (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On démontre que $\\displaystyle\\lim_{x\\to 0^+}x\\ln x=0$. On sait que $\\displaystyle\\lim_{X\\to-\\infty}Xe^X=0$ (croissance comparée).\n\nPour $x>0$, on pose $X=\\ln x$.\n\nComme $x=e^{X}$, complète.\n\n$x\\ln x=X\\times ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{X}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X=\\ln x$, donc $x=e^{\\ln x}=e^{X}$.",
+					"Donc $x\\ln x=e^{X}\\times X=X\\times\\textcolor{{{color:primary.0}}}{e^{X}}$."
+				]
+			}
+		},
+		{
+			"statement": "On démontre que $\\displaystyle\\lim_{x\\to 0^+}x\\ln x=0$. On sait que $\\displaystyle\\lim_{X\\to-\\infty}Xe^X=0$ (croissance comparée).\n\nPour $x>0$, on pose $X=\\ln x$.\n\nQue devient $X=\\ln x$ quand $x$ tend vers $0$ par valeurs positives ?\n\n```choix\n- $X$ tend vers $-\\infty$.\n- $X$ tend vers $0$.\n- $X$ tend vers $+\\infty$.\n- $X$ tend vers $1$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On sait que $\\displaystyle\\lim_{x\\to 0^+}\\ln x=-\\infty$.",
+					"Donc, quand $x\\to 0^+$, $X=\\ln x$ tend vers $\\textcolor{{{color:primary.0}}}{-\\infty}$.",
+					"C'est $\\ln 1$ qui vaut $0$, pas la limite de $\\ln x$ en $0$."
+				]
+			}
+		},
+		{
+			"statement": "On démontre que $\\displaystyle\\lim_{x\\to 0^+}x\\ln x=0$. On sait que $\\displaystyle\\lim_{X\\to-\\infty}Xe^X=0$ (croissance comparée).\n\nPour $x>0$, on pose $X=\\ln x$.\n\nOn a $x\\ln x=Xe^X$, et $X\\to-\\infty$ quand $x\\to 0^+$. Pourquoi peut-on conclure que $\\displaystyle\\lim_{x\\to 0^+}x\\ln x=0$ ?\n\n```choix\n- Par composition : $X\\to-\\infty$ et $\\displaystyle\\lim_{X\\to-\\infty}Xe^X=0$.\n- $x\\to 0$, donc le produit $x\\ln x$ tend vers $0$.\n- $\\ln x\\to-\\infty$, donc $x\\ln x\\to-\\infty$.\n- On ne peut pas conclure : « $0\\times\\infty$ » est une forme indéterminée.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $x\\to 0^+$, $X=\\ln x\\to-\\infty$.",
+					"Et $Xe^X\\to 0$ quand $X\\to-\\infty$ : par composition, $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{x\\to 0^+}x\\ln x=0}$.",
+					"« $0\\times\\infty$ » est bien indéterminé : c'est pour lever l'indétermination qu'on change de variable."
+				]
+			}
+		},
+		{
+			"statement": "On démontre que $\\displaystyle\\lim_{x\\to 0^+}x\\ln x=0$, en utilisant $\\displaystyle\\lim_{X\\to-\\infty}Xe^X=0$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour $x>0$, on pose $X=\\ln x$, de sorte que $x=e^{X}$.\n- Alors $x\\ln x=Xe^{X}$.\n- Quand $x\\to 0^+$, $X=\\ln x\\to-\\infty$.\n- Par composition, $\\displaystyle\\lim_{x\\to 0^+}x\\ln x=\\lim_{X\\to-\\infty}Xe^X=0$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On lève la forme indéterminée « $0\\times\\infty$ » par le changement de variable $X=\\ln x$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{x\\to 0^+}x\\ln x=0}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "e^X",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["e^{X}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : X",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["X"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln X",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\ln(X)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−∞",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : +∞",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "composition",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x → 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −∞",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : forme indéterminée",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
