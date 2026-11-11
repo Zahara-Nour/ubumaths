@@ -22,7 +22,7 @@ describe('findSensitive : secrets', () => {
 		expect(findSensitive([line(text)])[0].kind).toBe('secret');
 	});
 
-	it('JWT d’un vrai projet Supabase (porte un `ref`) → bloqué', () => {
+	it('JWT d’un vrai projet Supabase → bloqué', () => {
 		const payload = Buffer.from(
 			JSON.stringify({ iss: 'supabase', ref: 'abcdefgh', role: 'service_role' })
 		).toString('base64url');
@@ -73,13 +73,56 @@ describe('findSensitive : adresses', () => {
 		expect(findSensitive([line('x' + at + 'gmail.com', 'static/vendor.js')])).toEqual([]);
 	});
 
-	it('le signalement ne recopie pas la valeur', () => {
-		const [hit] = findSensitive([line('parent.dupont' + at + 'gmail.com')]);
-		expect(hit.excerpt).not.toContain('parent.dupont');
+	it('le signalement ne recopie rien de la ligne (ni cette valeur, ni une autre)', () => {
+		const secret = 'xkey' + 'sib-' + 'a'.repeat(40);
+		const hits = findSensitive([
+			line('a.b' + at + 'gmail.com et marie' + at + 'yahoo.fr ' + secret)
+		]);
+		expect(hits).toHaveLength(3);
+		for (const hit of hits) expect(JSON.stringify(hit)).not.toMatch(/gmail|yahoo|marie|xkeysib/);
+	});
+
+	it.each([
+		['prénom fictif suivi d’un nom', 'alicemartin12' + at + 'eleves.chiph.re'],
+		['prénom fictif avec point', 'camille.dupont' + at + 'eleves.chiph.re']
+	])('compte d’enfant, %s → bloqué', (_label, text) => {
+		expect(findSensitive([line(text)])).toHaveLength(1);
+	});
+
+	it.each([
+		'git' + at + 'github.com:org/repo.git',
+		'12345+pseudo' + at + 'users.noreply.github.com'
+	])('%s (GitHub technique) → accepté', (text) => {
+		expect(findSensitive([line(text)])).toEqual([]);
 	});
 });
 
 describe('parseAddedLines', () => {
+	it('ligne ajoutée qui commence par « ++ » : contenu, pas un en-tête', () => {
+		const diff = [
+			'diff --git a/src/a.ts b/src/a.ts',
+			'--- a/src/a.ts',
+			'+++ b/src/a.ts',
+			'@@ -0,0 +1,2 @@',
+			'+++ x',
+			'+suite'
+		].join('\n');
+		expect(parseAddedLines(diff)).toEqual([
+			{ file: 'src/a.ts', lineNo: 1, text: '++ x' },
+			{ file: 'src/a.ts', lineNo: 2, text: 'suite' }
+		]);
+	});
+
+	it('chemin accentué (git sans guillemets, core.quotepath=false)', () => {
+		const diff = [
+			'diff --git a/docs/é.md b/docs/é.md',
+			'+++ b/docs/é.md',
+			'@@ -0,0 +1 @@',
+			'+x'
+		].join('\n');
+		expect(parseAddedLines(diff)).toEqual([{ file: 'docs/é.md', lineNo: 1, text: 'x' }]);
+	});
+
 	it('ne garde que les lignes AJOUTÉES, avec fichier et numéro', () => {
 		const diff = [
 			'diff --git a/src/a.ts b/src/a.ts',
@@ -87,8 +130,7 @@ describe('parseAddedLines', () => {
 			'@@ -1,0 +10,2 @@',
 			'+const a = 1;',
 			'+const b = 2;',
-			'-const old = 0;',
-			'+++ /dev/null'
+			'-const old = 0;'
 		].join('\n');
 		expect(parseAddedLines(diff)).toEqual([
 			{ file: 'src/a.ts', lineNo: 10, text: 'const a = 1;' },

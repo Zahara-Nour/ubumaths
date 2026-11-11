@@ -8,7 +8,7 @@
  * - les **secrets** aux formats connus : clés Brevo (API et SMTP), Stripe live,
  *   Groq, Hugging Face, GitHub, AWS, clés privées, et les JWT d'un vrai projet
  *   Supabase (ceux qui portent un `ref`) — les clés de démo de Supabase local
- *   (`iss: supabase-demo`), publiques, passent ;
+ *   (`iss: supabase-demo`), publiques, passent ; tout autre JWT est signalé ;
  * - les **adresses courriel** hors des domaines fictifs de `ALLOWED_DOMAINS` ;
  *   sur `chiph.re`, seules les adresses de service ; sur le domaine fictif des
  *   comptes d'enfants (`eleves.chiph.re`), seuls les prénoms de `FICTIONAL_NAMES`
@@ -18,7 +18,10 @@
  * (données fictives seulement) reste la vraie protection.
  *
  * Exception assumée, sur la ligne même : `garde-donnees:ok (raison)`.
- * Le signalement ne recopie jamais la valeur trouvée.
+ * Le signalement ne recopie rien de la ligne (logs de CI publics) : fichier et
+ * numéro de ligne seulement. Limite : en CI, seul le diff final de la PR est lu
+ * (un secret ajouté puis retiré dans la PR n'y est plus) ; le pre-commit, lui,
+ * voit chaque commit.
  *
  * Usage : pnpm garde:donnees --staged          (pre-commit)
  *         pnpm garde:donnees --depuis origin/main   (CI, sur une PR)
@@ -37,7 +40,6 @@ export interface Hit {
 	lineNo: number;
 	kind: 'secret' | 'adresse';
 	label: string;
-	excerpt: string;
 }
 
 const MARKER = 'garde-donnees:ok';
@@ -92,10 +94,14 @@ function isAllowedEmail(local: string, domain: string): boolean {
 	const d = domain.toLowerCase();
 	const l = local.toLowerCase();
 	if (d === 'eleves.chiph.re') {
-		return l === '%' || FICTIONAL_NAMES.some((name) => l.startsWith(name));
+		// Format exact `<prénom fictif><chiffres>` : `alicemartin12` ou `camille.dupont` ne passent pas.
+		return l === '%' || FICTIONAL_NAMES.some((name) => new RegExp(`^${name}\\d*$`).test(l));
 	}
 	// Domaine actuel et ancien domaine (ubumaths) : adresses de service seulement.
 	if (d === 'chiph.re' || /^ubumaths\.(fr|com)$/.test(d)) return CHIPHRE_SERVICE.test(l);
+	// Adresses techniques de GitHub (dépôt distant, auteurs masqués).
+	if (d === 'github.com') return l === 'git';
+	if (d === 'users.noreply.github.com') return true;
 	return ALLOWED_DOMAINS.some((re) => re.test(d));
 }
 
@@ -111,44 +117,54 @@ function isRealSupabaseJwt(payloadB64: string): boolean {
 	}
 }
 
-/** Extrait sans la valeur : le fichier et la ligne suffisent pour la retrouver. */
-function mask(text: string, value: string): string {
-	return text.replace(value, '[…]').trim().slice(0, 100);
-}
-
 export function findSensitive(lines: AddedLine[]): Hit[] {
 	const hits: Hit[] = [];
 	for (const { file, lineNo, text } of lines) {
 		if (EXCLUDED_FILES.some((re) => re.test(file))) continue;
 		if (text.includes(MARKER)) continue;
-		const push = (kind: Hit['kind'], label: string, value: string) =>
-			hits.push({ file, lineNo, kind, label, excerpt: mask(text, value) });
+		// Rien de la ligne n'est recopié : les logs de CI d'un dépôt public sont lisibles par tous.
+		const push = (kind: Hit['kind'], label: string) => hits.push({ file, lineNo, kind, label });
 
 		for (const { label, re } of SECRET_PATTERNS) {
 			const m = text.match(re);
-			if (m) push('secret', label, m[0]);
+			if (m) push('secret', label);
 		}
 		for (const m of text.matchAll(JWT_RE)) {
-			if (isRealSupabaseJwt(m[1])) push('secret', 'jeton JWT', m[0]);
+			if (isRealSupabaseJwt(m[1])) push('secret', 'jeton JWT');
 		}
 		for (const m of text.matchAll(EMAIL_RE)) {
 			const [full, domain, tld] = m;
 			if (FILE_EXTENSIONS.has(tld.toLowerCase())) continue;
 			const local = full.slice(0, full.indexOf('@'));
-			if (!isAllowedEmail(local, domain)) push('adresse', 'adresse courriel réelle', full);
+			if (!isAllowedEmail(local, domain)) push('adresse', 'adresse courriel réelle');
 		}
 	}
 	return hits;
 }
 
-/** Lignes ajoutées d'un diff unifié (`git diff -U0`). */
+/**
+ * Lignes ajoutées d'un diff unifié (`git diff -U0`, préfixes `a/`/`b/` imposés par
+ * `GIT_DIFF_ARGS`). Un `+++` n'est un en-tête qu'entre `diff --git` et le premier
+ * `@@` du fichier : ailleurs, c'est une ligne ajoutée qui commence par `++`.
+ */
 export function parseAddedLines(diff: string): AddedLine[] {
 	const out: AddedLine[] = [];
 	let file: string | null = null;
+	let inHeader = false;
 	let lineNo = 0;
 	for (const raw of diff.split('\n')) {
-		if (raw.startsWith('+++ ')) {
-			file = raw.startsWith('+++ b/') ? raw.slice(6) : null;
+		if (raw.startsWith('diff --git ')) {
+			inHeader = true;
+			file = null;
+			continue;
+		}
+		if (inHeader) {
+			if (raw.startsWith('+++ ')) file = raw.startsWith('+++ b/') ? raw.slice(6) : null;
+			const hunk = raw.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
+			if (hunk) {
+				inHeader = false;
+				lineNo = Number(hunk[1]);
+			}
 			continue;
 		}
 		const hunk = raw.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
@@ -164,13 +180,31 @@ export function parseAddedLines(diff: string): AddedLine[] {
 	return out;
 }
 
+/**
+ * Sortie de diff stable quelle que soit la config git locale : chemins accentués
+ * non cités (`core.quotepath`), préfixes `a/`/`b/` imposés (`diff.mnemonicPrefix`,
+ * `diff.noprefix`), ni diff externe ni textconv.
+ */
+const GIT_DIFF_ARGS = [
+	'-c',
+	'core.quotepath=false',
+	'diff',
+	'-U0',
+	'--no-color',
+	'--no-ext-diff',
+	'--no-textconv',
+	'--src-prefix=a/',
+	'--dst-prefix=b/',
+	'--diff-filter=ACMR'
+];
+
 function main(argv: string[]): number {
 	const sinceIdx = argv.indexOf('--depuis');
 	let args: string[];
 	if (argv.includes('--staged')) {
-		args = ['diff', '--cached', '-U0', '--no-color', '--diff-filter=ACMR'];
+		args = [...GIT_DIFF_ARGS, '--cached'];
 	} else if (sinceIdx !== -1 && argv[sinceIdx + 1]) {
-		args = ['diff', '-U0', '--no-color', '--diff-filter=ACMR', `${argv[sinceIdx + 1]}...HEAD`];
+		args = [...GIT_DIFF_ARGS, `${argv[sinceIdx + 1]}...HEAD`];
 	} else {
 		console.error('Usage : garde-donnees-sensibles --staged | --depuis <ref>');
 		return 2;
@@ -183,7 +217,7 @@ function main(argv: string[]): number {
 	}
 	console.error(`❌ Données sensibles : ${hits.length} ligne(s) ajoutée(s) à revoir.`);
 	for (const h of hits) {
-		console.error(`   ${h.file}:${h.lineNo}  ${h.label}  —  ${h.excerpt}`);
+		console.error(`   ${h.file}:${h.lineNo}  ${h.label}`);
 	}
 	console.error(
 		'\n   Remplacer par une donnée fictive (example.com, local.test, prénom fictif),' +
