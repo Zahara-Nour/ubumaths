@@ -340,3 +340,14 @@ Réalisé (2026-11-11) :
   (bornées, sans effet sur la note ; même confiance que `test_answers.time_spent`). 4. _Constat hors PR_ : `skill_attempts_insert_teacher` n'empêche pas `place = 'evaluation'` (un
   prof peut écrire une trace « en contrôle » pour son élève). À aligner seulement si
   « `evaluation` ⇒ écrit par le serveur » doit être strict.
+
+### PR 5 — forme Saisie (2026-11-11)
+
+Décisions de David (recommandations suivies) :
+
+- **Fin de série** : comme les Flash-cards : bilan « k questions réussies sur n », « Revoir » les
+  ratées (en saisie, sans trace), « Recommencer », « Retour au panier ».
+- **Gain du Palotin** : oui, comme le Contrôle blanc (réponses corrigées par l'appli ; cartes de
+  cours exclues, calcul de `/api/tests/save`).
+- **Séries de chapitre** (forme choisie par le prof : Flash-cards / Contrôle blanc, CHECK en base) :
+  Saisie **pas dans cette PR** (migration additive à faire plus tard si besoin).
