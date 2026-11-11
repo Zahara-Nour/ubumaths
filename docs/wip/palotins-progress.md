@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, phase 0 validée._
+_Mis à jour le 2026-11-11, PR 1 en cours._
 
-- **État** : phase 0 **validée par David** le 2026-11-11 (comportements + découpage). Aucun code.
-- **Prochaine action** : après validation, worktree `../ubumaths-wt-palotins`, branche `feat/palotins`, PR 1.
-- **En attente de David** : rien.
-- **Pièges en cours** : l'accueil élève (`/dashboard`) et les révisions (`/dashboard/revisions`) sont **hors** du layout `dashboard/student/+layout.svelte` : il faudra y charger le Palotin.
-- **Worktree / branche** : pas encore créés.
+- **État** : PR 1 (maison, écusson, passages) codée sur `feat/palotins`, tests verts, doc système à jour ; revue `code-reviewer` puis PR.
+- **Prochaine action** : ouvrir la PR 1, CI, merge ; puis PR 2 (passages en séance, partie C).
+- **En attente de David** : vérification visuelle (port 5178) ; question de la Constance perdue (§ Revues).
+- **Pièges en cours** : `GET /api/student/buddy/presence` ÉCRIT (remise à zéro de la Constance) ; un passage acquitte le retour à l'AFFICHAGE, pas avant.
+- **Worktree / branche** : `../ubumaths-wt-palotins`, `feat/palotins`.
 
 ---
 
@@ -115,6 +115,18 @@ Concerne toutes les pages connectées de l'élève hors maison : `/dashboard/stu
 - **PR 1 — maison, écusson, passages** (parties A et B) : Palotin chargé sur l'accueil élève et les révisions ; écusson ; passages importants et spontanés avec plafond ; fin des `idle` hors maison. Affichage seul, aucune migration. Revue : `code-reviewer` (Sonnet).
 - **PR 2 — passages en séance** (partie C) : `/automaths/test` (élève connecté) et révision espacée. Aucune migration. Revue : `code-reviewer` (Sonnet).
 - Fin de chantier : mise à jour de `docs/systeme/buddy-palotins.md` (§ « Présence permanente » devient « Maison et passages », le « toujours visible » du Concept est retiré), archivage du journal.
+
+## Décisions d'implémentation
+
+- **2026-11-11, architecture (David)** : un seul composant `PalotinPresence`, monté par le layout racine (import dynamique, élève connecté), qui lit le Palotin APRÈS l'affichage par `GET /api/student/buddy/presence` ; la remise à zéro de la Constance et la lecture du retour quittent le layout de l'espace élève pour cette API. Alternative écartée : chargement serveur dans les 4 zones.
+- **Séances en PR 1** : les révisions en cours (`/dashboard/revisions/decks/<id>/study`, `/dashboard/revisions/chapitres/<id>`) et `/automaths/test` sont des zones « séance » dès la PR 1 : écusson seul, aucun passage de la partie B (C6). Les réactions (C2, C3) viennent en PR 2.
+- **Sieste annoncée une fois par chargement** : l'annonce de la Chatterie est lue une fois ; dite (ou consommée par une nouveauté), elle ne revient pas toutes les 10 minutes.
+
+## Revues de la PR 1 (2026-11-11)
+
+- `security-auditor` : aucun bloquant ; corrigé : l'heure du dernier passage est effacée à la déconnexion (`WORK_DATA_KEYS`, tablettes partagées). Note non traitée : pas de test de route pour le 403 d'un prof.
+- `code-reviewer` : corrigés — quiz ouvert à tort après expiration du cache (le serveur décide seul du quiz, Palotin de repli), réplique acquittée pendant l'état ouvert, `planPassages` réentrant, passages relancés par un gain plutôt qu'à l'arrivée sur une page (`afterNavigate`), minuteur du retour non nettoyé dans `BuddyWidget`, réponse de présence lente qui écrasait un gain plus récent du cache.
+- ⚠️ **Question pour David** : la Constance perdue est remise à zéro par la lecture de présence ; sa réplique, passage SPONTANÉ (B6), est perdue pour de bon si le plafond ou une séance l'empêche ce chargement-là. Avant, elle était toujours dite. Garder (spec) ou la passer en passage important ?
 
 ## Historique
 

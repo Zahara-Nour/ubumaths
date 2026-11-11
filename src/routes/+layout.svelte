@@ -57,6 +57,7 @@
 	import ModalStackRenderer from '$lib/components/modals/ModalStackRenderer.svelte';
 	import MathKeyboardClose from '$lib/components/MathKeyboardClose.svelte';
 	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
+	import type { Component } from 'svelte';
 
 	let { children, data }: { children: import('svelte').Snippet; data: LayoutData } = $props();
 
@@ -83,6 +84,18 @@
 		// Access to ensure reactivity
 		void theme.dark;
 		void fontSize.size;
+	});
+
+	// Palotin de l'élève connecté (maison, écusson, passages : chantier `palotins`).
+	// Chargé à la demande : ni le visiteur ni le professeur ne téléchargent son code,
+	// et le module d'entrée reste léger (Safari TDZ, cf. +layout.ts).
+	let PalotinPresence = $state<Component | null>(null);
+	const isStudent = $derived(data.profile?.role === 'student');
+	$effect(() => {
+		if (!browser || !isStudent || PalotinPresence) return;
+		import('$lib/components/buddy/PalotinPresence.svelte')
+			.then((module) => (PalotinPresence = module.default))
+			.catch((e) => console.debug('[Palotin] Chargement impossible :', e));
 	});
 
 	// Initialize VIP card templates store from server data
@@ -132,6 +145,11 @@
 
 <!-- « Fermer le clavier » au-dessus du clavier virtuel MathLive, tant qu'il est ouvert -->
 <MathKeyboardClose />
+
+<!-- Palotin de l'élève : il décide lui-même des pages où il apparaît -->
+{#if PalotinPresence && isStudent}
+	<PalotinPresence />
+{/if}
 
 <div class="flex h-screen flex-col">
 	<!-- Header - only show on non-dashboard routes -->
