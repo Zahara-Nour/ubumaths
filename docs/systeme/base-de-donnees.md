@@ -179,6 +179,10 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   Une trace `evaluation` (contrôle) est **écrite par le serveur seulement** : la policy
   `skill_attempts_insert_own_student` la refuse à l'élève (`place is distinct from 'evaluation'`,
   `20261111111212`) ; ses traces sans lieu restent acceptées.
+  **Purge de fin d'année** (L6, `20261111224115`) : chaque dimanche, `purge_trace_answers()`
+  (appelée par `run_cleanup_expired_data`, serveur seul) remet `answer_parts` et `part_verdicts` à
+  NULL pour les traces créées avant le 1er août de l'année scolaire en cours (minuit, heure de
+  Paris, `trace_answers_cutoff`) ; seule mise à jour de la ligne après son insertion.
 - **Position d'affichage** : `display_order` est local à la fratrie ; un nœud créé sans position va en
   dernier (triggers `*_place_last`) ; `reorder_curriculum_points` / `_themes` / `_objectives` renumérotent 1..N et refusent une liste
   incomplète (en **INVOKER** pour que la RLS s'applique) ; plus aucun appelant depuis la C5 étape 3 :
