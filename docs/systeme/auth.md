@@ -481,8 +481,9 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
    `/api/errors/bulk-resolve`, `/api/errors/delete-resolved`, `/api/bug-reports/config`,
    `/api/messages/templates`). Elles vérifiaient `requireRole(locals, 'admin')`, qui lit le rôle
    du compte **connecté** (toujours `teacher` en mode administration) : 403 au prof élevé
-   (2026-11-11). Sans cookie, le handle rend la main avant toute requête ; `/api/errors/log`,
-   appelé par tous, reste hors périmètre.
+   (2026-11-11). Sans cookie, le handle rend la main avant toute requête ; `/api/errors/log` et
+   `/api/questions/templates/all` (liste publique, anonyme), appelés par tous, restent hors
+   périmètre.
    **Sans session, ou avec la session d'un autre compte que `elevatedBy`, jamais d'élévation** :
    le cookie est effacé, le jeton n'est pas vérifié (poste partagé : logout, session expirée,
    élève connecté ensuite sur le même navigateur ; constat B4, 2026-10-10). Sinon : décode,

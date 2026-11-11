@@ -160,7 +160,9 @@ describe('createAdminElevationHandle — sections où l’élévation compte', (
 		// voisines des routes admin, hors périmètre (journal d'erreurs : appelé par tous)
 		'/api/errors/log',
 		'/api/bug-reports',
-		'/api/questions/templates-bis'
+		'/api/questions/templates-bis',
+		// liste publique des modèles (anonyme) : vérifier le jeton n'y servirait à rien
+		'/api/questions/templates/all'
 	])('%s : hors section, le cookie n’est pas lu', async (chemin) => {
 		const verifyToken = vi.fn().mockResolvedValue({ userId: ADMIN_ID, client: adminClient() });
 		const handle = createAdminElevationHandle({ verifyToken: verifyToken as never });
