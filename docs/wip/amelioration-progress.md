@@ -485,3 +485,11 @@ essai, 1280×800, 3 essais par case. 4G = CDP `emulateNetworkConditions` 9 Mbit/
   `event_name` et `target`. L'API (`logErrorSchema`) accepte déjà tout `context` ≤ 10 000 car.
 - Tests : `inp-tracker.test.ts` (16, serveur) ; `errorMonitoring-web-vitals.svelte.test.ts`
   +3 (non-interaction ignorée, adresse du début, contexte) — **rouges avant le branchement**.
+- **Revue** : `code-reviewer` (Sonnet) et `security-auditor` (Opus), rien de bloquant. Retenu :
+  écouteurs `pointerdown`/`keydown` retirés au `beforeunload` (sinon empilés à la
+  réinitialisation) ; tolérance de 1 ms dans l'appariement de l'adresse ; tests d'éviction
+  (interaction sortie des 10 gardées puis revenue) et de réinitialisation (chemin `keydown`).
+  `DataView.svelte` : les `id` d'aperçu et de diagramme reprenaient le nom de liste tapé
+  (`atelier-apercu-${list.name}`) → `${$props.id()}-apercu-<numéro>`. Non retenu (notes) :
+  `sanitizeUrl` ne masque pas les UUID du chemin (déjà le cas avant) ; Zod du `context` non typé
+  (route ouverte : la garde est côté client).

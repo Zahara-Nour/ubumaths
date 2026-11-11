@@ -657,6 +657,7 @@ export function initWebVitals(): void {
 
 	// INP de la visite : interactions seules, adresse de la page où chacune a commencé
 	const inpTracker = createInpTracker();
+	let removeInpListeners = () => {};
 
 	// Dernières valeurs envoyées : INP et CLS partent à chaque passage en arrière-plan,
 	// mais une valeur déjà envoyée ne repart pas (un onglet ouvert des jours renvoyait
@@ -773,6 +774,10 @@ export function initWebVitals(): void {
 			inpTracker.recordStart(event.timeStamp, window.location.href);
 		window.addEventListener('pointerdown', recordStart, { capture: true, passive: true });
 		window.addEventListener('keydown', recordStart, { capture: true, passive: true });
+		removeInpListeners = () => {
+			window.removeEventListener('pointerdown', recordStart, { capture: true });
+			window.removeEventListener('keydown', recordStart, { capture: true });
+		};
 	} catch {
 		// INP not supported
 	}
@@ -807,6 +812,7 @@ export function initWebVitals(): void {
 	window.addEventListener('beforeunload', () => {
 		webVitalsObservers.forEach((observer) => observer.disconnect());
 		webVitalsObservers.length = 0;
+		removeInpListeners();
 		webVitalsInitialized = false;
 	});
 

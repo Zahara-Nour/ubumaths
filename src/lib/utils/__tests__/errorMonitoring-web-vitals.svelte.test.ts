@@ -171,4 +171,26 @@ describe('Web Vitals — INP compté sur les seules interactions', () => {
 			target: 'button#zoom-avant'
 		});
 	});
+
+	it('ne garde plus les écouteurs de début après le beforeunload', async () => {
+		const initial = window.location.href;
+		try {
+			// beforeunload (sortie annulée) puis nouvelle initialisation
+			window.dispatchEvent(new Event('beforeunload'));
+			initWebVitals();
+			history.pushState(null, '', '/atelier-inp-reinit');
+			const start = new KeyboardEvent('keydown', { bubbles: true });
+			window.dispatchEvent(start);
+			history.pushState(null, '', '/dashboard-inp-reinit');
+			emit('event', [
+				{ duration: 1800, interactionId: 43, name: 'keydown', startTime: start.timeStamp }
+			]);
+			await hideAndShow();
+		} finally {
+			history.replaceState(null, '', initial);
+		}
+
+		expect(sent).toEqual(['Web Vital INP: 1800ms (threshold: 200ms)']);
+		expect(new URL(bodies[0].url).pathname).toBe('/atelier-inp-reinit');
+	});
 });

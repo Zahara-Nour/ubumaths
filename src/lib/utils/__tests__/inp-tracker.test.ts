@@ -85,6 +85,30 @@ describe('createInpTracker — règle des 50 interactions', () => {
 	});
 });
 
+describe('createInpTracker — interactions évincées', () => {
+	it('une interaction évincée des 10 plus lentes revient si son entrée la plus lente arrive après', () => {
+		const tracker = createInpTracker();
+		tracker.add([entry({ interactionId: 1, duration: 20 })], '/a');
+		for (let i = 2; i <= 11; i++) {
+			tracker.add([entry({ interactionId: i, duration: 100 + i })], '/a');
+		}
+		// l'interaction 1 est sortie des 10 gardées ; son pointerup lent arrive
+		tracker.add([entry({ interactionId: 1, duration: 900, name: 'pointerup' })], '/a');
+		expect(tracker.current()).toMatchObject({ value: 900, eventName: 'pointerup' });
+	});
+
+	it('ne compte pas deux fois une interaction évincée puis revenue', () => {
+		const tracker = createInpTracker();
+		tracker.add([entry({ interactionId: 1, duration: 20 })], '/a');
+		for (let i = 2; i <= 50; i++) {
+			tracker.add([entry({ interactionId: i, duration: 100 + i })], '/a');
+		}
+		tracker.add([entry({ interactionId: 1, duration: 30 })], '/a');
+		// 50 interactions distinctes (et non 51) : la plus lente (150) est écartée
+		expect(tracker.current()?.value).toBe(149);
+	});
+});
+
 describe("createInpTracker — adresse de l'interaction", () => {
 	it('prend la page du début de l’interaction, pas celle du moment de l’envoi', () => {
 		const tracker = createInpTracker();
@@ -103,6 +127,14 @@ describe("createInpTracker — adresse de l'interaction", () => {
 		tracker.recordStart(5000, '/cours');
 		tracker.recordStart(9000, '/dashboard');
 		tracker.add([entry({ interactionId: 1, duration: 700, startTime: 5002 })], '/dashboard');
+		expect(tracker.current()?.url).toBe('/cours');
+	});
+
+	it("tolère 1 ms d'arrondi entre l'événement et l'entrée", () => {
+		const tracker = createInpTracker();
+		tracker.recordStart(1000, '/atelier');
+		tracker.recordStart(2000.4, '/cours');
+		tracker.add([entry({ interactionId: 1, duration: 700, startTime: 2000 })], '/dashboard');
 		expect(tracker.current()?.url).toBe('/cours');
 	});
 

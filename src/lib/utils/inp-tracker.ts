@@ -47,6 +47,8 @@ interface Interaction {
 const MAX_KEPT = 10;
 /** Débuts d'interaction mémorisés pour retrouver l'adresse */
 const MAX_STARTS = 50;
+/** Marge (ms) entre l'horodatage de l'événement et le début de l'entrée (arrondis) */
+const START_TOLERANCE = 1;
 /** Longueur maximale de la description de la cible */
 const MAX_TARGET_LENGTH = 80;
 
@@ -80,7 +82,7 @@ export function createInpTracker() {
 	/** Adresse de la page au début de l'interaction qui commence à `startTime` */
 	function urlAt(startTime: number, fallback: string): string {
 		for (let i = starts.length - 1; i >= 0; i--) {
-			if (starts[i].time <= startTime) return starts[i].url;
+			if (starts[i].time <= startTime + START_TOLERANCE) return starts[i].url;
 		}
 		return fallback;
 	}
