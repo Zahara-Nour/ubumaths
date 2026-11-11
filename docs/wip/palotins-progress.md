@@ -129,6 +129,7 @@ Concerne toutes les pages connectées de l'élève hors maison : `/dashboard/stu
 - `code-reviewer` : corrigés — quiz ouvert à tort après expiration du cache (le serveur décide seul du quiz, Palotin de repli), réplique acquittée pendant l'état ouvert, `planPassages` réentrant, passages relancés par un gain plutôt qu'à l'arrivée sur une page (`afterNavigate`), minuteur du retour non nettoyé dans `BuddyWidget`, réponse de présence lente qui écrasait un gain plus récent du cache.
 - ⚠️ **Question pour David** : la Constance perdue est remise à zéro par la lecture de présence ; sa réplique, passage SPONTANÉ (B6), est perdue pour de bon si le plafond ou une séance l'empêche ce chargement-là. Avant, elle était toujours dite. Garder (spec) ou la passer en passage important ?
   - **Réponse de David (2026-11-11)** : passage important, hors plafond (B5). Petite PR `fix/palotins-constance`.
+  - Même PR (#2546) : les 2 tests d'intégration `palotin-boucle` sur la Constance perdue appelaient encore le layout de l'espace élève (rouges sur `main` depuis #2544, signalé par la session `amelioration`) ; ils passent par `GET /api/student/buddy/presence`, ajoutée au filtre `paths` de `nightly-integration.yml`.
 
 ## Historique
 
