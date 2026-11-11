@@ -5,10 +5,10 @@
 _Mis à jour le 2026-11-11, après #2546._
 
 - **État** : PR 1 (#2544) et petite PR Constance perdue = passage important (#2546) **mergées**, pas encore en prod. #2546 a aussi réparé les 2 tests d'intégration `palotin-boucle` cassés par #2544.
-- **Prochaine action** : PR 2 = partie C (réactions en séance), nouveau worktree `../ubumaths-wt-palotins`, branche `feat/palotins-seances`.
+- **Prochaine action** : PR 2 = partie C (réactions en séance) en cours ; compléments C11-C14 validés.
 - **En attente de David** : vérification visuelle de l'écusson et des passages (à noter dans `verifications-manuelles.md`).
 - **Pièges en cours** : `GET /api/student/buddy/presence` ÉCRIT (Constance) ; la Constance perdue est gardée en mémoire de l'onglet seulement (un rechargement avant la première page de passage la perd) ; `palotinZone` range déjà les séances (PR 2 n'a qu'à y brancher les réactions).
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-palotins` · `feat/palotins-seances`.
 
 ---
 
@@ -103,6 +103,13 @@ Concerne toutes les pages connectées de l'élève hors maison : `/dashboard/stu
 **Erreur**
 
 - C10. Le Palotin ne peut pas être lu au début de la séance : séance normale, sans passage ; la fin de séance reste comme aujourd'hui.
+
+**Compléments validés par David (2026-11-11, début de la PR 2)**
+
+- C11. **Moment** : la question suivante attend. Le Palotin entre, dit sa réplique (~3 s) et repart, puis la question suivante arrive (avec son chrono). Pas de passage sur la dernière question : la fin de séance appartient à `BuddyGainCard`.
+- C12. **Notion** = nœud de l'arbre des notions rattaché au modèle de questions (`classification_node_id`). Question sans notion, carte personnelle de révision : non comptée pour C3 (elle compte pour la série de C2). En révision, le serveur joint la notion à chaque carte.
+- C13. **Où** : Entraînement libre (`/automaths/test`, forme Entraînement, élève connecté) et révisions (paquet, chapitre). Jamais en contrôle (une réaction trahirait la correction), ni en flash-cards de l'Entraînement, ni sur les cartes de cours (hors score), ni en Course aux nombres (C7).
+- C14. **Répliques** : banques existantes `correct` (série de 5) et `incorrect` (3 erreurs), aucun texte nouveau. Révision : réussite = note ≥ 3 (« Bien », « Facile »), comme le compte de la séance.
 
 ### Hors périmètre
 

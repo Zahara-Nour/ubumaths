@@ -14,6 +14,9 @@
 	- Submits reviews and updates stats
 	- Progress tracking
 	- Completion summary
+	- Réactions du Palotin (chantier `palotins`, partie C) : 5 réussites
+	  d'affilée (note ≥ 3) ou 3 erreurs sur une notion → il passe une fois au
+	  plus, et la carte suivante attend son départ
 
 	Props:
 	- source: deck (deckId, states, all) ou chapitre (chapterId)
@@ -42,6 +45,8 @@
 	import { fetchMathouNews } from '$lib/components/mathoux/mathou-news';
 	import type { MathouNews } from '$lib/mathoux/news';
 	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
+	import { createSeanceReactions } from '$lib/components/buddy/seance-reactions';
+	import { isCourseCard } from '$lib/questions/types';
 
 	interface Props {
 		/**
@@ -100,6 +105,8 @@
 
 	// Derived state
 	const currentCard = $derived(cards[currentIndex]);
+	// Réactions du Palotin : une séance par composant
+	const seanceReactions = createSeanceReactions();
 	const totalCards = $derived(cards.length);
 	const progressPercent = $derived(totalCards > 0 ? (currentIndex / totalCards) * 100 : 0);
 	const remainingCards = $derived(totalCards - currentIndex);
@@ -199,6 +206,10 @@
 			// Fin de séance : le serveur peut joindre le gain du Palotin (`buddy_xp`)
 			await readBuddyGain(response);
 
+			// Le Palotin peut réagir : la carte suivante attend son départ
+			const waiting = reactTo(currentCard, grade);
+			if (waiting) await waiting;
+
 			// Move to next card
 			await moveToNextCard();
 		} catch (error) {
@@ -234,6 +245,20 @@
 		return typeof value === 'number' && Number.isInteger(value) && value > 0 && value <= 100
 			? value
 			: 0;
+	}
+
+	/**
+	 * Le Palotin réagit-il à cette note ? Réussite = note ≥ 3, comme le compte
+	 * de la séance ; notion du modèle (carte personnelle : aucune). Jamais sur
+	 * une carte de cours (hors score) ni sur la dernière carte. `null` : non.
+	 */
+	function reactTo(card: SessionCard, grade: 1 | 2 | 3 | 4): Promise<void> | null {
+		if (card.kind === 'template' && isCourseCard(card.instance)) return null;
+		return seanceReactions.afterAnswer({
+			correct: grade >= 3,
+			notionId: card.kind === 'template' ? card.notionId : null,
+			isLast: currentIndex + 1 >= totalCards
+		});
 	}
 
 	/**
