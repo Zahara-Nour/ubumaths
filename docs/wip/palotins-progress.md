@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2546._
+_Mis à jour le 2026-11-11, après #2550._
 
-- **État** : PR 1 (#2544) et petite PR Constance perdue = passage important (#2546) **mergées**, pas encore en prod. #2546 a aussi réparé les 2 tests d'intégration `palotin-boucle` cassés par #2544.
-- **Prochaine action** : PR 2 = partie C (réactions en séance) en cours ; compléments C11-C14 validés.
-- **En attente de David** : vérification visuelle de l'écusson et des passages (à noter dans `verifications-manuelles.md`).
-- **Pièges en cours** : `GET /api/student/buddy/presence` ÉCRIT (Constance) ; la Constance perdue est gardée en mémoire de l'onglet seulement (un rechargement avant la première page de passage la perd) ; `palotinZone` range déjà les séances (PR 2 n'a qu'à y brancher les réactions).
-- **Worktree / branche** : `../ubumaths-wt-palotins` · `feat/palotins-seances`.
+- **État** : PR 1 (#2544), Constance perdue (#2546) et PR 2 réactions en séance (#2550) **mergées**, pas encore en prod. Découpage du chantier entièrement livré.
+- **Prochaine action** : fin de chantier — relire `docs/systeme/buddy-palotins.md` (« Maison et passages » et « Réactions en séance » y sont ; vérifier que le Concept ne dit plus « toujours visible »), puis archiver ce journal (versement).
+- **En attente de David** : vérifications visuelles de #2544 et #2550 (`verifications-manuelles.md`).
+- **Pièges en cours** : `GET /api/student/buddy/presence` ÉCRIT (Constance) ; Constance perdue gardée en mémoire de l'onglet seulement ; une réaction de séance qui ne peut pas être jouée (état ouvert) est perdue pour la séance.
+- **Worktree / branche** : aucun.
 
 ---
 
