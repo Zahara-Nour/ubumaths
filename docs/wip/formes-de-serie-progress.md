@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2551._
+_Mis à jour le 2026-11-11, après #2554._
 
-- **État** : PR 4 ouverte (branche `feat/formes-de-serie-traces`) : trace par question en Flash-cards, Contrôle blanc, Course ; `/api/tests/save` réduit au gain ; renommage « Contrôle blanc » ; revues faites (§ PR 4) · **Prochaine action** : CI verte → merge, puis PR 4 bis (traces d'un contrôle côté serveur, lieu `evaluation`, client service) · **En attente de David** : deux points de revue notés en § PR 4 (évasion anti-fraude par `flash_cards`, double trace possible après une coupure réseau) — à trancher, non bloquants · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces envoyées en FILE (FSRS lit puis écrit sans verrou) · **Worktree / branche** : `ubumaths-wt-formes-de-serie`, `feat/formes-de-serie-traces`
+- **État** : PR 1 à 4 mergées (#2543, #2547, #2548, #2551, **#2554**) : trace par question en Flash-cards, Contrôle blanc, Course ; `/api/tests/save` réduit au gain ; libellé « Contrôle blanc » · **Prochaine action** : PR 4 bis = traces d'un contrôle assigné côté serveur (lieu `evaluation`, durées, client service), nouveau worktree depuis `origin/main` · **En attente de David** : deux points de revue non bloquants (§ PR 4, « À trancher ») : évasion anti-fraude par `flash_cards`, doublon après coupure réseau · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces envoyées en FILE (FSRS lit puis écrit sans verrou) ; au-delà des bornes, refus serveur (L3), rien de tronqué · **Worktree / branche** : aucun (retirés après #2554)
 
 ## Décisions de David (2026-11-11)
 
