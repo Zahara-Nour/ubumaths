@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, PR 7 (volets 1 et 2 de la piste 4 (c)) ouverte._
+_Mis à jour le 2026-11-11, après #2545._
 
-- **État** : phase 0 de la piste 4 (c) validée (4 volets ; B et C écartés) ; PR 7 = volets 1 (modules de `src/lib` sans effet de bord sauf une liste gardée) + 2 (étapes au premier dépliage) : atelier 1 467 → 1 308 Ko gzip, 67 pages à markdown −210 Ko · **Prochaine action** : PR 7 → revue, CI, merge ; puis volet 3 (`chalk` hors des 23 fichiers de `mathAST/cli`), volet 4 (silhouette), mesure après `deploy:prod` · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; mesurer l'atelier à froid (banc 4G ×4/×6) · **Tranché** : `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence (vitest n'élague pas) — la garde est un test serveur ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; manifeste Vite : clés = `.svelte-kit/generated/client-optimized/nodes/N.js` (atelier = 273) · **Worktree / branche** : `ubumaths-wt-amelioration` / `perf/atelier-barils`
+- **État** : #2545 mergée (volets 1 et 2 de la piste 4 (c) : modules de `src/lib` sans effet de bord sauf une liste gardée, étapes chargées au premier dépliage) — atelier 1 467 → 1 308 Ko gzip, 67 pages à markdown −210 Ko ; pas encore en prod, ni #2542, #2541, #2540, #2539, #2538, #2536, #2535 · **Prochaine action** : volet 3 (`chalk` hors des 23 fichiers de `mathAST/cli` : les commandes renvoient du texte brut, seul le REPL du terminal colore), nouveau worktree ; puis volet 4 (silhouette rendue par le serveur) ; mesure de l'atelier à froid après `deploy:prod` (banc 4G ×4/×6) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; ligne #2545 de `verifications-manuelles.md` · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence (vitest n'élague pas) — garde = test serveur, à 30 s de délai en CI ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; manifeste Vite : clés = `.svelte-kit/generated/client-optimized/nodes/N.js` (atelier = 273) · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -338,6 +338,14 @@ terminal ; volet 4 : silhouette inerte).
   contenu tiré au hasard) ; CSS identique (689 842 / 689 843 octets, 75 `@font-face`).
 - **Volet 2** : `StepsOnDemand.svelte` + `lazyLoader` ; 9 fichiers de tests préchargent dans un
   `beforeAll`. Atelier 1 409 → 1 308 Ko.
+- **Revue** (code-reviewer) : 0 bloquant ; 2 mineurs corrigés — la garde lit aussi les imports nus
+  des `.svelte` et des routes ; `loaded` réactif (`lazy-loader.svelte.ts`) : un « Réessayer »
+  réussi rétablit toutes les lignes en échec. Rolldown vérifié : un module déclaré sans effet
+  dont un export est utilisé GARDE ses instructions à effet ; seul un module atteint sans export
+  utilisé (import nu, import nommé inutilisé) disparaît.
+- **CI** : bloquée un temps par 2 tests d'intégration `palotin-boucle` rouges sur `main` depuis
+  #2544 (réparés par la session palotins, #2546) ; puis la garde des imports nus dépassait 5 s en
+  CI → tri par regex avant l'AST (161 ms) et délai de 30 s. Mergée le 2026-11-11.
 
 ## Piste 5 — « Mon cours », #1788 (phase 0, 2026-11-11)
 
