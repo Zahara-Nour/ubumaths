@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, phase 0 en cours (aucune PR, rien de codé)._
+_Mis à jour le 2026-11-11, PR 1 prête (migration additive `skill_attempts`), PR à ouvrir._
 
-- **État** : phase 0 **validée** (comportements N/L/E + Q-A à Q-D tranchées, § « Comportements de phase 0 ») ; rien de codé · **Prochaine action** : PR 1 = migration additive `skill_attempts` (worktree `ubumaths-wt-formes-de-serie`), tests d'intégration RLS d'abord · **En attente de David** : rien · **Suite** : chantier à part P5 (heatmap + Palotin de régularité) après celui-ci · **Pièges en cours** : « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` ; ADR 0038 corrigé (les contrôles écrivent des traces) ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`) · **Worktree / branche** : aucun encore
+- **État** : PR 1 écrite et relue (`code-reviewer` + `security-auditor` : aucun bloquant), 42 tests d'intégration verts, rouges sans la migration · **Prochaine action** : PR ouverte → CI verte → merge → `db:migrate` depuis la branche mergée → PR 2 · **En attente de David** : rien · **À trancher en PR 2** : traces « contrôle » écrites par l'élève (voir § « Colonnes de la PR 1 ») · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé (jamais `{@html}` ni KaTeX brut) ; aucune case → écrire NULL, pas `[]` ; « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` · **Worktree / branche** : `../ubumaths-wt-formes-de-serie` · `feat/formes-de-serie`
 
 ## Décisions de David (2026-11-11)
 
@@ -190,6 +190,31 @@ une trace par question (`/api/skill-attempts`) ; **un contrôle envoyé écrit d
 - **Q-C — tranchée** : heatmap de régularité (P5) et Palotin de régularité = **chantier à part**, juste
   après celui-ci (ils lisent les nouvelles traces).
 - **Q-D — tranchée** (2026-11-11) : widget D retiré sans remplacement.
+
+### Colonnes de la PR 1 — validées (David, 2026-11-11)
+
+- **Accès** : aucune policy touchée ; les policies de `skill_attempts` sont par ligne (élève : les
+  siennes ; prof : `is_my_student`), les colonnes neuves suivent la règle de l'ADR 0038.
+- **Lieu** (`place`) — noms anglais propres, pas ceux de `TestMode` (`course` = « cours » ailleurs
+  dans le code, `interactive` ne dit rien) : `flash_cards` (Flash-cards) · `typing` (Saisie) ·
+  `mock_test` (Contrôle blanc) · `number_race` (Course aux nombres) · `review` (révision) ·
+  `evaluation` (contrôle). Correspondance `TestMode` → lieu dans le code (PR 2/4).
+- **Bornes en base** (un élève insère ses traces directement par PostgREST : le Zod de l'API ne
+  protège rien) : 50 cases, 2 000 car. par case, durées 0-24 h, graine 0-2³¹−1, fin `validated` /
+  `timeout`.
+- **Cohérence par lieu en base** (N10, N11) : durées et fin seulement en `mock_test`,
+  `number_race`, `evaluation` ; réponse et verdicts seulement en `typing`, `mock_test`,
+  `number_race` ; autant de verdicts que de cases ; sans lieu, aucune colonne neuve.
+- **Lieu facultatif en base** (anciennes traces) ; l'API l'exigera (PR 2).
+- **Plafond total** (David, 2026-11-11, audit de sécurité) : **10 000 caractères par trace**, en plus
+  des 2 000 par case — un élève insère sans limite de nombre ; une trace reste sous ~40 Ko.
+- **Reporté en PR 2** (David, 2026-11-11) : un élève peut insérer une trace `place = 'evaluation'`
+  (le prof lirait « fait en contrôle »). Le serveur écrit aujourd'hui les traces d'un contrôle avec
+  le **jeton de l'élève** (`evaluation-attempts.ts`, `recordSeriesReviews(userClient, …)`). Correctif
+  envisagé : écriture par le client service + policy d'insertion élève qui refuse `evaluation`
+  (question d'accès à poser). Intégrité inchangée d'ici là (« réussi » est déjà falsifiable, ADR 0038).
+- **Aucune case** (question sans réponse, temps écoulé) : `answer_parts` et `part_verdicts` NULL ;
+  `[]` est refusé.
 
 ### Découpage proposé (une PR chacune)
 

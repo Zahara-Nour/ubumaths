@@ -167,6 +167,15 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   admin). Un CHECK impose le XOR entre les deux régimes. Le trigger `trg_skill_attempts_after_insert`
   recalcule les caches (`update_student_point_state`, `update_student_observable_state` →
   `update_student_competence_level`) ; les caches ne s'écrivent que par lui.
+- **Contenu d'une trace** ([ADR 0038](../adr/0038-contenu-d-une-trace.md), `20261111092522`) :
+  colonnes facultatives `place` (lieu : `flash_cards`, `typing`, `mock_test`, `number_race`, `review`,
+  `evaluation`), `response_ms`, `allotted_ms`, `end_reason` (`validated` / `timeout`), `seed`,
+  `answer_parts` (une chaîne par case) et `part_verdicts` (juste / faux par case). Bornes **et**
+  cohérence par lieu en CHECK, parce que l'élève insère ses traces directement par PostgREST :
+  50 cases, 2 000 caractères par case et 10 000 en tout (`trace_answer_parts_valid`), durées 0-24 h ; durées et fin
+  seulement en `mock_test` / `number_race` / `evaluation` ; réponse seulement en `typing` /
+  `mock_test` / `number_race`, avec autant de verdicts que de cases ; sans lieu, aucune de ces
+  colonnes (anciennes traces). Mêmes lecteurs que le reste de la ligne : l'élève, le professeur.
 - **Position d'affichage** : `display_order` est local à la fratrie ; un nœud créé sans position va en
   dernier (triggers `*_place_last`) ; `reorder_curriculum_points` / `_themes` / `_objectives` renumérotent 1..N et refusent une liste
   incomplète (en **INVOKER** pour que la RLS s'applique) ; plus aucun appelant depuis la C5 étape 3 :
@@ -700,4 +709,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21 ; avatar et boutique d'avatars : 2026-11-06).
+Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21 ; avatar et boutique d'avatars : 2026-11-06 ; contenu d'une trace : 2026-11-11).
