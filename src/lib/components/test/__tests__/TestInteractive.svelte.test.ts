@@ -373,7 +373,7 @@ describe('TestInteractive — réactions du Palotin (chantier palotins, partie C
 	it('contrôle noté ou réactions coupées : jamais de réaction (C13)', async () => {
 		const graded = await open(series(7), true, true, true, notions);
 		for (let i = 0; i < 5; i++) answer(graded.container, true);
-		graded.unmount();
+		await graded.unmount();
 
 		const off = await open(series(7));
 		for (let i = 0; i < 5; i++) answer(off.container, true);

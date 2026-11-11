@@ -259,7 +259,7 @@ describe('ReviewSession — réactions du Palotin (chantier palotins, partie C)'
 				return respond(404, {});
 			})
 		);
-		return render(ReviewSession, { source: deck });
+		return await render(ReviewSession, { source: deck });
 	}
 
 	async function grade(container: HTMLElement, label: string, position: number, count: number) {
