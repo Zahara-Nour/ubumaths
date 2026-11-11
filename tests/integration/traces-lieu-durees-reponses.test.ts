@@ -84,6 +84,20 @@ async function insertTrace(
 	return { id: rows?.[0]?.id ?? null, error: error?.message ?? null, code: error?.code ?? null };
 }
 
+/**
+ * Client qui écrit la trace : le serveur pour une trace de contrôle (la policy
+ * d'insertion de l'élève refuse `place = 'evaluation'`, migration
+ * `…_traces_evaluation_reservees_au_serveur.sql`), l'élève sinon. Les CHECK
+ * s'appliquent à tous les rôles : ce fichier les teste, l'accès est testé dans
+ * `traces-evaluation-serveur.test.ts`.
+ */
+function writerFor(
+	columns: TraceColumns,
+	studentClient: SupabaseClient<Database>
+): SupabaseClient<Database> {
+	return columns.place === 'evaluation' ? service : studentClient;
+}
+
 async function readTraces(client: SupabaseClient<Database>, id: string): Promise<TraceRow[]> {
 	const { data, error } = await client
 		.from('skill_attempts' as never)
@@ -222,7 +236,7 @@ describe('traces : formes acceptées', () => {
 
 	it.each(accepted)('lieu %s : trace cohérente acceptée', async (_place, columns) => {
 		const { studentId, client, templateId } = await studentWithTemplate();
-		const { error } = await insertTrace(client, studentId, templateId, columns);
+		const { error } = await insertTrace(writerFor(columns, client), studentId, templateId, columns);
 		expect(error).toBeNull();
 	});
 
@@ -378,7 +392,12 @@ describe('traces : refusées par la base', () => {
 
 	it.each(refused)('%s', async (_label, columns, constraints) => {
 		const { studentId, client, templateId } = await studentWithTemplate();
-		const { id, code, error } = await insertTrace(client, studentId, templateId, columns);
+		const { id, code, error } = await insertTrace(
+			writerFor(columns, client),
+			studentId,
+			templateId,
+			columns
+		);
 		// 23514 : violation d'une contrainte CHECK (pas une colonne inconnue ni la RLS)
 		expect(code).toBe('23514');
 		const violated = /check constraint "([^"]+)"/.exec(error ?? '')?.[1];
