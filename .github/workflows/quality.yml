@@ -178,6 +178,12 @@ jobs:
         if: github.event_name == 'pull_request'
         run: pnpm docs:check-a-jour --depuis origin/${{ github.base_ref }}
 
+      # Aucun secret ni adresse réelle dans les lignes ajoutées par la PR (données
+      # d'élèves mineurs, dépôt public) : bloquant. Même garde au pre-commit.
+      - name: Guard données sensibles
+        if: github.event_name == 'pull_request'
+        run: pnpm garde:donnees --depuis origin/${{ github.base_ref }}
+
       - name: Guard awaited render (vitest-browser-svelte 3)
         run: npx tsx scripts/check-await-render.ts
 
