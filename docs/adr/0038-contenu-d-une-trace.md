@@ -77,5 +77,7 @@ existe.
   ci-dessus.
 - Le prof lit du texte libre écrit par des mineurs : borné en longueur, purgé en fin d'année scolaire.
 - Une trace « corrigé » reste falsifiable par un élève qui écrit lui-même ses traces, comme aujourd'hui.
+- Une trace « contrôle » (`evaluation`) n'est écrite que par le serveur : l'élève ne peut pas en
+  insérer une (policy d'insertion, migration `20261111111212`, question d'accès tranchée le 2026-11-11).
 - Hors chantier, relevé : un contrôle tronque en silence au-delà de 50 cases / 2 000 caractères
   (`submission.ts`), une séance libre refuse.
