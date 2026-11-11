@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, volet 4 en PR (PR 9)._
+_Mis à jour le 2026-11-11, après #2553._
 
-- **État** : volets 1, 2 (#2545), 3 (#2552) de la piste 4 (c) mergés ; volet 4 (silhouette de l'atelier rendue par le serveur, `AtelierSilhouette.svelte`) en PR ; rien de #2552, #2545, #2542, #2541, #2540, #2539, #2538, #2536, #2535 en prod · **Prochaine action** : merger le volet 4 ; puis mesure de l'atelier à froid après `deploy:prod` (banc 4G ×4/×6) · **Défaut relevé, à proposer** : bureau 1280×800, « Mes objets » et la zone débordent de la grille (777 px pour 736) → la 2e rangée « + Point / + Courbe » est coupée sous l'écran (atelier chargé, avant ce volet aussi) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; ligne #2545 de `verifications-manuelles.md` · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence — garde = test serveur ; `chalk` cité par les seuls `cli.ts`/`repl.ts`/`terminal-palette.ts` (garde) ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; les dimensions de la silhouette recopient `AtelierContainer`/`ObjectPanel`/`ToolButton` · **Worktree / branche** : `ubumaths-wt-amelioration` · `perf/atelier-silhouette`
+- **État** : piste 4 (c) close : volets 1, 2 (#2545), 3 (#2552), 4 (#2553, silhouette de l'atelier rendue par le serveur) mergés ; rien de #2553, #2552, #2545, #2542, #2541, #2540, #2539, #2538, #2536, #2535 en prod · **Prochaine action** : mesure de l'atelier à froid après `deploy:prod` (banc 4G ×4/×6) · **Défaut relevé, à proposer** : bureau 1280×800, « Mes objets » et la zone débordent de la grille (777 px pour 736) → la 2e rangée « + Point / + Courbe » est coupée sous l'écran (existait avant #2553) · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève ; lignes #2545 et #2553 de `verifications-manuelles.md` · **Tranché** : B et C de la piste 4 (c) écartés ; `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 plus tard · **Pièges en cours** : un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build en silence — garde = test serveur ; `chalk` cité par les seuls `cli.ts`/`repl.ts`/`terminal-palette.ts` (garde) ; `db:migrate` refusé par le classifieur du mode auto → David le lance par `! pnpm db:migrate` ; les dimensions de la silhouette recopient `AtelierContainer`/`ObjectPanel`/`ToolButton` · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -367,7 +367,7 @@ terminal ; volet 4 : silhouette inerte).
   (rouge vérifié en câblant `boldGreen` sur `chalk.green`) ; laissé : double appel de
   `useChalkColors()` (`startRepl` est aussi exporté par l'index de `cli`).
 
-## Piste 4 (c) — volet 4 : silhouette de l'atelier (PR 9, 2026-11-11)
+## Piste 4 (c) — volet 4 : silhouette de l'atelier (#2553, mergée le 2026-11-11)
 
 - **Remède** : `AtelierSilhouette.svelte`, dans le `{:else}` de `routes/(public)/atelier/+page.svelte`
   (rendu tant que `opened` est nul : au serveur, puis jusqu'à `openLink(…)`). « Mes objets »,
@@ -379,6 +379,9 @@ terminal ; volet 4 : silhouette inerte).
   (49 px), onglets (44 px), pastilles (28 px) aux mêmes positions. Pièges : `ObjectPanel` met son
   titre dans un `<header>` (styles globaux des `header`, `strong` à 16 px) → même élément ; sur
   téléphone, pas de bouton « replier » quand l'atelier est vide (en-tête de 33 px).
+- **Revue** (code-reviewer) : 0 bloquant ; pris : `aria-busy` retiré (il pouvait taire le titre),
+  test qui situe chaque `inert` (contre-épreuve : scène inerte → rouge), titre en constante ;
+  JS qui ne charge pas → la silhouette reste : limite écrite dans la doc. CI verte, mergée.
 - **Défaut relevé (existant, non corrigé)** : à 1280×800, l'atelier chargé déborde de sa grille
   (panneau et zone 777 px pour 736) ; la 2e rangée « + Point / + Courbe » est sous l'écran.
 
