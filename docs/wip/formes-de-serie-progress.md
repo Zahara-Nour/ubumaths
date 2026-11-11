@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, PR 1 prête (migration additive `skill_attempts`), PR à ouvrir._
+_Mis à jour le 2026-11-11, après #2543._
 
-- **État** : PR 1 écrite et relue (`code-reviewer` + `security-auditor` : aucun bloquant), 42 tests d'intégration verts, rouges sans la migration · **Prochaine action** : PR ouverte → CI verte → merge → `db:migrate` depuis la branche mergée → PR 2 · **En attente de David** : rien · **À trancher en PR 2** : traces « contrôle » écrites par l'élève (voir § « Colonnes de la PR 1 ») · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé (jamais `{@html}` ni KaTeX brut) ; aucune case → écrire NULL, pas `[]` ; « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` · **Worktree / branche** : `../ubumaths-wt-formes-de-serie` · `feat/formes-de-serie`
+- **État** : PR 1 mergée (#2543) et migration **appliquée en prod** (7 colonnes, 12 CHECK, policies inchangées) · **Prochaine action** : PR 2 = `db:types` + `/api/skill-attempts` étendu (Zod, lieu exigé, aucune case → NULL) + export RGPD ; nouveau worktree `ubumaths-wt-formes-de-serie` (branche neuve depuis `origin/main`) · **En attente de David** : rien · **À trancher en PR 2** : traces « contrôle » écrites par l'élève (§ « Colonnes de la PR 1 ») — question d'accès à poser · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé (jamais `{@html}` ni KaTeX brut) ; `[]` refusé, écrire NULL ; « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` · **Worktree / branche** : aucun (retiré après #2543)
 
 ## Décisions de David (2026-11-11)
 
