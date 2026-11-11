@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2544._
+_Mis à jour le 2026-11-11, après #2546._
 
-- **État** : PR 1 (maison, écusson, passages) **mergée** (#2544), pas encore en prod. Worktree et branche supprimés.
-- **Prochaine action** : selon la réponse de David sur la Constance perdue (§ Revues), petite PR ; puis PR 2 = partie C (réactions en séance), nouveau worktree `../ubumaths-wt-palotins`, branche `feat/palotins-seances`.
-- **En attente de David** : question de la Constance perdue (recommandation : passage important, hors plafond) ; vérification visuelle de l'écusson et des passages (à noter dans `verifications-manuelles.md`).
-- **Pièges en cours** : `GET /api/student/buddy/presence` ÉCRIT (Constance) ; un passage acquitte le retour à l'AFFICHAGE ; `palotinZone` range déjà les séances (PR 2 n'a qu'à y brancher les réactions).
+- **État** : PR 1 (#2544) et petite PR Constance perdue = passage important (#2546) **mergées**, pas encore en prod. #2546 a aussi réparé les 2 tests d'intégration `palotin-boucle` cassés par #2544.
+- **Prochaine action** : PR 2 = partie C (réactions en séance), nouveau worktree `../ubumaths-wt-palotins`, branche `feat/palotins-seances`.
+- **En attente de David** : vérification visuelle de l'écusson et des passages (à noter dans `verifications-manuelles.md`).
+- **Pièges en cours** : `GET /api/student/buddy/presence` ÉCRIT (Constance) ; la Constance perdue est gardée en mémoire de l'onglet seulement (un rechargement avant la première page de passage la perd) ; `palotinZone` range déjà les séances (PR 2 n'a qu'à y brancher les réactions).
 - **Worktree / branche** : aucun.
 
 ---
@@ -65,8 +65,9 @@ Concerne toutes les pages connectées de l'élève hors maison : `/dashboard/stu
 - B4. Plus de répliques `idle` / `idle_lore` hors de la maison.
 - B5. **Passages importants**, hors plafond, une fois chacun :
   - retour après une longue absence (« tu m'as manqué »), s'il n'a pas encore été dit : l'élève arrivé par un lien de cours le voit sur cette page ;
+  - sinon Constance perdue (décision de David du 2026-11-11 : déjà remise à zéro par la lecture de présence, sa réplique ne doit jamais se perdre ; en séance, elle attend la page de passage suivante) ;
   - nouveautés de la Chatterie (Mathou réveillé, nouveau Mathou), tant qu'elles ne sont pas vues.
-- B6. **Passages spontanés**, soumis au plafond : Mathoux en sieste (« 2 Mathoux font la sieste »), Constance perdue.
+- B6. **Passage spontané**, soumis au plafond : Mathoux en sieste (« 2 Mathoux font la sieste »). (La Constance perdue, d'abord ici, est passée en B5.)
 - B7. **Plafond** : au plus un passage spontané toutes les **10 minutes**, toutes pages et onglets confondus (mémoire du navigateur). Un passage important ne consomme pas le plafond.
 
 **Limite**
@@ -127,6 +128,8 @@ Concerne toutes les pages connectées de l'élève hors maison : `/dashboard/stu
 - `security-auditor` : aucun bloquant ; corrigé : l'heure du dernier passage est effacée à la déconnexion (`WORK_DATA_KEYS`, tablettes partagées). Note non traitée : pas de test de route pour le 403 d'un prof.
 - `code-reviewer` : corrigés — quiz ouvert à tort après expiration du cache (le serveur décide seul du quiz, Palotin de repli), réplique acquittée pendant l'état ouvert, `planPassages` réentrant, passages relancés par un gain plutôt qu'à l'arrivée sur une page (`afterNavigate`), minuteur du retour non nettoyé dans `BuddyWidget`, réponse de présence lente qui écrasait un gain plus récent du cache.
 - ⚠️ **Question pour David** : la Constance perdue est remise à zéro par la lecture de présence ; sa réplique, passage SPONTANÉ (B6), est perdue pour de bon si le plafond ou une séance l'empêche ce chargement-là. Avant, elle était toujours dite. Garder (spec) ou la passer en passage important ?
+  - **Réponse de David (2026-11-11)** : passage important, hors plafond (B5). Petite PR `fix/palotins-constance`.
+  - Même PR (#2546) : les 2 tests d'intégration `palotin-boucle` sur la Constance perdue appelaient encore le layout de l'espace élève (rouges sur `main` depuis #2544, signalé par la session `amelioration`) ; ils passent par `GET /api/student/buddy/presence`, ajoutée au filtre `paths` de `nightly-integration.yml`.
 
 ## Historique
 

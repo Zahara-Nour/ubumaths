@@ -258,7 +258,7 @@ Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`)
   optimiste : de deux credits simultanes, un seul compte le jour et touche la recompense.
 - A la lecture de presence (`GET /api/student/buddy/presence`, premiere page d'une zone du Palotin),
   `resetLostConstance` remet la Constance a 0 si la derniere semaine enregistree est finie sans etre
-  tenue (`streakLost` → replique, dans la maison ou en passage spontane).
+  tenue (`streakLost` → replique, dans la maison ou en passage important).
 - **Ancienne serie en jours** (ligne sans `constance_week_start`, tout Palotin d'avant le
   2026-10-18) : `current_streak` et `longest_streak` comptaient des jours. Ils sont remis a 0 (record
   compris) au premier chargement du tableau de bord ou au premier jour travaille, sans replique ; le
@@ -331,9 +331,11 @@ le visiteur ni le prof ne telechargent son code). La zone se lit dans l'adresse
   enchaine la suivante s'il y en a, puis repart. Changer de page vers une seance ou la maison
   l'interrompt ; ce qui reste en file attend la page de passage suivante.
   - **importants**, une fois chacun, hors plafond : « tu m'as manque » (acquitte a l'affichage),
-    nouveautes de la Chatterie (avec le lien) ;
+    sinon Constance perdue (deja remise a zero par la lecture de presence : jamais bloquee par le
+    plafond ni par une seance, elle attend la premiere page de passage ; gardee en memoire de
+    l'onglet seulement, un rechargement avant cette page la perd), puis nouveautes de la Chatterie (avec le lien) ;
   - **spontanes**, au plus un toutes les **10 minutes** (`PASSAGE_COOLDOWN`), tous onglets
-    confondus : Mathoux en sieste (avec le lien), sinon Constance perdue. Heure du dernier passage
+    confondus : Mathoux en sieste (avec le lien). Heure du dernier passage
     dans `localStorage` (`chiphre:palotin:dernier-passage`, `createPassageClock`) ; stockage
     illisible : le plafond tient pour la page ouverte, jamais d'erreur.
 - L'annonce de la Chatterie est lue une fois par chargement, a la premiere page de passage
