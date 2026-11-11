@@ -9,7 +9,7 @@
  * gonflés d'autant.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { flushErrors, initWebVitals } from '../errorMonitoring';
+import { captureError, flushErrors, initWebVitals } from '../errorMonitoring';
 
 // Le module garde ses empreintes anti-doublon d'un test à l'autre
 // (`vi.resetModules` ne le recharge pas en mode navigateur) : chaque test
@@ -72,7 +72,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-	window.dispatchEvent(new Event('beforeunload')); // détache les écouteurs de ce test
+	window.dispatchEvent(new Event('beforeunload')); // remet initWebVitals à zéro
 	vi.unstubAllGlobals();
 	vi.useRealTimers();
 });
@@ -109,5 +109,18 @@ describe('Web Vitals — INP et CLS une fois par valeur', () => {
 		await hideAndShow();
 
 		expect(sent).toEqual(['Web Vital CLS: 0.300 (threshold: 0.1)']);
+	});
+
+	it('renvoie au passage suivant un INP abandonné par la limite par minute', async () => {
+		// 10 erreurs par minute au plus : la limite est atteinte avant l'INP
+		for (let i = 0; i < 10; i++) captureError(`Erreur de remplissage ${i}`);
+		emit('event', [{ duration: 1234, interactionId: 1 }]);
+		await hideAndShow();
+		expect(sent).not.toContain('Web Vital INP: 1234ms (threshold: 200ms)');
+
+		vi.advanceTimersByTime(61 * 1000);
+		await hideAndShow();
+
+		expect(sent).toContain('Web Vital INP: 1234ms (threshold: 200ms)');
 	});
 });

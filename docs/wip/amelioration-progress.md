@@ -193,12 +193,17 @@ du panier Automaths n'existe pas (« Fonctionnalité à venir »).
   élève**, une ou deux pages, sur un à trois jours : un onglet laissé ouvert.
 - **Cause** : `initWebVitals` envoyait INP et CLS à **chaque** passage en arrière-plan, avec la
   pire valeur depuis l'ouverture ; seule la fenêtre anti-doublon de 5 minutes les retenait.
-- **Correctif** (branche `fix/inp-renvoye`) : une valeur ne repart que si elle a grandi depuis
-  le dernier envoi (`reportedInp`, `reportedCls`) ; les écouteurs `visibilitychange` sont
-  détachés au `beforeunload` (`AbortController`), comme les observateurs. Tests :
+- **Correctif** (branche `fix/inp-renvoye`, PR #2539) : une valeur ne repart que si elle a grandi
+  depuis le dernier envoi (`reportedInp`, `reportedCls`), et n'est marquée envoyée que si
+  `queueError` l'a prise (sinon, limite par minute atteinte, elle retente au passage suivant :
+  `queueError` et `reportWebVital` rendent un booléen). Tests :
   `errorMonitoring-web-vitals.svelte.test.ts` (INP et CLS non renvoyés : rouges sans la garde ;
-  INP plus lent renvoyé : vert des deux côtés). Piège : `vi.resetModules()` ne recharge pas le
-  module en mode navigateur → valeurs distinctes par test.
+  INP abandonné renvoyé : rouge si on marque sans condition ; INP plus lent renvoyé). Piège :
+  `vi.resetModules()` ne recharge pas le module en mode navigateur → valeurs distinctes par test.
+- **Revue** (`code-reviewer`, Sonnet) : 2 points retenus. (1) valeur marquée envoyée alors que
+  l'envoi a été abandonné → corrigé ; (2) un premier jet détachait les écouteurs au
+  `beforeunload` (`AbortController`), ce qui coupait INP et CLS après un retour du bfcache
+  ou un `beforeunload` annulé → retiré.
 - **Non traité** (à proposer) : notre « INP » est la durée de l'événement le plus lent de toute
   la session, y compris les événements sans `interactionId` (pas des interactions) ; le vrai
   INP ne compte que les interactions. Et l'URL envoyée est celle de la page au moment du
