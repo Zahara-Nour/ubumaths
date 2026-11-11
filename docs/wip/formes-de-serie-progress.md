@@ -7,7 +7,7 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 _Mis à jour le 2026-11-11, phase 0 en cours (aucune PR, rien de codé)._
 
-- **État** : formes, noms, boutons, « état de mémorisation », besoins de suivi, P5, Palotin et **contenu d'une trace** (+ question d'accès) **validés** ; ni ADR ni `CONTEXT.md` écrits · **Prochaine action** : ADR (formes, deux boutons, trace) + `CONTEXT.md` (commit doc sur `main`) ; puis comportements de phase 0 · **En attente de David** : rien d'ouvert · **Pièges en cours** : « Saisie » déjà employé pour la page prof `teacher/evaluation-tasks/[id]/saisie` ; ADR 0016 (meilleur résultat du jour) à revoir avec la fusion des boutons ; widget « heatmap activité » actuel à remplacer ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`), une séance libre refuse ; ne pas relancer ce qui est validé · **Worktree / branche** : aucun (doc sur `main`)
+- **État** : phase 0 de conception **close** : [ADR 0037](../adr/0037-cinq-formes-de-serie-deux-boutons.md) (formes, deux boutons) et [ADR 0038](../adr/0038-contenu-d-une-trace.md) (trace) écrits, `CONTEXT.md` à jour (forme de série, Saisie, Contrôle blanc, état de mémorisation, trace) · **Prochaine action** : comportements de phase 0 en français (nominal / limite / erreur) et découpage en PR, à faire valider · **En attente de David** : rien d'ouvert · **Pièges en cours** : « Saisie » nomme aussi la page prof `teacher/evaluation-tasks/[id]/saisie` ; widget D (histogramme 1-4) et heatmap actuelle à remplacer ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`) ; ne pas relancer ce qui est validé · **Worktree / branche** : aucun (doc sur `main`) ; un worktree au premier code
 
 ## Décisions de David (2026-11-11)
 
@@ -100,3 +100,16 @@ Une trace par question, écrite dès la réponse. On garde ce qu'un besoin valid
 - **« Prouvé » (P9)** : corrigé dans le navigateur et envoyé tel quel, **comme aujourd'hui** (accepté).
 - **Conservation** : réponses tapées jusqu'à la fin de l'année scolaire ; réussi/raté et durées
   comme aujourd'hui ; réponses tapées dans l'export RGPD.
+
+## Glossaire et ADR (2026-11-11)
+
+Questions tranchées par David avant l'écriture (recommandations suivies) :
+
+- **Q1** : le contrôle garde ses deux formes (Contrôle blanc, Course aux nombres).
+- **Q2** : « trace » remplace « tentative » (banni, sauf pour un contrôle repassé).
+- **Q3** : toujours « forme de série » ; « forme » seule = PDF d'une fiche.
+- **Q4** : un seul champ « lieu » : Flash-cards, Saisie, Contrôle blanc, Course aux nombres, révision
+  (En classe ne laisse pas de trace d'élève).
+- **Q5** : second essai et aide (tuteur, pouvoirs des Mathoux) n'existent pas sur les questions de
+  série (`FlashCard.maxAttempts` : démo seulement ; tuteur : exercices de fiche) → `with_help` gardé ;
+  une trace par essai ; numéro d'essai ajouté le jour où le second essai existe.

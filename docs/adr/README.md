@@ -45,6 +45,8 @@ contourner en silence.
 | 0034 | [Solides : trois blocs, un nœud, une scène cavalière](0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)                          | 2026-10-30 |
 | 0035 | [Une série enregistre des modèles, plus des catégories](0035-une-serie-enregistre-des-modeles.md)                                        | 2026-11-04 |
 | 0036 | [Le centimètre d'une figure à compléter est celui de la figure](0036-le-cm-de-la-figure.md)                                              | 2026-11-08 |
+| 0037 | [Cinq formes de série, deux boutons d'auto-évaluation](0037-cinq-formes-de-serie-deux-boutons.md)                                        | 2026-11-11 |
+| 0038 | [Le contenu d'une trace : la graine, la réponse par case, les temps](0038-contenu-d-une-trace.md)                                        | 2026-11-11 |
 
 ## Écrire un ADR
 
