@@ -1,0 +1,187 @@
+{
+	"title": "Démontrer que deux primitives d'une même fonction diffèrent d'une constante",
+	"description": "Démonstration à trous : H′ = 0 (case), dérivée nulle sur un intervalle (choix), F = G + c (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction continue sur un intervalle $I$, et $F$ et $G$ deux primitives de $f$ sur $I$. On démontre qu'il existe un réel $c$ tel que $F(x)=G(x)+c$ pour tout $x$ de $I$.\n\nOn pose $H=F-G$ sur $I$.\n\nComplète, pour tout $x$ de $I$.\n\n$H'(x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$F$ et $G$ sont des primitives de $f$ : $F'=f$ et $G'=f$.",
+					"Donc $H'(x)=F'(x)-G'(x)=f(x)-f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue sur un intervalle $I$, et $F$ et $G$ deux primitives de $f$ sur $I$. On démontre qu'il existe un réel $c$ tel que $F(x)=G(x)+c$ pour tout $x$ de $I$.\n\nOn pose $H=F-G$ sur $I$.\n\nPour tout $x$ de $I$, $H'(x)=0$. Pourquoi $H$ est-elle constante sur $I$ ?\n\n```choix\n- Une fonction dérivable de dérivée nulle sur un intervalle est constante sur cet intervalle.\n- Car $H(0)=0$.\n- Car $F$ et $G$ sont égales.\n- Car $f$ est continue sur $I$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$H'=0$ sur $I$ : $H$ est à la fois croissante et décroissante sur $I$.",
+					"$I$ est un intervalle, donc $H$ est $\\textcolor{{{color:primary.0}}}{\\text{constante}}$ sur $I$ : il existe un réel $c$ tel que $H(x)=c$.",
+					"L'hypothèse « intervalle » compte : sur une réunion de deux intervalles, $H$ peut prendre une valeur différente sur chacun."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue sur un intervalle $I$, et $F$ et $G$ deux primitives de $f$ sur $I$. On démontre qu'il existe un réel $c$ tel que $F(x)=G(x)+c$ pour tout $x$ de $I$.\n\nOn pose $H=F-G$ sur $I$.\n\nIl existe un réel $c$ tel que $H(x)=c$ pour tout $x$ de $I$. Que peut-on conclure ?\n\n```choix\n- Pour tout $x$ de $I$, $F(x)=G(x)+c$.\n- Pour tout $x$ de $I$, $F(x)=G(x)$.\n- Pour tout $x$ de $I$, $F(x)=c\\,G(x)$.\n- Pour tout $x$ de $I$, $F(x)=c$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$H(x)=F(x)-G(x)=c$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{F(x)=G(x)+c}$ : deux primitives de $f$ sur $I$ diffèrent d'une constante.",
+					"La constante $c$ n'est pas forcément nulle : $F$ et $G$ peuvent être différentes."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue sur un intervalle $I$, et $F$ et $G$ deux primitives de $f$ sur $I$. On démontre que $F$ et $G$ diffèrent d'une constante.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On pose $H=F-G$ sur $I$.\n- Pour tout $x$ de $I$, $H'(x)=F'(x)-G'(x)=f(x)-f(x)=0$.\n- $H$ a une dérivée nulle sur l'intervalle $I$ : elle est constante, égale à un réel $c$.\n- Donc, pour tout $x$ de $I$, $F(x)=G(x)+c$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On étudie la différence des deux primitives.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{F=G+c}$ sur $I$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2f(x)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2f(x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dérivée nulle sur un intervalle",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : H(0) = 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : F = G",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f continue",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "F = G + c",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : F = G",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : F = cG",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : F = c",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

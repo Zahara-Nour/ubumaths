@@ -10,15 +10,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, lot 2 publié._
+_Mis à jour le 2026-11-11, lot 3 écrit (PR des fichiers ouverte)._
 
-- **État** : lots 1 et 2 publiés (§ 5, § 9).
-- **Prochaine action** : lot 3 (421, 448, 449, 471, 472), sur le modèle du lot 2 (§ 6) : fichiers sur une nouvelle branche.
-- **En attente de David** : rien.
+- **État** : lots 1 et 2 publiés (§ 5, § 9) ; lot 3 (421, 448, 449, 471, 472) écrit et vérifié (§ 10).
+- **Prochaine action** : merge de la PR des fichiers du lot 3 → David lance `create-questions --publier` → migration de
+  rangement (472 va sur une NOTION, sans sous-notion).
+- **En attente de David** : `create-questions --publier` du lot 3 après le merge.
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
   simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` en HEAD détachée sur `origin/main` ; nouvelle
-  branche pour le lot 3.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-demonstrations-3`.
 
 ---
 
@@ -232,3 +232,24 @@ dessiné, à jouer dans l'aperçu admin) ; base `verdicts` vide à la publicatio
 
 Verdicts lus : 5/5 « ok », sans commentaire. `publier-lot.ts` en simulation (5 brouillons passent le contrôle), puis
 `--publier` lancé par David : 5/5 publiés, statut relu en base (MCP).
+
+## 10. Lot 3 : dérivation, logarithme, primitives (2026-11-11)
+
+| Point | Modèle (`scripts/questions/tspe-demonstrations-3/`) | Niveau | Variations                                                                                           |
+| ----- | --------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+| 421   | `01-demontrer-courbe-au-dessus-des-tangentes`       | 4      | f′ croissante (choix), g(a) = 0 (case), g ⩾ 0 (choix), étapes (4)                                    |
+| 448   | `02-demontrer-derivee-logarithme`                   | 3      | e^(ln x) = x (case), dérivée de e^(ln x) (choix), ln′(x) = 1/x (case), étapes (4)                    |
+| 449   | `03-demontrer-limite-x-ln-x-en-0`                   | 7      | x ln x = X e^X (case), X → −∞ (choix), composition (choix), étapes (4)                               |
+| 471   | `04-demontrer-primitives-different-d-une-constante` | 5      | H′ = 0 (case), dérivée nulle sur un intervalle (choix), F = G + c (choix), étapes (4)                |
+| 472   | `05-demontrer-resolution-y-prime-egal-ay`           | 2      | dérivée de e^(ax) (case, a de −6 à 6 sauf −1, 0, 1), z′ = 0 (choix), y = Ce^(ax) (choix), étapes (4) |
+
+Niveaux : après ceux déjà présents sur le nœud (relevé prod du 2026-11-11 : inégalités de convexité 3, dérivée de ln
+1-2, croissances comparées 3-6 (391 et 405 compris), primitives : notion 1-4, y′ = ay 1). Aucun tag sur ces points.
+**TSPE-472 est posé sur la notion « Équations différentielles › y′ = ay »**, qui n'a pas de sous-notion (un modèle
+publié y est déjà) : la migration de rangement visera ce nœud à deux niveaux. Script :
+`docs/wip/questions/lot-tspe-demonstrations-3.py`.
+
+Vérifié : `create-questions` en simulation 5/5 (69 specs vertes) ; `question:specs` 150 tirages par variation, 5/5
+importables, 0 `\textcolor` hors `$` ; 4 848 formules des aperçus passées à `validateLatex` + accolades, 0 problème ;
+brouillons en base locale (copie hors dépôt) ; aperçu admin vu à l'écran (case et étapes à ranger de 472, choix de
+448). Le `C` de `$Ce^{ax}$` sort en romain dans l'appli, comme dans les modèles déjà publiés (rien de propre au lot).

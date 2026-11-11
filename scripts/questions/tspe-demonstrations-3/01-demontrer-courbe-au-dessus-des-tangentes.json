@@ -1,0 +1,187 @@
+{
+	"title": "Démontrer que la courbe est au-dessus de ses tangentes quand f″ est positive",
+	"description": "Démonstration à trous : f′ croissante (choix), g(a) = 0 (case), conclusion g ⩾ 0 (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$, telle que $f''(x)\\geqslant 0$ pour tout $x$ de $I$, et $a$ un réel de $I$. On démontre que la courbe de $f$ est au-dessus de sa tangente au point d'abscisse $a$, d'équation $y=f'(a)(x-a)+f(a)$.\n\nOn étudie la fonction $g$ définie sur $I$ par $g(x)=f(x)-f'(a)(x-a)-f(a)$ : elle est dérivable et $g'(x)=f'(x)-f'(a)$.\n\nPourquoi $g'(x)\\leqslant 0$ pour $x\\leqslant a$ et $g'(x)\\geqslant 0$ pour $x\\geqslant a$ ?\n\n```choix\n- Car $f''\\geqslant 0$ sur $I$, donc $f'$ est croissante sur $I$.\n- Car $f''\\geqslant 0$, donc $g'(x)\\geqslant 0$ pour tout $x$ de $I$.\n- Car $f$ est croissante sur $I$.\n- Car $g(a)=0$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f''$ est la dérivée de $f'$ : comme $f''\\geqslant 0$, $f'$ est croissante sur $I$.",
+					"Pour $x\\leqslant a$, $f'(x)\\leqslant f'(a)$ ; pour $x\\geqslant a$, $f'(x)\\geqslant f'(a)$ : c'est le signe de $\\textcolor{{{color:primary.0}}}{g'(x)=f'(x)-f'(a)}$.",
+					"C'est $f'$ qui est croissante, pas forcément $f$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$, telle que $f''(x)\\geqslant 0$ pour tout $x$ de $I$, et $a$ un réel de $I$. On démontre que la courbe de $f$ est au-dessus de sa tangente au point d'abscisse $a$, d'équation $y=f'(a)(x-a)+f(a)$.\n\nOn étudie la fonction $g$ définie sur $I$ par $g(x)=f(x)-f'(a)(x-a)-f(a)$ : elle est dérivable et $g'(x)=f'(x)-f'(a)$.\n\n$g$ est décroissante pour $x\\leqslant a$ et croissante pour $x\\geqslant a$ : elle atteint son minimum en $a$. Complète.\n\n$g(a)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$g(a)=f(a)-f'(a)(a-a)-f(a)$.",
+					"Or $a-a=0$, donc $g(a)=f(a)-f(a)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$, telle que $f''(x)\\geqslant 0$ pour tout $x$ de $I$, et $a$ un réel de $I$. On démontre que la courbe de $f$ est au-dessus de sa tangente au point d'abscisse $a$, d'équation $y=f'(a)(x-a)+f(a)$.\n\nOn étudie la fonction $g$ définie sur $I$ par $g(x)=f(x)-f'(a)(x-a)-f(a)$ : elle est dérivable et $g'(x)=f'(x)-f'(a)$.\n\n$g$ a pour minimum $g(a)=0$ sur $I$. Que peut-on conclure ?\n\n```choix\n- Pour tout $x$ de $I$, $g(x)\\geqslant 0$, donc $f(x)\\geqslant f'(a)(x-a)+f(a)$ : la courbe est au-dessus de la tangente.\n- Pour tout $x$ de $I$, $g(x)=0$ : la courbe est confondue avec la tangente.\n- Pour tout $x$ de $I$, $g(x)\\leqslant 0$ : la courbe est au-dessous de la tangente.\n- On ne peut rien conclure sans connaître $f$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le minimum de $g$ sur $I$ est $0$, donc $g(x)\\geqslant 0$ pour tout $x$ de $I$.",
+					"$g(x)$ est l'écart entre la courbe et la tangente : $\\textcolor{{{color:primary.0}}}{f(x)\\geqslant f'(a)(x-a)+f(a)}$.",
+					"Un minimum égal à $0$ ne veut pas dire que $g$ est nulle : seulement que $g$ ne descend pas sous $0$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$, telle que $f''\\geqslant 0$ sur $I$, et $a$ un réel de $I$. On démontre que la courbe de $f$ est au-dessus de sa tangente au point d'abscisse $a$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On pose $g(x)=f(x)-f'(a)(x-a)-f(a)$ sur $I$ ; $g'(x)=f'(x)-f'(a)$.\n- Comme $f''\\geqslant 0$, $f'$ est croissante : $g'\\leqslant 0$ pour $x\\leqslant a$ et $g'\\geqslant 0$ pour $x\\geqslant a$.\n- $g$ a donc pour minimum $g(a)=0$ sur $I$.\n- Pour tout $x$ de $I$, $g(x)\\geqslant 0$ : $f(x)\\geqslant f'(a)(x-a)+f(a)$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On étudie le signe de l'écart $g$ entre la courbe et la tangente.",
+					"Conclusion : la courbe de $f$ est $\\textcolor{{{color:primary.0}}}{\\text{au-dessus}}$ de chacune de ses tangentes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f′ croissante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : g′ ⩾ 0 partout",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f croissante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : g(a) = 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["a"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "g ⩾ 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : g = 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : g ⩽ 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
