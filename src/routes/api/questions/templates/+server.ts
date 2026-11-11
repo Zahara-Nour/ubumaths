@@ -22,7 +22,7 @@ import {
 	questionTemplatesListResponseSchema
 } from '$lib/server/validation';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireRoles, requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin, requireRoles } from '$lib/server/middleware/auth';
 import { toJson } from '$lib/types/database-helpers';
 import { templatePublicationErrors } from '$lib/server/template-publication';
 import { createServerLogger } from '$lib/utils/logger';
@@ -128,7 +128,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  * Returns: { success: true, template: QuestionTemplate } | { success: false, errors: string[] }
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin : la RLS réserve l'écriture à l'admin
+	const { supabase, adminUserId } = await requireAdmin(locals);
 
 	try {
 		// ====================================================================
@@ -175,7 +176,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Insert template (map camelCase to snake_case for database)
-		const { data: template, error: insertError } = await locals.supabase
+		const { data: template, error: insertError } = await supabase
 			.from('question_templates')
 			.insert({
 				type: getQuestionType({ options: templateData.options }),
@@ -197,7 +198,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
 				test_specs: toJson(templateData.testSpecs ?? null),
-				created_by: user.id
+				created_by: adminUserId
 			})
 			.select()
 			.single();

@@ -155,7 +155,9 @@ export async function callPut(db: FakeDb, body: unknown) {
 		body: JSON.stringify(body)
 	});
 	const locals = {
-		safeGetSession: async () => ({ user: { id: USER_ID } }),
+		// Ce que posent les hooks : session et profil (compte admin connecté)
+		user: { id: USER_ID },
+		profile: db.profiles.find((p) => p.id === USER_ID) ?? null,
 		supabase: { from: (table: 'question_templates' | 'profiles') => fakeQuery(db, table) }
 	};
 	return PUT({ request, locals, params: { id: ID } } as never);
@@ -168,7 +170,9 @@ export async function callPost(db: FakeDb, body: unknown) {
 		body: JSON.stringify(body)
 	});
 	const locals = {
-		safeGetSession: async () => ({ user: { id: USER_ID } }),
+		// Ce que posent les hooks : session et profil (compte admin connecté)
+		user: { id: USER_ID },
+		profile: db.profiles.find((p) => p.id === USER_ID) ?? null,
 		supabase: { from: (table: 'question_templates' | 'profiles') => fakeQuery(db, table) }
 	};
 	return POST({ request, locals } as never);

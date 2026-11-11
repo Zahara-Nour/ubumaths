@@ -131,18 +131,45 @@ describe('createAdminElevationHandle — sections où l’élévation compte', (
 		expect(locals.adminSupabase).toBe(client);
 	});
 
-	it.each(['/devoirs', '/aide-ecriture', '/atelier'])(
-		'%s : hors section, le cookie n’est pas lu',
-		async (chemin) => {
-			const verifyToken = vi.fn().mockResolvedValue({ userId: ADMIN_ID, client: adminClient() });
-			const handle = createAdminElevationHandle({ verifyToken: verifyToken as never });
-			const { event, cookies, locals } = eventAvecCookie({ id: TEACHER_ID }, chemin);
+	// Routes d'écriture réservées à l'admin hors de `/api/admin` : sans le cookie lu ici,
+	// `requireAdmin` y refusait le prof élevé (403 à la suppression d'un modèle, 2026-11-11).
+	it.each([
+		'/api/questions/templates',
+		'/api/questions/templates/22222222-2222-4222-8222-222222222222',
+		'/api/questions/templates/bulk-status',
+		'/api/errors/bulk-resolve',
+		'/api/errors/delete-resolved',
+		'/api/bug-reports/config',
+		'/api/messages/templates/22222222-2222-4222-8222-222222222222/approve'
+	])('%s : route d’écriture admin, un cookie valide donne l’élévation', async (chemin) => {
+		const client = adminClient();
+		const verifyToken = vi.fn().mockResolvedValue({ userId: ADMIN_ID, client });
+		const handle = createAdminElevationHandle({ verifyToken: verifyToken as never });
+		const { event, locals } = eventAvecCookie({ id: TEACHER_ID }, chemin);
 
-			await handle({ event, resolve: vi.fn().mockResolvedValue(new Response()) });
+		await handle({ event, resolve: vi.fn().mockResolvedValue(new Response()) });
 
-			expect(locals.adminElevation).toBeNull();
-			expect(cookies.get).not.toHaveBeenCalled();
-			expect(verifyToken).not.toHaveBeenCalled();
-		}
-	);
+		expect(locals.adminElevation).toMatchObject({ active: true, adminUserId: ADMIN_ID });
+		expect(locals.adminSupabase).toBe(client);
+	});
+
+	it.each([
+		'/devoirs',
+		'/aide-ecriture',
+		'/atelier',
+		// voisines des routes admin, hors périmètre (journal d'erreurs : appelé par tous)
+		'/api/errors/log',
+		'/api/bug-reports',
+		'/api/questions/templates-bis'
+	])('%s : hors section, le cookie n’est pas lu', async (chemin) => {
+		const verifyToken = vi.fn().mockResolvedValue({ userId: ADMIN_ID, client: adminClient() });
+		const handle = createAdminElevationHandle({ verifyToken: verifyToken as never });
+		const { event, cookies, locals } = eventAvecCookie({ id: TEACHER_ID }, chemin);
+
+		await handle({ event, resolve: vi.fn().mockResolvedValue(new Response()) });
+
+		expect(locals.adminElevation).toBeNull();
+		expect(cookies.get).not.toHaveBeenCalled();
+		expect(verifyToken).not.toHaveBeenCalled();
+	});
 });
