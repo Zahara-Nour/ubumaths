@@ -14,6 +14,7 @@
 	import { replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import AtelierContainer from '$lib/components/atelier/AtelierContainer.svelte';
+	import AtelierSilhouette from '$lib/components/atelier/AtelierSilhouette.svelte';
 	import { Atelier } from '$lib/atelier/atelier.svelte';
 	import { openLink } from '$lib/atelier/grapheur-link';
 	import type { AtelierState } from '$lib/atelier/persistence';
@@ -81,6 +82,9 @@
 				onLinkLeft={leaveLink}
 			/>
 		{/key}
+	{:else}
+		<!-- Rendue par le serveur : la forme de l'atelier tant que son JS charge -->
+		<AtelierSilhouette heading="Atelier" />
 	{/if}
 </div>
 

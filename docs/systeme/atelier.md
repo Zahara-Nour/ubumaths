@@ -181,6 +181,7 @@ Ceux du code et de l'interface :
 | Composant                    | Rôle                                                                                                                                                                                                                                                                                                                          |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `AtelierContainer.svelte`    | Le conteneur : barre d'icônes, panneau + vues (le **graphe agrandi**, bouton de la barre du graphe : `position: fixed` sur toute la fenêtre, en-tête et menu du site recouverts, panneau, barre et onglets masqués, Échap le réduit sans recadrer le graphe), console déroulante, session, `CalcDesk`, `GrapheurStore` propre |
+| `AtelierSilhouette.svelte`   | La forme de l'atelier rendue par le serveur tant que son JS charge (« Mes objets », barre, onglets, « Chargement de l'atelier… ») ; aucun contrôle, parties visibles `inert`                                                                                                                                                  |
 | `roving-toolbar.ts`          | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                                                                                                                                                                                                                             |
 | `ToolButton.svelte`          | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)                                                                                                                                                                                                       |
 | `ObjectPanel.svelte`         | « Mes objets » : création, liste des cartes ; replié par défaut sur téléphone                                                                                                                                                                                                                                                 |
@@ -2072,6 +2073,15 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
   LaTeX).
 
 ### Session, persistance, URL
+
+**Avant l'ouverture : la silhouette** (`AtelierSilhouette.svelte`, chantier amelioration,
+2026-11-11). La page ne pose l'atelier qu'une fois `openLink(…)` résolu, dans le navigateur : le
+serveur ne rendait rien, et l'écran restait vide le temps du JS (≈ 3 s en 4G lente). Il rend
+désormais la silhouette, aux dimensions de l'atelier vide (rien ne saute à l'arrivée) : le titre
+`<h1>` et « Chargement de l'atelier… » (`role="status"`) pour les lecteurs d'écran, le reste
+`inert`, sans bouton ni champ. Elle ne rend pas l'atelier utilisable plus tôt. ⚠️ Ses
+dimensions recopient `AtelierContainer`, `ObjectPanel` et `ToolButton`. Test :
+`routes/(public)/atelier/__tests__/silhouette-serveur.test.ts` (rendu serveur de la page).
 
 - **Stockage local** (`persistence.ts`) : clé `ATELIER_STORAGE_KEY` (`chiphre-atelier`),
   version `ATELIER_STATE_VERSION`. On range de quoi **reconstruire** (nom, type, définition,
