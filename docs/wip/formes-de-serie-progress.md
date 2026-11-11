@@ -7,7 +7,7 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 _Mis à jour le 2026-11-11, phase 0 en cours (aucune PR)._
 
-- **État** : phase 0, décisions de David ci-dessous ; ni ADR ni `CONTEXT.md` écrits · **Prochaine action** : répondre à David sur les points ouverts (nom des « fiches de révision », historique élève), puis écrire l'ADR + `CONTEXT.md` (commit doc sur `main`), puis comportements de phase 0 · **En attente de David** : (a) nom de `srs_card_stats` (proposé : « état de mémorisation ») ; (b) historique « mes dernières séances » côté élève, oui/non ; (c) piste (a) ADR 0017 de `cours-suites` (hors de ce chantier) · **Pièges en cours** : « Saisie » déjà employé pour la page prof `teacher/evaluation-tasks/[id]/saisie` ; ADR 0016 (meilleur résultat du jour) concerne l'auto-évaluation, à revoir avec la fusion des boutons · **Worktree / branche** : aucun (doc sur `main`)
+- **État** : phase 0, décisions de David ci-dessous ; ni ADR ni `CONTEXT.md` écrits · **Prochaine action** : répondre à David sur les points ouverts (nom des « fiches de révision », historique élève), puis écrire l'ADR + `CONTEXT.md` (commit doc sur `main`), puis comportements de phase 0 · **En attente de David** : contenu exact d'une trace (temps, forme, durée allouée, réponse tapée + graine ?) ; (c) piste (a) ADR 0017 de `cours-suites` (hors de ce chantier) · **Pièges en cours** : « Saisie » déjà employé pour la page prof `teacher/evaluation-tasks/[id]/saisie` ; ADR 0016 (meilleur résultat du jour) concerne l'auto-évaluation, à revoir avec la fusion des boutons · **Worktree / branche** : aucun (doc sur `main`)
 
 ## Décisions de David (2026-11-11)
 
@@ -22,8 +22,9 @@ _Mis à jour le 2026-11-11, phase 0 en cours (aucune PR)._
 2. **Auto-évaluation : deux boutons seulement, « Réussi / Pas réussi »**, partout (flash-cards ET
    révisions SRS, qui ont aujourd'hui 4 boutons FSRS). Origines `student_self` et `srs` fusionnées
    en une seule. « Aller au plus simple pour les élèves. »
-3. **Séances libres** (`test_sessions` + `test_answers` sans `evaluation_id`) : doublon avec les traces,
-   à ne plus écrire (sous réserve de l'historique élève, point ouvert b).
+3. **Nom** : `srs_card_stats` = **« état de mémorisation »**. **Pas d'historique** des séances côté élève.
+4. **Séances libres** (`test_sessions` + `test_answers` sans `evaluation_id`) : doublon avec les traces,
+   à ne plus écrire **à condition que les traces enregistrent tout le nécessaire** (David : « je n'ai pas dit qu'il ne faut rien écrire »).
 
 ## Constats vérifiés (2026-11-11)
 
