@@ -1295,9 +1295,9 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
    question dont l'énoncé masqué dirait encore la réponse est écartée et journalisée comme une
    génération impossible (`gestureAnswerLeaks`, la tentative ne se perd pas) ; `toPublicQuestion`
    refuse de l'envoyer en dernier filet (reprise).
-9. **Carte de cours** : non évaluable, retirée des formes qui corrigent (Contrôle blanc, Course aux
+9. **Carte de cours** : non évaluable, retirée des formes chronométrées (Contrôle blanc, Course aux
    nombres) et des contrôles (`excludeCourseCards`, `seriesFormExcludesCourseCards`), gardée en
-   Flash-cards et En classe ; une question de cours évaluable n'est jamais retirée. Pas de spec ;
+   Flash-cards, Saisie (auto-évaluée) et En classe ; une question de cours évaluable n'est jamais retirée. Pas de spec ;
    `checkTemplate` vérifie seulement un recto et un verso non vides. Une carte de cours est
    toujours une question de cours.
 10. **Plusieurs bonnes réponses** : réglage de la case choix (`plusieurs: oui`), jamais du modèle.

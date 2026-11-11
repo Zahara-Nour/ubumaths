@@ -21,7 +21,8 @@ const logger = createServerLogger('api/tests/save/+server');
  * ADR 0038, N9). Cet appel de fin n'écrit plus ni séance libre
  * (`test_sessions`, `test_answers`), ni trace, ni fiche FSRS (N13, décision de
  * David du 2026-11-11) : il calcule seulement le gain du Palotin à partir des
- * réponses de la série, comme avant (Contrôle blanc, Course aux nombres).
+ * réponses de la série, comme avant (Contrôle blanc, Course aux nombres), et
+ * en Saisie (réponses corrigées par l'appli, décision de David du 2026-11-11).
  * Flash-cards : auto-évaluées de bout en bout, aucun gain.
  *
  * Body: TestResult + items (composition jouée)

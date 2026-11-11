@@ -18,6 +18,7 @@
 	import TestInteractive from '$lib/components/test/TestInteractive.svelte';
 	import TestCourse from '$lib/components/test/TestCourse.svelte';
 	import FlashSeries from '$lib/components/test/FlashSeries.svelte';
+	import TypingSeries from '$lib/components/test/TypingSeries.svelte';
 	import EvaluationResults from '$lib/components/test/EvaluationResults.svelte';
 	import { resolveTestLaunch } from '$lib/utils/test-launch';
 	import type { TestResult } from '$lib/types/test';
@@ -211,7 +212,7 @@
 		// Série vide parce que toutes ses lignes sont des cartes : le dire (pas une panne)
 		if (items.length === 0 && excludeCourseCards && onlyCourseCards(series)) {
 			throw new Error(
-				'Cette série ne contient que des cartes de cours, sans réponse à corriger : choisir la forme « En classe » ou « Flash ».'
+				'Cette série ne contient que des cartes de cours, sans réponse à corriger : choisir la forme « En classe », « Flash-cards » ou « Saisie ».'
 			);
 		}
 		const instances = items.map((item) => item.instance);
@@ -284,10 +285,14 @@
 	}
 
 	/**
-	 * « Flash-cards » : Recommencer tire de nouvelles questions (cartes de cours comprises)
+	 * « Flash-cards », « Saisie » : Recommencer tire de nouvelles questions (cartes
+	 * de cours comprises)
 	 */
 	function handleFlashRestart() {
 		if (!testSession) return;
+		buddyGain = null;
+		mathouNews = null;
+		newsRequest += 1;
 		try {
 			testSession.instances = generateSeriesItems(testSession.items).map((item) => item.instance);
 			testSession.startTime = Date.now();
@@ -401,8 +406,11 @@
 			toaster.warning("Certaines réponses n'ont pas été enregistrées.");
 		}
 
-		// Flash-cards : auto-évaluées, aucun gain (et aucune séance écrite, N13)
-		if (result.mode !== 'interactive' && result.mode !== 'course') return;
+		// Flash-cards : auto-évaluées, aucun gain (et aucune séance écrite, N13).
+		// Saisie : corrigée par l'appli, gain comme le Contrôle blanc (David, 2026-11-11)
+		if (result.mode !== 'interactive' && result.mode !== 'course' && result.mode !== 'typing') {
+			return;
+		}
 
 		// Fin de série : le gain du Palotin seulement (plus de séance libre, N13)
 		try {
@@ -572,6 +580,20 @@
 					onRestart={handleFlashRestart}
 					onBack={handleBackToCart}
 					traceRecorder={seriesTraceRecorder}
+				/>
+			{/key}
+		{:else if testSession.mode === 'typing' && !assignmentId}
+			<!-- Forme « Saisie » : nouvelles questions = nouveau composant -->
+			{#key testSession.instances}
+				<TypingSeries
+					instances={testSession.instances}
+					isLoggedIn={!!data.user}
+					onComplete={handleTestComplete}
+					onRestart={handleFlashRestart}
+					onBack={handleBackToCart}
+					traceRecorder={seriesTraceRecorder}
+					{buddyGain}
+					{mathouNews}
 				/>
 			{/key}
 		{/if}

@@ -28,7 +28,7 @@ export type TestLaunch =
 	| { kind: 'start'; mode: TestMode; lines: SeriesItem[]; timeLimit?: number }
 	| { kind: 'error'; message: string };
 
-const TEST_MODES: readonly TestMode[] = ['display', 'interactive', 'course', 'flash'];
+const TEST_MODES: readonly TestMode[] = ['display', 'interactive', 'course', 'flash', 'typing'];
 
 /** Temps limite d'une Course aux nombres lu dans l'URL (secondes, 1 s à 1 h) */
 const MAX_TIME_LIMIT_SECONDS = 3600;

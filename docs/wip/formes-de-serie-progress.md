@@ -351,3 +351,15 @@ Décisions de David (recommandations suivies) :
   cours exclues, calcul de `/api/tests/save`).
 - **Séries de chapitre** (forme choisie par le prof : Flash-cards / Contrôle blanc, CHECK en base) :
   Saisie **pas dans cette PR** (migration additive à faire plus tard si besoin).
+
+Réalisé (2026-11-11) :
+
+- `TestMode` `typing` (lancement, liens partagés, Zod de fin de série, `TestModeDialog` : carte
+  « Saisie »). Cartes de cours gardées (`seriesFormExcludesCourseCards` inchangé).
+- `TypingSeries.svelte` : `FlashCard` `interactive` + `flipOnSubmit` (neuf) ; retournement offert
+  seulement après « Valider » ; « Suivante » / « Terminer » ; carte de cours = Flash-cards ; bilan,
+  « Revoir » (sans trace), gain du Palotin et nouvelles de la Chatterie sous le bilan.
+- Trace `typing` (`series-trace.ts`) : réponse et verdict par case, jamais de durée (N11).
+- `FlashCard` n'envoie plus de trace elle-même (seuls appelants interactifs : aperçus prof / admin,
+  que la route ignorait) : une seule voie, la forme de série.
+- `/api/tests/save` : gain en Saisie. Vitrine `/demo/questions` : onglet Saisie (« six formes »).

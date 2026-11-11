@@ -169,7 +169,7 @@ function reponse(templateId: string, isCorrect: boolean, index = 0) {
 async function enregistrer(
 	answers: ReturnType<typeof reponse>[],
 	statutAttendu = 200,
-	mode: 'interactive' | 'course' | 'flash' = 'interactive'
+	mode: 'interactive' | 'course' | 'flash' | 'typing' = 'interactive'
 ) {
 	const request = new Request('http://localhost/api/tests/save', {
 		method: 'POST',
@@ -227,7 +227,7 @@ describe('POST /api/tests/save — gain du Palotin seulement', () => {
 		ensureProgrammeDeckCard.mockReset().mockResolvedValue(undefined);
 	});
 
-	it.each(['interactive', 'course'] as const)(
+	it.each(['interactive', 'course', 'typing'] as const)(
 		'%s : aucune séance libre, aucune trace, aucune fiche, aucun paquet',
 		async (mode) => {
 			await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, false, 1)], 200, mode);
@@ -247,6 +247,12 @@ describe('POST /api/tests/save — gain du Palotin seulement', () => {
 		const corps = await reponseHttp.json();
 		expect(corps).toHaveProperty('buddy_xp');
 		expect(corps).not.toHaveProperty('sessionId');
+	});
+
+	it('Saisie : gain du Palotin comme le Contrôle blanc (David, 2026-11-11)', async () => {
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, false, 1)], 200, 'typing');
+		expect(addBuddyXpFromTest).toHaveBeenCalledTimes(1);
+		expect(addBuddyXpFromTest.mock.calls[0][2].map((a) => a.isCorrect)).toEqual([true, false]);
 	});
 
 	it('carte de cours : pas d’XP pour elle (décision 2026-09-28)', async () => {

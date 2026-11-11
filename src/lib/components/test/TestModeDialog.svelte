@@ -5,7 +5,8 @@
 
 	Modes:
 	- Display (« En classe ») : projection question par question, sans score
-	- Interactive (« Entraînement ») : une question à la fois, score à la fin
+	- Interactive (« Contrôle blanc ») : une question à la fois, chronométrée, score à la fin
+	- Typing (« Saisie ») : l'élève tape, la carte se retourne après « Valider », sans chrono
 	- Course aux nombres: All questions at once with time limit
 	- Flash (« Flash-cards ») : l'élève retourne chaque carte et s'auto-évalue, sans chrono
 
@@ -24,7 +25,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { Eye, BrainCircuit, Timer, Rocket, Layers } from '@lucide/svelte';
+	import { Eye, BrainCircuit, Timer, Rocket, Layers, Keyboard } from '@lucide/svelte';
 	import type { TestMode } from '$lib/types/test';
 
 	// Props
@@ -80,6 +81,17 @@
 				'Une carte à la fois',
 				"Tu t'auto-évalues après avoir vu la réponse",
 				'Revoir les cartes non trouvées'
+			]
+		},
+		{
+			mode: 'typing' as TestMode,
+			title: 'Saisie',
+			icon: Keyboard,
+			description: 'Tape ta réponse, la carte se retourne pour te corriger. Sans chrono.',
+			features: [
+				'Une question à la fois',
+				'Ta réponse face à la bonne, puis la correction',
+				'Revoir les questions ratées'
 			]
 		}
 	];

@@ -44,14 +44,15 @@
 	const NO_FORM = 'none';
 	/** Même défaut que la fenêtre de choix du panier (`TestModeDialog`) */
 	const DEFAULT_COURSE_MINUTES = 5;
-	const TEST_MODES: readonly string[] = ['display', 'interactive', 'course', 'flash'];
+	const TEST_MODES: readonly string[] = ['display', 'interactive', 'course', 'flash', 'typing'];
 
 	const formItems: { value: TestMode | typeof NO_FORM; label: string }[] = [
 		{ value: NO_FORM, label: 'Sans forme (ouvre le panier)' },
 		{ value: 'display', label: 'En classe' },
 		{ value: 'interactive', label: 'Contrôle blanc' },
 		{ value: 'course', label: 'Course aux nombres' },
-		{ value: 'flash', label: 'Flash-cards' }
+		{ value: 'flash', label: 'Flash-cards' },
+		{ value: 'typing', label: 'Saisie' }
 	];
 
 	const uid = $props.id();

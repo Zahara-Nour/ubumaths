@@ -52,7 +52,8 @@ describe('TestModeDialog — un clic sur une carte lance la série', () => {
 	it.each([
 		['En classe', 'display'],
 		['Contrôle blanc', 'interactive'],
-		['Flash-cards', 'flash']
+		['Flash-cards', 'flash'],
+		['Saisie', 'typing']
 	] as const)('« %s » lance « %s » aussitôt', async (label, mode) => {
 		const onSelect = vi.fn<(mode: TestMode, timeLimit?: number) => void>();
 		await render(TestModeDialog, { open: true, onSelect });

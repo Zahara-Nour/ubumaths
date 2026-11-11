@@ -1,7 +1,7 @@
 /**
  * Zod validation schemas for POST /api/skill-attempts
  *
- * Validates the body sent by FlashCard after local answer validation.
+ * Validates the body sent by a free series (`series-trace.ts`) after local answer validation.
  * Family competence attempts are excluded by design (decision 72):
  * those go through evaluation_tasks, not this endpoint.
  *

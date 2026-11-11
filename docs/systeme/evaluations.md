@@ -49,10 +49,10 @@ par les séances dans [srs.md](srs.md).
 
 | Fichier                                                             | Rôle                                                                                                                                                                                      |
 | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/types/test.ts`                                             | `TestMode` (`display` en classe, `flash`, `interactive` contrôle blanc, `course`), `ClassroomItem`, `TestResult`.                                                                         |
+| `src/lib/types/test.ts`                                             | `TestMode` (`display` en classe, `flash`, `typing` saisie, `interactive` contrôle blanc, `course`), `ClassroomItem`, `TestResult`.                                                        |
 | `src/lib/utils/test-launch.ts`                                      | `resolveTestLaunch` : que faire d'une URL `/automaths/test?…` (assignation, panier, démarrage, erreur).                                                                                   |
 | `src/lib/utils/test-score.ts`                                       | `computeTestScore` : score sur 10 d'une séance libre, cartes de cours hors score.                                                                                                         |
-| `src/lib/components/test/`                                          | Une forme = un composant : `ClassroomSeries`, `FlashSeries`, `TestInteractive`, `TestCourse` ; `TestResults`, `EvaluationResults`, `TestTimer`, `TestModeDialog`.                         |
+| `src/lib/components/test/`                                          | Une forme = un composant : `ClassroomSeries`, `FlashSeries`, `TypingSeries`, `TestInteractive`, `TestCourse` ; `TestResults`, `EvaluationResults`, `TestTimer`, `TestModeDialog`.         |
 | `src/lib/components/series/`                                        | `SaveSeriesDialog` (panier → série), `SeriesLinkShare` (lien de série, avec ou sans forme ; son QR par lien court, [qr-codes.md](qr-codes.md)).                                           |
 | `src/lib/types/evaluation.ts`                                       | `EvaluationForm`, bornes de la course (`COURSE_TIME_LIMIT_*`), statuts, `getStudentStatus`, `formatGrade`.                                                                                |
 | `src/lib/types/evaluation-attempt.ts`                               | Ce qu'échangent navigateur et serveur : `EvaluationStartResponse`, `EvaluationSubmitResponse`, `CorrectedQuestion`.                                                                       |
@@ -110,12 +110,13 @@ catégories en est vidé de ces lignes au chargement, réécrit, avec un message
 `series.items` (et `test_sessions.items` pour une séance), ex-`categories`, renommées au lot 4b du
 chantier `automaths-arbre`.
 
-| Forme (`TestMode`)             | Composant         | Cartes de cours | Chrono                                                                              | Correction et score                                      | Enregistré                                |
-| ------------------------------ | ----------------- | --------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------- |
-| En classe (`display`)          | `ClassroomSeries` | oui             | Par question ; ±5 s change tout le modèle (min. 5 s) ; Espace = pause               | Aucune note ; grilles des questions puis des corrections | **Rien**                                  |
-| Flash-cards (`flash`)          | `FlashSeries`     | oui             | Aucun                                                                               | « Pas réussi / Réussi » (auto-évaluation)                | Trace `student_self` par carte, pas d'XP  |
-| Contrôle blanc (`interactive`) | `TestInteractive` | **non**         | Par question ; à 0, ce qui est saisi est validé, rien = faux ; pas de chrono global | Navigateur (ADR 0001), score sur 10 (`computeTestScore`) | Trace `auto` par question, SRS, XP en fin |
-| Course aux nombres (`course`)  | `TestCourse`      | **non**         | Global, toutes les questions à l'écran ; 1 à 60 min (5 min proposées)               | Navigateur, score sur 10                                 | Comme le Contrôle blanc                   |
+| Forme (`TestMode`)             | Composant         | Cartes de cours     | Chrono                                                                              | Correction et score                                                                                             | Enregistré                                |
+| ------------------------------ | ----------------- | ------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| En classe (`display`)          | `ClassroomSeries` | oui                 | Par question ; ±5 s change tout le modèle (min. 5 s) ; Espace = pause               | Aucune note ; grilles des questions puis des corrections                                                        | **Rien**                                  |
+| Flash-cards (`flash`)          | `FlashSeries`     | oui                 | Aucun                                                                               | « Pas réussi / Réussi » (auto-évaluation)                                                                       | Trace `student_self` par carte, pas d'XP  |
+| Saisie (`typing`)              | `TypingSeries`    | oui (auto-évaluées) | Aucun                                                                               | Navigateur ; « Valider » retourne la carte (sa réponse face à la bonne, puis la correction) ; bilan « k sur n » | Trace `auto` par question, SRS, XP en fin |
+| Contrôle blanc (`interactive`) | `TestInteractive` | **non**             | Par question ; à 0, ce qui est saisi est validé, rien = faux ; pas de chrono global | Navigateur (ADR 0001), score sur 10 (`computeTestScore`)                                                        | Trace `auto` par question, SRS, XP en fin |
+| Course aux nombres (`course`)  | `TestCourse`      | **non**             | Global, toutes les questions à l'écran ; 1 à 60 min (5 min proposées)               | Navigateur, score sur 10                                                                                        | Comme le Contrôle blanc                   |
 
 Lancement (`resolveTestLaunch`) : `?assignment=<id>` → contrôle (forme et temps viennent du serveur,
 le `mode` de l'URL est ignoré) ; `?modeles=…` (ou un ancien `?categories=…`, signalé sans être relu) sans `mode` → le panier ;
@@ -127,14 +128,18 @@ rien n'est enregistré.
 (`/dashboard/student/assessments`) en contrôle : `automathsQuitLink` (`src/lib/navigation/return-links.ts`).
 En contrôle **avec une tentative ouverte**, le lien demande confirmation : les réponses tapées seront
 perdues (voir « Démarrer », étape 3) et, en course, le temps continue de courir (`remainingSeconds`).
-Pas de confirmation en Contrôle blanc libre ni dans l'aperçu du prof. « En classe » et les flash-cards (jamais
+Pas de confirmation en Contrôle blanc libre ni dans l'aperçu du prof. « En classe », les flash-cards et la Saisie (jamais
 en contrôle) quittent vers le panier. Les boutons de l'écran de fin gardent `onBack`.
 
 **Traces d'une série libre** (ADR 0038, chantier `formes-de-serie`, PR 4) : chaque question laisse
 sa trace **dès la réponse**, avec le **verdict du navigateur** : `buildSeriesTrace` et
 `createTraceRecorder` (`src/lib/questions/series-trace.ts`) postent à `api/skill-attempts`
 (voir [srs.md](srs.md#note--réussite)). Flash-cards : au clic « Réussi / Pas réussi » du premier tour
-(lieu `flash_cards`, « Revoir » n'écrit rien). Contrôle blanc : à « Valider » ou au chrono écoulé
+(lieu `flash_cards`, « Revoir » n'écrit rien). Saisie (PR 5) : à « Valider » du premier tour (lieu
+`typing`, réponse et verdict par case, **aucune durée** : N11) ; carte de cours au clic « Réussi / Pas
+réussi » (trace `student_self`, la route lit la nature « carte » en base) ; « Revoir » n'écrit rien. La
+carte ne se retourne qu'après « Valider » (`FlashCard` `flipOnSubmit`, `flippable` faux avant) : valider
+à vide montre la réponse. `FlashCard` n'envoie plus de trace elle-même. Contrôle blanc : à « Valider » ou au chrono écoulé
 (lieu `mock_test`, durée de réponse depuis l'affichage, plafonnée à la durée de la question, fin
 `validated` / `timeout`, réponse et verdict par case — `computeBlankColors`, figure sans son tracé).
 Course : à « Valider » (lieu `number_race`, durée depuis le début de la course, durée allouée = celle
@@ -148,12 +153,12 @@ visiteur (`traceRecorder` nul) ; un prof n'écrit rien (la route l'ignore).
 
 **Fin de série** : `POST /api/tests/save` n'écrit **plus rien** — ni `test_sessions`, ni `test_answers`
 (les séances libres anciennes restent lues par l'export RGPD), ni trace : il calcule seulement le gain
-du Palotin (Contrôle blanc, Course ; jamais pour les flash-cards, que la page n'envoie plus). Hors cartes de cours, chaque réponse rapporte au Palotin
+du Palotin (Contrôle blanc, Course, Saisie — décision de David du 2026-11-11 ; jamais pour les flash-cards, que la page n'envoie plus). Hors cartes de cours, chaque réponse rapporte au Palotin
 (`addBuddyXpFromTest`, réponse `buddy_xp`) ; son thème, pour le bonus « nouveau thème », est la branche
 de l'arbre des notions où se range le point que valide la question (`fetchTemplateThemeIds`,
-`src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Une fois le gain reçu (Contrôle blanc, Course ; ni flash, ni
+`src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Une fois le gain reçu (Contrôle blanc, Course, Saisie ; ni flash, ni
 évaluation, ni aperçu du prof), la page demande les nouveautés de la Chatterie
-(`fetchMathouNews`) et `TestResults` les affiche sous le gain du Palotin (`MathouNewsCard`, jamais
+(`fetchMathouNews`) et `TestResults` (`TypingSeries` en Saisie) les affiche sous le gain du Palotin (`MathouNewsCard`, jamais
 en évaluation) : voir [mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).
 Pendant un Contrôle blanc libre d'un élève connecté (jamais en contrôle), le Palotin peut réagir une
 fois (5 réussites d'affilée, 3 erreurs sur une même notion) : `TestInteractive` reçoit

@@ -14,6 +14,10 @@
 	avec la réponse de l'élève, statut global du barème de l'entraînement (Q105).
 	Carte de cours : verso inchangé (`CourseCardBack`).
 
+	Aucune trace envoyée d'ici : la forme de série qui l'affiche s'en charge
+	(`series-trace.ts`, ADR 0038). `flipOnSubmit` (forme Saisie) : la carte se
+	retourne d'elle-même après « Valider », juste ou faux.
+
 	Props:
 	- interactive: boolean (default: false) - Enable answer validation
 	- instance: QuestionInstance (pre-generated)
@@ -51,7 +55,6 @@
 	import { RotateCw, Check, X, AlertCircle, TriangleAlert } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import FlipCard from '$lib/components/FlipCard.svelte';
-	import { createLogger } from '$lib/utils/logger';
 
 	// Input components
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
@@ -60,8 +63,6 @@
 	import CorrectionView from './CorrectionView.svelte';
 	import ExpectedResultView from './ExpectedResultView.svelte';
 	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
-
-	const logger = createLogger('FlashCard');
 
 	// Props
 	interface Props {
@@ -87,6 +88,8 @@
 		flippable?: boolean;
 		/** Carte présentée côté verso dès l'affichage (grille des corrections) */
 		startFlipped?: boolean;
+		/** Forme Saisie : la carte se retourne après « Valider », juste ou faux (N2) */
+		flipOnSubmit?: boolean;
 	}
 
 	let {
@@ -102,7 +105,8 @@
 		maxAttempts = 0,
 		height = undefined,
 		flippable = true,
-		startFlipped = false
+		startFlipped = false,
+		flipOnSubmit = false
 	}: Props = $props();
 
 	// Mots cliquables dans l'énoncé et la correction
@@ -264,33 +268,6 @@
 	}
 
 	// ============================================================================
-	// SKILL TRACKING
-	// ============================================================================
-
-	/**
-	 * Fire-and-forget POST to /api/skill-attempts.
-	 * Fail-silent: network errors are logged but never surfaced to the student.
-	 * The API inserts one skill_attempts row per family-knowledge skill tagged
-	 * on the template. If no skills are tagged yet, the API returns { inserted: 0 }
-	 * with no error — that is the expected state for most templates (decision phase 2).
-	 */
-	async function trackSkillAttempt(template_id: string, success: boolean): Promise<void> {
-		try {
-			await fetch('/api/skill-attempts', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				// Lieu exigé par l'API (ADR 0038) : une carte interactive = Saisie. Graine,
-				// réponse et verdict par case viendront avec la forme Saisie (PR 5).
-				body: JSON.stringify({ template_id, success, with_help: false, place: 'typing' })
-			});
-			// Response is intentionally ignored — fail-silent strategy
-		} catch (err) {
-			// Network-level error (fetch itself threw) — log but do not block UX
-			logger.warn('Failed to track skill attempt (network error)', err);
-		}
-	}
-
-	// ============================================================================
 	// EVENT HANDLERS
 	// ============================================================================
 
@@ -327,13 +304,6 @@
 		isSubmitted = true;
 		isSubmitting = false;
 
-		// Track skill attempt (fire-and-forget, fail-silent).
-		// Only in interactive mode and when the template has a known ID.
-		// with_help is always false in V1 — FlashCard has no help mechanism (decision 58).
-		if (interactive && instance.templateId) {
-			void trackSkillAttempt(instance.templateId, isCorrect);
-		}
-
 		onAnswerSubmit?.(answerData);
 
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
@@ -342,7 +312,11 @@
 			blankUnoptimalResults = colors.unoptimal;
 		}
 
-		if (!isCorrect && showCorrectionOnWrong) {
+		if (flipOnSubmit) {
+			// Saisie : sa réponse face à la bonne, puis la correction (verso R1-R7)
+			isFlipped = true;
+			onFlip?.(true);
+		} else if (!isCorrect && showCorrectionOnWrong) {
 			setTimeout(() => {
 				isFlipped = true;
 				onFlip?.(true);

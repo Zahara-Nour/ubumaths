@@ -288,12 +288,12 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   taille. L'éditeur reste au prof, sur `/constructions/essais`
   ([constructions.md](geometrie/constructions.md)).
 - **`/demo/questions`** (vitrine, PR 6g) : la même série de 4 questions (écrites dans
-  `questions.ts`, sans base) sous ses cinq formes, en onglets, avec une phrase « qui, quand » par
-  forme : En classe, Contrôle blanc, Flash-cards et Course aux nombres sont les vrais composants
+  `questions.ts`, sans base) sous ses six formes, en onglets, avec une phrase « qui, quand » par
+  forme : En classe, Contrôle blanc, Flash-cards, Saisie et Course aux nombres sont les vrais composants
   d'Automaths (`$lib/components/test/`) ; les révisions espacées sont simulées
   (`SpacedReviewDemo.svelte` : carte, deux boutons « Pas réussi / Réussi » et la prochaine date d'une carte neuve, calculée
   par `$lib/srs/fsrs`). Rien n'est enregistré : la fin de série n'appelle rien, et le bandeau
-  « Connecte-toi… » du Contrôle blanc et des Flash-cards est coupé par `loginNote={false}`. Les boutons
+  « Connecte-toi… » du Contrôle blanc, des Flash-cards et de la Saisie est coupé par `loginNote={false}`. Les boutons
   « Retour au panier » mènent à `/automaths/panier`.
 - **`/demo/editeur`** (vitrine, PR 6h) : un seul `RichTextEditor` (`preset="standard"`) dont le
   JSON alimente trois cartes, chacune par le vrai moteur de son usage : message privé au prof

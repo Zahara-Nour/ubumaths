@@ -54,6 +54,12 @@ describe('resolveTestLaunch', () => {
 		).toEqual({ kind: 'start', mode: 'flash', lines: [ITEM], timeLimit: undefined });
 	});
 
+	it('forme Saisie (mode=typing) → démarrage direct', () => {
+		expect(
+			resolveTestLaunch(params({ [SERIES_LINK_PARAM]: encodeSeriesParam([ITEM]), mode: 'typing' }))
+		).toEqual({ kind: 'start', mode: 'typing', lines: [ITEM], timeLimit: undefined });
+	});
+
 	it('Course aux nombres : le temps de l’URL est gardé s’il est plausible', () => {
 		const launch = resolveTestLaunch(
 			params({ [SERIES_LINK_PARAM]: encodeSeriesParam([ITEM]), mode: 'course', time: '420' })
