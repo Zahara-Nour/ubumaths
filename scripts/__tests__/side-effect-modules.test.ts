@@ -91,7 +91,7 @@ describe('la liste face au code', () => {
 			(path) => !MODULES_WITH_SIDE_EFFECTS.has(path)
 		);
 		expect(missing, 'à ajouter dans scripts/side-effect-modules.ts').toEqual([]);
-	});
+	}, 30_000);
 
 	it('contient chaque module de src/lib visé par un import nu, .svelte et routes compris', () => {
 		// `import '$lib/utils/mathlive-styles'` est écrit dans des composants : un
@@ -100,7 +100,7 @@ describe('la liste face au code', () => {
 			(path) => !MODULES_WITH_SIDE_EFFECTS.has(path)
 		);
 		expect(missing, 'à ajouter dans scripts/side-effect-modules.ts').toEqual([]);
-	});
+	}, 30_000);
 
 	it('ne nomme que des fichiers qui existent', () => {
 		const gone = [...MODULES_WITH_SIDE_EFFECTS].filter((path) => !existsSync(join(LIB, path)));

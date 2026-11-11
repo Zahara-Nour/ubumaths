@@ -61,6 +61,9 @@ export function listModulesWithTopLevelEffects(libDir: string): string[] {
 	return found.sort();
 }
 
+/** Une ligne qui commence par `import '…'` ou `import "…"`. */
+const BARE_IMPORT_HINT = /^\s*import\s*['"]/m;
+
 /** Les cibles des imports nus (`import 'x';`) d'un source TypeScript. */
 export function findBareImports(source: string): string[] {
 	const sf = ts.createSourceFile('x.ts', source, ts.ScriptTarget.Latest, true);
@@ -104,6 +107,8 @@ export function listBareImportTargets(srcDir: string): string[] {
 			} else if (entry.name.endsWith('.ts')) {
 				source = readFileSync(path, 'utf8');
 			} else continue;
+			// Tri rapide : l'AST n'est lu que si un import nu est possible (~3 000 fichiers)
+			if (!BARE_IMPORT_HINT.test(source)) continue;
 			for (const spec of findBareImports(source)) {
 				const target = resolveTarget(path, spec);
 				if (target !== null && target.startsWith(libDir + '/')) {
