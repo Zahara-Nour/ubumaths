@@ -1,4 +1,5 @@
 {
+	"id": "3ca56be0-3e9c-48c8-9700-9549832e3697",
 	"title": "Démontrer la relation de Pascal par dénombrement",
 	"description": "Démonstration à trous : exemple chiffré, parties à 3 éléments contenant a (case, n tiré), parties sans a (choix), principe additif (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],
