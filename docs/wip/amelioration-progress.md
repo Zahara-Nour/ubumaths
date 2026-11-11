@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-10, après #2538._
+_Mis à jour le 2026-11-11, après #2539._
 
-- **État** : #2538 (formule seule d'un choix calée contre sa lettre dans `ChoiceList` : catalogue, panier, corrigé ; écran de réponse inchangé), #2536 et #2535 mergées, pas en prod · **Prochaine action** : (3) INP renvoyé plusieurs fois par notre suivi ; puis (4) Atelier lent : **David le constate lui-même**, lui demander sur quel geste, profiler celui-là ; (5) « Mon cours » #1788 · **Tranché** : `created_by` laissé tel quel · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `resource-link-extension` (anti-rebond) instable en CI, passé à la relance ; une PR peut ne pas déclencher « Code Quality » à l'ouverture → fermer/rouvrir la PR · **Worktree / branche** : aucun
+- **État** : #2539 (INP et CLS ne repartent plus à chaque passage en arrière-plan, mesure abandonnée retentée), #2538, #2536 et #2535 mergées, pas en prod · **Prochaine action** : (4) Atelier lent : **David le constate lui-même**, lui demander sur quel geste, profiler celui-là ; (5) « Mon cours » #1788 · **À proposer** (piste 3, « Non traité ») : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur ; une PR peut ne pas déclencher « Code Quality » à l'ouverture → fermer/rouvrir la PR · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
