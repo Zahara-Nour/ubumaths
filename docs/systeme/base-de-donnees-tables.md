@@ -794,7 +794,7 @@ Liens : `offered_by` → `profiles` · `trade_id` → `marketplace_trades`
 
 Liens : `initiator_id` → `profiles` · `last_offer_by` → `profiles` · `listing_id` → `marketplace_listings` · `partner_id` → `profiles` · `proposal_id` → `marketplace_proposals`
 
-## Jeux, défis et récompenses (52)
+## Jeux, défis et récompenses (54)
 
 ### `achievement_events`
 
@@ -819,6 +819,10 @@ Liens : `achievement_id` → `achievements` · `student_id` → `profiles`
 ### `achievements`
 
 `category?` · `context` · `created_at` · `description` · `display_order` · `icon` · `id` · `is_active` · `metadata` · `name` · `unlock_type` · `updated_at`
+
+### `avatar_catalog`
+
+`active` · `available_from?` · `available_until?` · `family` · `image_path` · `key` · `name` · `price` · `sort_order`
 
 ### `bonus_history`
 
@@ -1025,6 +1029,12 @@ Liens : `created_by` → `profiles`
 `achievement_id` · `context_data?` · `gidouilles_awarded` · `id` · `points_awarded` · `student_id` · `unlock_reason?` · `unlocked_at` · `unlocked_by?`
 
 Liens : `achievement_id` → `achievements` · `student_id` → `profiles` · `unlocked_by` → `profiles`
+
+### `student_avatars`
+
+`avatar_key` · `price_paid` · `purchased_at` · `student_id`
+
+Liens : `avatar_key` → `avatar_catalog` · `student_id` → `profiles`
 
 ### `student_buddies`
 
@@ -1305,18 +1315,6 @@ Liens : `teacher_id` → `profiles`
 ### `server_cache`
 
 `created_at?` · `expires_at` · `key` · `value`
-
-## ⚠️ Sans domaine (2)
-
-### `avatar_catalog`
-
-`active` · `available_from?` · `available_until?` · `family` · `image_path` · `key` · `name` · `price` · `sort_order`
-
-### `student_avatars`
-
-`avatar_key` · `price_paid` · `purchased_at` · `student_id`
-
-Liens : `avatar_key` → `avatar_catalog` · `student_id` → `profiles`
 
 ## Vues (24)
 
