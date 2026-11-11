@@ -12,8 +12,8 @@ import type { QuestionInstance } from '$lib/questions/types';
 import type { TestResult } from '$lib/types/test';
 import { resolvedMarkdown } from '$lib/ubumark';
 
-const FOUND = "J'avais trouvé";
-const NOT_FOUND = "Je n'avais pas trouvé";
+const FOUND = 'Réussi';
+const NOT_FOUND = 'Pas réussi';
 const REVIEW = "Revoir celles que je n'avais pas trouvées";
 
 function makeInstance(statement: string, courseCard = false): QuestionInstance {
@@ -252,7 +252,7 @@ describe('FlashSeries — clavier et série vide', () => {
 		await click(container, 'Voir la correction');
 		await tick();
 
-		expect(document.activeElement?.textContent?.trim()).toBe("J'avais trouvé");
+		expect(document.activeElement?.textContent?.trim()).toBe(FOUND);
 	});
 
 	it('après une auto-évaluation, le focus va sur le retournement de la carte suivante', async () => {

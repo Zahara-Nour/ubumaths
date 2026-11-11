@@ -22,7 +22,6 @@
 	import TopCurriculumPointsToRemediate from '$lib/components/teacher/analytics/TopCurriculumPointsToRemediate.svelte';
 	import ClassActivityHeatmap from '$lib/components/teacher/analytics/ClassActivityHeatmap.svelte';
 	import StudentRetentionCurve from '$lib/components/teacher/analytics/StudentRetentionCurve.svelte';
-	import StudentGradeHistogram from '$lib/components/teacher/analytics/StudentGradeHistogram.svelte';
 	import ClassCompetenceGrid from '$lib/components/teacher/analytics/ClassCompetenceGrid.svelte';
 	import TopObservablesToConsolidate from '$lib/components/teacher/analytics/TopObservablesToConsolidate.svelte';
 	import AntiFraudFlagsList from '$lib/components/teacher/anti-fraud/AntiFraudFlagsList.svelte';
@@ -168,7 +167,7 @@
 					</Card.Header>
 					<Card.Content>
 						{#if selectedStudentId}
-							<div class="grid gap-6 lg:grid-cols-2">
+							<div>
 								{#if !data.grade}
 									<p class="py-4 text-center text-sm text-muted-foreground">
 										Le niveau de votre {lore.entities.class} n'est pas renseigné.
@@ -189,14 +188,6 @@
 										Aucune branche du programme pour ce niveau.
 									</p>
 								{/if}
-								<StudentGradeHistogram
-									classId={data.classId}
-									studentId={selectedStudentId}
-									studentName={anonymized
-										? `${lore.entities.student} sélectionné`
-										: selectedStudentName}
-									{refreshNonce}
-								/>
 							</div>
 						{:else}
 							<p class="py-4 text-center text-sm text-muted-foreground">

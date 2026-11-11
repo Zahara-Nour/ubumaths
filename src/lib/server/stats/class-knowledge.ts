@@ -1,12 +1,13 @@
 /**
  * Agrégations par point du programme (knowledge / FSRS) au niveau classe.
  *
- * 5 fonctions exposées :
+ * 4 fonctions exposées :
  *   - getClassCurriculumPointGrid          → Widget A (grille élève × point du programme)
  *   - getClassTopCurriculumPointsToRemediate → Widget E (top à remédier)
  *   - getStudentRetentionCurve      → Widget B (8 semaines, stability moyenne par branche)
  *   - getClassActivityHeatmap       → Widget C (30 jours × élèves, reviews/jour)
- *   - getStudentGradeHistogram      → Widget D (7 jours, distribution {1,2,3,4})
+ * (Widget D, histogramme des notes 1-4, retiré : deux boutons « Pas réussi /
+ * Réussi » depuis le chantier `formes-de-serie`.)
  *
  * Performance : approche batchée (1-3 queries par fonction, pas N×queries).
  * Cf. `docs/systeme/analytique-prof.md` §3.
@@ -84,12 +85,6 @@ export interface HeatmapStudent {
 	display_name: string;
 	days_since_last_review: number | null;
 	is_alert: boolean;
-}
-
-export interface GradeHistogramBucket {
-	grade: 1 | 2 | 3 | 4;
-	count: number;
-	avg_stability_after: number;
 }
 
 // ===========================================================================
@@ -515,12 +510,16 @@ export interface ClassActivityHeatmap {
 /**
  * Tentative sur une carte de cours : auto-évaluation en entraînement libre
  * (`student_self`) ou révision de la carte dans un paquet (modèle `course_card`).
+ * Une révision est aussi « déclarée » (`student_self`, lieu `review`) depuis
+ * l'ADR 0038 ; elle compte dans le taux de réussite, comme les anciennes `srs`.
  */
 function isCourseCardAttempt(a: {
 	source?: string;
+	place?: string | null;
 	question_templates: { type: string } | null;
 }): boolean {
-	return a.source === 'student_self' || a.question_templates?.type === 'course_card';
+	if (a.question_templates?.type === 'course_card') return true;
+	return a.source === 'student_self' && a.place !== 'review';
 }
 
 export async function getClassActivityHeatmap(
@@ -553,7 +552,7 @@ export async function getClassActivityHeatmap(
 
 	const { data: attempts, error: attemptsError } = await supabase
 		.from('skill_attempts')
-		.select('student_id, created_at, success, source, question_templates(type)')
+		.select('student_id, created_at, success, source, place, question_templates(type)')
 		.in('student_id', studentIds)
 		.gte('created_at', cutoff);
 
@@ -569,6 +568,7 @@ export async function getClassActivityHeatmap(
 		created_at: string;
 		success: boolean | null;
 		source: string;
+		place: string | null;
 		question_templates: { type: string } | null;
 	};
 	const rows = (attempts ?? []) as AttRow[];
@@ -633,91 +633,6 @@ export async function getClassActivityHeatmap(
 	}
 
 	return { days: dayKeys, students: studentsOut, cells };
-}
-
-// ===========================================================================
-// Widget D — Histogramme grades par élève
-// ===========================================================================
-
-export async function getStudentGradeHistogram(
-	supabase: SB,
-	studentId: string,
-	days = 7
-): Promise<GradeHistogramBucket[]> {
-	const cutoff = new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
-
-	const { data: rows, error: rowsError } = await supabase
-		.from('skill_attempts')
-		.select('grade, created_at, template_id, question_templates(type)')
-		.eq('student_id', studentId)
-		.gte('created_at', cutoff)
-		.not('grade', 'is', null);
-
-	if (rowsError) {
-		logger.error('[getStudentGradeHistogram] Tentatives illisibles :', rowsError);
-		throw new Error(rowsError.message);
-	}
-
-	type AttRow = {
-		grade: number | null;
-		created_at: string;
-		template_id: string | null;
-		question_templates: { type: string } | null;
-	};
-	// Décision A1 (2026-09-28) : les notes d'une carte de cours (auto-évaluation)
-	// ne mesurent pas un point du programme.
-	const attempts = ((rows ?? []) as AttRow[]).filter((a) => !isCourseCardAttempt(a));
-
-	const buckets: Record<1 | 2 | 3 | 4, { count: number; stabSum: number; stabCount: number }> = {
-		1: { count: 0, stabSum: 0, stabCount: 0 },
-		2: { count: 0, stabSum: 0, stabCount: 0 },
-		3: { count: 0, stabSum: 0, stabCount: 0 },
-		4: { count: 0, stabSum: 0, stabCount: 0 }
-	};
-
-	for (const a of attempts) {
-		const g = a.grade;
-		if (g === 1 || g === 2 || g === 3 || g === 4) buckets[g].count += 1;
-	}
-
-	const templateIds = [...new Set(attempts.map((a) => a.template_id).filter(Boolean))] as string[];
-	if (templateIds.length > 0) {
-		const { data: stats, error: statsError } = await fetchInChunks(templateIds, (batch) =>
-			supabase
-				.from('srs_card_stats')
-				.select('card_reference_id, stability')
-				.eq('user_id', studentId)
-				.eq('card_reference_type', 'template')
-				.in('card_reference_id', batch)
-		);
-
-		if (statsError) {
-			logger.error('[getStudentGradeHistogram] Stabilité illisible :', statsError);
-			throw new Error(statsError.message);
-		}
-
-		type StatRow = { card_reference_id: string; stability: number | null };
-		const stabByTpl = new Map<string, number>();
-		for (const s of (stats ?? []) as StatRow[]) {
-			if (s.stability != null) stabByTpl.set(s.card_reference_id, s.stability);
-		}
-		for (const a of attempts) {
-			const g = a.grade;
-			if ((g === 1 || g === 2 || g === 3 || g === 4) && a.template_id) {
-				const stab = stabByTpl.get(a.template_id);
-				if (stab != null) {
-					buckets[g].stabSum += stab;
-					buckets[g].stabCount += 1;
-				}
-			}
-		}
-	}
-
-	return ([1, 2, 3, 4] as const).map((g) => ({
-		grade: g,
-		count: buckets[g].count,
-		avg_stability_after: buckets[g].stabCount > 0 ? buckets[g].stabSum / buckets[g].stabCount : 0
-	}));
 }
 
 // ===========================================================================

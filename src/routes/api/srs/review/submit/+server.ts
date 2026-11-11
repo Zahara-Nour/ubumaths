@@ -3,7 +3,7 @@
  *
  * Refonte 2026-06-10 (Phase 2, lot L5) :
  * - À chaque review d'une carte template-based, insère 1 row dans `skill_attempts`
- *   avec `source='srs'` et le `grade` brut conservé.
+ *   (`student_self`, lieu `review`, `grade` conservé — `recordSrsReviewAttempt`).
  * - Le trigger PG recalcule `student_point_state` pour chaque point tagué.
  * - Si la carte est dans un deck autre que Programme, on l'ajoute aussi au Programme
  *   pour cohérence (idempotent) — sauf question de cours ou brouillon (Q113,
@@ -104,7 +104,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// ----- NOUVEAU : INSERT skill_attempts pour cartes template-based -----
-		// Source='srs', grade conservé, success dérivé (grade >= 2 = Hard ou mieux).
+		// Déclaré (`student_self`), lieu `review`, grade conservé, success = grade >= 2.
 		// Trace partagée avec le paquet du chapitre (`recordSrsReviewAttempt`).
 		if (cardReferenceType === 'template' && card.template_id) {
 			const recorded = await recordSrsReviewAttempt(

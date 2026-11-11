@@ -10,7 +10,7 @@
 	Features:
 	- Fetches due cards from API
 	- Displays cards one by one using FlashCard
-	- Shows FSRS grading buttons after flip
+	- Shows « Pas réussi / Réussi » after flip (FSRS Again / Good)
 	- Submits reviews and updates stats
 	- Progress tracking
 	- Completion summary
@@ -24,7 +24,7 @@
 	import { onMount } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import CustomFlashCard from './CustomFlashCard.svelte';
-	import FSRSButtons from './FSRSButtons.svelte';
+	import SelfAssessButtons from '$lib/components/questions/SelfAssessButtons.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
@@ -167,18 +167,19 @@
 	}
 
 	/**
-	 * Handle grade selection
+	 * Auto-évaluation : deux boutons (N7), FSRS reçoit Good (3) ou Again (1)
 	 */
-	async function handleGrade(grade: 1 | 2 | 3 | 4) {
+	async function handleAssess(succeeded: boolean) {
 		if (!currentCard || isSubmitting) return;
 
 		isSubmitting = true;
+		const grade = succeeded ? 3 : 1;
 
 		// Calculate time spent on this card (in seconds)
 		const timeSpent = Math.round((Date.now() - cardStartTime) / 1000);
 
 		// Track correct/wrong
-		if (grade >= 3) {
+		if (succeeded) {
 			correctCount++;
 		} else {
 			wrongCount++;
@@ -473,14 +474,14 @@
 			{/key}
 		</div>
 
-		<!-- FSRS Grading Buttons (shown after flip) -->
+		<!-- Auto-évaluation (après retournement) -->
 		{#if showGradeButtons}
 			<div class="grade-section animate-fadeIn">
-				<FSRSButtons onGrade={handleGrade} disabled={isSubmitting} showIntervals={false} />
+				<SelfAssessButtons onAssess={handleAssess} disabled={isSubmitting} keyboard size="lg" />
 			</div>
 		{:else if !isFlipped}
 			<div class="text-center text-sm text-muted-foreground">
-				<p>Retournez la carte pour révéler la correction, puis notez votre réponse</p>
+				<p>Retournez la carte pour révéler la correction, puis dites si vous aviez réussi</p>
 			</div>
 		{/if}
 	</div>

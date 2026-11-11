@@ -27,6 +27,8 @@ export interface AttemptEntry {
 	success: boolean;
 	grade: number | null;
 	source: 'auto' | 'srs' | 'task' | string;
+	/** Lieu (ADR 0038) ; `null` pour les traces antérieures */
+	place?: string | null;
 }
 
 /**

@@ -200,7 +200,7 @@ async function loadAttempts(
 
 	const { data: attempts, error: attemptsError } = await supabase
 		.from('skill_attempts')
-		.select('created_at, success, grade, source')
+		.select('created_at, success, grade, source, place')
 		.eq('student_id', studentId)
 		.in('template_id', templateIds)
 		.gte('created_at', windowStart.toISOString());
@@ -212,7 +212,10 @@ async function loadAttempts(
 
 	const all = (attempts ?? []) as unknown as AttemptEntry[];
 	return {
-		srs: all.filter((a) => a.source === 'srs'),
+		// Révisions : `srs` avant l'ADR 0038, puis « déclaré » au lieu `review`
+		srs: all.filter(
+			(a) => a.source === 'srs' || (a.source === 'student_self' && a.place === 'review')
+		),
 		quiz: all.filter((a) => a.source === 'auto')
 	};
 }

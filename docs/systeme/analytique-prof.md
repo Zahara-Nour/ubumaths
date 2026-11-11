@@ -63,14 +63,14 @@ Onglet 📘 Connaissances :
   semaine (8 par défaut), lue dans `srs_card_stats.review_history`. Rien n'est tracé sous 3 révisions.
 - **C — Heatmap d'activité** (`ClassActivityHeatmap.svelte`) : élève × jour (30 j), nombre de
   tentatives ; alerte au-delà de 5 jours sans activité. Les cartes de cours comptent comme activité
-  mais pas dans le taux de réussite (`success_pct` à `null` un jour sans question notée).
-- **D — Histogramme des notes** (`StudentGradeHistogram.svelte`) : Again/Hard/Good/Easy sur 7 jours,
-  avec stabilité moyenne.
+  mais pas dans le taux de réussite (`success_pct` à `null` un jour sans question notée) ; les autres
+  traces « déclaré » (`student_self`) aussi, sauf la révision (lieu `review`), qui y compte.
+- **D — Histogramme des notes** : **retiré** le 2026-11-11 (chantier `formes-de-serie`) — avec deux
+  boutons « Pas réussi / Réussi », la grille A dit déjà réussi / raté.
 - **E — Top à remédier** (`TopCurriculumPointsToRemediate.svelte`) : points triés par % 🆘 + 🔁 ; clic →
   `AnalyticsModal.svelte` (élèves concernés).
 
-Les widgets B et D apparaissent dans « Détail par élève », après choix d'un élève ; B demande en plus
-une branche. Le sélecteur ne propose que les branches du niveau de la classe, dans l'ordre de l'arbre
+Le widget B apparaît dans « Détail par élève », après choix d'un élève et d'une branche. Le sélecteur ne propose que les branches du niveau de la classe, dans l'ordre de l'arbre
 (`getProgrammeTree`). Classe sans niveau : pas de sélecteur, B est remplacé par « Le niveau de votre
 … n'est pas renseigné. » (et l'API rend une courbe vide).
 
@@ -93,19 +93,18 @@ chaque widget suit dans son `$effect` de chargement).
   chargent leurs données eux-mêmes, côté client.
 - Agrégations (`src/lib/server/stats/`, barrel `index.ts`) :
   - `class-knowledge.ts` : `getClassCurriculumPointGrid`, `getClassTopCurriculumPointsToRemediate`,
-    `getStudentRetentionCurve`, `getClassActivityHeatmap`, `getStudentGradeHistogram` ;
+    `getStudentRetentionCurve`, `getClassActivityHeatmap` ;
   - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate`.
     Requêtes groupées (pas une requête par élève) ; les listes de modèles sont découpées par
     `fetchInChunks`.
 - Endpoints `GET` sous `src/routes/api/teacher/classes/[classId]/analytics/` : `knowledge-grid`
   (`?includeAllCycle`), `knowledge-top-remediate` (`?topN`), `knowledge-retention/[studentId]`
-  (`?branch=<uuid>&weeks`), `knowledge-heatmap` (`?days&alertThresholdDays`), `knowledge-grades/[studentId]`
-  (`?days`), `competence-grid`, `competence-top-consolidate` (`?topN`). Tous : Zod puis
-  `requireTeacherOfClass` ; les deux routes par élève vérifient en plus l'appartenance à la classe
+  (`?branch=<uuid>&weeks`), `knowledge-heatmap` (`?days&alertThresholdDays`), `competence-grid`,
+  `competence-top-consolidate` (`?topN`). Tous : Zod puis `requireTeacherOfClass` ; la route par élève vérifie en plus l'appartenance à la classe
   dans `class_members`.
-- Zod : `src/lib/server/validation/teacher-analytics.ts` (7 schémas, bornes : `topN` 1-30,
-  `weeks` 1-26, `days` 1-60 / 1-30).
-- Composants : `src/lib/components/teacher/analytics/` (7 widgets + `AnalyticsModal`) ; onglet
+- Zod : `src/lib/server/validation/teacher-analytics.ts` (6 schémas, bornes : `topN` 1-30,
+  `weeks` 1-26, `days` 1-60, `alertThresholdDays` 1-30).
+- Composants : `src/lib/components/teacher/analytics/` (6 widgets + `AnalyticsModal`) ; onglet
   Surveillance : `src/lib/components/teacher/anti-fraud/`.
 
 ## Invariants

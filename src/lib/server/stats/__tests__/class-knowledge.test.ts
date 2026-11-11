@@ -10,8 +10,7 @@ import {
 	getClassCurriculumPointGrid,
 	getClassTopCurriculumPointsToRemediate,
 	getStudentRetentionCurve,
-	getClassActivityHeatmap,
-	getStudentGradeHistogram
+	getClassActivityHeatmap
 } from '../class-knowledge';
 
 type QueryResult = { data: unknown; error: unknown };
@@ -664,6 +663,51 @@ describe('getClassActivityHeatmap', () => {
 		expect(heatmap.cells[0].success_pct).toBe(50);
 	});
 
+	// ADR 0038 : une révision s'écrit « déclaré » (`student_self`) au lieu
+	// `review` ; elle compte dans le taux de réussite comme les anciennes `srs`.
+	it('révision déclarée (lieu review) : dans le taux de réussite', async () => {
+		const today = new Date().toISOString();
+		const question = { type: 'fill_in_blanks' };
+		const supabase = buildMock({
+			class_members: () => ({
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
+				error: null
+			}),
+			skill_attempts: () => ({
+				data: [
+					{
+						student_id: 's1',
+						created_at: today,
+						success: true,
+						source: 'student_self',
+						place: 'review',
+						question_templates: question
+					},
+					{
+						student_id: 's1',
+						created_at: today,
+						success: false,
+						source: 'student_self',
+						place: 'review',
+						question_templates: question
+					},
+					{
+						student_id: 's1',
+						created_at: today,
+						success: false,
+						source: 'student_self',
+						place: 'review',
+						question_templates: { type: 'course_card' }
+					}
+				],
+				error: null
+			})
+		});
+		const heatmap = await getClassActivityHeatmap(supabase, 'class-1', 1);
+		expect(heatmap.cells[0].review_count).toBe(3);
+		expect(heatmap.cells[0].success_pct).toBe(50);
+	});
+
 	it('journée de cartes seulement : active, sans taux de réussite', async () => {
 		const today = new Date().toISOString();
 		const supabase = buildMock({
@@ -688,122 +732,5 @@ describe('getClassActivityHeatmap', () => {
 		expect(heatmap.cells[0].review_count).toBe(1);
 		expect(heatmap.cells[0].success_pct).toBeNull();
 		expect(heatmap.students[0].is_alert).toBe(false);
-	});
-});
-
-// =============================================================================
-// getStudentGradeHistogram
-// =============================================================================
-
-describe('getStudentGradeHistogram', () => {
-	it('returns 4 buckets with zeros when no attempts', async () => {
-		const supabase = buildMock({
-			skill_attempts: () => ({ data: [], error: null })
-		});
-		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
-		expect(buckets.length).toBe(4);
-		expect(buckets.map((b) => b.grade)).toEqual([1, 2, 3, 4]);
-		expect(buckets.every((b) => b.count === 0)).toBe(true);
-	});
-
-	it('counts grades correctly per bucket', async () => {
-		const today = new Date().toISOString();
-		const supabase = buildMock({
-			skill_attempts: () => ({
-				data: [
-					{ grade: 1, created_at: today, template_id: 't1' },
-					{ grade: 1, created_at: today, template_id: 't1' },
-					{ grade: 3, created_at: today, template_id: 't1' },
-					{ grade: 4, created_at: today, template_id: 't2' }
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({
-				data: [
-					{ card_reference_id: 't1', stability: 5 },
-					{ card_reference_id: 't2', stability: 10 }
-				],
-				error: null
-			})
-		});
-		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
-		expect(buckets[0].count).toBe(2); // grade 1
-		expect(buckets[1].count).toBe(0); // grade 2
-		expect(buckets[2].count).toBe(1); // grade 3
-		expect(buckets[3].count).toBe(1); // grade 4
-	});
-
-	// Décision A1 de David (2026-09-28) : une carte de cours ne mesure pas un
-	// point du programme — ses notes (auto-évaluation) restent hors de l'histogramme.
-	it('ignore les notes des cartes de cours', async () => {
-		const today = new Date().toISOString();
-		const supabase = buildMock({
-			skill_attempts: () => ({
-				data: [
-					{
-						grade: 3,
-						created_at: today,
-						template_id: 't1',
-						question_templates: { type: 'fill_in_blanks' }
-					},
-					{
-						grade: 4,
-						created_at: today,
-						template_id: 'c1',
-						question_templates: { type: 'course_card' }
-					},
-					{
-						grade: 4,
-						created_at: today,
-						template_id: 'c1',
-						question_templates: { type: 'course_card' }
-					}
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({ data: [{ card_reference_id: 't1', stability: 5 }], error: null })
-		});
-		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
-		expect(buckets[2].count).toBe(1); // grade 3
-		expect(buckets[3].count).toBe(0); // grade 4 : cartes exclues
-	});
-
-	it('computes avg_stability_after using current stability as proxy', async () => {
-		const today = new Date().toISOString();
-		const supabase = buildMock({
-			skill_attempts: () => ({
-				data: [
-					{ grade: 4, created_at: today, template_id: 't1' },
-					{ grade: 4, created_at: today, template_id: 't2' }
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({
-				data: [
-					{ card_reference_id: 't1', stability: 4 },
-					{ card_reference_id: 't2', stability: 6 }
-				],
-				error: null
-			})
-		});
-		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
-		expect(buckets[3].avg_stability_after).toBe(5); // (4+6)/2
-	});
-
-	it('ignores grades outside {1,2,3,4}', async () => {
-		const today = new Date().toISOString();
-		const supabase = buildMock({
-			skill_attempts: () => ({
-				data: [
-					{ grade: 0, created_at: today, template_id: 't1' },
-					{ grade: 5, created_at: today, template_id: 't1' },
-					{ grade: null, created_at: today, template_id: 't1' }
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({ data: [], error: null })
-		});
-		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
-		expect(buckets.every((b) => b.count === 0)).toBe(true);
 	});
 });
