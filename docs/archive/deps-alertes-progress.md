@@ -1,14 +1,12 @@
-# Chantier `deps-alertes` — alertes Dependabot après la v0.82.0
+# Chantier `deps-alertes` (clos) — alertes Dependabot après la v0.82.0
 
-## Reprendre ici
+## Bilan
 
-_Mis à jour le 2026-11-11, avant la PR._
+_Clos le 2026-11-11, après #2571._
 
-- **État** : PR `chore/deps-alertes` en préparation (glob 14, planchers minimatch 11 et postcss-selector-parser 6.1.5).
-- **Prochaine action** : build, PR, CI, merge ; puis vérifier que les alertes 98, 102, 104, 106 se ferment.
-- **En attente de David** : rien. SvelteKit 3 (alertes 96, 97, 100, 101) = chantier à part, si David le veut.
-- **Pièges en cours** : `@vercel/nft` (build Vercel) tourne sur glob 14 par override.
-- **Worktree / branche** : `../ubumaths-wt-deps-alertes`, `chore/deps-alertes`.
+- #2571 mergée : glob 14, overrides `glob@13`, `minimatch@10`, `postcss-selector-parser@6` (alertes 98, 102, 104, 106).
+- Restent ouvertes, non exploitables : SvelteKit < 3 (96, 97, 100, 101 ; correctif en majeure 3.0.0, chantier à part si David le veut), deepmerge (103, aucun correctif).
+- CI : le job « CI Summary » du premier run est resté en file (runner jamais attribué), run non relançable ; un `workflow_dispatch` vert ne débloque pas la protection de branche, `gh pr update-branch` (nouveau commit, nouvelle CI de PR) l'a fait.
 
 ---
 
