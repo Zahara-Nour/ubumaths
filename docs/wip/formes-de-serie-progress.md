@@ -7,7 +7,7 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 _Mis à jour le 2026-11-11, phase 0 en cours (aucune PR, rien de codé)._
 
-- **État** : formes, noms, deux boutons d'auto-évaluation, « état de mémorisation », besoins de suivi (P1-P9, E1-E4, A1-A2), régularité P5 (heatmap) et Palotin **validés** ; ni ADR ni `CONTEXT.md` écrits · **Prochaine action** : déduire des besoins validés le **contenu exact d'une trace** (temps, forme, durée allouée, fin de question sous chrono pour P7, réponse tapée + graine pour P4/E4, rattachement au contrôle pour P6, origine prouvé/déclaré pour P9) et le soumettre à David avec la question d'accès ; puis ADR + `CONTEXT.md` (commit doc sur `main`) ; puis comportements de phase 0 · **En attente de David** : rien d'ouvert (hors chantier : piste (a) ADR 0017 de `cours-suites`) · **Pièges en cours** : « Saisie » déjà employé pour la page prof `teacher/evaluation-tasks/[id]/saisie` ; ADR 0016 (meilleur résultat du jour) à revoir avec la fusion des boutons ; widget « heatmap activité » actuel (élève × jour) à remplacer ; ne pas relancer la discussion sur ce qui est validé ci-dessous · **Worktree / branche** : aucun (doc sur `main`)
+- **État** : formes, noms, boutons, « état de mémorisation », besoins de suivi, P5, Palotin et **contenu d'une trace** (+ question d'accès) **validés** ; ni ADR ni `CONTEXT.md` écrits · **Prochaine action** : ADR (formes, deux boutons, trace) + `CONTEXT.md` (commit doc sur `main`) ; puis comportements de phase 0 · **En attente de David** : rien d'ouvert · **Pièges en cours** : « Saisie » déjà employé pour la page prof `teacher/evaluation-tasks/[id]/saisie` ; ADR 0016 (meilleur résultat du jour) à revoir avec la fusion des boutons ; widget « heatmap activité » actuel à remplacer ; hors chantier : un contrôle tronque en silence au-delà de 50 cases / 2 000 car. (`submission.ts`), une séance libre refuse ; ne pas relancer ce qui est validé · **Worktree / branche** : aucun (doc sur `main`)
 
 ## Décisions de David (2026-11-11)
 
@@ -70,3 +70,33 @@ Point de départ pour décider du contenu d'une trace : on garde ce qu'un besoin
 - **Appli** : A1 durées ajustées au temps observé · A2 anti-triche (existe).
 - **Trace écrite question par question** dès que possible (une série abandonnée ne laisse rien aujourd'hui :
   Flash-cards et Entraînement n'écrivent qu'en fin de série).
+
+## Contenu d'une trace — validé (David, 2026-11-11)
+
+Une trace par question, écrite dès la réponse. On garde ce qu'un besoin validé exige, rien d'autre.
+
+- **Gardé** : élève, modèle, réussi, date (P1-P3, P5, P8, E1-E2). **Origine** à trois valeurs :
+  **corrigé** (par l'appli) · **déclaré** (`student_self` + `srs` fusionnés) · **prof** (P9).
+- **Ajouté** :
+  - **forme** (flash-cards, saisie, contrôle blanc, course, révision, en classe) — P5, P7, A1 ;
+  - **durée de réponse** — A1, P7, A2 ;
+  - **durée allouée** et **fin** (validée / temps écoulé) — formes chronométrées seulement — P7, A1 ;
+  - **graine** — avec le modèle, reproduit tout le tirage (valeurs, ordre des choix d'un QCM,
+    mélange des étiquettes à ranger : une seule source de hasard, `instance-generator.ts:432-435`),
+    comme les contrôles (`evaluation-attempts.ts:302`). Une modification du modèle ou du moteur
+    rend la relecture fausse : accepté ; les erreurs fréquentes ne regroupent que les traces
+    postérieures à la dernière modification du modèle ;
+  - **réponse** : liste de chaînes, une par case (bornes actuelles : 50 cases, 2 000 car.), formes
+    où l'on répond (pas les flash-cards) — P4, E4. QCM = numéros d'origine, ranger = position
+    affichée : illisibles sans la graine. **Figure à compléter : pas le tracé**, seulement son verdict ;
+  - **verdict par case** (juste/faux) — P4 : quelle case est ratée, même si le modèle a changé.
+- **Pas ajouté** : rattachement au contrôle (P6 lu dans `test_answers` des contrôles, qui
+  n'écrivent pas de trace ; contrôles inchangés) ; identifiant de séance ; `with_help` et
+  `phase_blocage` jamais lus → à supprimer plus tard (destructif, temps à part).
+- **Question d'accès (tranchée)** : l'élève lit ses traces (rien de neuf) ; **le prof lit
+  individuellement** réponses tapées, temps et forme de ses élèves en travail autonome (comme les
+  copies de contrôle) ; « sans dates précises » (P5) = affichage seulement, le prof lit déjà
+  `created_at`.
+- **« Prouvé » (P9)** : corrigé dans le navigateur et envoyé tel quel, **comme aujourd'hui** (accepté).
+- **Conservation** : réponses tapées jusqu'à la fin de l'année scolaire ; réussi/raté et durées
+  comme aujourd'hui ; réponses tapées dans l'export RGPD.
