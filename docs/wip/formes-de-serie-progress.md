@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, PR 4 bis ouverte._
+_Mis à jour le 2026-11-11, après #2559._
 
-- **État** : PR 1 à 4 mergées (#2543, #2547, #2548, #2551, #2554) ; **PR 4 bis** (traces d'un contrôle, lieu `evaluation`, client service, durées et fin déclarées par la page) ouverte, revues faites · **Prochaine action** : merger la PR 4 bis à la CI verte, puis PR 5 = forme Saisie · **En attente de David** : 4 points non bloquants (§ PR 4 et § PR 4 bis, « À trancher ») : évasion anti-fraude par `flash_cards`, doublon après coupure réseau, durées déclarées d'un contrôle, policy prof sur `evaluation` · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces en FILE (FSRS sans verrou) ; au-delà des bornes, refus serveur (L3) ; pas de graine dans une trace de contrôle (D18) · **Worktree / branche** : `ubumaths-wt-formes-de-serie` / `feat/formes-de-serie-evaluation`
+- **État** : PR 1 à 4 bis mergées (#2543, #2547, #2548, #2551, #2554, **#2559**) : trace par question en Flash-cards, Contrôle blanc, Course **et contrôle** (lieu `evaluation`, client service, durées et fin déclarées par la page) · **Prochaine action** : PR 5 = forme Saisie (`TestMode` neuf, `FlashCard` en saisie côté élève), nouveau worktree depuis `origin/main` · **En attente de David** : 4 points non bloquants (§ PR 4 et § PR 4 bis, « À trancher ») : évasion anti-fraude par `flash_cards`, doublon après coupure réseau, durées déclarées d'un contrôle, policy prof sur `evaluation` · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces en FILE (FSRS sans verrou) ; au-delà des bornes, refus serveur (L3) ; pas de graine dans une trace de contrôle (D18) · **Worktree / branche** : aucun (retirés après #2559)
 
 ## Décisions de David (2026-11-11)
 
