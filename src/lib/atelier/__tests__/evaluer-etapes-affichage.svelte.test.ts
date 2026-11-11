@@ -8,12 +8,19 @@
  * l'élève voit.
  */
 
-import { describe, it, expect, afterEach, beforeEach } from 'vitest';
+import { beforeAll, describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { mount, unmount, tick } from 'svelte';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { STEPS_VERBOSITY_KEY } from '../steps-summary';
 import CalculView from '$lib/components/atelier/CalculView.svelte';
+import { stepsCorrection } from '../steps-loader';
+
+// Le composant des étapes se charge au premier dépliage : chargé d'avance, le
+// rendu se lit dès le clic (le chargement a son test : StepsOnDemand).
+beforeAll(async () => {
+	await stepsCorrection.load();
+});
 
 let monte: Record<string, unknown> | null = null;
 let cible: HTMLDivElement | null = null;
