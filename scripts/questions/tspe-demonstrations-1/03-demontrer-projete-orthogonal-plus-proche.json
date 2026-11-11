@@ -1,0 +1,187 @@
+{
+	"title": "Démontrer que le projeté orthogonal sur un plan est le point le plus proche",
+	"description": "Démonstration à trous : produit scalaire MH·HN = 0 (case), sa justification (choix), conclusion MN > MH (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $\\mathcal{P}$ un plan, $M$ un point de l'espace et $H$ son projeté orthogonal sur $\\mathcal{P}$. On démontre que $H$ est le point de $\\mathcal{P}$ le plus proche de $M$.\n\nSoit $N$ un point de $\\mathcal{P}$ distinct de $H$.\n\nPar la relation de Chasles, $\\overrightarrow{MN}=\\overrightarrow{MH}+\\overrightarrow{HN}$, donc $MN^2=MH^2+2\\,\\overrightarrow{MH}\\cdot\\overrightarrow{HN}+HN^2$.\n\nComplète.\n\n$\\overrightarrow{MH}\\cdot\\overrightarrow{HN}=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{MH}$ est orthogonal au plan $\\mathcal{P}$, et $\\overrightarrow{HN}$ est un vecteur de $\\mathcal{P}$ (car $H$ et $N$ sont dans $\\mathcal{P}$).",
+					"Deux vecteurs orthogonaux ont un produit scalaire nul : $\\overrightarrow{MH}\\cdot\\overrightarrow{HN}=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $\\mathcal{P}$ un plan, $M$ un point de l'espace et $H$ son projeté orthogonal sur $\\mathcal{P}$. On démontre que $H$ est le point de $\\mathcal{P}$ le plus proche de $M$.\n\nSoit $N$ un point de $\\mathcal{P}$ distinct de $H$.\n\nOn a $MN^2=MH^2+2\\,\\overrightarrow{MH}\\cdot\\overrightarrow{HN}+HN^2$. Pourquoi $\\overrightarrow{MH}\\cdot\\overrightarrow{HN}=0$ ?\n\n```choix\n- La droite $(MH)$ est orthogonale au plan $\\mathcal{P}$, donc à tout vecteur de $\\mathcal{P}$, en particulier à $\\overrightarrow{HN}$.\n- Car $M$, $H$ et $N$ sont alignés.\n- Car $H$ est le milieu de $[MN]$.\n- Car $MH=HN$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$H$ est le projeté orthogonal de $M$ sur $\\mathcal{P}$ : $(MH)$ est orthogonale à $\\mathcal{P}$.",
+					"$H$ et $N$ sont dans $\\mathcal{P}$, donc $\\overrightarrow{HN}$ est un vecteur de $\\mathcal{P}$ : $\\textcolor{{{color:primary.0}}}{\\overrightarrow{MH}\\cdot\\overrightarrow{HN}=0}$.",
+					"$M$, $H$, $N$ ne sont pas alignés en général : le triangle $MHN$ est rectangle en $H$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $\\mathcal{P}$ un plan, $M$ un point de l'espace et $H$ son projeté orthogonal sur $\\mathcal{P}$. On démontre que $H$ est le point de $\\mathcal{P}$ le plus proche de $M$.\n\nSoit $N$ un point de $\\mathcal{P}$ distinct de $H$.\n\nOn a obtenu $MN^2=MH^2+HN^2$. Que peut-on conclure ?\n\n```choix\n- $N\\neq H$, donc $HN^2>0$ : $MN^2>MH^2$, d'où $MN>MH$.\n- $MN^2=MH^2+HN^2$, donc $MN=MH+HN$, d'où $MN>MH$.\n- $HN^2>0$, donc $MN^2<MH^2$, d'où $MN<MH$.\n- On ne peut pas conclure sans connaître la longueur $HN$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$N\\neq H$, donc $HN>0$ et $HN^2>0$.",
+					"Donc $MN^2>MH^2$ et, les longueurs étant positives, $\\textcolor{{{color:primary.0}}}{MN>MH}$ : $H$ est le point de $\\mathcal{P}$ le plus proche de $M$.",
+					"Attention : $MN^2=MH^2+HN^2$ ne donne pas $MN=MH+HN$ (la racine d'une somme n'est pas la somme des racines)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $\\mathcal{P}$ un plan, $M$ un point de l'espace et $H$ son projeté orthogonal sur $\\mathcal{P}$. On démontre que $H$ est le point de $\\mathcal{P}$ le plus proche de $M$. Soit $N$ un point de $\\mathcal{P}$ distinct de $H$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Par la relation de Chasles, $\\overrightarrow{MN}=\\overrightarrow{MH}+\\overrightarrow{HN}$, donc $MN^2=MH^2+2\\,\\overrightarrow{MH}\\cdot\\overrightarrow{HN}+HN^2$.\n- Or $\\overrightarrow{MH}$ est orthogonal à $\\mathcal{P}$ et $\\overrightarrow{HN}$ est un vecteur de $\\mathcal{P}$, donc $\\overrightarrow{MH}\\cdot\\overrightarrow{HN}=0$.\n- Donc $MN^2=MH^2+HN^2$, avec $HN^2>0$ car $N\\neq H$.\n- Donc $MN^2>MH^2$, soit $MN>MH$ : $H$ est le point de $\\mathcal{P}$ le plus proche de $M$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On compare $MN$ et $MH$ par leurs carrés, développés avec le produit scalaire.",
+					"Conclusion : pour tout point $N$ de $\\mathcal{P}$ distinct de $H$, $\\textcolor{{{color:primary.0}}}{MN>MH}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "orthogonale au plan",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : alignés",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : milieu",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : MH = HN",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "MN > MH",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : MN = MH + HN",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : mauvais sens",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pas de conclusion",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

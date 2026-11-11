@@ -1,0 +1,250 @@
+{
+	"title": "Démontrer l'équation cartésienne d'un plan dont on connaît un vecteur normal et un point",
+	"description": "Démonstration à trous : M ∈ P ⟺ AM·n = 0 (choix), calcul de d (case, A et n tirés), repère orthonormé (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé de l'espace, $\\mathcal{P}$ est le plan passant par $A(x_A\\,;\\,y_A\\,;\\,z_A)$ et de vecteur normal $\\vec{n}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ non nul. On démontre que $\\mathcal{P}$ a une équation de la forme $ax+by+cz+d=0$.\n\nSoit $M(x\\,;\\,y\\,;\\,z)$ un point de l'espace.\n\nPourquoi $M\\in\\mathcal{P}$ si et seulement si $\\overrightarrow{AM}\\cdot\\vec{n}=0$ ?\n\n```choix\n- $\\mathcal{P}$ est le plan passant par $A$ et orthogonal à $\\vec{n}$ : $M$ est dans $\\mathcal{P}$ si et seulement si $\\overrightarrow{AM}$ est orthogonal à $\\vec{n}$.\n- $M$ est dans $\\mathcal{P}$ si et seulement si $\\overrightarrow{AM}$ et $\\vec{n}$ sont colinéaires.\n- $M$ est dans $\\mathcal{P}$ si et seulement si $\\overrightarrow{AM}=\\vec{n}$.\n- $M$ est dans $\\mathcal{P}$ si et seulement si $AM=\\lVert\\vec{n}\\rVert$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un vecteur normal à $\\mathcal{P}$ est orthogonal à tout vecteur de $\\mathcal{P}$.",
+					"$A$ est dans $\\mathcal{P}$, donc $M$ y est si et seulement si $\\overrightarrow{AM}$ est un vecteur de $\\mathcal{P}$, c'est-à-dire orthogonal à $\\vec{n}$ : $\\textcolor{{{color:primary.0}}}{\\overrightarrow{AM}\\cdot\\vec{n}=0}$.",
+					"Si $\\overrightarrow{AM}$ et $\\vec{n}$ étaient colinéaires, $M$ serait sur la droite passant par $A$ orthogonale à $\\mathcal{P}$, pas dans le plan."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé de l'espace, $\\mathcal{P}$ est le plan passant par $A({{xa}}\\,;\\,{{ya}}\\,;\\,{{za}})$ et de vecteur normal $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$. On démontre que $\\mathcal{P}$ a une équation de la forme ${{a}}x+{{b}}y+{{c}}z+d=0$.\n\nPour $M(x\\,;\\,y\\,;\\,z)$ : $M\\in\\mathcal{P}\\iff{{a}}(x-{{xa}})+{{b}}(y-{{ya}})+{{c}}(z-{{za}})=0$.\n\nEn développant, on obtient ${{a}}x+{{b}}y+{{c}}z+d=0$. Complète.\n\n$d=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "xa",
+					"expression": "1..6"
+				},
+				{
+					"name": "ya",
+					"expression": "1..6"
+				},
+				{
+					"name": "za",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(a*xa+b*ya+c*za)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En développant, le terme constant est $-{{a}}\\times{{xa}}-{{b}}\\times{{ya}}-{{c}}\\times{{za}}$.",
+					"Donc $d=-({{eval:a*xa}}+{{eval:b*ya}}+{{eval:c*za}})=\\textcolor{{{color:primary.0}}}{{{eval:-(a*xa+b*ya+c*za)}}}$.",
+					"Vérification : $A$ est dans $\\mathcal{P}$, et ${{a}}\\times{{xa}}+{{b}}\\times{{ya}}+{{c}}\\times{{za}}+d=0$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé de l'espace, $\\mathcal{P}$ est le plan passant par $A(x_A\\,;\\,y_A\\,;\\,z_A)$ et de vecteur normal $\\vec{n}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ non nul. On démontre que $\\mathcal{P}$ a une équation de la forme $ax+by+cz+d=0$.\n\nSoit $M(x\\,;\\,y\\,;\\,z)$ un point de l'espace.\n\n$\\overrightarrow{AM}$ a pour coordonnées $(x-x_A\\,;\\,y-y_A\\,;\\,z-z_A)$. On écrit $\\overrightarrow{AM}\\cdot\\vec{n}=a(x-x_A)+b(y-y_A)+c(z-z_A)$. Qu'est-ce qui permet cette écriture ?\n\n```choix\n- Le repère est orthonormé : le produit scalaire de deux vecteurs s'y calcule par $xx'+yy'+zz'$.\n- Le produit scalaire se calcule par $xx'+yy'+zz'$ dans n'importe quel repère.\n- Le vecteur $\\vec{n}$ est de norme $1$.\n- Le point $A$ est l'origine du repère.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'expression $xx'+yy'+zz'$ du produit scalaire n'est valable que dans une base **orthonormée**.",
+					"Ici le repère est orthonormé : $\\overrightarrow{AM}\\cdot\\vec{n}=\\textcolor{{{color:primary.0}}}{a(x-x_A)+b(y-y_A)+c(z-z_A)}$.",
+					"Aucune hypothèse sur la norme de $\\vec{n}$ ni sur la position de $A$ n'est nécessaire."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé de l'espace, $\\mathcal{P}$ est le plan passant par $A(x_A\\,;\\,y_A\\,;\\,z_A)$ et de vecteur normal $\\vec{n}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ non nul. On démontre que $\\mathcal{P}$ a une équation de la forme $ax+by+cz+d=0$. Soit $M(x\\,;\\,y\\,;\\,z)$ un point de l'espace.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- $M\\in\\mathcal{P}$ si et seulement si $\\overrightarrow{AM}\\cdot\\vec{n}=0$.\n- Le repère est orthonormé et $\\overrightarrow{AM}$ a pour coordonnées $(x-x_A\\,;\\,y-y_A\\,;\\,z-z_A)$, donc $\\overrightarrow{AM}\\cdot\\vec{n}=a(x-x_A)+b(y-y_A)+c(z-z_A)$.\n- En développant : $\\overrightarrow{AM}\\cdot\\vec{n}=ax+by+cz-(ax_A+by_A+cz_A)$.\n- On pose $d=-(ax_A+by_A+cz_A)$ : $M\\in\\mathcal{P}\\iff ax+by+cz+d=0$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On traduit l'appartenance au plan par un produit scalaire nul, puis on le calcule en coordonnées.",
+					"Conclusion : $\\mathcal{P}$ a pour équation $\\textcolor{{{color:primary.0}}}{ax+by+cz+d=0}$, avec $d=-(ax_A+by_A+cz_A)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "orthogonal à n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : colinéaires",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AM = n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AM = ‖n‖",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "d = −20",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"xa": "1",
+				"ya": "2",
+				"za": "3"
+			},
+			"answers": ["-20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié, 20",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"xa": "1",
+				"ya": "2",
+				"za": "3"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coefficients oubliés, −6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"xa": "1",
+				"ya": "2",
+				"za": "3"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : premier terme seul, −2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"xa": "1",
+				"ya": "2",
+				"za": "3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "repère orthonormé",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout repère",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n unitaire",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : A origine",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
