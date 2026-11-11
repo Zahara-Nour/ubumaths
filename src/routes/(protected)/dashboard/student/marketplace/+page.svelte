@@ -88,19 +88,19 @@
 		<Tabs.List class="grid w-full grid-cols-4">
 			<Tabs.Trigger value="shop" class="gap-2">
 				<Store class="h-4 w-4" />
-				<span class="hidden sm:inline">Boutique</span>
+				<span class="sr-only sm:not-sr-only">Boutique</span>
 			</Tabs.Trigger>
 			<Tabs.Trigger value="avatars" class="gap-2">
 				<CircleUserRound class="h-4 w-4" />
-				<span class="hidden sm:inline">Avatars</span>
+				<span class="sr-only sm:not-sr-only">Avatars</span>
 			</Tabs.Trigger>
 			<Tabs.Trigger value="annonces" class="gap-2">
 				<Package class="h-4 w-4" />
-				<span class="hidden sm:inline">Annonces</span>
+				<span class="sr-only sm:not-sr-only">Annonces</span>
 			</Tabs.Trigger>
 			<Tabs.Trigger value="activity" class="relative gap-2">
 				<Bell class="h-4 w-4" />
-				<span class="hidden sm:inline">Activité</span>
+				<span class="sr-only sm:not-sr-only">Activité</span>
 				{#if totalPending > 0}
 					<Badge variant="destructive" class="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
 						{totalPending}
@@ -170,7 +170,7 @@
 					class="gap-1.5 sm:gap-2"
 				>
 					<Plus class="h-4 w-4" />
-					<span class="hidden sm:inline">Nouvelle annonce</span>
+					<span class="sr-only sm:not-sr-only">Nouvelle annonce</span>
 				</ConsentButton>
 			</div>
 

@@ -55,7 +55,8 @@
 	/** Clé de l'avatar dont l'action est en cours (bloque le double clic) */
 	let busyKey = $state<string | null>(null);
 
-	let balance = $derived(studentCache.getRewardsSync()?.gidouilles ?? 0);
+	/** Solde du cache ; null tant qu'il n'est pas chargé (rien n'est alors désactivé : la base tranche) */
+	let balance = $derived(studentCache.getRewardsSync()?.gidouilles ?? null);
 
 	let sections = $derived(
 		AVATAR_FAMILIES.map((family) => ({
@@ -102,7 +103,12 @@
 			}
 			syncGidouilles(cacheContext, -avatar.price);
 			toaster.success(`${avatar.name} rejoint ta collection.`);
-			await load();
+			// Mise à jour locale : un rechargement en échec ne doit pas masquer un achat réussi
+			if (shop)
+				shop = {
+					...shop,
+					avatars: shop.avatars.map((a) => (a.key === avatar.key ? { ...a, owned: true } : a))
+				};
 		} finally {
 			busyKey = null;
 		}
@@ -125,6 +131,7 @@
 	}
 
 	function missing(avatar: ShopAvatar): number {
+		if (balance === null) return 0;
 		return Math.max(0, Math.ceil(avatar.price - balance));
 	}
 

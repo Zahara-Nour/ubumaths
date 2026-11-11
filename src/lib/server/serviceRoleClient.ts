@@ -119,7 +119,11 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'lib/server/mathoux/collection.ts',
 	// Décorations (panse et colliers) : achat et pose réservés à `service_role`, pour l’élève de la
 	// session ; consentement vérifié avant l'achat
-	'/api/student/mathoux/decorations/'
+	'/api/student/mathoux/decorations/',
+	// Boutique d'avatars : achat et port réservés à `service_role` (buy_avatar,
+	// set_worn_avatar), pour l'élève de la session ; consentement vérifié avant l'achat
+	'/api/student/avatars/buy/',
+	'/api/student/avatars/wear/'
 ] as const;
 
 /**
