@@ -77,7 +77,13 @@ export const skillAttemptInputSchema = z
 		allotted_ms: z.number().int().min(1).max(MAX_DURATION_MS).optional(),
 		end_reason: z.enum(['validated', 'timeout']).optional(),
 		answer_parts: z
-			.array(z.string().max(MAX_PART_CHARS))
+			// NUL : interdit dans un `text` Postgres, l'INSERT rendrait 500
+			.array(
+				z
+					.string()
+					.max(MAX_PART_CHARS)
+					.refine((part) => !part.includes('\u0000'), 'NUL character not allowed')
+			)
 			.max(MAX_PARTS)
 			.nullish()
 			.transform(emptyToNull),
@@ -98,7 +104,7 @@ export const skillAttemptInputSchema = z
 
 		const parts = body.answer_parts;
 		const verdicts = body.part_verdicts;
-		if ((parts === null) !== (verdicts === null)) {
+		if ((parts == null) !== (verdicts == null)) {
 			ctx.addIssue({ code: 'custom', message: 'answer_parts and part_verdicts go together' });
 		} else if (parts && verdicts && parts.length !== verdicts.length) {
 			ctx.addIssue({ code: 'custom', message: 'one verdict per answer part' });
@@ -106,7 +112,8 @@ export const skillAttemptInputSchema = z
 		if (parts && !ANSWERED_PLACES.includes(body.place)) {
 			ctx.addIssue({ code: 'custom', message: `no answer for place ${body.place}` });
 		}
-		if (parts && parts.join('').length > MAX_TOTAL_CHARS) {
+		// En points de code, comme `char_length` en base (un émoji = 1, pas 2)
+		if (parts && [...parts.join('')].length > MAX_TOTAL_CHARS) {
 			ctx.addIssue({ code: 'custom', message: 'answer too long' });
 		}
 	});

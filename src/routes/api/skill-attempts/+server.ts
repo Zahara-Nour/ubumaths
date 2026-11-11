@@ -181,8 +181,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.select('id');
 
 	if (insertError) {
-		logger.error('[skill-attempts] INSERT failed:', insertError);
-		return json({ error: 'insert_failed', detail: insertError.message }, { status: 500 });
+		// Code et message seulement : `details` d'une violation de CHECK contient la
+		// ligne entière, réponse tapée par l'élève comprise (texte libre de mineur)
+		logger.error('[skill-attempts] INSERT failed:', {
+			code: insertError.code,
+			message: insertError.message
+		});
+		return json({ error: 'insert_failed' }, { status: 500 });
 	}
 
 	if (!insertedRows || insertedRows.length !== 1) {

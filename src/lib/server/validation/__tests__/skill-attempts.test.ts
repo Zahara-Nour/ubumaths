@@ -145,4 +145,25 @@ describe('skillAttemptInputSchema — réponse et verdict par case', () => {
 			part_verdicts: Array.from({ length: 6 }, () => false)
 		});
 	});
+
+	it('refuse le caractère NUL (Postgres le refuserait : 500)', () => {
+		refuse({ place: 'typing', answer_parts: ['a\u0000b'], part_verdicts: [true] });
+	});
+
+	it('plafond total en points de code, comme `char_length` : 5 001 émojis passent', () => {
+		const parts = Array.from({ length: 3 }, () => '😀'.repeat(1667));
+		const parsed = skillAttemptInputSchema.safeParse(
+			corps({ place: 'typing', answer_parts: parts, part_verdicts: [true, true, true] })
+		);
+		expect(parsed.success).toBe(true);
+	});
+
+	it('clés absentes : réponse et verdicts NULL', () => {
+		const parsed = skillAttemptInputSchema.safeParse(corps({ place: 'typing' }));
+		expect(parsed.success).toBe(true);
+		if (parsed.success) {
+			expect(parsed.data.answer_parts).toBeNull();
+			expect(parsed.data.part_verdicts).toBeNull();
+		}
+	});
 });
