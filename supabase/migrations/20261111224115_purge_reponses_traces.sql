@@ -72,11 +72,20 @@ BEGIN
 	v_run_id := start_job_run('trace_answers_purge',
 		jsonb_build_object('cutoff', v_coupure));
 
-	UPDATE skill_attempts
-	SET answer_parts = NULL, part_verdicts = NULL
-	WHERE created_at < v_coupure
-	  AND (answer_parts IS NOT NULL OR part_verdicts IS NOT NULL);
-	GET DIAGNOSTICS v_purgees = ROW_COUNT;
+	-- Un échec est journalisé « failed » (page admin des tâches) et ne remonte pas :
+	-- relancé, il annulerait aussi la ligne de journal dans le bloc de l'appelant.
+	BEGIN
+		UPDATE skill_attempts
+		SET answer_parts = NULL, part_verdicts = NULL
+		WHERE created_at < v_coupure
+		  AND (answer_parts IS NOT NULL OR part_verdicts IS NOT NULL);
+		GET DIAGNOSTICS v_purgees = ROW_COUNT;
+	EXCEPTION WHEN OTHERS THEN
+		PERFORM complete_job_run(v_run_id, 'failed', SQLERRM,
+			jsonb_build_object('cutoff', v_coupure));
+		RAISE NOTICE 'Trace answers purge failed: %', SQLERRM;
+		RETURN NULL;
+	END;
 
 	PERFORM complete_job_run(v_run_id, 'success', NULL,
 		jsonb_build_object('cutoff', v_coupure, 'traces_purged', v_purgees));
@@ -88,7 +97,7 @@ $$;
 COMMENT ON FUNCTION public.purge_trace_answers() IS
 	'L6 (formes-de-serie, 2026-11-11) : efface answer_parts et part_verdicts des traces créées '
 	'avant le 1er août de l''année scolaire en cours. Appelée par run_cleanup_expired_data '
-	'(hebdomadaire). Rend le nombre de traces purgées.';
+	'(hebdomadaire). Rend le nombre de traces purgées, NULL en cas d''échec (journalisé failed).';
 
 REVOKE EXECUTE ON FUNCTION public.purge_trace_answers() FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.purge_trace_answers() TO service_role;

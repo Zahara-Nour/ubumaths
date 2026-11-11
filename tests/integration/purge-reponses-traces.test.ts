@@ -14,7 +14,8 @@
  *   3. une trace de l'année en cours est gardée entière ;
  *   4. un second passage ne retouche rien ;
  *   5. ni un élève ni un visiteur ne peut lancer la purge ;
- *   6. la purge hebdomadaire l'appelle, et le passage est journalisé.
+ *   6. la purge hebdomadaire l'appelle (vraiment lancée), et le passage est journalisé ;
+ *   7. bornes : une seconde avant la coupure, purgée ; pile à la coupure, gardée.
  *
  * DOIT échouer sans la migration `…_purge_reponses_traces.sql`.
  *
@@ -50,6 +51,9 @@ let studentId: string;
 let templateId: string;
 let ancienne: string;
 let recente: string;
+let justeAvant: string;
+let pileALaCoupure: string;
+let parLaPurgeHebdo: string;
 let premierPassage: number;
 let secondPassage: number;
 
@@ -64,6 +68,21 @@ async function trace(age: string): Promise<string> {
 		   array['\\frac{3}{4}', '12'], array[true, false], now() - $3::interval)
 		 returning id`,
 		[studentId, templateId, age]
+	);
+	return rows[0].id;
+}
+
+/** Trace de Contrôle blanc complète, créée à `decalage` de la coupure en cours. */
+async function traceAutourDeLaCoupure(decalage: string): Promise<string> {
+	const pg = await getPostgresClient();
+	const { rows } = await pg.query<{ id: string }>(
+		`insert into skill_attempts (student_id, template_id, success, source, place, response_ms,
+		   allotted_ms, end_reason, seed, answer_parts, part_verdicts, created_at)
+		 values ($1, $2, true, 'auto', 'mock_test', 12345, 30000, 'validated', 424242,
+		   array['\\frac{3}{4}', '12'], array[true, false],
+		   public.trace_answers_cutoff((now() at time zone 'Europe/Paris')::date) + $3::interval)
+		 returning id`,
+		[studentId, templateId, decalage]
 	);
 	return rows[0].id;
 }
@@ -116,8 +135,14 @@ describe('purge des réponses des traces', () => {
 		templateId = await createFakeTemplate(service, student.id);
 		ancienne = await trace('2 years');
 		recente = await trace('1 minute');
+		justeAvant = await traceAutourDeLaCoupure('-1 second');
+		pileALaCoupure = await traceAutourDeLaCoupure('0 second');
 		premierPassage = await purger();
 		secondPassage = await purger();
+		// Purge hebdomadaire réelle (base locale) : elle doit atteindre une trace ancienne.
+		parLaPurgeHebdo = await trace('3 years');
+		const pg = await getPostgresClient();
+		await pg.query('select public.run_cleanup_expired_data()');
 	});
 
 	afterAll(async () => {
@@ -145,8 +170,20 @@ describe('purge des réponses des traces', () => {
 		expect(row.part_verdicts).toEqual([true, false]);
 	});
 
+	it('une seconde avant la coupure : purgée ; pile à la coupure : gardée', async () => {
+		expect((await lire(justeAvant)).answer_parts).toBeNull();
+		expect((await lire(pileALaCoupure)).answer_parts).toEqual(['\\frac{3}{4}', '12']);
+	});
+
+	it('la purge hebdomadaire (run_cleanup_expired_data) purge une trace ancienne', async () => {
+		const row = await lire(parLaPurgeHebdo);
+		expect(row.answer_parts).toBeNull();
+		expect(row.part_verdicts).toBeNull();
+		expect(row.success).toBe(true);
+	});
+
 	it('le premier passage compte la trace purgée, le second ne retouche rien', () => {
-		expect(premierPassage).toBeGreaterThanOrEqual(1);
+		expect(premierPassage).toBeGreaterThanOrEqual(2);
 		expect(secondPassage).toBe(0);
 	});
 
