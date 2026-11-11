@@ -254,6 +254,32 @@ versionnés. ⚠️ Un nom de fonction ne prend pas de chiffre (`g1(x)` refusé)
 - Revue, non traité : zoom clavier (`KeyboardHandler.svelte`) et boutons (`ViewportControls`)
   recalculent tout à chaque appui ; pas de test `bindParameters` du cache.
 
+## PR 6 — zoom au clavier et aux boutons en geste bref (2026-11-11)
+
+- Suite de la revue de #2540 : boutons « Zoom avant/arrière » (`ViewportControls`), touches
+  `+ = -` et flèches (`KeyboardHandler`) recalculaient tout à chaque appui.
+- Le minuteur de la molette passe dans le magasin : `briefGesture()` (150 ms,
+  `BRIEF_GESTURE_DELAY`), `endBriefGesture()` au démontage ; `setInteracting` tient le glisser
+  (`held`), qu'un geste bref ne clôt pas. Réinitialiser (maison, Échap) et `0` restent un seul calcul.
+- Tests : `grapheur-geste-bref.svelte.test.ts` (magasin), `zoom-clavier-boutons.svelte.test.ts`
+  (6 tests, rouges sans le changement) ; les 4 tests de la molette inchangés et verts.
+
+## Piste 4 (c) — chargement à froid de l'atelier : mesure du 2026-11-11 (rien de modifié)
+
+`ANALYZE=1 pnpm build` sur `main`, graphe des imports statiques du manifeste (nœud 273 =
+`/atelier`) ; tailles gzip -9 des fichiers.
+
+- Commun (entrée + layout racine) : 69 fichiers, 0,16 Mo. **Propre à l'atelier : 120 fichiers,
+  1,36 Mo** (total 1,53 Mo).
+- Répartition par source (gzip module par module, donc surestimée — à lire en proportions) :
+  MathLive ~250 Ko ; `lib/atelier` ~240 ; `components/markdown` ~180 et `ubumark` (parser, utils,
+  generators) ~265 — graphiques stat, tableaux de variations, simulations ; mathAST ~600 en tout
+  (cli, normal, integration, solve, parser, limits, pedagogical-*…) ; bits-ui ~75 ; geometry-core
+  ~80 ; **grapheur ~50 seulement**.
+- ⇒ découper « par vue » (grapheur, figures) ne gagne que ~0,1-0,15 Mo. Les vrais postes :
+  ubumark/markdown (commandes de stats, variations, simulations), MathLive (inutile en mode
+  texte ?), les modules lourds de mathAST attachés à des commandes précises.
+
 ## Piste 5 — « Mon cours », #1788 (phase 0, 2026-11-11)
 
 Relevé (code + prod en lecture seule) puis décisions de David :

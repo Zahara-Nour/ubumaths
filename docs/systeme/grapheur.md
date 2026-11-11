@@ -202,11 +202,14 @@ avec `courbe()` du DSL de géométrie. Trois corrections de septembre 2026, tout
 
 Pendant un geste (`isInteracting`), `FunctionCurve` passe à 100 points et à une polyligne, et les
 couches d'analyse (zéros, extremums, asymptotes, intersections, survol) dorment : elles ne tournent
-qu'une fois, à la fin du geste. Glisser marque le geste de l'appui au relâchement ; la **molette**
-aussi, jusqu'à 150 ms après le dernier cran (`GraphSVG.svelte`, `WHEEL_END_DELAY`), sans clore un
-glisser en cours ; un démontage pendant la molette clôt aussi le geste. Comme pendant un glisser,
+qu'une fois, à la fin du geste. Glisser marque le geste de l'appui au relâchement. Les **gestes
+brefs** — cran de molette, boutons « Zoom avant/arrière », touches `+` `=` `-` et flèches — le
+marquent jusqu'à 150 ms après le dernier (`briefGesture()` du magasin, `BRIEF_GESTURE_DELAY`) :
+une touche tenue ou des clics enchaînés n'analysent qu'une fois. Un geste bref ne clôt pas un
+glisser en cours (`setInteracting` le tient) ; un démontage du graphe clôt le geste bref en cours
+(`endBriefGesture()`). Comme pendant un glisser,
 les points remarquables et les étiquettes épinglées disparaissent le temps du geste (choix assumé :
-les garder imposerait l'analyse à chaque cran). Sans cela, chaque cran relançait toutes les analyses : ~150 ms par cran avec dix
+les garder imposerait l'analyse à chaque cran). Sans cela, chaque cran ou appui relançait toutes les analyses : ~150 ms par cran avec dix
 courbes sur un processeur bridé ×6 (mesures du 2026-11-11).
 
 `sampleCached`, le cache d'analyse (`analyzeAllFunctions`) et celui des intersections
