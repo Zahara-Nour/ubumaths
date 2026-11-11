@@ -212,7 +212,7 @@
 		// Série vide parce que toutes ses lignes sont des cartes : le dire (pas une panne)
 		if (items.length === 0 && excludeCourseCards && onlyCourseCards(series)) {
 			throw new Error(
-				'Cette série ne contient que des cartes de cours, sans réponse à corriger : choisir la forme « En classe », « Flash-cards » ou « Saisie ».'
+				'Cette série ne contient que des cartes de cours, sans réponse à corriger : choisir la forme « En classe », « Flash » ou « Saisie ».'
 			);
 		}
 		const instances = items.map((item) => item.instance);
