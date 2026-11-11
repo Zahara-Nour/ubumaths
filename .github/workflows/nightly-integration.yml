@@ -146,6 +146,7 @@ on:
       - 'src/routes/api/tests/save/*server.ts'
       - 'src/routes/api/student/buddy/*server.ts'
       - 'src/routes/api/student/buddy/change/*server.ts'
+      - 'src/routes/api/student/buddy/presence/*server.ts'
       - 'src/routes/api/student/reports/*server.ts'
       - 'src/routes/api/student/worksheets/*server.ts'
       - 'src/routes/api/student/worksheets/*/*server.ts'
