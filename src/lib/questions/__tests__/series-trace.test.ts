@@ -195,11 +195,11 @@ describe('createTraceRecorder — envoi (N9, E1)', () => {
 		expect(await recorder.settle()).toEqual({ failed: 0 });
 	});
 
-	it('réseau coupé : réessaie en silence, puis réussit', async () => {
+	it('serveur en panne (503, 429, 408) : réessaie en silence, puis réussit', async () => {
 		const fetchFn = vi
 			.fn()
-			.mockRejectedValueOnce(new TypeError('Failed to fetch'))
 			.mockResolvedValueOnce(new Response('{}', { status: 503 }))
+			.mockResolvedValueOnce(new Response('{}', { status: 429 }))
 			.mockResolvedValueOnce(new Response('{}', { status: 200 }));
 		const recorder = createTraceRecorder({ fetchFn, retryDelaysMs: [0, 0] });
 		recorder.record(trace);
@@ -207,12 +207,61 @@ describe('createTraceRecorder — envoi (N9, E1)', () => {
 		expect(fetchFn).toHaveBeenCalledTimes(3);
 	});
 
-	it('échec persistant : compté une fois, sans lever', async () => {
-		const fetchFn = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
+	it('408 : réessaie aussi', async () => {
+		const fetchFn = vi
+			.fn()
+			.mockResolvedValueOnce(new Response('{}', { status: 408 }))
+			.mockResolvedValueOnce(new Response('{}', { status: 200 }));
+		const recorder = createTraceRecorder({ fetchFn, retryDelaysMs: [0, 0] });
+		recorder.record(trace);
+		expect(await recorder.settle()).toEqual({ failed: 0 });
+		expect(fetchFn).toHaveBeenCalledTimes(2);
+	});
+
+	it('panne persistante : comptée une fois, sans lever', async () => {
+		const fetchFn = vi.fn(async () => new Response('{}', { status: 503 }));
 		const recorder = createTraceRecorder({ fetchFn, retryDelaysMs: [0, 0] });
 		recorder.record(trace);
 		expect(await recorder.settle()).toEqual({ failed: 1 });
 		expect(fetchFn).toHaveBeenCalledTimes(3);
+	});
+
+	// La trace a pu être écrite avant la coupure : la renvoyer ferait un doublon
+	// (2 lignes, 2 révisions FSRS). Décision de David du 2026-11-11 : mieux vaut
+	// perdre une trace que la compter deux fois.
+	it('réseau coupé (exception) : pas de nouvel essai, comptée comme non enregistrée', async () => {
+		const fetchFn = vi
+			.fn()
+			.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+			.mockResolvedValue(new Response('{}', { status: 200 }));
+		const recorder = createTraceRecorder({ fetchFn, retryDelaysMs: [0, 0] });
+		recorder.record(trace);
+		expect(await recorder.settle()).toEqual({ failed: 1 });
+		expect(fetchFn).toHaveBeenCalledTimes(1);
+	});
+
+	it('réseau coupé après une panne : arrêt aussitôt', async () => {
+		const fetchFn = vi
+			.fn()
+			.mockResolvedValueOnce(new Response('{}', { status: 503 }))
+			.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+			.mockResolvedValue(new Response('{}', { status: 200 }));
+		const recorder = createTraceRecorder({ fetchFn, retryDelaysMs: [0, 0] });
+		recorder.record(trace);
+		expect(await recorder.settle()).toEqual({ failed: 1 });
+		expect(fetchFn).toHaveBeenCalledTimes(2);
+	});
+
+	it('réseau coupé : la trace suivante part quand même', async () => {
+		const fetchFn = vi
+			.fn()
+			.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+			.mockResolvedValue(new Response('{}', { status: 200 }));
+		const recorder = createTraceRecorder({ fetchFn, retryDelaysMs: [0, 0] });
+		recorder.record(trace);
+		recorder.record({ ...trace, success: false });
+		expect(await recorder.settle()).toEqual({ failed: 1 });
+		expect(fetchFn).toHaveBeenCalledTimes(2);
 	});
 
 	it('trace refusée (400) : pas de nouvel essai, comptée comme non enregistrée (L3)', async () => {
