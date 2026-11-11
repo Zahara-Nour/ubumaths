@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-11, après #2540._
 
-- **État** : #2540 (molette = interaction, intersections en cache par paire), #2539, #2538, #2536, #2535 mergées, pas en prod · **Prochaine action** : (5) « Mon cours » #1788 ; piste 4 restante, à proposer : (c) chargement à froid de l'atelier (3-3,7 s en 4G, 1,7 Mo de JS), et zoom clavier/boutons qui recalcule tout à chaque appui (revue de #2540) · **À proposer** (piste 3, « Non traité ») : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel ; pendant la molette, points remarquables et étiquettes épinglées disparaissent comme au glisser · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur ; « Code Quality » peut rester en file d'attente plusieurs minutes ; un nom de fonction de l'atelier ne prend pas de chiffre (`g1(x)` refusé) · **Worktree / branche** : aucun
+- **État** : #2540 (molette = interaction, intersections en cache par paire), #2539, #2538, #2536, #2535 mergées, pas en prod · **Prochaine action** : (5) « Mon cours » #1788, phase 0 tranchée (section « Piste 5 ») : PR A index UNIQUE (chapter_id), PR B retrait de `students_can_leave` (worktree `mon-cours-1788`) ; piste 4 restante, à proposer : (c) chargement à froid de l'atelier (3-3,7 s en 4G, 1,7 Mo de JS), et zoom clavier/boutons qui recalcule tout à chaque appui (revue de #2540) · **À proposer** (piste 3, « Non traité ») : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel ; pendant la molette, points remarquables et étiquettes épinglées disparaissent comme au glisser · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur ; « Code Quality » peut rester en file d'attente plusieurs minutes ; un nom de fonction de l'atelier ne prend pas de chiffre (`g1(x)` refusé) · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -253,3 +253,20 @@ versionnés. ⚠️ Un nom de fonction ne prend pas de chiffre (`g1(x)` refusé)
   machine chargée) ; `unmount()` doit être attendu (`lint:fast` au pre-push).
 - Revue, non traité : zoom clavier (`KeyboardHandler.svelte`) et boutons (`ViewportControls`)
   recalculent tout à chaque appui ; pas de test `bindParameters` du cache.
+
+## Piste 5 — « Mon cours », #1788 (phase 0, 2026-11-11)
+
+Relevé (code + prod en lecture seule) puis décisions de David :
+
+- **Point 2** (objectif réinséré en double) : sans objet depuis l'ADR 0029 (lien vivant, plus de
+  versions ni de recopie) → à fermer dans #1788.
+- **Point 5** (pas de `UNIQUE (chapter_id)` sur `chapter_template_instantiations`) : toujours vrai ;
+  `adoptChapterContent` vérifie puis insère (deux appels simultanés passent). Prod : 2 rattachements,
+  0 chapitre en double. **Décidé : index UNIQUE (chapter_id)** — PR A, additive, personne ne gagne
+  d'accès.
+- **Point 3** (double clic « publier une fiche ») : **laissé** (David : point 5 seulement).
+- **Point 4** (`students_can_leave`, DELETE sur `class_members`, toujours en prod, aucun usage dans
+  `src`) : **décidé : la retirer** — PR B. Question en miroir : les élèves ne pourront plus se
+  retirer seuls d'une classe par l'API ; aucun écran ne le permet. DROP POLICY : `db:migrate`
+  seulement après accord explicite de David.
+- **Point 1** (fiche visible à trois endroits) : **plus tard**, reste dans #1788.
