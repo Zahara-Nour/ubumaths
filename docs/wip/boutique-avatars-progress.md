@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, PR 2 en cours (branche `feat/boutique-avatars-pr2`)._
+_Mis à jour le 2026-11-11, PR 2 en cours (branche `feat/boutique-avatars-pr2`)._
 
 - **État** : PR 2 codée — routes `GET /api/student/avatars`, `buy/`, `wear/` (élève de la session, consentement à l'achat seulement), `AvatarShopSection` dans l'onglet « Avatars » du Marché ET dans « Mon profil », export RGPD (`gaming.avatars`, `worn_avatar`, `google_avatar_url`). Vérifié en local (achat, port, retrait, en-tête rafraîchi, journal −30). Catalogue vide en prod : l'onglet dit « Les premiers avatars arrivent bientôt ».
 - **Prochaine action** : revues (`code-reviewer` + `security-auditor`), PR, CI, merge ; puis PR 3 (images du premier lot + lignes du catalogue).
@@ -89,4 +89,4 @@ Qui pourra lire quoi, qu'il ne pouvait pas lire avant ? Proposition : le **catal
 - 2026-11-06 : #2449 mergée (PR 1 : migration, garde, callback, doc) ; `db:migrate` fait.
 - 2026-11-11 : #2567 mergée (emblème du Capitaine pour le prof, photo grise vidée) ; migration appliquée.
 - 2026-11-11 : décision de David — boutique ouverte à tous les élèves : onglet du Marché + section de « Mon profil » (le Marché suit le réglage de la classe).
-- 2026-11-12 : PR 2 codée (routes, écran, export RGPD, doc système).
+- 2026-11-11 : PR 2 codée (routes, écran, export RGPD, doc système).

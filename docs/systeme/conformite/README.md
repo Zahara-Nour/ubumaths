@@ -118,7 +118,7 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > (`student_buddies`, décision de David) ; une lecture en échec rend 500, jamais un export
 > incomplet. `format_version` inchangé (`1.4`). Tableau des catégories : [rgpd.md § 7.3](rgpd.md).
 >
-> ➕ **2026-11-12.** `gaming.avatars` exporte la collection de la boutique d'avatars
+> ➕ **2026-11-11.** `gaming.avatars` exporte la collection de la boutique d'avatars
 > (`student_avatars` : clé, prix payé, date) ; le profil exporté dit l'avatar porté
 > (`worn_avatar`) et la photo Google gardée (`google_avatar_url`). Une lecture en échec rend 500.
 > `format_version` inchangé (`1.4`).
