@@ -185,3 +185,21 @@ du panier Automaths n'existe pas (« Fonctionnalité à venir »).
   à ~280 px de sa lettre ; elle est désormais contre la lettre, comme un choix de texte
   (`.choice-formula` : `justify-content: flex-start`). L'écran de réponse (`MultipleChoiceInput`)
   est inchangé. Test : « formule seule calée à gauche » (rouge avant : écart 278 px).
+
+## Piste 3 — INP renvoyé plusieurs fois par notre suivi (2026-11-11)
+
+- **Mesure** (`error_logs`, 60 j, messages INP reçus plus de 2 fois) : « INP 1688ms » ×28,
+  « 616ms » ×18, « 408ms » ×14, « 1080ms » ×13, « 2024ms » ×12… chaque fois **un seul
+  élève**, une ou deux pages, sur un à trois jours : un onglet laissé ouvert.
+- **Cause** : `initWebVitals` envoyait INP et CLS à **chaque** passage en arrière-plan, avec la
+  pire valeur depuis l'ouverture ; seule la fenêtre anti-doublon de 5 minutes les retenait.
+- **Correctif** (branche `fix/inp-renvoye`) : une valeur ne repart que si elle a grandi depuis
+  le dernier envoi (`reportedInp`, `reportedCls`) ; les écouteurs `visibilitychange` sont
+  détachés au `beforeunload` (`AbortController`), comme les observateurs. Tests :
+  `errorMonitoring-web-vitals.svelte.test.ts` (INP et CLS non renvoyés : rouges sans la garde ;
+  INP plus lent renvoyé : vert des deux côtés). Piège : `vi.resetModules()` ne recharge pas le
+  module en mode navigateur → valeurs distinctes par test.
+- **Non traité** (à proposer) : notre « INP » est la durée de l'événement le plus lent de toute
+  la session, y compris les événements sans `interactionId` (pas des interactions) ; le vrai
+  INP ne compte que les interactions. Et l'URL envoyée est celle de la page au moment du
+  passage en arrière-plan, pas celle où l'interaction lente a eu lieu.

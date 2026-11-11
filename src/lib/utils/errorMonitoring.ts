@@ -643,14 +643,27 @@ export function initWebVitals(): void {
 	// Track INP across session
 	let inpValue = 0;
 
+	// Dernières valeurs envoyées : INP et CLS partent à chaque passage en arrière-plan,
+	// mais une valeur déjà envoyée ne repart pas (un onglet ouvert des jours renvoyait
+	// sinon le même INP toutes les 5 minutes d'absence, fin de la fenêtre anti-doublon)
+	let reportedCls = 0;
+	let reportedInp = 0;
+
+	// Écouteurs détachés au déchargement, comme les observateurs
+	const listeners = new AbortController();
+
 	// Premier passage en arrière-plan : FCP et LCP mesurés après lui sont écartés
 	// (onglet ouvert en arrière-plan → « LCP » de plusieurs heures, cf. web-vitals-visibilite.ts)
 	let hiddenTime = readFirstHiddenTime();
-	document.addEventListener('visibilitychange', (event) => {
-		if (document.visibilityState === 'hidden') {
-			hiddenTime = Math.min(hiddenTime, event.timeStamp);
-		}
-	});
+	document.addEventListener(
+		'visibilitychange',
+		(event) => {
+			if (document.visibilityState === 'hidden') {
+				hiddenTime = Math.min(hiddenTime, event.timeStamp);
+			}
+		},
+		{ signal: listeners.signal }
+	);
 
 	// LCP (Largest Contentful Paint)
 	try {
@@ -759,26 +772,33 @@ export function initWebVitals(): void {
 
 	// Single consolidated visibilitychange listener for CLS and INP
 	// Report on page hide (when user leaves or switches tabs)
-	document.addEventListener('visibilitychange', () => {
-		if (document.visibilityState === 'hidden') {
-			// Report CLS if any shifts occurred
-			if (clsValue > 0) {
-				reportWebVital('CLS', clsValue, { shift_count: clsShiftCount });
-			}
+	document.addEventListener(
+		'visibilitychange',
+		() => {
+			if (document.visibilityState === 'hidden') {
+				// Report CLS if it grew since the last report
+				if (clsValue > reportedCls) {
+					reportWebVital('CLS', clsValue, { shift_count: clsShiftCount });
+					reportedCls = clsValue;
+				}
 
-			// Report INP if any interactions occurred
-			if (inpValue > 0) {
-				reportWebVital('INP', inpValue);
-			}
+				// Report INP if a slower interaction occurred since the last report
+				if (inpValue > reportedInp) {
+					reportWebVital('INP', inpValue);
+					reportedInp = inpValue;
+				}
 
-			// Note: We don't reset values - cumulative metrics continue across tab switches
-		}
-	});
+				// Note: We don't reset values - cumulative metrics continue across tab switches
+			}
+		},
+		{ signal: listeners.signal }
+	);
 
 	// Cleanup observers on page unload
 	window.addEventListener('beforeunload', () => {
 		webVitalsObservers.forEach((observer) => observer.disconnect());
 		webVitalsObservers.length = 0;
+		listeners.abort();
 		webVitalsInitialized = false;
 	});
 

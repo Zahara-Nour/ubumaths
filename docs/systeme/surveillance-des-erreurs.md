@@ -62,6 +62,9 @@ Trois boucles distinctes :
     `code` remplacés par `[REDACTED]`) ; un FCP ou un LCP mesuré après le premier passage
     de la page en arrière-plan est écarté (`web-vitals-visibilite.ts`, même règle que
     `web-vitals` : un onglet ouvert en arrière-plan donnait des « LCP » de plusieurs heures) ;
+    INP et CLS partent au passage en arrière-plan, mais seulement s'ils ont grandi depuis
+    le dernier envoi (avant, un onglet ouvert des jours renvoyait le même INP dès la fin
+    de la fenêtre anti-doublon de 5 minutes : jusqu'à 28 fois la même valeur) ;
   - garde-fous (objet `CONFIG`) : 10 erreurs par minute au plus, file envoyée toutes
     les 10 s ou dès 5 erreurs. « Lot » ne veut dire que regroupement dans le temps :
     chaque erreur part dans son propre `POST` ;
