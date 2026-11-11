@@ -7,7 +7,7 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 _Mis à jour le 2026-11-11, après #2565._
 
-- **État** : PR 1 à 5 mergées (#2543, #2547, #2548, #2551, #2554, #2559, **#2565**) : traces par question partout ; forme **Saisie** livrée (`TestMode` `typing`, `TypingSeries`, gain du Palotin) · **Prochaine action** : PR 6 = **purge** de fin d'année (cron : réponses et verdicts par case effacés, L6), nouveau worktree depuis `origin/main` ; puis Saisie dans les séries de chapitre si David le veut (migration du CHECK, reportée) · **En attente de David** : 4 points non bloquants (§ PR 4 et § PR 4 bis, « À trancher ») : évasion anti-fraude par `flash_cards`, doublon après coupure réseau, durées déclarées d'un contrôle, policy prof sur `evaluation` · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces en FILE (FSRS sans verrou) ; « Flash-cards » dans un message d'erreur fait échouer la garde de langue (`cards`) · **Worktree / branche** : aucun (retirés après #2565)
+- **État** : PR 1 à 5 mergées (#2543, #2547, #2548, #2551, #2554, #2559, **#2565**) : traces par question partout ; forme **Saisie** livrée (`TestMode` `typing`, `TypingSeries`, gain du Palotin) · **Prochaine action** : (a) David vérifie la Saisie à la main (`verifications-manuelles.md`, #2565) ; (b) **petite PR « doublon »** : `createTraceRecorder` (`series-trace.ts`) ne renvoie plus après une exception réseau, nouveaux essais gardés pour 5xx/429/408 seulement, test à l'appui, sans migration ; (c) PR 6 = **purge** de fin d'année (cron L6) : destructive → s'arrêter et dire à David ce qui sera perdu avant tout SQL ; (d) Saisie en séries de chapitre : attendre l'usage réel · **En attente de David** : rien (4 points tranchés le 2026-11-11, cf. « Décisions sur les points à trancher ») · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; traces en FILE (FSRS sans verrou) ; « Flash-cards » dans un message d'erreur fait échouer la garde de langue (`cards`) · **Worktree / branche** : aucun (nouveau worktree depuis `origin/main` pour la PR doublon)
 
 ## Décisions de David (2026-11-11)
 
@@ -340,6 +340,15 @@ Réalisé (2026-11-11) :
   (bornées, sans effet sur la note ; même confiance que `test_answers.time_spent`). 4. _Constat hors PR_ : `skill_attempts_insert_teacher` n'empêche pas `place = 'evaluation'` (un
   prof peut écrire une trace « en contrôle » pour son élève). À aligner seulement si
   « `evaluation` ⇒ écrit par le serveur » doit être strict.
+
+### Décisions sur les points à trancher (David, 2026-11-11)
+
+1. _Anti-fraude par `flash_cards`_ : **rien à faire** (requête à forger, enjeu = badges seulement, déjà possible avant).
+2. _Doublon après coupure réseau_ : **corriger simplement** : plus de nouvel essai après une exception réseau ; nouveaux essais gardés pour 500/429/408. Une trace peut se perdre si la coupure précède l'écriture (moindre mal). Pas de clé d'idempotence.
+3. _Durées déclarées d'un contrôle_ : **rien à faire** (bornées, sans effet sur la note).
+4. _Policy prof sur `evaluation`_ : **rien à faire** (mono-professeur ; ne pas retoucher la RLS pour un gain nul).
+
+Ordre ensuite : vérification manuelle de la Saisie → PR doublon → PR 6 purge → Saisie en séries de chapitre selon l'usage.
 
 ### PR 5 — forme Saisie (2026-11-11)
 
