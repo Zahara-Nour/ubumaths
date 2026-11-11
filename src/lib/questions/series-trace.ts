@@ -83,10 +83,18 @@ function answerPartsOf(values: string[], instance: QuestionInstance): string[] {
 	let budget = MAX_TOTAL_CHARS;
 	return values.slice(0, MAX_PARTS).map((value, index) => {
 		if (blanks[index]?.type === 'graphical') return '';
-		// En points de code, comme `char_length` en base
-		const part = [...value].slice(0, Math.min(MAX_PART_CHARS, budget));
-		budget -= part.length;
-		return part.join('').replaceAll('\u0000', '');
+		// Coupée entre deux points de code (jamais un émoji en deux) ; bornes : 2 000
+		// unités UTF-16 par case (Zod, plus strict que `char_length`) et 10 000 points
+		// de code en tout (`char_length` en base)
+		let part = '';
+		let points = 0;
+		for (const point of value.replaceAll('\u0000', '')) {
+			if (points >= budget || part.length + point.length > MAX_PART_CHARS) break;
+			part += point;
+			points += 1;
+		}
+		budget -= points;
+		return part;
 	});
 }
 

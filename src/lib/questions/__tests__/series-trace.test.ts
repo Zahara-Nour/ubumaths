@@ -138,6 +138,21 @@ describe('buildSeriesTrace — contenu', () => {
 		expect(parts.join('').length).toBeLessThanOrEqual(10000);
 	});
 
+	it('émojis : chaque case tient dans 2 000 unités UTF-16 (borne du Zod)', () => {
+		const trace = buildSeriesTrace({
+			place: 'mock_test',
+			instance: instance({
+				blanks: [{ expectedAnswer: '1', type: 'text' }] as QuestionInstance['blanks']
+			}),
+			answer: reponse(['😀'.repeat(1500)], false),
+			timing: { responseMs: 1, allottedMs: 30000, endReason: 'validated' }
+		});
+		const [part] = trace?.answer_parts ?? [];
+		expect(part.length).toBeLessThanOrEqual(2000);
+		// Jamais un émoji coupé en deux
+		expect(part).toBe('😀'.repeat(1000));
+	});
+
 	it('graine absente ou hors bornes : pas de graine', () => {
 		expect(
 			buildSeriesTrace({ place: 'flash_cards', instance: instance({ seed: undefined }) })
