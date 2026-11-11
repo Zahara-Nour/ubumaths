@@ -5,9 +5,9 @@ sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, PR 6 (purge) en cours._
+_Mis à jour le 2026-11-12, après #2576._
 
-- **État** : PR 1 à 5 + doublon mergées (#2543, #2547, #2548, #2551, #2554, #2559, #2565, #2570) · **PR 6 purge** : migration `20261111224115_purge_reponses_traces.sql` + tests (rouges sans, verts avec, en local) · **Prochaine action** : revue security-auditor → PR → CI → merge → `db:migrate` depuis la branche mergée ; puis (a) David vérifie la Saisie à la main ; (d) Saisie en séries de chapitre selon l'usage · **En attente de David** : rien (purge tranchée le 2026-11-11) · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; « Flash-cards » dans un message d'erreur fait échouer la garde de langue ; corps de commit ≤ 100 caractères par ligne · **Worktree / branche** : `../ubumaths-wt-formes-de-serie` · `feat/formes-de-serie-purge`
+- **État** : PR 1 à 6 + doublon mergées (#2543, #2547, #2548, #2551, #2554, #2559, #2565, #2570, **#2576 purge L6**, migration `20261111224115` appliquée en prod le 2026-11-12) · **Prochaine action** : (a) David vérifie la Saisie à la main (`verifications-manuelles.md`, #2565) ; (d) Saisie en séries de chapitre : attendre l'usage réel ; ensuite clôture du chantier (versement dans `docs/systeme/`) · **En attente de David** : la vérification (a) · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; « Flash-cards » dans un message d'erreur fait échouer la garde de langue ; corps de commit ≤ 100 caractères par ligne ; `db:types` pas relancé (fonctions de purge appelées par aucun code) · **Worktree / branche** : aucun
 
 ## Décisions de David (2026-11-11)
 
@@ -405,3 +405,6 @@ Réalisé :
   purgée et reste gardé, trace récente intacte, second passage à 0, droits, appel par la purge.
   Rouges sans la migration, verts avec ; C11, traces et garde SECURITY DEFINER verts.
 - Doc : `docs/systeme/conformite/README.md`, `rgpd.md`.
+- Revue security-auditor : aucun bloquant ; corrigés : échec journalisé `failed` (sans relancer),
+  bornes à la seconde près, purge hebdomadaire réellement lancée dans un test. Mergée (#2576),
+  `db:migrate` le 2026-11-12 depuis la branche mergée : droits vérifiés en prod (serveur seul).
