@@ -46,11 +46,10 @@ export interface RenderedResult {
 /**
  * Les sequences de couleur d un terminal.
  *
- * WARN **Invisible en node, presente en navigateur.** `chalk` detecte le
- * support des couleurs selon l environnement : le meme appel rend
- * « d/dx(x^2) = 2x » cote serveur et « ESC[1md/dx(x^2)ESC[22m = ESC[36m2xESC[39m »
- * dans Chromium. Un test serveur ne peut donc PAS voir ce defaut — celui qui le
- * garde est dans `render-ansi.svelte.test.ts`.
+ * Les commandes n'en produisent plus hors du terminal (palette en texte brut,
+ * `mathAST/cli/core/terminal-colors.ts`) ; on les retire quand même, par
+ * prudence. Autrefois `chalk` colorait aussi dans Chromium : « ESC[1md/dx(x^2)ESC[22m
+ * = ESC[36m2xESC[39m » — garde : `render-ansi.svelte.test.ts`.
  *
  * La seconde alternative attrape la forme deja depouillee de son ESC, telle
  * qu elle est apparue a l ecran : « [1md/dx(f) [22m ».

@@ -18,7 +18,7 @@
  * ou un nombre et une lettre (`x^2 0 a` → a³/3, voir `splitIntegralArgument`).
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand, type OptionDefinition } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
@@ -260,13 +260,13 @@ export class IntegrateCommand extends BaseCommand {
 			const resultLatex = toLatex(result.antiderivative);
 
 			lines.push(
-				chalk.bold(`∫ ${exprCustom} d${variable}`) + ' = ' + chalk.cyan(resultCustom) + ' + C'
+				colors.bold(`∫ ${exprCustom} d${variable}`) + ' = ' + colors.cyan(resultCustom) + ' + C'
 			);
-			lines.push(chalk.dim('LaTeX:') + ' ' + resultLatex);
+			lines.push(colors.dim('LaTeX:') + ' ' + resultLatex);
 
 			if (verbosity !== 'result' && result.steps.length > 0) {
 				lines.push('');
-				lines.push(chalk.bold('Étapes:'));
+				lines.push(colors.bold('Étapes:'));
 				for (const step of result.steps) {
 					const before = toCustom(step.before);
 					const after = toCustom(step.after);
@@ -283,8 +283,8 @@ export class IntegrateCommand extends BaseCommand {
 				answer: `${resultLatex} + C`
 			};
 		} else {
-			lines.push(chalk.yellow(`∫ ${exprCustom} d${variable}`) + ' : ' + chalk.red('Non résolu'));
-			lines.push(chalk.dim(`Technique tentée : ${TECHNIQUE_LABELS[result.technique]}`));
+			lines.push(colors.yellow(`∫ ${exprCustom} d${variable}`) + ' : ' + colors.red('Non résolu'));
+			lines.push(colors.dim(`Technique tentée : ${TECHNIQUE_LABELS[result.technique]}`));
 
 			return {
 				success: false,
@@ -311,28 +311,30 @@ export class IntegrateCommand extends BaseCommand {
 
 			if (result.status === 'approximate') {
 				lines.push(
-					chalk.bold(`∫[${boundStr}] ${exprCustom} d${variable}`) +
+					colors.bold(`∫[${boundStr}] ${exprCustom} d${variable}`) +
 						' ≈ ' +
-						chalk.cyan(numericValue) +
-						chalk.dim(' (numérique)')
+						colors.cyan(numericValue) +
+						colors.dim(' (numérique)')
 				);
 			} else {
 				const valueCustom = result.value ? toCustom(result.value) : numericValue;
 				lines.push(
-					chalk.bold(`∫[${boundStr}] ${exprCustom} d${variable}`) + ' = ' + chalk.cyan(valueCustom)
+					colors.bold(`∫[${boundStr}] ${exprCustom} d${variable}`) +
+						' = ' +
+						colors.cyan(valueCustom)
 				);
 				if (result.approximate !== undefined) {
-					lines.push(chalk.dim(`≈ ${result.approximate.toFixed(6)}`));
+					lines.push(colors.dim(`≈ ${result.approximate.toFixed(6)}`));
 				}
 			}
 
 			if (result.antiderivative) {
-				lines.push(chalk.dim('Primitive:') + ' ' + toCustom(result.antiderivative));
+				lines.push(colors.dim('Primitive:') + ' ' + toCustom(result.antiderivative));
 			}
 
 			if (verbosity !== 'result' && result.steps.length > 0) {
 				lines.push('');
-				lines.push(chalk.bold('Étapes:'));
+				lines.push(colors.bold('Étapes:'));
 				for (const step of result.steps) {
 					const before = toCustom(step.before);
 					const after = toCustom(step.after);
@@ -353,7 +355,9 @@ export class IntegrateCommand extends BaseCommand {
 			};
 		} else {
 			lines.push(
-				chalk.yellow(`∫[${boundStr}] ${exprCustom} d${variable}`) + ' : ' + chalk.red('Non résolu')
+				colors.yellow(`∫[${boundStr}] ${exprCustom} d${variable}`) +
+					' : ' +
+					colors.red('Non résolu')
 			);
 
 			// Le moteur dit POURQUOI (pôle dans [a ; b], #947) : message en

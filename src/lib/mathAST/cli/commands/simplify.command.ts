@@ -5,7 +5,7 @@
  * the simplified result with LaTeX, custom syntax, and hash outputs.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toLatex, toCustom } from '../../index';
@@ -85,11 +85,11 @@ export class SimplifyCommand extends BaseCommand {
 
 			// Build output
 			const lines = [
-				chalk.bold('Simplified:') + ' ' + chalk.green(custom),
+				colors.bold('Simplified:') + ' ' + colors.green(custom),
 				'',
-				chalk.dim('LaTeX:') + '  ' + latex,
-				chalk.dim('Custom:') + ' ' + custom,
-				chalk.dim('Hash:') + '   ' + chalk.cyan(hash)
+				colors.dim('LaTeX:') + '  ' + latex,
+				colors.dim('Custom:') + ' ' + custom,
+				colors.dim('Hash:') + '   ' + colors.cyan(hash)
 			];
 
 			return {

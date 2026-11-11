@@ -10,7 +10,7 @@
  * - .inv f = sqrt(x) -> Define f^(-1)(x) = sqrt(x)
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
@@ -136,10 +136,10 @@ export class InvCommand extends BaseCommand {
 		// Check if inverse is defined
 		if (!funcDef.inverse) {
 			const output =
-				chalk.yellow(`${funcName}`) +
-				chalk.dim('^(-1)') +
+				colors.yellow(`${funcName}`) +
+				colors.dim('^(-1)') +
 				' is not defined\n' +
-				chalk.dim(`Use: .inv ${funcName} = expression`);
+				colors.dim(`Use: .inv ${funcName} = expression`);
 
 			return {
 				success: true,
@@ -153,8 +153,8 @@ export class InvCommand extends BaseCommand {
 		const invLatex = toLatex(funcDef.inverse);
 
 		const output = [
-			chalk.bold(`${funcName}^(-1)(${paramsDisplay})`) + ' = ' + chalk.cyan(invCustom),
-			chalk.dim('LaTeX:') + ' ' + invLatex
+			colors.bold(`${funcName}^(-1)(${paramsDisplay})`) + ' = ' + colors.cyan(invCustom),
+			colors.dim('LaTeX:') + ' ' + invLatex
 		].join('\n');
 
 		return {
@@ -230,11 +230,11 @@ export class InvCommand extends BaseCommand {
 		const invStr = toCustom(parseResult.ast);
 		const actionWord = isOverride ? 'Updated' : 'Set';
 		const output =
-			chalk.green(actionWord) +
+			colors.green(actionWord) +
 			' ' +
-			chalk.bold(`${funcName}^(-1)(${paramsDisplay})`) +
+			colors.bold(`${funcName}^(-1)(${paramsDisplay})`) +
 			' = ' +
-			chalk.cyan(invStr);
+			colors.cyan(invStr);
 
 		return {
 			success: true,

@@ -19,6 +19,7 @@ import {
 } from './core';
 import type { EvalState } from './core';
 import { createDefaultRegistry } from './commands';
+import { useChalkColors } from './terminal-palette';
 import type { CommandContext } from './types';
 import { toCustom, toLatex, getVariables, hasAllBindings, evaluate, substitute } from '../index';
 
@@ -67,6 +68,7 @@ function getPrompt(mode: InputMode): string {
 }
 
 export function startRepl(): void {
+	useChalkColors();
 	const state: ReplState = {
 		lastAst: undefined,
 		registry: createDefaultRegistry(),
