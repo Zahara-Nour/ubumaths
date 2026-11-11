@@ -2,7 +2,9 @@
 	AvatarShopSection
 	=================
 
-	Onglet « Avatars » du Marché : la boutique d'avatars de l'élève (décisions de
+	La boutique d'avatars de l'élève, dans l'onglet « Avatars » du Marché (classes où
+	le Marché est ouvert) et dans « Mon profil » (tous les élèves : décision de David
+	du 2026-11-11, le Marché n'étant ouvert qu'à 37 élèves sur 81) (décisions de
 	David du 2026-11-06, docs/wip/boutique-avatars-progress.md, comportements 1 à 3,
 	5, 6, 8 à 12).
 
@@ -37,9 +39,11 @@
 		avatarUrl: string | null;
 		firstname: string | null;
 		lastname: string | null;
+		/** Aperçu de l'avatar actuel (false quand la page l'affiche déjà, « Mon profil ») */
+		showPreview?: boolean;
 	}
 
-	let { avatarUrl, firstname, lastname }: Props = $props();
+	let { avatarUrl, firstname, lastname, showPreview = true }: Props = $props();
 
 	// Constantes
 	const cacheContext: CacheContext = { type: 'student' };
@@ -134,14 +138,16 @@
 <div class="space-y-8">
 	<div class="flex flex-wrap items-center justify-between gap-4">
 		<div class="flex items-center gap-3">
-			<UserAvatar
-				avatar_url={avatarUrl}
-				role="student"
-				{firstname}
-				{lastname}
-				class="size-14"
-				loading="eager"
-			/>
+			{#if showPreview}
+				<UserAvatar
+					avatar_url={avatarUrl}
+					role="student"
+					{firstname}
+					{lastname}
+					class="size-14"
+					loading="eager"
+				/>
+			{/if}
 			<div>
 				<h2 class="flex items-center gap-2 text-2xl font-bold">
 					<CircleUserRound class="h-6 w-6 text-primary" />

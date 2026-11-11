@@ -7,6 +7,8 @@
 
 	Regroupe :
 	- Informations utilisateur (avatar, nom, email, rôle)
+	- Avatars (élèves) : la boutique d'avatars, ouverte à tous les élèves
+	  (décision de David du 2026-11-11), aussi dans l'onglet « Avatars » du Marché
 	- Préférences (mode sombre, taille du texte) — accessibles aussi via le
 	  menu hamburger sur mobile et via le header sur desktop
 	- Compte (mot de passe, GDPR Art. 20 : export, GDPR Art. 17 : suppression)
@@ -19,6 +21,7 @@
 	import type { PageData } from './$types';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import AvatarShopSection from '$lib/components/avatars/AvatarShopSection.svelte';
 	import AccountDeletionDialog from '$lib/components/account/AccountDeletionDialog.svelte';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
@@ -133,6 +136,17 @@
 			</span>
 		</div>
 	</section>
+
+	{#if role === 'student'}
+		<section class="rounded-lg border border-border bg-card p-6 shadow-sm" aria-label="Avatars">
+			<AvatarShopSection
+				avatarUrl={data.profile.avatar_url}
+				firstname={data.profile.firstname}
+				lastname={data.profile.lastname}
+				showPreview={false}
+			/>
+		</section>
+	{/if}
 
 	<section
 		class="rounded-lg border border-border bg-card p-6 shadow-sm"
