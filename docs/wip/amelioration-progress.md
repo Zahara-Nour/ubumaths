@@ -362,6 +362,10 @@ terminal ; volet 4 : silhouette inerte).
   client `render-ansi` verts ; `pnpm math repl` colore toujours (`FORCE_COLOR=1`) ; build : plus
   de `chalk` dans `.svelte-kit/output/client` (`FORCE_COLOR`/`supportsColor` absents).
 - `atelier/render.ts` retire toujours les séquences ANSI, par prudence (commentaire mis à jour).
+- **Revue** (code-reviewer) : 0 bloquant ; pris : garde d'import sur tout `src` et toute mention
+  de `'chalk'` (sous-chemins, `require`), 10 commandes au test ANSI, test du branchement chalk
+  (rouge vérifié en câblant `boldGreen` sur `chalk.green`) ; laissé : double appel de
+  `useChalkColors()` (`startRepl` est aussi exporté par l'index de `cli`).
 
 ## Piste 5 — « Mon cours », #1788 (phase 0, 2026-11-11)
 
