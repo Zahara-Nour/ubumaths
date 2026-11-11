@@ -23,7 +23,6 @@ describe('atelier — rendu serveur', () => {
 
 	it('rend la silhouette, annoncée comme en chargement', () => {
 		expect(start).toBeGreaterThanOrEqual(0);
-		expect(silhouette).toMatch(/^class="silhouette[^"]*"[^>]*aria-busy="true"/);
 		expect(silhouette).toMatch(/role="status"[^>]*>Chargement de l’atelier…</);
 	});
 
@@ -34,9 +33,19 @@ describe('atelier — rendu serveur', () => {
 		}
 	});
 
-	it('est inerte : aucun contrôle, et ses parties visibles hors du parcours', () => {
+	it('est inerte : aucun contrôle, ses parties visibles hors du parcours', () => {
 		expect(silhouette).not.toMatch(/<(button|input|textarea|select|a)\b/);
-		// « Mes objets », la barre d'outils, les onglets
+		expect(silhouette).toMatch(/<aside[^>]*\binert\b/);
+		expect(silhouette).toMatch(/class="barre[^"]*"[^>]*\binert\b/);
+		expect(silhouette).toMatch(/class="onglets[^"]*"[^>]*\binert\b/);
 		expect(silhouette.match(/\binert\b/g)).toHaveLength(3);
+	});
+
+	it('laisse le titre et l\u2019annonce hors de l\u2019inerte', () => {
+		// Ni la racine, ni la zone, ni la scène ne sont inertes : le titre et
+		// « Chargement… » y vivent, et un lecteur d'écran doit pouvoir les lire
+		expect(silhouette).toMatch(/^class="silhouette[^"]*">/);
+		expect(silhouette).toMatch(/<section class="zone[^"]*" aria-labelledby="[^"]+">/);
+		expect(silhouette).toMatch(/<div class="scene[^"]*">/);
 	});
 });

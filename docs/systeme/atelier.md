@@ -2079,7 +2079,8 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
 serveur ne rendait rien, et l'écran restait vide le temps du JS (≈ 3 s en 4G lente). Il rend
 désormais la silhouette, aux dimensions de l'atelier vide (rien ne saute à l'arrivée) : le titre
 `<h1>` et « Chargement de l'atelier… » (`role="status"`) pour les lecteurs d'écran, le reste
-`inert`, sans bouton ni champ. Elle ne rend pas l'atelier utilisable plus tôt. ⚠️ Ses
+`inert`, sans bouton ni champ. Elle ne rend pas l'atelier utilisable plus tôt. Limite connue : si
+le JS ne charge pas, la silhouette reste, sans message d'échec (le site entier exige le JS). ⚠️ Ses
 dimensions recopient `AtelierContainer`, `ObjectPanel` et `ToolButton`. Test :
 `routes/(public)/atelier/__tests__/silhouette-serveur.test.ts` (rendu serveur de la page).
 

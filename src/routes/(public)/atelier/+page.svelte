@@ -19,6 +19,9 @@
 	import { openLink } from '$lib/atelier/grapheur-link';
 	import type { AtelierState } from '$lib/atelier/persistence';
 
+	/** Le titre de niveau 1 : le même pour la silhouette et pour l'atelier chargé. */
+	const HEADING = 'Atelier';
+
 	interface Opened {
 		atelier: Atelier;
 		received: AtelierState | null;
@@ -78,13 +81,13 @@
 				ephemeral={opened.received !== null}
 				received={opened.received}
 				notice={opened.notice}
-				heading="Atelier"
+				heading={HEADING}
 				onLinkLeft={leaveLink}
 			/>
 		{/key}
 	{:else}
 		<!-- Rendue par le serveur : la forme de l'atelier tant que son JS charge -->
-		<AtelierSilhouette heading="Atelier" />
+		<AtelierSilhouette heading={HEADING} />
 	{/if}
 </div>
 

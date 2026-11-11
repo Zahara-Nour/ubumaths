@@ -28,7 +28,7 @@
 	let { heading }: Props = $props();
 </script>
 
-<div class="silhouette" aria-busy="true">
+<div class="silhouette">
 	<aside class="panneau" inert>
 		<!-- Un `header`, comme dans `ObjectPanel` : les styles globaux des `header` s'y appliquent aussi -->
 		<header class="tete"><strong>Mes objets</strong></header>
