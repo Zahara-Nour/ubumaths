@@ -1,0 +1,197 @@
+{
+	"title": "Démontrer qu'une suite croissante non majorée tend vers +∞",
+	"description": "Démonstration à trous : non majorée (choix), croissante (choix), conclusion par la définition (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $(u_n)$ une suite croissante et non majorée. On démontre que $\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty$, c'est-à-dire que tout intervalle $]A\\,;\\,+\\infty[$ contient tous les termes de la suite à partir d'un certain rang.\n\nSoit $A$ un nombre réel.\n\nQue permet d'affirmer le fait que $(u_n)$ n'est pas majorée ?\n\n```choix\n- Il existe un rang $N$ tel que $u_N>A$.\n- Pour tout entier $n$, $u_n>A$.\n- Il existe un rang $N$ tel que $u_N<A$.\n- $(u_n)$ tend vers $+\\infty$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $(u_n)$ est majorée par $A$ » signifie : pour tout $n$, $u_n\\leqslant A$.",
+					"Sa négation : $A$ n'est pas un majorant, donc **il existe un rang $N$ tel que $u_N>A$**.",
+					"« $(u_n)$ tend vers $+\\infty$ » est ce qu'on veut démontrer : on ne peut pas s'en servir."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ une suite croissante et non majorée. On démontre que $\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty$, c'est-à-dire que tout intervalle $]A\\,;\\,+\\infty[$ contient tous les termes de la suite à partir d'un certain rang.\n\nSoit $A$ un nombre réel.\n\nIl existe un rang $N$ tel que $u_N>A$. Pourquoi a-t-on $u_n\\geqslant u_N$ pour tout $n\\geqslant N$ ?\n\n```choix\n- Car la suite $(u_n)$ est croissante.\n- Car la suite $(u_n)$ n'est pas majorée.\n- Car $u_N>A$.\n- Car les termes de la suite sont positifs.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une suite croissante vérifie $u_{n+1}\\geqslant u_n$ pour tout $n$.",
+					"De proche en proche, pour tout $n\\geqslant N$, $\\textcolor{{{color:primary.0}}}{u_n\\geqslant u_N}$.",
+					"Le fait que la suite ne soit pas majorée a servi à trouver $N$, pas à comparer $u_n$ et $u_N$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ une suite croissante et non majorée. On démontre que $\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty$, c'est-à-dire que tout intervalle $]A\\,;\\,+\\infty[$ contient tous les termes de la suite à partir d'un certain rang.\n\nSoit $A$ un nombre réel.\n\nPour tout $n\\geqslant N$, $u_n\\geqslant u_N>A$. Pourquoi peut-on conclure ?\n\n```choix\n- À partir du rang $N$, tous les termes sont dans $]A\\,;\\,+\\infty[$, et $A$ était un réel quelconque.\n- Un terme $u_N$ dépasse $A$, cela suffit.\n- La suite est minorée par $A$, donc elle tend vers $+\\infty$.\n- La suite converge vers $A$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a montré que l'intervalle $]A\\,;\\,+\\infty[$ contient tous les termes à partir du rang $N$.",
+					"Comme $A$ est un réel quelconque, c'est la définition de $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty}$.",
+					"Un seul terme au-dessus de $A$ ne suffit pas : il faut tous les termes à partir d'un rang."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ une suite croissante et non majorée. On démontre que $\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Soit $A$ un nombre réel.\n- $(u_n)$ n'est pas majorée, donc $A$ n'en est pas un majorant : il existe un rang $N$ tel que $u_N>A$.\n- $(u_n)$ est croissante, donc pour tout $n\\geqslant N$, $u_n\\geqslant u_N>A$.\n- Tout intervalle $]A\\,;\\,+\\infty[$ contient donc tous les termes à partir d'un certain rang.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On revient à la définition d'une suite qui tend vers $+\\infty$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "il existe N tel que u_N > A",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pour tout n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u_N < A",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : circulaire",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "croissante",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non majorée",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u_N > A",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : termes positifs",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "tous les termes à partir de N",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul terme",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : minorée",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : converge",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

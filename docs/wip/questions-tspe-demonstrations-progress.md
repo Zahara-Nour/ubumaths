@@ -10,14 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après la publication du lot 1._
+_Mis à jour le 2026-11-11, lot 2 écrit (PR des fichiers ouverte)._
 
-- **État** : lot 1 (321, 548, 359, 373) publié en prod (§ 5) ; 4 verdicts « ok ».
-- **Prochaine action** : lot 2 (388, 389, 390, 391, 405), nouvelle branche depuis `origin/main` dans le worktree.
-- **En attente de David** : rien.
+- **État** : lot 1 publié (§ 5) ; lot 2 (388, 389, 390, 391, 405) : 5 fichiers vérifiés (§ 6), PR des fichiers.
+- **Prochaine action** : CI verte → merge ; puis David crée les brouillons → migration de rangement (3 sous-notions,
+  tags TSPE-388/389/390/391/405) → page à cocher → publication ; puis lot 3.
+- **En attente de David** : après le merge, `! pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/tspe-demonstrations-2 --publier` depuis le dépôt principal à jour.
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
-  simulation `publier-lot.ts` lit la prod → refusée au mode auto, David la lance.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` (branche de rangement mergée ; à recréer).
+  simulation `publier-lot.ts` lit la prod → refusée au mode auto, David la lance ; `x/n` saisi en ligne = forme à
+  améliorer (spec en `\frac`).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-demonstrations-2`.
 
 ---
 
@@ -173,3 +176,24 @@ jouer dans l'aperçu admin) ; base `verdicts` vide à la publication.
 
 Verdicts lus : 4/4 « ok », sans commentaire. `publier-lot.ts` en simulation (4 brouillons passent le contrôle), puis
 `--publier` lancé par David : 4/4 publiés, statut relu en base.
+
+## 6. Lot 2 : suites et limites (2026-11-11)
+
+| Point | Modèle (`scripts/questions/tspe-demonstrations-2/`) | Niveau | Variations                                                                                     |
+| ----- | --------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------- |
+| 388   | `01-demontrer-suite-croissante-non-majoree`         | 3      | non majorée : il existe N, u_N > A (choix), croissante (choix), définition (choix), étapes (4) |
+| 389   | `02-demontrer-limite-q-puissance-n`                 | 3      | hérédité de Bernoulli, na² (case), 1 + a > 0 (choix), a = q − 1 (case, q de 2 à 9), étapes (4) |
+| 390   | `03-demontrer-minoration-limite-infinie`            | 3      | limite de (vₙ) traduite (choix), rang max(n₀ ; N₁) (choix), définition (choix), étapes (4)     |
+| 391   | `04-demontrer-limites-exponentielle`                | 5      | f′(x) = eˣ − 1 (case), minimum f(0) = 1 (choix), inverse en −∞ (choix), étapes (4)             |
+| 405   | `05-demontrer-croissance-comparee-exp-puissance`    | 6      | cas n = 1 par eˣ ⩾ x²/2 admis (choix), X = x/n (case), conclusion (choix), étapes (4)          |
+
+Niveaux : après ceux déjà présents sur la sous-notion (relevé prod du 2026-11-11 : convergence monotone 1-2, suites
+géométriques 1-2, comparaison et encadrement 1-2, croissances comparées 3-4 ; 405 après 391). Aucun tag sur ces
+points. Script : `docs/wip/questions/lot-tspe-demonstrations-2.py`.
+
+Vérifié : `question:specs` 150 tirages par variation, 5/5 importables, 73 specs vertes, 0 `\textcolor` hors `$` ;
+4 296 formules des aperçus (483 distinctes) passées à `validateLatex` + accolades, 0 problème ; brouillons en base
+locale (copie hors dépôt) ; aperçu admin vu à l'écran (étapes à ranger 389, choix 405).
+
+Piège du lot : `x/n` saisi en ligne sort en « forme à améliorer » (bad_form) ; MathLive donne `\frac{x}{n}`, seule
+écriture alternative retenue en spec.
