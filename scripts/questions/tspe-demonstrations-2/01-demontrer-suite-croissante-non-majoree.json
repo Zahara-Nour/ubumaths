@@ -1,4 +1,5 @@
 {
+	"id": "1b7b322a-18b5-4cd4-a939-883a20403b21",
 	"title": "Démontrer qu'une suite croissante non majorée tend vers +∞",
 	"description": "Démonstration à trous : non majorée (choix), croissante (choix), conclusion par la définition (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],
