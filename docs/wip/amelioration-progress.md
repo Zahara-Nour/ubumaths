@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2540._
+_Mis à jour le 2026-11-11, après #2541._
 
-- **État** : #2540 (molette = interaction, intersections en cache par paire), #2539, #2538, #2536, #2535 mergées, pas en prod · **Prochaine action** : (5) « Mon cours » #1788, phase 0 tranchée (section « Piste 5 ») : PR A index UNIQUE (chapter_id), PR B retrait de `students_can_leave` (worktree `mon-cours-1788`) ; piste 4 restante, à proposer : (c) chargement à froid de l'atelier (3-3,7 s en 4G, 1,7 Mo de JS), et zoom clavier/boutons qui recalcule tout à chaque appui (revue de #2540) · **À proposer** (piste 3, « Non traité ») : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel ; pendant la molette, points remarquables et étiquettes épinglées disparaissent comme au glisser · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur ; « Code Quality » peut rester en file d'attente plusieurs minutes ; un nom de fonction de l'atelier ne prend pas de chiffre (`g1(x)` refusé) · **Worktree / branche** : aucun
+- **État** : #2541 (retrait de `students_can_leave`, #1788 point 4) mergée, **migration PAS appliquée en prod** ; #2540, #2539, #2538, #2536, #2535 mergées, pas en prod · **En attente de David** : accord pour `pnpm db:migrate` (DROP POLICY, aucune donnée perdue ; tests rouge→vert, audit sans bloquant) · **Prochaine action** : après l'accord, `db:migrate` depuis `main` ; puis piste 4 restante à proposer : (c) chargement à froid de l'atelier (3-3,7 s en 4G, 1,7 Mo de JS), zoom clavier/boutons qui recalcule tout à chaque appui · **À proposer** (piste 3) : INP compté sur les seules interactions (`interactionId`) et URL de l'interaction · **Après le prochain `deploy:prod`** : vérifier dans `error_logs` qu'un même message INP ne revient plus ×10 pour un élève · **Tranché** : `created_by` laissé tel quel ; molette = points remarquables masqués comme au glisser ; #1788 : point 3 laissé, point 1 (dispersion) plus tard · **Pièges en cours** : `chiph.re` répond 308 vers `www.chiph.re` ; ne pas lire `error_logs` sans séparer avant/après un déploiement ; `vi.resetModules()` ne recharge pas un module en test navigateur ; « Code Quality » peut rester en file plusieurs minutes (et `gh pr checks --watch` rend la main avant qu'elle démarre) ; un index unique se déclare par `CREATE UNIQUE INDEX`, pas `CONSTRAINT` · **Worktree / branche** : aucun
 
 ## Pistes proposées au départ (2026-11-09)
 
@@ -270,3 +270,15 @@ Relevé (code + prod en lecture seule) puis décisions de David :
   retirer seuls d'une classe par l'API ; aucun écran ne le permet. DROP POLICY : `db:migrate`
   seulement après accord explicite de David.
 - **Point 1** (fiche visible à trois endroits) : **plus tard**, reste dans #1788.
+
+## PR 5 — `students_can_leave` retirée (#2541, mergée le 2026-11-11)
+
+- **Correction du relevé** : le point 5 de #1788 était **déjà tenu** — index
+  `unique_chapter_instantiation` (`CREATE UNIQUE INDEX`, vérifié en prod), gardé par
+  `chapter-template-instantiation-unique.test.ts`. Pas de PR A.
+- Migration `20261111081528_retrait_students_can_leave.sql` ; test
+  `eleve-ne-quitte-pas-seul-sa-classe.test.ts` **rouge sans la migration** (l'élève effaçait sa
+  ligne), vert avec ; contre-épreuve professeur. 10 fichiers d'intégration voisins : 168 verts.
+- `security-auditor` : aucun finding bloquant (suppression de compte et cascades en service-role,
+  aucun DELETE de `class_members` dans `src`). `code-reviewer` : rien de bloquant.
+- Appliquée en **local** seulement (psql sous verrou). Prod : en attente de l'accord de David.
