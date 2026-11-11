@@ -19,6 +19,7 @@ import {
 	isPaintAfterHidden,
 	type VisibilityEntry
 } from '$lib/utils/web-vitals-visibilite';
+import { createInpTracker, type InteractionEntry } from '$lib/utils/inp-tracker';
 
 // =====================================================
 // TYPES
@@ -594,7 +595,8 @@ function getWebVitalSeverity(metric: WebVitalMetric, value: number): 'info' | 'w
 function reportWebVital(
 	metric: WebVitalMetric,
 	value: number,
-	context?: Record<string, unknown>
+	context?: Record<string, unknown>,
+	url: string = window.location.href
 ): boolean {
 	const severity = getWebVitalSeverity(metric, value);
 	const threshold = WEB_VITALS_THRESHOLDS[metric];
@@ -607,7 +609,7 @@ function reportWebVital(
 		error_type: 'performance',
 		severity,
 		message: `Web Vital ${metric}: ${metric === 'CLS' ? value.toFixed(3) : Math.round(value)}${metric === 'CLS' ? '' : 'ms'} (threshold: ${threshold.good}${metric === 'CLS' ? '' : 'ms'})`,
-		url: sanitizeUrl(window.location.href),
+		url: sanitizeUrl(url),
 		...getBrowserContext(),
 		context: {
 			metric,
@@ -620,6 +622,12 @@ function reportWebVital(
 	};
 
 	return queueError(errorData);
+}
+
+/** Nombre d'interactions de la visite, quand le navigateur le donne (Chrome) */
+function readInteractionCount(): number | undefined {
+	const count = (performance as Performance & { interactionCount?: number }).interactionCount;
+	return typeof count === 'number' ? count : undefined;
 }
 
 /** Premier passage en arrière-plan, lu dans l'historique de visibilité s'il existe */
@@ -647,8 +655,9 @@ export function initWebVitals(): void {
 	let clsValue = 0;
 	let clsShiftCount = 0;
 
-	// Track INP across session
-	let inpValue = 0;
+	// INP de la visite : interactions seules, adresse de la page où chacune a commencé
+	const inpTracker = createInpTracker();
+	let removeInpListeners = () => {};
 
 	// Dernières valeurs envoyées : INP et CLS partent à chaque passage en arrière-plan,
 	// mais une valeur déjà envoyée ne repart pas (un onglet ouvert des jours renvoyait
@@ -750,14 +759,7 @@ export function initWebVitals(): void {
 	// INP (Interaction to Next Paint) - aggregated across session
 	try {
 		const inpObserver = new PerformanceObserver((entryList) => {
-			for (const entry of entryList.getEntries()) {
-				const eventTiming = entry as PerformanceEventTiming;
-				const duration = eventTiming.duration;
-				// Track the worst interaction
-				if (duration > inpValue) {
-					inpValue = duration;
-				}
-			}
+			inpTracker.add(entryList.getEntries() as unknown as InteractionEntry[], window.location.href);
 		});
 		// durationThreshold is a valid option for event entries but not in TS types
 		inpObserver.observe({
@@ -766,6 +768,16 @@ export function initWebVitals(): void {
 			durationThreshold: 16
 		} as PerformanceObserverInit);
 		webVitalsObservers.push(inpObserver);
+		// Début de chaque interaction : l'adresse de la page à cet instant (un clic
+		// qui navigue est observé après la navigation)
+		const recordStart = (event: Event) =>
+			inpTracker.recordStart(event.timeStamp, window.location.href);
+		window.addEventListener('pointerdown', recordStart, { capture: true, passive: true });
+		window.addEventListener('keydown', recordStart, { capture: true, passive: true });
+		removeInpListeners = () => {
+			window.removeEventListener('pointerdown', recordStart, { capture: true });
+			window.removeEventListener('keydown', recordStart, { capture: true });
+		};
 	} catch {
 		// INP not supported
 	}
@@ -783,8 +795,13 @@ export function initWebVitals(): void {
 			}
 
 			// Report INP if a slower interaction occurred since the last report
-			if (inpValue > reportedInp && reportWebVital('INP', inpValue)) {
-				reportedInp = inpValue;
+			const inp = inpTracker.current(readInteractionCount());
+			if (
+				inp &&
+				inp.value > reportedInp &&
+				reportWebVital('INP', inp.value, { event_name: inp.eventName, target: inp.target }, inp.url)
+			) {
+				reportedInp = inp.value;
 			}
 
 			// Note: We don't reset values - cumulative metrics continue across tab switches
@@ -795,6 +812,7 @@ export function initWebVitals(): void {
 	window.addEventListener('beforeunload', () => {
 		webVitalsObservers.forEach((observer) => observer.disconnect());
 		webVitalsObservers.length = 0;
+		removeInpListeners();
 		webVitalsInitialized = false;
 	});
 

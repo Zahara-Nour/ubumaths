@@ -6,7 +6,7 @@ couvre:
   - 'src/routes/(protected)/dev/erreurs/surveillance/**'
   - 'src/routes/(protected)/dashboard/bug-reports/**'
   - 'src/lib/components/bug-reports/**'
-  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite}.ts'
+  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite,inp-tracker}.ts'
   - src/lib/stores/bugReportsConfig.svelte.ts
   - src/lib/types/bug-reports.ts
   - 'src/lib/server/{errorMonitoring,healthStats,bug-report-errors,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
@@ -65,6 +65,14 @@ Trois boucles distinctes :
     INP et CLS partent au passage en arrière-plan, mais seulement s'ils ont grandi depuis
     le dernier envoi (avant, un onglet ouvert des jours renvoyait le même INP dès la fin
     de la fenêtre anti-doublon de 5 minutes : jusqu'à 28 fois la même valeur) ;
+  - INP (`inp-tracker.ts`) : seuls les événements d'une interaction comptent
+    (`interactionId` non nul ; survol, défilement exclus) ; une interaction vaut son
+    événement le plus lent ; la plus lente par tranche de 50 interactions est écartée
+    (`performance.interactionCount`, à défaut les interactions observées). L'URL envoyée est
+    celle de la page où l'interaction a commencé (relevée au `pointerdown` / `keydown`), pas
+    celle du passage en arrière-plan. `context` reçoit `event_name` (`pointerup`, `keydown`…)
+    et `target` : balise, `id`, `role` — **jamais d'`aria-label`** (certains portent le nom
+    d'un élève) ni de texte saisi ;
   - garde-fous (objet `CONFIG`) : 10 erreurs par minute au plus, file envoyée toutes
     les 10 s ou dès 5 erreurs. « Lot » ne veut dire que regroupement dans le temps :
     chaque erreur part dans son propre `POST` ;
