@@ -1,24 +1,50 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
+	import { replaceState } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import CatalogueGallery from '$lib/components/questions/CatalogueGallery.svelte';
 	import CartFloatingButton from '$lib/components/CartFloatingButton.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-	import { buildCatalogue, type CatalogueRubric } from '$lib/questions/catalogue';
+	import {
+		buildCatalogue,
+		filterTemplatesByGrade,
+		type CatalogueRubric
+	} from '$lib/questions/catalogue';
+	import { GRADE_CODES, GRADES, isGradeCode, type GradeCode } from '$lib/types/grades';
 
 	// Valeur d'accordéon de la rubrique « Général » (elle n'a pas de nœud)
 	const GENERAL_RUBRIC_VALUE = 'general';
 	const UNCLASSIFIED_VALUE = 'non-classes';
+	// Valeur du menu « Niveau » quand aucun niveau n'est choisi
+	const ALL_GRADES_VALUE = 'tous';
+	// Paramètres d'adresse du filtre : un rechargement ou un lien le conserve
+	const GRADE_PARAM = 'niveau';
+	const LOWER_GRADES_PARAM = 'inferieurs';
+	const GRADE_ITEMS = [
+		{ value: ALL_GRADES_VALUE, label: 'Tous les niveaux' },
+		...GRADE_CODES.map((code) => ({ value: code, label: GRADES[code].displayName }))
+	];
+
+	// Filtre par niveau, repris de l'adresse au chargement (niveau inconnu : ignoré)
+	const initialGrade = page.url.searchParams.get(GRADE_PARAM);
+	let chosenGrade = $state<GradeCode | null>(isGradeCode(initialGrade) ? initialGrade : null);
+	let withLowerGrades = $state(page.url.searchParams.get(LOWER_GRADES_PARAM) === '1');
+
+	let filteredTemplates = $derived(
+		filterTemplatesByGrade(questionTemplatesCache.templates, chosenGrade, withLowerGrades)
+	);
 
 	// Le catalogue se range dans le navigateur, selon l'arbre des notions reçu
 	// avec les modèles (lus une fois par onglet) ; aucun aperçu n'est calculé
 	// par le serveur.
-	let catalogue = $derived(
-		buildCatalogue(questionTemplatesCache.templates, questionTemplatesCache.nodes)
-	);
+	let catalogue = $derived(buildCatalogue(filteredTemplates, questionTemplatesCache.nodes));
+	let hasAnyTemplate = $derived(questionTemplatesCache.templates.length > 0);
 	let branchItems = $derived(catalogue.branches.map((b) => ({ value: b.id, label: b.name })));
 
 	// Branche choisie (la première tant que rien n'est choisi)
@@ -50,6 +76,26 @@
 	function handleNotionChange(value: string | undefined) {
 		chosenNotionId = value;
 		openRubrics = [];
+	}
+
+	/** Écrit le filtre dans l'adresse, sans nouvelle entrée d'historique */
+	function writeGradeFilterToUrl() {
+		const url = new URL(page.url);
+		if (chosenGrade) url.searchParams.set(GRADE_PARAM, chosenGrade);
+		else url.searchParams.delete(GRADE_PARAM);
+		if (chosenGrade && withLowerGrades) url.searchParams.set(LOWER_GRADES_PARAM, '1');
+		else url.searchParams.delete(LOWER_GRADES_PARAM);
+		replaceState(`${resolve('/automaths')}${url.search}`, page.state);
+	}
+
+	function handleGradeChange(value: string) {
+		chosenGrade = isGradeCode(value) ? value : null;
+		writeGradeFilterToUrl();
+	}
+
+	function handleLowerGradesChange(checked: boolean) {
+		withLowerGrades = checked;
+		writeGradeFilterToUrl();
 	}
 
 	onMount(() => {
@@ -84,7 +130,7 @@
 		</div>
 	{:else if !questionTemplatesCache.isLoaded}
 		<p class="text-center text-muted-foreground">Chargement des questions…</p>
-	{:else if catalogue.branches.length === 0 && catalogue.unclassified.length === 0}
+	{:else if !hasAnyTemplate}
 		<!-- Empty state -->
 		<div class="flex min-h-96 items-center justify-center rounded-lg border border-dashed p-12">
 			<div class="text-center">
@@ -95,21 +141,53 @@
 			</div>
 		</div>
 	{:else}
-		{#if selectedBranch}
-			<!-- Branche -->
-			<div class="mb-6 flex items-center gap-4">
-				<label for="branch-select" class="shrink-0 text-sm font-medium whitespace-nowrap"
-					>Branche :</label
+		<div class="mb-6 flex flex-wrap items-center gap-x-8 gap-y-4">
+			{#if selectedBranch}
+				<!-- Branche -->
+				<div class="flex items-center gap-4">
+					<label for="branch-select" class="shrink-0 text-sm font-medium whitespace-nowrap"
+						>Branche :</label
+					>
+					<MySelect
+						id="branch-select"
+						items={branchItems}
+						value={selectedBranch.id}
+						onValueChange={handleBranchChange}
+						triggerClass="w-full sm:w-80"
+					/>
+				</div>
+			{/if}
+
+			<!-- Niveau : seul, ou avec les niveaux inférieurs -->
+			<div class="flex flex-wrap items-center gap-4">
+				<label for="grade-select" class="shrink-0 text-sm font-medium whitespace-nowrap"
+					>Niveau :</label
 				>
 				<MySelect
-					id="branch-select"
-					items={branchItems}
-					value={selectedBranch.id}
-					onValueChange={handleBranchChange}
-					triggerClass="w-full sm:w-80"
+					id="grade-select"
+					items={GRADE_ITEMS}
+					value={chosenGrade ?? ALL_GRADES_VALUE}
+					onValueChange={handleGradeChange}
+					triggerAriaLabel={`Niveau : ${chosenGrade ? GRADES[chosenGrade].displayName : 'tous les niveaux'}`}
+					fitContent
 				/>
+				{#if chosenGrade}
+					<MyCheckbox
+						checked={withLowerGrades}
+						onchange={handleLowerGradesChange}
+						label="et niveaux inférieurs"
+					/>
+				{/if}
 			</div>
+		</div>
 
+		{#if catalogue.branches.length === 0 && catalogue.unclassified.length === 0}
+			<p class="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
+				Aucune question pour ce niveau.
+			</p>
+		{/if}
+
+		{#if selectedBranch}
 			<!-- Notions -->
 			<Tabs.Root value={selectedNotion?.id} onValueChange={handleNotionChange}>
 				<Tabs.List class="mb-6 flex-wrap border border-border !bg-transparent">

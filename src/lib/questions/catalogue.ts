@@ -12,6 +12,8 @@
  *   elle-même forment la rubrique « Général », en tête.
  * - `templatePreview` calcule l'aperçu d'UN modèle (graine du panier), une
  *   seule fois : la rubrique dépliée l'appelle pour ses cartes seulement.
+ * - `filterTemplatesByGrade` garde les modèles d'un niveau, seul ou avec les
+ *   niveaux inférieurs (arbre des prérequis), avant le rangement.
  *
  * Seul le rangement suit l'arbre : le panier et les séries désignent encore les
  * modèles par l'ancien quadruplet, jusqu'au lot 2 du chantier `automaths-arbre`
@@ -22,6 +24,8 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { PREVIEW_SEED } from '$lib/questions/cart-preview';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import { compareNodes, placeOfNode, type TreeNode } from '$lib/questions/classification-tree';
+import type { GradeCode } from '$lib/types/grades';
+import { getAccessibleGrades } from '$lib/utils/grades';
 
 // ============================================================================
 // TYPES
@@ -155,6 +159,22 @@ export function buildCatalogue(
 	});
 
 	return { branches, unclassified };
+}
+
+/**
+ * Modèles d'un niveau : ce niveau seul, ou avec les niveaux inférieurs (arbre
+ * des prérequis : la 1re techno descend par la 2de, pas par la 1re spé).
+ * Sans niveau choisi, tous les modèles ; un modèle sans niveau n'apparaît sous
+ * aucun niveau.
+ */
+export function filterTemplatesByGrade(
+	templates: readonly QuestionTemplate[],
+	grade: GradeCode | null,
+	withLowerGrades: boolean
+): readonly QuestionTemplate[] {
+	if (!grade) return templates;
+	const accepted = new Set<string>(withLowerGrades ? getAccessibleGrades(grade) : [grade]);
+	return templates.filter((t) => (t.grades ?? []).some((g) => accepted.has(g)));
 }
 
 /** Aperçu d'un modèle (graine du panier), calculé une fois ; `null` si impossible */

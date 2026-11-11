@@ -196,7 +196,11 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   rubriques de sous-notion, dans l'ordre de l'arbre (`position`, puis nom), puis par niveau et titre.
   Les modèles posés sur la notion elle-même forment la rubrique « Général », en tête ; une branche,
   notion ou sous-notion sans modèle publié n'apparaît pas ; un modèle hors de l'arbre lu va dans
-  « Non classés » (jamais perdu). La tuile ne montre plus l'ancien sous-domaine. Le panier et les
+  « Non classés » (jamais perdu). **Filtre par niveau** (`filterTemplatesByGrade`, appliqué avant le
+  rangement) : menu « Niveau » (tous par défaut) et case « et niveaux inférieurs » (décochée au départ),
+  qui descend l'arbre des prérequis (`getAccessibleGrades` : la 1re techno passe par la 2de, pas par la
+  1re spé) ; un modèle sans niveau n'apparaît sous aucun niveau ; le choix est gardé dans l'adresse
+  (`?niveau=4&inferieurs=1`). La tuile ne montre plus l'ancien sous-domaine. Le panier et les
   séries désignent le **modèle** par son id (ADR 0035). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés que pour la rubrique
   dépliée (`CatalogueGallery`, montée par un `{#if}` : l'accordéon et les onglets de bits-ui
   gardent le contenu fermé dans le DOM), une fois par modèle (`templatePreview`), et réutilisés par le
