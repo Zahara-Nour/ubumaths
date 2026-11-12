@@ -1815,3 +1815,48 @@ Décisions :
 Chantier [`schema-barres`](../archive/wip/schema-barres-progress.md) : #2597 mergé (CI verte, revue `code-reviewer`
 sans bloquant), rendu vérifié à l'écran et au PDF. Exemple de la phase 0 corrigé : « 80 de moins » = barre plus
 courte (`Bronze : ? (2,5) ; -80 (1,5)`). Vitrine `/demo/blocs` : le schéma y reste (David, « je te suis »).
+
+## 30. Lot 13 « Schémas en barres » : phase 0 (proposée le 2026-11-12, à valider)
+
+Point : 6-142 « Utiliser des modèles pré-algébriques (schémas en barre) pour résoudre des problèmes algébriques »,
+aucune borne propre. Source : _exemples de mise en œuvre_ 6e p. 8 (primes 320 € : or = argent + 70, bronze =
+argent − 80 ; pastèque / ananas : 4 ananas + 1 pastèque = 31 €, 2 ananas + 2 pastèques = 29 €, réponse décimale
+5,50 €). Cadre du § 29 point 5 : entiers, résultats entiers ⩽ 1 000, longueurs des segments écrites par le prof
+(fixes par variation, jamais calculées). Formes de réponse : nombres entiers dans des cases (unité écrite après la
+case), ou choix entre schémas pour (1). Corrigé de chaque modèle : le schéma **rempli** (les `?` remplacés par les
+valeurs), puis les calculs, un par ligne. Contextes tournants : billes, cartes, timbres, € (achats), cm (ruban).
+
+1. **Choisir le schéma** (niveau 1) — « Léa et Tom ont 84 billes en tout ; Léa en a 12 de plus que Tom. Quel schéma
+   traduit l'énoncé ? » Choix unique entre 3 schémas, mélangés : le bon (`Tom : ?` / `Léa : ? ; 12` / `total : 84`),
+   l'écart sur la mauvaise barre (`Tom : ? ; 12` / `Léa : ?`), l'écart pris pour le total (`total : 12`, `= 84` sous
+   une barre). v1 « de plus », v2 « de moins » (la barre courte change de personne). Aucun calcul demandé.
+2. **Somme et différence, schéma donné** (1) — même énoncé, schéma dessiné, deux cases (la petite part, la grande).
+   v1 deux personnes ; v2 un ruban de S cm coupé en deux morceaux, l'un plus long de D cm. S de 20 à 1 000,
+   S − D pair, D < S.
+3. **« n fois plus »** (1) — Tom : `?` ; Léa : `? ; ? ; ?` (n segments, n de 2 à 5). v1 total connu (« 96 en
+   tout ») ; v2 écart connu (« Léa en a 48 de plus »), accolade `= 48` impossible sur une partie de barre : l'écart
+   est écrit dans l'énoncé seul (voir question 1). Deux cases.
+4. **Trois parts avec écarts** (2) — les primes de la source : total T, or = argent + d₁, bronze = argent − d₂
+   (schéma du § 29.1). v1 « de plus / de moins » comme la source ; v2 chaîne (voir question 2). Trois cases.
+   Conditions : (T − d₁ + d₂) divisible par 3, bronze ⩾ 10.
+5. **Deux lignes** (2) — ananas / pastèque, puis stylos / cahiers. Deux barres de segments `A` et `P`, accolade
+   `= 31 €` sous chacune. v1 `A ; A ; A ; P` et `A ; P` (la différence donne 2 A) ; v2 la forme de la source
+   `A ; A ; A ; A ; P` et `A ; A ; P ; P` (moitié de la seconde ligne, puis différence). Prix entiers de 1 à 50 € ;
+   en v2, le second total est pair. Deux cases.
+6. **a × ? + b = c** (1) — « 3 cahiers identiques et une règle à 7 € coûtent 100 € » : `: ? ; ? ; ? ; 7 = 100 €`,
+   une case. v1 achats (€) ; v2 « 4 paquets identiques de billes et 15 billes en vrac : 95 billes ». a de 2 à 6,
+   ? de 2 à 150, c ⩽ 1 000.
+
+Nœud et tag : migration de rangement après les brouillons, comme aux lots précédents ; nœud à relever (rubrique
+« Algèbre » du BO). **Question d'accès** (migration nœud + tag) : aucun accès nouveau ; brouillons visibles de
+l'admin et de l'auteur seuls jusqu'à la publication. Brouillons jusqu'au `deploy:prod` qui livre le bloc (#2597).
+
+**Questions** :
+
+1. (3) v2 : le bloc n'a pas d'accolade sur une partie de barre. Écart dans l'énoncé seul, schéma sans accolade ?
+   (recommandé ; l'accolade partielle notée dans `outils-manquants.md`)
+2. (4) v2 : chaîne « or = argent + d₁, argent = bronze + d₂ » (deux « de plus ») ? (recommandé : l'autre structure
+   courante, mêmes outils)
+3. (5) : rester en entiers (§ 29) et ne pas reprendre la source telle quelle (5,50 €) ? (recommandé)
+4. Niveaux : 1 pour (1), (2), (3), (6) ; 2 pour (4) et (5) ?
+5. Valider la phase 0 (variations, plages, formes de réponse) ?
