@@ -186,7 +186,7 @@ sont de vraies pages.
 | `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**   |
 | `/demo/structure`             | tous                                       | `/demo`, sitemap                                       | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                      | Vitrine               |
 | `/demo/cercle-trigo`          | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                              | Vitrine               |
-| `/demo/blocs`                 | tous                                       | `/demo`, sitemap                                       | Vitrine : 9 blocs du catalogue rangés par niveau (primaire, collège, lycée), texte du prof replié                                                                    | Vitrine               |
+| `/demo/blocs`                 | tous                                       | `/demo`, sitemap                                       | Vitrine : 10 blocs du catalogue rangés par niveau (primaire, collège, lycée), texte du prof replié                                                                   | Vitrine               |
 | `/demo/cartes`                | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 cartes VIP écrites dans le code, une par rareté, avec leur effet holographique                                                                           | Vitrine               |
 | `/demo/lexique`               | tous                                       | `/demo`, sitemap                                       | Vitrine : mots du dictionnaire soulignés dans une question et 5 phrases, sélecteur de niveau                                                                         | Vitrine               |
 | `/demo/corriges`              | tous                                       | `/demo`, sitemap                                       | Vitrine : une page de Corrigé de fiche (écriture manuscrite) en image fixe, `static/demo/corriges/`                                                                  | Vitrine               |
@@ -243,9 +243,9 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   `preset: custom` sans angle), π/6 seul avec projections et tableau, cos x = 1/2, cos x > 1/2 en
   arc. Le catalogue complet et la syntaxe restent sur `/aide-ecriture/cercle-trigo`, dont un test
   vérifie que chaque exemple se dessine.
-- **`/demo/blocs`** (vitrine, chantier catalogue-blocs, PR 2) : 9 exemples du catalogue des blocs,
+- **`/demo/blocs`** (vitrine, chantier catalogue-blocs, PR 2 ; schéma en barres ajouté le 2026-11-12) : 10 exemples du catalogue des blocs,
   rangés par niveau : horloge, opération posée, droite graduée (primaire) ; barres, circulaire,
-  nuage de points (collège) ; variations, arbre, courbe (lycée). Le texte n’est pas recopié :
+  nuage de points, schéma en barres (collège) ; variations, arbre, courbe (lycée). Le texte n’est pas recopié :
   `src/lib/block-catalog/showcase.ts` renvoie à un exemple d’une fiche (slug + titre), un renvoi
   cassé fait échouer `showcase.test.ts`. Rendu sans `showAuthoringErrors` ; le texte du prof est
   replié sous « Voir ce qu’écrit le prof », comme « Voir le script » de `/demo/geometrie`.
