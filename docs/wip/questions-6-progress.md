@@ -5,15 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, lot 12 écrit, PR #2591 (§ 27.1)._
+_Mis à jour le 2026-11-12, après #2591 (§ 27.1)._
 
-- **État** : lots 10 et 11 publiés ; lot 12 « Constructions » (173, 180, 207) écrit, PR #2591 en CI.
-- **Prochaine action** : merger #2591 (CI verte), puis `create-questions --publier` par David (3 brouillons), migration nœud + tag, page à cocher.
-- **En attente de David** : rien.
+- **État** : lots 10 et 11 publiés ; lot 12 « Constructions » (173, 180, 207) écrit et mergé (#2591), pas encore en prod.
+- **Prochaine action** : migration nœud + tag des 3 brouillons (173, 207 → « triangles » ; 180 → notion « Symétrie axiale »), puis page à cocher.
+- **En attente de David** : `create-questions --dir scripts/questions/6-constructions --publier` (3 brouillons en prod).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
 ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot12-constructions`.
+- **Worktree / branche** : aucun (retiré après #2591).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1756,3 +1756,4 @@ Pièges rencontrés :
   (helper `etiquette`).
 - Symétrique sur papier uni : seuls les segments sont jugés (instruments non vérifiés), conforme à la doc du contrôle.
 - Port 5176 pris par une autre session : serveur de test sur 5177.
+- #2591 mergée (CI verte), worktree retiré.
