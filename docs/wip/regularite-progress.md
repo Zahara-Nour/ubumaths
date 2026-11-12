@@ -6,9 +6,9 @@ validés », P5. Phase 0 : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, PR A ouverte._
+_Mis à jour le 2026-11-12, après #2587._
 
-- **État** : R1-R7 tranchées, comportements validés ; PR A (grille du prof) ouverte · **Prochaine action** : revues (code-reviewer + security-auditor), CI verte → merge, puis PR B (Palotin) · **En attente de David** : rien · **Pièges en cours** : R1 et R2 modifient la Constance Royale et `long_absence`, validés en 2026-10 → mettre `docs/systeme/buddy-palotins.md` à jour dans la PR B · **Worktree / branche** : `../ubumaths-wt-regularite` · `feat/regularite`
+- **État** : PR A (grille du prof) mergée (#2587) · **Prochaine action** : PR B (Palotin : moments N6-N8, R1 retrait de `streak_lost`, R2 « retour après une pause » à la place de `long_absence`), tests d'abord · **En attente de David** : volume des traces lues par la grille, agrégation SQL maintenant ou plus tard (recommandé : plus tard, noté dans `outils-manquants.md`) · **Pièges en cours** : R1 et R2 modifient des comportements validés en 2026-10 → mettre `docs/systeme/buddy-palotins.md` à jour dans la PR B · **Worktree / branche** : `../ubumaths-wt-regularite`, nouvelle branche pour la PR B
 
 ## Besoin validé (rappel, David, 2026-11-11)
 
@@ -118,4 +118,5 @@ Comportements N1-N8 / L1-L4 / E1 : **validés par David le 2026-11-12** (« Je v
 - Retirés : `ClassActivityHeatmap.svelte`, `getClassActivityHeatmap`, endpoint `knowledge-heatmap`,
   `heatmapQuerySchema` (R3).
 - Sans migration : le prof lisait déjà `school_years`, `school_holidays` et les traces de ses élèves.
-- Tests : 24 (calcul + lecture), 3 (endpoint), 7 (composant).
+- Tests : 24 (calcul + lecture), 3 (endpoint), 8 (composant).
+- Revues : `code-reviewer` (clavier, réponse périmée, case choisie par ligne/colonne : corrigés ; volume des traces : question à David), `security-auditor` (rien à corriger). Mergée le 2026-11-12 (#2587).
