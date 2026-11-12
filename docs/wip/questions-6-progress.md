@@ -5,19 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après le relevé du § 28._
+_Mis à jour le 2026-11-12, après la phase 0 du § 29._
 
-- **État** : lots 1 à 12 clos. Relevé § 28 : restent 142 (schéma en barres, outil neuf) et le groupe D (129, 138,
-  182, 183 non évaluables ; 197, 210 en attente de Blockly), sans modèle par décision du § 5.
-- **Prochaine action** : David a choisi 142. Phase 0 de l'outil « schéma en barres » (skill `couvrir-niveau`,
-  § 3 ter) : relever les outils voisins existants (blocs d'affichage, gestes de réponse), proposer le bloc, son
-  geste de réponse et les modèles de 6-142 ; attendre la validation avant de coder. Worktree à créer au premier code.
-- **En attente de David** : rien (la phase 0 lui sera soumise).
+- **État** : lots 1 à 12 clos ; restent 142 et le groupe D (sans modèle, § 5). Phase 0 de l'outil « schéma en
+  barres » validée (§ 29) : bloc ` ```schema-barres `, chantier à part `schema-barres`.
+- **Prochaine action** : chantier `schema-barres` (PR 1 affichage) ; après son merge, lot 13 (6 modèles 6-142).
+- **En attente de David** : rien.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`). `texte(P, …)` décale en haut à droite :
   `dx=0, dy=0, ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
   `publier-lot.ts` (même en simulation) est refusé par le mode auto : David le lance avec `!`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : aucun pour `questions-6` ; outil dans `../ubumaths-wt-schema-barres`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1788,3 +1786,24 @@ Relevé MCP prod : **7 points de 6e sans modèle publié** (aucun brouillon non 
   de Blockly.
 
 Hors 142, la couverture de la 6e est complète au sens du § 5.
+
+## 29. Phase 0 de l'outil « schéma en barres » (validée par David le 2026-11-12, « je valide »)
+
+Relevé : 6-142, CM1-063, CM2-066 sans aucun modèle en prod ; ` ```partage bande N ` ne fait que des parts égales
+(suffisant pour 4-074, pas ici) ; une case `choix` peut contenir un bloc. Sources : _Exemples de réussite_ 6e p. 8
+(primes 320 €, pastèque / ananas), bornes CM1-063 (3 × ? + 7 = 100), CM2-066 (179 billes).
+
+Décisions :
+
+1. **Bloc ` ```schema-barres `** (pas `barres` : confusion avec le diagramme en barres). Une ligne = une barre,
+   `Nom : segment ; segment…`, segment `étiquette (longueur)` (longueur en unités, 1 par défaut, virgule décimale) ;
+   `?` = inconnue ; `-80 (1,5)` = partie manquante en pointillés ; `= 9 €` en fin de ligne = accolade de la barre ;
+   `total : 320 €` = accolade sur toutes les barres ; variables `{{a}}` dans les étiquettes.
+2. **Longueurs écrites par le prof**, jamais calculées sur les nombres.
+3. **Pas de geste « compléter le schéma »** pour l'instant : `outils-manquants.md` ligne 32.
+4. **Paliers** : PR 1 affichage (écran SVG, PDF Typst, catalogue, éditeur riche, démo ; chat jamais), chantier
+   `schema-barres` (worktree, journal) ; puis **lot 13** de modèles 6-142, brouillons jusqu'au `deploy:prod` du bloc.
+5. **Lot 13 (6 modèles)** : (1) choisir le schéma, somme et différence ; (2) somme et différence, schéma donné ;
+   (3) « n fois plus » ; (4) trois parts avec écarts ; (5) deux lignes (pastèque / ananas) ; (6) a × ? + b = c.
+   Entiers, résultats entiers ≤ 1 000. CM1-063, CM2-066 restent à leurs chantiers.
+6. **Question d'accès** de la migration (nœud + tag) : aucun accès nouveau.
