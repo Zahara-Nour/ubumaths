@@ -168,6 +168,18 @@ describe('dessinerBlocs', () => {
 		expect(cachees.markdown).toContain('h-heures');
 	});
 
+	it('schema-barres : le SVG de la scène de l’appli, manquants en pointillés, sans alerte', () => {
+		const r = dessinerBlocs(
+			'```schema-barres\nTom : ? (2)\nLéa : ? (2) ; 12 (1)\nBen : ? (2) ; -5 (1)\ntotal : 84\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="sb-schema"`));
+		expect(r.markdown.match(/<rect class="sb-segment/g)).toHaveLength(5);
+		expect(r.markdown.match(/sb-manquant/g)).toHaveLength(1);
+		expect(r.markdown).toContain('>84</text>');
+		expect(r.markdown).toContain('aria-label="Schéma en barres');
+	});
+
 	it('figure : le SVG de figureToSvg', () => {
 		const r = dessinerBlocs(
 			'```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un segment.\n---\nA = point(1, 1)\nB = point(8, 1)\ns = segment(A, B)\n```'
