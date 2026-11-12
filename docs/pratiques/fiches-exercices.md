@@ -89,7 +89,9 @@ dans `data/fiches/fonctions-affines-2nde/`. Côté fonctions seulement (équatio
 **Sources d'une fiche : sous `data/fiches/<sujet>/`, jamais dans le scratchpad ni sous `docs/`.** Le
 scratchpad disparaît avec la session (les dossiers des fiches de 1re spé et de Seconde sont perdus) ;
 sous `docs/`, le prettier du pre-commit réécrit les listes ubumark (« 1. a. … » sur une ligne).
-`data/fiches/` est dans `.prettierignore`.
+`data/fiches/` est dans `.prettierignore`, et `data/` dans `.gitignore` : ajouter les sources avec
+`git add -f data/fiches/<sujet>/…` (sorties de `fiche:verifier` exclues par un `.gitignore` dans le
+dossier : `*.typ`, `*.pdf`, `fiche-*.png`, `corrige-*.png`, `virtual/`, cf. `data/fiches/fonctions-affines-2nde/`).
 
 Restent (priorité) : automatismes transverses (lectures graphiques,
 statistiques), listes Python injectées dans les thèmes, logique et ensembles, démonstrations
@@ -149,6 +151,9 @@ pnpm fiche:verifier <dossier> "Titre de la fiche"
 
 Enchaîne : Typst par le vrai générateur (FR/EN, énoncé/corrigé) → compilation par le compilateur
 **exact** de la production → débords de colonne (texte et tracés) → pages en PNG.
+Les illustrations citées par leur URL du bucket (pas encore envoyées) sont prises dans
+`<dossier>/images/` par leur nom de fichier et copiées sous `<dossier>/virtual/images/`
+(`scripts/fiches/images-locales.ts`) ; une image citée absente du dossier est signalée (⛔).
 
 Puis **relire les pages**. Les détecteurs ne voient pas : une chaîne d'égalités fausse, un vecteur
 minuscule, une ligne justifiée étirée par du code, un renvoi « question 3.a » alors que l'affichage

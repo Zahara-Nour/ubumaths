@@ -1,6 +1,6 @@
 """Vérification des résultats des corrigés de la fiche « Fonctions affines : entraînement technique ».
 Une assertion par résultat annoncé dans sol/ (et sol-en/, identique).
-Lancer : scripts/fiches/.venv/bin/python -I docs/wip/fiches-affines-2nde/technique/verif/assert_all.py
+Lancer : scripts/fiches/.venv/bin/python -I data/fiches/fonctions-affines-2nde/technique/verif/assert_all.py
 """
 from fractions import Fraction as F
 import sympy as sp

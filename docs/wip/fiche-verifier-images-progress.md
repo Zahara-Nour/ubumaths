@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-11-13, avant la PR._
 
-- **État** : tests écrits (`scripts/__tests__/fiches-images-locales.test.ts`), correctif en cours.
-- **Prochaine action** : `scripts/fiches/images-locales.ts` + appel dans `rendu-fiche.ts`, vérifier sur `data/fiches/fonctions-affines-2nde/applications`, PR.
+- **État** : correctif fait (`scripts/fiches/images-locales.ts`, appelé par `rendu-fiche.ts`), 5 tests verts, `fiche:verifier` vert sur la fiche d'applications affines (5 images, 0 débord).
+- **Prochaine action** : PR, CI, merge ; ligne n° 35 de `outils-manquants.md` → « Livré ».
 - **En attente de David** : rien.
 - **Pièges en cours** : le pre-commit (lint-staged) laisse l'index en désaccord avec le commit sur les `.md` reformatés : vérifier `git status` après chaque commit.
 - **Worktree / branche** : `../ubumaths-wt-fiche-verifier-images`, `fix/fiche-verifier-images`.
@@ -23,3 +23,4 @@ Ligne n° 35 de `docs/wip/outils-manquants.md` (chantier `fiches-affines-2nde`, 
 ## Journal
 
 - 2026-11-13 : worktree créé ; tests rouges écrits.
+- 2026-11-13 : correctif vert ; doc `fiches-exercices.md` (images locales ; `data/` est dans `.gitignore` → `git add -f`) ; chemins des commentaires `docs/wip/…` corrigés dans `data/fiches/fonctions-affines-2nde/`.

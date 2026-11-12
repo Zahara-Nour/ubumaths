@@ -1,7 +1,7 @@
 """Vérification des résultats des corrigés — « Fonctions affines : applications » (Seconde).
 
 UNE assertion par résultat écrit dans les corrigés (sol/ et sol-en/, mêmes nombres).
-Usage : scripts/fiches/.venv/bin/python -I docs/wip/fiches-affines-2nde/applications/verif/assert_all.py
+Usage : scripts/fiches/.venv/bin/python -I data/fiches/fonctions-affines-2nde/applications/verif/assert_all.py
 """
 
 from fractions import Fraction as F

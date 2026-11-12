@@ -13,6 +13,11 @@
  *    `md/<CLÉ>-guided.md` (+ `-autonomous.md` facultatif).
  * Dans les deux cas : `md/` énoncés FR, `sol/` corrigés FR, `en/` et `sol-en/`.
  *
+ * Les images citées par leur URL du bucket (pas encore envoyées : le script de création
+ * les envoie au `--publier`) sont prises dans `<dossier>/images/` et copiées sous
+ * `<dossier>/virtual/images/`, où `compile-prod.mjs` les lit ; une image citée absente
+ * en local est signalée.
+ *
  * Signale aussi, dans le Typst produit, les erreurs de formule rendues en texte
  * (« Unexpected… ») et les mots découpés lettre par lettre (`c o s`).
  *
@@ -20,6 +25,7 @@
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { copierImagesLocales } from './images-locales';
 import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
 import { STUDENT_STYLE_TEMPLATE } from '$lib/typst/templates/default-templates';
 import type {
@@ -100,6 +106,7 @@ const template = {
 } as WorksheetTemplateRow;
 
 let alertes = 0;
+const textes: string[] = [];
 for (const doc of DOCUMENTS) {
 	const config = {
 		show_title: true,
@@ -114,6 +121,7 @@ for (const doc of DOCUMENTS) {
 		language: doc.langue
 	} as WorksheetConfig;
 	const { liste, sections } = exercices(doc.langue);
+	textes.push(...liste.flatMap((e) => [e.statement, e.solution]));
 	const instance = {
 		exercises: liste.map((e, i) => ({
 			exercise_id: `e${i}`,
@@ -147,6 +155,14 @@ for (const doc of DOCUMENTS) {
 		`${doc.nom}.typ : ${liste.length} exercices` +
 			(erreurs.length ? ` — ⛔ ${erreurs.length} erreur(s) de formule` : '') +
 			(decoupes.length ? ` — ⛔ mots découpés : ${decoupes.join(' | ')}` : '')
+	);
+}
+const images = copierImagesLocales(dossier, textes);
+if (images.copiees.length) console.log(`images locales : ${images.copiees.join(', ')}`);
+if (images.manquantes.length) {
+	alertes += images.manquantes.length;
+	console.log(
+		`⛔ image(s) citée(s) absente(s) de ${join(dossier, 'images')} : ${images.manquantes.join(', ')}`
 	);
 }
 process.exit(alertes ? 1 : 0);
