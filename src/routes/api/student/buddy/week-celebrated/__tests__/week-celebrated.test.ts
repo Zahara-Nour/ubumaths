@@ -41,7 +41,7 @@ describe('POST /api/student/buddy/week-celebrated', () => {
 	it('retient la semaine de l’élève de la session', async () => {
 		vi.mocked(markWeekCelebrated).mockResolvedValue(true);
 		const response = await call();
-		expect(markWeekCelebrated).toHaveBeenCalledWith('eleve-1');
+		expect(markWeekCelebrated).toHaveBeenCalledWith('eleve-1', 'celebrated');
 		expect(await response.json()).toEqual({ acknowledged: true });
 	});
 

@@ -9,7 +9,9 @@ import {
 	activeDaysOf,
 	activeWeekStreak,
 	isWeekToCelebrate,
-	weekMomentFor
+	streakFirstDay,
+	weekMomentFor,
+	weekToMark
 } from '$lib/server/buddy-weeks';
 
 // Constantes
@@ -131,5 +133,29 @@ describe('isWeekToCelebrate', () => {
 	it('une semaine fêtée plus tard (horloge) ne refait pas fêter', () => {
 		expect(isWeekToCelebrate(W5, W4)).toBe(false);
 		expect(isWeekToCelebrate(W1, W4)).toBe(true);
+	});
+});
+
+describe('streakFirstDay', () => {
+	it('rentrée récente : la rentrée', () => {
+		expect(streakFirstDay('2026-09-01', '2026-11-12')).toBe('2026-09-01');
+	});
+
+	it('rentrée ancienne : 20 semaines avant aujourd’hui (lecture bornée)', () => {
+		expect(streakFirstDay('2026-09-01', '2027-06-10')).toBe('2027-01-21');
+	});
+});
+
+describe('weekToMark', () => {
+	it('aujourd’hui actif : la semaine en cours', () => {
+		expect(weekToMark('2026-09-21', true)).toBe(W3);
+	});
+
+	it('bulle dite dimanche soir, acquittée lundi : la semaine finie, pas celle qui commence', () => {
+		expect(weekToMark('2026-09-21', false)).toBe(W2);
+	});
+
+	it('jour inactif en milieu de semaine : la même semaine', () => {
+		expect(weekToMark('2026-09-23', false)).toBe(W3);
 	});
 });

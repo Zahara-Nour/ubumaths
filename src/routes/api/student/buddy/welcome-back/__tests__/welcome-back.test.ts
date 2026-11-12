@@ -52,7 +52,7 @@ describe('POST /api/student/buddy/welcome-back', () => {
 	it('la semaine en cours compte aussi comme fêtée (T4)', async () => {
 		vi.mocked(acknowledgeWelcomeBack).mockResolvedValue(true);
 		await call();
-		expect(markWeekCelebrated).toHaveBeenCalledWith('eleve-1');
+		expect(markWeekCelebrated).toHaveBeenCalledWith('eleve-1', 'current');
 	});
 
 	it('semaine non marquée : le retour reste acquitté', async () => {
@@ -61,9 +61,10 @@ describe('POST /api/student/buddy/welcome-back', () => {
 		expect(await (await call()).json()).toEqual({ acknowledged: true });
 	});
 
-	it('rien à fêter : acknowledged faux', async () => {
+	it('rien à fêter : acknowledged faux, la semaine n’est pas consommée', async () => {
 		vi.mocked(acknowledgeWelcomeBack).mockResolvedValue(false);
 		expect(await (await call()).json()).toEqual({ acknowledged: false });
+		expect(markWeekCelebrated).not.toHaveBeenCalled();
 	});
 
 	it('écriture en échec : 500', async () => {

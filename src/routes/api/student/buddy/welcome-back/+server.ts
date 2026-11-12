@@ -33,11 +33,14 @@ export const POST: RequestHandler = async ({ locals }) => {
 		throw error(500, 'Retour non enregistré');
 	}
 
+	// Retour vraiment fêté seulement (un double appel ne consomme pas la semaine).
 	// Non bloquant : au pire, la semaine sera fêtée en plus à la prochaine activité
-	try {
-		await markWeekCelebrated(user.id);
-	} catch (err) {
-		logger.error('Semaine non marquée fêtée après le retour :', err);
+	if (acknowledged) {
+		try {
+			await markWeekCelebrated(user.id, 'current');
+		} catch (err) {
+			logger.error('Semaine non marquée fêtée après le retour :', err);
+		}
 	}
 	return json({ acknowledged });
 };

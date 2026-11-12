@@ -49,6 +49,8 @@ type TraceInput = Pick<RegularityTrace, 'created_at' | 'source' | 'place'>;
 // Constantes
 const logger = createServerLogger('buddy-weeks');
 const DAY_MS = 24 * 3600 * 1000;
+/** Fenêtre lue pour le compte : 20 semaines (coût borné, cf. `streakFirstDay`) */
+const STREAK_WINDOW_DAYS = 20 * 7;
 /** Paliers de semaines actives d'affilée fêtés (R4) */
 const STREAK_MOMENTS: Partial<Record<number, WeekMoment>> = {
 	3: 'active_weeks_3',
@@ -106,6 +108,25 @@ export function activeWeekStreak(input: {
 		if (!holiday) break;
 	}
 	return streak;
+}
+
+/**
+ * Premier jour lu pour le compte : la rentrée, ou 20 semaines avant aujourd'hui
+ * si elle est plus ancienne. Assez pour 10 semaines actives même entrecoupées
+ * de vacances ; au-delà, le compte ne change plus le moment (palier 10 dépassé).
+ */
+export function streakFirstDay(firstDay: string, today: string): string {
+	const bound = addDays(today, -STREAK_WINDOW_DAYS);
+	return firstDay > bound ? firstDay : bound;
+}
+
+/**
+ * Semaine à retenir comme fêtée par l'acquittement du moment de la semaine :
+ * celle d'aujourd'hui s'il est actif, sinon celle d'hier (bulle dite avant
+ * minuit, acquittée après : on ne consomme pas la semaine qui commence).
+ */
+export function weekToMark(today: string, todayActive: boolean): string {
+	return weekStartOf(todayActive ? today : addDays(today, -1));
 }
 
 /** Le moment à fêter pour un compte de semaines actives (0 → rien) */
@@ -185,34 +206,51 @@ export async function loadWeekMoment(
 	const today = schoolDay(now);
 	if (!isWeekToCelebrate(await readCelebratedWeek(studentId), weekStartOf(today))) return null;
 
-	// Aujourd'hui actif ? (deux jours de marge : minuit à Paris tombe la veille en UTC)
-	const recent = await readStudentTraces(
-		studentId,
-		new Date(now.getTime() - 2 * DAY_MS).toISOString()
-	);
-	if (!activeDaysOf(recent).has(today)) return null;
+	if (!(await isTodayActive(studentId, now))) return null;
 
 	const { start, holidays } = await readStudentSchoolYear(studentId, now);
-	const firstDay = regularityFirstDay(start, now);
+	const firstDay = streakFirstDay(regularityFirstDay(start, now), today);
 	const since = new Date(new Date(`${weekStartOf(firstDay)}T00:00:00Z`).getTime() - DAY_MS);
 	const traces = await readStudentTraces(studentId, since.toISOString());
 	const streak = activeWeekStreak({ activeDays: activeDaysOf(traces), holidays, firstDay, today });
 	return weekMomentFor(streak);
 }
 
+/** Aujourd'hui (Paris) est-il un jour actif ? Deux jours lus : minuit à Paris tombe la veille en UTC */
+async function isTodayActive(studentId: string, now: Date): Promise<boolean> {
+	const recent = await readStudentTraces(
+		studentId,
+		new Date(now.getTime() - 2 * DAY_MS).toISOString()
+	);
+	return activeDaysOf(recent).has(schoolDay(now));
+}
+
 /**
- * La semaine en cours est fêtée (moment de la semaine, ou retour après une
- * pause : T4). Rend vrai si la ligne a été écrite.
+ * Retient une semaine comme fêtée. Rend vrai si la ligne a été écrite (faux
+ * sans ligne de passage : journalisé, la fête reviendra).
+ *   - `current` : la semaine en cours (retour après une pause fêté : T4) ;
+ *   - `celebrated` : celle du moment dit (`weekToMark`).
  */
-export async function markWeekCelebrated(studentId: string, now = new Date()): Promise<boolean> {
+export async function markWeekCelebrated(
+	studentId: string,
+	which: 'current' | 'celebrated',
+	now = new Date()
+): Promise<boolean> {
+	const today = schoolDay(now);
+	const week =
+		which === 'current'
+			? weekStartOf(today)
+			: weekToMark(today, await isTodayActive(studentId, now));
 	const { data, error } = await createServiceRoleClient()
 		.from('student_last_visits')
-		.update({ week_celebrated_on: weekStartOf(schoolDay(now)) })
+		.update({ week_celebrated_on: week })
 		.eq('student_id', studentId)
 		.select('student_id');
 	if (error) {
 		logger.error('❌ [buddy-weeks] Semaine fêtée non retenue :', error);
 		throw new Error(`Semaine fêtée non retenue : ${error.message}`);
 	}
-	return (data?.length ?? 0) > 0;
+	const written = (data?.length ?? 0) > 0;
+	if (!written) logger.warn('⚠️ [buddy-weeks] Semaine fêtée non retenue : aucune ligne de passage');
+	return written;
 }

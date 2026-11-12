@@ -477,13 +477,17 @@ moment, neutres en genre, sans nombre de jours ni Constance Royale.
 - **Apres une activite seulement** : `loadWeekMoment` ne rend un moment que si **aujourd'hui**
   est un jour actif et que la semaine n'est pas deja fetee (`student_last_visits.week_celebrated_on`
   < lundi en cours). Le test leger (traces des deux derniers jours) passe d'abord ; la lecture des
-  traces depuis la rentree n'a lieu qu'une fois par semaine et par eleve.
+  traces (depuis la rentree, 20 semaines au plus : `streakFirstDay`) n'a lieu que tant que la
+  semaine n'est pas acquittee.
 - **Un moment a la fois** : un retour a feter passe d'abord (`weekMoment` nul) ; le retour
   acquitte (`POST …/welcome-back`) marque aussi la semaine (`markWeekCelebrated`), cote serveur et
   cote client (`markReturnCelebrated` → `markWeekCelebrated`).
 - **Bulle** : `GET /api/student/buddy/presence` transmet `weekMoment` (le nom du moment, jamais un
   jour ni le compte) ; `BuddyWidget` (maison) ou `PalotinPresence` (passage important) le dit puis
-  l'acquitte (`POST /api/student/buddy/week-celebrated`, `markWeekCelebrated` : lundi en cours).
+  l'acquitte (`POST /api/student/buddy/week-celebrated`, `markWeekCelebrated(…, 'celebrated')` :
+  semaine d'aujourd'hui s'il est actif, sinon d'hier — bulle dite dimanche soir, acquittee lundi :
+  `weekToMark`). Le retour ne marque la semaine en cours que s'il etait vraiment a feter. Sans ligne
+  de passage : rien d'ecrit, journalise. Deux onglets ouverts : double fete possible (accepte).
   Acquittement en echec : la bulle revient a la prochaine activite. Lecture en echec : pas de fete.
 - Limite connue (comme le retour) : la presence se relit apres un gain ; des flash-cards seules
   rendent la semaine active sans relecture immediate, la fete vient a la page de maison suivante.

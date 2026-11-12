@@ -150,7 +150,7 @@ describe('Palotin : semaine qui devient active (base locale)', () => {
 		await addTraces(student, NOW, 5);
 		expect(await loadWeekMoment(student, NOW)).toBe('week_first_activity');
 
-		expect(await markWeekCelebrated(student, NOW)).toBe(true);
+		expect(await markWeekCelebrated(student, 'celebrated', NOW)).toBe(true);
 		expect(await loadWeekMoment(student, NOW)).toBeNull();
 	});
 
@@ -173,6 +173,11 @@ describe('Palotin : semaine qui devient active (base locale)', () => {
 		await addTraces(student, daysAgo(14), 5);
 		await addTraces(student, daysAgo(21), 5);
 		expect(await loadWeekMoment(student, NOW)).toBe('week_first_activity');
+	});
+
+	it('élève sans ligne de passage : rien écrit, faux', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		expect(await markWeekCelebrated(student.id, 'current', NOW)).toBe(false);
 	});
 
 	it('traces de contrôle : ne font pas un jour actif', async () => {

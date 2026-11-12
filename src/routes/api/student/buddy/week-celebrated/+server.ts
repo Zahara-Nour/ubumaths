@@ -25,7 +25,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 	const { user } = await requireRole(locals, 'student');
 
 	try {
-		return json({ acknowledged: await markWeekCelebrated(user.id) });
+		return json({ acknowledged: await markWeekCelebrated(user.id, 'celebrated') });
 	} catch (err) {
 		logger.error('Semaine fêtée non retenue :', err);
 		throw error(500, 'Semaine non enregistrée');
