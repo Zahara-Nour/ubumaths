@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2584._
+_Mis à jour le 2026-11-12, après #2584 et la fermeture de #1788._
 
-- **État** : 0.82.0 en prod ; #2564, #2572, #2577, #2584 (montée ESLint, journal `docs/archive/wip/montee-eslint-progress.md`) mergées, pas encore en prod ; piste « où les élèves bloquent » **reportée** (prod au 2026-11-11 : 101 traces, 2 élèves sur 82, 0 réponse enregistrée ; besoins P3, P4, P6, P7, P8, E4 déjà validés dans `formes-de-serie`) · **Prochaine action** : David choisit (n° 26 « mesurer en posant la règle » : à ouvrir, phase 0 d'abord ; majeures #2075 brevo, #2074 blockly, #1667 SvelteKit 3 ; tri des journaux wip ; #1788 point 1) · **En attente de David** : fermer #2537 (refusé au mode auto) ; `git stash drop` de « deps-mineures-2537 avant rebase » (copie inutile) ; que faire des comptes de 2025-2026 et de test (81 élèves sans trace sur 82 : traces apparues le 2026-09-29, aucun élève réel connecté depuis le 2026-07-26 ; « 2 élèves » du 2026-11-11 = 1 élève + 1 compte non élève) · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572, #2577 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 plus tard ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement, jamais sur `goto` ; typst.ts hors de Dependabot · **Pièges en cours** : monter un paquet de la config ESLint invalide tout le cache → Lint à froid ~28 min (job à 60 min depuis #2584) ; un `id` construit sur du texte saisi part dans `error_logs` ; module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` = absent du build ; `db:migrate` → `! pnpm db:migrate` · **Worktree / branche** : aucun
+- **État** : 0.82.0 en prod ; #2564, #2572, #2577, #2584 (montée ESLint, journal `docs/archive/wip/montee-eslint-progress.md`) mergées, pas encore en prod ; piste « où les élèves bloquent » **reportée** (prod au 2026-11-11 : 101 traces, 2 élèves sur 82, 0 réponse enregistrée ; besoins P3, P4, P6, P7, P8, E4 déjà validés dans `formes-de-serie`) · **Prochaine action** : David choisit (n° 26 « mesurer en posant la règle » : à ouvrir, phase 0 d'abord ; majeures #2075 brevo, #2074 blockly, #1667 SvelteKit 3 ; tri des journaux wip) · **En attente de David** : fermer #2537 (refusé au mode auto) ; `git stash drop` de « deps-mineures-2537 avant rebase » (copie inutile) ; que faire des comptes de 2025-2026 et de test (81 élèves sans trace sur 82 : traces apparues le 2026-09-29, aucun élève réel connecté depuis le 2026-07-26 ; « 2 élèves » du 2026-11-11 = 1 élève + 1 compte non élève) · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572, #2577 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 = rien à changer, issue fermée ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement, jamais sur `goto` ; typst.ts hors de Dependabot · **Pièges en cours** : monter un paquet de la config ESLint invalide tout le cache → Lint à froid ~28 min (job à 60 min depuis #2584) ; un `id` construit sur du texte saisi part dans `error_logs` ; module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` = absent du build ; `db:migrate` → `! pnpm db:migrate` · **Worktree / branche** : aucun
 
 ## Lot mineur de Dependabot (#2577, mergée le 2026-11-12)
 
@@ -476,6 +476,12 @@ Relevé (code + prod en lecture seule) puis décisions de David :
   retirer seuls d'une classe par l'API ; aucun écran ne le permet. DROP POLICY : `db:migrate`
   seulement après accord explicite de David.
 - **Point 1** (fiche visible à trois endroits) : **plus tard**, reste dans #1788.
+- **Point 1, tranché le 2026-11-12 : rien à changer, #1788 fermée.** Relevé : ce ne sont pas des
+  copies mais des entrées vers la même page `/dashboard/student/worksheets/<affectation>` — Mon
+  travail (+ encart du tableau de bord) et « Toutes mes fiches » (automatiques), onglet Fiches du
+  chapitre (si rangée), cahier de texte (si citée par `[[worksheet:…]]`). Chaque entrée répond à
+  une question différente (à faire / dans le cours / quand). Écartés : situer la fiche sur sa page
+  (B), fondre « Toutes mes fiches » dans les chapitres (C), attendre des élèves réels (D).
 
 ## PR 5 — `students_can_leave` retirée (#2541, mergée le 2026-11-11)
 
