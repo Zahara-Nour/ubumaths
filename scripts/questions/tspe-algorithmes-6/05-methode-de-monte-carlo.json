@@ -1,4 +1,5 @@
 {
+	"id": "4cf87b77-b2f9-4681-b98c-f7a7448a277a",
 	"title": "Méthode de Monte-Carlo pour une intégrale en Python",
 	"description": "Monte-Carlo pour l'intégrale de x³ sur [0 ; 2], points dans [0 ; 2] × [0 ; 8] : valeur renvoyée pour un décompte donné, compléter if y <= f(x):, limite de c/N (1/4)",
 	"grades": ["T_SPE"],

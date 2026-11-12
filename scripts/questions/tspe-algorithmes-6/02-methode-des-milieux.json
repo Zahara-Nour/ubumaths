@@ -1,4 +1,5 @@
 {
+	"id": "c9cd3e4e-acdf-4696-bf88-6f958e786de5",
 	"title": "Méthode des milieux en Python",
 	"description": "Méthode des milieux pour x² sur [0 ; b] : faire tourner pour n = 2 ou 4 (valeur exacte), compléter s = s + f(a + (k + 0.5) * h), limite quand n grandit (l'intégrale)",
 	"grades": ["T_SPE"],

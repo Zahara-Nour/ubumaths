@@ -1,4 +1,5 @@
 {
+	"id": "848e62ff-b404-4dba-910a-9346012bfd51",
 	"title": "Méthode d'Euler en Python : y′ = f et y′ = ay + b",
 	"description": "Méthode d'Euler : faire tourner deux pas de 0,5 sur y′ = ay + b (y0 ∈ {0, 4, 5}, jamais l'équilibre −b/a), compléter la ligne y = y + h * f(x) pour y′ = f, dire quelle valeur de la solution le programme approche",
 	"grades": ["T_SPE"],
