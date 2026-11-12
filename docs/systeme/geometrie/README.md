@@ -101,14 +101,14 @@ la vitrine `src/routes/(public)/demo/constructions/`.
 
 ### Composants et consommateurs
 
-| Fichier                                                                     | Rôle                                                                                |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `src/lib/components/geometry/GeometryCanvas.svelte`                         | Toile interactive : SVG, rough.js (main levée), MathLive (`mtexte`), drag, curseurs |
-| `src/lib/components/geometry/ElementPopover.svelte`, `SliderControl.svelte` | Panneau d'un objet, curseur                                                         |
-| `src/lib/ubumark/utils/figure-scene.ts`                                     | Bloc ` ```figure ` : interprète, refuse ce que le PDF ne sait pas dessiner, budget  |
-| `src/lib/ubumark/utils/figure-svg.ts`                                       | Bloc ` ```figure ` à l'écran : SVG statique (`figureToSvg`), sans `GeometryCanvas`  |
-| `src/lib/ubumark/generators/figure-typst.ts`                                | Bloc ` ```figure ` au PDF : `exportToTypst`                                         |
-| `src/lib/components/markdown/nodes/FigureBlock*.svelte`                     | Composants du bloc (chargement à la demande)                                        |
+| Fichier                                                                     | Rôle                                                                                           |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `src/lib/components/geometry/GeometryCanvas.svelte`                         | Toile interactive : SVG, rough.js (main levée), MathLive (`mtexte`), drag, curseurs            |
+| `src/lib/components/geometry/ElementPopover.svelte`, `SliderControl.svelte` | Panneau d'un objet, curseur                                                                    |
+| `src/lib/ubumark/utils/figure-scene.ts`                                     | Bloc ` ```figure ` : interprète, refuse ce que le PDF ne sait pas dessiner, budget             |
+| `src/lib/ubumark/utils/figure-svg.ts`                                       | Bloc ` ```figure ` à l'écran : SVG statique (`figureToSvg`), sans `GeometryCanvas`             |
+| `src/lib/ubumark/generators/figure-typst.ts`                                | Bloc ` ```figure ` au PDF : `exportToTypst` ; `mesure AB` : à 1 cm si ça tient (`atRealScale`) |
+| `src/lib/components/markdown/nodes/FigureBlock*.svelte`                     | Composants du bloc (chargement à la demande)                                                   |
 
 ### La vue Géométrie de l'atelier
 
