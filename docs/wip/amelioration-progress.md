@@ -16,8 +16,10 @@ _Mis à jour le 2026-11-12, PR « élèves actifs » en cours._
   Fonction `active_student_ids()` (`security invoker`, réservée à `service_role`) ; question
   d'accès : personne ne gagne rien. Définition dans `CONTEXT.md`.
 - Test `tests/integration/eleves-actifs.test.ts` : 7 rouges sans la migration (`PGRST202`), puis le
-  cas « élève de test » rouge sur la première version ; 8 verts. Migration appliquée en local (psql
-  sous verrou).
+  cas « élève de test » rouge sur la première version ; 9 verts (cas « archivé ici, actif là » ajouté
+  sur remarque de revue). Migration appliquée en local (psql sous verrou).
+- `security-auditor` : aucun finding bloquant (ACL vérifiée en local : `service_role` et `postgres`
+  seuls ; `security invoker`, `search_path` vide). `code-reviewer` : rien de bloquant.
 
 ## Lot mineur de Dependabot (#2577, mergée le 2026-11-12)
 

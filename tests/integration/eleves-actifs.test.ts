@@ -48,7 +48,10 @@ async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 	return client;
 }
 
-/** La fonction n'est pas encore dans les types générés (`db:types` après le merge). */
+/**
+ * La fonction n'est pas encore dans les types générés.
+ * TODO après `db:types` : retirer le cast, qui masquerait une dérive de signature.
+ */
 function callActiveStudentIds(client: SupabaseClient<Database>) {
 	return client.rpc('active_student_ids' as never);
 }
@@ -63,6 +66,7 @@ async function activeIds(): Promise<string[]> {
 describe('active_student_ids — les élèves actifs, pour les mesures', () => {
 	let twoClassesStudentId: string;
 	let archivedStudentId: string;
+	let movedStudentId: string;
 	let outsideStudentId: string;
 	let testStudentId: string;
 	let teacherId: string;
@@ -96,6 +100,12 @@ describe('active_student_ids — les élèves actifs, pour les mesures', () => {
 		archivedStudentId = archived.id;
 		await join(classA.id, archived.id, 'archived');
 
+		// Passage d'année : archivé dans l'ancienne classe, actif dans la nouvelle.
+		const moved = await TestData.profile().withRole('student').create();
+		movedStudentId = moved.id;
+		await join(classA.id, moved.id, 'archived');
+		await join(classB.id, moved.id, 'active');
+
 		outsideStudentId = (await TestData.profile().withRole('student').create()).id;
 
 		// Élève de test (CONTEXT.md) : ses résultats ne se mêlent jamais aux vrais,
@@ -123,6 +133,10 @@ describe('active_student_ids — les élèves actifs, pour les mesures', () => {
 
 	it('un élève dont l’adhésion est archivée n’y figure pas', async () => {
 		expect(await activeIds()).not.toContain(archivedStudentId);
+	});
+
+	it('un élève archivé dans une classe mais actif dans une autre y figure', async () => {
+		expect(await activeIds()).toContain(movedStudentId);
 	});
 
 	it('un élève hors-classe n’y figure pas', async () => {

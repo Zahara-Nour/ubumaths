@@ -1,8 +1,8 @@
 -- Élèves actifs pour les mesures (chantier amelioration, phase 0 validée le 2026-11-12)
 --
 -- `active_student_ids()` rend les élèves réels (`is_test` faux) membres `active`
--- d'au moins une classe :
--- la base de toute mesure sur les élèves (CONTEXT.md, « Élève actif »). Sans elle,
+-- d'au moins une classe : la base de toute mesure sur les élèves (CONTEXT.md,
+-- « Élève actif »). Sans elle,
 -- un comptage sur `profiles` entier mêle les élèves de l'année aux comptes des
 -- années passées (adhésions archivées au passage d'année), aux élèves
 -- hors-classe et aux élèves de test (CONTEXT.md : leurs résultats ne se mêlent
