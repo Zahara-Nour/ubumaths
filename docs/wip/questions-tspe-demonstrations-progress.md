@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après la publication du lot 7 (§ 30)._
+_Mis à jour le 2026-11-13, après #2613 (lot 8 dans `main`, § 31)._
 
-- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5, 6 et 7 publiés (§ 22, § 26, § 30). Reste le lot 8
-  (534, 624, 535, 536 : concentration, marche aléatoire, loi des grands nombres ; cadre D2, § 18).
-- **Prochaine action** : phase 0 du lot 8 (relevé prod, tableau modèle / nœud / niveau / variations, comme D4 § 27),
-  puis validation de David avant d'écrire.
-- **En attente de David** : rien.
+- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5, 6 et 7 publiés (§ 22, § 26, § 30) ; lot 8 (534,
+  624, 535, 536) dans `main` (#2613), brouillons pas encore créés en prod. C'est le dernier lot du chantier (D2, § 18).
+- **Prochaine action** : David lance `create-questions --publier` (commande au § 31) ; ensuite rangement (migration,
+  copie de celle du lot 7), page à cocher, publication, comme les § 28 à 30 ; puis clôture du chantier (versement).
+- **En attente de David** : `create-questions --publier` du lot 8.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -666,3 +666,5 @@ joué « Faux », corrigé rendu.
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-8 --publier`
+
+Mergé (#2613, 2026-11-13) : CI verte.
