@@ -151,3 +151,9 @@ David : « je valide ».
 - Tests : `buddy-absence` (4), `buddy-presence`, `buddy-queries-passage`, `BuddyWidget-retour` (6),
   `PalotinPresence` (relecture après activité, maison, sans activité), `BuddyGainCard` (répliques,
   signal d'activité, Constance à 0), intégration `palotin-boucle` (13).
+- Revues : `security-auditor` (rien de bloquant ; en-têtes des routes `presence` et
+  `welcome-back` remis d'accord). `code-reviewer` : retour fêté tard recouvert par la salutation ou
+  l'annonce alors que déjà acquitté → corrigé (elles attendent la fin de sa bulle) ; double fête
+  possible (file, relecture) → corrigé (`markReturnCelebrated`) ; relecture inutile en séance →
+  corrigé ; énigmes : `receiveBuddyGain` branché sur la page d'énigme ; `coquille-et-caches.md`
+  mis à jour. Gardé : un `planPassages` en cours retarde la fête à la page suivante (pas perdue).

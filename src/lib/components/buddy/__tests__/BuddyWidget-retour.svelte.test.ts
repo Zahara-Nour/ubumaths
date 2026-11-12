@@ -13,7 +13,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import BuddyWidget from '../BuddyWidget.svelte';
-import { BUBBLE_DURATION } from '../buddy-timing';
+import { BUBBLE_DURATION, GREETING_DELAY } from '../buddy-timing';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import { buddyMessages } from '$lib/config/buddy-messages';
 import type { BuddyState } from '$lib/types/buddy';
@@ -107,6 +107,33 @@ describe('BuddyWidget — retour après une pause', () => {
 		await new Promise((resolve) => setTimeout(resolve, 1500));
 		expect(acknowledgements()).toHaveLength(1);
 	}, 8_000);
+
+	it('retour connu juste après le montage : la salutation ne le recouvre pas', async () => {
+		mockSummary({ born: 0, napping: 0, toDiscover: 0, news: NO_NEWS });
+		const widget = await render(BuddyWidget, { props: { returnAfterPause: false } });
+		await new Promise((resolve) => setTimeout(resolve, 300));
+		await widget.rerender({ returnAfterPause: true });
+
+		await vi.waitFor(() => expect(RETURN).toContain(bubbleText()), { timeout: 3000 });
+		// Au-delà de la salutation (GREETING_DELAY), la bulle dit toujours le retour
+		await new Promise((resolve) => setTimeout(resolve, GREETING_DELAY + 500));
+		expect(RETURN).toContain(bubbleText());
+	}, 10_000);
+
+	it('retour connu après le montage : l’annonce de la Chatterie attend la fin de sa bulle', async () => {
+		mockSummary({ born: 2, napping: 2, toDiscover: 0, news: NO_NEWS });
+		const widget = await render(BuddyWidget, { props: { returnAfterPause: false } });
+		await new Promise((resolve) => setTimeout(resolve, 300));
+		await widget.rerender({ returnAfterPause: true });
+
+		await vi.waitFor(() => expect(RETURN).toContain(bubbleText()), { timeout: 3000 });
+		const saidAt = Date.now();
+		await vi.waitFor(() => expect(bubbleText().startsWith(NAPPING)).toBe(true), {
+			timeout: 10_000,
+			interval: 100
+		});
+		expect(Date.now() - saidAt).toBeGreaterThanOrEqual(BUBBLE_DURATION - 300);
+	}, 15_000);
 
 	it('l’annonce de la Chatterie suit la bulle, sans salutation entre les deux', async () => {
 		mockSummary({ born: 2, napping: 2, toDiscover: 0, news: NO_NEWS });

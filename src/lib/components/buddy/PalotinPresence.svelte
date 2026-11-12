@@ -65,6 +65,8 @@
 		link: { href: string; label: string } | null;
 		/** Appelé quand la réplique s'affiche (ex. acquitter le retour) */
 		onShown?: () => void;
+		/** Fête du retour après une pause : jamais deux fois */
+		isReturn?: boolean;
 	}
 
 	// Constantes
@@ -92,6 +94,8 @@
 	/** Lecture de présence terminée (réussie ou non) */
 	let loaded = $state(false);
 	let returnAfterPause = $state(false);
+	/** Retour déjà fêté pendant ce chargement : une relecture ne le refait pas dire */
+	let returnCelebrated = false;
 	/** Palotin selon le serveur : `null` tant qu'il n'a pas répondu (décide seul du quiz) */
 	let serverHasBuddy = $state<boolean | null>(null);
 	/** Palotin lu par la présence : repli quand le cache a expiré (TTL de 10 min) */
@@ -137,7 +141,7 @@
 				presenceBuddy = view.buddy;
 				if (studentCache.getBuddySync() === cachedBefore) studentCache.hydrateBuddy(view.buddy);
 				// Un retour déjà en file ou déjà dit n'est pas effacé par une relecture
-				if (view.returnAfterPause) returnAfterPause = true;
+				if (view.returnAfterPause && !returnCelebrated) returnAfterPause = true;
 			}
 		} catch {
 			// Lecture en échec : pas de passage ; l'écusson reste si le Palotin est déjà connu
@@ -147,17 +151,25 @@
 	}
 
 	/** Met une réplique du Palotin dans la file des passages. */
-	function enqueueContext(context: BuddyMessageContext, onShown?: () => void) {
+	function enqueueContext(context: BuddyMessageContext, onShown?: () => void, isReturn = false) {
 		if (!buddy) return;
 		const message = buddyMessageEngine.getMessage(buddy.palotin_type, context);
 		if (!message) return;
 		const expression = buddyMessageEngine.getExpression(context);
-		queue = [...queue, { message, expression, link: null, onShown }];
+		queue = [...queue, { message, expression, link: null, onShown, isReturn }];
 	}
 
-	/** Le retour est fêté : le serveur l'efface (en échec, il reviendra). */
+	/** Le retour est fêté en passage : le serveur l'efface (en échec, il reviendra). */
 	function acknowledgeWelcomeBack() {
+		markReturnCelebrated();
 		fetch(WELCOME_BACK_URL, { method: 'POST' }).catch(() => {});
+	}
+
+	/** Retour fêté (passage ou maison) : plus de fête en file ni à venir pour ce chargement. */
+	function markReturnCelebrated() {
+		returnCelebrated = true;
+		returnAfterPause = false;
+		queue = queue.filter((passage) => !passage.isReturn);
 	}
 
 	/**
@@ -178,7 +190,9 @@
 	async function planPassagesNow() {
 		if (returnAfterPause) {
 			returnAfterPause = false;
-			enqueueContext('return_after_pause', acknowledgeWelcomeBack);
+			if (!returnCelebrated && !queue.some((passage) => passage.isReturn)) {
+				enqueueContext('return_after_pause', acknowledgeWelcomeBack, true);
+			}
 		}
 
 		if (!announcementPromise) {
@@ -276,8 +290,9 @@
 	}
 
 	// Lecture du Palotin dès la première page où il peut apparaître
+	// (les relectures après une activité passent par `afterNavigate`, maison ou passage seulement)
 	$effect(() => {
-		if (zone !== null) untrack(() => void requestPresence());
+		if (zone !== null && !presenceRequested) untrack(() => void requestPresence());
 	});
 
 	// File des passages : jamais hors des pages de passage, ni pendant l'état ouvert
@@ -325,9 +340,7 @@
 			<BuddyWidget
 				fallbackBuddy={presenceBuddy}
 				{returnAfterPause}
-				onWelcomeBackSaid={() => {
-					returnAfterPause = false;
-				}}
+				onWelcomeBackSaid={markReturnCelebrated}
 				onChangePalotin={() => (showChangeModal = true)}
 			/>
 		{/key}

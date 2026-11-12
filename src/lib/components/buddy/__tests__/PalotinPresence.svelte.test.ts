@@ -200,6 +200,22 @@ describe('PalotinPresence — pages de passage', () => {
 		await vi.waitFor(() => expect(calls(WELCOME_BACK_URL)).toHaveLength(1));
 	}, 8000);
 
+	it('retour déjà fêté : une relecture qui le rend encore ne le refait pas dire', async () => {
+		mockServer({ presence: { buddy, returnAfterPause: true } });
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(calls(WELCOME_BACK_URL)).toHaveLength(1), { timeout: 3000 });
+		await vi.waitFor(() => expect(badge()).not.toBeNull(), { timeout: 8000 });
+
+		// Acquittement pas encore écrit (ou autre onglet) : le serveur le rend encore
+		mockServer({ presence: { buddy, returnAfterPause: true } });
+		notifyBuddyActivity();
+		navigateTo('/dashboard/student/progression');
+		await vi.waitFor(() => expect(calls(PRESENCE_URL)).toHaveLength(1));
+		await settle(1000);
+		expect(RETURN).not.toContain(bubbleText());
+		expect(calls(WELCOME_BACK_URL)).toHaveLength(0);
+	}, 15_000);
+
 	it('sans activité, changer de page ne relit pas la présence', async () => {
 		mockServer({});
 		await render(PalotinPresence);

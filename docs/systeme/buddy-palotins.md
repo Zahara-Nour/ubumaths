@@ -321,9 +321,11 @@ le visiteur ni le prof ne telechargent son code). La zone se lit dans l'adresse
   (`loadBuddyPresence`, `src/lib/server/buddy-presence.ts`) rend le Palotin (Constance perdue deja
   remise a zero par cette lecture) et le retour a feter (`returnAfterPause`), valides par Zod
   (`parseBuddyPresence`). **Relecture apres une activite** : un gain de pansees non nul
-  (`receiveBuddyGain` → `notifyBuddyActivity`, `palotin-presence.ts`) marque la presence a relire ;
-  elle est relue en arrivant dans la maison ou sur une page de passage (`afterNavigate`), pour feter
-  un retour sans recharger.
+  (`receiveBuddyGain` → `notifyBuddyActivity`, `palotin-presence.ts` ; Entrainement, Course aux
+  nombres, revision, enigme) marque la presence a relire ; elle est relue en arrivant dans la maison
+  ou sur une page de passage (`afterNavigate`), pour feter un retour sans recharger. Un retour fete
+  (passage ou maison) ne l'est plus pendant ce chargement, meme si une relecture le rend encore ;
+  dans la maison, salutation et annonce de la Chatterie attendent la fin de sa bulle.
   Le Palotin va dans `studentCache` (`hydrateBuddy`). Lecture en echec : pas de passage ; l'ecusson
   reste si le Palotin est deja en cache (layout de l'espace eleve).
 - **Maison** : `BuddyWidget` (recree en passant de l'accueil a la Chatterie) : replique du retour

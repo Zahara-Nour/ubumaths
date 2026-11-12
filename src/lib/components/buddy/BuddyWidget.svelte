@@ -60,6 +60,8 @@
 	let welcomeTimer: ReturnType<typeof setTimeout> | null = null;
 	/** Réplique du retour programmée : jamais deux fois pour ce widget */
 	let returnScheduled = false;
+	/** Fin de la bulle du retour : salutation et annonce attendent jusque-là (horodatage, ms) */
+	let returnBubbleUntil = 0;
 
 	// Status panel
 	let showStatus = $state(false);
@@ -128,12 +130,22 @@
 		const wait = Math.max(0, minDelay - (Date.now() - mountedAt));
 		if (!announcement) {
 			if (afterWelcomeBack) return;
-			greetingTimer = setTimeout(() => showMessage('idle'), wait);
+			greetingTimer = setTimeout(() => {
+				// Retour fêté entre-temps : pas de salutation par-dessus
+				if (!returnScheduled) showMessage('idle');
+			}, wait);
 			return;
 		}
-		nappingTimer = setTimeout(() => {
+		const announce = () => {
+			// Retour fêté entre-temps (présence relue) : l'annonce attend la fin de sa bulle
+			const remaining = returnBubbleUntil - Date.now();
+			if (remaining > 0) {
+				nappingTimer = setTimeout(announce, remaining);
+				return;
+			}
 			speak(announcement.message, announcement.expression, CHATTERIE_LINK);
-		}, wait);
+		};
+		nappingTimer = setTimeout(announce, wait);
 	}
 
 	/**
@@ -143,6 +155,7 @@
 	 */
 	function scheduleReturn() {
 		returnScheduled = true;
+		returnBubbleUntil = Date.now() + 1000 + BUBBLE_DURATION;
 		welcomeTimer = setTimeout(() => {
 			welcomeTimer = null;
 			showMessage('return_after_pause');
