@@ -6,13 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, à l'ouverture._
+_Mis à jour le 2026-11-12, à l'ouverture de la PR 1._
 
-- **État** : PR 1 (affichage) en cours d'écriture.
-- **Prochaine action** : PR 1 (parseur, scène, écran, PDF, catalogue, éditeur riche, doc), revue, merge ; puis
-  retour à `questions-6`, lot 13.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun.
+- **État** : PR 1 (affichage) écrite, revue (`code-reviewer` : aucun bloquant), PR ouverte.
+- **Prochaine action** : CI verte → merge ; puis retour à `questions-6`, lot 13 (6 modèles 6-142), modèles en
+  brouillon jusqu'au `deploy:prod` qui livre le bloc.
+- **En attente de David** : garder le schéma dans la vitrine `/demo/blocs` (10 blocs au lieu de 9) ?
+- **Pièges en cours** : `-80` retire de la longueur : la barre « 80 de moins » est plus COURTE que celle de
+  référence (`Bronze : ? (2,5) ; -80 (1,5)` sous `Argent : ? (4)`). Un `=` dans une étiquette ouvre l'accolade.
 - **Worktree / branche** : `../ubumaths-wt-schema-barres` · `feat/schema-barres`.
 
 ## 1. Décisions (phase 0, `questions-6` § 29)
@@ -73,3 +74,9 @@ total : 320 €
     faite seulement de parties manquantes.
 
 ## 3. Historique
+
+- 2026-11-12 — PR 1 écrite (agent `frontend-developer`) : parseur, scène, `SchemaBarres.svelte`, Typst, catalogue,
+  éditeur riche, vitrine `/demo/blocs`, doc `ubumark.md` ; 53 tests du dossier `schema-barres`, compilation Typst
+  réelle. Rendu vérifié à l'écran (clair, sombre, colonne de 358 px) et au PDF (4 exemples). Exemple des primes
+  corrigé (bronze plus court). Revue `code-reviewer` : aucun bloquant ; mineur corrigé (barre sans nom désignée
+  par son rang).
