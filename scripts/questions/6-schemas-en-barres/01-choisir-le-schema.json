@@ -1,0 +1,122 @@
+{
+	"title": "Schéma en barres : choisir le schéma d'un énoncé",
+	"description": "Somme et différence de deux quantités : choisir parmi trois schémas en barres celui qui traduit l'énoncé (écart « de plus » ou « de moins »)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Léa et Tom ont ${{eval:2*p+d}}$ billes en tout. Léa en a ${{d}}$ de plus que Tom.\n\nQuel schéma traduit cet énoncé ?\n\n````choix\n- ```schema-barres\n  Tom : ? (3)\n  Léa : ? (3) ; {{d}} (1)\n  total : {{eval:2*p+d}}\n  ```\n- ```schema-barres\n  Tom : ? (3) ; {{d}} (1)\n  Léa : ? (3)\n  total : {{eval:2*p+d}}\n  ```\n- ```schema-barres\n  Tom : ? (3)\n  Léa : ? (3) ; {{eval:2*p+d}} (1)\n  total : {{d}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..300"
+				},
+				{
+					"name": "d",
+					"expression": "2..90"
+				}
+			],
+			"conditions": ["2*p+d<1000", "p>=2*d", "d*6>=p"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le tout.** Les deux barres ensemble font ${{eval:2*p+d}}$ billes : l'accolade, à droite, embrasse les deux barres.",
+					"**L'écart.** Léa en a ${{d}}$ de plus que Tom : c'est la barre de Léa qui dépasse de ${{d}}$.\n\n```schema-barres\nTom : ? (3)\nLéa : ? (3) ; {{d}} (1)\ntotal : {{eval:2*p+d}}\n```\n\n"
+				]
+			}
+		},
+		{
+			"statement": "Léa et Tom ont ${{eval:2*p+d}}$ cartes en tout. Léa en a ${{d}}$ de moins que Tom.\n\nQuel schéma traduit cet énoncé ?\n\n````choix\n- ```schema-barres\n  Léa : ? (3)\n  Tom : ? (3) ; {{d}} (1)\n  total : {{eval:2*p+d}}\n  ```\n- ```schema-barres\n  Léa : ? (3) ; {{d}} (1)\n  Tom : ? (3)\n  total : {{eval:2*p+d}}\n  ```\n- ```schema-barres\n  Léa : ? (3)\n  Tom : ? (3) ; {{eval:2*p+d}} (1)\n  total : {{d}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..300"
+				},
+				{
+					"name": "d",
+					"expression": "2..90"
+				}
+			],
+			"conditions": ["2*p+d<1000", "p>=2*d", "d*6>=p"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le tout.** Les deux barres ensemble font ${{eval:2*p+d}}$ cartes : l'accolade, à droite, embrasse les deux barres.",
+					"**L'écart.** Tom en a ${{d}}$ de plus que Léa : c'est la barre de Tom qui dépasse de ${{d}}$.\n\n```schema-barres\nLéa : ? (3)\nTom : ? (3) ; {{d}} (1)\ntotal : {{eval:2*p+d}}\n```\n\n"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bon schéma",
+			"variationIndex": 0,
+			"variables": {
+				"p": "36",
+				"d": "12"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : écart sur la barre de Tom",
+			"variationIndex": 0,
+			"variables": {
+				"p": "36",
+				"d": "12"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : écart et total inversés",
+			"variationIndex": 0,
+			"variables": {
+				"p": "36",
+				"d": "12"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "« de moins » : bon schéma",
+			"variationIndex": 1,
+			"variables": {
+				"p": "50",
+				"d": "25"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "« de moins » : écart sur la barre de Léa",
+			"variationIndex": 1,
+			"variables": {
+				"p": "50",
+				"d": "25"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

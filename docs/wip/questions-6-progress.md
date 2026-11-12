@@ -5,19 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2597 (bloc ` ```schema-barres `)._
+_Mis à jour le 2026-11-12, lot 13 écrit (PR à ouvrir)._
 
-- **État** : lots 1 à 12 clos ; restent 142 et le groupe D (sans modèle, § 5). Bloc ` ```schema-barres ` mergé
-  (#2597, pas encore en prod) ; syntaxe : `docs/systeme/ubumark.md` § « Schéma en barres ».
-- **Prochaine action** : lot 13 (6 modèles 6-142, décisions du § 29 point 5) : phase 0 du lot (variations, plages,
-  niveaux, formes de réponse) à soumettre à David ; modèles en brouillon jusqu'au `deploy:prod` qui livre le bloc.
-- **En attente de David** : rien (la phase 0 du lot 13 lui sera soumise).
-- **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`). Schéma en barres : `-80` raccourcit la barre
-  (`Bronze : ? (2,5) ; -80 (1,5)` sous `Argent : ? (4)`), un `=` dans une étiquette ouvre l'accolade.
-  `texte(P, …)` décale en haut à droite : `dx=0, dy=0, ancre="centre"`. `\pi` dans `eval:`. Les `id` écrits par
-  `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
-  `publier-lot.ts` (même en simulation) est refusé par le mode auto : David le lance avec `!`.
-- **Worktree / branche** : aucun (à créer pour le lot 13).
+- **État** : lot 13 (6 modèles 6-142, § 30) écrit et vérifié (§ 30.1), PR des fichiers en cours ; restent ensuite
+  le groupe D (sans modèle, § 5).
+- **Prochaine action** : merger la PR ; puis, **après le `deploy:prod` qui livre ` ```schema-barres ` (#2597)**,
+  David crée les brouillons (`create-questions --dir scripts/questions/6-schemas-en-barres --publier`), migration
+  nœud + tag, page à cocher, publication.
+- **En attente de David** : `deploy:prod` ; n° 34 de `outils-manquants.md` (schéma petit dans un choix à 390 px).
+- **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`). Les `id` écrits par `create-questions
+--publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`). `publier-lot.ts`
+  est refusé par le mode auto : David le lance avec `!`.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-13`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1815,3 +1814,76 @@ Décisions :
 Chantier [`schema-barres`](../archive/wip/schema-barres-progress.md) : #2597 mergé (CI verte, revue `code-reviewer`
 sans bloquant), rendu vérifié à l'écran et au PDF. Exemple de la phase 0 corrigé : « 80 de moins » = barre plus
 courte (`Bronze : ? (2,5) ; -80 (1,5)`). Vitrine `/demo/blocs` : le schéma y reste (David, « je te suis »).
+
+## 30. Lot 13 « Schémas en barres » : phase 0 (validée par David le 2026-11-12, « je valide »)
+
+Point : 6-142 « Utiliser des modèles pré-algébriques (schémas en barre) pour résoudre des problèmes algébriques »,
+aucune borne propre. Source : _exemples de mise en œuvre_ 6e p. 8 (primes 320 € : or = argent + 70, bronze =
+argent − 80 ; pastèque / ananas : 4 ananas + 1 pastèque = 31 €, 2 ananas + 2 pastèques = 29 €, réponse décimale
+5,50 €). Cadre du § 29 point 5 : entiers, résultats entiers ⩽ 1 000, longueurs des segments écrites par le prof
+(fixes par variation, jamais calculées). Formes de réponse : nombres entiers dans des cases (unité écrite après la
+case), ou choix entre schémas pour (1). Corrigé de chaque modèle : le schéma **rempli** (les `?` remplacés par les
+valeurs), puis les calculs, un par ligne. Contextes tournants : billes, cartes, timbres, € (achats), cm (ruban).
+
+1. **Choisir le schéma** (niveau 1) — « Léa et Tom ont 84 billes en tout ; Léa en a 12 de plus que Tom. Quel schéma
+   traduit l'énoncé ? » Choix unique entre 3 schémas, mélangés : le bon (`Tom : ?` / `Léa : ? ; 12` / `total : 84`),
+   l'écart sur la mauvaise barre (`Tom : ? ; 12` / `Léa : ?`), l'écart pris pour le total (`total : 12`, `= 84` sous
+   une barre). v1 « de plus », v2 « de moins » (la barre courte change de personne). Aucun calcul demandé.
+2. **Somme et différence, schéma donné** (1) — même énoncé, schéma dessiné, deux cases (la petite part, la grande).
+   v1 deux personnes ; v2 un ruban de S cm coupé en deux morceaux, l'un plus long de D cm. S de 20 à 1 000,
+   S − D pair, D < S.
+3. **« n fois plus »** (1) — Tom : `?` ; Léa : `? ; ? ; ?` (n segments, n de 2 à 5). v1 total connu (« 96 en
+   tout ») ; v2 écart connu (« Léa en a 48 de plus »), accolade `= 48` impossible sur une partie de barre : l'écart
+   est écrit dans l'énoncé seul (voir question 1). Deux cases.
+4. **Trois parts avec écarts** (2) — les primes de la source : total T, or = argent + d₁, bronze = argent − d₂
+   (schéma du § 29.1). v1 « de plus / de moins » comme la source ; v2 chaîne (voir question 2). Trois cases.
+   Conditions : (T − d₁ + d₂) divisible par 3, bronze ⩾ 10.
+5. **Deux lignes** (2) — ananas / pastèque, puis stylos / cahiers. Deux barres de segments `A` et `P`, accolade
+   `= 31 €` sous chacune. v1 `A ; A ; A ; P` et `A ; P` (la différence donne 2 A) ; v2 la forme de la source
+   `A ; A ; A ; A ; P` et `A ; A ; P ; P` (moitié de la seconde ligne, puis différence). Prix entiers de 1 à 50 € ;
+   en v2, le second total est pair. Deux cases.
+6. **a × ? + b = c** (1) — « 3 cahiers identiques et une règle à 7 € coûtent 100 € » : `: ? ; ? ; ? ; 7 = 100 €`,
+   une case. v1 achats (€) ; v2 « 4 paquets identiques de billes et 15 billes en vrac : 95 billes ». a de 2 à 6,
+   ? de 2 à 150, c ⩽ 1 000.
+
+Nœud et tag : migration de rangement après les brouillons, comme aux lots précédents ; nœud à relever (rubrique
+« Algèbre » du BO). **Question d'accès** (migration nœud + tag) : aucun accès nouveau ; brouillons visibles de
+l'admin et de l'auteur seuls jusqu'à la publication. Brouillons jusqu'au `deploy:prod` qui livre le bloc (#2597).
+
+**Questions** :
+
+1. (3) v2 : le bloc n'a pas d'accolade sur une partie de barre. Écart dans l'énoncé seul, schéma sans accolade ?
+   (recommandé ; l'accolade partielle notée dans `outils-manquants.md`)
+2. (4) v2 : chaîne « or = argent + d₁, argent = bronze + d₂ » (deux « de plus ») ? (recommandé : l'autre structure
+   courante, mêmes outils)
+3. (5) : rester en entiers (§ 29) et ne pas reprendre la source telle quelle (5,50 €) ? (recommandé)
+4. Niveaux : 1 pour (1), (2), (3), (6) ; 2 pour (4) et (5) ?
+5. Valider la phase 0 (variations, plages, formes de réponse) ?
+
+**Réponses de David (2026-11-12)** : « je valide » (recommandations retenues). (1) Modèle 3 v2 : écart dans l'énoncé
+seul ; accolade partielle notée dans `outils-manquants.md` (n° 33). (2) Modèle 4 v2 : chaîne à deux « de plus ».
+(3) Entiers. (4) Niveaux 1 (modèles 1, 2, 3, 6) et 2 (4, 5). (5) Phase 0 validée.
+
+### 30.1 Écriture (2026-11-12)
+
+Script `docs/wip/questions/lot-13-schemas-en-barres.py` → `scripts/questions/6-schemas-en-barres/` (6 modèles,
+31 specs). `question:specs` à 300 tirages par variation : 31 specs vertes, 3 600 tirages ; sonde ad hoc (hors dépôt,
+`parseSchemaBarresContent` sur chaque bloc d'énoncé, de choix et de corrigé) : 4 200 blocs, 0 erreur ;
+`create-questions` en simulation contre la prod : 6 « à créer ». Base locale, aperçu admin à 390 et 1 100 px :
+les 6 modèles regardés, corrigé du modèle 1 joué.
+
+Écarts à la phase 0 et pièges :
+
+- **Ordres de grandeur** : longueurs fixes par variation, donc conditions pour que le dessin ne mente pas trop
+  (un écart de 9 € dessiné moitié de 252 €, vu à l'aperçu) : chaque part de base ⩾ chaque écart, et écart ⩾ base / 4
+  à base / 6 selon le modèle. Assez lâches pour garder les exemples de la source (primes 110 / 70 / 80, CM1
+  3 × 31 + 7).
+- Modèle 6 : le segment connu `b` a la longueur 1 (comme une part), b ⩽ 2 × part.
+- Modèle 1 : l'accolade du total sans unité (« 608 cartes » élargissait le dessin) ; totaux en `$…$`.
+- **Schéma dans un choix à 390 px** : réduit à la largeur de la case, texte vers 6 px (lisible à 1 100 px).
+  Doubler les longueurs ne change rien (la plus longue barre a toujours la même largeur). Noté
+  `outils-manquants.md` n° 34, à trancher.
+- Le champ `theme` / `domain` / `subdomain` est refusé (ADR 0035) : copier le `modele()` du lot 12, pas du lot 9.
+- `question:specs` dans un worktree neuf : `pnpm exec svelte-kit sync` d'abord (`$lib` introuvable sinon).
+- Base locale : `create-questions --publier` lancé sur une **copie** du dossier (scratchpad), pour que les `id`
+  locaux n'entrent pas dans les fichiers du dépôt.

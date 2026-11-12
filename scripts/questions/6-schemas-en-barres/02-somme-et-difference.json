@@ -1,0 +1,130 @@
+{
+	"title": "Schéma en barres : somme et différence",
+	"description": "Deux quantités dont on connaît la somme et la différence, schéma en barres donné : trouver chacune (deux personnes, ou un ruban coupé en deux morceaux)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Hugo et Nina ont {{eval:2*p+d}} cartes à eux deux. Nina en a ${{d}}$ de plus que Hugo.\n\n```schema-barres\nHugo : ? (3)\nNina : ? (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}}\n```\n\nCombien de cartes chacun a-t-il ?\n\nHugo : $?$ cartes\n\nNina : $?$ cartes",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..400"
+				},
+				{
+					"name": "d",
+					"expression": "2..150"
+				}
+			],
+			"conditions": ["2*p+d<1000", "p>=d", "d*4>=p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux parts égales.** On enlève l'écart du total : ${{eval:2*p+d}} - {{d}} = {{eval:2*p}}$. Il reste deux barres égales.",
+					"**Une part.** ${{eval:2*p}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{p}}}$.",
+					"**L'autre part.** ${{p}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:p+d}}}$.\n\n```schema-barres\nHugo : {{p}} (3)\nNina : {{p}} (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}}\n```\n\n"
+				]
+			}
+		},
+		{
+			"statement": "Un ruban de ${{eval:2*p+d}}$ cm est coupé en deux morceaux. Le grand morceau mesure ${{d}}$ cm de plus que le petit.\n\n```schema-barres\nPetit : ? (3)\nGrand : ? (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}} cm\n```\n\nCombien mesure chaque morceau ?\n\nPetit morceau : $?$ cm\n\nGrand morceau : $?$ cm",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..400"
+				},
+				{
+					"name": "d",
+					"expression": "2..150"
+				}
+			],
+			"conditions": ["2*p+d<1000", "p>=d", "d*4>=p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux parts égales.** On enlève l'écart du total : ${{eval:2*p+d}} - {{d}} = {{eval:2*p}}$. Il reste deux barres égales.",
+					"**Une part.** ${{eval:2*p}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{p}}}$.",
+					"**L'autre part.** ${{p}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:p+d}}}$.\n\n```schema-barres\nPetit : {{p}} (3)\nGrand : {{p}} (3) ; {{d}} (1,5)\ntotal : {{eval:2*p+d}} cm\n```\n\n"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "84 cartes, écart 12 : 36 et 48",
+			"variationIndex": 0,
+			"variables": {
+				"p": "36",
+				"d": "12"
+			},
+			"answers": ["36", "48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moitié du total",
+			"variationIndex": 0,
+			"variables": {
+				"p": "36",
+				"d": "12"
+			},
+			"answers": ["42", "42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : total moins l'écart non partagé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "36",
+				"d": "12"
+			},
+			"answers": ["72", "84"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ruban de 150 cm, écart 30 : 60 et 90",
+			"variationIndex": 1,
+			"variables": {
+				"p": "60",
+				"d": "30"
+			},
+			"answers": ["60", "90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : morceaux inversés",
+			"variationIndex": 1,
+			"variables": {
+				"p": "60",
+				"d": "30"
+			},
+			"answers": ["90", "60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

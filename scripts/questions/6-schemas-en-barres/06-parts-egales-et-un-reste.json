@@ -1,0 +1,135 @@
+{
+	"title": "Schéma en barres : parts égales et un reste",
+	"description": "Un total fait de a parts égales (a de 2 à 6) et d'une quantité connue, schéma en barres donné : trouver une part (a × ? + b = c)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "${{a}}$ cahiers identiques et une règle à ${{b}}$ € coûtent ${{eval:a*x+b}}$ € en tout.\n\n```schema-barres\n: ? ; ?{{if:a>2| ; ?|}}{{if:a>3| ; ?|}}{{if:a>4| ; ?|}}{{if:a>5| ; ?|}} ; {{b}} = {{eval:a*x+b}} €\n```\n\nQuel est le prix d'un cahier ?\n\n$?$ €",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "x",
+					"expression": "2..150"
+				},
+				{
+					"name": "b",
+					"expression": "2..50"
+				}
+			],
+			"conditions": ["a*x+b<1000", "b<=2*x", "b*5>=x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les parts égales.** On enlève le prix de la règle : ${{eval:a*x+b}} - {{b}} = {{eval:a*x}}$.",
+					"**Une part.** ${{eval:a*x}} \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.\n\n```schema-barres\n: {{x}} ; {{x}}{{if:a>2| ; {{x}}|}}{{if:a>3| ; {{x}}|}}{{if:a>4| ; {{x}}|}}{{if:a>5| ; {{x}}|}} ; {{b}} = {{eval:a*x+b}} €\n```\n\n"
+				]
+			}
+		},
+		{
+			"statement": "Zoé a ${{a}}$ paquets de billes identiques et ${{b}}$ billes en vrac, soit ${{eval:a*x+b}}$ billes en tout.\n\n```schema-barres\n: ? ; ?{{if:a>2| ; ?|}}{{if:a>3| ; ?|}}{{if:a>4| ; ?|}}{{if:a>5| ; ?|}} ; {{b}} = {{eval:a*x+b}} billes\n```\n\nCombien de billes y a-t-il dans un paquet ?\n\n$?$ billes",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "x",
+					"expression": "2..150"
+				},
+				{
+					"name": "b",
+					"expression": "2..50"
+				}
+			],
+			"conditions": ["a*x+b<1000", "b<=2*x", "b*5>=x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les parts égales.** On enlève les billes en vrac : ${{eval:a*x+b}} - {{b}} = {{eval:a*x}}$.",
+					"**Une part.** ${{eval:a*x}} \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.\n\n```schema-barres\n: {{x}} ; {{x}}{{if:a>2| ; {{x}}|}}{{if:a>3| ; {{x}}|}}{{if:a>4| ; {{x}}|}}{{if:a>5| ; {{x}}|}} ; {{b}} = {{eval:a*x+b}} billes\n```\n\n"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Source CM1 : 3 × ? + 7 = 100 → 31",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"x": "31",
+				"b": "7"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (c + b) ÷ a",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"x": "31",
+				"b": "7"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : c − b sans partager",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"x": "31",
+				"b": "7"
+			},
+			"answers": ["93"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 paquets de 150, 49 en vrac",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"x": "150",
+				"b": "49"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 paquets de 2, 2 en vrac",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"x": "2",
+				"b": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
