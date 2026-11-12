@@ -1,5 +1,6 @@
 <script lang="ts">
 	import {
+		localeFileNameSuffix,
 		sanitizeForFileName,
 		worksheetPdfFileName,
 		type WorksheetPdfKind
@@ -305,7 +306,12 @@
 			pdfBlob = new Blob([compiled.data.pdf as BlobPart], { type: 'application/pdf' });
 			pdfUrl = URL.createObjectURL(pdfBlob);
 			pageCount = pdfPageCount(compiled.data.pdf);
-			pdfFilename = worksheetPdfFileName(worksheet.title, mode, studentName);
+			pdfFilename = worksheetPdfFileName(
+				worksheet.title,
+				mode,
+				studentName,
+				worksheetLocale(worksheet.config)
+			);
 
 			toaster.success('PDF genere avec succes');
 			if (compiled.fallbackError) toaster.warning(fallbackWarning(compiled.fallbackError));
@@ -362,7 +368,7 @@
 
 		try {
 			const zip = new JSZip();
-			const folderName = `${sanitizeForFileName(worksheet.title)}_${mode}`;
+			const folderName = `${sanitizeForFileName(worksheet.title)}_${mode}${localeFileNameSuffix(worksheetLocale(worksheet.config))}`;
 			const folder = zip.folder(folderName);
 
 			if (!folder) {
@@ -425,7 +431,15 @@
 				});
 
 				const pdfData = await compileForBatch(typstContent);
-				folder.file(worksheetPdfFileName(worksheet.title, mode, studentName), pdfData);
+				folder.file(
+					worksheetPdfFileName(
+						worksheet.title,
+						mode,
+						studentName,
+						worksheetLocale(worksheet.config)
+					),
+					pdfData
+				);
 			}
 
 			// Corrigés : un exemplaire général, sans nom d'élève (et sans énoncé)

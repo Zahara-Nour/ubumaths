@@ -609,7 +609,9 @@ la lecture publique `variant="reader"` reste sur la fiche) :
 
 Réponses et Corrigé ne répètent **jamais l'énoncé** (ni consigne d'exercice, ni consigne de
 section, ni consignes d'épreuve). Noms de fichier distincts : `worksheetPdfFileName`
-(« … - Réponses.pdf », « … - Corrigé.pdf »). Côté élève, la boîte de téléchargement propose « avec
+(« … - Réponses.pdf », « … - Corrigé.pdf »). Version anglaise d'une fiche (`config.language`) dans
+l'aperçu PDF du prof : **même titre français**, suivi de `_EN` (« … - Corrigé_EN.pdf », dossier du zip
+compris ; David, 2026-11-12). Côté élève, la boîte de téléchargement propose « avec
 réponses » (partie « Réponses ») ou « avec corrigé » (partie « Corrections », dont seules les corrections sont en
 Shantell / Chiphre Math), pour les seuls exercices dont la correction est visible : l'API élève sert
 `answers` **exactement** sous la condition de `correction` (`correction_visible`).
