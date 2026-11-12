@@ -1,0 +1,197 @@
+{
+	"title": "Démontrer la formule d'intégration par parties",
+	"description": "Démonstration à trous : dérivée de uv (choix), uv primitive de (uv)′ (choix), formule isolée (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $u$ et $v$ deux fonctions dérivables sur $[a\\,;\\,b]$, de dérivées $u'$ et $v'$ continues. On démontre la formule d'intégration par parties :\n\n$\\displaystyle\\int_a^b u(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b-\\int_a^b u'(x)v(x)\\,\\mathrm{d}x$.\n\nOn part de la dérivée du produit $uv$. Pour tout $x$ de $[a\\,;\\,b]$, que vaut $(uv)'(x)$ ?\n\n```choix\n- $u'(x)v(x)+u(x)v'(x)$\n- $u'(x)v'(x)$\n- $u'(x)v(x)-u(x)v'(x)$\n- $u'(x)+v'(x)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée d'un produit est $(uv)'=u'v+uv'$.",
+					"Donc $(uv)'(x)=\\textcolor{{{color:primary.0}}}{u'(x)v(x)+u(x)v'(x)}$.",
+					"La dérivée d'un produit n'est pas le produit des dérivées."
+				]
+			}
+		},
+		{
+			"statement": "Soit $u$ et $v$ deux fonctions dérivables sur $[a\\,;\\,b]$, de dérivées $u'$ et $v'$ continues. On démontre la formule d'intégration par parties :\n\n$\\displaystyle\\int_a^b u(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b-\\int_a^b u'(x)v(x)\\,\\mathrm{d}x$.\n\nPour tout $x$, $(uv)'(x)=u'(x)v(x)+u(x)v'(x)$. Pourquoi $\\displaystyle\\int_a^b (uv)'(x)\\,\\mathrm{d}x=u(b)v(b)-u(a)v(a)$ ?\n\n```choix\n- Car $uv$ est une primitive de $(uv)'$ sur $[a\\,;\\,b]$.\n- Car $u$ et $v$ sont continues sur $[a\\,;\\,b]$.\n- Car l'intégrale d'un produit est le produit des intégrales.\n- Car $u(a)v(a)=0$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(uv)'$ est continue et $uv$ en est une primitive sur $[a\\,;\\,b]$.",
+					"Donc $\\displaystyle\\int_a^b (uv)'(x)\\,\\mathrm{d}x=\\textcolor{{{color:primary.0}}}{\\big[u(x)v(x)\\big]_a^b}=u(b)v(b)-u(a)v(a)$.",
+					"L'intégrale d'un produit n'est pas le produit des intégrales : c'est justement ce que la formule contourne."
+				]
+			}
+		},
+		{
+			"statement": "Soit $u$ et $v$ deux fonctions dérivables sur $[a\\,;\\,b]$, de dérivées $u'$ et $v'$ continues. On démontre la formule d'intégration par parties :\n\n$\\displaystyle\\int_a^b u(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b-\\int_a^b u'(x)v(x)\\,\\mathrm{d}x$.\n\nPar linéarité, $\\displaystyle\\int_a^b u'(x)v(x)\\,\\mathrm{d}x+\\int_a^b u(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b$. Que vaut alors $\\displaystyle\\int_a^b u(x)v'(x)\\,\\mathrm{d}x$ ?\n\n```choix\n- $\\big[u(x)v(x)\\big]_a^b-\\int_a^b u'(x)v(x)\\,\\mathrm{d}x$\n- $\\big[u(x)v(x)\\big]_a^b+\\int_a^b u'(x)v(x)\\,\\mathrm{d}x$\n- $\\big[u(x)v(x)\\big]_a^b-\\int_a^b u'(x)v'(x)\\,\\mathrm{d}x$\n- $\\big[u(x)v(x)\\big]_a^b\\times\\int_a^b u'(x)v(x)\\,\\mathrm{d}x$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $\\displaystyle\\int_a^b u(x)v'(x)\\,\\mathrm{d}x$ en retranchant $\\displaystyle\\int_a^b u'(x)v(x)\\,\\mathrm{d}x$ aux deux membres.",
+					"On obtient $\\textcolor{{{color:primary.0}}}{\\displaystyle\\int_a^b u(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b-\\int_a^b u'(x)v(x)\\,\\mathrm{d}x}$.",
+					"Le terme déplacé change de signe : c'est une soustraction, pas une addition."
+				]
+			}
+		},
+		{
+			"statement": "Soit $u$ et $v$ deux fonctions dérivables sur $[a\\,;\\,b]$, de dérivées continues. On démontre la formule d'intégration par parties.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour tout $x$ de $[a\\,;\\,b]$, $(uv)'(x)=u'(x)v(x)+u(x)v'(x)$.\n- $uv$ est une primitive de $(uv)'$ : $\\displaystyle\\int_a^b (uv)'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b$.\n- Par linéarité, $\\displaystyle\\int_a^b u'(x)v(x)\\,\\mathrm{d}x+\\int_a^b u(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b$.\n- Donc $\\displaystyle\\int_a^b u(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b-\\int_a^b u'(x)v(x)\\,\\mathrm{d}x$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On intègre la formule de dérivation d'un produit.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\displaystyle\\int_a^b u(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b-\\int_a^b u'(x)v(x)\\,\\mathrm{d}x}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u′v + uv′",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u′v′",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u′v − uv′",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u′ + v′",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "uv primitive",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : continuité",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit des intégrales",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u(a)v(a) = 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "formule",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe +",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u′v′",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
