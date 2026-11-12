@@ -1,0 +1,204 @@
+{
+	"title": "Méthode de Newton en Python : racine cubique",
+	"description": "Méthode de Newton pour f(x) = x³ − c : faire tourner une itération depuis 1, compléter la condition d'arrêt while abs(f(x)) > eps, dire de quel nombre le résultat est une valeur approchée (racine cubique)",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère le programme Python suivant, où `fp` est la fonction dérivée de `f`.\n\n```python\ndef f(x):\n    return x**3 - {{eval:c}}\n\ndef fp(x):\n    return 3 * x**2\n\ndef newton(x, n):\n    for k in range(n):\n        x = x - f(x) / fp(x)\n    return x\n```\n\nQue renvoie `newton(1, 1)` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4|7|10|13"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(2+c)/3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle est parcourue une seule fois, avec `x` égal à $1$.",
+					"$f(1)=1-{{eval:c}}={{eval:1-c}}$ et $f'(1)=3\\times1^2=3$.",
+					"`x` devient $1-\\dfrac{{{eval:1-c}}}{3}=1+{{eval:(c-1)/3}}=\\textcolor{{{color:primary.0}}}{{{eval:r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous applique la méthode de Newton : elle doit répéter l'itération tant que $f(x)$ n'est pas proche de $0$ à `eps` près. `fp` est la fonction dérivée de `f`.\n\n```python\ndef f(x):\n    return x**3 - {{eval:c}}\n\ndef fp(x):\n    return 3 * x**2\n\ndef newton(x, eps):\n    ...\n        x = x - f(x) / fp(x)\n    return x\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `while abs(f(x)) > eps:`\n- `while abs(f(x)) < eps:`\n- `while f(x) > eps:`\n- `while abs(x) > eps:`\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2|3|5|6|7|9|10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On continue tant que l'écart entre $f(x)$ et $0$ dépasse `eps`, c'est-à-dire tant que $|f(x)|>\\text{eps}$ ; `abs` donne la valeur absolue.",
+					"Avec `f(x) > eps`, la boucle s'arrêterait dès que $f(x)$ est négatif, même loin de $0$ ; avec `abs(f(x)) < eps`, elle ne tournerait qu'une fois arrivée près de la solution.",
+					"La ligne est donc `while abs(f(x)) > eps:`."
+				]
+			}
+		},
+		{
+			"statement": "On considère le programme Python suivant, où `fp` est la fonction dérivée de `f`.\n\n```python\ndef f(x):\n    return x**3 - {{eval:c}}\n\ndef fp(x):\n    return 3 * x**2\n\ndef newton(x, eps):\n    while abs(f(x)) > eps:\n        x = x - f(x) / fp(x)\n    return x\n\nprint(newton(2, 10**-9))\n```\n\nDe quel nombre la valeur affichée est-elle une valeur approchée ?\n\n```choix\n- $\\sqrt[3]{{{eval:c}}}$\n- $\\sqrt{{{eval:c}}}$\n- $\\dfrac{{{eval:c}}}{3}$\n- ${{eval:c}}^3$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2|3|5|6|7|9|10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La méthode de Newton, partie de $x=2$, fournit des valeurs de plus en plus proches d'une solution de $f(x)=0$ ; elle s'arrête quand $|f(x)|\\leqslant10^{-9}$.",
+					"$x^3-{{eval:c}}=0$ a pour unique solution réelle $\\sqrt[3]{{{eval:c}}}$ (la fonction $x\\mapsto x^3$ est strictement croissante).",
+					"La valeur affichée est une valeur approchée de $\\textcolor{{{color:primary.0}}}{\\sqrt[3]{{{eval:c}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "c = 7 : 3",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x + f(x)/f′(x)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"r": "3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c = 13 : 5",
+			"variationIndex": 0,
+			"variables": {
+				"c": "13",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "while abs(f(x)) > eps:",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : while abs(f(x)) < eps:",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : while f(x) > eps:",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : while abs(x) > eps:",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "racine cubique",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racine carrée",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : c/3",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : c³",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

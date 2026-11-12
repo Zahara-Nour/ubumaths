@@ -1,0 +1,206 @@
+{
+	"title": "Algorithme de Briggs pour le logarithme en Python",
+	"description": "Racines carrées successives, puis ln(x) ≈ 2^n (x^(1/2^n) − 1) : faire tourner sur un carré ou une puissance 4e, compléter le return, propriété ln(√x) = ½ ln(x)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\nfrom math import sqrt\n\ndef briggs(x, n):\n    for k in range(n):\n        x = sqrt(x)\n    return 2**n * (x - 1)\n```\n\nQue renvoie `briggs({{eval:x}}, {{eval:n}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "1|2"
+				},
+				{
+					"name": "x",
+					"expression": "eval:q^(2^n)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:2^n*(q-1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle prend ${{eval:n}}$ fois la racine carrée de `x` : ${{eval:x}}$ devient {{if:n==2|${{eval:q^2}}$, puis |}}${{eval:q}}$.",
+					"La fonction renvoie $2^{{{eval:n}}}\\times({{eval:q}}-1)=\\textcolor{{{color:primary.0}}}{{{eval:r}}}$.",
+					"C'est une valeur approchée grossière de $\\ln({{eval:x}})$ : il faut prendre $n$ bien plus grand pour que la racine soit proche de $1$."
+				]
+			}
+		},
+		{
+			"statement": "Pour $x>0$, après $n$ racines carrées successives, $y=x^{1/2^n}$ est proche de $1$, et $\\ln(x)=2^n\\ln(y)$. La fonction Python ci-dessous doit renvoyer une valeur approchée de $\\ln(x)$, en utilisant $\\ln(y)\\approx y-1$ pour $y$ proche de $1$.\n\n```python\nfrom math import sqrt\n\ndef briggs(x, n):\n    for k in range(n):\n        x = sqrt(x)\n    return ...\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `2**n * (x - 1)`\n- `(x - 1) / 2**n`\n- `2**n * x - 1`\n- `x - 1`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À la fin de la boucle, `x` contient $y=x^{1/2^n}$, proche de $1$.",
+					"La tangente à la courbe de $\\ln$ au point d'abscisse $1$ a pour équation $Y=y-1$, donc $\\ln(y)\\approx y-1$ ; puis $\\ln(x)=2^n\\ln(y)\\approx2^n(y-1)$.",
+					"On écrit donc `return 2**n * (x - 1)`."
+				]
+			}
+		},
+		{
+			"statement": "L'algorithme de Briggs repose sur l'égalité $\\ln(x)=2^n\\ln\\left(x^{1/2^n}\\right)$, obtenue en appliquant $n$ fois une propriété du logarithme. Laquelle ?\n\n```choix\n- $\\ln\\left(\\sqrt{x}\\right)=\\dfrac{1}{2}\\ln(x)$\n- $\\ln\\left(\\sqrt{x}\\right)=\\sqrt{\\ln(x)}$\n- $\\ln\\left(\\dfrac{x}{2}\\right)=\\dfrac{\\ln(x)}{2}$\n- $\\ln(x^2)=\\left(\\ln(x)\\right)^2$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $x>0$, $\\ln(x)=\\ln\\left(\\left(\\sqrt{x}\\right)^2\\right)=2\\ln\\left(\\sqrt{x}\\right)$, donc $\\ln\\left(\\sqrt{x}\\right)=\\dfrac{1}{2}\\ln(x)$.",
+					"Chaque racine carrée divise le logarithme par $2$ : après $n$ racines, $\\ln\\left(x^{1/2^n}\\right)=\\dfrac{\\ln(x)}{2^n}$.",
+					"La propriété utilisée est $\\textcolor{{{color:primary.0}}}{\\ln\\left(\\sqrt{x}\\right)=\\dfrac{1}{2}\\ln(x)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "q = 3, n = 1 : 4",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"n": "1",
+				"x": "9",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x − 1 sans 2^n",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"n": "1",
+				"x": "9",
+				"r": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "q = 2, n = 2 : 4",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"n": "2",
+				"x": "16",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "q = 5, n = 2 : 16",
+			"variationIndex": 0,
+			"variables": {
+				"q": "5",
+				"n": "2",
+				"x": "625",
+				"r": "16"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2**n * (x - 1)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (x - 1) / 2**n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2**n * x - 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x - 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ln √x = ½ ln x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racine du ln",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln(x/2)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln(x²)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

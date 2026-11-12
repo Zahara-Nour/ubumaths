@@ -1,0 +1,190 @@
+{
+	"title": "Valeurs approchées de √2, du nombre d'or et de e en Python",
+	"description": "Une constante par variation : √2 par la méthode de Héron (faire tourner une itération), nombre d'or par x = 1 + 1/x (interpréter), e par la somme des 1/k! (compléter t = t / k)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef heron(u, n):\n    for k in range(n):\n        u = (u + 2 / u) / 2\n    return u\n```\n\nQue renvoie `heron({{eval:p}}, 1)` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2|4|5"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(p+2/p)/2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle est parcourue une seule fois, avec `u` égal à ${{eval:p}}$.",
+					"`u` devient $\\dfrac{1}{2}\\left({{eval:p}}+\\dfrac{2}{{{eval:p}}}\\right)=\\dfrac{1}{2}\\left({{eval:p}}+{{eval:2/p;d}}\\right)=\\textcolor{{{color:primary.0}}}{{{eval:r;d}}}$.",
+					"C'est la méthode de Héron : à partir du rang $1$, les termes décroissent et se rapprochent de $\\sqrt{2}\\approx1{,}414$."
+				]
+			}
+		},
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\ndef u(n):\n    x = 1\n    for k in range(n):\n        x = 1 + 1 / x\n    return x\n\nprint(u(30))\n```\n\nDe quel nombre la valeur affichée est-elle une valeur approchée ?\n\n```choix\n- $\\dfrac{1+\\sqrt{5}}{2}$\n- $\\dfrac{1-\\sqrt{5}}{2}$\n- $\\sqrt{5}$\n- $2$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les premières valeurs de `x` sont $1$ ; $2$ ; $1{,}5$ ; $\\dfrac{5}{3}$ ; $1{,}6$ : la suite $x_{n+1}=1+\\dfrac{1}{x_n}$ converge (on l'admet) vers un nombre $\\ell$.",
+					"En passant à la limite : $\\ell=1+\\dfrac{1}{\\ell}$, soit $\\ell^2-\\ell-1=0$, dont les solutions sont $\\dfrac{1-\\sqrt{5}}{2}<0$ et $\\dfrac{1+\\sqrt{5}}{2}$.",
+					"Tous les termes sont supérieurs ou égaux à $1$, donc $\\ell\\geqslant1$ : la valeur affichée approche $\\textcolor{{{color:primary.0}}}{\\dfrac{1+\\sqrt{5}}{2}}\\approx1{,}618$, le nombre d'or."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer $1+\\dfrac{1}{1!}+\\dfrac{1}{2!}+\\cdots+\\dfrac{1}{n!}$, valeur approchée du nombre $e$. À chaque tour de boucle, `t` doit contenir $\\dfrac{1}{k!}$.\n\n```python\ndef approx_e(n):\n    s = 1\n    t = 1\n    for k in range(1, n + 1):\n        ...\n        s = s + t\n    return s\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `t = t / k`\n- `t = t * k`\n- `t = 1 / k`\n- `t = t / (k + 1)`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$k!=(k-1)!\\times k$, donc $\\dfrac{1}{k!}=\\dfrac{1}{(k-1)!}\\times\\dfrac{1}{k}$.",
+					"Avant la ligne, `t` contient $\\dfrac{1}{(k-1)!}$ (au premier tour, $\\dfrac{1}{0!}=1$) : il suffit de le diviser par $k$.",
+					"La ligne est donc `t = t / k`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 1 : 1,5",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"r": "1.5"
+			},
+			"answers": ["1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p = 1 : 1,5 avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"r": "1.5"
+			},
+			"answers": ["1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p = 5 : 2,7",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"r": "2.7"
+			},
+			"answers": ["2.7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p + 2/p sans diviser par 2",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"r": "2.7"
+			},
+			"answers": ["5.4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "nombre d'or",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racine négative",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : racine de 5",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "t = t / k",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : t = t * k",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : t = 1 / k",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : t = t / (k + 1)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

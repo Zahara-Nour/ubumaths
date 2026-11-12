@@ -10,18 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, phase 0 des algorithmes posée (§ 18)._
+_Mis à jour le 2026-11-12, lot 5 écrit, PR en cours (§ 19)._
 
-- **État** : démonstrations terminées (4 lots publiés, § 17). Algorithmes : relevé prod fait, aucun réemploi
-  possible, 18 modèles neufs à écrire (§ 18).
-- **Prochaine action** : après la réponse de David, lot 5 (analyse : 393, 433, 434, 592, 450), dans un worktree neuf
-  depuis `origin/main`.
-- **En attente de David** : rien (D2 du § 18 : phase 0 validée).
+- **État** : démonstrations terminées (§ 17). Algorithmes : phase 0 validée (D2, § 18) ; lot 5 (analyse : 393, 433,
+  434, 592, 450) écrit et vérifié (§ 19).
+- **Prochaine action** : PR du lot 5 verte → merge → David lance `create-questions --publier` → relevé MCP → migration
+  de rangement (gabarit `20261112051818`).
+- **En attente de David** : `create-questions --publier` après le merge.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3), saisie dans le champ « Seed » puis « Générer » ; `publier-lot.ts` lit la prod →
-  David la lance ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale tirée → `;d` dans
-  `expectedAnswer` ; jamais `str.format` sur un gabarit qui contient `{{eval}}` (1re, § 17).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (rien en cours).
+  David la lance ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale tirée → `;d` ; titre déjà
+  pris en prod au même niveau = lot bloqué (§ 19).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-algorithmes-5`.
 
 ---
 
@@ -428,3 +428,26 @@ distracteurs et pièges du § 17 du journal archivé `questions-1spe-demonstrati
 (a/b/c, Python, jamais de programme aléatoire à faire tourner, table de valeurs donnée pour 514 et 534) ; 18 modèles
 neufs, sans nœud neuf, et pour les points posés sur une notion, le modèle va sur la sous-notion de Q3 ; 393 en un
 modèle (√2, φ, e) ; accès : personne de plus ; publication comme les démonstrations.
+
+## 19. Lot 5 : algorithmes, analyse (2026-11-12)
+
+| Point | Modèle (`scripts/questions/tspe-algorithmes-5/`) | Nœud, niveau                                | Variations                                                                                                     |
+| ----- | ------------------------------------------------ | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| 393   | `01-valeurs-approchees-racine-2-nombre-d-or-e`   | Limites de suites › convergence monotone, 4 | Héron : `heron(p, 1)`, p ∈ {1, 2, 4, 5} (case) ; nombre d'or par x = 1 + 1/x (choix) ; e : `t = t / k` (choix) |
+| 433   | `02-methode-de-dichotomie`                       | Continuité › encadrement d'une solution, 4  | deux tours sur x² − c, c non carré de 2 à 15 (deux cases a et b) ; `if f(a) * f(m) <= 0:` ; tours pour 10⁻ᵏ    |
+| 434   | `03-methode-de-newton`                           | Continuité › encadrement d'une solution, 5  | une itération sur x³ − c depuis 1 (case, entier) ; `while abs(f(x)) > eps:` (choix) ; ∛c (choix)               |
+| 592   | `04-methode-de-la-secante`                       | Continuité › encadrement d'une solution, 6  | `secante(1, 3, 1)` sur x² − c = (3 + c)/4 (case) ; ligne de la sécante (choix) ; que représente x (choix)      |
+| 450   | `05-algorithme-de-briggs`                        | Logarithmes › propriétés algébriques, 3     | `briggs(q^(2^n), n)` = 2ⁿ(q − 1) (case) ; `return 2**n * (x - 1)` (choix) ; ln √x = ½ ln x (choix)             |
+
+Script : `docs/wip/questions/lot-tspe-algorithmes-5.py`. Le titre « Méthode de Newton en Python » existe déjà en prod au
+niveau 5 (`2286c302`, 1re) : `create-questions` aurait bloqué le lot. Le modèle s'appelle donc « … : racine cubique ».
+Dichotomie : les étapes du corrigé passent par `{{if}}` sur le signe de f(m) ; a et b finaux par `floor(4*sqrt(c))/4`.
+
+Vérifié : `question:specs` 150 tirages par variation, 5/5 importables (58 specs vertes), 0 `\textcolor` hors `$`, 0
+avertissement ; 210 réponses « faire tourner » recoupées en exécutant les programmes des énoncés (0 écart) ;
+`create-questions` en simulation prod (5 à créer, 0 homonyme) ; brouillons en base locale (copie hors dépôt) ; aperçu
+admin vu à l'écran : case double de la dichotomie jouée juste, puis son corrigé ; choix faux de la sécante, jugé
+faux ; ∛ (Newton), nombre d'or et propriétés de ln rendus.
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-5 --publier`

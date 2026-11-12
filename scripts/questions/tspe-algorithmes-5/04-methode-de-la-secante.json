@@ -1,0 +1,203 @@
+{
+	"title": "Méthode de la sécante en Python",
+	"description": "Méthode de la sécante pour f(x) = x² − c : faire tourner une itération depuis 1 et 3, compléter la ligne x = b − f(b)(b − a)/(f(b) − f(a)), interpréter x (sécante et axe des abscisses)",
+	"grades": ["T_SPE"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère le programme Python suivant (méthode de la sécante).\n\n```python\ndef f(x):\n    return x**2 - {{eval:c}}\n\ndef secante(a, b, n):\n    for k in range(n):\n        x = b - f(b) * (b - a) / (f(b) - f(a))\n        a = b\n        b = x\n    return b\n```\n\nQue renvoie `secante(1, 3, 1)` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(3+c)/4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle est parcourue une seule fois, avec $a=1$ et $b=3$ : $f(1)={{eval:1-c}}$ et $f(3)={{eval:9-c}}$.",
+					"$x=3-{{eval:9-c}}\\times\\dfrac{3-1}{{{eval:9-c}}-({{eval:1-c}})}=3-\\dfrac{{{eval:2*(9-c)}}}{8}={{eval:r;d}}$.",
+					"Puis `b` prend la valeur de `x` : la fonction renvoie $\\textcolor{{{color:primary.0}}}{{{eval:r;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La méthode de la sécante remplace le point d'abscisse $b$ par le point où la droite passant par $(a\\,;\\,f(a))$ et $(b\\,;\\,f(b))$ coupe l'axe des abscisses.\n\n```python\ndef f(x):\n    return x**2 - {{eval:c}}\n\ndef secante(a, b, n):\n    for k in range(n):\n        ...\n        a = b\n        b = x\n    return b\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `x = b - f(b) * (b - a) / (f(b) - f(a))`\n- `x = b - f(b) / (f(b) - f(a))`\n- `x = b - f(b) * (f(b) - f(a)) / (b - a)`\n- `x = b + f(b) * (b - a) / (f(b) - f(a))`\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La droite passant par $(a\\,;\\,f(a))$ et $(b\\,;\\,f(b))$ a pour coefficient directeur $s=\\dfrac{f(b)-f(a)}{b-a}$ et pour équation $y=f(b)+s(t-b)$.",
+					"Elle coupe l'axe des abscisses quand $y=0$ : $t=b-\\dfrac{f(b)}{s}=b-f(b)\\times\\dfrac{b-a}{f(b)-f(a)}$.",
+					"La ligne est donc `x = b - f(b) * (b - a) / (f(b) - f(a))`."
+				]
+			}
+		},
+		{
+			"statement": "Dans la méthode de la sécante, on calcule\n\n$x=b-f(b)\\times\\dfrac{b-a}{f(b)-f(a)}$\n\nà partir de deux nombres $a$ et $b$. Que représente $x$ ?\n\n```choix\n- L'abscisse du point d'intersection de la droite passant par $(a\\,;\\,f(a))$ et $(b\\,;\\,f(b))$ avec l'axe des abscisses.\n- L'abscisse du point d'intersection de la tangente en $b$ avec l'axe des abscisses.\n- Le milieu de $[a\\,;\\,b]$.\n- Le coefficient directeur de la droite passant par $(a\\,;\\,f(a))$ et $(b\\,;\\,f(b))$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{f(b)-f(a)}{b-a}$ est le coefficient directeur de la sécante passant par $(a\\,;\\,f(a))$ et $(b\\,;\\,f(b))$, pas celui de la tangente.",
+					"Le point de la sécante d'abscisse $x$ a pour ordonnée $f(b)+\\dfrac{f(b)-f(a)}{b-a}(x-b)=f(b)-f(b)=0$.",
+					"$x$ est donc $\\textcolor{{{color:primary.0}}}{\\text{l'abscisse où la sécante coupe l'axe des abscisses}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "c = 2 : 1,25",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"r": "1.25"
+			},
+			"answers": ["1.25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c = 2 : 1,25 avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"r": "1.25"
+			},
+			"answers": ["1,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans le facteur b − a",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"r": "1.25"
+			},
+			"answers": ["2.125"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c = 7 : 2,5",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"r": "2.5"
+			},
+			"answers": ["2.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "sécante",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans b − a",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quotient renversé",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe +",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sécante et axe",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tangente",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : milieu",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coefficient directeur",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
