@@ -15,6 +15,8 @@ const queries = vi.hoisted(() => ({
 	resetLostConstance: vi.fn()
 }));
 vi.mock('$lib/server/buddy-queries', () => queries);
+const weeks = vi.hoisted(() => ({ loadWeekMoment: vi.fn() }));
+vi.mock('$lib/server/buddy-weeks', () => weeks);
 vi.mock('$lib/utils/logger', () => ({
 	createServerLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() })
 }));
@@ -63,6 +65,8 @@ function fakeSupabase(row: unknown, error: unknown = null) {
 beforeEach(() => {
 	queries.isWelcomeBackPending.mockReset();
 	queries.resetLostConstance.mockReset();
+	weeks.loadWeekMoment.mockReset();
+	weeks.loadWeekMoment.mockResolvedValue(null);
 });
 
 describe('loadBuddyPresence — retour après une pause', () => {
@@ -78,7 +82,8 @@ describe('loadBuddyPresence — retour après une pause', () => {
 	it('sans Palotin : rien à dire, aucune lecture secondaire', async () => {
 		queries.isWelcomeBackPending.mockResolvedValue(true);
 		const presence = await loadBuddyPresence(fakeSupabase(null), STUDENT);
-		expect(presence).toEqual({ buddy: null, returnAfterPause: false });
+		expect(presence).toEqual({ buddy: null, returnAfterPause: false, weekMoment: null });
+		expect(weeks.loadWeekMoment).not.toHaveBeenCalled();
 		expect(queries.isWelcomeBackPending).not.toHaveBeenCalled();
 	});
 
@@ -106,7 +111,7 @@ describe('loadBuddyPresence — Constance perdue, remise à zéro en silence (R1
 		const presence = await loadBuddyPresence(fakeSupabase(LOST_ROW), STUDENT);
 		expect(queries.resetLostConstance).toHaveBeenCalledWith(STUDENT);
 		expect(presence.buddy?.current_streak).toBe(0);
-		expect(Object.keys(presence).sort()).toEqual(['buddy', 'returnAfterPause']);
+		expect(Object.keys(presence).sort()).toEqual(['buddy', 'returnAfterPause', 'weekMoment']);
 	});
 
 	it('remise à zéro qui lève : le Palotin est rendu', async () => {
@@ -120,5 +125,32 @@ describe('loadBuddyPresence — Constance perdue, remise à zéro en silence (R1
 		queries.isWelcomeBackPending.mockResolvedValue(false);
 		await loadBuddyPresence(fakeSupabase(BUDDY_ROW), STUDENT);
 		expect(queries.resetLostConstance).not.toHaveBeenCalled();
+	});
+});
+
+describe('loadBuddyPresence — semaine qui devient active (B2)', () => {
+	it('transmet le moment de la semaine, lu pour l’élève de la session', async () => {
+		queries.isWelcomeBackPending.mockResolvedValue(false);
+		weeks.loadWeekMoment.mockResolvedValue('active_weeks_3');
+		const presence = await loadBuddyPresence(fakeSupabase(BUDDY_ROW), STUDENT);
+		expect(weeks.loadWeekMoment).toHaveBeenCalledWith(STUDENT);
+		expect(presence.weekMoment).toBe('active_weeks_3');
+	});
+
+	it('un retour à fêter passe d’abord : pas de moment de la semaine (T4)', async () => {
+		queries.isWelcomeBackPending.mockResolvedValue(true);
+		weeks.loadWeekMoment.mockResolvedValue('week_first_activity');
+		const presence = await loadBuddyPresence(fakeSupabase(BUDDY_ROW), STUDENT);
+		expect(presence.returnAfterPause).toBe(true);
+		expect(presence.weekMoment).toBeNull();
+		expect(weeks.loadWeekMoment).not.toHaveBeenCalled();
+	});
+
+	it('lecture de la semaine qui lève : le Palotin est rendu, sans moment', async () => {
+		queries.isWelcomeBackPending.mockResolvedValue(false);
+		weeks.loadWeekMoment.mockRejectedValue(new Error('panne'));
+		const presence = await loadBuddyPresence(fakeSupabase(BUDDY_ROW), STUDENT);
+		expect(presence.weekMoment).toBeNull();
+		expect(presence.buddy?.palotin_type).toBe('pile');
 	});
 });

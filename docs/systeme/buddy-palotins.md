@@ -456,10 +456,37 @@ l'arrivee, contexte `long_absence`) est retire.
   le retour **n'est pas fete** (journalise). Pas de migration pour les reunir.
 - **Acces** : `student_last_visits` (jour du dernier passage, retour a feter) n'est lisible que par
   le serveur (RLS sans policy, droits retires a anon et authenticated) ; exportee dans l'export RGPD
-  (`dernier_passage`, `retour_a_feter`), supprimee avec le profil.
+  (`dernier_passage`, `retour_a_feter`, `semaine_fetee`), supprimee avec le profil.
 - Pourquoi une donnee neuve : `student_buddies.last_activity_date` est le dernier jour
   **travaille** (un eleve qui passe sans travailler ne la change pas) ; `auth.users.last_sign_in_at`
   ne bouge pas tant que la session reste ouverte.
+
+### Semaine qui devient active (2026-11-12, chantier `regularite`, B2)
+
+Le Palotin fete, **une fois par semaine**, la semaine qui devient active : au palier **3, 5 ou 10
+semaines actives d'affilee**, ce palier (`active_weeks_3`, `_5`, `_10`, `excited`) ; sinon la **1re
+activite de la semaine** (`week_first_activity`, `happy`). Trois repliques par Palotin et par
+moment, neutres en genre, sans nombre de jours ni Constance Royale.
+
+- **Memes regles que la grille du prof** (`stats/class-regularity.ts`) : jour actif = 5 traces
+  autonomes le meme jour de Paris (hors controle ; traces sans lieu comptees) ; semaine (lundi →
+  dimanche, Paris) active = au moins un jour actif. Une semaine de vacances (ecoles des classes
+  actives de l'eleve ; hors classe, aucune) sans activite est **sautee**, avec activite elle compte.
+  Le compte part de la rentree (`regularityFirstDay`) : l'ete le remet a zero. Compte coupe =
+  remis a zero **en silence**. Rien n'est stocke : le compte est recalcule (`buddy-weeks.ts`).
+- **Apres une activite seulement** : `loadWeekMoment` ne rend un moment que si **aujourd'hui**
+  est un jour actif et que la semaine n'est pas deja fetee (`student_last_visits.week_celebrated_on`
+  < lundi en cours). Le test leger (traces des deux derniers jours) passe d'abord ; la lecture des
+  traces depuis la rentree n'a lieu qu'une fois par semaine et par eleve.
+- **Un moment a la fois** : un retour a feter passe d'abord (`weekMoment` nul) ; le retour
+  acquitte (`POST …/welcome-back`) marque aussi la semaine (`markWeekCelebrated`), cote serveur et
+  cote client (`markReturnCelebrated` → `markWeekCelebrated`).
+- **Bulle** : `GET /api/student/buddy/presence` transmet `weekMoment` (le nom du moment, jamais un
+  jour ni le compte) ; `BuddyWidget` (maison) ou `PalotinPresence` (passage important) le dit puis
+  l'acquitte (`POST /api/student/buddy/week-celebrated`, `markWeekCelebrated` : lundi en cours).
+  Acquittement en echec : la bulle revient a la prochaine activite. Lecture en echec : pas de fete.
+- Limite connue (comme le retour) : la presence se relit apres un gain ; des flash-cards seules
+  rendent la semaine active sans relecture immediate, la fete vient a la page de maison suivante.
 
 ### Images
 
@@ -637,7 +664,8 @@ celui du plafond.
 student_last_visits
 ├── student_id (FK profiles, PK, ON DELETE CASCADE)
 ├── last_visit_date (date, jour UTC de la derniere page vue, hors API)
-└── welcome_back_on (date, NULL : jour du retour a feter, 2026-10-22)
+├── welcome_back_on (date, NULL : jour du retour a feter, 2026-10-22)
+└── week_celebrated_on (date, NULL : lundi de la derniere semaine fetee, 2026-11-12)
 ```
 
 Lisible par le serveur seul : RLS sans aucune policy, droits retires a `anon` et `authenticated`
@@ -646,8 +674,9 @@ INVOKER, `service_role` seul) enregistre le jour et rend le jour du passage prec
 premier) ; atomique, le jour enregistre ne recule jamais. Migration
 `20261021210000_palotin_dernier_passage.sql`, preuve `tests/integration/palotin-dernier-passage.test.ts` ;
 `welcome_back_on` : migration `20261022100000_palotin_retour_a_feter.sql`, preuve
-`tests/integration/palotin-retour-a-feter.test.ts`. Export RGPD : `gaming.dernier_passage` et
-`gaming.retour_a_feter` (`api/account/export`, lu au client service, filtre sur l'identite de la
+`tests/integration/palotin-retour-a-feter.test.ts` ; `week_celebrated_on` : migration
+`20261112131750_palotin_semaine_fetee.sql`, preuve `tests/integration/palotin-semaine-fetee.test.ts`.
+Export RGPD : `gaming.dernier_passage`, `gaming.retour_a_feter` et `gaming.semaine_fetee` (`api/account/export`, lu au client service, filtre sur l'identite de la
 session) ; mentionne dans `legal/confidentialite` (§ 3.2 et § 7).
 
 ### Table `buddy_skins`

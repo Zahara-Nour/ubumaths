@@ -11,7 +11,7 @@
 <script lang="ts">
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import type { BuddyMessageContext } from '$lib/config/buddy-messages';
-	import type { BuddyExpression, BuddyState } from '$lib/types/buddy';
+	import type { BuddyExpression, BuddyState, WeekMoment } from '$lib/types/buddy';
 	import { buddyMessageEngine } from './buddy-message-engine';
 	import BuddyAvatar from './BuddyAvatar.svelte';
 	import BuddySpeechBubble from './BuddySpeechBubble.svelte';
@@ -32,14 +32,23 @@
 		onChangePalotin?: () => void;
 		/** La réplique du retour a été dite : ne plus la redire */
 		onWelcomeBackSaid?: () => void;
+		/** Semaine qui devient active à fêter (B2) ; peut arriver après le montage */
+		weekMoment?: WeekMoment | null;
+		/** La réplique de la semaine a été dite : ne plus la redire */
+		onWeekMomentSaid?: () => void;
 		/** Palotin lu par la présence : repli quand le cache a expiré (TTL de 10 min) */
 		fallbackBuddy?: BuddyState | null;
 	}
+
+	const WELCOME_BACK_URL = '/api/student/buddy/welcome-back';
+	const WEEK_CELEBRATED_URL = '/api/student/buddy/week-celebrated';
 
 	let {
 		returnAfterPause = false,
 		onChangePalotin,
 		onWelcomeBackSaid,
+		weekMoment = null,
+		onWeekMomentSaid,
 		fallbackBuddy = null
 	}: Props = $props();
 
@@ -56,11 +65,11 @@
 	let bubbleTimer: ReturnType<typeof setTimeout> | null = null;
 	let greetingTimer: ReturnType<typeof setTimeout> | null = null;
 	let nappingTimer: ReturnType<typeof setTimeout> | null = null;
-	// Réplique du retour : nettoyée au démontage (quitter l'accueil avant elle ne l'acquitte pas)
+	// Réplique de fête (retour, semaine) : nettoyée au démontage (quitter l'accueil avant elle ne l'acquitte pas)
 	let welcomeTimer: ReturnType<typeof setTimeout> | null = null;
-	/** Réplique du retour programmée : jamais deux fois pour ce widget */
+	/** Réplique de fête programmée (retour ou semaine) : une seule pour ce widget */
 	let returnScheduled = false;
-	/** Fin de la bulle du retour : salutation et annonce attendent jusque-là (horodatage, ms) */
+	/** Fin de la bulle de fête : salutation et annonce attendent jusque-là (horodatage, ms) */
 	let returnBubbleUntil = 0;
 
 	// Status panel
@@ -149,18 +158,18 @@
 	}
 
 	/**
-	 * Fête le retour après une pause, une seconde après (au montage, ou quand la
-	 * présence relue après une activité l'apporte), puis l'acquitte. Joyeux, sans
-	 * durée (R2, chantier `regularite`, 2026-11-12).
+	 * Fête le retour après une pause (R2) ou la semaine qui devient active (B2),
+	 * une seconde après (au montage, ou quand la présence relue après une
+	 * activité l'apporte), puis l'acquitte. Joyeux, sans durée ni nombre de
+	 * jours (chantier `regularite`, 2026-11-12). Une seule fête par widget.
 	 */
-	function scheduleReturn() {
+	function scheduleCelebration(context: BuddyMessageContext, acknowledge: () => void) {
 		returnScheduled = true;
 		returnBubbleUntil = Date.now() + 1000 + BUBBLE_DURATION;
 		welcomeTimer = setTimeout(() => {
 			welcomeTimer = null;
-			showMessage('return_after_pause');
-			acknowledgeWelcomeBack();
-			onWelcomeBackSaid?.();
+			showMessage(context);
+			acknowledge();
 		}, 1000);
 	}
 
@@ -170,7 +179,14 @@
 	 * reviendra au prochain chargement.
 	 */
 	function acknowledgeWelcomeBack() {
-		fetch('/api/student/buddy/welcome-back', { method: 'POST' }).catch(() => {});
+		fetch(WELCOME_BACK_URL, { method: 'POST' }).catch(() => {});
+		onWelcomeBackSaid?.();
+	}
+
+	/** La semaine est fêtée : le serveur la retient (même règle que le retour). */
+	function acknowledgeWeek() {
+		fetch(WEEK_CELEBRATED_URL, { method: 'POST' }).catch(() => {});
+		onWeekMomentSaid?.();
 	}
 
 	/** Sur la Chatterie elle-même, l'annonce n'a pas lieu d'être (et la page a déjà calculé). */
@@ -208,7 +224,16 @@
 	$effect(() => {
 		if (!returnAfterPause || !buddy) return;
 		untrack(() => {
-			if (!returnScheduled) scheduleReturn();
+			if (!returnScheduled) scheduleCelebration('return_after_pause', acknowledgeWelcomeBack);
+		});
+	});
+
+	// Semaine à fêter, au montage ou plus tard : une fois, jamais après une autre fête
+	$effect(() => {
+		const moment = weekMoment;
+		if (!moment || !buddy) return;
+		untrack(() => {
+			if (!returnScheduled) scheduleCelebration(moment, acknowledgeWeek);
 		});
 	});
 
@@ -216,7 +241,7 @@
 		// Au montage : la réplique du retour (programmée par l'effet ci-dessous), puis les
 		// nouveautés ou les Mathoux en sieste, sinon une salutation
 		if (buddy) {
-			const welcomeBack = returnAfterPause;
+			const welcomeBack = returnAfterPause || weekMoment !== null;
 			if (!isOnChatterie()) {
 				void greetOrAnnounceChatterie(Date.now(), welcomeBack);
 			} else if (!welcomeBack) {

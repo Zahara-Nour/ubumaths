@@ -180,7 +180,7 @@ function formatName(first: string | null, last: string | null): string {
 }
 
 /** Rentrée et vacances de l'année scolaire active de l'école de la classe */
-async function readSchoolYear(
+export async function readSchoolYear(
 	supabase: SB,
 	classId: string,
 	now: Date

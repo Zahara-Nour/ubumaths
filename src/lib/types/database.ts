@@ -11367,16 +11367,19 @@ export type Database = {
         Row: {
           last_visit_date: string
           student_id: string
+          week_celebrated_on: string | null
           welcome_back_on: string | null
         }
         Insert: {
           last_visit_date: string
           student_id: string
+          week_celebrated_on?: string | null
           welcome_back_on?: string | null
         }
         Update: {
           last_visit_date?: string
           student_id?: string
+          week_celebrated_on?: string | null
           welcome_back_on?: string | null
         }
         Relationships: [
@@ -16018,6 +16021,7 @@ export type Database = {
         Args: { p_card_id: string; p_student_id: string }
         Returns: Json
       }
+      purge_trace_answers: { Args: never; Returns: number }
       rag_hybrid_search: {
         Args: {
           filter_grades?: string[]
@@ -16412,6 +16416,7 @@ export type Database = {
         Args: { p_parts: string[] }
         Returns: boolean
       }
+      trace_answers_cutoff: { Args: { p_today: string }; Returns: string }
       unaccent: { Args: { "": string }; Returns: string }
       unlock_cards: { Args: { p_entity_id: string }; Returns: number }
       unlock_specific_cards: {

@@ -12,7 +12,7 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Politique de confidentialité</h1>
 
-		<p class="lead text-muted-foreground">Dernière mise à jour : 22 octobre 2026 | Version 1.1</p>
+		<p class="lead text-muted-foreground">Dernière mise à jour : 12 novembre 2026 | Version 1.2</p>
 
 		<hr />
 
@@ -122,6 +122,12 @@
 							<td>
 								Que le Palotin remarque le retour de l'élève après une longue absence (supprimé avec
 								le compte)
+							</td>
+						</tr>
+						<tr>
+							<td>Dernière semaine fêtée par le Palotin</td>
+							<td>
+								Que le Palotin ne fête qu'une fois une semaine de travail (supprimée avec le compte)
 							</td>
 						</tr>
 					</tbody>
@@ -286,6 +292,10 @@
 								Effacé dès que le Palotin a salué le retour, ou au plus tard au premier passage
 								après 7 jours ; supprimé avec le profil
 							</td>
+						</tr>
+						<tr>
+							<td>Dernière semaine fêtée par le Palotin</td>
+							<td>Remplacée chaque semaine fêtée, supprimée avec le profil</td>
 						</tr>
 						<tr>
 							<td>Conversations avec le tuteur IA</td>

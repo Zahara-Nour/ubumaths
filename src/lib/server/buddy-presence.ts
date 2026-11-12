@@ -12,7 +12,10 @@
  *     sur toute page), et seulement une fois que l'élève a travaillé depuis
  *     (R2) ; le client l'acquitte une fois la bulle montrée. Le client relit la
  *     présence après un gain, pour le fêter sans recharger la page.
- * Seul « oui/non » sort, jamais le jour. Une lecture secondaire en échec rend
+ *   - semaine qui devient active (1re activité, 3/5/10 semaines d'affilée,
+ *     B2) : le moment seulement, jamais les jours ni le compte ; aucun si un
+ *     retour est à fêter (un seul moment à la fois : T4).
+ * Seul « oui/non » ou le nom du moment sort, jamais un jour. Une lecture secondaire en échec rend
  * `false`, jamais une erreur : le Palotin reste montrable.
  */
 
@@ -20,6 +23,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { toBuddyState, type BuddyState } from '$lib/types/buddy';
 import { isWelcomeBackPending, resetLostConstance } from '$lib/server/buddy-queries';
+import { loadWeekMoment, type WeekMoment } from '$lib/server/buddy-weeks';
 import { constanceReset, utcDay } from '$lib/utils/buddy-constance';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -28,6 +32,8 @@ export interface BuddyPresence {
 	buddy: BuddyState | null;
 	/** Retour après une pause à fêter : l'élève a travaillé depuis, pas encore fêté */
 	returnAfterPause: boolean;
+	/** Semaine qui devient active à fêter (aujourd'hui actif, pas encore fêtée) */
+	weekMoment: WeekMoment | null;
 }
 
 // Constantes
@@ -50,7 +56,7 @@ export async function loadBuddyPresence(
 	if (error) throw error;
 
 	// Sans Palotin, rien à dire : celui choisi ensuite est tout neuf
-	if (!buddyData) return { buddy: null, returnAfterPause: false };
+	if (!buddyData) return { buddy: null, returnAfterPause: false, weekMoment: null };
 
 	// Constance perdue (dernière semaine finie sous 3 jours travaillés, ou semaine
 	// sautée), ou ancienne série en jours : remise à zéro, sans réplique (R1).
@@ -73,5 +79,16 @@ export async function loadBuddyPresence(
 		logger.error('[buddy-presence] Retour à fêter illisible :', welcomeError);
 	}
 
-	return { buddy: toBuddyState(buddyRow), returnAfterPause };
+	// Un seul moment à la fois : le retour d'abord (T4)
+	let weekMoment: WeekMoment | null = null;
+	if (!returnAfterPause) {
+		try {
+			weekMoment = await loadWeekMoment(studentId);
+		} catch (weekError) {
+			// Non bloquant : pas de fête de la semaine plutôt qu'une lecture en échec
+			logger.error('[buddy-presence] Semaine à fêter illisible :', weekError);
+		}
+	}
+
+	return { buddy: toBuddyState(buddyRow), returnAfterPause, weekMoment };
 }

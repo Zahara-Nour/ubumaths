@@ -231,7 +231,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			// service, filtrés sur l'identité de la SESSION.
 			createServiceRoleClient()
 				.from('student_last_visits')
-				.select('last_visit_date, welcome_back_on')
+				.select('last_visit_date, welcome_back_on, week_celebrated_on')
 				.eq('student_id', userId)
 				.maybeSingle()
 		]);
@@ -360,7 +360,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 				avatars: avatarsResult.data || [],
 				palotin: buddyResult.data || null,
 				dernier_passage: lastVisitResult.data?.last_visit_date ?? null,
-				retour_a_feter: lastVisitResult.data?.welcome_back_on ?? null
+				retour_a_feter: lastVisitResult.data?.welcome_back_on ?? null,
+				semaine_fetee: lastVisitResult.data?.week_celebrated_on ?? null
 			},
 
 			// Rewards & Economy

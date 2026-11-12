@@ -189,3 +189,25 @@ lisible par le serveur seul.
   **personne** (colonne serveur seule ; n'en sort que « moment à fêter : lequel »).
 - Tests : intégration (colonne illisible par `authenticated`, rouge sans la migration), calcul pur
   du compte (vacances, été, semaine sautée), présence, bulles.
+
+## PR B2a — migration (2026-11-12)
+
+- `student_last_visits.week_celebrated_on` (migration `20261112131750`), intégration
+  `palotin-semaine-fetee` (8, rouges sans la migration). `security-auditor` : rien de bloquant ;
+  à faire en B2b : la colonne dans l'export RGPD. Mergée (#2593), `db:migrate` fait, `db:types`
+  en B2b.
+
+## PR B2b — moments de la semaine (2026-11-12)
+
+- `src/lib/server/buddy-weeks.ts` : `activeDaysOf`, `activeWeekStreak`, `weekMomentFor`,
+  `isWeekToCelebrate` (purs, 14 tests) ; `loadWeekMoment` (test léger du jour, puis traces depuis la
+  rentrée, vacances des écoles des classes actives) ; `markWeekCelebrated`.
+- Présence : champ `weekMoment` (nul si retour à fêter : T4). `POST …/week-celebrated` ;
+  `POST …/welcome-back` marque aussi la semaine. Client : `BuddyWidget` (`scheduleCelebration`,
+  une fête par widget) et `PalotinPresence` (passage `isWeek`, retour fêté → semaine fêtée).
+- Répliques : `week_first_activity`, `active_weeks_3/5/10`, 3 par Palotin — **à relire par David**.
+- Export RGPD `gaming.semaine_fetee` ; politique de confidentialité : ligne ajoutée (§ données et
+  durées), version 1.2 du 12 novembre 2026.
+- Tests : `buddy-weeks` (14), `buddy-presence` (+3), routes (+3, +2), `palotin-presence` (+1),
+  `PalotinPresence` (+4, dont 3 rouges sans le code), export (+1), intégration
+  `palotin-semaines-actives` (5).
