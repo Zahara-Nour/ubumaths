@@ -17,6 +17,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
 	import PdfSvgView from './PdfSvgView.svelte';
+	import UntranslatedExercisesNotice from './UntranslatedExercisesNotice.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		FileDown,
@@ -30,7 +31,8 @@
 		RefreshCw,
 		Code,
 		Copy,
-		FileCode
+		FileCode,
+		FileArchive
 	} from '@lucide/svelte';
 	import { generateWorksheetTypst } from '$lib/typst/generators';
 	import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
@@ -47,6 +49,8 @@
 	} from '$lib/typst/compiler/correction-fonts-compiler';
 	import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
 	import { worksheetLocale } from '$lib/types/worksheets';
+	import { isContentLocale, type ContentLocale } from '$lib/types/locale';
+	import { untranslatedExercises } from '$lib/exercises/translation-status';
 	import { documentLabels } from '$lib/typst/labels';
 	import { buildWorksheetCopy, GUIDANCE_LEVEL_ITEMS } from '$lib/worksheets/worksheet-copy';
 	import {
@@ -115,6 +119,20 @@
 	const inlineCorrections = $derived(mode === 'worksheet_correction');
 	let selectedStudentId = $state<string | undefined>(undefined);
 
+	// Langue d'impression : part de la langue de la fiche, ne change que le PDF.
+	// La fiche (et ce que voient les élèves affectés) garde la sienne ; le choix
+	// n'est pas enregistré. Le lecteur du cahier public n'a pas le choix.
+	const LOCALE_ITEMS: { value: ContentLocale; label: string }[] = [
+		{ value: 'fr', label: 'Français' },
+		{ value: 'en', label: 'English' }
+	];
+	let langueChoisie = $state<string | null>(null);
+	const printLocale = $derived<ContentLocale>(
+		!estLecteur && isContentLocale(langueChoisie)
+			? langueChoisie
+			: worksheetLocale(worksheet.config)
+	);
+
 	// Niveau de guidage imprimé hors affectation (ADR 0023) : guidé par défaut.
 	// Le lecteur du cahier public n'a pas le choix : toujours guidé.
 	let niveauChoisi = $state<string>(DEFAULT_GUIDANCE_LEVEL);
@@ -134,8 +152,20 @@
 	let typstContent = $state<string>('');
 	let markdownContent = $state<string>('');
 
+	// Config de l'avertissement des exercices non traduits : la langue d'impression
+	const printConfig = $derived({ ...(worksheet.config ?? {}), language: printLocale });
+
+	// « Tout télécharger » : les formes de la fiche, en français puis en anglais
+	const ZIP_LOCALES: readonly ContentLocale[] = ['fr', 'en'];
+	let isZipGenerating = $state(false);
+	let zipDone = $state(0);
+	let zipTotal = $state(0);
+
 	// Batch generation state
 	let isBatchGenerating = $state(false);
+	// Zip ou lot en cours : réglages verrouillés (le compilateur et ses images
+	// sont partagés, et la copie ne doit pas changer en route)
+	const isLongRunning = $derived(isZipGenerating || isBatchGenerating);
 	let batchProgress = $state(0);
 	let batchTotal = $state(0);
 	let batchCurrentStudent = $state<string>('');
@@ -199,15 +229,26 @@
 	// ============================================================================
 
 	/**
+	 * La fiche telle qu'imprimée dans une langue : la langue de sa config est
+	 * remplacée pour ce PDF seulement, la fiche elle-même n'est pas touchée.
+	 */
+	function worksheetForLocale(locale: ContentLocale): WorksheetWithRelations {
+		return { ...worksheet, config: { ...(worksheet.config ?? {}), language: locale } };
+	}
+
+	/**
 	 * La copie imprimée hors affectation (ADR 0023) : le calcul de toutes les
 	 * copies, au niveau choisi, avec la graine de la fiche — la même pour tous
 	 * les élèves du lot, et pour la correction générale.
 	 */
-	function generateSimpleInstance(ws: WorksheetWithRelations): InstanceData {
+	function generateSimpleInstance(
+		ws: WorksheetWithRelations,
+		level: GuidanceLevel = printLevel
+	): InstanceData {
 		return buildWorksheetCopy(ws, {
 			assignmentId: null,
 			worksheetId: ws.id,
-			level: printLevel,
+			level,
 			individualized: false,
 			locale: worksheetLocale(ws.config)
 		});
@@ -227,18 +268,57 @@
 		generatePreview();
 	}
 
+	function handleLocaleChange(locale: string) {
+		langueChoisie = locale;
+		generatePreview();
+	}
+
+	/** Nom de l'élève choisi dans l'aperçu ; aucun pour l'aperçu générique */
+	function selectedStudentName(): string | undefined {
+		const studentId =
+			selectedStudentId && selectedStudentId !== 'generic' ? selectedStudentId : undefined;
+		return studentId ? formatStudentName(students.find((s) => s.id === studentId)) : undefined;
+	}
+
+	/**
+	 * Source Typst d'une forme de la fiche (fiche, réponses, corrigé, fiche +
+	 * corrigé), dans la langue de `ws`. Les images externes rencontrées sont
+	 * suivies : `getTrackedExternalImages()` les donne ensuite.
+	 */
+	function worksheetFormTypst(
+		ws: WorksheetWithRelations,
+		instance: InstanceData,
+		kind: WorksheetPdfKind,
+		studentName: string | undefined,
+		size: TextSize = textSize
+	): string {
+		clearTrackedExternalImages();
+		return generateWorksheetTypst({
+			worksheet: ws,
+			instance,
+			config: ws.config || {},
+			mode: kind === 'worksheet_correction' ? 'worksheet' : kind,
+			inlineCorrections: kind === 'worksheet_correction',
+			studentName,
+			className: classId ? 'Classe' : undefined,
+			template: ws.template,
+			textSize: size
+		});
+	}
+
 	// ============================================================================
 	// PDF GENERATION (CLIENT-SIDE)
 	// ============================================================================
 
 	async function generatePreview() {
-		if (!worksheet || isGenerating || !typst) return;
+		if (!worksheet || isGenerating || isZipGenerating || isBatchGenerating || !typst) return;
 
 		isGenerating = true;
 		svgContent = '';
 		// Le niveau de CETTE génération : changé entre-temps, on recommence
 		const levelAtStart = printLevel;
 		const sizeAtStart = textSize;
+		const localeAtStart = printLocale;
 
 		// Clean up previous PDF
 		if (pdfUrl) {
@@ -249,48 +329,32 @@
 		pageCount = 0;
 
 		try {
-			// Determine student info
-			const studentId =
-				selectedStudentId && selectedStudentId !== 'generic' ? selectedStudentId : undefined;
-			const studentName = studentId
-				? formatStudentName(students.find((s) => s.id === studentId))
-				: undefined;
+			const studentName = selectedStudentName();
+			// La fiche dans la langue d'impression
+			const ws = worksheetForLocale(localeAtStart);
 
 			// Generate instance data
-			const instanceData = generateSimpleInstance(worksheet);
+			const instanceData = generateSimpleInstance(ws);
 
 			// Aperçu à l'écran : le même document que le PDF (ordre, numéros, corrections)
 			markdownContent = renderMarkdownPreview(
 				documentFromTeacherCopy({
-					worksheet,
+					worksheet: ws,
 					instance: instanceData,
-					config: worksheet.config || {}
+					config: ws.config || {}
 				}),
 				generatorMode,
 				{
 					inlineCorrections,
 					// Comme le titre du PDF
 					titleSuffix: inlineCorrections
-						? ` — ${documentLabels(worksheetLocale(worksheet.config)).correction}`
+						? ` — ${documentLabels(localeAtStart).correction}`
 						: undefined
 				}
 			);
 
-			// Clear tracked images before generating Typst
-			clearTrackedExternalImages();
-
 			// Generate Typst content
-			const generatedTypst = generateWorksheetTypst({
-				worksheet,
-				instance: instanceData,
-				config: worksheet.config || {},
-				mode: generatorMode,
-				inlineCorrections,
-				studentName,
-				className: classId ? 'Classe' : undefined,
-				template: worksheet.template,
-				textSize
-			});
+			const generatedTypst = worksheetFormTypst(ws, instanceData, mode, studentName);
 			// Images externes, posées dans le système de fichiers virtuel à la compilation
 			const imageData = await fetchExternalImages(getTrackedExternalImages());
 
@@ -306,12 +370,7 @@
 			pdfBlob = new Blob([compiled.data.pdf as BlobPart], { type: 'application/pdf' });
 			pdfUrl = URL.createObjectURL(pdfBlob);
 			pageCount = pdfPageCount(compiled.data.pdf);
-			pdfFilename = worksheetPdfFileName(
-				worksheet.title,
-				mode,
-				studentName,
-				worksheetLocale(worksheet.config)
-			);
+			pdfFilename = worksheetPdfFileName(worksheet.title, mode, studentName, localeAtStart);
 
 			toaster.success('PDF genere avec succes');
 			if (compiled.fallbackError) toaster.warning(fallbackWarning(compiled.fallbackError));
@@ -322,8 +381,8 @@
 		} finally {
 			isGenerating = false;
 		}
-		// Niveau ou taille changés pendant la génération : le changement n'est pas perdu
-		if (printLevel !== levelAtStart || textSize !== sizeAtStart) {
+		// Niveau, taille ou langue changés pendant la génération : le changement n'est pas perdu
+		if (printLevel !== levelAtStart || textSize !== sizeAtStart || printLocale !== localeAtStart) {
 			generatePreview();
 		}
 	}
@@ -354,12 +413,98 @@
 		}
 	}
 
+	/**
+	 * « Tout télécharger » : toutes les formes de la fiche, en français puis en
+	 * anglais, dans un zip. Même copie partout (graine de la fiche, niveau et
+	 * taille de l'aperçu, élève choisi) : le corrigé correspond à la fiche.
+	 * Un PDF qui échoue : aucun zip, et le message dit lequel.
+	 */
+	async function downloadAllForms() {
+		if (!typst || isZipGenerating || isBatchGenerating || isGenerating) return;
+
+		// Figés au départ : les 8 PDF sont la même copie
+		const studentName = selectedStudentName();
+		const level = printLevel;
+		const size = textSize;
+		const jobs = ZIP_LOCALES.flatMap((locale) =>
+			PDF_KIND_ITEMS.map((item) => ({ locale, kind: item.value, label: item.label }))
+		);
+		isZipGenerating = true;
+		zipDone = 0;
+		zipTotal = jobs.length;
+		let current: (typeof jobs)[number] | null = null;
+		// Première erreur de police du Corrigé : un seul avertissement pour le zip
+		let firstFallbackError: string | null = null;
+
+		try {
+			const zip = new JSZip();
+			for (const job of jobs) {
+				current = job;
+				const ws = worksheetForLocale(job.locale);
+				const source = worksheetFormTypst(
+					ws,
+					generateSimpleInstance(ws, level),
+					job.kind,
+					studentName,
+					size
+				);
+				const imageData = await fetchExternalImages(getTrackedExternalImages());
+				const compiled = await compileTypstDocument(source, {
+					images: imageData,
+					compiler: typst ?? undefined
+				});
+				firstFallbackError ??= compiled.fallbackError;
+				zip.file(
+					worksheetPdfFileName(worksheet.title, job.kind, studentName, job.locale),
+					compiled.data.pdf
+				);
+				zipDone += 1;
+			}
+			current = null;
+
+			const zipData = await zip.generateAsync({
+				type: 'blob',
+				compression: 'DEFLATE',
+				compressionOptions: { level: 6 }
+			});
+			const student = studentName ? `_${sanitizeForFileName(studentName)}` : '';
+			const url = URL.createObjectURL(zipData);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = `${sanitizeForFileName(worksheet.title)}${student}.zip`;
+			link.click();
+			URL.revokeObjectURL(url);
+
+			toaster.success(`${jobs.length} PDF téléchargés, en français et en anglais`);
+			if (firstFallbackError) toaster.warning(fallbackWarning(firstFallbackError));
+			const missing = untranslatedExercises(worksheet.exercises ?? []).length;
+			if (missing > 0) {
+				toaster.warning(
+					`Version anglaise : ${missing} ${missing > 1 ? 'exercices sont restés' : 'exercice est resté'} en français, faute de traduction`
+				);
+			}
+		} catch (err) {
+			console.error('Zip des formes de la fiche :', err);
+			const failed = current
+				? ` (${current.label}, ${current.locale === 'en' ? 'anglais' : 'français'})`
+				: '';
+			toaster.error(`Le zip n’a pas pu être fabriqué${failed}`);
+		} finally {
+			isZipGenerating = false;
+			zipDone = 0;
+		}
+	}
+
 	// ============================================================================
 	// BATCH PDF GENERATION (CLIENT-SIDE)
 	// ============================================================================
 
 	async function generateBatchPdfs() {
-		if (!typst || isBatchGenerating || students.length === 0) return;
+		if (!typst || isBatchGenerating || isZipGenerating || isGenerating || students.length === 0)
+			return;
+		// Figés au départ : contenu et noms de fichier dans la même langue, même niveau
+		const locale = printLocale;
+		const level = printLevel;
 
 		isBatchGenerating = true;
 		batchProgress = 0;
@@ -368,7 +513,9 @@
 
 		try {
 			const zip = new JSZip();
-			const folderName = `${sanitizeForFileName(worksheet.title)}_${mode}${localeFileNameSuffix(worksheetLocale(worksheet.config))}`;
+			// La fiche dans la langue d'impression
+			const ws = worksheetForLocale(locale);
+			const folderName = `${sanitizeForFileName(worksheet.title)}_${mode}${localeFileNameSuffix(locale)}`;
 			const folder = zip.folder(folderName);
 
 			if (!folder) {
@@ -380,11 +527,11 @@
 			clearTrackedExternalImages();
 
 			// Generate sample Typst to collect external image URLs
-			const sampleInstance = generateSimpleInstance(worksheet);
+			const sampleInstance = generateSimpleInstance(ws, level);
 			generateWorksheetTypst({
-				worksheet,
+				worksheet: ws,
 				instance: sampleInstance,
-				config: worksheet.config || {},
+				config: ws.config || {},
 				mode: generatorMode,
 				inlineCorrections,
 				studentName: formatStudentName(students[0]),
@@ -413,16 +560,16 @@
 				batchProgress = i;
 
 				// Generate instance for this student
-				const instanceData = generateSimpleInstance(worksheet);
+				const instanceData = generateSimpleInstance(ws, level);
 
 				// Clear tracked images (to avoid memory accumulation, images are already mapped)
 				clearTrackedExternalImages();
 
 				// Generate Typst content
 				const typstContent = generateWorksheetTypst({
-					worksheet,
+					worksheet: ws,
 					instance: instanceData,
-					config: worksheet.config || {},
+					config: ws.config || {},
 					mode: generatorMode,
 					inlineCorrections,
 					studentName,
@@ -431,15 +578,7 @@
 				});
 
 				const pdfData = await compileForBatch(typstContent);
-				folder.file(
-					worksheetPdfFileName(
-						worksheet.title,
-						mode,
-						studentName,
-						worksheetLocale(worksheet.config)
-					),
-					pdfData
-				);
+				folder.file(worksheetPdfFileName(worksheet.title, mode, studentName, locale), pdfData);
 			}
 
 			// Corrigés : un exemplaire général, sans nom d'élève (et sans énoncé)
@@ -447,12 +586,12 @@
 				const general = mode === 'answers' ? 'REPONSES GENERALES' : 'CORRECTION GENERALE';
 				batchCurrentStudent =
 					mode === 'answers' ? 'Reponses generales...' : 'Correction generale...';
-				const masterInstance = generateSimpleInstance(worksheet);
+				const masterInstance = generateSimpleInstance(ws, level);
 				clearTrackedExternalImages();
 				const masterTypst = generateWorksheetTypst({
-					worksheet,
+					worksheet: ws,
 					instance: masterInstance,
-					config: worksheet.config || {},
+					config: ws.config || {},
 					mode: generatorMode,
 					studentName: general,
 					className: classId ? 'Classe' : undefined,
@@ -644,6 +783,13 @@ INFORMATIONS
 
 				<!-- Preview Tab -->
 				<Tabs.Content value="preview" class="space-y-4">
+					{#if !estLecteur}
+						<!-- Suit la langue d'impression, pas celle de la fiche -->
+						<UntranslatedExercisesNotice
+							exercises={worksheet.exercises ?? []}
+							config={printConfig}
+						/>
+					{/if}
 					<!-- Controls -->
 					<div class="grid gap-4 sm:grid-cols-2">
 						{#if !estLecteur}
@@ -653,7 +799,7 @@ INFORMATIONS
 									type="single"
 									bind:value={modeChoisi}
 									items={PDF_KIND_ITEMS}
-									disabled={isBatchGenerating}
+									disabled={isLongRunning}
 									triggerAriaLabel="PDF à générer"
 								/>
 							</div>
@@ -666,21 +812,43 @@ INFORMATIONS
 									type="single"
 									bind:value={niveauChoisi}
 									items={GUIDANCE_LEVEL_ITEMS}
+									disabled={isLongRunning}
 									triggerAriaLabel="Niveau à imprimer"
 									onValueChange={handlePrintLevelChange}
+								/>
+							</div>
+
+							<div class="space-y-2">
+								<Label>Langue d'impression</Label>
+								<MySelect
+									type="single"
+									value={printLocale}
+									items={LOCALE_ITEMS}
+									disabled={isLongRunning}
+									triggerAriaLabel="Langue d'impression"
+									onValueChange={handleLocaleChange}
 								/>
 							</div>
 						{/if}
 
 						<!-- Pour tous, lecteur du cahier compris : un élève malvoyant peut l'utiliser -->
 						<div class="flex items-end">
-							<TextSizeSelect value={textSize} onchange={handleTextSizeChange} />
+							<TextSizeSelect
+								value={textSize}
+								onchange={handleTextSizeChange}
+								disabled={isLongRunning}
+							/>
 						</div>
 
 						{#if students.length > 0}
 							<div class="space-y-2">
 								<Label>Eleve</Label>
-								<MySelect type="single" bind:value={selectedStudentId} items={previewItems} />
+								<MySelect
+									type="single"
+									bind:value={selectedStudentId}
+									items={previewItems}
+									disabled={isLongRunning}
+								/>
 							</div>
 						{/if}
 					</div>
@@ -688,7 +856,11 @@ INFORMATIONS
 					<!-- Preview Actions -->
 					<div class="flex flex-wrap gap-2">
 						{#if !estLecteur}
-							<Button onclick={generatePreview} disabled={isGenerating} variant="outline">
+							<Button
+								onclick={generatePreview}
+								disabled={isGenerating || isLongRunning}
+								variant="outline"
+							>
 								{#if isGenerating}
 									<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 									Generation...
@@ -708,6 +880,20 @@ INFORMATIONS
 							<Button variant="outline" disabled={!pdfUrl} onclick={printPdf}>
 								<Printer class="mr-2 h-4 w-4" />
 								Imprimer
+							</Button>
+
+							<Button
+								variant="outline"
+								disabled={isLongRunning || isGenerating}
+								onclick={downloadAllForms}
+							>
+								{#if isZipGenerating}
+									<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+									PDF {Math.min(zipDone + 1, zipTotal)} / {zipTotal}
+								{:else}
+									<FileArchive class="mr-2 h-4 w-4" />
+									Tout télécharger (.zip)
+								{/if}
 							</Button>
 						{/if}
 
@@ -827,10 +1013,27 @@ INFORMATIONS
 								type="single"
 								bind:value={modeChoisi}
 								items={PDF_KIND_ITEMS}
-								disabled={isBatchGenerating}
+								disabled={isLongRunning}
 								triggerAriaLabel="PDF à générer pour le lot"
 							/>
 						</div>
+
+						<!-- Le lot imprime dans la langue d'impression : elle se voit et se change ici aussi -->
+						<div class="space-y-2">
+							<Label>Langue d'impression</Label>
+							<MySelect
+								type="single"
+								value={printLocale}
+								items={LOCALE_ITEMS}
+								disabled={isLongRunning}
+								triggerAriaLabel="Langue d'impression du lot"
+								onValueChange={handleLocaleChange}
+							/>
+						</div>
+						<UntranslatedExercisesNotice
+							exercises={worksheet.exercises ?? []}
+							config={printConfig}
+						/>
 
 						<div class="space-y-2">
 							<Label>Niveau à imprimer</Label>
@@ -838,6 +1041,7 @@ INFORMATIONS
 								type="single"
 								bind:value={niveauChoisi}
 								items={GUIDANCE_LEVEL_ITEMS}
+								disabled={isLongRunning}
 								triggerAriaLabel="Niveau à imprimer"
 								onValueChange={handlePrintLevelChange}
 							/>
@@ -845,7 +1049,7 @@ INFORMATIONS
 
 						<!-- Batch actions -->
 						<div class="flex flex-wrap gap-2">
-							<Button onclick={generateBatchPdfs} disabled={isBatchGenerating}>
+							<Button onclick={generateBatchPdfs} disabled={isLongRunning || isGenerating}>
 								{#if isBatchGenerating}
 									<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 									Generation en cours...

@@ -609,9 +609,12 @@ la lecture publique `variant="reader"` reste sur la fiche) :
 
 Réponses et Corrigé ne répètent **jamais l'énoncé** (ni consigne d'exercice, ni consigne de
 section, ni consignes d'épreuve). Noms de fichier distincts : `worksheetPdfFileName`
-(« … - Réponses.pdf », « … - Corrigé.pdf »). Version anglaise d'une fiche (`config.language`) dans
-l'aperçu PDF du prof : **même titre français**, suivi de `_EN` (« … - Corrigé_EN.pdf », dossier du zip
-compris ; David, 2026-11-12). Côté élève, la boîte de téléchargement propose « avec
+(« … - Réponses.pdf », « … - Corrigé.pdf »). Version anglaise dans l'aperçu PDF du prof : **même
+titre français**, suivi de `_EN` (« … - Corrigé_EN.pdf », dossier du zip compris ; David,
+2026-11-12). **« Tout télécharger (.zip) »** (aperçu du prof, pas le lecteur du cahier) : les 4 formes
+(fiche, réponses, corrigé, fiche + corrigé) en français puis en anglais, 8 PDF de la **même copie**
+(graine de la fiche, niveau et taille de l'aperçu, élève choisi), zip `Titre[_Élève].zip` ; un PDF
+qui échoue : aucun zip, le message nomme la forme et la langue. Côté élève, la boîte de téléchargement propose « avec
 réponses » (partie « Réponses ») ou « avec corrigé » (partie « Corrections », dont seules les corrections sont en
 Shantell / Chiphre Math), pour les seuls exercices dont la correction est visible : l'API élève sert
 `answers` **exactement** sous la condition de `correction` (`correction_visible`).
@@ -676,7 +679,13 @@ document : contenu (`variation.translations.en` → `variation` → `shared.tran
 `worksheet_exercises`, lus par `localizedText`), habillage (`documentLabels`), `lang` Typst
 (césure, guillemets, point décimal) et date (`DATE_LOCALES`, `en-US`). Tout ce qui manque retombe
 sur le français **champ par champ**. `UntranslatedExercisesNotice.svelte` liste les exercices qui
-sortiraient en français.
+sortiraient en français (à côté de la liste des exercices, et dans l'aperçu PDF où il suit la langue
+d'impression).
+
+**Langue d'impression** (aperçu PDF du prof, `PdfPreview.svelte`) : part de la langue de la fiche et ne
+change **que le PDF** — `worksheetForLocale` remplace `config.language` dans une copie de la fiche
+passée au générateur ; la fiche, et ce que voient ses élèves affectés, gardent leur langue. Choix
+non enregistré (David, 2026-11-12). Le lecteur du cahier public n'a pas le choix.
 
 ## `pnpm fiche:verifier`
 
@@ -709,7 +718,7 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
 3. **Le numéro d'exercice** se calcule par `exercise-numbering.ts`, jamais depuis `position`.
    Un exercice imprimé se rend par `worksheets/document/render-exercise.ts`, jamais dans un
    générateur : une évolution du rendu d'un exercice ne s'écrit qu'une fois (ADR 0028).
-4. **La langue est celle de la fiche**, pour le contenu comme pour l'habillage : pas d'exercice
+4. **La langue est celle de la fiche** (ou la langue d'impression de l'aperçu, qui la remplace pour un PDF), pour le contenu comme pour l'habillage : pas d'exercice
    anglais sous des libellés français. Une config illisible retombe sur le français, elle génère
    quand même.
 5. **Les images passent par le système de fichiers virtuel** (`/virtual/images/…`) : le WASM ne
