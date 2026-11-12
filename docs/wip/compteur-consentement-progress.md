@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, à l'ouverture de la PR._
+_Mis à jour le 2026-11-12, à l'ouverture de la PR #2586._
 
 - **État** : PR ouverte · **Prochaine action** : merge, archiver ce journal · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-compteur-consentement` / `fix/compteur-envois-consentement`
 
