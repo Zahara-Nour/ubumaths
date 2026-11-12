@@ -1,4 +1,5 @@
 {
+	"id": "957c2012-54af-4a3f-90e0-47487acb3d73",
 	"title": "Simuler une marche aléatoire en Python",
 	"description": "Marche aléatoire sur une droite graduée : compléter x = x - 1, compléter if random() < 0.7: (pas +1 de probabilité 0,7), valeur proche de la position moyenne (n(2p − 1))",
 	"grades": ["T_SPE"],

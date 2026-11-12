@@ -1,4 +1,5 @@
 {
+	"id": "daa7f4e5-593c-4948-bf0b-feb3f96e797e",
 	"title": "Probabilité de l'écart à pn en Python",
 	"description": "P(|Sₙ − pn| > √n) pour Sₙ ~ B(n ; p) : valeur renvoyée avec la table des P(Sₙ ⩽ k) donnée (n = 36, 49, 64, 100 ; p = 0,5), compléter if abs(k - n*p) > sqrt(n):, sens de la valeur renvoyée",
 	"grades": ["T_SPE"],

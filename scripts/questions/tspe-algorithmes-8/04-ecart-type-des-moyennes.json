@@ -1,4 +1,5 @@
 {
+	"id": "a24cffa6-79e7-4193-b738-c7a749377ba5",
 	"title": "Écart type des moyennes d'échantillons en Python",
 	"description": "N échantillons de taille n de X (μ = 10, écart type σ) : compléter la ligne de comptage abs(m - mu) <= k * sigma / sqrt(n), écart type des moyennes proche de σ/√n (case), effet de n multiplié par 4 (s divisé par 2)",
 	"grades": ["T_SPE"],
