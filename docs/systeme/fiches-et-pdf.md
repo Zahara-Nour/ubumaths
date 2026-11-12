@@ -641,6 +641,8 @@ U+1D7CE…, lettres grasses U+1D400… et grasses italiques U+1D468…, tous des
 pas et le PDF dessinait des **carrés vides**, sans erreur : Typst prend une autre police pour un
 glyphe absent, sauf ici. `chiphre-math-gras.test.ts` lit la `cmap`. Le chemin de `ChiphreMath.ttf`
 porte un `?v=` à changer à chaque reconstruction de la police (`/fonts/` est en cache 30 jours).
+Le `z` (et `𝑧`, `𝐳`) est dessiné à coins depuis le 2026-11-12 (`tools/chiphre-math/src/angular_z.py`) :
+celui de Shantell avait l'épaule ronde du `2`, et « 2z » se lisait « 22 ».
 
 **Noms de fichier** : tout PDF ou ZIP de fiche (fiche, corrigé, lot par élève, dossier et archive
 du lot par classe) est nommé par `sanitizeForFileName` (`src/lib/worksheets/pdf-file-name.ts`) :
