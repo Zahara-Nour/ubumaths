@@ -183,7 +183,7 @@ export function parseSchemaBarresContent(source: string): SchemaBarresNode {
 			const segments = parts.map(parseSegment);
 			if (segments.every((s) => s.missing)) {
 				throw new LineError(
-					`la barre « ${name} » n’a que des parties manquantes : écris au moins un segment plein`
+					`la barre ${name === '' ? `n° ${bars.length + 1}` : `« ${name} »`} n’a que des parties manquantes : écris au moins un segment plein`
 				);
 			}
 			if (bars.length >= SCHEMA_BARRES_BARS.max) {
