@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-12, avant la PR._
 
-- **État** : `tools/chiphre-math/src/angular_z.py` écrit et lancé ; 4 polices web + `ChiphreMath.ttf` régénérées (seul le z change) · **Prochaine action** : vérification visuelle sur `/dev/polices` et dans un PDF, puis PR · **En attente de David** : son avis sur le rendu à l'écran · **Pièges en cours** : `build_typst_math_font.py` réécrit aussi `ShantellSans-*.ttf` (seules les dates changent) : ne pas les commiter · **Worktree / branche** : `../ubumaths-wt-z-anguleux` · `feat/chiphre-math-z-anguleux`
+- **État** : `tools/chiphre-math/src/angular_z.py` écrit et lancé ; 4 polices web + `ChiphreMath.ttf` régénérées (seul le z change) ; `?v=2026-11-12` dans `correction-fonts.ts` ; vérifié sur `/dev/polices` (port 5176) et dans un PDF Typst ; `check:incremental` 0 erreur ; garde doc OK · **Prochaine action** : PR, CI, merge · **En attente de David** : son OK sur le rendu (images envoyées) · **Pièges en cours** : `build_typst_math_font.py` réécrit aussi `ShantellSans-*.ttf` (seules les dates changent) : ne pas les commiter · **Worktree / branche** : `../ubumaths-wt-z-anguleux` · `feat/chiphre-math-z-anguleux`
 
 ## Décisions (David, 2026-11-12)
 
