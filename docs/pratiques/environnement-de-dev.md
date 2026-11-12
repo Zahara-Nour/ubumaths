@@ -188,12 +188,15 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   (CI, worktrees, Vercel). Mesuré le 2026-10-11 : `mathlive@0.111.1` (#1081) a cassé
   l'installation de `main`, débloquée par une exception datée.
 - **Versions retenues exprès** (2026-10-12) — ne pas les monter sans relire la raison :
-  `typescript-eslint` **8.71.0 exacte** (#1188) : la 8.71.1 voit à tort les props `$bindable` comme
-  « only used as a type » (6 erreurs, bug amont sveltejs/eslint-plugin-svelte#1607) ; on libère
-  quand une version corrigée passe `pnpm lint` complet. `prettier` 3.9.9 et
+  `prettier` 3.9.9 et
   `prettier-plugin-svelte` 4.1.1 **exactes** (#1179) : une montée reformate des centaines de
   fichiers, elle se fait dans sa propre PR. `typst` reste en 0.6.1-rc5 tant qu'aucune nouveauté
   n'est nécessaire. Une PR Dependabot qui touche l'une d'elles échoue en CI ou se ferme.
+- **Paquets de la config ESLint** (`typescript-eslint`, `eslint-plugin-svelte`, `globals`) : leur
+  montée invalide tout le cache ESLint, donc relecture à froid en CI (au-delà de 30 min sur #2537 et
+  #2577) ; le job Lint a 60 min. `typescript-eslint` n'est plus épinglé depuis la 8.72.1 : le faux
+  positif `$bindable` de la 8.71.1 (sveltejs/eslint-plugin-svelte#1607) est corrigé dans
+  `svelte-eslint-parser` 1.10.
 - **Routines cloud claude.ai** (agents sur cron, gérées sur claude.ai/code/routines) : tri des CI
   échouées chaque nuit (03:30 UTC, PR `ci-fix/*` ou issue), audit sécurité / dépendances le lundi (PR
   `deps/security-audit-<date>`), scan de secrets quotidien (issue sans valeur en clair), hygiène des
