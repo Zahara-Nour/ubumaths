@@ -10,18 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, lot 6 écrit (§ 23)._
+_Mis à jour le 2026-11-12, lot 6 : brouillons en prod, rangement en PR (§ 24)._
 
 - **État** : démonstrations terminées (§ 17). Algorithmes : lot 5 publié (§ 22) ; lot 6 (474, 610, 611, 500, 499)
-  validé (D3) et écrit, PR en cours sur `feat/questions-tspe-algorithmes-6` (§ 23). Restent les lots 7 et 8.
-- **Prochaine action** : merge du lot 6, puis David lance `create-questions --publier` (commande au § 23) ; ensuite
-  rangement (migration nœud + tags), page à cocher, publication, comme les § 20 à 22.
-- **En attente de David** : `create-questions --publier` après le merge.
+  dans `main` (#2601), 5 brouillons créés en prod par David, migration de rangement en PR (§ 24). Restent 7 et 8.
+- **Prochaine action** : merge de la PR de rangement, `check:migrations --pr`, `db:migrate`, vérif prod ; puis page
+  à cocher et publication, comme les § 21 et 22.
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-algorithmes-6`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-algorithmes-6-rangement`.
 
 ---
 
@@ -519,3 +519,28 @@ l'écran : trapèzes, choix (intégrale, code) rendus, case 3/8 jouée « Juste 
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-6 --publier`
+
+Mergé (#2601, 2026-11-12) : CI verte ; le premier `gh pr merge` a reçu un 502, puis « Merge already in progress » ;
+le commit de merge `cdeb275` est arrivé sur `main` mais GitHub a classé la PR « CLOSED ». Vérifié : les 5 JSON sont
+dans `main`. Le dépôt principal, dont l'index portait un fichier d'une autre session, ne pouvait pas `pull` : David a
+lancé `create-questions` depuis le worktree (à jour, base prod par `.env`).
+
+## 24. Lot 6 : brouillons en prod, rangement (2026-11-12)
+
+David a lancé `create-questions --publier` depuis le worktree : 5 brouillons. Ids reportés dans les JSON (branche de
+rangement). Relevé prod (MCP) : 5 brouillons `{T_SPE}` aux niveaux du § 23 (1, 3, 4, 5, 3), sans nœud ni tag ; les 5
+points actifs, aucun déjà tagué ; 499 posé sur sa notion (Intégrale et aire), 474 sur « méthode d'Euler », 610, 611 et
+500 sur « méthode des rectangles » ; les 3 sous-notions visées actives, noms à apostrophe droite.
+
+| Modèle   | Sous-notion                                                | Point    |
+| -------- | ---------------------------------------------------------- | -------- |
+| 848e62ff | Équations différentielles › Généralités › méthode d'Euler  | TSPE-474 |
+| c9cd3e4e | Intégration › Calcul d'intégrales › méthode des rectangles | TSPE-610 |
+| 4625cdec | Intégration › Calcul d'intégrales › méthode des rectangles | TSPE-611 |
+| baf6dc34 | Intégration › Calcul d'intégrales › méthode des rectangles | TSPE-500 |
+| 4cf87b77 | Intégration › Intégrale et aire › aire algébrique          | TSPE-499 |
+
+Migration `20261112161704_questions_tspe_algorithmes_6_rangement_tags.sql` (copie de celle du lot 5, seuls l'en-tête,
+les données et le préfixe `_qta6_` changent) ; test `tests/integration/questions-tspe-algorithmes-6-rangement-tags.test.ts`
+12/12 vert, rouge sans la migration (partie aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie (`cmp`).
+Accès : personne de plus (§ 18 Q5, D2).

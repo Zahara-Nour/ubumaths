@@ -1,4 +1,5 @@
 {
+	"id": "4625cdec-00da-44bf-86ca-f73bc18ef073",
 	"title": "Méthode des trapèzes en Python",
 	"description": "Méthode des trapèzes pour x² sur [0 ; b] : faire tourner pour n = 2 ou 4 (valeur exacte), compléter s = s + (f(x) + f(x + h)) * h / 2, excès ou défaut (fonction convexe)",
 	"grades": ["T_SPE"],
