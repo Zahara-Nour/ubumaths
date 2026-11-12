@@ -5,19 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2524 (lot 11b, fichiers)._
+_Mis à jour le 2026-11-12, après #2588 (lot 11b, nœud et tag)._
 
-- **État** : lots 10 et 11a publiés. Lot 11b (174-179, 148) : 7 modèles en fichiers sur `main` (#2524, § 26.4), pas
-  encore en base de prod.
-- **Prochaine action** : après le `--publier` de David, commiter les `id` sur la branche de la PR de migration ; migration nœud + tag (patron `20261109132820` : 174-178 sur « triangles », 179 sur
-  la notion « Symétrie axiale », 148 sur la notion « Périmètres ») ; page à cocher ; puis lot 12 « Constructions »
-  (173, 180, 207).
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-triangles-symetrie-perimetres
---publier` depuis le dépôt principal (brouillons en prod).
+- **État** : lots 10 et 11a publiés. Lot 11b (174-179, 148) : 7 brouillons en prod, rangés et tagués (#2588,
+  `db:migrate` fait, § 26.5) ; page à cocher publiée, verdicts attendus.
+- **Prochaine action** : lire les verdicts (collection `verdicts` de https://claude.ai/artifact/RveJ3zykTyFdg3w6SHMizP),
+  corriger s'il le faut, puis `publier-lot.ts --dir scripts/questions/6-triangles-symetrie-perimetres` (simulation,
+  `--publier` par David) ; puis lot 12 « Constructions » (173, 180, 207).
+- **En attente de David** : relecture du lot 11b sur la page à cocher.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
-ancre="centre"`. `\pi` dans `eval:`. 179 et 148 sur une NOTION : vérifier la garde « notion sans sous-notion ».
-  Réponses de figure : pleine précision.
-- **Worktree / branche** : aucun (retiré après #2524).
+ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
+  `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
+- **Worktree / branche** : aucun (retiré après #2588).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1672,3 +1671,15 @@ Pièges rencontrés :
   sans gêne.
 - Essai local : un fichier réécrit par le script perd son `id` local ; recopie avec les `id` locaux dans le scratchpad
   puis `--mettre-a-jour --publier` (jamais d'`id` local commité).
+
+### 26.5 Lot 11b : brouillons, nœud et tag (2026-11-12)
+
+- Brouillons créés par David : e4b77481 (6-174), 4e98c2d6 (6-175), 7a3e2bc9 (6-176), c199bf10 (6-177),
+  ec11ca90 (6-178), 9e83ea34 (6-179), 60f165a8 (6-148).
+- Migration `20261112054933` (patron 11a) : 174-178 sur « triangles », 179 sur la notion « Symétrie axiale »,
+  148 sur la notion « Périmètres ». Test d'intégration 17/17, rouge sans la migration ; security-auditor sans
+  finding bloquant. #2588 mergée (CI verte), `db:migrate` fait : vérifié en prod (nœuds, un point chacun,
+  `updated_at` préservé, trigger `O`).
+- Un second `create-questions --publier` lancé depuis `main` avant le merge a été refusé par la garde des
+  homonymes (fichiers sans `id`) : rien d'écrit.
+- Page à cocher : https://claude.ai/artifact/RveJ3zykTyFdg3w6SHMizP (7 fiches, aucune alerte).
