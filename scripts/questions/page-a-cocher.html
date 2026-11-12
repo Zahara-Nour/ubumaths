@@ -1074,6 +1074,30 @@
 	.h-axe {
 		fill: var(--fg);
 	}
+	/* Schéma en barres : SchemaBarres.svelte (segments sur fond discret, manquants en pointillés sans fond) */
+	.sb-schema {
+		display: block;
+		max-width: 100%;
+		height: auto;
+		margin: 0.5rem auto;
+		font-family: var(--body);
+		color: var(--fg);
+	}
+	.sb-segment {
+		fill: color-mix(in srgb, var(--fg) 8%, var(--surface));
+		stroke: currentColor;
+	}
+	.sb-manquant {
+		fill: none;
+	}
+	.sb-accolade {
+		fill: none;
+		stroke: currentColor;
+	}
+	.sb-texte {
+		fill: currentColor;
+		stroke: none;
+	}
 	.c-contour {
 		fill: none;
 		stroke: var(--fg);
