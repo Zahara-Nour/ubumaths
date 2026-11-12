@@ -5,15 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, phase 0 du lot 12 proposée (§ 27)._
+_Mis à jour le 2026-11-12, lot 12 écrit, PR #2591 (§ 27.1)._
 
-- **État** : lots 10, 11a et 11b publiés (11b : 7 modèles 174-179, 148, relus OK, `published` en prod).
-- **Prochaine action** : lot 12 « Constructions » (173, 180, 207) : phase 0 validée (§ 27) : écrire le lot.
+- **État** : lots 10 et 11 publiés ; lot 12 « Constructions » (173, 180, 207) écrit, PR #2591 en CI.
+- **Prochaine action** : merger #2591 (CI verte), puis `create-questions --publier` par David (3 brouillons), migration nœud + tag, page à cocher.
 - **En attente de David** : rien.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
 ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
-- **Worktree / branche** : aucun (retiré après #2588).
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot12-constructions`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1738,3 +1738,21 @@ l'auteur seuls jusqu'à la publication, la migration ne fait que ranger et tague
 **Réponses de David (2026-11-12)** : « go » sur les recommandations. (1) Un seul lot de 3 modèles. (2) 173 : longueurs
 par des segments à reporter ; triangle quelconque coté en cm noté dans `outils-manquants.md` (n° 29). (3) Papier pointé
 noté (n° 30), sans l'attendre. (4) 173 v4 gardée. (5) Phase 0 validée, avec 207 au niveau 2 seulement.
+
+### 27.1 Écriture (2026-11-12)
+
+Script `docs/wip/questions/lot-12-constructions.py` → `scripts/questions/6-constructions/` (3 modèles, 34 specs ;
+niveaux : 173 → 1, 180 → 1, 207 → 2). Simulation `create-questions` verte, `question:specs` à 300 tirages par
+variation (figures construites à chaque tirage), `sonde-figures` à 0 problème, `answer-complexity-corpus` et
+`student-answer-safety` verts, essai en base locale et aperçu admin (toutes les variations regardées). PR #2591.
+
+Pièges rencontrés :
+
+- Rapporteur (rayon 0,35 × le plus petit côté de la fenêtre, 3,15 en 12 × 9) : il doit tenir en A et en B du même
+  côté de (AB) ; A(3,5 ; 2,5), B(8,5 ; 2,5). 173 v3 : angles de 30 à 65° pour que C reste dans la fenêtre.
+- Cercle circonscrit : le cercle entier doit tenir dans la fenêtre (rayon ⩽ 4 en hauteur 9) ; triangles choisis sur un
+  cercle donné, le rectangle par un triplet 3-4-5 (C(8,4 ; 7,7)) pour que l'angle droit soit exact.
+- Nom d'un sommet par défaut en haut à droite : il tombe sur un côté. `etiquette=` à l'opposé du centre de gravité
+  (helper `etiquette`).
+- Symétrique sur papier uni : seuls les segments sont jugés (instruments non vérifiés), conforme à la doc du contrôle.
+- Port 5176 pris par une autre session : serveur de test sur 5177.
