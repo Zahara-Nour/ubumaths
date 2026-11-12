@@ -10,18 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, lot 4 écrit, PR des fichiers en cours (§ 14)._
+_Mis à jour le 2026-11-12, après #2583 (fichiers du lot 4, § 14)._
 
-- **État** : lots 1, 2 et 3 publiés (§ 5, § 9, § 13) ; lot 4 (494, 495, 512, 528, 623) écrit et vérifié (§ 14), PR des
-  fichiers ouverte.
-- **Prochaine action** : PR verte → merge → David lance `create-questions --publier` (lot 4) → ids dans les JSON →
+- **État** : lots 1, 2 et 3 publiés (§ 5, § 9, § 13) ; lot 4 (494, 495, 512, 528, 623) écrit et vérifié, fichiers mergés
+  (#2583, § 14).
+- **Prochaine action** : David lance `create-questions --publier` (lot 4, dépôt principal) → ids dans les JSON →
   migration de rangement (copie de celle du lot 2 : 5 sous-notions, aucune notion seule) → page à cocher.
-- **En attente de David** : la création des 5 brouillons en prod, après le merge.
+- **En attente de David** : la création des 5 brouillons en prod :
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-demonstrations-4 --publier`.
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3), saisie dans
   le champ « Seed » puis « Générer » (le `?seed=` de l'adresse est ignoré) ; `publier-lot.ts` lit la prod → David la
   lance ; `x/n` en ligne = forme à améliorer ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale
   tirée → `;d` dans `expectedAnswer`, sinon fraction et « forme à améliorer ».
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-demonstrations-4`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` ; branche
+  de rangement à créer : `feat/questions-tspe-demonstrations-4-rangement`.
 
 ---
 
