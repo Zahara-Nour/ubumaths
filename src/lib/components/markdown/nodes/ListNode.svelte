@@ -45,6 +45,7 @@
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
+	import SchemaBarres from './SchemaBarres.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
 	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
@@ -61,6 +62,7 @@
 	import type { OperationNode } from '$lib/ubumark/types/operation';
 	import type { CollectionNode } from '$lib/ubumark/types/collection';
 	import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
+	import type { SchemaBarresNode } from '$lib/ubumark/types/schema-barres';
 
 	interface Props {
 		ordered: boolean;
@@ -298,6 +300,13 @@
 	}
 
 	/**
+	 * Bloc ```schema-barres en retrait dans un item de liste
+	 */
+	function isSchemaBarresNode(node: ASTNode): node is SchemaBarresNode {
+		return node.type === 'schema-barres';
+	}
+
+	/**
 	 * Bloc ```partage en retrait dans un item de liste
 	 */
 	function isPartageNode(node: ASTNode): node is PartageNode {
@@ -336,7 +345,8 @@
 			'espace',
 			'operation',
 			'collection',
-			'monnaie'
+			'monnaie',
+			'schema-barres'
 		].includes(node.type);
 	}
 
@@ -491,6 +501,8 @@
 						<Collection node={child} />
 					{:else if isMonnaieNode(child)}
 						<Monnaie node={child} />
+					{:else if isSchemaBarresNode(child)}
+						<SchemaBarres node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -603,6 +615,8 @@
 						<Collection node={child} />
 					{:else if isMonnaieNode(child)}
 						<Monnaie node={child} />
+					{:else if isSchemaBarresNode(child)}
+						<SchemaBarres node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

@@ -30,7 +30,8 @@ export type CatalogNodeType =
 	| 'operation'
 	| 'ranger'
 	| 'collection'
-	| 'monnaie';
+	| 'monnaie'
+	| 'schema-barres';
 
 /** Une ligne du tableau des réglages */
 export interface BlockSetting {

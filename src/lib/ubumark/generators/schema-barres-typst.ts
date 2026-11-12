@@ -36,6 +36,9 @@ const PT_PER_CM = 28.3465;
 /** Hauteur de la boîte d'un texte, en corps de texte */
 const TEXT_BOX_RATIO = 1.5;
 
+/** Marge de la largeur de boîte sur la largeur estimée d'un texte */
+const TEXT_BOX_SLACK = 1.5;
+
 // ============================================================================
 // FONCTIONS
 // ============================================================================
@@ -50,12 +53,10 @@ const cm = (units: number) => `${Number((units * SCHEMA_BARRES_CM_PER_UNIT).toFi
 /** Un texte : boîte alignée (milieu, fin ou début) et centrée verticalement sur `y` */
 function textTypst(item: SchemaBarresText): string {
 	const height = SCHEMA_BARRES_FONT_SIZE * TEXT_BOX_RATIO;
+	// Boîte plus large que l'estimation : la police du PDF peut être plus large, le texte ne doit jamais passer à la ligne
+	const width = item.width * TEXT_BOX_SLACK;
 	const from =
-		item.anchor === 'middle'
-			? item.x - item.width / 2
-			: item.anchor === 'end'
-				? item.x - item.width
-				: item.x;
+		item.anchor === 'middle' ? item.x - width / 2 : item.anchor === 'end' ? item.x - width : item.x;
 	const align =
 		item.anchor === 'middle'
 			? 'center + horizon'
@@ -63,7 +64,7 @@ function textTypst(item: SchemaBarresText): string {
 				? 'right + horizon'
 				: 'left + horizon';
 	const size = `${Number((SCHEMA_BARRES_FONT_SIZE * SCHEMA_BARRES_CM_PER_UNIT * PT_PER_CM).toFixed(2))}pt`;
-	return `  #place(top + left, dx: ${cm(from)}, dy: ${cm(item.y - height / 2)}, box(width: ${cm(item.width)}, height: ${cm(height)}, align(${align}, text(size: ${size}, ${typstString(item.text)}))))`;
+	return `  #place(top + left, dx: ${cm(from)}, dy: ${cm(item.y - height / 2)}, box(width: ${cm(width)}, height: ${cm(height)}, align(${align}, text(size: ${size}, hyphenate: false, ${typstString(item.text)}))))`;
 }
 
 /** Typst d'un bloc ```schema-barres */

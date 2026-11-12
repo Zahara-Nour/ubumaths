@@ -36,6 +36,7 @@
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
+	import SchemaBarres from './SchemaBarres.svelte';
 	import ChoiceBlock from './ChoiceBlock.svelte';
 	import RangerPlacer from './RangerPlacer.svelte';
 
@@ -106,6 +107,8 @@
 	<Collection {node} />
 {:else if node.type === 'monnaie'}
 	<Monnaie {node} />
+{:else if node.type === 'schema-barres'}
+	<SchemaBarres {node} />
 {:else if node.type === 'choice'}
 	<ChoiceBlock {node} />
 {:else if node.type === 'ranger'}
