@@ -1,0 +1,221 @@
+{
+	"title": "Méthode des milieux en Python",
+	"description": "Méthode des milieux pour x² sur [0 ; b] : faire tourner pour n = 2 ou 4 (valeur exacte), compléter s = s + f(a + (k + 0.5) * h), limite quand n grandit (l'intégrale)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\ndef f(x):\n    return x**2\n\ndef milieux(a, b, n):\n    h = (b - a) / n\n    s = 0\n    for k in range(n):\n        s = s + f(a + (k + 0.5) * h)\n    return s * h\n```\n\nQue renvoie `milieux(0, {{eval:B}}, {{eval:n}})` ? On donnera la valeur exacte.\n\n$?$",
+			"variables": [
+				{
+					"name": "B",
+					"expression": "1|2"
+				},
+				{
+					"name": "n",
+					"expression": "2|4"
+				},
+				{
+					"name": "h",
+					"expression": "eval:B/n"
+				},
+				{
+					"name": "r",
+					"expression": "eval:B^3*(4*n^2-1)/(12*n^2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h=\\dfrac{{{eval:B}}-0}{{{eval:n}}}={{eval:h}}$ ; la boucle évalue $f$ au milieu de chacun des ${{eval:n}}$ intervalles de longueur $h$.",
+					"{{if:n==2|Les milieux sont ${{eval:h/2}}$ et ${{eval:3*h/2}}$, donc $s=\\left({{eval:h/2}}\\right)^2+\\left({{eval:3*h/2}}\\right)^2={{eval:10*h^2/4}}$|Les milieux sont ${{eval:h/2}}$, ${{eval:3*h/2}}$, ${{eval:5*h/2}}$ et ${{eval:7*h/2}}$, donc $s={{eval:h^2/4}}\\times(1+9+25+49)={{eval:21*h^2}}$}}.",
+					"La fonction renvoie $s\\times h=\\textcolor{{{color:primary.0}}}{{{eval:r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit calculer une valeur approchée de $\\displaystyle\\int_a^b f(x)\\,\\mathrm{d}x$ par la méthode des milieux : on découpe $[a\\,;\\,b]$ en $n$ intervalles de longueur $h$, et chaque rectangle a pour hauteur l'image du milieu de son intervalle.\n\n```python\ndef f(x):\n    return x**2\n\ndef milieux(a, b, n):\n    h = (b - a) / n\n    s = 0\n    for k in range(n):\n        ...\n    return s * h\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `s = s + f(a + (k + 0.5) * h)`\n- `s = s + f(a + k * h)`\n- `s = s + f(a + (k + 1) * h)`\n- `s = s + f((k + 0.5) * h)`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le $k$-ième intervalle (pour $k$ allant de $0$ à $n-1$) est $[a+kh\\,;\\,a+(k+1)h]$.",
+					"Son milieu est $a+kh+\\dfrac{h}{2}=a+(k+0{,}5)h$ ; avec `a + k * h` ou `a + (k + 1) * h`, on obtiendrait les rectangles à gauche ou à droite, et sans `a` on partirait de $0$.",
+					"La ligne est donc `s = s + f(a + (k + 0.5) * h)`."
+				]
+			}
+		},
+		{
+			"statement": "On reprend la fonction `milieux` ci-dessous, avec $f(x)=x^2$.\n\n```python\ndef f(x):\n    return x**2\n\ndef milieux(a, b, n):\n    h = (b - a) / n\n    s = 0\n    for k in range(n):\n        s = s + f(a + (k + 0.5) * h)\n    return s * h\n```\n\nQuand $n$ devient de plus en plus grand, de quel nombre `milieux(0, 1, n)` se rapproche-t-elle ?\n\n```choix\n- $\\displaystyle\\int_0^1 x^2\\,\\mathrm{d}x=\\dfrac{1}{3}$\n- $\\dfrac{f(0)+f(1)}{2}=\\dfrac{1}{2}$\n- $f(1)-f(0)=1$\n- $f\\left(\\dfrac{1}{2}\\right)=\\dfrac{1}{4}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`milieux(0, 1, n)` est la somme des aires de $n$ rectangles qui recouvrent à peu près le domaine sous la courbe de $f$, entre $0$ et $1$.",
+					"Quand $n$ augmente, cette somme tend vers l'aire sous la courbe, c'est-à-dire $\\displaystyle\\int_0^1 x^2\\,\\mathrm{d}x=\\left[\\dfrac{x^3}{3}\\right]_0^1=\\dfrac{1}{3}$.",
+					"Elle se rapproche donc de $\\textcolor{{{color:primary.0}}}{\\dfrac{1}{3}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "B = 1, n = 2 : 5/16",
+			"variationIndex": 0,
+			"variables": {
+				"B": "1",
+				"n": "2",
+				"h": "1/2",
+				"r": "5/16"
+			},
+			"answers": ["\\frac{5}{16}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 0,3125 au lieu de la fraction",
+			"variationIndex": 0,
+			"variables": {
+				"B": "1",
+				"n": "2",
+				"h": "1/2",
+				"r": "5/16"
+			},
+			"answers": ["0.3125"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : rectangles à gauche (1/8)",
+			"variationIndex": 0,
+			"variables": {
+				"B": "1",
+				"n": "2",
+				"h": "1/2",
+				"r": "5/16"
+			},
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "B = 1, n = 4 : 21/64",
+			"variationIndex": 0,
+			"variables": {
+				"B": "1",
+				"n": "4",
+				"h": "1/4",
+				"r": "21/64"
+			},
+			"answers": ["\\frac{21}{64}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "B = 2, n = 4 : 21/8",
+			"variationIndex": 0,
+			"variables": {
+				"B": "2",
+				"n": "4",
+				"h": "1/2",
+				"r": "21/8"
+			},
+			"answers": ["\\frac{21}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "s = s + f(a + (k + 0.5) * h)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : à gauche",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : à droite",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans a",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/3",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -10,18 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après la publication du lot 5 (§ 22)._
+_Mis à jour le 2026-11-12, lot 6 écrit (§ 23)._
 
-- **État** : démonstrations terminées (§ 17). Algorithmes : phase 0 validée (D2, § 18) ; lot 5 (analyse : 393, 433,
-  434, 592, 450) **publié** (§ 22). Restent les lots 6, 7, 8 (§ 18 Q1).
-- **Prochaine action** : lot 6 (équations différentielles et intégration : 474, 610, 611, 500, 499), même démarche que
-  le lot 5 (§ 19 à 22) : phase 0 du lot (titres, niveaux, variations), JSON, `create-questions` par David, rangement.
-- **En attente de David** : rien.
+- **État** : démonstrations terminées (§ 17). Algorithmes : lot 5 publié (§ 22) ; lot 6 (474, 610, 611, 500, 499)
+  validé (D3) et écrit, PR en cours sur `feat/questions-tspe-algorithmes-6` (§ 23). Restent les lots 7 et 8.
+- **Prochaine action** : merge du lot 6, puis David lance `create-questions --publier` (commande au § 23) ; ensuite
+  rangement (migration nœud + tags), page à cocher, publication, comme les § 20 à 22.
+- **En attente de David** : `create-questions --publier` après le merge.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (rien en cours).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-algorithmes-6`.
 
 ---
 
@@ -489,3 +489,33 @@ base `verdicts` vide à la publication.
 
 Verdicts lus : 5/5 « ok », sans commentaire (ids = ceux du § 20). `publier-lot.ts` en simulation puis `--publier`,
 lancés par David (le mode auto a bloqué la simulation : elle lit la prod). Relu en base (MCP) : 5 `published`.
+
+## 23. Lot 6 : algorithmes, équations différentielles et intégration (2026-11-12)
+
+Relevé prod (MCP, 2026-11-12) : les 5 points actifs, aucun tagué. 474 sur « méthode d'Euler » (sous-notion vide) ;
+610, 611, 500 sur « méthode des rectangles » (niveau max 2) ; 499 sur la notion Intégrale et aire, modèle sur « aire
+algébrique » (niveau max 2, D2 Q3). Aucun homonyme de titre.
+
+**D3 (David, 2026-11-12, « je te suis »)** : tableau ci-dessous tel que proposé ; Euler au niveau 1 (sous-notion
+vide) ; Monte-Carlo sur x³ et le rectangle [0 ; 2] × [0 ; 8] (pas la parabole de 1re) ; trapèzes (c) par la convexité.
+
+| Point | Modèle (`scripts/questions/tspe-algorithmes-6/`) | Nœud, niveau                     | Variations                                                                                   |
+| ----- | ------------------------------------------------ | -------------------------------- | -------------------------------------------------------------------------------------------- |
+| 474   | `01-methode-d-euler`                             | méthode d'Euler, 1               | `euler(a, b, y0, 0.5, 2)` sur y′ = ay + b (case) ; `y = y + h * f(x)` (choix) ; y(t) (choix) |
+| 610   | `02-methode-des-milieux`                         | méthode des rectangles, 3        | x² sur [0 ; B], n ∈ {2, 4}, fraction (case) ; `f(a + (k + 0.5) * h)` (choix) ; limite 1/3    |
+| 611   | `03-methode-des-trapezes`                        | méthode des rectangles, 4        | x² sur [0 ; B], n ∈ {2, 4}, fraction (case) ; `(f(x) + f(x + h)) * h / 2` ; excès (convexe)  |
+| 500   | `04-algorithme-de-brouncker`                     | méthode des rectangles, 5        | `brouncker(n)`, n ∈ {2, 3} → 7/12, 37/60 (case) ; `1 / ((2*k - 1) * (2*k))` ; ln 2 (choix)   |
+| 499   | `05-methode-de-monte-carlo`                      | Intégrale et aire › aire alg., 3 | décompte c donné → 16c/1000 (case) ; `if y <= f(x):` (choix) ; c/N → 1/4 (choix)             |
+
+Script : `docs/wip/questions/lot-tspe-algorithmes-6.py`. Pièges : en spec, une variable passée en décimal (`r: 0.375`)
+impose la forme décimale : passer les fractions en chaîne (`'3/8'`) ; un décimal exact là où la fraction est attendue
+rend `bad_form` (spec avec `constraintViolations: ['form']`). Euler : y0 ∈ {0, 4, 5}, car a = −1, b = y0 tombait sur
+l'équilibre (y constant), vu à l'écran.
+
+Vérifié : `question:specs` 150 tirages par variation, 5/5 importables (62 specs vertes), 0 `\textcolor` hors `$` ;
+260 réponses « faire tourner » recoupées en exécutant les programmes des énoncés (0 écart) ; `create-questions` en
+simulation prod (5 à créer, 0 déjà en base) ; brouillons en base locale (copie hors dépôt) ; aperçu admin vu à
+l'écran : trapèzes, choix (intégrale, code) rendus, case 3/8 jouée « Juste » ; Euler rendu.
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-6 --publier`

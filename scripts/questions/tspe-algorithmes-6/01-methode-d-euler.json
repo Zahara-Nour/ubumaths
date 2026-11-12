@@ -1,0 +1,258 @@
+{
+	"title": "Méthode d'Euler en Python : y′ = f et y′ = ay + b",
+	"description": "Méthode d'Euler : faire tourner deux pas de 0,5 sur y′ = ay + b (y0 ∈ {0, 4, 5}, jamais l'équilibre −b/a), compléter la ligne y = y + h * f(x) pour y′ = f, dire quelle valeur de la solution le programme approche",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante, qui applique la méthode d'Euler à l'équation différentielle $y'=ay+b$.\n\n```python\ndef euler(a, b, y, h, n):\n    for k in range(n):\n        y = y + h * (a * y + b)\n    return y\n```\n\nQue renvoie `euler({{eval:a}}, {{eval:b}}, {{eval:y0}}, 0.5, 2)` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-1|1|2|3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "y0",
+					"expression": "0|4|5"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:y0+0.5*(a*y0+b)"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:y1+0.5*(a*y1+b)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:y2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle est parcourue deux fois, avec $h=0{,}5$.",
+					"Premier tour : $a\\times y+b={{eval:a*y0+b}}$, donc `y` devient ${{eval:y0}}+0{,}5\\times({{eval:a*y0+b}})={{eval:y1;d}}$.",
+					"Second tour : $a\\times y+b={{eval:a*y1+b;d}}$, donc `y` devient ${{eval:y1;d}}+0{,}5\\times({{eval:a*y1+b;d}})=\\textcolor{{{color:primary.0}}}{{{eval:y2;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous applique la méthode d'Euler, avec un pas $h$, à l'équation différentielle $y'=f(x)$, en partant du point de coordonnées $(x\\,;\\,y)$.\n\n```python\ndef f(x):\n    return 2 * x + 1\n\ndef euler(x, y, h, n):\n    for k in range(n):\n        ...\n        x = x + h\n    return y\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `y = y + h * f(x)`\n- `y = y + f(x)`\n- `y = h * f(x)`\n- `y = y + h * f(y)`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La méthode d'Euler remplace la courbe, sur $[x\\,;\\,x+h]$, par sa tangente au point d'abscisse $x$ : $y(x+h)\\approx y(x)+h\\times y'(x)$.",
+					"Ici $y'(x)=f(x)$ : la pente dépend de $x$, pas de $y$, et l'accroissement est $h$ fois la pente.",
+					"La ligne est donc `y = y + h * f(x)`."
+				]
+			}
+		},
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\ndef euler(a, b, y, h, n):\n    for k in range(n):\n        y = y + h * (a * y + b)\n    return y\n\nprint(euler({{eval:a}}, {{eval:b}}, 1, 0.001, {{eval:1000*t}}))\n```\n\nDe quel nombre la valeur affichée est-elle une valeur approchée ? On note $y$ la solution de $y'={{eval:a}}y+{{eval:b}}$ telle que $y(0)=1$.\n\n```choix\n- $y({{eval:t}})$\n- $y'({{eval:t}})$\n- $y({{eval:1000*t}})$\n- $y(0{,}001)$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3"
+				},
+				{
+					"name": "b",
+					"expression": "1|2"
+				},
+				{
+					"name": "t",
+					"expression": "1|2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de $x=0$ et $y=1$ ; chaque tour avance de $h=0{,}001$ et calcule une valeur approchée de $y$ au point suivant.",
+					"Après ${{eval:1000*t}}$ tours, on est arrivé en $x={{eval:1000*t}}\\times0{,}001={{eval:t}}$.",
+					"La valeur affichée approche donc $\\textcolor{{{color:primary.0}}}{y({{eval:t}})}$, et d'autant mieux que le pas est petit."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 1, b = 1, y0 = 4 : 10,25",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"y0": "4",
+				"y1": "6.5",
+				"y2": "10.25"
+			},
+			"answers": ["10.25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a = 2, b = 1, y0 = 0 : 1,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"y0": "0",
+				"y1": "0.5",
+				"y2": "1.5"
+			},
+			"answers": ["1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a = 2, b = 1, y0 = 0 : avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"y0": "0",
+				"y1": "0.5",
+				"y2": "1.5"
+			},
+			"answers": ["1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul pas",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"y0": "0",
+				"y1": "0.5",
+				"y2": "1.5"
+			},
+			"answers": ["0.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = −1, b = 3, y0 = 5 : 3,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"b": "3",
+				"y0": "5",
+				"y1": "4",
+				"y2": "3.5"
+			},
+			"answers": ["3.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "y = y + h * f(x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans h",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans y",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(y)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y(t)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"t": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y′(t)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"t": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : y(1000 t)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"t": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : y(h)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"t": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
