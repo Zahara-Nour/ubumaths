@@ -99,9 +99,10 @@ jobs:
     needs: version
     if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' }}
     runs-on: ubuntu-latest
-    # Un changement de eslint.config.* invalide tout le cache ESLint : relecture
-    # à froid ~18 min (#1871), plus ~2 min d'installation.
-    timeout-minutes: 30
+    # Un changement de eslint.config.* ou d'un paquet de la config (typescript-eslint,
+    # eslint-plugin-svelte, globals) invalide tout le cache ESLint : relecture à froid
+    # ~18 min (#1871), mais coupée à 30 min sur #2537 et #2577. Marge large.
+    timeout-minutes: 60
 
     steps:
       - name: Checkout code
