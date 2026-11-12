@@ -6,9 +6,9 @@ validés », P5. Phase 0 : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, ouverture._
+_Mis à jour le 2026-11-12, R1-R7 tranchées._
 
-- **État** : phase 0 écrite (comportements + questions R1-R7) · **Prochaine action** : réponses de David à R1-R7, puis validation des comportements, puis découpage · **En attente de David** : R1-R7 · **Pièges en cours** : la Constance Royale (série qui se perd) et « tu m'as manqué » existent déjà et contredisent P5 (R1, R2) · **Worktree / branche** : `../ubumaths-wt-regularite` · `feat/regularite`
+- **État** : R1-R7 tranchées (recommandations validées, § Décisions) · **Prochaine action** : validation des comportements N1-N8 / L1-L4 / E1 (reposée à David), puis PR A (grille du prof) · **En attente de David** : validation des comportements · **Pièges en cours** : R1 et R2 modifient la Constance Royale et `long_absence`, validés en 2026-10 → mettre `docs/systeme/buddy-palotins.md` à jour dans la PR B · **Worktree / branche** : `../ubumaths-wt-regularite` · `feat/regularite`
 
 ## Besoin validé (rappel, David, 2026-11-11)
 
@@ -92,3 +92,17 @@ _Mis à jour le 2026-11-12, ouverture._
   (b) ignorées (semaines vides avant le déploiement).
 - **R7 — Découpage** : PR A grille du prof (lecture seule, sans migration a priori : le prof lit déjà
   les traces de ses élèves, on lui en montre moins) ; PR B Palotin (moments, R1, R2). D'accord ?
+
+## Décisions (David, 2026-11-12)
+
+David : « Je valide tes recos ».
+
+- **R1 = a** : la réplique `streak_lost` est retirée et la remise à 0 de la Constance Royale n'est plus montrée ; le bonus d'XP reste.
+- **R2 = a** : « tu m'as manqué » (`long_absence`, triste, à l'arrivée) est remplacé par le moment « retour après une pause » : réplique joyeuse, après la 1re activité, sans durée.
+- **R3 = a** : le widget C (`ClassActivityHeatmap`) est remplacé par la grille de régularité.
+- **R4 = a** : semaine active = au moins un jour actif ; les semaines de vacances ne coupent pas le compte ; compte coupé = remis à zéro en silence.
+- **R5 = oui** : notion acquise = passage au badge ✅ ; question longtemps ratée = modèle raté ≥ 3 fois sur ≥ 7 jours, puis réussi.
+- **R6 = a** : traces sans lieu comptées comme travail autonome.
+- **R7 = oui** : PR A grille du prof (lecture seule, sans migration a priori) ; PR B Palotin (moments, R1, R2).
+
+Comportements N1-N8 / L1-L4 / E1 : **pas encore validés explicitement** (reposé à David le 2026-11-12).
