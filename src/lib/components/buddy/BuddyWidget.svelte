@@ -16,7 +16,7 @@
 	import BuddyAvatar from './BuddyAvatar.svelte';
 	import BuddySpeechBubble from './BuddySpeechBubble.svelte';
 	import BuddyStatusPanel from './BuddyStatusPanel.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
 	import { page } from '$app/state';
 	import { BUBBLE_DURATION, GREETING_DELAY, LINK_BUBBLE_DURATION } from './buddy-timing';
@@ -27,19 +27,17 @@
 	} from './chatterie-announcement';
 
 	interface Props {
-		streakLost?: boolean;
-		/** Retour après une longue absence : « tu m'as manqué » remplace la Constance perdue */
-		longAbsence?: boolean;
+		/** Retour après une pause à fêter (l'élève a travaillé depuis) ; peut arriver après le montage */
+		returnAfterPause?: boolean;
 		onChangePalotin?: () => void;
-		/** La réplique du retour (absence, Constance perdue) a été dite : ne plus la redire */
+		/** La réplique du retour a été dite : ne plus la redire */
 		onWelcomeBackSaid?: () => void;
 		/** Palotin lu par la présence : repli quand le cache a expiré (TTL de 10 min) */
 		fallbackBuddy?: BuddyState | null;
 	}
 
 	let {
-		streakLost = false,
-		longAbsence = false,
+		returnAfterPause = false,
 		onChangePalotin,
 		onWelcomeBackSaid,
 		fallbackBuddy = null
@@ -60,6 +58,8 @@
 	let nappingTimer: ReturnType<typeof setTimeout> | null = null;
 	// Réplique du retour : nettoyée au démontage (quitter l'accueil avant elle ne l'acquitte pas)
 	let welcomeTimer: ReturnType<typeof setTimeout> | null = null;
+	/** Réplique du retour programmée : jamais deux fois pour ce widget */
+	let returnScheduled = false;
 
 	// Status panel
 	let showStatus = $state(false);
@@ -123,7 +123,7 @@
 	async function greetOrAnnounceChatterie(mountedAt: number, afterWelcomeBack: boolean) {
 		const announcement = await fetchChatterieAnnouncement();
 		if (!buddy) return;
-		// Après la réplique du retour (absence, Constance perdue), sa bulle passe d'abord, et pas de salutation
+		// Après la réplique du retour, sa bulle passe d'abord, et pas de salutation
 		const minDelay = afterWelcomeBack ? 1000 + BUBBLE_DURATION : GREETING_DELAY;
 		const wait = Math.max(0, minDelay - (Date.now() - mountedAt));
 		if (!announcement) {
@@ -137,20 +137,24 @@
 	}
 
 	/**
-	 * Réplique du retour : « tu m'as manqué » après une longue absence, sinon
-	 * la Constance perdue. Une Constance perdue pendant l'absence reste remise
-	 * à zéro, mais sa réplique ne s'affiche pas : « tu m'as manqué » la remplace
-	 * (décision du 2026-10-21).
+	 * Fête le retour après une pause, une seconde après (au montage, ou quand la
+	 * présence relue après une activité l'apporte), puis l'acquitte. Joyeux, sans
+	 * durée (R2, chantier `regularite`, 2026-11-12).
 	 */
-	function welcomeBackContext(): BuddyMessageContext | null {
-		if (longAbsence) return 'long_absence';
-		return streakLost ? 'streak_lost' : null;
+	function scheduleReturn() {
+		returnScheduled = true;
+		welcomeTimer = setTimeout(() => {
+			welcomeTimer = null;
+			showMessage('return_after_pause');
+			acknowledgeWelcomeBack();
+			onWelcomeBackSaid?.();
+		}, 1000);
 	}
 
 	/**
-	 * « Tu m'as manqué » est dit : le retour est fêté, le serveur l'efface. Après
-	 * la bulle seulement (un préchargement n'affiche rien, donc ne consomme rien) ;
-	 * en échec, la bulle reviendra au prochain chargement.
+	 * Le retour est fêté : le serveur l'efface. Après la bulle seulement (un
+	 * préchargement n'affiche rien, donc ne consomme rien) ; en échec, la bulle
+	 * reviendra au prochain chargement.
 	 */
 	function acknowledgeWelcomeBack() {
 		fetch('/api/student/buddy/welcome-back', { method: 'POST' }).catch(() => {});
@@ -187,20 +191,21 @@
 		onChangePalotin?.();
 	}
 
+	// Retour à fêter, au montage ou plus tard (présence relue après une activité) : une fois
+	$effect(() => {
+		if (!returnAfterPause || !buddy) return;
+		untrack(() => {
+			if (!returnScheduled) scheduleReturn();
+		});
+	});
+
 	onMount(() => {
-		// Au montage : la réplique du retour (longue absence, sinon Constance perdue), puis les
+		// Au montage : la réplique du retour (programmée par l'effet ci-dessous), puis les
 		// nouveautés ou les Mathoux en sieste, sinon une salutation
 		if (buddy) {
-			const welcomeBack = welcomeBackContext();
-			if (welcomeBack) {
-				welcomeTimer = setTimeout(() => {
-					showMessage(welcomeBack);
-					if (welcomeBack === 'long_absence') acknowledgeWelcomeBack();
-					onWelcomeBackSaid?.();
-				}, 1000);
-			}
+			const welcomeBack = returnAfterPause;
 			if (!isOnChatterie()) {
-				void greetOrAnnounceChatterie(Date.now(), welcomeBack !== null);
+				void greetOrAnnounceChatterie(Date.now(), welcomeBack);
 			} else if (!welcomeBack) {
 				greetingTimer = setTimeout(() => showMessage('idle'), GREETING_DELAY);
 			}

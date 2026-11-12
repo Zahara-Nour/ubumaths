@@ -134,25 +134,32 @@ describe('recordStudentPresence', () => {
 describe('isWelcomeBackPending', () => {
 	it('lit la ligne de l’élève de la session, sans rien écrire', async () => {
 		service.setResult({ data: { welcome_back_on: utcDay() }, error: null });
-		expect(await isWelcomeBackPending(STUDENT)).toBe(true);
+		expect(await isWelcomeBackPending(STUDENT, utcDay())).toBe(true);
 		expect(called('eq')).toEqual([['student_id', STUDENT]]);
 		expect(called('update')).toEqual([]);
 	});
 
+	it('pas encore travaillé depuis le retour : on attend (R2, 2026-11-12)', async () => {
+		service.setResult({ data: { welcome_back_on: daysAgo(2) }, error: null });
+		expect(await isWelcomeBackPending(STUDENT, daysAgo(30))).toBe(false);
+		expect(await isWelcomeBackPending(STUDENT, null)).toBe(false);
+		expect(await isWelcomeBackPending(STUDENT, daysAgo(1))).toBe(true);
+	});
+
 	it('retour d’il y a 6 jours : encore à fêter ; 7 jours : oublié', async () => {
 		service.setResult({ data: { welcome_back_on: daysAgo(6) }, error: null });
-		expect(await isWelcomeBackPending(STUDENT)).toBe(true);
+		expect(await isWelcomeBackPending(STUDENT, utcDay())).toBe(true);
 		service.setResult({ data: { welcome_back_on: daysAgo(7) }, error: null });
-		expect(await isWelcomeBackPending(STUDENT)).toBe(false);
+		expect(await isWelcomeBackPending(STUDENT, utcDay())).toBe(false);
 	});
 
 	it('rien à fêter, aucune ligne, ou lecture en échec : faux', async () => {
 		service.setResult({ data: { welcome_back_on: null }, error: null });
-		expect(await isWelcomeBackPending(STUDENT)).toBe(false);
+		expect(await isWelcomeBackPending(STUDENT, utcDay())).toBe(false);
 		service.setResult({ data: null, error: null });
-		expect(await isWelcomeBackPending(STUDENT)).toBe(false);
+		expect(await isWelcomeBackPending(STUDENT, utcDay())).toBe(false);
 		service.setResult({ data: null, error: { message: 'panne' } });
-		expect(await isWelcomeBackPending(STUDENT)).toBe(false);
+		expect(await isWelcomeBackPending(STUDENT, utcDay())).toBe(false);
 	});
 });
 

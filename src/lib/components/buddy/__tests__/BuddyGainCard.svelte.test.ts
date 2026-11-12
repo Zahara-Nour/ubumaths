@@ -13,6 +13,7 @@ import { render } from 'vitest-browser-svelte';
 import BuddyGainCard from '../BuddyGainCard.svelte';
 import BuddyStatusPanel from '../BuddyStatusPanel.svelte';
 import { parseBuddyGain, receiveBuddyGain, toBuddyGainView } from '../buddy-gain';
+import { registerBuddyActivityListener } from '../palotin-presence';
 import { buddyMessages } from '$lib/config/buddy-messages';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import type { BuddyState } from '$lib/types/buddy';
@@ -283,8 +284,25 @@ describe('BuddyStatusPanel — Constance Royale en semaines', () => {
 			constance_week_start: TWO_WEEKS_AGO,
 			constance_days_this_week: 3
 		});
-		expect(shown).toContain('Constance Royale : 0 semaine');
+		// R1 (2026-11-12) : la remise à zéro n'est pas montrée, ni « 0 semaine »
+		expect(shown).not.toContain('Constance Royale');
 		expect(shown).toContain('Cette semaine : 0 jour sur 3');
+		expect(shown).toContain('Record : 5 semaines');
+	});
+});
+
+describe('receiveBuddyGain — activité signalée au Palotin (retour après une pause)', () => {
+	it('gain non nul : la présence du Palotin est prévenue ; gain nul : non', async () => {
+		const listener = vi.fn();
+		const unregister = registerBuddyActivityListener(listener);
+		try {
+			await receiveBuddyGain(saveResponse({ xp_gained: 0, daily_cap_reached: true }));
+			expect(listener).not.toHaveBeenCalled();
+			await receiveBuddyGain(saveResponse());
+			expect(listener).toHaveBeenCalledTimes(1);
+		} finally {
+			unregister();
+		}
 	});
 });
 
@@ -318,12 +336,25 @@ describe('receiveBuddyGain — Constance Royale à jour sans recharger', () => {
 	});
 });
 
-describe('répliques de Constance perdue — en semaines', () => {
-	it('chaque Palotin parle de la semaine manquée, jamais d’une série de jours', () => {
+describe('répliques du retour après une pause (R2, 2026-11-12)', () => {
+	it('ni durée, ni absence, ni tristesse, ni genre', () => {
 		for (const palotin of ['giron', 'pile', 'cotice'] as const) {
-			const lines = buddyMessages[palotin].streak_lost;
-			expect(lines.length).toBeGreaterThan(0);
-			for (const line of lines) expect(line).toMatch(/semaine|Constance/i);
+			const lines = buddyMessages[palotin].return_after_pause;
+			expect(lines.length).toBeGreaterThanOrEqual(3);
+			for (const line of lines) {
+				expect(line).not.toMatch(
+					/manqu|absen|longtemps|jours?\b|semaines?|mois|oubli|seul|triste/i
+				);
+				// Neutre en genre : pas d'accord au masculin ou au féminin sur l'élève
+				expect(line).not.toMatch(/\b(content|contente|revenu|revenue|prêt|prête)\b/i);
+			}
+		}
+	});
+
+	it('plus aucune réplique de Constance perdue (R1, 2026-11-12)', () => {
+		for (const palotin of ['giron', 'pile', 'cotice'] as const) {
+			expect(Object.keys(buddyMessages[palotin])).not.toContain('streak_lost');
+			expect(Object.keys(buddyMessages[palotin])).not.toContain('long_absence');
 		}
 	});
 });

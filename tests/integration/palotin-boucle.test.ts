@@ -104,12 +104,12 @@ function buildLocals(p: Person): App.Locals {
 /** Lecture de présence du Palotin (première page d'une zone du Palotin) */
 async function readPresence(
 	locals: App.Locals
-): Promise<{ buddy: { current_streak: number } | null; streakLost: boolean }> {
+): Promise<{ buddy: { current_streak: number } | null; returnAfterPause: boolean }> {
 	const response = await presenceRoute({ locals } as never);
 	expect(response.status, 'statut de /api/student/buddy/presence').toBe(200);
 	return (await response.json()) as {
 		buddy: { current_streak: number } | null;
-		streakLost: boolean;
+		returnAfterPause: boolean;
 	};
 }
 
@@ -595,7 +595,8 @@ describe('la boucle du Palotin tourne', () => {
 
 			const data = await readPresence({ ...buildLocals(p), profile } as App.Locals);
 
-			expect(data.streakLost).toBe(true);
+			// Remise à zéro en silence (R1, 2026-11-12) : aucune réplique à demander
+			expect(data).not.toHaveProperty('streakLost');
 			expect(data.buddy?.current_streak).toBe(0);
 			expect(await constanceOf(p)).toMatchObject({ current_streak: 0, longest_streak: 5 });
 		});
@@ -613,7 +614,6 @@ describe('la boucle du Palotin tourne', () => {
 
 			const data = await readPresence({ ...buildLocals(p), profile } as App.Locals);
 
-			expect(data.streakLost).toBe(false);
 			expect(data.buddy?.current_streak).toBe(3);
 			expect((await constanceOf(p))?.current_streak).toBe(3);
 		});

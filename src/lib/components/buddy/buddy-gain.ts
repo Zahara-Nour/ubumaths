@@ -19,6 +19,7 @@ import type { PalotinType } from '$lib/config/buddy-messages';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import { toBuddyState, type BuddyExpression, type BuddyState } from '$lib/types/buddy';
 import { buddyMessageEngine } from './buddy-message-engine';
+import { notifyBuddyActivity } from './palotin-presence';
 
 // Types
 /** Gain lu dans la réponse du serveur. */
@@ -156,6 +157,8 @@ export async function receiveBuddyGain(payload: unknown): Promise<BuddyGainView 
 async function applyBuddyGain(payload: unknown): Promise<BuddyGainView | null> {
 	const gain = parseBuddyGain(payload);
 	if (!gain) return null;
+	// Un gain = un jour travaillé : la présence du Palotin se relira (retour à fêter)
+	if (gain.xpGained > 0) notifyBuddyActivity();
 
 	const cached = studentCache.getBuddySync();
 	if (cached) {

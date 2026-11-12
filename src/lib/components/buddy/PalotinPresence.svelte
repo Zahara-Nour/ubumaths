@@ -12,9 +12,11 @@
 	    3 erreurs sur une notion : `seance-reactions.ts`), et la séance attend
 	    qu'il soit reparti ;
 	  - ailleurs : rien.
-	Le Palotin est lu APRÈS l'affichage (`GET /api/student/buddy/presence`).
-	Passages importants (retour d'absence, Constance perdue, nouveautés de la
-	Chatterie) : une fois chacun, hors plafond. Passage spontané (Mathoux en
+	Le Palotin est lu APRÈS l'affichage (`GET /api/student/buddy/presence`), et
+	relu à la page suivante quand l'élève vient de travailler (gain de pansées) :
+	un retour après une pause se fête après la 1re activité, sans recharger.
+	Passages importants (retour après une pause, nouveautés de la Chatterie) :
+	une fois chacun, hors plafond. Passage spontané (Mathoux en
 	sieste) : un toutes les 10 minutes au plus, tous onglets confondus.
 	Sans Palotin : le quiz de choix s'ouvre sur l'accueil seulement.
 -->
@@ -40,7 +42,8 @@
 		browserStorage,
 		createPassageClock,
 		palotinZone,
-		parseBuddyPresence
+		parseBuddyPresence,
+		registerBuddyActivityListener
 	} from './palotin-presence';
 	import {
 		registerSeanceReactionHandler,
@@ -84,10 +87,11 @@
 	// Variables
 	const clock = createPassageClock(browserStorage);
 	let presenceRequested = false;
+	/** L'élève a travaillé depuis la dernière lecture : relire à la page suivante */
+	let presenceStale = false;
 	/** Lecture de présence terminée (réussie ou non) */
 	let loaded = $state(false);
-	let streakLost = $state(false);
-	let longAbsence = $state(false);
+	let returnAfterPause = $state(false);
 	/** Palotin selon le serveur : `null` tant qu'il n'a pas répondu (décide seul du quiz) */
 	let serverHasBuddy = $state<boolean | null>(null);
 	/** Palotin lu par la présence : repli quand le cache a expiré (TTL de 10 min) */
@@ -115,10 +119,14 @@
 	const moveDuration = $derived(prefersReducedMotion.current ? 0 : MOVE_DURATION);
 
 	// Functions
-	/** Lit le Palotin, une fois, à la première page où il peut apparaître. */
+	/**
+	 * Lit le Palotin à la première page où il peut apparaître, puis de nouveau
+	 * après une activité (un retour après une pause peut alors être à fêter).
+	 */
 	async function requestPresence() {
-		if (presenceRequested) return;
+		if (presenceRequested && !presenceStale) return;
 		presenceRequested = true;
+		presenceStale = false;
 		// Cache réécrit pendant la lecture (gain de fin de séance) : il est plus récent, on le garde
 		const cachedBefore = studentCache.getBuddySync();
 		try {
@@ -128,8 +136,8 @@
 				serverHasBuddy = view.buddy !== null;
 				presenceBuddy = view.buddy;
 				if (studentCache.getBuddySync() === cachedBefore) studentCache.hydrateBuddy(view.buddy);
-				streakLost = view.streakLost;
-				longAbsence = view.longAbsence;
+				// Un retour déjà en file ou déjà dit n'est pas effacé par une relecture
+				if (view.returnAfterPause) returnAfterPause = true;
 			}
 		} catch {
 			// Lecture en échec : pas de passage ; l'écusson reste si le Palotin est déjà connu
@@ -147,19 +155,15 @@
 		queue = [...queue, { message, expression, link: null, onShown }];
 	}
 
-	/** « Tu m'as manqué » est dit : le serveur l'efface (en échec, il reviendra). */
+	/** Le retour est fêté : le serveur l'efface (en échec, il reviendra). */
 	function acknowledgeWelcomeBack() {
 		fetch(WELCOME_BACK_URL, { method: 'POST' }).catch(() => {});
 	}
 
 	/**
 	 * Ce que le Palotin a à dire en passant : d'abord les passages importants
-	 * (retour d'absence ou Constance perdue, nouveautés de la Chatterie), puis le
-	 * passage spontané si le plafond le permet (Mathoux en sieste).
-	 * La Constance perdue est importante : la lecture de présence l'a déjà remise
-	 * à zéro, sa réplique ne reviendrait pas au chargement suivant (décision de
-	 * David, 2026-11-11). Elle reste en mémoire de l'onglet : un rechargement
-	 * avant la première page de passage la perd encore (pas d'acquittement serveur).
+	 * (retour après une pause, nouveautés de la Chatterie), puis le passage
+	 * spontané si le plafond le permet (Mathoux en sieste).
 	 */
 	async function planPassages() {
 		if (planning || !buddy) return;
@@ -172,14 +176,9 @@
 	}
 
 	async function planPassagesNow() {
-		if (longAbsence) {
-			// « Tu m'as manqué » remplace la Constance perdue
-			longAbsence = false;
-			streakLost = false;
-			enqueueContext('long_absence', acknowledgeWelcomeBack);
-		} else if (streakLost) {
-			streakLost = false;
-			enqueueContext('streak_lost');
+		if (returnAfterPause) {
+			returnAfterPause = false;
+			enqueueContext('return_after_pause', acknowledgeWelcomeBack);
 		}
 
 		if (!announcementPromise) {
@@ -289,17 +288,30 @@
 
 	// Changement de page : l'état ouvert se ferme ; hors des pages de passage, le Palotin repart
 	// Arrivée sur une page de passage (la première est traitée à la fin de la lecture de présence)
+	// Après une activité, la présence est relue en arrivant dans la maison ou sur un passage
 	afterNavigate(() => {
 		statusOpen = false;
-		if (palotinZone(page.url.pathname) !== 'passage') {
-			stopPassage();
-		} else if (loaded) {
+		const nextZone = palotinZone(page.url.pathname);
+		if (nextZone !== 'passage') stopPassage();
+		if (presenceStale && (nextZone === 'maison' || nextZone === 'passage')) {
+			// La lecture planifie elle-même les passages
+			void requestPresence();
+		} else if (nextZone === 'passage' && loaded) {
 			void planPassages();
 		}
 	});
 
-	// Prêt à réagir en séance ; démonté, la séance n'attend plus
-	onMount(() => registerSeanceReactionHandler(playSeanceReaction));
+	// Prêt à réagir en séance ; prévenu des activités ; démonté, la séance n'attend plus
+	onMount(() => {
+		const unregisterSeance = registerSeanceReactionHandler(playSeanceReaction);
+		const unregisterActivity = registerBuddyActivityListener(() => {
+			presenceStale = true;
+		});
+		return () => {
+			unregisterSeance();
+			unregisterActivity();
+		};
+	});
 
 	onDestroy(() => {
 		if (passageTimer) clearTimeout(passageTimer);
@@ -312,11 +324,9 @@
 		{#key homeKey}
 			<BuddyWidget
 				fallbackBuddy={presenceBuddy}
-				{streakLost}
-				{longAbsence}
+				{returnAfterPause}
 				onWelcomeBackSaid={() => {
-					streakLost = false;
-					longAbsence = false;
+					returnAfterPause = false;
 				}}
 				onChangePalotin={() => (showChangeModal = true)}
 			/>

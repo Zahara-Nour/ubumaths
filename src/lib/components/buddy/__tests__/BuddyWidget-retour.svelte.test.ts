@@ -1,12 +1,13 @@
 /**
- * Le Palotin au retour de l'élève (docs/systeme/buddy-palotins.md)
- * =======================================================================
+ * Le Palotin au retour de l'élève, après une pause (docs/systeme/buddy-palotins.md)
+ * =================================================================================
  *
- * Ce que l'élève LIT et VOIT : après une longue absence, son Palotin est
- * triste et lui dit « tu m'as manqué ». La Constance perdue pendant cette
- * absence n'a pas sa réplique (« tu m'as manqué » la remplace) ; l'annonce de
- * la Chatterie suit la bulle, sans salutation. Une fois la bulle montrée, le
- * retour est acquitté auprès du serveur (docs/systeme/buddy-palotins.md).
+ * Ce que l'élève LIT et VOIT (chantier `regularite`, R2, David 2026-11-12) :
+ * après une pause, le Palotin fête le retour APRÈS la 1re activité, joyeux,
+ * sans dire la durée ni parler d'absence. La présence peut arriver après le
+ * montage (relue après un gain) : la réplique est dite alors, une seule fois.
+ * L'annonce de la Chatterie suit la bulle, sans salutation. Une fois la bulle
+ * montrée, le retour est acquitté auprès du serveur.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -39,8 +40,7 @@ const buddy: BuddyState = {
 	constance_week_start: null,
 	constance_days_this_week: 0
 };
-const MISSED = buddyMessages.pile.long_absence;
-const STREAK_LOST = buddyMessages.pile.streak_lost;
+const RETURN = buddyMessages.pile.return_after_pause;
 /** Début de l'annonce de la Chatterie (suivie du lien « Aller à la Chatterie ») */
 const NAPPING = '2 Mathoux font la sieste.';
 const WELCOME_BACK_URL = '/api/student/buddy/welcome-back';
@@ -76,36 +76,45 @@ afterEach(() => {
 	studentCache.hydrateBuddy(null);
 });
 
-describe('BuddyWidget — retour après une longue absence', () => {
-	it('le Palotin est triste et dit « tu m’as manqué »', async () => {
+describe('BuddyWidget — retour après une pause', () => {
+	it('le Palotin est joyeux et fête le retour', async () => {
 		mockSummary({ born: 0, napping: 0, toDiscover: 0, news: NO_NEWS });
-		await render(BuddyWidget, { props: { longAbsence: true } });
+		await render(BuddyWidget, { props: { returnAfterPause: true } });
 
-		await vi.waitFor(() => expect(MISSED).toContain(bubbleText()), { timeout: 3000 });
-		expect(avatarSrc()).toContain('pile-sad');
+		await vi.waitFor(() => expect(RETURN).toContain(bubbleText()), { timeout: 3000 });
+		expect(avatarSrc()).toContain('pile-happy');
 		// Aucune salutation ensuite : à 2,5 s, la salutation au hasard serait déjà partie
 		await new Promise((resolve) => setTimeout(resolve, 2500));
 		const text = bubbleText();
-		expect(text === '' || MISSED.includes(text)).toBe(true);
+		expect(text === '' || RETURN.includes(text)).toBe(true);
 	}, 8_000);
 
-	it('Constance perdue pendant l’absence : sa réplique ne s’affiche pas', async () => {
+	it('retour connu après le montage (présence relue après un gain) : dit une fois', async () => {
 		mockSummary({ born: 0, napping: 0, toDiscover: 0, news: NO_NEWS });
-		await render(BuddyWidget, { props: { longAbsence: true, streakLost: true } });
+		const onWelcomeBackSaid = vi.fn();
+		const widget = await render(BuddyWidget, {
+			props: { returnAfterPause: false, onWelcomeBackSaid }
+		});
+		await new Promise((resolve) => setTimeout(resolve, 200));
+		await widget.rerender({ returnAfterPause: true, onWelcomeBackSaid });
 
-		await vi.waitFor(() => expect(MISSED).toContain(bubbleText()), { timeout: 3000 });
+		await vi.waitFor(() => expect(RETURN).toContain(bubbleText()), { timeout: 3000 });
+		await vi.waitFor(() => expect(acknowledgements()).toHaveLength(1));
+		expect(onWelcomeBackSaid).toHaveBeenCalledTimes(1);
+		// Le parent remet le drapeau à faux puis à vrai : rien n'est redit
+		await widget.rerender({ returnAfterPause: false, onWelcomeBackSaid });
+		await widget.rerender({ returnAfterPause: true, onWelcomeBackSaid });
 		await new Promise((resolve) => setTimeout(resolve, 1500));
-		expect(STREAK_LOST).not.toContain(bubbleText());
-		expect(MISSED).toContain(bubbleText());
-	});
+		expect(acknowledgements()).toHaveLength(1);
+	}, 8_000);
 
 	it('l’annonce de la Chatterie suit la bulle, sans salutation entre les deux', async () => {
 		mockSummary({ born: 2, napping: 2, toDiscover: 0, news: NO_NEWS });
-		await render(BuddyWidget, { props: { longAbsence: true } });
+		await render(BuddyWidget, { props: { returnAfterPause: true } });
 
-		await vi.waitFor(() => expect(MISSED).toContain(bubbleText()), { timeout: 3000 });
-		const missedAt = Date.now();
-		// Jusqu'à l'annonce, la bulle ne montre que « tu m'as manqué » (ou rien)
+		await vi.waitFor(() => expect(RETURN).toContain(bubbleText()), { timeout: 3000 });
+		const saidAt = Date.now();
+		// Jusqu'à l'annonce, la bulle ne montre que la réplique du retour (ou rien)
 		const seen = new Set<string>();
 		await vi.waitFor(
 			() => {
@@ -115,25 +124,19 @@ describe('BuddyWidget — retour après une longue absence', () => {
 			},
 			{ timeout: 8000, interval: 100 }
 		);
-		// « tu m'as manqué » reste affiché toute la durée d'une bulle avant d'être remplacé
-		expect(Date.now() - missedAt).toBeGreaterThanOrEqual(BUBBLE_DURATION - 300);
+		// La réplique du retour reste affichée toute la durée d'une bulle avant d'être remplacée
+		expect(Date.now() - saidAt).toBeGreaterThanOrEqual(BUBBLE_DURATION - 300);
 		for (const text of seen) {
-			if (!text.startsWith(NAPPING)) expect(MISSED).toContain(text);
+			if (!text.startsWith(NAPPING)) expect(RETURN).toContain(text);
 		}
 	}, 12_000);
-
-	it('sans longue absence, la Constance perdue garde sa réplique', async () => {
-		mockSummary({ born: 0, napping: 0, toDiscover: 0, news: NO_NEWS });
-		await render(BuddyWidget, { props: { streakLost: true } });
-
-		await vi.waitFor(() => expect(STREAK_LOST).toContain(bubbleText()), { timeout: 3000 });
-		expect(avatarSrc()).toContain('pile-determined');
-	});
 
 	it('accueil quitté avant la bulle : rien n’est acquitté', async () => {
 		mockSummary({ born: 0, napping: 0, toDiscover: 0, news: NO_NEWS });
 		const onWelcomeBackSaid = vi.fn();
-		const widget = await render(BuddyWidget, { props: { longAbsence: true, onWelcomeBackSaid } });
+		const widget = await render(BuddyWidget, {
+			props: { returnAfterPause: true, onWelcomeBackSaid }
+		});
 
 		await widget.unmount();
 		await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -143,19 +146,20 @@ describe('BuddyWidget — retour après une longue absence', () => {
 
 	it('la bulle montrée, le retour est acquitté une fois auprès du serveur', async () => {
 		mockSummary({ born: 0, napping: 0, toDiscover: 0, news: NO_NEWS });
-		await render(BuddyWidget, { props: { longAbsence: true } });
+		await render(BuddyWidget, { props: { returnAfterPause: true } });
 
 		expect(acknowledgements()).toHaveLength(0);
-		await vi.waitFor(() => expect(MISSED).toContain(bubbleText()), { timeout: 3000 });
+		await vi.waitFor(() => expect(RETURN).toContain(bubbleText()), { timeout: 3000 });
 		await vi.waitFor(() => expect(acknowledgements()).toHaveLength(1));
 		expect(acknowledgements()[0]).toEqual([WELCOME_BACK_URL, { method: 'POST' }]);
 	});
 
-	it('sans longue absence : rien à acquitter', async () => {
+	it('sans retour : rien à acquitter, salutation habituelle', async () => {
 		mockSummary({ born: 0, napping: 0, toDiscover: 0, news: NO_NEWS });
-		await render(BuddyWidget, { props: { streakLost: true } });
+		await render(BuddyWidget, { props: {} });
 
-		await vi.waitFor(() => expect(STREAK_LOST).toContain(bubbleText()), { timeout: 3000 });
+		await new Promise((resolve) => setTimeout(resolve, 1500));
+		expect(RETURN).not.toContain(bubbleText());
 		expect(acknowledgements()).toHaveLength(0);
 	});
 });
