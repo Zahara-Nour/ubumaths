@@ -1,0 +1,215 @@
+{
+	"title": "Permutations en Python : générer, tirer au hasard",
+	"description": "Permutations : nombre de listes renvoyées par la génération récursive (n! pour n = 3, 4, 5), compléter j = randint(0, i) dans le mélange de Fisher-Yates, probabilité d'une permutation donnée (1/n!)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La fonction Python ci-dessous renvoie la liste de toutes les permutations de la liste `L` (chacune écrite comme une liste).\n\n```python\ndef permutations(L):\n    if len(L) <= 1:\n        return [L]\n    resultat = []\n    for i in range(len(L)):\n        reste = L[:i] + L[i+1:]\n        for P in permutations(reste):\n            resultat.append([L[i]] + P)\n    return resultat\n\nprint(len(permutations({{if:n==3|[1, 2, 3]|{{if:n==4|[1, 2, 3, 4]|[1, 2, 3, 4, 5]}}}})))\n```\n\nQuel nombre ce programme affiche-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..5"
+				},
+				{
+					"name": "r",
+					"expression": "eval:factorial(n)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour chaque premier élément `L[i]` (il y a `len(L)` choix), la fonction ajoute toutes les permutations des éléments restants.",
+					"Donc, pour une liste de $m$ éléments, le nombre de permutations est $m$ fois celui d'une liste de $m-1$ éléments, et il vaut $1$ pour $m=1$ : $m\\times(m-1)\\times\\cdots\\times1=m!$.",
+					"Pour ${{eval:n}}$ éléments, le programme affiche ${{eval:n}}!=\\textcolor{{{color:primary.0}}}{{{eval:r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit mélanger la liste `L` de façon que toutes ses permutations aient la même probabilité d'être obtenues (mélange de Fisher-Yates) : `randint(a, b)` renvoie un entier au hasard entre `a` et `b`, **bornes comprises**.\n\n```python\nfrom random import randint\n\ndef melange(L):\n    n = len(L)\n    for i in range(n - 1, 0, -1):\n        ...\n        L[i], L[j] = L[j], L[i]\n    return L\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `j = randint(0, i)`\n- `j = randint(0, n - 1)`\n- `j = randint(0, i - 1)`\n- `j = randint(1, i)`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque tour, on choisit au hasard l'élément qui ira en position `i`, parmi ceux des positions $0$ à $i$ qui ne sont pas encore placés : `j = randint(0, i)`.",
+					"Il y a alors $n\\times(n-1)\\times\\cdots\\times2=n!$ suites de tirages équiprobables, une par permutation. Avec `randint(0, n - 1)`, il y en a $n^{n-1}$, qui n'est pas un multiple de $n!$ : certaines permutations sortent plus souvent. Avec `randint(0, i - 1)`, `L[i]` est toujours échangé et la liste de départ ne peut pas sortir ; avec `randint(1, i)`, `L[0]` ne bouge jamais.",
+					"La ligne est donc `j = randint(0, i)`."
+				]
+			}
+		},
+		{
+			"statement": "On reprend la fonction `melange` ci-dessous, qui tire une permutation de `L` au hasard, toutes les permutations ayant la même probabilité d'être obtenues.\n\n```python\nfrom random import randint\n\ndef melange(L):\n    n = len(L)\n    for i in range(n - 1, 0, -1):\n        j = randint(0, i)\n        L[i], L[j] = L[j], L[i]\n    return L\n```\n\nOn exécute `melange({{if:n==3|[1, 2, 3]|{{if:n==4|[1, 2, 3, 4]|[1, 2, 3, 4, 5]}}}})`. Quelle est la probabilité que la liste renvoyée soit `{{if:n==3|[3, 2, 1]|{{if:n==4|[4, 3, 2, 1]|[5, 4, 3, 2, 1]}}}}` ?\n\n```choix\n- $\\dfrac{1}{{{eval:factorial(n)}}}$\n- $\\dfrac{1}{{{eval:n}}}$\n- $\\dfrac{1}{{{eval:n^n}}}$\n- $\\dfrac{1}{{{eval:factorial(n-1)}}}$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une liste de ${{eval:n}}$ éléments distincts a ${{eval:n}}!={{eval:factorial(n)}}$ permutations.",
+					"Elles sont équiprobables, et `{{if:n==3|[3, 2, 1]|{{if:n==4|[4, 3, 2, 1]|[5, 4, 3, 2, 1]}}}}` est l'une d'elles.",
+					"La probabilité est donc $\\textcolor{{{color:primary.0}}}{\\dfrac{1}{{{eval:factorial(n)}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n = 3 : 6",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"r": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 4 : 24",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"r": "24"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 5 : 120",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"r": "120"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n^n (n = 3)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"r": "6"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n (n = 4)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"r": "24"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "j = randint(0, i)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : randint(0, n − 1), biaisé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : Sattolo",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : L[0] fixe",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/n!",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/n",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/nⁿ",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/(n − 1)!",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

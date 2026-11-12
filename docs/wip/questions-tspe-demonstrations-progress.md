@@ -10,16 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, lot 6 publié (§ 26)._
+_Mis à jour le 2026-11-12, lot 7 en PR (§ 27)._
 
-- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 et 6 publiés (§ 22, § 26). Restent les lots 7 et 8.
-- **Prochaine action** : phase 0 du lot 7 (même démarche que les § 19 à 26).
-- **En attente de David** : rien.
+- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 et 6 publiés (§ 22, § 26) ; lot 7 (324, 513, 514, 515) écrit et vérifié, en PR (§ 27). Reste le lot 8.
+- **Prochaine action** : merge de la PR du lot 7, puis David lance `create-questions --publier` (commande au § 27) ;
+  ensuite rangement (migration), page à cocher, publication, comme les § 24 à 26.
+- **En attente de David** : `create-questions --publier` après le merge.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (branches du lot 6 supprimées).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-algorithmes-7`.
 
 ---
 
@@ -560,3 +561,35 @@ base `verdicts` vide à la publication.
 
 Verdicts lus : 5/5 « ok », sans commentaire (ids = ceux du § 24). `publier-lot.ts` en simulation puis `--publier`,
 lancés par David. Relu en base (MCP) : 5 `published`.
+
+## 27. Lot 7 : algorithmes, probabilités, simulation et loi binomiale (2026-11-12)
+
+Relevé prod (MCP, 2026-11-12) : les 4 points actifs, de type `algorithme`, aucun tagué. 324 sur « permutations »
+(niveau max 3) ; 513 sur la notion Loi binomiale, modèle sur « schéma de Bernoulli » (niveau max 3, D2 Q3) ; 514 sur
+« intervalle de fluctuation » (niveau max 2) ; 515 sur « échantillons » (niveau max 3). Aucun homonyme de titre.
+
+**D4 (David, 2026-11-12, « je valide », après mes recos)** : tableau ci-dessous tel que proposé. 513 et 515 sans
+forme (a) (programmes aléatoires) : 513 double (c) (loi, puis P(X = k)), 515 double (b) (simulation de X, puis somme) ;
+niveaux juste au-dessus de l'existant ; 324 (a) compte les listes (n!), sans demander la k-ième.
+
+| Point | Modèle (`scripts/questions/tspe-algorithmes-7/`) | Nœud, niveau                    | Variations                                                                                                                    |
+| ----- | ------------------------------------------------ | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| 324   | `01-permutations-en-python`                      | permutations, 4                 | `len(permutations([1, …, n]))`, n ∈ {3, 4, 5} → n! (case) ; `j = randint(0, i)` ; 1/n! (choix)                                |
+| 513   | `02-planche-de-galton`                           | Loi binomiale › schéma de B., 4 | `if random() < 0.5:` (choix) ; loi B(n ; 0,5) (choix) ; P(case k) = C(n, k)/2ⁿ, fraction (case)                               |
+| 514   | `03-probleme-de-la-surreservation`               | intervalle de fluctuation, 3    | table de P(X ⩽ k), B(80 ; 0,9), α ∈ {0,2 ; 0,1 ; 0,05 ; 0,01} → 74, 75, 76, 78 (case) ; `while 1 - F(k) > alpha:` ; sens de k |
+| 515   | `04-simuler-un-echantillon`                      | échantillons, 4                 | `if random() < 0.3:` (choix) ; `S = S + X()` (choix) ; moyenne d'un grand échantillon → E(X)                                  |
+
+Script : `docs/wip/questions/lot-tspe-algorithmes-7.py`. Dans le code Python, un décimal s'écrit en dur ou par
+`{{if}}` (α de 514), jamais par `{{eval}}`. Les `{{if}}` imbriqués à branches `0{,}6995` passent. Table de 514
+calculée en Python (`math.comb`). Choix de 514 (c) : la bonne réponse raccourcie (elle se trahissait par sa longueur) ;
+515 (c) : quatre nombres nus (pas « E(X) = » sur deux d'entre eux seulement).
+
+Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (53 specs vertes), 0 `\textcolor` hors `$` ;
+149 réponses recoupées en exécutant les programmes des énoncés (324 (a), 514 (a), et 513 P(X = k) par les 2ⁿ chutes) :
+0 écart ; `create-questions` en simulation prod (4 à créer, 0 déjà en base) ; brouillons en base locale (copie hors
+dépôt, variables de `.env.local` passées à la main : `dotenv` ne lit que `.env`) ; aperçu admin vu à l'écran :
+surréservation, table en virgules, case 74 jouée « Juste », corrigé rendu ; échantillon, choix −0,1 / 0,5 / 1,89 / 0,3
+rendus en virgules, 0,3 joué « Faux » ; Galton, lois rendues.
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-7 --publier`
