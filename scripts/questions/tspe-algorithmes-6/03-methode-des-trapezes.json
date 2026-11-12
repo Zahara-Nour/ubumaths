@@ -1,0 +1,221 @@
+{
+	"title": "Méthode des trapèzes en Python",
+	"description": "Méthode des trapèzes pour x² sur [0 ; b] : faire tourner pour n = 2 ou 4 (valeur exacte), compléter s = s + (f(x) + f(x + h)) * h / 2, excès ou défaut (fonction convexe)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\ndef f(x):\n    return x**2\n\ndef trapezes(a, b, n):\n    h = (b - a) / n\n    s = 0\n    x = a\n    for k in range(n):\n        s = s + (f(x) + f(x + h)) * h / 2\n        x = x + h\n    return s\n```\n\nQue renvoie `trapezes(0, {{eval:B}}, {{eval:n}})` ? On donnera la valeur exacte.\n\n$?$",
+			"variables": [
+				{
+					"name": "B",
+					"expression": "1|2"
+				},
+				{
+					"name": "n",
+					"expression": "2|4"
+				},
+				{
+					"name": "h",
+					"expression": "eval:B/n"
+				},
+				{
+					"name": "r",
+					"expression": "eval:B^3/3+B*h^2/6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h=\\dfrac{{{eval:B}}-0}{{{eval:n}}}={{eval:h}}$ ; chaque tour ajoute l'aire d'un trapèze, $\\dfrac{f(x)+f(x+h)}{2}\\times h$.",
+					"En regroupant, chaque image intérieure est comptée deux fois : {{if:n==2|$s=\\dfrac{h}{2}\\left(f(0)+2f({{eval:h}})+f({{eval:B}})\\right)={{eval:h/2}}\\times{{eval:2*h^2+B^2}}$|$s=\\dfrac{h}{2}\\left(f(0)+2f({{eval:h}})+2f({{eval:2*h}})+2f({{eval:3*h}})+f({{eval:B}})\\right)={{eval:h/2}}\\times{{eval:28*h^2+B^2}}$}}.",
+					"La fonction renvoie $\\textcolor{{{color:primary.0}}}{{{eval:r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit calculer une valeur approchée de $\\displaystyle\\int_a^b f(x)\\,\\mathrm{d}x$ par la méthode des trapèzes : sur chaque intervalle $[x\\,;\\,x+h]$, on remplace l'aire sous la courbe par celle du trapèze de sommets $(x\\,;\\,0)$, $(x+h\\,;\\,0)$, $(x+h\\,;\\,f(x+h))$ et $(x\\,;\\,f(x))$.\n\n```python\ndef f(x):\n    return x**2\n\ndef trapezes(a, b, n):\n    h = (b - a) / n\n    s = 0\n    x = a\n    for k in range(n):\n        ...\n        x = x + h\n    return s\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `s = s + (f(x) + f(x + h)) * h / 2`\n- `s = s + (f(x) + f(x + h)) * h`\n- `s = s + (f(x + h) - f(x)) * h / 2`\n- `s = s + f(x) * f(x + h) * h / 2`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le trapèze a pour bases $f(x)$ et $f(x+h)$ et pour hauteur $h$.",
+					"Son aire est $\\dfrac{\\text{somme des bases}}{2}\\times\\text{hauteur}=\\dfrac{f(x)+f(x+h)}{2}\\times h$ : sans la division par $2$, on compterait deux fois trop.",
+					"La ligne est donc `s = s + (f(x) + f(x + h)) * h / 2`."
+				]
+			}
+		},
+		{
+			"statement": "On reprend la fonction `trapezes` ci-dessous, avec $f(x)=x^2$.\n\n```python\ndef f(x):\n    return x**2\n\ndef trapezes(a, b, n):\n    h = (b - a) / n\n    s = 0\n    x = a\n    for k in range(n):\n        s = s + (f(x) + f(x + h)) * h / 2\n        x = x + h\n    return s\n```\n\nComment la valeur renvoyée par `trapezes(0, 1, 10)` se place-t-elle par rapport à $\\displaystyle\\int_0^1 x^2\\,\\mathrm{d}x$ ?\n\n```choix\n- Elle est supérieure, car $f$ est convexe : sur chaque intervalle, la courbe est sous la corde.\n- Elle est inférieure, car $f$ est convexe : sur chaque intervalle, la courbe est sous la corde.\n- Elle est égale, car la méthode des trapèzes est exacte pour un polynôme.\n- Elle est supérieure, car $f$ est croissante sur $[0\\,;\\,1]$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f''(x)=2>0$ : $f$ est convexe, donc sur chaque intervalle $[x\\,;\\,x+h]$ sa courbe est sous la corde qui joint $(x\\,;\\,f(x))$ et $(x+h\\,;\\,f(x+h))$.",
+					"Chaque trapèze contient donc le domaine sous la courbe : son aire est plus grande. La croissance de $f$ ne joue aucun rôle.",
+					"La valeur renvoyée est $\\textcolor{{{color:primary.0}}}{\\text{supérieure à l'intégrale}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "B = 1, n = 2 : 3/8",
+			"variationIndex": 0,
+			"variables": {
+				"B": "1",
+				"n": "2",
+				"h": "1/2",
+				"r": "3/8"
+			},
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 0,375 au lieu de la fraction",
+			"variationIndex": 0,
+			"variables": {
+				"B": "1",
+				"n": "2",
+				"h": "1/2",
+				"r": "3/8"
+			},
+			"answers": ["0.375"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : sans diviser par 2",
+			"variationIndex": 0,
+			"variables": {
+				"B": "1",
+				"n": "2",
+				"h": "1/2",
+				"r": "3/8"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "B = 1, n = 4 : 11/32",
+			"variationIndex": 0,
+			"variables": {
+				"B": "1",
+				"n": "4",
+				"h": "1/4",
+				"r": "11/32"
+			},
+			"answers": ["\\frac{11}{32}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "B = 2, n = 2 : 3",
+			"variationIndex": 0,
+			"variables": {
+				"B": "2",
+				"n": "2",
+				"h": "1",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "s = s + (f(x) + f(x + h)) * h / 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans /2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : différence",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "supérieure, convexe",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inférieure",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : égale",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

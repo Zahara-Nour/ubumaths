@@ -1,0 +1,178 @@
+{
+	"title": "Algorithme de Brouncker pour ln 2 en Python",
+	"description": "Somme de Brouncker 1/(1×2) + 1/(3×4) + … : faire tourner pour n = 2 ou 3 (fraction), compléter s = s + 1 / ((2k − 1)(2k)), dire de quel nombre c'est une valeur approchée (ln 2)",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef brouncker(n):\n    s = 0\n    for k in range(1, n + 1):\n        s = s + 1 / ((2*k - 1) * (2*k))\n    return s\n```\n\nQue renvoie `brouncker({{eval:n}})` ? On donnera la valeur exacte, sous forme de fraction.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2|3"
+				},
+				{
+					"name": "r",
+					"expression": "eval:1/2+floor(n/2)/12+floor(n/3)/30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $k=1$, on ajoute $\\dfrac{1}{1\\times2}=\\dfrac{1}{2}$ ; pour $k=2$, $\\dfrac{1}{3\\times4}=\\dfrac{1}{12}${{if:n==3| ; pour $k=3$, $\\dfrac{1}{5\\times6}=\\dfrac{1}{30}$|}}.",
+					"{{if:n==3|$s=\\dfrac{1}{2}+\\dfrac{1}{12}+\\dfrac{1}{30}=\\dfrac{30}{60}+\\dfrac{5}{60}+\\dfrac{2}{60}$|$s=\\dfrac{1}{2}+\\dfrac{1}{12}=\\dfrac{6}{12}+\\dfrac{1}{12}$}}.",
+					"La fonction renvoie $\\textcolor{{{color:primary.0}}}{{{eval:r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer la somme de Brouncker\n\n$\\dfrac{1}{1\\times2}+\\dfrac{1}{3\\times4}+\\dfrac{1}{5\\times6}+\\cdots+\\dfrac{1}{(2n-1)\\times2n}$\n\n```python\ndef brouncker(n):\n    s = 0\n    for k in range(1, n + 1):\n        ...\n    return s\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `s = s + 1 / ((2*k - 1) * (2*k))`\n- `s = s + 1 / (k * (k + 1))`\n- `s = s + 1 / (2*k * (2*k + 1))`\n- `s = s + (-1)**k / k`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les dénominateurs sont $1\\times2$, $3\\times4$, $5\\times6$ : un impair suivi du pair suivant.",
+					"Pour $k$ allant de $1$ à $n$, ce sont $(2k-1)\\times2k$ ; `k * (k + 1)` donnerait $1\\times2$, $2\\times3$, $3\\times4$, et `2*k * (2*k + 1)` commencerait à $2\\times3$.",
+					"La ligne est donc `s = s + 1 / ((2*k - 1) * (2*k))`."
+				]
+			}
+		},
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\ndef brouncker(n):\n    s = 0\n    for k in range(1, n + 1):\n        s = s + 1 / ((2*k - 1) * (2*k))\n    return s\n\nprint(brouncker(10000))\n```\n\nDe quel nombre la valeur affichée est-elle une valeur approchée ?\n\n```choix\n- $\\ln(2)=\\displaystyle\\int_1^2\\dfrac{1}{x}\\,\\mathrm{d}x$\n- $1$\n- $\\dfrac{\\pi}{4}$\n- $\\ln(3)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{(2k-1)\\times2k}=\\dfrac{1}{2k-1}-\\dfrac{1}{2k}$, donc la somme vaut $1-\\dfrac{1}{2}+\\dfrac{1}{3}-\\dfrac{1}{4}+\\cdots-\\dfrac{1}{2n}$.",
+					"Brouncker obtient cette somme en remplissant le domaine sous l'hyperbole $y=\\dfrac{1}{x}$, entre $1$ et $2$, par des rectangles de plus en plus fins ; elle tend vers l'aire de ce domaine.",
+					"La valeur affichée approche donc $\\textcolor{{{color:primary.0}}}{\\ln(2)}\\approx0{,}693$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n = 2 : 7/12",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"r": "7/12"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 3 : 37/60",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"r": "37/60"
+			},
+			"answers": ["\\frac{37}{60}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un terme oublié (n = 3)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"r": "37/60"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s = s + 1 / ((2*k - 1) * (2*k))",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k(k+1)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2k(2k+1)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : série harmonique alternée",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ln 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : π/4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln 3",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

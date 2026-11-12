@@ -1,0 +1,190 @@
+{
+	"title": "Méthode de Monte-Carlo pour une intégrale en Python",
+	"description": "Monte-Carlo pour l'intégrale de x³ sur [0 ; 2], points dans [0 ; 2] × [0 ; 8] : valeur renvoyée pour un décompte donné, compléter if y <= f(x):, limite de c/N (1/4)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère le programme Python suivant : `random()` renvoie un nombre au hasard dans $[0\\,;\\,1[$.\n\n```python\nfrom random import random\n\ndef f(x):\n    return x**3\n\ndef monte_carlo(N):\n    c = 0\n    for k in range(N):\n        x = 2 * random()\n        y = 8 * random()\n        if y <= f(x):\n            c = c + 1\n    return 16 * c / N\n```\n\nOn exécute `monte_carlo(1000)`. À la fin de la boucle, `c` vaut ${{eval:c}}$. Quelle valeur la fonction renvoie-t-elle ?\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "230..270"
+				},
+				{
+					"name": "r",
+					"expression": "eval:16*c/1000"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`c` compte les points tirés dans le rectangle $[0\\,;\\,2]\\times[0\\,;\\,8]$ qui sont sous la courbe de $f$.",
+					"La fonction renvoie $\\dfrac{16\\times{{eval:c}}}{1000}=\\textcolor{{{color:primary.0}}}{{{eval:r;d}}}$.",
+					"C'est l'aire du rectangle ($16$) multipliée par la proportion de points sous la courbe : une valeur approchée de $\\displaystyle\\int_0^2 x^3\\,\\mathrm{d}x=4$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous tire $N$ points au hasard dans le rectangle $[0\\,;\\,2]\\times[0\\,;\\,8]$ et compte, dans `c`, ceux qui sont sous la courbe de $f$.\n\n```python\nfrom random import random\n\ndef f(x):\n    return x**3\n\ndef monte_carlo(N):\n    c = 0\n    for k in range(N):\n        x = 2 * random()\n        y = 8 * random()\n        ...\n            c = c + 1\n    return 16 * c / N\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `if y <= f(x):`\n- `if y >= f(x):`\n- `if x <= f(y):`\n- `if y <= x:`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le point de coordonnées $(x\\,;\\,y)$ est sous la courbe de $f$ quand son ordonnée est inférieure à l'image de son abscisse.",
+					"Il faut donc comparer $y$ à $f(x)$, et non $x$ à $f(y)$ ; `y >= f(x)` compterait les points au-dessus.",
+					"La ligne est donc `if y <= f(x):`."
+				]
+			}
+		},
+		{
+			"statement": "On reprend la fonction `monte_carlo` ci-dessous.\n\n```python\nfrom random import random\n\ndef f(x):\n    return x**3\n\ndef monte_carlo(N):\n    c = 0\n    for k in range(N):\n        x = 2 * random()\n        y = 8 * random()\n        if y <= f(x):\n            c = c + 1\n    return 16 * c / N\n```\n\nPour $N$ grand, de quel nombre la proportion $\\dfrac{c}{N}$ est-elle proche ?\n\n```choix\n- $\\dfrac{1}{4}$\n- $4$\n- $\\dfrac{1}{16}$\n- $\\dfrac{1}{2}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{c}{N}$ est la fréquence des points tombés sous la courbe : pour $N$ grand, elle est proche de la probabilité qu'un point du rectangle soit sous la courbe.",
+					"Cette probabilité est le quotient des aires : $\\dfrac{\\displaystyle\\int_0^2 x^3\\,\\mathrm{d}x}{2\\times8}=\\dfrac{\\left[\\frac{x^4}{4}\\right]_0^2}{16}=\\dfrac{4}{16}$.",
+					"$\\dfrac{c}{N}$ est donc proche de $\\textcolor{{{color:primary.0}}}{\\dfrac{1}{4}}$ ; $4$ est l'intégrale elle-même, valeur approchée par $16\\times\\dfrac{c}{N}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "c = 250 : 4",
+			"variationIndex": 0,
+			"variables": {
+				"c": "250",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c = 243 : 3,888",
+			"variationIndex": 0,
+			"variables": {
+				"c": "243",
+				"r": "3.888"
+			},
+			"answers": ["3.888"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c = 243 : avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"c": "243",
+				"r": "3.888"
+			},
+			"answers": ["3,888"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : c/N sans l'aire du rectangle",
+			"variationIndex": 0,
+			"variables": {
+				"c": "243",
+				"r": "3.888"
+			},
+			"answers": ["0.243"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "if y <= f(x):",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x et y échangés",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : y <= x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/16",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
