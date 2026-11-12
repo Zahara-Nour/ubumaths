@@ -1,4 +1,5 @@
 {
+	"id": "a4b9281f-3e12-4ae3-a4b7-3ac02043f491",
 	"title": "Démontrer l'expression de la probabilité de k succès dans un schéma de Bernoulli",
 	"description": "Démonstration à trous : probabilité d'un chemin (choix), nombre de chemins (case, n et k tirés), incompatibilité (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],

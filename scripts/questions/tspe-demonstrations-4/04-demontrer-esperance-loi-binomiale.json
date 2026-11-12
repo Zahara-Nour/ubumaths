@@ -1,4 +1,5 @@
 {
+	"id": "040b57c3-e994-4e93-8cc4-daaef9f5467d",
 	"title": "Démontrer l'espérance de la loi binomiale",
 	"description": "Démonstration à trous : E(Xᵢ) = p (case), linéarité (choix), exemple (case, n et p tirés) ; étapes à ranger",
 	"grades": ["T_SPE"],
