@@ -11,7 +11,7 @@ _Mis à jour le 2026-11-12, clôture après #2576._
 
 ## Suites (futurs chantiers, non ouverts)
 
-- **Régularité (P5)** : heatmap élève × semaine + Palotin de régularité (Q-C, § Besoins de suivi) — à ouvrir en premier.
+- **Régularité (P5)** : heatmap élève × semaine + Palotin de régularité (Q-C, § Besoins de suivi) — **fait** : chantier `regularite`, clos le 2026-11-12 (`regularite-progress.md`).
 - **Saisie en séries de chapitre** : forme choisie par le prof (CHECK en base : Flash-cards / Contrôle blanc) ; migration additive, seulement si l'usage la demande.
 - **Écrans prof et élève** sur les nouvelles traces : P3 taux par point / notion, P4 et E4 erreurs fréquentes, P6 bilan d'un contrôle, P7 durées trop courtes, P8 page de suivi d'un élève.
 - **A1 durées ajustées** au temps observé (modèle : `recalculate_minesweeper_reference_times()`).

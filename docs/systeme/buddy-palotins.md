@@ -413,6 +413,26 @@ la bulle dit « 2 Mathoux font la sieste. » avec le lien « Aller à la Chatter
 Palotin salue. La salutation attend la réponse, pour ne jamais précéder l'annonce. Sur la Chatterie
 elle-même, ni appel ni annonce. Durées : `buddy-timing.ts`. Détail : [mathoux.md](mathoux.md).
 
+### Regularite : ce que le Palotin dit, et ne dit jamais (2026-11-12, chantier `regularite`)
+
+Besoin P5 valide par David le 2026-11-11, decisions R1-R7 du 2026-11-12. Le Palotin ne parle
+**qu'apres une activite**, jamais d'une absence ; **aucune serie perdue** n'est dite ni montree
+(Constance a 0 cachee, R1) ; **aucune comparaison** avec d'autres eleves ; **aucune notification**
+hors du site ; un retour apres une pause est fete **sans dire sa duree** (R2). Les moments fetes et
+ou ils vivent :
+
+- **1re activite de la semaine** et **3 / 5 / 10 semaines actives d'affilee** : § Semaine qui devient
+  active (semaine active = au moins un jour actif, meme regle que la grille du prof, R4).
+- **Retour apres une pause** : § Retour apres une pause.
+- **Question longtemps ratee enfin reussie** : § Question longtemps ratee enfin reussie (carte de
+  fin de serie).
+- **Notion acquise** : pas de replique neuve, l'annonce du Mathou (croissance, etoile) la couvre.
+- **Serie terminee, quel que soit le score** : la carte de gain la couvre (une reponse fausse
+  rapporte aussi des pansees) ; flash-cards sans carte, laissees telles.
+
+Cote prof, la meme regularite se lit dans la grille eleve x semaine (`analytique-prof.md`, widget C).
+Journal du chantier : `docs/archive/wip/regularite-progress.md`.
+
 ### Retour apres une pause (2026-10-21, revu le 2026-11-12)
 
 Decide par David le 2026-10-21 (presence notee partout : meme jour, apres #1588). Revu le

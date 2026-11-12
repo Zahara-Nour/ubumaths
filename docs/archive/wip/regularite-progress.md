@@ -1,14 +1,14 @@
 # Chantier `regularite` — régularité de travail (P5) : grille du prof et Palotin
 
 Ouvert le 2026-11-12, juste après `formes-de-serie` (Q-C). Besoin validé par David le 2026-11-11 :
-[`formes-de-serie-progress.md`](../archive/wip/formes-de-serie-progress.md) § « Besoins de suivi
-validés », P5. Phase 0 : **rien de codé**.
+[`formes-de-serie-progress.md`](formes-de-serie-progress.md) § « Besoins de suivi
+validés », P5. **Clos le 2026-11-12.**
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2599._
+_Mis à jour le 2026-11-12, clôture après #2599._
 
-- **État** : tout le découpage validé est mergé : A (#2587), B1 (#2589), B2a (#2593, migration en prod), B2b (#2595), B3 (#2599, question longtemps ratée enfin réussie, sans migration) · **Prochaine action** : clôture du chantier (versement dans `docs/systeme/`, journal archivé) après la relecture de David · **En attente de David** : relire les 9 répliques `long_struggle_won` (§ « PR B3 — question longtemps ratée ») ; dire si le chantier se clôt · **Pièges en cours** : la présence se relit après un gain ; « semaine fêtée » = `student_last_visits.week_celebrated_on`, serveur seul ; B3 lit avec le client de l'élève (RLS) · **Worktree / branche** : aucun (`../ubumaths-wt-regularite` supprimé après #2599)
+- **État** : **clos** le 2026-11-12. Découpage entier mergé : A (#2587), B1 (#2589), B2a (#2593, migration en prod), B2b (#2595), B3 (#2599). Durable versé PR par PR dans `docs/systeme/buddy-palotins.md` et `analytique-prof.md` ; principes P5 du Palotin réunis à la clôture (`buddy-palotins.md` § « Regularite : ce que le Palotin dit, et ne dit jamais ») · **Prochaine action** : aucune · **En attente de David** : vérifications manuelles de B1, B2b et B3 dans `docs/wip/verifications-manuelles.md` (suivies là) ; volume des traces de la grille : `docs/wip/outils-manquants.md` n° 28 · **Pièges** : « semaine fêtée » = `student_last_visits.week_celebrated_on`, serveur seul ; B3 lit avec le client de l'élève (RLS) · **Worktree / branche** : aucun
 
 ## Besoin validé (rappel, David, 2026-11-11)
 
@@ -275,3 +275,8 @@ Révision (FSRS) = traces **déclarées** (`student_self`) ; flash-cards = pas d
   corrigé (`.catch(undefined)`, NaN côté client → 0) ; tri sur l'instant, pas la chaîne → corrigé ;
   requête jamais vue contre la base → intégration `palotin-question-longtemps-ratee` (4, rouge sans
   le filtre `source`). Gardé : page ouverte > 24 h, durée bornée à 24 h (rare, sans effet hors fête).
+
+## Clôture (David, 2026-11-12)
+
+David : « je te suis » (mes recos). Répliques `long_struggle_won` **validées telles quelles** ;
+chantier clos, journal archivé.
