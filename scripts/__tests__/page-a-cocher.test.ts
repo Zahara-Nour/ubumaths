@@ -178,6 +178,11 @@ describe('dessinerBlocs', () => {
 		expect(r.markdown.match(/sb-manquant/g)).toHaveLength(1);
 		expect(r.markdown).toContain('>84</text>');
 		expect(r.markdown).toContain('aria-label="Schéma en barres');
+		expect(r.markdown).toContain('stroke-dasharray="5 4"');
+		const echappe = dessinerBlocs('```schema-barres\nR&D : <b> (2)\n```');
+		expect(echappe.markdown).toContain('R&amp;D');
+		expect(echappe.markdown).toContain('&lt;b>');
+		expect(echappe.markdown).not.toContain('<b>');
 	});
 
 	it('figure : le SVG de figureToSvg', () => {
