@@ -14,8 +14,8 @@ _Mis à jour le 2026-11-12, après #2602 et son `db:migrate` (§ 24)._
 
 - **État** : démonstrations terminées (§ 17). Algorithmes : lot 5 publié (§ 22) ; lot 6 (474, 610, 611, 500, 499)
   en brouillons en prod, rangés sur leur sous-notion avec leur point (#2602, vérifié en prod). Restent 7 et 8.
-- **Prochaine action** : page à cocher du lot 6 puis publication, comme les § 21 et 22.
-- **En attente de David** : rien.
+- **Prochaine action** : verdicts de la page à cocher (§ 25), puis `publier-lot.ts` (David), comme le § 22.
+- **En attente de David** : cocher la page du lot 6 (§ 25).
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -550,3 +550,9 @@ Rangement appliqué : `db:migrate` lancé du dépôt principal après #2602 (il 
 `20261112154105_active_student_ids_lecture_seule`, mergée par une autre session et encore en attente). Vérifié en prod : les
 5 brouillons sur leur sous-notion (méthode d'Euler ; méthode des rectangles × 3 ; aire algébrique), un point chacun,
 `updated_at` inchangé. Branches du lot 6 supprimées.
+
+## 25. Lot 6 : page à cocher (2026-11-12)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-algorithmes-6`, lu en base prod : 5 brouillons `draft`, chacun sur son
+point, 3 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/29jy3b8va86UQqrKVi673t (capacité `db`) ;
+base `verdicts` vide à la publication.
