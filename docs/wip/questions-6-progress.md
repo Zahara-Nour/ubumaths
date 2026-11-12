@@ -9,9 +9,10 @@ _Mis à jour le 2026-11-12, après le relevé du § 28._
 
 - **État** : lots 1 à 12 clos. Relevé § 28 : restent 142 (schéma en barres, outil neuf) et le groupe D (129, 138,
   182, 183 non évaluables ; 197, 210 en attente de Blockly), sans modèle par décision du § 5.
-- **Prochaine action** : selon la réponse de David — outil « schéma en barres » (142, phase 0) ou clôture du chantier
-  (versement de la doc, archivage du journal).
-- **En attente de David** : 142 maintenant (outil neuf), ou clore le chantier ?
+- **Prochaine action** : David a choisi 142. Phase 0 de l'outil « schéma en barres » (skill `couvrir-niveau`,
+  § 3 ter) : relever les outils voisins existants (blocs d'affichage, gestes de réponse), proposer le bloc, son
+  geste de réponse et les modèles de 6-142 ; attendre la validation avant de coder. Worktree à créer au premier code.
+- **En attente de David** : rien (la phase 0 lui sera soumise).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`). `texte(P, …)` décale en haut à droite :
   `dx=0, dy=0, ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
