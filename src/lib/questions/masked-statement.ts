@@ -337,8 +337,12 @@ function findFiguresACompleter(lines: string[]): FoundBlock[] {
 	return found;
 }
 
-/** `verifier: mesure AOB` (lot 6), `, rapporteur posé` (lot 8) : rien à cacher */
-const MEASURE_CHECK = /^mesure\s+[A-Z]{3}(?:\s*,\s*rapporteur\s+pos[ée])?$/;
+/**
+ * `verifier: mesure AOB` (lot 6), `, rapporteur posé` (lot 8), `mesure AB` et
+ * `mesure AB en mm` (n° 26) : rien à cacher
+ */
+const MEASURE_CHECK =
+	/^mesure\s+(?:[A-Z]{3}(?:\s*,\s*rapporteur\s+pos[ée])?|[A-Z]{2}(?:\s+en\s+(?:cm|mm))?)$/;
 /** Définition d'un point nommé : `B = <expression>` */
 const POINT_DEFINITION = /^\s*([A-Za-z][A-Za-z0-9_']*)\s*=\s*(.+)$/;
 /** Une expression qui peut porter la mesure d'un angle (garde de l'énoncé masqué) */
@@ -390,7 +394,10 @@ function maskFigure(block: FoundBlock): MaskLine {
 	if (header.spec.masked || header.spec.checks.length === 0) return () => null;
 	// Angle à mesurer (lot 6) : `verifier: mesure AOB` reste (l'écran en tire la case) ; les
 	// points calculés sont écrits en coordonnées (`B = rotation(A, angle=50, …)` dirait la réponse)
-	if (header.spec.checks.some((c) => c.kind === 'mesure')) return maskMeasureFigure(block);
+	// Segment à mesurer (n° 26) : de même, `mesure AB` reste ; `B = milieu(A, C)` dirait la longueur
+	if (header.spec.checks.some((c) => c.kind === 'mesure' || c.kind === 'mesure_segment')) {
+		return maskMeasureFigure(block);
+	}
 	const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
 	const headerEnd = separator === -1 ? block.body.length : separator;
 	const toolsWritten = block.body.slice(0, headerEnd).some((line) => keyOf(line) === 'outils');

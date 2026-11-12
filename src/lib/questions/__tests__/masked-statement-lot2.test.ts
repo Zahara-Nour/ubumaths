@@ -209,6 +209,18 @@ describe('figure à compléter (```figure-a-completer)', () => {
 		expect(body(full.statement, 'figure-a-completer')).toContain('rotation(A, angle=50');
 	});
 
+	it('segment à mesurer (n° 26) : verifier: mesure AB reste, les points calculés en coordonnées', () => {
+		const { statement } = sent(
+			`Mesure le segment.\n\n${block('figure-a-completer', 'fenetre: 0 ; 12 ; 0 ; 6', 'verifier: mesure AB en mm', '---', 'A = point(2, 3)', 'C = point(14, 3, visible=faux)', 'B = milieu(A, C)', 's = segment(A, B)')}`
+		);
+		const masked = body(statement, 'figure-a-completer');
+		const header = readConstructionHeader(masked);
+		expect(header.errors).toEqual([]);
+		expect(header.spec.checks).toMatchObject([{ kind: 'mesure_segment', unit: 'mm' }]);
+		expect(masked).toContain('B = point(8, 3)');
+		expect(masked).not.toMatch(/milieu/);
+	});
+
 	it('papier uni : la palette des instruments est écrite (lot 2b)', () => {
 		const { statement } = sent(
 			`Construis le symétrique de A.\n\n${block('figure-a-completer', 'fenetre: 0 ; 10 ; 0 ; 6', "verifier: point A' = symetrie(A, axe=d)", '---', 'P = point(0, 0)', 'Q = point(6, 6)', 'd = droite(P, Q)', 'A = point(1, 4)')}`
