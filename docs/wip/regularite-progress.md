@@ -158,7 +158,10 @@ David : « je valide ».
   corrigé ; énigmes : `receiveBuddyGain` branché sur la page d'énigme ; `coquille-et-caches.md`
   mis à jour. Gardé : un `planPassages` en cours retarde la fête à la page suivante (pas perdue).
 
-## PR B2 — phase 0 technique (2026-11-12) — à valider
+## PR B2 — phase 0 technique (2026-11-12)
+
+David : « je valide » (T1-T7 ; question d'accès : **personne de plus**). Livraison en deux PR :
+B2a migration + intégration, puis `db:migrate` + `db:types` ; B2b le code.
 
 Constats : les traces de l'élève se lisent par l'index `(student_id, created_at)` ; les moments
 « 1re activité de la semaine » et « N semaines d'affilée » tombent **au même instant** (le compte
