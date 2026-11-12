@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, lot 13 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-12, après #2603 (lot 13, fichiers)._
 
-- **État** : lot 13 (6 modèles 6-142, § 30) écrit et vérifié (§ 30.1), PR des fichiers en cours ; restent ensuite
-  le groupe D (sans modèle, § 5).
-- **Prochaine action** : merger la PR ; puis, **après le `deploy:prod` qui livre ` ```schema-barres ` (#2597)**,
-  David crée les brouillons (`create-questions --dir scripts/questions/6-schemas-en-barres --publier`), migration
+- **État** : lot 13 (6 modèles 6-142, § 30) mergé (#2603), fichiers seulement, pas encore en base prod ; restent
+  ensuite le groupe D (sans modèle, § 5).
+- **Prochaine action** : **après le `deploy:prod` qui livre ` ```schema-barres ` (#2597)**, David crée les brouillons
+  (`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-schemas-en-barres --publier`), puis migration
   nœud + tag, page à cocher, publication.
 - **En attente de David** : `deploy:prod` ; n° 34 de `outils-manquants.md` (schéma petit dans un choix à 390 px).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`). Les `id` écrits par `create-questions
 --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`). `publier-lot.ts`
   est refusé par le mode auto : David le lance avec `!`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-13`.
+- **Worktree / branche** : aucun (à créer pour la migration nœud + tag).
 
 ## 1. Relevé (prod, 2026-10-26)
 
