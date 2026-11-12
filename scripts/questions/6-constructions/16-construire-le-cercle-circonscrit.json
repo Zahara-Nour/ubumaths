@@ -1,0 +1,102 @@
+{
+	"title": "Construire le cercle circonscrit à un triangle",
+	"description": "Au compas et à la règle : les médiatrices de deux côtés se coupent au centre du cercle qui passe par les trois sommets",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Construis le cercle circonscrit au triangle $ABC$ : le cercle qui passe par ses trois sommets.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: cercle c = cercle_circonscrit(A, B, C)\n---\n{{if:k==1|A = point(3, 2.5, etiquette=\"bas-gauche\")\nB = point(9.5, 2.5, etiquette=\"bas-droite\")\nC = point(5.5, 8.5, etiquette=\"haut\")\ntriangle(A, B, C)|{{if:k==2|A = point(3, 3.5, etiquette=\"gauche\")\nB = point(9, 3.5, etiquette=\"droite\")\nC = point(4.5, 2, etiquette=\"bas-gauche\")\ntriangle(A, B, C)|A = point(2, 4.5, etiquette=\"gauche\")\nB = point(10, 4.5, etiquette=\"droite\")\nC = point(8.4, 7.7, etiquette=\"haut-droite\")\ntriangle(A, B, C)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le centre** est à égale distance de $A$, $B$ et $C$ : il est sur la médiatrice de $[AB]$ et sur celle de $[BC]$.",
+					"On construit ces deux médiatrices au compas (deux arcs de même rayon centrés aux extrémités de chaque côté) ; elles se coupent en $O$.",
+					"Le cercle de centre $O$ passant par $A$ passe aussi par $B$ et $C$ : c'est le $\\textcolor{{{color:primary.0}}}{\\text{cercle circonscrit}}$. {{if:k==1|Ici, le triangle a trois angles aigus : $O$ est **dans** le triangle.|{{if:k==2|Ici, le triangle a un angle obtus : $O$ est **hors** du triangle.|Ici, le triangle est rectangle en $C$ : $O$ est le **milieu** de l'hypoténuse $[AB]$.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Triangle aux angles aigus : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [
+				"cercle(3;2.5;7.2250000000000005;2.5)|cercle(9.5;2.5;5.2749999999999995;2.5)|droite(6.25;5.199652755448375;6.25;-0.19965275544837535)|cercle(9.5;2.5;6.8999999999999995;6.4)|cercle(5.5;8.5;8.100000000000001;4.6)|droite(9.991987158875423;7.161324772583615;5.008012841124577;3.8386752274163847)|cercle(6.25;4.666666666666666;3;2.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle obtus : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [
+				"cercle(3;3.5;6.9;3.5)|cercle(9;3.5;5.1;3.5)|droite(6;5.991987158875423;6;1.008012841124577)|cercle(9;3.5;6.075;2.525)|cercle(4.5;2;7.425;2.975)|droite(6.127003210281145;4.618990369156567;7.372996789718855;0.881009630843433)|cercle(6;5;3;3.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle rectangle : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": [
+				"cercle(2;4.5;7.2;4.5)|cercle(10;4.5;4.8;4.5)|droite(6;7.822649545167231;6;1.1773504548327698)|cercle(10;4.5;8.96;6.58)|cercle(8.4;7.7;9.44;5.62)|droite(10.52905981806689;6.764529909033445;7.870940181933107;5.435470090966554)|cercle(6;4.500000000000001;2;4.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : centre pris à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(6;4.5;3;2.5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : centre au milieu de [AB]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [
+				"cercle(3;2.5;7.2250000000000005;2.5)|cercle(9.5;2.5;5.2749999999999995;2.5)|droite(6.25;5.199652755448375;6.25;-0.19965275544837535)|cercle(6.25;2.5;3;2.5)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien de tracé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		}
+	]
+}
