@@ -1,6 +1,6 @@
 # montee-eslint — paquets de la config ESLint
 
-Piste du chantier [amelioration](amelioration-progress.md).
+Piste du chantier [amelioration](../../wip/amelioration-progress.md).
 
 ## Reprendre ici
 
