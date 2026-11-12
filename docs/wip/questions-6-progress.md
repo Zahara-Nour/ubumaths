@@ -1895,3 +1895,5 @@ les 6 modèles regardés, corrigé du modèle 1 joué.
   brouillons, sans nœud ni tag ; 6-142 sur « Algèbre > Premiers pas algébriques > nombre inconnu ».
 - Migration `20261112225106` (patron du lot 12, sous-notion seule) : les 6 sur ce nœud, tag 6-142. Test d'intégration
   17/17, rouge sans la migration (10 échecs).
+  security-auditor sans finding bloquant (prod relevée : 6 brouillons, nœud unique, 6-142 actif, trigger `O`).
+  PR #2610.
