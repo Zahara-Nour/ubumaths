@@ -1,4 +1,5 @@
 {
+	"id": "2af325bb-4e7f-42c2-bb93-c9902bc133d7",
 	"title": "Schéma en barres : parts égales et un reste",
 	"description": "Un total fait de a parts égales (a de 2 à 6) et d'une quantité connue, schéma en barres donné : trouver une part (a × ? + b = c)",
 	"grades": ["6"],

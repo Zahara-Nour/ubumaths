@@ -1,4 +1,5 @@
 {
+	"id": "4c967bde-dc18-457f-867e-de54f9cc7aae",
 	"title": "Schéma en barres : deux achats pour deux prix",
 	"description": "Deux achats de deux articles en quantités différentes, schéma en barres donné : trouver le prix de chaque article (différence des deux lignes, ou moitié d'une ligne puis différence)",
 	"grades": ["6"],

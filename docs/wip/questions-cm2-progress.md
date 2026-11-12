@@ -2,7 +2,7 @@
 
 > Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Chantiers voisins : CE1 ([questions-ce1-progress.md](questions-ce1-progress.md)), 6e
-> ([questions-6-progress.md](questions-6-progress.md)).
+> ([questions-6-progress.md](../archive/wip/questions-6-progress.md)).
 
 ## Reprendre ici
 

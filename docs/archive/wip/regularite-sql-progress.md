@@ -1,14 +1,14 @@
 # Chantier `regularite-sql` — grille de régularité comptée dans la base
 
 Ouvert le 2026-11-12 : `docs/wip/outils-manquants.md` n° 28, né de la revue de #2587 (chantier
-[`regularite`](../archive/wip/regularite-progress.md), clos). David : « ok pour 28 », puis
-« je valide » (phase 0 ci-dessous).
+[`regularite`](regularite-progress.md), clos). David : « ok pour 28 », puis
+« je valide » (phase 0 ci-dessous). **Clos le 2026-11-12.**
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, #2607 ouverte._
+_Mis à jour le 2026-11-13, clôture après #2607._
 
-- **État** : PR 1 mergée (#2604, migration en prod) ; PR 2 #2607 ouverte (le code appelle `class_regularity_weeks`), revues faites, ligne 28 passée dans « Livré » de `outils-manquants.md` · **Prochaine action** : CI verte → merge → clôture (journal archivé, worktree supprimé) · **En attente de David** : rien · **Pièges en cours** : base locale : historique des migrations en retard (`migration up --local` échoue) → `psql` + `notify pgrst` · **Worktree / branche** : `../ubumaths-wt-regularite-sql` · `feat/regularite-sql-code`
+- **État** : **clos**. #2604 (migration `class_regularity_weeks`, en prod) et #2607 (la grille l'appelle, plus aucune trace lue) mergées ; ligne 28 d'`outils-manquants.md` passée dans « Livré ». Durable versé : `docs/systeme/base-de-donnees.md`, `analytique-prof.md` · **Prochaine action** : aucune (#2607 en prod au prochain `deploy:prod`) · **En attente de David** : rien · **Pièges** : base locale : historique des migrations en retard (`migration up --local` échoue) → `psql` + `notify pgrst` · **Worktree / branche** : aucun
 
 ## Constat (2026-11-12)
 

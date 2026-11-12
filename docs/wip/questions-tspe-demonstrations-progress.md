@@ -10,18 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après la publication du lot 7 (§ 30)._
+_Mis à jour le 2026-11-13, après #2615 (rangement du lot 8, § 32) et la page à cocher (§ 33)._
 
-- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5, 6 et 7 publiés (§ 22, § 26, § 30). Reste le lot 8
-  (534, 624, 535, 536 : concentration, marche aléatoire, loi des grands nombres ; cadre D2, § 18).
-- **Prochaine action** : phase 0 du lot 8 (relevé prod, tableau modèle / nœud / niveau / variations, comme D4 § 27),
-  puis validation de David avant d'écrire.
-- **En attente de David** : rien.
+- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 à 7 publiés ; lot 8 (534, 624, 535, 536) en
+  brouillon en prod, rangé et tagué (#2615, `db:migrate` fait), page à cocher publiée (§ 33). Dernier lot (D2, § 18).
+- **Prochaine action** : lire et compter les verdicts de la page à cocher ; tout « ok » → `publier-lot.ts` en
+  simulation puis `--publier` (David) ; relire `published` en base ; puis clôture du chantier (versement).
+- **En attente de David** : ses verdicts sur https://claude.ai/artifact/Gkqe46y5T66T7aaWNio2xM.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
-  (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
-  `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
+  (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main`.
 
 ---
@@ -634,3 +633,68 @@ base `verdicts` vide à la publication.
 
 Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 28). `publier-lot.ts` en simulation puis `--publier`,
 lancés par David. Relu en base (MCP) : 4 `published`.
+
+## 31. Lot 8 : algorithmes, concentration et loi des grands nombres (2026-11-13)
+
+Relevé prod (MCP, 2026-11-12) : les 4 points actifs, de type `algorithme`, aucun tagué. 534 et 624 sur
+« Bienaymé-Tchebychev » (niveau max 2) ; 535 sur « épreuves indépendantes successives » (niveau max 4, dont la marche
+aléatoire de 1re `4bd92a32`, un calcul) ; 536 sur « loi des grands nombres » (niveau max 1). Aucun homonyme de titre.
+
+**D5 (David, 2026-11-13, « je valide », après mes recos)** : tableau ci-dessous tel que proposé ; 534 avec p = 0,5
+seulement ; 536 sans les proportions 0,68 / 0,95 / 0,997 (approximation normale, hors programme).
+
+| Point | Modèle (`scripts/questions/tspe-algorithmes-8/`) | Nœud, niveau                   | Variations                                                                                       |
+| ----- | ------------------------------------------------ | ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| 534   | `01-probabilite-de-l-ecart-a-pn`                 | Bienaymé-Tchebychev, 3         | table des P(Sₙ ⩽ k), n ∈ {36, 49, 64, 100}, p = 0,5 (case) ; `if abs(k - n*p) > sqrt(n):` ; sens |
+| 624   | `02-comparer-avec-bienayme-tchebychev`           | Bienaymé-Tchebychev, 4         | `borne(n, p)` → p(1 − p) (case) ; `return V / delta**2` ; 0,0352 contre 0,25 (choix)             |
+| 535   | `03-simuler-une-marche-aleatoire`                | épreuves indép. successives, 5 | `x = x - 1` ; `if random() < 0.7:` ; position moyenne → n(2p − 1) (case)                         |
+| 536   | `04-ecart-type-des-moyennes`                     | loi des grands nombres, 2      | ligne de comptage `abs(m - mu) <= k * sigma / sqrt(n)` ; s ≈ σ/√n (case) ; n × 4 → s ÷ 2         |
+
+Écart au tableau proposé : 534 tire n dans {36, 49, 64, 100}, et non {16, 25, 36, 100} : pour 16 et 25, la somme lue
+dans la table arrondie à 10⁻⁴ (0,0212 ; 0,0432) diffère de la valeur exacte arrondie (0,0213 ; 0,0433). Le script le
+vérifie (`assert`). Table écrite à 4 décimales (`0{,}0300`, pas `0{,}03`).
+
+Script : `docs/wip/questions/lot-tspe-algorithmes-8.py`. 536 : X vaut 10 − σ ou 10 + σ, avec la probabilité 1/2 chacune
+(espérance 10, écart type σ). Un `\textcolor` sur du texte du corrigé va dans `$\text{…}$`.
+
+Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (52 specs vertes), 0 `\textcolor` hors `$` ;
+57 réponses recoupées en exécutant les programmes des énoncés (534 et 624 exacts ; 535 et 536 simulés, tolérance
+0,1 et 15 %) : 0 écart ; `create-questions` en simulation prod (4 à créer, 0 déjà en base) ; brouillons en base locale
+(copie hors dépôt) ; aperçu admin vu à l'écran : 534, table rendue, case 0,0288 jouée « Juste » ; 624 (c), choix D
+joué « Faux », corrigé rendu.
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-8 --publier`
+
+Mergé (#2613, 2026-11-13) : CI verte.
+
+## 32. Lot 8 : brouillons en prod, rangement (2026-11-13)
+
+David a lancé `create-questions --publier` depuis le dépôt principal : 4 brouillons. Ids reportés dans les JSON
+(branche de rangement). Relevé prod (MCP) : 4 brouillons `{T_SPE}` aux niveaux du § 31 (3, 4, 5, 2), sans nœud ni tag ;
+les 4 points actifs, aucun déjà tagué, chacun sur sa sous-notion ; les 3 sous-notions visées actives, une ligne chacune.
+
+| Modèle   | Sous-notion                                                                | Point    |
+| -------- | -------------------------------------------------------------------------- | -------- |
+| daa7f4e5 | Probabilités › Sommes et concentration › Bienaymé-Tchebychev               | TSPE-534 |
+| d01b1293 | Probabilités › Sommes et concentration › Bienaymé-Tchebychev               | TSPE-624 |
+| 957c2012 | Probabilités › Probabilités conditionnelles › épreuves indépendantes succ. | TSPE-535 |
+| a24cffa6 | Probabilités › Sommes et concentration › loi des grands nombres            | TSPE-536 |
+
+Migration `20261112232927_questions_tspe_algorithmes_8_rangement_tags.sql` (copie de celle du lot 7, seuls l'en-tête,
+les données et le préfixe `_qta8_` changent) ; test `tests/integration/questions-tspe-algorithmes-8-rangement-tags.test.ts`
+12/12 vert, rouge sans la migration (étape 4 retirée : 2 rouges + `beforeAll` en échec, 5 sautés), fichier restauré
+d'une copie (`cmp`). Accès : personne de plus (§ 18 Q5, D2).
+`security-auditor` : aucun finding (diff contre le lot 7 limité à l'en-tête, aux données et au préfixe ; deux modèles
+sur la même sous-notion, rien ne la suppose unique).
+
+Rangement appliqué : #2615 mergé (CI verte, `check:migrations` OK), `db:migrate` lancé du dépôt principal (seule
+migration en attente). Vérifié en prod : les 4 brouillons sur leur sous-notion, un point chacun, `updated_at`
+inchangé. Branche supprimée. Les 4 JSON modifiés par `create-questions` dans le dépôt principal, identiques à
+`origin/main`, y ont été remis à l'état commité avant le pull.
+
+## 33. Lot 8 : page à cocher (2026-11-13)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-algorithmes-8`, lu en base prod : 4 brouillons `draft`, chacun sur son
+point, 3 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/Gkqe46y5T66T7aaWNio2xM (capacité `db`) ;
+base `verdicts` vide à la publication.

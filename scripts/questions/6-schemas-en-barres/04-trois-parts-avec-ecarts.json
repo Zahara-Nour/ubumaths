@@ -1,4 +1,5 @@
 {
+	"id": "e97ca3dd-6e83-429b-a81c-3f23d55b9a7c",
 	"title": "Schéma en barres : trois parts avec des écarts",
 	"description": "Un total partagé en trois parts liées par des écarts (« de plus », « de moins »), comme les primes d'une course : trouver les trois parts à l'aide du schéma en barres",
 	"grades": ["6"],

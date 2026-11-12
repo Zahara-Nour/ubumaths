@@ -1,22 +1,20 @@
 # Chantier « questions-6 » — couvrir la 6e en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Bornes : `docs/systeme/programmes/bornes/cycle3.json` → `6.points`.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2603 (lot 13, fichiers)._
+_Mis à jour le 2026-11-13, clôture._
 
-- **État** : lot 13 (6 modèles 6-142, § 30) mergé (#2603), fichiers seulement, pas encore en base prod ; restent
-  ensuite le groupe D (sans modèle, § 5).
-- **Prochaine action** : **après le `deploy:prod` qui livre ` ```schema-barres ` (#2597)**, David crée les brouillons
-  (`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-schemas-en-barres --publier`), puis migration
-  nœud + tag, page à cocher, publication.
-- **En attente de David** : `deploy:prod` ; n° 34 de `outils-manquants.md` (schéma petit dans un choix à 390 px).
-- **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`). Les `id` écrits par `create-questions
---publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`). `publier-lot.ts`
-  est refusé par le mode auto : David le lance avec `!`.
-- **Worktree / branche** : aucun (à créer pour la migration nœud + tag).
+- **État** : **chantier clos le 2026-11-13** (go de David). Relevé MCP refait à la clôture : 195 modèles publiés en
+  6e, 105 points sur 111 couverts ; les 6 restants sont le groupe D (129, 138, 182, 183, 197, 210), sans modèle par
+  décision (§ 5, question 8). Découpage recompté : lots 1 à 7 du § 4 et les trois outils neufs du § 5 (question 6),
+  tous livrés (§ 7 à 30). Durable versé dans `docs/systeme/programmes/bornes/cycle3.md` § 6e, « Couverture ».
+- **Prochaine action** : aucune.
+- **En attente de David** : n° 34 de `outils-manquants.md` (schéma petit dans un choix à 390 px), suivi là-bas.
+- **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`, doublon de 059e3fc9).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1505,9 +1503,9 @@ sur l'essai local (même gabarit).
 
 ## 25. Modèles témoins des contrôles de la figure (décision de David, 2026-11-09)
 
-Contexte : [outils-manquants.md](outils-manquants.md), paragraphe « Contenu restant aux sessions questions »,
+Contexte : [outils-manquants.md](../../wip/outils-manquants.md), paragraphe « Contenu restant aux sessions questions »,
 recommandation du 2026-11-09 : aucun modèle n'utilise encore les contrôles `point`, `droite`, `angle`, `mesure`,
-`bissectrice` de la figure à compléter (chantier [`controles-figure`](../archive/wip/controles-figure-progress.md),
+`bissectrice` de la figure à compléter (chantier [`controles-figure`](controles-figure-progress.md),
 clos le 2026-11-06), ni le patron `designer:` / `completer:`, ni la trotteuse. Un modèle témoin par contrôle est le
 seul moyen de les exercer de bout en bout chez un élève.
 
@@ -1811,7 +1809,7 @@ Décisions :
 
 ### 29.1 Bloc livré (2026-11-12)
 
-Chantier [`schema-barres`](../archive/wip/schema-barres-progress.md) : #2597 mergé (CI verte, revue `code-reviewer`
+Chantier [`schema-barres`](schema-barres-progress.md) : #2597 mergé (CI verte, revue `code-reviewer`
 sans bloquant), rendu vérifié à l'écran et au PDF. Exemple de la phase 0 corrigé : « 80 de moins » = barre plus
 courte (`Bronze : ? (2,5) ; -80 (1,5)`). Vitrine `/demo/blocs` : le schéma y reste (David, « je te suis »).
 
@@ -1887,3 +1885,21 @@ les 6 modèles regardés, corrigé du modèle 1 joué.
 - `question:specs` dans un worktree neuf : `pnpm exec svelte-kit sync` d'abord (`$lib` introuvable sinon).
 - Base locale : `create-questions --publier` lancé sur une **copie** du dossier (scratchpad), pour que les `id`
   locaux n'entrent pas dans les fichiers du dépôt.
+
+### 30.2 Brouillons, nœud et tag (2026-11-12)
+
+- `deploy:prod` 0.85.0 (livre ` ```schema-barres `, #2597, et le lot 13, #2603). Brouillons créés par David :
+  a9c37578 (01), 399342ff (02), d79ea0bc (03), e97ca3dd (04), 4c967bde (05), 2af325bb (06). Relevé prod : en 6e,
+  brouillons, sans nœud ni tag ; 6-142 sur « Algèbre > Premiers pas algébriques > nombre inconnu ».
+- Migration `20261112225106` (patron du lot 12, sous-notion seule) : les 6 sur ce nœud, tag 6-142. Test d'intégration
+  17/17, rouge sans la migration (10 échecs).
+  security-auditor sans finding bloquant (prod relevée : 6 brouillons, nœud unique, 6-142 actif, trigger `O`).
+  PR #2610.
+
+### 30.3 Page à cocher (2026-11-13)
+
+- La page ne dessinait pas ` ```schema-barres ` : outil complété (#2614, `buildSchemaBarresScene`, test tirets et
+  échappement ; revue sans bloquant). Page : https://claude.ai/artifact/K1E6gbkkwJEb4WCyC8cPo2 (6 fiches, 0 alerte).
+- Relecture de David : 6/6 OK, sans commentaire. Publication laissée à David.
+- Publication lancée par David (`publier-lot.ts --publier`) ; vérifié en prod (MCP) : les 6 `published`, 3a7a5711
+  `draft`. Relevé : 6 points de 6e sans modèle publié, exactement le groupe D (129, 138, 182, 183, 197, 210).
