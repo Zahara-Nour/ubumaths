@@ -10,18 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, après #2613 (lot 8 dans `main`, § 31)._
+_Mis à jour le 2026-11-13, après #2615 (rangement du lot 8, § 32) et la page à cocher (§ 33)._
 
-- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5, 6 et 7 publiés (§ 22, § 26, § 30) ; lot 8 (534,
-  624, 535, 536) dans `main` (#2613), brouillons pas encore créés en prod. C'est le dernier lot du chantier (D2, § 18).
-- **Prochaine action** : David lance `create-questions --publier` (commande au § 31) ; ensuite rangement (migration,
-  copie de celle du lot 7), page à cocher, publication, comme les § 28 à 30 ; puis clôture du chantier (versement).
-- **En attente de David** : `create-questions --publier` du lot 8.
+- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 à 7 publiés ; lot 8 (534, 624, 535, 536) en
+  brouillon en prod, rangé et tagué (#2615, `db:migrate` fait), page à cocher publiée (§ 33). Dernier lot (D2, § 18).
+- **Prochaine action** : lire et compter les verdicts de la page à cocher ; tout « ok » → `publier-lot.ts` en
+  simulation puis `--publier` (David) ; relire `published` en base ; puis clôture du chantier (versement).
+- **En attente de David** : ses verdicts sur https://claude.ai/artifact/Gkqe46y5T66T7aaWNio2xM.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
-  (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
-  `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
+  (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main`.
 
 ---
@@ -686,3 +685,16 @@ Migration `20261112232927_questions_tspe_algorithmes_8_rangement_tags.sql` (copi
 les données et le préfixe `_qta8_` changent) ; test `tests/integration/questions-tspe-algorithmes-8-rangement-tags.test.ts`
 12/12 vert, rouge sans la migration (étape 4 retirée : 2 rouges + `beforeAll` en échec, 5 sautés), fichier restauré
 d'une copie (`cmp`). Accès : personne de plus (§ 18 Q5, D2).
+`security-auditor` : aucun finding (diff contre le lot 7 limité à l'en-tête, aux données et au préfixe ; deux modèles
+sur la même sous-notion, rien ne la suppose unique).
+
+Rangement appliqué : #2615 mergé (CI verte, `check:migrations` OK), `db:migrate` lancé du dépôt principal (seule
+migration en attente). Vérifié en prod : les 4 brouillons sur leur sous-notion, un point chacun, `updated_at`
+inchangé. Branche supprimée. Les 4 JSON modifiés par `create-questions` dans le dépôt principal, identiques à
+`origin/main`, y ont été remis à l'état commité avant le pull.
+
+## 33. Lot 8 : page à cocher (2026-11-13)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-algorithmes-8`, lu en base prod : 4 brouillons `draft`, chacun sur son
+point, 3 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/Gkqe46y5T66T7aaWNio2xM (capacité `db`) ;
+base `verdicts` vide à la publication.
