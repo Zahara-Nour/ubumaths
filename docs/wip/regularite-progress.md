@@ -6,9 +6,9 @@ validés », P5. Phase 0 : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2595._
+_Mis à jour le 2026-11-12, après #2599._
 
-- **État** : A (#2587), B1 (#2589), B2a (#2593, migration appliquée en prod) et B2b (#2595, moments de la semaine) mergées ; reste **B3** (question longtemps ratée enfin réussie, sur la carte de fin de série ; R5 : modèle raté ≥ 3 fois sur ≥ 7 jours, puis réussi) · **Prochaine action** : phase 0 technique de B3 (où lire l'historique d'un modèle, carte de gain) · **En attente de David** : rien · **Pièges en cours** : la présence se relit après un gain ; « semaine fêtée » = `student_last_visits.week_celebrated_on`, serveur seul · **Worktree / branche** : `../ubumaths-wt-regularite` (branche `feat/regularite-moments` mergée, à nettoyer) ; nouvelle branche depuis `origin/main` pour B3
+- **État** : tout le découpage validé est mergé : A (#2587), B1 (#2589), B2a (#2593, migration en prod), B2b (#2595), B3 (#2599, question longtemps ratée enfin réussie, sans migration) · **Prochaine action** : clôture du chantier (versement dans `docs/systeme/`, journal archivé) après la relecture de David · **En attente de David** : relire les 9 répliques `long_struggle_won` (§ « PR B3 — question longtemps ratée ») ; dire si le chantier se clôt · **Pièges en cours** : la présence se relit après un gain ; « semaine fêtée » = `student_last_visits.week_celebrated_on`, serveur seul ; B3 lit avec le client de l'élève (RLS) · **Worktree / branche** : aucun (`../ubumaths-wt-regularite` supprimé après #2599)
 
 ## Besoin validé (rappel, David, 2026-11-11)
 
