@@ -157,3 +157,32 @@ David : « je valide ».
   possible (file, relecture) → corrigé (`markReturnCelebrated`) ; relecture inutile en séance →
   corrigé ; énigmes : `receiveBuddyGain` branché sur la page d'énigme ; `coquille-et-caches.md`
   mis à jour. Gardé : un `planPassages` en cours retarde la fête à la page suivante (pas perdue).
+
+## PR B2 — phase 0 technique (2026-11-12) — à valider
+
+Constats : les traces de l'élève se lisent par l'index `(student_id, created_at)` ; les moments
+« 1re activité de la semaine » et « N semaines d'affilée » tombent **au même instant** (le compte
+monte quand la semaine devient active) ; le retour (R2) est retenu dans `student_last_visits`,
+lisible par le serveur seul.
+
+- **T1 — Où compter** : à la volée dans la présence (`loadBuddyPresence`), sans compteur stocké.
+  D'abord un test léger : aujourd'hui (Paris) a-t-il ≥ 5 traces autonomes, et la semaine n'est-elle
+  pas déjà fêtée ? Seulement alors, lecture des traces depuis la rentrée et calcul du compte
+  (fonctions de `class-regularity.ts` réutilisées). Donc le gros calcul tourne une fois par semaine
+  et par élève.
+- **T2 — « Déjà dit »** : une colonne `student_last_visits.week_celebrated_on date` (lundi de la
+  semaine fêtée), serveur seul comme `welcome_back_on`. Un seul champ pour les deux moments.
+- **T3 — Après une activité** : fête seulement si **aujourd'hui** est un jour actif (jamais à
+  l'arrivée un autre jour).
+- **T4 — Un seul moment à la fois** : retour après une pause > palier 3/5/10 > 1re activité de la
+  semaine. Le retour fêté marque aussi la semaine (pas deux bulles le même jour).
+- **T5 — Vacances** : celles des écoles des classes de l'élève ; hors classe, aucune. Semaine de
+  vacances sans activité : sautée ; avec activité : comptée.
+- **T6 — Borne** : le compte part de la rentrée (même premier jour que la grille) : l'été le remet
+  à zéro.
+- **T7 — Répliques** : 3 par Palotin et par moment (`week_first_activity`, `active_weeks_3`, `_5`,
+  `_10`), sans citer la Constance Royale ni un nombre de jours ; à relire par David dans la PR.
+- **Question d'accès** : qui pourra lire quoi qu'il ne pouvait pas lire avant ? Recommandé :
+  **personne** (colonne serveur seule ; n'en sort que « moment à fêter : lequel »).
+- Tests : intégration (colonne illisible par `authenticated`, rouge sans la migration), calcul pur
+  du compte (vacances, été, semaine sautée), présence, bulles.
