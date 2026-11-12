@@ -10,17 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, lot 7 en PR (§ 27)._
+_Mis à jour le 2026-11-12, après #2605 (lot 7 dans `main`, § 27)._
 
-- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 et 6 publiés (§ 22, § 26) ; lot 7 (324, 513, 514, 515) écrit et vérifié, en PR (§ 27). Reste le lot 8.
-- **Prochaine action** : merge de la PR du lot 7, puis David lance `create-questions --publier` (commande au § 27) ;
-  ensuite rangement (migration), page à cocher, publication, comme les § 24 à 26.
-- **En attente de David** : `create-questions --publier` après le merge.
+- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 et 6 publiés (§ 22, § 26) ; lot 7 (324, 513, 514, 515) dans `main` (#2605), brouillons pas encore créés en prod (§ 27). Reste le lot 8.
+- **Prochaine action** : David lance `create-questions --publier` (commande au § 27) ; ensuite rangement
+  (migration), page à cocher, publication, comme les § 24 à 26.
+- **En attente de David** : `create-questions --publier` du lot 7.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-algorithmes-7`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (branche du lot 7 supprimée).
 
 ---
 
@@ -593,3 +593,5 @@ rendus en virgules, 0,3 joué « Faux » ; Galton, lois rendues.
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-7 --publier`
+
+Mergé (#2605, 2026-11-12) : CI verte ; merge retardé par un `deploy:prod` en cours (garde-fou), fait à sa fin.
