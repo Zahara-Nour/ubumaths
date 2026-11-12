@@ -35,6 +35,10 @@ couvre:
   - 'src/routes/api/student/{bonus-history,gidouilles-activity,rewards}/**'
   - 'src/routes/api/students/*/vip-cards/**'
   - 'src/routes/api/classes/*/gidouilles/**'
+  - 'src/lib/avatars/**'
+  - 'src/lib/server/avatars/**'
+  - 'src/lib/components/avatars/**'
+  - 'src/routes/api/student/avatars/**'
 ---
 
 # Jeux et économie (gidouilles, cartes VIP, marché, classements)
@@ -141,6 +145,7 @@ dans le code, hors catalogue, sans travaux tant qu'ils ne reprennent pas.
 | Inventaire élève                      | `src/routes/(protected)/dashboard/student/inventory/+page.svelte` (`vip-cards/collection` y redirige)                                                                                                                                                                                                                        |
 | Marché                                | `src/routes/(protected)/dashboard/student/marketplace/`, `src/routes/api/marketplace/`, `src/lib/server/marketplace/`, `src/lib/stores/marketplace.svelte.ts`                                                                                                                                                                |
 | Marché (prof)                         | `src/routes/(protected)/dashboard/teacher/gamification/marketplace/+page.svelte`                                                                                                                                                                                                                                             |
+| Boutique d'avatars                    | `src/routes/api/student/avatars/` (`GET` catalogue, `buy/`, `wear/`) → `buy_avatar`, `set_worn_avatar` ; `src/lib/server/avatars/shop.ts` ; écran `src/lib/components/avatars/AvatarShopSection.svelte` (Marché et « Mon profil »)                                                                                           |
 
 Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue dans
 `vip_card_templates`, les probabilités de tirage dans `vip_card_config`, le journal dans
@@ -254,6 +259,23 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
 - **Lunettes et chapeaux des Mathoux** (lot D, 2026-10-26) : cinq lunettes et cinq chapeaux, de 10
   à 40, achetés de la même façon (« Chatterie : monocle acheté ») et montrés dans la même vitrine.
   Voir [mathoux.md § Lunettes et chapeaux](mathoux.md#lunettes-et-chapeaux).
+- **Boutique d'avatars** (chantier `boutique-avatars`, phase 0 validée le 2026-11-06) : avatars
+  achetés une fois pour toutes, à prix fixe (en base, `avatar_catalog.price`), par
+  `POST /api/student/avatars/buy` → `buy_avatar` (solde vérifié, débit, ligne « Avatar : <nom>
+  acheté » au journal, sous verrou ; l'achat n'équipe pas). Consentement exigé comme pour la
+  boutique VIP. Porter ou retirer (`POST /api/student/avatars/wear`, `avatar: null` pour
+  retirer) est gratuit, sans consentement, et passe par `set_worn_avatar`, qui recopie l'image
+  dans `profiles.avatar_url` (la photo Google revient au retrait). Les deux routes prennent
+  l'élève de la **session** (les fonctions font confiance à `p_student_id`) et partagent la
+  limite `avatar_shop:<id>` (30 par minute). Le catalogue vu par l'élève
+  (`GET /api/student/avatars`, `readAvatarShop`) montre les avatars **en vente** (actifs, dans
+  leur fenêtre) et ceux qu'il **possède** (même retirés ou hors fenêtre : toujours portables).
+  L'écran est dans l'onglet « Avatars » du Marché **et** dans « Mon profil », parce que le Marché
+  n'est ouvert qu'aux classes où le prof l'active (décision de David du 2026-11-11 : 37 élèves
+  sur 81 l'avaient). Réservée aux élèves : prof et admin gardent leur emblème. Après un port,
+  la page est rechargée (`invalidateAll`) et l'en-tête montre le nouvel avatar. Base, gardes
+  et tests : [base-de-donnees.md](base-de-donnees.md) (`tests/integration/boutique-avatars.test.ts`) ;
+  routes : `src/routes/api/student/avatars/__tests__/avatars-routes.test.ts`.
 - **Cartes réservées au serveur** : personne ne modifie directement `profiles.vip_cards` (garde
   `guard_profile_reserved_fields`, migration `20261003150000_vip_cartes_verrou.sql`) ; seules les
   fonctions SECURITY DEFINER le font.

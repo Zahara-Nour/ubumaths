@@ -63,6 +63,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			tutorConversationsResult,
 			mathouxResult,
 			mathouDecorationsResult,
+			avatarsResult,
 			buddyResult,
 			lastVisitResult
 		] = await Promise.all([
@@ -210,6 +211,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.select('decoration, price_paid, purchased_at')
 				.eq('student_id', userId),
 
+			// Jeux — avatars achetés dans la boutique d'avatars (lisibles par l'élève seul)
+			supabase
+				.from('student_avatars')
+				.select('avatar_key, price_paid, purchased_at')
+				.eq('student_id', userId),
+
 			// Jeux — le Palotin de l'élève (une ligne par élève ; décision de David, 2026-10-18)
 			supabase
 				.from('student_buddies')
@@ -251,6 +258,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 			);
 		}
 
+		if (avatarsResult.error) {
+			throw new Error(`student_avatars illisible : ${avatarsResult.error.message}`);
+		}
+
 		if (buddyResult.error) {
 			throw new Error(`student_buddies illisible : ${buddyResult.error.message}`);
 		}
@@ -272,6 +283,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 			firstname: profile.firstname,
 			lastname: profile.lastname,
 			avatar_url: profile.avatar_url,
+			// Boutique d'avatars : avatar porté (clé du catalogue) et photo Google gardée
+			worn_avatar: profile.worn_avatar,
+			google_avatar_url: profile.google_avatar_url,
 			role: profile.role,
 			grade: profile.grade,
 			gidouilles: profile.gidouilles,
@@ -343,6 +357,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 				player_stats: gamePlayerResult.data || null,
 				mathoux: mathouxResult.data || [],
 				mathou_decorations: mathouDecorationsResult.data || [],
+				avatars: avatarsResult.data || [],
 				palotin: buddyResult.data || null,
 				dernier_passage: lastVisitResult.data?.last_visit_date ?? null,
 				retour_a_feter: lastVisitResult.data?.welcome_back_on ?? null

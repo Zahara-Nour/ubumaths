@@ -2,10 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2567._
+_Mis à jour le 2026-11-11, PR 2 en cours (branche `feat/boutique-avatars-pr2`)._
 
-- **Fait (#2567)** : migration `20261111195233` appliquée en prod le 2026-11-11 (vérifié : profil prof sans photo, 73/73 photos d'élèves intactes) ; le prof voit l'emblème du Capitaine. Reste pour la PR 2 : bouton « Utiliser l'emblème par défaut » dans le profil, passant par une route serveur.
-- **État** : PR 1 mergée (#2449) et **migration appliquée en prod** (`20261106164739`, via `db push --include-all` depuis `main` ; vérifié : 74/74 photos Google recopiées, 3 triggers, `buy_avatar` fermé à `authenticated`) ; catalogue vide · **Prochaine action** : PR 2 dans un nouveau worktree — d'abord `pnpm db:types` (types depuis la prod), puis routes achat / port, onglet « Avatars » du Marché, export RGPD · **En attente de David** : images du premier lot (`boutique-avatars-prompts.md`) · **Pièges en cours** : l'élève vient de la SESSION (`locals`), jamais du corps (les fonctions font confiance à `p_student_id`) ; consentement vérifié par la route ; export RGPD : ajouter `student_avatars` ; callback : rafraîchir `google_avatar_url` après `db:types` ; jusqu'au prochain `deploy:prod`, l'ancien callback de prod écrit l'avatar avec le client utilisateur → 42501 journalisé (connexion Google coupée de toute façon) ; job CI navigateur instable (2 relances sur #2449) · **Worktree / branche** : à créer pour la PR 2
+- **État** : PR 2 codée — routes `GET /api/student/avatars`, `buy/`, `wear/` (élève de la session, consentement à l'achat seulement), `AvatarShopSection` dans l'onglet « Avatars » du Marché ET dans « Mon profil », export RGPD (`gaming.avatars`, `worn_avatar`, `google_avatar_url`). Vérifié en local (achat, port, retrait, en-tête rafraîchi, journal −30). Catalogue vide en prod : l'onglet dit « Les premiers avatars arrivent bientôt ».
+- **Prochaine action** : revues (`code-reviewer` + `security-auditor`), PR, CI, merge ; puis PR 3 (images du premier lot + lignes du catalogue).
+- **En attente de David** : images du premier lot (`boutique-avatars-prompts.md`). Bouton « Utiliser l'emblème par défaut » (reste de #2567) : **tranché le 2026-11-12** — hors PR 2, plus tard, pour tous, photo Google gardée.
+- **Pièges en cours** : le Marché n'est ouvert qu'aux classes où le prof l'active (37/81 élèves en prod le 2026-11-11) → boutique AUSSI dans « Mon profil » (décision de David du 2026-11-11). Callback OAuth : rien à faire (trigger `keep_google_avatar_url_trg`, connexion Google fermée). Navigateur : tester sur `127.0.0.1:5176` (`--host 127.0.0.1`), pas `localhost` (cookie admin de David). Job CI navigateur instable.
+- **Worktree / branche** : `../ubumaths-wt-boutique-avatars` · `feat/boutique-avatars-pr2`
 
 ## Décisions de David (2026-11-06)
 
@@ -84,3 +87,7 @@ Qui pourra lire quoi, qu'il ne pouvait pas lire avant ? Proposition : le **catal
 ## Historique
 
 - 2026-11-06 : #2449 mergée (PR 1 : migration, garde, callback, doc) ; `db:migrate` fait.
+- 2026-11-11 : #2567 mergée (emblème du Capitaine pour le prof, photo grise vidée) ; migration appliquée.
+- 2026-11-11 : décision de David — boutique ouverte à tous les élèves : onglet du Marché + section de « Mon profil » (le Marché suit le réglage de la classe).
+- 2026-11-11 : PR 2 codée (routes, écran, export RGPD, doc système).
+- 2026-11-12 : décision de David — bouton « Utiliser l'emblème par défaut » hors PR 2, plus tard, pour tous, photo Google gardée. CI de #2574 bloquée (run fantôme « queued » sans job) : relancée par ce commit.
