@@ -10,18 +10,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, lot 5 écrit, PR en cours (§ 19)._
+_Mis à jour le 2026-11-12, après #2590 (lot 5 mergé, § 19)._
 
 - **État** : démonstrations terminées (§ 17). Algorithmes : phase 0 validée (D2, § 18) ; lot 5 (analyse : 393, 433,
-  434, 592, 450) écrit et vérifié (§ 19).
-- **Prochaine action** : PR du lot 5 verte → merge → David lance `create-questions --publier` → relevé MCP → migration
-  de rangement (gabarit `20261112051818`).
-- **En attente de David** : `create-questions --publier` après le merge.
+  434, 592, 450) mergé (#2590), pas encore en base.
+- **Prochaine action** : après la commande de David, relevé MCP des 5 brouillons → migration de rangement (gabarit
+  `20261112051818`, nœuds et niveaux du § 19) → page à cocher → lot 6.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-5
+--publier`, depuis le dépôt principal à jour.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3), saisie dans le champ « Seed » puis « Générer » ; `publier-lot.ts` lit la prod →
   David la lance ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale tirée → `;d` ; titre déjà
   pris en prod au même niveau = lot bloqué (§ 19).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-algorithmes-5`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (rien en cours).
 
 ---
 
