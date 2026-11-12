@@ -1,0 +1,142 @@
+{
+	"title": "Schéma en barres : « n fois plus »",
+	"description": "Une quantité vaut n fois l'autre (n de 2 à 5), on connaît leur somme ou leur différence : trouver les deux quantités à l'aide du schéma en barres",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Léa a ${{n}}$ fois plus de timbres que Tom. À eux deux, ils ont ${{eval:(n+1)*t}}$ timbres.\n\n```schema-barres\nTom : ?\nLéa : ? ; ?{{if:n>2| ; ?|}}{{if:n>3| ; ?|}}{{if:n>4| ; ?|}}\n```\n\nCombien de timbres chacun a-t-il ?\n\nTom : $?$ timbres\n\nLéa : $?$ timbres",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "t",
+					"expression": "3..150"
+				}
+			],
+			"conditions": ["(n+1)*t<1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n*t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les parts.** Tom a une part, Léa en a ${{n}}$ : ${{eval:n+1}}$ parts égales en tout.",
+					"**Une part.** ${{eval:(n+1)*t}} \\div {{eval:n+1}} = \\textcolor{{{color:primary.0}}}{{{t}}}$ : c'est le nombre de timbres de Tom.",
+					"**Léa.** ${{n}} \\times {{t}} = \\textcolor{{{color:primary.0}}}{{{eval:n*t}}}$.\n\n```schema-barres\nTom : {{t}}\nLéa : {{t}} ; {{t}}{{if:n>2| ; {{t}}|}}{{if:n>3| ; {{t}}|}}{{if:n>4| ; {{t}}|}}\n```\n\n"
+				]
+			}
+		},
+		{
+			"statement": "Léa a ${{n}}$ fois plus de timbres que Tom, soit ${{eval:(n-1)*t}}$ timbres de plus que lui.\n\n```schema-barres\nTom : ?\nLéa : ? ; ?{{if:n>2| ; ?|}}{{if:n>3| ; ?|}}{{if:n>4| ; ?|}}\n```\n\nCombien de timbres chacun a-t-il ?\n\nTom : $?$ timbres\n\nLéa : $?$ timbres",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "t",
+					"expression": "3..150"
+				}
+			],
+			"conditions": ["n*t<1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n*t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'écart.** La barre de Léa dépasse celle de Tom {{if:n>2|de ${{eval:n-1}}$ parts : ces ${{eval:n-1}}$ parts font|d'une part : cette part fait}} ${{eval:(n-1)*t}}$ timbres.",
+					"**Une part.** {{if:n>2|${{eval:(n-1)*t}} \\div {{eval:n-1}} = \\textcolor{{{color:primary.0}}}{{{t}}}$|Une part vaut $\\textcolor{{{color:primary.0}}}{{{t}}}$}} : c'est le nombre de timbres de Tom.",
+					"**Léa.** ${{n}} \\times {{t}} = \\textcolor{{{color:primary.0}}}{{{eval:n*t}}}$.\n\n```schema-barres\nTom : {{t}}\nLéa : {{t}} ; {{t}}{{if:n>2| ; {{t}}|}}{{if:n>3| ; {{t}}|}}{{if:n>4| ; {{t}}|}}\n```\n\n"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n = 3, 4 parts de 25 : 25 et 75",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"t": "25"
+			},
+			"answers": ["25", "75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : total ÷ n",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"t": "25"
+			},
+			"answers": ["33", "67"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 2, 3 parts de 150 : 150 et 300",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"t": "150"
+			},
+			"answers": ["150", "300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écart 60, n = 4 : 20 et 80",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"t": "20"
+			},
+			"answers": ["20", "80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : écart ÷ n",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"t": "20"
+			},
+			"answers": ["15", "60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 2 : l'écart est une part",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"t": "40"
+			},
+			"answers": ["40", "80"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

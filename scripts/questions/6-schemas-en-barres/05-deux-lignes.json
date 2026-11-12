@@ -1,0 +1,130 @@
+{
+	"title": "Schéma en barres : deux achats pour deux prix",
+	"description": "Deux achats de deux articles en quantités différentes, schéma en barres donné : trouver le prix de chaque article (différence des deux lignes, ou moitié d'une ligne puis différence)",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "3 stylos et 1 cahier coûtent ${{eval:3*x+y}}$ €. 1 stylo et 1 cahier coûtent ${{eval:x+y}}$ €. Les stylos ont tous le même prix, les cahiers aussi.\n\nSur le schéma, S est le prix d'un stylo et C celui d'un cahier.\n\n```schema-barres\nAchat 1 : S ; S ; S ; C (1,5) = {{eval:3*x+y}} €\nAchat 2 : S ; C (1,5) = {{eval:x+y}} €\n```\n\nQuel est le prix d'un stylo, et celui d'un cahier ?\n\nUn stylo : $?$ €\n\nUn cahier : $?$ €",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..20"
+				},
+				{
+					"name": "y",
+					"expression": "2..30"
+				}
+			],
+			"conditions": ["x<y", "y<=2*x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				},
+				{
+					"expectedAnswer": "{{y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La différence.** L'achat 1 a deux stylos de plus que l'achat 2 : $2$ stylos coûtent ${{eval:3*x+y}} - {{eval:x+y}} = {{eval:2*x}}$ €.",
+					"**Un stylo.** ${{eval:2*x}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{x}}}$ €.",
+					"**Un cahier.** ${{eval:x+y}} - {{x}} = \\textcolor{{{color:primary.0}}}{{{y}}}$ €.\n\n```schema-barres\nAchat 1 : {{x}} ; {{x}} ; {{x}} ; {{y}} (1,5) = {{eval:3*x+y}} €\nAchat 2 : {{x}} ; {{y}} (1,5) = {{eval:x+y}} €\n```\n\n"
+				]
+			}
+		},
+		{
+			"statement": "4 ananas et 1 pastèque coûtent ${{eval:4*x+y}}$ €. 2 ananas et 2 pastèques coûtent ${{eval:2*x+2*y}}$ €. Les ananas ont tous le même prix, les pastèques aussi.\n\nSur le schéma, A est le prix d'un ananas et P celui d'une pastèque.\n\n```schema-barres\nAchat 1 : A ; A ; A ; A ; P (1,5) = {{eval:4*x+y}} €\nAchat 2 : A ; A ; P (1,5) ; P (1,5) = {{eval:2*x+2*y}} €\n```\n\nQuel est le prix d'un ananas, et celui d'une pastèque ?\n\nUn ananas : $?$ €\n\nUne pastèque : $?$ €",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..20"
+				},
+				{
+					"name": "y",
+					"expression": "2..30"
+				}
+			],
+			"conditions": ["x<y", "y<=2*x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				},
+				{
+					"expectedAnswer": "{{y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La moitié de l'achat 2.** 1 ananas et 1 pastèque coûtent ${{eval:2*x+2*y}} \\div 2 = {{eval:x+y}}$ €.",
+					"**La différence.** L'achat 1 a trois ananas de plus que cette moitié : $3$ ananas coûtent ${{eval:4*x+y}} - {{eval:x+y}} = {{eval:3*x}}$ €, donc un ananas ${{eval:3*x}} \\div 3 = \\textcolor{{{color:primary.0}}}{{{x}}}$ €.",
+					"**Une pastèque.** ${{eval:x+y}} - {{x}} = \\textcolor{{{color:primary.0}}}{{{y}}}$ €.\n\n```schema-barres\nAchat 1 : {{x}} ; {{x}} ; {{x}} ; {{x}} ; {{y}} (1,5) = {{eval:4*x+y}} €\nAchat 2 : {{x}} ; {{x}} ; {{y}} (1,5) ; {{y}} (1,5) = {{eval:2*x+2*y}} €\n```\n\n"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Stylo 4 €, cahier 7 €",
+			"variationIndex": 0,
+			"variables": {
+				"x": "4",
+				"y": "7"
+			},
+			"answers": ["4", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prix inversés",
+			"variationIndex": 0,
+			"variables": {
+				"x": "4",
+				"y": "7"
+			},
+			"answers": ["7", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : différence prise pour un stylo",
+			"variationIndex": 0,
+			"variables": {
+				"x": "4",
+				"y": "7"
+			},
+			"answers": ["8", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ananas 6 €, pastèque 9 €",
+			"variationIndex": 1,
+			"variables": {
+				"x": "6",
+				"y": "9"
+			},
+			"answers": ["6", "9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moitié oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"x": "6",
+				"y": "9"
+			},
+			"answers": ["1", "28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

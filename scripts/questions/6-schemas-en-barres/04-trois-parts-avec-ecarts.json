@@ -1,0 +1,162 @@
+{
+	"title": "Schéma en barres : trois parts avec des écarts",
+	"description": "Un total partagé en trois parts liées par des écarts (« de plus », « de moins »), comme les primes d'une course : trouver les trois parts à l'aide du schéma en barres",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une prime totale de ${{T}}$ € est partagée entre les trois premiers d'une course : la prime d'or, la prime d'argent et la prime de bronze. La prime d'or vaut ${{u}}$ € de plus que la prime d'argent, et la prime de bronze ${{v}}$ € de moins que la prime d'argent.\n\n```schema-barres\nOr : ? (4) ; {{u}} (2)\nArgent : ? (4)\nBronze : ? (2,5) ; -{{v}} (1,5)\ntotal : {{T}} €\n```\n\nQuelle est la prime de chacun ?\n\nOr : $?$ €\n\nArgent : $?$ €\n\nBronze : $?$ €",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30..300"
+				},
+				{
+					"name": "u",
+					"expression": "5..90"
+				},
+				{
+					"name": "v",
+					"expression": "5..90"
+				},
+				{
+					"name": "T",
+					"expression": "eval:3*a+u-v"
+				}
+			],
+			"conditions": ["a-v>=10", "a>=u", "a>=v", "u*5>=a", "v*5>=a", "3*a+u-v<1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+u}}"
+				},
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a-v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Trois parts égales.** Si l'on enlève les ${{u}}$ € de l'or et qu'on ajoute les ${{v}}$ € qui manquent au bronze, les trois barres sont égales : ${{T}} - {{u}} + {{v}} = {{eval:3*a}}$.",
+					"**L'argent.** ${{eval:3*a}} \\div 3 = \\textcolor{{{color:primary.0}}}{{{a}}}$ €.",
+					"**L'or et le bronze.** ${{a}} + {{u}} = \\textcolor{{{color:primary.0}}}{{{eval:a+u}}}$ € et ${{a}} - {{v}} = \\textcolor{{{color:primary.0}}}{{{eval:a-v}}}$ €.\n\n```schema-barres\nOr : {{a}} (4) ; {{u}} (2)\nArgent : {{a}} (4)\nBronze : {{eval:a-v}} (2,5) ; -{{v}} (1,5)\ntotal : {{T}} €\n```\n\n"
+				]
+			}
+		},
+		{
+			"statement": "Une prime totale de ${{T}}$ € est partagée entre les trois premiers d'une course : la prime d'or, la prime d'argent et la prime de bronze. La prime d'or vaut ${{u}}$ € de plus que la prime d'argent, et la prime d'argent ${{v}}$ € de plus que la prime de bronze.\n\n```schema-barres\nOr : ? (3) ; {{v}} (1,5) ; {{u}} (1,5)\nArgent : ? (3) ; {{v}} (1,5)\nBronze : ? (3)\ntotal : {{T}} €\n```\n\nQuelle est la prime de chacun ?\n\nOr : $?$ €\n\nArgent : $?$ €\n\nBronze : $?$ €",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "10..250"
+				},
+				{
+					"name": "u",
+					"expression": "5..90"
+				},
+				{
+					"name": "v",
+					"expression": "5..90"
+				},
+				{
+					"name": "T",
+					"expression": "eval:3*b+2*v+u"
+				}
+			],
+			"conditions": ["3*b+2*v+u<1000", "b>=u", "b>=v", "u*4>=b", "v*4>=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b+v+u}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b+v}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Trois parts égales.** On enlève les écarts : ${{v}}$ € à l'argent, ${{v}}$ € et ${{u}}$ € à l'or : ${{T}} - {{v}} - {{v}} - {{u}} = {{eval:3*b}}$.",
+					"**Le bronze.** ${{eval:3*b}} \\div 3 = \\textcolor{{{color:primary.0}}}{{{b}}}$ €.",
+					"**L'argent et l'or.** ${{b}} + {{v}} = \\textcolor{{{color:primary.0}}}{{{eval:b+v}}}$ € et ${{eval:b+v}} + {{u}} = \\textcolor{{{color:primary.0}}}{{{eval:b+v+u}}}$ €.\n\n```schema-barres\nOr : {{b}} (3) ; {{v}} (1,5) ; {{u}} (1,5)\nArgent : {{b}} (3) ; {{v}} (1,5)\nBronze : {{b}} (3)\ntotal : {{T}} €\n```\n\n"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Source : 320 €, +70, -80 : 180, 110, 30",
+			"variationIndex": 0,
+			"variables": {
+				"a": "110",
+				"u": "70",
+				"v": "80",
+				"T": "320"
+			},
+			"answers": ["180", "110", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : partage égal",
+			"variationIndex": 0,
+			"variables": {
+				"a": "110",
+				"u": "70",
+				"v": "80",
+				"T": "320"
+			},
+			"answers": ["107", "107", "106"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bronze compté « de plus »",
+			"variationIndex": 0,
+			"variables": {
+				"a": "110",
+				"u": "70",
+				"v": "80",
+				"T": "320"
+			},
+			"answers": ["127", "57", "137"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Chaîne : 300 €, +40, +20 : 140, 100, 80",
+			"variationIndex": 1,
+			"variables": {
+				"b": "80",
+				"u": "40",
+				"v": "20",
+				"T": "300"
+			},
+			"answers": ["140", "100", "80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : or et bronze inversés",
+			"variationIndex": 1,
+			"variables": {
+				"b": "80",
+				"u": "40",
+				"v": "20",
+				"T": "300"
+			},
+			"answers": ["80", "100", "140"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
