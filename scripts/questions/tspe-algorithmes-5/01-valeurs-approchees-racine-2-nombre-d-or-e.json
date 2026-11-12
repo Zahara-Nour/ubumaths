@@ -1,4 +1,5 @@
 {
+	"id": "b7fd4743-790e-4f7b-903b-93dc50ae96d2",
 	"title": "Valeurs approchées de √2, du nombre d'or et de e en Python",
 	"description": "Une constante par variation : √2 par la méthode de Héron (faire tourner une itération), nombre d'or par x = 1 + 1/x (interpréter), e par la somme des 1/k! (compléter t = t / k)",
 	"grades": ["T_SPE"],

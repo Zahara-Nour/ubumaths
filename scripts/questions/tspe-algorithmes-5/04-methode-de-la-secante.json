@@ -1,4 +1,5 @@
 {
+	"id": "3bc7b3c9-31bb-43ea-a262-ded5381a5635",
 	"title": "Méthode de la sécante en Python",
 	"description": "Méthode de la sécante pour f(x) = x² − c : faire tourner une itération depuis 1 et 3, compléter la ligne x = b − f(b)(b − a)/(f(b) − f(a)), interpréter x (sécante et axe des abscisses)",
 	"grades": ["T_SPE"],

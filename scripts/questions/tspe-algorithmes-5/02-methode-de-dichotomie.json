@@ -1,4 +1,5 @@
 {
+	"id": "641e5a83-8e88-41ba-80d1-b8c170686839",
 	"title": "Méthode de dichotomie en Python",
 	"description": "Dichotomie pour f(x) = x² − c : faire tourner deux tours (a et b renvoyés), compléter la condition f(a) * f(m) <= 0, nombre de tours pour une amplitude de 10^(−k)",
 	"grades": ["T_SPE"],

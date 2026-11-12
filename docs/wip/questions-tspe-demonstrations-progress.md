@@ -452,3 +452,25 @@ faux ; ∛ (Newton), nombre d'or et propriétés de ln rendus.
 
 Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-5 --publier`
+
+## 20. Lot 5 : brouillons en prod, rangement (2026-11-12)
+
+David a lancé `create-questions --publier` depuis le dépôt principal : 5 brouillons. Ids reportés dans les JSON (branche
+de rangement), dépôt principal rendu propre (`git restore`). Relevé prod (MCP) : 5 brouillons `{T_SPE}` aux niveaux du
+§ 19 (4, 4, 5, 6, 3), sans nœud ni tag ; les 5 points actifs, aucun déjà tagué ; 393 et 450 posés sur leur notion
+(Limites de suites, Logarithmes), 433, 434 et 592 sur « encadrement d'une solution » ; les 3 sous-notions visées
+actives, noms à apostrophe droite.
+
+| Modèle   | Sous-notion                                         | Point    |
+| -------- | --------------------------------------------------- | -------- |
+| b7fd4743 | Suites › Limites de suites › convergence monotone   | TSPE-393 |
+| 641e5a83 | Fonctions › Continuité › encadrement d'une solution | TSPE-433 |
+| 85a3aec6 | Fonctions › Continuité › encadrement d'une solution | TSPE-434 |
+| 3bc7b3c9 | Fonctions › Continuité › encadrement d'une solution | TSPE-592 |
+| f455700a | Fonctions › Logarithmes › propriétés algébriques    | TSPE-450 |
+
+Migration `20261112131748_questions_tspe_algorithmes_5_rangement_tags.sql` (copie de celle du lot 4, seuls l'en-tête,
+les données et le préfixe `_qta5_` changent) ; test `tests/integration/questions-tspe-algorithmes-5-rangement-tags.test.ts`
+12/12 vert, rouge sans la migration (partie aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie. Accès :
+personne de plus (§ 18 Q5, D2).
+`security-auditor` : aucun finding. PR #2594.
