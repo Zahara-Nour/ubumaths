@@ -6,3 +6,4 @@
 
 export * from './class-knowledge';
 export * from './class-competence';
+export * from './class-regularity';

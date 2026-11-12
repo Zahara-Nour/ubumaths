@@ -6,9 +6,9 @@ validés », P5. Phase 0 : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, R1-R7 tranchées._
+_Mis à jour le 2026-11-12, PR A ouverte._
 
-- **État** : R1-R7 tranchées (recommandations validées, § Décisions) · **Prochaine action** : validation des comportements N1-N8 / L1-L4 / E1 (reposée à David), puis PR A (grille du prof) · **En attente de David** : validation des comportements · **Pièges en cours** : R1 et R2 modifient la Constance Royale et `long_absence`, validés en 2026-10 → mettre `docs/systeme/buddy-palotins.md` à jour dans la PR B · **Worktree / branche** : `../ubumaths-wt-regularite` · `feat/regularite`
+- **État** : R1-R7 tranchées, comportements validés ; PR A (grille du prof) ouverte · **Prochaine action** : revues (code-reviewer + security-auditor), CI verte → merge, puis PR B (Palotin) · **En attente de David** : rien · **Pièges en cours** : R1 et R2 modifient la Constance Royale et `long_absence`, validés en 2026-10 → mettre `docs/systeme/buddy-palotins.md` à jour dans la PR B · **Worktree / branche** : `../ubumaths-wt-regularite` · `feat/regularite`
 
 ## Besoin validé (rappel, David, 2026-11-11)
 
@@ -105,4 +105,17 @@ David : « Je valide tes recos ».
 - **R6 = a** : traces sans lieu comptées comme travail autonome.
 - **R7 = oui** : PR A grille du prof (lecture seule, sans migration a priori) ; PR B Palotin (moments, R1, R2).
 
-Comportements N1-N8 / L1-L4 / E1 : **pas encore validés explicitement** (reposé à David le 2026-11-12).
+Comportements N1-N8 / L1-L4 / E1 : **validés par David le 2026-11-12** (« Je valide »).
+
+## PR A — grille du prof (2026-11-12)
+
+- `src/lib/server/stats/class-regularity.ts` : fonctions pures (`weekStartOf`, `activeDaysTier`,
+  `isAutonomousTrace`, `regularityFirstDay`, `buildRegularityGrid`) + `getClassRegularityGrid`
+  (classe → école → année active → vacances ; élèves actifs ; traces paginées par `readAllRows`,
+  sources de l'élève seulement, filtrées en mémoire hors `evaluation`).
+- Endpoint `GET …/analytics/regularity` (sans paramètre) ; composant `ClassRegularityGrid.svelte`
+  pleine largeur dans l'onglet Connaissances.
+- Retirés : `ClassActivityHeatmap.svelte`, `getClassActivityHeatmap`, endpoint `knowledge-heatmap`,
+  `heatmapQuerySchema` (R3).
+- Sans migration : le prof lisait déjà `school_years`, `school_holidays` et les traces de ses élèves.
+- Tests : 24 (calcul + lecture), 3 (endpoint), 7 (composant).

@@ -20,7 +20,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import ClassCurriculumPointGrid from '$lib/components/teacher/analytics/ClassCurriculumPointGrid.svelte';
 	import TopCurriculumPointsToRemediate from '$lib/components/teacher/analytics/TopCurriculumPointsToRemediate.svelte';
-	import ClassActivityHeatmap from '$lib/components/teacher/analytics/ClassActivityHeatmap.svelte';
+	import ClassRegularityGrid from '$lib/components/teacher/analytics/ClassRegularityGrid.svelte';
 	import StudentRetentionCurve from '$lib/components/teacher/analytics/StudentRetentionCurve.svelte';
 	import ClassCompetenceGrid from '$lib/components/teacher/analytics/ClassCompetenceGrid.svelte';
 	import TopObservablesToConsolidate from '$lib/components/teacher/analytics/TopObservablesToConsolidate.svelte';
@@ -131,10 +131,8 @@
 		<Tabs.Content value="knowledge" class="space-y-6">
 			<ClassCurriculumPointGrid classId={data.classId} {anonymized} {refreshNonce} />
 
-			<div class="grid gap-6 lg:grid-cols-2">
-				<TopCurriculumPointsToRemediate classId={data.classId} {refreshNonce} />
-				<ClassActivityHeatmap classId={data.classId} {anonymized} {refreshNonce} />
-			</div>
+			<TopCurriculumPointsToRemediate classId={data.classId} {refreshNonce} />
+			<ClassRegularityGrid classId={data.classId} {anonymized} {refreshNonce} />
 
 			{#if data.students.length > 0}
 				<Card.Root>
