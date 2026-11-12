@@ -232,4 +232,26 @@ describe('PdfPreview — Tout télécharger (.zip)', () => {
 		expect(click).not.toHaveBeenCalled();
 		click.mockRestore();
 	});
+
+	it('lot par élève : la langue d’impression se voit dans l’onglet Lot, contenu et noms suivent', async () => {
+		const students = [
+			{ id: 'b1a7c0de-0000-4000-8000-000000000001', first_name: 'Ada', last_name: 'Martin' }
+		];
+		const screen = await render(PdfPreview, {
+			props: { worksheet: makeWorksheet('fr'), students }
+		});
+		await expect.poll(() => preview(screen.container)).toBe('DOC-worksheet-fr');
+
+		await page.getByRole('tab', { name: 'Lot' }).click();
+		await page.getByRole('combobox', { name: "Langue d'impression du lot" }).click();
+		await page.getByRole('option', { name: 'English', exact: true }).click();
+		await expect.poll(() => preview(screen.container)).toBe('DOC-worksheet-en');
+		captured.generated = [];
+
+		expect(await downloadedFileName('Generer pour tous les eleves')).toBe(
+			'Variables_aleatoires_worksheet_EN.zip'
+		);
+		expect(captured.zipFiles).toContain('Variables_aleatoires_Martin_Ada_EN.pdf');
+		expect(captured.generated.every((g) => g.language === 'en')).toBe(true);
+	});
 });
