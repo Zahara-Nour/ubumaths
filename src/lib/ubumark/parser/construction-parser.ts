@@ -117,7 +117,15 @@ function hasGrid(lines: readonly string[], headerEnd: number): boolean {
 
 /** Vérifications à forme propre (pas une liste de points) */
 type NamedKind =
-	'symetrique' | 'point' | 'droite' | 'cercle' | 'triangle' | 'angle' | 'mesure' | 'segment';
+	| 'symetrique'
+	| 'point'
+	| 'droite'
+	| 'cercle'
+	| 'triangle'
+	| 'angle'
+	| 'mesure'
+	| 'segment'
+	| 'mesure_segment';
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
@@ -361,12 +369,39 @@ const POSED_REGEX = /^rapporteur\s+pos[ée]$/;
 /** Ce qui suit les trois lettres : la pose, ou autre chose (refusé) */
 const MEASURE_SUFFIX_REGEX = /^([A-Z]{3})\s*(?:,\s*(.*)|\s+(.+))$/;
 
+const SEGMENT_MEASURE_EXAMPLE = 'mesure AB';
+/** `AB`, `AB en cm`, `AB en mm` (n° 26) : les deux bouts du segment, l'unité de la case */
+const SEGMENT_MEASURE_REGEX = /^([A-Z])([A-Z])(?:\s*(.*))?$/;
+const SEGMENT_MEASURE_UNIT_REGEX = /^en\s+(cm|mm)$/;
+
+/**
+ * `mesure AB` (n° 26) : le segment [AB] est tracé, l'élève le mesure à la règle
+ * graduée et tape sa longueur, en cm entiers (`en mm` : en mm entiers)
+ */
+function readSegmentMeasure(match: RegExpExecArray, line: number): ConstructionCheck {
+	const [a, b] = [match[1], match[2]];
+	if (a === b) throw new LineError(`mesure ${a}${b} : deux points différents`);
+	const suffix = match[3]?.trim() ?? '';
+	if (suffix === '') return { kind: 'mesure_segment', points: [a, b], unit: 'cm', line };
+	const unit = SEGMENT_MEASURE_UNIT_REGEX.exec(suffix);
+	if (!unit) {
+		throw new LineError(
+			`mesure ${a}${b} : la longueur se tape en cm ou en mm : « mesure ${a}${b} » (cm) ou « mesure ${a}${b} en mm »`
+		);
+	}
+	return { kind: 'mesure_segment', points: [a, b], unit: unit[1] as 'cm' | 'mm', line };
+}
+
 /**
  * `mesure AOB` (lot 6) : l'angle est tracé, l'élève tape sa mesure ;
- * `mesure AOB, rapporteur posé` (lot 8) : le rapporteur est déjà posé
+ * `mesure AOB, rapporteur posé` (lot 8) : le rapporteur est déjà posé ;
+ * `mesure AB` (n° 26) : le segment, à la règle graduée
  */
 function readMeasure(rest: string, line: number): ConstructionCheck {
 	const text = rest.trim();
+	// Deux lettres (puis l'unité, ou autre chose) : un segment ; trois : un angle
+	const segment = /^[A-Z]{2}(?![A-Z])/.test(text) ? SEGMENT_MEASURE_REGEX.exec(text) : null;
+	if (segment) return readSegmentMeasure(segment, line);
 	// Une suite qui vise la pose : une virgule, ou le mot rapporteur (`mesure AOB = 50` n'en est pas)
 	const found = MEASURE_SUFFIX_REGEX.exec(text);
 	const suffixed = found && (found[2] !== undefined || /rapporteur/i.test(found[3])) ? found : null;
@@ -375,7 +410,7 @@ function readMeasure(rest: string, line: number): ConstructionCheck {
 	const match = MEASURE_REGEX.exec(letters);
 	if (!match) {
 		throw new LineError(
-			`mesure attend l’angle par trois points, le sommet au milieu : « ${MEASURE_EXAMPLE} »`
+			`mesure attend un segment par ses deux bouts (« ${SEGMENT_MEASURE_EXAMPLE} ») ou un angle par trois points, le sommet au milieu (« ${MEASURE_EXAMPLE} »)`
 		);
 	}
 	const [a, o, b] = [match[1], match[2], match[3]];
@@ -541,6 +576,9 @@ function readRuledPolygon(
 	return { kind, points: [a, b, c, d], ruled: true, height: read, line };
 }
 
+/** Les mots de `verifier:` (le segment à mesurer s'écrit `mesure AB`) */
+const AUTHOR_CHECK_WORDS = CONSTRUCTION_CHECK_KINDS.filter((kind) => kind !== 'mesure_segment');
+
 function readCheck(value: string, line: number): ConstructionCheck {
 	const [rawWord = '', ...rest] = value.split(/\s+/);
 	// `symétrique` accentué, comme `vérifier:`
@@ -550,6 +588,9 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	if (word === 'angle') return readAngle(rest.join(' '), line);
 	if (word === 'mesure') return readMeasure(rest.join(' '), line);
 	if (word === 'segment') return readSegmentLength(rest.join(' '), line);
+	if (word === 'mesure_segment') {
+		throw new LineError(`pour mesurer un segment, écrire « ${SEGMENT_MEASURE_EXAMPLE} »`);
+	}
 	if (word === 'carre' || word === 'rectangle') {
 		const ruled = readRuledPolygon(word, rest.join(' '), line);
 		if (ruled) return ruled;
@@ -558,9 +599,7 @@ function readCheck(value: string, line: number): ConstructionCheck {
 		return readNamed(word, rest.join(' '), line);
 	}
 	if (!(CONSTRUCTION_CHECK_KINDS as readonly string[]).includes(word)) {
-		throw new LineError(
-			`vérification « ${word} » inconnue (${CONSTRUCTION_CHECK_KINDS.join(', ')})`
-		);
+		throw new LineError(`vérification « ${word} » inconnue (${AUTHOR_CHECK_WORDS.join(', ')})`);
 	}
 	const kind = word as Exclude<ConstructionCheckKind, NamedKind>;
 	const { count, example, word: countWord } = CHECK_ARITY[kind];
@@ -682,8 +721,15 @@ function coherenceError(
 	const rulerTriangle = check.kind === 'triangle' && check.lengths.some(isRuledLength);
 	// … et au carré / rectangle coté (PR 6), qui a ses propres règles ci-dessous
 	if (isRuledPolygonCheck(check)) return ruledPolygonError(check, spec, grid);
-	if (check.kind !== 'segment' && !rulerCircle && !rulerTriangle && spec.tools.includes('regle')) {
-		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} »), un cercle de rayon donné (« verifier: ${RULER_CIRCLE_EXAMPLE} ») ou un triangle rectangle coté (« verifier: ${RULER_TRIANGLE_EXAMPLE} ») ; la retirer de outils:`;
+	// … et à mesurer un segment (n° 26)
+	if (
+		check.kind !== 'segment' &&
+		check.kind !== 'mesure_segment' &&
+		!rulerCircle &&
+		!rulerTriangle &&
+		spec.tools.includes('regle')
+	) {
+		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} »), un cercle de rayon donné (« verifier: ${RULER_CIRCLE_EXAMPLE} »), un triangle rectangle coté (« verifier: ${RULER_TRIANGLE_EXAMPLE} ») ou à mesurer un segment (« verifier: ${SEGMENT_MEASURE_EXAMPLE} ») ; la retirer de outils:`;
 	}
 	if (!protractorAllowed && spec.tools.includes('rapporteur')) {
 		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} »), à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») à construire un triangle dont un angle est donné (« verifier: ${TRIANGLE_ANGLES_EXAMPLE} ») ou une bissectrice (« verifier: droite d = bissectrice(A, O, B) ») ; le retirer de outils:`;
@@ -721,6 +767,17 @@ function coherenceError(
 		}
 		if (grid) {
 			return `angle ${name} : l’angle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+		}
+	} else if (check.kind === 'mesure_segment') {
+		// N° 26 : seul dans la figure, papier uni, la règle graduée seule
+		const name = check.points.join('');
+		if (spec.checks.length > 1) {
+			return `mesure ${name} : un segment à mesurer ne se mêle pas à d’autres vérifications`;
+		}
+		const other = spec.tools.find((t) => t !== 'regle');
+		if (other) return `mesure ${name} : outil ${other} hors de la palette (regle)`;
+		if (grid) {
+			return `mesure ${name} : la règle graduée sert sur papier uni (sur quadrillage, le carreau fait l’unité) ; retirer « grille: » (ou écrire « grille: non »)`;
 		}
 	} else if (check.kind === 'mesure') {
 		// Lot 6 (§ 19) : seul dans la figure, papier uni, le rapporteur seul
@@ -849,7 +906,8 @@ function coherenceError(
 				c.kind !== 'triangle' &&
 				c.kind !== 'angle' &&
 				c.kind !== 'mesure' &&
-				c.kind !== 'segment'
+				c.kind !== 'segment' &&
+				c.kind !== 'mesure_segment'
 		);
 		if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
 			const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
@@ -939,7 +997,8 @@ export function readConstructionHeader(
 			kind === 'triangle' ||
 			kind === 'angle' ||
 			kind === 'mesure' ||
-			kind === 'segment';
+			kind === 'segment' ||
+			kind === 'mesure_segment';
 		const first = spec.checks[0];
 		// Cercle de centre donné (n° 19) : le compas (et le Report), sur papier uni comme sur quadrillage
 		const centered = first.kind === 'cercle' ? centeredCircleOf(first.expression) : null;
