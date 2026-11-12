@@ -40,7 +40,7 @@
 			{missing.length > 1 ? 'exercices sortiront' : 'exercice sortira'} en français
 		</p>
 		<p class="mt-1 text-muted-foreground">
-			Cette fiche est en anglais. Sans version anglaise, l'énoncé français est utilisé :
+			En anglais, un exercice sans version anglaise garde son énoncé français :
 			{missing.map((e) => e.title ?? 'sans titre').join(', ')}
 		</p>
 	</div>
