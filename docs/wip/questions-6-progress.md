@@ -5,16 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, migration du lot 12 en PR (§ 27.2)._
+_Mis à jour le 2026-11-12, après #2592 (§ 27.2)._
 
-- **État** : lot 12 « Constructions » : 3 brouillons en prod (f06e45e8, 59694d66, 0ecb0f0e) ; migration nœud + tag
-  `20261112103339` en PR, test 17/17 (rouge sans elle).
-- **Prochaine action** : merge, `db:migrate`, vérification en prod, page à cocher.
-- **En attente de David** : rien.
+- **État** : lot 12 « Constructions » : 3 brouillons en prod (f06e45e8, 59694d66, 0ecb0f0e), rangés et tagués
+  (#2592, `db:migrate` fait) ; page à cocher publiée : https://claude.ai/artifact/XRSzPk6vCeaqJMiSYQxUL7.
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; 3/3 OK → `publier-lot.ts --dir
+scripts/questions/6-constructions` en simulation, puis David le lance avec `--publier`.
+- **En attente de David** : relecture des 3 fiches (constructions à jouer dans l'aperçu admin).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
 ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
-- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-lot12-noeuds`.
+- **Worktree / branche** : aucun (retiré après #2592).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1765,3 +1766,7 @@ Pièges rencontrés :
   sans nœud ni tag ; nœuds des points conformes à la phase 0.
 - Migration `20261112103339` (patron 11b) : 173 et 207 sur « triangles », 180 sur la notion « Symétrie axiale ».
   Test d'intégration 17/17, rouge sans la migration (10 échecs).
+  security-auditor sans finding bloquant. #2592 mergée (CI verte), `db:migrate` fait : vérifié en prod (nœuds, un
+  point chacun, `updated_at` préservé, trigger `O`). Worktree retiré.
+- Page à cocher : https://claude.ai/artifact/XRSzPk6vCeaqJMiSYQxUL7 (3 fiches ; alerte attendue sur les 3 : bloc
+  `figure-a-completer` non dessiné, à jouer dans l'aperçu admin).
