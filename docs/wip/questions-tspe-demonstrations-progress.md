@@ -16,7 +16,7 @@ _Mis à jour le 2026-11-12, phase 0 des algorithmes posée (§ 18)._
   possible, 18 modèles neufs à écrire (§ 18).
 - **Prochaine action** : après la réponse de David, lot 5 (analyse : 393, 433, 434, 592, 450), dans un worktree neuf
   depuis `origin/main`.
-- **En attente de David** : Q1 à Q6 du § 18 (lots, forme, rangement, 393, accès, publication).
+- **En attente de David** : rien (D2 du § 18 : phase 0 validée).
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3), saisie dans le champ « Seed » puis « Générer » ; `publier-lot.ts` lit la prod →
   David la lance ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale tirée → `;d` dans
@@ -423,3 +423,8 @@ distracteurs et pièges du § 17 du journal archivé `questions-1spe-demonstrati
   personne de plus. Ce sont des brouillons, et la migration ne touche que le nœud et les tags. À la publication, les
   élèves de terminale spé voient les modèles, comme pour tout modèle publié._
 - **Q6 — Publication** comme les démonstrations : page à cocher, puis `publier-lot.ts` lancé par David. _Reco : oui._
+
+**D2 (David, 2026-11-12, « je valide »)** : Q1 à Q6 telles que recommandées. Lots 5 à 8 dans l'ordre de Q1 ; forme D9
+(a/b/c, Python, jamais de programme aléatoire à faire tourner, table de valeurs donnée pour 514 et 534) ; 18 modèles
+neufs, sans nœud neuf, et pour les points posés sur une notion, le modèle va sur la sous-notion de Q3 ; 393 en un
+modèle (√2, φ, e) ; accès : personne de plus ; publication comme les démonstrations.
