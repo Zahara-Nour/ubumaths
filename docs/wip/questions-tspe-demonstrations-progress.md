@@ -10,17 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2605 (lot 7 dans `main`, § 27)._
+_Mis à jour le 2026-11-12, après #2608 (lot 7 rangé en prod, § 28 ; page à cocher, § 29)._
 
-- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 et 6 publiés (§ 22, § 26) ; lot 7 (324, 513, 514, 515) dans `main` (#2605), brouillons pas encore créés en prod (§ 27). Reste le lot 8.
-- **Prochaine action** : David lance `create-questions --publier` (commande au § 27) ; ensuite rangement
-  (migration), page à cocher, publication, comme les § 24 à 26.
-- **En attente de David** : `create-questions --publier` du lot 7.
+- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 et 6 publiés (§ 22, § 26) ; lot 7 (324, 513, 514, 515) rangé en prod, page à cocher publiée (§ 29), en relecture. Reste le lot 8.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 4) ; tout « ok » → David lance
+  `publier-lot.ts --dir scripts/questions/tspe-algorithmes-7` (simulation puis `--publier`) ; puis phase 0 du lot 8.
+- **En attente de David** : relecture du lot 7 sur https://claude.ai/artifact/LuyXd7gcHJ6gqJJCArM8vH.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
-  (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (branche du lot 7 supprimée).
+  (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
+  `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main`.
 
 ---
 
@@ -616,3 +617,14 @@ les données et le préfixe `_qta7_` changent) ; test `tests/integration/questio
 Accès : personne de plus (§ 18 Q5, D2).
 `security-auditor` : aucun finding (diff contre le lot 6 limité aux données ; chemins, points et noms de sous-notion
 résolus en prod à une ligne chacun, 513 sur sa notion).
+
+Rangement appliqué : `db:migrate` lancé du dépôt principal après #2608. Vérifié en prod : les 4 brouillons sur leur
+sous-notion (permutations ; schéma de Bernoulli ; intervalle de fluctuation ; échantillons), un point chacun,
+`updated_at` inchangé. Branche du lot 7 supprimée. Les 4 JSON modifiés par `create-questions` dans le dépôt principal,
+identiques à `origin/main`, y ont été remis à l'état commité avant le pull.
+
+## 29. Lot 7 : page à cocher (2026-11-12)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-algorithmes-7`, lu en base prod : 4 brouillons `draft`, chacun sur son
+point, 3 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/LuyXd7gcHJ6gqJJCArM8vH (capacité `db`) ;
+base `verdicts` vide à la publication.
