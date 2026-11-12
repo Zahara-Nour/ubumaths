@@ -1,0 +1,211 @@
+{
+	"title": "Simuler une marche aléatoire en Python",
+	"description": "Marche aléatoire sur une droite graduée : compléter x = x - 1, compléter if random() < 0.7: (pas +1 de probabilité 0,7), valeur proche de la position moyenne (n(2p − 1))",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Un pion part de l'origine d'une droite graduée. À chaque étape, il avance d'une unité (pas $+1$) avec la probabilité $0{,}5$, ou recule d'une unité (pas $-1$) sinon, indépendamment des étapes précédentes. La fonction Python ci-dessous doit renvoyer la position du pion après $n$ étapes ; `random()` renvoie un nombre au hasard dans $[0\\,;\\,1[$.\n\n```python\nfrom random import random\n\ndef marche(n):\n    x = 0\n    for k in range(n):\n        if random() < 0.5:\n            x = x + 1\n        else:\n            ...\n    return x\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `x = x - 1`\n- `x = 0`\n- `x = x + 1`\n- `x = -1`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le cas `else`, le pion recule d'une unité : sa position diminue de $1$.",
+					"`x = 0` et `x = -1` effacent la position atteinte, et `x = x + 1` ferait toujours avancer le pion.",
+					"La ligne est donc `x = x - 1`."
+				]
+			}
+		},
+		{
+			"statement": "Un pion part de l'origine d'une droite graduée. À chaque étape, il avance d'une unité (pas $+1$) avec la probabilité $0{,}7$, ou recule d'une unité (pas $-1$) sinon, indépendamment des étapes précédentes. La fonction Python ci-dessous doit renvoyer la position du pion après $n$ étapes ; `random()` renvoie un nombre au hasard dans $[0\\,;\\,1[$.\n\n```python\nfrom random import random\n\ndef marche(n):\n    x = 0\n    for k in range(n):\n        ...\n            x = x + 1\n        else:\n            x = x - 1\n    return x\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `if random() < 0.7:`\n- `if random() < 0.3:`\n- `if random() > 0.7:`\n- `if random() == 0.7:`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le pion avance avec la probabilité $0{,}7$ : la condition qui précède `x = x + 1` doit être vraie avec la probabilité $0{,}7$.",
+					"`random()` tombe dans $[0\\,;\\,0{,}7[$ avec la probabilité $0{,}7$. `random() < 0.3` et `random() > 0.7` sont vrais avec la probabilité $0{,}3$, et `random() == 0.7` presque jamais.",
+					"La ligne est donc `if random() < 0.7:`."
+				]
+			}
+		},
+		{
+			"statement": "Un pion part de l'origine d'une droite graduée. À chaque étape, il avance d'une unité (pas $+1$) avec la probabilité ${{if:q==6|0{,}6|{{if:q==7|0{,}7|0{,}8}}}}$, ou recule d'une unité (pas $-1$) sinon, indépendamment des étapes précédentes. On considère le programme Python suivant.\n\n```python\nfrom random import random\n\ndef marche(n):\n    x = 0\n    for k in range(n):\n        if random() < {{if:q==6|0.6|{{if:q==7|0.7|0.8}}}}:\n            x = x + 1\n        else:\n            x = x - 1\n    return x\n\nS = 0\nfor j in range(100000):\n    S = S + marche({{eval:n}})\nprint(S / 100000)\n```\n\nDe quel nombre la valeur affichée est-elle, en général, proche ?\n\n$?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "6|7|8"
+				},
+				{
+					"name": "n",
+					"expression": "10|20|50"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n*(2*q-10)/10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le programme affiche la moyenne des positions après ${{eval:n}}$ étapes, sur $100\\,000$ marches : d'après la loi des grands nombres, elle est proche de l'espérance $E(X)$ de la position $X$.",
+					"Si $Y$ est le nombre de pas $+1$, $Y$ suit la loi $\\mathcal{B}({{eval:n}}\\,;\\,{{if:q==6|0{,}6|{{if:q==7|0{,}7|0{,}8}}}})$ et $X=Y-({{eval:n}}-Y)=2Y-{{eval:n}}$.",
+					"$E(X)=2E(Y)-{{eval:n}}=2\\times{{eval:n*q/10}}-{{eval:n}}=\\textcolor{{{color:primary.0}}}{{{eval:r}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x = x - 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x = 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x = x + 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x = -1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "if random() < 0.7:",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : < 0.3",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : > 0.7",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : == 0.7",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 0,7, n = 10 : 4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "7",
+				"n": "10",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p = 0,6, n = 50 : 10",
+			"variationIndex": 2,
+			"variables": {
+				"q": "6",
+				"n": "50",
+				"r": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p = 0,8, n = 20 : 12",
+			"variationIndex": 2,
+			"variables": {
+				"q": "8",
+				"n": "20",
+				"r": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : np (p = 0,7, n = 10)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "7",
+				"n": "10",
+				"r": "4"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : marche symétrique, 0 (p = 0,7, n = 10)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "7",
+				"n": "10",
+				"r": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

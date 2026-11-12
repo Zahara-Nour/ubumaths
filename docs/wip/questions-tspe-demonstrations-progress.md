@@ -634,3 +634,35 @@ base `verdicts` vide à la publication.
 
 Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 28). `publier-lot.ts` en simulation puis `--publier`,
 lancés par David. Relu en base (MCP) : 4 `published`.
+
+## 31. Lot 8 : algorithmes, concentration et loi des grands nombres (2026-11-13)
+
+Relevé prod (MCP, 2026-11-12) : les 4 points actifs, de type `algorithme`, aucun tagué. 534 et 624 sur
+« Bienaymé-Tchebychev » (niveau max 2) ; 535 sur « épreuves indépendantes successives » (niveau max 4, dont la marche
+aléatoire de 1re `4bd92a32`, un calcul) ; 536 sur « loi des grands nombres » (niveau max 1). Aucun homonyme de titre.
+
+**D5 (David, 2026-11-13, « je valide », après mes recos)** : tableau ci-dessous tel que proposé ; 534 avec p = 0,5
+seulement ; 536 sans les proportions 0,68 / 0,95 / 0,997 (approximation normale, hors programme).
+
+| Point | Modèle (`scripts/questions/tspe-algorithmes-8/`) | Nœud, niveau                   | Variations                                                                                       |
+| ----- | ------------------------------------------------ | ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| 534   | `01-probabilite-de-l-ecart-a-pn`                 | Bienaymé-Tchebychev, 3         | table des P(Sₙ ⩽ k), n ∈ {36, 49, 64, 100}, p = 0,5 (case) ; `if abs(k - n*p) > sqrt(n):` ; sens |
+| 624   | `02-comparer-avec-bienayme-tchebychev`           | Bienaymé-Tchebychev, 4         | `borne(n, p)` → p(1 − p) (case) ; `return V / delta**2` ; 0,0352 contre 0,25 (choix)             |
+| 535   | `03-simuler-une-marche-aleatoire`                | épreuves indép. successives, 5 | `x = x - 1` ; `if random() < 0.7:` ; position moyenne → n(2p − 1) (case)                         |
+| 536   | `04-ecart-type-des-moyennes`                     | loi des grands nombres, 2      | ligne de comptage `abs(m - mu) <= k * sigma / sqrt(n)` ; s ≈ σ/√n (case) ; n × 4 → s ÷ 2         |
+
+Écart au tableau proposé : 534 tire n dans {36, 49, 64, 100}, et non {16, 25, 36, 100} : pour 16 et 25, la somme lue
+dans la table arrondie à 10⁻⁴ (0,0212 ; 0,0432) diffère de la valeur exacte arrondie (0,0213 ; 0,0433). Le script le
+vérifie (`assert`). Table écrite à 4 décimales (`0{,}0300`, pas `0{,}03`).
+
+Script : `docs/wip/questions/lot-tspe-algorithmes-8.py`. 536 : X vaut 10 − σ ou 10 + σ, avec la probabilité 1/2 chacune
+(espérance 10, écart type σ). Un `\textcolor` sur du texte du corrigé va dans `$\text{…}$`.
+
+Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (52 specs vertes), 0 `\textcolor` hors `$` ;
+57 réponses recoupées en exécutant les programmes des énoncés (534 et 624 exacts ; 535 et 536 simulés, tolérance
+0,1 et 15 %) : 0 écart ; `create-questions` en simulation prod (4 à créer, 0 déjà en base) ; brouillons en base locale
+(copie hors dépôt) ; aperçu admin vu à l'écran : 534, table rendue, case 0,0288 jouée « Juste » ; 624 (c), choix D
+joué « Faux », corrigé rendu.
+
+Commande pour David, après le merge (depuis le dépôt principal, à jour) :
+`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-8 --publier`

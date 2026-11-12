@@ -1,0 +1,211 @@
+{
+	"title": "Comparer avec Bienaymé-Tchebychev en Python",
+	"description": "Majoration de Bienaymé-Tchebychev pour δ = √n et Sₙ ~ B(n ; p) : valeur de borne(n, p) (p(1 − p), p = 0,5 ; 0,2 ; 0,1), compléter return V / delta**2, comparer 0,0352 à 0,25 (inégalité vraie mais pas optimale)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On note $S_n$ une variable aléatoire qui suit la loi binomiale $\\mathcal{B}(n\\,;\\,p)$. D'après l'inégalité de Bienaymé-Tchebychev, pour tout réel $\\delta>0$, $P(\\lvert S_n-np\\rvert\\geqslant\\delta)\\leqslant\\dfrac{V(S_n)}{\\delta^2}$. La fonction Python ci-dessous calcule cette majoration pour $\\delta=\\sqrt{n}$.\n\n```python\nfrom math import sqrt\n\ndef borne(n, p):\n    V = n * p * (1 - p)\n    delta = sqrt(n)\n    return V / delta**2\n```\n\nQue renvoie `borne({{eval:n}}, {{if:q==2|0.5|{{if:q==5|0.2|0.1}}}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "25|100|400"
+				},
+				{
+					"name": "q",
+					"expression": "2|5|10"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(q-1)/q^2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`V` vaut $V(S_n)=np(1-p)$ et `delta**2` vaut $(\\sqrt{n})^2=n$.",
+					"La fonction renvoie $\\dfrac{np(1-p)}{n}=p(1-p)$ : le résultat ne dépend pas de $n$.",
+					"Avec $p={{if:q==2|0{,}5|{{if:q==5|0{,}2|0{,}1}}}}$ : ${{if:q==2|0{,}5|{{if:q==5|0{,}2|0{,}1}}}}\\times(1-{{if:q==2|0{,}5|{{if:q==5|0{,}2|0{,}1}}}})=\\textcolor{{{color:primary.0}}}{{{eval:r;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $S_n$ une variable aléatoire qui suit la loi binomiale $\\mathcal{B}(n\\,;\\,p)$. D'après l'inégalité de Bienaymé-Tchebychev, pour tout réel $\\delta>0$, $P(\\lvert S_n-np\\rvert\\geqslant\\delta)\\leqslant\\dfrac{V(S_n)}{\\delta^2}$. La fonction Python ci-dessous doit renvoyer cette majoration pour $\\delta=\\sqrt{n}$.\n\n```python\nfrom math import sqrt\n\ndef borne(n, p):\n    V = n * p * (1 - p)\n    delta = sqrt(n)\n    ...\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `return V / delta**2`\n- `return V / delta`\n- `return sqrt(V) / delta`\n- `return delta**2 / V`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La majoration est $\\dfrac{V(S_n)}{\\delta^2}$ : la variance divisée par le **carré** de l'écart $\\delta$.",
+					"`V` est la variance $np(1-p)$ et `delta` vaut $\\sqrt{n}$.",
+					"La ligne est donc `return V / delta**2`."
+				]
+			}
+		},
+		{
+			"statement": "On note $S_n$ une variable aléatoire qui suit la loi binomiale $\\mathcal{B}(n\\,;\\,p)$. D'après l'inégalité de Bienaymé-Tchebychev, pour tout réel $\\delta>0$, $P(\\lvert S_n-np\\rvert\\geqslant\\delta)\\leqslant\\dfrac{V(S_n)}{\\delta^2}$. Avec la fonction `P_ecart(n, p)`, qui renvoie $P(\\lvert S_n-np\\rvert>\\sqrt{n})$, et la fonction `borne(n, p)` ci-dessous, qui renvoie la majoration pour $\\delta=\\sqrt{n}$, on exécute le programme suivant.\n\n```python\nfrom math import sqrt\n\ndef borne(n, p):\n    V = n * p * (1 - p)\n    delta = sqrt(n)\n    return V / delta**2\n\nprint(round(P_ecart(100, 0.5), 4))\nprint(borne(100, 0.5))\n```\n\nIl affiche `0.0352` puis `0.25`. Que peut-on en conclure ?\n\n```choix\n- L'inégalité est vérifiée, mais la majoration est loin d'être optimale.\n- L'inégalité de Bienaymé-Tchebychev est fausse ici, car $0{,}25>0{,}0352$.\n- Le calcul de `P_ecart` est faux : il devrait renvoyer $0{,}25$.\n- L'inégalité de Bienaymé-Tchebychev ne s'applique pas à une loi binomiale.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(\\lvert S_n-np\\rvert>\\sqrt{n})\\leqslant P(\\lvert S_n-np\\rvert\\geqslant\\sqrt{n})\\leqslant p(1-p)$ : on doit trouver une probabilité inférieure ou égale à $0{,}25$.",
+					"C'est le cas : $0{,}0352\\leqslant0{,}25$. L'inégalité vaut pour toute variable aléatoire qui a une variance, binomiale comprise.",
+					"Mais $0{,}25$ est environ sept fois plus grand que la probabilité : la majoration est $\\textcolor{{{color:primary.0}}}{\\text{vraie mais grossière}}$, c'est le prix de son caractère universel."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 0,5 : 0,25",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100",
+				"q": "2",
+				"r": "0.25"
+			},
+			"answers": ["0.25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p = 0,2 : 0,16 avec virgule",
+			"variationIndex": 0,
+			"variables": {
+				"n": "25",
+				"q": "5",
+				"r": "0.16"
+			},
+			"answers": ["0,16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p = 0,1 : 0,09",
+			"variationIndex": 0,
+			"variables": {
+				"n": "400",
+				"q": "10",
+				"r": "0.09"
+			},
+			"answers": ["0.09"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : V(Sₙ) sans diviser (n = 25, p = 0,2)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "25",
+				"q": "5",
+				"r": "0.16"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : V/δ (n = 100, p = 0,5)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100",
+				"q": "2",
+				"r": "0.25"
+			},
+			"answers": ["2.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "return V / delta**2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : V/δ",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √V/δ",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : inverse",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "vraie mais grossière",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : fausse",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : calcul faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ne s'applique pas",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
