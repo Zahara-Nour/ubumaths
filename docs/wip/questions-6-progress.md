@@ -5,15 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2591 (§ 27.1)._
+_Mis à jour le 2026-11-12, migration du lot 12 en PR (§ 27.2)._
 
-- **État** : lots 10 et 11 publiés ; lot 12 « Constructions » (173, 180, 207) écrit et mergé (#2591), pas encore en prod.
-- **Prochaine action** : migration nœud + tag des 3 brouillons (173, 207 → « triangles » ; 180 → notion « Symétrie axiale »), puis page à cocher.
-- **En attente de David** : `create-questions --dir scripts/questions/6-constructions --publier` (3 brouillons en prod).
+- **État** : lot 12 « Constructions » : 3 brouillons en prod (f06e45e8, 59694d66, 0ecb0f0e) ; migration nœud + tag
+  `20261112103339` en PR, test 17/17 (rouge sans elle).
+- **Prochaine action** : merge, `db:migrate`, vérification en prod, page à cocher.
+- **En attente de David** : rien.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
 ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
-- **Worktree / branche** : aucun (retiré après #2591).
+- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-lot12-noeuds`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1757,3 +1758,10 @@ Pièges rencontrés :
 - Symétrique sur papier uni : seuls les segments sont jugés (instruments non vérifiés), conforme à la doc du contrôle.
 - Port 5176 pris par une autre session : serveur de test sur 5177.
 - #2591 mergée (CI verte), worktree retiré.
+
+### 27.2 Brouillons, nœud et tag (2026-11-12)
+
+- Brouillons créés par David : f06e45e8 (6-173), 59694d66 (6-180), 0ecb0f0e (6-207). Relevé prod : en 6e, brouillons,
+  sans nœud ni tag ; nœuds des points conformes à la phase 0.
+- Migration `20261112103339` (patron 11b) : 173 et 207 sur « triangles », 180 sur la notion « Symétrie axiale ».
+  Test d'intégration 17/17, rouge sans la migration (10 échecs).
