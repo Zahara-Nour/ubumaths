@@ -40,7 +40,7 @@ describe('bloc ```schema-barres — nominal', () => {
 	});
 
 	it('4. étiquette commençant par `-` : partie manquante, étiquette sans le signe', () => {
-		const node = parse('Bronze : ? (4) ; -80 (1,5)');
+		const node = parse('Bronze : ? (2,5) ; -80 (1,5)');
 		expect(node.spec?.bars[0].segments[1]).toEqual({ label: '80', length: 1.5, missing: true });
 	});
 

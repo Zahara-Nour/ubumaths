@@ -16,7 +16,7 @@ const count = (text: string, pattern: RegExp) => (text.match(pattern) ?? []).len
 
 describe('bloc ```schema-barres au PDF', () => {
 	it('9. un rectangle par segment, noir sur fond blanc, pointillés pour la partie manquante', () => {
-		const out = typst('Or : ? (4) ; 70 (2)', 'Bronze : ? (4) ; -80 (1,5)');
+		const out = typst('Or : ? (4) ; 70 (2)', 'Bronze : ? (2,5) ; -80 (1,5)');
 		expect(count(out, /rect\(/g)).toBe(4);
 		expect(count(out, /dash: "dashed"/g)).toBe(1);
 		expect(count(out, /fill: white/g)).toBe(4);

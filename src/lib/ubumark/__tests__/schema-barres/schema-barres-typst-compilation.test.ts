@@ -34,7 +34,7 @@ it('un document avec des blocs ```schema-barres compile en PDF', async () => {
 				'```schema-barres',
 				'Or : ? (4) ; 70 € (2)',
 				'Argent : ? (4)',
-				'Bronze : ? (4) ; -80 € (1,5)',
+				'Bronze : ? (2,5) ; -80 € (1,5)',
 				'total : 320 €',
 				'```',
 				'',
