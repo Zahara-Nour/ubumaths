@@ -176,6 +176,11 @@ describe('bloc ```schema-barres — erreurs', () => {
 		expect(node.errors[0]).toMatch(/^Ligne 1 : .*parties manquantes/);
 	});
 
+	it('18 bis. barre sans nom faite seulement de parties manquantes : désignée par son rang', () => {
+		const node = parse(': ? (2)', ': -x (2)');
+		expect(node.errors[0]).toMatch(/^Ligne 2 : la barre n° 2 n’a que des parties manquantes/);
+	});
+
 	it('plusieurs erreurs : toutes situées, dans l’ordre', () => {
 		const node = parse('A ? (2)', 'B : ? (0)', 'C : ? ; ; ?');
 		expect(node.errors.map((e) => e.slice(0, 8))).toEqual(['Ligne 1 ', 'Ligne 2 ', 'Ligne 3 ']);
