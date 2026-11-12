@@ -10,17 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2594 (lot 5 rangé en prod, § 20 et 21)._
+_Mis à jour le 2026-11-12, après la publication du lot 5 (§ 22)._
 
 - **État** : démonstrations terminées (§ 17). Algorithmes : phase 0 validée (D2, § 18) ; lot 5 (analyse : 393, 433,
-  434, 592, 450) en brouillons rangés et tagués en prod ; page à cocher publiée (§ 21).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 5) → corrections éventuelles →
-  `publier-lot.ts --dir scripts/questions/tspe-algorithmes-5` en simulation → `--publier` par David → lot 6 (§ 18 Q1).
-- **En attente de David** : relecture de https://claude.ai/artifact/XdXrnzXoD8SHNnWRY4QMUC.
+  434, 592, 450) **publié** (§ 22). Restent les lots 6, 7, 8 (§ 18 Q1).
+- **Prochaine action** : lot 6 (équations différentielles et intégration : 474, 610, 611, 500, 499), même démarche que
+  le lot 5 (§ 19 à 22) : phase 0 du lot (titres, niveaux, variations), JSON, `create-questions` par David, rangement.
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
-  l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance ; **`\dots` non rendu**, `\cdots`
-  oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué (§ 19) ; `Doc-inchangée:` dans un COMMIT (la garde
-  locale sur l'index ne le voit pas) ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
+  l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
+  la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
+  (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (rien en cours).
 
 ---
@@ -484,3 +484,8 @@ prod : 5 brouillons, chacun sur sa sous-notion avec son seul point, `updated_at`
 `page-a-cocher.ts --dir scripts/questions/tspe-algorithmes-5`, lu en base prod : 5 brouillons `draft`, chacun sur son
 point, 3 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/XdXrnzXoD8SHNnWRY4QMUC (capacité `db`) ;
 base `verdicts` vide à la publication.
+
+## 22. Lot 5 : publication (2026-11-12)
+
+Verdicts lus : 5/5 « ok », sans commentaire (ids = ceux du § 20). `publier-lot.ts` en simulation puis `--publier`,
+lancés par David (le mode auto a bloqué la simulation : elle lit la prod). Relu en base (MCP) : 5 `published`.
