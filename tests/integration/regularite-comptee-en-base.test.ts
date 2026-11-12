@@ -62,7 +62,7 @@ let archivedId: string;
 
 // Functions
 async function clientFor(email: string): Promise<SupabaseClient> {
-	// Client non typé : la fonction n'est dans `database.ts` qu'après `db:types`
+	// Client non typé : la preuve rouge (PR 1) précédait `db:types`
 	const client = createClient(SUPABASE_URL, ANON_KEY, {
 		auth: { persistSession: false, autoRefreshToken: false }
 	});

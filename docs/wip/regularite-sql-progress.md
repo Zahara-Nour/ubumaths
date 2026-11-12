@@ -58,3 +58,8 @@ en mémoire : traces par élève × jour de Paris → jours ≥ 5 traces → jou
 - Tests unitaires réécrits (règles de trace → intégration) : 9 rouges avant le code ; intégration
   - test 6 « parité » : jours actifs SQL = `activeDaysOf` (règle TS du Palotin) sur les mêmes traces.
 - Doc : `analytique-prof.md` (widget C).
+- Revues : `security-auditor` (rien) ; `code-reviewer` (rien de bloquant). Gardés : (1) la borne
+  haute « aujourd'hui » de l'ancien calcul n'existe plus : une trace datée d'un jour à venir de la
+  semaine en cours compterait (les semaines à venir restent hors grille) ; `created_at` vaut
+  `now()` en pratique, effet au plus sur le palier de la semaine en cours ; (2) `data` nul sans
+  erreur → grille vide (cas que supabase-js ne produit pas). Commentaire périmé du test corrigé.
