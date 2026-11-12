@@ -10,18 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2590 (lot 5 mergé, § 19)._
+_Mis à jour le 2026-11-12, après #2594 (lot 5 rangé en prod, § 20 et 21)._
 
 - **État** : démonstrations terminées (§ 17). Algorithmes : phase 0 validée (D2, § 18) ; lot 5 (analyse : 393, 433,
-  434, 592, 450) mergé (#2590), pas encore en base.
-- **Prochaine action** : après la commande de David, relevé MCP des 5 brouillons → migration de rangement (gabarit
-  `20261112051818`, nœuds et niveaux du § 19) → page à cocher → lot 6.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-5
---publier`, depuis le dépôt principal à jour.
+  434, 592, 450) en brouillons rangés et tagués en prod ; page à cocher publiée (§ 21).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 5) → corrections éventuelles →
+  `publier-lot.ts --dir scripts/questions/tspe-algorithmes-5` en simulation → `--publier` par David → lot 6 (§ 18 Q1).
+- **En attente de David** : relecture de https://claude.ai/artifact/XdXrnzXoD8SHNnWRY4QMUC.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
-  l'aperçu admin = variation (§ 3), saisie dans le champ « Seed » puis « Générer » ; `publier-lot.ts` lit la prod →
-  David la lance ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale tirée → `;d` ; titre déjà
-  pris en prod au même niveau = lot bloqué (§ 19).
+  l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance ; **`\dots` non rendu**, `\cdots`
+  oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué (§ 19) ; `Doc-inchangée:` dans un COMMIT (la garde
+  locale sur l'index ne le voit pas) ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (rien en cours).
 
 ---
@@ -474,3 +473,14 @@ les données et le préfixe `_qta5_` changent) ; test `tests/integration/questio
 12/12 vert, rouge sans la migration (partie aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie. Accès :
 personne de plus (§ 18 Q5, D2).
 `security-auditor` : aucun finding. PR #2594.
+
+Mergée (#2594 ; premier passage rouge sur la garde doc, ligne `Doc-inchangée:` ajoutée dans un commit, puis CI verte) ;
+`check:migrations --pr` vert ; `db:migrate` refusé (« inserted before » : une autre session avait migré après
+l'horodatage), `db push --dry-run --include-all` ne montrait que cette migration, puis `--include-all`. Vérifié en
+prod : 5 brouillons, chacun sur sa sous-notion avec son seul point, `updated_at` inchangé.
+
+## 21. Lot 5 : page à cocher (2026-11-12)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-algorithmes-5`, lu en base prod : 5 brouillons `draft`, chacun sur son
+point, 3 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/XdXrnzXoD8SHNnWRY4QMUC (capacité `db`) ;
+base `verdicts` vide à la publication.
