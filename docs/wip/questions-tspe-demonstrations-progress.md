@@ -10,16 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après la publication du lot 4 (§ 17)._
+_Mis à jour le 2026-11-12, phase 0 des algorithmes posée (§ 18)._
 
-- **État** : les 4 lots sont publiés (§ 5, § 9, § 13, § 17) : les 19 démonstrations ont chacune un modèle publié.
-- **Prochaine action** : phase 0 des algorithmes (18, § 1) : relevé, classement, questions à David, rien codé avant
-  sa validation.
-- **En attente de David** : son go pour la phase 0 des algorithmes.
+- **État** : démonstrations terminées (4 lots publiés, § 17). Algorithmes : relevé prod fait, aucun réemploi
+  possible, 18 modèles neufs à écrire (§ 18).
+- **Prochaine action** : après la réponse de David, lot 5 (analyse : 393, 433, 434, 592, 450), dans un worktree neuf
+  depuis `origin/main`.
+- **En attente de David** : Q1 à Q6 du § 18 (lots, forme, rangement, 393, accès, publication).
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3), saisie dans le champ « Seed » puis « Générer » ; `publier-lot.ts` lit la prod →
   David la lance ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale tirée → `;d` dans
-  `expectedAnswer`.
+  `expectedAnswer` ; jamais `str.format` sur un gabarit qui contient `{{eval}}` (1re, § 17).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (rien en cours).
 
 ---
@@ -363,3 +364,62 @@ dessiné, à jouer dans l'aperçu admin) ; base `verdicts` vide à la publicatio
 Verdicts lus : 5/5 « ok », sans commentaire (ids = ceux du § 15). `publier-lot.ts` en simulation (5 brouillons passent
 le contrôle), puis `--publier` lancé par David : 5/5 publiés, statut relu en base (MCP : 5 `published`). Fin des
 démonstrations.
+
+## 18. Algorithmes : relevé et phase 0 (2026-11-12)
+
+Relevé prod (MCP, 2026-11-12) : les 18 points sont actifs, de type `algorithme`, et **aucun modèle n'est tagué** dessus.
+Le niveau indiqué est le plus haut déjà présent sur le nœud.
+
+| Point | Algorithme                                       | Nœud du point (prod)                                                       | Niv. max |
+| ----- | ------------------------------------------------ | -------------------------------------------------------------------------- | -------- |
+| 324   | Génération ou tirage aléatoire d'une permutation | Dénombrement › Arrangements et permutations › permutations                 | 3        |
+| 393   | Valeurs approchées de π, e, √2, φ, ln 2          | **notion** Suites › Limites de suites                                      | —        |
+| 433   | Dichotomie                                       | Fonctions › Continuité › encadrement d'une solution                        | 3        |
+| 434   | Newton                                           | Fonctions › Continuité › encadrement d'une solution                        | 3        |
+| 592   | Sécante                                          | Fonctions › Continuité › encadrement d'une solution                        | 3        |
+| 450   | Briggs (logarithme)                              | **notion** Fonctions › Logarithmes                                         | —        |
+| 474   | Euler pour y′ = f et y′ = ay + b                 | Équations différentielles › Généralités › méthode d'Euler                  | aucun    |
+| 610   | Milieux                                          | Intégration › Calcul d'intégrales › méthode des rectangles                 | 2        |
+| 611   | Trapèzes                                         | Intégration › Calcul d'intégrales › méthode des rectangles                 | 2        |
+| 500   | Brouncker (ln 2)                                 | Intégration › Calcul d'intégrales › méthode des rectangles                 | 2        |
+| 499   | Monte-Carlo                                      | **notion** Intégration › Intégrale et aire                                 | —        |
+| 513   | Planche de Galton                                | **notion** Probabilités › Loi binomiale                                    | —        |
+| 514   | Surréservation : plus petit k, P(X > k) ⩽ α      | Probabilités › Loi binomiale › intervalle de fluctuation                   | 2        |
+| 515   | Échantillon d'une variable aléatoire             | Probabilités › Sommes et concentration › échantillons                      | 3        |
+| 534   | P(\|Sₙ − pn\| > √n)                              | Probabilités › Sommes et concentration › Bienaymé-Tchebychev               | 2        |
+| 624   | La comparer à Bienaymé-Tchebychev                | Probabilités › Sommes et concentration › Bienaymé-Tchebychev               | 2        |
+| 535   | Marche aléatoire                                 | Probabilités › Probabilités conditionnelles › épreuves indépendantes succ. | 4        |
+| 536   | N échantillons, écart type des moyennes          | Probabilités › Sommes et concentration › loi des grands nombres            | 1        |
+
+**Réemplois du § 1 : aucun n'est possible.** Un tag n'est accepté que si le point est sur le nœud du modèle ou sur sa
+notion (`question_template_points_check_rules`). Or les modèles de 1re sont rangés ailleurs : Newton `2286c302` sur
+Dérivation › tangente, Euler `a6d5ec1e` sur Exponentielle › dérivée, Monte-Carlo `e05ecec7` et `7652fee6` sur
+Échantillonnage › simulation, e `3762e1e9` sur Exponentielle. La marche aléatoire `4bd92a32` est bien sur la
+sous-notion de 535, mais c'est un calcul de probabilité, pas un programme. Ces modèles servent de gabarits : formes,
+distracteurs et pièges du § 17 du journal archivé `questions-1spe-demonstrations`.
+
+### Phase 0 — questions à David (posées le 2026-11-12)
+
+- **Q1 — Périmètre et lots.** Les 18 algorithmes, en 4 lots : (5) analyse (393, 433, 434, 592, 450) ; (6) équations
+  différentielles et intégration (474, 610, 611, 500, 499) ; (7) probabilités, simulation et loi binomiale (324, 513,
+  514, 515) ; (8) probabilités, concentration (534, 624, 535, 536). _Reco : oui._
+- **Q2 — Forme.** Comme D9 de la 1re : Python seulement ; (a) faire tourner (valeur renvoyée pour une entrée tirée, en
+  case), (b) compléter une ligne (case choix, 4 propositions, erreurs typiques en distracteurs), (c) interpréter (de
+  quoi la valeur renvoyée est une approximation). 2 ou 3 variations par modèle. Un programme aléatoire n'est jamais
+  « faites-le tourner » : décompte donné (Monte-Carlo, 536), ou formes (b) et (c) seulement (324 tirage, 513, 515, 535).
+  Les sommes binomiales (514, 534) ne se calculent pas à la main : (a) se fait avec une table de valeurs donnée dans
+  l'énoncé, comme `f0c8c1fc`. _Reco : oui._
+- **Q3 — Rangement.** Un modèle par point, tagué sur son point P (ADR 0020), soit **18 modèles neufs**. Aucun réemploi
+  (voir ci-dessus) ; les modèles de 1re servent de gabarits. 534 et 624 font deux modèles, sur la même sous-notion. Les
+  modèles vont sur la sous-notion du point, au-dessus des niveaux déjà présents, sans nœud neuf. Pour les 4 points posés
+  sur une notion, le modèle va sur une sous-notion existante et le point reste sur la notion, comme au lot 11 de la 1re :
+  393 → Limites de suites › convergence monotone (suites monotones vers √2, e) ; 450 → Logarithmes › propriétés
+  algébriques (ln √x = ½ ln x) ; 499 → Intégrale et aire › aire algébrique ; 513 → Loi binomiale › schéma de
+  Bernoulli. _Reco : oui._
+- **Q4 — 393, un seul modèle** à 3 variations (une par constante) : √2 par Héron (uₙ₊₁ = (uₙ + 2/uₙ)/2), φ par
+  uₙ₊₁ = 1 + 1/uₙ, e par la somme des 1/k!. π est déjà traité par Archimède en 1re, et ln 2 par Brouncker (500).
+  _Reco : oui._
+- **Q5 — Accès** (avant toute migration) : « qui pourra lire quoi, qu'il ne pouvait pas lire avant ? » _Reco :
+  personne de plus. Ce sont des brouillons, et la migration ne touche que le nœud et les tags. À la publication, les
+  élèves de terminale spé voient les modèles, comme pour tout modèle publié._
+- **Q6 — Publication** comme les démonstrations : page à cocher, puis `publier-lot.ts` lancé par David. _Reco : oui._
