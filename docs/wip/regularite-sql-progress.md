@@ -6,9 +6,9 @@ Ouvert le 2026-11-12 : `docs/wip/outils-manquants.md` n° 28, né de la revue de
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2604 ; PR 2 en cours._
+_Mis à jour le 2026-11-12, #2607 ouverte._
 
-- **État** : PR 1 mergée (#2604), `db:migrate` fait, `db:types` dans la PR 2. PR 2 = `getClassRegularityGrid` appelle `class_regularity_weeks` (plus aucune trace lue) ; tests unitaires réécrits (rouges puis verts), parité SQL ↔ `activeDaysOf` en intégration (6 verts) · **Prochaine action** : `code-reviewer`, PR, CI, merge ; ligne 28 de `outils-manquants.md` → « Livré » ; clôture · **En attente de David** : rien · **Pièges en cours** : base locale : historique des migrations en retard (`migration up --local` échoue) → `psql` + `notify pgrst` · **Worktree / branche** : `../ubumaths-wt-regularite-sql` · `feat/regularite-sql-code`
+- **État** : PR 1 mergée (#2604, migration en prod) ; PR 2 #2607 ouverte (le code appelle `class_regularity_weeks`), revues faites, ligne 28 passée dans « Livré » de `outils-manquants.md` · **Prochaine action** : CI verte → merge → clôture (journal archivé, worktree supprimé) · **En attente de David** : rien · **Pièges en cours** : base locale : historique des migrations en retard (`migration up --local` échoue) → `psql` + `notify pgrst` · **Worktree / branche** : `../ubumaths-wt-regularite-sql` · `feat/regularite-sql-code`
 
 ## Constat (2026-11-12)
 
