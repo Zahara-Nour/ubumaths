@@ -751,7 +751,7 @@ entiers ; autre suite refusée ; `verifier: mesure_segment` refusé, on écrit `
 refusée ailleurs) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
-le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `
+le bloc s'affiche comme sa figure de départ (au PDF, une figure à `mesure AB` est imprimée à l'échelle 1 unité = 1 cm quand elle tient dans la place disponible, sinon réduite comme les autres : `atRealScale`, `figure-typst.ts`). Le repérage est celui de ` ```figure `
 (`isFigureBlockStart` reconnaît les deux mots ; ` ```construction ` n'ouvre rien : le mot désigne les constructions animées, voir [CONTEXT.md](../../CONTEXT.md) « Figure à compléter ») ; l'éditeur riche rend le bloc à son mot
 (`figureFence`, `markdown-import.ts`). Jugement : [questions](questions.md) (case « figure »). Fiche
 de l'aide à l'écriture : `block-catalog/figure-a-completer.ts` (`/aide-ecriture/blocs/figure-a-completer`).

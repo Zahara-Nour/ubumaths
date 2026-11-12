@@ -959,6 +959,11 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    (`solutionRulers` → `segmentMeasureRuler`, `solutionSegmentMeasure`) : la règle posée au 0 en A le long
    de [AB], la longueur écrite au milieu de [AB] du côté opposé au corps de la règle ; aucun trait. Énoncé
    masqué : `verifier: mesure AB` reste, points calculés réécrits en coordonnées (`maskMeasureFigure`).
+   Énoncé PDF (PR 2, Q4 a, 2026-11-12) : la figure est imprimée à l'échelle 1 unité = 1 cm pour qu'une vraie
+   règle lise la bonne longueur, si elle tient dans la place disponible (`layout` + `measure` à la compilation :
+   page ou colonne de fiche) ; sinon réduite à la largeur de sa taille comme les autres figures (jamais de
+   débordement ; la mesure à la règle est alors fausse sur ce papier). Deux canevas dans le Typst
+   (`atRealScale`, `figure-typst.ts`).
    Le 0 posé depuis B (graduations vers A) : « doit être sur B ». Limites connues (revue, comme
    `mesure AOB`) : une figure qui affiche la longueur (`cote(A, B)`, un `texte`) n'est pas refusée ; dans
    l'énoncé masqué, seuls les points sont réécrits (un `rayon=6` d'un objet caché reste écrit, la garde ne
