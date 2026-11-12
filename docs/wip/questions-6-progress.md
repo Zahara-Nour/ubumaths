@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2592 (§ 27.2)._
+_Mis à jour le 2026-11-12, après la publication du lot 12 (§ 27.3)._
 
-- **État** : lot 12 « Constructions » : 3 brouillons en prod (f06e45e8, 59694d66, 0ecb0f0e), rangés et tagués
-  (#2592, `db:migrate` fait) ; page à cocher publiée : https://claude.ai/artifact/XRSzPk6vCeaqJMiSYQxUL7.
-- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; 3/3 OK → `publier-lot.ts --dir
-scripts/questions/6-constructions` en simulation, puis David le lance avec `--publier`.
-- **En attente de David** : relecture des 3 fiches (constructions à jouer dans l'aperçu admin).
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
-ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
+- **État** : lot 12 « Constructions » publié (f06e45e8, 59694d66, 0ecb0f0e, vérifié en prod). Lots 1 à 12 clos.
+- **Prochaine action** : relevé prod des points de 6e encore sans modèle publié (restaient au § 23 : C 169, 142 ;
+  figure à compléter 170, 172 ; D 129, 138, 182, 183, 197, 210), puis proposer la suite à David.
+- **En attente de David** : rien.
+- **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`). `texte(P, …)` décale en haut à droite :
+  `dx=0, dy=0, ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
-- **Worktree / branche** : aucun (retiré après #2592).
+  `publier-lot.ts` (même en simulation) est refusé par le mode auto : David le lance avec `!`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1770,3 +1770,9 @@ Pièges rencontrés :
   point chacun, `updated_at` préservé, trigger `O`). Worktree retiré.
 - Page à cocher : https://claude.ai/artifact/XRSzPk6vCeaqJMiSYQxUL7 (3 fiches ; alerte attendue sur les 3 : bloc
   `figure-a-completer` non dessiné, à jouer dans l'aperçu admin).
+
+### 27.3 Relecture et publication (2026-11-12)
+
+- Page à cocher : 3/3 OK, sans commentaire.
+- `publier-lot.ts --dir scripts/questions/6-constructions` lancé par David (simulation puis `--publier`) ; vérifié en
+  prod (MCP) : f06e45e8, 59694d66, 0ecb0f0e `published` ; 3a7a5711 toujours `draft`.
