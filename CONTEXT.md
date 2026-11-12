@@ -41,6 +41,7 @@ textes d'interface (boutons, consignes, récits) gardent leur ton.
 | **École**         | **Frontière sociale / safeguarding** : un élève n'interagit qu'avec des élèves de son école.                     | `my_school()`, `same_school()`                       |
 | **Classe**        | Sous-groupe d'**organisation** (un dossier), **pas** une frontière d'accès pour le prof.                         | `classes`, `class_members`                           |
 | Élève hors-classe | Élève sans classe active ; le prof le voit (rubrique « Non assignés »).                                          |                                                      |
+| Élève actif       | Élève réel (pas de test) membre actif d'au moins une classe. **Base de toute mesure** sur les élèves.            | `active_student_ids()`                               |
 | Élève archivé     | Retiré d'une classe : relit ce qu'il a reçu, ne reçoit plus rien.                                                | `class_members.left_at` (posé par trigger)           |
 | Élève de test     | Compte fictif servant à essayer l'application ; ses résultats ne se mêlent jamais aux vrais.                     | `profiles.is_test`                                   |
 | **Mode test**     | Interrupteur du prof : voir les élèves de test **ou** les vrais, jamais les deux. ≠ `TestMode` (forme de série). | `user_preferences.test_mode_enabled`                 |

@@ -127,6 +127,14 @@ réintégration. `left_at` NULL = départ inconnu (les adhésions archivées ava
 le remplacer par un `coalesce`. L'élève archivé relit ce qu'il a reçu, ne reçoit plus rien. Test :
 `tests/integration/archived-member-stops-receiving.test.ts`.
 
+**Élèves actifs, pour les mesures** (migration `20261112144816`) : `active_student_ids()` rend les
+élèves réels (`is_test` faux) membres `active` d'au moins une classe — la définition d'« élève actif »
+de [CONTEXT.md](../../CONTEXT.md#les-personnes-et-les-frontières). Toute mesure sur les élèves part
+de là (`where student_id in (select student_id from public.active_student_ids())`), jamais de
+`profiles` entier : il mêle les comptes des années passées (adhésions archivées au passage
+d'année), les élèves hors-classe et les élèves de test. `security invoker`, exécution réservée à
+`service_role` (42501 pour `anon` et `authenticated`). Test : `tests/integration/eleves-actifs.test.ts`.
+
 **Import d'élèves** : deux ordres possibles, à toujours considérer. Import puis connexion : la ligne
 `pending_students` est activée à la première connexion. Connexion avant import : il faut insérer
 directement dans `class_members`.
