@@ -1,4 +1,5 @@
 {
+	"id": "f68e6a98-a41a-4f13-8c25-a5d00730f10e",
 	"title": "Démontrer la limite en 0 de x ln x",
 	"description": "Démonstration à trous : x ln x = X e^X (case), X → −∞ (choix), composition (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],

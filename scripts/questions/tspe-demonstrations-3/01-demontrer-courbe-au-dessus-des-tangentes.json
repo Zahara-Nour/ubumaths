@@ -1,4 +1,5 @@
 {
+	"id": "aa8e1716-c6e1-4247-8d7e-4c77ff910b5c",
 	"title": "Démontrer que la courbe est au-dessus de ses tangentes quand f″ est positive",
 	"description": "Démonstration à trous : f′ croissante (choix), g(a) = 0 (case), conclusion g ⩾ 0 (choix) ; étapes à ranger",
 	"grades": ["T_SPE"],
