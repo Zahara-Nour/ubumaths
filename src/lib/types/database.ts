@@ -14775,6 +14775,14 @@ export type Database = {
       }
       check_match_status: { Args: never; Returns: Json }
       check_profanity_simple: { Args: { p_text: string }; Returns: boolean }
+      class_regularity_weeks: {
+        Args: { p_class_id: string; p_first_day: string; p_min_traces: number }
+        Returns: {
+          active_days: number
+          student_id: string
+          week_start: string
+        }[]
+      }
       cleanup_abandoned_minesweeper_games: { Args: never; Returns: number }
       cleanup_account_deletion_audit: { Args: never; Returns: number }
       cleanup_expired_cache: {

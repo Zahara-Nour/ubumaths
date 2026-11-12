@@ -70,8 +70,9 @@ Onglet 📘 Connaissances :
   ni compte de traces). Jour actif = au moins 5 traces le même jour de Paris, écrites par l'élève
   (sources `auto` / `srs` / `student_self`), hors contrôle (lieu `evaluation`) ; une trace sans lieu
   (antérieure à `formes-de-serie`) compte. Semaine qui touche un jour de `school_holidays` : repère
-  dans l'en-tête, colorée comme les autres. Traces lues page par page (`readAllRows`) ; une lecture en
-  échec rend une erreur, affichée dans le cadre du widget. Remplace l'ancienne carte élève × jour
+  dans l'en-tête, colorée comme les autres. Jours actifs **comptés par la base**
+  (`class_regularity_weeks`, chantier `regularite-sql`, 2026-11-12 : une ligne par élève × semaine,
+  avec les droits du prof ; le serveur ne lit plus une trace) ; une lecture en échec rend une erreur, affichée dans le cadre du widget. Remplace l'ancienne carte élève × jour
   (30 j, nombres de traces, alerte après 5 jours sans activité), jugée trop précise (besoin P5).
 - **D — Histogramme des notes** : **retiré** le 2026-11-11 (chantier `formes-de-serie`) — avec deux
   boutons « Pas réussi / Réussi », la grille A dit déjà réussi / raté.

@@ -12,11 +12,12 @@
  *   2. membre archivé de la classe : pas compté ;
  *   3. un élève ne compte que ses propres traces (RLS, security invoker) ;
  *   4. un élève hors de la classe n'obtient rien ;
- *   5. `anon` n'a pas l'exécution.
+ *   5. `anon` n'a pas l'exécution ;
+ *   6. parité : mêmes jours actifs que la règle TypeScript (`activeDaysOf`).
  *
  * @vitest-environment node
  */
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
 	createServiceRoleClient,
@@ -25,6 +26,15 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
+
+// `buddy-weeks` charge le client service : le brancher sur la base LOCALE
+vi.mock('$lib/server/serviceRoleClient', async () => {
+	const helpers = await import('../helpers/database/trigger-test-helpers');
+	return { createServiceRoleClient: helpers.createServiceRoleClient };
+});
+
+import { activeDaysOf } from '$lib/server/buddy-weeks';
+import { MIN_TRACES_PER_ACTIVE_DAY, weekStartOf } from '$lib/server/stats/class-regularity';
 
 // Types
 interface WeekRow {
@@ -52,7 +62,7 @@ let archivedId: string;
 
 // Functions
 async function clientFor(email: string): Promise<SupabaseClient> {
-	// Client non typé : la fonction n'est dans `database.ts` qu'après `db:types`
+	// Client non typé : la preuve rouge (PR 1) précédait `db:types`
 	const client = createClient(SUPABASE_URL, ANON_KEY, {
 		auth: { persistSession: false, autoRefreshToken: false }
 	});
@@ -99,7 +109,7 @@ async function weeks(client: SupabaseClient): Promise<WeekRow[]> {
 	const { data, error } = await client.rpc('class_regularity_weeks', {
 		p_class_id: classId,
 		p_first_day: FIRST_DAY,
-		p_min_traces: 5
+		p_min_traces: MIN_TRACES_PER_ACTIVE_DAY
 	});
 	if (error) throw new Error(error.message);
 	return [...((data ?? []) as WeekRow[])].sort((x, y) =>
@@ -193,5 +203,24 @@ describe('class_regularity_weeks (base locale)', () => {
 			p_min_traces: 5
 		});
 		expect(error?.code).toBe('42501');
+	});
+
+	it('parité : mêmes semaines que la règle TypeScript sur les mêmes traces', async () => {
+		const { data, error } = await service
+			.from('skill_attempts')
+			.select('created_at, source, place')
+			.eq('student_id', studentA.id);
+		if (error) throw new Error(error.message);
+		const perWeek = new Map<string, number>();
+		for (const day of activeDaysOf(data ?? [])) {
+			if (day < FIRST_DAY) continue;
+			perWeek.set(weekStartOf(day), (perWeek.get(weekStartOf(day)) ?? 0) + 1);
+		}
+		const expected = [...perWeek]
+			.map(([week_start, active_days]) => ({ student_id: studentA.id, week_start, active_days }))
+			.sort((x, y) => x.week_start.localeCompare(y.week_start));
+		const rows = (await weeks(teacherClient)).filter((r) => r.student_id === studentA.id);
+		expect(expected.length).toBeGreaterThan(0);
+		expect(rows).toEqual(expected);
 	});
 });
