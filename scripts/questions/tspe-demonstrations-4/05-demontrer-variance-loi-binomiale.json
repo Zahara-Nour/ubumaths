@@ -1,4 +1,5 @@
 {
+	"id": "3e797f0a-bcb2-49a7-850c-e673cbf32811",
 	"title": "Démontrer la variance de la loi binomiale",
 	"description": "Démonstration à trous : V(Xᵢ), facteur 1 − p (case), indépendance (choix), exemple (case, n et p tirés) ; étapes à ranger",
 	"grades": ["T_SPE"],

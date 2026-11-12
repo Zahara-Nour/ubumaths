@@ -1,4 +1,5 @@
 {
+	"id": "0b85dc50-b2e6-4343-a81b-98b27752743f",
 	"title": "Démontrer que la fonction intégrale d'une fonction positive croissante est une primitive",
 	"description": "Démonstration à trous : encadrement par croissance (choix), limite du taux f(x) (case), F(a) = 0 (case) ; étapes à ranger",
 	"grades": ["T_SPE"],
