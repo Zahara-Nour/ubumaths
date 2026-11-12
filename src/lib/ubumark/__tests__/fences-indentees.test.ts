@@ -77,6 +77,7 @@ describe('ce qui ne change pas', () => {
 	it('Q58 — bloc spécial indenté : pas un bloc de code', () => {
 		expect(types('  ```courbe\n  f(x) = x\n  ```')).not.toContain('code-block');
 		expect(types('  ```barres\n  A = 1\n  ```')).not.toContain('code-block');
+		expect(types('  ```schema-barres\n  Or : ? (4)\n  ```')).not.toContain('code-block');
 	});
 
 	it('dans une liste : lecture inchangée, le code une seule fois', () => {

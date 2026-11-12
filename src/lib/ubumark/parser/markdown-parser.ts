@@ -134,6 +134,12 @@ import {
 	parseMonnaieContent,
 	isMonnaieBlockStart
 } from './monnaie-parser';
+import {
+	findSchemaBarresBlocks,
+	parseSchemaBarres,
+	parseSchemaBarresContent,
+	isSchemaBarresBlockStart
+} from './schema-barres-parser';
 import { findChoiceBlocks, parseChoiceBlock } from './choix-parser';
 import { findRangerBlocks, parseRangerBlock } from './ranger-parser';
 import {
@@ -520,6 +526,7 @@ function parseBlocks(
 	const operationBlocks = findOperationBlocks(lines);
 	const collectionBlocks = findCollectionBlocks(lines);
 	const monnaieBlocks = findMonnaieBlocks(lines);
+	const schemaBarresBlocks = findSchemaBarresBlocks(lines);
 	// Bloc ```choix (case « choix ») : ses choix restent du markdown, rendus un à un
 	const choiceBlocks = findChoiceBlocks(lines);
 	// Bloc ```ranger (étiquettes à ranger) : ses étiquettes restent du markdown
@@ -546,6 +553,7 @@ function parseBlocks(
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
 		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' },
 		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' },
+		{ ranges: schemaBarresBlocks, parse: parseSchemaBarres, language: 'schema-barres' },
 		{ ranges: choiceBlocks, parse: parseChoiceBlock, language: 'choix' },
 		{ ranges: rangerBlocks, parse: parseRangerBlock, language: 'ranger' }
 	];
@@ -617,6 +625,7 @@ function parseBlocks(
 			...operationBlocks,
 			...collectionBlocks,
 			...monnaieBlocks,
+			...schemaBarresBlocks,
 			...choiceBlocks,
 			...rangerBlocks,
 			...courbeBlocks,
@@ -638,6 +647,7 @@ function parseBlocks(
 			...findOperationBlocks(originalLines),
 			...findCollectionBlocks(originalLines),
 			...findMonnaieBlocks(originalLines),
+			...findSchemaBarresBlocks(originalLines),
 			...findChoiceBlocks(originalLines),
 			...findRangerBlocks(originalLines),
 			...originalCourbeBlocks,
@@ -1820,6 +1830,12 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findMonnaieBlocks,
 		parse: parseMonnaie,
 		language: 'monnaie'
+	},
+	{
+		is: isSchemaBarresBlockStart,
+		find: findSchemaBarresBlocks,
+		parse: parseSchemaBarres,
+		language: 'schema-barres'
 	}
 ] as const;
 
@@ -2062,6 +2078,9 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'monnaie') {
 			// Monnaie dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseMonnaieContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'schema-barres') {
+			// Schéma en barres dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseSchemaBarresContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));

@@ -33,7 +33,8 @@ describe('Q66 dans une liste — un ``` lointain ne ferme pas un bloc séparé p
 		['cubes', 'espace', ['```cubes', 'hauteurs: 2 1']],
 		['operation', 'operation', ['```operation', 'calcul: 45 + 37']],
 		['collection', 'collection', ['```collection', 'unités: 9']],
-		['monnaie', 'monnaie', ['```monnaie', 'billets: 10']]
+		['monnaie', 'monnaie', ['```monnaie', 'billets: 10']],
+		['schema-barres', 'schema-barres', ['```schema-barres', 'Or : ? (4)']]
 	])('%s : le bloc, puis le texte intermédiaire en paragraphe', (_, type, block) => {
 		const nodes = inItem([...block, '', 'Voici le texte qui suit le bloc', '', '```']);
 
@@ -137,6 +138,7 @@ describe('bloc ouvert sur la ligne de l’item', () => {
 		['cubes', 'espace', ['- ```cubes', '  hauteurs: 2 1', '  ```']],
 		['horloge', 'horloge', ['- ```horloge', '  heure: 9 h', '  ```']],
 		['partage', 'partage', ['1. ```partage', '   forme: bande 8', '   ```']],
+		['schema-barres', 'schema-barres', ['- ```schema-barres', '  Or : ? (4)', '  ```']],
 		['solide', 'espace', ['- ```solide', '  forme: pyramide carree 4 3', '  ```']],
 		['python', 'code-block', ['- ```python', '  print(1)', '  ```']]
 	])('%s : un seul nœud, sans erreur', (_, type, lines) => {

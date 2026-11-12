@@ -245,6 +245,17 @@ export type { CollectionNode, CollectionIssue, CollectionSpec, CollectionSet } f
 export type { MonnaieNode, MonnaieIssue, MonnaieSpec, MonnaieSet } from './monnaie';
 
 // ============================================================================
+// SCHÉMA EN BARRES (bloc ```schema-barres)
+// ============================================================================
+
+export type {
+	SchemaBarresNode,
+	SchemaBarresSpec,
+	SchemaBarresBar,
+	SchemaBarresSegment
+} from './schema-barres';
+
+// ============================================================================
 // PARSER TYPES
 // ============================================================================
 
