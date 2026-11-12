@@ -10,18 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, lot 3 en brouillons, PR de rangement en cours (§ 11)._
+_Mis à jour le 2026-11-12, après #2579._
 
-- **État** : lots 1 et 2 publiés (§ 5, § 9) ; lot 3 en 5 brouillons en prod (#2573 mergée), migration de rangement écrite
-  et prouvée (§ 11).
-- **Prochaine action** : PR de rangement verte → merge → `check:migrations --pr` → `db:migrate` → vérif prod → page à
-  cocher du lot 3.
-- **En attente de David** : rien avant la page à cocher.
+- **État** : lots 1 et 2 publiés (§ 5, § 9) ; lot 3 en 5 brouillons rangés et tagués en prod (§ 11), page à cocher
+  publiée (§ 12).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 5/5) → `publier-lot.ts` en
+  simulation → David lance `--publier`.
+- **En attente de David** : relecture de la page à cocher du lot 3 (https://claude.ai/artifact/Rt9XXTXJnsPSdGGDpUYsv1).
 - **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
-  simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer ; TSPE-472 se range sur
-  une NOTION (sous-notion nulle dans la migration).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche
-  `feat/questions-tspe-demonstrations-3-rangement`.
+  simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (rien en cours).
 
 ---
 
@@ -279,3 +277,13 @@ facultative et seconde passe de résolution sur la notion, aller et rollback) ; 
 `tests/integration/questions-tspe-demonstrations-3-rangement-tags.test.ts` 12/12 vert, rouge sans la migration (partie
 aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie. `security-auditor` : aucun finding bloquant (non bloquant : pas de cas « notion
 de 472 introuvable », couvert par la même garde que « point archivé »). Accès : personne de plus (Q5).
+
+Mergée (#2579, CI verte du premier coup) ; `check:migrations --pr` vert ; `db:migrate` depuis le dépôt principal (seule
+migration en attente) ; vérifié en prod : 5 brouillons, chacun sur son nœud (3885e298 sur la notion) avec son seul
+point, `updated_at` inchangé. Garde des niveaux : aucun niveau manquant.
+
+## 12. Lot 3 : page à cocher (2026-11-12)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-demonstrations-3`, lu en base prod : 5 brouillons `draft`, chacun sur son
+point. Page : https://claude.ai/artifact/Rt9XXTXJnsPSdGGDpUYsv1 (capacité `db`) ; 5 alertes attendues (bloc ranger non
+dessiné, à jouer dans l'aperçu admin) ; base `verdicts` vide à la publication.
