@@ -8,7 +8,7 @@ validés », P5. Phase 0 : **rien de codé**.
 
 _Mis à jour le 2026-11-12, après #2587._
 
-- **État** : PR A (grille du prof) mergée (#2587) · **Prochaine action** : PR B (Palotin : moments N6-N8, R1 retrait de `streak_lost`, R2 « retour après une pause » à la place de `long_absence`), tests d'abord · **En attente de David** : volume des traces lues par la grille, agrégation SQL maintenant ou plus tard (recommandé : plus tard, noté dans `outils-manquants.md`) · **Pièges en cours** : R1 et R2 modifient des comportements validés en 2026-10 → mettre `docs/systeme/buddy-palotins.md` à jour dans la PR B · **Worktree / branche** : `../ubumaths-wt-regularite`, nouvelle branche pour la PR B
+- **État** : PR A (grille du prof) mergée (#2587) · **Prochaine action** : PR B (Palotin : moments N6-N8, R1 retrait de `streak_lost`, R2 « retour après une pause » à la place de `long_absence`), tests d'abord · **En attente de David** : rien (volume des traces de la grille : plus tard, ligne 28 de `outils-manquants.md`, David le 2026-11-12) · **Pièges en cours** : R1 et R2 modifient des comportements validés en 2026-10 → mettre `docs/systeme/buddy-palotins.md` à jour dans la PR B · **Worktree / branche** : `../ubumaths-wt-regularite`, nouvelle branche pour la PR B
 
 ## Besoin validé (rappel, David, 2026-11-11)
 
