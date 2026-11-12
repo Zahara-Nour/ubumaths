@@ -16,7 +16,7 @@
  * Les images (`applications/images/affine-*.png`) sont envoyées sous
  * `<DAVID>/affine-*.png` ; les textes les citent par leur URL.
  *
- * Racine : `docs/wip/fiches-affines-2nde/` (relative à la racine du dépôt, résolue depuis
+ * Racine : `data/fiches/fonctions-affines-2nde/` (relative à la racine du dépôt, résolue depuis
  * l'emplacement du script), ou `--racine <dossier>` ; sous-dossiers `technique/` et
  * `applications/` (plan.json, md/, sol/, en/, sol-en/, images/).
  *
@@ -67,7 +67,7 @@ function racine(): string {
 		if (!valeur || valeur.startsWith('--')) throw new Error('--racine demande un dossier');
 		return resolve(valeur);
 	}
-	return resolve(import.meta.dirname, '..', 'docs', 'wip', 'fiches-affines-2nde');
+	return resolve(import.meta.dirname, '..', 'data', 'fiches', 'fonctions-affines-2nde');
 }
 
 const CONFIG_FICHE = {

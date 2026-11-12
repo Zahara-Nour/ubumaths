@@ -85,7 +85,7 @@ Ne rien écrire dans ces dossiers.
 ## Disposition de sortie
 
 ```
-docs/wip/fiches-affines-2nde/<technique|applications>/
+data/fiches/fonctions-affines-2nde/<technique|applications>/
   plan.json                 sections {id,title,position,en}, exercices {key,section,title,en_title,category}
   md/<CLÉ>-guided.md (+ -autonomous.md)   énoncés FR
   sol/  en/  sol-en/        mêmes noms
