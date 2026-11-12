@@ -6,9 +6,9 @@ Ouvert le 2026-11-12 : `docs/wip/outils-manquants.md` n° 28, né de la revue de
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, PR 1 (migration) en cours._
+_Mis à jour le 2026-11-12, après #2604 ; PR 2 en cours._
 
-- **État** : PR 1 = migration `class_regularity_weeks` + intégration (5 ; les 4 premiers rouges sans la migration, verts avec) ; `security-auditor` : rien de bloquant · **Prochaine action** : revue `security-auditor`, PR, CI, merge, `db:migrate`, `db:types` ; puis PR 2 (le code de `getClassRegularityGrid` appelle la fonction) · **En attente de David** : rien · **Pièges en cours** : base locale : l'historique des migrations est en retard sur le schéma (`migration up --local` échoue sur `20261112131750`) → appliquer le fichier par `psql` + `notify pgrst` ; mono-prof : `is_my_student` = tout prof, pas de cas « autre prof » · **Worktree / branche** : `../ubumaths-wt-regularite-sql` · `feat/regularite-sql`
+- **État** : PR 1 mergée (#2604), `db:migrate` fait, `db:types` dans la PR 2. PR 2 = `getClassRegularityGrid` appelle `class_regularity_weeks` (plus aucune trace lue) ; tests unitaires réécrits (rouges puis verts), parité SQL ↔ `activeDaysOf` en intégration (6 verts) · **Prochaine action** : `code-reviewer`, PR, CI, merge ; ligne 28 de `outils-manquants.md` → « Livré » ; clôture · **En attente de David** : rien · **Pièges en cours** : base locale : historique des migrations en retard (`migration up --local` échoue) → `psql` + `notify pgrst` · **Worktree / branche** : `../ubumaths-wt-regularite-sql` · `feat/regularite-sql-code`
 
 ## Constat (2026-11-12)
 
@@ -46,3 +46,15 @@ en mémoire : traces par élève × jour de Paris → jours ≥ 5 traces → jou
   cas « élève hors classe » ajouté (test 4, vert) ; **à faire en PR 2** : `p_min_traces` NULL rend
   une grille vide en silence → l'appelant passe la constante `MIN_TRACES_PER_ACTIVE_DAY` ; garder
   `locals.supabase` + `requireTeacherOfClass`, ne renvoyer que les paliers.
+- Mergée le 2026-11-12 (#2604) ; `db:migrate` fait (essai à blanc d'abord : seule cette migration).
+
+## PR 2 — le code (2026-11-12)
+
+- `db:types` : `class_regularity_weeks` dans `database.ts`.
+- `class-regularity.ts` : `buildRegularityGrid` reçoit `activeWeeks` (`RegularityWeekCount[]`) au
+  lieu des traces ; `getClassRegularityGrid` appelle la fonction avec le client du prof et
+  `p_min_traces = MIN_TRACES_PER_ACTIVE_DAY` (jamais NULL : finding faible de l'audit) ; erreur →
+  levée (E1). `readAllRows` retiré. `isAutonomousTrace`, `AUTONOMOUS_SOURCES` gardés (Palotin).
+- Tests unitaires réécrits (règles de trace → intégration) : 9 rouges avant le code ; intégration
+  - test 6 « parité » : jours actifs SQL = `activeDaysOf` (règle TS du Palotin) sur les mêmes traces.
+- Doc : `analytique-prof.md` (widget C).

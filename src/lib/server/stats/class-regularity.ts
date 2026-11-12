@@ -11,11 +11,15 @@
  *
  * Remplace l'ancien widget C (élève × jour, nombres de traces), jugé trop
  * précis (décision R3). Cf. `docs/systeme/analytique-prof.md`.
+ *
+ * La base compte les jours actifs par élève et par semaine
+ * (`class_regularity_weeks`, chantier `regularite-sql`, mêmes règles) : le
+ * serveur ne lit plus une trace. `isAutonomousTrace` reste la règle en
+ * TypeScript du Palotin (`buddy-weeks.ts`).
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { readAllRows } from '$lib/server/read-all-rows';
 import { schoolDay } from '$lib/server/course-card-attempts';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -50,6 +54,14 @@ export interface RegularityTrace {
 	created_at: string;
 	source: string;
 	place: string | null;
+}
+
+/** Jours actifs d'un élève dans une semaine, comptés par la base */
+export interface RegularityWeekCount {
+	student_id: string;
+	/** Lundi de la semaine, AAAA-MM-JJ */
+	week_start: string;
+	active_days: number;
 }
 
 interface Holiday {
@@ -117,12 +129,12 @@ export function regularityFirstDay(yearStart: string | null, now: Date): string 
 
 export function buildRegularityGrid(input: {
 	students: { id: string; display_name: string }[];
-	traces: RegularityTrace[];
+	activeWeeks: RegularityWeekCount[];
 	firstDay: string;
 	today: string;
 	holidays: Holiday[];
 }): ClassRegularityGrid {
-	const { students, traces, firstDay, today, holidays } = input;
+	const { students, activeWeeks, firstDay, today, holidays } = input;
 
 	const weeks: RegularityWeek[] = [];
 	const lastWeek = weekStartOf(today);
@@ -135,27 +147,15 @@ export function buildRegularityGrid(input: {
 	}
 	const weekIndex = new Map(weeks.map((w, i) => [w.start, i]));
 
-	// Traces par élève et par jour de Paris
+	// Jours actifs par élève et par semaine de la grille
 	const known = new Set(students.map((s) => s.id));
-	const perDay = new Map<string, number>();
-	for (const t of traces) {
-		if (!known.has(t.student_id) || !isAutonomousTrace(t)) continue;
-		const day = schoolDay(new Date(t.created_at));
-		if (day < firstDay || day > today) continue;
-		const key = `${t.student_id}|${day}`;
-		perDay.set(key, (perDay.get(key) ?? 0) + 1);
-	}
-
-	// Jours actifs par élève et par semaine
 	const activeDays = new Map<string, number[]>();
-	for (const [key, count] of perDay) {
-		if (count < MIN_TRACES_PER_ACTIVE_DAY) continue;
-		const [studentId, day] = key.split('|');
-		const index = weekIndex.get(weekStartOf(day));
-		if (index === undefined) continue;
-		const row = activeDays.get(studentId) ?? Array.from({ length: weeks.length }, () => 0);
-		row[index] += 1;
-		activeDays.set(studentId, row);
+	for (const w of activeWeeks) {
+		const index = weekIndex.get(w.week_start);
+		if (!known.has(w.student_id) || index === undefined) continue;
+		const row = activeDays.get(w.student_id) ?? Array.from({ length: weeks.length }, () => 0);
+		row[index] = w.active_days;
+		activeDays.set(w.student_id, row);
 	}
 
 	return {
@@ -251,30 +251,25 @@ export async function getClassRegularityGrid(
 		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
 	if (students.length === 0) {
-		return buildRegularityGrid({ students, traces: [], firstDay, today, holidays });
+		return buildRegularityGrid({ students, activeWeeks: [], firstDay, today, holidays });
 	}
 
-	// Un jour de marge avant le lundi : minuit à Paris tombe la veille en UTC
-	const since = new Date(civilToUtc(weekStartOf(firstDay)).getTime() - DAY_MS).toISOString();
-	const studentIds = (members as unknown as MemberRow[]).map((m) => m.student_id);
-	let traces: RegularityTrace[];
-	try {
-		traces = await readAllRows<RegularityTrace>(
-			(fromRow, toRow) =>
-				supabase
-					.from('skill_attempts')
-					.select('student_id, created_at, source, place')
-					.in('student_id', studentIds)
-					.in('source', [...AUTONOMOUS_SOURCES])
-					.gte('created_at', since)
-					.order('id')
-					.range(fromRow, toRow),
-			'des traces de la classe'
-		);
-	} catch (e) {
-		logger.error('[getClassRegularityGrid] Traces illisibles :', e);
-		throw e;
+	// Comptée par la base, avec les droits du prof (RLS) ; seuil = constante (jamais NULL)
+	const { data: activeWeeks, error: weeksError } = await supabase.rpc('class_regularity_weeks', {
+		p_class_id: classId,
+		p_first_day: firstDay,
+		p_min_traces: MIN_TRACES_PER_ACTIVE_DAY
+	});
+	if (weeksError) {
+		logger.error('[getClassRegularityGrid] Jours actifs illisibles :', weeksError);
+		throw new Error(weeksError.message);
 	}
 
-	return buildRegularityGrid({ students, traces, firstDay, today, holidays });
+	return buildRegularityGrid({
+		students,
+		activeWeeks: activeWeeks ?? [],
+		firstDay,
+		today,
+		holidays
+	});
 }
