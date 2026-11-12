@@ -1,4 +1,5 @@
 {
+	"id": "f455700a-468b-4ca0-bf2d-2b7bde135416",
 	"title": "Algorithme de Briggs pour le logarithme en Python",
 	"description": "Racines carrées successives, puis ln(x) ≈ 2^n (x^(1/2^n) − 1) : faire tourner sur un carré ou une puissance 4e, compléter le return, propriété ln(√x) = ½ ln(x)",
 	"grades": ["T_SPE"],

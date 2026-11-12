@@ -1,4 +1,5 @@
 {
+	"id": "85a3aec6-cc35-4293-8b46-cae1fdc03c4b",
 	"title": "Méthode de Newton en Python : racine cubique",
 	"description": "Méthode de Newton pour f(x) = x³ − c : faire tourner une itération depuis 1, compléter la condition d'arrêt while abs(f(x)) > eps, dire de quel nombre le résultat est une valeur approchée (racine cubique)",
 	"grades": ["T_SPE"],
