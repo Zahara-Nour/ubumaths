@@ -10,19 +10,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, lot 4 en brouillons, PR de rangement en cours (§ 15)._
+_Mis à jour le 2026-11-12, après #2585 (lot 4 rangé, page à cocher publiée, § 16)._
 
-- **État** : lots 1, 2 et 3 publiés (§ 5, § 9, § 13) ; lot 4 en 5 brouillons en prod (#2583 mergée), migration de
-  rangement écrite et prouvée (§ 15).
-- **Prochaine action** : PR de rangement verte → merge → `check:migrations --pr` → `db:migrate` → vérif prod → page à
-  cocher du lot 4.
-- **En attente de David** : rien avant la page à cocher.
-- **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3), saisie dans
-  le champ « Seed » puis « Générer » (le `?seed=` de l'adresse est ignoré) ; `publier-lot.ts` lit la prod → David la
-  lance ; `x/n` en ligne = forme à améliorer ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale
-  tirée → `;d` dans `expectedAnswer`, sinon fraction et « forme à améliorer ».
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche
-  `feat/questions-tspe-demonstrations-4-rangement`.
+- **État** : lots 1, 2 et 3 publiés (§ 5, § 9, § 13) ; lot 4 en 5 brouillons en prod, rangés et tagués (#2585,
+  `db:migrate` fait), page à cocher publiée (§ 16). Les 19 démonstrations ont toutes un modèle.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, les compter) → corrections s'il y en a →
+  `publier-lot.ts` en simulation → David lance `--publier` → relire le statut → fin des démonstrations : phase 0 des
+  algorithmes (18, § 1).
+- **En attente de David** : la relecture du lot 4 sur https://claude.ai/artifact/WFfKsrjNvYpQgVypTTSoJm.
+- **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
+  l'aperçu admin = variation (§ 3), saisie dans le champ « Seed » puis « Générer » ; `publier-lot.ts` lit la prod →
+  David la lance ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale tirée → `;d` dans
+  `expectedAnswer`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (rien en cours).
 
 ---
 
@@ -345,4 +345,17 @@ tag ; les 5 points actifs sur leurs sous-notions actives, aucun déjà tagué. N
 Migration `20261112051818_questions_tspe_demonstrations_4_rangement_tags.sql` (copie de celle du lot 2, seuls
 l'en-tête, les données et le préfixe `_qtd4_` changent) ; test
 `tests/integration/questions-tspe-demonstrations-4-rangement-tags.test.ts` 12/12 vert, rouge sans la migration (partie
-aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie. Accès : personne de plus (Q5).
+aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie. Accès : personne de plus (Q5). `security-auditor` :
+aucun finding.
+
+Mergée (#2585, CI verte du premier coup) ; `check:migrations --pr` vert ; `db:migrate` depuis le dépôt principal (seule
+migration en attente) ; vérifié en prod : 5 brouillons, chacun sur sa sous-notion avec son seul point, `updated_at`
+inchangé. Garde des niveaux : aucun niveau manquant.
+
+Piège : commitlint refuse une ligne de corps de plus de 100 caractères (couper à la main).
+
+## 16. Lot 4 : page à cocher (2026-11-12)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-demonstrations-4`, lu en base prod : 5 brouillons `draft`, chacun sur son
+point. Page : https://claude.ai/artifact/WFfKsrjNvYpQgVypTTSoJm (capacité `db`) ; 5 alertes attendues (bloc ranger non
+dessiné, à jouer dans l'aperçu admin) ; base `verdicts` vide à la publication.
