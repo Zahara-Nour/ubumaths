@@ -5,7 +5,7 @@
  * Ce que l'élève VOIT, page par page (docs/wip/palotins-progress.md) :
  *   - maison (accueil, Chatterie) : le Palotin, toujours là ;
  *   - passage (reste de l'espace élève) : l'écusson ; le Palotin entre pour les
- *     passages importants (retour, Constance perdue, nouveautés) et, au plus
+ *     passages importants (retour après une pause, nouveautés) et, au plus
  *     un toutes les 10 minutes, pour le spontané (Mathoux en sieste) ;
  *   - séance : l'écusson seul, aucun passage ;
  *   - ailleurs : rien, et rien n'est demandé au serveur.
@@ -15,8 +15,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import PalotinPresence from '../PalotinPresence.svelte';
-import { LAST_PASSAGE_KEY } from '../palotin-presence';
+import { LAST_PASSAGE_KEY, notifyBuddyActivity } from '../palotin-presence';
 import { playSeanceReaction, SEANCE_PASSAGE_DURATION } from '../seance-reactions';
+import { afterNavigate } from '$app/navigation';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import { buddyMessages } from '$lib/config/buddy-messages';
 import type { BuddyState } from '$lib/types/buddy';
@@ -48,8 +49,7 @@ const buddy: BuddyState = {
 	constance_week_start: null,
 	constance_days_this_week: 0
 };
-const MISSED = buddyMessages.pile.long_absence;
-const STREAK_LOST = buddyMessages.pile.streak_lost;
+const RETURN = buddyMessages.pile.return_after_pause;
 const CORRECT = buddyMessages.pile.correct;
 const INCORRECT = buddyMessages.pile.incorrect;
 const NAPPING = '2 Mathoux font la sieste.';
@@ -73,14 +73,14 @@ const WELCOME_BACK_URL = '/api/student/buddy/welcome-back';
 
 // Functions
 interface ServerState {
-	presence?: { buddy: BuddyState | null; streakLost: boolean; longAbsence: boolean } | 'panne';
+	presence?: { buddy: BuddyState | null; returnAfterPause: boolean } | 'panne';
 	napping?: number;
 	news?: MathouNews;
 }
 
 /** Serveur simulé, réponse selon l'adresse demandée. */
 function mockServer({ presence, napping = 0, news = NO_NEWS }: ServerState) {
-	const presenceBody = presence ?? { buddy, streakLost: false, longAbsence: false };
+	const presenceBody = presence ?? { buddy, returnAfterPause: false };
 	vi.stubGlobal(
 		'fetch',
 		vi.fn((url: string) => {
@@ -105,6 +105,14 @@ function at(pathname: string) {
 	pageState.url = new URL(`http://localhost:5175${pathname}`);
 }
 
+/** Navigation simulée : la page change, puis les rappels `afterNavigate` du composant. */
+function navigateTo(pathname: string) {
+	at(pathname);
+	for (const [callback] of vi.mocked(afterNavigate).mock.calls) {
+		(callback as () => void)();
+	}
+}
+
 function bubbleText(): string {
 	return document.querySelector('[data-buddy-bubble]')?.textContent?.trim() ?? '';
 }
@@ -123,6 +131,7 @@ async function settle(ms = 300) {
 }
 
 beforeEach(() => {
+	vi.mocked(afterNavigate).mockClear();
 	at('/dashboard/student/devoirs');
 	studentCache.hydrateBuddy(null);
 	localStorage.removeItem(LAST_PASSAGE_KEY);
@@ -146,18 +155,76 @@ describe('PalotinPresence — pages de passage', () => {
 		expect(bubbleText()).toBe('');
 	});
 
-	it('retour d’absence : il entre, dit « tu m’as manqué », l’acquitte, puis repart', async () => {
-		mockServer({ presence: { buddy, streakLost: true, longAbsence: true } });
+	it('retour après une pause : il entre, le fête, l’acquitte, puis repart', async () => {
+		mockServer({ presence: { buddy, returnAfterPause: true } });
 		await render(PalotinPresence);
 
-		await vi.waitFor(() => expect(MISSED).toContain(bubbleText()), { timeout: 3000 });
+		await vi.waitFor(() => expect(RETURN).toContain(bubbleText()), { timeout: 3000 });
 		expect(avatarButton()).not.toBeNull();
 		expect(badge()).toBeNull();
 		await vi.waitFor(() => expect(calls(WELCOME_BACK_URL)).toHaveLength(1));
-		// La Constance perdue n'a pas sa réplique : « tu m'as manqué » la remplace
 		await vi.waitFor(() => expect(badge()).not.toBeNull(), { timeout: 8000 });
-		expect(STREAK_LOST).not.toContain(bubbleText());
 	}, 12_000);
+
+	it('activité après la lecture : la présence est relue à la page suivante, le retour fêté', async () => {
+		mockServer({});
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(badge()).not.toBeNull());
+		expect(calls(PRESENCE_URL)).toHaveLength(1);
+
+		// L'élève fait une série : le serveur sait maintenant qu'il a travaillé depuis son retour
+		at('/automaths/test');
+		mockServer({ presence: { buddy, returnAfterPause: true } });
+		notifyBuddyActivity();
+		navigateTo('/dashboard/student/devoirs');
+
+		await vi.waitFor(() => expect(RETURN).toContain(bubbleText()), { timeout: 3000 });
+		expect(calls(PRESENCE_URL)).toHaveLength(1);
+		await vi.waitFor(() => expect(calls(WELCOME_BACK_URL)).toHaveLength(1));
+	}, 8000);
+
+	it('activité, retour dans la maison : le Palotin de l’accueil fête le retour', async () => {
+		// La page simulée n'est pas réactive : le widget de la maison est monté dès le départ
+		at('/dashboard');
+		mockServer({});
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(avatarButton()).not.toBeNull());
+		await settle(1500);
+		expect(RETURN).not.toContain(bubbleText());
+
+		mockServer({ presence: { buddy, returnAfterPause: true } });
+		notifyBuddyActivity();
+		navigateTo('/dashboard');
+
+		await vi.waitFor(() => expect(RETURN).toContain(bubbleText()), { timeout: 4000 });
+		await vi.waitFor(() => expect(calls(WELCOME_BACK_URL)).toHaveLength(1));
+	}, 8000);
+
+	it('retour déjà fêté : une relecture qui le rend encore ne le refait pas dire', async () => {
+		mockServer({ presence: { buddy, returnAfterPause: true } });
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(calls(WELCOME_BACK_URL)).toHaveLength(1), { timeout: 3000 });
+		await vi.waitFor(() => expect(badge()).not.toBeNull(), { timeout: 8000 });
+
+		// Acquittement pas encore écrit (ou autre onglet) : le serveur le rend encore
+		mockServer({ presence: { buddy, returnAfterPause: true } });
+		notifyBuddyActivity();
+		navigateTo('/dashboard/student/progression');
+		await vi.waitFor(() => expect(calls(PRESENCE_URL)).toHaveLength(1));
+		await settle(1000);
+		expect(RETURN).not.toContain(bubbleText());
+		expect(calls(WELCOME_BACK_URL)).toHaveLength(0);
+	}, 15_000);
+
+	it('sans activité, changer de page ne relit pas la présence', async () => {
+		mockServer({});
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(badge()).not.toBeNull());
+
+		navigateTo('/dashboard/student/progression');
+		await settle();
+		expect(calls(PRESENCE_URL)).toHaveLength(1);
+	});
 
 	it('nouveautés de la Chatterie : passage avec le lien, même juste après un autre passage', async () => {
 		localStorage.setItem(LAST_PASSAGE_KEY, String(Date.now()));
@@ -187,21 +254,6 @@ describe('PalotinPresence — pages de passage', () => {
 		expect(avatarButton()).toBeNull();
 	});
 
-	it('Constance perdue : passage important, dit même si le plafond est atteint', async () => {
-		// Un passage spontané vient d'avoir lieu (autre onglet) : la remise à zéro est déjà faite
-		// par la lecture de présence, la réplique ne reviendra jamais si elle n'est pas dite ici
-		const lastPassage = Date.now();
-		localStorage.setItem(LAST_PASSAGE_KEY, String(lastPassage));
-		mockServer({ napping: 2, presence: { buddy, streakLost: true, longAbsence: false } });
-		await render(PalotinPresence);
-
-		await vi.waitFor(() => expect(STREAK_LOST).toContain(bubbleText()), { timeout: 3000 });
-		// Hors plafond : elle ne le consomme pas, et la sieste attend toujours
-		expect(Number(localStorage.getItem(LAST_PASSAGE_KEY))).toBe(lastPassage);
-		await settle(800);
-		expect(bubbleText().startsWith(NAPPING)).toBe(false);
-	});
-
 	it('clic sur l’écusson : le Palotin entre avec son état', async () => {
 		mockServer({});
 		await render(PalotinPresence);
@@ -226,7 +278,7 @@ describe('PalotinPresence — pages de passage', () => {
 describe('PalotinPresence — séances', () => {
 	it('Entraînement : l’écusson seul, aucun passage, la Chatterie n’est pas lue', async () => {
 		at('/automaths/test');
-		mockServer({ napping: 2, presence: { buddy, streakLost: true, longAbsence: true } });
+		mockServer({ napping: 2, presence: { buddy, returnAfterPause: true } });
 		await render(PalotinPresence);
 
 		await vi.waitFor(() => expect(badge()).not.toBeNull());
@@ -331,7 +383,7 @@ describe('PalotinPresence — maison et ailleurs', () => {
 
 	it('sans Palotin, sur l’accueil : le quiz de choix s’ouvre', async () => {
 		at('/dashboard');
-		mockServer({ presence: { buddy: null, streakLost: false, longAbsence: false } });
+		mockServer({ presence: { buddy: null, returnAfterPause: false } });
 		await render(PalotinPresence);
 
 		await vi.waitFor(() => expect(document.body.textContent).toContain('Choisis ton Palotin !'));
@@ -351,7 +403,7 @@ describe('PalotinPresence — maison et ailleurs', () => {
 	});
 
 	it('sans Palotin, ailleurs : ni quiz ni écusson', async () => {
-		mockServer({ presence: { buddy: null, streakLost: false, longAbsence: false } });
+		mockServer({ presence: { buddy: null, returnAfterPause: false } });
 		await render(PalotinPresence);
 		await settle();
 

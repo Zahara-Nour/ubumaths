@@ -305,9 +305,8 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
   à 0 quand la dernière semaine enregistrée est finie sous 3 jours travaillés, ou sautée (règle
   pure `constanceReset`, `src/lib/utils/buddy-constance.ts`). L'écriture passe par
   `resetLostConstance` (`src/lib/server/buddy-queries.ts`) : client service, verrou sur
-  `updated_at`, règle réévaluée sur la ligne relue ; la lecture rend la ligne écrite, et
-  `streakLost` (réplique de Constance perdue) n'est annoncé que pour une semaine manquée dont
-  l'écriture a rendu sa ligne — pas pour la remise à zéro d'une ancienne série en jours
+  `updated_at`, règle réévaluée sur la ligne relue ; la lecture rend la ligne écrite, sans rien
+  annoncer : la Constance perdue n'a plus de réplique depuis le 2026-11-12 (chantier `regularite`)
   ([rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md)). Reste une écriture dans une
   lecture (GET), rejouée à chaque chargement complet d'une page où le Palotin apparaît.
 - **Pile de modales peu accessible** : le dialogue est rendu **dans** un `<button>` (le fond,

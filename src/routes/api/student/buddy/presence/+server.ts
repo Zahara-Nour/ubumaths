@@ -2,8 +2,9 @@
  * GET /api/student/buddy/presence
  * ================================
  *
- * Lu par le composant de présence du Palotin, après l'affichage : le Palotin,
- * la Constance perdue (remise à zéro par cette lecture) et le retour à fêter.
+ * Lu par le composant de présence du Palotin, après l'affichage (et relu après
+ * une activité) : le Palotin (Constance perdue remise à zéro par cette lecture,
+ * en silence) et le retour après une pause à fêter.
  * Aucun paramètre. Voir `$lib/server/buddy-presence`.
  *
  * AUTH: élève seulement

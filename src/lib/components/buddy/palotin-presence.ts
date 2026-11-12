@@ -30,8 +30,8 @@ export interface PassageClock {
 /** Ce que rend `GET /api/student/buddy/presence`. */
 export interface BuddyPresenceView {
 	buddy: BuddyState | null;
-	streakLost: boolean;
-	longAbsence: boolean;
+	/** Retour après une pause à fêter (l'élève a travaillé depuis) */
+	returnAfterPause: boolean;
 }
 
 // Constantes
@@ -70,9 +70,12 @@ const buddyStateSchema = z.object({
 
 export const buddyPresenceSchema = z.object({
 	buddy: buddyStateSchema.nullable(),
-	streakLost: z.boolean(),
-	longAbsence: z.boolean()
+	returnAfterPause: z.boolean()
 });
+
+// Variables
+/** Qui veut savoir que l'élève vient de travailler (la présence du Palotin) */
+const activityListeners = new Set<() => void>();
 
 // Functions
 /** Zone de la page : `null` = le Palotin n'y apparaît pas. */
@@ -134,4 +137,20 @@ export function browserStorage(): Storage | null {
 export function parseBuddyPresence(body: unknown): BuddyPresenceView | null {
 	const parsed = buddyPresenceSchema.safeParse(body);
 	return parsed.success ? parsed.data : null;
+}
+
+/**
+ * S'inscrit pour savoir que l'élève vient de travailler (un gain de pansées) :
+ * la présence du Palotin se relit alors à la page suivante, pour fêter un
+ * retour après une pause sans recharger (R2, chantier `regularite`). Rend la
+ * fonction de désinscription.
+ */
+export function registerBuddyActivityListener(listener: () => void): () => void {
+	activityListeners.add(listener);
+	return () => activityListeners.delete(listener);
+}
+
+/** L'élève vient de travailler : prévient les inscrits. */
+export function notifyBuddyActivity(): void {
+	for (const listener of activityListeners) listener();
 }

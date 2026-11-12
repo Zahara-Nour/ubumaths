@@ -6,9 +6,12 @@
  * décision de David du 2026-11-11) : `GET /api/student/buddy/presence`.
  * Cette lecture fait ce que faisait le layout de l'espace élève :
  *   - Constance Royale perdue : remise à zéro (client service, règle réévaluée
- *     sur la ligne relue) ; seule une semaine manquée donne la réplique ;
- *   - retour après une longue absence : LU seulement (la présence est notée par
- *     le hook, sur toute page) ; le client l'acquitte une fois la bulle montrée.
+ *     sur la ligne relue), EN SILENCE : aucune réplique (R1, chantier
+ *     `regularite`, 2026-11-12 : jamais de série perdue) ;
+ *   - retour après une pause : LU seulement (la présence est notée par le hook,
+ *     sur toute page), et seulement une fois que l'élève a travaillé depuis
+ *     (R2) ; le client l'acquitte une fois la bulle montrée. Le client relit la
+ *     présence après un gain, pour le fêter sans recharger la page.
  * Seul « oui/non » sort, jamais le jour. Une lecture secondaire en échec rend
  * `false`, jamais une erreur : le Palotin reste montrable.
  */
@@ -23,10 +26,8 @@ import { createServerLogger } from '$lib/utils/logger';
 // Types
 export interface BuddyPresence {
 	buddy: BuddyState | null;
-	/** Constance perdue, remise à zéro par CETTE lecture */
-	streakLost: boolean;
-	/** Retour après une longue absence pas encore fêté */
-	longAbsence: boolean;
+	/** Retour après une pause à fêter : l'élève a travaillé depuis, pas encore fêté */
+	returnAfterPause: boolean;
 }
 
 // Constantes
@@ -49,32 +50,28 @@ export async function loadBuddyPresence(
 	if (error) throw error;
 
 	// Sans Palotin, rien à dire : celui choisi ensuite est tout neuf
-	if (!buddyData) return { buddy: null, streakLost: false, longAbsence: false };
+	if (!buddyData) return { buddy: null, returnAfterPause: false };
 
 	// Constance perdue (dernière semaine finie sous 3 jours travaillés, ou semaine
-	// sautée). Une ancienne série en jours est remise à zéro sans réplique.
-	let streakLost = false;
+	// sautée), ou ancienne série en jours : remise à zéro, sans réplique (R1).
 	let buddyRow = buddyData;
 	if (constanceReset(buddyData, utcDay())) {
 		try {
 			const reset = await resetLostConstance(studentId);
-			if (reset) {
-				buddyRow = reset.buddy;
-				streakLost = reset.kind === 'lost';
-			}
+			if (reset) buddyRow = reset.buddy;
 		} catch (resetError) {
 			// Non bloquant : la Constance sera remise à zéro à la prochaine lecture
 			logger.error('[buddy-presence] Constance perdue non remise à zéro :', resetError);
 		}
 	}
 
-	let longAbsence = false;
+	let returnAfterPause = false;
 	try {
-		longAbsence = await isWelcomeBackPending(studentId);
+		returnAfterPause = await isWelcomeBackPending(studentId, buddyRow.last_activity_date);
 	} catch (welcomeError) {
-		// Non bloquant : pas de « tu m'as manqué » plutôt qu'une lecture en échec
+		// Non bloquant : pas de fête du retour plutôt qu'une lecture en échec
 		logger.error('[buddy-presence] Retour à fêter illisible :', welcomeError);
 	}
 
-	return { buddy: toBuddyState(buddyRow), streakLost, longAbsence };
+	return { buddy: toBuddyState(buddyRow), returnAfterPause };
 }

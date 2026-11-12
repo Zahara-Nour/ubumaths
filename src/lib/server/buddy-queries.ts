@@ -34,7 +34,7 @@ import {
 } from '$lib/utils/buddy-constance';
 import {
 	isLongAbsence,
-	isWelcomeBackDue,
+	isReturnToCelebrate,
 	lastExpiredWelcomeBackDay
 } from '$lib/utils/buddy-absence';
 
@@ -559,11 +559,15 @@ async function forgetExpiredWelcomeBack(studentId: string, today: string): Promi
 }
 
 /**
- * Vrai si le Palotin doit dire « tu m'as manqué » : un retour noté il y a
- * moins de `WELCOME_BACK_DAYS` jours, pas encore fêté. Lecture seule : un
- * préchargement ne consomme rien. Lecture en échec : faux.
+ * Vrai si le Palotin doit fêter le retour : un retour noté il y a moins de
+ * `WELCOME_BACK_DAYS` jours, pas encore fêté, et un jour travaillé depuis
+ * (`lastWorkedDay`, `student_buddies.last_activity_date`) — R2, 2026-11-12.
+ * Lecture seule : un préchargement ne consomme rien. Lecture en échec : faux.
  */
-export async function isWelcomeBackPending(studentId: string): Promise<boolean> {
+export async function isWelcomeBackPending(
+	studentId: string,
+	lastWorkedDay: string | null
+): Promise<boolean> {
 	const { data, error } = await createServiceRoleClient()
 		.from('student_last_visits')
 		.select('welcome_back_on')
@@ -573,11 +577,11 @@ export async function isWelcomeBackPending(studentId: string): Promise<boolean> 
 		logger.error('❌ [buddy-queries] Retour à fêter illisible :', error);
 		return false;
 	}
-	return isWelcomeBackDue(data?.welcome_back_on ?? null, todayUtc());
+	return isReturnToCelebrate(data?.welcome_back_on ?? null, lastWorkedDay, todayUtc());
 }
 
 /**
- * Le Palotin a dit « tu m'as manqué » : le retour est fêté, on l'efface.
+ * Le Palotin a fêté le retour : on l'efface.
  * Rend vrai si une ligne a été effacée (faux s'il n'y avait rien à fêter).
  */
 export async function acknowledgeWelcomeBack(studentId: string): Promise<boolean> {

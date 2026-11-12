@@ -338,7 +338,9 @@ directe de l'élève est supprimée (`20261016090200`) ; EXECUTE est retiré à 
 les pages `dashboard/student/riddles/**` passent l'énigme par `toStudentRiddle`
 (`src/lib/types/riddle.ts`), qui ne garde de `answer` que le type de saisie et, pour un QCM, les
 choix. `RiddleCard` ne corrige donc plus dans le navigateur : le verdict vient de la route de
-soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`.
+soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Le gain du Palotin rendu
+par la soumission (`buddy_xp`) passe par `receiveBuddyGain` (cache du Palotin à jour, retour après
+une pause à fêter, [buddy-palotins.md](buddy-palotins.md)). Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`.
 
 ⚠️ **Réponse attendue et correction : `riddle_solutions`, plus `riddles`** (étape B, 2026-10-12).
 `riddles.answer` / `riddles.correction` n'existent plus (étape C, `20261016100800`) : les requêtes sur

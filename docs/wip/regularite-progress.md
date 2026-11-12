@@ -6,9 +6,9 @@ validés », P5. Phase 0 : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2587._
+_Mis à jour le 2026-11-12, PR B1 en cours._
 
-- **État** : PR A (grille du prof) mergée (#2587) · **Prochaine action** : PR B (Palotin : moments N6-N8, R1 retrait de `streak_lost`, R2 « retour après une pause » à la place de `long_absence`), tests d'abord · **En attente de David** : rien (volume des traces de la grille : plus tard, ligne 28 de `outils-manquants.md`, David le 2026-11-12) · **Pièges en cours** : R1 et R2 modifient des comportements validés en 2026-10 → mettre `docs/systeme/buddy-palotins.md` à jour dans la PR B · **Worktree / branche** : `../ubumaths-wt-regularite`, nouvelle branche pour la PR B
+- **État** : PR A mergée (#2587) ; PR B découpée en B1 / B2 / B3 (David, 2026-11-12) ; B1 (R1 + R2, sans migration) codée sur `feat/regularite-palotin` · **Prochaine action** : B1 → revues, PR, CI, merge ; puis B2 (1re activité de la semaine, 3/5/10 semaines actives, migration) · **En attente de David** : rien · **Pièges en cours** : la présence du Palotin n'était lue qu'une fois par chargement → relue après un gain (`notifyBuddyActivity`) · **Worktree / branche** : `../ubumaths-wt-regularite`, `feat/regularite-palotin`
 
 ## Besoin validé (rappel, David, 2026-11-11)
 
@@ -120,3 +120,40 @@ Comportements N1-N8 / L1-L4 / E1 : **validés par David le 2026-11-12** (« Je v
 - Sans migration : le prof lisait déjà `school_years`, `school_holidays` et les traces de ses élèves.
 - Tests : 24 (calcul + lecture), 3 (endpoint), 8 (composant).
 - Revues : `code-reviewer` (clavier, réponse périmée, case choisie par ligne/colonne : corrigés ; volume des traces : question à David), `security-auditor` (rien à corriger). Mergée le 2026-11-12 (#2587).
+
+## PR B — découpage et décisions (David, 2026-11-12)
+
+David : « je valide ».
+
+- **B1** (sans migration) : R1 + R2. **B2** (migration) : 1re activité de la semaine, 3/5/10 semaines
+  actives d'affilée. **B3** : question longtemps ratée enfin réussie, sur la carte de fin de série.
+- **R1, affichage** : Constance à 0 → ni « Constance Royale : 0 semaine » ni badge chez l'élève ;
+  « Cette semaine : x jours sur 3 » et le record restent ; le prof garde « 0 sem. ».
+- **Notion acquise** : couverte par l'annonce du Mathou (croissance, étoile) ; pas de réplique neuve.
+- **Série terminée, quel que soit le score** : couverte par la carte de gain (une réponse fausse
+  rapporte aussi des pansées ; plafond → « panse pleine ») ; flash-cards sans carte, laissées telles.
+- **1re activité de la semaine** (B2) : au 1er **jour actif** (5 traces), même règle que la grille.
+- Retour après une pause : seuil de 21 jours et fenêtre de 7 jours gardés.
+
+## PR B1 — R1 + R2 (2026-11-12)
+
+- R1 : réplique `streak_lost` retirée ; la présence remet la Constance à 0 sans rien transmettre
+  (`streakLost` retiré de `GET /api/student/buddy/presence`) ; `BuddyStatusPanel` masque la ligne
+  de Constance à 0.
+- R2 : `long_absence` (triste) → `return_after_pause` (joyeux, 3 répliques par Palotin, sans durée,
+  neutres en genre). À fêter seulement si l'élève a travaillé depuis le retour
+  (`isReturnToCelebrate` : `last_activity_date` ≥ `welcome_back_on`, dans les 7 jours) ; champ
+  `returnAfterPause` de la présence.
+- Relecture après une activité : `receiveBuddyGain` (gain > 0) → `notifyBuddyActivity` ;
+  `PalotinPresence` relit la présence en arrivant dans la maison ou sur un passage ; `BuddyWidget`
+  fête un retour arrivé après son montage (une fois par widget).
+- Limite connue : travailler = gagner des pansées ; des flash-cards seules ne fêtent pas le retour.
+- Tests : `buddy-absence` (4), `buddy-presence`, `buddy-queries-passage`, `BuddyWidget-retour` (6),
+  `PalotinPresence` (relecture après activité, maison, sans activité), `BuddyGainCard` (répliques,
+  signal d'activité, Constance à 0), intégration `palotin-boucle` (13).
+- Revues : `security-auditor` (rien de bloquant ; en-têtes des routes `presence` et
+  `welcome-back` remis d'accord). `code-reviewer` : retour fêté tard recouvert par la salutation ou
+  l'annonce alors que déjà acquitté → corrigé (elles attendent la fin de sa bulle) ; double fête
+  possible (file, relecture) → corrigé (`markReturnCelebrated`) ; relecture inutile en séance →
+  corrigé ; énigmes : `receiveBuddyGain` branché sur la page d'énigme ; `coquille-et-caches.md`
+  mis à jour. Gardé : un `planPassages` en cours retarde la fête à la page suivante (pas perdue).

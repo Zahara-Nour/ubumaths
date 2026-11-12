@@ -137,16 +137,15 @@ describe('parseBuddyPresence', () => {
 	};
 
 	it('réponse bien formée : rendue', () => {
-		const view = parseBuddyPresence({ buddy, streakLost: true, longAbsence: false });
+		const view = parseBuddyPresence({ buddy, returnAfterPause: true });
 		expect(view?.buddy?.palotin_type).toBe('cotice');
-		expect(view?.streakLost).toBe(true);
+		expect(view?.returnAfterPause).toBe(true);
 	});
 
 	it('sans Palotin : rendue avec `buddy` nul', () => {
-		expect(parseBuddyPresence({ buddy: null, streakLost: false, longAbsence: false })).toEqual({
+		expect(parseBuddyPresence({ buddy: null, returnAfterPause: false })).toEqual({
 			buddy: null,
-			streakLost: false,
-			longAbsence: false
+			returnAfterPause: false
 		});
 	});
 

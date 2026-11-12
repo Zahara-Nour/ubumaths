@@ -2,8 +2,8 @@
  * POST /api/student/buddy/welcome-back
  * ====================================
  *
- * Le Palotin a dit « tu m'as manqué » : le retour de l'élève après une longue
- * absence est fêté, on l'efface (docs/systeme/buddy-palotins.md).
+ * Le Palotin a fêté le retour de l'élève après une pause : on l'efface
+ * (docs/systeme/buddy-palotins.md).
  * Appelé par le widget APRÈS avoir montré la bulle : un préchargement de page
  * ne consomme donc rien.
  *
