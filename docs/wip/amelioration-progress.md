@@ -2,9 +2,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2584 et la fermeture de #1788._
+_Mis à jour le 2026-11-12, PR « élèves actifs » en cours._
 
-- **État** : 0.82.0 en prod ; #2564, #2572, #2577, #2584 (montée ESLint, journal `docs/archive/wip/montee-eslint-progress.md`) mergées, pas encore en prod ; piste « où les élèves bloquent » **reportée** (prod au 2026-11-11 : 101 traces, 2 élèves sur 82, 0 réponse enregistrée ; besoins P3, P4, P6, P7, P8, E4 déjà validés dans `formes-de-serie`) · **Prochaine action** : David choisit (n° 26 « mesurer en posant la règle » : à ouvrir, phase 0 d'abord ; majeures #2075 brevo, #2074 blockly, #1667 SvelteKit 3 ; tri des journaux wip) · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572, #2577 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 = rien à changer, issue fermée ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement, jamais sur `goto` ; typst.ts hors de Dependabot ; comptes élèves inactifs (80 sur 82, année 2025-2026 et tests) gardés tels quels (conforme au registre : scolarité + 5 ans), mesurer sur les membres d'une classe active · **Pièges en cours** : monter un paquet de la config ESLint invalide tout le cache → Lint à froid ~28 min (job à 60 min depuis #2584) ; un `id` construit sur du texte saisi part dans `error_logs` ; module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` = absent du build ; `db:migrate` → `! pnpm db:migrate` · **Worktree / branche** : aucun
+- **État** : 0.82.0 en prod ; #2564, #2572, #2577, #2584 (montée ESLint, journal `docs/archive/wip/montee-eslint-progress.md`) mergées, pas encore en prod ; piste « où les élèves bloquent » **reportée** (prod au 2026-11-11 : 101 traces, 2 élèves sur 82, 0 réponse enregistrée ; besoins P3, P4, P6, P7, P8, E4 déjà validés dans `formes-de-serie`) · **Prochaine action** : PR `feat/eleves-actifs` (fonction `active_student_ids()`) → CI, revues, merge, `db:migrate`, puis PR `db:types` ; ensuite David choisit (n° 26 « mesurer en posant la règle » : phase 0 d'abord ; majeures #2075 brevo, #2074 blockly, #1667 SvelteKit 3 ; tri des journaux wip) · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572, #2577 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 = rien à changer, issue fermée ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement, jamais sur `goto` ; typst.ts hors de Dependabot ; comptes élèves inactifs (80 sur 82, année 2025-2026 et tests) gardés tels quels (conforme au registre : scolarité + 5 ans), mesurer sur les membres d'une classe active · **Pièges en cours** : monter un paquet de la config ESLint invalide tout le cache → Lint à froid ~28 min (job à 60 min depuis #2584) ; un `id` construit sur du texte saisi part dans `error_logs` ; module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` = absent du build ; `db:migrate` → `! pnpm db:migrate` · **Worktree / branche** : `../ubumaths-wt-amelioration`, `feat/eleves-actifs`
+
+## Élèves actifs pour les mesures (`feat/eleves-actifs`, 2026-11-12)
+
+- Origine : les mesures faites à la main sur `profiles` entier comptaient 82 élèves dont 2 actifs
+  (au passage d'année, l'archivage met les adhésions de 2025-2026 en `archived`).
+- **Phase 0 validée par David** : élève actif = élève réel (`is_test` faux, ajouté en cours de route,
+  validé) membre `active` d'au moins une classe ; élèves hors-classe **exclus** (cas réel : élève
+  approuvé jamais placé dans une classe — marginal, et indiscernable en base d'un ancien élève).
+  Fonction `active_student_ids()` (`security invoker`, réservée à `service_role`) ; question
+  d'accès : personne ne gagne rien. Définition dans `CONTEXT.md`.
+- Test `tests/integration/eleves-actifs.test.ts` : 7 rouges sans la migration (`PGRST202`), puis le
+  cas « élève de test » rouge sur la première version ; 8 verts. Migration appliquée en local (psql
+  sous verrou).
 
 ## Lot mineur de Dependabot (#2577, mergée le 2026-11-12)
 
