@@ -1,0 +1,280 @@
+{
+	"title": "Méthode de dichotomie en Python",
+	"description": "Dichotomie pour f(x) = x² − c : faire tourner deux tours (a et b renvoyés), compléter la condition f(a) * f(m) <= 0, nombre de tours pour une amplitude de 10^(−k)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\ndef f(x):\n    return x**2 - {{eval:c}}\n\ndef dichotomie(a, b, n):\n    for k in range(n):\n        m = (a + b) / 2\n        if f(a) * f(m) <= 0:\n            b = m\n        else:\n            a = m\n    return a, b\n```\n\nL'appel `dichotomie({{eval:p}}, {{eval:p+1}}, 2)` renvoie le couple `a, b`. Que valent `a` et `b` ?\n\n$a=?$ et $b=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2|3|5|6|7|8|10|11|12|13|14|15"
+				},
+				{
+					"name": "p",
+					"expression": "eval:floor(sqrt(c))"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:p+0.5"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:m1^2-c"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:floor(2*sqrt(c))/2"
+				},
+				{
+					"name": "b1",
+					"expression": "eval:a1+0.5"
+				},
+				{
+					"name": "m2",
+					"expression": "eval:a1+0.25"
+				},
+				{
+					"name": "s2",
+					"expression": "eval:m2^2-c"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:floor(4*sqrt(c))/4"
+				},
+				{
+					"name": "b2",
+					"expression": "eval:a2+0.25"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a2;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Au départ, $a={{eval:p}}$ et $f(a)={{eval:p^2-c}}<0$ ; `a` garde une image négative tout au long du programme.",
+					"Premier tour : $m={{eval:m1;d}}$ et $f(m)={{eval:m1^2-c;d}}$ {{if:s1>0|est positif, donc $f(a)\\times f(m)<0$ et `b` prend la valeur $m$|est négatif, donc $f(a)\\times f(m)>0$ et `a` prend la valeur $m$}}. Alors $a={{eval:a1;d}}$ et $b={{eval:b1;d}}$.",
+					"Second tour : $m={{eval:m2;d}}$ et $f(m)={{eval:m2^2-c;d}}$ {{if:s2>0|est positif, donc $f(a)\\times f(m)<0$ et `b` prend la valeur $m$|est négatif, donc $f(a)\\times f(m)>0$ et `a` prend la valeur $m$}}. Alors $a={{eval:a2;d}}$ et $b={{eval:b2;d}}$.",
+					"La fonction renvoie $a=\\textcolor{{{color:primary.0}}}{{{eval:a2;d}}}$ et $b=\\textcolor{{{color:primary.0}}}{{{eval:b2;d}}}$ : un encadrement d'amplitude $0{,}25$ de $\\sqrt{{{eval:c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est continue et strictement croissante sur $[a\\,;\\,b]$, avec $f(a)<0<f(b)$. La fonction Python ci-dessous coupe l'intervalle en deux à chaque tour et garde la moitié qui contient la solution de $f(x)=0$.\n\n```python\ndef f(x):\n    return x**2 - {{eval:c}}\n\ndef dichotomie(a, b, n):\n    for k in range(n):\n        m = (a + b) / 2\n        ...\n            b = m\n        else:\n            a = m\n    return a, b\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `if f(a) * f(m) <= 0:`\n- `if f(m) <= 0:`\n- `if f(a) * f(b) <= 0:`\n- `if f(a) + f(m) <= 0:`\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2|3|5|6|7|8|10|11|12|13|14|15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La solution est dans $[a\\,;\\,m]$ quand $f(a)$ et $f(m)$ sont de signes contraires (ou $f(m)=0$), c'est-à-dire quand $f(a)\\times f(m)\\leqslant0$ : on remplace alors $b$ par $m$.",
+					"Avec `if f(m) <= 0:`, on garderait la mauvaise moitié ; $f(a)\\times f(b)$ reste négatif à tous les tours et ne dit rien de $m$.",
+					"La ligne est donc `if f(a) * f(m) <= 0:`."
+				]
+			}
+		},
+		{
+			"statement": "On applique la méthode de dichotomie à partir d'un intervalle d'amplitude $1$ : chaque tour de boucle divise l'amplitude par $2$.\n\nCombien de tours faut-il au minimum pour obtenir un encadrement d'amplitude inférieure ou égale à $10^{-{{eval:k}}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:3*k+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après $n$ tours, l'amplitude vaut $\\dfrac{1}{2^n}$ : on cherche le plus petit $n$ tel que $\\dfrac{1}{2^n}\\leqslant10^{-{{eval:k}}}$, soit $2^n\\geqslant{{eval:10^k}}$.",
+					"$2^{{{eval:n-1}}}={{eval:2^(n-1)}}<{{eval:10^k}}$ et $2^{{{eval:n}}}={{eval:2^n}}\\geqslant{{eval:10^k}}$.",
+					"Il faut au minimum $\\textcolor{{{color:primary.0}}}{{{eval:n}}}$ tours."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "c = 2 : 1,25 et 1,5",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"p": "1",
+				"m1": "1.5",
+				"s1": "0.25",
+				"a1": "1",
+				"b1": "1.5",
+				"m2": "1.25",
+				"s2": "-0.4375",
+				"a2": "1.25",
+				"b2": "1.5"
+			},
+			"answers": ["1.25", "1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c = 2 : avec virgules",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"p": "1",
+				"m1": "1.5",
+				"s1": "0.25",
+				"a1": "1",
+				"b1": "1.5",
+				"m2": "1.25",
+				"s2": "-0.4375",
+				"a2": "1.25",
+				"b2": "1.5"
+			},
+			"answers": ["1,25", "1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul tour",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"p": "1",
+				"m1": "1.5",
+				"s1": "0.25",
+				"a1": "1",
+				"b1": "1.5",
+				"m2": "1.25",
+				"s2": "-0.4375",
+				"a2": "1.25",
+				"b2": "1.5"
+			},
+			"answers": ["1", "1.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c = 7 : 2,5 et 2,75",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"p": "2",
+				"m1": "2.5",
+				"s1": "-0.75",
+				"a1": "2.5",
+				"b1": "3",
+				"m2": "2.75",
+				"s2": "0.5625",
+				"a2": "2.5",
+				"b2": "2.75"
+			},
+			"answers": ["2.5", "2.75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "if f(a) * f(m) <= 0:",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : if f(m) <= 0:",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : if f(a) * f(b) <= 0:",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : if f(a) + f(m) <= 0:",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 2 : 7 tours",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"n": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2^6 = 64 jugé suffisant",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"n": "7"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 3 : 10 tours",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"n": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
