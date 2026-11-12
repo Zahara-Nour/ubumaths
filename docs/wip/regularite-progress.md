@@ -219,3 +219,33 @@ David : « je valide » (mes recos).
 - Répliques `week_first_activity`, `active_weeks_3/5/10` : **validées telles quelles**.
 - Vacances commençant un samedi : la semaine d'école d'avant reste « vacances » (sautée sans
   activité) — **règle gardée**, commune avec la grille du prof.
+
+## PR B3 — phase 0 technique (2026-11-12) — à valider
+
+Constats : les traces d'une série sont écrites question par question (`/api/skill-attempts`) et
+`settle()` les attend **avant** `POST /api/tests/save`, qui calcule le gain : le serveur peut tout
+relire en base, sans faire confiance au client. Index `(student_id, template_id, created_at)` déjà
+là. La carte (`BuddyGainCard`) n'a qu'une réplique ; « Nouveau niveau » est une ligne à part.
+Révision (FSRS) = traces **déclarées** (`student_self`) ; flash-cards = pas de gain.
+
+- **U1 — Où** : fin de Saisie, Contrôle blanc, Course aux nombres (`/api/tests/save`). Pas en
+  révision ni en flash-cards (réussite déclarée, pas corrigée). Cartes de cours exclues.
+- **U2 — Règle** : pour un modèle de la série, la 1re réussite **de cette série** suit au moins
+  3 échecs **sans réussite entre eux**, le premier de ces échecs ≥ 7 jours avant (dates de Paris).
+  Une réussite plus ancienne remet le compte à zéro.
+- **U3 — Traces comptées** : corrigées par l'appli (`source = 'auto'`), contrôles compris pour les
+  échecs (un contrôle raté est un vrai raté) ; la réussite, elle, est dans la série.
+- **U4 — « Déjà dit » sans migration** : une réussite plus tardive casse la règle d'elle-même. Seul
+  risque : deux séries le même jour avec ce modèle → la 2e refêterait. Le client envoie l'heure de
+  début de série (`startedAt`, bornée : ≤ maintenant, ≥ maintenant − 24 h) ; seule une réussite
+  postérieure compte. Tricher ne rapporte rien (une réplique, aucune pansée).
+- **U5 — Affichage** : `buddy_xp.longStruggleWon: true` ; la carte remplace sa réplique par une
+  réplique `long_struggle_won` (3 par Palotin, fière, sans citer le nombre d'échecs ni de jours),
+  expression `excited`. Plusieurs modèles concernés → une seule réplique. Carte cachée (pas de
+  Palotin, rien gagné hors plafond) → rien.
+- **U6 — Coût** : une lecture des traces `auto` des modèles réussis de la série (≤ 30 modèles,
+  limitée), seulement s'il y a une réussite.
+- **Question d'accès** : aucune migration, aucune donnée nouvelle ; le serveur lit les traces de
+  l'élève lui-même. Personne ne lit rien de plus.
+- Tests : règle pure (3 échecs/6 jours → non ; réussite entre deux → remise à zéro ; 2e série du
+  jour → non ; contrôle raté compté), route (`longStruggleWon`), carte (réplique, priorité).
