@@ -5,7 +5,7 @@
 _Mis à jour le 2026-11-12, avant la première PR._
 
 - **État** : inventaire fait (aucune fiche, 1 exercice existant `b5390946`), plan validé par David, `CONVENTIONS.md` écrit (plan exercice par exercice dedans).
-- **Prochaine action** : rédaction par deux agents `pedagogy-expert` (Opus), un par fiche, dans `docs/wip/fiches-affines-2nde/{technique,applications}/`.
+- **Prochaine action** : rédaction en cours (deux agents `pedagogy-expert` Opus, un par fiche, dans `docs/wip/fiches-affines-2nde/{technique,applications}/`) ; puis relecture des écarts et des pages, puis simulation `pnpm tsx scripts/create-fonctions-affines-2nde.ts`.
 - **En attente de David** : rien avant la simulation d'écriture en base.
 - **Pièges en cours** : les dossiers source des anciennes fiches (scratchpad) ont disparu → modèles réexportés de la prod par `scratchpad/outils/export-fiche.mjs` ; sources de ce chantier gardées dans le dépôt.
 - **Worktree / branche** : `../ubumaths-wt-fiches-affines-2nde`, `feat/fiches-affines-2nde`.
@@ -20,3 +20,4 @@ _Mis à jour le 2026-11-12, avant la première PR._
 ## Journal
 
 - 2026-11-12 : étape 1 (base prod, lecture seule) — aucune fiche affine en Seconde ; `b5390946` « Antécédents par une fonction affine » (thème `Fonctions`, dans « Fonctions : généralités ») à inclure sans modification.
+- 2026-11-12 : script `scripts/create-fonctions-affines-2nde.ts` écrit (deux fiches, `--racine`, existant `b5390946` en fin de S2, images `affine-*.png`) ; simulation verte sur un faux dossier, `check:incremental` 0 erreur. Même description pour les deux fiches.
