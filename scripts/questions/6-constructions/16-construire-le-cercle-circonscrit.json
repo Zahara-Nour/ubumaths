@@ -1,4 +1,5 @@
 {
+	"id": "0ecb0f0e-f474-4bb0-b465-f23f408650d1",
 	"title": "Construire le cercle circonscrit à un triangle",
 	"description": "Au compas et à la règle : les médiatrices de deux côtés se coupent au centre du cercle qui passe par les trois sommets",
 	"grades": ["6"],

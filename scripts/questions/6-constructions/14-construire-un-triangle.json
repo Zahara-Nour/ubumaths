@@ -1,4 +1,5 @@
 {
+	"id": "f06e45e8-45f3-48f7-8bd2-2a16ae86958f",
 	"title": "Construire un triangle",
 	"description": "Construire un triangle à partir de trois longueurs (compas), de deux côtés et de l'angle compris, ou d'un côté et de ses deux angles adjacents (rapporteur) ; savoir si trois longueurs permettent de construire un triangle",
 	"grades": ["6"],
