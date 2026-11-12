@@ -5,17 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, après #2610 (nœud et tag du lot 13) et #2614 (page à cocher : schema-barres dessiné)._
+_Mis à jour le 2026-11-13, après la publication du lot 13._
 
-- **État** : 0.85.0 en prod (bloc ` ```schema-barres `). Lot 13 : 6 brouillons en prod, rangés sur « Algèbre >
-  Premiers pas algébriques > nombre inconnu », tag 6-142 (`db:migrate` fait, vérifié) ; page à cocher 6/6 OK.
-  Après publication, la 6e est couverte au sens du § 5 (restent les 6 points du groupe D, sans modèle par décision).
-- **Prochaine action** : David publie (`! pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/6-schemas-en-barres`, puis `--publier`) ; vérifier en prod (MCP) 6 `published`, 3a7a5711 `draft` ;
-  puis clôture du chantier (versement, archive du journal) si David le confirme.
-- **En attente de David** : la publication ; n° 34 de `outils-manquants.md` (schéma petit dans un choix à 390 px).
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. `publier-lot.ts` et `create-questions --publier` : David, avec `!`.
-  `db:migrate` passe en mode auto depuis le dépôt principal (fait pour #2610).
+- **État** : lot 13 publié (6 modèles 6-142, vérifié en prod). Relevé prod : les seuls points de 6e sans modèle
+  publié sont 129, 138, 182, 183, 197, 210, le groupe D, sans modèle par décision (§ 5, question 8). **La 6e est
+  couverte.**
+- **Prochaine action** : clôture du chantier si David la confirme (recompter le découpage des § 4 et 5 contre les
+  PR mergées, versement du durable dans `docs/systeme/`, archive du journal).
+- **En attente de David** : go pour la clôture ; n° 34 de `outils-manquants.md` (schéma petit dans un choix à 390 px).
+- **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`).
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
@@ -1903,3 +1901,5 @@ les 6 modèles regardés, corrigé du modèle 1 joué.
 - La page ne dessinait pas ` ```schema-barres ` : outil complété (#2614, `buildSchemaBarresScene`, test tirets et
   échappement ; revue sans bloquant). Page : https://claude.ai/artifact/K1E6gbkkwJEb4WCyC8cPo2 (6 fiches, 0 alerte).
 - Relecture de David : 6/6 OK, sans commentaire. Publication laissée à David.
+- Publication lancée par David (`publier-lot.ts --publier`) ; vérifié en prod (MCP) : les 6 `published`, 3a7a5711
+  `draft`. Relevé : 6 points de 6e sans modèle publié, exactement le groupe D (129, 138, 182, 183, 197, 210).
