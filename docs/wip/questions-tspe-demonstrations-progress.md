@@ -10,12 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2608 (lot 7 rangé en prod, § 28 ; page à cocher, § 29)._
+_Mis à jour le 2026-11-12, après la publication du lot 7 (§ 30)._
 
-- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 et 6 publiés (§ 22, § 26) ; lot 7 (324, 513, 514, 515) rangé en prod, page à cocher publiée (§ 29), en relecture. Reste le lot 8.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 4) ; tout « ok » → David lance
-  `publier-lot.ts --dir scripts/questions/tspe-algorithmes-7` (simulation puis `--publier`) ; puis phase 0 du lot 8.
-- **En attente de David** : relecture du lot 7 sur https://claude.ai/artifact/LuyXd7gcHJ6gqJJCArM8vH.
+- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5, 6 et 7 publiés (§ 22, § 26, § 30). Reste le lot 8
+  (534, 624, 535, 536 : concentration, marche aléatoire, loi des grands nombres ; cadre D2, § 18).
+- **Prochaine action** : phase 0 du lot 8 (relevé prod, tableau modèle / nœud / niveau / variations, comme D4 § 27),
+  puis validation de David avant d'écrire.
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -628,3 +629,8 @@ identiques à `origin/main`, y ont été remis à l'état commité avant le pull
 `page-a-cocher.ts --dir scripts/questions/tspe-algorithmes-7`, lu en base prod : 4 brouillons `draft`, chacun sur son
 point, 3 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/LuyXd7gcHJ6gqJJCArM8vH (capacité `db`) ;
 base `verdicts` vide à la publication.
+
+## 30. Lot 7 : publication (2026-11-12)
+
+Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 28). `publier-lot.ts` en simulation puis `--publier`,
+lancés par David. Relu en base (MCP) : 4 `published`.
