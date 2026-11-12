@@ -108,7 +108,7 @@ parental_consents (new)
 ├── consent_given_at: TIMESTAMPTZ
 ├── consent_ip: INET
 ├── consent_user_agent: TEXT
-├── email_count: INTEGER (max 5)
+├── email_count: INTEGER (max 5) — envoi réservé avant Brevo (mise à jour conditionnelle : un double clic → 409), rendu si Brevo refuse
 └── last_email_sent_at: TIMESTAMPTZ
 
 pending_students (modified)
