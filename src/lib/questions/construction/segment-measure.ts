@@ -44,9 +44,11 @@ export const segmentMeasureZeroFeedback = (
 	name: string,
 	typed: number,
 	expected: number,
-	unit: Unit
+	unit: Unit,
+	/** Le bout où mettre le 0 : celui le plus près du 0 de la règle posée (A par défaut) */
+	at: string = name.charAt(0)
 ) =>
-	`Le 0 de la règle doit être sur ${name.charAt(0)} : ${wrongSegmentMeasureFeedback(name, typed, expected, unit).replace(/^L/, 'l')}`;
+	`Le 0 de la règle doit être sur ${at} : ${wrongSegmentMeasureFeedback(name, typed, expected, unit).replace(/^L/, 'l')}`;
 
 /** Erreur de l'AUTEUR, levée sous le nom de la classe du juge par l'appelant */
 export class SegmentMeasureAuthorError extends Error {}
@@ -171,9 +173,11 @@ function misplacedZeroReading(ruler: DrawnRegle, a: Position, b: Position, unit:
 	const along = (p: Position) => (p.x - ruler.ox) * u.x + (p.y - ruler.oy) * u.y;
 	const across = (p: Position) => Math.abs((p.y - ruler.oy) * u.x - (p.x - ruler.ox) * u.y);
 	if (across(a) > ALONG_RULER || across(b) > ALONG_RULER) return null;
-	const [near, far] = [along(a), along(b)].sort((x, y) => x - y);
+	const [ta, tb] = [along(a), along(b)];
+	const [near, far] = ta <= tb ? [ta, tb] : [tb, ta];
 	if (near < -ZERO_AT_END || Math.abs(near) <= ZERO_AT_END) return null;
-	return unit === 'cm' ? far : far * 10;
+	// Le bout le plus près du 0 : celui où l'élève devait le mettre (revue : posée depuis B)
+	return { reading: unit === 'cm' ? far : far * 10, fromA: ta <= tb };
 }
 
 /**
@@ -194,11 +198,12 @@ export function judgeSegmentMeasure(
 	}
 	if (typed === expected) return { status: 'correct' };
 	const ruler = drawn.filter((o): o is DrawnRegle => o.kind === 'regle').at(-1);
-	const reading = ruler ? misplacedZeroReading(ruler, a, b, check.unit) : null;
-	if (reading !== null && Math.abs(typed - reading) <= 0.5) {
+	const misplaced = ruler ? misplacedZeroReading(ruler, a, b, check.unit) : null;
+	if (misplaced !== null && Math.abs(typed - misplaced.reading) <= 0.5) {
+		const at = misplaced.fromA ? check.points[0] : check.points[1];
 		return {
 			status: 'incorrect',
-			feedback: segmentMeasureZeroFeedback(name, typed, expected, check.unit)
+			feedback: segmentMeasureZeroFeedback(name, typed, expected, check.unit, at)
 		};
 	}
 	return {

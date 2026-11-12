@@ -171,6 +171,17 @@ describe('Juge : mesurer un segment', () => {
 		});
 	});
 
+	it('règle posée depuis B, le 0 un peu après B : « le 0 doit être sur B » (revue)', () => {
+		// 0 en x = 9, graduations vers la gauche : B à 1 cm, A à 7 cm ; l'élève lit 7
+		expect(judge(SOURCE, [ruler(9, 0)], 7)).toEqual({
+			status: 'incorrect',
+			feedback: segmentMeasureZeroFeedback('AB', 7, 6, 'cm', 'B')
+		});
+		expect(segmentMeasureZeroFeedback('AB', 7, 6, 'cm', 'B')).toBe(
+			'Le 0 de la règle doit être sur B : le segment [AB] mesure 6 cm, pas 7 cm.'
+		);
+	});
+
 	it('règle qui ne longe pas [AB] : message ordinaire', () => {
 		const away: DrawnRegle = { kind: 'regle', ox: 1, oy: 5, bx: 11, by: 5, sens: 1 };
 		expect(judge(SOURCE, [away], 7)).toEqual({

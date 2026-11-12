@@ -959,7 +959,11 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    (`solutionRulers` → `segmentMeasureRuler`, `solutionSegmentMeasure`) : la règle posée au 0 en A le long
    de [AB], la longueur écrite au milieu de [AB] du côté opposé au corps de la règle ; aucun trait. Énoncé
    masqué : `verifier: mesure AB` reste, points calculés réécrits en coordonnées (`maskMeasureFigure`).
-   L'énoncé PDF n'est pas encore à l'échelle 1 unité = 1 cm (PR 2 du n° 26).
+   Le 0 posé depuis B (graduations vers A) : « doit être sur B ». Limites connues (revue, comme
+   `mesure AOB`) : une figure qui affiche la longueur (`cote(A, B)`, un `texte`) n'est pas refusée ; dans
+   l'énoncé masqué, seuls les points sont réécrits (un `rayon=6` d'un objet caché reste écrit, la garde ne
+   cherche que `angle=` et `rotation(`). L'énoncé PDF n'est pas encore à l'échelle 1 unité = 1 cm (PR 2
+   du n° 26).
    Vérification `segment AB = 6 cm` (`construction/segment-length.ts`, chantier `regle-graduee`,
    CE2-039, [ADR 0036](../adr/0036-le-cm-de-la-figure.md)) : A est un point de la figure (nommé, visible,
    dans la fenêtre), B nomme l'autre bout (messages seulement, absent de la figure) ; la longueur
