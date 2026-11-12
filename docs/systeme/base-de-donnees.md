@@ -190,6 +190,14 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   (appelée par `run_cleanup_expired_data`, serveur seul) remet `answer_parts` et `part_verdicts` à
   NULL pour les traces créées avant le 1er août de l'année scolaire en cours (minuit, heure de
   Paris, `trace_answers_cutoff`) ; seule mise à jour de la ligne après son insertion.
+- **Régularité comptée en base** (`20261112210248`) : `class_regularity_weeks(p_class_id,
+p_first_day, p_min_traces)` rend, par élève `active` de la classe et par semaine (lundi), le
+  nombre de jours de Paris à au moins `p_min_traces` traces autonomes (`auto`/`srs`/`student_self`,
+  hors lieu `evaluation`, sans lieu compté) depuis `p_first_day`. `security invoker` : la RLS de
+  l'appelant s'applique (le professeur compte ce qu'il lit déjà, un élève ses seules traces) ;
+  exécution à `authenticated`, 42501 pour `anon`. Sert la grille de régularité du professeur
+  ([analytique-prof.md](analytique-prof.md), widget C). Test :
+  `tests/integration/regularite-comptee-en-base.test.ts`.
 - **Position d'affichage** : `display_order` est local à la fratrie ; un nœud créé sans position va en
   dernier (triggers `*_place_last`) ; `reorder_curriculum_points` / `_themes` / `_objectives` renumérotent 1..N et refusent une liste
   incomplète (en **INVOKER** pour que la RLS s'applique) ; plus aucun appelant depuis la C5 étape 3 :
