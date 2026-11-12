@@ -473,3 +473,4 @@ Migration `20261112131748_questions_tspe_algorithmes_5_rangement_tags.sql` (copi
 les données et le préfixe `_qta5_` changent) ; test `tests/integration/questions-tspe-algorithmes-5-rangement-tags.test.ts`
 12/12 vert, rouge sans la migration (partie aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie. Accès :
 personne de plus (§ 18 Q5, D2).
+`security-auditor` : aucun finding. PR #2594.
