@@ -1,19 +1,19 @@
 # Chantier « questions-6 » — couvrir la 6e en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Bornes : `docs/systeme/programmes/bornes/cycle3.json` → `6.points`.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, après la publication du lot 13._
+_Mis à jour le 2026-11-13, clôture._
 
-- **État** : lot 13 publié (6 modèles 6-142, vérifié en prod). Relevé prod : les seuls points de 6e sans modèle
-  publié sont 129, 138, 182, 183, 197, 210, le groupe D, sans modèle par décision (§ 5, question 8). **La 6e est
-  couverte.**
-- **Prochaine action** : clôture du chantier si David la confirme (recompter le découpage des § 4 et 5 contre les
-  PR mergées, versement du durable dans `docs/systeme/`, archive du journal).
-- **En attente de David** : go pour la clôture ; n° 34 de `outils-manquants.md` (schéma petit dans un choix à 390 px).
-- **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`).
+- **État** : **chantier clos le 2026-11-13** (go de David). Relevé MCP refait à la clôture : 195 modèles publiés en
+  6e, 105 points sur 111 couverts ; les 6 restants sont le groupe D (129, 138, 182, 183, 197, 210), sans modèle par
+  décision (§ 5, question 8). Découpage recompté : lots 1 à 7 du § 4 et les trois outils neufs du § 5 (question 6),
+  tous livrés (§ 7 à 30). Durable versé dans `docs/systeme/programmes/bornes/cycle3.md` § 6e, « Couverture ».
+- **Prochaine action** : aucune.
+- **En attente de David** : n° 34 de `outils-manquants.md` (schéma petit dans un choix à 390 px), suivi là-bas.
+- **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`, doublon de 059e3fc9).
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
@@ -1503,7 +1503,7 @@ sur l'essai local (même gabarit).
 
 ## 25. Modèles témoins des contrôles de la figure (décision de David, 2026-11-09)
 
-Contexte : [outils-manquants.md](outils-manquants.md), paragraphe « Contenu restant aux sessions questions »,
+Contexte : [outils-manquants.md](../../wip/outils-manquants.md), paragraphe « Contenu restant aux sessions questions »,
 recommandation du 2026-11-09 : aucun modèle n'utilise encore les contrôles `point`, `droite`, `angle`, `mesure`,
 `bissectrice` de la figure à compléter (chantier [`controles-figure`](../archive/wip/controles-figure-progress.md),
 clos le 2026-11-06), ni le patron `designer:` / `completer:`, ni la trotteuse. Un modèle témoin par contrôle est le
