@@ -5,7 +5,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
-import { page } from 'vitest/browser';
+import { page, userEvent } from 'vitest/browser';
 import ClassRegularityGrid from '../ClassRegularityGrid.svelte';
 
 const GRID = {
@@ -63,6 +63,25 @@ describe('ClassRegularityGrid', () => {
 		mockFetch(GRID);
 		await render(ClassRegularityGrid, { classId: 'class-1' });
 		await page.getByTitle('Bob — semaine du 19 oct. (vacances) : 1 jour actif').click();
+		await expect
+			.element(
+				page.getByText('Bob — semaine du 19 oct. (vacances) : 1 jour actif', { exact: true }).last()
+			)
+			.toBeVisible();
+	});
+
+	it('clavier : une seule case dans l’ordre de tabulation, les flèches parcourent la grille', async () => {
+		mockFetch(GRID);
+		await render(ClassRegularityGrid, { classId: 'class-1' });
+		const first = page.getByTitle('Alice — semaine du 12 oct. : 2 à 3 jours actifs');
+		await expect.element(first).toHaveAttribute('tabindex', '0');
+		await expect
+			.element(page.getByTitle('Bob — semaine du 12 oct. : aucun jour actif'))
+			.toHaveAttribute('tabindex', '-1');
+		(first.element() as HTMLButtonElement).focus();
+		await userEvent.keyboard('{ArrowDown}{ArrowRight}');
+		const target = page.getByTitle('Bob — semaine du 19 oct. (vacances) : 1 jour actif');
+		await expect.element(target).toHaveFocus();
 		await expect
 			.element(
 				page.getByText('Bob — semaine du 19 oct. (vacances) : 1 jour actif', { exact: true }).last()

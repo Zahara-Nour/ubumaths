@@ -63,8 +63,13 @@
 	let data = $state<RegularityGrid | null>(null);
 	let loading = $state(false);
 	let error = $state<string | null>(null);
-	/** Case appuyée (téléphone : pas de survol) */
-	let picked = $state<string | null>(null);
+	/** Case choisie (appui, clic ou clavier) : ligne et colonne */
+	let picked = $state<{ row: number; col: number } | null>(null);
+	/** Case qui reçoit le focus au Tab (une seule : les flèches parcourent la grille) */
+	let active = $state({ row: 0, col: 0 });
+	/** Jeton de la dernière requête : une réponse périmée ne remplace pas la plus récente */
+	let requestSeq = 0;
+	let gridEl = $state<HTMLTableElement | null>(null);
 
 	/** Libellé du mois au-dessus de la première semaine de chaque mois */
 	const monthLabels = $derived.by(() => {
@@ -78,29 +83,76 @@
 
 	// Functions
 
-	async function load() {
+	async function load(forClass: string, keepGrid: boolean) {
+		const seq = ++requestSeq;
 		loading = true;
 		error = null;
+		if (!keepGrid) {
+			data = null;
+			picked = null;
+			active = { row: 0, col: 0 };
+		}
 		try {
-			const res = await fetch(`/api/teacher/classes/${classId}/analytics/regularity`);
+			const res = await fetch(`/api/teacher/classes/${forClass}/analytics/regularity`);
+			if (seq !== requestSeq) return;
 			if (!res.ok) {
 				const body = await res.json().catch(() => ({}));
-				error = body.error ?? `Erreur ${res.status}`;
+				if (seq === requestSeq) error = body.error ?? `Erreur ${res.status}`;
 				return;
 			}
-			data = (await res.json()) as RegularityGrid;
+			const grid = (await res.json()) as RegularityGrid;
+			if (seq === requestSeq) data = grid;
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Erreur réseau';
+			if (seq === requestSeq) error = e instanceof Error ? e.message : 'Erreur réseau';
 		} finally {
-			loading = false;
+			if (seq === requestSeq) loading = false;
 		}
 	}
 
+	// Changement de classe : la grille de l'ancienne classe disparaît ;
+	// simple actualisation : elle reste affichée pendant le chargement.
+	let loadedClass: string | null = null;
 	$effect(() => {
-		void classId;
 		void refreshNonce;
-		void load();
+		const forClass = classId;
+		const keepGrid = loadedClass === forClass;
+		loadedClass = forClass;
+		void load(forClass, keepGrid);
 	});
+
+	function pick(row: number, col: number) {
+		picked = { row, col };
+		active = { row, col };
+	}
+
+	/** Flèches, Début, Fin : déplacent le focus d'une case à l'autre */
+	function onCellKeydown(event: KeyboardEvent, row: number, col: number) {
+		if (!data) return;
+		const lastRow = data.students.length - 1;
+		const lastCol = data.weeks.length - 1;
+		const moves: Record<string, [number, number]> = {
+			ArrowRight: [row, Math.min(col + 1, lastCol)],
+			ArrowLeft: [row, Math.max(col - 1, 0)],
+			ArrowDown: [Math.min(row + 1, lastRow), col],
+			ArrowUp: [Math.max(row - 1, 0), col],
+			Home: [row, 0],
+			End: [row, lastCol]
+		};
+		const target = moves[event.key];
+		if (!target) return;
+		event.preventDefault();
+		const [r, c] = target;
+		pick(r, c);
+		gridEl?.querySelector<HTMLButtonElement>(`[data-cell="${r}-${c}"]`)?.focus();
+	}
+
+	function pickedText(): string {
+		if (!data || !picked) return '';
+		const student = data.students[picked.row];
+		const week = data.weeks[picked.col];
+		if (!student || !week) return '';
+		return cellText(studentDisplay(student, picked.row), week, student.tiers[picked.col] ?? 0);
+	}
 
 	function weekLabel(week: RegularityWeek): string {
 		const label = `semaine du ${DAY_FORMAT.format(new Date(`${week.start}T00:00:00Z`))}`;
@@ -156,7 +208,11 @@
 			</div>
 
 			<div class="overflow-x-auto">
-				<table class="border-separate border-spacing-0.5 text-xs" aria-label="Régularité">
+				<table
+					bind:this={gridEl}
+					class="border-separate border-spacing-0.5 text-xs"
+					aria-label="Régularité"
+				>
 					<thead>
 						<tr>
 							<th
@@ -200,11 +256,14 @@
 									<td class="p-0">
 										<button
 											type="button"
-											tabindex="-1"
+											tabindex={active.row === idx && active.col === w ? 0 : -1}
+											data-cell="{idx}-{w}"
 											class="cell {tierClass(tier)} block"
-											class:picked={picked === text}
+											class:picked={picked?.row === idx && picked?.col === w}
 											title={text}
-											onclick={() => (picked = text)}
+											onclick={() => pick(idx, w)}
+											onfocus={() => pick(idx, w)}
+											onkeydown={(e) => onCellKeydown(e, idx, w)}
 										>
 											<span class="sr-only">{text}</span>
 										</button>
@@ -217,7 +276,7 @@
 			</div>
 
 			<p class="mt-2 min-h-5 text-xs text-muted-foreground" aria-live="polite">
-				{picked ?? ''}
+				{pickedText()}
 			</p>
 		{/if}
 	</Card.Content>
@@ -248,7 +307,8 @@
 		background: var(--color-primary);
 		border-color: transparent;
 	}
-	.picked {
+	.picked,
+	.cell:focus-visible {
 		outline: 2px solid var(--color-foreground);
 		outline-offset: 1px;
 	}

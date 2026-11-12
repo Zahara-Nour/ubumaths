@@ -153,7 +153,7 @@ export function buildRegularityGrid(input: {
 		const [studentId, day] = key.split('|');
 		const index = weekIndex.get(weekStartOf(day));
 		if (index === undefined) continue;
-		const row = activeDays.get(studentId) ?? new Array<number>(weeks.length).fill(0);
+		const row = activeDays.get(studentId) ?? Array.from({ length: weeks.length }, () => 0);
 		row[index] += 1;
 		activeDays.set(studentId, row);
 	}
@@ -163,7 +163,9 @@ export function buildRegularityGrid(input: {
 		students: students.map((s) => ({
 			id: s.id,
 			display_name: s.display_name,
-			tiers: (activeDays.get(s.id) ?? new Array<number>(weeks.length).fill(0)).map(activeDaysTier)
+			tiers: (activeDays.get(s.id) ?? Array.from({ length: weeks.length }, () => 0)).map(
+				activeDaysTier
+			)
 		}))
 	};
 }
