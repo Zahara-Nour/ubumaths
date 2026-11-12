@@ -2,9 +2,27 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, après #2572._
+_Mis à jour le 2026-11-12, après #2577._
 
-- **État** : 0.82.0 en prod ; piste 3 close (#2564, pas encore en prod) ; piste 4 « CI instable » close (7 issues fermées) ; erreur `/dev/modeles` = onglet d'avant 0.81.0 face au nouveau serveur → corrigée par #2572 (mergée, pas encore en prod : `version.pollInterval` 5 min, garde de version au rafraîchissement horaire du jeton, rechargement complet sur lien et Précédent / Suivant) · **Prochaine action** : David choisit la piste suivante (« où les élèves bloquent », outils manquants n°24 / n°26, #2191 et PR Dependabot, tri des journaux wip, #1788 point 1) · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 plus tard ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement, jamais sur `goto` · **Pièges en cours** : un `id` construit sur du texte saisi part dans `error_logs` ; un module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` disparaît du build ; `db:migrate` → `! pnpm db:migrate` · **Worktree / branche** : aucun (worktree retiré après #2572)
+- **État** : 0.82.0 en prod ; #2564, #2572, #2577 mergées, pas encore en prod ; piste « où les élèves bloquent » **reportée** (prod au 2026-11-11 : 101 traces, 2 élèves sur 82, 0 réponse enregistrée ; besoins P3, P4, P6, P7, P8, E4 déjà validés dans `formes-de-serie`) · **Prochaine action** : David choisit (n° 26 « mesurer en posant la règle » : à ouvrir, phase 0 d'abord ; montée ESLint typescript-eslint + eslint-plugin-svelte + globals, délai du job Lint relevé ; majeures #2075 brevo, #2074 blockly, #1667 SvelteKit 3 ; tri des journaux wip ; #1788 point 1) · **En attente de David** : fermer #2537 (refusé au mode auto) ; `git stash drop` de « deps-mineures-2537 avant rebase » (copie inutile) ; les 80 élèves sans trace sont-ils normaux ? · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572, #2577 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 plus tard ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement, jamais sur `goto` ; typst.ts hors de Dependabot · **Pièges en cours** : monter un paquet de la config ESLint invalide tout le cache → Lint à froid > 30 min ; un `id` construit sur du texte saisi part dans `error_logs` ; module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` = absent du build ; `db:migrate` → `! pnpm db:migrate` · **Worktree / branche** : aucun
+
+## Lot mineur de Dependabot (#2577, mergée le 2026-11-12)
+
+- Reprend #2537 (53 montées), rebasé sur main (#2571 compris). **Hors du lot** : typst.ts (refus du
+  2026-10-12, désormais `ignore` dans `.github/dependabot.yml`) ; typescript-eslint (épinglé 8.71.0),
+  eslint-plugin-svelte, globals : leur montée change la config ESLint → cache entièrement invalidé →
+  Lint à froid coupé à 30 min (vu sur #2537 et au 1er passage de #2577 ; dossier par dossier, ESLint
+  n'est pas plus lent). Local : `pnpm lint` à froid meurt à court de mémoire (exit 134) à 15 min.
+- **bits-ui 2.20** : le déclencheur d'un `Select` a le rôle `combobox` (15 fichiers de tests passés de
+  `button` à `combobox`). Une combobox ne tire pas son nom de son contenu : `MySelect` sans
+  `placeholder` ni `triggerAriaLabel` n'avait plus de nom (glossaire) → nom par défaut = valeur
+  affichée. Doc : `docs/pratiques/composants-ui.md`.
+- **svelte 5.57.3** refuse `$props<T>()` (6 fichiers) ; **MathLive 0.111.4** retire `url()` de
+  `\htmlStyle` (témoin de la sonde d'historique : `color:zzevil`) ; lockfile dédoublonné
+  (`@codemirror/view` en double cassait les types des éditeurs).
+- `wrapDynamicImport` dans les logs des tests navigateur : bruit, sans échec associé.
+- Reste : majeures #2075 (brevo 3 → 6), #2074 (blockly 12 → 13), #1667 (SvelteKit 3, alertes faibles
+  96, 97, 100, 101) ; #2191 ouverte ; alerte 103 (deepmerge) sans correctif amont.
 
 ## Onglet resté ouvert pendant un déploiement (2026-11-11)
 
