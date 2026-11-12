@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2574._
+_Mis à jour le 2026-11-12, PR 3 en préparation (pas encore de PR)._
 
-- **État** : PR 2 mergée (#2574) — routes `GET /api/student/avatars`, `buy/`, `wear/`, `AvatarShopSection` dans l'onglet « Avatars » du Marché ET dans « Mon profil », export RGPD. Rien en prod tant que `pnpm deploy:prod` n'est pas lancé (sur demande de David) ; catalogue vide : l'écran dit « Les premiers avatars arrivent bientôt ».
-- **Prochaine action** : PR 3 — images du premier lot (`static/avatars/…webp`) + lignes du catalogue (migration de données).
-- **En attente de David** : images du premier lot (`boutique-avatars-prompts.md`). Bouton « Utiliser l'emblème par défaut » : tranché (2026-11-12) — plus tard, pour tous, photo Google gardée.
-- **Pièges en cours** : Marché ouvert à 37/81 élèves → boutique aussi dans « Mon profil ». Navigateur : tester sur `127.0.0.1:<port>` (`--host 127.0.0.1`), pas `localhost` (cookie admin de David). Runs CI fantômes possibles (« queued » sans job) : un nouveau commit ou `gh workflow run` les débloque.
-- **Worktree / branche** : aucun (à créer pour la PR 3)
+- **État** : branche `feat/boutique-avatars-pr3` poussée : migration `20261112044727_avatar_catalog_premier_lot.sql` (21 avatars, données seules, jouée en LOCAL seulement), `pnpm avatars:convertir <dossier>` (→ `static/avatars/<clé>.webp`, 512 px), test d'intégration `avatar-catalog-images.test.ts` rouge tant qu'une image manque.
+- **Prochaine action** : convertir les images de David, test vert, `check:incremental`, PR, CI, merge, puis `db:migrate` (additive, question d'accès inchangée) depuis la branche mergée.
+- **En attente de David** : les 21 images, nommées selon `boutique-avatars-prompts.md` § Noms des fichiers ; et la validation des noms/sujets du lot (le fichier dit encore « à valider »).
+- **Pièges en cours** : ne PAS merger avant les images (image cassée partout où l'avatar est porté). Marché ouvert à 37/81 élèves → boutique aussi dans « Mon profil ». Navigateur : `127.0.0.1:<port>` (`--host 127.0.0.1`). Runs CI fantômes possibles.
+- **Worktree / branche** : `../ubumaths-wt-boutique-avatars` · `feat/boutique-avatars-pr3`
 
 ## Décisions de David (2026-11-06)
 

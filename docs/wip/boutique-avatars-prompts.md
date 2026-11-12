@@ -42,6 +42,24 @@ Composition: square 1:1 format, the subject centered and filling about 70% of th
 | Automates de Turingrad  | Le Rossignol mécanique  | 60     | a mechanical nightingale made of copper and brass with a wind-up key on its back, singing                                                                       |
 | Automates de Turingrad  | Le Chat à vapeur        | 60     | a mechanical cat made of brass plates and rivets, a little steam whistle tail, green glowing eyes                                                               |
 
+## Noms des fichiers (PR 3)
+
+Enregistrer chaque image sous la clé du catalogue (`.png` ou `.jpg`), toutes dans un même dossier, puis `pnpm avatars:convertir <dossier>` → `static/avatars/<clé>.webp`.
+
+| Nom affiché             | Fichier              | Nom affiché            | Fichier                  |
+| ----------------------- | -------------------- | ---------------------- | ------------------------ |
+| La Chandelle verte      | `green_candle`       | L'Infini-chenille      | `infinity_caterpillar`   |
+| Le Croc à phynances     | `phynance_hook`      | Le Ruban de Möbius     | `mobius_ribbon`          |
+| Le Bateau-passoire      | `colander_boat`      | Le Pantin rouge        | `red_puppet`             |
+| La Galopine aux tresses | `galopine_braids`    | Le Bouffon à gidouille | `gidouille_jester`       |
+| Le Galopin bouclé       | `galopin_curly`      | Le Pantin du Czar      | `czar_puppet`            |
+| Le Galopin à lunettes   | `galopin_glasses`    | L'Ours de Lituanie     | `lithuanian_bear`        |
+| Le Cube-vache           | `cube_cow`           | Le Hibou savant        | `scholar_owl`            |
+| Le Dodécaèdre-mouton    | `dodecahedron_sheep` | Le Renard palotin      | `palotin_fox`            |
+| Le Tétraèdre-chèvre     | `tetrahedron_goat`   | L'Automate calculateur | `calculating_automaton`  |
+| Le Pi moustachu         | `mustached_pi`       | Le Rossignol mécanique | `mechanical_nightingale` |
+|                         |                      | Le Chat à vapeur       | `steam_cat`              |
+
 ## Les 3 cadres (anneau seul, centre vide)
 
 Modèle : remplacer `<ANNEAU>`.
