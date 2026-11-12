@@ -8,7 +8,7 @@ Ouvert le 2026-11-12 : `docs/wip/outils-manquants.md` n° 28, né de la revue de
 
 _Mis à jour le 2026-11-12, PR 1 (migration) en cours._
 
-- **État** : PR 1 = migration `class_regularity_weeks` + intégration (4, rouges sans la migration, vertes avec) · **Prochaine action** : revue `security-auditor`, PR, CI, merge, `db:migrate`, `db:types` ; puis PR 2 (le code de `getClassRegularityGrid` appelle la fonction) · **En attente de David** : rien · **Pièges en cours** : base locale : l'historique des migrations est en retard sur le schéma (`migration up --local` échoue sur `20261112131750`) → appliquer le fichier par `psql` + `notify pgrst` ; mono-prof : `is_my_student` = tout prof, pas de cas « autre prof » · **Worktree / branche** : `../ubumaths-wt-regularite-sql` · `feat/regularite-sql`
+- **État** : PR 1 = migration `class_regularity_weeks` + intégration (5 ; les 4 premiers rouges sans la migration, verts avec) ; `security-auditor` : rien de bloquant · **Prochaine action** : revue `security-auditor`, PR, CI, merge, `db:migrate`, `db:types` ; puis PR 2 (le code de `getClassRegularityGrid` appelle la fonction) · **En attente de David** : rien · **Pièges en cours** : base locale : l'historique des migrations est en retard sur le schéma (`migration up --local` échoue sur `20261112131750`) → appliquer le fichier par `psql` + `notify pgrst` ; mono-prof : `is_my_student` = tout prof, pas de cas « autre prof » · **Worktree / branche** : `../ubumaths-wt-regularite-sql` · `feat/regularite-sql`
 
 ## Constat (2026-11-12)
 
@@ -33,11 +33,16 @@ en mémoire : traces par élève × jour de Paris → jours ≥ 5 traces → jou
 ## PR 1 — migration (2026-11-12)
 
 - `supabase/migrations/20261112210248_regularite_comptee_en_base.sql` ; intégration
-  `tests/integration/regularite-comptee-en-base.test.ts` (4) : comptes exacts pour le prof
+  `tests/integration/regularite-comptee-en-base.test.ts` (5) : comptes exacts pour le prof
   (frontière de Paris, 4 traces, contrôle, sans lieu, `srs`, `student_self`, avant la rentrée),
-  membre archivé exclu, élève limité à ses traces, `anon` refusé (42501). Rouges sans la migration
+  membre archivé exclu, élève limité à ses traces, élève hors classe → rien, `anon` refusé (42501). Rouges sans la migration
   (fonction introuvable), vertes avec.
 - **Écart avec la phase 0** : le cas « un prof d'une autre classe → 0 ligne » n'existe pas
   (mono-prof : `is_my_student` et `is_class_teacher` = tout prof ou admin) ; remplacé par « membre
   archivé exclu ». Réponse à la question d'accès inchangée.
 - Plan : `idx_skill_attempts_student_time` utilisé (jointure par élève, borne `created_at`).
+- `security-auditor` : aucun finding bloquant (prod : mêmes policies SELECT qu'en local ; timing
+  par élève via l'index ; `p_first_day` ancien ou `p_min_traces` ≤ 0 sans effet nuisible). Faibles :
+  cas « élève hors classe » ajouté (test 4, vert) ; **à faire en PR 2** : `p_min_traces` NULL rend
+  une grille vide en silence → l'appelant passe la constante `MIN_TRACES_PER_ACTIVE_DAY` ; garder
+  `locals.supabase` + `requireTeacherOfClass`, ne renvoyer que les paliers.

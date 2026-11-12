@@ -11,7 +11,8 @@
  *      exclu ;
  *   2. membre archivé de la classe : pas compté ;
  *   3. un élève ne compte que ses propres traces (RLS, security invoker) ;
- *   4. `anon` n'a pas l'exécution.
+ *   4. un élève hors de la classe n'obtient rien ;
+ *   5. `anon` n'a pas l'exécution.
  *
  * @vitest-environment node
  */
@@ -175,6 +176,11 @@ describe('class_regularity_weeks (base locale)', () => {
 		expect(await weeks(studentB.client)).toEqual([
 			{ student_id: studentB.id, week_start: '2026-10-12', active_days: 1 }
 		]);
+	});
+
+	it("un élève hors de la classe n'obtient rien", async () => {
+		const outsider = await TestData.profile().withRole('student').create();
+		expect(await weeks(await clientFor(outsider.email!))).toEqual([]);
 	});
 
 	it("anon n'a pas l'exécution", async () => {
