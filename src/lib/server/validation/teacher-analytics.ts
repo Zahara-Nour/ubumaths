@@ -31,12 +31,6 @@ export const retentionQuerySchema = z.object({
 	weeks: z.coerce.number().int().min(1).max(26).default(8)
 });
 
-/** Query : ?days=30 (1..60) pour Widget C. */
-export const heatmapQuerySchema = z.object({
-	days: z.coerce.number().int().min(1).max(60).default(30),
-	alertThresholdDays: z.coerce.number().int().min(1).max(30).default(5)
-});
-
 /** Query : ?topN=10 (1..30) pour Widgets E & G. */
 export const topNQuerySchema = z.object({
 	topN: z.coerce.number().int().min(1).max(30).default(10)

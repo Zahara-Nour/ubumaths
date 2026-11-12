@@ -9,7 +9,7 @@ couvre:
 
 # Analytique prof — la page « analytics » d'une classe
 
-> Vérifié contre le code le 2026-10-21 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
+> Vérifié contre le code le 2026-10-21 ; widget C remplacé par la régularité le 2026-11-12 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
 > [teacher-analytics-progress.md](../archive/wip/teacher-analytics-progress.md) (archivé, ne décrit
 > pas le code actuel).
 
@@ -61,10 +61,18 @@ Onglet 📘 Connaissances :
   dans le programme du niveau de la classe (points non archivés de ce niveau dont la branche,
   lue en remontant sous-notion → notion → branche, est celle choisie). Retrievability moyenne par
   semaine (8 par défaut), lue dans `srs_card_stats.review_history`. Rien n'est tracé sous 3 révisions.
-- **C — Heatmap d'activité** (`ClassActivityHeatmap.svelte`) : élève × jour (30 j), nombre de
-  tentatives ; alerte au-delà de 5 jours sans activité. Les cartes de cours comptent comme activité
-  mais pas dans le taux de réussite (`success_pct` à `null` un jour sans question notée) ; les autres
-  traces « déclaré » (`student_self`) aussi, sauf la révision (lieu `review`), qui y compte.
+- **C — Régularité** (`ClassRegularityGrid.svelte`, `getClassRegularityGrid` dans
+  `class-regularity.ts`, chantier `regularite`, 2026-11-12) : élève × **semaine** (lundi → dimanche,
+  heure de Paris), de la rentrée (`start_date` de l'année scolaire active de l'école ; à défaut, ou
+  rentrée à venir, le 1er septembre écoulé) à la semaine en cours. Case = **palier** de jours actifs :
+  0 (vide), 1, 2-3, 4+, une seule couleur (`--color-primary`) en quatre intensités ; survol ou appui
+  = le palier en toutes lettres. **Le serveur n'envoie que le palier** (ni nombre de jours, ni dates,
+  ni compte de traces). Jour actif = au moins 5 traces le même jour de Paris, écrites par l'élève
+  (sources `auto` / `srs` / `student_self`), hors contrôle (lieu `evaluation`) ; une trace sans lieu
+  (antérieure à `formes-de-serie`) compte. Semaine qui touche un jour de `school_holidays` : repère
+  dans l'en-tête, colorée comme les autres. Traces lues page par page (`readAllRows`) ; une lecture en
+  échec rend une erreur, affichée dans le cadre du widget. Remplace l'ancienne carte élève × jour
+  (30 j, nombres de traces, alerte après 5 jours sans activité), jugée trop précise (besoin P5).
 - **D — Histogramme des notes** : **retiré** le 2026-11-11 (chantier `formes-de-serie`) — avec deux
   boutons « Pas réussi / Réussi », la grille A dit déjà réussi / raté.
 - **E — Top à remédier** (`TopCurriculumPointsToRemediate.svelte`) : points triés par % 🆘 + 🔁 ; clic →
@@ -93,17 +101,18 @@ chaque widget suit dans son `$effect` de chargement).
   chargent leurs données eux-mêmes, côté client.
 - Agrégations (`src/lib/server/stats/`, barrel `index.ts`) :
   - `class-knowledge.ts` : `getClassCurriculumPointGrid`, `getClassTopCurriculumPointsToRemediate`,
-    `getStudentRetentionCurve`, `getClassActivityHeatmap` ;
+    `getStudentRetentionCurve` ;
+  - `class-regularity.ts` : `getClassRegularityGrid` (et ses fonctions pures, testées seules) ;
   - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate`.
     Requêtes groupées (pas une requête par élève) ; les listes de modèles sont découpées par
     `fetchInChunks`.
 - Endpoints `GET` sous `src/routes/api/teacher/classes/[classId]/analytics/` : `knowledge-grid`
   (`?includeAllCycle`), `knowledge-top-remediate` (`?topN`), `knowledge-retention/[studentId]`
-  (`?branch=<uuid>&weeks`), `knowledge-heatmap` (`?days&alertThresholdDays`), `competence-grid`,
+  (`?branch=<uuid>&weeks`), `regularity` (sans paramètre), `competence-grid`,
   `competence-top-consolidate` (`?topN`). Tous : Zod puis `requireTeacherOfClass` ; la route par élève vérifie en plus l'appartenance à la classe
   dans `class_members`.
-- Zod : `src/lib/server/validation/teacher-analytics.ts` (6 schémas, bornes : `topN` 1-30,
-  `weeks` 1-26, `days` 1-60, `alertThresholdDays` 1-30).
+- Zod : `src/lib/server/validation/teacher-analytics.ts` (5 schémas, bornes : `topN` 1-30,
+  `weeks` 1-26).
 - Composants : `src/lib/components/teacher/analytics/` (6 widgets + `AnalyticsModal`) ; onglet
   Surveillance : `src/lib/components/teacher/anti-fraud/`.
 
