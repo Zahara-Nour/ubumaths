@@ -423,5 +423,7 @@ describe('seriesElapsedMs — durée envoyée en fin de série (B3)', () => {
 		expect(seriesElapsedMs(61_000, 1_000)).toBe(0);
 		// Page laissée ouverte deux jours
 		expect(seriesElapsedMs(0, 48 * 3600 * 1000)).toBe(24 * 3600 * 1000);
+		// Début inconnu : 0, jamais NaN (envoyé en null)
+		expect(seriesElapsedMs(Number.NaN, 1_000)).toBe(0);
 	});
 });

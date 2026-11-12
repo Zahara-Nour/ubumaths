@@ -270,3 +270,8 @@ Révision (FSRS) = traces **déclarées** (`student_self`) ; flash-cards = pas d
   Celle-là, on l’a enfin eue ! » · « Ouais ! Tu as tenu bon, et ça a payé ! » · « Celle qui nous
   résistait ? Battue ! Tope là ! ».
 - Doc : `buddy-palotins.md` § « Question longtemps ratée enfin réussie ».
+- Revues : `security-auditor` (rien de bloquant ; lecture passée du client service au client de
+  l'élève, RLS en seconde barrière) ; `code-reviewer` : durée mal formée → 400 et gain perdu →
+  corrigé (`.catch(undefined)`, NaN côté client → 0) ; tri sur l'instant, pas la chaîne → corrigé ;
+  requête jamais vue contre la base → intégration `palotin-question-longtemps-ratee` (4, rouge sans
+  le filtre `source`). Gardé : page ouverte > 24 h, durée bornée à 24 h (rare, sans effet hors fête).

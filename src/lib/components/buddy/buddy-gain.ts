@@ -129,7 +129,10 @@ export function parseBuddyGain(payload: unknown): BuddyGain | null {
  * laissée ouverte deux jours ne font jamais refuser le gain.
  */
 export function seriesElapsedMs(startTime: number, now: number = Date.now()): number {
-	return Math.min(Math.max(Math.round(now - startTime), 0), SERIES_MAX_MS);
+	const elapsed = Math.round(now - startTime);
+	// Début inconnu : 0, aucune réussite « dans la série », donc pas de fête
+	if (!Number.isFinite(elapsed)) return 0;
+	return Math.min(Math.max(elapsed, 0), SERIES_MAX_MS);
 }
 
 /** « 1 pansée », « 12 pansées » (mots du lore, jamais « XP »). */

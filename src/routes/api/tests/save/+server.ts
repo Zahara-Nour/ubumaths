@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { validateSaveTest } from '$lib/server/validation/tests';
@@ -11,6 +12,7 @@ import {
 } from '$lib/server/course-card-attempts';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '$lib/types/database';
 
 const logger = createServerLogger('api/tests/save/+server');
 
@@ -117,7 +119,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				];
 				buddyXp = {
 					...gain,
-					longStruggleWon: await isLongStruggleWon(user.id, wonTemplateIds, seriesElapsedMs)
+					longStruggleWon: await isLongStruggleWon(
+						supabase,
+						user.id,
+						wonTemplateIds,
+						seriesElapsedMs
+					)
 				};
 			}
 		} catch (buddyError) {
@@ -138,6 +145,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
  * (la fête manque, jamais le gain).
  */
 async function isLongStruggleWon(
+	supabase: SupabaseClient<Database>,
 	studentId: string,
 	wonTemplateIds: string[],
 	seriesElapsedMs: number | undefined
@@ -145,6 +153,7 @@ async function isLongStruggleWon(
 	if (seriesElapsedMs === undefined || wonTemplateIds.length === 0) return false;
 	try {
 		return await loadLongStruggleWon(
+			supabase,
 			studentId,
 			wonTemplateIds,
 			new Date(Date.now() - seriesElapsedMs)

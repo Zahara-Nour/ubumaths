@@ -12,12 +12,15 @@
  * - « Déjà dit » sans stockage (U4) : une réussite plus tardive casse la règle
  *   d'elle-même ; seule une réussite postérieure au début de la série compte,
  *   pour qu'une 2e série du même jour ne refête pas.
- * - Lu en base avec les droits du serveur, jamais d'après le client : le client
- *   ne fait que désigner les modèles à relire et la durée de la série.
+ * - Lu en base avec le client de l'élève (RLS : ses traces seulement, en plus
+ *   du filtre `student_id`), jamais d'après le corps : le client ne fait que
+ *   désigner les modèles à relire et la durée de la série. Une trace masquée
+ *   par la RLS ne coûte que la fête.
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { schoolDay } from '$lib/server/course-card-attempts';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import type { Database } from '$lib/types/database';
 
 // Types
 /** Trace d'un modèle : instant et verdict (`null` = inconnu) */
@@ -52,7 +55,8 @@ function daysBetween(from: string, to: string): number {
 export function isLongStruggleWon(traces: StruggleTrace[], since: Date): boolean {
 	const known = traces
 		.filter((t): t is StruggleTrace & { success: boolean } => t.success !== null)
-		.sort((a, b) => a.created_at.localeCompare(b.created_at));
+		// Tri sur l'instant : PostgREST tronque les zéros des fractions de seconde
+		.sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
 	const sinceMs = since.getTime();
 	const winIndex = known.findIndex((t) => t.success && new Date(t.created_at).getTime() >= sinceMs);
 	if (winIndex === -1) return false;
@@ -74,16 +78,16 @@ export function isLongStruggleWon(traces: StruggleTrace[], since: Date): boolean
  * parallèle. Lecture en échec → lève (l'appelant n'en fait pas un échec).
  */
 export async function loadLongStruggleWon(
+	supabase: SupabaseClient<Database>,
 	studentId: string,
 	templateIds: string[],
 	since: Date
 ): Promise<boolean> {
 	const ids = [...new Set(templateIds)].slice(0, MAX_TEMPLATES);
 	if (ids.length === 0) return false;
-	const service = createServiceRoleClient();
 	const results = await Promise.all(
 		ids.map(async (templateId) => {
-			const { data, error } = await service
+			const { data, error } = await supabase
 				.from('skill_attempts')
 				.select('created_at, success')
 				.eq('student_id', studentId)

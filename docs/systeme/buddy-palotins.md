@@ -507,7 +507,7 @@ et `daily_cap` ; « Nouveau tour de panse » et la panse pleine restent dits a p
   debut de serie empeche une 2e serie du meme jour de refeter. Le client envoie la **duree** de la
   serie (`seriesElapsedMs`, 0 a 24 h), jamais une heure : le serveur en tire le debut avec sa
   propre horloge. Sans duree (ancien client) : pas de fete.
-- **Lecture** : `api/tests/save` relit, avec les droits du serveur et l'`id` de la session, les
+- **Lecture** : `api/tests/save` relit, avec le client de l'eleve (RLS) et l'`id` de la session, les
   100 dernieres traces de chaque modele **reussi** de la serie (30 modeles au plus), seulement si
   l'eleve a un Palotin (gain non nul). Champ `buddy_xp.longStruggleWon` ; lecture en echec → `false`,
   le gain reste. Cote client, mal forme → ignore (la fete manque, jamais le gain).

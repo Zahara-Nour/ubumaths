@@ -144,13 +144,15 @@ export const saveTestSchema = z
 		items: seriesItemsSchema,
 		assignmentId: uuidSchema.optional(),
 		// Durée de la série (ms, horloge du client) : le serveur en tire son début,
-		// sans dépendre de l'heure du client (question longtemps ratée, B3 `regularite`)
+		// sans dépendre de l'heure du client (question longtemps ratée, B3 `regularite`).
+		// Mal formée → ignorée : la fête manque, jamais le gain (pas de 400)
 		seriesElapsedMs: z
 			.number()
 			.int()
 			.min(0)
 			.max(24 * 3600 * 1000)
 			.optional()
+			.catch(undefined)
 	})
 	.refine(
 		(data) => {
