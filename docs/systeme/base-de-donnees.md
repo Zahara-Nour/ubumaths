@@ -132,8 +132,7 @@ le remplacer par un `coalesce`. L'élève archivé relit ce qu'il a reçu, ne re
 de [CONTEXT.md](../../CONTEXT.md#les-personnes-et-les-frontières). Toute mesure sur les élèves part
 de là (`where student_id in (select student_id from public.active_student_ids())`), jamais de
 `profiles` entier : il mêle les comptes des années passées (adhésions archivées au passage
-d'année), les élèves hors-classe et les élèves de test. `security invoker`, exécution réservée à
-`service_role` (42501 pour `anon` et `authenticated`). Test : `tests/integration/eleves-actifs.test.ts`.
+d'année), les élèves hors-classe et les élèves de test. `security invoker`, exécution réservée à `service_role` (scripts serveur) et à `supabase_read_only_user` (l'outil Supabase en lecture seule, qui lit déjà toutes les tables ; migration `20261112154105`) — 42501 pour `anon` et `authenticated`. Test : `tests/integration/eleves-actifs.test.ts`.
 
 **Import d'élèves** : deux ordres possibles, à toujours considérer. Import puis connexion : la ligne
 `pending_students` est activée à la première connexion. Connexion avant import : il faut insérer

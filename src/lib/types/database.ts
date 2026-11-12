@@ -14543,6 +14543,12 @@ export type Database = {
         Args: { p_proposal_id: string; p_user_id: string }
         Returns: Json
       }
+      active_student_ids: {
+        Args: never
+        Returns: {
+          student_id: string
+        }[]
+      }
       add_buddy_xp: {
         Args: { p_is_milestone?: boolean; p_student_id: string; p_xp: number }
         Returns: Json

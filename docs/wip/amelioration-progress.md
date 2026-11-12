@@ -21,6 +21,15 @@ _Mis à jour le 2026-11-12, après #2598._
 - `security-auditor` : aucun finding bloquant (ACL vérifiée en local : `service_role` et `postgres`
   seuls ; `security invoker`, `search_path` vide). `code-reviewer` : rien de bloquant.
 
+## Élèves actifs : rôle de lecture seule et types (`feat/eleves-actifs-lecture`, 2026-11-12)
+
+- Après le `db:migrate` de #2598, l'outil Supabase en lecture seule (`supabase_read_only_user`) est
+  refusé (42501) : la phase 0 le donnait pour usager, à tort (il n'est pas `service_role`).
+  **David : ouvrir l'exécution à ce rôle** — il lit déjà toutes les tables, rien de gagné.
+- Migration `20261112154105` (GRANT seul, rollback en commentaire). Test : `postgres` local ne peut
+  pas `set role supabase_read_only_user` → on lit `has_function_privilege` ; rouge sans la
+  migration, 10 verts avec. `db:types` depuis la prod (la fonction y est) ; cast `as never` retiré.
+
 ## Lot mineur de Dependabot (#2577, mergée le 2026-11-12)
 
 - Reprend #2537 (53 montées), rebasé sur main (#2571 compris). **Hors du lot** : typst.ts (refus du

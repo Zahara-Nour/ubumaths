@@ -8,7 +8,9 @@
  * d'année —, les élèves hors-classe et les élèves de test (`profiles.is_test`)
  * n'y figurent pas.
  *
- * Accès : réservée à `service_role` (mesures, scripts serveur). Un élève, un
+ * Accès : réservée à `service_role` (scripts serveur) et à
+ * `supabase_read_only_user` (l'outil Supabase en lecture seule, qui lit déjà
+ * toutes les tables : il sert aux mesures). Un élève, un
  * professeur ou un visiteur anonyme est refusé (`42501`) : la fonction ne
  * sert jamais au navigateur.
  *
@@ -23,6 +25,8 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { Database } from '$lib/types/database';
+import type { Client } from 'pg';
+import { connectPostgresClient } from '../helpers/database/postgres-client';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =
@@ -48,19 +52,14 @@ async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 	return client;
 }
 
-/**
- * La fonction n'est pas encore dans les types générés.
- * TODO après `db:types` : retirer le cast, qui masquerait une dérive de signature.
- */
 function callActiveStudentIds(client: SupabaseClient<Database>) {
-	return client.rpc('active_student_ids' as never);
+	return client.rpc('active_student_ids');
 }
 
 async function activeIds(): Promise<string[]> {
 	const { data, error } = await callActiveStudentIds(service);
 	if (error) throw new Error(`active_student_ids : ${error.message}`);
-	const rows = (data ?? []) as unknown as { student_id: string }[];
-	return rows.map((r) => r.student_id);
+	return (data ?? []).map((r) => r.student_id);
 }
 
 describe('active_student_ids — les élèves actifs, pour les mesures', () => {
@@ -149,6 +148,20 @@ describe('active_student_ids — les élèves actifs, pour les mesures', () => {
 
 	it('un professeur n’y figure pas', async () => {
 		expect(await activeIds()).not.toContain(teacherId);
+	});
+
+	it('le rôle de lecture seule des mesures peut l’appeler', async () => {
+		// `postgres` n'est pas superutilisateur en local : il ne peut pas endosser
+		// ce rôle (`set role`). On lit donc le droit lui-même.
+		const pg: Client = await connectPostgresClient();
+		try {
+			const { rows } = await pg.query<{ allowed: boolean }>(
+				"select has_function_privilege('supabase_read_only_user', 'public.active_student_ids()', 'execute') as allowed"
+			);
+			expect(rows[0]?.allowed).toBe(true);
+		} finally {
+			await pg.end();
+		}
 	});
 
 	it.each([
