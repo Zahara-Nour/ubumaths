@@ -5,17 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après la phase 0 du § 29._
+_Mis à jour le 2026-11-12, après #2597 (bloc ` ```schema-barres `)._
 
-- **État** : lots 1 à 12 clos ; restent 142 et le groupe D (sans modèle, § 5). Phase 0 de l'outil « schéma en
-  barres » validée (§ 29) : bloc ` ```schema-barres `, chantier à part `schema-barres`.
-- **Prochaine action** : chantier `schema-barres` (PR 1 affichage) ; après son merge, lot 13 (6 modèles 6-142).
-- **En attente de David** : rien.
-- **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`). `texte(P, …)` décale en haut à droite :
-  `dx=0, dy=0, ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
+- **État** : lots 1 à 12 clos ; restent 142 et le groupe D (sans modèle, § 5). Bloc ` ```schema-barres ` mergé
+  (#2597, pas encore en prod) ; syntaxe : `docs/systeme/ubumark.md` § « Schéma en barres ».
+- **Prochaine action** : lot 13 (6 modèles 6-142, décisions du § 29 point 5) : phase 0 du lot (variations, plages,
+  niveaux, formes de réponse) à soumettre à David ; modèles en brouillon jusqu'au `deploy:prod` qui livre le bloc.
+- **En attente de David** : rien (la phase 0 du lot 13 lui sera soumise).
+- **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`). Schéma en barres : `-80` raccourcit la barre
+  (`Bronze : ? (2,5) ; -80 (1,5)` sous `Argent : ? (4)`), un `=` dans une étiquette ouvre l'accolade.
+  `texte(P, …)` décale en haut à droite : `dx=0, dy=0, ancre="centre"`. `\pi` dans `eval:`. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
   `publier-lot.ts` (même en simulation) est refusé par le mode auto : David le lance avec `!`.
-- **Worktree / branche** : aucun pour `questions-6` ; outil dans `../ubumaths-wt-schema-barres`.
+- **Worktree / branche** : aucun (à créer pour le lot 13).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1807,3 +1809,9 @@ Décisions :
    (3) « n fois plus » ; (4) trois parts avec écarts ; (5) deux lignes (pastèque / ananas) ; (6) a × ? + b = c.
    Entiers, résultats entiers ≤ 1 000. CM1-063, CM2-066 restent à leurs chantiers.
 6. **Question d'accès** de la migration (nœud + tag) : aucun accès nouveau.
+
+### 29.1 Bloc livré (2026-11-12)
+
+Chantier [`schema-barres`](../archive/wip/schema-barres-progress.md) : #2597 mergé (CI verte, revue `code-reviewer`
+sans bloquant), rendu vérifié à l'écran et au PDF. Exemple de la phase 0 corrigé : « 80 de moins » = barre plus
+courte (`Bronze : ? (2,5) ; -80 (1,5)`). Vitrine `/demo/blocs` : le schéma y reste (David, « je te suis »).

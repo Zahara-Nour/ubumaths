@@ -1,20 +1,20 @@
 # Chantier « schema-barres » — bloc ` ```schema-barres ` (schéma en barres)
 
 > Outil neuf de la 6e (point 6-142), aussi pour CM1-063 et CM2-066. Phase 0 validée par David le 2026-11-12 :
-> [`questions-6`](questions-6-progress.md) § 29. Ligne 31 de [`outils-manquants.md`](outils-manquants.md).
+> [`questions-6`](../../wip/questions-6-progress.md) § 29. Ligne 31 de [`outils-manquants.md`](../../wip/outils-manquants.md).
 > Recette : `docs/systeme/ubumark.md` § « Comment étendre — nouveau bloc spécial » ; patron : ` ```partage `.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, à l'ouverture de la PR 1._
+_Mis à jour le 2026-11-12, après #2597. Chantier clos, journal archivé._
 
-- **État** : PR 1 (affichage) écrite, revue (`code-reviewer` : aucun bloquant), PR ouverte.
-- **Prochaine action** : CI verte → merge ; puis retour à `questions-6`, lot 13 (6 modèles 6-142), modèles en
-  brouillon jusqu'au `deploy:prod` qui livre le bloc.
-- **En attente de David** : garder le schéma dans la vitrine `/demo/blocs` (10 blocs au lieu de 9) ?
-- **Pièges en cours** : `-80` retire de la longueur : la barre « 80 de moins » est plus COURTE que celle de
-  référence (`Bronze : ? (2,5) ; -80 (1,5)` sous `Argent : ? (4)`). Un `=` dans une étiquette ouvre l'accolade.
-- **Worktree / branche** : `../ubumaths-wt-schema-barres` · `feat/schema-barres`.
+- **État** : bloc ` ```schema-barres ` (affichage) mergé, #2597 ; doc durable dans `docs/systeme/ubumark.md`.
+  Vitrine `/demo/blocs` à 10 blocs (David, 2026-11-12 : garder).
+- **Prochaine action** : aucune ici ; les modèles 6-142 sont le lot 13 de `questions-6`.
+- **En attente de David** : rien.
+- **Pièges** : `-80` retire de la longueur (la barre « 80 de moins » est plus COURTE que la référence) ; un `=`
+  dans une étiquette ouvre l'accolade.
+- **Worktree / branche** : supprimés.
 
 ## 1. Décisions (phase 0, `questions-6` § 29)
 
@@ -80,3 +80,4 @@ total : 320 €
   réelle. Rendu vérifié à l'écran (clair, sombre, colonne de 358 px) et au PDF (4 exemples). Exemple des primes
   corrigé (bronze plus court). Revue `code-reviewer` : aucun bloquant ; mineur corrigé (barre sans nom désignée
   par son rang).
+- 2026-11-12 — #2597 mergé (CI verte). Chantier clos, journal archivé.

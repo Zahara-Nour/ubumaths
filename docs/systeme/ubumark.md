@@ -1006,7 +1006,7 @@ _Plusieurs figures_ (`unites: N`, de 1 à 5 ; absent = 1) : N figures identiques
 > les rangs à 5 figures (la réponse attendue ne dit pas combien sont dessinées). Correction : « Tu as colorié
 > 5 parts ; il fallait en colorier 7 (7/4, chaque figure a 4 parts). », figures justes unités pleines d'abord.
 
-**Schéma en barres** (chantier [schema-barres](../wip/schema-barres-progress.md), affichage seulement : aucun geste,
+**Schéma en barres** (chantier [schema-barres](../archive/wip/schema-barres-progress.md), affichage seulement : aucun geste,
 aucune case) — `src/lib/ubumark/__tests__/schema-barres/` :
 
 ````text
