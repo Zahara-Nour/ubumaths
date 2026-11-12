@@ -219,3 +219,59 @@ David : « je valide » (mes recos).
 - Répliques `week_first_activity`, `active_weeks_3/5/10` : **validées telles quelles**.
 - Vacances commençant un samedi : la semaine d'école d'avant reste « vacances » (sautée sans
   activité) — **règle gardée**, commune avec la grille du prof.
+
+## PR B3 — phase 0 technique (2026-11-12)
+
+David : « je valide » (U1-U6, contrôles ratés comptés, `startedAt` sans migration).
+
+Constats : les traces d'une série sont écrites question par question (`/api/skill-attempts`) et
+`settle()` les attend **avant** `POST /api/tests/save`, qui calcule le gain : le serveur peut tout
+relire en base, sans faire confiance au client. Index `(student_id, template_id, created_at)` déjà
+là. La carte (`BuddyGainCard`) n'a qu'une réplique ; « Nouveau niveau » est une ligne à part.
+Révision (FSRS) = traces **déclarées** (`student_self`) ; flash-cards = pas de gain.
+
+- **U1 — Où** : fin de Saisie, Contrôle blanc, Course aux nombres (`/api/tests/save`). Pas en
+  révision ni en flash-cards (réussite déclarée, pas corrigée). Cartes de cours exclues.
+- **U2 — Règle** : pour un modèle de la série, la 1re réussite **de cette série** suit au moins
+  3 échecs **sans réussite entre eux**, le premier de ces échecs ≥ 7 jours avant (dates de Paris).
+  Une réussite plus ancienne remet le compte à zéro.
+- **U3 — Traces comptées** : corrigées par l'appli (`source = 'auto'`), contrôles compris pour les
+  échecs (un contrôle raté est un vrai raté) ; la réussite, elle, est dans la série.
+- **U4 — « Déjà dit » sans migration** : une réussite plus tardive casse la règle d'elle-même. Seul
+  risque : deux séries le même jour avec ce modèle → la 2e refêterait. Le client envoie l'heure de
+  début de série (`startedAt`, bornée : ≤ maintenant, ≥ maintenant − 24 h) ; seule une réussite
+  postérieure compte. Tricher ne rapporte rien (une réplique, aucune pansée).
+- **U5 — Affichage** : `buddy_xp.longStruggleWon: true` ; la carte remplace sa réplique par une
+  réplique `long_struggle_won` (3 par Palotin, fière, sans citer le nombre d'échecs ni de jours),
+  expression `excited`. Plusieurs modèles concernés → une seule réplique. Carte cachée (pas de
+  Palotin, rien gagné hors plafond) → rien.
+- **U6 — Coût** : une lecture des traces `auto` des modèles réussis de la série (≤ 30 modèles,
+  limitée), seulement s'il y a une réussite.
+- **Question d'accès** : aucune migration, aucune donnée nouvelle ; le serveur lit les traces de
+  l'élève lui-même. Personne ne lit rien de plus.
+- Tests : règle pure (3 échecs/6 jours → non ; réussite entre deux → remise à zéro ; 2e série du
+  jour → non ; contrôle raté compté), route (`longStruggleWon`), carte (réplique, priorité).
+
+## PR B3 — question longtemps ratée enfin réussie (2026-11-12)
+
+- `src/lib/server/buddy-struggle.ts` : `isLongStruggleWon` (pur, 12 tests) et `loadLongStruggleWon`
+  (100 dernières traces `auto` par modèle réussi, 30 modèles au plus, droits du serveur).
+- `POST /api/tests/save` : `buddy_xp.longStruggleWon`, seulement si gain non nul ; lecture en échec
+  → `false`, le gain reste (7 tests de route).
+- **Écart avec U4, même idée** : le client envoie la **durée** de la série (`seriesElapsedMs`,
+  0-24 h), pas son heure de début : le serveur calcule le début avec sa propre horloge (une horloge
+  d'élève décalée ne fait ni manquer ni refêter). Sans durée (ancien client) : pas de fête.
+- Carte : réplique `long_struggle_won` (`excited`), avant celle de montée de tour ; « Nouveau tour
+  de panse » et panse pleine restent dits. Répliques (3 par Palotin) — **à relire par David** :
+  Giron « Celle-là te résistait, et tu l’as eue ! Cornegidouille ! » · « Tu n’as rien lâché, et
+  voilà la victoire ! » · « Par ma chandelle verte, celle-là, tu l’as enfin domptée ! » ; Pile
+  « Celle-là te résistait. Aujourd’hui, elle a cédé. » · « Tu as persévéré, et elle a fini par
+  céder. » · « Ce qui semblait difficile ne l’est plus. Beau chemin. » ; Cotice « Trop fort !
+  Celle-là, on l’a enfin eue ! » · « Ouais ! Tu as tenu bon, et ça a payé ! » · « Celle qui nous
+  résistait ? Battue ! Tope là ! ».
+- Doc : `buddy-palotins.md` § « Question longtemps ratée enfin réussie ».
+- Revues : `security-auditor` (rien de bloquant ; lecture passée du client service au client de
+  l'élève, RLS en seconde barrière) ; `code-reviewer` : durée mal formée → 400 et gain perdu →
+  corrigé (`.catch(undefined)`, NaN côté client → 0) ; tri sur l'instant, pas la chaîne → corrigé ;
+  requête jamais vue contre la base → intégration `palotin-question-longtemps-ratee` (4, rouge sans
+  le filtre `source`). Gardé : page ouverte > 24 h, durée bornée à 24 h (rare, sans effet hors fête).

@@ -158,7 +158,9 @@ visiteur (`traceRecorder` nul) ; un prof n'écrit rien (la route l'ignore).
 du Palotin (Contrôle blanc, Course, Saisie — décision de David du 2026-11-11 ; jamais pour les flash-cards, que la page n'envoie plus). Hors cartes de cours, chaque réponse rapporte au Palotin
 (`addBuddyXpFromTest`, réponse `buddy_xp`) ; son thème, pour le bonus « nouveau thème », est la branche
 de l'arbre des notions où se range le point que valide la question (`fetchTemplateThemeIds`,
-`src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Une fois le gain reçu (Contrôle blanc, Course, Saisie ; ni flash, ni
+`src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Le corps porte aussi la durée de la
+série (`seriesElapsedMs`, 0 à 24 h) : le serveur en tire le début de la série pour fêter une question
+longtemps ratée enfin réussie (`buddy_xp.longStruggleWon`, voir `buddy-palotins.md`). Une fois le gain reçu (Contrôle blanc, Course, Saisie ; ni flash, ni
 évaluation, ni aperçu du prof), la page demande les nouveautés de la Chatterie
 (`fetchMathouNews`) et `TestResults` (`TypingSeries` en Saisie) les affiche sous le gain du Palotin (`MathouNewsCard`, jamais
 en évaluation) : voir [mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).

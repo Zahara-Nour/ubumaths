@@ -12,7 +12,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import BuddyGainCard from '../BuddyGainCard.svelte';
 import BuddyStatusPanel from '../BuddyStatusPanel.svelte';
-import { parseBuddyGain, receiveBuddyGain, toBuddyGainView } from '../buddy-gain';
+import { parseBuddyGain, receiveBuddyGain, seriesElapsedMs, toBuddyGainView } from '../buddy-gain';
 import { registerBuddyActivityListener } from '../palotin-presence';
 import { buddyMessages } from '$lib/config/buddy-messages';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
@@ -356,5 +356,74 @@ describe('répliques du retour après une pause (R2, 2026-11-12)', () => {
 			expect(Object.keys(buddyMessages[palotin])).not.toContain('streak_lost');
 			expect(Object.keys(buddyMessages[palotin])).not.toContain('long_absence');
 		}
+	});
+});
+
+describe('question longtemps ratée enfin réussie (B3, 2026-11-12)', () => {
+	function withStruggle(
+		longStruggleWon: unknown,
+		xpResult: Parameters<typeof saveResponse>[0] = {}
+	) {
+		const payload = saveResponse(xpResult);
+		return { ...payload, buddy_xp: { ...payload.buddy_xp, longStruggleWon } };
+	}
+
+	it('fêtée : la réplique du moment remplace celle du gain, Palotin ravi', async () => {
+		const gain = viewOf(withStruggle(true));
+		expect(gain?.expression).toBe('excited');
+		const { container } = await render(BuddyGainCard, { gain });
+		const shown = texte(container);
+		expect(shown).toContain('Giron a gagné 12 pansées');
+		expect(buddyMessages.giron.long_struggle_won.some((m) => shown.includes(m))).toBe(true);
+		expect(buddyMessages.giron.session_gain.some((m) => shown.includes(m))).toBe(false);
+	});
+
+	it('avec une montée de tour de panse : la réplique du moment, le nouveau tour reste annoncé', async () => {
+		const { container } = await render(BuddyGainCard, {
+			gain: viewOf(withStruggle(true, { leveled_up: true, new_level: 4 }))
+		});
+		const shown = texte(container);
+		expect(shown).toContain('Nouveau tour de panse : 4 !');
+		expect(buddyMessages.giron.long_struggle_won.some((m) => shown.includes(m))).toBe(true);
+	});
+
+	it('panse pleine : la réplique du moment, la panse pleine reste dite', async () => {
+		const { container } = await render(BuddyGainCard, {
+			gain: viewOf(withStruggle(true, { xp_gained: 0, daily_cap_reached: true }))
+		});
+		const shown = texte(container);
+		expect(shown).toContain('Sa panse est pleine');
+		expect(buddyMessages.giron.long_struggle_won.some((m) => shown.includes(m))).toBe(true);
+	});
+
+	it('faux, absent ou mal formé : la réplique habituelle', () => {
+		for (const value of [false, undefined, 'oui']) {
+			const gain = viewOf(withStruggle(value));
+			expect(gain, String(value)).not.toBeNull();
+			expect(buddyMessages.giron.session_gain).toContain(gain?.message);
+		}
+	});
+
+	it('répliques : 3 par Palotin, ni nombre, ni durée, ni échec rappelé', () => {
+		for (const palotin of ['giron', 'pile', 'cotice'] as const) {
+			const lines = buddyMessages[palotin].long_struggle_won;
+			expect(lines.length).toBe(3);
+			for (const line of lines) {
+				expect(line).not.toMatch(/\d|jours?\b|semaines?|fois|rat[ée]|échec|erreur|faux/i);
+				expect(line).not.toMatch(/\b(content|contente|prêt|prête|fier|fière)\b/i);
+			}
+		}
+	});
+});
+
+describe('seriesElapsedMs — durée envoyée en fin de série (B3)', () => {
+	it('durée de la série, bornée entre 0 et 24 h comme le serveur l’accepte', () => {
+		expect(seriesElapsedMs(1_000, 61_000)).toBe(60_000);
+		// Horloge qui recule
+		expect(seriesElapsedMs(61_000, 1_000)).toBe(0);
+		// Page laissée ouverte deux jours
+		expect(seriesElapsedMs(0, 48 * 3600 * 1000)).toBe(24 * 3600 * 1000);
+		// Début inconnu : 0, jamais NaN (envoyé en null)
+		expect(seriesElapsedMs(Number.NaN, 1_000)).toBe(0);
 	});
 });
