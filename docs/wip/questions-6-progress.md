@@ -8,8 +8,8 @@
 _Mis à jour le 2026-11-12, phase 0 du lot 12 proposée (§ 27)._
 
 - **État** : lots 10, 11a et 11b publiés (11b : 7 modèles 174-179, 148, relus OK, `published` en prod).
-- **Prochaine action** : lot 12 « Constructions » (173, 180, 207) : écrire le lot une fois la phase 0 validée.
-- **En attente de David** : réponses aux 5 questions du § 27.
+- **Prochaine action** : lot 12 « Constructions » (173, 180, 207) : phase 0 validée (§ 27) : écrire le lot.
+- **En attente de David** : rien.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
 ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
@@ -1734,3 +1734,7 @@ l'auteur seuls jusqu'à la publication, la migration ne fait que ranger et tague
 3. 180 : papier pointé absent, noté dans `outils-manquants.md` sans l'attendre ? (recommandé)
 4. 173 v4 « si possible » (choix, sans figure) : la garder ? (recommandé : la borne le demande)
 5. Valider la phase 0 (variations, niveaux, formes de réponse) ?
+
+**Réponses de David (2026-11-12)** : « go » sur les recommandations. (1) Un seul lot de 3 modèles. (2) 173 : longueurs
+par des segments à reporter ; triangle quelconque coté en cm noté dans `outils-manquants.md` (n° 29). (3) Papier pointé
+noté (n° 30), sans l'attendre. (4) 173 v4 gardée. (5) Phase 0 validée, avec 207 au niveau 2 seulement.
