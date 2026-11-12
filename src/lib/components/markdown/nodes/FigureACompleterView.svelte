@@ -120,6 +120,7 @@
 		solutionAngle,
 		solutionBissectrices,
 		solutionRulers,
+		solutionSegmentMeasure,
 		solutionTriangle,
 		type ConstructionAnswerInput,
 		type Drawing,
@@ -174,14 +175,20 @@
 	let interactive = $derived(answer !== undefined && !answer.disabled);
 	/** Angle à mesurer (lot 6, § 19) : la mesure se tape sous la figure, à part des repères */
 	let measureCheck = $derived(node.construction?.checks.find((c) => c.kind === 'mesure') ?? null);
-	let measured = $derived(measureCheck ? splitMeasuredAnswer(answer?.value ?? '') : null);
+	/** Segment à mesurer (n° 26) : la longueur se tape sous la figure, à part des règles posées */
+	let segmentMeasure = $derived(
+		node.construction?.checks.find((c) => c.kind === 'mesure_segment') ?? null
+	);
+	/** Une case à taper sous la figure (angle ou segment) : la réponse finit par `mesure(n)` */
+	let typed = $derived(measureCheck !== null || segmentMeasure !== null);
+	let measured = $derived(typed ? splitMeasuredAnswer(answer?.value ?? '') : null);
 	let typedMeasure = $derived(measured?.measure ?? null);
 	/** Rapporteur déjà posé (lot 8, § 23) : figé, aucun outil ; l'élève tape seulement la mesure */
 	let posedMeasure = $derived(measureCheck?.posed === true);
 	/** L'élève peut-il tracer ? (pas quand le rapporteur est déjà posé) */
 	let drawable = $derived(interactive && !posedMeasure);
 	let objects = $derived(
-		parseConstructionAnswer(measureCheck ? (measured?.drawn ?? '') : (answer?.value ?? '')) ?? []
+		parseConstructionAnswer(typed ? (measured?.drawn ?? '') : (answer?.value ?? '')) ?? []
 	);
 	let lines = $derived(objects.filter(isDrawnLine));
 	let placedPoints = $derived(objects.filter(isDrawnPoint));
@@ -250,6 +257,9 @@
 			if (ruler && rulerShape === 'cercle') {
 				return 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
 			}
+			if (ruler && segmentMeasure) {
+				return 'Règle posée : lis la longueur du segment, puis tape-la sous la figure. Pour la reposer, touche où mettre le 0.';
+			}
 			if (ruler) {
 				return 'Règle posée : touche Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.';
 			}
@@ -313,7 +323,7 @@
 		hint = null;
 		if (next.objects !== drawing.objects) {
 			answer?.onChange(
-				measureCheck
+				typed
 					? serializeMeasuredAnswer(next.objects, typedMeasure)
 					: serializeConstructionAnswer(next.objects)
 			);
@@ -357,7 +367,8 @@
 
 	/** ‹ › et flèches : décaler d'un millimètre le bout du segment le long de la règle */
 	function nudgeRuler(delta: number) {
-		if (!drawable) return;
+		// Segment à mesurer (n° 26) : rien à tracer, la règle seule
+		if (!drawable || segmentMeasure) return;
 		apply(
 			nudgeRulerEnd(drawing, delta, {
 				rulerLength,
@@ -490,6 +501,31 @@
 			y: c.y + (mid.y / midLength) * (r + 16)
 		};
 		return { d, label, text: `${arc.measure}°` };
+	}
+
+	/** Écart (px) entre le segment mesuré et sa longueur écrite à la correction */
+	const SEGMENT_LABEL_SVG = 14;
+
+	/**
+	 * Longueur du segment mesuré à la correction (n° 26) : au milieu de [AB], du
+	 * côté opposé au corps de la règle posée en A (local y > 0 de `Ruler`)
+	 */
+	function segmentLabel(
+		segment: { from: Position; to: Position },
+		scene: FigureScene,
+		width: number,
+		height: number
+	): Position {
+		const transformer = createTransformer(scene.viewport, width, height);
+		const a = transformer.mathToSvg(segment.from.x, segment.from.y);
+		const b = transformer.mathToSvg(segment.to.x, segment.to.y);
+		const length = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+		const u = { x: (b.x - a.x) / length, y: (b.y - a.y) / length };
+		// Corps de la règle : la normale (-u.y, u.x) ; la longueur de l'autre côté
+		return {
+			x: (a.x + b.x) / 2 + u.y * SEGMENT_LABEL_SVG,
+			y: (a.y + b.y) / 2 - u.x * SEGMENT_LABEL_SVG
+		};
 	}
 
 	/**
@@ -992,7 +1028,26 @@
 				<Protractor x={p.x} y={p.y} rotation={p.rotation} pixelsPerUnit={p.pixelsPerUnit} />
 			</g>
 		{/if}
-		{#if ruler}
+		{#if ruler && segmentMeasure}
+			{@const r = rulerOnScreen(ruler, scene, width, height)}
+			<!-- Segment à mesurer (n° 26) : la règle posée, rien à régler au clavier -->
+			<g
+				data-testid="regle"
+				data-sens={ruler.sens}
+				class="rapporteur"
+				role="img"
+				aria-label="Règle graduée posée"
+			>
+				<Ruler
+					x={r.x}
+					y={r.y}
+					rotation={r.rotation}
+					length={rulerLength}
+					pixelsPerUnit={r.pixelsPerUnit}
+					mirrored={r.mirrored}
+				/>
+			</g>
+		{:else if ruler}
 			{@const r = rulerOnScreen(ruler, scene, width, height)}
 			<!-- Clavier : la règle a le focus, les flèches mènent le bout du segment -->
 			<g
@@ -1202,6 +1257,22 @@
 			{/each}
 		{/if}
 		{#if corrected}
+			<!-- Segment à mesurer (n° 26) : sa longueur, écrite du côté opposé au corps de la règle -->
+			{@const measuredSegment = solutionSegmentMeasure(
+				checks,
+				allPoints,
+				figureShapes(scene, node.header)
+			)}
+			{#if measuredSegment}
+				{@const l = segmentLabel(measuredSegment, scene, width, height)}
+				<g data-testid="bonne-longueur" class="bon-point">
+					<text x={l.x} y={l.y} text-anchor="middle" dominant-baseline="middle"
+						>{measuredSegment.text}</text
+					>
+				</g>
+			{/if}
+		{/if}
+		{#if corrected}
 			<!-- Angle à construire (lot 5) : l'arc de l'angle, codé de sa mesure -->
 			{@const arc = solutionAngle(checks, allPoints, figureShapes(scene, node.header), lines)}
 			{#if arc}
@@ -1386,24 +1457,26 @@
 			{/if}
 			{#if ruler}
 				<div class="palette" role="group" aria-label="Règle graduée">
-					<Button
-						variant="outline"
-						size="sm"
-						data-testid="regle-moins"
-						aria-label={rulerShape === 'cercle'
-							? 'Compas : un millimètre de moins'
-							: 'Segment : un millimètre de moins'}
-						onclick={() => nudgeRuler(-1)}>‹ 1 mm</Button
-					>
-					<Button
-						variant="outline"
-						size="sm"
-						data-testid="regle-plus"
-						aria-label={rulerShape === 'cercle'
-							? 'Compas : un millimètre de plus'
-							: 'Segment : un millimètre de plus'}
-						onclick={() => nudgeRuler(1)}>1 mm ›</Button
-					>
+					{#if !segmentMeasure}
+						<Button
+							variant="outline"
+							size="sm"
+							data-testid="regle-moins"
+							aria-label={rulerShape === 'cercle'
+								? 'Compas : un millimètre de moins'
+								: 'Segment : un millimètre de moins'}
+							onclick={() => nudgeRuler(-1)}>‹ 1 mm</Button
+						>
+						<Button
+							variant="outline"
+							size="sm"
+							data-testid="regle-plus"
+							aria-label={rulerShape === 'cercle'
+								? 'Compas : un millimètre de plus'
+								: 'Segment : un millimètre de plus'}
+							onclick={() => nudgeRuler(1)}>1 mm ›</Button
+						>
+					{/if}
 					<Button variant="outline" size="sm" data-testid="regle-retourner" onclick={flipTheRuler}>
 						Retourner
 					</Button>
@@ -1442,6 +1515,32 @@
 		{#if interactive && measureHint === node}
 			<p class="figure-a-completer-consigne" data-testid="mesure-consigne">
 				Au degré près : tape un nombre entier.
+			</p>
+		{/if}
+	{/if}
+	{#if segmentMeasure && answer !== undefined}
+		{@const name = segmentMeasure.points.join('')}
+		<!-- Segment à mesurer (n° 26) : la longueur lue sur la règle, en cm (ou mm) entiers -->
+		<label class="figure-a-completer-mesure">
+			<span>Longueur du segment [{name}] :</span>
+			<Input
+				class="w-20 text-center"
+				type="text"
+				inputmode="numeric"
+				autocomplete="off"
+				maxlength={3}
+				data-testid="mesure-segment"
+				aria-label="Longueur du segment [{name}], en {segmentMeasure.unit}"
+				value={typedMeasure === null ? '' : String(typedMeasure)}
+				disabled={!interactive}
+				aria-invalid={answer.isCorrect === false || undefined}
+				oninput={typeMeasure}
+			/>
+			<span aria-hidden="true">{segmentMeasure.unit}</span>
+		</label>
+		{#if interactive && measureHint === node}
+			<p class="figure-a-completer-consigne" data-testid="mesure-consigne">
+				Tape un nombre entier de {segmentMeasure.unit}.
 			</p>
 		{/if}
 	{/if}

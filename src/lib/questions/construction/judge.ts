@@ -43,6 +43,11 @@ import { TriangleAuthorError, assertTriangle, judgeTriangle } from './triangle';
 import { AngleAuthorError, assertAngle, judgeAngle } from './angle';
 import { MeasureAuthorError, assertMeasure, judgeMeasure } from './measure';
 import {
+	SegmentMeasureAuthorError,
+	assertSegmentMeasure,
+	judgeSegmentMeasure
+} from './segment-measure';
+import {
 	SegmentLengthAuthorError,
 	assertSegmentLength,
 	judgeSegmentLength
@@ -156,7 +161,8 @@ function asAuthorError(error: unknown): unknown {
 		error instanceof TriangleAuthorError ||
 		error instanceof AngleAuthorError ||
 		error instanceof MeasureAuthorError ||
-		error instanceof SegmentLengthAuthorError
+		error instanceof SegmentLengthAuthorError ||
+		error instanceof SegmentMeasureAuthorError
 	) {
 		return new ConstructionAuthorError(error.message);
 	}
@@ -206,6 +212,14 @@ export function assertConstructionChecks(
 		if (check.kind === 'mesure') {
 			try {
 				assertMeasure(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
+		if (check.kind === 'mesure_segment') {
+			try {
+				assertSegmentMeasure(check, points, shapes);
 			} catch (error) {
 				throw asAuthorError(error);
 			}
@@ -296,6 +310,21 @@ export function judgeConstruction(
 		if (!split || !drawn || drawn.some((o) => o.kind !== 'repere')) return { status: 'incorrect' };
 		try {
 			return judgeMeasure(measure, points, shapes, split.measure);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Segment à mesurer (n° 26) : seul dans la figure (garanti par le parseur) ; les règles
+	// posées ne sont pas notées, la longueur tapée l'est
+	const segmentMeasure = allChecks.find((c) => c.kind === 'mesure_segment');
+	if (segmentMeasure) {
+		if (answer.trim() === '') return { status: 'empty' };
+		const split = splitMeasuredAnswer(answer);
+		const drawn = split ? parseConstructionAnswer(split.drawn) : null;
+		// La règle graduée seule dans la palette : autre chose qu'une règle est une réponse forgée
+		if (!split || !drawn || drawn.some((o) => o.kind !== 'regle')) return { status: 'incorrect' };
+		try {
+			return judgeSegmentMeasure(segmentMeasure, points, shapes, drawn, split.measure);
 		} catch (error) {
 			throw asAuthorError(error);
 		}

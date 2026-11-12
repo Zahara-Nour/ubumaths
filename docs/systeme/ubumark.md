@@ -744,8 +744,11 @@ points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le ra
 refusé ailleurs, sauf dans un triangle à angle donné (pas l'angle droit, à l'équerre) ou une bissectrice ;
 `segment AB = 6 cm` (aussi `5 cm 3 mm`, `5,3 cm`, `72 mm`, au millimètre près, plus de 0), A un point de la
 figure, B le nom de l'autre bout, un segment à tracer à la règle graduée sur papier uni, seul, palette
-Règle graduée · Segment ; suivi de `sur [Ax)`, le long de la demi-droite x d'origine A de la figure ; la
-règle graduée refusée ailleurs) et `case: N`, posée
+Règle graduée · Segment ; suivi de `sur [Ax)`, le long de la demi-droite x d'origine A de la figure ;
+`mesure AB` (n° 26, `SegmentMeasureCheck`, kind `mesure_segment`), deux points, un segment tracé à mesurer à la
+règle graduée sur papier uni, seul, la règle graduée seule, longueur en cm entiers (suivi de `en mm` : en mm
+entiers ; autre suite refusée ; `verifier: mesure_segment` refusé, on écrit `mesure AB`) ; la règle graduée
+refusée ailleurs) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
 le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `
@@ -1642,7 +1645,7 @@ Points à retenir :
     `givenViews` ; `CubesGeste` les dessine telles quelles) : tout assemblage qui a ces vues étant
     juste, les hauteurs ne pouvaient pas partir ; ` ```patron ` `completer:` → le patron amputé en
     grille, déjà tourné et retourné, et `completer: ? ?` (`task.masked` faces à poser,
-    `completerStart`) ; ` ```figure-a-completer ` → `verifier: ?` (sauf `verifier: mesure AOB`, laissé tel quel, ses points calculés réécrits en coordonnées : `maskMeasureFigure`) (`spec.masked`, l'outil ou la palette
+    `completerStart`) ; ` ```figure-a-completer ` → `verifier: ?` (sauf `verifier: mesure AOB` et `verifier: mesure AB`, laissés tels quels, leurs points calculés réécrits en coordonnées : `maskMeasureFigure`) (`spec.masked`, l'outil ou la palette
     déduite écrits en `outils:`). Pas masqués : `dessiner:` des cubes (la perspective est la figure), `designer:` du
     patron (la tâche, dans la consigne). Gardes : `questions/__tests__/masked-statement.test.ts` et
     `masked-statement-lot2.test.ts`, `FillBlanksInput-enonce-masque.svelte.test.ts` (même HTML

@@ -67,7 +67,9 @@ export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, Constructi
 	// Lot 6 (§ 19) : mesurer un angle, le rapporteur seul
 	mesure: ['rapporteur'],
 	// Chantier `regle-graduee` (ADR 0036) : segment de longueur donnée, papier uni seulement
-	segment: ['regle', 'segment']
+	segment: ['regle', 'segment'],
+	// N° 26 (`amelioration`) : mesurer un segment, la règle graduée seule
+	mesure_segment: ['regle']
 };
 
 /** `bissectrice(A, O, B)` : trois points nommés, le sommet au milieu (lot 9, § 25) */
@@ -164,7 +166,8 @@ export const CONSTRUCTION_CHECK_KINDS = [
 	'triangle',
 	'angle',
 	'mesure',
-	'segment'
+	'segment',
+	'mesure_segment'
 ] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
@@ -378,6 +381,20 @@ export interface MeasureCheck {
 }
 
 /**
+ * `mesure AB` (n° 26 de `outils-manquants.md`, CP-035, CE1-044 ; phase 0 validée
+ * par David le 2026-11-12) : le segment [AB] est tracé ; l'élève pose la règle
+ * graduée (jamais notée) et tape la longueur sous la figure. La longueur attendue
+ * est calculée sur la figure (1 unité = 1 cm, ADR 0036). `unit` : `mesure AB`
+ * ou `mesure AB en cm` → cm entiers ; `mesure AB en mm` → mm entiers.
+ */
+export interface SegmentMeasureCheck {
+	kind: 'mesure_segment';
+	points: [string, string];
+	unit: 'cm' | 'mm';
+	line: number;
+}
+
+/**
  * Unité dans laquelle l'auteur a écrit la longueur (messages à l'élève dans la
  * même) : `6 cm` ou `5,3 cm` → cm décimaux ; `5 cm 3 mm` → cm et mm ; `72 mm` → mm
  */
@@ -436,7 +453,8 @@ export type ConstructionCheck =
 	| TriangleCheck
 	| AngleCheck
 	| MeasureCheck
-	| SegmentLengthCheck;
+	| SegmentLengthCheck
+	| SegmentMeasureCheck;
 
 /** L'outil avec lequel se trace chaque vérification */
 export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
@@ -452,7 +470,8 @@ export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	angle: 'rapporteur',
 	mesure: 'rapporteur',
 	// Le segment est exigé aussi (cohérence du parseur) ; la règle graduée est l'outil de départ
-	segment: 'regle'
+	segment: 'regle',
+	mesure_segment: 'regle'
 };
 
 export interface ConstructionSpec {

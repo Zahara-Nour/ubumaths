@@ -68,6 +68,7 @@ import {
 } from './triangle';
 import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
 import { measureCorrection } from './measure';
+import { segmentMeasureCorrection, segmentMeasureRuler } from './segment-measure';
 import { segmentLengthRuler, segmentLengthSolution } from './segment-length';
 import { symmetrySolution, type FigureShapes } from './symmetry';
 
@@ -525,7 +526,14 @@ export function solutionLines(
 	expected?: ExpectedPoints
 ): DrawnLine[] {
 	return checks.flatMap((check): DrawnLine[] => {
-		if (check.kind === 'point' || check.kind === 'cercle' || check.kind === 'mesure') return [];
+		if (
+			check.kind === 'point' ||
+			check.kind === 'cercle' ||
+			check.kind === 'mesure' ||
+			check.kind === 'mesure_segment'
+		) {
+			return [];
+		}
 		if (check.kind === 'droite') return lineSolution([check], expected);
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
 		if (check.kind === 'triangle') return triangleSolution(check, points, shapes, drawn);
@@ -621,6 +629,12 @@ export function solutionRulers(
 		const ruler = segmentLengthRuler(check, points, shapes, drawn);
 		return ruler ? [ruler] : [];
 	}
+	// Segment à mesurer (n° 26) : la règle posée au 0 en A, le long de [AB]
+	const measured = checks.find((c) => c.kind === 'mesure_segment');
+	if (measured) {
+		const ruler = segmentMeasureRuler(measured, points, shapes);
+		return ruler ? [ruler] : [];
+	}
 	// Carré / rectangle coté (PR 6) : une règle en B (vers C), une en A (vers D)
 	const ruled = checks.find(isRuledPolygonCheck);
 	if (ruled) return ruledPolygonRulers(ruled, points, shapes, drawn);
@@ -631,6 +645,16 @@ export function solutionRulers(
 		return ruler ? [ruler] : [];
 	}
 	return circleLengthRulers(checks.filter(isCircleCheck), points, drawn);
+}
+
+/** Segment à mesurer (n° 26) : sa longueur, écrite le long de [AB] ; null sinon */
+export function solutionSegmentMeasure(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined
+): { from: Position; to: Position; text: string } | null {
+	const check = checks.find((c) => c.kind === 'mesure_segment');
+	return check ? segmentMeasureCorrection(check, points, shapes) : null;
 }
 
 /** Les points à placer : où ils vont, avec leur nom (vérifications `point`) */

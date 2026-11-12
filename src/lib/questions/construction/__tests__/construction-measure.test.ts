@@ -74,7 +74,7 @@ describe('Lecture de « verifier: mesure AOB »', () => {
 	});
 
 	it.each([
-		['mesure AO', 'trois points'],
+		['mesure A', 'trois points'],
 		['mesure AOA', 'trois points différents'],
 		['mesure AOB = 50', 'trois points']
 	])('« %s » : refusé', (verifier, message) => {
