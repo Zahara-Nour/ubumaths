@@ -668,3 +668,21 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-8 --publier`
 
 Mergé (#2613, 2026-11-13) : CI verte.
+
+## 32. Lot 8 : brouillons en prod, rangement (2026-11-13)
+
+David a lancé `create-questions --publier` depuis le dépôt principal : 4 brouillons. Ids reportés dans les JSON
+(branche de rangement). Relevé prod (MCP) : 4 brouillons `{T_SPE}` aux niveaux du § 31 (3, 4, 5, 2), sans nœud ni tag ;
+les 4 points actifs, aucun déjà tagué, chacun sur sa sous-notion ; les 3 sous-notions visées actives, une ligne chacune.
+
+| Modèle   | Sous-notion                                                                | Point    |
+| -------- | -------------------------------------------------------------------------- | -------- |
+| daa7f4e5 | Probabilités › Sommes et concentration › Bienaymé-Tchebychev               | TSPE-534 |
+| d01b1293 | Probabilités › Sommes et concentration › Bienaymé-Tchebychev               | TSPE-624 |
+| 957c2012 | Probabilités › Probabilités conditionnelles › épreuves indépendantes succ. | TSPE-535 |
+| a24cffa6 | Probabilités › Sommes et concentration › loi des grands nombres            | TSPE-536 |
+
+Migration `20261112232927_questions_tspe_algorithmes_8_rangement_tags.sql` (copie de celle du lot 7, seuls l'en-tête,
+les données et le préfixe `_qta8_` changent) ; test `tests/integration/questions-tspe-algorithmes-8-rangement-tags.test.ts`
+12/12 vert, rouge sans la migration (étape 4 retirée : 2 rouges + `beforeAll` en échec, 5 sautés), fichier restauré
+d'une copie (`cmp`). Accès : personne de plus (§ 18 Q5, D2).
