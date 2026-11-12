@@ -1,4 +1,5 @@
 {
+	"id": "60f165a8-3aba-4983-95c0-6b92b0cc6257",
 	"title": "Périmètres de figures composées",
 	"description": "Décomposer le contour d'une figure en segments et en portions de cercle, additionner leurs longueurs ; un demi-cercle de diamètre D mesure π × D ÷ 2 (π ≈ 3,14)",
 	"grades": ["6"],
