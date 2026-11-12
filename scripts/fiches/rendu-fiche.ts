@@ -165,4 +165,10 @@ if (images.manquantes.length) {
 		`⛔ image(s) citée(s) absente(s) de ${join(dossier, 'images')} : ${images.manquantes.join(', ')}`
 	);
 }
+if (images.aConvertir.length) {
+	alertes += images.aConvertir.length;
+	console.log(
+		`⛔ image(s) à convertir en PNG avant de les citer : ${images.aConvertir.join(', ')}`
+	);
+}
 process.exit(alertes ? 1 : 0);

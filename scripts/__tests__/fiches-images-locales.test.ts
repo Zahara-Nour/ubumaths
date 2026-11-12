@@ -42,12 +42,12 @@ describe('copierImagesLocales', () => {
 		const r = copierImagesLocales(dossier, [`Texte\n\n![Un taxi](${TAXI}){size=large}\n`]);
 		const cible = join(dossier, 'virtual', 'images', nomVirtuel(TAXI));
 		expect(readFileSync(cible, 'utf8')).toBe('octets du taxi');
-		expect(r).toEqual({ copiees: ['affine-taxi.png'], manquantes: [] });
+		expect(r).toEqual({ copiees: ['affine-taxi.png'], manquantes: [], aConvertir: [] });
 	});
 
 	it('signale une image citée absente du dossier images/, sans rien copier pour elle', () => {
 		const r = copierImagesLocales(dossier, [`![Une jauge](${JAUGE})`]);
-		expect(r).toEqual({ copiees: [], manquantes: ['affine-jauge.png'] });
+		expect(r).toEqual({ copiees: [], manquantes: ['affine-jauge.png'], aConvertir: [] });
 		expect(existsSync(join(dossier, 'virtual', 'images', nomVirtuel(JAUGE)))).toBe(false);
 	});
 
@@ -58,12 +58,28 @@ describe('copierImagesLocales', () => {
 
 	it('ne crée rien quand aucun texte ne cite d’image', () => {
 		const r = copierImagesLocales(dossier, ['Pas d’image ici, juste ~f(x)=2x+1~.']);
-		expect(r).toEqual({ copiees: [], manquantes: [] });
+		expect(r).toEqual({ copiees: [], manquantes: [], aConvertir: [] });
 		expect(existsSync(join(dossier, 'virtual'))).toBe(false);
 	});
 
 	it('ignore un lien ordinaire qui n’est pas une image', () => {
 		const r = copierImagesLocales(dossier, [`[le site](https://exemple.org/page)`]);
-		expect(r).toEqual({ copiees: [], manquantes: [] });
+		expect(r).toEqual({ copiees: [], manquantes: [], aConvertir: [] });
+	});
+
+	it('refuse un WebP local (le générateur attend un PNG sous ce nom) : à convertir', () => {
+		const url = `${BASE}/affine-figure.webp`;
+		writeFileSync(join(dossier, 'images', 'affine-figure.webp'), 'octets webp');
+		const r = copierImagesLocales(dossier, [`![f](${url})`]);
+		expect(r).toEqual({ copiees: [], manquantes: [], aConvertir: ['affine-figure.webp'] });
+		expect(existsSync(join(dossier, 'virtual', 'images', nomVirtuel(url)))).toBe(false);
+	});
+
+	it('retrouve un nom de fichier encodé dans l’URL (%20)', () => {
+		const url = `${BASE}/mon%20schema.png`;
+		writeFileSync(join(dossier, 'images', 'mon schema.png'), 'octets');
+		const r = copierImagesLocales(dossier, [`![s](${url})`]);
+		expect(r.copiees).toEqual(['mon schema.png']);
+		expect(existsSync(join(dossier, 'virtual', 'images', nomVirtuel(url)))).toBe(true);
 	});
 });

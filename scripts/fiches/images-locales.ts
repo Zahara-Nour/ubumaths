@@ -11,10 +11,15 @@
  * télécharge pour une fiche en base.
  */
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
-import { basename, join } from 'node:path';
+import { basename, extname, join } from 'node:path';
 import { urlToVirtualPath } from '$lib/typst/image-loader';
 
-export type ImagesLocales = { copiees: string[]; manquantes: string[] };
+/**
+ * `aConvertir` : image locale dont le format n'est pas celui du chemin virtuel (un
+ * WebP, que le générateur renomme `.png`) ; la copier telle quelle donnerait un faux
+ * PNG. Les illustrations d'une fiche sont des PNG (docs/pratiques/fiches-exercices.md § 4).
+ */
+export type ImagesLocales = { copiees: string[]; manquantes: string[]; aConvertir: string[] };
 
 /** URL des images citées (`![alt](URL)`), sans doublon, dans l'ordre de lecture. */
 function urlsDesImages(textes: string[]): string[] {
@@ -29,17 +34,23 @@ function urlsDesImages(textes: string[]): string[] {
  * présentes dans `<dossier>/images/`. Rend les noms copiés et les noms absents.
  */
 export function copierImagesLocales(dossier: string, textes: string[]): ImagesLocales {
-	const resultat: ImagesLocales = { copiees: [], manquantes: [] };
+	const resultat: ImagesLocales = { copiees: [], manquantes: [], aConvertir: [] };
 	for (const url of urlsDesImages(textes)) {
-		const nom = basename(new URL(url).pathname);
+		// Le nom du fichier local est le nom décodé (`mon%20schema.png` → `mon schema.png`)
+		const nom = decodeURIComponent(basename(new URL(url).pathname));
 		const source = join(dossier, 'images', nom);
 		if (!existsSync(source)) {
 			resultat.manquantes.push(nom);
 			continue;
 		}
+		const nomVirtuel = basename(urlToVirtualPath(url));
+		if (extname(nom).toLowerCase() !== extname(nomVirtuel)) {
+			resultat.aConvertir.push(nom);
+			continue;
+		}
 		const dossierVirtuel = join(dossier, 'virtual', 'images');
 		mkdirSync(dossierVirtuel, { recursive: true });
-		copyFileSync(source, join(dossierVirtuel, basename(urlToVirtualPath(url))));
+		copyFileSync(source, join(dossierVirtuel, nomVirtuel));
 		resultat.copiees.push(nom);
 	}
 	return resultat;

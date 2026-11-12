@@ -24,3 +24,4 @@ Ligne n° 35 de `docs/wip/outils-manquants.md` (chantier `fiches-affines-2nde`, 
 
 - 2026-11-13 : worktree créé ; tests rouges écrits.
 - 2026-11-13 : correctif vert ; doc `fiches-exercices.md` (images locales ; `data/` est dans `.gitignore` → `git add -f`) ; chemins des commentaires `docs/wip/…` corrigés dans `data/fiches/fonctions-affines-2nde/`.
+- 2026-11-13 : revue `code-reviewer` (Sonnet) : WebP local copié sous un nom `.png` sans conversion → refusé et signalé (« à convertir en PNG ») ; nom encodé (`%20`) décodé. 7 tests verts.
