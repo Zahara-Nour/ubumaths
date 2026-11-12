@@ -29,6 +29,11 @@ export type BuddyMessageContext =
 	| 'active_weeks_3'
 	| 'active_weeks_5'
 	| 'active_weeks_10'
+	/**
+	 * Question longtemps ratée enfin réussie, sur la carte de fin de série :
+	 * fier, sans nombre, sans durée, sans rappeler les échecs (B3, `regularite`)
+	 */
+	| 'long_struggle_won'
 	| 'level_up'
 	| 'theme_fractions'
 	| 'theme_geometry'
@@ -173,6 +178,11 @@ const giron: BuddyMessages = {
 		'Dix semaines de suite ! C’est légendaire !',
 		'Dix semaines d’affilée ! Cornegidouille, quel exploit !',
 		'Dix semaines sans faiblir ! On en parlera dans tout le Royaume !'
+	],
+	long_struggle_won: [
+		'Celle-là te résistait, et tu l’as eue ! Cornegidouille !',
+		'Tu n’as rien lâché, et voilà la victoire !',
+		'Par ma chandelle verte, celle-là, tu l’as enfin domptée !'
 	],
 	level_up: [
 		`${LEVEL} 1 ! On commence tranquille !`,
@@ -359,6 +369,11 @@ const pile: BuddyMessages = {
 		'Dix semaines de suite. Voilà une vraie habitude.',
 		'Dix semaines d’affilée… c’est rare, et c’est beau.',
 		'Dix semaines au travail. Le Royaume te salue.'
+	],
+	long_struggle_won: [
+		'Celle-là te résistait. Aujourd’hui, elle a cédé.',
+		'Tu as persévéré, et elle a fini par céder.',
+		'Ce qui semblait difficile ne l’est plus. Beau chemin.'
 	],
 	level_up: [
 		`${LEVEL} 1, une porte s’ouvre doucement.`,
@@ -566,6 +581,11 @@ const cotice: BuddyMessages = {
 		'Dix semaines de suite ! C’est énorme !',
 		'Dix semaines d’affilée ! Cornegidouille, je n’en reviens pas !',
 		'Dix semaines ensemble ! Meilleure équipe du Royaume !'
+	],
+	long_struggle_won: [
+		'Trop fort ! Celle-là, on l’a enfin eue !',
+		'Ouais ! Tu as tenu bon, et ça a payé !',
+		'Celle qui nous résistait ? Battue ! Tope là !'
 	],
 	level_up: [
 		`${LEVEL} 1 ! On démarre tranquille !`,

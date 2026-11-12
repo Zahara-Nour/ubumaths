@@ -220,7 +220,9 @@ David : « je valide » (mes recos).
 - Vacances commençant un samedi : la semaine d'école d'avant reste « vacances » (sautée sans
   activité) — **règle gardée**, commune avec la grille du prof.
 
-## PR B3 — phase 0 technique (2026-11-12) — à valider
+## PR B3 — phase 0 technique (2026-11-12)
+
+David : « je valide » (U1-U6, contrôles ratés comptés, `startedAt` sans migration).
 
 Constats : les traces d'une série sont écrites question par question (`/api/skill-attempts`) et
 `settle()` les attend **avant** `POST /api/tests/save`, qui calcule le gain : le serveur peut tout
@@ -249,3 +251,22 @@ Révision (FSRS) = traces **déclarées** (`student_self`) ; flash-cards = pas d
   l'élève lui-même. Personne ne lit rien de plus.
 - Tests : règle pure (3 échecs/6 jours → non ; réussite entre deux → remise à zéro ; 2e série du
   jour → non ; contrôle raté compté), route (`longStruggleWon`), carte (réplique, priorité).
+
+## PR B3 — question longtemps ratée enfin réussie (2026-11-12)
+
+- `src/lib/server/buddy-struggle.ts` : `isLongStruggleWon` (pur, 12 tests) et `loadLongStruggleWon`
+  (100 dernières traces `auto` par modèle réussi, 30 modèles au plus, droits du serveur).
+- `POST /api/tests/save` : `buddy_xp.longStruggleWon`, seulement si gain non nul ; lecture en échec
+  → `false`, le gain reste (7 tests de route).
+- **Écart avec U4, même idée** : le client envoie la **durée** de la série (`seriesElapsedMs`,
+  0-24 h), pas son heure de début : le serveur calcule le début avec sa propre horloge (une horloge
+  d'élève décalée ne fait ni manquer ni refêter). Sans durée (ancien client) : pas de fête.
+- Carte : réplique `long_struggle_won` (`excited`), avant celle de montée de tour ; « Nouveau tour
+  de panse » et panse pleine restent dits. Répliques (3 par Palotin) — **à relire par David** :
+  Giron « Celle-là te résistait, et tu l’as eue ! Cornegidouille ! » · « Tu n’as rien lâché, et
+  voilà la victoire ! » · « Par ma chandelle verte, celle-là, tu l’as enfin domptée ! » ; Pile
+  « Celle-là te résistait. Aujourd’hui, elle a cédé. » · « Tu as persévéré, et elle a fini par
+  céder. » · « Ce qui semblait difficile ne l’est plus. Beau chemin. » ; Cotice « Trop fort !
+  Celle-là, on l’a enfin eue ! » · « Ouais ! Tu as tenu bon, et ça a payé ! » · « Celle qui nous
+  résistait ? Battue ! Tope là ! ».
+- Doc : `buddy-palotins.md` § « Question longtemps ratée enfin réussie ».

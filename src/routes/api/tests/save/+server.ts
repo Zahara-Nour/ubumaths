@@ -2,8 +2,9 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { validateSaveTest } from '$lib/server/validation/tests';
-import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
+import { addBuddyXpFromTest, type BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
 import { fetchTemplateThemeIds } from '$lib/server/buddy-themes';
+import { loadLongStruggleWon } from '$lib/server/buddy-struggle';
 import {
 	CourseCardLookupError,
 	fetchCourseCardTemplateIds
@@ -25,7 +26,10 @@ const logger = createServerLogger('api/tests/save/+server');
  * en Saisie (réponses corrigées par l'appli, décision de David du 2026-11-11).
  * Flash-cards : auto-évaluées de bout en bout, aucun gain.
  *
- * Body: TestResult + items (composition jouée)
+ * Le gain porte aussi `longStruggleWon` : un modèle réussi dans la série était
+ * longtemps raté (chantier `regularite`, B3, `buddy-struggle.ts`).
+ *
+ * Body: TestResult + items (composition jouée) + seriesElapsedMs
  * Returns: { buddy_xp }
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -42,7 +46,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
-		const { result, assignmentId } = validation.data;
+		const { result, assignmentId, seriesElapsedMs } = validation.data;
 
 		// Évaluation (chantier 5, ADR 0015) : le SERVEUR tire, corrige et note, par
 		// `/api/evaluations/assignments/[id]/start` puis `/api/evaluations/attempts/[id]/submit`.
@@ -82,7 +86,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		}
 
-		let buddyXp = null;
+		let buddyXp: (BuddyXpFromExerciseResult & { longStruggleWon: boolean }) | null = null;
 		try {
 			const xpAnswers = result.answers.filter(
 				(answer) => !answer.instance.templateId || !courseCardIds.has(answer.instance.templateId)
@@ -102,7 +106,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					? themeByTemplate.get(answer.instance.templateId)
 					: undefined
 			}));
-			buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
+			const gain = await addBuddyXpFromTest(supabase, user.id, answers);
+			if (gain) {
+				const wonTemplateIds = [
+					...new Set(
+						xpAnswers.flatMap((answer) =>
+							answer.isCorrect && answer.instance.templateId ? [answer.instance.templateId] : []
+						)
+					)
+				];
+				buddyXp = {
+					...gain,
+					longStruggleWon: await isLongStruggleWon(user.id, wonTemplateIds, seriesElapsedMs)
+				};
+			}
 		} catch (buddyError) {
 			// Non bloquant : les traces sont déjà enregistrées, question par question
 			logger.error('⚠️ [API] Error awarding buddy XP:', buddyError);
@@ -114,3 +131,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
+
+/**
+ * Un modèle réussi de la série était-il longtemps raté ? Sans durée de série
+ * (ancien client) ou sans réussite : non, sans lecture. Lecture en échec : non
+ * (la fête manque, jamais le gain).
+ */
+async function isLongStruggleWon(
+	studentId: string,
+	wonTemplateIds: string[],
+	seriesElapsedMs: number | undefined
+): Promise<boolean> {
+	if (seriesElapsedMs === undefined || wonTemplateIds.length === 0) return false;
+	try {
+		return await loadLongStruggleWon(
+			studentId,
+			wonTemplateIds,
+			new Date(Date.now() - seriesElapsedMs)
+		);
+	} catch (struggleError) {
+		logger.error('Question longtemps ratée non relue :', struggleError);
+		return false;
+	}
+}

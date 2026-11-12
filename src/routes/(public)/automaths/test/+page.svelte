@@ -28,7 +28,11 @@
 	} from '$lib/types/evaluation-attempt';
 	import { toSubmission, type Submission } from '$lib/questions/submission';
 	import { toDisplayInstance, unitKeysOf } from '$lib/questions/public-question';
-	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
+	import {
+		receiveBuddyGain,
+		seriesElapsedMs,
+		type BuddyGainView
+	} from '$lib/components/buddy/buddy-gain';
 	import { fetchMathouNews } from '$lib/components/mathoux/mathou-news';
 	import type { MathouNews } from '$lib/mathoux/news';
 	import { createTraceRecorder } from '$lib/questions/series-trace';
@@ -421,7 +425,10 @@
 				},
 				body: JSON.stringify({
 					result,
-					items: testSession?.items || []
+					items: testSession?.items || [],
+					// Durée de la série : le serveur en tire son début (question longtemps
+					// ratée enfin réussie, fêtée une seule fois) sans lire l'heure du client
+					...(testSession ? { seriesElapsedMs: seriesElapsedMs(testSession.startTime) } : {})
 				})
 			});
 

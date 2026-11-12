@@ -381,7 +381,7 @@ Decide par David (journal `palotins`, C1 a C14). Logique pure dans
 
 ### Gain visible en fin de seance (2026-10-18)
 
-`api/tests/save` (fin d'un Contrôle blanc ou d'une Course : il ne fait plus que ce calcul) et `api/srs/review/submit` renvoient `buddy_xp` (meme forme, ou `null`).
+`api/tests/save` (fin d'un Contrôle blanc, d'une Course ou d'une Saisie : il ne fait plus que ce calcul, et la question longtemps ratée, voir plus bas) et `api/srs/review/submit` renvoient `buddy_xp` (meme forme, ou `null`).
 `parseBuddyGain` (`src/lib/components/buddy/buddy-gain.ts`) le valide avec Zod : absent, `null`,
 mal forme ou `xp_gained` = 0 → rien n'est affiche. `BuddyGainCard.svelte` montre l'avatar (`happy`,
 `excited` si montee), « Giron a gagne 12 pansees », une replique (`session_gain`, ou `daily_cap`
@@ -491,6 +491,26 @@ moment, neutres en genre, sans nombre de jours ni Constance Royale.
   Acquittement en echec : la bulle revient a la prochaine activite. Lecture en echec : pas de fete.
 - Limite connue (comme le retour) : la presence se relit apres un gain ; des flash-cards seules
   rendent la semaine active sans relecture immediate, la fete vient a la page de maison suivante.
+
+### Question longtemps ratee enfin reussie (2026-11-12, chantier `regularite`, B3)
+
+Sur la carte de fin de serie (Saisie, Controle blanc, Course aux nombres ; ni revision ni
+flash-cards : reussite declaree), la replique `long_struggle_won` (`excited`, 3 par Palotin, sans
+nombre, sans duree, sans rappeler les echecs) remplace `session_gain`, la replique de montee de tour
+et `daily_cap` ; « Nouveau tour de panse » et la panse pleine restent dits a part.
+
+- **Regle** (`src/lib/server/buddy-struggle.ts`, `isLongStruggleWon`) : pour un modele, la 1re
+  reussite **posterieure au debut de la serie** suit au moins **3 echecs sans reussite entre eux**,
+  le premier au moins **7 jours** avant (dates de Paris). Traces corrigees seulement
+  (`source = 'auto'`), controles compris pour les echecs. Cartes de cours exclues.
+- **Une seule fois, sans stockage** : une reussite plus tardive casse la regle d'elle-meme ; le
+  debut de serie empeche une 2e serie du meme jour de refeter. Le client envoie la **duree** de la
+  serie (`seriesElapsedMs`, 0 a 24 h), jamais une heure : le serveur en tire le debut avec sa
+  propre horloge. Sans duree (ancien client) : pas de fete.
+- **Lecture** : `api/tests/save` relit, avec les droits du serveur et l'`id` de la session, les
+  100 dernieres traces de chaque modele **reussi** de la serie (30 modeles au plus), seulement si
+  l'eleve a un Palotin (gain non nul). Champ `buddy_xp.longStruggleWon` ; lecture en echec → `false`,
+  le gain reste. Cote client, mal forme → ignore (la fete manque, jamais le gain).
 
 ### Images
 

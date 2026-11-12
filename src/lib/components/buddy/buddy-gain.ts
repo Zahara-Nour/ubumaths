@@ -33,6 +33,8 @@ export interface BuddyGain {
 	/** Semaine et jours travaillés de la Constance, présents avec `newStreak` */
 	constanceWeekStart?: string;
 	constanceDaysThisWeek?: number;
+	/** Un modèle réussi dans la série était longtemps raté (B3, chantier `regularite`) */
+	longStruggleWon?: boolean;
 }
 
 /** Ce que `BuddyGainCard` affiche : le gain, le Palotin et sa réplique. */
@@ -43,6 +45,8 @@ export interface BuddyGainView extends BuddyGain {
 }
 
 // Constantes
+/** Durée de série la plus longue acceptée par le serveur (24 h) */
+const SERIES_MAX_MS = 24 * 3600 * 1000;
 const buddyXpSchema = z.object({
 	xpResult: z.object({
 		xp_gained: z.number().int().min(0).max(100_000),
@@ -53,7 +57,9 @@ const buddyXpSchema = z.object({
 	streakUpdated: z.boolean().optional(),
 	newStreak: z.number().int().min(0).max(100_000).optional(),
 	constanceWeekStart: z.iso.date().optional(),
-	constanceDaysThisWeek: z.number().int().min(0).max(7).optional()
+	constanceDaysThisWeek: z.number().int().min(0).max(7).optional(),
+	// Mal formé : la fête manque, jamais le gain
+	longStruggleWon: z.boolean().optional().catch(undefined)
 });
 
 /** `GET /api/student/buddy` : `{ buddy }` (ligne `student_buddies` ou `null`). */
@@ -96,8 +102,14 @@ export function parseBuddyGain(payload: unknown): BuddyGain | null {
 	if (typeof payload !== 'object' || payload === null || !('buddy_xp' in payload)) return null;
 	const parsed = buddyXpSchema.safeParse(payload.buddy_xp);
 	if (!parsed.success) return null;
-	const { xpResult, streakUpdated, newStreak, constanceWeekStart, constanceDaysThisWeek } =
-		parsed.data;
+	const {
+		xpResult,
+		streakUpdated,
+		newStreak,
+		constanceWeekStart,
+		constanceDaysThisWeek,
+		longStruggleWon
+	} = parsed.data;
 	if (xpResult.xp_gained <= 0 && !xpResult.daily_cap_reached) return null;
 	return {
 		xpGained: xpResult.xp_gained,
@@ -106,8 +118,18 @@ export function parseBuddyGain(payload: unknown): BuddyGain | null {
 		dailyCapReached: xpResult.daily_cap_reached,
 		newStreak: streakUpdated ? newStreak : undefined,
 		constanceWeekStart: streakUpdated ? constanceWeekStart : undefined,
-		constanceDaysThisWeek: streakUpdated ? constanceDaysThisWeek : undefined
+		constanceDaysThisWeek: streakUpdated ? constanceDaysThisWeek : undefined,
+		longStruggleWon: longStruggleWon === true
 	};
+}
+
+/**
+ * Durée d'une série pour `POST /api/tests/save` (`seriesElapsedMs`), bornée
+ * comme le serveur l'accepte (0 à 24 h) : une horloge qui recule ou une page
+ * laissée ouverte deux jours ne font jamais refuser le gain.
+ */
+export function seriesElapsedMs(startTime: number, now: number = Date.now()): number {
+	return Math.min(Math.max(Math.round(now - startTime), 0), SERIES_MAX_MS);
 }
 
 /** « 1 pansée », « 12 pansées » (mots du lore, jamais « XP »). */
@@ -121,16 +143,21 @@ export function palotinName(palotin: PalotinType): string {
 	return PALOTIN_NAMES[palotin];
 }
 
-/** Réplique et expression du Palotin pour ce gain. */
+/**
+ * Réplique et expression du Palotin pour ce gain. Question longtemps ratée
+ * enfin réussie : sa réplique d'abord (le nouveau tour de panse et la panse
+ * pleine restent dits par la carte, à part).
+ */
 export function toBuddyGainView(gain: BuddyGain, palotin: PalotinType): BuddyGainView {
 	const message =
+		(gain.longStruggleWon ? buddyMessageEngine.getMessage(palotin, 'long_struggle_won') : null) ??
 		(gain.leveledUp ? buddyMessageEngine.getLevelUpMessage(palotin, gain.newLevel) : null) ??
 		buddyMessageEngine.getMessage(palotin, gain.dailyCapReached ? 'daily_cap' : 'session_gain') ??
 		'';
 	return {
 		...gain,
 		palotin,
-		expression: gain.leveledUp ? 'excited' : 'happy',
+		expression: gain.leveledUp || gain.longStruggleWon ? 'excited' : 'happy',
 		message
 	};
 }

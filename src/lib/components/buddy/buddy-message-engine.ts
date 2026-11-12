@@ -30,6 +30,7 @@ const CONTEXT_EXPRESSION_MAP: Record<BuddyMessageContext, BuddyExpression> = {
 	active_weeks_3: 'excited',
 	active_weeks_5: 'excited',
 	active_weeks_10: 'excited',
+	long_struggle_won: 'excited',
 	level_up: 'excited',
 	theme_fractions: 'thinking',
 	theme_geometry: 'thinking',

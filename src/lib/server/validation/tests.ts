@@ -142,7 +142,15 @@ export const saveTestSchema = z
 	.object({
 		result: testResultSchema,
 		items: seriesItemsSchema,
-		assignmentId: uuidSchema.optional()
+		assignmentId: uuidSchema.optional(),
+		// Durée de la série (ms, horloge du client) : le serveur en tire son début,
+		// sans dépendre de l'heure du client (question longtemps ratée, B3 `regularite`)
+		seriesElapsedMs: z
+			.number()
+			.int()
+			.min(0)
+			.max(24 * 3600 * 1000)
+			.optional()
 	})
 	.refine(
 		(data) => {
