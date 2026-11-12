@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, avant la PR._
+_Mis à jour le 2026-11-12, après #2582 — chantier clos, journal archivé._
 
-- **État** : code + tests + doc faits, revue traitée, PR ouverte · **Prochaine action** : CI verte → merge · **En attente de David** : essai à l'écran (aperçu PDF d'une fiche) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-zip-fiche-langues` / `feat/zip-fiche-langues`
+- **État** : clos, #2581 et #2582 mergées · **Prochaine action** : aucune · **En attente de David** : vérification à l'écran (ligne de `docs/wip/verifications-manuelles.md`), après `deploy:prod` · **Pièges en cours** : aucun · **Worktree / branche** : retirés
 
 ## Décisions de David (2026-11-12)
 
