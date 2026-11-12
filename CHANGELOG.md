@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.85.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.84.0...v0.85.0) (2026-11-12)
+
+### ✨ Features
+
+- **analytique:** grille de regularite comptee en base (class_regularity_weeks) ([f4353dd](https://github.com/Zahara-Nour/ubumaths/commit/f4353dde5c8008815dc303f3d45595e350645c2d))
+- **questions:** tspe, algorithmes lot 7 (permutations, Galton, surreservation, echantillon) ([39aa945](https://github.com/Zahara-Nour/ubumaths/commit/39aa945f4f59ef074bf04cc97267ea6a74b3d73f))
+
+### 📚 Documentation
+
+- **base:** class_regularity_weeks dans la carte de la base ([9b4b620](https://github.com/Zahara-Nour/ubumaths/commit/9b4b620e8bc75e41cd3591a8a715c691a07ef515))
+- **wip:** questions-tspe-demonstrations, reprendre ici apres [#2605](https://github.com/Zahara-Nour/ubumaths/issues/2605) ([c916e6f](https://github.com/Zahara-Nour/ubumaths/commit/c916e6fde0994c841cf03ba7c6ea267897249d3e))
+
 ## [0.84.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.83.0...v0.84.0) (2026-11-12)
 
 ### ✨ Features
