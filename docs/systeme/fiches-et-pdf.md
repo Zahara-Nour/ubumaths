@@ -663,7 +663,7 @@ dessiné par Typst lui-même, sans cetz ni registre, et compte pour une figure d
 cadres de réponse (`answer-frames.ts`) → [qr-codes.md](qr-codes.md). Une **horloge**
 (` ```horloge `), une **opération posée** (` ```operation `, `table` Typst native, cases de
 retenue non dessinées : l'élève écrit sur papier libre), une **collection** (` ```collection `),
-des **pièces et billets** (` ```monnaie `) une **figure partagée en parts égales** (` ```partage `, parts coloriées grisées) et un **assemblage de cubes** (` ```cubes `, faces en trois gris) sont aussi du Typst natif et comptent chacune pour une figure dans ces cadres → [ubumark.md](ubumark.md).
+des **pièces et billets** (` ```monnaie `) une **figure partagée en parts égales** (` ```partage `, parts coloriées grisées) un **schéma en barres** (` ```schema-barres `, traits noirs, pointillés pour la partie manquante) et un **assemblage de cubes** (` ```cubes `, faces en trois gris) sont aussi du Typst natif et comptent chacune pour une figure dans ces cadres → [ubumark.md](ubumark.md).
 Des **étiquettes à ranger** (` ```ranger `) : étiquettes encadrées puis places en pointillés, Typst
 natif, deux lignes dans les cadres de réponse ; en étapes (`signe: aucun`), étiquettes en colonne puis
 places numérotées pleine largeur, une ligne par étiquette et une par place.
