@@ -1,13 +1,21 @@
 # Chantier `formes-de-serie` — redéfinir les formes d'une série et les traces enregistrées
 
 Né le 2026-11-11 de la relecture de `cours-suites` (bouton différent entre flash-card et entraînement
-sur une carte de cours). Discussion de conception (phase 0) : **rien de codé**.
+sur une carte de cours). **Clos le 2026-11-12.**
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2576._
+_Mis à jour le 2026-11-12, clôture après #2576._
 
-- **État** : PR 1 à 6 + doublon mergées (#2543, #2547, #2548, #2551, #2554, #2559, #2565, #2570, **#2576 purge L6**, migration `20261111224115` appliquée en prod le 2026-11-12) · **Prochaine action** : (a) David vérifie la Saisie à la main (`verifications-manuelles.md`, #2565) ; (d) Saisie en séries de chapitre : attendre l'usage réel ; ensuite clôture du chantier (versement dans `docs/systeme/`) · **En attente de David** : la vérification (a) · **Pièges en cours** : `answer_parts` = texte libre de mineurs, toujours affiché échappé ; `[]` refusé, écrire NULL ; l'API refuse `evaluation` et `review` ; « Flash-cards » dans un message d'erreur fait échouer la garde de langue ; corps de commit ≤ 100 caractères par ligne ; `db:types` pas relancé (fonctions de purge appelées par aucun code) · **Worktree / branche** : aucun
+- **État** : **clos** le 2026-11-12. Découpage entier mergé (#2543, #2547, #2548, #2551, #2554, #2559, #2565, #2570, #2576) ; migrations appliquées en prod. Durable déjà versé PR par PR : `docs/systeme/srs.md`, `evaluations.md`, `base-de-donnees.md`, `analytique-prof.md`, `conformite/`, `CONTEXT.md`, ADR 0037 et 0038 · **Prochaine action** : aucune ; suites ci-dessous (§ Suites) · **En attente de David** : vérifications manuelles #2565, #2554, #2551 dans `docs/wip/verifications-manuelles.md` (suivies là) · **Pièges** : `answer_parts` = texte libre de mineurs, affiché échappé (dans `srs.md`) ; `db:types` pas relancé après #2576 (fonctions de purge appelées par aucun code) · **Worktree / branche** : aucun
+
+## Suites (futurs chantiers, non ouverts)
+
+- **Régularité (P5)** : heatmap élève × semaine + Palotin de régularité (Q-C, § Besoins de suivi) — à ouvrir en premier.
+- **Saisie en séries de chapitre** : forme choisie par le prof (CHECK en base : Flash-cards / Contrôle blanc) ; migration additive, seulement si l'usage la demande.
+- **Écrans prof et élève** sur les nouvelles traces : P3 taux par point / notion, P4 et E4 erreurs fréquentes, P6 bilan d'un contrôle, P7 durées trop courtes, P8 page de suivi d'un élève.
+- **A1 durées ajustées** au temps observé (modèle : `recalculate_minesweeper_reference_times()`).
+- **Suppression de `with_help` et `phase_blocage`** (jamais lus ; destructif, temps à part).
 
 ## Décisions de David (2026-11-11)
 
