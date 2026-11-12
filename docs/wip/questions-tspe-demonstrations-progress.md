@@ -10,14 +10,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2585 (lot 4 rangé, page à cocher publiée, § 16)._
+_Mis à jour le 2026-11-12, après la publication du lot 4 (§ 17)._
 
-- **État** : lots 1, 2 et 3 publiés (§ 5, § 9, § 13) ; lot 4 en 5 brouillons en prod, rangés et tagués (#2585,
-  `db:migrate` fait), page à cocher publiée (§ 16). Les 19 démonstrations ont toutes un modèle.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, les compter) → corrections s'il y en a →
-  `publier-lot.ts` en simulation → David lance `--publier` → relire le statut → fin des démonstrations : phase 0 des
-  algorithmes (18, § 1).
-- **En attente de David** : la relecture du lot 4 sur https://claude.ai/artifact/WFfKsrjNvYpQgVypTTSoJm.
+- **État** : les 4 lots sont publiés (§ 5, § 9, § 13, § 17) : les 19 démonstrations ont chacune un modèle publié.
+- **Prochaine action** : phase 0 des algorithmes (18, § 1) : relevé, classement, questions à David, rien codé avant
+  sa validation.
+- **En attente de David** : son go pour la phase 0 des algorithmes.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3), saisie dans le champ « Seed » puis « Générer » ; `publier-lot.ts` lit la prod →
   David la lance ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale tirée → `;d` dans
@@ -359,3 +357,9 @@ Piège : commitlint refuse une ligne de corps de plus de 100 caractères (couper
 `page-a-cocher.ts --dir scripts/questions/tspe-demonstrations-4`, lu en base prod : 5 brouillons `draft`, chacun sur son
 point. Page : https://claude.ai/artifact/WFfKsrjNvYpQgVypTTSoJm (capacité `db`) ; 5 alertes attendues (bloc ranger non
 dessiné, à jouer dans l'aperçu admin) ; base `verdicts` vide à la publication.
+
+## 17. Lot 4 : publication (2026-11-12)
+
+Verdicts lus : 5/5 « ok », sans commentaire (ids = ceux du § 15). `publier-lot.ts` en simulation (5 brouillons passent
+le contrôle), puis `--publier` lancé par David : 5/5 publiés, statut relu en base (MCP : 5 `published`). Fin des
+démonstrations.
