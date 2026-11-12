@@ -10,18 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, lot 6 : brouillons en prod, rangement en PR (§ 24)._
+_Mis à jour le 2026-11-12, après #2602 et son `db:migrate` (§ 24)._
 
 - **État** : démonstrations terminées (§ 17). Algorithmes : lot 5 publié (§ 22) ; lot 6 (474, 610, 611, 500, 499)
-  dans `main` (#2601), 5 brouillons créés en prod par David, migration de rangement en PR (§ 24). Restent 7 et 8.
-- **Prochaine action** : merge de la PR de rangement, `check:migrations --pr`, `db:migrate`, vérif prod ; puis page
-  à cocher et publication, comme les § 21 et 22.
+  en brouillons en prod, rangés sur leur sous-notion avec leur point (#2602, vérifié en prod). Restent 7 et 8.
+- **Prochaine action** : page à cocher du lot 6 puis publication, comme les § 21 et 22.
 - **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-algorithmes-6-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (branches du lot 6 supprimées).
 
 ---
 
@@ -546,3 +545,8 @@ les données et le préfixe `_qta6_` changent) ; test `tests/integration/questio
 Accès : personne de plus (§ 18 Q5, D2).
 `security-auditor` : aucun finding (diff contre le lot 5 limité aux données ; gardes résolues en prod, 1 nœud et
 1 point par ligne). PR #2602.
+
+Rangement appliqué : `db:migrate` lancé du dépôt principal après #2602 (il a aussi appliqué
+`20261112154105_active_student_ids_lecture_seule`, mergée par une autre session et encore en attente). Vérifié en prod : les
+5 brouillons sur leur sous-notion (méthode d'Euler ; méthode des rectangles × 3 ; aire algébrique), un point chacun,
+`updated_at` inchangé. Branches du lot 6 supprimées.
