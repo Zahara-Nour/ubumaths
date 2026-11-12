@@ -2,9 +2,53 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2600 et son `db:migrate`._
+_Mis à jour le 2026-11-12, après #2600 et son `db:migrate` ; phase 0 du n° 26 écrite._
 
-- **État** : 0.82.0 en prod ; #2564, #2572, #2577, #2584 (montée ESLint, journal `docs/archive/wip/montee-eslint-progress.md`), #2598 et #2600 (`active_student_ids()`, élèves actifs pour les mesures, migrées en prod, vérifié : l'outil Supabase en lecture seule compte 2 élèves actifs) mergées, pas encore en prod ; piste « où les élèves bloquent » **reportée** (prod au 2026-11-11 : 101 traces, 2 élèves sur 82, 0 réponse enregistrée ; besoins P3, P4, P6, P7, P8, E4 déjà validés dans `formes-de-serie`) · **Prochaine action** : David choisit (n° 26 « mesurer en posant la règle » : phase 0 d'abord ; majeures #2075 brevo, #2074 blockly, #1667 SvelteKit 3 ; tri des journaux wip) · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572, #2577 de `verifications-manuelles.md` · **Tranché** : élève actif = réel, membre `active` d'une classe, hors-classe exclus ; INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 = rien à changer, issue fermée ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement, jamais sur `goto` ; typst.ts hors de Dependabot ; comptes élèves inactifs (80 sur 82, année 2025-2026 et tests) gardés tels quels (conforme au registre : scolarité + 5 ans), mesurer sur les membres d'une classe active · **Pièges en cours** : monter un paquet de la config ESLint invalide tout le cache → Lint à froid ~28 min (job à 60 min depuis #2584) ; un `id` construit sur du texte saisi part dans `error_logs` ; module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` = absent du build ; `db:migrate` → `! pnpm db:migrate` · **Worktree / branche** : aucun
+- **État** : 0.82.0 en prod ; #2564, #2572, #2577, #2584 (montée ESLint, journal `docs/archive/wip/montee-eslint-progress.md`), #2598 et #2600 (`active_student_ids()`, élèves actifs pour les mesures, migrées en prod, vérifié : l'outil Supabase en lecture seule compte 2 élèves actifs) mergées, pas encore en prod ; piste « où les élèves bloquent » **reportée** (prod au 2026-11-11 : 101 traces, 2 élèves sur 82, 0 réponse enregistrée ; besoins P3, P4, P6, P7, P8, E4 déjà validés dans `formes-de-serie`) · **Prochaine action** : n° 26 « mesurer en posant la règle » choisi par David ; phase 0 écrite (§ N° 26), coder après validation (autres pistes : majeures #2075 brevo, #2074 blockly, #1667 SvelteKit 3 ; tri des journaux wip) · **En attente de David** : Q1 à Q6 du § N° 26 · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572, #2577 de `verifications-manuelles.md` · **Tranché** : élève actif = réel, membre `active` d'une classe, hors-classe exclus ; INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 = rien à changer, issue fermée ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement, jamais sur `goto` ; typst.ts hors de Dependabot ; comptes élèves inactifs (80 sur 82, année 2025-2026 et tests) gardés tels quels (conforme au registre : scolarité + 5 ans), mesurer sur les membres d'une classe active · **Pièges en cours** : monter un paquet de la config ESLint invalide tout le cache → Lint à froid ~28 min (job à 60 min depuis #2584) ; un `id` construit sur du texte saisi part dans `error_logs` ; module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` = absent du build ; `db:migrate` → `! pnpm db:migrate` · **Worktree / branche** : aucun
+
+## N° 26 — mesurer un segment en posant la règle : phase 0 (2026-11-12, en attente de David)
+
+Ligne n° 26 de `outils-manquants.md` (CP-035, CE1-044). Aucun début ailleurs (vérifié le 2026-11-12 :
+branches, PR, journaux de `docs/wip`, `docs/archive/wip` et des worktrees). Aujourd'hui : modèles à règle
+**dessinée** sous le segment (CP lot B2 « Mesure avec la règle », 0 au début ; CE1 `01-mesure-a-la-regle`,
+départ 1 à 4, et « entre [_] et [_] cm »). Briques existantes : `mesure AOB` (angle tracé, l'élève pose le
+rapporteur et tape la mesure, `construction/measure.ts`) et la règle graduée posée (outil `regle`,
+`segment AB = 6 cm`, ADR 0036 : 1 unité de la figure = 1 cm).
+
+**Comportements proposés** (sur le modèle de `mesure AOB`) :
+
+- **Nominal** : `verifier: mesure AB` dans une ` ```figure-a-completer ` sur papier uni ; le segment [AB]
+  est tracé. Palette : Règle graduée seule. L'élève pose la règle (0 et direction aimantés aux points,
+  comme aujourd'hui) puis tape la longueur dans la case sous la figure (« Longueur du segment [AB] »,
+  unité affichée à côté). Juste : la longueur exacte, calculée sur la figure. La règle posée entre
+  dans la réponse mais n'est pas notée (comme les repères du rapporteur).
+- **Limite** : règle non posée et longueur juste → juste (on ne note que le nombre) ; plusieurs règles
+  posées → aucune incidence ; rien tapé → vide ; règle posée seule → « Tape la longueur du segment [AB]. »
+- **Erreur de l'élève** : « Le segment mesure 6 cm, pas 7 cm. » ; si la dernière règle posée longe [AB]
+  avec A sur une graduation autre que 0 et que le nombre tapé est la graduation lue en B → « Le 0 de la
+  règle doit être sur A : le segment mesure 6 cm, pas 7 cm. » (l'erreur type du CP).
+- **Erreurs de l'auteur** : quadrillage ; A ou B absent, invisible ou hors de la fenêtre ; [AB] non tracé ;
+  longueur pas entière dans l'unité de la case ; plus longue que la règle (`rulerLengthOf`) ; `outils:`.
+- **Correction** : la règle posée en A le long de [AB], 0 en A, et la longueur codée.
+
+**Questions** :
+
+- **Q1 — Écriture** : `mesure AB` (deux points = segment, trois = angle) ? Reco : oui.
+- **Q2 — Unité** : `mesure AB` en cm entiers (CP, CE1) ; `mesure AB en mm` pour les mm entiers (CE2 et
+  après) ? Reco : oui, cm entiers seuls d'abord, mm dans la même PR s'il ne coûte rien.
+- **Q3 — Message « le 0 doit être sur A »** (règle mal posée détectée) ? Reco : oui.
+- **Q4 — Énoncé PDF** : la figure imprimée a une largeur fixe (`FIGURE_WIDTH_CM`,
+  `figure-typst.ts:130`), donc 1 unité ≠ 1 cm sur papier : une vraie règle lirait une autre longueur.
+  (a) imprimer à l'échelle 1 unité = 1 cm quand la figure a un `mesure AB` (fenêtre ≤ largeur utile) ;
+  (b) imprimer la règle posée, comme le rapporteur posé ; (c) rien, l'énoncé PDF ne sert pas à mesurer.
+  Reco : (a) — c'est le geste réel ; risque : l'impression « ajuster à la page ».
+- **Q5 — Pas de variante « règle posée »** (règle déjà posée, à lire) : les modèles à règle dessinée la
+  couvrent déjà. Reco : pas de variante. Pas de « entre [_] et [_] cm » non plus (idem).
+- **Q6 — Modèles** : l'outil ici ; les modèles (un par niveau, CP-035 et CE1-044) aux sessions
+  `questions-*`, ligne dans « Contenu restant » de `outils-manquants.md`. Reco : oui.
+
+Découpage prévu : une PR (parseur, juge, case, correction, doc `questions.md`/`ubumark.md`, tests rouges
+d'abord), une 2e si Q4 (a). Revue : `code-reviewer` en `model: opus` (correction des réponses).
 
 ## Élèves actifs pour les mesures (#2598, mergée le 2026-11-12)
 
