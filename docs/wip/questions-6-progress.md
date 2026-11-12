@@ -5,12 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après la publication du lot 12 (§ 27.3)._
+_Mis à jour le 2026-11-12, après le relevé du § 28._
 
-- **État** : lot 12 « Constructions » publié (f06e45e8, 59694d66, 0ecb0f0e, vérifié en prod). Lots 1 à 12 clos.
-- **Prochaine action** : relevé prod des points de 6e encore sans modèle publié (restaient au § 23 : C 169, 142 ;
-  figure à compléter 170, 172 ; D 129, 138, 182, 183, 197, 210), puis proposer la suite à David.
-- **En attente de David** : rien.
+- **État** : lots 1 à 12 clos. Relevé § 28 : restent 142 (schéma en barres, outil neuf) et le groupe D (129, 138,
+  182, 183 non évaluables ; 197, 210 en attente de Blockly), sans modèle par décision du § 5.
+- **Prochaine action** : selon la réponse de David — outil « schéma en barres » (142, phase 0) ou clôture du chantier
+  (versement de la doc, archivage du journal).
+- **En attente de David** : 142 maintenant (outil neuf), ou clore le chantier ?
 - **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`). `texte(P, …)` décale en haut à droite :
   `dx=0, dy=0, ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
@@ -1776,3 +1777,13 @@ Pièges rencontrés :
 - Page à cocher : 3/3 OK, sans commentaire.
 - `publier-lot.ts --dir scripts/questions/6-constructions` lancé par David (simulation puis `--publier`) ; vérifié en
   prod (MCP) : f06e45e8, 59694d66, 0ecb0f0e `published` ; 3a7a5711 toujours `draft`.
+
+## 28. Relevé après le lot 12 (2026-11-12)
+
+Relevé MCP prod : **7 points de 6e sans modèle publié** (aucun brouillon non plus) : 129, 138, 142, 182, 183, 197, 210. Seul brouillon de 6e : 3a7a5711 (à ne pas publier). Restent :
+
+- **C, outil neuf (1)** : 142 « schéma en barres » (3e outil neuf de l'ordre validé au § 5, question 6).
+- **D (6)**, sans modèle par décision du § 5 (question 8) : 129, 138, 182, 183 non évaluables ; 197, 210 en attente
+  de Blockly.
+
+Hors 142, la couverture de la 6e est complète au sens du § 5.
