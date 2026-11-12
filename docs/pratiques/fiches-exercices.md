@@ -80,6 +80,16 @@ Seconde : **« Fonctions : généralités »** `41737393` (thème `Fonctions`, 1
 antécédents par le calcul, lectures graphiques ; 14 neufs + « Calcul d'images » `5b233301`) —
 `create-fonctions-generalites-2nde.ts`. Courbes de lecture graphique : tout ce qu'on fait LIRE est
 sur un nœud de la grille (vérifié par sympy) ; une cubique ne le permet qu'avec une racine double.
+**« Fonctions affines »** (thème `Fonctions affines`, 2026-11-12) — technique `18a394e6` (7 sections,
+15 neufs + « Antécédents par une fonction affine » `b5390946`), applications `e9bfec01` (4 sections,
+9 ex. dont 3 `autonomous`, 3 illustrations) — `create-fonctions-affines-2nde.ts`, sources versionnées
+dans `data/fiches/fonctions-affines-2nde/`. Côté fonctions seulement (équations de droite, parallélisme
+→ future fiche « Droites du plan ») ; tableaux de signes de mx + p seulement.
+
+**Sources d'une fiche : sous `data/fiches/<sujet>/`, jamais dans le scratchpad ni sous `docs/`.** Le
+scratchpad disparaît avec la session (les dossiers des fiches de 1re spé et de Seconde sont perdus) ;
+sous `docs/`, le prettier du pre-commit réécrit les listes ubumark (« 1. a. … » sur une ligne).
+`data/fiches/` est dans `.prettierignore`.
 
 Restent (priorité) : automatismes transverses (lectures graphiques,
 statistiques), listes Python injectées dans les thèmes, logique et ensembles, démonstrations
