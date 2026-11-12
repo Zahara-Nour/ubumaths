@@ -1,7 +1,7 @@
 # Chantier « schema-barres » — bloc ` ```schema-barres ` (schéma en barres)
 
 > Outil neuf de la 6e (point 6-142), aussi pour CM1-063 et CM2-066. Phase 0 validée par David le 2026-11-12 :
-> [`questions-6`](../../wip/questions-6-progress.md) § 29. Ligne 31 de [`outils-manquants.md`](../../wip/outils-manquants.md).
+> [`questions-6`](questions-6-progress.md) § 29. Ligne 31 de [`outils-manquants.md`](../../wip/outils-manquants.md).
 > Recette : `docs/systeme/ubumark.md` § « Comment étendre — nouveau bloc spécial » ; patron : ` ```partage `.
 
 ## Reprendre ici

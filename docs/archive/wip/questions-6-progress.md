@@ -1505,7 +1505,7 @@ sur l'essai local (même gabarit).
 
 Contexte : [outils-manquants.md](../../wip/outils-manquants.md), paragraphe « Contenu restant aux sessions questions »,
 recommandation du 2026-11-09 : aucun modèle n'utilise encore les contrôles `point`, `droite`, `angle`, `mesure`,
-`bissectrice` de la figure à compléter (chantier [`controles-figure`](../archive/wip/controles-figure-progress.md),
+`bissectrice` de la figure à compléter (chantier [`controles-figure`](controles-figure-progress.md),
 clos le 2026-11-06), ni le patron `designer:` / `completer:`, ni la trotteuse. Un modèle témoin par contrôle est le
 seul moyen de les exercer de bout en bout chez un élève.
 
@@ -1809,7 +1809,7 @@ Décisions :
 
 ### 29.1 Bloc livré (2026-11-12)
 
-Chantier [`schema-barres`](../archive/wip/schema-barres-progress.md) : #2597 mergé (CI verte, revue `code-reviewer`
+Chantier [`schema-barres`](schema-barres-progress.md) : #2597 mergé (CI verte, revue `code-reviewer`
 sans bloquant), rendu vérifié à l'écran et au PDF. Exemple de la phase 0 corrigé : « 80 de moins » = barre plus
 courte (`Bronze : ? (2,5) ; -80 (1,5)`). Vitrine `/demo/blocs` : le schéma y reste (David, « je te suis »).
 
