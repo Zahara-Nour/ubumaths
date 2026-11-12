@@ -1,4 +1,5 @@
 {
+	"id": "a29488bc-0a0b-4ac8-a799-3d87f9b43d55",
 	"title": "Planche de Galton en Python",
 	"description": "Planche de Galton simulée en Python : compléter if random() < 0.5:, loi du numéro de case (B(n ; 0,5), pièges : uniforme, n + 1 épreuves), probabilité d'une case (fraction)",
 	"grades": ["T_SPE"],

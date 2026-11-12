@@ -1,4 +1,5 @@
 {
+	"id": "0671ee48-8a7a-4da3-8dd4-55c2861c8134",
 	"title": "Permutations en Python : générer, tirer au hasard",
 	"description": "Permutations : nombre de listes renvoyées par la génération récursive (n! pour n = 3, 4, 5), compléter j = randint(0, i) dans le mélange de Fisher-Yates, probabilité d'une permutation donnée (1/n!)",
 	"grades": ["T_SPE"],
