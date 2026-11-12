@@ -8,7 +8,7 @@ validés », P5. Phase 0 : **rien de codé**.
 
 _Mis à jour le 2026-11-12, après #2595._
 
-- **État** : A (#2587), B1 (#2589), B2a (#2593, migration appliquée en prod) et B2b (#2595, moments de la semaine) mergées ; reste **B3** (question longtemps ratée enfin réussie, sur la carte de fin de série ; R5 : modèle raté ≥ 3 fois sur ≥ 7 jours, puis réussi) · **Prochaine action** : phase 0 technique de B3 (où lire l'historique d'un modèle, carte de gain) · **En attente de David** : relire les répliques `week_first_activity` / `active_weeks_3/5/10` (`src/lib/config/buddy-messages.ts`) ; dire si des vacances qui commencent un samedi doivent rendre « vacances » la semaine d'école d'avant (règle commune avec la grille du prof) · **Pièges en cours** : la présence se relit après un gain ; « semaine fêtée » = `student_last_visits.week_celebrated_on`, serveur seul · **Worktree / branche** : `../ubumaths-wt-regularite` (branche `feat/regularite-moments` mergée, à nettoyer) ; nouvelle branche depuis `origin/main` pour B3
+- **État** : A (#2587), B1 (#2589), B2a (#2593, migration appliquée en prod) et B2b (#2595, moments de la semaine) mergées ; reste **B3** (question longtemps ratée enfin réussie, sur la carte de fin de série ; R5 : modèle raté ≥ 3 fois sur ≥ 7 jours, puis réussi) · **Prochaine action** : phase 0 technique de B3 (où lire l'historique d'un modèle, carte de gain) · **En attente de David** : rien · **Pièges en cours** : la présence se relit après un gain ; « semaine fêtée » = `student_last_visits.week_celebrated_on`, serveur seul · **Worktree / branche** : `../ubumaths-wt-regularite` (branche `feat/regularite-moments` mergée, à nettoyer) ; nouvelle branche depuis `origin/main` pour B3
 
 ## Besoin validé (rappel, David, 2026-11-11)
 
@@ -211,3 +211,11 @@ lisible par le serveur seul.
 - Tests : `buddy-weeks` (14), `buddy-presence` (+3), routes (+3, +2), `palotin-presence` (+1),
   `PalotinPresence` (+4, dont 3 rouges sans le code), export (+1), intégration
   `palotin-semaines-actives` (5).
+
+## Décisions après B2 (David, 2026-11-12)
+
+David : « je valide » (mes recos).
+
+- Répliques `week_first_activity`, `active_weeks_3/5/10` : **validées telles quelles**.
+- Vacances commençant un samedi : la semaine d'école d'avant reste « vacances » (sautée sans
+  activité) — **règle gardée**, commune avec la grille du prof.
