@@ -1,0 +1,196 @@
+{
+	"title": "Démontrer que la fonction intégrale d'une fonction positive croissante est une primitive",
+	"description": "Démonstration à trous : encadrement par croissance (choix), limite du taux f(x) (case), F(a) = 0 (case) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction continue, positive et croissante sur $[a\\,;\\,b]$, et $F$ la fonction définie sur $[a\\,;\\,b]$ par $F(x)=\\displaystyle\\int_a^x f(t)\\,\\mathrm{d}t$. On démontre que $F$ est une primitive de $f$, puis que $\\displaystyle\\int_a^b f(x)\\,\\mathrm{d}x=G(b)-G(a)$ pour toute primitive $G$ de $f$.\n\nSoit $x$ dans $[a\\,;\\,b[$ et $h>0$ tel que $x+h\\leqslant b$ (le cas $h<0$ se traite de même). $F(x+h)-F(x)=\\displaystyle\\int_x^{x+h}f(t)\\,\\mathrm{d}t$ est l'aire sous la courbe de $f$ entre $x$ et $x+h$.\n\nPourquoi a-t-on $h\\,f(x)\\leqslant F(x+h)-F(x)\\leqslant h\\,f(x+h)$ ?\n\n```choix\n- Car $f$ est croissante : pour $t$ entre $x$ et $x+h$, $f(x)\\leqslant f(t)\\leqslant f(x+h)$.\n- Car $f$ est positive sur $[a\\,;\\,b]$.\n- Car $F$ est croissante sur $[a\\,;\\,b]$.\n- Car $f$ est continue en $x$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est croissante : pour $t$ entre $x$ et $x+h$, $f(x)\\leqslant f(t)\\leqslant f(x+h)$.",
+					"L'aire sous la courbe entre $x$ et $x+h$ est donc comprise entre celles de deux rectangles de largeur $h$ : $\\textcolor{{{color:primary.0}}}{h\\,f(x)\\leqslant F(x+h)-F(x)\\leqslant h\\,f(x+h)}$.",
+					"La positivité de $f$ sert à lire l'intégrale comme une aire ; c'est la croissance qui donne l'encadrement."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue, positive et croissante sur $[a\\,;\\,b]$, et $F$ la fonction définie sur $[a\\,;\\,b]$ par $F(x)=\\displaystyle\\int_a^x f(t)\\,\\mathrm{d}t$. On démontre que $F$ est une primitive de $f$, puis que $\\displaystyle\\int_a^b f(x)\\,\\mathrm{d}x=G(b)-G(a)$ pour toute primitive $G$ de $f$.\n\nSoit $x$ dans $[a\\,;\\,b[$ et $h>0$ tel que $x+h\\leqslant b$ (le cas $h<0$ se traite de même). $F(x+h)-F(x)=\\displaystyle\\int_x^{x+h}f(t)\\,\\mathrm{d}t$ est l'aire sous la courbe de $f$ entre $x$ et $x+h$.\n\nOn a $h\\,f(x)\\leqslant F(x+h)-F(x)\\leqslant h\\,f(x+h)$, donc, en divisant par $h>0$, $f(x)\\leqslant\\dfrac{F(x+h)-F(x)}{h}\\leqslant f(x+h)$. Comme $f$ est continue, complète.\n\n$\\displaystyle\\lim_{h\\to 0^+}\\dfrac{F(x+h)-F(x)}{h}=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "f(x)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est continue en $x$ : $\\displaystyle\\lim_{h\\to 0^+}f(x+h)=f(x)$.",
+					"Le quotient est encadré par $f(x)$ et $f(x+h)$, qui tendent tous deux vers $f(x)$ : par encadrement, sa limite est $\\textcolor{{{color:primary.0}}}{f(x)}$.",
+					"Ainsi $F$ est dérivable et $F'=f$ : $F$ est une primitive de $f$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue, positive et croissante sur $[a\\,;\\,b]$, et $F$ la fonction définie sur $[a\\,;\\,b]$ par $F(x)=\\displaystyle\\int_a^x f(t)\\,\\mathrm{d}t$. On démontre que $F$ est une primitive de $f$, puis que $\\displaystyle\\int_a^b f(x)\\,\\mathrm{d}x=G(b)-G(a)$ pour toute primitive $G$ de $f$.\n\n$F$ est une primitive de $f$. Soit $G$ une primitive de $f$ : il existe un réel $c$ tel que $G=F+c$, donc $G(b)-G(a)=F(b)-F(a)$. Complète.\n\n$F(a)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$F(a)=\\displaystyle\\int_a^a f(t)\\,\\mathrm{d}t$ : l'aire d'une bande de largeur nulle.",
+					"Donc $F(a)=\\textcolor{{{color:primary.0}}}{0}$, et $G(b)-G(a)=F(b)=\\displaystyle\\int_a^b f(x)\\,\\mathrm{d}x$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue, positive et croissante sur $[a\\,;\\,b]$, et $F(x)=\\displaystyle\\int_a^x f(t)\\,\\mathrm{d}t$. On démontre que $F$ est une primitive de $f$, puis que $\\displaystyle\\int_a^b f(x)\\,\\mathrm{d}x=G(b)-G(a)$ pour toute primitive $G$ de $f$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour $h>0$, $f$ étant croissante : $h\\,f(x)\\leqslant F(x+h)-F(x)\\leqslant h\\,f(x+h)$.\n- On divise par $h$ ; par continuité de $f$ et encadrement, le quotient tend vers $f(x)$ : $F'(x)=f(x)$.\n- Si $G$ est une primitive de $f$, alors $G=F+c$ avec $c$ réel, et $F(a)=0$.\n- Donc $G(b)-G(a)=F(b)-F(a)=\\displaystyle\\int_a^b f(x)\\,\\mathrm{d}x$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On encadre le taux d'accroissement de $F$, puis on compare $F$ à une primitive quelconque.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\displaystyle\\int_a^b f(x)\\,\\mathrm{d}x=G(b)-G(a)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f croissante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f positive",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : F croissante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f continue",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["f(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(x + h)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["f(x+h)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(h)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["f(h)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(a)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["f(a)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["a"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,228 @@
+{
+	"title": "Démontrer l'espérance de la loi binomiale",
+	"description": "Démonstration à trous : E(Xᵢ) = p (case), linéarité (choix), exemple (case, n et p tirés) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $X$ une variable aléatoire de loi binomiale $\\mathcal{B}(n\\,;p)$. On démontre que $E(X)=np$.\n\nOn écrit $X=X_1+X_2+\\cdots+X_n$, où $X_i$ vaut $1$ si la $i$-ième épreuve est un succès et $0$ sinon : chaque $X_i$ suit la loi de Bernoulli de paramètre $p$.\n\nComplète.\n\n$E(X_i)=1\\times p+0\\times(1-p)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X_i$ vaut $1$ avec la probabilité $p$ et $0$ avec la probabilité $1-p$.",
+					"Donc $E(X_i)=1\\times p+0\\times(1-p)=\\textcolor{{{color:primary.0}}}{p}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire de loi binomiale $\\mathcal{B}(n\\,;p)$. On démontre que $E(X)=np$.\n\nOn écrit $X=X_1+X_2+\\cdots+X_n$, où $X_i$ vaut $1$ si la $i$-ième épreuve est un succès et $0$ sinon : chaque $X_i$ suit la loi de Bernoulli de paramètre $p$.\n\nPourquoi $E(X)=E(X_1)+E(X_2)+\\cdots+E(X_n)$ ?\n\n```choix\n- Par linéarité de l'espérance.\n- Parce que les $X_i$ sont indépendantes : sans indépendance, ce serait faux.\n- Parce que $X=nX_1$.\n- Parce que les $X_i$ ne prennent que les valeurs $0$ et $1$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'espérance d'une somme de variables aléatoires est la somme de leurs espérances.",
+					"Donc $\\textcolor{{{color:primary.0}}}{E(X)=E(X_1)+\\cdots+E(X_n)}$.",
+					"La linéarité de l'espérance ne demande pas l'indépendance (c'est la variance qui la demande)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire de loi binomiale $\\mathcal{B}(n\\,;p)$. On démontre que $E(X)=np$.\n\nOn écrit $X=X_1+X_2+\\cdots+X_n$, où $X_i$ vaut $1$ si la $i$-ième épreuve est un succès et $0$ sinon : chaque $X_i$ suit la loi de Bernoulli de paramètre $p$.\n\nExemple : pour $n={{n}}$ et $p={{eval:t/10;d}}$, chaque $E(X_i)$ vaut ${{eval:t/10;d}}$. Calcule $E(X)$ (nombre entier ou décimal).\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*t/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$E(X)=E(X_1)+\\cdots+E(X_{{{n}}})$ : ${{n}}$ termes égaux à ${{eval:t/10;d}}$.",
+					"$E(X)={{n}}\\times{{eval:t/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:n*t/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire de loi binomiale $\\mathcal{B}(n\\,;p)$. On démontre que $E(X)=np$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On écrit $X=X_1+\\cdots+X_n$, où les $X_i$ suivent la loi de Bernoulli de paramètre $p$.\n- Pour chaque $i$, $E(X_i)=1\\times p+0\\times(1-p)=p$.\n- Par linéarité, $E(X)=E(X_1)+\\cdots+E(X_n)=p+\\cdots+p$.\n- Donc $E(X)=np$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On décompose $X$ en somme de variables de Bernoulli.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{E(X)=np}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["p"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 − p",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1-p"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p(1 − p)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["p(1-p)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "linéarité",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : indépendance",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : X = nX₁",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : valeurs 0 et 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 10, p = 0,3 → 3",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"t": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : variance 2,1",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"t": "3"
+			},
+			"answers": ["2,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p = 0,3",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"t": "3"
+			},
+			"answers": ["0,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n + p = 10,3",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"t": "3"
+			},
+			"answers": ["10,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 8, p = 0,3 → 2,4",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"t": "3"
+			},
+			"answers": ["2,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

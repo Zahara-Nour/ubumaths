@@ -10,16 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après la publication du lot 3 (§ 13)._
+_Mis à jour le 2026-11-12, lot 4 écrit, PR des fichiers en cours (§ 14)._
 
-- **État** : lots 1, 2 et 3 publiés (§ 5, § 9, § 13) : 15 démonstrations sur 19.
-- **Prochaine action** : lot 4, intégration et loi binomiale (494, 495, 512, 528, 623 ; Q3 : n et k tirés pour 512,
-  528, 623), sur le modèle du lot 3 (§ 10) ; nouveau worktree `../ubumaths-wt-questions-tspe-demonstrations` depuis
-  `origin/main`, branche `feat/questions-tspe-demonstrations-4`.
-- **En attente de David** : rien.
-- **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3) ; la
-  simulation `publier-lot.ts` lit la prod → David la lance ; `x/n` en ligne = forme à améliorer.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main` (rien en cours).
+- **État** : lots 1, 2 et 3 publiés (§ 5, § 9, § 13) ; lot 4 (494, 495, 512, 528, 623) écrit et vérifié (§ 14), PR des
+  fichiers ouverte.
+- **Prochaine action** : PR verte → merge → David lance `create-questions --publier` (lot 4) → ids dans les JSON →
+  migration de rangement (copie de celle du lot 2 : 5 sous-notions, aucune notion seule) → page à cocher.
+- **En attente de David** : la création des 5 brouillons en prod, après le merge.
+- **Pièges en cours** : commitlint refuse le type `content` ; graine de l'aperçu admin = variation (§ 3), saisie dans
+  le champ « Seed » puis « Générer » (le `?seed=` de l'adresse est ignoré) ; `publier-lot.ts` lit la prod → David la
+  lance ; `x/n` en ligne = forme à améliorer ; **`\dots` non rendu** (rouge), `\cdots` oui (§ 14) ; réponse décimale
+  tirée → `;d` dans `expectedAnswer`, sinon fraction et « forme à améliorer ».
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, branche `feat/questions-tspe-demonstrations-4`.
 
 ---
 
@@ -292,3 +294,34 @@ dessiné, à jouer dans l'aperçu admin) ; base `verdicts` vide à la publicatio
 
 Verdicts lus : 5/5 « ok », sans commentaire (ids = ceux du § 11). `publier-lot.ts` en simulation (5 brouillons passent
 le contrôle), puis `--publier` lancé par David : 5/5 publiés, statut relu en base (MCP : 5 `published`).
+
+## 14. Lot 4 : intégration et loi binomiale (2026-11-12)
+
+| Point | Modèle (`scripts/questions/tspe-demonstrations-4/`) | Niveau | Variations                                                                                                                         |
+| ----- | --------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 494   | `01-demontrer-fonction-integrale-primitive`         | 4      | encadrement par croissance (choix), limite du taux = f(x) (case), F(a) = 0 (case), étapes (4)                                      |
+| 495   | `02-demontrer-integration-par-parties`              | 4      | (uv)′ (choix), uv primitive de (uv)′ (choix), formule isolée (choix), étapes (4)                                                   |
+| 512   | `03-demontrer-loi-binomiale`                        | 7      | probabilité d'un chemin (choix), nombre de chemins C(n, k) (case, n de 3 à 6, k de 1 à n − 1), incompatibilité (choix), étapes (4) |
+| 528   | `04-demontrer-esperance-loi-binomiale`              | 3      | E(Xᵢ) = p (case), linéarité (choix), exemple E(X) (case, n de 2 à 20, p = 0,1 à 0,9), étapes (4)                                   |
+| 623   | `05-demontrer-variance-loi-binomiale`               | 4      | V(Xᵢ), facteur 1 − p (case), indépendance (choix), exemple V(X) (case, n et p tirés), étapes (4)                                   |
+
+Niveaux : après ceux déjà présents sur la sous-notion (relevé prod du 2026-11-12 : dérivée d'une fonction intégrale
+2-3, intégration par parties 1-3, expression de la loi 1-6, espérance et variance 1-2 ; 623 après 528). Les 5 points
+sont sur une sous-notion, aucun tagué. Q3 : pour 528 et 623, la variation d'exemple tire n et p (k n'y a pas de
+sens). Script : `docs/wip/questions/lot-tspe-demonstrations-4.py`.
+
+Vérifié : `create-questions` en simulation 5/5 (72 specs vertes) ; `question:specs` 150 tirages par variation, 5/5
+importables, 0 `\textcolor` hors `$` ; 3 916 formules des aperçus (439 distinctes) passées à `validateLatex` +
+accolades, 0 problème ; brouillons en base locale (copie hors dépôt) ; aperçu admin vu à l'écran (case de 512,
+étapes à ranger et exemple de 623, choix de 495, énoncé de 528).
+
+Pièges du lot, vus seulement à l'écran :
+
+- **`\dots` sort en rouge** (commande non rendue), dans l'énoncé comme dans les étapes à ranger ; `validateLatex` ne
+  le signale pas. Remplacé par `\cdots`, qui est rendu. 64 `\dots` dans d'autres `scripts/questions/` (1re, 2de,
+  dénombrement de terminale) : à regarder hors chantier, certains peuvent être dans des blocs de code.
+- Réponse attendue décimale calculée (`{{eval:n*t*(10-t)/100}}`) : sans `;d`, elle sort en fraction (`\dfrac{21}{10}`)
+  et la saisie « 2,1 » est jugée « forme à améliorer ». Avec `;d`, c'est correct.
+- Propositions de choix trop longues (formule complète d'intégration par parties, en `\displaystyle`) : elles débordent
+  de leur case. Question reformulée (« Que vaut ∫ u v′ ? »), propositions réduites au membre de droite.
+- Aperçu admin : le `?seed=` de l'adresse est ignoré ; la graine se saisit dans le champ « Seed », puis « Générer ».

@@ -1,0 +1,217 @@
+{
+	"title": "Démontrer l'expression de la probabilité de k succès dans un schéma de Bernoulli",
+	"description": "Démonstration à trous : probabilité d'un chemin (choix), nombre de chemins (case, n et k tirés), incompatibilité (choix) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On répète $n$ fois, de façon indépendante, une épreuve de Bernoulli de probabilité de succès $p$ ; $X$ est le nombre de succès. On démontre que, pour tout entier $k$ de $0$ à $n$, $P(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}$.\n\nOn représente l'expérience par un arbre à $n$ niveaux.\n\nUn chemin de l'arbre comporte exactement $k$ succès et $n-k$ échecs. Pourquoi sa probabilité est-elle $p^k(1-p)^{n-k}$ ?\n\n```choix\n- Les épreuves sont indépendantes : on multiplie les probabilités le long du chemin, $k$ fois $p$ et $n-k$ fois $1-p$.\n- On additionne les probabilités le long du chemin.\n- Chaque succès a la probabilité $p$, donc le chemin a la probabilité $kp$.\n- Il y a $\\dbinom{n}{k}$ chemins de ce type.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La probabilité d'un chemin est le produit des probabilités de ses branches.",
+					"$k$ branches valent $p$ et $n-k$ valent $1-p$ : $\\textcolor{{{color:primary.0}}}{p^k(1-p)^{n-k}}$.",
+					"Le nombre de chemins sert à l'étape suivante, pas à la probabilité d'un seul chemin."
+				]
+			}
+		},
+		{
+			"statement": "On répète $n$ fois, de façon indépendante, une épreuve de Bernoulli de probabilité de succès $p$ ; $X$ est le nombre de succès. On démontre que, pour tout entier $k$ de $0$ à $n$, $P(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}$.\n\nOn représente l'expérience par un arbre à $n$ niveaux.\n\nOn compte les chemins qui comportent exactement $k$ succès. Exemple : pour $n={{n}}$, combien de chemins comportent exactement ${{k}}$ succès ?\n\nIl y en a $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{eval:n-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un tel chemin est déterminé par les positions de ses ${{k}}$ succès parmi les ${{n}}$ épreuves.",
+					"Il y en a donc $\\dbinom{{{n}}}{{{k}}}=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On répète $n$ fois, de façon indépendante, une épreuve de Bernoulli de probabilité de succès $p$ ; $X$ est le nombre de succès. On démontre que, pour tout entier $k$ de $0$ à $n$, $P(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}$.\n\nOn représente l'expérience par un arbre à $n$ niveaux.\n\nIl y a $\\dbinom{n}{k}$ chemins à $k$ succès, chacun de probabilité $p^k(1-p)^{n-k}$. Pourquoi $P(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}$ ?\n\n```choix\n- L'événement $\\{X=k\\}$ est la réunion de ces chemins, deux à deux incompatibles : on additionne leurs probabilités, toutes égales.\n- On multiplie les probabilités de ces chemins.\n- Ces chemins sont indépendants, donc on additionne leurs probabilités.\n- On ne garde que le chemin le plus probable.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux chemins différents correspondent à deux issues différentes : ils sont incompatibles.",
+					"On additionne $\\dbinom{n}{k}$ fois $p^k(1-p)^{n-k}$ : $\\textcolor{{{color:primary.0}}}{P(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}}$.",
+					"Incompatibles et indépendants, ce n'est pas la même chose : c'est l'incompatibilité qui permet d'additionner."
+				]
+			}
+		},
+		{
+			"statement": "On répète $n$ fois, de façon indépendante, une épreuve de Bernoulli de probabilité de succès $p$ ; $X$ est le nombre de succès. On démontre que $P(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On représente l'expérience par un arbre à $n$ niveaux.\n- Un chemin à $k$ succès et $n-k$ échecs a pour probabilité $p^k(1-p)^{n-k}$, par indépendance.\n- Il y a $\\dbinom{n}{k}$ chemins de ce type : on choisit les positions des $k$ succès.\n- Ces chemins sont incompatibles : $P(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On calcule la probabilité d'un chemin, puis on compte les chemins.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{P(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "produit, indépendance",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : kp",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : nombre de chemins",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "C(5, 2) = 10",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"k": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 × 4 = 20, ordre compté",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"k": "2"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2⁵ = 32, tous les chemins",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"k": "2"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"k": "2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "incompatibilité",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : produit",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : indépendants",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le plus probable",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

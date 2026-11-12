@@ -1,0 +1,216 @@
+{
+	"title": "Démontrer la variance de la loi binomiale",
+	"description": "Démonstration à trous : V(Xᵢ), facteur 1 − p (case), indépendance (choix), exemple (case, n et p tirés) ; étapes à ranger",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $X$ une variable aléatoire de loi binomiale $\\mathcal{B}(n\\,;p)$. On démontre que $V(X)=np(1-p)$.\n\nOn écrit $X=X_1+X_2+\\cdots+X_n$, où $X_i$ vaut $1$ si la $i$-ième épreuve est un succès et $0$ sinon : chaque $X_i$ suit la loi de Bernoulli de paramètre $p$, et les $X_i$ sont indépendantes (les épreuves le sont).\n\n$E(X_i)=p$. Complète le calcul de la variance de $X_i$.\n\n$V(X_i)=(1-p)^2\\times p+(0-p)^2\\times ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1-p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X_i$ vaut $1$ avec la probabilité $p$ et $0$ avec la probabilité $\\textcolor{{{color:primary.0}}}{1-p}$.",
+					"Donc $V(X_i)=(1-p)^2p+p^2(1-p)=p(1-p)\\big((1-p)+p\\big)=p(1-p)$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire de loi binomiale $\\mathcal{B}(n\\,;p)$. On démontre que $V(X)=np(1-p)$.\n\nOn écrit $X=X_1+X_2+\\cdots+X_n$, où $X_i$ vaut $1$ si la $i$-ième épreuve est un succès et $0$ sinon : chaque $X_i$ suit la loi de Bernoulli de paramètre $p$, et les $X_i$ sont indépendantes (les épreuves le sont).\n\nOn sait que $V(X_i)=p(1-p)$. Pourquoi $V(X)=V(X_1)+V(X_2)+\\cdots+V(X_n)$ ?\n\n```choix\n- Car $X_1$, …, $X_n$ sont indépendantes : la variance d'une somme de variables indépendantes est la somme de leurs variances.\n- Par linéarité, toujours vraie pour la variance.\n- Car $V(X)=E(X^2)-E(X)^2$.\n- Car $X=nX_1$, donc $V(X)=nV(X_1)$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les épreuves sont indépendantes, donc les $X_i$ aussi.",
+					"Pour des variables indépendantes, $\\textcolor{{{color:primary.0}}}{V(X)=V(X_1)+\\cdots+V(X_n)}$.",
+					"Sans indépendance, la variance d'une somme n'est pas, en général, la somme des variances."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire de loi binomiale $\\mathcal{B}(n\\,;p)$. On démontre que $V(X)=np(1-p)$.\n\nOn écrit $X=X_1+X_2+\\cdots+X_n$, où $X_i$ vaut $1$ si la $i$-ième épreuve est un succès et $0$ sinon : chaque $X_i$ suit la loi de Bernoulli de paramètre $p$, et les $X_i$ sont indépendantes (les épreuves le sont).\n\nExemple : pour $n={{n}}$ et $p={{eval:t/10;d}}$, calcule $V(X)$ (nombre entier ou décimal).\n\n$V(X)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*t*(10-t)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque $V(X_i)$ vaut ${{eval:t/10;d}}\\times{{eval:(10-t)/10;d}}={{eval:t*(10-t)/100;d}}$.",
+					"$V(X)={{n}}\\times{{eval:t*(10-t)/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:n*t*(10-t)/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire de loi binomiale $\\mathcal{B}(n\\,;p)$. On démontre que $V(X)=np(1-p)$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On écrit $X=X_1+\\cdots+X_n$, où les $X_i$ sont des variables de Bernoulli de paramètre $p$, indépendantes.\n- Pour chaque $i$, $V(X_i)=(1-p)^2p+p^2(1-p)=p(1-p)$.\n- Les $X_i$ étant indépendantes, $V(X)=V(X_1)+\\cdots+V(X_n)=p(1-p)+\\cdots+p(1-p)$.\n- Donc $V(X)=np(1-p)$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On décompose $X$ en somme de variables de Bernoulli indépendantes.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{V(X)=np(1-p)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 − p",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1-p"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["p"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p − 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["p-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "indépendance",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : linéarité",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : König-Huygens",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : X = nX₁",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 10, p = 0,3 → 2,1",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"t": "3"
+			},
+			"answers": ["2,1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : espérance 3",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"t": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : V(Xᵢ) = 0,21",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"t": "3"
+			},
+			"answers": ["0,21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : np² = 0,9",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"t": "3"
+			},
+			"answers": ["0,9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
