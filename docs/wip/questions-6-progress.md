@@ -5,14 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2588 (lot 11b, nœud et tag)._
+_Mis à jour le 2026-11-12, lot 11b publié (§ 26.6)._
 
-- **État** : lots 10 et 11a publiés. Lot 11b (174-179, 148) : 7 brouillons en prod, rangés et tagués (#2588,
-  `db:migrate` fait, § 26.5) ; page à cocher publiée, verdicts attendus.
-- **Prochaine action** : lire les verdicts (collection `verdicts` de https://claude.ai/artifact/RveJ3zykTyFdg3w6SHMizP),
-  corriger s'il le faut, puis `publier-lot.ts --dir scripts/questions/6-triangles-symetrie-perimetres` (simulation,
-  `--publier` par David) ; puis lot 12 « Constructions » (173, 180, 207).
-- **En attente de David** : relecture du lot 11b sur la page à cocher.
+- **État** : lots 10, 11a et 11b publiés (11b : 7 modèles 174-179, 148, relus OK, `published` en prod).
+- **Prochaine action** : lot 12 « Constructions » (173, 180, 207) : phase 0 à proposer à David.
+- **En attente de David** : rien.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
 ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
@@ -1683,3 +1680,10 @@ Pièges rencontrés :
 - Un second `create-questions --publier` lancé depuis `main` avant le merge a été refusé par la garde des
   homonymes (fichiers sans `id`) : rien d'écrit.
 - Page à cocher : https://claude.ai/artifact/RveJ3zykTyFdg3w6SHMizP (7 fiches, aucune alerte).
+
+### 26.6 Lot 11b : relecture et publication (2026-11-12)
+
+- Verdicts lus : 7/7 « OK », sans commentaire ; identifiants = les 7 fichiers du lot.
+- Publication lancée par David (`publier-lot.ts --publier`) ; relu en prod :
+  7 `published`.
+- Lot 11 clos. Suite : lot 12 « Constructions » (173, 180, 207).
