@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, lot 11b publié (§ 26.6)._
+_Mis à jour le 2026-11-12, phase 0 du lot 12 proposée (§ 27)._
 
 - **État** : lots 10, 11a et 11b publiés (11b : 7 modèles 174-179, 148, relus OK, `published` en prod).
-- **Prochaine action** : lot 12 « Constructions » (173, 180, 207) : phase 0 à proposer à David.
-- **En attente de David** : rien.
+- **Prochaine action** : lot 12 « Constructions » (173, 180, 207) : écrire le lot une fois la phase 0 validée.
+- **En attente de David** : réponses aux 5 questions du § 27.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `texte(P, …)` décale en haut à droite : `dx=0, dy=0,
 ancre="centre"`. `\pi` dans `eval:`. Réponses de figure : pleine précision. Les `id` écrits par
   `create-questions --publier` dans le dépôt principal partent sur la branche de migration (copie, `git restore`).
@@ -1687,3 +1687,50 @@ Pièges rencontrés :
 - Publication lancée par David (`publier-lot.ts --publier`) ; relu en prod :
   7 `published`.
 - Lot 11 clos. Suite : lot 12 « Constructions » (173, 180, 207).
+
+## 27. Lot 12 « Constructions » : phase 0 (proposée le 2026-11-12, à valider)
+
+Relevé prod (MCP, 2026-11-12) : **aucun modèle** sur 6-173, 6-180, 6-207 (ni sur 5-059, 5-060, CM1-104, CM1-108,
+CM2-094, CM2-097). Nœuds : 173 et 207 → « Géométrie > Figures planes > triangles » ; 180 → notion « Géométrie >
+Symétrie axiale ». Contrôles en prod (`controles-figure`, clos) : `triangle` (trois longueurs, deux côtés et l'angle
+compris, un côté et ses deux angles adjacents), `symetrique par d` (quadrillage ou papier uni),
+`cercle c = cercle_circonscrit(A, B, C)` (papier uni). Déjà employés : `symetrique` (CE2, quadrillage), triangle à trois
+longueurs (CE2) ; jamais : triangle à angles, cercle circonscrit, symétrique sur papier uni.
+
+Limites des outils (vérifiées dans le code) :
+
+- une longueur en cm n'est admise que dans le **triangle rectangle** (`construction-parser.ts:746`) : un triangle
+  quelconque reçoit ses longueurs par des segments tracés dans la figure (u, v), reportés au compas ou au Report.
+  L'exemple de réussite « trois longueurs en cm » n'est pas faisable tel quel ;
+- pas de **papier pointé** (borne de 180 : « quadrillé, pointé, uni »).
+
+Bornes : 173 « trois longueurs (si possible), deux côtés et l'angle compris, un côté et ses deux angles adjacents »
+(exemples de réussite p. 15) ; 180 « supports quadrillé, pointé, uni ; instruments imposés » (p. 16) ; 207 aucune.
+
+1. **Construire un triangle** (173, niveaux 1-3) — papier uni, [AB] tracé. v1 trois longueurs : AC = u, BC = v
+   (segments u et v tracés à côté), palette Segment · Compas · Report · Droite ; v2 deux côtés et l'angle compris :
+   AC = u, CAB = a (entier, 30 à 120°), Rapporteur · Règle · Segment · Report · Compas ; v3 un côté et ses deux angles
+   adjacents : CAB = a, ABC = b (a + b ⩽ 150) ; v4 « si possible », sans figure : trois longueurs écrites (tirées
+   constructibles ou non, ex. 3 cm, 4 cm, 8 cm) : « peut-on construire ce triangle ? » (choix : oui / non, la plus
+   grande longueur dépasse la somme des deux autres). Corrigé des tracés : la correction du contrôle (arcs, angles).
+2. **Construire le symétrique d'une figure** (180, 1-3) — v1 quadrillage, axe **oblique** (diagonale des carreaux),
+   polygone de 3 ou 4 sommets sur les nœuds, outil segment ; v2 papier uni, triangle, instruments imposés : équerre
+   (`outils: segment, droite, equerre`) ; v3 papier uni, compas imposé (`outils: segment, droite, compas`). Axe jamais
+   horizontal ni vertical en v2 et v3. Palettes restreintes à vérifier à l'écriture (le parseur les admet sur papier
+   uni dès qu'un instrument y figure).
+3. **Construire le cercle circonscrit** (207, 2-3) — papier uni, triangle ABC tracé, palette par défaut (Droite ·
+   Équerre · Compas · Report) ; triangle tiré parmi trois : aux angles aigus (centre dedans), obtus (centre dehors),
+   rectangle (centre au milieu de l'hypoténuse). Corrigé : deux médiatrices, leur point commun O, le cercle de centre
+   O passant par A.
+
+**Question d'accès** (migration nœud + tag) : personne ne lit rien de plus ; brouillons visibles de l'admin et de
+l'auteur seuls jusqu'à la publication, la migration ne fait que ranger et taguer.
+
+**Questions** :
+
+1. Un seul lot de 3 modèles ?
+2. 173 : longueurs données par des segments à reporter (outil actuel) ; le triangle quelconque coté en cm (règle
+   graduée et compas) noté dans `outils-manquants.md` pour plus tard ? (recommandé)
+3. 180 : papier pointé absent, noté dans `outils-manquants.md` sans l'attendre ? (recommandé)
+4. 173 v4 « si possible » (choix, sans figure) : la garder ? (recommandé : la borne le demande)
+5. Valider la phase 0 (variations, niveaux, formes de réponse) ?
