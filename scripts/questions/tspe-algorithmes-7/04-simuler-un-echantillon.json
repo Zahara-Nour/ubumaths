@@ -1,4 +1,5 @@
 {
+	"id": "b107cbf1-7978-4289-b662-aca886ac7752",
 	"title": "Simuler un échantillon en Python",
 	"description": "Échantillon de X (a avec la probabilité 0,3, −1 sinon) : compléter if random() < 0.3: dans la simulation de X, compléter S = S + X() dans la moyenne, valeur proche de la moyenne d'un grand échantillon (E(X))",
 	"grades": ["T_SPE"],

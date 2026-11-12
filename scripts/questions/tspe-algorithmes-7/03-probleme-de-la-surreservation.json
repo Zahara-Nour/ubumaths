@@ -1,4 +1,5 @@
 {
+	"id": "88d644e6-24b5-4971-bcc3-f4ce17251412",
 	"title": "Problème de la surréservation en Python",
 	"description": "Surréservation, X ~ B(80 ; 0,9) : plus petit k tel que P(X > k) ⩽ α avec la table des P(X ⩽ k) donnée (α = 0,2 ; 0,1 ; 0,05 ; 0,01), compléter while 1 - F(k) > alpha:, sens du k renvoyé",
 	"grades": ["T_SPE"],

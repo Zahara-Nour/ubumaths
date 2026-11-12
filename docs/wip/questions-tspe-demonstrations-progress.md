@@ -595,3 +595,24 @@ Commande pour David, après le merge (depuis le dépôt principal, à jour) :
 `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-algorithmes-7 --publier`
 
 Mergé (#2605, 2026-11-12) : CI verte ; merge retardé par un `deploy:prod` en cours (garde-fou), fait à sa fin.
+
+## 28. Lot 7 : brouillons en prod, rangement (2026-11-12)
+
+David a lancé `create-questions --publier` depuis le dépôt principal : 4 brouillons. Ids reportés dans les JSON
+(branche de rangement). Relevé prod (MCP) : 4 brouillons `{T_SPE}` aux niveaux du § 27 (4, 4, 3, 4), sans nœud ni tag ;
+les 4 points actifs, aucun déjà tagué ; 513 posé sur sa notion (Loi binomiale), 324, 514 et 515 sur leur sous-notion ;
+les 4 sous-notions visées actives.
+
+| Modèle   | Sous-notion                                                | Point    |
+| -------- | ---------------------------------------------------------- | -------- |
+| 0671ee48 | Dénombrement › Arrangements et permutations › permutations | TSPE-324 |
+| a29488bc | Probabilités › Loi binomiale › schéma de Bernoulli         | TSPE-513 |
+| 88d644e6 | Probabilités › Loi binomiale › intervalle de fluctuation   | TSPE-514 |
+| b107cbf1 | Probabilités › Sommes et concentration › échantillons      | TSPE-515 |
+
+Migration `20261112220558_questions_tspe_algorithmes_7_rangement_tags.sql` (copie de celle du lot 6, seuls l'en-tête,
+les données et le préfixe `_qta7_` changent) ; test `tests/integration/questions-tspe-algorithmes-7-rangement-tags.test.ts`
+12/12 vert, rouge sans la migration (partie aller vidée : 6 rouges, 5 sautés), fichier restauré d'une copie (`cmp`).
+Accès : personne de plus (§ 18 Q5, D2).
+`security-auditor` : aucun finding (diff contre le lot 6 limité aux données ; chemins, points et noms de sous-notion
+résolus en prod à une ligne chacun, 513 sur sa notion).
