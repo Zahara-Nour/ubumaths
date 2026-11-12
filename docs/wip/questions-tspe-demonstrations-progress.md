@@ -10,12 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2602 et son `db:migrate` (§ 24)._
+_Mis à jour le 2026-11-12, lot 6 publié (§ 26)._
 
-- **État** : démonstrations terminées (§ 17). Algorithmes : lot 5 publié (§ 22) ; lot 6 (474, 610, 611, 500, 499)
-  en brouillons en prod, rangés sur leur sous-notion avec leur point (#2602, vérifié en prod). Restent 7 et 8.
-- **Prochaine action** : verdicts de la page à cocher (§ 25), puis `publier-lot.ts` (David), comme le § 22.
-- **En attente de David** : cocher la page du lot 6 (§ 25).
+- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 et 6 publiés (§ 22, § 26). Restent les lots 7 et 8.
+- **Prochaine action** : phase 0 du lot 7 (même démarche que les § 19 à 26).
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -556,3 +555,8 @@ Rangement appliqué : `db:migrate` lancé du dépôt principal après #2602 (il 
 `page-a-cocher.ts --dir scripts/questions/tspe-algorithmes-6`, lu en base prod : 5 brouillons `draft`, chacun sur son
 point, 3 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/29jy3b8va86UQqrKVi673t (capacité `db`) ;
 base `verdicts` vide à la publication.
+
+## 26. Lot 6 : publication (2026-11-12)
+
+Verdicts lus : 5/5 « ok », sans commentaire (ids = ceux du § 24). `publier-lot.ts` en simulation puis `--publier`,
+lancés par David. Relu en base (MCP) : 5 `published`.
