@@ -15,6 +15,11 @@ updates:
     # `minimumReleaseAge` de pnpm-workspace.yaml.
     cooldown:
       default-days: 3
+    # typst.ts se monte à la main, avec `TYPST_VERSION` du CDN et une
+    # recompilation de toutes les fiches (décision de David, 2026-10-12)
+    ignore:
+      - dependency-name: '@myriaddreamin/typst.ts'
+      - dependency-name: '@myriaddreamin/typst-ts-web-compiler'
     groups:
       # One PR for all non-major bumps (patch + minor).
       minor-and-patch:

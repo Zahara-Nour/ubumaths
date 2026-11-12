@@ -21,7 +21,7 @@ function output(container: HTMLElement): string {
 }
 
 async function choosePeriod(name: string) {
-	await page.getByRole('button', { name: /^Mois ou jour hors-mois/ }).click();
+	await page.getByRole('combobox', { name: /^Mois ou jour hors-mois/ }).click();
 	await page.getByRole('option', { name }).click();
 }
 

@@ -114,7 +114,7 @@ describe('Page Séries — lien de série (Q44, Q46)', () => {
 
 	it('« En classe » : lien qui lance la série sous cette forme', async () => {
 		await renderPage([series({})]);
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'En classe' }).click();
 		await page.getByRole('button', { name: 'Copier le lien' }).click();
 
@@ -126,7 +126,7 @@ describe('Page Séries — lien de série (Q44, Q46)', () => {
 
 	it('« Course aux nombres » : une durée est proposée et portée par le lien', async () => {
 		await renderPage([series({})]);
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 		await page.getByLabelText('Temps limite (minutes)').fill('12');
 		await page.getByRole('button', { name: 'Copier le lien' }).click();

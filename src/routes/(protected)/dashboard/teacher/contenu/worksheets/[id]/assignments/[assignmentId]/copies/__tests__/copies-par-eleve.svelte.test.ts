@@ -148,7 +148,7 @@ describe('copies par élève : l’aperçu avant d’imprimer', () => {
 		await render(CopiesPage, { props: { data: DATA } as never });
 		await expect.poll(shown).toContain('Fougère Félix');
 
-		await page.getByRole('button', { name: 'Copie à afficher' }).click();
+		await page.getByRole('combobox', { name: 'Copie à afficher' }).click();
 		await page.getByRole('option', { name: /Écureuil Élise/ }).click();
 
 		await expect.poll(shown).not.toContain('Abricot Ondine');
@@ -162,9 +162,9 @@ describe('copies par élève : l’aperçu avant d’imprimer', () => {
 		await render(CopiesPage, { props: { data: DATA } as never });
 		await expect.poll(shown).toContain('Fougère Félix');
 
-		await page.getByRole('button', { name: 'Copie à afficher' }).click();
+		await page.getByRole('combobox', { name: 'Copie à afficher' }).click();
 		await page.getByRole('option', { name: /Écureuil Élise/ }).click();
-		await page.getByRole('button', { name: 'Copie à afficher' }).click();
+		await page.getByRole('combobox', { name: 'Copie à afficher' }).click();
 		await page.getByRole('option', { name: /Fougère Félix/ }).click();
 
 		await expect.poll(shown).toContain(`Énoncé de ${FELIX}`);

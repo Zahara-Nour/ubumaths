@@ -78,7 +78,7 @@ describe('glossaire', () => {
 	it('le filtre propose la Terminale maths expertes', async () => {
 		await renderGlossaire();
 		await page
-			.getByRole('button', { name: /niveau/i })
+			.getByRole('combobox', { name: /niveau/i })
 			.first()
 			.click();
 		await expect
@@ -90,7 +90,7 @@ describe('glossaire', () => {
 	it('le filtre propose la Terminale maths complémentaires et la Terminale techno', async () => {
 		await renderGlossaire();
 		await page
-			.getByRole('button', { name: /niveau/i })
+			.getByRole('combobox', { name: /niveau/i })
 			.first()
 			.click();
 		await expect
@@ -106,7 +106,7 @@ describe('glossaire', () => {
 	it('le filtre propose la 1re générale, qui montre ses mots', async () => {
 		await renderGlossaire();
 		await page
-			.getByRole('button', { name: /niveau/i })
+			.getByRole('combobox', { name: /niveau/i })
 			.first()
 			.click();
 		await page.getByRole('option', { name: '1ère générale (maths spécifiques)' }).click();
@@ -118,7 +118,7 @@ describe('glossaire', () => {
 	it('le filtre propose la 1re techno, qui voit les mots partagés avec elle', async () => {
 		await renderGlossaire();
 		await page
-			.getByRole('button', { name: /niveau/i })
+			.getByRole('combobox', { name: /niveau/i })
 			.first()
 			.click();
 		await page.getByRole('option', { name: '1ère technologique' }).click();
@@ -140,7 +140,7 @@ describe('glossaire', () => {
 		await renderGlossaire();
 		await expect.element(await termLink('nombre dérivé')).toHaveTextContent(/spécialité/);
 		await page
-			.getByRole('button', { name: /niveau/i })
+			.getByRole('combobox', { name: /niveau/i })
 			.first()
 			.click();
 		await page.getByRole('option', { name: '1ère technologique' }).click();

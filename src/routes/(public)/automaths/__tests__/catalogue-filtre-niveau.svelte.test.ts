@@ -69,7 +69,7 @@ function lastUrl(): URL {
 }
 
 async function chooseGrade(label: string) {
-	await page.getByRole('button', { name: /^Niveau :/ }).click();
+	await page.getByRole('combobox', { name: /^Niveau :/ }).click();
 	await page.getByRole('option', { name: label, exact: true }).click();
 }
 
@@ -126,7 +126,7 @@ describe('Catalogue Automaths — filtre par niveau', () => {
 		await chooseGrade('2nde');
 
 		await expect.element(page.getByText('Aucune question pour ce niveau.')).toBeVisible();
-		await expect.element(page.getByRole('button', { name: /^Niveau :/ })).toBeVisible();
+		await expect.element(page.getByRole('combobox', { name: /^Niveau :/ })).toBeVisible();
 	});
 
 	it('adresse ?niveau=4&inferieurs=1 : le filtre est repris au chargement', async () => {
