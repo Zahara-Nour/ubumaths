@@ -69,6 +69,7 @@ const SPECIAL_LANGUAGES: ReadonlySet<string> = new Set([
 	'operation',
 	'collection',
 	'monnaie',
+	'schema-barres',
 	'courbe',
 	'figure',
 	'figure-a-completer',

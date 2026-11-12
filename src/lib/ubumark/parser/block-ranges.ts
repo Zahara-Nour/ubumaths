@@ -22,6 +22,7 @@ import { findEspaceBlocks } from './espace-parser';
 import { findOperationBlocks } from './operation-parser';
 import { findCollectionBlocks } from './collection-parser';
 import { findMonnaieBlocks } from './monnaie-parser';
+import { findSchemaBarresBlocks } from './schema-barres-parser';
 import { findCourbeBlocks } from './courbe-parser';
 import { findFigureBlocks } from './figure-parser';
 import { findStatChartBlocks } from './stat-chart-parser';
@@ -54,6 +55,7 @@ export function blockLineRanges(lines: string[]): [number, number][] {
 		...findOperationBlocks(lines),
 		...findCollectionBlocks(lines),
 		...findMonnaieBlocks(lines),
+		...findSchemaBarresBlocks(lines),
 		...findCourbeBlocks(lines),
 		...findFigureBlocks(lines),
 		...findStatChartBlocks(lines),

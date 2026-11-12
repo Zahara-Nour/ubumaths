@@ -14,6 +14,7 @@ import { horlogeEntry } from './horloge';
 import { monnaieEntry } from './monnaie';
 import { numberLineEntry } from './number-line';
 import { partageEntry } from './partage';
+import { schemaBarresEntry } from './schema-barres';
 import { cubesEntry } from './cubes';
 import { solideEntry } from './solide';
 import { patronEntry } from './patron';
@@ -44,6 +45,7 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	collectionEntry,
 	monnaieEntry,
 	partageEntry,
+	schemaBarresEntry,
 	cubesEntry,
 	solideEntry,
 	patronEntry,

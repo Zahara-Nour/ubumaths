@@ -142,6 +142,7 @@ function nodeLines(node: ASTNode): number {
 		case 'operation':
 		case 'collection':
 		case 'monnaie':
+		case 'schema-barres':
 			return FIGURE_LINES;
 		case 'choice':
 			// Bloc ```choix : une ligne par choix

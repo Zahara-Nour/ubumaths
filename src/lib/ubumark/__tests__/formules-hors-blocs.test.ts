@@ -95,6 +95,12 @@ describe('blocs spéciaux après une formule sur plusieurs lignes', () => {
 
 		expect(types(md)).not.toContain('code-block');
 	});
+
+	it('schéma en barres : un nœud, pas un bloc de code', () => {
+		const md = '$$\na\n$$\n\n```schema-barres\nOr : ? (4) ; 70 (2)\n```\n\nfin';
+
+		expect(types(md)).toEqual(['math-block', 'schema-barres', 'paragraph']);
+	});
 });
 
 describe('Q61 — un `$$` qui enjamberait un bloc n’est plus une formule', () => {

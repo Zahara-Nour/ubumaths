@@ -2,7 +2,7 @@
  * Sélection de la vitrine `/demo/blocs` (chantier catalogue-blocs, phase 0 du 2026-10-25) :
  *
  * - primaire : horloge, opération posée, droite graduée ; collège : barres, circulaire, nuage ;
- *   lycée : variations, arbre, courbe ;
+ *   schéma en barres ; lycée : variations, arbre, courbe ;
  * - chaque item renvoie à un exemple existant d'une fiche (pas de texte recopié).
  */
 import { describe, expect, it } from 'vitest';
@@ -10,7 +10,7 @@ import { findBlockEntry } from '../index';
 import { SHOWCASE_ITEMS, SHOWCASE_SECTIONS, showcaseSource } from '../showcase';
 
 describe('vitrine des blocs', () => {
-	it('range les neuf blocs de la phase 0 par niveau', () => {
+	it('range les blocs par niveau (neuf de la phase 0, puis le schéma en barres)', () => {
 		const fencesByLevel = SHOWCASE_SECTIONS.map(({ level }) =>
 			SHOWCASE_ITEMS.filter((item) => item.level === level).map(
 				(item) => showcaseSource(item).split('\n')[0]
@@ -18,7 +18,7 @@ describe('vitrine des blocs', () => {
 		);
 		expect(fencesByLevel).toEqual([
 			['```horloge', '```operation', '```line'],
-			['```barres', '```circulaire', '```nuage'],
+			['```barres', '```circulaire', '```nuage', '```schema-barres'],
 			['```variation', '```probtree', '```courbe']
 		]);
 	});

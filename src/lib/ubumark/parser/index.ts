@@ -185,6 +185,14 @@ export {
 	isMonnaieBlockStart
 } from './monnaie-parser';
 
+// Bloc ```schema-barres
+export {
+	parseSchemaBarres,
+	parseSchemaBarresContent,
+	findSchemaBarresBlocks,
+	isSchemaBarresBlockStart
+} from './schema-barres-parser';
+
 // Bloc ```courbe
 export {
 	parseCourbe,

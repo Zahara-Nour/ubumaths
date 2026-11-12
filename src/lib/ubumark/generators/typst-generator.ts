@@ -72,6 +72,7 @@ import { generateEspaceTypst } from './espace-typst';
 import { generateOperationTypst } from './operation-typst';
 import { generateCollectionTypst } from './collection-typst';
 import { generateMonnaieTypst } from './monnaie-typst';
+import { generateSchemaBarresTypst } from './schema-barres-typst';
 // Registre LÉGER : pas d'import de geometry-core ici (voir figure-typst-registry.ts)
 import { renderFigureTypst } from './figure-typst-registry';
 import { parseMarkdown } from '../parser/markdown-parser';
@@ -533,6 +534,8 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateCollectionTypst(node);
 		case 'monnaie':
 			return generateMonnaieTypst(node);
+		case 'schema-barres':
+			return generateSchemaBarresTypst(node);
 		case 'choice':
 			// Bloc ```choix (case « choix ») : « A) … » par choix, chaque choix rendu en markdown
 			return node.choices

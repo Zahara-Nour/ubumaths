@@ -2,7 +2,7 @@
  * Vitrine — les blocs ubumark (`/demo/blocs`)
  * Comportements validés par David le 2026-10-25 (docs/archive/wip/catalogue-blocs-progress.md, phase 0).
  *
- * - un visiteur voit le titre, le retour vers `/demo`, trois niveaux et neuf blocs dessinés ;
+ * - un visiteur voit le titre, le retour vers `/demo`, trois niveaux et dix blocs dessinés ;
  * - le texte de chaque bloc est replié sous « Voir ce qu'écrit le prof » ;
  * - aucun cadre d'erreur d'écriture (vitrine publique).
  */
@@ -12,7 +12,7 @@ import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
 
 describe('/demo/blocs', () => {
-	it('montre au visiteur le titre, le retour vers /demo, 3 niveaux et 9 blocs', async () => {
+	it('montre au visiteur le titre, le retour vers /demo, 3 niveaux et 10 blocs', async () => {
 		const screen = await render(Page);
 
 		await expect
@@ -27,7 +27,7 @@ describe('/demo/blocs', () => {
 				.elements()
 				.map((h) => h.textContent)
 		).toEqual(['À l’école primaire', 'Au collège', 'Au lycée']);
-		expect(page.getByRole('heading', { level: 3 }).elements()).toHaveLength(9);
+		expect(page.getByRole('heading', { level: 3 }).elements()).toHaveLength(10);
 		// Chaque carte dessine son bloc (svg, tableau ou potence selon le bloc)
 		await expect
 			.poll(() =>
@@ -35,7 +35,7 @@ describe('/demo/blocs', () => {
 					(zone) => zone.querySelector('svg, table, .operation-grille') !== null
 				)
 			)
-			.toHaveLength(9);
+			.toHaveLength(10);
 	});
 
 	it('replie le texte de chaque bloc sous « Voir ce qu’écrit le prof »', async () => {
@@ -43,7 +43,7 @@ describe('/demo/blocs', () => {
 
 		await expect.element(page.getByRole('heading', { level: 1 })).toBeInTheDocument();
 		const details = [...screen.container.querySelectorAll('details')];
-		expect(details).toHaveLength(9);
+		expect(details).toHaveLength(10);
 		expect(details.every((d) => !d.open)).toBe(true);
 		expect(
 			details.every(
