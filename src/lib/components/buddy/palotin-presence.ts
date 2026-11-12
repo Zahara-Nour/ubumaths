@@ -16,7 +16,7 @@
  */
 
 import { z } from 'zod';
-import type { BuddyState } from '$lib/types/buddy';
+import { WEEK_MOMENTS, type BuddyState, type WeekMoment } from '$lib/types/buddy';
 
 // Types
 export type PalotinZone = 'maison' | 'passage' | 'seance';
@@ -32,6 +32,8 @@ export interface BuddyPresenceView {
 	buddy: BuddyState | null;
 	/** Retour après une pause à fêter (l'élève a travaillé depuis) */
 	returnAfterPause: boolean;
+	/** Semaine qui devient active à fêter (jamais avec un retour : un moment à la fois) */
+	weekMoment: WeekMoment | null;
 }
 
 // Constantes
@@ -70,7 +72,9 @@ const buddyStateSchema = z.object({
 
 export const buddyPresenceSchema = z.object({
 	buddy: buddyStateSchema.nullable(),
-	returnAfterPause: z.boolean()
+	returnAfterPause: z.boolean(),
+	// Absent d'un serveur plus ancien (déploiement en cours) : rien à fêter
+	weekMoment: z.enum(WEEK_MOMENTS).nullable().default(null)
 });
 
 // Variables

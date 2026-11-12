@@ -113,6 +113,10 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Récompenses (lot 3, Q141) : XP du compagnon et succès réservés au serveur,
 	// appelés APRÈS le contrôle d'identité de la route
 	'lib/server/buddy-queries.ts',
+	// Semaines actives du Palotin (chantier `regularite`, B2) : élève de la session
+	// seulement ; `student_last_visits` sans policy, traces et classes filtrées par
+	// `student_id`, rien d'autre que le nom du moment ne sort
+	'lib/server/buddy-weeks.ts',
 	'lib/server/achievements/service.ts',
 	// Mémoire des Mathoux (Chatterie) : `authenticated` n'a que SELECT sur
 	// `student_mathoux` ; écrite par le serveur pour l'élève de la session, après le calcul

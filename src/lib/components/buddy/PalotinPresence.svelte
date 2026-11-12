@@ -29,7 +29,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import type { BuddyMessageContext, PalotinType } from '$lib/config/buddy-messages';
-	import type { BuddyExpression, BuddyState } from '$lib/types/buddy';
+	import type { BuddyExpression, BuddyState, WeekMoment } from '$lib/types/buddy';
 	import { buddyMessageEngine } from './buddy-message-engine';
 	import { BUBBLE_DURATION, LINK_BUBBLE_DURATION } from './buddy-timing';
 	import {
@@ -67,6 +67,8 @@
 		onShown?: () => void;
 		/** Fête du retour après une pause : jamais deux fois */
 		isReturn?: boolean;
+		/** Fête de la semaine qui devient active : jamais deux fois */
+		isWeek?: boolean;
 	}
 
 	// Constantes
@@ -80,6 +82,7 @@
 	/** Durée de l'entrée et de la sortie du Palotin */
 	const MOVE_DURATION = 300;
 	const WELCOME_BACK_URL = '/api/student/buddy/welcome-back';
+	const WEEK_CELEBRATED_URL = '/api/student/buddy/week-celebrated';
 	/** Réplique de chaque réaction en séance : exclamation, encouragement (C14) */
 	const SEANCE_CONTEXTS: Record<SeanceReaction, BuddyMessageContext> = {
 		streak: 'correct',
@@ -96,6 +99,10 @@
 	let returnAfterPause = $state(false);
 	/** Retour déjà fêté pendant ce chargement : une relecture ne le refait pas dire */
 	let returnCelebrated = false;
+	/** Semaine qui devient active à fêter (B2) : jamais avec un retour */
+	let weekMoment = $state<WeekMoment | null>(null);
+	/** Semaine déjà fêtée pendant ce chargement (ou retour fêté : un moment à la fois, T4) */
+	let weekCelebrated = false;
 	/** Palotin selon le serveur : `null` tant qu'il n'a pas répondu (décide seul du quiz) */
 	let serverHasBuddy = $state<boolean | null>(null);
 	/** Palotin lu par la présence : repli quand le cache a expiré (TTL de 10 min) */
@@ -142,6 +149,7 @@
 				if (studentCache.getBuddySync() === cachedBefore) studentCache.hydrateBuddy(view.buddy);
 				// Un retour déjà en file ou déjà dit n'est pas effacé par une relecture
 				if (view.returnAfterPause && !returnCelebrated) returnAfterPause = true;
+				if (view.weekMoment && !weekCelebrated && !returnCelebrated) weekMoment = view.weekMoment;
 			}
 		} catch {
 			// Lecture en échec : pas de passage ; l'écusson reste si le Palotin est déjà connu
@@ -151,12 +159,16 @@
 	}
 
 	/** Met une réplique du Palotin dans la file des passages. */
-	function enqueueContext(context: BuddyMessageContext, onShown?: () => void, isReturn = false) {
+	function enqueueContext(
+		context: BuddyMessageContext,
+		onShown?: () => void,
+		kind: { isReturn?: boolean; isWeek?: boolean } = {}
+	) {
 		if (!buddy) return;
 		const message = buddyMessageEngine.getMessage(buddy.palotin_type, context);
 		if (!message) return;
 		const expression = buddyMessageEngine.getExpression(context);
-		queue = [...queue, { message, expression, link: null, onShown, isReturn }];
+		queue = [...queue, { message, expression, link: null, onShown, ...kind }];
 	}
 
 	/** Le retour est fêté en passage : le serveur l'efface (en échec, il reviendra). */
@@ -165,11 +177,28 @@
 		fetch(WELCOME_BACK_URL, { method: 'POST' }).catch(() => {});
 	}
 
-	/** Retour fêté (passage ou maison) : plus de fête en file ni à venir pour ce chargement. */
+	/**
+	 * Retour fêté (passage ou maison) : plus de fête en file ni à venir pour ce
+	 * chargement ; la semaine compte aussi comme fêtée (un moment à la fois, T4).
+	 */
 	function markReturnCelebrated() {
 		returnCelebrated = true;
 		returnAfterPause = false;
+		markWeekCelebrated();
 		queue = queue.filter((passage) => !passage.isReturn);
+	}
+
+	/** La semaine est fêtée en passage : le serveur la retient (en échec, elle reviendra). */
+	function acknowledgeWeek() {
+		markWeekCelebrated();
+		fetch(WEEK_CELEBRATED_URL, { method: 'POST' }).catch(() => {});
+	}
+
+	/** Semaine fêtée (passage ou maison) : plus de fête de la semaine pour ce chargement. */
+	function markWeekCelebrated() {
+		weekCelebrated = true;
+		weekMoment = null;
+		queue = queue.filter((passage) => !passage.isWeek);
 	}
 
 	/**
@@ -191,7 +220,14 @@
 		if (returnAfterPause) {
 			returnAfterPause = false;
 			if (!returnCelebrated && !queue.some((passage) => passage.isReturn)) {
-				enqueueContext('return_after_pause', acknowledgeWelcomeBack, true);
+				enqueueContext('return_after_pause', acknowledgeWelcomeBack, { isReturn: true });
+			}
+		}
+		if (weekMoment) {
+			const moment = weekMoment;
+			weekMoment = null;
+			if (!weekCelebrated && !queue.some((passage) => passage.isWeek || passage.isReturn)) {
+				enqueueContext(moment, acknowledgeWeek, { isWeek: true });
 			}
 		}
 
@@ -341,6 +377,8 @@
 				fallbackBuddy={presenceBuddy}
 				{returnAfterPause}
 				onWelcomeBackSaid={markReturnCelebrated}
+				{weekMoment}
+				onWeekMomentSaid={markWeekCelebrated}
 				onChangePalotin={() => (showChangeModal = true)}
 			/>
 		{/key}

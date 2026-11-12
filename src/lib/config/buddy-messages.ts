@@ -20,6 +20,15 @@ export type BuddyMessageContext =
 	 * activité : joyeux, jamais la durée ni l'absence (R2, chantier `regularite`)
 	 */
 	| 'return_after_pause'
+	/**
+	 * Semaine qui devient active (5 traces autonomes un jour de la semaine) :
+	 * 1re activité de la semaine, ou 3, 5, 10 semaines actives d'affilée. Fier,
+	 * jamais un nombre de jours ni la Constance Royale (B2, chantier `regularite`)
+	 */
+	| 'week_first_activity'
+	| 'active_weeks_3'
+	| 'active_weeks_5'
+	| 'active_weeks_10'
 	| 'level_up'
 	| 'theme_fractions'
 	| 'theme_geometry'
@@ -144,6 +153,26 @@ const giron: BuddyMessages = {
 		'Te revoilà dans la course ! On fonce !',
 		'Ça repart, et ça repart fort ! Bienvenue !',
 		'Par ma chandelle verte, quel plaisir de te revoir à l’œuvre !'
+	],
+	week_first_activity: [
+		'Première victoire de la semaine ! On lance la machine !',
+		'La semaine démarre, et elle démarre fort !',
+		'Hop, la semaine est lancée ! En avant !'
+	],
+	active_weeks_3: [
+		'Trois semaines de suite au combat ! Ça devient du sérieux !',
+		'Trois semaines d’affilée ! Le rythme est là !',
+		'Par ma chandelle verte, trois semaines sans lâcher !'
+	],
+	active_weeks_5: [
+		'Cinq semaines de suite ! Rien ne t’arrête !',
+		'Cinq semaines d’affilée ! Quelle cadence !',
+		'Cinq semaines au front ! Le Royaume en tremble !'
+	],
+	active_weeks_10: [
+		'Dix semaines de suite ! C’est légendaire !',
+		'Dix semaines d’affilée ! Cornegidouille, quel exploit !',
+		'Dix semaines sans faiblir ! On en parlera dans tout le Royaume !'
 	],
 	level_up: [
 		`${LEVEL} 1 ! On commence tranquille !`,
@@ -310,6 +339,26 @@ const pile: BuddyMessages = {
 		'Te revoilà au travail… le fil se renoue, tranquillement.',
 		'Quel plaisir de te retrouver ici. On continue, à ton rythme.',
 		'La reprise te va bien. On avance ensemble.'
+	],
+	week_first_activity: [
+		'La semaine commence par du travail. Beau départ.',
+		'Une nouvelle semaine s’ouvre, et tu es là. C’est bien.',
+		'Premier pas de la semaine. Le chemin continue.'
+	],
+	active_weeks_3: [
+		'Trois semaines de suite. La régularité prend racine.',
+		'Trois semaines d’affilée… le fil tient bon.',
+		'Trois semaines où tu reviens au travail. C’est précieux.'
+	],
+	active_weeks_5: [
+		'Cinq semaines de suite. Une belle constance, tranquille.',
+		'Cinq semaines d’affilée. Pas à pas, on va loin.',
+		'Cinq semaines au travail. Quelle belle persévérance.'
+	],
+	active_weeks_10: [
+		'Dix semaines de suite. Voilà une vraie habitude.',
+		'Dix semaines d’affilée… c’est rare, et c’est beau.',
+		'Dix semaines au travail. Le Royaume te salue.'
 	],
 	level_up: [
 		`${LEVEL} 1, une porte s’ouvre doucement.`,
@@ -497,6 +546,26 @@ const cotice: BuddyMessages = {
 		'Te revoilà ! Trop bien de bosser de nouveau ensemble !',
 		'Ouais, ça repart ! Bienvenue de retour dans l’équipe !',
 		'Cornegidouille, quelle joie de te retrouver !'
+	],
+	week_first_activity: [
+		'Première séance de la semaine ! Trop bien, on est partis !',
+		'Ouais, la semaine commence ! On fait équipe !',
+		'Et c’est parti pour la semaine ! Top départ !'
+	],
+	active_weeks_3: [
+		'Trois semaines de suite ! On forme une sacrée équipe !',
+		'Trois semaines d’affilée ! Trop fort !',
+		'Trois semaines ensemble, sans s’arrêter ! J’adore !'
+	],
+	active_weeks_5: [
+		'Cinq semaines de suite ! Tope là !',
+		'Cinq semaines d’affilée ! On est inarrêtables !',
+		'Cinq semaines ! Ça mérite une danse de la victoire !'
+	],
+	active_weeks_10: [
+		'Dix semaines de suite ! C’est énorme !',
+		'Dix semaines d’affilée ! Cornegidouille, je n’en reviens pas !',
+		'Dix semaines ensemble ! Meilleure équipe du Royaume !'
 	],
 	level_up: [
 		`${LEVEL} 1 ! On démarre tranquille !`,

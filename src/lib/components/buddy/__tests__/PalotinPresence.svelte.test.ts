@@ -20,7 +20,7 @@ import { playSeanceReaction, SEANCE_PASSAGE_DURATION } from '../seance-reactions
 import { afterNavigate } from '$app/navigation';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import { buddyMessages } from '$lib/config/buddy-messages';
-import type { BuddyState } from '$lib/types/buddy';
+import type { BuddyState, WeekMoment } from '$lib/types/buddy';
 import { NO_NEWS, newsSummaryPhrase, type MathouNews } from '$lib/mathoux/news';
 
 // Page courante simulée
@@ -50,6 +50,8 @@ const buddy: BuddyState = {
 	constance_days_this_week: 0
 };
 const RETURN = buddyMessages.pile.return_after_pause;
+const WEEKS_3 = buddyMessages.pile.active_weeks_3;
+const WEEK_FIRST = buddyMessages.pile.week_first_activity;
 const CORRECT = buddyMessages.pile.correct;
 const INCORRECT = buddyMessages.pile.incorrect;
 const NAPPING = '2 Mathoux font la sieste.';
@@ -70,10 +72,13 @@ const NEWS: MathouNews = {
 const PRESENCE_URL = '/api/student/buddy/presence';
 const MATHOUX_URL = '/api/student/mathoux';
 const WELCOME_BACK_URL = '/api/student/buddy/welcome-back';
+const WEEK_CELEBRATED_URL = '/api/student/buddy/week-celebrated';
 
 // Functions
 interface ServerState {
-	presence?: { buddy: BuddyState | null; returnAfterPause: boolean } | 'panne';
+	presence?:
+		| { buddy: BuddyState | null; returnAfterPause: boolean; weekMoment?: WeekMoment | null }
+		| 'panne';
 	napping?: number;
 	news?: MathouNews;
 }
@@ -214,6 +219,54 @@ describe('PalotinPresence — pages de passage', () => {
 		await settle(1000);
 		expect(RETURN).not.toContain(bubbleText());
 		expect(calls(WELCOME_BACK_URL)).toHaveLength(0);
+	}, 15_000);
+
+	it('3 semaines actives : il entre, le fête, l’acquitte, puis repart (B2)', async () => {
+		mockServer({ presence: { buddy, returnAfterPause: false, weekMoment: 'active_weeks_3' } });
+		await render(PalotinPresence);
+
+		await vi.waitFor(() => expect(WEEKS_3).toContain(bubbleText()), { timeout: 3000 });
+		await vi.waitFor(() => expect(calls(WEEK_CELEBRATED_URL)).toHaveLength(1));
+		expect(calls(WELCOME_BACK_URL)).toHaveLength(0);
+		await vi.waitFor(() => expect(badge()).not.toBeNull(), { timeout: 8000 });
+	}, 12_000);
+
+	it('semaine déjà fêtée : une relecture qui la rend encore ne la refait pas dire', async () => {
+		mockServer({ presence: { buddy, returnAfterPause: false, weekMoment: 'week_first_activity' } });
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(calls(WEEK_CELEBRATED_URL)).toHaveLength(1), { timeout: 3000 });
+		await vi.waitFor(() => expect(badge()).not.toBeNull(), { timeout: 8000 });
+
+		mockServer({ presence: { buddy, returnAfterPause: false, weekMoment: 'week_first_activity' } });
+		notifyBuddyActivity();
+		navigateTo('/dashboard/student/progression');
+		await vi.waitFor(() => expect(calls(PRESENCE_URL)).toHaveLength(1));
+		await settle(1000);
+		expect(WEEK_FIRST).not.toContain(bubbleText());
+		expect(calls(WEEK_CELEBRATED_URL)).toHaveLength(0);
+	}, 15_000);
+
+	it('maison : le Palotin de l’accueil fête la semaine et l’acquitte', async () => {
+		at('/dashboard');
+		mockServer({ presence: { buddy, returnAfterPause: false, weekMoment: 'active_weeks_3' } });
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(WEEKS_3).toContain(bubbleText()), { timeout: 4000 });
+		await vi.waitFor(() => expect(calls(WEEK_CELEBRATED_URL)).toHaveLength(1));
+	}, 8000);
+
+	it('retour fêté : la semaine rendue ensuite n’est plus dite (un moment à la fois, T4)', async () => {
+		mockServer({ presence: { buddy, returnAfterPause: true } });
+		await render(PalotinPresence);
+		await vi.waitFor(() => expect(calls(WELCOME_BACK_URL)).toHaveLength(1), { timeout: 3000 });
+		await vi.waitFor(() => expect(badge()).not.toBeNull(), { timeout: 8000 });
+
+		mockServer({ presence: { buddy, returnAfterPause: false, weekMoment: 'week_first_activity' } });
+		notifyBuddyActivity();
+		navigateTo('/dashboard/student/progression');
+		await vi.waitFor(() => expect(calls(PRESENCE_URL)).toHaveLength(1));
+		await settle(1000);
+		expect(WEEK_FIRST).not.toContain(bubbleText());
+		expect(calls(WEEK_CELEBRATED_URL)).toHaveLength(0);
 	}, 15_000);
 
 	it('sans activité, changer de page ne relit pas la présence', async () => {
