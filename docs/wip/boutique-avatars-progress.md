@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-11, PR 2 en cours (branche `feat/boutique-avatars-pr2`)._
+_Mis à jour le 2026-11-12, après #2574._
 
-- **État** : PR 2 codée — routes `GET /api/student/avatars`, `buy/`, `wear/` (élève de la session, consentement à l'achat seulement), `AvatarShopSection` dans l'onglet « Avatars » du Marché ET dans « Mon profil », export RGPD (`gaming.avatars`, `worn_avatar`, `google_avatar_url`). Vérifié en local (achat, port, retrait, en-tête rafraîchi, journal −30). Catalogue vide en prod : l'onglet dit « Les premiers avatars arrivent bientôt ».
-- **Prochaine action** : revues (`code-reviewer` + `security-auditor`), PR, CI, merge ; puis PR 3 (images du premier lot + lignes du catalogue).
-- **En attente de David** : images du premier lot (`boutique-avatars-prompts.md`). Bouton « Utiliser l'emblème par défaut » (reste de #2567) : **tranché le 2026-11-12** — hors PR 2, plus tard, pour tous, photo Google gardée.
-- **Pièges en cours** : le Marché n'est ouvert qu'aux classes où le prof l'active (37/81 élèves en prod le 2026-11-11) → boutique AUSSI dans « Mon profil » (décision de David du 2026-11-11). Callback OAuth : rien à faire (trigger `keep_google_avatar_url_trg`, connexion Google fermée). Navigateur : tester sur `127.0.0.1:5176` (`--host 127.0.0.1`), pas `localhost` (cookie admin de David). Job CI navigateur instable.
-- **Worktree / branche** : `../ubumaths-wt-boutique-avatars` · `feat/boutique-avatars-pr2`
+- **État** : PR 2 mergée (#2574) — routes `GET /api/student/avatars`, `buy/`, `wear/`, `AvatarShopSection` dans l'onglet « Avatars » du Marché ET dans « Mon profil », export RGPD. Rien en prod tant que `pnpm deploy:prod` n'est pas lancé (sur demande de David) ; catalogue vide : l'écran dit « Les premiers avatars arrivent bientôt ».
+- **Prochaine action** : PR 3 — images du premier lot (`static/avatars/…webp`) + lignes du catalogue (migration de données).
+- **En attente de David** : images du premier lot (`boutique-avatars-prompts.md`). Bouton « Utiliser l'emblème par défaut » : tranché (2026-11-12) — plus tard, pour tous, photo Google gardée.
+- **Pièges en cours** : Marché ouvert à 37/81 élèves → boutique aussi dans « Mon profil ». Navigateur : tester sur `127.0.0.1:<port>` (`--host 127.0.0.1`), pas `localhost` (cookie admin de David). Runs CI fantômes possibles (« queued » sans job) : un nouveau commit ou `gh workflow run` les débloque.
+- **Worktree / branche** : aucun (à créer pour la PR 3)
 
 ## Décisions de David (2026-11-06)
 
@@ -91,3 +91,4 @@ Qui pourra lire quoi, qu'il ne pouvait pas lire avant ? Proposition : le **catal
 - 2026-11-11 : décision de David — boutique ouverte à tous les élèves : onglet du Marché + section de « Mon profil » (le Marché suit le réglage de la classe).
 - 2026-11-11 : PR 2 codée (routes, écran, export RGPD, doc système).
 - 2026-11-12 : décision de David — bouton « Utiliser l'emblème par défaut » hors PR 2, plus tard, pour tous, photo Google gardée. CI de #2574 bloquée (run fantôme « queued » sans job) : relancée par ce commit.
+- 2026-11-12 : #2574 mergée (PR 2 : routes, onglet Avatars du Marché, Mon profil, export RGPD, doc).
