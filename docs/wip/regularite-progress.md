@@ -6,9 +6,9 @@ validés », P5. Phase 0 : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, PR B1 en cours._
+_Mis à jour le 2026-11-12, après #2589._
 
-- **État** : PR A mergée (#2587) ; PR B découpée en B1 / B2 / B3 (David, 2026-11-12) ; B1 (R1 + R2, sans migration) codée sur `feat/regularite-palotin` · **Prochaine action** : B1 → revues, PR, CI, merge ; puis B2 (1re activité de la semaine, 3/5/10 semaines actives, migration) · **En attente de David** : rien · **Pièges en cours** : la présence du Palotin n'était lue qu'une fois par chargement → relue après un gain (`notifyBuddyActivity`) · **Worktree / branche** : `../ubumaths-wt-regularite`, `feat/regularite-palotin`
+- **État** : PR A (#2587) et PR B1 (#2589, R1 + R2) mergées ; reste B2 et B3 (découpage validé, § « PR B — découpage ») · **Prochaine action** : B2 = moments « 1re activité de la semaine » (au 1er jour actif, 5 traces) et « 3/5/10 semaines actives d'affilée » (R4) ; phase 0 technique d'abord (où compter les semaines actives, où retenir « déjà dit » : migration, question d'accès à poser à David) · **En attente de David** : rien · **Pièges en cours** : la présence du Palotin se relit après un gain (`notifyBuddyActivity`) : y brancher les moments de B2 plutôt qu'une nouvelle lecture ; flash-cards = pas de gain, donc pas d'« activité » pour le Palotin · **Worktree / branche** : `../ubumaths-wt-regularite`, nouvelle branche depuis `origin/main` pour B2
 
 ## Besoin validé (rappel, David, 2026-11-11)
 
