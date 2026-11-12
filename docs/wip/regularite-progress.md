@@ -6,9 +6,9 @@ validés », P5. Phase 0 : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2589._
+_Mis à jour le 2026-11-12, après #2595._
 
-- **État** : PR A (#2587) et PR B1 (#2589, R1 + R2) mergées ; reste B2 et B3 (découpage validé, § « PR B — découpage ») · **Prochaine action** : B2 = moments « 1re activité de la semaine » (au 1er jour actif, 5 traces) et « 3/5/10 semaines actives d'affilée » (R4) ; phase 0 technique d'abord (où compter les semaines actives, où retenir « déjà dit » : migration, question d'accès à poser à David) · **En attente de David** : rien · **Pièges en cours** : la présence du Palotin se relit après un gain (`notifyBuddyActivity`) : y brancher les moments de B2 plutôt qu'une nouvelle lecture ; flash-cards = pas de gain, donc pas d'« activité » pour le Palotin · **Worktree / branche** : `../ubumaths-wt-regularite`, nouvelle branche depuis `origin/main` pour B2
+- **État** : A (#2587), B1 (#2589), B2a (#2593, migration appliquée en prod) et B2b (#2595, moments de la semaine) mergées ; reste **B3** (question longtemps ratée enfin réussie, sur la carte de fin de série ; R5 : modèle raté ≥ 3 fois sur ≥ 7 jours, puis réussi) · **Prochaine action** : phase 0 technique de B3 (où lire l'historique d'un modèle, carte de gain) · **En attente de David** : relire les répliques `week_first_activity` / `active_weeks_3/5/10` (`src/lib/config/buddy-messages.ts`) ; dire si des vacances qui commencent un samedi doivent rendre « vacances » la semaine d'école d'avant (règle commune avec la grille du prof) · **Pièges en cours** : la présence se relit après un gain ; « semaine fêtée » = `student_last_visits.week_celebrated_on`, serveur seul · **Worktree / branche** : `../ubumaths-wt-regularite` (branche `feat/regularite-moments` mergée, à nettoyer) ; nouvelle branche depuis `origin/main` pour B3
 
 ## Besoin validé (rappel, David, 2026-11-11)
 
