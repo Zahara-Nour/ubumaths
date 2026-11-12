@@ -1,0 +1,258 @@
+{
+	"title": "Planche de Galton en Python",
+	"description": "Planche de Galton simulée en Python : compléter if random() < 0.5:, loi du numéro de case (B(n ; 0,5), pièges : uniforme, n + 1 épreuves), probabilité d'une case (fraction)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans une planche de Galton à $n$ rangées de clous, une bille rebondit sur un clou de chaque rangée et part à droite ou à gauche avec la même probabilité, indépendamment des autres rangées. Elle tombe dans la case numéro $x$, où $x$ est le nombre de fois où elle est partie à droite. La fonction Python ci-dessous doit simuler la chute d'une bille et renvoyer le numéro de sa case ; `random()` renvoie un nombre au hasard dans $[0\\,;\\,1[$.\n\n```python\nfrom random import random\n\ndef galton(n):\n    x = 0\n    for k in range(n):\n        ...\n            x = x + 1\n    return x\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `if random() < 0.5:`\n- `if random() == 0.5:`\n- `if random() < 1:`\n- `if random() < 1 / n:`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque rangée, la bille part à droite avec la probabilité $\\dfrac{1}{2}$.",
+					"`random()` tombe dans $[0\\,;\\,0{,}5[$ avec la probabilité $\\dfrac{1}{2}$. `random() < 1` est toujours vrai, `random() == 0.5` ne l'est presque jamais, et `1 / n` dépend du nombre de rangées.",
+					"La ligne est donc `if random() < 0.5:`."
+				]
+			}
+		},
+		{
+			"statement": "Dans une planche de Galton à $n$ rangées de clous, une bille rebondit sur un clou de chaque rangée et part à droite ou à gauche avec la même probabilité, indépendamment des autres rangées. Elle tombe dans la case numéro $x$, où $x$ est le nombre de fois où elle est partie à droite. On simule la chute d'une bille avec la fonction Python suivante.\n\n```python\nfrom random import random\n\ndef galton(n):\n    x = 0\n    for k in range(n):\n        if random() < 0.5:\n            x = x + 1\n    return x\n```\n\nQuelle loi suit le nombre renvoyé par `galton({{eval:n}})` ?\n\n```choix\n- La loi binomiale $\\mathcal{B}({{eval:n}}\\,;\\,0{,}5)$\n- La loi uniforme sur $\\{0\\,;\\,1\\,;\\,\\ldots\\,;\\,{{eval:n}}\\}$\n- La loi binomiale $\\mathcal{B}({{eval:n+1}}\\,;\\,0{,}5)$\n- La loi de Bernoulli de paramètre $0{,}5$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque tour de boucle est une épreuve de Bernoulli : succès (« à droite ») avec la probabilité $0{,}5$.",
+					"Les ${{eval:n}}$ épreuves sont identiques et indépendantes, et `x` compte les succès. Il y a ${{eval:n+1}}$ cases, mais seulement ${{eval:n}}$ rangées, donc ${{eval:n}}$ épreuves ; et les cases du milieu sont plus probables que celles des bords.",
+					"`x` suit donc la loi $\\textcolor{{{color:primary.0}}}{\\mathcal{B}({{eval:n}}\\,;\\,0{,}5)}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans une planche de Galton à $n$ rangées de clous, une bille rebondit sur un clou de chaque rangée et part à droite ou à gauche avec la même probabilité, indépendamment des autres rangées. Elle tombe dans la case numéro $x$, où $x$ est le nombre de fois où elle est partie à droite. On simule la chute d'une bille avec la fonction Python suivante.\n\n```python\nfrom random import random\n\ndef galton(n):\n    x = 0\n    for k in range(n):\n        if random() < 0.5:\n            x = x + 1\n    return x\n```\n\nQuelle est la probabilité que `galton({{eval:n}})` renvoie ${{eval:k}}$ ? On donnera la valeur exacte, sous forme de fraction.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{eval:n-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "eval:binom(n,k)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2^n"
+				},
+				{
+					"name": "r",
+					"expression": "eval:binom(n,k)/2^n"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre renvoyé suit la loi binomiale $\\mathcal{B}({{eval:n}}\\,;\\,0{,}5)$.",
+					"$P(X={{eval:k}})=\\dbinom{{{eval:n}}}{{{eval:k}}}\\times0{,}5^{{{eval:k}}}\\times0{,}5^{{{eval:n-k}}}=\\dfrac{{{eval:c}}}{{{eval:d}}}$.",
+					"La probabilité est donc $\\textcolor{{{color:primary.0}}}{{{eval:r}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "if random() < 0.5:",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : == 0.5",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : < 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : < 1/n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "B(n ; 0,5)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : uniforme",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : B(n + 1 ; 0,5)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : Bernoulli",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 4, k = 2 : 3/8",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"k": "2",
+				"c": "6",
+				"d": "16",
+				"r": "3/8"
+			},
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 0,375 au lieu de la fraction",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"k": "2",
+				"c": "6",
+				"d": "16",
+				"r": "3/8"
+			},
+			"answers": ["0.375"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : cases équiprobables (1/5)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"k": "2",
+				"c": "6",
+				"d": "16",
+				"r": "3/8"
+			},
+			"answers": ["\\frac{1}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coefficient oublié (1/16)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"k": "2",
+				"c": "6",
+				"d": "16",
+				"r": "3/8"
+			},
+			"answers": ["\\frac{1}{16}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 5, k = 1 : 5/32",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"k": "1",
+				"c": "5",
+				"d": "32",
+				"r": "5/32"
+			},
+			"answers": ["\\frac{5}{32}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 6, k = 3 : 5/16",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"k": "3",
+				"c": "20",
+				"d": "64",
+				"r": "5/16"
+			},
+			"answers": ["\\frac{5}{16}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

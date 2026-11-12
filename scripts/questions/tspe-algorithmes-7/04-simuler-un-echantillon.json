@@ -1,0 +1,182 @@
+{
+	"title": "Simuler un échantillon en Python",
+	"description": "Échantillon de X (a avec la probabilité 0,3, −1 sinon) : compléter if random() < 0.3: dans la simulation de X, compléter S = S + X() dans la moyenne, valeur proche de la moyenne d'un grand échantillon (E(X))",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une variable aléatoire $X$ prend la valeur $2$ avec la probabilité $0{,}3$, et la valeur $-1$ sinon. La fonction `X` ci-dessous doit simuler $X$, et `moyenne(n)` renvoyer la moyenne d'un échantillon de taille $n$ de $X$ ; `random()` renvoie un nombre au hasard dans $[0\\,;\\,1[$.\n\n```python\nfrom random import random\n\ndef X():\n    ...\n        return 2\n    return -1\n\ndef moyenne(n):\n    S = 0\n    for k in range(n):\n        S = S + X()\n    return S / n\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `if random() < 0.3:`\n- `if random() > 0.3:`\n- `if random() < 0.7:`\n- `if random() == 0.3:`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`random()` tombe dans $[0\\,;\\,0{,}3[$ avec la probabilité $0{,}3$ : c'est dans ce cas que `X` doit renvoyer $2$.",
+					"`random() > 0.3` et `random() < 0.7` sont vrais avec la probabilité $0{,}7$ : $X$ vaudrait $2$ trop souvent. `random() == 0.3` n'est presque jamais vrai.",
+					"La ligne est donc `if random() < 0.3:`."
+				]
+			}
+		},
+		{
+			"statement": "Une variable aléatoire $X$ prend la valeur $2$ avec la probabilité $0{,}3$, et la valeur $-1$ sinon. La fonction `X` ci-dessous simule $X$, et `moyenne(n)` doit renvoyer la moyenne d'un échantillon de taille $n$ de $X$ : $n$ valeurs de $X$, tirées indépendamment.\n\n```python\nfrom random import random\n\ndef X():\n    if random() < 0.3:\n        return 2\n    return -1\n\ndef moyenne(n):\n    S = 0\n    for k in range(n):\n        ...\n    return S / n\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `S = S + X()`\n- `S = X()`\n- `S = S + k`\n- `S = S * X()`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`S` doit être la somme $S_n=X_1+X_2+\\cdots+X_n$ des $n$ valeurs tirées : à chaque tour, on tire une nouvelle valeur `X()` et on l'ajoute à `S`.",
+					"Avec `S = X()`, `S` ne garderait que le dernier tirage ; `S = S + k` additionne les numéros des tours, et `S = S * X()` reste égal à $0$.",
+					"La ligne est donc `S = S + X()`, et la fonction renvoie $M_n=\\dfrac{S_n}{n}$."
+				]
+			}
+		},
+		{
+			"statement": "Une variable aléatoire $X$ prend la valeur ${{eval:a}}$ avec la probabilité $0{,}3$, et la valeur $-1$ sinon. On considère le programme Python suivant.\n\n```python\nfrom random import random\n\ndef X():\n    if random() < 0.3:\n        return {{eval:a}}\n    return -1\n\ndef moyenne(n):\n    S = 0\n    for k in range(n):\n        S = S + X()\n    return S / n\n\nprint(moyenne(100000))\n```\n\nDe quel nombre la valeur affichée est-elle, en général, proche ?\n\n```choix\n- ${{eval:3*a/10-7/10;d}}$\n- $0{,}3$\n- ${{eval:(a-1)/2;d}}$\n- ${{eval:3*a^2/10+7/10-(3*a/10-7/10)^2;d}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`moyenne(100000)` est la moyenne $M_n$ d'un échantillon de taille $n=100\\,000$ de $X$.",
+					"D'après la loi des grands nombres, $M_n$ se concentre autour de $E(X)$ quand $n$ est grand (sa variance $\\dfrac{V(X)}{n}$ tend vers $0$).",
+					"$E(X)={{eval:a}}\\times0{,}3+(-1)\\times0{,}7=\\textcolor{{{color:primary.0}}}{{{eval:3*a/10-7/10;d}}}$. La moyenne des deux valeurs, ${{eval:(a-1)/2;d}}$, ne tient pas compte de leurs probabilités."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "if random() < 0.3:",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : > 0.3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : < 0.7",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : == 0.3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "S = S + X()",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier tirage",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : numéros des tours",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "E(X)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : moyenne des valeurs",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : V(X)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

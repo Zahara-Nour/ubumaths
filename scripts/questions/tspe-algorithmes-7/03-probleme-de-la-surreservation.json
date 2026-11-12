@@ -1,0 +1,222 @@
+{
+	"title": "Problème de la surréservation en Python",
+	"description": "Surréservation, X ~ B(80 ; 0,9) : plus petit k tel que P(X > k) ⩽ α avec la table des P(X ⩽ k) donnée (α = 0,2 ; 0,1 ; 0,05 ; 0,01), compléter while 1 - F(k) > alpha:, sens du k renvoyé",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une compagnie aérienne vend $80$ billets pour un vol. Chaque passager se présente à l'embarquement avec la probabilité $0{,}9$, indépendamment des autres. On note $X$ le nombre de passagers qui se présentent : $X$ suit la loi binomiale $\\mathcal{B}(80\\,;\\,0{,}9)$, et la fonction `F` ci-dessous renvoie $P(X\\leqslant k)$.\n\n```python\nfrom math import comb\n\ndef F(k):\n    s = 0\n    for j in range(k + 1):\n        s = s + comb(80, j) * 0.9**j * 0.1**(80 - j)\n    return s\n\ndef seuil(alpha):\n    k = 0\n    while 1 - F(k) > alpha:\n        k = k + 1\n    return k\n```\n\nOn donne quelques valeurs de $P(X\\leqslant k)$, arrondies à $10^{-4}$.\n\n| $k$ | $72$ | $73$ | $74$ | $75$ | $76$ | $77$ | $78$ | $79$ |\n|---|---|---|---|---|---|---|---|---|\n| $P(X\\leqslant k)$ | $0{,}5544$ | $0{,}6995$ | $0{,}8231$ | $0{,}9120$ | $0{,}9647$ | $0{,}9893$ | $0{,}9978$ | $0{,}9998$ |\n\nQue renvoie `seuil({{if:j==1|0.2|{{if:j==2|0.1|{{if:j==3|0.05|0.01}}}}}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:j==1|74|{{if:j==2|75|{{if:j==3|76|78}}}}}}"
+				},
+				{
+					"name": "fq",
+					"expression": "{{if:j==1|0{,}6995|{{if:j==2|0{,}8231|{{if:j==3|0{,}9120|0{,}9893}}}}}}"
+				},
+				{
+					"name": "fr",
+					"expression": "{{if:j==1|0{,}8231|{{if:j==2|0{,}9120|{{if:j==3|0{,}9647|0{,}9978}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle augmente `k` tant que $P(X>k)=1-P(X\\leqslant k)$ est strictement supérieure à ${{if:j==1|0{,}2|{{if:j==2|0{,}1|{{if:j==3|0{,}05|0{,}01}}}}}}$ : elle renvoie le plus petit $k$ tel que $P(X\\leqslant k)\\geqslant1-{{if:j==1|0{,}2|{{if:j==2|0{,}1|{{if:j==3|0{,}05|0{,}01}}}}}}$.",
+					"$P(X\\leqslant {{eval:r-1}})\\approx{{fq}}$, donc $P(X>{{eval:r-1}})$ est supérieure à ${{if:j==1|0{,}2|{{if:j==2|0{,}1|{{if:j==3|0{,}05|0{,}01}}}}}}$ ; $P(X\\leqslant {{r}})\\approx{{fr}}$, donc $P(X>{{r}})\\leqslant{{if:j==1|0{,}2|{{if:j==2|0{,}1|{{if:j==3|0{,}05|0{,}01}}}}}}$.",
+					"La fonction renvoie $\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une compagnie aérienne vend $80$ billets pour un vol. Chaque passager se présente à l'embarquement avec la probabilité $0{,}9$, indépendamment des autres. On note $X$ le nombre de passagers qui se présentent : $X$ suit la loi binomiale $\\mathcal{B}(80\\,;\\,0{,}9)$, et la fonction `F` ci-dessous renvoie $P(X\\leqslant k)$. La fonction `seuil` doit renvoyer le plus petit entier $k$ tel que $P(X>k)\\leqslant\\alpha$.\n\n```python\nfrom math import comb\n\ndef F(k):\n    s = 0\n    for j in range(k + 1):\n        s = s + comb(80, j) * 0.9**j * 0.1**(80 - j)\n    return s\n\ndef seuil(alpha):\n    k = 0\n    ...\n        k = k + 1\n    return k\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `while 1 - F(k) > alpha:`\n- `while F(k) > alpha:`\n- `while 1 - F(k) <= alpha:`\n- `while F(k) < alpha:`\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X>k)=1-P(X\\leqslant k)=1-F(k)$.",
+					"On augmente $k$ **tant que** la condition voulue n'est pas atteinte, c'est-à-dire tant que $1-F(k)>\\alpha$ ; avec `<=`, la boucle s'arrêterait tout de suite, et `F(k)` seul porte sur $P(X\\leqslant k)$, pas sur $P(X>k)$.",
+					"La ligne est donc `while 1 - F(k) > alpha:`."
+				]
+			}
+		},
+		{
+			"statement": "Une compagnie aérienne vend $80$ billets pour un vol. Chaque passager se présente à l'embarquement avec la probabilité $0{,}9$, indépendamment des autres. On note $X$ le nombre de passagers qui se présentent : $X$ suit la loi binomiale $\\mathcal{B}(80\\,;\\,0{,}9)$, et la fonction `F` ci-dessous renvoie $P(X\\leqslant k)$.\n\n```python\nfrom math import comb\n\ndef F(k):\n    s = 0\n    for j in range(k + 1):\n        s = s + comb(80, j) * 0.9**j * 0.1**(80 - j)\n    return s\n\ndef seuil(alpha):\n    k = 0\n    while 1 - F(k) > alpha:\n        k = k + 1\n    return k\n```\n\n`seuil(0.05)` renvoie $76$. Que signifie ce résultat ?\n\n```choix\n- Si l'avion a $76$ places, la probabilité que des passagers présents restent sans place est au plus $5\\,\\%$.\n- La probabilité qu'exactement $76$ passagers se présentent est au plus $5\\,\\%$.\n- Si l'avion a $76$ places, au moins $5\\,\\%$ des passagers présents restent sans place.\n- Dans $95\\,\\%$ des cas, exactement $76$ passagers se présentent.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`seuil(0.05)` est le plus petit $k$ tel que $P(X>k)\\leqslant0{,}05$ : ici $P(X>76)\\leqslant0{,}05$ et $P(X>75)>0{,}05$.",
+					"$X>76$ signifie que plus de $76$ passagers se présentent : avec $76$ places, certains restent au sol. L'événement porte sur « plus de $76$ », pas sur « exactement $76$ ».",
+					"Avec $\\textcolor{{{color:primary.0}}}{76}$ places, le risque de laisser des passagers au sol est au plus $5\\,\\%$ ; avec $75$, il dépasserait $5\\,\\%$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "α = 0,2 : 74",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"r": "74"
+			},
+			"answers": ["74"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "α = 0,1 : 75",
+			"variationIndex": 0,
+			"variables": {
+				"j": "2",
+				"r": "75"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "α = 0,05 : 76",
+			"variationIndex": 0,
+			"variables": {
+				"j": "3",
+				"r": "76"
+			},
+			"answers": ["76"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "α = 0,01 : 78",
+			"variationIndex": 0,
+			"variables": {
+				"j": "4",
+				"r": "78"
+			},
+			"answers": ["78"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier k qui ne convient pas (α = 0,05)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "3",
+				"r": "76"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un cran trop loin (α = 0,01)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "4",
+				"r": "78"
+			},
+			"answers": ["79"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "while 1 - F(k) > alpha:",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : F(k) > alpha",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : <=",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : F(k) < alpha",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "au plus 5 % de risque, 76 places",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exactement 76",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au moins 5 %",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 95 % exactement 76",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
