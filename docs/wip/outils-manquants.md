@@ -74,7 +74,7 @@ Tranchés hors appli : 5-011, 040, 130, 065, 042, 043, 059, 075, 084 (David, `qu
 
 ## 4. Livré (pour mémoire)
 
-`fiche:verifier` avec des images locales (ancien n° 35 : une fiche en rédaction dont les images ne sont pas encore dans le bucket compile ; `scripts/fiches/images-locales.ts` les copie de `<dossier>/images/` vers `virtual/images/`, refuse un WebP local ; chantier [`fiche-verifier-images`](fiche-verifier-images-progress.md), #2612, 2026-11-13).
+`fiche:verifier` avec des images locales (ancien n° 35 : une fiche en rédaction dont les images ne sont pas encore dans le bucket compile ; `scripts/fiches/images-locales.ts` les copie de `<dossier>/images/` vers `virtual/images/`, refuse un WebP local ; chantier [`fiche-verifier-images`](../archive/wip/fiche-verifier-images-progress.md), #2612, 2026-11-13).
 
 Mesurer un segment en posant la règle graduée (`verifier: mesure AB`, `mesure AB en mm` : l'élève pose la règle et tape la longueur ; message « le 0 doit être sur A » ; énoncé PDF à l'échelle 1 unité = 1 cm si la figure tient, sinon réduite ; chantier [`amelioration`](amelioration-progress.md) § N° 26, #2606 + #2611, 2026-11-12 ; ex-ligne 26 du § 1).
 
