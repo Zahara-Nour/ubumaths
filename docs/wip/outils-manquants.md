@@ -73,7 +73,7 @@ Tranchés hors appli : 5-011, 040, 130, 065, 042, 043, 059, 075, 084 (David, `qu
 
 ## 4. Livré (pour mémoire)
 
-Schéma en barres lisible dans une case choix sur téléphone (ancien n° 34 : à 390 px, le texte tombait à 9 px, 5 px dans « En classe » ; les barres raccourcissent pour que le texte garde 12 px, PDF et grand écran inchangés ; chantier [`schema-barres-telephone`](schema-barres-telephone-progress.md), #2619, 2026-11-13).
+Schéma en barres lisible dans une case choix sur téléphone (ancien n° 34 : à 390 px, le texte tombait à 9 px, 5 px dans « En classe » ; les barres raccourcissent pour que le texte garde 12 px, PDF et grand écran inchangés ; chantier [`schema-barres-telephone`](../archive/wip/schema-barres-telephone-progress.md), #2619, 2026-11-13).
 
 `fiche:verifier` avec des images locales (ancien n° 35 : une fiche en rédaction dont les images ne sont pas encore dans le bucket compile ; `scripts/fiches/images-locales.ts` les copie de `<dossier>/images/` vers `virtual/images/`, refuse un WebP local ; chantier [`fiche-verifier-images`](../archive/wip/fiche-verifier-images-progress.md), #2612, 2026-11-13).
 

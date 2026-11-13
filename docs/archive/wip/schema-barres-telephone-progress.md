@@ -1,17 +1,18 @@
 # Chantier « schema-barres-telephone » — schéma en barres lisible dans une case choix sur téléphone
 
-> N° 34 de [outils-manquants.md](outils-manquants.md). Vu au lot 13 de `questions-6`
-> ([journal § 30.1](../archive/wip/questions-6-progress.md)).
+> N° 34 de [outils-manquants.md](../../wip/outils-manquants.md). Vu au lot 13 de `questions-6`
+> ([journal § 30.1](questions-6-progress.md)).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-13, après #2619._
 
-- **État** : correctif écrit, tests verts (scène et rendu), mesuré dans l'appli à 390 px.
-- **Prochaine action** : PR, CI, merge ; n° 34 passé dans « Livré » de `outils-manquants.md`.
+- **État** : **chantier clos le 2026-11-13**. #2619 mergée (barres raccourcies, conteneur `w-full` après la revue) ;
+  n° 34 passé dans « Livré » de `outils-manquants.md` ; doc dans `docs/systeme/ubumark.md` (bloc schema-barres).
+- **Prochaine action** : aucune ; en prod au prochain `deploy:prod`.
 - **En attente de David** : rien.
 - **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-schema-barres-telephone` · `fix/schema-barres-telephone`.
+- **Worktree / branche** : supprimés.
 
 ## 1. Mesure (2026-11-13)
 
