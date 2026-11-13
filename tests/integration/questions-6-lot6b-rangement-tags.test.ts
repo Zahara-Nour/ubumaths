@@ -5,7 +5,7 @@
  * Migration `20261030170000_questions_6_lot6b_rangement_tags` : les 7 brouillons de 6e créés
  * le 2026-10-30 par scripts/create-questions.ts (scripts/questions/6-grandeurs/, sans
  * nœud ni tag) vont sur le nœud de leur point, un seul point chacun (ADR 0020). Décisions de
- * David (journal docs/wip/questions-6-progress.md § 13).
+ * David (journal docs/archive/wip/questions-6-progress.md § 13).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en 6e, brouillons, sans nœud ni tag — puis rejoue la

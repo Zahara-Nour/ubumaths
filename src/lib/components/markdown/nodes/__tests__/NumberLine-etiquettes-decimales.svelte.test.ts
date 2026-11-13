@@ -1,6 +1,6 @@
 /**
  * Droite graduée : une graduation décimale s'écrit avec une virgule en français
- * (`docs/wip/questions-6-progress.md` § 16 : la loupe des centièmes montrait
+ * (`docs/archive/wip/questions-6-progress.md` § 16 : la loupe des centièmes montrait
  * « 1.4 » et « 1.5 »)
  */
 import { describe, it, expect } from 'vitest';
