@@ -11,7 +11,9 @@
 	- Nom accessible : « Schéma en barres » puis les noms des barres, jamais les
 	  étiquettes (ce serait la réponse).
 	- Réduit à la largeur de la colonne (téléphone compris) ; jamais plus grand
-	  que sa taille de fiche (`SCHEMA_BARRES_CM_PER_UNIT`).
+	  que sa taille de fiche (`SCHEMA_BARRES_CM_PER_UNIT`). Colonne étroite (case
+	  choix sur téléphone) : barres raccourcies pour que le texte garde sa taille
+	  (`schemaBarresDrawWidth`, mesurée sur la colonne).
 	- Bloc en erreur : messages pour le prof, cadre neutre pour l'élève (Q48).
 
 	@module components/markdown/nodes/SchemaBarres
@@ -27,6 +29,7 @@
 		SCHEMA_BARRES_FONT_SIZE,
 		SCHEMA_BARRES_STROKE,
 		buildSchemaBarresScene,
+		schemaBarresDrawWidth,
 		schemaBarresLabel
 	} from '$lib/ubumark/utils/schema-barres-scene';
 	import { readAuthoringErrors } from '../authoring-errors';
@@ -43,7 +46,18 @@
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
 
-	let scene = $derived(node.spec === null ? null : buildSchemaBarresScene(node.spec));
+	// Largeur de la colonne, mesurée (0 avant le montage : barres pleines, comme au PDF).
+	// Le conteneur est `w-full` : sa largeur vient du parent, jamais du dessin (sinon,
+	// dans un parent à la taille du contenu, le dessin rétrécirait de proche en proche).
+	let columnWidth = $state(0);
+
+	let scene = $derived(
+		node.spec === null
+			? null
+			: buildSchemaBarresScene(node.spec, {
+					drawWidth: schemaBarresDrawWidth(node.spec, columnWidth)
+				})
+	);
 
 	/** Sommets d'une accolade, au format de l'attribut `points` */
 	const polylinePoints = (points: { x: number; y: number }[]) =>
@@ -73,7 +87,10 @@
 	{/if}
 {:else}
 	{@const spec = node.spec}
-	<div class="schema-barres-bloc my-2 flex justify-center {className}">
+	<div
+		class="schema-barres-bloc my-2 flex w-full justify-center {className}"
+		bind:clientWidth={columnWidth}
+	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox="0 0 {scene.width} {scene.height}"

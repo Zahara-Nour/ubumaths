@@ -146,3 +146,37 @@ describe('SchemaBarres — branché dans le rendu Markdown', () => {
 		expect(screen.container.querySelectorAll('svg[role="img"]')).toHaveLength(2);
 	});
 });
+
+describe('SchemaBarres — colonne étroite (case choix sur téléphone, n° 34)', () => {
+	/** Corps du texte rendu, en px : la police en unités, réduite comme le dessin */
+	function renderedFontPx(svg: SVGSVGElement): number {
+		return (
+			(Number(svg.getAttribute('font-size')) * svg.getBoundingClientRect().width) /
+			svg.viewBox.baseVal.width
+		);
+	}
+
+	async function inColumn(widthPx: number) {
+		const column = mainElement().appendChild(document.createElement('div'));
+		column.style.width = `${widthPx}px`;
+		const screen = await render(SchemaBarres, {
+			target: column,
+			props: { node: node('Tom : ? (3)', 'Léa : ? (3) ; 20 (1)', 'total : 220') }
+		});
+		const svg = screen.container.querySelector('svg[role="img"]') as SVGSVGElement;
+		await expect.poll(() => svg.viewBox.baseVal.width).toBeGreaterThan(0);
+		return svg;
+	}
+
+	it('258 px : barres raccourcies, le texte rendu garde au moins 12 px', async () => {
+		const svg = await inColumn(258);
+		await expect.poll(() => renderedFontPx(svg)).toBeGreaterThanOrEqual(11.9);
+		expect(svg.getBoundingClientRect().width).toBeLessThanOrEqual(258);
+	});
+
+	it('colonne large : dessin à sa taille de fiche, texte au-dessus de 12 px', async () => {
+		const svg = await inColumn(1100);
+		expect(svg.getBoundingClientRect().width).toBeLessThan(1100);
+		expect(renderedFontPx(svg)).toBeGreaterThan(13);
+	});
+});

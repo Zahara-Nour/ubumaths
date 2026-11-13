@@ -33,8 +33,20 @@ import type { SchemaBarresSpec } from '../types/schema-barres';
 /** Taille réelle d'une unité de la scène au PDF, en cm (la zone des barres fait 7,9 cm) */
 export const SCHEMA_BARRES_CM_PER_UNIT = 0.022;
 
-/** Largeur de dessin de la plus longue barre, en unités */
+/** Largeur de dessin de la plus longue barre, en unités (PDF, et écran assez large) */
 export const SCHEMA_BARRES_DRAW_WIDTH = 360;
+
+/** Taille d'une unité à l'écran sans réduction, en px (1 cm CSS = 96 / 2,54 px) */
+export const SCHEMA_BARRES_PX_PER_UNIT = (SCHEMA_BARRES_CM_PER_UNIT * 96) / 2.54;
+
+/**
+ * Colonne étroite (téléphone, case choix) : corps du texte visé à l'écran, en px.
+ * Les barres raccourcissent pour que le dessin, réduit à la colonne, le garde.
+ */
+export const SCHEMA_BARRES_MIN_FONT_PX = 12;
+
+/** Plus courte largeur de dessin admise, en unités (au-delà, le texte rapetisse) */
+export const SCHEMA_BARRES_MIN_DRAW_WIDTH = 120;
 
 /** Épaisseur des traits, en unités */
 export const SCHEMA_BARRES_STROKE = 1.6;
@@ -50,6 +62,9 @@ export const SCHEMA_BARRES_MARGIN = 4;
 
 /** Longueur des tirets d'une partie manquante, et leur écart, en unités */
 export const SCHEMA_BARRES_DASH = [5, 4] as const;
+
+/** Marge d'une étiquette dans sa part de barre, de chaque côté, en unités */
+const LABEL_PADDING = 4;
 
 const BAR_HEIGHT = 36;
 const BAR_GAP = 16;
@@ -101,6 +116,11 @@ export interface SchemaBarresText {
 	anchor: 'start' | 'middle' | 'end';
 	/** Largeur estimée de la boîte du texte (pour l'alignement au PDF) */
 	width: number;
+}
+
+export interface SchemaBarresSceneOptions {
+	/** Largeur de dessin de la plus longue barre, en unités (défaut : `SCHEMA_BARRES_DRAW_WIDTH`) */
+	drawWidth?: number;
 }
 
 export interface SchemaBarresScene {
@@ -161,13 +181,17 @@ function verticalBrace(x: number, y1: number, y2: number): SchemaBarresBrace {
 }
 
 /** La scène d'un schéma (spec valide) */
-export function buildSchemaBarresScene(spec: SchemaBarresSpec): SchemaBarresScene {
+export function buildSchemaBarresScene(
+	spec: SchemaBarresSpec,
+	options: SchemaBarresSceneOptions = {}
+): SchemaBarresScene {
 	const { bars } = spec;
+	const drawWidth = options.drawWidth ?? SCHEMA_BARRES_DRAW_WIDTH;
 	const nameChars = Math.max(...bars.map((b) => b.name.length));
 	const nameWidth = nameChars > 0 ? nameChars * SCHEMA_BARRES_CHAR_WIDTH + NAME_GAP : 0;
-	const unit = SCHEMA_BARRES_DRAW_WIDTH / Math.max(...bars.map((b) => barLength(b.segments)));
+	const unit = drawWidth / Math.max(...bars.map((b) => barLength(b.segments)));
 	const left = SCHEMA_BARRES_MARGIN + nameWidth;
-	const right = left + SCHEMA_BARRES_DRAW_WIDTH;
+	const right = left + drawWidth;
 
 	const rects: SchemaBarresRect[] = [];
 	const braces: SchemaBarresBrace[] = [];
@@ -254,6 +278,39 @@ export function buildSchemaBarresScene(spec: SchemaBarresSpec): SchemaBarresScen
 	// `top` est déjà décalé de l'écart qui suit la dernière barre
 	const height = top - BAR_GAP + SCHEMA_BARRES_MARGIN;
 	return { width, height, rects, braces, texts };
+}
+
+/**
+ * Largeur de dessin pour une colonne de `columnPx` px à l'écran.
+ *
+ * Le dessin est réduit à la colonne : barres de 360 unités dans 258 px, le texte
+ * tombe vers 9 px. On raccourcit donc les barres (noms, total et hauteurs ne
+ * bougent pas) jusqu'à ce que le texte garde `SCHEMA_BARRES_MIN_FONT_PX`, sans
+ * descendre sous `SCHEMA_BARRES_MIN_DRAW_WIDTH` ni sous la longueur où une
+ * étiquette ne tiendrait plus dans sa part. Colonne inconnue (0, rendu serveur)
+ * ou assez large : `SCHEMA_BARRES_DRAW_WIDTH`, comme au PDF.
+ */
+export function schemaBarresDrawWidth(spec: SchemaBarresSpec, columnPx: number): number {
+	if (!(columnPx > 0)) return SCHEMA_BARRES_DRAW_WIDTH;
+	const full = buildSchemaBarresScene(spec);
+	if (full.width * SCHEMA_BARRES_PX_PER_UNIT <= columnPx) return SCHEMA_BARRES_DRAW_WIDTH;
+
+	// Hors barres (noms, accolade du total, marges) : ne dépend pas de la largeur de dessin
+	const rest = full.width - SCHEMA_BARRES_DRAW_WIDTH;
+	// Réduit à la colonne, le texte fait FONT_SIZE × columnPx / largeur de la scène
+	const target = (SCHEMA_BARRES_FONT_SIZE * columnPx) / SCHEMA_BARRES_MIN_FONT_PX - rest;
+
+	const longest = Math.max(...spec.bars.map((b) => barLength(b.segments)));
+	const labelsFit = Math.max(
+		0,
+		...spec.bars.flatMap((b) =>
+			b.segments
+				.filter((s) => s.label !== '')
+				.map((s) => ((textWidth(s.label) + 2 * LABEL_PADDING) * longest) / s.length)
+		)
+	);
+	const floor = Math.max(SCHEMA_BARRES_MIN_DRAW_WIDTH, labelsFit);
+	return Math.round(Math.min(SCHEMA_BARRES_DRAW_WIDTH, Math.max(target, floor)));
 }
 
 /**
