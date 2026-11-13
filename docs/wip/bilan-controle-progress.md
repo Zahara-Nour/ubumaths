@@ -6,11 +6,9 @@ validés ») ; David : « go pour P6 ». Phase 0 : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, phase 0 validée par David (« je valide »)._
+_Mis à jour le 2026-11-13, PR ouverte (implémentation complète)._
 
-- **État** : phase 0 **validée** (N1-N4, L1-L5, E1 ; Q1 = meilleure copie, Q2 = une colonne « partiel », Q3 = compté dans chaque notion, Q4 = pas de clic, Q5 = une PR sans migration, personne ne lit rien de plus) ; rien de codé · **Prochaine action** : tests d'abord (rouges) — calcul pur `computeEvaluationBreakdown` (nouveau fichier `src/lib/server/evaluation-breakdown.ts`), lecture mockée, composant, intégration — puis implémentation · **En attente de David** : rien · **Pièges en cours** : 0 copie de contrôle en prod : tout se prouve sur fixtures et en mode test · **Worktree / branche** : `../ubumaths-wt-bilan-controle` · `feat/bilan-controle`
-
-**Points d'entrée relevés** : loader `src/routes/(protected)/dashboard/teacher/assessments/[id]/results/+page.server.ts` (appelle `getEvaluationResults(locals.supabase, evaluation, isTestMode)` puis `computeEvaluationStatistics`) ; `getEvaluationResults` (`src/lib/server/evaluations.ts` ~l. 646) lit `test_sessions` par `evaluation_id` + `user_id`, profils filtrés par `is_test` → réutiliser ses élèves (mode test déjà appliqué) ; meilleure copie = même règle que `bestGrade` (note max). Le bilan ne doit pas faire échouer la page (E1 : erreur propre à la section, pas un `throw` du loader).
+- **État** : codé et testé (calcul pur 27 tests, loader 2, composant 6, intégration 2 sous RLS réelle) ; doc `docs/systeme/evaluations.md` à jour ; PR ouverte, revues `code-reviewer` + `security-auditor` en cours · **Prochaine action** : traiter les revues, CI verte → merge · **En attente de David** : rien · **Pièges en cours** : 0 copie de contrôle en prod : tout se prouve sur fixtures et en mode test ; `test_answers` > 1 000 lignes → lecture paginée · **Worktree / branche** : `../ubumaths-wt-bilan-controle` · `feat/bilan-controle`
 
 ## Constats vérifiés (2026-11-13)
 
@@ -79,3 +77,15 @@ Calcul pur (meilleure copie, partiels, modèle répété, plusieurs notions, san
 copie) ; lecture (mock : tables lues, mode test) ; composant (L1, E1, tri des notions) ;
 intégration (le prof lit `test_answers` d'un contrôle de ses élèves, pas d'erreur RLS silencieuse).
 Revue : `code-reviewer` + `security-auditor` (données d'élèves).
+
+## Implémentation (2026-11-13)
+
+- `src/lib/server/evaluation-breakdown.ts` : `computeEvaluationBreakdown` (pur) + `getEvaluationBreakdown`
+  (lecture, client du prof ; jamais d'exception : `{ status: 'error' }`). Types partagés :
+  `src/lib/types/evaluation-breakdown.ts`. Composant `EvaluationBreakdown.svelte` sous les cartes.
+- Choix d'implémentation non écrits en phase 0 : à note égale, une copie **avec réponses** l'emporte
+  (sinon une copie en retard à 0 masquerait une vraie copie à 0), puis la plus récente ; point posé
+  directement sur une notion → cette notion ; point posé sur une branche → « Sans notion » ; nœuds
+  archivés gardés (bilan d'un contrôle passé) ; modèle supprimé → ligne « Modèle supprimé ».
+- Réponses lues par pages de 1 000 (`max_rows` PostgREST) : 30 élèves × 3 copies × 40 questions dépasse.
+- Preuve rouge : tests du calcul et du loader rouges sans le code (module absent, loader de `main`).
