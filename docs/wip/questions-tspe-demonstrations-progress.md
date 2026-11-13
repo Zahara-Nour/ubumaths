@@ -10,14 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, lot 9 en PR (#2618, § 36)._
+_Mis à jour le 2026-11-13, après #2618 (lot 9 dans `main`, § 36)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Suite de D1 : les **31
   approfondissements** ; relevé prod et phase 0 au § 35 (lots 9 à 15 proposés).
-- **Prochaine action** : merger #2618 (lot 9 : 340, 554, 341, 362), puis David lance `create-questions --publier`
+- **Prochaine action** : #2618 mergée (lot 9 : 340, 554, 341, 362) ; David lance `create-questions --publier`
   (`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-approfondissements-9 --publier`) ; ensuite
   rangement (copie de la migration du lot 8), page à cocher, publication ; puis lot 10 (374, 377, 564, 361).
-- **En attente de David** : `create-questions --publier` du lot 9, après le merge de #2618.
+- **En attente de David** : `create-questions --publier` du lot 9 (depuis le dépôt principal, à jour).
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -811,4 +811,4 @@ prod (MCP) ; brouillons en base locale (copie hors dépôt) ; aperçu admin vu �
 prend la saisie qu'après **deux clics séparés** (le premier donne le focus au champ) ; même chose sur une copie d'un
 modèle publié (`Espace : translations`), donc pas un défaut des modèles.
 
-PR #2618.
+Mergé (#2618, 2026-11-13) : CI verte.
