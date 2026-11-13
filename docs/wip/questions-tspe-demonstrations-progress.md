@@ -10,19 +10,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, après la publication du lot 8 (§ 34)._
+_Mis à jour le 2026-11-13, phase 0 des approfondissements posée (§ 35)._
 
-- **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés ; en prod, 20/20 démonstrations et 22/22
-  algorithmes `T_SPE` ont un modèle publié (§ 34). **Le chantier n'est PAS fini** : D1 (§ 2) prévoit ensuite les
-  **31 savoir-faire d'approfondissement** (relevé au § 1), avec leur propre phase 0.
-- **Prochaine action** : phase 0 des approfondissements (relevé prod des 31 points, nœuds, niveaux, modèles de 1re
-  et 2de à suivre ; questions Q1-Q6 comme aux § 2 et § 18), puis validation de David avant d'écrire.
-- **En attente de David** : rien.
+- **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Suite de D1 : les **31
+  approfondissements** ; relevé prod et phase 0 au § 35 (lots 9 à 15 proposés).
+- **Prochaine action** : après la réponse de David, lot 9 (barycentres et Leibniz : 340, 554, 341, 362).
+- **En attente de David** : Q1 à Q6 du § 35 (lots, forme, rangement, sous-notions neuves pour 395 et 517,
+  réemplois 340 / 538, accès).
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
+  Le journal à jour vit sur `main` (le worktree est détaché) : `git -C <wt> checkout --detach origin/main` avant de lire.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main`.
 
 ---
@@ -709,3 +709,76 @@ lancés par David. Relu en base (MCP) : 4 `published`.
 Bilan prod (MCP, points `T_SPE` actifs, modèle publié tagué) : `demonstration` 20/20 ; `algorithme` 22/22 ;
 `savoir_faire` approfondissement 5/36, soit les **31** du § 1 encore sans modèle ; aucun brouillon tagué. Suites de D1
 (§ 2) : démonstrations ✅, algorithmes ✅, approfondissements à faire (phase 0 à poser).
+
+## 35. Approfondissements : relevé et phase 0 (2026-11-13)
+
+Relevé prod (MCP, 2026-11-13) : les 31 points du § 1 sont actifs, de type `savoir_faire`, exigence
+`approfondissement`, et **aucun modèle n'est tagué** dessus (les 5 autres approfondissements, 322, 360, 375, 376, 516,
+en ont déjà). « Niv. max » = plus haut niveau publié sur le nœud du modèle.
+
+| Lot | Point | Approfondissement                      | Nœud du point (prod)                                  | Modèle sur (sous-notion)                       | Niv. max | Forme pressentie            |
+| --- | ----- | -------------------------------------- | ----------------------------------------------------- | ---------------------------------------------- | -------- | --------------------------- |
+| 9   | 340   | Barycentre de 2, 3 ou 4 points         | **notion** Géométrie › Vecteurs                       | Vecteurs › combinaison linéaire                | 3        | application, coordonnées    |
+| 9   | 554   | Associativité du barycentre            | **notion** Géométrie › Vecteurs                       | Vecteurs › combinaison linéaire                | 3        | preuve à trous + ranger     |
+| 9   | 341   | Fonction vectorielle de Leibniz        | **notion** Géométrie › Vecteurs                       | Vecteurs › combinaison linéaire                | 3        | application (réduction)     |
+| 9   | 362   | Fonction scalaire de Leibniz           | Orthogonalité et distances › produit scalaire espace  | idem                                           | 5        | application (lieu, sphère)  |
+| 10  | 374   | Intersection de deux plans             | Espace › positions relatives et intersections         | idem                                           | 3        | application, valeurs tirées |
+| 10  | 377   | Sphère ∩ droite                        | Orthogonalité et distances › sphère                   | idem                                           | 4        | application, valeurs tirées |
+| 10  | 564   | Plan tangent à une sphère              | Orthogonalité et distances › sphère                   | idem                                           | 4        | application, valeurs tirées |
+| 10  | 361   | Sphère circonscrite à un tétraèdre     | Orthogonalité et distances › sphère                   | idem                                           | 4        | application, valeurs tirées |
+| 11  | 394   | Suites adjacentes                      | Limites de suites › convergence monotone              | idem                                           | 4        | application + preuve        |
+| 11  | 395   | Récurrence linéaire d'ordre 2          | **notion** Suites › Suites récurrentes                | **aucune ne convient** (escalier, point fixe)  | —        | application, valeurs tirées |
+| 11  | 396   | Newton (exemples)                      | Suites récurrentes › point fixe                       | idem                                           | 3        | calcul des itérés à la main |
+| 11  | 571   | Convergence de la méthode de Héron     | Suites récurrentes › point fixe                       | idem                                           | 3        | preuve à trous + ranger     |
+| 12  | 406   | Asymptotes obliques                    | Limites de fonctions › asymptotes                     | idem                                           | 1        | application, valeurs tirées |
+| 12  | 584   | Branches infinies                      | Limites de fonctions › asymptotes                     | idem                                           | 1        | application                 |
+| 12  | 435   | TVI démontré par dichotomie            | Continuité › valeurs intermédiaires                   | idem                                           | 2        | preuve à trous + ranger     |
+| 12  | 436   | f(x + y) = f(x) + f(y), f continue     | **notion** Fonctions › Continuité                     | Continuité › continuité en un point (à défaut) | 2        | preuve à trous + ranger     |
+| 12  | 437   | Prolongement par continuité            | Continuité › continuité en un point                   | idem                                           | 2        | application                 |
+| 13  | 422   | Courbe de Lorenz                       | **notion** Fonctions › Convexité                      | Convexité › caractérisations                   | 3        | application (Gini)          |
+| 13  | 423   | Dérivée n-ième                         | **notion** Fonctions › Dérivation                     | Dérivation › fonctions dérivées                | 7        | application, conjecture     |
+| 13  | 424   | Inégalité arithmético-géométrique      | Convexité › inégalités de convexité                   | idem                                           | 4        | preuve (concavité de ln)    |
+| 13  | 451   | x ↦ xᵃ                                 | **notion** Fonctions › Logarithmes                    | Logarithmes › propriétés algébriques           | 3        | application                 |
+| 13  | 452   | Limite de (1 + x/n)ⁿ                   | **notion** Fonctions › Fonction exponentielle         | Exponentielle › propriétés algébriques ¹       | 8        | preuve à trous + ranger     |
+| 13  | 460   | Fonction tangente                      | **notion** Fonctions › Fonctions trigonométriques     | Fonctions trigo › dérivées et variations       | 4        | application                 |
+| 14  | 473   | Autres équations différentielles       | Éq. diff. › Généralités › notion de solution          | idem                                           | 1        | application (logistique)    |
+| 14  | 496   | Aire par suites adjacentes             | Calcul d'intégrales › méthode des rectangles          | idem                                           | 5        | application                 |
+| 14  | 497   | Encadrement de Hₙ par des intégrales   | Calcul d'intégrales › positivité et inégalités        | idem                                           | 3        | preuve à trous + ranger     |
+| 15  | 517   | Loi de Poisson (limite de binomiales)  | **notion** Probabilités › Autres lois                 | **aucune ne convient**                         | —        | application, valeurs tirées |
+| 15  | 529   | E(XY) = E(X)E(Y), variance d'une somme | Sommes et concentration › espérance et variance somme | idem                                           | 3        | preuve + application        |
+| 15  | 537   | Estimation                             | Statistiques › Échantillonnage › estimation propor.   | idem (aucun modèle dessus)                     | —        | application                 |
+| 15  | 538   | Marche aléatoire                       | Probabilités conditionnelles › épreuves indép. succ.  | idem                                           | 5        | application (loi binomiale) |
+| 15  | 539   | Sondage, sex ratio, demi-vie           | Sommes et concentration › loi des grands nombres      | idem                                           | 2        | application (concentration) |
+
+¹ Comme `3762e1e9` (1SPE-299, valeur approchée de e par (1 + 1/n)ⁿ), rangé là.
+
+**Réemplois possibles** (le tag est accepté : point sur le nœud ou la notion du modèle) : 340 ← `6bd8366f` (2de,
+« Barycentre de deux ou trois points », Vecteurs › combinaison linéaire) ; 538 ← `4bd92a32` (1re, « Marche aléatoire
+sur une droite graduée », même sous-notion). Tous deux sont du niveau de leur classe (2 ou 3 points dans le plan ;
+arbre sur quelques pas), pas de la terminale (4 points, espace ; loi binomiale).
+
+Chevauchements à éviter : 396 et 571 ne refont pas les algorithmes 434 (Newton en Python) et 393 (Héron en Python) :
+calcul des itérés à la main pour 396, étude de la convergence (preuve) pour 571. 435 n'est pas l'algorithme 433 :
+c'est la preuve du TVI par les suites adjacentes.
+
+### Phase 0 — questions à David (posées le 2026-11-13)
+
+- **Q1 — Périmètre et lots.** Les 31 approfondissements en 7 lots : (9) barycentres et Leibniz ; (10) plans et
+  sphères ; (11) suites ; (12) limites et continuité ; (13) convexité, dérivation, fonctions usuelles ; (14) équations
+  différentielles et intégrales ; (15) probabilités et statistiques. _Reco : oui._
+- **Q2 — Forme.** Comme D3 de la 1re : les preuves (554, 571, 435, 436, 452, 497, et en partie 394, 424, 529) à trous
+  - une variation « étapes à ranger » (D1 de ce chantier) ; les autres en exercices d'application à valeurs tirées,
+    2 ou 3 variations ; tout résultat hors programme dont l'exercice a besoin est donné dans l'énoncé (loi de Poisson,
+    formule de Gini, xᵃ = eᵃ ˡⁿ ˣ). _Reco : oui._
+- **Q3 — Rangement.** Un modèle par point, tagué sur son point P, soit 31 modèles neufs, sur la sous-notion du point,
+  au-dessus des niveaux déjà présents. Pour les points posés sur une notion, le modèle va sur la sous-notion de la
+  colonne « Modèle sur », et le point reste sur la notion. _Reco : oui._
+- **Q4 — 395 et 517, sans sous-notion qui convienne.** (a) deux sous-notions neuves, « récurrence linéaire d'ordre 2 »
+  sous Suites récurrentes et « loi de Poisson » sous Autres lois, posées par la migration du lot, comme D4 de la 1re ;
+  ou (b) la plus proche existante (point fixe ; espérance et variance). _Reco : (a), une case vide vaut mieux qu'un
+  modèle mal rangé._ 436 reste sur « continuité en un point », faute de mieux, sans nœud neuf.
+- **Q5 — Réemplois.** 340 et 538 : modèles neufs de niveau terminale, `6bd8366f` et `4bd92a32` servant de gabarits ;
+  ou réemploi (ajout de `T_SPE` aux classes et tag). _Reco : modèles neufs._
+- **Q6 — Accès** (avant toute migration) : « qui pourra lire quoi, qu'il ne pouvait pas lire avant ? » _Reco : personne
+  de plus (brouillons ; migration de nœud et de tags, et pour Q4 a deux sous-notions vides, publiques comme toutes)._
+  Publication comme les lots 1 à 8 : page à cocher, puis `publier-lot.ts` lancé par David.
