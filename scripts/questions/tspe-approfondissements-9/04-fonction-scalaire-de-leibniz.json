@@ -1,0 +1,246 @@
+{
+	"title": "Fonction scalaire de Leibniz",
+	"description": "MA² + MB² = 2MI² + AB²/2 : pourquoi les produits scalaires s'annulent (case choix), terme constant (case), rayon de la sphère MA² + MB² = k (case), MA² − MB² = k : un plan orthogonal à (AB) (case choix)",
+	"grades": ["T_SPE"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts de l'espace, et $I$ le milieu de $[AB]$.\n\nPour tout point $M$, $MA^2=\\left(\\overrightarrow{MI}+\\overrightarrow{IA}\\right)^2=MI^2+2\\,\\overrightarrow{MI}\\cdot\\overrightarrow{IA}+IA^2$, et de même pour $MB^2$. En ajoutant, pourquoi les produits scalaires disparaissent-ils ?\n\n```choix\n- Car $\\overrightarrow{IA}+\\overrightarrow{IB}=\\vec{0}$.\n- Car $\\overrightarrow{MI}$ est orthogonal à $\\overrightarrow{AB}$.\n- Car $\\overrightarrow{MI}\\cdot\\overrightarrow{IA}=MI\\times IA$.\n- Car un produit scalaire est toujours nul.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La somme des deux produits scalaires est $2\\,\\overrightarrow{MI}\\cdot\\overrightarrow{IA}+2\\,\\overrightarrow{MI}\\cdot\\overrightarrow{IB}=2\\,\\overrightarrow{MI}\\cdot\\left(\\overrightarrow{IA}+\\overrightarrow{IB}\\right)$ (bilinéarité).",
+					"$I$ est le milieu de $[AB]$ : $\\textcolor{{{color:primary.0}}}{\\overrightarrow{IA}+\\overrightarrow{IB}=\\vec{0}}$, donc cette somme est nulle, quel que soit $M$.",
+					"Il reste $MA^2+MB^2=2MI^2+IA^2+IB^2=2MI^2+\\dfrac{AB^2}{2}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts de l'espace, et $I$ le milieu de $[AB]$.\n\nOn donne $AB={{eval:2*u}}$. Pour tout point $M$, complète.\n\n$$MA^2+MB^2=2MI^2+?$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*u^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$MA^2=MI^2+2\\,\\overrightarrow{MI}\\cdot\\overrightarrow{IA}+IA^2$ et $MB^2=MI^2+2\\,\\overrightarrow{MI}\\cdot\\overrightarrow{IB}+IB^2$.",
+					"En ajoutant, les produits scalaires s'annulent car $\\overrightarrow{IA}+\\overrightarrow{IB}=\\vec{0}$ : $MA^2+MB^2=2MI^2+IA^2+IB^2$.",
+					"$IA=IB={{eval:u}}$, donc $IA^2+IB^2=\\textcolor{{{color:primary.0}}}{{{eval:2*u^2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts de l'espace, et $I$ le milieu de $[AB]$.\n\nOn donne $AB={{eval:2*u}}$, et on admet que $MA^2+MB^2=2MI^2+\\dfrac{AB^2}{2}$ pour tout point $M$. L'ensemble des points $M$ tels que $MA^2+MB^2={{eval:2*r^2+2*u^2}}$ est une sphère de centre $I$. Quel est son rayon ?\n\n$r=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La condition s'écrit $2MI^2+{{eval:2*u^2}}={{eval:2*r^2+2*u^2}}$, soit $2MI^2={{eval:2*r^2}}$.",
+					"Donc $MI^2={{eval:r^2}}$, et $MI={{eval:r}}$ (une distance est positive).",
+					"C'est la sphère de centre $I$ et de rayon $\\textcolor{{{color:primary.0}}}{{{eval:r}}}$."
+				]
+			},
+			"conditions": ["r != u"]
+		},
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts de l'espace, et $I$ le milieu de $[AB]$.\n\nPour tout point $M$, $MA^2-MB^2=\\left(\\overrightarrow{MA}-\\overrightarrow{MB}\\right)\\cdot\\left(\\overrightarrow{MA}+\\overrightarrow{MB}\\right)$. Quel est l'ensemble des points $M$ tels que $MA^2-MB^2={{eval:k}}$ ?\n\n```choix\n- Un plan orthogonal à la droite $(AB)$\n- Une sphère de centre $I$\n- Une droite parallèle à $(AB)$\n- Le plan médiateur de $[AB]$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..20;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{MA}-\\overrightarrow{MB}=\\overrightarrow{BA}$ et $\\overrightarrow{MA}+\\overrightarrow{MB}=2\\,\\overrightarrow{MI}$ : $MA^2-MB^2=2\\,\\overrightarrow{BA}\\cdot\\overrightarrow{MI}=2\\,\\overrightarrow{IM}\\cdot\\overrightarrow{AB}$.",
+					"La condition s'écrit $\\overrightarrow{IM}\\cdot\\overrightarrow{AB}={{eval:k/2}}$ : le projeté de $M$ sur $(AB)$ est un point fixe $H$.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{le plan orthogonal à } (AB) \\text{ passant par } H}$ ; ce n'est pas le plan médiateur, qui correspond à $MA^2-MB^2=0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "IA + IB = 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : orthogonal",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : MI × IA",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : toujours nul",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "18",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 36 (AB²)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 (IA² seul)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 25 (sans la racine)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"r": "5"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √29 (AB²/2 oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"r": "5"
+			},
+			"answers": ["\\sqrt{29}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "plan orthogonal à (AB)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sphère",
+			"variationIndex": 3,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : droite",
+			"variationIndex": 3,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : plan médiateur",
+			"variationIndex": 3,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

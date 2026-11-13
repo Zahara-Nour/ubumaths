@@ -1,0 +1,232 @@
+{
+	"title": "Fonction vectorielle de Leibniz",
+	"description": "aMA + bMB = (a + b)MG (case), MA − MB constant quand la somme des coefficients est nulle (case choix), rayon de la sphère ‖MA + 2MB‖ = k (case), ‖MA + MB‖ = ‖MA − MB‖ : sphère de diamètre [AB] (case choix)",
+	"grades": ["T_SPE"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts de l'espace. À tout point $M$, on associe un vecteur combinaison linéaire de $\\overrightarrow{MA}$ et $\\overrightarrow{MB}$ (fonction vectorielle de Leibniz).\n\nSoit $G$ le barycentre de $(A\\,;\\,{{eval:a}})$ et $(B\\,;\\,{{eval:b}})$. Pour tout point $M$, complète.\n\n$${{eval:a}}\\,\\overrightarrow{MA}+{{eval:b}}\\,\\overrightarrow{MB}=?\\,\\overrightarrow{MG}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par Chasles, $\\overrightarrow{MA}=\\overrightarrow{MG}+\\overrightarrow{GA}$ et $\\overrightarrow{MB}=\\overrightarrow{MG}+\\overrightarrow{GB}$.",
+					"Donc ${{eval:a}}\\,\\overrightarrow{MA}+{{eval:b}}\\,\\overrightarrow{MB}={{eval:a+b}}\\,\\overrightarrow{MG}+\\left({{eval:a}}\\,\\overrightarrow{GA}+{{eval:b}}\\,\\overrightarrow{GB}\\right)$.",
+					"La parenthèse est nulle, par définition de $G$ : ${{eval:a}}\\,\\overrightarrow{MA}+{{eval:b}}\\,\\overrightarrow{MB}=\\textcolor{{{color:primary.0}}}{{{eval:a+b}}}\\,\\overrightarrow{MG}$."
+				]
+			},
+			"conditions": ["a != b"]
+		},
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts de l'espace. À tout point $M$, on associe un vecteur combinaison linéaire de $\\overrightarrow{MA}$ et $\\overrightarrow{MB}$ (fonction vectorielle de Leibniz).\n\nOn considère, pour tout point $M$, le vecteur $\\overrightarrow{MA}-\\overrightarrow{MB}$ (somme des coefficients nulle). Que peut-on dire ?\n\n```choix\n- Il vaut $\\overrightarrow{BA}$ pour tout point $M$ : il ne dépend pas de $M$.\n- Il vaut $\\vec{0}$ pour tout point $M$.\n- Il vaut $\\overrightarrow{AB}$ pour tout point $M$.\n- Il vaut $2\\,\\overrightarrow{MI}$, où $I$ est le milieu de $[AB]$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par Chasles, $\\overrightarrow{MA}-\\overrightarrow{MB}=\\overrightarrow{MA}+\\overrightarrow{BM}=\\overrightarrow{BM}+\\overrightarrow{MA}$.",
+					"Donc $\\overrightarrow{MA}-\\overrightarrow{MB}=\\textcolor{{{color:primary.0}}}{\\overrightarrow{BA}}$ : quand la somme des coefficients est nulle, la fonction de Leibniz est constante."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts de l'espace. À tout point $M$, on associe un vecteur combinaison linéaire de $\\overrightarrow{MA}$ et $\\overrightarrow{MB}$ (fonction vectorielle de Leibniz).\n\nSoit $G$ le barycentre de $(A\\,;\\,1)$ et $(B\\,;\\,2)$. L'ensemble des points $M$ de l'espace tels que $\\left\\|\\overrightarrow{MA}+2\\,\\overrightarrow{MB}\\right\\|={{eval:3*r}}$ est une sphère de centre $G$. Quel est son rayon ?\n\n$r=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$G$ est le barycentre de $(A\\,;\\,1)$ et $(B\\,;\\,2)$ : $\\overrightarrow{MA}+2\\,\\overrightarrow{MB}=3\\,\\overrightarrow{MG}$ pour tout point $M$.",
+					"La condition s'écrit $3MG={{eval:3*r}}$, soit $MG={{eval:r}}$.",
+					"C'est la sphère de centre $G$ et de rayon $\\textcolor{{{color:primary.0}}}{{{eval:r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts de l'espace. À tout point $M$, on associe un vecteur combinaison linéaire de $\\overrightarrow{MA}$ et $\\overrightarrow{MB}$ (fonction vectorielle de Leibniz).\n\nSoit $I$ le milieu de $[AB]$. Quel est l'ensemble des points $M$ de l'espace tels que $\\left\\|\\overrightarrow{MA}+\\overrightarrow{MB}\\right\\|=\\left\\|\\overrightarrow{MA}-\\overrightarrow{MB}\\right\\|$ ?\n\n```choix\n- La sphère de diamètre $[AB]$\n- Le plan médiateur de $[AB]$\n- La droite $(AB)$\n- Le seul point $I$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$I$ est le milieu de $[AB]$ : $\\overrightarrow{MA}+\\overrightarrow{MB}=2\\,\\overrightarrow{MI}$.",
+					"La somme des coefficients de $\\overrightarrow{MA}-\\overrightarrow{MB}$ est nulle : ce vecteur vaut $\\overrightarrow{BA}$ pour tout $M$.",
+					"La condition s'écrit $2MI=AB$, soit $MI=\\dfrac{AB}{2}$ : c'est $\\textcolor{{{color:primary.0}}}{\\text{la sphère de diamètre } [AB]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (produit)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BA",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vecteur nul",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AB",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2MI",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4",
+			"variationIndex": 2,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 (sans diviser par 3)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 (divisé par 2)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sphère de diamètre [AB]",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plan médiateur",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (AB)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le point I",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

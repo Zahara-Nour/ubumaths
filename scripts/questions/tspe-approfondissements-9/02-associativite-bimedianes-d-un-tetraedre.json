@@ -1,0 +1,204 @@
+{
+	"title": "Associativité du barycentre : bimédianes d'un tétraèdre",
+	"description": "Isobarycentre G d'un tétraèdre : GA + GB = 2GI (case), G milieu de la bimédiane (case choix), associativité CG = (a + b)/(a + b + c) CH (case), concourance des bimédianes (étapes à ranger)",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $ABCD$ un tétraèdre, $I$ le milieu de $[AB]$ et $J$ le milieu de $[CD]$ : le segment $[IJ]$ est une bimédiane du tétraèdre. Soit $G$ l'isobarycentre de $A$, $B$, $C$ et $D$ : $\\overrightarrow{GA}+\\overrightarrow{GB}+\\overrightarrow{GC}+\\overrightarrow{GD}=\\vec{0}$.\n\nComplète.\n\n$$\\overrightarrow{GA}+\\overrightarrow{GB}=?\\,\\overrightarrow{GI}$$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par Chasles, $\\overrightarrow{GA}=\\overrightarrow{GI}+\\overrightarrow{IA}$ et $\\overrightarrow{GB}=\\overrightarrow{GI}+\\overrightarrow{IB}$.",
+					"$I$ est le milieu de $[AB]$ : $\\overrightarrow{IA}+\\overrightarrow{IB}=\\vec{0}$.",
+					"Donc $\\overrightarrow{GA}+\\overrightarrow{GB}=\\textcolor{{{color:primary.0}}}{2}\\,\\overrightarrow{GI}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABCD$ un tétraèdre, $I$ le milieu de $[AB]$ et $J$ le milieu de $[CD]$ : le segment $[IJ]$ est une bimédiane du tétraèdre. Soit $G$ l'isobarycentre de $A$, $B$, $C$ et $D$ : $\\overrightarrow{GA}+\\overrightarrow{GB}+\\overrightarrow{GC}+\\overrightarrow{GD}=\\vec{0}$.\n\nOn a obtenu $2\\,\\overrightarrow{GI}+2\\,\\overrightarrow{GJ}=\\vec{0}$. Qu'en conclut-on ?\n\n```choix\n- $G$ est le milieu de $[IJ]$.\n- $G$ est confondu avec $I$.\n- $G$ est sur la droite $(AB)$.\n- $IJ=\\dfrac{1}{2}CD$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$2\\,\\overrightarrow{GI}+2\\,\\overrightarrow{GJ}=\\vec{0}$ donne $\\overrightarrow{GI}+\\overrightarrow{GJ}=\\vec{0}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{G \\text{ est le milieu de } [IJ]}$ : l'isobarycentre est sur la bimédiane $[IJ]$, en son milieu."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$, $B$ et $C$ trois points non alignés, $G$ le barycentre de $(A\\,;\\,{{eval:a}})$, $(B\\,;\\,{{eval:b}})$, $(C\\,;\\,{{eval:c}})$, et $H$ le barycentre de $(A\\,;\\,{{eval:a}})$, $(B\\,;\\,{{eval:b}})$.\n\nComme ${{eval:a}}\\,\\overrightarrow{GA}+{{eval:b}}\\,\\overrightarrow{GB}={{eval:a+b}}\\,\\overrightarrow{GH}$ (associativité), complète.\n\n$$\\overrightarrow{CG}=?\\,\\overrightarrow{CH}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b)/(a+b+c)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La relation ${{eval:a}}\\,\\overrightarrow{GA}+{{eval:b}}\\,\\overrightarrow{GB}+{{eval:c}}\\,\\overrightarrow{GC}=\\vec{0}$ devient ${{eval:a+b}}\\,\\overrightarrow{GH}+{{eval:c}}\\,\\overrightarrow{GC}=\\vec{0}$ : $G$ est le barycentre de $(H\\,;\\,{{eval:a+b}})$ et $(C\\,;\\,{{eval:c}})$.",
+					"Par Chasles, $\\overrightarrow{GH}=\\overrightarrow{GC}+\\overrightarrow{CH}$ : ${{eval:a+b+c}}\\,\\overrightarrow{GC}+{{eval:a+b}}\\,\\overrightarrow{CH}=\\vec{0}$.",
+					"Donc $\\overrightarrow{CG}=\\textcolor{{{color:primary.0}}}{{{eval:(a+b)/(a+b+c)}}}\\,\\overrightarrow{CH}$."
+				]
+			},
+			"conditions": ["a != b || b != c"]
+		},
+		{
+			"statement": "Soit $ABCD$ un tétraèdre. On démontre que ses trois bimédianes (segments qui joignent les milieux de deux arêtes opposées) sont concourantes.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Soit $G$ tel que $\\overrightarrow{GA}+\\overrightarrow{GB}+\\overrightarrow{GC}+\\overrightarrow{GD}=\\vec{0}$, $I$ le milieu de $[AB]$ et $J$ celui de $[CD]$.\n- Par les milieux, $\\overrightarrow{GA}+\\overrightarrow{GB}=2\\,\\overrightarrow{GI}$ et $\\overrightarrow{GC}+\\overrightarrow{GD}=2\\,\\overrightarrow{GJ}$.\n- Donc $2\\,\\overrightarrow{GI}+2\\,\\overrightarrow{GJ}=\\vec{0}$ : $G$ est le milieu de $[IJ]$.\n- En groupant $A$ avec $C$, puis avec $D$, $G$ est aussi le milieu des deux autres bimédianes : elles sont concourantes en $G$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On nomme $G$, l'isobarycentre, puis on regroupe les points deux par deux (associativité).",
+					"Chaque regroupement place $G$ au milieu d'une bimédiane : $\\textcolor{{{color:primary.0}}}{G}$ est sur les trois."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "milieu de [IJ]",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : confondu avec I",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sur (AB)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : IJ = CD/2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/8",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "3"
+			},
+			"answers": ["\\frac{5}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/8 (c/(a+b+c))",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "3"
+			},
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5/3 ((a+b)/c)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "3"
+			},
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

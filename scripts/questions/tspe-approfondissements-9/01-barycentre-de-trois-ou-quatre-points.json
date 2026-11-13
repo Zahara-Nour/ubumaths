@@ -1,0 +1,324 @@
+{
+	"title": "Barycentre de trois ou quatre points de l'espace",
+	"description": "Barycentre de (A ; a), (B ; b), (C ; c) : AG en fonction de AB et AC (deux cases), coordonnées dans l'espace (formule donnée, trois cases), barycentre de quatre points (case), existence quand la somme des coefficients est non nulle (case choix)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $A$, $B$ et $C$ trois points de l'espace, et $G$ le point tel que ${{eval:a}}\\,\\overrightarrow{GA}+{{eval:b}}\\,\\overrightarrow{GB}+{{eval:c}}\\,\\overrightarrow{GC}=\\vec{0}$ : $G$ est le barycentre de $(A\\,;\\,{{eval:a}})$, $(B\\,;\\,{{eval:b}})$ et $(C\\,;\\,{{eval:c}})$.\n\nEn écrivant $\\overrightarrow{GB}=\\overrightarrow{GA}+\\overrightarrow{AB}$ et $\\overrightarrow{GC}=\\overrightarrow{GA}+\\overrightarrow{AC}$, complète.\n\n$$\\overrightarrow{AG}=?\\,\\overrightarrow{AB}+?\\,\\overrightarrow{AC}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b/(a+b+c)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:c/(a+b+c)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace : ${{eval:a}}\\,\\overrightarrow{GA}+{{eval:b}}\\left(\\overrightarrow{GA}+\\overrightarrow{AB}\\right)+{{eval:c}}\\left(\\overrightarrow{GA}+\\overrightarrow{AC}\\right)=\\vec{0}$.",
+					"Soit ${{eval:a+b+c}}\\,\\overrightarrow{GA}+{{eval:b}}\\,\\overrightarrow{AB}+{{eval:c}}\\,\\overrightarrow{AC}=\\vec{0}$, donc ${{eval:a+b+c}}\\,\\overrightarrow{AG}={{eval:b}}\\,\\overrightarrow{AB}+{{eval:c}}\\,\\overrightarrow{AC}$.",
+					"Donc $\\overrightarrow{AG}=\\textcolor{{{color:primary.0}}}{{{eval:b/(a+b+c)}}}\\,\\overrightarrow{AB}+\\textcolor{{{color:primary.0}}}{{{eval:c/(a+b+c)}}}\\,\\overrightarrow{AC}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère de l'espace, on considère les points $A({{eval:a1}}\\,;\\,{{eval:a2}}\\,;\\,{{eval:a3}})$, $B({{eval:b1}}\\,;\\,{{eval:b2}}\\,;\\,{{eval:b3}})$ et $C({{eval:c1}}\\,;\\,{{eval:c2}}\\,;\\,{{eval:c3}})$. Soit $G$ le barycentre de $(A\\,;\\,{{eval:a}})$, $(B\\,;\\,{{eval:b}})$ et $(C\\,;\\,1)$, c'est-à-dire le point tel que ${{eval:a}}\\,\\overrightarrow{GA}+{{eval:b}}\\,\\overrightarrow{GB}+\\overrightarrow{GC}=\\vec{0}$.\n\nOn admet que ses coordonnées sont les moyennes de celles de $A$, $B$ et $C$ pondérées par ${{eval:a}}$, ${{eval:b}}$ et $1$ : $x_G=\\dfrac{{{eval:a}}x_A+{{eval:b}}x_B+x_C}{{{eval:a+b+1}}}$, et de même pour $y_G$ et $z_G$.\n\nDonne les coordonnées de $G$.\n\n$$G(?\\,;\\,?\\,;\\,?)$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "b",
+					"expression": "2..3"
+				},
+				{
+					"name": "g1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "g2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "g3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "a1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "a2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "a3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c1",
+					"expression": "eval:((a)+(b)+1)*(g1)-(a)*(a1)-(b)*(b1)"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:((a)+(b)+1)*(g2)-(a)*(a2)-(b)*(b2)"
+				},
+				{
+					"name": "c3",
+					"expression": "eval:((a)+(b)+1)*(g3)-(a)*(a3)-(b)*(b3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:g2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:g3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x_G=\\dfrac{{{eval:a}}\\times{{eval:a1;()}}+{{eval:b}}\\times{{eval:b1;()}}{{eval:c1;+}}}{{{eval:a+b+1}}}=\\dfrac{{{eval:(a+b+1)*g1}}}{{{eval:a+b+1}}}={{eval:g1}}$.",
+					"De même, $y_G=\\dfrac{{{eval:(a+b+1)*g2}}}{{{eval:a+b+1}}}={{eval:g2}}$ et $z_G=\\dfrac{{{eval:(a+b+1)*g3}}}{{{eval:a+b+1}}}={{eval:g3}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{G({{eval:g1}}\\,;\\,{{eval:g2}}\\,;\\,{{eval:g3}})}$."
+				]
+			},
+			"conditions": [
+				"abs(c1) <= 12",
+				"abs(c2) <= 12",
+				"abs(c3) <= 12",
+				"a1 != b1 || a2 != b2 || a3 != b3",
+				"g1 != 0 || g2 != 0 || g3 != 0"
+			]
+		},
+		{
+			"statement": "Soit $ABCD$ un tétraèdre, et $G$ le barycentre de $(A\\,;\\,1)$, $(B\\,;\\,1)$, $(C\\,;\\,1)$ et $(D\\,;\\,{{eval:k}})$ : $\\overrightarrow{GA}+\\overrightarrow{GB}+\\overrightarrow{GC}+{{eval:k}}\\,\\overrightarrow{GD}=\\vec{0}$.\n\nEn exprimant chaque vecteur à l'aide de $\\overrightarrow{GA}$ (relation de Chasles), complète.\n\n$$\\overrightarrow{AG}=\\dfrac{1}{?}\\left(\\overrightarrow{AB}+\\overrightarrow{AC}+{{eval:k}}\\,\\overrightarrow{AD}\\right)$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k+3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{GB}=\\overrightarrow{GA}+\\overrightarrow{AB}$, $\\overrightarrow{GC}=\\overrightarrow{GA}+\\overrightarrow{AC}$ et $\\overrightarrow{GD}=\\overrightarrow{GA}+\\overrightarrow{AD}$.",
+					"On obtient ${{eval:k+3}}\\,\\overrightarrow{GA}+\\overrightarrow{AB}+\\overrightarrow{AC}+{{eval:k}}\\,\\overrightarrow{AD}=\\vec{0}$ : le coefficient de $\\overrightarrow{GA}$ est la somme des coefficients, $1+1+1+{{eval:k}}$.",
+					"Donc $\\overrightarrow{AG}=\\dfrac{1}{\\textcolor{{{color:primary.0}}}{{{eval:k+3}}}}\\left(\\overrightarrow{AB}+\\overrightarrow{AC}+{{eval:k}}\\,\\overrightarrow{AD}\\right)$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$, $B$ et $C$ trois points non alignés de l'espace, et $k$ un réel. On cherche un point $G$ tel que $\\overrightarrow{GA}+\\overrightarrow{GB}+k\\,\\overrightarrow{GC}=\\vec{0}$.\n\nPour quelles valeurs de $k$ un tel point existe-t-il ?\n\n```choix\n- Pour $k\\neq -2$\n- Pour $k\\neq 0$\n- Pour $k\\neq 2$\n- Pour toute valeur de $k$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par Chasles, la relation s'écrit $(2+k)\\,\\overrightarrow{GA}+\\overrightarrow{AB}+k\\,\\overrightarrow{AC}=\\vec{0}$.",
+					"Si $2+k\\neq 0$, elle donne $\\overrightarrow{AG}=\\dfrac{1}{2+k}\\left(\\overrightarrow{AB}+k\\,\\overrightarrow{AC}\\right)$ : un seul point $G$.",
+					"Si $k=-2$, elle devient $\\overrightarrow{AB}-2\\,\\overrightarrow{AC}=\\vec{0}$, fausse car $A$, $B$, $C$ ne sont pas alignés : aucun point. Le barycentre existe donc $\\textcolor{{{color:primary.0}}}{\\text{pour } k\\neq -2}$, quand la somme des coefficients n'est pas nulle."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/10 et 1/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans le coefficient de A (3/8 et 5/8)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["\\frac{3}{8}", "\\frac{5}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coefficients échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["\\frac{1}{2}", "\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "G(1 ; 1 ; 0)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"g1": "1",
+				"g2": "1",
+				"g3": "0",
+				"a1": "1",
+				"a2": "0",
+				"a3": "2",
+				"b1": "-1",
+				"b2": "2",
+				"b3": "0",
+				"c1": "7",
+				"c2": "0",
+				"c3": "-4"
+			},
+			"answers": ["1", "1", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : isobarycentre (7/3 ; 2/3 ; −2/3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"g1": "1",
+				"g2": "1",
+				"g3": "0",
+				"a1": "1",
+				"a2": "0",
+				"a3": "2",
+				"b1": "-1",
+				"b2": "2",
+				"b3": "0",
+				"c1": "7",
+				"c2": "0",
+				"c3": "-4"
+			},
+			"answers": ["\\frac{7}{3}", "\\frac{2}{3}", "-\\frac{2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (les poids de A, B, C oubliés)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k ≠ −2",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k ≠ 0",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k ≠ 2",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : toute valeur",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
