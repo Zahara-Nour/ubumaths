@@ -47,7 +47,7 @@
 	);
 
 	function rate(tally: BreakdownTally): string {
-		return tally.successRate === null ? '–' : `${Math.round(tally.successRate)} %`;
+		return tally.successRate === null ? '–' : `${Math.round(tally.successRate)}\u00a0%`;
 	}
 
 	function notionLabel(row: NotionBreakdown): string {
