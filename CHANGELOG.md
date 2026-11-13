@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.86.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.85.0...v0.86.0) (2026-11-13)
+
+### ✨ Features
+
+- **construction:** case de longueur, correction et enonce masque de mesure AB (n° 26) ([a484161](https://github.com/Zahara-Nour/ubumaths/commit/a48416170639303618e5e6175a6b1a6221900f61))
+- **construction:** mesurer un segment a la regle graduee, parseur et juge (n° 26) ([1000f60](https://github.com/Zahara-Nour/ubumaths/commit/1000f60c2d71273401b3f76d083a9c1ceea6eba4))
+- **fiches:** script de creation des fiches fonctions affines de seconde ([861cf41](https://github.com/Zahara-Nour/ubumaths/commit/861cf4152feaee3986a74d4108d68628f182b4ad))
+- **figure:** enonce PDF de mesure AB a l'echelle 1 unite = 1 cm si la figure tient ([86abf1e](https://github.com/Zahara-Nour/ubumaths/commit/86abf1e716ff38b3bf8f46526c39db0bf7f60d9c))
+- **questions:** 6e, lot 13 schemas en barres, noeud et tag des 6 brouillons ([db39253](https://github.com/Zahara-Nour/ubumaths/commit/db39253f826215167ee054ac45896a91caf5d8bf))
+- **questions:** page a cocher, le bloc schema-barres dessine par la scene de l'appli ([408d0ed](https://github.com/Zahara-Nour/ubumaths/commit/408d0ede739567dea471148e0599c0a0f205ca25))
+- **questions:** terminale spé, lot 7 algorithmes, noeud et tag des 4 brouillons ([31acae9](https://github.com/Zahara-Nour/ubumaths/commit/31acae963e5c8d44673aba519053dd4e7670f661))
+- **questions:** tspe algorithmes lot 8, rangement et tags ([fd1b903](https://github.com/Zahara-Nour/ubumaths/commit/fd1b90394da549af988d8c099028f81feadd65af))
+- **questions:** tspe, algorithmes lot 8 (ecart a pn, Bienayme-Tchebychev, marche, moyennes) ([c0cdf26](https://github.com/Zahara-Nour/ubumaths/commit/c0cdf268738176404243d30a9845a4634624ef14))
+
+### 🐛 Bug Fixes
+
+- **construction:** mesure AB, le 0 dit sur B quand la regle est posee depuis B (revue) ([833e9c5](https://github.com/Zahara-Nour/ubumaths/commit/833e9c53a65aa5e3eab500381e9c25cde66b6f18))
+- **fiches:** fiche:verifier compile une fiche dont les images ne sont pas encore en ligne ([f254db6](https://github.com/Zahara-Nour/ubumaths/commit/f254db6e9cf74457ea0616e61be3f3291a2a3da5))
+- **fiches:** images locales, webp refuse et nom encode decode ([3d541f1](https://github.com/Zahara-Nour/ubumaths/commit/3d541f1e4159d7b63867619830ebf2bd6d7c00bc))
+- **fiches:** sources des fiches affines sous data/fiches, hors de prettier ([3edd9f3](https://github.com/Zahara-Nour/ubumaths/commit/3edd9f35725f5c35225a4d287f6afc4967e994d5))
+
+### ⚡ Performance Improvements
+
+- **analytique:** la grille de regularite compte les jours actifs en base ([af6193a](https://github.com/Zahara-Nour/ubumaths/commit/af6193a9d12b230382a3e2a6bfad24ddae36f3be))
+
+### 📚 Documentation
+
+- **fiches:** fiches fonctions affines de seconde publiees, sources sous data/fiches ([634742d](https://github.com/Zahara-Nour/ubumaths/commit/634742d7c7adaf4688aa3fb0dca544ef0a57652a))
+- questions-6 archive, liens relatifs corriges ([c9c9af5](https://github.com/Zahara-Nour/ubumaths/commit/c9c9af57b8ff798b23ad3bf7191793d9ad8a9288))
+- versement du chantier questions-6, 6e couverte, journal archive ([b2cb4ff](https://github.com/Zahara-Nour/ubumaths/commit/b2cb4ff2d6e755f3007fad14fa17c1fe09623250))
+- **wip:** amelioration, n° 26 livre ([#2611](https://github.com/Zahara-Nour/ubumaths/issues/2611)), verification manuelle ([e4139e2](https://github.com/Zahara-Nour/ubumaths/commit/e4139e2ff76b279da1c2dbc270a005a37dfb8798))
+- **wip:** amelioration, PR 1 du n° 26 ecrite ([f2cced0](https://github.com/Zahara-Nour/ubumaths/commit/f2cced09b94a0c60eea9ec8ec8747263e843b319))
+- **wip:** amelioration, PR 1 du n° 26 mergee ([#2606](https://github.com/Zahara-Nour/ubumaths/issues/2606)), verification manuelle ([520c298](https://github.com/Zahara-Nour/ubumaths/commit/520c2982d64cc9b7284e6a1d4bfad1701beac54e))
+- **wip:** fiche-verifier-images clos apres [#2612](https://github.com/Zahara-Nour/ubumaths/issues/2612), journal archive ([7d647f0](https://github.com/Zahara-Nour/ubumaths/commit/7d647f068ff56be22f20d35c4f88c60df968c892))
+- **wip:** fiches-affines-2nde clos apres [#2609](https://github.com/Zahara-Nour/ubumaths/issues/2609), journal et conventions archives ([2aa434a](https://github.com/Zahara-Nour/ubumaths/commit/2aa434a6f06bb0fc415905ae626ef89e85372c79))
+- **wip:** fiches-affines-2nde, conventions et plan valides ([52c1dde](https://github.com/Zahara-Nour/ubumaths/commit/52c1dde0a86cd86aeb89057e113b27935a9ad589))
+- **wip:** fiches-affines-2nde, sources de la fiche d'applications ([32d5bfd](https://github.com/Zahara-Nour/ubumaths/commit/32d5bfdd08b31fa74c10f538446c055cce44b796))
+- **wip:** fiches-affines-2nde, sources de la fiche technique ([8a656f9](https://github.com/Zahara-Nour/ubumaths/commit/8a656f9b2691e77ad489c5a4383f9fef516fae48))
+- **wip:** n° 26 livre ([#2606](https://github.com/Zahara-Nour/ubumaths/issues/2606), [#2611](https://github.com/Zahara-Nour/ubumaths/issues/2611)), journal amelioration a jour ([9afb5f8](https://github.com/Zahara-Nour/ubumaths/commit/9afb5f8451f0ab3feb95693f788d3af94222159d))
+- **wip:** outils-manquants n° 35 livre ([#2612](https://github.com/Zahara-Nour/ubumaths/issues/2612)) ([7205ca9](https://github.com/Zahara-Nour/ubumaths/commit/7205ca91c14460d1e57c1ad8928ed61d789e0b32))
+- **wip:** outils-manquants, ligne 28 livree ([#2604](https://github.com/Zahara-Nour/ubumaths/issues/2604), [#2607](https://github.com/Zahara-Nour/ubumaths/issues/2607)) ([c10ebd9](https://github.com/Zahara-Nour/ubumaths/commit/c10ebd9a3ce93c98fc7d03a8145a3744af1df5f5))
+- **wip:** questions-6, audit du lot 13 range ([545f085](https://github.com/Zahara-Nour/ubumaths/commit/545f085f8f7d99d314616bb4d0f92c318fcecc22))
+- **wip:** questions-6, lot 13 publie, 6e couverte ([79a4b36](https://github.com/Zahara-Nour/ubumaths/commit/79a4b368585a5dd7d5ae960c9eefbe262ad19496))
+- **wip:** questions-6, reprendre ici apres [#2610](https://github.com/Zahara-Nour/ubumaths/issues/2610) et [#2614](https://github.com/Zahara-Nour/ubumaths/issues/2614) ([c77f8fa](https://github.com/Zahara-Nour/ubumaths/commit/c77f8fa136c2482bc7c88b8bbeb1468139bd6064))
+- **wip:** questions-tspe-demonstrations, lot 7 publie ([f9bf300](https://github.com/Zahara-Nour/ubumaths/commit/f9bf300d8a763897c0e01e678417a06fdb7aa4dd))
+- **wip:** questions-tspe-demonstrations, lot 7 range et page a cocher apres [#2608](https://github.com/Zahara-Nour/ubumaths/issues/2608) ([c546e73](https://github.com/Zahara-Nour/ubumaths/commit/c546e73c08ef837a410d0f2d97ca1b4c04f95623))
+- **wip:** questions-tspe-demonstrations, lot 8 range, page a cocher ([df117a7](https://github.com/Zahara-Nour/ubumaths/commit/df117a7d3b146c32ee3fc8334a7dda0b311722e5))
+- **wip:** questions-tspe-demonstrations, lot 8 rangement ([b5fe5ba](https://github.com/Zahara-Nour/ubumaths/commit/b5fe5ba246865bde852cde1cf96ffa54744e4e20))
+- **wip:** questions-tspe-demonstrations, reprendre ici apres [#2613](https://github.com/Zahara-Nour/ubumaths/issues/2613) ([43b1cdc](https://github.com/Zahara-Nour/ubumaths/commit/43b1cdc1de899e97cc04af7083132dacf4d46847))
+- **wip:** regularite-sql clos apres [#2607](https://github.com/Zahara-Nour/ubumaths/issues/2607), journal archive ([172d749](https://github.com/Zahara-Nour/ubumaths/commit/172d74910c2c45a10ffdd9aeb64a77d69987994a))
+- **wip:** verification manuelle des fiches fonctions affines ([#2609](https://github.com/Zahara-Nour/ubumaths/issues/2609)) ([a1e7875](https://github.com/Zahara-Nour/ubumaths/commit/a1e7875a72516ba747e0dfc811da95dbd5ce46f1))
+
 ## [0.85.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.84.0...v0.85.0) (2026-11-12)
 
 ### ✨ Features
