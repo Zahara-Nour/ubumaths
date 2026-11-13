@@ -10,12 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, phase 0 des approfondissements posée (§ 35)._
+_Mis à jour le 2026-11-13, lot 9 en PR (#2618, § 36)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Suite de D1 : les **31
   approfondissements** ; relevé prod et phase 0 au § 35 (lots 9 à 15 proposés).
-- **Prochaine action** : après la réponse de David, lot 9 (barycentres et Leibniz : 340, 554, 341, 362).
-- **En attente de David** : rien (D3, § 35).
+- **Prochaine action** : merger #2618 (lot 9 : 340, 554, 341, 362), puis David lance `create-questions --publier`
+  (`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-approfondissements-9 --publier`) ; ensuite
+  rangement (copie de la migration du lot 8), page à cocher, publication ; puis lot 10 (374, 377, 564, 361).
+- **En attente de David** : `create-questions --publier` du lot 9, après le merge de #2618.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -788,3 +790,25 @@ l'énoncé ; 31 modèles neufs sur les sous-notions du tableau ; **deux sous-not
 d'ordre 2 » (Suites récurrentes, 395) et « loi de Poisson » (Autres lois, 517), posées par la migration de leur lot ;
 436 sur « continuité en un point » ; 340 et 538 en modèles neufs (`6bd8366f`, `4bd92a32` = gabarits) ; accès : personne
 de plus ; publication comme les lots 1 à 8.
+
+## 36. Lot 9 : approfondissements, barycentres et Leibniz (2026-11-13)
+
+| Point | Modèle (`scripts/questions/tspe-approfondissements-9/`) | Nœud, niveau                       | Variations                                                                                                 |
+| ----- | ------------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| 340   | `01-barycentre-de-trois-ou-quatre-points`               | Vecteurs › combinaison linéaire, 4 | AG = ?AB + ?AC (2 cases) ; coordonnées dans l'espace, formule donnée (3 cases) ; 4 points ; k ≠ −2 (choix) |
+| 554   | `02-associativite-bimedianes-d-un-tetraedre`            | Vecteurs › combinaison linéaire, 5 | GA + GB = 2GI ; milieu de [IJ] (choix) ; CG = (a + b)/(a + b + c) CH ; bimédianes (ranger, 4)              |
+| 341   | `03-fonction-vectorielle-de-leibniz`                    | Vecteurs › combinaison linéaire, 6 | aMA + bMB = (a + b)MG ; MA − MB = BA (choix) ; rayon ‖MA + 2MB‖ = 3r ; sphère de diamètre [AB] (choix)     |
+| 362   | `04-fonction-scalaire-de-leibniz`                       | produit scalaire dans l'espace, 6  | IA + IB = 0 (choix) ; MA² + MB² = 2MI² + ? ; rayon MA² + MB² = k ; MA² − MB² = k : plan (choix)            |
+
+Poids tirés de 2 à 5 partout où ils s'affichent (un poids 1 s'écrivait « 1 GA », vu dans les aperçus) ; 340 (b) :
+G et A, B tirés, C calculé pour que G soit le barycentre de (A ; a), (B ; b), (C ; 1), coordonnées entières.
+Script : `docs/wip/questions/lot-tspe-approfondissements-9.py`.
+
+Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (52 specs vertes), 0 `\textcolor` hors `$` ;
+3 062 formules des aperçus (357 distinctes) passées à `validateLatex` + accolades, 0 problème ; titres sans homonyme en
+prod (MCP) ; brouillons en base locale (copie hors dépôt) ; aperçu admin vu à l'écran : 340 (a) joué « Juste »
+(3/10 ; 2/5), 340 (b) rendu, 554 (c) rendu. Piège d'outil : dans l'aperçu piloté par Chrome, une case MathLive ne
+prend la saisie qu'après **deux clics séparés** (le premier donne le focus au champ) ; même chose sur une copie d'un
+modèle publié (`Espace : translations`), donc pas un défaut des modèles.
+
+PR #2618.
