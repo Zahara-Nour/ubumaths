@@ -1,4 +1,5 @@
 {
+	"id": "77581bce-b0b6-459b-bbdc-fda93623fc8d",
 	"title": "Barycentre de trois ou quatre points de l'espace",
 	"description": "Barycentre de (A ; a), (B ; b), (C ; c) : AG en fonction de AB et AC (deux cases), coordonnées dans l'espace (formule donnée, trois cases), barycentre de quatre points (case), existence quand la somme des coefficients est non nulle (case choix)",
 	"grades": ["T_SPE"],

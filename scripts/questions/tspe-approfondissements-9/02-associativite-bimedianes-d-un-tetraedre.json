@@ -1,4 +1,5 @@
 {
+	"id": "27203b17-d0a1-4e55-9d8f-fee3e7ffa88c",
 	"title": "Associativité du barycentre : bimédianes d'un tétraèdre",
 	"description": "Isobarycentre G d'un tétraèdre : GA + GB = 2GI (case), G milieu de la bimédiane (case choix), associativité CG = (a + b)/(a + b + c) CH (case), concourance des bimédianes (étapes à ranger)",
 	"grades": ["T_SPE"],

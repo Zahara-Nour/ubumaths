@@ -1,4 +1,5 @@
 {
+	"id": "b6392aeb-fcd3-44ee-bfb3-f832fb0e04b3",
 	"title": "Fonction scalaire de Leibniz",
 	"description": "MA² + MB² = 2MI² + AB²/2 : pourquoi les produits scalaires s'annulent (case choix), terme constant (case), rayon de la sphère MA² + MB² = k (case), MA² − MB² = k : un plan orthogonal à (AB) (case choix)",
 	"grades": ["T_SPE"],
