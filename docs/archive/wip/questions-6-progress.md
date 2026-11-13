@@ -12,7 +12,8 @@ _Mis à jour le 2026-11-13, clôture._
   décision (§ 5, question 8). Découpage recompté : lots 1 à 7 du § 4 et les trois outils neufs du § 5 (question 6),
   tous livrés (§ 7 à 30). Durable versé dans `docs/systeme/programmes/bornes/cycle3.md` § 6e, « Couverture ».
 - **Prochaine action** : aucune.
-- **En attente de David** : n° 34 de `outils-manquants.md` (schéma petit dans un choix à 390 px), suivi là-bas.
+- **En attente de David** : rien (n° 34, schéma petit dans un choix à 390 px : livré par #2619, chantier
+  `schema-barres-telephone`).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier (toujours `draft`, doublon de 059e3fc9).
 - **Worktree / branche** : aucun.
 
