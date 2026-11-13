@@ -10,17 +10,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, après #2615 (rangement du lot 8, § 32) et la page à cocher (§ 33)._
+_Mis à jour le 2026-11-13, après la publication du lot 8 (§ 34)._
 
-- **État** : démonstrations terminées (§ 17). Algorithmes : lots 5 à 7 publiés ; lot 8 (534, 624, 535, 536) en
-  brouillon en prod, rangé et tagué (#2615, `db:migrate` fait), page à cocher publiée (§ 33). Dernier lot (D2, § 18).
-- **Prochaine action** : lire et compter les verdicts de la page à cocher ; tout « ok » → `publier-lot.ts` en
-  simulation puis `--publier` (David) ; relire `published` en base ; puis clôture du chantier (versement).
-- **En attente de David** : ses verdicts sur https://claude.ai/artifact/Gkqe46y5T66T7aaWNio2xM.
+- **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés ; en prod, 20/20 démonstrations et 22/22
+  algorithmes `T_SPE` ont un modèle publié (§ 34). **Le chantier n'est PAS fini** : D1 (§ 2) prévoit ensuite les
+  **31 savoir-faire d'approfondissement** (relevé au § 1), avec leur propre phase 0.
+- **Prochaine action** : phase 0 des approfondissements (relevé prod des 31 points, nœuds, niveaux, modèles de 1re
+  et 2de à suivre ; questions Q1-Q6 comme aux § 2 et § 18), puis validation de David avant d'écrire.
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
-  (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20).
+  (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
+  `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main`.
 
 ---
@@ -698,3 +700,12 @@ inchangé. Branche supprimée. Les 4 JSON modifiés par `create-questions` dans 
 `page-a-cocher.ts --dir scripts/questions/tspe-algorithmes-8`, lu en base prod : 4 brouillons `draft`, chacun sur son
 point, 3 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/Gkqe46y5T66T7aaWNio2xM (capacité `db`) ;
 base `verdicts` vide à la publication.
+
+## 34. Lot 8 : publication, bilan des algorithmes (2026-11-13)
+
+Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 32). `publier-lot.ts` en simulation puis `--publier`,
+lancés par David. Relu en base (MCP) : 4 `published`.
+
+Bilan prod (MCP, points `T_SPE` actifs, modèle publié tagué) : `demonstration` 20/20 ; `algorithme` 22/22 ;
+`savoir_faire` approfondissement 5/36, soit les **31** du § 1 encore sans modèle ; aucun brouillon tagué. Suites de D1
+(§ 2) : démonstrations ✅, algorithmes ✅, approfondissements à faire (phase 0 à poser).
