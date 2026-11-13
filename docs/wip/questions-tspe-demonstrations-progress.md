@@ -15,8 +15,7 @@ _Mis à jour le 2026-11-13, phase 0 des approfondissements posée (§ 35)._
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Suite de D1 : les **31
   approfondissements** ; relevé prod et phase 0 au § 35 (lots 9 à 15 proposés).
 - **Prochaine action** : après la réponse de David, lot 9 (barycentres et Leibniz : 340, 554, 341, 362).
-- **En attente de David** : Q1 à Q6 du § 35 (lots, forme, rangement, sous-notions neuves pour 395 et 517,
-  réemplois 340 / 538, accès).
+- **En attente de David** : rien (D3, § 35).
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -782,3 +781,10 @@ c'est la preuve du TVI par les suites adjacentes.
 - **Q6 — Accès** (avant toute migration) : « qui pourra lire quoi, qu'il ne pouvait pas lire avant ? » _Reco : personne
   de plus (brouillons ; migration de nœud et de tags, et pour Q4 a deux sous-notions vides, publiques comme toutes)._
   Publication comme les lots 1 à 8 : page à cocher, puis `publier-lot.ts` lancé par David.
+
+**D3 (David, 2026-11-13, « je te suis »)** : Q1 à Q6 du § 35 telles que recommandées. Lots 9 à 15 dans l'ordre de Q1 ;
+preuves à trous + « étapes à ranger », le reste en applications à valeurs tirées, résultat hors programme donné dans
+l'énoncé ; 31 modèles neufs sur les sous-notions du tableau ; **deux sous-notions neuves**, « récurrence linéaire
+d'ordre 2 » (Suites récurrentes, 395) et « loi de Poisson » (Autres lois, 517), posées par la migration de leur lot ;
+436 sur « continuité en un point » ; 340 et 538 en modèles neufs (`6bd8366f`, `4bd92a32` = gabarits) ; accès : personne
+de plus ; publication comme les lots 1 à 8.
