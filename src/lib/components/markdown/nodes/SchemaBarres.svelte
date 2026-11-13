@@ -46,7 +46,9 @@
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
 
-	// Largeur de la colonne, mesurée (0 avant le montage : barres pleines, comme au PDF)
+	// Largeur de la colonne, mesurée (0 avant le montage : barres pleines, comme au PDF).
+	// Le conteneur est `w-full` : sa largeur vient du parent, jamais du dessin (sinon,
+	// dans un parent à la taille du contenu, le dessin rétrécirait de proche en proche).
 	let columnWidth = $state(0);
 
 	let scene = $derived(
@@ -86,7 +88,7 @@
 {:else}
 	{@const spec = node.spec}
 	<div
-		class="schema-barres-bloc my-2 flex justify-center {className}"
+		class="schema-barres-bloc my-2 flex w-full justify-center {className}"
 		bind:clientWidth={columnWidth}
 	>
 		<svg
