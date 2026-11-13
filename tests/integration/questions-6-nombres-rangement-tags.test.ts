@@ -5,7 +5,7 @@
  * Migration `20261027150000_questions_6_nombres_rangement_tags` : les 10 brouillons de 6e
  * créés le 2026-10-27 par scripts/create-questions.ts (sans nœud ni tag) vont sur le nœud de
  * leur point (sous-notion, ou notion pour 6-104) et reçoivent ce point, un seul (ADR 0020).
- * Décision de David (journal docs/wip/questions-6-progress.md § 9).
+ * Décision de David (journal docs/archive/wip/questions-6-progress.md § 9).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en 6e, sans nœud ni tag — puis rejoue la migration

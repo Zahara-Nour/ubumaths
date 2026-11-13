@@ -5,13 +5,13 @@
  * Migration `20261027100100_questions_6_rangement_tags` : 37 modèles marqués 6e à tort prennent le
  * niveau de leur point (5e, 4e, 3e, ou CM ajouté à la 6e), 18 changent de nœud, 34 reçoivent leur
  * tag ; 3a7a5711 (doublon de 059e3fc9) repasse en brouillon et perd 6-200. Décisions de David du
- * 2026-10-26 (journal docs/wip/questions-6-progress.md § 6).
+ * 2026-10-26 (journal docs/archive/wip/questions-6-progress.md § 6).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, à leur nœud, à leurs niveaux, à leur statut et avec
  * leurs tags d'avant — puis rejoue la migration **depuis son fichier**, dans une transaction
  * annulée à la fin. Les triggers de garde des tags restent actifs : chaque tag posé a passé la
- * règle du nœud. Le lot (fixture) est écrit par docs/wip/questions-6/lot-rangement-6.py, avec la
+ * règle du nœud. Le lot (fixture) est écrit par docs/archive/wip/questions-6/lot-rangement-6.py, avec la
  * migration, depuis le relevé de la prod du 2026-10-27.
  *
  * @vitest-environment node
