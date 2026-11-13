@@ -15,7 +15,7 @@
  *  - réservoir : jauge pleine (60 L) et zone de réserve (15 L), aucune distance.
  *
  * Usage (depuis la racine du worktree) :
- *   node docs/wip/fiches-affines-2nde/applications/images/gen-svg.mjs
+ *   node data/fiches/fonctions-affines-2nde/applications/images/gen-svg.mjs
  */
 import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
