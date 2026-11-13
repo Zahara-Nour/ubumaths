@@ -7,7 +7,12 @@ import { describe, expect, it } from 'vitest';
 import { parseSchemaBarresContent } from '$lib/ubumark/parser/schema-barres-parser';
 import {
 	SCHEMA_BARRES_DRAW_WIDTH,
+	SCHEMA_BARRES_FONT_SIZE,
+	SCHEMA_BARRES_MIN_DRAW_WIDTH,
+	SCHEMA_BARRES_MIN_FONT_PX,
+	SCHEMA_BARRES_PX_PER_UNIT,
 	buildSchemaBarresScene,
+	schemaBarresDrawWidth,
 	schemaBarresLabel
 } from '$lib/ubumark/utils/schema-barres-scene';
 
@@ -146,5 +151,49 @@ describe('scène du schéma en barres', () => {
 		const { spec } = scene('Or : ? (4) ; 70 (2)', 'Argent : ? (4)', 'Bronze : ?', 'total : 320 €');
 		expect(schemaBarresLabel(spec)).toBe('Schéma en barres : Or, Argent, Bronze');
 		expect(schemaBarresLabel(scene(': ? ; 7').spec)).toBe('Schéma en barres');
+	});
+});
+
+describe('schéma dans une colonne étroite (téléphone, case choix)', () => {
+	const LIGNES = ['Tom : ? (3)', 'Léa : ? (3) ; 20 (1)', 'total : 220'];
+	/** Corps du texte à l'écran (px) : le dessin est réduit à la colonne, jamais agrandi */
+	function fontPx(spec: Parameters<typeof buildSchemaBarresScene>[0], columnPx: number) {
+		const s = buildSchemaBarresScene(spec, {
+			drawWidth: schemaBarresDrawWidth(spec, columnPx)
+		});
+		const shownPx = Math.min(s.width * SCHEMA_BARRES_PX_PER_UNIT, columnPx);
+		return (SCHEMA_BARRES_FONT_SIZE * shownPx) / s.width;
+	}
+
+	it('la largeur de dessin demandée fixe la plus longue barre, le reste ne bouge pas', () => {
+		const { spec, scene: large } = scene(...LIGNES);
+		const court = buildSchemaBarresScene(spec, { drawWidth: 200 });
+		const tom = court.rects[0];
+		const lea = court.rects.slice(1, 3);
+		expect(lea[0].width + lea[1].width).toBeCloseTo(200);
+		expect(tom.width).toBeCloseTo(lea[0].width); // échelle commune gardée
+		expect(court.width).toBeCloseTo(large.width - (SCHEMA_BARRES_DRAW_WIDTH - 200));
+		expect(court.height).toBeCloseTo(large.height);
+	});
+
+	it('colonne large, ou largeur inconnue (rendu serveur) : barres de pleine longueur', () => {
+		const { spec } = scene(...LIGNES);
+		expect(schemaBarresDrawWidth(spec, 1100)).toBe(SCHEMA_BARRES_DRAW_WIDTH);
+		expect(schemaBarresDrawWidth(spec, 0)).toBe(SCHEMA_BARRES_DRAW_WIDTH);
+	});
+
+	it('téléphone (258 px) : barres raccourcies, texte d’au moins 12 px', () => {
+		const { spec } = scene(...LIGNES);
+		expect(schemaBarresDrawWidth(spec, 258)).toBeLessThan(SCHEMA_BARRES_DRAW_WIDTH);
+		expect(fontPx(spec, 258)).toBeGreaterThanOrEqual(SCHEMA_BARRES_MIN_FONT_PX - 0.01);
+	});
+
+	it('colonne très étroite : jamais sous la longueur minimale, chaque étiquette tient dans sa part', () => {
+		const { spec } = scene('A : 1 234 (1) ; ? (3)', 'B : ? (4)');
+		const drawWidth = schemaBarresDrawWidth(spec, 120);
+		expect(drawWidth).toBeGreaterThanOrEqual(SCHEMA_BARRES_MIN_DRAW_WIDTH);
+		const s = buildSchemaBarresScene(spec, { drawWidth });
+		const part = s.rects[0];
+		expect(part.width).toBeGreaterThanOrEqual('1 234'.length * 9);
 	});
 });
