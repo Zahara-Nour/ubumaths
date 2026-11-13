@@ -1,4 +1,5 @@
 {
+	"id": "e50f68d0-ae5f-4a5d-b4c7-28a4a9da2e30",
 	"title": "Fonction vectorielle de Leibniz",
 	"description": "aMA + bMB = (a + b)MG (case), MA − MB constant quand la somme des coefficients est nulle (case choix), rayon de la sphère ‖MA + 2MB‖ = k (case), ‖MA + MB‖ = ‖MA − MB‖ : sphère de diamètre [AB] (case choix)",
 	"grades": ["T_SPE"],
