@@ -6,9 +6,11 @@ validés ») ; David : « go pour P6 ». Phase 0 : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, phase 0 écrite._
+_Mis à jour le 2026-11-13, phase 0 validée par David (« je valide »)._
 
-- **État** : phase 0 écrite (constats, comportements N/L/E, questions Q1-Q5) · **Prochaine action** : validation de David, puis tests d'abord · **En attente de David** : Q1-Q5 et les comportements · **Pièges en cours** : 0 copie de contrôle en prod (1 contrôle publié) : tout se prouve sur fixtures et en mode test · **Worktree / branche** : `../ubumaths-wt-bilan-controle` · `feat/bilan-controle`
+- **État** : phase 0 **validée** (N1-N4, L1-L5, E1 ; Q1 = meilleure copie, Q2 = une colonne « partiel », Q3 = compté dans chaque notion, Q4 = pas de clic, Q5 = une PR sans migration, personne ne lit rien de plus) ; rien de codé · **Prochaine action** : tests d'abord (rouges) — calcul pur `computeEvaluationBreakdown` (nouveau fichier `src/lib/server/evaluation-breakdown.ts`), lecture mockée, composant, intégration — puis implémentation · **En attente de David** : rien · **Pièges en cours** : 0 copie de contrôle en prod : tout se prouve sur fixtures et en mode test · **Worktree / branche** : `../ubumaths-wt-bilan-controle` · `feat/bilan-controle`
+
+**Points d'entrée relevés** : loader `src/routes/(protected)/dashboard/teacher/assessments/[id]/results/+page.server.ts` (appelle `getEvaluationResults(locals.supabase, evaluation, isTestMode)` puis `computeEvaluationStatistics`) ; `getEvaluationResults` (`src/lib/server/evaluations.ts` ~l. 646) lit `test_sessions` par `evaluation_id` + `user_id`, profils filtrés par `is_test` → réutiliser ses élèves (mode test déjà appliqué) ; meilleure copie = même règle que `bestGrade` (note max). Le bilan ne doit pas faire échouer la page (E1 : erreur propre à la section, pas un `throw` du loader).
 
 ## Constats vérifiés (2026-11-13)
 
@@ -57,7 +59,7 @@ _Mis à jour le 2026-11-13, phase 0 écrite._
 - **E1** Lecture en échec → message d'erreur dans la section, jamais un bilan vide ou faux (la page
   garde ses cartes et son tableau).
 
-## Questions à trancher
+## Questions tranchées (David, 2026-11-13 : « je valide » — toutes les recos)
 
 - **Q1 — Quelle copie compte ?** (a) **la meilleure de chaque élève** (même règle que la note et la
   moyenne affichées) · (b) la première (ce que l'élève savait sans s'entraîner) · (c) toutes.
