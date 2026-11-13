@@ -84,6 +84,9 @@ const logger = createServerLogger('server/evaluation-breakdown');
 /** Plafond de lignes par requête PostgREST (`max_rows`) */
 const PAGE_SIZE = 1000;
 
+/** Identifiants par requête (`.in(...)`) : l'adresse reste courte */
+const ID_BATCH_SIZE = 100;
+
 /** Profondeur maximale de l'arbre (branche › notion › sous-notion), avec marge */
 const MAX_NODE_DEPTH = 6;
 
@@ -268,25 +271,30 @@ function rowsOf<T>(what: string, result: { data: T[] | null; error: unknown }): 
 	return result.data ?? [];
 }
 
-/** Réponses des copies, par pages (plafond `max_rows` de PostgREST) */
-async function readAnswers(
-	supabase: TypedSupabaseClient,
-	sessionIds: string[]
-): Promise<AnswerRow[]> {
-	const rows: AnswerRow[] = [];
-	for (let from = 0; ; from += PAGE_SIZE) {
-		const page = rowsOf(
-			'Réponses',
-			await supabase
-				.from('test_answers')
-				.select('test_session_id, template_id, status, points')
-				.in('test_session_id', sessionIds)
-				.order('id')
-				.range(from, from + PAGE_SIZE - 1)
-		);
-		rows.push(...page);
-		if (page.length < PAGE_SIZE) return rows;
+/**
+ * Lignes filtrées par une liste d'identifiants : par lots (l'adresse de la
+ * requête porte chaque identifiant), chaque lot par pages (plafond `max_rows`
+ * de PostgREST). La requête doit trier sur une colonne unique.
+ */
+async function readInBatches<T>(
+	what: string,
+	ids: readonly string[],
+	query: (
+		batch: string[],
+		from: number,
+		to: number
+	) => PromiseLike<{ data: T[] | null; error: unknown }>
+): Promise<T[]> {
+	const rows: T[] = [];
+	for (let start = 0; start < ids.length; start += ID_BATCH_SIZE) {
+		const batch = ids.slice(start, start + ID_BATCH_SIZE);
+		for (let from = 0; ; from += PAGE_SIZE) {
+			const page = rowsOf(what, await query(batch, from, from + PAGE_SIZE - 1));
+			rows.push(...page);
+			if (page.length < PAGE_SIZE) break;
+		}
 	}
+	return rows;
 }
 
 /** Nœuds des points et leurs ancêtres, niveau par niveau */
@@ -322,25 +330,27 @@ export async function getEvaluationBreakdown(
 ): Promise<EvaluationBreakdown> {
 	const items = evaluation.series.items;
 	try {
-		const sessions =
-			studentIds.length === 0
-				? []
-				: rowsOf(
-						'Copies',
-						await supabase
-							.from('test_sessions')
-							.select('id, user_id, grade, completed_at')
-							.eq('evaluation_id', evaluation.id)
-							.in('user_id', studentIds)
-							.not('completed_at', 'is', null)
-					);
-		const answers =
-			sessions.length === 0
-				? []
-				: await readAnswers(
-						supabase,
-						sessions.map((s) => s.id)
-					);
+		const sessions = await readInBatches('Copies', studentIds, (batch, from, to) =>
+			supabase
+				.from('test_sessions')
+				.select('id, user_id, grade, completed_at')
+				.eq('evaluation_id', evaluation.id)
+				.in('user_id', batch)
+				.not('completed_at', 'is', null)
+				.order('id')
+				.range(from, to)
+		);
+		const answers = await readInBatches(
+			'Réponses',
+			sessions.map((s) => s.id),
+			(batch, from, to) =>
+				supabase
+					.from('test_answers')
+					.select('test_session_id, template_id, status, points')
+					.in('test_session_id', batch)
+					.order('id')
+					.range(from, to)
+		);
 
 		const templateIds = [
 			...new Set([

@@ -92,7 +92,7 @@ describe('computeEvaluationBreakdown — par question (N1)', () => {
 		expect(result.questions[1]).toMatchObject({ successRate: 100, correct: 1 });
 	});
 
-	it('Q2 : forme non optimale et mauvaise forme comptent ensemble en « partiel »', () => {
+	it('Q2 : forme non optimale et mauvaise forme en « partiel » ; le taux suit les points enregistrés (½ et 0)', () => {
 		const result = computeEvaluationBreakdown(
 			input({
 				items: [{ templateId: T1 }],
@@ -100,11 +100,17 @@ describe('computeEvaluationBreakdown — par question (N1)', () => {
 					session('s-ada', ADA, 10, '2026-11-10T10:00:00Z'),
 					session('s-bob', BOB, 10, '2026-11-10T10:00:00Z')
 				],
-				answers: [answer('s-ada', T1, 'unoptimal_form', 0.5), answer('s-bob', T1, 'bad_form', 0.5)]
+				answers: [answer('s-ada', T1, 'unoptimal_form', 0.5), answer('s-bob', T1, 'bad_form', 0)]
 			})
 		);
 		if (result.status !== 'ok') throw new Error('bilan attendu');
-		expect(result.questions[0]).toMatchObject({ partial: 2, answers: 2, successRate: 50 });
+		// Le correcteur donne 0 à `bad_form` (`pointsOfStatus`) : le taux suit la note
+		expect(result.questions[0]).toMatchObject({
+			partial: 2,
+			answers: 2,
+			pointsEarned: 0.5,
+			successRate: 25
+		});
 	});
 
 	it('faux et sans réponse sont distingués ; un statut inconnu compte « sans réponse »', () => {
@@ -423,6 +429,31 @@ describe('getEvaluationBreakdown', () => {
 		if (result.status !== 'ok') throw new Error('bilan attendu');
 		expect(result.questions[0].answers).toBe(1500);
 		expect(fake.on('test_answers')).toHaveLength(2);
+	});
+
+	it('élèves et copies lus par lots de 100 identifiants : l’adresse de la requête reste courte', async () => {
+		const students = Array.from({ length: 250 }, (_, i) => `eleve-${i}`);
+		const fake = fakeFrom({
+			...readable(),
+			test_sessions: (calls) => {
+				const batch = calls.find((c) => c.method === 'in')?.args[1] as string[];
+				return { data: batch.map((id) => session(`s-${id}`, id, 10, '2026-11-10T10:00:00Z')) };
+			},
+			test_answers: (calls) => {
+				const batch = calls.find((c) => c.method === 'in')?.args[1] as string[];
+				return { data: batch.map((id) => answer(id, T1, 'correct', 1)) };
+			}
+		});
+		const result = await getEvaluationBreakdown(fake.client, EVALUATION_INPUT, students);
+		if (result.status !== 'ok') throw new Error('bilan attendu');
+		expect(result.copies).toBe(250);
+		expect(result.questions[0].answers).toBe(250);
+		const sizes = (table: string) =>
+			fake
+				.on(table)
+				.map((q) => (q.calls.find((c) => c.method === 'in')?.args[1] as string[]).length);
+		expect(sizes('test_sessions')).toEqual([100, 100, 50]);
+		expect(sizes('test_answers')).toEqual([100, 100, 50]);
 	});
 
 	it.each([
