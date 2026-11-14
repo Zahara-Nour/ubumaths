@@ -8,12 +8,11 @@
 
 _Mis à jour le 2026-11-14, ouverture du chantier._
 
-- **État** : phase 0 écrite, pas encore validée · **Prochaine action** : David tranche les questions de
-  la phase 0, puis lot 1 (tests rouges d'abord) · **En attente de David** : questions 1 à 6 de la phase 0
+- **État** : phase 0 validée · **Prochaine action** : lot 1 (tests rouges d'abord) · **En attente de David** : rien
   · **Pièges en cours** : `[…]` sert déjà aux liens markdown, à `[…]{.type}` et aux intervalles écrits en
   texte (`]2 ; 3[`) · **Worktree / branche** : `../ubumaths-wt-trous-etiquettes`, `feat/trous-etiquettes`
 
-## Phase 0 (à valider)
+## Phase 0 (validée le 2026-11-14)
 
 Le prof écrit :
 
@@ -68,6 +67,8 @@ différentes ; moins de 3 étiquettes différentes (réserve devinable) ; `[_]` 
 5. **Bornes** : 1 à 10 trous, 3 à 12 étiquettes différentes **(reco)** ; ou d'autres nombres.
 6. **Nom du bloc et du chantier** : `trous` **(reco)** ; ou `texte-a-trous`, `completer`.
 
+**Tranché (David, 2026-11-14, « je valide » sur les recommandations)** : 1. bloc ` ```trous ` ; 2. trou `[étiquette]`, formule `[$r$]` ; 3. étiquette réutilisable ; 4. `intrus: a ; b` en dernière ligne ; 5. 1 à 10 trous, 3 à 12 étiquettes différentes ; 6. nom `trous`.
+
 ## Journal
 
-- 2026-11-14 : worktree ouvert (`feat/trous-etiquettes`), phase 0 écrite.
+- 2026-11-14 : worktree ouvert (`feat/trous-etiquettes`), phase 0 écrite puis validée.
