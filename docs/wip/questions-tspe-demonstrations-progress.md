@@ -17,13 +17,13 @@ _Mis à jour le 2026-11-14, après les verdicts du lot 13 (§ 55)._
   « ok » (§ 55) ; 8 points restants après lui (lots 14 : 473, 496, 497 ; 15 : 517, 529, 537, 538, 539).
 - **Prochaine action** : vérifier en base (MCP) la publication du lot 13 (6 `published`) ; puis lot 14 (Q1 du § 35), même démarche que le lot 13 (§ 52 à 54).
 - **En attente de David** : `publier-lot.ts --dir scripts/questions/tspe-approfondissements-13` (simulation puis
-  `--publier`).
+  `--publier`), après le merge de la PR des `id` (§ 56).
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
-  `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge ;
-  `page-a-cocher.ts` exige les `id` (pas `publier-lot.ts`, qui apparie par titre) : copie hors dépôt (§ 54) ; `1x` non nettoyé dans
+  **les `id` écrits par `create-questions` se commitent dans la PR de rangement** (`page-a-cocher.ts` et
+  `publier-lot.ts` les exigent ; les retirer a bloqué la publication du lot 13, § 56) ; `1x` non nettoyé dans
   `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable `e` ni `i`** (§ 52).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` ; prochaine branche à créer depuis `origin/main`.
 
@@ -1030,3 +1030,10 @@ https://claude.ai/artifact/HSuXTzpPLFA8shqMMnGitH (capacité `db`) ; base `verdi
 
 Verdicts lus : 6/6 « ok », sans commentaire (ids = ceux du § 53). `publier-lot.ts` (simulation puis `--publier`) à
 lancer par David.
+
+## 56. Lot 13 : `id` des fichiers (2026-11-14)
+
+Erreur de ma part : au § 53, j'ai remis les JSON du lot 13 à l'état commité dans le dépôt principal, ce qui a retiré
+les `id` écrits par `create-questions`, et la PR de rangement (#2645) ne les a pas commités (celle du lot 12 l'avait
+fait). `publier-lot.ts` a donc refusé le lot (« sans id », rien publié). Correctif : PR qui ajoute la ligne `id` des six
+fichiers (ids du § 53). Le piège du § 54 (« `publier-lot.ts` apparie par titre ») était faux : il apparie par `id`.

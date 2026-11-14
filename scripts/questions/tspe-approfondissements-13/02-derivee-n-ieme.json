@@ -1,4 +1,5 @@
 {
+	"id": "9a8bf09c-4d16-4612-b89d-5a0bd8af16b7",
 	"title": "Dérivée n-ième d'une fonction",
 	"description": "Définition de f^(n) donnée : dérivée n-ième de e^{ax} (case), de (x + b)e^x par conjecture (case), de 1/x (deux cases), de sin par périodicité des dérivées (case choix)",
 	"grades": ["T_SPE"],
