@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-11 : retours de David sur A1 (`57129cb5`)._
 - Règle des cartes (PR #2528) : une carte de cours, non évaluable, n'est retirée que des formes qui
   corrigent ; une question de cours évaluable passe partout.
 - Geste « associer deux colonnes » : à créer, chantier à part (`docs/wip/outils-manquants.md` n° 27) ;
-  la n° 11 est un QCM en attendant.
+  la n° 11 est un QCM en attendant. → convertie en « associer » le 2026-11-14 (chantier `associer`).
 
 ## Écarts à la liste (à valider)
 
