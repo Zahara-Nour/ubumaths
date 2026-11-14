@@ -1,14 +1,14 @@
 # Chantier `bilan-controle` — bilan d'un contrôle par question et par notion (P6)
 
 Ouvert le 2026-11-13. Besoin P6 validé par David le 2026-11-11
-([`formes-de-serie-progress.md`](../archive/wip/formes-de-serie-progress.md) § « Besoins de suivi
-validés ») ; David : « go pour P6 ». Phase 0 : **rien de codé**.
+([`formes-de-serie-progress.md`](formes-de-serie-progress.md) § « Besoins de suivi
+validés ») ; David : « go pour P6 ». Clos le 2026-11-14 (#2621).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR #2621 ouverte, revues traitées._
+_Mis à jour le 2026-11-14, après #2621 — chantier **clos**, journal archivé._
 
-- **État** : codé, testé, doc à jour ; revues faites (sécurité : rien de bloquant ; code : prémisse de Q2 fausse → Q2 retranchée, lecture par lots) · **Prochaine action** : CI verte → merge #2621, puis archiver le journal (fin de chantier) · **En attente de David** : rien · **Pièges en cours** : 0 copie de contrôle en prod (tout se prouve sur fixtures) · **Worktree / branche** : `../ubumaths-wt-bilan-controle` · `feat/bilan-controle`
+- **État** : livré par #2621 (mergée le 2026-11-14), pas encore en prod (attend un `deploy:prod`) ; doc durable dans `docs/systeme/evaluations.md` § Résultats · **Prochaine action** : aucune · **En attente de David** : vérification à l'écran notée dans `docs/wip/verifications-manuelles.md` · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
 
 ## Constats vérifiés (2026-11-13)
 
