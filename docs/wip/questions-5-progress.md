@@ -5,21 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 10 tranché, lot 11 porté par `blockly`._
+_Mis à jour le 2026-11-14, lot 10 écrit, #2668 ouverte (CI en cours)._
 
-- **État** : lots 1 à 9 publiés. Lot 10 : phase 0 (§ 24) et ses 2 questions tranchées le 2026-11-14
-  (§ 24 bis), **à écrire**. Lot 11 « Programmer en blocs » (§ 25) : validé, **porté par le chantier `blockly`**
-  (ne pas l'écrire ici).
-- **Prochaine action** : écrire le lot 10 (§ 24 et 24 bis ; worktree `questions-5`, script
-  `lot-5-proportionnalite.py`).
+- **État** : lots 1 à 9 publiés. Lot 10 écrit (§ 24 ter) : 10 modèles, specs et sonde courbes vertes,
+  simulation prod 10 « à créer ». Lot 11 « Programmer en blocs » (§ 25) : **porté par `blockly`**.
+- **Prochaine action** : suivre la CI de #2668 et la merger si verte, puis David lance `create-questions --publier` sur
+  `scripts/questions/5-proportionnalite-fonctions` ; ensuite relevé, migration nœud + tag (`lot-10-rangement.py`).
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
   128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
-- **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance (dry-run
-  d'abord, `--include-all` si une plus ancienne arrive après coup) ; `pnpm check:migrations --pr <n>` avant merge ;
-  horodatage = `pnpm migration:horodatage` ; `Doc-inchangée:` dans un COMMIT ; `gh pr checks --watch` rend la main
-  avant l'intégration : suivre les runs ; jamais `e`.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer
+  avant de commiter ; `db:migrate` en prod refusé par le classifieur du mode auto → David le lance (dry-run
+  d'abord) ; `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; jamais `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-5` · `feat/questions-5-lot-10`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -729,6 +727,23 @@ proportionnalité 1 (6e ×2) ; caractérisation 1-3 ; généralités sur les fon
 - 04 **sans contexte** (alignés avec l'origine / sans l'origine / pas alignés) ; 05 **en contexte**, raison dans le
   choix (« oui » / « non, pas alignés » / « non, alignés mais pas avec l'origine »).
 - Le lot 10 est donc validé dans son ensemble (§ 24 + ces deux points).
+
+## 24 ter. Lot 10 écrit (2026-11-14)
+
+- Relevé prod refait : toujours 0 modèle sur les 10 points. Bornes relues (5-089, 5-090 : situation concrète ;
+  5-141, 5-099 : alignés avec l'origine / droite par l'origine ; 5-094 à 5-143 : pas de notation fonctionnelle).
+- Script `docs/wip/questions/lot-5-proportionnalite-fonctions.py` → `scripts/questions/5-proportionnalite-fonctions/`
+  (10 modèles, 52 specs, sans `theme` / `domain` / `subdomain`). `question:specs` tout vert, `sonde-courbes`
+  0 problème sur 300 tirages, simulation prod 10 « à créer ».
+- Formes : 01 `placer: toutes`, axe de 5 en 5 ou `axe: à choisir` ; 02 `placer: A=… ; B=… ; C=…` (3 contextes) ;
+  03 trois cases de quotient dans le tableau + case choix ; 04, 05, 08 case choix (`melanger: non`) ; 06 quatre
+  lignes `nom=d_1…d_4`, variation 2 avec une parabole par l'origine (piège « pas une droite ») ; 07 trois
+  lectures (directe, directe, inverse) ; 09 `données:` et nuage `points:` ; 10 `données:` croissante et cloche.
+- Pièges vus : `{{if:}}` imbriqué non résolu dans un bloc courbe (sonde) → coefficients calculés ; case `$?$`
+  oubliée (09) ; droites trop près de l'origine (|b| ≥ 2) ; frais fixes trop petits pour l'axe de 5 en 5 (05 :
+  8 à 12 €).
+- Base locale : 10 brouillons ; aperçu admin : 02, 05, 06, 10 rendus justes (repère, nuage, droites nommées,
+  cloche à deux cases). Id locaux retirés des fichiers avant commit.
 
 ## 25. Lot 11 « Programmer en blocs » : validé (David, 2026-11-14, « je te suis »)
 

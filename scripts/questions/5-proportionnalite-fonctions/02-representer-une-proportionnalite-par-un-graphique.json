@@ -1,0 +1,242 @@
+{
+	"title": "Représenter une proportionnalité par un graphique",
+	"description": "Tableau d'une situation de proportionnalité : placer ses trois points dans un repère",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les pommes coûtent ${{a}}~\\unit{€}$ le kilogramme. Le prix payé est proportionnel à la masse achetée.\n\n| Masse (kg) | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ |\n|---|---|---|---|\n| Prix (€) | ${{y1}}$ | ${{y2}}$ | ${{y3}}$ |\n\nPlace les points A, B et C qui représentent ce tableau : la masse en abscisse, le prix en ordonnée.\n\n```courbe\nx: -1 ; 6\ny: -1 ; {{eval:5*a+1}}\ngrille: 1 ; 1\naxes: x = Masse (kg) ; y = Prix (€)\nplacer: A=({{x1}} ; {{y1}}) ; B=({{x2}} ; {{y2}}) ; C=({{x3}} ; {{y3}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : masse en abscisse, prix en ordonnée.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "x1",
+					"expression": "1..5"
+				},
+				{
+					"name": "x2",
+					"expression": "1..5"
+				},
+				{
+					"name": "x3",
+					"expression": "1..5"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:a*x1"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:a*x2"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:a*x3"
+				}
+			],
+			"conditions": ["x1 < x2", "x2 < x3"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : (masse ; prix).",
+					"A$\\textcolor{{{color:primary.0}}}{({{x1}} ; {{y1}})}$, B$\\textcolor{{{color:primary.0}}}{({{x2}} ; {{y2}})}$, C$\\textcolor{{{color:primary.0}}}{({{x3}} ; {{y3}})}$.",
+					"Les trois points sont alignés avec l'origine du repère : c'est le cas de toute situation de proportionnalité."
+				]
+			}
+		},
+		{
+			"statement": "Léa roule à vélo à la vitesse constante de ${{v}}~\\unit{km/h}$. La distance parcourue est proportionnelle à la durée.\n\n| Durée (h) | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ |\n|---|---|---|---|\n| Distance (km) | ${{y1}}$ | ${{y2}}$ | ${{y3}}$ |\n\nPlace les points A, B et C qui représentent ce tableau : la durée en abscisse, la distance en ordonnée.\n\n```courbe\nx: -1 ; 5\ny: -5 ; {{eval:4*v+10}}\ngrille: 1 ; 5\naxes: x = Durée (h) ; y = Distance (km)\nplacer: A=({{x1}} ; {{y1}}) ; B=({{x2}} ; {{y2}}) ; C=({{x3}} ; {{y3}})\ntaille: moyenne\ndescription: Repère : durée en abscisse, de 1 en 1 ; distance en ordonnée, de 5 en 5.\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "2..4"
+				},
+				{
+					"name": "v",
+					"expression": "eval:5*w"
+				},
+				{
+					"name": "x1",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "1..4"
+				},
+				{
+					"name": "x3",
+					"expression": "1..4"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:v*x1"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:v*x2"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:v*x3"
+				}
+			],
+			"conditions": ["x1 < x2", "x2 < x3"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : (durée ; distance).",
+					"A$\\textcolor{{{color:primary.0}}}{({{x1}} ; {{y1}})}$, B$\\textcolor{{{color:primary.0}}}{({{x2}} ; {{y2}})}$, C$\\textcolor{{{color:primary.0}}}{({{x3}} ; {{y3}})}$.",
+					"Les trois points sont alignés avec l'origine du repère : c'est le cas de toute situation de proportionnalité."
+				]
+			}
+		},
+		{
+			"statement": "Pour une pâte à crêpes, il faut ${{f}}~\\unit{g}$ de farine par personne. La masse de farine est proportionnelle au nombre de personnes.\n\n| Nombre de personnes | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ |\n|---|---|---|---|\n| Farine (g) | ${{y1}}$ | ${{y2}}$ | ${{y3}}$ |\n\nPlace les points A, B et C qui représentent ce tableau : le nombre de personnes en abscisse, la masse de farine en ordonnée.\n\n```courbe\nx: -1 ; 9\ny: {{eval:-f}} ; {{eval:9*f}}\ngrille: 1 ; {{f}}\naxes: x = Personnes ; y = Farine (g)\nplacer: A=({{x1}} ; {{y1}}) ; B=({{x2}} ; {{y2}}) ; C=({{x3}} ; {{y3}})\ntaille: moyenne\ndescription: Repère : nombre de personnes en abscisse, de 1 en 1 ; farine en ordonnée, de {{f}} en {{f}} g.\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "f",
+					"expression": "eval:50*q"
+				},
+				{
+					"name": "n1",
+					"expression": "1..4"
+				},
+				{
+					"name": "n2",
+					"expression": "1..4"
+				},
+				{
+					"name": "n3",
+					"expression": "1..4"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:2*n1"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:2*n2"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:2*n3"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:f*x1"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:f*x2"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:f*x3"
+				}
+			],
+			"conditions": ["n1 < n2", "n2 < n3"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : (personnes ; farine).",
+					"A$\\textcolor{{{color:primary.0}}}{({{x1}} ; {{y1}})}$, B$\\textcolor{{{color:primary.0}}}{({{x2}} ; {{y2}})}$, C$\\textcolor{{{color:primary.0}}}{({{x3}} ; {{y3}})}$.",
+					"Les trois points sont alignés avec l'origine du repère : c'est le cas de toute situation de proportionnalité."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Pommes à 3 € : (1 ; 3), (2 ; 6), (4 ; 12)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"x1": "1",
+				"x2": "2",
+				"x3": "4"
+			},
+			"answers": ["1;3", "2;6", "4;12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : abscisse et ordonnée échangées pour B",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"x1": "1",
+				"x2": "2",
+				"x3": "4"
+			},
+			"answers": ["1;3", "6;2", "4;12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Vélo à 15 km/h : (1 ; 15), (2 ; 30), (3 ; 45)",
+			"variationIndex": 1,
+			"variables": {
+				"w": "3",
+				"x1": "1",
+				"x2": "2",
+				"x3": "3"
+			},
+			"answers": ["1;15", "2;30", "3;45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : C placé une graduation trop bas",
+			"variationIndex": 1,
+			"variables": {
+				"w": "3",
+				"x1": "1",
+				"x2": "2",
+				"x3": "3"
+			},
+			"answers": ["1;15", "2;30", "3;40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Crêpes, 50 g : (2 ; 100), (4 ; 200), (8 ; 400)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1",
+				"n1": "1",
+				"n2": "2",
+				"n3": "4"
+			},
+			"answers": ["2;100", "4;200", "8;400"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nombre de personnes lu 1, 2, 4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1",
+				"n1": "1",
+				"n2": "2",
+				"n3": "4"
+			},
+			"answers": ["1;100", "2;200", "4;400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

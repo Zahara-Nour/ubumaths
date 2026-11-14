@@ -1,0 +1,252 @@
+{
+	"title": "Interpréter un tableau de valeurs",
+	"description": "Dire si une grandeur augmente, diminue, ou ni l'un ni l'autre quand l'autre augmente",
+	"grades": ["5"],
+	"level": 7,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le tableau donne la température d'une ville à différentes heures.\n\n| Heure (h) | $8$ | $9$ | $10$ | $11$ | $12$ |\n|---|---|---|---|---|---|\n| Température (°C) | ${{y1}}$ | ${{y2}}$ | ${{y3}}$ | ${{y4}}$ | ${{y5}}$ |\n\nQuand l'heure augmente, comment varie la température ?\n\n```choix\nmelanger: non\n- Elle augmente\n- Elle diminue\n- Ni l'un ni l'autre : elle augmente et diminue\n```",
+			"variables": [
+				{
+					"name": "w1",
+					"expression": "3..10"
+				},
+				{
+					"name": "d1",
+					"expression": "1..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "d3",
+					"expression": "1..3"
+				},
+				{
+					"name": "d4",
+					"expression": "1..3"
+				},
+				{
+					"name": "w2",
+					"expression": "eval:w1+d1"
+				},
+				{
+					"name": "w3",
+					"expression": "eval:w2+d2"
+				},
+				{
+					"name": "w4",
+					"expression": "eval:w3+d3"
+				},
+				{
+					"name": "w5",
+					"expression": "eval:w4+d4"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:(1-min(abs(t-1),1))*w1+(1-min(abs(t-2),1))*w5+(1-min(abs(t-3),1))*w2"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:(1-min(abs(t-1),1))*w2+(1-min(abs(t-2),1))*w4+(1-min(abs(t-3),1))*w4"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:(1-min(abs(t-1),1))*w3+(1-min(abs(t-2),1))*w3+(1-min(abs(t-3),1))*w1"
+				},
+				{
+					"name": "y4",
+					"expression": "eval:(1-min(abs(t-1),1))*w4+(1-min(abs(t-2),1))*w2+(1-min(abs(t-3),1))*w5"
+				},
+				{
+					"name": "y5",
+					"expression": "eval:(1-min(abs(t-1),1))*w5+(1-min(abs(t-2),1))*w1+(1-min(abs(t-3),1))*w3"
+				},
+				{
+					"name": "r",
+					"expression": "eval:t-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit la deuxième ligne de gauche à droite : ${{y1}}$, ${{y2}}$, ${{y3}}$, ${{y4}}$, ${{y5}}$.",
+					"{{if:t==1|Chaque valeur est plus grande que la précédente : elle **augmente**.|{{if:t==2|Chaque valeur est plus petite que la précédente : elle diminue.|Elle augmente parfois et diminue parfois : ni l'un ni l'autre.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Le tableau donne le nombre d'adhérents d'un club de sport chaque année.\n\n| Année | $2021$ | $2022$ | $2023$ | $2024$ | $2025$ |\n|---|---|---|---|---|---|\n| Adhérents | ${{y1}}$ | ${{y2}}$ | ${{y3}}$ | ${{y4}}$ | ${{y5}}$ |\n\nQuand l'année augmente, comment varie le nombre d'adhérents ?\n\n```choix\nmelanger: non\n- Elle augmente\n- Elle diminue\n- Ni l'un ni l'autre : elle augmente et diminue\n```",
+			"variables": [
+				{
+					"name": "w1",
+					"expression": "40..60"
+				},
+				{
+					"name": "d1",
+					"expression": "2..8"
+				},
+				{
+					"name": "d2",
+					"expression": "2..8"
+				},
+				{
+					"name": "d3",
+					"expression": "2..8"
+				},
+				{
+					"name": "d4",
+					"expression": "2..8"
+				},
+				{
+					"name": "w2",
+					"expression": "eval:w1+d1"
+				},
+				{
+					"name": "w3",
+					"expression": "eval:w2+d2"
+				},
+				{
+					"name": "w4",
+					"expression": "eval:w3+d3"
+				},
+				{
+					"name": "w5",
+					"expression": "eval:w4+d4"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:(1-min(abs(t-1),1))*w1+(1-min(abs(t-2),1))*w5+(1-min(abs(t-3),1))*w2"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:(1-min(abs(t-1),1))*w2+(1-min(abs(t-2),1))*w4+(1-min(abs(t-3),1))*w4"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:(1-min(abs(t-1),1))*w3+(1-min(abs(t-2),1))*w3+(1-min(abs(t-3),1))*w1"
+				},
+				{
+					"name": "y4",
+					"expression": "eval:(1-min(abs(t-1),1))*w4+(1-min(abs(t-2),1))*w2+(1-min(abs(t-3),1))*w5"
+				},
+				{
+					"name": "y5",
+					"expression": "eval:(1-min(abs(t-1),1))*w5+(1-min(abs(t-2),1))*w1+(1-min(abs(t-3),1))*w3"
+				},
+				{
+					"name": "r",
+					"expression": "eval:t-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit la deuxième ligne de gauche à droite : ${{y1}}$, ${{y2}}$, ${{y3}}$, ${{y4}}$, ${{y5}}$.",
+					"{{if:t==1|Chaque valeur est plus grande que la précédente : elle **augmente**.|{{if:t==2|Chaque valeur est plus petite que la précédente : elle diminue.|Elle augmente parfois et diminue parfois : ni l'un ni l'autre.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5, 7, 8, 11, 13 : augmente",
+			"variationIndex": 0,
+			"variables": {
+				"w1": "5",
+				"d1": "2",
+				"d2": "1",
+				"d3": "3",
+				"d4": "2",
+				"t": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "13, 11, 8, 7, 5 : diminue",
+			"variationIndex": 0,
+			"variables": {
+				"w1": "5",
+				"d1": "2",
+				"d2": "1",
+				"d3": "3",
+				"d4": "2",
+				"t": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : lit le tableau de droite à gauche",
+			"variationIndex": 0,
+			"variables": {
+				"w1": "5",
+				"d1": "2",
+				"d2": "1",
+				"d3": "3",
+				"d4": "2",
+				"t": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7, 11, 5, 13, 8 : ni l'un ni l'autre",
+			"variationIndex": 1,
+			"variables": {
+				"w1": "45",
+				"d1": "2",
+				"d2": "1",
+				"d3": "3",
+				"d4": "2",
+				"t": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compare seulement la première et la dernière",
+			"variationIndex": 1,
+			"variables": {
+				"w1": "45",
+				"d1": "2",
+				"d2": "1",
+				"d3": "3",
+				"d4": "2",
+				"t": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

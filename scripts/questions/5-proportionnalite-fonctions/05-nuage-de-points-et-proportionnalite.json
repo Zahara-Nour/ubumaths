@@ -1,0 +1,209 @@
+{
+	"title": "Nuage de points et proportionnalité",
+	"description": "Prix selon un nombre d'objets : proportionnel, alignés sans l'origine, ou pas alignés",
+	"grades": ["5"],
+	"level": 6,
+	"delay": 75,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le graphique donne le prix payé, en euros, selon le nombre de places de cinéma achetées.\n\n```courbe\nx: -1 ; 6\ny: -5 ; 60\ngrille: 1 ; 5\naxes: x = Places ; y = Prix (€)\npoints: A(1 ; {{y1}}), B(2 ; {{y2}}), C(3 ; {{y3}}), D(4 ; {{y4}}), F(5 ; {{y5}})\ntaille: moyenne\ndescription: Nuage de cinq points : nombre de places de 1 à 5 en abscisse, prix en ordonnée.\n```\n\nLe prix payé est-il proportionnel au nombre de places ?\n\n```choix\nmelanger: non\n- Oui\n- Non : les points sont alignés, mais pas avec l'origine\n- Non : les points ne sont pas alignés\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "6..9"
+				},
+				{
+					"name": "b",
+					"expression": "8..12"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "bb",
+					"expression": "eval:b*(1-min(abs(t-2),1))"
+				},
+				{
+					"name": "lift",
+					"expression": "eval:2*(1-min(abs(t-3),1))"
+				},
+				{
+					"name": "rb",
+					"expression": "eval:3*(1-min(abs(t-3),1))"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:a+bb"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:2*a+bb"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:3*a+bb"
+				},
+				{
+					"name": "y4",
+					"expression": "eval:4*a+bb-rb"
+				},
+				{
+					"name": "y5",
+					"expression": "eval:5*a+bb-2*rb"
+				},
+				{
+					"name": "r",
+					"expression": "eval:t-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une situation de proportionnalité est représentée par des points **alignés avec l'origine** du repère.",
+					"{{if:t==1|Les points sont alignés avec l'origine : **oui**, le prix est proportionnel au nombre de places.|{{if:t==2|Les points sont alignés, mais la droite qui les porte ne passe pas par l'origine (il y a un montant fixe) : **non**.|Les derniers points ne sont pas alignés avec les premiers (à partir d'un certain nombre, chaque place supplémentaire coûte moins cher) : **non**.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Le graphique donne le prix payé, en euros, selon le nombre de tickets de bus achetés.\n\n```courbe\nx: -1 ; 7\ny: -2 ; 26\ngrille: 1 ; 2\naxes: x = Tickets ; y = Prix (€)\npoints: A(1 ; {{y1}}), B(2 ; {{y2}}), C(3 ; {{y3}}), D(4 ; {{y4}}), F(5 ; {{y5}}), G(6 ; {{y6}})\ntaille: moyenne\ndescription: Nuage de six points : nombre de tickets de 1 à 6 en abscisse, prix en ordonnée.\n```\n\nLe prix payé est-il proportionnel au nombre de tickets ?\n\n```choix\nmelanger: non\n- Oui\n- Non : les points sont alignés, mais pas avec l'origine\n- Non : les points ne sont pas alignés\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "bb",
+					"expression": "eval:b*(1-min(abs(t-2),1))"
+				},
+				{
+					"name": "lift",
+					"expression": "eval:2*(1-min(abs(t-3),1))"
+				},
+				{
+					"name": "rb",
+					"expression": "eval:2*(1-min(abs(t-3),1))"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:a+bb"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:2*a+bb"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:3*a+bb"
+				},
+				{
+					"name": "y4",
+					"expression": "eval:4*a+bb"
+				},
+				{
+					"name": "y5",
+					"expression": "eval:5*a+bb-rb"
+				},
+				{
+					"name": "y6",
+					"expression": "eval:6*a+bb-2*rb"
+				},
+				{
+					"name": "r",
+					"expression": "eval:t-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une situation de proportionnalité est représentée par des points **alignés avec l'origine** du repère.",
+					"{{if:t==1|Les points sont alignés avec l'origine : **oui**, le prix est proportionnel au nombre de tickets.|{{if:t==2|Les points sont alignés, mais la droite qui les porte ne passe pas par l'origine (il y a un montant fixe) : **non**.|Les derniers points ne sont pas alignés avec les premiers (à partir d'un certain nombre, chaque ticket supplémentaire coûte moins cher) : **non**.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cinéma, 7 € la place : oui",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "10",
+				"t": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cinéma avec frais de 10 € : alignés sans l'origine",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "10",
+				"t": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : frais pris pour proportionnel",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "10",
+				"t": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bus, prix dégressif : pas alignés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"t": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dégressif pris pour « alignés sans l'origine »",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"t": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
