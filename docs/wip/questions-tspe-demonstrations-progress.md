@@ -10,21 +10,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2633 (fichiers du lot 12)._
+_Mis à jour le 2026-11-14, après #2638 (rangement du lot 12) et la page à cocher (§ 50)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 11 publiés (§ 47), lot 12 en fichiers sur `main` (#2633, § 48), 14 restants après lui.
-- **Prochaine action** : David lance
-  `create-questions --dir scripts/questions/tspe-approfondissements-12 --publier` depuis le dépôt principal ; puis
-  migration de rangement (406, 584 → asymptotes ; 435 → valeurs intermédiaires ; 436, 437 → continuité en un point).
-- **En attente de David** : `create-questions --publier` du lot 12.
+  § 35, lots 9 à 15) : lots 9 à 11 publiés (§ 47) ; lot 12 en brouillons rangés et tagués (§ 49), page à cocher
+  publiée (§ 50) ; 14 restants après lui.
+- **Prochaine action** : lire les verdicts de la page du § 50 ; 5/5 « ok » → David lance `publier-lot.ts` (simulation
+  puis `--publier`) ; puis lot 13 (Q1 du § 35), même démarche que le lot 12 (§ 48 à 50).
+- **En attente de David** : relecture de la page à cocher du lot 12.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge ;
   **`1x` non nettoyé dans une formule `f(x)=…`** : `cf()`/`cfs()` du script du lot 12 (§ 48).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, sur `feat/questions-tspe-approfondissements-12`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` ; prochaine branche à créer depuis `origin/main`.
 
 ---
 
@@ -954,3 +954,22 @@ simulation sur la prod : 5 « à créer », aucun titre pris ; brouillons en bas
 132c53c2, a64f78b6, 80cd393c, 56e89288) ; aperçu admin vu à l'écran (port 5177) : 406 (b) joué « Juste »
 (y = −3x + 4), 436 (c) joué faux (A coché à tort, correction affichée), étapes à ranger de 436 rendues, rappel en
 liste de 584 rendu.
+
+## 49. Lot 12 : brouillons et rangement (2026-11-14)
+
+`create-questions --publier` lancé par David : b4f3142b (406), 6248e597 (584), 3c6d8ed7 (435), 1c4204c4 (436),
+ec4fa70f (437), en `draft`, sans nœud ni tag (MCP). Migration
+`20261114063936_questions_tspe_approfondissements_12_rangement_tags`, copie de celle du lot 10 (SQL exécutable
+identique aux données près) : 406, 584 → Fonctions > Limites de fonctions > asymptotes ; 435 → Fonctions > Continuité >
+valeurs intermédiaires ; 436, 437 → Fonctions > Continuité > continuité en un point (436 sur la notion). Test
+d'intégration 12/12, rouge sans la migration (8 échecs) ; `security-auditor` : aucun finding.
+Mergé (#2638) : CI verte (intégration comprise), `check:migrations --pr` vert, `db:migrate` fait du dépôt principal
+(simulation : cette seule migration) ; relu en base (MCP) : 5 `draft`, chacun sur sa sous-notion avec son seul point,
+`updated_at` intact. JSON du dépôt principal remis à l'état commité.
+
+## 50. Lot 12 : page à cocher (2026-11-14)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-approfondissements-12`, lu en base prod : 5 brouillons `draft`, chacun
+sur son point, 3 ou 4 exemples chacun ; alertes « bloc ranger non dessiné » sur 435 et 436 (habituelles, étapes de 436
+vues dans l'aperçu admin, § 48). Page : https://claude.ai/artifact/TomwTwr6RtuHT74E9Ht4EP (capacité `db`) ; base
+`verdicts` vide à la publication.
