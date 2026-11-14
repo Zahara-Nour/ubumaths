@@ -8,7 +8,7 @@ couvre:
   - 'src/lib/components/{test,assessments,series}/**'
   - src/lib/components/teacher/TestModeToggle.svelte
   - src/lib/stores/test-mode.svelte.ts
-  - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
+  - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-question-errors,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
   - 'src/lib/server/validation/{evaluations,tests,parody-evaluations,grades,chapter-series}.ts'
   - 'src/lib/types/{evaluation,evaluation-attempt,evaluation-breakdown,test,grades,skills}.ts'
   - 'src/lib/utils/{test-launch,test-score,grades}.ts'
@@ -278,6 +278,22 @@ les cartes de la page résultats) :
   1 000 (`max_rows`). Une lecture en échec rend `{ status: 'error' }` : la section le dit, la page
   garde cartes et tableau.
 
+**Erreurs d'une question** (chantier `erreurs-frequentes`, besoin P4 ; `getEvaluationQuestionErrors` dans
+`evaluation-question-errors.ts`, route `…/assessments/[id]/results/question-errors?template=<uuid>`) :
+chaque ligne « par question » du bilan se déplie ; les erreurs sont lues au premier dépliage.
+
+- **Mêmes copies que le bilan** (`bestCopies`, copies avec réponses tous modèles confondus), mêmes gardes
+  que la page (rôle, auteur du contrôle, mode test), client du prof sous la RLS existante.
+- **Réponses listées** : fausses, mauvaise forme, forme non optimale (une réponse fausse sans valeur
+  enregistrée comprise) ; justes jamais listées ; sans réponse comptées à part, **selon le statut seul**,
+  comme le bilan. Question non corrigée faute de temps : détail indisponible, jamais recalculé. Chacune rendue par `CorrectionCard` avec le verdict par case recalculé par le serveur
+  (`detailsWithinBudget`, détail « indisponible » possible), énoncé tiré lu dans
+  `test_answers.question_instance`, nom de l'élève en texte.
+- **Regroupement** : même énoncé tiré (sans position ni `generatedAt` / `seed`) **et** même réponse → un
+  groupe, avec les noms. Les tirages étant aléatoires, aucun regroupement entre énoncés différents.
+- **Erreurs par case** : question à au moins deux cases jugées, hors QCM, sur les réponses au détail
+  disponible (justes au dénominateur).
+
 ## Les observations (compétences, famille B)
 
 Le prof évalue les six **compétences mathématiques** par leurs **observables** (table `observables`,
@@ -406,4 +422,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14.

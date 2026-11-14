@@ -93,7 +93,7 @@
 	{/if}
 
 	<!-- Bilan par question et par notion -->
-	<EvaluationBreakdown breakdown={data.breakdown} />
+	<EvaluationBreakdown breakdown={data.breakdown} evaluationId={data.evaluation.id} />
 
 	<!-- Results Table -->
 	<Card.Root>

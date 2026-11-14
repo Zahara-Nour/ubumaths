@@ -6,24 +6,45 @@
 	réussite = points obtenus / points possibles, sur la meilleure copie de chaque
 	élève.
 
+	Chaque ligne « par question » s'ouvre (si `evaluationId` est fourni) : les
+	erreurs de la classe sur cette question, lues au PREMIER dépliage seulement
+	(chantier `erreurs-frequentes`). Les noms des élèves sont rendus en texte.
+
 	Props:
 	- breakdown: EvaluationBreakdown - résultat de `getEvaluationBreakdown`
+	- evaluationId?: string - le contrôle ; sans lui, les lignes ne s'ouvrent pas
 -->
 
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
-	import type {
-		BreakdownTally,
-		EvaluationBreakdown,
-		NotionBreakdown
+	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
+	import { ChevronRight } from '@lucide/svelte';
+	import {
+		QUESTION_ERRORS_MESSAGE,
+		type BreakdownTally,
+		type EvaluationBreakdown,
+		type EvaluationQuestionErrors,
+		type NotionBreakdown,
+		type QuestionErrorGroup
 	} from '$lib/types/evaluation-breakdown';
+	import type { TestAnswerResult } from '$lib/types/test';
 
 	interface Props {
 		breakdown: EvaluationBreakdown;
+		evaluationId?: string;
 	}
 
-	let { breakdown }: Props = $props();
+	/** Chargement d'une ligne : en cours, lu, ou en échec */
+	type RowState =
+		| { phase: 'loading' }
+		| { phase: 'error' }
+		| { phase: 'done'; errors: Extract<EvaluationQuestionErrors, { status: 'ok' }> };
+
+	let { breakdown, evaluationId }: Props = $props();
+
+	let openRows = $state<Record<string, boolean>>({});
+	let rowStates = $state<Record<string, RowState>>({});
 
 	const ok = $derived(breakdown.status === 'ok' ? breakdown : null);
 	const hasCopies = $derived(ok !== null && ok.copies > 0);
@@ -48,6 +69,50 @@
 
 	function rate(tally: BreakdownTally): string {
 		return tally.successRate === null ? '–' : `${Math.round(tally.successRate)}\u00a0%`;
+	}
+
+	async function loadErrors(templateId: string): Promise<void> {
+		rowStates[templateId] = { phase: 'loading' };
+		try {
+			const response = await fetch(
+				`/dashboard/teacher/assessments/${evaluationId}/results/question-errors?template=${encodeURIComponent(templateId)}`
+			);
+			const body = (await response.json()) as EvaluationQuestionErrors;
+			rowStates[templateId] =
+				response.ok && body.status === 'ok' ? { phase: 'done', errors: body } : { phase: 'error' };
+		} catch {
+			rowStates[templateId] = { phase: 'error' };
+		}
+	}
+
+	function toggleRow(templateId: string): void {
+		openRows[templateId] = !openRows[templateId];
+		// Lecture au premier dépliage seulement (un échec se relit au dépliage suivant)
+		if (
+			openRows[templateId] &&
+			(!rowStates[templateId] || rowStates[templateId].phase === 'error')
+		) {
+			void loadErrors(templateId);
+		}
+	}
+
+	function answerResultOf(group: QuestionErrorGroup): TestAnswerResult {
+		return {
+			index: 0,
+			instance: group.instance,
+			isCorrect: false,
+			userAnswer: {
+				value: group.values,
+				isCorrect: false,
+				timeSpent: 0,
+				attempts: 1,
+				submittedAt: ''
+			}
+		};
+	}
+
+	function pluralize(n: number, one: string, many: string): string {
+		return `${n} ${n > 1 ? many : one}`;
 	}
 
 	function notionLabel(row: NotionBreakdown): string {
@@ -83,6 +148,51 @@
 	<Table.Head class="text-center">Sans réponse</Table.Head>
 {/snippet}
 
+{#snippet errorsPanel(panel: RowState | undefined)}
+	{#if !panel || panel.phase === 'loading'}
+		<p class="py-3 text-muted-foreground" role="status">Chargement des erreurs…</p>
+	{:else if panel.phase === 'error'}
+		<p class="py-3 text-destructive" role="alert">{QUESTION_ERRORS_MESSAGE}</p>
+	{:else}
+		{@const errors = panel.errors}
+		<div class="space-y-4 py-3">
+			{#if errors.withoutAnswer > 0}
+				<p class="text-sm text-muted-foreground">{errors.withoutAnswer} sans réponse</p>
+			{/if}
+			{#if errors.blanks.length > 0}
+				<ul class="text-sm">
+					{#each errors.blanks as stat (stat.blank)}
+						<li>
+							Case {stat.blank} : {pluralize(stat.errors, 'erreur', 'erreurs')} sur {stat.answers}
+						</li>
+					{/each}
+				</ul>
+			{/if}
+			{#if errors.groups.length === 0}
+				<p class="text-sm text-muted-foreground">Aucune erreur sur cette question.</p>
+			{:else}
+				<div class="grid gap-4 lg:grid-cols-2">
+					{#each errors.groups as group, index (index)}
+						<div class="space-y-2">
+							<p class="text-sm font-medium">
+								{#if group.students.length > 1}
+									{group.students.length} élèves ont répondu ainsi :
+								{/if}
+								{group.students.join(', ')}
+							</p>
+							<CorrectionCard
+								answerResult={answerResultOf(group)}
+								verdict={group.verdict}
+								size="sm"
+							/>
+						</div>
+					{/each}
+				</div>
+			{/if}
+		</div>
+	{/if}
+{/snippet}
+
 {#snippet state()}
 	{#if breakdown.status === 'error'}
 		<p class="py-6 text-center text-destructive">{breakdown.message}</p>
@@ -110,11 +220,40 @@
 				</Table.Header>
 				<Table.Body>
 					{#each ok.questions as row (row.templateId ?? '')}
+						{@const templateId = row.templateId}
+						{@const expandable = evaluationId !== undefined && templateId !== null}
 						<Table.Row>
-							<Table.Cell class="font-medium">{row.title}</Table.Cell>
+							<Table.Cell class="font-medium">
+								{#if expandable && templateId}
+									<button
+										type="button"
+										class="flex items-center gap-1 text-left hover:underline"
+										aria-expanded={openRows[templateId] === true}
+										aria-controls="erreurs-{templateId}"
+										onclick={() => toggleRow(templateId)}
+									>
+										<ChevronRight
+											class="h-4 w-4 shrink-0 transition-transform {openRows[templateId]
+												? 'rotate-90'
+												: ''}"
+											aria-hidden="true"
+										/>
+										{row.title}
+									</button>
+								{:else}
+									{row.title}
+								{/if}
+							</Table.Cell>
 							{@render rateCell(row)}
 							{@render counts(row)}
 						</Table.Row>
+						{#if expandable && templateId && openRows[templateId]}
+							<Table.Row>
+								<Table.Cell colspan={6} class="bg-muted/30" id="erreurs-{templateId}">
+									{@render errorsPanel(rowStates[templateId])}
+								</Table.Cell>
+							</Table.Row>
+						{/if}
 					{/each}
 				</Table.Body>
 			</Table.Root>
