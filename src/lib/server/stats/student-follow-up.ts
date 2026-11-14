@@ -124,6 +124,8 @@ export function buildStudentPointFollowUp(input: BuildInput): StudentPointCounts
 		}
 	>();
 
+	// Une origine inconnue est journalisée une fois, pas à chaque trace.
+	const unknownSources = new Set<string>();
 	for (const a of input.attempts) {
 		if (a.template_id === null) continue;
 		const points = pointsOfTemplate.get(a.template_id);
@@ -131,7 +133,8 @@ export function buildStudentPointFollowUp(input: BuildInput): StudentPointCounts
 
 		const isProved = PROVED_SOURCES.has(a.source);
 		const isDeclared = DECLARED_SOURCES.has(a.source);
-		if (!isProved && !isDeclared) {
+		if (!isProved && !isDeclared && !unknownSources.has(a.source)) {
+			unknownSources.add(a.source);
 			logger.warn(`[student-follow-up] Source de trace inconnue : ${a.source}`);
 		}
 

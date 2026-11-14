@@ -8,13 +8,12 @@
 	 * Phase 0 : docs/wip/suivi-eleve-progress.md
 	 */
 	import { lore } from '$lib/config/lore';
-	import { AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from '@lucide/svelte';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import { studentJournalHref } from '$lib/navigation/return-links';
-	import type { CurriculumPointBadge } from '$lib/server/srs/curriculum-point-badge';
+	import { badgeMeta } from '$lib/components/teacher/analytics/curriculum-point-badge-meta';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -41,18 +40,6 @@
 		}
 		return result;
 	});
-
-	function badgeMeta(badge: CurriculumPointBadge) {
-		return (
-			{
-				a_remedier: { icon: AlertCircle, color: 'text-red-600', label: 'À remédier' },
-				a_renforcer: { icon: RefreshCw, color: 'text-amber-600', label: 'À renforcer' },
-				en_apprentissage: { icon: Clock, color: 'text-blue-600', label: 'En apprentissage' },
-				acquise_en_memoire: { icon: CheckCircle, color: 'text-emerald-600', label: 'Acquise' },
-				non_commencee: { icon: Circle, color: 'text-muted-foreground', label: 'Non commencée' }
-			} as const
-		)[badge];
-	}
 
 	function countPhrase(label: string, count: { done: number; succeeded: number }): string {
 		const succeeded = count.succeeded > 1 ? 'réussies' : 'réussie';
@@ -81,7 +68,7 @@
 		<Card.Header>
 			<Card.Title>Points du programme</Card.Title>
 			<Card.Description>
-				Les points de son niveau qu’il a travaillés, dans l’ordre du programme.
+				Les points de son niveau déjà travaillés, dans l’ordre du programme.
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>

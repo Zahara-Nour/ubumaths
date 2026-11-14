@@ -179,7 +179,11 @@ de 2nde de répondre une fois à la question d'âge.
   vers `dashboard/teacher/consent` ; la page d'aperçu redirige (303) vers cette même page.
   L'en-tête de « Mes classes » porte aussi un lien « Consentements parentaux », seul accès à cette
   page depuis l'interface.
-- Journal d'un élève : `src/routes/(protected)/dashboard/teacher/students/[studentId]/journal/+page.server.ts`.
+- **Suivi d'un élève** : `src/routes/(protected)/dashboard/teacher/students/[studentId]/` — dans la liste
+  des classes, le nom de l'élève (en classe et « Non assignés ») y mène ; voir
+  [analytique-prof.md](analytique-prof.md#suivi-dun-élève-page-à-part).
+- Journal d'un élève (récompenses) : `src/routes/(protected)/dashboard/teacher/students/[studentId]/journal/+page.server.ts`,
+  ouvert par l'icône à côté du nom ou depuis le suivi (`?depuis=suivi`, retour vers le suivi).
 - Chatterie d'un élève (lecture seule) : `src/routes/(protected)/dashboard/teacher/students/[studentId]/chatterie/`,
   même garde que le journal (`verifyTeacherStudentWithRole`) ; voir [mathoux.md](mathoux.md#vue-du-professeur).
 
@@ -214,7 +218,7 @@ de 2nde de répondre une fois à la question d'âge.
   (`locals.adminSupabase`) si l'élévation est active, sinon le client de l'admin connecté, sinon 403.
 - **Prof ou admin** (`requireRoles`) : approbation des comptes, liste des comptes en attente,
   avertissements, journal d'un élève. **Prof seul** (`requireRole(locals, 'teacher')`) : courriel de
-  bienvenue, codes d'inscription, `api/classes`.
+  bienvenue, codes d'inscription, `api/classes`, suivi d'un élève.
 - `verifyTeacherStudent` (`src/lib/server/middleware/student-access.ts`) vérifie seulement que
   l'appelant est prof ou admin et que la cible est un élève : la classe n'est pas une frontière.
 
