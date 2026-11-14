@@ -54,6 +54,8 @@ import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { hasStatChartToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { hasTrigCircleToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { hasTortueToProgram } from '$lib/ubumark/parser/tortue-parser';
+import { readExpectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
 import { hasVariationToFill } from '$lib/ubumark/parser/variation-table-parser';
 import {
 	readSignTableCases,
@@ -211,6 +213,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'courbe')
 		return 'les coordonnées du point, la droite ou le vecteur du repère (placer:, tracer:)';
 	if (kind === 'trig') return 'la mesure du point du cercle trigonométrique (placer:)';
+	if (kind === 'tortue') return 'le programme du bloc tortue (attendu:)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -641,6 +644,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasStatChartToPlace(String(resolvedStatement)) ||
 				hasCourbeToPlace(String(resolvedStatement)) ||
 				hasTrigCircleToPlace(String(resolvedStatement)) ||
+				hasTortueToProgram(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
 				hasAssocierToPlace(String(resolvedStatement)) ||
 				hasPartageToColorier(String(resolvedStatement)) ||
@@ -855,7 +859,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' || kind === 'tortue' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'tortue' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
@@ -948,6 +952,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 								return [first];
 							if (!child.spec?.placer || first === undefined) return [];
 							return child.spec.placer.map((_, k) => first + k);
+						}
+						if (child.type === 'tortue') {
+							return child.spec !== null && child.caseIndex !== undefined ? [child.caseIndex] : [];
 						}
 						if (child.type === 'trig-circle') {
 							const first = child.caseIndex;
@@ -1308,7 +1315,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				}
 				if (buildAnswer !== undefined) {
 					resolved.construire = buildAnswer.kind;
-					resolved.expectedAnswerLatex = buildAnswer.answer;
+					// Programme tortue : le corrigé montre le programme, sans la comparaison
+					resolved.expectedAnswerLatex =
+						buildAnswer.kind === 'tortue'
+							? (readExpectedTortueAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
+							: buildAnswer.answer;
 				}
 				return resolved;
 			});

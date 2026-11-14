@@ -80,6 +80,7 @@ import { judgeConstruction } from '$lib/questions/construction/judge';
 import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
 import { isCourbeAnswerCorrect } from '$lib/ubumark/utils/courbe-tracer';
 import { isPlacedAngleCorrect } from '$lib/ubumark/utils/trig-placer';
+import { isTortueAnswerCorrect, tortueAnswerVerdict } from '$lib/ubumark/utils/tortue-answer';
 import {
 	isLineToRepresentBlank,
 	isRepresentedIntervalCorrect
@@ -830,6 +831,8 @@ function validateBlankValue(
 	if (blank.construire === 'courbe') return isCourbeAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Point du cercle trigonométrique : le même cran, modulo 2π
 	if (blank.construire === 'trig') return isPlacedAngleCorrect(userAnswer, blank.expectedAnswer);
+	// Programme tortue : son tracé, rejoué par l'interpréteur, contre celui de l'attendu
+	if (blank.construire === 'tortue') return isTortueAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
 	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
 	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
@@ -1342,6 +1345,14 @@ function validateSingleBlank(
 		return isCourbeAnswerCorrect(userAnswer, blank.expectedAnswer)
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
+	}
+
+	// Programme tortue : son tracé contre celui de l'attendu ; un programme qui ne se lit pas ou
+	// ne s'arrête pas dit pourquoi
+	if (blank.construire === 'tortue') {
+		const verdict = tortueAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
 	}
 
 	// Point du cercle trigonométrique : le même cran, modulo 2π

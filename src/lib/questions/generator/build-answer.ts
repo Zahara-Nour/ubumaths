@@ -57,6 +57,8 @@ import { vectorExpected } from '$lib/ubumark/utils/courbe-vecteur';
 import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
 import { expectedStepAnswer, stepOfRadians } from '$lib/ubumark/utils/trig-placer';
 import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
+import { parseTortueContent } from '$lib/ubumark/parser/tortue-parser';
+import { expectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
 
 // Constantes
 
@@ -65,6 +67,7 @@ const MASKABLE_KINDS = new Set<BuildKind>([
 	'line',
 	'courbe',
 	'trig',
+	'tortue',
 	'horloge',
 	'collection',
 	'monnaie',
@@ -113,6 +116,14 @@ export function buildAnswerOf(
 ): { answer: string } | { errors: string[] } {
 	// `?` : forme réservée à l'énoncé envoyé pendant une évaluation (rien à attendre)
 	if (MASKABLE_KINDS.has(kind) && hasMaskedValue(source)) return { errors: [MASKED_IN_TEMPLATE] };
+	if (kind === 'tortue') {
+		// Programme tortue : la comparaison et le programme de référence (`attendu:`)
+		const node = parseTortueContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
+		if (node.spec?.attendu == null) return { errors: ['attendu: absent'] };
+		return { answer: expectedTortueAnswer(node.spec.comparer, node.spec.attendu) };
+	}
 	if (kind === 'line') {
 		const { node, errors } = parseNumberLineContent(source);
 		if (node === null) return { errors: errors.map((e) => e.message) };
