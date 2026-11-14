@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2644._
+_Mis à jour le 2026-11-14, PR de rangement ouverte._
 
-- **État** : modèles 2de `2de-associer-courbes/01` (sans point) et 3e `3-associer-droites/01` (3-067) mergés (#2644) ; `sonde-courbes` lit les courbes d'un bloc associer · **Prochaine action** : après le `deploy:prod` (lot 2 pas encore en prod), David lance `create-questions --publier` des deux dossiers ; commiter les `id` écrits ; puis PR de migration nœud + tag (3e : 3-067 sur « coefficient directeur et ordonnée à l'origine » ; 2de : rangé sous Généralités sur les fonctions, sans tag ; garde « notion sans sous-notion » vérifiée le 2026-11-14 : « Généralités sur les fonctions » a 8 sous-notions actives et déjà 10 modèles posés sur la notion elle-même → la garde doit lister ces 8 en `sous_notions_admises`, sinon elle lève) · **En attente de David** : `deploy:prod`, puis publication des brouillons · **Pièges en cours** : `{{eval:(a)*x+(b)}}` réordonne (`3-2x`) → `{{eval:(a)*x}}{{eval:b;+}}` ; la publication en base locale écrit des `id` locaux dans les fichiers (ne pas les commiter) · **Worktree / branche** : aucun (retiré après l'essai de David, qui a validé les deux modèles en local le 2026-11-14)
+- **État** : brouillons publiés en prod par David AVANT le `deploy:prod` (3e `27ac630c`, 2de `5eec6d7d`, `draft`, sans nœud) ; PR `feat/associer-rangement` : `id` commités + migration `20261114075544_questions_associer_rangement_tags` (3e → 3-067 ; 2de → notion « Généralités sur les fonctions », sans tag, ses 8 sous-notions admises), test d'intégration 12/12, rouge sans la migration · **Prochaine action** : CI verte → `check:migrations --pr` → merge → `db:migrate` depuis le dépôt principal (4 conditions : accès tranché « personne », rouge prouvé, `security-auditor`, additive + rollback) · **En attente de David** : `deploy:prod` (aucune PR du chantier, #2623 comprise, n'est en prod) ; ne pas ouvrir les brouillons dans l'admin de prod ni les publier avant · **Pièges en cours** : `{{eval:(a)*x+(b)}}` réordonne → `{{eval:(a)*x}}{{eval:b;+}}` ; une publication en base locale écrit des `id` locaux (ne pas les commiter) · **Worktree / branche** : `../ubumaths-wt-associer`, `feat/associer-rangement`
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -200,3 +200,4 @@ Relevé prod (MCP, lecture seule) : en 2de, aucun point « fonctions de référe
 - 2026-11-14 : #2637 mergée (CI verte après relance d'un job d'intégration tombé sur un port pris). Second modèle 3e (affines à coefficients tirés) : « ok » de David.
 - 2026-11-14 : PR de contenu — worktree `associer` rouvert (branche `feat/associer-modeles-courbes`), relevé, décisions ci-dessus, deux modèles écrits ; `sonde-courbes` ne voyait pas les courbes décalées d'un bloc associer (« 0 blocs ») → elle retire le décalage (rouge prouvé sur une copie sans `y:`).
 - 2026-11-14 : #2644 mergée (CI verte, revue Sonnet de la sonde sans défaut) ; modèles joués dans l'aperçu admin local.
+- 2026-11-14 : David publie les deux brouillons en prod avant le `deploy:prod` (le script vérifie avec le code local ; les élèves ne voient pas un brouillon). Worktree rouvert, branche `feat/associer-rangement` : `id` + migration de rangement + test (rouge sans la migration prouvé).

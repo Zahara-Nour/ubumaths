@@ -1,4 +1,5 @@
 {
+	"id": "5eec6d7d-a69b-4ef9-bebd-524e28044929",
 	"title": "Relier une courbe à sa fonction de référence",
 	"description": "Associer les courbes des fonctions carré, inverse, valeur absolue et x ↦ x à leur expression, intrus x ↦ −x²",
 	"grades": ["2"],
