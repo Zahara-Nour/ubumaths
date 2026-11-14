@@ -482,6 +482,24 @@ describe('deux côtés et l’angle compris', () => {
 		});
 	});
 
+	it('juste : côté d’angle tracé en segment au-delà de C, [BC] seul jusqu’au report (2e revue de #2658)', () => {
+		const m = repereAt(MARK_A);
+		const side = segment(A, { x: A.x + (m.x - A.x) * 2.5, y: A.y + (m.y - A.y) * 2.5 });
+		// Le côté est un segment parti de A : un seul croisement avec l'arc
+		const [c] = cross(side, REPORT);
+		expect(judge(SAS, [MARK_A, side, REPORT, segment(B, c)])).toEqual({ status: 'correct' });
+	});
+
+	it('faux : côté d’angle en segment, [BC] arrêté à l’œil sur lui', () => {
+		const m = repereAt(MARK_A);
+		const side = segment(A, { x: A.x + (m.x - A.x) * 2.5, y: A.y + (m.y - A.y) * 2.5 });
+		const c = { x: A.x + (m.x - A.x) * 1.5, y: A.y + (m.y - A.y) * 1.5 };
+		expect(judge(SAS, [MARK_A, side, segment(B, c)])).toEqual({
+			status: 'incorrect',
+			feedback: vertexEyeballedAnglesFeedback('C')
+		});
+	});
+
 	it('faux : C pris à l’œil sur le côté d’angle', () => {
 		const m = repereAt(MARK_A);
 		const c = { x: A.x + (m.x - A.x) * 1.5, y: A.y + (m.y - A.y) * 1.5 };

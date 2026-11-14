@@ -571,6 +571,26 @@ function angleCrossings(
 	return pairs(sidesFrom(v), circles);
 }
 
+/** Un côté d'angle construit tracé en segment (lot 7) : son sommet et son trait */
+interface AngleSide {
+	vertex: Position;
+	trait: Trait;
+}
+
+/** Les côtés d'angle construits tracés en segment, partis de A ou de B (`angleSideVertex`) */
+function angleSideSegments(
+	objects: readonly DrawnObject[],
+	marks: readonly DrawnRepere[],
+	construction: Construction
+): AngleSide[] {
+	return objects.flatMap((o, i): AngleSide[] => {
+		if (o.kind !== 'segment' || !construction.built.has(i)) return [];
+		const vertex = angleSideVertex(o, marks, construction);
+		const trait = traitOf(o);
+		return vertex && trait ? [{ vertex, trait }] : [];
+	});
+}
+
 /** L'autre bout d'un segment qui part de `from` (pas [AB] repassé), sinon null */
 function farEnd(line: DrawnLine, from: Position, other: Position, eps: number): Position | null {
 	const p = { x: line.x1, y: line.y1 };
@@ -588,7 +608,8 @@ function joinedVertices(
 	check: TriangleCheck,
 	a: Position,
 	b: Position,
-	objects: readonly DrawnObject[]
+	objects: readonly DrawnObject[],
+	angleSides: readonly AngleSide[] = []
 ): { vertices: Position[] } | { verdict: ConstructionVerdict } {
 	const [nameA, nameB, nameC] = check.points;
 	const segments = objects.filter((o): o is DrawnLine => o.kind === 'segment');
@@ -608,7 +629,14 @@ function joinedVertices(
 	}
 	if (fromA.length === 0) return incorrect(missingSideFeedback(nameA, nameC));
 	if (fromB.length === 0) return incorrect(missingSideFeedback(nameB, nameC));
-	const vertices = fromA.filter((p) => fromB.some((q) => near(p, q, eps)));
+	const joined = fromA.filter((p) => fromB.some((q) => near(p, q, eps)));
+	// Un côté d'angle en segment, parti de V, tient lieu de [VC] : le côté parti de l'autre
+	// sommet s'arrête dessus (David, 2026-11-14, 2e revue de #2658)
+	const onSides = angleSides.flatMap(({ vertex, trait }) => {
+		const ends = near(vertex, a, eps) ? fromB : near(vertex, b, eps) ? fromA : [];
+		return ends.filter((q) => !near(q, vertex, eps) && distanceToTrait(q, trait) <= eps);
+	});
+	const vertices = [...joined, ...onSides];
 	if (vertices.length === 0) return incorrect(notJoinedFeedback(nameA, nameB, nameC));
 	return { vertices };
 }
@@ -839,7 +867,16 @@ function judgeRuledTriangle(
 		? ['segment', 'repere', 'regle', 'cercle']
 		: ['segment', 'cercle', 'regle'];
 	if (objects.some((o) => !allowed.includes(o.kind))) return { status: 'incorrect' };
-	const joined = joinedVertices(check, a, b, objects);
+	const construction = constructionOf(
+		objects,
+		basePointsOf(points, figure.segments),
+		figure.traits
+	);
+	const marks = objects.filter(
+		(o): o is DrawnRepere => o.kind === 'repere' && isBuiltMark(o, construction)
+	);
+	const sides = angle ? angleSideSegments(objects, marks, construction) : [];
+	const joined = joinedVertices(check, a, b, objects, sides);
 	if ('verdict' in joined) return joined.verdict;
 	const distinct = distinctVertices(joined.vertices);
 	if (distinct.length > 1) {
@@ -902,14 +939,6 @@ function judgeRuledTriangle(
 	// Deux côtés et l'angle compris : C sur un côté d'angle construit, parti de V
 	const v = at(angle.vertex);
 	const [expected] = check.lengths.filter(isRuledLength);
-	const construction = constructionOf(
-		objects,
-		basePointsOf(points, figure.segments),
-		figure.traits
-	);
-	const marks = objects.filter(
-		(o): o is DrawnRepere => o.kind === 'repere' && isBuiltMark(o, construction)
-	);
 	const eps = tolerance(a, b, c);
 	/** Les côtés d'angle construits partis de V qui passent par C */
 	const angleSides = objects.filter((o, i) => {
@@ -978,9 +1007,6 @@ export function judgeTriangle(
 	if (check.angles.length > 0 && check.lengths.length === 0 && circles) {
 		return { status: 'incorrect' };
 	}
-	const joined = joinedVertices(check, a, b, objects);
-	if ('verdict' in joined) return joined.verdict;
-	const { vertices } = joined;
 	const construction = constructionOf(
 		objects,
 		basePointsOf(points, figure.segments),
@@ -990,6 +1016,10 @@ export function judgeTriangle(
 	const marks = objects.filter(
 		(o): o is DrawnRepere => o.kind === 'repere' && isBuiltMark(o, construction)
 	);
+	const sides = check.angles.length > 0 ? angleSideSegments(objects, marks, construction) : [];
+	const joined = joinedVertices(check, a, b, objects, sides);
+	if ('verdict' in joined) return joined.verdict;
+	const { vertices } = joined;
 	// Trois longueurs (lot 4) : C au croisement de deux cercles construits. Avec un angle
 	// (lot 7, revue de #2348) : au croisement de ce que dit le § 21, deux côtés d'angle (un
 	// depuis A, un depuis B), ou le côté d'angle et un cercle construit centré au même

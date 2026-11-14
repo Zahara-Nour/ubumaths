@@ -154,3 +154,13 @@ DrawnCircle` remplacé par un cercle porté avec son indice. Suites : serveur 7 
   ouvert sur une règle verticale) ; l'ancien « juste : C à l'arc » (C tiré d'une règle absente) est
   remplacé par S1-S3 ; le test Q18 devient « [AC] tracé à part, prolongé au-delà de C » (segment
   collé en C).
+- 2026-11-14 : **suite après #2658** (branche `feat/triangle-cote-cm-suite`, 2e revue, tranché par David
+  « je te suis »). (1) Un côté d'angle tracé en segment (construit, parti du sommet, portant le repère)
+  tient lieu de [AC] : [BC] seul arrêté dessus ferme le triangle (`joinedVertices` reçoit les côtés
+  d'angle, `angleSideSegments`). **L'effet s'étend au lot 7** (angle avec segment à reporter), même
+  code, même geste ; C doit toujours y être construit. Pas de faux juste : C à l'œil sur le côté reste
+  faux, [BC] qui n'arrive pas sur le côté reste « doivent se rejoindre ». Tests : 4 dans
+  `construction-triangle-cm.test.ts` (3 rouges, le 4e, non-régression, déjà vert), 2 dans
+  `construction-triangle-angles.test.ts` (rouges), verts après. (2) Doc : « croisement de traits »
+  (tout croisement, droites comprises) dans le commentaire de `FigureACompleterView.svelte` et dans
+  `questions.md`, comportement inchangé.

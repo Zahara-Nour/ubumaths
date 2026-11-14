@@ -697,8 +697,9 @@
 				{ points: targets.points, intersections: [], traits: [] },
 				radius
 			);
-			// Bout d'un segment : un croisement de traits (deux arcs du triangle coté en cm) passe
-			// avant la graduation de la dernière règle posée, sauf au départ (revue de #2658)
+			// Bout d'un segment : tout croisement de traits (arcs, droites, segments ; par exemple deux
+			// arcs du triangle coté en cm) passe avant la graduation de la dernière règle posée, sauf
+			// au départ (revue de #2658)
 			const start = drawing.start;
 			const crossing =
 				tool === 'segment' && start
