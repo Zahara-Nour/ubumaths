@@ -10,15 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, après #2620 (rangement du lot 9, § 37-38)._
+_Mis à jour le 2026-11-14, après la publication du lot 9 (§ 39)._
 
-- **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Suite de D1 : les **31
-  approfondissements** ; relevé prod et phase 0 au § 35 (lots 9 à 15). Lot 9 : brouillons rangés et tagués en prod
-  (#2620, `db:migrate` fait), page à cocher publiée (§ 38).
-- **Prochaine action** : lire les verdicts de la page du lot 9 ; si 4/4 « ok », David lance `publier-lot.ts`
-  (simulation puis `--publier`) ; puis lot 10 (374, 377, 564, 361).
-- **En attente de David** : verdicts du lot 9 sur https://claude.ai/artifact/HzbMcyErATK8eDFTWbF1RF (554 : jouer le
-  bloc « ranger » dans l'aperçu admin, la page ne le dessine pas).
+- **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
+  § 35, lots 9 à 15) : lot 9 publié (§ 39), 27 restants.
+- **Prochaine action** : lot 10 (374, 377, 564, 361), comme le lot 9 (§ 36-38) : nouvelle branche, modèles,
+  aperçus, PR ; puis brouillons, migration de rangement, page à cocher.
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -829,3 +827,8 @@ sur sa sous-notion avec son seul point, `updated_at` intact. JSON du dépôt pri
 `page-a-cocher.ts --dir scripts/questions/tspe-approfondissements-9`, lu en base prod : 4 brouillons `draft`, chacun
 sur son point, 4 exemples chacun ; une alerte : le bloc « ranger » de 554 n'est pas dessiné (le jouer dans l'aperçu).
 Page : https://claude.ai/artifact/HzbMcyErATK8eDFTWbF1RF (capacité `db`) ; base `verdicts` vide à la publication.
+
+## 39. Lot 9 : publication (2026-11-14)
+
+Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 37). `publier-lot.ts` en simulation puis `--publier`,
+lancés par David. Relu en base (MCP) : 4 `published`.
