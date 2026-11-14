@@ -6,11 +6,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 1 codé (branche non poussée)._
+_Mis à jour le 2026-11-14, après #2653._
 
-- **État** : lot 1 codé et commité sur la branche · **Prochaine action** : revue, push, PR · **En attente de David** : écart 2 du journal (corrigé de la série : liste ou texte en gras)
-  · **Pièges en cours** : `[…]` sert déjà aux liens markdown, à `[…]{.type}` et aux intervalles écrits en
-  texte (`]2 ; 3[`) · **Worktree / branche** : `../ubumaths-wt-trous-etiquettes`, `feat/trous-etiquettes`
+- **État** : lot 1 mergé (#2653, CI verte, revue opus « prêt pour PR », mineurs corrigés) ; bloc ` ```trous ` complet sur `main`, pas encore en prod · **Prochaine action** : essai de David (`verifications-manuelles.md`), puis clore le chantier (versement, journal archivé) · **En attente de David** : corrigé PDF de la série — garder « 1 → pair ; 2 → impair » (reco) ou le texte avec les étiquettes en gras (`trousAFiger`) ; `deploy:prod` · **Pièges en cours** : rouge non prouvé pour le parseur et le composant seul ; ~150 lignes du geste copiées d'`AssocierEtiquettes` (module commun plus tard) ; échappement Typst de `#`/`@` en texte nu laissé (commun avec associer, ranger) · **Worktree / branche** : aucun
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -119,3 +117,4 @@ différentes ; moins de 3 étiquettes différentes (réserve devinable) ; `[_]` 
   « 1 → pair ») ; (7) cadres de réponse PDF : une ligne par rangée de la réserve (6 étiquettes par rangée,
   `TROUS_RESERVE_COLUMNS`, partagé avec `generateTrousTypst`). **Laissé** : (5) `inlineUbumarkTypst`
   commun avec associer et ranger (décision du coordinateur).
+- 2026-11-14 : #2653 mergée (conflit avec le bloc `tortue` de #2651 résolu dans `questions.md`), worktree retiré.
