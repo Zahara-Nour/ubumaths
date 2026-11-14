@@ -48,6 +48,8 @@ export function definitionHint(draft: string, inputMode: InputMode): DraftHint |
 	const match = FUNCTION_DEFINITION.exec(draft);
 	if (match === null) return null;
 	const [start, name, letter] = match;
+	// Une définition en n est une SUITE (`kindOf`, `calcul.ts`), qui refuse « sur »
+	if (letter === 'n') return null;
 	const body = draft.slice(start.length);
 	if (intervalWord(body, inputMode === 'math' ? 'latex' : 'detect', true) !== null) {
 		return { model: INTERVAL_MODEL };

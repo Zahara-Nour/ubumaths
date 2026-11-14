@@ -48,7 +48,11 @@ describe('le modèle d’une définition de fonction', () => {
 			'f(2)',
 			'.dériver f',
 			'résoudre f(x) = 0',
-			'f = x^2'
+			'f = x^2',
+			// Une définition en n est une SUITE (`kindOf`, `calcul.ts`) : « sur » y est refusé
+			'u(n) =',
+			'u(n) = 2n+1',
+			'u(n) = 2n sur'
 		]) {
 			expect(definitionHint(draft, 'text'), draft).toBeNull();
 		}

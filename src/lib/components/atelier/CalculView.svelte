@@ -843,8 +843,7 @@
 
 	{#if hint !== null}
 		<p class="modele" id="{uid}-modele">
-			Modèle : <code>{hint.model}</code>{#if hint.note !== undefined}
-				— {hint.note}{/if}
+			Modèle : <code>{hint.model}</code>{#if hint.note !== undefined}{' '}— {hint.note}{/if}
 		</p>
 	{/if}
 

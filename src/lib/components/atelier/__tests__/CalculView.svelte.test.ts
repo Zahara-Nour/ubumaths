@@ -729,8 +729,10 @@ describe('le clavier de Calcul', () => {
 		it('une définition sans « sur » : le modèle de l’ensemble, nom et variable tapés', async () => {
 			const { container, field } = await typing('g(t) = 3t + 1');
 
-			expect(modele(container)).toContain('Modèle : g(t) = t² sur [0;3]');
-			expect(modele(container)).toContain('pour choisir l’ensemble');
+			// Une espace entre le modèle et sa note (revue de #2641 : « [0;3]— » collé)
+			expect(modele(container)?.replace(/\s+/g, ' ')).toContain(
+				'Modèle : g(t) = t² sur [0;3] — pour choisir l’ensemble'
+			);
 			expect(field.getAttribute('aria-describedby')).toBe(container.querySelector('.modele')?.id);
 		});
 
