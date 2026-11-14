@@ -10,22 +10,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, après #2620 (rangement du lot 9, § 37-38)._
+_Mis à jour le 2026-11-14, après #2622 (fichiers du lot 10, § 40)._
 
-- **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Suite de D1 : les **31
-  approfondissements** ; relevé prod et phase 0 au § 35 (lots 9 à 15). Lot 9 : brouillons rangés et tagués en prod
-  (#2620, `db:migrate` fait), page à cocher publiée (§ 38).
-- **Prochaine action** : lire les verdicts de la page du lot 9 ; si 4/4 « ok », David lance `publier-lot.ts`
-  (simulation puis `--publier`) ; puis lot 10 (374, 377, 564, 361).
-- **En attente de David** : verdicts du lot 9 sur https://claude.ai/artifact/HzbMcyErATK8eDFTWbF1RF (554 : jouer le
-  bloc « ranger » dans l'aperçu admin, la page ne le dessine pas).
+- **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
+  § 35, lots 9 à 15) : lot 9 publié (§ 39) ; lot 10 (374, 377, 564, 361) écrit et vérifié (§ 40), mergé (#2622).
+- **Prochaine action** : après le `create-questions` de David, commiter les ids écrits dans les JSON, puis migration
+  de rangement et tags (copie de celle du lot 9 : 374 → Espace › positions relatives et intersections ; 377, 564, 361
+  → Orthogonalité et distances dans l'espace › sphère), page à cocher.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-approfondissements-10
+--publier` (prod), depuis le dépôt principal.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
   Le journal à jour vit sur `main` (le worktree est détaché) : `git -C <wt> checkout --detach origin/main` avant de lire.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, sur `chore/questions-tspe-approfondissements-9-rangement` (mergée) : le détacher sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main`.
 
 ---
 
@@ -829,3 +829,30 @@ sur sa sous-notion avec son seul point, `updated_at` intact. JSON du dépôt pri
 `page-a-cocher.ts --dir scripts/questions/tspe-approfondissements-9`, lu en base prod : 4 brouillons `draft`, chacun
 sur son point, 4 exemples chacun ; une alerte : le bloc « ranger » de 554 n'est pas dessiné (le jouer dans l'aperçu).
 Page : https://claude.ai/artifact/HzbMcyErATK8eDFTWbF1RF (capacité `db`) ; base `verdicts` vide à la publication.
+
+## 39. Lot 9 : publication (2026-11-14)
+
+Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 37). `publier-lot.ts` en simulation puis `--publier`,
+lancés par David. Relu en base (MCP) : 4 `published`.
+
+## 40. Lot 10 : approfondissements, plans et sphères (2026-11-14)
+
+| Point | Modèle (`scripts/questions/tspe-approfondissements-10/`) | Nœud, niveau                            | Variations                                                                                     |
+| ----- | -------------------------------------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| 374   | `01-intersection-de-deux-plans`                          | positions relatives et intersections, 4 | A(?;?;0) et u(?;?;1) en posant z = t ; plans strictement parallèles (choix) ; M(x0 ; y ; z)    |
+| 377   | `02-intersection-d-une-sphere-et-d-une-droite`           | sphère, 5                               | ?t² + ?t + ? = 0 ; point d'intersection, droite par le centre ; aucun point commun (choix)     |
+| 564   | `03-plan-tangent-a-une-sphere`                           | sphère, 5                               | ΩA, centre lu sur l'équation développée ; d du plan tangent ; Pythagore : seul point A (choix) |
+| 361   | `04-sphere-circonscrite-a-un-tetraedre`                  | sphère, 6                               | centre de OABC trirectangle ; R² ; plans médiateurs (choix) ; cote du centre par ΩO² = ΩD²     |
+
+Niveaux au-dessus de ceux de la prod (relevé MCP du 2026-11-14 : 3 au plus sur « positions relatives et
+intersections », 4 sur « sphère ») ; `shared.cleanCoefficients`. Script :
+`docs/wip/questions/lot-tspe-approfondissements-10.py`.
+
+Défauts vus dans les aperçus et corrigés : variable `e` lue comme le nombre d'Euler (renommée `f`) ; le nettoyage ne
+reconnaît pas le nom `\mathcal{P}'` (prime) devant une équation, d'où `x-y+(-1)z` : second plan nommé `\mathcal{Q}` ;
+formule colorée non nettoyée dans `\textcolor` : termes signés `;+`.
+
+Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (43 specs vertes), 0 `\textcolor` hors `$` ;
+3 248 formules des aperçus (430 distinctes) passées à `validateLatex` + accolades, 0 problème ; `create-questions` en
+simulation sur la prod : 4 « à créer », aucun titre pris ; brouillons en base locale (copie hors dépôt) ; aperçu admin :
+374 (a) joué « Juste » (A(−4 ; −2 ; 0), u(−2 ; 0 ; 1)), cases des triplets nus et de `?t^2+?t+?` (377 a) rendues.

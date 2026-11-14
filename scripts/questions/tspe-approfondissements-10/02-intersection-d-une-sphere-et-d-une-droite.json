@@ -1,0 +1,298 @@
+{
+	"title": "Espace : intersection d'une sphère et d'une droite",
+	"description": "Équation du second degré en t obtenue en remplaçant la représentation paramétrique (trois cases), point d'intersection d'une droite passant par le centre (trois cases), droite sans point commun avec la sphère (case choix)",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la sphère $\\mathcal{S}$ d'équation $(x-({{eval:a}}))^2+(y-({{eval:b}}))^2+(z-({{eval:c}}))^2={{eval:r2}}$ et la droite $d$ de représentation paramétrique $x={{eval:a+p}}+t$, $y={{eval:b+q}}-t$, $z={{eval:c}}+2t$ ($t\\in\\mathbb{R}$).\n\nEn remplaçant $x$, $y$ et $z$ dans l'équation de $\\mathcal{S}$, puis en passant tout dans le membre de gauche, on obtient une équation du second degré en $t$. Complète.\n\n$?t^2+?t+?=0$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..4"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				},
+				{
+					"name": "c",
+					"expression": "-4..4"
+				},
+				{
+					"name": "p",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q",
+					"expression": "-3..3"
+				},
+				{
+					"name": "r2",
+					"expression": "5..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "6"
+				},
+				{
+					"expectedAnswer": "{{eval:2*(p-q)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p^2+q^2-r2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour un point de $d$ : $x-({{eval:a}})={{eval:p}}+t$, $y-({{eval:b}})={{eval:q}}-t$ et $z-({{eval:c}})=2t$.",
+					"L'équation devient $({{eval:p}}+t)^2+({{eval:q}}-t)^2+(2t)^2={{eval:r2}}$, soit $t^2+{{eval:2*p}}t+{{eval:p^2}}+t^2-{{eval:2*q}}t+{{eval:q^2}}+4t^2={{eval:r2}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{6t^2{{eval:2*(p-q);+}}t{{eval:p^2+q^2-r2;+}}=0}$."
+				]
+			},
+			"conditions": ["a+p != 0", "b+q != 0", "c != 0", "p != q", "p^2+q^2 != r2"]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la sphère $\\mathcal{S}$ d'équation $(x-({{eval:a}}))^2+(y-({{eval:b}}))^2+(z-({{eval:c}}))^2={{eval:9*k^2}}$ et la droite $d$ de représentation paramétrique $x={{eval:a}}+t$, $y={{eval:b}}+2t$, $z={{eval:c}}+2t$ ($t\\in\\mathbb{R}$).\n\n$d$ coupe $\\mathcal{S}$ en deux points. Donne les coordonnées de celui qui correspond à $t>0$.\n\n$E(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b+2*k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:c+2*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En remplaçant : $t^2+(2t)^2+(2t)^2={{eval:9*k^2}}$, soit $9t^2={{eval:9*k^2}}$.",
+					"Donc $t^2={{eval:k^2}}$ : $t={{eval:k}}$ ou $t=-{{eval:k}}$ ($d$ passe par le centre de $\\mathcal{S}$).",
+					"Pour $t={{eval:k}}$ : $\\textcolor{{{color:primary.0}}}{E({{eval:a+k}}\\,;\\,{{eval:b+2*k}}\\,;\\,{{eval:c+2*k}})}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la sphère $\\mathcal{S}$ de centre $\\Omega({{eval:a}}\\,;\\,{{eval:b}}\\,;\\,{{eval:c}})$ et de rayon ${{eval:r}}$, et la droite $d$ de représentation paramétrique $x={{eval:a}}+t$, $y={{eval:b+p}}$, $z={{eval:c+q}}$ ($t\\in\\mathbb{R}$).\n\nCombien $d$ et $\\mathcal{S}$ ont-elles de points communs ?\n\n```choix\n- Aucun\n- Un seul : $d$ est tangente à $\\mathcal{S}$\n- Deux\n- Une infinité\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				},
+				{
+					"name": "c",
+					"expression": "-4..4"
+				},
+				{
+					"name": "p",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une équation de $\\mathcal{S}$ est $(x-({{eval:a}}))^2+(y-({{eval:b}}))^2+(z-({{eval:c}}))^2={{eval:r^2}}$.",
+					"Pour un point de $d$ : $t^2+{{eval:p;()}}^2+{{eval:q;()}}^2={{eval:r^2}}$, soit $t^2={{eval:r^2-p^2-q^2}}$.",
+					"Un carré n'est jamais strictement négatif : $\\textcolor{{{color:primary.0}}}{\\text{aucun point commun}}$."
+				]
+			},
+			"conditions": ["p^2+q^2 > r^2"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "6t² + 4t − 12 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"p": "1",
+				"q": "-1",
+				"r2": "14"
+			},
+			"answers": ["6", "4", "-12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3t² (coefficient de z oublié au carré)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"p": "1",
+				"q": "-1",
+				"r2": "14"
+			},
+			"answers": ["3", "4", "-12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : constante sans le rayon",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"p": "1",
+				"q": "-1",
+				"r2": "14"
+			},
+			"answers": ["6", "4", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "E(3 ; 2 ; 5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["3", "2", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : t = −2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["-1", "-6", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : t = 6 (rayon)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["7", "10", "13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "aucun",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "0",
+				"c": "2",
+				"p": "3",
+				"q": "-2",
+				"r": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tangente",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "0",
+				"c": "2",
+				"p": "3",
+				"q": "-2",
+				"r": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "0",
+				"c": "2",
+				"p": "3",
+				"q": "-2",
+				"r": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : infinité",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "0",
+				"c": "2",
+				"p": "3",
+				"q": "-2",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

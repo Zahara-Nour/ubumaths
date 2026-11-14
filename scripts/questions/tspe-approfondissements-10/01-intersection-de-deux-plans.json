@@ -1,0 +1,334 @@
+{
+	"title": "Espace : déterminer l'intersection de deux plans",
+	"description": "Deux plans sécants : point de cote nulle et vecteur directeur de la droite d'intersection (quatre cases), plans aux vecteurs normaux colinéaires : strictement parallèles (case choix), coordonnées manquantes d'un point de la droite d'intersection (deux cases)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P} : x+y+({{eval:k1}})z={{eval:d1}}$ et $\\mathcal{Q} : x-y+({{eval:k2}})z={{eval:d2}}$. Leurs vecteurs normaux ne sont pas colinéaires : les deux plans se coupent selon une droite $d$.\n\nEn posant $z=t$, résous le système en $x$ et $y$, puis complète : $d$ passe par le point $A$ de cote nulle et a pour vecteur directeur $\\vec{u}$ de cote $1$.\n\n$A(?\\,;\\,?\\,;\\,0)$ et $\\vec{u}$ : $(?\\,;\\,?\\,;\\,1)$",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "y0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k1",
+					"expression": "eval:-(u1)-(u2)"
+				},
+				{
+					"name": "k2",
+					"expression": "eval:(u2)-(u1)"
+				},
+				{
+					"name": "d1",
+					"expression": "eval:(x0)+(y0)"
+				},
+				{
+					"name": "d2",
+					"expression": "eval:(x0)-(y0)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x0}}"
+				},
+				{
+					"expectedAnswer": "{{eval:y0}}"
+				},
+				{
+					"expectedAnswer": "{{eval:u1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:u2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $z=t$, le système devient $x+y={{eval:d1}}+({{eval:-k1}})t$ et $x-y={{eval:d2}}+({{eval:-k2}})t$.",
+					"En ajoutant : $2x={{eval:2*x0}}+({{eval:2*u1}})t$, donc $x={{eval:x0}}+({{eval:u1}})t$. En soustrayant : $2y={{eval:2*y0}}+({{eval:2*u2}})t$, donc $y={{eval:y0}}+({{eval:u2}})t$.",
+					"Pour $t=0$ : $\\textcolor{{{color:primary.0}}}{A({{eval:x0}}\\,;\\,{{eval:y0}}\\,;\\,0)}$ ; les coefficients de $t$ donnent $\\textcolor{{{color:primary.0}}}{\\vec{u}({{eval:u1}}\\,;\\,{{eval:u2}}\\,;\\,1)}$."
+				]
+			},
+			"conditions": ["k1 != 0", "k2 != 0"]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P} : {{eval:a}}x+({{eval:b}})y+({{eval:c}})z={{eval:d}}$ et $\\mathcal{Q} : {{eval:k*a}}x+({{eval:k*b}})y+({{eval:k*c}})z={{eval:f}}$.\n\nQuelle est leur intersection ?\n\n```choix\n- L'ensemble vide : les plans sont strictement parallèles\n- Une droite, car les plans ne sont pas confondus\n- Le plan $\\mathcal{P}$ : les plans sont confondus\n- Un point\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "d",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "f",
+					"expression": "-9..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les vecteurs normaux $\\vec{n}({{eval:a}}\\,;\\,{{eval:b}}\\,;\\,{{eval:c}})$ et $\\vec{n}'({{eval:k*a}}\\,;\\,{{eval:k*b}}\\,;\\,{{eval:k*c}})$ vérifient $\\vec{n}'={{eval:k;()}}\\,\\vec{n}$ : ils sont colinéaires, les plans sont parallèles.",
+					"Si un point vérifiait les deux équations, en multipliant la première par ${{eval:k;()}}$ on aurait ${{eval:k*a}}x+({{eval:k*b}})y+({{eval:k*c}})z={{eval:k*d}}$, alors que la seconde donne ${{eval:f}}$.",
+					"Comme ${{eval:k*d}}\\neq {{eval:f}}$, aucun point n'est commun : l'intersection est $\\textcolor{{{color:primary.0}}}{\\varnothing}$, les plans sont strictement parallèles."
+				]
+			},
+			"conditions": ["f != k*d"]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P} : x+y+{{eval:a}}z={{eval:d1}}$ et $\\mathcal{Q} : x-y+{{eval:b}}z={{eval:d2}}$, sécants selon une droite $d$.\n\nLe point $M({{eval:x0}}\\,;\\,y\\,;\\,z)$ appartient à $d$. Détermine $y$ et $z$.\n\n$y=?$ et $z=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "x0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "y0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "z0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "d1",
+					"expression": "eval:(x0)+(y0)+(a)*(z0)"
+				},
+				{
+					"name": "d2",
+					"expression": "eval:(x0)-(y0)+(b)*(z0)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:y0}}"
+				},
+				{
+					"expectedAnswer": "{{eval:z0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$M$ est dans les deux plans : ${{eval:x0}}+y+{{eval:a}}z={{eval:d1}}$ et ${{eval:x0}}-y+{{eval:b}}z={{eval:d2}}$, soit $y+{{eval:a}}z={{eval:d1-x0}}$ et $-y+{{eval:b}}z={{eval:d2-x0}}$.",
+					"En ajoutant : ${{eval:a+b}}z={{eval:d1+d2-2*x0}}$, donc $z={{eval:z0}}$.",
+					"Puis $y={{eval:d1-x0}}-{{eval:a}}\\times{{eval:z0;()}}$ : $\\textcolor{{{color:primary.0}}}{y={{eval:y0}}}$ et $\\textcolor{{{color:primary.0}}}{z={{eval:z0}}}$."
+				]
+			},
+			"conditions": ["x0 != 0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(1 ; 2 ; 0), u(2 ; −1 ; 1)",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "1",
+				"y0": "2",
+				"u1": "2",
+				"u2": "-1",
+				"k1": "-1",
+				"k2": "-3",
+				"d1": "3",
+				"d2": "-1"
+			},
+			"answers": ["1", "2", "2", "-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes du vecteur directeur",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "1",
+				"y0": "2",
+				"u1": "2",
+				"u2": "-1",
+				"k1": "-1",
+				"k2": "-3",
+				"d1": "3",
+				"d2": "-1"
+			},
+			"answers": ["1", "2", "-2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x et y échangés",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "1",
+				"y0": "2",
+				"u1": "2",
+				"u2": "-1",
+				"k1": "-1",
+				"k2": "-3",
+				"d1": "3",
+				"d2": "-1"
+			},
+			"answers": ["2", "1", "-1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "strictement parallèles",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"k": "-2",
+				"f": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une droite",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"k": "-2",
+				"f": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : confondus",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"k": "-2",
+				"f": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un point",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"k": "-2",
+				"f": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = −2, z = 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "3",
+				"d1": "5",
+				"d2": "12"
+			},
+			"answers": ["-2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y = 2 (signe)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "3",
+				"d1": "5",
+				"d2": "12"
+			},
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : y et z échangés",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "3",
+				"d1": "5",
+				"d2": "12"
+			},
+			"answers": ["3", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
