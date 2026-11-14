@@ -9,9 +9,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR des points de revue de #2660 ouverte._
+_Mis à jour le 2026-11-14, après #2665._
 
-- **État** : v0.88.0 en prod, modèle 6-173 à jour en prod. PR `fix/triangle-cote-cm-juge` ouverte : (1) un seul C avec un angle, (2) côté sans repère → « trace ses côtés avec le rapporteur » ; (3) sans changement (même geste que S5, admis à la revue de #2348) · **Prochaine action** : CI + revue opus → merge ; puis clore le chantier (versement, archive du journal) · **En attente de David** : `deploy:prod` de la PR (quand il voudra) ; relecture des 2 variations en prod ; confirmer : choix du lot 1 (1), (3), (4) gardés, (5) remplacé par la revue de #2658 ; auteur de l'écriture en prod de 18:52 · **Pièges en cours** : la PR change le juge du lot 7 et du cas en cm avec angle, en prod au prochain déploiement · **Worktree / branche** : `ubumaths-wt-triangle-cote-cm` (`fix/triangle-cote-cm-juge`) ; `ubumaths-wt-triangle-cm-variations` gardé pour le serveur 5176, à retirer après la relecture
+- **État** : outil et variations en prod (v0.88.0 ; modèle 6-173 f06e45e8 vérifié identique au fichier). #2665 mergée (lot 7 et cas en cm avec angle : un seul C ; côté sans repère → « trace ses côtés avec le rapporteur », jamais au triangle rectangle), **pas encore en prod** · **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, archive du journal) · **En attente de David** : `deploy:prod` de #2665 (quand il voudra) ; relecture des 2 variations en prod · **Pièges en cours** : faux faux d'avant, laissé : deux côtés d'angle en segments qui se croisent au-delà de C, sans [AC] ni [BC] → « doivent se rejoindre » · **Worktree / branche** : aucun pour ce chantier ; `ubumaths-wt-triangle-cm-variations` gardé pour le serveur 5176, à retirer après la relecture
 
 ## Ce qui existe (lu dans le code, 2026-11-14)
 
@@ -203,3 +203,4 @@ David : « oui » aux recos (choix du lot 1 (1), (3), (4) gardés ; corriger les
   rejoindre ».
 - Vérifié à la demande de David : déploiements du 2026-11-14 = v0.87.0 (09:24, sans #2658) et v0.88.0 (19:11,
   avec #2658, #2660, #2661) ; contenu du modèle f06e45e8 en prod identique au fichier (simulation, 26/26).
+- #2665 mergée (CI verte). Choix du lot 1 (1), (3), (4) confirmés par David (« oui » aux recos) ; écriture en prod de 18:52 faite par une autre session.
