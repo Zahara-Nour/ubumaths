@@ -366,7 +366,7 @@ courbe, pas dans le bloc associer. Instance : `serializeAssocierBlock` écrit la
 élément a un bloc), courbe en taille `petite`.
 
 Bloc ``trous (texte à trous à étiquettes, [questions.md](questions.md), chantier
-[`trous-etiquettes`](../wip/trous-etiquettes-progress.md)) — `__tests__/trous/trous-parser.test.ts`,
+[`trous-etiquettes`](../archive/wip/trous-etiquettes-progress.md)) — `__tests__/trous/trous-parser.test.ts`,
 `trous-typst-compilation.test.ts`, `TrousEtiquettes.svelte.test.ts` : le texte, une ligne non vide par
 ligne affichée (lignes vides ignorées), en markdown en ligne (gras, formules, variables) ; chaque trou est
 sa bonne étiquette entre crochets, **hors formule** (`[arithmétique]`, `[$r$]` ; `$[0 ; 1]$` n'est pas

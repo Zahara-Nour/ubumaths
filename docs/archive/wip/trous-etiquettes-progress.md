@@ -1,14 +1,14 @@
 # Chantier `trous-etiquettes` — texte à trous à étiquettes (outils-manquants n° 34)
 
 > Demande de David du 2026-11-14. Même mécanique que ` ```associer `, `geste: étiquettes`
-> (chantier [`associer`](../archive/wip/associer-progress.md)) : associer ne place qu'un trou par
+> (chantier [`associer`](associer-progress.md)) : associer ne place qu'un trou par
 > ligne, en bout de ligne ; ici, les trous sont au milieu d'un paragraphe.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2653._
+_Mis à jour le 2026-11-14, clôture._
 
-- **État** : lot 1 mergé (#2653, CI verte, revue opus « prêt pour PR », mineurs corrigés) ; bloc ` ```trous ` complet sur `main`, pas encore en prod · **Prochaine action** : essai de David (`verifications-manuelles.md`), puis clore le chantier (versement, journal archivé) · **En attente de David** : corrigé PDF de la série — garder « 1 → pair ; 2 → impair » (reco) ou le texte avec les étiquettes en gras (`trousAFiger`) ; `deploy:prod` · **Pièges en cours** : rouge non prouvé pour le parseur et le composant seul ; ~150 lignes du geste copiées d'`AssocierEtiquettes` (module commun plus tard) ; échappement Typst de `#`/`@` en texte nu laissé (commun avec associer, ranger) · **Worktree / branche** : aucun
+- **État** : **chantier clos** — bloc ` ```trous ` livré (#2653), essai de David validé le 2026-11-14 ; doc durable dans `docs/systeme/questions.md`, `ubumark.md`, `fiches-et-pdf.md` ; journal archivé · **En attente de David** : `deploy:prod` ; corrigé PDF de la série (question reportée dans `docs/wip/outils-manquants.md` § 3) · **Reste connu** : ~150 lignes du geste copiées d'`AssocierEtiquettes` (module commun plus tard) ; échappement Typst de `#`/`@` en texte nu (commun avec associer, ranger)
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -118,3 +118,4 @@ différentes ; moins de 3 étiquettes différentes (réserve devinable) ; `[_]` 
   `TROUS_RESERVE_COLUMNS`, partagé avec `generateTrousTypst`). **Laissé** : (5) `inlineUbumarkTypst`
   commun avec associer et ranger (décision du coordinateur).
 - 2026-11-14 : #2653 mergée (conflit avec le bloc `tortue` de #2651 résolu dans `questions.md`), worktree retiré.
+- 2026-11-14 : **essai de David validé** (fiche du bloc, téléphone et ordinateur) ; chantier clos, journal archivé ; la question du corrigé PDF de la série passe dans `outils-manquants.md` § 3.

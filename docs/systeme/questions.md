@@ -452,7 +452,7 @@ Courbe dans un élément (lot 2, ` ```courbe ` en retrait, clôture ```` ; déta
 [ubumark.md](ubumark.md)) : variables de la courbe résolues au tirage, comparaison des éléments sur leur
 texte entier ; une courbe à placer dans un élément n'est pas une case (`assignBlankIndices` l'écarte, le
 parseur associer la refuse) ; au plus 6 éléments.
-Texte à trous (``trous, chantier [`trous-etiquettes`](../wip/trous-etiquettes-progress.md),
+Texte à trous (``trous, chantier [`trous-etiquettes`](../archive/wip/trous-etiquettes-progress.md),
    outils-manquants n° 34 ; `trous-parser.ts`, `findTrousToPlace`) : le prof écrit son texte, chaque trou
    étant sa bonne étiquette entre crochets hors formule (`[arithmétique]`, `[$r$]`), et `intrus: a ; b` en
    dernière ligne ; une étiquette écrite deux fois n'est montrée qu'une fois. Même mécanique qu'associer à
