@@ -3,6 +3,7 @@
 	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import EvaluationResultsTable from '$lib/components/assessments/EvaluationResultsTable.svelte';
+	import EvaluationBreakdown from '$lib/components/assessments/EvaluationBreakdown.svelte';
 	import { TrendingUp, Users, CheckCircle2, Clock, AlertCircle } from '@lucide/svelte';
 	import { formatGrade, formLabel } from '$lib/types/evaluation';
 	import type { PageData } from './$types';
@@ -90,6 +91,9 @@
 			</Card.Root>
 		</div>
 	{/if}
+
+	<!-- Bilan par question et par notion -->
+	<EvaluationBreakdown breakdown={data.breakdown} />
 
 	<!-- Results Table -->
 	<Card.Root>
