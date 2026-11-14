@@ -2,11 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2647._
+_Mis à jour le 2026-11-14, phase 0 de la PR 4 validée._
 
-- **État** : #2627, #2632, #2634 (`/tortue`), #2636 (rythme) et **#2647 (onglets Blocs / Tortue sur téléphone, pause de 600 ms au départ)** mergées ; la PR 3 du découpage est faite, essayée par David sur iPhone · **Prochaine action** : phase 0 de la PR 4, geste de réponse « programme » dans les modèles de questions (correction par tracé ou par sortie), à présenter avant de coder · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) ; molette sur l'espace de blocs = défilement des blocs ; tests navigateur : `getByRole` ignore un élément masqué → `includeHidden: true` · **Worktree / branche** : aucun (le prochain : `ubumaths-wt-blockly`, nouvelle branche)
-
----
+- **État** : PR 1 à 3c mergées (#2627, #2632, #2634, #2636, #2647) ; **PR 4 en cours** (geste de réponse « programme » tortue, phase 0 validée, cf. § PR 4) · **Prochaine action** : tests rouges puis code de la PR 4 · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir dans la PR 4 ; réponse ≤ 2 000 caractères (`MAX_ANSWER_LENGTH`) ; tests navigateur : `getByRole` ignore un élément masqué → `includeHidden: true` · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-geste-reponse`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -189,3 +187,28 @@ Phase 0 présentée le 2026-11-14 ; David : « je te suis » sur les cinq recomm
 - `code-reviewer` (Sonnet) : rien de bloquant ; nom du `tablist`, marge du test de pause, test
   « Tout de suite » pendant la pause ajoutés. Laissé : sur ordinateur, `tabpanel` sans onglet
   visible. Mergée : #2647.
+
+## PR 4 — geste de réponse « programme » tortue (branche `feat/blockly-geste-reponse`)
+
+Phase 0 présentée le 2026-11-14 ; David suit les quatre recommandations (« je suis tes recos »).
+
+- **Bloc ubumark** ```tortue : `attendu:` (programme de référence en notation texte,
+  `répéter 4 [ avancer 3 ; tourner à droite 90 ]`, variables tirées admises), `montrer: oui|non`
+  (figure à reproduire en gris), `comparer: position|forme`.
+- **Réponse enregistrée** (tranché, reco 1) : le programme de l'élève en notation texte (≤ 2 000
+  caractères), rangé avec les autres réponses (aucune table, aucune règle d'accès nouvelle) ;
+  reconverti en blocs à la réouverture.
+- **Jugement** : les deux programmes rejoués par l'interpréteur, `memesTraces` (ni ordre ni chemin).
+  **Comparaison** (tranché, reco 2) : `position` par défaut (même figure, même endroit) ;
+  `forme` : à un quart de tour, un retournement ou une translation près (8 symétries du quadrillage).
+- Élève : blocs + quadrillage dans la carte (onglets sur téléphone), Lancer à volonté, Valider ;
+  programme vide → Valider grisé ; sortie du cadre → jugée sur le tracé, signalée ; erreur de la
+  tortue → faux + message ; programme trop long → refusé avant l'envoi.
+- Après validation : tracé de l'élève en couleur, attendu en pointillés, verdict ; corrigé :
+  programme de référence en texte + figure. Évaluation notée : `attendu:` jamais envoyé, figure
+  modèle seulement si `montrer: oui`. Contrôle du modèle : référence lisible et non vide à chaque
+  tirage, sinon publication refusée.
+- **PDF** (tranché, reco 3) : consigne + figure modèle + « À faire sur Chiphre ».
+- **Découpage** (tranché, reco 4) : tortue seule ; correction par sortie (programmes de calcul,
+  5e) = PR 5 ; blocs imposés, nombre maximal de blocs, premiers modèles : plus tard.
+- Revoir la clé arrondie de `normaliserSegments`.
