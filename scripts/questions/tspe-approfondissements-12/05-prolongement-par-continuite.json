@@ -1,0 +1,197 @@
+{
+	"title": "Prolongement par continuité en un point",
+	"description": "Valeur du prolongement d'une fraction rationnelle simplifiable (case), de (e^{ax} − 1)/x en 0 par le nombre dérivé (case), fonction qui se prolonge en 0 (case choix)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La fonction $f$ est définie sur $\\mathbb{R}\\setminus\\{{{eval:d}}\\}$ par $f(x)=\\dfrac{x^2{{if:k1==1|+|{{if:k1==-1|-|{{eval:k1;+}}}}}}x{{eval:k2;+}}}{x{{eval:-d;+}}}$.\n\nPar quelle valeur faut-il poser $f({{eval:d}})$ pour prolonger $f$ par continuité en ${{eval:d}}$ ?\n\n$f({{eval:d}})=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "k1",
+					"expression": "eval:(m)-(d)"
+				},
+				{
+					"name": "k2",
+					"expression": "eval:-(m)*(d)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d+m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le numérateur s'annule en ${{eval:d}}$ : $x^2{{if:k1==1|+|{{if:k1==-1|-|{{eval:k1;+}}}}}}x{{eval:k2;+}}=(x{{eval:-d;+}})(x{{eval:m;+}})$.",
+					"Pour $x\\neq {{eval:d}}$, $f(x)=x{{eval:m;+}}$, donc $\\displaystyle\\lim_{x\\to {{eval:d}}}f(x)={{eval:d;()}}{{eval:m;+}}={{eval:d+m}}$.",
+					"La limite est finie : on prolonge $f$ par continuité en posant $\\textcolor{{{color:primary.0}}}{f({{eval:d}})={{eval:d+m}}}$."
+				]
+			},
+			"conditions": ["m != d"]
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $\\mathbb{R}^*$ par $f(x)=\\dfrac{e^{{{eval:a}}x}-1}{x}$.\n\nPar quelle valeur faut-il poser $f(0)$ pour prolonger $f$ par continuité en $0$ ?\n\n$f(0)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $g(x)=e^{{{eval:a}}x}$, $g(0)=1$ et $f(x)=\\dfrac{g(x)-g(0)}{x-0}$ : c'est un taux de variation de $g$ en $0$.",
+					"$g$ est dérivable, $g'(x)={{eval:a}}e^{{{eval:a}}x}$, donc $\\displaystyle\\lim_{x\\to 0}f(x)=g'(0)={{eval:a}}$.",
+					"On prolonge $f$ par continuité en posant $\\textcolor{{{color:primary.0}}}{f(0)={{eval:a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les quatre fonctions ci-dessous sont définies sur $]0;+\\infty[$.\n\nLaquelle se prolonge par continuité en $0$ ?\n\n```choix\n- $x\\mapsto x\\ln(x)$\n- $x\\mapsto\\ln(x)$\n- $x\\mapsto\\dfrac{1}{x}$\n- $x\\mapsto\\dfrac{e^x}{x}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction se prolonge par continuité en $0$ si elle a une limite **finie** en $0$.",
+					"$\\displaystyle\\lim_{x\\to 0^+}x\\ln(x)=0$ (croissance comparée), alors que $\\ln(x)\\to-\\infty$, $\\dfrac{1}{x}\\to+\\infty$ et $\\dfrac{e^x}{x}\\to+\\infty$.",
+					"Seule $\\textcolor{{{color:primary.0}}}{x\\mapsto x\\ln(x)}$ se prolonge, en posant $f(0)=0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(2) = 5",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"m": "3",
+				"k1": "1",
+				"k2": "-6"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : m seul",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"m": "3",
+				"k1": "1",
+				"k2": "-6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : d − m",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"m": "3",
+				"k1": "1",
+				"k2": "-6"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(0) = −3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x ln x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ln x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : e^x/x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
