@@ -12,7 +12,8 @@
  * de cours donne son recto à l'énoncé et son verso au corrigé. Les gestes à figer :
  * tableau de signes à compléter (vide / rempli), droite à tracer (repère vide / droite
  * dessinée), boîte à moustaches à construire (axe seul / boîte dessinée), points à
- * placer sur une droite graduée ou dans un repère (sans eux / points posés).
+ * placer sur une droite graduée ou dans un repère (sans eux / points posés), éléments à
+ * associer (deux colonnes à relier / la liste « élément → bonne étiquette »).
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
  * fonctions déclarées par le modèle de la question (`shared.genericFunctions`). L'écran
@@ -44,6 +45,8 @@ import {
 	PLACER_LINE_REGEX
 } from '$lib/ubumark/parser/stat-chart-parser';
 import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
+import { findAssociersToPlace, parseAssocierContent } from '$lib/ubumark/parser/associer-parser';
+import { associerPlacedOf } from '$lib/ubumark/utils/associer';
 import {
 	findVariationsToFill,
 	revealVariationBody
@@ -405,6 +408,51 @@ function boitesAConstruire(
 	return { texte: lignes.join('\n'), cases };
 }
 
+/**
+ * Éléments à associer (```associer, déjà sans liens, étiquettes dans l'ordre affiché) :
+ * à l'énoncé, le bloc sans `case:` (le PDF dessine les deux colonnes à relier) ; au
+ * corrigé (`corrige`), à sa place la liste « élément → bonne étiquette ». Une case par
+ * élément. Bloc en retrait ou cité, illisible, ou réponse attendue hors des étiquettes
+ * → refus, message à l'appui.
+ */
+function associersAFiger(
+	modele: string,
+	texte: string,
+	corrige: boolean,
+	instance: QuestionInstance
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const blocs = findAssociersToPlace(texte);
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (bloc.nested) throw refus('éléments à associer en retrait ou cités');
+		const node = parseAssocierContent(bloc.body.join('\n'));
+		if (node.errors.length > 0 || node.caseIndex === undefined) {
+			throw refus(`éléments à associer illisibles (${node.errors.join(' ; ')})`);
+		}
+		cases += node.items.length;
+		const first = node.caseIndex;
+		const fin = bloc.closed
+			? bloc.startIndex + bloc.body.length + 1
+			: bloc.startIndex + bloc.body.length;
+		if (corrige) {
+			const liste = node.items.map((item, k) => {
+				const attendue = instance.blanks?.[first + k]?.expectedAnswer ?? '';
+				const position = associerPlacedOf(attendue, node.labels.length);
+				if (position === null) throw refus(`élément ${k + 1} : réponse attendue illisible`);
+				return `- ${item} → ${node.labels[position]}`;
+			});
+			lignes.splice(bloc.startIndex, fin - bloc.startIndex + 1, ...liste);
+			continue;
+		}
+		const corps = bloc.body.filter((ligne) => !CASE_LINE.test(ligne));
+		lignes.splice(bloc.startIndex + 1, bloc.body.length, ...corps);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
 /** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
 function choixImprime(contenu: string): string {
 	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
@@ -503,6 +551,10 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	const graduationsEnonce = droitesAPlacer(template.id, boitesEnonce.texte, false);
 	const graduationsCorrige = droitesAPlacer(template.id, boitesCorrige.texte, true);
 
+	// Éléments à associer : deux colonnes à l'énoncé, la liste des bonnes associations au corrigé
+	const associerEnonce = associersAFiger(template.id, graduationsEnonce.texte, false, instance);
+	const associerCorrige = associersAFiger(template.id, graduationsCorrige.texte, true, instance);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
 	const cases =
@@ -511,17 +563,18 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 		tableauxEnonce.cases +
 		droitesEnonce.cases +
 		boitesEnonce.cases +
-		graduationsEnonce.cases;
+		graduationsEnonce.cases +
+		associerEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = graduationsEnonce.texte
+	const enonce = associerEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = graduationsCorrige.texte
+	const corrige = associerCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 

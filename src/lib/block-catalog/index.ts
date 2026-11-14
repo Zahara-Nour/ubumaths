@@ -23,6 +23,7 @@ import { probtreeEntry } from './probtree';
 import { qrEntry } from './qr';
 import { scratchEntry } from './scratch';
 import { rangerEntry } from './ranger';
+import { associerEntry } from './associer';
 import { boxPlotEntry, statChartEntry } from './stat-chart';
 import { trigEntry } from './trig';
 import { variationEntry } from './variation';
@@ -50,6 +51,7 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	solideEntry,
 	patronEntry,
 	rangerEntry,
+	associerEntry,
 	operationEntry,
 	trigEntry,
 	scratchEntry

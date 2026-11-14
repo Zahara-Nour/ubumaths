@@ -18,6 +18,7 @@ import {
 } from '$lib/ubumark/parser/associer-parser';
 import { displayedAssocierLabels, displayedOrder } from '$lib/ubumark/utils/associer';
 import { parseMarkdown } from '$lib/ubumark';
+import { generateTypst } from '$lib/ubumark/generators/typst-generator';
 
 const block = (...body: string[]) => ['```associer', ...body, '```'].join('\n');
 
@@ -157,5 +158,21 @@ describe('ordre affiché', () => {
 		expect(order).not.toEqual([0, 1, 2]);
 		expect([...order].sort()).toEqual([0, 1, 2]);
 		expect(displayedOrder(free)).toEqual(order);
+	});
+});
+
+describe('PDF (Typst)', () => {
+	it('deux colonnes à relier : éléments et points à gauche, points et étiquettes affichées à droite', () => {
+		const typst = generateTypst(
+			parseMarkdown(block('case: 0', '- a ->', '- b ->', '- -> z', '- -> x', '- -> y'))
+		);
+		expect(typst).toContain('grid(columns: (auto, auto, 2.5cm, auto, auto)');
+		const grid = typst.split('\n').find((line) => line.includes('2.5cm')) ?? '';
+		const cells = [...grid.matchAll(/\[([^\]]*)\]/g)].map((m) => m[1].trim());
+		expect(cells).toEqual(['a', '•', '', '•', 'z', 'b', '•', '', '•', 'x', '', '', '', '•', 'y']);
+	});
+
+	it('bloc mal écrit : rien', () => {
+		expect(generateTypst(parseMarkdown(block('- a -> 1')))).not.toContain('grid(');
 	});
 });

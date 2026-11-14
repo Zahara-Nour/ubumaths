@@ -29,6 +29,7 @@ export type CatalogNodeType =
 	| 'espace'
 	| 'operation'
 	| 'ranger'
+	| 'associer'
 	| 'collection'
 	| 'monnaie'
 	| 'schema-barres';

@@ -64,6 +64,8 @@ import { generateCourbeTypst } from './courbe-typst';
 import { generateStatChartTypst } from './stat-chart-typst';
 import type { RangerNode } from '../types/ranger';
 import { displayedLabels } from '../utils/ranger';
+import type { AssocierNode } from '../types/associer';
+import { displayedAssocierLabels } from '../utils/associer';
 import { generateQrTypst } from './qr-typst';
 import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
@@ -549,6 +551,8 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'ranger':
 			return generateRangerTypst(node, options);
+		case 'associer':
+			return generateAssocierTypst(node, options);
 
 		default:
 			return '';
@@ -3843,6 +3847,43 @@ export async function markdownToTypst(
 	await import('./figure-typst-setup');
 	const ast = parseMarkdown(markdown);
 	return generateTypst(ast, options);
+}
+
+/** Une ligne d'ubumark (étiquette, élément) en Typst, dans le texte courant */
+function inlineUbumarkTypst(text: string, options: ResolvedTypstTranspilerOptions): string {
+	const paragraph = parseMarkdown(text).children[0];
+	return paragraph?.type === 'paragraph'
+		? paragraph.children.map((child) => generateInline(child, options)).join('')
+		: '';
+}
+
+/**
+ * Bloc ```associer : deux colonnes à relier au crayon. À gauche les éléments, un
+ * point « • » au bout de chacun ; à droite les étiquettes, dans l'ordre où l'élève
+ * les voit, un point devant chacune. Jamais la réponse (le corrigé d'une série
+ * d'automatismes remplace le bloc par la liste des bonnes associations).
+ */
+function generateAssocierTypst(
+	node: AssocierNode,
+	options: ResolvedTypstTranspilerOptions
+): string {
+	if (node.errors.length > 0) return '';
+	const items = node.items.map((item) => inlineUbumarkTypst(item, options));
+	const labels = displayedAssocierLabels(node).map((label) => inlineUbumarkTypst(label, options));
+	const rows = Math.max(items.length, labels.length);
+	const cells: string[] = [];
+	for (let k = 0; k < rows; k++) {
+		const item = items[k];
+		const label = labels[k];
+		cells.push(
+			item === undefined ? '[]' : `[${item}]`,
+			item === undefined ? '[]' : '[•]',
+			'[]',
+			label === undefined ? '[]' : '[•]',
+			label === undefined ? '[]' : `[${label}]`
+		);
+	}
+	return `#align(center, grid(columns: (auto, auto, 2.5cm, auto, auto), column-gutter: 0.4em, row-gutter: 0.9em, align: (right + horizon, center + horizon, center, center + horizon, left + horizon), ${cells.join(', ')}))`;
 }
 
 /**
