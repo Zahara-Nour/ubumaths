@@ -9,10 +9,19 @@
  * @module ubumark/utils/trous
  */
 
-import type { TrousSpec } from '../types/trous';
+import type { TrousSegment, TrousSpec } from '../types/trous';
 import { associerPlacedOf, displayedAssocierLabels, displayedOrder } from './associer';
 
+// Types
+
+/** Morceau d'une ligne à l'écran : le trou garde la ponctuation qui le suit (`glue`) */
+export type TrousPiece =
+	{ kind: 'text'; text: string } | { kind: 'hole'; hole: number; glue: string };
+
 // Constantes
+
+/** Ponctuation collée au trou qui la précède : jamais seule en début de ligne */
+const TRAILING_PUNCTUATION = /^[.,;:!?)\]»…]+/;
 export const TROUS_MIN_HOLES = 1;
 export const TROUS_MAX_HOLES = 10;
 /** Moins, la réponse se devinerait */
@@ -39,4 +48,26 @@ export function trousPlacedOf(value: string, count: number): number | null {
 /** Nombre de trous du bloc */
 export function trousHoleCount(spec: Pick<TrousSpec, 'answers'>): number {
 	return spec.answers.length;
+}
+
+/**
+ * Une ligne du texte prête pour l'écran : la ponctuation qui suit un trou (`.`, `,`)
+ * passe dans le trou, pour ne jamais revenir seule à la ligne au téléphone
+ */
+export function trousPieces(line: readonly TrousSegment[]): TrousPiece[] {
+	const pieces: TrousPiece[] = [];
+	line.forEach((segment, index) => {
+		if (segment.kind === 'hole') {
+			const next = line[index + 1];
+			const glue = next?.kind === 'text' ? (next.text.match(TRAILING_PUNCTUATION)?.[0] ?? '') : '';
+			pieces.push({ kind: 'hole', hole: segment.hole, glue });
+			return;
+		}
+		const previous = line[index - 1];
+		const glued =
+			previous?.kind === 'hole' ? (segment.text.match(TRAILING_PUNCTUATION)?.[0] ?? '') : '';
+		const text = segment.text.slice(glued.length);
+		if (text !== '') pieces.push({ kind: 'text', text });
+	});
+	return pieces;
 }

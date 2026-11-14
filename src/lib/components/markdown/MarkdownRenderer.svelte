@@ -64,6 +64,7 @@
 	import ChoiceBlock from './nodes/ChoiceBlock.svelte';
 	import RangerPlacer from './nodes/RangerPlacer.svelte';
 	import AssocierPlacer from './nodes/AssocierPlacer.svelte';
+	import TrousEtiquettes from './nodes/TrousEtiquettes.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -425,6 +426,8 @@
 					<RangerPlacer {node} />
 				{:else if node.type === 'associer'}
 					<AssocierPlacer {node} />
+				{:else if node.type === 'trous'}
+					<TrousEtiquettes {node} />
 				{/if}
 			{/each}
 		{:else}

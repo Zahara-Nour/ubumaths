@@ -17,7 +17,7 @@ import {
 	replaceTrousBlocks,
 	serializeTrousBlock
 } from '$lib/ubumark/parser/trous-parser';
-import { displayedTrousLabels } from '$lib/ubumark/utils/trous';
+import { displayedTrousLabels, trousPieces } from '$lib/ubumark/utils/trous';
 import { parseMarkdown } from '$lib/ubumark';
 
 const block = (...body: string[]) => ['```trous', ...body, '```'].join('\n');
@@ -222,5 +222,17 @@ describe('repérage des blocs', () => {
 		expect(node.type).toBe('trous');
 		if (node.type !== 'trous') return;
 		expect(node.errors.join(' ')).toMatch(/bloc non fermé/);
+	});
+});
+
+describe('écran : la ponctuation suit le trou', () => {
+	it('« [x]. » : le point passe dans le trou, jamais seul en début de ligne', () => {
+		const { lines } = parseTrousBody(['A [x], puis [y].', 'intrus: z']);
+		expect(trousPieces(lines[0])).toEqual([
+			{ kind: 'text', text: 'A ' },
+			{ kind: 'hole', hole: 0, glue: ',' },
+			{ kind: 'text', text: ' puis ' },
+			{ kind: 'hole', hole: 1, glue: '.' }
+		]);
 	});
 });
