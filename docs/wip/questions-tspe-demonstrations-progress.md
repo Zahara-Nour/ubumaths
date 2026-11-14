@@ -10,14 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2628 (fichiers du lot 11)._
+_Mis à jour le 2026-11-14, après #2630 (rangement du lot 11, `db:migrate` fait)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 et 10 publiés, lot 11 en fichiers sur `main` (#2628, § 44), 19 restants après lui.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/tspe-approfondissements-11 --publier`
-  depuis le dépôt principal ; puis migration de rangement avec la **sous-notion neuve** « récurrence
-  linéaire d'ordre 2 » (Suites récurrentes, 395), comme D4 de la 1re.
-- **En attente de David** : `create-questions --publier` du lot 11.
+  § 35, lots 9 à 15) : lots 9 et 10 publiés, lot 11 rangé en prod, en `draft` (#2630, § 45), 19 restants après lui.
+- **Prochaine action** : lot 11, page à cocher (`page-a-cocher.ts --dir scripts/questions/tspe-approfondissements-11`,
+  comme § 42), puis publication par David ; puis lot 12.
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -900,3 +899,18 @@ simulation sur la prod : 4 « à créer », aucun titre pris ; brouillons en bas
 89db2744, 30742c88, df24b682) ; aperçu admin vu à l'écran : 394 (a) joué « Juste » (9/(n + 1), ℓ = −5),
 395 (a) joué faux (u₃ = 5 au lieu de 6 : case 2 fausse, case 1 juste), 396 (c) « 76/27 » joué « Juste », étapes
 à ranger de 571 rendues.
+
+## 45. Lot 11 : brouillons et rangement (2026-11-14)
+
+`create-questions --publier` lancé par David : 5dea92fa (394), 261a1341 (395), f64ab8f3 (396), 87044276 (571), en
+`draft`, sans nœud ni tag (MCP) ; « récurrence linéaire d'ordre 2 » absente. Migration
+`20261114021510_questions_tspe_approfondissements_11_rangement_tags`, copie de celle du lot 5 de 1re (sous-notion
+neuve, tout ou rien) : sous-notion neuve en fin de Suites récurrentes (position 2) ; 394 → Limites de suites >
+convergence monotone ; 395 → Suites récurrentes > récurrence linéaire d'ordre 2 (le point reste sur la notion) ; 396
+et 571 → Suites récurrentes > point fixe. Test d'intégration 11/11, rouge sans la migration (6 échecs) ; tests
+frères comme au lot 8 de 1re : fixture de l'arbre, décompte 482, `LATER`. `security-auditor` : aucun finding.
+Base locale non rejouée : 11 migrations non enregistrées mais déjà présentes en partie (colonne `week_celebrated_on`),
+`migration up --local` refusé ; la CI (intégration comprise) a fait foi.
+Mergé (#2630) : CI verte, `check:migrations --pr` vert, `db:migrate` fait du dépôt principal (le worktree n'est pas
+lié au projet) ; relu en base (MCP) : 4 `draft`, chacun sur sa sous-notion avec son seul point, `updated_at` intact.
+JSON du dépôt principal remis à l'état commité.
