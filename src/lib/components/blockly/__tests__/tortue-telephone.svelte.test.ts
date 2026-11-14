@@ -16,6 +16,26 @@ function quadrillage() {
 	return page.getByRole('img', { name: /Tracé de la tortue/, includeHidden: true });
 }
 
+/** Pose « avancer de 2 » dans l'espace de travail créé par le composant. */
+async function poserAvancer(): Promise<void> {
+	await expect.element(panneauBlocs()).toBeVisible();
+	Blockly.serialization.workspaces.load(
+		{
+			blocks: {
+				blocks: [
+					{
+						type: 'tortue_avancer',
+						x: 10,
+						y: 10,
+						inputs: { VALEUR: { shadow: { type: 'math_number', fields: { NUM: 2 } } } }
+					}
+				]
+			}
+		},
+		Blockly.getMainWorkspace()
+	);
+}
+
 afterEach(async () => {
 	await page.viewport(1280, 900);
 });
@@ -63,33 +83,30 @@ describe('Pause au départ', () => {
 	it('après « Lancer », la tortue attend au départ avant le premier pas', async () => {
 		await page.viewport(390, 844);
 		await render(TortueBacASable);
-		// L'espace de travail créé par le composant : on y pose « avancer de 2 »
-		await expect.element(panneauBlocs()).toBeVisible();
-		Blockly.serialization.workspaces.load(
-			{
-				blocks: {
-					blocks: [
-						{
-							type: 'tortue_avancer',
-							x: 10,
-							y: 10,
-							inputs: { VALEUR: { shadow: { type: 'math_number', fields: { NUM: 2 } } } }
-						}
-					]
-				}
-			},
-			Blockly.getMainWorkspace()
-		);
+		await poserAvancer();
 		await page.getByRole('button', { name: 'Lancer' }).click();
 		await expect
 			.element(quadrillage())
 			.toHaveAttribute('aria-label', 'Tracé de la tortue : 0 segment');
-		await new Promise((r) => setTimeout(r, 400));
+		await new Promise((r) => setTimeout(r, 200));
 		await expect
 			.element(quadrillage())
 			.toHaveAttribute('aria-label', 'Tracé de la tortue : 0 segment');
 		await expect
 			.element(quadrillage())
+			.toHaveAttribute('aria-label', 'Tracé de la tortue : 1 segment');
+	});
+});
+
+describe('Tout de suite pendant la pause', () => {
+	it('le tracé complet s’affiche sans attendre la fin de la pause', async () => {
+		await page.viewport(390, 844);
+		await render(TortueBacASable);
+		await poserAvancer();
+		await page.getByRole('button', { name: 'Lancer' }).click();
+		await page.getByRole('button', { name: 'Tout de suite' }).click();
+		await expect
+			.element(quadrillage(), { timeout: 300 })
 			.toHaveAttribute('aria-label', 'Tracé de la tortue : 1 segment');
 	});
 });

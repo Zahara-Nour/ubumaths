@@ -150,7 +150,11 @@
 <div class="flex flex-col gap-3">
 	<div class="flex flex-wrap items-center gap-2">
 		<!-- Téléphone et tablette en portrait : un panneau à la fois (David, 2026-11-14) -->
-		<div class="flex rounded-md border border-border p-0.5 lg:hidden" role="tablist">
+		<div
+			class="flex rounded-md border border-border p-0.5 lg:hidden"
+			role="tablist"
+			aria-label="Panneau affiché"
+		>
 			{#each ONGLETS as { valeur, libelle } (valeur)}
 				<button
 					type="button"
