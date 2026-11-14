@@ -10,21 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 14 publié (§ 61)._
+_Mis à jour le 2026-11-14, après #2656 (rangement du lot 15, § 64)._
 
-- **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 14 publiés (§ 61) ; lot 15 restant (517, 529, 537, 538, 539).
-- **Prochaine action** : lot 15 (517, 529, 537, 538, 539) : relevé MCP, fichiers, aperçus, PR des fichiers (même
-  démarche que le lot 14, § 58 à 61).
-- **En attente de David** : rien.
-- **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
-  l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
-  la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
-  (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
-  **les `id` écrits par `create-questions` se commitent dans la PR de rangement** (`page-a-cocher.ts` et
-  `publier-lot.ts` les exigent, § 56) ; `1x` non nettoyé dans `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable
-  `e` ni `i`** (§ 52) ; `pnpm deploy:prod` en cours = merge bloqué, attendre `lock.py --tenu deploy`.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche à créer depuis `origin/main`.
+- **État** : lots 1 à 14 publiés (§ 61) ; lot 15 rangé en prod (#2656, sous-notion « loi de Poisson »), page à cocher
+  publiée : https://claude.ai/artifact/YNBWKZxoNHbtrLVfpTgK8k (§ 64).
+- **Prochaine action** : lire les verdicts ; corriger les « à revoir » ; `publier-lot.ts` (David). Dernier lot du
+  chantier, puis clôture (recompter le découpage contre les PR mergées).
+- **En attente de David** : verdicts sur la page à cocher du lot 15.
+- **Pièges en cours** : commitlint (type `content` refusé, corps ≤ 100 car.) ; graine de l'aperçu = variation (§ 3) ;
+  scripts sur la prod (`create-questions`, `publier-lot.ts`, simulations comprises) → David ; `\dots` non rendu
+  (§ 14) ; `Doc-inchangée:` dans un COMMIT ; « inserted before » → `--dry-run --include-all` (§ 20) ; `cf()` (§ 48) ;
+  pas de variable `e` ni `i` (§ 52) ; réponse décimale → `blankDefaults.acceptDecimal` (§ 62).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche à créer depuis `origin/main` s'il y a un correctif.
 
 ---
 
@@ -1085,3 +1082,51 @@ publication.
 
 Verdicts lus : 3/3 « ok », sans commentaire (ids du § 59). `publier-lot.ts` (simulation puis `--publier`) lancé par
 David. Relu en base (MCP) : 3 `published`.
+
+## 62. Lot 15 : approfondissements, probabilités et statistiques (2026-11-14)
+
+| Point | Modèle (`scripts/questions/tspe-approfondissements-15/`) | Nœud, niveau                                             | Variations                                                                                                               |
+| ----- | -------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 517   | `01-loi-de-poisson-limite-de-binomiales`                 | Autres lois › loi de Poisson (neuve), 1                  | lim P(X_n = 0) = e^{−λ} ; lim P(X_n = 1) = λe^{−λ} ; approcher B(n, p), P(Y = 2) (deux cases) ; évènements rares (choix) |
+| 529   | `02-esperance-d-un-produit-et-variance-d-une-somme`      | Sommes et concentration › espérance et variance somme, 4 | factoriser par indépendance (choix) ; V(X + Y) développée ; E((X + Y)²) et V(X + Y) ; Y = X ; ranger (5)                 |
+| 537   | `03-estimer-une-proportion`                              | Échantillonnage › estimation d'une proportion, 1         | p(1 − p) ≤ 1/4 (choix) ; majorant du risque ; taille d'échantillon ; intervalle de confiance (deux)                      |
+| 538   | `04-marche-aleatoire-et-loi-binomiale`                   | Probabilités conditionnelles › épreuves indép., 6        | S_n = 2X_n − n (deux cases) ; P(S_4 = 0) ; E(S_N) et V(S_N) ; nombre impair d'étapes (choix)                             |
+| 539   | `05-concentration-sondage-sex-ratio-demi-vie`            | Sommes et concentration › loi des grands nombres, 3      | sondage n = 1 000 ; sex ratio n = 10⁶ ; demi-vie n = 10²³ (exposant) ; effet de n (choix)                                |
+
+Relevé MCP du 2026-11-14 : les cinq points actifs, aucun modèle tagué dessus ; 517 sur la notion Autres lois (pas de
+sous-notion « loi de Poisson » en prod), les quatre autres sur la sous-notion du modèle ; niveaux publiés au plus —,
+3, —, 5, 2. Aucun des cinq titres pris en prod (MCP). Script : `docs/wip/questions/lot-tspe-approfondissements-15.py`.
+
+Piège neuf : une réponse décimale (`0,3`) est « bad_form » sans `shared.blankDefaults.acceptDecimal` (vu sur les
+modèles de 1re spé ; le gabarit du lot 14 ne le portait pas). Défauts vus dans les aperçus et corrigés :
+`E(Z)^2` réécrit `E Z^2` par le nettoyage (écrit `\left(E(Z)\right)^2`) ; milliers sans espace (`2000`, `4000`) :
+espace écrite à la main (`\,000`).
+
+Vérifié : `question:specs` 150 tirages par variation, 5/5 importables (67 specs vertes), 0 `\textcolor` hors `$` ;
+672 formules distinctes des aperçus passées à `validateLatex` + accolades, 0 problème ; `create-questions` en
+simulation sur la prod refusé par le mode auto (titres vérifiés par MCP à la place) ; brouillons en base locale (copie
+hors dépôt : a7550547, 1d99c55a, e2027daa, 5487df35, f22e6fe3) ; aperçu admin vu à l'écran (port 5177) : 529
+(Y = X) joué « Juste » (`0,1`), étapes à ranger de 529 rendues, 538 (parité) joué faux (B coché à tort, correction
+affichée), 517 (P(Y = 2)) joué « Juste » (`4,5` et `3`).
+
+Mergé (#2654) : CI verte. Les `id` viendront de `create-questions --publier` (prod, lancé par David).
+
+## 63. Lot 15 : brouillons et rangement (2026-11-14)
+
+`create-questions --publier` lancé par David : 8d03f8c1 (517), 81353e4d (529), 38c8774e (537), 7f9366af (538),
+f55ce309 (539), en `draft`, au niveau {T_SPE}, sans nœud ni tag (MCP) ; « loi de Poisson » absente sous Autres lois
+(8 sous-notions). Les `id` des cinq JSON sont commités dans la PR de rangement (piège du § 56). Migration
+`20261114111511_questions_tspe_approfondissements_15_rangement_tags`, copie de celle du lot 11 (sous-notion neuve,
+tout ou rien) aux données près : « loi de Poisson » en fin d'Autres lois (position 8) ; chacun sur la sous-notion du
+§ 62, 517 restant sur la notion. Test d'intégration 11/11, rouge sans la migration (6 échecs, 5 sautés) ; tests
+frères comme au lot 11 : fixture de l'arbre, décompte 483, `LATER`.
+`security-auditor` : aucun finding (code identique au lot 11 aux données près ; relevé prod refait, concordant).
+
+## 64. Lot 15 : rangement mergé, page à cocher (2026-11-14)
+
+Mergé (#2656) : CI verte (intégration comprise), `check:migrations --pr` vert, `db:migrate` fait du dépôt principal
+(simulation : cette seule migration) ; relu en base (MCP) : 5 `draft`, chacun sur sa sous-notion avec son seul point,
+« loi de Poisson » en position 8, `updated_at` intact. JSON du dépôt principal remis à l'état commité (identiques à
+`origin/main`, `id` compris). `page-a-cocher.ts` lu en base prod : 5 brouillons, 4, 5, 4, 4 et 4 exemples ; alerte
+« bloc ranger non dessiné » sur 529 (habituelle, étapes vues dans l'aperçu admin, § 62). Page :
+https://claude.ai/artifact/YNBWKZxoNHbtrLVfpTgK8k (capacité `db`) ; base `verdicts` vide à la publication.

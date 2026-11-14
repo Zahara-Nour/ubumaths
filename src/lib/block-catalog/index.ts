@@ -25,6 +25,7 @@ import { scratchEntry } from './scratch';
 import { rangerEntry } from './ranger';
 import { associerEntry } from './associer';
 import { trousEntry } from './trous';
+import { tortueEntry } from './tortue';
 import { boxPlotEntry, statChartEntry } from './stat-chart';
 import { trigEntry } from './trig';
 import { variationEntry } from './variation';
@@ -56,7 +57,8 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	trousEntry,
 	operationEntry,
 	trigEntry,
-	scratchEntry
+	scratchEntry,
+	tortueEntry
 ];
 
 /** Fiche d'un bloc par son segment d'adresse */

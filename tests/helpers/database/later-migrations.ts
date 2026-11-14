@@ -37,8 +37,12 @@ export const AUTOMATISMES_1SPE_POINT_2_496 =
 /** Sous-notion « Suites > Suites récurrentes > récurrence linéaire d'ordre 2 », lot 11 de terminale spé (approfondissements). */
 export const QUESTIONS_TSPE_APPRO11 =
 	'supabase/migrations/20261114021510_questions_tspe_approfondissements_11_rangement_tags.sql';
+/** Sous-notion « Probabilités > Autres lois > loi de Poisson », lot 15 de terminale spé (approfondissements). */
+export const QUESTIONS_TSPE_APPRO15 =
+	'supabase/migrations/20261114111511_questions_tspe_approfondissements_15_rangement_tags.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
+	QUESTIONS_TSPE_APPRO15,
 	QUESTIONS_TSPE_APPRO11,
 	AUTOMATISMES_1SPE_POINT_2_496,
 	QUESTIONS_1SPE_APPRO8,

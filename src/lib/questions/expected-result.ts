@@ -207,7 +207,8 @@ export type ExpectedLine =
 			answers?: { answer: string; status: ExpectedStatus }[];
 			/**
 			 * Étiquettes à ranger, éléments à associer, texte à trous : la bonne réponse de chaque place
-			 * (position affichée) ; le bloc de l'énoncé ne dit pas la réponse
+			 * (position affichée) ; le bloc de l'énoncé ne dit pas la réponse. Programme tortue : la
+			 * réponse attendue de la case (`position | <programme>`)
 			 */
 			expected?: string[];
 	  };
@@ -733,7 +734,10 @@ function buildLines(
 		buildKind: build.kind,
 		source: build.source,
 		answer: answered ? build.answer : null,
-		status: answered ? status : 'solution'
+		status: answered ? status : 'solution',
+		// Programme tortue : la réponse attendue porte le programme de référence (le bloc d'un
+		// énoncé masqué ne le dit plus, `attendu: ?`)
+		...(build.kind === 'tortue' && { expected: [view.expected] })
 	};
 	// Propre à la case : une autre case de l'énoncé peut avoir sa réponse
 	if (withAnswer && status === 'empty') {

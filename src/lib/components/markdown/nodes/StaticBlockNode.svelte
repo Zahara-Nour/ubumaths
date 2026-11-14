@@ -41,6 +41,7 @@
 	import RangerPlacer from './RangerPlacer.svelte';
 	import AssocierPlacer from './AssocierPlacer.svelte';
 	import TrousEtiquettes from './TrousEtiquettes.svelte';
+	import TortueProgramme from './TortueProgramme.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -119,4 +120,6 @@
 	<AssocierPlacer {node} />
 {:else if node.type === 'trous'}
 	<TrousEtiquettes {node} />
+{:else if node.type === 'tortue'}
+	<TortueProgramme {node} />
 {/if}
