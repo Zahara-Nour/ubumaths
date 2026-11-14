@@ -56,6 +56,11 @@ export interface QuestionErrorAnswer {
 	/** `test_answers.user_answer` */
 	userAnswer: unknown;
 	status: string | null;
+	/**
+	 * Verdict déjà connu (trace de série : verdict par case stocké, PR 2) ; absent :
+	 * recalculé dans le budget de la relecture d'une copie
+	 */
+	verdict?: CorrectedDetail;
 }
 
 export interface StudentName {
@@ -149,8 +154,10 @@ export function computeQuestionErrors(
 	);
 	const withoutAnswer = rows.length - answered.length;
 
-	const details = detailsWithinBudget(
-		answered.map((row) => {
+	// Verdict recalculé seulement pour les réponses qui n'en portent pas
+	const toCompute = answered.filter((row) => row.verdict === undefined);
+	const computed = detailsWithinBudget(
+		toCompute.map((row) => {
 			const values = valuesOf(row.userAnswer);
 			const feedback = feedbackOf(row.userAnswer);
 			return {
@@ -163,6 +170,8 @@ export function computeQuestionErrors(
 		}),
 		budget
 	);
+	let next = 0;
+	const details: CorrectedDetail[] = answered.map((row) => row.verdict ?? computed[next++]);
 
 	// Groupes : énoncé tiré identique ET réponse identique
 	const groups = new Map<string, QuestionErrorGroup>();
@@ -216,7 +225,7 @@ export function computeQuestionErrors(
 }
 
 /** Nom affiché d'un élève, en texte brut */
-function displayName(student: StudentName | undefined): string {
+export function displayName(student: StudentName | undefined): string {
 	const name = [student?.firstname, student?.lastname].filter(Boolean).join(' ').trim();
 	return name || DEFAULT_NAME;
 }

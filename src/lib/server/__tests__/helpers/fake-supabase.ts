@@ -37,6 +37,7 @@ const CHAIN_METHODS = [
 	'upsert',
 	'eq',
 	'neq',
+	'gt',
 	'gte',
 	'lt',
 	'in',

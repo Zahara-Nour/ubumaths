@@ -179,6 +179,22 @@ describe('computeQuestionErrors', () => {
 		expect(result.groups[0].verdict).toMatchObject({ unavailable: true });
 	});
 
+	it('verdict fourni (trace de série) : jamais recalculé, servi tel quel', () => {
+		let calls = 0;
+		const verdict = {
+			status: 'incorrect' as const,
+			blanks: [{ index: 0, status: 'incorrect' as const, remarks: [], answer: '8' }]
+		};
+		const result = computeQuestionErrors([{ ...row('Bob', 'incorrect', ['8']), verdict }], {
+			validate: (inst, answer) => {
+				calls += 1;
+				return validate(inst, answer);
+			}
+		});
+		expect(calls).toBe(0);
+		expect(result.groups[0].verdict).toEqual(verdict);
+	});
+
 	it('aucune erreur : liste vide', () => {
 		const result = computeQuestionErrors([row('Ada', 'correct', ['ok'])], { validate });
 		expect(result).toMatchObject({ answers: 1, withoutAnswer: 0, groups: [], blanks: [] });

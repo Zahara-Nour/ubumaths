@@ -280,7 +280,9 @@ les cartes de la page résultats) :
 
 **Erreurs d'une question** (chantier `erreurs-frequentes`, besoin P4 ; `getEvaluationQuestionErrors` dans
 `evaluation-question-errors.ts`, route `…/assessments/[id]/results/question-errors?template=<uuid>`) :
-chaque ligne « par question » du bilan se déplie ; les erreurs sont lues au premier dépliage.
+chaque ligne « par question » du bilan se déplie ; les erreurs sont lues au premier dépliage. Le panneau est `QuestionErrorsPanel.svelte`, partagé avec l'onglet « Erreurs » du widget E de
+l'analytique ([analytique-prof.md](analytique-prof.md)), qui y fait passer aussi les traces de séries
+(verdict par case fourni : `computeQuestionErrors` ne recalcule que les réponses sans verdict).
 
 - **Mêmes copies que le bilan** (`bestCopies`, copies avec réponses tous modèles confondus), mêmes gardes
   que la page (rôle, auteur du contrôle, mode test), client du prof sous la RLS existante.
@@ -422,4 +424,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14.

@@ -7,9 +7,9 @@ Q4 : « clic sur une question = P4 »). David : « ok pour P4 / E4 ».
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2626._
+_Mis à jour le 2026-11-14, PR 2 en cours._
 
-- **État** : PR 1 (erreurs d'une question du bilan d'un contrôle) livrée par #2626, mergée, pas encore en prod · **Prochaine action** : PR 2 — erreurs par point du programme dans l'analytique de la classe (fenêtre du « Top à remédier ») ; phase 0 déjà écrite (§ PR 2), plan technique à écrire, nouveau worktree · **En attente de David** : vérification à l'écran #2626 (`verifications-manuelles.md`) · **Pièges en cours** : aucune trace de série n'a encore de réponse en prod (0 ligne `answer_parts`) : la PR 2 ne lira d'abord que les contrôles ; comptes du panneau = statut seul, comme le bilan · **Worktree / branche** : supprimés après #2626 (PR 2 : `git worktree add -b feat/erreurs-frequentes-par-point ../ubumaths-wt-erreurs-frequentes origin/main`)
+- **État** : PR 2 (erreurs par point, widget « Top à remédier ») codée sur `feat/erreurs-frequentes-par-point`, revues faites (sécurité : 0 bloquant ; code : plafond en base + budget partagé corrigés), PR à ouvrir puis CI · **Prochaine action** : PR, CI verte → merge ; puis clôture du chantier (versement) · **En attente de David** : vérification à l'écran #2626 et PR 2 (`verifications-manuelles.md`) · **Pièges en cours** : prod sans aucune donnée pour la PR 2 (0 trace avec réponse, 0 copie de contrôle) ; serveur de test : `http://localhost:5177` (worktree) · **Worktree / branche** : `../ubumaths-wt-erreurs-frequentes`, `feat/erreurs-frequentes-par-point`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -92,6 +92,47 @@ students, templateId)` ; copies comptées = celles du bilan P6 (`bestCopies` exp
 - **Revue** : `code-reviewer` + `security-auditor` (données d'élèves, nouvelle route). Doc : `evaluations.md`
   § Résultats.
 
+## PR 2 — état des lieux et plan technique (2026-11-14)
+
+**Prod, mesuré le 2026-11-14** (MCP lecture seule) : 0 trace `skill_attempts` avec réponse (`answer_parts`),
+0 réponse de contrôle (1 contrôle, aucune copie). Les 101 lignes `test_answers` viennent toutes d'**anciennes
+séries libres** (`test_sessions` sans contrôle, 2026-09-29 → 2026-11-11) : circuit fermé le 2026-11-11 (N13,
+`/api/tests/save` n'écrit plus de séance).
+
+**Vérifié dans le code** :
+
+- le prof lit les traces de ses élèves (`skill_attempts_select_teacher` = `is_my_student`) et leurs réponses
+  de contrôle (PR 1) : **aucune migration** ;
+- les traces de contrôle (`place = 'evaluation'`) n'ont ni réponse ni graine : pas de double compte avec
+  `test_answers` ;
+- `generateInstance(template, seed)` (déjà utilisé par `evaluation-attempts.ts`) rejoue le tirage d'une trace ;
+- point → modèles : `question_template_points` ; élèves de la classe : `class_members` (comme le widget E,
+  pas de mode test dans l'analytique).
+
+**Décisions de David (2026-11-14)** : **Q6** — séries **et** contrôles, comme la phase 0 (« contrôles d'abord »
+de l'ancien « Reprendre ici » abandonné). **Q7** — anciennes séries libres (`test_answers` sans contrôle)
+**exclues** : circuit fermé, stock figé.
+
+**Plan** :
+
+- **Serveur** `src/lib/server/stats/point-errors.ts` : `getClassPointErrors(supabase, classId, pointId)` →
+  une entrée par modèle du point (titre + mêmes blocs que la PR 1, type `EvaluationQuestionErrors` réutilisé).
+  - Contrôles : copies des élèves de la classe (sessions avec `evaluation_id`), meilleure copie par élève
+    **et par contrôle** (`bestCopies`) ; énoncé tiré lu tel quel (aucun filtre de date : il est stocké entier).
+  - Séries : traces `typing` / `mock_test` / `number_race` avec réponse et graine, **postérieures à
+    `question_templates.updated_at`** ; énoncé rejoué par `generateInstance` ; trace réussie = juste, ratée =
+    faux ; verdict par case = `part_verdicts` stocké (pas de recalcul).
+  - Les deux sources passent par `computeQuestionErrors` (PR 1), étendu pour accepter un verdict fourni.
+  - Lecture bornée (lots de `readInBatches`, plafond de lignes par modèle, budget de détail de la PR 1).
+- **Route** `GET /api/teacher/classes/[classId]/analytics/point-errors?point=<uuid>` : `requireTeacherOfClass`,
+  Zod sur `classId` et `point`.
+- **Écran** : la fenêtre « élèves concernés » du widget E (`AnalyticsModal`) prend deux onglets, « Élèves » et
+  « Erreurs » ; « Erreurs » se charge à la première ouverture. Le panneau de la PR 1 (snippet `errorsPanel`
+  d'`EvaluationBreakdown.svelte`) devient un composant partagé `QuestionErrorsPanel.svelte`.
+- **Vide** : « Pas encore de réponse écrite sur ce point (les flash-cards ne gardent pas de réponse). »
+- **Revue** : `code-reviewer` + `security-auditor` (données d'élèves, nouvelle route). Doc : doc système de
+  l'analytique de classe + `evaluations.md` (panneau partagé).
+
 ## Suites (futurs chantiers, non ouverts — David, 2026-11-14)
 
 - **« Ta dernière réponse » sur la carte de révision** : rappeler à l'élève sa réponse fausse d'avant quand la
@@ -113,4 +154,6 @@ students, templateId)` ; copies comptées = celles du bilan P6 (`bestCopies` exp
 
 - 2026-11-14 : ouverture, état des lieux, phase 0 écrite.
 - 2026-11-14 : #2626 mergée (PR 1). Relecture : comptes alignés sur le bilan (statut seul), question non corrigée faute de temps jamais recalculée ; audit sécurité sans finding bloquant (mineurs laissés : modèle étranger → « aucune erreur », pas de 404 car un modèle sorti de la série garde sa ligne ; cas admin et mode test non testés au niveau route).
+- 2026-11-14 : PR 2 codée (serveur `point-errors.ts`, route, onglet « Erreurs », panneau partagé). Revues : sécurité sans bloquant ; code → plafond posé en base, budget de 5 s partagé par la requête, libellé « réponses écrites », clé de remontage avec la classe. Mineurs laissés : numérotation des cases non jugées entre sources, regroupement contrôle/série possible en deux groupes, contrôles lus sans borne de date.
+- 2026-11-14 : PR 2 — état des lieux prod, plan technique, Q6 (séries + contrôles) et Q7 (anciennes séries libres exclues) tranchées.
 - 2026-11-14 : phase 0 tranchée : E4 retiré, PR 1 puis PR 2, nominatif, regroupement à énoncé identique ; deux futurs chantiers.
