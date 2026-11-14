@@ -14,17 +14,26 @@ export const FROM_PARAM = 'depuis';
 export type ReturnLink = { href: string; label: string };
 
 // ============================================================================
-// JOURNAL D'UN ÉLÈVE (prof) — ouvert depuis les classes ou depuis l'accueil
+// JOURNAL D'UN ÉLÈVE (prof) — ouvert depuis les classes, l'accueil ou le suivi
 // ============================================================================
 
-export function studentJournalHref(studentId: string, from?: 'accueil'): string {
+export function studentJournalHref(studentId: string, from?: 'accueil' | 'suivi'): string {
 	const href = `/dashboard/teacher/students/${studentId}/journal`;
 	return from ? `${href}?${FROM_PARAM}=${from}` : href;
 }
 
-export function studentJournalReturn(searchParams: URLSearchParams): ReturnLink {
-	if (searchParams.get(FROM_PARAM) === 'accueil') {
+/** Suivi d'un élève (prof) : ouvert depuis la liste des classes */
+export function studentFollowUpHref(studentId: string): string {
+	return `/dashboard/teacher/students/${studentId}`;
+}
+
+export function studentJournalReturn(studentId: string, searchParams: URLSearchParams): ReturnLink {
+	const from = searchParams.get(FROM_PARAM);
+	if (from === 'accueil') {
 		return { href: '/dashboard', label: "Retour à l'accueil" };
+	}
+	if (from === 'suivi') {
+		return { href: studentFollowUpHref(studentId), label: 'Retour au suivi' };
 	}
 	return { href: '/dashboard/teacher/classes', label: `Retour aux ${lore.entities.class}s` };
 }

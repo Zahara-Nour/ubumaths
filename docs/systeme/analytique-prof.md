@@ -6,11 +6,13 @@ couvre:
   - src/lib/types/point-errors.ts
   - 'src/routes/(protected)/dashboard/teacher/classes/*/analytics/**'
   - 'src/routes/api/teacher/classes/*/analytics/**'
+  - 'src/routes/(protected)/dashboard/teacher/students/*/+page.*'
+  - 'src/routes/(protected)/dashboard/teacher/students/*/__tests__/**'
 ---
 
 # Analytique prof — la page « analytics » d'une classe
 
-> Vérifié contre le code le 2026-10-21 ; onglet « Erreurs » du widget E (`erreurs-frequentes`, PR 2) le 2026-11-14 ; widget C remplacé par la régularité le 2026-11-12 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
+> Vérifié contre le code le 2026-10-21 ; page de suivi d'un élève (`suivi-eleve`, PR 1) le 2026-11-14 ; onglet « Erreurs » du widget E (`erreurs-frequentes`, PR 2) le 2026-11-14 ; widget C remplacé par la régularité le 2026-11-12 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
 > [teacher-analytics-progress.md](../archive/wip/teacher-analytics-progress.md) (archivé, ne décrit
 > pas le code actuel).
 
@@ -122,6 +124,30 @@ En-tête : bouton **Export compétences** (→ [export-competences.md](export-co
 **Mode projection** (noms anonymisés « Élève 1… »), **Actualiser** (incrémente `refreshNonce`, que
 chaque widget suit dans son `$effect` de chargement).
 
+## Suivi d'un élève (page à part)
+
+Chantier `suivi-eleve` (besoins P8 et P9, 2026-11-14). Une page par élève,
+`/dashboard/teacher/students/[studentId]`, ouverte depuis la liste des classes (nom de l'élève, en classe
+comme dans « Élèves non assignés »). Elle rassemble ce que l'analytique de classe montre d'un élève ; le
+journal des récompenses reste à part (`…/journal?depuis=suivi`, retour vers le suivi).
+
+- **Accès** : `requireRole('teacher')` (admin refusé, comme l'analytique), UUID par Zod (400),
+  `verifyTeacherStudent` (403 si la cible n'est pas un élève). Aucune garde de classe : mono-prof, la RLS
+  (`is_my_student`) borne les lectures. Lecture seule.
+- **Bloc « Points du programme »** (`getStudentPointFollowUp`, `src/lib/server/stats/student-follow-up.ts` ;
+  calcul pur `buildStudentPointFollowUp`) : les points vivants **du niveau de l'élève** (`profiles.grade`,
+  `keepLinksOfGrade` comme la grille A) dont il a tenté un modèle, dans l'ordre de l'arbre (branche →
+  notion → point, `placeInTree`). Par point :
+  - le **badge** de la grille A (pire badge des modèles du point, déclaré compris : ADR 0016) ;
+  - deux comptes de traces (P9) : **corrigé** = origines `auto` + `teacher` (l'appli ou un adulte a jugé),
+    **déclaré** = `student_self` + anciennes `srs` ; chacun « réussies sur faites » ; une moitié vide
+    n'est pas affichée ;
+  - la marque **« seulement déclaré »** quand rien n'est corrigé.
+    Trace sans verdict (`success` NULL) ou d'origine inconnue : comptée nulle part (l'origine inconnue est
+    journalisée, une fois). **Aucune date** (vie privée, comme la régularité). Traces lues **paginées**
+    (`readInBatches`). Une lecture en échec : le bloc le dit, la page reste.
+- **À venir (PR 2)** : contrôles, régularité, compétences ; lien depuis la grille A.
+
 ## Carte du code
 
 - Page : `src/routes/(protected)/dashboard/teacher/classes/[classId]/analytics/+page.svelte` et
@@ -132,7 +158,8 @@ chaque widget suit dans son `$effect` de chargement).
     `getStudentRetentionCurve` ;
   - `point-errors.ts` : `getClassPointErrors` (onglet « Erreurs » du widget E ; hors barrel) ;
   - `class-regularity.ts` : `getClassRegularityGrid` (et ses fonctions pures, testées seules) ;
-  - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate`.
+  - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate` ;
+  - `student-follow-up.ts` : `getStudentPointFollowUp` (page de suivi d'un élève ; hors barrel).
     Requêtes groupées (pas une requête par élève) ; les listes de modèles sont découpées par
     `fetchInChunks`.
 - Endpoints `GET` sous `src/routes/api/teacher/classes/[classId]/analytics/` : `knowledge-grid`
@@ -142,7 +169,7 @@ chaque widget suit dans son `$effect` de chargement).
   dans `class_members`.
 - Zod : `src/lib/server/validation/teacher-analytics.ts` (5 schémas, bornes : `topN` 1-30,
   `weeks` 1-26).
-- Composants : `src/lib/components/teacher/analytics/` (6 widgets, `AnalyticsModal` du widget G, `PointDetailsModal` du widget E) ; onglet
+- Composants : `src/lib/components/teacher/analytics/` (`curriculum-point-badge-meta.ts` : icône, couleur et libellé d'un badge, partagés avec la page de suivi ; 6 widgets, `AnalyticsModal` du widget G, `PointDetailsModal` du widget E) ; onglet
   Surveillance : `src/lib/components/teacher/anti-fraud/`.
 
 ## Invariants
@@ -156,11 +183,11 @@ chaque widget suit dans son `$effect` de chargement).
 ## Tests
 
 Serveur : `src/lib/server/stats/__tests__/class-knowledge.test.ts` (28),
-`class-competence.test.ts` (12), `point-errors.test.ts` (18) ; route `point-errors` :
+`class-competence.test.ts` (12), `point-errors.test.ts` (18), `student-follow-up.test.ts` (13) ; route `point-errors` :
 `analytics/point-errors/__tests__/server.test.ts`. Composants : un `*.svelte.test.ts` par widget dans
 `src/lib/components/teacher/analytics/__tests__/` (29 au total). Garde : `src/lib/server/stats/__tests__/teacher-class-auth.test.ts` (prof accepté,
 admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page.server.test.ts`
-(compteur de signalements illisible → `null`, pas 0). Aucun test d'intégration base.
+(compteur de signalements illisible → `null`, pas 0). Suivi d'un élève : `students/[studentId]/__tests__/` (loader : 400, 403, admin refusé, lecture en échec ; rendu de la page). Aucun test d'intégration base.
 
 ## Décisions
 
@@ -171,6 +198,10 @@ admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page
 - [ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md) — famille A abandonnée.
 
 ## Écarts connus
+
+- **Grille A : traces lues sans pagination** (`getClassCurriculumPointGrid`) : au-delà du plafond de
+  lignes de PostgREST, des modèles tentés peuvent manquer en silence. La page de suivi d'un élève, elle,
+  pagine. Vu le 2026-11-14, non corrigé.
 
 - **Nom d'un point en LaTeX brut** dans les infobulles (`title`) de la grille : un attribut ne rend pas
   les formules. (La fenêtre du widget E rend son titre par `InlineMarkdown` depuis le 2026-11-14.)

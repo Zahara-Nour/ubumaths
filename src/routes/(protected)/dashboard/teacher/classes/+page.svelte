@@ -36,7 +36,7 @@
 -->
 
 <script lang="ts">
-	import { studentJournalHref } from '$lib/navigation/return-links';
+	import { studentFollowUpHref, studentJournalHref } from '$lib/navigation/return-links';
 	import { lore } from '$lib/config/lore';
 	import { welcomeEmailState } from '$lib/utils/welcome-email-state';
 	import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
@@ -714,7 +714,13 @@
 												/>
 												<div>
 													<p class="font-medium text-foreground">
-														{getStudentDisplayName(student)}
+														<a
+															class="underline-offset-4 hover:underline"
+															href={studentFollowUpHref(student.id)}
+															title="Voir le suivi du {lore.entities.student}"
+														>
+															{getStudentDisplayName(student)}
+														</a>
 													</p>
 													{#if emailState.kind === 'parent-link'}
 														<p class="text-sm text-muted-foreground">
@@ -814,7 +820,13 @@
 									class="size-8"
 								/>
 								<p class="font-medium text-foreground">
-									{student.firstname}{student.lastname ? ` ${student.lastname}` : ''}
+									<a
+										class="underline-offset-4 hover:underline"
+										href={studentFollowUpHref(student.id)}
+										title="Voir le suivi du {lore.entities.student}"
+									>
+										{student.firstname}{student.lastname ? ` ${student.lastname}` : ''}
+									</a>
 								</p>
 							</div>
 							<Button

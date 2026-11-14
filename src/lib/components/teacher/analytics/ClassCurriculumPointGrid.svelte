@@ -7,7 +7,8 @@
 -->
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
-	import { ArrowUpDown, AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from '@lucide/svelte';
+	import { ArrowUpDown } from '@lucide/svelte';
+	import { badgeMeta } from './curriculum-point-badge-meta';
 	import { Button } from '$lib/components/ui/button';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
@@ -81,18 +82,6 @@
 			(a, b) => (stats[b.id]?.acquise_pct ?? 0) - (stats[a.id]?.acquise_pct ?? 0)
 		);
 	});
-
-	function badgeMeta(badge: CurriculumPointBadge) {
-		return (
-			{
-				a_remedier: { icon: AlertCircle, color: 'text-red-600', label: 'À remédier' },
-				a_renforcer: { icon: RefreshCw, color: 'text-amber-600', label: 'À renforcer' },
-				en_apprentissage: { icon: Clock, color: 'text-blue-600', label: 'En apprentissage' },
-				acquise_en_memoire: { icon: CheckCircle, color: 'text-emerald-600', label: 'Acquise' },
-				non_commencee: { icon: Circle, color: 'text-muted-foreground', label: 'Non commencée' }
-			} as const
-		)[badge];
-	}
 
 	function displayName(s: ClassStudent, idx: number): string {
 		return anonymized ? `${lore.entities.student} ${idx + 1}` : s.display_name;
