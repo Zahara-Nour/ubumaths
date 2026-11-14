@@ -68,7 +68,7 @@ retour à la ligne, points centrés sur chaque case.
 
 Ensuite : convertir la n° 11 de `cours-suites` (B11, QCM) en « associer ».
 
-## Phase 0 du lot 2 — un bloc ` ```courbe ` dans un élément (à valider)
+## Phase 0 du lot 2 — un bloc ` ```courbe ` dans un élément (validée le 2026-11-14)
 
 Le prof écrit (même convention que le bloc ` ```choix ` : suite de l'élément en retrait de 2 espaces,
 clôture ```` du bloc associer dès qu'un élément contient un bloc) :
@@ -125,6 +125,11 @@ en erreur (son message, préfixé « élément N ») ; courbe à geste (`placer:
 3. Limite d'éléments à bloc : 6 **(reco, 8 courbes = page très haute)** ; ou 8 comme aujourd'hui.
 4. Série d'automatismes : éléments numérotés **(reco)** ; ou refus des éléments à bloc dans les
    séries.
+
+**Tranché (David, 2026-11-14, « je valide »)** : 1. courbes à gauche seulement ; 2. ` ```courbe ` seul
+pour ce lot, les autres blocs d'affichage plus tard (à noter dans `outils-manquants.md`) ; 3. au plus 6
+éléments dès qu'un élément contient un bloc ; 4. séries d'automatismes : éléments numérotés.
+Niveau du modèle « graphique ↔ expression » : **pas encore répondu**, à reposer.
 
 Ensuite (même chantier) : un modèle « graphique ↔ expression » à écrire, niveau à choisir par David.
 

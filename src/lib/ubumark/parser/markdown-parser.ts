@@ -142,7 +142,7 @@ import {
 } from './schema-barres-parser';
 import { findChoiceBlocks, parseChoiceBlock } from './choix-parser';
 import { findRangerBlocks, parseRangerBlock } from './ranger-parser';
-import { findAssocierBlocks, parseAssocierBlock } from './associer-parser';
+import { findAssocierBlocks, parseAssocierBlock, parseAssocierContent } from './associer-parser';
 import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
@@ -2087,6 +2087,10 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'schema-barres') {
 			// Schéma en barres dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseSchemaBarresContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'associer') {
+			// Éléments à associer dans un item de liste (énoncé d'une série d'automatismes,
+			// bloc sans case) : deux colonnes à relier, jamais du code
+			blocks.push(parseAssocierContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));

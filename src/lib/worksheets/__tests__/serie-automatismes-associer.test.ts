@@ -9,6 +9,8 @@
 import { describe, it, expect } from 'vitest';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { buildSerie } from '../serie-automatismes';
+import { parseMarkdown } from '$lib/ubumark';
+import { generateTypst } from '$lib/ubumark/generators/typst-generator';
 
 function modele(id: string, statement: string, blanks?: unknown[]): QuestionTemplate {
 	return {
@@ -46,11 +48,55 @@ describe('buildSerie — éléments à associer', () => {
 		expect(serie.solution).toMatch(/- a → pair/);
 		expect(serie.solution).toMatch(/- b → impair/);
 		expect(serie.solution).toMatch(/- c → pair/);
+		// L'énoncé est un item de liste : le PDF dessine les deux colonnes, jamais du code
+		const typst = generateTypst(parseMarkdown(serie.statement));
+		expect(typst).toContain('2.5cm');
+		expect(typst).not.toContain('- a ->');
 	});
 
 	it('avec une autre case : les cases comptent ensemble', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'avec-case', seed: 1 }]);
 		expect(serie.solution).toMatch(/- b → impair/);
 		expect(serie.solution).toContain('2');
+	});
+
+	it('courbes dans les éléments (lot 2) : énoncé avec les courbes, corrigé « 1 → étiquette »', () => {
+		const courbes = modele(
+			'courbes',
+			[
+				'Associe.',
+				'',
+				'````associer',
+				'- ```courbe',
+				'  x: -3 ; 3',
+				'  y: -3 ; 3',
+				'  f(x) = 2*x',
+				'  ```',
+				'  -> linéaire',
+				'- ```courbe',
+				'  x: -3 ; 3',
+				'  y: -3 ; 3',
+				'  f(x) = x^2',
+				'  ```',
+				'  -> carré',
+				'- -> constante',
+				'````'
+			].join('\n')
+		);
+		const serie = buildSerie(new Map([[courbes.id, courbes]]), [
+			{ templateId: 'courbes', seed: 1 }
+		]);
+		expect(serie.statement).toContain('````associer');
+		expect(serie.statement).toContain('- ```courbe');
+		expect(serie.statement).not.toMatch(/case:/);
+		// Lien de fin d'élément vidé (`->` seul) ; seuls les intrus « - -> … » portent une étiquette
+		expect(serie.statement).not.toMatch(/^\s+->[ \t]*\S/m);
+		expect(serie.solution).not.toContain('```courbe');
+		expect(serie.solution).toMatch(/- 1 → linéaire/);
+		expect(serie.solution).toMatch(/- 2 → carré/);
+		// Le PDF de la série dessine les courbes, numérotées (bloc dans l'item de liste)
+		const typst = generateTypst(parseMarkdown(serie.statement));
+		expect(typst).toContain('[*2.*]');
+		expect(typst).not.toContain('Figure indisponible');
 	});
 });

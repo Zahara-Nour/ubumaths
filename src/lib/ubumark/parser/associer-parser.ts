@@ -21,6 +21,21 @@
  * Sans aucun lien (`- élément ->` partout), le bloc se lit sans réponse : l'énoncé
  * d'une instance, ou un geste libre dans un cours (une question l'exige complet).
  *
+ * Un élément peut contenir un bloc ```courbe (lot 2) : sa suite est en retrait de
+ * 2 espaces (comme ```choix), le lien `-> étiquette` sur sa dernière ligne, et le
+ * bloc associer se ferme par ```` :
+ *
+ * ````associer
+ * - ```courbe
+ *   f(x) = 2x + 1
+ *   ```
+ *   -> $x \mapsto 2x + 1$
+ * - -> $x \mapsto x^2$
+ * ````
+ *
+ * Seulement à gauche, seulement ```courbe, sans geste (`placer:`, `tracer:`), et au
+ * plus 6 éléments dès qu'un élément contient un bloc.
+ *
  * `geste: relier` (défaut : l'élève trace un trait d'un point à l'autre) ou
  * `geste: étiquettes` (il pose une étiquette sur la place de chaque élément), en tête.
  *
@@ -47,6 +62,8 @@ export interface AssocierBlockRange {
 	startIndex: number;
 	/** Ligne de clôture ; bloc non fermé : dernière ligne du texte */
 	endIndex: number;
+	/** Clôture d'ouverture (``` ou ````…) */
+	fence: string;
 	closed: boolean;
 }
 
@@ -55,14 +72,24 @@ export interface AssocierBlock extends AssocierSpec {
 }
 
 // Constantes
-const OPEN_REGEX = /^```associer\s*$/;
-const CLOSE_REGEX = /^```\s*$/;
+const OPEN_REGEX = /^(`{3,})associer\s*$/;
 const ITEM_REGEX = /^-(?:[ \t](.*))?$/;
 const SETTING_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 const CASE_INDEX_REGEX = /^\d{1,3}$/;
 const TEXT_BLANK = '[_]';
+/** Ouverture ou clôture d'un bloc dans un élément (``` seule ou avec un nom) */
+const INNER_FENCE_REGEX = /^(`{3,})(\S*)\s*$/;
+const CONTINUATION_INDENT = '  ';
+/** Réglage d'une courbe à geste : elle porterait une case */
+const COURBE_GESTURE_REGEX = /^\s*(placer|tracer)\s*:/i;
+/** Langage du seul bloc admis dans un élément */
+const ITEM_BLOCK_LANGUAGE = 'courbe';
 
 export const ASSOCIER_BLOCK_UNCLOSED_MESSAGE = 'bloc non fermé (ajouter ``` à la fin)';
+export const ASSOCIER_FENCE_MESSAGE =
+	'un élément contient un bloc : ouvrir par ````associer et fermer par ```` (quatre accents graves)';
+/** Au plus, dès qu'un élément contient un bloc (8 courbes : page trop haute) */
+export const ASSOCIER_MAX_BLOCK_ITEMS = 6;
 
 // Functions
 /**
@@ -106,19 +133,37 @@ export function isAssocierBlockStart(line: string): boolean {
 	return OPEN_REGEX.test(line);
 }
 
-/** Blocs associer de premier niveau ; sans clôture, le bloc va jusqu'à la fin du texte */
+/** L'élément contient-il un bloc (une ligne qui commence par ```) ? */
+export function associerItemHasBlock(item: string): boolean {
+	return /^`{3,}/m.test(item);
+}
+
+/** Un élément dans un message : sa première ligne, ou son rang s'il commence par un bloc */
+function itemName(index: number, item: string): string {
+	if (!item.includes('\n')) return `« ${item} »`;
+	const first = item.split('\n')[0];
+	return INNER_FENCE_REGEX.test(first) ? `n° ${index + 1}` : `« ${first} »`;
+}
+
+/**
+ * Blocs associer de premier niveau. Clôture : une ligne de ` seuls, au moins aussi
+ * longue que l'ouverture ; sans elle, le bloc va jusqu'à la fin du texte.
+ */
 export function findAssocierBlocks(lines: readonly string[]): AssocierBlockRange[] {
 	const ranges: AssocierBlockRange[] = [];
 	let i = 0;
 	while (i < lines.length) {
-		if (!OPEN_REGEX.test(lines[i])) {
+		const open = lines[i].match(OPEN_REGEX);
+		if (!open) {
 			i++;
 			continue;
 		}
+		const fence = open[1];
+		const close = new RegExp(`^\`{${fence.length},}\\s*$`);
 		let j = i + 1;
-		while (j < lines.length && !CLOSE_REGEX.test(lines[j])) j++;
+		while (j < lines.length && !close.test(lines[j])) j++;
 		const closed = j < lines.length;
-		ranges.push({ startIndex: i, endIndex: closed ? j : lines.length - 1, closed });
+		ranges.push({ startIndex: i, endIndex: closed ? j : lines.length - 1, fence, closed });
 		i = (closed ? j : lines.length - 1) + 1;
 	}
 	return ranges;
@@ -131,18 +176,26 @@ export function findAssocierBlocks(lines: readonly string[]): AssocierBlockRange
  */
 export function findAssociersToPlace(markdown: string): {
 	startIndex: number;
+	/** Ligne de clôture ; bloc non fermé : dernière ligne du texte */
+	endIndex: number;
 	body: string[];
 	closed: boolean;
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
 	const plain = lines.map(unnestedLine);
-	return findAssocierBlocks(plain).map((range) => ({
-		startIndex: range.startIndex,
-		body: plain.slice(range.startIndex + 1, range.closed ? range.endIndex : range.endIndex + 1),
-		closed: range.closed,
-		nested: lines[range.startIndex] !== plain[range.startIndex]
-	}));
+	return findAssocierBlocks(plain).map((range) => {
+		const nested = lines[range.startIndex] !== plain[range.startIndex];
+		// Bloc au premier niveau : lignes intactes (le retrait d'une suite d'élément compte)
+		const source = nested ? plain : lines;
+		return {
+			startIndex: range.startIndex,
+			endIndex: range.endIndex,
+			body: source.slice(range.startIndex + 1, range.closed ? range.endIndex : range.endIndex + 1),
+			closed: range.closed,
+			nested
+		};
+	});
 }
 
 /** L'énoncé a-t-il des éléments à associer ? */
@@ -150,11 +203,71 @@ export function hasAssocierToPlace(markdown: string): boolean {
 	return findAssociersToPlace(markdown).length > 0;
 }
 
+/** Une ligne `- …` du bloc et sa suite (retrait de 2 espaces retiré) */
+interface Entry {
+	line: string;
+	content: string;
+	continuation: string[];
+}
+
+/**
+ * Lignes d'une suite d'élément → contenu, lien et erreurs. Le lien est la dernière
+ * ligne non vide hors d'un bloc qui commence par `->` ; `link` vaut `null` sans lui.
+ */
+function readContinuation(
+	first: string,
+	continuation: readonly string[]
+): { content: string; link: string | null; errors: string[] } {
+	const errors: string[] = [];
+	const content: string[] = [];
+	let link: string | null = null;
+	let inner: { fence: string; language: string } | null = null;
+	for (const line of first === '' ? continuation : [first, ...continuation]) {
+		const trimmed = line.trim();
+		const fence = trimmed.match(INNER_FENCE_REGEX);
+		if (inner) {
+			content.push(line);
+			if (fence && fence[2] === '' && fence[1].length >= inner.fence.length) inner = null;
+			else if (inner.language === ITEM_BLOCK_LANGUAGE && COURBE_GESTURE_REGEX.test(line)) {
+				errors.push(
+					'une courbe dans un élément : pas de placer: ni de tracer: (pas de case dedans)'
+				);
+			}
+			continue;
+		}
+		if (link !== null) {
+			if (trimmed !== '') {
+				errors.push('« -> étiquette » va sur la dernière ligne de l’élément');
+				link = null;
+			}
+			continue;
+		}
+		if (trimmed.startsWith('->')) {
+			link = trimmed.slice(2).trim();
+			continue;
+		}
+		if (fence && fence[2] !== '') {
+			inner = { fence: fence[1], language: fence[2] };
+			if (fence[2] !== ITEM_BLOCK_LANGUAGE) {
+				errors.push(
+					`seul un bloc \`\`\`${ITEM_BLOCK_LANGUAGE} peut aller dans un élément (pas \`\`\`${fence[2]})`
+				);
+			}
+		}
+		content.push(line);
+	}
+	if (inner) errors.push('bloc non fermé dans un élément (ajouter ``` en retrait)');
+	while (content.length > 0 && content[content.length - 1].trim() === '') content.pop();
+	return { content: content.join('\n').trim(), link, errors };
+}
+
 /** Lit le corps d'un bloc associer (lignes entre les clôtures) */
 export function parseAssocierBody(body: readonly string[]): AssocierSpec {
 	const errors: string[] = [];
 	const spec: AssocierSpec = { gesture: 'relier', items: [], labels: [], answers: [], errors };
-	let started = false;
+	const entries: Entry[] = [];
+	/** Clôture du bloc ouvert dans l'élément en cours (ses lignes lui appartiennent) */
+	let innerFence: string | null = null;
 
 	const labelIndex = (label: string): number => {
 		const known = spec.labels.indexOf(label);
@@ -163,33 +276,39 @@ export function parseAssocierBody(body: readonly string[]): AssocierSpec {
 		return spec.labels.length - 1;
 	};
 
+	// 1. Découpage : réglages, lignes `- …` et leur suite en retrait
 	for (const line of body) {
+		const current = entries[entries.length - 1];
 		const trimmed = line.trim();
-		if (trimmed === '') continue;
-		const item = trimmed.match(ITEM_REGEX);
-		if (item) {
-			started = true;
-			const content = (item[1] ?? '').trim();
-			const link = splitLink(content);
-			if (!link) {
-				errors.push(`ligne « ${trimmed} » : écrire « - élément -> étiquette »`);
-				continue;
-			}
-			const [left, right] = link;
-			if (left === '' && right === '') {
-				errors.push(`ligne « ${trimmed} » : ni élément ni étiquette`);
-				continue;
-			}
-			if (left === '') {
-				labelIndex(right);
-				continue;
-			}
-			spec.items.push(left);
-			// Lien retiré (`- élément ->`) : énoncé d'une instance, ou bloc sans réponse
-			spec.answers.push(right === '' ? null : labelIndex(right));
+		if (current && innerFence !== null) {
+			const stripped = line.startsWith(CONTINUATION_INDENT) ? line.slice(2) : line;
+			current.continuation.push(stripped);
+			const fence = stripped.trim().match(INNER_FENCE_REGEX);
+			if (fence && fence[2] === '' && fence[1].length >= innerFence.length) innerFence = null;
 			continue;
 		}
-		const setting = started ? null : trimmed.match(SETTING_REGEX);
+		if (trimmed === '') {
+			current?.continuation.push('');
+			continue;
+		}
+		const item = trimmed.match(ITEM_REGEX);
+		const indented = line.startsWith(CONTINUATION_INDENT);
+		if (current && indented && !item) {
+			const stripped = line.slice(2);
+			current.continuation.push(stripped);
+			// Ouverture d'un bloc (```courbe) : ses lignes, même `- …`, sont à l'élément
+			const fence = stripped.trim().match(INNER_FENCE_REGEX);
+			innerFence = fence && fence[2] !== '' ? fence[1] : null;
+			continue;
+		}
+		if (item) {
+			const content = (item[1] ?? '').trim();
+			entries.push({ line: trimmed, content, continuation: [] });
+			const fence = content.match(INNER_FENCE_REGEX);
+			innerFence = fence && fence[2] !== '' ? fence[1] : null;
+			continue;
+		}
+		const setting = entries.length > 0 ? null : trimmed.match(SETTING_REGEX);
 		if (setting) {
 			const key = setting[1].toLowerCase();
 			if (key === 'case' && CASE_INDEX_REGEX.test(setting[2].trim())) {
@@ -206,10 +325,61 @@ export function parseAssocierBody(body: readonly string[]): AssocierSpec {
 		errors.push(`ligne « ${trimmed} » : une ligne commence par « - »`);
 	}
 
+	// 2. Lecture de chaque élément
+	/** Éléments déjà signalés sans étiquette (pas de second message) */
+	const reported = new Set<number>();
+	for (const { line, content, continuation } of entries) {
+		const hasContinuation = continuation.some((text) => text.trim() !== '');
+		if (!hasContinuation) {
+			const link = splitLink(content);
+			if (!link) {
+				errors.push(`ligne « ${line} » : écrire « - élément -> étiquette »`);
+				continue;
+			}
+			const [left, right] = link;
+			if (left === '' && right === '') {
+				errors.push(`ligne « ${line} » : ni élément ni étiquette`);
+				continue;
+			}
+			if (left === '') {
+				labelIndex(right);
+				continue;
+			}
+			spec.items.push(left);
+			// Lien retiré (`- élément ->`) : énoncé d'une instance, ou bloc sans réponse
+			spec.answers.push(right === '' ? null : labelIndex(right));
+			continue;
+		}
+		// Élément sur plusieurs lignes (un bloc dedans) : jamais à droite
+		if (content.startsWith('->') || splitLink(content) !== null) {
+			errors.push(
+				`ligne « ${line} » : pas de bloc dans une étiquette ni dans un intrus (les blocs vont à gauche)`
+			);
+			continue;
+		}
+		const read = readContinuation(content, continuation);
+		errors.push(...read.errors);
+		if (read.content === '') {
+			errors.push(`ligne « ${line} » : élément vide`);
+			continue;
+		}
+		spec.items.push(read.content);
+		const index = spec.items.length - 1;
+		if (read.link === null) {
+			errors.push(missingLabelMessage(index, read.content));
+			reported.add(index);
+			spec.answers.push(null);
+		} else {
+			spec.answers.push(read.link === '' ? null : labelIndex(read.link));
+		}
+	}
+
 	// Des liens écrits, d'autres oubliés : bloc du prof incomplet
 	if (spec.answers.some((answer) => answer !== null)) {
 		spec.answers.forEach((answer, index) => {
-			if (answer === null) errors.push(missingLabelMessage(index, spec.items[index]));
+			if (answer === null && !reported.has(index)) {
+				errors.push(missingLabelMessage(index, spec.items[index]));
+			}
 		});
 	}
 	for (const text of [...spec.items, ...spec.labels]) {
@@ -221,10 +391,15 @@ export function parseAssocierBody(body: readonly string[]): AssocierSpec {
 		const first = spec.items.indexOf(text);
 		if (first < index) {
 			errors.push(
-				`les éléments ${first + 1} et ${index + 1} sont identiques (« ${text} ») : on ne saurait pas lequel va où`
+				`les éléments ${first + 1} et ${index + 1} sont identiques (${itemName(index, text)}) : on ne saurait pas lequel va où`
 			);
 		}
 	});
+	if (spec.items.some(associerItemHasBlock) && spec.items.length > ASSOCIER_MAX_BLOCK_ITEMS) {
+		errors.unshift(
+			`au plus ${ASSOCIER_MAX_BLOCK_ITEMS} éléments quand un élément contient un bloc`
+		);
+	}
 	if (spec.items.length < ASSOCIER_MIN_ITEMS) {
 		errors.unshift(
 			`au moins ${ASSOCIER_MIN_ITEMS} éléments (une ligne « - élément -> étiquette » par élément)`
@@ -264,6 +439,10 @@ export function parseAssocierBlock(
 	const body = lines.slice(startIndex + 1, closed ? endIndex : endIndex + 1);
 	const node = parseAssocierContent(body.join('\n'));
 	if (!closed) node.errors.push(ASSOCIER_BLOCK_UNCLOSED_MESSAGE);
+	// Même convention que ```choix : un bloc dans un élément exige ````
+	if (range && range.fence.length === 3 && node.items.some(associerItemHasBlock)) {
+		node.errors.push(ASSOCIER_FENCE_MESSAGE);
+	}
 	return { node };
 }
 
@@ -277,13 +456,22 @@ export function serializeAssocierBlock(block: {
 	items: readonly string[];
 	labels: readonly string[];
 }): string {
+	// Élément sur plusieurs lignes (un bloc dedans) : suite en retrait, lien vide en
+	// dernière ligne, clôture ````
+	const multiline = block.items.some((item) => item.includes('\n'));
+	const fence = multiline ? '````' : '```';
+	const writeItem = (item: string): string[] => {
+		if (!item.includes('\n')) return [`- ${item} ->`];
+		const [first, ...rest] = item.split('\n');
+		return [`- ${first}`, ...rest.map((line) => (line === '' ? '' : `  ${line}`)), '  ->'];
+	};
 	return [
-		'```associer',
+		`${fence}associer`,
 		`case: ${block.caseIndex}`,
 		...(block.gesture === 'etiquettes' ? ['geste: étiquettes'] : []),
-		...block.items.map((item) => `- ${item} ->`),
+		...block.items.flatMap(writeItem),
 		...block.labels.map((label) => `- -> ${label}`),
-		'```'
+		fence
 	].join('\n');
 }
 

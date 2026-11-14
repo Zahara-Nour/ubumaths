@@ -13,7 +13,8 @@
  * tableau de signes à compléter (vide / rempli), droite à tracer (repère vide / droite
  * dessinée), boîte à moustaches à construire (axe seul / boîte dessinée), points à
  * placer sur une droite graduée ou dans un repère (sans eux / points posés), éléments à
- * associer (deux colonnes à relier / la liste « élément → bonne étiquette »).
+ * associer (deux colonnes à relier / la liste « élément → bonne étiquette », « 1 → étiquette »
+ * quand un élément contient une courbe).
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
  * fonctions déclarées par le modèle de la question (`shared.genericFunctions`). L'écran
@@ -45,7 +46,11 @@ import {
 	PLACER_LINE_REGEX
 } from '$lib/ubumark/parser/stat-chart-parser';
 import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
-import { findAssociersToPlace, parseAssocierContent } from '$lib/ubumark/parser/associer-parser';
+import {
+	associerItemHasBlock,
+	findAssociersToPlace,
+	parseAssocierContent
+} from '$lib/ubumark/parser/associer-parser';
 import { associerPlacedOf } from '$lib/ubumark/utils/associer';
 import {
 	findVariationsToFill,
@@ -438,11 +443,14 @@ function associersAFiger(
 			? bloc.startIndex + bloc.body.length + 1
 			: bloc.startIndex + bloc.body.length;
 		if (corrige) {
+			// Un élément contient un bloc (```courbe) : éléments numérotés à l'énoncé (PDF),
+			// le corrigé dit « 1 → étiquette » sans redessiner la courbe
+			const numerotes = node.items.some(associerItemHasBlock);
 			const liste = node.items.map((item, k) => {
 				const attendue = instance.blanks?.[first + k]?.expectedAnswer ?? '';
 				const position = associerPlacedOf(attendue, node.labels.length);
 				if (position === null) throw refus(`élément ${k + 1} : réponse attendue illisible`);
-				return `- ${item} → ${node.labels[position]}`;
+				return `- ${numerotes ? k + 1 : item} → ${node.labels[position]}`;
 			});
 			lignes.splice(bloc.startIndex, fin - bloc.startIndex + 1, ...liste);
 			continue;

@@ -66,6 +66,7 @@ import type { RangerNode } from '../types/ranger';
 import { displayedLabels } from '../utils/ranger';
 import type { AssocierNode } from '../types/associer';
 import { displayedAssocierLabels } from '../utils/associer';
+import { associerItemHasBlock } from '../parser/associer-parser';
 import { generateQrTypst } from './qr-typst';
 import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
@@ -3874,7 +3875,25 @@ function generateAssocierTypst(
 	options: ResolvedTypstTranspilerOptions
 ): string {
 	if (node.errors.length > 0) return '';
-	const items = node.items.map((item) => inlineUbumarkTypst(item, options));
+	// Un élément contient un bloc (```courbe, lot 2) : éléments numérotés (le corrigé
+	// d'une série dit « 1 → étiquette »), courbe en petit
+	const numbered = node.items.some(associerItemHasBlock);
+	const items = node.items.map((item, k) => {
+		if (!numbered) return inlineUbumarkTypst(item, options);
+		const body = associerItemHasBlock(item)
+			? parseMarkdown(item)
+					.children.map((block) =>
+						generateBlock(
+							block.type === 'courbe' && block.spec
+								? { ...block, spec: { ...block.spec, size: 'petite' } }
+								: block,
+							options
+						)
+					)
+					.join('\n\n')
+			: inlineUbumarkTypst(item, options);
+		return `#grid(columns: 2, column-gutter: 0.4em, align: horizon, [*${k + 1}.*], [${body}])`;
+	});
 	const labels = displayedAssocierLabels(node).map((label) => inlineUbumarkTypst(label, options));
 	const rows = Math.max(items.length, labels.length);
 	const cells: string[] = [];

@@ -492,6 +492,10 @@ function markBuildBlocks(statement: string): {
 	blocks: BuildBlock[];
 	errors: string[];
 } {
+	const associers = findAssociersToPlace(statement);
+	/** Une courbe dans un élément à associer : le bloc associer la refuse, avec son message */
+	const inAssocier = (index: number) =>
+		associers.some((b) => index > b.startIndex && index < b.endIndex);
 	const found = [
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
@@ -503,11 +507,13 @@ function markBuildBlocks(statement: string): {
 			kind: 'boite-a-moustaches' as const
 		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
-		...findAssociersToPlace(statement).map((b) => ({ ...b, kind: 'associer' as const })),
+		...associers.map((b) => ({ ...b, kind: 'associer' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
-		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
+		...findCourbesToPlace(statement)
+			.filter((b) => !inAssocier(b.startIndex))
+			.map((b) => ({ ...b, kind: 'courbe' as const })),
 		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const })),
 		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);

@@ -135,7 +135,7 @@ describe('blocs d’un énoncé', () => {
 	it('repère les blocs, en retrait ou non', () => {
 		const text = ['Associe :', '', block(...SUITES), '', '> ' + '```associer'].join('\n');
 		expect(findAssocierBlocks(text.split('\n'))).toEqual([
-			{ startIndex: 2, endIndex: 7, closed: true }
+			{ startIndex: 2, endIndex: 7, fence: '```', closed: true }
 		]);
 		expect(hasAssocierToPlace(text)).toBe(true);
 		const nested = findAssociersToPlace(
