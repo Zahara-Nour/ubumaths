@@ -14783,6 +14783,16 @@ export type Database = {
           week_start: string
         }[]
       }
+      class_template_success: {
+        Args: { p_class_id: string; p_first_day: string }
+        Returns: {
+          declared_done: number
+          proved_done: number
+          proved_succeeded: number
+          student_id: string
+          template_id: string
+        }[]
+      }
       cleanup_abandoned_minesweeper_games: { Args: never; Returns: number }
       cleanup_account_deletion_audit: { Args: never; Returns: number }
       cleanup_expired_cache: {

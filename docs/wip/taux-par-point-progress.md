@@ -11,9 +11,9 @@ sur les nouvelles traces (P4, P5, P6, P7, P8, P9 faits).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2663._
+_Mis à jour le 2026-11-14, PR 2 prête (revues faites)._
 
-- **État** : PR 1 mergée (#2663) ; `class_template_success` **en prod** (`db:migrate` fait, essai à blanc d'abord : seule cette migration) · **Prochaine action** : PR 2 dans un worktree neuf (`git worktree add -b feat/taux-par-point-calcul ../ubumaths-wt-taux-par-point origin/main`) : `pnpm db:types`, puis tests rouges du calcul (`class-success-rate.ts`), endpoint `success-rate`, widget `ClassSuccessRates.svelte`, doc (`analytique-prof.md`, `base-de-donnees.md`) ; revue `code-reviewer` + `security-auditor` · **En attente de David** : rien · **Pièges en cours** : base locale : migration appliquée par `docker exec supabase_db_ubumaths psql` + `notify pgrst` (pas de `psql` sur la machine) ; prod presque vide (vérifier en local, `db:seed-riche`) ; l'analytique refuse le compte admin ; `success` jamais NULL sur une trace de modèle (CHECK) ; valider `classId` par Zod (`classIdParamSchema`) · **Worktree / branche** : aucun (l'ancien retiré après #2663)
+- **État** : PR 2 (`feat/taux-par-point-calcul`) : calcul, endpoint, widget, doc ; revues faites, vérifiée en local · **Prochaine action** : CI verte → merge ; puis versement (le chantier est fini : journal archivé, durable déjà dans `analytique-prof.md`) · **En attente de David** : rien · **Pièges en cours** : la RPC est plafonnée par `max_rows` (lue par pages) ; base locale réinitialisée par `db:seed-riche` le 2026-11-14 (traces fictives ajoutées dans « 6B ») · **Worktree / branche** : `../ubumaths-wt-taux-par-point` · `feat/taux-par-point-calcul`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -104,6 +104,26 @@ Comptage par la base ; question d'accès : **personne** ne lit rien de plus.
   `p_first_day` NULL → 0 ligne ; admin et membre archivé appelant non testés (déduits des policies).
 - Mergée le 2026-11-14 (#2663) ; `db:migrate` fait (essai à blanc : seule cette migration).
 
+## PR 2 — calcul, endpoint, widget (2026-11-14)
+
+- `pnpm db:types` : `class_template_success` dans `database.ts`.
+- `src/lib/server/stats/class-success-rate.ts` : `pointsOfTemplates` (points vivants, niveau de la
+  classe), `buildClassSuccessRates` (pur), `getClassSuccessRates` (rentrée de l'école, comptes lus
+  **par pages** : la RPC est plafonnée par `max_rows` = 1000, une classe la dépasse vite).
+- `placeInTree` rend aussi `notion_id` (deux notions peuvent porter le même nom).
+- Endpoint `GET /api/teacher/classes/[classId]/analytics/success-rate` ; widget
+  `ClassSuccessRates.svelte` après « Top à remédier ».
+- Tests : 17 unitaires du calcul et de la lecture, 3 de l'endpoint, 6 du widget. Endpoint et widget
+  vus rouges (module absent) avant d'être écrits ; le calcul aussi, mais seulement par module absent.
+
+- Revues : `code-reviewer` (aucun bloquant ni important ; corrigé : course de réponses du widget,
+  motif `requestSeq` de la grille C ; laissé : liens modèle → point d'un lot de 100 modèles au-delà de
+  `max_rows`, il faudrait plus de 10 points par modèle) ; `security-auditor` (aucun bloquant ni
+  important ; effectif affiché sous le seuil voulu, écrit dans la doc).
+- Vérifié en local (`db:reset` + `db:seed-riche`, traces fictives insérées dans « 6B », qui n'en avait
+  aucune) : rendu conforme (67 %, « Pas assez de réponses · 2 », « Seulement déclaré », 83 %), trace
+  d'avant la rentrée exclue, RPC lue par le prof avec `order` + `range`.
+
 ## Phase 0 — comportements proposés (à valider)
 
 - **Nominal** : dans l'onglet Connaissances, un widget « Taux de réussite » liste les **notions**
@@ -142,6 +162,7 @@ Comptage par la base ; question d'accès : **personne** ne lit rien de plus.
 
 ## Journal
 
+- 2026-11-14 : PR 2 écrite (calcul, endpoint, widget).
 - 2026-11-14 : #2663 mergée, `db:migrate` fait.
 - 2026-11-14 : T1 tranchée (base) ; PR 1 écrite, tests rouges puis verts.
 - 2026-11-14 : plan technique écrit ; T1 posée à David.
