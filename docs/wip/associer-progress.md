@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2646._
+_Mis à jour le 2026-11-14, après le `deploy:prod` v0.87.0._
 
-- **État** : brouillons en prod (3e `27ac630c` → « coefficient directeur et ordonnée à l'origine », tag 3-067 ; 2de `5eec6d7d` → notion « Généralités sur les fonctions », sans tag), rangés par `db:migrate` de #2646 et vérifiés (MCP) ; tout le code du chantier est sur `main` · **Prochaine action** : après le `deploy:prod`, David essaie les deux brouillons dans l'admin de prod, puis les publie ; ensuite, clore le chantier (versement dans `docs/systeme/`, journal archivé) · **En attente de David** : `deploy:prod` (aucune PR du chantier n'est en prod, #2623 comprise), essai, publication · **Pièges en cours** : ne pas ouvrir ni publier les brouillons en prod avant le déploiement ; `{{eval:(a)*x+(b)}}` réordonne → `{{eval:(a)*x}}{{eval:b;+}}` · **Worktree / branche** : aucun
+- **État** : tout le chantier est en prod (v0.87.0 : #2623, #2637, #2644, #2646) ; brouillons en prod (3e `27ac630c` → « coefficient directeur et ordonnée à l'origine », tag 3-067 ; 2de `5eec6d7d` → notion « Généralités sur les fonctions », sans tag) · **Prochaine action** : David essaie les deux brouillons dans l'admin de prod, puis les publie ; ensuite, clore le chantier (versement dans `docs/systeme/`, journal archivé) · **En attente de David** : essai, publication · **Pièges en cours** : `{{eval:(a)*x+(b)}}` réordonne → `{{eval:(a)*x}}{{eval:b;+}}` · **Worktree / branche** : aucun
 
 ## Phase 0 (validée le 2026-11-14)
 
