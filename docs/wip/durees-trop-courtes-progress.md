@@ -7,9 +7,9 @@ Suite prévue : A1 (durées ajustées au temps observé), chantier à part.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR 1 codée, PR ouverte._
+_Mis à jour le 2026-11-14, après #2652._
 
-- **État** : PR 1 (bilan d'un contrôle) codée, tests verts (unitaires, rendu, intégration `bilan-controle`), PR ouverte · **Prochaine action** : CI + revue `code-reviewer`, merge ; puis PR 2 (éditeur de série) · **En attente de David** : rien (D1 appliqué : modèle sur deux lignes à durées différentes → pas de signal) · **Pièges en cours** : prod presque vide : vérifier en local ; `test_answers` ne garde pas la durée de la question, elle vient de la composition · **Worktree / branche** : `../ubumaths-wt-durees-trop-courtes`, `feat/durees-trop-courtes`
+- **État** : PR 1 mergée (#2652) : le bilan d'un contrôle signale « Durée sans doute trop courte » (≥ 5 élèves, plus de la moitié sans réponse au chrono écoulé ; plusieurs tirages : compté seulement si tous manqués) · **Prochaine action** : PR 2, éditeur de série (marque à côté de la durée de chaque ligne, modèle × durée, Contrôles blancs et contrôles des élèves du prof) : phase technique à écrire, vérifier d'abord ce que les traces `mock_test` permettent (aucun lien vers la série) · **En attente de David** : rien · **Pièges en cours** : prod presque vide : vérifier en local ; `test_answers` ne garde pas la durée de la question (elle vient de la composition) · **Worktree / branche** : aucun (worktree retiré après #2652) ; PR 2 : nouveau worktree `../ubumaths-wt-durees-trop-courtes`, branche `feat/durees-trop-courtes-editeur`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -99,6 +99,8 @@ Aucune migration. Contrôles de forme `interactive` seulement (Q4). Mêmes copie
   répondu) ?
 
 ## Journal
+
+- 2026-11-14 : PR 1 mergée (#2652) ; la revue a resserré la règle des tirages multiples (tous manqués).
 
 - 2026-11-14 : PR 1 codée (`timingsOf` dans `evaluation-breakdown.ts`, champ `timing` de chaque
   question, marque dans `EvaluationBreakdown.svelte`, doc `evaluations.md`). Plusieurs tirages : un
