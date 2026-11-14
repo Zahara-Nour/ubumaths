@@ -948,13 +948,17 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    Avec l'angle, la graduation de la règle et l'arc du compas sont justes tous les deux (décision 3) ;
    le côté d'angle (segment parti de V qui porte le repère) peut dépasser C, C se lit sur lui : Q18 ne
    vaut que pour [VC] et ce qui le prolonge depuis C (option A, David, 2026-11-14, revue de #2658).
+   Un côté d'angle tracé en segment tient lieu de [VC] : [BC] seul, arrêté sur lui, ferme le
+   triangle (`joinedVertices`, `angleSideSegments` ; 2e revue de #2658) ; cela vaut aussi pour le
+   triangle à angle sans cm (lot 7), où C doit toujours être au croisement construit.
    Erreurs de l'auteur : celles du triangle (impossible, rapporteur qui sort, C hors de la fenêtre) et
    un côté plus long que la règle. Correction : une règle posée au bout de chaque côté coté, vers C
    (`triangleRulers`) ; trois longueurs : les arcs de 4 cm et 5 cm ; avec l'angle : l'angle codé, sans
    arc. À l'écran, le Compas choisi avec une règle posée mène l'ouverture (indices, ‹ ›) comme le
    cercle de rayon donné en cm (`rulerShape` de `FigureACompleterView`) ; règle posée, le bout d'un
-   segment va d'abord à un croisement de traits proche (deux arcs), puis à la graduation (revue de
-   #2658 : une règle laissée en B vers C ne doit pas avaler le croisement).
+   segment va d'abord à un croisement de traits proche (tout croisement : arcs, droites, segments ;
+   hors du départ), puis à la graduation (revue de #2658 : une règle laissée en B vers C ne doit pas
+   avaler le croisement des arcs).
    Vérification `angle AOy = 50` (`construction/angle.ts`, lot 5 du chantier) : [OA) est donné (A, O
    nommés et visibles, `points` = A puis O) ; y nomme le côté à tracer (messages seulement) ; mesure
    entière de 1 à 179 (parseur). L'élève pose le rapporteur (outil `rapporteur` : centre, puis un point

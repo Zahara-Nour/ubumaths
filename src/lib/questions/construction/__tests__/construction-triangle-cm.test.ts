@@ -17,6 +17,7 @@ import { constructionExpected, constructionPositions, constructionShapes } from 
 import { ConstructionAuthorError, assertConstructionChecks, judgeConstruction } from '../judge';
 import {
 	missingSideFeedback,
+	notJoinedFeedback,
 	severalTrianglesFeedback,
 	vertexEyeballedAnglesFeedback,
 	vertexEyeballedFeedback,
@@ -438,6 +439,37 @@ describe('triangle coté en cm, deux côtés et l’angle compris', () => {
 			const [c] = cross(side, arc);
 			const objects = [MARK, ALONG, side, arc, segment(A, c), segment(B, c)];
 			expect(judge(ANGLE, objects)).toEqual({ status: 'correct' });
+		});
+
+		describe('le côté d’angle tient lieu de [AC] (David, 2026-11-14, 2e revue)', () => {
+			const SIDE = segment(A, rulerGraduation(ALONG, 60));
+
+			it('côté de 6 cm, arc de 4 cm sur la règle, [BC] seul jusqu’au croisement → juste', () => {
+				const arc = opened(ALONG, 40);
+				const [c] = cross(SIDE, arc);
+				expect(judge(ANGLE, [MARK, ALONG, SIDE, arc, segment(B, c)])).toEqual({
+					status: 'correct'
+				});
+			});
+
+			it('côté de 6 cm le long de la règle, [BC] seul jusqu’à la graduation de 4 cm → juste', () => {
+				expect(judge(ANGLE, [MARK, ALONG, SIDE, segment(B, C)])).toEqual({ status: 'correct' });
+			});
+
+			it('sans règle ni compas, [BC] arrêté sur le côté : C placé à l’œil', () => {
+				expect(judge(ANGLE, [MARK, SIDE, segment(B, C)])).toMatchObject({
+					status: 'incorrect',
+					feedback: vertexOffGraduationFeedback('A', 'C')
+				});
+			});
+
+			it('[BC] qui n’arrive pas sur le côté : côtés qui ne se rejoignent pas', () => {
+				const off = { x: C.x + 0.3, y: C.y - 0.3 };
+				expect(judge(ANGLE, [MARK, ALONG, SIDE, segment(B, off)])).toMatchObject({
+					status: 'incorrect',
+					feedback: notJoinedFeedback('A', 'B', 'C')
+				});
+			});
 		});
 
 		it('S3 : côté d’angle de 6 cm, compas ouvert sur une autre règle posée en A, verticale → juste', () => {

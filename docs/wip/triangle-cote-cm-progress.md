@@ -154,3 +154,14 @@ DrawnCircle` remplacé par un cercle porté avec son indice. Suites : serveur 7 
   ouvert sur une règle verticale) ; l'ancien « juste : C à l'arc » (C tiré d'une règle absente) est
   remplacé par S1-S3 ; le test Q18 devient « [AC] tracé à part, prolongé au-delà de C » (segment
   collé en C).
+- 2026-11-14 : **suite après #2658** (branche `feat/triangle-cote-cm-suite`, 2e revue, tranché par David
+  « je te suis »). (1) Un côté d'angle tracé en segment (construit, parti du sommet, portant le repère)
+  tient lieu de [AC] : [BC] seul arrêté dessus ferme le triangle (`joinedVertices` reçoit les côtés
+  d'angle, `angleSideSegments`). **L'effet s'étend au lot 7** (angle avec segment à reporter), même
+  code, même geste ; C doit toujours y être construit. Pas de faux juste : C à l'œil sur le côté reste
+  faux, [BC] qui n'arrive pas sur le côté reste « doivent se rejoindre ». Tests : 4 dans
+  `construction-triangle-cm.test.ts` (3 rouges, le 4e, non-régression, déjà vert), 2 dans
+  `construction-triangle-angles.test.ts` (rouges), verts après. (2) Doc : « croisement de traits »
+  (tout croisement, droites comprises) dans le commentaire de `FigureACompleterView.svelte` et dans
+  `questions.md`, comportement inchangé.
+- 2026-11-14 : **revue `code-reviewer` (opus) de #2660** : « prêt pour PR », aucun faux juste (32 sondes : lot 7, un côté et deux angles, cm). **Laissés, à trancher plus tard par David** : (1) lot 7 hors cm, un éventail de [BC] dont un seul arrive au bon croisement est juste (déjà avant la PR ; le cas en cm a « Trace un seul triangle ABC. ») ; (2) côté sans repère qui passe par le bout de [BC] → « Tes côtés [AC] et [BC] doivent se rejoindre en C. », message à préciser (« trace ses côtés avec le rapporteur ») ; (3) hors PR : repère de 140° sous (AB), côté tiré à l'opposé du repère → juste (`isAngleSide` teste l'alignement, pas le sens), avant comme après la PR.
