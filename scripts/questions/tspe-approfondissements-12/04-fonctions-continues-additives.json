@@ -1,0 +1,232 @@
+{
+	"title": "Fonctions continues telles que f(x + y) = f(x) + f(y)",
+	"description": "Valeurs en 0, en un entier et en son opposé (trois cases), valeur en un rationnel (case), passage des rationnels aux réels par continuité (case choix), f est linéaire (étapes à ranger)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction continue sur $\\mathbb{R}$ telle que, pour tous réels $x$ et $y$, $f(x+y)=f(x)+f(y)$. On sait que $f(1)={{eval:c}}$.\n\nComplète.\n\n$f(0)=?$, $f({{eval:N}})=?$ et $f({{eval:-N}})=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "N",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{eval:N*c}}"
+				},
+				{
+					"expectedAnswer": "{{eval:-N*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $x=y=0$ : $f(0)=2f(0)$, donc $f(0)=0$.",
+					"Avec $y=1$ : $f(n+1)=f(n)+f(1)$ ; par récurrence, $f(n)=nf(1)$, donc $f({{eval:N}})={{eval:N}}\\times{{eval:c;()}}={{eval:N*c}}$.",
+					"Avec $y=-x$ : $f(x)+f(-x)=f(0)=0$, donc $f({{eval:-N}})=-f({{eval:N}})$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f(0)=0}$, $\\textcolor{{{color:primary.0}}}{f({{eval:N}})={{eval:N*c}}}$ et $\\textcolor{{{color:primary.0}}}{f({{eval:-N}})={{eval:-N*c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue sur $\\mathbb{R}$ telle que, pour tous réels $x$ et $y$, $f(x+y)=f(x)+f(y)$. On sait que $f(1)={{eval:c}}$, et que $f(nx)=nf(x)$ pour tout entier naturel $n$ et tout réel $x$.\n\nDétermine la valeur exacte de $f\\left(\\dfrac{{{eval:p}}}{{{eval:q}}}\\right)$.\n\n$f\\left(\\dfrac{{{eval:p}}}{{{eval:q}}}\\right)=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..7"
+				},
+				{
+					"name": "p",
+					"expression": "1..{{eval:q-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*c/q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $n={{eval:q}}$ et $x=\\dfrac{1}{{{eval:q}}}$ : $f(1)={{eval:q}}f\\left(\\dfrac{1}{{{eval:q}}}\\right)$, donc $f\\left(\\dfrac{1}{{{eval:q}}}\\right)={{eval:c/q}}$.",
+					"Avec $n={{eval:p}}$ : $f\\left(\\dfrac{{{eval:p}}}{{{eval:q}}}\\right)={{eval:p}}f\\left(\\dfrac{1}{{{eval:q}}}\\right)$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f\\left(\\dfrac{{{eval:p}}}{{{eval:q}}}\\right)={{eval:p*c/q}}}$ : sur les rationnels, $f(r)=f(1)\\,r$."
+				]
+			},
+			"conditions": ["gcd(p,q) == 1"]
+		},
+		{
+			"statement": "Soit $f$ une fonction continue sur $\\mathbb{R}$ telle que, pour tous réels $x$ et $y$, $f(x+y)=f(x)+f(y)$. On a montré que $f(r)=f(1)\\,r$ pour tout rationnel $r$.\n\nPourquoi a-t-on $f(x)=f(1)\\,x$ pour tout **réel** $x$ ?\n\n```choix\n- Tout réel $x$ est limite d'une suite de rationnels $(r_n)$ ; $f(r_n)=f(1)\\,r_n$ et $f$ est continue en $x$\n- Parce que $f(0)=0$\n- Parce que $f$ est dérivable sur $\\mathbb{R}$\n- Parce que l'égalité est vraie pour tous les entiers\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soit $x$ réel et $(r_n)$ une suite de rationnels de limite $x$ (par exemple les valeurs décimales approchées de $x$).",
+					"Pour tout $n$, $f(r_n)=f(1)\\,r_n$ ; $f$ étant continue en $x$, $f(r_n)\\to f(x)$, et $f(1)\\,r_n\\to f(1)\\,x$.",
+					"Par unicité de la limite, $\\textcolor{{{color:primary.0}}}{f(x)=f(1)\\,x}$ : $f$ est linéaire. Sans la continuité, le passage des rationnels aux réels tomberait."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue sur $\\mathbb{R}$ telle que, pour tous réels $x$ et $y$, $f(x+y)=f(x)+f(y)$. On démontre que $f$ est linéaire : $f(x)=ax$, avec $a=f(1)$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Avec $x=y=0$, $f(0)=2f(0)$, donc $f(0)=0$.\n- Par récurrence, $f(n)=na$ pour tout entier naturel $n$.\n- Avec $y=-x$, $f(-x)=-f(x)$ : $f(n)=na$ pour tout entier relatif $n$.\n- Comme $a=f\\left(q\\times\\dfrac{1}{q}\\right)=qf\\left(\\dfrac{1}{q}\\right)$, on obtient $f\\left(\\dfrac{p}{q}\\right)=\\dfrac{p}{q}a$ pour tout rationnel $\\dfrac{p}{q}$.\n- Tout réel est limite d'une suite de rationnels et $f$ est continue : $f(x)=ax$ pour tout réel $x$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On établit $f(x)=ax$ de proche en proche : en $0$, sur les entiers naturels, sur les entiers relatifs, sur les rationnels.",
+					"La continuité étend l'égalité à tous les réels : $\\textcolor{{{color:primary.0}}}{f(x)=f(1)\\,x}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0, 12, −12",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"N": "4"
+			},
+			"answers": ["0", "12", "-12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(0) = f(1)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"N": "4"
+			},
+			"answers": ["3", "12", "-12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(−N) = f(N)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"N": "4"
+			},
+			"answers": ["0", "12", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(2/5) = −6/5",
+			"variationIndex": 1,
+			"variables": {
+				"c": "-3",
+				"q": "5",
+				"p": "2"
+			},
+			"answers": ["-\\frac{6}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe",
+			"variationIndex": 1,
+			"variables": {
+				"c": "-3",
+				"q": "5",
+				"p": "2"
+			},
+			"answers": ["\\frac{6}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : c/q (p oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "-3",
+				"q": "5",
+				"p": "2"
+			},
+			"answers": ["-\\frac{3}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "densité et continuité",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(0) = 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dérivable",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : vrai sur les entiers",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

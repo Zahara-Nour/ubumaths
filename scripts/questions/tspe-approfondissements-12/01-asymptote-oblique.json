@@ -1,0 +1,330 @@
+{
+	"title": "Asymptote oblique : équation, division, position",
+	"description": "Définition d'une asymptote oblique (case choix), équation lue sur f(x) = ax + b + c/(x − d) (deux cases), écriture d'une fraction rationnelle sous la forme mx + p + r/(x − d) (trois cases), position de la courbe par rapport à l'asymptote (case choix)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction définie sur $]0;+\\infty[$, de courbe $\\mathcal{C}_f$, et $D$ la droite d'équation $y=mx+p$, avec $m\\neq 0$.\n\nÀ quelle condition $D$ est-elle **asymptote oblique** à $\\mathcal{C}_f$ en $+\\infty$ ?\n\n```choix\n- $\\displaystyle\\lim_{x\\to+\\infty}\\big(f(x)-(mx+p)\\big)=0$\n- $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{f(x)}{x}=m$\n- $\\displaystyle\\lim_{x\\to+\\infty}f(x)=+\\infty$\n- $f(x)-(mx+p)>0$ pour tout $x>0$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $D$ est asymptote oblique en $+\\infty$ si l'écart vertical entre la courbe et la droite tend vers $0$.",
+					"$\\dfrac{f(x)}{x}\\to m$ est une **conséquence** de cette définition, pas une condition suffisante : $f(x)=x+\\sqrt{x}$ vérifie $\\dfrac{f(x)}{x}\\to 1$ sans asymptote.",
+					"La condition est $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{x\\to+\\infty}\\big(f(x)-(mx+p)\\big)=0}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $]{{eval:d}};+\\infty[$ par $f(x)={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x{{eval:b;+}}+\\dfrac{{{eval:c}}}{x{{eval:-d;+}}}$.\n\nDonne l'équation de l'asymptote oblique $D$ à sa courbe en $+\\infty$.\n\n$D : y=?x+?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..3;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)-({{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x{{eval:b;+}})=\\dfrac{{{eval:c}}}{x{{eval:-d;+}}}$.",
+					"Or $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{{{eval:c}}}{x{{eval:-d;+}}}=0$ : l'écart entre la courbe et la droite tend vers $0$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{D : y={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x{{eval:b;+}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $]{{eval:d}};+\\infty[$ par $f(x)=\\dfrac{{{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x^2{{if:k1==1|+|{{if:k1==-1|-|{{eval:k1;+}}}}}}x{{eval:k2;+}}}{x{{eval:-d;+}}}$.\n\nComplète l'écriture de $f(x)$, qui donne l'asymptote oblique $y=mx+p$ en $+\\infty$.\n\n$f(x)=?x+?+\\dfrac{?}{x{{eval:-d;+}}}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k1",
+					"expression": "eval:(b)-(a)*(d)"
+				},
+				{
+					"name": "k2",
+					"expression": "eval:(c)-(b)*(d)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche $m$, $p$ et $r$ tels que $(mx+p)(x{{eval:-d;+}})+r={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x^2{{if:k1==1|+|{{if:k1==-1|-|{{eval:k1;+}}}}}}x{{eval:k2;+}}$.",
+					"En développant : $mx^2+(p{{eval:-d;+}}m)x+r{{eval:-d;+}}p$. Par identification, $m={{eval:a}}$, puis $p={{eval:b}}$, puis $r={{eval:c}}$.",
+					"Donc $f(x)=\\textcolor{{{color:primary.0}}}{{{eval:a}}}x+\\textcolor{{{color:primary.0}}}{{{eval:b;()}}}+\\dfrac{\\textcolor{{{color:primary.0}}}{{{eval:c}}}}{x{{eval:-d;+}}}$ : la droite $y={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x{{eval:b;+}}$ est asymptote oblique."
+				]
+			},
+			"conditions": ["k1 != 0", "k2 != 0"]
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $\\mathbb{R}\\setminus\\{{{eval:d}}\\}$ par $f(x)={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x{{eval:b;+}}+\\dfrac{{{eval:c}}}{x{{eval:-d;+}}}$. La droite $D : y={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x{{eval:b;+}}$ est asymptote oblique à sa courbe $\\mathcal{C}_f$.\n\nQuelle est la position de $\\mathcal{C}_f$ par rapport à $D$ sur $]-\\infty;{{eval:d}}[$ ?\n\n```choix\n- $\\mathcal{C}_f$ est au-dessous de $D$\n- $\\mathcal{C}_f$ est au-dessus de $D$\n- $\\mathcal{C}_f$ coupe $D$ en un seul point\n- $\\mathcal{C}_f$ et $D$ sont confondues\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..3;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On étudie le signe de $f(x)-({{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x{{eval:b;+}})=\\dfrac{{{eval:c}}}{x{{eval:-d;+}}}$.",
+					"Pour $x<{{eval:d}}$, $x{{eval:-d;+}}<0$ et ${{eval:c}}>0$ : le quotient est strictement négatif.",
+					"Donc, sur $]-\\infty;{{eval:d}}[$, $\\textcolor{{{color:primary.0}}}{\\mathcal{C}_f\\text{ est au-dessous de }D}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "écart de limite nulle",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(x)/x → m",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f → +∞",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : écart positif",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = 2x − 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "4",
+				"d": "1"
+			},
+			"answers": ["2", "-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe de b",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "4",
+				"d": "1"
+			},
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b + c",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "4",
+				"d": "1"
+			},
+			"answers": ["2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x + 1 + 3/(x − 2)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "2",
+				"k1": "-3",
+				"k2": "1"
+			},
+			"answers": ["2", "1", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p = k1 (division oubliée)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "2",
+				"k1": "-3",
+				"k2": "1"
+			},
+			"answers": ["2", "-3", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : r = k2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "2",
+				"k1": "-3",
+				"k2": "1"
+			},
+			"answers": ["2", "1", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "au-dessous",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "4",
+				"d": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "4",
+				"d": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coupe",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "4",
+				"d": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : confondues",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "4",
+				"d": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

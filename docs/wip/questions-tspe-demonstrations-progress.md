@@ -10,18 +10,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 11 publié (§ 47)._
+_Mis à jour le 2026-11-14, lot 12 en fichiers (§ 48)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 11 publiés (§ 47), 19 restants.
-- **Prochaine action** : lot 12 (Q1 du § 35), même démarche que le lot 11 (§ 44 à 47).
-- **En attente de David** : rien.
+  § 35, lots 9 à 15) : lots 9 à 11 publiés (§ 47), lot 12 en fichiers (§ 48, PR ouverte), 14 restants après lui.
+- **Prochaine action** : PR du lot 12 verte → merge ; puis David lance
+  `create-questions --dir scripts/questions/tspe-approfondissements-12 --publier` depuis le dépôt principal ; puis
+  migration de rangement (406, 584 → asymptotes ; 435 → valeurs intermédiaires ; 436, 437 → continuité en un point).
+- **En attente de David** : `create-questions --publier` du lot 12, après le merge.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
-  `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, sur `feat/questions-tspe-approfondissements-11`.
+  `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge ;
+  **`1x` non nettoyé dans une formule `f(x)=…`** : `cf()`/`cfs()` du script du lot 12 (§ 48).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, sur `feat/questions-tspe-approfondissements-12`.
 
 ---
 
@@ -925,3 +928,29 @@ dans l'aperçu admin, § 44). Page : https://claude.ai/artifact/PgMJ1EGTsjS9bvEt
 
 Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 45). `publier-lot.ts` en simulation puis `--publier`,
 lancés par David. Relu en base (MCP) : 4 `published`.
+
+## 48. Lot 12 : approfondissements, limites et continuité (2026-11-14)
+
+| Point | Modèle (`scripts/questions/tspe-approfondissements-12/`) | Nœud, niveau              | Variations                                                                                          |
+| ----- | -------------------------------------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------- |
+| 406   | `01-asymptote-oblique`                                   | asymptotes, 2             | définition (choix) ; y = ?x + ? lu sur ax + b + c/(x − d) ; ?x + ? + ?/(x − d) ; position (choix)   |
+| 584   | `02-branches-infinies`                                   | asymptotes, 3             | classement donné : (Oy) pour un trinôme, (Ox) pour a ln x + b (choix) ; lim f(x)/x ; y = ax (choix) |
+| 435   | `03-demontrer-tvi-par-dichotomie`                        | valeurs intermédiaires, 3 | b₁ − a₁ et b_n − a_n = ?/2ⁿ ; adjacentes (choix) ; f(ℓ) = 0 par continuité (choix) ; ranger (5)     |
+| 436   | `04-fonctions-continues-additives`                       | continuité en un point, 4 | f(0), f(N), f(−N) ; f(p/q) ; densité + continuité (choix) ; ranger (5)                              |
+| 437   | `05-prolongement-par-continuite`                         | continuité en un point, 3 | fraction simplifiable en d ; (e^{ax} − 1)/x en 0 par le nombre dérivé ; x ln x (choix)              |
+
+Relevé MCP du 2026-11-14 : 406 et 584 sur « asymptotes » (niveau 1 au plus), 435 sur « valeurs intermédiaires »
+(2 au plus), 437 sur « continuité en un point » (2 au plus), 436 sur la notion Continuité ; aucun modèle tagué sur ces
+points. Script : `docs/wip/questions/lot-tspe-approfondissements-12.py`.
+
+Défauts vus dans les aperçus et corrigés : couleur hors `$` (« la courbe a \textcolor… », « adjacentes ») ;
+coefficient 1 ou −1 laissé dans une formule `f(x)=…` ou `f(x)-(…)` (`1x`, `1\ln(x)`, `1\sqrt{x}`) : le nettoyage ne
+passe pas là, d'où `cf()`/`cfs()` (`{{if:…}}`) et a ≥ 2 devant ln et √ ; `+\dfrac{-5}{x}` (signe sorti de la
+fraction, `abs`) ; `\dfrac{-5}{5}` dans le corrigé de 436 (valeur calculée `c/q`).
+
+Vérifié : `question:specs` 150 tirages par variation, 5/5 importables (64 specs vertes), 0 `\textcolor` hors `$` ;
+905 formules distinctes des aperçus passées à `validateLatex` + accolades, 0 problème ; `create-questions` en
+simulation sur la prod : 5 « à créer », aucun titre pris ; brouillons en base locale (copie hors dépôt : a30677d9,
+132c53c2, a64f78b6, 80cd393c, 56e89288) ; aperçu admin vu à l'écran (port 5177) : 406 (b) joué « Juste »
+(y = −3x + 4), 436 (c) joué faux (A coché à tort, correction affichée), étapes à ranger de 436 rendues, rappel en
+liste de 584 rendu.

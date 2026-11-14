@@ -1,0 +1,211 @@
+{
+	"title": "Démontrer le théorème des valeurs intermédiaires par dichotomie",
+	"description": "Longueur des intervalles de la dichotomie (deux cases), suites adjacentes (case choix), annulation en la limite commune par continuité (case choix), démonstration (étapes à ranger)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction continue sur $[{{eval:a0}};{{eval:a0+L}}]$ telle que $f({{eval:a0}})\\leqslant 0\\leqslant f({{eval:a0+L}})$. On pose $a_0={{eval:a0}}$, $b_0={{eval:a0+L}}$ et, pour tout entier naturel $n$, $c_n=\\dfrac{a_n+b_n}{2}$ : si $f(c_n)\\leqslant 0$, alors $a_{n+1}=c_n$ et $b_{n+1}=b_n$ ; sinon $a_{n+1}=a_n$ et $b_{n+1}=c_n$.\n\nComplète.\n\n$b_1-a_1=?$ et, pour tout $n$, $b_n-a_n=\\dfrac{?}{2^n}$",
+			"variables": [
+				{
+					"name": "a0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "L",
+					"expression": "1..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:L}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans les deux cas, l'intervalle $[a_{n+1};b_{n+1}]$ est une moitié de $[a_n;b_n]$ : $b_{n+1}-a_{n+1}=\\dfrac{b_n-a_n}{2}$.",
+					"La suite $(b_n-a_n)$ est géométrique de raison $\\dfrac{1}{2}$ et de premier terme $b_0-a_0={{eval:L}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{b_1-a_1={{eval:L/2}}}$ et $b_n-a_n=\\dfrac{\\textcolor{{{color:primary.0}}}{{{eval:L}}}}{2^n}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue sur $[a;b]$ telle que $f(a)\\leqslant 0\\leqslant f(b)$. On démontre qu'elle s'annule sur $[a;b]$ : on pose $a_0=a$, $b_0=b$ et, pour tout entier naturel $n$, $c_n=\\dfrac{a_n+b_n}{2}$ : si $f(c_n)\\leqslant 0$, alors $a_{n+1}=c_n$ et $b_{n+1}=b_n$ ; sinon $a_{n+1}=a_n$ et $b_{n+1}=c_n$. Ainsi $a_n\\leqslant b_n$ et $f(a_n)\\leqslant 0\\leqslant f(b_n)$ pour tout $n$.\n\nPourquoi les suites $(a_n)$ et $(b_n)$ convergent-elles vers une même limite $\\ell$ ?\n\n```choix\n- $(a_n)$ est croissante, $(b_n)$ décroissante et $b_n-a_n=\\dfrac{b-a}{2^n}$ tend vers $0$ : elles sont adjacentes\n- $(a_n)$ et $(b_n)$ sont bornées par $a$ et $b$\n- $f$ est continue sur $[a;b]$\n- $a_n\\leqslant b_n$ pour tout entier naturel $n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque étape, $a_{n+1}\\geqslant a_n$ et $b_{n+1}\\leqslant b_n$ : $(a_n)$ croît et $(b_n)$ décroît.",
+					"Leur différence $b_n-a_n=\\dfrac{b-a}{2^n}$ tend vers $0$.",
+					"Les suites sont donc $\\textcolor{{{color:primary.0}}}{\\text{adjacentes}}$ : elles convergent vers une même limite $\\ell\\in[a;b]$. Être bornées ne suffirait pas à avoir la même limite."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue sur $[a;b]$ telle que $f(a)\\leqslant 0\\leqslant f(b)$. On démontre qu'elle s'annule sur $[a;b]$ : on pose $a_0=a$, $b_0=b$ et, pour tout entier naturel $n$, $c_n=\\dfrac{a_n+b_n}{2}$ : si $f(c_n)\\leqslant 0$, alors $a_{n+1}=c_n$ et $b_{n+1}=b_n$ ; sinon $a_{n+1}=a_n$ et $b_{n+1}=c_n$. Ainsi $a_n\\leqslant b_n$ et $f(a_n)\\leqslant 0\\leqslant f(b_n)$ pour tout $n$. Les suites $(a_n)$ et $(b_n)$ convergent vers un même réel $\\ell$ de $[a;b]$.\n\nPourquoi a-t-on $f(\\ell)=0$ ?\n\n```choix\n- $f$ est continue en $\\ell$ : $f(a_n)\\to f(\\ell)$ avec $f(a_n)\\leqslant 0$, et $f(b_n)\\to f(\\ell)$ avec $f(b_n)\\geqslant 0$\n- $f$ est croissante sur $[a;b]$\n- $a_n$ tend vers $\\ell$, donc $f(a_n)$ tend vers $0$\n- $f(a)\\leqslant 0\\leqslant f(b)$ suffit\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ étant continue en $\\ell$, $\\displaystyle\\lim_{n\\to+\\infty}f(a_n)=f(\\ell)$ et $\\displaystyle\\lim_{n\\to+\\infty}f(b_n)=f(\\ell)$.",
+					"Par passage à la limite dans les inégalités : $f(a_n)\\leqslant 0$ donne $f(\\ell)\\leqslant 0$, et $f(b_n)\\geqslant 0$ donne $f(\\ell)\\geqslant 0$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f(\\ell)=0}$ : $f$ s'annule en $\\ell\\in[a;b]$. Aucune monotonie n'est nécessaire."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue sur $[a;b]$ telle que $f(a)\\leqslant 0\\leqslant f(b)$. On démontre par dichotomie que $f$ s'annule sur $[a;b]$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On pose $a_0=a$, $b_0=b$ et l'on coupe $[a_n;b_n]$ en deux en gardant la moitié $[a_{n+1};b_{n+1}]$ où $f(a_{n+1})\\leqslant 0\\leqslant f(b_{n+1})$.\n- $(a_n)$ est croissante, $(b_n)$ décroissante et $b_n-a_n=\\dfrac{b-a}{2^n}$.\n- Comme $b_n-a_n$ tend vers $0$, les suites sont adjacentes : elles convergent vers un même réel $\\ell\\in[a;b]$.\n- Par continuité de $f$ en $\\ell$, $f(a_n)\\to f(\\ell)$ et $f(b_n)\\to f(\\ell)$.\n- Par passage à la limite, $f(\\ell)\\leqslant 0$ et $f(\\ell)\\geqslant 0$, donc $f(\\ell)=0$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On construit deux suites adjacentes qui encadrent une solution, en coupant l'intervalle en deux à chaque étape.",
+					"La continuité de $f$ en leur limite commune $\\ell$ donne $\\textcolor{{{color:primary.0}}}{f(\\ell)=0}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/2 et 3",
+			"variationIndex": 0,
+			"variables": {
+				"a0": "1",
+				"L": "3"
+			},
+			"answers": ["\\frac{3}{2}", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : longueur non divisée",
+			"variationIndex": 0,
+			"variables": {
+				"a0": "1",
+				"L": "3"
+			},
+			"answers": ["3", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b₀ au lieu de b₀ − a₀",
+			"variationIndex": 0,
+			"variables": {
+				"a0": "1",
+				"L": "3"
+			},
+			"answers": ["\\frac{3}{2}", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "adjacentes",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bornées",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f continue",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a_n ≤ b_n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "continuité en ℓ",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f croissante",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(a_n) → 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(a) ≤ 0 ≤ f(b)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,275 @@
+{
+	"title": "Branches infinies : asymptote ou branche parabolique",
+	"description": "Classement donné dans l'énoncé : branche parabolique de direction (Oy) pour un polynôme du second degré, de direction (Ox) pour a ln(x) + b (cases choix), limite de f(x)/x pour f(x) = ax + b√x (case), branche parabolique de direction y = ax (case choix)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La fonction $f$ est définie sur $]0;+\\infty[$ par $f(x)={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x^2{{eval:b;+}}x{{eval:c;+}}$.\n\nOn admet le classement suivant. Si $\\displaystyle\\lim_{x\\to+\\infty}f(x)=+\\infty$, on étudie $\\dfrac{f(x)}{x}$ en $+\\infty$ :\n\n- s'il tend vers $+\\infty$, la courbe a une **branche parabolique de direction $(Oy)$** ;\n- s'il tend vers $0$, une **branche parabolique de direction $(Ox)$** ;\n- s'il tend vers un réel $a\\neq 0$, on étudie $f(x)-ax$ : s'il tend vers un réel $b$, la droite $y=ax+b$ est **asymptote oblique** ; s'il tend vers $+\\infty$, la courbe a une **branche parabolique de direction la droite $y=ax$**.\n\nQuelle branche infinie la courbe de $f$ a-t-elle en $+\\infty$ ?\n\n```choix\n- une branche parabolique de direction $(Oy)$\n- une branche parabolique de direction $(Ox)$\n- une asymptote oblique\n- une asymptote horizontale\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to+\\infty}f(x)=+\\infty$, car ${{eval:a}}>0$ (terme de plus haut degré).",
+					"$\\dfrac{f(x)}{x}={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x{{eval:b;+}}{{if:c>0|+|-}}\\dfrac{{{eval:abs(c)}}}{x}$, qui tend vers $+\\infty$.",
+					"Donc la courbe a $\\textcolor{{{color:primary.0}}}{\\text{une branche parabolique de direction }(Oy)}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $]0;+\\infty[$ par $f(x)={{eval:a}}\\ln(x){{eval:b;+}}$.\n\nOn admet le classement suivant. Si $\\displaystyle\\lim_{x\\to+\\infty}f(x)=+\\infty$, on étudie $\\dfrac{f(x)}{x}$ en $+\\infty$ :\n\n- s'il tend vers $+\\infty$, la courbe a une **branche parabolique de direction $(Oy)$** ;\n- s'il tend vers $0$, une **branche parabolique de direction $(Ox)$** ;\n- s'il tend vers un réel $a\\neq 0$, on étudie $f(x)-ax$ : s'il tend vers un réel $b$, la droite $y=ax+b$ est **asymptote oblique** ; s'il tend vers $+\\infty$, la courbe a une **branche parabolique de direction la droite $y=ax$**.\n\nQuelle branche infinie la courbe de $f$ a-t-elle en $+\\infty$ ?\n\n```choix\n- une branche parabolique de direction $(Ox)$\n- une branche parabolique de direction $(Oy)$\n- une asymptote oblique\n- une asymptote horizontale\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to+\\infty}\\ln(x)=+\\infty$ et ${{eval:a}}>0$, donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)=+\\infty$.",
+					"$\\dfrac{f(x)}{x}={{eval:a}}\\times\\dfrac{\\ln(x)}{x}{{if:b>0|+|-}}\\dfrac{{{eval:abs(b)}}}{x}$, qui tend vers $0$ par croissance comparée.",
+					"Donc la courbe a $\\textcolor{{{color:primary.0}}}{\\text{une branche parabolique de direction }(Ox)}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $]0;+\\infty[$ par $f(x)={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x+{{eval:b}}\\sqrt{x}$, et $\\displaystyle\\lim_{x\\to+\\infty}f(x)=+\\infty$.\n\nPour étudier sa branche infinie en $+\\infty$, calcule la limite suivante.\n\n$\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{f(x)}{x}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $x>0$, $\\dfrac{f(x)}{x}={{eval:a}}+\\dfrac{{{eval:b}}\\sqrt{x}}{x}={{eval:a}}+\\dfrac{{{eval:b}}}{\\sqrt{x}}$.",
+					"Or $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{1}{\\sqrt{x}}=0$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{f(x)}{x}={{eval:a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $]0;+\\infty[$ par $f(x)={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x+{{eval:b}}\\sqrt{x}$ ; on a $\\displaystyle\\lim_{x\\to+\\infty}f(x)=+\\infty$ et $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{f(x)}{x}={{eval:a}}$.\n\nOn admet le classement suivant. Si $\\displaystyle\\lim_{x\\to+\\infty}f(x)=+\\infty$, on étudie $\\dfrac{f(x)}{x}$ en $+\\infty$ :\n\n- s'il tend vers $+\\infty$, la courbe a une **branche parabolique de direction $(Oy)$** ;\n- s'il tend vers $0$, une **branche parabolique de direction $(Ox)$** ;\n- s'il tend vers un réel $a\\neq 0$, on étudie $f(x)-ax$ : s'il tend vers un réel $b$, la droite $y=ax+b$ est **asymptote oblique** ; s'il tend vers $+\\infty$, la courbe a une **branche parabolique de direction la droite $y=ax$**.\n\nQuelle branche infinie la courbe de $f$ a-t-elle en $+\\infty$ ?\n\n```choix\n- une branche parabolique de direction la droite $y={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x$\n- une asymptote oblique d'équation $y={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x$\n- une branche parabolique de direction $(Oy)$\n- une branche parabolique de direction $(Ox)$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{f(x)}{x}$ tend vers ${{eval:a}}\\neq 0$ : on étudie $f(x)-{{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x={{eval:b}}\\sqrt{x}$.",
+					"$\\displaystyle\\lim_{x\\to+\\infty}{{eval:b}}\\sqrt{x}=+\\infty$ : l'écart ne tend pas vers un réel, il n'y a pas d'asymptote.",
+					"Donc la courbe a $\\textcolor{{{color:primary.0}}}{\\text{une branche parabolique de direction la droite }y={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}x}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "direction (Oy)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : direction (Ox)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : asymptote oblique",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : horizontale",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "direction (Ox)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : direction (Oy)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : asymptote oblique",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : horizontale",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "limite 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a + b",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "direction y = ax",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : asymptote y = ax",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : direction (Oy)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : direction (Ox)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
