@@ -45,6 +45,7 @@ import {
 	findAssociersToPlace,
 	parseAssocierContent
 } from '$lib/ubumark/parser/associer-parser';
+import { findTrousToPlace } from '$lib/ubumark/parser/trous-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import {
 	findCubesToBuild,
@@ -384,6 +385,7 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	'boite-a-moustaches': 'Une boîte à moustaches à construire',
 	ranger: 'Des étiquettes à ranger',
 	associer: 'Des éléments à associer',
+	trous: 'Un texte à trous',
 	partage: 'Une figure à colorier',
 	cubes: 'Un assemblage de cubes à geste',
 	patron: 'Un patron à geste',
@@ -513,6 +515,7 @@ function markBuildBlocks(statement: string): {
 		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
 		...associers.map((b) => ({ ...b, kind: 'associer' as const })),
+		...findTrousToPlace(statement).map((b) => ({ ...b, kind: 'trous' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
@@ -753,6 +756,7 @@ export function assignBlankIndices(
 								build.kind === 'boite-a-moustaches' ||
 								build.kind === 'ranger' ||
 								build.kind === 'associer' ||
+								build.kind === 'trous' ||
 								build.kind === 'courbe' ||
 								build.kind === 'trig') && {
 								point
@@ -771,6 +775,7 @@ export function assignBlankIndices(
 								build.kind === 'trig' ||
 								build.kind === 'ranger' ||
 								build.kind === 'associer' ||
+								build.kind === 'trous' ||
 								build.kind === 'partage' ||
 								build.kind === 'cubes' ||
 								build.kind === 'patron' ||
