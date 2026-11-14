@@ -72,6 +72,7 @@ import { displayedTrousLabels, TROUS_RESERVE_COLUMNS } from '../utils/trous';
 import { generateQrTypst } from './qr-typst';
 import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
+import { generateTortueTypst } from './tortue-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
 import { generateOperationTypst } from './operation-typst';
@@ -558,6 +559,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateAssocierTypst(node, options);
 		case 'trous':
 			return generateTrousTypst(node, options);
+		case 'tortue':
+			// Programme tortue : la figure à reproduire (`montrer: oui`) et « À faire sur Chiphre »
+			return generateTortueTypst(node);
 
 		default:
 			return '';

@@ -53,6 +53,8 @@
 	import { parseAssocierContent } from '$lib/ubumark/parser/associer-parser';
 	import TrousEtiquettes from '$lib/components/markdown/nodes/TrousEtiquettes.svelte';
 	import { parseTrousContent } from '$lib/ubumark/parser/trous-parser';
+	import TortueCorrige from '$lib/components/markdown/nodes/TortueCorrige.svelte';
+	import { parseTortueContent } from '$lib/ubumark/parser/tortue-parser';
 	import Partage from '$lib/components/markdown/nodes/Partage.svelte';
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
@@ -125,6 +127,7 @@
 	let ranger = $derived(kind === 'ranger' ? parseRangerContent(source) : null);
 	let associer = $derived(kind === 'associer' ? parseAssocierContent(source) : null);
 	let trous = $derived(kind === 'trous' ? parseTrousContent(source) : null);
+	let tortue = $derived(kind === 'tortue' ? parseTortueContent(source) : null);
 	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
 	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
 	let patron = $derived(kind === 'patron' ? parseEspaceContent(source, 'patron') : null);
@@ -276,6 +279,9 @@
 			showControls={false}
 		/>
 	{/if}
+{:else if tortue}
+	<!-- Programme tortue : le tracé de l'élève et l'attendu en pointillés, les programmes en texte -->
+	<TortueCorrige node={tortue} {answer} correct={accepted(status)} expected={expected?.[0]} />
 {:else if trous && trous.errors.length === 0}
 	{@const node = { ...trous, caseIndex: 0 }}
 	{#if lineCases}
