@@ -14,7 +14,7 @@ function modele(id: string, statement: string, blanks?: unknown[]): QuestionTemp
 	return {
 		id,
 		title: 't',
-		grades: ['1SPE'],
+		grades: ['1_SPE'],
 		level: 1,
 		status: 'draft',
 		variations: [{ statement, ...(blanks ? { blanks } : {}) }]

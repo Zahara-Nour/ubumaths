@@ -30,7 +30,7 @@ function template(
 		title: 'Associer',
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
-		grades: ['1SPE'],
+		grades: ['1_SPE'],
 		level: 1,
 		...(options && { options })
 	} as QuestionTemplate;

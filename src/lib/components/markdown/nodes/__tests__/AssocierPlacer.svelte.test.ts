@@ -198,7 +198,7 @@ describe('FillBlanksInput — associer', () => {
 				)
 			}
 		],
-		grades: ['1SPE'],
+		grades: ['1_SPE'],
 		level: 1
 	} as QuestionTemplate;
 
