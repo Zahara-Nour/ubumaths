@@ -4,7 +4,7 @@
  * Partagé entre le serveur (calcul, lecture) et la page résultats du professeur.
  */
 
-/** Répartition des réponses : juste / partiel (½ point) / faux / sans réponse */
+/** Répartition des réponses : juste (1) / partiel (½) / faux, mauvaise forme comprise (0) / sans réponse */
 export interface BreakdownCounts {
 	correct: number;
 	partial: number;

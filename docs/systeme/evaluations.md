@@ -267,7 +267,7 @@ les cartes de la page résultats) :
   des élèves passés par le loader (ceux de `getEvaluationResults`).
 - **Par question** : une ligne par modèle, dans l'ordre de la composition ; les tirages d'un même
   modèle s'additionnent. Taux de réussite = points obtenus / réponses (1, ½ ou 0 par réponse) ;
-  répartition juste / partiel (forme non optimale ou mauvaise forme) / faux / sans réponse. Une
+  répartition juste (1) / partiel (forme non optimale, ½) / faux (mauvaise forme comprise, 0) / sans réponse. Une
   réponse d'un modèle sorti de la série reste comptée sous son modèle, en fin de liste.
 - **Par notion** : modèle → `question_template_points` → `curriculum_points.node_id`, remonté
   jusqu'au nœud `notion` (branche › notion). Un modèle à plusieurs notions compte dans **chacune** ;

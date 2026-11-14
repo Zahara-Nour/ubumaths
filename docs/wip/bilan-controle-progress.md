@@ -6,9 +6,9 @@ validés ») ; David : « go pour P6 ». Phase 0 : **rien de codé**.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, PR ouverte (implémentation complète)._
+_Mis à jour le 2026-11-14, PR #2621 ouverte, revues traitées._
 
-- **État** : codé et testé (calcul pur 27 tests, loader 2, composant 6, intégration 2 sous RLS réelle) ; doc `docs/systeme/evaluations.md` à jour ; PR ouverte, revues `code-reviewer` + `security-auditor` en cours · **Prochaine action** : traiter les revues, CI verte → merge · **En attente de David** : rien · **Pièges en cours** : 0 copie de contrôle en prod : tout se prouve sur fixtures et en mode test ; `test_answers` > 1 000 lignes → lecture paginée · **Worktree / branche** : `../ubumaths-wt-bilan-controle` · `feat/bilan-controle`
+- **État** : codé, testé, doc à jour ; revues faites (sécurité : rien de bloquant ; code : prémisse de Q2 fausse → Q2 retranchée, lecture par lots) · **Prochaine action** : CI verte → merge #2621, puis archiver le journal (fin de chantier) · **En attente de David** : rien · **Pièges en cours** : 0 copie de contrôle en prod (tout se prouve sur fixtures) · **Worktree / branche** : `../ubumaths-wt-bilan-controle` · `feat/bilan-controle`
 
 ## Constats vérifiés (2026-11-13)
 
@@ -62,7 +62,11 @@ _Mis à jour le 2026-11-13, PR ouverte (implémentation complète)._
 - **Q1 — Quelle copie compte ?** (a) **la meilleure de chaque élève** (même règle que la note et la
   moyenne affichées) · (b) la première (ce que l'élève savait sans s'entraîner) · (c) toutes.
   **Reco : a.**
-- **Q2 — Partiel** : `unoptimal_form` / `bad_form` rapportent ½ point. Les montrer en « partiel »
+- **Q2 — Partiel** ⚠️ **retranchée le 2026-11-14** : la prémisse était fausse (`bad_form` vaut
+  **0** point, `pointsOfStatus`, seul `unoptimal_form` vaut ½ ; trouvé par la revue de code).
+  David : « ok pour 2 » → **partiel = forme non optimale seulement ; mauvaise forme comptée en
+  « faux »** (chaque colonne a ses points ; le détail de la forme relève de P4). Énoncé d'origine :
+  `unoptimal_form` / `bad_form` rapportent ½ point. Les montrer en « partiel »
   (une colonne) — **reco** — ou les détailler (forme non optimale / mauvaise forme) ?
 - **Q3 — Modèle à plusieurs notions** : (a) compté dans chacune — **reco** (le taux d'une notion dit
   « les questions qui la travaillent ») · (b) seulement dans la première.
@@ -89,3 +93,5 @@ Revue : `code-reviewer` + `security-auditor` (données d'élèves).
   archivés gardés (bilan d'un contrôle passé) ; modèle supprimé → ligne « Modèle supprimé ».
 - Réponses lues par pages de 1 000 (`max_rows` PostgREST) : 30 élèves × 3 copies × 40 questions dépasse.
 - Preuve rouge : tests du calcul et du loader rouges sans le code (module absent, loader de `main`).
+- Revues (2026-11-14) : `security-auditor` sans finding bloquant ; `code-reviewer` → Q2 (ci-dessus)
+  et lecture des copies / réponses par lots de 100 identifiants, chaque lot paginé.

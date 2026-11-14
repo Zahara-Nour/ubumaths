@@ -13,7 +13,8 @@
  * - **Question** = un modèle de la série (ADR 0035) : ses tirages s'additionnent.
  * - **Notion** : modèle → points du programme → nœud du point, remonté jusqu'à
  *   la notion. Un modèle à plusieurs notions compte dans chacune.
- * - **Partiel** : forme non optimale ou mauvaise forme (½ point).
+ * - **Partiel** : forme non optimale (½ point). La mauvaise forme vaut 0 point
+ *   (`pointsOfStatus`) : elle compte en « faux » (David, 2026-11-14).
  *
  * Tout se lit avec le client du professeur, sous la RLS existante : aucune
  * donnée de plus n'est lisible. Une lecture en échec rend une erreur PROPRE AU
@@ -113,8 +114,9 @@ function columnOf(status: string | null): keyof BreakdownCounts {
 		case 'correct':
 			return 'correct';
 		case 'unoptimal_form':
-		case 'bad_form':
 			return 'partial';
+		// Mauvaise forme : 0 point (`pointsOfStatus`), rangée avec les réponses fausses
+		case 'bad_form':
 		case 'incorrect':
 			return 'incorrect';
 		default:

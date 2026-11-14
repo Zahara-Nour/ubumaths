@@ -92,7 +92,7 @@ describe('computeEvaluationBreakdown — par question (N1)', () => {
 		expect(result.questions[1]).toMatchObject({ successRate: 100, correct: 1 });
 	});
 
-	it('Q2 : forme non optimale et mauvaise forme en « partiel » ; le taux suit les points enregistrés (½ et 0)', () => {
+	it('Q2 : forme non optimale (½) en « partiel » ; mauvaise forme (0) en « faux »', () => {
 		const result = computeEvaluationBreakdown(
 			input({
 				items: [{ templateId: T1 }],
@@ -104,9 +104,10 @@ describe('computeEvaluationBreakdown — par question (N1)', () => {
 			})
 		);
 		if (result.status !== 'ok') throw new Error('bilan attendu');
-		// Le correcteur donne 0 à `bad_form` (`pointsOfStatus`) : le taux suit la note
+		// Le correcteur donne 0 à `bad_form` (`pointsOfStatus`) : chaque colonne a ses points
 		expect(result.questions[0]).toMatchObject({
-			partial: 2,
+			partial: 1,
+			incorrect: 1,
 			answers: 2,
 			pointsEarned: 0.5,
 			successRate: 25
