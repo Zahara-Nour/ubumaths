@@ -7,9 +7,9 @@ Q4 : « clic sur une question = P4 »). David : « ok pour P4 / E4 ».
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, phase 0 tranchée._
+_Mis à jour le 2026-11-14, après #2626._
 
-- **État** : phase 0 tranchée (§ Décisions), aucun code · **Prochaine action** : PR 1 (contrôles), tests rouges d'abord · **En attente de David** : rien · **Pièges en cours** : aucune trace de série n'a encore de réponse en prod (0 ligne `answer_parts`) ; seuls les contrôles ont des réponses (101, dont 44 fausses, 20 modèles) · **Worktree / branche** : `../ubumaths-wt-erreurs-frequentes` · `feat/erreurs-frequentes`
+- **État** : PR 1 (erreurs d'une question du bilan d'un contrôle) livrée par #2626, mergée, pas encore en prod · **Prochaine action** : PR 2 — erreurs par point du programme dans l'analytique de la classe (fenêtre du « Top à remédier ») ; phase 0 déjà écrite (§ PR 2), plan technique à écrire, nouveau worktree · **En attente de David** : vérification à l'écran #2626 (`verifications-manuelles.md`) · **Pièges en cours** : aucune trace de série n'a encore de réponse en prod (0 ligne `answer_parts`) : la PR 2 ne lira d'abord que les contrôles ; comptes du panneau = statut seul, comme le bilan · **Worktree / branche** : supprimés après #2626 (PR 2 : `git worktree add -b feat/erreurs-frequentes-par-point ../ubumaths-wt-erreurs-frequentes origin/main`)
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -112,4 +112,5 @@ students, templateId)` ; copies comptées = celles du bilan P6 (`bestCopies` exp
 ## Historique
 
 - 2026-11-14 : ouverture, état des lieux, phase 0 écrite.
+- 2026-11-14 : #2626 mergée (PR 1). Relecture : comptes alignés sur le bilan (statut seul), question non corrigée faute de temps jamais recalculée ; audit sécurité sans finding bloquant (mineurs laissés : modèle étranger → « aucune erreur », pas de 404 car un modèle sorti de la série garde sa ligne ; cas admin et mode test non testés au niveau route).
 - 2026-11-14 : phase 0 tranchée : E4 retiré, PR 1 puis PR 2, nominatif, regroupement à énoncé identique ; deux futurs chantiers.
