@@ -201,7 +201,7 @@ describe('évaluation notée : l’énoncé envoyé ne dit pas le programme', ()
 			expect(findUnmaskedAnswers(statement)).toEqual(['tortue']);
 			const masked = maskGestureAnswers(statement);
 			expect(masked).not.toContain('avancer');
-			expect(masked).toMatch(/^(  |> )attendu: \?$/m);
+			expect(masked).toMatch(/^( {2}|> )attendu: \?$/m);
 			expect(findUnmaskedAnswers(masked)).toEqual([]);
 		}
 	});
