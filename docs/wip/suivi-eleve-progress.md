@@ -9,7 +9,7 @@ validés ») : « P8 page de suivi d'un élève · P9 distinguer prouvé (corrig
 
 _Mis à jour le 2026-11-14, PR 2 en phase 0._
 
-- **État** : PR 1 (#2639) mergée, pas encore en prod ; plan de la PR 2 écrit (§ « PR 2 — plan technique ») · **Prochaine action** : coder la PR 2 une fois le plan validé · **En attente de David** : R1 à R3 du plan de la PR 2 ; vérification à l'écran de #2639 (`verifications-manuelles.md`) · **Pièges en cours** : prod presque sans traces avec réponse ; la grille A lit `skill_attempts` sans pagination (écart noté dans `analytique-prof.md`) · **Worktree / branche** : `../ubumaths-wt-suivi-eleve`, `feat/suivi-eleve-blocs`
+- **État** : PR 1 (#2639) mergée, pas encore en prod ; plan de la PR 2 écrit (§ « PR 2 — plan technique ») · **Prochaine action** : coder la PR 2 (plan validé) · **En attente de David** : vérification à l'écran de #2639 (`verifications-manuelles.md`) · **Pièges en cours** : prod presque sans traces avec réponse ; la grille A lit `skill_attempts` sans pagination (écart noté dans `analytique-prof.md`) · **Worktree / branche** : `../ubumaths-wt-suivi-eleve`, `feat/suivi-eleve-blocs`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -91,7 +91,7 @@ mémoire FSRS (`Teachers can view card stats of their students`) de ses élèves
 - **Revue** : `code-reviewer` + `security-auditor` (données d'élèves, nouvelle route). **Doc** :
   section « Suivi d'un élève » dans `docs/systeme/analytique-prof.md` (ou doc à part si elle grossit).
 
-## PR 2 — plan technique (2026-11-14, à valider)
+## PR 2 — plan technique (2026-11-14 ; R1 à R3 : David, « je te suis » aux recommandations)
 
 Aucune migration. Trois blocs ajoutés à la page de suivi, chacun lu à part : une lecture en échec, le
 bloc le dit, les autres restent (comme « Points du programme »). Aucune date (Q5).
@@ -126,7 +126,7 @@ bloc le dit, les autres restent (comme « Points du programme »). Aucune date (
 - **Revue** : `code-reviewer` + `security-auditor` (données d'élèves). **Doc** : `analytique-prof.md`
   § Suivi d'un élève, `evaluations.md` (retour des résultats), `composants-ui.md` si BackLink.
 
-### Questions (R1 à R3)
+### Questions (R1 à R3) — tranchées : recommandations suivies (lecture TS, pas de lien en projection, ligne sans tentatives)
 
 - **R1 — Régularité, où compter** : la fonction de la base `class_regularity_weeks` compte **par
   classe** ; un élève hors classe n'y passe pas. Recommandé : lire **ses** traces depuis la rentrée

@@ -15,6 +15,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import * as Card from '$lib/components/ui/card';
+	import { studentFollowUpHref } from '$lib/navigation/return-links';
 	import type { CurriculumPointBadge } from '$lib/server/srs/curriculum-point-badge';
 
 	interface ClassStudent {
@@ -163,7 +164,15 @@
 								<td
 									class="sticky left-0 z-10 max-w-[10rem] truncate bg-background px-2 py-2 font-medium"
 								>
-									{displayName(student, idx)}
+									<!-- Pas de lien en projection : le suivi afficherait le vrai nom (R2) -->
+									{#if anonymized}
+										{displayName(student, idx)}
+									{:else}
+										<a
+											class="underline-offset-4 hover:underline"
+											href={studentFollowUpHref(student.id, classId)}>{displayName(student, idx)}</a
+										>
+									{/if}
 								</td>
 								{#each orderedPoints as point (point.id)}
 									{@const badge = data.cells[`${student.id}:${point.id}`] ?? 'non_commencee'}

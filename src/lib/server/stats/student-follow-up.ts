@@ -27,6 +27,20 @@ import {
 	type CurriculumPointBadge
 } from '$lib/server/srs/curriculum-point-badge';
 import { isLivePoint, placeInTree } from '$lib/server/stats/class-knowledge';
+import {
+	AUTONOMOUS_SOURCES,
+	buildRegularityGrid,
+	countActiveWeeks,
+	readSchoolYearOfSchool,
+	regularityFirstDay,
+	type RegularityTier,
+	type RegularityTrace,
+	type RegularityWeek
+} from '$lib/server/stats/class-regularity';
+import { schoolDay } from '$lib/server/course-card-attempts';
+import { getStudentAssignments } from '$lib/server/evaluations';
+import type { StudentEvaluationStatus } from '$lib/types/evaluation';
+import type { MathCompetenceLevel } from '$lib/types/skills';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/stats/student-follow-up');
@@ -55,6 +69,27 @@ export interface StudentFsrsRow {
 	card_reference_id: string;
 	state: CardState;
 	next_review: string;
+}
+
+/** Régularité de l'élève : un palier par semaine depuis la rentrée (jamais de nombre). */
+export interface StudentRegularity {
+	weeks: RegularityWeek[];
+	tiers: RegularityTier[];
+}
+
+/** Une compétence et le niveau de l'élève (null : pas encore évaluée). */
+export interface StudentCompetence {
+	id: string;
+	name: string;
+	level: MathCompetenceLevel | null;
+}
+
+/** Un contrôle assigné à l'élève : ni date, ni contenu de la série. */
+export interface StudentEvaluation {
+	evaluation_id: string;
+	title: string;
+	best_grade: number | null;
+	status: StudentEvaluationStatus;
 }
 
 /** Un point travaillé, avant rangement dans l'arbre. */
@@ -257,4 +292,118 @@ export async function getStudentPointFollowUp(
 			onlyDeclared: c.onlyDeclared
 		};
 	});
+}
+
+// ===========================================================================
+// Bloc « Régularité »
+// ===========================================================================
+
+/**
+ * La ligne de l'élève, mêmes règles que la grille C de la classe. Comptée en
+ * TypeScript sur ses traces (la fonction de base compte par classe ; un élève
+ * peut être hors classe : décision R1). Rentrée = celle de l'école de l'élève.
+ * @throws si une lecture échoue (une ligne vide dirait « il n'a pas travaillé »).
+ */
+export async function getStudentRegularity(
+	supabase: SB,
+	studentId: string,
+	now = new Date()
+): Promise<StudentRegularity> {
+	const { data: profile, error: profileError } = await supabase
+		.from('profiles')
+		.select('school_id')
+		.eq('id', studentId)
+		.maybeSingle();
+	if (profileError) throw new Error(`École de l'élève illisible : ${profileError.message}`);
+
+	const { start, holidays } = await readSchoolYearOfSchool(
+		supabase,
+		profile?.school_id ?? null,
+		now
+	);
+	const firstDay = regularityFirstDay(start, now);
+	// Un jour de marge : minuit à Paris tombe la veille en UTC
+	const since = new Date(new Date(`${firstDay}T00:00:00Z`).getTime() - 24 * 3600 * 1000);
+
+	const traces = await readInBatches<RegularityTrace>(
+		'Traces de régularité',
+		[studentId],
+		(batch, from, to) =>
+			supabase
+				.from('skill_attempts')
+				.select('student_id, created_at, source, place')
+				.in('student_id', batch)
+				.in('source', [...AUTONOMOUS_SOURCES])
+				.gte('created_at', since.toISOString())
+				.order('id')
+				.range(from, to)
+	);
+
+	const grid = buildRegularityGrid({
+		students: [{ id: studentId, display_name: '' }],
+		activeWeeks: countActiveWeeks(traces, firstDay),
+		firstDay,
+		today: schoolDay(now),
+		holidays
+	});
+	return { weeks: grid.weeks, tiers: grid.students[0].tiers };
+}
+
+// ===========================================================================
+// Bloc « Compétences »
+// ===========================================================================
+
+/** Les compétences dans l'ordre d'affichage, avec le niveau de l'élève. */
+export async function getStudentCompetences(
+	supabase: SB,
+	studentId: string
+): Promise<StudentCompetence[]> {
+	const { data: competences, error: competencesError } = await supabase
+		.from('math_competences')
+		.select('id, name, display_order')
+		.order('display_order', { ascending: true });
+	if (competencesError) throw new Error(`Compétences illisibles : ${competencesError.message}`);
+
+	const { data: levels, error: levelsError } = await supabase
+		.from('student_competence_level')
+		.select('math_competence_id, niveau')
+		.eq('student_id', studentId);
+	if (levelsError) throw new Error(`Niveaux de l'élève illisibles : ${levelsError.message}`);
+
+	const levelOf = new Map(
+		(levels ?? []).map((l) => [l.math_competence_id, l.niveau as MathCompetenceLevel])
+	);
+	return (competences ?? []).map((c) => ({
+		id: c.id,
+		name: c.name,
+		level: levelOf.get(c.id) ?? null
+	}));
+}
+
+// ===========================================================================
+// Bloc « Contrôles »
+// ===========================================================================
+
+/**
+ * Les contrôles publiés assignés à l'élève (nommément ou par une de ses
+ * classes), lus avec le client du prof (RLS). Un contrôle assigné deux fois
+ * n'apparaît qu'une fois. Du plus récent au plus ancien, sans date rendue.
+ */
+export async function getStudentEvaluations(
+	supabase: SB,
+	studentId: string
+): Promise<StudentEvaluation[]> {
+	const assignments = await getStudentAssignments(supabase, studentId);
+	const byEvaluation = new Map<string, (typeof assignments)[number]>();
+	for (const a of assignments) {
+		if (!byEvaluation.has(a.evaluation.id)) byEvaluation.set(a.evaluation.id, a);
+	}
+	return [...byEvaluation.values()]
+		.sort((a, b) => b.evaluation.created_at.localeCompare(a.evaluation.created_at))
+		.map((a) => ({
+			evaluation_id: a.evaluation.id,
+			title: a.evaluation.series.title,
+			best_grade: a.best_grade,
+			status: a.status
+		}));
 }

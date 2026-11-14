@@ -22,9 +22,14 @@ export function studentJournalHref(studentId: string, from?: 'accueil' | 'suivi'
 	return from ? `${href}?${FROM_PARAM}=${from}` : href;
 }
 
-/** Suivi d'un élève (prof) : ouvert depuis la liste des classes */
-export function studentFollowUpHref(studentId: string): string {
-	return `/dashboard/teacher/students/${studentId}`;
+/**
+ * Suivi d'un élève (prof) : ouvert depuis la liste des classes, ou depuis
+ * l'analytique d'une classe (grille A) : il y revient alors.
+ */
+export function studentFollowUpHref(studentId: string, fromClassId?: string): string {
+	const href = `/dashboard/teacher/students/${studentId}`;
+	if (!fromClassId) return href;
+	return `${href}?${FROM_PARAM}=analytique&${CLASS_PARAM}=${encodeURIComponent(fromClassId)}`;
 }
 
 export function studentJournalReturn(studentId: string, searchParams: URLSearchParams): ReturnLink {
@@ -188,4 +193,38 @@ export function automathsQuitLink(options: {
 		href: '/dashboard/student/assessments',
 		confirmLeave: `${consequence} Quitter quand même ?`
 	};
+}
+
+// ============================================================================
+// SUIVI D'UN ÉLÈVE (prof) — ouvert depuis les classes ou depuis l'analytique
+// d'une classe ; RÉSULTATS D'UN CONTRÔLE — ouverts depuis la liste des
+// contrôles ou depuis le suivi d'un élève
+// ============================================================================
+
+const CLASS_PARAM = 'classe';
+const STUDENT_PARAM = 'eleve';
+
+export function studentFollowUpReturn(searchParams: URLSearchParams): ReturnLink {
+	const classId = searchParams.get(CLASS_PARAM);
+	if (searchParams.get(FROM_PARAM) === 'analytique' && classId && UUID_PATTERN.test(classId)) {
+		return {
+			href: `/dashboard/teacher/classes/${classId}/analytics`,
+			label: "Retour à l'analytique"
+		};
+	}
+	return { href: '/dashboard/teacher/classes', label: `Retour aux ${lore.entities.class}s` };
+}
+
+export function evaluationResultsHref(evaluationId: string, fromStudentId?: string): string {
+	const href = `/dashboard/teacher/assessments/${evaluationId}/results`;
+	if (!fromStudentId) return href;
+	return `${href}?${FROM_PARAM}=suivi&${STUDENT_PARAM}=${encodeURIComponent(fromStudentId)}`;
+}
+
+export function evaluationResultsReturn(searchParams: URLSearchParams): ReturnLink {
+	const studentId = searchParams.get(STUDENT_PARAM);
+	if (searchParams.get(FROM_PARAM) === 'suivi' && studentId && UUID_PATTERN.test(studentId)) {
+		return { href: studentFollowUpHref(studentId), label: 'Retour au suivi' };
+	}
+	return { href: '/dashboard/teacher/assessments', label: 'Retour aux contrôles' };
 }

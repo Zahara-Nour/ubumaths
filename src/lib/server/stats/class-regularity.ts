@@ -127,6 +127,41 @@ export function regularityFirstDay(yearStart: string | null, now: Date): string 
 	return septemberFirst <= today ? septemberFirst : `${year - 1}-09-01`;
 }
 
+/**
+ * Jours actifs par élève et par semaine, comptés en TypeScript à partir des
+ * traces (mêmes règles que `class_regularity_weeks`) : travail autonome
+ * seulement, jour de Paris, au moins `MIN_TRACES_PER_ACTIVE_DAY` traces, jours
+ * à partir de `firstDay`. Sert au suivi d'un élève, qui peut être hors classe.
+ */
+export function countActiveWeeks(
+	traces: RegularityTrace[],
+	firstDay: string
+): RegularityWeekCount[] {
+	// Traces par élève et par jour de Paris
+	const perDay = new Map<string, number>();
+	for (const trace of traces) {
+		if (!isAutonomousTrace(trace)) continue;
+		const day = schoolDay(new Date(trace.created_at));
+		if (day < firstDay) continue;
+		const key = `${trace.student_id}|${day}`;
+		perDay.set(key, (perDay.get(key) ?? 0) + 1);
+	}
+
+	// Jours actifs par élève et par semaine
+	const perWeek = new Map<string, number>();
+	for (const [key, count] of perDay) {
+		if (count < MIN_TRACES_PER_ACTIVE_DAY) continue;
+		const [studentId, day] = key.split('|');
+		const weekKey = `${studentId}|${weekStartOf(day)}`;
+		perWeek.set(weekKey, (perWeek.get(weekKey) ?? 0) + 1);
+	}
+
+	return [...perWeek].map(([key, activeDays]) => {
+		const [studentId, weekStart] = key.split('|');
+		return { student_id: studentId, week_start: weekStart, active_days: activeDays };
+	});
+}
+
 export function buildRegularityGrid(input: {
 	students: { id: string; display_name: string }[];
 	activeWeeks: RegularityWeekCount[];
@@ -191,12 +226,21 @@ export async function readSchoolYear(
 		.eq('id', classId)
 		.maybeSingle();
 	if (classError) throw new Error(`classe illisible — ${classError.message}`);
-	if (!classRow?.school_id) return { start: null, holidays: [] };
+	return readSchoolYearOfSchool(supabase, classRow?.school_id ?? null, now);
+}
+
+/** Rentrée et vacances de l'année scolaire active d'une école (aucune sans école) */
+export async function readSchoolYearOfSchool(
+	supabase: SB,
+	schoolId: string | null,
+	now: Date
+): Promise<{ start: string | null; holidays: Holiday[] }> {
+	if (!schoolId) return { start: null, holidays: [] };
 
 	const { data: years, error: yearsError } = await supabase
 		.from('school_years')
 		.select('id, start_date')
-		.eq('school_id', classRow.school_id)
+		.eq('school_id', schoolId)
 		.eq('is_active', true)
 		.order('start_date', { ascending: false });
 	if (yearsError) throw new Error(`années scolaires illisibles — ${yearsError.message}`);

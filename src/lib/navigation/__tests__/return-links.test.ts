@@ -6,6 +6,9 @@ import {
 	notionHref,
 	notionReturn,
 	studentFollowUpHref,
+	studentFollowUpReturn,
+	evaluationResultsHref,
+	evaluationResultsReturn,
 	studentJournalHref,
 	studentJournalReturn,
 	studySessionHref,
@@ -75,6 +78,61 @@ describe('journal d’un élève (prof)', () => {
 
 	it('le suivi d’un élève a sa propre adresse', () => {
 		expect(studentFollowUpHref('s1')).toBe('/dashboard/teacher/students/s1');
+	});
+});
+
+describe('suivi d’un élève (prof)', () => {
+	const CLASS_ID = '11111111-2222-4333-8444-555555555555';
+
+	it('ouvert depuis les classes : retour aux classes', () => {
+		expect(studentFollowUpReturn(params('')).href).toBe('/dashboard/teacher/classes');
+	});
+
+	it('ouvert depuis l’analytique (grille A) : retour à l’analytique de cette classe', () => {
+		expect(studentFollowUpHref('s1', CLASS_ID)).toBe(
+			`/dashboard/teacher/students/s1?depuis=analytique&classe=${CLASS_ID}`
+		);
+		expect(studentFollowUpReturn(params(`depuis=analytique&classe=${CLASS_ID}`))).toEqual({
+			href: `/dashboard/teacher/classes/${CLASS_ID}/analytics`,
+			label: "Retour à l'analytique"
+		});
+	});
+
+	it('classe bricolée ou absente : retour aux classes', () => {
+		expect(studentFollowUpReturn(params('depuis=analytique&classe=../admin')).href).toBe(
+			'/dashboard/teacher/classes'
+		);
+		expect(studentFollowUpReturn(params('depuis=analytique')).href).toBe(
+			'/dashboard/teacher/classes'
+		);
+	});
+});
+
+describe('résultats d’un contrôle (prof)', () => {
+	const STUDENT_ID = '11111111-2222-4333-8444-555555555555';
+
+	it('ouverts depuis la liste : retour aux contrôles', () => {
+		expect(evaluationResultsHref('e1')).toBe('/dashboard/teacher/assessments/e1/results');
+		expect(evaluationResultsReturn(params(''))).toEqual({
+			href: '/dashboard/teacher/assessments',
+			label: 'Retour aux contrôles'
+		});
+	});
+
+	it('ouverts depuis le suivi : retour au suivi de cet élève', () => {
+		expect(evaluationResultsHref('e1', STUDENT_ID)).toBe(
+			`/dashboard/teacher/assessments/e1/results?depuis=suivi&eleve=${STUDENT_ID}`
+		);
+		expect(evaluationResultsReturn(params(`depuis=suivi&eleve=${STUDENT_ID}`))).toEqual({
+			href: `/dashboard/teacher/students/${STUDENT_ID}`,
+			label: 'Retour au suivi'
+		});
+	});
+
+	it('élève bricolé : retour aux contrôles', () => {
+		expect(evaluationResultsReturn(params('depuis=suivi&eleve=x/../../admin')).href).toBe(
+			'/dashboard/teacher/assessments'
+		);
 	});
 });
 

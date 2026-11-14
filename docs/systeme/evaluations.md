@@ -254,7 +254,10 @@ dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'un contrôle co
 ### Résultats
 
 Élève : `getStudentAssignments` (statut calculé par `getStudentStatus` : non commencé, en cours,
-terminé, expiré ; meilleure note `bestGrade`, Q36). Prof : `getEvaluationResults` (un élève par ligne
+terminé, expiré ; meilleure note `bestGrade`, Q36) ; la même fonction, appelée avec le client du prof,
+nourrit le bloc « Contrôles » du suivi d'un élève ([analytique-prof.md](analytique-prof.md#suivi-dun-élève-page-à-part)).
+La page des résultats a deux parents : la liste des contrôles, ou ce suivi (`?depuis=suivi&eleve=<uuid>`,
+`evaluationResultsReturn`). Prof : `getEvaluationResults` (un élève par ligne
 même s'il est assigné deux fois, toutes ses tentatives) et `computeEvaluationStatistics` (moyenne,
 min, max sur la meilleure note de chaque élève). Les résultats suivent le **mode test** : vrais
 élèves ou élèves de test, jamais les deux.

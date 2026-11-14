@@ -3,7 +3,7 @@
  *
  * SÉCURITÉ : prof seulement (l'admin est refusé, comme l'analytique), Zod sur
  * l'identifiant, `verifyTeacherStudent` avant toute lecture. Aucune date
- * n'est rendue (vie privée).
+ * d'activité n'est rendue (vie privée) ; la régularité ne rend que des paliers.
  */
 
 import type { PageServerLoad } from './$types';
@@ -12,8 +12,10 @@ import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
 import {
+	getStudentCompetences,
+	getStudentEvaluations,
 	getStudentPointFollowUp,
-	type StudentPointFollowUp
+	getStudentRegularity
 } from '$lib/server/stats/student-follow-up';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -49,13 +51,22 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw error(404, 'Élève non trouvé');
 	}
 
-	let points: StudentPointFollowUp[] = [];
-	let pointsError = false;
-	try {
-		points = await getStudentPointFollowUp(supabase, studentId);
-	} catch (e) {
-		logger.error('[Suivi élève] Points du programme illisibles :', e);
-		pointsError = true;
+	// Quatre blocs lus à part : un bloc en échec le dit, les autres restent.
+	const [points, evaluations, regularity, competences] = await Promise.allSettled([
+		getStudentPointFollowUp(supabase, studentId),
+		getStudentEvaluations(supabase, studentId),
+		getStudentRegularity(supabase, studentId),
+		getStudentCompetences(supabase, studentId)
+	]);
+	for (const [label, result] of [
+		['Points du programme', points],
+		['Contrôles', evaluations],
+		['Régularité', regularity],
+		['Compétences', competences]
+	] as const) {
+		if (result.status === 'rejected') {
+			logger.error(`[Suivi élève] ${label} illisibles :`, result.reason);
+		}
 	}
 
 	return {
@@ -63,7 +74,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			id: student.id,
 			fullName: `${student.firstname ?? ''} ${student.lastname ?? ''}`.trim() || 'cet élève'
 		},
-		points,
-		pointsError
+		points: points.status === 'fulfilled' ? points.value : [],
+		pointsError: points.status === 'rejected',
+		evaluations: evaluations.status === 'fulfilled' ? evaluations.value : [],
+		evaluationsError: evaluations.status === 'rejected',
+		regularity: regularity.status === 'fulfilled' ? regularity.value : null,
+		competences: competences.status === 'fulfilled' ? competences.value : [],
+		competencesError: competences.status === 'rejected'
 	};
 };

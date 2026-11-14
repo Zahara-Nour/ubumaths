@@ -180,7 +180,8 @@ de 2nde de répondre une fois à la question d'âge.
   L'en-tête de « Mes classes » porte aussi un lien « Consentements parentaux », seul accès à cette
   page depuis l'interface.
 - **Suivi d'un élève** : `src/routes/(protected)/dashboard/teacher/students/[studentId]/` — dans la liste
-  des classes, le nom de l'élève (en classe et « Non assignés ») y mène ; voir
+  des classes, le nom de l'élève (en classe et « Non assignés ») y mène, comme le nom dans la grille A de
+  l'analytique ; voir
   [analytique-prof.md](analytique-prof.md#suivi-dun-élève-page-à-part).
 - Journal d'un élève (récompenses) : `src/routes/(protected)/dashboard/teacher/students/[studentId]/journal/+page.server.ts`,
   ouvert par l'icône à côté du nom ou depuis le suivi (`?depuis=suivi`, retour vers le suivi).
