@@ -142,6 +142,7 @@ import {
 } from './schema-barres-parser';
 import { findChoiceBlocks, parseChoiceBlock } from './choix-parser';
 import { findRangerBlocks, parseRangerBlock } from './ranger-parser';
+import { findAssocierBlocks, parseAssocierBlock } from './associer-parser';
 import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
@@ -531,6 +532,8 @@ function parseBlocks(
 	const choiceBlocks = findChoiceBlocks(lines);
 	// Bloc ```ranger (étiquettes à ranger) : ses étiquettes restent du markdown
 	const rangerBlocks = findRangerBlocks(lines);
+	// Bloc ```associer (associer deux colonnes) : éléments et étiquettes restent du markdown
+	const associerBlocks = findAssocierBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -555,7 +558,8 @@ function parseBlocks(
 		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' },
 		{ ranges: schemaBarresBlocks, parse: parseSchemaBarres, language: 'schema-barres' },
 		{ ranges: choiceBlocks, parse: parseChoiceBlock, language: 'choix' },
-		{ ranges: rangerBlocks, parse: parseRangerBlock, language: 'ranger' }
+		{ ranges: rangerBlocks, parse: parseRangerBlock, language: 'ranger' },
+		{ ranges: associerBlocks, parse: parseAssocierBlock, language: 'associer' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -628,6 +632,7 @@ function parseBlocks(
 			...schemaBarresBlocks,
 			...choiceBlocks,
 			...rangerBlocks,
+			...associerBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -650,6 +655,7 @@ function parseBlocks(
 			...findSchemaBarresBlocks(originalLines),
 			...findChoiceBlocks(originalLines),
 			...findRangerBlocks(originalLines),
+			...findAssocierBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks

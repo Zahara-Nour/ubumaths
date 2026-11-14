@@ -39,6 +39,7 @@
 	import SchemaBarres from './SchemaBarres.svelte';
 	import ChoiceBlock from './ChoiceBlock.svelte';
 	import RangerPlacer from './RangerPlacer.svelte';
+	import AssocierPlacer from './AssocierPlacer.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -113,4 +114,6 @@
 	<ChoiceBlock {node} />
 {:else if node.type === 'ranger'}
 	<RangerPlacer {node} />
+{:else if node.type === 'associer'}
+	<AssocierPlacer {node} />
 {/if}

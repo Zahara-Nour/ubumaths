@@ -19,7 +19,10 @@
 	(```boite-a-moustaches, `placer:`) : les traits de l'élève (cinq cases par boîte),
 	ou la boîte juste. Étiquettes à ranger (```ranger) : les places
 	verrouillées avec les étiquettes de l'élève (`answers`, une par place) et, faux,
-	le rangement juste (`expected`) ; ou le rangement juste seul. Cercle trigonométrique
+	le rangement juste (`expected`) ; ou le rangement juste seul. Éléments à associer
+	(```associer) : les rangées verrouillées avec les étiquettes de l'élève (`answers`, une
+	par élément) et, faux, la bonne étiquette dessous (`expected`) ; ou les bonnes
+	étiquettes seules. Cercle trigonométrique
 	à placer (```trig, `placer:`) : le cercle verrouillé avec les points de l'élève
 	(`answers`, un par point), ou les points justes en vert.
 
@@ -44,6 +47,8 @@
 	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
 	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
 	import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
+	import AssocierPlacer from '$lib/components/markdown/nodes/AssocierPlacer.svelte';
+	import { parseAssocierContent } from '$lib/ubumark/parser/associer-parser';
 	import Partage from '$lib/components/markdown/nodes/Partage.svelte';
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
@@ -84,7 +89,7 @@
 		 * statut de chaque point (barre), prime sur `answer`
 		 */
 		answers?: { answer: string; status: ExpectedStatus }[];
-		/** Étiquettes à ranger : la bonne réponse de chaque place (le bloc ne la dit pas) */
+		/** Étiquettes à ranger, éléments à associer : la bonne réponse de chaque place (le bloc ne la dit pas) */
 		expected?: readonly string[];
 	}
 
@@ -114,6 +119,7 @@
 		kind === 'boite-a-moustaches' ? parseStatChartContent('boite-a-moustaches', source) : null
 	);
 	let ranger = $derived(kind === 'ranger' ? parseRangerContent(source) : null);
+	let associer = $derived(kind === 'associer' ? parseAssocierContent(source) : null);
 	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
 	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
 	let patron = $derived(kind === 'patron' ? parseEspaceContent(source, 'patron') : null);
@@ -238,6 +244,23 @@
 	{:else if expected}
 		<!-- Le rangement juste : chaque place a sa bonne étiquette -->
 		<RangerPlacer
+			{node}
+			answers={expected.map((value) => ({
+				value,
+				isCorrect: null,
+				disabled: true,
+				onChange: () => {}
+			}))}
+			showControls={false}
+		/>
+	{/if}
+{:else if associer && associer.errors.length === 0}
+	{@const node = { ...associer, caseIndex: 0 }}
+	{#if lineCases}
+		<AssocierPlacer {node} answers={lineCases} {expected} showControls={false} />
+	{:else if expected}
+		<!-- La bonne réponse : chaque élément avec sa bonne étiquette -->
+		<AssocierPlacer
 			{node}
 			answers={expected.map((value) => ({
 				value,

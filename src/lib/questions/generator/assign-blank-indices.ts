@@ -39,6 +39,7 @@ import { findLinesToPlace, isLineToRepresent } from '$lib/ubumark/parser/number-
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
+import { findAssociersToPlace } from '$lib/ubumark/parser/associer-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import {
 	findCubesToBuild,
@@ -377,6 +378,7 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	barres: 'Un diagramme en barres à construire',
 	'boite-a-moustaches': 'Une boîte à moustaches à construire',
 	ranger: 'Des étiquettes à ranger',
+	associer: 'Des éléments à associer',
 	partage: 'Une figure à colorier',
 	cubes: 'Un assemblage de cubes à geste',
 	patron: 'Un patron à geste',
@@ -386,7 +388,7 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
-	`${NESTED_BLOCK_NAMES[kind]} ${kind === 'ranger' ? 'doivent' : 'doit'} être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
+	`${NESTED_BLOCK_NAMES[kind]} ${kind === 'ranger' || kind === 'associer' ? 'doivent' : 'doit'} être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
 
 /** Bloc `cases: aucune` : opération résolue, rien à remplir */
 function isSolvedOperation(body: string[]): boolean {
@@ -501,6 +503,7 @@ function markBuildBlocks(statement: string): {
 			kind: 'boite-a-moustaches' as const
 		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
+		...findAssociersToPlace(statement).map((b) => ({ ...b, kind: 'associer' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
@@ -731,6 +734,7 @@ export function assignBlankIndices(
 								build.kind === 'barres' ||
 								build.kind === 'boite-a-moustaches' ||
 								build.kind === 'ranger' ||
+								build.kind === 'associer' ||
 								build.kind === 'courbe' ||
 								build.kind === 'trig') && {
 								point
@@ -748,6 +752,7 @@ export function assignBlankIndices(
 								build.kind === 'courbe' ||
 								build.kind === 'trig' ||
 								build.kind === 'ranger' ||
+								build.kind === 'associer' ||
 								build.kind === 'partage' ||
 								build.kind === 'cubes' ||
 								build.kind === 'patron' ||

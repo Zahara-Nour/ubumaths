@@ -39,7 +39,7 @@ export function rangerOrder(count: number, random: RandomSource): number[] {
 }
 
 /** Graine tirée du texte des étiquettes : stable partout, différente d'un bloc à l'autre */
-function textSeed(labels: readonly string[]): number {
+export function textSeed(labels: readonly string[]): number {
 	let hash = 0;
 	for (const char of labels.join('\n')) hash = (Math.imul(hash, 31) + char.charCodeAt(0)) | 0;
 	return hash;

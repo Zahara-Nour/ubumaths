@@ -570,6 +570,7 @@ export type { MonnaieNode } from './monnaie';
 export type { SchemaBarresNode } from './schema-barres';
 export type { ChoiceNode } from './choix';
 export type { RangerNode } from './ranger';
+export type { AssocierNode } from './associer';
 
 // Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
@@ -590,6 +591,7 @@ import type { MonnaieNode } from './monnaie';
 import type { SchemaBarresNode } from './schema-barres';
 import type { ChoiceNode } from './choix';
 import type { RangerNode } from './ranger';
+import type { AssocierNode } from './associer';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -622,7 +624,8 @@ export type BlockNode =
 	| MonnaieNode
 	| SchemaBarresNode
 	| ChoiceNode
-	| RangerNode;
+	| RangerNode
+	| AssocierNode;
 
 // ============================================================================
 // COMPOSITE NODES
