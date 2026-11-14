@@ -1202,16 +1202,19 @@
 					/>
 				{:else}
 					<div data-construire-case={caseIndex}>
-						<TortueProgramme
-							{node}
-							expected={flashMode ? undefined : expected}
-							answer={{
-								value: state?.value ?? '',
-								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
-								disabled: flashMode || effectiveDisabled,
-								onChange: (value) => handleInputChange(caseIndex, value)
-							}}
-						/>
+						<!-- Autre question, autre bloc : la carte est recréée (les blocs sont chargés au montage) -->
+						{#key node.source}
+							<TortueProgramme
+								{node}
+								expected={flashMode ? undefined : expected}
+								answer={{
+									value: state?.value ?? '',
+									isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value) => handleInputChange(caseIndex, value)
+								}}
+							/>
+						{/key}
 					</div>
 				{/if}
 			{:else if node.type === 'horloge' && node.caseIndex !== undefined && node.spec?.placer !== undefined}

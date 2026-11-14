@@ -160,18 +160,36 @@ describe('programme tortue : la carte', () => {
 		expect(screen.container.textContent).not.toContain('Effacer');
 	});
 
-	it('évaluation notée (attendu: ?) : jamais d’attendu en pointillés, même après la validation', async () => {
+	it.each([
+		{ cas: 'attendu vide (case publique)', expected: '' },
+		{ cas: 'attendu absent', expected: undefined }
+	])(
+		'évaluation notée (attendu: ?, $cas) : jamais d’attendu en pointillés, même après la validation',
+		async ({ expected }) => {
+			const screen = await render(TortueProgramme, {
+				target: mainElement(),
+				props: {
+					node: node('attendu: ?', 'montrer: oui', 'figure: 0 0 3 0', 'case: 0'),
+					answer: { value: 'avancer 2', isCorrect: false, disabled: true, onChange: () => {} },
+					expected
+				}
+			});
+			await attendreBlocs(screen.container);
+			expect(trace(screen.container, 'modele')?.querySelectorAll('line')).toHaveLength(1);
+			expect(trace(screen.container, 'attendu')).toBeNull();
+		}
+	);
+
+	it('réponse relue écrite autrement (point décimal) : pas renvoyée au chargement', async () => {
+		const { answer, recu } = caseDeReponse('avancer 2.5');
 		const screen = await render(TortueProgramme, {
 			target: mainElement(),
-			props: {
-				node: node('attendu: ?', 'montrer: oui', 'figure: 0 0 3 0', 'case: 0'),
-				answer: { value: 'avancer 2', isCorrect: false, disabled: true, onChange: () => {} },
-				expected: '?'
-			}
+			props: { node: CARRE_MONTRE, answer }
 		});
 		await attendreBlocs(screen.container);
-		expect(trace(screen.container, 'modele')?.querySelectorAll('line')).toHaveLength(1);
-		expect(trace(screen.container, 'attendu')).toBeNull();
+		await expect.poll(() => Blockly.getMainWorkspace().getAllBlocks(false).length).toBe(2);
+		await new Promise((r) => setTimeout(r, 300));
+		expect(recu).toEqual([]);
 	});
 
 	it('sur téléphone : onglets Blocs / Tortue, « Lancer » montre le quadrillage', async () => {

@@ -161,7 +161,8 @@
 				{verdict}
 				onprogramme={handleProgramme}
 			/>
-			{#if refus && !verrouille}
+			<!-- Aussi après la validation : la réponse est vide, l'élève voit pourquoi -->
+			{#if refus}
 				<p class="mt-2 text-sm text-destructive" role="alert">{refus}</p>
 			{/if}
 		{:else}

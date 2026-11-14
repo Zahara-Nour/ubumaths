@@ -51,6 +51,13 @@ describe('programme tortue → Typst', () => {
 		expect(source).toContain(TORTUE_A_FAIRE_SUR_CHIPHRE);
 	});
 
+	it('figure très haute : réduite à 14 cm de haut, sans quadrillage au-delà de 40 carreaux', () => {
+		const source = generateTypst(parseMarkdown(bloc('attendu: avancer 100', 'montrer: oui')));
+		expect(source).not.toContain('luma(200)');
+		const hauteurs = [...source.matchAll(/height: ([\d.]+)cm/g)].map((m) => Number(m[1]));
+		expect(Math.max(...hauteurs)).toBeLessThanOrEqual(14);
+	});
+
 	it('bloc mal écrit : le cadre neutre, jamais une erreur de compilation', () => {
 		const source = generateTypst(parseMarkdown(bloc('montrer: oui')));
 		expect(source).toContain(TORTUE_UNAVAILABLE);

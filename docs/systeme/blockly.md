@@ -157,8 +157,9 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
   `TortueEditeur.svelte` par `import()` au montage : Blockly n'est téléchargé que par une carte
   tortue. Chaque modification des blocs donne `etatVersTexte` ; la réponse de la case est ce texte,
   ou `''` quand le programme est vide, trop long (> `LONGUEUR_MAX_PROGRAMME`, message « Programme
-  trop long ») ou illisible. Une réponse déjà donnée revient en blocs (`texteVersEtat`) sans être
-  renvoyée.
+  trop long », gardé après la validation) ou illisible. Une réponse déjà donnée revient en blocs
+  (`texteVersEtat`) sans être renvoyée, même écrite autrement que `etatVersTexte` (point décimal).
+  `FillBlanksInput` recrée la carte quand le bloc change (`{#key node.source}`).
 - **Après la validation** (case verrouillée) : l'espace de blocs est recréé en lecture seule
   (`BlocklyWorkspace`, `readonly`), sans « Effacer » ; le quadrillage montre tout de suite le tracé
   final du programme de l'élève, vert juste ou rouge faux, et l'attendu en pointillés quand il est

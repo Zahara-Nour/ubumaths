@@ -140,7 +140,11 @@
 		untrack(() => {
 			if (programme.trim() === '') return;
 			const lu = texteVersEtat(programme);
-			if (lu.ok) BlocklyCore.serialization.workspaces.load(lu.etat, espace);
+			if (!lu.ok) return;
+			BlocklyCore.serialization.workspaces.load(lu.etat, espace);
+			// La réponse relue peut s'écrire autrement (point décimal…) : le rechargement ne la renvoie pas
+			const relu = etatVersTexte(BlocklyCore.serialization.workspaces.save(espace));
+			if (relu.ok) dernierTexte = relu.texte;
 		});
 	});
 

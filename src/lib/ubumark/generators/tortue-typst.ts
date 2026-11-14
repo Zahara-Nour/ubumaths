@@ -34,8 +34,12 @@ export const TORTUE_A_FAIRE_SUR_CHIPHRE =
 /** Côté d'un carreau sur la fiche (cm) */
 const CARREAU_CM = 0.5;
 
-/** Largeur que la figure ne dépasse pas (cm) */
+/** Largeur et hauteur que la figure ne dépassent pas (cm) : elle tient dans la page */
 const LARGEUR_MAX_CM = 14;
+const HAUTEUR_MAX_CM = 14;
+
+/** Au-delà de ce nombre de carreaux sur un côté, pas de quadrillage (illisible, et trop de lignes) */
+const CARREAUX_MAX_QUADRILLAGE = 40;
 
 // ============================================================================
 // FONCTIONS
@@ -51,7 +55,8 @@ function figureTypst(segments: readonly Segment[]): string {
 	const xMax = Math.ceil(Math.max(...xs)) + 1;
 	const yMin = Math.floor(Math.min(...ys)) - 1;
 	const yMax = Math.ceil(Math.max(...ys)) + 1;
-	const k = Math.min(CARREAU_CM, LARGEUR_MAX_CM / (xMax - xMin));
+	const k = Math.min(CARREAU_CM, LARGEUR_MAX_CM / (xMax - xMin), HAUTEUR_MAX_CM / (yMax - yMin));
+	const avecQuadrillage = Math.max(xMax - xMin, yMax - yMin) <= CARREAUX_MAX_QUADRILLAGE;
 	/** Repère de la tortue (y vers le haut) → coin haut gauche de la boîte */
 	const px = (x: number) => cm((x - xMin) * k);
 	const py = (y: number) => cm((yMax - y) * k);
@@ -61,8 +66,10 @@ function figureTypst(segments: readonly Segment[]): string {
 	const grille = '(paint: luma(200), thickness: 0.3pt)';
 	const trait = '(paint: black, thickness: 1.2pt, cap: "round")';
 	const parts: string[] = [];
-	for (let x = xMin; x <= xMax; x++) parts.push(line(x, yMin, x, yMax, grille));
-	for (let y = yMin; y <= yMax; y++) parts.push(line(xMin, y, xMax, y, grille));
+	if (avecQuadrillage) {
+		for (let x = xMin; x <= xMax; x++) parts.push(line(x, yMin, x, yMax, grille));
+		for (let y = yMin; y <= yMax; y++) parts.push(line(xMin, y, xMax, y, grille));
+	}
 	for (const s of segments) parts.push(line(s.de.x, s.de.y, s.a.x, s.a.y, trait));
 	const r = 0.08;
 	parts.push(

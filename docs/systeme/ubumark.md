@@ -1054,7 +1054,7 @@ sans case ; masqué quand même (cité ou en retrait, `attendu:` reste la répon
 verrouillage, corrigé) : [blockly](blockly.md) § L'écran d'une question tortue. PDF
 (`tortue-typst.ts`, `tortue-typst.test.ts`, compilé pour de vrai) : avec `montrer: oui`, la
 figure (`spec.modele`, ou `figure:` d'un énoncé masqué) sur un quadrillage recadré à un carreau
-autour d'elle et du départ (point noir), 0,5 cm le carreau, 14 cm au plus ; puis le cadre
+autour d'elle et du départ (point noir), 0,5 cm le carreau, 14 cm au plus de large comme de haut, sans quadrillage au-delà de 40 carreaux ; puis le cadre
 « À faire sur Chiphre : programme la tortue avec les blocs, à l'écran. » (`TORTUE_A_FAIRE_SUR_CHIPHRE`).
 Sans `montrer:`, le cadre seul ; bloc en erreur : « Programme tortue indisponible ».
 
