@@ -76,6 +76,22 @@ son énoncé**.
 - **Q1** : PR 1 (contrôles) puis PR 2 (par point). **Q2** : nominatif côté prof. **Q3** : regroupement des
   réponses identiques à énoncé identique seulement, le reste une par une. Q4, Q5 : sans objet.
 
+## PR 1 — plan technique (2026-11-14)
+
+- **Serveur** `src/lib/server/evaluation-question-errors.ts` : `getEvaluationQuestionErrors(supabase, evaluation,
+students, templateId)` ; copies comptées = celles du bilan P6 (`bestCopies` exporté de
+  `evaluation-breakdown.ts`, pas recopié) ; lit `test_answers` (`question_instance`, `user_answer`, `status`,
+  `points`) du modèle ; verdict par case = `detailsWithinBudget` (`corrected-detail.ts`, budget de la relecture
+  d'une copie) ; calcul pur séparé (`computeQuestionErrors`) pour les tests.
+- **Rendu** : erreurs par case (≥ 2 cases, hors QCM) sur les réponses dont le détail est disponible ; groupes
+  (énoncé tiré identique + réponse identique) → noms des élèves ; « sans réponse » compté à part.
+- **Route** `GET …/assessments/[id]/results/question-errors?template=<uuid>` : mêmes gardes que la page
+  (rôle, auteur du contrôle, mode test), Zod sur `template`.
+- **Écran** : lignes « par question » de `EvaluationBreakdown.svelte` dépliables (bouton, `aria-expanded`),
+  chargement au premier dépliage, chaque groupe rendu par `CorrectionCard` avec le verdict du serveur.
+- **Revue** : `code-reviewer` + `security-auditor` (données d'élèves, nouvelle route). Doc : `evaluations.md`
+  § Résultats.
+
 ## Suites (futurs chantiers, non ouverts — David, 2026-11-14)
 
 - **« Ta dernière réponse » sur la carte de révision** : rappeler à l'élève sa réponse fausse d'avant quand la
