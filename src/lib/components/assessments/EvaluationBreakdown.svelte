@@ -18,17 +18,15 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
-	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
+	import QuestionErrorsPanel from './QuestionErrorsPanel.svelte';
 	import { ChevronRight } from '@lucide/svelte';
 	import {
 		QUESTION_ERRORS_MESSAGE,
 		type BreakdownTally,
 		type EvaluationBreakdown,
 		type EvaluationQuestionErrors,
-		type NotionBreakdown,
-		type QuestionErrorGroup
+		type NotionBreakdown
 	} from '$lib/types/evaluation-breakdown';
-	import type { TestAnswerResult } from '$lib/types/test';
 
 	interface Props {
 		breakdown: EvaluationBreakdown;
@@ -96,25 +94,6 @@
 		}
 	}
 
-	function answerResultOf(group: QuestionErrorGroup): TestAnswerResult {
-		return {
-			index: 0,
-			instance: group.instance,
-			isCorrect: false,
-			userAnswer: {
-				value: group.values,
-				isCorrect: false,
-				timeSpent: 0,
-				attempts: 1,
-				submittedAt: ''
-			}
-		};
-	}
-
-	function pluralize(n: number, one: string, many: string): string {
-		return `${n} ${n > 1 ? many : one}`;
-	}
-
 	function notionLabel(row: NotionBreakdown): string {
 		return row.branch ? `${row.branch} › ${row.notion}` : row.notion;
 	}
@@ -154,42 +133,7 @@
 	{:else if panel.phase === 'error'}
 		<p class="py-3 text-destructive" role="alert">{QUESTION_ERRORS_MESSAGE}</p>
 	{:else}
-		{@const errors = panel.errors}
-		<div class="space-y-4 py-3">
-			{#if errors.withoutAnswer > 0}
-				<p class="text-sm text-muted-foreground">{errors.withoutAnswer} sans réponse</p>
-			{/if}
-			{#if errors.blanks.length > 0}
-				<ul class="text-sm">
-					{#each errors.blanks as stat (stat.blank)}
-						<li>
-							Case {stat.blank} : {pluralize(stat.errors, 'erreur', 'erreurs')} sur {stat.answers}
-						</li>
-					{/each}
-				</ul>
-			{/if}
-			{#if errors.groups.length === 0}
-				<p class="text-sm text-muted-foreground">Aucune erreur sur cette question.</p>
-			{:else}
-				<div class="grid gap-4 lg:grid-cols-2">
-					{#each errors.groups as group, index (index)}
-						<div class="space-y-2">
-							<p class="text-sm font-medium">
-								{#if group.students.length > 1}
-									{group.students.length} élèves ont répondu ainsi :
-								{/if}
-								{group.students.join(', ')}
-							</p>
-							<CorrectionCard
-								answerResult={answerResultOf(group)}
-								verdict={group.verdict}
-								size="sm"
-							/>
-						</div>
-					{/each}
-				</div>
-			{/if}
-		</div>
+		<QuestionErrorsPanel errors={panel.errors} />
 	{/if}
 {/snippet}
 
