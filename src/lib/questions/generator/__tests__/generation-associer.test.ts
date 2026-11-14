@@ -242,3 +242,14 @@ describe('associer : les cases et leurs réponses', () => {
 		);
 	});
 });
+
+describe('associer : le geste', () => {
+	it('relier par défaut : rien d’écrit ; geste: étiquettes gardé dans l’énoncé de l’instance', () => {
+		expect(shownBlock(generate(template({ statement: associer(...SUITES) }))).gesture).toBe(
+			'relier'
+		);
+		const etiquettes = generate(template({ statement: associer('geste: étiquettes', ...SUITES) }));
+		expect(shownBlock(etiquettes).gesture).toBe('etiquettes');
+		expect(String(etiquettes.statement)).toContain('geste: étiquettes');
+	});
+});

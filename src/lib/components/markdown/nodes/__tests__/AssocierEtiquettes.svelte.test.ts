@@ -6,7 +6,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
-import AssocierPlacer from '../AssocierPlacer.svelte';
+import AssocierPlacer from '../AssocierEtiquettes.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
 import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';

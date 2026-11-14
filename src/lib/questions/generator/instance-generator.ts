@@ -85,6 +85,7 @@ import {
 	hasSolidesToBuild
 } from '$lib/ubumark/parser/espace-parser';
 import type { RangerSign } from '$lib/ubumark/types/ranger';
+import type { AssocierGesture } from '$lib/ubumark/types/associer';
 import { buildAnswerOf, MASKED_IN_TEMPLATE } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
@@ -845,7 +846,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			// Éléments à associer : ordre AFFICHÉ des étiquettes de chaque bloc, par case de son premier élément
 			const associerOrders = new Map<
 				number,
-				{ order: number[]; items: string[]; labels: string[] }
+				{ order: number[]; gesture: AssocierGesture; items: string[]; labels: string[] }
 			>();
 			for (const [key, { kind, source, point }] of Object.entries(blankResult.buildBlanks ?? {})) {
 				const index = Number(key);
@@ -885,8 +886,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					const first = index - (point ?? 0);
 					let shown = associerOrders.get(first);
 					if (!shown) {
-						const { items, labels } = parseAssocierContent(source);
-						shown = { order: rangerOrder(labels.length, random), items, labels };
+						const { gesture, items, labels } = parseAssocierContent(source);
+						shown = { order: rangerOrder(labels.length, random), gesture, items, labels };
 						associerOrders.set(first, shown);
 					}
 					buildAnswers.set(index, {
@@ -1354,6 +1355,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						if (!shown || block.caseIndex === undefined) return '';
 						return serializeAssocierBlock({
 							caseIndex: block.caseIndex,
+							gesture: shown.gesture,
 							items: shown.items,
 							labels: shown.order.map((index) => shown.labels[index])
 						});

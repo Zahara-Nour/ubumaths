@@ -21,6 +21,9 @@
  * Sans aucun lien (`- élément ->` partout), le bloc se lit sans réponse : l'énoncé
  * d'une instance, ou un geste libre dans un cours (une question l'exige complet).
  *
+ * `geste: relier` (défaut : l'élève trace un trait d'un point à l'autre) ou
+ * `geste: étiquettes` (il pose une étiquette sur la place de chaque élément), en tête.
+ *
  * `case: N` est posée par le générateur de questions, jamais écrite. Dans
  * l'énoncé d'une instance, le bloc n'a plus de lien : `- élément ->` pour chaque
  * élément, puis `- -> étiquette` dans l'ordre AFFICHÉ (mélangé) ; il peut être
@@ -30,7 +33,7 @@
  */
 
 import { unnestedLine } from './nested-line';
-import type { AssocierNode, AssocierSpec } from '../types/associer';
+import type { AssocierGesture, AssocierNode, AssocierSpec } from '../types/associer';
 import {
 	ASSOCIER_MAX_ITEMS,
 	ASSOCIER_MAX_LABELS,
@@ -79,6 +82,18 @@ function splitLink(content: string): [string, string] | null {
 			return [content.slice(0, i).trim(), content.slice(i + 2).trim()];
 		}
 	}
+	return null;
+}
+
+/** `relier` ou `étiquettes` (accents et casse ignorés) ; `null` : inconnu */
+function readGesture(value: string): AssocierGesture | null {
+	const word = value
+		.trim()
+		.toLowerCase()
+		.normalize('NFD')
+		.replace(/\p{Diacritic}/gu, '');
+	if (word === 'relier') return 'relier';
+	if (word === 'etiquettes' || word === 'etiquette') return 'etiquettes';
 	return null;
 }
 
@@ -138,7 +153,7 @@ export function hasAssocierToPlace(markdown: string): boolean {
 /** Lit le corps d'un bloc associer (lignes entre les clôtures) */
 export function parseAssocierBody(body: readonly string[]): AssocierSpec {
 	const errors: string[] = [];
-	const spec: AssocierSpec = { items: [], labels: [], answers: [], errors };
+	const spec: AssocierSpec = { gesture: 'relier', items: [], labels: [], answers: [], errors };
 	let started = false;
 
 	const labelIndex = (label: string): number => {
@@ -179,6 +194,10 @@ export function parseAssocierBody(body: readonly string[]): AssocierSpec {
 			const key = setting[1].toLowerCase();
 			if (key === 'case' && CASE_INDEX_REGEX.test(setting[2].trim())) {
 				spec.caseIndex = Number(setting[2].trim());
+			} else if (key === 'geste') {
+				const gesture = readGesture(setting[2]);
+				if (gesture) spec.gesture = gesture;
+				else errors.push('geste: écrire relier (des traits) ou étiquettes (à poser)');
 			} else {
 				errors.push(`réglage « ${setting[1]} » inconnu`);
 			}
@@ -254,12 +273,14 @@ export function parseAssocierBlock(
  */
 export function serializeAssocierBlock(block: {
 	caseIndex: number;
+	gesture: AssocierGesture;
 	items: readonly string[];
 	labels: readonly string[];
 }): string {
 	return [
 		'```associer',
 		`case: ${block.caseIndex}`,
+		...(block.gesture === 'etiquettes' ? ['geste: étiquettes'] : []),
 		...block.items.map((item) => `- ${item} ->`),
 		...block.labels.map((label) => `- -> ${label}`),
 		'```'

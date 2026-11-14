@@ -33,11 +33,22 @@ describe('lecture du corps d’un bloc associer', () => {
 	it('nominal : éléments, étiquettes une fois chacune, intrus, bonne étiquette de chaque élément', () => {
 		const spec = parseAssocierBody(SUITES);
 		expect(spec).toEqual({
+			gesture: 'relier',
 			items: ['$u_{n+1} = u_n + 3$', '$u_{n+1} = 2u_n$', '$u_n = 5 + 2n$'],
 			labels: ['arithmétique', 'géométrique', "ni l'une ni l'autre"],
 			answers: [0, 1, 0],
 			errors: []
 		});
+	});
+
+	it('geste: étiquettes (accents et casse ignorés), relier par défaut, valeur inconnue refusée', () => {
+		expect(parseAssocierBody(SUITES).gesture).toBe('relier');
+		expect(parseAssocierBody(['geste: étiquettes', ...SUITES]).gesture).toBe('etiquettes');
+		expect(parseAssocierBody(['geste: Etiquettes', ...SUITES]).gesture).toBe('etiquettes');
+		expect(parseAssocierBody(['geste: relier', ...SUITES]).gesture).toBe('relier');
+		expect(parseAssocierBody(['geste: flèches', ...SUITES]).errors.join(' ')).toContain(
+			'geste: écrire relier'
+		);
 	});
 
 	it('correspondance un à un', () => {
@@ -136,7 +147,12 @@ describe('blocs d’un énoncé', () => {
 	it('réécriture d’instance : sans liens, étiquettes dans l’ordre donné, relue à l’identique', () => {
 		const text = ['Avant', block(...SUITES), 'Après'].join('\n');
 		const out = replaceAssocierBlocks(text, (b) =>
-			serializeAssocierBlock({ caseIndex: 2, items: b.items, labels: [...b.labels].reverse() })
+			serializeAssocierBlock({
+				caseIndex: 2,
+				gesture: b.gesture,
+				items: b.items,
+				labels: [...b.labels].reverse()
+			})
 		);
 		expect(out).toBe(
 			[

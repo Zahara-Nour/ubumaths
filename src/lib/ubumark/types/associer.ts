@@ -14,9 +14,16 @@
 
 import type { BaseNode } from './ast';
 
+/**
+ * Geste de l'élève : `relier` (défaut), un trait d'un point à l'autre ; `etiquettes`
+ * (`geste: étiquettes`), poser une étiquette sur la place de chaque élément
+ */
+export type AssocierGesture = 'relier' | 'etiquettes';
+
 export interface AssocierSpec {
 	/** Case du premier élément (`case: N`, posée par le générateur) ; absente hors question */
 	caseIndex?: number;
+	gesture: AssocierGesture;
 	/** Éléments de gauche (ubumark), dans l'ordre écrit */
 	items: string[];
 	/**

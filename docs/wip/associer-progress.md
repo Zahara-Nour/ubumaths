@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 1 en PR._
+_Mis à jour le 2026-11-14, #2623 ouverte (CI verte sur le lot 1), PAS mergée : geste « relier » à ajouter._
 
-- **État** : lot 1 (texte, formules) codé, relu (`code-reviewer` Opus : 1 Important + 5 Mineurs, tous corrigés), PR ouverte · **Prochaine action** : CI verte → merge ; puis convertir B11 de `cours-suites` en bloc associer (session « questions ») ; lot 2 = blocs courbe dans un élément · **En attente de David** : essai du geste à l'écran (serveur de la branche, port 5177) · **Pièges en cours** : `rangerLabelsCollide` et `RangerPlacer` (clés d'erreurs) ont les deux défauts hérités corrigés ici pour associer, pas pour ranger · **Worktree / branche** : `../ubumaths-wt-associer`, `feat/associer`
+- **État** : lot 1 (geste étiquettes) relu et vert ; décisions 6-7 (ci-dessous) : `geste: relier` par défaut, `geste: étiquettes` en option, même PR. Fait : réglage `geste:` (parseur, tirage, tests) ; `AssocierPlacer.svelte` = aiguilleur, qui rend pour l'instant `AssocierEtiquettes.svelte` (ex-AssocierPlacer) pour les deux gestes · **Prochaine action** : écrire `AssocierRelier.svelte` (spec du geste sous les décisions 6-7 : SVG par-dessus, ancres mesurées, glisser / toucher, clavier, correction rouge / pointillés verts), le brancher dans l'aiguilleur, tests ; FillBlanksInput (tests à `geste: étiquettes` pour l'ancien geste) ; catalogue (réglage `geste`, exemples) ; docs `ubumark.md`, `questions.md` ; puis CI verte → merge · **En attente de David** : rien (essai du geste relier quand il sera prêt ; accès distant : `tailscale serve` actif sur 5177 → `tailscale serve reset` à la fin) · **Pièges en cours** : test d'écran renommé `AssocierEtiquettes.svelte.test.ts` (importe AssocierEtiquettes) ; ranger garde ses deux défauts hérités (collision, clés) · **Worktree / branche** : `../ubumaths-wt-associer`, `feat/associer`
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -49,6 +49,22 @@ sans `->`, étiquette vide, case (`[_]`) dans un élément ; moins de 3 étiquet
 3. Notation partielle, une case par ligne.
 4. Écriture `->`.
 5. Nom du chantier et du bloc : `associer`.
+
+**Correction de la phase 0 (David, 2026-11-14, après essai)** : David attendait des **traits** entre
+les deux colonnes ; la phase 0 ne proposait que la pose d'étiquettes (mon oubli). Tranché (« je suis
+tes recos ») :
+
+6. Deux gestes, un seul bloc : réglage `geste: relier` (**défaut**, traits entre deux points) ou
+   `geste: étiquettes` (le geste du lot 1, pour les classements et les éléments longs). Bloc, juge,
+   corrigé et PDF communs ; seul l'écran change.
+7. Dans la même PR (#2623, pas mergée), avant tout merge.
+
+Geste « relier » : éléments à gauche avec un point au bout, étiquettes à droite avec un point devant ;
+glisser d'un point à l'autre (trait qui suit le doigt) ou toucher un point puis l'autre, dans les deux
+sens ; un trait par élément (un nouveau remplace l'ancien), plusieurs traits possibles vers une
+étiquette ; toucher un trait ou le point d'un élément relié efface ; clavier : élément puis étiquette
+(Entrée) ; correction : trait faux rouge, bon trait en pointillés verts ; téléphone : deux colonnes,
+retour à la ligne, points centrés sur chaque case.
 
 Ensuite : convertir la n° 11 de `cours-suites` (B11, QCM) en « associer ».
 
