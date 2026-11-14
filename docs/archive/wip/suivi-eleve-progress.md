@@ -1,7 +1,7 @@
 # Chantier `suivi-eleve` — page de suivi d'un élève (P8), prouvé / déclaré (P9)
 
 Ouvert le 2026-11-14. Besoins P8 et P9 validés par David le 2026-11-11
-([`formes-de-serie-progress.md`](../archive/wip/formes-de-serie-progress.md) § « Besoins de suivi
+([`formes-de-serie-progress.md`](formes-de-serie-progress.md) § « Besoins de suivi
 validés ») : « P8 page de suivi d'un élève · P9 distinguer prouvé (corrigé par l'appli) et déclaré
 (auto-évaluation) ». Choisi par David le 2026-11-14, après la clôture d'`erreurs-frequentes`.
 
@@ -17,7 +17,7 @@ _Mis à jour le 2026-11-14 : **chantier CLOS** (go de David : « on clot le chan
   `/dashboard/teacher/students/[studentId]/journal` : le **journal des récompenses** (gamification),
   ouvert depuis la liste des classes (`studentJournalHref`). Il y a aussi `…/chatterie`.
 - **Ce que le prof voit d'un élève est éparpillé** dans l'analytique de classe
-  (`/dashboard/teacher/classes/[classId]/analytics`, [analytique-prof.md](../systeme/analytique-prof.md)) :
+  (`/dashboard/teacher/classes/[classId]/analytics`, [analytique-prof.md](../../systeme/analytique-prof.md)) :
   sa ligne de la grille A (badge FSRS par point du programme), sa ligne de la régularité (C), sa courbe
   de rétention (B, élève × branche), son niveau dans les compétences ; ses notes, contrôle par contrôle
   (bilan d'un contrôle).
