@@ -41,15 +41,15 @@ export interface LoadingStage {
 // Output Types
 // =============================================================================
 
+/** Mode du terrain de jeu : programme (console) ou tortue (quadrillage, ADR 0039). */
+export type ModeBlockly = 'programme' | 'tortue';
+
 /**
  * Output line type classification
  * - 'stdout': Normal program output
  * - 'stderr': Error output
  * - 'info': System information messages
  */
-/** Mode du terrain de jeu : programme (console) ou tortue (quadrillage, ADR 0039). */
-export type ModeBlockly = 'programme' | 'tortue';
-
 export type OutputLineType = 'stdout' | 'stderr' | 'info';
 
 /**

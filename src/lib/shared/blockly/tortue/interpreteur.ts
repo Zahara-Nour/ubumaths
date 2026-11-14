@@ -21,6 +21,7 @@ export interface EtatTortue extends Point {
 export type ErreurTortue =
 	| { type: 'bloc-inconnu'; typeBloc: string }
 	| { type: 'trop-long' }
+	| { type: 'trop-loin' }
 	| { type: 'programme-illisible' };
 
 export type ResultatTortue =
@@ -46,6 +47,12 @@ interface BlocLu {
 /** Nombre maximal de pas (blocs exécutés et tours de boucle) avant l'arrêt. */
 export const LIMITE_PAS = 10_000;
 
+/** Distance maximale au départ, en carreaux : au-delà, les nombres perdent leur précision. */
+export const DISTANCE_MAX = 1_000_000;
+
+/** Imbrication maximale (entrées dans des entrées) : protège la pile d'appels. */
+const IMBRICATION_MAX = 1_000;
+
 /** Blocs d'instruction connus de l'interpréteur. */
 const INSTRUCTIONS = new Set([
 	'tortue_avancer',
@@ -64,6 +71,7 @@ const VALEURS = new Set(['math_number']);
 const MESSAGES: Record<ErreurTortue['type'], string> = {
 	'bloc-inconnu': 'Ce bloc n’est pas pris en charge par la tortue.',
 	'trop-long': `Programme arrêté après ${LIMITE_PAS.toLocaleString('fr-FR')} pas : il est trop long, ou ne s’arrête pas.`,
+	'trop-loin': `La tortue est partie trop loin (plus de ${DISTANCE_MAX.toLocaleString('fr-FR')} carreaux du départ).`,
 	'programme-illisible': 'Programme illisible.'
 };
 
@@ -85,10 +93,25 @@ function estObjet(valeur: unknown): valeur is Record<string, unknown> {
 
 class ProgrammeIllisible extends Error {}
 
-/** Lit un bloc sérialisé et ses descendants ; lève `ProgrammeIllisible` si la forme est fausse. */
-function lireBloc(brut: unknown, profondeur: number): BlocLu {
-	// Une pile de Blockly n'a pas de profondeur réaliste au-delà ; protège la pile d'appels
-	if (!estObjet(brut) || typeof brut.type !== 'string' || profondeur > 2_000) {
+/**
+ * Lit une pile sérialisée (un bloc et ses suivants, par `next`) ; lève `ProgrammeIllisible` si
+ * la forme est fausse. Les suivants sont lus en boucle : seule l'imbrication fait récursion.
+ */
+function lirePile(brut: unknown, imbrication: number): BlocLu {
+	const blocs: BlocLu[] = [];
+	let courant: unknown = brut;
+	while (courant !== undefined) {
+		const { bloc, suivant } = lireBloc(courant, imbrication);
+		blocs.push(bloc);
+		courant = suivant;
+	}
+	for (let i = 0; i < blocs.length - 1; i++) blocs[i].suivant = blocs[i + 1];
+	return blocs[0];
+}
+
+/** Lit un bloc et ses entrées ; rend aussi le bloc suivant, encore brut. */
+function lireBloc(brut: unknown, imbrication: number): { bloc: BlocLu; suivant: unknown } {
+	if (!estObjet(brut) || typeof brut.type !== 'string' || imbrication > IMBRICATION_MAX) {
 		throw new ProgrammeIllisible();
 	}
 
@@ -98,29 +121,30 @@ function lireBloc(brut: unknown, profondeur: number): BlocLu {
 		for (const [nom, entree] of Object.entries(brut.inputs)) {
 			if (!estObjet(entree)) throw new ProgrammeIllisible();
 			const contenu = entree.block ?? entree.shadow;
-			entrees[nom] = contenu === undefined ? undefined : lireBloc(contenu, profondeur + 1);
+			entrees[nom] = contenu === undefined ? undefined : lirePile(contenu, imbrication + 1);
 		}
 	}
 
-	let suivant: BlocLu | undefined;
+	let suivant: unknown;
 	if (brut.next !== undefined) {
 		if (!estObjet(brut.next)) throw new ProgrammeIllisible();
-		suivant = brut.next.block === undefined ? undefined : lireBloc(brut.next.block, profondeur + 1);
+		suivant = brut.next.block;
 	}
 
 	const desactive =
 		brut.enabled === false ||
 		(Array.isArray(brut.disabledReasons) && brut.disabledReasons.length > 0);
 
-	return {
+	const bloc: BlocLu = {
 		type: brut.type,
 		actif: !desactive,
 		champs: estObjet(brut.fields) ? brut.fields : {},
 		entrees,
-		suivant,
+		suivant: undefined,
 		x: typeof brut.x === 'number' ? brut.x : 0,
 		y: typeof brut.y === 'number' ? brut.y : 0
 	};
+	return { bloc, suivant };
 }
 
 /** Lit les piles de l'espace de travail, triées de haut en bas (puis de gauche à droite). */
@@ -131,7 +155,13 @@ function lirePiles(etat: unknown): BlocLu[] {
 	const blocs = etat.blocks.blocks;
 	if (blocs === undefined) return [];
 	if (!Array.isArray(blocs)) throw new ProgrammeIllisible();
-	return blocs.map((bloc) => lireBloc(bloc, 0)).sort((a, b) => a.y - b.y || a.x - b.x);
+	return (
+		blocs
+			.map((bloc) => lirePile(bloc, 0))
+			// Un nombre posé seul dans l'espace de travail ne fait rien : ignoré, comme une pile vide
+			.filter((pile) => !VALEURS.has(pile.type))
+			.sort((a, b) => a.y - b.y || a.x - b.x)
+	);
 }
 
 /** Premier bloc inconnu (instruction ou valeur) d'une pile, blocs désactivés compris. */
@@ -165,6 +195,7 @@ function nombreDeTours(bloc: BlocLu): number {
 }
 
 class TropLong extends Error {}
+class TropLoin extends Error {}
 
 /**
  * Exécute un programme tortue. Ne lève jamais : un état mal formé, un bloc inconnu ou un
@@ -209,10 +240,14 @@ export function executerTortue(etat: unknown): ResultatTortue {
 	function deplacer(distance: number): void {
 		const radians = (tortue.cap * Math.PI) / 180;
 		const de = { x: tortue.x, y: tortue.y };
-		tortue.x = arrondir(tortue.x + distance * Math.cos(radians));
-		tortue.y = arrondir(tortue.y + distance * Math.sin(radians));
-		if (tortue.styloBaisse && (tortue.x !== de.x || tortue.y !== de.y)) {
-			segments.push({ de, a: { x: tortue.x, y: tortue.y } });
+		const x = arrondir(tortue.x + distance * Math.cos(radians));
+		const y = arrondir(tortue.y + distance * Math.sin(radians));
+		// Au-delà, Infinity puis NaN fausseraient le tracé ; la tortue reste où elle était
+		if (!(Math.hypot(x, y) <= DISTANCE_MAX)) throw new TropLoin();
+		tortue.x = x;
+		tortue.y = y;
+		if (tortue.styloBaisse && (x !== de.x || y !== de.y)) {
+			segments.push({ de, a: { x, y } });
 		}
 	}
 
@@ -260,8 +295,13 @@ export function executerTortue(etat: unknown): ResultatTortue {
 	try {
 		for (const pile of piles) executerPile(pile);
 	} catch (erreur) {
-		if (!(erreur instanceof TropLong)) throw erreur;
-		return { ok: false, erreur: { type: 'trop-long' }, segments, tortue, pas };
+		const type =
+			erreur instanceof TropLong
+				? 'trop-long'
+				: erreur instanceof TropLoin
+					? 'trop-loin'
+					: 'programme-illisible';
+		return { ok: false, erreur: { type }, segments, tortue, pas };
 	}
 
 	return { ok: true, segments, tortue, pas };

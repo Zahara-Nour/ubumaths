@@ -169,6 +169,13 @@
 			return;
 		}
 
+		// Les blocs tortue n'ont de sens que pour l'interpréteur : le code généré n'est qu'un aperçu
+		if (workspace.getAllBlocks(false).some((bloc) => bloc.type.startsWith('tortue_'))) {
+			executor.clearOutput();
+			executor.addOutput('info', 'Les blocs tortue s’exécutent en mode Tortue.');
+			return;
+		}
+
 		// Check if there's code to execute
 		if (!currentCode || currentCode.trim().length === 0) {
 			executor.addOutput(

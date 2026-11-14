@@ -78,11 +78,17 @@ geste de réponse dans les modèles de questions) ; décisions dans son journal.
 - Blocs : `tortue_avancer` / `tortue_reculer` (entrée `VALEUR`), `tortue_gauche` /
   `tortue_droite` (entrée `ANGLE`), `tortue_lever_stylo`, `tortue_baisser_stylo` ;
   `controls_repeat` / `controls_repeat_ext` (répétitions arrondies à l'entier inférieur, négatives
-  → 0), `math_number`. Entrée vide → 0, bloc désactivé → ignoré. Piles exécutées de haut en bas.
+  → 0), `math_number`. Entrée vide → 0, bloc désactivé → ignoré, nombre posé seul → ignoré. Piles
+  exécutées de haut en bas ; les suivants (`next`) sont lus en boucle, seule l'imbrication
+  (bornée à 1 000) fait récursion.
 - Repère : unité = un carreau, départ en (0, 0), cap 0 = vers la droite, tourner à gauche = sens
   direct, stylo baissé. Coordonnées arrondies au milliardième après chaque déplacement.
 - **`LIMITE_PAS` = 10 000** (blocs exécutés et tours de boucle, même vides) : au-delà, arrêt
-  `trop-long` avec le tracé partiel.
+  `trop-long` avec le tracé partiel. **`DISTANCE_MAX` = 1 000 000** carreaux du départ : au-delà,
+  arrêt `trop-loin` avant tout `Infinity` / `NaN`. Toute autre exception → `programme-illisible` :
+  `executerTortue` ne lève jamais.
+- En mode Programme, un espace de travail qui contient un bloc tortue n'est pas envoyé au worker
+  (message « Les blocs tortue s'exécutent en mode Tortue. »).
 - Quadrillage fixe 20 × 20 (`DEMI_COTE_CADRE`), tracé instantané (animation prévue avec le bac à
   sable).
 

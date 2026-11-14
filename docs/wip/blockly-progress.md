@@ -124,3 +124,18 @@ suivent les recommandations).
   quelconque ; répétitions négatives → 0.
 - Erreurs : bloc inconnu → « Ce bloc n'est pas pris en charge par la tortue », rien n'est tracé ;
   plus de 10 000 pas → arrêt, message, tracé partiel affiché.
+
+### Essai et revue (2026-11-14)
+
+- Essai `/dev/blockly` (port 5176) : carré, stylo levé, dépassement du cadre signalé, arrêt à
+  10 000 pas, bloc inconnu refusé — conformes.
+- `code-reviewer` (Sonnet) : rien de bloquant. Corrigé : une distance énorme donnait `NaN`
+  (→ erreur `trop-loin` au-delà de 1 000 000 carreaux) ; un nombre posé seul faisait refuser tout
+  le programme (→ ignoré) ; en mode Programme, des blocs tortue partaient au worker (→ message) ;
+  une pile de plus de 2 000 blocs était « illisible » (→ suivants lus en boucle, seule
+  l'imbrication est bornée) ; toute exception rend `programme-illisible`. Choix faits sans David,
+  à lui signaler : seuil `trop-loin`, nombre isolé ignoré, répétitions à virgule arrondies à
+  l'entier inférieur (Scratch arrondit au plus proche).
+- Écarté : la clé de regroupement de `normaliserSegments` (arrondi 1e-6) peut séparer deux
+  droites identiques à une frontière d'arrondi (~0,2 % sur des irrationnels, non reproduit) ; à
+  revoir avec la correction par tracé (PR 4).

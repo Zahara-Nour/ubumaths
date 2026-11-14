@@ -145,6 +145,18 @@ describe('executerTortue — nominal', () => {
 });
 
 describe('executerTortue — limites', () => {
+	it('un nombre posé seul dans l’espace de travail est ignoré', () => {
+		const etat = {
+			blocks: {
+				blocks: [
+					{ ...nombre(7), x: 0, y: 0 },
+					{ ...avancer(2), x: 0, y: 50 }
+				]
+			}
+		};
+		expect(executerTortue(etat)).toMatchObject({ ok: true, tortue: { x: 2 } });
+	});
+
 	it('programme vide : rien, sans erreur', () => {
 		expect(executerTortue({})).toEqual({
 			ok: true,
@@ -171,6 +183,30 @@ describe('executerTortue — limites', () => {
 });
 
 describe('executerTortue — erreurs', () => {
+	it('trop loin : arrêt avant tout NaN, tortue et tracé restent finis', () => {
+		const resultat = executerTortue(
+			espace([avancer(1), avancer(1e300), avancer(1e300), gauche(90)])
+		);
+		expect(resultat).toMatchObject({ ok: false, erreur: { type: 'trop-loin' } });
+		expect(resultat.tortue).toMatchObject({ x: 1, y: 0 });
+		expect(resultat.segments).toEqual([{ de: { x: 0, y: 0 }, a: { x: 1, y: 0 } }]);
+		if (!resultat.ok) expect(messageErreurTortue(resultat.erreur)).toContain('trop loin');
+	});
+
+	it('une très longue pile (5 000 blocs) se lit et s’exécute', () => {
+		const resultat = executerTortue(espace(Array.from({ length: 5_000 }, () => gauche(90))));
+		expect(resultat).toMatchObject({ ok: true, pas: 5_000 });
+	});
+
+	it('imbrication démesurée : refusée sans exception', () => {
+		let bloc: Bloc = avancer(1);
+		for (let i = 0; i < 1_500; i++) bloc = repeter(1, [bloc]);
+		expect(executerTortue(espace([bloc]))).toMatchObject({
+			ok: false,
+			erreur: { type: 'programme-illisible' }
+		});
+	});
+
 	it('bloc inconnu : refusé, rien n’est tracé, même ce qui le précède', () => {
 		const resultat = executerTortue(
 			espace([avancer(2), { type: 'text_print', inputs: {} }, avancer(1)])
