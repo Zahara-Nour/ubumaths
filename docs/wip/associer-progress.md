@@ -91,3 +91,4 @@ Ensuite : convertir la n° 11 de `cours-suites` (B11, QCM) en « associer ».
   Laissés : `touch-action: none` sur toute la case (comme le geste étiquettes ; à revoir si l'essai sur
   iPhone gêne le défilement), verdict signalé par la couleur seule (noms accessibles « juste / faux »).
 - 2026-11-14 : #2623 mergée (CI verte), geste relier essayé et validé par David.
+- 2026-11-14 : B11 de `cours-suites` convertie (branche `feat/associer-b11`) : 2 variations de 4 situations + intrus « ni l'une ni l'autre », `geste: étiquettes` (classement, David : « je te suis »), délai 60 s, 6 specs ; `create-questions --mettre-a-jour` réécrit désormais aussi le délai. Mise à jour du brouillon en prod : par David.

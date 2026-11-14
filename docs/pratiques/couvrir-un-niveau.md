@@ -255,7 +255,7 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
 Relevé MCP (contenu complet, md5, nœuds, points, tags, **0 donnée d'élève**) ; instantané dans
 `docs/wip/<chantier>/etat-prod-<date>/` (ses md5 = prod) ; nouveau contenu écrit par le script
 de lot, `checkTemplate` vert ; **David** lance `create-questions --publier --mettre-a-jour`
-(remplace contenu et description). Le script de lot réécrit les fichiers **sans leur `id`** :
+(remplace contenu, description et délai). Le script de lot réécrit les fichiers **sans leur `id`** :
 le remettre (`git diff`) avant de lancer, sinon le lot est bloqué (homonyme en base). Retrait de tag ou niveaux seuls → migration à la main.
 
 Modèle **publié** (`--mettre-a-jour` ne le touche pas) → deux migrations, gabarits du lot 0 du
