@@ -352,12 +352,12 @@ ETAPES_NUAGE = [
     ' alignés avec les premiers (à partir d\'un certain nombre, chaque {{un}} supplémentaire coûte moins cher) : **non**.}}}}']
 NUAGE_CINEMA = variation(
     'Le graphique donne le prix payé, en euros, selon le nombre de places de cinéma achetées.\n\n'
-    '```courbe\nx: -1 ; 6\ny: -5 ; 55\ngrille: 1 ; 5\naxes: x = Places ; y = Prix (€)\n'
+    '```courbe\nx: -1 ; 6\ny: -5 ; 60\ngrille: 1 ; 5\naxes: x = Places ; y = Prix (€)\n'
     'points: A(1 ; {{y1}}), B(2 ; {{y2}}), C(3 ; {{y3}}), D(4 ; {{y4}}), F(5 ; {{y5}})\n'
     'taille: moyenne\ndescription: Nuage de cinq points : nombre de places de 1 à 5 en abscisse,'
     ' prix en ordonnée.\n```\n\nLe prix payé est-il proportionnel au nombre de places ?\n\n'
     + choix(RAISONS),
-    [var('a', '6..9'), var('b', '3..5')] + CAS_VARS
+    [var('a', '6..9'), var('b', '8..12')] + CAS_VARS
     + [var('rb', f'eval:3*{ind("t", 3)}'),
        var('y1', 'eval:a+bb'), var('y2', 'eval:2*a+bb'), var('y3', 'eval:3*a+bb'),
        var('y4', 'eval:4*a+bb-rb'), var('y5', 'eval:5*a+bb-2*rb'), var('r', 'eval:t-1')],
@@ -382,10 +382,10 @@ MODELES.append(modele(
     'Nuage de points et proportionnalité',
     'Prix selon un nombre d\'objets : proportionnel, alignés sans l\'origine, ou pas alignés',
     6, [NUAGE_CINEMA, NUAGE_BUS],
-    [spec('Cinéma, 7 € la place : oui', 0, {'a': 7, 'b': 4, 't': 1}, [0], 'correct'),
-     spec('Cinéma avec frais de 4 € : alignés sans l\'origine', 0, {'a': 7, 'b': 4, 't': 2}, [1],
-          'correct'),
-     spec('Erreur : frais pris pour proportionnel', 0, {'a': 7, 'b': 4, 't': 2}, [0],
+    [spec('Cinéma, 7 € la place : oui', 0, {'a': 7, 'b': 10, 't': 1}, [0], 'correct'),
+     spec('Cinéma avec frais de 10 € : alignés sans l\'origine', 0, {'a': 7, 'b': 10, 't': 2},
+          [1], 'correct'),
+     spec('Erreur : frais pris pour proportionnel', 0, {'a': 7, 'b': 10, 't': 2}, [0],
           'incorrect'),
      spec('Bus, prix dégressif : pas alignés', 1, {'a': 2, 'b': 3, 't': 3}, [2], 'correct'),
      spec('Erreur : dégressif pris pour « alignés sans l\'origine »', 1, {'a': 2, 'b': 3, 't': 3},
@@ -416,7 +416,7 @@ DROITES_SEULES = variation(
     ['Une situation de proportionnalité est représentée par une **droite qui passe par'
      ' l\'origine** du repère.',
      'Seule ' + m('d_{{p}}') + ' passe par l\'origine : c\'est elle.'],
-    [f'c{j}*c{j} > 0' for j in (1, 2, 3, 4)])
+    [f'c{j}*c{j} >= 4' for j in (1, 2, 3, 4)])
 
 
 def expr_courbe(j):
@@ -439,8 +439,8 @@ DROITES_ET_COURBE = variation(
      ' l\'origine** du repère.',
      '$d_{{q}}$ passe par l\'origine, mais ce n\'est pas une droite. Seule ' + m('d_{{p}}')
      + ' est une droite qui passe par l\'origine : c\'est elle.'],
-    [f'c{j}*c{j} > 0' for j in (1, 2, 3, 4)])
-s_d = {'p': 3, 's1': 2, 's2': 1, 's3': 2, 's4': 3, 'c1': 2, 'c2': -1, 'c3': 3, 'c4': 1}
+    [f'c{j}*c{j} >= 4' for j in (1, 2, 3, 4)])
+s_d = {'p': 3, 's1': 2, 's2': 1, 's3': 2, 's4': 3, 'c1': 2, 'c2': -2, 'c3': 3, 'c4': 3}
 MODELES.append(modele(
     '06-caracteriser-graphiquement-la-proportionnalite',
     'Caractériser graphiquement la proportionnalité',
@@ -616,8 +616,8 @@ DEPASSER_CROISSANTE = variation(
      ' bout de ${{k}}$ min, puis reste au-dessus, car elle augmente.',
      'Elle dépasse ${{s}}$ dizaines de degrés à partir de ' + m('{{k}}') + ' min.'])
 DEPASSER_CLOCHE = variation(
-    'Le graphique donne la hauteur, en mètres, d\'une fusée à eau selon le temps écoulé depuis'
-    ' son lancement, en secondes.\n\n```courbe\nx: -1 ; 7\ny: -1 ; {{eval:h+1}}\ngrille: 1 ; 1\n'
+    'Le graphique donne la hauteur, en mètres, d\'une fusée à eau lancée depuis un toit, selon le'
+    ' temps écoulé depuis son lancement, en secondes.\n\n```courbe\nx: -1 ; 7\ny: -1 ; {{eval:h+1}}\ngrille: 1 ; 1\n'
     'axes: x = Temps (s) ; y = Hauteur (m)\nf(x) = {{h}} - (x - 3)^2 sur [0 ; 6]   bleu\n'
     'taille: moyenne\ndescription: Courbe en cloche : la hauteur monte, atteint {{h}} m au bout de'
     ' 3 s, puis redescend.\n```\n\nPendant quelle période la hauteur de la fusée dépasse-t-elle'

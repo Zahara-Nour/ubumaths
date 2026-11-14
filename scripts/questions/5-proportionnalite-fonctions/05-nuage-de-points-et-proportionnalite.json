@@ -7,7 +7,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Le graphique donne le prix payé, en euros, selon le nombre de places de cinéma achetées.\n\n```courbe\nx: -1 ; 6\ny: -5 ; 55\ngrille: 1 ; 5\naxes: x = Places ; y = Prix (€)\npoints: A(1 ; {{y1}}), B(2 ; {{y2}}), C(3 ; {{y3}}), D(4 ; {{y4}}), F(5 ; {{y5}})\ntaille: moyenne\ndescription: Nuage de cinq points : nombre de places de 1 à 5 en abscisse, prix en ordonnée.\n```\n\nLe prix payé est-il proportionnel au nombre de places ?\n\n```choix\nmelanger: non\n- Oui\n- Non : les points sont alignés, mais pas avec l'origine\n- Non : les points ne sont pas alignés\n```",
+			"statement": "Le graphique donne le prix payé, en euros, selon le nombre de places de cinéma achetées.\n\n```courbe\nx: -1 ; 6\ny: -5 ; 60\ngrille: 1 ; 5\naxes: x = Places ; y = Prix (€)\npoints: A(1 ; {{y1}}), B(2 ; {{y2}}), C(3 ; {{y3}}), D(4 ; {{y4}}), F(5 ; {{y5}})\ntaille: moyenne\ndescription: Nuage de cinq points : nombre de places de 1 à 5 en abscisse, prix en ordonnée.\n```\n\nLe prix payé est-il proportionnel au nombre de places ?\n\n```choix\nmelanger: non\n- Oui\n- Non : les points sont alignés, mais pas avec l'origine\n- Non : les points ne sont pas alignés\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -15,7 +15,7 @@
 				},
 				{
 					"name": "b",
-					"expression": "3..5"
+					"expression": "8..12"
 				},
 				{
 					"name": "t",
@@ -145,7 +145,7 @@
 			"variationIndex": 0,
 			"variables": {
 				"a": "7",
-				"b": "4",
+				"b": "10",
 				"t": "1"
 			},
 			"answers": ["0"],
@@ -154,11 +154,11 @@
 			}
 		},
 		{
-			"description": "Cinéma avec frais de 4 € : alignés sans l'origine",
+			"description": "Cinéma avec frais de 10 € : alignés sans l'origine",
 			"variationIndex": 0,
 			"variables": {
 				"a": "7",
-				"b": "4",
+				"b": "10",
 				"t": "2"
 			},
 			"answers": ["1"],
@@ -171,7 +171,7 @@
 			"variationIndex": 0,
 			"variables": {
 				"a": "7",
-				"b": "4",
+				"b": "10",
 				"t": "2"
 			},
 			"answers": ["0"],

@@ -83,7 +83,7 @@
 			}
 		},
 		{
-			"statement": "Le graphique donne la hauteur, en mètres, d'une fusée à eau selon le temps écoulé depuis son lancement, en secondes.\n\n```courbe\nx: -1 ; 7\ny: -1 ; {{eval:h+1}}\ngrille: 1 ; 1\naxes: x = Temps (s) ; y = Hauteur (m)\nf(x) = {{h}} - (x - 3)^2 sur [0 ; 6]   bleu\ntaille: moyenne\ndescription: Courbe en cloche : la hauteur monte, atteint {{h}} m au bout de 3 s, puis redescend.\n```\n\nPendant quelle période la hauteur de la fusée dépasse-t-elle ${{s}}~\\unit{m}$ ?\n\nDe $?$ s à $?$ s",
+			"statement": "Le graphique donne la hauteur, en mètres, d'une fusée à eau lancée depuis un toit, selon le temps écoulé depuis son lancement, en secondes.\n\n```courbe\nx: -1 ; 7\ny: -1 ; {{eval:h+1}}\ngrille: 1 ; 1\naxes: x = Temps (s) ; y = Hauteur (m)\nf(x) = {{h}} - (x - 3)^2 sur [0 ; 6]   bleu\ntaille: moyenne\ndescription: Courbe en cloche : la hauteur monte, atteint {{h}} m au bout de 3 s, puis redescend.\n```\n\nPendant quelle période la hauteur de la fusée dépasse-t-elle ${{s}}~\\unit{m}$ ?\n\nDe $?$ s à $?$ s",
 			"variables": [
 				{
 					"name": "h",
