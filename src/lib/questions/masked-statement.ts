@@ -35,7 +35,8 @@
  * Un bloc dans une option d'un ```choix n'est pas un geste (le générateur met le
  * choix à l'abri avant de repérer les gestes) : il reste tel quel, sinon les options
  * deviendraient identiques.
- * Sans objet : ```ranger (déjà mélangé), ```patron `designer:` (la tâche, que la
+ * Sans objet : ```ranger (déjà mélangé), ```associer (réécrit sans liens au tirage ; la garde
+ * `findUnmaskedAnswers` vérifie qu'il n'en reste aucun), ```patron `designer:` (la tâche, que la
  * consigne dit ; les faces se trouvent par le pliage), ```cubes `dessiner:` (la
  * perspective est la figure), ```solide `tracer:` (la combinaison est la tâche, que
  * la consigne dit ; les points se trouvent par le calcul), opération posée.
@@ -61,6 +62,7 @@ import {
 	parseStatChartContent
 } from '$lib/ubumark/parser/stat-chart-parser';
 import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
+import { findAssociersToPlace, parseAssocierBody } from '$lib/ubumark/parser/associer-parser';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
@@ -620,6 +622,10 @@ export function findUnmaskedAnswers(statement: string): string[] {
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
+		),
+		// Éléments à associer : l'énoncé d'instance n'a plus aucun lien (`- élément ->`)
+		...leaks('associer', own(findAssociersToPlace(statement)), (block) =>
+			parseAssocierBody(block.body).answers.every((answer) => answer === null)
 		),
 		...leaks('collection', findBuildCollections(statement), keyMasked(['construire'])),
 		...leaks('monnaie', findBuildMonnaies(statement), keyMasked(['construire'])),

@@ -71,6 +71,13 @@ import {
 	serializeRangerBlock
 } from '$lib/ubumark/parser/ranger-parser';
 import { rangerOrder } from '$lib/ubumark/utils/ranger';
+import {
+	findAssociersToPlace,
+	hasAssocierToPlace,
+	parseAssocierContent,
+	replaceAssocierBlocks,
+	serializeAssocierBlock
+} from '$lib/ubumark/parser/associer-parser';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
 import {
 	hasCubesToBuild,
@@ -78,6 +85,7 @@ import {
 	hasSolidesToBuild
 } from '$lib/ubumark/parser/espace-parser';
 import type { RangerSign } from '$lib/ubumark/types/ranger';
+import type { AssocierGesture } from '$lib/ubumark/types/associer';
 import { buildAnswerOf, MASKED_IN_TEMPLATE } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
@@ -149,6 +157,44 @@ function rangerLabelsCollide(
 	});
 }
 
+/**
+ * Deux éléments d'un même bloc ```associer ont-ils le même texte avec ce tirage, ou
+ * deux étiquettes écrites différemment ? Résolus à part, comme `rangerLabelsCollide`.
+ */
+function associerTextsCollide(
+	statement: TemplateMarkdown | undefined,
+	variables: ResolvedVariable[],
+	genericFunctions: Parameters<typeof resolveMarkdownContent>[3],
+	cleanCoefficients: boolean,
+	capitalPairs: Parameters<typeof resolveMarkdownContent>[5]
+): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```associer')) return false;
+	const resolve = (written: string) =>
+		String(
+			resolveMarkdownContent(
+				templateMarkdown(written),
+				variables,
+				createRandomSource(0),
+				genericFunctions,
+				cleanCoefficients,
+				capitalPairs
+			)
+		).trim();
+	return findAssociersToPlace(text).some((block) => {
+		const { items, labels } = parseAssocierContent(block.body.join('\n'));
+		// Seuls deux textes ÉCRITS différents comptent : deux éléments écrits identiques
+		// sont refusés par le parseur, avec son message (inutile de retirer)
+		const collide = (written: string[]) => {
+			const resolved = written.map(resolve);
+			return resolved.some((text, i) =>
+				resolved.some((other, j) => j > i && other === text && written[j] !== written[i])
+			);
+		};
+		return collide(items) || collide(labels);
+	});
+}
+
 /** Ce qui donne la réponse d'un bloc qui porte sa case, pour les messages au prof */
 function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'line')
@@ -157,6 +203,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'barres') return 'l’effectif de la barre (placer:)';
 	if (kind === 'boite-a-moustaches') return 'les valeurs de la boîte (placer:)';
 	if (kind === 'ranger') return 'l’étiquette à sa place (bloc ranger)';
+	if (kind === 'associer') return 'l’étiquette de chaque élément (bloc associer, « -> »)';
 	if (kind === 'partage') return 'la fraction du bloc partage (colorier:)';
 	if (kind === 'cubes') return 'la vue ou les vues du bloc cubes (dessiner:, retrouver:)';
 	if (kind === 'patron') return 'les faces du bloc patron (designer:, completer:)';
@@ -475,6 +522,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let lastVariableError: string | undefined;
 		let conditionFailures = 0;
 		let rangerCollisions = 0;
+		let associerCollisions = 0;
 		for (let attempt = 0; attempt <= MAX_CONDITION_RETRIES; attempt++) {
 			// Nouvel essai : la source continue, les tirages sont donc neufs
 			let candidate: ResolvedVariable[];
@@ -503,8 +551,30 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				rangerCollisions++;
 				continue;
 			}
+			// Éléments à associer : deux éléments (ou deux étiquettes) au même texte après tirage
+			if (
+				associerTextsCollide(
+					resolvedVariation.statement,
+					candidate,
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			) {
+				associerCollisions++;
+				continue;
+			}
 			resolvedVariables = candidate;
 			break;
+		}
+
+		if (resolvedVariables === undefined && associerCollisions > 0) {
+			return {
+				success: false,
+				errors: [
+					`Éléments à associer : deux éléments identiques (ou deux étiquettes) à chacun des ${associerCollisions} tirages ; écrire une condition qui les rend différents`
+				]
+			};
 		}
 
 		if (resolvedVariables === undefined && rangerCollisions > 0) {
@@ -572,6 +642,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasCourbeToPlace(String(resolvedStatement)) ||
 				hasTrigCircleToPlace(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
+				hasAssocierToPlace(String(resolvedStatement)) ||
 				hasPartageToColorier(String(resolvedStatement)) ||
 				hasCubesToBuild(String(resolvedStatement)) ||
 				hasPatronsToBuild(String(resolvedStatement)) ||
@@ -772,6 +843,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				number,
 				{ order: number[]; labels: string[]; sign: RangerSign }
 			>();
+			// Éléments à associer : ordre AFFICHÉ des étiquettes de chaque bloc, par case de son premier élément
+			const associerOrders = new Map<
+				number,
+				{ order: number[]; gesture: AssocierGesture; items: string[]; labels: string[] }
+			>();
 			for (const [key, { kind, source, point }] of Object.entries(blankResult.buildBlanks ?? {})) {
 				const index = Number(key);
 				const read = buildAnswerOf(kind, source, point);
@@ -797,6 +873,22 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						const { labels, sign } = parseRangerContent(source);
 						shown = { order: rangerOrder(labels.length, random), labels, sign };
 						rangerOrders.set(first, shown);
+					}
+					buildAnswers.set(index, {
+						kind,
+						answer: String(shown.order.indexOf(Number(read.answer)))
+					});
+					continue;
+				}
+				if (kind === 'associer') {
+					// Mélange des étiquettes au premier élément du bloc ; réponse = la position
+					// affichée de la bonne étiquette de l'élément
+					const first = index - (point ?? 0);
+					let shown = associerOrders.get(first);
+					if (!shown) {
+						const { gesture, items, labels } = parseAssocierContent(source);
+						shown = { order: rangerOrder(labels.length, random), gesture, items, labels };
+						associerOrders.set(first, shown);
 					}
 					buildAnswers.set(index, {
 						kind,
@@ -885,6 +977,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							const first = child.caseIndex;
 							if (first === undefined) return [];
 							return child.labels.map((_, k) => first + k);
+						}
+						if (child.type === 'associer') {
+							const first = child.caseIndex;
+							if (first === undefined) return [];
+							return child.items.map((_, k) => first + k);
 						}
 						if (child.type === 'stat-chart') {
 							const first = child.caseIndex;
@@ -1243,6 +1340,23 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						return serializeRangerBlock({
 							caseIndex: block.caseIndex,
 							sign: shown.sign,
+							labels: shown.order.map((index) => shown.labels[index])
+						});
+					})
+				);
+			}
+
+			// Blocs ```associer de l'énoncé : sans les liens, étiquettes dans l'ordre AFFICHÉ
+			if (associerOrders.size > 0) {
+				finalStatement = resolvedMarkdown(
+					replaceAssocierBlocks(String(finalStatement), (block) => {
+						const shown =
+							block.caseIndex === undefined ? undefined : associerOrders.get(block.caseIndex);
+						if (!shown || block.caseIndex === undefined) return '';
+						return serializeAssocierBlock({
+							caseIndex: block.caseIndex,
+							gesture: shown.gesture,
+							items: shown.items,
 							labels: shown.order.map((index) => shown.labels[index])
 						});
 					})

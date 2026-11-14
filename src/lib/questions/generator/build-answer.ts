@@ -11,7 +11,8 @@
  * `placer:` (```boite-a-moustaches, `11` : minimum, Q1, médiane, Q3, maximum,
  * boîte après boîte), ou le rang ÉCRIT de
  * l'étiquette d'une place (```ranger, `2` ; le générateur le change en position
- * affichée après le mélange), ou les parts à colorier d'une figure (```partage,
+ * affichée après le mélange), ou le rang ÉCRIT de la bonne étiquette d'un élément
+ * (```associer, `1` ; changé de même en position affichée), ou les parts à colorier d'une figure (```partage,
  * `colorier: 3/8` : `3/8`, parts à colorier sur parts de la figure), ou la vue ou
  * les vues d'un assemblage de cubes (```cubes, `dessiner: face` : `100/111` ;
  * `retrouver: face` : `face : 2 1 / 1 2`), ou les coordonnées d'un point à placer
@@ -31,6 +32,7 @@ import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
+import { missingLabelMessage, parseAssocierContent } from '$lib/ubumark/parser/associer-parser';
 import { adaptedScale, barsCaseCount } from '$lib/ubumark/utils/barres-placer';
 import {
 	boxesToPlace,
@@ -78,12 +80,14 @@ const CASE_IS_AUTOMATIC = 'case: est posée automatiquement, retirer cette ligne
 
 /**
  * Nombre de cases du bloc : une par point d'une droite à placer, une par barre d'un
- * diagramme à construire, une par étiquette à ranger, une par point d'un repère, sinon
+ * diagramme à construire, une par étiquette à ranger, une par élément à associer, une
+ * par point d'un repère, sinon
  * une ; un bloc illisible compte une case (refusé au générateur avec ses messages)
  */
 export function buildCaseCount(kind: BuildKind, source: string): number {
 	if (kind === 'line') return Math.max(1, parseNumberLineContent(source).node?.placer?.length ?? 1);
 	if (kind === 'ranger') return Math.max(1, parseRangerContent(source).labels.length);
+	if (kind === 'associer') return Math.max(1, parseAssocierContent(source).items.length);
 	if (kind === 'courbe') return Math.max(1, parseCourbeContent(source).spec?.placer?.length ?? 1);
 	if (kind === 'trig') return Math.max(1, parseTrigCircleContent(source).node?.placer?.length ?? 1);
 	if (kind === 'barres') {
@@ -185,6 +189,16 @@ export function buildAnswerOf(
 			};
 		}
 		return { answer: String(point) };
+	}
+	if (kind === 'associer') {
+		const node = parseAssocierContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0) return { errors: node.errors };
+		const answer = node.answers[point];
+		if (answer === undefined || answer === null) {
+			return { errors: [missingLabelMessage(point, node.items[point] ?? '')] };
+		}
+		return { answer: String(answer) };
 	}
 	if (kind === 'partage') {
 		const node = parsePartageContent(source);

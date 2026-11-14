@@ -63,6 +63,7 @@
 	import SchemaBarres from './nodes/SchemaBarres.svelte';
 	import ChoiceBlock from './nodes/ChoiceBlock.svelte';
 	import RangerPlacer from './nodes/RangerPlacer.svelte';
+	import AssocierPlacer from './nodes/AssocierPlacer.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -422,6 +423,8 @@
 					<ChoiceBlock {node} />
 				{:else if node.type === 'ranger'}
 					<RangerPlacer {node} />
+				{:else if node.type === 'associer'}
+					<AssocierPlacer {node} />
 				{/if}
 			{/each}
 		{:else}

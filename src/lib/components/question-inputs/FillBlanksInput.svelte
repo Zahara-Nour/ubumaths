@@ -83,6 +83,7 @@
 	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
 	import BoxPlotPlacer from '$lib/components/markdown/nodes/BoxPlotPlacer.svelte';
 	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
+	import AssocierPlacer from '$lib/components/markdown/nodes/AssocierPlacer.svelte';
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
 	import PatronGeste from '$lib/components/markdown/nodes/PatronGeste.svelte';
@@ -239,6 +240,7 @@
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		if (node.type === 'choice') return node.caseIndex !== undefined;
 		if (node.type === 'ranger') return node.caseIndex !== undefined;
+		if (node.type === 'associer') return node.caseIndex !== undefined;
 		if (node.type === 'variation-table') return isTableToFill(node);
 		return false;
 	}
@@ -539,7 +541,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -1114,6 +1116,35 @@
 							{node}
 							expected={flashMode ? undefined : expected}
 							answers={node.labels.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'associer' && node.caseIndex !== undefined && node.errors.length === 0}
+				<!-- Éléments à associer : l'élève relie (ou pose une étiquette sur) chaque élément, une case par
+				     élément (N, N + 1…), la position affichée de l'étiquette posée est la réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.items.length}
+				{@const expected = node.items.map((_, k) => blanks[firstCase + k]?.expectedAnswer ?? '')}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : chaque élément avec sa bonne étiquette -->
+					<BuildAnswer
+						kind="associer"
+						source={node.source}
+						answer={null}
+						status="solution"
+						{expected}
+					/>
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<AssocierPlacer
+							{node}
+							expected={flashMode ? undefined : expected}
+							answers={node.items.map((_, k) => ({
 								value: inputStates[firstCase + k]?.value ?? '',
 								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
 								disabled: flashMode || effectiveDisabled,

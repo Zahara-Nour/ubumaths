@@ -839,7 +839,9 @@ function validateBlankValue(
 	// Vecteur sur un solide : l'un des couples de points justes
 	if (blank.construire === 'solide') return isSolideAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
-	if (blank.construire === 'ranger') return userAnswer.trim() === blank.expectedAnswer;
+	if (blank.construire === 'ranger' || blank.construire === 'associer') {
+		return userAnswer.trim() === blank.expectedAnswer;
+	}
 	// Signe ou marque d'un tableau de signes : le même jeton
 	if (isSignTableCell(blank)) return isSignCellCorrect(userAnswer, blank.expectedAnswer);
 
@@ -1377,8 +1379,8 @@ function validateSingleBlank(
 			: { isCorrect: false };
 	}
 
-	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
-	if (blank.construire === 'ranger') {
+	// Étiquettes à ranger, éléments à associer : l'étiquette posée (sa position affichée), jamais sa valeur
+	if (blank.construire === 'ranger' || blank.construire === 'associer') {
 		return userAnswer.trim() === blank.expectedAnswer
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };

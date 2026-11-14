@@ -23,6 +23,7 @@ import { hasStatChartToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { hasTrigCircleToPlace } from '$lib/ubumark/parser/trig-circle-parser';
 import { hasRangerToPlace } from '$lib/ubumark/parser/ranger-parser';
+import { hasAssocierToPlace } from '$lib/ubumark/parser/associer-parser';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
 import {
 	hasCubesToBuild,
@@ -180,7 +181,8 @@ function validateVariation(
 			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul),
 			// un bloc ```figure-a-completer aussi (la figure de l'élève), un bloc ```collection
 			// ou ```monnaie à construire aussi (sa réponse est sa valeur), une droite ou une horloge
-			// à placer aussi, un diagramme en barres à construire aussi, des étiquettes à ranger aussi, une figure à colorier aussi,
+			// à placer aussi, un diagramme en barres à construire aussi, des étiquettes à ranger aussi, des éléments à associer aussi,
+			// une figure à colorier aussi,
 			// un assemblage de cubes à geste aussi, un patron à geste aussi, un repère à points
 			// à placer aussi, un cercle trigonométrique à points à placer aussi, un tableau de
 			// signes à compléter aussi (ses cellules cachées)
@@ -195,6 +197,7 @@ function validateVariation(
 				!hasCourbeToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasTrigCircleToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasRangerToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasAssocierToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasPartageToColorier(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCubesToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasPatronsToBuild(String(variation.statement ?? shared?.statement ?? '')) &&

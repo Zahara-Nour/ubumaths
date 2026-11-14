@@ -151,6 +151,9 @@ function nodeLines(node: ASTNode): number {
 			// Bloc ```ranger : la ligne des étiquettes, puis celle des places ; en étapes
 			// (`signe: aucun`), une ligne par étiquette, puis une par place
 			return node.sign === 'aucun' ? 2 * node.labels.length : 2;
+		case 'associer':
+			// Bloc ```associer : une ligne par rangée des deux colonnes
+			return Math.max(node.items.length, node.labels.length);
 		default:
 			// Nœud en ligne isolé : une ligne de texte
 			return inlineLines([node]);
