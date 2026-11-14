@@ -442,4 +442,14 @@
 	math-field[data-sans-menu]::part(menu-toggle) {
 		display: none;
 	}
+
+	/*
+	 * Le texte indicatif : MathLive surligne tout `\text{…}` du champ qui a le
+	 * focus (fond bleu marqué en sombre), consigne comprise. La variable
+	 * calculée par MathLive se redéfinit sur la partie, ses enfants en héritent ;
+	 * le texte tapé par l'élève garde son surlignage.
+	 */
+	math-field::part(placeholder) {
+		--_text-highlight-background-color: transparent;
+	}
 </style>
