@@ -10,21 +10,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après les verdicts du lot 13 (§ 55)._
+_Mis à jour le 2026-11-14, après la publication du lot 13 (§ 57)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 12 publiés (§ 53) ; lot 13 en brouillons rangés et tagués (§ 53), relu 6/6
-  « ok » (§ 55) ; 8 points restants après lui (lots 14 : 473, 496, 497 ; 15 : 517, 529, 537, 538, 539).
-- **Prochaine action** : vérifier en base (MCP) la publication du lot 13 (6 `published`) ; puis lot 14 (Q1 du § 35), même démarche que le lot 13 (§ 52 à 54).
-- **En attente de David** : `publier-lot.ts --dir scripts/questions/tspe-approfondissements-13` (simulation puis
-  `--publier`), après le merge de la PR des `id` (§ 56).
+  § 35, lots 9 à 15) : lots 9 à 13 publiés (§ 57) ; 8 points restants (lot 14 : 473, 496, 497 ; lot 15 : 517, 529,
+  537, 538, 539).
+- **Prochaine action** : lot 14 (équations différentielles et intégrales, Q1 du § 35), même démarche que le lot 13
+  (§ 52 à 57) : script, fichiers, PR ; brouillons (David) ; rangement + `id` commités ; page à cocher ; publication.
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   **les `id` écrits par `create-questions` se commitent dans la PR de rangement** (`page-a-cocher.ts` et
-  `publier-lot.ts` les exigent ; les retirer a bloqué la publication du lot 13, § 56) ; `1x` non nettoyé dans
-  `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable `e` ni `i`** (§ 52).
+  `publier-lot.ts` les exigent, § 56) ; `1x` non nettoyé dans `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable
+  `e` ni `i`** (§ 52) ; `pnpm deploy:prod` en cours = merge bloqué, attendre `lock.py --tenu deploy`.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` ; prochaine branche à créer depuis `origin/main`.
 
 ---
@@ -1037,3 +1037,8 @@ Erreur de ma part : au § 53, j'ai remis les JSON du lot 13 à l'état commité 
 les `id` écrits par `create-questions`, et la PR de rangement (#2645) ne les a pas commités (celle du lot 12 l'avait
 fait). `publier-lot.ts` a donc refusé le lot (« sans id », rien publié). Correctif : PR qui ajoute la ligne `id` des six
 fichiers (ids du § 53). Le piège du § 54 (« `publier-lot.ts` apparie par titre ») était faux : il apparie par `id`.
+
+## 57. Lot 13 : publication (2026-11-14)
+
+`id` commités (#2648). `publier-lot.ts` en simulation puis `--publier`, lancés par David. Relu en base (MCP) : 6
+`published`.
