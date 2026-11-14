@@ -52,6 +52,8 @@ export interface ClassCurriculumPoint {
 
 /** Point rangé dans l'arbre : sa notion et sa branche (`null` si nœud illisible). */
 export interface PlacedCurriculumPoint extends ClassCurriculumPoint {
+	/** Identifiant de la notion (`null` si nœud illisible) : deux notions peuvent porter le même nom. */
+	notion_id: string | null;
 	branch_name: string | null;
 }
 
@@ -120,6 +122,7 @@ export async function placeInTree(
 	return placed.map(({ point, place }) => ({
 		id: point.id,
 		name: point.name,
+		notion_id: place?.notion.id ?? null,
 		notion_name: place?.notion.name ?? null,
 		branch_name: place?.branch.name ?? null
 	}));

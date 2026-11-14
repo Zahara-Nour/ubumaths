@@ -21,6 +21,7 @@
 	import ClassCurriculumPointGrid from '$lib/components/teacher/analytics/ClassCurriculumPointGrid.svelte';
 	import TopCurriculumPointsToRemediate from '$lib/components/teacher/analytics/TopCurriculumPointsToRemediate.svelte';
 	import ClassRegularityGrid from '$lib/components/teacher/analytics/ClassRegularityGrid.svelte';
+	import ClassSuccessRates from '$lib/components/teacher/analytics/ClassSuccessRates.svelte';
 	import StudentRetentionCurve from '$lib/components/teacher/analytics/StudentRetentionCurve.svelte';
 	import ClassCompetenceGrid from '$lib/components/teacher/analytics/ClassCompetenceGrid.svelte';
 	import TopObservablesToConsolidate from '$lib/components/teacher/analytics/TopObservablesToConsolidate.svelte';
@@ -132,6 +133,7 @@
 			<ClassCurriculumPointGrid classId={data.classId} {anonymized} {refreshNonce} />
 
 			<TopCurriculumPointsToRemediate classId={data.classId} {refreshNonce} />
+			<ClassSuccessRates classId={data.classId} {refreshNonce} />
 			<ClassRegularityGrid classId={data.classId} {anonymized} {refreshNonce} />
 
 			{#if data.students.length > 0}
