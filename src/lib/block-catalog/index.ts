@@ -24,6 +24,7 @@ import { qrEntry } from './qr';
 import { scratchEntry } from './scratch';
 import { rangerEntry } from './ranger';
 import { associerEntry } from './associer';
+import { trousEntry } from './trous';
 import { boxPlotEntry, statChartEntry } from './stat-chart';
 import { trigEntry } from './trig';
 import { variationEntry } from './variation';
@@ -52,6 +53,7 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	patronEntry,
 	rangerEntry,
 	associerEntry,
+	trousEntry,
 	operationEntry,
 	trigEntry,
 	scratchEntry

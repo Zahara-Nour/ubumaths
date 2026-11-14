@@ -30,6 +30,7 @@ export type CatalogNodeType =
 	| 'operation'
 	| 'ranger'
 	| 'associer'
+	| 'trous'
 	| 'collection'
 	| 'monnaie'
 	| 'schema-barres';
