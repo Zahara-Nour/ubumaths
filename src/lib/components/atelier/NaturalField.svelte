@@ -444,12 +444,14 @@
 	}
 
 	/*
-	 * Le texte indicatif : MathLive surligne tout `\text{…}` du champ qui a le
-	 * focus (fond bleu marqué en sombre), consigne comprise. La variable
-	 * calculée par MathLive se redéfinit sur la partie, ses enfants en héritent ;
-	 * le texte tapé par l'élève garde son surlignage.
+	 * MathLive surligne tout `\text{…}` du champ qui a le focus (fond bleu
+	 * marqué en sombre), consigne comprise : les mots (« sur », « ou ») y
+	 * paraissaient sélectionnés. Deux variables publiques, une par thème
+	 * (`--highlight-text` en clair, `--text-highlight-background-color` en
+	 * sombre) : elles traversent le shadow DOM par héritage.
 	 */
-	math-field::part(placeholder) {
-		--_text-highlight-background-color: transparent;
+	math-field {
+		--highlight-text: transparent;
+		--text-highlight-background-color: transparent;
 	}
 </style>
