@@ -1,0 +1,260 @@
+{
+	"title": "Courbe de Lorenz et indice de Gini",
+	"description": "Définition de la courbe de Lorenz et de l'indice de Gini donnée : fonction qui peut être une fonction de Lorenz (case choix), indice de Gini pour L(x) = x^k (case), pour L(x) = ax² + (1 − a)x (case), lecture de L(0,2) = 0,05 (case choix)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On range la population d'un pays par revenus croissants. Pour $x\\in[0;1]$, $L(x)$ est la part du revenu total perçue par la proportion $x$ de la population aux revenus les plus faibles. La courbe de $L$ est la **courbe de Lorenz** ; on admet que $L(0)=0$, $L(1)=1$, que $L$ est croissante et convexe sur $[0;1]$, et que $L(x)\\leqslant x$. L'**indice de Gini** est $G=1-2\\displaystyle\\int_0^1L(x)\\,\\mathrm{d}x$ : il vaut $0$ quand les revenus sont égaux.\n\nLaquelle de ces fonctions, définies sur $[0;1]$, peut être une fonction de Lorenz ?\n\n```choix\n- $L(x)=x^{{{eval:k}}}$\n- $L(x)=\\sqrt{x}$\n- $L(x)=\\dfrac{x}{2}$\n- $L(x)=2x-x^2$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|4|6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x\\mapsto\\dfrac{x}{2}$ ne convient pas : $L(1)$ doit valoir $1$.",
+					"$x\\mapsto\\sqrt{x}$ et $x\\mapsto 2x-x^2$ sont concaves, et leur courbe passe au-dessus de la droite $y=x$ : elles donneraient aux plus pauvres plus que leur part.",
+					"$x\\mapsto x^{{{eval:k}}}$ vaut $0$ en $0$, $1$ en $1$, est croissante, convexe (dérivée seconde positive) et $x^{{{eval:k}}}\\leqslant x$ sur $[0;1]$ : $\\textcolor{{{color:primary.0}}}{L(x)=x^{{{eval:k}}}}$ convient."
+				]
+			}
+		},
+		{
+			"statement": "On range la population d'un pays par revenus croissants. Pour $x\\in[0;1]$, $L(x)$ est la part du revenu total perçue par la proportion $x$ de la population aux revenus les plus faibles. La courbe de $L$ est la **courbe de Lorenz** ; on admet que $L(0)=0$, $L(1)=1$, que $L$ est croissante et convexe sur $[0;1]$, et que $L(x)\\leqslant x$. L'**indice de Gini** est $G=1-2\\displaystyle\\int_0^1L(x)\\,\\mathrm{d}x$ : il vaut $0$ quand les revenus sont égaux.\n\nDans un pays, $L(x)=x^{{{eval:k}}}$. Calcule son indice de Gini.\n\n$G=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|4|6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k-1)/(k+1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\int_0^1x^{{{eval:k}}}\\,\\mathrm{d}x=\\left[\\dfrac{x^{{{eval:k+1}}}}{{{eval:k+1}}}\\right]_0^1=\\dfrac{1}{{{eval:k+1}}}$.",
+					"$G=1-\\dfrac{2}{{{eval:k+1}}}=\\dfrac{{{eval:k-1}}}{{{eval:k+1}}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{G=\\dfrac{{{eval:k-1}}}{{{eval:k+1}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On range la population d'un pays par revenus croissants. Pour $x\\in[0;1]$, $L(x)$ est la part du revenu total perçue par la proportion $x$ de la population aux revenus les plus faibles. La courbe de $L$ est la **courbe de Lorenz** ; on admet que $L(0)=0$, $L(1)=1$, que $L$ est croissante et convexe sur $[0;1]$, et que $L(x)\\leqslant x$. L'**indice de Gini** est $G=1-2\\displaystyle\\int_0^1L(x)\\,\\mathrm{d}x$ : il vaut $0$ quand les revenus sont égaux.\n\nDans un pays, $L(x)=\\dfrac{{{eval:p}}}{{{eval:q}}}x^2+\\dfrac{{{eval:q-p}}}{{{eval:q}}}x$. Calcule son indice de Gini.\n\n$G=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..{{eval:q-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p/(3*q)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\int_0^1L(x)\\,\\mathrm{d}x=\\dfrac{{{eval:p}}}{{{eval:q}}}\\times\\dfrac{1}{3}+\\dfrac{{{eval:q-p}}}{{{eval:q}}}\\times\\dfrac{1}{2}$.",
+					"$G=1-\\dfrac{2\\times{{eval:p}}}{3\\times{{eval:q}}}-\\dfrac{{{eval:q-p}}}{{{eval:q}}}=\\dfrac{{{eval:p}}}{{{eval:q}}}-\\dfrac{2\\times{{eval:p}}}{3\\times{{eval:q}}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{G=\\dfrac{{{eval:p}}}{3\\times{{eval:q}}}={{eval:p/(3*q)}}}$."
+				]
+			},
+			"conditions": ["gcd(p,q) == 1"]
+		},
+		{
+			"statement": "On range la population d'un pays par revenus croissants. Pour $x\\in[0;1]$, $L(x)$ est la part du revenu total perçue par la proportion $x$ de la population aux revenus les plus faibles. La courbe de $L$ est la **courbe de Lorenz** ; on admet que $L(0)=0$, $L(1)=1$, que $L$ est croissante et convexe sur $[0;1]$, et que $L(x)\\leqslant x$. L'**indice de Gini** est $G=1-2\\displaystyle\\int_0^1L(x)\\,\\mathrm{d}x$ : il vaut $0$ quand les revenus sont égaux.\n\nDans un pays, $L(0{,}2)=0{,}05$. Que signifie cette égalité ?\n\n```choix\n- Les $20\\,\\%$ de la population aux revenus les plus faibles perçoivent $5\\,\\%$ du revenu total\n- Les $5\\,\\%$ de la population aux revenus les plus faibles perçoivent $20\\,\\%$ du revenu total\n- Les $20\\,\\%$ de la population aux revenus les plus élevés perçoivent $5\\,\\%$ du revenu total\n- Le revenu des $20\\,\\%$ les plus pauvres a augmenté de $5\\,\\%$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x=0{,}2$ est une **proportion de la population**, prise parmi les revenus les plus faibles.",
+					"$L(0{,}2)=0{,}05$ est la **part du revenu total** qu'elle perçoit.",
+					"Donc $\\textcolor{{{color:primary.0}}}{20\\,\\%}$ des habitants, les moins riches, perçoivent $\\textcolor{{{color:primary.0}}}{5\\,\\%}$ du revenu total."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x^k",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racine (concave)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x/2 (L(1) ≠ 1)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2x − x² (concave)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "G = 3/5",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["\\frac{3}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : intégrale seule",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["\\frac{1}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 − intégrale",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["\\frac{4}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "G = 1/6",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"p": "2"
+			},
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "G = 1/4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"p": "3"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p/q",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"p": "3"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : intégrale",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"p": "3"
+			},
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "20 % les plus pauvres, 5 %",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inversé",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les plus riches",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : augmentation",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

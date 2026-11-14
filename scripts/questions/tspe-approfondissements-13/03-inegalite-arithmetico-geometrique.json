@@ -1,0 +1,204 @@
+{
+	"title": "Inégalité arithmético-géométrique",
+	"description": "Inégalité donnée par la concavité de ln (case choix), passage à la moyenne géométrique par l'exponentielle (case choix), minimum de x + m²/x (deux cases), démonstration (étapes à ranger)",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La fonction $\\ln$ est concave sur $]0;+\\infty[$ : sa courbe est au-dessus de ses cordes. Soit $a$ et $b$ deux réels strictement positifs.\n\nQuelle inégalité obtient-on en comparant la courbe et la corde au point d'abscisse $\\dfrac{a+b}{2}$ ?\n\n```choix\n- $\\ln\\left(\\dfrac{a+b}{2}\\right)\\geqslant\\dfrac{\\ln(a)+\\ln(b)}{2}$\n- $\\ln\\left(\\dfrac{a+b}{2}\\right)\\leqslant\\dfrac{\\ln(a)+\\ln(b)}{2}$\n- $\\ln\\left(\\dfrac{a+b}{2}\\right)\\geqslant\\ln(a)+\\ln(b)$\n- $\\ln(a+b)\\geqslant\\ln(a)+\\ln(b)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La corde joint les points d'abscisses $a$ et $b$ ; en son milieu, d'abscisse $\\dfrac{a+b}{2}$, son ordonnée est $\\dfrac{\\ln(a)+\\ln(b)}{2}$.",
+					"La courbe d'une fonction concave est au-dessus de ses cordes.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\ln\\left(\\dfrac{a+b}{2}\\right)\\geqslant\\dfrac{\\ln(a)+\\ln(b)}{2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ et $b$ deux réels strictement positifs. On a montré que $\\ln\\left(\\dfrac{a+b}{2}\\right)\\geqslant\\dfrac{\\ln(a)+\\ln(b)}{2}$.\n\nPourquoi en déduit-on que $\\dfrac{a+b}{2}\\geqslant\\sqrt{ab}$ ?\n\n```choix\n- $\\dfrac{\\ln(a)+\\ln(b)}{2}=\\ln\\left(\\sqrt{ab}\\right)$ et la fonction exponentielle est croissante\n- La fonction $\\ln$ est concave\n- $\\dfrac{a+b}{2}$ et $\\sqrt{ab}$ sont positifs\n- La fonction racine carrée est croissante\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{\\ln(a)+\\ln(b)}{2}=\\dfrac{1}{2}\\ln(ab)=\\ln\\left(\\sqrt{ab}\\right)$.",
+					"L'inégalité s'écrit $\\ln\\left(\\dfrac{a+b}{2}\\right)\\geqslant\\ln\\left(\\sqrt{ab}\\right)$ ; on compose par la fonction exponentielle, croissante.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\dfrac{a+b}{2}\\geqslant\\sqrt{ab}}$ : la moyenne arithmétique dépasse la moyenne géométrique."
+				]
+			}
+		},
+		{
+			"statement": "On admet l'inégalité arithmético-géométrique : pour tous réels $a>0$ et $b>0$, $\\dfrac{a+b}{2}\\geqslant\\sqrt{ab}$, avec égalité si et seulement si $a=b$.\n\nLa fonction $f$ est définie sur $]0;+\\infty[$ par $f(x)=x+\\dfrac{{{eval:m^2}}}{x}$.\n\nComplète : pour tout $x>0$, $f(x)\\geqslant ?$, avec égalité pour $x=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*m}}"
+				},
+				{
+					"expectedAnswer": "{{eval:m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $a=x$ et $b=\\dfrac{{{eval:m^2}}}{x}$ : $\\dfrac{f(x)}{2}\\geqslant\\sqrt{x\\times\\dfrac{{{eval:m^2}}}{x}}=\\sqrt{{{eval:m^2}}}={{eval:m}}$.",
+					"Égalité si et seulement si $x=\\dfrac{{{eval:m^2}}}{x}$, soit $x^2={{eval:m^2}}$ et $x={{eval:m}}$ (car $x>0$).",
+					"Donc $\\textcolor{{{color:primary.0}}}{f(x)\\geqslant {{eval:2*m}}}$, avec égalité pour $\\textcolor{{{color:primary.0}}}{x={{eval:m}}}$ : le minimum de $f$ est ${{eval:2*m}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ et $b$ deux réels strictement positifs. On démontre l'inégalité arithmético-géométrique $\\dfrac{a+b}{2}\\geqslant\\sqrt{ab}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour $x>0$, $\\ln''(x)=-\\dfrac{1}{x^2}<0$ : $\\ln$ est concave sur $]0;+\\infty[$.\n- Sa courbe est au-dessus de ses cordes : $\\ln\\left(\\dfrac{a+b}{2}\\right)\\geqslant\\dfrac{\\ln(a)+\\ln(b)}{2}$.\n- Or $\\dfrac{\\ln(a)+\\ln(b)}{2}=\\ln\\left(\\sqrt{ab}\\right)$, donc $\\ln\\left(\\dfrac{a+b}{2}\\right)\\geqslant\\ln\\left(\\sqrt{ab}\\right)$.\n- La fonction exponentielle est croissante : on compose les deux membres par elle.\n- Donc $\\dfrac{a+b}{2}\\geqslant\\sqrt{ab}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"La concavité de $\\ln$ compare le logarithme de la moyenne à la moyenne des logarithmes.",
+					"La croissance de l'exponentielle ramène aux nombres eux-mêmes : $\\textcolor{{{color:primary.0}}}{\\dfrac{a+b}{2}\\geqslant\\sqrt{ab}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "au-dessus de la corde",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens inversé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme des ln",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln(a + b)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ln√(ab) et exp croissante",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : concavité",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : positivité",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : racine croissante",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "min 10 en 5",
+			"variationIndex": 2,
+			"variables": {
+				"m": "5"
+			},
+			"answers": ["10", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : m au lieu de 2m",
+			"variationIndex": 2,
+			"variables": {
+				"m": "5"
+			},
+			"answers": ["5", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x = m²",
+			"variationIndex": 2,
+			"variables": {
+				"m": "5"
+			},
+			"answers": ["10", "25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

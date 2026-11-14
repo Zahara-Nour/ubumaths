@@ -1,0 +1,264 @@
+{
+	"title": "Fonction tangente : propriétés, dérivée, tangente",
+	"description": "Définition donnée : parité et périodicité (case choix), dérivée par le quotient (case), nombre dérivé en π/6, π/4 ou π/3 (case), tangente en π/4 (deux cases), variations sur ]−π/2 ; π/2[ (case choix)",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La fonction **tangente** est définie par $\\tan(x)=\\dfrac{\\sin(x)}{\\cos(x)}$ pour tout réel $x$ tel que $\\cos(x)\\neq 0$, c'est-à-dire $x\\neq\\dfrac{\\pi}{2}+k\\pi$, $k\\in\\mathbb{Z}$.\n\nQuelle phrase est vraie ?\n\n```choix\n- La fonction tangente est impaire et $\\pi$-périodique\n- La fonction tangente est paire et $\\pi$-périodique\n- La fonction tangente est définie sur $\\mathbb{R}$ et impaire\n- La fonction tangente est bornée et $\\pi$-périodique\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\tan(-x)=\\dfrac{\\sin(-x)}{\\cos(-x)}=\\dfrac{-\\sin(x)}{\\cos(x)}=-\\tan(x)$ : elle est impaire.",
+					"$\\sin(x+\\pi)=-\\sin(x)$ et $\\cos(x+\\pi)=-\\cos(x)$, donc $\\tan(x+\\pi)=\\tan(x)$.",
+					"Elle n'est ni définie sur $\\mathbb{R}$ ni bornée (limites infinies en $\\dfrac{\\pi}{2}$) : $\\textcolor{{{color:primary.0}}}{\\text{impaire et }\\pi\\text{-périodique}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction **tangente** est définie par $\\tan(x)=\\dfrac{\\sin(x)}{\\cos(x)}$ pour tout réel $x$ tel que $\\cos(x)\\neq 0$, c'est-à-dire $x\\neq\\dfrac{\\pi}{2}+k\\pi$, $k\\in\\mathbb{Z}$.\n\nOn dérive $\\tan$ comme un quotient. Complète.\n\n$\\tan'(x)=\\dfrac{?}{\\cos^2(x)}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\tan'(x)=\\dfrac{\\cos(x)\\times\\cos(x)-\\sin(x)\\times(-\\sin(x))}{\\cos^2(x)}=\\dfrac{\\cos^2(x)+\\sin^2(x)}{\\cos^2(x)}$.",
+					"Or $\\cos^2(x)+\\sin^2(x)=1$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\tan'(x)=\\dfrac{1}{\\cos^2(x)}}=1+\\tan^2(x)$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction **tangente** est définie par $\\tan(x)=\\dfrac{\\sin(x)}{\\cos(x)}$ pour tout réel $x$ tel que $\\cos(x)\\neq 0$, c'est-à-dire $x\\neq\\dfrac{\\pi}{2}+k\\pi$, $k\\in\\mathbb{Z}$. On admet que $\\tan'(x)=\\dfrac{1}{\\cos^2(x)}$.\n\nCalcule le nombre dérivé suivant.\n\n$\\tan'\\left({{if:r==0|\\dfrac{\\pi}{6}|{{if:r==1|\\dfrac{\\pi}{4}|\\dfrac{\\pi}{3}}}}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:r==0|\\frac{4}{3}|{{if:r==1|2|4}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos\\left({{if:r==0|\\dfrac{\\pi}{6}|{{if:r==1|\\dfrac{\\pi}{4}|\\dfrac{\\pi}{3}}}}}\\right)={{if:r==0|\\dfrac{\\sqrt{3}}{2}|{{if:r==1|\\dfrac{\\sqrt{2}}{2}|\\dfrac{1}{2}}}}}$, donc $\\cos^2\\left({{if:r==0|\\dfrac{\\pi}{6}|{{if:r==1|\\dfrac{\\pi}{4}|\\dfrac{\\pi}{3}}}}}\\right)={{if:r==0|\\dfrac{3}{4}|{{if:r==1|\\dfrac{1}{2}|\\dfrac{1}{4}}}}}$.",
+					"$\\tan'\\left({{if:r==0|\\dfrac{\\pi}{6}|{{if:r==1|\\dfrac{\\pi}{4}|\\dfrac{\\pi}{3}}}}}\\right)=\\dfrac{1}{{{if:r==0|\\dfrac{3}{4}|{{if:r==1|\\dfrac{1}{2}|\\dfrac{1}{4}}}}}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\tan'\\left({{if:r==0|\\dfrac{\\pi}{6}|{{if:r==1|\\dfrac{\\pi}{4}|\\dfrac{\\pi}{3}}}}}\\right)={{if:r==0|\\frac{4}{3}|{{if:r==1|2|4}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction **tangente** est définie par $\\tan(x)=\\dfrac{\\sin(x)}{\\cos(x)}$ pour tout réel $x$ tel que $\\cos(x)\\neq 0$, c'est-à-dire $x\\neq\\dfrac{\\pi}{2}+k\\pi$, $k\\in\\mathbb{Z}$. On admet que $\\tan'(x)=\\dfrac{1}{\\cos^2(x)}$.\n\nDonne l'équation de la tangente à la courbe de $\\tan$ au point d'abscisse $\\dfrac{\\pi}{4}$.\n\n$y=?x+?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "1-\\frac{\\pi}{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\tan\\left(\\dfrac{\\pi}{4}\\right)=1$ et $\\tan'\\left(\\dfrac{\\pi}{4}\\right)=\\dfrac{1}{\\left(\\frac{\\sqrt{2}}{2}\\right)^2}=2$.",
+					"La tangente a pour équation $y=2\\left(x-\\dfrac{\\pi}{4}\\right)+1$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{y=2x+1-\\dfrac{\\pi}{2}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction **tangente** est définie par $\\tan(x)=\\dfrac{\\sin(x)}{\\cos(x)}$ pour tout réel $x$ tel que $\\cos(x)\\neq 0$, c'est-à-dire $x\\neq\\dfrac{\\pi}{2}+k\\pi$, $k\\in\\mathbb{Z}$.\n\nQuelle phrase décrit la fonction tangente sur $\\left]-\\dfrac{\\pi}{2};\\dfrac{\\pi}{2}\\right[$ ?\n\n```choix\n- Elle est strictement croissante, de limite $+\\infty$ en $\\dfrac{\\pi}{2}$ à gauche\n- Elle est strictement décroissante, de limite $-\\infty$ en $\\dfrac{\\pi}{2}$ à gauche\n- Elle est strictement croissante, de limite $1$ en $\\dfrac{\\pi}{2}$ à gauche\n- Elle admet un maximum en $0$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\tan'(x)=\\dfrac{1}{\\cos^2(x)}>0$ : la fonction est strictement croissante.",
+					"Quand $x\\to\\dfrac{\\pi}{2}$ à gauche, $\\sin(x)\\to 1$ et $\\cos(x)\\to 0$ en restant positif : le quotient tend vers $+\\infty$.",
+					"Donc elle est $\\textcolor{{{color:primary.0}}}{\\text{strictement croissante, de limite }+\\infty}$ en $\\dfrac{\\pi}{2}$ à gauche."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "impaire, π-périodique",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : paire",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : définie sur R",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bornée",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sin² − cos²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\sin^2(x)-\\cos^2(x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "tan′(π/3) = 4",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "tan′(π/6) = 4/3",
+			"variationIndex": 2,
+			"variables": {
+				"r": "0"
+			},
+			"answers": ["\\frac{4}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cos² au lieu de 1/cos²",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/cos",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = 2x + 1 − π/2",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2", "1-\\frac{\\pi}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordonnée à l'origine 1",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pente 1",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1", "1-\\frac{\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "croissante, +∞",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décroissante",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : limite 1",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : maximum en 0",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
