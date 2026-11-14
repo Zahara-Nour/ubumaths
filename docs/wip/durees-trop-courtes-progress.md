@@ -7,9 +7,9 @@ Suite prévue : A1 (durées ajustées au temps observé), chantier à part.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, phase 0._
+_Mis à jour le 2026-11-14, phase 0 tranchée, plan de la PR 1 écrit._
 
-- **État** : état des lieux fait, comportements et questions Q1 à Q5 posés (§ « Phase 0 ») · **Prochaine action** : plan technique de la PR 1 après les réponses · **En attente de David** : Q1 à Q5 · **Pièges en cours** : prod presque vide (aucune trace chronométrée, 1 contrôle, 101 réponses) : tout se vérifie en local · **Worktree / branche** : `../ubumaths-wt-durees-trop-courtes`, `feat/durees-trop-courtes`
+- **État** : Q1 à Q5 tranchées (recommandations suivies), plan technique de la PR 1 écrit (§ « PR 1 — plan technique ») · **Prochaine action** : coder la PR 1 (tests d'abord) · **En attente de David** : rien (défaut noté D1 dans le plan, à contester s'il le veut) · **Pièges en cours** : prod presque vide (aucune trace chronométrée, 1 contrôle, 101 réponses) : tout se vérifie en local ; `test_answers` ne garde ni la fin (`endReason`) ni la durée de la question · **Worktree / branche** : `../ubumaths-wt-durees-trop-courtes`, `feat/durees-trop-courtes`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -44,7 +44,46 @@ _Mis à jour le 2026-11-14, phase 0._
 - **Erreur** : lecture en échec → pas de marque, la page reste (le bilan et l'éditeur ne dépendent pas
   du signal).
 
-## Questions à David (phase 0, posées le 2026-11-14)
+## Décisions (David, 2026-11-14 : « je te suis » aux recommandations)
+
+- **Q1** : « rien répondu » = temps écoulé **sans rien saisi** ; une réponse commencée ne compte pas.
+  Seuils : au moins **5 élèves** à cette durée, **plus de la moitié**.
+- **Q2** : grain **modèle × durée**.
+- **Q3** : PR 1 = **bilan d'un contrôle** ; PR 2 = **éditeur de série** (à côté de la durée de chaque
+  ligne). Pas l'analytique de classe.
+- **Q4** : **Course aux nombres hors du signal** (chrono global).
+- **Q5** : **aucune durée suggérée** (c'est A1).
+
+## PR 1 — plan technique (2026-11-14)
+
+Aucune migration. Contrôles de forme `interactive` seulement (Q4). Mêmes copies que le bilan
+(`bestCopies` : la meilleure de chaque élève, copies rendues, mode test respecté).
+
+- **Ce qu'on sait d'une réponse de contrôle** : `test_answers` garde le statut (« sans réponse » = statut
+  nul ou inconnu, règle du bilan, `columnOf`) et `time_spent` (secondes déclarées par la page), **pas**
+  la fin ni la durée de la question. La durée vient de la **composition de la série** du contrôle
+  (`series.items`, lignes `{ templateId, delay }`), fiable : la série est verrouillée dès qu'une séance
+  commence (`series_lock_guard`).
+- **« Rien répondu à temps »** = réponse « sans réponse » **et** `time_spent ≥ délai − 1 s` (secondes
+  entières déclarées). Une réponse vide validée tôt (« Valider » à vide) n'est pas un manque de temps.
+- **D1 (défaut de Claude, non tranché)** : un modèle présent sur **deux lignes à durées différentes**
+  dans la même série → pas de signal pour ce modèle dans ce contrôle (on ne sait pas quelle durée chaque
+  élève a eue sans lire `evaluation_attempt_questions`, réservée au service). Cas rare.
+- **Code** : `src/lib/server/evaluation-breakdown.ts` — la lecture des réponses gagne `time_spent` ; une
+  fonction pure `tooShortOf(rows, delays)` rend, par modèle, `{ delaySeconds, students, unansweredInTime }`
+  et `tooShort` (≥ 5 élèves **et** > moitié). Chaque élève compte une fois par modèle (plusieurs tirages
+  du même modèle dans la copie : il compte s'il a manqué **au moins la moitié** de ses tirages — à
+  vérifier contre le bilan, qui additionne les tirages).
+- **Rendu** : `EvaluationBreakdown.svelte`, ligne du modèle : marque « Durée sans doute trop courte »
+  et « 7 élèves sur 10 n'ont rien répondu dans les 20 s » ; aucun nom ; rien sous le seuil ; Course :
+  rien.
+- **Tests** (rouges d'abord) : pure (seuil 5, moitié stricte, vide validé tôt écarté, réponse commencée
+  écartée, D1, plusieurs tirages) ; bilan (course sans signal, lecture `time_spent`) ; rendu (marque,
+  phrase, absente sous le seuil).
+- **Revue** : `code-reviewer` (données d'élèves agrégées, aucune nouvelle lecture d'accès) ;
+  `security-auditor` seulement si une lecture nouvelle apparaît. **Doc** : `evaluations.md` § Résultats.
+
+## Questions à David (phase 0, posées le 2026-11-14 — tranchées ci-dessus)
 
 - **Q1 — « Rien répondu »** : seulement le chrono écoulé **sans rien saisi** (proposé) ? Ou aussi le
   chrono écoulé avec une réponse **commencée** (validée d'office à 0 s) ? Et les seuils : 5 élèves au
@@ -61,4 +100,5 @@ _Mis à jour le 2026-11-14, phase 0._
 
 ## Journal
 
+- 2026-11-14 : phase 0 tranchée (« je te suis »), plan technique de la PR 1, défaut D1.
 - 2026-11-14 : chantier ouvert, état des lieux, phase 0 posée (Q1 à Q5).
