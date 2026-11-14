@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2630 (lot 11 rangé, page à cocher publiée)._
+_Mis à jour le 2026-11-14, après #2630 (lot 11 rangé et relu 4/4 OK)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
   § 35, lots 9 à 15) : lots 9 et 10 publiés, lot 11 rangé en prod, en `draft` (#2630, § 45), 19 restants après lui.
-- **Prochaine action** : lot 11, lire les verdicts de la page à cocher (§ 46, `ArtifactData list verdicts`), puis
-  `publier-lot.ts` lancé par David ; puis lot 12.
-- **En attente de David** : relecture du lot 11 sur la page à cocher (§ 46).
+- **Prochaine action** : lot 11, David lance `publier-lot.ts` (simulation puis `--publier`, § 47) ; relire 4
+  `published` (MCP) ; puis lot 12.
+- **En attente de David** : `publier-lot.ts --publier` du lot 11.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -921,3 +921,8 @@ JSON du dépôt principal remis à l'état commité.
 sur son point, 3 ou 4 exemples chacun ; alertes « bloc ranger non dessiné » sur 394 et 571 (habituelles, étapes vues
 dans l'aperçu admin, § 44). Page : https://claude.ai/artifact/PgMJ1EGTsjS9bvEtZX15Ve (capacité `db`) ; base
 `verdicts` vide à la publication. Rendu vu dans Chrome (largeur 900 px, le passage à 390 px n'a pas pris).
+
+## 47. Lot 11 : publication (2026-11-14)
+
+Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 45). `publier-lot.ts` en simulation puis `--publier`, à
+lancer par David.
