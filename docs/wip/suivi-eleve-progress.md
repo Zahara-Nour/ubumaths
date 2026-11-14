@@ -7,9 +7,9 @@ validés ») : « P8 page de suivi d'un élève · P9 distinguer prouvé (corrig
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, ouverture._
+_Mis à jour le 2026-11-14, phase 0 tranchée._
 
-- **État** : phase 0, état des lieux fait, questions posées (§ Questions à David) · **Prochaine action** : attendre les réponses de David, puis plan technique de la PR 1 · **En attente de David** : Q1 à Q6 · **Pièges en cours** : prod presque sans traces avec réponse (cf. `erreurs-frequentes`) · **Worktree / branche** : `../ubumaths-wt-suivi-eleve`, `feat/suivi-eleve`
+- **État** : phase 0 tranchée (Q1 à Q6, recommandations validées), plan technique de la PR 1 écrit · **Prochaine action** : PR 1 — tests rouges puis code (§ PR 1 — plan technique) · **En attente de David** : rien · **Pièges en cours** : prod presque sans traces avec réponse ; la grille A lit `skill_attempts` sans pagination (plafond PostgREST), ne pas recopier · **Worktree / branche** : `../ubumaths-wt-suivi-eleve`, `feat/suivi-eleve`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -47,7 +47,51 @@ _Mis à jour le 2026-11-14, ouverture._
 - **Erreur** : élève qui n'est pas au prof → 403 ; une lecture en échec → le bloc le dit, les autres
   restent.
 
-## Questions à David (phase 0, posées le 2026-11-14)
+## Décisions (David, 2026-11-14 : « ok » aux recommandations)
+
+- **Q1** : nouvelle page `/dashboard/teacher/students/[studentId]` ; le nom de l'élève dans la liste des
+  classes l'ouvre (élèves en classe **et** section « Élèves non assignés ») ; l'icône du journal des
+  récompenses reste à côté.
+- **Q2** : quatre blocs (points, contrôles, régularité, compétences), **pas** d'erreurs pour l'instant.
+- **Q3** : deux comptes par point, sur la page de l'élève **seulement** (rien dans la grille A).
+  **Prouvé** = `auto` + `teacher` (un adulte ou l'appli a jugé) ; **déclaré** = `student_self` + anciennes `srs`.
+- **Q4** : badge inchangé (celui de la grille A, déclaré compris, ADR 0016).
+- **Q5** : aucune date.
+- **Q6** : prof seulement, **admin refusé** (comme l'analytique). PR 1 = page + bloc « Points du
+  programme » (P8 + P9) ; PR 2 = contrôles, régularité, compétences, lien depuis la grille A.
+
+## PR 1 — plan technique (2026-11-14)
+
+Aucune migration : le prof lit déjà les traces (`skill_attempts_select_teacher`, `is_my_student`) et la
+mémoire FSRS (`Teachers can view card stats of their students`) de ses élèves.
+
+- **Serveur** `src/lib/server/stats/student-follow-up.ts` :
+  - `buildStudentPointFollowUp` (pur, testé seul) : traces + liens modèle → point + états FSRS → une
+    entrée par point : badge (même règle que la grille A : pire badge des modèles du point), comptes
+    `proved = { done, succeeded }`, `declared = { done, succeeded }`, `onlyDeclared`. Trace sans verdict
+    (`success` NULL) : comptée nulle part ; origine inconnue : comptée nulle part, journalisée.
+  - `getStudentPointFollowUp(supabase, studentId)` : niveau = `profiles.grade` de l'élève ; traces
+    (`template_id, source, success`) **paginées** (`readInBatches` ou `.range`, tri sur `id`) ; liens
+    `question_template_points` par lots (`fetchInChunks`), points vivants (`isLivePoint`) du niveau
+    (`keepLinksOfGrade`) ; `srs_card_stats` de l'élève ; rangement par `placeInTree`, avec branche et
+    notion. `isLivePoint` et `placeInTree` sortent de `class-knowledge.ts` (exportés, la grille A les
+    garde) ; `placeInTree` rend aussi le nom de la branche.
+- **Route** `/dashboard/teacher/students/[studentId]/+page.server.ts` : `requireRole('teacher')` (admin
+  refusé) · Zod UUID → 400 · `verifyTeacherStudent` → 403 · profil (prénom, nom) ; lecture des points en
+  échec → `pointsError`, la page reste.
+- **Page** `+page.svelte` : `BackLink` vers les classes · « Suivi de <prénom nom> » · bloc « Points du
+  programme » groupé par branche puis notion ; chaque point : nom (`InlineMarkdown`), badge, « Corrigé :
+  4 réussies sur 6 · Déclaré : 3 réussies sur 3 », marque « seulement déclaré » ; vide : « Pas encore de
+  point travaillé. » ; lien vers le journal des récompenses (`?depuis=suivi`, retour vers le suivi).
+- **Liens** : `studentFollowUpHref` dans `return-links.ts` ; liste des classes : le nom de l'élève
+  (en classe et hors classe) mène au suivi.
+- **Tests** : `buildStudentPointFollowUp` (comptes, seulement déclaré, NULL, origine inconnue, point
+  d'un autre niveau écarté, archivé écarté) ; loader (400, 403 non-élève, admin refusé, échec de
+  lecture) ; rendu de la page (groupes, comptes, marque, vide, erreur) ; retour du journal `?depuis=suivi`.
+- **Revue** : `code-reviewer` + `security-auditor` (données d'élèves, nouvelle route). **Doc** :
+  section « Suivi d'un élève » dans `docs/systeme/analytique-prof.md` (ou doc à part si elle grossit).
+
+## Questions à David (phase 0, posées le 2026-11-14 — tranchées ci-dessus)
 
 - **Q1 — Où et quoi** : une **nouvelle page** `/dashboard/teacher/students/[studentId]` (le journal des
   récompenses reste à part, lié depuis elle), ouverte depuis la liste des classes et la grille A ? Et pour
@@ -68,4 +112,5 @@ _Mis à jour le 2026-11-14, ouverture._
 
 ## Journal
 
+- 2026-11-14 : phase 0 tranchée (recommandations validées), plan technique de la PR 1.
 - 2026-11-14 : chantier ouvert, état des lieux, questions de phase 0.
