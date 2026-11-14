@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 2 codé, PR pas encore ouverte._
+_Mis à jour le 2026-11-14, PR #2637 ouverte (lot 2), CI en cours._
 
-- **État** : lot 2 (` ```courbe ` dans un élément) codé et commité sur `feat/associer-courbe` (pas poussé) ; tests verts (13 725), `check:incremental`, `types:cliquet`, `lint:fast`, garde doc OK ; bug du lot 1 corrigé (associer d'une série imprimé en code) · **Prochaine action** : revue faite et corrigée ; PR ouverte → suivre la CI, merger, puis vérification manuelle (relier une courbe au téléphone) · **En attente de David** : niveau du modèle « graphique ↔ expression » (pas répondu) ; relecture de B11 s'il le souhaite · **Pièges en cours** : la courbe exige `x:` et `y:` (sinon « Figure indisponible ») ; Typst d'une courbe non compilable en test (cetz, réseau) ; serveur de test : port 5177 (5176 pris) · **Worktree / branche** : `ubumaths-wt-associer` · `feat/associer-courbe`
+- **État** : lot 2 (` ```courbe ` dans un élément) codé, revu (opus, 3 points corrigés), PR #2637 ouverte ; bug du lot 1 corrigé dans la même PR (associer d'une série imprimé en code) · **Prochaine action** : `gh pr checks 2637` → verte : merger (`gh pr merge 2637 --merge`), rouge : corriger ; puis noter la vérification manuelle (relier une courbe au téléphone) et ouvrir le modèle « courbe ↔ expression » · **Tranché** : niveau 2de (fonctions de référence : carré, inverse, racine, cube ; intrus $x \mapsto x$ ; sans variables ; geste relier), PR de contenu séparée, brouillon publié par David (« ok » de David aux recos) · **En attente de David** : un second modèle 3e (affines à coefficients tirés) en plus, ou la 2de seule ? (pas répondu, à reposer) · **Pièges en cours** : la courbe exige `x:` et `y:` ; Typst d'une courbe non compilable en test (cetz, réseau) · **Worktree / branche** : `ubumaths-wt-associer` · `feat/associer-courbe`
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -177,3 +177,5 @@ Ensuite (même chantier) : un modèle « graphique ↔ expression » à écrire,
   le générateur donnait d'autres messages que l'aperçu) → blocs du premier niveau cherchés sur les lignes
   intactes, message de clôture posé par `assignBlankIndices` ; texte sur plusieurs lignes sans bloc
   accepté → refusé ; réglage en retrait après un élément → message sur le retrait.
+- 2026-11-14 : PR #2637 ouverte. Modèle « courbe ↔ expression » : 2de retenue (recos acceptées par
+  David) ; second modèle 3e : question ouverte.
