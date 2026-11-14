@@ -7,7 +7,7 @@
 
 	FEATURES:
 	- Student info header with avatar and name
-	- Lien de retour vers les classes, ou vers l'accueil s'il a été ouvert de là
+	- Lien de retour vers les classes, ou vers l'accueil ou le suivi s'il a été ouvert de là
 	- Reuses RewardEventCard and RewardJournalFilters from Phase 5
 	- Same layout and UX as student journal
 
@@ -35,8 +35,8 @@
 	// Props from server load
 	let { data }: { data: PageData } = $props();
 
-	// Ouvert depuis l'accueil (`?depuis=accueil`) ou depuis les classes
-	let back = $derived(studentJournalReturn($page.url.searchParams));
+	// Ouvert depuis l'accueil ou le suivi (`?depuis=`), sinon depuis les classes
+	let back = $derived(studentJournalReturn(data.student.id, $page.url.searchParams));
 
 	// Local state for filter
 	let selectedRewardType = $state<RewardType | null>(null);

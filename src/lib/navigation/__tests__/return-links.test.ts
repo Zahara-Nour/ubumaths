@@ -5,6 +5,7 @@ import {
 	automathsQuitLink,
 	notionHref,
 	notionReturn,
+	studentFollowUpHref,
 	studentJournalHref,
 	studentJournalReturn,
 	studySessionHref,
@@ -40,7 +41,7 @@ describe('notion du programme (élève)', () => {
 describe('journal d’un élève (prof)', () => {
 	it('ouvert depuis les classes : retour aux classes', () => {
 		expect(studentJournalHref('s1')).toBe('/dashboard/teacher/students/s1/journal');
-		expect(studentJournalReturn(params(''))).toEqual({
+		expect(studentJournalReturn('s1', params(''))).toEqual({
 			href: '/dashboard/teacher/classes',
 			label: 'Retour aux Bataillons'
 		});
@@ -50,16 +51,30 @@ describe('journal d’un élève (prof)', () => {
 		expect(studentJournalHref('s1', 'accueil')).toBe(
 			'/dashboard/teacher/students/s1/journal?depuis=accueil'
 		);
-		expect(studentJournalReturn(params('depuis=accueil'))).toEqual({
+		expect(studentJournalReturn('s1', params('depuis=accueil'))).toEqual({
 			href: '/dashboard',
 			label: "Retour à l'accueil"
 		});
 	});
 
 	it('origine inconnue (adresse bricolée) : retour aux classes', () => {
-		expect(studentJournalReturn(params('depuis=https://exemple.com')).href).toBe(
+		expect(studentJournalReturn('s1', params('depuis=https://exemple.com')).href).toBe(
 			'/dashboard/teacher/classes'
 		);
+	});
+
+	it('ouvert depuis le suivi : retour au suivi de cet élève', () => {
+		expect(studentJournalHref('s1', 'suivi')).toBe(
+			'/dashboard/teacher/students/s1/journal?depuis=suivi'
+		);
+		expect(studentJournalReturn('s1', params('depuis=suivi'))).toEqual({
+			href: '/dashboard/teacher/students/s1',
+			label: 'Retour au suivi'
+		});
+	});
+
+	it('le suivi d’un élève a sa propre adresse', () => {
+		expect(studentFollowUpHref('s1')).toBe('/dashboard/teacher/students/s1');
 	});
 });
 

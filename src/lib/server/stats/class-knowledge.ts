@@ -50,6 +50,11 @@ export interface ClassCurriculumPoint {
 	notion_name: string | null;
 }
 
+/** Point rangé dans l'arbre : sa notion et sa branche (`null` si nœud illisible). */
+export interface PlacedCurriculumPoint extends ClassCurriculumPoint {
+	branch_name: string | null;
+}
+
 export interface ClassCurriculumPointGrid {
 	students: ClassStudent[];
 	points: ClassCurriculumPoint[];
@@ -78,7 +83,7 @@ export interface RetentionPoint {
 // ===========================================================================
 
 /** Point d'un niveau, non archivé : le seul qui a sa place dans l'analytique. */
-function isLivePoint(p: ProgrammePointRow): boolean {
+export function isLivePoint(p: ProgrammePointRow): boolean {
 	return p.grade !== null && p.archived_at === null;
 }
 
@@ -87,10 +92,10 @@ function isLivePoint(p: ProgrammePointRow): boolean {
  * Un point qu'on ne sait pas placer (nœud illisible) garde sa colonne, en
  * dernier et sans étiquette, plutôt que de disparaître en silence.
  */
-async function placeInTree(
+export async function placeInTree(
 	supabase: SB,
 	points: ProgrammePointRow[]
-): Promise<ClassCurriculumPoint[]> {
+): Promise<PlacedCurriculumPoint[]> {
 	const nodeIds = points.map((p) => p.node_id);
 	const nodes = await loadNodesWithAncestors(supabase, nodeIds);
 	const nodeById = new Map(nodes.map((n) => [n.id, n]));
@@ -115,7 +120,8 @@ async function placeInTree(
 	return placed.map(({ point, place }) => ({
 		id: point.id,
 		name: point.name,
-		notion_name: place?.notion.name ?? null
+		notion_name: place?.notion.name ?? null,
+		branch_name: place?.branch.name ?? null
 	}));
 }
 
@@ -259,7 +265,12 @@ export async function getClassCurriculumPointGrid(
 	}
 
 	if (pointById.size > 0) {
-		points = await placeInTree(supabase, [...pointById.values()]);
+		// La grille ne montre pas la branche : sa forme reste celle d'avant.
+		points = (await placeInTree(supabase, [...pointById.values()])).map((p) => ({
+			id: p.id,
+			name: p.name,
+			notion_name: p.notion_name
+		}));
 	}
 
 	// Deux `.in()` dans la même requête : seul `templateIds` est découpé.
