@@ -1,4 +1,5 @@
 {
+	"id": "27ac630c-3784-43fe-8569-53b769eb4f00",
 	"title": "Relier une droite à sa fonction affine",
 	"description": "Associer trois droites à leur expression ax + b (même ordonnée à l'origine ou même coefficient directeur), intrus bx + a",
 	"grades": ["3"],
