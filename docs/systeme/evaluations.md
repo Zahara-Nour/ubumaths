@@ -281,7 +281,7 @@ les cartes de la page résultats) :
   `timing` de chaque question) : sur les mêmes copies, un élève « n'a rien répondu dans le temps
   imparti » quand sa réponse est « sans réponse » (règle `columnOf`) **et** que son `time_spent`
   atteint la durée − 1 s (secondes entières déclarées ; un vide validé tôt ou sans durée déclarée ne
-  compte pas). Tiré plusieurs fois, il compte une fois, s'il a manqué au moins la moitié de ses
+  compte pas). Tiré plusieurs fois, il compte une fois, seulement s'il a manqué tous ses
   tirages. La question porte la marque « Durée sans doute trop courte » et la phrase « 7 élèves sur
   10 n'ont rien répondu dans les 20 s » à partir de **5 élèves**, **plus de la moitié** ; aucun nom.
   Durée = celle de la ligne dans la composition (0 → 20 s, comme au tirage ; la série est verrouillée

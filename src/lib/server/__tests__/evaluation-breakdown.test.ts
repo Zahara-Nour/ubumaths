@@ -480,10 +480,10 @@ describe('computeEvaluationBreakdown — durée sans doute trop courte (P7)', ()
 		).toMatchObject({ delaySeconds: 20, unansweredInTime: 5, tooShort: true });
 	});
 
-	it('plusieurs tirages : un élève compte une fois, sans réponse s’il en a manqué au moins la moitié', () => {
+	it('plusieurs tirages : un élève compte une fois, sans réponse seulement s’il les a TOUS manqués', () => {
 		const two = [{ templateId: T1, delay: 10 }];
 		const answers = [
-			// 1 manqué sur 2 → compte
+			// 1 manqué sur 2 → a répondu à l'autre : ne compte pas
 			timedOut('s-0', T1, 10),
 			answer('s-0', T1, 'correct', 1, 5),
 			// 2 sur 2 → compte
@@ -495,7 +495,7 @@ describe('computeEvaluationBreakdown — durée sans doute trop courte (P7)', ()
 		];
 		expect(timingOf({ items: two, sessions: students(3), answers })).toMatchObject({
 			students: 3,
-			unansweredInTime: 2
+			unansweredInTime: 1
 		});
 	});
 

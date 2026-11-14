@@ -236,8 +236,8 @@ function unansweredInTime(answer: AnswerRow, delaySeconds: number): boolean {
 /**
  * Temps imparti, par modèle, sur les réponses des copies comptées (une copie
  * par élève). Un élève compte une fois par modèle ; tiré plusieurs fois, il
- * compte « sans réponse à temps » s'il l'a été pour au moins la moitié de ses
- * tirages.
+ * compte « sans réponse à temps » seulement s'il l'a été pour TOUS ses tirages
+ * (Q1 : « rien répondu »).
  */
 export function timingsOf(
 	answers: ReadonlyArray<AnswerRow>,
@@ -261,7 +261,7 @@ export function timingsOf(
 		if (delay === null) continue;
 		const counts = [...(draws.get(templateId)?.values() ?? [])];
 		const students = counts.length;
-		const missed = counts.filter(([total, empty]) => empty * 2 >= total).length;
+		const missed = counts.filter(([total, empty]) => empty === total).length;
 		timings.set(templateId, {
 			delaySeconds: delay,
 			students,

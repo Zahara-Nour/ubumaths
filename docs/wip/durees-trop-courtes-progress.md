@@ -102,7 +102,7 @@ Aucune migration. Contrôles de forme `interactive` seulement (Q4). Mêmes copie
 
 - 2026-11-14 : PR 1 codée (`timingsOf` dans `evaluation-breakdown.ts`, champ `timing` de chaque
   question, marque dans `EvaluationBreakdown.svelte`, doc `evaluations.md`). Plusieurs tirages : un
-  élève compte s'il a manqué au moins la moitié de ses tirages.
+  élève compte seulement s'il a manqué tous ses tirages (lecture littérale de Q1, après la revue).
 
 - 2026-11-14 : phase 0 tranchée (« je te suis »), plan technique de la PR 1, défaut D1.
 - 2026-11-14 : chantier ouvert, état des lieux, phase 0 posée (Q1 à Q5).
