@@ -111,6 +111,10 @@ function hasMathBlank(text: string): boolean {
 function splitHoles(line: string): {
 	parts: ({ kind: 'text'; text: string } | { kind: 'hole'; label: string })[];
 	unclosed: boolean;
+	/** `[texte](adresse)` : un lien markdown, pas un trou */
+	link?: boolean;
+	/** Un trou entre deux `*` (gras, italique) laissés ouverts avant lui */
+	inEmphasis?: boolean;
 } {
 	const parts: ({ kind: 'text'; text: string } | { kind: 'hole'; label: string })[] = [];
 	let inMath = false;
@@ -149,6 +153,8 @@ function splitHoles(line: string): {
 			j++;
 		}
 		if (j >= line.length) return { parts, unclosed: true };
+		if (line[j + 1] === '(') return { parts, unclosed: false, link: true };
+		if (openEmphasis(line.slice(0, i))) return { parts, unclosed: false, inEmphasis: true };
 		if (text !== '') parts.push({ kind: 'text', text });
 		text = '';
 		parts.push({ kind: 'hole', label: line.slice(i + 1, j).trim() });
@@ -156,6 +162,42 @@ function splitHoles(line: string): {
 	}
 	if (text !== '') parts.push({ kind: 'text', text });
 	return { parts, unclosed: false };
+}
+
+/**
+ * Un gras (`**`) ou un italique (`*`) ouvert et pas refermé dans ce début de ligne
+ * (hors formules) ? Un trou y couperait le gras : les `*` s'afficheraient tels quels.
+ */
+function openEmphasis(before: string): boolean {
+	let inMath = false;
+	let outside = '';
+	for (let i = 0; i < before.length; i++) {
+		const char = before[i];
+		if (char === '\\') {
+			i++;
+			continue;
+		}
+		if (char === '$') inMath = !inMath;
+		else if (!inMath) outside += char;
+	}
+	const strong = outside.split('**').length - 1;
+	const single = outside.replaceAll('**', '').split('*').length - 1;
+	return strong % 2 === 1 || single % 2 === 1;
+}
+
+/**
+ * Le bloc a-t-il un trou rempli (une étiquette entre crochets) ? Garde anti-fuite :
+ * l'énoncé d'une instance n'a que des trous vides, quelle que soit sa réserve.
+ */
+export function trousHasFilledHole(body: readonly string[]): boolean {
+	return body.some((line) => {
+		const trimmed = line.trim();
+		if (CASE_REGEX.test(trimmed) || LIST_SETTING_REGEX.test(trimmed)) return false;
+		const { parts, unclosed, link } = splitHoles(trimmed);
+		// Illisible : signalé, par prudence
+		if (unclosed || link) return true;
+		return parts.some((part) => part.kind === 'hole' && part.label !== '');
+	});
 }
 
 export function isTrousBlockStart(line: string): boolean {
@@ -260,7 +302,17 @@ export function parseTrousBody(body: readonly string[]): TrousSpec {
 			hasInnerBlock = true;
 			return;
 		}
-		const { parts, unclosed } = splitHoles(line);
+		const { parts, unclosed, link, inEmphasis } = splitHoles(line);
+		if (link) {
+			errors.push(`ligne « ${line} » : pas de lien dans un bloc trous ([texte](adresse))`);
+			return;
+		}
+		if (inEmphasis) {
+			errors.push(
+				`ligne « ${line} » : un trou ne peut pas être dans du gras ou de l’italique (fermer « ** » ou « * » avant le trou)`
+			);
+			return;
+		}
 		if (unclosed) {
 			errors.push(
 				`ligne « ${line} » : crochet « [ » sans « ] » (un intervalle s’écrit en formule : $]2 ; 3[$)`
@@ -311,7 +363,13 @@ export function parseTrousBody(body: readonly string[]): TrousSpec {
 			}
 			spec.answers.push(labelIndex(label));
 		});
-		for (const label of intrus ?? []) labelIndex(label);
+		for (const label of intrus ?? []) {
+			if (spec.labels.includes(label) && holeLabels.includes(label)) {
+				errors.push(`l’intrus « ${label} » est déjà l’étiquette d’un trou : le retirer de intrus:`);
+				continue;
+			}
+			labelIndex(label);
+		}
 	}
 
 	if (hasTextBlank || [...spec.labels, ...textOf(spec)].some(hasMathBlank)) {
@@ -322,7 +380,7 @@ export function parseTrousBody(body: readonly string[]): TrousSpec {
 	for (const label of spec.labels) {
 		if (hasBareSemicolon(label)) {
 			errors.push(
-				`« ${label} » : pas de « ; » hors formule dans une étiquette (il sépare les intrus)`
+				`« ${label} » : pas de « ; » hors formule dans une étiquette (il sépare les intrus ; un intervalle s’écrit en formule : $[${label}]$)`
 			);
 		}
 	}

@@ -63,7 +63,7 @@ import {
 } from '$lib/ubumark/parser/stat-chart-parser';
 import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
 import { findAssociersToPlace, parseAssocierBody } from '$lib/ubumark/parser/associer-parser';
-import { findTrousToPlace, parseTrousBody } from '$lib/ubumark/parser/trous-parser';
+import { findTrousToPlace, trousHasFilledHole } from '$lib/ubumark/parser/trous-parser';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
@@ -628,10 +628,8 @@ export function findUnmaskedAnswers(statement: string): string[] {
 		...leaks('associer', own(findAssociersToPlace(statement)), (block) =>
 			parseAssocierBody(block.body).answers.every((answer) => answer === null)
 		),
-		// Texte à trous : l'énoncé d'instance n'a que des trous vides (`[]`)
-		...leaks('trous', own(findTrousToPlace(statement)), (block) =>
-			parseTrousBody(block.body).answers.every((answer) => answer === null)
-		),
+		// Texte à trous : l'énoncé d'instance n'a que des trous vides (`[]`), même avec sa réserve écrite
+		...leaks('trous', own(findTrousToPlace(statement)), (block) => !trousHasFilledHole(block.body)),
 		...leaks('collection', findBuildCollections(statement), keyMasked(['construire'])),
 		...leaks('monnaie', findBuildMonnaies(statement), keyMasked(['construire'])),
 		...leaks('partage', findPartagesToColorier(statement), keyMasked(['colorier'])),

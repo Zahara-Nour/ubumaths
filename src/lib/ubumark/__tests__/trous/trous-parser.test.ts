@@ -159,6 +159,36 @@ describe('erreurs (message au prof)', () => {
 		expect(errorsOf('A [x ; y].', 'intrus: a ; b')).toMatch(/« ; »/);
 	});
 
+	it('revue : [0 ; 1] en texte, le message dit d’écrire l’intervalle en formule', () => {
+		expect(errorsOf('Sur [0 ; 1], f est [croissante].', 'intrus: a ; b')).toMatch(
+			/un intervalle s’écrit en formule : \$\[0 ; 1\]\$/
+		);
+	});
+
+	it('revue : un lien markdown n’est pas un trou', () => {
+		expect(errorsOf('Voir [le cours](https://x.fr), A [x].', 'intrus: y ; z')).toMatch(
+			/pas de lien dans un bloc trous/
+		);
+	});
+
+	it('revue : [0, 1] en texte reste un trou', () => {
+		expect(errorsOf('A [0, 1].', 'intrus: y ; z')).toBe('');
+	});
+
+	it('revue : un intrus égal à l’étiquette d’un trou est signalé', () => {
+		expect(errorsOf('A [x], B [y].', 'intrus: x ; z')).toMatch(
+			/l’intrus « x » est déjà l’étiquette d’un trou/
+		);
+	});
+
+	it('revue : un trou dans du gras ou de l’italique est refusé', () => {
+		const message = /un trou ne peut pas être dans du gras ou de l’italique/;
+		expect(errorsOf('**Une [x] suite**, B [y].', 'intrus: z')).toMatch(message);
+		expect(errorsOf('*Une [x] suite*, B [y].', 'intrus: z')).toMatch(message);
+		// Gras fermé avant le trou, ou formule avec * : permis
+		expect(errorsOf('**Une** suite [x], $2 * 3$ et [y].', 'intrus: z')).toBe('');
+	});
+
 	it('étiquettes: avec un trou rempli', () => {
 		expect(errorsOf('A [x].', 'étiquettes: x ; y ; z')).toMatch(/trous restent vides/);
 	});

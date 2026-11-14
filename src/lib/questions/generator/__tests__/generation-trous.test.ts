@@ -235,6 +235,13 @@ describe('trous : les cases et leurs réponses', () => {
 
 	it('garde anti-fuite : un bloc qui garde ses étiquettes dans les trous est signalé', () => {
 		expect(findUnmaskedAnswers(trous('case: 0', ...SUITES))).toEqual(['trous']);
+		// Revue : un trou rempli trahit la réponse, même avec la réserve écrite (`étiquettes:`)
+		expect(
+			findUnmaskedAnswers(trous('case: 0', 'A [x] et B [].', 'étiquettes: x ; y ; z'))
+		).toEqual(['trous']);
+		expect(findUnmaskedAnswers(trous('case: 0', 'A [] et B [].', 'étiquettes: x ; y ; z'))).toEqual(
+			[]
+		);
 	});
 
 	it('version publique (évaluation notée) : ni réponse, ni trou rempli', () => {

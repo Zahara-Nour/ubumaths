@@ -68,7 +68,7 @@ import type { AssocierNode } from '../types/associer';
 import { displayedAssocierLabels } from '../utils/associer';
 import { associerItemHasBlock } from '../parser/associer-parser';
 import type { TrousNode } from '../types/trous';
-import { displayedTrousLabels } from '../utils/trous';
+import { displayedTrousLabels, TROUS_RESERVE_COLUMNS } from '../utils/trous';
 import { generateQrTypst } from './qr-typst';
 import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
@@ -3964,7 +3964,7 @@ function generateTrousTypst(node: TrousNode, options: ResolvedTypstTranspilerOpt
 		'#set par(justify: false, leading: 1.1em)',
 		'#let trous-etiquette(body) = box(stroke: 0.6pt, inset: (x: 6pt, y: 4pt), radius: 3pt, body)',
 		`#let trous-trou(numero) = box[#text(size: 0.7em, baseline: -0.3em)[#numero]#box(width: ${trousHoleWidth(labels)}em, repeat[.])]`,
-		`#block(width: 100%, stroke: 0.6pt, inset: 8pt, radius: 3pt, align(center, grid(columns: ${Math.min(labels.length, 6)}, column-gutter: 0.8em, row-gutter: 0.5em, align: horizon, ${reserve})))`,
+		`#block(width: 100%, stroke: 0.6pt, inset: 8pt, radius: 3pt, align(center, grid(columns: ${Math.min(labels.length, TROUS_RESERVE_COLUMNS)}, column-gutter: 0.8em, row-gutter: 0.5em, align: horizon, ${reserve})))`,
 		'',
 		lines.join('\n\n'),
 		']'

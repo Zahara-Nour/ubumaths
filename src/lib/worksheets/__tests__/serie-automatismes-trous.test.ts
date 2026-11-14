@@ -48,6 +48,8 @@ describe('buildSerie — texte à trous', () => {
 	it('avec une autre case : les cases comptent ensemble', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'avec-case', seed: 1 }]);
 		expect(serie.solution).toContain('1 → pair ; 2 → impair ; 3 → pair');
-		expect(serie.solution).toContain('2');
+		// La case de la formule, à sa place (avant les trous) : la réponse en gras
+		expect(serie.solution).toContain('Calcule $1 + 1 = \\mathbf{2}$.');
+		expect(serie.solution.indexOf('\\mathbf{2}')).toBeLessThan(serie.solution.indexOf('1 → pair'));
 	});
 });

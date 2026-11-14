@@ -676,8 +676,8 @@ une ligne par rangée dans les cadres de réponse (le plus grand des deux nombre
 courbe dans les cadres ; au corrigé d'une série, « 1 → étiquette » (la courbe n'est pas redessinée).
 Un **texte à trous** (` ```trous `) : la réserve encadrée (étiquettes dans l'ordre affiché), puis le
 texte non justifié, chaque trou en pointillés de la largeur de la plus longue étiquette, numéroté en
-petit devant (`generateTrousTypst`, Typst natif) ; jamais la réponse ; une ligne pour la réserve et une
-par ligne du texte dans les cadres de réponse. Au corrigé d'une série, « 1 → étiquette ; 2 → étiquette ».
+petit devant (`generateTrousTypst`, Typst natif) ; jamais la réponse ; dans les cadres de réponse, une ligne par rangée de la réserve (6 étiquettes par
+rangée, `TROUS_RESERVE_COLUMNS`) et une par ligne du texte. Au corrigé d'une série, « 1 → étiquette ; 2 → étiquette ».
 Un **programme Scratch** (` ```scratch `, palier 1) sort en texte brut monospace, clôture plus
 longue que toute suite d'accents graves du programme (le dessin en blocs n'existe qu'à l'écran),
 et compte une ligne par ligne du programme dans les cadres de réponse ; en erreur, « Programme

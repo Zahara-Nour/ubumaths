@@ -458,10 +458,10 @@ Texte à trous (``trous, chantier [`trous-etiquettes`](../wip/trous-etiquettes-p
    (`rangerOrder`) ; le bloc de l'énoncé de l'instance est réécrit **aux trous vides** (`[]`) avec la
    réserve dans l'ordre affiché en dernière ligne `étiquettes: …` (`replaceTrousBlocks`,
    `serializeTrousBlock`) ; garde anti-fuite `findUnmaskedAnswers` (`'trous'` si un trou garde son
-   étiquette). Réponse attendue d'un trou = la position **affichée** de sa bonne étiquette ; juge à part :
+   étiquette, même avec `étiquettes:` : `trousHasFilledHole`). Réponse attendue d'un trou = la position **affichée** de sa bonne étiquette ; juge à part :
    égalité stricte, comme ranger et associer. Refus (messages du parseur, détail [ubumark.md](ubumark.md)) :
    aucun trou, plus de 10, trou vide, moins de 3 ou plus de 12 étiquettes différentes, `[_]` ou `?` en
-   formule dans le bloc, un bloc dans le texte, `[` sans `]` ; trous vides écrits par le prof
+   formule dans le bloc, un bloc dans le texte, `[` sans `]`, un lien, un trou dans du gras, un intrus déjà étiquette d'un trou ; trous vides écrits par le prof
    (`étiquettes:`) ; `case:` écrite ; « ordre indifférent ». Deux étiquettes écrites différemment
    identiques après tirage : le tirage est refait (`trousLabelsCollide`) ; après 100 essais → échec,
    « Texte à trous : deux étiquettes identiques… ».

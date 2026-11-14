@@ -92,6 +92,15 @@ describe('taille estimée d’après la longueur de la réponse', () => {
 		expect(answerLines(parseMarkdown(paragraph).children)).toBeGreaterThan(3);
 	});
 
+	it('texte à trous : les rangées de la réserve (6 étiquettes par rangée), puis une par ligne', () => {
+		const court = ['```trous', 'A [x], B [y].', 'intrus: z', '```'].join('\n');
+		expect(answerLines(parseMarkdown(court).children)).toBe(2);
+		const long = ['```trous', 'A [a], B [b].', 'C [c].', 'intrus: d ; e ; f ; g ; h', '```'].join(
+			'\n'
+		);
+		expect(answerLines(parseMarkdown(long).children)).toBe(2 + 2);
+	});
+
 	it('éléments à associer : une ligne par rangée, une rangée à courbe compte pour une figure', () => {
 		const texte = ['```associer', '- a -> 1', '- b -> 2', '- -> 3', '```'].join('\n');
 		expect(answerLines(parseMarkdown(texte).children)).toBe(3);

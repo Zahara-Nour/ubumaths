@@ -108,3 +108,14 @@ différentes ; moins de 3 étiquettes différentes (réserve devinable) ; `[_]` 
      factorisation possible plus tard (un module `.svelte.ts` commun).
      **Non vérifié** : iPhone réel (glisser au doigt, loupe) ; « Valider grisé tant qu'une place est vide »
      repose sur le mécanisme commun des cases à construire (`data-construire-cases`), non testé à part.
+- 2026-11-14 : **revue `code-reviewer` (opus) du lot 1** : « prêt pour PR », aucun bloquant. **Corrigés** :
+  (1) `[texte](adresse)` n'est plus lu comme un trou → « pas de lien dans un bloc trous » ; `[0 ; 1]` en
+  texte → le message du `;` propose l'intervalle en formule (`$[0 ; 1]$`) ; `[0, 1]` reste un trou ;
+  (2) un intrus égal à l'étiquette d'un trou → « l'intrus « x » est déjà l'étiquette d'un trou » ;
+  (3) trou dans du gras ou de l'italique (`**a [x] b**`, `*a [x] b*`) → refusé avec un message (les `*`
+  s'affichaient tels quels à l'écran et dans le PDF ; l'italique `_…_` n'est pas repéré) ;
+  (4) garde anti-fuite : `trousHasFilledHole` signale un trou rempli même avec `étiquettes:` ;
+  (6) test de la série : la réponse de la case de formule assertée à sa place (`\mathbf{2}`, avant
+  « 1 → pair ») ; (7) cadres de réponse PDF : une ligne par rangée de la réserve (6 étiquettes par rangée,
+  `TROUS_RESERVE_COLUMNS`, partagé avec `generateTrousTypst`). **Laissé** : (5) `inlineUbumarkTypst`
+  commun avec associer et ranger (décision du coordinateur).

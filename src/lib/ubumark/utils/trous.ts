@@ -27,6 +27,8 @@ export const TROUS_MAX_HOLES = 10;
 /** Moins, la réponse se devinerait */
 export const TROUS_MIN_LABELS = 3;
 export const TROUS_MAX_LABELS = 12;
+/** Étiquettes par rangée de la réserve, dans le PDF */
+export const TROUS_RESERVE_COLUMNS = 6;
 
 // Functions
 

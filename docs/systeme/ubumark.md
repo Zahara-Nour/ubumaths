@@ -374,7 +374,7 @@ un trou), coupé par `splitHoles` (`lines` : morceaux `text` / `hole`). Dernièr
 apparition, intrus en dernier ; `answers` = rang de la bonne étiquette de chaque trou), 1 à 10 trous.
 Refus (messages au prof) : aucun trou, trou vide `[]`, `[` sans `]` (un intervalle s'écrit en
 formule), `[_]` ou `?` en formule (une autre case), un bloc ` ``` ` dans le texte, `;` hors formule
-dans une étiquette, `intrus:` ailleurs qu'en dernière ligne. `case:` posée par le générateur. **Forme
+dans une étiquette (le message propose l'intervalle en formule, `$[0 ; 1]$`), `intrus:` ailleurs qu'en dernière ligne, un intrus déjà étiquette d'un trou, un lien `[texte](adresse)`, un trou dans du gras ou de l'italique. `case:` posée par le générateur. **Forme
 d'instance** : trous vides `[]` et réserve dans l'ordre affiché en dernière ligne `étiquettes: …`
 (`serializeTrousBlock`) ; écrite par le prof, elle se lit sans réponse (geste libre ; refusée dans une
 question). Ordre de la réserve : `displayedTrousLabels` (`utils/trous.ts`, celui d'associer : tel quel
@@ -385,8 +385,9 @@ qui revient à la ligne avec le texte ; la ponctuation qui suit un trou lui rest
 geste, clavier et corrigé ceux d'`AssocierEtiquettes` (glisser ou toucher puis poser, échange,
 retrait ; ← → dans la réserve, ↓ vers le premier trou, ← → ↑ ↓ d'un trou à l'autre, ↑ du premier trou
 vers la réserve ; noms « Étiquette 2 sur 5 », « Trou 1 sur 4, vide » ; place verte ou rouge,
-« Correction : » et la bonne étiquette sous une place fausse). Un trou au milieu d'un gras (`**a [x]
-b**`) coupe le gras (chaque morceau est rendu à part). PDF : réserve encadrée, texte non justifié, trous
+« Correction : » et la bonne étiquette sous une place fausse). Un trou au milieu d'un gras ou d'un
+italique (`**a [x] b**`, `*a [x] b*`, repéré par `openEmphasis`) est refusé : chaque morceau étant
+rendu à part, les `*` s'afficheraient tels quels (l'italique `_…_` n'est pas repéré). PDF : réserve encadrée, texte non justifié, trous
 en pointillés numérotés (numéro en petit devant), jamais la réponse. Éditeur riche : bloc de code
 `trous`. Dans un item de liste (série d'automatismes), lu par `parseContentWithCodeBlocks`.
 
