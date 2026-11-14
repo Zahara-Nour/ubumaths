@@ -1,0 +1,102 @@
+{
+	"title": "Relier une courbe à sa fonction de référence",
+	"description": "Associer les courbes des fonctions carré, inverse, valeur absolue et x ↦ x à leur expression, intrus x ↦ −x²",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Relie chaque courbe à la fonction qu'elle représente.\n\n````associer\n- ```courbe\n  x: -3 ; 3\n  y: -3 ; 3\n  grille: 1 ; 1\n  f(x) = x^2   bleu\n  description: Courbe en U, symétrique par rapport à l'axe des ordonnées, au-dessus de l'axe des abscisses ; passe par (0 ; 0), (1 ; 1) et (−1 ; 1).\n  ```\n  -> $x \\mapsto x^2$\n- ```courbe\n  x: -3 ; 3\n  y: -3 ; 3\n  grille: 1 ; 1\n  f(x) = 1/x   bleu\n  description: Deux branches, l'une pour x > 0 au-dessus de l'axe des abscisses, l'autre pour x < 0 en dessous ; passe par (1 ; 1) et (−1 ; −1).\n  ```\n  -> $x \\mapsto \\dfrac{1}{x}$\n- ```courbe\n  x: -3 ; 3\n  y: -3 ; 3\n  grille: 1 ; 1\n  f(x) = abs(x)   bleu\n  description: Courbe en V, formée de deux demi-droites, pointe à l'origine ; passe par (1 ; 1) et (−1 ; 1).\n  ```\n  -> $x \\mapsto |x|$\n- ```courbe\n  x: -3 ; 3\n  y: -3 ; 3\n  grille: 1 ; 1\n  f(x) = x   bleu\n  description: Droite qui passe par l'origine, (1 ; 1) et (−1 ; −1).\n  ```\n  -> $x \\mapsto x$\n- -> $x \\mapsto -x^2$\n````",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Courbe 1 : La courbe en **U**, au-dessus de l'axe des abscisses, est la parabole de la fonction carré $x \\mapsto x^2$ : un carré n'est jamais négatif.",
+					"Courbe 2 : La courbe en **deux branches**, qui ne coupe pas l'axe des ordonnées, est l'hyperbole de la fonction inverse $x \\mapsto \\dfrac{1}{x}$ : $0$ n'a pas d'image.",
+					"Courbe 3 : La courbe en **V** est celle de la fonction valeur absolue $x \\mapsto |x|$ : deux demi-droites, $|x| = x$ si $x \\geqslant 0$ et $|x| = -x$ si $x < 0$.",
+					"Courbe 4 : La **droite** qui passe par l'origine et par $(1\\,;1)$ représente $x \\mapsto x$.",
+					"$x \\mapsto -x^2$ ne va avec aucune courbe : sa courbe serait un U **retourné**, sous l'axe des abscisses."
+				]
+			}
+		},
+		{
+			"statement": "Relie chaque courbe à la fonction qu'elle représente.\n\n````associer\n- ```courbe\n  x: -3 ; 3\n  y: -3 ; 3\n  grille: 1 ; 1\n  f(x) = abs(x)   bleu\n  description: Courbe en V, formée de deux demi-droites, pointe à l'origine ; passe par (1 ; 1) et (−1 ; 1).\n  ```\n  -> $x \\mapsto |x|$\n- ```courbe\n  x: -3 ; 3\n  y: -3 ; 3\n  grille: 1 ; 1\n  f(x) = x   bleu\n  description: Droite qui passe par l'origine, (1 ; 1) et (−1 ; −1).\n  ```\n  -> $x \\mapsto x$\n- ```courbe\n  x: -3 ; 3\n  y: -3 ; 3\n  grille: 1 ; 1\n  f(x) = x^2   bleu\n  description: Courbe en U, symétrique par rapport à l'axe des ordonnées, au-dessus de l'axe des abscisses ; passe par (0 ; 0), (1 ; 1) et (−1 ; 1).\n  ```\n  -> $x \\mapsto x^2$\n- ```courbe\n  x: -3 ; 3\n  y: -3 ; 3\n  grille: 1 ; 1\n  f(x) = 1/x   bleu\n  description: Deux branches, l'une pour x > 0 au-dessus de l'axe des abscisses, l'autre pour x < 0 en dessous ; passe par (1 ; 1) et (−1 ; −1).\n  ```\n  -> $x \\mapsto \\dfrac{1}{x}$\n- -> $x \\mapsto -x^2$\n````",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Courbe 1 : La courbe en **V** est celle de la fonction valeur absolue $x \\mapsto |x|$ : deux demi-droites, $|x| = x$ si $x \\geqslant 0$ et $|x| = -x$ si $x < 0$.",
+					"Courbe 2 : La **droite** qui passe par l'origine et par $(1\\,;1)$ représente $x \\mapsto x$.",
+					"Courbe 3 : La courbe en **U**, au-dessus de l'axe des abscisses, est la parabole de la fonction carré $x \\mapsto x^2$ : un carré n'est jamais négatif.",
+					"Courbe 4 : La courbe en **deux branches**, qui ne coupe pas l'axe des ordonnées, est l'hyperbole de la fonction inverse $x \\mapsto \\dfrac{1}{x}$ : $0$ n'a pas d'image.",
+					"$x \\mapsto -x^2$ ne va avec aucune courbe : sa courbe serait un U **retourné**, sous l'axe des abscisses."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Toutes les courbes bien reliées",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["4", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la parabole reliée à x ↦ −x²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : parabole et valeur absolue échangées",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1", "0", "4", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'hyperbole reliée à x ↦ x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["4", "2", "1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Toutes les courbes bien reliées",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["4", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la courbe en V reliée à x ↦ x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0", "0", "1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la parabole reliée à x ↦ −x²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["4", "0", "3", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
