@@ -3,6 +3,7 @@ couvre:
   - 'src/lib/server/stats/**'
   - src/lib/server/validation/teacher-analytics.ts
   - 'src/lib/components/teacher/analytics/**'
+  - src/lib/types/point-errors.ts
   - 'src/routes/(protected)/dashboard/teacher/classes/*/analytics/**'
   - 'src/routes/api/teacher/classes/*/analytics/**'
 ---
