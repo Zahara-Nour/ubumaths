@@ -888,8 +888,12 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    croisement de deux côtés d'angle, l'un parti de A, l'autre de B (`angleSideVertex`), ou du côté
    d'angle et d'un cercle construit centré au même sommet : un point construit par les exceptions de
    la règle ci-dessus ne suffit pas ; un cercle ou un report sans longueur donnée : faux, sans message.
-   Messages, après ceux du lot 4 : « Ton sommet C est placé à l'œil : trace ses côtés avec le
-   rapporteur. », « Tes deux angles sont tracés de part et d'autre de [AB] : trace-les du même côté. »
+   Messages, après ceux du lot 4 : « Trace un seul triangle ABC. » (plusieurs C distincts, revue de
+   #2660 : sinon un éventail de [BC] arrêtés sur un côté d'angle, dont un seul au croisement, serait
+   juste), « Ton sommet C est placé à l'œil : trace ses côtés avec le rapporteur. » (aussi quand un
+   côté sans repère passe par le bout de l'autre sans que les deux se rejoignent : ce message remplace
+   alors « doivent se rejoindre », jamais au triangle rectangle), plusieurs C justes de part et d'autre
+   de (AB) compris, « Tes deux angles sont tracés de part et d'autre de [AB] : trace-les du même côté. »
    (repères de côtés opposés ET un angle faux), « Ton angle ABC mesure 115° au lieu de 65° : tu as lu la
    mauvaise graduation du rapporteur. » (180 − a, repère du côté de C), « Ton angle CAB mesure 45° au
    lieu de 40°. », puis la longueur. Erreurs de l'auteur, en plus : fenêtre trop allongée

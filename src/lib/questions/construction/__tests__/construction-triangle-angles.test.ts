@@ -18,6 +18,7 @@ import {
 	missingSidesFeedback,
 	notJoinedFeedback,
 	oppositeAnglesFeedback,
+	severalTrianglesFeedback,
 	vertexEyeballedAnglesFeedback,
 	wrongAngleTriangleFeedback,
 	wrongLengthFeedback,
@@ -506,6 +507,67 @@ describe('deux côtés et l’angle compris', () => {
 		expect(judge(SAS, [MARK_A, LINE_A, segment(A, c), segment(B, c)])).toEqual({
 			status: 'incorrect',
 			feedback: vertexEyeballedAnglesFeedback('C')
+		});
+	});
+});
+
+describe('revue de #2660 : un seul C, côté sans repère', () => {
+	const SAS = figure('triangle ABC : AC = u ; CAB = 40', [
+		...BODY,
+		'u = segment(point(1, 7), point(5, 7))'
+	]);
+	const REPORT = report(A, { x: 1, y: 7 }, { x: 5, y: 7 });
+	const m = repereAt(MARK_A);
+	/** Le point du côté d'angle de A à `k` fois la distance du repère */
+	const along = (k: number) => ({ x: A.x + (m.x - A.x) * k, y: A.y + (m.y - A.y) * k });
+	const SIDE = segment(A, along(2.5));
+
+	it('faux : éventail de [BC] arrêtés sur le côté d’angle, un seul au croisement (angle compris)', () => {
+		const [c] = cross(SIDE, REPORT);
+		expect(judge(SAS, [MARK_A, SIDE, REPORT, segment(B, along(1.2)), segment(B, c)])).toEqual({
+			status: 'incorrect',
+			feedback: severalTrianglesFeedback('A', 'B', 'C')
+		});
+	});
+
+	it('faux : éventail de [BC] arrêtés sur le côté d’angle, un seul au croisement (deux angles)', () => {
+		const sideA = segment(A, along(3));
+		expect(
+			judge(ANGLES, [MARK_A, sideA, MARK_B, LINE_B, segment(B, along(1.2)), segment(B, C)])
+		).toEqual({
+			status: 'incorrect',
+			feedback: severalTrianglesFeedback('A', 'B', 'C')
+		});
+	});
+
+	it('faux : deux triangles justes, de part et d’autre de (AB) (comme Q17 en cm)', () => {
+		const below = built(repere(A, B, 40, -1), repere(B, A, 65, 1));
+		expect(judge(ANGLES, [...NOMINAL, ...below])).toEqual({
+			status: 'incorrect',
+			feedback: severalTrianglesFeedback('A', 'B', 'C')
+		});
+	});
+
+	it('juste : un seul [BC], au croisement (non-régression)', () => {
+		const sideA = segment(A, along(3));
+		expect(judge(ANGLES, [MARK_A, sideA, MARK_B, LINE_B, segment(B, C)])).toEqual({
+			status: 'correct'
+		});
+	});
+
+	it('faux : côté [AC] sans repère qui passe par le bout de [BC] : « trace ses côtés avec le rapporteur »', () => {
+		const end = { x: 6, y: 6 };
+		const sideA = segment(A, { x: A.x + (end.x - A.x) * 1.5, y: A.y + (end.y - A.y) * 1.5 });
+		expect(judge(ANGLES, [sideA, segment(B, end)])).toEqual({
+			status: 'incorrect',
+			feedback: vertexEyeballedAnglesFeedback('C')
+		});
+	});
+
+	it('faux : côtés qui ne se rejoignent vraiment pas : message inchangé', () => {
+		expect(judge(ANGLES, [segment(A, C), segment(B, { x: C.x + 1, y: C.y })])).toEqual({
+			status: 'incorrect',
+			feedback: notJoinedFeedback('A', 'B', 'C')
 		});
 	});
 });

@@ -9,9 +9,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après le déploiement v0.88.0._
+_Mis à jour le 2026-11-14, PR des points de revue de #2660 ouverte._
 
-- **État** : tout est en prod. Code : v0.88.0 (#2658, #2660, #2661), déployée le 2026-11-14 à 19:11. Modèle 6-173 (f06e45e8) : 6 variations, dont v5 (trois longueurs) et v6 (deux côtés et l'angle) en cm ; la simulation `triangle-cm-6` contre la prod dit « identique », 26/26 specs vertes. ⚠️ L'écriture en prod a eu lieu **avant** le déploiement (`updated_at` 18:52, heure de Paris), auteur inconnu : v5 et v6 injouables pendant environ 19 min, réglé par la 0.88.0 · **Prochaine action** : clore le chantier (versement, archive du journal) une fois les points en attente tranchés · **En attente de David** : relecture des 2 variations (en prod, ou dans l'aperçu local : brouillon d3c2b97d, serveur 5176) ; les 4 choix faits seul au lot 1 (Journal, 1, 3, 4, 5) ; les 3 points mineurs de la revue de #2660 (Journal, fin ; reco : aligner le (1) « un seul C » du lot 7 sur le cas en cm) · **Pièges en cours** : #2660 change aussi le juge du lot 7, désormais en prod · **Worktree / branche** : `ubumaths-wt-triangle-cm-variations` gardé pour le serveur 5176, à retirer après la relecture
+- **État** : v0.88.0 en prod, modèle 6-173 à jour en prod. PR `fix/triangle-cote-cm-juge` ouverte : (1) un seul C avec un angle, (2) côté sans repère → « trace ses côtés avec le rapporteur » ; (3) sans changement (même geste que S5, admis à la revue de #2348) · **Prochaine action** : CI + revue opus → merge ; puis clore le chantier (versement, archive du journal) · **En attente de David** : `deploy:prod` de la PR (quand il voudra) ; relecture des 2 variations en prod ; confirmer : choix du lot 1 (1), (3), (4) gardés, (5) remplacé par la revue de #2658 ; auteur de l'écriture en prod de 18:52 · **Pièges en cours** : la PR change le juge du lot 7 et du cas en cm avec angle, en prod au prochain déploiement · **Worktree / branche** : `ubumaths-wt-triangle-cote-cm` (`fix/triangle-cote-cm-juge`) ; `ubumaths-wt-triangle-cm-variations` gardé pour le serveur 5176, à retirer après la relecture
 
 ## Ce qui existe (lu dans le code, 2026-11-14)
 
@@ -179,3 +179,27 @@ DrawnCircle` remplacé par un cercle porté avec son indice. Suites : serveur 7 
 - `update-published-questions.ts --lot triangle-cm-6` (simulation) : « identique », 26/26 specs vertes. La base
   contenait déjà les variations (`updated_at` à 18:52, heure de Paris), donc entre le report du déploiement
   (18:47) et la v0.88.0 (19:11). Auteur de l'écriture inconnu. Rien n'a été réécrit.
+
+### 2026-11-14 — points de revue de #2660 (branche `fix/triangle-cote-cm-juge`)
+
+David : « oui » aux recos (choix du lot 1 (1), (3), (4) gardés ; corriger les 3 points).
+
+- (1) Avec un angle (lot 7 et cas en cm), plusieurs C distincts → « Trace un seul triangle ABC. »
+  (`judgeTriangle`, comme `judgeRuledTriangle`). Trois longueurs (lot 4) inchangé : juste si un C convient.
+- (2) Aucun C commun, avec un angle, et un côté parti d'un sommet passe par le bout de l'autre → « Ton sommet
+  C est placé à l'œil : trace ses côtés avec le rapporteur. » au lieu de « doivent se rejoindre »
+  (`joinedVertices`).
+- (3) **Pas de changement, ma reco était fausse** : l'angle tracé est juste (graduation 140° de l'autre côté,
+  trait prolongé au-delà de A). C'est le geste du test S5 (droite prolongée, admis à la revue de #2348), ici en
+  segment. Dit à David.
+- Tests : 5 dans `construction-triangle-angles.test.ts` (3 rouges avant le code, 2 de non-régression déjà
+  verts). Suites `questions` + `ubumark` serveur : 13 035 verts. `question:specs` f06e45e8 et
+  14-construire-un-triangle : importables. En prod, seul f06e45e8 a des triangles à angle (requête MCP).
+- Revue `code-reviewer` (opus) de #2665 : **bloquant** corrigé — le message « rapporteur » du (2) sortait au
+  triangle rectangle (l'angle droit est dans `check.angles`) ; réservé aux angles non droits (`rightAngleOf`),
+  2 tests rouges puis verts dans `construction-triangle-rectangle.test.ts`. Mineur (2) : deux triangles justes de
+  part et d'autre de (AB) désormais refusés avec un angle, comme Q17 en cm → test + doc. Mineur (3), d'avant la
+  PR, laissé : deux côtés d'angle en segments qui se croisent au-delà de C, sans [AC] ni [BC] → « doivent se
+  rejoindre ».
+- Vérifié à la demande de David : déploiements du 2026-11-14 = v0.87.0 (09:24, sans #2658) et v0.88.0 (19:11,
+  avec #2658, #2660, #2661) ; contenu du modèle f06e45e8 en prod identique au fichier (simulation, 26/26).

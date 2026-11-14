@@ -20,7 +20,8 @@ import {
 	sideEyeballedFeedback,
 	vertexEyeballedFeedback,
 	wrongLengthFeedback,
-	wrongSquaresFeedback
+	wrongSquaresFeedback,
+	notJoinedFeedback
 } from '../triangle';
 import { isStraight, perpendicularThrough, type StraightTrait } from '../instruments';
 import { solutionLines, solutionTriangle } from '../drawing';
@@ -503,5 +504,21 @@ describe('triangle rectangle : revue', () => {
 			's = segment(A, B)'
 		]);
 		expect(() => assertChecks(source)).toThrow(/perpendiculaire.*sort de la fenêtre/);
+	});
+});
+
+describe('revue de #2665 : côtés qui ne se rejoignent pas, sans rapporteur', () => {
+	it('papier uni : [AC] au-delà de C sur la perpendiculaire, [BC] arrêté en C → « doivent se rejoindre »', () => {
+		expect(judge(RIGHT, [SQUARE_A, segment(A, { x: 3, y: 7 }), segment(B, C)])).toEqual({
+			status: 'incorrect',
+			feedback: notJoinedFeedback('A', 'B', 'C')
+		});
+	});
+
+	it('quadrillage : même message, pas le rapporteur', () => {
+		expect(judge(SQUARES, [segment(GA, { x: 2, y: 6 }), segment(GB, { x: 2, y: 5 })])).toEqual({
+			status: 'incorrect',
+			feedback: notJoinedFeedback('A', 'B', 'C')
+		});
 	});
 });
