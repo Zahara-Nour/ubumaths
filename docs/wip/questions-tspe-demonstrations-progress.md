@@ -10,15 +10,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, fichiers du lot 14 écrits (§ 58)._
+_Mis à jour le 2026-11-14, après #2649 (fichiers du lot 14, § 58)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 13 publiés (§ 57) ; lot 14 (473, 496, 497) : fichiers vérifiés, PR ouverte (§ 58) ;
+  § 35, lots 9 à 15) : lots 9 à 13 publiés (§ 57) ; lot 14 (473, 496, 497) : fichiers mergés (#2649, § 58) ;
   lot 15 restant (517, 529, 537, 538, 539).
-- **Prochaine action** : PR du lot 14 mergée → David lance `create-questions --publier` (brouillons en prod), puis
+- **Prochaine action** : après les brouillons du lot 14 en prod (David) : relevé MCP des ids, puis
   rangement + `id` commités, page à cocher, publication (même démarche que le lot 13, § 52 à 57).
 - **En attente de David** : `create-questions.ts --dir scripts/questions/tspe-approfondissements-14 --publier`,
-  après le merge de la PR des fichiers.
+  depuis le dépôt principal (fichiers mergés).
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -26,7 +26,7 @@ _Mis à jour le 2026-11-14, fichiers du lot 14 écrits (§ 58)._
   **les `id` écrits par `create-questions` se commitent dans la PR de rangement** (`page-a-cocher.ts` et
   `publier-lot.ts` les exigent, § 56) ; `1x` non nettoyé dans `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable
   `e` ni `i`** (§ 52) ; `pnpm deploy:prod` en cours = merge bloqué, attendre `lock.py --tenu deploy`.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-approfondissements-14`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche à créer depuis `origin/main`.
 
 ---
 
