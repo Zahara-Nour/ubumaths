@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, pendant la PR `fix/blockly-calcul-mettre-resultat`._
+_Mis à jour le 2026-11-14, après #2664 et la version 0.88.0._
 
-- **État** : PR 1 à 5b mergées ; choix de 5a / 5b tranchés (§ Décisions après #2662) ; PR en cours : « mettre résultat à » dans l'écriture canonique et le corrigé · **Prochaine action** : phase 0 des premiers modèles `tortue / `calcul CM1 → 5e (points du programme, modèles existants, liste proposée), à valider avant tout modèle · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une PR en conflit ne lance pas sa CI (vérifier `mergeable`) · **Worktree / branche** : `ubumaths-wt-blockly` / `fix/blockly-calcul-mettre-resultat`
+- **État** : PR 1 à 5b et #2664 (« mettre résultat à ») mergées et **en prod (0.88.0)** ; premiers modèles validés (§ Premiers modèles) · **Prochaine action** : lot 11 de la 5e (6 modèles Blockly) dans le chantier `questions-5` (§ 25 de son journal), puis le lot 6e (6-197, 6-210) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` · **Worktree / branche** : aucun
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -354,9 +354,32 @@ nocturne. `départ:` lu par les parseurs ``calcul et ```tortue (`spec.depart`) ;
   avec » ; 50 affichages au plus ; pas d'aperçu JS / Python du calcul.
 - **Piste suivante** : premiers modèles CM1 → 5e (fin du découpage validé), phase 0 d'abord.
 
-## PR `fix/blockly-calcul-mettre-resultat`
+## PR `fix/blockly-calcul-mettre-resultat` — #2664, mergée le 2026-11-14, en prod (0.88.0)
 
 - `calcul/notation.ts` : `ecrirePile` écrit `mettre résultat à` ; `reecrireCalcul(texte)` (illisible
   → rendu tel quel). `CalculCorrige.svelte` : « Ton programme » et « Un programme juste » réécrits.
   Catalogue : exemples en `mettre résultat à`. Tests rouges sans le correctif vérifiés (notation,
   corrigé). Rien d'enregistré ne change de sens : les deux formes sont lues.
+- Revue `code-reviewer` (Sonnet) : rien de bloquant (aucune comparaison de textes, réponses
+  enregistrées rejouées comme avant, aucune fuite avec `attendu: ?`) ; +5 caractères par affectation
+  sous `LONGUEUR_MAX_PROGRAMME` (1999), sans effet réel.
+
+## Premiers modèles (David, 2026-11-14 : « je te suis »)
+
+Relevé prod (lecture seule) : 0 modèle sur 5-100, 101, 102, 103, 104, 105, 106, 6-197, 6-210,
+CM2-152 ; 6-194, 195, 196 en ont un (Algorithmique › Préalgorithmique).
+
+- **Lot 11 de la 5e** (chantier `questions-5`, § 25 de son journal), 6 modèles : 5-102 formule en
+  blocs (calcul : a × nombre + b, (nombre + a) × b, nombre × nombre − a) ; 5-103 programme en
+  étapes données en mots (calcul, 2 puis 3-4 étapes) ; 5-105 modifier un programme de calcul
+  (`départ:`) ; 5-105 modifier un tracé (tortue, `départ:` carré 3 → carré 5, rectangle 4 × 2) ;
+  5-106 répéter (tortue, `montrer:` : carré, escalier, créneaux ; nœud Boucles › boucle bornée) ;
+  5-100 séquencer (tortue sans boucle : L, T, zigzag). Nœud par défaut : Algorithmique ›
+  Variables et instructions.
+- **Lot 6e** : 6-197 chemin sur quadrillage montré (tortue, 3 à 6 segments) ; 6-210 « pour 3,
+  affiche 10 » (calcul, `essais:` d'un seul nombre : toute bonne réponse est juste).
+- **Plus tard** : CM2-152 (comme 6-210, nombres simples) ; CM1-118 / CM2-104 laissés (déplacements
+  dans le quartier). 5-101 et 5-104 attendent le programme en blocs affiché dans l'énoncé.
+- **5-106** : (a) — la correction n'impose pas la boucle (un carré en 8 blocs est juste) ; les
+  créneaux du niveau 3 la rendent presque nécessaire. « Nombre maximal de blocs » reste une piste.
+- **Question d'accès** : rien de neuf (rattachement de modèles à un nœud et à un point).

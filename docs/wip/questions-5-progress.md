@@ -5,16 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, phase 0 du lot 10 proposée._
+_Mis à jour le 2026-11-14, lot 11 (Blockly) validé._
 
-- **État** : lots 1 à 9 publiés. Lot 10 « Proportionnalité, fonctions, barres à construire » : phase 0 écrite
-  (§ 24 : 10 modèles, 112 089 090 141 091 099 094 142 096 143), **pas encore validée**.
-- **Prochaine action** : reposer à David les 2 questions du § 24 (niveaux 6-9 à la suite ; 04 / 05 différenciés),
-  puis écrire le lot (worktree `questions-5`, script `lot-5-proportionnalite.py`).
-- **En attente de David** : validation du § 24 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main
-  (au pilotage Chrome, la frappe de la 2e case arrivait aussi dans la 1re — extension ou appli ?).
+- **État** : lots 1 à 9 publiés. Lot 10 (§ 24) : phase 0 écrite, **pas validée**. Lot 11 « Programmer en blocs »
+  (§ 25) : **validé** par David le 2026-11-14 ; blocs `tortue / `calcul en prod (0.88.0).
+- **Prochaine action** : écrire le lot 11 (worktree `questions-5`, script `lot-11-blockly.py`, fiches
+  `src/lib/block-catalog/calcul.ts` et `tortue.ts`).
+- **En attente de David** : les 2 questions du § 24 (niveaux 6-9 à la suite ; 04 / 05 différenciés) ; 02 du lot 7
+  (deux cases sur deux lignes) à essayer à la main.
 - **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
-  128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049).
+  128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance (dry-run
   d'abord, `--include-all` si une plus ancienne arrive après coup) ; `pnpm check:migrations --pr <n>` avant merge ;
   horodatage = `pnpm migration:horodatage` ; `Doc-inchangée:` dans un COMMIT ; `gh pr checks --watch` rend la main
@@ -722,3 +722,23 @@ proportionnalité 1 (6e ×2) ; caractérisation 1-3 ; généralités sur les fon
 - Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte connecté).
 - **Questions posées, sans réponse** : (1) niveaux 6-9 à la suite pour 07-10 plutôt que renuméroter (reco : à la
   suite) ; (2) 04 sans contexte oui / non, 05 en contexte avec la raison — d'accord ?
+
+## 25. Lot 11 « Programmer en blocs » : validé (David, 2026-11-14, « je te suis »)
+
+Phase 0 tenue dans le chantier `blockly` (journal `blockly-progress.md`, § Premiers modèles), qui fait foi pour
+le détail. Relevé prod : 0 modèle sur 5-100, 102, 103, 105, 106.
+
+| #   | Point | Modèle                      | Bloc / réponse                    | Nœud                                      |
+| --- | ----- | --------------------------- | --------------------------------- | ----------------------------------------- |
+| 01  | 5-102 | Écrire une formule en blocs | ```calcul                         | Algorithmique › Variables et instructions |
+| 02  | 5-103 | Programme en étapes         | ```calcul (étapes en mots)        | idem                                      |
+| 03  | 5-105 | Modifier un programme       | ```calcul + `départ:`             | idem                                      |
+| 04  | 5-105 | Modifier un tracé           | ```tortue + `départ:`             | idem                                      |
+| 05  | 5-106 | Répéter                     | ```tortue, `montrer:` (dessin)    | Algorithmique › Boucles › boucle bornée   |
+| 06  | 5-100 | Séquencer                   | ```tortue sans boucle, `montrer:` | Algorithmique › Variables et instructions |
+
+- 01 : niv. 1 a × nombre + b, niv. 2 (nombre + a) × b, niv. 3 nombre × nombre − a. 02 : 2 étapes, puis 3-4.
+  03 : départ `afficher nombre × 3 + 1` → `× 5 − 2`. 04 : carré 3 → carré 5, rectangle 4 × 2. 05 : carré,
+  escalier de 4 marches, créneaux. 06 : L, T, zigzag.
+- 05 : la boucle n'est pas imposée (le jugement compare les tracés) ; accepté (option a).
+- Accès : rien de neuf (tags lisibles par tout compte connecté, comme les autres lots).
