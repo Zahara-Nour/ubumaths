@@ -49,6 +49,7 @@
 	} from '$lib/atelier/natural-input';
 	import NaturalField from './NaturalField.svelte';
 	import { isSafeLatex } from '$lib/atelier/safe-latex';
+	import { definitionHint, type DraftHint } from '$lib/atelier/draft-hint';
 
 	/** Les étapes d'une ligne et leur résumé, celles de la ligne ou de son bouton. */
 	type LineSteps = { readonly steps?: Entry['steps']; readonly summary?: Entry['summary'] };
@@ -392,9 +393,17 @@
 		highlightedProposal = proposals[next].insert;
 	}
 
-	/** La commande dont l'élève tape la suite, et son modèle sous le champ. */
+	/**
+	 * Le modèle sous le champ : celui de la commande dont l'élève tape la suite,
+	 * sinon, pour une définition de fonction, l'écriture « sur [a;b] » (phase 0
+	 * `docs/wip/modele-definition-progress.md`, dans les deux champs).
+	 */
 	const writing = $derived(inputMode === 'math' ? null : commandBeingWritten(catalog, desk.draft));
-	const model = $derived(writing === null ? null : (writing.example ?? writing.description));
+	const hint = $derived<DraftHint | null>(
+		writing !== null
+			? { model: writing.example ?? writing.description }
+			: definitionHint(desk.draft, inputMode)
+	);
 
 	/**
 	 * Une frappe rouvre la liste et remet le surlignage sur la première
@@ -832,8 +841,10 @@
 		</ul>
 	{/if}
 
-	{#if model !== null}
-		<p class="modele" id="{uid}-modele">Modèle : <code>{model}</code></p>
+	{#if hint !== null}
+		<p class="modele" id="{uid}-modele">
+			Modèle : <code>{hint.model}</code>{#if hint.note !== undefined}&nbsp;— {hint.note}{/if}
+		</p>
 	{/if}
 
 	<form onsubmit={submit}>
@@ -865,7 +876,7 @@
 						? `${uid}-propositions`
 						: undefined}
 				aria-activedescendant={activeDescendant}
-				aria-describedby={model !== null ? `${uid}-modele` : undefined}
+				aria-describedby={hint !== null ? `${uid}-modele` : undefined}
 				onkeydown={handleKeydown}
 				onkeyup={handleKeyup}
 				onclick={syncCaret}

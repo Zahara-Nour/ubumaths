@@ -360,6 +360,29 @@ describe('Calcul en écriture mathématique', () => {
 		await vi.waitFor(() => expect(container.textContent).not.toContain('Modèle :'));
 		expect(container.querySelector('[aria-label="Commandes disponibles"]')).toBeNull();
 	});
+
+	// Phase 0 `docs/wip/modele-definition-progress.md` : la même ligne qu'en texte
+	it('une définition de fonction montre le modèle de l’ensemble', async () => {
+		const { choose, typeMath, container } = await open();
+		await choose('Écriture mathématique');
+
+		await typeMath('g(t)=3t');
+
+		await vi.waitFor(() =>
+			expect(container.querySelector('.modele')?.textContent).toContain('g(t) = t² sur [0;3]')
+		);
+	});
+
+	it('« sur » tapé au clavier de MathLive : le modèle de l’intervalle', async () => {
+		const { choose, typeMath, container } = await open();
+		await choose('Écriture mathématique');
+
+		await typeMath('f(x)=x sur');
+
+		await vi.waitFor(() =>
+			expect(container.querySelector('.modele')?.textContent).toContain('[a;b], ]a;b[, [0;+∞[')
+		);
+	});
 });
 
 // =============================================================================

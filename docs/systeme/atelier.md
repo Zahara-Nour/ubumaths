@@ -85,6 +85,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`) ; une définition illisible dit l'aide précise du parseur, comme la ligne de calcul (`invalidExpressionMessage`) |
 | `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                                                                          |
 | `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                                                                                      |
+| `src/lib/atelier/draft-hint.ts`             | Le « Modèle : » d'une définition de fonction sous le champ de la console : `g(t) = t² sur [0;3]`, puis, « sur » tapé, `[a;b], ]a;b[, [0;+∞[`                                                                          |
 | `src/lib/atelier/reciprocal.ts`             | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français                                                                                                                 |
 | `src/lib/atelier/limit.ts`                  | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule                                                                                                                      |
 | `src/lib/atelier/limit-steps.ts`            | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`                                                                                                                            |
@@ -638,7 +639,11 @@ l'ensemble est refusé dans Calcul (`outsideIntervalRefusal`, argument sans vari
 de la carte (I4). Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
 intervalle — même règle `intervalWord`, « sur » en fin de saisie compris (jugé au `keydown`,
 `beforeinput` et `input` en capture : l'`input` arrive trop tard) — sinon `[0;1[` s'écrit
-`\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible.
+`\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible. Dans la console, une
+définition de fonction en cours (`f(x) =`, dans les deux champs) montre sous le champ « Modèle :
+f(x) = x² sur [0;3] — pour choisir l'ensemble », nom et variable tapés ; « sur » tapé, le modèle
+devient celui d'un intervalle (`definitionHint`, `draft-hint.ts`). Une indication seulement :
+Entrée calcule la ligne telle quelle.
 
 **Les calculs sur l'intervalle** (lot 2, I4) : `.résoudre` et `.variations` travaillent sur
 l'ensemble des fonctions qu'ils citent SEULES ou appelées sur une lettre (`f`, `f(x)`, `f'(t)` —
@@ -2058,8 +2063,8 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
 - **Le clavier virtuel est un seul pour la page** : les onglets « Calcul » et « Commandes » sont
   posés quand le champ prend le focus et retirés quand il le perd (les cartes ont leurs champs
   MathLive), comme `FillBlanksInput.svelte`.
-- En écriture mathématique, la liste des commandes et le « Modèle : » du mode texte ne s'ouvrent
-  pas : le champ a sa propre liste. Le focus réel est dans le shadow DOM de MathLive, où
+- En écriture mathématique, la liste des commandes et le « Modèle : » d'une commande ne s'ouvrent
+  pas : le champ a sa propre liste (le « Modèle : » d'une définition de fonction, lui, s'affiche). Le focus réel est dans le shadow DOM de MathLive, où
   `aria-controls` de l'hôte ne porte pas : une région `status` annonce la proposition surlignée
   (« résoudre, 1 sur 2 »). La liste s'ouvre au-dessus du mot quand le champ est dans la moitié
   basse de l'écran, et défile.
