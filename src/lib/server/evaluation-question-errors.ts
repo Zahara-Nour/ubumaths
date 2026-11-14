@@ -8,8 +8,9 @@
  *
  * - **Copies comptées** : celles du bilan (`bestCopies`, la meilleure copie
  *   rendue de chaque élève ; copies en retard exclues).
- * - **Sans réponse** (réponse absente ou statut vide) : comptée à part, jamais
- *   listée.
+ * - **Sans réponse** : selon le statut seul, comme le bilan (statut vide ou
+ *   inconnu) ; comptée à part, jamais listée. Une réponse fausse sans valeur
+ *   enregistrée est listée, avec une réponse vide.
  * - **Groupe** : même énoncé tiré ET même réponse (les tirages sont aléatoires :
  *   deux réponses identiques ne se comparent qu'à énoncé identique). L'énoncé se
  *   compare sans la position dans la copie ni les métadonnées de génération
@@ -75,6 +76,9 @@ const GENERATION_KEYS: readonly string[] = [POSITION_KEY, 'generatedAt', 'seed']
 
 const WRONG_STATUSES: readonly string[] = ['incorrect', 'bad_form', 'unoptimal_form'];
 
+/** Statuts comptés « avec réponse » par le bilan ; tout autre statut = sans réponse */
+const ANSWERED_STATUSES: readonly string[] = ['correct', ...WRONG_STATUSES];
+
 const DEFAULT_NAME = 'Élève';
 
 // Functions
@@ -113,6 +117,14 @@ function valuesOf(userAnswer: unknown): string[] | null {
 	return Array.isArray(value) ? value.map(String) : null;
 }
 
+/** Motif enregistré d'une question (ex. non corrigée faute de temps), ou undefined */
+function feedbackOf(userAnswer: unknown): string | undefined {
+	if (!userAnswer || typeof userAnswer !== 'object' || !('feedback' in userAnswer))
+		return undefined;
+	const feedback = (userAnswer as { feedback: unknown }).feedback;
+	return typeof feedback === 'string' ? feedback : undefined;
+}
+
 /** Statut enregistré → statut de validation, ou null (statut vide ou inconnu) */
 function wrongStatus(status: string | null): ValidationStatus | null {
 	return status !== null && WRONG_STATUSES.includes(status) ? (status as ValidationStatus) : null;
@@ -130,19 +142,25 @@ export function computeQuestionErrors(
 	rows: ReadonlyArray<QuestionErrorAnswer>,
 	budget: DetailBudget = {}
 ): Extract<EvaluationQuestionErrors, { status: 'ok' }> {
-	// Réponses « avec réponse » : valeurs présentes ET statut connu
-	const answered = rows.filter((row) => {
-		const status = row.status;
-		return valuesOf(row.userAnswer) !== null && status !== null && status !== 'empty';
-	});
+	// « Avec réponse » selon le STATUT seul, comme le bilan (`columnOf`) : les
+	// comptes du panneau et de la ligne du bilan ne peuvent pas diverger
+	const answered = rows.filter(
+		(row) => row.status !== null && ANSWERED_STATUSES.includes(row.status)
+	);
 	const withoutAnswer = rows.length - answered.length;
 
 	const details = detailsWithinBudget(
-		answered.map((row) => ({
-			instance: servedInstance(row.instance),
-			answer: { values: valuesOf(row.userAnswer) ?? [] },
-			status: row.status as ValidationStatus
-		})),
+		answered.map((row) => {
+			const values = valuesOf(row.userAnswer);
+			const feedback = feedbackOf(row.userAnswer);
+			return {
+				instance: servedInstance(row.instance),
+				answer: values === null ? null : { values },
+				status: row.status as ValidationStatus,
+				// Question non corrigée faute de temps : jamais recalculée (détail indisponible)
+				...(feedback !== undefined && { feedback })
+			};
+		}),
 		budget
 	);
 

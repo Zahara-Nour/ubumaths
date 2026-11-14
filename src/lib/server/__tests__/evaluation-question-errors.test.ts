@@ -12,6 +12,7 @@ import { QUESTION_ERRORS_MESSAGE } from '$lib/types/evaluation-breakdown';
 import type { QuestionInstance } from '$lib/questions/types';
 import type { DetailedVerdict, StudentAnswer } from '$lib/utils/answer-validator';
 import { createFakeSupabase, type Result } from './helpers/fake-supabase';
+import { GRADING_BUDGET_EXCEEDED_FEEDBACK } from '../grading-budget';
 
 const EVALUATION = '8b9c0d1e-8888-4888-8888-888888888888';
 const TEMPLATE = '4d5e6f70-4444-4444-8444-444444444441';
@@ -70,13 +71,29 @@ describe('computeQuestionErrors', () => {
 		]);
 	});
 
-	it('sans réponse : compté à part, jamais listé', () => {
+	it('sans réponse : selon le statut seul, comme le bilan ; compté à part, jamais listé', () => {
 		const result = computeQuestionErrors(
-			[row('Ada', 'incorrect', null), row('Bob', 'empty', ['']), row('Cléo', null, null)],
+			[row('Bob', 'empty', ['']), row('Cléo', null, null), row('Dan', 'inconnu', ['3'])],
 			{ validate }
 		);
 		expect(result.withoutAnswer).toBe(3);
 		expect(result.groups).toEqual([]);
+	});
+
+	it('faux sans valeur enregistrée : faux comme dans le bilan, listé avec une réponse vide', () => {
+		const result = computeQuestionErrors([row('Ada', 'incorrect', null)], { validate });
+		expect(result.withoutAnswer).toBe(0);
+		expect(result.groups).toHaveLength(1);
+		expect(result.groups[0]).toMatchObject({ students: ['Ada'], status: 'incorrect' });
+	});
+
+	it('question non corrigée faute de temps : détail indisponible, jamais recalculé', () => {
+		const late: QuestionErrorAnswer = {
+			...row('Ada', 'incorrect', ['ok']),
+			userAnswer: { value: ['ok'], feedback: GRADING_BUDGET_EXCEEDED_FEEDBACK }
+		};
+		const result = computeQuestionErrors([late], { validate });
+		expect(result.groups[0].verdict).toMatchObject({ unavailable: true, status: 'incorrect' });
 	});
 
 	it('même énoncé et même réponse : un groupe avec la liste des noms', () => {
@@ -131,9 +148,10 @@ describe('computeQuestionErrors', () => {
 			],
 			{ validate }
 		);
+		// Dan : faux sans valeur enregistrée, compté comme dans le bilan (cases vides = fausses)
 		expect(result.blanks).toEqual([
-			{ blank: 1, errors: 1, answers: 3 },
-			{ blank: 2, errors: 2, answers: 3 }
+			{ blank: 1, errors: 2, answers: 4 },
+			{ blank: 2, errors: 3, answers: 4 }
 		]);
 	});
 

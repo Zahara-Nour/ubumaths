@@ -284,8 +284,9 @@ chaque ligne « par question » du bilan se déplie ; les erreurs sont lues au p
 
 - **Mêmes copies que le bilan** (`bestCopies`, copies avec réponses tous modèles confondus), mêmes gardes
   que la page (rôle, auteur du contrôle, mode test), client du prof sous la RLS existante.
-- **Réponses listées** : fausses, mauvaise forme, forme non optimale ; justes jamais listées ; sans réponse
-  comptées à part. Chacune rendue par `CorrectionCard` avec le verdict par case recalculé par le serveur
+- **Réponses listées** : fausses, mauvaise forme, forme non optimale (une réponse fausse sans valeur
+  enregistrée comprise) ; justes jamais listées ; sans réponse comptées à part, **selon le statut seul**,
+  comme le bilan. Question non corrigée faute de temps : détail indisponible, jamais recalculé. Chacune rendue par `CorrectionCard` avec le verdict par case recalculé par le serveur
   (`detailsWithinBudget`, détail « indisponible » possible), énoncé tiré lu dans
   `test_answers.question_instance`, nom de l'élève en texte.
 - **Regroupement** : même énoncé tiré (sans position ni `generatedAt` / `seed`) **et** même réponse → un
