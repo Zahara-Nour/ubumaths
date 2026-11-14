@@ -6,7 +6,7 @@ import { construireSourceSandbox, NOMS_INTERDITS_EN_PARAMETRE } from '../js-sand
 // sandbox en mode strict → SyntaxError à chaque exécution, quel que soit le programme.
 function executer(noms: string[], valeurs: unknown[], code: string): unknown {
 	const fn = new Function(construireSourceSandbox(noms, code));
-	return fn.apply(null, valeurs);
+	return fn(...valeurs);
 }
 
 describe('construireSourceSandbox', () => {
