@@ -11,7 +11,7 @@ import type { EvaluationQuestionErrors } from '$lib/types/evaluation-breakdown';
 export interface PointTemplateErrors {
 	templateId: string;
 	title: string;
-	/** Réponses de séries au-delà du plafond, non lues (les plus anciennes) */
+	/** Réponses de séries non montrées : au-delà du plafond (les plus anciennes) ou du budget de temps */
 	capped: boolean;
 	errors: Extract<EvaluationQuestionErrors, { status: 'ok' }>;
 }

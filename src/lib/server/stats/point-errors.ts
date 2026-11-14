@@ -92,6 +92,16 @@ const logger = createServerLogger('server/stats/point-errors');
 /** Lieux de série où l'élève tape sa réponse (les seuls qui gardent une réponse) */
 const ANSWERED_PLACES = ['typing', 'mock_test', 'number_race'];
 
+/** Élèves par requête (l'adresse porte chaque identifiant) */
+const STUDENT_BATCH_SIZE = 100;
+
+/**
+ * Budget de temps de TOUTE la requête (rejeu des énoncés + verdicts recalculés),
+ * partagé entre les modèles du point : au-delà, plus aucun énoncé rejoué (le
+ * modèle le dit, comme au plafond) ni verdict recalculé (détail indisponible).
+ */
+const REQUEST_BUDGET_MS = 5_000;
+
 // Functions
 
 /** Verdict d'une trace : statut de la trace, case par case selon `part_verdicts` */
@@ -138,11 +148,15 @@ export function seriesTraceAnswer(
 	};
 }
 
-/** Énoncés rejoués d'un modèle, un par graine */
-function replayer(template: QuestionTemplate): (seed: number) => QuestionInstance | null {
+/** Énoncés rejoués d'un modèle, un par graine ; aucun au-delà du budget (`expired`) */
+function replayer(
+	template: QuestionTemplate,
+	expired: () => boolean
+): (seed: number) => QuestionInstance | null {
 	const cache = new Map<number, QuestionInstance | null>();
 	return (seed) => {
 		if (!cache.has(seed)) {
+			if (expired()) return null;
 			const result = generateInstance(template, seed);
 			cache.set(seed, result.success && result.instance ? result.instance : null);
 		}
@@ -157,8 +171,9 @@ function replayer(template: QuestionTemplate): (seed: number) => QuestionInstanc
 export function buildPointErrors(
 	templates: ReadonlyArray<{ id: string; title: string; capped: boolean }>,
 	answersByTemplate: ReadonlyMap<string, QuestionErrorAnswer[]>,
-	budget: DetailBudget = {}
+	budget: DetailBudget & { remainingMs?: () => number } = {}
 ): PointTemplateErrors[] {
+	const { remainingMs, ...detailBudget } = budget;
 	return templates
 		.flatMap((t) => {
 			const rows = answersByTemplate.get(t.id) ?? [];
@@ -168,7 +183,11 @@ export function buildPointErrors(
 					templateId: t.id,
 					title: t.title,
 					capped: t.capped,
-					errors: computeQuestionErrors(rows, budget)
+					// Budget partagé : chaque modèle n'a que ce qu'il reste
+					errors: computeQuestionErrors(
+						rows,
+						remainingMs ? { ...detailBudget, budgetMs: remainingMs() } : detailBudget
+					)
 				}
 			];
 		})
@@ -272,13 +291,19 @@ async function readControlAnswers(
 	});
 }
 
-/** Traces de séries d'un modèle, postérieures à sa modification, les plus récentes d'abord */
+/**
+ * Traces de séries d'un modèle, postérieures à sa modification, les plus
+ * récentes d'abord. Plafond appliqué PAR LA BASE : chaque lot d'élèves rend au
+ * plus `POINT_ERRORS_TRACE_CAP + 1` lignes (la dernière dit qu'il y en a plus).
+ */
 async function readSeriesTraces(
 	supabase: TypedSupabaseClient,
 	studentIds: string[],
 	template: QuestionTemplate
 ): Promise<{ traces: SeriesTraceRow[]; capped: boolean }> {
-	const traces: SeriesTraceRow[] = await readInBatches('Traces', studentIds, (batch, from, to) => {
+	const traces: SeriesTraceRow[] = [];
+	for (let start = 0; start < studentIds.length; start += STUDENT_BATCH_SIZE) {
+		const batch = studentIds.slice(start, start + STUDENT_BATCH_SIZE);
 		let query = supabase
 			.from('skill_attempts')
 			.select('id, student_id, template_id, success, seed, answer_parts, part_verdicts, created_at')
@@ -287,9 +312,17 @@ async function readSeriesTraces(
 			.in('place', ANSWERED_PLACES)
 			.not('seed', 'is', null);
 		if (template.updated_at) query = query.gt('created_at', template.updated_at);
-		return query.order('id').range(from, to);
-	});
-	const recent = [...traces].sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
+		traces.push(
+			...rowsOf(
+				'Traces',
+				await query
+					.order('created_at', { ascending: false })
+					.order('id')
+					.range(0, POINT_ERRORS_TRACE_CAP)
+			)
+		);
+	}
+	const recent = traces.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
 	return {
 		traces: recent.slice(0, POINT_ERRORS_TRACE_CAP),
 		capped: recent.length > POINT_ERRORS_TRACE_CAP
@@ -302,8 +335,11 @@ async function readSeriesTraces(
 export async function getClassPointErrors(
 	supabase: TypedSupabaseClient,
 	classId: string,
-	pointId: string
+	pointId: string,
+	clock: () => number = () => performance.now()
 ): Promise<ClassPointErrors> {
+	const startedAt = clock();
+	const remainingMs = () => Math.max(0, REQUEST_BUDGET_MS - (clock() - startedAt));
 	try {
 		const students = await readStudents(supabase, classId);
 		const links = rowsOf(
@@ -343,8 +379,8 @@ export async function getClassPointErrors(
 		const capped = new Map<string, boolean>();
 		for (const template of templates) {
 			const read = await readSeriesTraces(supabase, studentIds, template);
-			capped.set(template.id, read.capped);
-			const replay = replayer(template);
+			const replay = replayer(template, () => remainingMs() === 0);
+			let skipped = false;
 			for (const trace of read.traces) {
 				const row = seriesTraceAnswer(
 					trace,
@@ -352,14 +388,17 @@ export async function getClassPointErrors(
 					replay
 				);
 				if (row) push(template.id, row);
+				else if (remainingMs() === 0) skipped = true;
 			}
+			capped.set(template.id, read.capped || skipped);
 		}
 
 		return {
 			status: 'ok',
 			templates: buildPointErrors(
 				templates.map((t) => ({ id: t.id, title: t.title, capped: capped.get(t.id) ?? false })),
-				answersByTemplate
+				answersByTemplate,
+				{ clock, remainingMs }
 			)
 		};
 	} catch (e) {

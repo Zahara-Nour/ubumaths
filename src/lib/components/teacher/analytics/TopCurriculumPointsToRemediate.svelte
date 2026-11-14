@@ -150,7 +150,7 @@
 	</Card.Content>
 </Card.Root>
 
-{#key modalPointId}
+{#key `${classId}:${modalPointId}`}
 	<PointDetailsModal
 		bind:open={modalOpen}
 		{classId}

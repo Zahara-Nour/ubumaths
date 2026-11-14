@@ -9,7 +9,7 @@ Q4 : « clic sur une question = P4 »). David : « ok pour P4 / E4 ».
 
 _Mis à jour le 2026-11-14, PR 2 en cours._
 
-- **État** : PR 1 mergée (#2626, pas en prod). PR 2 (erreurs par point, widget « Top à remédier ») : plan écrit (§ PR 2), Q6/Q7 tranchées (séries + contrôles ; anciennes séries libres exclues) · **Prochaine action** : tests rouges du serveur `point-errors.ts`, puis implémentation · **En attente de David** : vérification à l'écran #2626 (`verifications-manuelles.md`) · **Pièges en cours** : prod sans aucune donnée pour la PR 2 (0 trace avec réponse, 0 copie de contrôle) : tester sur la base locale ; comptes = statut seul, comme le bilan · **Worktree / branche** : `../ubumaths-wt-erreurs-frequentes`, `feat/erreurs-frequentes-par-point`
+- **État** : PR 2 (erreurs par point, widget « Top à remédier ») codée sur `feat/erreurs-frequentes-par-point`, revues faites (sécurité : 0 bloquant ; code : plafond en base + budget partagé corrigés), PR à ouvrir puis CI · **Prochaine action** : PR, CI verte → merge ; puis clôture du chantier (versement) · **En attente de David** : vérification à l'écran #2626 et PR 2 (`verifications-manuelles.md`) · **Pièges en cours** : prod sans aucune donnée pour la PR 2 (0 trace avec réponse, 0 copie de contrôle) ; serveur de test : `http://localhost:5177` (worktree) · **Worktree / branche** : `../ubumaths-wt-erreurs-frequentes`, `feat/erreurs-frequentes-par-point`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -154,5 +154,6 @@ de l'ancien « Reprendre ici » abandonné). **Q7** — anciennes séries libres
 
 - 2026-11-14 : ouverture, état des lieux, phase 0 écrite.
 - 2026-11-14 : #2626 mergée (PR 1). Relecture : comptes alignés sur le bilan (statut seul), question non corrigée faute de temps jamais recalculée ; audit sécurité sans finding bloquant (mineurs laissés : modèle étranger → « aucune erreur », pas de 404 car un modèle sorti de la série garde sa ligne ; cas admin et mode test non testés au niveau route).
+- 2026-11-14 : PR 2 codée (serveur `point-errors.ts`, route, onglet « Erreurs », panneau partagé). Revues : sécurité sans bloquant ; code → plafond posé en base, budget de 5 s partagé par la requête, libellé « réponses écrites », clé de remontage avec la classe. Mineurs laissés : numérotation des cases non jugées entre sources, regroupement contrôle/série possible en deux groupes, contrôles lus sans borne de date.
 - 2026-11-14 : PR 2 — état des lieux prod, plan technique, Q6 (séries + contrôles) et Q7 (anciennes séries libres exclues) tranchées.
 - 2026-11-14 : phase 0 tranchée : E4 retiré, PR 1 puis PR 2, nominatif, regroupement à énoncé identique ; deux futurs chantiers.

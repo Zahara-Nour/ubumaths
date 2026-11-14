@@ -22,7 +22,6 @@
 	import {
 		POINT_ERRORS_EMPTY,
 		POINT_ERRORS_MESSAGE,
-		POINT_ERRORS_TRACE_CAP,
 		type ClassPointErrors,
 		type PointTemplateErrors
 	} from '$lib/types/point-errors';
@@ -66,6 +65,12 @@
 		} catch {
 			errorsState = { phase: 'error' };
 		}
+	}
+
+	/** Réponses écrites = comptées moins sans réponse */
+	function writtenLabel(entry: PointTemplateErrors): string {
+		const n = entry.errors.answers - entry.errors.withoutAnswer;
+		return `${n} réponse${n > 1 ? 's' : ''} écrite${n > 1 ? 's' : ''}`;
 	}
 
 	function handleTabChange(value: string): void {
@@ -123,12 +128,9 @@
 								<section class="space-y-1">
 									<h3 class="font-medium"><InlineMarkdown content={entry.title} /></h3>
 									<p class="text-xs text-muted-foreground">
-										{entry.errors.answers} réponse{entry.errors.answers > 1 ? 's' : ''} écrite{entry
-											.errors.answers > 1
-											? 's'
-											: ''}
+										{writtenLabel(entry)}
 										{#if entry.capped}
-											· séries : les {POINT_ERRORS_TRACE_CAP} plus récentes{/if}
+											· séries : seules les réponses les plus récentes sont montrées{/if}
 									</p>
 									<QuestionErrorsPanel errors={entry.errors} />
 								</section>

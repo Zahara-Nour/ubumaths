@@ -342,6 +342,25 @@ describe('getClassPointErrors', () => {
 		expect(result.templates[0].errors.answers).toBe(POINT_ERRORS_TRACE_CAP);
 	});
 
+	it('plafond posé par la base : plus récentes d’abord, CAP + 1 lignes au plus', async () => {
+		const fake = fakeFrom(readable());
+		await getClassPointErrors(fake.client, CLASS, POINT);
+		const [query] = fake.on('skill_attempts');
+		expect(called(query, 'order', 'created_at', { ascending: false })).toBe(true);
+		expect(called(query, 'range', 0, POINT_ERRORS_TRACE_CAP)).toBe(true);
+	});
+
+	it('budget de temps épuisé : aucun énoncé rejoué, le modèle le dit ; les contrôles restent', async () => {
+		let now = 0;
+		// Chaque lecture de l'horloge avance d'une minute : budget épuisé dès le rejeu
+		const clock = () => (now += 60_000);
+		const result = await getClassPointErrors(fakeFrom(readable()).client, CLASS, POINT, clock);
+		if (result.status !== 'ok') throw new Error('attendu ok');
+		const [entry] = result.templates;
+		expect(entry.capped).toBe(true);
+		expect(entry.errors.groups.flatMap((g) => g.students)).toEqual(['Ada Lovelace']);
+	});
+
 	it('aucune réponse écrite : liste vide', async () => {
 		const tables = readable();
 		tables.test_sessions = { data: [] };

@@ -94,7 +94,12 @@ contrôle (`QuestionErrorsPanel.svelte`, partagé avec [evaluations.md](evaluati
   par `generateInstance(modèle, graine)` (une génération par graine) ; trace réussie = juste, ratée =
   faux ; verdict par case = `part_verdicts` stocké, jamais recalculé (longueur différente des réponses →
   détail indisponible) ; rien de tapé = sans réponse. Les `POINT_ERRORS_TRACE_CAP` (200) traces les plus
-  récentes par modèle ; au-delà, le modèle le dit.
+  récentes par modèle, plafond posé par la base (tri `created_at` décroissant, `range`).
+- **Budget de temps** (`REQUEST_BUDGET_MS`, 5 s) partagé par toute la requête : rejeu des énoncés et verdicts
+  recalculés des contrôles. Au-delà : plus aucun énoncé rejoué, verdict « indisponible ». Un modèle dont des
+  traces ne sont pas montrées (plafond ou budget) le dit (« seules les réponses les plus récentes »).
+- **Écart connu** : les copies de contrôle de la classe sont lues sans borne de date (règle du bilan :
+  copie avec réponses, tous modèles confondus) ; sans effet à l'échelle mono-prof.
 - **Exclus** : flash-cards (aucune réponse tapée), traces de contrôle (ni réponse ni graine, déjà dans
   `test_answers`), anciennes séries libres (`test_answers` d'une séance sans contrôle, circuit fermé le
   2026-11-11, décision Q7).
