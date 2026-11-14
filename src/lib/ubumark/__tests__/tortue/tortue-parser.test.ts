@@ -24,6 +24,15 @@ describe('parseTortueContent', () => {
 		expect(node.spec?.modele).toHaveLength(4);
 	});
 
+	it('montrer: oui et figure de plus de 500 segments : refusé (l’énoncé masqué ne se relirait plus)', () => {
+		const pointilles =
+			'attendu: répéter 600 [ avancer 1 ; lever le stylo ; avancer 1 ; baisser le stylo ]';
+		expect(parseTortueContent(pointilles).errors).toEqual([]);
+		const node = parseTortueContent([pointilles, 'montrer: oui'].join('\n'));
+		expect(node.spec).toBeNull();
+		expect(node.errors.map((e) => e.message).join(' ')).toMatch(/500 segments au plus/);
+	});
+
 	it('case: lue', () => {
 		expect(parseTortueContent(['case: 2', CARRE].join('\n')).caseIndex).toBe(2);
 	});

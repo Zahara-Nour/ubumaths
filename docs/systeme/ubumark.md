@@ -1016,11 +1016,13 @@ Toujours une question : le bloc porte sa case (`caseIndex`, posé par le génér
 (obligatoire) : programme de référence en notation texte ([blockly](blockly.md) § Programme
 tortue en réponse) ; il doit se lire, s'exécuter et tracer au moins un trait, sinon erreur
 d'auteur située. `montrer: oui | non` (défaut `non`) : la figure à reproduire (`spec.modele`,
-segments normalisés). `comparer: position | forme` (défaut `position`). Clés inconnues, valeurs
+segments normalisés ; avec `montrer: oui`, 500 segments au plus, `TORTUE_FIGURE_MAX_SEGMENTS`,
+sinon l'énoncé masqué ne se relirait plus). `comparer: position | forme` (défaut `position`). Clés inconnues, valeurs
 hors liste, clé en double : refus. Masqué (évaluation notée, `maskTortue`) : `attendu: ?`, et
 avec `montrer: oui` une ligne `figure: x1 y1 x2 y2 ; …` (`figureText`) qui porte la figure
 sans le programme ; `figure:` écrite par un auteur est refusée. Dans un item de liste : nœud lu,
-sans case. Éditeur riche : bloc de code `tortue`, texte gardé. Écran et PDF : PR 4b.
+sans case ; masqué quand même (cité ou en retrait, `attendu:` reste la réponse), et vu par
+`findUnmaskedAnswers`. Éditeur riche : bloc de code `tortue`, texte gardé. Écran et PDF : PR 4b.
 
 **Figure partagée en parts égales** (chantier [fractions-a-colorier](../archive/wip/fractions-a-colorier-progress.md),
 PR 1 : affichage ; PR 2 : `colorier:` ; PR 3 : `unites:`) — `src/lib/ubumark/__tests__/partage/` :

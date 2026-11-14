@@ -14,6 +14,7 @@
  */
 
 import { lirePiles, nombreDeTours, premierBlocInconnu, valeur, type BlocLu } from './interpreteur';
+import { MAX_ANSWER_LENGTH } from '$lib/questions/submission';
 
 // =============================================================================
 // Types
@@ -34,8 +35,13 @@ type Jeton = { type: '[' | ']' | ';' } | { type: 'mot'; mot: string };
 // Constantes
 // =============================================================================
 
-/** Longueur maximale d'un programme écrit (celle d'une réponse, `MAX_ANSWER_LENGTH`). */
-export const LONGUEUR_MAX_PROGRAMME = 2_000;
+/**
+ * Longueur maximale d'un programme écrit : un caractère de moins qu'une réponse
+ * (`MAX_ANSWER_LENGTH`). L'envoi tronque une réponse trop longue à `MAX_ANSWER_LENGTH` ;
+ * un programme de cette longueur exacte peut donc être coupé, et rejoué comme un autre
+ * programme : il est refusé.
+ */
+export const LONGUEUR_MAX_PROGRAMME = MAX_ANSWER_LENGTH - 1;
 
 /** Répétitions imbriquées au plus. */
 const PROFONDEUR_MAX = 50;
@@ -130,7 +136,10 @@ function normaliser(mot: string): string {
 
 function decouper(texte: string): Jeton[] {
 	const jetons: Jeton[] = [];
-	for (const morceau of texte.split(/(\[|\]|;|\n)|\s+/)) {
+	// Retour à la ligne de Windows ou d'un champ de saisie (`\r\n`) : un seul séparateur ;
+	// les blancs autour d'un retour à la ligne ne l'avalent pas
+	const lignes = texte.replace(/\r\n?/g, '\n');
+	for (const morceau of lignes.split(/(\[|\]|;|\n)|[^\S\n]+/)) {
 		if (!morceau) continue;
 		if (morceau === '[' || morceau === ']' || morceau === ';') jetons.push({ type: morceau });
 		else if (morceau === '\n') jetons.push({ type: ';' });

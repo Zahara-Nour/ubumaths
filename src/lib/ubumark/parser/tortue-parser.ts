@@ -259,6 +259,18 @@ export function parseTortueContent(source: string): TortueNode {
 	if (!seen.has('attendu')) {
 		fail(1, `il manque la ligne attendu: (le programme de référence, ex. ${EXEMPLE_ATTENDU})`);
 	}
+	// La figure montrée part dans `figure:` en évaluation notée : au-delà de la limite,
+	// l'énoncé masqué ne se relirait plus (bloc indisponible pour l'élève)
+	if (
+		montrer &&
+		segmentsAttendus &&
+		normaliserSegments(segmentsAttendus).length > TORTUE_FIGURE_MAX_SEGMENTS
+	) {
+		fail(
+			seen.get('attendu') ?? 1,
+			`attendu: figure trop grande pour montrer: oui (${TORTUE_FIGURE_MAX_SEGMENTS} segments au plus)`
+		);
+	}
 	if (seen.has('figure') && !attenduMasque) {
 		fail(
 			seen.get('figure') ?? 1,

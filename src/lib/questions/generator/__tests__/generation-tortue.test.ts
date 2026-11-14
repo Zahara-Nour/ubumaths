@@ -193,6 +193,19 @@ describe('évaluation notée : l’énoncé envoyé ne dit pas le programme', ()
 		expect(node.spec?.modele).toHaveLength(4);
 	});
 
+	it('bloc cité ou en retrait : masqué aussi, et vu par la garde', () => {
+		for (const statement of [
+			['- Trace un carré :', '', '  ```tortue', `  ${ATTENDU}`, '  ```'].join('\n'),
+			['> ```tortue', `> ${ATTENDU}`, '> ```'].join('\n')
+		]) {
+			expect(findUnmaskedAnswers(statement)).toEqual(['tortue']);
+			const masked = maskGestureAnswers(statement);
+			expect(masked).not.toContain('avancer');
+			expect(masked).toMatch(/^(  |> )attendu: \?$/m);
+			expect(findUnmaskedAnswers(masked)).toEqual([]);
+		}
+	});
+
 	it('la garde voit un programme tortue non masqué', () => {
 		expect(findUnmaskedAnswers(tortue(ATTENDU))).toEqual(['tortue']);
 		expect(findUnmaskedAnswers(maskGestureAnswers(tortue(ATTENDU, 'montrer: oui')))).toEqual([]);

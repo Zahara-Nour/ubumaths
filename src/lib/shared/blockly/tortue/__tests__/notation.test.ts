@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { executerTortue } from '../interpreteur';
 import { etatVersTexte, LONGUEUR_MAX_PROGRAMME, texteVersEtat } from '../notation';
+import { MAX_ANSWER_LENGTH } from '$lib/questions/submission';
 
 // =============================================================================
 // Aides
@@ -186,6 +187,27 @@ describe('texteVersEtat', () => {
 		expect(texteVersEtat('répéter 4 [ avancer 1')).toMatchObject({ ok: false });
 		expect(texteVersEtat('avancer 1 ]')).toMatchObject({ ok: false });
 		expect(texteVersEtat('répéter 4 avancer 1')).toMatchObject({ ok: false });
+	});
+
+	it('retour à la ligne précédé d’une espace, ou `\\r\\n` : séparateur', () => {
+		const attendu = trace('avancer 3 ; tourner à droite 90 ; avancer 2');
+		for (const texte of [
+			'avancer 3 \ntourner à droite 90\n avancer 2',
+			'avancer 3\r\ntourner à droite 90\r\navancer 2',
+			'avancer 3\rtourner à droite 90 \r\n avancer 2'
+		]) {
+			expect(trace(texte).segments).toEqual(attendu.segments);
+		}
+	});
+
+	it('longueur d’une réponse tronquée par l’envoi : refusée ; un caractère de moins : lue', () => {
+		const juste = 'avancer 1' + ' '.repeat(LONGUEUR_MAX_PROGRAMME - 'avancer 1'.length);
+		expect(juste).toHaveLength(MAX_ANSWER_LENGTH - 1);
+		expect(texteVersEtat(juste)).toMatchObject({ ok: true });
+		expect(texteVersEtat(juste + ' ')).toMatchObject({
+			ok: false,
+			message: 'Programme trop long.'
+		});
 	});
 
 	it('imbrication trop profonde ou texte trop long : refusé sans planter', () => {

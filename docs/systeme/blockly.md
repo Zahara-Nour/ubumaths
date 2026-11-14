@@ -125,11 +125,13 @@ journal.
 
 - **Notation texte** (`notation.ts`) : `avancer n`, `reculer n`, `tourner à droite n`,
   `tourner à gauche n`, `lever le stylo`, `baisser le stylo`, `répéter n [ … ]`, séparées par `;`
-  ou un retour à la ligne. Lecture souple (accents, majuscules, espaces, virgule ou point
+  ou un retour à la ligne (`\r\n` compris, blancs autour admis). Lecture souple (accents, majuscules, espaces, virgule ou point
   décimal) ; écriture canonique (accents, virgule, `;`, `[ … ]` espacés). C'est ce que l'auteur
   écrit dans `attendu:` et ce qui est **enregistré** comme réponse de l'élève : une réponse fait au
-  plus 2 000 caractères (`MAX_ANSWER_LENGTH`, `LONGUEUR_MAX_PROGRAMME`) et l'état Blockly
-  sérialisé est trop bavard (un carré ≈ 700 caractères).
+  plus 2 000 caractères (`MAX_ANSWER_LENGTH`) et l'état Blockly sérialisé est trop bavard (un
+  carré ≈ 700 caractères). `LONGUEUR_MAX_PROGRAMME` = `MAX_ANSWER_LENGTH - 1` : l'envoi tronque
+  une réponse trop longue à `MAX_ANSWER_LENGTH`, un programme de cette longueur exacte peut avoir
+  été coupé (et rejoué comme un autre programme) : il est refusé (« Programme trop long »).
 - `etatVersTexte` suit l'exécution : piles de haut en bas, blocs désactivés et nombres posés
   seuls ignorés, entrée vide → 0, répétitions à l'entier inférieur ; un bloc inconnu refuse tout.
   `texteVersEtat` rend une seule pile (`controls_repeat`, ombres `math_number`), rejouable par

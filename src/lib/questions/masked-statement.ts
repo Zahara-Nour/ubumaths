@@ -640,7 +640,8 @@ export function findUnmaskedAnswers(statement: string): string[] {
 				)
 		),
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
-		...leaks('tortue', own(findTortuesToProgram(statement)), keyMasked(['attendu'])),
+		// Bloc cité ou en retrait compris : `attendu:` est la réponse elle-même, où qu'il soit
+		...leaks('tortue', findTortuesToProgram(statement), keyMasked(['attendu'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
 		),
@@ -706,10 +707,8 @@ export function maskGestureAnswers(statement: string): string {
 		() => (line, rank) => courbePoints(line, rank) ?? courbeLine(line, rank)
 	);
 	maskBlocks(findTrigCirclesToPlace(statement), () => placer);
-	maskBlocks(
-		findTortuesToProgram(statement).filter((block) => !block.nested),
-		maskTortue
-	);
+	// Tous les blocs, cités ou en retrait compris : `attendu:` est la réponse elle-même
+	maskBlocks(findTortuesToProgram(statement), maskTortue);
 	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, maskedPlacerValue));
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	maskBlocks(findBuildCollections(statement), () => build);

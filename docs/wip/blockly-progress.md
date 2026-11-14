@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, phase 0 de la PR 4 validée._
+_Mis à jour le 2026-11-14, PR 4a revue et prête à ouvrir._
 
-- **État** : PR 1 à 3c mergées ; **PR 4a en cours** (logique du geste « programme » tortue, sans écran, cf. § PR 4a) · **Prochaine action** : ouvrir la PR 4a, puis la 4b (écran + PDF) · **En attente de David** : avis sur les choix listés au § PR 4a (`montrer:` à `non` par défaut, `forme` = 8 symétries) · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; réponse tronquée à 2 000 caractères par l'envoi → la refuser à l'écran (4b) ; `index.ts` de `tortue/` importe Blockly : côté serveur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; ports 5176+ souvent pris · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-geste-reponse`
+- **État** : PR 1 à 3c mergées ; **PR 4a** (logique du geste « programme » tortue, sans écran) revue, correctifs faits, PR ouverte · **Prochaine action** : merger la 4a (CI verte), puis la 4b (écran + PDF + catalogue) · **En attente de David** : avis sur les choix listés au § PR 4a (`montrer:` à `non` par défaut, `forme` = 8 symétries) ; ne publier aucun modèle tortue avant la 4b (pas d'écran pour répondre) · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; programme ≥ 2 000 caractères refusé par `texteVersEtat` → l'écran (4b) doit le refuser avant l'envoi ; `index.ts` de `tortue/` importe Blockly : côté serveur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; ports 5176+ souvent pris · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-geste-reponse`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -229,3 +229,11 @@ dessiné, aperçu de l'éditeur), PDF (« À faire sur Chiphre »), catalogue de
 - **Choix faits sans David, à lui signaler** : `montrer:` vaut `non` par défaut ; `forme`
   n'accepte que les 8 symétries du quadrillage (pas une rotation de 45°) ; une réponse de plus de
   2 000 caractères est tronquée par l'envoi (`toAnswer`) → l'écran (4b) doit la refuser avant.
+- **Revue (code-reviewer Opus, 2026-11-14)** : aucun programme faux jugé juste, aucune fuite de
+  `attendu:`. Corrigés, tests rouges sans le correctif vérifiés : figure `montrer: oui` de plus
+  de 500 segments refusée à l'auteur (l'énoncé masqué ne se relisait plus) ; `\r\n` et
+  « espace + retour à la ligne » lus comme séparateurs ; `LONGUEUR_MAX_PROGRAMME` =
+  `MAX_ANSWER_LENGTH - 1` (une réponse tronquée par l'envoi est refusée côté serveur, plus jugée
+  comme un autre programme) ; bloc cité ou en retrait masqué et vu par la garde. Reste, à dire à
+  David : **entre 4a et 4b, une question tortue publiée n'a aucun écran pour répondre** (ni
+  carte, ni PDF) → ne pas publier de modèle tortue avant la 4b.
