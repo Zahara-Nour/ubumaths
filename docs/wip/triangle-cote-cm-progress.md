@@ -9,13 +9,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot codé et poussé (pas de PR)._
+_Mis à jour le 2026-11-14, après #2660._
 
-- **État** : phase 0 validée, lot unique codé sur la branche, tests verts · **Prochaine action** : revue
-  (`code-reviewer` en opus : correction des réponses), PR, puis point 5 (modèle 6-173) · **En attente de
-  David** : confirmation des choix faits seul (Journal, 2026-11-14) · **Pièges en cours** : un cercle ouvert sur
-  une graduation n'est pas « construit » pour `constructionOf` (`instruments.ts`) : c'est le cœur du travail ·
-  **Worktree / branche** : `../ubumaths-wt-triangle-cote-cm` · `feat/triangle-cote-cm`
+- **État** : outil livré sur `main` (#2658 triangle quelconque coté en cm, #2660 côté d'angle qui passe par C = [AC]) ; pas encore en prod ; vérification à la main notée (`verifications-manuelles.md`, #2658) · **Prochaine action** : point 5, variations en cm du modèle 6-173 (contenu : par le prof, écriture en prod sur demande explicite de David), puis clore · **En attente de David** : 4 choix faits seul au lot 1 (Journal, 1, 3, 4, 5 ; le 2 remplacé par l'option A, le 5 remplacé : palette entière exigée avec l'angle) ; 3 points mineurs de la revue de #2660 (Journal, fin) — reco : aligner le (1) « un seul C » du lot 7 sur le cas en cm ; `deploy:prod` · **Pièges en cours** : #2660 change aussi le juge du lot 7 en prod (même geste sur papier) · **Worktree / branche** : aucun (retiré après #2660)
 
 ## Ce qui existe (lu dans le code, 2026-11-14)
 
