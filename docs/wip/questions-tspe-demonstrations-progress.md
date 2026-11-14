@@ -10,12 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 11 écrit (§ 44), PR des fichiers pas encore ouverte._
+_Mis à jour le 2026-11-14, lot 11 écrit et vu à l'écran (§ 44), PR des fichiers ouverte._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
   § 35, lots 9 à 15) : lots 9 et 10 publiés, lot 11 écrit et vérifié (§ 44), 19 restants après lui.
-- **Prochaine action** : lot 11, aperçu admin (brouillons locaux du § 44 ; serveur 5176 à relancer, il avait échoué au
-  démarrage), puis PR des fichiers (branche `feat/questions-tspe-approfondissements-11`, déjà commitée), CI, merge ;
+- **Prochaine action** : lot 11, PR des fichiers (branche `feat/questions-tspe-approfondissements-11`) : CI, merge ;
   puis David lance `create-questions --publier` ; migration de rangement avec la **sous-notion neuve** « récurrence
   linéaire d'ordre 2 » (Suites récurrentes, 395), comme D4 de la 1re.
 - **En attente de David** : rien.
@@ -898,4 +897,6 @@ Défauts vus dans les aperçus et corrigés : √8, √12… non simplifiés (A 
 Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (44 specs vertes), 0 `\textcolor` hors `$` ;
 409 formules distinctes des aperçus passées à `validateLatex` + accolades, 0 problème ; `create-questions` en
 simulation sur la prod : 4 « à créer », aucun titre pris ; brouillons en base locale (copie hors dépôt : 0ac17302,
-89db2744, 30742c88, df24b682). Reste : aperçu admin à l'écran.
+89db2744, 30742c88, df24b682) ; aperçu admin vu à l'écran : 394 (a) joué « Juste » (9/(n + 1), ℓ = −5),
+395 (a) joué faux (u₃ = 5 au lieu de 6 : case 2 fausse, case 1 juste), 396 (c) « 76/27 » joué « Juste », étapes
+à ranger de 571 rendues.
