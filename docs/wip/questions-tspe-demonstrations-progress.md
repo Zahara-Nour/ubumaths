@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, fichiers du lot 15 (§ 62)._
+_Mis à jour le 2026-11-14, après #2654 (fichiers du lot 15, § 62)._
 
 - **État** : lots 1 à 14 publiés (§ 61) ; lot 15 (517, 529, 537, 538, 539, phase 0 au § 35) : fichiers écrits et
-  vérifiés, PR des fichiers ouverte (§ 62).
-- **Prochaine action** : fichiers mergés → David lance `create-questions --publier` (prod) ; migration de rangement +
+  vérifiés, mergés (#2654, § 62).
+- **Prochaine action** : David lance `create-questions --publier` (prod) ; migration de rangement +
   tags **avec la sous-notion neuve « loi de Poisson »** sous Autres lois (comme 395, § 45 : fixture de l'arbre,
   décompte) ; `id` commités dans cette PR (§ 56) ; page à cocher, verdicts, publication. Dernier lot du chantier.
 - **En attente de David** : `create-questions --publier` du lot 15 après le merge des fichiers.
@@ -22,7 +22,7 @@ _Mis à jour le 2026-11-14, fichiers du lot 15 (§ 62)._
   scripts sur la prod (`create-questions`, `publier-lot.ts`, simulations comprises) → David ; `\dots` non rendu
   (§ 14) ; `Doc-inchangée:` dans un COMMIT ; « inserted before » → `--dry-run --include-all` (§ 20) ; `cf()` (§ 48) ;
   pas de variable `e` ni `i` (§ 52) ; réponse décimale → `blankDefaults.acceptDecimal` (§ 62).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-approfondissements-15`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche (rangement 15) à créer depuis `origin/main`.
 
 ---
 
@@ -1109,3 +1109,5 @@ simulation sur la prod refusé par le mode auto (titres vérifiés par MCP à la
 hors dépôt : a7550547, 1d99c55a, e2027daa, 5487df35, f22e6fe3) ; aperçu admin vu à l'écran (port 5177) : 529
 (Y = X) joué « Juste » (`0,1`), étapes à ranger de 529 rendues, 538 (parité) joué faux (B coché à tort, correction
 affichée), 517 (P(Y = 2)) joué « Juste » (`4,5` et `3`).
+
+Mergé (#2654) : CI verte. Les `id` viendront de `create-questions --publier` (prod, lancé par David).
