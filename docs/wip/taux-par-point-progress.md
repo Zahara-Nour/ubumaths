@@ -11,9 +11,9 @@ sur les nouvelles traces (P4, P5, P6, P7, P8, P9 faits).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, phase 0 tranchée._
+_Mis à jour le 2026-11-14, plan technique écrit._
 
-- **État** : phase 0 tranchée (« je suis tes recos », § Décisions) · **Prochaine action** : plan technique (lecture des traces depuis la rentrée, regroupement par point puis notion, coût de la lecture : décider s'il faut un comptage par la base), puis tests rouges · **En attente de David** : rien · **Pièges en cours** : prod presque vide (vérifier en local, `db:seed-riche`) ; l'analytique refuse le compte admin (décision du 2026-10-11) ; prouvé = sources `auto` + `teacher`, comme `student-follow-up.ts` · **Worktree / branche** : `../ubumaths-wt-taux-par-point`, `feat/taux-par-point`
+- **État** : phase 0 tranchée, plan technique écrit (§ Plan technique) · **Prochaine action** : selon T1, PR 1 (migration `class_template_success` + intégration) ou PR unique en TypeScript · **En attente de David** : **T1** (comptage par la base ou lecture des traces) et, si base, **la question d'accès** · **Pièges en cours** : prod presque vide (vérifier en local, `db:seed-riche`) ; l'analytique refuse le compte admin (décision du 2026-10-11) ; prouvé = sources `auto` + `teacher`, comme `student-follow-up.ts` · **Worktree / branche** : `../ubumaths-wt-taux-par-point`, `feat/taux-par-point`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -34,6 +34,57 @@ _Mis à jour le 2026-11-14, phase 0 tranchée._
 - **Accès** : `requireTeacherOfClass` ; RLS `skill_attempts_select_teacher` (`is_my_student` = prof
   unique ou admin). A priori **aucune migration** ; si la lecture des traces est trop lourde, un
   comptage par la base, comme pour la régularité (`class_regularity_weeks`), serait une migration à part.
+
+## Plan technique (2026-11-14, à valider : T1)
+
+**Coût de la lecture.** Le taux a besoin de toutes les traces prouvées de la classe depuis la rentrée.
+C'est exactement la lecture que `regularite-sql` a retirée de la grille C (`outils-manquants.md`
+n° 28 : pages de 1000, à chaque ouverture). Ordre de grandeur : 30 élèves × ~150 jours × quelques
+dizaines de traces = des centaines de milliers de lignes en fin d'année. La grille A lit d'ailleurs
+`skill_attempts` sans pages (plafond `max_rows`) : ce n'est pas un modèle à suivre.
+
+- **T1 — recommandé : comptage par la base**, fonction
+  `class_template_success(p_class_id uuid, p_first_day date)` →
+  `(student_id, template_id, proved_done, proved_succeeded, declared_done)`. `security invoker`
+  (RLS du prof), `authenticated` seulement, membres `active`, `template_id` non NULL, jour de Paris
+  ≥ `p_first_day`, `success` NULL hors compte, prouvé = `auto`/`teacher`, déclaré =
+  `student_self`/`srs`. Une ligne par élève × modèle : quelques milliers au plus.
+  Livraison en deux PR (règle `db:types`) : PR 1 = migration + intégration, `db:migrate`, `db:types` ;
+  PR 2 = le code. Question d'accès attendue : **personne ne lit rien de plus** (comptes de traces
+  que le prof lit déjà par la RLS `skill_attempts_select_teacher`).
+- Autre choix : lecture des traces en TypeScript (`readInBatches`, une seule PR, pas de migration),
+  au prix de la lecture que n° 28 a jugée trop lourde.
+
+**Calcul (TypeScript, pur, testé en unitaire)** : `buildClassSuccessRates` dans
+`src/lib/server/stats/class-success-rate.ts`.
+
+1. Liens modèle → points : `question_template_points` + `isLivePoint` + `keepLinksOfGrade` (niveau de
+   la classe), comme la grille A.
+2. **Point** : pour chaque élève, les comptes de ses modèles liés au point → taux de l'élève =
+   réussis / faits (prouvé). Taux du point = moyenne des taux des élèves ayant ≥ 1 réponse prouvée
+   (Q3) ; `students` = leur nombre. Moins de 3 → `rate: null` (« pas assez de réponses », Q5).
+   Aucun prouvé mais du déclaré → `onlyDeclared` (Q2).
+3. **Notion** : même règle, chaque trace comptée **une fois** par notion (un modèle lié à deux points
+   de la même notion ne double pas l'élève). Notion = celle de `placeInTree` ; point non placé → en
+   dernier, sans notion, comme la grille A.
+4. Ordre : celui de `placeInTree` (branche › notion › point).
+5. Rentrée : `readSchoolYear` + `regularityFirstDay` (règle de la régularité, Q4).
+
+**Serveur** : `getClassSuccessRates(supabase, classId)` (lève en cas d'échec de lecture, E1) ;
+endpoint `GET /api/teacher/classes/[classId]/analytics/success-rate` (`classIdParamSchema`,
+`requireTeacherOfClass`). Réponse : `{ notions: [{ name, branch_name, rate, students,
+onlyDeclared, points: [{ id, name, rate, students, onlyDeclared }] }] }`. Aucun nom d'élève, aucune date.
+
+**UI** : `ClassSuccessRates.svelte` dans `src/lib/components/teacher/analytics/`, une carte de l'onglet
+Connaissances (après E). Notions repliées, clic → points. Messages : classe sans trace, aucun point
+prouvé, erreur dans le cadre de la carte. Rafraîchi par `refreshNonce` comme les autres widgets.
+
+**Tests d'abord** : unitaires du calcul (moyenne par élève, seuil 3, déclaré seul, `success` NULL,
+source inconnue, modèle à deux points d'une même notion, niveau de la classe, rentrée) ; endpoint
+(200, 400, 403) ; intégration de la fonction si T1 = base (comptes exacts, frontière de Paris,
+membre archivé exclu, élève hors classe → rien, `anon` 42501, rouges sans la migration).
+Revue : `code-reviewer` + `security-auditor` (données d'élèves, API). Doc : `analytique-prof.md`
+(nouveau widget), `base-de-donnees.md` si fonction.
 
 ## Phase 0 — comportements proposés (à valider)
 
@@ -73,5 +124,6 @@ _Mis à jour le 2026-11-14, phase 0 tranchée._
 
 ## Journal
 
+- 2026-11-14 : plan technique écrit ; T1 posée à David.
 - 2026-11-14 : phase 0 tranchée (« je suis tes recos »).
 - 2026-11-14 : chantier ouvert, état des lieux, phase 0 posée (Q1 à Q5).
