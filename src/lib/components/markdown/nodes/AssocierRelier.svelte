@@ -35,6 +35,7 @@
 	import { associerPlacedOf, displayedAssocierLabels } from '$lib/ubumark/utils/associer';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import AssocierContenu from './AssocierContenu.svelte';
+	import { associerItemHasBlock } from '$lib/ubumark/parser/associer-parser';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	// Types
@@ -67,6 +68,8 @@
 	let labels = $derived(displayedAssocierLabels(node));
 	let labelCount = $derived(labels.length);
 	let count = $derived(node.items.length);
+	/** Un élément contient une courbe : la colonne de gauche prend plus de place */
+	let withBlocks = $derived(node.items.some(associerItemHasBlock));
 
 	/**
 	 * Étiquette reliée à chaque élément (position affichée), `null` : pas de trait.
@@ -371,7 +374,7 @@
 			{/each}
 		</ul>
 	{:else}
-		<div {@attach watchFrame} class="relier-cadre">
+		<div {@attach watchFrame} class="relier-cadre" class:relier-avec-blocs={withBlocks}>
 			<div class="relier-colonne relier-elements">
 				{#each node.items as item, k (k)}
 					<button
@@ -479,6 +482,11 @@
 		column-gap: clamp(2rem, 12vw, 6rem);
 	}
 
+	/* Courbes à gauche : au téléphone, la courbe garde ~130 px à côté de son point */
+	.relier-avec-blocs {
+		grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+	}
+
 	.relier-colonne {
 		display: flex;
 		min-width: 0;
@@ -521,6 +529,8 @@
 
 	.relier-contenu {
 		min-width: 0;
+		/* Une courbe (lot 2) se réduit à la case plutôt que de passer sous le point */
+		flex: 0 1 auto;
 	}
 
 	.relier-case:focus-visible {

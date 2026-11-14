@@ -4,7 +4,7 @@
 
 	Texte et formules : `InlineMarkdown`, sur une ligne. Élément qui contient un bloc
 	(```courbe, lot 2 du chantier `docs/wip/associer-progress.md`) : rendu en blocs,
-	en petit (largeur bornée : 130 à 180 px), pour que deux colonnes tiennent au
+	en petit (180 px au plus, la largeur de sa case sinon), pour que deux colonnes tiennent au
 	téléphone.
 
 	@module components/markdown/nodes/AssocierContenu
@@ -36,7 +36,8 @@
 <style>
 	.associer-bloc {
 		display: block;
-		width: clamp(130px, 38vw, 180px);
+		width: 180px;
+		max-width: 100%;
 		text-align: left;
 		/* Le geste (trait, pose) se fait sur la case entière, pas dans la figure */
 		pointer-events: none;

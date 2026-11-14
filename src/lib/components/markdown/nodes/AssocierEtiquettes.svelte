@@ -30,6 +30,7 @@
 	import { associerPlacedOf, displayedAssocierLabels } from '$lib/ubumark/utils/associer';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import AssocierContenu from './AssocierContenu.svelte';
+	import { associerItemHasBlock } from '$lib/ubumark/parser/associer-parser';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
@@ -53,6 +54,8 @@
 	let labels = $derived(displayedAssocierLabels(node));
 	let labelCount = $derived(labels.length);
 	let count = $derived(node.items.length);
+	/** Un élément contient une courbe : la colonne des éléments prend plus de place */
+	let withBlocks = $derived(node.items.some(associerItemHasBlock));
 
 	/**
 	 * Étiquette posée à chaque place (position affichée), `null` : vide. Relue quand
@@ -264,7 +267,7 @@
 			</div>
 		{/if}
 
-		<div class="associer-rangees">
+		<div class="associer-rangees" class:associer-avec-blocs={withBlocks}>
 			{#each node.items as item, k (k)}
 				{@const position = placed[k]}
 				{@const correct = solution?.[k] ?? null}
@@ -385,6 +388,11 @@
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		align-items: center;
 		gap: 0.5rem 1rem;
+	}
+
+	/* Courbes à gauche : la courbe garde sa place à côté de la place à remplir */
+	.associer-avec-blocs {
+		grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
 	}
 
 	.associer-element {
