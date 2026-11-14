@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-14, phase 0 de la PR 4 validée._
 
-- **État** : PR 1 à 3c mergées (#2627, #2632, #2634, #2636, #2647) ; **PR 4 en cours** (geste de réponse « programme » tortue, phase 0 validée, cf. § PR 4) · **Prochaine action** : tests rouges puis code de la PR 4 · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir dans la PR 4 ; réponse ≤ 2 000 caractères (`MAX_ANSWER_LENGTH`) ; tests navigateur : `getByRole` ignore un élément masqué → `includeHidden: true` · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-geste-reponse`
+- **État** : PR 1 à 3c mergées ; **PR 4a en cours** (logique du geste « programme » tortue, sans écran, cf. § PR 4a) · **Prochaine action** : ouvrir la PR 4a, puis la 4b (écran + PDF) · **En attente de David** : avis sur les choix listés au § PR 4a (`montrer:` à `non` par défaut, `forme` = 8 symétries) · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; réponse tronquée à 2 000 caractères par l'envoi → la refuser à l'écran (4b) ; `index.ts` de `tortue/` importe Blockly : côté serveur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; ports 5176+ souvent pris · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-geste-reponse`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -212,3 +212,20 @@ Phase 0 présentée le 2026-11-14 ; David suit les quatre recommandations (« je
 - **Découpage** (tranché, reco 4) : tortue seule ; correction par sortie (programmes de calcul,
   5e) = PR 5 ; blocs imposés, nombre maximal de blocs, premiers modèles : plus tard.
 - Revoir la clé arrondie de `normaliserSegments`.
+
+### PR 4a — logique, sans écran (branche `feat/blockly-geste-reponse`)
+
+PR 4 coupée en deux (la chaîne d'un bloc à geste touche ~30 fichiers, cf. l'horloge `a244bd665`) :
+**4a** = notation texte, jugement, bloc ```tortue (parseur), chaîne des questions (génération,
+validation, corrigé, masquage), éditeur riche ; **4b** = écran (blocs dans la carte, corrigé
+dessiné, aperçu de l'éditeur), PDF (« À faire sur Chiphre »), catalogue des blocs.
+
+- `notation.ts` (texte ↔ état Blockly), `jugement.ts` (`position` / `forme`), `memesFormes`
+  (8 symétries du quadrillage + translation) ; `normaliserSegments` : cases de 1e-6 + voisines
+  (la frontière d'arrondi ne sépare plus une droite, test ajouté).
+- Case : `construire: 'tortue'`, type `text`, attendu `position | <programme>`
+  (`ubumark/utils/tortue-answer.ts`), message de la tortue en `feedback`. Masquage : `attendu: ?`
+  - `figure: x1 y1 x2 y2 ; …` si `montrer: oui`.
+- **Choix faits sans David, à lui signaler** : `montrer:` vaut `non` par défaut ; `forme`
+  n'accepte que les 8 symétries du quadrillage (pas une rotation de 45°) ; une réponse de plus de
+  2 000 caractères est tronquée par l'envoi (`toAnswer`) → l'écran (4b) doit la refuser avant.
