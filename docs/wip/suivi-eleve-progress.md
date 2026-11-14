@@ -7,9 +7,9 @@ validés ») : « P8 page de suivi d'un élève · P9 distinguer prouvé (corrig
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, phase 0 tranchée._
+_Mis à jour le 2026-11-14, PR 1 ouverte._
 
-- **État** : phase 0 tranchée (Q1 à Q6, recommandations validées), plan technique de la PR 1 écrit · **Prochaine action** : PR 1 — tests rouges puis code (§ PR 1 — plan technique) · **En attente de David** : rien · **Pièges en cours** : prod presque sans traces avec réponse ; la grille A lit `skill_attempts` sans pagination (plafond PostgREST), ne pas recopier · **Worktree / branche** : `../ubumaths-wt-suivi-eleve`, `feat/suivi-eleve`
+- **État** : PR 1 (page + bloc « Points du programme », prouvé / déclaré) codée, revues faites (aucun bloquant), PR ouverte, CI en cours · **Prochaine action** : merge au vert, puis PR 2 (contrôles, régularité, compétences, lien depuis la grille A) · **En attente de David** : rien · **Pièges en cours** : prod presque sans traces avec réponse ; la grille A lit `skill_attempts` sans pagination (écart noté dans `analytique-prof.md`) · **Worktree / branche** : `../ubumaths-wt-suivi-eleve`, `feat/suivi-eleve` ; serveur de test sur 5177
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -112,5 +112,6 @@ mémoire FSRS (`Teachers can view card stats of their students`) de ses élèves
 
 ## Journal
 
+- 2026-11-14 : PR 1 codée (agent), badge mis en commun avec la grille A (`curriculum-point-badge-meta.ts`), doc système (`analytique-prof.md` § Suivi d'un élève, `comptes-classes-ecoles.md`, `composants-ui.md`). Revues : code → clés de liste répétées si deux notions homonymes non voisines (corrigé, test rouge puis vert) ; sécurité sans bloquant. Mineurs laissés : test d'intégration contre la RLS (tout est mocké ; un échec RLS afficherait « pas encore de point » sans fuite), refus de l'admin tenu par le code seul (la RLS le laisse lire, comme l'analytique), assertions non nulles `!` dans `student-follow-up.ts`.
 - 2026-11-14 : phase 0 tranchée (recommandations validées), plan technique de la PR 1.
 - 2026-11-14 : chantier ouvert, état des lieux, questions de phase 0.
