@@ -10,8 +10,8 @@ couvre:
   - src/lib/stores/test-mode.svelte.ts
   - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-question-errors,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
   - 'src/lib/server/validation/{evaluations,tests,parody-evaluations,grades,chapter-series}.ts'
-  - 'src/lib/types/{evaluation,evaluation-attempt,evaluation-breakdown,test,grades,skills}.ts'
-  - 'src/lib/utils/{test-launch,test-score,grades}.ts'
+  - 'src/lib/types/{evaluation,evaluation-attempt,evaluation-breakdown,duration-signals,test,grades,skills}.ts'
+  - 'src/lib/utils/{test-launch,test-score,grades,duration-signals}.ts'
 ---
 
 # Séries, contrôles, observations
@@ -78,6 +78,7 @@ pas des notes.
 | -------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/automaths/test` (couverte par [questions.md](questions.md))                          | tous          | Page unique qui joue toutes les formes, libres ou contrôle.                                                                                                                        |
 | `POST /api/series`                                                                     | prof, admin   | Enregistrer le panier comme série. Liste et édition : `/dashboard/teacher/series`.                                                                                                 |
+| `GET /api/series/duration-signals?templates=<uuid,…>`                                  | prof, admin   | Durées sans doute trop courtes des modèles du panier (1 à 100 UUID, Zod) ; des comptes, aucun nom.                                                                                 |
 | `POST /api/tests/save`                                                                 | connecté      | Fin d'une série **libre** : gain du Palotin seulement, rien d'écrit. Refuse un contrôle.                                                                                           |
 | `/dashboard/teacher/assessments` (+ `new`, `[id]/edit`, `[id]/assign`, `[id]/results`) | prof, admin   | Créer depuis une série, régler (brouillon seulement), publier, assigner, résultats.                                                                                                |
 | `/dashboard/student/assessments` (+ `[id]/results`)                                    | élève         | Ses contrôles ; ses tentatives (`[id]` = identifiant de l'**assignation**). S'ouvre depuis « Mon travail » (« Tous mes contrôles »), y revient (`BackLink`).                       |
@@ -292,6 +293,25 @@ les cartes de la page résultats) :
   1 000 (`max_rows`). Une lecture en échec rend `{ status: 'error' }` : la section le dit, la page
   garde cartes et tableau.
 
+**Durée trop courte dans le panier et l'éditeur de série** (chantier `durees-trop-courtes`, PR 2 ;
+`getDurationSignals` dans `src/lib/server/stats/duration-signals.ts`) : même marque, posée par
+**modèle × durée**. Elle apparaît dans le panier (sous la durée d'une tuile, pour un prof ou un
+admin, lue par `GET /api/series/duration-signals` quand les modèles du panier changent) et dans
+l'éditeur de série (`/dashboard/teacher/series/[id]/edit`), qui affiche la durée de chaque ligne en
+lecture (elle se règle dans le panier). Le composant est commun : `TooShortMark.svelte`
+(`src/lib/components/series/`), utilisé aussi par le bilan. Deux sources fusionnées par élève :
+
+- les **traces de Contrôle blanc** (`skill_attempts`, lieu `mock_test`), avec durée =
+  `allotted_ms` ; une trace est manquée si `end_reason = 'timeout'` et `part_verdicts` est nul (un
+  choix coché est une case) ; fin inconnue (« Terminer ») écartée ;
+- les **réponses des contrôles** de forme `interactive`, avec la règle du bilan.
+
+Un élève compte une fois par modèle × durée, et seulement s'il a manqué **tous** ses tirages. Seuils
+du bilan. Ne comptent que les traces et les copies **postérieures à la dernière modification du
+modèle** (`question_templates.updated_at`). Carte de cours écartée. Mode test du prof respecté
+(`profiles.is_test`). Lecture : client du prof, RLS existante (`skill_attempts_select_teacher`, aucun
+accès nouveau). Un échec ne retire que la marque.
+
 **Erreurs d'une question** (chantier `erreurs-frequentes`, besoin P4 ; `getEvaluationQuestionErrors` dans
 `evaluation-question-errors.ts`, route `…/assessments/[id]/results/question-errors?template=<uuid>`) :
 chaque ligne « par question » du bilan se déplie ; les erreurs sont lues au premier dépliage. Le panneau est `QuestionErrorsPanel.svelte`, partagé avec l'onglet « Erreurs » du widget E de
@@ -438,4 +458,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14 ; durée sans doute trop courte (`durees-trop-courtes`, PR 1) le 2026-11-14.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14 ; durée sans doute trop courte (`durees-trop-courtes`, PR 1) le 2026-11-14, dans le panier et l'éditeur de série (PR 2) le 2026-11-14.

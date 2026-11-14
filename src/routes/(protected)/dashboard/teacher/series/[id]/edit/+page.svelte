@@ -7,7 +7,9 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { Minus, Plus, Trash2 } from '@lucide/svelte';
+	import { Clock, Minus, Plus, Trash2 } from '@lucide/svelte';
+	import TooShortMark from '$lib/components/series/TooShortMark.svelte';
+	import { effectiveDelay, tooShortAt } from '$lib/types/duration-signals';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitAction } from '$lib/utils/form-action';
 	import { getGradeSelectItems } from '$lib/utils/grades';
@@ -132,6 +134,15 @@
 									</span>
 								{/if}
 								<div class="flex items-center gap-2">
+									<!-- Durée par question : en lecture (elle se règle dans le panier) -->
+									<span
+										class="flex items-center gap-1 text-sm text-muted-foreground"
+										title="Durée par question"
+										data-duree
+									>
+										<Clock class="h-3.5 w-3.5" aria-hidden="true" />
+										{effectiveDelay(item.delay)}&nbsp;s
+									</span>
 									<Button
 										type="button"
 										size="icon"
@@ -161,6 +172,10 @@
 										<Trash2 class="h-4 w-4" />
 									</Button>
 								</div>
+								<TooShortMark
+									timing={tooShortAt(data.durationSignals, item.templateId, item.delay)}
+									class="w-full"
+								/>
 							</li>
 						{/each}
 					</ul>

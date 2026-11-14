@@ -23,11 +23,10 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import QuestionErrorsPanel from './QuestionErrorsPanel.svelte';
-	import { ChevronRight, Timer } from '@lucide/svelte';
+	import { ChevronRight } from '@lucide/svelte';
+	import TooShortMark from '$lib/components/series/TooShortMark.svelte';
 	import {
 		QUESTION_ERRORS_MESSAGE,
-		TOO_SHORT_LABEL,
-		tooShortSentence,
 		type BreakdownTally,
 		type EvaluationBreakdown,
 		type EvaluationQuestionErrors,
@@ -145,13 +144,7 @@
 {/snippet}
 
 {#snippet tooShortMark(row: QuestionBreakdown)}
-	{#if row.timing?.tooShort}
-		<!-- Couleur d'accent sur l'icône seule : le texte garde le contraste du tableau -->
-		<p class="mt-1 flex items-start gap-1 text-sm font-normal">
-			<Timer class="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
-			<span><strong>{TOO_SHORT_LABEL}</strong> · {tooShortSentence(row.timing)}</span>
-		</p>
-	{/if}
+	<TooShortMark timing={row.timing} class="mt-1" />
 {/snippet}
 
 {#snippet state()}
