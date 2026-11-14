@@ -221,18 +221,23 @@
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
 	let tools = $derived<ConstructionTool[]>(node.construction?.tools ?? ['droite']);
-	/** Le trait que mène la règle : le cercle au compas (PR 3), sinon le segment */
-	let rulerShape = $derived<'segment' | 'cercle'>(
-		tools.includes('compas') && !tools.includes('segment') ? 'cercle' : 'segment'
-	);
+	/** Palette au compas sans segment : le cercle de rayon donné en cm (PR 3) */
+	let compassOnly = $derived(tools.includes('compas') && !tools.includes('segment'));
 	/** Outil de départ : celui de la vérification s'il est dans la palette (le point, le segment) */
 	let firstTool = $derived.by((): ConstructionTool => {
 		// Cercle de rayon donné en cm (PR 3) : on pose la règle avant d'ouvrir le compas
-		if (rulerShape === 'cercle' && tools.includes('regle')) return 'regle';
+		if (compassOnly && tools.includes('regle')) return 'regle';
 		const own = checks[0] ? CHECK_TOOL[checks[0].kind] : null;
 		return own && tools.includes(own) ? own : (tools[0] ?? 'droite');
 	});
 	let tool = $derived(chosen?.node === node ? chosen.tool : firstTool);
+	/**
+	 * Le trait que mène la règle : le cercle au compas (PR 3 ; ou le Compas choisi
+	 * dans une palette qui a aussi le segment, triangle coté en cm), sinon le segment
+	 */
+	let rulerShape = $derived<'segment' | 'cercle'>(
+		compassOnly || (tools.includes('compas') && tool === 'compas') ? 'cercle' : 'segment'
+	);
 	/** Palette avec équerre ou compas : aimantation des instruments (hors quadrillage) */
 	let instruments = $derived(tools.some((t) => INSTRUMENT_TOOLS.includes(t)));
 	/** Report : ce qu'attend le prochain toucher (dont : reprendre Report pour une autre longueur) */
@@ -256,6 +261,13 @@
 				return 'Touche un point dans la direction du segment, pour y poser la règle.';
 			if (ruler && rulerShape === 'cercle') {
 				return 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
+			}
+			// Triangle coté en cm : le compas s'ouvre sur la règle ; avec l'angle (rapporteur), le
+			// côté se trace aussi le long de la règle (revue de #2658)
+			if (ruler && tools.includes('compas')) {
+				return tools.includes('rapporteur')
+					? 'Règle posée : touche Compas pour l’ouvrir sur la règle, ou Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.'
+					: 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
 			}
 			if (ruler && segmentMeasure) {
 				return 'Règle posée : lis la longueur du segment, puis tape-la sous la figure. Pour la reposer, touche où mettre le 0.';
@@ -685,7 +697,24 @@
 				{ points: targets.points, intersections: [], traits: [] },
 				radius
 			);
-			const first = drawing.start ? (onRuler ?? onPoint) : (onPoint ?? onRuler);
+			// Bout d'un segment : un croisement de traits (deux arcs du triangle coté en cm) passe
+			// avant la graduation de la dernière règle posée, sauf au départ (revue de #2658)
+			const start = drawing.start;
+			const crossing =
+				tool === 'segment' && start
+					? snapInstrument(
+							math,
+							{
+								points: [],
+								intersections: targets.intersections.filter(
+									(p) => Math.hypot(p.x - start.x, p.y - start.y) > radius
+								),
+								traits: []
+							},
+							radius
+						)
+					: null;
+			const first = start ? (crossing ?? onRuler ?? onPoint) : (onPoint ?? onRuler);
 			tapAt(first ?? snapWithInstruments(math, targets, radius));
 			return;
 		}

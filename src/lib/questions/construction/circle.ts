@@ -466,7 +466,7 @@ export function judgeCircles(
 					{ free, all: circleIndexes },
 					circleAt,
 					others,
-					(i) => graduationOf(circleAt(i), rulersBefore(i), rulerLength)
+					(i) => compassGraduationOf(circleAt(i), rulersBefore(i), rulerLength)
 				);
 				if (typeof verdict !== 'number') return verdict;
 				taken.add(verdict);
@@ -583,7 +583,7 @@ function judgeCentered(
  * La graduation (mm, plus de 0) où le compas est ouvert : son point d'ouverture
  * sur une graduation d'une règle posée avec son 0 au centre du cercle ; null sinon
  */
-function graduationOf(
+export function compassGraduationOf(
 	circle: DrawnCircle,
 	rulers: readonly DrawnRegle[],
 	rulerLength: number

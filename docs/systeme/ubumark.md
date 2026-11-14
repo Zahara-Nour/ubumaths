@@ -811,8 +811,11 @@ Segment · Équerre (· Report) sur papier uni, Segment seul sur quadrillage, o�
 `AC = 3 carreaux` (`TRIANGLE_SQUARES_REGEX`, unité obligatoire, 1..50, `TriangleLength.squares`) ou par deux
 points ; ou, sur papier uni, en cm (`AC = 4 cm`, `TRIANGLE_RULED_REGEX` lue par `readLengthText`, au mm
 près, `TriangleLength` `{ length, unit }`, chantier `regle-graduee`, PR 4), palette Segment · Équerre ·
-Règle graduée ; refusés : l'hypoténuse, 90° avec un autre angle, `AC = u` sur quadrillage, les carreaux sans
-quadrillage ou hors du triangle rectangle, les cm sur quadrillage ou sans l'angle droit ;
+Règle graduée ; les cm aussi hors du triangle rectangle, sur papier uni (chantier `triangle-cote-cm`) :
+`triangle ABC : AC = 4 cm ; BC = 5 cm`, palette Segment · Compas · Règle graduée, et
+`triangle ABC : CAB = 50 ; AC = 4 cm`, palette Segment · Rapporteur · Règle graduée · Compas ; refusés :
+l'hypoténuse, 90° avec un autre angle, `AC = u` sur quadrillage, les carreaux sans quadrillage ou hors du
+triangle rectangle, les cm sur quadrillage ou mêlés à un segment à reporter ;
 `angle AOy = 50`, un point du côté donné, le sommet, le nom du côté à tracer, une mesure entière de 1 à 179
 (`°` admis), un angle à construire sur papier uni, seul, palette Rapporteur · Segment ; `mesure AOB`, trois
 points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le rapporteur seul (suivi de

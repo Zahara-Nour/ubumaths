@@ -919,8 +919,8 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    carreaux.
    **Côté coté en cm** (chantier `regle-graduee`, PR 4) : `triangle ABC : CAB = 90 ; AC = 4 cm` (aussi
    `3,5 cm`, `3 cm 5 mm`, `35 mm`, au mm près ; `TriangleLength` `{ length, unit }`, `isRuledLength`),
-   papier uni, palette Segment · Équerre · Règle graduée exactement (`triangleTools`) ; les cm sans
-   l'angle droit ou sur quadrillage sont refusés par le parseur, un côté plus long que la règle
+   papier uni, palette Segment · Équerre · Règle graduée exactement (`triangleTools`) ; les cm sur
+   quadrillage, ou mêlés à un segment à reporter, sont refusés par le parseur, un côté plus long que la règle
    (`rulerLengthOf`) à la publication. Un seul triangle (Q17) : plusieurs C distincts (un de chaque côté
    de (AB) compte pour deux, un même C atteint deux fois pour un) → « Trace un seul triangle ABC. ».
    Même ordre que ci-dessus, le croisement du report remplacé par la graduation, lue au bout du trait
@@ -930,7 +930,31 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    est placé à l'œil : arrête [AC] sur une graduation de la règle. » ; puis « Ton côté [AC] mesure
    3,8 cm au lieu de 4 cm. » (dans l'unité de l'auteur). Report : hors palette, faux sans message.
    Correction : la règle posée au sommet le long de la perpendiculaire, vers le C de la correction
-   (`triangleRuler`, par `solutionRulers`), sans arc ni codage de longueur.
+   (`triangleRulers`, par `solutionRulers`), sans arc ni codage de longueur.
+   **Triangle quelconque coté en cm** (chantier `triangle-cote-cm`, phase 0 validée le 2026-11-14,
+   `judgeRuledTriangle`) : `triangle ABC : AC = 4 cm ; BC = 5 cm` (palette Segment · Compas · Règle
+   graduée) et `triangle ABC : CAB = 50 ; AC = 4 cm` (Segment · Rapporteur · Règle graduée · Compas ;
+   palette entière exigée), [AB] tracé, papier uni ; toutes les longueurs en cm ou
+   aucune (parseur). Hors palette (Report, point, droite) : faux sans message. Un seul C (Q17), puis,
+   dans l'ordre : côté manquant ; C placé à l'œil (trois longueurs : hors d'un cercle centré en A ou en
+   B, « Ton sommet C est placé à l'œil : construis-le avec ton compas. » ; avec l'angle : hors d'un côté
+   d'angle construit en V, le message du lot 7, puis ni sur une graduation d'une règle posée en V avant
+   le côté, ni sur un cercle centré en V, « Ton point C est placé à l'œil : arrête [AC] sur une
+   graduation de la règle. ») ; compas ouvert à l'œil, c'est-à-dire pas sur une graduation d'une règle
+   posée à son centre AVANT lui (`compassGraduationOf` de `circle.ts`, « Ton compas est ouvert à
+   l'œil : ouvre-le sur une graduation de la règle. ») ; mauvaise longueur, lue sur la graduation (de
+   la règle ou de l'ouverture du compas) ou au bout du trait vu (Q18, arrondie au mm) : « Ton côté
+   [AC] mesure 3,8 cm au lieu de 4 cm. » ; enfin l'angle faux (messages du lot 7, `angleFeedbackOf`).
+   Avec l'angle, la graduation de la règle et l'arc du compas sont justes tous les deux (décision 3) ;
+   le côté d'angle (segment parti de V qui porte le repère) peut dépasser C, C se lit sur lui : Q18 ne
+   vaut que pour [VC] et ce qui le prolonge depuis C (option A, David, 2026-11-14, revue de #2658).
+   Erreurs de l'auteur : celles du triangle (impossible, rapporteur qui sort, C hors de la fenêtre) et
+   un côté plus long que la règle. Correction : une règle posée au bout de chaque côté coté, vers C
+   (`triangleRulers`) ; trois longueurs : les arcs de 4 cm et 5 cm ; avec l'angle : l'angle codé, sans
+   arc. À l'écran, le Compas choisi avec une règle posée mène l'ouverture (indices, ‹ ›) comme le
+   cercle de rayon donné en cm (`rulerShape` de `FigureACompleterView`) ; règle posée, le bout d'un
+   segment va d'abord à un croisement de traits proche (deux arcs), puis à la graduation (revue de
+   #2658 : une règle laissée en B vers C ne doit pas avaler le croisement).
    Vérification `angle AOy = 50` (`construction/angle.ts`, lot 5 du chantier) : [OA) est donné (A, O
    nommés et visibles, `points` = A puis O) ; y nomme le côté à tracer (messages seulement) ; mesure
    entière de 1 à 179 (parseur). L'élève pose le rapporteur (outil `rapporteur` : centre, puis un point

@@ -136,7 +136,9 @@ export const LINE_GRID_TOOLS: ConstructionTool[] = ['droite', 'equerre', 'compas
  * avec un angle (lot 7, § 21), Rapporteur · Règle · Segment, plus le Report et
  * le Compas s'il reste une longueur à reporter ; triangle rectangle (n° 20) :
  * Segment · Équerre (· Report, ou · Règle graduée pour un côté en cm) sur papier
- * uni, Segment seul sur quadrillage
+ * uni, Segment seul sur quadrillage ; longueurs en cm (`triangle-cote-cm`) :
+ * Segment · Compas · Règle graduée, ou Segment · Rapporteur · Règle graduée ·
+ * Compas avec l'angle
  */
 export function triangleTools(
 	check: Pick<TriangleCheck, 'angles' | 'lengths'>,
@@ -148,6 +150,13 @@ export function triangleTools(
 		// Côté coté en cm (PR 4 de `regle-graduee`) : la règle graduée à la place du Report
 		if (check.lengths.some(isRuledLength)) return ['segment', 'equerre', 'regle'];
 		return check.lengths.length > 0 ? ['segment', 'equerre', 'report'] : ['segment', 'equerre'];
+	}
+	// Triangle quelconque coté en cm (chantier `triangle-cote-cm`, décision de David du
+	// 2026-11-14) : la règle graduée à la place du Report, la longueur se prend sur la règle
+	if (check.lengths.some(isRuledLength)) {
+		return check.angles.length === 0
+			? ['segment', 'compas', 'regle']
+			: ['segment', 'rapporteur', 'regle', 'compas'];
 	}
 	if (check.angles.length === 0) return [...(PLAIN_PAPER_TOOLS.triangle ?? [])];
 	const tools: ConstructionTool[] = ['rapporteur', 'droite', 'segment'];
@@ -296,7 +305,8 @@ export type TriangleLength =
 	| { side: [string, string]; squares: number }
 	/**
 	 * À la règle graduée (chantier `regle-graduee`, PR 4) : `AC = 4 cm`, en
-	 * millimètres entiers ; triangle rectangle sur papier uni seulement
+	 * millimètres entiers ; papier uni seulement (triangle rectangle, ou
+	 * quelconque depuis le chantier `triangle-cote-cm`)
 	 */
 	| { side: [string, string]; length: number; unit: LengthUnit };
 
