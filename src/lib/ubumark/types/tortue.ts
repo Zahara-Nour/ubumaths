@@ -47,6 +47,8 @@ export interface TortueSpec {
 	 * les segments de `figure:` ; null sinon
 	 */
 	modele: Segment[] | null;
+	/** Programme de départ, posé dans l'espace de travail de l'élève (`départ:`) ; null sinon */
+	depart: string | null;
 }
 
 /** Message situé, à destination de l'AUTEUR (jamais montré à l'élève) */

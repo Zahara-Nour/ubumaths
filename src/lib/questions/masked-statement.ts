@@ -10,7 +10,7 @@
  * noms, le nombre de points ou de barres, la forme. La correction ne change pas :
  * le serveur juge sur l'instance complète.
  *
- * Masqué : ```tortue (`attendu:`, la figure seule en `figure:`), ```line, ```courbe et ```trig (`placer:`), ```courbe (`tracer:` : l'équation
+ * Masqué : ```tortue (`attendu:`, la figure seule en `figure:`), ```calcul (`attendu:`), ```line, ```courbe et ```trig (`placer:`), ```courbe (`tracer:` : l'équation
  * de la droite devient `tracer: ?`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus),
@@ -52,6 +52,7 @@ import {
 	findTortuesToProgram,
 	parseTortueContent
 } from '$lib/ubumark/parser/tortue-parser';
+import { findCalculsToProgram } from '$lib/ubumark/parser/calcul-parser';
 import {
 	findHorlogesToPlace,
 	isMaskedPlacerValue,
@@ -643,6 +644,7 @@ export function findUnmaskedAnswers(statement: string): string[] {
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
 		// Bloc cité ou en retrait compris : `attendu:` est la réponse elle-même, où qu'il soit
 		...leaks('tortue', findTortuesToProgram(statement), keyMasked(['attendu'])),
+		...leaks('calcul', findCalculsToProgram(statement), keyMasked(['attendu'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
 		),
@@ -712,6 +714,9 @@ export function maskGestureAnswers(statement: string): string {
 	maskBlocks(findTrigCirclesToPlace(statement), () => placer);
 	// Tous les blocs, cités ou en retrait compris : `attendu:` est la réponse elle-même
 	maskBlocks(findTortuesToProgram(statement), maskTortue);
+	// Programme de calcul : `attendu: ?` ; les essais et le départ restent (ni l'un ni l'autre
+	// ne dit la réponse)
+	maskBlocks(findCalculsToProgram(statement), () => keyLine(ATTENDU_LINE, () => MASKED_VALUE));
 	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, maskedPlacerValue));
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	maskBlocks(findBuildCollections(statement), () => build);

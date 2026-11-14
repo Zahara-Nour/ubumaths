@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+	ecrireEssais,
 	ESSAIS_PAR_DEFAUT,
 	jugerProgrammeCalcul,
+	lireEssais,
 	lireProgrammeCalcul,
 	memesAffichages
 } from '../jugement';
@@ -104,5 +106,34 @@ describe('memesAffichages', () => {
 		expect(memesAffichages([1], [1.001])).toBe(false);
 		expect(memesAffichages([0], [1e-15])).toBe(true);
 		expect(memesAffichages([1, 2], [1])).toBe(false);
+	});
+});
+
+describe('lireEssais / ecrireEssais', () => {
+	it('lit et réécrit', () => {
+		expect(lireEssais('-3 ; 0 ; 2,5 ; −1 ; 0.5')).toEqual({
+			ok: true,
+			essais: [-3, 0, 2.5, -1, 0.5]
+		});
+		expect(ecrireEssais([-3, 0, 2.5])).toBe('−3 ; 0 ; 2,5');
+		expect(lireEssais(ecrireEssais(ESSAIS_PAR_DEFAUT))).toEqual({
+			ok: true,
+			essais: [...ESSAIS_PAR_DEFAUT]
+		});
+	});
+
+	it('refuse vide, illisible, doublon, trop de nombres', () => {
+		expect(lireEssais('')).toMatchObject({ ok: false });
+		expect(lireEssais('1 ; deux')).toMatchObject({
+			ok: false,
+			message: expect.stringMatching(/deux/)
+		});
+		expect(lireEssais('1 ; 1,0')).toMatchObject({
+			ok: false,
+			message: expect.stringMatching(/deux fois/)
+		});
+		expect(lireEssais(Array.from({ length: 21 }, (_, i) => i).join(' ; '))).toMatchObject({
+			ok: false
+		});
 	});
 });

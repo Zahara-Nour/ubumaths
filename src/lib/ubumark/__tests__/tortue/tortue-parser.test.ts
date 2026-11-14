@@ -14,8 +14,21 @@ describe('parseTortueContent', () => {
 			attendu: 'répéter 4 [ avancer 3 ; tourner à droite 90 ]',
 			montrer: false,
 			comparer: 'position',
-			modele: null
+			modele: null,
+			depart: null
 		});
+	});
+
+	it('départ: lu (avec ou sans accent), illisible refusé', () => {
+		const node = parseTortueContent([CARRE, 'départ: avancer 3 ; tourner à droite 90'].join('\n'));
+		expect(node.errors).toEqual([]);
+		expect(node.spec?.depart).toBe('avancer 3 ; tourner à droite 90');
+		expect(parseTortueContent([CARRE, 'depart: avancer 1'].join('\n')).spec?.depart).toBe(
+			'avancer 1'
+		);
+		expect(parseTortueContent([CARRE, 'départ: sauter 3'].join('\n')).errors[0].message).toMatch(
+			/Ligne 2 : départ: Instruction inconnue/
+		);
 	});
 
 	it('montrer: oui : la figure du programme, normalisée', () => {

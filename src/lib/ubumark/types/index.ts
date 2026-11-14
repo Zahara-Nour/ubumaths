@@ -217,6 +217,9 @@ export type { HorlogeNode, HorlogeIssue, HorlogeSpec, HorlogeTime } from './horl
 // TORTUE (bloc ```tortue)
 export type { TortueNode, TortueIssue, TortueSpec } from './tortue';
 
+// CALCUL (bloc ```calcul)
+export type { CalculNode, CalculIssue, CalculSpec } from './calcul';
+
 // ============================================================================
 // PARTAGE (bloc ```partage)
 // ============================================================================

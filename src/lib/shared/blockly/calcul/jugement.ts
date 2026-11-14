@@ -87,3 +87,35 @@ export function jugerProgrammeCalcul(
 	if (eleve.sorties.every((s) => s.length === 0)) return { juste: false, message: RIEN_AFFICHE };
 	return { juste: eleve.sorties.every((s, i) => memesAffichages(s, reference.sorties[i])) };
 }
+
+/** Nombre d'essai écrit : signe (− ou -), entier ou décimal (virgule ou point). */
+const NOMBRE_ESSAI = /^[-−]?\d+(?:[.,]\d+)?$/;
+
+/**
+ * Lit une liste de nombres d'essai (`-3 ; 0 ; 2,5`) : de 1 à `ESSAIS_MAX` nombres distincts.
+ * Rend les nombres, ou le message pour l'auteur.
+ */
+export function lireEssais(
+	texte: string
+): { ok: true; essais: number[] } | { ok: false; message: string } {
+	const morceaux = texte.split(';').map((m) => m.trim());
+	if (morceaux.length === 1 && morceaux[0] === '') {
+		return { ok: false, message: 'aucun nombre (ex. -3 ; 0 ; 2,5)' };
+	}
+	if (morceaux.length > ESSAIS_MAX) return { ok: false, message: `${ESSAIS_MAX} nombres au plus` };
+	const essais: number[] = [];
+	for (const morceau of morceaux) {
+		if (!NOMBRE_ESSAI.test(morceau)) {
+			return { ok: false, message: `« ${morceau} » n’est pas un nombre (ex. -3 ; 0 ; 2,5)` };
+		}
+		const n = Number(morceau.replace('−', '-').replace(',', '.'));
+		if (essais.some((e) => e === n)) return { ok: false, message: `${morceau} donné deux fois` };
+		essais.push(n);
+	}
+	return { ok: true, essais };
+}
+
+/** Écrit une liste de nombres d'essai, relisible par `lireEssais`. */
+export function ecrireEssais(essais: readonly number[]): string {
+	return essais.map(ecrireNombreCalcul).join(' ; ');
+}
