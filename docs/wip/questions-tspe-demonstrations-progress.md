@@ -10,21 +10,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 10 écrit (§ 40), PR des fichiers ouverte._
+_Mis à jour le 2026-11-14, après #2622 (fichiers du lot 10, § 40)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lot 9 publié (§ 39) ; lot 10 (374, 377, 564, 361) écrit et vérifié (§ 40), PR des fichiers.
-- **Prochaine action** : merger la PR du lot 10 ; puis David lance `create-questions --dir
-scripts/questions/tspe-approfondissements-10 --publier` (prod) ; ensuite migration de rangement et tags (copie de
-  celle du lot 9), page à cocher.
-- **En attente de David** : `create-questions --publier` du lot 10 après le merge.
+  § 35, lots 9 à 15) : lot 9 publié (§ 39) ; lot 10 (374, 377, 564, 361) écrit et vérifié (§ 40), mergé (#2622).
+- **Prochaine action** : après le `create-questions` de David, commiter les ids écrits dans les JSON, puis migration
+  de rangement et tags (copie de celle du lot 9 : 374 → Espace › positions relatives et intersections ; 377, 564, 361
+  → Orthogonalité et distances dans l'espace › sphère), page à cocher.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-approfondissements-10
+--publier` (prod), depuis le dépôt principal.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
   Le journal à jour vit sur `main` (le worktree est détaché) : `git -C <wt> checkout --detach origin/main` avant de lire.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, sur `feat/questions-tspe-approfondissements-10`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main`.
 
 ---
 
