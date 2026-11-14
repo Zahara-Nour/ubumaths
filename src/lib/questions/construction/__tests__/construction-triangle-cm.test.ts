@@ -384,6 +384,14 @@ describe('triangle coté en cm, deux côtés et l’angle compris', () => {
 			).toMatch(/report hors de la palette/);
 		});
 
+		it('refuse une palette sans compas (revue de #2658 : la palette validée l’a)', () => {
+			expect(
+				errorOf(
+					figure('triangle ABC : CAB = 50 ; AC = 4 cm', ['outils: segment, rapporteur, regle'])
+				)
+			).toMatch(/compas/);
+		});
+
 		it('refuse un angle qui n’est pas compris entre [AB] et le côté coté', () => {
 			expect(errorOf(figure('triangle ABC : CAB = 50 ; BC = 4 cm'))).toMatch(/compris/);
 		});
@@ -412,9 +420,32 @@ describe('triangle coté en cm, deux côtés et l’angle compris', () => {
 			expect(judge(ANGLE, NOMINAL)).toEqual({ status: 'correct' });
 		});
 
-		it('juste : C à l’arc du compas ouvert à 4 cm sur une règle posée en A', () => {
+		// Option A (David, 2026-11-14, après la revue de #2658) : le côté d'angle (le segment qui
+		// porte le repère, parti de A) peut dépasser C ; C se lit sur lui
+		it('S1 : côté [A, repère] de 3,15 cm, coupé par l’arc de 3 cm ouvert sur la règle → juste', () => {
+			const source = figure('triangle ABC : CAB = 50 ; AC = 3 cm');
+			const side = segment(A, repereAt(MARK));
 			const ruler = regle(A, { x: 4, y: 8 });
-			const objects = [MARK, ruler, opened(ruler, 40), segment(A, C), segment(B, C)];
+			const arc = opened(ruler, 30);
+			const [c] = cross(side, arc);
+			const objects = [MARK, side, ruler, arc, segment(A, c), segment(B, c)];
+			expect(judge(source, objects)).toEqual({ status: 'correct' });
+		});
+
+		it('S2 : côté d’angle de 6 cm le long de la règle, compas ouvert à 40 mm sur elle → juste', () => {
+			const side = segment(A, rulerGraduation(ALONG, 60));
+			const arc = opened(ALONG, 40);
+			const [c] = cross(side, arc);
+			const objects = [MARK, ALONG, side, arc, segment(A, c), segment(B, c)];
+			expect(judge(ANGLE, objects)).toEqual({ status: 'correct' });
+		});
+
+		it('S3 : côté d’angle de 6 cm, compas ouvert sur une autre règle posée en A, verticale → juste', () => {
+			const side = segment(A, rulerGraduation(ALONG, 60));
+			const vertical = regle(A, { x: 4, y: 8 });
+			const arc = opened(vertical, 40);
+			const [c] = cross(side, arc);
+			const objects = [MARK, ALONG, side, vertical, arc, segment(A, c), segment(B, c)];
 			expect(judge(ANGLE, objects)).toEqual({ status: 'correct' });
 		});
 
@@ -485,9 +516,9 @@ describe('triangle coté en cm, deux côtés et l’angle compris', () => {
 			});
 		});
 
-		it('[AC] prolongé au-delà de C : jugé sur le trait vu (Q18)', () => {
+		it('[AC] tracé à part, prolongé au-delà de C : jugé sur le trait vu (Q18)', () => {
 			const beyond = rulerGraduation(ALONG, 55);
-			expect(judge(ANGLE, [...NOMINAL, segment(A, beyond)])).toMatchObject({
+			expect(judge(ANGLE, [...NOMINAL, segment(C, beyond)])).toMatchObject({
 				status: 'incorrect',
 				feedback: 'Ton côté [AC] mesure 5,5 cm au lieu de 4 cm.'
 			});

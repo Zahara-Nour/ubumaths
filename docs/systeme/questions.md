@@ -930,7 +930,7 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    **Triangle quelconque coté en cm** (chantier `triangle-cote-cm`, phase 0 validée le 2026-11-14,
    `judgeRuledTriangle`) : `triangle ABC : AC = 4 cm ; BC = 5 cm` (palette Segment · Compas · Règle
    graduée) et `triangle ABC : CAB = 50 ; AC = 4 cm` (Segment · Rapporteur · Règle graduée · Compas ;
-   rapporteur, segment et règle graduée exigés), [AB] tracé, papier uni ; toutes les longueurs en cm ou
+   palette entière exigée), [AB] tracé, papier uni ; toutes les longueurs en cm ou
    aucune (parseur). Hors palette (Report, point, droite) : faux sans message. Un seul C (Q17), puis,
    dans l'ordre : côté manquant ; C placé à l'œil (trois longueurs : hors d'un cercle centré en A ou en
    B, « Ton sommet C est placé à l'œil : construis-le avec ton compas. » ; avec l'angle : hors d'un côté
@@ -941,12 +941,16 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    l'œil : ouvre-le sur une graduation de la règle. ») ; mauvaise longueur, lue sur la graduation (de
    la règle ou de l'ouverture du compas) ou au bout du trait vu (Q18, arrondie au mm) : « Ton côté
    [AC] mesure 3,8 cm au lieu de 4 cm. » ; enfin l'angle faux (messages du lot 7, `angleFeedbackOf`).
-   Avec l'angle, la graduation de la règle et l'arc du compas sont justes tous les deux (décision 3).
+   Avec l'angle, la graduation de la règle et l'arc du compas sont justes tous les deux (décision 3) ;
+   le côté d'angle (segment parti de V qui porte le repère) peut dépasser C, C se lit sur lui : Q18 ne
+   vaut que pour [VC] et ce qui le prolonge depuis C (option A, David, 2026-11-14, revue de #2658).
    Erreurs de l'auteur : celles du triangle (impossible, rapporteur qui sort, C hors de la fenêtre) et
    un côté plus long que la règle. Correction : une règle posée au bout de chaque côté coté, vers C
    (`triangleRulers`) ; trois longueurs : les arcs de 4 cm et 5 cm ; avec l'angle : l'angle codé, sans
    arc. À l'écran, le Compas choisi avec une règle posée mène l'ouverture (indices, ‹ ›) comme le
-   cercle de rayon donné en cm (`rulerShape` de `FigureACompleterView`).
+   cercle de rayon donné en cm (`rulerShape` de `FigureACompleterView`) ; règle posée, le bout d'un
+   segment va d'abord à un croisement de traits proche (deux arcs), puis à la graduation (revue de
+   #2658 : une règle laissée en B vers C ne doit pas avaler le croisement).
    Vérification `angle AOy = 50` (`construction/angle.ts`, lot 5 du chantier) : [OA) est donné (A, O
    nommés et visibles, `points` = A puis O) ; y nomme le côté à tracer (messages seulement) ; mesure
    entière de 1 à 179 (parseur). L'élève pose le rapporteur (outil `rapporteur` : centre, puis un point

@@ -850,24 +850,28 @@ function judgeRuledTriangle(
 	const rulerLength = rulerLengthOf(figure.window);
 	const incorrect = (feedback: string): ConstructionVerdict => ({ status: 'incorrect', feedback });
 	/** Les compas piqués en V qui passent par C */
-	const circlesThrough = (v: Position): number[] =>
+	const circlesThrough = (v: Position): { i: number; circle: DrawnCircle }[] =>
 		objects.flatMap((o, i) => {
 			if (o.kind !== 'cercle') return [];
 			const center = { x: o.cx, y: o.cy };
 			const radius = distance(center, { x: o.x, y: o.y });
 			const eps = tolerance(center, c, { x: o.x, y: o.y });
-			return near(center, v, tolerance(v)) && Math.abs(distance(v, c) - radius) <= eps ? [i] : [];
+			const through = near(center, v, tolerance(v)) && Math.abs(distance(v, c) - radius) <= eps;
+			return through ? [{ i, circle: o }] : [];
 		});
 	/** Leurs ouvertures (mm) sur une règle posée en V avant eux (revue de #2494) */
-	const openings = (indexes: readonly number[]): number[] =>
-		indexes.flatMap((i) => {
+	const openings = (circles: readonly { i: number; circle: DrawnCircle }[]): number[] =>
+		circles.flatMap(({ i, circle }) => {
 			const rulers = objects.slice(0, i).filter((o): o is DrawnRegle => o.kind === 'regle');
-			const mm = compassGraduationOf(objects[i] as DrawnCircle, rulers, rulerLength);
+			const mm = compassGraduationOf(circle, rulers, rulerLength);
 			return mm === null ? [] : [mm];
 		});
 	/** Le trait vu depuis V va-t-il au-delà de C (Q18) ? Sa longueur (mm) ; null sinon */
-	const beyond = (v: Position): { end: Position; mm: number } | null => {
-		const end = seenEndOf(objects, v, c, tolerance(a, b, c));
+	const beyond = (
+		v: Position,
+		seen: readonly DrawnObject[] = objects
+	): { end: Position; mm: number } | null => {
+		const end = seenEndOf(seen, v, c, tolerance(a, b, c));
 		return end === c ? null : { end, mm: Math.round(distance(v, end) * 10) };
 	};
 	if (!angle) {
@@ -906,16 +910,29 @@ function judgeRuledTriangle(
 	const marks = objects.filter(
 		(o): o is DrawnRepere => o.kind === 'repere' && isBuiltMark(o, construction)
 	);
-	const onAngleSide = objects.some((o, i) => {
+	const eps = tolerance(a, b, c);
+	/** Les côtés d'angle construits partis de V qui passent par C */
+	const angleSides = objects.filter((o, i) => {
 		if (!construction.built.has(i)) return false;
 		const vertex = angleSideVertex(o, marks, construction);
 		if (!vertex || !near(vertex, v, tolerance(v))) return false;
 		const trait = traitOf(o);
-		return trait !== null && distanceToTrait(c, trait) <= tolerance(a, b, c);
+		return trait !== null && distanceToTrait(c, trait) <= eps;
 	});
-	if (!onAngleSide) return incorrect(vertexEyeballedAnglesFeedback(nameC));
+	if (angleSides.length === 0) return incorrect(vertexEyeballedAnglesFeedback(nameC));
+	// Option A (David, 2026-11-14, revue de #2658) : un côté d'angle (segment parti de V qui
+	// porte le repère) peut dépasser C, C se lit sur lui ; Q18 ne vaut que pour [VC] et ce qui
+	// le prolonge depuis C (un segment tracé à part)
+	const pastC = (o: DrawnObject) =>
+		o.kind === 'segment' &&
+		Math.max(distance(v, { x: o.x1, y: o.y1 }), distance(v, { x: o.x2, y: o.y2 })) >
+			distance(v, c) + eps;
+	const sidesPastC = angleSides.filter(pastC);
 	// La règle posée en V le long du côté, lue au bout du trait vu (Q18), sinon le compas
-	const seen = beyond(v);
+	const seen = beyond(
+		v,
+		objects.filter((o) => !sidesPastC.includes(o))
+	);
 	let mm = ruledGraduationOf(seen?.end ?? c, v, objects, rulerLength);
 	if (mm === null) {
 		if (seen) return incorrect(vertexOffGraduationFeedback(angle.vertex, nameC));

@@ -133,3 +133,24 @@ que la règle graduée ; un cercle ou C hors de la fenêtre ; cm sur quadrillage
     l'ouvrir sur la règle, ou Segment pour tracer le long de la règle. … » (nouveau texte d'écran).
     (5) Message d'auteur pour une palette incomplète (deux textes nouveaux, voir le parseur).
   - **Non fait** : point 5 (modèle 6-173 en base), à faire après le merge.
+- 2026-11-14 : **corrections de revue de #2658** (le BLOQUANT, chemin du compas avec l'angle face à Q18,
+  attend David : non touché). (1) CI : `docs/systeme/utilitaires-et-demos.md` décrit la mécanique du
+  catalogue, pas ses exemples → `Doc-inchangée:` dans le commit. (2) Vue : règle posée, le bout d'un
+  segment va d'abord à un croisement de traits dans le rayon du toucher (hors du départ), avant la
+  graduation de la dernière règle ; test composant « règle de B dirigée vers C » rouge (pas juste) puis
+  vert. (3) Indice de la Règle posée : « ou Segment pour tracer le long de la règle » seulement avec le
+  rapporteur ; test composant rouge puis vert. (4) Avec l'angle, le compas est désormais exigé dans
+  `outils:` (palette entière, la plus simple : un cercle tracé est toujours dans la palette ; remplace
+  le choix (5) « compas laissé au choix ») ; test parseur rouge puis vert. (5) `objects[i] as
+DrawnCircle` remplacé par un cercle porté avec son indice. Suites : serveur 7 521 verts, composants
+  figure 100 verts.
+- 2026-11-14 : **Tranché après revue, David, 2026-11-14 : option A.** Avec l'angle, Q18 ne s'applique pas
+  au côté d'angle (segment construit parti du sommet qui porte le repère) : il peut dépasser C, et C se
+  lit sur lui (graduation de la règle posée en A, ou croisement avec l'arc du compas ouvert sur la
+  règle). Un [AC] prolongé par un segment tracé à part au-delà de C reste faux ; rien ne change pour
+  trois longueurs ni pour le triangle rectangle coté. Code : `judgeRuledTriangle` retire du trait vu
+  les côtés d'angle qui dépassent C. Tests rouges puis verts : S1 (`AC = 3 cm`, côté [A, repère] de
+  3,15 cm coupé par l'arc), S2 (côté de 6 cm le long de la règle, compas à 40 mm sur elle), S3 (compas
+  ouvert sur une règle verticale) ; l'ancien « juste : C à l'arc » (C tiré d'une règle absente) est
+  remplacé par S1-S3 ; le test Q18 devient « [AC] tracé à part, prolongé au-delà de C » (segment
+  collé en C).

@@ -491,3 +491,39 @@ describe('case « figure » : triangle coté en cm, trois longueurs (triangle-co
 		await expect.poll(() => all(container, 'bonne-regle').length).toBe(2);
 	});
 });
+
+describe('case « figure » : triangle coté en cm, revue de #2658', () => {
+	it('règle de B dirigée vers C : le bout du segment va au croisement des arcs, pas à la graduation → juste', async () => {
+		const { container, rect } = await rendered(SIDES_BLOCK);
+		await rulerAndCompass(container, rect, { x: 2, y: 2 }, { x: 2, y: 7 }, { x: 2.05, y: 6 });
+		// La règle de B pointée à peu près vers C : sa graduation 5 cm tombe près de C, pas sur C
+		await rulerAndCompass(
+			container,
+			rect,
+			{ x: 8, y: 2 },
+			{ x: 4.3, y: 5.25 },
+			{ x: 4.3, y: 5.25 }
+		);
+		await expect.poll(() => mmShown(container)).toBe('50');
+		tool(container, 'segment');
+		tap(rect, 2.05, 2.05);
+		tap(rect, 4.27, 5.29);
+		tap(rect, 8.05, 2.05);
+		tap(rect, 4.27, 5.29);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(2);
+		button(container, 'Valider').click();
+		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);
+	});
+
+	it('trois longueurs : l’indice de la Règle posée ne propose pas le Segment', async () => {
+		const { container, rect } = await rendered(SIDES_BLOCK);
+		tool(container, 'regle');
+		tap(rect, 2.05, 2.05);
+		tap(rect, 2, 7);
+		await expect.poll(() => all(container, 'regle').length).toBe(1);
+		await expect
+			.poll(() => container.textContent)
+			.toContain('touche Compas pour l’ouvrir sur la règle');
+		expect(container.textContent).not.toContain('ou Segment pour tracer le long de la règle');
+	});
+});

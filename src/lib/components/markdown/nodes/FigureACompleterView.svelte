@@ -262,9 +262,12 @@
 			if (ruler && rulerShape === 'cercle') {
 				return 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
 			}
-			// Triangle coté en cm : le compas s'ouvre sur la règle, le segment s'y trace
+			// Triangle coté en cm : le compas s'ouvre sur la règle ; avec l'angle (rapporteur), le
+			// côté se trace aussi le long de la règle (revue de #2658)
 			if (ruler && tools.includes('compas')) {
-				return 'Règle posée : touche Compas pour l’ouvrir sur la règle, ou Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.';
+				return tools.includes('rapporteur')
+					? 'Règle posée : touche Compas pour l’ouvrir sur la règle, ou Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.'
+					: 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
 			}
 			if (ruler && segmentMeasure) {
 				return 'Règle posée : lis la longueur du segment, puis tape-la sous la figure. Pour la reposer, touche où mettre le 0.';
@@ -694,7 +697,24 @@
 				{ points: targets.points, intersections: [], traits: [] },
 				radius
 			);
-			const first = drawing.start ? (onRuler ?? onPoint) : (onPoint ?? onRuler);
+			// Bout d'un segment : un croisement de traits (deux arcs du triangle coté en cm) passe
+			// avant la graduation de la dernière règle posée, sauf au départ (revue de #2658)
+			const start = drawing.start;
+			const crossing =
+				tool === 'segment' && start
+					? snapInstrument(
+							math,
+							{
+								points: [],
+								intersections: targets.intersections.filter(
+									(p) => Math.hypot(p.x - start.x, p.y - start.y) > radius
+								),
+								traits: []
+							},
+							radius
+						)
+					: null;
+			const first = start ? (crossing ?? onRuler ?? onPoint) : (onPoint ?? onRuler);
 			tapAt(first ?? snapWithInstruments(math, targets, radius));
 			return;
 		}

@@ -844,14 +844,13 @@ function coherenceError(
 			return null;
 		}
 		// Chantier `triangle-cote-cm` : les longueurs au compas ouvert sur la règle graduée ;
-		// l'angle au rapporteur, C sur la graduation (le compas est un choix de l'élève)
+		// l'angle au rapporteur, C sur la graduation ou à l'arc : la palette entière est exigée
+		// (revue de #2658 : un cercle tracé est alors toujours dans la palette)
 		if (ruled) {
-			const needed: ConstructionTool[] =
-				check.angles.length > 0 ? ['rapporteur', 'segment', 'regle'] : allowed;
-			const missing = needed.find((t) => !spec.tools.includes(t));
+			const missing = allowed.find((t) => !spec.tools.includes(t));
 			if (missing) {
 				return check.angles.length > 0
-					? `triangle ${name} : l’angle se construit au rapporteur, la longueur à la règle graduée (ou au compas ouvert sur la règle), puis les côtés au segment (outils: ${allowed.join(', ')})`
+					? `triangle ${name} : l’angle se construit au rapporteur, la longueur à la règle graduée ou au compas ouvert sur la règle, puis les côtés au segment (outils: ${allowed.join(', ')})`
 					: `triangle ${name} : les longueurs se prennent au compas ouvert sur la règle graduée, puis les côtés au segment (outils: ${allowed.join(', ')})`;
 			}
 			return null;
