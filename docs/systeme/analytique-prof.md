@@ -81,6 +81,21 @@ Onglet 📘 Connaissances :
   boutons « Pas réussi / Réussi », la grille A dit déjà réussi / raté.
 - **E — Top à remédier** (`TopCurriculumPointsToRemediate.svelte`) : points triés par % 🆘 + 🔁 ; clic →
   `PointDetailsModal.svelte`, deux onglets : **élèves concernés** (badge) et **Erreurs** (voir plus bas).
+- **Taux de réussite** (`ClassSuccessRates.svelte`, `getClassSuccessRates` dans
+  `class-success-rate.ts`, chantier `taux-par-point`, besoin P3, 2026-11-14), après E : les
+  **notions** travaillées depuis la rentrée (même règle que C), dans l'ordre de l'arbre (branche ›
+  notion, `placeInTree`), chacune avec son taux (« 64 % · 18 élèves ») ; un clic déplie ses
+  **points**. Ne compte que le **prouvé** (sources `auto` + `teacher` : séries corrigées, contrôles,
+  prof) ; flash-cards et révision (déclaré) hors du taux, mention « Seulement déclaré » quand un point
+  ou une notion n'a que du déclaré. **Chaque élève pèse autant** : taux de chaque élève (justes /
+  faites), puis moyenne des élèves ayant au moins une réponse prouvée. Moins de **3** élèves → « Pas
+  assez de réponses » (`MIN_STUDENTS_FOR_RATE`). Points : liens modèle → point vivants, niveau de la
+  classe (`keepLinksOfGrade`), comme A. Notion : chaque modèle compté une fois (un modèle lié à deux
+  points de la même notion ne double pas l'élève) ; points qu'on ne sait pas placer → groupe « Points
+  sans notion », en dernier. Comptes **faits par la base** (`class_template_success`, une ligne par
+  élève × modèle, lue par pages de 1000 : plafond `max_rows`) ; le serveur n'envoie ni nom d'élève ni
+  date. Classe sans réponse → « Aucune réponse depuis la rentrée. » ; rien de prouvé → message au-dessus
+  de la liste ; lecture en échec → erreur dans le cadre du widget.
 
 **Onglet « Erreurs » du widget E** (chantier `erreurs-frequentes`, besoin P4, PR 2 ;
 `getClassPointErrors` dans `src/lib/server/stats/point-errors.ts`, route `point-errors?point=<uuid>`) : lu à
@@ -180,6 +195,8 @@ projection**, le suivi afficherait le vrai nom). Elle rassemble ce que l'analyti
     série, hors barrel ; décrit dans [evaluations.md](evaluations.md)) ;
   - `class-regularity.ts` : `getClassRegularityGrid` (et ses fonctions pures, testées seules, dont
     `countActiveWeeks` pour le suivi d'un élève ; `readSchoolYearOfSchool`) ;
+  - `class-success-rate.ts` : `getClassSuccessRates` (et ses fonctions pures `pointsOfTemplates`,
+    `buildClassSuccessRates`) ;
   - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate` ;
   - `student-follow-up.ts` : `getStudentPointFollowUp`, `getStudentEvaluations`, `getStudentRegularity`,
     `getStudentCompetences` (page de suivi d'un élève ; hors barrel).
@@ -187,12 +204,12 @@ projection**, le suivi afficherait le vrai nom). Elle rassemble ce que l'analyti
     `fetchInChunks`.
 - Endpoints `GET` sous `src/routes/api/teacher/classes/[classId]/analytics/` : `knowledge-grid`
   (`?includeAllCycle`), `knowledge-top-remediate` (`?topN`), `knowledge-retention/[studentId]`
-  (`?branch=<uuid>&weeks`), `regularity` (sans paramètre), `competence-grid`,
+  (`?branch=<uuid>&weeks`), `regularity` et `success-rate` (sans paramètre), `competence-grid`,
   `competence-top-consolidate` (`?topN`), `point-errors` (`?point=<uuid>`). Tous : Zod puis `requireTeacherOfClass` ; la route par élève vérifie en plus l'appartenance à la classe
   dans `class_members`.
 - Zod : `src/lib/server/validation/teacher-analytics.ts` (5 schémas, bornes : `topN` 1-30,
   `weeks` 1-26).
-- Composants : `src/lib/components/teacher/analytics/` (`curriculum-point-badge-meta.ts` : icône, couleur et libellé d'un badge, partagés avec la page de suivi ; `RegularityTable.svelte` : tableau de régularité, partagé par la grille C et le suivi ; 6 widgets, `AnalyticsModal` du widget G, `PointDetailsModal` du widget E) ; onglet
+- Composants : `src/lib/components/teacher/analytics/` (`curriculum-point-badge-meta.ts` : icône, couleur et libellé d'un badge, partagés avec la page de suivi ; `RegularityTable.svelte` : tableau de régularité, partagé par la grille C et le suivi ; 7 widgets, `AnalyticsModal` du widget G, `PointDetailsModal` du widget E) ; onglet
   Surveillance : `src/lib/components/teacher/anti-fraud/`.
 
 ## Invariants
@@ -206,11 +223,12 @@ projection**, le suivi afficherait le vrai nom). Elle rassemble ce que l'analyti
 ## Tests
 
 Serveur : `src/lib/server/stats/__tests__/class-knowledge.test.ts` (28),
-`class-competence.test.ts` (12), `point-errors.test.ts` (18), `student-follow-up.test.ts` (13), `student-follow-up-blocs.test.ts` (9) ; route `point-errors` :
-`analytics/point-errors/__tests__/server.test.ts`. Composants : un `*.svelte.test.ts` par widget dans
-`src/lib/components/teacher/analytics/__tests__/` (29 au total). Garde : `src/lib/server/stats/__tests__/teacher-class-auth.test.ts` (prof accepté,
+`class-competence.test.ts` (12), `point-errors.test.ts` (18), `student-follow-up.test.ts` (13), `student-follow-up-blocs.test.ts` (9), `class-success-rate.test.ts` (20) ; routes `point-errors` et
+`success-rate` : `analytics/<route>/__tests__/server.test.ts`. Composants : un `*.svelte.test.ts` par widget dans
+`src/lib/components/teacher/analytics/__tests__/` (44 au total). Garde : `src/lib/server/stats/__tests__/teacher-class-auth.test.ts` (prof accepté,
 admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page.server.test.ts`
-(compteur de signalements illisible → `null`, pas 0). Suivi d'un élève : `students/[studentId]/__tests__/` (loader : 400, 403, admin refusé, chaque bloc en échec seul ; rendu de la page, quatre blocs, retour selon l'origine) ; retours dans `src/lib/navigation/__tests__/return-links.test.ts`. Aucun test d'intégration base.
+(compteur de signalements illisible → `null`, pas 0). Suivi d'un élève : `students/[studentId]/__tests__/` (loader : 400, 403, admin refusé, chaque bloc en échec seul ; rendu de la page, quatre blocs, retour selon l'origine) ; retours dans `src/lib/navigation/__tests__/return-links.test.ts`. Intégration base : `tests/integration/regularite-comptee-en-base.test.ts` et
+`taux-par-point-compte-en-base.test.ts` (fonctions de comptage).
 
 ## Décisions
 

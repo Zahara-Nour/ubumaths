@@ -198,6 +198,13 @@ p_first_day, p_min_traces)` rend, par élève `active` de la classe et par semai
   exécution à `authenticated`, 42501 pour `anon`. Sert la grille de régularité du professeur
   ([analytique-prof.md](analytique-prof.md), widget C). Test :
   `tests/integration/regularite-comptee-en-base.test.ts`.
+- **Taux de réussite compté en base** (`20261114173810`) : `class_template_success(p_class_id,
+p_first_day)` rend, par élève `active` de la classe et par modèle (`template_id` non NULL), les
+  réponses prouvées faites et justes (sources `auto`/`teacher`, contrôles compris) et les réponses
+  déclarées faites (`srs`/`student_self`), depuis `p_first_day` (jour de Paris). `security invoker`
+  (RLS de l'appelant), exécution à `authenticated`, 42501 pour `anon`. Sert le widget « Taux de
+  réussite » de l'analytique ([analytique-prof.md](analytique-prof.md)), qui la lit par pages
+  (`max_rows`) ; tests : `tests/integration/taux-par-point-compte-en-base.test.ts`.
 - **Position d'affichage** : `display_order` est local à la fratrie ; un nœud créé sans position va en
   dernier (triggers `*_place_last`) ; `reorder_curriculum_points` / `_themes` / `_objectives` renumérotent 1..N et refusent une liste
   incomplète (en **INVOKER** pour que la RLS s'applique) ; plus aucun appelant depuis la C5 étape 3 :
