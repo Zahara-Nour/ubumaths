@@ -1,0 +1,255 @@
+{
+	"title": "Estimer une proportion par l'inégalité de Bienaymé-Tchebychev",
+	"description": "Majorer p(1 − p) par 1/4 (case choix), majorant du risque pour un sondage (case), taille d'échantillon pour une précision et un risque donnés (case), intervalle de confiance (deux cases)",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On veut estimer la proportion inconnue $p$ d'un caractère dans une population. Sur un échantillon de $n$ individus tirés au hasard (tirages assimilés à des tirages indépendants), on note $F_n$ la fréquence du caractère : $E(F_n)=p$ et $V(F_n)=\\dfrac{p(1-p)}{n}$. D'après l'inégalité de Bienaymé-Tchebychev, pour tout $\\delta>0$, $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{p(1-p)}{n\\delta^2}$.\n\nPourquoi peut-on en déduire $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{1}{4n\\delta^2}$, sans connaître $p$ ?\n\n```choix\n- Pour tout $p\\in[0;1]$, $p(1-p)\\leqslant\\dfrac{1}{4}$\n- $p(1-p)=\\dfrac{1}{4}$ pour tout $p\\in[0;1]$\n- $p\\leqslant\\dfrac{1}{4}$ dès que $n$ est assez grand\n- $F_n$ est égale à $p$ quand $n$ est assez grand\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{4}-p(1-p)=p^2-p+\\dfrac{1}{4}=\\left(p-\\dfrac{1}{2}\\right)^2\\geqslant 0$ : le maximum de $p(1-p)$, atteint en $p=\\dfrac{1}{2}$, vaut $\\dfrac{1}{4}$.",
+					"Donc $\\dfrac{p(1-p)}{n\\delta^2}\\leqslant\\dfrac{1}{4n\\delta^2}$, quel que soit $p$.",
+					"D'où $\\textcolor{{{color:primary.0}}}{P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{1}{4n\\delta^2}}$ : un majorant qui ne dépend que de $n$ et de $\\delta$."
+				]
+			}
+		},
+		{
+			"statement": "On veut estimer la proportion inconnue $p$ d'un caractère dans une population. Sur un échantillon de $n$ individus tirés au hasard (tirages assimilés à des tirages indépendants), on note $F_n$ la fréquence du caractère : $E(F_n)=p$ et $V(F_n)=\\dfrac{p(1-p)}{n}$. D'après l'inégalité de Bienaymé-Tchebychev, pour tout $\\delta>0$, $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{p(1-p)}{n\\delta^2}$. On en déduit $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{1}{4n\\delta^2}$.\n\nUn sondage interroge $n={{eval:100*m}}$ personnes ; on prend $\\delta={{eval:d/20;d}}$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P\\left(\\lvert F_n-p\\rvert\\geqslant{{eval:d/20;d}}\\right)\\leqslant ?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1/(m*d^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$4n\\delta^2=4\\times{{eval:100*m}}\\times{{eval:d/20;d}}^2={{eval:m*d^2}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{P\\left(\\lvert F_n-p\\rvert\\geqslant{{eval:d/20;d}}\\right)\\leqslant{{eval:1/(m*d^2)}}}$ : au plus ce risque que l'écart entre la fréquence observée et $p$ atteigne ${{eval:d/20;d}}$."
+				]
+			}
+		},
+		{
+			"statement": "On veut estimer la proportion inconnue $p$ d'un caractère dans une population. Sur un échantillon de $n$ individus tirés au hasard (tirages assimilés à des tirages indépendants), on note $F_n$ la fréquence du caractère : $E(F_n)=p$ et $V(F_n)=\\dfrac{p(1-p)}{n}$. D'après l'inégalité de Bienaymé-Tchebychev, pour tout $\\delta>0$, $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{p(1-p)}{n\\delta^2}$. On en déduit $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{1}{4n\\delta^2}$.\n\nOn veut une précision $\\delta={{eval:d/20;d}}$ avec un risque d'au plus ${{eval:a/20;d}}$. Complète : le majorant $\\dfrac{1}{4n\\delta^2}$ est inférieur ou égal à ${{eval:a/20;d}}$ si et seulement si\n\n$n\\geqslant ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2000/(a*d^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{4n\\delta^2}\\leqslant{{eval:a/20;d}}$ si et seulement si $n\\geqslant\\dfrac{1}{4\\times{{eval:a/20;d}}\\times{{eval:d/20;d}}^2}$.",
+					"$4\\times{{eval:a/20;d}}\\times{{eval:d/20;d}}^2={{eval:a*d^2/2000;d}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{n\\geqslant {{if:a*d^2==1|2\\,000|{{if:a*d^2==2|1\\,000|{{eval:2000/(a*d^2)}}}}}}}$ : un échantillon de ${{if:a*d^2==1|2\\,000|{{if:a*d^2==2|1\\,000|{{eval:2000/(a*d^2)}}}}}}$ individus suffit."
+				]
+			}
+		},
+		{
+			"statement": "On veut estimer la proportion inconnue $p$ d'un caractère dans une population. Sur un échantillon de $n$ individus tirés au hasard (tirages assimilés à des tirages indépendants), on note $F_n$ la fréquence du caractère : $E(F_n)=p$ et $V(F_n)=\\dfrac{p(1-p)}{n}$. D'après l'inégalité de Bienaymé-Tchebychev, pour tout $\\delta>0$, $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{p(1-p)}{n\\delta^2}$. On en déduit $P\\left(\\lvert F_n-p\\rvert<\\delta\\right)\\geqslant 1-\\dfrac{1}{4n\\delta^2}$.\n\nSur un échantillon de $n=2\\,000$ personnes, la fréquence observée est $f={{eval:r/100;d}}$. Avec $\\delta={{eval:d/20;d}}$, on a $1-\\dfrac{1}{4n\\delta^2}={{eval:1-1/(20*d^2);d}}$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\nComplète l'intervalle de confiance au niveau ${{eval:1-1/(20*d^2);d}}$.\n\n$?<p<?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "20..80"
+				},
+				{
+					"name": "d",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(r-5*d)/100}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(r+5*d)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert f-p\\rvert<\\delta$ équivaut à $f-\\delta<p<f+\\delta$.",
+					"$f-\\delta={{eval:r/100;d}}-{{eval:d/20;d}}={{eval:(r-5*d)/100;d}}$ et $f+\\delta={{eval:(r+5*d)/100;d}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{{{eval:(r-5*d)/100;d}}<p<{{eval:(r+5*d)/100;d}}}$, au niveau de confiance ${{eval:1-1/(20*d^2);d}}$ au moins."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p(1 − p) ≤ 1/4",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : égal à 1/4",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p ≤ 1/4",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : F_n = p",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/4",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"d": "1"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : δ non élevé au carré",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"d": "1"
+			},
+			"answers": ["\\frac{1}{80}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le 4",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"d": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n ≥ 2000",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"d": "1"
+			},
+			"answers": ["2000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : δ non élevé au carré",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"d": "1"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le 4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"d": "1"
+			},
+			"answers": ["8000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,37 < p < 0,47",
+			"variationIndex": 3,
+			"variables": {
+				"r": "42",
+				"d": "1"
+			},
+			"answers": ["0,37", "0,47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : borne droite f",
+			"variationIndex": 3,
+			"variables": {
+				"r": "42",
+				"d": "1"
+			},
+			"answers": ["0,37", "0,42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2δ",
+			"variationIndex": 3,
+			"variables": {
+				"r": "42",
+				"d": "1"
+			},
+			"answers": ["0,32", "0,52"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

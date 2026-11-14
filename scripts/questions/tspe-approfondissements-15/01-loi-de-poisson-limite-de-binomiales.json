@@ -1,0 +1,255 @@
+{
+	"title": "Loi de Poisson, limite de lois binomiales",
+	"description": "X_n de loi B(n, λ/n) : limite de P(X_n = 0) (case), de P(X_n = 1) (case) ; approcher une loi binomiale par une loi de Poisson, P(Y = 2) (deux cases) ; évènements rares (case choix)",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour tout entier $n>{{eval:a}}$, la variable aléatoire $X_n$ suit la loi binomiale $\\mathcal{B}\\left(n,\\dfrac{{{eval:a}}}{n}\\right)$ : son espérance, $n\\times\\dfrac{{{eval:a}}}{n}={{eval:a}}$, ne dépend pas de $n$. On admet que, pour tout réel $x$, $\\displaystyle\\lim_{n\\to+\\infty}\\left(1+\\dfrac{x}{n}\\right)^n=e^x$.\n\nComplète.\n\n$\\displaystyle\\lim_{n\\to+\\infty}P(X_n=0)=e^{?}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X_n=0)=\\left(1-\\dfrac{{{eval:a}}}{n}\\right)^n$ : aucun succès en $n$ épreuves.",
+					"Avec $x=-{{eval:a}}$ dans la limite admise, $\\left(1-\\dfrac{{{eval:a}}}{n}\\right)^n$ tend vers $e^{-{{eval:a}}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}P(X_n=0)=e^{-{{eval:a}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n>{{eval:a}}$, la variable aléatoire $X_n$ suit la loi binomiale $\\mathcal{B}\\left(n,\\dfrac{{{eval:a}}}{n}\\right)$ : son espérance, $n\\times\\dfrac{{{eval:a}}}{n}={{eval:a}}$, ne dépend pas de $n$. On admet que, pour tout réel $x$, $\\displaystyle\\lim_{n\\to+\\infty}\\left(1+\\dfrac{x}{n}\\right)^n=e^x$.\n\nComplète.\n\n$\\displaystyle\\lim_{n\\to+\\infty}P(X_n=1)=?\\times e^{-{{eval:a}}}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X_n=1)=n\\times\\dfrac{{{eval:a}}}{n}\\left(1-\\dfrac{{{eval:a}}}{n}\\right)^{n-1}={{eval:a}}\\times\\dfrac{\\left(1-\\frac{{{eval:a}}}{n}\\right)^n}{1-\\frac{{{eval:a}}}{n}}$.",
+					"$\\left(1-\\dfrac{{{eval:a}}}{n}\\right)^n$ tend vers $e^{-{{eval:a}}}$ et $1-\\dfrac{{{eval:a}}}{n}$ tend vers $1$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}P(X_n=1)={{eval:a}}e^{-{{eval:a}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une machine fabrique ${{eval:2^j}}\\,000$ pièces ; chacune est défectueuse avec la probabilité ${{eval:L/(1000*2^j);d}}$, indépendamment des autres. Le nombre $X$ de pièces défectueuses suit la loi binomiale de paramètres $n={{eval:2^j}}\\,000$ et $p={{eval:L/(1000*2^j);d}}$.\n\nOn approche la loi de $X$ par la **loi de Poisson** de paramètre $\\lambda=np$ : une variable $Y$ qui suit cette loi vérifie, pour tout entier $k\\geqslant 0$, $P(Y=k)=e^{-\\lambda}\\dfrac{\\lambda^k}{k!}$.\n\nComplète.\n\n$P(Y=2)=?\\times e^{-?}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "2..6"
+				},
+				{
+					"name": "j",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L^2/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:L}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lambda=np={{eval:2^j}}\\,000\\times{{eval:L/(1000*2^j);d}}={{eval:L}}$.",
+					"$P(Y=2)=e^{-{{eval:L}}}\\times\\dfrac{{{eval:L}}^2}{2!}=\\dfrac{{{eval:L^2}}}{2}e^{-{{eval:L}}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{P(Y=2)={{eval:L^2/2}}e^{-{{eval:L}}}}$ : c'est une valeur approchée de $P(X=2)$."
+				]
+			}
+		},
+		{
+			"statement": "On approche la loi binomiale $\\mathcal{B}(n,p)$ par la loi de Poisson de paramètre $np$.\n\nDans quel cas cette approximation est-elle la mieux justifiée ?\n\n```choix\n- $n={{eval:m}}\\,000$ et $p=0{,}002$\n- $n=10$ et $p=0{,}5$\n- $n={{eval:m}}\\,000$ et $p=0{,}5$\n- $n=5$ et $p=0{,}002$\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La loi de Poisson est la limite des lois $\\mathcal{B}\\left(n,\\dfrac{\\lambda}{n}\\right)$ : elle convient quand $n$ est grand et $p$ petit, $np$ restant modéré.",
+					"C'est la loi des **évènements rares** : beaucoup d'épreuves, chacune peu probable de réussir. Avec $p=0{,}5$, le succès n'est pas rare ; avec $n=5$, les épreuves sont trop peu nombreuses.",
+					"Donc $\\textcolor{{{color:primary.0}}}{n={{eval:m}}\\,000\\text{ et }p=0{,}002}$, avec $\\lambda=np={{eval:2*m}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "e^{−3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (1 − 0)ⁿ → 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3e^{−3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans le facteur n",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : limite nulle",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8e^{−4}",
+			"variationIndex": 2,
+			"variables": {
+				"L": "4",
+				"j": "1"
+			},
+			"answers": ["8", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans 2!",
+			"variationIndex": 2,
+			"variables": {
+				"L": "4",
+				"j": "1"
+			},
+			"answers": ["16", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : λ = n",
+			"variationIndex": 2,
+			"variables": {
+				"L": "4",
+				"j": "1"
+			},
+			"answers": ["8", "2000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n grand, p petit",
+			"variationIndex": 3,
+			"variables": {
+				"m": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n petit, p = 0,5",
+			"variationIndex": 3,
+			"variables": {
+				"m": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p = 0,5",
+			"variationIndex": 3,
+			"variables": {
+				"m": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n = 5",
+			"variationIndex": 3,
+			"variables": {
+				"m": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

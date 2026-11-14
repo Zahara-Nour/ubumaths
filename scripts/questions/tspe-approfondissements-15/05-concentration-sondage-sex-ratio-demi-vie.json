@@ -1,0 +1,230 @@
+{
+	"title": "Concentration : sondage, sex ratio, demi-vie",
+	"description": "Majorant 1/(4nδ²) de l'inégalité de concentration pour un sondage (n = 1 000, case), le sex ratio (n = 10⁶, case), la demi-vie (n = 10²³, exposant en case), effet de n sur le majorant (case choix)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On répète $n$ fois, de façon indépendante, une épreuve dont le succès a la probabilité $p$, et l'on note $F_n$ la fréquence des succès. L'inégalité de concentration donne, pour tout $\\delta>0$, $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{p(1-p)}{n\\delta^2}\\leqslant\\dfrac{1}{4n\\delta^2}$.\n\n**Sondage.** On interroge $n=1\\,000$ personnes ; $p$ est la proportion, dans la population, des personnes favorables à un projet. On prend $\\delta={{eval:d/20;d}}$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\nComplète le majorant $\\dfrac{1}{4n\\delta^2}$.\n\n$P\\left(\\lvert F_n-p\\rvert\\geqslant{{eval:d/20;d}}\\right)\\leqslant ?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1/(10*d^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$4n\\delta^2=4\\times 1\\,000\\times{{eval:d/20;d}}^2={{eval:10*d^2}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{P\\left(\\lvert F_n-p\\rvert\\geqslant{{eval:d/20;d}}\\right)\\leqslant{{eval:1/(10*d^2);d}}}$ : avec mille personnes, un écart de ${{eval:d/20;d}}$ reste possible."
+				]
+			}
+		},
+		{
+			"statement": "On répète $n$ fois, de façon indépendante, une épreuve dont le succès a la probabilité $p$, et l'on note $F_n$ la fréquence des succès. L'inégalité de concentration donne, pour tout $\\delta>0$, $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{p(1-p)}{n\\delta^2}\\leqslant\\dfrac{1}{4n\\delta^2}$.\n\n**Sex ratio.** Sur $n=10^6$ naissances, $F_n$ est la fréquence des garçons et $p$ la probabilité qu'un nouveau-né soit un garçon (environ $0{,}512$). On prend $\\delta={{eval:d/1000;d}}$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\nComplète le majorant $\\dfrac{1}{4n\\delta^2}$.\n\n$P\\left(\\lvert F_n-p\\rvert\\geqslant{{eval:d/1000;d}}\\right)\\leqslant ?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1/(4*d^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\delta^2={{eval:d^2}}\\times 10^{-6}$, donc $4n\\delta^2=4\\times 10^6\\times{{eval:d^2}}\\times 10^{-6}={{eval:4*d^2}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{P\\left(\\lvert F_n-p\\rvert\\geqslant{{eval:d/1000;d}}\\right)\\leqslant{{eval:1/(4*d^2)}}}$ : sur un million de naissances, la fréquence des garçons s'écarte rarement de $p$ de plus de ${{eval:d/1000;d}}$."
+				]
+			}
+		},
+		{
+			"statement": "On répète $n$ fois, de façon indépendante, une épreuve dont le succès a la probabilité $p$, et l'on note $F_n$ la fréquence des succès. L'inégalité de concentration donne, pour tout $\\delta>0$, $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{p(1-p)}{n\\delta^2}\\leqslant\\dfrac{1}{4n\\delta^2}$.\n\n**Demi-vie.** Un échantillon contient $n=10^{23}$ atomes radioactifs ; chacun se désintègre pendant une demi-vie avec la probabilité $p=\\dfrac{1}{2}$, indépendamment des autres. $F_n$ est la proportion d'atomes désintégrés au bout d'une demi-vie.\n\nComplète.\n\n$P\\left(\\left\\lvert F_n-\\dfrac{1}{2}\\right\\rvert\\geqslant 10^{-{{eval:k}}}\\right)\\leqslant 2{,}5\\times 10^{?}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*k-24}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ici $p(1-p)=\\dfrac{1}{4}$ exactement : le majorant vaut $\\dfrac{1}{4n\\delta^2}=\\dfrac{1}{4\\times 10^{23}\\times 10^{-{{eval:2*k}}}}=\\dfrac{10^{{{eval:2*k-23}}}}{4}$.",
+					"$\\dfrac{1}{4}=2{,}5\\times 10^{-1}$, donc $\\dfrac{10^{{{eval:2*k-23}}}}{4}=2{,}5\\times 10^{{{eval:2*k-24}}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{P\\left(\\left\\lvert F_n-\\dfrac{1}{2}\\right\\rvert\\geqslant 10^{-{{eval:k}}}\\right)\\leqslant 2{,}5\\times 10^{{{eval:2*k-24}}}}$ : la moitié des atomes, à $10^{-{{eval:k}}}$ près, est désintégrée, de façon quasi certaine."
+				]
+			}
+		},
+		{
+			"statement": "On répète $n$ fois, de façon indépendante, une épreuve dont le succès a la probabilité $p$, et l'on note $F_n$ la fréquence des succès. L'inégalité de concentration donne, pour tout $\\delta>0$, $P\\left(\\lvert F_n-p\\rvert\\geqslant\\delta\\right)\\leqslant\\dfrac{p(1-p)}{n\\delta^2}\\leqslant\\dfrac{1}{4n\\delta^2}$.\n\nPour un même $\\delta$, par combien le majorant $\\dfrac{1}{4n\\delta^2}$ est-il divisé quand on passe d'un sondage de $n=10^3$ personnes à une étude de $n=10^6$ naissances ?\n\n```choix\n- Par $1\\,000$\n- Par $\\sqrt{1\\,000}$\n- Par $10^6$\n- Il ne change pas : seul $\\delta$ compte\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le majorant $\\dfrac{1}{4n\\delta^2}$ est inversement proportionnel à $n$.",
+					"$n$ est multiplié par $\\dfrac{10^6}{10^3}=1\\,000$.",
+					"Donc le majorant est divisé par $\\textcolor{{{color:primary.0}}}{1\\,000}$. (C'est l'écart type de $F_n$, en $\\dfrac{1}{\\sqrt{n}}$, qui est divisé par $\\sqrt{1\\,000}$.)"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,1",
+			"variationIndex": 0,
+			"variables": {
+				"d": "1"
+			},
+			"answers": ["0,1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : δ non élevé au carré",
+			"variationIndex": 0,
+			"variables": {
+				"d": "1"
+			},
+			"answers": ["0,005"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le 4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "1"
+			},
+			"answers": ["0,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/16",
+			"variationIndex": 1,
+			"variables": {
+				"d": "2"
+			},
+			"answers": ["\\frac{1}{16}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/(4d)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "2"
+			},
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le 4",
+			"variationIndex": 1,
+			"variables": {
+				"d": "2"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10^{−12}",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["-12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : δ non élevé au carré",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["-18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["-11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "par 1 000",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √1 000",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10⁶",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ne change pas",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
