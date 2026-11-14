@@ -24,7 +24,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; refus des questions à programme dans une série et programme de calcul (`calcul, cadres de réponse) le 2026-11-14 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; refus des questions à programme dans une série et programme de calcul (`calcul, cadres de réponse, PDF) le 2026-11-14 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03.
 
 ## À quoi ça sert
 
@@ -682,7 +682,8 @@ Un **programme tortue** (` ```tortue `, chantier `blockly`) ne se fait pas sur p
 `montrer: oui`, la figure à reproduire sur un quadrillage recadré (départ marqué d'un point), puis le
 cadre « À faire sur Chiphre » ; sans, le cadre seul (`generateTortueTypst`, détail dans
 [ubumark](ubumark.md)) ; une figure (`FIGURE_LINES`) dans les cadres de réponse. Un **programme de calcul**
-(` ```calcul `) compte de même une figure dans les cadres de réponse ; son PDF vient en PR 5b. Une
+(` ```calcul `) imprime le cadre « À faire sur Chiphre » seul (`generateCalculTypst`) et compte de même une
+figure dans les cadres de réponse. Une
 série d'automatismes refuse toute question à programme (tortue, calcul), elle se fait à l'écran
 (David, 2026-11-14) : « <id> : une question à programme (tortue, calcul) ne peut pas entrer dans
 une série d'automatismes » (`figer`, avant le compte des cases).

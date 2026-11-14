@@ -13,7 +13,7 @@ couvre:
 # Blockly — programmation par blocs
 
 > Écrite à partir du code le 2026-11-14 (chantier `blockly`, journal
-> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14.
+> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14.
 
 ## À quoi ça sert
 
@@ -55,6 +55,9 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 | `src/lib/shared/blockly/calcul/interpreteur.ts`               | `executerCalcul(etat, nombre)` : interprète un programme de calcul pour un nombre de départ (ADR 0039), rend les nombres affichés                                |
 | `src/lib/shared/blockly/calcul/notation.ts`                   | `etatVersTexteCalcul` / `texteVersEtatCalcul` : `résultat = nombre + 2 ; afficher résultat × 4` ↔ état Blockly                                                   |
 | `src/lib/shared/blockly/calcul/jugement.ts`                   | `jugerProgrammeCalcul` (mêmes affichages sur chaque essai), `lireProgrammeCalcul`, `lireEssais` / `ecrireEssais`, `ESSAIS_PAR_DEFAUT`                            |
+| `src/lib/shared/blockly/calcul/blocs.ts`                      | `definirBlocsCalcul` : définitions Blockly des blocs de calcul (sans générateur) ; **seul fichier de `calcul/` qui importe Blockly**                             |
+| `src/lib/shared/blockly/calcul/toolbox.ts`                    | `CALCUL_TOOLBOX` (Calcul, Résultat, Afficher, Boucles avec `controls_repeat` seul), `COULEURS_CALCUL` ; sans import de Blockly                                   |
+| `src/lib/components/blockly/CalculEditeur.svelte`             | Éditeur d'une question de calcul (blocs, « Essayer avec », Lancer, affichages) ; rend le programme en texte à chaque modification ; chargé à la demande          |
 | `src/lib/shared/blockly/tortue/interpreteur.ts`               | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments, tortue finale et étapes                                               |
 | `src/lib/shared/blockly/tortue/animation.ts`                  | `imageAnimation` (image à l'étape i), `rythmeAnimation` (durée d'un tic, étapes par tic)                                                                         |
 | `src/lib/shared/blockly/tortue/segments.ts`                   | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `memesFormes` (8 symétries + translation), `sortDuCadre`                    |
@@ -156,8 +159,8 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 ## Programme de calcul en réponse
 
 Programmes de calcul de 5e (« choisir un nombre, ajouter 2, multiplier par 4 »), bloc `calcul
-d'une question ([ubumark](ubumark.md)). **PR 5a : logique seule** ; l'écran (blocs Blockly,
-« Essayer avec », corrigé, PDF) vient en 5b — d'ici là, un bloc `calcul n'a pas d'écran.
+d'une question ([ubumark](ubumark.md)). Logique en PR 5a, écran en PR 5b (cf. « L'écran d'une
+question de calcul »).
 
 - **Blocs interprétés** (`calcul/interpreteur.ts`, ADR 0039) : `calcul_nombre_choisi` (le nombre
   de départ, lu seulement : la variable de 5e « en lecture d'une donnée saisie »), `math_number`,
@@ -214,10 +217,34 @@ d'une question ([ubumark](ubumark.md)). **PR 5a : logique seule** ; l'écran (bl
   `StaticBlockNode`) : la même carte, geste libre, rien de jugé.
 - **PDF** (`ubumark/generators/tortue-typst.ts`) : cf. [ubumark](ubumark.md).
 
+## L'écran d'une question de calcul
+
+- **Carte** : `CalculProgramme.svelte`, monté par `FillBlanksInput` (case `data-construire-case`),
+  `MarkdownRenderer` et `StaticBlockNode` (geste libre). Cadre d'attente au rendu serveur, puis
+  `CalculEditeur.svelte` chargé par `import()`. Mêmes règles de réponse que la tortue : texte
+  `etatVersTexteCalcul`, `''` si vide, trop long (« Programme trop long ») ou illisible ; réponse
+  déjà donnée rechargée sans être renvoyée ; `{#key node.source}`.
+- **« Essayer avec »** : champ (`data-calcul-focus`, focalisé à l'ouverture de la question),
+  5 proposé, lu par `lireEssais` (virgule, `−`) ; « Lancer » ou Entrée → `executerCalcul` sur ce
+  nombre : « Avec 2,5, le programme affiche : 18 ; 4,5 » (50 affichages au plus), « n'affiche
+  rien », ou le message d'erreur (division par zéro…) sous les affichages déjà faits. Nombre
+  illisible → « Écris un nombre… ». Toute modification des blocs efface le dernier lancer.
+- **`départ:`** (calcul et tortue) : posé dans l'espace de travail quand la case est vide et pas
+  verrouillée ; il ne devient la réponse qu'au premier changement (Valider reste grisé tant que
+  l'élève n'y a pas touché). Case verrouillée sans réponse : espace vide, jamais le départ.
+- **Après la validation** : blocs en lecture seule, sans « Effacer », cadre vert ou rouge ;
+  « Essayer avec » marche encore.
+- **Corrigé** : `CalculCorrige.svelte` via `BuildAnswer`, sans Blockly : « Ton programme », « Un
+  programme juste » (réponse attendue de la case, sinon `attendu:`), tableau « Nombre choisi →
+  Ton programme affiche / Il fallait afficher » sur les essais, lignes fausses marquées
+  (`data-juste`) ; « erreur », « rien » dans une cellule ; message de l'élève sous le tableau.
+  Référence inconnue (`attendu: ?`) : la colonne de l'élève seule.
+- **PDF** (`ubumark/generators/calcul-typst.ts`) : le cadre « À faire sur Chiphre » seul.
+
 ## Comment étendre
 
-- Nouveau bloc de calcul : cas dans `executerCalcul` (et `INSTRUCTIONS` / `VALEURS` de
-  `calcul/interpreteur.ts`), écriture et lecture dans `calcul/notation.ts` (l'aller-retour doit
+- Nouveau bloc de calcul : définition dans `calcul/blocs.ts`, entrée dans `CALCUL_TOOLBOX`, cas
+  dans `executerCalcul` (et `INSTRUCTIONS` / `VALEURS` de `calcul/interpreteur.ts`), écriture et lecture dans `calcul/notation.ts` (l'aller-retour doit
   garder le calcul : `notation.test.ts`).
 - Nouveau bloc tortue : définition et aperçu dans `tortue/blocs.ts`, cas dans `executerTortue`
   (et dans `INSTRUCTIONS` / `VALEURS`), entrée dans `TORTUE_TOOLBOX` ; `blocs.test.ts` vérifie
@@ -236,7 +263,11 @@ d'une question ([ubumark](ubumark.md)). **PR 5a : logique seule** ; l'écran (bl
   étapes et `imageAnimation`.
 - `src/lib/shared/blockly/calcul/__tests__/` : interpréteur (opérations, variable, répétition,
   erreurs), notation (priorités, lecture souple, refus expliqués, aller-retour), jugement (calcul
-  écrit autrement, essais, marge, messages), `lireEssais`.
+  écrit autrement, essais, marge, messages), `lireEssais` ; `sans-blockly.test.ts` : ni
+  l'interpréteur, ni la notation, ni le jugement n'importent Blockly (imports suivis).
+- `src/lib/components/markdown/nodes/__tests__/CalculProgramme.svelte.test.ts` (navigateur) :
+  blocs → réponse, « Essayer avec » (Lancer, Entrée), messages, lancer effacé, programme vidé,
+  trop long, `départ:` (calcul et tortue), verrouillé, question générée ; corrigé (`CalculCorrige`).
 - `src/lib/components/blockly/__tests__/tortue-telephone.svelte.test.ts` (navigateur, 390 px et
   1280 px) : onglets, bascule au « Lancer », programme gardé, pause au départ.
 - `src/lib/components/markdown/nodes/__tests__/TortueProgramme.svelte.test.ts` (navigateur) :

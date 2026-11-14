@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2659._
+_Mis à jour le 2026-11-14, PR 5b en cours (branche `feat/blockly-calcul-ecran`)._
 
-- **État** : PR 1 à 5a mergées (5a = logique du programme de calcul, `départ:`, refus clair des séries, #2659) ; plus de worktree · **Prochaine action** : PR 5b (écran du programme de calcul : blocs Blockly `calcul/blocs.ts` + boîte à outils avec `controls_repeat` seulement, « Essayer avec », corrigé avec tableau nombre → résultat, PDF « À faire sur Chiphre », catalogue ; `départ:` posé dans l'espace de blocs, tortue comprise), dans un worktree neuf `ubumaths-wt-blockly` · **En attente de David** : avis sur les choix listés au § PR 5a (écriture `résultat = …`, `:` = division, `−` devant un nombre seulement, marges, 1 à 20 essais) · **Après le prochain `deploy:prod`** : lignes #2627, #2632, #2634 / 3b / 3c et 4b de `verifications-manuelles.md` · **Pièges en cours** : ne publier aucun modèle ```calcul avant la 5b (pas d'écran) ; montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; `calcul/` n'importe pas Blockly, le garder ainsi (correction sous Node) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une PR en conflit ne lance pas sa CI (vérifier `mergeable`) · **Worktree / branche** : aucun (à recréer pour la 5b)
+- **État** : PR 1 à 5a mergées ; 5b (écran du programme de calcul) codée, tests verts, en essai · **Prochaine action** : essai navigateur, revue `code-reviewer` (Sonnet), PR, merge · **En attente de David** : avis sur les choix du § PR 5a (écriture `résultat = …`, `:` = division, `−` devant un nombre seulement, marges, 1 à 20 essais) et du § PR 5b (`départ:` pas réponse tant qu'on n'y touche pas, 5 proposé dans « Essayer avec ») · **Après le prochain `deploy:prod`** : lignes #2627, #2632, #2634 / 3b / 3c et 4b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une PR en conflit ne lance pas sa CI (vérifier `mergeable`) · **Worktree / branche** : `ubumaths-wt-blockly` / `feat/blockly-calcul-ecran`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -314,3 +314,25 @@ nocturne. `départ:` lu par les parseurs ``calcul et ```tortue (`spec.depart`) ;
   2 s de serveur par jugement) ; `controls_repeat_ext` retiré du calcul (un nombre de tours
   calculé s'écrivait `répéter 0`) ; nombre trop grand pour être lu refusé (lu 0, donc jugé
   juste contre `afficher 0`) ; marge absolue 1e-12 près de 0 (`nombre ÷ 10¹¹` était jugé égal à 0).
+
+### PR 5b — écran, corrigé, PDF, catalogue (branche `feat/blockly-calcul-ecran`)
+
+- Blocs : `calcul/blocs.ts` (`definirBlocsCalcul`, appelé par `BlocklyWorkspace` comme la tortue,
+  sans générateur de code) ; `calcul/toolbox.ts` (`CALCUL_TOOLBOX` : Calcul — nombre choisi, les 4
+  opérations à ombres, nombre —, Résultat, Afficher, Boucles avec `controls_repeat` seul).
+- Carte : `CalculProgramme.svelte` → `CalculEditeur.svelte` par `import()` : « Essayer avec »
+  (champ focalisé à l'ouverture, Entrée lance), Lancer, « Avec 2,5, le programme affiche : 18 ;
+  4,5 », messages (rien d'affiché, division par zéro, nombre illisible). Verrouillé : blocs en
+  lecture seule, cadre vert / rouge, on peut encore essayer.
+- Corrigé : `CalculCorrige.svelte` via `BuildAnswer` : programmes en texte + tableau nombre →
+  « Ton programme affiche / Il fallait afficher », lignes fausses en rouge ; `attendu: ?` → colonne
+  de l'élève seule.
+- PDF : `calcul-typst.ts`, cadre « À faire sur Chiphre » seul (ni référence ni départ). Compilé.
+- Catalogue : fiche `calcul` (3 exemples, 3 erreurs) ; `départ:` ajouté à la fiche tortue.
+- `départ:` (calcul ET tortue) posé dans l'espace de blocs quand la case est vide et pas
+  verrouillée.
+- **Choix faits sans David, à lui signaler** : le programme de départ ne devient la réponse qu'au
+  premier changement (Valider grisé tant que l'élève n'y touche pas ; un départ non touché ne compte
+  pas comme répondu dans un devoir) ; « Essayer avec » propose 5 ; 50 affichages montrés au plus ;
+  pas de générateur JS / Python pour les blocs de calcul (le mode Calcul du bac à sable viendra
+  plus tard).

@@ -41,6 +41,13 @@ export const tortueEntry: BlockCatalogEntry = {
 					defaultValue: 'position',
 					description:
 						'position : la même figure au même endroit. forme : la même figure n’importe où, même tournée d’un quart de tour ou retournée (un carré tracé vers le bas est juste).'
+				},
+				{
+					key: 'départ',
+					values: 'un programme (notation texte)',
+					defaultValue: 'aucun',
+					description:
+						'Un programme posé d’avance dans l’espace de travail de l’élève, à modifier (« change un nombre pour que le carré ait un côté de 4 »). Tant qu’il n’y touche pas, il n’a pas répondu.'
 				}
 			]
 		}
