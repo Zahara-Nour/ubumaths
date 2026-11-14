@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, #2623 ouverte, PAS mergée : geste « relier » codé, à essayer par David._
+_Mis à jour le 2026-11-14, après #2623._
 
-- **État** : lot 1 (étiquettes) + geste « relier » (`AssocierRelier.svelte`, défaut) codés et testés ; aiguilleur `AssocierPlacer.svelte` ; catalogue (réglage `geste`, classement en `geste: étiquettes`) et docs `ubumark.md`, `questions.md` à jour · **Prochaine action** : retours de David sur l'essai, puis revue (`code-reviewer`), CI verte → merge · **En attente de David** : essai du geste relier sur `/aide-ecriture/blocs/associer` (serveur 5177 du worktree ; `tailscale serve` actif sur 5177 → `tailscale serve reset` à la fin) · **Pièges en cours** : ranger garde ses deux défauts hérités (collision, clés) · **Worktree / branche** : `../ubumaths-wt-associer`, `feat/associer`
+- **État** : lot 1 mergé (#2623) — bloc ``associer, geste `relier` (défaut, traits) et `geste: étiquettes`, juge, corrigé, PDF, séries, catalogue, docs ; essayé et validé par David. Pas encore en prod (`deploy:prod` sur demande de David) · **Prochaine action** : convertir la n° 11 de `cours-suites` (B11, QCM) en « associer » ; puis lot 2 (blocs ` ``courbe `dans un élément) · **En attente de David** : go pour la suite (B11, puis lot 2) · **Pièges en cours** : ranger garde ses deux défauts hérités (collision, clés) ;`touch-action: none`sur toute la case (à revoir si le défilement gêne sur iPhone) · **Worktree / branche** : aucun (worktree`associer` retiré ; nouveau worktree pour la suite)
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -90,3 +90,4 @@ Ensuite : convertir la n° 11 de `cours-suites` (B11, QCM) en « associer ».
   case, mesure sous un ancêtre mis à l'échelle, `pointercancel` d'un autre pointeur (les deux gestes).
   Laissés : `touch-action: none` sur toute la case (comme le geste étiquettes ; à revoir si l'essai sur
   iPhone gêne le défilement), verdict signalé par la couleur seule (noms accessibles « juste / faux »).
+- 2026-11-14 : #2623 mergée (CI verte), geste relier essayé et validé par David.
