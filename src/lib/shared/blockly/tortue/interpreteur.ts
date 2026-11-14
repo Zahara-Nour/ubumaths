@@ -7,6 +7,14 @@
  */
 
 import { arrondir, type Point, type Segment } from './segments';
+import {
+	lirePiles as lirePilesDe,
+	premierBlocInconnu as premierBlocInconnuDe,
+	type BlocLu,
+	type BlocsConnus
+} from '../lecture';
+
+export type { BlocLu } from '../lecture';
 
 // =============================================================================
 // Types
@@ -40,18 +48,6 @@ interface Trace {
 
 export type ResultatTortue = ({ ok: true } | { ok: false; erreur: ErreurTortue }) & Trace;
 
-/** Bloc sérialisé, après vérification de forme. */
-export interface BlocLu {
-	type: string;
-	actif: boolean;
-	champs: Record<string, unknown>;
-	/** Entrées valeur ou instructions : le bloc posé, sinon l'ombre. */
-	entrees: Record<string, BlocLu | undefined>;
-	suivant: BlocLu | undefined;
-	x: number;
-	y: number;
-}
-
 // =============================================================================
 // Constantes
 // =============================================================================
@@ -61,9 +57,6 @@ export const LIMITE_PAS = 10_000;
 
 /** Distance maximale au départ, en carreaux : au-delà, les nombres perdent leur précision. */
 export const DISTANCE_MAX = 1_000_000;
-
-/** Imbrication maximale (entrées dans des entrées) : protège la pile d'appels. */
-const IMBRICATION_MAX = 1_000;
 
 /** Blocs d'instruction connus de l'interpréteur. */
 const INSTRUCTIONS = new Set([
@@ -99,101 +92,23 @@ function etatInitial(): EtatTortue {
 	return { x: 0, y: 0, cap: 0, styloBaisse: true };
 }
 
-function estObjet(valeur: unknown): valeur is Record<string, unknown> {
-	return typeof valeur === 'object' && valeur !== null && !Array.isArray(valeur);
-}
-
-class ProgrammeIllisible extends Error {}
-
-/**
- * Lit une pile sérialisée (un bloc et ses suivants, par `next`) ; lève `ProgrammeIllisible` si
- * la forme est fausse. Les suivants sont lus en boucle : seule l'imbrication fait récursion.
- */
-function lirePile(brut: unknown, imbrication: number): BlocLu {
-	const blocs: BlocLu[] = [];
-	let courant: unknown = brut;
-	while (courant !== undefined) {
-		const { bloc, suivant } = lireBloc(courant, imbrication);
-		blocs.push(bloc);
-		courant = suivant;
-	}
-	for (let i = 0; i < blocs.length - 1; i++) blocs[i].suivant = blocs[i + 1];
-	return blocs[0];
-}
-
-/** Lit un bloc et ses entrées ; rend aussi le bloc suivant, encore brut. */
-function lireBloc(brut: unknown, imbrication: number): { bloc: BlocLu; suivant: unknown } {
-	if (!estObjet(brut) || typeof brut.type !== 'string' || imbrication > IMBRICATION_MAX) {
-		throw new ProgrammeIllisible();
-	}
-
-	const entrees: Record<string, BlocLu | undefined> = {};
-	if (brut.inputs !== undefined) {
-		if (!estObjet(brut.inputs)) throw new ProgrammeIllisible();
-		for (const [nom, entree] of Object.entries(brut.inputs)) {
-			if (!estObjet(entree)) throw new ProgrammeIllisible();
-			const contenu = entree.block ?? entree.shadow;
-			entrees[nom] = contenu === undefined ? undefined : lirePile(contenu, imbrication + 1);
-		}
-	}
-
-	let suivant: unknown;
-	if (brut.next !== undefined) {
-		if (!estObjet(brut.next)) throw new ProgrammeIllisible();
-		suivant = brut.next.block;
-	}
-
-	const desactive =
-		brut.enabled === false ||
-		(Array.isArray(brut.disabledReasons) && brut.disabledReasons.length > 0);
-
-	const bloc: BlocLu = {
-		type: brut.type,
-		actif: !desactive,
-		champs: estObjet(brut.fields) ? brut.fields : {},
-		entrees,
-		suivant: undefined,
-		x: typeof brut.x === 'number' ? brut.x : 0,
-		y: typeof brut.y === 'number' ? brut.y : 0
-	};
-	return { bloc, suivant };
-}
+/** Blocs connus de la tortue, pour la lecture commune (`lecture.ts`). */
+const CONNUS: BlocsConnus = { instructions: INSTRUCTIONS, valeurs: VALEURS };
 
 /**
  * Lit les piles de l'espace de travail, triées de haut en bas (puis de gauche à droite) ; lève
- * une erreur si la forme est fausse.
+ * une erreur si la forme est fausse. Un nombre posé seul est ignoré.
  */
 export function lirePiles(etat: unknown): BlocLu[] {
-	if (!estObjet(etat)) throw new ProgrammeIllisible();
-	if (etat.blocks === undefined) return [];
-	if (!estObjet(etat.blocks)) throw new ProgrammeIllisible();
-	const blocs = etat.blocks.blocks;
-	if (blocs === undefined) return [];
-	if (!Array.isArray(blocs)) throw new ProgrammeIllisible();
-	return (
-		blocs
-			.map((bloc) => lirePile(bloc, 0))
-			// Un nombre posé seul dans l'espace de travail ne fait rien : ignoré, comme une pile vide
-			.filter((pile) => !VALEURS.has(pile.type))
-			.sort((a, b) => a.y - b.y || a.x - b.x)
-	);
+	return lirePilesDe(etat, VALEURS);
 }
 
-/** Premier bloc inconnu (instruction ou valeur) d'une pile, blocs désactivés compris. */
+/** Premier bloc inconnu de la tortue (instruction ou valeur) d'une pile, blocs désactivés compris. */
 export function premierBlocInconnu(
 	bloc: BlocLu | undefined,
 	attendu: 'instruction' | 'valeur'
 ): string | null {
-	for (let courant = bloc; courant; courant = courant.suivant) {
-		const connus = attendu === 'instruction' ? INSTRUCTIONS : VALEURS;
-		if (!connus.has(courant.type)) return courant.type;
-		for (const [nom, entree] of Object.entries(courant.entrees)) {
-			const inconnu = premierBlocInconnu(entree, nom === 'DO' ? 'instruction' : 'valeur');
-			if (inconnu) return inconnu;
-		}
-		if (attendu === 'valeur') return null;
-	}
-	return null;
+	return premierBlocInconnuDe(bloc, attendu, CONNUS);
 }
 
 /** Valeur numérique d'une entrée ; une entrée vide vaut 0, comme dans le code généré. */
