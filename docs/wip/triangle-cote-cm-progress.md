@@ -9,9 +9,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2660._
+_Mis à jour le 2026-11-14, après #2661._
 
-- **État** : outil livré sur `main` (#2658 triangle quelconque coté en cm, #2660 côté d'angle qui passe par C = [AC]) ; pas encore en prod ; vérification à la main notée (`verifications-manuelles.md`, #2658) · **Prochaine action** : point 5, variations en cm du modèle 6-173 (contenu : par le prof, écriture en prod sur demande explicite de David), puis clore · **En attente de David** : 4 choix faits seul au lot 1 (Journal, 1, 3, 4, 5 ; le 2 remplacé par l'option A, le 5 remplacé : palette entière exigée avec l'angle) ; 3 points mineurs de la revue de #2660 (Journal, fin) — reco : aligner le (1) « un seul C » du lot 7 sur le cas en cm ; `deploy:prod` · **Pièges en cours** : #2660 change aussi le juge du lot 7 en prod (même geste sur papier) · **Worktree / branche** : aucun (retiré après #2660)
+- **État** : outil livré (#2658, #2660) ; variations en cm du modèle 6-173 (f06e45e8) prêtes sur `main` (#2661 : v5 trois longueurs, v6 deux côtés et l'angle), **pas encore écrites en prod** ; rien n'est en prod côté code · **Prochaine action** : David lance `pnpm tsx scripts/update-published-questions.ts --lot triangle-cm-6` (simulation, diff), puis `--publier` ; vérifier en prod (MCP), puis clore le chantier (versement, archive du journal) · **En attente de David** : l'écriture en prod ; relecture des 2 variations dans l'aperçu local (brouillon d3c2b97d, serveur 5176) ; 4 choix faits seul au lot 1 (Journal, 1, 3, 4, 5) ; 3 points mineurs de la revue de #2660 (Journal, fin ; reco : aligner le (1) « un seul C » du lot 7 sur le cas en cm) ; `deploy:prod` (le juge en cm n'est pas en prod : écrire les variations AVANT le déploiement les rendrait injouables) · **Pièges en cours** : #2660 change aussi le juge du lot 7 en prod · **Worktree / branche** : `ubumaths-wt-triangle-cm-variations` gardé pour le serveur de test 5176, à retirer après la relecture
 
 ## Ce qui existe (lu dans le code, 2026-11-14)
 
@@ -161,3 +161,14 @@ DrawnCircle` remplacé par un cercle porté avec son indice. Suites : serveur 7 
   (tout croisement, droites comprises) dans le commentaire de `FigureACompleterView.svelte` et dans
   `questions.md`, comportement inchangé.
 - 2026-11-14 : **revue `code-reviewer` (opus) de #2660** : « prêt pour PR », aucun faux juste (32 sondes : lot 7, un côté et deux angles, cm). **Laissés, à trancher plus tard par David** : (1) lot 7 hors cm, un éventail de [BC] dont un seul arrive au bon croisement est juste (déjà avant la PR ; le cas en cm a « Trace un seul triangle ABC. ») ; (2) côté sans repère qui passe par le bout de [BC] → « Tes côtés [AC] et [BC] doivent se rejoindre en C. », message à préciser (« trace ses côtés avec le rapporteur ») ; (3) hors PR : repère de 140° sous (AB), côté tiré à l'opposé du repère → juste (`isAngleSide` teste l'alignement, pas le sens), avant comme après la PR.
+- 2026-11-14 : **point 5, variations en cm du modèle 6-173** (worktree `ubumaths-wt-triangle-cm-variations`,
+  branche `feat/triangle-cm-variations`). Instantané prod de f06e45e8 (`export-question-templates`, identique
+  au JSON du lot 12 : 4 variations, 15 specs), commité avant l'ajout. Script
+  `docs/wip/questions/lot-12b-triangle-cm.py` : v5 trois longueurs en cm (`AC = {{l}} cm ; BC = {{m}} cm`,
+  l et m de 3 à 6, [AB] = 5 cm), v6 deux côtés et l'angle compris (`CAB = {{a}} ; AC = {{l}} cm`, a de 30 à
+  120 sauf 90, l de 3 à 5) ; palette par défaut (exigée par le parseur) ; 11 specs (6 justes, 5 fausses :
+  longueurs échangées, compas ouvert à l'œil, C à l'œil, 130° pour 50°, 3,8 cm pour 4 cm) ; description
+  du modèle complétée. Lot `triangle-cm-6` ajouté à `update-published-questions.ts`. `question:specs` 26/26,
+  1 800 tirages, 1 500 figures ; `sonde-figures` 0 problème ; corpus + sécurité des réponses 88 verts.
+  Brouillon d'essai en base locale : d3c2b97d.
+- 2026-11-14 : #2661 mergée (CI verte). Écriture en prod : par David, après le `deploy:prod` qui livre le juge en cm.

@@ -28,7 +28,7 @@
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
  *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de,
- *          resoudre-graphique-droite-3, somme-vecteurs-2de
+ *          resoudre-graphique-droite-3, somme-vecteurs-2de, triangle-cm-6
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -199,6 +199,11 @@ const SOMME_VECTEURS_2DE: readonly string[] = [
 	'51192dc4-78df-4d5d-b6be-7062f456cef3' // Vecteurs › Représenter la somme de deux vecteurs (flèches u et v données, 2-297)
 ];
 
+/** Chantier `triangle-cote-cm`, point 5 : variations en cm ajoutées (docs/wip/questions/lot-12b-triangle-cm.py) */
+const TRIANGLE_CM_6: readonly string[] = [
+	'f06e45e8-45f3-48f7-8bd2-2a16ae86958f' // Triangles › Construire un triangle (6-173), + trois longueurs en cm, deux côtés et l'angle en cm
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -231,7 +236,8 @@ const LOTS: Record<string, Lot> = {
 	'somme-vecteurs-2de': {
 		dossier: 'scripts/questions/2de-somme-vecteurs-existants',
 		cibles: SOMME_VECTEURS_2DE
-	}
+	},
+	'triangle-cm-6': { dossier: 'scripts/questions/6-triangle-existants', cibles: TRIANGLE_CM_6 }
 };
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
