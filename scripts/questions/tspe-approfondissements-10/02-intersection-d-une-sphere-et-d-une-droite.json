@@ -1,4 +1,5 @@
 {
+	"id": "15f1bdd0-e293-435b-b83e-072be415a5e1",
 	"title": "Espace : intersection d'une sphère et d'une droite",
 	"description": "Équation du second degré en t obtenue en remplaçant la représentation paramétrique (trois cases), point d'intersection d'une droite passant par le centre (trois cases), droite sans point commun avec la sphère (case choix)",
 	"grades": ["T_SPE"],
