@@ -1,4 +1,5 @@
 {
+	"id": "22f0fe4b-59dd-4750-ac1b-78417647246b",
 	"title": "Approcher une aire par deux suites adjacentes",
 	"description": "Aire sous x ↦ x² sur [0 ; a] par les sommes s_n et S_n : pourquoi s_n ≤ A ≤ S_n (case choix), S_n − s_n (case), rang pour une précision 10^{−p} (case), aire par la somme des carrés donnée (case)",
 	"grades": ["T_SPE"],

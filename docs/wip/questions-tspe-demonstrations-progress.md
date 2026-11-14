@@ -10,15 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2649 (fichiers du lot 14, § 58)._
+_Mis à jour le 2026-11-14, rangement du lot 14 (§ 59)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 13 publiés (§ 57) ; lot 14 (473, 496, 497) : fichiers mergés (#2649, § 58) ;
-  lot 15 restant (517, 529, 537, 538, 539).
-- **Prochaine action** : après les brouillons du lot 14 en prod (David) : relevé MCP des ids, puis
-  rangement + `id` commités, page à cocher, publication (même démarche que le lot 13, § 52 à 57).
-- **En attente de David** : `create-questions.ts --dir scripts/questions/tspe-approfondissements-14 --publier`,
-  depuis le dépôt principal (fichiers mergés).
+  § 35, lots 9 à 15) : lots 9 à 13 publiés (§ 57) ; lot 14 (473, 496, 497) : 3 brouillons en prod, PR de rangement +
+  `id` ouverte (§ 59) ; lot 15 restant (517, 529, 537, 538, 539).
+- **Prochaine action** : PR de rangement mergée → `db:migrate` du dépôt principal, relevé MCP, page à cocher, verdicts,
+  publication (même démarche que le lot 13, § 53 à 57).
+- **En attente de David** : rien avant la page à cocher.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -26,7 +25,7 @@ _Mis à jour le 2026-11-14, après #2649 (fichiers du lot 14, § 58)._
   **les `id` écrits par `create-questions` se commitent dans la PR de rangement** (`page-a-cocher.ts` et
   `publier-lot.ts` les exigent, § 56) ; `1x` non nettoyé dans `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable
   `e` ni `i`** (§ 52) ; `pnpm deploy:prod` en cours = merge bloqué, attendre `lock.py --tenu deploy`.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche à créer depuis `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-approfondissements-14-rangement`.
 
 ---
 
@@ -1064,3 +1063,12 @@ Vérifié : `question:specs` 150 tirages par variation, 3/3 importables (39 spec
 simulation sur la prod : 3 « à créer », aucun titre pris ; brouillons en base locale (copie hors dépôt : c0c9bcb6,
 e410f2dd, a194b387) ; aperçu admin vu à l'écran (port 5177) : étapes à ranger de 497 rendues, choix de 496 joué faux
 (B coché à tort, correction affichée), changement de variable de 473 joué « Juste » (−1 et 1/6).
+
+## 59. Lot 14 : brouillons et rangement (2026-11-14)
+
+`create-questions --publier` lancé par David depuis le worktree : 90ddb100 (473), 22f0fe4b (496), a4fab858 (497), en
+`draft`, au niveau {T_SPE}, sans nœud ni tag (MCP). Les `id` écrits dans les trois JSON sont commités dans la PR de
+rangement (piège du § 56). Migration `20261114090523_questions_tspe_approfondissements_14_rangement_tags`, copie de
+celle du lot 13 (SQL exécutable et rollback identiques aux données près) : chacun sur la sous-notion du § 58, qui porte
+aussi son point. Test d'intégration 12/12, rouge sans la migration (6 échecs, 5 sautés).
+`security-auditor` : aucun finding bloquant (relevé prod refait : 3 `draft` sans nœud ni tag, chemins et points résolus).
