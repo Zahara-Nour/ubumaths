@@ -86,6 +86,7 @@
 	import AssocierPlacer from '$lib/components/markdown/nodes/AssocierPlacer.svelte';
 	import TrousEtiquettes from '$lib/components/markdown/nodes/TrousEtiquettes.svelte';
 	import TortueProgramme from '$lib/components/markdown/nodes/TortueProgramme.svelte';
+	import CalculProgramme from '$lib/components/markdown/nodes/CalculProgramme.svelte';
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
 	import PatronGeste from '$lib/components/markdown/nodes/PatronGeste.svelte';
@@ -245,6 +246,7 @@
 		if (node.type === 'associer') return node.caseIndex !== undefined;
 		if (node.type === 'trous') return node.caseIndex !== undefined;
 		if (node.type === 'tortue') return node.caseIndex !== undefined;
+		if (node.type === 'calcul') return node.caseIndex !== undefined;
 		if (node.type === 'variation-table') return isTableToFill(node);
 		return false;
 	}
@@ -545,7 +547,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-calcul-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -1207,6 +1209,36 @@
 							<TortueProgramme
 								{node}
 								expected={flashMode ? undefined : expected}
+								answer={{
+									value: state?.value ?? '',
+									isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value) => handleInputChange(caseIndex, value)
+								}}
+							/>
+						{/key}
+					</div>
+				{/if}
+			{:else if node.type === 'calcul' && node.caseIndex !== undefined && node.spec !== null}
+				<!-- Programme de calcul : l'élève assemble des blocs, son programme écrit en texte est la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const expected = blanks[caseIndex]?.expectedAnswer}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : un programme juste et ce qu'il affiche -->
+					<BuildAnswer
+						kind="calcul"
+						source={node.source}
+						answer={null}
+						status="solution"
+						expected={expected === undefined ? undefined : [expected]}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<!-- Autre question, autre bloc : la carte est recréée (les blocs sont chargés au montage) -->
+						{#key node.source}
+							<CalculProgramme
+								{node}
 								answer={{
 									value: state?.value ?? '',
 									isCorrect: flashMode ? null : (state?.isCorrect ?? null),

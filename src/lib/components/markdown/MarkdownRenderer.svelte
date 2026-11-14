@@ -66,6 +66,7 @@
 	import AssocierPlacer from './nodes/AssocierPlacer.svelte';
 	import TrousEtiquettes from './nodes/TrousEtiquettes.svelte';
 	import TortueProgramme from './nodes/TortueProgramme.svelte';
+	import CalculProgramme from './nodes/CalculProgramme.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -431,6 +432,8 @@
 					<TrousEtiquettes {node} />
 				{:else if node.type === 'tortue'}
 					<TortueProgramme {node} />
+				{:else if node.type === 'calcul'}
+					<CalculProgramme {node} />
 				{/if}
 			{/each}
 		{:else}

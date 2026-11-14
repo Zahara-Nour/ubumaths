@@ -32,6 +32,7 @@ export type CatalogNodeType =
 	| 'associer'
 	| 'trous'
 	| 'tortue'
+	| 'calcul'
 	| 'collection'
 	| 'monnaie'
 	| 'schema-barres';

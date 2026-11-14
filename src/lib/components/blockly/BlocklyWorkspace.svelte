@@ -36,6 +36,7 @@
 		type ToolboxDefinition
 	} from '$lib/shared/blockly';
 	import { definirBlocsTortue } from '$lib/shared/blockly/tortue';
+	import { definirBlocsCalcul } from '$lib/shared/blockly/calcul/blocs';
 
 	// =============================================================================
 	// Types
@@ -130,8 +131,9 @@
 				)
 			);
 
-			// Blocs tortue (définis une seule fois), avant l'injection
+			// Blocs tortue et de calcul (définis une seule fois), avant l'injection
 			definirBlocsTortue();
+			definirBlocsCalcul();
 
 			// Inject Blockly into the container
 			workspace = Blockly.inject(containerRef, options);

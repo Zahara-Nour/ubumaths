@@ -9,6 +9,8 @@
 	- L'éditeur (Blockly, lourd) est chargé à la demande, une fois la carte affichée : les autres
 	  questions ne le paient pas. En attendant, et au rendu côté serveur : le quadrillage seul.
 	- `montrer: oui` : la figure à reproduire en gris sur le quadrillage.
+	- `départ:` : le programme posé d'avance dans l'espace de travail, à modifier. Il ne devient la
+	  réponse qu'au premier changement (un programme de départ non touché n'est pas une réponse).
 	- Programme vide → réponse vide (Valider grisé) ; trop long → refusé avant l'envoi, réponse vide.
 	- Après la validation : blocs verrouillés, tracé de l'élève vert ou rouge, l'attendu en
 	  pointillés quand il est connu (jamais dans une évaluation notée : `attendu: ?`).
@@ -88,7 +90,15 @@
 	let modele = $derived(spec?.montrer ? spec.modele : null);
 	let verrouille = $derived(answer?.disabled ?? false);
 	let verdict = $derived(answer?.isCorrect ?? null);
-	let programme = $derived(answer ? answer.value : programmeLibre);
+	/**
+	 * Les blocs posés à l'ouverture : la réponse déjà donnée, sinon `départ:` — aussi projeté en
+	 * classe (verrouillé sans verdict), jamais une fois jugé (ce n'est pas le programme de l'élève)
+	 */
+	let programme = $derived.by(() => {
+		const donne = answer ? answer.value : programmeLibre;
+		if (donne !== '' || verdict !== null) return donne;
+		return spec?.depart ?? '';
+	});
 
 	/** L'attendu, après la validation seulement : la réponse attendue, sinon le bloc */
 	let attendu = $derived.by((): Segment[] | null => {

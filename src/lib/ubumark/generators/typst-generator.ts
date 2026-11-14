@@ -73,6 +73,7 @@ import { generateQrTypst } from './qr-typst';
 import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
 import { generateTortueTypst } from './tortue-typst';
+import { generateCalculTypst } from './calcul-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
 import { generateOperationTypst } from './operation-typst';
@@ -562,6 +563,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 		case 'tortue':
 			// Programme tortue : la figure à reproduire (`montrer: oui`) et « À faire sur Chiphre »
 			return generateTortueTypst(node);
+		case 'calcul':
+			// Programme de calcul : « À faire sur Chiphre » (la consigne est dans l'énoncé)
+			return generateCalculTypst(node);
 
 		default:
 			return '';
