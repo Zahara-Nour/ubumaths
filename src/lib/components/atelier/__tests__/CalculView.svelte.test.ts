@@ -721,6 +721,40 @@ describe('le clavier de Calcul', () => {
 			expect(container.querySelector('.modele')?.textContent).toContain(derive.example);
 		});
 	});
+
+	// Phase 0 `docs/wip/modele-definition-progress.md` (validée le 2026-11-14)
+	describe('le modèle d’une définition de fonction', () => {
+		const modele = (container: HTMLElement) => container.querySelector('.modele')?.textContent;
+
+		it('une définition sans « sur » : le modèle de l’ensemble, nom et variable tapés', async () => {
+			const { container, field } = await typing('g(t) = 3t + 1');
+
+			expect(modele(container)).toContain('Modèle : g(t) = t² sur [0;3]');
+			expect(modele(container)).toContain('pour choisir l’ensemble');
+			expect(field.getAttribute('aria-describedby')).toBe(container.querySelector('.modele')?.id);
+		});
+
+		it('« sur » tapé : le modèle de l’intervalle', async () => {
+			const { container } = await typing('f(x) = x^2 sur ');
+
+			expect(modele(container)).toContain('[a;b], ]a;b[, [0;+∞[');
+			expect(modele(container)).not.toContain('pour choisir');
+		});
+
+		it('rien pour un calcul', async () => {
+			const { container } = await typing('3+4');
+
+			expect(container.querySelector('.modele')).toBeNull();
+		});
+
+		it('Entrée calcule la ligne telle quelle', async () => {
+			const { container } = await typing('f(x) = x^2{Enter}');
+
+			await vi.waitFor(() => expect(lines(container)).toBe(1));
+			expect(container.querySelector('.historique li.refus')).toBeNull();
+			expect(container.querySelector('.modele')).toBeNull();
+		});
+	});
 });
 
 /**

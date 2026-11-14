@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, phase 0 validée par David, rien codé._
+_Mis à jour le 2026-11-14, PR ouverte (codée, tests verts)._
 
-- **État** : phase 0 ci-dessous VALIDÉE (« ok » de David, 2026-11-14). Aucun code, aucun worktree.
-- **Prochaine action** : `git worktree add -b feat/atelier-modele-definition ../ubumaths-wt-modele-definition origin/main` ; tests d'abord (rouges) dans `src/lib/components/atelier/__tests__/` ; puis `CalculView.svelte` (ligne « Modèle », `model` / `writing`, l. ~396 : aujourd'hui champ texte seulement).
-- **En attente de David** : rien.
-- **Pièges en cours** : tester l'Atelier sur un autre appareil en HTTPS (Tailscale Serve) ou par tunnel, JAMAIS `http://100.79.226.105` (`crypto.randomUUID` absent → l'Atelier plante) ; `desk.draft` est la ligne en TEXTE même en champ mathématique (`draftTextOf`) ; intervalle lu par `src/lib/atelier/interval.ts`.
-- **Worktree / branche** : à créer (voir ci-dessus).
+- **État** : codé sur `feat/atelier-modele-definition` : `src/lib/atelier/draft-hint.ts` (`definitionHint`), branché dans `CalculView.svelte` (ligne « Modèle », les deux champs) ; tests `draft-hint.test.ts`, `CalculView.svelte.test.ts`, `reglages.svelte.test.ts` ; `docs/systeme/atelier.md` à jour.
+- **Prochaine action** : CI verte → merge ; puis versement (journal archivé, chantier clos).
+- **En attente de David** : essai à l'écran (serveur de la branche, port 5176).
+- **Pièges en cours** : tester l'Atelier sur un autre appareil en HTTPS (Tailscale Serve) ou par tunnel, JAMAIS `http://100.79.226.105` (`crypto.randomUUID` absent → l'Atelier plante) ; en champ mathématique, la ligne relue en texte garde « sur » collé (`xsur`) : `definitionHint` la lit comme du LaTeX.
+- **Worktree / branche** : `../ubumaths-wt-modele-definition` · `feat/atelier-modele-definition`.
 
 ## Phase 0 — comportements validés
 
@@ -33,3 +33,4 @@ _Mis à jour le 2026-11-14, phase 0 validée par David, rien codé._
 ## Historique
 
 - 2026-11-14 : chantier ouvert après #2635 / #2640 (chantier `bouton-calculer`, archivé). Idée proposée, non demandée : ligne « Modèle » des commandes dans le champ mathématique ; commandes proposées sans point dans le champ texte.
+- 2026-11-14 : codé (tests d'abord, rouges puis verts). Le modèle s'affiche dès `f(x) =` ; la variable tapée sert aussi au corps (`g(t) = t² sur [0;3]`). Le champ mathématique n'a pas d'`aria-describedby` (hôte MathLive, comme la liste des commandes).
