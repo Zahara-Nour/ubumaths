@@ -1120,3 +1120,4 @@ f55ce309 (539), en `draft`, au niveau {T_SPE}, sans nœud ni tag (MCP) ; « loi 
 tout ou rien) aux données près : « loi de Poisson » en fin d'Autres lois (position 8) ; chacun sur la sous-notion du
 § 62, 517 restant sur la notion. Test d'intégration 11/11, rouge sans la migration (6 échecs, 5 sautés) ; tests
 frères comme au lot 11 : fixture de l'arbre, décompte 483, `LATER`.
+`security-auditor` : aucun finding (code identique au lot 11 aux données près ; relevé prod refait, concordant).
