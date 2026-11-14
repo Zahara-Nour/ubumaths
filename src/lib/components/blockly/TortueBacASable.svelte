@@ -75,8 +75,9 @@
 		arreterAnimation();
 		const nouveau = executerTortue(BlocklyCore.serialization.workspaces.save(workspace));
 		resultat = nouveau;
-		etape = -1;
-		if (nouveau.etapes.length === 0) return;
+		// Première étape tout de suite : pas d'écran vide après « Lancer »
+		etape = 0;
+		if (nouveau.etapes.length <= 1) return;
 		minuterie = setInterval(() => {
 			etape++;
 			if (etape >= nouveau.etapes.length - 1) arreterAnimation();

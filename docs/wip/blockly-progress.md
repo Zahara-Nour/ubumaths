@@ -155,3 +155,16 @@ Phase 0 présentée le 2026-11-14 ; David : « je te suis » sur les cinq recomm
   message.
 - **Boucle** : `controls_repeat` (champ entier ≥ 0) dans la boîte à outils tortue, à la place de
   `controls_repeat_ext` (l'interpréteur garde les deux).
+
+### Essai et revue (2026-11-14)
+
+- Essai `/tortue` (port 5176, fenêtre étroite) : carré animé (tracé partiel à 1 s, complet
+  ensuite), « Tracé terminé : 4 segments. », « Tout de suite », bloc sorti de la boucle pendant
+  l'animation → quadrillage vidé ; aperçu Python juste. Corrigé à l'essai : en colonne, `flex-1`
+  écrasait la hauteur de l'espace de blocs (0 px).
+- `code-reviewer` (Sonnet) : rien de bloquant. Corrigé : première étape affichée dès « Lancer » ;
+  test des étapes pour `trop-loin`. Laissé : « Lancer » sur un espace vide affiche « Tracé
+  terminé : 0 segment. » (phase 0 : « rien, sans erreur »).
+- **Question pour David** : vitesse fixe → un long programme dure longtemps (`répéter 360` de
+  « avancer 1, tourner 1 » = 720 étapes ≈ 3 min 30 ; 10 000 étapes ≈ 50 min). « Tout de suite »
+  existe ; accélérer au-delà d'un seuil ?

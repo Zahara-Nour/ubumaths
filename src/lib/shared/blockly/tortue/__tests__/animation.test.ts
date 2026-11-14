@@ -80,6 +80,15 @@ describe('étapes de l’interpréteur', () => {
 	});
 });
 
+describe('étapes : arrêt trop-loin', () => {
+	it('la dernière étape est la tortue d’avant le pas refusé', () => {
+		const resultat = executerTortue(espace(avancer(2), avancer(2_000_000)));
+		expect(resultat.ok).toBe(false);
+		expect(resultat.etapes).toEqual([{ tortue: { ...DEPART, x: 2 }, segments: 1 }]);
+		expect(resultat.etapes.at(-1)?.tortue).toEqual(resultat.tortue);
+	});
+});
+
 describe('imageAnimation', () => {
 	const carre = executerTortue(espace(repeter(4, [avancer(3), gauche(90)])));
 
