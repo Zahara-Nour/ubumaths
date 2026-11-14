@@ -1,0 +1,222 @@
+{
+	"title": "Démontrer la convergence de la méthode de Héron",
+	"description": "Écart u_{n+1} − √A mis au même dénominateur (deux cases), décroissance à partir du rang 1 (case choix), valeur exacte de la limite (case), convergence vers √A (étapes à ranger)",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit la suite $(u_n)$ définie par $u_0>0$ et, pour tout entier naturel $n$, $u_{n+1}=\\dfrac{1}{2}\\left(u_n+\\dfrac{{{eval:A}}}{u_n}\\right)$ (méthode de Héron). On admet que $u_n>0$ pour tout $n$.\n\nPour comparer $u_{n+1}$ à $\\sqrt{{{eval:A}}}$, complète.\n\n$u_{n+1}-\\sqrt{{{eval:A}}}=\\dfrac{u_n^2-?\\sqrt{{{eval:A}}}\\,u_n+?}{2u_n}$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "{{eval:A}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Au même dénominateur : $u_{n+1}-\\sqrt{{{eval:A}}}=\\dfrac{u_n^2+{{eval:A}}-2\\sqrt{{{eval:A}}}\\,u_n}{2u_n}$.",
+					"Le numérateur est une identité remarquable : $u_n^2-2\\sqrt{{{eval:A}}}\\,u_n+{{eval:A}}=(u_n-\\sqrt{{{eval:A}}})^2$, car $(\\sqrt{{{eval:A}}})^2={{eval:A}}$.",
+					"Donc $u_{n+1}-\\sqrt{{{eval:A}}}=\\dfrac{u_n^2-\\textcolor{{{color:primary.0}}}{2}\\sqrt{{{eval:A}}}\\,u_n+\\textcolor{{{color:primary.0}}}{{{eval:A}}}}{2u_n}=\\dfrac{(u_n-\\sqrt{{{eval:A}}})^2}{2u_n}\\geqslant 0$ : $u_n\\geqslant \\sqrt{{{eval:A}}}$ dès $n\\geqslant 1$."
+				]
+			},
+			"conditions": ["A != 4", "A != 8", "A != 9", "A != 12", "A != 16", "A != 18", "A != 20"]
+		},
+		{
+			"statement": "Soit la suite $(u_n)$ définie par $u_0>0$ et, pour tout entier naturel $n$, $u_{n+1}=\\dfrac{1}{2}\\left(u_n+\\dfrac{{{eval:A}}}{u_n}\\right)$ (méthode de Héron). On admet que $u_n>0$ pour tout $n$. On a montré que $u_n\\geqslant \\sqrt{{{eval:A}}}$ pour tout $n\\geqslant 1$, et $u_{n+1}-u_n=\\dfrac{{{eval:A}}-u_n^2}{2u_n}$.\n\nPourquoi la suite est-elle décroissante à partir du rang $1$ ?\n\n```choix\n- $u_n\\geqslant \\sqrt{{{eval:A}}}$ donne $u_n^2\\geqslant {{eval:A}}$, et $2u_n>0$ : le quotient est négatif\n- $u_n\\leqslant \\sqrt{{{eval:A}}}$, donc ${{eval:A}}-u_n^2\\geqslant 0$\n- $u_n>0$ suffit : le quotient est négatif\n- Le numérateur ${{eval:A}}-u_n^2$ est positif\n```",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $n\\geqslant 1$, $u_n\\geqslant \\sqrt{{{eval:A}}}\\geqslant 0$, donc $u_n^2\\geqslant {{eval:A}}$ : le numérateur ${{eval:A}}-u_n^2$ est négatif.",
+					"Le dénominateur $2u_n$ est strictement positif.",
+					"Donc $\\textcolor{{{color:primary.0}}}{u_{n+1}-u_n\\leqslant 0}$ : la suite est décroissante à partir du rang $1$."
+				]
+			},
+			"conditions": ["A != 4", "A != 8", "A != 9", "A != 12", "A != 16", "A != 18", "A != 20"]
+		},
+		{
+			"statement": "Soit la suite $(u_n)$ définie par $u_0>0$ et, pour tout entier naturel $n$, $u_{n+1}=\\dfrac{1}{2}\\left(u_n+\\dfrac{{{eval:A}}}{u_n}\\right)$ (méthode de Héron). On admet que $u_n>0$ pour tout $n$. On a montré qu'elle est décroissante à partir du rang $1$ et minorée par $0$ : elle converge vers un réel $\\ell$, et l'on admet que $\\ell>0$.\n\nDétermine la valeur exacte de $\\ell$.\n\n$\\ell=?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sqrt{{{eval:A}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction $x\\mapsto\\dfrac{1}{2}\\left(x+\\dfrac{{{eval:A}}}{x}\\right)$ est continue en $\\ell$, donc $\\ell=\\dfrac{1}{2}\\left(\\ell+\\dfrac{{{eval:A}}}{\\ell}\\right)$.",
+					"En multipliant par $2\\ell$ (non nul) : $2\\ell^2=\\ell^2+{{eval:A}}$, soit $\\ell^2={{eval:A}}$.",
+					"Comme $\\ell>0$ : $\\textcolor{{{color:primary.0}}}{\\ell=\\sqrt{{{eval:A}}}}$ ; la méthode de Héron approche $\\sqrt{{{eval:A}}}$."
+				]
+			},
+			"conditions": ["A != 4", "A != 8", "A != 9", "A != 12", "A != 16", "A != 18", "A != 20"]
+		},
+		{
+			"statement": "Soit $A>0$ et la suite $(u_n)$ définie par $u_0>0$ et $u_{n+1}=\\dfrac{1}{2}\\left(u_n+\\dfrac{A}{u_n}\\right)$, dont tous les termes sont strictement positifs. On démontre qu'elle converge vers $\\sqrt{A}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- $u_{n+1}-\\sqrt{A}=\\dfrac{(u_n-\\sqrt{A})^2}{2u_n}\\geqslant 0$ : $u_n\\geqslant\\sqrt{A}$ pour tout $n\\geqslant 1$.\n- $u_{n+1}-u_n=\\dfrac{A-u_n^2}{2u_n}\\leqslant 0$ pour $n\\geqslant 1$ : la suite est décroissante à partir du rang $1$.\n- Décroissante et minorée par $\\sqrt{A}$, elle converge vers un réel $\\ell\\geqslant\\sqrt{A}>0$.\n- Par continuité de $x\\mapsto\\dfrac{1}{2}\\left(x+\\dfrac{A}{x}\\right)$ en $\\ell$ : $\\ell=\\dfrac{1}{2}\\left(\\ell+\\dfrac{A}{\\ell}\\right)$, soit $\\ell^2=A$.\n- Comme $\\ell>0$, $\\ell=\\sqrt{A}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On minore d'abord la suite par $\\sqrt{A}$, puis on en déduit qu'elle décroît.",
+					"Décroissante et minorée, elle converge ; sa limite est un point fixe positif : $\\textcolor{{{color:primary.0}}}{\\ell=\\sqrt{A}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 et 7",
+			"variationIndex": 0,
+			"variables": {
+				"A": "7"
+			},
+			"answers": ["2", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 (double produit oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"A": "7"
+			},
+			"answers": ["1", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 49",
+			"variationIndex": 0,
+			"variables": {
+				"A": "7"
+			},
+			"answers": ["2", "49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_n ≥ √A",
+			"variationIndex": 1,
+			"variables": {
+				"A": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u_n ≤ √A",
+			"variationIndex": 1,
+			"variables": {
+				"A": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u_n > 0 suffit",
+			"variationIndex": 1,
+			"variables": {
+				"A": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : numérateur positif",
+			"variationIndex": 1,
+			"variables": {
+				"A": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ℓ = √7",
+			"variationIndex": 2,
+			"variables": {
+				"A": "7"
+			},
+			"answers": ["\\sqrt{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 (ℓ² au lieu de ℓ)",
+			"variationIndex": 2,
+			"variables": {
+				"A": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −√7 (signe)",
+			"variationIndex": 2,
+			"variables": {
+				"A": "7"
+			},
+			"answers": ["-\\sqrt{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,272 @@
+{
+	"title": "Suite récurrente linéaire d'ordre 2 : termes, forme explicite",
+	"description": "Termes u₂ et u₃ d'une suite définie par u_{n+2} = a u_{n+1} + b u_n (deux cases), racines de l'équation caractéristique (deux cases), coefficients λ et μ de la forme explicite, théorème donné (deux cases)",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:u0}}$, $u_1={{eval:u1}}$ et, pour tout entier naturel $n$, $u_{n+2}={{eval:a}}u_{n+1}+({{eval:b}})u_n$.\n\nCalcule $u_2$ et $u_3$.\n\n$u_2=?$ et $u_3=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:(a)*(u1)+(b)*(u0)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a*u2+b*u1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $n=0$ : $u_2={{eval:a}}\\times{{eval:u1;()}}+{{eval:b;()}}\\times{{eval:u0;()}}={{eval:u2}}$.",
+					"Avec $n=1$ : $u_3={{eval:a}}\\times{{eval:u2;()}}+{{eval:b;()}}\\times{{eval:u1;()}}={{eval:a*u2+b*u1}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{u_2={{eval:u2}}}$ et $\\textcolor{{{color:primary.0}}}{u_3={{eval:a*u2+b*u1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ vérifie, pour tout entier naturel $n$, $u_{n+2}={{eval:a}}u_{n+1}+({{eval:b}})u_n$.\n\nOn admet que si l'équation $r^2=ar+b$ a deux racines réelles distinctes $r_1$ et $r_2$, toute suite vérifiant $u_{n+2}=au_{n+1}+bu_n$ s'écrit $u_n=\\lambda r_1^{\\,n}+\\mu r_2^{\\,n}$, avec $\\lambda$ et $\\mu$ réels.\n\nDétermine $r_1$ et $r_2$, avec $r_1<r_2$.\n\n$r_1=?$ et $r_2=?$",
+			"variables": [
+				{
+					"name": "r1",
+					"expression": "1..4"
+				},
+				{
+					"name": "r2",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(r1)+(r2)"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(r1)*(r2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:min(r1,r2)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:max(r1,r2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'équation s'écrit $r^2-({{eval:a}})r-({{eval:b}})=0$.",
+					"Ses racines ont pour somme ${{eval:a}}$ et pour produit ${{eval:-b}}$ : ce sont ${{eval:r1}}$ et ${{eval:r2}}$ (on vérifie : ${{eval:r1;()}}^2={{eval:r1^2}}$ et ${{eval:a}}\\times{{eval:r1;()}}{{eval:b;+}}={{eval:a*r1+b}}$).",
+					"Donc $\\textcolor{{{color:primary.0}}}{r_1={{eval:min(r1,r2)}}}$ et $\\textcolor{{{color:primary.0}}}{r_2={{eval:max(r1,r2)}}}$."
+				]
+			},
+			"conditions": ["r2 != r1", "r1+r2 != 0"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:l+m}}$, $u_1={{eval:l*r1+m*r2}}$ et, pour tout entier naturel $n$, $u_{n+2}={{eval:a}}u_{n+1}+({{eval:b}})u_n$.\n\nOn admet que si l'équation $r^2=ar+b$ a deux racines réelles distinctes $r_1$ et $r_2$, toute suite vérifiant $u_{n+2}=au_{n+1}+bu_n$ s'écrit $u_n=\\lambda r_1^{\\,n}+\\mu r_2^{\\,n}$, avec $\\lambda$ et $\\mu$ réels. Ici, $r_1={{eval:r1}}$ et $r_2={{eval:r2}}$.\n\nDétermine $\\lambda$ et $\\mu$ tels que $u_n=\\lambda\\times {{eval:r1;()}}^n+\\mu\\times {{eval:r2;()}}^n$.\n\n$\\lambda=?$ et $\\mu=?$",
+			"variables": [
+				{
+					"name": "r1",
+					"expression": "1..4"
+				},
+				{
+					"name": "r2",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(r1)+(r2)"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(r1)*(r2)"
+				},
+				{
+					"name": "l",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..3;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:l}}"
+				},
+				{
+					"expectedAnswer": "{{eval:m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $n=0$ : $\\lambda+\\mu={{eval:l+m}}$. Avec $n=1$ : ${{eval:r1}}\\lambda+({{eval:r2}})\\mu={{eval:l*r1+m*r2}}$.",
+					"En retranchant ${{eval:r1}}$ fois la première équation : $({{eval:r2-r1}})\\mu={{eval:m*(r2-r1)}}$, donc $\\mu={{eval:m}}$, puis $\\lambda={{eval:l+m}}-{{eval:m;()}}={{eval:l}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\lambda={{eval:l}}}$ et $\\textcolor{{{color:primary.0}}}{\\mu={{eval:m}}}$."
+				]
+			},
+			"conditions": ["r2 != r1", "r1+r2 != 0", "r1 != 1", "r2 != 1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u₂ = 7, u₃ = 12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"u0": "-3",
+				"u1": "2",
+				"u2": "7"
+			},
+			"answers": ["7", "12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coefficients échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"u0": "-3",
+				"u1": "2",
+				"u2": "7"
+			},
+			"answers": ["-8", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u₂ et u₃ échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"u0": "-3",
+				"u1": "2",
+				"u2": "7"
+			},
+			"answers": ["12", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "r₁ = −1, r₂ = 3",
+			"variationIndex": 1,
+			"variables": {
+				"r1": "3",
+				"r2": "-1",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["-1", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes (r² + ar + b)",
+			"variationIndex": 1,
+			"variables": {
+				"r1": "3",
+				"r2": "-1",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["-3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre",
+			"variationIndex": 1,
+			"variables": {
+				"r1": "3",
+				"r2": "-1",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["3", "-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "λ = 3, μ = −2",
+			"variationIndex": 2,
+			"variables": {
+				"r1": "2",
+				"r2": "-1",
+				"a": "1",
+				"b": "2",
+				"l": "3",
+				"m": "-2"
+			},
+			"answers": ["3", "-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : λ et μ échangés",
+			"variationIndex": 2,
+			"variables": {
+				"r1": "2",
+				"r2": "-1",
+				"a": "1",
+				"b": "2",
+				"l": "3",
+				"m": "-2"
+			},
+			"answers": ["-2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : μ = 2 (signe)",
+			"variationIndex": 2,
+			"variables": {
+				"r1": "2",
+				"r2": "-1",
+				"a": "1",
+				"b": "2",
+				"l": "3",
+				"m": "-2"
+			},
+			"answers": ["3", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
