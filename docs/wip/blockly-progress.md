@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR 3 en cours._
+_Mis à jour le 2026-11-14, après #2634._
 
-- **État** : #2627 et #2632 mergées ; PR 3 (bac à sable public `/tortue`) en cours, phase 0 validée (« je te suis », 2026-11-14) · **Prochaine action** : tests rouges (animation, `controls_repeat`), puis page `/tortue` · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627 et #2632 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-bac-a-sable`
+- **État** : #2627, #2632 et **#2634 (bac à sable public `/tortue`)** mergées ; PR 3b (rythme de l'animation : 300 ms par étape jusqu'à 40 étapes, puis 12 s au total) en cours · **Prochaine action** : merger la PR 3b, puis phase 0 de la PR 4 (geste de réponse « programme », correction par tracé) · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) ; molette sur l'espace de blocs = défilement des blocs, pas de la page · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-animation-rythme`
 
 ---
 
@@ -165,6 +165,12 @@ Phase 0 présentée le 2026-11-14 ; David : « je te suis » sur les cinq recomm
 - `code-reviewer` (Sonnet) : rien de bloquant. Corrigé : première étape affichée dès « Lancer » ;
   test des étapes pour `trop-loin`. Laissé : « Lancer » sur un espace vide affiche « Tracé
   terminé : 0 segment. » (phase 0 : « rien, sans erreur »).
-- **Question pour David** : vitesse fixe → un long programme dure longtemps (`répéter 360` de
-  « avancer 1, tourner 1 » = 720 étapes ≈ 3 min 30 ; 10 000 étapes ≈ 50 min). « Tout de suite »
-  existe ; accélérer au-delà d'un seuil ?
+- Question posée à David : vitesse fixe → un long programme dure longtemps (`répéter 360` de
+  « avancer 1, tourner 1 » = 720 étapes ≈ 3 min 30 ; 10 000 étapes ≈ 50 min).
+
+## PR 3b — rythme de l'animation (branche `feat/blockly-animation-rythme`)
+
+- **Tranché par David le 2026-11-14** (« oui » à ma recommandation) : 300 ms par étape jusqu'à
+  40 étapes ; au-delà, l'animation entière dure 12 s, plusieurs étapes par tic quand une étape
+  durerait moins d'une image (16 ms) ; pas de curseur de vitesse ; PR séparée après #2634.
+- `rythmeAnimation(n)` dans `tortue/animation.ts`, testée (8, 40, 41, 720, 10 000, 0 étapes).

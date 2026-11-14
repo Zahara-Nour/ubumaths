@@ -15,9 +15,9 @@
 	import TortueCanvas from './TortueCanvas.svelte';
 	import {
 		TORTUE_TOOLBOX,
-		DUREE_ETAPE_MS,
 		executerTortue,
 		imageAnimation,
+		rythmeAnimation,
 		messageErreurTortue,
 		type ResultatTortue
 	} from '$lib/shared/blockly/tortue';
@@ -78,10 +78,11 @@
 		// Première étape tout de suite : pas d'écran vide après « Lancer »
 		etape = 0;
 		if (nouveau.etapes.length <= 1) return;
+		const { dureeMs, etapesParTic } = rythmeAnimation(nouveau.etapes.length);
 		minuterie = setInterval(() => {
-			etape++;
+			etape = Math.min(etape + etapesParTic, nouveau.etapes.length - 1);
 			if (etape >= nouveau.etapes.length - 1) arreterAnimation();
-		}, DUREE_ETAPE_MS);
+		}, dureeMs);
 	}
 
 	function toutDeSuite(): void {
