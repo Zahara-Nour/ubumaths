@@ -637,7 +637,20 @@ function joinedVertices(
 		return ends.filter((q) => !near(q, vertex, eps) && distanceToTrait(q, trait) <= eps);
 	});
 	const vertices = [...joined, ...onSides];
-	if (vertices.length === 0) return incorrect(notJoinedFeedback(nameA, nameB, nameC));
+	if (vertices.length === 0) {
+		// Avec un angle : un côté parti d'un sommet passe par le bout de l'autre sans être un
+		// côté d'angle (aucun repère ne le porte) → C à l'œil (revue de #2660, point 2)
+		const crossesEnd = (from: Position, ends: readonly Position[]) =>
+			segments.some((s) => {
+				if (!farEnd(s, from, from === a ? b : a, eps)) return false;
+				const trait = traitOf(s);
+				return trait !== null && ends.some((q) => distanceToTrait(q, trait) <= eps);
+			});
+		if (check.angles.length > 0 && (crossesEnd(a, fromB) || crossesEnd(b, fromA))) {
+			return incorrect(vertexEyeballedAnglesFeedback(nameC));
+		}
+		return incorrect(notJoinedFeedback(nameA, nameB, nameC));
+	}
 	return { vertices };
 }
 
@@ -980,9 +993,10 @@ function judgeRuledTriangle(
 
 /**
  * Verdict : un côté [AC] (segment partant de A) et un côté [BC] (de B) qui se
- * rejoignent en un C construit, aux longueurs données. Plusieurs paires
- * possibles : juste si l'une convient ; sinon le message d'une paire au sommet
- * construit d'abord (l'essai le plus avancé). Cercles et droites : construction.
+ * rejoignent en un C construit, aux longueurs données. Trois longueurs, plusieurs
+ * paires possibles : juste si l'une convient ; sinon le message d'une paire au
+ * sommet construit d'abord (l'essai le plus avancé). Avec un angle : un seul C
+ * (revue de #2660). Cercles et droites : construction.
  */
 export function judgeTriangle(
 	check: TriangleCheck,
@@ -1020,6 +1034,14 @@ export function judgeTriangle(
 	const joined = joinedVertices(check, a, b, objects, sides);
 	if ('verdict' in joined) return joined.verdict;
 	const { vertices } = joined;
+	// Avec un angle, un seul C, comme en cm : sinon un éventail de [BC] arrêtés sur un côté
+	// d'angle, dont un seul au croisement, serait juste (revue de #2660, point 1)
+	if (check.angles.length > 0 && distinctVertices(vertices).length > 1) {
+		return {
+			status: 'incorrect',
+			feedback: severalTrianglesFeedback(nameA, check.points[1], nameC)
+		};
+	}
 	// Trois longueurs (lot 4) : C au croisement de deux cercles construits. Avec un angle
 	// (lot 7, revue de #2348) : au croisement de ce que dit le § 21, deux côtés d'angle (un
 	// depuis A, un depuis B), ou le côté d'angle et un cercle construit centré au même
