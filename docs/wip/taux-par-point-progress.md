@@ -1,5 +1,5 @@
 ---
-status: phase-0
+status: en-cours
 ---
 
 # Chantier `taux-par-point` — taux de réussite de la classe par point et par notion (P3)
@@ -11,9 +11,9 @@ sur les nouvelles traces (P4, P5, P6, P7, P8, P9 faits).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, chantier ouvert._
+_Mis à jour le 2026-11-14, phase 0 tranchée._
 
-- **État** : état des lieux fait, phase 0 posée (Q1 à Q5) · **Prochaine action** : réponses de David, puis plan technique · **En attente de David** : Q1 à Q5 · **Pièges en cours** : prod presque vide (vérifier en local, `db:seed-riche`) ; l'analytique refuse le compte admin (décision du 2026-10-11) · **Worktree / branche** : `../ubumaths-wt-taux-par-point`, `feat/taux-par-point`
+- **État** : phase 0 tranchée (« je suis tes recos », § Décisions) · **Prochaine action** : plan technique (lecture des traces depuis la rentrée, regroupement par point puis notion, coût de la lecture : décider s'il faut un comptage par la base), puis tests rouges · **En attente de David** : rien · **Pièges en cours** : prod presque vide (vérifier en local, `db:seed-riche`) ; l'analytique refuse le compte admin (décision du 2026-10-11) ; prouvé = sources `auto` + `teacher`, comme `student-follow-up.ts` · **Worktree / branche** : `../ubumaths-wt-taux-par-point`, `feat/taux-par-point`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -45,7 +45,17 @@ _Mis à jour le 2026-11-14, chantier ouvert._
   d'un taux. Aucun point travaillé → message. Une classe sans trace → message.
 - **Erreur** : lecture en échec → message dans le cadre du widget, le reste de la page reste.
 
-## Questions à David (phase 0, posées le 2026-11-14)
+## Décisions (David, 2026-11-14 : « je suis tes recos »)
+
+- **Q1** : un **widget à part** dans l'onglet Connaissances ; notions dans l'ordre de l'arbre,
+  dépliables en points.
+- **Q2** : **prouvé seulement** (sources `auto` + `teacher`) ; flash-cards et révision (déclaré) hors
+  du taux ; mention « seulement déclaré » quand un point n'a que du déclaré.
+- **Q3** : **chaque élève pèse autant** (taux de chaque élève, puis moyenne).
+- **Q4** : **depuis la rentrée** (année scolaire de l'école, règle de la régularité).
+- **Q5** : moins de **3 élèves** → « pas assez de réponses ».
+
+## Questions à David (phase 0, posées le 2026-11-14 — tranchées ci-dessus)
 
 - **Q1 — Où ?** Recommandé : un **widget à part** dans l'onglet Connaissances (notions, dépliables en
   points). Autres choix : une ligne « % réussite » en pied de la grille A (déjà chargée en pieds), ou
@@ -63,4 +73,5 @@ _Mis à jour le 2026-11-14, chantier ouvert._
 
 ## Journal
 
+- 2026-11-14 : phase 0 tranchée (« je suis tes recos »).
 - 2026-11-14 : chantier ouvert, état des lieux, phase 0 posée (Q1 à Q5).
