@@ -11,9 +11,9 @@ sur les nouvelles traces (P4, P5, P6, P7, P8, P9 faits).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR 1 ouverte._
+_Mis à jour le 2026-11-14, après #2663._
 
-- **État** : T1 tranchée (base, accès : personne ne lit rien de plus) ; PR 1 (migration `class_template_success` + intégration, 5 tests rouges sans la migration, verts avec) ouverte · **Prochaine action** : audit `security-auditor`, CI verte → merge → `db:migrate` depuis le dépôt principal → PR 2 (`db:types`, calcul, endpoint, widget) · **En attente de David** : rien · **Pièges en cours** : base locale : migration appliquée par `docker exec supabase_db_ubumaths psql` + `notify pgrst` (pas de `psql` sur la machine) ; prod presque vide (vérifier en local, `db:seed-riche`) ; l'analytique refuse le compte admin ; `success` jamais NULL sur une trace de modèle (CHECK) · **Worktree / branche** : `../ubumaths-wt-taux-par-point`, `feat/taux-par-point`
+- **État** : PR 1 mergée (#2663) ; `class_template_success` **en prod** (`db:migrate` fait, essai à blanc d'abord : seule cette migration) · **Prochaine action** : PR 2 dans un worktree neuf (`git worktree add -b feat/taux-par-point-calcul ../ubumaths-wt-taux-par-point origin/main`) : `pnpm db:types`, puis tests rouges du calcul (`class-success-rate.ts`), endpoint `success-rate`, widget `ClassSuccessRates.svelte`, doc (`analytique-prof.md`, `base-de-donnees.md`) ; revue `code-reviewer` + `security-auditor` · **En attente de David** : rien · **Pièges en cours** : base locale : migration appliquée par `docker exec supabase_db_ubumaths psql` + `notify pgrst` (pas de `psql` sur la machine) ; prod presque vide (vérifier en local, `db:seed-riche`) ; l'analytique refuse le compte admin ; `success` jamais NULL sur une trace de modèle (CHECK) ; valider `classId` par Zod (`classIdParamSchema`) · **Worktree / branche** : aucun (l'ancien retiré après #2663)
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -99,6 +99,10 @@ Comptage par la base ; question d'accès : **personne** ne lit rien de plus.
   archivé exclu, élève limité à ses traces, élève hors classe → rien, `anon` 42501. **Rouges sans la
   migration** (PGRST202, fonction introuvable), verts avec.
 - Plan : `idx_skill_attempts_student_template_time` (local, `enable_seqscan=off`).
+- `security-auditor` : aucun finding bloquant ni important. Faibles : coût à revoir par `EXPLAIN`
+  quand la table grossira (`idx_skill_attempts_student_time` borne mieux la date ; au planificateur) ;
+  `p_first_day` NULL → 0 ligne ; admin et membre archivé appelant non testés (déduits des policies).
+- Mergée le 2026-11-14 (#2663) ; `db:migrate` fait (essai à blanc : seule cette migration).
 
 ## Phase 0 — comportements proposés (à valider)
 
@@ -138,6 +142,7 @@ Comptage par la base ; question d'accès : **personne** ne lit rien de plus.
 
 ## Journal
 
+- 2026-11-14 : #2663 mergée, `db:migrate` fait.
 - 2026-11-14 : T1 tranchée (base) ; PR 1 écrite, tests rouges puis verts.
 - 2026-11-14 : plan technique écrit ; T1 posée à David.
 - 2026-11-14 : phase 0 tranchée (« je suis tes recos »).
