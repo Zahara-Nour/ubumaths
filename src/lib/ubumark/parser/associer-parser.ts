@@ -55,7 +55,6 @@ export interface AssocierBlock extends AssocierSpec {
 const OPEN_REGEX = /^```associer\s*$/;
 const CLOSE_REGEX = /^```\s*$/;
 const ITEM_REGEX = /^-(?:[ \t](.*))?$/;
-const LINK_REGEX = /^(.*?)\s*->\s*(.*)$/;
 const SETTING_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 const CASE_INDEX_REGEX = /^\d{1,3}$/;
 const TEXT_BLANK = '[_]';
@@ -63,6 +62,26 @@ const TEXT_BLANK = '[_]';
 export const ASSOCIER_BLOCK_UNCLOSED_MESSAGE = 'bloc non fermé (ajouter ``` à la fin)';
 
 // Functions
+/**
+ * Coupe `élément -> étiquette` au premier `->` HORS d'une formule `$…$` (`$u_n -> 0$`
+ * reste entier) ; `null` : pas de lien
+ */
+function splitLink(content: string): [string, string] | null {
+	let inMath = false;
+	for (let i = 0; i < content.length; i++) {
+		const char = content[i];
+		if (char === '\\') {
+			i++;
+			continue;
+		}
+		if (char === '$') inMath = !inMath;
+		else if (!inMath && char === '-' && content[i + 1] === '>') {
+			return [content.slice(0, i).trim(), content.slice(i + 2).trim()];
+		}
+	}
+	return null;
+}
+
 /** L'élément de rang `index` n'a pas d'étiquette (bloc du prof) */
 export function missingLabelMessage(index: number, item: string): string {
 	return `l’élément ${index + 1} (« ${item} ») n’a pas d’étiquette : écrire « -> étiquette »`;
@@ -136,12 +155,12 @@ export function parseAssocierBody(body: readonly string[]): AssocierSpec {
 		if (item) {
 			started = true;
 			const content = (item[1] ?? '').trim();
-			const link = content.match(LINK_REGEX);
+			const link = splitLink(content);
 			if (!link) {
 				errors.push(`ligne « ${trimmed} » : écrire « - élément -> étiquette »`);
 				continue;
 			}
-			const [, left, right] = link.map((part) => part.trim());
+			const [left, right] = link;
 			if (left === '' && right === '') {
 				errors.push(`ligne « ${trimmed} » : ni élément ni étiquette`);
 				continue;

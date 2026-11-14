@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, phase 0 validée._
+_Mis à jour le 2026-11-14, lot 1 en PR._
 
-- **État** : phase 0 validée (David, 2026-11-14, « je valide ») ; lot 1 en cours sur `feat/associer` · **Prochaine action** : parseur + tests, puis générateur, juge, écran, PDF · **En attente de David** : rien · **Pièges en cours** : — · **Worktree / branche** : `../ubumaths-wt-associer`, `feat/associer`
+- **État** : lot 1 (texte, formules) codé, relu (`code-reviewer` Opus : 1 Important + 5 Mineurs, tous corrigés), PR ouverte · **Prochaine action** : CI verte → merge ; puis convertir B11 de `cours-suites` en `associer (session « questions ») ; lot 2 = blocs `courbe dans un élément · **En attente de David** : essai du geste à l'écran (serveur de la branche, port 5177) · **Pièges en cours** : `rangerLabelsCollide` et `RangerPlacer` (clés d'erreurs) ont les deux défauts hérités corrigés ici pour associer, pas pour ranger · **Worktree / branche** : `../ubumaths-wt-associer`, `feat/associer`
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -55,3 +55,11 @@ Ensuite : convertir la n° 11 de `cours-suites` (B11, QCM) en « associer ».
 ## Journal
 
 - 2026-11-14 : worktree ouvert, phase 0 validée.
+- 2026-11-14 : lot 1 codé — parseur `associer-parser.ts`, case par élément (`construire: 'associer'`),
+  mélange `rangerOrder`, énoncé d'instance sans liens, juge strict, `AssocierPlacer.svelte`, corrigé
+  (`BuildAnswer`), PDF (`generateAssocierTypst`, compilation réelle testée), série d'automatismes
+  (corrigé « élément → étiquette »), catalogue `/aide-ecriture/blocs/associer`, éditeur riche, garde
+  anti-fuite `findUnmaskedAnswers`. Écart à la phase 0 : le `?` dans un élément n'est pas refusé (texte
+  courant « Quelle suite ? ») ; seul `[_]` l'est. Revue : étiquettes `+`/`-` vides au PDF (repli en
+  chaîne Typst), `->` dans une formule (coupe hors `$…$`), message des doublons écrits, clés `{#each}`,
+  garde anti-fuite, test sur la structure.

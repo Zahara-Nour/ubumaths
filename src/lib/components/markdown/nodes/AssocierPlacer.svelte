@@ -229,7 +229,7 @@
 
 	{#if node.errors.length > 0}
 		<ul class="text-sm text-destructive" role="alert">
-			{#each node.errors as error (error)}
+			{#each node.errors as error, i (i)}
 				<li>Bloc associer : {error}</li>
 			{/each}
 		</ul>

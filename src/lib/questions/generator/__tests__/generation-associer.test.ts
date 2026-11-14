@@ -20,6 +20,7 @@ import { validateAnswer } from '$lib/utils/answer-validator';
 import { buildExpectedResult } from '../../expected-result';
 import { toPublicQuestion } from '../../public-question';
 import type { AssocierNode } from '$lib/ubumark/types/associer';
+import { findUnmaskedAnswers } from '../../masked-statement';
 
 function template(
 	variation: Omit<QuestionVariation, 'statement'> & { statement: string },
@@ -156,6 +157,17 @@ describe('associer : les cases et leurs réponses', () => {
 		expect(result.errors.join(' ')).toMatch(/Éléments à associer : deux éléments identiques/);
 	});
 
+	it('deux éléments écrits identiques, sans variable : le message du parseur', () => {
+		const result = generateInstance(
+			template({ statement: associer('- 3 -> impair', '- 3 -> premier', '- -> pair') }),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/les éléments 1 et 2 sont identiques/);
+		expect(result.errors.join(' ')).not.toMatch(/tirages/);
+	});
+
 	it('case: écrite à la main : refusée', () => {
 		const result = generateInstance(
 			template({ statement: associer('case: 0', '- a -> 1', '- b -> 2', '- -> 3') }),
@@ -206,6 +218,10 @@ describe('associer : les cases et leurs réponses', () => {
 		});
 	});
 
+	it('garde anti-fuite : un bloc qui garde ses liens est signalé', () => {
+		expect(findUnmaskedAnswers(associer('case: 0', ...SUITES))).toEqual(['associer']);
+	});
+
 	it('version publique (évaluation notée) : ni réponse, ni lien', () => {
 		const instance = generate(template({ statement: `Associe.\n\n${associer(...SUITES)}` }));
 		const sent = toPublicQuestion(instance, { position: 0, delaySeconds: 30 });
@@ -214,6 +230,13 @@ describe('associer : les cases et leurs réponses', () => {
 		expect(sent.blanks?.every((blank) => blank.construire === 'associer')).toBe(true);
 		expect(sent.statement).not.toMatch(/^- [^-\s].*->[ \t]*\S/m);
 		const published = parseMarkdown(sent.statement).children.find((c) => c.type === 'associer');
+		// Structure : aucun lien dans l'énoncé publié
+		expect(published && published.type === 'associer' && published.answers).toEqual([
+			null,
+			null,
+			null
+		]);
+		expect(findUnmaskedAnswers(sent.statement)).toEqual([]);
 		expect(published && published.type === 'associer' && published.labels).toEqual(
 			shownBlock(instance).labels
 		);

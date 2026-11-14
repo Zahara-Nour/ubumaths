@@ -3849,12 +3849,18 @@ export async function markdownToTypst(
 	return generateTypst(ast, options);
 }
 
-/** Une ligne d'ubumark (étiquette, élément) en Typst, dans le texte courant */
+/**
+ * Une ligne d'ubumark (étiquette, élément) en Typst, dans le texte courant. Une ligne
+ * que le parseur ne lit pas en paragraphe (`+`, `-`, `1.` : une liste ; `> 0` : une
+ * citation) sort en chaîne Typst, telle qu'écrite — comme le repli d'`InlineMarkdown`.
+ */
 function inlineUbumarkTypst(text: string, options: ResolvedTypstTranspilerOptions): string {
-	const paragraph = parseMarkdown(text).children[0];
-	return paragraph?.type === 'paragraph'
-		? paragraph.children.map((child) => generateInline(child, options)).join('')
-		: '';
+	const blocks = parseMarkdown(text).children;
+	const paragraph = blocks[0];
+	if (paragraph?.type === 'paragraph' && blocks.length === 1) {
+		return paragraph.children.map((child) => generateInline(child, options)).join('');
+	}
+	return `#"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 }
 
 /**

@@ -182,12 +182,15 @@ function associerTextsCollide(
 		).trim();
 	return findAssociersToPlace(text).some((block) => {
 		const { items, labels } = parseAssocierContent(block.body.join('\n'));
-		const resolvedItems = items.map(resolve);
-		const resolvedLabels = labels.map(resolve);
-		return (
-			new Set(resolvedItems).size < resolvedItems.length ||
-			new Set(resolvedLabels).size < resolvedLabels.length
-		);
+		// Seuls deux textes ÉCRITS différents comptent : deux éléments écrits identiques
+		// sont refusés par le parseur, avec son message (inutile de retirer)
+		const collide = (written: string[]) => {
+			const resolved = written.map(resolve);
+			return resolved.some((text, i) =>
+				resolved.some((other, j) => j > i && other === text && written[j] !== written[i])
+			);
+		};
+		return collide(items) || collide(labels);
 	});
 }
 

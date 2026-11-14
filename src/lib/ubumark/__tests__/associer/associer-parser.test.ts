@@ -55,6 +55,23 @@ describe('lecture du corps d’un bloc associer', () => {
 		expect(spec.errors).toEqual([]);
 	});
 
+	it('« -> » dans une formule : l’élément reste entier', () => {
+		const spec = parseAssocierBody([
+			'- $u_n -> 0$ -> converge',
+			'- $u_n = n$ -> diverge',
+			'- -> oscille'
+		]);
+		expect(spec.items).toEqual(['$u_n -> 0$', '$u_n = n$']);
+		expect(spec.labels).toEqual(['converge', 'diverge', 'oscille']);
+		expect(spec.errors).toEqual([]);
+	});
+
+	it('élément qui commence par un signe moins', () => {
+		const spec = parseAssocierBody(['- -3 -> négatif', '- 3 -> positif', '- -> nul']);
+		expect(spec.items).toEqual(['-3', '3']);
+		expect(spec.errors).toEqual([]);
+	});
+
 	it('erreur : élément sans étiquette dans le bloc du prof', () => {
 		const spec = parseAssocierBody(['- a -> 1', '- b ->', '- c -> 3', '- -> 4']);
 		expect(spec.errors.join(' ')).toContain('l’élément 2 (« b ») n’a pas d’étiquette');
@@ -170,6 +187,15 @@ describe('PDF (Typst)', () => {
 		const grid = typst.split('\n').find((line) => line.includes('2.5cm')) ?? '';
 		const cells = [...grid.matchAll(/\[([^\]]*)\]/g)].map((m) => m[1].trim());
 		expect(cells).toEqual(['a', '•', '', '•', 'z', 'b', '•', '', '•', 'x', '', '', '', '•', 'y']);
+	});
+
+	it('étiquettes « + », « - », « 1. » (lues en liste par le parseur) : écrites telles quelles', () => {
+		const typst = generateTypst(
+			parseMarkdown(block('case: 0', '- a ->', '- b ->', '- -> +', '- -> -', '- -> 1.'))
+		);
+		expect(typst).toContain('[#"+"]');
+		expect(typst).toContain('[#"-"]');
+		expect(typst).toContain('[#"1."]');
 	});
 
 	it('bloc mal écrit : rien', () => {
