@@ -10,22 +10,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 13 en fichiers (§ 52), PR à ouvrir._
+_Mis à jour le 2026-11-14, après #2642 (fichiers du lot 13)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
   § 35, lots 9 à 15) : lots 9 à 11 publiés (§ 47) ; lot 12 relu 5/5 « ok » (§ 51), encore en `draft` ; lot 13 en
-  fichiers sur `feat/questions-tspe-approfondissements-13` (§ 52) ; 8 points restants après lui (lots 14, 15).
-- **Prochaine action** : PR des fichiers du lot 13, CI, merge ; puis `create-questions --publier` du lot 13 (David),
-  migration de rangement (§ 52, colonne « Nœud »), page à cocher.
+  fichiers sur `main` (#2642, § 52) ; 8 points restants après lui (lots 14, 15).
+- **Prochaine action** : David lance `create-questions --publier` du lot 13 depuis le dépôt principal ; puis migration
+  de rangement et tags (§ 52, colonne « Nœud »), page à cocher.
 - **En attente de David** : `publier-lot.ts --dir scripts/questions/tspe-approfondissements-12` (simulation puis
-  `--publier`) ; après le merge, `create-questions --dir scripts/questions/tspe-approfondissements-13 --publier`.
+  `--publier`) ; `create-questions --dir scripts/questions/tspe-approfondissements-13 --publier`.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge ;
   `1x` non nettoyé dans `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable `e` ni `i`** (§ 52).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, sur `feat/questions-tspe-approfondissements-13`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche à créer depuis `origin/main`.
 
 ---
 
