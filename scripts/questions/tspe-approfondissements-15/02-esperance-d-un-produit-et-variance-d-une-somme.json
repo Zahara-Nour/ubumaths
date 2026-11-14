@@ -1,4 +1,5 @@
 {
+	"id": "81353e4d-b232-417e-a8f6-c10244f8b4a3",
 	"title": "E(XY) = E(X)E(Y) et variance d'une somme",
 	"description": "Factoriser la somme qui définit E(XY) par indépendance (case choix), développement de V(X + Y) (case), E((X + Y)²) et V(X + Y) (deux cases), contre-exemple Y = X (case), démonstration (étapes à ranger)",
 	"grades": ["T_SPE"],

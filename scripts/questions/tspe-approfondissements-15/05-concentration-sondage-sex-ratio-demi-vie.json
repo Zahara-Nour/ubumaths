@@ -1,4 +1,5 @@
 {
+	"id": "f55ce309-ec88-4b89-86d6-3297a75aa269",
 	"title": "Concentration : sondage, sex ratio, demi-vie",
 	"description": "Majorant 1/(4nδ²) de l'inégalité de concentration pour un sondage (n = 1 000, case), le sex ratio (n = 10⁶, case), la demi-vie (n = 10²³, exposant en case), effet de n sur le majorant (case choix)",
 	"grades": ["T_SPE"],

@@ -1,4 +1,5 @@
 {
+	"id": "8d03f8c1-0a03-400e-9e1b-fa8ba0879579",
 	"title": "Loi de Poisson, limite de lois binomiales",
 	"description": "X_n de loi B(n, λ/n) : limite de P(X_n = 0) (case), de P(X_n = 1) (case) ; approcher une loi binomiale par une loi de Poisson, P(Y = 2) (deux cases) ; évènements rares (case choix)",
 	"grades": ["T_SPE"],
