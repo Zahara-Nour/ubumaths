@@ -7,9 +7,9 @@ validés ») : « P8 page de suivi d'un élève · P9 distinguer prouvé (corrig
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2643._
+_Mis à jour le 2026-11-14 : **chantier CLOS** (go de David : « on clot le chantier »)._
 
-- **État** : PR 1 (#2639) et PR 2 (#2643) mergées, pas encore en prod ; le découpage validé (Q6) est entièrement livré · **Prochaine action** : clore le chantier (versement : doc déjà dans `analytique-prof.md` § Suivi d'un élève ; journal à archiver) sur le go de David · **En attente de David** : vérifications à l'écran de #2639 et #2643 (`verifications-manuelles.md`) ; go pour clore · **Pièges en cours** : prod presque sans traces avec réponse ; la grille A lit `skill_attempts` sans pagination (écart noté dans `analytique-prof.md`) ; chaîne grille A → suivi → résultats → suivi qui perd le retour à l'analytique (limite acceptée) · **Worktree / branche** : supprimés après #2643
+- **État** : clos ; P8 et P9 livrés par #2639 et #2643 · **Doc durable** : `docs/systeme/analytique-prof.md` § Suivi d'un élève · **Reste** : vérifications à l'écran de #2639 et #2643 (`docs/wip/verifications-manuelles.md`) · **Limites acceptées** : chaîne grille A → suivi → résultats → suivi qui perd le retour à l'analytique ; contrôle d'une classe quittée absent
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -159,6 +159,7 @@ bloc le dit, les autres restent (comme « Points du programme »). Aucune date (
 
 ## Journal
 
+- 2026-11-14 : chantier clos, journal archivé.
 - 2026-11-14 : #2643 mergée (PR 2), CI verte.
 - 2026-11-14 : PR 2 codée (session principale) : trois blocs, `RegularityTable.svelte` partagé avec la grille C, `countActiveWeeks` (équivalent TS de `class_regularity_weeks`), retours `?depuis=analytique&classe=` et `?depuis=suivi&eleve=`. Revues : code et sécurité sans bloquant. Corrigé : warn si profil illisible (rentrée par défaut). Laissés : chaîne grille A → suivi → résultats → suivi perd le retour vers l'analytique (retour aux classes) ; `getStudentAssignments` ne valide pas son `studentId` elle-même (UUID validé en amont, fonction antérieure) ; contrôle d'une classe quittée absent (comme l'écran élève) ; pas de test croisé TS ↔ SQL de la régularité.
 - 2026-11-14 : PR 2, worktree `feat/suivi-eleve-blocs`, état des lieux et plan technique, R1 à R3 posées.
