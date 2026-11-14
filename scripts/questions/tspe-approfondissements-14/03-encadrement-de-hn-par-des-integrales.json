@@ -1,0 +1,215 @@
+{
+	"title": "Encadrer Hₙ par des intégrales",
+	"description": "Encadrement de ln(k + 1) − ln(k) en intégrant 1/t (case choix), ln(N + 1) ≤ H_N (case), H_N − 1 ≤ ln(N) (case), limite de H_n / ln(n) (case), démonstration (étapes à ranger)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Pour tout entier $n\\geqslant 1$, on note $H_n=\\displaystyle\\sum_{k=1}^{n}\\dfrac{1}{k}$. Soit $k\\geqslant 1$ un entier. Pour tout $t\\in[k;k+1]$, $\\dfrac{1}{k+1}\\leqslant\\dfrac{1}{t}\\leqslant\\dfrac{1}{k}$.\n\nQuelle inégalité obtient-on en intégrant sur $[k;k+1]$ ?\n\n```choix\n- $\\dfrac{1}{k+1}\\leqslant\\ln(k+1)-\\ln(k)\\leqslant\\dfrac{1}{k}$\n- $\\dfrac{1}{k}\\leqslant\\ln(k+1)-\\ln(k)\\leqslant\\dfrac{1}{k+1}$\n- $\\dfrac{1}{(k+1)^2}\\leqslant\\ln(k+1)-\\ln(k)\\leqslant\\dfrac{1}{k^2}$\n- $\\ln(k+1)\\leqslant\\ln(k+1)-\\ln(k)\\leqslant\\ln(k)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$k\\leqslant k+1$ : l'intégration sur $[k;k+1]$ conserve l'ordre.",
+					"L'intervalle est de longueur $1$ : une constante $c$ s'intègre en $c$ ; et $\\displaystyle\\int_k^{k+1}\\dfrac{1}{t}\\,\\mathrm{d}t=\\ln(k+1)-\\ln(k)$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\dfrac{1}{k+1}\\leqslant\\ln(k+1)-\\ln(k)\\leqslant\\dfrac{1}{k}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant 1$, on note $H_n=\\displaystyle\\sum_{k=1}^{n}\\dfrac{1}{k}$. On a montré que, pour tout entier $k\\geqslant 1$, $\\dfrac{1}{k+1}\\leqslant\\ln(k+1)-\\ln(k)\\leqslant\\dfrac{1}{k}$.\n\nEn ajoutant les inégalités $\\ln(k+1)-\\ln(k)\\leqslant\\dfrac{1}{k}$ pour $k$ allant de $1$ à ${{eval:N}}$, complète.\n\n$\\ln(?)\\leqslant H_{{{eval:N}}}$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "5..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La somme des $\\dfrac{1}{k}$ vaut $\\displaystyle\\sum_{k=1}^{{{eval:N}}}\\dfrac{1}{k}=H_{{{eval:N}}}$.",
+					"Celle des $\\ln(k+1)-\\ln(k)$ est télescopique : $\\displaystyle\\sum_{k=1}^{{{eval:N}}}\\left(\\ln(k+1)-\\ln(k)\\right)=\\ln({{eval:N+1}})-\\ln(1)=\\ln({{eval:N+1}})$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\ln({{eval:N+1}})\\leqslant H_{{{eval:N}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant 1$, on note $H_n=\\displaystyle\\sum_{k=1}^{n}\\dfrac{1}{k}$. On a montré que, pour tout entier $k\\geqslant 1$, $\\dfrac{1}{k+1}\\leqslant\\ln(k+1)-\\ln(k)\\leqslant\\dfrac{1}{k}$.\n\nEn ajoutant les inégalités $\\dfrac{1}{k+1}\\leqslant\\ln(k+1)-\\ln(k)$ pour $k$ allant de $1$ à ${{eval:N-1}}$, complète.\n\n$H_{{{eval:N}}}-?\\leqslant\\ln({{eval:N}})$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "5..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La somme des $\\dfrac{1}{k+1}$ vaut $\\displaystyle\\sum_{k=1}^{{{eval:N-1}}}\\dfrac{1}{k+1}=\\dfrac{1}{2}+\\cdots+\\dfrac{1}{{{eval:N}}}=H_{{{eval:N}}}-1$ : il manque le premier terme.",
+					"Celle des $\\ln(k+1)-\\ln(k)$, télescopique, vaut $\\ln({{eval:N}})-\\ln(1)=\\ln({{eval:N}})$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{H_{{{eval:N}}}-1\\leqslant\\ln({{eval:N}})}$, soit $H_{{{eval:N}}}\\leqslant 1+\\ln({{eval:N}})$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant 1$, on note $H_n=\\displaystyle\\sum_{k=1}^{n}\\dfrac{1}{k}$. On a montré que, pour tout entier $n\\geqslant 1$, $\\ln(n+1)\\leqslant H_n\\leqslant 1+\\ln(n)$.\n\nComplète.\n\n$\\displaystyle\\lim_{n\\to+\\infty}\\dfrac{H_n}{\\ln(n)}=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $n\\geqslant 2$, $\\ln(n)>0$ : $\\dfrac{\\ln(n+1)}{\\ln(n)}\\leqslant\\dfrac{H_n}{\\ln(n)}\\leqslant\\dfrac{1}{\\ln(n)}+1$.",
+					"$\\dfrac{\\ln(n+1)}{\\ln(n)}=1+\\dfrac{\\ln\\left(1+\\frac{1}{n}\\right)}{\\ln(n)}$ tend vers $1$, et $\\dfrac{1}{\\ln(n)}+1$ aussi.",
+					"Par le théorème des gendarmes, $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}\\dfrac{H_n}{\\ln(n)}=1}$ : $H_n$ tend vers $+\\infty$ aussi lentement que $\\ln(n)$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant 1$, on note $H_n=\\displaystyle\\sum_{k=1}^{n}\\dfrac{1}{k}$. Soit $n\\geqslant 2$ un entier. On démontre que $\\ln(n+1)\\leqslant H_n\\leqslant 1+\\ln(n)$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour tout entier $k\\geqslant 1$ et tout $t\\in[k;k+1]$, $\\dfrac{1}{k+1}\\leqslant\\dfrac{1}{t}\\leqslant\\dfrac{1}{k}$.\n- On intègre sur $[k;k+1]$, de longueur $1$ : $\\dfrac{1}{k+1}\\leqslant\\ln(k+1)-\\ln(k)\\leqslant\\dfrac{1}{k}$.\n- On ajoute les inégalités $\\ln(k+1)-\\ln(k)\\leqslant\\dfrac{1}{k}$ pour $k$ de $1$ à $n$ ; la somme est télescopique : $\\ln(n+1)\\leqslant H_n$.\n- De même, avec les inégalités $\\dfrac{1}{k+1}\\leqslant\\ln(k+1)-\\ln(k)$ pour $k$ de $1$ à $n-1$ : $H_n-1\\leqslant\\ln(n)$.\n- Donc $\\ln(n+1)\\leqslant H_n\\leqslant 1+\\ln(n)$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On encadre $\\dfrac{1}{t}$ sur chaque intervalle $[k;k+1]$, puis on intègre.",
+					"Les sommes télescopiques donnent $\\textcolor{{{color:primary.0}}}{\\ln(n+1)\\leqslant H_n\\leqslant 1+\\ln(n)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "encadrement par 1/(k + 1) et 1/k",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens inversé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carrés",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ln(13)",
+			"variationIndex": 1,
+			"variables": {
+				"N": "12"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : N",
+			"variationIndex": 1,
+			"variables": {
+				"N": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1",
+			"variationIndex": 2,
+			"variables": {
+				"N": "12"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/N",
+			"variationIndex": 2,
+			"variables": {
+				"N": "12"
+			},
+			"answers": ["\\frac{1}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "limite 1",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
