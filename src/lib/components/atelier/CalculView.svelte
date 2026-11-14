@@ -200,7 +200,7 @@
 	 * Le champ « Écriture mathématique » (phase 0 `atelier-reglages-phase0.md`).
 	 *
 	 * `desk.draft` reste la ligne en cours, en TEXTE, quel que soit le champ :
-	 * le bouton « Calculer », les commandes préparées par une carte et le retour
+	 * l'envoi du formulaire, les commandes préparées par une carte et le retour
 	 * au mode texte la lisent. Le champ mathématique l'écrit à chaque frappe
 	 * (`draftTextOf`) ; la reprend quand elle change du dehors
 	 * (`fieldLatexFromText`).
@@ -558,9 +558,13 @@
 
 	function submit(event: SubmitEvent) {
 		event.preventDefault();
-		// Le bouton « Calculer » sous le champ mathématique : le même chemin qu'Entrée
+		// Pas de bouton « Calculer » (David, 2026-11-14) : Entrée, ou la touche ↵
+		// d'un clavier virtuel, valide. Le champ texte envoie le formulaire (seul
+		// champ : envoi implicite) ; le champ mathématique valide lui-même, et un
+		// envoi du formulaire en mode mathématique prend le même chemin
 		if (inputMode === 'math') naturalField?.submit();
-		else desk.submit(desk.draft);
+		// Ligne vide : rien (le bouton grisé bloquait aussi l'envoi par Entrée)
+		else if (desk.draft.trim() !== '') desk.submit(desk.draft);
 	}
 
 	/** Remplacer la commande en cours par celle que l'élève vient de choisir. */
@@ -870,7 +874,6 @@
 				placeholder="f(x) = x^2 − 3x + 1, ou 12 km + 300 m, ou un point pour les commandes"
 			/>
 		{/if}
-		<Button type="submit" disabled={desk.draft.trim() === ''}>Calculer</Button>
 	</form>
 </div>
 

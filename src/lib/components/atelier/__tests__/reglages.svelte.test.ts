@@ -285,17 +285,23 @@ describe('Calcul en écriture mathématique', () => {
 		await vi.waitFor(() => expect(history()).toContain('3x2'));
 	});
 
-	it('le bouton « Calculer » calcule aussi', async () => {
-		const { choose, typeMath, history, calcul } = await open();
-		await choose('Écriture mathématique');
+	// Pas de bouton « Calculer » (David, 2026-11-14) : Entrée, ou la touche ↵ du
+	// clavier virtuel ou du clavier du téléphone, valide dans les deux champs
+	it('aucun bouton « Calculer » : Entrée calcule dans le champ texte', async () => {
+		const { textField, history, calcul } = await open();
+		const buttons = [...calcul().querySelectorAll('button')];
+		expect(buttons.some((b) => b.textContent?.trim() === 'Calculer')).toBe(false);
 
-		await typeMath('4+3');
-		const button = [...calcul().querySelectorAll('button')].find(
-			(b) => b.textContent?.trim() === 'Calculer'
-		);
-		await vi.waitFor(() => expect(button?.disabled).toBe(false));
-		button?.click();
+		const field = textField();
+		if (field === null) throw new Error('pas de champ texte');
+		await userEvent.click(field);
+		// Ligne vide : Entrée ne fait rien, l'historique ne bouge pas
+		const empty = history();
+		await userEvent.keyboard('{Enter}');
+		await new Promise((resolve) => setTimeout(resolve, 200));
+		expect(history()).toBe(empty);
 
+		await userEvent.keyboard('4+3{Enter}');
 		await vi.waitFor(() => expect(history()).toContain('7'));
 	});
 
