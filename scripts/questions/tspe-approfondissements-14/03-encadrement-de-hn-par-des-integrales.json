@@ -1,4 +1,5 @@
 {
+	"id": "a4fab858-4011-4fda-9dec-5a3550ffa589",
 	"title": "Encadrer Hₙ par des intégrales",
 	"description": "Encadrement de ln(k + 1) − ln(k) en intégrant 1/t (case choix), ln(N + 1) ≤ H_N (case), H_N − 1 ≤ ln(N) (case), limite de H_n / ln(n) (case), démonstration (étapes à ranger)",
 	"grades": ["T_SPE"],
