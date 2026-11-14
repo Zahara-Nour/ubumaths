@@ -29,7 +29,7 @@ _Mis à jour le 2026-11-14, ouverture._
   aux graduations ; « Ton compas est ouvert à l'œil : ouvre-le sur une graduation de la règle. »
 - 1 unité de la figure = 1 cm ([ADR 0036](../adr/0036-le-cm-de-la-figure.md)), papier uni seulement.
 
-## Phase 0 (proposée le 2026-11-14, à valider)
+## Phase 0 (validée le 2026-11-14)
 
 Le prof écrit, [AB] déjà tracé dans la figure (6 unités = 6 cm, longueur dite dans l'énoncé) :
 
@@ -90,6 +90,8 @@ que la règle graduée ; un cercle ou C hors de la fenêtre ; cm sur quadrillage
 7. **Message de mauvaise longueur** : dire la mesure, « Ton côté [AC] mesure 3,8 cm au lieu de 4 cm. » (reco :
    comme le segment en cm de la PR 1, l'élève voit de combien il s'est trompé) ; ou garder le message actuel du
    triangle, « Ton côté [AC] n'a pas la bonne longueur. ».
+
+**Tranché (David, 2026-11-14, « je valide » sur les recommandations)** : 1. [AB] déjà tracé ; 2. cm et segment à reporter mêlés → refusé ; 3. C sur la graduation ou à l'arc, les deux justes ; 4. Report retiré dès qu'une longueur est en cm ; 5. modèle 6-173 : variations en cm ajoutées, celles en segments gardées ; 6. un seul lot, une PR ; 7. « Ton côté [AC] mesure 3,8 cm au lieu de 4 cm. ».
 
 ## Journal
 
