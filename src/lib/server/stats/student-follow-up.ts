@@ -315,6 +315,9 @@ export async function getStudentRegularity(
 		.eq('id', studentId)
 		.maybeSingle();
 	if (profileError) throw new Error(`École de l'élève illisible : ${profileError.message}`);
+	// Profil masqué : la grille partira du 1er septembre, pas de la rentrée de l'école
+	if (!profile)
+		logger.warn("[getStudentRegularity] Profil de l'élève illisible, rentrée par défaut");
 
 	const { start, holidays } = await readSchoolYearOfSchool(
 		supabase,

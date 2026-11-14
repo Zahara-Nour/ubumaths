@@ -159,6 +159,7 @@ bloc le dit, les autres restent (comme « Points du programme »). Aucune date (
 
 ## Journal
 
+- 2026-11-14 : PR 2 codée (session principale) : trois blocs, `RegularityTable.svelte` partagé avec la grille C, `countActiveWeeks` (équivalent TS de `class_regularity_weeks`), retours `?depuis=analytique&classe=` et `?depuis=suivi&eleve=`. Revues : code et sécurité sans bloquant. Corrigé : warn si profil illisible (rentrée par défaut). Laissés : chaîne grille A → suivi → résultats → suivi perd le retour vers l'analytique (retour aux classes) ; `getStudentAssignments` ne valide pas son `studentId` elle-même (UUID validé en amont, fonction antérieure) ; contrôle d'une classe quittée absent (comme l'écran élève) ; pas de test croisé TS ↔ SQL de la régularité.
 - 2026-11-14 : PR 2, worktree `feat/suivi-eleve-blocs`, état des lieux et plan technique, R1 à R3 posées.
 - 2026-11-14 : #2639 mergée (PR 1), CI verte.
 - 2026-11-14 : PR 1 codée (agent), badge mis en commun avec la grille A (`curriculum-point-badge-meta.ts`), doc système (`analytique-prof.md` § Suivi d'un élève, `comptes-classes-ecoles.md`, `composants-ui.md`). Revues : code → clés de liste répétées si deux notions homonymes non voisines (corrigé, test rouge puis vert) ; sécurité sans bloquant. Mineurs laissés : test d'intégration contre la RLS (tout est mocké ; un échec RLS afficherait « pas encore de point » sans fuite), refus de l'admin tenu par le code seul (la RLS le laisse lire, comme l'analytique), assertions non nulles `!` dans `student-follow-up.ts`.
