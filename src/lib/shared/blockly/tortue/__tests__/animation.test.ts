@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { DUREE_ETAPE_MS, imageAnimation } from '../animation';
+import {
+	DUREE_ETAPE_MS,
+	DUREE_IMAGE_MIN_MS,
+	DUREE_MAX_ANIMATION_MS,
+	imageAnimation,
+	rythmeAnimation,
+	SEUIL_ETAPES_LENTES
+} from '../animation';
 import { executerTortue, LIMITE_PAS } from '../interpreteur';
 
 // Même forme que dans interpreteur.test.ts : blocs sérialisés comme les rend Blockly.
@@ -115,5 +122,38 @@ describe('imageAnimation', () => {
 
 	it('vitesse fixe, environ 0,3 s par étape', () => {
 		expect(DUREE_ETAPE_MS).toBe(300);
+	});
+});
+
+describe('rythmeAnimation', () => {
+	it('programme court (≤ 40 étapes) : 300 ms par étape, une à la fois', () => {
+		expect(SEUIL_ETAPES_LENTES).toBe(40);
+		expect(rythmeAnimation(8)).toEqual({ dureeMs: DUREE_ETAPE_MS, etapesParTic: 1 });
+		expect(rythmeAnimation(40)).toEqual({ dureeMs: DUREE_ETAPE_MS, etapesParTic: 1 });
+	});
+
+	it('au-delà : l’animation entière dure 12 s', () => {
+		expect(DUREE_MAX_ANIMATION_MS).toBe(12_000);
+		const rythme = rythmeAnimation(41);
+		expect(rythme.etapesParTic).toBe(1);
+		expect(rythme.dureeMs * 41).toBeCloseTo(12_000);
+	});
+
+	it('rosace de 720 étapes : 12 s au lieu de 3 min 30, encore une étape par image', () => {
+		const rythme = rythmeAnimation(720);
+		expect(rythme.etapesParTic).toBe(1);
+		expect(rythme.dureeMs * 720).toBeCloseTo(12_000);
+	});
+
+	it('10 000 étapes : plusieurs étapes par image, jamais sous 16 ms, 12 s au plus', () => {
+		const n = 10_000;
+		const rythme = rythmeAnimation(n);
+		expect(rythme.etapesParTic).toBeGreaterThan(1);
+		expect(rythme.dureeMs).toBeGreaterThanOrEqual(DUREE_IMAGE_MIN_MS);
+		expect(rythme.dureeMs * Math.ceil(n / rythme.etapesParTic)).toBeLessThanOrEqual(12_000 + 1e-6);
+	});
+
+	it('aucune étape : rythme par défaut, sans division par zéro', () => {
+		expect(rythmeAnimation(0)).toEqual({ dureeMs: DUREE_ETAPE_MS, etapesParTic: 1 });
 	});
 });

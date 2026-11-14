@@ -50,7 +50,7 @@ journal.
 | `src/lib/workers/js-sandbox.worker.ts`                        | Sandbox JavaScript : globales filtrées, délai de 10 s, sortie limitée                                                                            |
 | `src/lib/workers/js-sandbox-source.ts`                        | Source de la fonction sandbox (sans effet de bord, testable sous Node)                                                                           |
 | `src/lib/shared/blockly/tortue/interpreteur.ts`               | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments, tortue finale et étapes                               |
-| `src/lib/shared/blockly/tortue/animation.ts`                  | `imageAnimation` (ce que montre le quadrillage à l'étape i), `DUREE_ETAPE_MS` = 300                                                              |
+| `src/lib/shared/blockly/tortue/animation.ts`                  | `imageAnimation` (image à l'étape i), `rythmeAnimation` (durée d'un tic, étapes par tic)                                                         |
 | `src/lib/shared/blockly/tortue/segments.ts`                   | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `sortDuCadre`                                               |
 | `src/lib/shared/blockly/tortue/blocs.ts`                      | `definirBlocsTortue` : définitions Blockly et générateurs d'aperçu JS / Python (`from turtle import *`)                                          |
 | `src/lib/shared/blockly/tortue/toolbox.ts`                    | `TORTUE_TOOLBOX` : Tortue, « répéter n fois » (`controls_repeat`, champ entier ≥ 0), nombre — uniquement des blocs interprétés                   |
@@ -106,7 +106,8 @@ journal.
 - **Boîte à outils** : `controls_repeat` (champ entier ≥ 0 : ni virgule ni négatif ne se
   saisissent) ; l'interpréteur lit encore `controls_repeat_ext`, qui reviendra avec les variables.
 - Quadrillage fixe 20 × 20 (`DEMI_COTE_CADRE`). Sur `/dev/blockly`, tracé instantané ; sur
-  `/tortue`, **animé** : une étape toutes les 300 ms, « Tout de suite » saute à la fin, toute
+  `/tortue`, **animé** : 300 ms par étape jusqu'à 40 étapes, au-delà l'animation entière dure
+  12 s (plusieurs étapes par tic sous 16 ms) ; « Tout de suite » saute à la fin, toute
   modification des blocs arrête l'animation et vide le quadrillage ; le message (fin ou erreur)
   s'affiche à la fin de l'animation.
 

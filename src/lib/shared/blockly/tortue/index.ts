@@ -4,7 +4,7 @@
 
 export { definirBlocsTortue, COULEUR_TORTUE } from './blocs';
 export { TORTUE_TOOLBOX } from './toolbox';
-export { imageAnimation, DUREE_ETAPE_MS } from './animation';
+export { imageAnimation, rythmeAnimation, DUREE_ETAPE_MS } from './animation';
 export {
 	executerTortue,
 	messageErreurTortue,
