@@ -24,7 +24,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; texte à trous (``trous) le 2026-11-14 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03.
 
 ## À quoi ça sert
 
@@ -678,6 +678,11 @@ Un **texte à trous** (` ```trous `) : la réserve encadrée (étiquettes dans l
 texte non justifié, chaque trou en pointillés de la largeur de la plus longue étiquette, numéroté en
 petit devant (`generateTrousTypst`, Typst natif) ; jamais la réponse ; dans les cadres de réponse, une ligne par rangée de la réserve (6 étiquettes par
 rangée, `TROUS_RESERVE_COLUMNS`) et une par ligne du texte. Au corrigé d'une série, « 1 → étiquette ; 2 → étiquette ».
+Un **programme tortue** (` ```tortue `, chantier `blockly`) ne se fait pas sur papier : avec
+`montrer: oui`, la figure à reproduire sur un quadrillage recadré (départ marqué d'un point), puis le
+cadre « À faire sur Chiphre » ; sans, le cadre seul (`generateTortueTypst`, détail dans
+[ubumark](ubumark.md)) ; une figure (`FIGURE_LINES`) dans les cadres de réponse. Une série
+d'automatismes le refuse (aucune règle de série : « 0 case(s) dans l'énoncé pour 1 réponse(s) »).
 Un **programme Scratch** (` ```scratch `, palier 1) sort en texte brut monospace, clôture plus
 longue que toute suite d'accents graves du programme (le dessin en blocs n'existe qu'à l'écran),
 et compte une ligne par ligne du programme dans les cadres de réponse ; en erreur, « Programme

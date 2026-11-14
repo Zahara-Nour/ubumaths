@@ -13,7 +13,7 @@ couvre:
 # Blockly — programmation par blocs
 
 > Écrite à partir du code le 2026-11-14 (chantier `blockly`, journal
-> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14.
+> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour).
 
 ## À quoi ça sert
 
@@ -31,36 +31,36 @@ Deux pages, rien n'est enregistré :
 
 Dans une question (bloc ubumark ```tortue, cf. [ubumark](ubumark.md) et
 [questions](questions.md)), la réponse de l'élève est son programme, écrit en **notation texte**
-et jugé sur son tracé (§ Programme tortue en réponse). L'écran de la question (blocs dans la
-carte, corrigé) et le PDF viennent avec la PR 4b du chantier `blockly` ; décisions dans son
-journal.
+et jugé sur son tracé (§ Programme tortue en réponse), avec les blocs dans la carte, un corrigé
+dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue).
 
 ## Carte du code
 
-| Fichier                                                       | Rôle                                                                                                                                             |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `src/routes/(public)/tortue/+page.svelte`                     | Page publique « La Tortue », monte `TortueBacASable`                                                                                             |
-| `src/lib/components/blockly/TortueBacASable.svelte`           | Blocs tortue, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié ; onglets Blocs / Tortue sous `lg`               |
-| `src/routes/(protected)/dev/blockly/+page.svelte`             | Page de test, monte `BlocklyPlayground`                                                                                                          |
-| `src/lib/components/blockly/BlocklyPlayground.svelte`         | Assemble espace de travail, barre d'outils, aperçu du code, console                                                                              |
-| `src/lib/components/blockly/BlocklyWorkspace.svelte`          | `Blockly.inject` ; charge la locale française (`blockly/msg/fr`) avant                                                                           |
-| `src/lib/stores/blocklyPlayground.svelte.ts`                  | État de la page (langage, code, sortie)                                                                                                          |
-| `src/lib/shared/blockly/config.ts`                            | `BLOCKLY_CONFIG` (délais, limites), `DEFAULT_WORKSPACE_OPTIONS`, thème `CHIPHRE_THEME`, messages d'erreur                                        |
-| `src/lib/shared/blockly/toolbox/standard.ts`                  | Boîte à outils : Logique, Boucles, Math, Texte, Listes, Variables, Fonctions                                                                     |
-| `src/lib/shared/blockly/generators/`                          | `generateCode` / `getRawCode` (générateurs Blockly), enveloppes `wrapJavaScriptCode` / `wrapPythonCode`, garde-fous (longueur, boucles infinies) |
-| `src/lib/shared/blockly/execution/blockly-executor.svelte.ts` | Aiguille vers `JsExecutor` ou, chargé à la demande, le `PlaygroundExecutor` Python (Pyodide, cf. [python/](python/))                             |
-| `src/lib/shared/blockly/execution/js-executor.svelte.ts`      | Pilote le worker JavaScript                                                                                                                      |
-| `src/lib/workers/js-sandbox.worker.ts`                        | Sandbox JavaScript : globales filtrées, délai de 10 s, sortie limitée                                                                            |
-| `src/lib/workers/js-sandbox-source.ts`                        | Source de la fonction sandbox (sans effet de bord, testable sous Node)                                                                           |
-| `src/lib/shared/blockly/tortue/interpreteur.ts`               | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments, tortue finale et étapes                               |
-| `src/lib/shared/blockly/tortue/animation.ts`                  | `imageAnimation` (image à l'étape i), `rythmeAnimation` (durée d'un tic, étapes par tic)                                                         |
-| `src/lib/shared/blockly/tortue/segments.ts`                   | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `memesFormes` (8 symétries + translation), `sortDuCadre`    |
-| `src/lib/shared/blockly/tortue/notation.ts`                   | `etatVersTexte` / `texteVersEtat` : programme en notation texte (`répéter 4 [ avancer 3 ; tourner à droite 90 ]`) ↔ état Blockly                 |
-| `src/lib/shared/blockly/tortue/jugement.ts`                   | `jugerProgrammeTortue` (comparaison `position` ou `forme`), `lireProgrammeTortue` (segments ou message d'erreur)                                 |
-| `src/lib/shared/blockly/tortue/blocs.ts`                      | `definirBlocsTortue` : définitions Blockly et générateurs d'aperçu JS / Python (`from turtle import *`)                                          |
-| `src/lib/shared/blockly/tortue/toolbox.ts`                    | `TORTUE_TOOLBOX` : Tortue, « répéter n fois » (`controls_repeat`, champ entier ≥ 0), nombre — uniquement des blocs interprétés                   |
-| `src/lib/components/blockly/TortueCanvas.svelte`              | Quadrillage fixe 20 × 20 en SVG, segments coupés au cadre, dépassement signalé                                                                   |
-| `static/blockly/media/`                                       | Médias de Blockly (corbeille, sprites, icônes), servis par Chiphre                                                                               |
+| Fichier                                                       | Rôle                                                                                                                                                             |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/(public)/tortue/+page.svelte`                     | Page publique « La Tortue », monte `TortueBacASable`                                                                                                             |
+| `src/lib/components/blockly/TortueBacASable.svelte`           | Blocs tortue, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié ; onglets Blocs / Tortue sous `lg`                               |
+| `src/routes/(protected)/dev/blockly/+page.svelte`             | Page de test, monte `BlocklyPlayground`                                                                                                                          |
+| `src/lib/components/blockly/BlocklyPlayground.svelte`         | Assemble espace de travail, barre d'outils, aperçu du code, console                                                                                              |
+| `src/lib/components/blockly/BlocklyWorkspace.svelte`          | `Blockly.inject` ; charge la locale française (`blockly/msg/fr`) avant                                                                                           |
+| `src/lib/stores/blocklyPlayground.svelte.ts`                  | État de la page (langage, code, sortie)                                                                                                                          |
+| `src/lib/shared/blockly/config.ts`                            | `BLOCKLY_CONFIG` (délais, limites), `DEFAULT_WORKSPACE_OPTIONS`, thème `CHIPHRE_THEME`, messages d'erreur                                                        |
+| `src/lib/shared/blockly/toolbox/standard.ts`                  | Boîte à outils : Logique, Boucles, Math, Texte, Listes, Variables, Fonctions                                                                                     |
+| `src/lib/shared/blockly/generators/`                          | `generateCode` / `getRawCode` (générateurs Blockly), enveloppes `wrapJavaScriptCode` / `wrapPythonCode`, garde-fous (longueur, boucles infinies)                 |
+| `src/lib/shared/blockly/execution/blockly-executor.svelte.ts` | Aiguille vers `JsExecutor` ou, chargé à la demande, le `PlaygroundExecutor` Python (Pyodide, cf. [python/](python/))                                             |
+| `src/lib/shared/blockly/execution/js-executor.svelte.ts`      | Pilote le worker JavaScript                                                                                                                                      |
+| `src/lib/workers/js-sandbox.worker.ts`                        | Sandbox JavaScript : globales filtrées, délai de 10 s, sortie limitée                                                                                            |
+| `src/lib/workers/js-sandbox-source.ts`                        | Source de la fonction sandbox (sans effet de bord, testable sous Node)                                                                                           |
+| `src/lib/shared/blockly/tortue/interpreteur.ts`               | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments, tortue finale et étapes                                               |
+| `src/lib/shared/blockly/tortue/animation.ts`                  | `imageAnimation` (image à l'étape i), `rythmeAnimation` (durée d'un tic, étapes par tic)                                                                         |
+| `src/lib/shared/blockly/tortue/segments.ts`                   | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `memesFormes` (8 symétries + translation), `sortDuCadre`                    |
+| `src/lib/shared/blockly/tortue/notation.ts`                   | `etatVersTexte` / `texteVersEtat` : programme en notation texte (`répéter 4 [ avancer 3 ; tourner à droite 90 ]`) ↔ état Blockly                                 |
+| `src/lib/shared/blockly/tortue/jugement.ts`                   | `jugerProgrammeTortue` (comparaison `position` ou `forme`), `lireProgrammeTortue` (segments ou message d'erreur)                                                 |
+| `src/lib/shared/blockly/tortue/blocs.ts`                      | `definirBlocsTortue` : définitions Blockly et générateurs d'aperçu JS / Python (`from turtle import *`)                                                          |
+| `src/lib/shared/blockly/tortue/toolbox.ts`                    | `TORTUE_TOOLBOX` : Tortue, « répéter n fois » (`controls_repeat`, champ entier ≥ 0), nombre — uniquement des blocs interprétés                                   |
+| `src/lib/components/blockly/TortueCanvas.svelte`              | Quadrillage fixe 20 × 20 en SVG, segments coupés au cadre, dépassement signalé ; figure modèle en gris, attendu en pointillés, tracé vert / rouge ; sans Blockly |
+| `src/lib/components/blockly/TortueEditeur.svelte`             | Éditeur d'une question tortue (blocs, Lancer, quadrillage, onglets sous `lg`) ; rend le programme en texte à chaque modification ; chargé à la demande           |
+| `static/blockly/media/`                                       | Médias de Blockly (corbeille, sprites, icônes), servis par Chiphre                                                                                               |
 
 ## Invariants
 
@@ -149,6 +149,31 @@ journal.
   cherche sa pareille dans les cases voisines : deux morceaux d'une même droite à cheval sur une
   frontière d'arrondi sont fusionnés (avant la PR 4, une clé arrondie pouvait les séparer).
 
+## L'écran d'une question tortue
+
+- **Carte** : `TortueProgramme.svelte` (nœud ubumark, `components/markdown/nodes/`), monté par
+  `FillBlanksInput` à la place du bloc (case `data-construire-case`). Il montre d'abord le
+  quadrillage seul (rendu serveur, figure `montrer: oui` en gris), puis charge
+  `TortueEditeur.svelte` par `import()` au montage : Blockly n'est téléchargé que par une carte
+  tortue. Chaque modification des blocs donne `etatVersTexte` ; la réponse de la case est ce texte,
+  ou `''` quand le programme est vide, trop long (> `LONGUEUR_MAX_PROGRAMME`, message « Programme
+  trop long », gardé après la validation) ou illisible. Une réponse déjà donnée revient en blocs
+  (`texteVersEtat`) sans être renvoyée, même écrite autrement que `etatVersTexte` (point décimal).
+  `FillBlanksInput` recrée la carte quand le bloc change (`{#key node.source}`).
+- **Après la validation** (case verrouillée) : l'espace de blocs est recréé en lecture seule
+  (`BlocklyWorkspace`, `readonly`), sans « Effacer » ; le quadrillage montre tout de suite le tracé
+  final du programme de l'élève, vert juste ou rouge faux, et l'attendu en pointillés quand il est
+  connu : réponse attendue de la case (`position | <programme>`), sinon `attendu:` du bloc. Jamais
+  en évaluation notée (`attendu: ?`, case masquée). « Lancer » rejoue l'animation.
+- **Corrigé** (copie corrigée, bonne réponse) : `TortueCorrige.svelte` via `BuildAnswer`, sans
+  Blockly : quadrillage (tracé de l'élève et attendu en pointillés, ou tracé juste seul) et
+  programmes en texte (« Ton programme », « Un programme juste »). La ligne `build` de
+  `expected-result.ts` porte la réponse attendue (`expected`), seul endroit où un énoncé masqué
+  garde le programme de référence.
+- **Hors question** (aperçu de l'éditeur riche, aide à l'écriture, `MarkdownRenderer` et
+  `StaticBlockNode`) : la même carte, geste libre, rien de jugé.
+- **PDF** (`ubumark/generators/tortue-typst.ts`) : cf. [ubumark](ubumark.md).
+
 ## Comment étendre
 
 - Nouveau bloc tortue : définition et aperçu dans `tortue/blocs.ts`, cas dans `executerTortue`
@@ -168,6 +193,10 @@ journal.
   étapes et `imageAnimation`.
 - `src/lib/components/blockly/__tests__/tortue-telephone.svelte.test.ts` (navigateur, 390 px et
   1280 px) : onglets, bascule au « Lancer », programme gardé, pause au départ.
+- `src/lib/components/markdown/nodes/__tests__/TortueProgramme.svelte.test.ts` (navigateur) :
+  figure montrée ou non, blocs → réponse en texte, programme vidé, trop long refusé, verrouillé
+  (tracé rouge, attendu en pointillés), évaluation notée sans attendu, téléphone, question
+  générée dans `FillBlanksInput` ; corrigé (`TortueCorrige`).
 - `src/lib/components/__tests__/Sidebar.svelte.test.ts` : « La Tortue » visible sans connexion.
 - `src/lib/workers/__tests__/js-sandbox-source.test.ts` : la fonction sandbox compile et s'exécute.
 - `src/lib/shared/blockly/execution/__tests__/js-executor-boucle.svelte.test.ts` (navigateur) :

@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2651._
+_Mis à jour le 2026-11-14, PR 4b en cours (branche `feat/blockly-geste-ecran`)._
 
-- **État** : PR 1 à 4a mergées (4a = logique du geste « programme » tortue, sans écran, #2651) · **Prochaine action** : PR 4b (écran : blocs dans la carte, corrigé dessiné, aperçu de l'éditeur ; PDF « À faire sur Chiphre » ; catalogue des blocs), nouvelle branche depuis `origin/main` dans le worktree · **En attente de David** : avis sur les choix listés au § PR 4a (`montrer:` à `non` par défaut, `forme` = 8 symétries) ; ne publier aucun modèle tortue avant la 4b (pas d'écran pour répondre) · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; programme ≥ 2 000 caractères refusé par `texteVersEtat` → l'écran (4b) doit le refuser avant l'envoi ; `index.ts` de `tortue/` importe Blockly : côté serveur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` (`pnpm check:integration-paths`) ; ports 5176+ souvent pris · **Worktree / branche** : `ubumaths-wt-blockly`, branche de la 4b à créer
+- **État** : PR 1 à 4a mergées ; 4b (écran du geste « programme » tortue : carte, corrigé, PDF, catalogue) commitée, PR à ouvrir · **Prochaine action** : revue `code-reviewer`, PR, CI, merge ; puis PR 5 (correction par sortie, programmes de calcul de 5e) · **En attente de David** : avis sur les choix listés au § PR 4a (`montrer:` à `non` par défaut, `forme` = 8 symétries) ; une question tortue est refusée par les séries d'automatismes (§ PR 4b) · **Après le prochain `deploy:prod`** : lignes #2627, #2632, #2634 / 3b / 3c et 4b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (l'éditeur est chargé par `import()`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; suite navigateur complète en local : le navigateur se ferme en route (machine), la CI fait foi · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-geste-ecran`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -237,3 +237,22 @@ dessiné, aperçu de l'éditeur), PDF (« À faire sur Chiphre »), catalogue de
   comme un autre programme) ; bloc cité ou en retrait masqué et vu par la garde. Reste, à dire à
   David : **entre 4a et 4b, une question tortue publiée n'a aucun écran pour répondre** (ni
   carte, ni PDF) → ne pas publier de modèle tortue avant la 4b.
+
+### PR 4b — écran, corrigé, PDF, catalogue (branche `feat/blockly-geste-ecran`)
+
+- Carte : `TortueProgramme.svelte` (quadrillage tout de suite, figure `montrer: oui` en gris ;
+  éditeur `TortueEditeur.svelte` chargé par `import()`, Blockly hors des autres questions).
+  Réponse = `etatVersTexte` ; vide, trop long (message) ou illisible → `''`. Verrouillé : blocs
+  en lecture seule, tracé final vert / rouge, attendu en pointillés (réponse attendue de la case,
+  sinon `attendu:` ; jamais en évaluation notée). Onglets Blocs / Tortue sous `lg`.
+- Corrigé : `TortueCorrige.svelte` (sans Blockly) via `BuildAnswer` ; la ligne `build` porte
+  `expected` (seul endroit où un énoncé masqué garde la référence).
+- PDF : `tortue-typst.ts`, figure recadrée + « À faire sur Chiphre », cadre seul sans `montrer:`.
+  Compilé pour de vrai dans le test.
+- Catalogue : fiche `tortue` (3 exemples, 3 erreurs), aide à l'écriture et vitrine des blocs.
+- Essai navigateur (vitrine `/demo/questions`, question ajoutée le temps de l'essai puis retirée) :
+  blocs posés à la souris, Lancer, Valider → corrigé dessiné et programmes en texte. La forme
+  « Saisie » laisse valider à vide (exprès, « valider à vide montre la réponse ») ; `QuestionCard`
+  grise Valider sur réponse vide.
+- **À dire à David** : une série d'automatismes **refuse** une question tortue (« 0 case(s) dans
+  l'énoncé pour 1 réponse(s) ») : pas de règle de série écrite (que mettre au corrigé imprimé ?).

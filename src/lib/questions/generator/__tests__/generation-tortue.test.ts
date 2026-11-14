@@ -161,6 +161,15 @@ describe('programme tortue : la case et sa réponse', () => {
 		expect(builds[0]).toMatchObject({ kind: 'build', buildKind: 'tortue', status: 'incorrect' });
 	});
 
+	it('copie corrigée : la ligne porte la réponse attendue (le corrigé dessine la référence)', () => {
+		// Énoncé masqué d'une évaluation notée : le bloc ne dit plus le programme, la case si
+		const instance = generate(template({ statement: tortue(ATTENDU) }));
+		const builds = buildExpectedResult(instance, { values: [A_GAUCHE] }).lines.filter(
+			(l) => l.kind === 'build'
+		);
+		expect(builds[0]).toMatchObject({ expected: [`position | ${CARRE}`] });
+	});
+
 	it('copie corrigée sans programme : « aucun programme »', () => {
 		const instance = generate(template({ statement: tortue(ATTENDU) }));
 		const { lines } = buildExpectedResult(instance, { values: [''] });
