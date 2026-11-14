@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2650 (rangement du lot 14, § 60)._
+_Mis à jour le 2026-11-14, lot 14 publié (§ 61)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 13 publiés (§ 57) ; lot 14 (473, 496, 497) : 3 brouillons rangés et tagués, `id`
-  commités, page à cocher publiée (§ 60) ; lot 15 restant (517, 529, 537, 538, 539).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 3), puis `publier-lot.ts` (David).
-- **En attente de David** : relecture de https://claude.ai/artifact/FwMMhYS4arXRBnNyRvn3rx.
+  § 35, lots 9 à 15) : lots 9 à 14 publiés (§ 61) ; lot 15 restant (517, 529, 537, 538, 539).
+- **Prochaine action** : lot 15 (517, 529, 537, 538, 539) : relevé MCP, fichiers, aperçus, PR des fichiers (même
+  démarche que le lot 14, § 58 à 61).
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -24,7 +24,7 @@ _Mis à jour le 2026-11-14, après #2650 (rangement du lot 14, § 60)._
   **les `id` écrits par `create-questions` se commitent dans la PR de rangement** (`page-a-cocher.ts` et
   `publier-lot.ts` les exigent, § 56) ; `1x` non nettoyé dans `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable
   `e` ni `i`** (§ 52) ; `pnpm deploy:prod` en cours = merge bloqué, attendre `lock.py --tenu deploy`.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-approfondissements-14-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche à créer depuis `origin/main`.
 
 ---
 
@@ -1080,3 +1080,8 @@ Mergé (#2650) : CI verte (intégration comprise), `check:migrations --pr` vert,
 brouillons, 4, 4 et 5 exemples ; alerte « bloc ranger non dessiné » sur 497 (habituelle, étapes vues dans l'aperçu
 admin, § 58). Page : https://claude.ai/artifact/FwMMhYS4arXRBnNyRvn3rx (capacité `db`) ; base `verdicts` vide à la
 publication.
+
+## 61. Lot 14 : verdicts et publication (2026-11-14)
+
+Verdicts lus : 3/3 « ok », sans commentaire (ids du § 59). `publier-lot.ts` (simulation puis `--publier`) lancé par
+David. Relu en base (MCP) : 3 `published`.
