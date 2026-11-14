@@ -8,9 +8,9 @@ couvre:
   - 'src/lib/components/{test,assessments,series}/**'
   - src/lib/components/teacher/TestModeToggle.svelte
   - src/lib/stores/test-mode.svelte.ts
-  - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
+  - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
   - 'src/lib/server/validation/{evaluations,tests,parody-evaluations,grades,chapter-series}.ts'
-  - 'src/lib/types/{evaluation,evaluation-attempt,test,grades,skills}.ts'
+  - 'src/lib/types/{evaluation,evaluation-attempt,evaluation-breakdown,test,grades,skills}.ts'
   - 'src/lib/utils/{test-launch,test-score,grades}.ts'
 ---
 
@@ -58,6 +58,7 @@ par les séances dans [srs.md](srs.md).
 | `src/lib/types/evaluation-attempt.ts`                               | Ce qu'échangent navigateur et serveur : `EvaluationStartResponse`, `EvaluationSubmitResponse`, `CorrectedQuestion`.                                                                       |
 | `src/lib/server/series.ts`                                          | CRUD des séries ; traduit le verrou de la base (`SERIES_LOCKED_SQLSTATE` = `UBS01`).                                                                                                      |
 | `src/lib/server/evaluations.ts`                                     | Contrôles : création, réglages, statut, assignation, destinataires, résultats, statistiques.                                                                                              |
+| `src/lib/server/evaluation-breakdown.ts`                            | Bilan d'un contrôle par question et par notion (`getEvaluationBreakdown`, calcul pur `computeEvaluationBreakdown`) ; types dans `src/lib/types/evaluation-breakdown.ts`.                  |
 | `src/lib/server/evaluation-attempts.ts`                             | `startEvaluationAttempt`, `submitEvaluationAttempt`, `readSubmittedCopy` (ADR 0015).                                                                                                      |
 | `src/lib/server/grading-budget.ts`                                  | Budget de temps de la correction d'un envoi → [questions.md](questions.md).                                                                                                               |
 | `src/lib/server/chapter-series.ts`                                  | Série rattachée à un chapitre de « Mon cours » (forme flash ou entraînement, sans note).                                                                                                  |
@@ -258,6 +259,25 @@ même s'il est assigné deux fois, toutes ses tentatives) et `computeEvaluationS
 min, max sur la meilleure note de chaque élève). Les résultats suivent le **mode test** : vrais
 élèves ou élèves de test, jamais les deux.
 
+**Bilan par question et par notion** (`getEvaluationBreakdown`, `EvaluationBreakdown.svelte`, sous
+les cartes de la page résultats) :
+
+- **Copie comptée** : la meilleure de chaque élève du tableau (même règle que `bestGrade` ; à note
+  égale, une copie avec réponses puis la plus récente), copies rendues seulement. Le mode test vient
+  des élèves passés par le loader (ceux de `getEvaluationResults`).
+- **Par question** : une ligne par modèle, dans l'ordre de la composition ; les tirages d'un même
+  modèle s'additionnent. Taux de réussite = points obtenus / réponses (1, ½ ou 0 par réponse) ;
+  répartition juste (1) / partiel (forme non optimale, ½) / faux (mauvaise forme comprise, 0) / sans réponse. Une
+  réponse d'un modèle sorti de la série reste comptée sous son modèle, en fin de liste.
+- **Par notion** : modèle → `question_template_points` → `curriculum_points.node_id`, remonté
+  jusqu'au nœud `notion` (branche › notion). Un modèle à plusieurs notions compte dans **chacune** ;
+  sans point (ou point posé sur une branche) → « Sans notion », en dernier. Tri du taux le plus
+  faible au plus fort.
+- **Copie en retard** (note 0, aucune réponse écrite) : hors du bilan, dite à part.
+- **Lecture** : client du prof, RLS existante (`test_answers_select_teacher`), réponses par pages de
+  1 000 (`max_rows`). Une lecture en échec rend `{ status: 'error' }` : la section le dit, la page
+  garde cartes et tableau.
+
 ## Les observations (compétences, famille B)
 
 Le prof évalue les six **compétences mathématiques** par leurs **observables** (table `observables`,
@@ -326,12 +346,13 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ## Tests
 
-- Unitaires serveur : `src/lib/server/__tests__/` (`evaluations`, `series`, `chapter-series`,
+- Unitaires serveur : `src/lib/server/__tests__/` (`evaluations`, `evaluation-breakdown`, `series`, `chapter-series`,
   `grading-budget`, `evaluation-attempts-srs`, `evaluation-curriculum-points`) ;
   `src/lib/server/validation/__tests__/evaluations.test.ts`.
 - Routes : `src/routes/api/evaluations/assignments/[id]/start/__tests__/start.test.ts`,
   `src/routes/api/evaluations/attempts/[id]/submit/__tests__/submit.test.ts`,
   `src/routes/api/tests/save/__tests__/`, `src/routes/api/series/__tests__/series-route.test.ts`,
+  `src/routes/(protected)/dashboard/teacher/assessments/[id]/results/__tests__/page.server.test.ts`,
   `src/routes/(public)/automaths/test/__tests__/evaluation-notee.svelte.test.ts`.
 - Composants : `src/lib/components/test/__tests__/`, `src/lib/components/assessments/__tests__/` ;
   utilitaires : `src/lib/utils/__tests__/test-launch.test.ts`, `test-score.test.ts`.
@@ -339,7 +360,7 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
   `evaluation-tentatives.test.ts`, `series-evaluations.test.ts`, `series-evaluations-code.test.ts`,
   `acces-evaluation-eleve-archive.test.ts`, `series-de-chapitre.test.ts`,
   `presques-evaluations-visiteur.test.ts`, `test-sessions-mode-flash.test.ts`,
-  `competence-referentiel.test.ts`.
+  `competence-referentiel.test.ts`, `bilan-controle.test.ts`.
 - **Sans test** : la saisie des observations, le dépôt de presques évaluations, le mode test.
 
 ## Décisions (ADR)

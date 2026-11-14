@@ -10,15 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2622 (fichiers du lot 10, § 40)._
+_Mis à jour le 2026-11-14, après la publication du lot 10 (§ 43)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lot 9 publié (§ 39) ; lot 10 (374, 377, 564, 361) écrit et vérifié (§ 40), mergé (#2622).
-- **Prochaine action** : après le `create-questions` de David, commiter les ids écrits dans les JSON, puis migration
-  de rangement et tags (copie de celle du lot 9 : 374 → Espace › positions relatives et intersections ; 377, 564, 361
-  → Orthogonalité et distances dans l'espace › sphère), page à cocher.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-approfondissements-10
---publier` (prod), depuis le dépôt principal.
+  § 35, lots 9 à 15) : lots 9 et 10 publiés (§ 39, § 43), 23 restants.
+- **Prochaine action** : lot 11 (394, 395, 396, 571), comme le lot 10 (§ 40-42) ; 395 demande la sous-notion neuve
+  « récurrence linéaire d'ordre 2 » sous Suites récurrentes, posée par la migration du lot (D3) ; 396 et 571 ne
+  refont pas les algorithmes 434 et 393 (§ 35).
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -856,3 +855,25 @@ Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (43 spec
 3 248 formules des aperçus (430 distinctes) passées à `validateLatex` + accolades, 0 problème ; `create-questions` en
 simulation sur la prod : 4 « à créer », aucun titre pris ; brouillons en base locale (copie hors dépôt) ; aperçu admin :
 374 (a) joué « Juste » (A(−4 ; −2 ; 0), u(−2 ; 0 ; 1)), cases des triplets nus et de `?t^2+?t+?` (377 a) rendues.
+
+## 41. Lot 10 : brouillons et rangement (2026-11-14)
+
+`create-questions --publier` lancé par David : b9696ffd (374), 15f1bdd0 (377), d6eebe08 (564), 31d52b00 (361), en
+`draft`, sans nœud ni tag (MCP). Migration `20261114005646_questions_tspe_approfondissements_10_rangement_tags`, copie
+de celle du lot 9 (SQL exécutable identique aux données près) : 374 → Géométrie > Espace > positions relatives et
+intersections ; 377, 564, 361 → Géométrie > Orthogonalité et distances dans l'espace > sphère (chaque point sur la
+sous-notion de son modèle). Test d'intégration 12/12, rouge sans la migration (6 échecs) ; `security-auditor` : aucun finding (diff avec le lot 9 :
+données seules).
+Mergé (#2624) : CI verte, `check:migrations --pr` vert, `db:migrate` fait ; relu en base (MCP) : 4 `draft`, chacun
+sur sa sous-notion avec son seul point, `updated_at` intact. JSON du dépôt principal remis à l'état commité.
+
+## 42. Lot 10 : page à cocher (2026-11-14)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-approfondissements-10`, lu en base prod : 4 brouillons `draft`, chacun
+sur son point, 3 ou 4 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/UvDuTUFzdrCimQ63Xjf6i8
+(capacité `db`) ; base `verdicts` vide à la publication.
+
+## 43. Lot 10 : publication (2026-11-14)
+
+Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 41). `publier-lot.ts` en simulation puis `--publier`,
+lancés par David. Relu en base (MCP) : 4 `published`.

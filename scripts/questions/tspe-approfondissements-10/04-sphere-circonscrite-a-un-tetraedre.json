@@ -1,4 +1,5 @@
 {
+	"id": "31d52b00-dfb6-482d-b65f-89534b333522",
 	"title": "Espace : sphère circonscrite à un tétraèdre",
 	"description": "Tétraèdre trirectangle OABC : centre (trois cases) et carré du rayon (case) de la sphère circonscrite ; le centre est le point commun aux plans médiateurs (case choix) ; cote du centre par ΩO² = ΩD² (case)",
 	"grades": ["T_SPE"],

@@ -1,4 +1,5 @@
 {
+	"id": "d6eebe08-5197-4c59-a86f-5600b2f0cabc",
 	"title": "Espace : plan tangent à une sphère en un point",
 	"description": "Vecteur normal ΩA, centre lu sur une équation développée (trois cases), constante d'une équation du plan tangent (case), pourquoi le plan tangent ne touche la sphère qu'en A : Pythagore (case choix)",
 	"grades": ["T_SPE"],
