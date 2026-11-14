@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, ouverture du chantier._
+_Mis à jour le 2026-11-14, après #2627._
 
-- **État** : phase 0 validée le 2026-11-14 ; PR #2627 = PR 1 (Blockly 13, médias servis par nous) + PR 1b (exécution JS et Python réparées, blocs en français, doc `docs/systeme/blockly.md`), validée par David le 2026-11-14 · **Prochaine action** : CI + revues `code-reviewer` / `security-auditor` de #2627, merge ; puis PR 2, la tortue · **En attente de David** : avant la PR 3 (bac à sable public), choisir comment rendre le sandbox JS étanche (cf. « Revue de sécurité ») · **Pièges en cours** : une montée de Blockly recopie `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → Vite ré-optimise et recharge, la page paraît vide un instant · **Worktree / branche** : `ubumaths-wt-blockly` · `feat/blockly-13`
+- **État** : #2627 mergée (Blockly 13, médias servis par nous, exécution JS / Python réparée, boucle infinie arrêtée, blocs en français, doc `docs/systeme/blockly.md`) ; #2074 fermée · **Prochaine action** : PR 2, la tortue, une fois la question ci-dessous tranchée · **En attente de David** : comment rendre l'exécution sûre avant tout programme écrit par un autre (§ « Revues de #2627 ») : (1) durcir le worker, (2) interpréteur JS isolé, (3) **recommandé** : interpréter nous-mêmes les blocs tortue / calcul, le JS / Python généré n'étant plus qu'un aperçu · **Après le prochain `deploy:prod`** : ligne #2627 de `verifications-manuelles.md` · **Pièges en cours** : une montée de Blockly recopie `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → Vite ré-optimise, la page paraît vide un instant ; le port 5176 est souvent pris par une autre session · **Worktree / branche** : aucun (le prochain : `ubumaths-wt-blockly`, nouvelle branche)
 
 ---
 
