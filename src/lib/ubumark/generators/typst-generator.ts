@@ -67,6 +67,8 @@ import { displayedLabels } from '../utils/ranger';
 import type { AssocierNode } from '../types/associer';
 import { displayedAssocierLabels } from '../utils/associer';
 import { associerItemHasBlock } from '../parser/associer-parser';
+import type { TrousNode } from '../types/trous';
+import { displayedTrousLabels } from '../utils/trous';
 import { generateQrTypst } from './qr-typst';
 import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
@@ -554,6 +556,8 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateRangerTypst(node, options);
 		case 'associer':
 			return generateAssocierTypst(node, options);
+		case 'trous':
+			return generateTrousTypst(node, options);
 
 		default:
 			return '';
@@ -3909,6 +3913,62 @@ function generateAssocierTypst(
 		);
 	}
 	return `#align(center, grid(columns: (auto, auto, 2.5cm, auto, auto), column-gutter: 0.4em, row-gutter: 0.9em, align: (right + horizon, center + horizon, center, center + horizon, left + horizon), ${cells.join(', ')}))`;
+}
+
+/** Largeur d'un trou (em) : celle de la plus longue étiquette, à peu près */
+function trousHoleWidth(labels: readonly string[]): number {
+	const visible = (label: string) =>
+		label
+			.replace(/\\[a-zA-Z]+/g, 'x')
+			.replace(/[$*_{}\\^]/g, '')
+			.trim().length;
+	const longest = Math.max(0, ...labels.map(visible));
+	return Math.min(14, Math.max(3, Math.ceil(longest * 0.6) + 1));
+}
+
+/**
+ * Un morceau de texte d'un bloc trous en Typst, ses espaces de bord gardés (le
+ * parseur les retirerait : « est » collerait au trou qui suit)
+ */
+function trousTextTypst(text: string, options: ResolvedTypstTranspilerOptions): string {
+	if (text.trim() === '') return text === '' ? '' : ' ';
+	const before = /^\s/.test(text) ? ' ' : '';
+	const after = /\s$/.test(text) ? ' ' : '';
+	return `${before}${inlineUbumarkTypst(text.trim(), options)}${after}`;
+}
+
+/**
+ * Bloc ```trous : la réserve encadrée (étiquettes dans l'ordre où l'élève les
+ * voit), puis le texte, chaque trou en pointillés de la largeur de la plus longue
+ * étiquette, numéroté (le corrigé d'une série d'automatismes dit « 1 → étiquette »).
+ * Jamais la réponse.
+ */
+function generateTrousTypst(node: TrousNode, options: ResolvedTypstTranspilerOptions): string {
+	if (node.errors.length > 0) return '';
+	const labels = displayedTrousLabels(node);
+	const reserve = labels
+		.map((label) => `trous-etiquette[${inlineUbumarkTypst(label, options)}]`)
+		.join(', ');
+	const lines = node.lines.map((line) =>
+		line
+			.map((segment) =>
+				segment.kind === 'text'
+					? trousTextTypst(segment.text, options)
+					: `#trous-trou(${segment.hole + 1});`
+			)
+			.join('')
+	);
+	return [
+		'#[',
+		// Pas de justification (les trous étireraient les espaces) ; de la place pour écrire
+		'#set par(justify: false, leading: 1.1em)',
+		'#let trous-etiquette(body) = box(stroke: 0.6pt, inset: (x: 6pt, y: 4pt), radius: 3pt, body)',
+		`#let trous-trou(numero) = box[#text(size: 0.7em, baseline: -0.3em)[#numero]#box(width: ${trousHoleWidth(labels)}em, repeat[.])]`,
+		`#block(width: 100%, stroke: 0.6pt, inset: 8pt, radius: 3pt, align(center, grid(columns: ${Math.min(labels.length, 6)}, column-gutter: 0.8em, row-gutter: 0.5em, align: horizon, ${reserve})))`,
+		'',
+		lines.join('\n\n'),
+		']'
+	].join('\n');
 }
 
 /**

@@ -14,7 +14,8 @@
  * dessinée), boîte à moustaches à construire (axe seul / boîte dessinée), points à
  * placer sur une droite graduée ou dans un repère (sans eux / points posés), éléments à
  * associer (deux colonnes à relier / la liste « élément → bonne étiquette », « 1 → étiquette »
- * quand un élément contient une courbe).
+ * quand un élément contient une courbe), texte à trous (la réserve et les trous numérotés /
+ * « 1 → étiquette ; 2 → étiquette »).
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
  * fonctions déclarées par le modèle de la question (`shared.genericFunctions`). L'écran
@@ -52,6 +53,8 @@ import {
 	parseAssocierContent
 } from '$lib/ubumark/parser/associer-parser';
 import { associerPlacedOf } from '$lib/ubumark/utils/associer';
+import { findTrousToPlace, parseTrousContent } from '$lib/ubumark/parser/trous-parser';
+import { trousPlacedOf } from '$lib/ubumark/utils/trous';
 import {
 	findVariationsToFill,
 	revealVariationBody
@@ -461,6 +464,48 @@ function associersAFiger(
 	return { texte: lignes.join('\n'), cases };
 }
 
+/**
+ * Texte à trous (```trous, déjà aux trous vides, réserve dans l'ordre affiché) : à
+ * l'énoncé, le bloc sans `case:` (le PDF dessine la réserve et les trous numérotés) ;
+ * au corrigé (`corrige`), à sa place « 1 → étiquette ; 2 → étiquette ». Une case par
+ * trou. Bloc en retrait ou cité, illisible, ou réponse attendue hors de la réserve
+ * → refus, message à l'appui.
+ */
+function trousAFiger(
+	modele: string,
+	texte: string,
+	corrige: boolean,
+	instance: QuestionInstance
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const blocs = findTrousToPlace(texte);
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (bloc.nested) throw refus('texte à trous en retrait ou cité');
+		const node = parseTrousContent(bloc.body.join('\n'));
+		if (node.errors.length > 0 || node.caseIndex === undefined) {
+			throw refus(`texte à trous illisible (${node.errors.join(' ; ')})`);
+		}
+		cases += node.answers.length;
+		const first = node.caseIndex;
+		if (corrige) {
+			const liste = node.answers.map((_, k) => {
+				const attendue = instance.blanks?.[first + k]?.expectedAnswer ?? '';
+				const position = trousPlacedOf(attendue, node.labels.length);
+				if (position === null) throw refus(`trou ${k + 1} : réponse attendue illisible`);
+				return `${k + 1} → ${node.labels[position]}`;
+			});
+			lignes.splice(bloc.startIndex, bloc.endIndex - bloc.startIndex + 1, liste.join(' ; '));
+			continue;
+		}
+		const corps = bloc.body.filter((ligne) => !CASE_LINE.test(ligne));
+		lignes.splice(bloc.startIndex + 1, bloc.body.length, ...corps);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
 /** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
 function choixImprime(contenu: string): string {
 	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
@@ -563,6 +608,10 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	const associerEnonce = associersAFiger(template.id, graduationsEnonce.texte, false, instance);
 	const associerCorrige = associersAFiger(template.id, graduationsCorrige.texte, true, instance);
 
+	// Texte à trous : la réserve et les trous numérotés à l'énoncé, « 1 → étiquette » au corrigé
+	const trousEnonce = trousAFiger(template.id, associerEnonce.texte, false, instance);
+	const trousCorrige = trousAFiger(template.id, associerCorrige.texte, true, instance);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
 	const cases =
@@ -572,17 +621,18 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 		droitesEnonce.cases +
 		boitesEnonce.cases +
 		graduationsEnonce.cases +
-		associerEnonce.cases;
+		associerEnonce.cases +
+		trousEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = associerEnonce.texte
+	const enonce = trousEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = associerCorrige.texte
+	const corrige = trousCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 
