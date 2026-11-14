@@ -105,7 +105,11 @@ describe('etatVersTexteCalcul', () => {
 	it('écriture canonique', () => {
 		expect(aller_retour('afficher (nombre+2)*4')).toBe('afficher (nombre + 2) × 4');
 		expect(aller_retour('mettre résultat à nombre / 2 ; afficher resultat')).toBe(
-			'résultat = nombre ÷ 2 ; afficher résultat'
+			'mettre résultat à nombre ÷ 2 ; afficher résultat'
+		);
+		// Les mots du bloc, jamais `=` : en 5e, `résultat = résultat × 3` se lit comme une égalité
+		expect(aller_retour('résultat = nombre ; résultat = résultat × 3 ; afficher résultat')).toBe(
+			'mettre résultat à nombre ; mettre résultat à résultat × 3 ; afficher résultat'
 		);
 		expect(aller_retour('afficher 0.5 + nombre')).toBe('afficher 0,5 + nombre');
 		expect(aller_retour('répéter 2 [ afficher 1 ] ; répéter 3 [ ]')).toBe(

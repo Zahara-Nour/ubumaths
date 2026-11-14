@@ -53,7 +53,7 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 | `src/lib/workers/js-sandbox-source.ts`                        | Source de la fonction sandbox (sans effet de bord, testable sous Node)                                                                                           |
 | `src/lib/shared/blockly/lecture.ts`                           | Lecture commune (tortue, calcul) : état sérialisé → `BlocLu` vérifié (`lirePiles`), `premierBlocInconnu`, `nombreDeTours`                                        |
 | `src/lib/shared/blockly/calcul/interpreteur.ts`               | `executerCalcul(etat, nombre)` : interprète un programme de calcul pour un nombre de départ (ADR 0039), rend les nombres affichés                                |
-| `src/lib/shared/blockly/calcul/notation.ts`                   | `etatVersTexteCalcul` / `texteVersEtatCalcul` : `résultat = nombre + 2 ; afficher résultat × 4` ↔ état Blockly                                                   |
+| `src/lib/shared/blockly/calcul/notation.ts`                   | `etatVersTexteCalcul` / `texteVersEtatCalcul` : `mettre résultat à nombre + 2 ; afficher résultat × 4` ↔ état Blockly                                            |
 | `src/lib/shared/blockly/calcul/jugement.ts`                   | `jugerProgrammeCalcul` (mêmes affichages sur chaque essai), `lireProgrammeCalcul`, `lireEssais` / `ecrireEssais`, `ESSAIS_PAR_DEFAUT`                            |
 | `src/lib/shared/blockly/calcul/blocs.ts`                      | `definirBlocsCalcul` : définitions Blockly des blocs de calcul (sans générateur) ; **seul fichier de `calcul/` qui importe Blockly**                             |
 | `src/lib/shared/blockly/calcul/toolbox.ts`                    | `CALCUL_TOOLBOX` (Calcul, Résultat, Afficher, Boucles avec `controls_repeat` seul), `COULEURS_CALCUL` ; sans import de Blockly                                   |
@@ -173,12 +173,13 @@ question de calcul »).
   division par zéro, nombre devenu infini, plus de 10 000 pas (`LIMITE_PAS_CALCUL` ; une opération compte un pas, comme une instruction
   ou un tour de boucle : un long calcul répété reste borné) ; les
   affichages déjà faits sont rendus.
-- **Notation texte** (`calcul/notation.ts`) : `afficher <calcul>`, `résultat = <calcul>` (ou
-  `mettre résultat à <calcul>`), `répéter n [ … ]`, séparées par `;` ou un retour à la ligne.
+- **Notation texte** (`calcul/notation.ts`) : `afficher <calcul>`, `mettre résultat à <calcul>` (ou
+  `résultat = <calcul>`, plus court pour l'auteur), `répéter n [ … ]`, séparées par `;` ou un retour à la ligne.
   Calculs : nombres, `nombre` (ou `nombre choisi`), `résultat`, `+ − × ÷` (aussi `- * / :`),
   parenthèses ; × et ÷ avant + et −, de gauche à droite ; `−` devant un nombre en fait un
   négatif (`nombre + -3` d'une variable tirée), devant autre chose c'est refusé (écrire `0 − …`).
-  Écriture canonique : `−`, `×`, `÷`, virgule décimale, sans exposant (`1e21` ne se relirait
+  Écriture canonique : `mettre résultat à …` (les mots du bloc ; en 5e, `résultat = résultat × 3`
+  se lirait comme une égalité), `−`, `×`, `÷`, virgule décimale, sans exposant (`1e21` ne se relirait
   pas), parenthèses là seulement où l'arbre les exige — à droite d'une opération de même
   priorité aussi (`2 × (3 × 4)` reste tel quel) et autour d'un négatif opérande (`nombre + (−3)`).
   Un nombre trop grand pour être lu est refusé (jamais lu 0). Même longueur maximale que la tortue (`LONGUEUR_MAX_PROGRAMME`). Un nombre dans une entrée part
@@ -237,7 +238,8 @@ question de calcul »).
 - **Après la validation** : blocs en lecture seule, sans « Effacer », cadre vert ou rouge ;
   « Essayer avec » marche encore.
 - **Corrigé** : `CalculCorrige.svelte` via `BuildAnswer`, sans Blockly : « Ton programme », « Un
-  programme juste » (réponse attendue de la case, sinon `attendu:`), tableau « Nombre choisi →
+  programme juste » (réponse attendue de la case, sinon `attendu:`), tous deux réécrits en
+  écriture canonique (`reecrireCalcul` : « mettre résultat à », jamais `résultat =`), tableau « Nombre choisi →
   Ton programme affiche / Il fallait afficher » sur les essais, lignes fausses marquées
   (`data-juste`) ; « erreur », « rien » dans une cellule ; message de l'élève sous le tableau.
   Référence inconnue (`attendu: ?`) : la colonne de l'élève seule.

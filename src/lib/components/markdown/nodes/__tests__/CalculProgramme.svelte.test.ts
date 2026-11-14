@@ -326,6 +326,23 @@ describe('programme de calcul : le corrigé', () => {
 		]);
 	});
 
+	it('programmes écrits avec les mots des blocs, jamais `résultat =`', async () => {
+		const screen = await render(CalculCorrige, {
+			target: mainElement(),
+			props: {
+				node: node('attendu: résultat = (nombre+2)*4 ; afficher résultat', 'essais: 1'),
+				answer: 'résultat = nombre + 2 ; afficher résultat × 4',
+				correct: true
+			}
+		});
+		const texte = screen.container.textContent ?? '';
+		expect(texte).toContain('Ton programme : mettre résultat à nombre + 2 ; afficher résultat × 4');
+		expect(texte).toContain(
+			'Un programme juste : mettre résultat à (nombre + 2) × 4 ; afficher résultat'
+		);
+		expect(texte).not.toContain('résultat =');
+	});
+
 	it('une ligne juste n’est pas marquée fausse', async () => {
 		const screen = await render(CalculCorrige, {
 			target: mainElement(),

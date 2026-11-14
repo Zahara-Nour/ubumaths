@@ -1,5 +1,5 @@
 /**
- * Notation texte d'un programme de calcul : `résultat = nombre + 2 ; afficher résultat × 4`.
+ * Notation texte d'un programme de calcul : `mettre résultat à nombre + 2 ; afficher résultat × 4`.
  *
  * C'est la forme écrite par l'auteur d'un modèle (`attendu:`, `départ:` du bloc ```calcul) et
  * la forme enregistrée de la réponse de l'élève : courte, lisible par le prof, rejouée par
@@ -10,7 +10,9 @@
  * (ou `nombre choisi`), `résultat`, `+ − × ÷` (aussi `- * / :`), parenthèses ; × et ÷ avant
  * + et −, de gauche à droite ; un signe − devant un nombre en fait un nombre négatif.
  * Lecture souple : accents, majuscules, espaces, virgule ou point décimal. Écriture canonique :
- * accents, virgule décimale, `−`, `×`, `÷`, parenthèses là seulement où le calcul les exige.
+ * `mettre résultat à …` (les mots du bloc : en 5e, `résultat = résultat × 3` se lirait comme une
+ * égalité), accents, virgule décimale, `−`, `×`, `÷`, parenthèses là seulement où le calcul les
+ * exige.
  *
  * Sans dépendance à Blockly : s'exécute aussi sous Node (correction).
  */
@@ -131,7 +133,7 @@ function ecrirePile(bloc: BlocLu | undefined): string[] {
 		} else if (courant.type === 'calcul_afficher') {
 			instructions.push(`afficher ${ecrireValeur(courant.entrees.VALEUR).texte}`);
 		} else if (courant.type === 'calcul_mettre_resultat') {
-			instructions.push(`résultat = ${ecrireValeur(courant.entrees.VALEUR).texte}`);
+			instructions.push(`mettre résultat à ${ecrireValeur(courant.entrees.VALEUR).texte}`);
 		}
 	}
 	return instructions;
@@ -159,6 +161,17 @@ export function etatVersTexteCalcul(etat: unknown): TexteLu {
 	} catch {
 		return { ok: false, message: 'Programme illisible.' };
 	}
+}
+
+/**
+ * Réécrit un programme en écriture canonique, pour le montrer à l'élève (corrigé) : un programme
+ * illisible est rendu tel quel.
+ */
+export function reecrireCalcul(texte: string): string {
+	const lu = texteVersEtatCalcul(texte);
+	if (!lu.ok) return texte;
+	const ecrit = etatVersTexteCalcul(lu.etat);
+	return ecrit.ok ? ecrit.texte : texte;
 }
 
 // =============================================================================

@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2662._
+_Mis à jour le 2026-11-14, pendant la PR `fix/blockly-calcul-mettre-resultat`._
 
-- **État** : PR 1 à 5b mergées (5b = écran du programme de calcul, `départ:` posé dans les blocs, #2662) ; plus de worktree · **Prochaine action** : à choisir avec David — premiers modèles `tortue / `calcul (sessions `questions-*`), mode Calcul du bac à sable, questions « prévoir la valeur », blocs imposés / nombre maximal de blocs, étanchéité du sandbox JS (§ Écarts de `docs/systeme/blockly.md`) · **En attente de David** : avis sur les choix des § PR 5a (écriture `résultat = …`, `:` = division, `−` devant un nombre seulement, marges, 1 à 20 essais) et § PR 5b (départ pas réponse tant qu'on n'y touche pas, 5 proposé dans « Essayer avec », pas d'aperçu JS / Python du calcul) · **Après le prochain `deploy:prod`** : lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une PR en conflit ne lance pas sa CI (vérifier `mergeable`) · **Worktree / branche** : aucun
+- **État** : PR 1 à 5b mergées ; choix de 5a / 5b tranchés (§ Décisions après #2662) ; PR en cours : « mettre résultat à » dans l'écriture canonique et le corrigé · **Prochaine action** : phase 0 des premiers modèles `tortue / `calcul CM1 → 5e (points du programme, modèles existants, liste proposée), à valider avant tout modèle · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une PR en conflit ne lance pas sa CI (vérifier `mergeable`) · **Worktree / branche** : `ubumaths-wt-blockly` / `fix/blockly-calcul-mettre-resultat`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -341,3 +341,22 @@ nocturne. `départ:` lu par les parseurs ``calcul et ```tortue (`spec.depart`) ;
   lus par l'interpréteur et la notation, `calcul/` sans Blockly, `départ:`, refus). Mineurs
   laissés : espace vidé → le départ revient à la recréation de la carte (documenté) ; double
   import `Blockly` / `BlocklyCore` et `math_number` posé seul ignoré, comme la tortue.
+
+## Décisions après #2662 (David, 2026-11-14 : « je te suis »)
+
+- **Choix de 5a gardés** : `:` = division ; `−` seulement devant un nombre (`0 − …` sinon) ;
+  marges d'égalité ; `essais:` de 1 à 20 nombres. **Un seul changé** : l'écriture canonique est
+  `mettre résultat à …` (les mots du bloc) et non plus `résultat = …`, qui en 5e se lit comme une
+  égalité fausse (`résultat = résultat × 3`). `résultat = …` reste lu (plus court pour l'auteur
+  d'`attendu:`). Le corrigé réécrit les deux programmes (`reecrireCalcul`), donc aussi une
+  référence écrite `résultat = (nombre+2)*4`.
+- **Choix de 5b gardés** : départ pas réponse tant qu'on n'y touche pas ; 5 proposé dans « Essayer
+  avec » ; 50 affichages au plus ; pas d'aperçu JS / Python du calcul.
+- **Piste suivante** : premiers modèles CM1 → 5e (fin du découpage validé), phase 0 d'abord.
+
+## PR `fix/blockly-calcul-mettre-resultat`
+
+- `calcul/notation.ts` : `ecrirePile` écrit `mettre résultat à` ; `reecrireCalcul(texte)` (illisible
+  → rendu tel quel). `CalculCorrige.svelte` : « Ton programme » et « Un programme juste » réécrits.
+  Catalogue : exemples en `mettre résultat à`. Tests rouges sans le correctif vérifiés (notation,
+  corrigé). Rien d'enregistré ne change de sens : les deux formes sont lues.
