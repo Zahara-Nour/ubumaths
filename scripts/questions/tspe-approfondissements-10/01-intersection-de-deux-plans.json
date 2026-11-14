@@ -1,4 +1,5 @@
 {
+	"id": "b9696ffd-c71c-4560-9872-0d4ee95dd6ad",
 	"title": "Espace : déterminer l'intersection de deux plans",
 	"description": "Deux plans sécants : point de cote nulle et vecteur directeur de la droite d'intersection (quatre cases), plans aux vecteurs normaux colinéaires : strictement parallèles (case choix), coordonnées manquantes d'un point de la droite d'intersection (deux cases)",
 	"grades": ["T_SPE"],
