@@ -6,9 +6,14 @@
 	import EvaluationBreakdown from '$lib/components/assessments/EvaluationBreakdown.svelte';
 	import { TrendingUp, Users, CheckCircle2, Clock, AlertCircle } from '@lucide/svelte';
 	import { formatGrade, formLabel } from '$lib/types/evaluation';
+	import { evaluationResultsReturn } from '$lib/navigation/return-links';
+	import { page } from '$app/state';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	// Deux parents : la liste des contrôles, ou le suivi d'un élève (`?depuis=suivi&eleve=`)
+	const back = $derived(evaluationResultsReturn(page.url.searchParams));
 </script>
 
 <svelte:head>
@@ -18,7 +23,7 @@
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
 	<div class="mb-8">
-		<BackLink href="/dashboard/teacher/assessments" label="Retour aux contrôles" />
+		<BackLink href={back.href} label={back.label} />
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">{data.evaluation.series.title}</h1>
 			<p class="mt-2 text-muted-foreground">

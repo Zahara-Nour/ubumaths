@@ -11,6 +11,7 @@ import { describe, it, expect, vi } from 'vitest';
 import {
 	activeDaysTier,
 	buildRegularityGrid,
+	countActiveWeeks,
 	getClassRegularityGrid,
 	isAutonomousTrace,
 	regularityFirstDay,
@@ -71,6 +72,68 @@ describe('regularityFirstDay (N1, L1)', () => {
 
 	it('une rentrée à venir retombe sur le 1er septembre écoulé', () => {
 		expect(regularityFirstDay('2027-09-01', now)).toBe('2026-09-01');
+	});
+});
+
+describe('countActiveWeeks (suivi d’un élève : mêmes règles que la base)', () => {
+	/** n traces autonomes de l'élève s1 à l'instant UTC donné */
+	function traces(n: number, at: string, extra: { source?: string; place?: string | null } = {}) {
+		return Array.from({ length: n }, () => ({
+			student_id: 's1',
+			created_at: at,
+			source: extra.source ?? 'auto',
+			place: extra.place === undefined ? 'typing' : extra.place
+		}));
+	}
+
+	it('un jour à 5 traces est actif, un jour à 4 ne l’est pas', () => {
+		const result = countActiveWeeks(
+			[...traces(5, '2026-11-10T10:00:00Z'), ...traces(4, '2026-11-11T10:00:00Z')],
+			'2026-09-01'
+		);
+		expect(result).toEqual([{ student_id: 's1', week_start: '2026-11-09', active_days: 1 }]);
+	});
+
+	it('compte les jours actifs par semaine (lundi → dimanche)', () => {
+		const result = countActiveWeeks(
+			[
+				...traces(5, '2026-11-09T10:00:00Z'),
+				...traces(5, '2026-11-15T10:00:00Z'),
+				...traces(5, '2026-11-16T10:00:00Z')
+			],
+			'2026-09-01'
+		);
+		expect(result).toEqual(
+			expect.arrayContaining([
+				{ student_id: 's1', week_start: '2026-11-09', active_days: 2 },
+				{ student_id: 's1', week_start: '2026-11-16', active_days: 1 }
+			])
+		);
+		expect(result).toHaveLength(2);
+	});
+
+	it('jour de Paris : 23 h 30 UTC un dimanche tombe le lundi suivant', () => {
+		const result = countActiveWeeks(traces(5, '2026-11-15T23:30:00Z'), '2026-09-01');
+		expect(result).toEqual([{ student_id: 's1', week_start: '2026-11-16', active_days: 1 }]);
+	});
+
+	it('écarte les contrôles et les traces du prof ; une trace sans lieu compte', () => {
+		const result = countActiveWeeks(
+			[
+				...traces(3, '2026-11-10T10:00:00Z', { place: 'evaluation' }),
+				...traces(3, '2026-11-10T10:00:00Z', { source: 'teacher' }),
+				...traces(4, '2026-11-10T10:00:00Z', { place: null })
+			],
+			'2026-09-01'
+		);
+		expect(result).toEqual([]);
+		expect(
+			countActiveWeeks(traces(5, '2026-11-10T10:00:00Z', { place: null }), '2026-09-01')
+		).toHaveLength(1);
+	});
+
+	it('ignore les jours avant la rentrée', () => {
+		expect(countActiveWeeks(traces(5, '2026-08-31T10:00:00Z'), '2026-09-01')).toEqual([]);
 	});
 });
 

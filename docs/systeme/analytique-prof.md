@@ -128,8 +128,10 @@ chaque widget suit dans son `$effect` de chargement).
 
 Chantier `suivi-eleve` (besoins P8 et P9, 2026-11-14). Une page par élève,
 `/dashboard/teacher/students/[studentId]`, ouverte depuis la liste des classes (nom de l'élève, en classe
-comme dans « Élèves non assignés »). Elle rassemble ce que l'analytique de classe montre d'un élève ; le
-journal des récompenses reste à part (`…/journal?depuis=suivi`, retour vers le suivi).
+comme dans « Élèves non assignés ») et depuis la grille A de l'analytique (nom en tête de ligne,
+`?depuis=analytique&classe=<uuid>` : le retour ramène à l'analytique de cette classe ; **aucun lien en mode
+projection**, le suivi afficherait le vrai nom). Elle rassemble ce que l'analytique de classe montre d'un
+élève ; le journal des récompenses reste à part (`…/journal?depuis=suivi`, retour vers le suivi).
 
 - **Accès** : `requireRole('teacher')` (admin refusé, comme l'analytique), UUID par Zod (400),
   `verifyTeacherStudent` (403 si la cible n'est pas un élève). Aucune garde de classe : mono-prof, la RLS
@@ -146,7 +148,24 @@ journal des récompenses reste à part (`…/journal?depuis=suivi`, retour vers 
     Trace sans verdict (`success` NULL) ou d'origine inconnue : comptée nulle part (l'origine inconnue est
     journalisée, une fois). **Aucune date** (vie privée, comme la régularité). Traces lues **paginées**
     (`readInBatches`). Une lecture en échec : le bloc le dit, la page reste.
-- **À venir (PR 2)** : contrôles, régularité, compétences ; lien depuis la grille A.
+- **Bloc « Contrôles »** (`getStudentEvaluations`) : `getStudentAssignments` (celle de l'écran de l'élève)
+  appelée avec le **client du prof** (RLS : ses contrôles, ses classes, les séances de ses élèves). Un
+  contrôle publié assigné deux fois (classe et nommément) : une ligne. Par ligne : titre, **meilleure note
+  sur 20** (Q36) ou statut (« Pas commencé », « En cours », « Rendu », « Non rendu, date limite passée »),
+  lien vers les résultats (`?depuis=suivi&eleve=<uuid>`, retour vers le suivi). Du plus récent au plus
+  ancien (création du contrôle), **sans date affichée** ; ni contenu de série ni tentatives envoyés.
+- **Bloc « Régularité »** (`getStudentRegularity`) : la ligne de l'élève, **mêmes règles que la grille C**
+  (palier par semaine, repère de vacances, jamais de nombre ni de date de jour actif), affichée par le même
+  tableau (`RegularityTable.svelte`). Rentrée = année scolaire active de **l'école de l'élève**
+  (`profiles.school_id`, `readSchoolYearOfSchool`) ; sans école, le 1er septembre écoulé. Comptée en
+  TypeScript (`countActiveWeeks`, même règle que `class_regularity_weeks`) sur **ses** traces autonomes
+  depuis la veille de la rentrée, paginées : la fonction de base compte par classe, l'élève peut être hors
+  classe (décision R1, 2026-11-14).
+- **Bloc « Compétences »** (`getStudentCompetences`) : toutes les lignes de `math_competences`
+  (`display_order`) avec le niveau de l'élève (`student_competence_level`) ou « pas encore évaluée » ; sans
+  date de dernière saisie.
+- Les quatre blocs sont lus en parallèle (`Promise.allSettled`) : un bloc en échec le dit (journalisé), les
+  autres restent.
 
 ## Carte du code
 
@@ -157,9 +176,11 @@ journal des récompenses reste à part (`…/journal?depuis=suivi`, retour vers 
   - `class-knowledge.ts` : `getClassCurriculumPointGrid`, `getClassTopCurriculumPointsToRemediate`,
     `getStudentRetentionCurve` ;
   - `point-errors.ts` : `getClassPointErrors` (onglet « Erreurs » du widget E ; hors barrel) ;
-  - `class-regularity.ts` : `getClassRegularityGrid` (et ses fonctions pures, testées seules) ;
+  - `class-regularity.ts` : `getClassRegularityGrid` (et ses fonctions pures, testées seules, dont
+    `countActiveWeeks` pour le suivi d'un élève ; `readSchoolYearOfSchool`) ;
   - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate` ;
-  - `student-follow-up.ts` : `getStudentPointFollowUp` (page de suivi d'un élève ; hors barrel).
+  - `student-follow-up.ts` : `getStudentPointFollowUp`, `getStudentEvaluations`, `getStudentRegularity`,
+    `getStudentCompetences` (page de suivi d'un élève ; hors barrel).
     Requêtes groupées (pas une requête par élève) ; les listes de modèles sont découpées par
     `fetchInChunks`.
 - Endpoints `GET` sous `src/routes/api/teacher/classes/[classId]/analytics/` : `knowledge-grid`
@@ -169,7 +190,7 @@ journal des récompenses reste à part (`…/journal?depuis=suivi`, retour vers 
   dans `class_members`.
 - Zod : `src/lib/server/validation/teacher-analytics.ts` (5 schémas, bornes : `topN` 1-30,
   `weeks` 1-26).
-- Composants : `src/lib/components/teacher/analytics/` (`curriculum-point-badge-meta.ts` : icône, couleur et libellé d'un badge, partagés avec la page de suivi ; 6 widgets, `AnalyticsModal` du widget G, `PointDetailsModal` du widget E) ; onglet
+- Composants : `src/lib/components/teacher/analytics/` (`curriculum-point-badge-meta.ts` : icône, couleur et libellé d'un badge, partagés avec la page de suivi ; `RegularityTable.svelte` : tableau de régularité, partagé par la grille C et le suivi ; 6 widgets, `AnalyticsModal` du widget G, `PointDetailsModal` du widget E) ; onglet
   Surveillance : `src/lib/components/teacher/anti-fraud/`.
 
 ## Invariants
@@ -183,11 +204,11 @@ journal des récompenses reste à part (`…/journal?depuis=suivi`, retour vers 
 ## Tests
 
 Serveur : `src/lib/server/stats/__tests__/class-knowledge.test.ts` (28),
-`class-competence.test.ts` (12), `point-errors.test.ts` (18), `student-follow-up.test.ts` (13) ; route `point-errors` :
+`class-competence.test.ts` (12), `point-errors.test.ts` (18), `student-follow-up.test.ts` (13), `student-follow-up-blocs.test.ts` (9) ; route `point-errors` :
 `analytics/point-errors/__tests__/server.test.ts`. Composants : un `*.svelte.test.ts` par widget dans
 `src/lib/components/teacher/analytics/__tests__/` (29 au total). Garde : `src/lib/server/stats/__tests__/teacher-class-auth.test.ts` (prof accepté,
 admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page.server.test.ts`
-(compteur de signalements illisible → `null`, pas 0). Suivi d'un élève : `students/[studentId]/__tests__/` (loader : 400, 403, admin refusé, lecture en échec ; rendu de la page). Aucun test d'intégration base.
+(compteur de signalements illisible → `null`, pas 0). Suivi d'un élève : `students/[studentId]/__tests__/` (loader : 400, 403, admin refusé, chaque bloc en échec seul ; rendu de la page, quatre blocs, retour selon l'origine) ; retours dans `src/lib/navigation/__tests__/return-links.test.ts`. Aucun test d'intégration base.
 
 ## Décisions
 

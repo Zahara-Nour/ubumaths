@@ -93,6 +93,21 @@ describe('ClassCurriculumPointGrid', () => {
 		await expect.element(page.getByText(`${lore.entities.student} 2`)).toBeVisible();
 	});
 
+	it('le nom de l’élève mène à son suivi, qui reviendra à cette analytique', async () => {
+		mockFetch(sampleGrid);
+		await render(ClassCurriculumPointGrid, { classId: 'class-1' });
+		await expect
+			.element(page.getByRole('link', { name: 'Alice Martin' }))
+			.toHaveAttribute('href', '/dashboard/teacher/students/s1?depuis=analytique&classe=class-1');
+	});
+
+	it('mode projection : aucun lien vers le suivi (il afficherait le vrai nom)', async () => {
+		mockFetch(sampleGrid);
+		await render(ClassCurriculumPointGrid, { classId: 'class-1', anonymized: true });
+		await expect.element(page.getByText(`${lore.entities.student} 1`)).toBeVisible();
+		expect(document.querySelectorAll('a[href*="/dashboard/teacher/students/"]')).toHaveLength(0);
+	});
+
 	it('renders error message when fetch fails', async () => {
 		globalThis.fetch = vi.fn().mockResolvedValue({
 			ok: false,

@@ -1,12 +1,22 @@
 /**
  * Page de suivi d'un élève, ce que le PROF lit à l'écran : points groupés par
  * branche puis notion, comptes « Corrigé / Déclaré », marque « seulement
- * déclaré », état vide, erreur de lecture.
+ * déclaré », état vide, erreur de lecture ; contrôles, régularité et
+ * compétences (PR 2), chacun avec son état vide et son erreur ; retour selon
+ * l'origine (classes ou analytique).
  */
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import SuiviPage from '../+page.svelte';
+
+// Adresse courante simulée (le retour dépend de `?depuis=`)
+const pageState = vi.hoisted(() => ({
+	url: new URL('http://localhost/dashboard/teacher/students/s1')
+}));
+vi.mock('$app/state', () => ({ page: pageState }));
+
+const CLASS_ID = '11111111-2222-4333-8444-555555555555';
 
 const NONE = { done: 0, succeeded: 0 };
 
@@ -43,18 +53,56 @@ const POINTS = [
 	}
 ];
 
-async function renderPage(data: Partial<{ points: unknown[]; pointsError: boolean }> = {}) {
+const EVALUATIONS = [
+	{ evaluation_id: 'e1', title: 'Contrôle fractions', best_grade: 14.5, status: 'completed' },
+	{ evaluation_id: 'e2', title: 'Course aux nombres', best_grade: null, status: 'not_started' },
+	{ evaluation_id: 'e3', title: 'Contrôle triangles', best_grade: null, status: 'expired' }
+];
+
+const REGULARITY = {
+	weeks: [
+		{ start: '2026-11-02', holiday: false },
+		{ start: '2026-11-09', holiday: false }
+	],
+	tiers: [0, 3]
+};
+
+const COMPETENCES = [
+	{ id: 'c1', name: 'Chercher', level: 'satisfaisante' },
+	{ id: 'c2', name: 'Modéliser', level: null }
+];
+
+type PageDataOverrides = Partial<{
+	points: unknown[];
+	pointsError: boolean;
+	evaluations: unknown[];
+	evaluationsError: boolean;
+	regularity: unknown;
+	competences: unknown[];
+	competencesError: boolean;
+}>;
+
+async function renderPage(data: PageDataOverrides = {}) {
 	return await render(SuiviPage, {
 		props: {
 			data: {
 				student: { id: 's1', fullName: 'Alix Martin' },
 				points: POINTS,
 				pointsError: false,
+				evaluations: EVALUATIONS,
+				evaluationsError: false,
+				regularity: REGULARITY,
+				competences: COMPETENCES,
+				competencesError: false,
 				...data
 			}
 		} as never
 	});
 }
+
+beforeEach(() => {
+	pageState.url = new URL('http://localhost/dashboard/teacher/students/s1');
+});
 
 describe('Suivi d’un élève, vue du prof', () => {
 	it('titre, retour vers les classes, lien vers le journal', async () => {
@@ -132,5 +180,65 @@ describe('Suivi d’un élève, vue du prof', () => {
 		await expect
 			.element(page.getByRole('heading', { level: 1, name: 'Suivi de Alix Martin' }))
 			.toBeVisible();
+	});
+
+	it('ouvert depuis l’analytique d’une classe : le retour y ramène', async () => {
+		pageState.url = new URL(
+			`http://localhost/dashboard/teacher/students/s1?depuis=analytique&classe=${CLASS_ID}`
+		);
+		await renderPage();
+		await expect
+			.element(page.getByRole('link', { name: "Retour à l'analytique" }))
+			.toHaveAttribute('href', `/dashboard/teacher/classes/${CLASS_ID}/analytics`);
+	});
+
+	it('contrôles : meilleure note ou statut, lien vers les résultats qui revient au suivi', async () => {
+		await renderPage();
+		await expect.element(page.getByText('14,5/20')).toBeVisible();
+		await expect.element(page.getByText('Pas commencé')).toBeVisible();
+		await expect.element(page.getByText('Non rendu, date limite passée')).toBeVisible();
+		await expect
+			.element(page.getByRole('link', { name: 'Contrôle fractions' }))
+			.toHaveAttribute('href', '/dashboard/teacher/assessments/e1/results?depuis=suivi&eleve=s1');
+	});
+
+	it('contrôles : aucun assigné, ou lecture en échec', async () => {
+		await renderPage({ evaluations: [] });
+		await expect.element(page.getByText('Aucun contrôle assigné.')).toBeVisible();
+	});
+
+	it('contrôles en échec : le bloc le dit, les autres restent', async () => {
+		await renderPage({ evaluations: [], evaluationsError: true });
+		await expect.element(page.getByText(/Les contrôles n’ont pas pu être lus/)).toBeVisible();
+		await expect.element(page.getByText('Chercher')).toBeVisible();
+	});
+
+	it('régularité : un palier par semaine, en toutes lettres, jamais un nombre de traces', async () => {
+		await renderPage();
+		await expect.element(page.getByRole('table', { name: 'Régularité' })).toBeVisible();
+		await expect
+			.element(page.getByRole('button', { name: /semaine du 9 nov\. : 4 jours actifs ou plus/ }))
+			.toBeInTheDocument();
+		await expect
+			.element(page.getByRole('button', { name: /semaine du 2 nov\. : aucun jour actif/ }))
+			.toBeInTheDocument();
+	});
+
+	it('régularité en échec : le bloc le dit', async () => {
+		await renderPage({ regularity: null });
+		await expect.element(page.getByText(/La régularité n’a pas pu être lue/)).toBeVisible();
+		expect(page.getByRole('table', { name: 'Régularité' }).elements()).toHaveLength(0);
+	});
+
+	it('compétences : niveau ou « pas encore évaluée », sans date', async () => {
+		await renderPage();
+		await expect.element(page.getByText('Chercher')).toBeVisible();
+		await expect.element(page.getByText('Satisfaisante')).toBeVisible();
+		await expect.element(page.getByText('pas encore évaluée')).toBeVisible();
+	});
+
+	it('compétences en échec : le bloc le dit', async () => {
+		await renderPage({ competences: [], competencesError: true });
+		await expect.element(page.getByText(/Les compétences n’ont pas pu être lues/)).toBeVisible();
 	});
 });

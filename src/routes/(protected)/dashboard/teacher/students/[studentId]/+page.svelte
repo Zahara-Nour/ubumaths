@@ -1,9 +1,13 @@
 <script lang="ts">
 	/**
-	 * Suivi d'un élève, vu par le professeur. Bloc « Points du programme » :
-	 * par point travaillé, le badge FSRS et deux comptes de traces, corrigées
-	 * (l'appli ou un adulte a jugé) et déclarées (l'élève a dit « je sais »).
-	 * Aucune date (vie privée).
+	 * Suivi d'un élève, vu par le professeur. Quatre blocs, chacun lu à part :
+	 *   - Points du programme : par point travaillé, le badge FSRS et deux
+	 *     comptes de traces, corrigées (l'appli ou un adulte a jugé) et déclarées
+	 *     (l'élève a dit « je sais ») ;
+	 *   - Contrôles : meilleure note ou statut, lien vers les résultats ;
+	 *   - Régularité : sa ligne de la grille C (paliers par semaine) ;
+	 *   - Compétences : son niveau dans chacune.
+	 * Aucune date d'activité (vie privée).
 	 *
 	 * Phase 0 : docs/wip/suivi-eleve-progress.md
 	 */
@@ -12,11 +16,36 @@
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import { studentJournalHref } from '$lib/navigation/return-links';
+	import {
+		evaluationResultsHref,
+		studentFollowUpReturn,
+		studentJournalHref
+	} from '$lib/navigation/return-links';
 	import { badgeMeta } from '$lib/components/teacher/analytics/curriculum-point-badge-meta';
+	import RegularityTable from '$lib/components/teacher/analytics/RegularityTable.svelte';
+	import { formatGrade, type StudentEvaluationStatus } from '$lib/types/evaluation';
+	import { formatMathCompetenceLevel, getMathCompetenceLevelVisual } from '$lib/types/skills';
+	import { page } from '$app/state';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	const STATUS_LABELS: Record<StudentEvaluationStatus, string> = {
+		not_started: 'Pas commencé',
+		in_progress: 'En cours',
+		completed: 'Rendu',
+		expired: 'Non rendu, date limite passée'
+	};
+
+	// Deux parents : la liste des classes, ou l'analytique d'une classe (grille A)
+	const back = $derived(studentFollowUpReturn(page.url.searchParams));
+
+	// La ligne de régularité, au format du tableau partagé avec la grille C
+	const regularityRows = $derived(
+		data.regularity
+			? [{ id: data.student.id, display_name: data.student.fullName, tiers: data.regularity.tiers }]
+			: []
+	);
 
 	type Point = PageData['points'][number];
 	type Notion = { name: string | null; points: Point[] };
@@ -61,7 +90,7 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-6">
-	<BackLink href="/dashboard/teacher/classes" label="Retour aux {lore.entities.class}s" />
+	<BackLink href={back.href} label={back.label} />
 
 	<h1 class="mb-6 text-3xl font-bold tracking-tight">Suivi de {data.student.fullName}</h1>
 
@@ -122,6 +151,95 @@
 						</section>
 					{/each}
 				</div>
+			{/if}
+		</Card.Content>
+	</Card.Root>
+
+	<Card.Root class="mt-6">
+		<Card.Header>
+			<Card.Title>Contrôles</Card.Title>
+			<Card.Description>Sa meilleure note à chaque contrôle qui lui est assigné.</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			{#if data.evaluationsError}
+				<p class="text-sm text-destructive">
+					Les contrôles n’ont pas pu être lus. Réessaie dans un moment.
+				</p>
+			{:else if data.evaluations.length === 0}
+				<p class="py-6 text-center text-sm text-muted-foreground">Aucun contrôle assigné.</p>
+			{:else}
+				<ul class="divide-y divide-border/50">
+					{#each data.evaluations as evaluation (evaluation.evaluation_id)}
+						<li class="flex items-center justify-between gap-3 py-2 text-sm">
+							<a
+								class="min-w-0 truncate text-primary underline-offset-4 hover:underline"
+								href={evaluationResultsHref(evaluation.evaluation_id, data.student.id)}
+								>{evaluation.title}</a
+							>
+							<span class="shrink-0 font-medium">
+								{#if evaluation.best_grade !== null}
+									{formatGrade(evaluation.best_grade)}
+								{:else}
+									<span class="font-normal text-muted-foreground"
+										>{STATUS_LABELS[evaluation.status]}</span
+									>
+								{/if}
+							</span>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</Card.Content>
+	</Card.Root>
+
+	<Card.Root class="mt-6">
+		<Card.Header>
+			<Card.Title>Régularité</Card.Title>
+			<Card.Description>
+				Jours actifs par semaine depuis la rentrée. Un jour est actif quand l'{lore.entities
+					.student} donne au moins 5 réponses en travail autonome ; les contrôles ne comptent pas.
+			</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			{#if !data.regularity}
+				<p class="text-sm text-destructive">
+					La régularité n’a pas pu être lue. Réessaie dans un moment.
+				</p>
+			{:else}
+				<RegularityTable weeks={data.regularity.weeks} students={regularityRows} />
+			{/if}
+		</Card.Content>
+	</Card.Root>
+
+	<Card.Root class="mt-6">
+		<Card.Header>
+			<Card.Title>Compétences</Card.Title>
+			<Card.Description>Son niveau dans chaque compétence.</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			{#if data.competencesError}
+				<p class="text-sm text-destructive">
+					Les compétences n’ont pas pu être lues. Réessaie dans un moment.
+				</p>
+			{:else if data.competences.length === 0}
+				<p class="py-6 text-center text-sm text-muted-foreground">Aucune compétence.</p>
+			{:else}
+				<ul class="divide-y divide-border/50">
+					{#each data.competences as competence (competence.id)}
+						{@const label = competence.level
+							? formatMathCompetenceLevel(competence.level)
+							: 'pas encore évaluée'}
+						<li class="flex items-center justify-between gap-3 py-2 text-sm">
+							<span>{competence.name}</span>
+							<span class="flex shrink-0 items-center gap-2 text-muted-foreground">
+								<span aria-hidden="true"
+									>{competence.level ? getMathCompetenceLevelVisual(competence.level) : '◯'}</span
+								>
+								{label}
+							</span>
+						</li>
+					{/each}
+				</ul>
 			{/if}
 		</Card.Content>
 	</Card.Root>
