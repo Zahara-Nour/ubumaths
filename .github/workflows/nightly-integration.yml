@@ -69,6 +69,8 @@ on:
       - 'src/lib/grapheur/sequence.ts'
       # Bloc ```qr : adresse (parseur) et matrice (générateur Typst)
       - 'src/lib/qr/**'
+      # programme tortue : jugé par answer-validator (chantier blockly)
+      - 'src/lib/shared/blockly/tortue/**'
       - 'src/lib/seo/site.ts'
       - 'src/lib/utils/**'
       # src/lib : fichiers atteints ponctuellement
