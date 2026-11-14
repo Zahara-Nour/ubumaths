@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2634._
+_Mis à jour le 2026-11-14, après #2636._
 
-- **État** : #2627, #2632 et **#2634 (bac à sable public `/tortue`)** mergées ; PR 3b (rythme de l'animation : 300 ms par étape jusqu'à 40 étapes, puis 12 s au total) en cours · **Prochaine action** : merger la PR 3b, puis phase 0 de la PR 4 (geste de réponse « programme », correction par tracé) · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) ; molette sur l'espace de blocs = défilement des blocs, pas de la page · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-animation-rythme`
+- **État** : #2627, #2632, **#2634 (bac à sable public `/tortue`)** et **#2636 (animation plafonnée à 12 s au-delà de 40 étapes)** mergées ; la PR 3 du découpage est faite · **Prochaine action** : phase 0 de la PR 4, geste de réponse « programme » dans les modèles de questions (correction par tracé ou par sortie), à présenter avant de coder · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / PR 3b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) ; molette sur l'espace de blocs = défilement des blocs, pas de la page · **Worktree / branche** : aucun (le prochain : `ubumaths-wt-blockly`, nouvelle branche)
 
 ---
 
@@ -174,3 +174,4 @@ Phase 0 présentée le 2026-11-14 ; David : « je te suis » sur les cinq recomm
   40 étapes ; au-delà, l'animation entière dure 12 s, plusieurs étapes par tic quand une étape
   durerait moins d'une image (16 ms) ; pas de curseur de vitesse ; PR séparée après #2634.
 - `rythmeAnimation(n)` dans `tortue/animation.ts`, testée (8, 40, 41, 720, 10 000, 0 étapes).
+- `code-reviewer` (Sonnet) : rien de bloquant (total ≤ 12 s, pas ≥ 16 ms vérifiés). Mergée : #2636.
