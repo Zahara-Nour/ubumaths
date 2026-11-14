@@ -1,0 +1,291 @@
+{
+	"id": "f06e45e8-45f3-48f7-8bd2-2a16ae86958f",
+	"title": "Construire un triangle",
+	"description": "Construire un triangle à partir de trois longueurs (compas), de deux côtés et de l'angle compris, ou d'un côté et de ses deux angles adjacents (rapporteur) ; savoir si trois longueurs permettent de construire un triangle",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 240,
+	"status": "published",
+	"variations": [
+		{
+			"statement": "Construis le triangle $ABC$ : le côté $[AB]$ est tracé. Le côté $[AC]$ doit être aussi long que le segment $u$, et le côté $[BC]$ aussi long que le segment $v$. Reporte les longueurs, puis trace les côtés $[AC]$ et $[BC]$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: triangle ABC : AC = u ; BC = v\n---\nA = point(3.5, 2.5, etiquette=\"bas\")\nB = point(8.5, 2.5, etiquette=\"bas\")\nsegment(A, B)\n{{if:k==1|u = segment(point(0.5, 8.2, visible=faux), point(5, 8.2, visible=faux), couleur=\"gris\")\ntexte(2.75, 7.749999999999999, \"u\", dx=0, dy=0, ancre=\"centre\")\nv = segment(point(6.5, 8.2, visible=faux), point(10, 8.2, visible=faux), couleur=\"gris\")\ntexte(8.25, 7.749999999999999, \"v\", dx=0, dy=0, ancre=\"centre\")|{{if:k==2|u = segment(point(0.5, 8.2, visible=faux), point(3.5, 8.2, visible=faux), couleur=\"gris\")\ntexte(2, 7.749999999999999, \"u\", dx=0, dy=0, ancre=\"centre\")\nv = segment(point(6.5, 8.2, visible=faux), point(11, 8.2, visible=faux), couleur=\"gris\")\ntexte(8.75, 7.749999999999999, \"v\", dx=0, dy=0, ancre=\"centre\")|u = segment(point(0.5, 8.2, visible=faux), point(4.5, 8.2, visible=faux), couleur=\"gris\")\ntexte(2.5, 7.749999999999999, \"u\", dx=0, dy=0, ancre=\"centre\")\nv = segment(point(6.5, 8.2, visible=faux), point(10.5, 8.2, visible=faux), couleur=\"gris\")\ntexte(8.5, 7.749999999999999, \"v\", dx=0, dy=0, ancre=\"centre\")}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Reporter $u$ depuis $A$** : un arc de centre $A$, ouvert de la longueur de $u$. Le point $C$ est sur cet arc.",
+					"**Reporter $v$ depuis $B$** : un arc de centre $B$, ouvert de la longueur de $v$. Les deux arcs se coupent en $\\textcolor{{{color:primary.0}}}{C}$ ; on trace $[AC]$ et $[BC]$."
+				]
+			}
+		},
+		{
+			"statement": "Construis le triangle $ABC$ : le côté $[AB]$ est tracé. L'angle $\\widehat{CAB}$ doit mesurer ${{a}}^\\circ$, et le côté $[AC]$ doit être aussi long que le segment $u$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: triangle ABC : AC = u ; CAB = {{a}}\n---\nA = point(3.5, 2.5, etiquette=\"bas\")\nB = point(8.5, 2.5, etiquette=\"bas\")\nsegment(A, B)\n{{if:k==1|u = segment(point(0.5, 8.2, visible=faux), point(5, 8.2, visible=faux), couleur=\"gris\")\ntexte(2.75, 7.749999999999999, \"u\", dx=0, dy=0, ancre=\"centre\")|{{if:k==2|u = segment(point(0.5, 8.2, visible=faux), point(4, 8.2, visible=faux), couleur=\"gris\")\ntexte(2.25, 7.749999999999999, \"u\", dx=0, dy=0, ancre=\"centre\")|u = segment(point(0.5, 8.2, visible=faux), point(4.5, 8.2, visible=faux), couleur=\"gris\")\ntexte(2.5, 7.749999999999999, \"u\", dx=0, dy=0, ancre=\"centre\")}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "30..120"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**L'angle en $A$** : rapporteur centré en $A$, base sur $[AB]$ ; un repère à ${{a}}^\\circ$ (en partant du $0$ qui est sur $[AB]$), puis la demi-droite de $A$ au repère.",
+					"**La longueur** : un arc de centre $A$, ouvert de la longueur de $u$, coupe cette demi-droite en $\\textcolor{{{color:primary.0}}}{C}$ ; on trace $[AC]$ et $[BC]$."
+				]
+			}
+		},
+		{
+			"statement": "Construis le triangle $ABC$ : le côté $[AB]$ est tracé. L'angle $\\widehat{CAB}$ doit mesurer ${{a}}^\\circ$ et l'angle $\\widehat{ABC}$ doit mesurer ${{b}}^\\circ$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: triangle ABC : CAB = {{a}} ; ABC = {{b}}\n---\nA = point(3.5, 2.5, etiquette=\"bas\")\nB = point(8.5, 2.5, etiquette=\"bas\")\nsegment(A, B)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30..65"
+				},
+				{
+					"name": "b",
+					"expression": "30..65"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'angle en $A$** : rapporteur centré en $A$, base sur $[AB]$, repère à ${{a}}^\\circ$, demi-droite de $A$ au repère.",
+					"**L'angle en $B$**, du même côté de $[AB]$ : rapporteur centré en $B$, base sur $[BA]$, repère à ${{b}}^\\circ$, demi-droite de $B$ au repère.",
+					"Les deux demi-droites se coupent en $\\textcolor{{{color:primary.0}}}{C}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"statement": "Peut-on construire un triangle dont les côtés mesurent {{if:k==1|$5\\,\\text{cm}$, $6\\,\\text{cm}$ et $9\\,\\text{cm}$|{{if:k==2|$3\\,\\text{cm}$, $4\\,\\text{cm}$ et $8\\,\\text{cm}$|{{if:k==3|$4\\,\\text{cm}$, $7\\,\\text{cm}$ et $10\\,\\text{cm}$|$2\\,\\text{cm}$, $5\\,\\text{cm}$ et $9\\,\\text{cm}$}}}}}} ?\n\n```choix\nmelanger: non\n- oui\n- non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "j",
+					"expression": "eval:(1)*(k-1)*(k-3)*(k-4)/(2)+(1)*(k-1)*(k-2)*(k-3)/(6)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le plus long côté** doit être plus court que la somme des deux autres : sinon, les deux arcs ne se coupent pas.",
+					"{{if:k==1|Les deux plus petits côtés : $5\\,\\text{cm} + 6\\,\\text{cm} = 11\\,\\text{cm}$ ; le plus grand : $9\\,\\text{cm}$, et $9 < 11$|{{if:k==2|Les deux plus petits côtés : $3\\,\\text{cm} + 4\\,\\text{cm} = 7\\,\\text{cm}$ ; le plus grand : $8\\,\\text{cm}$, et $8 > 7$|{{if:k==3|Les deux plus petits côtés : $4\\,\\text{cm} + 7\\,\\text{cm} = 11\\,\\text{cm}$ ; le plus grand : $10\\,\\text{cm}$, et $10 < 11$|Les deux plus petits côtés : $2\\,\\text{cm} + 5\\,\\text{cm} = 7\\,\\text{cm}$ ; le plus grand : $9\\,\\text{cm}$, et $9 > 7$}}}}}} : {{if:j==0|$\\textcolor{{{color:primary.0}}}{\\text{oui}}$, on peut construire le triangle.|$\\textcolor{{{color:primary.0}}}{\\text{non}}$, le plus grand côté est trop long.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": [
+				"report(3.5;2.5;0.5;8.2;5;8.2)|report(8.5;2.5;6.5;8.2;10;8.2)|segment(3.5;2.5;6.8;5.559411708155672)|segment(8.5;2.5;6.8;5.559411708155672)"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1"
+			},
+			"description": "Trois longueurs, cas 1 : reportées, C au-dessus",
+			"variationIndex": 0
+		},
+		{
+			"answers": [
+				"report(3.5;2.5;0.5;8.2;3.5;8.2)|report(8.5;2.5;6.5;8.2;11;8.2)|segment(3.5;2.5;4.875;-0.1663411259626928)|segment(8.5;2.5;4.875;-0.1663411259626928)"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "Trois longueurs, cas 2 : C au-dessous",
+			"variationIndex": 0
+		},
+		{
+			"answers": [
+				"report(3.5;2.5;0.5;8.2;4.5;8.2)|report(8.5;2.5;6.5;8.2;10.5;8.2)|segment(3.5;2.5;6;5.622498999199199)|segment(8.5;2.5;6;5.622498999199199)"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "Trois longueurs, cas 3 : isocèle",
+			"variationIndex": 0
+		},
+		{
+			"answers": [
+				"report(3.5;2.5;6.5;8.2;10;8.2)|report(8.5;2.5;0.5;8.2;5;8.2)|segment(3.5;2.5;5.2;5.559411708155671)|segment(8.5;2.5;5.2;5.559411708155671)"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1"
+			},
+			"description": "Erreur : u reporté en B et v en A",
+			"variationIndex": 0
+		},
+		{
+			"answers": [
+				"segment(3.5;2.5;5.175;4.966341125962693)|segment(8.5;2.5;5.175;4.966341125962693)"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "Erreur : C placé à l'œil",
+			"variationIndex": 0
+		},
+		{
+			"answers": [
+				"repere(3.5;2.5;8.5;2.5;3.15;50;1)|droite(3.5;2.5;5.524780970512599;4.91303999582478)|report(3.5;2.5;0.5;8.2;5;8.2)|segment(3.5;2.5;6.392544243589428;5.947199994035401)|segment(8.5;2.5;6.392544243589428;5.947199994035401)"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "50",
+				"k": "1"
+			},
+			"description": "Deux côtés et l'angle compris : 50°",
+			"variationIndex": 1
+		},
+		{
+			"answers": [
+				"repere(3.5;2.5;8.5;2.5;3.15;110;-1)|droite(3.5;2.5;2.4226365485241437;-0.46003175547561126)|report(3.5;2.5;0.5;8.2;4;8.2)|segment(3.5;2.5;2.3029294983601596;-0.7889241727506793)|segment(8.5;2.5;2.3029294983601596;-0.7889241727506793)"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "110",
+				"k": "2"
+			},
+			"description": "Deux côtés et l'angle compris : 110°, au-dessous",
+			"variationIndex": 1
+		},
+		{
+			"answers": [
+				"repere(3.5;2.5;8.5;2.5;3.15;130;1)|droite(3.5;2.5;1.475219029487401;4.91303999582478)|report(3.5;2.5;0.5;8.2;5;8.2)|segment(3.5;2.5;0.6074557564105727;5.947199994035401)|segment(8.5;2.5;0.6074557564105727;5.947199994035401)"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "50",
+				"k": "1"
+			},
+			"description": "Erreur : 130° au lieu de 50° (mauvaise graduation)",
+			"variationIndex": 1
+		},
+		{
+			"answers": [
+				"repere(3.5;2.5;8.5;2.5;3.15;40;1)|droite(3.5;2.5;5.91303999582478;4.524780970512598)|repere(8.5;2.5;3.5;2.5;3.15;55;-1)|droite(8.5;2.5;6.693234225494205;5.0803289395103235)|segment(3.5;2.5;6.649519229519841;5.142760423875849)|segment(8.5;2.5;6.649519229519841;5.142760423875849)"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "40",
+				"b": "55"
+			},
+			"description": "Un côté et deux angles : 40° et 55°",
+			"variationIndex": 2
+		},
+		{
+			"answers": [
+				"repere(3.5;2.5;8.5;2.5;3.15;65;-1)|droite(3.5;2.5;4.831247524483203;-0.35486952916544734)|repere(8.5;2.5;3.5;2.5;3.15;30;1)|droite(8.5;2.5;5.772019978079018;0.9250000000000007)|segment(3.5;2.5;4.560581487108501;0.2255756611314994)|segment(8.5;2.5;4.560581487108501;0.2255756611314994)"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "65",
+				"b": "30"
+			},
+			"description": "Un côté et deux angles : 65° et 30°, au-dessous",
+			"variationIndex": 2
+		},
+		{
+			"answers": [
+				"repere(3.5;2.5;8.5;2.5;3.15;55;1)|droite(3.5;2.5;5.306765774505795;5.0803289395103235)|repere(8.5;2.5;3.5;2.5;3.15;40;-1)|droite(8.5;2.5;6.08696000417522;4.5247809705126)|segment(3.5;2.5;5.350480770480159;5.142760423875851)|segment(8.5;2.5;5.350480770480159;5.142760423875851)"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "40",
+				"b": "55"
+			},
+			"description": "Erreur : angles échangés",
+			"variationIndex": 2
+		},
+		{
+			"answers": [
+				"segment(3.5;2.5;7.0495192295198414;5.442760423875849)|segment(8.5;2.5;7.0495192295198414;5.442760423875849)"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "40",
+				"b": "55"
+			},
+			"description": "Erreur : C placé à l'œil",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"j": "0",
+				"k": "1"
+			},
+			"description": "5, 6, 9 : oui",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"j": "1",
+				"k": "2"
+			},
+			"description": "3, 4, 8 : non",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "1",
+				"k": "4"
+			},
+			"description": "Erreur : oui pour 2, 5, 9",
+			"variationIndex": 3
+		}
+	]
+}
