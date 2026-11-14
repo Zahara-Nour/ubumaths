@@ -13,7 +13,9 @@ joignent par **Tailscale** : adresse du Mac mini `100.79.226.105`, nom
    cookies en `Secure`. Sur `http://100.79.226.105:<port>`, le navigateur jette le cookie : la
    connexion « ne fait rien » (côté serveur : « login successful » puis « Profile missing »).
    `crypto.randomUUID` n'existe pas non plus en HTTP sur une adresse IP (commit c05eadaa1, tableau de
-   variations).
+   variations). ⚠️ **L'Atelier plante alors au premier objet créé** (rien ne se trace, l'expression
+   disparaît de sa carte, 2026-11-14) : même page publique, l'Atelier se teste en HTTPS (Tailscale
+   Serve) ou par le tunnel SSH, jamais par `http://100.79.226.105`.
 2. **Le navigateur appelle Supabase lui-même**, à l'adresse `PUBLIC_SUPABASE_URL` de `.env.local`
    (`http://127.0.0.1:54321`, la base LOCALE). Sur un autre appareil, `127.0.0.1` désigne cet
    appareil : il faut lui rendre le port 54321 du Mac mini, ou changer cette adresse.
