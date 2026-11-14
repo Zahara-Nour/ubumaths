@@ -56,7 +56,7 @@ function errorsOf(students: string[]) {
 
 function stubFetch(body: unknown, ok = true) {
 	const fetchMock = vi.fn(
-		async () => new Response(JSON.stringify(body), { status: ok ? 200 : 500 })
+		async (_url: string) => new Response(JSON.stringify(body), { status: ok ? 200 : 500 })
 	);
 	vi.stubGlobal('fetch', fetchMock);
 	return fetchMock;
