@@ -1,0 +1,292 @@
+{
+	"title": "Espace : sphère circonscrite à un tétraèdre",
+	"description": "Tétraèdre trirectangle OABC : centre (trois cases) et carré du rayon (case) de la sphère circonscrite ; le centre est le point commun aux plans médiateurs (case choix) ; cote du centre par ΩO² = ΩD² (case)",
+	"grades": ["T_SPE"],
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le tétraèdre $OABC$, avec $O(0\\,;\\,0\\,;\\,0)$, $A({{eval:2*p}}\\,;\\,{{eval:0}}\\,;\\,{{eval:0}})$, $B({{eval:0}}\\,;\\,{{eval:2*q}}\\,;\\,{{eval:0}})$ et $C({{eval:0}}\\,;\\,{{eval:0}}\\,;\\,{{eval:2*s}})$.\n\nDétermine le centre $\\Omega$ de la sphère circonscrite à $OABC$, c'est-à-dire passant par ses quatre sommets.\n\n$\\Omega(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..4"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "s",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le centre $\\Omega(x\\,;\\,y\\,;\\,z)$ est équidistant des quatre sommets.",
+					"$\\Omega O^2=\\Omega A^2$ : $x^2=(x-{{eval:2*p}})^2$, soit ${{eval:4*p}}x={{eval:4*p^2}}$, donc $x={{eval:p}}$ ; de même $\\Omega O^2=\\Omega B^2$ donne $y={{eval:q}}$ et $\\Omega O^2=\\Omega C^2$ donne $z={{eval:s}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\Omega({{eval:p}}\\,;\\,{{eval:q}}\\,;\\,{{eval:s}})}$, le milieu de $[OD]$ où $D$ est le sommet opposé à $O$ du pavé construit sur $OA$, $OB$, $OC$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le tétraèdre $OABC$, avec $O(0\\,;\\,0\\,;\\,0)$, $A({{eval:2*p}}\\,;\\,{{eval:0}}\\,;\\,{{eval:0}})$, $B({{eval:0}}\\,;\\,{{eval:2*q}}\\,;\\,{{eval:0}})$ et $C({{eval:0}}\\,;\\,{{eval:0}}\\,;\\,{{eval:2*s}})$.\n\nSoit $R$ le rayon de la sphère circonscrite à $OABC$, passant par ses quatre sommets. Détermine $R^2$.\n\n$R^2=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..4"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "s",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p^2+q^2+s^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le centre $\\Omega(x\\,;\\,y\\,;\\,z)$ est équidistant des quatre sommets.",
+					"$\\Omega O^2=\\Omega A^2$ : $x^2=(x-{{eval:2*p}})^2$, soit ${{eval:4*p}}x={{eval:4*p^2}}$, donc $x={{eval:p}}$ ; de même $\\Omega O^2=\\Omega B^2$ donne $y={{eval:q}}$ et $\\Omega O^2=\\Omega C^2$ donne $z={{eval:s}}$.",
+					"$R^2=\\Omega O^2={{eval:p}}^2+{{eval:q}}^2+{{eval:s}}^2$, donc $\\textcolor{{{color:primary.0}}}{R^2={{eval:p^2+q^2+s^2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABCD$ un tétraèdre. On cherche le centre $\\Omega$ de sa sphère circonscrite, la sphère qui passe par $A$, $B$, $C$ et $D$.\n\nQuel est ce point ?\n\n```choix\n- Le point commun aux plans médiateurs des arêtes $[AB]$, $[AC]$ et $[AD]$\n- L'isobarycentre de $A$, $B$, $C$ et $D$\n- Le point commun aux hauteurs du tétraèdre\n- Le milieu du segment qui joint les milieux de $[AB]$ et de $[CD]$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\Omega A=\\Omega B$ équivaut à : $\\Omega$ est dans le plan médiateur de $[AB]$.",
+					"De même avec $[AC]$ et $[AD]$ : $\\Omega A=\\Omega B=\\Omega C=\\Omega D$ équivaut à $\\Omega$ commun aux trois plans médiateurs.",
+					"Le centre est donc $\\textcolor{{{color:primary.0}}}{\\text{le point commun aux plans médiateurs}}$ ; l'isobarycentre ne convient que pour un tétraèdre particulier (régulier par exemple)."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le tétraèdre $OABD$, avec $O(0\\,;\\,0\\,;\\,0)$, $A({{eval:2*p}}\\,;\\,{{eval:0}}\\,;\\,{{eval:0}})$, $B({{eval:0}}\\,;\\,{{eval:2*q}}\\,;\\,{{eval:0}})$ et $D({{eval:d1}}\\,;\\,{{eval:d2}}\\,;\\,{{eval:d3}})$.\n\nLe centre de sa sphère circonscrite est $\\Omega({{eval:p}}\\,;\\,{{eval:q}}\\,;\\,z)$ (plans médiateurs de $[OA]$ et $[OB]$). En écrivant $\\Omega O^2=\\Omega D^2$, détermine $z$.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "d1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "d2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "d3",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(d1^2+d2^2+d3^2-2*p*d1-2*q*d2)/(2*d3)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\Omega O^2={{eval:p^2+q^2}}+z^2$ et $\\Omega D^2=({{eval:p}}-{{eval:d1;()}})^2+({{eval:q}}-{{eval:d2;()}})^2+(z-{{eval:d3}})^2$.",
+					"L'égalité donne, après simplification de $z^2$ : ${{eval:2*d3}}z={{eval:d1^2+d2^2+d3^2-2*p*d1-2*q*d2}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{z={{eval:(d1^2+d2^2+d3^2-2*p*d1-2*q*d2)/(2*d3)}}}$."
+				]
+			},
+			"conditions": ["d1 != 2*p || d2 != 0", "d1 != 0 || d2 != 2*q"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Ω(1 ; 2 ; 3)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"s": "3"
+			},
+			"answers": ["1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sommet opposé (2 ; 4 ; 6)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"s": "3"
+			},
+			"answers": ["2", "4", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : isobarycentre (1/2 ; 1 ; 3/2)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"s": "3"
+			},
+			"answers": ["\\frac{1}{2}", "1", "\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "14",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"s": "3"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 56 (diamètre au carré)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"s": "3"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √14 (R au lieu de R²)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"s": "3"
+			},
+			"answers": ["\\sqrt{14}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "plans médiateurs",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : isobarycentre",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : hauteurs",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bimédianes",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "z = 4/3",
+			"variationIndex": 3,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"d1": "1",
+				"d2": "0",
+				"d3": "3"
+			},
+			"answers": ["\\frac{4}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8/3 (sans le facteur 2)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"d1": "1",
+				"d2": "0",
+				"d3": "3"
+			},
+			"answers": ["\\frac{8}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/2 (milieu de la cote de D)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"d1": "1",
+				"d2": "0",
+				"d3": "3"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
