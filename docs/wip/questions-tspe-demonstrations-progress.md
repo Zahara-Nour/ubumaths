@@ -1071,3 +1071,4 @@ e410f2dd, a194b387) ; aperçu admin vu à l'écran (port 5177) : étapes à rang
 rangement (piège du § 56). Migration `20261114090523_questions_tspe_approfondissements_14_rangement_tags`, copie de
 celle du lot 13 (SQL exécutable et rollback identiques aux données près) : chacun sur la sous-notion du § 58, qui porte
 aussi son point. Test d'intégration 12/12, rouge sans la migration (6 échecs, 5 sautés).
+`security-auditor` : aucun finding bloquant (relevé prod refait : 3 `draft` sans nœud ni tag, chemins et points résolus).
