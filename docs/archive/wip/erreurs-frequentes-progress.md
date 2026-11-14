@@ -1,15 +1,15 @@
 # Chantier `erreurs-frequentes` — erreurs fréquentes d'une question / d'un point (P4, E4)
 
 Ouvert le 2026-11-14. Besoins P4 (prof) et E4 (élève) validés par David le 2026-11-11
-([`formes-de-serie-progress.md`](../archive/wip/formes-de-serie-progress.md) § « Besoins de suivi
-validés ») ; suite directe de P6 ([`bilan-controle-progress.md`](../archive/wip/bilan-controle-progress.md),
-Q4 : « clic sur une question = P4 »). David : « ok pour P4 / E4 ».
+([`formes-de-serie-progress.md`](formes-de-serie-progress.md) § « Besoins de suivi
+validés ») ; suite directe de P6 ([`bilan-controle-progress.md`](bilan-controle-progress.md),
+Q4 : « clic sur une question = P4 »). David : « ok pour P4 / E4 ». Clos le 2026-11-14 (#2626, #2631).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2631._
+_Mis à jour le 2026-11-14, après #2631 — chantier **clos**, journal archivé._
 
-- **État** : PR 1 (#2626, bilan d'un contrôle) et PR 2 (#2631, erreurs par point, widget « Top à remédier ») mergées, pas encore en prod ; le découpage validé (PR 1 puis PR 2, E4 retiré) est entièrement livré · **Prochaine action** : clôture du chantier — versement (le durable est déjà dans `analytique-prof.md` et `evaluations.md`), archivage du journal ; à proposer à David · **En attente de David** : vérifications à l'écran #2626 et #2631 (`verifications-manuelles.md`) · **Pièges en cours** : prod sans aucune donnée pour ces écrans (0 trace avec réponse, 0 copie de contrôle) · **Worktree / branche** : supprimés après #2631
+- **État** : livré par #2626 (bilan d'un contrôle) et #2631 (erreurs par point, widget « Top à remédier »), pas encore en prod (attend un `deploy:prod`) ; E4 retiré (couvert par la révision espacée) ; doc durable dans `docs/systeme/evaluations.md` et `docs/systeme/analytique-prof.md` · **Prochaine action** : aucune ; futurs chantiers au § Suites · **En attente de David** : vérifications à l'écran notées dans `docs/wip/verifications-manuelles.md` · **Pièges en cours** : prod sans donnée pour ces écrans · **Worktree / branche** : supprimés
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -154,6 +154,7 @@ de l'ancien « Reprendre ici » abandonné). **Q7** — anciennes séries libres
 
 - 2026-11-14 : ouverture, état des lieux, phase 0 écrite.
 - 2026-11-14 : #2626 mergée (PR 1). Relecture : comptes alignés sur le bilan (statut seul), question non corrigée faute de temps jamais recalculée ; audit sécurité sans finding bloquant (mineurs laissés : modèle étranger → « aucune erreur », pas de 404 car un modèle sorti de la série garde sa ligne ; cas admin et mode test non testés au niveau route).
+- 2026-11-14 : chantier clos, journal archivé.
 - 2026-11-14 : #2631 mergée (PR 2), CI verte.
 - 2026-11-14 : PR 2 codée (serveur `point-errors.ts`, route, onglet « Erreurs », panneau partagé). Revues : sécurité sans bloquant ; code → plafond posé en base, budget de 5 s partagé par la requête, libellé « réponses écrites », clé de remontage avec la classe. Mineurs laissés : numérotation des cases non jugées entre sources, regroupement contrôle/série possible en deux groupes, contrôles lus sans borne de date.
 - 2026-11-14 : PR 2 — état des lieux prod, plan technique, Q6 (séries + contrôles) et Q7 (anciennes séries libres exclues) tranchées.
