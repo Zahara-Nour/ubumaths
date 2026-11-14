@@ -106,3 +106,36 @@ David suit la recommandation (option 3) : les blocs tortue et calcul sont exécu
 évalué) — rien à évader ; il sert aussi à rejouer le tracé pour la correction par segments. Le JS /
 Python généré reste affiché en aperçu. Options écartées : durcir le worker (course aux
 contournements), interpréteur JS isolé (dépendance, lenteur). Figée : [ADR 0039](../adr/0039-blocs-interpretes-par-chiphre.md).
+
+## PR 2 — la tortue (branche `feat/blockly-tortue`, worktree `ubumaths-wt-blockly`)
+
+Phase 0 présentée le 2026-11-14 ; David a tranché les trois questions ouvertes (ses réponses
+suivent les recommandations).
+
+- **Blocs** : avancer de n, reculer de n, tourner à droite de n°, tourner à gauche de n°, lever le
+  stylo, baisser le stylo ; « répéter n fois » et « nombre » de Blockly, exécutés par
+  l'interpréteur ([ADR 0039](../adr/0039-blocs-interpretes-par-chiphre.md)).
+- **Unité** : 1 = **un carreau** (tranché). **Quadrillage fixe 20 × 20** (tranché), tortue au
+  centre, orientée vers la droite, stylo baissé ; ce qui sort du cadre est coupé et signalé.
+- **Tracé instantané** (tranché) ; l'animation viendra avec le bac à sable (PR 3).
+- L'interpréteur rend les segments tracés et la tortue finale ; segments normalisés pour la
+  correction future (arrondis nettoyés, sens et ordre indifférents, segments alignés fusionnés).
+- Limites : programme vide → rien, sans erreur ; stylo levé → déplacement sans trait ; angle
+  quelconque ; répétitions négatives → 0.
+- Erreurs : bloc inconnu → « Ce bloc n'est pas pris en charge par la tortue », rien n'est tracé ;
+  plus de 10 000 pas → arrêt, message, tracé partiel affiché.
+
+### Essai et revue (2026-11-14)
+
+- Essai `/dev/blockly` (port 5176) : carré, stylo levé, dépassement du cadre signalé, arrêt à
+  10 000 pas, bloc inconnu refusé — conformes.
+- `code-reviewer` (Sonnet) : rien de bloquant. Corrigé : une distance énorme donnait `NaN`
+  (→ erreur `trop-loin` au-delà de 1 000 000 carreaux) ; un nombre posé seul faisait refuser tout
+  le programme (→ ignoré) ; en mode Programme, des blocs tortue partaient au worker (→ message) ;
+  une pile de plus de 2 000 blocs était « illisible » (→ suivants lus en boucle, seule
+  l'imbrication est bornée) ; toute exception rend `programme-illisible`. Choix faits sans David,
+  à lui signaler : seuil `trop-loin`, nombre isolé ignoré, répétitions à virgule arrondies à
+  l'entier inférieur (Scratch arrondit au plus proche).
+- Écarté : la clé de regroupement de `normaliserSegments` (arrondi 1e-6) peut séparer deux
+  droites identiques à une frontière d'arrondi (~0,2 % sur des irrationnels, non reproduit) ; à
+  revoir avec la correction par tracé (PR 4).

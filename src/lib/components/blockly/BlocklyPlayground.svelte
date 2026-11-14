@@ -4,6 +4,8 @@
   Main orchestrating component for the Blockly visual programming playground.
   Combines workspace, toolbar, code preview, and output components.
   Uses BlocklyExecutor for secure code execution (JS via Worker, Python via Pyodide).
+  Mode tortue : les blocs sont exécutés par `executerTortue` (ADR 0039), jamais par le code
+  généré, qui ne sert que d'aperçu.
 -->
 <script lang="ts">
 	import type * as Blockly from 'blockly';
@@ -13,7 +15,15 @@
 	import BlocklyToolbar from './BlocklyToolbar.svelte';
 	import BlocklyCodePreview from './BlocklyCodePreview.svelte';
 	import BlocklyOutput from './BlocklyOutput.svelte';
-	import type { ExecutionLanguage } from '$lib/shared/blockly';
+	import TortueCanvas from './TortueCanvas.svelte';
+	import * as BlocklyCore from 'blockly';
+	import { STANDARD_TOOLBOX, type ExecutionLanguage, type ModeBlockly } from '$lib/shared/blockly';
+	import {
+		TORTUE_TOOLBOX,
+		executerTortue,
+		messageErreurTortue,
+		type ResultatTortue
+	} from '$lib/shared/blockly/tortue';
 	import { generateCode } from '$lib/shared/blockly/generators';
 	import { BLOCKLY_CONFIG } from '$lib/shared/blockly/config';
 	import { BlocklyExecutor } from '$lib/shared/blockly/execution';
@@ -36,6 +46,12 @@
 
 	/** Fullscreen mode */
 	let isFullscreen = $state(false);
+
+	/** Mode : programme (console) ou tortue (quadrillage) */
+	let mode = $state<ModeBlockly>('programme');
+
+	/** Dernière exécution de la tortue (null : rien exécuté depuis le dernier changement) */
+	let resultatTortue = $state<ResultatTortue | null>(null);
 
 	/** Debounce timer for code generation */
 	let codeGenTimer: ReturnType<typeof setTimeout> | null = null;
@@ -148,6 +164,18 @@
 		// Regenerate code to ensure it's up to date
 		generateBothCodes();
 
+		if (mode === 'tortue') {
+			runTortue(workspace);
+			return;
+		}
+
+		// Les blocs tortue n'ont de sens que pour l'interpréteur : le code généré n'est qu'un aperçu
+		if (workspace.getAllBlocks(false).some((bloc) => bloc.type.startsWith('tortue_'))) {
+			executor.clearOutput();
+			executor.addOutput('info', 'Les blocs tortue s’exécutent en mode Tortue.');
+			return;
+		}
+
 		// Check if there's code to execute
 		if (!currentCode || currentCode.trim().length === 0) {
 			executor.addOutput(
@@ -159,6 +187,32 @@
 
 		// Execute code via executor
 		await executor.execute(currentCode, language);
+	}
+
+	/**
+	 * Exécute les blocs par l'interpréteur de la tortue (aucun code évalué)
+	 */
+	function runTortue(ws: Blockly.WorkspaceSvg): void {
+		executor.clearOutput();
+		const resultat = executerTortue(BlocklyCore.serialization.workspaces.save(ws));
+		resultatTortue = resultat;
+		if (resultat.ok) {
+			const n = resultat.segments.length;
+			executor.addOutput('info', `Tracé terminé : ${n} segment${n > 1 ? 's' : ''}.`);
+		} else {
+			executor.addOutput('stderr', messageErreurTortue(resultat.erreur));
+		}
+	}
+
+	/**
+	 * Change de mode : boîte à outils et zone de résultat suivent
+	 */
+	function handleModeChange(nouveauMode: ModeBlockly): void {
+		mode = nouveauMode;
+		resultatTortue = null;
+		executor.clearOutput();
+		const toolbox = nouveauMode === 'tortue' ? TORTUE_TOOLBOX : STANDARD_TOOLBOX;
+		workspace?.updateToolbox(toolbox as unknown as Blockly.utils.toolbox.ToolboxDefinition);
 	}
 
 	// =============================================================================
@@ -180,6 +234,7 @@
 			workspace.clear();
 			generateBothCodes();
 			executor.clearOutput();
+			resultatTortue = null;
 		}
 	}
 
@@ -288,6 +343,8 @@
 		onclearworkspace={handleClearWorkspace}
 		onlanguagechange={handleLanguageChange}
 		ontogglefullscreen={toggleFullscreen}
+		{mode}
+		onmodechange={handleModeChange}
 	/>
 
 	<!-- Main content area -->
@@ -297,9 +354,19 @@
 			<BlocklyWorkspace bind:workspace onchange={handleWorkspaceChange} />
 		</div>
 
-		<!-- Right: Code preview -->
-		<div class="w-96 flex-shrink-0">
-			<BlocklyCodePreview {jsCode} {pythonCode} activeLanguage={language} />
+		<!-- Right: quadrillage (mode tortue) et aperçu du code -->
+		<div class="flex w-96 flex-shrink-0 flex-col overflow-hidden">
+			{#if mode === 'tortue'}
+				<div class="border-b border-border p-3">
+					<TortueCanvas
+						segments={resultatTortue?.segments ?? []}
+						tortue={resultatTortue?.tortue ?? { x: 0, y: 0, cap: 0, styloBaisse: true }}
+					/>
+				</div>
+			{/if}
+			<div class="min-h-0 flex-1">
+				<BlocklyCodePreview {jsCode} {pythonCode} activeLanguage={language} />
+			</div>
 		</div>
 	</div>
 

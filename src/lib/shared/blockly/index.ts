@@ -8,6 +8,7 @@
 export type {
 	ExecutorState,
 	ExecutionLanguage,
+	ModeBlockly,
 	LoadingStage,
 	OutputLineType,
 	OutputLine,

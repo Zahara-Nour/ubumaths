@@ -7,7 +7,7 @@
 <script lang="ts">
 	import { Play, Trash2, RefreshCw, Loader2, Maximize2, Minimize2 } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
-	import type { ExecutionLanguage } from '$lib/shared/blockly';
+	import type { ExecutionLanguage, ModeBlockly } from '$lib/shared/blockly';
 
 	// =============================================================================
 	// Types
@@ -30,6 +30,10 @@
 		onlanguagechange: (lang: ExecutionLanguage) => void;
 		/** Callback to toggle fullscreen */
 		ontogglefullscreen: () => void;
+		/** Mode : programme (console) ou tortue (quadrillage) */
+		mode: ModeBlockly;
+		/** Changement de mode */
+		onmodechange: (mode: ModeBlockly) => void;
 	}
 
 	// =============================================================================
@@ -44,8 +48,15 @@
 		onclear,
 		onclearworkspace,
 		onlanguagechange,
-		ontogglefullscreen
+		ontogglefullscreen,
+		mode,
+		onmodechange
 	}: Props = $props();
+
+	const MODES: { valeur: ModeBlockly; libelle: string }[] = [
+		{ valeur: 'programme', libelle: 'Programme' },
+		{ valeur: 'tortue', libelle: 'Tortue' }
+	];
 
 	// =============================================================================
 	// Event Handlers
@@ -82,10 +93,33 @@
 		</Button>
 	</div>
 
-	<!-- Right side: Language selector and fullscreen -->
+	<!-- Right side: mode, language selector and fullscreen -->
 	<div class="flex items-center gap-4">
 		<div class="flex items-center gap-2">
-			<span class="text-sm font-medium text-muted-foreground">Langage :</span>
+			<span class="text-sm font-medium text-muted-foreground">Mode :</span>
+			<div class="flex rounded-md border border-border">
+				{#each MODES as option, i (option.valeur)}
+					<button
+						type="button"
+						onclick={() => mode !== option.valeur && onmodechange(option.valeur)}
+						aria-pressed={mode === option.valeur}
+						class="px-3 py-1 text-sm font-medium transition-colors {mode === option.valeur
+							? 'bg-primary text-primary-foreground'
+							: 'bg-background text-foreground hover:bg-muted'} {i === 0
+							? 'rounded-l-md'
+							: 'rounded-r-md border-l border-border'}"
+						disabled={isExecuting}
+					>
+						{option.libelle}
+					</button>
+				{/each}
+			</div>
+		</div>
+
+		<div class="flex items-center gap-2">
+			<span class="text-sm font-medium text-muted-foreground"
+				>{mode === 'tortue' ? 'Aperçu :' : 'Langage :'}</span
+			>
 			<div class="flex rounded-md border border-border">
 				<button
 					type="button"

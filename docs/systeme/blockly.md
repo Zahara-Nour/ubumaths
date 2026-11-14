@@ -20,8 +20,8 @@ L'élève assemble des **blocs** (Blockly) ; Chiphre en tire du **JavaScript** o
 l'exécute, la sortie s'affiche dans une console. Programme visé : algorithmique par blocs du cycle 3
 et du cycle 4 (Scratch au BO), relais vers Python au lycée.
 
-État au 2026-11-14 : **prototype**, page `/dev/blockly` (réservée à l'admin). Rien n'est
-enregistré. Le chantier `blockly` en fait une fonctionnalité élève (tortue, bac à sable public,
+État au 2026-11-14 : **prototype**, page `/dev/blockly` (réservée à l'admin), avec deux modes :
+**Programme** (console) et **Tortue** (quadrillage). Rien n'est enregistré. Le chantier `blockly` en fait une fonctionnalité élève (tortue, bac à sable public,
 geste de réponse dans les modèles de questions) ; décisions dans son journal.
 
 ## Carte du code
@@ -39,6 +39,11 @@ geste de réponse dans les modèles de questions) ; décisions dans son journal.
 | `src/lib/shared/blockly/execution/js-executor.svelte.ts`      | Pilote le worker JavaScript                                                                                                                      |
 | `src/lib/workers/js-sandbox.worker.ts`                        | Sandbox JavaScript : globales filtrées, délai de 10 s, sortie limitée                                                                            |
 | `src/lib/workers/js-sandbox-source.ts`                        | Source de la fonction sandbox (sans effet de bord, testable sous Node)                                                                           |
+| `src/lib/shared/blockly/tortue/interpreteur.ts`               | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments et tortue finale                                       |
+| `src/lib/shared/blockly/tortue/segments.ts`                   | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `sortDuCadre`                                               |
+| `src/lib/shared/blockly/tortue/blocs.ts`                      | `definirBlocsTortue` : définitions Blockly et générateurs d'aperçu JS / Python (`from turtle import *`)                                          |
+| `src/lib/shared/blockly/tortue/toolbox.ts`                    | `TORTUE_TOOLBOX` : Tortue, « répéter n fois », nombre — uniquement des blocs interprétés                                                         |
+| `src/lib/components/blockly/TortueCanvas.svelte`              | Quadrillage fixe 20 × 20 en SVG, segments coupés au cadre, dépassement signalé                                                                   |
 | `static/blockly/media/`                                       | Médias de Blockly (corbeille, sprites, icônes), servis par Chiphre                                                                               |
 
 ## Invariants
@@ -64,8 +69,34 @@ geste de réponse dans les modèles de questions) ; décisions dans son journal.
   `$lib/shared/python` (import circulaire quand Blockly charge l'exécuteur par son fichier).
 - Renderer `thrasos` explicite (défaut depuis Blockly 13).
 
+## Tortue
+
+- **Exécutée par l'interpréteur, jamais par le code généré** ([ADR 0039](../adr/0039-blocs-interpretes-par-chiphre.md)).
+  `executerTortue` lit `Blockly.serialization.workspaces.save` (sans dépendre de Blockly) ; le
+  code JS / Python n'est qu'un aperçu. Un bloc inconnu, même dans une entrée valeur, refuse tout
+  le programme (rien n'est tracé).
+- Blocs : `tortue_avancer` / `tortue_reculer` (entrée `VALEUR`), `tortue_gauche` /
+  `tortue_droite` (entrée `ANGLE`), `tortue_lever_stylo`, `tortue_baisser_stylo` ;
+  `controls_repeat` / `controls_repeat_ext` (répétitions arrondies à l'entier inférieur, négatives
+  → 0), `math_number`. Entrée vide → 0, bloc désactivé → ignoré, nombre posé seul → ignoré. Piles
+  exécutées de haut en bas ; les suivants (`next`) sont lus en boucle, seule l'imbrication
+  (bornée à 1 000) fait récursion.
+- Repère : unité = un carreau, départ en (0, 0), cap 0 = vers la droite, tourner à gauche = sens
+  direct, stylo baissé. Coordonnées arrondies au milliardième après chaque déplacement.
+- **`LIMITE_PAS` = 10 000** (blocs exécutés et tours de boucle, même vides) : au-delà, arrêt
+  `trop-long` avec le tracé partiel. **`DISTANCE_MAX` = 1 000 000** carreaux du départ : au-delà,
+  arrêt `trop-loin` avant tout `Infinity` / `NaN`. Toute autre exception → `programme-illisible` :
+  `executerTortue` ne lève jamais.
+- En mode Programme, un espace de travail qui contient un bloc tortue n'est pas envoyé au worker
+  (message « Les blocs tortue s'exécutent en mode Tortue. »).
+- Quadrillage fixe 20 × 20 (`DEMI_COTE_CADRE`), tracé instantané (animation prévue avec le bac à
+  sable).
+
 ## Comment étendre
 
+- Nouveau bloc tortue : définition et aperçu dans `tortue/blocs.ts`, cas dans `executerTortue`
+  (et dans `INSTRUCTIONS` / `VALEURS`), entrée dans `TORTUE_TOOLBOX` ; `blocs.test.ts` vérifie
+  que chaque bloc de la boîte à outils est interprétable.
 - Nouveau bloc : définition JSON + générateurs JavaScript **et** Python, entrée dans la boîte à
   outils ; un test qui génère le code depuis un `Blockly.Workspace` sans interface et l'exécute dans
   `construireSourceSandbox` (modèle : `generators/__tests__/print.test.ts`).
@@ -75,6 +106,8 @@ geste de réponse dans les modèles de questions) ; décisions dans son journal.
 
 - `src/lib/shared/blockly/__tests__/` : types, médias.
 - `src/lib/shared/blockly/generators/__tests__/` : enveloppes, garde-fous, bloc `print` exécuté.
+- `src/lib/shared/blockly/tortue/__tests__/` : interpréteur (nominal, limites, erreurs), segments,
+  blocs passés par un vrai `Blockly.Workspace` sérialisé.
 - `src/lib/workers/__tests__/js-sandbox-source.test.ts` : la fonction sandbox compile et s'exécute.
 - `src/lib/shared/blockly/execution/__tests__/js-executor-boucle.svelte.test.ts` (navigateur) :
   après une boucle infinie, la console répond de nouveau.

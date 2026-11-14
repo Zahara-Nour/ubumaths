@@ -35,6 +35,7 @@
 		CHIPHRE_THEME,
 		type ToolboxDefinition
 	} from '$lib/shared/blockly';
+	import { definirBlocsTortue } from '$lib/shared/blockly/tortue';
 
 	// =============================================================================
 	// Types
@@ -128,6 +129,9 @@
 					)
 				)
 			);
+
+			// Blocs tortue (définis une seule fois), avant l'injection
+			definirBlocsTortue();
 
 			// Inject Blockly into the container
 			workspace = Blockly.inject(containerRef, options);
