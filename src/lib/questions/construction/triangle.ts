@@ -638,15 +638,17 @@ function joinedVertices(
 	});
 	const vertices = [...joined, ...onSides];
 	if (vertices.length === 0) {
-		// Avec un angle : un côté parti d'un sommet passe par le bout de l'autre sans être un
-		// côté d'angle (aucun repère ne le porte) → C à l'œil (revue de #2660, point 2)
+		// Avec un angle au rapporteur (pas l'angle droit, construit à l'équerre ou de nœud en
+		// nœud) : un côté parti d'un sommet passe par le bout de l'autre sans être un côté
+		// d'angle (aucun repère ne le porte) → C à l'œil (revue de #2660, point 2 ; #2665)
+		const protractor = check.angles.length > 0 && !rightAngleOf(check);
 		const crossesEnd = (from: Position, ends: readonly Position[]) =>
 			segments.some((s) => {
 				if (!farEnd(s, from, from === a ? b : a, eps)) return false;
 				const trait = traitOf(s);
 				return trait !== null && ends.some((q) => distanceToTrait(q, trait) <= eps);
 			});
-		if (check.angles.length > 0 && (crossesEnd(a, fromB) || crossesEnd(b, fromA))) {
+		if (protractor && (crossesEnd(a, fromB) || crossesEnd(b, fromA))) {
 			return incorrect(vertexEyeballedAnglesFeedback(nameC));
 		}
 		return incorrect(notJoinedFeedback(nameA, nameB, nameC));

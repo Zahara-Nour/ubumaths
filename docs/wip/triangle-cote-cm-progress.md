@@ -195,3 +195,11 @@ David : « oui » aux recos (choix du lot 1 (1), (3), (4) gardés ; corriger les
 - Tests : 5 dans `construction-triangle-angles.test.ts` (3 rouges avant le code, 2 de non-régression déjà
   verts). Suites `questions` + `ubumark` serveur : 13 035 verts. `question:specs` f06e45e8 et
   14-construire-un-triangle : importables. En prod, seul f06e45e8 a des triangles à angle (requête MCP).
+- Revue `code-reviewer` (opus) de #2665 : **bloquant** corrigé — le message « rapporteur » du (2) sortait au
+  triangle rectangle (l'angle droit est dans `check.angles`) ; réservé aux angles non droits (`rightAngleOf`),
+  2 tests rouges puis verts dans `construction-triangle-rectangle.test.ts`. Mineur (2) : deux triangles justes de
+  part et d'autre de (AB) désormais refusés avec un angle, comme Q17 en cm → test + doc. Mineur (3), d'avant la
+  PR, laissé : deux côtés d'angle en segments qui se croisent au-delà de C, sans [AC] ni [BC] → « doivent se
+  rejoindre ».
+- Vérifié à la demande de David : déploiements du 2026-11-14 = v0.87.0 (09:24, sans #2658) et v0.88.0 (19:11,
+  avec #2658, #2660, #2661) ; contenu du modèle f06e45e8 en prod identique au fichier (simulation, 26/26).

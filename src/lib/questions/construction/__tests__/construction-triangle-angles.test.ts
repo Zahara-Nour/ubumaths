@@ -540,6 +540,14 @@ describe('revue de #2660 : un seul C, côté sans repère', () => {
 		});
 	});
 
+	it('faux : deux triangles justes, de part et d’autre de (AB) (comme Q17 en cm)', () => {
+		const below = built(repere(A, B, 40, -1), repere(B, A, 65, 1));
+		expect(judge(ANGLES, [...NOMINAL, ...below])).toEqual({
+			status: 'incorrect',
+			feedback: severalTrianglesFeedback('A', 'B', 'C')
+		});
+	});
+
 	it('juste : un seul [BC], au croisement (non-régression)', () => {
 		const sideA = segment(A, along(3));
 		expect(judge(ANGLES, [MARK_A, sideA, MARK_B, LINE_B, segment(B, C)])).toEqual({
