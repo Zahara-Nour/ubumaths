@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2623._
+_Mis à jour le 2026-11-14, après #2629._
 
-- **État** : lot 1 mergé (#2623) — bloc `associer`, geste `relier` (défaut, traits) et `geste: étiquettes`, juge, corrigé, PDF, séries, catalogue, docs ; essayé et validé par David. Pas encore en prod (`deploy:prod` sur demande de David) · **Prochaine action** : convertir la n° 11 de `cours-suites` (B11, QCM) en « associer » ; puis lot 2 (blocs `courbe` dans un élément) · **En attente de David** : go pour la suite (B11, puis lot 2) · **Pièges en cours** : ranger garde ses deux défauts hérités (collision, clés) ; `touch-action: none` sur toute la case (à revoir si le défilement gêne sur iPhone) · **Worktree / branche** : aucun (worktree `associer` retiré ; nouveau worktree pour la suite)
+- **État** : lot 1 mergé (#2623, geste `relier` par défaut + `geste: étiquettes`) ; B11 de `cours-suites` convertie en `associer` (#2629, `geste: étiquettes`), brouillon mis à jour en prod par David et vérifié (délai 60 s, 2 variations, 6 specs). Pas encore de `deploy:prod` · **Prochaine action** : lot 2 — blocs `courbe` dans un élément (phase 0 à écrire et à faire valider) · **En attente de David** : go pour le lot 2 ; relecture de B11 dans l'aperçu s'il le souhaite · **Pièges en cours** : ranger garde ses deux défauts hérités (collision, clés) ; `touch-action: none` sur toute la case (à revoir si le défilement gêne sur iPhone) · **Worktree / branche** : aucun (nouveau worktree `associer` pour le lot 2)
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -92,3 +92,4 @@ Ensuite : convertir la n° 11 de `cours-suites` (B11, QCM) en « associer ».
   iPhone gêne le défilement), verdict signalé par la couleur seule (noms accessibles « juste / faux »).
 - 2026-11-14 : #2623 mergée (CI verte), geste relier essayé et validé par David.
 - 2026-11-14 : B11 de `cours-suites` convertie (branche `feat/associer-b11`) : 2 variations de 4 situations + intrus « ni l'une ni l'autre », `geste: étiquettes` (classement, David : « je te suis »), délai 60 s, 6 specs ; `create-questions --mettre-a-jour` réécrit désormais aussi le délai. Mise à jour du brouillon en prod : par David.
+- 2026-11-14 : #2629 mergée ; `create-questions --publier --mettre-a-jour` lancé par David (1 mis à jour, 29 identiques), vérifié par MCP.
