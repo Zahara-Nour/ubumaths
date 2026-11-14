@@ -671,7 +671,9 @@ natif, deux lignes dans les cadres de réponse ; en étapes (`signe: aucun`), é
 places numérotées pleine largeur, une ligne par étiquette et une par place.
 Des **éléments à associer** (` ```associer `) : deux colonnes à relier au crayon, éléments puis « • »
 à gauche, « • » puis étiquettes (ordre affiché) à droite (`generateAssocierTypst`, grille Typst native) ;
-une ligne par rangée dans les cadres de réponse (le plus grand des deux nombres).
+une ligne par rangée dans les cadres de réponse (le plus grand des deux nombres). Un élément à courbe
+(lot 2) : éléments numérotés « 1. », courbe en taille `petite`, une figure (`FIGURE_LINES`) par rangée à
+courbe dans les cadres ; au corrigé d'une série, « 1 → étiquette » (la courbe n'est pas redessinée).
 Un **programme Scratch** (` ```scratch `, palier 1) sort en texte brut monospace, clôture plus
 longue que toute suite d'accents graves du programme (le dessin en blocs n'existe qu'à l'écran),
 et compte une ligne par ligne du programme dans les cadres de réponse ; en erreur, « Programme

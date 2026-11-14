@@ -35,6 +35,13 @@ export const associerEntry: BlockCatalogEntry = {
 						'Un élément par ligne, avec sa bonne étiquette. Deux éléments peuvent avoir la même étiquette (classement) : elle n’est montrée qu’une fois. Deux éléments au même texte sont refusés ; avec des variables, un tirage qui les rend identiques est refait.'
 				},
 				{
+					key: '- puis un bloc ```courbe en retrait',
+					values: '2 à 6 éléments à courbe',
+					defaultValue: null,
+					description:
+						'Un élément peut être une courbe : après « - », le bloc ```courbe décalé de 2 espaces, puis « -> étiquette » sur la dernière ligne, décalée aussi. Le bloc associer s’ouvre alors par ````associer et se ferme par ```` (quatre accents graves). Les courbes vont à gauche seulement, sans placer: ni tracer:. Sur la fiche PDF, les éléments sont numérotés.'
+				},
+				{
 					key: '- -> étiquette',
 					values: 'intrus',
 					defaultValue: null,
@@ -70,9 +77,55 @@ export const associerEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'La même étiquette sert à plusieurs éléments. Avec « geste: étiquettes », l’élève pose l’étiquette à côté de chaque situation : pas de traits qui se croisent. L’intrus « ni l’une ni l’autre » empêche de répondre au hasard entre deux étiquettes.'
+		},
+		{
+			title: 'Courbe ↔ expression',
+			source: [
+				'````associer',
+				'- ```courbe',
+				'  x: -3 ; 3',
+				'  y: -3 ; 3',
+				'  f(x) = 2*x - 1',
+				'  ```',
+				'  -> $x \\mapsto 2x - 1$',
+				'- ```courbe',
+				'  x: -3 ; 3',
+				'  y: -3 ; 3',
+				'  f(x) = -x + 2',
+				'  ```',
+				'  -> $x \\mapsto -x + 2$',
+				'- ```courbe',
+				'  x: -3 ; 3',
+				'  y: -3 ; 3',
+				'  f(x) = x^2 - 2',
+				'  ```',
+				'  -> $x \\mapsto x^2 - 2$',
+				'- -> $x \\mapsto x + 2$',
+				'````'
+			].join('\n'),
+			explanation:
+				'Chaque élément est une courbe, en retrait sous son « - », et son étiquette vient en dernière ligne, en retrait. Quatre accents graves autour du bloc associer. L’intrus « $x \\mapsto x + 2$ » oblige à lire la pente et l’ordonnée à l’origine.'
 		}
 	],
 	mistakes: [
+		{
+			title: 'Courbe dans un bloc fermé par ```',
+			source: [
+				'```associer',
+				'- ```courbe',
+				'  x: -3 ; 3',
+				'  y: -3 ; 3',
+				'  f(x) = 2*x',
+				'  ```',
+				'  -> linéaire',
+				'- $x^2$ -> carré',
+				'- -> constante',
+				'```'
+			].join('\n'),
+			message: 'ouvrir par ````associer et fermer par ````',
+			explanation:
+				'Un élément contient un bloc : le bloc associer prend quatre accents graves, pour qu’on voie où il finit.'
+		},
 		{
 			title: 'Élément sans étiquette',
 			source: fence('associer', '- a -> 1', '- b', '- -> 3'),

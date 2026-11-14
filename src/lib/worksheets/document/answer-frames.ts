@@ -35,6 +35,7 @@
  */
 
 import { parseMarkdown } from '$lib/ubumark';
+import { associerItemHasBlock } from '$lib/ubumark/parser/associer-parser';
 import type { ASTNode, DocumentNode, InlineNode, ListItemNode } from '$lib/ubumark/types';
 import {
 	ANSWER_FRAME_MAX_QUESTIONS,
@@ -151,9 +152,13 @@ function nodeLines(node: ASTNode): number {
 			// Bloc ```ranger : la ligne des étiquettes, puis celle des places ; en étapes
 			// (`signe: aucun`), une ligne par étiquette, puis une par place
 			return node.sign === 'aucun' ? 2 * node.labels.length : 2;
-		case 'associer':
-			// Bloc ```associer : une ligne par rangée des deux colonnes
-			return Math.max(node.items.length, node.labels.length);
+		case 'associer': {
+			// Bloc ```associer : une ligne par rangée des deux colonnes ; une rangée à courbe
+			// (lot 2) compte pour une figure
+			const rows = Math.max(node.items.length, node.labels.length);
+			const withBlock = node.items.filter(associerItemHasBlock).length;
+			return rows - withBlock + withBlock * FIGURE_LINES;
+		}
 		default:
 			// Nœud en ligne isolé : une ligne de texte
 			return inlineLines([node]);

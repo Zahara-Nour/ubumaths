@@ -34,6 +34,7 @@
 	import type { AssocierNode } from '$lib/ubumark/types/associer';
 	import { associerPlacedOf, displayedAssocierLabels } from '$lib/ubumark/utils/associer';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
+	import AssocierContenu from './AssocierContenu.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	// Types
@@ -390,7 +391,7 @@
 						onpointerdown={(event) => onPointerDown(event, 'item', k)}
 					>
 						<span id="{uid}-element-{k}" class="relier-contenu"
-							><InlineMarkdown content={item} /></span
+							><AssocierContenu content={item} /></span
 						>
 						<span class="relier-point" data-relier-point="item" aria-hidden="true"></span>
 					</button>

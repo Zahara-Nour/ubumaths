@@ -29,6 +29,7 @@
 	import type { AssocierNode } from '$lib/ubumark/types/associer';
 	import { associerPlacedOf, displayedAssocierLabels } from '$lib/ubumark/utils/associer';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
+	import AssocierContenu from './AssocierContenu.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
@@ -268,7 +269,7 @@
 				{@const position = placed[k]}
 				{@const correct = solution?.[k] ?? null}
 				<div class="associer-element" id="{uid}-element-{k}">
-					<InlineMarkdown content={item} />
+					<AssocierContenu content={item} />
 				</div>
 				<div class="associer-cellule">
 					{#if showControls}

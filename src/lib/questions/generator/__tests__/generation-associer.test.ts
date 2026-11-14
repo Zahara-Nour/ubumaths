@@ -294,7 +294,11 @@ describe('lot 2 — une courbe dans un élément', () => {
 				['$x\\mapsto2*x$', '$x\\mapstox+1$'][k]
 			);
 		});
-		expect(findUnmaskedAnswers(String(instance.statement), instance)).toEqual([]);
+		expect(findUnmaskedAnswers(String(instance.statement))).toEqual([]);
+		// Le bloc du prof (liens en fin d'élément) est signalé par la garde anti-fuite
+		expect(
+			findUnmaskedAnswers(COURBES.join('\n').replace('````associer', '````associer\ncase: 0'))
+		).toEqual(['associer']);
 	});
 
 	it('deux courbes identiques après tirage : refusé', () => {

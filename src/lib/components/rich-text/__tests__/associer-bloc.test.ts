@@ -26,4 +26,22 @@ describe('bloc ```associer — aller-retour de l’éditeur riche', () => {
 		const json = markdownToTipTap('```associer\n- seul -> 1\n```');
 		expect(json.content?.[0]?.attrs).toEqual({ language: 'associer' });
 	});
+
+	it('lot 2 : une courbe dans un élément repart en ````associer identique', () => {
+		const md = [
+			'Associe.',
+			'',
+			'````associer',
+			'- ```courbe',
+			'  x: -3 ; 3',
+			'  y: -3 ; 3',
+			'  f(x) = 2*x',
+			'  ```',
+			'  -> linéaire',
+			'- $x^2$ -> carré',
+			'- -> constante',
+			'````'
+		].join('\n');
+		expect(tipTapToMarkdown(markdownToTipTap(md)).trim()).toBe(md);
+	});
 });
