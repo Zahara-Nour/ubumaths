@@ -42,7 +42,7 @@ import { createServerLogger } from '$lib/utils/logger';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
-interface SessionRow {
+export interface SessionRow {
 	id: string;
 	user_id: string | null;
 	grade: number | null;
@@ -76,7 +76,7 @@ export interface BreakdownInput {
 }
 
 /** Échec d'une lecture : la cause est journalisée, le bilan dit son erreur */
-class BreakdownReadError extends Error {}
+export class BreakdownReadError extends Error {}
 
 // Constantes
 
@@ -147,7 +147,7 @@ function withRate<T extends BreakdownTally>(tally: T): T {
  * Meilleure copie rendue de chaque élève. Ordre : note la plus haute, puis une
  * copie avec réponses (une copie en retard n'en a aucune), puis la plus récente.
  */
-function bestCopies(
+export function bestCopies(
 	sessions: ReadonlyArray<SessionRow>,
 	answeredSessions: ReadonlySet<string>
 ): SessionRow[] {
@@ -265,7 +265,7 @@ export function computeEvaluationBreakdown(input: BreakdownInput): EvaluationBre
 }
 
 /** Résultat d'une requête : ses lignes, ou une erreur journalisée */
-function rowsOf<T>(what: string, result: { data: T[] | null; error: unknown }): T[] {
+export function rowsOf<T>(what: string, result: { data: T[] | null; error: unknown }): T[] {
 	if (result.error) {
 		logger.error(`[getEvaluationBreakdown] ${what} illisibles :`, result.error);
 		throw new BreakdownReadError(what);
@@ -278,7 +278,7 @@ function rowsOf<T>(what: string, result: { data: T[] | null; error: unknown }): 
  * requête porte chaque identifiant), chaque lot par pages (plafond `max_rows`
  * de PostgREST). La requête doit trier sur une colonne unique.
  */
-async function readInBatches<T>(
+export async function readInBatches<T>(
 	what: string,
 	ids: readonly string[],
 	query: (
