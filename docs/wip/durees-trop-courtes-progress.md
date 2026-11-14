@@ -7,9 +7,9 @@ Suite prévue : A1 (durées ajustées au temps observé), chantier à part.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR 2 en cours (plan technique écrit)._
+_Mis à jour le 2026-11-14, après #2655._
 
-- **État** : PR 1 mergée (#2652) ; PR 2 : phase 0 tranchée (Q6 à Q8, « je suis tes recos »), plan technique écrit (§ « PR 2 — plan technique ») · **Prochaine action** : tests rouges (pure `durationSignalsOf`), puis lecture, route, panier, éditeur · **En attente de David** : rien · **Pièges en cours** : prod presque vide, vérifier en local ; carte de cours = jamais de case, l'écarter ; `allotted_ms` en ms, durées en s · **Worktree / branche** : `../ubumaths-wt-durees-trop-courtes`, `feat/durees-trop-courtes-editeur`
+- **État** : PR 1 (#2652, bilan d'un contrôle) et PR 2 (#2655, panier et éditeur de série) mergées : tout le découpage validé (Q3) est livré · **Prochaine action** : clore le chantier (versement : le durable est déjà dans `evaluations.md` ; archiver ce journal) si David le confirme ; suite prévue A1 (durées ajustées au temps observé), chantier à part · **En attente de David** : clôture ; Q8 à reconfirmer (`updated_at` bouge à chaque modification du modèle, même un tag : le signal repart de zéro) ; vérification manuelle #2655 · **Pièges en cours** : prod presque vide, vérifier en local ; série verrouillée dès un contrôle commencé (la durée de la composition est celle du jour) · **Worktree / branche** : aucun (retiré après #2655)
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -189,6 +189,8 @@ voit tout, par sa policy). Le mode test est respecté (`profiles.is_test` = le m
   répondu) ?
 
 ## Journal
+
+- 2026-11-14 : PR 2 mergée (#2655). Revues : rôle élève seul compté (le prof lit son propre profil), contrôles lus par pages, marque du panier effacée pendant la lecture ; « durée lue dans la composition actuelle » écarté (série verrouillée, `series_lock_guard`).
 
 - 2026-11-14 : PR 2 codée : `duration-signals.ts` (pur + lecture), route
   `GET /api/series/duration-signals`, marque commune `TooShortMark.svelte`, panier, éditeur (durée
