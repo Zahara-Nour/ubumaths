@@ -686,7 +686,7 @@
 				{
 					"nom": "Suites récurrentes",
 					"niveaux": "Tle, Tle comp.",
-					"sous_notions": ["escalier", "point fixe"],
+					"sous_notions": ["escalier", "point fixe", "récurrence linéaire d'ordre 2"],
 					"note": null
 				},
 				{
