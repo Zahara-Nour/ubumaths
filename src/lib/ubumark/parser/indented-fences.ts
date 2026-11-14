@@ -62,6 +62,7 @@ const SPECIAL_LANGUAGES: ReadonlySet<string> = new Set([
 	'qr',
 	'scratch',
 	'horloge',
+	'tortue',
 	'partage',
 	'cubes',
 	'solide',

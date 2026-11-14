@@ -37,6 +37,7 @@ import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { findTortuesToProgram } from '$lib/ubumark/parser/tortue-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findAssociersToPlace } from '$lib/ubumark/parser/associer-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
@@ -224,9 +225,12 @@ export const EMPTY_BUILD_TEXT = "Tu n'as rien posé.";
 export const EMPTY_SIGN_TABLE_TEXT = "Tu n'as rien rempli dans le tableau.";
 /** Droite à placer laissée vide (aucun point) */
 export const EMPTY_PLACE_TEXT = "Tu n'as rien placé.";
+/** Programme tortue laissé vide (aucun bloc) */
+export const EMPTY_PROGRAM_TEXT = "Tu n'as écrit aucun programme.";
 /** Texte d'une case de ce genre laissée vide : rien posé, placé, colorié ou rempli */
 function emptyBuildText(kind: BuildKind, source: string): string {
 	if (kind === 'partage') return NOTHING_COLORED;
+	if (kind === 'tortue') return EMPTY_PROGRAM_TEXT;
 	if (kind === 'cubes') {
 		return parseEspaceContent(source).spec?.task?.kind === 'retrouver'
 			? MISSING_HEIGHTS
@@ -361,7 +365,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
 		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
 		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const })),
-		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const }))
+		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const })),
+		...findTortuesToProgram(statement).map((b) => ({ ...b, kind: 'tortue' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {

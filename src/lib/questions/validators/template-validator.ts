@@ -22,6 +22,7 @@ import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { hasStatChartToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { hasTrigCircleToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { hasTortueToProgram } from '$lib/ubumark/parser/tortue-parser';
 import { hasRangerToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { hasAssocierToPlace } from '$lib/ubumark/parser/associer-parser';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
@@ -185,7 +186,7 @@ function validateVariation(
 			// une figure à colorier aussi,
 			// un assemblage de cubes à geste aussi, un patron à geste aussi, un repère à points
 			// à placer aussi, un cercle trigonométrique à points à placer aussi, un tableau de
-			// signes à compléter aussi (ses cellules cachées)
+			// signes à compléter aussi (ses cellules cachées), un programme tortue aussi
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
 				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
@@ -196,6 +197,7 @@ function validateVariation(
 				!hasStatChartToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCourbeToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasTrigCircleToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasTortueToProgram(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasRangerToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasAssocierToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasPartageToColorier(String(variation.statement ?? shared?.statement ?? '')) &&

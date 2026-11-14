@@ -145,6 +145,14 @@ export {
 	isHorlogeBlockStart
 } from './horloge-parser';
 
+// Bloc ```tortue
+export {
+	parseTortue,
+	parseTortueContent,
+	findTortueBlocks,
+	isTortueBlockStart
+} from './tortue-parser';
+
 // Bloc ```partage
 export {
 	parsePartage,

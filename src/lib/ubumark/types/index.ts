@@ -214,6 +214,9 @@ export type { ScratchNode, ScratchIssue } from './scratch';
 
 export type { HorlogeNode, HorlogeIssue, HorlogeSpec, HorlogeTime } from './horloge';
 
+// TORTUE (bloc ```tortue)
+export type { TortueNode, TortueIssue, TortueSpec } from './tortue';
+
 // ============================================================================
 // PARTAGE (bloc ```partage)
 // ============================================================================

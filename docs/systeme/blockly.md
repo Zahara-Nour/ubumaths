@@ -29,7 +29,10 @@ Deux pages, rien n'est enregistré :
 - **`/dev/blockly`** (réservée à l'admin) : prototype à deux modes, **Programme** (console, code
   exécuté dans le worker JS ou Pyodide) et **Tortue** (quadrillage, tracé instantané).
 
-Suite du chantier `blockly` : geste de réponse dans les modèles de questions ; décisions dans son
+Dans une question (bloc ubumark ```tortue, cf. [ubumark](ubumark.md) et
+[questions](questions.md)), la réponse de l'élève est son programme, écrit en **notation texte**
+et jugé sur son tracé (§ Programme tortue en réponse). L'écran de la question (blocs dans la
+carte, corrigé) et le PDF viennent avec la PR 4b du chantier `blockly` ; décisions dans son
 journal.
 
 ## Carte du code
@@ -51,7 +54,9 @@ journal.
 | `src/lib/workers/js-sandbox-source.ts`                        | Source de la fonction sandbox (sans effet de bord, testable sous Node)                                                                           |
 | `src/lib/shared/blockly/tortue/interpreteur.ts`               | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments, tortue finale et étapes                               |
 | `src/lib/shared/blockly/tortue/animation.ts`                  | `imageAnimation` (image à l'étape i), `rythmeAnimation` (durée d'un tic, étapes par tic)                                                         |
-| `src/lib/shared/blockly/tortue/segments.ts`                   | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `sortDuCadre`                                               |
+| `src/lib/shared/blockly/tortue/segments.ts`                   | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `memesFormes` (8 symétries + translation), `sortDuCadre`    |
+| `src/lib/shared/blockly/tortue/notation.ts`                   | `etatVersTexte` / `texteVersEtat` : programme en notation texte (`répéter 4 [ avancer 3 ; tourner à droite 90 ]`) ↔ état Blockly                 |
+| `src/lib/shared/blockly/tortue/jugement.ts`                   | `jugerProgrammeTortue` (comparaison `position` ou `forme`), `lireProgrammeTortue` (segments ou message d'erreur)                                 |
 | `src/lib/shared/blockly/tortue/blocs.ts`                      | `definirBlocsTortue` : définitions Blockly et générateurs d'aperçu JS / Python (`from turtle import *`)                                          |
 | `src/lib/shared/blockly/tortue/toolbox.ts`                    | `TORTUE_TOOLBOX` : Tortue, « répéter n fois » (`controls_repeat`, champ entier ≥ 0), nombre — uniquement des blocs interprétés                   |
 | `src/lib/components/blockly/TortueCanvas.svelte`              | Quadrillage fixe 20 × 20 en SVG, segments coupés au cadre, dépassement signalé                                                                   |
@@ -115,6 +120,32 @@ journal.
   panneau à la fois ; « Lancer » bascule sur Tortue. L'espace de blocs est masqué, jamais démonté
   (le programme reste) ; Blockly se redimensionne au retour (`ResizeObserver`). Au-dessus de `lg`,
   les deux panneaux côte à côte, sans onglets ; les boutons sont au-dessus des deux.
+
+## Programme tortue en réponse
+
+- **Notation texte** (`notation.ts`) : `avancer n`, `reculer n`, `tourner à droite n`,
+  `tourner à gauche n`, `lever le stylo`, `baisser le stylo`, `répéter n [ … ]`, séparées par `;`
+  ou un retour à la ligne. Lecture souple (accents, majuscules, espaces, virgule ou point
+  décimal) ; écriture canonique (accents, virgule, `;`, `[ … ]` espacés). C'est ce que l'auteur
+  écrit dans `attendu:` et ce qui est **enregistré** comme réponse de l'élève : une réponse fait au
+  plus 2 000 caractères (`MAX_ANSWER_LENGTH`, `LONGUEUR_MAX_PROGRAMME`) et l'état Blockly
+  sérialisé est trop bavard (un carré ≈ 700 caractères).
+- `etatVersTexte` suit l'exécution : piles de haut en bas, blocs désactivés et nombres posés
+  seuls ignorés, entrée vide → 0, répétitions à l'entier inférieur ; un bloc inconnu refuse tout.
+  `texteVersEtat` rend une seule pile (`controls_repeat`, ombres `math_number`), rejouable par
+  `executerTortue` et rechargeable dans l'espace de blocs. Refus : instruction inconnue (le
+  message la cite), nombre absent ou illisible, `répéter` sans entier ≥ 0 ou sans crochets,
+  crochets mal appariés, plus de 50 répétitions imbriquées, texte trop long. Un aller-retour
+  texte → blocs → texte rend le même texte.
+- **Jugement** (`jugement.ts`) : les deux programmes rejoués, segments comparés sans ordre ni
+  chemin. `position` : même figure au même endroit (`memesTraces`) ; `forme` : à une translation,
+  un quart de tour, un demi-tour ou un retournement près (`memesFormes`, les 8 symétries du
+  quadrillage, chaque tracé ramené au coin bas gauche de son encadrement). Une rotation d'un
+  autre angle ne compte pas. Réponse vide → faux sans message ; illisible, trop longue ou trop
+  loin → faux avec le message de la tortue ; attendu illisible ou sans trait → jamais juste.
+- `normaliserSegments` range chaque droite dans une case de taille 1e-6 (direction, décalage) et
+  cherche sa pareille dans les cases voisines : deux morceaux d'une même droite à cheval sur une
+  frontière d'arrondi sont fusionnés (avant la PR 4, une clé arrondie pouvait les séparer).
 
 ## Comment étendre
 
