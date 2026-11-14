@@ -7,9 +7,9 @@ Suite prévue : A1 (durées ajustées au temps observé), chantier à part.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, phase 0 tranchée, plan de la PR 1 écrit._
+_Mis à jour le 2026-11-14, PR 1 codée, PR ouverte._
 
-- **État** : Q1 à Q5 tranchées (recommandations suivies), plan technique de la PR 1 écrit (§ « PR 1 — plan technique ») · **Prochaine action** : coder la PR 1 (tests d'abord) · **En attente de David** : rien (défaut noté D1 dans le plan, à contester s'il le veut) · **Pièges en cours** : prod presque vide (aucune trace chronométrée, 1 contrôle, 101 réponses) : tout se vérifie en local ; `test_answers` ne garde ni la fin (`endReason`) ni la durée de la question · **Worktree / branche** : `../ubumaths-wt-durees-trop-courtes`, `feat/durees-trop-courtes`
+- **État** : PR 1 (bilan d'un contrôle) codée, tests verts (unitaires, rendu, intégration `bilan-controle`), PR ouverte · **Prochaine action** : CI + revue `code-reviewer`, merge ; puis PR 2 (éditeur de série) · **En attente de David** : rien (D1 appliqué : modèle sur deux lignes à durées différentes → pas de signal) · **Pièges en cours** : prod presque vide : vérifier en local ; `test_answers` ne garde pas la durée de la question, elle vient de la composition · **Worktree / branche** : `../ubumaths-wt-durees-trop-courtes`, `feat/durees-trop-courtes`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -99,6 +99,10 @@ Aucune migration. Contrôles de forme `interactive` seulement (Q4). Mêmes copie
   répondu) ?
 
 ## Journal
+
+- 2026-11-14 : PR 1 codée (`timingsOf` dans `evaluation-breakdown.ts`, champ `timing` de chaque
+  question, marque dans `EvaluationBreakdown.svelte`, doc `evaluations.md`). Plusieurs tirages : un
+  élève compte s'il a manqué au moins la moitié de ses tirages.
 
 - 2026-11-14 : phase 0 tranchée (« je te suis »), plan technique de la PR 1, défaut D1.
 - 2026-11-14 : chantier ouvert, état des lieux, phase 0 posée (Q1 à Q5).

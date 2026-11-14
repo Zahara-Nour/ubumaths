@@ -1,13 +1,15 @@
 /**
  * Bilan d'un contrôle par question et par notion (chantier `bilan-controle`, P6) :
- * ce que lit le professeur (N1, N2, L1, L4, E1).
+ * ce que lit le professeur (N1, N2, L1, L4, E1). Durée sans doute trop courte
+ * (chantier `durees-trop-courtes`, P7).
  */
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import EvaluationBreakdown from '../EvaluationBreakdown.svelte';
 import type {
 	BreakdownTally,
-	EvaluationBreakdown as Breakdown
+	EvaluationBreakdown as Breakdown,
+	QuestionTiming
 } from '$lib/types/evaluation-breakdown';
 
 function tally(overrides: Partial<BreakdownTally> = {}): BreakdownTally {
@@ -29,10 +31,11 @@ function ok(overrides: Partial<Extract<Breakdown, { status: 'ok' }>> = {}): Brea
 		copies: 4,
 		lateCopies: 0,
 		questions: [
-			{ templateId: 't1', title: 'Fractions égales', ...tally() },
+			{ templateId: 't1', title: 'Fractions égales', timing: null, ...tally() },
 			{
 				templateId: 't2',
 				title: 'Somme de relatifs',
+				timing: null,
 				...tally({
 					successRate: 25,
 					pointsEarned: 1,
@@ -92,6 +95,7 @@ describe('EvaluationBreakdown', () => {
 					{
 						templateId: 't1',
 						title: 'Fractions égales',
+						timing: null,
 						...tally({
 							answers: 0,
 							pointsEarned: 0,
@@ -131,5 +135,57 @@ describe('EvaluationBreakdown', () => {
 		expect(text).toContain('Bilan par notion');
 		expect(text.match(/Le bilan ne peut pas être calculé pour le moment\./g)).toHaveLength(2);
 		expect(container.querySelectorAll('table')).toHaveLength(0);
+	});
+
+	describe('durée sans doute trop courte (P7)', () => {
+		function withTiming(timing: QuestionTiming | null): Breakdown {
+			const base = ok();
+			if (base.status !== 'ok') throw new Error('bilan attendu');
+			return {
+				...base,
+				questions: [{ ...base.questions[0], timing }, base.questions[1]]
+			};
+		}
+
+		it('signalée → marque et phrase sur la ligne du modèle, aucun nom', async () => {
+			const { container } = await render(EvaluationBreakdown, {
+				breakdown: withTiming({
+					delaySeconds: 20,
+					students: 10,
+					unansweredInTime: 7,
+					tooShort: true
+				})
+			});
+			const questions = rows(container, 'bilan-questions');
+			expect(questions[0]).toContain('Durée sans doute trop courte');
+			expect(questions[0]).toContain("7 élèves sur 10 n'ont rien répondu dans les 20 s");
+			expect(questions[1]).not.toContain('Durée sans doute trop courte');
+		});
+
+		it('singulier : 1 élève… n’a', async () => {
+			const { container } = await render(EvaluationBreakdown, {
+				breakdown: withTiming({
+					delaySeconds: 10,
+					students: 1,
+					unansweredInTime: 1,
+					tooShort: true
+				})
+			});
+			expect(rows(container, 'bilan-questions')[0]).toContain(
+				"1 élève sur 1 n'a rien répondu dans les 10 s"
+			);
+		});
+
+		it('sous le seuil, ou sans durée (Course, D1) → rien', async () => {
+			for (const timing of [
+				{ delaySeconds: 20, students: 4, unansweredInTime: 4, tooShort: false },
+				null
+			]) {
+				const { container } = await render(EvaluationBreakdown, { breakdown: withTiming(timing) });
+				const text = container.textContent ?? '';
+				expect(text).not.toContain('Durée sans doute trop courte');
+				expect(text).not.toContain('rien répondu');
+			}
+		});
 	});
 });

@@ -1,6 +1,7 @@
 /**
  * Bilan d'un contrôle par question et par notion (chantier `bilan-controle`, P6) :
  * calcul pur (N1-N3, L1-L5) et lecture (N4 mode test par les élèves fournis, E1).
+ * Durée sans doute trop courte (chantier `durees-trop-courtes`, P7).
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -39,12 +40,25 @@ function session(id: string, user: string, grade: number | null, completedAt: st
 	return { id, user_id: user, grade, completed_at: completedAt };
 }
 
-function answer(sessionId: string, templateId: string | null, status: string, points: number) {
-	return { test_session_id: sessionId, template_id: templateId, status, points };
+function answer(
+	sessionId: string,
+	templateId: string | null,
+	status: string | null,
+	points: number,
+	timeSpent: number | null = null
+) {
+	return {
+		test_session_id: sessionId,
+		template_id: templateId,
+		status,
+		points,
+		time_spent: timeSpent
+	};
 }
 
 function input(overrides: Partial<BreakdownInput> = {}): BreakdownInput {
 	return {
+		form: 'interactive',
 		items: [{ templateId: T1 }, { templateId: T2 }],
 		sessions: [],
 		answers: [],
@@ -356,6 +370,206 @@ describe('computeEvaluationBreakdown — par notion (N2, Q3, L3)', () => {
 });
 
 // ===========================================================================
+// Durée sans doute trop courte (chantier `durees-trop-courtes`, P7)
+// ===========================================================================
+
+/** n élèves, chacun avec sa copie rendue */
+function students(n: number) {
+	return Array.from({ length: n }, (_, i) =>
+		session(`s-${i}`, `eleve-${i}`, 10, '2026-11-10T10:00:00Z')
+	);
+}
+
+/** Réponse vide au chrono écoulé (la page déclare la durée entière) */
+function timedOut(sessionId: string, templateId: string | null, delay: number) {
+	return answer(sessionId, templateId, 'empty', 0, delay);
+}
+
+function timingOf(overrides: Partial<BreakdownInput>, templateId = T1) {
+	const result = computeEvaluationBreakdown(input(overrides));
+	if (result.status !== 'ok') throw new Error('bilan attendu');
+	return result.questions.find((q) => q.templateId === templateId)?.timing;
+}
+
+describe('computeEvaluationBreakdown — durée sans doute trop courte (P7)', () => {
+	const items = [{ templateId: T1, delay: 10 }];
+
+	it('N : 3 élèves sur 5 sans réponse au chrono écoulé → signalée, à la durée de la série', () => {
+		const answers = [
+			timedOut('s-0', T1, 10),
+			timedOut('s-1', T1, 10),
+			timedOut('s-2', T1, 10),
+			answer('s-3', T1, 'correct', 1, 6),
+			answer('s-4', T1, 'incorrect', 0, 8)
+		];
+		expect(timingOf({ items, sessions: students(5), answers })).toEqual({
+			delaySeconds: 10,
+			students: 5,
+			unansweredInTime: 3,
+			tooShort: true
+		});
+	});
+
+	it('L : moins de 5 élèves → compté, jamais signalé', () => {
+		const answers = [0, 1, 2, 3].map((i) => timedOut(`s-${i}`, T1, 10));
+		expect(timingOf({ items, sessions: students(4), answers })).toMatchObject({
+			students: 4,
+			unansweredInTime: 4,
+			tooShort: false
+		});
+	});
+
+	it('L : la moitié exactement ne suffit pas (plus de la moitié)', () => {
+		const answers = [
+			...[0, 1, 2].map((i) => timedOut(`s-${i}`, T1, 10)),
+			...[3, 4, 5].map((i) => answer(`s-${i}`, T1, 'correct', 1, 4))
+		];
+		expect(timingOf({ items, sessions: students(6), answers })).toMatchObject({
+			students: 6,
+			unansweredInTime: 3,
+			tooShort: false
+		});
+	});
+
+	it('L : réponse fausse à temps ou réponse commencée au chrono → pas un manque de temps', () => {
+		const answers = [
+			// Réponse tapée, validée d'office au chrono (Q1) : jugée, pas vide
+			...[0, 1, 2].map((i) => answer(`s-${i}`, T1, 'incorrect', 0, 10)),
+			...[3, 4].map((i) => answer(`s-${i}`, T1, 'incorrect', 0, 3))
+		];
+		expect(timingOf({ items, sessions: students(5), answers })).toMatchObject({
+			unansweredInTime: 0,
+			tooShort: false
+		});
+	});
+
+	it('L : vide validé tôt, ou sans durée déclarée → pas compté « sans réponse à temps »', () => {
+		const answers = [
+			answer('s-0', T1, 'empty', 0, 2),
+			answer('s-1', T1, null, 0, 1),
+			answer('s-2', T1, 'empty', 0, null),
+			timedOut('s-3', T1, 10),
+			// Secondes entières déclarées : 9 s sur 10 s, c'est le chrono écoulé
+			answer('s-4', T1, 'empty', 0, 9)
+		];
+		expect(timingOf({ items, sessions: students(5), answers })).toMatchObject({
+			students: 5,
+			unansweredInTime: 2,
+			tooShort: false
+		});
+	});
+
+	it('statut inconnu ou nul, chrono écoulé → sans réponse (règle du bilan)', () => {
+		const answers = [0, 1, 2, 3, 4].map((i) =>
+			answer(`s-${i}`, T1, i % 2 === 0 ? null : 'bizarre', 0, 10)
+		);
+		expect(timingOf({ items, sessions: students(5), answers })).toMatchObject({
+			unansweredInTime: 5,
+			tooShort: true
+		});
+	});
+
+	it('durée 0 dans la série = durée par défaut (20 s)', () => {
+		const answers = [0, 1, 2, 3, 4].map((i) => timedOut(`s-${i}`, T1, 20));
+		expect(
+			timingOf({
+				items: [{ templateId: T1, delay: 0 }],
+				sessions: students(5),
+				answers
+			})
+		).toMatchObject({ delaySeconds: 20, unansweredInTime: 5, tooShort: true });
+	});
+
+	it('plusieurs tirages : un élève compte une fois, sans réponse s’il en a manqué au moins la moitié', () => {
+		const two = [{ templateId: T1, delay: 10 }];
+		const answers = [
+			// 1 manqué sur 2 → compte
+			timedOut('s-0', T1, 10),
+			answer('s-0', T1, 'correct', 1, 5),
+			// 2 sur 2 → compte
+			timedOut('s-1', T1, 10),
+			timedOut('s-1', T1, 10),
+			// 0 sur 2 → ne compte pas
+			answer('s-2', T1, 'correct', 1, 5),
+			answer('s-2', T1, 'incorrect', 0, 5)
+		];
+		expect(timingOf({ items: two, sessions: students(3), answers })).toMatchObject({
+			students: 3,
+			unansweredInTime: 2
+		});
+	});
+
+	it('seule la meilleure copie de chaque élève compte (comme le bilan)', () => {
+		const sessions = [
+			...students(5),
+			// Ada a refait le contrôle et a mieux réussi : sa première copie est écartée
+			session('s-ada-1', 'eleve-0', 2, '2026-11-09T10:00:00Z')
+		];
+		const answers = [
+			timedOut('s-ada-1', T1, 10),
+			...[0, 1, 2, 3, 4].map((i) => answer(`s-${i}`, T1, 'correct', 1, 3))
+		];
+		expect(timingOf({ items, sessions, answers })).toMatchObject({
+			students: 5,
+			unansweredInTime: 0
+		});
+	});
+
+	it('D1 : modèle sur deux lignes à durées différentes → pas de durée, pas de signal', () => {
+		const answers = [0, 1, 2, 3, 4].map((i) => timedOut(`s-${i}`, T1, 10));
+		expect(
+			timingOf({
+				items: [
+					{ templateId: T1, delay: 10 },
+					{ templateId: T1, delay: 40 }
+				],
+				sessions: students(5),
+				answers
+			})
+		).toBeNull();
+	});
+
+	it('modèle sur deux lignes à la même durée → une seule durée, signal lu', () => {
+		const answers = [0, 1, 2, 3, 4].map((i) => timedOut(`s-${i}`, T1, 10));
+		expect(
+			timingOf({
+				items: [
+					{ templateId: T1, delay: 10 },
+					{ templateId: T1, delay: 10 }
+				],
+				sessions: students(5),
+				answers
+			})
+		).toMatchObject({ delaySeconds: 10, tooShort: true });
+	});
+
+	it('Q4 : Course aux nombres → aucune durée par question, aucun signal', () => {
+		const answers = [0, 1, 2, 3, 4].map((i) => timedOut(`s-${i}`, T1, 10));
+		expect(timingOf({ form: 'course', items, sessions: students(5), answers })).toBeNull();
+	});
+
+	it('modèle hors de la série, ou supprimé → pas de durée connue', () => {
+		const answers = [0, 1, 2, 3, 4].flatMap((i) => [
+			timedOut(`s-${i}`, T3, 10),
+			timedOut(`s-${i}`, null, 10)
+		]);
+		const result = computeEvaluationBreakdown(input({ items, sessions: students(5), answers }));
+		if (result.status !== 'ok') throw new Error('bilan attendu');
+		expect(result.questions.find((q) => q.templateId === T3)?.timing).toBeNull();
+		expect(result.questions.find((q) => q.templateId === null)?.timing).toBeNull();
+	});
+
+	it('question de la série sans copie → aucun élève, pas de signal', () => {
+		expect(timingOf({ items, sessions: [], answers: [] })).toEqual({
+			delaySeconds: 10,
+			students: 0,
+			unansweredInTime: 0,
+			tooShort: false
+		});
+	});
+});
+
+// ===========================================================================
 // Lecture
 // ===========================================================================
 
@@ -371,6 +585,7 @@ function fakeFrom(tables: Tables) {
 
 const EVALUATION_INPUT = {
 	id: EVALUATION,
+	form: 'interactive' as const,
 	series: { items: [{ templateId: T1, quantity: 2, delay: 20 }] }
 };
 
@@ -407,6 +622,43 @@ describe('getEvaluationBreakdown', () => {
 		expect(called(sessions, 'not', 'completed_at', 'is', null)).toBe(true);
 		const [answers] = fake.on('test_answers');
 		expect(called(answers, 'in', 'test_session_id', ['s-ada'])).toBe(true);
+		// P7 : le temps passé est lu avec la réponse
+		expect(
+			called(answers, 'select', 'test_session_id, template_id, status, points, time_spent')
+		).toBe(true);
+	});
+
+	it('P7 : la durée vient de la composition de la série ; le temps passé, des réponses', async () => {
+		const many = Array.from({ length: 5 }, (_, i) => `eleve-${i}`);
+		const fake = fakeFrom({
+			...readable(),
+			test_sessions: { data: many.map((id) => session(`s-${id}`, id, 10, '2026-11-10T10:00:00Z')) },
+			test_answers: { data: many.map((id) => timedOut(`s-${id}`, T1, 20)) }
+		});
+		const result = await getEvaluationBreakdown(fake.client, EVALUATION_INPUT, many);
+		if (result.status !== 'ok') throw new Error('bilan attendu');
+		expect(result.questions[0].timing).toEqual({
+			delaySeconds: 20,
+			students: 5,
+			unansweredInTime: 5,
+			tooShort: true
+		});
+	});
+
+	it('P7 : Course aux nombres → aucun signal', async () => {
+		const many = Array.from({ length: 5 }, (_, i) => `eleve-${i}`);
+		const fake = fakeFrom({
+			...readable(),
+			test_sessions: { data: many.map((id) => session(`s-${id}`, id, 10, '2026-11-10T10:00:00Z')) },
+			test_answers: { data: many.map((id) => timedOut(`s-${id}`, T1, 20)) }
+		});
+		const result = await getEvaluationBreakdown(
+			fake.client,
+			{ ...EVALUATION_INPUT, form: 'course' },
+			many
+		);
+		if (result.status !== 'ok') throw new Error('bilan attendu');
+		expect(result.questions[0].timing).toBeNull();
 	});
 
 	it('N4 : aucun élève (mode test sans élève de test) → aucune lecture de copie', async () => {

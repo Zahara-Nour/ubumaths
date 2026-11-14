@@ -32,8 +32,8 @@ const breakdown: Breakdown = {
 	copies: 4,
 	lateCopies: 0,
 	questions: [
-		{ templateId: T1, title: 'Fractions égales', ...tally },
-		{ templateId: null, title: 'Modèle supprimé', ...tally }
+		{ templateId: T1, title: 'Fractions égales', timing: null, ...tally },
+		{ templateId: null, title: 'Modèle supprimé', timing: null, ...tally }
 	],
 	notions: []
 };
