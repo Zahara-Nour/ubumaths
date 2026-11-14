@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 11 de la 5e écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-11-14, après #2667._
 
-- **État** : PR 1 à 5b et #2664 en prod (0.88.0) ; lot 11 de la 5e écrit (§ Lot 11), simulation verte, joué en base locale · **Prochaine action** : PR des fichiers (branche `feat/blockly-lot-5-11`) → merge → **David** lance `create-questions --dir scripts/questions/5-lot11 --publier` en prod → ids commités → migration nœud + tag → page à cocher → publication ; puis le lot 6e (6-197, 6-210) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-5-11`
+- **État** : lot 11 de la 5e mergé (#2667, fichiers seuls, sans id) ; rien en prod · **Prochaine action** : **David** lance, depuis `../ubumaths-wt-blockly` (branche `feat/blockly-lot-5-11-rangement`), `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-lot11 --publier` (brouillons en prod, ids écrits dans les fichiers) → je commite les ids + migration nœud + tag (01-05 → Variables et instructions, 06 → Boucles › boucle bornée) → page à cocher → publication ; puis le lot 6e (6-197, 6-210) · **En attente de David** : la création en prod ci-dessus ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une case programme est jugée AVANT la garde de complexité (garde de corpus à jour, #2667) · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-5-11-rangement`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -411,3 +411,11 @@ Script `docs/wip/questions/lot-5-11-blockly.py` → `scripts/questions/5-lot11/`
 - Vérifié : simulation 6/6 importable, 150 tirages par modèle ; une spec inversée → modèle refusé
   (specs bien jugées, calcul et tortue) ; base locale : 05 joué juste (départ posé, tracé, corrigé),
   04 joué faux (tableau des essais, correction).
+- **#2667 mergée le 2026-11-14.** CI rouge d'abord : la garde de corpus
+  `answer-complexity-corpus.test.ts` comptait les programmes (150 caractères et plus) alors qu'en
+  prod une case tortue / calcul est jugée par son interpréteur avant `isAnswerTooComplex` ; test
+  complété (comme `partage`), revue `code-reviewer` (Sonnet) sans bloquant.
+- **Piste (revue de #2667)** : `validateBlanksOrderIndependent` (`answer-validator.ts` ~l. 2245)
+  applique la garde à toutes les cases, programmes et `partage` compris : un modèle à cases
+  interchangeables avec un programme de plus de ~130 caractères serait refusé. Aucun modèle
+  concerné aujourd'hui.
