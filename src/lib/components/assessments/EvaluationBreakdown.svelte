@@ -10,6 +10,10 @@
 	erreurs de la classe sur cette question, lues au PREMIER dépliage seulement
 	(chantier `erreurs-frequentes`). Les noms des élèves sont rendus en texte.
 
+	Une question dont la durée est sans doute trop courte (chantier
+	`durees-trop-courtes`, P7) porte une marque et une phrase (« 7 élèves sur 10
+	n'ont rien répondu dans les 20 s ») ; aucun nom.
+
 	Props:
 	- breakdown: EvaluationBreakdown - résultat de `getEvaluationBreakdown`
 	- evaluationId?: string - le contrôle ; sans lui, les lignes ne s'ouvrent pas
@@ -19,13 +23,16 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import QuestionErrorsPanel from './QuestionErrorsPanel.svelte';
-	import { ChevronRight } from '@lucide/svelte';
+	import { ChevronRight, Timer } from '@lucide/svelte';
 	import {
 		QUESTION_ERRORS_MESSAGE,
+		TOO_SHORT_LABEL,
+		tooShortSentence,
 		type BreakdownTally,
 		type EvaluationBreakdown,
 		type EvaluationQuestionErrors,
-		type NotionBreakdown
+		type NotionBreakdown,
+		type QuestionBreakdown
 	} from '$lib/types/evaluation-breakdown';
 
 	interface Props {
@@ -137,6 +144,16 @@
 	{/if}
 {/snippet}
 
+{#snippet tooShortMark(row: QuestionBreakdown)}
+	{#if row.timing?.tooShort}
+		<!-- Couleur d'accent sur l'icône seule : le texte garde le contraste du tableau -->
+		<p class="mt-1 flex items-start gap-1 text-sm font-normal">
+			<Timer class="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
+			<span><strong>{TOO_SHORT_LABEL}</strong> · {tooShortSentence(row.timing)}</span>
+		</p>
+	{/if}
+{/snippet}
+
 {#snippet state()}
 	{#if breakdown.status === 'error'}
 		<p class="py-6 text-center text-destructive">{breakdown.message}</p>
@@ -187,6 +204,7 @@
 								{:else}
 									{row.title}
 								{/if}
+								{@render tooShortMark(row)}
 							</Table.Cell>
 							{@render rateCell(row)}
 							{@render counts(row)}

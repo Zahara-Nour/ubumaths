@@ -46,6 +46,15 @@ describe('normaliserSegments', () => {
 	});
 });
 
+describe('normaliserSegments — frontière d’arrondi', () => {
+	it('une même droite à cheval sur une frontière de la clé : fusionnée', () => {
+		// y = 4,99e-7 et 5,01e-7 : points confondus à la tolérance près, clés arrondies différentes
+		expect(
+			normaliserSegments([seg(0, 4.99e-7, 2, 4.99e-7), seg(1, 5.01e-7, 3, 5.01e-7)])
+		).toHaveLength(1);
+	});
+});
+
 describe('memesTraces', () => {
 	it('deux carrés parcourus différemment : même tracé', () => {
 		const sensDirect = [seg(0, 0, 2, 0), seg(2, 0, 2, 2), seg(2, 2, 0, 2), seg(0, 2, 0, 0)];

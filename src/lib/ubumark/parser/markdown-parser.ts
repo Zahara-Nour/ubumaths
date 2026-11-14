@@ -105,6 +105,12 @@ import {
 	isHorlogeBlockStart
 } from './horloge-parser';
 import {
+	findTortueBlocks,
+	parseTortue,
+	parseTortueContent,
+	isTortueBlockStart
+} from './tortue-parser';
+import {
 	findPartageBlocks,
 	parsePartage,
 	parsePartageContent,
@@ -523,6 +529,7 @@ function parseBlocks(
 	const qrBlocks = findQrBlocks(lines);
 	const scratchBlocks = findScratchBlocks(lines);
 	const horlogeBlocks = findHorlogeBlocks(lines);
+	const tortueBlocks = findTortueBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
 	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
@@ -554,6 +561,7 @@ function parseBlocks(
 		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
 		{ ranges: scratchBlocks, parse: parseScratch, language: 'scratch' },
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
+		{ ranges: tortueBlocks, parse: parseTortue, language: 'tortue' },
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
@@ -628,6 +636,7 @@ function parseBlocks(
 			...qrBlocks,
 			...scratchBlocks,
 			...horlogeBlocks,
+			...tortueBlocks,
 			...partageBlocks,
 			...espaceBlocks,
 			...operationBlocks,
@@ -652,6 +661,7 @@ function parseBlocks(
 			...findQrBlocks(originalLines),
 			...findScratchBlocks(originalLines),
 			...findHorlogeBlocks(originalLines),
+			...findTortueBlocks(originalLines),
 			...findPartageBlocks(originalLines),
 			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
@@ -1814,6 +1824,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'horloge'
 	},
 	{
+		is: isTortueBlockStart,
+		find: findTortueBlocks,
+		parse: parseTortue,
+		language: 'tortue'
+	},
+	{
 		is: isPartageBlockStart,
 		find: findPartageBlocks,
 		parse: parsePartage,
@@ -2075,6 +2091,10 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'horloge') {
 			// Horloge dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseHorlogeContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'tortue') {
+			// Programme tortue dans un item de liste : toujours un nœud, même en erreur (Q48) ;
+			// sans case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseTortueContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'partage') {
 			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));

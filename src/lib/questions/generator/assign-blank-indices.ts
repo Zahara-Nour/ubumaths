@@ -54,6 +54,7 @@ import {
 } from '$lib/ubumark/parser/espace-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { findTortuesToProgram } from '$lib/ubumark/parser/tortue-parser';
 import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
 import { NESTED_PREFIX } from '$lib/ubumark/parser/nested-line';
 import { buildCaseCount } from './build-answer';
@@ -274,6 +275,9 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 	if (findTrigCirclesToPlace(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${buildNestedMessage('trig')}`);
 	}
+	if (findTortuesToProgram(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('tortue')}`);
+	}
 	if (findVariationsToFill(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${VARIATION_NESTED_MESSAGE}`);
 	}
@@ -391,7 +395,8 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	patron: 'Un patron à geste',
 	courbe: 'Un repère à points à placer',
 	trig: 'Un cercle trigonométrique à points à placer',
-	solide: 'Un solide à geste'
+	solide: 'Un solide à geste',
+	tortue: 'Un programme tortue'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
@@ -523,7 +528,8 @@ function markBuildBlocks(statement: string): {
 			.filter((b) => !inAssocier(b.startIndex))
 			.map((b) => ({ ...b, kind: 'courbe' as const })),
 		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const })),
-		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const }))
+		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const })),
+		...findTortuesToProgram(statement).map((b) => ({ ...b, kind: 'tortue' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	// Courbe dans un élément d'un bloc fermé par ``` : même message que l'aperçu
@@ -779,7 +785,8 @@ export function assignBlankIndices(
 								build.kind === 'partage' ||
 								build.kind === 'cubes' ||
 								build.kind === 'patron' ||
-								build.kind === 'solide'
+								build.kind === 'solide' ||
+								build.kind === 'tortue'
 								? 'text'
 								: 'math'
 						);

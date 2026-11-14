@@ -1,4 +1,5 @@
 {
+	"id": "90ddb100-bd29-43fe-a84c-aa3695c36326",
 	"title": "Autres équations différentielles, équation logistique",
 	"description": "Solution de y' = y² (case choix), f'' + ω²f = 0 pour a cos(ωx) + b sin(ωx) (case), équation logistique : équation vérifiée par 1/f (deux cases), population, f(0) et limite (deux cases)",
 	"grades": ["T_SPE"],

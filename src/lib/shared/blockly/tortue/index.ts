@@ -17,8 +17,25 @@ export {
 export {
 	normaliserSegments,
 	memesTraces,
+	memesFormes,
 	sortDuCadre,
 	DEMI_COTE_CADRE,
 	type Point,
 	type Segment
 } from './segments';
+export {
+	etatVersTexte,
+	texteVersEtat,
+	LONGUEUR_MAX_PROGRAMME,
+	type EtatProgramme,
+	type EtatLu,
+	type TexteLu
+} from './notation';
+export {
+	jugerProgrammeTortue,
+	lireProgrammeTortue,
+	COMPARAISONS_TORTUE,
+	type ComparaisonTortue,
+	type ProgrammeLu,
+	type VerdictTortue
+} from './jugement';

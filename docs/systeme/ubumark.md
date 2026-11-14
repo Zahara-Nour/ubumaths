@@ -280,6 +280,7 @@ une droite illisible y garde sa source en bloc de code, Q64).
 | `qr`                                                                                                                                            | `qr`                        | `qr-parser.ts`                                                | `QrBlock.svelte`                                                                                                                         | `qr-typst.ts`                                  |
 | `scratch`                                                                                                                                       | `scratch`                   | `scratch-parser.ts`                                           | `ScratchBlock.svelte` (dessin : `utils/scratch-render.ts`)                                                                               | `scratch-typst.ts` (texte)                     |
 | `horloge`                                                                                                                                       | `horloge`                   | `horloge-parser.ts`                                           | `Horloge.svelte`                                                                                                                         | `horloge-typst.ts`                             |
+| `tortue`                                                                                                                                        | `tortue`                    | `tortue-parser.ts`                                            | — (PR 4b du chantier `blockly`)                                                                                                          | — (PR 4b)                                      |
 | `operation`                                                                                                                                     | `operation`                 | `operation-parser.ts`                                         | `Operation.svelte`                                                                                                                       | `operation-typst.ts`                           |
 | `collection`                                                                                                                                    | `collection`                | `collection-parser.ts`                                        | `Collection.svelte`                                                                                                                      | `collection-typst.ts`                          |
 | `monnaie`                                                                                                                                       | `monnaie`                   | `monnaie-parser.ts`                                           | `Monnaie.svelte`                                                                                                                         | `monnaie-typst.ts`                             |
@@ -1027,6 +1028,29 @@ l'enfant les dessine. **Trotteuse** (CM2-083, chantier [cercle-trotteuse](../arc
 petite, trotteuse ; ◀ ▶ d'une seconde) ; réponse `'47 25 40'`, attendue `'9 h 25 min 40 s'` (`timeText`), la
 trotteuse jugée à la seconde exacte ; phrases en plus : trotteuse pas posée, grande aiguille et trotteuse
 inversées. Masquée : `placer: ? s` (`maskedPlacerValue`), pour que la trotteuse reste à poser.
+
+**Programme tortue** (chantier [blockly](../wip/blockly-progress.md), PR 4) —
+`src/lib/ubumark/__tests__/tortue/tortue-parser.test.ts` :
+
+````text
+```tortue
+attendu: répéter 4 [ avancer 3 ; tourner à droite 90 ]
+montrer: oui
+comparer: forme
+```
+````
+
+Toujours une question : le bloc porte sa case (`caseIndex`, posé par le générateur). `attendu:`
+(obligatoire) : programme de référence en notation texte ([blockly](blockly.md) § Programme
+tortue en réponse) ; il doit se lire, s'exécuter et tracer au moins un trait, sinon erreur
+d'auteur située. `montrer: oui | non` (défaut `non`) : la figure à reproduire (`spec.modele`,
+segments normalisés ; avec `montrer: oui`, 500 segments au plus, `TORTUE_FIGURE_MAX_SEGMENTS`,
+sinon l'énoncé masqué ne se relirait plus). `comparer: position | forme` (défaut `position`). Clés inconnues, valeurs
+hors liste, clé en double : refus. Masqué (évaluation notée, `maskTortue`) : `attendu: ?`, et
+avec `montrer: oui` une ligne `figure: x1 y1 x2 y2 ; …` (`figureText`) qui porte la figure
+sans le programme ; `figure:` écrite par un auteur est refusée. Dans un item de liste : nœud lu,
+sans case ; masqué quand même (cité ou en retrait, `attendu:` reste la réponse), et vu par
+`findUnmaskedAnswers`. Éditeur riche : bloc de code `tortue`, texte gardé. Écran et PDF : PR 4b.
 
 **Figure partagée en parts égales** (chantier [fractions-a-colorier](../archive/wip/fractions-a-colorier-progress.md),
 PR 1 : affichage ; PR 2 : `colorier:` ; PR 3 : `unites:`) — `src/lib/ubumark/__tests__/partage/` :

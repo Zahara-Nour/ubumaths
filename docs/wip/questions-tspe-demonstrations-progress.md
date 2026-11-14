@@ -10,15 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2649 (fichiers du lot 14, § 58)._
+_Mis à jour le 2026-11-14, lot 14 publié (§ 61)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 13 publiés (§ 57) ; lot 14 (473, 496, 497) : fichiers mergés (#2649, § 58) ;
-  lot 15 restant (517, 529, 537, 538, 539).
-- **Prochaine action** : après les brouillons du lot 14 en prod (David) : relevé MCP des ids, puis
-  rangement + `id` commités, page à cocher, publication (même démarche que le lot 13, § 52 à 57).
-- **En attente de David** : `create-questions.ts --dir scripts/questions/tspe-approfondissements-14 --publier`,
-  depuis le dépôt principal (fichiers mergés).
+  § 35, lots 9 à 15) : lots 9 à 14 publiés (§ 61) ; lot 15 restant (517, 529, 537, 538, 539).
+- **Prochaine action** : lot 15 (517, 529, 537, 538, 539) : relevé MCP, fichiers, aperçus, PR des fichiers (même
+  démarche que le lot 14, § 58 à 61).
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -1064,3 +1062,26 @@ Vérifié : `question:specs` 150 tirages par variation, 3/3 importables (39 spec
 simulation sur la prod : 3 « à créer », aucun titre pris ; brouillons en base locale (copie hors dépôt : c0c9bcb6,
 e410f2dd, a194b387) ; aperçu admin vu à l'écran (port 5177) : étapes à ranger de 497 rendues, choix de 496 joué faux
 (B coché à tort, correction affichée), changement de variable de 473 joué « Juste » (−1 et 1/6).
+
+## 59. Lot 14 : brouillons et rangement (2026-11-14)
+
+`create-questions --publier` lancé par David depuis le worktree : 90ddb100 (473), 22f0fe4b (496), a4fab858 (497), en
+`draft`, au niveau {T_SPE}, sans nœud ni tag (MCP). Les `id` écrits dans les trois JSON sont commités dans la PR de
+rangement (piège du § 56). Migration `20261114090523_questions_tspe_approfondissements_14_rangement_tags`, copie de
+celle du lot 13 (SQL exécutable et rollback identiques aux données près) : chacun sur la sous-notion du § 58, qui porte
+aussi son point. Test d'intégration 12/12, rouge sans la migration (6 échecs, 5 sautés).
+`security-auditor` : aucun finding bloquant (relevé prod refait : 3 `draft` sans nœud ni tag, chemins et points résolus).
+
+## 60. Lot 14 : rangement mergé, page à cocher (2026-11-14)
+
+Mergé (#2650) : CI verte (intégration comprise), `check:migrations --pr` vert, `db:migrate` fait du dépôt principal
+(simulation : cette seule migration) ; relu en base (MCP) : 3 `draft`, chacun sur sa sous-notion avec son seul point,
+`updated_at` intact. `page-a-cocher.ts` lu en base prod, directement sur les JSON du dépôt (`id` commités) : 3
+brouillons, 4, 4 et 5 exemples ; alerte « bloc ranger non dessiné » sur 497 (habituelle, étapes vues dans l'aperçu
+admin, § 58). Page : https://claude.ai/artifact/FwMMhYS4arXRBnNyRvn3rx (capacité `db`) ; base `verdicts` vide à la
+publication.
+
+## 61. Lot 14 : verdicts et publication (2026-11-14)
+
+Verdicts lus : 3/3 « ok », sans commentaire (ids du § 59). `publier-lot.ts` (simulation puis `--publier`) lancé par
+David. Relu en base (MCP) : 3 `published`.

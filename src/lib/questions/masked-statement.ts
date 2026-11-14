@@ -10,7 +10,7 @@
  * noms, le nombre de points ou de barres, la forme. La correction ne change pas :
  * le serveur juge sur l'instance complète.
  *
- * Masqué : ```line, ```courbe et ```trig (`placer:`), ```courbe (`tracer:` : l'équation
+ * Masqué : ```tortue (`attendu:`, la figure seule en `figure:`), ```line, ```courbe et ```trig (`placer:`), ```courbe (`tracer:` : l'équation
  * de la droite devient `tracer: ?`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus),
@@ -47,6 +47,11 @@
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import {
+	figureText,
+	findTortuesToProgram,
+	parseTortueContent
+} from '$lib/ubumark/parser/tortue-parser';
 import {
 	findHorlogesToPlace,
 	isMaskedPlacerValue,
@@ -111,6 +116,7 @@ const REPRESENTER_LINE = /^(representer\s*:)(.*)$/i;
 const TRACER_LINE = /^(tracer\s*:)(.*)$/i;
 const BUILD_LINE = /^(construire\s*:)(.*)$/i;
 const COLORIER_LINE = /^(colorier\s*:)(.*)$/i;
+const ATTENDU_LINE = /^(attendu\s*:)(.*)$/i;
 const RESERVE_LINE = /^réserve\s*:/i;
 /** `A=3` sur une droite : le nom avant `=` */
 const NAMED_TARGET = /^([^=\s]+)\s*=/;
@@ -199,6 +205,20 @@ function maskLines<T extends FoundBlock>(
  * dépend de la somme (pièces de centimes si elle en a, chantier `monnaie-centimes`) :
  * l'énoncé masqué l'écrit, pour que l'élève ait la même réserve qu'à l'entraînement.
  */
+/**
+ * Programme tortue : `attendu: ?` ; la figure à reproduire (`montrer: oui`) part seule, en
+ * segments (`figure:`), sans le programme qui la trace
+ */
+function maskTortue(block: FoundBlock): MaskLine {
+	const attendu = keyLine(ATTENDU_LINE, () => MASKED_VALUE);
+	const modele = parseTortueContent(block.body.join('\n')).spec?.modele ?? null;
+	return (line, rank) => {
+		const masked = attendu(line, rank);
+		if (masked === null || modele === null) return masked;
+		return `${masked}\nfigure: ${figureText(modele)}`;
+	};
+}
+
 function maskMonnaie(block: FoundBlock): MaskLine {
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	if (block.body.some((line) => RESERVE_LINE.test(line.trim()))) return build;
@@ -621,6 +641,8 @@ export function findUnmaskedAnswers(statement: string): string[] {
 				)
 		),
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
+		// Bloc cité ou en retrait compris : `attendu:` est la réponse elle-même, où qu'il soit
+		...leaks('tortue', findTortuesToProgram(statement), keyMasked(['attendu'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
 		),
@@ -688,6 +710,8 @@ export function maskGestureAnswers(statement: string): string {
 		() => (line, rank) => courbePoints(line, rank) ?? courbeLine(line, rank)
 	);
 	maskBlocks(findTrigCirclesToPlace(statement), () => placer);
+	// Tous les blocs, cités ou en retrait compris : `attendu:` est la réponse elle-même
+	maskBlocks(findTortuesToProgram(statement), maskTortue);
 	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, maskedPlacerValue));
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	maskBlocks(findBuildCollections(statement), () => build);
