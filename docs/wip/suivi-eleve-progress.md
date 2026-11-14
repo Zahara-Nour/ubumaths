@@ -7,9 +7,9 @@ validés ») : « P8 page de suivi d'un élève · P9 distinguer prouvé (corrig
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2639._
+_Mis à jour le 2026-11-14, PR 2 en phase 0._
 
-- **État** : PR 1 (#2639, page de suivi + bloc « Points du programme », prouvé / déclaré) mergée, pas encore en prod · **Prochaine action** : PR 2 — contrôles, régularité, compétences, lien depuis la grille A (plan technique à écrire, nouveau worktree) · **En attente de David** : vérification à l'écran de #2639 (`verifications-manuelles.md`) · **Pièges en cours** : prod presque sans traces avec réponse ; la grille A lit `skill_attempts` sans pagination (écart noté dans `analytique-prof.md`) · **Worktree / branche** : supprimés après #2639
+- **État** : PR 1 (#2639) mergée, pas encore en prod ; plan de la PR 2 écrit (§ « PR 2 — plan technique ») · **Prochaine action** : coder la PR 2 une fois le plan validé · **En attente de David** : R1 à R3 du plan de la PR 2 ; vérification à l'écran de #2639 (`verifications-manuelles.md`) · **Pièges en cours** : prod presque sans traces avec réponse ; la grille A lit `skill_attempts` sans pagination (écart noté dans `analytique-prof.md`) · **Worktree / branche** : `../ubumaths-wt-suivi-eleve`, `feat/suivi-eleve-blocs`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -91,6 +91,53 @@ mémoire FSRS (`Teachers can view card stats of their students`) de ses élèves
 - **Revue** : `code-reviewer` + `security-auditor` (données d'élèves, nouvelle route). **Doc** :
   section « Suivi d'un élève » dans `docs/systeme/analytique-prof.md` (ou doc à part si elle grossit).
 
+## PR 2 — plan technique (2026-11-14, à valider)
+
+Aucune migration. Trois blocs ajoutés à la page de suivi, chacun lu à part : une lecture en échec, le
+bloc le dit, les autres restent (comme « Points du programme »). Aucune date (Q5).
+
+- **Contrôles** : `getStudentAssignments(supabase, studentId)` (`src/lib/server/evaluations.ts`, déjà
+  écrite pour l'élève) appelée avec le **client du prof** ; la RLS lui laisse lire les assignations de ses
+  contrôles, les classes et les séances de ses élèves. Une ligne par contrôle publié assigné à l'élève :
+  titre, **meilleure note sur 20** (Q36, `bestGrade`) ou statut (« pas commencé », « en cours »,
+  « expiré sans copie »), lien vers les résultats du contrôle. Ordre : celui rendu, sans date affichée.
+  - Retour : la page des résultats a désormais deux parents → `?depuis=suivi&eleve=<uuid>` (UUID
+    vérifié comme `signalement`, sinon retour par défaut aux contrôles) ; `evaluationResultsReturn`
+    dans `return-links.ts`.
+- **Régularité** : la ligne de l'élève, mêmes règles que la grille C (palier par semaine, jamais de
+  nombre ni de date ; repère de vacances). **R1** ci-dessous. Rentrée = année scolaire de **l'école de
+  l'élève** (`profiles.school_id`) ; `readSchoolYear` prend un identifiant d'école au lieu d'une
+  classe (la grille C lit l'école de la classe puis appelle la même fonction). Sans école : le 1er
+  septembre écoulé (règle existante, `regularityFirstDay`).
+- **Compétences** : `student_competence_level` de l'élève × `math_competences` (ordre `display_order`),
+  niveau ◯ / 🟠 / 🟢 / ✨ comme la grille F (méta d'icône mise en commun si la grille F l'a en dur) ;
+  compétence sans niveau → « pas encore évaluée ». **Sans** la date de dernière saisie (Q5).
+- **Lien depuis la grille A** : le nom en tête de ligne mène au suivi, `?depuis=analytique&classe=<uuid>` ;
+  le suivi revient alors à l'analytique de la classe (`studentFollowUpReturn`, UUID vérifié ; défaut :
+  les classes). **R2** ci-dessous.
+- **Code** : `src/lib/server/stats/student-follow-up.ts` gagne `getStudentRegularity` et
+  `getStudentCompetences` ; contrôles par `getStudentAssignments` tel quel. Loader : les quatre lectures
+  en parallèle (`Promise.allSettled`), un drapeau d'erreur par bloc.
+- **Tests** : régularité de l'élève (paliers, semaine de vacances, sans école → 1er septembre, trace de
+  contrôle écartée, jour à 4 traces non actif) ; compétences (ordre, sans niveau) ; loader (chaque bloc
+  en échec seul, les autres restent) ; rendu (trois blocs, vides, erreurs) ; retours `?depuis=suivi`
+  (résultats) et `?depuis=analytique` (suivi), UUID invalide → défaut ; grille A : lien sur le nom,
+  absent en projection.
+- **Revue** : `code-reviewer` + `security-auditor` (données d'élèves). **Doc** : `analytique-prof.md`
+  § Suivi d'un élève, `evaluations.md` (retour des résultats), `composants-ui.md` si BackLink.
+
+### Questions (R1 à R3)
+
+- **R1 — Régularité, où compter** : la fonction de la base `class_regularity_weeks` compte **par
+  classe** ; un élève hors classe n'y passe pas. Recommandé : lire **ses** traces depuis la rentrée
+  (date, origine, lieu ; paginées), compter en TypeScript avec les fonctions pures déjà testées
+  (`isAutonomousTrace`, `weekStartOf`, `activeDaysTier`) ; un élève, c'est au plus quelques milliers de
+  lignes par an. Autre voie : une fonction de base `student_regularity_weeks` (migration, puis deux PR).
+- **R2 — Mode projection** : dans la grille A en mode projection (noms anonymisés), le nom n'est
+  **pas** un lien (un clic afficherait le vrai nom au tableau). Recommandé : pas de lien en projection.
+- **R3 — Contrôles, quoi par ligne** : titre + meilleure note (ou statut) + lien vers les résultats,
+  sans date ni nombre de tentatives. Recommandé tel quel ; ajouter le nombre de tentatives ?
+
 ## Questions à David (phase 0, posées le 2026-11-14 — tranchées ci-dessus)
 
 - **Q1 — Où et quoi** : une **nouvelle page** `/dashboard/teacher/students/[studentId]` (le journal des
@@ -112,6 +159,7 @@ mémoire FSRS (`Teachers can view card stats of their students`) de ses élèves
 
 ## Journal
 
+- 2026-11-14 : PR 2, worktree `feat/suivi-eleve-blocs`, état des lieux et plan technique, R1 à R3 posées.
 - 2026-11-14 : #2639 mergée (PR 1), CI verte.
 - 2026-11-14 : PR 1 codée (agent), badge mis en commun avec la grille A (`curriculum-point-badge-meta.ts`), doc système (`analytique-prof.md` § Suivi d'un élève, `comptes-classes-ecoles.md`, `composants-ui.md`). Revues : code → clés de liste répétées si deux notions homonymes non voisines (corrigé, test rouge puis vert) ; sécurité sans bloquant. Mineurs laissés : test d'intégration contre la RLS (tout est mocké ; un échec RLS afficherait « pas encore de point » sans fuite), refus de l'admin tenu par le code seul (la RLS le laisse lire, comme l'analytique), assertions non nulles `!` dans `student-follow-up.ts`.
 - 2026-11-14 : phase 0 tranchée (recommandations validées), plan technique de la PR 1.
