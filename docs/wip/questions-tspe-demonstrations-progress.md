@@ -23,7 +23,7 @@ _Mis à jour le 2026-11-14, après #2645 (rangement du lot 13) et la page à coc
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge ;
-  `page-a-cocher.ts` et `publier-lot.ts` exigent les `id` : copie hors dépôt (§ 54) ; `1x` non nettoyé dans
+  `page-a-cocher.ts` exige les `id` (pas `publier-lot.ts`, qui apparie par titre) : copie hors dépôt (§ 54) ; `1x` non nettoyé dans
   `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable `e` ni `i`** (§ 52).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` ; prochaine branche à créer depuis `origin/main`.
 
