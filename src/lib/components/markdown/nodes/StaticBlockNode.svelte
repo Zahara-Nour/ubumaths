@@ -40,6 +40,7 @@
 	import ChoiceBlock from './ChoiceBlock.svelte';
 	import RangerPlacer from './RangerPlacer.svelte';
 	import AssocierPlacer from './AssocierPlacer.svelte';
+	import TrousEtiquettes from './TrousEtiquettes.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -116,4 +117,6 @@
 	<RangerPlacer {node} />
 {:else if node.type === 'associer'}
 	<AssocierPlacer {node} />
+{:else if node.type === 'trous'}
+	<TrousEtiquettes {node} />
 {/if}

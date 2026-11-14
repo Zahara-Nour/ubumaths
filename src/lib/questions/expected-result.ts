@@ -40,6 +40,7 @@ import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
 import { findTortuesToProgram } from '$lib/ubumark/parser/tortue-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findAssociersToPlace } from '$lib/ubumark/parser/associer-parser';
+import { findTrousToPlace } from '$lib/ubumark/parser/trous-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { NOTHING_COLORED } from '$lib/ubumark/utils/partage-colorier';
 import {
@@ -205,7 +206,7 @@ export type ExpectedLine =
 			 */
 			answers?: { answer: string; status: ExpectedStatus }[];
 			/**
-			 * Étiquettes à ranger, éléments à associer : la bonne réponse de chaque place
+			 * Étiquettes à ranger, éléments à associer, texte à trous : la bonne réponse de chaque place
 			 * (position affichée) ; le bloc de l'énoncé ne dit pas la réponse
 			 */
 			expected?: string[];
@@ -360,6 +361,7 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
 		...findAssociersToPlace(statement).map((b) => ({ ...b, kind: 'associer' as const })),
+		...findTrousToPlace(statement).map((b) => ({ ...b, kind: 'trous' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
@@ -767,7 +769,7 @@ function placeLines(
 		answer: answered ? answers.map((a) => a.answer).join(' ; ') : null,
 		status: answered ? (allAccepted ? 'correct' : 'incorrect') : 'solution',
 		...(answered && { answers }),
-		...((build.kind === 'ranger' || build.kind === 'associer') && {
+		...((build.kind === 'ranger' || build.kind === 'associer' || build.kind === 'trous') && {
 			expected: points.map((p) => p.expected)
 		})
 	};

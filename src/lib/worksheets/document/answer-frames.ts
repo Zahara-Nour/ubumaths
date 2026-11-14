@@ -36,6 +36,7 @@
 
 import { parseMarkdown } from '$lib/ubumark';
 import { associerItemHasBlock } from '$lib/ubumark/parser/associer-parser';
+import { TROUS_RESERVE_COLUMNS } from '$lib/ubumark/utils/trous';
 import type { ASTNode, DocumentNode, InlineNode, ListItemNode } from '$lib/ubumark/types';
 import {
 	ANSWER_FRAME_MAX_QUESTIONS,
@@ -160,6 +161,10 @@ function nodeLines(node: ASTNode): number {
 			const withBlock = node.items.filter(associerItemHasBlock).length;
 			return rows - withBlock + withBlock * FIGURE_LINES;
 		}
+		case 'trous':
+			// Bloc ```trous : les rangées de la réserve (au plus 6 étiquettes par rangée, comme
+			// `generateTrousTypst`), puis une ligne par ligne du texte
+			return Math.ceil(node.labels.length / TROUS_RESERVE_COLUMNS) + node.lines.length;
 		default:
 			// Nœud en ligne isolé : une ligne de texte
 			return inlineLines([node]);

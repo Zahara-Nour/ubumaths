@@ -80,6 +80,14 @@ import {
 	replaceAssocierBlocks,
 	serializeAssocierBlock
 } from '$lib/ubumark/parser/associer-parser';
+import {
+	findTrousToPlace,
+	hasTrousToPlace,
+	parseTrousContent,
+	replaceTrousBlocks,
+	serializeTrousBlock
+} from '$lib/ubumark/parser/trous-parser';
+import type { TrousSegment } from '$lib/ubumark/types/trous';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
 import {
 	hasCubesToBuild,
@@ -197,6 +205,38 @@ function associerTextsCollide(
 	});
 }
 
+/**
+ * Deux étiquettes d'un même bloc ```trous écrites différemment ont-elles le même
+ * texte avec ce tirage ? Résolues à part, comme `rangerLabelsCollide` (deux trous à
+ * la même étiquette écrite sont permis : elle n'est montrée qu'une fois).
+ */
+function trousLabelsCollide(
+	statement: TemplateMarkdown | undefined,
+	variables: ResolvedVariable[],
+	genericFunctions: Parameters<typeof resolveMarkdownContent>[3],
+	cleanCoefficients: boolean,
+	capitalPairs: Parameters<typeof resolveMarkdownContent>[5]
+): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```trous')) return false;
+	return findTrousToPlace(text).some((block) => {
+		const { labels } = parseTrousContent(block.body.join('\n'));
+		const resolved = labels.map((label) =>
+			String(
+				resolveMarkdownContent(
+					templateMarkdown(label),
+					variables,
+					createRandomSource(0),
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			).trim()
+		);
+		return new Set(resolved).size < resolved.length;
+	});
+}
+
 /** Ce qui donne la réponse d'un bloc qui porte sa case, pour les messages au prof */
 function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'line')
@@ -206,6 +246,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'boite-a-moustaches') return 'les valeurs de la boîte (placer:)';
 	if (kind === 'ranger') return 'l’étiquette à sa place (bloc ranger)';
 	if (kind === 'associer') return 'l’étiquette de chaque élément (bloc associer, « -> »)';
+	if (kind === 'trous') return 'l’étiquette de chaque trou (bloc trous, « [étiquette] »)';
 	if (kind === 'partage') return 'la fraction du bloc partage (colorier:)';
 	if (kind === 'cubes') return 'la vue ou les vues du bloc cubes (dessiner:, retrouver:)';
 	if (kind === 'patron') return 'les faces du bloc patron (designer:, completer:)';
@@ -526,6 +567,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let conditionFailures = 0;
 		let rangerCollisions = 0;
 		let associerCollisions = 0;
+		let trousCollisions = 0;
 		for (let attempt = 0; attempt <= MAX_CONDITION_RETRIES; attempt++) {
 			// Nouvel essai : la source continue, les tirages sont donc neufs
 			let candidate: ResolvedVariable[];
@@ -567,6 +609,19 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				associerCollisions++;
 				continue;
 			}
+			// Texte à trous : deux étiquettes au même texte après tirage
+			if (
+				trousLabelsCollide(
+					resolvedVariation.statement,
+					candidate,
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			) {
+				trousCollisions++;
+				continue;
+			}
 			resolvedVariables = candidate;
 			break;
 		}
@@ -576,6 +631,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				success: false,
 				errors: [
 					`Éléments à associer : deux éléments identiques (ou deux étiquettes) à chacun des ${associerCollisions} tirages ; écrire une condition qui les rend différents`
+				]
+			};
+		}
+
+		if (resolvedVariables === undefined && trousCollisions > 0) {
+			return {
+				success: false,
+				errors: [
+					`Texte à trous : deux étiquettes identiques à chacun des ${trousCollisions} tirages (laquelle irait où ?) ; écrire une condition qui les rend différentes`
 				]
 			};
 		}
@@ -647,6 +711,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasTortueToProgram(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
 				hasAssocierToPlace(String(resolvedStatement)) ||
+				hasTrousToPlace(String(resolvedStatement)) ||
 				hasPartageToColorier(String(resolvedStatement)) ||
 				hasCubesToBuild(String(resolvedStatement)) ||
 				hasPatronsToBuild(String(resolvedStatement)) ||
@@ -852,6 +917,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				number,
 				{ order: number[]; gesture: AssocierGesture; items: string[]; labels: string[] }
 			>();
+			// Texte à trous : ordre AFFICHÉ de la réserve de chaque bloc, par case de son premier trou
+			const trousOrders = new Map<
+				number,
+				{ order: number[]; lines: TrousSegment[][]; labels: string[] }
+			>();
 			for (const [key, { kind, source, point }] of Object.entries(blankResult.buildBlanks ?? {})) {
 				const index = Number(key);
 				const read = buildAnswerOf(kind, source, point);
@@ -893,6 +963,22 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						const { gesture, items, labels } = parseAssocierContent(source);
 						shown = { order: rangerOrder(labels.length, random), gesture, items, labels };
 						associerOrders.set(first, shown);
+					}
+					buildAnswers.set(index, {
+						kind,
+						answer: String(shown.order.indexOf(Number(read.answer)))
+					});
+					continue;
+				}
+				if (kind === 'trous') {
+					// Mélange de la réserve au premier trou du bloc ; réponse = la position
+					// affichée de la bonne étiquette du trou
+					const first = index - (point ?? 0);
+					let shown = trousOrders.get(first);
+					if (!shown) {
+						const { lines, labels } = parseTrousContent(source);
+						shown = { order: rangerOrder(labels.length, random), lines, labels };
+						trousOrders.set(first, shown);
 					}
 					buildAnswers.set(index, {
 						kind,
@@ -989,6 +1075,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							const first = child.caseIndex;
 							if (first === undefined) return [];
 							return child.items.map((_, k) => first + k);
+						}
+						if (child.type === 'trous') {
+							const first = child.caseIndex;
+							if (first === undefined) return [];
+							return child.answers.map((_, k) => first + k);
 						}
 						if (child.type === 'stat-chart') {
 							const first = child.caseIndex;
@@ -1368,6 +1459,22 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							caseIndex: block.caseIndex,
 							gesture: shown.gesture,
 							items: shown.items,
+							labels: shown.order.map((index) => shown.labels[index])
+						});
+					})
+				);
+			}
+
+			// Blocs ```trous de l'énoncé : trous vides, réserve dans l'ordre AFFICHÉ
+			if (trousOrders.size > 0) {
+				finalStatement = resolvedMarkdown(
+					replaceTrousBlocks(String(finalStatement), (block) => {
+						const shown =
+							block.caseIndex === undefined ? undefined : trousOrders.get(block.caseIndex);
+						if (!shown || block.caseIndex === undefined) return '';
+						return serializeTrousBlock({
+							caseIndex: block.caseIndex,
+							lines: shown.lines,
 							labels: shown.order.map((index) => shown.labels[index])
 						});
 					})
