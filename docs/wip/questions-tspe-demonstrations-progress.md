@@ -10,20 +10,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, rangement du lot 10 écrit (§ 41), PR ouverte._
+_Mis à jour le 2026-11-14, après #2624 (rangement du lot 10, § 41-42)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lot 9 publié (§ 39) ; lot 10 : brouillons en prod (§ 41), migration de rangement en PR.
-- **Prochaine action** : CI verte → merge → `check:migrations --pr` puis `db:migrate` depuis le dépôt principal à
-  jour, relire en base (MCP) ; remettre les JSON du dépôt principal à l'état commité ; page à cocher du lot 10.
-- **En attente de David** : rien.
+  § 35, lots 9 à 15) : lot 9 publié (§ 39) ; lot 10 : brouillons rangés et tagués en prod (#2624, `db:migrate`
+  fait), page à cocher publiée (§ 42).
+- **Prochaine action** : lire les verdicts de la page du lot 10 ; si 4/4 « ok », David lance `publier-lot.ts`
+  (simulation puis `--publier`) ; puis lot 11 (394, 395, 396, 571 ; 395 demande la sous-notion neuve « récurrence
+  linéaire d'ordre 2 », D3).
+- **En attente de David** : verdicts du lot 10 sur https://claude.ai/artifact/UvDuTUFzdrCimQ63Xjf6i8.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
   Le journal à jour vit sur `main` (le worktree est détaché) : `git -C <wt> checkout --detach origin/main` avant de lire.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, sur `chore/questions-tspe-approfondissements-10-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main`.
 
 ---
 
@@ -863,3 +865,11 @@ de celle du lot 9 (SQL exécutable identique aux données près) : 374 → Géom
 intersections ; 377, 564, 361 → Géométrie > Orthogonalité et distances dans l'espace > sphère (chaque point sur la
 sous-notion de son modèle). Test d'intégration 12/12, rouge sans la migration (6 échecs) ; `security-auditor` : aucun finding (diff avec le lot 9 :
 données seules).
+Mergé (#2624) : CI verte, `check:migrations --pr` vert, `db:migrate` fait ; relu en base (MCP) : 4 `draft`, chacun
+sur sa sous-notion avec son seul point, `updated_at` intact. JSON du dépôt principal remis à l'état commité.
+
+## 42. Lot 10 : page à cocher (2026-11-14)
+
+`page-a-cocher.ts --dir scripts/questions/tspe-approfondissements-10`, lu en base prod : 4 brouillons `draft`, chacun
+sur son point, 3 ou 4 exemples chacun, aucune alerte. Page : https://claude.ai/artifact/UvDuTUFzdrCimQ63Xjf6i8
+(capacité `db`) ; base `verdicts` vide à la publication.
