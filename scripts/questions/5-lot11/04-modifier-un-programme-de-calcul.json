@@ -1,0 +1,180 @@
+{
+	"title": "Modifier un programme de calcul",
+	"description": "Changer les nombres ou une opération d'un programme de calcul donné en blocs.",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le programme posé dans l'espace de travail multiplie le nombre choisi par ${{p}}$, puis ajoute ${{q}}$.\n\nModifie-le pour qu'il multiplie par ${{a}}$, puis ajoute ${{b}}$.\n\n```calcul\nattendu: afficher nombre × {{a}} + {{b}}\ndépart: afficher nombre × {{p}} + {{q}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "6..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["(q-b)*(q-b) > 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Il suffit de changer les deux nombres écrits dans les blocs : ${{p}}$ devient ${{a}}$ et ${{q}}$ devient ${{b}}$.",
+					"Le reste du programme (nombre choisi, × , +, afficher) ne change pas."
+				]
+			}
+		},
+		{
+			"statement": "Le programme posé dans l'espace de travail ajoute ${{p}}$ au nombre choisi, multiplie le résultat par ${{q}}$, puis l'affiche.\n\nModifie-le pour qu'il **soustraie** ${{a}}$ au nombre choisi au lieu d'ajouter ${{p}}$ ; la multiplication par ${{q}}$ ne change pas.\n\n```calcul\nattendu: mettre résultat à nombre − {{a}} ; mettre résultat à résultat × {{q}} ; afficher résultat\ndépart: mettre résultat à nombre + {{p}} ; mettre résultat à résultat × {{q}} ; afficher résultat\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Dans le premier bloc, on remplace l'opération $+$ par $-$, et ${{p}}$ par ${{a}}$.",
+					"Les deux autres blocs ne changent pas : résultat × ${{q}}$, puis afficher résultat."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Nombres changés",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4",
+				"a": "7",
+				"b": "2"
+			},
+			"answers": ["afficher nombre × 7 + 2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : programme de départ laissé tel quel",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4",
+				"a": "7",
+				"b": "2"
+			},
+			"answers": ["afficher nombre × 3 + 4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un seul nombre changé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4",
+				"a": "7",
+				"b": "2"
+			},
+			"answers": ["afficher nombre × 7 + 4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : nombres échangés",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4",
+				"a": "7",
+				"b": "2"
+			},
+			"answers": ["afficher nombre × 2 + 7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Opération changée",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"q": "3",
+				"a": "2"
+			},
+			"answers": [
+				"mettre résultat à nombre − 2 ; mettre résultat à résultat × 3 ; afficher résultat"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Opération changée, en une ligne",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"q": "3",
+				"a": "2"
+			},
+			"answers": ["afficher (nombre − 2) × 3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : soustrait après la multiplication",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"q": "3",
+				"a": "2"
+			},
+			"answers": [
+				"mettre résultat à nombre × 3 ; mettre résultat à résultat − 2 ; afficher résultat"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : nombre changé mais pas l'opération",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"q": "3",
+				"a": "2"
+			},
+			"answers": [
+				"mettre résultat à nombre + 2 ; mettre résultat à résultat × 3 ; afficher résultat"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

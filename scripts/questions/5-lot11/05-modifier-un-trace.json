@@ -1,0 +1,148 @@
+{
+	"title": "Modifier un tracé",
+	"description": "Changer les longueurs d'un programme tortue donné (carré, rectangle).",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le programme posé dans l'espace de travail fait tracer à la tortue un carré de côté $3$.\n\nModifie-le pour qu'elle trace un carré de côté ${{c}}$.\n\n```tortue\nattendu: répéter 4 [ avancer {{c}} ; tourner à gauche 90 ]\ncomparer: forme\ndépart: répéter 4 [ avancer 3 ; tourner à gauche 90 ]\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..7"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Le côté du carré, c'est la longueur dont la tortue avance : on change $3$ en ${{c}}$.",
+					"On ne touche ni à « répéter $4$ » (un carré a $4$ côtés) ni à l'angle de $90°$."
+				]
+			}
+		},
+		{
+			"statement": "Le programme posé dans l'espace de travail fait tracer à la tortue un rectangle de $4$ carreaux sur $2$.\n\nModifie-le pour qu'elle trace un rectangle de ${{l}}$ carreaux sur ${{h}}$.\n\n```tortue\nattendu: répéter 2 [ avancer {{l}} ; tourner à gauche 90 ; avancer {{h}} ; tourner à gauche 90 ]\ncomparer: forme\ndépart: répéter 2 [ avancer 4 ; tourner à gauche 90 ; avancer 2 ; tourner à gauche 90 ]\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "5..8"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Dans la boucle, la tortue trace une longueur puis une largeur : $4$ devient ${{l}}$ et $2$ devient ${{h}}$.",
+					"La boucle est répétée $2$ fois : chaque côté est tracé deux fois, comme il se doit dans un rectangle."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré de côté 5",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["répéter 4 [ avancer 5 ; tourner à gauche 90 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carré de côté 5 tourné à droite (même forme)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["répéter 4 [ avancer 5 ; tourner à droite 90 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : départ laissé tel quel",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["répéter 4 [ avancer 3 ; tourner à gauche 90 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : répète 5 au lieu d'avancer de 5",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["répéter 5 [ avancer 3 ; tourner à gauche 90 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle 6 × 3",
+			"variationIndex": 1,
+			"variables": {
+				"l": "6",
+				"h": "3"
+			},
+			"answers": [
+				"répéter 2 [ avancer 6 ; tourner à gauche 90 ; avancer 3 ; tourner à gauche 90 ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle 3 × 6 (même rectangle, debout)",
+			"variationIndex": 1,
+			"variables": {
+				"l": "6",
+				"h": "3"
+			},
+			"answers": [
+				"répéter 2 [ avancer 3 ; tourner à gauche 90 ; avancer 6 ; tourner à gauche 90 ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une seule longueur changée",
+			"variationIndex": 1,
+			"variables": {
+				"l": "6",
+				"h": "3"
+			},
+			"answers": [
+				"répéter 2 [ avancer 6 ; tourner à gauche 90 ; avancer 2 ; tourner à gauche 90 ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : boucle répétée une seule fois",
+			"variationIndex": 1,
+			"variables": {
+				"l": "6",
+				"h": "3"
+			},
+			"answers": ["avancer 6 ; tourner à gauche 90 ; avancer 3 ; tourner à gauche 90"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
