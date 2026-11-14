@@ -7,9 +7,9 @@ Suite prévue : A1 (durées ajustées au temps observé), chantier à part.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR 2 en phase 0._
+_Mis à jour le 2026-11-14, PR 2 en cours (plan technique écrit)._
 
-- **État** : PR 1 mergée (#2652) ; PR 2 : état des lieux fait, phase 0 posée (Q6 à Q8, § « PR 2 ») · **Prochaine action** : selon les réponses, plan technique puis tests rouges · **En attente de David** : Q6 (où : panier et/ou éditeur, qui n'affiche pas les durées), Q7 (QCM du Contrôle blanc), Q8 (traces antérieures à une modification du modèle) · **Pièges en cours** : prod presque vide, vérifier en local ; `test_answers` ne garde pas la durée (elle vient de la composition) · **Worktree / branche** : `../ubumaths-wt-durees-trop-courtes`, `feat/durees-trop-courtes-editeur`
+- **État** : PR 1 mergée (#2652) ; PR 2 : phase 0 tranchée (Q6 à Q8, « je suis tes recos »), plan technique écrit (§ « PR 2 — plan technique ») · **Prochaine action** : tests rouges (pure `durationSignalsOf`), puis lecture, route, panier, éditeur · **En attente de David** : rien · **Pièges en cours** : prod presque vide, vérifier en local ; carte de cours = jamais de case, l'écarter ; `allotted_ms` en ms, durées en s · **Worktree / branche** : `../ubumaths-wt-durees-trop-courtes`, `feat/durees-trop-courtes-editeur`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -124,6 +124,54 @@ Aucune migration. Contrôles de forme `interactive` seulement (Q4). Mêmes copie
 - **Q8 — Traces anciennes** : un modèle modifié depuis peut devenir plus court ou plus long à faire.
   Recommandé : **ne compter que les traces postérieures à la dernière modification du modèle**, la
   règle de « erreurs de la classe sur un point ». Autre choix : tout compter.
+
+**Décisions (David, 2026-11-14 : « je suis tes recos »)**
+
+- **Q6** : la marque va **dans le panier** (à côté des ± de la durée, pour un prof ou un admin
+  connecté) **et dans l'éditeur**, qui affiche désormais la durée de chaque ligne (en lecture).
+- **Q7** : le code a été vérifié et le doute ne tient pas. Une case « choix » coché est une case de la
+  trace (`answer_parts`) : un QCM coché puis laissé au chrono compte comme une « réponse commencée ».
+  Seule la **carte de cours** (`options.courseCard`, jamais de case) est écartée du signal.
+- **Q8** : seules les traces et les copies **postérieures à la dernière modification du modèle**
+  (`question_templates.updated_at`) comptent.
+
+## PR 2 — plan technique (2026-11-14)
+
+Aucune migration. Lectures avec le client du prof, sous la RLS existante (`is_my_student` ; l'admin
+voit tout, par sa policy). Le mode test est respecté (`profiles.is_test` = le mode du prof,
+`getTeacherTestMode`), comme dans le bilan.
+
+- **Pur** : `durationSignalsOf(input)` dans `src/lib/server/stats/duration-signals.ts`. Pour chaque
+  modèle, il rend la liste `{ delaySeconds, students, unansweredInTime, tooShort }`, une entrée par
+  durée observée. Une **trace de Contrôle blanc** (`place = 'mock_test'`, `end_reason` non nul) est
+  un tirage à `round(allotted_ms / 1000)` s ; elle est manquée si `end_reason = 'timeout'` et
+  `answer_parts` est nul. Une **réponse de contrôle** compte avec la règle de la PR 1
+  (`unansweredInTime`, durée de la composition, D1). L'élève est la clé et compte une fois par
+  modèle × durée ; il est manqué si **tous** ses tirages le sont. Les seuils `TOO_SHORT_MIN_STUDENTS`
+  et plus de la moitié sont repris de la PR 1.
+- **Lecture** : `getDurationSignals(supabase, templateIds, isTestMode)`.
+  1. Lire les modèles (`id, updated_at, options`) et écarter les cartes de cours.
+  2. Lire les traces `mock_test` de ces modèles, depuis `updated_at`.
+  3. Lire les contrôles de forme `interactive` dont la série contient l'un des modèles, leurs copies
+     rendues après `updated_at`, la meilleure par élève et par contrôle (`bestCopies`), puis les
+     réponses `test_answers` des modèles.
+  4. Garder seulement les élèves dont `is_test` correspond au mode.
+
+  Une lecture en échec → `{ status: 'error' }`, jamais une exception.
+
+- **Route** : `GET /api/series/duration-signals?templates=<uuid,…>` (prof/admin, Zod : 1 à 100 UUID),
+  pour le panier qui change ses durées en direct ; le client choisit l'entrée de la durée courante.
+- **Panier** : `CartQuestionCard` reçoit l'entrée de sa durée et affiche la marque sous les ±.
+- **Éditeur** : `+page.server.ts` charge les signaux (un échec ne bloque pas la page) ; chaque ligne
+  affiche « 20 s » et, s'il y a lieu, la marque.
+- **Rendu commun** : la marque et la phrase de la PR 1 (`EvaluationBreakdown`) passent dans un petit
+  composant partagé.
+- **Tests** (rouges d'abord) : pure (seuil, moitié stricte, une durée ne compte pas pour une autre,
+  sources fusionnées par élève, `Terminer` écarté, vide validé tôt pas manqué, carte de cours
+  écartée) ; route (rôle, Zod) ; rendu (panier, éditeur) ; intégration locale de la lecture (RLS, Q8,
+  mode test).
+- **Revue** : `code-reviewer` + `security-auditor` (nouvelle route API sur des données d'élèves).
+  **Doc** : `evaluations.md` et la doc des séries (`couvre:`).
 
 ## Questions à David (phase 0, posées le 2026-11-14 — tranchées ci-dessus)
 
