@@ -3,7 +3,8 @@
 	====================
 
 	Corrigé d'une question « programme de calcul » (bloc ```calcul), sans Blockly : les
-	programmes écrits en texte et le tableau nombre → résultat sur les nombres d'essai.
+	programmes écrits en texte (réécrits en écriture canonique, avec les mots des blocs :
+	« mettre résultat à », jamais `résultat =`) et le tableau nombre → résultat sur les essais.
 
 	- Avec la réponse de l'élève : son programme, un programme juste, puis le tableau (ce que
 	  son programme affiche, ce qu'il fallait afficher) ; les lignes fausses sont marquées.
@@ -15,7 +16,11 @@
 -->
 <script lang="ts">
 	import { executerCalcul } from '$lib/shared/blockly/calcul/interpreteur';
-	import { ecrireNombreCalcul, texteVersEtatCalcul } from '$lib/shared/blockly/calcul/notation';
+	import {
+		ecrireNombreCalcul,
+		reecrireCalcul,
+		texteVersEtatCalcul
+	} from '$lib/shared/blockly/calcul/notation';
 	import {
 		lireProgrammeCalcul,
 		memesAffichages,
@@ -118,13 +123,13 @@
 		{#if answer !== null}
 			<p>
 				<span class="text-muted-foreground">Ton programme :</span>
-				<code class="calcul-code">{answer}</code>
+				<code class="calcul-code">{reecrireCalcul(answer)}</code>
 			</p>
 		{/if}
 		{#if reference !== null}
 			<p>
 				<span class="text-muted-foreground">Un programme juste :</span>
-				<code class="calcul-code">{reference}</code>
+				<code class="calcul-code">{reecrireCalcul(reference)}</code>
 			</p>
 		{/if}
 		{#if essais.length > 0 && (answer !== null || reference !== null)}

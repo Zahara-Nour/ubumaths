@@ -56,7 +56,7 @@ export const calculEntry: BlockCatalogEntry = {
 			title: 'En deux étapes, avec résultat',
 			source: fence(
 				'calcul',
-				'attendu: résultat = nombre − 5 ; résultat = résultat × résultat ; afficher résultat'
+				'attendu: mettre résultat à nombre − 5 ; mettre résultat à résultat × résultat ; afficher résultat'
 			),
 			explanation:
 				'L’élève range chaque étape dans résultat avant de l’afficher. Un programme qui affiche directement (nombre − 5) × (nombre − 5) est juste aussi.'
@@ -82,7 +82,7 @@ export const calculEntry: BlockCatalogEntry = {
 		},
 		{
 			title: 'Rien d’affiché',
-			source: fence('calcul', 'attendu: résultat = nombre × 2'),
+			source: fence('calcul', 'attendu: mettre résultat à nombre × 2'),
 			message: 'ce programme n’affiche rien',
 			explanation:
 				'Le programme calcule mais n’affiche rien : il faut un bloc afficher, sinon il n’y a rien à comparer.'
