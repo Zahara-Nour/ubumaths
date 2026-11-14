@@ -113,7 +113,7 @@
 
 <div class="flex flex-col gap-4 lg:flex-row">
 	<div
-		class="h-[60vh] min-h-80 flex-1 overflow-hidden rounded-md border border-border lg:h-[calc(100vh-12rem)]"
+		class="h-[60vh] min-h-80 overflow-hidden rounded-md border border-border lg:h-[calc(100vh-12rem)] lg:flex-1"
 	>
 		<BlocklyWorkspace bind:workspace toolbox={TORTUE_TOOLBOX} onchange={handleChange} />
 	</div>

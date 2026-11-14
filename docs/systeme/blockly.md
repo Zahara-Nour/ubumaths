@@ -4,6 +4,7 @@ couvre:
   - 'src/lib/components/blockly/**'
   - src/lib/stores/blocklyPlayground.svelte.ts
   - 'src/routes/(protected)/dev/blockly/**'
+  - 'src/routes/(public)/tortue/**'
   - src/lib/workers/js-sandbox.worker.ts
   - src/lib/workers/js-sandbox-source.ts
   - 'static/blockly/**'
@@ -20,14 +21,23 @@ L'élève assemble des **blocs** (Blockly) ; Chiphre en tire du **JavaScript** o
 l'exécute, la sortie s'affiche dans une console. Programme visé : algorithmique par blocs du cycle 3
 et du cycle 4 (Scratch au BO), relais vers Python au lycée.
 
-État au 2026-11-14 : **prototype**, page `/dev/blockly` (réservée à l'admin), avec deux modes :
-**Programme** (console) et **Tortue** (quadrillage). Rien n'est enregistré. Le chantier `blockly` en fait une fonctionnalité élève (tortue, bac à sable public,
-geste de réponse dans les modèles de questions) ; décisions dans son journal.
+Deux pages, rien n'est enregistré :
+
+- **`/tortue`, « La Tortue »** (publique, sans connexion, dans le menu et le sitemap) : bac à
+  sable de la tortue seule. **Aucun JavaScript n'y est exécuté** : seul l'interpréteur de blocs
+  tourne ; le code Python est un aperçu replié (« Voir en Python »).
+- **`/dev/blockly`** (réservée à l'admin) : prototype à deux modes, **Programme** (console, code
+  exécuté dans le worker JS ou Pyodide) et **Tortue** (quadrillage, tracé instantané).
+
+Suite du chantier `blockly` : geste de réponse dans les modèles de questions ; décisions dans son
+journal.
 
 ## Carte du code
 
 | Fichier                                                       | Rôle                                                                                                                                             |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/routes/(public)/tortue/+page.svelte`                     | Page publique « La Tortue », monte `TortueBacASable`                                                                                             |
+| `src/lib/components/blockly/TortueBacASable.svelte`           | Blocs tortue, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié                                                  |
 | `src/routes/(protected)/dev/blockly/+page.svelte`             | Page de test, monte `BlocklyPlayground`                                                                                                          |
 | `src/lib/components/blockly/BlocklyPlayground.svelte`         | Assemble espace de travail, barre d'outils, aperçu du code, console                                                                              |
 | `src/lib/components/blockly/BlocklyWorkspace.svelte`          | `Blockly.inject` ; charge la locale française (`blockly/msg/fr`) avant                                                                           |
@@ -39,10 +49,11 @@ geste de réponse dans les modèles de questions) ; décisions dans son journal.
 | `src/lib/shared/blockly/execution/js-executor.svelte.ts`      | Pilote le worker JavaScript                                                                                                                      |
 | `src/lib/workers/js-sandbox.worker.ts`                        | Sandbox JavaScript : globales filtrées, délai de 10 s, sortie limitée                                                                            |
 | `src/lib/workers/js-sandbox-source.ts`                        | Source de la fonction sandbox (sans effet de bord, testable sous Node)                                                                           |
-| `src/lib/shared/blockly/tortue/interpreteur.ts`               | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments et tortue finale                                       |
+| `src/lib/shared/blockly/tortue/interpreteur.ts`               | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments, tortue finale et étapes                               |
+| `src/lib/shared/blockly/tortue/animation.ts`                  | `imageAnimation` (ce que montre le quadrillage à l'étape i), `DUREE_ETAPE_MS` = 300                                                              |
 | `src/lib/shared/blockly/tortue/segments.ts`                   | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `sortDuCadre`                                               |
 | `src/lib/shared/blockly/tortue/blocs.ts`                      | `definirBlocsTortue` : définitions Blockly et générateurs d'aperçu JS / Python (`from turtle import *`)                                          |
-| `src/lib/shared/blockly/tortue/toolbox.ts`                    | `TORTUE_TOOLBOX` : Tortue, « répéter n fois », nombre — uniquement des blocs interprétés                                                         |
+| `src/lib/shared/blockly/tortue/toolbox.ts`                    | `TORTUE_TOOLBOX` : Tortue, « répéter n fois » (`controls_repeat`, champ entier ≥ 0), nombre — uniquement des blocs interprétés                   |
 | `src/lib/components/blockly/TortueCanvas.svelte`              | Quadrillage fixe 20 × 20 en SVG, segments coupés au cadre, dépassement signalé                                                                   |
 | `static/blockly/media/`                                       | Médias de Blockly (corbeille, sprites, icônes), servis par Chiphre                                                                               |
 
@@ -89,8 +100,15 @@ geste de réponse dans les modèles de questions) ; décisions dans son journal.
   `executerTortue` ne lève jamais.
 - En mode Programme, un espace de travail qui contient un bloc tortue n'est pas envoyé au worker
   (message « Les blocs tortue s'exécutent en mode Tortue. »).
-- Quadrillage fixe 20 × 20 (`DEMI_COTE_CADRE`), tracé instantané (animation prévue avec le bac à
-  sable).
+- **Étapes** : après chaque déplacement, virage ou changement de stylo (pas pour une boucle),
+  l'interpréteur note la tortue et le nombre de segments déjà tracés (`etapes`). Programme refusé
+  → aucune étape ; arrêt `trop-long` → étapes jusqu'au tracé partiel.
+- **Boîte à outils** : `controls_repeat` (champ entier ≥ 0 : ni virgule ni négatif ne se
+  saisissent) ; l'interpréteur lit encore `controls_repeat_ext`, qui reviendra avec les variables.
+- Quadrillage fixe 20 × 20 (`DEMI_COTE_CADRE`). Sur `/dev/blockly`, tracé instantané ; sur
+  `/tortue`, **animé** : une étape toutes les 300 ms, « Tout de suite » saute à la fin, toute
+  modification des blocs arrête l'animation et vide le quadrillage ; le message (fin ou erreur)
+  s'affiche à la fin de l'animation.
 
 ## Comment étendre
 
@@ -107,7 +125,9 @@ geste de réponse dans les modèles de questions) ; décisions dans son journal.
 - `src/lib/shared/blockly/__tests__/` : types, médias.
 - `src/lib/shared/blockly/generators/__tests__/` : enveloppes, garde-fous, bloc `print` exécuté.
 - `src/lib/shared/blockly/tortue/__tests__/` : interpréteur (nominal, limites, erreurs), segments,
-  blocs passés par un vrai `Blockly.Workspace` sérialisé.
+  blocs passés par un vrai `Blockly.Workspace` sérialisé (dont le champ de `controls_repeat`),
+  étapes et `imageAnimation`.
+- `src/lib/components/__tests__/Sidebar.svelte.test.ts` : « La Tortue » visible sans connexion.
 - `src/lib/workers/__tests__/js-sandbox-source.test.ts` : la fonction sandbox compile et s'exécute.
 - `src/lib/shared/blockly/execution/__tests__/js-executor-boucle.svelte.test.ts` (navigateur) :
   après une boucle infinie, la console répond de nouveau.

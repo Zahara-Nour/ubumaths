@@ -14,7 +14,7 @@ couvre:
 
 # Coquille de l'application et caches des tableaux de bord
 
-> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; Palotin revu le 2026-11-11 (chantier `palotins`).
+> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; Palotin revu le 2026-11-11 (chantier `palotins`) ; La Tortue ajoutée au menu le 2026-11-14.
 
 ## À quoi ça sert
 
@@ -47,7 +47,7 @@ Déjà documenté ailleurs, et seulement cité ici :
 - un en-tête (`Header`) : gidouille et « Chiphre » (lien vers `/`), avatar (lien vers
   `/dashboard`) ou bouton « Connexion », et sur ordinateur taille du texte, thème, plein écran ;
 - sur ordinateur (`md` et plus), une barre d'icônes à gauche (`Sidebar`) : Accueil, Automaths, Jeux,
-  Python (élève, prof), Upsilon, Atelier, Chiffrement, Le Shtam, Whiteboard (prof), puis, sous un
+  Python (élève, prof), La Tortue, Upsilon, Atelier, Chiffrement, Le Shtam, Whiteboard (prof), puis, sous un
   trait, Zygomatics ;
 - sur mobile, le menu ouvre un tiroir (`Sheet`) avec les mêmes liens, le thème, la taille du
   texte et, connecté, « Mon cabinet » et « Déconnexion » ;
