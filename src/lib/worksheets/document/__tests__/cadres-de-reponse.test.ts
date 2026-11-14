@@ -12,6 +12,7 @@ import { parseMarkdown } from '$lib/ubumark';
 import {
 	ANSWER_FRAME_HEIGHT_CM,
 	EXERCISE_FRAME_MAX_CM,
+	FIGURE_LINES,
 	answerFrameSize,
 	answerLines,
 	estimateAnswerFrames,
@@ -89,6 +90,24 @@ describe('taille estimée d’après la longueur de la réponse', () => {
 	it('un long paragraphe compte plusieurs lignes', () => {
 		const paragraph = 'mot '.repeat(80);
 		expect(answerLines(parseMarkdown(paragraph).children)).toBeGreaterThan(3);
+	});
+
+	it('éléments à associer : une ligne par rangée, une rangée à courbe compte pour une figure', () => {
+		const texte = ['```associer', '- a -> 1', '- b -> 2', '- -> 3', '```'].join('\n');
+		expect(answerLines(parseMarkdown(texte).children)).toBe(3);
+		const courbe = [
+			'````associer',
+			'- ```courbe',
+			'  x: -3 ; 3',
+			'  y: -3 ; 3',
+			'  f(x) = 2*x',
+			'  ```',
+			'  -> 1',
+			'- b -> 2',
+			'- -> 3',
+			'````'
+		].join('\n');
+		expect(answerLines(parseMarkdown(courbe).children)).toBe(2 + FIGURE_LINES);
 	});
 
 	it('une formule compte ses symboles, pas ses commandes LaTeX', () => {

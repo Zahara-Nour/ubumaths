@@ -253,3 +253,112 @@ describe('associer : le geste', () => {
 		expect(String(etiquettes.statement)).toContain('geste: étiquettes');
 	});
 });
+
+describe('lot 2 — une courbe dans un élément', () => {
+	const courbe = (expr: string) => [
+		'- ```courbe',
+		'  x: -3 ; 3',
+		'  y: -5 ; 5',
+		`  f(x) = ${expr}`,
+		'  ```',
+		`  -> $x \\mapsto ${expr}$`
+	];
+	const COURBES = [
+		'````associer',
+		...courbe('{{a}}*x'),
+		...courbe('x+{{b}}'),
+		'- -> $x \\mapsto x^2$',
+		'````'
+	];
+
+	it('une case par courbe ; l’énoncé garde les courbes (variables résolues), sans lien', () => {
+		const instance = generate(
+			template({
+				statement: `Associe chaque courbe à sa fonction.\n\n${COURBES.join('\n')}`,
+				variables: [
+					{ name: 'a', expression: '2' },
+					{ name: 'b', expression: '1' }
+				]
+			})
+		);
+		expect(instance.blanks).toHaveLength(2);
+		const shown = shownBlock(instance);
+		expect(shown.errors).toEqual([]);
+		expect(shown.items).toHaveLength(2);
+		expect(shown.items[0]).toMatch(/^```courbe\n[\s\S]*f\(x\) = 2\*x\n```$/);
+		expect(shown.items[1]).toMatch(/f\(x\) = x\+1/);
+		expect(shown.answers).toEqual([null, null]);
+		expect(String(instance.statement)).toMatch(/^````associer$/m);
+		expectedOf(instance).forEach((position, k) => {
+			expect(shown.labels[Number(position)].replace(/\s/g, '')).toBe(
+				['$x\\mapsto2*x$', '$x\\mapstox+1$'][k]
+			);
+		});
+		expect(findUnmaskedAnswers(String(instance.statement))).toEqual([]);
+		// Le bloc du prof (liens en fin d'élément) est signalé par la garde anti-fuite
+		expect(
+			findUnmaskedAnswers(COURBES.join('\n').replace('````associer', '````associer\ncase: 0'))
+		).toEqual(['associer']);
+	});
+
+	it('deux courbes identiques après tirage : refusé', () => {
+		const result = generateInstance(
+			template({
+				statement: [
+					'````associer',
+					...courbe('{{a}}*x'),
+					...courbe('{{b}}*x'),
+					'- -> $0$',
+					'````'
+				].join('\n'),
+				variables: [
+					{ name: 'a', expression: '2' },
+					{ name: 'b', expression: '2' }
+				]
+			}),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/deux éléments identiques/);
+	});
+
+	it('courbe dans un bloc fermé par ``` : refusé avec le message de clôture', () => {
+		const result = generateInstance(
+			template({
+				statement: ['```associer', ...COURBES.slice(1, -1), '```'].join('\n'),
+				variables: [
+					{ name: 'a', expression: '2' },
+					{ name: 'b', expression: '1' }
+				]
+			}),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/````associer/);
+	});
+
+	it('courbe à placer dans un élément : refusée', () => {
+		const result = generateInstance(
+			template({
+				statement: [
+					'````associer',
+					'- ```courbe',
+					'  x: -3 ; 3',
+					'  y: -3 ; 3',
+					'  placer: A=(1 ; 2)',
+					'  ```',
+					'  -> a',
+					'- b -> b',
+					'- -> c',
+					'````'
+				].join('\n')
+			}),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/pas de placer: ni de tracer:/);
+	});
+});

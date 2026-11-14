@@ -39,7 +39,12 @@ import { findLinesToPlace, isLineToRepresent } from '$lib/ubumark/parser/number-
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
-import { findAssociersToPlace } from '$lib/ubumark/parser/associer-parser';
+import {
+	ASSOCIER_FENCE_MESSAGE,
+	associerItemHasBlock,
+	findAssociersToPlace,
+	parseAssocierContent
+} from '$lib/ubumark/parser/associer-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import {
 	findCubesToBuild,
@@ -492,6 +497,10 @@ function markBuildBlocks(statement: string): {
 	blocks: BuildBlock[];
 	errors: string[];
 } {
+	const associers = findAssociersToPlace(statement);
+	/** Une courbe dans un élément à associer : le bloc associer la refuse, avec son message */
+	const inAssocier = (index: number) =>
+		associers.some((b) => index > b.startIndex && index < b.endIndex);
 	const found = [
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
@@ -503,15 +512,24 @@ function markBuildBlocks(statement: string): {
 			kind: 'boite-a-moustaches' as const
 		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
-		...findAssociersToPlace(statement).map((b) => ({ ...b, kind: 'associer' as const })),
+		...associers.map((b) => ({ ...b, kind: 'associer' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
-		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
+		...findCourbesToPlace(statement)
+			.filter((b) => !inAssocier(b.startIndex))
+			.map((b) => ({ ...b, kind: 'courbe' as const })),
 		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const })),
 		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
+	// Courbe dans un élément d'un bloc fermé par ``` : même message que l'aperçu
+	for (const block of associers) {
+		if (block.nested || block.fence.length > 3) continue;
+		if (parseAssocierContent(block.body.join('\n')).items.some(associerItemHasBlock)) {
+			errors.push(`Des éléments à associer : ${ASSOCIER_FENCE_MESSAGE}`);
+		}
+	}
 	const marked = found.filter((b) => !b.nested);
 	const markAfter = new Set(marked.map((b) => b.startIndex));
 	const out = statement
