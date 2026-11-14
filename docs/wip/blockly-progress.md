@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-14, après #2627._
 
-- **État** : #2627 mergée (Blockly 13, médias servis par nous, exécution JS / Python réparée, boucle infinie arrêtée, blocs en français, doc `docs/systeme/blockly.md`) ; #2074 fermée · **Prochaine action** : PR 2, la tortue, une fois la question ci-dessous tranchée · **En attente de David** : comment rendre l'exécution sûre avant tout programme écrit par un autre (§ « Revues de #2627 ») : (1) durcir le worker, (2) interpréteur JS isolé, (3) **recommandé** : interpréter nous-mêmes les blocs tortue / calcul, le JS / Python généré n'étant plus qu'un aperçu · **Après le prochain `deploy:prod`** : ligne #2627 de `verifications-manuelles.md` · **Pièges en cours** : une montée de Blockly recopie `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → Vite ré-optimise, la page paraît vide un instant ; le port 5176 est souvent pris par une autre session · **Worktree / branche** : aucun (le prochain : `ubumaths-wt-blockly`, nouvelle branche)
+- **État** : #2627 mergée (Blockly 13, médias servis par nous, exécution JS / Python réparée, boucle infinie arrêtée, blocs en français, doc `docs/systeme/blockly.md`) ; #2074 fermée · **Prochaine action** : écrire l'ADR de la décision ci-dessous, puis PR 2 (la tortue) sur un nouveau worktree `ubumaths-wt-blockly` · **Tranché le 2026-11-14 (David suit la reco)** : option 3, Chiphre **interprète lui-même les blocs** tortue et calcul ; aucun JavaScript généré n'est exécuté pour eux, le code JS / Python ne sert plus que d'aperçu ; le sandbox JS actuel ne doit jamais exécuter un programme écrit par un autre · **En attente de David** : rien · **Après le prochain `deploy:prod`** : ligne #2627 de `verifications-manuelles.md` · **Pièges en cours** : une montée de Blockly recopie `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → Vite ré-optimise, la page paraît vide un instant ; le port 5176 est souvent pris par une autre session · **Worktree / branche** : aucun (le prochain : `ubumaths-wt-blockly`, nouvelle branche)
 
 ---
 
@@ -98,3 +98,11 @@ arguments in strict mode`, quel que soit le programme. Présent depuis 4e3c2f7d5
   2. **Boucle infinie jamais tuée** → corrigé dans #2627 (`relancerWorker`, test navigateur rouge
      puis vert).
   3. CSP du worker absente (fichier statique) : défense en profondeur, avec le point 1.
+
+## Décision du 2026-11-14 : exécution sûre
+
+David suit la recommandation (option 3) : les blocs tortue et calcul sont exécutés par un
+**interpréteur de blocs écrit par Chiphre** (parcours de l'arbre des blocs, pas de JavaScript
+évalué) — rien à évader ; il sert aussi à rejouer le tracé pour la correction par segments. Le JS /
+Python généré reste affiché en aperçu. Options écartées : durcir le worker (course aux
+contournements), interpréteur JS isolé (dépendance, lenteur). À figer en ADR au début de la PR 2.
