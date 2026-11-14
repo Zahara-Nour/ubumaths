@@ -1,4 +1,5 @@
 {
+	"id": "8a28feb1-5d10-4f61-8215-5550568f2554",
 	"title": "Démontrer que (1 + x/n)ⁿ tend vers eˣ",
 	"description": "Écriture de n ln(1 + a/n) avec h = a/n (case), limite de ln(1 + h)/h par le nombre dérivé (case choix), limite de (1 + a/n)^{bn} (case), démonstration (étapes à ranger)",
 	"grades": ["T_SPE"],
