@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2657._
+_Mis à jour le 2026-11-14, PR 5a en cours (branche `feat/blockly-calcul-logique`)._
 
-- **État** : PR 1 à 4b mergées (#2627, #2632, #2634, 3b, #2647, #2651, #2657) ; plus de worktree · **Prochaine action** : phase 0 de la PR 5 (correction par sortie, programmes de calcul de 5e), à valider par David avant tout code, dans un worktree neuf `ubumaths-wt-blockly` · **En attente de David** : avis sur les choix listés au § PR 4a (`montrer:` à `non` par défaut, `forme` = 8 symétries) ; une question tortue est refusée par les séries d'automatismes (§ PR 4b) · **Après le prochain `deploy:prod`** : lignes #2627, #2632, #2634 / 3b / 3c et 4b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (l'éditeur est chargé par `import()`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; suite navigateur complète en local : le navigateur se ferme en route (machine), la CI fait foi · **Worktree / branche** : aucun (à recréer pour la PR 5)
+- **État** : PR 1 à 4b mergées ; phase 0 de la PR 5 validée (§ PR 5) ; 5a (logique du geste « programme de calcul », `départ:`, message des séries) en cours · **Prochaine action** : tests rouges de l'interpréteur de calcul et de la notation, puis implémentation · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632, #2634 / 3b / 3c et 4b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (l'éditeur est chargé par `import()`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; suite navigateur complète en local : le navigateur se ferme en route (machine), la CI fait foi ; entre 5a et 5b, ne publier aucun modèle ```calcul (pas d'écran) · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-calcul-logique`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -256,3 +256,35 @@ dessiné, aperçu de l'éditeur), PDF (« À faire sur Chiphre »), catalogue de
   grise Valider sur réponse vide.
 - **À dire à David** : une série d'automatismes **refuse** une question tortue (« 0 case(s) dans
   l'énoncé pour 1 réponse(s) ») : pas de règle de série écrite (que mettre au corrigé imprimé ?).
+
+## PR 5 — geste de réponse « programme de calcul » (5e)
+
+Phase 0 présentée le 2026-11-14 ; David suit toutes les recommandations (« je te suis »), y compris
+celles laissées en attente aux PR 4a / 4b.
+
+- **Élève** : assemble un programme de calcul en blocs, le lance à volonté sur un nombre qu'il
+  tape (« Essayer avec »), voit ce qu'il affiche, valide.
+- **Blocs** (tranché, Q1), tous interprétés (ADR 0039) : `nombre choisi` (entrée, lecture seule,
+  BO 5e), nombres, les 4 opérations, **une seule variable** `résultat` (« mettre résultat à … » +
+  lecture), `afficher`, `répéter n fois`. Pas de variable créée par l'élève (4e).
+- **Jugement par sortie** : référence et programme de l'élève rejoués sur chaque nombre d'essai ;
+  juste si mêmes affichages, dans l'ordre, pour chaque essai (`nombre × 4 + 8` juste pour
+  `(nombre + 2) × 4`). Égalité à une très petite marge (0,1 + 0,2 = 0,3). Rien d'affiché → faux,
+  « Ton programme n'affiche rien » ; division par zéro ou programme trop long sur un essai → faux +
+  message ; bloc inconnu refusé ; programme vide → Valider grisé ; trop long → refusé avant l'envoi.
+- **Bloc ubumark** (tranché, Q2) : ```calcul, `attendu:` (référence en notation texte, variables
+  tirées admises), `essais:` facultatif ; défaut −3 ; 0 ; 1 ; 2 ; 5 ; 10 ; 0,5 (un seul essai ne
+  sépare pas `× 2` de `+ 2`). Réponse = programme en notation texte (≤ `LONGUEUR_MAX_PROGRAMME`),
+  rangée avec les autres réponses. Contrôle du modèle : référence lisible, qui affiche quelque chose
+  sur chaque essai, sinon publication refusée.
+- **`départ:`** (tranché, Q3, maintenant) : programme de départ à modifier (BO « modifier ses
+  paramètres »), pour `calcul et `tortue.
+- **Écran** (Q4, PR 5b) : blocs + « Essayer avec » + Lancer + affichages ; corrigé = programme de
+  référence + tableau nombre → résultat sur les essais ; PDF = consigne + « À faire sur Chiphre ».
+- **Découpage** (Q5) : **5a** = interpréteur, notation, jugement, bloc ubumark, chaîne des
+  questions, `départ:` (parseur) ; **5b** = écran, corrigé, PDF, catalogue. Plus tard : mode Calcul
+  du bac à sable, questions « prévoir la valeur » (programme en blocs dans l'énoncé).
+- **Tranché aussi (en attente depuis 4a / 4b)** : `montrer:` reste à `non` par défaut ; `forme`
+  reste aux 8 symétries du quadrillage ; une question à programme (tortue, calcul) reste refusée
+  par les séries d'automatismes, mais avec un message clair pour le prof (« Une question à
+  programme (tortue, calcul) ne peut pas entrer dans une série d'automatismes. ») — en 5a.
