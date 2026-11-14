@@ -1,7 +1,7 @@
 {
 	"id": "f06e45e8-45f3-48f7-8bd2-2a16ae86958f",
 	"title": "Construire un triangle",
-	"description": "Construire un triangle à partir de trois longueurs (compas), de deux côtés et de l'angle compris, ou d'un côté et de ses deux angles adjacents (rapporteur) ; savoir si trois longueurs permettent de construire un triangle",
+	"description": "Construire un triangle à partir de trois longueurs (compas, segments à reporter ou longueurs en cm à la règle graduée), de deux côtés et de l'angle compris, ou d'un côté et de ses deux angles adjacents (rapporteur) ; savoir si trois longueurs permettent de construire un triangle",
 	"grades": ["6"],
 	"level": 1,
 	"delay": 240,
@@ -83,6 +83,45 @@
 				"steps": [
 					"**Le plus long côté** doit être plus court que la somme des deux autres : sinon, les deux arcs ne se coupent pas.",
 					"{{if:k==1|Les deux plus petits côtés : $5\\,\\text{cm} + 6\\,\\text{cm} = 11\\,\\text{cm}$ ; le plus grand : $9\\,\\text{cm}$, et $9 < 11$|{{if:k==2|Les deux plus petits côtés : $3\\,\\text{cm} + 4\\,\\text{cm} = 7\\,\\text{cm}$ ; le plus grand : $8\\,\\text{cm}$, et $8 > 7$|{{if:k==3|Les deux plus petits côtés : $4\\,\\text{cm} + 7\\,\\text{cm} = 11\\,\\text{cm}$ ; le plus grand : $10\\,\\text{cm}$, et $10 < 11$|Les deux plus petits côtés : $2\\,\\text{cm} + 5\\,\\text{cm} = 7\\,\\text{cm}$ ; le plus grand : $9\\,\\text{cm}$, et $9 > 7$}}}}}} : {{if:j==0|$\\textcolor{{{color:primary.0}}}{\\text{oui}}$, on peut construire le triangle.|$\\textcolor{{{color:primary.0}}}{\\text{non}}$, le plus grand côté est trop long.}}"
+				]
+			}
+		},
+		{
+			"statement": "Construis le triangle $ABC$ : le côté $[AB]$, de $5\\,\\text{cm}$, est tracé. Le côté $[AC]$ doit mesurer ${{l}}\\,\\text{cm}$, et le côté $[BC]$ ${{m}}\\,\\text{cm}$. Prends les longueurs sur la règle graduée avec le compas, puis trace les côtés $[AC]$ et $[BC]$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: triangle ABC : AC = {{l}} cm ; BC = {{m}} cm\n---\nA = point(3.5, 2.5, etiquette=\"bas\")\nB = point(8.5, 2.5, etiquette=\"bas\")\nsegment(A, B)\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "3..6"
+				},
+				{
+					"name": "m",
+					"expression": "3..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**${{l}}\\,\\text{cm}$ depuis $A$** : la règle posée le $0$ en $A$, le compas piqué en $A$ et ouvert sur la graduation ${{l}}\\,\\text{cm}$ ; un arc de centre $A$. Le point $C$ est sur cet arc.",
+					"**${{m}}\\,\\text{cm}$ depuis $B$** : de même, le compas piqué en $B$ et ouvert à ${{m}}\\,\\text{cm}$. Les deux arcs se coupent en $\\textcolor{{{color:primary.0}}}{C}$ ; on trace $[AC]$ et $[BC]$."
+				]
+			}
+		},
+		{
+			"statement": "Construis le triangle $ABC$ : le côté $[AB]$, de $5\\,\\text{cm}$, est tracé. L'angle $\\widehat{CAB}$ doit mesurer ${{a}}^\\circ$, et le côté $[AC]$ ${{l}}\\,\\text{cm}$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: triangle ABC : CAB = {{a}} ; AC = {{l}} cm\n---\nA = point(3.5, 2.5, etiquette=\"bas\")\nB = point(8.5, 2.5, etiquette=\"bas\")\nsegment(A, B)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30..120"
+				},
+				{
+					"name": "l",
+					"expression": "3..5"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**L'angle en $A$** : rapporteur centré en $A$, base sur $[AB]$ ; un repère à ${{a}}^\\circ$ (en partant du $0$ qui est sur $[AB]$), puis le côté de $A$ au repère.",
+					"**La longueur** : la règle posée le $0$ en $A$ le long de ce côté ; $\\textcolor{{{color:primary.0}}}{C}$ est sur la graduation ${{l}}\\,\\text{cm}$ (ou à l'arc du compas ouvert à ${{l}}\\,\\text{cm}$ sur la règle). On trace $[AC]$ et $[BC]$."
 				]
 			}
 		}
@@ -286,6 +325,160 @@
 			},
 			"description": "Erreur : oui pour 2, 5, 9",
 			"variationIndex": 3
+		},
+		{
+			"description": "Trois longueurs en cm : 4 et 3, C au-dessus",
+			"variationIndex": 4,
+			"variables": {
+				"l": "4",
+				"m": "3"
+			},
+			"answers": [
+				"regle(3.5;2.5;3.5;8.5;1)|cercle(3.5;2.5;3.5;6.5)|regle(8.5;2.5;3.5;2.5;1)|cercle(8.5;2.5;5.5;2.5)|segment(3.5;2.5;6.7;4.8999999999999995)|segment(8.5;2.5;6.7;4.8999999999999995)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Trois longueurs en cm : 3 et 3, C au-dessous",
+			"variationIndex": 4,
+			"variables": {
+				"l": "3",
+				"m": "3"
+			},
+			"answers": [
+				"regle(3.5;2.5;3.5;8.5;1)|cercle(3.5;2.5;3.5;5.5)|regle(8.5;2.5;3.5;2.5;1)|cercle(8.5;2.5;5.5;2.5)|segment(3.5;2.5;6;0.8416876048223003)|segment(8.5;2.5;6;0.8416876048223003)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Trois longueurs en cm : 6 et 6",
+			"variationIndex": 4,
+			"variables": {
+				"l": "6",
+				"m": "6"
+			},
+			"answers": [
+				"regle(3.5;2.5;3.5;8.5;1)|cercle(3.5;2.5;3.5;8.5)|regle(8.5;2.5;3.5;2.5;1)|cercle(8.5;2.5;2.5;2.5)|segment(3.5;2.5;6;7.954356057317857)|segment(8.5;2.5;6;7.954356057317857)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur (cm) : longueurs échangées",
+			"variationIndex": 4,
+			"variables": {
+				"l": "5",
+				"m": "3"
+			},
+			"answers": [
+				"regle(3.5;2.5;3.5;8.5;1)|cercle(3.5;2.5;3.5;5.5)|regle(8.5;2.5;3.5;2.5;1)|cercle(8.5;2.5;3.5;2.5)|segment(3.5;2.5;4.4;5.361817604250836)|segment(8.5;2.5;4.4;5.361817604250836)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur (cm) : compas ouvert à l'œil",
+			"variationIndex": 4,
+			"variables": {
+				"l": "4",
+				"m": "5"
+			},
+			"answers": [
+				"cercle(3.5;2.5;5.9;5.7)|cercle(8.5;2.5;5.5;6.5)|segment(3.5;2.5;5.1;6.1660605559646715)|segment(8.5;2.5;5.1;6.1660605559646715)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur (cm) : C placé à l'œil",
+			"variationIndex": 4,
+			"variables": {
+				"l": "4",
+				"m": "5"
+			},
+			"answers": [
+				"segment(3.5;2.5;5.3999999999999995;5.966060555964671)|segment(8.5;2.5;5.3999999999999995;5.966060555964671)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Angle et côté en cm : 50°, 4 cm, C sur la graduation",
+			"variationIndex": 5,
+			"variables": {
+				"a": "50",
+				"l": "4"
+			},
+			"answers": [
+				"repere(3.5;2.5;8.5;2.5;3.15;50;1)|regle(3.5;2.5;5.524780970512599;4.91303999582478;1)|segment(3.5;2.5;6.071150438746157;5.564177772475912)|segment(8.5;2.5;6.071150438746157;5.564177772475912)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Angle et côté en cm : 110°, 5 cm, C à l'arc du compas",
+			"variationIndex": 5,
+			"variables": {
+				"a": "110",
+				"l": "5"
+			},
+			"answers": [
+				"repere(3.5;2.5;8.5;2.5;3.15;110;1)|segment(3.5;2.5;1.447879140045988;8.13815572471545)|regle(3.5;2.5;8.5;2.5;1)|cercle(3.5;2.5;8.5;2.5)|segment(8.5;2.5;1.7898992833716567;7.198463103929542)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur (cm) : 130° au lieu de 50°",
+			"variationIndex": 5,
+			"variables": {
+				"a": "50",
+				"l": "4"
+			},
+			"answers": [
+				"repere(3.5;2.5;8.5;2.5;3.15;130;1)|regle(3.5;2.5;1.475219029487401;4.91303999582478;1)|segment(3.5;2.5;0.9288495612538425;5.564177772475912)|segment(8.5;2.5;0.9288495612538425;5.564177772475912)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur (cm) : 3,8 cm au lieu de 4 cm",
+			"variationIndex": 5,
+			"variables": {
+				"a": "50",
+				"l": "4"
+			},
+			"answers": [
+				"repere(3.5;2.5;8.5;2.5;3.15;50;1)|regle(3.5;2.5;5.524780970512599;4.91303999582478;1)|segment(3.5;2.5;5.94259291680885;5.4109688838521155)|segment(8.5;2.5;5.94259291680885;5.4109688838521155)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur (cm) : C placé à l'œil",
+			"variationIndex": 5,
+			"variables": {
+				"a": "70",
+				"l": "4"
+			},
+			"answers": [
+				"segment(3.5;2.5;5.168080573302675;6.458770483143634)|segment(8.5;2.5;5.168080573302675;6.458770483143634)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
 		}
 	]
 }
