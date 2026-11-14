@@ -1,0 +1,199 @@
+{
+	"title": "Interpréter un graphique cartésien",
+	"description": "Pour quelles valeurs une grandeur dépasse-t-elle un seuil : « à partir de » ou « de … à … »",
+	"grades": ["5"],
+	"level": 9,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le graphique donne la température d'un four, en dizaines de degrés, selon le temps de chauffe, en minutes.\n\n```courbe\nx: -1 ; 7\ny: -1 ; 20\ngrille: 1 ; 1\naxes: x = Temps (min) ; y = Température (dizaines de °C)\ndonnées: (0 ; {{y0}}) ; (1 ; {{y1}}) ; (2 ; {{y2}}) ; (3 ; {{y3}}) ; (4 ; {{y4}}) ; (5 ; {{y5}}) ; (6 ; {{y6}})\ntaille: moyenne\n```\n\nÀ partir de combien de minutes la température dépasse-t-elle ${{s}}$ dizaines de degrés ?\n\nÀ partir de $?$ min",
+			"variables": [
+				{
+					"name": "y0",
+					"expression": "2..4"
+				},
+				{
+					"name": "d1",
+					"expression": "1..2"
+				},
+				{
+					"name": "d2",
+					"expression": "1..2"
+				},
+				{
+					"name": "d3",
+					"expression": "1..2"
+				},
+				{
+					"name": "d4",
+					"expression": "1..2"
+				},
+				{
+					"name": "d5",
+					"expression": "1..2"
+				},
+				{
+					"name": "d6",
+					"expression": "1..2"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:y0+d1"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:y1+d2"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:y2+d3"
+				},
+				{
+					"name": "y4",
+					"expression": "eval:y3+d4"
+				},
+				{
+					"name": "y5",
+					"expression": "eval:y4+d5"
+				},
+				{
+					"name": "y6",
+					"expression": "eval:y5+d6"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "s",
+					"expression": "eval:y0*(1-min(abs(k-0),1))+y1*(1-min(abs(k-1),1))+y2*(1-min(abs(k-2),1))+y3*(1-min(abs(k-3),1))+y4*(1-min(abs(k-4),1))+y5*(1-min(abs(k-5),1))+y6*(1-min(abs(k-6),1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la ligne horizontale d'ordonnée ${{s}}$ : la température atteint ${{s}}$ au bout de ${{k}}$ min, puis reste au-dessus, car elle augmente.",
+					"Elle dépasse ${{s}}$ dizaines de degrés à partir de $\\textcolor{{{color:primary.0}}}{{{k}}}$ min."
+				]
+			}
+		},
+		{
+			"statement": "Le graphique donne la hauteur, en mètres, d'une fusée à eau selon le temps écoulé depuis son lancement, en secondes.\n\n```courbe\nx: -1 ; 7\ny: -1 ; {{eval:h+1}}\ngrille: 1 ; 1\naxes: x = Temps (s) ; y = Hauteur (m)\nf(x) = {{h}} - (x - 3)^2 sur [0 ; 6]   bleu\ntaille: moyenne\ndescription: Courbe en cloche : la hauteur monte, atteint {{h}} m au bout de 3 s, puis redescend.\n```\n\nPendant quelle période la hauteur de la fusée dépasse-t-elle ${{s}}~\\unit{m}$ ?\n\nDe $?$ s à $?$ s",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "10..14"
+				},
+				{
+					"name": "dd",
+					"expression": "1..2"
+				},
+				{
+					"name": "s",
+					"expression": "eval:h-dd*dd"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:3-dd"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:3+dd"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x1}}"
+				},
+				{
+					"expectedAnswer": "{{x2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la ligne horizontale d'ordonnée ${{s}}$ : elle coupe la courbe en deux points, d'abscisses $\\textcolor{{{color:primary.0}}}{{{x1}}}$ et $\\textcolor{{{color:primary.0}}}{{{x2}}}$.",
+					"Entre ces deux instants, la courbe est au-dessus de la ligne : la hauteur dépasse ${{s}}$ m de ${{x1}}$ s à ${{x2}}$ s."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Seuil 8 atteint à 3 min",
+			"variationIndex": 0,
+			"variables": {
+				"y0": "3",
+				"d1": "2",
+				"d2": "1",
+				"d3": "2",
+				"d4": "2",
+				"d5": "1",
+				"d6": "2",
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rend le seuil au lieu du temps",
+			"variationIndex": 0,
+			"variables": {
+				"y0": "3",
+				"d1": "2",
+				"d2": "1",
+				"d3": "2",
+				"d4": "2",
+				"d5": "1",
+				"d6": "2",
+				"k": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Hauteur 12, seuil 8 : de 1 à 5",
+			"variationIndex": 1,
+			"variables": {
+				"h": "12",
+				"dd": "2"
+			},
+			"answers": ["1", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bornes du graphique (0 à 6)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "12",
+				"dd": "2"
+			},
+			"answers": ["0", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rend les hauteurs",
+			"variationIndex": 1,
+			"variables": {
+				"h": "12",
+				"dd": "2"
+			},
+			"answers": ["8", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
