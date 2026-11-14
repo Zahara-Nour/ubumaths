@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-14, après #2664 et la version 0.88.0._
 
-- **État** : PR 1 à 5b et #2664 (« mettre résultat à ») mergées et **en prod (0.88.0)** ; premiers modèles validés (§ Premiers modèles) · **Prochaine action** : lot 11 de la 5e (6 modèles Blockly) dans le chantier `questions-5` (§ 25 de son journal), puis le lot 6e (6-197, 6-210) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` · **Worktree / branche** : aucun
+- **État** : PR 1 à 5b et #2664 (« mettre résultat à ») mergées et **en prod (0.88.0)** ; premiers modèles validés (§ Premiers modèles) · **Prochaine action** : écrire le lot 11 de la 5e (6 modèles, § Premiers modèles) **dans ce chantier** (worktree `ubumaths-wt-blockly`), fichiers selon la convention des lots (`scripts/questions/5-lot11/`, script `docs/wip/questions/lot-5-11-blockly.py`, migration nœud + tag, page à cocher, `docs/pratiques/couvrir-un-niveau.md`) ; puis le lot 6e (6-197, 6-210) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` · **Worktree / branche** : aucun
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -369,7 +369,8 @@ nocturne. `départ:` lu par les parseurs ``calcul et ```tortue (`spec.depart`) ;
 Relevé prod (lecture seule) : 0 modèle sur 5-100, 101, 102, 103, 104, 105, 106, 6-197, 6-210,
 CM2-152 ; 6-194, 195, 196 en ont un (Algorithmique › Préalgorithmique).
 
-- **Lot 11 de la 5e** (chantier `questions-5`, § 25 de son journal), 6 modèles : 5-102 formule en
+- **Lot 11 de la 5e** (porté par CE chantier, David le 2026-11-14 ; numéro 11 et § 25 dans le journal
+  `questions-5`), 6 modèles : 5-102 formule en
   blocs (calcul : a × nombre + b, (nombre + a) × b, nombre × nombre − a) ; 5-103 programme en
   étapes données en mots (calcul, 2 puis 3-4 étapes) ; 5-105 modifier un programme de calcul
   (`départ:`) ; 5-105 modifier un tracé (tortue, `départ:` carré 3 → carré 5, rectangle 4 × 2) ;
@@ -383,3 +384,7 @@ CM2-152 ; 6-194, 195, 196 en ont un (Algorithmique › Préalgorithmique).
 - **5-106** : (a) — la correction n'impose pas la boucle (un carré en 8 blocs est juste) ; les
   créneaux du niveau 3 la rendent presque nécessaire. « Nombre maximal de blocs » reste une piste.
 - **Question d'accès** : rien de neuf (rattachement de modèles à un nœud et à un point).
+- **Où** (David, 2026-11-14, « je te suis ») : les lots Blockly restent dans le chantier `blockly`
+  (deux niveaux, suite directe du découpage), pas dans `questions-5` / `questions-6` ; le journal de
+  la 5e garde un pointeur. Le chantier n'est pas clos : modèles, puis pistes (mode Calcul du bac à
+  sable, « prévoir la valeur », nombre maximal de blocs, étanchéité du sandbox JS).
