@@ -46,6 +46,8 @@
 
 	/** Au-delà, un appui devient un glissement (px) */
 	const DRAG_THRESHOLD = 6;
+	// Espace de bord rendu par une variable (une chaîne littérale entre accolades est refusée par le lint)
+	const SPACE = ' ';
 
 	const uid = $props.id();
 
@@ -220,9 +222,9 @@
 
 {#snippet text(content: string)}
 	<!-- Espaces de bord gardés : le parseur les retirerait, « est » collerait au trou -->
-	{#if /^\s/.test(content)}{' '}{/if}{#if content.trim() !== ''}<InlineMarkdown
+	{#if /^\s/.test(content)}{SPACE}{/if}{#if content.trim() !== ''}<InlineMarkdown
 			content={content.trim()}
-		/>{/if}{#if /\s$/.test(content) && content.trim() !== ''}{' '}{/if}
+		/>{/if}{#if /\s$/.test(content) && content.trim() !== ''}{SPACE}{/if}
 {/snippet}
 
 {#snippet sizer()}
