@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après le `deploy:prod` v0.87.0._
+_Mis à jour le 2026-11-14, après le `deploy:prod` v0.87.0. Chantier clos, journal archivé._
 
-- **État** : tout le chantier est en prod (v0.87.0 : #2623, #2637, #2644, #2646) ; brouillons en prod (3e `27ac630c` → « coefficient directeur et ordonnée à l'origine », tag 3-067 ; 2de `5eec6d7d` → notion « Généralités sur les fonctions », sans tag) · **Prochaine action** : David essaie les deux brouillons dans l'admin de prod, puis les publie ; ensuite, clore le chantier (versement dans `docs/systeme/`, journal archivé) · **En attente de David** : essai, publication · **Pièges en cours** : `{{eval:(a)*x+(b)}}` réordonne → `{{eval:(a)*x}}{{eval:b;+}}` · **Worktree / branche** : aucun
+- **État** : geste « associer deux colonnes » livré et en prod (v0.87.0) — lot 1 texte et formules, gestes relier / étiquettes (#2623), B11 de `cours-suites` (#2629), lot 2 courbe dans un élément (#2637), modèles 2de et 3e (#2644), rangement (#2646). Doc durable : `docs/systeme/ubumark.md` (bloc), `questions.md` (case, juge, corrigé), `fiches-et-pdf.md` (PDF) · **Reste, hors chantier** : essai et publication des brouillons 3e `27ac630c` et 2de `5eec6d7d` par David (`verifications-manuelles.md`) ; autres blocs d'affichage dans un élément : `outils-manquants.md` n° 27, plus tard
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -202,3 +202,4 @@ Relevé prod (MCP, lecture seule) : en 2de, aucun point « fonctions de référe
 - 2026-11-14 : #2644 mergée (CI verte, revue Sonnet de la sonde sans défaut) ; modèles joués dans l'aperçu admin local.
 - 2026-11-14 : David publie les deux brouillons en prod avant le `deploy:prod` (le script vérifie avec le code local ; les élèves ne voient pas un brouillon). Worktree rouvert, branche `feat/associer-rangement` : `id` + migration de rangement + test (rouge sans la migration prouvé).
 - 2026-11-14 : #2646 mergée avec le job `Lint` ROUGE (garde doc à jour : `Doc-inchangée:` mise dans le corps de la PR au lieu du commit ; CI lue par `tail -15`, qui coupait les `fail`) — erreur signalée à David ; tous les autres jobs verts, `security-auditor` sans finding bloquant. `db:migrate` sur son accord : 2 modèles rangés, `updated_at` préservé, trigger réactivé.
+- 2026-11-14 : v0.87.0 en prod (tout le chantier). Chantier clos à la demande de David, journal archivé ; essai et publication des deux brouillons laissés à David.

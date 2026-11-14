@@ -430,7 +430,7 @@ la droite (`FillBlanksInput`) — même critère aux deux endroits (`isLineToRep
    devinerait) ou plus de 8 étiquettes, vide, `signe:` autre que `<` / `>`. Deux étiquettes identiques après
    tirage : condition implicite, le tirage des variables est refait (`rangerLabelsCollide`, résolution à part
    sur une source jetable) ; toujours identiques après 100 essais → échec, message au prof.
-   Éléments à associer (``associer, chantier [`associer`](../wip/associer-progress.md), outils-manquants
+   Éléments à associer (``associer, chantier [`associer`](../archive/wip/associer-progress.md), outils-manquants
 n° 27 ; `associer-parser.ts`, `findAssociersToPlace`) : le prof écrit `- élément -> étiquette`, un
 intrus `- -> étiquette` ; une étiquette écrite deux fois n'est montrée qu'une fois (classement). Une
 case par élément (`buildCaseCount` = nombre d'éléments, `point` = rang de l'élément), `type: 'text'`,
