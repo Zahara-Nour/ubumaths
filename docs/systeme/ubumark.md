@@ -351,10 +351,12 @@ absent de `SPECIAL_BLOCK_KINDS` ; dans un item de liste (énoncé d'une série d
 `parseContentWithCodeBlocks` (deux colonnes, jamais du code). **Courbe dans un élément** (lot 2) : après
 `- `, un bloc ` ```courbe ` en retrait de 2 espaces (sur la ligne du tiret ou sous un texte), puis
 `-> étiquette` sur la dernière ligne de la suite, en retrait ; clôture ```` du bloc associer (sinon
-`ASSOCIER_FENCE_MESSAGE`, posé par `parseAssocierBlock`), comme ` ```choix `. L'élément garde son markdown
+`ASSOCIER_FENCE_MESSAGE`, posé par `parseAssocierBlock` à l'aperçu et par `assignBlankIndices` au tirage ;
+`findAssociersToPlace` cherche les blocs du premier niveau sur les lignes intactes), comme ` ```choix `. L'élément garde son markdown
 sur plusieurs lignes (`associerItemHasBlock`) ; refus : autre bloc que courbe, courbe à `placer:` /
 `tracer:` (le générateur ignore alors la courbe à placer : le message est celui du bloc associer), bloc
-dans une étiquette ou un intrus, lien absent ou pas en dernière ligne, plus de 6 éléments
+dans une étiquette ou un intrus, suite en retrait sans bloc (texte sur plusieurs lignes, réglage en
+retrait), lien absent ou pas en dernière ligne, plus de 6 éléments
 (`ASSOCIER_MAX_BLOCK_ITEMS`). Les erreurs propres de la courbe (fenêtre manquante…) s'affichent sur la
 courbe, pas dans le bloc associer. Instance : `serializeAssocierBlock` écrit la suite en retrait et un
 `->` vide en dernière ligne. Écran : `AssocierContenu.svelte` (courbe en petit, 130 à 180 px, sans

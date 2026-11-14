@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-14, lot 2 codé, PR pas encore ouverte._
 
-- **État** : lot 2 (` ```courbe ` dans un élément) codé et commité sur `feat/associer-courbe` (pas poussé) ; tests verts (13 725), `check:incremental`, `types:cliquet`, `lint:fast`, garde doc OK ; bug du lot 1 corrigé (associer d'une série imprimé en code) · **Prochaine action** : revue `code-reviewer` (opus) — lancée, résultat perdu si `/clear` : la relancer sur `git diff origin/main...HEAD`, corriger, puis push, PR, CI, merge · **En attente de David** : niveau du modèle « graphique ↔ expression » (pas répondu) ; relecture de B11 s'il le souhaite · **Pièges en cours** : la courbe exige `x:` et `y:` (sinon « Figure indisponible ») ; Typst d'une courbe non compilable en test (cetz, réseau) ; serveur de test : port 5177 (5176 pris) · **Worktree / branche** : `ubumaths-wt-associer` · `feat/associer-courbe`
+- **État** : lot 2 (` ```courbe ` dans un élément) codé et commité sur `feat/associer-courbe` (pas poussé) ; tests verts (13 725), `check:incremental`, `types:cliquet`, `lint:fast`, garde doc OK ; bug du lot 1 corrigé (associer d'une série imprimé en code) · **Prochaine action** : revue faite et corrigée ; PR ouverte → suivre la CI, merger, puis vérification manuelle (relier une courbe au téléphone) · **En attente de David** : niveau du modèle « graphique ↔ expression » (pas répondu) ; relecture de B11 s'il le souhaite · **Pièges en cours** : la courbe exige `x:` et `y:` (sinon « Figure indisponible ») ; Typst d'une courbe non compilable en test (cetz, réseau) ; serveur de test : port 5177 (5176 pris) · **Worktree / branche** : `ubumaths-wt-associer` · `feat/associer-courbe`
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -172,3 +172,8 @@ Ensuite (même chantier) : un modèle « graphique ↔ expression » à écrire,
   **Bug du lot 1 trouvé et corrigé** : dans l'énoncé d'une série d'automatismes, le bloc associer est
   dans un item de liste, que `parseContentWithCodeBlocks` lisait en bloc de code (PDF : code brut) ;
   test rouge sans le correctif.
+- 2026-11-14 : revue `code-reviewer` (opus) — « prêt pour PR », corrigés : bloc à ``` avec une courbe coupé
+  par `findAssociersToPlace` (lignes désimbriquées : la clôture en retrait de la courbe fermait le bloc ;
+  le générateur donnait d'autres messages que l'aperçu) → blocs du premier niveau cherchés sur les lignes
+  intactes, message de clôture posé par `assignBlankIndices` ; texte sur plusieurs lignes sans bloc
+  accepté → refusé ; réglage en retrait après un élément → message sur le retrait.

@@ -323,6 +323,22 @@ describe('lot 2 — une courbe dans un élément', () => {
 		expect(result.errors.join(' ')).toMatch(/deux éléments identiques/);
 	});
 
+	it('courbe dans un bloc fermé par ``` : refusé avec le message de clôture', () => {
+		const result = generateInstance(
+			template({
+				statement: ['```associer', ...COURBES.slice(1, -1), '```'].join('\n'),
+				variables: [
+					{ name: 'a', expression: '2' },
+					{ name: 'b', expression: '1' }
+				]
+			}),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/````associer/);
+	});
+
 	it('courbe à placer dans un élément : refusée', () => {
 		const result = generateInstance(
 			template({

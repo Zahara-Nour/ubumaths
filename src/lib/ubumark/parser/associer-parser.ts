@@ -178,24 +178,41 @@ export function findAssociersToPlace(markdown: string): {
 	startIndex: number;
 	/** Ligne de clôture ; bloc non fermé : dernière ligne du texte */
 	endIndex: number;
+	/** Clôture d'ouverture (``` ou ````) */
+	fence: string;
 	body: string[];
 	closed: boolean;
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
 	const plain = lines.map(unnestedLine);
-	return findAssocierBlocks(plain).map((range) => {
-		const nested = lines[range.startIndex] !== plain[range.startIndex];
-		// Bloc au premier niveau : lignes intactes (le retrait d'une suite d'élément compte)
-		const source = nested ? plain : lines;
-		return {
+	const bodyOf = (source: readonly string[], range: AssocierBlockRange) =>
+		source.slice(range.startIndex + 1, range.closed ? range.endIndex : range.endIndex + 1);
+	// Au premier niveau : lignes intactes (le retrait d'une suite d'élément compte, et
+	// la clôture en retrait d'une courbe ne ferme pas le bloc associer)
+	const top = findAssocierBlocks(lines).map((range) => ({
+		startIndex: range.startIndex,
+		endIndex: range.endIndex,
+		fence: range.fence,
+		body: bodyOf(lines, range),
+		closed: range.closed,
+		nested: false
+	}));
+	const inTop = (index: number) =>
+		top.some((block) => index >= block.startIndex && index <= block.endIndex);
+	// En retrait ou cité : repéré sur les lignes désimbriquées, refusé par le générateur
+	const nested = findAssocierBlocks(plain)
+		.filter((range) => lines[range.startIndex] !== plain[range.startIndex])
+		.filter((range) => !inTop(range.startIndex))
+		.map((range) => ({
 			startIndex: range.startIndex,
 			endIndex: range.endIndex,
-			body: source.slice(range.startIndex + 1, range.closed ? range.endIndex : range.endIndex + 1),
+			fence: range.fence,
+			body: bodyOf(plain, range),
 			closed: range.closed,
-			nested
-		};
-	});
+			nested: true
+		}));
+	return [...top, ...nested].sort((a, b) => a.startIndex - b.startIndex);
 }
 
 /** L'énoncé a-t-il des éléments à associer ? */
@@ -348,6 +365,15 @@ export function parseAssocierBody(body: readonly string[]): AssocierSpec {
 			spec.items.push(left);
 			// Lien retiré (`- élément ->`) : énoncé d'une instance, ou bloc sans réponse
 			spec.answers.push(right === '' ? null : labelIndex(right));
+			continue;
+		}
+		// Une suite en retrait n'a de sens que pour un bloc (texte sur plusieurs lignes,
+		// réglage en retrait : refusés)
+		const lines = [content, ...continuation];
+		if (!lines.some((text) => INNER_FENCE_REGEX.test(text.trim()))) {
+			errors.push(
+				`ligne « ${line} » : seul un bloc \`\`\`${ITEM_BLOCK_LANGUAGE} peut suivre un élément, en retrait (un élément de texte tient sur une ligne)`
+			);
 			continue;
 		}
 		// Élément sur plusieurs lignes (un bloc dedans) : jamais à droite

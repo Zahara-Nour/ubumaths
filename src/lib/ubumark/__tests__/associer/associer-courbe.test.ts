@@ -175,6 +175,26 @@ describe('courbe dans un élément : erreurs', () => {
 		expect(parseAssocierBody([1, 2, 3, 4, 5, 6].flatMap(courbe)).errors).toEqual([]);
 	});
 
+	it('texte sur plusieurs lignes sans bloc : refusé (la suite ne sert qu’à une courbe)', () => {
+		expect(errorsOf('- a', '  b', '  -> 1', '- c -> 2', '- -> 3')).toMatch(
+			/seul un bloc ```courbe peut suivre/
+		);
+	});
+
+	it('réglage en retrait après un élément : message sur le retrait, pas sur les étiquettes', () => {
+		const errors = errorsOf('- a -> 1', '  geste: étiquettes', '- b -> 2', '- -> 3');
+		expect(errors).toMatch(/seul un bloc ```courbe peut suivre/);
+		expect(errors).not.toMatch(/étiquette ni dans un intrus/);
+	});
+
+	it('générateur : bloc à ``` avec une courbe, lu entier et refusé avec le message de clôture', () => {
+		const md = ['```associer', ...COURBES, '```'].join('\n');
+		const [found] = findAssociersToPlace(md);
+		expect(found.endIndex).toBe(md.split('\n').length - 1);
+		expect(found.fence).toBe('```');
+		expect(parseAssocierContent(found.body.join('\n')).items).toHaveLength(3);
+	});
+
 	it('bloc associer à ``` alors qu’un élément contient un bloc', () => {
 		const md = ['```associer', ...COURBES, '```'].join('\n');
 		const node = parseMarkdown(md).children.find((n) => n.type === 'associer') as AssocierNode;
