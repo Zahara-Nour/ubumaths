@@ -1,4 +1,5 @@
 {
+	"id": "7f9366af-1eee-44c2-9afc-681370c0a9c7",
 	"title": "Marche aléatoire et loi binomiale",
 	"description": "Pion sur une droite graduée : S_n = 2X_n − n (deux cases), P(S_4 = 0) par la loi binomiale (case), espérance et variance de S_N (deux cases), retour à l'origine après un nombre impair d'étapes (case choix)",
 	"grades": ["T_SPE"],

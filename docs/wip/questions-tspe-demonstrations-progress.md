@@ -10,19 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2654 (fichiers du lot 15, § 62)._
+_Mis à jour le 2026-11-14, rangement du lot 15 en PR (§ 63)._
 
-- **État** : lots 1 à 14 publiés (§ 61) ; lot 15 (517, 529, 537, 538, 539, phase 0 au § 35) : fichiers écrits et
-  vérifiés, mergés (#2654, § 62).
-- **Prochaine action** : David lance `create-questions --publier` (prod) ; migration de rangement +
-  tags **avec la sous-notion neuve « loi de Poisson »** sous Autres lois (comme 395, § 45 : fixture de l'arbre,
-  décompte) ; `id` commités dans cette PR (§ 56) ; page à cocher, verdicts, publication. Dernier lot du chantier.
-- **En attente de David** : `create-questions --publier` du lot 15 après le merge des fichiers.
+- **État** : lots 1 à 14 publiés (§ 61) ; lot 15 : brouillons créés par David, migration de rangement + sous-notion
+  « loi de Poisson » en PR (§ 63).
+- **Prochaine action** : merge, `db:migrate` du dépôt principal, relecture MCP ; page à cocher (`page-a-cocher.ts`),
+  verdicts, `publier-lot.ts` (David). Dernier lot du chantier, puis clôture (recompter le découpage).
+- **En attente de David** : —
 - **Pièges en cours** : commitlint (type `content` refusé, corps ≤ 100 car.) ; graine de l'aperçu = variation (§ 3) ;
   scripts sur la prod (`create-questions`, `publier-lot.ts`, simulations comprises) → David ; `\dots` non rendu
   (§ 14) ; `Doc-inchangée:` dans un COMMIT ; « inserted before » → `--dry-run --include-all` (§ 20) ; `cf()` (§ 48) ;
   pas de variable `e` ni `i` (§ 52) ; réponse décimale → `blankDefaults.acceptDecimal` (§ 62).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche (rangement 15) à créer depuis `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-approfondissements-15-rangement`.
 
 ---
 
@@ -1111,3 +1110,14 @@ hors dépôt : a7550547, 1d99c55a, e2027daa, 5487df35, f22e6fe3) ; aperçu admin
 affichée), 517 (P(Y = 2)) joué « Juste » (`4,5` et `3`).
 
 Mergé (#2654) : CI verte. Les `id` viendront de `create-questions --publier` (prod, lancé par David).
+
+## 63. Lot 15 : brouillons et rangement (2026-11-14)
+
+`create-questions --publier` lancé par David : 8d03f8c1 (517), 81353e4d (529), 38c8774e (537), 7f9366af (538),
+f55ce309 (539), en `draft`, au niveau {T_SPE}, sans nœud ni tag (MCP) ; « loi de Poisson » absente sous Autres lois
+(8 sous-notions). Les `id` des cinq JSON sont commités dans la PR de rangement (piège du § 56). Migration
+`20261114111511_questions_tspe_approfondissements_15_rangement_tags`, copie de celle du lot 11 (sous-notion neuve,
+tout ou rien) aux données près : « loi de Poisson » en fin d'Autres lois (position 8) ; chacun sur la sous-notion du
+§ 62, 517 restant sur la notion. Test d'intégration 11/11, rouge sans la migration (6 échecs, 5 sautés) ; tests
+frères comme au lot 11 : fixture de l'arbre, décompte 483, `LATER`.
+`security-auditor` : aucun finding (code identique au lot 11 aux données près ; relevé prod refait, concordant).
