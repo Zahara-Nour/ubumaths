@@ -61,6 +61,8 @@ import { expectedStepAnswer, stepOfRadians } from '$lib/ubumark/utils/trig-place
 import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
 import { parseTortueContent } from '$lib/ubumark/parser/tortue-parser';
 import { expectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
+import { parseCalculContent } from '$lib/ubumark/parser/calcul-parser';
+import { expectedCalculAnswer } from '$lib/ubumark/utils/calcul-answer';
 
 // Constantes
 
@@ -70,6 +72,7 @@ const MASKABLE_KINDS = new Set<BuildKind>([
 	'courbe',
 	'trig',
 	'tortue',
+	'calcul',
 	'horloge',
 	'collection',
 	'monnaie',
@@ -127,6 +130,14 @@ export function buildAnswerOf(
 		if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
 		if (node.spec?.attendu == null) return { errors: ['attendu: absent'] };
 		return { answer: expectedTortueAnswer(node.spec.comparer, node.spec.attendu) };
+	}
+	if (kind === 'calcul') {
+		// Programme de calcul : les nombres d'essai et le programme de référence (`attendu:`)
+		const node = parseCalculContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
+		if (node.spec?.attendu == null) return { errors: ['attendu: absent'] };
+		return { answer: expectedCalculAnswer(node.spec.essais, node.spec.attendu) };
 	}
 	if (kind === 'line') {
 		const { node, errors } = parseNumberLineContent(source);

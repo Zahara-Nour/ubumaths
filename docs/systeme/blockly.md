@@ -13,7 +13,7 @@ couvre:
 # Blockly — programmation par blocs
 
 > Écrite à partir du code le 2026-11-14 (chantier `blockly`, journal
-> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour).
+> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14.
 
 ## À quoi ça sert
 
@@ -51,6 +51,10 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 | `src/lib/shared/blockly/execution/js-executor.svelte.ts`      | Pilote le worker JavaScript                                                                                                                                      |
 | `src/lib/workers/js-sandbox.worker.ts`                        | Sandbox JavaScript : globales filtrées, délai de 10 s, sortie limitée                                                                                            |
 | `src/lib/workers/js-sandbox-source.ts`                        | Source de la fonction sandbox (sans effet de bord, testable sous Node)                                                                                           |
+| `src/lib/shared/blockly/lecture.ts`                           | Lecture commune (tortue, calcul) : état sérialisé → `BlocLu` vérifié (`lirePiles`), `premierBlocInconnu`, `nombreDeTours`                                        |
+| `src/lib/shared/blockly/calcul/interpreteur.ts`               | `executerCalcul(etat, nombre)` : interprète un programme de calcul pour un nombre de départ (ADR 0039), rend les nombres affichés                                |
+| `src/lib/shared/blockly/calcul/notation.ts`                   | `etatVersTexteCalcul` / `texteVersEtatCalcul` : `résultat = nombre + 2 ; afficher résultat × 4` ↔ état Blockly                                                   |
+| `src/lib/shared/blockly/calcul/jugement.ts`                   | `jugerProgrammeCalcul` (mêmes affichages sur chaque essai), `lireProgrammeCalcul`, `lireEssais` / `ecrireEssais`, `ESSAIS_PAR_DEFAUT`                            |
 | `src/lib/shared/blockly/tortue/interpreteur.ts`               | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments, tortue finale et étapes                                               |
 | `src/lib/shared/blockly/tortue/animation.ts`                  | `imageAnimation` (image à l'étape i), `rythmeAnimation` (durée d'un tic, étapes par tic)                                                                         |
 | `src/lib/shared/blockly/tortue/segments.ts`                   | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `memesFormes` (8 symétries + translation), `sortDuCadre`                    |
@@ -149,6 +153,42 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
   cherche sa pareille dans les cases voisines : deux morceaux d'une même droite à cheval sur une
   frontière d'arrondi sont fusionnés (avant la PR 4, une clé arrondie pouvait les séparer).
 
+## Programme de calcul en réponse
+
+Programmes de calcul de 5e (« choisir un nombre, ajouter 2, multiplier par 4 »), bloc `calcul
+d'une question ([ubumark](ubumark.md)). **PR 5a : logique seule** ; l'écran (blocs Blockly,
+« Essayer avec », corrigé, PDF) vient en 5b — d'ici là, un bloc `calcul n'a pas d'écran.
+
+- **Blocs interprétés** (`calcul/interpreteur.ts`, ADR 0039) : `calcul_nombre_choisi` (le nombre
+  de départ, lu seulement : la variable de 5e « en lecture d'une donnée saisie »), `math_number`,
+  `calcul_operation` (champ `OP` : `ADD`, `MINUS`, `MULTIPLY`, `DIVIDE`, entrées `A` et `B`),
+  `calcul_resultat` (l'unique variable, 0 au départ), `calcul_mettre_resultat`,
+  `calcul_afficher`, `controls_repeat` (nombre de tours écrit dans le bloc ; `controls_repeat_ext`, à
+  nombre de tours calculé, est inconnu : il ne s'écrirait pas en texte). L'élève ne crée pas de variable (4e). Entrée vide
+  → 0 ; blocs désactivés et calculs posés seuls ignorés ; piles de haut en bas. Erreurs : bloc
+  inconnu (même dans une entrée, `math_arithmetic` compris), opération inconnue (illisible),
+  division par zéro, nombre devenu infini, plus de 10 000 pas (`LIMITE_PAS_CALCUL` ; une opération compte un pas, comme une instruction
+  ou un tour de boucle : un long calcul répété reste borné) ; les
+  affichages déjà faits sont rendus.
+- **Notation texte** (`calcul/notation.ts`) : `afficher <calcul>`, `résultat = <calcul>` (ou
+  `mettre résultat à <calcul>`), `répéter n [ … ]`, séparées par `;` ou un retour à la ligne.
+  Calculs : nombres, `nombre` (ou `nombre choisi`), `résultat`, `+ − × ÷` (aussi `- * / :`),
+  parenthèses ; × et ÷ avant + et −, de gauche à droite ; `−` devant un nombre en fait un
+  négatif (`nombre + -3` d'une variable tirée), devant autre chose c'est refusé (écrire `0 − …`).
+  Écriture canonique : `−`, `×`, `÷`, virgule décimale, sans exposant (`1e21` ne se relirait
+  pas), parenthèses là seulement où l'arbre les exige — à droite d'une opération de même
+  priorité aussi (`2 × (3 × 4)` reste tel quel) et autour d'un négatif opérande (`nombre + (−3)`).
+  Un nombre trop grand pour être lu est refusé (jamais lu 0). Même longueur maximale que la tortue (`LONGUEUR_MAX_PROGRAMME`). Un nombre dans une entrée part
+  en ombre ; un calcul, posé sur une ombre 0.
+- **Jugement** (`calcul/jugement.ts`) : référence et réponse rejouées sur chaque nombre d'essai
+  (`essais:`, sinon `ESSAIS_PAR_DEFAUT` = −3 ; 0 ; 1 ; 2 ; 5 ; 10 ; 0,5 — un seul essai ne
+  sépare pas `× 2` de `+ 2`) ; juste si mêmes nombres affichés, dans le même ordre, ni plus ni
+  moins, pour chaque essai (`memesAffichages`, marge relative 1e-9 : 0,1 + 0,2 = 0,3, pas 0,3001 ; près de 0, marge absolue 1e-12 : 10⁻¹¹ ≠ 0).
+  Réponse vide → faux sans message ; illisible → le message de lecture ; erreur sur un essai →
+  « Avec le nombre 0 : Division par zéro… » ; rien d'affiché sur aucun essai → « Ton programme
+  n'affiche rien. » ; référence illisible, muette sur un essai ou en erreur, ou aucun essai →
+  jamais juste (refusée à la publication).
+
 ## L'écran d'une question tortue
 
 - **Carte** : `TortueProgramme.svelte` (nœud ubumark, `components/markdown/nodes/`), monté par
@@ -176,6 +216,9 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 
 ## Comment étendre
 
+- Nouveau bloc de calcul : cas dans `executerCalcul` (et `INSTRUCTIONS` / `VALEURS` de
+  `calcul/interpreteur.ts`), écriture et lecture dans `calcul/notation.ts` (l'aller-retour doit
+  garder le calcul : `notation.test.ts`).
 - Nouveau bloc tortue : définition et aperçu dans `tortue/blocs.ts`, cas dans `executerTortue`
   (et dans `INSTRUCTIONS` / `VALEURS`), entrée dans `TORTUE_TOOLBOX` ; `blocs.test.ts` vérifie
   que chaque bloc de la boîte à outils est interprétable.
@@ -191,6 +234,9 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 - `src/lib/shared/blockly/tortue/__tests__/` : interpréteur (nominal, limites, erreurs), segments,
   blocs passés par un vrai `Blockly.Workspace` sérialisé (dont le champ de `controls_repeat`),
   étapes et `imageAnimation`.
+- `src/lib/shared/blockly/calcul/__tests__/` : interpréteur (opérations, variable, répétition,
+  erreurs), notation (priorités, lecture souple, refus expliqués, aller-retour), jugement (calcul
+  écrit autrement, essais, marge, messages), `lireEssais`.
 - `src/lib/components/blockly/__tests__/tortue-telephone.svelte.test.ts` (navigateur, 390 px et
   1280 px) : onglets, bascule au « Lancer », programme gardé, pause au départ.
 - `src/lib/components/markdown/nodes/__tests__/TortueProgramme.svelte.test.ts` (navigateur) :

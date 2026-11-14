@@ -563,6 +563,7 @@ export type { QrNode } from './qr';
 export type { ScratchNode } from './scratch';
 export type { HorlogeNode } from './horloge';
 export type { TortueNode } from './tortue';
+export type { CalculNode } from './calcul';
 export type { PartageNode } from './partage';
 export type { EspaceNode } from './espace';
 export type { OperationNode } from './operation';
@@ -586,6 +587,7 @@ import type { QrNode } from './qr';
 import type { ScratchNode } from './scratch';
 import type { HorlogeNode } from './horloge';
 import type { TortueNode } from './tortue';
+import type { CalculNode } from './calcul';
 import type { PartageNode } from './partage';
 import type { EspaceNode } from './espace';
 import type { OperationNode } from './operation';
@@ -622,6 +624,7 @@ export type BlockNode =
 	| ScratchNode
 	| HorlogeNode
 	| TortueNode
+	| CalculNode
 	| PartageNode
 	| EspaceNode
 	| OperationNode

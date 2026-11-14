@@ -14,6 +14,7 @@
  * - `montrer: oui | non` (défaut `non`) : la figure à reproduire, en gris.
  * - `comparer: position | forme` (défaut `position`) : même figure au même endroit, ou à
  *   une translation, un quart de tour ou un retournement près.
+ * - `départ:` : un programme posé d'avance dans l'espace de travail de l'élève, à modifier.
  * - `case: N` : posée par le générateur.
  * - `figure:` : réservée à l'énoncé d'une évaluation notée, où `attendu:` devient `?` ; elle
  *   porte la figure à reproduire (`x1 y1 x2 y2 ; …`).
@@ -27,6 +28,7 @@ import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
 import { isMaskedValue } from '../utils/masked-value';
 import { lireProgrammeTortue, type ComparaisonTortue } from '$lib/shared/blockly/tortue/jugement';
+import { texteVersEtat } from '$lib/shared/blockly/tortue/notation';
 import { normaliserSegments, type Segment } from '$lib/shared/blockly/tortue/segments';
 import {
 	TORTUE_FIGURE_MAX_SEGMENTS,
@@ -45,12 +47,13 @@ const BLOCK_END_REGEX = /^```\s*$/;
 /** `clé: valeur` */
 const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 
-type Key = 'attendu' | 'montrer' | 'comparer' | 'case' | 'figure';
+type Key = 'attendu' | 'montrer' | 'comparer' | 'départ' | 'case' | 'figure';
 
-const KEY_NAMES: Key[] = ['attendu', 'montrer', 'comparer', 'case', 'figure'];
+const KEY_NAMES: Key[] = ['attendu', 'montrer', 'comparer', 'départ', 'case', 'figure'];
 
-/** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
-const BLOCK_KEYS: readonly string[] = KEY_NAMES;
+/** Les clés du bloc, `depart` sans accent compris : une ligne qui commence par l'une d'elles
+ * n'est jamais du texte (Q66) */
+const BLOCK_KEYS: readonly string[] = [...KEY_NAMES, 'depart'];
 
 const COMPARAISONS: readonly ComparaisonTortue[] = ['position', 'forme'];
 
@@ -161,6 +164,7 @@ class LineError extends Error {}
 
 function normalizeKey(raw: string): Key | null {
 	const lower = raw.toLowerCase();
+	if (lower === 'depart') return 'départ';
 	return KEY_NAMES.find((k) => k === lower) ?? null;
 }
 
@@ -189,6 +193,7 @@ export function parseTortueContent(source: string): TortueNode {
 	let montrer = false;
 	let comparer: ComparaisonTortue = 'position';
 	let figure: Segment[] | null = null;
+	let depart: string | null = null;
 	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
 
@@ -207,7 +212,10 @@ export function parseTortueContent(source: string): TortueNode {
 		const key = normalizeKey(match[1]);
 		const value = match[2].trim();
 		if (key === null) {
-			fail(lineNo, `clé « ${match[1]} » inconnue (clés possibles : attendu, montrer, comparer)`);
+			fail(
+				lineNo,
+				`clé « ${match[1]} » inconnue (clés possibles : attendu, montrer, comparer, départ)`
+			);
 			return;
 		}
 		const previous = seen.get(key);
@@ -244,6 +252,12 @@ export function parseTortueContent(source: string): TortueNode {
 				case 'figure':
 					figure = parseFigure(value);
 					break;
+				case 'départ': {
+					const lu = texteVersEtat(value);
+					if (!lu.ok) throw new LineError(`départ: ${lu.message}`);
+					depart = value === '' ? null : value;
+					break;
+				}
 				case 'case':
 					if (!/^\d+$/.test(value))
 						throw new LineError(`case « ${value} » : numéro de case entier`);
@@ -289,7 +303,8 @@ export function parseTortueContent(source: string): TortueNode {
 			attendu: attenduMasque ? null : attendu,
 			montrer,
 			comparer,
-			modele: montrer && traceModele ? normaliserSegments(traceModele) : null
+			modele: montrer && traceModele ? normaliserSegments(traceModele) : null,
+			depart
 		},
 		errors,
 		...withCase

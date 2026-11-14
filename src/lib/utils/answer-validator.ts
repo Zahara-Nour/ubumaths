@@ -81,6 +81,7 @@ import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
 import { isCourbeAnswerCorrect } from '$lib/ubumark/utils/courbe-tracer';
 import { isPlacedAngleCorrect } from '$lib/ubumark/utils/trig-placer';
 import { isTortueAnswerCorrect, tortueAnswerVerdict } from '$lib/ubumark/utils/tortue-answer';
+import { calculAnswerVerdict, isCalculAnswerCorrect } from '$lib/ubumark/utils/calcul-answer';
 import {
 	isLineToRepresentBlank,
 	isRepresentedIntervalCorrect
@@ -833,6 +834,8 @@ function validateBlankValue(
 	if (blank.construire === 'trig') return isPlacedAngleCorrect(userAnswer, blank.expectedAnswer);
 	// Programme tortue : son tracé, rejoué par l'interpréteur, contre celui de l'attendu
 	if (blank.construire === 'tortue') return isTortueAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Programme de calcul : ses affichages, rejoués sur chaque essai, contre ceux de l'attendu
+	if (blank.construire === 'calcul') return isCalculAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
 	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
 	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
@@ -1355,6 +1358,14 @@ function validateSingleBlank(
 	// ne s'arrête pas dit pourquoi
 	if (blank.construire === 'tortue') {
 		const verdict = tortueAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Programme de calcul : ses affichages sur chaque essai contre ceux de l'attendu ; un
+	// programme illisible, muet ou en erreur sur un essai dit pourquoi
+	if (blank.construire === 'calcul') {
+		const verdict = calculAnswerVerdict(userAnswer, blank.expectedAnswer);
 		if (verdict.juste) return { isCorrect: true, status: 'correct' };
 		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
 	}

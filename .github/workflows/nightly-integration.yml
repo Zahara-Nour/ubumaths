@@ -71,6 +71,9 @@ on:
       - 'src/lib/qr/**'
       # programme tortue : jugé par answer-validator (chantier blockly)
       - 'src/lib/shared/blockly/tortue/**'
+      # programme de calcul et lecture commune des blocs : jugés par answer-validator
+      - 'src/lib/shared/blockly/calcul/**'
+      - 'src/lib/shared/blockly/lecture.ts'
       - 'src/lib/seo/site.ts'
       - 'src/lib/utils/**'
       # src/lib : fichiers atteints ponctuellement

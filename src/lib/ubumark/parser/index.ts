@@ -153,6 +153,14 @@ export {
 	isTortueBlockStart
 } from './tortue-parser';
 
+// Bloc ```calcul
+export {
+	parseCalcul,
+	parseCalculContent,
+	findCalculBlocks,
+	isCalculBlockStart
+} from './calcul-parser';
+
 // Bloc ```partage
 export {
 	parsePartage,
