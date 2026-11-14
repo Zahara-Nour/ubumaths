@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-14, PR 5b en cours (branche `feat/blockly-calcul-ecran`)._
 
-- **État** : PR 1 à 5a mergées ; 5b (écran du programme de calcul) codée, tests verts, en essai · **Prochaine action** : essai navigateur, revue `code-reviewer` (Sonnet), PR, merge · **En attente de David** : avis sur les choix du § PR 5a (écriture `résultat = …`, `:` = division, `−` devant un nombre seulement, marges, 1 à 20 essais) et du § PR 5b (`départ:` pas réponse tant qu'on n'y touche pas, 5 proposé dans « Essayer avec ») · **Après le prochain `deploy:prod`** : lignes #2627, #2632, #2634 / 3b / 3c et 4b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une PR en conflit ne lance pas sa CI (vérifier `mergeable`) · **Worktree / branche** : `ubumaths-wt-blockly` / `feat/blockly-calcul-ecran`
+- **État** : PR 1 à 5a mergées ; 5b (écran du programme de calcul) codée, tests verts, en essai · **Prochaine action** : PR, CI, merge (essai navigateur et revue faits) · **En attente de David** : avis sur les choix du § PR 5a (écriture `résultat = …`, `:` = division, `−` devant un nombre seulement, marges, 1 à 20 essais) et du § PR 5b (`départ:` pas réponse tant qu'on n'y touche pas, 5 proposé dans « Essayer avec ») · **Après le prochain `deploy:prod`** : lignes #2627, #2632, #2634 / 3b / 3c et 4b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une PR en conflit ne lance pas sa CI (vérifier `mergeable`) · **Worktree / branche** : `ubumaths-wt-blockly` / `feat/blockly-calcul-ecran`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -336,3 +336,8 @@ nocturne. `départ:` lu par les parseurs ``calcul et ```tortue (`spec.depart`) ;
   pas comme répondu dans un devoir) ; « Essayer avec » propose 5 ; 50 affichages montrés au plus ;
   pas de générateur JS / Python pour les blocs de calcul (le mode Calcul du bac à sable viendra
   plus tard).
+- **Revue (code-reviewer Sonnet, 2026-11-14)** : aucun finding bloquant ; invariants vérifiés
+  (référence jamais montrée avant validation ni en évaluation notée, blocs de la boîte à outils
+  lus par l'interpréteur et la notation, `calcul/` sans Blockly, `départ:`, refus). Mineurs
+  laissés : espace vidé → le départ revient à la recréation de la carte (documenté) ; double
+  import `Blockly` / `BlocklyCore` et `math_number` posé seul ignoré, comme la tortue.

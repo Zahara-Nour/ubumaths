@@ -231,7 +231,9 @@ question de calcul »).
   illisible → « Écris un nombre… ». Toute modification des blocs efface le dernier lancer.
 - **`départ:`** (calcul et tortue) : posé dans l'espace de travail quand la case est vide et pas
   jugée (aussi projeté en classe) ; il ne devient la réponse qu'au premier changement (Valider reste grisé tant que
-  l'élève n'y a pas touché). Case jugée sans réponse : espace vide, jamais le départ.
+  l'élève n'y a pas touché). Espace vidé puis carte recréée (autre question et retour) : le départ
+  revient (réponse vide = pas répondu, retour à l'état de départ). Case jugée sans réponse : espace
+  vide, jamais le départ.
 - **Après la validation** : blocs en lecture seule, sans « Effacer », cadre vert ou rouge ;
   « Essayer avec » marche encore.
 - **Corrigé** : `CalculCorrige.svelte` via `BuildAnswer`, sans Blockly : « Ton programme », « Un
