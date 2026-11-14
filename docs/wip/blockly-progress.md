@@ -330,7 +330,7 @@ nocturne. `départ:` lu par les parseurs ``calcul et ```tortue (`spec.depart`) ;
 - PDF : `calcul-typst.ts`, cadre « À faire sur Chiphre » seul (ni référence ni départ). Compilé.
 - Catalogue : fiche `calcul` (3 exemples, 3 erreurs) ; `départ:` ajouté à la fiche tortue.
 - `départ:` (calcul ET tortue) posé dans l'espace de blocs quand la case est vide et pas
-  verrouillée.
+  jugée (projeté en classe aussi).
 - **Choix faits sans David, à lui signaler** : le programme de départ ne devient la réponse qu'au
   premier changement (Valider grisé tant que l'élève n'y touche pas ; un départ non touché ne compte
   pas comme répondu dans un devoir) ; « Essayer avec » propose 5 ; 50 affichages montrés au plus ;

@@ -193,7 +193,20 @@ describe('programme de calcul : la carte', () => {
 		await expect.poll(() => recu.at(-1)).toBe(ATTENDU);
 	});
 
-	it('verrouillé sans réponse : pas le programme de départ (il n’est pas celui de l’élève)', async () => {
+	it('jugé sans réponse : pas le programme de départ (il n’est pas celui de l’élève)', async () => {
+		const screen = await render(CalculProgramme, {
+			target: mainElement(),
+			props: {
+				node: node(`attendu: ${ATTENDU}`, 'départ: afficher nombre + 2', 'case: 0'),
+				answer: { value: '', isCorrect: false, disabled: true, onChange: () => {} }
+			}
+		});
+		await attendreBlocs(screen.container);
+		await new Promise((r) => setTimeout(r, 300));
+		expect(Blockly.getMainWorkspace().getAllBlocks(false)).toHaveLength(0);
+	});
+
+	it('projeté en classe (verrouillé, pas jugé) : le programme de départ se voit', async () => {
 		const screen = await render(CalculProgramme, {
 			target: mainElement(),
 			props: {
@@ -202,8 +215,7 @@ describe('programme de calcul : la carte', () => {
 			}
 		});
 		await attendreBlocs(screen.container);
-		await new Promise((r) => setTimeout(r, 300));
-		expect(Blockly.getMainWorkspace().getAllBlocks(false)).toHaveLength(0);
+		await expect.poll(() => Blockly.getMainWorkspace().getAllBlocks(false).length).toBe(4);
 	});
 
 	it('après la validation : cadre rouge, blocs verrouillés, on peut encore essayer', async () => {

@@ -90,10 +90,13 @@
 	let modele = $derived(spec?.montrer ? spec.modele : null);
 	let verrouille = $derived(answer?.disabled ?? false);
 	let verdict = $derived(answer?.isCorrect ?? null);
-	/** Les blocs posés à l'ouverture : la réponse déjà donnée, sinon `départ:` (pas verrouillé) */
+	/**
+	 * Les blocs posés à l'ouverture : la réponse déjà donnée, sinon `départ:` — aussi projeté en
+	 * classe (verrouillé sans verdict), jamais une fois jugé (ce n'est pas le programme de l'élève)
+	 */
 	let programme = $derived.by(() => {
 		const donne = answer ? answer.value : programmeLibre;
-		if (donne !== '' || verrouille) return donne;
+		if (donne !== '' || verdict !== null) return donne;
 		return spec?.depart ?? '';
 	});
 

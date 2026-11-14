@@ -230,8 +230,8 @@ question de calcul »).
   rien », ou le message d'erreur (division par zéro…) sous les affichages déjà faits. Nombre
   illisible → « Écris un nombre… ». Toute modification des blocs efface le dernier lancer.
 - **`départ:`** (calcul et tortue) : posé dans l'espace de travail quand la case est vide et pas
-  verrouillée ; il ne devient la réponse qu'au premier changement (Valider reste grisé tant que
-  l'élève n'y a pas touché). Case verrouillée sans réponse : espace vide, jamais le départ.
+  jugée (aussi projeté en classe) ; il ne devient la réponse qu'au premier changement (Valider reste grisé tant que
+  l'élève n'y a pas touché). Case jugée sans réponse : espace vide, jamais le départ.
 - **Après la validation** : blocs en lecture seule, sans « Effacer », cadre vert ou rouge ;
   « Essayer avec » marche encore.
 - **Corrigé** : `CalculCorrige.svelte` via `BuildAnswer`, sans Blockly : « Ton programme », « Un
