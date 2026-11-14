@@ -1,0 +1,218 @@
+{
+	"title": "Suites adjacentes : définition, propriété, limite commune",
+	"description": "Différence et limite commune de deux suites adjacentes (deux cases), condition qui manque à la définition (case choix), pourquoi v_n − u_n reste positive (case choix), convergence vers la même limite (étapes à ranger)",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $u_n={{eval:c}}-\\dfrac{{{eval:a}}}{n+1}$ et $v_n={{eval:c}}+\\dfrac{{{eval:b}}}{n+1}$. La suite $(u_n)$ est croissante et $(v_n)$ décroissante.\n\nDeux suites $(u_n)$ et $(v_n)$ sont **adjacentes** si l'une est croissante, l'autre décroissante, et si $\\displaystyle\\lim_{n\\to+\\infty}(v_n-u_n)=0$.\n\nComplète, puis donne la limite commune $\\ell$ de ces deux suites adjacentes.\n\n$v_n-u_n=\\dfrac{?}{n+1}$ et $\\ell=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$v_n-u_n=\\dfrac{{{eval:b}}}{n+1}+\\dfrac{{{eval:a}}}{n+1}=\\dfrac{{{eval:a+b}}}{n+1}$, qui tend vers $0$ : les suites sont adjacentes.",
+					"Comme $\\displaystyle\\lim_{n\\to+\\infty}\\dfrac{1}{n+1}=0$, $(u_n)$ et $(v_n)$ tendent toutes deux vers ${{eval:c}}$.",
+					"Donc $v_n-u_n=\\dfrac{\\textcolor{{{color:primary.0}}}{{{eval:a+b}}}}{n+1}$ et $\\textcolor{{{color:primary.0}}}{\\ell={{eval:c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est croissante et la suite $(v_n)$ est décroissante.\n\nQuelle condition faut-il ajouter pour que $(u_n)$ et $(v_n)$ soient **adjacentes** ?\n\n```choix\n- $\\displaystyle\\lim_{n\\to+\\infty}(v_n-u_n)=0$\n- $u_n\\leqslant v_n$ pour tout entier naturel $n$\n- $(u_n)$ et $(v_n)$ sont bornées\n- $u_0\\leqslant v_0$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, deux suites sont adjacentes si l'une est croissante, l'autre décroissante, et si leur différence tend vers $0$.",
+					"$u_n\\leqslant v_n$ n'est pas une condition : c'est une **conséquence** de la définition.",
+					"La condition à ajouter est $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}(v_n-u_n)=0}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ croissante et $(v_n)$ décroissante, adjacentes. On pose $w_n=v_n-u_n$ : la suite $(w_n)$ est décroissante, car $w_{n+1}-w_n=(v_{n+1}-v_n)-(u_{n+1}-u_n)\\leqslant 0$.\n\nPourquoi a-t-on $w_n\\geqslant 0$ pour tout entier naturel $n$ ?\n\n```choix\n- $(w_n)$ est décroissante et tend vers $0$ : si un terme $w_N$ était négatif, les suivants resteraient sous $w_N<0$\n- $(w_n)$ est croissante et tend vers $0$\n- $u_n$ et $v_n$ sont positifs\n- $w_0\\geqslant 0$, donc tous les termes le sont\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $w_N<0$ pour un rang $N$, alors $w_n\\leqslant w_N$ pour tout $n\\geqslant N$, car $(w_n)$ est décroissante.",
+					"La limite vérifierait $0\\leqslant w_N<0$ : c'est impossible.",
+					"Donc $\\textcolor{{{color:primary.0}}}{w_n\\geqslant 0}$ pour tout $n$ : une suite décroissante de limite $0$ reste positive."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ croissante et $(v_n)$ décroissante, telles que $\\displaystyle\\lim_{n\\to+\\infty}(v_n-u_n)=0$. On démontre qu'elles convergent vers la même limite.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On pose $w_n=v_n-u_n$ pour tout entier naturel $n$.\n- $w_{n+1}-w_n=(v_{n+1}-v_n)-(u_{n+1}-u_n)\\leqslant 0$ : la suite $(w_n)$ est décroissante.\n- Décroissante et de limite $0$, la suite $(w_n)$ est positive : $u_n\\leqslant v_n$.\n- Ainsi $u_0\\leqslant u_n\\leqslant v_n\\leqslant v_0$ : $(u_n)$, croissante et majorée par $v_0$, converge, et $(v_n)$, décroissante et minorée par $u_0$, converge.\n- Comme $\\displaystyle\\lim_{n\\to+\\infty}(v_n-u_n)=0$, les deux limites sont égales.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On étudie la différence $w_n=v_n-u_n$ : décroissante de limite $0$, elle est positive.",
+					"L'encadrement $u_0\\leqslant u_n\\leqslant v_n\\leqslant v_0$ donne la convergence des deux suites (théorème de la limite monotone), et la différence nulle à la limite donne $\\textcolor{{{color:primary.0}}}{\\text{la même limite}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v_n − u_n = 4/(n + 1), ℓ = 2",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["4", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b − a",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["-2", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ℓ = 0 (limite de la différence)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["4", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "différence de limite nulle",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u_n ≤ v_n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bornées",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u_0 ≤ v_0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissante de limite 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : termes positifs",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : w_0 ≥ 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,190 @@
+{
+	"title": "Méthode de Newton : calculer des itérés à la main",
+	"description": "Abscisse où la tangente coupe l'axe des abscisses (case choix), relation de récurrence de la méthode de Newton pour f(x) = x³ − A (trois cases), premier itéré exact (case)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction dérivable et $x_n$ un réel tel que $f'(x_n)\\neq 0$. La tangente à la courbe de $f$ au point d'abscisse $x_n$ a pour équation $y=f'(x_n)(x-x_n)+f(x_n)$.\n\nÀ quelle abscisse $x_{n+1}$ coupe-t-elle l'axe des abscisses ?\n\n```choix\n- $x_{n+1}=x_n-\\dfrac{f(x_n)}{f'(x_n)}$\n- $x_{n+1}=x_n-\\dfrac{f'(x_n)}{f(x_n)}$\n- $x_{n+1}=x_n+\\dfrac{f(x_n)}{f'(x_n)}$\n- $x_{n+1}=\\dfrac{f(x_n)}{f'(x_n)}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche $x$ tel que $y=0$ : $f'(x_n)(x-x_n)+f(x_n)=0$.",
+					"Donc $x-x_n=-\\dfrac{f(x_n)}{f'(x_n)}$.",
+					"Soit $\\textcolor{{{color:primary.0}}}{x_{n+1}=x_n-\\dfrac{f(x_n)}{f'(x_n)}}$ : c'est la relation de la méthode de Newton."
+				]
+			}
+		},
+		{
+			"statement": "La **méthode de Newton** approche une solution de $f(x)=0$ : à partir de $x_0$, on remplace $x_n$ par l'abscisse $x_{n+1}$ du point où la tangente à la courbe de $f$ en $x_n$ coupe l'axe des abscisses, soit $x_{n+1}=x_n-\\dfrac{f(x_n)}{f'(x_n)}$.\n\nOn l'applique à $f(x)=x^3-{{eval:A}}$, pour approcher $\\sqrt[3]{{{eval:A}}}$. Complète la relation de récurrence obtenue, écrite avec un seul quotient.\n\n$x_{n+1}=\\dfrac{?x_n^3+?}{?x_n^2}$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "{{eval:A}}"
+				},
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=3x^2$, donc $x_{n+1}=x_n-\\dfrac{x_n^3-{{eval:A}}}{3x_n^2}$.",
+					"Au même dénominateur : $x_{n+1}=\\dfrac{3x_n^3-x_n^3+{{eval:A}}}{3x_n^2}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{x_{n+1}=\\dfrac{2x_n^3+{{eval:A}}}{3x_n^2}}$."
+				]
+			},
+			"conditions": ["A != 8", "A != 27"]
+		},
+		{
+			"statement": "La **méthode de Newton** approche une solution de $f(x)=0$ : à partir de $x_0$, on remplace $x_n$ par l'abscisse $x_{n+1}$ du point où la tangente à la courbe de $f$ en $x_n$ coupe l'axe des abscisses, soit $x_{n+1}=x_n-\\dfrac{f(x_n)}{f'(x_n)}$.\n\nOn l'applique à $f(x)=x^3-{{eval:A}}$ avec $x_0={{eval:x0}}$. Calcule $x_1$ (valeur exacte).\n\n$x_1=?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "2..30"
+				},
+				{
+					"name": "x0",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(2*x0^3+A)/(3*x0^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=3x^2$, donc $x_1=x_0-\\dfrac{x_0^3-{{eval:A}}}{3x_0^2}$.",
+					"Avec $x_0={{eval:x0}}$ : $x_1={{eval:x0}}-\\dfrac{{{eval:x0^3}}-{{eval:A}}}{{{eval:3*x0^2}}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{x_1={{eval:(2*x0^3+A)/(3*x0^2)}}}$."
+				]
+			},
+			"conditions": ["A != x0^3", "A != 8", "A != 27"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x_n − f/f'",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f'/f",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe +",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans x_n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2x³ + 10)/(3x²)",
+			"variationIndex": 1,
+			"variables": {
+				"A": "10"
+			},
+			"answers": ["2", "10", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3x³ (x_n oublié au même dénominateur)",
+			"variationIndex": 1,
+			"variables": {
+				"A": "10"
+			},
+			"answers": ["3", "10", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −A (signe)",
+			"variationIndex": 1,
+			"variables": {
+				"A": "10"
+			},
+			"answers": ["2", "-10", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x₁ = 13/6",
+			"variationIndex": 2,
+			"variables": {
+				"A": "10",
+				"x0": "2"
+			},
+			"answers": ["\\frac{13}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 11/6 (signe +)",
+			"variationIndex": 2,
+			"variables": {
+				"A": "10",
+				"x0": "2"
+			},
+			"answers": ["\\frac{11}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7/2 (formule de Héron)",
+			"variationIndex": 2,
+			"variables": {
+				"A": "10",
+				"x0": "2"
+			},
+			"answers": ["\\frac{7}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

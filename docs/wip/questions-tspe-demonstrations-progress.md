@@ -10,21 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après la publication du lot 10 (§ 43)._
+_Mis à jour le 2026-11-14, lot 11 écrit et vu à l'écran (§ 44), PR des fichiers ouverte._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 et 10 publiés (§ 39, § 43), 23 restants.
-- **Prochaine action** : lot 11 (394, 395, 396, 571), comme le lot 10 (§ 40-42) ; 395 demande la sous-notion neuve
-  « récurrence linéaire d'ordre 2 » sous Suites récurrentes, posée par la migration du lot (D3) ; 396 et 571 ne
-  refont pas les algorithmes 434 et 393 (§ 35).
+  § 35, lots 9 à 15) : lots 9 et 10 publiés, lot 11 écrit et vérifié (§ 44), 19 restants après lui.
+- **Prochaine action** : lot 11, PR des fichiers (branche `feat/questions-tspe-approfondissements-11`) : CI, merge ;
+  puis David lance `create-questions --publier` ; migration de rangement avec la **sous-notion neuve** « récurrence
+  linéaire d'ordre 2 » (Suites récurrentes, 395), comme D4 de la 1re.
 - **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
-  Le journal à jour vit sur `main` (le worktree est détaché) : `git -C <wt> checkout --detach origin/main` avant de lire.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, sur `feat/questions-tspe-approfondissements-11`.
 
 ---
 
@@ -877,3 +876,27 @@ sur son point, 3 ou 4 exemples chacun, aucune alerte. Page : https://claude.ai/a
 
 Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 41). `publier-lot.ts` en simulation puis `--publier`,
 lancés par David. Relu en base (MCP) : 4 `published`.
+
+## 44. Lot 11 : approfondissements, suites (2026-11-14)
+
+| Point | Modèle (`scripts/questions/tspe-approfondissements-11/`) | Nœud, niveau                             | Variations                                                                                            |
+| ----- | -------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 394   | `01-suites-adjacentes`                                   | convergence monotone, 5                  | v − u = ?/(n + 1) et limite commune ; condition de la définition (choix) ; w ≥ 0 (choix) ; ranger (5) |
+| 395   | `02-suite-recurrente-lineaire-d-ordre-2`                 | récurrence linéaire d'ordre 2 (neuve), 1 | u₂ et u₃ ; racines r₁ < r₂ ; λ et μ de la forme explicite (théorème donné)                            |
+| 396   | `03-methode-de-newton-iteres-a-la-main`                  | point fixe, 4                            | formule par la tangente (choix) ; récurrence pour x³ − A (3 cases) ; x₁ exact                         |
+| 571   | `04-demontrer-convergence-methode-de-heron`              | point fixe, 5                            | u_{n+1} − √A au même dénominateur (2 cases) ; décroissance (choix) ; ℓ = √A ; ranger (5)              |
+
+Niveaux au-dessus de la prod (relevé MCP du 2026-11-14 : 4 au plus sur « convergence monotone », 3 sur « point
+fixe ») ; 395 au niveau 1, sa sous-notion étant neuve et vide. 396 prend f(x) = x³ − A pour ne pas retomber sur
+Héron. Script : `docs/wip/questions/lot-tspe-approfondissements-11.py`.
+
+Défauts vus dans les aperçus et corrigés : √8, √12… non simplifiés (A sans facteur carré pour 571) ; la variation
+« limite » de 571 donnait la réponse dans l'énoncé (« minorée par √A ») : elle demande désormais ℓ, minorée par 0 ;
+`1 − (2)` et `1 − (−10)/3` dans les corrigés.
+
+Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (44 specs vertes), 0 `\textcolor` hors `$` ;
+409 formules distinctes des aperçus passées à `validateLatex` + accolades, 0 problème ; `create-questions` en
+simulation sur la prod : 4 « à créer », aucun titre pris ; brouillons en base locale (copie hors dépôt : 0ac17302,
+89db2744, 30742c88, df24b682) ; aperçu admin vu à l'écran : 394 (a) joué « Juste » (9/(n + 1), ℓ = −5),
+395 (a) joué faux (u₃ = 5 au lieu de 6 : case 2 fausse, case 1 juste), 396 (c) « 76/27 » joué « Juste », étapes
+à ranger de 571 rendues.
