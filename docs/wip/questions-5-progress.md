@@ -5,14 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 11 (Blockly) validé._
+_Mis à jour le 2026-11-14, lot 10 tranché, lot 11 porté par `blockly`._
 
-- **État** : lots 1 à 9 publiés. Lot 10 (§ 24) : phase 0 écrite, **pas validée**. Lot 11 « Programmer en blocs »
-  (§ 25) : **validé** par David le 2026-11-14 ; blocs `tortue / `calcul en prod (0.88.0).
-- **Prochaine action** : écrire le lot 11 (worktree `questions-5`, script `lot-11-blockly.py`, fiches
-  `src/lib/block-catalog/calcul.ts` et `tortue.ts`).
-- **En attente de David** : les 2 questions du § 24 (niveaux 6-9 à la suite ; 04 / 05 différenciés) ; 02 du lot 7
-  (deux cases sur deux lignes) à essayer à la main.
+- **État** : lots 1 à 9 publiés. Lot 10 : phase 0 (§ 24) et ses 2 questions tranchées le 2026-11-14
+  (§ 24 bis), **à écrire**. Lot 11 « Programmer en blocs » (§ 25) : validé, **porté par le chantier `blockly`**
+  (ne pas l'écrire ici).
+- **Prochaine action** : écrire le lot 10 (§ 24 et 24 bis ; worktree `questions-5`, script
+  `lot-5-proportionnalite.py`).
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
   128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance (dry-run
@@ -723,9 +723,16 @@ proportionnalité 1 (6e ×2) ; caractérisation 1-3 ; généralités sur les fon
 - **Questions posées, sans réponse** : (1) niveaux 6-9 à la suite pour 07-10 plutôt que renuméroter (reco : à la
   suite) ; (2) 04 sans contexte oui / non, 05 en contexte avec la raison — d'accord ?
 
+## 24 bis. Lot 10 : questions tranchées (David, 2026-11-14, « je te suis »)
+
+- 07-10 : niveaux 6, 7, 8, 9 **à la suite** dans « généralités sur les fonctions » (4 et 5 inchangés).
+- 04 **sans contexte** (alignés avec l'origine / sans l'origine / pas alignés) ; 05 **en contexte**, raison dans le
+  choix (« oui » / « non, pas alignés » / « non, alignés mais pas avec l'origine »).
+- Le lot 10 est donc validé dans son ensemble (§ 24 + ces deux points).
+
 ## 25. Lot 11 « Programmer en blocs » : validé (David, 2026-11-14, « je te suis »)
 
-Phase 0 tenue dans le chantier `blockly` (journal `blockly-progress.md`, § Premiers modèles), qui fait foi pour
+**Porté par le chantier `blockly`** (David, 2026-11-14) : ne pas l'écrire depuis ce chantier. Phase 0 tenue dans le chantier `blockly` (journal `blockly-progress.md`, § Premiers modèles), qui fait foi pour
 le détail. Relevé prod : 0 modèle sur 5-100, 102, 103, 105, 106.
 
 | #   | Point | Modèle                      | Bloc / réponse                    | Nœud                                      |
