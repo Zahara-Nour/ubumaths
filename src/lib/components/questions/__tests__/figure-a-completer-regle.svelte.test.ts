@@ -502,7 +502,8 @@ describe('case « figure » : triangle coté en cm, revue de #2658', () => {
 			rect,
 			{ x: 8, y: 2 },
 			{ x: 4.3, y: 5.25 },
-			{ x: 4.3, y: 5.25 }
+			// Ouverture touchée à 5,0 cm de B le long de la règle (4,92 cm en (4,3 ; 5,25) : 49 ou 50 selon l'arrondi)
+			{ x: 4.24, y: 5.3 }
 		);
 		await expect.poll(() => mmShown(container)).toBe('50');
 		tool(container, 'segment');
