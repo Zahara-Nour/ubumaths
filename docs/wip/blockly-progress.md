@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-14, ouverture du chantier._
 
-- **État** : phase 0 validée par David le 2026-11-14 (ci-dessous) ; PR 1 (Blockly 13, médias servis par nous) en cours · **Prochaine action** : PR 1b proposée (exécution réparée + blocs en français) avant la tortue · **En attente de David** : accord sur la PR 1b · **Pièges en cours** : une montée de Blockly doit recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts` le vérifie) · **Worktree / branche** : `ubumaths-wt-blockly` · `feat/blockly-13`
+- **État** : phase 0 validée le 2026-11-14 ; PR #2627 = PR 1 (Blockly 13, médias servis par nous) + PR 1b (exécution JS et Python réparées, blocs en français, doc `docs/systeme/blockly.md`), validée par David le 2026-11-14 · **Prochaine action** : CI + revues `code-reviewer` / `security-auditor` de #2627, merge ; puis PR 2, la tortue · **En attente de David** : rien · **Pièges en cours** : une montée de Blockly recopie `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → Vite ré-optimise et recharge, la page paraît vide un instant · **Worktree / branche** : `ubumaths-wt-blockly` · `feat/blockly-13`
 
 ---
 
@@ -38,7 +38,7 @@ Découpage :
 
 | PR  | Contenu                                                                                                                      |
 | --- | ---------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Blockly 13 (remplace la PR Dependabot #2074), médias servis par nous                                                         |
+| 1   | Blockly 13 (remplace la PR Dependabot #2074), médias servis par nous — #2627                                                 |
 | 2   | Tortue : blocs, tracé sur quadrillage, tests                                                                                 |
 | 3   | Bac à sable public à partir de `/dev/blockly`                                                                                |
 | 4+  | Geste de réponse « programme » (correction par tracé ou par sortie), puis premiers modèles CM1 → 5e (sessions `questions-*`) |
@@ -64,3 +64,20 @@ arguments in strict mode`, quel que soit le programme. Présent depuis 4e3c2f7d5
 - **Blocs en anglais** (« print », « create text with ») : aucune locale française chargée.
 - Proposé : une PR 1b qui répare les deux exécutions et charge le français, avant la tortue (qui a
   besoin d'exécuter). Le sandbox est du code de sécurité → revue `security-auditor`.
+
+## PR 1b — exécution réparée (rattachée à #2627, accord de David le 2026-11-14)
+
+- **JS** : `js-sandbox-source.ts` (`construireSourceSandbox`) construit la fonction sandbox et refuse
+  `eval` / `arguments` en paramètre ; `eval` est retiré de la portée globale du worker au démarrage.
+  Variable `_blocked` (jamais utilisée) supprimée.
+- **Sortie avalée** : `wrapJavaScriptCode` capturait `console.log` et les erreurs dans une valeur de
+  retour que personne ne lisait. Enveloppe réduite aux aides math ; les tests qui exigeaient la
+  capture (ils assertaient le défaut) remplacés par des tests qui exécutent le code enveloppé.
+- **Bloc print** : Blockly génère `window.alert` → `installerGenerateursChiphre` le remplace par
+  `console.log` (rouge vérifié : `window.alert('abc')` sans le remplacement).
+- **Python** : `base-executor.svelte.ts` importait des valeurs du barrel `$lib/shared/python`
+  (cycle → `Class extends value undefined`) ; import depuis `../config` et `../worker/messages`.
+- **Français** : `Blockly.setLocale` avec `blockly/msg/fr` (« afficher », « répéter 10 fois »).
+- Essai `/dev/blockly` : « abc » affiché en JS et en Python.
+- Doc d'abord : `docs/systeme/blockly.md` écrite, zone Blockly retirée de `trous` (la
+  calculatrice y reste).

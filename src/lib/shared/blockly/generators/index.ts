@@ -11,6 +11,7 @@ import { pythonGenerator } from 'blockly/python';
 import type { ExecutionLanguage, CodeGenerationResult } from '../types';
 import { BLOCKLY_CONFIG, ERROR_MESSAGES } from '../config';
 import {
+	installerGenerateursChiphre,
 	wrapJavaScriptCode,
 	detectInfiniteLoops as detectJsInfiniteLoops,
 	validateCodeLength as validateJsCodeLength
@@ -53,6 +54,7 @@ export function generateCode(
 	workspace: Blockly.WorkspaceSvg,
 	language: ExecutionLanguage
 ): CodeGenerationResult {
+	installerGenerateursChiphre();
 	try {
 		// Validate language
 		if (language !== 'javascript' && language !== 'python') {
@@ -206,6 +208,7 @@ export function generateCodeFromXml(
  * @returns Raw generated code without wrappers
  */
 export function getRawCode(workspace: Blockly.WorkspaceSvg, language: ExecutionLanguage): string {
+	installerGenerateursChiphre();
 	if (language === 'javascript') {
 		return javascriptGenerator.workspaceToCode(workspace);
 	} else {

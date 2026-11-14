@@ -15,6 +15,7 @@
 
 import type { FromWorkerMessage } from '$lib/shared/blockly/worker/messages';
 import { toWorkerMessageSchema } from '$lib/shared/blockly/worker/messages';
+import { construireSourceSandbox } from './js-sandbox-source';
 
 // =============================================================================
 // Worker Global Declarations
@@ -321,7 +322,6 @@ interface SafeGlobals {
 	SharedWorker: undefined;
 	ServiceWorker: undefined;
 	importScripts: undefined;
-	eval: undefined;
 	Function: undefined;
 	setTimeout: undefined;
 	setInterval: undefined;
@@ -427,7 +427,6 @@ function createSafeGlobals(id: string): SafeGlobals {
 		SharedWorker: undefined,
 		ServiceWorker: undefined,
 		importScripts: undefined,
-		eval: undefined,
 		Function: undefined,
 		setTimeout: undefined,
 		setInterval: undefined,
@@ -635,17 +634,8 @@ function executeCode(code: string, id: string): void {
 	const globalNames = Object.keys(safeGlobals);
 	const globalValues = Object.values(safeGlobals);
 
-	// Create sandboxed function
-	// The code runs in strict mode within an IIFE that receives only safe globals
-	// Additional security: block constructor access at runtime
-	const sandboxedCode = `
-		"use strict";
-		return (function(${globalNames.join(', ')}) {
-			// Runtime protection against constructor access
-			var _blocked = function() { throw new Error("Acces non autorise"); };
-			${code}
-		}).apply(null, arguments);
-	`;
+	// Fonction sandbox : le code ne reçoit que les globales sûres (mode strict)
+	const sandboxedCode = construireSourceSandbox(globalNames, code);
 
 	try {
 		// We use the Function constructor here, but note:
@@ -760,6 +750,10 @@ self.onmessage = (event: MessageEvent<unknown>) => {
 // =============================================================================
 // Worker Initialization
 // =============================================================================
+
+// `eval` ne peut pas être masqué par un paramètre en mode strict (cf. js-sandbox-source.ts) :
+// on le retire de la portée globale du worker, qui ne s'en sert pas (il utilise `new Function`).
+Reflect.deleteProperty(globalThis, 'eval');
 
 // Signal that worker is ready
 postWorkerMessage({ type: 'ready' });

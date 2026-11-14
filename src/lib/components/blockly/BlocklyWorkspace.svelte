@@ -26,6 +26,7 @@
 <script lang="ts">
 	import * as Blockly from 'blockly';
 	import 'blockly/blocks';
+	import * as BlocklyFr from 'blockly/msg/fr';
 	import { onMount, onDestroy } from 'svelte';
 	import {
 		STANDARD_TOOLBOX,
@@ -117,6 +118,16 @@
 				// Use custom theme with black category text, or provided theme
 				theme: theme ?? CHIPHRE_THEME
 			};
+
+			// Blocs en français (« afficher », « répéter »…), avant de créer l'espace de travail
+			// (on ne garde que les messages : l'espace de noms du module porte aussi `default`)
+			Blockly.setLocale(
+				Object.fromEntries(
+					Object.entries(BlocklyFr).filter(
+						(entree): entree is [string, string] => typeof entree[1] === 'string'
+					)
+				)
+			);
 
 			// Inject Blockly into the container
 			workspace = Blockly.inject(containerRef, options);
