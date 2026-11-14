@@ -308,3 +308,9 @@ nocturne. `départ:` lu par les parseurs ``calcul et ```tortue (`spec.depart`) ;
   `mettre résultat à …` aussi) ; `:` lu comme une division ; `−` seulement devant un nombre
   (`0 − …` sinon) ; marge d'égalité relative 1e-9 ; `essais:` de 1 à 20 nombres distincts ;
   le programme est muet seulement s'il n'affiche rien sur AUCUN essai (sinon simplement faux).
+- **Revue (code-reviewer Opus, 2026-11-14)** : rien de bloquant ; aucune fuite de `attendu:`,
+  aller-retours et priorités sûrs, tortue inchangée. Corrigés, tests rouges sans le correctif
+  vérifiés : une opération compte un pas (`répéter 4999 [ afficher nombre+1+…+1 ]` coûtait
+  2 s de serveur par jugement) ; `controls_repeat_ext` retiré du calcul (un nombre de tours
+  calculé s'écrivait `répéter 0`) ; nombre trop grand pour être lu refusé (lu 0, donc jugé
+  juste contre `afficher 0`) ; marge absolue 1e-12 près de 0 (`nombre ÷ 10¹¹` était jugé égal à 0).

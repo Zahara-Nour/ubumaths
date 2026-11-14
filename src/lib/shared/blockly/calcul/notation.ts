@@ -115,9 +115,8 @@ function ecrireValeur(bloc: BlocLu | undefined): {
 
 /** Nombre de tours d'une répétition, écrit (le champ, ou la valeur de l'entrée). */
 function tours(bloc: BlocLu): number {
-	return nombreDeTours(bloc, (entree) =>
-		entree?.type === 'math_number' ? valeurNombre(entree) : 0
-	);
+	// Seul `controls_repeat` est connu du calcul : le nombre de tours est son champ
+	return nombreDeTours(bloc, () => 0);
 }
 
 function ecrirePile(bloc: BlocLu | undefined): string[] {
@@ -125,7 +124,7 @@ function ecrirePile(bloc: BlocLu | undefined): string[] {
 	for (let courant = bloc; courant; courant = courant.suivant) {
 		// Un bloc désactivé n'est pas exécuté, son contenu non plus
 		if (!courant.actif) continue;
-		if (courant.type === 'controls_repeat' || courant.type === 'controls_repeat_ext') {
+		if (courant.type === 'controls_repeat') {
 			const contenu = ecrirePile(courant.entrees.DO);
 			const corps = contenu.length > 0 ? ` ${contenu.join(' ; ')} ` : ' ';
 			instructions.push(`répéter ${tours(courant)} [${corps}]`);
@@ -189,6 +188,15 @@ function decouper(texte: string): Jeton[] {
 }
 
 class TexteIllisible extends Error {}
+
+/** Nombre écrit ; trop grand pour être lu (Infinity), il est refusé, jamais lu 0. */
+function lireNombreFini(mot: string): number {
+	const n = Number(mot.replace(',', '.'));
+	if (!Number.isFinite(n)) {
+		throw new TexteIllisible(`« ${mot.slice(0, 20)}… » : nombre trop grand.`);
+	}
+	return n;
+}
 
 function nombreBloc(n: number): Bloc {
 	return { type: 'math_number', fields: { NUM: n } };
@@ -361,7 +369,7 @@ export function texteVersEtatCalcul(texte: string): EtatLu {
 			const suivant = jetons[position + 1];
 			if (suivant?.type === 'mot' && NOMBRE.test(suivant.mot)) {
 				position += 2;
-				return nombreBloc(-Number(suivant.mot.replace(',', '.')));
+				return nombreBloc(-lireNombreFini(suivant.mot));
 			}
 			throw new TexteIllisible('Le signe « − » doit être suivi d’un nombre (écrire 0 − … sinon).');
 		}
@@ -369,7 +377,7 @@ export function texteVersEtatCalcul(texte: string): EtatLu {
 			const normal = normaliser(jeton.mot);
 			if (NOMBRE.test(jeton.mot)) {
 				position++;
-				return nombreBloc(Number(jeton.mot.replace(',', '.')));
+				return nombreBloc(lireNombreFini(jeton.mot));
 			}
 			if (normal === 'nombre') {
 				position++;

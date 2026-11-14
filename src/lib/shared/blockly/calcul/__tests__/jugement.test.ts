@@ -106,6 +106,9 @@ describe('memesAffichages', () => {
 		expect(memesAffichages([1], [1.001])).toBe(false);
 		expect(memesAffichages([0], [1e-15])).toBe(true);
 		expect(memesAffichages([1, 2], [1])).toBe(false);
+		// Sous 1, la marge reste relative : un petit nombre n'est pas 0 (revue PR 5a)
+		expect(memesAffichages([1e-11], [0])).toBe(false);
+		expect(memesAffichages([0.1 + 0.2 - 0.3], [0])).toBe(true);
 	});
 });
 

@@ -37,6 +37,12 @@ export const ESSAIS_MAX = 20;
 /** Marge relative de l'égalité : 0,1 + 0,2 = 0,3, mais 0,3001 ≠ 0,3. */
 const MARGE = 1e-9;
 
+/**
+ * Marge absolue, pour comparer à 0 : 0,1 + 0,2 − 0,3 (≈ 5e-17) vaut 0, mais 0,00000000001
+ * ne vaut pas 0 (une marge relative bornée par 1 l'acceptait, revue PR 5a).
+ */
+const MARGE_ZERO = 1e-12;
+
 export const RIEN_AFFICHE = 'Ton programme n’affiche rien.';
 
 // =============================================================================
@@ -44,7 +50,8 @@ export const RIEN_AFFICHE = 'Ton programme n’affiche rien.';
 // =============================================================================
 
 function egaux(a: number, b: number): boolean {
-	return Math.abs(a - b) <= MARGE * Math.max(1, Math.abs(a), Math.abs(b));
+	const ecart = Math.abs(a - b);
+	return ecart <= MARGE_ZERO || ecart <= MARGE * Math.max(Math.abs(a), Math.abs(b));
 }
 
 /** Mêmes nombres affichés, dans le même ordre, à la marge près. */

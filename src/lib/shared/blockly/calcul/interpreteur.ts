@@ -5,7 +5,8 @@
  *
  * Blocs : `calcul_nombre_choisi` (le nombre de départ, lu seulement), `math_number`,
  * `calcul_operation` (+ − × ÷), `calcul_resultat` (l'unique variable, 0 au départ),
- * `calcul_mettre_resultat`, `calcul_afficher`, `controls_repeat(_ext)`.
+ * `calcul_mettre_resultat`, `calcul_afficher`, `controls_repeat` (nombre de tours écrit dans
+ * le bloc : un nombre de tours calculé, `controls_repeat_ext`, ne s'écrirait pas en texte).
  *
  * Sans dépendance à Blockly : s'exécute aussi bien dans le navigateur que sous Node (correction).
  */
@@ -44,18 +45,13 @@ export type ResultatCalcul = ({ ok: true } | { ok: false; erreur: ErreurCalcul }
 // Constantes
 // =============================================================================
 
-/** Nombre maximal de pas (blocs exécutés et tours de boucle) avant l'arrêt. */
+/** Nombre maximal de pas (blocs exécutés, tours de boucle, opérations) avant l'arrêt. */
 export const LIMITE_PAS_CALCUL = 10_000;
 
 export const OPERATIONS_CALCUL: readonly OperationCalcul[] = ['ADD', 'MINUS', 'MULTIPLY', 'DIVIDE'];
 
 /** Blocs d'instruction connus de l'interpréteur. */
-const INSTRUCTIONS = new Set([
-	'calcul_afficher',
-	'calcul_mettre_resultat',
-	'controls_repeat',
-	'controls_repeat_ext'
-]);
+const INSTRUCTIONS = new Set(['calcul_afficher', 'calcul_mettre_resultat', 'controls_repeat']);
 
 /** Blocs valeur connus de l'interpréteur. */
 const VALEURS = new Set([
@@ -159,6 +155,8 @@ export function executerCalcul(etat: unknown, nombre: number): ResultatCalcul {
 			case 'calcul_operation': {
 				const op = operationDe(bloc);
 				if (op === null) throw new Illisible();
+				// Une opération compte un pas : un long calcul répété reste borné (revue PR 5a)
+				compterUnPas();
 				const a = evaluer(bloc.entrees.A);
 				const b = evaluer(bloc.entrees.B);
 				if (op === 'ADD') return fini(a + b);
@@ -182,8 +180,7 @@ export function executerCalcul(etat: unknown, nombre: number): ResultatCalcul {
 				case 'calcul_mettre_resultat':
 					resultat = evaluer(courant.entrees.VALEUR);
 					break;
-				case 'controls_repeat':
-				case 'controls_repeat_ext': {
+				case 'controls_repeat': {
 					const tours = nombreDeToursDe(courant, evaluer);
 					for (let i = 0; i < tours; i++) {
 						// Un tour compte même vide : « répéter 10¹² fois (rien) » s'arrête

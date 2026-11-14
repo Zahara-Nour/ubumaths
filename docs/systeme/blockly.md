@@ -163,10 +163,12 @@ d'une question ([ubumark](ubumark.md)). **PR 5a : logique seule** ; l'écran (bl
   de départ, lu seulement : la variable de 5e « en lecture d'une donnée saisie »), `math_number`,
   `calcul_operation` (champ `OP` : `ADD`, `MINUS`, `MULTIPLY`, `DIVIDE`, entrées `A` et `B`),
   `calcul_resultat` (l'unique variable, 0 au départ), `calcul_mettre_resultat`,
-  `calcul_afficher`, `controls_repeat(_ext)`. L'élève ne crée pas de variable (4e). Entrée vide
+  `calcul_afficher`, `controls_repeat` (nombre de tours écrit dans le bloc ; `controls_repeat_ext`, à
+  nombre de tours calculé, est inconnu : il ne s'écrirait pas en texte). L'élève ne crée pas de variable (4e). Entrée vide
   → 0 ; blocs désactivés et calculs posés seuls ignorés ; piles de haut en bas. Erreurs : bloc
   inconnu (même dans une entrée, `math_arithmetic` compris), opération inconnue (illisible),
-  division par zéro, nombre devenu infini, plus de 10 000 pas (`LIMITE_PAS_CALCUL`) ; les
+  division par zéro, nombre devenu infini, plus de 10 000 pas (`LIMITE_PAS_CALCUL` ; une opération compte un pas, comme une instruction
+  ou un tour de boucle : un long calcul répété reste borné) ; les
   affichages déjà faits sont rendus.
 - **Notation texte** (`calcul/notation.ts`) : `afficher <calcul>`, `résultat = <calcul>` (ou
   `mettre résultat à <calcul>`), `répéter n [ … ]`, séparées par `;` ou un retour à la ligne.
@@ -176,12 +178,12 @@ d'une question ([ubumark](ubumark.md)). **PR 5a : logique seule** ; l'écran (bl
   Écriture canonique : `−`, `×`, `÷`, virgule décimale, sans exposant (`1e21` ne se relirait
   pas), parenthèses là seulement où l'arbre les exige — à droite d'une opération de même
   priorité aussi (`2 × (3 × 4)` reste tel quel) et autour d'un négatif opérande (`nombre + (−3)`).
-  Même longueur maximale que la tortue (`LONGUEUR_MAX_PROGRAMME`). Un nombre dans une entrée part
+  Un nombre trop grand pour être lu est refusé (jamais lu 0). Même longueur maximale que la tortue (`LONGUEUR_MAX_PROGRAMME`). Un nombre dans une entrée part
   en ombre ; un calcul, posé sur une ombre 0.
 - **Jugement** (`calcul/jugement.ts`) : référence et réponse rejouées sur chaque nombre d'essai
   (`essais:`, sinon `ESSAIS_PAR_DEFAUT` = −3 ; 0 ; 1 ; 2 ; 5 ; 10 ; 0,5 — un seul essai ne
   sépare pas `× 2` de `+ 2`) ; juste si mêmes nombres affichés, dans le même ordre, ni plus ni
-  moins, pour chaque essai (`memesAffichages`, marge relative 1e-9 : 0,1 + 0,2 = 0,3, pas 0,3001).
+  moins, pour chaque essai (`memesAffichages`, marge relative 1e-9 : 0,1 + 0,2 = 0,3, pas 0,3001 ; près de 0, marge absolue 1e-12 : 10⁻¹¹ ≠ 0).
   Réponse vide → faux sans message ; illisible → le message de lecture ; erreur sur un essai →
   « Avec le nombre 0 : Division par zéro… » ; rien d'affiché sur aucun essai → « Ton programme
   n'affiche rien. » ; référence illisible, muette sur un essai ou en erreur, ou aucun essai →

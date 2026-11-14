@@ -155,6 +155,25 @@ describe('executerCalcul', () => {
 		expect(r.pas).toBe(LIMITE_PAS_CALCUL);
 	});
 
+	it('chaque opération compte un pas : un long calcul répété est arrêté (revue PR 5a)', () => {
+		let somme: Bloc = choisi;
+		for (let i = 0; i < 980; i++) somme = op('ADD', somme, nombre(1));
+		const r = executerCalcul(programme(repeter(4999, [afficher(somme)])), 0);
+		expect(r).toMatchObject({ ok: false, erreur: { type: 'trop-long' } });
+		expect(r.pas).toBe(LIMITE_PAS_CALCUL);
+	});
+
+	it('répéter à nombre de tours calculé (controls_repeat_ext) : bloc inconnu', () => {
+		const ext = {
+			type: 'controls_repeat_ext',
+			inputs: { TIMES: { block: choisi }, DO: { block: afficher(nombre(7)) } }
+		};
+		expect(executerCalcul(programme(ext), 3)).toMatchObject({
+			ok: false,
+			erreur: { type: 'bloc-inconnu', typeBloc: 'controls_repeat_ext' }
+		});
+	});
+
 	it('bloc inconnu refusé, même dans une entrée', () => {
 		expect(executerCalcul(programme({ type: 'tortue_avancer' }), 0)).toMatchObject({
 			ok: false,

@@ -91,6 +91,10 @@ describe('texteVersEtatCalcul', () => {
 		expect(message('afficher 2 3')).toMatch(/2 3|calcul/i);
 	});
 
+	it('nombre trop grand pour être lu : refusé, jamais lu 0 (revue PR 5a)', () => {
+		expect(message(`afficher ${'9'.repeat(400)}`)).toMatch(/trop grand/i);
+	});
+
 	it('programme trop long refusé', () => {
 		const long = 'afficher 1 ; '.repeat(Math.ceil(LONGUEUR_MAX_PROGRAMME / 12));
 		expect(message(long)).toMatch(/trop long/i);
