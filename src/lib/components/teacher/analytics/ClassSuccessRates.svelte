@@ -48,34 +48,37 @@
 	let loading = $state(false);
 	let error = $state<string | null>(null);
 	let expanded = $state<string[]>([]);
+	/** Jeton de la dernière requête : une réponse périmée ne remplace pas la plus récente */
+	let requestSeq = 0;
 
 	const nothingProved = $derived(notions.length > 0 && notions.every((n) => n.students === 0));
 
 	// Functions
 
-	async function load() {
+	async function load(forClass: string) {
+		const seq = ++requestSeq;
 		loading = true;
 		error = null;
 		try {
-			const res = await fetch(`/api/teacher/classes/${classId}/analytics/success-rate`);
+			const res = await fetch(`/api/teacher/classes/${forClass}/analytics/success-rate`);
+			if (seq !== requestSeq) return;
 			if (!res.ok) {
 				const body = await res.json().catch(() => ({}));
-				error = body.error ?? `Erreur ${res.status}`;
+				if (seq === requestSeq) error = body.error ?? `Erreur ${res.status}`;
 				return;
 			}
 			const data = (await res.json()) as { notions: NotionRate[] };
-			notions = data.notions;
+			if (seq === requestSeq) notions = data.notions;
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Erreur réseau';
+			if (seq === requestSeq) error = e instanceof Error ? e.message : 'Erreur réseau';
 		} finally {
-			loading = false;
+			if (seq === requestSeq) loading = false;
 		}
 	}
 
 	$effect(() => {
-		void classId;
 		void refreshNonce;
-		void load();
+		void load(classId);
 	});
 
 	function keyOf(notion: NotionRate): string {

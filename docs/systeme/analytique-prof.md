@@ -89,7 +89,7 @@ Onglet 📘 Connaissances :
   prof) ; flash-cards et révision (déclaré) hors du taux, mention « Seulement déclaré » quand un point
   ou une notion n'a que du déclaré. **Chaque élève pèse autant** : taux de chaque élève (justes /
   faites), puis moyenne des élèves ayant au moins une réponse prouvée. Moins de **3** élèves → « Pas
-  assez de réponses » (`MIN_STUDENTS_FOR_RATE`). Points : liens modèle → point vivants, niveau de la
+  assez de réponses » (`MIN_STUDENTS_FOR_RATE`). L'effectif reste affiché sous le seuil (voulu : il ne dit rien du résultat, et le prof lit déjà chaque réponse). Points : liens modèle → point vivants, niveau de la
   classe (`keepLinksOfGrade`), comme A. Notion : chaque modèle compté une fois (un modèle lié à deux
   points de la même notion ne double pas l'élève) ; points qu'on ne sait pas placer → groupe « Points
   sans notion », en dernier. Comptes **faits par la base** (`class_template_success`, une ligne par
