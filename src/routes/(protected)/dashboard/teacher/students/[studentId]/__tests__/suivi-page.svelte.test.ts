@@ -103,6 +103,21 @@ describe('Suivi d’un élève, vue du prof', () => {
 		await expect.element(page.getByLabelText('En apprentissage')).toBeVisible();
 	});
 
+	it('deux notions homonymes non voisines : deux groupes, la page tient', async () => {
+		const point = (id: string, notion: string) => ({
+			...POINTS[2],
+			id,
+			name: `Point ${id}`,
+			branch_name: 'Nombres et calculs',
+			notion_name: notion
+		});
+		await renderPage({
+			points: [point('a', 'Fractions'), point('b', 'Décimaux'), point('c', 'Fractions')]
+		});
+		expect(page.getByRole('heading', { name: 'Fractions' }).elements()).toHaveLength(2);
+		await expect.element(page.getByText('Point c')).toBeVisible();
+	});
+
 	it('aucun point travaillé : le dit', async () => {
 		await renderPage({ points: [] });
 		await expect.element(page.getByText('Pas encore de point travaillé.')).toBeVisible();

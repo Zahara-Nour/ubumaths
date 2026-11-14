@@ -22,7 +22,8 @@
 	type Notion = { name: string | null; points: Point[] };
 	type Branch = { name: string | null; notions: Notion[] };
 
-	// Les points arrivent dans l'ordre de l'arbre : on regroupe les voisins.
+	// Les points arrivent dans l'ordre de l'arbre : on regroupe les voisins. Un même
+	// nom peut revenir plus loin (notions homonymes) : les listes sont clées par position.
 	const branches = $derived.by(() => {
 		const result: Branch[] = [];
 		for (const point of data.points) {
@@ -80,11 +81,11 @@
 				<p class="py-6 text-center text-sm text-muted-foreground">Pas encore de point travaillé.</p>
 			{:else}
 				<div class="space-y-6">
-					{#each branches as branch (branch.name)}
+					{#each branches as branch, branchIndex (branchIndex)}
 						<section>
 							<h2 class="mb-2 text-lg font-semibold">{branch.name ?? 'Autres points'}</h2>
 							<div class="space-y-4">
-								{#each branch.notions as notion (notion.name)}
+								{#each branch.notions as notion, notionIndex (notionIndex)}
 									<div>
 										<h3 class="mb-1 text-sm font-medium text-muted-foreground">
 											{notion.name ?? 'Sans notion'}
