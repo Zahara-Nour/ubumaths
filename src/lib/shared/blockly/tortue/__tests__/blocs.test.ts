@@ -82,6 +82,42 @@ describe('blocs tortue dans Blockly', () => {
 		expect(python).toContain('left(90)');
 	});
 
+	it('boucle de la boîte à outils : « répéter n fois » à champ, sans entrée valeur', () => {
+		const types = TORTUE_TOOLBOX.contents.flatMap((categorie) =>
+			categorie.contents.map((entree) => entree.type)
+		);
+		expect(types).toContain('controls_repeat');
+		expect(types).not.toContain('controls_repeat_ext');
+	});
+
+	it('« répéter n fois » : ni virgule ni négatif ne se saisissent', () => {
+		espace = new Blockly.Workspace();
+		const bloc = espace.newBlock('controls_repeat');
+		bloc.setFieldValue('-3', 'TIMES');
+		expect(Number(bloc.getFieldValue('TIMES'))).toBe(0);
+		bloc.setFieldValue('2.7', 'TIMES');
+		expect(Number(bloc.getFieldValue('TIMES'))).toBe(3);
+		bloc.setFieldValue('4', 'TIMES');
+		const resultat = executerTortue({
+			blocks: {
+				blocks: [
+					{
+						...Blockly.serialization.blocks.save(bloc),
+						inputs: {
+							DO: {
+								block: {
+									type: 'tortue_avancer',
+									inputs: { VALEUR: { shadow: { type: 'math_number', fields: { NUM: 1 } } } }
+								}
+							}
+						}
+					}
+				]
+			}
+		});
+		expect(resultat.tortue.x).toBe(4);
+	});
+
 	it('chaque bloc de la boîte à outils est exécutable par l’interpréteur', () => {
 		const types = TORTUE_TOOLBOX.contents.flatMap((categorie) =>
 			categorie.contents.map((entree) => entree.type)

@@ -63,6 +63,7 @@
 		Home,
 		Gamepad2,
 		Terminal,
+		Turtle,
 		Calculator,
 		PenTool,
 		Laugh
@@ -120,6 +121,8 @@
 				icon: Terminal,
 				roles: ['student', 'teacher']
 			},
+			// La Tortue (chantier blockly, PR 3) : publique, aucune donnée serveur
+			{ label: 'La Tortue', href: '/tortue', icon: Turtle },
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
 			// Sans `roles` : ni l'atelier, ni Automaths, ni le Shtam ne lisent de
 			// donnée serveur réservée, ils sont donc ouverts, y compris hors connexion.
