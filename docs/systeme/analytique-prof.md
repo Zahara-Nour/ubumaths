@@ -12,7 +12,7 @@ couvre:
 
 # Analytique prof — la page « analytics » d'une classe
 
-> Vérifié contre le code le 2026-10-21 ; page de suivi d'un élève (`suivi-eleve`, PR 1) le 2026-11-14 ; onglet « Erreurs » du widget E (`erreurs-frequentes`, PR 2) le 2026-11-14 ; widget C remplacé par la régularité le 2026-11-12 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
+> Vérifié contre le code le 2026-10-21 ; page de suivi d'un élève (`suivi-eleve`, PR 1) le 2026-11-14 ; onglet « Erreurs » du widget E (`erreurs-frequentes`, PR 2) le 2026-11-14 ; `duration-signals.ts` (`durees-trop-courtes`, PR 2) le 2026-11-14 ; widget C remplacé par la régularité le 2026-11-12 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
 > [teacher-analytics-progress.md](../archive/wip/teacher-analytics-progress.md) (archivé, ne décrit
 > pas le code actuel).
 
@@ -176,6 +176,8 @@ projection**, le suivi afficherait le vrai nom). Elle rassemble ce que l'analyti
   - `class-knowledge.ts` : `getClassCurriculumPointGrid`, `getClassTopCurriculumPointsToRemediate`,
     `getStudentRetentionCurve` ;
   - `point-errors.ts` : `getClassPointErrors` (onglet « Erreurs » du widget E ; hors barrel) ;
+  - `duration-signals.ts` : `getDurationSignals` (durées trop courtes du panier et de l'éditeur de
+    série, hors barrel ; décrit dans [evaluations.md](evaluations.md)) ;
   - `class-regularity.ts` : `getClassRegularityGrid` (et ses fonctions pures, testées seules, dont
     `countActiveWeeks` pour le suivi d'un élève ; `readSchoolYearOfSchool`) ;
   - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate` ;

@@ -190,6 +190,11 @@ voit tout, par sa policy). Le mode test est respecté (`profiles.is_test` = le m
 
 ## Journal
 
+- 2026-11-14 : PR 2 codée : `duration-signals.ts` (pur + lecture), route
+  `GET /api/series/duration-signals`, marque commune `TooShortMark.svelte`, panier, éditeur (durée
+  affichée). Q7 vérifiée : un choix coché est une case. Test d'intégration vérifié rouge sans Q8 ni le
+  mode test. Tests du calcul écrits juste après le code, pas avant. Doc : `evaluations.md`,
+  `questions.md`, `analytique-prof.md`.
 - 2026-11-14 : PR 2, worktree ouvert, état des lieux, phase 0 posée (Q6 à Q8).
 
 - 2026-11-14 : PR 1 mergée (#2652) ; la revue a resserré la règle des tirages multiples (tous manqués).
