@@ -10,18 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, rangement du lot 15 en PR (§ 63)._
+_Mis à jour le 2026-11-14, après #2656 (rangement du lot 15, § 64)._
 
-- **État** : lots 1 à 14 publiés (§ 61) ; lot 15 : brouillons créés par David, migration de rangement + sous-notion
-  « loi de Poisson » en PR (§ 63).
-- **Prochaine action** : merge, `db:migrate` du dépôt principal, relecture MCP ; page à cocher (`page-a-cocher.ts`),
-  verdicts, `publier-lot.ts` (David). Dernier lot du chantier, puis clôture (recompter le découpage).
-- **En attente de David** : —
+- **État** : lots 1 à 14 publiés (§ 61) ; lot 15 rangé en prod (#2656, sous-notion « loi de Poisson »), page à cocher
+  publiée : https://claude.ai/artifact/YNBWKZxoNHbtrLVfpTgK8k (§ 64).
+- **Prochaine action** : lire les verdicts ; corriger les « à revoir » ; `publier-lot.ts` (David). Dernier lot du
+  chantier, puis clôture (recompter le découpage contre les PR mergées).
+- **En attente de David** : verdicts sur la page à cocher du lot 15.
 - **Pièges en cours** : commitlint (type `content` refusé, corps ≤ 100 car.) ; graine de l'aperçu = variation (§ 3) ;
   scripts sur la prod (`create-questions`, `publier-lot.ts`, simulations comprises) → David ; `\dots` non rendu
   (§ 14) ; `Doc-inchangée:` dans un COMMIT ; « inserted before » → `--dry-run --include-all` (§ 20) ; `cf()` (§ 48) ;
   pas de variable `e` ni `i` (§ 52) ; réponse décimale → `blankDefaults.acceptDecimal` (§ 62).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, `feat/questions-tspe-approfondissements-15-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche à créer depuis `origin/main` s'il y a un correctif.
 
 ---
 
@@ -1121,3 +1121,12 @@ tout ou rien) aux données près : « loi de Poisson » en fin d'Autres lois (po
 § 62, 517 restant sur la notion. Test d'intégration 11/11, rouge sans la migration (6 échecs, 5 sautés) ; tests
 frères comme au lot 11 : fixture de l'arbre, décompte 483, `LATER`.
 `security-auditor` : aucun finding (code identique au lot 11 aux données près ; relevé prod refait, concordant).
+
+## 64. Lot 15 : rangement mergé, page à cocher (2026-11-14)
+
+Mergé (#2656) : CI verte (intégration comprise), `check:migrations --pr` vert, `db:migrate` fait du dépôt principal
+(simulation : cette seule migration) ; relu en base (MCP) : 5 `draft`, chacun sur sa sous-notion avec son seul point,
+« loi de Poisson » en position 8, `updated_at` intact. JSON du dépôt principal remis à l'état commité (identiques à
+`origin/main`, `id` compris). `page-a-cocher.ts` lu en base prod : 5 brouillons, 4, 5, 4, 4 et 4 exemples ; alerte
+« bloc ranger non dessiné » sur 529 (habituelle, étapes vues dans l'aperçu admin, § 62). Page :
+https://claude.ai/artifact/YNBWKZxoNHbtrLVfpTgK8k (capacité `db`) ; base `verdicts` vide à la publication.
