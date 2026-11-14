@@ -47,7 +47,7 @@ son énoncé**.
   (libellé du choix, ordre affiché), la figure seulement par son verdict ; modèle sorti de la série : s'ouvre
   aussi ; **mode test** suivi comme dans P6.
 - **Erreur** : lecture en échec → le panneau le dit, le reste de la page reste.
-- **Mode projection** de la page (s'il existe là) : noms masqués.
+- **Pas de mode projection** sur la page résultats (vérifié) : rien à masquer de plus que P6.
 
 ### PR 2 — prof, par point du programme (analytique de la classe)
 
