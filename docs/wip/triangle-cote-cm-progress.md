@@ -9,10 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, ouverture._
+_Mis à jour le 2026-11-14, lot codé et poussé (pas de PR)._
 
-- **État** : phase 0 écrite, **à valider** · **Prochaine action** : réponses de David aux questions Q1-Q7, puis
-  tests rouges · **En attente de David** : validation de la phase 0 · **Pièges en cours** : un cercle ouvert sur
+- **État** : phase 0 validée, lot unique codé sur la branche, tests verts · **Prochaine action** : revue
+  (`code-reviewer` en opus : correction des réponses), PR, puis point 5 (modèle 6-173) · **En attente de
+  David** : confirmation des choix faits seul (Journal, 2026-11-14) · **Pièges en cours** : un cercle ouvert sur
   une graduation n'est pas « construit » pour `constructionOf` (`instruments.ts`) : c'est le cœur du travail ·
   **Worktree / branche** : `../ubumaths-wt-triangle-cote-cm` · `feat/triangle-cote-cm`
 
@@ -97,3 +98,38 @@ que la règle graduée ; un cercle ou C hors de la fenêtre ; cm sur quadrillage
 
 - 2026-11-14 : worktree ouvert (`feat/triangle-cote-cm`), code relu (parseur, `triangle.ts`, PR 3 et 4 de
   `regle-graduee`), phase 0 écrite.
+- 2026-11-14 : **lot unique codé** (branche `feat/triangle-cote-cm`, pas encore de PR). Parseur
+  (`construction-parser.ts`) : les cm admis hors du triangle rectangle, papier uni ; cm et segment à
+  reporter mêlés → « les longueurs se donnent toutes en cm (à la règle graduée) ou toutes par un segment
+  à reporter, pas les deux » ; palette exigée (trois longueurs : segment, compas, règle graduée ; avec
+  l'angle : rapporteur, segment, règle graduée, le compas laissé au choix). Palette (`triangleTools`) :
+  Segment · Compas · Règle graduée, ou Segment · Rapporteur · Règle graduée · Compas. Juge
+  (`triangle.ts`, `judgeRuledTriangle`) : hors palette → faux sans message ; un seul C (Q17) ; côté
+  manquant ; C à l'œil ; compas ouvert à l'œil (règle posée au centre AVANT le cercle,
+  `compassGraduationOf` exporté de `circle.ts`) ; mauvaise longueur (graduation, ou bout du trait vu,
+  Q18) ; angle faux. Avec l'angle, graduation de la règle OU arc du compas, les deux justes. Refactor
+  sans changement de comportement : `distinctVertices`, `seenEndOf` (sortis de `judgeRight`),
+  `angleFeedbackOf` (sorti de `judgeTriangle`). Correction : `triangleRuler` → `triangleRulers` (règle
+  en A et en B, ou en V le long du côté d'angle) ; arcs de 4 et 5 cm pour les trois longueurs, aucun
+  avec l'angle. Vue : `rulerShape` suit le Compas choisi quand la palette a aussi le segment (indice
+  « Pique le compas au 0 de la règle… », ‹ › sur l'ouverture). Catalogue : deux exemples ; doc
+  `questions.md`, `ubumark.md`.
+  - **Tests** : `construction-triangle-cm.test.ts` (41 tests, 40 rouges avant le code ; le 41e, refus
+    d'un angle non compris, déjà vert : non-régression) + 1 test modifié dans
+    `construction-triangle-rectangle-cm.test.ts` (« refuse une longueur en cm sans l'angle droit » →
+    « admet ») : **41 rouges** avant le code, verts après ; 2 tests composant dans
+    `figure-a-completer-regle.svelte.test.ts` : rouges avant (parseur), et rouges encore sans le
+    changement de la vue (indice du compas), verts après. Suites : construction + catalogue + ubumark
+    serveur 7 520 verts ; composants figure 98 verts. `check:incremental` 0 erreur, `types:cliquet`
+    tenu, `lint:fast` propre.
+  - **Choix faits sans David (à confirmer)** : (1) « plusieurs C distincts » est jugé juste après le côté
+    manquant, avant tout autre message (comme Q17 du triangle rectangle) : sinon un éventail dont un C
+    est juste serait juste, faux juste que Q17 interdit ; la liste de la phase 0 le met plus bas. (2)
+    Q18 appliqué aux deux chemins : un côté d'angle tracé en segment plus long que [AC] (puis l'arc)
+    compte comme [AC] prolongé → « mesure 6 cm au lieu de 4 cm », comme au triangle rectangle ; sans
+    l'outil droite (palette validée), l'élève trace le côté le long de la règle jusqu'à la graduation.
+    (3) Trois longueurs, [AC] prolongé : la longueur du trait vu arrondie au mm (aucune règle ne la lit).
+    (4) Indice de l'outil Règle quand la palette a aussi le compas : « Règle posée : touche Compas pour
+    l'ouvrir sur la règle, ou Segment pour tracer le long de la règle. … » (nouveau texte d'écran).
+    (5) Message d'auteur pour une palette incomplète (deux textes nouveaux, voir le parseur).
+  - **Non fait** : point 5 (modèle 6-173 en base), à faire après le merge.

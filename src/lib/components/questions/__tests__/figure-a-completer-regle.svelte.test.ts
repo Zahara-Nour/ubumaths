@@ -15,6 +15,7 @@ import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
+import type { Position } from '$lib/questions/construction/judge';
 import { templateMarkdown } from '$lib/ubumark';
 
 // Fenêtre 0..10 × 0..8 ; A(2 ; 4) ; règle de 10 cm
@@ -409,6 +410,84 @@ describe('case « figure » : rectangle coté en cm (PR 6)', () => {
 		await expect
 			.poll(() => container.textContent)
 			.toContain('Ton côté [BC] mesure 2,8 cm au lieu de 3 cm.');
+		await expect.poll(() => all(container, 'bonne-regle').length).toBe(2);
+	});
+});
+
+// Chantier `triangle-cote-cm` : A(2 ; 2), B(8 ; 2), AC = 4 cm, BC = 5 cm → C(4,25 ; 5,307…)
+const SIDES_BLOCK = [
+	'```figure-a-completer',
+	'fenetre: 0 ; 10 ; 0 ; 8',
+	'verifier: triangle ABC : AC = 4 cm ; BC = 5 cm',
+	'---',
+	'A = point(2, 2)',
+	'B = point(8, 2)',
+	's = segment(A, B)',
+	'```'
+].join('\n');
+
+/** Règle posée en `at` vers `toward`, puis le compas piqué en `at`, ouvert près de `opening` */
+async function rulerAndCompass(
+	container: HTMLElement,
+	rect: SVGRectElement,
+	at: Position,
+	toward: Position,
+	opening: Position
+) {
+	const circles = all(container, 'cercle-eleve').length;
+	tool(container, 'regle');
+	tap(rect, at.x + 0.05, at.y + 0.05);
+	tap(rect, toward.x, toward.y);
+	await expect.poll(() => all(container, 'regle').length).toBe(1);
+	tool(container, 'compas');
+	await expect.poll(() => container.textContent).toContain('Pique le compas au 0 de la règle');
+	tap(rect, at.x + 0.05, at.y + 0.05);
+	tap(rect, opening.x, opening.y);
+	await expect.poll(() => all(container, 'cercle-eleve').length).toBe(circles + 1);
+}
+
+describe('case « figure » : triangle coté en cm, trois longueurs (triangle-cote-cm)', () => {
+	it('palette : Segment, Compas, Règle graduée ; compas ouverts sur 4 cm et 5 cm, côtés → juste', async () => {
+		const { container, rect } = await rendered(SIDES_BLOCK);
+		const palette = ['segment', 'compas', 'regle'].map((id) => byTestId(container, `outil-${id}`));
+		expect(palette.map((b) => b?.textContent?.trim())).toEqual([
+			'Segment',
+			'Compas',
+			'Règle graduée'
+		]);
+		expect(byTestId(container, 'outil-report')).toBeNull();
+		// Règle en A vers le haut : l'ouverture s'aimante à la graduation de 4 cm
+		await rulerAndCompass(container, rect, { x: 2, y: 2 }, { x: 2, y: 7 }, { x: 2.05, y: 6 });
+		await expect.poll(() => mmShown(container)).toBe('40');
+		// Règle en B vers la gauche, le long de [AB] : 5 cm
+		await rulerAndCompass(container, rect, { x: 8, y: 2 }, { x: 4, y: 2 }, { x: 3, y: 2.05 });
+		await expect.poll(() => mmShown(container)).toBe('50');
+		tool(container, 'segment');
+		tap(rect, 2.05, 2.05);
+		tap(rect, 4.27, 5.3);
+		tap(rect, 8.05, 2.05);
+		tap(rect, 4.27, 5.3);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(2);
+		button(container, 'Valider').click();
+		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);
+	});
+
+	it('compas ouvert sur 3,8 cm : message ; à la correction, deux règles', async () => {
+		const { container, rect } = await rendered(SIDES_BLOCK);
+		await rulerAndCompass(container, rect, { x: 2, y: 2 }, { x: 2, y: 7 }, { x: 2.05, y: 5.8 });
+		await expect.poll(() => mmShown(container)).toBe('38');
+		await rulerAndCompass(container, rect, { x: 8, y: 2 }, { x: 4, y: 2 }, { x: 3, y: 2.05 });
+		tool(container, 'segment');
+		// C(4,12 ; 5,15…) : croisement des cercles de 3,8 cm et 5 cm
+		tap(rect, 2.05, 2.05);
+		tap(rect, 4.13, 5.15);
+		tap(rect, 8.05, 2.05);
+		tap(rect, 4.13, 5.15);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(2);
+		button(container, 'Valider').click();
+		await expect
+			.poll(() => container.textContent)
+			.toContain('Ton côté [AC] mesure 3,8 cm au lieu de 4 cm.');
 		await expect.poll(() => all(container, 'bonne-regle').length).toBe(2);
 	});
 });

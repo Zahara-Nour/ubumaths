@@ -30,6 +30,14 @@
  * C sur la perpendiculaire construite, sur une graduation d'une règle posée avec
  * son 0 en A AVANT le premier côté qui arrive en C, à la longueur au mm près.
  *
+ * Triangle quelconque coté en cm (chantier `triangle-cote-cm`, phase 0 validée
+ * par David le 2026-11-14) : `AC = 4 cm ; BC = 5 cm` (Segment · Compas · Règle
+ * graduée), C au croisement de deux cercles ouverts sur une graduation d'une
+ * règle posée au centre AVANT le cercle ; `CAB = 50 ; AC = 4 cm` (Segment ·
+ * Rapporteur · Règle graduée · Compas), C sur le côté d'angle, sur la graduation
+ * d'une règle posée en A ou à l'arc d'un tel compas. Un seul C, côté jugé sur le
+ * trait vu, comme le triangle rectangle coté.
+ *
  * @module questions/construction/triangle
  */
 
@@ -50,7 +58,7 @@ import {
 	protractorWindowError,
 	type AngleCorrection
 } from './angle';
-import type { DrawnLine, DrawnObject, DrawnRegle, DrawnRepere } from './answer';
+import type { DrawnCircle, DrawnLine, DrawnObject, DrawnRegle, DrawnRepere } from './answer';
 import {
 	angleSideVertex,
 	basePointsOf,
@@ -70,6 +78,7 @@ import type { ConstructionVerdict, Position } from './judge';
 import { tolerance } from './polygon';
 import { SAME_DIRECTION, formatLength, rulerLengthOf, seenSegments } from './segment-length';
 import type { FigureShapes } from './symmetry';
+import { centeredRulerEyeballedFeedback, compassGraduationOf } from './circle';
 
 export const missingSidesFeedback = (a: string, b: string, c: string) =>
 	`Trace les côtés [${a}${c}] et [${b}${c}] du triangle.`;
@@ -655,32 +664,12 @@ function judgeRight(
 	}
 	// Côté en cm (Q17, David, 2026-11-09) : plusieurs C distincts → faux ; un C de chaque
 	// côté de (AB) compte pour deux, un même C atteint deux fois pour un
-	if (ruled) {
-		const distinct = joined.vertices.filter(
-			(c, i) => !joined.vertices.slice(0, i).some((d) => near(c, d, tolerance(c, d)))
-		);
-		if (distinct.length > 1) {
-			const [nameA, nameB] = check.points;
-			return { status: 'incorrect', feedback: severalTrianglesFeedback(nameA, nameB, nameC) };
-		}
+	if (ruled && distinctVertices(joined.vertices).length > 1) {
+		const [nameA, nameB] = check.points;
+		return { status: 'incorrect', feedback: severalTrianglesFeedback(nameA, nameB, nameC) };
 	}
-	// Côté en cm (Q18, David, 2026-11-09) : [VC] jugé sur le trait vu depuis V, par son
-	// bout le plus loin (un [VC] prolongé au-delà de C mesure ce qu'il montre)
-	const seen = ruled
-		? seenSegments(
-				objects.filter((o): o is DrawnLine => o.kind === 'segment'),
-				v,
-				tolerance(v, w)
-			)
-		: [];
-	const seenEnd = (c: Position): Position => {
-		const r = distance(v, c);
-		const u = { x: (c.x - v.x) / r, y: (c.y - v.y) / r };
-		const group = seen.find(
-			(s) => Math.acos(Math.min(1, s.direction.x * u.x + s.direction.y * u.y)) < SAME_DIRECTION
-		);
-		return group && distance(v, group.end) > r ? group.end : c;
-	};
+	// Côté en cm (Q18) : [VC] jugé sur le trait vu depuis V
+	const seenEnd = (c: Position): Position => seenEndOf(objects, v, c, tolerance(v, w));
 	const verdictOf = (c: Position): { rank: number; feedback: string | null } => {
 		const eps = tolerance(v, w, c);
 		const carriers = lines.filter((t) => distanceToTrait(c, t) <= eps);
@@ -724,6 +713,35 @@ function judgeRight(
 	return { status: 'incorrect', feedback: best.feedback ?? undefined };
 }
 
+/** Les C distincts : un même C atteint deux fois compte pour un (Q17 de `regle-graduee`) */
+function distinctVertices(vertices: readonly Position[]): Position[] {
+	return vertices.filter((c, i) => !vertices.slice(0, i).some((d) => near(c, d, tolerance(c, d))));
+}
+
+/**
+ * Côté coté en cm (Q18, David, 2026-11-09) : le bout du trait vu depuis V dans la
+ * direction de C, le plus loin (un [VC] prolongé au-delà de C mesure ce qu'il
+ * montre) ; C lui-même si rien ne le prolonge
+ */
+function seenEndOf(
+	objects: readonly DrawnObject[],
+	v: Position,
+	c: Position,
+	eps: number
+): Position {
+	const seen = seenSegments(
+		objects.filter((o): o is DrawnLine => o.kind === 'segment'),
+		v,
+		eps
+	);
+	const r = distance(v, c);
+	const u = { x: (c.x - v.x) / r, y: (c.y - v.y) / r };
+	const group = seen.find(
+		(s) => Math.acos(Math.min(1, s.direction.x * u.x + s.direction.y * u.y)) < SAME_DIRECTION
+	);
+	return group && distance(v, group.end) > r ? group.end : c;
+}
+
 /**
  * Côté coté en cm (PR 4) : la graduation (mm, plus de 0) où est C, sur une règle
  * posée avec son 0 en V avant le premier côté qui arrive en C (comme le cercle de
@@ -755,6 +773,166 @@ export function ruledGraduationOf(
 }
 
 /**
+ * Le premier message d'angle faux en C (lot 7) : mauvaise graduation lue, autre
+ * mesure, ou deux repères de part et d'autre de [AB] ; null si les angles sont justes
+ */
+function angleFeedbackOf(
+	check: TriangleCheck,
+	a: Position,
+	b: Position,
+	c: Position,
+	marks: readonly DrawnRepere[]
+): string | null {
+	const [nameA, nameB] = check.points;
+	const at = (name: string) => (name === nameA ? a : b);
+	// Le repère qui porte le côté [VC) : centré en V, dans la direction de C
+	const markSide = (v: Position) => {
+		const mark = marks.find((m) => {
+			if (!near({ x: m.vx, y: m.vy }, v, tolerance(v))) return false;
+			const p = repereAt(m);
+			return sideOf(v, c, p) === 0;
+		});
+		return mark ? sideOf(a, b, repereAt(mark)) : null;
+	};
+	const angleErrors = check.angles.flatMap((g) => {
+		const v = at(g.vertex);
+		const measured = angleBetween(v, at(g.base), c);
+		if (Math.abs(measured - g.measure) <= ANGLE_EPSILON) return [];
+		const name = angleName(check, g);
+		const sameSide = markSide(v) === sideOf(a, b, c);
+		if (sameSide && Math.abs(measured - (180 - g.measure)) <= ANGLE_EPSILON) {
+			return [wrongScaleAngleFeedback(name, measured, g.measure)];
+		}
+		return [wrongAngleTriangleFeedback(name, measured, g.measure)];
+	});
+	// Repères de part et d'autre de [AB] : seulement si un angle est faux (un repère
+	// à 180 − a de l'autre côté, droite prolongée, donne un angle juste : revue de #2348)
+	if (angleErrors.length > 0 && check.angles.length === 2) {
+		const [sideA, sideB] = check.angles.map((g) => markSide(at(g.vertex)));
+		if (sideA && sideB && sideA !== sideB) return oppositeAnglesFeedback(nameA, nameB);
+	}
+	return angleErrors[0] ?? null;
+}
+
+/**
+ * Triangle quelconque coté en cm (chantier `triangle-cote-cm`, phase 0 validée par
+ * David le 2026-11-14). Palette seule (un Report, un point : réponse forgée) ; un
+ * seul C (Q17) ; puis, dans l'ordre de la phase 0 : C placé à l'œil, compas
+ * ouvert à l'œil, mauvaise longueur (lue sur la graduation, ou au bout du trait
+ * vu, Q18), angle faux. Trois longueurs : C sur un cercle centré en A et un centré
+ * en B, chacun ouvert sur une graduation d'une règle posée à son centre AVANT lui
+ * (`compassGraduationOf`). Deux côtés et l'angle compris : C sur un côté d'angle
+ * construit (rapporteur), puis sur la graduation d'une règle posée en V avant le
+ * côté (`ruledGraduationOf`), ou sur un tel cercle centré en V (décision 3).
+ */
+function judgeRuledTriangle(
+	check: TriangleCheck,
+	setting: TriangleSetting,
+	points: ReadonlyMap<string, Position>,
+	figure: FigureShapes,
+	objects: readonly DrawnObject[]
+): ConstructionVerdict {
+	const [nameA, nameB, nameC] = check.points;
+	const { a, b } = setting;
+	const [angle] = check.angles;
+	const allowed: readonly DrawnObject['kind'][] = angle
+		? ['segment', 'repere', 'regle', 'cercle']
+		: ['segment', 'cercle', 'regle'];
+	if (objects.some((o) => !allowed.includes(o.kind))) return { status: 'incorrect' };
+	const joined = joinedVertices(check, a, b, objects);
+	if ('verdict' in joined) return joined.verdict;
+	const distinct = distinctVertices(joined.vertices);
+	if (distinct.length > 1) {
+		return { status: 'incorrect', feedback: severalTrianglesFeedback(nameA, nameB, nameC) };
+	}
+	const [c] = distinct;
+	const at = (name: string) => (name === nameA ? a : b);
+	const rulerLength = rulerLengthOf(figure.window);
+	const incorrect = (feedback: string): ConstructionVerdict => ({ status: 'incorrect', feedback });
+	/** Les compas piqués en V qui passent par C */
+	const circlesThrough = (v: Position): number[] =>
+		objects.flatMap((o, i) => {
+			if (o.kind !== 'cercle') return [];
+			const center = { x: o.cx, y: o.cy };
+			const radius = distance(center, { x: o.x, y: o.y });
+			const eps = tolerance(center, c, { x: o.x, y: o.y });
+			return near(center, v, tolerance(v)) && Math.abs(distance(v, c) - radius) <= eps ? [i] : [];
+		});
+	/** Leurs ouvertures (mm) sur une règle posée en V avant eux (revue de #2494) */
+	const openings = (indexes: readonly number[]): number[] =>
+		indexes.flatMap((i) => {
+			const rulers = objects.slice(0, i).filter((o): o is DrawnRegle => o.kind === 'regle');
+			const mm = compassGraduationOf(objects[i] as DrawnCircle, rulers, rulerLength);
+			return mm === null ? [] : [mm];
+		});
+	/** Le trait vu depuis V va-t-il au-delà de C (Q18) ? Sa longueur (mm) ; null sinon */
+	const beyond = (v: Position): { end: Position; mm: number } | null => {
+		const end = seenEndOf(objects, v, c, tolerance(a, b, c));
+		return end === c ? null : { end, mm: Math.round(distance(v, end) * 10) };
+	};
+	if (!angle) {
+		const sides = check.lengths.filter(isRuledLength).map((length) => {
+			const vertex = length.side[0];
+			const v = at(vertex);
+			return { vertex, v, length, circles: circlesThrough(v) };
+		});
+		if (sides.some((side) => side.circles.length === 0)) {
+			return incorrect(vertexEyeballedFeedback(nameC));
+		}
+		const opened = sides.map((side) => ({ ...side, mms: openings(side.circles) }));
+		if (opened.some((side) => side.mms.length === 0)) {
+			return incorrect(centeredRulerEyeballedFeedback());
+		}
+		for (const side of opened) {
+			const expected = side.length;
+			if (!side.mms.includes(expected.length)) {
+				return incorrect(wrongRuledLengthFeedback(side.vertex, nameC, side.mms[0], expected));
+			}
+			const seen = beyond(side.v);
+			if (seen && seen.mm !== expected.length) {
+				return incorrect(wrongRuledLengthFeedback(side.vertex, nameC, seen.mm, expected));
+			}
+		}
+		return { status: 'correct' };
+	}
+	// Deux côtés et l'angle compris : C sur un côté d'angle construit, parti de V
+	const v = at(angle.vertex);
+	const [expected] = check.lengths.filter(isRuledLength);
+	const construction = constructionOf(
+		objects,
+		basePointsOf(points, figure.segments),
+		figure.traits
+	);
+	const marks = objects.filter(
+		(o): o is DrawnRepere => o.kind === 'repere' && isBuiltMark(o, construction)
+	);
+	const onAngleSide = objects.some((o, i) => {
+		if (!construction.built.has(i)) return false;
+		const vertex = angleSideVertex(o, marks, construction);
+		if (!vertex || !near(vertex, v, tolerance(v))) return false;
+		const trait = traitOf(o);
+		return trait !== null && distanceToTrait(c, trait) <= tolerance(a, b, c);
+	});
+	if (!onAngleSide) return incorrect(vertexEyeballedAnglesFeedback(nameC));
+	// La règle posée en V le long du côté, lue au bout du trait vu (Q18), sinon le compas
+	const seen = beyond(v);
+	let mm = ruledGraduationOf(seen?.end ?? c, v, objects, rulerLength);
+	if (mm === null) {
+		if (seen) return incorrect(vertexOffGraduationFeedback(angle.vertex, nameC));
+		const circles = circlesThrough(v);
+		if (circles.length === 0) return incorrect(vertexOffGraduationFeedback(angle.vertex, nameC));
+		const mms = openings(circles);
+		if (mms.length === 0) return incorrect(centeredRulerEyeballedFeedback());
+		mm = mms.includes(expected.length) ? expected.length : mms[0];
+	}
+	if (mm !== expected.length) {
+		return incorrect(wrongRuledLengthFeedback(angle.vertex, nameC, mm, expected));
+	}
+	const angleError = angleFeedbackOf(check, a, b, c, marks);
+	return angleError ? incorrect(angleError) : { status: 'correct' };
+}
+
+/**
  * Verdict : un côté [AC] (segment partant de A) et un côté [BC] (de B) qui se
  * rejoignent en un C construit, aux longueurs données. Plusieurs paires
  * possibles : juste si l'une convient ; sinon le message d'une paire au sommet
@@ -771,7 +949,11 @@ export function judgeTriangle(
 	const figure = shapes as FigureShapes;
 	const right = rightAngleOf(check);
 	if (right) return judgeRight(check, right, setting, points, figure, objects);
-	const [nameA, nameB, nameC] = check.points;
+	// Chantier `triangle-cote-cm` : toutes les longueurs en cm (garanti par le parseur)
+	if (check.lengths.some(isRuledLength)) {
+		return judgeRuledTriangle(check, setting, points, figure, objects);
+	}
+	const [nameA, , nameC] = check.points;
 	// Un point placé sans l'outil point : réponse forgée ; un cercle sans longueur donnée
 	// (palette Rapporteur · Règle · Segment, revue de #2348) aussi
 	if (objects.some((o) => o.kind === 'point')) return { status: 'incorrect' };
@@ -811,33 +993,8 @@ export function judgeTriangle(
 		};
 	}
 	const feedbackOf = (c: Position): string | null => {
-		// Le repère qui porte le côté [VC) : centré en V, dans la direction de C
-		const markSide = (v: Position) => {
-			const mark = marks.find((m) => {
-				if (!near({ x: m.vx, y: m.vy }, v, tolerance(v))) return false;
-				const p = repereAt(m);
-				return sideOf(v, c, p) === 0;
-			});
-			return mark ? sideOf(a, b, repereAt(mark)) : null;
-		};
-		const angleErrors = check.angles.flatMap((g) => {
-			const v = at(g.vertex);
-			const measured = angleBetween(v, at(g.base), c);
-			if (Math.abs(measured - g.measure) <= ANGLE_EPSILON) return [];
-			const name = angleName(check, g);
-			const sameSide = markSide(v) === sideOf(a, b, c);
-			if (sameSide && Math.abs(measured - (180 - g.measure)) <= ANGLE_EPSILON) {
-				return [wrongScaleAngleFeedback(name, measured, g.measure)];
-			}
-			return [wrongAngleTriangleFeedback(name, measured, g.measure)];
-		});
-		// Repères de part et d'autre de [AB] : seulement si un angle est faux (un repère
-		// à 180 − a de l'autre côté, droite prolongée, donne un angle juste : revue de #2348)
-		if (angleErrors.length > 0 && check.angles.length === 2) {
-			const [sideA, sideB] = check.angles.map((g) => markSide(at(g.vertex)));
-			if (sideA && sideB && sideA !== sideB) return oppositeAnglesFeedback(nameA, nameB);
-		}
-		if (angleErrors.length > 0) return angleErrors[0];
+		const angleError = angleFeedbackOf(check, a, b, c, marks);
+		if (angleError) return angleError;
 		const lengthEps = tolerance(a, b, c);
 		for (const [i, length] of check.lengths.entries()) {
 			const vertex = length.side[0];
@@ -1012,11 +1169,13 @@ export function triangleCorrection(
 		right && !shapes.grid
 			? [{ kind: 'droite', x1: at(right.vertex).x, y1: at(right.vertex).y, x2: c.x, y2: c.y }]
 			: [];
-	// Arcs de report : papier uni, longueur prise sur la figure (pas en carreaux)
+	// Arcs de report : papier uni, longueur prise sur la figure (pas en carreaux) ; en cm,
+	// les arcs du compas des trois longueurs (`triangle-cote-cm`), la règle sinon
+	const compassArcs = !right && check.angles.length === 0;
 	const arcs = shapes.grid
 		? []
 		: check.lengths.flatMap((length, i) =>
-				isSquaresLength(length) || isRuledLength(length)
+				isSquaresLength(length) || (isRuledLength(length) && !compassArcs)
 					? []
 					: [{ center: at(length.side[0]), radius: lengths[i] }]
 			);
@@ -1024,22 +1183,24 @@ export function triangleCorrection(
 }
 
 /**
- * Côté coté en cm (PR 4 de `regle-graduee`) : la règle graduée de la correction,
- * posée en V (le sommet de l'angle droit), le long de la perpendiculaire, vers le
- * C de la correction ; null sinon
+ * Côté coté en cm : les règles graduées de la correction, posées au bout de
+ * chaque côté coté, vers le C de la correction — en V le long de la
+ * perpendiculaire (triangle rectangle, PR 4 de `regle-graduee`), en A et en B
+ * (trois longueurs) ou en V le long du côté d'angle (`triangle-cote-cm`) ; aucune
+ * sans longueur en cm
  */
-export function triangleRuler(
+export function triangleRulers(
 	check: TriangleCheck,
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined,
 	drawn: readonly DrawnObject[]
-): DrawnRegle | null {
-	const right = rightAngleOf(check);
-	if (!right || !check.lengths.some(isRuledLength)) return null;
+): DrawnRegle[] {
+	if (!check.lengths.some(isRuledLength)) return [];
 	const sides = triangleSolution(check, points, shapes, drawn);
-	if (sides.length !== 2) return null;
-	const v = points.get(right.vertex);
-	if (!v) return null;
+	if (sides.length !== 2) return [];
 	const c = { x: sides[0].x2, y: sides[0].y2 };
-	return { kind: 'regle', ox: v.x, oy: v.y, bx: c.x, by: c.y, sens: 1 };
+	return check.lengths.flatMap((length): DrawnRegle[] => {
+		const v = points.get(length.side[0]);
+		return v ? [{ kind: 'regle', ox: v.x, oy: v.y, bx: c.x, by: c.y, sens: 1 }] : [];
+	});
 }

@@ -62,7 +62,7 @@ import { polygonSolution } from './polygon';
 import { ruledPolygonCorrection, ruledPolygonRulers, ruledPolygonSolution } from './ruled-polygon';
 import {
 	triangleCorrection,
-	triangleRuler,
+	triangleRulers,
 	triangleSolution,
 	type TriangleCorrection
 } from './triangle';
@@ -605,8 +605,8 @@ export function solutionAngle(
 
 /**
  * La règle graduée de la correction : posée en A (segment de longueur donnée), au
- * centre O (cercle de rayon donné en cm, PR 3) ou au sommet de l'angle droit
- * (triangle rectangle coté en cm, PR 4) ; null sinon
+ * centre O (cercle de rayon donné en cm, PR 3) ou au bout d'un côté coté en cm
+ * d'un triangle (PR 4, `triangle-cote-cm`) ; null sinon
  */
 export function solutionRuler(
 	checks: readonly ConstructionCheck[],
@@ -638,12 +638,10 @@ export function solutionRulers(
 	// Carré / rectangle coté (PR 6) : une règle en B (vers C), une en A (vers D)
 	const ruled = checks.find(isRuledPolygonCheck);
 	if (ruled) return ruledPolygonRulers(ruled, points, shapes, drawn);
-	// Triangle rectangle coté en cm (PR 4) : la règle posée au sommet de l'angle droit
+	// Triangle coté en cm : la règle posée au sommet de l'angle droit (PR 4), en A et en B
+	// (trois longueurs) ou au sommet de l'angle donné (`triangle-cote-cm`)
 	const triangle = checks.find((c) => c.kind === 'triangle');
-	if (triangle) {
-		const ruler = triangleRuler(triangle, points, shapes, drawn);
-		return ruler ? [ruler] : [];
-	}
+	if (triangle) return triangleRulers(triangle, points, shapes, drawn);
 	return circleLengthRulers(checks.filter(isCircleCheck), points, drawn);
 }
 

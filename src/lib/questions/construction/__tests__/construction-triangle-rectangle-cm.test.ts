@@ -140,9 +140,9 @@ describe('triangle rectangle coté en cm : lecture de l’en-tête', () => {
 		expect(errorOf(figure('triangle ABC : CAB = 90 ; AC = 3,25 cm'))).toMatch(/millimètre/);
 	});
 
-	it('refuse une longueur en cm sans l’angle droit', () => {
-		expect(errorOf(figure('triangle ABC : AC = 4 cm ; BC = 3 cm'))).toMatch(/cm.*angle droit/);
-		expect(errorOf(figure('triangle ABC : AC = 4 cm ; CAB = 40'))).toMatch(/cm.*angle droit/);
+	it('admet une longueur en cm sans l’angle droit (chantier `triangle-cote-cm`)', () => {
+		expect(errorOf(figure('triangle ABC : AC = 4 cm ; BC = 3 cm'))).toBeUndefined();
+		expect(errorOf(figure('triangle ABC : AC = 4 cm ; CAB = 40'))).toBeUndefined();
 	});
 
 	it('refuse une longueur en cm sur quadrillage', () => {
