@@ -67,6 +67,7 @@ export const SITEMAP_PAGES: SitemapPage[] = [
 		priority: 0.5,
 		changefreq: 'monthly'
 	},
+	{ path: '/tortue', title: 'La Tortue', priority: 0.7, changefreq: 'monthly' },
 	{ path: '/games', title: 'Jeux', priority: 0.8, changefreq: 'monthly' },
 	{ path: '/games/trio', title: 'Trio', priority: 0.6, changefreq: 'monthly' },
 	{ path: '/games/mathemo', title: 'Mathémo', priority: 0.6, changefreq: 'monthly' },

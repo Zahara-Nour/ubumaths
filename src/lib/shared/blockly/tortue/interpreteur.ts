@@ -24,9 +24,21 @@ export type ErreurTortue =
 	| { type: 'trop-loin' }
 	| { type: 'programme-illisible' };
 
-export type ResultatTortue =
-	| { ok: true; segments: Segment[]; tortue: EtatTortue; pas: number }
-	| { ok: false; erreur: ErreurTortue; segments: Segment[]; tortue: EtatTortue; pas: number };
+/** État après une instruction qui change la tortue (déplacement, virage, stylo) : sert à l'animation. */
+export interface EtapeTortue {
+	tortue: EtatTortue;
+	/** Nombre de segments tracés après cette étape. */
+	segments: number;
+}
+
+interface Trace {
+	segments: Segment[];
+	tortue: EtatTortue;
+	etapes: EtapeTortue[];
+	pas: number;
+}
+
+export type ResultatTortue = ({ ok: true } | { ok: false; erreur: ErreurTortue }) & Trace;
 
 /** Bloc sérialisé, après vérification de forme. */
 interface BlocLu {
@@ -211,6 +223,7 @@ export function executerTortue(etat: unknown): ResultatTortue {
 			erreur: { type: 'programme-illisible' },
 			segments: [],
 			tortue: etatInitial(),
+			etapes: [],
 			pas: 0
 		};
 	}
@@ -223,6 +236,7 @@ export function executerTortue(etat: unknown): ResultatTortue {
 				erreur: { type: 'bloc-inconnu', typeBloc: inconnu },
 				segments: [],
 				tortue: etatInitial(),
+				etapes: [],
 				pas: 0
 			};
 		}
@@ -230,7 +244,12 @@ export function executerTortue(etat: unknown): ResultatTortue {
 
 	const tortue = etatInitial();
 	const segments: Segment[] = [];
+	const etapes: EtapeTortue[] = [];
 	let pas = 0;
+
+	function noterEtape(): void {
+		etapes.push({ tortue: { ...tortue }, segments: segments.length });
+	}
 
 	function compterUnPas(): void {
 		if (pas >= LIMITE_PAS) throw new TropLong();
@@ -286,9 +305,11 @@ export function executerTortue(etat: unknown): ResultatTortue {
 						compterUnPas();
 						executerPile(courant.entrees.DO);
 					}
-					break;
+					// La boucle ne note pas d'étape : ses instructions notent les leurs
+					continue;
 				}
 			}
+			noterEtape();
 		}
 	}
 
@@ -301,8 +322,8 @@ export function executerTortue(etat: unknown): ResultatTortue {
 				: erreur instanceof TropLoin
 					? 'trop-loin'
 					: 'programme-illisible';
-		return { ok: false, erreur: { type }, segments, tortue, pas };
+		return { ok: false, erreur: { type }, segments, tortue, etapes, pas };
 	}
 
-	return { ok: true, segments, tortue, pas };
+	return { ok: true, segments, tortue, etapes, pas };
 }

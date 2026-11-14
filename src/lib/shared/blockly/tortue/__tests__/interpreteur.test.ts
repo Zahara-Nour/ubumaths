@@ -162,6 +162,7 @@ describe('executerTortue — limites', () => {
 			ok: true,
 			segments: [],
 			tortue: { x: 0, y: 0, cap: 0, styloBaisse: true },
+			etapes: [],
 			pas: 0
 		});
 		expect(executerTortue(espace()).ok).toBe(true);

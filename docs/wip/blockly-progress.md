@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2632._
+_Mis à jour le 2026-11-14, PR 3 en cours._
 
-- **État** : #2627 (Blockly 13, exécution réparée) et **#2632 (la tortue)** mergées ; [ADR 0039](../adr/0039-blocs-interpretes-par-chiphre.md) : les blocs tortue et calcul sont **interprétés par Chiphre** (`executerTortue`), le code JS / Python n'est qu'un aperçu ; le sandbox JS ne doit jamais exécuter un programme écrit par un autre · **Prochaine action** : PR 3, bac à sable public à partir de `/dev/blockly` (mode Tortue seul ? animation du tracé, prévue là) — phase 0 à présenter avant de coder ; **en ouverture de la PR 3** : boîte à outils tortue avec `controls_repeat` (champ entier ≥ 0) au lieu de `controls_repeat_ext`, + test · **Tranché par David le 2026-11-14** (choix de #2632) : seuil `trop-loin` 1 000 000 carreaux gardé ; nombre posé seul ignoré sans message ; répétitions à virgule ou négatives rendues impossibles à saisir (`controls_repeat`), `controls_repeat_ext` reviendra en 5e avec les variables · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627 et #2632 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) · **Worktree / branche** : aucun (le prochain : `ubumaths-wt-blockly`, nouvelle branche)
+- **État** : #2627 et #2632 mergées ; PR 3 (bac à sable public `/tortue`) en cours, phase 0 validée (« je te suis », 2026-11-14) · **Prochaine action** : tests rouges (animation, `controls_repeat`), puis page `/tortue` · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627 et #2632 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-bac-a-sable`
 
 ---
 
@@ -139,3 +139,32 @@ suivent les recommandations).
 - Écarté : la clé de regroupement de `normaliserSegments` (arrondi 1e-6) peut séparer deux
   droites identiques à une frontière d'arrondi (~0,2 % sur des irrationnels, non reproduit) ; à
   revoir avec la correction par tracé (PR 4).
+
+## PR 3 — bac à sable public (branche `feat/blockly-bac-a-sable`, worktree `ubumaths-wt-blockly`)
+
+Phase 0 présentée le 2026-11-14 ; David : « je te suis » sur les cinq recommandations.
+
+- **Page publique `/tortue`, « La Tortue »**, sans connexion, rien d'enregistré. `/dev/blockly`
+  reste l'atelier de l'admin (deux modes).
+- **Tortue seule** : aucun JavaScript exécuté sur la page publique, seul l'interpréteur
+  (ADR 0039) ; les programmes de calcul passeront eux aussi par l'interpréteur, plus tard.
+- **Aperçu Python replié** (« Voir en Python »), en bonus.
+- **Liens** : Header + Sidebar + sitemap ; pas de Tour du Royaume pour l'instant.
+- **Animation** : vitesse fixe (~0,3 s par pas), bouton « Tout de suite » ; modifier les blocs
+  pendant l'animation l'arrête et remet le quadrillage à zéro ; erreur → tracé partiel joué puis
+  message.
+- **Boucle** : `controls_repeat` (champ entier ≥ 0) dans la boîte à outils tortue, à la place de
+  `controls_repeat_ext` (l'interpréteur garde les deux).
+
+### Essai et revue (2026-11-14)
+
+- Essai `/tortue` (port 5176, fenêtre étroite) : carré animé (tracé partiel à 1 s, complet
+  ensuite), « Tracé terminé : 4 segments. », « Tout de suite », bloc sorti de la boucle pendant
+  l'animation → quadrillage vidé ; aperçu Python juste. Corrigé à l'essai : en colonne, `flex-1`
+  écrasait la hauteur de l'espace de blocs (0 px).
+- `code-reviewer` (Sonnet) : rien de bloquant. Corrigé : première étape affichée dès « Lancer » ;
+  test des étapes pour `trop-loin`. Laissé : « Lancer » sur un espace vide affiche « Tracé
+  terminé : 0 segment. » (phase 0 : « rien, sans erreur »).
+- **Question pour David** : vitesse fixe → un long programme dure longtemps (`répéter 360` de
+  « avancer 1, tourner 1 » = 720 étapes ≈ 3 min 30 ; 10 000 étapes ≈ 50 min). « Tout de suite »
+  existe ; accélérer au-delà d'un seuil ?

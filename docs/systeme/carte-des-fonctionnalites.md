@@ -12,7 +12,7 @@ couvre:
 
 # Carte des fonctionnalités : ce que Chiphre offre, à qui, par où
 
-> Vérifié contre le code le 2026-10-11 (branche `feat/sitemap-complet`) ; Tour du Royaume revu le 2026-11-01 (cartes). Inventaire **vu de l'utilisateur** :
+> Vérifié contre le code le 2026-10-11 (branche `feat/sitemap-complet`) ; Tour du Royaume revu le 2026-11-01 (cartes) ; La Tortue ajoutée le 2026-11-14 (chantier `blockly`). Inventaire **vu de l'utilisateur** :
 > chaque fonctionnalité sous son libellé réel, sa route, son accès, et la preuve de ses points forts.
 > Le fonctionnement de chaque système est dans sa propre doc (carte : [docs/README.md](../README.md)) ;
 > le lore utilisable en vitrine est dans [univers-chiphre.md](univers-chiphre.md#le-lore-en-vitrine).
@@ -48,6 +48,7 @@ toute nouvelle page publique qui n'est dans aucune des trois listes.
 | Atelier (vues Calcul, Graphe, Données)     | `/atelier` (`/grapheur` y mène)                    | Calcul formel en français avec étapes, grapheur, statistiques et probabilités ; partage par lien. Rien ne quitte le navigateur (`src/routes/(public)/atelier/+page.svelte:6`)          | oui                     | oui      |
 | Chiffrement — le Cabinet Noir de Turingrad | `/chiffrement`, 9 établis, `/chiffrement/depeches` | Chiffrer, déchiffrer, décrypter (César → RSA), calculs pas à pas ; campagne des 9 Dépêches du Czar (`src/lib/ciphers/dispatches.ts`). 100 % navigateur                                 | oui                     | oui      |
 | Upsilon                                    | `/upsilon`                                         | Simulateur de la calculatrice graphique Upsilon                                                                                                                                        | oui                     | oui      |
+| La Tortue                                  | `/tortue`                                          | Programmer une tortue par blocs (avancer, tourner, répéter) ; tracé animé sur quadrillage, aperçu Python. Rien n'est enregistré, aucun JavaScript exécuté (ADR 0039)                   | oui                     | oui      |
 | Python Playground                          | `/python`                                          | Python dans le navigateur (Pyodide), débogueur pas à pas, diagramme mémoire (`src/lib/components/python/debug/`)                                                                       | **non** (élève, prof)   | oui      |
 | Jeux : Trio, Mathémo, Démineur, 2048       | `/games/*`                                         | Jeux mathématiques ; gidouilles gagnées si l'élève est connecté (`public: true`, `src/routes/(public)/games/+page.svelte`)                                                             | oui                     | oui      |
 | Glossaire Mathématique                     | `/glossaire`                                       | Dictionnaire, définitions par niveau (671 entrées dans la copie figée `tests/fixtures/lexique/dictionnaire-reference.ts` ; la base fait foi) ; une page par terme `/glossaire/<slug>`  | **non**                 | oui      |
@@ -129,7 +130,7 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
   (pages légales, `/a-propos`) est dans le coin inférieur droit (`src/routes/+layout.svelte`).
 - **En-tête** (`src/lib/components/Header.svelte`) : « Connexion » en haut à droite ; l'inscription
   n'est atteinte que depuis la page de connexion (« Créer un compte »).
-- **Menu** : Accueil, Automaths, Jeux, Upsilon, Atelier, Chiffrement, Le Shtam, Zygomatics
+- **Menu** : Accueil, Automaths, Jeux, La Tortue, Upsilon, Atelier, Chiffrement, Le Shtam, Zygomatics
   (D13, D14 : Géométrie retirée, Automaths et le Shtam ajoutés, 2026-10-12).
 
 ## La roue des publics et les trois vues

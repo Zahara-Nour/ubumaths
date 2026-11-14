@@ -29,7 +29,9 @@ export const TORTUE_TOOLBOX = {
 			kind: 'category',
 			name: 'Boucles',
 			colour: '#3D703D',
-			contents: [{ kind: 'block', type: 'controls_repeat_ext', inputs: { TIMES: nombre(4) } }]
+			// Bloc à champ entier ≥ 0 : ni virgule ni négatif ne se saisissent (David, 2026-11-14) ;
+			// `controls_repeat_ext` reviendra en 5e avec les variables
+			contents: [{ kind: 'block', type: 'controls_repeat', fields: { TIMES: 4 } }]
 		},
 		{
 			kind: 'category',
