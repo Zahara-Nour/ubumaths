@@ -1125,7 +1125,7 @@
 					</div>
 				{/if}
 			{:else if node.type === 'associer' && node.caseIndex !== undefined && node.errors.length === 0}
-				<!-- Éléments à associer : l'élève pose une étiquette par élément, une case par
+				<!-- Éléments à associer : l'élève relie (ou pose une étiquette sur) chaque élément, une case par
 				     élément (N, N + 1…), la position affichée de l'étiquette posée est la réponse -->
 				{@const firstCase = node.caseIndex}
 				{@const caseCount = node.items.length}

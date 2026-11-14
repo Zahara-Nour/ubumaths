@@ -1,6 +1,8 @@
 /**
  * Associer deux colonnes à l'écran (chantier `docs/wip/associer-progress.md`)
  *
+ * Geste `geste: étiquettes` ; le geste par défaut (relier) : `AssocierRelier.svelte.test.ts`.
+ *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
  */
 import { describe, it, expect, afterEach } from 'vitest';
@@ -175,7 +177,15 @@ describe('Associer — le geste', () => {
 		const screen = await render(MarkdownRenderer, {
 			target: mainElement(),
 			props: {
-				content: ['```associer', '- a -> 1', '- b -> 2', '- c -> 1', '- -> 3', '```'].join('\n')
+				content: [
+					'```associer',
+					'geste: étiquettes',
+					'- a -> 1',
+					'- b -> 2',
+					'- c -> 1',
+					'- -> 3',
+					'```'
+				].join('\n')
 			}
 		});
 		const labels = tray(screen.container).map((b) => b.textContent?.trim());
@@ -192,9 +202,17 @@ describe('FillBlanksInput — associer', () => {
 		variations: [
 			{
 				statement: templateMarkdown(
-					['Associe.', '', '```associer', '- a -> 1', '- b -> 2', '- c -> 1', '- -> 3', '```'].join(
-						'\n'
-					)
+					[
+						'Associe.',
+						'',
+						'```associer',
+						'geste: étiquettes',
+						'- a -> 1',
+						'- b -> 2',
+						'- c -> 1',
+						'- -> 3',
+						'```'
+					].join('\n')
 				)
 			}
 		],
@@ -275,7 +293,7 @@ describe('BuildAnswer — associer', () => {
 			props: {
 				kind: 'associer',
 				// Source d'une instance, `case:` retirée : sans liens
-				source: ['- a ->', '- b ->', '- -> x', '- -> y', '- -> z'].join('\n'),
+				source: ['geste: étiquettes', '- a ->', '- b ->', '- -> x', '- -> y', '- -> z'].join('\n'),
 				answer: '1 ; 1',
 				status: 'incorrect',
 				answers: [

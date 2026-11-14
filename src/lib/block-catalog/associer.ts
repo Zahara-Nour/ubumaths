@@ -14,12 +14,19 @@ export const associerEntry: BlockCatalogEntry = {
 	fences: ['associer'],
 	nodeType: 'associer',
 	summary:
-		'Des éléments à gauche, des étiquettes à droite : l’élève pose sur chaque élément l’étiquette qui lui correspond (formule ↔ nom, situation ↔ type de suite).',
+		'Des éléments à gauche, des étiquettes à droite : l’élève relie chaque élément à l’étiquette qui lui correspond (formule ↔ nom, situation ↔ type de suite).',
 	intro:
-		'Écrivez chaque élément avec sa bonne étiquette, séparés par « -> ». L’élève voit les éléments dans l’ordre écrit, et au-dessus les étiquettes mélangées, chacune une fois. Il les pose au doigt ou à la souris : en les glissant, ou en touchant l’étiquette puis la place. Une étiquette reste disponible : elle peut servir à plusieurs éléments. Il est jugé élément par élément (note partielle), sur l’étiquette posée. Sur la fiche PDF, deux colonnes à relier au crayon.',
+		'Écrivez chaque élément avec sa bonne étiquette, séparés par « -> ». L’élève voit les éléments à gauche dans l’ordre écrit, et à droite les étiquettes mélangées, chacune une fois. Il trace un trait d’un point à l’autre, au doigt ou à la souris : en glissant, ou en touchant un point puis l’autre ; toucher un trait l’efface. Une étiquette peut recevoir plusieurs traits. Avec « geste: étiquettes », il pose plutôt les étiquettes sur une place à côté de chaque élément. Il est jugé élément par élément (note partielle). Sur la fiche PDF, deux colonnes à relier au crayon.',
 	settingGroups: [
 		{
 			settings: [
+				{
+					key: 'geste',
+					values: 'relier, étiquettes',
+					defaultValue: 'relier',
+					description:
+						'relier : un trait de chaque élément vers son étiquette. étiquettes : l’élève pose une étiquette sur la place de chaque élément, mieux pour un classement en peu d’étiquettes ou des éléments longs (beaucoup de traits se croiseraient). Le jugement, le corrigé et la fiche PDF sont les mêmes.'
+				},
 				{
 					key: '- élément -> étiquette',
 					values: '2 à 8 éléments (texte, formule $…$, variable)',
@@ -48,12 +55,13 @@ export const associerEntry: BlockCatalogEntry = {
 				'- $u_n=u_0\\,q^n$ -> terme général géométrique'
 			),
 			explanation:
-				'Une correspondance un à un. La consigne (« Associe chaque formule à son nom. ») va dans l’énoncé, au-dessus. Essayez : glissez les étiquettes sur les places.'
+				'Une correspondance un à un. La consigne (« Associe chaque formule à son nom. ») va dans l’énoncé, au-dessus. Essayez : reliez chaque formule à son nom.'
 		},
 		{
 			title: 'Classer des situations',
 			source: fence(
 				'associer',
+				'geste: étiquettes',
 				'- Un capital augmente de 3 % par an -> géométrique',
 				'- On ajoute 50 € chaque mois -> arithmétique',
 				'- Une population diminue de moitié chaque année -> géométrique',
@@ -61,7 +69,7 @@ export const associerEntry: BlockCatalogEntry = {
 				'- -> ni l’une ni l’autre'
 			),
 			explanation:
-				'La même étiquette sert à plusieurs éléments. L’intrus « ni l’une ni l’autre » empêche de répondre au hasard entre deux étiquettes.'
+				'La même étiquette sert à plusieurs éléments. Avec « geste: étiquettes », l’élève pose l’étiquette à côté de chaque situation : pas de traits qui se croisent. L’intrus « ni l’une ni l’autre » empêche de répondre au hasard entre deux étiquettes.'
 		}
 	],
 	mistakes: [

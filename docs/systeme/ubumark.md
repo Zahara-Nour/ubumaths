@@ -319,20 +319,31 @@ la colonne, ← → d'une colonne à l'autre ; consigne lue « Étapes à remett
 place par place) : n'écrire que des étapes qui ne peuvent pas permuter.
 
 Bloc ``associer (associer deux colonnes, [questions.md](questions.md)) —
-`__tests__/associer/associer-parser.test.ts`, `AssocierPlacer.svelte.test.ts`,
-`associer-typst-compilation.test.ts` : une ligne `- élément -> étiquette` par élément (2 à 8, deux à
+`__tests__/associer/associer-parser.test.ts`, `AssocierRelier.svelte.test.ts`,
+`AssocierEtiquettes.svelte.test.ts`, `associer-typst-compilation.test.ts` : réglage `geste: relier`
+(défaut, rien d'écrit) ou `geste: étiquettes` en tête (`gesture`, gardé dans l'énoncé de l'instance) ; une ligne `- élément -> étiquette` par élément (2 à 8, deux à
 deux différents), `- -> étiquette` pour un intrus ; étiquettes différentes de 3 à 10, une étiquette
 écrite plusieurs fois n'en fait qu'une (`labels`, `answers` = rang de la bonne étiquette de chaque
 élément). Sans aucun lien (`- élément ->` partout), le bloc se lit sans réponse : énoncé d'une instance
 ou geste libre ; des liens écrits et d'autres oubliés → erreur. `case:` posée par le générateur. Ordre
 des étiquettes vu par l'élève : `displayedAssocierLabels` (`utils/associer.ts`) — dans une question, tel
 quel ; hors question, mélange fixe tiré du texte (`textSeed` de `utils/ranger.ts`). Écran
-`AssocierPlacer.svelte` : les étiquettes en haut, **toujours disponibles** (une étiquette sert à
-plusieurs éléments), puis une rangée « élément | place » par élément, deux colonnes égales même au
-téléphone ; glisser ou toucher l'étiquette puis la place ; glisser une place vers une autre l'y déplace
-(échange si elle est prise), vers les étiquettes la vide ; toucher une place remplie la vide ; clavier
-← → dans les étiquettes, ↑ ↓ d'une place à l'autre et vers les étiquettes, Entrée, Échap ; noms
-« Étiquette 2 sur 3 », « Place de l'élément 1 sur 3, vide ». Corrigé : place verte ou rouge, « Correction :
+`AssocierPlacer.svelte`, aiguilleur selon le geste ; mêmes props et mêmes réponses (position affichée de
+l'étiquette de chaque élément). **Relier** (`AssocierRelier.svelte`) : éléments à gauche, un point au
+bout, étiquettes à droite, un point devant, deux colonnes même au téléphone (texte à la ligne, point
+centré sur sa case) ; traits dans un SVG posé par-dessus, entre les centres des points mesurés
+(`ResizeObserver`) ; glisser d'un point à l'autre (le trait suit le doigt) ou toucher une case puis une
+case de l'autre colonne, dans les deux sens ; un trait par élément (le nouveau remplace l'ancien),
+plusieurs vers une étiquette ; toucher un trait, ou un élément relié sans rien de pris, l'efface ;
+clavier ↑ ↓ dans une colonne, ← → vers l'autre, Entrée, Échap ; noms « Élément 1 sur 3, pas relié »,
+« Étiquette 2 sur 3 ». Corrigé : trait juste vert, faux rouge, bon trait en pointillés verts sous un
+élément faux (`expected`). **Étiquettes** (`AssocierEtiquettes.svelte`) : les étiquettes en haut,
+**toujours disponibles** (une étiquette sert à plusieurs éléments), puis une rangée « élément | place »
+par élément, deux colonnes égales même au téléphone ; glisser ou toucher l'étiquette puis la place ;
+glisser une place vers une autre l'y déplace (échange si elle est prise), vers les étiquettes la vide ;
+toucher une place remplie la vide ; clavier ← → dans les étiquettes, ↑ ↓ d'une place à l'autre et vers
+les étiquettes, Entrée, Échap ; noms « Étiquette 2 sur 3 », « Place de l'élément 1 sur 3, vide ».
+Corrigé : place verte ou rouge, « Correction :
 » et la bonne étiquette sous une place fausse (`expected`). PDF : deux colonnes à relier (« • » au bout
 de chaque élément et devant chaque étiquette). Éditeur riche : bloc de code `associer`. Comme ranger,
 absent de `SPECIAL_BLOCK_KINDS` (dans une liste : bloc de code).

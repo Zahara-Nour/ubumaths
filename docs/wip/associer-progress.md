@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, #2623 ouverte (CI verte sur le lot 1), PAS mergée : geste « relier » à ajouter._
+_Mis à jour le 2026-11-14, #2623 ouverte, PAS mergée : geste « relier » codé, à essayer par David._
 
-- **État** : lot 1 (geste étiquettes) relu et vert ; décisions 6-7 (ci-dessous) : `geste: relier` par défaut, `geste: étiquettes` en option, même PR. Fait : réglage `geste:` (parseur, tirage, tests) ; `AssocierPlacer.svelte` = aiguilleur, qui rend pour l'instant `AssocierEtiquettes.svelte` (ex-AssocierPlacer) pour les deux gestes · **Prochaine action** : écrire `AssocierRelier.svelte` (spec du geste sous les décisions 6-7 : SVG par-dessus, ancres mesurées, glisser / toucher, clavier, correction rouge / pointillés verts), le brancher dans l'aiguilleur, tests ; FillBlanksInput (tests à `geste: étiquettes` pour l'ancien geste) ; catalogue (réglage `geste`, exemples) ; docs `ubumark.md`, `questions.md` ; puis CI verte → merge · **En attente de David** : rien (essai du geste relier quand il sera prêt ; accès distant : `tailscale serve` actif sur 5177 → `tailscale serve reset` à la fin) · **Pièges en cours** : test d'écran renommé `AssocierEtiquettes.svelte.test.ts` (importe AssocierEtiquettes) ; ranger garde ses deux défauts hérités (collision, clés) · **Worktree / branche** : `../ubumaths-wt-associer`, `feat/associer`
+- **État** : lot 1 (étiquettes) + geste « relier » (`AssocierRelier.svelte`, défaut) codés et testés ; aiguilleur `AssocierPlacer.svelte` ; catalogue (réglage `geste`, classement en `geste: étiquettes`) et docs `ubumark.md`, `questions.md` à jour · **Prochaine action** : retours de David sur l'essai, puis revue (`code-reviewer`), CI verte → merge · **En attente de David** : essai du geste relier sur `/aide-ecriture/blocs/associer` (serveur 5177 du worktree ; `tailscale serve` actif sur 5177 → `tailscale serve reset` à la fin) · **Pièges en cours** : ranger garde ses deux défauts hérités (collision, clés) · **Worktree / branche** : `../ubumaths-wt-associer`, `feat/associer`
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -79,3 +79,7 @@ Ensuite : convertir la n° 11 de `cours-suites` (B11, QCM) en « associer ».
   courant « Quelle suite ? ») ; seul `[_]` l'est. Revue : étiquettes `+`/`-` vides au PDF (repli en
   chaîne Typst), `->` dans une formule (coupe hors `$…$`), message des doublons écrits, clés `{#each}`,
   garde anti-fuite, test sur la structure.
+- 2026-11-14 : geste « relier » (décisions 6-7) — `AssocierRelier.svelte` : SVG par-dessus, points
+  mesurés (`ResizeObserver`, attachement), glisser / toucher dans les deux sens, toucher un trait ou un
+  élément relié efface, clavier ↑ ↓ ← →, corrigé vert / rouge / pointillés verts ; tests d'écran
+  `AssocierRelier.svelte.test.ts` (15) ; anciens tests d'intégration passés à `geste: étiquettes`.

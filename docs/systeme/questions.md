@@ -434,7 +434,8 @@ la droite (`FillBlanksInput`) — même critère aux deux endroits (`isLineToRep
 n° 27 ; `associer-parser.ts`, `findAssociersToPlace`) : le prof écrit `- élément -> étiquette`, un
 intrus `- -> étiquette` ; une étiquette écrite deux fois n'est montrée qu'une fois (classement). Une
 case par élément (`buildCaseCount` = nombre d'éléments, `point` = rang de l'élément), `type: 'text'`,
-`construire: 'associer'` (« éléments à associer »). Au tirage, les étiquettes sont mélangées comme
+`construire: 'associer'` (« éléments à associer »). Geste de l'écran : `geste: relier` (défaut, traits)
+ou `geste: étiquettes`, gardé dans l'énoncé de l'instance ; juge et corrigé communs. Au tirage, les étiquettes sont mélangées comme
 celles d'un ranger (`rangerOrder` : jamais l'ordre écrit) ; le bloc de l'énoncé de l'instance est
 réécrit **sans liens** (`- élément ->`, puis `- -> étiquette` dans l'ordre affiché :
 `replaceAssocierBlocks`, `serializeAssocierBlock`), la version publique n'a rien à cacher. Réponse
@@ -1176,7 +1177,8 @@ verrouillé avec les traits de l'élève, ou `StatChart` avec la boîte juste (`
 ligne `build`, `answers` par place, et `expected` (la bonne position de chaque place, que le bloc ne dit
 pas) ; `RangerPlacer` verrouillé avec les places de l'élève, fausses marquées, et le rangement juste
 dessous ; éléments à associer, ``associer, de même : UNE ligne `build`, `answers` par élément et `expected` ;
-`AssocierPlacer` verrouillé, la bonne étiquette sous chaque place fausse ; repère à placer, ``courbe `placer:`, de même : UN repère, `answers` par point, « Tu n'as rien
+`AssocierPlacer` verrouillé (relier : traits de l'élève, le bon en pointillés sous un faux ; étiquettes :
+la bonne étiquette sous chaque place fausse) ; repère à placer, ``courbe `placer:`, de même : UN repère, `answers` par point, « Tu n'as rien
 placé. » quand aucun n'est posé ; `CourbePlacer` verrouillé avec les points de l'élève et ses phrases
 `placedPointMistake`, ou le repère avec les points justes, nommés ; droite à tracer, ``courbe
 `tracer:` : UNE case, `answer` = `x1;y1/x2;y2`, la droite de l'élève et sa phrase `tracedLineMistake`, ou
