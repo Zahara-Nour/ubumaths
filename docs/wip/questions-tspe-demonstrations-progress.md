@@ -10,13 +10,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2630 (lot 11 rangé et relu 4/4 OK)._
+_Mis à jour le 2026-11-14, lot 11 publié (§ 47)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 et 10 publiés, lot 11 rangé en prod, en `draft` (#2630, § 45), 19 restants après lui.
-- **Prochaine action** : lot 11, David lance `publier-lot.ts` (simulation puis `--publier`, § 47) ; relire 4
-  `published` (MCP) ; puis lot 12.
-- **En attente de David** : `publier-lot.ts --publier` du lot 11.
+  § 35, lots 9 à 15) : lots 9 à 11 publiés (§ 47), 19 restants.
+- **Prochaine action** : lot 12 (Q1 du § 35), même démarche que le lot 11 (§ 44 à 47).
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -924,5 +923,5 @@ dans l'aperçu admin, § 44). Page : https://claude.ai/artifact/PgMJ1EGTsjS9bvEt
 
 ## 47. Lot 11 : publication (2026-11-14)
 
-Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 45). `publier-lot.ts` en simulation puis `--publier`, à
-lancer par David.
+Verdicts lus : 4/4 « ok », sans commentaire (ids = ceux du § 45). `publier-lot.ts` en simulation puis `--publier`,
+lancés par David. Relu en base (MCP) : 4 `published`.
