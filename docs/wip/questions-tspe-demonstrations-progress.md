@@ -10,14 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, rangement du lot 14 (§ 59)._
+_Mis à jour le 2026-11-14, après #2650 (rangement du lot 14, § 60)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 13 publiés (§ 57) ; lot 14 (473, 496, 497) : 3 brouillons en prod, PR de rangement +
-  `id` ouverte (§ 59) ; lot 15 restant (517, 529, 537, 538, 539).
-- **Prochaine action** : PR de rangement mergée → `db:migrate` du dépôt principal, relevé MCP, page à cocher, verdicts,
-  publication (même démarche que le lot 13, § 53 à 57).
-- **En attente de David** : rien avant la page à cocher.
+  § 35, lots 9 à 15) : lots 9 à 13 publiés (§ 57) ; lot 14 (473, 496, 497) : 3 brouillons rangés et tagués, `id`
+  commités, page à cocher publiée (§ 60) ; lot 15 restant (517, 529, 537, 538, 539).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 3), puis `publier-lot.ts` (David).
+- **En attente de David** : relecture de https://claude.ai/artifact/FwMMhYS4arXRBnNyRvn3rx.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -1072,3 +1071,12 @@ rangement (piège du § 56). Migration `20261114090523_questions_tspe_approfondi
 celle du lot 13 (SQL exécutable et rollback identiques aux données près) : chacun sur la sous-notion du § 58, qui porte
 aussi son point. Test d'intégration 12/12, rouge sans la migration (6 échecs, 5 sautés).
 `security-auditor` : aucun finding bloquant (relevé prod refait : 3 `draft` sans nœud ni tag, chemins et points résolus).
+
+## 60. Lot 14 : rangement mergé, page à cocher (2026-11-14)
+
+Mergé (#2650) : CI verte (intégration comprise), `check:migrations --pr` vert, `db:migrate` fait du dépôt principal
+(simulation : cette seule migration) ; relu en base (MCP) : 3 `draft`, chacun sur sa sous-notion avec son seul point,
+`updated_at` intact. `page-a-cocher.ts` lu en base prod, directement sur les JSON du dépôt (`id` commités) : 3
+brouillons, 4, 4 et 5 exemples ; alerte « bloc ranger non dessiné » sur 497 (habituelle, étapes vues dans l'aperçu
+admin, § 58). Page : https://claude.ai/artifact/FwMMhYS4arXRBnNyRvn3rx (capacité `db`) ; base `verdicts` vide à la
+publication.
