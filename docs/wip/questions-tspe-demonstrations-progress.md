@@ -1004,3 +1004,14 @@ simulation sur la prod : 6 « à créer », aucun titre pris ; brouillons en bas
 8d96b772, c1b44d16, be926d14, ccb1998c, 8209bef6) ; aperçu admin vu à l'écran (port 5177) : 460 (tangente en π/4) joué
 « Juste » (saisie `1-π/2`), 422 (lecture) joué faux (A coché à tort, correction affichée), étapes à ranger de 424
 rendues.
+
+## 53. Lot 12 publié ; lot 13 : brouillons et rangement (2026-11-14)
+
+Lot 12 : `publier-lot.ts` lancé par David ; relu en base (MCP) : 5 `published`.
+
+Lot 13 : `create-questions --publier` lancé par David : fdbc6cb0 (422), 9a8bf09c (423), 8ce83078 (424), 97309b20
+(451), 8a28feb1 (452), fe0dd759 (460), en `draft`, sans nœud ni tag (MCP). JSON du dépôt principal remis à l'état
+commité. Migration `20261114073717_questions_tspe_approfondissements_13_rangement_tags`, copie de celle du lot 12
+(SQL exécutable identique aux données près) : chacun sur la sous-notion du § 52 ; 424 sur sa sous-notion, les cinq
+autres points sur leur notion. Test d'intégration 12/12, rouge sans la migration (6 échecs, 5 sautés) ;
+`security-auditor` : aucun finding bloquant.
