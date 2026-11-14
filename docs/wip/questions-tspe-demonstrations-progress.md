@@ -10,22 +10,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2642 (fichiers du lot 13)._
+_Mis à jour le 2026-11-14, après #2645 (rangement du lot 13) et la page à cocher (§ 54)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 11 publiés (§ 47) ; lot 12 relu 5/5 « ok » (§ 51), encore en `draft` ; lot 13 en
-  fichiers sur `main` (#2642, § 52) ; 8 points restants après lui (lots 14, 15).
-- **Prochaine action** : David lance `create-questions --publier` du lot 13 depuis le dépôt principal ; puis migration
-  de rangement et tags (§ 52, colonne « Nœud »), page à cocher.
-- **En attente de David** : `publier-lot.ts --dir scripts/questions/tspe-approfondissements-12` (simulation puis
-  `--publier`) ; `create-questions --dir scripts/questions/tspe-approfondissements-13 --publier`.
+  § 35, lots 9 à 15) : lots 9 à 12 publiés (§ 53) ; lot 13 en brouillons rangés et tagués (§ 53), page à cocher
+  publiée (§ 54) ; 8 points restants après lui (lots 14 : 473, 496, 497 ; 15 : 517, 529, 537, 538, 539).
+- **Prochaine action** : lire les verdicts de la page du § 54 ; 6/6 « ok » → David lance `publier-lot.ts` (simulation
+  puis `--publier`) ; puis lot 14 (Q1 du § 35), même démarche que le lot 13 (§ 52 à 54).
+- **En attente de David** : relecture de la page à cocher du lot 13.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge ;
-  `1x` non nettoyé dans `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable `e` ni `i`** (§ 52).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche à créer depuis `origin/main`.
+  `page-a-cocher.ts` et `publier-lot.ts` exigent les `id` : copie hors dépôt (§ 54) ; `1x` non nettoyé dans
+  `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable `e` ni `i`** (§ 52).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` ; prochaine branche à créer depuis `origin/main`.
 
 ---
 
@@ -1015,3 +1015,13 @@ commité. Migration `20261114073717_questions_tspe_approfondissements_13_rangeme
 (SQL exécutable identique aux données près) : chacun sur la sous-notion du § 52 ; 424 sur sa sous-notion, les cinq
 autres points sur leur notion. Test d'intégration 12/12, rouge sans la migration (6 échecs, 5 sautés) ;
 `security-auditor` : aucun finding bloquant.
+Mergé (#2645) : CI verte (intégration comprise), `check:migrations --pr` vert, `db:migrate` fait du dépôt principal
+(simulation : cette seule migration) ; relu en base (MCP) : 6 `draft`, chacun sur sa sous-notion avec son seul point,
+`updated_at` intact.
+
+## 54. Lot 13 : page à cocher (2026-11-14)
+
+`page-a-cocher.ts` lu en base prod, depuis une copie hors dépôt des fichiers avec leurs `id` (le script les exige ; les
+JSON du dépôt n'en portent pas) : 6 brouillons `draft`, chacun sur son point, 4 ou 5 exemples chacun ; alertes « bloc
+ranger non dessiné » sur 424 et 452 (habituelles, étapes de 424 vues dans l'aperçu admin, § 52). Page :
+https://claude.ai/artifact/HSuXTzpPLFA8shqMMnGitH (capacité `db`) ; base `verdicts` vide à la publication.
