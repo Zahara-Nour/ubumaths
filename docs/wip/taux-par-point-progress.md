@@ -11,9 +11,9 @@ sur les nouvelles traces (P4, P5, P6, P7, P8, P9 faits).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, plan technique écrit._
+_Mis à jour le 2026-11-14, PR 1 ouverte._
 
-- **État** : phase 0 tranchée, plan technique écrit (§ Plan technique) · **Prochaine action** : selon T1, PR 1 (migration `class_template_success` + intégration) ou PR unique en TypeScript · **En attente de David** : **T1** (comptage par la base ou lecture des traces) et, si base, **la question d'accès** · **Pièges en cours** : prod presque vide (vérifier en local, `db:seed-riche`) ; l'analytique refuse le compte admin (décision du 2026-10-11) ; prouvé = sources `auto` + `teacher`, comme `student-follow-up.ts` · **Worktree / branche** : `../ubumaths-wt-taux-par-point`, `feat/taux-par-point`
+- **État** : T1 tranchée (base, accès : personne ne lit rien de plus) ; PR 1 (migration `class_template_success` + intégration, 5 tests rouges sans la migration, verts avec) ouverte · **Prochaine action** : audit `security-auditor`, CI verte → merge → `db:migrate` depuis le dépôt principal → PR 2 (`db:types`, calcul, endpoint, widget) · **En attente de David** : rien · **Pièges en cours** : base locale : migration appliquée par `docker exec supabase_db_ubumaths psql` + `notify pgrst` (pas de `psql` sur la machine) ; prod presque vide (vérifier en local, `db:seed-riche`) ; l'analytique refuse le compte admin ; `success` jamais NULL sur une trace de modèle (CHECK) · **Worktree / branche** : `../ubumaths-wt-taux-par-point`, `feat/taux-par-point`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -86,6 +86,20 @@ membre archivé exclu, élève hors classe → rien, `anon` 42501, rouges sans l
 Revue : `code-reviewer` + `security-auditor` (données d'élèves, API). Doc : `analytique-prof.md`
 (nouveau widget), `base-de-donnees.md` si fonction.
 
+## Décision T1 (David, 2026-11-14 : « je suis tes recos »)
+
+Comptage par la base ; question d'accès : **personne** ne lit rien de plus.
+
+## PR 1 — migration (2026-11-14)
+
+- `supabase/migrations/20261114173810_taux_par_point_compte_en_base.sql` : `class_template_success`
+  (security invoker, `authenticated` seulement, rollback en commentaire).
+- `tests/integration/taux-par-point-compte-en-base.test.ts` (5) : comptes exacts (frontière de Paris
+  de la rentrée, contrôle et prof dans le prouvé, déclaré à part, modèle seulement déclaré), membre
+  archivé exclu, élève limité à ses traces, élève hors classe → rien, `anon` 42501. **Rouges sans la
+  migration** (PGRST202, fonction introuvable), verts avec.
+- Plan : `idx_skill_attempts_student_template_time` (local, `enable_seqscan=off`).
+
 ## Phase 0 — comportements proposés (à valider)
 
 - **Nominal** : dans l'onglet Connaissances, un widget « Taux de réussite » liste les **notions**
@@ -124,6 +138,7 @@ Revue : `code-reviewer` + `security-auditor` (données d'élèves, API). Doc : `
 
 ## Journal
 
+- 2026-11-14 : T1 tranchée (base) ; PR 1 écrite, tests rouges puis verts.
 - 2026-11-14 : plan technique écrit ; T1 posée à David.
 - 2026-11-14 : phase 0 tranchée (« je suis tes recos »).
 - 2026-11-14 : chantier ouvert, état des lieux, phase 0 posée (Q1 à Q5).
