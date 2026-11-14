@@ -9,9 +9,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2661 (simulation jouée, déploiement reporté)._
+_Mis à jour le 2026-11-14, après le déploiement v0.88.0._
 
-- **État** : outil livré (#2658, #2660) ; variations en cm du modèle 6-173 (f06e45e8) prêtes sur `main` (#2661 : v5 trois longueurs, v6 deux côtés et l'angle), **pas encore écrites en prod** ; rien n'est en prod côté code (prod = 0.87.0, sans #2658/#2660) ; simulation du lot `triangle-cm-6` jouée le 2026-11-14 contre la prod : 26 specs vertes / 600 tirages, 3 champs à modifier (variations, testSpecs, description) · **Prochaine action** : **d'abord `deploy:prod`** (David l'a reporté le 2026-11-14 : « on fera le déploiement plus tard ») ; ensuite seulement `pnpm tsx scripts/update-published-questions.ts --lot triangle-cm-6 --publier`, vérifier en prod (MCP), puis clore le chantier (versement, archive du journal) · **En attente de David** : `deploy:prod` ; l'écriture en prod ; relecture des 2 variations dans l'aperçu local (brouillon d3c2b97d, serveur 5176) ; 4 choix faits seul au lot 1 (Journal, 1, 3, 4, 5) ; 3 points mineurs de la revue de #2660 (Journal, fin ; reco : aligner le (1) « un seul C » du lot 7 sur le cas en cm) · **Pièges en cours** : ⛔ ne JAMAIS `--publier` avant le déploiement (variations injouables, le juge en cm n'est pas en prod) ; #2660 change aussi le juge du lot 7 en prod · **Worktree / branche** : `ubumaths-wt-triangle-cm-variations` gardé pour le serveur de test 5176, à retirer après la relecture
+- **État** : tout est en prod. Code : v0.88.0 (#2658, #2660, #2661), déployée le 2026-11-14 à 19:11. Modèle 6-173 (f06e45e8) : 6 variations, dont v5 (trois longueurs) et v6 (deux côtés et l'angle) en cm ; la simulation `triangle-cm-6` contre la prod dit « identique », 26/26 specs vertes. ⚠️ L'écriture en prod a eu lieu **avant** le déploiement (`updated_at` 18:52, heure de Paris), auteur inconnu : v5 et v6 injouables pendant environ 19 min, réglé par la 0.88.0 · **Prochaine action** : clore le chantier (versement, archive du journal) une fois les points en attente tranchés · **En attente de David** : relecture des 2 variations (en prod, ou dans l'aperçu local : brouillon d3c2b97d, serveur 5176) ; les 4 choix faits seul au lot 1 (Journal, 1, 3, 4, 5) ; les 3 points mineurs de la revue de #2660 (Journal, fin ; reco : aligner le (1) « un seul C » du lot 7 sur le cas en cm) · **Pièges en cours** : #2660 change aussi le juge du lot 7, désormais en prod · **Worktree / branche** : `ubumaths-wt-triangle-cm-variations` gardé pour le serveur 5176, à retirer après la relecture
 
 ## Ce qui existe (lu dans le code, 2026-11-14)
 
@@ -172,3 +172,10 @@ DrawnCircle` remplacé par un cercle porté avec son indice. Suites : serveur 7 
   1 800 tirages, 1 500 figures ; `sonde-figures` 0 problème ; corpus + sécurité des réponses 88 verts.
   Brouillon d'essai en base locale : d3c2b97d.
 - 2026-11-14 : #2661 mergée (CI verte). Écriture en prod : par David, après le `deploy:prod` qui livre le juge en cm.
+
+### 2026-11-14 — déploiement v0.88.0, variations en prod
+
+- `pnpm deploy:prod` lancé sur demande de David : v0.88.0 (39 commits, dont #2658, #2660, #2661). Vercel `Ready`.
+- `update-published-questions.ts --lot triangle-cm-6` (simulation) : « identique », 26/26 specs vertes. La base
+  contenait déjà les variations (`updated_at` à 18:52, heure de Paris), donc entre le report du déploiement
+  (18:47) et la v0.88.0 (19:11). Auteur de l'écriture inconnu. Rien n'a été réécrit.
