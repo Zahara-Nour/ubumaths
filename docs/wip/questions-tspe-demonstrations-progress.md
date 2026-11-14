@@ -10,22 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2622 (fichiers du lot 10, § 40)._
+_Mis à jour le 2026-11-14, rangement du lot 10 écrit (§ 41), PR ouverte._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lot 9 publié (§ 39) ; lot 10 (374, 377, 564, 361) écrit et vérifié (§ 40), mergé (#2622).
-- **Prochaine action** : après le `create-questions` de David, commiter les ids écrits dans les JSON, puis migration
-  de rangement et tags (copie de celle du lot 9 : 374 → Espace › positions relatives et intersections ; 377, 564, 361
-  → Orthogonalité et distances dans l'espace › sphère), page à cocher.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-approfondissements-10
---publier` (prod), depuis le dépôt principal.
+  § 35, lots 9 à 15) : lot 9 publié (§ 39) ; lot 10 : brouillons en prod (§ 41), migration de rangement en PR.
+- **Prochaine action** : CI verte → merge → `check:migrations --pr` puis `db:migrate` depuis le dépôt principal à
+  jour, relire en base (MCP) ; remettre les JSON du dépôt principal à l'état commité ; page à cocher du lot 10.
+- **En attente de David** : rien.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
   `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge.
   Le journal à jour vit sur `main` (le worktree est détaché) : `git -C <wt> checkout --detach origin/main` avant de lire.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, détaché sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, sur `chore/questions-tspe-approfondissements-10-rangement`.
 
 ---
 
@@ -856,3 +854,11 @@ Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (43 spec
 3 248 formules des aperçus (430 distinctes) passées à `validateLatex` + accolades, 0 problème ; `create-questions` en
 simulation sur la prod : 4 « à créer », aucun titre pris ; brouillons en base locale (copie hors dépôt) ; aperçu admin :
 374 (a) joué « Juste » (A(−4 ; −2 ; 0), u(−2 ; 0 ; 1)), cases des triplets nus et de `?t^2+?t+?` (377 a) rendues.
+
+## 41. Lot 10 : brouillons et rangement (2026-11-14)
+
+`create-questions --publier` lancé par David : b9696ffd (374), 15f1bdd0 (377), d6eebe08 (564), 31d52b00 (361), en
+`draft`, sans nœud ni tag (MCP). Migration `20261114005646_questions_tspe_approfondissements_10_rangement_tags`, copie
+de celle du lot 9 (SQL exécutable identique aux données près) : 374 → Géométrie > Espace > positions relatives et
+intersections ; 377, 564, 361 → Géométrie > Orthogonalité et distances dans l'espace > sphère (chaque point sur la
+sous-notion de son modèle). Test d'intégration 12/12, rouge sans la migration (6 échecs).
