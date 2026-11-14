@@ -1,0 +1,309 @@
+{
+	"title": "Espace : plan tangent à une sphère en un point",
+	"description": "Vecteur normal ΩA, centre lu sur une équation développée (trois cases), constante d'une équation du plan tangent (case), pourquoi le plan tangent ne touche la sphère qu'en A : Pythagore (case choix)",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la sphère $\\mathcal{S}$ d'équation $x^2+y^2+z^2+({{eval:-2*a}})x+({{eval:-2*b}})y+({{eval:-2*c}})z+({{eval:a^2+b^2+c^2-r2}})=0$ et son point $A({{eval:xa}}\\,;\\,{{eval:ya}}\\,;\\,{{eval:za}})$.\n\nLe plan tangent à $\\mathcal{S}$ en $A$ est le plan passant par $A$ et orthogonal au rayon $[\\Omega A]$, où $\\Omega$ est le centre de $\\mathcal{S}$. Donne les coordonnées du vecteur $\\overrightarrow{\\Omega A}$, normal à ce plan.\n\n$(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:(v1)^2+(v2)^2+(v3)^2"
+				},
+				{
+					"name": "xa",
+					"expression": "eval:(a)+(v1)"
+				},
+				{
+					"name": "ya",
+					"expression": "eval:(b)+(v2)"
+				},
+				{
+					"name": "za",
+					"expression": "eval:(c)+(v3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:v2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:v3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On complète les carrés : $(x-({{eval:a}}))^2+(y-({{eval:b}}))^2+(z-({{eval:c}}))^2={{eval:r2}}$.",
+					"Le centre est $\\Omega({{eval:a}}\\,;\\,{{eval:b}}\\,;\\,{{eval:c}})$.",
+					"Donc $\\overrightarrow{\\Omega A}\\textcolor{{{color:primary.0}}}{({{eval:v1}}\\,;\\,{{eval:v2}}\\,;\\,{{eval:v3}})}$."
+				]
+			},
+			"conditions": ["(v1 != 0 && v2 != 0) || (v1 != 0 && v3 != 0) || (v2 != 0 && v3 != 0)"]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la sphère $\\mathcal{S}$ d'équation $(x-({{eval:a}}))^2+(y-({{eval:b}}))^2+(z-({{eval:c}}))^2={{eval:r2}}$ et son point $A({{eval:xa}}\\,;\\,{{eval:ya}}\\,;\\,{{eval:za}})$.\n\nLe plan $\\mathcal{P}$ tangent à $\\mathcal{S}$ en $A$ a une équation de la forme ${{eval:v1}}x+({{eval:v2}})y+({{eval:v3}})z+d=0$. Détermine $d$.\n\n$d=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:(v1)^2+(v2)^2+(v3)^2"
+				},
+				{
+					"name": "xa",
+					"expression": "eval:(a)+(v1)"
+				},
+				{
+					"name": "ya",
+					"expression": "eval:(b)+(v2)"
+				},
+				{
+					"name": "za",
+					"expression": "eval:(c)+(v3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(v1*xa+v2*ya+v3*za)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le centre de $\\mathcal{S}$ est $\\Omega({{eval:a}}\\,;\\,{{eval:b}}\\,;\\,{{eval:c}})$, et $\\mathcal{P}$ est orthogonal à $\\overrightarrow{\\Omega A}({{eval:v1}}\\,;\\,{{eval:v2}}\\,;\\,{{eval:v3}})$ : d'où les coefficients de $x$, $y$ et $z$.",
+					"$A\\in\\mathcal{P}$ : ${{eval:v1}}\\times{{eval:xa;()}}+{{eval:v2;()}}\\times{{eval:ya;()}}+{{eval:v3;()}}\\times{{eval:za;()}}+d=0$.",
+					"Soit ${{eval:v1*xa+v2*ya+v3*za}}+d=0$, donc $\\textcolor{{{color:primary.0}}}{d={{eval:-(v1*xa+v2*ya+v3*za)}}}$."
+				]
+			},
+			"conditions": ["(v1 != 0 && v2 != 0) || (v1 != 0 && v3 != 0) || (v2 != 0 && v3 != 0)"]
+		},
+		{
+			"statement": "Soit $\\mathcal{S}$ une sphère de centre $\\Omega$ et de rayon $R$, $A$ un point de $\\mathcal{S}$, et $\\mathcal{P}$ le plan passant par $A$ et orthogonal à $(\\Omega A)$.\n\nPour montrer que $A$ est le seul point commun à $\\mathcal{P}$ et $\\mathcal{S}$, on prend un point $M$ de $\\mathcal{P}$ distinct de $A$. Quel argument donne $\\Omega M>R$ ?\n\n```choix\n- Le triangle $\\Omega AM$ est rectangle en $A$ : $\\Omega M^2=\\Omega A^2+AM^2>R^2$\n- L'inégalité triangulaire : $\\Omega M=\\Omega A+AM$\n- $M$ est dans $\\mathcal{P}$, donc $\\Omega M=R$\n- $AM=\\Omega A$, car $\\mathcal{P}$ est orthogonal à $(\\Omega A)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(\\Omega A)$ est orthogonale à $\\mathcal{P}$, donc à la droite $(AM)$ contenue dans $\\mathcal{P}$ : le triangle $\\Omega AM$ est rectangle en $A$.",
+					"Pythagore : $\\Omega M^2=\\Omega A^2+AM^2=R^2+AM^2>R^2$, car $AM>0$.",
+					"Donc $\\Omega M>R$ : $M\\notin\\mathcal{S}$, et $\\textcolor{{{color:primary.0}}}{A \\text{ est le seul point commun}}$ ; c'est pourquoi $\\mathcal{P}$ est dit tangent à $\\mathcal{S}$ en $A$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "ΩA(2 ; 1 ; −2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-1",
+				"c": "2",
+				"v1": "2",
+				"v2": "1",
+				"v3": "-2",
+				"r2": "9",
+				"xa": "3",
+				"ya": "0",
+				"za": "0"
+			},
+			"answers": ["2", "1", "-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AΩ (signes)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-1",
+				"c": "2",
+				"v1": "2",
+				"v2": "1",
+				"v3": "-2",
+				"r2": "9",
+				"xa": "3",
+				"ya": "0",
+				"za": "0"
+			},
+			"answers": ["-2", "-1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coordonnées de A",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-1",
+				"c": "2",
+				"v1": "2",
+				"v2": "1",
+				"v3": "-2",
+				"r2": "9",
+				"xa": "3",
+				"ya": "0",
+				"za": "0"
+			},
+			"answers": ["3", "0", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "d = −6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "-1",
+				"c": "2",
+				"v1": "2",
+				"v2": "1",
+				"v3": "-2",
+				"r2": "9",
+				"xa": "3",
+				"ya": "0",
+				"za": "0"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : d = 6 (signe)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "-1",
+				"c": "2",
+				"v1": "2",
+				"v2": "1",
+				"v3": "-2",
+				"r2": "9",
+				"xa": "3",
+				"ya": "0",
+				"za": "0"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : d avec Ω au lieu de A (3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "-1",
+				"c": "2",
+				"v1": "2",
+				"v2": "1",
+				"v3": "-2",
+				"r2": "9",
+				"xa": "3",
+				"ya": "0",
+				"za": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pythagore",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inégalité triangulaire",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ΩM = R",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AM = ΩA",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
