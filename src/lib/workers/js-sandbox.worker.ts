@@ -7,7 +7,13 @@
  * Provides a whitelist of safe globals, timeout protection, and console output capture.
  *
  * Security features:
- * - No access to window, document, fetch, XMLHttpRequest, eval, Function constructor
+ * - Les identifiants window, document, fetch, XMLHttpRequest, Function… valent undefined dans le
+ *   code exécuté ; `eval` est retiré de la portée globale du worker.
+ * - ⚠️ PAS ÉTANCHE : le constructeur de fonctions reste joignable par
+ *   `(() => {}).constructor` et donne la portée globale du worker (fetch avec les cookies de
+ *   l'utilisateur). Acceptable tant que seul l'élève écrit le code qu'il exécute ; à corriger
+ *   avant d'exécuter un programme écrit par quelqu'un d'autre (cf. docs/systeme/blockly.md).
+ * - Délai : une boucle infinie bloque le worker ; JsExecutor le termine (terminate) et en recrée un
  * - 10 second execution timeout
  * - Console output captured and forwarded via postMessage
  * - Strict mode enforcement
@@ -15,6 +21,7 @@
 
 import type { FromWorkerMessage } from '$lib/shared/blockly/worker/messages';
 import { toWorkerMessageSchema } from '$lib/shared/blockly/worker/messages';
+import { construireSourceSandbox } from './js-sandbox-source';
 
 // =============================================================================
 // Worker Global Declarations
@@ -321,7 +328,6 @@ interface SafeGlobals {
 	SharedWorker: undefined;
 	ServiceWorker: undefined;
 	importScripts: undefined;
-	eval: undefined;
 	Function: undefined;
 	setTimeout: undefined;
 	setInterval: undefined;
@@ -427,7 +433,6 @@ function createSafeGlobals(id: string): SafeGlobals {
 		SharedWorker: undefined,
 		ServiceWorker: undefined,
 		importScripts: undefined,
-		eval: undefined,
 		Function: undefined,
 		setTimeout: undefined,
 		setInterval: undefined,
@@ -635,17 +640,8 @@ function executeCode(code: string, id: string): void {
 	const globalNames = Object.keys(safeGlobals);
 	const globalValues = Object.values(safeGlobals);
 
-	// Create sandboxed function
-	// The code runs in strict mode within an IIFE that receives only safe globals
-	// Additional security: block constructor access at runtime
-	const sandboxedCode = `
-		"use strict";
-		return (function(${globalNames.join(', ')}) {
-			// Runtime protection against constructor access
-			var _blocked = function() { throw new Error("Acces non autorise"); };
-			${code}
-		}).apply(null, arguments);
-	`;
+	// Fonction sandbox : le code ne reçoit que les globales sûres (mode strict)
+	const sandboxedCode = construireSourceSandbox(globalNames, code);
 
 	try {
 		// We use the Function constructor here, but note:
@@ -760,6 +756,10 @@ self.onmessage = (event: MessageEvent<unknown>) => {
 // =============================================================================
 // Worker Initialization
 // =============================================================================
+
+// `eval` ne peut pas être masqué par un paramètre en mode strict (cf. js-sandbox-source.ts) :
+// on le retire de la portée globale du worker, qui ne s'en sert pas (il utilise `new Function`).
+Reflect.deleteProperty(globalThis, 'eval');
 
 // Signal that worker is ready
 postWorkerMessage({ type: 'ready' });

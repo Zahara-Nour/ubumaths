@@ -25,7 +25,10 @@ import type {
 	ExerciseValidationConfig,
 	ExerciseValidationResult
 } from '$lib/shared/python';
-import { PYODIDE_CONFIG, fromWorkerMessageSchema } from '$lib/shared/python';
+// Valeurs importées de leurs fichiers, jamais du barrel `$lib/shared/python` : il ré-exporte les
+// exécuteurs qui étendent cette classe (import circulaire, cf. __tests__/import-direct.test.ts)
+import { PYODIDE_CONFIG } from '../config';
+import { fromWorkerMessageSchema } from '../worker/messages';
 import type {
 	DebugStepAction,
 	DebugSnapshot,

@@ -47,6 +47,9 @@ export const LOADING_STAGES: readonly LoadingStage[] = [
 // Workspace Configuration
 // =============================================================================
 
+/** Dossier des médias Blockly sous static/ (copie de node_modules/blockly/media) */
+export const BLOCKLY_MEDIA_PATH = '/blockly/media/';
+
 /**
  * Default Blockly workspace options
  */
@@ -67,10 +70,13 @@ export const DEFAULT_WORKSPACE_OPTIONS = {
 	},
 	trashcan: true,
 	maxBlocks: BLOCKLY_CONFIG.MAX_BLOCKS,
-	// Disable sounds to avoid CSP issues (Blockly loads from external CDN)
+	// Sons coupés : pas de bruit en classe
 	sounds: false,
-	// Use unpkg CDN for Blockly media files (trashcan, sprites, etc.)
-	media: 'https://unpkg.com/blockly@12.5.1/media/',
+	// Médias (corbeille, sprites, icônes) servis par nous : aucune requête vers un tiers depuis le
+	// navigateur des élèves. Copie de node_modules/blockly/media, gardée à jour par media.test.ts.
+	media: BLOCKLY_MEDIA_PATH,
+	// Renderer explicite : Blockly 13 a changé celui par défaut
+	renderer: 'thrasos',
 	move: {
 		scrollbars: true,
 		drag: true,

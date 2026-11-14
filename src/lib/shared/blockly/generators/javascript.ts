@@ -5,6 +5,27 @@
  * including helper functions and code wrapping for sandboxed execution.
  */
 
+import { javascriptGenerator, Order } from 'blockly/javascript';
+
+// =============================================================================
+// Générateurs propres à Chiphre
+// =============================================================================
+
+/**
+ * Remplace les générateurs JavaScript de Blockly qui ne conviennent pas au sandbox.
+ * Idempotent ; appelé avant chaque génération (pas au chargement du module : un module de
+ * `src/lib` qui agit au chargement peut disparaître du build).
+ *
+ * - `text_print` : Blockly génère `window.alert(…)`, or `window` est bloqué dans le sandbox →
+ *   on écrit dans la console de l'élève.
+ */
+export function installerGenerateursChiphre(): void {
+	javascriptGenerator.forBlock['text_print'] = (block, generator) => {
+		const message = generator.valueToCode(block, 'TEXT', Order.NONE) || "''";
+		return `console.log(${message});\n`;
+	};
+}
+
 // =============================================================================
 // Math Helper Functions
 // =============================================================================
@@ -64,8 +85,12 @@ function isPrime(n) {
 // =============================================================================
 
 /**
- * Wrap generated JavaScript code for safe sandbox execution.
- * Captures console.log output and provides math helper functions.
+ * Enveloppe le code généré par Blockly avant de l'envoyer au sandbox (js-sandbox.worker.ts).
+ *
+ * Ni capture de `console.log` ni `try/catch` ici : la console du worker envoie déjà chaque ligne
+ * à l'élève, et une erreur doit remonter jusqu'au worker pour s'afficher. (Une ancienne version
+ * rangeait sortie et erreur dans une valeur de retour que personne ne lisait : rien ne
+ * s'affichait.)
  *
  * @param code - Generated JavaScript code from Blockly
  * @returns Wrapped code ready for execution
@@ -75,41 +100,10 @@ export function wrapJavaScriptCode(code: string): string {
 (function() {
 	'use strict';
 
-	// Output capture
-	const __output__ = [];
-	const __console_log__ = console.log;
-
-	console.log = function(...args) {
-		__output__.push(args.map(arg => {
-			if (arg === null) return 'null';
-			if (arg === undefined) return 'undefined';
-			if (typeof arg === 'object') {
-				try {
-					return JSON.stringify(arg);
-				} catch {
-					return String(arg);
-				}
-			}
-			return String(arg);
-		}).join(' '));
-	};
-
 	${MATH_HELPERS}
 
-	try {
-		// Generated code
-		${code}
-
-		return { success: true, output: __output__ };
-	} catch (error) {
-		return {
-			success: false,
-			error: error instanceof Error ? error.message : String(error),
-			output: __output__
-		};
-	} finally {
-		console.log = __console_log__;
-	}
+	// Generated code
+	${code}
 })();
 `.trim();
 }

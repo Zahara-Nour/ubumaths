@@ -18,6 +18,7 @@ import {
 	validatePyCodeLength,
 	JS_MATH_HELPERS
 } from '../index';
+import { construireSourceSandbox } from '$lib/workers/js-sandbox-source';
 
 // =============================================================================
 // JavaScript Code Wrapping Tests
@@ -43,31 +44,27 @@ describe('JavaScript Code Wrapping', () => {
 			expect(wrapped).toContain('function isPrime(n)');
 		});
 
-		it('should capture console.log output', () => {
-			const code = 'console.log("test");';
-			const wrapped = wrapJavaScriptCode(code);
+		// Comportement réel : le code enveloppé tourne dans la fonction du sandbox
+		// (construireSourceSandbox), avec une console qui écrit vers l'élève.
+		function executerDansLeSandbox(code: string): string[] {
+			const sortie: string[] = [];
+			const console = { log: (...args: unknown[]) => sortie.push(args.join(' ')) };
+			const fn = new Function(
+				construireSourceSandbox(['console', 'window'], wrapJavaScriptCode(code))
+			);
+			fn.apply(null, [console, undefined]);
+			return sortie;
+		}
 
-			expect(wrapped).toContain('const __output__ = []');
-			expect(wrapped).toContain('const __console_log__ = console.log');
-			expect(wrapped).toContain('console.log = function(...args)');
+		it('la sortie de console.log arrive à la console du sandbox', () => {
+			expect(executerDansLeSandbox('console.log("abc"); console.log(gcd(12, 18));')).toEqual([
+				'abc',
+				'6'
+			]);
 		});
 
-		it('should include error handling', () => {
-			const code = 'throw new Error("test");';
-			const wrapped = wrapJavaScriptCode(code);
-
-			expect(wrapped).toContain('try {');
-			expect(wrapped).toContain('} catch (error) {');
-			expect(wrapped).toContain('return {');
-			expect(wrapped).toContain('success: false');
-		});
-
-		it('should restore console.log in finally block', () => {
-			const code = 'const x = 1;';
-			const wrapped = wrapJavaScriptCode(code);
-
-			expect(wrapped).toContain('} finally {');
-			expect(wrapped).toContain('console.log = __console_log__');
+		it("une erreur remonte jusqu'au sandbox au lieu de disparaître", () => {
+			expect(() => executerDansLeSandbox('throw new Error("boum");')).toThrow('boum');
 		});
 
 		it('should handle empty code', () => {
@@ -427,10 +424,6 @@ describe('Code Wrapping Integration', () => {
 		expect(wrapped).toContain('function gcd');
 		expect(wrapped).toContain('function lcm');
 		expect(wrapped).toContain('function isPrime');
-		expect(wrapped).toContain('__output__');
-		expect(wrapped).toContain('try {');
-		expect(wrapped).toContain('} catch');
-		expect(wrapped).toContain('} finally {');
 		expect(wrapped).toContain(code);
 	});
 

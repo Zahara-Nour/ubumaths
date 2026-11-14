@@ -184,6 +184,18 @@ export class JsExecutor {
 	}
 
 	/**
+	 * Arrête le worker et en crée un neuf. Un worker pris dans une boucle synchrone (boucle infinie
+	 * de l'élève) ne lit plus aucun message, `cancel` compris : seul `terminate()` l'arrête.
+	 * `isReady` repasse à vrai au message `ready` du nouveau worker.
+	 */
+	private relancerWorker(): void {
+		this.worker?.terminate();
+		this.worker = null;
+		this.state = 'initial';
+		this.init();
+	}
+
+	/**
 	 * Terminate the worker and clean up resources.
 	 * Call this when the component unmounts.
 	 */
@@ -310,10 +322,8 @@ export class JsExecutor {
 		this.executionTimeout = setTimeout(() => {
 			if (this.currentExecutionId === executionId && this.state === 'executing') {
 				this.stderr = "Delai d'execution depasse (10 secondes)";
-				this.state = 'ready';
 				this.currentExecutionId = null;
-				// Send cancel to worker
-				this.postToWorker({ type: 'cancel', id: executionId });
+				this.relancerWorker();
 			}
 		}, TIMEOUT_MS + TIMEOUT_BUFFER_MS);
 
@@ -330,10 +340,9 @@ export class JsExecutor {
 	 */
 	cancel(): void {
 		if (this.currentExecutionId && this.state === 'executing') {
-			this.postToWorker({ type: 'cancel', id: this.currentExecutionId });
-			this.state = 'ready';
 			this.clearExecutionTimeout();
 			this.currentExecutionId = null;
+			this.relancerWorker();
 		}
 	}
 

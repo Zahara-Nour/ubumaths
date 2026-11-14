@@ -339,6 +339,15 @@ const result = await pythonStore.executor.validateExercise(code, {
 
 Utilisée par `ExerciseForm` (bouton "Vérifier") et par la page consultation exercice (bouton "Vérifier" + "Soumettre").
 
+### Imports : jamais de valeur depuis le barrel
+
+`base-executor.svelte.ts` importe ses **valeurs** (`PYODIDE_CONFIG`, `fromWorkerMessageSchema`) de
+leurs fichiers (`../config`, `../worker/messages`), jamais du barrel `$lib/shared/python` : le
+barrel ré-exporte `PlaygroundExecutor` et `NotebookExecutor`, qui étendent `BasePythonExecutor`.
+Quand un module charge l'exécuteur par son fichier (Blockly, cf.
+[blockly.md](../blockly.md)), le cycle évaluait `extends BasePythonExecutor` avant la classe. Les
+imports `type` restent libres. Test : `execution/__tests__/import-direct.test.ts`.
+
 ---
 
 ## Tests
