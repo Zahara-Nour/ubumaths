@@ -47,6 +47,7 @@ contourner en silence.
 | 0036 | [Le centimètre d'une figure à compléter est celui de la figure](0036-le-cm-de-la-figure.md)                                              | 2026-11-08 |
 | 0037 | [Cinq formes de série, deux boutons d'auto-évaluation](0037-cinq-formes-de-serie-deux-boutons.md)                                        | 2026-11-11 |
 | 0038 | [Le contenu d'une trace : la graine, la réponse par case, les temps](0038-contenu-d-une-trace.md)                                        | 2026-11-11 |
+| 0039 | [Les blocs tortue et calcul sont interprétés par Chiphre, jamais évalués en JavaScript](0039-blocs-interpretes-par-chiphre.md)           | 2026-11-14 |
 
 ## Écrire un ADR
 
