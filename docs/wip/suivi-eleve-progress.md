@@ -7,9 +7,9 @@ validés ») : « P8 page de suivi d'un élève · P9 distinguer prouvé (corrig
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR 1 ouverte._
+_Mis à jour le 2026-11-14, après #2639._
 
-- **État** : PR 1 (page + bloc « Points du programme », prouvé / déclaré) codée, revues faites (aucun bloquant), PR ouverte, CI en cours · **Prochaine action** : merge au vert, puis PR 2 (contrôles, régularité, compétences, lien depuis la grille A) · **En attente de David** : rien · **Pièges en cours** : prod presque sans traces avec réponse ; la grille A lit `skill_attempts` sans pagination (écart noté dans `analytique-prof.md`) · **Worktree / branche** : `../ubumaths-wt-suivi-eleve`, `feat/suivi-eleve` ; serveur de test sur 5177
+- **État** : PR 1 (#2639, page de suivi + bloc « Points du programme », prouvé / déclaré) mergée, pas encore en prod · **Prochaine action** : PR 2 — contrôles, régularité, compétences, lien depuis la grille A (plan technique à écrire, nouveau worktree) · **En attente de David** : vérification à l'écran de #2639 (`verifications-manuelles.md`) · **Pièges en cours** : prod presque sans traces avec réponse ; la grille A lit `skill_attempts` sans pagination (écart noté dans `analytique-prof.md`) · **Worktree / branche** : supprimés après #2639
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -112,6 +112,7 @@ mémoire FSRS (`Teachers can view card stats of their students`) de ses élèves
 
 ## Journal
 
+- 2026-11-14 : #2639 mergée (PR 1), CI verte.
 - 2026-11-14 : PR 1 codée (agent), badge mis en commun avec la grille A (`curriculum-point-badge-meta.ts`), doc système (`analytique-prof.md` § Suivi d'un élève, `comptes-classes-ecoles.md`, `composants-ui.md`). Revues : code → clés de liste répétées si deux notions homonymes non voisines (corrigé, test rouge puis vert) ; sécurité sans bloquant. Mineurs laissés : test d'intégration contre la RLS (tout est mocké ; un échec RLS afficherait « pas encore de point » sans fuite), refus de l'admin tenu par le code seul (la RLS le laisse lire, comme l'analytique), assertions non nulles `!` dans `student-follow-up.ts`.
 - 2026-11-14 : phase 0 tranchée (recommandations validées), plan technique de la PR 1.
 - 2026-11-14 : chantier ouvert, état des lieux, questions de phase 0.
