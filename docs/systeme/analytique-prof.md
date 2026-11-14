@@ -9,7 +9,7 @@ couvre:
 
 # Analytique prof — la page « analytics » d'une classe
 
-> Vérifié contre le code le 2026-10-21 ; widget C remplacé par la régularité le 2026-11-12 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
+> Vérifié contre le code le 2026-10-21 ; onglet « Erreurs » du widget E (`erreurs-frequentes`, PR 2) le 2026-11-14 ; widget C remplacé par la régularité le 2026-11-12 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
 > [teacher-analytics-progress.md](../archive/wip/teacher-analytics-progress.md) (archivé, ne décrit
 > pas le code actuel).
 
@@ -77,7 +77,28 @@ Onglet 📘 Connaissances :
 - **D — Histogramme des notes** : **retiré** le 2026-11-11 (chantier `formes-de-serie`) — avec deux
   boutons « Pas réussi / Réussi », la grille A dit déjà réussi / raté.
 - **E — Top à remédier** (`TopCurriculumPointsToRemediate.svelte`) : points triés par % 🆘 + 🔁 ; clic →
-  `AnalyticsModal.svelte` (élèves concernés).
+  `PointDetailsModal.svelte`, deux onglets : **élèves concernés** (badge) et **Erreurs** (voir plus bas).
+
+**Onglet « Erreurs » du widget E** (chantier `erreurs-frequentes`, besoin P4, PR 2 ;
+`getClassPointErrors` dans `src/lib/server/stats/point-errors.ts`, route `point-errors?point=<uuid>`) : lu à
+la première ouverture de l'onglet (un échec se relit à l'ouverture suivante). Pour chaque modèle du point
+ayant au moins une réponse écrite, du plus de réponses fausses au moins, les mêmes blocs que le bilan d'un
+contrôle (`QuestionErrorsPanel.svelte`, partagé avec [evaluations.md](evaluations.md) § Résultats) :
+
+- **Élèves** : membres actifs de la classe (`class_members`) ; noms en texte, nominatif (décision Q2).
+- **Contrôles** : réponses `test_answers` des séances de contrôle (`evaluation_id` non nul), meilleure
+  copie de chaque élève **pour chaque contrôle** (`bestCopies`), énoncé tiré lu tel quel.
+- **Séries** (Saisie, Contrôle blanc, Course aux nombres : lieux `typing`, `mock_test`, `number_race`) :
+  traces `skill_attempts` avec graine, **postérieures à `question_templates.updated_at`** ; énoncé rejoué
+  par `generateInstance(modèle, graine)` (une génération par graine) ; trace réussie = juste, ratée =
+  faux ; verdict par case = `part_verdicts` stocké, jamais recalculé (longueur différente des réponses →
+  détail indisponible) ; rien de tapé = sans réponse. Les `POINT_ERRORS_TRACE_CAP` (200) traces les plus
+  récentes par modèle ; au-delà, le modèle le dit.
+- **Exclus** : flash-cards (aucune réponse tapée), traces de contrôle (ni réponse ni graine, déjà dans
+  `test_answers`), anciennes séries libres (`test_answers` d'une séance sans contrôle, circuit fermé le
+  2026-11-11, décision Q7).
+- Aucune réponse écrite → « Pas encore de réponse écrite sur ce point (les flash-cards ne gardent pas de
+  réponse). » ; lecture en échec → message dans l'onglet, les élèves restent.
 
 Le widget B apparaît dans « Détail par élève », après choix d'un élève et d'une branche. Le sélecteur ne propose que les branches du niveau de la classe, dans l'ordre de l'arbre
 (`getProgrammeTree`). Classe sans niveau : pas de sélecteur, B est remplacé par « Le niveau de votre
@@ -103,6 +124,7 @@ chaque widget suit dans son `$effect` de chargement).
 - Agrégations (`src/lib/server/stats/`, barrel `index.ts`) :
   - `class-knowledge.ts` : `getClassCurriculumPointGrid`, `getClassTopCurriculumPointsToRemediate`,
     `getStudentRetentionCurve` ;
+  - `point-errors.ts` : `getClassPointErrors` (onglet « Erreurs » du widget E ; hors barrel) ;
   - `class-regularity.ts` : `getClassRegularityGrid` (et ses fonctions pures, testées seules) ;
   - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate`.
     Requêtes groupées (pas une requête par élève) ; les listes de modèles sont découpées par
@@ -110,11 +132,11 @@ chaque widget suit dans son `$effect` de chargement).
 - Endpoints `GET` sous `src/routes/api/teacher/classes/[classId]/analytics/` : `knowledge-grid`
   (`?includeAllCycle`), `knowledge-top-remediate` (`?topN`), `knowledge-retention/[studentId]`
   (`?branch=<uuid>&weeks`), `regularity` (sans paramètre), `competence-grid`,
-  `competence-top-consolidate` (`?topN`). Tous : Zod puis `requireTeacherOfClass` ; la route par élève vérifie en plus l'appartenance à la classe
+  `competence-top-consolidate` (`?topN`), `point-errors` (`?point=<uuid>`). Tous : Zod puis `requireTeacherOfClass` ; la route par élève vérifie en plus l'appartenance à la classe
   dans `class_members`.
 - Zod : `src/lib/server/validation/teacher-analytics.ts` (5 schémas, bornes : `topN` 1-30,
   `weeks` 1-26).
-- Composants : `src/lib/components/teacher/analytics/` (6 widgets + `AnalyticsModal`) ; onglet
+- Composants : `src/lib/components/teacher/analytics/` (6 widgets, `AnalyticsModal` du widget G, `PointDetailsModal` du widget E) ; onglet
   Surveillance : `src/lib/components/teacher/anti-fraud/`.
 
 ## Invariants
@@ -128,7 +150,8 @@ chaque widget suit dans son `$effect` de chargement).
 ## Tests
 
 Serveur : `src/lib/server/stats/__tests__/class-knowledge.test.ts` (28),
-`class-competence.test.ts` (12). Composants : un `*.svelte.test.ts` par widget dans
+`class-competence.test.ts` (12), `point-errors.test.ts` (18) ; route `point-errors` :
+`analytics/point-errors/__tests__/server.test.ts`. Composants : un `*.svelte.test.ts` par widget dans
 `src/lib/components/teacher/analytics/__tests__/` (29 au total). Garde : `src/lib/server/stats/__tests__/teacher-class-auth.test.ts` (prof accepté,
 admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page.server.test.ts`
 (compteur de signalements illisible → `null`, pas 0). Aucun test d'intégration base.
@@ -143,8 +166,8 @@ admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page
 
 ## Écarts connus
 
-- **Nom d'un point en LaTeX brut** dans les infobulles (`title`) de la grille et dans le titre de la
-  fenêtre des élèves concernés (Top) : un attribut ou un titre texte ne rend pas les formules.
+- **Nom d'un point en LaTeX brut** dans les infobulles (`title`) de la grille : un attribut ne rend pas
+  les formules. (La fenêtre du widget E rend son titre par `InlineMarkdown` depuis le 2026-11-14.)
 - **Deux « acquis » différents** : la grille A calcule un badge **FSRS** depuis `srs_card_stats` ;
   elle ne lit pas `student_point_state` (régime d'acquisition `fluence` / `diversite`). Un point
   peut être « acquis » pour l'un et pas pour l'autre ; la page ne montre pas le second. Tranché le
