@@ -65,6 +65,8 @@
 			durationSignals = null;
 			return;
 		}
+		// Pas de marque périmée pendant la lecture
+		durationSignals = null;
 		let cancelled = false;
 		void fetchDurationSignals(ids.split(',')).then((signals) => {
 			if (!cancelled) durationSignals = signals;

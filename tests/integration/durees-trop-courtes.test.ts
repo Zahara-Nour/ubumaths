@@ -193,6 +193,8 @@ describe('durées trop courtes lues par le professeur (RLS réelle)', () => {
 		for (const s of students) await mockTrace(s, T_TABLES, 30, 'missed', BEFORE_UPDATE);
 		// Élève de test : compte seulement en mode test
 		await mockTrace(testStudent, T_TABLES, 10, 'missed');
+		// Le prof s'essaie au Contrôle blanc : ses traces ne comptent pas
+		await mockTrace(teacher, T_TABLES, 40, 'missed');
 		// Carte de cours : jamais de case, jamais de signal
 		for (const s of students) await mockTrace(s, T_CARTE, 10, 'missed');
 	});
@@ -237,6 +239,10 @@ describe('durées trop courtes lues par le professeur (RLS réelle)', () => {
 		const result = await getDurationSignals(students[1].client, [T_TABLES], false);
 		expect(result.status).toBe('ok');
 		if (result.status !== 'ok') return;
-		for (const timing of result.signals[T_TABLES] ?? []) expect(timing.students).toBe(1);
+		// Ses deux durées (10 s manquée, 40 s validée), lui seul à chacune
+		expect(result.signals[T_TABLES]?.map((t) => [t.delaySeconds, t.students])).toEqual([
+			[10, 1],
+			[40, 1]
+		]);
 	});
 });

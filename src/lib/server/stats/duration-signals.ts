@@ -42,7 +42,6 @@ import {
 	bestCopies,
 	delaysByTemplate,
 	readInBatches,
-	rowsOf,
 	unansweredInTime,
 	type AnswerRow,
 	type SessionRow
@@ -188,9 +187,14 @@ async function readControlAnswers(
 	updatedAt: ReadonlyMap<string, string | null>
 ): Promise<ControlAnswer[]> {
 	const wanted = new Set(templateIds);
-	const evaluations = rowsOf(
-		'Contrôles',
-		await supabase.from('evaluations').select('id, series_id').eq('form', 'interactive')
+	// Par pages (plafond `max_rows`) : une seule « liste » d'ids, la forme
+	const evaluations = await readInBatches('Contrôles', ['interactive'], (forms, from, to) =>
+		supabase
+			.from('evaluations')
+			.select('id, series_id')
+			.in('form', forms)
+			.order('id')
+			.range(from, to)
 	);
 	if (evaluations.length === 0) return [];
 	const seriesIds = [...new Set(evaluations.map((e) => e.series_id))];
@@ -258,7 +262,7 @@ async function readControlAnswers(
 	});
 }
 
-/** Élèves dont `is_test` vaut le mode du professeur */
+/** Élèves (rôle élève) dont `is_test` vaut le mode du professeur */
 async function studentsOfMode(
 	supabase: TypedSupabaseClient,
 	studentIds: string[],
@@ -269,6 +273,8 @@ async function studentsOfMode(
 			.from('profiles')
 			.select('id')
 			.in('id', batch)
+			// Le prof lit aussi son propre profil : ses traces ne comptent pas
+			.eq('role', 'student')
 			.eq('is_test', isTestMode)
 			.order('id')
 			.range(from, to)
