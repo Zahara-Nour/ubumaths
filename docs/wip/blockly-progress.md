@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-14, ouverture du chantier._
 
-- **État** : phase 0 validée le 2026-11-14 ; PR #2627 = PR 1 (Blockly 13, médias servis par nous) + PR 1b (exécution JS et Python réparées, blocs en français, doc `docs/systeme/blockly.md`), validée par David le 2026-11-14 · **Prochaine action** : CI + revues `code-reviewer` / `security-auditor` de #2627, merge ; puis PR 2, la tortue · **En attente de David** : rien · **Pièges en cours** : une montée de Blockly recopie `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → Vite ré-optimise et recharge, la page paraît vide un instant · **Worktree / branche** : `ubumaths-wt-blockly` · `feat/blockly-13`
+- **État** : phase 0 validée le 2026-11-14 ; PR #2627 = PR 1 (Blockly 13, médias servis par nous) + PR 1b (exécution JS et Python réparées, blocs en français, doc `docs/systeme/blockly.md`), validée par David le 2026-11-14 · **Prochaine action** : CI + revues `code-reviewer` / `security-auditor` de #2627, merge ; puis PR 2, la tortue · **En attente de David** : avant la PR 3 (bac à sable public), choisir comment rendre le sandbox JS étanche (cf. « Revue de sécurité ») · **Pièges en cours** : une montée de Blockly recopie `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → Vite ré-optimise et recharge, la page paraît vide un instant · **Worktree / branche** : `ubumaths-wt-blockly` · `feat/blockly-13`
 
 ---
 
@@ -81,3 +81,20 @@ arguments in strict mode`, quel que soit le programme. Présent depuis 4e3c2f7d5
 - Essai `/dev/blockly` : « abc » affiché en JS et en Python.
 - Doc d'abord : `docs/systeme/blockly.md` écrite, zone Blockly retirée de `trous` (la
   calculatrice y reste).
+
+## Revues de #2627 (2026-11-14)
+
+- `code-reviewer` : rien de bloquant. Mineurs : `text_prompt_ext` génère `window.prompt` (hors
+  boîte à outils) ; numéros de ligne d'erreur faux (comme avant).
+- `security-auditor` : rien de bloquant tant que la page est admin seule. **Avant la page
+  publique** :
+  1. **Évasion** : `(() => {}).constructor('return this')()` → portée globale du worker → `fetch`
+     same-origin avec les cookies de l'élève, `importScripts`. Regex `checkDangerousPatterns`
+     contournables. Risque réel seulement si le code exécuté vient d'un autre que l'élève
+     (programme partagé, exemple, devoir). **Question pour David** : durcir le worker
+     (neutraliser `.constructor` des quatre prototypes de fonctions, supprimer `fetch` /
+     `importScripts`… du global, CSP du worker), ou exécuter par un **interpréteur** (JS-Interpreter,
+     QuickJS-wasm), ou — pour la tortue — interpréter les blocs nous-mêmes, sans JavaScript.
+  2. **Boucle infinie jamais tuée** → corrigé dans #2627 (`relancerWorker`, test navigateur rouge
+     puis vert).
+  3. CSP du worker absente (fichier statique) : défense en profondeur, avec le point 1.

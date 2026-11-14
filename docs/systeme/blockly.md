@@ -53,6 +53,8 @@ geste de réponse dans les modèles de questions) ; décisions dans son journal.
   (`construireSourceSandbox` refuse) : `eval` est retiré de la portée globale du worker au
   démarrage. `checkDangerousPatterns` refuse `constructor` / `__proto__` / affectation de
   `prototype`.
+- **Boucle infinie** : le délai dépassé (ou `cancel`) fait `terminate()` puis recrée le worker
+  (`relancerWorker`, `js-executor.svelte.ts`) ; un worker bloqué ne lit plus ses messages.
 - **La sortie passe par la console du worker** : `wrapJavaScriptCode` n'intercepte ni
   `console.log` ni les erreurs ; une erreur remonte au worker, qui l'affiche.
 - **Générateurs remplacés** (`installerGenerateursChiphre`, appelée avant chaque génération, jamais
@@ -74,10 +76,22 @@ geste de réponse dans les modèles de questions) ; décisions dans son journal.
 - `src/lib/shared/blockly/__tests__/` : types, médias.
 - `src/lib/shared/blockly/generators/__tests__/` : enveloppes, garde-fous, bloc `print` exécuté.
 - `src/lib/workers/__tests__/js-sandbox-source.test.ts` : la fonction sandbox compile et s'exécute.
+- `src/lib/shared/blockly/execution/__tests__/js-executor-boucle.svelte.test.ts` (navigateur) :
+  après une boucle infinie, la console répond de nouveau.
 - `src/lib/shared/python/execution/__tests__/import-direct.test.ts` : exécuteur Python importé par
   son fichier.
 
 ## Écarts connus
+
+- ⚠️ **Le sandbox JavaScript n'est pas étanche** (revue `security-auditor` de #2627, 2026-11-14) :
+  `(() => {}).constructor('return this')()` rend la portée globale du worker (`fetch` vers l'API
+  avec les cookies de l'utilisateur, `importScripts`, `postMessage`). `checkDangerousPatterns` se
+  contourne (`x['constr' + 'uctor']`). Le worker, fichier statique, n'a pas de CSP propre. Sans
+  gravité tant que l'élève n'exécute que ce qu'il a écrit (les blocs standard ne produisent pas ce
+  code) ; **à régler avant d'exécuter un programme écrit par quelqu'un d'autre** (programme
+  partagé, exemple, devoir du prof). Choix à faire au chantier `blockly`.
+- Le bloc `text_prompt_ext` (absent de la boîte à outils) génère `window.prompt` : à remplacer dans
+  `installerGenerateursChiphre` s'il y entre.
 
 - Le numéro de ligne d'une erreur (`extractLineNumber`) se rapporte au code enveloppé, pas aux
   blocs.

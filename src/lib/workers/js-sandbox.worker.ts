@@ -7,7 +7,13 @@
  * Provides a whitelist of safe globals, timeout protection, and console output capture.
  *
  * Security features:
- * - No access to window, document, fetch, XMLHttpRequest, eval, Function constructor
+ * - Les identifiants window, document, fetch, XMLHttpRequest, Function… valent undefined dans le
+ *   code exécuté ; `eval` est retiré de la portée globale du worker.
+ * - ⚠️ PAS ÉTANCHE : le constructeur de fonctions reste joignable par
+ *   `(() => {}).constructor` et donne la portée globale du worker (fetch avec les cookies de
+ *   l'utilisateur). Acceptable tant que seul l'élève écrit le code qu'il exécute ; à corriger
+ *   avant d'exécuter un programme écrit par quelqu'un d'autre (cf. docs/systeme/blockly.md).
+ * - Délai : une boucle infinie bloque le worker ; JsExecutor le termine (terminate) et en recrée un
  * - 10 second execution timeout
  * - Console output captured and forwarded via postMessage
  * - Strict mode enforcement
