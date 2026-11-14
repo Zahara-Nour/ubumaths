@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR ouverte (codée, tests verts)._
+_Mis à jour le 2026-11-14, après #2641. Chantier CLOS, journal archivé._
 
-- **État** : codé sur `feat/atelier-modele-definition` : `src/lib/atelier/draft-hint.ts` (`definitionHint`), branché dans `CalculView.svelte` (ligne « Modèle », les deux champs) ; tests `draft-hint.test.ts`, `CalculView.svelte.test.ts`, `reglages.svelte.test.ts` ; `docs/systeme/atelier.md` à jour.
-- **Prochaine action** : CI verte → merge ; puis versement (journal archivé, chantier clos).
-- **En attente de David** : essai à l'écran (serveur de la branche, port 5176).
-- **Pièges en cours** : tester l'Atelier sur un autre appareil en HTTPS (Tailscale Serve) ou par tunnel, JAMAIS `http://100.79.226.105` (`crypto.randomUUID` absent → l'Atelier plante) ; en champ mathématique, la ligne relue en texte garde « sur » collé (`xsur`) : `definitionHint` la lit comme du LaTeX.
-- **Worktree / branche** : `../ubumaths-wt-modele-definition` · `feat/atelier-modele-definition`.
+- **État** : livré par #2641 (mergée) : `definitionHint` (`src/lib/atelier/draft-hint.ts`), ligne « Modèle » de `CalculView.svelte`, dans les deux champs ; pas de modèle pour une suite (`u(n) =`, revue). Doc durable : `docs/systeme/atelier.md`.
+- **Prochaine action** : aucune. Vérification à l'écran notée dans `docs/wip/verifications-manuelles.md`.
+- **En attente de David** : rien.
+- **Hors périmètre, à rouvrir un jour** : la même aide sur les cartes de « Mes objets ».
 
 ## Phase 0 — comportements validés
 
@@ -34,3 +33,4 @@ _Mis à jour le 2026-11-14, PR ouverte (codée, tests verts)._
 
 - 2026-11-14 : chantier ouvert après #2635 / #2640 (chantier `bouton-calculer`, archivé). Idée proposée, non demandée : ligne « Modèle » des commandes dans le champ mathématique ; commandes proposées sans point dans le champ texte.
 - 2026-11-14 : codé (tests d'abord, rouges puis verts). Le modèle s'affiche dès `f(x) =` ; la variable tapée sert aussi au corps (`g(t) = t² sur [0;3]`). Le champ mathématique n'a pas d'`aria-describedby` (hôte MathLive, comme la liste des commandes).
+- 2026-11-14 : #2641 mergée (revue : suites `u(n)` exclues, espace insécable avant la note). Chantier clos, journal archivé.
