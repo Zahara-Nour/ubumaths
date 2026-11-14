@@ -1,0 +1,279 @@
+{
+	"title": "Dérivée n-ième d'une fonction",
+	"description": "Définition de f^(n) donnée : dérivée n-ième de e^{ax} (case), de (x + b)e^x par conjecture (case), de 1/x (deux cases), de sin par périodicité des dérivées (case choix)",
+	"grades": ["T_SPE"],
+	"level": 8,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Pour une fonction $f$ dérivable autant de fois qu'il le faut, on note $f^{(1)}=f'$ et, pour tout entier $n\\geqslant 1$, $f^{(n+1)}=\\left(f^{(n)}\\right)'$ : $f^{(n)}$ est la **dérivée $n$-ième** de $f$.\n\nLa fonction $f$ est définie sur $\\mathbb{R}$ par $f(x)=e^{{{eval:a}}x}$.\n\nComplète.\n\n$f^{({{eval:N}})}(x)=?\\,e^{{{eval:a}}x}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "N",
+					"expression": "3..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:a}}e^{{{eval:a}}x}$ et $f''(x)={{eval:a^2}}e^{{{eval:a}}x}$ : chaque dérivation multiplie par ${{eval:a}}$.",
+					"Par récurrence, $f^{(n)}(x)={{eval:a;()}}^n\\,e^{{{eval:a}}x}$ pour tout $n\\geqslant 1$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f^{({{eval:N}})}(x)={{eval:a^N}}e^{{{eval:a}}x}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour une fonction $f$ dérivable autant de fois qu'il le faut, on note $f^{(1)}=f'$ et, pour tout entier $n\\geqslant 1$, $f^{(n+1)}=\\left(f^{(n)}\\right)'$ : $f^{(n)}$ est la **dérivée $n$-ième** de $f$.\n\nLa fonction $f$ est définie sur $\\mathbb{R}$ par $f(x)=(x{{eval:b;+}})e^{x}$.\n\nCalcule les premières dérivées, conjecture une formule, puis complète.\n\n$f^{({{eval:N}})}(x)=(x+?)e^{x}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "N",
+					"expression": "4..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b+N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=e^{x}+(x{{eval:b;+}})e^{x}=(x{{eval:b+1;+}})e^{x}$ : dériver ajoute $1$ dans la parenthèse.",
+					"Par récurrence, $f^{(n)}(x)=(x{{eval:b;+}}+n)e^{x}$ : si c'est vrai au rang $n$, $f^{(n+1)}(x)=e^{x}+(x{{eval:b;+}}+n)e^{x}=(x{{eval:b;+}}+n+1)e^{x}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f^{({{eval:N}})}(x)=(x{{eval:b+N;+}})e^{x}}$."
+				]
+			},
+			"conditions": ["b + N != 0"]
+		},
+		{
+			"statement": "Pour une fonction $f$ dérivable autant de fois qu'il le faut, on note $f^{(1)}=f'$ et, pour tout entier $n\\geqslant 1$, $f^{(n+1)}=\\left(f^{(n)}\\right)'$ : $f^{(n)}$ est la **dérivée $n$-ième** de $f$.\n\nLa fonction $f$ est définie sur $]0;+\\infty[$ par $f(x)=\\dfrac{1}{x}$.\n\nComplète.\n\n$f^{({{eval:N}})}(x)=\\dfrac{?}{x^{?}}$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-1)^N*factorial(N)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:N+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=-\\dfrac{1}{x^2}$, $f''(x)=\\dfrac{2}{x^3}$, $f^{(3)}(x)=-\\dfrac{6}{x^4}$ : chaque dérivation multiplie par $-(\\text{exposant})$ et augmente l'exposant de $1$.",
+					"Par récurrence, $f^{(n)}(x)=\\dfrac{(-1)^n\\,n!}{x^{n+1}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f^{({{eval:N}})}(x)={{if:(-1)^N<0|-|}}\\dfrac{{{eval:factorial(N)}}}{x^{{{eval:N+1}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour une fonction $f$ dérivable autant de fois qu'il le faut, on note $f^{(1)}=f'$ et, pour tout entier $n\\geqslant 1$, $f^{(n+1)}=\\left(f^{(n)}\\right)'$ : $f^{(n)}$ est la **dérivée $n$-ième** de $f$.\n\nLa fonction $f$ est définie sur $\\mathbb{R}$ par $f(x)=\\sin(x)$.\n\nQue vaut $f^{({{eval:N}})}(x)$ ?\n\n```choix\n- $-\\cos(x)$\n- $\\cos(x)$\n- $\\sin(x)$\n- $-\\sin(x)$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "10..30"
+				},
+				{
+					"name": "N",
+					"expression": "eval:4*k+3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'=\\cos$, $f''=-\\sin$, $f^{(3)}=-\\cos$, $f^{(4)}=\\sin$ : les dérivées se répètent tous les $4$ rangs.",
+					"${{eval:N}}=4\\times{{eval:k}}+3$, donc $f^{({{eval:N}})}=f^{(3)}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f^{({{eval:N}})}(x)=-\\cos(x)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(−2)^5 = −32",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"N": "5"
+			},
+			"answers": ["-32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2^5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"N": "5"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a × N",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"N": "5"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x + 4",
+			"variationIndex": 1,
+			"variables": {
+				"b": "-3",
+				"N": "7"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b",
+			"variationIndex": 1,
+			"variables": {
+				"b": "-3",
+				"N": "7"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : N",
+			"variationIndex": 1,
+			"variables": {
+				"b": "-3",
+				"N": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "24/x⁵",
+			"variationIndex": 2,
+			"variables": {
+				"N": "4"
+			},
+			"answers": ["24", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−6/x⁴",
+			"variationIndex": 2,
+			"variables": {
+				"N": "3"
+			},
+			"answers": ["-6", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe",
+			"variationIndex": 2,
+			"variables": {
+				"N": "3"
+			},
+			"answers": ["6", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposant N",
+			"variationIndex": 2,
+			"variables": {
+				"N": "3"
+			},
+			"answers": ["-6", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−cos",
+			"variationIndex": 3,
+			"variables": {
+				"k": "12",
+				"N": "51"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cos",
+			"variationIndex": 3,
+			"variables": {
+				"k": "12",
+				"N": "51"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sin",
+			"variationIndex": 3,
+			"variables": {
+				"k": "12",
+				"N": "51"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −sin",
+			"variationIndex": 3,
+			"variables": {
+				"k": "12",
+				"N": "51"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

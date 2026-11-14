@@ -1,0 +1,287 @@
+{
+	"title": "Fonction x ↦ xᵃ : définition, valeurs, dérivée",
+	"description": "Définition x^a = e^{a ln x} donnée : valeur exacte de m^{q·p/q} (case), dérivée de x^{p/q} (deux cases), variations et limite de x^{−p/q} (case choix), x^{1/2} = √x (case choix)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Pour tout réel $x>0$ et tout réel $a$, on définit $x^a=e^{a\\ln(x)}$.\n\nDétermine la valeur exacte du nombre suivant.\n\n${{eval:m^q}}^{\\frac{{{eval:p}}}{{{eval:q}}}}=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..3"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "p",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m^p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, ${{eval:m^q}}^{\\frac{{{eval:p}}}{{{eval:q}}}}=e^{\\frac{{{eval:p}}}{{{eval:q}}}\\ln({{eval:m^q}})}$, et $\\ln({{eval:m^q}})=\\ln({{eval:m}}^{{{eval:q}}})={{eval:q}}\\ln({{eval:m}})$.",
+					"Donc ${{eval:m^q}}^{\\frac{{{eval:p}}}{{{eval:q}}}}=e^{{{eval:p}}\\ln({{eval:m}})}={{eval:m}}^{{{eval:p}}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{{{eval:m^q}}^{\\frac{{{eval:p}}}{{{eval:q}}}}={{eval:m^p}}}$."
+				]
+			},
+			"conditions": ["gcd(p,q) == 1"]
+		},
+		{
+			"statement": "Pour tout réel $x>0$ et tout réel $a$, on définit $x^a=e^{a\\ln(x)}$.\n\nLa fonction $f$ est définie sur $]0;+\\infty[$ par $f(x)=x^{\\frac{{{eval:p}}}{{{eval:q}}}}$.\n\nComplète.\n\n$f'(x)=?\\,x^{?}$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..4"
+				},
+				{
+					"name": "p",
+					"expression": "1..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p/q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(p-q)/q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)=e^{\\frac{{{eval:p}}}{{{eval:q}}}\\ln(x)}$, donc $f'(x)=\\frac{{{eval:p}}}{{{eval:q}}}\\times\\dfrac{1}{x}\\times e^{\\frac{{{eval:p}}}{{{eval:q}}}\\ln(x)}=\\frac{{{eval:p}}}{{{eval:q}}}\\times\\dfrac{x^{\\frac{{{eval:p}}}{{{eval:q}}}}}{x}$.",
+					"Or $\\dfrac{x^{\\frac{{{eval:p}}}{{{eval:q}}}}}{x}=e^{\\frac{{{eval:p}}}{{{eval:q}}}\\ln(x)-\\ln(x)}=x^{\\frac{{{eval:p}}}{{{eval:q}}}-1}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f'(x)=\\frac{{{eval:p}}}{{{eval:q}}}x^{{{if:p<q|-|}}\\frac{{{eval:abs(p-q)}}}{{{eval:q}}}}}$ : la formule $(x^n)'=nx^{n-1}$ reste vraie pour un exposant réel."
+				]
+			},
+			"conditions": ["gcd(p,q) == 1"]
+		},
+		{
+			"statement": "Pour tout réel $x>0$ et tout réel $a$, on définit $x^a=e^{a\\ln(x)}$.\n\nLa fonction $f$ est définie sur $]0;+\\infty[$ par $f(x)=x^{-\\frac{{{eval:p}}}{{{eval:q}}}}$.\n\nQuelle phrase la décrit ?\n\n```choix\n- $f$ est strictement décroissante, de limite $0$ en $+\\infty$\n- $f$ est strictement croissante, de limite $+\\infty$ en $+\\infty$\n- $f$ est strictement décroissante, de limite $-\\infty$ en $+\\infty$\n- $f$ est strictement décroissante, de limite $1$ en $+\\infty$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..4"
+				},
+				{
+					"name": "p",
+					"expression": "1..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)=e^{-\\frac{{{eval:p}}}{{{eval:q}}}\\ln(x)}$ et $f'(x)=-\\frac{{{eval:p}}}{{{eval:q}}}\\times\\dfrac{1}{x}\\,e^{-\\frac{{{eval:p}}}{{{eval:q}}}\\ln(x)}<0$ : $f$ est strictement décroissante.",
+					"Quand $x\\to+\\infty$, $-\\frac{{{eval:p}}}{{{eval:q}}}\\ln(x)\\to-\\infty$, et $e^{X}\\to 0$ quand $X\\to-\\infty$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f\\text{ est strictement décroissante, de limite }0}$ en $+\\infty$."
+				]
+			},
+			"conditions": ["gcd(p,q) == 1"]
+		},
+		{
+			"statement": "Pour tout réel $x>0$ et tout réel $a$, on définit $x^a=e^{a\\ln(x)}$.\n\nPourquoi a-t-on $x^{\\frac{1}{2}}=\\sqrt{x}$ pour tout $x>0$ ?\n\n```choix\n- $x^{\\frac{1}{2}}=e^{\\frac{1}{2}\\ln(x)}$ est positif et son carré vaut $e^{\\ln(x)}=x$\n- Parce que $\\dfrac{1}{2}\\ln(x)=\\ln\\left(\\dfrac{x}{2}\\right)$\n- Parce que $x^{\\frac{1}{2}}=\\dfrac{x}{2}$\n- Parce que $e^{\\ln(x)}=x$ suffit\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x^{\\frac{1}{2}}=e^{\\frac{1}{2}\\ln(x)}>0$, comme toute exponentielle.",
+					"$\\left(e^{\\frac{1}{2}\\ln(x)}\\right)^2=e^{2\\times\\frac{1}{2}\\ln(x)}=e^{\\ln(x)}=x$.",
+					"$\\sqrt{x}$ est le seul réel positif de carré $x$ : $\\textcolor{{{color:primary.0}}}{x^{\\frac{1}{2}}=\\sqrt{x}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8^{2/3} = 4",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"m": "2",
+				"p": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 × 2/3",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"m": "2",
+				"p": "2"
+			},
+			"answers": ["\\frac{16}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"m": "2",
+				"p": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/2 x^{1/2}",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"p": "3"
+			},
+			"answers": ["\\frac{3}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/3 x^{−2/3}",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"p": "1"
+			},
+			"answers": ["\\frac{1}{3}", "-\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exposant non diminué",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"p": "3"
+			},
+			"answers": ["\\frac{3}{2}", "\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposant + 1",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"p": "3"
+			},
+			"answers": ["\\frac{3}{2}", "\\frac{5}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissante, limite 0",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"p": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : limite −∞",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"p": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : limite 1",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"p": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "positif, carré x",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ln(x/2)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x/2",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : e^{ln x} seul",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,210 @@
+{
+	"title": "Démontrer que (1 + x/n)ⁿ tend vers eˣ",
+	"description": "Écriture de n ln(1 + a/n) avec h = a/n (case), limite de ln(1 + h)/h par le nombre dérivé (case choix), limite de (1 + a/n)^{bn} (case), démonstration (étapes à ranger)",
+	"grades": ["T_SPE"],
+	"level": 9,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On étudie la suite définie, pour $n>{{eval:abs(a)}}$, par $u_n=\\left(1{{if:a>0|+|-}}\\dfrac{{{eval:abs(a)}}}{n}\\right)^n=e^{n\\ln\\left(1{{if:a>0|+|-}}\\dfrac{{{eval:abs(a)}}}{n}\\right)}$. On pose $h={{if:a<0|-|}}\\dfrac{{{eval:abs(a)}}}{n}$.\n\nComplète.\n\n$n\\ln\\left(1{{if:a>0|+|-}}\\dfrac{{{eval:abs(a)}}}{n}\\right)=?\\times\\dfrac{\\ln(1+h)}{h}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h={{if:a<0|-|}}\\dfrac{{{eval:abs(a)}}}{n}$, donc $n={{if:a<0|-|}}\\dfrac{{{eval:abs(a)}}}{h}$.",
+					"$n\\ln(1+h)={{if:a<0|-|}}\\dfrac{{{eval:abs(a)}}}{h}\\ln(1+h)={{eval:a}}\\times\\dfrac{\\ln(1+h)}{h}$.",
+					"Donc $n\\ln\\left(1{{if:a>0|+|-}}\\dfrac{{{eval:abs(a)}}}{n}\\right)=\\textcolor{{{color:primary.0}}}{{{eval:a}}}\\times\\dfrac{\\ln(1+h)}{h}$."
+				]
+			}
+		},
+		{
+			"statement": "Pourquoi a-t-on $\\displaystyle\\lim_{h\\to 0}\\dfrac{\\ln(1+h)}{h}=1$ ?\n\n```choix\n- $\\dfrac{\\ln(1+h)-\\ln(1)}{h}$ est un taux de variation de $\\ln$ en $1$, qui tend vers $\\ln'(1)=1$\n- $\\ln(1+h)$ et $h$ tendent tous deux vers $0$\n- $\\ln(1+h)=h$ pour tout réel $h>-1$\n- La fonction $\\ln$ est croissante\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln(1)=0$, donc $\\dfrac{\\ln(1+h)}{h}=\\dfrac{\\ln(1+h)-\\ln(1)}{(1+h)-1}$ : c'est le taux de variation de $\\ln$ entre $1$ et $1+h$.",
+					"$\\ln$ est dérivable en $1$ et $\\ln'(1)=\\dfrac{1}{1}=1$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{h\\to 0}\\dfrac{\\ln(1+h)}{h}=1}$. Deux quantités qui tendent vers $0$ ne suffisent pas à conclure : c'est une forme indéterminée."
+				]
+			}
+		},
+		{
+			"statement": "On admet que, pour tout réel $x$, $\\displaystyle\\lim_{n\\to+\\infty}\\left(1+\\dfrac{x}{n}\\right)^n=e^{x}$.\n\nComplète.\n\n$\\displaystyle\\lim_{n\\to+\\infty}\\left(1{{if:a>0|+|-}}\\dfrac{{{eval:abs(a)}}}{n}\\right)^{{{eval:b}}n}=e^{?}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\left(1{{if:a>0|+|-}}\\dfrac{{{eval:abs(a)}}}{n}\\right)^{{{eval:b}}n}=\\left(\\left(1{{if:a>0|+|-}}\\dfrac{{{eval:abs(a)}}}{n}\\right)^n\\right)^{{{eval:b}}}$.",
+					"Avec $x={{eval:a}}$, $\\left(1{{if:a>0|+|-}}\\dfrac{{{eval:abs(a)}}}{n}\\right)^n$ tend vers $e^{{{eval:a}}}$ ; la fonction $X\\mapsto X^{{{eval:b}}}$ est continue.",
+					"Donc la limite vaut $\\left(e^{{{eval:a}}}\\right)^{{{eval:b}}}=\\textcolor{{{color:primary.0}}}{e^{{{eval:a*b}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $x$ un réel non nul. On démontre que $\\displaystyle\\lim_{n\\to+\\infty}\\left(1+\\dfrac{x}{n}\\right)^n=e^{x}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour $n>|x|$, $1+\\dfrac{x}{n}>0$ et $\\left(1+\\dfrac{x}{n}\\right)^n=e^{n\\ln\\left(1+\\frac{x}{n}\\right)}$.\n- On pose $h=\\dfrac{x}{n}$ : $n\\ln\\left(1+\\dfrac{x}{n}\\right)=x\\times\\dfrac{\\ln(1+h)}{h}$.\n- Quand $n\\to+\\infty$, $h\\to 0$ et $\\dfrac{\\ln(1+h)}{h}\\to\\ln'(1)=1$.\n- Donc $n\\ln\\left(1+\\dfrac{x}{n}\\right)$ tend vers $x$.\n- Par continuité de la fonction exponentielle en $x$, $\\left(1+\\dfrac{x}{n}\\right)^n$ tend vers $e^{x}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On écrit la puissance sous forme exponentielle et l'on reconnaît un nombre dérivé de $\\ln$ en $1$.",
+					"La continuité de l'exponentielle conclut : $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}\\left(1+\\dfrac{x}{n}\\right)^n=e^{x}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "nombre dérivé de ln en 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les deux tendent vers 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln(1 + h) = h",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln croissante",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "e^{−6}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"b": "2"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a seul",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"b": "2"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a + b",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"b": "2"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
