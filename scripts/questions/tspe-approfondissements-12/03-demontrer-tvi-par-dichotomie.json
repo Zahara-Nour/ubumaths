@@ -1,4 +1,5 @@
 {
+	"id": "3c6d8ed7-5eab-4777-9ef1-3bb478505a4a",
 	"title": "Démontrer le théorème des valeurs intermédiaires par dichotomie",
 	"description": "Longueur des intervalles de la dichotomie (deux cases), suites adjacentes (case choix), annulation en la limite commune par continuité (case choix), démonstration (étapes à ranger)",
 	"grades": ["T_SPE"],

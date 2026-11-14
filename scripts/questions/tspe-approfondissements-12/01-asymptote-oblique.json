@@ -1,4 +1,5 @@
 {
+	"id": "b4f3142b-5677-490b-baa7-6f1eb524cc93",
 	"title": "Asymptote oblique : équation, division, position",
 	"description": "Définition d'une asymptote oblique (case choix), équation lue sur f(x) = ax + b + c/(x − d) (deux cases), écriture d'une fraction rationnelle sous la forme mx + p + r/(x − d) (trois cases), position de la courbe par rapport à l'asymptote (case choix)",
 	"grades": ["T_SPE"],
