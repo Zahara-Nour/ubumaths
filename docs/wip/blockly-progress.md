@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2636._
+_Mis à jour le 2026-11-14, PR 3c en cours._
 
-- **État** : #2627, #2632, **#2634 (bac à sable public `/tortue`)** et **#2636 (animation plafonnée à 12 s au-delà de 40 étapes)** mergées ; la PR 3 du découpage est faite · **Prochaine action** : phase 0 de la PR 4, geste de réponse « programme » dans les modèles de questions (correction par tracé ou par sortie), à présenter avant de coder · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / PR 3b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) ; molette sur l'espace de blocs = défilement des blocs, pas de la page · **Worktree / branche** : aucun (le prochain : `ubumaths-wt-blockly`, nouvelle branche)
+- **État** : #2627, #2632, #2634 (`/tortue`) et #2636 (rythme) mergées ; PR 3c (onglets Blocs / Tortue sur téléphone, pause de 600 ms au départ) essayée par David sur iPhone (« ça marche ! ») · **Prochaine action** : merger la PR 3c, puis phase 0 de la PR 4 (geste de réponse « programme », correction par tracé) · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) ; molette sur l'espace de blocs = défilement des blocs ; tests navigateur : `getByRole` ignore un élément masqué → `includeHidden: true` pour asserter « masqué » · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-onglets-telephone`
 
 ---
 
@@ -175,3 +175,14 @@ Phase 0 présentée le 2026-11-14 ; David : « je te suis » sur les cinq recomm
   durerait moins d'une image (16 ms) ; pas de curseur de vitesse ; PR séparée après #2634.
 - `rythmeAnimation(n)` dans `tortue/animation.ts`, testée (8, 40, 41, 720, 10 000, 0 étapes).
 - `code-reviewer` (Sonnet) : rien de bloquant (total ≤ 12 s, pas ≥ 16 ms vérifiés). Mergée : #2636.
+
+## PR 3c — La Tortue sur téléphone (branche `feat/blockly-onglets-telephone`)
+
+- Essai de David sur iPhone (lien Tailscale, `--host`) : le tracé s'affichait **sous** les blocs,
+  hors de l'écran. Options présentées (onglets, panneaux empilés, défilement au « Lancer ») ;
+  **David : onglets, sous `lg`** (« oui », 2026-11-14).
+- Onglets « Blocs » / « Tortue » sous `lg` ; « Lancer » bascule sur Tortue ; espace de blocs
+  masqué, jamais démonté. Boutons au-dessus des deux panneaux (aussi sur ordinateur).
+- Retour de David : pas de pause entre la bascule et le premier pas → **pause de 600 ms** au
+  départ, tortue visible, rien de tracé (aussi sur ordinateur). « ça marche ! » (2026-11-14).
+- Test navigateur `tortue-telephone.svelte.test.ts` (rouge vérifié pour les onglets et la pause).
