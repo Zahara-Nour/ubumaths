@@ -25,9 +25,7 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		title: 'Programmer un carré',
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
-		grades: ['cm1'],
-		theme: 'Test',
-		domain: 'Test',
+		grades: ['CM1'],
 		level: 1
 	} as QuestionTemplate;
 }
