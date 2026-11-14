@@ -10,14 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 12 en fichiers (§ 48)._
+_Mis à jour le 2026-11-14, après #2633 (fichiers du lot 12)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 11 publiés (§ 47), lot 12 en fichiers (§ 48, PR ouverte), 14 restants après lui.
-- **Prochaine action** : PR du lot 12 verte → merge ; puis David lance
+  § 35, lots 9 à 15) : lots 9 à 11 publiés (§ 47), lot 12 en fichiers sur `main` (#2633, § 48), 14 restants après lui.
+- **Prochaine action** : David lance
   `create-questions --dir scripts/questions/tspe-approfondissements-12 --publier` depuis le dépôt principal ; puis
   migration de rangement (406, 584 → asymptotes ; 435 → valeurs intermédiaires ; 436, 437 → continuité en un point).
-- **En attente de David** : `create-questions --publier` du lot 12, après le merge.
+- **En attente de David** : `create-questions --publier` du lot 12.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
