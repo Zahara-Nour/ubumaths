@@ -29,6 +29,7 @@ import { findStatChartBlocks } from './stat-chart-parser';
 import { findChoiceBlocks } from './choix-parser';
 import { findRangerBlocks } from './ranger-parser';
 import { findAssocierBlocks } from './associer-parser';
+import { findTrousBlocks } from './trous-parser';
 
 /**
  * La fin d'un bloc spécial : ``` seul, à la marge — la même règle que les
@@ -62,7 +63,8 @@ export function blockLineRanges(lines: string[]): [number, number][] {
 		...findStatChartBlocks(lines),
 		...findChoiceBlocks(lines),
 		...findRangerBlocks(lines),
-		...findAssocierBlocks(lines)
+		...findAssocierBlocks(lines),
+		...findTrousBlocks(lines)
 	].map((r): [number, number] => [r.startIndex, r.endIndex]);
 	// Les blocs de code, une fois les blocs spéciaux masqués (comme parseBlocks)
 	const masked = lines.map((line, index) =>

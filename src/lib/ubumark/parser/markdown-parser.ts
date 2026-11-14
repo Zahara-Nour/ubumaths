@@ -143,6 +143,7 @@ import {
 import { findChoiceBlocks, parseChoiceBlock } from './choix-parser';
 import { findRangerBlocks, parseRangerBlock } from './ranger-parser';
 import { findAssocierBlocks, parseAssocierBlock, parseAssocierContent } from './associer-parser';
+import { findTrousBlocks, parseTrousBlock, parseTrousContent } from './trous-parser';
 import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
@@ -534,6 +535,8 @@ function parseBlocks(
 	const rangerBlocks = findRangerBlocks(lines);
 	// Bloc ```associer (associer deux colonnes) : éléments et étiquettes restent du markdown
 	const associerBlocks = findAssocierBlocks(lines);
+	// Bloc ```trous (texte à trous à étiquettes) : le texte et les étiquettes restent du markdown
+	const trousBlocks = findTrousBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -559,7 +562,8 @@ function parseBlocks(
 		{ ranges: schemaBarresBlocks, parse: parseSchemaBarres, language: 'schema-barres' },
 		{ ranges: choiceBlocks, parse: parseChoiceBlock, language: 'choix' },
 		{ ranges: rangerBlocks, parse: parseRangerBlock, language: 'ranger' },
-		{ ranges: associerBlocks, parse: parseAssocierBlock, language: 'associer' }
+		{ ranges: associerBlocks, parse: parseAssocierBlock, language: 'associer' },
+		{ ranges: trousBlocks, parse: parseTrousBlock, language: 'trous' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -633,6 +637,7 @@ function parseBlocks(
 			...choiceBlocks,
 			...rangerBlocks,
 			...associerBlocks,
+			...trousBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -656,6 +661,7 @@ function parseBlocks(
 			...findChoiceBlocks(originalLines),
 			...findRangerBlocks(originalLines),
 			...findAssocierBlocks(originalLines),
+			...findTrousBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks
@@ -2091,6 +2097,10 @@ function parseContentWithCodeBlocks(
 			// Éléments à associer dans un item de liste (énoncé d'une série d'automatismes,
 			// bloc sans case) : deux colonnes à relier, jamais du code
 			blocks.push(parseAssocierContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'trous') {
+			// Texte à trous dans un item de liste (énoncé d'une série d'automatismes, bloc
+			// sans case) : le texte et sa réserve, jamais du code
+			blocks.push(parseTrousContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));

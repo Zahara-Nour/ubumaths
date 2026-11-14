@@ -159,6 +159,9 @@ function nodeLines(node: ASTNode): number {
 			const withBlock = node.items.filter(associerItemHasBlock).length;
 			return rows - withBlock + withBlock * FIGURE_LINES;
 		}
+		case 'trous':
+			// Bloc ```trous : la réserve, puis une ligne par ligne du texte
+			return 1 + node.lines.length;
 		default:
 			// Nœud en ligne isolé : une ligne de texte
 			return inlineLines([node]);
