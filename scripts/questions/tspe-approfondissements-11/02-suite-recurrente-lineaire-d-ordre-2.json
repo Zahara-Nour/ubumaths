@@ -1,4 +1,5 @@
 {
+	"id": "261a1341-a1bf-4469-8e81-d2249b4645d3",
 	"title": "Suite récurrente linéaire d'ordre 2 : termes, forme explicite",
 	"description": "Termes u₂ et u₃ d'une suite définie par u_{n+2} = a u_{n+1} + b u_n (deux cases), racines de l'équation caractéristique (deux cases), coefficients λ et μ de la forme explicite, théorème donné (deux cases)",
 	"grades": ["T_SPE"],

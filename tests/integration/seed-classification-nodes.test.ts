@@ -20,7 +20,8 @@
  * « Limites de suites > croissances comparées » → 477 ; puis
  * 20261102070008 « Variables et instructions > blocs personnalisés » → 478 ; puis
  * 20261103233226 « Généralités sur les suites > sommes de termes » et « Modèles d'évolution >
- * emprunt » → 480 ; puis 20261105195513 « Géométrie repérée > parabole » → 481.
+ * emprunt » → 480 ; puis 20261105195513 « Géométrie repérée > parabole » → 481 ; puis
+ * 20261114021510 « Suites récurrentes > récurrence linéaire d'ordre 2 » → 482.
  *
  * La preuve est INTÉGRALE, pas un échantillon : l'ensemble exact des chemins
  * « branche > notion > sous-notion » du JSON source
@@ -150,7 +151,7 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 		const extra = [...actual].filter((p) => !expected.has(p));
 		expect(missing, `chemins du JSON absents de la base`).toEqual([]);
 		expect(extra, `chemins en base absents du JSON`).toEqual([]);
-		expect(actual.size).toBe(19 + 134 + 481);
+		expect(actual.size).toBe(19 + 134 + 482);
 		expect([...archived].sort()).toEqual(arbre.archives.map((a) => `${a.kind}|${a.chemin}`).sort());
 	});
 

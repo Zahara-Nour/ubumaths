@@ -1,4 +1,5 @@
 {
+	"id": "f64ab8f3-1caf-4c8a-b337-07ddbfd4dac2",
 	"title": "Méthode de Newton : calculer des itérés à la main",
 	"description": "Abscisse où la tangente coupe l'axe des abscisses (case choix), relation de récurrence de la méthode de Newton pour f(x) = x³ − A (trois cases), premier itéré exact (case)",
 	"grades": ["T_SPE"],
