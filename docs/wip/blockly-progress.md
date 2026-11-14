@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR 3c en cours._
+_Mis à jour le 2026-11-14, après #2647._
 
-- **État** : #2627, #2632, #2634 (`/tortue`) et #2636 (rythme) mergées ; PR 3c (onglets Blocs / Tortue sur téléphone, pause de 600 ms au départ) essayée par David sur iPhone (« ça marche ! ») · **Prochaine action** : merger la PR 3c, puis phase 0 de la PR 4 (geste de réponse « programme », correction par tracé) · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) ; molette sur l'espace de blocs = défilement des blocs ; tests navigateur : `getByRole` ignore un élément masqué → `includeHidden: true` pour asserter « masqué » · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-onglets-telephone`
+- **État** : #2627, #2632, #2634 (`/tortue`), #2636 (rythme) et **#2647 (onglets Blocs / Tortue sur téléphone, pause de 600 ms au départ)** mergées ; la PR 3 du découpage est faite, essayée par David sur iPhone · **Prochaine action** : phase 0 de la PR 4, geste de réponse « programme » dans les modèles de questions (correction par tracé ou par sortie), à présenter avant de coder · **En attente de David** : rien · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; premier chargement de `blockly/msg/fr` en dev → page vide un instant ; ports 5176+ souvent pris ; `normaliserSegments` : clé arrondie à 1e-6, à revoir pour la correction par tracé (PR 4) ; molette sur l'espace de blocs = défilement des blocs ; tests navigateur : `getByRole` ignore un élément masqué → `includeHidden: true` · **Worktree / branche** : aucun (le prochain : `ubumaths-wt-blockly`, nouvelle branche)
 
 ---
 
@@ -186,3 +186,6 @@ Phase 0 présentée le 2026-11-14 ; David : « je te suis » sur les cinq recomm
 - Retour de David : pas de pause entre la bascule et le premier pas → **pause de 600 ms** au
   départ, tortue visible, rien de tracé (aussi sur ordinateur). « ça marche ! » (2026-11-14).
 - Test navigateur `tortue-telephone.svelte.test.ts` (rouge vérifié pour les onglets et la pause).
+- `code-reviewer` (Sonnet) : rien de bloquant ; nom du `tablist`, marge du test de pause, test
+  « Tout de suite » pendant la pause ajoutés. Laissé : sur ordinateur, `tabpanel` sans onglet
+  visible. Mergée : #2647.
