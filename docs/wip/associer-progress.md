@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-14, lot 1 en PR._
 
-- **État** : lot 1 (texte, formules) codé, relu (`code-reviewer` Opus : 1 Important + 5 Mineurs, tous corrigés), PR ouverte · **Prochaine action** : CI verte → merge ; puis convertir B11 de `cours-suites` en `associer (session « questions ») ; lot 2 = blocs `courbe dans un élément · **En attente de David** : essai du geste à l'écran (serveur de la branche, port 5177) · **Pièges en cours** : `rangerLabelsCollide` et `RangerPlacer` (clés d'erreurs) ont les deux défauts hérités corrigés ici pour associer, pas pour ranger · **Worktree / branche** : `../ubumaths-wt-associer`, `feat/associer`
+- **État** : lot 1 (texte, formules) codé, relu (`code-reviewer` Opus : 1 Important + 5 Mineurs, tous corrigés), PR ouverte · **Prochaine action** : CI verte → merge ; puis convertir B11 de `cours-suites` en bloc associer (session « questions ») ; lot 2 = blocs courbe dans un élément · **En attente de David** : essai du geste à l'écran (serveur de la branche, port 5177) · **Pièges en cours** : `rangerLabelsCollide` et `RangerPlacer` (clés d'erreurs) ont les deux défauts hérités corrigés ici pour associer, pas pour ranger · **Worktree / branche** : `../ubumaths-wt-associer`, `feat/associer`
 
 ## Phase 0 (validée le 2026-11-14)
 
