@@ -1,4 +1,5 @@
 {
+	"id": "97309b20-645e-403b-8531-5334374a5996",
 	"title": "Fonction x ↦ xᵃ : définition, valeurs, dérivée",
 	"description": "Définition x^a = e^{a ln x} donnée : valeur exacte de m^{q·p/q} (case), dérivée de x^{p/q} (deux cases), variations et limite de x^{−p/q} (case choix), x^{1/2} = √x (case choix)",
 	"grades": ["T_SPE"],

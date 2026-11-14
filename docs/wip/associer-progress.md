@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2644._
+_Mis à jour le 2026-11-14, après #2646._
 
-- **État** : modèles 2de `2de-associer-courbes/01` (sans point) et 3e `3-associer-droites/01` (3-067) mergés (#2644) ; `sonde-courbes` lit les courbes d'un bloc associer · **Prochaine action** : après le `deploy:prod` (lot 2 pas encore en prod), David lance `create-questions --publier` des deux dossiers ; commiter les `id` écrits ; puis PR de migration nœud + tag (3e : 3-067 sur « coefficient directeur et ordonnée à l'origine » ; 2de : rangé sous Généralités sur les fonctions, sans tag ; garde « notion sans sous-notion » vérifiée le 2026-11-14 : « Généralités sur les fonctions » a 8 sous-notions actives et déjà 10 modèles posés sur la notion elle-même → la garde doit lister ces 8 en `sous_notions_admises`, sinon elle lève) · **En attente de David** : `deploy:prod`, puis publication des brouillons · **Pièges en cours** : `{{eval:(a)*x+(b)}}` réordonne (`3-2x`) → `{{eval:(a)*x}}{{eval:b;+}}` ; la publication en base locale écrit des `id` locaux dans les fichiers (ne pas les commiter) · **Worktree / branche** : aucun (retiré après l'essai de David, qui a validé les deux modèles en local le 2026-11-14)
+- **État** : brouillons en prod (3e `27ac630c` → « coefficient directeur et ordonnée à l'origine », tag 3-067 ; 2de `5eec6d7d` → notion « Généralités sur les fonctions », sans tag), rangés par `db:migrate` de #2646 et vérifiés (MCP) ; tout le code du chantier est sur `main` · **Prochaine action** : après le `deploy:prod`, David essaie les deux brouillons dans l'admin de prod, puis les publie ; ensuite, clore le chantier (versement dans `docs/systeme/`, journal archivé) · **En attente de David** : `deploy:prod` (aucune PR du chantier n'est en prod, #2623 comprise), essai, publication · **Pièges en cours** : ne pas ouvrir ni publier les brouillons en prod avant le déploiement ; `{{eval:(a)*x+(b)}}` réordonne → `{{eval:(a)*x}}{{eval:b;+}}` · **Worktree / branche** : aucun
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -200,3 +200,5 @@ Relevé prod (MCP, lecture seule) : en 2de, aucun point « fonctions de référe
 - 2026-11-14 : #2637 mergée (CI verte après relance d'un job d'intégration tombé sur un port pris). Second modèle 3e (affines à coefficients tirés) : « ok » de David.
 - 2026-11-14 : PR de contenu — worktree `associer` rouvert (branche `feat/associer-modeles-courbes`), relevé, décisions ci-dessus, deux modèles écrits ; `sonde-courbes` ne voyait pas les courbes décalées d'un bloc associer (« 0 blocs ») → elle retire le décalage (rouge prouvé sur une copie sans `y:`).
 - 2026-11-14 : #2644 mergée (CI verte, revue Sonnet de la sonde sans défaut) ; modèles joués dans l'aperçu admin local.
+- 2026-11-14 : David publie les deux brouillons en prod avant le `deploy:prod` (le script vérifie avec le code local ; les élèves ne voient pas un brouillon). Worktree rouvert, branche `feat/associer-rangement` : `id` + migration de rangement + test (rouge sans la migration prouvé).
+- 2026-11-14 : #2646 mergée avec le job `Lint` ROUGE (garde doc à jour : `Doc-inchangée:` mise dans le corps de la PR au lieu du commit ; CI lue par `tail -15`, qui coupait les `fail`) — erreur signalée à David ; tous les autres jobs verts, `security-auditor` sans finding bloquant. `db:migrate` sur son accord : 2 modèles rangés, `updated_at` préservé, trigger réactivé.

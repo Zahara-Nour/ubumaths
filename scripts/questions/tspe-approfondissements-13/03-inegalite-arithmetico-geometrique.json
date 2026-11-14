@@ -1,4 +1,5 @@
 {
+	"id": "8ce83078-19e4-49fd-93a2-832136139fbc",
 	"title": "Inégalité arithmético-géométrique",
 	"description": "Inégalité donnée par la concavité de ln (case choix), passage à la moyenne géométrique par l'exponentielle (case choix), minimum de x + m²/x (deux cases), démonstration (étapes à ranger)",
 	"grades": ["T_SPE"],

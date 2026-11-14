@@ -1,4 +1,5 @@
 {
+	"id": "fdbc6cb0-7612-4c8a-8028-5028b16548df",
 	"title": "Courbe de Lorenz et indice de Gini",
 	"description": "Définition de la courbe de Lorenz et de l'indice de Gini donnée : fonction qui peut être une fonction de Lorenz (case choix), indice de Gini pour L(x) = x^k (case), pour L(x) = ax² + (1 − a)x (case), lecture de L(0,2) = 0,05 (case choix)",
 	"grades": ["T_SPE"],

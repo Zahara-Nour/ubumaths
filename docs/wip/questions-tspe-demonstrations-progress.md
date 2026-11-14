@@ -10,21 +10,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2642 (fichiers du lot 13)._
+_Mis à jour le 2026-11-14, après #2649 (fichiers du lot 14, § 58)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 11 publiés (§ 47) ; lot 12 relu 5/5 « ok » (§ 51), encore en `draft` ; lot 13 en
-  fichiers sur `main` (#2642, § 52) ; 8 points restants après lui (lots 14, 15).
-- **Prochaine action** : David lance `create-questions --publier` du lot 13 depuis le dépôt principal ; puis migration
-  de rangement et tags (§ 52, colonne « Nœud »), page à cocher.
-- **En attente de David** : `publier-lot.ts --dir scripts/questions/tspe-approfondissements-12` (simulation puis
-  `--publier`) ; `create-questions --dir scripts/questions/tspe-approfondissements-13 --publier`.
+  § 35, lots 9 à 15) : lots 9 à 13 publiés (§ 57) ; lot 14 (473, 496, 497) : fichiers mergés (#2649, § 58) ;
+  lot 15 restant (517, 529, 537, 538, 539).
+- **Prochaine action** : après les brouillons du lot 14 en prod (David) : relevé MCP des ids, puis
+  rangement + `id` commités, page à cocher, publication (même démarche que le lot 13, § 52 à 57).
+- **En attente de David** : `create-questions.ts --dir scripts/questions/tspe-approfondissements-14 --publier`,
+  depuis le dépôt principal (fichiers mergés).
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
   (§ 19) ; `Doc-inchangée:` dans un COMMIT ; `db:migrate` « inserted before » → `--dry-run --include-all` (§ 20) ;
-  `create-questions` lancé du dépôt principal y laisse les JSON modifiés : les remettre à l'état commité après le merge ;
-  `1x` non nettoyé dans `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable `e` ni `i`** (§ 52).
+  **les `id` écrits par `create-questions` se commitent dans la PR de rangement** (`page-a-cocher.ts` et
+  `publier-lot.ts` les exigent, § 56) ; `1x` non nettoyé dans `f(x)=…` : `cf()`/`cfs()` (§ 48) ; **pas de variable
+  `e` ni `i`** (§ 52) ; `pnpm deploy:prod` en cours = merge bloqué, attendre `lock.py --tenu deploy`.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche à créer depuis `origin/main`.
 
 ---
@@ -1015,3 +1016,51 @@ commité. Migration `20261114073717_questions_tspe_approfondissements_13_rangeme
 (SQL exécutable identique aux données près) : chacun sur la sous-notion du § 52 ; 424 sur sa sous-notion, les cinq
 autres points sur leur notion. Test d'intégration 12/12, rouge sans la migration (6 échecs, 5 sautés) ;
 `security-auditor` : aucun finding bloquant.
+Mergé (#2645) : CI verte (intégration comprise), `check:migrations --pr` vert, `db:migrate` fait du dépôt principal
+(simulation : cette seule migration) ; relu en base (MCP) : 6 `draft`, chacun sur sa sous-notion avec son seul point,
+`updated_at` intact.
+
+## 54. Lot 13 : page à cocher (2026-11-14)
+
+`page-a-cocher.ts` lu en base prod, depuis une copie hors dépôt des fichiers avec leurs `id` (le script les exige ; les
+JSON du dépôt n'en portent pas) : 6 brouillons `draft`, chacun sur son point, 4 ou 5 exemples chacun ; alertes « bloc
+ranger non dessiné » sur 424 et 452 (habituelles, étapes de 424 vues dans l'aperçu admin, § 52). Page :
+https://claude.ai/artifact/HSuXTzpPLFA8shqMMnGitH (capacité `db`) ; base `verdicts` vide à la publication.
+
+## 55. Lot 13 : verdicts (2026-11-14)
+
+Verdicts lus : 6/6 « ok », sans commentaire (ids = ceux du § 53). `publier-lot.ts` (simulation puis `--publier`) à
+lancer par David.
+
+## 56. Lot 13 : `id` des fichiers (2026-11-14)
+
+Erreur de ma part : au § 53, j'ai remis les JSON du lot 13 à l'état commité dans le dépôt principal, ce qui a retiré
+les `id` écrits par `create-questions`, et la PR de rangement (#2645) ne les a pas commités (celle du lot 12 l'avait
+fait). `publier-lot.ts` a donc refusé le lot (« sans id », rien publié). Correctif : PR qui ajoute la ligne `id` des six
+fichiers (ids du § 53). Le piège du § 54 (« `publier-lot.ts` apparie par titre ») était faux : il apparie par `id`.
+
+## 57. Lot 13 : publication (2026-11-14)
+
+`id` commités (#2648). `publier-lot.ts` en simulation puis `--publier`, lancés par David. Relu en base (MCP) : 6
+`published`.
+
+## 58. Lot 14 : approfondissements, équations différentielles et intégrales (2026-11-14)
+
+| Point | Modèle (`scripts/questions/tspe-approfondissements-14/`) | Nœud, niveau                                      | Variations                                                                                                     |
+| ----- | -------------------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| 473   | `01-autres-equations-differentielles`                    | Éq. diff. › Généralités › notion de solution, 2   | solution de y′ = y² (choix) ; f″ + ω²f = 0 ; logistique : équation de 1/f (deux cases) ; f(0) et limite (deux) |
+| 496   | `02-aire-par-suites-adjacentes`                          | Calcul d'intégrales › méthode des rectangles, 6   | x² sur [0 ; a] : pourquoi s_n ≤ A ≤ S_n (choix) ; S_n − s_n = a³/n ; rang pour 10⁻ᵖ ; A = a³/3 (Σk² donnée)    |
+| 497   | `03-encadrement-de-hn-par-des-integrales`                | Calcul d'intégrales › positivité et inégalités, 4 | intégrer 1/(k+1) ≤ 1/t ≤ 1/k (choix) ; ln(N + 1) ≤ H_N ; H_N − 1 ≤ ln(N) ; H_n/ln(n) → 1 ; ranger (5)          |
+
+Relevé MCP du 2026-11-14 : les trois points actifs, chacun sur la sous-notion du modèle, aucun modèle tagué dessus ;
+niveaux publiés au plus 1, 5, 3. Script : `docs/wip/questions/lot-tspe-approfondissements-14.py`.
+
+Défauts vus dans les aperçus et corrigés : `g'=-1g` dans la conclusion en couleur (473, r = 1 : `cf()`) ; `1\times
+10^{2}` (496, a = 1) ; « inégalités de droite / de gauche » de 497 se heurtaient au « à gauche » du corrigé : les
+inégalités sont désormais écrites en toutes lettres.
+
+Vérifié : `question:specs` 150 tirages par variation, 3/3 importables (39 specs vertes), 0 `\textcolor` hors `$` ;
+363 formules distinctes des aperçus passées à `validateLatex` + accolades, 0 problème ; `create-questions` en
+simulation sur la prod : 3 « à créer », aucun titre pris ; brouillons en base locale (copie hors dépôt : c0c9bcb6,
+e410f2dd, a194b387) ; aperçu admin vu à l'écran (port 5177) : étapes à ranger de 497 rendues, choix de 496 joué faux
+(B coché à tort, correction affichée), changement de variable de 473 joué « Juste » (−1 et 1/6).

@@ -37,7 +37,7 @@ journal.
 | Fichier                                                       | Rôle                                                                                                                                             |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `src/routes/(public)/tortue/+page.svelte`                     | Page publique « La Tortue », monte `TortueBacASable`                                                                                             |
-| `src/lib/components/blockly/TortueBacASable.svelte`           | Blocs tortue, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié                                                  |
+| `src/lib/components/blockly/TortueBacASable.svelte`           | Blocs tortue, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié ; onglets Blocs / Tortue sous `lg`               |
 | `src/routes/(protected)/dev/blockly/+page.svelte`             | Page de test, monte `BlocklyPlayground`                                                                                                          |
 | `src/lib/components/blockly/BlocklyPlayground.svelte`         | Assemble espace de travail, barre d'outils, aperçu du code, console                                                                              |
 | `src/lib/components/blockly/BlocklyWorkspace.svelte`          | `Blockly.inject` ; charge la locale française (`blockly/msg/fr`) avant                                                                           |
@@ -106,10 +106,15 @@ journal.
 - **Boîte à outils** : `controls_repeat` (champ entier ≥ 0 : ni virgule ni négatif ne se
   saisissent) ; l'interpréteur lit encore `controls_repeat_ext`, qui reviendra avec les variables.
 - Quadrillage fixe 20 × 20 (`DEMI_COTE_CADRE`). Sur `/dev/blockly`, tracé instantané ; sur
-  `/tortue`, **animé** : 300 ms par étape jusqu'à 40 étapes, au-delà l'animation entière dure
+  `/tortue`, **animé** : pause de 600 ms au départ (`PAUSE_DEPART_MS`, tortue au départ, rien de
+  tracé), puis 300 ms par étape jusqu'à 40 étapes, au-delà l'animation entière dure
   12 s (plusieurs étapes par tic sous 16 ms) ; « Tout de suite » saute à la fin, toute
   modification des blocs arrête l'animation et vide le quadrillage ; le message (fin ou erreur)
   s'affiche à la fin de l'animation.
+- **Téléphone et tablette en portrait** (sous `lg`, 1024 px) : onglets « Blocs » / « Tortue », un
+  panneau à la fois ; « Lancer » bascule sur Tortue. L'espace de blocs est masqué, jamais démonté
+  (le programme reste) ; Blockly se redimensionne au retour (`ResizeObserver`). Au-dessus de `lg`,
+  les deux panneaux côte à côte, sans onglets ; les boutons sont au-dessus des deux.
 
 ## Comment étendre
 
@@ -128,6 +133,8 @@ journal.
 - `src/lib/shared/blockly/tortue/__tests__/` : interpréteur (nominal, limites, erreurs), segments,
   blocs passés par un vrai `Blockly.Workspace` sérialisé (dont le champ de `controls_repeat`),
   étapes et `imageAnimation`.
+- `src/lib/components/blockly/__tests__/tortue-telephone.svelte.test.ts` (navigateur, 390 px et
+  1280 px) : onglets, bascule au « Lancer », programme gardé, pause au départ.
 - `src/lib/components/__tests__/Sidebar.svelte.test.ts` : « La Tortue » visible sans connexion.
 - `src/lib/workers/__tests__/js-sandbox-source.test.ts` : la fonction sandbox compile et s'exécute.
 - `src/lib/shared/blockly/execution/__tests__/js-executor-boucle.svelte.test.ts` (navigateur) :
