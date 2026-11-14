@@ -1,4 +1,5 @@
 {
+	"id": "6248e597-570c-4cc2-afda-4d399e9c6858",
 	"title": "Branches infinies : asymptote ou branche parabolique",
 	"description": "Classement donné dans l'énoncé : branche parabolique de direction (Oy) pour un polynôme du second degré, de direction (Ox) pour a ln(x) + b (cases choix), limite de f(x)/x pour f(x) = ax + b√x (case), branche parabolique de direction y = ax (case choix)",
 	"grades": ["T_SPE"],

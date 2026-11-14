@@ -1,4 +1,5 @@
 {
+	"id": "ec4fa70f-817c-4619-afc7-34c96792b78d",
 	"title": "Prolongement par continuité en un point",
 	"description": "Valeur du prolongement d'une fraction rationnelle simplifiable (case), de (e^{ax} − 1)/x en 0 par le nombre dérivé (case), fonction qui se prolonge en 0 (case choix)",
 	"grades": ["T_SPE"],
