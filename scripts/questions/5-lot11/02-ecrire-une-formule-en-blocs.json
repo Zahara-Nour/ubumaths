@@ -1,0 +1,205 @@
+{
+	"title": "Écrire une formule en blocs",
+	"description": "Traduire une formule (ax + b, b(x + a), x² − a) en programme de calcul par blocs.",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris un programme qui affiche la valeur de ${{a}}x + {{b}}$, où $x$ est le **nombre choisi**.\n\n```calcul\nattendu: afficher {{a}} × nombre + {{b}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..12"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{a}}x$, c'est ${{a}} \\times x$ : en blocs, ${{a}}$ × nombre choisi.",
+					"On ajoute ${{b}}$ : la multiplication se fait d'abord, sans parenthèses.",
+					"Un programme juste : afficher ${{a}}$ × nombre $+\\ {{b}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris un programme qui affiche la valeur de ${{b}}(x + {{a}})$, où $x$ est le **nombre choisi**.\n\n```calcul\nattendu: afficher (nombre + {{a}}) × {{b}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{b}}(x + {{a}})$, c'est ${{b}} \\times (x + {{a}})$ : on calcule d'abord $x + {{a}}$.",
+					"En blocs, le bloc « nombre $+\\ {{a}}$ » se place **dans** le bloc de multiplication : il joue le rôle des parenthèses.",
+					"Sans cela, nombre $+\\ {{a}} \\times {{b}}$ multiplierait seulement ${{a}}$ par ${{b}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris un programme qui affiche la valeur de $x^2 - {{a}}$, où $x$ est le **nombre choisi**.\n\n```calcul\nattendu: afficher nombre × nombre − {{a}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..12"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"$x^2$, c'est $x \\times x$ : le nombre choisi multiplié par lui-même (et non $2 \\times x$).",
+					"On soustrait ensuite ${{a}}$.",
+					"Un programme juste : afficher nombre × nombre $-\\ {{a}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3x + 5 : référence",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["afficher 3 × nombre + 5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3x + 5 : écrit nombre × 3 + 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["afficher nombre × 3 + 5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3x + 5 : en deux étapes avec résultat",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": [
+				"mettre résultat à nombre × 3 ; mettre résultat à résultat + 5 ; afficher résultat"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 5x (coefficients inversés)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["afficher 3 + nombre × 5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (nombre + 5) × 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["afficher (nombre + 5) × 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4(x + 2) : référence",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "4"
+			},
+			"answers": ["afficher (nombre + 2) × 4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4(x + 2) : développé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "4"
+			},
+			"answers": ["afficher nombre × 4 + 8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parenthèses oubliées",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "4"
+			},
+			"answers": ["afficher nombre + 2 × 4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² − 7 : référence",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["afficher nombre × nombre − 7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x² lu 2x",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["afficher nombre × 2 − 7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x × (x − 7)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["afficher nombre × (nombre − 7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

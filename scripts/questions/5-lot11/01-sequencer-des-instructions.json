@@ -1,0 +1,195 @@
+{
+	"title": "Séquencer des instructions (tortue)",
+	"description": "Faire tracer à la tortue une lettre L, une lettre T ou un zigzag, sans boucle.",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Fais tracer à la tortue la lettre **L** dessinée en gris : elle descend de ${{a}}$ carreaux, puis va vers la droite sur ${{b}}$ carreaux.\n\n```tortue\nattendu: tourner à droite 90 ; avancer {{a}} ; tourner à gauche 90 ; avancer {{b}}\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				}
+			],
+			"conditions": ["(a-b)*(a-b) > 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La tortue regarde vers la droite : elle tourne d'abord d'un quart de tour à droite pour regarder vers le bas.",
+					"Elle avance de ${{a}}$, tourne d'un quart de tour à gauche (elle regarde de nouveau vers la droite), puis avance de ${{b}}$.",
+					"L'ordre compte : en avançant avant de tourner, la tortue tracerait un autre L."
+				]
+			}
+		},
+		{
+			"statement": "Fais tracer à la tortue la lettre **T** dessinée en gris : une barre de ${{d}}$ carreaux, et une jambe de ${{h}}$ carreaux qui descend du milieu de la barre.\n\n```tortue\nattendu: avancer {{a}} ; tourner à droite 90 ; avancer {{h}} ; reculer {{h}} ; tourner à gauche 90 ; avancer {{a}}\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "h",
+					"expression": "3..5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*a"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La tortue avance de ${{a}}$ jusqu'au milieu de la barre.",
+					"Elle tourne à droite, descend de ${{h}}$ pour tracer la jambe, puis **recule** de ${{h}}$ pour remonter au milieu de la barre.",
+					"Elle tourne à gauche et avance encore de ${{a}}$ pour finir la barre."
+				]
+			}
+		},
+		{
+			"statement": "Fais tracer à la tortue le zigzag dessiné en gris. Elle commence par tourner de $45°$ vers la gauche ; chaque trait mesure ${{a}}$ carreaux et chaque coin est un angle droit.\n\n```tortue\nattendu: tourner à gauche 45 ; avancer {{a}} ; tourner à droite 90 ; avancer {{a}} ; tourner à gauche 90 ; avancer {{a}} ; tourner à droite 90 ; avancer {{a}}\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La tortue tourne de $45°$ à gauche et avance de ${{a}}$ : premier trait, qui monte.",
+					"Pour redescendre, elle tourne de $90°$ **à droite** ; pour remonter, de $90°$ **à gauche**.",
+					"Le zigzag a $4$ traits : avancer, droite, avancer, gauche, avancer, droite, avancer."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "L : programme de référence",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["tourner à droite 90 ; avancer 4 ; tourner à gauche 90 ; avancer 3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "L tracé dans l'autre sens (du bout de la barre vers le haut)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": [
+				"lever le stylo ; tourner à droite 90 ; avancer 4 ; tourner à gauche 90 ; avancer 3 ; baisser le stylo ; reculer 3 ; tourner à gauche 90 ; avancer 4"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : avance avant de tourner",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["avancer 4 ; tourner à droite 90 ; avancer 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tourne à gauche (L vers le haut)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["tourner à gauche 90 ; avancer 4 ; tourner à droite 90 ; avancer 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "T : programme de référence",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"h": "4",
+				"d": "6"
+			},
+			"answers": [
+				"avancer 3 ; tourner à droite 90 ; avancer 4 ; reculer 4 ; tourner à gauche 90 ; avancer 3"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "T : la barre d'abord, puis la jambe",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"h": "4",
+				"d": "6"
+			},
+			"answers": ["avancer 6 ; reculer 3 ; tourner à droite 90 ; avancer 4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : jambe au bout de la barre",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"h": "4",
+				"d": "6"
+			},
+			"answers": ["avancer 6 ; tourner à droite 90 ; avancer 4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zigzag : programme de référence",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": [
+				"tourner à gauche 45 ; avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 2"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tourne toujours à droite (escalier fermé)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": [
+				"tourner à gauche 45 ; avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à droite 90 ; avancer 2"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

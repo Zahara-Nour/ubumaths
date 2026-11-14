@@ -1,0 +1,228 @@
+{
+	"title": "Programme de calcul en étapes",
+	"description": "Écrire en blocs un programme de calcul donné étape par étape (2 à 4 étapes).",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris en blocs le programme de calcul suivant.\n\n1. Choisir un nombre.\n2. Le multiplier par ${{a}}$.\n3. Soustraire ${{b}}$.\n4. Afficher le résultat.\n\n```calcul\nattendu: mettre résultat à nombre × {{a}} ; mettre résultat à résultat − {{b}} ; afficher résultat\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On range chaque étape dans **résultat** : d'abord nombre × ${{a}}$.",
+					"Puis résultat $-\\ {{b}}$, que l'on range de nouveau dans résultat, et on l'affiche.",
+					"Afficher directement nombre × ${{a}} - {{b}}$ est juste aussi."
+				]
+			}
+		},
+		{
+			"statement": "Écris en blocs le programme de calcul suivant.\n\n1. Choisir un nombre.\n2. Lui ajouter ${{a}}$.\n3. Multiplier le résultat par ${{b}}$.\n4. Soustraire ${{c}}$.\n5. Afficher le résultat.\n\n```calcul\nattendu: mettre résultat à nombre + {{a}} ; mettre résultat à résultat × {{b}} ; mettre résultat à résultat − {{c}} ; afficher résultat\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Étape par étape : résultat prend la valeur nombre $+\\ {{a}}$, puis résultat × ${{b}}$, puis résultat $-\\ {{c}}$.",
+					"L'ordre des étapes compte : multiplier avant d'ajouter donnerait un autre programme.",
+					"En une ligne : afficher $($nombre $+\\ {{a}}) \\times {{b}} - {{c}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris en blocs le programme de calcul suivant.\n\n1. Choisir un nombre.\n2. Lui soustraire ${{a}}$.\n3. Multiplier le résultat par le nombre choisi.\n4. Ajouter ${{b}}$.\n5. Afficher le résultat.\n\n```calcul\nattendu: mettre résultat à nombre − {{a}} ; mettre résultat à résultat × nombre ; mettre résultat à résultat + {{b}} ; afficher résultat\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Résultat prend la valeur nombre $-\\ {{a}}$.",
+					"On le multiplie par le **nombre choisi** (le bloc « nombre choisi », pas un nombre écrit).",
+					"On ajoute ${{b}}$ et on affiche : en une ligne, $($nombre $-\\ {{a}}) \\times$ nombre $+\\ {{b}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "×4 puis −3 : avec résultat",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": [
+				"mettre résultat à nombre × 4 ; mettre résultat à résultat − 3 ; afficher résultat"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "×4 puis −3 : en une ligne",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["afficher nombre × 4 − 3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : étapes inversées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["afficher (nombre − 3) × 4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien d'affiché",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["mettre résultat à nombre × 4 ; mettre résultat à résultat − 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "+2, ×5, −1 : avec résultat",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "1"
+			},
+			"answers": [
+				"mettre résultat à nombre + 2 ; mettre résultat à résultat × 5 ; mettre résultat à résultat − 1 ; afficher résultat"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "+2, ×5, −1 : développé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "1"
+			},
+			"answers": ["afficher nombre × 5 + 9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parenthèses oubliées",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "1"
+			},
+			"answers": ["afficher nombre + 2 × 5 − 1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : chaque étape repart du nombre choisi",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "1"
+			},
+			"answers": [
+				"mettre résultat à nombre + 2 ; mettre résultat à nombre × 5 ; mettre résultat à nombre − 1 ; afficher résultat"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−3, × nombre, +6 : avec résultat",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "6"
+			},
+			"answers": [
+				"mettre résultat à nombre − 3 ; mettre résultat à résultat × nombre ; mettre résultat à résultat + 6 ; afficher résultat"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−3, × nombre, +6 : en une ligne",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "6"
+			},
+			"answers": ["afficher (nombre − 3) × nombre + 6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : multiplie par le résultat (au carré)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "6"
+			},
+			"answers": [
+				"mettre résultat à nombre − 3 ; mettre résultat à résultat × résultat ; mettre résultat à résultat + 6 ; afficher résultat"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

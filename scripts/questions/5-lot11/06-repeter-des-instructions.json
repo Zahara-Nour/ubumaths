@@ -1,0 +1,190 @@
+{
+	"title": "Répéter des instructions (tortue)",
+	"description": "Faire tracer un carré, un escalier ou des créneaux avec le bloc répéter.",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Fais tracer à la tortue le carré dessiné en gris, de côté ${{c}}$, en utilisant le bloc **répéter**.\n\n```tortue\nattendu: répéter 4 [ avancer {{c}} ; tourner à gauche 90 ]\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Un côté se trace en deux instructions : avancer ${{c}}$, puis tourner d'un quart de tour à gauche.",
+					"Le carré a $4$ côtés : on répète ces deux instructions $4$ fois.",
+					"Un programme juste : répéter $4$ [ avancer ${{c}}$ ; tourner à gauche $90$ ]."
+				]
+			}
+		},
+		{
+			"statement": "Fais tracer à la tortue l'escalier dessiné en gris : ${{n}}$ marches de ${{s}}$ {{if:s==1|carreau|carreaux}} de haut et de large. Utilise le bloc **répéter**.\n\n```tortue\nattendu: répéter {{n}} [ tourner à gauche 90 ; avancer {{s}} ; tourner à droite 90 ; avancer {{s}} ]\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..5"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				}
+			],
+			"conditions": ["n*s <= 8"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Une marche : monter (tourner à gauche, avancer ${{s}}$), puis aller vers la droite (tourner à droite, avancer ${{s}}$).",
+					"On répète cette marche ${{n}}$ fois.",
+					"Un programme juste : répéter ${{n}}$ [ tourner à gauche $90$ ; avancer ${{s}}$ ; tourner à droite $90$ ; avancer ${{s}}$ ]."
+				]
+			}
+		},
+		{
+			"statement": "Fais tracer à la tortue les créneaux dessinés en gris : ${{n}}$ créneaux de ${{h}}$ {{if:h==1|carreau|carreaux}} de haut, chacun suivi d'un creux de $1$ carreau. Utilise le bloc **répéter**.\n\n```tortue\nattendu: répéter {{n}} [ tourner à gauche 90 ; avancer {{h}} ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer {{h}} ; tourner à gauche 90 ; avancer 1 ]\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Un créneau : monter de ${{h}}$, avancer de $1$, redescendre de ${{h}}$, avancer de $1$ (le creux).",
+					"Les angles : à gauche pour monter, à droite deux fois (en haut puis pour redescendre), à gauche pour repartir vers la droite.",
+					"On répète ce motif ${{n}}$ fois."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré : avec répéter",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4"
+			},
+			"answers": ["répéter 4 [ avancer 4 ; tourner à gauche 90 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carré : sans répéter (8 blocs, juste aussi)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4"
+			},
+			"answers": [
+				"avancer 4 ; tourner à gauche 90 ; avancer 4 ; tourner à gauche 90 ; avancer 4 ; tourner à gauche 90 ; avancer 4"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : répète 3 fois",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4"
+			},
+			"answers": ["répéter 3 [ avancer 4 ; tourner à gauche 90 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tourne à droite (carré en dessous)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4"
+			},
+			"answers": ["répéter 4 [ avancer 4 ; tourner à droite 90 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Escalier : avec répéter",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"s": "2"
+			},
+			"answers": [
+				"répéter 4 [ tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 2 ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une marche de trop",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"s": "2"
+			},
+			"answers": [
+				"répéter 5 [ tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 2 ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : avance avant de monter (marches décalées)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"s": "2"
+			},
+			"answers": [
+				"répéter 4 [ avancer 2 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Créneaux : avec répéter",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"h": "2"
+			},
+			"answers": [
+				"répéter 3 [ tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 1 ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : creux oublié",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"h": "2"
+			},
+			"answers": [
+				"répéter 3 [ tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2664 et la version 0.88.0._
+_Mis à jour le 2026-11-14, lot 11 de la 5e écrit (PR des fichiers à ouvrir)._
 
-- **État** : PR 1 à 5b et #2664 (« mettre résultat à ») mergées et **en prod (0.88.0)** ; premiers modèles validés (§ Premiers modèles) · **Prochaine action** : écrire le lot 11 de la 5e (6 modèles, § Premiers modèles) **dans ce chantier** (worktree `ubumaths-wt-blockly`), fichiers selon la convention des lots (`scripts/questions/5-lot11/`, script `docs/wip/questions/lot-5-11-blockly.py`, migration nœud + tag, page à cocher, `docs/pratiques/couvrir-un-niveau.md`) ; puis le lot 6e (6-197, 6-210) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` · **Worktree / branche** : aucun
+- **État** : PR 1 à 5b et #2664 en prod (0.88.0) ; lot 11 de la 5e écrit (§ Lot 11), simulation verte, joué en base locale · **Prochaine action** : PR des fichiers (branche `feat/blockly-lot-5-11`) → merge → **David** lance `create-questions --dir scripts/questions/5-lot11 --publier` en prod → ids commités → migration nœud + tag → page à cocher → publication ; puis le lot 6e (6-197, 6-210) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-5-11`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -388,3 +388,26 @@ CM2-152 ; 6-194, 195, 196 en ont un (Algorithmique › Préalgorithmique).
   (deux niveaux, suite directe du découpage), pas dans `questions-5` / `questions-6` ; le journal de
   la 5e garde un pointeur. Le chantier n'est pas clos : modèles, puis pistes (mode Calcul du bac à
   sable, « prévoir la valeur », nombre maximal de blocs, étanchéité du sandbox JS).
+
+## Lot 11 de la 5e — écrit le 2026-11-14 (branche `feat/blockly-lot-5-11`)
+
+Script `docs/wip/questions/lot-5-11-blockly.py` → `scripts/questions/5-lot11/` (6 modèles, 56 specs).
+
+| #   | Point | Titre                               | Geste           | Variations                                        | Niveau |
+| --- | ----- | ----------------------------------- | --------------- | ------------------------------------------------- | ------ |
+| 01  | 5-100 | Séquencer des instructions (tortue) | tortue, montrer | L, T, zigzag (45°)                                | 1      |
+| 02  | 5-102 | Écrire une formule en blocs         | calcul          | ax + b, b(x + a), x² − a                          | 1      |
+| 03  | 5-103 | Programme de calcul en étapes       | calcul          | 2, 3, 4 étapes (la 4e réutilise le nombre choisi) | 2      |
+| 04  | 5-105 | Modifier un programme de calcul     | calcul, départ  | changer 2 nombres ; changer + en −                | 2      |
+| 05  | 5-105 | Modifier un tracé                   | tortue, départ  | carré 3 → c ; rectangle 4 × 2 → l × h             | 2      |
+| 06  | 5-106 | Répéter des instructions (tortue)   | tortue, montrer | carré, escalier, créneaux                         | 1      |
+
+- Nœuds (prod, relevé du 2026-11-14) : 01 à 05 → Algorithmique › Variables et instructions ;
+  06 → Algorithmique › Boucles › boucle bornée (nœud du point 5-106).
+- **Choix faits sans David, à lui signaler** : figure montrée → `comparer: position` ; figure décrite
+  ou départ donné (05) → `comparer: forme` (le rectangle 3 × 6 est juste pour 6 × 3) ; zigzag
+  tracé à 45° (« zigzag » à angles droits = créneau ou escalier, déjà au 06), l'énoncé donne
+  l'angle de départ et la longueur des traits ; niveaux 1-2 ; délai 300 s.
+- Vérifié : simulation 6/6 importable, 150 tirages par modèle ; une spec inversée → modèle refusé
+  (specs bien jugées, calcul et tortue) ; base locale : 05 joué juste (départ posé, tracé, corrigé),
+  04 joué faux (tableau des essais, correction).
