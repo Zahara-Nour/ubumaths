@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR #2637 ouverte (lot 2), CI en cours._
+_Mis à jour le 2026-11-14, après #2637._
 
-- **État** : lot 2 (` ```courbe ` dans un élément) codé, revu (opus, 3 points corrigés), PR #2637 ouverte ; bug du lot 1 corrigé dans la même PR (associer d'une série imprimé en code) · **Prochaine action** : `gh pr checks 2637` → verte : merger (`gh pr merge 2637 --merge`), rouge : corriger ; puis noter la vérification manuelle (relier une courbe au téléphone) et ouvrir le modèle « courbe ↔ expression » · **Tranché** : niveau 2de (fonctions de référence : carré, inverse, racine, cube ; intrus $x \mapsto x$ ; sans variables ; geste relier), PR de contenu séparée, brouillon publié par David (« ok » de David aux recos) · **En attente de David** : un second modèle 3e (affines à coefficients tirés) en plus, ou la 2de seule ? (pas répondu, à reposer) · **Pièges en cours** : la courbe exige `x:` et `y:` ; Typst d'une courbe non compilable en test (cetz, réseau) · **Worktree / branche** : `ubumaths-wt-associer` · `feat/associer-courbe`
+- **État** : lot 2 (` ```courbe ` dans un élément) mergé (#2637) ; vérification manuelle notée · **Prochaine action** : PR de contenu (nouvelle branche, nouveau worktree) : modèle 2de « courbe ↔ expression » (carré, inverse, racine, cube ; intrus $x \mapsto x$ ; sans variables ; geste relier) **et** modèle 3e (affines à coefficients tirés, « ok » de David le 2026-11-14) ; brouillons publiés par David · **En attente de David** : rien · **Pièges en cours** : la courbe exige `x:` et `y:` ; Typst d'une courbe non compilable en test (cetz, réseau) · **Worktree / branche** : aucun (`ubumaths-wt-associer` retiré après #2637)
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -179,3 +179,4 @@ Ensuite (même chantier) : un modèle « graphique ↔ expression » à écrire,
   accepté → refusé ; réglage en retrait après un élément → message sur le retrait.
 - 2026-11-14 : PR #2637 ouverte. Modèle « courbe ↔ expression » : 2de retenue (recos acceptées par
   David) ; second modèle 3e : question ouverte.
+- 2026-11-14 : #2637 mergée (CI verte après relance d'un job d'intégration tombé sur un port pris). Second modèle 3e (affines à coefficients tirés) : « ok » de David.
