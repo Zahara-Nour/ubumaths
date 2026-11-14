@@ -1,0 +1,290 @@
+{
+	"title": "Autres équations différentielles, équation logistique",
+	"description": "Solution de y' = y² (case choix), f'' + ω²f = 0 pour a cos(ωx) + b sin(ωx) (case), équation logistique : équation vérifiée par 1/f (deux cases), population, f(0) et limite (deux cases)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On considère l'équation différentielle $y'=y^2$, d'inconnue $y$, fonction dérivable.\n\nLaquelle de ces fonctions, définies sur $]-\\infty;{{eval:c}}[$, en est solution ?\n\n```choix\n- $f(x)=\\dfrac{1}{{{eval:c}}-x}$\n- $f(x)=\\dfrac{1}{x-{{eval:c}}}$\n- $f(x)=({{eval:c}}-x)^2$\n- $f(x)=\\ln({{eval:c}}-x)$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $f(x)=\\dfrac{1}{{{eval:c}}-x}$, la dérivée de $\\dfrac{1}{u}$ est $-\\dfrac{u'}{u^2}$, avec $u'(x)=-1$ : $f'(x)=\\dfrac{1}{({{eval:c}}-x)^2}=\\left(f(x)\\right)^2$.",
+					"Pour $f(x)=\\dfrac{1}{x-{{eval:c}}}$, $f'(x)=-\\dfrac{1}{(x-{{eval:c}})^2}=-\\left(f(x)\\right)^2$ : le signe ne convient pas.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f(x)=\\dfrac{1}{{{eval:c}}-x}}$ est solution de $y'=y^2$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $\\mathbb{R}$ par $f(x)={{if:a==1||{{if:a==-1|-|{{eval:a}}}}}}\\cos({{eval:w}}x)+{{if:b==1||{{if:b==-1|-|{{eval:b}}}}}}\\sin({{eval:w}}x)$.\n\nComplète : pour tout réel $x$,\n\n$f''(x)+?f(x)=0$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "w",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:w^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:-a*w}}\\sin({{eval:w}}x){{eval:b*w;+}}\\cos({{eval:w}}x)$.",
+					"$f''(x)={{eval:-a*w^2}}\\cos({{eval:w}}x){{eval:-b*w^2;+}}\\sin({{eval:w}}x)=-{{eval:w^2}}f(x)$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f''(x)+{{eval:w^2}}f(x)=0}$ : $f$ est solution de $y''+\\omega^2y=0$ avec $\\omega={{eval:w}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'**équation logistique** $y'={{if:r==1||{{if:r==-1|-|{{eval:r}}}}}}y\\left(1-\\dfrac{y}{{{eval:K}}}\\right)$. Soit $f$ une solution strictement positive sur $[0;+\\infty[$ ; on pose $g=\\dfrac{1}{f}$.\n\nComplète l'équation différentielle vérifiée par $g$.\n\n$g'=?g+?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "K",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-r}}"
+				},
+				{
+					"expectedAnswer": "{{eval:r/K}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$g'=-\\dfrac{f'}{f^2}=-\\dfrac{{{if:r==1||{{if:r==-1|-|{{eval:r}}}}}}f\\left(1-\\frac{f}{{{eval:K}}}\\right)}{f^2}=-{{if:r==1||{{if:r==-1|-|{{eval:r}}}}}}\\left(\\dfrac{1}{f}-\\dfrac{1}{{{eval:K}}}\\right)$.",
+					"Or $\\dfrac{1}{f}=g$, donc $g'=-{{if:r==1||{{if:r==-1|-|{{eval:r}}}}}}g+{{eval:r/K}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{g'=-{{if:r==1||{{if:r==-1|-|{{eval:r}}}}}}g+{{eval:r/K}}}$ : une équation $y'=ay+b$ que l'on sait résoudre."
+				]
+			}
+		},
+		{
+			"statement": "Une population (en milliers d'individus) suit l'**équation logistique** $y'={{if:r==1||{{if:r==-1|-|{{eval:r}}}}}}y\\left(1-\\dfrac{y}{{{eval:K}}}\\right)$, le temps $t$ étant en années. On admet que la fonction $f$ définie sur $[0;+\\infty[$ par $f(t)=\\dfrac{{{eval:K}}}{1+{{if:c==1||{{if:c==-1|-|{{eval:c}}}}}}e^{-{{if:r==1||{{if:r==-1|-|{{eval:r}}}}}}t}}$ en est solution.\n\nComplète.\n\n$f(0)=?$ et $\\displaystyle\\lim_{t\\to+\\infty}f(t)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "K",
+					"expression": "eval:m*(c+1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m}}"
+				},
+				{
+					"expectedAnswer": "{{eval:K}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(0)=\\dfrac{{{eval:K}}}{1+{{eval:c}}}={{eval:m}}$.",
+					"Quand $t\\to+\\infty$, $e^{-{{if:r==1||{{if:r==-1|-|{{eval:r}}}}}}t}\\to 0$, donc le dénominateur tend vers $1$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f(0)={{eval:m}}}$ et $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{t\\to+\\infty}f(t)={{eval:K}}}$ : la population tend vers la capacité d'accueil du milieu."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/(c − x)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/(x − c), signe",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (c − x)²",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln(c − x)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ω² = 9",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"w": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ω",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"w": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −ω²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"w": "3"
+			},
+			"answers": ["-9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "g' = −2g + 1/5",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"K": "10"
+			},
+			"answers": ["-2", "\\frac{1}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"K": "10"
+			},
+			"answers": ["2", "\\frac{1}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : K/r",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"K": "10"
+			},
+			"answers": ["-2", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(0) = 5, limite 20",
+			"variationIndex": 3,
+			"variables": {
+				"r": "2",
+				"c": "3",
+				"m": "5",
+				"K": "20"
+			},
+			"answers": ["5", "20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(0) = K",
+			"variationIndex": 3,
+			"variables": {
+				"r": "2",
+				"c": "3",
+				"m": "5",
+				"K": "20"
+			},
+			"answers": ["20", "20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : limite 0",
+			"variationIndex": 3,
+			"variables": {
+				"r": "2",
+				"c": "3",
+				"m": "5",
+				"K": "20"
+			},
+			"answers": ["5", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
