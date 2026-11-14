@@ -7,9 +7,9 @@ Q4 : « clic sur une question = P4 »). David : « ok pour P4 / E4 ».
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, ouverture._
+_Mis à jour le 2026-11-14, phase 0 tranchée._
 
-- **État** : phase 0 écrite (ci-dessous), aucun code · **Prochaine action** : réponses de David à Q1-Q5, puis tests rouges de la PR 1 · **En attente de David** : Q1-Q5 · **Pièges en cours** : aucune trace de série n'a encore de réponse en prod (0 ligne `answer_parts`) ; seuls les contrôles ont des réponses (101, dont 44 fausses, 20 modèles) · **Worktree / branche** : `../ubumaths-wt-erreurs-frequentes` · `feat/erreurs-frequentes`
+- **État** : phase 0 tranchée (§ Décisions), aucun code · **Prochaine action** : PR 1 (contrôles), tests rouges d'abord · **En attente de David** : rien · **Pièges en cours** : aucune trace de série n'a encore de réponse en prod (0 ligne `answer_parts`) ; seuls les contrôles ont des réponses (101, dont 44 fausses, 20 modèles) · **Worktree / branche** : `../ubumaths-wt-erreurs-frequentes` · `feat/erreurs-frequentes`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -68,7 +68,21 @@ son énoncé**.
   quand la copie est consultable.
 - **Erreur** : lecture en échec → message, la page reste.
 
-## Questions à David (phase 0)
+## Décisions de David (2026-11-14)
+
+- **PR 3 (E4) retirée** : doublon de la révision espacée (un modèle raté revient en révision et en sort
+  réussi = E2, qui existe) et de la correction immédiate (Saisie retourne la carte, contrôle = copie corrigée).
+  E4 est tenu pour couvert.
+- **Q1** : PR 1 (contrôles) puis PR 2 (par point). **Q2** : nominatif côté prof. **Q3** : regroupement des
+  réponses identiques à énoncé identique seulement, le reste une par une. Q4, Q5 : sans objet.
+
+## Suites (futurs chantiers, non ouverts — David, 2026-11-14)
+
+- **« Ta dernière réponse » sur la carte de révision** : rappeler à l'élève sa réponse fausse d'avant quand la
+  révision lui remet le modèle (seul apport réel qu'E4 aurait eu).
+- **Type d'erreur** : deviner la nature d'une erreur (signe, oubli du carré…) par le moteur mathAST.
+
+## Questions à David (phase 0, posées le 2026-11-14 — tranchées ci-dessus)
 
 - **Q1 — Découpage** : trois PR dans l'ordre ci-dessus (contrôles d'abord : ce sont les seules réponses
   qui existent en prod aujourd'hui) ? Ou seulement la PR 1 pour l'instant ?
@@ -82,3 +96,4 @@ son énoncé**.
 ## Historique
 
 - 2026-11-14 : ouverture, état des lieux, phase 0 écrite.
+- 2026-11-14 : phase 0 tranchée : E4 retiré, PR 1 puis PR 2, nominatif, regroupement à énoncé identique ; deux futurs chantiers.
