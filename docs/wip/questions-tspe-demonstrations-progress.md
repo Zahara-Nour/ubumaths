@@ -861,4 +861,5 @@ simulation sur la prod : 4 « à créer », aucun titre pris ; brouillons en bas
 `draft`, sans nœud ni tag (MCP). Migration `20261114005646_questions_tspe_approfondissements_10_rangement_tags`, copie
 de celle du lot 9 (SQL exécutable identique aux données près) : 374 → Géométrie > Espace > positions relatives et
 intersections ; 377, 564, 361 → Géométrie > Orthogonalité et distances dans l'espace > sphère (chaque point sur la
-sous-notion de son modèle). Test d'intégration 12/12, rouge sans la migration (6 échecs).
+sous-notion de son modèle). Test d'intégration 12/12, rouge sans la migration (6 échecs) ; `security-auditor` : aucun finding (diff avec le lot 9 :
+données seules).
