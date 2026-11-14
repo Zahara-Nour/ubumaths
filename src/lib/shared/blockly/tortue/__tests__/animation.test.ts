@@ -4,6 +4,7 @@ import {
 	DUREE_ETAPE_MS,
 	DUREE_IMAGE_MIN_MS,
 	DUREE_MAX_ANIMATION_MS,
+	PAUSE_DEPART_MS,
 	imageAnimation,
 	rythmeAnimation,
 	SEUIL_ETAPES_LENTES
@@ -122,6 +123,10 @@ describe('imageAnimation', () => {
 
 	it('vitesse fixe, environ 0,3 s par étape', () => {
 		expect(DUREE_ETAPE_MS).toBe(300);
+	});
+
+	it('pause de 0,6 s au départ, avant le premier pas', () => {
+		expect(PAUSE_DEPART_MS).toBe(600);
 	});
 });
 

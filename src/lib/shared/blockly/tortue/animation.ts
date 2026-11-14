@@ -13,6 +13,9 @@ import type { Segment } from './segments';
 /** Durée d'une étape de l'animation (vitesse fixe, tranché par David le 2026-11-14). */
 export const DUREE_ETAPE_MS = 300;
 
+/** Pause au départ, tortue visible et rien de tracé, avant le premier pas (David, 2026-11-14). */
+export const PAUSE_DEPART_MS = 600;
+
 /** Jusqu'à ce nombre d'étapes, chaque étape dure `DUREE_ETAPE_MS` (programmes de CM1 – 6e). */
 export const SEUIL_ETAPES_LENTES = 40;
 
