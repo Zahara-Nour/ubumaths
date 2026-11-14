@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2629._
+_Mis à jour le 2026-11-14, lot 2 codé, PR pas encore ouverte._
 
-- **État** : lot 1 mergé (#2623, geste `relier` par défaut + `geste: étiquettes`) ; B11 de `cours-suites` convertie en `associer` (#2629, `geste: étiquettes`), brouillon mis à jour en prod par David et vérifié (délai 60 s, 2 variations, 6 specs). Pas encore de `deploy:prod` · **Prochaine action** : lot 2 — coder dès la phase 0 du lot 2 validée · **En attente de David** : validation de la phase 0 du lot 2 (4 questions) ; relecture de B11 dans l'aperçu s'il le souhaite · **Pièges en cours** : ranger garde ses deux défauts hérités (collision, clés) ; `touch-action: none` sur toute la case (à revoir si le défilement gêne sur iPhone) · **Worktree / branche** : `ubumaths-wt-associer` · `feat/associer-courbe`
+- **État** : lot 2 (` ```courbe ` dans un élément) codé et commité sur `feat/associer-courbe` (pas poussé) ; tests verts (13 725), `check:incremental`, `types:cliquet`, `lint:fast`, garde doc OK ; bug du lot 1 corrigé (associer d'une série imprimé en code) · **Prochaine action** : revue `code-reviewer` (opus) — lancée, résultat perdu si `/clear` : la relancer sur `git diff origin/main...HEAD`, corriger, puis push, PR, CI, merge · **En attente de David** : niveau du modèle « graphique ↔ expression » (pas répondu) ; relecture de B11 s'il le souhaite · **Pièges en cours** : la courbe exige `x:` et `y:` (sinon « Figure indisponible ») ; Typst d'une courbe non compilable en test (cetz, réseau) ; serveur de test : port 5177 (5176 pris) · **Worktree / branche** : `ubumaths-wt-associer` · `feat/associer-courbe`
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -159,3 +159,16 @@ Ensuite (même chantier) : un modèle « graphique ↔ expression » à écrire,
 - 2026-11-14 : B11 de `cours-suites` convertie (branche `feat/associer-b11`) : 2 variations de 4 situations + intrus « ni l'une ni l'autre », `geste: étiquettes` (classement, David : « je te suis »), délai 60 s, 6 specs ; `create-questions --mettre-a-jour` réécrit désormais aussi le délai. Mise à jour du brouillon en prod : par David.
 - 2026-11-14 : #2629 mergée ; `create-questions --publier --mettre-a-jour` lancé par David (1 mis à jour, 29 identiques), vérifié par MCP.
 - 2026-11-14 : lot 2 — worktree `associer` (branche `feat/associer-courbe`), phase 0 écrite.
+- 2026-11-14 : lot 2 codé — parseur (entrées + suite en retrait, `readContinuation`, clôture ````,
+  `ASSOCIER_FENCE_MESSAGE`, `ASSOCIER_MAX_BLOCK_ITEMS` = 6), `serializeAssocierBlock` sur plusieurs
+  lignes, `findAssociersToPlace` garde les lignes intactes (le retrait comptait) et rend `endIndex`,
+  `assignBlankIndices` écarte une courbe à placer dans un associer (message du bloc associer), PDF
+  numéroté + courbe `petite`, série « 1 → étiquette », cadres de réponse (une figure par rangée à courbe),
+  `AssocierContenu.svelte` (courbe ≤ 180 px, sans `pointer-events`), colonne de gauche 1,4 fr quand un
+  élément a un bloc (téléphone : le point ne mord plus la courbe), catalogue (exemple + erreur).
+  Écarts à la phase 0 : les erreurs propres d'une courbe (fenêtre manquante…) s'affichent sur la courbe,
+  pas en « élément N : … » du bloc associer (le parseur ne relit pas la courbe : variables non résolues
+  dans le modèle) ; compilation Typst réelle d'une courbe impossible en test (paquet cetz, réseau).
+  **Bug du lot 1 trouvé et corrigé** : dans l'énoncé d'une série d'automatismes, le bloc associer est
+  dans un item de liste, que `parseContentWithCodeBlocks` lisait en bloc de code (PDF : code brut) ;
+  test rouge sans le correctif.
