@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR 4a revue et prête à ouvrir._
+_Mis à jour le 2026-11-14, après #2651._
 
-- **État** : PR 1 à 3c mergées ; **PR 4a** (logique du geste « programme » tortue, sans écran) revue, correctifs faits, PR ouverte · **Prochaine action** : merger la 4a (CI verte), puis la 4b (écran + PDF + catalogue) · **En attente de David** : avis sur les choix listés au § PR 4a (`montrer:` à `non` par défaut, `forme` = 8 symétries) ; ne publier aucun modèle tortue avant la 4b (pas d'écran pour répondre) · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; programme ≥ 2 000 caractères refusé par `texteVersEtat` → l'écran (4b) doit le refuser avant l'envoi ; `index.ts` de `tortue/` importe Blockly : côté serveur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; ports 5176+ souvent pris · **Worktree / branche** : `ubumaths-wt-blockly`, `feat/blockly-geste-reponse`
+- **État** : PR 1 à 4a mergées (4a = logique du geste « programme » tortue, sans écran, #2651) · **Prochaine action** : PR 4b (écran : blocs dans la carte, corrigé dessiné, aperçu de l'éditeur ; PDF « À faire sur Chiphre » ; catalogue des blocs), nouvelle branche depuis `origin/main` dans le worktree · **En attente de David** : avis sur les choix listés au § PR 4a (`montrer:` à `non` par défaut, `forme` = 8 symétries) ; ne publier aucun modèle tortue avant la 4b (pas d'écran pour répondre) · **Après le prochain `deploy:prod`** : lignes #2627, #2632 et #2634 / 3b / 3c de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; programme ≥ 2 000 caractères refusé par `texteVersEtat` → l'écran (4b) doit le refuser avant l'envoi ; `index.ts` de `tortue/` importe Blockly : côté serveur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` (`pnpm check:integration-paths`) ; ports 5176+ souvent pris · **Worktree / branche** : `ubumaths-wt-blockly`, branche de la 4b à créer
 
 ## Phase 0 — validée par David le 2026-11-14
 
