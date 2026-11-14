@@ -8,7 +8,8 @@
 	 * propose de le retirer du panier. En dessous : la durée et le nombre de répétitions,
 	 * toujours visibles ; leurs boutons − / + n'apparaissent qu'au survol (ou au
 	 * focus clavier, ou toujours sur écran tactile). Un clic sur la tuile ne fait
-	 * rien : tout est déjà dans la flash-card.
+	 * rien : tout est déjà dans la flash-card. Sous la durée : la marque « Durée
+	 * sans doute trop courte » à cette durée (prof, chantier `durees-trop-courtes`).
 	 */
 	import { Button } from '$lib/components/ui/button';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
@@ -18,6 +19,8 @@
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import type { SeriesItem } from '$lib/validation/series';
 	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
+	import type { QuestionTiming } from '$lib/types/evaluation-breakdown';
+	import TooShortMark from '$lib/components/series/TooShortMark.svelte';
 
 	// Bornes et pas de la durée (secondes)
 	const DELAY_STEP = 5;
@@ -36,7 +39,8 @@
 		onIncrementQuantity,
 		onDecrementQuantity,
 		onUpdateDelay,
-		onRemove
+		onRemove,
+		tooShort = null
 	}: {
 		item: SeriesItem;
 		/** Absent : le modèle n'est plus publié */
@@ -46,6 +50,8 @@
 		onDecrementQuantity: (templateId: string) => void;
 		onUpdateDelay: (templateId: string, delay: number) => void;
 		onRemove: (templateId: string) => void;
+		/** Durée courante signalée trop courte (prof seulement) ; null : rien */
+		tooShort?: QuestionTiming | null;
 	} = $props();
 
 	function handleIncrementDelay() {
@@ -153,4 +159,6 @@
 			</Button>
 		</div>
 	</div>
+
+	<TooShortMark timing={tooShort} />
 </div>

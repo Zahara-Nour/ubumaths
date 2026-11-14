@@ -32,6 +32,8 @@
 		type SeriesItem
 	} from '$lib/validation/series';
 	import { templatePreview } from '$lib/questions/catalogue';
+	import { fetchDurationSignals } from '$lib/utils/duration-signals';
+	import { tooShortAt, type DurationSignals } from '$lib/types/duration-signals';
 	import type { TestMode } from '$lib/types/test';
 	import type { PageData } from './$types';
 
@@ -49,6 +51,30 @@
 	let cartItems = $derived(questionCart.allItems);
 	let isEmpty = $derived(cartItems.length === 0);
 	let totalInstances = $derived(questionCart.totalInstances);
+
+	// Durées trop courtes chez les élèves du prof (chantier `durees-trop-courtes`)
+	let durationSignals = $state<DurationSignals | null>(null);
+	let signalTemplateIds = $derived(
+		isTeacher ? [...new Set(cartItems.map((i) => i.templateId))].sort().join(',') : ''
+	);
+
+	// Relu quand les modèles du panier changent (pas la durée : l'entrée se choisit ici)
+	$effect(() => {
+		const ids = signalTemplateIds;
+		if (!ids) {
+			durationSignals = null;
+			return;
+		}
+		// Pas de marque périmée pendant la lecture
+		durationSignals = null;
+		let cancelled = false;
+		void fetchDurationSignals(ids.split(',')).then((signals) => {
+			if (!cancelled) durationSignals = signals;
+		});
+		return () => {
+			cancelled = true;
+		};
+	});
 
 	// Test dialog state
 	let testDialogOpen = $state(false);
@@ -281,6 +307,7 @@
 							onDecrementQuantity={handleDecrementQuantity}
 							onUpdateDelay={handleUpdateDelay}
 							onRemove={handleRemove}
+							tooShort={tooShortAt(durationSignals, item.templateId, item.delay)}
 						/>
 					{/each}
 				</div>

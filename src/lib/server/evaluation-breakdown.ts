@@ -59,7 +59,7 @@ export interface SessionRow {
 	completed_at: string | null;
 }
 
-interface AnswerRow {
+export interface AnswerRow {
 	test_session_id: string;
 	template_id: string | null;
 	status: string | null;
@@ -161,11 +161,11 @@ function withRate<T extends BreakdownTally>(tally: T): T {
  * Meilleure copie rendue de chaque élève. Ordre : note la plus haute, puis une
  * copie avec réponses (une copie en retard n'en a aucune), puis la plus récente.
  */
-export function bestCopies(
-	sessions: ReadonlyArray<SessionRow>,
+export function bestCopies<S extends SessionRow>(
+	sessions: ReadonlyArray<S>,
 	answeredSessions: ReadonlySet<string>
-): SessionRow[] {
-	const best = new Map<string, SessionRow>();
+): S[] {
+	const best = new Map<string, S>();
 	const better = (a: SessionRow, b: SessionRow): boolean => {
 		const gradeA = a.grade === null ? -Infinity : Number(a.grade);
 		const gradeB = b.grade === null ? -Infinity : Number(b.grade);
@@ -217,7 +217,7 @@ function delayOf(item: { delay?: number }): number {
  * Modèle → sa durée dans la série ; null quand il est sur deux lignes à durées
  * différentes (D1 : la durée de chaque élève n'est pas lisible ici).
  */
-function delaysByTemplate(items: BreakdownInput['items']): Map<string, number | null> {
+export function delaysByTemplate(items: BreakdownInput['items']): Map<string, number | null> {
 	const delays = new Map<string, number | null>();
 	for (const item of items) {
 		const delay = delayOf(item);
@@ -228,7 +228,10 @@ function delaysByTemplate(items: BreakdownInput['items']): Map<string, number | 
 }
 
 /** Laissée sans réponse jusqu'au bout du chrono (secondes entières déclarées) */
-function unansweredInTime(answer: AnswerRow, delaySeconds: number): boolean {
+export function unansweredInTime(
+	answer: Pick<AnswerRow, 'status' | 'time_spent'>,
+	delaySeconds: number
+): boolean {
 	if (columnOf(answer.status) !== 'empty' || answer.time_spent === null) return false;
 	return Number(answer.time_spent) >= delaySeconds - 1;
 }
