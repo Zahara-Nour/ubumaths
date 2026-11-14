@@ -22,7 +22,7 @@ l'algorithme 434 (Newton en Python) ni 571 l'algorithme 393 (Héron en Python) :
 pour 396, preuve de la convergence pour 571 ; 396 prend f(x) = x³ − A, pour ne pas retomber sur
 Héron (f(x) = x² − A).
 
-    python3 docs/wip/questions/lot-tspe-approfondissements-11.py scripts/questions/tspe-approfondissements-11
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-11.py scripts/questions/tspe-approfondissements-11
 """
 import json
 import os

@@ -20,7 +20,7 @@ bonne, variation « étapes à ranger », positions calculées par le générate
 Pièges : pas de variable `e` ni `i` (lues comme le nombre d'Euler et l'imaginaire) ; un
 coefficient tiré devant une lettre passe par `cf()` (`1x` n'est pas nettoyé dans f(x) = …).
 
-    python3 docs/wip/questions/lot-tspe-approfondissements-14.py scripts/questions/tspe-approfondissements-14
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-14.py scripts/questions/tspe-approfondissements-14
 """
 import json
 import os

@@ -25,7 +25,7 @@ Pièges : pas de variable `e` ni `i` (lues comme le nombre d'Euler et l'imaginai
 décimale exige `blankDefaults.acceptDecimal` (sinon « bad_form ») ; les valeurs tirées gardent
 les décimaux exacts (p = L/(1000 × 2ʲ), δ = d/20).
 
-    python3 docs/wip/questions/lot-tspe-approfondissements-15.py scripts/questions/tspe-approfondissements-15
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-15.py scripts/questions/tspe-approfondissements-15
 """
 import json
 import os

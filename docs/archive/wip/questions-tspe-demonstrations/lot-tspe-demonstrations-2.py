@@ -19,7 +19,7 @@ Niveaux : après ceux déjà présents sur la sous-notion (relevé prod du 2026-
 monotone 1-2, suites géométriques 1-2, comparaison et encadrement 1-2, croissances comparées 3-4 ;
 405 après 391 sur la même sous-notion).
 
-    python3 docs/wip/questions/lot-tspe-demonstrations-2.py scripts/questions/tspe-demonstrations-2
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-demonstrations-2.py scripts/questions/tspe-demonstrations-2
 """
 import json
 import os

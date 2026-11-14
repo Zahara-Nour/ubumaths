@@ -17,7 +17,7 @@ prod (relevé du 2026-11-14 : 3 au plus sur « positions relatives et intersecti
 Forme (D3, Q2) : applications à valeurs tirées, cases et cases choix (4 propositions, la première
 est la bonne). `shared.cleanCoefficients` nettoie les équations (« 1x », « +(-3)z », « 0z »).
 
-    python3 docs/wip/questions/lot-tspe-approfondissements-10.py scripts/questions/tspe-approfondissements-10
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-10.py scripts/questions/tspe-approfondissements-10
 """
 import json
 import os

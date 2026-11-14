@@ -19,7 +19,7 @@ bonne, variation « étapes à ranger », positions calculées par le générate
 et 362 sont des applications à valeurs tirées. La formule des coordonnées du barycentre est donnée
 dans l'énoncé (approfondissement : le BO ne la demande pas).
 
-    python3 docs/wip/questions/lot-tspe-approfondissements-9.py scripts/questions/tspe-approfondissements-9
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-9.py scripts/questions/tspe-approfondissements-9
 """
 import json
 import os

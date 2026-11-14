@@ -2,23 +2,19 @@
 
 > Suite du chantier clos `questions-tspe` (journaux `docs/archive/wip/questions-tspe*-progress.md` ; sa Q4 mettait
 > les 68 points P hors chantier). Modèles suivis : `questions-1spe-demonstrations` (archivé, D1-D13) et
-> `questions-2de-demonstrations` (D1-D5). Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md).
-> Bornes et couverture : [tspe.md](../systeme/programmes/bornes/lycee/tspe.md) ; BO :
+> `questions-2de-demonstrations` (D1-D5). Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md).
+> Bornes et couverture : [tspe.md](../../systeme/programmes/bornes/lycee/tspe.md) ; BO :
 > `src/lib/server/programmes/transcriptions/T_SPE.md`. En base, le niveau est `T_SPE`.
 > Ouvert le 2026-11-11 (David : « comme pour la classe de première et la classe de seconde, il va falloir traiter
 > la classe P »).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après la publication du lot 15 (§ 65)._
+_Mis à jour le 2026-11-14 : chantier **clos** (go de David)._
 
-- **État** : lots 1 à 15 publiés ; découpage recompté en base (§ 65) : les 78 points P de `T_SPE` ont un modèle
-  publié, 0 brouillon, 342 modèles `T_SPE` (274 + 68).
-- **Prochaine action** : clôture, si David la valide : versement du bilan dans `tspe.md`, journal archivé,
-  worktree retiré.
-- **En attente de David** : go pour la clôture.
-- **Pièges en cours** : aucun (chantier terminé).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` (HEAD détaché sur `origin/main`, propre).
+- **État** : clos ; les 68 points P de `T_SPE` ont leur modèle publié (§ 65). Bilan versé dans
+  [tspe.md](../../systeme/programmes/bornes/lycee/tspe.md) ; scripts des lots dans
+  `docs/archive/wip/questions-tspe-demonstrations/`. Plus rien à faire.
 
 ---
 
@@ -132,7 +128,7 @@ sous-notion existante du point, aucun nœud neuf (321 et 548 : deux modèles) ; 
 | 373   | `04-demontrer-equation-cartesienne-plan`            | 4      | M ∈ P ⟺ AM·n = 0 (choix), d (case, A et n tirés de 1 à 6 / 2 à 5), repère orthonormé (choix), étapes (4)            |
 
 Niveaux : après ceux déjà présents sur la sous-notion (relevé prod : triangle de Pascal 3-4, projeté orthogonal 2-5,
-vecteur normal et équation cartésienne 1-3). Script : `docs/wip/questions/lot-tspe-demonstrations-1.py`. Étapes
+vecteur normal et équation cartésienne 1-3). Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-demonstrations-1.py`. Étapes
 interchangeables évitées : « Soit N » (359) et « Soit M » (373) passés dans l'énoncé, « Les autres… » (548) et « Or… »
 (359) pour fixer l'ordre.
 
@@ -187,7 +183,7 @@ Verdicts lus : 4/4 « ok », sans commentaire. `publier-lot.ts` en simulation (4
 
 Niveaux : après ceux déjà présents sur la sous-notion (relevé prod du 2026-11-11 : convergence monotone 1-2, suites
 géométriques 1-2, comparaison et encadrement 1-2, croissances comparées 3-4 ; 405 après 391). Aucun tag sur ces
-points. Script : `docs/wip/questions/lot-tspe-demonstrations-2.py`.
+points. Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-demonstrations-2.py`.
 
 Vérifié : `question:specs` 150 tirages par variation, 5/5 importables, 73 specs vertes, 0 `\textcolor` hors `$` ;
 4 296 formules des aperçus (483 distinctes) passées à `validateLatex` + accolades, 0 problème ; brouillons en base
@@ -247,7 +243,7 @@ Niveaux : après ceux déjà présents sur le nœud (relevé prod du 2026-11-11 
 1-2, croissances comparées 3-6 (391 et 405 compris), primitives : notion 1-4, y′ = ay 1). Aucun tag sur ces points.
 **TSPE-472 est posé sur la notion « Équations différentielles › y′ = ay »**, qui n'a pas de sous-notion (un modèle
 publié y est déjà) : la migration de rangement visera ce nœud à deux niveaux. Script :
-`docs/wip/questions/lot-tspe-demonstrations-3.py`.
+`docs/archive/wip/questions-tspe-demonstrations/lot-tspe-demonstrations-3.py`.
 
 Vérifié : `create-questions` en simulation 5/5 (69 specs vertes) ; `question:specs` 150 tirages par variation, 5/5
 importables, 0 `\textcolor` hors `$` ; 4 848 formules des aperçus passées à `validateLatex` + accolades, 0 problème ;
@@ -305,7 +301,7 @@ le contrôle), puis `--publier` lancé par David : 5/5 publiés, statut relu en 
 Niveaux : après ceux déjà présents sur la sous-notion (relevé prod du 2026-11-12 : dérivée d'une fonction intégrale
 2-3, intégration par parties 1-3, expression de la loi 1-6, espérance et variance 1-2 ; 623 après 528). Les 5 points
 sont sur une sous-notion, aucun tagué. Q3 : pour 528 et 623, la variation d'exemple tire n et p (k n'y a pas de
-sens). Script : `docs/wip/questions/lot-tspe-demonstrations-4.py`.
+sens). Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-demonstrations-4.py`.
 
 Vérifié : `create-questions` en simulation 5/5 (72 specs vertes) ; `question:specs` 150 tirages par variation, 5/5
 importables, 0 `\textcolor` hors `$` ; 3 916 formules des aperçus (439 distinctes) passées à `validateLatex` +
@@ -436,7 +432,7 @@ modèle (√2, φ, e) ; accès : personne de plus ; publication comme les démon
 | 592   | `04-methode-de-la-secante`                       | Continuité › encadrement d'une solution, 6  | `secante(1, 3, 1)` sur x² − c = (3 + c)/4 (case) ; ligne de la sécante (choix) ; que représente x (choix)      |
 | 450   | `05-algorithme-de-briggs`                        | Logarithmes › propriétés algébriques, 3     | `briggs(q^(2^n), n)` = 2ⁿ(q − 1) (case) ; `return 2**n * (x - 1)` (choix) ; ln √x = ½ ln x (choix)             |
 
-Script : `docs/wip/questions/lot-tspe-algorithmes-5.py`. Le titre « Méthode de Newton en Python » existe déjà en prod au
+Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-algorithmes-5.py`. Le titre « Méthode de Newton en Python » existe déjà en prod au
 niveau 5 (`2286c302`, 1re) : `create-questions` aurait bloqué le lot. Le modèle s'appelle donc « … : racine cubique ».
 Dichotomie : les étapes du corrigé passent par `{{if}}` sur le signe de f(m) ; a et b finaux par `floor(4*sqrt(c))/4`.
 
@@ -504,7 +500,7 @@ vide) ; Monte-Carlo sur x³ et le rectangle [0 ; 2] × [0 ; 8] (pas la parabole 
 | 500   | `04-algorithme-de-brouncker`                     | méthode des rectangles, 5        | `brouncker(n)`, n ∈ {2, 3} → 7/12, 37/60 (case) ; `1 / ((2*k - 1) * (2*k))` ; ln 2 (choix)   |
 | 499   | `05-methode-de-monte-carlo`                      | Intégrale et aire › aire alg., 3 | décompte c donné → 16c/1000 (case) ; `if y <= f(x):` (choix) ; c/N → 1/4 (choix)             |
 
-Script : `docs/wip/questions/lot-tspe-algorithmes-6.py`. Pièges : en spec, une variable passée en décimal (`r: 0.375`)
+Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-algorithmes-6.py`. Pièges : en spec, une variable passée en décimal (`r: 0.375`)
 impose la forme décimale : passer les fractions en chaîne (`'3/8'`) ; un décimal exact là où la fraction est attendue
 rend `bad_form` (spec avec `constraintViolations: ['form']`). Euler : y0 ∈ {0, 4, 5}, car a = −1, b = y0 tombait sur
 l'équilibre (y constant), vu à l'écran.
@@ -577,7 +573,7 @@ niveaux juste au-dessus de l'existant ; 324 (a) compte les listes (n!), sans dem
 | 514   | `03-probleme-de-la-surreservation`               | intervalle de fluctuation, 3    | table de P(X ⩽ k), B(80 ; 0,9), α ∈ {0,2 ; 0,1 ; 0,05 ; 0,01} → 74, 75, 76, 78 (case) ; `while 1 - F(k) > alpha:` ; sens de k |
 | 515   | `04-simuler-un-echantillon`                      | échantillons, 4                 | `if random() < 0.3:` (choix) ; `S = S + X()` (choix) ; moyenne d'un grand échantillon → E(X)                                  |
 
-Script : `docs/wip/questions/lot-tspe-algorithmes-7.py`. Dans le code Python, un décimal s'écrit en dur ou par
+Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-algorithmes-7.py`. Dans le code Python, un décimal s'écrit en dur ou par
 `{{if}}` (α de 514), jamais par `{{eval}}`. Les `{{if}}` imbriqués à branches `0{,}6995` passent. Table de 514
 calculée en Python (`math.comb`). Choix de 514 (c) : la bonne réponse raccourcie (elle se trahissait par sa longueur) ;
 515 (c) : quatre nombres nus (pas « E(X) = » sur deux d'entre eux seulement).
@@ -651,7 +647,7 @@ seulement ; 536 sans les proportions 0,68 / 0,95 / 0,997 (approximation normale,
 dans la table arrondie à 10⁻⁴ (0,0212 ; 0,0432) diffère de la valeur exacte arrondie (0,0213 ; 0,0433). Le script le
 vérifie (`assert`). Table écrite à 4 décimales (`0{,}0300`, pas `0{,}03`).
 
-Script : `docs/wip/questions/lot-tspe-algorithmes-8.py`. 536 : X vaut 10 − σ ou 10 + σ, avec la probabilité 1/2 chacune
+Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-algorithmes-8.py`. 536 : X vaut 10 − σ ou 10 + σ, avec la probabilité 1/2 chacune
 (espérance 10, écart type σ). Un `\textcolor` sur du texte du corrigé va dans `$\text{…}$`.
 
 Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (52 specs vertes), 0 `\textcolor` hors `$` ;
@@ -796,7 +792,7 @@ de plus ; publication comme les lots 1 à 8.
 
 Poids tirés de 2 à 5 partout où ils s'affichent (un poids 1 s'écrivait « 1 GA », vu dans les aperçus) ; 340 (b) :
 G et A, B tirés, C calculé pour que G soit le barycentre de (A ; a), (B ; b), (C ; 1), coordonnées entières.
-Script : `docs/wip/questions/lot-tspe-approfondissements-9.py`.
+Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-9.py`.
 
 Vérifié : `question:specs` 150 tirages par variation, 4/4 importables (52 specs vertes), 0 `\textcolor` hors `$` ;
 3 062 formules des aperçus (357 distinctes) passées à `validateLatex` + accolades, 0 problème ; titres sans homonyme en
@@ -839,7 +835,7 @@ lancés par David. Relu en base (MCP) : 4 `published`.
 
 Niveaux au-dessus de ceux de la prod (relevé MCP du 2026-11-14 : 3 au plus sur « positions relatives et
 intersections », 4 sur « sphère ») ; `shared.cleanCoefficients`. Script :
-`docs/wip/questions/lot-tspe-approfondissements-10.py`.
+`docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-10.py`.
 
 Défauts vus dans les aperçus et corrigés : variable `e` lue comme le nombre d'Euler (renommée `f`) ; le nettoyage ne
 reconnaît pas le nom `\mathcal{P}'` (prime) devant une équation, d'où `x-y+(-1)z` : second plan nommé `\mathcal{Q}` ;
@@ -883,7 +879,7 @@ lancés par David. Relu en base (MCP) : 4 `published`.
 
 Niveaux au-dessus de la prod (relevé MCP du 2026-11-14 : 4 au plus sur « convergence monotone », 3 sur « point
 fixe ») ; 395 au niveau 1, sa sous-notion étant neuve et vide. 396 prend f(x) = x³ − A pour ne pas retomber sur
-Héron. Script : `docs/wip/questions/lot-tspe-approfondissements-11.py`.
+Héron. Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-11.py`.
 
 Défauts vus dans les aperçus et corrigés : √8, √12… non simplifiés (A sans facteur carré pour 571) ; la variation
 « limite » de 571 donnait la réponse dans l'énoncé (« minorée par √A ») : elle demande désormais ℓ, minorée par 0 ;
@@ -935,7 +931,7 @@ lancés par David. Relu en base (MCP) : 4 `published`.
 
 Relevé MCP du 2026-11-14 : 406 et 584 sur « asymptotes » (niveau 1 au plus), 435 sur « valeurs intermédiaires »
 (2 au plus), 437 sur « continuité en un point » (2 au plus), 436 sur la notion Continuité ; aucun modèle tagué sur ces
-points. Script : `docs/wip/questions/lot-tspe-approfondissements-12.py`.
+points. Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-12.py`.
 
 Défauts vus dans les aperçus et corrigés : couleur hors `$` (« la courbe a \textcolor… », « adjacentes ») ;
 coefficient 1 ou −1 laissé dans une formule `f(x)=…` ou `f(x)-(…)` (`1x`, `1\ln(x)`, `1\sqrt{x}`) : le nettoyage ne
@@ -985,7 +981,7 @@ Verdicts lus : 5/5 « ok », sans commentaire (ids = ceux du § 49). Relu en bas
 | 460   | `06-fonction-tangente`                                   | Fonctions trigonométriques › dérivées et variations, 5 | parité, période (choix) ; tan′ = 1/cos² ; tan′ en π/6, π/4, π/3 ; tangente en π/4 ; variations (choix) |
 
 Relevé MCP du 2026-11-14 : aucun modèle tagué sur ces six points ; niveaux publiés au plus 3, 7, 4, 3, 8, 4 sur les
-sous-notions visées (pas de plafond de niveau en base). Script : `docs/wip/questions/lot-tspe-approfondissements-13.py`.
+sous-notions visées (pas de plafond de niveau en base). Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-13.py`.
 
 Piège neuf : **pas de variable `i`** (lue comme l'imaginaire, comme `e` pour Euler) : `{{if:i==0|…}}` ne valait jamais
 vrai, le tirage restait sur π/3 ; renommée `r`. Défaut vu dans les aperçus et corrigé : `n=\dfrac{-5}{h}` dans le
@@ -1045,7 +1041,7 @@ fichiers (ids du § 53). Le piège du § 54 (« `publier-lot.ts` apparie par tit
 | 497   | `03-encadrement-de-hn-par-des-integrales`                | Calcul d'intégrales › positivité et inégalités, 4 | intégrer 1/(k+1) ≤ 1/t ≤ 1/k (choix) ; ln(N + 1) ≤ H_N ; H_N − 1 ≤ ln(N) ; H_n/ln(n) → 1 ; ranger (5)          |
 
 Relevé MCP du 2026-11-14 : les trois points actifs, chacun sur la sous-notion du modèle, aucun modèle tagué dessus ;
-niveaux publiés au plus 1, 5, 3. Script : `docs/wip/questions/lot-tspe-approfondissements-14.py`.
+niveaux publiés au plus 1, 5, 3. Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-14.py`.
 
 Défauts vus dans les aperçus et corrigés : `g'=-1g` dans la conclusion en couleur (473, r = 1 : `cf()`) ; `1\times
 10^{2}` (496, a = 1) ; « inégalités de droite / de gauche » de 497 se heurtaient au « à gauche » du corrigé : les
@@ -1092,7 +1088,7 @@ David. Relu en base (MCP) : 3 `published`.
 
 Relevé MCP du 2026-11-14 : les cinq points actifs, aucun modèle tagué dessus ; 517 sur la notion Autres lois (pas de
 sous-notion « loi de Poisson » en prod), les quatre autres sur la sous-notion du modèle ; niveaux publiés au plus —,
-3, —, 5, 2. Aucun des cinq titres pris en prod (MCP). Script : `docs/wip/questions/lot-tspe-approfondissements-15.py`.
+3, —, 5, 2. Aucun des cinq titres pris en prod (MCP). Script : `docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-15.py`.
 
 Piège neuf : une réponse décimale (`0,3`) est « bad_form » sans `shared.blankDefaults.acceptDecimal` (vu sur les
 modèles de 1re spé ; le gabarit du lot 14 ne le portait pas). Défauts vus dans les aperçus et corrigés :

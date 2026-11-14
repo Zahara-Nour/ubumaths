@@ -20,7 +20,7 @@ l'affichage), (c) interpréter. Valeurs calculables à la main. 393 : une variat
 Gabarits remplis par `replace`, jamais par `format` (format mange les accolades de {{eval:…}}).
 Variables : jamais `e` ni `E` (constante d'Euler), ni `i`.
 
-    python3 docs/wip/questions/lot-tspe-algorithmes-5.py scripts/questions/tspe-algorithmes-5
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-algorithmes-5.py scripts/questions/tspe-algorithmes-5
 """
 import json
 import os

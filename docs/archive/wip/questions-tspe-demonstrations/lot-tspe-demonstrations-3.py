@@ -19,7 +19,7 @@ Niveaux : après ceux déjà présents sur le nœud (relevé prod du 2026-11-11 
 convexité 3, dérivée de ln 1-2, croissances comparées 3-6, primitives : notion 1-4, y′ = ay 1).
 TSPE-472 est posé sur la NOTION « y′ = ay », qui n'a pas de sous-notion : le modèle y va.
 
-    python3 docs/wip/questions/lot-tspe-demonstrations-3.py scripts/questions/tspe-demonstrations-3
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-demonstrations-3.py scripts/questions/tspe-demonstrations-3
 """
 import json
 import os

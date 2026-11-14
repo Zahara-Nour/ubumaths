@@ -17,7 +17,7 @@ chiffré), A et n pour 373 ; lettres ailleurs.
 Niveaux : après ceux déjà présents sur la sous-notion (relevé prod du 2026-11-11 : triangle de
 Pascal 3-4, projeté orthogonal 2-5, vecteur normal et équation cartésienne 1-3).
 
-    python3 docs/wip/questions/lot-tspe-demonstrations-1.py scripts/questions/tspe-demonstrations-1
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-demonstrations-1.py scripts/questions/tspe-demonstrations-1
 """
 import json
 import os

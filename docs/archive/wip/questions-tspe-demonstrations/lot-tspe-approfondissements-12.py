@@ -25,7 +25,7 @@ Pièges : pas de variable `e` (lue comme le nombre d'Euler) ; un coefficient tir
 ne vaut jamais ±1 (`e^{1x}` ne serait pas nettoyé) ; le numérateur d'une fraction tirée reste
 positif (`+\\dfrac{-3}{…}` ne serait pas nettoyé).
 
-    python3 docs/wip/questions/lot-tspe-approfondissements-12.py scripts/questions/tspe-approfondissements-12
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-12.py scripts/questions/tspe-approfondissements-12
 """
 import json
 import os

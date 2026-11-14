@@ -19,7 +19,7 @@ Niveaux : après ceux déjà présents sur le nœud (relevé prod du 2026-11-12 
 intégrale 2-3, intégration par parties 1-3, expression de la loi 1-6, espérance et variance 1-2 ;
 623 après 528).
 
-    python3 docs/wip/questions/lot-tspe-demonstrations-4.py scripts/questions/tspe-demonstrations-4
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-demonstrations-4.py scripts/questions/tspe-demonstrations-4
 """
 import json
 import os

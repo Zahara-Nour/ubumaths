@@ -24,7 +24,7 @@ Pièges : pas de variable `e` ni `i` (lues comme le nombre d'Euler et l'imaginai
 ne vaut jamais ±1 (`e^{1x}` ne serait pas nettoyé) ; le numérateur d'une fraction tirée reste
 positif (signe sorti de la fraction).
 
-    python3 docs/wip/questions/lot-tspe-approfondissements-13.py scripts/questions/tspe-approfondissements-13
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-approfondissements-13.py scripts/questions/tspe-approfondissements-13
 """
 import json
 import os

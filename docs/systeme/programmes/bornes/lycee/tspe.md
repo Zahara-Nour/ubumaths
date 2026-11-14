@@ -41,16 +41,28 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 
 - **TSPE-444** : le BO dit « de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme, et la partie exponentielle n'a aucun point en terminale.
 
-## Couverture en modèles de questions (prod, 2026-11-06)
+## Couverture en modèles de questions (prod, 2026-11-14)
 
 Chantier `questions-tspe` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), clos le
 2026-11-03 ; journaux dans `docs/archive/wip/questions-tspe*-progress.md` (index + sous-chantiers `proba`,
-`espace`, `restes`, `lot9`) ; 334 couvert ensuite par les chantiers `solide-vecteur` et `tetraedre-vue`.
+`espace`, `restes`, `lot9`) ; 334 couvert ensuite par les chantiers `solide-vecteur` et `tetraedre-vue` ; les
+points P par `questions-tspe-demonstrations` (2026-11-11 au 2026-11-14, journal
+`docs/archive/wip/questions-tspe-demonstrations-progress.md`).
 
-- **274 modèles publiés** de niveau `T_SPE`, aucun brouillon ; **227 points sur 326** ont au moins un modèle publié.
-- **99 points sans modèle, tous voulus** :
-  - **P** (68) — 19 démonstrations, 18 algorithmes, 31 savoir-faire d'approfondissement : hors questions (les
-    modèles d'approfondissement déjà écrits, 322, 323, 325, 360, 375, 376, ont été publiés avec leur thème).
+- **342 modèles publiés** de niveau `T_SPE`, aucun brouillon ; **295 points sur 326** ont au moins un modèle publié
+  (relevé MCP du 2026-11-14).
+- **Points P** : tous couverts (20 démonstrations, 22 algorithmes, 36 savoir-faire d'approfondissement). Les 68 qui
+  n'avaient pas de modèle l'ont reçu de `questions-tspe-demonstrations`, un modèle par point, tagué sur son point
+  (ADR 0020), en 15 lots :
+  - **19 démonstrations** (lots 1-4 : 321, 548, 359, 373, 388-391, 405, 421, 448, 449, 471, 472, 494, 495, 512,
+    528, 623) : démonstration à trous (étape clé en case, ou justification en case choix à 4 propositions), plus une
+    variation « étapes à ranger » (bloc ` ```ranger `, `signe: aucun`) ; 321 et 548 en deux modèles distincts.
+  - **18 algorithmes** (lots 5-8) : programme Python à lire, compléter ou corriger (forme D9 de la 1re), jamais
+    de programme aléatoire à faire tourner (table de valeurs donnée pour 514 et 534) ; 393 en un modèle (√2, φ, e).
+  - **31 approfondissements** (lots 9-15) : preuves traitées comme les démonstrations, le reste en exercices
+    d'application à valeurs tirées. Sous-notions posées par migration : « récurrence linéaire d'ordre 2 » (Suites
+    récurrentes, 395) et « loi de Poisson » (Autres lois, 517).
+- **31 points sans modèle, tous voulus** :
   - **Couverts par leur voisin** (31) — même savoir-faire sur deux lignes du BO, ou notion dont le savoir-faire
     voisin est la seule épreuve : 301, 540 → 306 ; 544 → 541 ; 547 → 316 ; 317 → 318 ; 326, 327, 328, 330 → 550,
     333 ; 342 → 345 ; 348 → 357 ; 349 → 565 ; 560 → 367 ; 350 → 370 ; 561 → 369 ; 363 → 365 ; 397, 572, 573 → 415 ;

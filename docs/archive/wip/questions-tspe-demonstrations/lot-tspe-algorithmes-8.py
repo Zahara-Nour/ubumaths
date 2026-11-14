@@ -23,7 +23,7 @@ Gabarits remplis par `replace`, jamais par `format` (format mange les accolades 
 Variables : jamais `e` ni `E` (constante d'Euler), ni `i`. Dans le code Python, un décimal est
 écrit en dur ou par {{if:…}} (jamais par {{eval}}, qui l'écrirait avec une virgule).
 
-    python3 docs/wip/questions/lot-tspe-algorithmes-8.py scripts/questions/tspe-algorithmes-8
+    python3 docs/archive/wip/questions-tspe-demonstrations/lot-tspe-algorithmes-8.py scripts/questions/tspe-algorithmes-8
 """
 import json
 import os
