@@ -10,14 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 11 écrit et vu à l'écran (§ 44), PR des fichiers ouverte._
+_Mis à jour le 2026-11-14, après #2628 (fichiers du lot 11)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 et 10 publiés, lot 11 écrit et vérifié (§ 44), 19 restants après lui.
-- **Prochaine action** : lot 11, PR des fichiers (branche `feat/questions-tspe-approfondissements-11`) : CI, merge ;
-  puis David lance `create-questions --publier` ; migration de rangement avec la **sous-notion neuve** « récurrence
+  § 35, lots 9 à 15) : lots 9 et 10 publiés, lot 11 en fichiers sur `main` (#2628, § 44), 19 restants après lui.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/tspe-approfondissements-11 --publier`
+  depuis le dépôt principal ; puis migration de rangement avec la **sous-notion neuve** « récurrence
   linéaire d'ordre 2 » (Suites récurrentes, 395), comme D4 de la 1re.
-- **En attente de David** : rien.
+- **En attente de David** : `create-questions --publier` du lot 11.
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
