@@ -167,6 +167,54 @@ describe('Associer, relier — le geste', () => {
 		await expect.poll(() => probe.values[0]).toBe('');
 	});
 
+	it('un point déjà relié reste au-dessus de son trait : on le touche, on y lâche', async () => {
+		const { probe, answers } = answersProbe(3);
+		const screen = await render(AssocierPlacer, {
+			target: mainElement(),
+			props: { node: shown(ITEMS, LABELS), answers: answers() }
+		});
+		const root = screen.container;
+		await userEvent.click(itemCases(root)[0]);
+		await userEvent.click(labelCases(root)[1]);
+		await expect.poll(() => traits(root)).toHaveLength(1);
+		// Au centre de chaque point relié, c'est la case qui reçoit le doigt, pas la zone du trait
+		const dots = [
+			root.querySelectorAll('[data-relier-point="item"]')[0],
+			root.querySelectorAll('[data-relier-point="label"]')[1]
+		];
+		for (const dot of dots) {
+			const { clientX, clientY } = centerOf(dot);
+			expect(document.elementFromPoint(clientX, clientY)?.closest('[data-relier-case]')).toBe(
+				dot.closest('[data-relier-case]')
+			);
+		}
+		// Toucher le point de l'étiquette reliée la prend (sans effacer le trait), puis relier l'élément 3
+		await userEvent.click(labelCases(root)[1]);
+		await userEvent.click(itemCases(root)[2]);
+		await expect.poll(() => probe.values).toEqual(['1', '', '1']);
+		// Glisser vers le point d'une étiquette reliée : posé
+		drag(itemCases(root)[1], labelCases(root)[1]);
+		await expect.poll(() => probe.values).toEqual(['1', '1', '1']);
+	});
+
+	it('un toucher qui bouge un peu sur la même case compte comme un toucher', async () => {
+		const { probe, answers } = answersProbe(3);
+		const screen = await render(AssocierPlacer, {
+			target: mainElement(),
+			props: { node: shown(ITEMS, LABELS), answers: answers() }
+		});
+		const root = screen.container;
+		const item = itemCases(root)[0];
+		const start = centerOf(item);
+		const moved = { ...start, clientX: start.clientX + 12 };
+		item.dispatchEvent(new PointerEvent('pointerdown', start));
+		window.dispatchEvent(new PointerEvent('pointermove', moved));
+		window.dispatchEvent(new PointerEvent('pointerup', moved));
+		item.click();
+		await userEvent.click(labelCases(root)[2]);
+		await expect.poll(() => probe.values[0]).toBe('2');
+	});
+
 	it('glisser d’un point à l’autre, dans les deux sens', async () => {
 		const { probe, answers } = answersProbe(3);
 		const screen = await render(AssocierPlacer, {
@@ -210,6 +258,32 @@ describe('Associer, relier — le geste', () => {
 		await userEvent.keyboard('{ArrowDown}');
 		await userEvent.keyboard('{Enter}');
 		await expect.poll(() => probe.values).toEqual(['', '2', '']);
+	});
+
+	it('clavier : Entrée sur un élément relié le reprend, Suppr efface ; changement annoncé', async () => {
+		const { probe, answers } = answersProbe(3);
+		const screen = await render(AssocierPlacer, {
+			target: mainElement(),
+			props: { node: shown(ITEMS, LABELS), answers: answers() }
+		});
+		const root = screen.container;
+		itemCases(root)[0].focus();
+		await userEvent.keyboard('{Enter}');
+		await userEvent.keyboard('{ArrowRight}');
+		await userEvent.keyboard('{Enter}');
+		await expect.poll(() => probe.values[0]).toBe('0');
+		await expect
+			.poll(() => root.querySelector('[role="status"]')?.textContent?.trim())
+			.toBe('Élément 1 relié à l’étiquette 1');
+		itemCases(root)[0].focus();
+		await userEvent.keyboard('{Enter}');
+		await userEvent.keyboard('{ArrowRight}');
+		await userEvent.keyboard('{ArrowDown}');
+		await userEvent.keyboard('{Enter}');
+		await expect.poll(() => probe.values[0]).toBe('1');
+		itemCases(root)[0].focus();
+		await userEvent.keyboard('{Delete}');
+		await expect.poll(() => probe.values[0]).toBe('');
 	});
 
 	it('noms accessibles : jamais la bonne étiquette', async () => {

@@ -15,8 +15,11 @@
 	- Un trait par élément (un nouveau remplace l'ancien) ; plusieurs traits possibles
 	  vers une même étiquette.
 	- Toucher un trait, ou la case d'un élément relié (rien de pris), efface son trait.
+	  Les cases sont au-dessus des traits : la zone d'un trait ne masque jamais un point.
 	- Clavier : Tab, flèches (↑ ↓ dans une colonne, ← → d'une colonne à l'autre),
-	  Entrée (prendre, relier), Échap (lâcher).
+	  Entrée (prendre, relier ; un élément relié est repris, pas effacé), Suppr ou
+	  Retour arrière (effacer le trait de l'élément), Échap (lâcher). Chaque changement
+	  est dit dans une région `role="status"` toujours présente.
 	- Nom accessible : « Élément 1 sur 3, relié à l'étiquette 2 » — jamais la bonne
 	  étiquette.
 	- Dans une question (`answers`, une case par élément) : la réponse de chaque élément
@@ -54,8 +57,8 @@
 	let { node, answers, expected, showControls = true, class: className = '' }: Props = $props();
 
 	// Constantes
-	/** Au-delà, un appui devient un glissement (px) */
-	const DRAG_THRESHOLD = 6;
+	/** Au-delà, un appui devient un glissement (px) : un doigt bouge un peu en touchant */
+	const DRAG_THRESHOLD = 10;
 
 	const uid = $props.id();
 
@@ -74,6 +77,14 @@
 	let locked = $derived((answers?.[0]?.disabled ?? false) || !showControls);
 	/** Case prise (toucher, Entrée), en attente d'une case de l'autre colonne */
 	let selected = $state<{ side: Side; index: number } | null>(null);
+	/** La case prise, si elle compte encore (ni verrouillé, ni hors du bloc après une modification) */
+	let active = $derived.by(() => {
+		if (locked || !selected) return null;
+		const limit = selected.side === 'item' ? count : labelCount;
+		return selected.index < limit ? selected : null;
+	});
+	/** Dernier changement, lu par un lecteur d'écran (région toujours présente) */
+	let announce = $state('');
 
 	let verdicts = $derived(links.map((_, k) => answers?.[k]?.isCorrect ?? null));
 	let judged = $derived(verdicts.some((v) => v !== null));
@@ -141,13 +152,18 @@
 	function measure() {
 		if (!frame) return;
 		const box = frame.getBoundingClientRect();
+		// Sous un ancêtre mis à l'échelle (aperçu), l'écran mesure en pixels affichés, le SVG dessine en pixels de mise en page
+		const scale = box.width / (frame.offsetWidth || box.width || 1) || 1;
 		const centerOf = (dot: Element): Point => {
 			const r = dot.getBoundingClientRect();
-			return { x: r.left + r.width / 2 - box.left, y: r.top + r.height / 2 - box.top };
+			return {
+				x: (r.left + r.width / 2 - box.left) / scale,
+				y: (r.top + r.height / 2 - box.top) / scale
+			};
 		};
 		itemAnchors = [...frame.querySelectorAll('[data-relier-point="item"]')].map(centerOf);
 		labelAnchors = [...frame.querySelectorAll('[data-relier-point="label"]')].map(centerOf);
-		size = { width: box.width, height: box.height };
+		size = { width: frame.offsetWidth, height: frame.offsetHeight };
 	}
 
 	/** Attachement du cadre : mesure, puis remesure à chaque changement de taille */
@@ -172,12 +188,15 @@
 
 	/** Relie l'élément `k` à l'étiquette `label` (remplace son trait) */
 	function link(k: number, label: number) {
+		if (k >= count || label >= labelCount) return;
 		emit(links.map((current, j) => (j === k ? label : current)));
+		announce = `Élément ${k + 1} relié à l’étiquette ${label + 1}`;
 	}
 
 	/** Efface le trait de l'élément `k` */
 	function unlink(k: number) {
 		emit(links.map((current, j) => (j === k ? null : current)));
+		announce = `Trait de l’élément ${k + 1} effacé`;
 	}
 
 	/** Relie deux cases de colonnes différentes ; même colonne : rien */
@@ -189,9 +208,10 @@
 		return true;
 	}
 
-	function onCaseClick(side: Side, index: number) {
+	/** Toucher ou Entrée ; `keyboard` : Entrée sur un élément relié le prend (l'effacer : Suppr) */
+	function onCaseClick(side: Side, index: number, keyboard = false) {
 		if (locked || swallowClick) return;
-		const current = selected;
+		const current = active;
 		if (current && current.side !== side) {
 			join(current, { side, index });
 			selected = null;
@@ -199,13 +219,18 @@
 		}
 		if (current && current.side === side && current.index === index) {
 			selected = null;
+			announce = '';
 			return;
 		}
-		if (!current && side === 'item' && links[index] !== null) {
+		if (!current && side === 'item' && links[index] !== null && !keyboard) {
 			unlink(index);
 			return;
 		}
 		selected = { side, index };
+		announce =
+			side === 'item'
+				? `Élément ${index + 1} pris, choisis son étiquette`
+				: `Étiquette ${index + 1} prise, choisis un élément`;
 	}
 
 	function onLineClick(item: number) {
@@ -215,8 +240,10 @@
 	}
 
 	function framePoint(event: PointerEvent): Point {
-		const box = frame?.getBoundingClientRect();
-		return { x: event.clientX - (box?.left ?? 0), y: event.clientY - (box?.top ?? 0) };
+		if (!frame) return { x: event.clientX, y: event.clientY };
+		const box = frame.getBoundingClientRect();
+		const scale = box.width / (frame.offsetWidth || box.width || 1) || 1;
+		return { x: (event.clientX - box.left) / scale, y: (event.clientY - box.top) / scale };
 	}
 
 	function onPointerDown(event: PointerEvent, side: Side, index: number) {
@@ -250,21 +277,23 @@
 		const { side, index, moved } = drag;
 		drag = null;
 		if (!moved) return;
+		const target = document
+			.elementFromPoint(event.clientX, event.clientY)
+			?.closest<HTMLElement>('[data-relier-case]');
+		// Lâché sur la case de départ : un toucher qui a un peu bougé, le clic qui suit compte
+		if (target?.dataset.relierCase === `${side}:${index}`) return;
 		// Glissé : le clic qui suit (même bouton) ne doit pas reprendre la case
 		swallowClick = true;
 		setTimeout(() => (swallowClick = false), 0);
 		selected = null;
-		const target = document
-			.elementFromPoint(event.clientX, event.clientY)
-			?.closest<HTMLElement>('[data-relier-case]');
 		if (!target || !root?.contains(target)) return;
 		const [targetSide, targetIndex] = (target.dataset.relierCase ?? '').split(':');
 		if (targetSide !== 'item' && targetSide !== 'label') return;
 		join({ side, index }, { side: targetSide, index: Number(targetIndex) });
 	}
 
-	function onPointerCancel() {
-		drag = null;
+	function onPointerCancel(event: PointerEvent) {
+		if (drag && event.pointerId === drag.pointerId) drag = null;
 	}
 
 	/** Flèches : ↑ ↓ dans une colonne, ← → vers l'autre colonne (même rang, ou le dernier) */
@@ -275,6 +304,12 @@
 		}
 		if (!root) return;
 		const current = event.target as HTMLButtonElement;
+		const [side, rank] = (current.dataset.relierCase ?? '').split(':');
+		if ((event.key === 'Delete' || event.key === 'Backspace') && side === 'item') {
+			event.preventDefault();
+			if (!locked && links[Number(rank)] !== null) unlink(Number(rank));
+			return;
+		}
 		const column = (side: Side) => [
 			...root!.querySelectorAll<HTMLButtonElement>(
 				`button[data-relier-case^="${side}:"]:not(:disabled)`
@@ -307,7 +342,7 @@
 	}
 
 	function isSelected(side: Side, index: number): boolean {
-		return selected?.side === side && selected.index === index;
+		return active?.side === side && active.index === index;
 	}
 </script>
 
@@ -324,11 +359,8 @@
 	aria-labelledby="{uid}-consigne"
 >
 	<p id="{uid}-consigne" class="sr-only">
-		Relier chaque élément à une étiquette ; une étiquette peut servir plusieurs fois
-		{selected?.side === 'item' ? `; élément ${selected.index + 1} pris, choisis son étiquette` : ''}
-		{selected?.side === 'label'
-			? `; étiquette ${selected.index + 1} prise, choisis un élément`
-			: ''}
+		Relier chaque élément à une étiquette ; une étiquette peut servir plusieurs fois ; Entrée sur un
+		élément relié le reprend, Suppr efface son trait
 	</p>
 
 	{#if node.errors.length > 0}
@@ -353,7 +385,7 @@
 						aria-describedby="{uid}-element-{k}"
 						aria-pressed={isSelected('item', k)}
 						disabled={locked}
-						onclick={() => onCaseClick('item', k)}
+						onclick={(event) => onCaseClick('item', k, event.detail === 0)}
 						onkeydown={onKeydown}
 						onpointerdown={(event) => onPointerDown(event, 'item', k)}
 					>
@@ -376,7 +408,7 @@
 						aria-describedby="{uid}-etiquette-{position}"
 						aria-pressed={isSelected('label', position)}
 						disabled={locked}
-						onclick={() => onCaseClick('label', position)}
+						onclick={(event) => onCaseClick('label', position, event.detail === 0)}
 						onkeydown={onKeydown}
 						onpointerdown={(event) => onPointerDown(event, 'label', position)}
 					>
@@ -429,9 +461,10 @@
 			</svg>
 		</div>
 
-		{#if judged}
-			<p class="sr-only" role="status">{allRight ? 'réponse juste' : 'réponse fausse'}</p>
-		{/if}
+		<!-- Toujours présente : une région insérée avec son texte est souvent muette -->
+		<p class="sr-only" role="status">
+			{judged ? (allRight ? 'réponse juste' : 'réponse fausse') : announce}
+		</p>
 	{/if}
 </div>
 
@@ -452,7 +485,10 @@
 		gap: 0.5rem;
 	}
 
+	/* Au-dessus des traits : la zone d'un trait ne masque jamais le point (cases transparentes) */
 	.relier-case {
+		position: relative;
+		z-index: 1;
 		display: flex;
 		min-width: 0;
 		min-height: 2.75rem;
@@ -523,6 +559,7 @@
 
 	.relier-traits {
 		position: absolute;
+		z-index: 0;
 		inset: 0;
 		overflow: visible;
 		pointer-events: none;

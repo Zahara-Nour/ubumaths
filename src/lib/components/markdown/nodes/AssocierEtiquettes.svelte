@@ -167,8 +167,8 @@
 		if (from !== null && tray && root?.contains(tray)) clear(from);
 	}
 
-	function onPointerCancel() {
-		drag = null;
+	function onPointerCancel(event: PointerEvent) {
+		if (drag && event.pointerId === drag.pointerId) drag = null;
 	}
 
 	/** Flèches : ← → dans les étiquettes, ↑ ↓ d'une place à l'autre et vers les étiquettes */

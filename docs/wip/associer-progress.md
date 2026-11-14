@@ -83,3 +83,10 @@ Ensuite : convertir la n° 11 de `cours-suites` (B11, QCM) en « associer ».
   mesurés (`ResizeObserver`, attachement), glisser / toucher dans les deux sens, toucher un trait ou un
   élément relié efface, clavier ↑ ↓ ← →, corrigé vert / rouge / pointillés verts ; tests d'écran
   `AssocierRelier.svelte.test.ts` (15) ; anciens tests d'intégration passés à `geste: étiquettes`.
+- 2026-11-14 : revue du geste relier (`code-reviewer`) — corrigés : la zone d'un trait masquait le point
+  relié (toucher, lâcher impossibles ; cases passées au-dessus du SVG, test rouge sans le correctif),
+  Entrée sur un élément relié le reprend (Suppr efface), région `role="status"` toujours présente,
+  case prise périmée (verrouillé, bloc modifié), seuil de glissement 10 px et toucher qui bouge sur sa
+  case, mesure sous un ancêtre mis à l'échelle, `pointercancel` d'un autre pointeur (les deux gestes).
+  Laissés : `touch-action: none` sur toute la case (comme le geste étiquettes ; à revoir si l'essai sur
+  iPhone gêne le défilement), verdict signalé par la couleur seule (noms accessibles « juste / faux »).
