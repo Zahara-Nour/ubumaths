@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, lot 10 écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-11-14, lot 10 écrit, #2668 ouverte (CI en cours)._
 
 - **État** : lots 1 à 9 publiés. Lot 10 écrit (§ 24 ter) : 10 modèles, specs et sonde courbes vertes,
   simulation prod 10 « à créer ». Lot 11 « Programmer en blocs » (§ 25) : **porté par `blockly`**.
-- **Prochaine action** : merger la PR des fichiers, puis David lance `create-questions --publier` sur
+- **Prochaine action** : suivre la CI de #2668 et la merger si verte, puis David lance `create-questions --publier` sur
   `scripts/questions/5-proportionnalite-fonctions` ; ensuite relevé, migration nœud + tag (`lot-10-rangement.py`).
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
