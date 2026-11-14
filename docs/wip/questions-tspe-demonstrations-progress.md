@@ -10,14 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2645 (rangement du lot 13) et la page à cocher (§ 54)._
+_Mis à jour le 2026-11-14, après les verdicts du lot 13 (§ 55)._
 
 - **État** : démonstrations (lots 1-4) et algorithmes (lots 5-8) publiés (§ 34). Approfondissements (31, phase 0 au
-  § 35, lots 9 à 15) : lots 9 à 12 publiés (§ 53) ; lot 13 en brouillons rangés et tagués (§ 53), page à cocher
-  publiée (§ 54) ; 8 points restants après lui (lots 14 : 473, 496, 497 ; 15 : 517, 529, 537, 538, 539).
-- **Prochaine action** : lire les verdicts de la page du § 54 ; 6/6 « ok » → David lance `publier-lot.ts` (simulation
-  puis `--publier`) ; puis lot 14 (Q1 du § 35), même démarche que le lot 13 (§ 52 à 54).
-- **En attente de David** : relecture de la page à cocher du lot 13.
+  § 35, lots 9 à 15) : lots 9 à 12 publiés (§ 53) ; lot 13 en brouillons rangés et tagués (§ 53), relu 6/6
+  « ok » (§ 55) ; 8 points restants après lui (lots 14 : 473, 496, 497 ; 15 : 517, 529, 537, 538, 539).
+- **Prochaine action** : vérifier en base (MCP) la publication du lot 13 (6 `published`) ; puis lot 14 (Q1 du § 35), même démarche que le lot 13 (§ 52 à 54).
+- **En attente de David** : `publier-lot.ts --dir scripts/questions/tspe-approfondissements-13` (simulation puis
+  `--publier`).
 - **Pièges en cours** : commitlint refuse le type `content` et les lignes de corps > 100 caractères ; graine de
   l'aperçu admin = variation (§ 3) ; `publier-lot.ts` lit la prod → David la lance (simulation comprise : le mode auto
   la bloque) ; **`\dots` non rendu**, `\cdots` oui (§ 14) ; titre déjà pris en prod au même niveau = lot bloqué
@@ -1025,3 +1025,8 @@ Mergé (#2645) : CI verte (intégration comprise), `check:migrations --pr` vert,
 JSON du dépôt n'en portent pas) : 6 brouillons `draft`, chacun sur son point, 4 ou 5 exemples chacun ; alertes « bloc
 ranger non dessiné » sur 424 et 452 (habituelles, étapes de 424 vues dans l'aperçu admin, § 52). Page :
 https://claude.ai/artifact/HSuXTzpPLFA8shqMMnGitH (capacité `db`) ; base `verdicts` vide à la publication.
+
+## 55. Lot 13 : verdicts (2026-11-14)
+
+Verdicts lus : 6/6 « ok », sans commentaire (ids = ceux du § 53). `publier-lot.ts` (simulation puis `--publier`) à
+lancer par David.
