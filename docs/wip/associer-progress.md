@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR de contenu en cours._
+_Mis à jour le 2026-11-14, après #2644._
 
-- **État** : deux modèles écrits (branche `feat/associer-modeles-courbes`) : 2de `2de-associer-courbes/01` et 3e `3-associer-droites/01` ; specs vertes, sonde des courbes à 0 problème (la sonde lit désormais les courbes d'un bloc associer) · **Prochaine action** : aperçu admin en base locale, PR, merge · **En attente de David** : après le merge, `deploy:prod` (le lot 2 n'est pas en prod), puis `create-questions --publier` des deux dossiers ; ensuite migration nœud + tag (3e : 3-067 ; 2de : rangé sans point) · **Pièges en cours** : `{{eval:(a)*x+(b)}}` réordonne (`3-2x`) → écrire `{{eval:(a)*x}}{{eval:b;+}}` ; l'ordre des éléments de gauche est celui écrit (seules les étiquettes sont mélangées) ; la courbe exige `x:` et `y:` · **Worktree / branche** : `ubumaths-wt-associer` · `feat/associer-modeles-courbes`
+- **État** : modèles 2de `2de-associer-courbes/01` (sans point) et 3e `3-associer-droites/01` (3-067) mergés (#2644) ; `sonde-courbes` lit les courbes d'un bloc associer · **Prochaine action** : après le `deploy:prod` (lot 2 pas encore en prod), David lance `create-questions --publier` des deux dossiers ; commiter les `id` écrits ; puis PR de migration nœud + tag (3e : 3-067 sur « coefficient directeur et ordonnée à l'origine » ; 2de : rangé sous Généralités sur les fonctions, sans tag — vérifier la garde « notion sans sous-notion ») · **En attente de David** : `deploy:prod`, puis publication des brouillons · **Pièges en cours** : `{{eval:(a)*x+(b)}}` réordonne (`3-2x`) → `{{eval:(a)*x}}{{eval:b;+}}` ; la publication en base locale écrit des `id` locaux dans les fichiers (ne pas les commiter) · **Worktree / branche** : `ubumaths-wt-associer` gardé pour l'essai de David (serveur 5178 + Tailscale Serve), à retirer ensuite
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -199,3 +199,4 @@ Relevé prod (MCP, lecture seule) : en 2de, aucun point « fonctions de référe
   David) ; second modèle 3e : question ouverte.
 - 2026-11-14 : #2637 mergée (CI verte après relance d'un job d'intégration tombé sur un port pris). Second modèle 3e (affines à coefficients tirés) : « ok » de David.
 - 2026-11-14 : PR de contenu — worktree `associer` rouvert (branche `feat/associer-modeles-courbes`), relevé, décisions ci-dessus, deux modèles écrits ; `sonde-courbes` ne voyait pas les courbes décalées d'un bloc associer (« 0 blocs ») → elle retire le décalage (rouge prouvé sur une copie sans `y:`).
+- 2026-11-14 : #2644 mergée (CI verte, revue Sonnet de la sonde sans défaut) ; modèles joués dans l'aperçu admin local.
