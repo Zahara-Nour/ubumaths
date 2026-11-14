@@ -10,18 +10,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2656 (rangement du lot 15, § 64)._
+_Mis à jour le 2026-11-14, après la publication du lot 15 (§ 65)._
 
-- **État** : lots 1 à 14 publiés (§ 61) ; lot 15 rangé en prod (#2656, sous-notion « loi de Poisson »), page à cocher
-  publiée : https://claude.ai/artifact/YNBWKZxoNHbtrLVfpTgK8k (§ 64).
-- **Prochaine action** : lire les verdicts ; corriger les « à revoir » ; `publier-lot.ts` (David). Dernier lot du
-  chantier, puis clôture (recompter le découpage contre les PR mergées).
-- **En attente de David** : verdicts sur la page à cocher du lot 15.
-- **Pièges en cours** : commitlint (type `content` refusé, corps ≤ 100 car.) ; graine de l'aperçu = variation (§ 3) ;
-  scripts sur la prod (`create-questions`, `publier-lot.ts`, simulations comprises) → David ; `\dots` non rendu
-  (§ 14) ; `Doc-inchangée:` dans un COMMIT ; « inserted before » → `--dry-run --include-all` (§ 20) ; `cf()` (§ 48) ;
-  pas de variable `e` ni `i` (§ 52) ; réponse décimale → `blankDefaults.acceptDecimal` (§ 62).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations`, prochaine branche à créer depuis `origin/main` s'il y a un correctif.
+- **État** : lots 1 à 15 publiés ; découpage recompté en base (§ 65) : les 78 points P de `T_SPE` ont un modèle
+  publié, 0 brouillon, 342 modèles `T_SPE` (274 + 68).
+- **Prochaine action** : clôture, si David la valide : versement du bilan dans `tspe.md`, journal archivé,
+  worktree retiré.
+- **En attente de David** : go pour la clôture.
+- **Pièges en cours** : aucun (chantier terminé).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-demonstrations` (HEAD détaché sur `origin/main`, propre).
 
 ---
 
@@ -1130,3 +1127,15 @@ Mergé (#2656) : CI verte (intégration comprise), `check:migrations --pr` vert,
 `origin/main`, `id` compris). `page-a-cocher.ts` lu en base prod : 5 brouillons, 4, 5, 4, 4 et 4 exemples ; alerte
 « bloc ranger non dessiné » sur 529 (habituelle, étapes vues dans l'aperçu admin, § 62). Page :
 https://claude.ai/artifact/YNBWKZxoNHbtrLVfpTgK8k (capacité `db`) ; base `verdicts` vide à la publication.
+
+## 65. Lot 15 : verdicts, publication ; recomptage du découpage (2026-11-14)
+
+Verdicts lus : 5/5 « ok », sans commentaire (ids des fichiers de `tspe-approfondissements-15/`). `publier-lot.ts`
+(simulation puis `--publier`) lancé par David. Relu en base (MCP) : 5 `published`.
+
+Recomptage contre le découpage (D1 : lots 1-4 démonstrations ; § 18 : lots 5-8 algorithmes ; D3 : lots 9-15
+approfondissements) : les 15 lots sont publiés, aucune PR ouverte. En base (MCP, points actifs `T_SPE`) : démonstrations
+20/20, algorithmes 22/22, savoir-faire d'approfondissement 36/36 couverts par un modèle publié (les points P déjà
+couverts avant le chantier comptent dans ces totaux) ; 0 modèle non publié sur un point `T_SPE`. 342 modèles `T_SPE`
+publiés (274 au § 0 + 68, un par point, 321 et 548 distincts) ; 295 points sur 326 couverts. Les 31 sans modèle
+sont les « couverts par leur voisin » du § 0 (28 connaissances, 3 savoir-faire attendus), hors chantier.
