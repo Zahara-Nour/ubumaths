@@ -26,7 +26,7 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		title: 'Programme de calcul',
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
-		grades: ['5e'],
+		grades: ['5'],
 		level: 1
 	} as QuestionTemplate;
 }

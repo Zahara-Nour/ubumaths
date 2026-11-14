@@ -288,3 +288,23 @@ celles laissées en attente aux PR 4a / 4b.
   reste aux 8 symétries du quadrillage ; une question à programme (tortue, calcul) reste refusée
   par les séries d'automatismes, mais avec un message clair pour le prof (« Une question à
   programme (tortue, calcul) ne peut pas entrer dans une série d'automatismes. ») — en 5a.
+
+### PR 5a — logique, sans écran (branche `feat/blockly-calcul-logique`)
+
+- `shared/blockly/lecture.ts` : lecture des blocs commune à la tortue et au calcul (sortie de
+  `tortue/interpreteur.ts`, API de la tortue inchangée).
+- `shared/blockly/calcul/` : `interpreteur.ts` (`executerCalcul(etat, nombre)`), `notation.ts`
+  (texte ↔ blocs, priorités, parenthèses minimales qui gardent l'arbre), `jugement.ts`
+  (`jugerProgrammeCalcul`, `lireEssais`). Blocs : `calcul_nombre_choisi`, `calcul_operation`
+  (champ `OP`, 4 opérations ; pas `math_arithmetic`, qui offre la puissance), `calcul_resultat`,
+  `calcul_mettre_resultat`, `calcul_afficher`, `math_number`, `controls_repeat(_ext)`. Les
+  définitions Blockly (`blocs.ts`, boîte à outils) viennent en 5b avec l'écran.
+- Bloc ``calcul : parseur, chaîne des questions (case `construire: 'calcul'`, attendu
+`<essais> | <programme>`, `calcul-answer.ts`), masquage `attendu: ?`, éditeur riche, garde
+nocturne. `départ:` lu par les parseurs ``calcul et ```tortue (`spec.depart`) ; l'écran le
+  posera en 5b.
+- Séries d'automatismes : refus clair d'une question à programme (`figer`).
+- **Choix faits sans David, à lui signaler** : écriture canonique `résultat = …` (lecture de
+  `mettre résultat à …` aussi) ; `:` lu comme une division ; `−` seulement devant un nombre
+  (`0 − …` sinon) ; marge d'égalité relative 1e-9 ; `essais:` de 1 à 20 nombres distincts ;
+  le programme est muet seulement s'il n'affiche rien sur AUCUN essai (sinon simplement faux).

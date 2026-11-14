@@ -15,7 +15,7 @@ function modele(id: string, statement: string): QuestionTemplate {
 	return {
 		id,
 		title: 't',
-		grades: ['5e'],
+		grades: ['5'],
 		level: 1,
 		status: 'draft',
 		variations: [{ statement: templateMarkdown(statement) }]
