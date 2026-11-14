@@ -41,7 +41,7 @@ interface Trace {
 export type ResultatTortue = ({ ok: true } | { ok: false; erreur: ErreurTortue }) & Trace;
 
 /** Bloc sérialisé, après vérification de forme. */
-interface BlocLu {
+export interface BlocLu {
 	type: string;
 	actif: boolean;
 	champs: Record<string, unknown>;
@@ -159,8 +159,11 @@ function lireBloc(brut: unknown, imbrication: number): { bloc: BlocLu; suivant: 
 	return { bloc, suivant };
 }
 
-/** Lit les piles de l'espace de travail, triées de haut en bas (puis de gauche à droite). */
-function lirePiles(etat: unknown): BlocLu[] {
+/**
+ * Lit les piles de l'espace de travail, triées de haut en bas (puis de gauche à droite) ; lève
+ * une erreur si la forme est fausse.
+ */
+export function lirePiles(etat: unknown): BlocLu[] {
 	if (!estObjet(etat)) throw new ProgrammeIllisible();
 	if (etat.blocks === undefined) return [];
 	if (!estObjet(etat.blocks)) throw new ProgrammeIllisible();
@@ -177,7 +180,7 @@ function lirePiles(etat: unknown): BlocLu[] {
 }
 
 /** Premier bloc inconnu (instruction ou valeur) d'une pile, blocs désactivés compris. */
-function premierBlocInconnu(
+export function premierBlocInconnu(
 	bloc: BlocLu | undefined,
 	attendu: 'instruction' | 'valeur'
 ): string | null {
@@ -194,13 +197,14 @@ function premierBlocInconnu(
 }
 
 /** Valeur numérique d'une entrée ; une entrée vide vaut 0, comme dans le code généré. */
-function valeur(bloc: BlocLu | undefined): number {
+export function valeur(bloc: BlocLu | undefined): number {
 	if (!bloc) return 0;
 	const nombre = Number(bloc.champs.NUM);
 	return Number.isFinite(nombre) ? nombre : 0;
 }
 
-function nombreDeTours(bloc: BlocLu): number {
+/** Nombre de tours d'une répétition : entier inférieur, jamais négatif. */
+export function nombreDeTours(bloc: BlocLu): number {
 	const brut =
 		bloc.type === 'controls_repeat' ? Number(bloc.champs.TIMES) : valeur(bloc.entrees.TIMES);
 	return Number.isFinite(brut) ? Math.max(0, Math.floor(brut)) : 0;
