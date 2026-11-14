@@ -11,9 +11,9 @@ sur les nouvelles traces (P4, P5, P6, P7, P8, P9 faits).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, PR 2 prête (revues faites)._
+_Mis à jour le 2026-11-14, après #2666._
 
-- **État** : PR 2 (`feat/taux-par-point-calcul`) : calcul, endpoint, widget, doc ; revues faites, vérifiée en local · **Prochaine action** : CI verte → merge ; puis versement (le chantier est fini : journal archivé, durable déjà dans `analytique-prof.md`) · **En attente de David** : rien · **Pièges en cours** : la RPC est plafonnée par `max_rows` (lue par pages) ; base locale réinitialisée par `db:seed-riche` le 2026-11-14 (traces fictives ajoutées dans « 6B ») · **Worktree / branche** : `../ubumaths-wt-taux-par-point` · `feat/taux-par-point-calcul`
+- **État** : PR 2 mergée (#2666) : widget « Taux de réussite » livré sur `main` (pas encore en prod : attend un `deploy:prod`) ; le découpage (PR 1 migration, PR 2 code) est fait · **Prochaine action** : clôture si David la valide (versement : le durable est déjà dans `analytique-prof.md` et `base-de-donnees.md`, journal à archiver) · **En attente de David** : « clore le chantier ? » ; vérification manuelle #2666 notée dans `verifications-manuelles.md` · **Pièges en cours** : base locale réinitialisée (`db:seed-riche`) le 2026-11-14, traces fictives ajoutées dans « 6B » · **Worktree / branche** : aucun (retiré après #2666)
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
@@ -162,6 +162,7 @@ Comptage par la base ; question d'accès : **personne** ne lit rien de plus.
 
 ## Journal
 
+- 2026-11-14 : #2666 mergée (PR 2).
 - 2026-11-14 : PR 2 écrite (calcul, endpoint, widget).
 - 2026-11-14 : #2663 mergée, `db:migrate` fait.
 - 2026-11-14 : T1 tranchée (base) ; PR 1 écrite, tests rouges puis verts.
