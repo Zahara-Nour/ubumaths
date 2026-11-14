@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2637._
+_Mis à jour le 2026-11-14, PR de contenu en cours._
 
-- **État** : lot 2 (` ```courbe ` dans un élément) mergé (#2637) ; vérification manuelle notée · **Prochaine action** : PR de contenu (nouvelle branche, nouveau worktree) : modèle 2de « courbe ↔ expression » (carré, inverse, racine, cube ; intrus $x \mapsto x$ ; sans variables ; geste relier) **et** modèle 3e (affines à coefficients tirés, « ok » de David le 2026-11-14) ; brouillons publiés par David · **En attente de David** : rien · **Pièges en cours** : la courbe exige `x:` et `y:` ; Typst d'une courbe non compilable en test (cetz, réseau) · **Worktree / branche** : aucun (`ubumaths-wt-associer` retiré après #2637)
+- **État** : deux modèles écrits (branche `feat/associer-modeles-courbes`) : 2de `2de-associer-courbes/01` et 3e `3-associer-droites/01` ; specs vertes, sonde des courbes à 0 problème (la sonde lit désormais les courbes d'un bloc associer) · **Prochaine action** : aperçu admin en base locale, PR, merge · **En attente de David** : après le merge, `deploy:prod` (le lot 2 n'est pas en prod), puis `create-questions --publier` des deux dossiers ; ensuite migration nœud + tag (3e : 3-067 ; 2de : rangé sans point) · **Pièges en cours** : `{{eval:(a)*x+(b)}}` réordonne (`3-2x`) → écrire `{{eval:(a)*x}}{{eval:b;+}}` ; l'ordre des éléments de gauche est celui écrit (seules les étiquettes sont mélangées) ; la courbe exige `x:` et `y:` · **Worktree / branche** : `ubumaths-wt-associer` · `feat/associer-modeles-courbes`
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -133,6 +133,24 @@ Niveau du modèle « graphique ↔ expression » : **pas encore répondu**, à r
 
 Ensuite (même chantier) : un modèle « graphique ↔ expression » à écrire, niveau à choisir par David.
 
+## Modèles « courbe ↔ expression » : décisions (David, 2026-11-14)
+
+Relevé prod (MCP, lecture seule) : en 2de, aucun point « fonctions de référence » ; 2-334 (carré) et
+2-335 (inverse) ont chacun « définition et courbe » ; 2-363 (racine ↔ carré sur ℝ⁺, approfondissement)
+0 modèle ; le cube n'a aucun point de courbe. En 3e : 3-044 (notion Fonctions affines), 3-045 et 3-067
+(sous-notion « coefficient directeur et ordonnée à l'origine »).
+
+- **2de** : la décision **l2-2** (2026-10-22 : racine carrée et cube sans définition ni courbe en 2de)
+  contredisait le modèle prévu (carré, inverse, racine, cube). Tranché : **recentrer** sur les fonctions
+  de référence de 2de — courbes de $x^2$, $1/x$, $|x|$ et $x \mapsto x$, intrus $x \mapsto -x^2$, sans
+  variables, geste relier, niveau 1, 60 s — et **sans tag** (aucun point ne le décrit en entier,
+  ADR 0020), rangé sous Fonctions > Généralités sur les fonctions. Deux variations (deux ordres des
+  courbes : l'ordre de gauche est celui écrit).
+- **3e** : point **3-067**. Trois droites $x \mapsto ax+b$, $a \in \{-3…3\} \setminus \{0\}$,
+  $b \in \{-4…4\} \setminus \{0, a\}$ ; variation 1 : $ax+b$, $-ax+b$, $ax-b$ ; variation 2 : $ax$,
+  $ax+b$, $-ax+b$ ; intrus $bx+a$ ; geste relier, niveau 1, 60 s.
+- Question d'accès de la future migration de rangement : personne ne gagne de lecture (brouillons neufs).
+
 ## Journal
 
 - 2026-11-14 : worktree ouvert, phase 0 validée.
@@ -180,3 +198,4 @@ Ensuite (même chantier) : un modèle « graphique ↔ expression » à écrire,
 - 2026-11-14 : PR #2637 ouverte. Modèle « courbe ↔ expression » : 2de retenue (recos acceptées par
   David) ; second modèle 3e : question ouverte.
 - 2026-11-14 : #2637 mergée (CI verte après relance d'un job d'intégration tombé sur un port pris). Second modèle 3e (affines à coefficients tirés) : « ok » de David.
+- 2026-11-14 : PR de contenu — worktree `associer` rouvert (branche `feat/associer-modeles-courbes`), relevé, décisions ci-dessus, deux modèles écrits ; `sonde-courbes` ne voyait pas les courbes décalées d'un bloc associer (« 0 blocs ») → elle retire le décalage (rouge prouvé sur une copie sans `y:`).
