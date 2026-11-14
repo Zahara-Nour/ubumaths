@@ -48,7 +48,9 @@ fait déjà (` ```figure ` + ` ```choix `, B).
 
 ## 3. À trancher par David
 
-- **Corrigé PDF d'une série avec un texte à trous** (` ```trous `) : aujourd'hui « 1 → étiquette ; 2 → étiquette » ; ou le texte avec les bonnes étiquettes en gras dans les trous (changement local, `trousAFiger`) ? Question posée le 2026-11-14 ([`trous-etiquettes`](../archive/wip/trous-etiquettes-progress.md)).
+Rien en attente au 2026-11-14.
+
+**Tranché le 2026-11-14 (David)** : corrigé PDF d'une série avec un texte à trous (` ```trous `) = « 1 → étiquette ; 2 → étiquette », comme associer (rien à changer ; [`trous-etiquettes`](../archive/wip/trous-etiquettes-progress.md)).
 
 **Tranché le 2026-11-04 (David)** :
 

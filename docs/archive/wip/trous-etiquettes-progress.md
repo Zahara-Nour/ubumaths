@@ -8,7 +8,7 @@
 
 _Mis à jour le 2026-11-14, clôture._
 
-- **État** : **chantier clos** — bloc ` ```trous ` livré (#2653), essai de David validé le 2026-11-14 ; doc durable dans `docs/systeme/questions.md`, `ubumark.md`, `fiches-et-pdf.md` ; journal archivé · **En attente de David** : `deploy:prod` ; corrigé PDF de la série (question reportée dans `docs/wip/outils-manquants.md` § 3) · **Reste connu** : ~150 lignes du geste copiées d'`AssocierEtiquettes` (module commun plus tard) ; échappement Typst de `#`/`@` en texte nu (commun avec associer, ranger)
+- **État** : **chantier clos** — bloc ` ```trous ` livré (#2653), essai de David validé le 2026-11-14 ; doc durable dans `docs/systeme/questions.md`, `ubumark.md`, `fiches-et-pdf.md` ; journal archivé · **En attente de David** : `deploy:prod` · **Reste connu** : ~150 lignes du geste copiées d'`AssocierEtiquettes` (module commun plus tard) ; échappement Typst de `#`/`@` en texte nu (commun avec associer, ranger)
 
 ## Phase 0 (validée le 2026-11-14)
 
@@ -119,3 +119,4 @@ différentes ; moins de 3 étiquettes différentes (réserve devinable) ; `[_]` 
   commun avec associer et ranger (décision du coordinateur).
 - 2026-11-14 : #2653 mergée (conflit avec le bloc `tortue` de #2651 résolu dans `questions.md`), worktree retiré.
 - 2026-11-14 : **essai de David validé** (fiche du bloc, téléphone et ordinateur) ; chantier clos, journal archivé ; la question du corrigé PDF de la série passe dans `outils-manquants.md` § 3.
+- 2026-11-14 : **corrigé PDF de la série tranché** (David) : « 1 → étiquette ; 2 → étiquette » gardé, comme associer.
