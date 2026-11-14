@@ -1,15 +1,15 @@
 # Chantier `durees-trop-courtes` — repérer les durées manifestement trop courtes (P7)
 
 Ouvert le 2026-11-14, choisi par David après la clôture de `suivi-eleve`. Besoin P7 validé le
-2026-11-11 ([`formes-de-serie-progress.md`](../archive/wip/formes-de-serie-progress.md) § « Besoins de
+2026-11-11 ([`formes-de-serie-progress.md`](formes-de-serie-progress.md) § « Besoins de
 suivi validés ») : « repérer les questions où la majorité n'a rien répondu dans le temps imparti ».
 Suite prévue : A1 (durées ajustées au temps observé), chantier à part.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2655._
+_Chantier clos le 2026-11-14 (accord de David), après #2652 et #2655._
 
-- **État** : PR 1 (#2652, bilan d'un contrôle) et PR 2 (#2655, panier et éditeur de série) mergées : tout le découpage validé (Q3) est livré · **Prochaine action** : clore le chantier (versement : le durable est déjà dans `evaluations.md` ; archiver ce journal) si David le confirme ; suite prévue A1 (durées ajustées au temps observé), chantier à part · **En attente de David** : clôture ; Q8 à reconfirmer (`updated_at` bouge à chaque modification du modèle, même un tag : le signal repart de zéro) ; vérification manuelle #2655 · **Pièges en cours** : prod presque vide, vérifier en local ; série verrouillée dès un contrôle commencé (la durée de la composition est celle du jour) · **Worktree / branche** : aucun (retiré après #2655)
+- **État** : clos. Livré : marque « Durée sans doute trop courte » dans le bilan d'un contrôle (#2652), le panier et l'éditeur de série (#2655). Versé : `docs/systeme/evaluations.md` (§ Résultats, durée trop courte) · **Suite** : A1 (durées ajustées au temps observé), chantier à part · **Piège pour A1** : `question_templates.updated_at` bouge à chaque modification du modèle (tag, publication) et remet le signal à zéro (Q8, gardé tel quel le 2026-11-14, même règle que « erreurs de la classe sur un point ») ; une date « contenu modifié » demanderait une colonne et une migration · **Vérification manuelle** : #2655 dans `docs/wip/verifications-manuelles.md`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
