@@ -277,6 +277,17 @@ les cartes de la page résultats) :
   sans point (ou point posé sur une branche) → « Sans notion », en dernier. Tri du taux le plus
   faible au plus fort.
 - **Copie en retard** (note 0, aucune réponse écrite) : hors du bilan, dite à part.
+- **Durée sans doute trop courte** (chantier `durees-trop-courtes`, besoin P7 ; `timingsOf`, champ
+  `timing` de chaque question) : sur les mêmes copies, un élève « n'a rien répondu dans le temps
+  imparti » quand sa réponse est « sans réponse » (règle `columnOf`) **et** que son `time_spent`
+  atteint la durée − 1 s (secondes entières déclarées ; un vide validé tôt ou sans durée déclarée ne
+  compte pas). Tiré plusieurs fois, il compte une fois, seulement s'il a manqué tous ses
+  tirages. La question porte la marque « Durée sans doute trop courte » et la phrase « 7 élèves sur
+  10 n'ont rien répondu dans les 20 s » à partir de **5 élèves**, **plus de la moitié** ; aucun nom.
+  Durée = celle de la ligne dans la composition (0 → 20 s, comme au tirage ; la série est verrouillée
+  dès la première séance). `timing` nul : Course aux nombres (chrono global), modèle hors de la série
+  ou supprimé, modèle sur **deux lignes à durées différentes** (durée de chaque élève non lisible
+  ici).
 - **Lecture** : client du prof, RLS existante (`test_answers_select_teacher`), réponses par pages de
   1 000 (`max_rows`). Une lecture en échec rend `{ status: 'error' }` : la section le dit, la page
   garde cartes et tableau.
@@ -427,4 +438,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14 ; durée sans doute trop courte (`durees-trop-courtes`, PR 1) le 2026-11-14.

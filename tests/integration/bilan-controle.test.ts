@@ -7,6 +7,8 @@
  * `test_answers_select_teacher`), modèles, points et notions du programme. Un
  * refus RLS rendrait zéro ligne sans erreur : on vérifie donc les NOMBRES, pas
  * l'absence d'erreur (Q5 : aucune migration, personne ne lit rien de plus).
+ * Le temps passé (`time_spent`, chantier `durees-trop-courtes`, P7) se lit avec
+ * la réponse, sous la même policy.
  *
  * `pnpm test:integration tests/integration/bilan-controle.test.ts`
  *
@@ -84,7 +86,7 @@ async function copy(
 	student: Person,
 	grade: number,
 	completedAt: string,
-	answers: Array<{ templateId: string; status: string; points: number }>
+	answers: Array<{ templateId: string; status: string; points: number; timeSpent?: number }>
 ): Promise<void> {
 	const sessionId = await insertId('test_sessions', {
 		user_id: student.id,
@@ -104,7 +106,8 @@ async function copy(
 			question_instance: { __position: position },
 			status: a.status,
 			points: a.points,
-			is_correct: a.status === 'correct'
+			is_correct: a.status === 'correct',
+			time_spent: a.timeSpent ?? null
 		}))
 	);
 	if (error) throw new Error(`décor test_answers : ${error.message}`);
@@ -204,8 +207,9 @@ describe('bilan d’un contrôle lu par le professeur (RLS réelle)', () => {
 		// Ada : deux copies, la meilleure (15) compte ; Bob : une copie en retard
 		await copy(ada, 15, '2026-11-10T10:00:00Z', [
 			{ templateId: T_FRACTIONS, status: 'correct', points: 1 },
-			{ templateId: T_FRACTIONS, status: 'unoptimal_form', points: 0.5 },
-			{ templateId: T_RELATIFS, status: 'incorrect', points: 0 }
+			{ templateId: T_FRACTIONS, status: 'unoptimal_form', points: 0.5, timeSpent: 12 },
+			// Chrono écoulé sans rien répondre (P7) : temps déclaré = durée
+			{ templateId: T_RELATIFS, status: 'empty', points: 0, timeSpent: 20 }
 		]);
 		await copy(ada, 5, '2026-11-11T10:00:00Z', [
 			{ templateId: T_FRACTIONS, status: 'incorrect', points: 0 },
@@ -227,7 +231,7 @@ describe('bilan d’un contrôle lu par le professeur (RLS réelle)', () => {
 		];
 		const result = await getEvaluationBreakdown(
 			teacher.client,
-			{ id: evaluationId, series: { items } },
+			{ id: evaluationId, form: 'interactive', series: { items } },
 			[ada.id, bob.id]
 		);
 
@@ -242,12 +246,17 @@ describe('bilan d’un contrôle lu par le professeur (RLS réelle)', () => {
 			[BRANCH_NAME, NOTION_NAME, 2, 75],
 			[null, 'Sans notion', 1, 0]
 		]);
+		// P7 : le temps passé se lit sous la RLS du professeur (1 élève : sous le seuil)
+		expect(result.questions.map((q) => q.timing)).toEqual([
+			{ delaySeconds: 20, students: 1, unansweredInTime: 0, tooShort: false },
+			{ delaySeconds: 20, students: 1, unansweredInTime: 1, tooShort: false }
+		]);
 	});
 
 	it('un élève ne lit pas les copies des autres : son bilan ne compte que la sienne', async () => {
 		const result = await getEvaluationBreakdown(
 			ada.client,
-			{ id: evaluationId, series: { items: [] } },
+			{ id: evaluationId, form: 'interactive', series: { items: [] } },
 			[ada.id, bob.id]
 		);
 		// Bob (retard) est invisible pour Ada ; sa propre meilleure copie seule

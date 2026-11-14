@@ -15,6 +15,12 @@
  *   la notion. Un modèle à plusieurs notions compte dans chacune.
  * - **Partiel** : forme non optimale (½ point). La mauvaise forme vaut 0 point
  *   (`pointsOfStatus`) : elle compte en « faux » (David, 2026-11-14).
+ * - **Durée sans doute trop courte** (chantier `durees-trop-courtes`, P7) : par
+ *   question, sur les mêmes copies, les élèves qui ont laissé le chrono
+ *   s'écouler sans rien répondre (réponse « sans réponse » ET temps déclaré ≥
+ *   durée − 1 s). Signalée à partir de 5 élèves, au-delà de la moitié. Durée lue
+ *   dans la composition (verrouillée dès la première séance) ; Course aux
+ *   nombres hors du signal (chrono global).
  *
  * Tout se lit avec le client du professeur, sous la RLS existante : aucune
  * donnée de plus n'est lisible. Une lecture en échec rend une erreur PROPRE AU
@@ -29,13 +35,17 @@ import {
 	BREAKDOWN_ERROR_MESSAGE,
 	DELETED_TEMPLATE_LABEL,
 	NO_NOTION_LABEL,
+	TOO_SHORT_MIN_STUDENTS,
 	UNKNOWN_TEMPLATE_LABEL,
 	type BreakdownCounts,
 	type BreakdownTally,
 	type EvaluationBreakdown,
 	type NotionBreakdown,
-	type QuestionBreakdown
+	type QuestionBreakdown,
+	type QuestionTiming
 } from '$lib/types/evaluation-breakdown';
+import type { EvaluationForm } from '$lib/types/evaluation';
+import { DEFAULT_QUESTION_DELAY_SECONDS } from '$lib/questions/series-items';
 import { createServerLogger } from '$lib/utils/logger';
 
 // Types
@@ -54,6 +64,8 @@ interface AnswerRow {
 	template_id: string | null;
 	status: string | null;
 	points: number | null;
+	/** Secondes passées, déclarées par la page (entières) ; null si absentes */
+	time_spent: number | null;
 }
 
 interface NodeRow {
@@ -65,8 +77,10 @@ interface NodeRow {
 
 /** Tout ce que le calcul consomme, déjà lu */
 export interface BreakdownInput {
-	/** Lignes de la série, dans l'ordre de la composition */
-	items: ReadonlyArray<{ templateId: string }>;
+	/** Forme du contrôle : la Course aux nombres n'a pas de durée par question */
+	form: EvaluationForm;
+	/** Lignes de la série, dans l'ordre de la composition (durée 0 ou absente : défaut) */
+	items: ReadonlyArray<{ templateId: string; delay?: number }>;
 	sessions: ReadonlyArray<SessionRow>;
 	answers: ReadonlyArray<AnswerRow>;
 	templates: ReadonlyArray<{ id: string; title: string }>;
@@ -194,6 +208,70 @@ function notionsByTemplate(input: BreakdownInput): Map<string, Set<string>> {
 	return result;
 }
 
+/** Durée d'une ligne de série, comme au tirage (`drawSeriesQuestions`) */
+function delayOf(item: { delay?: number }): number {
+	return item.delay && item.delay > 0 ? item.delay : DEFAULT_QUESTION_DELAY_SECONDS;
+}
+
+/**
+ * Modèle → sa durée dans la série ; null quand il est sur deux lignes à durées
+ * différentes (D1 : la durée de chaque élève n'est pas lisible ici).
+ */
+function delaysByTemplate(items: BreakdownInput['items']): Map<string, number | null> {
+	const delays = new Map<string, number | null>();
+	for (const item of items) {
+		const delay = delayOf(item);
+		const known = delays.get(item.templateId);
+		delays.set(item.templateId, known === undefined || known === delay ? delay : null);
+	}
+	return delays;
+}
+
+/** Laissée sans réponse jusqu'au bout du chrono (secondes entières déclarées) */
+function unansweredInTime(answer: AnswerRow, delaySeconds: number): boolean {
+	if (columnOf(answer.status) !== 'empty' || answer.time_spent === null) return false;
+	return Number(answer.time_spent) >= delaySeconds - 1;
+}
+
+/**
+ * Temps imparti, par modèle, sur les réponses des copies comptées (une copie
+ * par élève). Un élève compte une fois par modèle ; tiré plusieurs fois, il
+ * compte « sans réponse à temps » seulement s'il l'a été pour TOUS ses tirages
+ * (Q1 : « rien répondu »).
+ */
+export function timingsOf(
+	answers: ReadonlyArray<AnswerRow>,
+	delays: ReadonlyMap<string, number | null>
+): Map<string, QuestionTiming> {
+	// Modèle → copie → [tirages, tirages sans réponse à temps]
+	const draws = new Map<string, Map<string, [number, number]>>();
+	for (const answer of answers) {
+		const delay = answer.template_id ? delays.get(answer.template_id) : undefined;
+		if (!answer.template_id || delay === undefined || delay === null) continue;
+		const bySession = draws.get(answer.template_id) ?? new Map<string, [number, number]>();
+		const count = bySession.get(answer.test_session_id) ?? [0, 0];
+		count[0] += 1;
+		if (unansweredInTime(answer, delay)) count[1] += 1;
+		bySession.set(answer.test_session_id, count);
+		draws.set(answer.template_id, bySession);
+	}
+
+	const timings = new Map<string, QuestionTiming>();
+	for (const [templateId, delay] of delays) {
+		if (delay === null) continue;
+		const counts = [...(draws.get(templateId)?.values() ?? [])];
+		const students = counts.length;
+		const missed = counts.filter(([total, empty]) => empty === total).length;
+		timings.set(templateId, {
+			delaySeconds: delay,
+			students,
+			unansweredInTime: missed,
+			tooShort: students >= TOO_SHORT_MIN_STUDENTS && missed * 2 > students
+		});
+	}
+	return timings;
+}
+
 /** Calcul pur du bilan, sur des données déjà lues */
 export function computeEvaluationBreakdown(input: BreakdownInput): EvaluationBreakdown {
 	const answeredSessions = new Set(input.answers.map((a) => a.test_session_id));
@@ -212,7 +290,7 @@ export function computeEvaluationBreakdown(input: BreakdownInput): EvaluationBre
 				templateId === null
 					? DELETED_TEMPLATE_LABEL
 					: (titles.get(templateId) ?? UNKNOWN_TEMPLATE_LABEL);
-			row = { templateId, title, ...emptyTally() };
+			row = { templateId, title, timing: null, ...emptyTally() };
 			questions.set(key, row);
 		}
 		return row;
@@ -245,6 +323,15 @@ export function computeEvaluationBreakdown(input: BreakdownInput): EvaluationBre
 		const ids = answer.template_id ? notionIds.get(answer.template_id) : undefined;
 		if (!ids || ids.size === 0) add(notionRow(null), answer);
 		else for (const id of ids) add(notionRow(id), answer);
+	}
+
+	// Durée sans doute trop courte : contrôle chronométré par question seulement (Q4)
+	if (input.form === 'interactive') {
+		const countedAnswers = input.answers.filter((a) => counted.has(a.test_session_id));
+		for (const [templateId, timing] of timingsOf(countedAnswers, delaysByTemplate(input.items))) {
+			const row = questions.get(templateId);
+			if (row) row.timing = timing;
+		}
 	}
 
 	const notionRows = [...notions.values()].map(withRate).sort((a, b) => {
@@ -327,9 +414,14 @@ async function readNodes(supabase: TypedSupabaseClient, nodeIds: string[]): Prom
  */
 export async function getEvaluationBreakdown(
 	supabase: TypedSupabaseClient,
-	evaluation: { id: string; series: { items: ReadonlyArray<{ templateId: string }> } },
+	evaluation: {
+		id: string;
+		form: EvaluationForm;
+		series: { items: ReadonlyArray<{ templateId: string; delay?: number }> };
+	},
 	studentIds: string[]
 ): Promise<EvaluationBreakdown> {
+	const { form } = evaluation;
 	const items = evaluation.series.items;
 	try {
 		const sessions = await readInBatches('Copies', studentIds, (batch, from, to) =>
@@ -348,7 +440,7 @@ export async function getEvaluationBreakdown(
 			(batch, from, to) =>
 				supabase
 					.from('test_answers')
-					.select('test_session_id, template_id, status, points')
+					.select('test_session_id, template_id, status, points, time_spent')
 					.in('test_session_id', batch)
 					.order('id')
 					.range(from, to)
@@ -362,6 +454,7 @@ export async function getEvaluationBreakdown(
 		];
 		if (templateIds.length === 0) {
 			return computeEvaluationBreakdown({
+				form,
 				items,
 				sessions,
 				answers,
@@ -396,6 +489,7 @@ export async function getEvaluationBreakdown(
 		);
 
 		return computeEvaluationBreakdown({
+			form,
 			items,
 			sessions,
 			answers,

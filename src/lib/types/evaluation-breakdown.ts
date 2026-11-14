@@ -25,11 +25,33 @@ export interface BreakdownTally extends BreakdownCounts {
 	successRate: number | null;
 }
 
+/**
+ * Temps imparti d'une question (chantier `durees-trop-courtes`, P7) : sur les
+ * copies comptées, combien d'élèves ont laissé le chrono s'écouler sans rien
+ * répondre. Aucun nom, seulement des comptes.
+ */
+export interface QuestionTiming {
+	/** Durée de la question dans la série (secondes) */
+	delaySeconds: number;
+	/** Élèves qui ont eu la question */
+	students: number;
+	/** Élèves qui n'ont rien répondu dans le temps imparti */
+	unansweredInTime: number;
+	/** Au moins `TOO_SHORT_MIN_STUDENTS` élèves, et plus de la moitié sans réponse à temps */
+	tooShort: boolean;
+}
+
 /** Une question de la série (un modèle) */
 export interface QuestionBreakdown extends BreakdownTally {
 	/** null : modèle supprimé depuis */
 	templateId: string | null;
 	title: string;
+	/**
+	 * null : pas de durée par question (Course aux nombres), modèle hors de la
+	 * série, ou modèle sur deux lignes à durées différentes (durée de chaque
+	 * élève inconnue)
+	 */
+	timing: QuestionTiming | null;
 }
 
 /** Une notion du programme (branche › notion) */
@@ -59,6 +81,17 @@ export const NO_NOTION_LABEL = 'Sans notion';
 export const DELETED_TEMPLATE_LABEL = 'Modèle supprimé';
 export const UNKNOWN_TEMPLATE_LABEL = 'Modèle indisponible';
 export const BREAKDOWN_ERROR_MESSAGE = 'Le bilan ne peut pas être calculé pour le moment.';
+
+/** Durée sans doute trop courte : pas de jugement sous ce nombre d'élèves (P7, Q1) */
+export const TOO_SHORT_MIN_STUDENTS = 5;
+export const TOO_SHORT_LABEL = 'Durée sans doute trop courte';
+
+/** « 7 élèves sur 10 n'ont rien répondu dans les 20 s » */
+export function tooShortSentence(timing: QuestionTiming): string {
+	const n = timing.unansweredInTime;
+	const verb = n > 1 ? "n'ont" : "n'a";
+	return `${n} élève${n > 1 ? 's' : ''} sur ${timing.students} ${verb} rien répondu dans les ${timing.delaySeconds}\u00a0s`;
+}
 
 // ---------------------------------------------------------------------------
 // Erreurs de la classe sur une question (chantier `erreurs-frequentes`, PR 1)
