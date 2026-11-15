@@ -1,4 +1,5 @@
 {
+	"id": "5768bed7-0b51-4b6c-84e6-23a7d0042cc9",
 	"title": "Séquencer des instructions (tortue)",
 	"description": "Faire tracer à la tortue une lettre L, une lettre T ou un zigzag, sans boucle.",
 	"grades": ["5"],

@@ -1,4 +1,5 @@
 {
+	"id": "4cf28652-900a-4cd3-8b22-f421b8226361",
 	"title": "Écrire une formule en blocs",
 	"description": "Traduire une formule (ax + b, b(x + a), x² − a) en programme de calcul par blocs.",
 	"grades": ["5"],
