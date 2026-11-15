@@ -8,9 +8,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, PR 1a en cours._
+_Mis à jour le 2026-11-15, après #2672._
 
-- **État** : phase 0 validée (Q1-Q8 selon les recos) ; PR 1a (bloc `robot en question : moteur, parseur, juge, câblage, sans écran) codée, tests verts, docs à jour, revue en cours · **Prochaine action** : findings de revue → PR 1a ouverte, CI, merge ; puis PR 1b (écran : carte du geste, corrigé, PDF, catalogue) · **En attente de David** : rien · **Pièges en cours** : sans écran, un bloc `robot ne s'affiche pas et le PDF n'imprime rien jusqu'à la PR 1b ; zsh ne découpe pas une variable (tableau `F=(…)` puis `"${F[@]}"`) ; code en dehors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches`)
+- **État** : phase 0 validée (Q1-Q8 selon les recos) ; PR 1a mergée (#2672) : bloc ```robot en question, moteur, parseur, juge, câblage, sans écran ni PDF · **Prochaine action** : PR 1b, l'écran — carte du geste (réserve de cartes, bande « Mon code », toucher ou glisser comme `RangerPlacer`, « avance de » + chiffre 1-9), quadrillage dessiné (affichage et question), corrigé dessiné (chemin de l'élève vert / rouge, code juste en pointillés), PDF (quadrillage + 15 cases), fiche du catalogue ; puis lot 2 (deux modèles CE1 « produire ») · **En attente de David** : rien · **Pièges en cours** : la copie corrigée reçoit `expected` = `<scène> \| <code>` complet (passer par `readExpectedRobotAnswer().solution`, asserter le TEXTE montré) ; série d'automatismes refuse le robot tant qu'il n'a pas de PDF (lever ce refus en 1b) ; zsh ne découpe pas une variable (`F=(…)`, `"${F[@]}"`) ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-1b`)
 
 ## Phase 0 — comportements (à valider)
 
@@ -129,3 +129,4 @@ sans règle d'accès : personne ne lit rien de plus.
   grande avance d'abord ; `interdites:` à `;` final. **À faire en PR 1b** : la copie corrigée reçoit
   `expected` = la chaîne complète `<scène> | <code>` : le rendu passe par `readExpectedRobotAnswer().solution`,
   test qui asserte le TEXTE montré.
+- 2026-11-15 : #2672 mergée (PR 1a), CI verte du premier coup.
