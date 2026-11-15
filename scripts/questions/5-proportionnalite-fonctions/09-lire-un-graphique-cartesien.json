@@ -1,4 +1,5 @@
 {
+	"id": "6f3c6c5f-97ed-4a95-9c86-8410543a7216",
 	"title": "Lire un graphique cartésien",
 	"description": "Lire l'ordonnée d'un point d'une courbe, ou l'abscisse d'un point d'un nuage",
 	"grades": ["5"],

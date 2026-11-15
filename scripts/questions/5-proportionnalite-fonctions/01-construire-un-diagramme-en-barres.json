@@ -1,4 +1,5 @@
 {
+	"id": "79b46762-3fbe-4992-a365-0b1ae36c400d",
 	"title": "Construire un diagramme en barres",
 	"description": "Tableau des effectifs donné : construire toutes les barres, axe de 5 en 5 ou échelle à choisir",
 	"grades": ["5"],

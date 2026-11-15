@@ -1,4 +1,5 @@
 {
+	"id": "c3d20985-ae60-407c-a5f6-d5da48dcf7ec",
 	"title": "Interpréter un tableau de valeurs",
 	"description": "Dire si une grandeur augmente, diminue, ou ni l'un ni l'autre quand l'autre augmente",
 	"grades": ["5"],
