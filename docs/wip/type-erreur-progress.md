@@ -10,9 +10,9 @@ d'une erreur (signe, oubli du carré…) par le moteur mathAST ».
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, PR 2 en cours._
+_Mis à jour le 2026-11-15, après #2686._
 
-- **État** : PR 2 (prof) codée sur `feat/type-erreur-prof` : `answerErrorKinds` (`src/lib/questions/error-kinds.ts`), comptes par type dans `computeQuestionErrors`, étiquettes et ligne « Types d'erreur » dans `QuestionErrorsPanel` · **Prochaine action** : PR 2 → revue, CI, merge ; puis PR 3 (phrase à l'élève) · **En attente de David** : rien · **Pièges en cours** : le message global du validateur vaut « Les blancs suivants sont incorrects » sur toute réponse fausse → ne lire que les `remarks` de la case (sinon aucun type ne sort ; test avec le vrai validateur) ; `rac{-3}{4}`, `-(12)`, `	frac` non lus comme écriture finale (mineur) ; à figer en PR 3 : `4` pour `-2` = carré en trop, `-5` pour `25` = carré oublié · **Worktree / branche** : `ubumaths-wt-type-erreur`, `feat/type-erreur-prof`
+- **État** : PR 1 (#2682, moteur `guessErrorKind`) et PR 2 (#2686, prof : `answerErrorKinds` dans `src/lib/questions/error-kinds.ts`, comptes par type et étiquettes dans `QuestionErrorsPanel`) mergées ; vérification manuelle notée · **Prochaine action** : PR 3 — la phrase à l'élève à la correction (Saisie, Contrôle blanc, copie de contrôle corrigée), ton tranché (Q3 : « Ta réponse est l'opposé du résultat : vérifie le signe. ») · **En attente de David** : rien · **Pièges en cours** : le message global du validateur vaut « Les blancs suivants sont incorrects » sur toute réponse fausse → ne lire que les `remarks` de la case ; traces de séries sans remarques (`traceVerdict`) ; cases `orderIndependent` non typées ; réponse > 64 caractères non lue ; `rac{-3}{4}`, `-(12)`, `	frac` non lus (mineur) ; à figer en PR 3 : `4` pour `-2` = carré en trop, `-5` pour `25` = carré oublié · **Worktree / branche** : aucun (retiré après #2686) ; PR 3 → nouveau worktree `ubumaths-wt-type-erreur`, branche `feat/type-erreur-eleve`
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -85,6 +85,7 @@ l'autre.
 
 ## Historique
 
+- 2026-11-15 : #2686 mergée (PR 2, prof ; revue Sonnet + audit sécurité sans bloquant ; borne 64 caractères ajoutée ; CI verte).
 - 2026-11-15 : PR 2 codée (prof) : cases fausses typées, compte par type ; cases à appariement libre (`orderIndependent`) non typées en v1.
 - 2026-11-15 : #2682 mergée (PR 1, moteur ; revue Opus sans bloquant ; CI verte).
 - 2026-11-15 : Q5 tranchée (calculé à la lecture) ; PR 1 commencée.
