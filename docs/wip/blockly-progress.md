@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2688 et la publication du lot CM2._
+_Mis à jour le 2026-11-15, lot « prévoir la valeur » écrit (PR des fichiers à ouvrir)._
 
-- **État** : lot 6e publié, #2683 en prod (v0.90.0), 6-210 corrigé · lot CM2 publié (CM2-152, `42881663`, #2685 + #2688) · **Prochaine action** : (3) « prévoir la valeur » (programme en blocs affiché dans l'énoncé ; débloque 5-101 / 5-104, et CM2-067 sans modèle) : phase 0 d'abord · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; il ne rejoue pas les specs d'un modèle déjà en base (copie sans id, dans le scratchpad si possible) ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `CalculCorrige.svelte` est aussi couvert par `ubumark.md` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance, simulation comprise) ; `db:migrate` → depuis le dépôt principal ; worktree neuf → `pnpm exec svelte-kit sync` · **Worktree / branche** : aucun (retiré après #2688) ; le prochain lot en ouvre un
+- **État** : lots 6e et CM2 publiés ; « prévoir la valeur » = lot de 3 modèles en ```scratch, SANS outil neuf (David, 2026-11-15 : le bloc Blockly en lecture seule est abandonné, § Prévoir la valeur) · **Prochaine action** : PR des fichiers (`feat/blockly-prevoir-valeur`), merge, puis **David** lance `create-questions --publier` → ids commités aussitôt → migration nœud + tag (CM2-067 sur la sous-notion « programmes de calcul », 5-101 / 5-104 sur la notion « Variables et instructions ») → page à cocher → publication · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; modèle sur une notion → `sous_notions_admises` dans la migration ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `db:migrate` → depuis le dépôt principal ; montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance) · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-prevoir-valeur`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -525,3 +525,39 @@ Script `docs/wip/questions/lot-cm2-blockly.py` → `scripts/questions/CM2-blockl
   suggérée, pas imposée ; `afficher r` faux (règle de #2683) ; délai 300 s.
 - Vérifié : simulation 1/1 (12 specs) ; une spec inversée → modèle refusé ;
   `answer-complexity-corpus` et `student-answer-safety.render` verts. Pas joué en base locale.
+
+## Prévoir la valeur — écrit le 2026-11-15 (branche `feat/blockly-prevoir-valeur`)
+
+**Phase 0** (David, 2026-11-15, « je te suis » à chaque fois). D'abord validé : un bloc Blockly
+neuf en lecture seule dans l'énoncé (case ordinaire + contrôle de publication, corrigé pas à pas
+calculé, PDF en texte), calcul seul, deux PR (bloc puis modèles). **Puis abandonné avant tout
+code** : le bloc ``scratch (chantier `bloc-scratch`, #2122, en prod) montre déjà un programme dans
+l'énoncé, et 7 modèles s'en servent, dont « Exécuter un programme pour un nombre de départ » (6e,
+6-195, publié) — exactement « prévoir la valeur ». Décision : **aucun outil neuf**, un lot de
+modèles en ``scratch (ou en mots, BO CM2), case ordinaire ou case choix. Perdu par rapport au
+bloc neuf : corrigé écrit à la main (vérifié par les specs) et contrôle automatique case /
+programme ; apparence Scratch et non Blockly.
+
+Relevé prod (lecture seule) : CM2-067 « Exécuter un programme de calcul (résultat pour un nombre
+de départ donné) » sur **Algèbre › Premiers pas algébriques › programmes de calcul** (sous-notion) ;
+5-101 « Identifier les entrées et sorties d'un programme » et 5-104 « Prévoir la valeur d'une
+expression informatique avant son exécution » sur la **notion Algorithmique › Variables et
+instructions** (comme le lot 11). Aucun modèle sur les trois. BO CM2 : « jusqu'à trois
+instructions », exemple en liste, « peuvent aussi être codés … comme Scratch ».
+
+Script `docs/wip/questions/lot-prevoir-valeur.py` → `scripts/questions/blockly-prevoir-valeur/`
+(3 modèles, 25 specs).
+
+| #   | Point   | Titre                              | Variations                                                          | Niveau |
+| --- | ------- | ---------------------------------- | ------------------------------------------------------------------- | ------ |
+| 01  | CM2-067 | Exécuter un programme de calcul    | 3 instructions en mots (BO) ; 2 en mots ; Scratch (× a puis − b)    | 1      |
+| 02  | 5-104   | Prévoir la valeur d'une expression | (x + a) × b imbriqué ; x + x × a ; x − a + b à intermédiaire < 0    | 1      |
+| 03  | 5-101   | Entrées et sorties d'un programme  | choix « l'entrée ? » ; choix « la sortie ? » ; 2 entrées, 2 sorties | 1      |
+
+- 5e : négatifs seulement en addition / soustraction (produit de relatifs en 4e) ; résultats
+  entiers. Corrigés : « le bloc le plus intérieur se calcule en premier ».
+- Vérifié : simulation 3/3 (25 specs, base prod, aucun homonyme) ; une spec inversée → chaque
+  modèle refusé ; `check:ubumark` sur les énoncés et corrigés (Scratch reconnu, `dire … pendant
+(2) secondes` compris ; témoin d'instruction inconnue bien signalé) ; `audit-question-draws`
+  200 tirages par variation sans alerte ; `answer-complexity-corpus` et
+  `student-answer-safety.render` verts. Pas joué en base locale (comme les lots précédents).
