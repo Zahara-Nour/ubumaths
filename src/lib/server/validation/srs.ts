@@ -149,8 +149,8 @@ export const uuidParamSchema = z.object({
  * Schema for review/due query parameters.
  *
  * `states` est un filtre optionnel (CSV) sur les états FSRS, utilisé par les
- * sections du deck Programme (À remédier = "learning,relearning" ; À renforcer
- * = "review"). Validation : chaque élément doit être un CardState valide ; un
+ * sections du deck Programme (À remédier = "relearning" ; À renforcer
+ * = "learning,review"). Validation : chaque élément doit être un CardState valide ; un
  * filtre dont la liste résultante est vide est ignoré (pas de filtre).
  */
 const CARD_STATES = ['new', 'learning', 'review', 'relearning'] as const;

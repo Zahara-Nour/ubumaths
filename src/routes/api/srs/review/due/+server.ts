@@ -1,11 +1,11 @@
 /**
  * SRS Review API - Due Cards
  *
- * GET /api/srs/review/due?deck_id=X[&states=learning,relearning][&all=true]
+ * GET /api/srs/review/due?deck_id=X[&states=relearning][&all=true]
  *
  * Refonte 2026-06-10 (Phase 3) : ajout du filtre `states` pour permettre
  * aux sections du deck Programme de lancer une session ciblée
- * (À remédier = states=learning,relearning ; À renforcer = states=review).
+ * (À remédier = states=relearning ; À renforcer = states=learning,review).
  */
 
 import { json } from '@sveltejs/kit';

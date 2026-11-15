@@ -289,7 +289,7 @@ describe('getClassCurriculumPointGrid', () => {
 			srs_card_stats: () => ({
 				data: [
 					{ user_id: 's1', card_reference_id: 't1', state: 'review', next_review: future },
-					{ user_id: 's1', card_reference_id: 't2', state: 'learning', next_review: past }
+					{ user_id: 's1', card_reference_id: 't2', state: 'relearning', next_review: past }
 				],
 				error: null
 			})
@@ -412,7 +412,7 @@ describe('getClassTopCurriculumPointsToRemediate', () => {
 				data: Array.from({ length: count }, (_, i) => ({
 					user_id: 's1',
 					card_reference_id: `t${i}`,
-					state: 'learning',
+					state: 'relearning',
 					next_review: past
 				})),
 				error: null
