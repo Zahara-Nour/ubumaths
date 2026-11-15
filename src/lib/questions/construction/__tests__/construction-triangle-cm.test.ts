@@ -1,7 +1,7 @@
 /**
  * Juge d'une case « figure » : triangle quelconque coté en cm — chantier
  * `triangle-cote-cm` (n° 29 d'`outils-manquants`, phase 0 validée par David le
- * 2026-11-14, `docs/wip/triangle-cote-cm-progress.md`).
+ * 2026-11-14, `docs/archive/wip/triangle-cote-cm-progress.md`).
  *
  * [AB] est tracé, papier uni. Trois longueurs (`AC = 4 cm ; BC = 5 cm`) : règle
  * posée en A, compas piqué en A et ouvert sur la graduation de 4 cm, de même en
