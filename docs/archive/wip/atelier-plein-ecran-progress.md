@@ -1,16 +1,16 @@
 ---
 title: Atelier — plein écran et « Mes objets » rétractable
 date: 2026-11-15
-status: livré (#2675), pas en prod
+status: clos (#2675, validé par David le 2026-11-15)
 ---
 
 # Atelier — plein écran et « Mes objets » rétractable
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2675._
+_Mis à jour le 2026-11-15, chantier clos._
 
-- **État** : livré sur `main` (#2675, mergée), pas en prod · **Prochaine action** : aucune ; clore le chantier (versement : la doc est déjà dans `docs/systeme/atelier.md`, archiver ce journal) après l'essai de David · **En attente de David** : essai sur ordinateur (ligne du 2026-11-15 dans `verifications-manuelles.md`) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-atelier-plein-ecran` gardé tant que David teste sur le serveur 5176 (Tailscale Serve sur 443), puis `git worktree remove` + `tailscale serve reset`
+- **État** : livré (#2675), validé par David sur le serveur de la branche le 2026-11-15 (« c'est parfait ») ; pas encore en prod · **Prochaine action** : aucune · **Doc durable** : `docs/systeme/atelier.md` · Worktree et branche supprimés.
 
 ## Demande (David, 2026-11-15)
 
