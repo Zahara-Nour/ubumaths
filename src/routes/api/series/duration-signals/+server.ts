@@ -1,6 +1,6 @@
 /**
- * Durées trop courtes des modèles d'un panier (chantier `durees-trop-courtes`,
- * PR 2). Prof et admin. Lecture seule, sous la RLS du professeur ; mode test
+ * Durées trop courtes (chantier `durees-trop-courtes`, PR 2) et durées
+ * observées (chantier `durees-ajustees`) des modèles d'un panier. Prof et admin. Lecture seule, sous la RLS du professeur ; mode test
  * respecté. Rend des comptes, jamais un nom.
  */
 
@@ -32,5 +32,5 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const isTestMode = await getTeacherTestMode(user.id, locals.supabase);
 	const result = await getDurationSignals(locals.supabase, query.data, isTestMode);
 	if (result.status === 'error') throw error(500, result.message);
-	return json(result.signals);
+	return json({ signals: result.signals, observed: result.observed });
 };

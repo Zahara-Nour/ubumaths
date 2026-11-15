@@ -22,6 +22,14 @@
  * modèle (Q8). Carte de cours (jamais de case) : écartée. Mode test du
  * professeur respecté (`profiles.is_test`).
  *
+ * **Durée observée** (chantier `durees-ajustees`, A1) : mêmes tirages, avec leur
+ * durée de réponse. Un temps écoulé dit seulement « au-delà de la durée » (la
+ * durée de réponse est plafonnée) ; une question passée à vide avant la fin
+ * ne dit rien du temps nécessaire : durée inconnue, écartée ; on rend la durée dans laquelle 80 % des
+ * tirages ont été validés, arrondie aux 5 s supérieures, si ces 80 % sont
+ * connus (plus de 20 % de temps écoulés : aucun chiffre) et si au moins
+ * 5 élèves ont compté. Chaque tirage compte, durées allouées confondues.
+ *
  * Tout se lit avec le client du professeur, sous la RLS existante
  * (`is_my_student`) : aucune lecture nouvelle. Aucun nom ne sort d'ici.
  *
@@ -34,12 +42,18 @@ import { isCourseCard } from '$lib/questions/types';
 import { TOO_SHORT_MIN_STUDENTS, type QuestionTiming } from '$lib/types/evaluation-breakdown';
 import {
 	DURATION_SIGNALS_MESSAGE,
+	OBSERVED_MAX_SECONDS,
+	OBSERVED_MIN_SECONDS,
+	OBSERVED_QUANTILE,
+	OBSERVED_STEP_SECONDS,
 	type DurationSignals,
-	type DurationSignalsResult
+	type DurationSignalsResult,
+	type ObservedDurations
 } from '$lib/types/duration-signals';
 import {
 	BreakdownReadError,
 	bestCopies,
+	columnOf,
 	delaysByTemplate,
 	readInBatches,
 	unansweredInTime,
@@ -60,6 +74,13 @@ export interface DurationDraw {
 	delaySeconds: number;
 	/** Temps écoulé sans rien répondu */
 	missed: boolean;
+	/**
+	 * Validée avant la fin AVEC une réponse : durée de réponse (s) ; null : temps
+	 * écoulé, durée inconnue, ou validée à vide (passer ≠ avoir eu le temps, A1)
+	 */
+	responseSeconds: number | null;
+	/** Arrivée au bout du chrono, réponse commencée ou non : « au-delà de la durée » */
+	timedOut: boolean;
 }
 
 /** Trace de Contrôle blanc, colonnes lues */
@@ -67,6 +88,7 @@ export interface MockTestTraceRow {
 	student_id: string;
 	template_id: string | null;
 	allotted_ms: number | null;
+	response_ms: number | null;
 	end_reason: string | null;
 	part_verdicts: boolean[] | null;
 }
@@ -99,7 +121,14 @@ export function mockTestDraws(traces: ReadonlyArray<MockTestTraceRow>): Duration
 				studentId: trace.student_id,
 				templateId: trace.template_id,
 				delaySeconds: Math.round(trace.allotted_ms / 1000),
-				missed: trace.end_reason === 'timeout' && trace.part_verdicts === null
+				missed: trace.end_reason === 'timeout' && trace.part_verdicts === null,
+				responseSeconds:
+					trace.end_reason === 'validated' &&
+					trace.response_ms !== null &&
+					trace.part_verdicts !== null
+						? trace.response_ms / 1000
+						: null,
+				timedOut: trace.end_reason === 'timeout'
 			}
 		];
 	});
@@ -110,12 +139,18 @@ export function controlDraws(answers: ReadonlyArray<ControlAnswer>): DurationDra
 	return answers.flatMap(({ studentId, answer, delays }) => {
 		const delay = answer.template_id ? delays.get(answer.template_id) : undefined;
 		if (!answer.template_id || delay === undefined || delay === null) return [];
+		// Secondes entières déclarées : la dernière seconde vaut le bout du chrono (règle P7)
+		const spent = answer.time_spent === null ? null : Number(answer.time_spent);
+		const timedOut = spent !== null && spent >= delay - 1;
+		const answered = columnOf(answer.status) !== 'empty';
 		return [
 			{
 				studentId,
 				templateId: answer.template_id,
 				delaySeconds: delay,
-				missed: unansweredInTime(answer, delay)
+				missed: unansweredInTime(answer, delay),
+				responseSeconds: spent !== null && !timedOut && answered ? spent : null,
+				timedOut
 			}
 		];
 	});
@@ -157,6 +192,42 @@ export function durationSignalsOf(draws: ReadonlyArray<DurationDraw>): DurationS
 	return signals;
 }
 
+/**
+ * Tirages → durée observée par modèle (A1, Q3-Q4). Tirage à durée inconnue :
+ * écarté. Temps écoulé : au-delà de toute durée validée.
+ */
+export function observedDurationsOf(draws: ReadonlyArray<DurationDraw>): ObservedDurations {
+	// Modèle → [élèves, durées validées, tirages comptés]
+	const byTemplate = new Map<string, { students: Set<string>; times: number[]; total: number }>();
+	for (const draw of draws) {
+		if (!draw.timedOut && draw.responseSeconds === null) continue;
+		const entry = byTemplate.get(draw.templateId) ?? {
+			students: new Set<string>(),
+			times: [],
+			total: 0
+		};
+		entry.students.add(draw.studentId);
+		entry.total += 1;
+		if (!draw.timedOut && draw.responseSeconds !== null) entry.times.push(draw.responseSeconds);
+		byTemplate.set(draw.templateId, entry);
+	}
+
+	const observed: ObservedDurations = {};
+	for (const [templateId, { students, times, total }] of byTemplate) {
+		if (students.size < TOO_SHORT_MIN_STUDENTS) continue;
+		const rank = Math.ceil(OBSERVED_QUANTILE * total);
+		// Les temps écoulés sont après toutes les durées validées : pas assez de durées connues
+		if (times.length < rank) continue;
+		const quantile = times.sort((a, b) => a - b)[rank - 1];
+		const rounded = Math.ceil(quantile / OBSERVED_STEP_SECONDS) * OBSERVED_STEP_SECONDS;
+		observed[templateId] = {
+			seconds: Math.min(OBSERVED_MAX_SECONDS, Math.max(OBSERVED_MIN_SECONDS, rounded)),
+			students: students.size
+		};
+	}
+	return observed;
+}
+
 /** Postérieur à la modification du modèle (Q8) ; modèle jamais modifié : tout compte */
 function isAfter(date: string | null, updatedAt: string | null | undefined): boolean {
 	if (!date) return false;
@@ -171,7 +242,9 @@ async function readMockTestTraces(
 	const rows = await readInBatches('Traces de Contrôle blanc', templateIds, (batch, from, to) =>
 		supabase
 			.from('skill_attempts')
-			.select('id, student_id, template_id, allotted_ms, end_reason, part_verdicts, created_at')
+			.select(
+				'id, student_id, template_id, allotted_ms, response_ms, end_reason, part_verdicts, created_at'
+			)
 			.in('template_id', batch)
 			.eq('place', 'mock_test')
 			.not('end_reason', 'is', null)
@@ -283,7 +356,7 @@ async function studentsOfMode(
 }
 
 /**
- * Durées observées des modèles, pour les élèves du professeur. Une lecture en
+ * Durées trop courtes et durées observées des modèles, pour les élèves du professeur. Une lecture en
  * échec rend une erreur propre, jamais une exception.
  */
 export async function getDurationSignals(
@@ -292,7 +365,7 @@ export async function getDurationSignals(
 	isTestMode: boolean
 ): Promise<DurationSignalsResult> {
 	const ids = [...new Set(templateIds)];
-	if (ids.length === 0) return { status: 'ok', signals: {} };
+	if (ids.length === 0) return { status: 'ok', signals: {}, observed: {} };
 	try {
 		const templates = await readInBatches('Modèles', ids, (batch, from, to) =>
 			supabase
@@ -303,7 +376,7 @@ export async function getDurationSignals(
 				.range(from, to)
 		);
 		const kept = templates.filter((t) => !isCourseCard(t));
-		if (kept.length === 0) return { status: 'ok', signals: {} };
+		if (kept.length === 0) return { status: 'ok', signals: {}, observed: {} };
 		const keptIds = kept.map((t) => t.id);
 		const updatedAt = new Map(kept.map((t) => [t.id, t.updated_at]));
 
@@ -312,16 +385,18 @@ export async function getDurationSignals(
 			readControlAnswers(supabase, keptIds, updatedAt)
 		]);
 		const draws = [...mockTestDraws(traces), ...controlDraws(answers)];
-		if (draws.length === 0) return { status: 'ok', signals: {} };
+		if (draws.length === 0) return { status: 'ok', signals: {}, observed: {} };
 
 		const allowed = await studentsOfMode(
 			supabase,
 			[...new Set(draws.map((d) => d.studentId))],
 			isTestMode
 		);
+		const counted = draws.filter((d) => allowed.has(d.studentId));
 		return {
 			status: 'ok',
-			signals: durationSignalsOf(draws.filter((d) => allowed.has(d.studentId)))
+			signals: durationSignalsOf(counted),
+			observed: observedDurationsOf(counted)
 		};
 	} catch (e) {
 		if (!(e instanceof BreakdownReadError)) {

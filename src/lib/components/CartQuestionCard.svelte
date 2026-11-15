@@ -9,7 +9,8 @@
 	 * toujours visibles ; leurs boutons − / + n'apparaissent qu'au survol (ou au
 	 * focus clavier, ou toujours sur écran tactile). Un clic sur la tuile ne fait
 	 * rien : tout est déjà dans la flash-card. Sous la durée : la marque « Durée
-	 * sans doute trop courte » à cette durée (prof, chantier `durees-trop-courtes`).
+	 * sans doute trop courte » à cette durée (prof, chantier `durees-trop-courtes`),
+	 * puis la durée observée chez ses élèves, à appliquer (chantier `durees-ajustees`).
 	 */
 	import { Button } from '$lib/components/ui/button';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
@@ -21,6 +22,7 @@
 	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 	import type { QuestionTiming } from '$lib/types/evaluation-breakdown';
 	import TooShortMark from '$lib/components/series/TooShortMark.svelte';
+	import ObservedDelayHint from '$lib/components/series/ObservedDelayHint.svelte';
 
 	// Bornes et pas de la durée (secondes)
 	const DELAY_STEP = 5;
@@ -40,7 +42,8 @@
 		onDecrementQuantity,
 		onUpdateDelay,
 		onRemove,
-		tooShort = null
+		tooShort = null,
+		observedDelay = null
 	}: {
 		item: SeriesItem;
 		/** Absent : le modèle n'est plus publié */
@@ -52,6 +55,8 @@
 		onRemove: (templateId: string) => void;
 		/** Durée courante signalée trop courte (prof seulement) ; null : rien */
 		tooShort?: QuestionTiming | null;
+		/** Durée observée à suggérer (prof seulement) ; null : rien */
+		observedDelay?: number | null;
 	} = $props();
 
 	function handleIncrementDelay() {
@@ -161,4 +166,8 @@
 	</div>
 
 	<TooShortMark timing={tooShort} />
+	<ObservedDelayHint
+		seconds={observedDelay}
+		onapply={(seconds) => onUpdateDelay(item.templateId, seconds)}
+	/>
 </div>
