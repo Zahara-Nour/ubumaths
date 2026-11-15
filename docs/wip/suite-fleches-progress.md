@@ -8,9 +8,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2689._
+_Mis à jour le 2026-11-15, après la publication du lot 2._
 
-- **État** : lot 1 livré (#2672, #2680). Lot 2 : #2687 (modèles `scripts/questions/ce1-11/`) et #2689 (id + migration `20261115165656_questions_ce1_robot_rangement_tags`) mergées ; brouillons créés en prod par David (`856f400e` flèches niveau 4, `c8da0674` avance-pivote niveau 5) ; migration appliquée en prod par le `db:migrate` de la session `blockly` (#2688), vérifiée par MCP (nœud « coder un déplacement », tag CE1-080, brouillons) ; garde des niveaux verte · **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/MsZEbT2WJLF2cZNT8cDYth, collection `verdicts`, 2 fiches ; le bloc robot n'y est pas dessiné : jouer chaque modèle dans l'aperçu admin), compter ; puis `publier-lot.ts --dir scripts/questions/ce1-11` en simulation, David lance `--publier` · **En attente de David** : relecture des 2 modèles · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` ; aperçu local par `http://[::1]:5176` (`localhost` porte la session de David) · **Worktree / branche** : retiré après #2689 (reste : relecture et publication, sans code)
+- **État** : chantier terminé. Lot 1 (#2672, #2680, en prod v0.90.0) et lot 2 (#2687, #2689) livrés ; `856f400e` (flèches, niveau 4) et `c8da0674` (avance-pivote, niveau 5) relus OK (2/2) et **publiés** le 2026-11-15, rangés « coder un déplacement », tag CE1-080 ; n° 9 passé dans « Livré » d'`outils-manquants.md` · **Prochaine action** : clôture (versement du durable dans `docs/systeme/`, déjà fait pour le bloc dans `ubumark.md` ; archivage du journal) sur go de David ; hors chantier : les modèles QCM `e3bacfdc`, `8cbd4fb3` pourraient passer au bloc ```robot (phase 0, Q8) · **En attente de David** : go pour la clôture · **Pièges en cours** : le worktree `ubumaths-wt-suite-fleches` porte 9 fichiers `scripts/questions/5-triangles/` modifiés (id écrits) par une autre session : ne pas le retirer sans savoir à qui ils sont · **Worktree / branche** : `ubumaths-wt-suite-fleches` (HEAD détaché sur `origin/main`), branches `feat/suite-fleches-2`, `-2b` mergées
 
 ## Phase 0 — comportements (à valider)
 
@@ -217,3 +217,4 @@ règle d'accès, personne ne lit rien de plus.
   test d'intégration 19 verts / 8 rouges sans la migration, `security-auditor` sans bloquant) mergée. Dépôt principal
   bloqué par des fichiers d'autres sessions ; entre-temps le `db:migrate` de la session `blockly` a appliqué notre
   migration (note de cette session, intégrée ici). Vérifié par MCP. Page à cocher publiée, verdicts vides.
+- 2026-11-15 : relecture de David : 2/2 OK. `publier-lot.ts` en simulation vert ; David a publié ; relu en base : `published`, niveaux 4 et 5. N° 9 d'`outils-manquants.md` passé dans « Livré ».
