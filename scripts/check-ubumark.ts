@@ -25,6 +25,7 @@ import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
 import type { HorlogeNode } from '$lib/ubumark/types/horloge';
 import type { TortueNode } from '$lib/ubumark/types/tortue';
 import type { CalculNode } from '$lib/ubumark/types/calcul';
+import type { RobotNode } from '$lib/ubumark/types/robot';
 import type { OperationNode } from '$lib/ubumark/types/operation';
 import type { CollectionNode } from '$lib/ubumark/types/collection';
 import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
@@ -44,9 +45,10 @@ type BlocNode =
 	| EspaceNode
 	| ScratchNode
 	| TortueNode
-	| CalculNode;
+	| CalculNode
+	| RobotNode;
 
-/** Blocs ```courbe, ```figure, ```horloge, ```tortue, ```calcul, ```operation, ```collection, ```monnaie, ```partage, ```cubes, ```solide, ```patron et ```scratch d'un arbre ubumark, listes et choix compris. */
+/** Blocs ```courbe, ```figure, ```horloge, ```tortue, ```calcul, ```robot, ```operation, ```collection, ```monnaie, ```partage, ```cubes, ```solide, ```patron et ```scratch d'un arbre ubumark, listes et choix compris. */
 function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 	if (Array.isArray(node)) {
 		for (const child of node) blocs(child, found);
@@ -57,6 +59,7 @@ function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 		else if (record.type === 'horloge') found.push(node as HorlogeNode);
 		else if (record.type === 'tortue') found.push(node as TortueNode);
 		else if (record.type === 'calcul') found.push(node as CalculNode);
+		else if (record.type === 'robot') found.push(node as RobotNode);
 		else if (record.type === 'operation') found.push(node as OperationNode);
 		else if (record.type === 'collection') found.push(node as CollectionNode);
 		else if (record.type === 'monnaie') found.push(node as MonnaieNode);
@@ -92,6 +95,7 @@ function blocMessages(bloc: BlocNode): string[] {
 		bloc.type === 'horloge' ||
 		bloc.type === 'tortue' ||
 		bloc.type === 'calcul' ||
+		bloc.type === 'robot' ||
 		bloc.type === 'operation' ||
 		bloc.type === 'collection' ||
 		bloc.type === 'monnaie'

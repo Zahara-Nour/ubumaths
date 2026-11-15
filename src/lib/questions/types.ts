@@ -717,7 +717,8 @@ export type BuildKind =
 	| 'trig'
 	| 'solide'
 	| 'tortue'
-	| 'calcul';
+	| 'calcul'
+	| 'robot';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -735,6 +736,7 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'trig') return 'cercle trigonométrique';
 	if (kind === 'tortue') return 'programme tortue';
 	if (kind === 'calcul') return 'programme de calcul';
+	if (kind === 'robot') return 'robot à produire';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 

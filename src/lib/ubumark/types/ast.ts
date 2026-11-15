@@ -564,6 +564,7 @@ export type { ScratchNode } from './scratch';
 export type { HorlogeNode } from './horloge';
 export type { TortueNode } from './tortue';
 export type { CalculNode } from './calcul';
+export type { RobotNode } from './robot';
 export type { PartageNode } from './partage';
 export type { EspaceNode } from './espace';
 export type { OperationNode } from './operation';
@@ -588,6 +589,7 @@ import type { ScratchNode } from './scratch';
 import type { HorlogeNode } from './horloge';
 import type { TortueNode } from './tortue';
 import type { CalculNode } from './calcul';
+import type { RobotNode } from './robot';
 import type { PartageNode } from './partage';
 import type { EspaceNode } from './espace';
 import type { OperationNode } from './operation';
@@ -625,6 +627,7 @@ export type BlockNode =
 	| HorlogeNode
 	| TortueNode
 	| CalculNode
+	| RobotNode
 	| PartageNode
 	| EspaceNode
 	| OperationNode

@@ -220,6 +220,9 @@ export type { TortueNode, TortueIssue, TortueSpec } from './tortue';
 // CALCUL (bloc ```calcul)
 export type { CalculNode, CalculIssue, CalculSpec } from './calcul';
 
+// ROBOT (bloc ```robot)
+export type { RobotNode, RobotIssue, RobotSpec, RobotScene, Instruction } from './robot';
+
 // ============================================================================
 // PARTAGE (bloc ```partage)
 // ============================================================================

@@ -63,6 +63,8 @@ import { parseTortueContent } from '$lib/ubumark/parser/tortue-parser';
 import { expectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
 import { parseCalculContent } from '$lib/ubumark/parser/calcul-parser';
 import { expectedCalculAnswer } from '$lib/ubumark/utils/calcul-answer';
+import { parseRobotContent } from '$lib/ubumark/parser/robot-parser';
+import { expectedRobotAnswer } from '$lib/ubumark/utils/robot-answer';
 
 // Constantes
 
@@ -138,6 +140,14 @@ export function buildAnswerOf(
 		if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
 		if (node.spec?.attendu == null) return { errors: ['attendu: absent'] };
 		return { answer: expectedCalculAnswer(node.spec.essais, node.spec.attendu) };
+	}
+	if (kind === 'robot') {
+		// Robot à produire : la scène et un code le plus court (le juge rejoue celui de l'élève)
+		const node = parseRobotContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
+		if (node.spec?.solution == null) return { errors: ['arrivée: absente'] };
+		return { answer: expectedRobotAnswer(node.spec, node.spec.solution) };
 	}
 	if (kind === 'line') {
 		const { node, errors } = parseNumberLineContent(source);

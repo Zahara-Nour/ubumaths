@@ -255,6 +255,8 @@ function convertBlock(block: BlockNode): JSONContent | null {
 			return convertCodeBlock({ type: 'code-block', language: 'tortue', code: block.source });
 		case 'calcul':
 			return convertCodeBlock({ type: 'code-block', language: 'calcul', code: block.source });
+		case 'robot':
+			return convertCodeBlock({ type: 'code-block', language: 'robot', code: block.source });
 		case 'partage':
 			return convertCodeBlock({ type: 'code-block', language: 'partage', code: block.source });
 		case 'espace':
@@ -436,6 +438,8 @@ function convertListItem(item: ListItemNode): JSONContent {
 			content.push(
 				convertCodeBlock({ type: 'code-block', language: 'calcul', code: child.source })
 			);
+		} else if (child.type === 'robot') {
+			content.push(convertCodeBlock({ type: 'code-block', language: 'robot', code: child.source }));
 		} else if (child.type === 'operation') {
 			content.push(
 				convertCodeBlock({ type: 'code-block', language: 'operation', code: child.source })

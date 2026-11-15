@@ -191,12 +191,12 @@ export function parseRobotContent(source: string): RobotNode {
 
 	let colonnes = 0;
 	let lignes = 0;
-	let codage: Codage = 'flèches';
+	let codage = 'flèches' as Codage;
 	let depart: Case | null = null;
 	let departTexte = '';
-	let arrivee: Case | null = null;
+	let arrivee = null as Case | null;
 	let interdites: Case[] = [];
-	let produire = false;
+	let produire = false as boolean;
 	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
 
