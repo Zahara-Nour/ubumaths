@@ -1,4 +1,5 @@
 {
+	"id": "6191801f-cac0-4155-bcb3-98cede936c24",
 	"title": "Nuage de points et proportionnalité",
 	"description": "Prix selon un nombre d'objets : proportionnel, alignés sans l'origine, ou pas alignés",
 	"grades": ["5"],

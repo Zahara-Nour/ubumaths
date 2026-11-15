@@ -113,7 +113,7 @@ function atelierFile(build: (atelier: Atelier, desk: CalcDesk) => void): File {
 // =============================================================================
 
 describe('la barre d’icônes', () => {
-	it('des icônes seules, nommées : à gauche annuler et les fichiers, à droite la console, partager et régler', async () => {
+	it('des icônes seules, nommées : à gauche annuler et les fichiers, à droite la console, partager, régler et le plein écran', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
 		const { container } = await render(AtelierContainer, { atelier });
@@ -129,7 +129,7 @@ describe('la barre d’icônes', () => {
 				'Charger un atelier',
 				'Enregistrer l’atelier'
 			],
-			['Console', 'Partager', 'Réglages']
+			['Console', 'Partager', 'Réglages', 'Plein écran']
 		]);
 		// Icône seule : aucun texte visible, l'infobulle porte le nom
 		for (const button of toolbar(container).querySelectorAll('button')) {
@@ -252,7 +252,8 @@ describe('la barre d’icônes', () => {
 			'Rétablir',
 			'Enregistrer l’atelier',
 			'Console',
-			'Réglages'
+			'Réglages',
+			'Plein écran'
 		]);
 		// Le bandeau et « Garder dans mon atelier » restent
 		expect(container.textContent).toContain('Le tien n’a pas été modifié.');

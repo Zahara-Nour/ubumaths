@@ -94,7 +94,9 @@ function answersOf(template: QuestionTemplate): string[] {
  *   plus de 250 caractères (lot 11a de la 6e) ;
  * - programme tortue ou de calcul (```tortue, ```calcul) : programme en notation texte, rejoué
  *   par son interpréteur et borné par `LONGUEUR_MAX_PROGRAMME` ; un programme de quatre étapes
- *   dépasse 150 caractères (lot 11 de la 5e).
+ *   dépasse 150 caractères (lot 11 de la 5e) ;
+ * - code de robot (```robot + `produire: oui`) : rejoué sur la scène, 15 instructions au plus
+ *   (« avance de 9, » × 15 dépasse 150 caractères).
  */
 function isJudgedBeforeGuard(
 	template: QuestionTemplate,
@@ -111,9 +113,11 @@ function isJudgedBeforeGuard(
 	);
 }
 
-/** Case programme (tortue, calcul) : jugée par son interpréteur, avant la garde */
+/** Case programme (tortue, calcul, robot) : jugée par son interpréteur, avant la garde */
 function isProgramBlank(blank: { construire?: string }): boolean {
-	return blank.construire === 'tortue' || blank.construire === 'calcul';
+	return (
+		blank.construire === 'tortue' || blank.construire === 'calcul' || blank.construire === 'robot'
+	);
 }
 
 describe('garde de complexité — corpus du dépôt', () => {

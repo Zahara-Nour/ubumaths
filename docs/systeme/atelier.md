@@ -1960,6 +1960,16 @@ compte suit. Le choix n'est pas retenu d'un chargement à l'autre. ⚠️ Les te
 tournent à 414 px, se jouent sur bureau (`harness/desktop-screen.ts`) ; le repli a ses propres
 tests (`mes-objets-telephone.svelte.test.ts`).
 
+**« Mes objets » replié sur bureau** (chantier `atelier-plein-ecran`, validé par David le
+2026-11-15) : au-dessus de 720 px, un second bouton de l'en-tête (« Replier / Déplier « Mes
+objets » », `aria-controls` ; pas d'`aria-expanded`, le nom dit déjà l'état) replie le panneau en une **bande** de 2,75rem : le bouton en haut,
+puis le titre et le compte écrits de haut en bas ; la vue prend la largeur (la colonne de la
+grille passe à `auto` par `:has(.panneau.replie-large)`, sauf sous le graphe agrandi). Il s'ouvre
+déplié, n'a pas de bouton quand l'atelier est vide, se rouvre quand une carte prend la main
+(`selected` non nul, comme sur téléphone) et n'est pas retenu d'une visite à l'autre. État à part
+de celui du téléphone (`foldedWide` contre `opened`) : le CSS montre l'un ou l'autre bouton.
+Tests : `plein-ecran-et-repli.svelte.test.ts`.
+
 **𝒞f dans la vue Géométrie** (PR 3, K1-K3) : l'action de carte « Afficher dans Géométrie » /
 « Retirer de Géométrie » (`figure` dans `BY_KIND`, bascule comme « Tracer ») pose `inFigure` sur
 la fonction (`setInFigure`, un état d'affichage **rangé** comme `plotted` : sauvegarde, lien,
@@ -2315,7 +2325,18 @@ Lot 1 de la refonte de l'interface (`docs/archive/wip/atelier-refonte-interface-
 David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, en icônes seules
 (`ToolButton.svelte`) : à gauche **Repartir de zéro**, **Charger un atelier**, **Enregistrer
 l'atelier**, précédés d'**Annuler** et **Rétablir** (lot 5, voir « Annuler / Rétablir ») ; à
-droite **Console**, **Partager** et **Réglages**.
+droite **Console**, **Partager**, **Réglages** et **Plein écran**.
+
+**Plein écran** (chantier `atelier-plein-ecran`, 2026-11-15) : tout l'atelier recouvre la fenêtre
+(classe `plein-ecran` : `position: fixed`, `inset: 0`, comme le graphe agrandi), sans l'en-tête
+ni le menu du site ; « Mes objets », la barre et les onglets restent. Le bouton devient
+« Quitter le plein écran ». Ce n'est **pas** le plein écran du navigateur (Échap en sortirait
+aussi dans Chrome, écarté par David). Échap en sort (`handleExpandedEscape`), après ce qui a
+mieux à faire : un champ, un menu ou une fenêtre ouverts, la console (un Échap venu d'elle la
+ferme seulement — l'ordre des écouteurs délégués de Svelte n'étant pas sûr, on teste
+`consolePanel.contains(target)` — ; ouverte, focus ailleurs, Échap la ferme d'abord), le graphe
+agrandi (un Échap par étage). Non retenu d'une
+visite à l'autre.
 Un bouton indisponible garde le focus (`aria-disabled`, pas `disabled`) et dit pourquoi, dans son
 infobulle et à l'aide technique (« Ton atelier est vide : il n'y a rien à enregistrer. »).
 « Vide » se lit sur `atelier.isBlank` (ni objet, ni grille) : une grille seule s'enregistre et se

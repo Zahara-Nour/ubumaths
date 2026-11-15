@@ -116,6 +116,7 @@ import {
 	parseCalculContent,
 	isCalculBlockStart
 } from './calcul-parser';
+import { findRobotBlocks, parseRobot, parseRobotContent, isRobotBlockStart } from './robot-parser';
 import {
 	findPartageBlocks,
 	parsePartage,
@@ -537,6 +538,7 @@ function parseBlocks(
 	const horlogeBlocks = findHorlogeBlocks(lines);
 	const tortueBlocks = findTortueBlocks(lines);
 	const calculBlocks = findCalculBlocks(lines);
+	const robotBlocks = findRobotBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
 	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
@@ -570,6 +572,7 @@ function parseBlocks(
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
 		{ ranges: tortueBlocks, parse: parseTortue, language: 'tortue' },
 		{ ranges: calculBlocks, parse: parseCalcul, language: 'calcul' },
+		{ ranges: robotBlocks, parse: parseRobot, language: 'robot' },
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
@@ -646,6 +649,7 @@ function parseBlocks(
 			...horlogeBlocks,
 			...tortueBlocks,
 			...calculBlocks,
+			...robotBlocks,
 			...partageBlocks,
 			...espaceBlocks,
 			...operationBlocks,
@@ -672,6 +676,7 @@ function parseBlocks(
 			...findHorlogeBlocks(originalLines),
 			...findTortueBlocks(originalLines),
 			...findCalculBlocks(originalLines),
+			...findRobotBlocks(originalLines),
 			...findPartageBlocks(originalLines),
 			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
@@ -1846,6 +1851,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'calcul'
 	},
 	{
+		is: isRobotBlockStart,
+		find: findRobotBlocks,
+		parse: parseRobot,
+		language: 'robot'
+	},
+	{
 		is: isPartageBlockStart,
 		find: findPartageBlocks,
 		parse: parsePartage,
@@ -2115,6 +2126,10 @@ function parseContentWithCodeBlocks(
 			// Programme de calcul dans un item de liste : toujours un nœud, même en erreur (Q48) ;
 			// sans case (bloc en retrait), l'élève n'y répond pas
 			blocks.push(parseCalculContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'robot') {
+			// Robot dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans case
+			// (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseRobotContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'partage') {
 			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));

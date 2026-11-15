@@ -58,6 +58,12 @@ import { hasTortueToProgram } from '$lib/ubumark/parser/tortue-parser';
 import { readExpectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
 import { hasCalculToProgram } from '$lib/ubumark/parser/calcul-parser';
 import { readExpectedCalculAnswer } from '$lib/ubumark/utils/calcul-answer';
+import {
+	findRobotsToProduce,
+	hasRobotToProduce,
+	parseRobotContent
+} from '$lib/ubumark/parser/robot-parser';
+import { readExpectedRobotAnswer } from '$lib/ubumark/utils/robot-answer';
 import { hasVariationToFill } from '$lib/ubumark/parser/variation-table-parser';
 import {
 	readSignTableCases,
@@ -170,6 +176,56 @@ function rangerLabelsCollide(
 }
 
 /**
+ * Un robot à produire (```robot + `produire: oui`) est-il impossible avec ce tirage (aucun
+ * code de 15 instructions et 4 virages au plus, départ ou arrivée sur une case grise, arrivée
+ * au départ) ? Résolu à part, comme `rangerLabelsCollide` : les variables seules, d'où le refus
+ * de `{{random:` dans le bloc (`ROBOT_RANDOM_MESSAGE`). Condition implicite : le tirage est
+ * refait ; si aucun ne convient, le dernier passe et le bloc dit son erreur au prof. Toute autre
+ * erreur (case hors du quadrillage, clé inconnue) n'est pas une affaire de tirage : pas de
+ * nouvel essai, le prof la voit tout de suite.
+ */
+function robotSceneImpossible(
+	statement: TemplateMarkdown | undefined,
+	variables: ResolvedVariable[],
+	genericFunctions: Parameters<typeof resolveMarkdownContent>[3],
+	cleanCoefficients: boolean,
+	capitalPairs: Parameters<typeof resolveMarkdownContent>[5]
+): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```robot')) return false;
+	return findRobotsToProduce(text).some((block) => {
+		const resolved = String(
+			resolveMarkdownContent(
+				templateMarkdown(block.body.join('\n')),
+				variables,
+				createRandomSource(0),
+				genericFunctions,
+				cleanCoefficients,
+				capitalPairs
+			)
+		);
+		const node = parseRobotContent(resolved);
+		return (
+			node.spec === null &&
+			node.errors.every((e) => ROBOT_TIRAGE_ERRORS.some((motif) => motif.test(e.message)))
+		);
+	});
+}
+
+/** Erreurs d'un bloc robot qui tiennent au tirage (`robotSceneImpossible`) */
+const ROBOT_TIRAGE_ERRORS = [/aucun code de/, /l’arrivée est le départ/, /est sur une case grise/];
+
+const ROBOT_RANDOM_MESSAGE =
+	'Robot à produire : pas de {{random:…}} dans le bloc ```robot (le tirage ne pourrait pas être vérifié) ; utiliser une variable';
+
+/** Un robot à produire tire-t-il un hasard dans son bloc (`{{random:`) ? */
+function robotHasRandom(statement: TemplateMarkdown | undefined): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```robot')) return false;
+	return findRobotsToProduce(text).some((block) => block.body.join('\n').includes('{{random'));
+}
+
+/**
  * Deux éléments d'un même bloc ```associer ont-ils le même texte avec ce tirage, ou
  * deux étiquettes écrites différemment ? Résolus à part, comme `rangerLabelsCollide`.
  */
@@ -258,6 +314,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'trig') return 'la mesure du point du cercle trigonométrique (placer:)';
 	if (kind === 'tortue') return 'le programme du bloc tortue (attendu:)';
 	if (kind === 'calcul') return 'le programme du bloc calcul (attendu:)';
+	if (kind === 'robot') return 'le code du robot (calculé d’après la scène)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -559,6 +616,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 		}
 
+		if (robotHasRandom(resolvedVariation.statement)) {
+			return { success: false, errors: [ROBOT_RANDOM_MESSAGE] };
+		}
+
 		// 5. Resolve variables in declaration order (with condition retry loop).
 		// Un tirage est rejeté et recommencé quand une condition est fausse, mais aussi quand
 		// une variable ne se calcule pas pour CE tirage (division par zéro, arccos(3/2)) :
@@ -571,6 +632,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let rangerCollisions = 0;
 		let associerCollisions = 0;
 		let trousCollisions = 0;
+		/** Dernier tirage rejeté pour un robot impossible : repris si aucun ne convient */
+		let robotFallback: ResolvedVariable[] | undefined;
 		for (let attempt = 0; attempt <= MAX_CONDITION_RETRIES; attempt++) {
 			// Nouvel essai : la source continue, les tirages sont donc neufs
 			let candidate: ResolvedVariable[];
@@ -625,6 +688,19 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				trousCollisions++;
 				continue;
 			}
+			// Robot à produire : aucun code possible avec ce tirage
+			if (
+				robotSceneImpossible(
+					resolvedVariation.statement,
+					candidate,
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			) {
+				robotFallback = candidate;
+				continue;
+			}
 			resolvedVariables = candidate;
 			break;
 		}
@@ -645,6 +721,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					`Texte à trous : deux étiquettes identiques à chacun des ${trousCollisions} tirages (laquelle irait où ?) ; écrire une condition qui les rend différentes`
 				]
 			};
+		}
+
+		// Robot à produire impossible à chaque tirage : le dernier passe, la case dira pourquoi
+		if (resolvedVariables === undefined && robotFallback !== undefined) {
+			resolvedVariables = robotFallback;
 		}
 
 		if (resolvedVariables === undefined && rangerCollisions > 0) {
@@ -713,6 +794,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasTrigCircleToPlace(String(resolvedStatement)) ||
 				hasTortueToProgram(String(resolvedStatement)) ||
 				hasCalculToProgram(String(resolvedStatement)) ||
+				hasRobotToProduce(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
 				hasAssocierToPlace(String(resolvedStatement)) ||
 				hasTrousToPlace(String(resolvedStatement)) ||
@@ -933,7 +1015,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' || kind === 'tortue' || kind === 'calcul' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'tortue' || kind === 'calcul' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
@@ -1045,6 +1127,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						}
 						if (child.type === 'tortue' || child.type === 'calcul') {
 							return child.spec !== null && child.caseIndex !== undefined ? [child.caseIndex] : [];
+						}
+						if (child.type === 'robot') {
+							return child.spec?.produire && child.caseIndex !== undefined ? [child.caseIndex] : [];
 						}
 						if (child.type === 'trig-circle') {
 							const first = child.caseIndex;
@@ -1411,13 +1496,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				if (buildAnswer !== undefined) {
 					resolved.construire = buildAnswer.kind;
 					// Programme tortue ou de calcul : le corrigé montre le programme, sans la
-					// comparaison ni les essais
+					// comparaison ni les essais ; robot : le code, sans la scène
 					resolved.expectedAnswerLatex =
 						buildAnswer.kind === 'tortue'
 							? (readExpectedTortueAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
 							: buildAnswer.kind === 'calcul'
 								? (readExpectedCalculAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
-								: buildAnswer.answer;
+								: buildAnswer.kind === 'robot'
+									? (readExpectedRobotAnswer(buildAnswer.answer)?.solution ?? buildAnswer.answer)
+									: buildAnswer.answer;
 				}
 				return resolved;
 			});

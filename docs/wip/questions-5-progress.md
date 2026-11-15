@@ -5,20 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2668 (lot 10 mergé)._
+_Mis à jour le 2026-11-15, phase 0 du lot 12 proposée (§ 27)._
 
-- **État** : lots 1 à 9 publiés. Lot 10 (§ 24 ter, 10 modèles) **mergé** (#2668), pas encore créé en prod.
-  Lot 11 « Programmer en blocs » (§ 25) : **porté par `blockly`**.
-- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/5-proportionnalite-fonctions`
-  (depuis `main`) ; ensuite relevé, migration nœud + tag (`lot-10-rangement.py`) sur une nouvelle branche.
-- **En attente de David** : création en prod du lot 10 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
-- **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
-  128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
-- **Pièges en cours** : `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer
-  avant de commiter ; `db:migrate` en prod refusé par le classifieur du mode auto → David le lance (dry-run
-  d'abord) ; `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5` retiré après #2668 ; la migration se fera dans un nouveau
-  worktree (`feat/questions-5-lot-10-rangement`).
+- **État** : lots 1 à 11 publiés (lot 11 = Blockly, par `blockly`, 6 modèles publiés le 2026-11-15). Classement
+  refait le 2026-11-15 (§ 26) : 43 points sans modèle publié = 9 D, **34 B** (101, 104 compris, corrigé le même jour).
+- **Prochaine action** : validation de la phase 0 du lot 12 (§ 27), puis écriture (`5-reperage/`).
+- **En attente de David** : phase 0 du lot 12 et ses 2 questions (§ 27) ; 02 du lot 7 (deux cases sur deux lignes)
+  à essayer à la main.
+- **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
+  `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
+  classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
+  `pnpm migration:horodatage` ; jamais `e`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -746,6 +744,38 @@ proportionnalité 1 (6e ×2) ; caractérisation 1-3 ; généralités sur les fon
 - Base locale : 10 brouillons ; aperçu admin : 02, 05, 06, 10 rendus justes (repère, nuage, droites nommées,
   cloche à deux cases). Id locaux retirés des fichiers avant commit.
 
+### 24 quater. Lot 10 en prod (2026-11-15)
+
+- Brouillons créés par David (06:20 UTC) : 79b46762 (01), 5ae1954a (02), 570a6e6b (03), 9567cb1d (04), 6191801f (05),
+  40a9edf0 (06), 87e396e4 (07), c3d20985 (08), 6f3c6c5f (09), 832df844 (10). Vérifié au MCP : 10 modèles, une
+  fois chacun, `draft`. Un second `--publier` lancé juste après a été refusé par la garde d'homonymes (0 doublon).
+- Suite : relevé, `lot-10-rangement.py` (gabarit lot 9), migration nœud + tag, worktree
+  `feat/questions-5-lot-10-rangement`.
+
+### 24 quinquies. Lot 10 rangé (2026-11-15)
+
+- Relevé `etat-prod-2026-11-15-lot10/` (10 modèles sans nœud, 0 tag) ; `releve-prod.ts` ne lit plus `theme`,
+  `domain`, `subdomain` (colonnes retirées de la base).
+- Migration `20261115062310_questions_5_lot10_rangement_tags` (`lot-10-rangement.py`, gabarit lot 9) : chaque
+  brouillon sur le nœud de son point, tag posé (5-112 diagrammes en barres ; 5-089 « Situations de
+  proportionnalité » ; 5-090, 141, 091, 099 « caractérisation » ; 5-094, 142, 096, 143 « Généralités sur les
+  fonctions »). Test : 11 rouges avec une migration vide, 19/19 vert.
+- Piège : base locale remplie par `db:seed-riche` = contenu de la prod, vrais id compris → les tests « copies de
+  la prod » butaient sur la clé primaire (lot 9 compris). `insertProdCopies` retire d'abord ces lignes dans la
+  transaction ; les deux cas « base sans les modèles » du test du lot 10 aussi.
+
+- #2670 mergée (CI verte, `check:migrations` 0, `security-auditor` sans finding). `db:migrate` lancé par David
+  (dry-run : celle-là seule). Vérifié au MCP : 10 brouillons sur leur nœud, 1 tag chacun, `updated_at` intact
+  (06:20). Les id des fichiers : #2671 (session `blockly`, `create-questions` lancé depuis son worktree).
+- Page à cocher https://claude.ai/artifact/KVSPdAyo3EjNnGVA1BnDtW (10 fiches, aucune alerte, capacité `db`,
+  `verdicts` vide à la publication).
+
+### Lot 10 : publication (2026-11-15)
+
+- Page à cocher : **10 verdicts sur 10 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
+  `publier-lot` 10/10 ; David : `--publier` → 10/10 ; vérifié au MCP (`status = published` pour les 10, 07:06 UTC).
+  **Lot 10 clos.**
+
 ## 25. Lot 11 « Programmer en blocs » : validé (David, 2026-11-14, « je te suis »)
 
 **Porté par le chantier `blockly`** (David, 2026-11-14) : ne pas l'écrire depuis ce chantier. Phase 0 tenue dans le chantier `blockly` (journal `blockly-progress.md`, § Premiers modèles), qui fait foi pour
@@ -765,3 +795,89 @@ le détail. Relevé prod : 0 modèle sur 5-100, 102, 103, 105, 106.
   escalier de 4 marches, créneaux. 06 : L, T, zigzag.
 - 05 : la boucle n'est pas imposée (le jugement compare les tracés) ; accepté (option a).
 - Accès : rien de neuf (tags lisibles par tout compte connecté, comme les autres lots).
+
+## 26. Reclassement (2026-11-15)
+
+Relevé prod (MCP) : **43 points de 5e sans modèle publié**. Lot 11 publié (5-100, 102, 103, 105, 106 : 6 modèles).
+Deux brouillons existent déjà, écrits par le chantier `automatismes-1spe` (#2462, rangés #2474, en attente de
+publication par David) : `d4f38d30` « Lire les coordonnées d'un point » (5-047) et `d4d56c1b` « Placer un point de
+coordonnées données » (5-128). Outils revérifiés dans `ubumark.md`, `questions.md`, `blockly.md`, `outils-manquants.md`.
+
+- **D (hors appli, § 5.5)** : 011, 040, 042, 043, 059, 065, 075, 084, 130.
+- **B — repérage (8)** : 016, 046 (` ```line ` à lire) ; 121, 127 (` ```line placer:`) ; 095, 114 (` ```courbe
+placer:`, #2096) ; 047, 128 (brouillons ci-dessus, rien à écrire).
+- **B — tableaux de valeurs (2)** : 093, 097 (tableau à trous, formule donnée).
+- **B — ranger (1)** : 122 (` ```ranger `, ex-C du § 5.4).
+- **B — solides (3)** : 144 (` ```solide ` + choix : reconnaître cube / pavé), 048 (mettre en relation des
+  perspectives : choix entre solides ; pas de perspective à dessiner hors assemblages de cubes), 049 (` ```patron `
+  - ` ```solide `, choix ; `designer:` / `completer:` pour le cube) — ex-C2.
+- **B — géométrie, lire ou choisir (14)** : 054, 055, 057, 060, 062, 063, 064, 066, 067, 069, 070, 071, 072, 115
+  (` ```figure ` + case ou choix).
+- **B — géométrie, tracer (4, ex-C3)** : 131 (`droite h = perpendiculaire(…)`), 132 (droite par le sommet et
+  `milieu(…)`) — **sur quadrillage seulement** (sur papier uni, `droite` n'accepte que médiatrice et bissectrice),
+  pied et milieu sur des nœuds ; 068, 133 (`point D = …`, message du parallélogramme croisé). Le tracé du symétrique
+  central (054 / 055) : `symetrique par O`.
+- **B — algorithmique (2)** : 101 (entrées / sorties), 104 (prévoir la valeur) : bloc ` ```scratch ` (programme
+  affiché en lecture seule, chantier `bloc-scratch`, déjà utilisé par `6-tableaux-programmes/05`) + case ou choix.
+  **Corrigé le 2026-11-15** : d'abord classés C (« programme en blocs affiché » à créer) d'après `blockly-progress.md`,
+  qui l'écrit ainsi ; la ligne n° 36 ajoutée à `outils-manquants.md` est retirée. Reste au chantier `blockly`
+  (décision du § 26 bis), à lui de choisir ` ```scratch ` ou un affichage Blockly.
+
+**Lots proposés** (reco, ordre) :
+
+1. **Lot 12 « Droite graduée et repère »** : 016, 046, 121, 127, 095, 114, 093, 097, 122 (9 modèles), avec les
+   brouillons `d4f38d30`, `d4d56c1b` relus sur la même page à cocher et publiés avec le lot.
+2. **Lot 13 « Triangles : droites remarquables »** : 057, 060, 062, 063, 064, 066, 131, 132.
+3. **Lot 14 « Parallélogrammes »** : 067, 068, 069, 070, 071, 072, 133.
+4. **Lot 15 « Symétrie centrale, aires, solides »** : 054, 055, 115, 144, 048, 049.
+
+**Questions à David** :
+
+1. Ordre des lots 12 à 15 ci-dessus : d'accord ?
+2. `d4f38d30` et `d4d56c1b` : les relire et publier avec le lot 12 (reco), ou les publier tout de suite ?
+3. 101, 104 : laisser au chantier `blockly` (reco : après ses lots, avec la piste « prévoir la valeur ») — outil existant (` ```scratch `), voir ci-dessus.
+
+### 26 bis. Reclassement : décisions (David, 2026-11-15, « je te suis »)
+
+Ordre des lots 12 à 15 validé ; `d4f38d30`, `d4d56c1b` relus et publiés **avec le lot 12** ; 101, 104 laissés au
+chantier `blockly`, après ses lots.
+
+## 27. Lot 12 « Droite graduée et repère » : phase 0 proposée (2026-11-15, NON validée)
+
+Relevé prod : aucun modèle sur les 9 points. Nœuds (ceux des points) : « Relatifs › droite graduée » (vide) ;
+« Repérage et déplacements › coordonnées dans le plan » (les 2 brouillons, **tous deux niveau 1**) ; « Fonctions ›
+généralités » (5e : 4 à 9) ; « Statistiques › courbes et repères » (1, 2) ; « Relatifs › ordre » (1, 2). Voisins : 6e
+`6-droite-ordre/` 01, 02 (demi-droite, dixièmes, centièmes, demis, quarts), 04 (` ```ranger `).
+
+| #   | Point | Modèle                                     | Réponse              | Nœud, niveau                        |
+| --- | ----- | ------------------------------------------ | -------------------- | ----------------------------------- |
+| 01  | 5-016 | Lire l'abscisse d'un point (relatifs)      | case                 | relatifs › droite graduée, 1        |
+| 02  | 5-121 | Placer un point d'abscisse relative        | ` ```line placer:`   | relatifs › droite graduée, 2        |
+| 03  | 5-046 | Lire une abscisse décimale relative        | case                 | coordonnées dans le plan, 1         |
+| 04  | 5-127 | Placer un point d'abscisse décimale        | ` ```line placer:`   | coordonnées dans le plan, 2         |
+| —   | 5-047 | `d4f38d30` Lire les coordonnées d'un point | cases (existant)     | coordonnées dans le plan, 1 → **3** |
+| —   | 5-128 | `d4d56c1b` Placer un point de coordonnées  | ` ```courbe placer:` | coordonnées dans le plan, 1 → **4** |
+| 05  | 5-093 | Produire un tableau de valeurs             | tableau à trous      | généralités sur les fonctions, 10   |
+| 06  | 5-097 | Tableau de valeurs à partir d'une formule  | tableau à trous      | généralités sur les fonctions, 11   |
+| 07  | 5-095 | Placer les points d'un tableau de valeurs  | ` ```courbe placer:` | généralités sur les fonctions, 12   |
+| 08  | 5-114 | Représenter des données (graphique)        | ` ```courbe placer:` | courbes et repères, 3               |
+| 09  | 5-122 | Ranger des nombres relatifs                | ` ```ranger `        | relatifs › ordre, 3                 |
+
+- 01 : droite de −5 à 5 graduée en unités (abscisse entière négative ou positive), en demis, en quarts (borne :
+  « dixièmes, moitiés, quarts, tiers ») ; v3 en **tiers**, réponse en fraction ($-\frac{4}{3}$) — question 1.
+  02 : mêmes graduations, puis deux points A et B de signes contraires.
+- 03 : graduée en dixièmes autour de 0 (−1,5 à 1,5) et autour d'un entier négatif (−4 à −2,5) ; deux décimales
+  exclues (centièmes = 6e). 04 : mêmes droites, un point puis deux points.
+- Les 2 brouillons passent aux niveaux 3 et 4 (fichiers `automatismes-2de-geometrie/01`, `02`, puis
+  `create-questions --mettre-a-jour` par David) : la droite avant le plan — question 2.
+- 05 : situation en mots, sans formule (« 3 € le kilo et 2 € de livraison », programme de calcul en étapes),
+  tableau de 4 colonnes, 4 cases. 06 : formule donnée (aire $A = c \times c$ ; périmètre ; distance de freinage
+  $d = v \times v \div 100$, v de 10 en 10 jusqu'à 50), 4 cases ; pas de notation fonctionnelle (borne).
+- 07 : tableau de 3 ou 4 valeurs (entiers, x de 0 à 6, y ≤ 10, puis y de 2 en 2 ou de 5 en 5), points A, B, C, D
+  nommés sous le tableau, repère gradué en conséquence. 08 : relevé en contexte (température heure par heure,
+  négative possible ; taille d'une plante semaine par semaine), 4-5 points à placer, titres d'axes.
+- 09 : 5 nombres, croissant (`signe: <`), puis décroissant (`signe: >`) ; v1 entiers relatifs, v2 décimaux
+  relatifs avec les pièges du BO (−2,5 et −2,05 ; −3 et 1 ; −0,7 et 0).
+- Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte connecté).
+- **Questions** : (1) tiers en v3 de 01, réponse en fraction (reco : oui, la borne les cite) ; (2) 03 et 04 sur
+  « coordonnées dans le plan » (le nœud de leurs points), brouillons renumérotés 3 et 4 (reco : oui).
