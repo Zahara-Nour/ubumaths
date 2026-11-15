@@ -359,7 +359,9 @@ l'analytique ([analytique-prof.md](analytique-prof.md)), qui y fait passer aussi
   générique, n'est pas lu), case hors écriture
   mathématique (choix, geste, tableau de signes, figure), question à cases appariées librement
   (`orderIndependent`), ambiguïté ou attendu 0 / ±1 (règles du moteur). Détail indisponible : seule une
-  question à une case se lit, d'après la valeur saisie. Calculé à la lecture, jamais stocké ; la note ne
+  question à une case se lit, d'après la valeur saisie. Traces de séries : leur verdict par case
+  (`part_verdicts`) ne garde aucune remarque, la règle « la remarque prime » n'y agit donc pas ; le
+  % et l'unité restent écartés par le moteur lui-même (attendu en pourcentage ou non numérique). Calculé à la lecture, jamais stocké ; la note ne
   change pas.
 
 ## Les observations (compétences, famille B)
