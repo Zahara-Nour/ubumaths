@@ -10,7 +10,8 @@
  *
  * Règles (décisions de David, 2026-11-15) :
  * - réponse = écriture finale de nombre (`-3`, `0,25`, `\frac{1}{4}`) ;
- *   attendu = constante numérique (π, √2 compris), hors pourcentage ;
+ *   attendu = constante numérique, hors pourcentage et unité (√2 se lit, mais
+ *   une réponse décimale finie n'égale jamais exactement π : rien ne sort) ;
  * - attendu 0, 1 ou −1 → rien (trop de relations se confondent) ;
  * - deux types vrais à la fois (attendu 4, réponse 2 : moitié et carré oublié)
  *   → rien : on ne devine jamais entre deux.
@@ -35,11 +36,9 @@ import {
 export type ErrorKind =
 	'sign' | 'power-of-ten' | 'inverse' | 'double' | 'half' | 'square-missing' | 'square-extra';
 
-export interface ErrorGuess {
-	kind: ErrorKind;
-	/** `power-of-ten` seulement : réponse = attendu × 10^exponent (exponent ≠ 0) */
-	exponent?: number;
-}
+export type ErrorGuess =
+	/** Réponse = attendu × 10^exponent (exponent ≠ 0) */
+	{ kind: 'power-of-ten'; exponent: number } | { kind: Exclude<ErrorKind, 'power-of-ten'> };
 
 // =============================================================================
 // Constantes
@@ -70,8 +69,8 @@ export function guessErrorKind(answerLatex: string, expectedLatex: string): Erro
 	if (!answer || !expected) return null;
 	if (!isFinalNumberWriting(answer) || isPercentWriting(expected)) return null;
 
-	const a = valueOf(answer);
-	const e = valueOf(expected);
+	const a = numericValue(answer);
+	const e = numericValue(expected);
 	if (a === null || e === null) return null;
 	if (close(e, 0) || close(Math.abs(e), 1)) return null;
 	if (close(a, e)) return null;
@@ -101,7 +100,7 @@ function parseNode(latex: string): MathNode | null {
 }
 
 /** Valeur d'une constante numérique, `null` si littérale ou infinie */
-function valueOf(node: MathNode): number | null {
+function numericValue(node: MathNode): number | null {
 	try {
 		const value = compile(node)({});
 		return Number.isFinite(value) ? value : null;

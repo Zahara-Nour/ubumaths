@@ -25,6 +25,7 @@ describe('guessErrorKind — types reconnus', () => {
 
 	it('double et moitié', () => {
 		expect(guessErrorKind('30', '15')).toEqual({ kind: 'double' });
+		expect(guessErrorKind('-4', '-2')).toEqual({ kind: 'double' });
 		expect(guessErrorKind('7,5', '15')).toEqual({ kind: 'half' });
 	});
 
@@ -35,6 +36,8 @@ describe('guessErrorKind — types reconnus', () => {
 
 	it('carré en trop : réponse = attendu²', () => {
 		expect(guessErrorKind('49', '7')).toEqual({ kind: 'square-extra' });
+		// (−2)² = 4 : l'élève a élevé au carré, signe compris
+		expect(guessErrorKind('4', '-2')).toEqual({ kind: 'square-extra' });
 	});
 
 	it('attendu irrationnel : la relation se lit sur la valeur', () => {
@@ -61,6 +64,8 @@ describe('guessErrorKind — rien quand on ne sait pas', () => {
 		expect(guessErrorKind('\\frac{1}{4}', '\\frac{1}{2}')).toBeNull();
 		// 4 = double de 2 ET carré de 2
 		expect(guessErrorKind('4', '2')).toBeNull();
+		// 10 = 100 ÷ 10 ET 10² = 100 (carré oublié)
+		expect(guessErrorKind('10', '100')).toBeNull();
 		// 0,1 = inverse de 10 ET 10 ÷ 100
 		expect(guessErrorKind('0,1', '10')).toBeNull();
 	});
