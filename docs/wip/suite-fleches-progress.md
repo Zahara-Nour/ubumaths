@@ -8,9 +8,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, PR 1b en cours (après #2672)._
+_Mis à jour le 2026-11-15, PR 1b : findings corrigés, PR à ouvrir (après #2672)._
 
-- **État** : phase 0 validée (Q1-Q8 selon les recos) ; PR 1a mergée (#2672) ; PR 1b écrite sur `feat/suite-fleches-1b` : `RobotCode` (cartes, toucher / glisser, « avance de » + chiffre), `RobotQuadrillage` (SVG), `RobotCorrige`, câblage carte / corrigé, `robot-typst.ts` (quadrillage + « Écris le code : » + 15 cases), robot admis dans une série d'automatismes (`robotsAFiger`), fiche du catalogue · **Prochaine action** : PR 1b (code commité, PAS de PR ouverte) — 1) `git merge origin/main` (la branche est en retard : le diff montre des fichiers atelier étrangers) ; 2) corriger les findings de la revue (journal, 2026-11-15) : n° 1 cartes périmées si la case reste `''` (durcir `dernierGeste`), n° 2 déplacer une carte au clavier, n° 3 focus perdu, n° 4-5 `swallowClick` / `pointercancel`, n° 7 tests (deux robots dans une série, glisser dans la bande et vers la réserve) ; 3) PR, CI, merge ; puis lot 2 (deux modèles CE1 « produire » : flèches, avance-pivote ; brouillons en prod, nœud + tag CE1-080) · **En attente de David** : rien · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` : tout affichage passe par `readExpectedRobotAnswer().solution` ; zsh ne découpe pas une variable (`F=(…)`, `"${F[@]}"`) ; `/aide-ecriture` refuse le compte local `teacher@local.test` (403) : captures faites depuis vitest navigateur ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-1b`)
+- **État** : phase 0 validée (Q1-Q8) ; PR 1a mergée (#2672) ; PR 1b sur `feat/suite-fleches-1b` : écran à cartes, corrigé, PDF, série d'automatismes, fiche du catalogue ; `origin/main` fusionnée ; findings 1-5 et 7 de la revue corrigés (6 écarté : flash verrouillé) · **Prochaine action** : PR 1b ouverte → CI → merge ; puis lot 2 (deux modèles CE1 « produire » : flèches, avance-pivote ; brouillons en prod, nœud + tag CE1-080) · **En attente de David** : rien · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` : tout affichage passe par `readExpectedRobotAnswer().solution` ; zsh ne découpe pas une variable (`F=(…)`, `"${F[@]}"`) ; `/aide-ecriture` refuse le compte local `teacher@local.test` (403) : captures depuis vitest navigateur ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-1b`)
 
 ## Phase 0 — comportements (à valider)
 
@@ -147,3 +147,14 @@ sans règle d'accès : personne ne lit rien de plus.
   seulement ; (5) `onPointerCancel` sans filtre `pointerId` ; (6) fantôme `position: fixed` décalé sous
   un ancêtre `transform` (carte flash) : à regarder ; (7) tests manquants : deux robots / robot après
   trous dans une série, glisser dans la bande, glisser vers la réserve, chiffres après retrait.
+- 2026-11-15 : findings de la revue 1b corrigés. (1) `FillBlanksInput` : `{#key blanks}` dans
+  `{#key node.source}` — même bloc, question suivante → le bloc repart de la case (le `dernierGeste`
+  d'un « avance de » sans chiffre, réponse `''`, ne survit plus) ; (2) Alt + ← → déplace la carte
+  posée (`aria-keyshortcuts`) ; (3) focus suivi : carte déplacée, voisine d'une carte retirée, réserve
+  quand la bande se vide, carte posée à la 15e, 1er chiffre (ou le posé) à l'ouverture, carte à la
+  fermeture (chiffre, Échap) ; (4) `swallowClick` remis à faux au `pointerdown` seulement, un clic
+  clavier (`detail === 0`) jamais avalé ; (5) `pointercancel` filtré par `pointerId` ; (6) écarté : en
+  flash la case est verrouillée (aucun glisser), seul `fadeIn` 0,3 s transforme la carte ; (7) tests :
+  glisser dans la bande et vers la réserve, rangée de chiffres fermée à l'effacement, clavier, focus,
+  autre question (FillBlanksInput), deux robots / robot après des trous dans une série. 6 tests
+  vérifiés rouges sans les correctifs.

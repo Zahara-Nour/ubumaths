@@ -11,6 +11,9 @@
 	- Toucher une carte de la réserve l'ajoute au bout du code ; la glisser l'insère où on la
 	  lâche. Toucher une carte posée la retire ; la glisser la déplace ; la glisser sur la
 	  réserve la retire. « Effacer la dernière », « Tout effacer ».
+	- Clavier : ← → d'un bouton à l'autre d'une rangée ; Alt + ← → déplace la carte posée qui a
+	  le focus. Le focus ne se perd jamais : il suit la carte, ou va à sa voisine, au premier
+	  chiffre quand la rangée de chiffres s'ouvre, à la réserve quand la bande se vide.
 	- « avance de » : une rangée de chiffres 1 à 9 s'ouvre sous le code ; toucher la carte
 	  plus tard la rouvre (avec « Retirer »). Tant qu'un « avance de » n'a pas son chiffre, la
 	  réponse est vide (et l'élève voit pourquoi).
@@ -30,6 +33,7 @@
 </script>
 
 <script lang="ts">
+	import { tick } from 'svelte';
 	import { readExpectedRobotAnswer } from '$lib/ubumark/utils/robot-answer';
 	import { ecrireCode, lireCode, simuler } from '$lib/ubumark/utils/robot-moteur';
 	import {
@@ -127,7 +131,11 @@
 		y: number;
 		moved: boolean;
 	} | null>(null);
-	/** Un glissement vient de finir : le clic qui suit ne compte pas */
+	/**
+	 * Un glissement vient de finir : le clic souris qui suit ne compte pas. Remis à faux au
+	 * prochain appui (jamais par un minuteur : le clic peut arriver après) ; un clic clavier
+	 * (`detail === 0`) n'est jamais avalé.
+	 */
 	let swallowClick = false;
 	let root: HTMLElement | undefined = $state();
 
@@ -205,16 +213,47 @@
 		return { ...modele, id: prochainId++ };
 	}
 
+	/** Après le rendu : le focus sur l'élément visé, si le focus était dans le bloc */
+	async function focusSur(selecteur: string) {
+		const avait = root?.contains(document.activeElement) ?? false;
+		await tick();
+		if (avait) root?.querySelector<HTMLElement>(selecteur)?.focus();
+	}
+
+	/** Le focus sur une carte posée, sinon sur le premier bouton actif de la réserve */
+	function focusCarte(id: number | undefined) {
+		void focusSur(
+			id === undefined ? '[data-robot-reserve] button:not(:disabled)' : `[data-robot-id="${id}"]`
+		);
+	}
+
+	/** Ouvre la rangée de chiffres d'un « avance de », le focus sur le chiffre posé ou le premier */
+	function ouvrirChiffres(id: number) {
+		choix = id;
+		const carte = cartes.find((c) => c.id === id);
+		const pas = carte?.kind === 'avance' ? carte.pas : null;
+		void focusSur(pas === null ? '.robot-chiffre' : '.robot-chiffre[aria-pressed="true"]');
+	}
+
 	/** Ajoute une carte de la réserve à la place `at` (au bout par défaut) */
 	function ajouter(modele: Modele, at = cartes.length) {
 		if (verrouille || plein) return;
 		const carte = nouvelle(modele);
 		emit([...cartes.slice(0, at), carte, ...cartes.slice(at)]);
-		choix = carte.kind === 'avance' ? carte.id : null;
+		if (carte.kind === 'avance') ouvrirChiffres(carte.id);
+		else {
+			choix = null;
+			// 15e carte : la réserve se grise, le focus passe à la carte posée
+			if (plein) focusCarte(carte.id);
+		}
 	}
 
+	/** Retire une carte ; le focus va à sa voisine (la suivante, sinon la précédente) */
 	function retirer(id: number) {
-		emit(cartes.filter((c) => c.id !== id));
+		const k = cartes.findIndex((c) => c.id === id);
+		const reste = cartes.filter((c) => c.id !== id);
+		emit(reste);
+		focusCarte((reste[k] ?? reste[k - 1])?.id);
 	}
 
 	function deplacer(id: number, at: number) {
@@ -227,19 +266,28 @@
 
 	function poserChiffre(pas: number) {
 		if (choix === null) return;
-		emit(cartes.map((c) => (c.id === choix && c.kind === 'avance' ? { ...c, pas } : c)));
+		const id = choix;
+		emit(cartes.map((c) => (c.id === id && c.kind === 'avance' ? { ...c, pas } : c)));
 		choix = null;
+		// La rangée de chiffres disparaît : le focus revient à la carte
+		focusCarte(id);
 	}
 
-	function onReserveClick(modele: Modele) {
-		if (swallowClick) return;
+	/** Un clic souris juste après un glissement ne compte pas ; un clic clavier toujours */
+	function clicAvale(event: MouseEvent): boolean {
+		return swallowClick && event.detail !== 0;
+	}
+
+	function onReserveClick(event: MouseEvent, modele: Modele) {
+		if (clicAvale(event)) return;
 		ajouter(modele);
 	}
 
-	function onCarteClick(carte: Carte) {
-		if (verrouille || swallowClick) return;
+	function onCarteClick(event: MouseEvent, carte: Carte) {
+		if (verrouille || clicAvale(event)) return;
 		if (carte.kind === 'avance') {
-			choix = choix === carte.id ? null : carte.id;
+			if (choix === carte.id) choix = null;
+			else ouvrirChiffres(carte.id);
 			return;
 		}
 		retirer(carte.id);
@@ -287,7 +335,6 @@
 		drag = null;
 		if (!moved) return;
 		swallowClick = true;
-		setTimeout(() => (swallowClick = false), 0);
 		const target = document.elementFromPoint(event.clientX, event.clientY);
 		const at = placeSous(target, event.clientX);
 		if (source.from === 'reserve') {
@@ -302,18 +349,32 @@
 		if (versReserve && root?.contains(versReserve)) retirer(source.id);
 	}
 
-	function onPointerCancel() {
-		drag = null;
+	function onPointerCancel(event: PointerEvent) {
+		if (drag && event.pointerId === drag.pointerId) drag = null;
 	}
 
-	/** Flèches ← → : d'un bouton à son voisin dans la rangée */
+	/**
+	 * Flèches ← → : d'un bouton à son voisin dans la rangée. Alt + ← → sur une carte posée : la
+	 * déplace d'un cran (le focus la suit).
+	 */
 	function onKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
+			if (choix !== null) focusCarte(choix);
 			choix = null;
 			return;
 		}
 		if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
 		const current = event.target as HTMLElement;
+		const id = current.dataset.robotId;
+		if (event.altKey && id !== undefined) {
+			event.preventDefault();
+			const from = cartes.findIndex((c) => c.id === Number(id));
+			const at = event.key === 'ArrowLeft' ? from - 1 : from + 2;
+			if (verrouille || from < 0 || at < 0 || at > cartes.length) return;
+			deplacer(Number(id), at);
+			focusCarte(Number(id));
+			return;
+		}
 		const row = current.closest<HTMLElement>('[data-robot-row]');
 		if (!row) return;
 		const list = [...row.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')];
@@ -403,7 +464,7 @@
 						data-robot-focus={k === 0 ? '' : undefined}
 						aria-label="Ajouter : {nomCarte(modele)}"
 						disabled={plein}
-						onclick={() => onReserveClick(modele)}
+						onclick={(event) => onReserveClick(event, modele)}
 						onkeydown={onKeydown}
 						onpointerdown={(event) => !plein && onPointerDown(event, { from: 'reserve', modele })}
 					>
@@ -438,13 +499,15 @@
 							drag.source.from === 'code' &&
 							drag.source.id === carte.id}
 						data-robot-pos={k}
+						data-robot-id={carte.id}
 						aria-label="Instruction {k + 1} sur {cartes.length} : {nomCarte(carte)}{verrouille
 							? ''
 							: carte.kind === 'avance'
 								? ', toucher pour changer le chiffre'
 								: ', toucher pour la retirer'}"
+						aria-keyshortcuts={verrouille ? undefined : 'Alt+ArrowLeft Alt+ArrowRight'}
 						disabled={verrouille}
-						onclick={() => onCarteClick(carte)}
+						onclick={(event) => onCarteClick(event, carte)}
 						onkeydown={onKeydown}
 						onpointerdown={(event) => onPointerDown(event, { from: 'code', id: carte.id })}
 					>
@@ -506,7 +569,10 @@
 					type="button"
 					class="robot-action"
 					disabled={cartes.length === 0}
-					onclick={() => emit([])}
+					onclick={() => {
+						emit([]);
+						focusCarte(undefined);
+					}}
 					onkeydown={onKeydown}
 				>
 					Tout effacer

@@ -1140,7 +1140,13 @@ carte reste posée (cartes gardées tant que la case dit la réponse du dernier 
 instructions au plus. ». Réponse de la case : `ecrireCode` du code. Pas de bouton « Essayer »
 (phase 0, Q4). Validé : cartes verrouillées, réserve cachée, trajet de l'élève vert ou rouge, une
 croix sur le bord où il sort ou bute, et, faux, le trajet d'un code juste en pointillés (la réponse
-attendue, sinon `spec.solution`). Clavier : ← → d'une carte à l'autre, Échap ferme les chiffres ;
+attendue, sinon `spec.solution`). Clavier : ← → d'une carte à l'autre, Alt + ← → déplace la carte
+posée qui a le focus, Échap ferme les chiffres ; le focus ne se perd jamais (il suit la carte
+déplacée, passe à la voisine d'une carte retirée, au premier chiffre — ou au chiffre posé — quand la
+rangée s'ouvre, à la carte quand elle se ferme, à la réserve quand la bande se vide, à la carte posée
+quand la 15e grise la réserve) ; un clic clavier n'est jamais avalé par un glissement qui vient de
+finir. Dans une question (`FillBlanksInput`), le bloc repart de la case à chaque question
+(`{#key blanks}`) : un « avance de » sans chiffre (case vide) ne passe pas à la suivante ;
 noms accessibles (« Ajouter : flèche vers la droite », « Instruction 2 sur 5 : … »).
 
 Corrigé (`RobotCorrige.svelte`, par `BuildAnswer` kind `robot`) : le trajet de l'élève, pourquoi

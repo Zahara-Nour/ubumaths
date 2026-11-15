@@ -1237,18 +1237,22 @@
 					/>
 				{:else}
 					<div data-construire-case={caseIndex}>
-						<!-- Autre question, autre bloc : les cartes repartent de la case -->
+						<!-- Autre question (même bloc compris), autre bloc : les cartes repartent de la case.
+						     `blanks` : un « avance de » sans chiffre donne '' — la case vide de la question
+						     suivante ne doit pas garder ses cartes -->
 						{#key node.source}
-							<RobotCode
-								{node}
-								expected={flashMode ? undefined : expected}
-								answer={{
-									value: state?.value ?? '',
-									isCorrect: flashMode ? null : (state?.isCorrect ?? null),
-									disabled: flashMode || effectiveDisabled,
-									onChange: (value) => handleInputChange(caseIndex, value)
-								}}
-							/>
+							{#key blanks}
+								<RobotCode
+									{node}
+									expected={flashMode ? undefined : expected}
+									answer={{
+										value: state?.value ?? '',
+										isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+										disabled: flashMode || effectiveDisabled,
+										onChange: (value) => handleInputChange(caseIndex, value)
+									}}
+								/>
+							{/key}
 						{/key}
 					</div>
 				{/if}

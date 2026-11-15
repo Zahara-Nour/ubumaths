@@ -73,6 +73,68 @@ describe('buildSerie — robot à produire', () => {
 		);
 	});
 
+	it('deux robots dans une question : deux cases, chacun son code juste, dans l’ordre', () => {
+		const deux = new Map([
+			[
+				'deux',
+				modele(
+					'deux',
+					[
+						'Code.',
+						'',
+						'```robot',
+						'quadrillage: 8 x 5',
+						'départ: 1, 1',
+						'arrivée: 4, 1',
+						'produire: oui',
+						'```',
+						'',
+						'```robot',
+						'quadrillage: 8 x 5',
+						'départ: 1, 1',
+						'arrivée: 1, 3',
+						'produire: oui',
+						'```'
+					].join('\n')
+				)
+			]
+		]);
+		const serie = buildSerie(deux, [{ templateId: 'deux', seed: 1 }]);
+		expect(serie.statement.match(/```robot/g)).toHaveLength(2);
+		expect(serie.statement).not.toMatch(/case\s*:/);
+		const codes = [...serie.solution.matchAll(/Un code juste : \*\*(.+)\*\*/g)].map((m) => m[1]);
+		expect(codes).toEqual(['→ → →', '↑ ↑']);
+	});
+
+	it('robot après un texte à trous : les cases comptent ensemble, le robot a SA réponse', () => {
+		const mixte = new Map([
+			[
+				'mixte',
+				modele(
+					'mixte',
+					[
+						'Complète.',
+						'',
+						'```trous',
+						'$2$ est [pair], $7$ est [impair].',
+						'intrus: premier',
+						'```',
+						'',
+						'```robot',
+						'quadrillage: 8 x 5',
+						'départ: 1, 1',
+						'arrivée: 4, 1',
+						'produire: oui',
+						'```'
+					].join('\n')
+				)
+			]
+		]);
+		const serie = buildSerie(mixte, [{ templateId: 'mixte', seed: 1 }]);
+		expect(serie.solution).toContain('1 → pair ; 2 → impair');
+		expect(serie.solution).toContain('Un code juste : **→ → →**');
+	});
+
 	it('avance-pivote : le code juste en mots', () => {
 		const serie = buildSerie(
 			robot('quadrillage: 8 x 5', 'codage: avance-pivote', 'départ: 2, 1, droite', 'arrivée: 6, 1'),

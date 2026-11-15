@@ -10,8 +10,12 @@
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { page } from 'vitest/browser';
+import { page, userEvent } from 'vitest/browser';
 import RobotCode from '../RobotCode.svelte';
+import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
+import { templateMarkdown } from '$lib/ubumark';
+import type { QuestionTemplate } from '$lib/questions/types';
 import RobotCorrige from '../RobotCorrige.svelte';
 import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 import { parseRobotContent } from '$lib/ubumark/parser/robot-parser';
@@ -63,6 +67,26 @@ function caseDeReponse(valeur = '', isCorrect: boolean | null = null) {
 
 const derniere = (recu: string[]) => recu[recu.length - 1];
 const ajouter = (nom: string) => page.getByRole('button', { name: `Ajouter : ${nom}` });
+
+const carte = (rang: number) =>
+	page.getByRole('button', { name: new RegExp(`^Instruction ${rang} sur`) });
+
+/** Événement de pointeur synthétique (aucun vrai pointeur à capturer) */
+function pointer(target: EventTarget, type: string, x: number, y: number, pointerId = 7) {
+	target.dispatchEvent(
+		new PointerEvent(type, { clientX: x, clientY: y, bubbles: true, pointerId, button: 0 })
+	);
+}
+
+/** Glisse `source` jusqu'au point `at` ; `pendant` : entre le mouvement et le lâcher */
+function glisser(source: HTMLElement, at: { x: number; y: number }, pendant?: () => void) {
+	const depart = source.getBoundingClientRect();
+	source.setPointerCapture = () => {};
+	pointer(source, 'pointerdown', depart.left + 5, depart.top + 5);
+	pointer(window, 'pointermove', at.x, at.y);
+	pendant?.();
+	pointer(window, 'pointerup', at.x, at.y);
+}
 
 describe('robot à produire : les cartes', () => {
 	it('toucher les cartes de la réserve compose le code, en texte', async () => {
@@ -164,21 +188,160 @@ describe('robot à produire : les cartes', () => {
 		await ajouter('flèche vers le haut').click();
 		await ajouter('flèche vers le haut').click();
 		const source = ajouter('flèche vers la droite').element() as HTMLElement;
-		const cible = page.getByRole('button', { name: /^Instruction 1 sur 2/ }).element();
-		const depart = source.getBoundingClientRect();
-		const rect = cible.getBoundingClientRect();
+		const rect = carte(1).element().getBoundingClientRect();
 		// Lâchée sur la moitié gauche de la 1re carte : insérée avant elle
-		const at = { x: rect.left + 3, y: rect.top + rect.height / 2 };
-		const pointer = (target: EventTarget, type: string, x: number, y: number) =>
-			target.dispatchEvent(
-				new PointerEvent(type, { clientX: x, clientY: y, bubbles: true, pointerId: 7, button: 0 })
-			);
-		// Événements synthétiques : aucun vrai pointeur à capturer
-		source.setPointerCapture = () => {};
-		pointer(source, 'pointerdown', depart.left + 5, depart.top + 5);
-		pointer(window, 'pointermove', at.x, at.y);
-		pointer(window, 'pointerup', at.x, at.y);
+		glisser(source, { x: rect.left + 3, y: rect.top + rect.height / 2 });
 		expect(derniere(recu)).toBe('→ ↑ ↑');
+	});
+
+	it('glisser une carte posée dans la bande la déplace', async () => {
+		const { answer, recu } = caseDeReponse();
+		await render(RobotCode, {
+			target: mainElement(),
+			props: { node: parseRobotContent(FLECHES), answer }
+		});
+		await ajouter('flèche vers le haut').click();
+		await ajouter('flèche vers la droite').click();
+		await ajouter('flèche vers le bas').click();
+		const source = carte(3).element() as HTMLElement;
+		const rect = carte(1).element().getBoundingClientRect();
+		glisser(source, { x: rect.left + 3, y: rect.top + rect.height / 2 });
+		expect(derniere(recu)).toBe('↓ ↑ →');
+	});
+
+	it('glisser une carte posée sur la réserve la retire', async () => {
+		const { answer, recu } = caseDeReponse();
+		await render(RobotCode, {
+			target: mainElement(),
+			props: { node: parseRobotContent(FLECHES), answer }
+		});
+		await ajouter('flèche vers le haut').click();
+		await ajouter('flèche vers la droite').click();
+		const source = carte(1).element() as HTMLElement;
+		const rect = ajouter('flèche vers le bas').element().getBoundingClientRect();
+		glisser(source, { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+		expect(derniere(recu)).toBe('→');
+	});
+
+	it('un glissement n’avale pas le geste suivant au clavier', async () => {
+		const { answer, recu } = caseDeReponse();
+		await render(RobotCode, {
+			target: mainElement(),
+			props: { node: parseRobotContent(FLECHES), answer }
+		});
+		await ajouter('flèche vers le haut').click();
+		const source = ajouter('flèche vers la droite').element() as HTMLElement;
+		const rect = carte(1).element().getBoundingClientRect();
+		glisser(source, { x: rect.right - 3, y: rect.top + rect.height / 2 });
+		expect(derniere(recu)).toBe('↑ →');
+		// Entrée sur une carte de la réserve, juste après : elle est ajoutée
+		(ajouter('flèche vers le bas').element() as HTMLElement).focus();
+		await userEvent.keyboard('{Enter}');
+		expect(derniere(recu)).toBe('↑ → ↓');
+	});
+
+	it('pointercancel d’un autre doigt n’annule pas le glissement en cours', async () => {
+		const { answer, recu } = caseDeReponse();
+		await render(RobotCode, {
+			target: mainElement(),
+			props: { node: parseRobotContent(FLECHES), answer }
+		});
+		await ajouter('flèche vers le haut').click();
+		const source = ajouter('flèche vers la droite').element() as HTMLElement;
+		const rect = carte(1).element().getBoundingClientRect();
+		glisser(source, { x: rect.left + 3, y: rect.top + rect.height / 2 }, () =>
+			pointer(window, 'pointercancel', 0, 0, 8)
+		);
+		expect(derniere(recu)).toBe('→ ↑');
+	});
+
+	it('clavier : Alt + ← → déplace la carte posée, le focus la suit', async () => {
+		const { answer, recu } = caseDeReponse();
+		await render(RobotCode, {
+			target: mainElement(),
+			props: { node: parseRobotContent(FLECHES), answer }
+		});
+		await ajouter('flèche vers le haut').click();
+		await ajouter('flèche vers la droite').click();
+		await ajouter('flèche vers le bas').click();
+		(carte(3).element() as HTMLElement).focus();
+		await userEvent.keyboard('{Alt>}{ArrowLeft}{/Alt}');
+		expect(derniere(recu)).toBe('↑ ↓ →');
+		await expect.element(carte(2)).toHaveFocus();
+		await userEvent.keyboard('{Alt>}{ArrowLeft}{/Alt}');
+		expect(derniere(recu)).toBe('↓ ↑ →');
+		// Déjà en tête : rien ne bouge
+		await userEvent.keyboard('{Alt>}{ArrowLeft}{/Alt}');
+		expect(derniere(recu)).toBe('↓ ↑ →');
+		await userEvent.keyboard('{Alt>}{ArrowRight}{/Alt}');
+		expect(derniere(recu)).toBe('↑ ↓ →');
+		await expect.element(carte(2)).toHaveFocus();
+	});
+
+	it('focus : retirer une carte passe à sa voisine, la bande vide rend le focus à la réserve', async () => {
+		const { answer } = caseDeReponse();
+		await render(RobotCode, {
+			target: mainElement(),
+			props: { node: parseRobotContent(FLECHES), answer }
+		});
+		await ajouter('flèche vers le haut').click();
+		await ajouter('flèche vers la droite').click();
+		(carte(1).element() as HTMLElement).focus();
+		await userEvent.keyboard('{Enter}');
+		await expect
+			.element(page.getByRole('button', { name: /^Instruction 1 sur 1 : flèche vers la droite/ }))
+			.toHaveFocus();
+		await userEvent.keyboard('{Enter}');
+		await expect.element(ajouter('flèche vers la gauche')).toHaveFocus();
+	});
+
+	it('focus : la 15e carte grise la réserve, le focus passe à la carte posée', async () => {
+		const { answer } = caseDeReponse();
+		await render(RobotCode, {
+			target: mainElement(),
+			props: { node: parseRobotContent(FLECHES), answer }
+		});
+		for (let k = 0; k < 14; k++) await ajouter('flèche vers la droite').click();
+		(ajouter('flèche vers la droite').element() as HTMLElement).focus();
+		await userEvent.keyboard('{Enter}');
+		await expect.element(carte(15)).toHaveFocus();
+	});
+
+	it('focus : « avance de » ouvre les chiffres le focus sur 1 ; le chiffre posé le rend à la carte', async () => {
+		const { answer, recu } = caseDeReponse();
+		await render(RobotCode, {
+			target: mainElement(),
+			props: { node: parseRobotContent(AVANCE_PIVOTE), answer }
+		});
+		(ajouter('avance de, chiffre à choisir').element() as HTMLElement).focus();
+		await userEvent.keyboard('{Enter}');
+		const chiffres = page.getByRole('group', { name: 'De combien de cases avance le robot ?' });
+		await expect.element(chiffres.getByRole('button', { name: '1', exact: true })).toHaveFocus();
+		await userEvent.keyboard('{ArrowRight}{ArrowRight}{Enter}');
+		expect(derniere(recu)).toBe('avance de 3');
+		await expect.element(carte(1)).toHaveFocus();
+		// Rouverte : le focus sur le chiffre posé ; Échap ferme et rend le focus à la carte
+		await userEvent.keyboard('{Enter}');
+		await expect.element(chiffres.getByRole('button', { name: '3', exact: true })).toHaveFocus();
+		await userEvent.keyboard('{Escape}');
+		await expect.element(chiffres).not.toBeInTheDocument();
+		await expect.element(carte(1)).toHaveFocus();
+	});
+
+	it('la rangée de chiffres se ferme quand son « avance de » est effacé', async () => {
+		const { answer, recu } = caseDeReponse();
+		await render(RobotCode, {
+			target: mainElement(),
+			props: { node: parseRobotContent(AVANCE_PIVOTE), answer }
+		});
+		await ajouter('pivote à gauche').click();
+		await ajouter('avance de, chiffre à choisir').click();
+		const chiffres = page.getByRole('group', { name: 'De combien de cases avance le robot ?' });
+		await expect.element(chiffres).toBeVisible();
+		await page.getByRole('button', { name: 'Effacer la dernière' }).click();
+		expect(derniere(recu)).toBe('pivote à gauche');
+		await expect.element(chiffres).not.toBeInTheDocument();
+		await expect.element(page.getByText('Choisis de combien')).not.toBeInTheDocument();
 	});
 
 	it('sans produire: le quadrillage seul, aucune carte', async () => {
@@ -188,6 +351,43 @@ describe('robot à produire : les cartes', () => {
 		});
 		expect(screen.container.querySelector('svg[role="img"]')).not.toBeNull();
 		expect(screen.container.querySelectorAll('button')).toHaveLength(0);
+	});
+});
+
+describe('robot à produire : dans la question (FillBlanksInput)', () => {
+	it('autre question, même bloc : un « avance de » sans chiffre ne passe pas à la suivante', async () => {
+		const generated = generateInstance(
+			{
+				id: 'test-robot',
+				title: 'Robot',
+				status: 'draft',
+				variations: [
+					{
+						statement: templateMarkdown(
+							['Code.', '', '```robot', ...AVANCE_PIVOTE.split('\n').slice(0, -1), '```'].join('\n')
+						)
+					}
+				],
+				grades: ['CE1'],
+				level: 1
+			} as QuestionTemplate,
+			42
+		);
+		if (!generated.success) throw new Error(generated.errors.join(' ; '));
+		const props = $state({
+			statement: generated.instance.statement,
+			blanks: generated.instance.blanks ?? [],
+			values: [] as string[],
+			validationResults: []
+		});
+		await render(FillBlanksInput, { target: mainElement(), props });
+		await ajouter('avance de, chiffre à choisir').click();
+		await expect.element(carte(1)).toBeVisible();
+		expect(props.values[0] ?? '').toBe('');
+		// La question suivante, tirée du même modèle : même bloc, case vide
+		props.blanks = (generated.instance.blanks ?? []).map((b) => ({ ...b }));
+		await expect.element(carte(1)).not.toBeInTheDocument();
+		await expect.element(page.getByText('Touche une carte pour l’ajouter.')).toBeVisible();
 	});
 });
 
