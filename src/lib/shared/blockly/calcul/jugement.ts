@@ -5,6 +5,11 @@
  * mêmes nombres, dans le même ordre, pour chaque essai. Un seul essai ne suffit pas : `× 2` et
  * `+ 2` donnent tous deux 4 en partant de 2.
  *
+ * Quand l'attendu dépend du nombre choisi, le programme de l'élève doit en dépendre aussi : avec
+ * un seul essai (« pour 3, affiche 10 »), `afficher 10` coïnciderait sinon. La dépendance est
+ * mesurée sur des nombres témoins, pas en cherchant le bloc « nombre » (`nombre × 0 + 10` ne
+ * dépend pas du nombre).
+ *
  * Sans dépendance à Blockly : s'exécute aussi sous Node (correction).
  */
 
@@ -45,6 +50,9 @@ const MARGE_ZERO = 1e-12;
 
 export const RIEN_AFFICHE = 'Ton programme n’affiche rien.';
 
+export const PROGRAMME_CONSTANT =
+	'Ton programme affiche toujours la même chose, quel que soit le nombre choisi.';
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -78,6 +86,23 @@ export function lireProgrammeCalcul(texte: string, essais: readonly number[]): P
 	return { ok: true, sorties };
 }
 
+/**
+ * Le programme affiche-t-il des choses différentes selon le nombre choisi ? Mesuré sur les
+ * nombres témoins (`ESSAIS_PAR_DEFAUT`) ; un témoin où le programme s'arrête sur une erreur est
+ * ignoré. null : programme illisible, ou moins de deux témoins utilisables (on ne sait pas).
+ */
+export function dependDuNombre(texte: string): boolean | null {
+	const lu = texteVersEtatCalcul(texte);
+	if (!lu.ok) return null;
+	const sorties: number[][] = [];
+	for (const temoin of ESSAIS_PAR_DEFAUT) {
+		const resultat = executerCalcul(lu.etat, temoin);
+		if (resultat.ok) sorties.push(resultat.affichages);
+	}
+	if (sorties.length < 2) return null;
+	return sorties.some((s) => !memesAffichages(s, sorties[0]));
+}
+
 /** Juge le programme de l'élève contre le programme attendu. Ne lève jamais. */
 export function jugerProgrammeCalcul(
 	reponse: string,
@@ -92,7 +117,14 @@ export function jugerProgrammeCalcul(
 	const eleve = lireProgrammeCalcul(reponse, essais);
 	if (!eleve.ok) return { juste: false, message: eleve.message };
 	if (eleve.sorties.every((s) => s.length === 0)) return { juste: false, message: RIEN_AFFICHE };
-	return { juste: eleve.sorties.every((s, i) => memesAffichages(s, reference.sorties[i])) };
+	if (!eleve.sorties.every((s, i) => memesAffichages(s, reference.sorties[i]))) {
+		return { juste: false };
+	}
+	// Mêmes affichages sur les essais : encore faut-il dépendre du nombre si l'attendu en dépend
+	if (dependDuNombre(attendu) === true && dependDuNombre(reponse) === false) {
+		return { juste: false, message: PROGRAMME_CONSTANT };
+	}
+	return { juste: true };
 }
 
 /** Nombre d'essai écrit : signe (− ou -), entier ou décimal (virgule ou point). */

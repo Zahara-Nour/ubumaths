@@ -22,6 +22,7 @@
 		texteVersEtatCalcul
 	} from '$lib/shared/blockly/calcul/notation';
 	import {
+		jugerProgrammeCalcul,
 		lireProgrammeCalcul,
 		memesAffichages,
 		RIEN_AFFICHE
@@ -68,9 +69,13 @@
 	let reference = $derived(lu?.attendu ?? spec?.attendu ?? null);
 	let essais = $derived(lu?.essais ?? spec?.essais ?? []);
 
-	/** Pourquoi le programme de l'élève s'arrête (premier essai en erreur), ou n'affiche rien */
+	/**
+	 * Pourquoi le programme de l'élève est faux sans que le tableau le montre : il s'arrête
+	 * (premier essai en erreur), n'affiche rien, ou affiche toujours la même chose (référence connue)
+	 */
 	let messageEleve = $derived.by((): string | null => {
 		if (answer === null) return null;
+		if (reference !== null) return jugerProgrammeCalcul(answer, reference, essais).message ?? null;
 		const sorties = lireProgrammeCalcul(answer, essais);
 		if (!sorties.ok) return sorties.message;
 		return sorties.sorties.every((s) => s.length === 0) ? RIEN_AFFICHE : null;

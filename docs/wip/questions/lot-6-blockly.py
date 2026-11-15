@@ -14,7 +14,8 @@ Règles du lot (celles du lot 11 de la 5e, lot-5-11-blockly.py) :
   quadrillage 20 × 20, tortue au centre, tournée vers la droite : chaque chemin tient dans
   8 carreaux de chaque côté ;
 - 6-210 : `essais:` d'un seul nombre (le nombre de l'énoncé) : tout programme qui affiche le
-  résultat demandé pour ce nombre est juste, `afficher 10` compris ;
+  résultat demandé pour ce nombre est juste, s'il dépend du nombre choisi (`afficher 10` est
+  faux : règle du jugement des cases calcul, David le 2026-11-15) ;
 - variables : jamais `e` ni `i`.
 
     python3 docs/wip/questions/lot-6-blockly.py scripts/questions/6-blockly
@@ -167,7 +168,7 @@ RES_ADD = variation(
     ['On cherche ce qu\'il faut ajouter à ${{n}}$ pour obtenir ${{r}}$ : ${{r}} - {{n}} = {{a}}$.',
      'Un programme juste : afficher nombre $+\\ {{a}}$. Avec ${{n}}$, il affiche'
      ' ${{n}} + {{a}} = {{r}}$.',
-     'D\'autres programmes sont justes aussi, pourvu qu\'ils affichent ${{r}}$ avec ${{n}}$.'])
+     'D\'autres programmes sont justes aussi, pourvu qu\'ils utilisent le nombre choisi et affichent ${{r}}$ avec ${{n}}$.'])
 RES_MUL = variation(
     RESULTAT_INTRO.replace('{OPS}', ' et une multiplication')
     + bloc('calcul', 'attendu: afficher nombre × {{a}}', 'essais: {{n}}'),
@@ -176,7 +177,7 @@ RES_MUL = variation(
      ' {{a}}$.',
      'Un programme juste : afficher nombre $\\times {{a}}$. Avec ${{n}}$, il affiche'
      ' ${{n}} \\times {{a}} = {{r}}$.',
-     'D\'autres programmes sont justes aussi, pourvu qu\'ils affichent ${{r}}$ avec ${{n}}$.'])
+     'D\'autres programmes sont justes aussi, pourvu qu\'ils utilisent le nombre choisi et affichent ${{r}}$ avec ${{n}}$.'])
 RES_DEUX = variation(
     RESULTAT_INTRO.replace('{OPS}', ', une multiplication puis une addition')
     + bloc('calcul', 'attendu: mettre résultat à nombre × {{a}} ; '
@@ -186,7 +187,7 @@ RES_DEUX = variation(
      ' {{p}}$ ; il manque ${{r}} - {{p}} = {{b}}$.',
      'Un programme juste : résultat prend la valeur nombre $\\times {{a}}$, puis résultat'
      ' $+\\ {{b}}$, et on affiche résultat.',
-     'D\'autres programmes sont justes aussi, pourvu qu\'ils affichent ${{r}}$ avec ${{n}}$.'])
+     'D\'autres programmes sont justes aussi, pourvu qu\'ils utilisent le nombre choisi et affichent ${{r}}$ avec ${{n}}$.'])
 
 MODELES.append(modele(
     '02-programme-pour-un-resultat-donne', 'Programme pour un résultat donné',
@@ -196,8 +197,8 @@ MODELES.append(modele(
           'afficher nombre + 7', 'correct'),
      spec('Pour 3, affiche 10 : autre programme juste (3 × 3 + 1)', 0, {'n': 3, 'a': 7, 'r': 10},
           'afficher nombre × 3 + 1', 'correct'),
-     spec('Pour 3, affiche 10 : afficher 10 (juste : un seul essai)', 0,
-          {'n': 3, 'a': 7, 'r': 10}, 'afficher 10', 'correct'),
+     spec('Pour 3, affiche 10 : afficher 10 (faux : ne dépend pas du nombre choisi)', 0,
+          {'n': 3, 'a': 7, 'r': 10}, 'afficher 10', 'incorrect'),
      spec('Erreur : ajoute 10', 0, {'n': 3, 'a': 7, 'r': 10}, 'afficher nombre + 10',
           'incorrect'),
      spec('Erreur : rien d\'affiché', 0, {'n': 3, 'a': 7, 'r': 10},
