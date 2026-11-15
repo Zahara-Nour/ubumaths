@@ -45,9 +45,12 @@ function errorsOf(students: string[]) {
 							values: ['2/6'],
 							status: 'incorrect',
 							verdict: { unavailable: true, status: 'incorrect' },
-							students
+							students,
+							errorKinds: []
 						}
-					]
+					],
+					errorKinds: [],
+					unrecognized: 0
 				}
 			}
 		]
