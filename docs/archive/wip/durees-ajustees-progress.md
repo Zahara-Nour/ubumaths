@@ -1,19 +1,19 @@
 ---
-status: en-cours
+status: clos
 ---
 
 # Chantier `durees-ajustees` — durées ajustées au temps observé (A1)
 
 Ouvert le 2026-11-15, choisi par David après la clôture de `taux-par-point`. Besoin A1 validé le
-2026-11-11 ([`formes-de-serie-progress.md`](../archive/wip/formes-de-serie-progress.md) § « Besoins de
+2026-11-11 ([`formes-de-serie-progress.md`](./formes-de-serie-progress.md) § « Besoins de
 suivi validés ») : « durées ajustées au temps observé ». Suite prévue de `durees-trop-courtes`
-([journal](../archive/wip/durees-trop-courtes-progress.md), Q5 : « aucune durée suggérée, c'est A1 »).
+([journal](./durees-trop-courtes-progress.md), Q5 : « aucune durée suggérée, c'est A1 »).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2673._
+_Mis à jour le 2026-11-15 : chantier clos._
 
-- **État** : PR unique mergée (#2673) : « Durée observée » + « Appliquer » sous la durée d'une ligne (panier, éditeur de série), sur `main`, en prod au prochain `deploy:prod` ; aucune migration · **Prochaine action** : clôture si David la valide (versement : le durable est déjà dans `docs/systeme/evaluations.md`, `analytique-prof.md`, `questions.md` ; journal à archiver) · **En attente de David** : « clore le chantier ? » ; vérification manuelle #2673 dans `verifications-manuelles.md` · **Pièges en cours** : prod sans aucune trace avec durée (2026-11-15) → suggestion invisible tant que Contrôles blancs / contrôles chronométrés n'ont pas tourné ; vérifiable en local seulement (traces fictives) · **Worktree / branche** : aucun (retiré après #2673)
+- **État** : clos (PR unique #2673) ; durable dans `docs/systeme/evaluations.md` § Durée observée, `analytique-prof.md`, `questions.md` · **Prochaine action** : aucune · **Pièges** : prod sans trace avec durée au 2026-11-15 → suggestion invisible tant que Contrôles blancs / contrôles chronométrés n'ont pas tourné ; vérification manuelle #2673 dans `docs/wip/verifications-manuelles.md` · **Worktree / branche** : aucun
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -110,6 +110,7 @@ signal P7 ; seule une durée agrégée par modèle sort, aucun nom. (Avec Q2 B, 
 
 ## Historique
 
+- 2026-11-15 : chantier clos, journal archivé.
 - 2026-11-15 : #2673 mergée (CI verte ; revues sans bloquant ; Q7 réponse vide écartée).
 - 2026-11-15 : PR 1 écrite (calcul, endpoint, panier, éditeur).
 - 2026-11-15 : phase 0 validée (recos).
