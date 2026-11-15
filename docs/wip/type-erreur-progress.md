@@ -10,9 +10,9 @@ d'une erreur (signe, oubli du carré…) par le moteur mathAST ».
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, à l'ouverture._
+_Mis à jour le 2026-11-15, après #2682._
 
-- **État** : phase 0 validée ; PR 1 (moteur `guessErrorKind`) en cours · **Prochaine action** : PR 1 → PR 2 (panneaux prof) → PR 3 (élève) · **En attente de David** : rien ; Q1-Q5 tranchées (§ Décisions) · **Pièges en cours** : prod sans réponse écrite (2026-11-14 : 0 `answer_parts`, 0 copie de contrôle) → rien de visible en prod tant que Saisie / Contrôle blanc / contrôles n'ont pas tourné · **Worktree / branche** : `../ubumaths-wt-type-erreur` · `feat/type-erreur`
+- **État** : PR 1 mergée (#2682) : `guessErrorKind` (`src/lib/mathAST/error-kind.ts`), sans appelant ; phase 0 entière tranchée (Q1-Q5, § Décisions) · **Prochaine action** : PR 2 — type sur chaque réponse fausse + compte par type dans `QuestionErrorsPanel` (côté prof), puis PR 3 (phrase à l'élève) · **En attente de David** : rien · **Pièges en cours** : prod sans réponse écrite → rien de visible avant que Saisie / Contrôle blanc / contrôles aient tourné ; `rac{-3}{4}`, `-(12)`, `	frac` non lus comme écriture finale (revue, mineur : à regarder si MathLive les produit) ; à figer côté élève en PR 3 : `4` pour `-2` = carré en trop, `-5` pour `25` = carré oublié · **Worktree / branche** : aucun (retiré après #2682) ; PR 2 → nouveau worktree `ubumaths-wt-type-erreur`, branche `feat/type-erreur-prof`
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -85,6 +85,7 @@ l'autre.
 
 ## Historique
 
+- 2026-11-15 : #2682 mergée (PR 1, moteur ; revue Opus sans bloquant ; CI verte).
 - 2026-11-15 : Q5 tranchée (calculé à la lecture) ; PR 1 commencée.
 - 2026-11-15 : Q1-Q4 tranchées (recos).
 - 2026-11-15 : chantier ouvert, worktree créé, phase 0 écrite.
