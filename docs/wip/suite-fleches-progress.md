@@ -106,6 +106,8 @@ sort ou bute), et un code juste le plus court (calculé, pas écrit par le prof)
   quels (leur variation « où arrive ? » reste juste) ; les passer au bloc ```robot = plus tard, hors chantier.
   Recommandation : oui.
 
+Réponse de David (2026-11-15) : « je suis tes recos » — Q1-Q8 tranchées selon les recommandations.
+
 **Question d'accès** : aucune migration au lot 1 ; au lot 2, modèles en brouillon (admin seul) et migration nœud + tag
 sans règle d'accès : personne ne lit rien de plus.
 
