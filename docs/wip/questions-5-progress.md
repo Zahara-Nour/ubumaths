@@ -5,14 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2679 (rangé, db:migrate) et #2681 (graduations)._
+_Mis à jour le 2026-11-15, lot 12 relu (11/11 ok), simulation verte._
 
-- **État** : lots 1 à 11 publiés (lot 11 = Blockly, par `blockly`, 6 modèles publiés le 2026-11-15). Classement
-  refait le 2026-11-15 (§ 26) : 43 points sans modèle publié = 9 D, **34 B** (101, 104 compris, corrigé le même jour).
-- **Prochaine action** : **David** met à jour 02 et 04 en prod (`create-questions --dir scripts/questions/5-reperage
---publier --mettre-a-jour`, depuis le dépôt principal) puis relit la page à cocher
-  (https://claude.ai/artifact/BBjACe2etgUg2YdZymzzKx, 11 modèles) ; je compte les verdicts ; `publier-lot.ts` en
-  simulation sur les 11 ; publication par David.
+- **État** : lots 1 à 11 publiés ; lot 12 : 02 et 04 mis à jour en prod (#2681), page à cocher **11/11 ok**,
+  `publier-lot.ts` en simulation : **9 brouillons passent**. Classement (§ 26) : 43 points sans modèle publié = 9 D, 34 B.
+- **Prochaine action** : **David** publie le lot 12 (`! pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/5-reperage --publier`, dépôt principal) ; puis je vérifie au MCP et je recompte les points (§ 26).
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
@@ -913,3 +911,6 @@ renumérotés 3 et 4.
   **Piège** : régénérer le lot effaçait les `id` des fichiers ; le script les garde désormais.
 - Page à cocher publiée (https://claude.ai/artifact/BBjACe2etgUg2YdZymzzKx, capacité `db`, collection `verdicts`
   vide au départ) ; 09 (ranger) non dessiné par la page : à jouer dans l'aperçu.
+- Relecture (2026-11-15) : 02 et 04 mis à jour en prod par David (08:09 UTC, droites vérifiées au MCP) ; page à cocher
+  **11 verdicts sur 11 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation `publier-lot.ts` : 9
+  brouillons passent le contrôle (`d4f38d30`, `d4d56c1b` déjà publiés, niveau seul changé).
