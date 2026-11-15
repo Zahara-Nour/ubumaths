@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2667._
+_Mis à jour le 2026-11-15, après #2669 et son `db:migrate`._
 
-- **État** : lot 11 de la 5e mergé (#2667, fichiers seuls, sans id) ; rien en prod · **Prochaine action** : **David** lance, depuis `../ubumaths-wt-blockly` (branche `feat/blockly-lot-5-11-rangement`), `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-lot11 --publier` (brouillons en prod, ids écrits dans les fichiers) → je commite les ids + migration nœud + tag (01-05 → Variables et instructions, 06 → Boucles › boucle bornée) → page à cocher → publication ; puis le lot 6e (6-197, 6-210) · **En attente de David** : la création en prod ci-dessus ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`), jamais d'`index.ts` ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une case programme est jugée AVANT la garde de complexité (garde de corpus à jour, #2667) · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-5-11-rangement`
+- **État** : lot 11 de la 5e en prod, 6 brouillons rangés et tagués (#2667, #2669, migration appliquée et vérifiée) ; page à cocher publiée : https://claude.ai/artifact/43MsAsgzEHGiLeC1G7qvqw (collection `verdicts`, vide au 2026-11-15) · **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`) → corriger les « À revoir » → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/5-lot11` (simulation) puis **David** `--publier` ; puis le lot 6e (6-197, 6-210), nouvelle branche · **En attente de David** : relecture de la page à cocher (blocs tortue / calcul non dessinés par la page : les jouer dans l'aperçu admin) ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une case programme est jugée AVANT la garde de complexité ; ⚠ le worktree porte des ids NON commités du lot 10 de la 5e (`scripts/questions/5-proportionnalite-fonctions/`, écrits le 2026-11-15 à 07:20, chantier `questions-5`) : ne pas le supprimer avant qu'ils soient récupérés · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-5-11-rangement` (mergée)
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -419,3 +419,12 @@ Script `docs/wip/questions/lot-5-11-blockly.py` → `scripts/questions/5-lot11/`
   applique la garde à toutes les cases, programmes et `partage` compris : un modèle à cases
   interchangeables avec un programme de plus de ~130 caractères serait refusé. Aucun modèle
   concerné aujourd'hui.
+- **#2669 mergée le 2026-11-15** : ids de prod commités, migration `20261115061153` (5 modèles sur la
+  notion « Variables et instructions », sous-notions existantes admises ; 5-106 sur « Boucles ›
+  boucle bornée »), test d'intégration 10/10, rouge sans la migration ; `security-auditor` sans
+  bloquant ; `db:migrate` appliqué, vérifié en prod (nœud, un tag, brouillon, `updated_at` intact,
+  trigger `O`). La base locale portait déjà les 6 modèles avec les ids de prod (copie) : le test les
+  retire dans sa transaction annulée.
+- **Page à cocher** : https://claude.ai/artifact/43MsAsgzEHGiLeC1G7qvqw (6 fiches, alerte « bloc non
+  dessiné » sur chacune : `page-a-cocher.ts` ne dessine ni la tortue ni le calcul — piste pour
+  `outils-manquants.md` si David le veut).
