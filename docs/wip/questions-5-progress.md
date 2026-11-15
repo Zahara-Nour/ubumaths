@@ -15,8 +15,8 @@ _Mis à jour le 2026-11-15, après #2670 (migration de rangement du lot 10 merg�
 - **En attente de David** : `db:migrate` du lot 10 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
   128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
-- **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; `create-questions
---publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
+- **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
+  `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
   classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
   `pnpm migration:horodatage` ; jamais `e`.
 - **Worktree / branche** : aucun (`ubumaths-wt-questions-5` retiré après #2670).
