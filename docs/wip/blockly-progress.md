@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après la publication du lot 11 de la 5e._
+_Mis à jour le 2026-11-15, lot 6e écrit (PR à venir)._
 
-- **État** : lot 11 de la 5e **publié** en prod (6 modèles, 6 « ok » sur la page à cocher, statut `published` vérifié le 2026-11-15) · **Prochaine action** : le lot 6e (6-197, 6-210), nouvelle branche et nouveau worktree depuis `origin/main` · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une case programme est jugée AVANT la garde de complexité ; ⚠ le worktree porte des ids NON commités du lot 10 de la 5e (`scripts/questions/5-proportionnalite-fonctions/`, écrits le 2026-11-15 à 07:20, chantier `questions-5`) : ne pas le supprimer avant qu'ils soient récupérés · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-5-11-rangement` (mergée ; à retirer une fois les ids du lot 10 récupérés)
+- **État** : lot 6e écrit (`scripts/questions/6-blockly/`, 2 modèles : 6-197 chemin tortue, 6-210 « pour n, affiche r »), fichiers seuls, sans id ; rien en prod · **Prochaine action** : PR des fichiers → merge → **David** lance, depuis `../ubumaths-wt-blockly`, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-blockly --publier` → je commite les ids + migration nœud + tag (les deux → Algorithmique › Préalgorithmique) → page à cocher → publication · **En attente de David** : les choix du lot 6e (§ Lot 6e, « afficher 10 » juste compris) ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une case programme est jugée AVANT la garde de complexité ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT (le lot 10 de la 5e les avait perdus, #2671) ; worktree neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx scripts/…` · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-6`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -429,3 +429,23 @@ Script `docs/wip/questions/lot-5-11-blockly.py` → `scripts/questions/5-lot11/`
   dessiné » sur chacune : `page-a-cocher.ts` ne dessine ni la tortue ni le calcul — piste pour
   `outils-manquants.md` si David le veut).
 - **Publication** (2026-11-15) : 6 « ok » sur 6 à la page à cocher, aucun « À revoir » ; `publier-lot.ts --publier` lancé par David ; les 6 modèles sont `published` en prod (vérifié par requête).
+
+## Lot 6e — écrit le 2026-11-15 (branche `feat/blockly-lot-6`)
+
+Script `docs/wip/questions/lot-6-blockly.py` → `scripts/questions/6-blockly/` (2 modèles, 24 specs).
+Avant : #2671 (ids du lot 10 de la 5e, restés non commités dans l'ancien worktree) mergée, ancien
+worktree retiré.
+
+| #   | Point | Titre                                | Geste                 | Variations                                       | Niveau |
+| --- | ----- | ------------------------------------ | --------------------- | ------------------------------------------------ | ------ |
+| 01  | 6-197 | Programmer un chemin sur quadrillage | tortue, montrer       | 3, 4, 5 (contourner un obstacle), 6 traits       | 1      |
+| 02  | 6-210 | Programme pour un résultat donné     | calcul, un seul essai | + a ; × a ; × a puis + b (« pour n, affiche r ») | 1      |
+
+- Nœud (prod, relevé du 2026-11-15) : 6-197 et 6-210 → Algorithmique › Préalgorithmique, les deux.
+- **Choix faits sans David, à lui signaler** : 01 sans boucle, chemins à angles droits, tortue
+  tournée vers la droite au départ (dit dans l'énoncé), chemin décrit en mots ET montré en gris
+  (`comparer: position`) ; 02 : `essais: {{n}}` seul, donc `afficher 10` est juste (spec qui le dit)
+  comme tout autre programme qui affiche r pour n ; l'énoncé suggère l'opération (« et une
+  addition ») sans l'imposer ; niveau 1 ; délai 300 s.
+- Vérifié : simulation 2/2 importable ; une spec inversée → modèle refusé (01 et 02) ;
+  `answer-complexity-corpus` et `student-answer-safety.render` verts. Pas joué en base locale.
