@@ -5,20 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, lot 12 écrit, #2677 ouverte (§ 27 ter)._
+_Mis à jour le 2026-11-15, après #2677 (lot 12 écrit, mergé)._
 
 - **État** : lots 1 à 11 publiés (lot 11 = Blockly, par `blockly`, 6 modèles publiés le 2026-11-15). Classement
   refait le 2026-11-15 (§ 26) : 43 points sans modèle publié = 9 D, **34 B** (101, 104 compris, corrigé le même jour).
-- **Prochaine action** : CI de #2677 verte → merge ; puis **David** lance, depuis `../ubumaths-wt-questions-5`,
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-reperage --publier` et
-  `… --dir scripts/questions/automatismes-2de-geometrie --mettre-a-jour` (niveaux 3, 4 des brouillons) ; je commite
-  les id ; migration nœud + tag ; page à cocher (11 modèles) ; publication.
+- **Prochaine action** : **David** lance, depuis `../ubumaths-wt-questions-5`,
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-reperage --publier` ; je commite les id ; migration
+  nœud + tag des 9, **et niveaux 3, 4 de `d4f38d30`, `d4d56c1b`** (`--mettre-a-jour` ne touche pas le niveau) ; page à
+  cocher (11 modèles) ; publication.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
   classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
   `pnpm migration:horodatage` ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot-12` (#2677).
+- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot-12` (#2677 mergée ; nouvelle branche pour les id et la migration).
 
 ## 1. Relevé (prod, 2026-10-28)
 
