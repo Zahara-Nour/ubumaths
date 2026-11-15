@@ -5,18 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, PR #2692 (lot 13, rangement) ouverte._
+_Mis à jour le 2026-11-15, après #2692 (lot 13 rangé)._
 
-- **État** : lots 1 à 12 publiés ; lot 13 (§ 28 ter) : 9 brouillons en prod, id commités, migration nœud + tag
-  `20261115183239_questions_5_lot13_rangement_tags` (#2692). Restent : lot 14 (7), lot 15 (6), 9 D, 101 et 104
+- **État** : lots 1 à 12 publiés ; lot 13 (§ 28 quater) : 9 brouillons rangés et tagués en prod, page à cocher
+  publiée (https://claude.ai/artifact/BsSmAMHX3m5At63YkCSRuh). Restent : lot 14 (7), lot 15 (6), 9 D, 101 et 104
   (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : #2692 verte → merge → `db:migrate` (David, classifieur) → vérifier au MCP → page à cocher →
-  publication par David.
-- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
-- **Pièges en cours** : `create-questions --publier` lancé depuis un AUTRE worktree (suite-fleches) y a écrit les id :
-  vérifier `pwd` ; base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; `--publier` en LOCAL
-  écrit les id locaux → passer par une copie ; `pnpm check:migrations --pr <n>` avant merge ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot-13-rangement`.
+- **Prochaine action** : David relit la page (08, 09 « Tracer » à jouer dans l'aperçu) → compter les verdicts →
+  simulation `publier-lot.ts --dir scripts/questions/5-triangles` → David publie ; puis phase 0 du lot 14.
+- **En attente de David** : verdicts du lot 13 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main
+  (aperçu de `ef08a256`).
+- **Pièges en cours** : lancer `create-questions --publier` depuis le worktree du chantier (`pwd`) ; worktree neuf :
+  copier `supabase/.temp/` du dépôt principal sinon `db:migrate` « Cannot find project ref » ; base locale = contenu
+  de la prod (vrais id) ; `--publier` en LOCAL écrit les id locaux → copie ; jamais `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-5` (détaché sur `main`, à retirer à la clôture du lot 13).
 
 ---
 
@@ -1013,3 +1014,8 @@ triangle obtus en v2 de 04 et 08.
 - Migration `20261115183239_questions_5_lot13_rangement_tags` (générée, `docs/wip/questions-5/lot-13-rangement.py`,
   instantané `etat-prod-2026-11-15-lot13`) : 057 ×2 → « perpendiculaires et parallèles », les 7 autres →
   « triangles ». Test d'intégration 19 verts ; sans le corps, 8 rouges et 7 sautés.
+- #2692 mergée (CI verte, `security-auditor` sans finding, `check:migrations` ok). Migration appliquée en prod (avec
+  celle de `blockly`, `20261115185327`, par la session `blockly`) ; vérifié au MCP : 9 modèles sur leur nœud, tag
+  posé, `updated_at` préservé.
+- Page à cocher publiée (https://claude.ai/artifact/BsSmAMHX3m5At63YkCSRuh, capacité `db`, collection `verdicts`
+  vide au départ) ; 08, 09 (`figure-a-completer`) non dessinés par la page : à jouer dans l'aperçu.
