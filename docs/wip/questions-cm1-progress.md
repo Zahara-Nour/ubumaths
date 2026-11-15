@@ -8,8 +8,8 @@
 _Mis à jour le 2026-11-15 : recompte et phase 0 du lot 6 (§ 16)._
 
 - **État** : lots 0 à 5d publiés (5d : 3 modèles neufs + a43667e9 du CE2 ouvert au CM1). Recompte du 2026-11-15 : 94 points couverts sur 171 (§ 16).
-- **Prochaine action** : écrire le lot 6 (problèmes) quand David aura validé la phase 0 du § 16.
-- **En attente de David** : les 4 questions du § 16 (découpage, schéma en barres dans le corrigé, lot 6 bis des oubliés, lot 6 ter d'algèbre).
+- **Prochaine action** : écrire le lot 6 (problèmes, § 16), branche `content/questions-cm1-lot6`.
+- **En attente de David** : rien (§ 16 bis : un lot de 10, schéma en barres au corrigé, puis 6 bis, 6 ter).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom), refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau (tout programme) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; prochain lot sur une branche neuve depuis `origin/main`.
 
@@ -1169,3 +1169,10 @@ Questions :
    Reco : oui (063 profite du schéma en barres, comme 6-142).
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 16 bis. Lot 6 : réponse de David (2026-11-15)
+
+« je te suis », en réponse aux quatre recommandations du § 16 : 1. **un seul lot** de 10 modèles ; 2. schéma en barres
+(` ```schema-barres `) dans le **corrigé** de 6-1, 6-3 et 6-7, aucun dans l'énoncé ; 3. **lot 6 bis « rattrapage »**
+(001, 002, 131, 010, 143, 024, 048) juste après ; 4. **lot 6 ter « algèbre »** (062-066) entre les problèmes et les
+données.
