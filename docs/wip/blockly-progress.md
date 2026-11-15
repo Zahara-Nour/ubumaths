@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, phase 0 du bac à sable de calcul validée._
+_Mis à jour le 2026-11-15, après #2707._
 
-- **État** : PR en cours, bac à sable public `/programmes-de-calcul` (phase 0 validée, section en fin de journal) · **Prochaine action** : page + liens + test du rendu + doc `blockly.md`, PR, revue `code-reviewer` (Sonnet) · **En attente de David** : lancer `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) puis `--publier` ; `deploy:prod` pour livrer #2700 ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 (sinon l'ancien code lirait `blocs:` comme une clé inconnue : bloc indisponible) ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; modèle sur une notion → `sous_notions_admises` ; `Doc-inchangée:` → dans un COMMIT ; `db:migrate` → depuis le dépôt principal ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → `nightly-integration.yml` ; garde `docs:check-a-jour` : relancer après `git fetch` · **Worktree / branche** : `ubumaths-wt-blockly` · `feat/blockly-bac-a-sable-calcul`
+- **État** : bac à sable public `/programmes-de-calcul` livré (#2707, mergée, pas encore en prod) · **Prochaine action** : dernière piste, étanchéité du sandbox JS (retirer le worker JS de `/dev/blockly`, aperçu par l'interpréteur), phase 0 d'abord ; ou clore le chantier si David y renonce · **En attente de David** : `deploy:prod` (livre #2700 et #2707) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) et `--publier` ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683, #2700 / #2704 et #2707 de `verifications-manuelles.md` · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 (sinon `blocs:` serait une clé inconnue : bloc indisponible) ; garde `docs:check-a-jour` : ne lit que les COMMITS → la lancer après avoir commité le code (avant, verte à tort ; #2707 : `coquille-et-caches.md` et `carte-des-fonctionnalites.md` couvrent menu et sitemap) ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` → dans un COMMIT ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) · **Worktree / branche** : aucun (retiré après #2707)
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -636,3 +636,8 @@ Phase 0 présentée le 2026-11-15 ; David : « je te suis » sur les trois recom
 - **Pas d'aperçu Python** (aucun générateur pour les blocs de calcul) ; un nombre à la fois, pas de
   tableau de valeurs.
 - **Revue** : `code-reviewer` (Sonnet). Doc : `docs/systeme/blockly.md`.
+- **#2707 mergée le 2026-11-15** : page `/programmes-de-calcul` (`CalculEditeur` tel quel), liens
+  Header / Sidebar / sitemap, renvois croisés, 6 tests navigateur. Revue `code-reviewer` (Sonnet) :
+  aucun bloquant, deux mineurs corrigés (guillemets insécables, test « pas d'aperçu Python » sur le
+  rendu). CI d'abord rouge : la garde de doc demandait `coquille-et-caches.md` et
+  `carte-des-fonctionnalites.md` (verte en local car lancée avant le commit du code).
