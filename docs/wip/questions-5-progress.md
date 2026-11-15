@@ -5,20 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2677 (lot 12 écrit, mergé)._
+_Mis à jour le 2026-11-15, après #2679 (rangé, db:migrate) et #2681 (graduations)._
 
 - **État** : lots 1 à 11 publiés (lot 11 = Blockly, par `blockly`, 6 modèles publiés le 2026-11-15). Classement
   refait le 2026-11-15 (§ 26) : 43 points sans modèle publié = 9 D, **34 B** (101, 104 compris, corrigé le même jour).
-- **Prochaine action** : **David** lance, depuis `../ubumaths-wt-questions-5`,
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-reperage --publier` ; je commite les id ; migration
-  nœud + tag des 9, **et niveaux 3, 4 de `d4f38d30`, `d4d56c1b`** (`--mettre-a-jour` ne touche pas le niveau) ; page à
-  cocher (11 modèles) ; publication.
+- **Prochaine action** : **David** met à jour 02 et 04 en prod (`create-questions --dir scripts/questions/5-reperage
+--publier --mettre-a-jour`, depuis le dépôt principal) puis relit la page à cocher
+  (https://claude.ai/artifact/BBjACe2etgUg2YdZymzzKx, 11 modèles) ; je compte les verdicts ; `publier-lot.ts` en
+  simulation sur les 11 ; publication par David.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
   classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
   `pnpm migration:horodatage` ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot-12` (#2677 mergée ; nouvelle branche pour les id et la migration).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -898,3 +898,18 @@ renumérotés 3 et 4.
   relevé de températures (08 v1) en `x: -1 ; 11` (la fenêtre 5-11 n'avait pas l'axe des ordonnées).
 - Base locale (copie au scratchpad : aucun id local dans les fichiers) : 9 brouillons créés ; aperçu admin regardé
   pour 01 (unités), 08 (plante, repère de 2 en 2), 09 (ranger décroissant) — rendu juste.
+
+### 27 quater. Lot 12 en prod, rangé (2026-11-15, #2679, #2681)
+
+- David a lancé `create-questions --publier` : 9 brouillons (`2f1302fe`, `64a067cf`, `a5418354`, `e4d1ea01`,
+  `ef117fcd`, `5e4f9ecf`, `2b3be6d7`, `324e90e2`, `8683328e`), id commités (#2679).
+- Migrations `20261115074056_questions_5_lot12_rangement_tags` (générée, `docs/wip/questions-5/lot-12-rangement.py`)
+  et `20261115074154_questions_5_lot12_niveaux` (`d4f38d30`, `d4d56c1b` : 1 → 3, 4 ; `--mettre-a-jour` ne touche pas
+  le niveau). Tests d'intégration 28 verts, 13 rouges sans le corps ; `security-auditor` sans finding bloquant ; CI
+  verte ; `db:migrate` joué ; vérifié au MCP : 11 modèles sur leur nœud, tag posé, niveaux 1-2-3-4 dans
+  « coordonnées dans le plan ».
+- Page à cocher : alerte « graduations à 7-15 px sur téléphone » sur 02 et 04 (droites à placer) → #2681 : 12
+  intervalles au plus (02 : demis [−3 ; 2], quarts [−2 ; 1] ; 04 : dixièmes [−1 ; 0], [−n−1 ; −n], [−0,5 ; 0,5]).
+  **Piège** : régénérer le lot effaçait les `id` des fichiers ; le script les garde désormais.
+- Page à cocher publiée (https://claude.ai/artifact/BBjACe2etgUg2YdZymzzKx, capacité `db`, collection `verdicts`
+  vide au départ) ; 09 (ranger) non dessiné par la page : à jouer dans l'aperçu.
