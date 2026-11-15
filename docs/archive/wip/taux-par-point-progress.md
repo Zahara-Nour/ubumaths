@@ -1,24 +1,24 @@
 ---
-status: en-cours
+status: clos
 ---
 
 # Chantier `taux-par-point` — taux de réussite de la classe par point et par notion (P3)
 
 Ouvert le 2026-11-14, choisi par David après la clôture de `durees-trop-courtes`. Besoin P3 validé le
-2026-11-11 ([`formes-de-serie-progress.md`](../archive/wip/formes-de-serie-progress.md) § « Besoins de
+2026-11-11 ([`formes-de-serie-progress.md`](formes-de-serie-progress.md) § « Besoins de
 suivi validés ») : « taux de réussite par point et par notion » (prof, classe). Dernier écran prévu
 sur les nouvelles traces (P4, P5, P6, P7, P8, P9 faits).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2666._
+_Chantier clos le 2026-11-15 (accord de David), après #2663 et #2666._
 
-- **État** : PR 2 mergée (#2666) : widget « Taux de réussite » livré sur `main` (pas encore en prod : attend un `deploy:prod`) ; le découpage (PR 1 migration, PR 2 code) est fait · **Prochaine action** : clôture si David la valide (versement : le durable est déjà dans `analytique-prof.md` et `base-de-donnees.md`, journal à archiver) · **En attente de David** : « clore le chantier ? » ; vérification manuelle #2666 notée dans `verifications-manuelles.md` · **Pièges en cours** : base locale réinitialisée (`db:seed-riche`) le 2026-11-14, traces fictives ajoutées dans « 6B » · **Worktree / branche** : aucun (retiré après #2666)
+- **État** : clos. Découpage fait (PR 1 migration #2663, PR 2 code #2666) ; widget « Taux de réussite » sur `main`, en prod au prochain `deploy:prod` · **Versement** : le durable est dans `docs/systeme/analytique-prof.md` et `docs/systeme/base-de-donnees.md` · **Reste** : vérification manuelle #2666 dans `verifications-manuelles.md`
 
 ## Ce qui existe (vérifié le 2026-11-14)
 
 - **Analytique de la classe** (`/dashboard/teacher/classes/[classId]/analytics`, onglet Connaissances,
-  [analytique-prof.md](../systeme/analytique-prof.md)) :
+  [analytique-prof.md](../../systeme/analytique-prof.md)) :
   - grille A élève × point : badge de **mémorisation** (révision espacée, 🆘 / 🔁 / ⏳ / ✅ / ◯),
     colonnes dans l'ordre de l'arbre (branche › notion › point), notion sous chaque nom, pied de
     colonne « % acquise / % à remédier » ;
