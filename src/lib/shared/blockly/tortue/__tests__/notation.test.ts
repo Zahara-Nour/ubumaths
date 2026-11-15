@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { executerTortue } from '../interpreteur';
-import { etatVersTexte, LONGUEUR_MAX_PROGRAMME, texteVersEtat } from '../notation';
+import { etatVersTexte, LONGUEUR_MAX_PROGRAMME, nombreDeBlocs, texteVersEtat } from '../notation';
 import { MAX_ANSWER_LENGTH } from '$lib/questions/submission';
 
 // =============================================================================
@@ -216,5 +216,23 @@ describe('texteVersEtat', () => {
 		expect(texteVersEtat('avancer 1 ; '.repeat(LONGUEUR_MAX_PROGRAMME))).toMatchObject({
 			ok: false
 		});
+	});
+});
+
+describe('nombreDeBlocs', () => {
+	it('compte les blocs posés, pas les nombres écrits dedans', () => {
+		expect(nombreDeBlocs('avancer 3')).toBe(1);
+		expect(nombreDeBlocs('répéter 4 [ avancer 3 ; tourner à gauche 90 ]')).toBe(3);
+		expect(nombreDeBlocs('lever le stylo ; avancer 2 ; baisser le stylo')).toBe(3);
+	});
+
+	it('répétitions imbriquées, répétition vide : chaque répéter compte', () => {
+		expect(nombreDeBlocs('répéter 2 [ répéter 3 [ avancer 1 ] ; tourner à droite 90 ]')).toBe(4);
+		expect(nombreDeBlocs('répéter 3 [ ]')).toBe(1);
+	});
+
+	it('programme vide : 0 ; illisible : null', () => {
+		expect(nombreDeBlocs('')).toBe(0);
+		expect(nombreDeBlocs('sauter 3')).toBeNull();
 	});
 });

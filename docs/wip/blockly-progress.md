@@ -589,9 +589,9 @@ Pistes restantes après celle-ci : mode Calcul du bac à sable, étanchéité du
 - **Où** : bloc ```tortue seulement (calcul : « un bloc » y est flou ; plus tard si un modèle en a
   besoin). Clé `blocs: N` = au plus N blocs ; absente → rien ne change (modèles publiés compris).
 - **Refus à la publication** : valeur non entière ou < 1 ; `attendu:` qui dépasse lui-même la limite.
-- **Compte** : les blocs posés, pas les nombres écrits dedans (`répéter 4 [ avancer 3 ; tourner à
-gauche 90 ]` = 3) ; compté sur le texte enregistré (blocs désactivés ou posés seuls exclus, comme
-  à l'exécution) : le serveur juge sans Blockly.
+- **Compte** : les blocs posés, pas les nombres écrits dedans (un carré en `répéter` = 3 blocs) ;
+  compté sur le texte enregistré (blocs désactivés ou posés seuls exclus, comme à l'exécution) :
+  le serveur juge sans Blockly.
 - **Élève** : consigne « Au plus N blocs » affichée par la carte, compteur « Blocs : 5 / 3 », rouge
   au-delà ; **dépasser est permis** (option a : Blockly ne bloque pas) ; jugé faux, message « Ton
   programme utilise 8 blocs ; il en faut au plus 3. », même si le tracé est juste. Corrigé : la même

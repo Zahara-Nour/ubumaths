@@ -15,8 +15,41 @@ describe('parseTortueContent', () => {
 			montrer: false,
 			comparer: 'position',
 			modele: null,
-			depart: null
+			depart: null,
+			blocsMax: null
 		});
+	});
+
+	it('blocs: lu ; non entier, < 1 ou dépassé par attendu: refusé', () => {
+		expect(parseTortueContent([CARRE, 'blocs: 3'].join('\n')).spec?.blocsMax).toBe(3);
+		expect(parseTortueContent([CARRE, 'blocs: 12'].join('\n')).spec?.blocsMax).toBe(12);
+		for (const valeur of ['0', '2,5', 'trois', '']) {
+			const node = parseTortueContent([CARRE, `blocs: ${valeur}`].join('\n'));
+			expect(node.spec, valeur).toBeNull();
+			expect(node.errors[0].message).toMatch(/Ligne 2 : blocs:/);
+		}
+		const trop = parseTortueContent([CARRE, 'blocs: 2'].join('\n'));
+		expect(trop.spec).toBeNull();
+		expect(trop.errors.map((e) => e.message).join(' ')).toMatch(
+			/attendu: utilise 3 blocs, plus que blocs: 2/
+		);
+	});
+
+	it('blocs: le départ peut dépasser la limite', () => {
+		const node = parseTortueContent(
+			[
+				CARRE,
+				'blocs: 3',
+				'départ: avancer 3 ; tourner à droite 90 ; avancer 3 ; tourner à droite 90'
+			].join('\n')
+		);
+		expect(node.errors).toEqual([]);
+	});
+
+	it('blocs: avec attendu: ? (énoncé d’une évaluation notée) : la limite reste lue', () => {
+		const node = parseTortueContent(['attendu: ?', 'blocs: 3'].join('\n'));
+		expect(node.errors).toEqual([]);
+		expect(node.spec?.blocsMax).toBe(3);
 	});
 
 	it('départ: lu (avec ou sans accent), illisible refusé', () => {

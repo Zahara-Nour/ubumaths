@@ -119,3 +119,40 @@ describe('lireProgrammeTortue', () => {
 		expect(lireProgrammeTortue('répéter 100000 [ avancer 1 ]')).toMatchObject({ ok: false });
 	});
 });
+
+describe('jugerProgrammeTortue — nombre maximal de blocs', () => {
+	const HUIT_BLOCS = Array.from({ length: 4 }, () => 'avancer 3 ; tourner à droite 90').join(' ; ');
+
+	it('sans limite : le carré en 8 blocs est juste', () => {
+		expect(jugerProgrammeTortue(HUIT_BLOCS, CARRE_DROITE, 'position')).toEqual({ juste: true });
+		expect(jugerProgrammeTortue(HUIT_BLOCS, CARRE_DROITE, 'position', null).juste).toBe(true);
+	});
+
+	it('dans la limite : jugé sur le tracé', () => {
+		expect(jugerProgrammeTortue(CARRE_DROITE, CARRE_DROITE, 'position', 3)).toEqual({
+			juste: true
+		});
+		expect(
+			jugerProgrammeTortue(
+				'répéter 4 [ avancer 3 ; tourner à gauche 90 ]',
+				CARRE_DROITE,
+				'position',
+				3
+			).juste
+		).toBe(false);
+	});
+
+	it('au-delà : faux avec le message, même si le tracé est juste', () => {
+		expect(jugerProgrammeTortue(HUIT_BLOCS, CARRE_DROITE, 'position', 3)).toEqual({
+			juste: false,
+			message: 'Ton programme utilise 8 blocs ; il en faut au plus 3.'
+		});
+	});
+
+	it('illisible : le message de lecture prime ; vide : faux sans message', () => {
+		expect(jugerProgrammeTortue('sauter 3', CARRE_DROITE, 'position', 3).message).toMatch(
+			/Instruction inconnue/
+		);
+		expect(jugerProgrammeTortue('', CARRE_DROITE, 'position', 3)).toEqual({ juste: false });
+	});
+});

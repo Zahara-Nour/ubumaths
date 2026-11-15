@@ -244,6 +244,45 @@ describe('programme tortue : la carte', () => {
 	});
 });
 
+describe('programme tortue : nombre maximal de blocs', () => {
+	const LIMITE = node(`attendu: ${CARRE}`, 'blocs: 3', 'case: 0');
+	const compteur = (root: Element) => root.querySelector('[data-compteur-blocs]');
+
+	it('la consigne s’affiche avant l’éditeur ; sans limite, ni consigne ni compteur', async () => {
+		const { answer } = caseDeReponse();
+		const screen = await render(TortueProgramme, {
+			target: mainElement(),
+			props: { node: LIMITE, answer }
+		});
+		expect(screen.container.textContent).toContain('Au plus 3 blocs');
+		const sans = await render(TortueProgramme, {
+			target: mainElement(),
+			props: { node: CARRE_MONTRE, answer: caseDeReponse().answer }
+		});
+		await attendreBlocs(sans.container);
+		expect(sans.container.textContent).not.toContain('Au plus');
+		expect(compteur(sans.container)).toBeNull();
+	});
+
+	it('le compteur suit les blocs posés, signalé au-delà ; la réponse part quand même', async () => {
+		const { answer, recu } = caseDeReponse();
+		const screen = await render(TortueProgramme, {
+			target: mainElement(),
+			props: { node: LIMITE, answer }
+		});
+		await attendreBlocs(screen.container);
+		poser(CARRE);
+		await expect.poll(() => compteur(screen.container)?.textContent?.trim()).toBe('Blocs : 3 / 3');
+		expect(compteur(screen.container)?.getAttribute('data-depasse')).toBe('false');
+		const huit = Array.from({ length: 4 }, () => 'avancer 3 ; tourner à droite 90').join(' ; ');
+		poser(huit);
+		await expect.poll(() => compteur(screen.container)?.textContent?.trim()).toBe('Blocs : 8 / 3');
+		expect(compteur(screen.container)?.getAttribute('data-depasse')).toBe('true');
+		// Dépasser est permis : la réponse est envoyée, le serveur la juge fausse
+		expect(recu.at(-1)).toBe(huit);
+	});
+});
+
 describe('programme tortue : le corrigé', () => {
 	it('réponse fausse : son programme, un programme juste, l’attendu en pointillés', async () => {
 		const screen = await render(TortueCorrige, {
@@ -270,6 +309,22 @@ describe('programme tortue : le corrigé', () => {
 		});
 		expect(trace(screen.container, 'eleve')?.querySelectorAll('line')).toHaveLength(4);
 		expect(screen.container.textContent).toContain(`Un programme juste : ${CARRE}`);
+	});
+
+	it('trop de blocs : le message sous « Ton programme »', async () => {
+		const huit = Array.from({ length: 4 }, () => 'avancer 3 ; tourner à droite 90').join(' ; ');
+		const screen = await render(TortueCorrige, {
+			target: mainElement(),
+			props: {
+				node: node('attendu: ?', 'blocs: 3'),
+				answer: huit,
+				correct: false,
+				expected: `position | blocs 3 | ${CARRE}`
+			}
+		});
+		const texte = screen.container.textContent ?? '';
+		expect(texte).toContain('Ton programme utilise 8 blocs ; il en faut au plus 3.');
+		expect(texte).toContain(`Un programme juste : ${CARRE}`);
 	});
 
 	it('référence inconnue (énoncé masqué, rien de plus) : aucun programme juste inventé', async () => {

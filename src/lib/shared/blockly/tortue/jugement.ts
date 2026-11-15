@@ -7,7 +7,7 @@
  */
 
 import { executerTortue, messageErreurTortue } from './interpreteur';
-import { texteVersEtat } from './notation';
+import { nombreDeBlocs, texteVersEtat } from './notation';
 import { memesFormes, memesTraces, type Segment } from './segments';
 
 // =============================================================================
@@ -47,15 +47,37 @@ export function lireProgrammeTortue(texte: string): ProgrammeLu {
 	return { ok: true, segments: resultat.segments };
 }
 
-/** Juge le programme de l'élève contre le programme attendu. Ne lève jamais. */
+/** Message d'un programme qui dépasse le nombre maximal de blocs (`blocs:`). */
+export function messageTropDeBlocs(nombre: number, maximum: number): string {
+	return `Ton programme utilise ${nombre} blocs ; il en faut au plus ${maximum}.`;
+}
+
+/**
+ * Le programme dépasse-t-il le nombre maximal de blocs ? Rend le message, ou null (dans la
+ * limite, sans limite, ou illisible : sa lecture dit pourquoi).
+ */
+export function depassementDeBlocs(reponse: string, maximum: number | null): string | null {
+	if (maximum === null) return null;
+	const nombre = nombreDeBlocs(reponse);
+	if (nombre === null || nombre <= maximum) return null;
+	return messageTropDeBlocs(nombre, maximum);
+}
+
+/**
+ * Juge le programme de l'élève contre le programme attendu. `blocsMax` (`blocs:`) : au-delà, faux
+ * avec le message, même si le tracé est juste. Ne lève jamais.
+ */
 export function jugerProgrammeTortue(
 	reponse: string,
 	attendu: string,
-	comparaison: ComparaisonTortue
+	comparaison: ComparaisonTortue,
+	blocsMax: number | null = null
 ): VerdictTortue {
 	if (reponse.trim() === '') return { juste: false };
 	const eleve = lireProgrammeTortue(reponse);
 	if (!eleve.ok) return { juste: false, message: eleve.message };
+	const tropDeBlocs = depassementDeBlocs(reponse, blocsMax);
+	if (tropDeBlocs !== null) return { juste: false, message: tropDeBlocs };
 	const reference = lireProgrammeTortue(attendu);
 	// Un attendu illisible est refusé à la publication ; ici, jamais juste
 	if (!reference.ok || reference.segments.length === 0) return { juste: false };

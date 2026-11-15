@@ -15,6 +15,8 @@
  * - `comparer: position | forme` (défaut `position`) : même figure au même endroit, ou à
  *   une translation, un quart de tour ou un retournement près.
  * - `départ:` : un programme posé d'avance dans l'espace de travail de l'élève, à modifier.
+ * - `blocs: N` : au plus N blocs (les nombres écrits dans un bloc ne comptent pas) ; au-delà, le
+ *   programme est faux. `attendu:` doit tenir dans la limite ; `départ:` peut la dépasser.
  * - `case: N` : posée par le générateur.
  * - `figure:` : réservée à l'énoncé d'une évaluation notée, où `attendu:` devient `?` ; elle
  *   porte la figure à reproduire (`x1 y1 x2 y2 ; …`).
@@ -28,9 +30,10 @@ import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
 import { isMaskedValue } from '../utils/masked-value';
 import { lireProgrammeTortue, type ComparaisonTortue } from '$lib/shared/blockly/tortue/jugement';
-import { texteVersEtat } from '$lib/shared/blockly/tortue/notation';
+import { nombreDeBlocs, texteVersEtat } from '$lib/shared/blockly/tortue/notation';
 import { normaliserSegments, type Segment } from '$lib/shared/blockly/tortue/segments';
 import {
+	TORTUE_BLOCS_MAX,
 	TORTUE_FIGURE_MAX_SEGMENTS,
 	type TortueBlockRange,
 	type TortueIssue,
@@ -47,9 +50,9 @@ const BLOCK_END_REGEX = /^```\s*$/;
 /** `clé: valeur` */
 const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 
-type Key = 'attendu' | 'montrer' | 'comparer' | 'départ' | 'case' | 'figure';
+type Key = 'attendu' | 'montrer' | 'comparer' | 'départ' | 'blocs' | 'case' | 'figure';
 
-const KEY_NAMES: Key[] = ['attendu', 'montrer', 'comparer', 'départ', 'case', 'figure'];
+const KEY_NAMES: Key[] = ['attendu', 'montrer', 'comparer', 'départ', 'blocs', 'case', 'figure'];
 
 /** Les clés du bloc, `depart` sans accent compris : une ligne qui commence par l'une d'elles
  * n'est jamais du texte (Q66) */
@@ -194,6 +197,7 @@ export function parseTortueContent(source: string): TortueNode {
 	let comparer: ComparaisonTortue = 'position';
 	let figure: Segment[] | null = null;
 	let depart: string | null = null;
+	let blocsMax: number | null = null;
 	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
 
@@ -214,7 +218,7 @@ export function parseTortueContent(source: string): TortueNode {
 		if (key === null) {
 			fail(
 				lineNo,
-				`clé « ${match[1]} » inconnue (clés possibles : attendu, montrer, comparer, départ)`
+				`clé « ${match[1]} » inconnue (clés possibles : attendu, montrer, comparer, départ, blocs)`
 			);
 			return;
 		}
@@ -258,6 +262,16 @@ export function parseTortueContent(source: string): TortueNode {
 					depart = value === '' ? null : value;
 					break;
 				}
+				case 'blocs': {
+					const nombre = /^\d+$/.test(value) ? Number(value) : NaN;
+					if (!(nombre >= 1 && nombre <= TORTUE_BLOCS_MAX)) {
+						throw new LineError(
+							`blocs: « ${value} » : un nombre entier de blocs, de 1 à ${TORTUE_BLOCS_MAX} (ex. blocs: 3)`
+						);
+					}
+					blocsMax = nombre;
+					break;
+				}
 				case 'case':
 					if (!/^\d+$/.test(value))
 						throw new LineError(`case « ${value} » : numéro de case entier`);
@@ -285,6 +299,14 @@ export function parseTortueContent(source: string): TortueNode {
 			`attendu: figure trop grande pour montrer: oui (${TORTUE_FIGURE_MAX_SEGMENTS} segments au plus)`
 		);
 	}
+	// Un attendu au-delà de la limite : aucun élève ne pourrait être juste
+	const blocsAttendus = attendu === null ? null : nombreDeBlocs(attendu);
+	if (blocsMax !== null && blocsAttendus !== null && blocsAttendus > blocsMax) {
+		fail(
+			seen.get('blocs') ?? 1,
+			`attendu: utilise ${blocsAttendus} blocs, plus que blocs: ${blocsMax}`
+		);
+	}
 	if (seen.has('figure') && !attenduMasque) {
 		fail(
 			seen.get('figure') ?? 1,
@@ -304,7 +326,8 @@ export function parseTortueContent(source: string): TortueNode {
 			montrer,
 			comparer,
 			modele: montrer && traceModele ? normaliserSegments(traceModele) : null,
-			depart
+			depart,
+			blocsMax
 		},
 		errors,
 		...withCase

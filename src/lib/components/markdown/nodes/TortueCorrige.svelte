@@ -8,6 +8,7 @@
 	- Avec la réponse de l'élève : son tracé (vert juste, rouge faux), l'attendu en pointillés,
 	  son programme puis un programme juste.
 	- Sans réponse : le tracé juste et le programme de référence.
+	- `blocs:` dépassé : le message sous le programme de l'élève.
 	- Référence inconnue (énoncé masqué d'une évaluation notée, `attendu: ?`) : la figure du
 	  bloc seule s'il la montre, jamais d'attendu inventé.
 
@@ -15,7 +16,7 @@
 -->
 <script lang="ts">
 	import TortueCanvas from '$lib/components/blockly/TortueCanvas.svelte';
-	import { lireProgrammeTortue } from '$lib/shared/blockly/tortue/jugement';
+	import { depassementDeBlocs, lireProgrammeTortue } from '$lib/shared/blockly/tortue/jugement';
 	import { readExpectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
 	import { TORTUE_UNAVAILABLE, type TortueNode } from '$lib/ubumark/types/tortue';
 
@@ -33,17 +34,19 @@
 
 	let spec = $derived(node.spec);
 
-	let reference = $derived(
-		(expected !== undefined ? readExpectedTortueAnswer(expected)?.attendu : undefined) ??
-			spec?.attendu ??
-			null
-	);
+	let attendue = $derived(expected !== undefined ? readExpectedTortueAnswer(expected) : null);
+	let reference = $derived(attendue?.attendu ?? spec?.attendu ?? null);
+	/** La limite de la réponse attendue, sinon celle du bloc (gardée dans un énoncé masqué) */
+	let blocsMax = $derived(attendue ? attendue.blocsMax : (spec?.blocsMax ?? null));
 	let traceReference = $derived.by(() => {
 		if (reference === null) return null;
 		const lu = lireProgrammeTortue(reference);
 		return lu.ok ? lu.segments : null;
 	});
 	let eleve = $derived(answer === null ? null : lireProgrammeTortue(answer));
+	let tropDeBlocs = $derived(
+		answer !== null && eleve?.ok ? depassementDeBlocs(answer, blocsMax) : null
+	);
 </script>
 
 {#if spec === null}
@@ -69,6 +72,9 @@
 				<span class="text-muted-foreground">Ton programme :</span>
 				<code class="tortue-code">{answer}</code>
 			</p>
+			{#if tropDeBlocs}
+				<p class="text-sm text-destructive">{tropDeBlocs}</p>
+			{/if}
 		{:else}
 			<TortueCanvas segments={traceReference ?? spec.modele ?? []} label="Le tracé attendu" />
 		{/if}
