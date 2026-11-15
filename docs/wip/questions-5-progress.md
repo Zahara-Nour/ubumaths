@@ -10,9 +10,9 @@ _Mis à jour le 2026-11-15, après #2702 (lot 14, rangement) mergée et migrée.
 - **État** : lots 1 à 13 publiés. Lot 14 « Parallélogrammes » : 7 brouillons en prod, rangés sur « Figures planes ›
   parallélogrammes », tag posé (#2702, `db:migrate` joué, vérifié au MCP) ; page à cocher publiée (§ 29 quater).
   Restent : lot 15 (6 : 054, 055, 115, 144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : David coche la page https://claude.ai/artifact/37eYa4zpEKzGx2S75ZG2xN (06 et 07 à jouer
-  dans l'aperçu) → compter les verdicts → simulation `publier-lot.ts` → publication par David ; puis phase 0 du lot 15.
-- **En attente de David** : verdicts du lot 14 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main
+- **Prochaine action** : David publie le lot 14 (`pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/5-parallelogrammes --publier`, depuis le dépôt principal) → vérifier au MCP ; puis phase 0 du lot 15.
+- **En attente de David** : publication du lot 14 (7 verdicts « ok », simulation verte) ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main
   (aperçu de `ef08a256`).
 - **Pièges en cours** : `create-questions --publier` depuis le worktree du chantier (`pwd`) ; `--publier` en LOCAL
   écrit les id locaux → copie au scratchpad ; serveur de dev sur `--host 127.0.0.1` pour Chrome ; jamais `e`.
@@ -1106,3 +1106,8 @@ instruments (v2) ; 07 limité aux diagonales.
   préservé.
 - Page à cocher publiée (https://claude.ai/artifact/37eYa4zpEKzGx2S75ZG2xN, capacité `db`, collection `verdicts`
   vide au départ) ; 06, 07 (`figure-a-completer`) non dessinés par la page : à jouer dans l'aperçu.
+
+### Lot 14 : relu (2026-11-15)
+
+- Page à cocher : **7 verdicts sur 7 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
+  `publier-lot.ts` : 7 brouillons passent. Worktree retiré.
