@@ -5,19 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2668 (lot 10 mergé)._
+_Mis à jour le 2026-11-15, après #2670 (migration de rangement du lot 10 mergée)._
 
-- **État** : lots 1 à 9 publiés. Lot 10 (§ 24 ter) mergé (#2668) et **créé en prod** (10 brouillons, § 24 quater).
-  Lot 11 « Programmer en blocs » (§ 25) : **porté par `blockly`**.
-- **Prochaine action** : PR de la migration du lot 10 (§ 24 quinquies) → `security-auditor`, CI, merge, `db:migrate` (David).
-- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
+- **État** : lots 1 à 9 publiés. Lot 10 créé en prod (§ 24 quater), migration nœud + tag mergée (#2670, § 24
+  quinquies, `security-auditor` sans finding), **pas encore appliquée en prod**. Lot 11 : porté par `blockly`.
+- **Prochaine action** : David lance `pnpm db:migrate --dry-run` puis `pnpm db:migrate` depuis `main` (seule
+  `20261115062310_questions_5_lot10_rangement_tags` attendue) ; ensuite vérifier au MCP (10 nœuds, 10 tags,
+  `updated_at` intact), page à cocher du lot 10, publication.
+- **En attente de David** : `db:migrate` du lot 10 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
   128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
-- **Pièges en cours** : `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer
-  avant de commiter ; `db:migrate` en prod refusé par le classifieur du mode auto → David le lance (dry-run
-  d'abord) ; `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5` retiré après #2668 ; la migration se fera dans un nouveau
-  worktree (`feat/questions-5-lot-10-rangement`).
+- **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; `create-questions
+--publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
+  classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
+  `pnpm migration:horodatage` ; jamais `e`.
+- **Worktree / branche** : aucun (`ubumaths-wt-questions-5` retiré après #2670).
 
 ## 1. Relevé (prod, 2026-10-28)
 
