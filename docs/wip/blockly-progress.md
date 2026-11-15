@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2676 et la publication du lot 6e._
+_Mis à jour le 2026-11-15, PR « programme constant » en cours._
 
-- **État** : lot 6e publié en prod (`94d75415` 6-197 chemin tortue, `befab91c` 6-210 « pour n, affiche r »), rangés sous Algorithmique › Préalgorithmique ; lot 11 de la 5e publié aussi · **Prochaine action** : choisir la suite avec David (§ Premiers modèles : CM2-152 comme 6-210 en nombres simples ; 5-101 / 5-104 attendent le programme en blocs dans l'énoncé ; pistes : mode Calcul du bac à sable, « prévoir la valeur », nombre maximal de blocs, étanchéité du sandbox JS) · **En attente de David** : les choix du lot 6e (§ Lot 6e, « afficher 10 » juste compris) ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` d'une migration de rangement → dans un COMMIT ; `db:migrate` → depuis le dépôt principal (worktree non lié) ; worktree neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx scripts/…` · **Worktree / branche** : aucun (le prochain lot en ouvre un)
+- **État** : lot 6e publié ; suite validée par David (« je te suis », 2026-11-15) : (1) refuser un programme qui ne dépend pas du nombre (« afficher 10 » de 6-210), (2) CM2-152, (3) « prévoir la valeur » · **Prochaine action** : PR `fix/blockly-calcul-programme-constant` (règle dans `calcul/jugement.ts`, corrigé, spec et corrigé de 6-210) → revue `code-reviewer` Opus → merge → **David** corrige 6-210 en prod (`update-published-questions.ts`) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `create-questions` ne rejoue pas les specs d'un modèle déjà en base : copie sans id pour les vérifier ; `Doc-inchangée:` → dans un COMMIT ; `db:migrate` → depuis le dépôt principal ; worktree neuf → `pnpm exec svelte-kit sync` · **Worktree / branche** : `../ubumaths-wt-blockly`, `fix/blockly-calcul-programme-constant`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -461,3 +461,22 @@ worktree retiré.
 - **Page à cocher** : https://claude.ai/artifact/6gAfuvYSAHfgdYF8XBg4XW (2 fiches, alerte « bloc non
   dessiné » sur chacune, comme au lot 11).
 - **Publication** (2026-11-15) : 2 « ok » sur 2 à la page à cocher, aucun « À revoir » ; `publier-lot.ts --publier` lancé par David ; les 2 modèles sont `published` en prod (vérifié par requête).
+
+## Programme qui ne dépend pas du nombre — 2026-11-15 (branche `fix/blockly-calcul-programme-constant`)
+
+- **Décisions de David (2026-11-15)** : ordre de la suite (« je te suis » sur mes recos) : corriger
+  « afficher 10 », puis CM2-152, puis « prévoir la valeur » ; **règle générale** dans le jugement
+  des cases calcul plutôt qu'une option de modèle (« je te suis » à cette question précise).
+- Règle : attendu qui dépend du nombre (mesuré sur `ESSAIS_PAR_DEFAUT`, témoin en erreur ignoré)
+  → la réponse doit en dépendre ; sinon faux, « Ton programme affiche toujours la même chose,
+  quel que soit le nombre choisi. » Seulement quand les affichages coïncident sur les essais
+  (verdict et message des réponses déjà fausses inchangés). Corrigé : le message sous le tableau.
+- 6-210 : spec `afficher 10` → incorrect ; corrigé « …pourvu qu'ils utilisent le nombre choisi et
+  affichent r avec n » ; source `lot-6-blockly.py` alignée. Specs rejouées sur une copie sans id
+  (12/12 ; l'ancienne spec « juste » refusée).
+- Tests : `jugement.test.ts` (rouges sans la règle), `CalculProgramme.svelte.test.ts` (corrigé, rouge
+  sans la modification de `CalculCorrige.svelte`).
+- **#2683** : revue `code-reviewer` (Opus) sans bloquant ; point 1 corrigé (corrigé : réponse vide
+  avec référence connue gardait « n'affiche rien », test rouge d'abord), point 2 en commentaire
+  (témoins fixes : un polynôme qui s'annule sur chacun tromperait la mesure, cas d'école).
+  CI : `ubumark.md` couvre aussi `CalculCorrige.svelte` → `Doc-inchangée:` (il ne fait que le nommer).

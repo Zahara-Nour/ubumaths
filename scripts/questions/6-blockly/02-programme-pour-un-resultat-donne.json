@@ -29,7 +29,7 @@
 				"steps": [
 					"On cherche ce qu'il faut ajouter à ${{n}}$ pour obtenir ${{r}}$ : ${{r}} - {{n}} = {{a}}$.",
 					"Un programme juste : afficher nombre $+\\ {{a}}$. Avec ${{n}}$, il affiche ${{n}} + {{a}} = {{r}}$.",
-					"D'autres programmes sont justes aussi, pourvu qu'ils affichent ${{r}}$ avec ${{n}}$."
+					"D'autres programmes sont justes aussi, pourvu qu'ils utilisent le nombre choisi et affichent ${{r}}$ avec ${{n}}$."
 				]
 			}
 		},
@@ -55,7 +55,7 @@
 				"steps": [
 					"On cherche par combien multiplier ${{n}}$ pour obtenir ${{r}}$ : ${{r}} \\div {{n}} = {{a}}$.",
 					"Un programme juste : afficher nombre $\\times {{a}}$. Avec ${{n}}$, il affiche ${{n}} \\times {{a}} = {{r}}$.",
-					"D'autres programmes sont justes aussi, pourvu qu'ils affichent ${{r}}$ avec ${{n}}$."
+					"D'autres programmes sont justes aussi, pourvu qu'ils utilisent le nombre choisi et affichent ${{r}}$ avec ${{n}}$."
 				]
 			}
 		},
@@ -89,7 +89,7 @@
 				"steps": [
 					"Une façon de chercher : multiplier ${{n}}$ par ${{a}}$ donne ${{n}} \\times {{a}} = {{p}}$ ; il manque ${{r}} - {{p}} = {{b}}$.",
 					"Un programme juste : résultat prend la valeur nombre $\\times {{a}}$, puis résultat $+\\ {{b}}$, et on affiche résultat.",
-					"D'autres programmes sont justes aussi, pourvu qu'ils affichent ${{r}}$ avec ${{n}}$."
+					"D'autres programmes sont justes aussi, pourvu qu'ils utilisent le nombre choisi et affichent ${{r}}$ avec ${{n}}$."
 				]
 			}
 		}
@@ -122,7 +122,7 @@
 			}
 		},
 		{
-			"description": "Pour 3, affiche 10 : afficher 10 (juste : un seul essai)",
+			"description": "Pour 3, affiche 10 : afficher 10 (faux : ne dépend pas du nombre choisi)",
 			"variationIndex": 0,
 			"variables": {
 				"n": "3",
@@ -131,7 +131,7 @@
 			},
 			"answers": ["afficher 10"],
 			"expected": {
-				"status": "correct"
+				"status": "incorrect"
 			}
 		},
 		{
