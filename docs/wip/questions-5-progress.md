@@ -5,7 +5,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, lot 14 écrit (PR des fichiers)._
+_Mis à jour le 2026-11-15, après #2699 (lot 14, fichiers) mergée._
 
 - **État** : lots 1 à 13 publiés. Lot 14 « Parallélogrammes » validé (§ 29 bis) et écrit (§ 29 ter), 7 modèles dans
   `scripts/questions/5-parallelogrammes/`. Restent : lot 15 (6 : 054, 055, 115, 144, 048, 049), 9 D, 101 et 104
