@@ -1,4 +1,5 @@
 {
+	"id": "87e396e4-dd51-43a5-b209-2ba406005ff6",
 	"title": "Lire un tableau de valeurs",
 	"description": "Lire la valeur qui correspond à un nombre dans un tableau, ou le nombre qui donne une valeur",
 	"grades": ["5"],
