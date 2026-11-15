@@ -7,16 +7,16 @@
 
 _Mis à jour le 2026-11-15, après #2699 (lot 14, fichiers) mergée._
 
-- **État** : lots 1 à 13 publiés. Lot 14 « Parallélogrammes » validé (§ 29 bis) et écrit (§ 29 ter), 7 modèles dans
-  `scripts/questions/5-parallelogrammes/`. Restent : lot 15 (6 : 054, 055, 115, 144, 048, 049), 9 D, 101 et 104
-  (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : PR des fichiers du lot 14 verte → merge → David lance `create-questions --dir
-scripts/questions/5-parallelogrammes --publier` depuis ce worktree → commiter les id → migration de rangement
-  (nœud « Figures planes › parallélogrammes ») → page à cocher → publication par David.
+- **État** : lots 1 à 13 publiés. Lot 14 « Parallélogrammes » écrit (§ 29 ter), #2699 (fichiers) mergée, CI verte ;
+  7 modèles dans `scripts/questions/5-parallelogrammes/`, pas encore en prod. Restent : lot 15 (6 : 054, 055, 115,
+  144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/5-parallelogrammes --publier` depuis le
+  worktree (après `git pull`) → commiter les id → migration de rangement (nœud « Figures planes › parallélogrammes »)
+  → page à cocher → publication par David.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
 - **Pièges en cours** : `create-questions --publier` depuis le worktree du chantier (`pwd`) ; `--publier` en LOCAL
   écrit les id locaux → copie au scratchpad ; serveur de dev sur `--host 127.0.0.1` pour Chrome ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot-14`.
+- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot-14` (mergée ; la PR suivante part d'une branche neuve).
 
 ---
 
