@@ -1,4 +1,5 @@
 {
+	"id": "d6633d24-6d18-43e1-9306-e556e777178d",
 	"title": "Problèmes : retrouver un côté connaissant le périmètre",
 	"description": "Triangle ou quadrilatère : tous les côtés sauf un ; rectangle : un côté et le périmètre (8 cm et 27 cm → 5,5 cm) ; carré : le périmètre",
 	"grades": ["CM1"],
