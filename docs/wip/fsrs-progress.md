@@ -9,9 +9,9 @@ la PR 6g de `demo-debug` (#1711) : `calculateNewStability` n'utilise pas la note
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2703._
+_Mis à jour le 2026-11-15, après #2705._
 
-- **État** : PR 1 mergée (#2703, algorithme) ; PR 1b codée (Q5 (a) : réussite → `review`) · **Prochaine action** : PR 1b ouverte → CI → merge ; puis PR 2 (rejouer les 27 fiches depuis `review_history`, script `--essai` puis `--publier` sur demande explicite de David) · **En attente de David** : rien avant la PR 2 · **Pièges en cours** : `ts-fsrs` arrondit au 1e-8 → comparaison relative (1e-7) ; les tests qui appellent `reviewCard` sans `now` révisent « le même jour » ; les 27 fiches de prod gardent les anciennes valeurs jusqu'à la PR 2 · **Worktree / branche** : `../ubumaths-wt-fsrs`, `fix/fsrs-etat`
+- **État** : PR 1 (#2703, algorithme) et PR 1b (#2705, `learning` → `review`) mergées · **Prochaine action** : réponses à Q6-Q7, puis PR 2 (rejouer les 27 fiches depuis `review_history`, script `--essai` puis `--publier` sur demande explicite de David) · **En attente de David** : Q6 (badge d'une fiche réussie une fois, due), Q7 (tuile « En cours ») · **Pièges en cours** : `ts-fsrs` arrondit au 1e-8 → comparaison relative (1e-7) ; les tests qui appellent `reviewCard` sans `now` révisent « le même jour » ; les 27 fiches de prod gardent les anciennes valeurs jusqu'à la PR 2 · **Worktree / branche** : `../ubumaths-wt-fsrs`, `feat/fsrs-rejouer`
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -113,8 +113,22 @@ une fois** reste à jamais sur des intervalles courts (17 j au lieu de 44 au 5e 
   (reco : `learning` ne dure qu'une révision, comme `relearning`) ; (b) neuve réussie → `review` tout de
   suite ; (c) ne rien changer dans ce chantier.
 
+## Questions à David (posées le 2026-11-15, après la revue de #2705)
+
+- **Q6 — Fiche réussie une seule fois, puis due** : elle est encore `learning`, et le badge
+  (`templateToBadge`) affiche **« à remédier »** alors que l'élève n'a jamais échoué ; le commentaire du badge
+  dit pourtant « "à remédier" implique un échec ». Proposé : (a) **le badge ne lit que `relearning` comme
+  « à remédier »** ; `learning` due → « à renforcer » (reco : c'est la règle écrite du badge, un seul fichier,
+  sans migration) ; (b) une fiche neuve réussie passe directement en `review` (`learning` ne sert plus) ;
+  (c) laisser.
+- **Q7 — Tuile « En cours » d'un paquet** (`DeckCard.svelte`, compte SQL `learning_count`) : elle compte
+  `learning` seul, donc presque plus rien depuis #2705, et jamais les fiches ratées (`relearning`). Proposé :
+  (a) **compter `learning` + `relearning`** (« en cours d'apprentissage », reco ; migration de la fonction
+  de statistiques, personne ne lit rien de plus) ; (b) retirer la tuile ; (c) laisser.
+
 ## Historique
 
+- 2026-11-15 : #2705 mergée (PR 1b ; revue Sonnet sans bloquant, 2 points remontés → Q6, Q7 ; CI verte sur `b7bd6c805`).
 - 2026-11-15 : Q5 tranchée (« je te suis » → (a)) ; PR 1b codée : `learning` → `review` à la réussite, tests qui figeaient le bug réécrits (rouges avant). Les 5 fiches `learning` de prod n'ont qu'une révision : elles ne sont pas encore « bloquées ».
 - 2026-11-15 : #2703 mergée (PR 1 ; CI verte sur `65acfbc7d`).
 - 2026-11-15 : PR 1 ouverte (#2703) ; revue Opus sans bloquant, 2 mineurs corrigés : scénario du plafond après un oubli (rouge sans le `Math.min`), `best-of-day` passe son `now` à `reviewCard` (rouge sans).
