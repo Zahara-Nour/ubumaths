@@ -9,8 +9,8 @@ _Mis à jour le 2026-11-15, lot 12 publié en entier (11 modèles)._
 
 - **État** : lots 1 à 12 publiés. Relevé MCP : **32 points sans modèle publié** = 9 D, lot 13 (8), lot 14 (7),
   lot 15 (6), 101 et 104 (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : phase 0 du **lot 13 « Triangles : droites remarquables »** (057, 060, 062, 063, 064, 066,
-  131, 132 ; classement du § 26), à faire valider par David avant d'écrire.
+- **Prochaine action** : phase 0 du **lot 13 « Triangles : droites remarquables »** écrite (§ 28, 9 modèles),
+  **en attente de la validation de David** (3 questions) ; puis écrire le lot.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
@@ -927,3 +927,59 @@ renumérotés 3 et 4.
 - Lot 14 (7) : 067, 068, 069, 070, 071, 072, 133.
 - Lot 15 (6) : 054, 055, 115, 144, 048, 049.
 - Chantier `blockly` (2) : 101, 104.
+
+## 28. Lot 13 « Triangles : droites remarquables » : phase 0 (2026-11-15, NON validée)
+
+Relevé prod (MCP) : aucun modèle sur les 8 points. Nœuds : 057 → « Figures planes › perpendiculaires et parallèles »
+(vide) ; les 7 autres → « Figures planes › triangles » (5e : 1 modèle, niveau 1, « Le troisième angle » ; voisins 6e :
+médiatrices concourantes, cercle circonscrit ; 4e : triangle inscrit dans un demi-cercle, centre du cercle
+circonscrit). Outils : ` ```figure ` (`angle(…, marque=…)`, `marque_segment`, couleurs) + case ou ` ```choix ` ;
+` ```figure-a-completer ` sur quadrillage, `droite h = hauteur(A, B, C)` / `mediane(A, B, C)` (toute droite par
+deux nœuds, règle et équerre aux nœuds ; sur papier uni, seulement médiatrice et bissectrice).
+
+| #   | Point | Modèle                                                   | Réponse                    | Nœud, niveau                      |
+| --- | ----- | -------------------------------------------------------- | -------------------------- | --------------------------------- |
+| 01  | 5-057 | Reconnaître des angles alternes-internes, correspondants | choix                      | perpendiculaires et parallèles, 1 |
+| 02  | 5-057 | Angles et droites parallèles                             | case (v1) · choix (v2)     | perpendiculaires et parallèles, 2 |
+| 03  | 5-060 | Cercle circonscrit d'un triangle particulier             | choix (v1, v3) · case (v2) | triangles, 2                      |
+| 04  | 5-062 | Quelle est la hauteur issue de A ?                       | choix                      | triangles, 3                      |
+| 05  | 5-064 | Quelle est la médiane issue de A ?                       | choix                      | triangles, 4                      |
+| 06  | 5-063 | Les hauteurs sont concourantes                           | choix                      | triangles, 5                      |
+| 07  | 5-066 | Hauteurs et médianes des triangles particuliers          | case (v1) · choix (v2, v3) | triangles, 6                      |
+| 08  | 5-131 | Tracer une hauteur                                       | figure à compléter         | triangles, 7                      |
+| 09  | 5-132 | Tracer une médiane                                       | figure à compléter         | triangles, 8                      |
+
+- 01 : deux droites coupées par une sécante, deux angles marqués (arcs de couleur) ; « ces deux angles sont » :
+  alternes-internes / correspondants / ni l'un ni l'autre. Figures variées (sécante penchée à gauche, à droite ;
+  droites non parallèles parfois, la position ne dépend pas du parallélisme). Borne : ces deux positions seulement.
+- 02 : v1 (d) ∥ (d'), un angle donné (35° à 145°, entier), l'angle alterne-interne ou correspondant marqué → sa
+  mesure (case, en degrés) ; v2 réciproque : deux angles alternes-internes ou correspondants mesurés (72° et 72°, ou
+  72° et 70°) → « les droites (d) et (d') sont-elles parallèles ? » oui / non. Corrigé : la propriété (ou sa
+  réciproque, ou sa contraposée dite en mots, sans le mot).
+- 03 : v1 triangle rectangle → le centre du cercle circonscrit est : le milieu de l'hypoténuse / le sommet de
+  l'angle droit / le milieu d'un côté de l'angle droit / un point intérieur au triangle ; v2 ABC rectangle en A,
+  BC = 6 à 14 cm (pair) → rayon du cercle circonscrit (case, cm) ; v3 triangle isocèle en A → la médiatrice de [BC]
+  passe par : A / le milieu de [AB] / B. Borne : « observé et admis » (démontré en 4e), le corrigé ne démontre pas.
+- 04 : triangle ABC et trois segments partant de A, codés : [AH] ⟂ (BC) (angle droit), [AM] avec M milieu de [BC]
+  (marques), [AK] quelconque ; plus une hauteur d'un autre sommet ([BL]) en piège. v1 triangle à angles aigus ;
+  v2 triangle obtus en B, pied H sur le prolongement de [BC] (la hauteur hors du triangle). Choix : les quatre segments.
+- 05 : même décor, « quelle est la médiane issue de A ? » ; pièges : la hauteur [AH], le segment vers le milieu de
+  [AB], un segment quelconque. Médiane = segment ici (libellé du point) ; la droite (AM) en corrigé.
+- 06 : v1 deux hauteurs tracées, sécantes en H → « la hauteur issue de C passe par » : H / le milieu de [AB] /
+  le centre du cercle circonscrit ; v2 « H point d'intersection des hauteurs issues de A et de B ; la droite (CH)
+  est » : perpendiculaire à (AB) / parallèle à (AB) / la médiatrice de [AB].
+- 07 : v1 ABC isocèle en A, H pied de la hauteur issue de A, BC = 6 à 16 cm (pair) → BH (case) : la hauteur est
+  aussi médiane ; v2 triangle équilatéral → « la hauteur issue de A est aussi » : la médiane, la médiatrice de [BC],
+  la bissectrice de l'angle A / seulement la médiane / rien d'autre (choix d'une réponse : « les trois ») ;
+  v3 ABC rectangle en A → « la hauteur issue de B est » : le côté [BA] / le côté [BC] / un segment intérieur.
+- 08 : quadrillage, triangle aux sommets sur des nœuds, côté [BC] de pente simple (1/3, 1/2, 2) pour que le pied
+  et un 2e point de la hauteur tombent sur des nœuds ; `verifier: droite h = hauteur(A, B, C)`, règle et équerre ;
+  v1 triangle aigu, v2 obtus en B (pied hors de [BC], prolonger le côté). Erreurs dans les specs : la médiane,
+  la perpendiculaire à (BC) passant par le milieu (médiatrice), la perpendiculaire à (AB).
+- 09 : de même, `verifier: droite m = mediane(A, B, C)`, milieu de [BC] sur un nœud (coordonnées de B et C de même
+  parité) ; erreurs : la hauteur, la droite par A et le milieu de [AB], la médiatrice de [BC].
+- Pas de sous-notion neuve. Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte connecté).
+- **Questions** : (1) 057 en deux modèles, reconnaître puis utiliser (reco : oui) ; (2) 03 v2, rayon du cercle
+  circonscrit d'un triangle rectangle « admis » en 5e, alors que le 4e a déjà « triangle inscrit dans un
+  demi-cercle » (reco : oui, la borne cite l'observation en 5e) ; (3) triangle obtus en v2 de 04 et 08, pied hors du
+  côté (reco : oui, c'est l'erreur classique).
