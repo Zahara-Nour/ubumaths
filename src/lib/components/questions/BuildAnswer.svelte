@@ -55,6 +55,8 @@
 	import { parseTrousContent } from '$lib/ubumark/parser/trous-parser';
 	import TortueCorrige from '$lib/components/markdown/nodes/TortueCorrige.svelte';
 	import { parseTortueContent } from '$lib/ubumark/parser/tortue-parser';
+	import RobotCorrige from '$lib/components/markdown/nodes/RobotCorrige.svelte';
+	import { parseRobotContent } from '$lib/ubumark/parser/robot-parser';
 	import CalculCorrige from '$lib/components/markdown/nodes/CalculCorrige.svelte';
 	import { parseCalculContent } from '$lib/ubumark/parser/calcul-parser';
 	import Partage from '$lib/components/markdown/nodes/Partage.svelte';
@@ -131,6 +133,7 @@
 	let trous = $derived(kind === 'trous' ? parseTrousContent(source) : null);
 	let tortue = $derived(kind === 'tortue' ? parseTortueContent(source) : null);
 	let calcul = $derived(kind === 'calcul' ? parseCalculContent(source) : null);
+	let robot = $derived(kind === 'robot' ? parseRobotContent(source) : null);
 	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
 	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
 	let patron = $derived(kind === 'patron' ? parseEspaceContent(source, 'patron') : null);
@@ -285,6 +288,9 @@
 {:else if tortue}
 	<!-- Programme tortue : le tracé de l'élève et l'attendu en pointillés, les programmes en texte -->
 	<TortueCorrige node={tortue} {answer} correct={accepted(status)} expected={expected?.[0]} />
+{:else if robot}
+	<!-- Robot à produire : le trajet de l'élève, un code juste et son trajet en pointillés -->
+	<RobotCorrige node={robot} {answer} correct={accepted(status)} expected={expected?.[0]} />
 {:else if calcul}
 	<!-- Programme de calcul : les programmes en texte, le tableau nombre → résultat -->
 	<CalculCorrige node={calcul} {answer} correct={accepted(status)} expected={expected?.[0]} />

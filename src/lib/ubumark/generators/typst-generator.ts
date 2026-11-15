@@ -73,6 +73,7 @@ import { generateQrTypst } from './qr-typst';
 import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
 import { generateTortueTypst } from './tortue-typst';
+import { generateRobotTypst } from './robot-typst';
 import { generateCalculTypst } from './calcul-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
@@ -566,6 +567,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 		case 'calcul':
 			// Programme de calcul : « À faire sur Chiphre » (la consigne est dans l'énoncé)
 			return generateCalculTypst(node);
+		case 'robot':
+			// Robot : le quadrillage ; à produire, « Écris le code : » et 15 cases vides
+			return generateRobotTypst(node);
 
 		default:
 			return '';

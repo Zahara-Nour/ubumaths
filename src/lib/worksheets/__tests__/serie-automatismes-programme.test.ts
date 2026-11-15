@@ -1,10 +1,12 @@
 /**
  * Série d'automatismes : question à programme (tortue, calcul ; chantier `blockly`, PR 5)
+ * et robot à produire (chantier `suite-fleches`, PR 1b)
  * ======================================================================================
  *
  * Un programme se fait à l'écran : une question à programme n'entre pas dans une série
  * d'automatismes (tranché par David le 2026-11-14). Le refus le dit au prof, au lieu de
- * « 0 case(s) dans l'énoncé pour 1 réponse(s) ».
+ * « 0 case(s) dans l'énoncé pour 1 réponse(s) ». Un robot à produire, lui, se fait sur papier : le
+ * quadrillage et 15 cases à l'énoncé, un code juste au corrigé.
  */
 import { describe, it, expect } from 'vitest';
 import type { QuestionTemplate } from '$lib/questions/types';
@@ -36,18 +38,46 @@ describe('buildSerie — question à programme', () => {
 });
 
 describe('buildSerie — robot à produire', () => {
-	it('refusé tant qu’il n’a pas de rendu PDF', () => {
-		const modeles = new Map([
+	const robot = (...lignes: string[]) =>
+		new Map([
 			[
 				'robot',
-				modele(
-					'robot',
-					'Code.\n\n```robot\nquadrillage: 8 x 5\ndépart: 2, 1\narrivée: 6, 4\nproduire: oui\n```'
-				)
+				modele('robot', ['Code.', '', '```robot', ...lignes, 'produire: oui', '```'].join('\n'))
 			]
 		]);
-		expect(() => buildSerie(modeles, [{ templateId: 'robot', seed: 1 }])).toThrow(
-			'robot : un robot à produire ne peut pas encore entrer dans une série d’automatismes (pas de rendu PDF)'
+
+	it('énoncé : le bloc sans case: (le PDF dessine le quadrillage et 15 cases)', () => {
+		const serie = buildSerie(robot('quadrillage: 8 x 5', 'départ: 2, 1', 'arrivée: 6, 4'), [
+			{ templateId: 'robot', seed: 1 }
+		]);
+		expect(serie.statement).toContain('```robot');
+		expect(serie.statement).toContain('produire: oui');
+		expect(serie.statement).not.toMatch(/case\s*:/);
+	});
+
+	it('corrigé : le quadrillage seul, puis le CODE juste (jamais la scène de la réponse attendue)', () => {
+		const serie = buildSerie(robot('quadrillage: 8 x 5', 'départ: 2, 1', 'arrivée: 6, 4'), [
+			{ templateId: 'robot', seed: 1 }
+		]);
+		expect(serie.solution).toContain('```robot');
+		expect(serie.solution).not.toContain('produire');
+		const code = /Un code juste : \*\*(.+)\*\*/.exec(serie.solution)?.[1];
+		expect(code).toBeDefined();
+		expect(code).not.toContain('|');
+		expect(code).not.toContain('8x5');
+		// Le plus court : 4 cases à droite, 3 en haut, dans un ordre ou l'autre
+		expect(code!.split(' ').sort()).toEqual(['↑', '↑', '↑', '→', '→', '→', '→'].sort());
+		// Le code vient APRÈS la fin du bloc
+		expect(serie.solution.indexOf('Un code juste')).toBeGreaterThan(
+			serie.solution.lastIndexOf('```')
 		);
+	});
+
+	it('avance-pivote : le code juste en mots', () => {
+		const serie = buildSerie(
+			robot('quadrillage: 8 x 5', 'codage: avance-pivote', 'départ: 2, 1, droite', 'arrivée: 6, 1'),
+			[{ templateId: 'robot', seed: 1 }]
+		);
+		expect(serie.solution).toContain('Un code juste : **avance de 4**');
 	});
 });
