@@ -115,5 +115,6 @@ une fois** reste à jamais sur des intervalles courts (17 j au lieu de 44 au 5e 
 
 ## Historique
 
+- 2026-11-15 : PR 1 ouverte (#2703) ; revue Opus sans bloquant, 2 mineurs corrigés : scénario du plafond après un oubli (rouge sans le `Math.min`), `best-of-day` passe son `now` à `reviewCard` (rouge sans).
 - 2026-11-15 : PR 1 codée : `fsrs.ts` réécrit (FSRS-6 publié, écart en jours civils à Paris, court terme le même jour, `now` facultatif) ; `DECAY_PARAMETER` = −w[20] ; commentaires des paramètres corrigés ; `ts-fsrs@6.0.0` en devDependency ; 9e défaut vu au passage : un premier « Pas réussi » donnait une stabilité 0 (la fiche restait « neuve »).
 - 2026-11-15 : chantier ouvert, worktree `fix/fsrs` ; constat et simulation ; phase 0 écrite, Q1-Q4 posées.

@@ -65,6 +65,11 @@ const SCENARIOS: Record<string, Step[]> = {
 		{ grade: 4, days: 20 },
 		{ grade: 1, days: 60 }
 	],
+	// Le plafond S / e^(w[17]·w[18]) joue : oubli d'une fiche à faible stabilité
+	'Deux échecs à un an d’écart (plafond après un oubli)': [
+		{ grade: 1, days: 0 },
+		{ grade: 1, days: 365 }
+	],
 	'Plusieurs révisions le même jour (court terme)': [
 		{ grade: 3, days: 0 },
 		{ grade: 3, days: 0 },

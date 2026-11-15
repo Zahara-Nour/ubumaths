@@ -36,6 +36,18 @@ afterEach(() => {
 });
 
 describe('reviewBestOfDay', () => {
+	it('FSRS révise à l’instant reçu, pas à l’horloge du serveur (même jour civil que `schoolDay`)', () => {
+		vi.useFakeTimers();
+		const card = cardReviewedLongAgo();
+		// Série envoyée à 23 h 59 à Paris, traitée après minuit
+		const sentAt = new Date('2026-09-30T21:59:00Z');
+		vi.setSystemTime(new Date('2026-09-30T22:01:00Z'));
+
+		const result = reviewBestOfDay(fsrs, card, Grade.GOOD, sentAt);
+
+		expect(result!.lastReview).toBe(sentAt.toISOString());
+	});
+
 	it('première révision du jour : révision normale, état d’avant mémorisé', () => {
 		vi.useFakeTimers();
 		const card = cardReviewedLongAgo();
