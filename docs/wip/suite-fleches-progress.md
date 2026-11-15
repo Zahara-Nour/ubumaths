@@ -111,6 +111,48 @@ Réponse de David (2026-11-15) : « je suis tes recos » — Q1-Q8 tranchées se
 **Question d'accès** : aucune migration au lot 1 ; au lot 2, modèles en brouillon (admin seul) et migration nœud + tag
 sans règle d'accès : personne ne lit rien de plus.
 
+## Lot 2 — phase 0 (à valider)
+
+Deux modèles neufs, lot `ce1-11` (`scripts/questions/ce1-11/`, script `docs/wip/questions/lot-ce1-11.py`),
+point **CE1-080**, nœud « Géométrie > Repérage et déplacements > coder un déplacement » (celui de `e3bacfdc` et
+`8cbd4fb3`). Bloc ```robot déjà en prod (v0.90.0). Brouillons, délai 120 s (composer un code prend plus long que
+choisir parmi trois).
+
+**01 « Écris le code avec des flèches »** (niveau 2) — `codage: flèches`, quadrillage 8 × 5.
+Énoncé : « Écris le code qui mène le robot à la case verte. Chaque flèche le fait avancer d'une case dans son sens.
+Il ne peut pas entrer dans une case grise. »
+
+- V1 **sans case grise** : départ et arrivée tirés, au moins 5 cases d'écart, pas sur la même ligne ni la même
+  colonne (sinon le code est une seule direction).
+- V2 **avec un mur** : une des trois dispositions de cases grises écrites en dur (mur vertical, mur en L, deux
+  murs), départ et arrivée tirés de part et d'autre ; il faut 2 à 4 virages. Tirage refait si impossible
+  (`robotSceneImpossible`).
+
+**02 « Avance et pivote »** (niveau 3) — `codage: avance-pivote`, quadrillage 8 × 5, sens du départ tiré (haut,
+droite, bas, gauche).
+Énoncé : « Écris le code qui mène le robot à la case verte. Son nez montre où il regarde. « Pivote » le fait
+tourner d'un quart de tour sur place, sans changer de case. »
+
+- V1 **sans case grise** : comme 01 V1, le robot ne regarde jamais déjà vers l'arrivée sur un seul axe.
+- V2 **avec un mur** : les mêmes dispositions que 01 V2.
+
+**testSpecs** (chaque variation) : le plus court code (juste) ; un code juste avec un détour (juste) ; une case de
+trop (faux, « arrive ici ») ; vers le bas depuis la ligne 1 (faux, sortie). V2 : le code tout droit à travers le
+mur (faux, case grise). 02 : erreurs typiques du codage relatif — gauche et droite du robot inversées ; « avance »
+lu comme une flèche absolue (pas de pivot au départ) : faux.
+
+**Questions**
+
+- **L2-Q1.** Deux variations par modèle (sans / avec cases grises), plutôt qu'un modèle par cas ? Recommandation :
+  oui (même point, même geste ; le mur est la difficulté du BO, « 4 virages »).
+- **L2-Q2.** Niveaux 2 (flèches) et 3 (avance-pivote), comme `e3bacfdc` (2) et `8cbd4fb3` (3) ? Recommandation : 2
+  et 3 (le codage relatif est le plus dur).
+- **L2-Q3.** Quadrillage 8 × 5 sur les deux modèles (tient sur un téléphone, distance la plus longue 11) ?
+  Recommandation : oui.
+
+**Question d'accès** (déjà tranchée, phase 0 Q8) : modèles en brouillon (admin seul) ; migration nœud + tag sans
+règle d'accès, personne ne lit rien de plus.
+
 ## Journal
 
 - 2026-11-15 : worktree ouvert. À reporter dans la 1re PR : le commentaire d'en-tête de
