@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2674._
+_Mis à jour le 2026-11-15, après #2676._
 
-- **État** : lot 6e écrit (`scripts/questions/6-blockly/`, 2 modèles : 6-197 chemin tortue, 6-210 « pour n, affiche r »), mergé (#2674), fichiers seuls, sans id ; rien en prod · **Prochaine action** : **David** lance, depuis `../ubumaths-wt-blockly`, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-blockly --publier` → je commite les ids + migration nœud + tag (les deux → Algorithmique › Préalgorithmique) → page à cocher → publication · **En attente de David** : les choix du lot 6e (§ Lot 6e, « afficher 10 » juste compris) ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une case programme est jugée AVANT la garde de complexité ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT (le lot 10 de la 5e les avait perdus, #2671) ; worktree neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx scripts/…` · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-6-rangement`
+- **État** : lot 6e en prod en brouillon (2 modèles : `94d75415` 6-197 chemin tortue, `befab91c` 6-210 « pour n, affiche r »), rangés sous Algorithmique › Préalgorithmique avec un tag chacun (#2676, `db:migrate` fait et vérifié) · **Prochaine action** : **David** relit la page à cocher https://claude.ai/artifact/6gAfuvYSAHfgdYF8XBg4XW → compter les verdicts (`ArtifactData list verdicts`) → simulation `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-blockly` → **David** lance `--publier` → statut relu en base · **En attente de David** : la relecture ; les choix du lot 6e (§ Lot 6e, « afficher 10 » juste compris) ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` d'une migration de rangement → dans un COMMIT ; `db:migrate` → depuis le dépôt principal (worktree non lié) ; worktree neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx scripts/…` · **Worktree / branche** : aucun (retiré après #2676) ; publication depuis le dépôt principal
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -456,3 +456,7 @@ worktree retiré.
 - **#2676** : migration `20261115072353` (2 modèles sur « Algorithmique › Préalgorithmique », un tag
   chacun), calquée sur `20261115061153` ; test d'intégration 10/10, rouge sans la migration (6/10) ;
   `security-auditor` sans bloquant. CI : `Doc-inchangée:` doit être dans un COMMIT, pas dans la PR.
+- **#2676 mergée le 2026-11-15** ; `db:migrate` (depuis le dépôt principal) appliqué, vérifié en
+  prod : nœud, un tag chacun, brouillon, `updated_at` intact, trigger `O`. Garde des niveaux verte.
+- **Page à cocher** : https://claude.ai/artifact/6gAfuvYSAHfgdYF8XBg4XW (2 fiches, alerte « bloc non
+  dessiné » sur chacune, comme au lot 11).
