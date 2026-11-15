@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2696 et la publication du lot « prévoir la valeur »._
+_Mis à jour le 2026-11-15, phase 0 « nombre maximal de blocs » validée._
 
-- **État** : lots 6e, CM2 et « prévoir la valeur » publiés (CM2-067, 5-104, 5-101 : `98f54315`, `55615796`, `b9e88a6e`, en ```scratch, sans outil neuf) · **Prochaine action** : choisir avec David la piste suivante parmi celles qui restent (mode Calcul du bac à sable, nombre maximal de blocs, étanchéité du sandbox JS ; garde `r.grade = any(q.grades)` pour les prochaines migrations de rangement) — phase 0 d'abord · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; modèle sur une notion → `sous_notions_admises` dans la migration ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `db:migrate` → depuis le dépôt principal ; montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance) · **Worktree / branche** : aucun (retiré après #2696) ; le prochain lot en ouvre un
+- **État** : PR A (outil `blocs:` du bloc ```tortue) en cours sur `feat/blockly-max-blocs` · **Prochaine action** : tests rouges → code → PR A ; puis PR B (5-106 : carré 3, escalier 5, créneaux 9, mise à jour du modèle publié lancée par David) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; modèle sur une notion → `sous_notions_admises` dans la migration ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `db:migrate` → depuis le dépôt principal ; montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance) ; garde `r.grade = any(q.grades)` pour les prochaines migrations de rangement · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-max-blocs`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -580,3 +580,24 @@ Script `docs/wip/questions/lot-prevoir-valeur.py` → `scripts/questions/blockly
 - **Publication** (2026-11-15) : 3 « ok » sur 3 à la page à cocher, aucun « À revoir » ;
   `publier-lot.ts --publier` lancé par David ; les 3 modèles sont `published` en prod (vérifié par
   requête).
+
+## Nombre maximal de blocs — phase 0 validée par David le 2026-11-15
+
+Besoin : 5-106 (carré, escalier, créneaux) ne force pas la boucle (un carré en 8 blocs est juste).
+Pistes restantes après celle-ci : mode Calcul du bac à sable, étanchéité du sandbox JS.
+
+- **Où** : bloc ```tortue seulement (calcul : « un bloc » y est flou ; plus tard si un modèle en a
+  besoin). Clé `blocs: N` = au plus N blocs ; absente → rien ne change (modèles publiés compris).
+- **Refus à la publication** : valeur non entière ou < 1 ; `attendu:` qui dépasse lui-même la limite.
+- **Compte** : les blocs posés, pas les nombres écrits dedans (`répéter 4 [ avancer 3 ; tourner à
+gauche 90 ]` = 3) ; compté sur le texte enregistré (blocs désactivés ou posés seuls exclus, comme
+  à l'exécution) : le serveur juge sans Blockly.
+- **Élève** : consigne « Au plus N blocs » affichée par la carte, compteur « Blocs : 5 / 3 », rouge
+  au-delà ; **dépasser est permis** (option a : Blockly ne bloque pas) ; jugé faux, message « Ton
+  programme utilise 8 blocs ; il en faut au plus 3. », même si le tracé est juste. Corrigé : la même
+  phrase. Évaluation notée (`attendu: ?`) : la limite reste visible (consigne). `départ:` peut
+  dépasser. Vide → faux sans message.
+- **Question d'accès** : aucune (pas de migration). **Revue** : `code-reviewer` (Opus), correction
+  des réponses.
+- **Découpage** : PR A = l'outil ; PR B = 5-106 (carré 3, escalier 5, créneaux 9 = le nombre de
+  blocs de l'attendu, déjà minimal), mise à jour du modèle publié lancée par David.
