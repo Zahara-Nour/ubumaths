@@ -17,7 +17,8 @@ Phase 0 : journal § 27, validée par David le 2026-11-15 (« je te suis », tie
 Décisions et pièges :
 - un fichier ne porte ni `theme`, ni `domain`, ni `subdomain` (ADR 0035) ; nœud et tag : migration ;
 - 01 / 02 : unités, demis, quarts (01 : tiers en plus, réponse en fraction) ; 03 / 04 : dixièmes seulement
-  (centièmes = 6e) ; droites étiquetées en 0 et 1 seulement (03 v2 : les deux entiers qui encadrent) ;
+  (centièmes = 6e) ; droites À PLACER (02, 04) : 12 intervalles au plus (page à cocher : 20 px entre
+  graduations sur téléphone) ; droites étiquetées en 0 et 1 seulement (03 v2 : les deux entiers qui encadrent) ;
 - « k impair » : `mod(k*k,2)!=0` (k signé par `;±`) ;
 - 05 sans formule (situation en mots, programme de calcul) ; 06 formule donnée (borne 5-097) ;
   pas de notation fonctionnelle (bornes 5-093 à 5-097) ;
@@ -144,21 +145,21 @@ MODELES.append(modele(
                [var('k', '2..5;±'), var('x', 'eval:k')], [],
                ['Chaque graduation vaut $1$ ; ${{x}}$ est à ${{eval:abs(k)}}$ graduations ' + COTE + '.',
                 'On place le point sur la graduation ' + m('{{x}}') + '.']),
-     variation(PLACE + droite('-4', '4', '0.5', '2', '0, 1', 'placer: {{x}}'),
-               [var('k', '1..7;±'), var('x', 'eval:k/2;d')], [],
+     variation(PLACE + droite('-3', '2', '0.5', '2', '0, 1', 'placer: {{x}}'),
+               [var('k', '1..5;±'), var('x', 'eval:k/2;d')], [],
                ['L\'unité est partagée en $2$ : chaque graduation vaut $0.5$.',
                 '${{x}}$, c\'est ${{eval:abs(k)}}$ graduations ' + COTE + ' : on place le point en ' + m('{{x}}')
                 + '.'],
-               ['mod(k*k,2)!=0']),
-     variation(PLACE + droite('-3', '3', '0.25', '4', '0, 1', 'placer: {{x}}'),
-               [var('k', '1..11;±'), var('x', 'eval:k/4;d')], [],
+               ['mod(k*k,2)!=0', 'k<=3']),
+     variation(PLACE + droite('-2', '1', '0.25', '4', '0, 1', 'placer: {{x}}'),
+               [var('k', '1..7;±'), var('x', 'eval:k/4;d')], [],
                ['L\'unité est partagée en $4$ : chaque graduation vaut $0.25$.',
                 '${{x}}$, c\'est ${{eval:abs(k)}}$ graduations ' + COTE + ' : on place le point en ' + m('{{x}}')
                 + '.'],
-               ['mod(k*k,2)!=0']),
+               ['mod(k*k,2)!=0', 'k<=3']),
      variation('Place les points $A({{xa}})$ et $B({{xb}})$ sur la droite graduée.\n\n'
-               + droite('-4', '4', '0.5', '2', '0, 1', 'placer: A={{xa}} ; B={{xb}}'),
-               [var('a', '1..7'), var('b', '1..7'), var('xa', 'eval:-a/2;d'), var('xb', 'eval:b/2;d')], [],
+               + droite('-3', '2', '0.5', '2', '0, 1', 'placer: A={{xa}} ; B={{xb}}'),
+               [var('a', '1..6'), var('b', '1..4'), var('xa', 'eval:-a/2;d'), var('xb', 'eval:b/2;d')], [],
                ['Chaque graduation vaut $0.5$.',
                 '$A$ est à ${{a}}$ graduations à gauche de $0$, en ' + m('{{xa}}') + ' ; $B$ est à ${{b}}$'
                 ' graduations à droite de $0$, en ' + m('{{xb}}') + '.'],
@@ -170,8 +171,8 @@ MODELES.append(modele(
      spec('Erreur : 2,5', 1, {'k': -5}, ['2.5'], 'incorrect'),
      spec('−1,75 placé', 2, {'k': -7}, ['-1.75'], 'correct'),
      spec('Erreur : −1,25', 2, {'k': -7}, ['-1.25'], 'incorrect'),
-     spec('A(−1,5), B(2) placés', 3, {'a': 3, 'b': 4}, ['-1.5', '2'], 'correct'),
-     spec('Erreur : A en 1,5', 3, {'a': 3, 'b': 4}, ['1.5', '2'], 'incorrect')],
+     spec('A(−1,5), B(1,5) placés', 3, {'a': 3, 'b': 3}, ['-1.5', '1.5'], 'correct'),
+     spec('Erreur : A en 1,5', 3, {'a': 3, 'b': 2}, ['1.5', '1'], 'incorrect')],
     delay=45))
 
 # --- 03. 5-046 : lire une abscisse décimale relative ---------------------------------------
@@ -209,34 +210,30 @@ MODELES.append(modele(
 
 MODELES.append(modele(
     '04-placer-un-point-d-abscisse-decimale', "Placer un point d'abscisse décimale relative",
-    'Placer un nombre décimal relatif sur une droite graduée en dixièmes : autour de 0, entre deux entiers'
-    ' négatifs, puis deux points', 2,
-    [variation(PLACE + droite('-1.5', '1.5', '0.1', '10', '0, 1', 'placer: {{x}}'),
-               [var('k', '1..14;±'), var('x', 'eval:k/10;d')], [],
+    'Placer un nombre décimal relatif sur une droite graduée en dixièmes (une unité, 10 graduations) : entre −1'
+    ' et 0, entre deux entiers négatifs, puis deux points de part et d\'autre de 0', 2,
+    [variation(PLACE + droite('-1', '0', '0.1', '10', '-1, 0', 'placer: {{x}}'),
+               [var('k', '1..9'), var('x', 'eval:-k/10;d')], [],
                ['Chaque graduation vaut $0.1$.',
-                '${{x}}$, c\'est ${{eval:abs(k)}}$ graduations ' + COTE + ' : on place le point en ' + m('{{x}}')
-                + '.'],
-               ['k*k!=100']),
-     variation(PLACE + droite('{{eval:-n-1}}', '{{eval:-n+0.5;d}}', '0.1', '10', '{{eval:-n-1}}, {{eval:-n}}',
+                '${{x}}$, c\'est ${{k}}$ graduations à gauche de $0$ : on place le point en ' + m('{{x}}') + '.']),
+     variation(PLACE + droite('{{eval:-n-1}}', '{{eval:-n}}', '0.1', '10', '{{eval:-n-1}}, {{eval:-n}}',
                               'placer: {{x}}'),
                [var('n', '2..5'), var('k', '1..9'), var('x', 'eval:-(10*n+k)/10;d')], [],
                ['Chaque graduation vaut $0.1$.',
                 '${{x}}$ est entre ${{eval:-n-1}}$ et ${{eval:-n}}$, à ${{k}}$ graduations à gauche de'
                 ' ${{eval:-n}}$ : on place le point en ' + m('{{x}}') + '.']),
      variation('Place les points $A({{xa}})$ et $B({{xb}})$ sur la droite graduée.\n\n'
-               + droite('-1.5', '1.5', '0.1', '10', '0, 1', 'placer: A={{xa}} ; B={{xb}}'),
-               [var('a', '1..14'), var('b', '1..9'), var('xa', 'eval:-a/10;d'), var('xb', 'eval:b/10;d')], [],
+               + droite('-0.5', '0.5', '0.1', '10', '-0.5, 0, 0.5', 'placer: A={{xa}} ; B={{xb}}'),
+               [var('a', '1..4'), var('b', '1..4'), var('xa', 'eval:-a/10;d'), var('xb', 'eval:b/10;d')], [],
                ['Chaque graduation vaut $0.1$.',
                 '$A$ est à ${{a}}$ graduations à gauche de $0$, en ' + m('{{xa}}') + ' ; $B$ à ${{b}}$'
-                ' graduations à droite, en ' + m('{{xb}}') + '.'],
-               ['a!=10'])],
-    [spec('−1,3 placé', 0, {'k': -13}, ['-1.3'], 'correct'),
-     spec('Erreur : −0,7 (compté depuis −1 vers la droite)', 0, {'k': -13}, ['-0.7'], 'incorrect'),
-     spec('Erreur : 1,3', 0, {'k': -13}, ['1.3'], 'incorrect'),
+                ' graduations à droite, en ' + m('{{xb}}') + '.'])],
+    [spec('−0,3 placé', 0, {'k': 3}, ['-0.3'], 'correct'),
+     spec('Erreur : −0,7 (compté depuis −1 vers la droite)', 0, {'k': 3}, ['-0.7'], 'incorrect'),
      spec('−3,4 placé', 1, {'n': 3, 'k': 4}, ['-3.4'], 'correct'),
      spec('Erreur : −3,6', 1, {'n': 3, 'k': 4}, ['-3.6'], 'incorrect'),
-     spec('A(−0,6), B(0,4) placés', 2, {'a': 6, 'b': 4}, ['-0.6', '0.4'], 'correct'),
-     spec('Erreur : A en 0,6', 2, {'a': 6, 'b': 4}, ['0.6', '0.4'], 'incorrect')],
+     spec('A(−0,3), B(0,4) placés', 2, {'a': 3, 'b': 4}, ['-0.3', '0.4'], 'correct'),
+     spec('Erreur : A en 0,3', 2, {'a': 3, 'b': 4}, ['0.3', '0.4'], 'incorrect')],
     delay=45))
 
 # --- 05. 5-093 : produire un tableau de valeurs (sans formule) -----------------------------
@@ -494,6 +491,11 @@ FAUX_RANGER = {0: 'Erreur : −3 avant −7 (distance à zéro)',
 os.makedirs(DOSSIER, exist_ok=True)
 for nom, mod in MODELES:
     chemin = os.path.join(DOSSIER, nom + '.json')
+    # L'id écrit par `create-questions --publier` est gardé : sans lui, le fichier ne retrouve plus son modèle.
+    if os.path.exists(chemin):
+        ancien = json.load(open(chemin, encoding='utf-8'))
+        if 'id' in ancien:
+            mod = {'id': ancien['id'], **mod}
     a_ranger = [s for s in mod['testSpecs'] if isinstance(s, str)]
     mod['testSpecs'] = [s for s in mod['testSpecs'] if not isinstance(s, str)]
     with open(chemin, 'w', encoding='utf-8') as f:

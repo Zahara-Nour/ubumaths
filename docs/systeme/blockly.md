@@ -54,7 +54,7 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 | `src/lib/shared/blockly/lecture.ts`                           | Lecture commune (tortue, calcul) : état sérialisé → `BlocLu` vérifié (`lirePiles`), `premierBlocInconnu`, `nombreDeTours`                                        |
 | `src/lib/shared/blockly/calcul/interpreteur.ts`               | `executerCalcul(etat, nombre)` : interprète un programme de calcul pour un nombre de départ (ADR 0039), rend les nombres affichés                                |
 | `src/lib/shared/blockly/calcul/notation.ts`                   | `etatVersTexteCalcul` / `texteVersEtatCalcul` : `mettre résultat à nombre + 2 ; afficher résultat × 4` ↔ état Blockly                                            |
-| `src/lib/shared/blockly/calcul/jugement.ts`                   | `jugerProgrammeCalcul` (mêmes affichages sur chaque essai), `lireProgrammeCalcul`, `lireEssais` / `ecrireEssais`, `ESSAIS_PAR_DEFAUT`                            |
+| `src/lib/shared/blockly/calcul/jugement.ts`                   | `jugerProgrammeCalcul` (mêmes affichages sur chaque essai), `dependDuNombre`, `lireProgrammeCalcul`, `lireEssais` / `ecrireEssais`, `ESSAIS_PAR_DEFAUT`          |
 | `src/lib/shared/blockly/calcul/blocs.ts`                      | `definirBlocsCalcul` : définitions Blockly des blocs de calcul (sans générateur) ; **seul fichier de `calcul/` qui importe Blockly**                             |
 | `src/lib/shared/blockly/calcul/toolbox.ts`                    | `CALCUL_TOOLBOX` (Calcul, Résultat, Afficher, Boucles avec `controls_repeat` seul), `COULEURS_CALCUL` ; sans import de Blockly                                   |
 | `src/lib/components/blockly/CalculEditeur.svelte`             | Éditeur d'une question de calcul (blocs, « Essayer avec », Lancer, affichages) ; rend le programme en texte à chaque modification ; chargé à la demande          |
@@ -192,6 +192,14 @@ question de calcul »).
   « Avec le nombre 0 : Division par zéro… » ; rien d'affiché sur aucun essai → « Ton programme
   n'affiche rien. » ; référence illisible, muette sur un essai ou en erreur, ou aucun essai →
   jamais juste (refusée à la publication).
+  **Dépendre du nombre** : quand l'attendu affiche des choses différentes selon le nombre choisi,
+  la réponse doit en dépendre aussi, sinon elle est fausse même si ses affichages coïncident
+  sur les essais (« pour 3, affiche 10 » à un seul essai : `afficher 10`, `nombre × 0 + 10`) →
+  « Ton programme affiche toujours la même chose, quel que soit le nombre choisi. »
+  (`PROGRAMME_CONSTANT`). Mesuré par `dependDuNombre` sur les nombres témoins
+  (`ESSAIS_PAR_DEFAUT`), un témoin en erreur ignoré, moins de deux témoins utilisables → on ne
+  sait pas, rien refusé. Une réponse déjà fausse sur les essais garde son verdict sans message ;
+  un attendu constant ne déclenche rien (David, 2026-11-15).
 
 ## L'écran d'une question tortue
 
@@ -241,7 +249,8 @@ question de calcul »).
   programme juste » (réponse attendue de la case, sinon `attendu:`), tous deux réécrits en
   écriture canonique (`reecrireCalcul` : « mettre résultat à », jamais `résultat =`), tableau « Nombre choisi →
   Ton programme affiche / Il fallait afficher » sur les essais, lignes fausses marquées
-  (`data-juste`) ; « erreur », « rien » dans une cellule ; message de l'élève sous le tableau.
+  (`data-juste`) ; « erreur », « rien » dans une cellule ; message de l'élève sous le tableau
+  (référence connue : celui de `jugerProgrammeCalcul`, « affiche toujours la même chose » compris).
   Référence inconnue (`attendu: ?`) : la colonne de l'élève seule.
 - **PDF** (`ubumark/generators/calcul-typst.ts`) : le cadre « À faire sur Chiphre » seul.
 

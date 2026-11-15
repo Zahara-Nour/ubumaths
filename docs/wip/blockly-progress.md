@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2676._
+_Mis à jour le 2026-11-15, après #2683 et #2684._
 
-- **État** : lot 6e en prod en brouillon (2 modèles : `94d75415` 6-197 chemin tortue, `befab91c` 6-210 « pour n, affiche r »), rangés sous Algorithmique › Préalgorithmique avec un tag chacun (#2676, `db:migrate` fait et vérifié) · **Prochaine action** : **David** relit la page à cocher https://claude.ai/artifact/6gAfuvYSAHfgdYF8XBg4XW → compter les verdicts (`ArtifactData list verdicts`) → simulation `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-blockly` → **David** lance `--publier` → statut relu en base · **En attente de David** : la relecture ; les choix du lot 6e (§ Lot 6e, « afficher 10 » juste compris) ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` d'une migration de rangement → dans un COMMIT ; `db:migrate` → depuis le dépôt principal (worktree non lié) ; worktree neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx scripts/…` · **Worktree / branche** : aucun (retiré après #2676) ; publication depuis le dépôt principal
+- **État** : lot 6e publié ; un programme qui ne dépend pas du nombre est faux (#2683, déployée en v0.90.0 le 2026-11-15) ; 6-210 corrigé en prod (spec `afficher 10` faux, corrigé ajusté, #2684 + `update-published-questions --lot blockly-6-210` par David, vérifié en base) · **Prochaine action** : (2) CM2-152 (comme 6-210, nombres simples) : relevé du point en prod, phase 0 courte, lot · puis (3) « prévoir la valeur » (programme en blocs dans l'énoncé, débloque 5-101 / 5-104) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il ne rejoue pas les specs d'un modèle déjà en base (copie sans id, dans le scratchpad si possible) ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `CalculCorrige.svelte` est aussi couvert par `ubumark.md` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance, simulation comprise) ; `db:migrate` → depuis le dépôt principal ; worktree neuf → `pnpm exec svelte-kit sync` · **Worktree / branche** : aucun (retiré le 2026-11-15) ; le prochain lot en ouvre un
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -460,3 +460,27 @@ worktree retiré.
   prod : nœud, un tag chacun, brouillon, `updated_at` intact, trigger `O`. Garde des niveaux verte.
 - **Page à cocher** : https://claude.ai/artifact/6gAfuvYSAHfgdYF8XBg4XW (2 fiches, alerte « bloc non
   dessiné » sur chacune, comme au lot 11).
+- **Publication** (2026-11-15) : 2 « ok » sur 2 à la page à cocher, aucun « À revoir » ; `publier-lot.ts --publier` lancé par David ; les 2 modèles sont `published` en prod (vérifié par requête).
+
+## Programme qui ne dépend pas du nombre — 2026-11-15 (branche `fix/blockly-calcul-programme-constant`)
+
+- **Décisions de David (2026-11-15)** : ordre de la suite (« je te suis » sur mes recos) : corriger
+  « afficher 10 », puis CM2-152, puis « prévoir la valeur » ; **règle générale** dans le jugement
+  des cases calcul plutôt qu'une option de modèle (« je te suis » à cette question précise).
+- Règle : attendu qui dépend du nombre (mesuré sur `ESSAIS_PAR_DEFAUT`, témoin en erreur ignoré)
+  → la réponse doit en dépendre ; sinon faux, « Ton programme affiche toujours la même chose,
+  quel que soit le nombre choisi. » Seulement quand les affichages coïncident sur les essais
+  (verdict et message des réponses déjà fausses inchangés). Corrigé : le message sous le tableau.
+- 6-210 : spec `afficher 10` → incorrect ; corrigé « …pourvu qu'ils utilisent le nombre choisi et
+  affichent r avec n » ; source `lot-6-blockly.py` alignée. Specs rejouées sur une copie sans id
+  (12/12 ; l'ancienne spec « juste » refusée).
+- Tests : `jugement.test.ts` (rouges sans la règle), `CalculProgramme.svelte.test.ts` (corrigé, rouge
+  sans la modification de `CalculCorrige.svelte`).
+- **#2683** : revue `code-reviewer` (Opus) sans bloquant ; point 1 corrigé (corrigé : réponse vide
+  avec référence connue gardait « n'affiche rien », test rouge d'abord), point 2 en commentaire
+  (témoins fixes : un polynôme qui s'annule sur chacun tromperait la mesure, cas d'école).
+  CI : `ubumark.md` couvre aussi `CalculCorrige.svelte` → `Doc-inchangée:` (il ne fait que le nommer).
+- **#2683 mergée le 2026-11-15** (CI verte). **#2684 mergée** : instantané de `befab91c` (prod),
+  corrigé, lot `blockly-6-210` ; simulation (diff = 3 corrigés + 1 spec, 12/12 vertes) puis
+  `--publier` par David ; vérifié en base (publié, 3 corrigés, spec `incorrect`). Ligne ajoutée à
+  `verifications-manuelles.md` (après `deploy:prod`).

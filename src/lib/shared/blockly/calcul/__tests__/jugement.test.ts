@@ -6,7 +6,8 @@ import {
 	jugerProgrammeCalcul,
 	lireEssais,
 	lireProgrammeCalcul,
-	memesAffichages
+	memesAffichages,
+	PROGRAMME_CONSTANT
 } from '../jugement';
 
 const BO = 'afficher (nombre + 2) × 4';
@@ -84,6 +85,52 @@ describe('jugerProgrammeCalcul', () => {
 		});
 		expect(jugerProgrammeCalcul('résultat = 1', 'résultat = 1', [0])).toEqual({ juste: false });
 		expect(jugerProgrammeCalcul(BO, BO, [])).toEqual({ juste: false });
+	});
+});
+
+describe('jugerProgrammeCalcul : un programme qui ne dépend pas du nombre', () => {
+	// 6-210 : « pour 3, affiche 10 », un seul essai
+	const POUR_3 = 'afficher nombre + 7';
+
+	it('afficher le résultat directement est faux, avec un message', () => {
+		expect(jugerProgrammeCalcul('afficher 10', POUR_3, [3])).toEqual({
+			juste: false,
+			message: PROGRAMME_CONSTANT
+		});
+	});
+
+	it('un nombre choisi posé mais sans effet ne suffit pas', () => {
+		expect(jugerProgrammeCalcul('afficher nombre × 0 + 10', POUR_3, [3])).toEqual({
+			juste: false,
+			message: PROGRAMME_CONSTANT
+		});
+		expect(jugerProgrammeCalcul('mettre résultat à nombre ; afficher 10', POUR_3, [3])).toEqual({
+			juste: false,
+			message: PROGRAMME_CONSTANT
+		});
+	});
+
+	it('tout programme qui utilise le nombre et affiche 10 pour 3 reste juste', () => {
+		for (const reponse of [POUR_3, 'afficher nombre × 3 + 1', 'afficher 13 − nombre']) {
+			expect(jugerProgrammeCalcul(reponse, POUR_3, [3])).toEqual({ juste: true });
+		}
+	});
+
+	it('un nombre témoin qui fait planter le programme est ignoré', () => {
+		// 1 ÷ (nombre − 2) plante en 2 (témoin), pas en 3 (l'essai) : il dépend bien du nombre
+		expect(
+			jugerProgrammeCalcul('afficher 10 × (nombre − 2) ÷ (nombre − 2) + nombre − 3', POUR_3, [3])
+		).toEqual({ juste: true });
+	});
+
+	it('attendu qui affiche toujours la même chose : la règle ne joue pas', () => {
+		expect(jugerProgrammeCalcul('afficher 0,1 + 0,2', 'afficher 0,3', [0])).toEqual({
+			juste: true
+		});
+	});
+
+	it('faux de toute façon : verdict et message inchangés (plusieurs essais)', () => {
+		expect(jugerProgrammeCalcul('afficher 8', BO, ESSAIS_PAR_DEFAUT)).toEqual({ juste: false });
 	});
 });
 
