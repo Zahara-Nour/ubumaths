@@ -1,4 +1,5 @@
 {
+	"id": "2f1302fe-9caf-42b8-823d-a33dcd9c7681",
 	"title": "Lire l'abscisse d'un point sur une droite graduée",
 	"description": "Lire l'abscisse relative d'un point sur une droite graduée étiquetée en 0 et 1 : graduée en unités, en demis, en quarts, en tiers (réponse en fraction)",
 	"grades": ["5"],

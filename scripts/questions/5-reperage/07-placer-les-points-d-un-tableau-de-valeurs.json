@@ -1,4 +1,5 @@
 {
+	"id": "2b3be6d7-e950-4211-912d-6ac42ff79246",
 	"title": "Placer les points d'un tableau de valeurs",
 	"description": "Placer dans un repère donné les points qui représentent un tableau de valeurs (hauteur d'eau selon le temps, prix selon le nombre de séances), axes gradués de 1 en 1 puis de 5 en 5",
 	"grades": ["5"],

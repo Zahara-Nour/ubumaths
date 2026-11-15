@@ -1,4 +1,5 @@
 {
+	"id": "a5418354-54b4-4063-95f5-a63cc91ea21c",
 	"title": "Lire une abscisse décimale relative",
 	"description": "Lire l'abscisse décimale relative d'un point sur une droite graduée en dixièmes : autour de 0, puis entre deux entiers négatifs",
 	"grades": ["5"],

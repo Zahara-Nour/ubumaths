@@ -1,4 +1,5 @@
 {
+	"id": "e4d1ea01-fcac-4719-a55c-1596b9bafc75",
 	"title": "Placer un point d'abscisse décimale relative",
 	"description": "Placer un nombre décimal relatif sur une droite graduée en dixièmes : autour de 0, entre deux entiers négatifs, puis deux points",
 	"grades": ["5"],

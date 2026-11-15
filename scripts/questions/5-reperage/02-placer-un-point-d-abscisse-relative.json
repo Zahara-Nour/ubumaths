@@ -1,4 +1,5 @@
 {
+	"id": "64a067cf-beb1-4479-9b08-85645937b8e6",
 	"title": "Placer un point d'abscisse relative",
 	"description": "Placer un nombre relatif sur une droite graduée étiquetée en 0 et 1 : en unités, en demis, en quarts, puis deux points de signes contraires",
 	"grades": ["5"],
