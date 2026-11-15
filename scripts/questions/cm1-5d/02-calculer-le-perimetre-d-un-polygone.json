@@ -1,0 +1,390 @@
+{
+	"title": "Calculer le périmètre d'un polygone",
+	"description": "Longueurs écrites sur les côtés (rectangle, trapèze, maison), cm et mm mêlés ; compter sur un quadrillage ; côtés posés bout à bout sur la règle",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un polygone",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel est le périmètre de ce rectangle ?\n\n```figure\nfenetre: -2 ; {{eval:a+2}} ; -1.2 ; {{eval:b+1.2}}\ndescription: Un rectangle ; ses côtés mesurent {{a}} cm et {{b}} cm.\n---\nR1 = point(0, 0, visible=faux)\nR2 = point({{a}}, 0, visible=faux)\nR3 = point({{a}}, {{b}}, visible=faux)\nR4 = point(0, {{b}}, visible=faux)\nR = polygone(R1, R2, R3, R4, couleur=\"bleu\", epaisseur=2)\ntexte({{eval:a/2;d}}, -0.6, \"{{a}} cm\")\ntexte({{eval:a/2;d}}, {{eval:b+0.6}}, \"{{a}} cm\")\ntexte(-1, {{eval:b/2;d}}, \"{{b}} cm\")\ntexte({{eval:a+1}}, {{eval:b/2;d}}, \"{{b}} cm\")\n```\n\nLe périmètre du rectangle est $?~\\text{cm}$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a+2*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre d'une figure, c'est la longueur de son **tour** : on ajoute les longueurs de **tous** ses côtés.",
+					"Le rectangle a quatre côtés : deux de ${{a}}~\\unit{cm}$ et deux de ${{b}}~\\unit{cm}$.",
+					"$${{a}} + {{b}} + {{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:2*a+2*b}}}$$ Le périmètre est ${{eval:2*a+2*b}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le périmètre de cette figure ?\n\n```figure\nfenetre: -2 ; 8 ; -1.2 ; {{eval:h+5}}\ndescription: Une figure à cinq côtés en forme de maison : le bas mesure 6 cm, les deux murs {{h}} cm, les deux côtés du toit 5 cm.\n---\nM1 = point(0, 0, visible=faux)\nM2 = point(6, 0, visible=faux)\nM3 = point(6, {{h}}, visible=faux)\nM4 = point(3, {{eval:h+4}}, visible=faux)\nM5 = point(0, {{h}}, visible=faux)\nM = polygone(M1, M2, M3, M4, M5, couleur=\"bleu\", epaisseur=2)\ntexte(3, -0.6, \"6 cm\")\ntexte(-1, {{eval:h/2;d}}, \"{{h}} cm\")\ntexte(7, {{eval:h/2;d}}, \"{{h}} cm\")\ntexte(0.6, {{eval:h+2.4}}, \"5 cm\")\ntexte(5.4, {{eval:h+2.4}}, \"5 cm\")\n```\n\nLe périmètre de la figure est $?~\\text{cm}$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:16+2*h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre d'une figure, c'est la longueur de son **tour** : on ajoute les longueurs de **tous** ses côtés.",
+					"On fait le tour en partant du bas : $6~\\unit{cm}$, ${{h}}~\\unit{cm}$, $5~\\unit{cm}$, $5~\\unit{cm}$, ${{h}}~\\unit{cm}$. Il y a **cinq** côtés.",
+					"$$6 + {{h}} + 5 + 5 + {{h}} = \\textcolor{{{color:primary.0}}}{{{eval:16+2*h}}}$$ Le périmètre est ${{eval:16+2*h}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le périmètre de cette figure ?\n\n```figure\nfenetre: -2 ; {{eval:a+2}} ; -1.2 ; 5.2\ndescription: Une figure à quatre côtés : le bas mesure {{a}} cm, le haut {{eval:a-3}} cm, le côté gauche 4 cm et le côté penché 5 cm.\n---\nT1 = point(0, 0, visible=faux)\nT2 = point({{a}}, 0, visible=faux)\nT3 = point({{eval:a-3}}, 4, visible=faux)\nT4 = point(0, 4, visible=faux)\nT = polygone(T1, T2, T3, T4, couleur=\"bleu\", epaisseur=2)\ntexte({{eval:a/2;d}}, -0.6, \"{{a}} cm\")\ntexte({{eval:(a-3)/2;d}}, 4.6, \"{{eval:a-3}} cm\")\ntexte(-1, 2, \"4 cm\")\ntexte({{eval:a-0.6}}, 2.4, \"5 cm\")\n```\n\nLe périmètre de la figure est $?~\\text{cm}$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a+6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre d'une figure, c'est la longueur de son **tour** : on ajoute les longueurs de **tous** ses côtés.",
+					"Les quatre côtés mesurent ${{a}}~\\unit{cm}$, $5~\\unit{cm}$, ${{eval:a-3}}~\\unit{cm}$ et $4~\\unit{cm}$.",
+					"$${{a}} + 5 + {{eval:a-3}} + 4 = \\textcolor{{{color:primary.0}}}{{{eval:2*a+6}}}$$ Le périmètre est ${{eval:2*a+6}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque carreau du quadrillage mesure $1~\\unit{cm}$ de côté. Quel est le périmètre de cette figure ?\n\n```figure\nfenetre: -1 ; {{eval:w+1}} ; -1 ; {{eval:h+1}}\ngrille: 1\ndescription: Sur un quadrillage, une figure à six côtés en forme de L.\n---\nL1 = point(0, 0, visible=faux)\nL2 = point({{w}}, 0, visible=faux)\nL3 = point({{w}}, {{eval:h-d}}, visible=faux)\nL4 = point({{eval:w-c}}, {{eval:h-d}}, visible=faux)\nL5 = point({{eval:w-c}}, {{h}}, visible=faux)\nL6 = point(0, {{h}}, visible=faux)\nL = polygone(L1, L2, L3, L4, L5, L6, couleur=\"bleu\", epaisseur=3)\n```\n\nLe périmètre de la figure est $?~\\text{cm}$.",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "4..8"
+				},
+				{
+					"name": "h",
+					"expression": "3..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["c <= w-2", "d <= h-2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*w+2*h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre d'une figure, c'est la longueur de son **tour** : on ajoute les longueurs de **tous** ses côtés. Ici, on compte les côtés de carreau sur le contour.",
+					"En partant du coin en bas à gauche : ${{w}} + {{eval:h-d}} + {{c}} + {{d}} + {{eval:w-c}} + {{h}}$ côtés de carreau. Il y a **six** côtés.",
+					"$${{w}} + {{eval:h-d}} + {{c}} + {{d}} + {{eval:w-c}} + {{h}} = \\textcolor{{{color:primary.0}}}{{{eval:2*w+2*h}}}$$ Le périmètre est ${{eval:2*w+2*h}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le périmètre de ce rectangle, en centimètres ?\n\n```figure\nfenetre: -2.2 ; {{eval:a+2.2}} ; -1.2 ; {{eval:b/10+1.2;d}}\ndescription: Un rectangle ; ses côtés mesurent {{a}} cm et {{b}} mm.\n---\nR1 = point(0, 0, visible=faux)\nR2 = point({{a}}, 0, visible=faux)\nR3 = point({{a}}, {{eval:b/10;d}}, visible=faux)\nR4 = point(0, {{eval:b/10;d}}, visible=faux)\nR = polygone(R1, R2, R3, R4, couleur=\"bleu\", epaisseur=2)\ntexte({{eval:a/2;d}}, -0.6, \"{{a}} cm\")\ntexte({{eval:a/2;d}}, {{eval:b/10+0.6;d}}, \"{{a}} cm\")\ntexte(-1.2, {{eval:b/20;d}}, \"{{b}} mm\")\ntexte({{eval:a+1.2}}, {{eval:b/20;d}}, \"{{b}} mm\")\n```\n\nLe périmètre du rectangle est $?~\\text{cm}$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..8"
+				},
+				{
+					"name": "b",
+					"expression": "15..65"
+				}
+			],
+			"conditions": ["mod(b,10) != 0", "b/10 != a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a+b/5;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avant d'ajouter, toutes les longueurs doivent être dans la **même unité** : $10~\\unit{mm} = 1~\\unit{cm}$, donc ${{b}}~\\unit{mm} = {{eval:b/10;d}}~\\unit{cm}$.",
+					"Le périmètre d'une figure, c'est la longueur de son **tour** : on ajoute les longueurs de **tous** ses côtés.",
+					"$${{a}} + {{eval:b/10;d}} + {{a}} + {{eval:b/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:2*a+b/5;d}}}$$ Le périmètre est ${{eval:2*a+b/5;d}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour trouver le périmètre d'un triangle, Inès a posé ses trois côtés **bout à bout** au-dessus de sa règle, le premier au $0$.\n\n```figure\nfenetre: -0.8 ; 15.8 ; -0.5 ; 3.9\ndescription: Une règle graduée en centimètres ; au-dessus, trois segments bout à bout (bleu, rouge, vert), le premier commence au 0.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(15.4, 0, visible=faux)\nregle3 = point(15.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\ng13a = point(13, 1.4, visible=faux)\ng13b = point(13, 0.9, visible=faux)\nsegment(g13a, g13b, couleur=\"noir\")\ntexte(13, 0.5, \"13\")\ng14a = point(14, 1.4, visible=faux)\ng14b = point(14, 0.9, visible=faux)\nsegment(g14a, g14b, couleur=\"noir\")\ntexte(14, 0.5, \"14\")\ng15a = point(15, 1.4, visible=faux)\ng15b = point(15, 0.9, visible=faux)\nsegment(g15a, g15b, couleur=\"noir\")\ntexte(15, 0.5, \"15\")\nDt1 = point(0, 1.7, visible=faux)\nDt2 = point(0, 2.3, visible=faux)\nsegment(Dt1, Dt2, couleur=\"bleu\", epaisseur=3)\nP1 = point(0, 2, visible=faux)\nP2 = point({{a}}, 2, visible=faux)\nsegment(P1, P2, couleur=\"bleu\", epaisseur=3)\nPt1 = point({{a}}, 1.7, visible=faux)\nPt2 = point({{a}}, 2.3, visible=faux)\nsegment(Pt1, Pt2, couleur=\"bleu\", epaisseur=3)\nQ1 = point({{a}}, 2, visible=faux)\nQ2 = point({{eval:a+b}}, 2, visible=faux)\nsegment(Q1, Q2, couleur=\"rouge\", epaisseur=3)\nQt1 = point({{eval:a+b}}, 1.7, visible=faux)\nQt2 = point({{eval:a+b}}, 2.3, visible=faux)\nsegment(Qt1, Qt2, couleur=\"rouge\", epaisseur=3)\nS1 = point({{eval:a+b}}, 2, visible=faux)\nS2 = point({{eval:a+b+c}}, 2, visible=faux)\nsegment(S1, S2, couleur=\"vert\", epaisseur=3)\nSt1 = point({{eval:a+b+c}}, 1.7, visible=faux)\nSt2 = point({{eval:a+b+c}}, 2.3, visible=faux)\nsegment(St1, St2, couleur=\"vert\", epaisseur=3)\n```\n\nLe périmètre du triangle est $?~\\text{cm}$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "3..6"
+				},
+				{
+					"name": "c",
+					"expression": "3..6"
+				}
+			],
+			"conditions": ["a+b+c <= 15"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Mis bout à bout, les trois côtés font **le tour** du triangle : leur longueur totale, c'est le périmètre.",
+					"Le dernier côté s'arrête à la graduation ${{eval:a+b+c}}$ ; on peut vérifier : $${{a}} + {{b}} + {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+c}}}$$",
+					"Le périmètre du triangle est ${{eval:a+b+c}}~\\unit{cm}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "rectangle 7 × 4 : 22",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux côtés seulement (11)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'aire (28)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "maison h = 3 : 22",
+			"variationIndex": 1,
+			"variables": {
+				"h": "3"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul mur (19)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "3"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "trapèze a = 7 : 20",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : côté penché oublié (15)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "L 6 × 5, coin 2 × 2 : 22",
+			"variationIndex": 3,
+			"variables": {
+				"w": "6",
+				"h": "5",
+				"c": "2",
+				"d": "2"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les carreaux de l'intérieur (26)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "6",
+				"h": "5",
+				"c": "2",
+				"d": "2"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le coin compté une fois (20)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "6",
+				"h": "5",
+				"c": "2",
+				"d": "2"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 cm et 35 mm : 15",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4",
+				"b": "35"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : unités non converties (78)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4",
+				"b": "35"
+			},
+			"answers": ["78"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 cm et 23 mm : 14,6",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"b": "23"
+			},
+			"answers": ["14,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 23 mm lu 23 cm (56)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"b": "23"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 73/5",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"b": "23"
+			},
+			"answers": ["\\frac{73}{5}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "règle 4 + 5 + 3 : 12",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le dernier côté seul (3)",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

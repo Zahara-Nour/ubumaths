@@ -1,0 +1,247 @@
+{
+	"title": "Qu'est-ce que le périmètre ?",
+	"description": "Le périmètre est la longueur du contour ; le reconnaître sur un dessin ; ne pas le confondre avec l'aire (même aire, périmètres différents ; même périmètre, aires différentes)",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un polygone",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le périmètre d'une figure, c'est…\n\n```choix\n- la longueur de son contour\n- la place qu'elle occupe à l'intérieur\n- le nombre de ses côtés\n- la longueur de son plus grand côté\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre se mesure **en faisant le tour** de la figure : c'est une **longueur**, la longueur de son contour.",
+					"La place occupée à l'intérieur, c'est l'**aire** ; ce n'est pas le périmètre."
+				]
+			}
+		},
+		{
+			"statement": "Sur quel dessin le **périmètre** du rectangle est-il en rouge ?\n\n````choix\n- ```figure\n  fenetre: -0.5 ; 4.5 ; -0.5 ; 3\n  description: Un rectangle ; tout son contour est en rouge.\n  ---\n  F1 = point(0, 0, visible=faux)\n  F2 = point(4, 0, visible=faux)\n  F3 = point(4, 2.5, visible=faux)\n  F4 = point(0, 2.5, visible=faux)\n  F = polygone(F1, F2, F3, F4, couleur=\"rouge\", epaisseur=4)\n  ```\n- ```figure\n  fenetre: -0.5 ; 4.5 ; -0.5 ; 3\n  description: Un rectangle ; son intérieur est colorié en rouge.\n  ---\n  F1 = point(0, 0, visible=faux)\n  F2 = point(4, 0, visible=faux)\n  F3 = point(4, 2.5, visible=faux)\n  F4 = point(0, 2.5, visible=faux)\n  F = polygone(F1, F2, F3, F4, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=0.6)\n  ```\n- ```figure\n  fenetre: -0.5 ; 4.5 ; -0.5 ; 3\n  description: Un rectangle ; un seul de ses côtés est en rouge.\n  ---\n  F1 = point(0, 0, visible=faux)\n  F2 = point(4, 0, visible=faux)\n  F3 = point(4, 2.5, visible=faux)\n  F4 = point(0, 2.5, visible=faux)\n  F = polygone(F1, F2, F3, F4, couleur=\"noir\")\n  segment(F1, F2, couleur=\"rouge\", epaisseur=4)\n  ```\n- ```figure\n  fenetre: -0.5 ; 4.5 ; -0.5 ; 3\n  description: Un rectangle ; un segment rouge la traverse d'un coin à l'autre.\n  ---\n  F1 = point(0, 0, visible=faux)\n  F2 = point(4, 0, visible=faux)\n  F3 = point(4, 2.5, visible=faux)\n  F4 = point(0, 2.5, visible=faux)\n  F = polygone(F1, F2, F3, F4, couleur=\"noir\")\n  segment(F1, F3, couleur=\"rouge\", epaisseur=4)\n  ```\n````",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre, c'est la longueur du **tour** de la figure : il faut que **tout le contour** soit en rouge.",
+					"L'intérieur colorié montre l'**aire** ; un seul côté ou un trait qui traverse la figure ne font pas le tour."
+				]
+			}
+		},
+		{
+			"statement": "Sur quel dessin le **périmètre** de la figure est-il en rouge ?\n\n````choix\n- ```figure\n  fenetre: -0.5 ; 4.5 ; -0.5 ; 4.5\n  description: Une figure à cinq côtés en forme de maison ; tout son contour est en rouge.\n  ---\n  F1 = point(0, 0, visible=faux)\n  F2 = point(4, 0, visible=faux)\n  F3 = point(4, 2.5, visible=faux)\n  F4 = point(2, 4, visible=faux)\n  F5 = point(0, 2.5, visible=faux)\n  F = polygone(F1, F2, F3, F4, F5, couleur=\"rouge\", epaisseur=4)\n  ```\n- ```figure\n  fenetre: -0.5 ; 4.5 ; -0.5 ; 4.5\n  description: Une figure à cinq côtés en forme de maison ; son intérieur est colorié en rouge.\n  ---\n  F1 = point(0, 0, visible=faux)\n  F2 = point(4, 0, visible=faux)\n  F3 = point(4, 2.5, visible=faux)\n  F4 = point(2, 4, visible=faux)\n  F5 = point(0, 2.5, visible=faux)\n  F = polygone(F1, F2, F3, F4, F5, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=0.6)\n  ```\n- ```figure\n  fenetre: -0.5 ; 4.5 ; -0.5 ; 4.5\n  description: Une figure à cinq côtés en forme de maison ; un seul de ses côtés est en rouge.\n  ---\n  F1 = point(0, 0, visible=faux)\n  F2 = point(4, 0, visible=faux)\n  F3 = point(4, 2.5, visible=faux)\n  F4 = point(2, 4, visible=faux)\n  F5 = point(0, 2.5, visible=faux)\n  F = polygone(F1, F2, F3, F4, F5, couleur=\"noir\")\n  segment(F1, F2, couleur=\"rouge\", epaisseur=4)\n  ```\n- ```figure\n  fenetre: -0.5 ; 4.5 ; -0.5 ; 4.5\n  description: Une figure à cinq côtés en forme de maison ; un segment rouge la traverse d'un coin à l'autre.\n  ---\n  F1 = point(0, 0, visible=faux)\n  F2 = point(4, 0, visible=faux)\n  F3 = point(4, 2.5, visible=faux)\n  F4 = point(2, 4, visible=faux)\n  F5 = point(0, 2.5, visible=faux)\n  F = polygone(F1, F2, F3, F4, F5, couleur=\"noir\")\n  segment(F1, F3, couleur=\"rouge\", epaisseur=4)\n  ```\n````",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre, c'est la longueur du **tour** de la figure : il faut que **tout le contour** soit en rouge.",
+					"L'intérieur colorié montre l'**aire** ; un seul côté ou un trait qui traverse la figure ne font pas le tour."
+				]
+			}
+		},
+		{
+			"statement": "Laquelle de ces deux figures a le plus grand **périmètre** ?\n\n```figure\nfenetre: -1 ; {{if:t==1|12|{{if:t==2|15|{{if:t==3|15|{{if:t==4|9|13}}}}}}}} ; -1.2 ; 4\ngrille: 1\ndescription: Deux rectangles dessinés sur un quadrillage, A en bleu et B en rouge ; ils couvrent le même nombre de carreaux.\n---\nA1 = point(0, 0, visible=faux)\nA2 = point({{if:t==1|6|{{if:t==2|9|{{if:t==3|4|{{if:t==4|2|4}}}}}}}}, 0, visible=faux)\nA3 = point({{if:t==1|6|{{if:t==2|9|{{if:t==3|4|{{if:t==4|2|4}}}}}}}}, {{if:t==1|1|{{if:t==2|1|{{if:t==3|2|{{if:t==4|2|3}}}}}}}}, visible=faux)\nA4 = point(0, {{if:t==1|1|{{if:t==2|1|{{if:t==3|2|{{if:t==4|2|3}}}}}}}}, visible=faux)\nA = polygone(A1, A2, A3, A4, couleur=\"bleu\", epaisseur=3)\nB1 = point({{if:t==1|8|{{if:t==2|11|{{if:t==3|6|{{if:t==4|4|6}}}}}}}}, 0, visible=faux)\nB2 = point({{if:t==1|11|{{if:t==2|14|{{if:t==3|14|{{if:t==4|8|12}}}}}}}}, 0, visible=faux)\nB3 = point({{if:t==1|11|{{if:t==2|14|{{if:t==3|14|{{if:t==4|8|12}}}}}}}}, {{if:t==1|2|{{if:t==2|3|{{if:t==3|1|{{if:t==4|1|2}}}}}}}}, visible=faux)\nB4 = point({{if:t==1|8|{{if:t==2|11|{{if:t==3|6|{{if:t==4|4|6}}}}}}}}, {{if:t==1|2|{{if:t==2|3|{{if:t==3|1|{{if:t==4|1|2}}}}}}}}, visible=faux)\nB = polygone(B1, B2, B3, B4, couleur=\"rouge\", epaisseur=3)\ntexte({{if:t==1|3.0|{{if:t==2|4.5|{{if:t==3|2.0|{{if:t==4|1.0|2.0}}}}}}}}, -0.6, \"A\")\ntexte({{if:t==1|9.5|{{if:t==2|12.5|{{if:t==3|10.0|{{if:t==4|6.0|9.0}}}}}}}}, -0.6, \"B\")\n```\n\n```choix\nmelanger: non\n- la figure A\n- la figure B\n- elles ont le même périmètre\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..5"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor(t/3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux figures couvrent {{if:t==1|6|{{if:t==2|9|{{if:t==3|8|{{if:t==4|4|12}}}}}}}} carreaux : elles ont la même **aire**. Cela ne dit rien de leur périmètre : il faut compter le **tour**.",
+					"Tour de A : ${{if:t==1|6|{{if:t==2|9|{{if:t==3|4|{{if:t==4|2|4}}}}}}}} + {{if:t==1|1|{{if:t==2|1|{{if:t==3|2|{{if:t==4|2|3}}}}}}}} + {{if:t==1|6|{{if:t==2|9|{{if:t==3|4|{{if:t==4|2|4}}}}}}}} + {{if:t==1|1|{{if:t==2|1|{{if:t==3|2|{{if:t==4|2|3}}}}}}}} = {{if:t==1|14|{{if:t==2|20|{{if:t==3|12|{{if:t==4|8|14}}}}}}}}$ côtés de carreau ; tour de B : ${{if:t==1|3|{{if:t==2|3|{{if:t==3|8|{{if:t==4|4|6}}}}}}}} + {{if:t==1|2|{{if:t==2|3|{{if:t==3|1|{{if:t==4|1|2}}}}}}}} + {{if:t==1|3|{{if:t==2|3|{{if:t==3|8|{{if:t==4|4|6}}}}}}}} + {{if:t==1|2|{{if:t==2|3|{{if:t==3|1|{{if:t==4|1|2}}}}}}}} = {{if:t==1|10|{{if:t==2|12|{{if:t==3|18|{{if:t==4|10|16}}}}}}}}$.",
+					"La figure **{{if:r==0|A|B}}** a le plus grand périmètre."
+				]
+			}
+		},
+		{
+			"statement": "Laquelle de ces deux figures a le plus grand **périmètre** ?\n\n```figure\nfenetre: -1 ; {{eval:2*w+3}} ; -1.2 ; {{eval:h+1}}\ngrille: 1\ndescription: Sur un quadrillage, un rectangle et la même figure à laquelle on a retiré un carreau dans un coin.\n---\nR1 = point({{eval:(o-1)*(w+2)}}, 0, visible=faux)\nR2 = point({{eval:(o-1)*(w+2)+w}}, 0, visible=faux)\nR3 = point({{eval:(o-1)*(w+2)+w}}, {{h}}, visible=faux)\nR4 = point({{eval:(o-1)*(w+2)}}, {{h}}, visible=faux)\nR = polygone(R1, R2, R3, R4, couleur=\"{{if:o==1|bleu|rouge}}\", epaisseur=3)\nL1 = point({{eval:(2-o)*(w+2)}}, 0, visible=faux)\nL2 = point({{eval:(2-o)*(w+2)+w}}, 0, visible=faux)\nL3 = point({{eval:(2-o)*(w+2)+w}}, {{eval:h-1}}, visible=faux)\nL4 = point({{eval:(2-o)*(w+2)+w-1}}, {{eval:h-1}}, visible=faux)\nL5 = point({{eval:(2-o)*(w+2)+w-1}}, {{h}}, visible=faux)\nL6 = point({{eval:(2-o)*(w+2)}}, {{h}}, visible=faux)\nL = polygone(L1, L2, L3, L4, L5, L6, couleur=\"{{if:o==1|rouge|bleu}}\", epaisseur=3)\ntexte({{eval:w/2;d}}, -0.6, \"A\")\ntexte({{eval:w+2+w/2;d}}, -0.6, \"B\")\n```\n\n```choix\nmelanger: non\n- la figure A\n- la figure B\n- elles ont le même périmètre\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "3..5"
+				},
+				{
+					"name": "h",
+					"expression": "2..4"
+				},
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La figure au coin retiré a un carreau de moins : son **aire** est plus petite. Mais son **tour** ?",
+					"Au coin, le contour rentre d'un carreau puis ressort d'un carreau : les deux petits côtés remplacent exactement les deux morceaux du rectangle enlevés.",
+					"Tour du rectangle : ${{eval:2*w+2*h}}$ côtés de carreau ; tour de l'autre figure : ${{eval:2*w+2*h}}$ aussi. Elles ont **le même périmètre**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "définition : le contour",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'intérieur (l'aire)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "rectangle : le contour en rouge",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'intérieur colorié",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "maison : le contour en rouge",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul côté",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6×1 (14) contre 3×2 (10) : A",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : même aire donc même périmètre",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4×2 (12) contre 8×1 (18) : B",
+			"variationIndex": 3,
+			"variables": {
+				"t": "3",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus haute, A",
+			"variationIndex": 3,
+			"variables": {
+				"t": "3",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "coin retiré : même périmètre",
+			"variationIndex": 4,
+			"variables": {
+				"w": "4",
+				"h": "3",
+				"o": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le rectangle, plus grand",
+			"variationIndex": 4,
+			"variables": {
+				"w": "4",
+				"h": "3",
+				"o": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
