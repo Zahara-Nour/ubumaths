@@ -1213,6 +1213,14 @@ d'une case choix (bon / coché à tort / oublié, à leur place dans l'énoncé)
 (R10). Rendu par `ExpectedResultView.svelte` ; la réponse de l'élève passe par
 `student-answer-safety.ts` dès qu'elle s'affiche chez un autre (copie lue par le prof).
 
+Type d'erreur (chantier `type-erreur`, PR 3) : une case fausse sans remarque du validateur reçoit en
+remarque la phrase de son type d'erreur deviné (`blankErrorGuess` et `errorGuessSentence` de
+`error-kinds.ts`), par exemple « Ta réponse est l'opposé du résultat : vérifie le signe. » ou « Ta
+réponse est 10 fois trop petite : vérifie la place de la virgule. ». Une remarque existante prime
+(%, unité, arrondi…). Mêmes exclusions que côté prof ([evaluations.md](evaluations.md), types
+d'erreur) : case hors écriture mathématique ordinaire, cases appariées librement, ambiguïté. Saisie,
+Contrôle blanc et copie corrigée montrent la phrase par ce seul chemin. La note ne change pas.
+
 Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(…)`, jamais rendue en
 markdown, lue par le juge borné) au lieu de « Réponse attendue : `droite(A;B)` ». `FigureAnswer.svelte`
 la dessine en lecture seule : droites de l'élève (vertes si juste ; sinon la bonne droite en

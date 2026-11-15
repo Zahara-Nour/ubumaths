@@ -2,7 +2,12 @@
  * Types d'erreur d'une réponse, case par case (chantier `type-erreur`, PR 2).
  */
 import { describe, expect, it } from 'vitest';
-import { answerErrorKinds, errorGuessLabel } from '../error-kinds';
+import {
+	answerErrorKinds,
+	blankErrorGuess,
+	errorGuessLabel,
+	errorGuessSentence
+} from '../error-kinds';
 import type { InstanceBlank, QuestionInstance, ValidationStatus } from '../types';
 import {
 	validateAnswerDetailed,
@@ -197,5 +202,56 @@ describe('errorGuessLabel', () => {
 			'Puissance de 10 (× 1 000)'
 		);
 		expect(errorGuessLabel({ kind: 'power-of-ten', exponent: -1 })).toBe('Puissance de 10 (÷ 10)');
+	});
+});
+
+describe('errorGuessSentence', () => {
+	it('dit la relation, puis invite à vérifier (Q3)', () => {
+		expect(errorGuessSentence({ kind: 'sign' })).toBe(
+			"Ta réponse est l'opposé du résultat : vérifie le signe."
+		);
+		expect(errorGuessSentence({ kind: 'power-of-ten', exponent: 3 })).toBe(
+			'Ta réponse est 1\u202f000 fois trop grande : vérifie la place de la virgule.'
+		);
+		expect(errorGuessSentence({ kind: 'power-of-ten', exponent: -2 })).toBe(
+			'Ta réponse est 100 fois trop petite : vérifie la place de la virgule.'
+		);
+	});
+
+	it('chaque type a sa phrase, sans formule (texte rendu tel quel)', () => {
+		const kinds = ['sign', 'inverse', 'double', 'half', 'square-missing', 'square-extra'] as const;
+		const sentences = kinds.map((kind) => errorGuessSentence({ kind }));
+		expect(new Set(sentences).size).toBe(kinds.length);
+		for (const s of sentences) expect(s).toMatch(/^[^$]+ : vérifie [^$]+\.$/);
+	});
+});
+
+describe('blankErrorGuess', () => {
+	const one = (answer: string, extra: Partial<BlankVerdict> = {}): BlankVerdict => ({
+		index: 0,
+		status: 'incorrect',
+		remarks: [],
+		answer,
+		...extra
+	});
+
+	it('case fausse sans remarque : son type', () => {
+		expect(blankErrorGuess(instance([math('12')]), one('-12'))).toEqual({ kind: 'sign' });
+	});
+
+	it('remarque déjà là, case juste, non notée : rien', () => {
+		const inst = instance([math('12')]);
+		expect(
+			blankErrorGuess(inst, one('-12', { remarks: ['N’oublie pas le symbole %.'] }))
+		).toBeNull();
+		expect(blankErrorGuess(inst, one('-12', { status: 'unoptimal_form' }))).toBeNull();
+		expect(blankErrorGuess(inst, one('-12', { ungraded: true }))).toBeNull();
+	});
+
+	it('case hors écriture mathématique ordinaire, ou appariement libre : rien', () => {
+		expect(blankErrorGuess(instance([{ ...math('12'), type: 'text' }]), one('-12'))).toBeNull();
+		expect(
+			blankErrorGuess(instance([math('12')], { orderIndependent: true }), one('-12'))
+		).toBeNull();
 	});
 });

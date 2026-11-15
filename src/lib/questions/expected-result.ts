@@ -58,8 +58,10 @@ import { buildCaseCount } from './generator/build-answer';
 import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
 import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
 import { isSignTableCell, signCellToken } from './sign-table-case';
+import { blankErrorGuess, errorGuessSentence } from './error-kinds';
 import {
 	validateAnswerDetailed,
+	type BlankVerdict,
 	type DetailedVerdict,
 	type StudentAnswer
 } from '$lib/utils/answer-validator';
@@ -577,7 +579,7 @@ function blankViews(
 				student,
 				typed,
 				status: detail?.status ?? null,
-				remarks: detail?.remarks ?? [],
+				remarks: detail ? blankRemarks(instance, detail) : [],
 				...(blank.construction && {
 					figure: { source: blank.construction.source, answer: detail?.answer ?? value }
 				}),
@@ -594,6 +596,16 @@ function blankViews(
 			}
 		];
 	});
+}
+
+/**
+ * Remarques d'une case : celles du validateur, sinon la phrase du type d'erreur
+ * deviné (chantier `type-erreur`, PR 3) — un message existant prime toujours
+ */
+function blankRemarks(instance: QuestionInstance, detail: BlankVerdict): string[] {
+	if (detail.remarks.length > 0) return detail.remarks;
+	const guess = blankErrorGuess(instance, detail);
+	return guess ? [errorGuessSentence(guess)] : [];
 }
 
 /** Solution montrée : sa réponse juste pour une case `rulesSuffice` (R7), sinon l'attendu */
