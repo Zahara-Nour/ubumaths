@@ -28,7 +28,8 @@
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
  *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de,
- *          resoudre-graphique-droite-3, somme-vecteurs-2de, triangle-cm-6, blockly-6-210
+ *          resoudre-graphique-droite-3, somme-vecteurs-2de, triangle-cm-6, blockly-6-210,
+ *          blockly-5-106
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -209,6 +210,11 @@ const BLOCKLY_6_210: readonly string[] = [
 	'befab91c-c77e-464e-a5bf-79206462928d' // Algorithmique › Programme pour un résultat donné (6-210)
 ];
 
+/** Chantier `blockly` (nombre maximal de blocs) : `blocs:` force la répétition (carré 3, escalier 5, créneaux 9) */
+const BLOCKLY_5_106: readonly string[] = [
+	'51636342-7294-407b-9fd0-42f9ede6e8a9' // Boucles › boucle bornée : Répéter des instructions (5-106)
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -243,7 +249,8 @@ const LOTS: Record<string, Lot> = {
 		cibles: SOMME_VECTEURS_2DE
 	},
 	'triangle-cm-6': { dossier: 'scripts/questions/6-triangle-existants', cibles: TRIANGLE_CM_6 },
-	'blockly-6-210': { dossier: 'scripts/questions/6-blockly-existants', cibles: BLOCKLY_6_210 }
+	'blockly-6-210': { dossier: 'scripts/questions/6-blockly-existants', cibles: BLOCKLY_6_210 },
+	'blockly-5-106': { dossier: 'scripts/questions/5-blockly-existants', cibles: BLOCKLY_5_106 }
 };
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
