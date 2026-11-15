@@ -18,6 +18,9 @@
  *   texte posé.
  * - **Cases ratées** : seulement pour une question à plusieurs cases hors QCM,
  *   sur les réponses dont le détail par case est disponible.
+ * - **Types d'erreur** (chantier `type-erreur`, PR 2) : chaque case fausse d'un
+ *   groupe porte son type quand il est reconnu (`answerErrorKinds`) ; la question
+ *   compte les cases fausses par type, chaque élève du groupe compté une fois.
  *
  * Tout se lit avec le client du professeur, sous la RLS existante. Une lecture
  * en échec rend une erreur propre au panneau, jamais une exception.
@@ -32,9 +35,12 @@ import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
 import {
 	QUESTION_ERRORS_MESSAGE,
 	type BlankErrorStat,
+	type ErrorKindCount,
 	type EvaluationQuestionErrors,
 	type QuestionErrorGroup
 } from '$lib/types/evaluation-breakdown';
+import type { ErrorKind } from '$lib/mathAST/error-kind';
+import { ERROR_KIND_ORDER, answerErrorKinds } from '$lib/questions/error-kinds';
 import { detailsWithinBudget, type DetailBudget } from './corrected-detail';
 import {
 	BreakdownReadError,
@@ -179,6 +185,8 @@ export function computeQuestionErrors(
 	const stats = new Map<number, BlankErrorStat>();
 	let blankCount = 0;
 	let choice = false;
+	// Cases fausses sans type, par groupe (le type d'un groupe se calcule une fois)
+	const unrecognizedByGroup = new Map<string, number>();
 
 	answered.forEach((row, i) => {
 		const detail: CorrectedDetail = details[i];
@@ -201,15 +209,34 @@ export function computeQuestionErrors(
 		const key = `${stableStringify(plainInstance(row.instance))}\u0000${stableStringify(values)}`;
 		const existing = groups.get(key);
 		if (existing) existing.students.push(row.studentName);
-		else
+		else {
+			const instance = servedInstance(row.instance);
+			const kinds = answerErrorKinds(instance, detail, values, status);
+			unrecognizedByGroup.set(key, kinds.unrecognized);
 			groups.set(key, {
-				instance: servedInstance(row.instance),
+				instance,
 				values,
 				status,
 				verdict: detail,
-				students: [row.studentName]
+				students: [row.studentName],
+				errorKinds: kinds.kinds
 			});
+		}
 	});
+
+	// Comptes par type : chaque case typée d'un groupe, une fois par élève
+	const kindCounts = new Map<ErrorKind, number>();
+	let unrecognized = 0;
+	for (const [key, group] of groups) {
+		const weight = group.students.length;
+		for (const { guess } of group.errorKinds) {
+			kindCounts.set(guess.kind, (kindCounts.get(guess.kind) ?? 0) + weight);
+		}
+		unrecognized += (unrecognizedByGroup.get(key) ?? 0) * weight;
+	}
+	const errorKinds: ErrorKindCount[] = ERROR_KIND_ORDER.filter((kind) => kindCounts.has(kind))
+		.map((kind) => ({ kind, count: kindCounts.get(kind) ?? 0 }))
+		.sort((a, b) => b.count - a.count);
 
 	const sorted = [...groups.values()]
 		.map((g) => ({ ...g, students: [...g.students].sort((a, b) => a.localeCompare(b, 'fr')) }))
@@ -220,7 +247,9 @@ export function computeQuestionErrors(
 		answers: rows.length,
 		withoutAnswer,
 		blanks: blankCount >= 2 && !choice ? [...stats.values()].sort((a, b) => a.blank - b.blank) : [],
-		groups: sorted
+		groups: sorted,
+		errorKinds,
+		unrecognized
 	};
 }
 

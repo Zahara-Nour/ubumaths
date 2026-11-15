@@ -49,12 +49,22 @@ function group(students: string[]): QuestionErrorGroup {
 		values: ['8'],
 		status: 'incorrect',
 		verdict: { unavailable: true, status: 'incorrect' },
-		students
+		students,
+		errorKinds: []
 	};
 }
 
 function ok(overrides: Partial<Extract<EvaluationQuestionErrors, { status: 'ok' }>> = {}) {
-	return { status: 'ok', answers: 12, withoutAnswer: 0, blanks: [], groups: [], ...overrides };
+	return {
+		status: 'ok',
+		answers: 12,
+		withoutAnswer: 0,
+		blanks: [],
+		groups: [],
+		errorKinds: [],
+		unrecognized: 0,
+		...overrides
+	};
 }
 
 function stubFetch(body: unknown) {
@@ -180,6 +190,54 @@ describe('bilan par question : erreurs dépliables', () => {
 		expect(all).toContain('Cléo');
 		expect(all).not.toContain('1 élèves');
 		expect(all).toContain('2 sans réponse');
+	});
+
+	it('types d’erreur : compte par type, et type de chaque réponse (chantier type-erreur)', async () => {
+		stubFetch(
+			ok({
+				errorKinds: [
+					{ kind: 'sign', count: 4 },
+					{ kind: 'power-of-ten', count: 2 }
+				],
+				unrecognized: 6,
+				groups: [
+					{ ...group(['Ada']), errorKinds: [{ blank: 1, guess: { kind: 'sign' } }] },
+					{
+						...group(['Bob']),
+						errorKinds: [{ blank: 1, guess: { kind: 'power-of-ten', exponent: -2 } }]
+					},
+					group(['Cléo'])
+				]
+			})
+		);
+		const { container } = await render(EvaluationBreakdown, {
+			breakdown,
+			evaluationId: EVALUATION
+		});
+		await userEvent.click(toggle(container));
+		await vi.waitFor(() =>
+			expect(container.querySelector('[data-testid="error-kind-counts"]')).not.toBeNull()
+		);
+		const counts = (
+			container.querySelector('[data-testid="error-kind-counts"]')?.textContent ?? ''
+		).replace(/\s+/g, ' ');
+		expect(counts).toContain('Erreur de signe : 4 · Puissance de 10 : 2 · Non reconnue : 6');
+		const labels = [...container.querySelectorAll('[data-testid="error-kinds"]')].map((el) =>
+			(el.textContent ?? '').trim()
+		);
+		expect(labels).toEqual(['Erreur de signe', 'Puissance de 10 (÷ 100)']);
+	});
+
+	it('aucun type reconnu : pas de ligne de comptes', async () => {
+		stubFetch(ok({ unrecognized: 3, groups: [group(['Ada'])] }));
+		const { container } = await render(EvaluationBreakdown, {
+			breakdown,
+			evaluationId: EVALUATION
+		});
+		await userEvent.click(toggle(container));
+		await vi.waitFor(() => expect(text(container)).toContain('Ada'));
+		expect(container.querySelector('[data-testid="error-kind-counts"]')).toBeNull();
+		expect(container.querySelector('[data-testid="error-kinds"]')).toBeNull();
 	});
 
 	it('sans identifiant de contrôle : aucune ligne dépliable (compatibilité)', async () => {

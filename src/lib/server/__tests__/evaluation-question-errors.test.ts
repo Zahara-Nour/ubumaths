@@ -213,6 +213,80 @@ describe('computeQuestionErrors', () => {
 	});
 });
 
+describe('computeQuestionErrors — types d’erreur (chantier type-erreur)', () => {
+	/** Énoncé tiré : réponse attendue de chaque case = `expected` */
+	function drawn(expected: string, blanks = 1): QuestionInstance {
+		return {
+			templateId: TEMPLATE,
+			statement: `Calcule (résultat ${expected})`,
+			blanks: Array.from({ length: blanks }, () => ({
+				type: 'math',
+				expectedAnswer: expected,
+				expectedAnswerLatex: expected
+			})),
+			generatedAt: '2026-11-15T10:00:00Z'
+		} as unknown as QuestionInstance;
+	}
+
+	it('énoncés différents, même type : comptés ensemble, chaque élève une fois', () => {
+		const result = computeQuestionErrors(
+			[
+				row('Ada', 'incorrect', ['-12'], drawn('12')),
+				row('Bob', 'incorrect', ['-12'], drawn('12')),
+				row('Cléo', 'incorrect', ['-35'], drawn('35')),
+				row('Dan', 'incorrect', ['3,5'], drawn('35')),
+				row('Eve', 'incorrect', ['13'], drawn('12')),
+				row('Fred', 'correct', ['ok'], drawn('12'))
+			],
+			{ validate }
+		);
+		expect(result.errorKinds).toEqual([
+			{ kind: 'sign', count: 3 },
+			{ kind: 'power-of-ten', count: 1 }
+		]);
+		expect(result.unrecognized).toBe(1);
+		const ada = result.groups.find((g) => g.students.includes('Ada'));
+		expect(ada?.errorKinds).toEqual([{ blank: 1, guess: { kind: 'sign' } }]);
+		const eve = result.groups.find((g) => g.students.includes('Eve'));
+		expect(eve?.errorKinds).toEqual([]);
+	});
+
+	it('plusieurs cases : un compte par case fausse', () => {
+		const result = computeQuestionErrors([row('Ada', 'incorrect', ['-12', '24'], drawn('12', 2))], {
+			validate
+		});
+		expect(result.errorKinds).toEqual([
+			{ kind: 'sign', count: 1 },
+			{ kind: 'double', count: 1 }
+		]);
+		expect(result.groups[0].errorKinds.map((k) => k.blank)).toEqual([1, 2]);
+	});
+
+	it('mauvaise forme : ni type ni « non reconnue »', () => {
+		const result = computeQuestionErrors(
+			[
+				{
+					...row('Ada', 'bad_form', ['\\frac{24}{2}'], drawn('12')),
+					verdict: {
+						status: 'bad_form',
+						blanks: [{ index: 0, status: 'bad_form', remarks: [], answer: '\\frac{24}{2}' }]
+					}
+				}
+			],
+			{ validate }
+		);
+		expect(result.errorKinds).toEqual([]);
+		expect(result.unrecognized).toBe(0);
+	});
+
+	it('aucune erreur : aucun compte', () => {
+		const result = computeQuestionErrors([row('Ada', 'correct', ['ok'], drawn('12'))], {
+			validate
+		});
+		expect(result).toMatchObject({ errorKinds: [], unrecognized: 0 });
+	});
+});
+
 // Lecture
 
 const STUDENTS = [

@@ -6,6 +6,8 @@
 
 import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
 import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
+import type { ErrorKind } from '$lib/mathAST/error-kind';
+import type { BlankErrorKind } from '$lib/questions/error-kinds';
 
 /** Répartition des réponses : juste (1) / partiel (½) / faux, mauvaise forme comprise (0) / sans réponse */
 export interface BreakdownCounts {
@@ -120,6 +122,14 @@ export interface QuestionErrorGroup {
 	verdict: CorrectedDetail;
 	/** Noms des élèves, en texte brut */
 	students: string[];
+	/** Type d'erreur des cases fausses, quand il est reconnu (chantier `type-erreur`) */
+	errorKinds: BlankErrorKind[];
+}
+
+/** Cases fausses d'un même type, tous élèves confondus */
+export interface ErrorKindCount {
+	kind: ErrorKind;
+	count: number;
 }
 
 export type EvaluationQuestionErrors =
@@ -133,5 +143,9 @@ export type EvaluationQuestionErrors =
 			blanks: BlankErrorStat[];
 			/** Réponses fausses ou partielles, regroupées ; vide : aucune erreur */
 			groups: QuestionErrorGroup[];
+			/** Cases fausses par type reconnu, du plus fréquent au moins fréquent */
+			errorKinds: ErrorKindCount[];
+			/** Cases fausses sans type reconnu */
+			unrecognized: number;
 	  }
 	| { status: 'error'; message: string };

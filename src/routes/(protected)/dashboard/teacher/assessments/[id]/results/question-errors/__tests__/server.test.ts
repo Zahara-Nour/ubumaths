@@ -78,7 +78,9 @@ describe('GET question-errors', () => {
 			answers: 1,
 			withoutAnswer: 0,
 			blanks: [],
-			groups: []
+			groups: [],
+			errorKinds: [],
+			unrecognized: 0
 		};
 		mocks.errors.mockResolvedValue(ok);
 		const response = await GET(event(`?template=${TEMPLATE}`));

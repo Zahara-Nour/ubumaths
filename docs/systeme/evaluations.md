@@ -348,6 +348,21 @@ l'analytique ([analytique-prof.md](analytique-prof.md)), qui y fait passer aussi
   groupe, avec les noms. Les tirages étant aléatoires, aucun regroupement entre énoncés différents.
 - **Erreurs par case** : question à au moins deux cases jugées, hors QCM, sur les réponses au détail
   disponible (justes au dénominateur).
+- **Types d'erreur** (chantier `type-erreur`, PR 2 ; `answerErrorKinds` dans
+  `src/lib/questions/error-kinds.ts`, moteur `guessErrorKind` de mathAST) : chaque case **fausse** d'un
+  groupe porte son type quand il est reconnu (erreur de signe, puissance de 10 avec son facteur, inverse,
+  double, moitié, carré oublié, carré en trop), étiquette sous la liste des noms (« Case 2 : … » sur une
+  question à plusieurs cases). La question compte les cases fausses par type, chaque élève d'un groupe
+  compté une fois, d'un énoncé tiré à l'autre : « Types d'erreur : Erreur de signe : 4 · Non reconnue : 6 »,
+  ligne montrée seulement si un type au moins est reconnu. Pas de type : mauvaise forme (bonne valeur),
+  case déjà nommée par une remarque (%, unité, arrondi… ; le message global, agrégat ou phrase
+  générique, n'est pas lu), case hors écriture
+  mathématique (choix, geste, tableau de signes, figure), question à cases appariées librement
+  (`orderIndependent`), ambiguïté ou attendu 0 / ±1 (règles du moteur). Détail indisponible : seule une
+  question à une case se lit, d'après la valeur saisie. Traces de séries : leur verdict par case
+  (`part_verdicts`) ne garde aucune remarque, la règle « la remarque prime » n'y agit donc pas ; le
+  % et l'unité restent écartés par le moteur lui-même (attendu en pourcentage ou non numérique). Calculé à la lecture, jamais stocké ; la note ne
+  change pas.
 
 ## Les observations (compétences, famille B)
 
