@@ -1,4 +1,5 @@
 {
+	"id": "856f400e-cb97-4bc9-8934-03081d9abb72",
 	"title": "Écrire le code du robot avec des flèches",
 	"description": "Composer avec des flèches le code qui mène le robot à la case verte : sans obstacle, puis en contournant des cases grises (au plus 15 instructions, 4 virages)",
 	"grades": ["CE1"],
