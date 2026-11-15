@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après le reclassement (§ 26)._
+_Mis à jour le 2026-11-15, phase 0 du lot 12 proposée (§ 27)._
 
 - **État** : lots 1 à 11 publiés (lot 11 = Blockly, par `blockly`, 6 modèles publiés le 2026-11-15). Classement
   refait le 2026-11-15 (§ 26) : 43 points sans modèle publié = 9 D, **32 B**, 2 C (101, 104).
-- **Prochaine action** : réponses de David aux questions du § 26, puis phase 0 du lot 12 « Droite graduée et repère ».
-- **En attente de David** : questions du § 26 (ordre des lots, brouillons `d4f38d30` / `d4d56c1b`) ; 02 du lot 7
-  (deux cases sur deux lignes) à essayer à la main.
+- **Prochaine action** : validation de la phase 0 du lot 12 (§ 27), puis écriture (`5-reperage/`).
+- **En attente de David** : phase 0 du lot 12 et ses 2 questions (§ 27) ; 02 du lot 7 (deux cases sur deux lignes)
+  à essayer à la main.
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
   classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
@@ -833,3 +833,48 @@ placer:`, #2096) ; 047, 128 (brouillons ci-dessus, rien à écrire).
 1. Ordre des lots 12 à 15 ci-dessus : d'accord ?
 2. `d4f38d30` et `d4d56c1b` : les relire et publier avec le lot 12 (reco), ou les publier tout de suite ?
 3. 101, 104 : laisser au chantier `blockly` (reco : après ses lots, avec la piste « prévoir la valeur »).
+
+### 26 bis. Reclassement : décisions (David, 2026-11-15, « je te suis »)
+
+Ordre des lots 12 à 15 validé ; `d4f38d30`, `d4d56c1b` relus et publiés **avec le lot 12** ; 101, 104 laissés au
+chantier `blockly`, après ses lots.
+
+## 27. Lot 12 « Droite graduée et repère » : phase 0 proposée (2026-11-15, NON validée)
+
+Relevé prod : aucun modèle sur les 9 points. Nœuds (ceux des points) : « Relatifs › droite graduée » (vide) ;
+« Repérage et déplacements › coordonnées dans le plan » (les 2 brouillons, **tous deux niveau 1**) ; « Fonctions ›
+généralités » (5e : 4 à 9) ; « Statistiques › courbes et repères » (1, 2) ; « Relatifs › ordre » (1, 2). Voisins : 6e
+`6-droite-ordre/` 01, 02 (demi-droite, dixièmes, centièmes, demis, quarts), 04 (` ```ranger `).
+
+| #   | Point | Modèle                                     | Réponse              | Nœud, niveau                        |
+| --- | ----- | ------------------------------------------ | -------------------- | ----------------------------------- |
+| 01  | 5-016 | Lire l'abscisse d'un point (relatifs)      | case                 | relatifs › droite graduée, 1        |
+| 02  | 5-121 | Placer un point d'abscisse relative        | ` ```line placer:`   | relatifs › droite graduée, 2        |
+| 03  | 5-046 | Lire une abscisse décimale relative        | case                 | coordonnées dans le plan, 1         |
+| 04  | 5-127 | Placer un point d'abscisse décimale        | ` ```line placer:`   | coordonnées dans le plan, 2         |
+| —   | 5-047 | `d4f38d30` Lire les coordonnées d'un point | cases (existant)     | coordonnées dans le plan, 1 → **3** |
+| —   | 5-128 | `d4d56c1b` Placer un point de coordonnées  | ` ```courbe placer:` | coordonnées dans le plan, 1 → **4** |
+| 05  | 5-093 | Produire un tableau de valeurs             | tableau à trous      | généralités sur les fonctions, 10   |
+| 06  | 5-097 | Tableau de valeurs à partir d'une formule  | tableau à trous      | généralités sur les fonctions, 11   |
+| 07  | 5-095 | Placer les points d'un tableau de valeurs  | ` ```courbe placer:` | généralités sur les fonctions, 12   |
+| 08  | 5-114 | Représenter des données (graphique)        | ` ```courbe placer:` | courbes et repères, 3               |
+| 09  | 5-122 | Ranger des nombres relatifs                | ` ```ranger `        | relatifs › ordre, 3                 |
+
+- 01 : droite de −5 à 5 graduée en unités (abscisse entière négative ou positive), en demis, en quarts (borne :
+  « dixièmes, moitiés, quarts, tiers ») ; v3 en **tiers**, réponse en fraction ($-\frac{4}{3}$) — question 1.
+  02 : mêmes graduations, puis deux points A et B de signes contraires.
+- 03 : graduée en dixièmes autour de 0 (−1,5 à 1,5) et autour d'un entier négatif (−4 à −2,5) ; deux décimales
+  exclues (centièmes = 6e). 04 : mêmes droites, un point puis deux points.
+- Les 2 brouillons passent aux niveaux 3 et 4 (fichiers `automatismes-2de-geometrie/01`, `02`, puis
+  `create-questions --mettre-a-jour` par David) : la droite avant le plan — question 2.
+- 05 : situation en mots, sans formule (« 3 € le kilo et 2 € de livraison », programme de calcul en étapes),
+  tableau de 4 colonnes, 4 cases. 06 : formule donnée (aire $A = c \times c$ ; périmètre ; distance de freinage
+  $d = v \times v \div 100$, v de 10 en 10 jusqu'à 50), 4 cases ; pas de notation fonctionnelle (borne).
+- 07 : tableau de 3 ou 4 valeurs (entiers, x de 0 à 6, y ≤ 10, puis y de 2 en 2 ou de 5 en 5), points A, B, C, D
+  nommés sous le tableau, repère gradué en conséquence. 08 : relevé en contexte (température heure par heure,
+  négative possible ; taille d'une plante semaine par semaine), 4-5 points à placer, titres d'axes.
+- 09 : 5 nombres, croissant (`signe: <`), puis décroissant (`signe: >`) ; v1 entiers relatifs, v2 décimaux
+  relatifs avec les pièges du BO (−2,5 et −2,05 ; −3 et 1 ; −0,7 et 0).
+- Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte connecté).
+- **Questions** : (1) tiers en v3 de 01, réponse en fraction (reco : oui, la borne les cite) ; (2) 03 et 04 sur
+  « coordonnées dans le plan » (le nœud de leurs points), brouillons renumérotés 3 et 4 (reco : oui).
