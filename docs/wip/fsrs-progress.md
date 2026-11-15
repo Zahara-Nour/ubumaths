@@ -9,9 +9,9 @@ la PR 6g de `demo-debug` (#1711) : `calculateNewStability` n'utilise pas la note
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, phase 0 écrite._
+_Mis à jour le 2026-11-15, PR 1 codée._
 
-- **État** : phase 0 écrite (constat mesuré, Q1-Q4), rien de codé · **Prochaine action** : réponses de David à Q1-Q4, puis PR 1 · **En attente de David** : Q1 (corriger notre code / passer à `ts-fsrs`), Q2 (fiches existantes), Q3 (révisions du même jour), Q4 (rétention et intervalle) · **Pièges en cours** : depuis l'ADR 0038 l'écran n'envoie plus que les notes 1 et 3 ; le bug d'origine (Difficile = Bien = Facile) n'est presque plus visible, les écarts qui comptent sont ailleurs (ci-dessous) · **Worktree / branche** : `../ubumaths-wt-fsrs`, `fix/fsrs`
+- **État** : PR 1 codée (algorithme FSRS-6 conforme à `ts-fsrs`, tests de référence rouges avant, verts après ; doc `srs.md`) · **Prochaine action** : PR 1 ouverte → revue Opus + CI → merge ; puis Q5 (état `learning`) selon la réponse, puis PR 2 (rejouer les 27 fiches) · **En attente de David** : Q5 · **Pièges en cours** : `ts-fsrs` arrondit au 1e-8 à chaque étape → comparaison relative (1e-7) ; les tests existants qui appellent `reviewCard` sans `now` révisent « le même jour » (court terme) · **Worktree / branche** : `../ubumaths-wt-fsrs`, `fix/fsrs`
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -94,6 +94,26 @@ une fois** reste à jamais sur des intervalles courts (17 j au lieu de 44 au 5e 
   celles que l'algorithme prévoit) ; (b) baisser la rétention (0,85 ou 0,8) pour garder un rythme proche
   d'aujourd'hui.
 
+## Décisions de David (2026-11-15)
+
+- « Je te suis » sur les quatre recommandations : **Q1 (a)** corriger `fsrs.ts`, oracle `ts-fsrs` en
+  devDependency pour les tests seulement ; **Q2 (a)** rejouer les 27 fiches depuis `review_history` (PR 2,
+  script, écriture en prod sur demande explicite) ; **Q3 (a)** formule court terme de FSRS-6 le même jour ;
+  **Q4 (a)** rétention 0,9.
+- « Même jour » = même jour civil à Paris (celui de `best-of-day.ts`) : FSRS-6 compte l'écart en jours
+  entiers, 0 = même jour.
+
+## Question à David (posée le 2026-11-15, pendant la PR 1)
+
+- **Q5 — État de la fiche bloqué en « learning »** (8e défaut, trouvé en codant) : une fiche neuve réussie
+  passe en `learning` et **n'en sort jamais** tant qu'elle est réussie (`learning` → `learning`). Or le badge
+  du programme (`templateToBadge`) lit `learning` comme `relearning` : due, elle s'affiche **« à remédier »**
+  (qui suppose un échec) au lieu de « à renforcer », et jamais « acquise en mémoire ». Prod : 5 fiches
+  `learning`, toutes sans aucun échec. Proposé : (a) **une réussite fait passer `learning` → `review`**
+  (reco : `learning` ne dure qu'une révision, comme `relearning`) ; (b) neuve réussie → `review` tout de
+  suite ; (c) ne rien changer dans ce chantier.
+
 ## Historique
 
+- 2026-11-15 : PR 1 codée : `fsrs.ts` réécrit (FSRS-6 publié, écart en jours civils à Paris, court terme le même jour, `now` facultatif) ; `DECAY_PARAMETER` = −w[20] ; commentaires des paramètres corrigés ; `ts-fsrs@6.0.0` en devDependency ; 9e défaut vu au passage : un premier « Pas réussi » donnait une stabilité 0 (la fiche restait « neuve »).
 - 2026-11-15 : chantier ouvert, worktree `fix/fsrs` ; constat et simulation ; phase 0 écrite, Q1-Q4 posées.

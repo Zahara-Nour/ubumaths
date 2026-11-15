@@ -20,7 +20,7 @@ couvre:
 
 > Remplace les sept fichiers de [`srs/`](../archive/systeme-2026-06/srs/README.md) (juin 2026, archivés), écrits au temps de la
 > « famille A » du référentiel, abandonnée ([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)).
-> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04 ; composition relue sans ancienne forme (lot 4a) le 2026-11-04 ; contenu d'une trace de `api/skill-attempts` (ADR 0038) le 2026-11-11 ; notion des cartes dues (réactions du Palotin) le 2026-11-11 ; lieu `flash_cards` « déclaré » et traces par question des séries libres le 2026-11-11.
+> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04 ; composition relue sans ancienne forme (lot 4a) le 2026-11-04 ; contenu d'une trace de `api/skill-attempts` (ADR 0038) le 2026-11-11 ; notion des cartes dues (réactions du Palotin) le 2026-11-11 ; lieu `flash_cards` « déclaré » et traces par question des séries libres le 2026-11-11 ; algorithme FSRS-6 (chantier `fsrs`) le 2026-11-15.
 
 ## À quoi ça sert
 
@@ -140,6 +140,14 @@ s'affichait « toutes capacités ».
   entre tous les paquets** (Programme, paquet assigné, paquet du chapitre — décision Q165) :
   réviser une question dans un paquet avance son échéance partout.
 - Première révision : `loadOrInitCardStats` part de `FSRS.initCard()` (stabilité 0).
+- **Algorithme** (`fsrs.ts`) : FSRS-6 tel que publié, avec ses 21 paramètres par défaut, vérifié contre
+  l'implémentation de référence `ts-fsrs` (devDependency, **tests seulement** :
+  `src/lib/srs/__tests__/fsrs-reference.test.ts`). Fiche neuve : stabilité `w[note − 1]`, difficulté
+  `w[4] − e^(w[5]·(note − 1)) + 1`. Courbe d'oubli `R = (1 + f·t/S)^(−w[20])`, `f` choisi pour que R = 0,9
+  quand t = S : à la rétention 0,9, **l'intervalle vaut la stabilité** (arrondie, entre 1 et 36 500 j).
+  L'écart `t` se compte en **jours civils à Paris** ; `t = 0` (même jour) → formule court terme
+  (`w[17..19]`). Bien ×5 à chaque échéance : 2 · 11 · 46 · 163 · 497 j. `reviewCard` prend un `now`
+  facultatif (tests).
 - `review_history` (JSONB) garde chaque révision ; pour une auto-évaluation, l'entrée porte
   aussi `before`, l'état de la fiche juste avant (ce qui permet de la remplacer dans la journée).
 - Tous les chemins instancient `new FSRS()` : paramètres et rétention **par défaut**
@@ -407,10 +415,12 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
   désormais les lignes supprimées et répondent 403 quand la RLS refuse en silence (paquet assigné
   ou géré automatiquement — Programme, chapitre). Test :
   `src/routes/api/srs/__tests__/suppressions-silencieuses.test.ts`.
-- **La note ignorée après la 1re révision** (trouvé le 2026-10-25, chantier demo-debug) :
-  `calculateNewStability` (`src/lib/srs/fsrs.ts`) ne lit `grade` que pour une carte neuve
-  (stabilité 0) ; ensuite Difficile, Bien et Facile donnent la même stabilité, donc le même
-  intervalle (22 j dans l'essai). Futur chantier `fsrs`.
+- ✅ **FSRS-6 mal recopié** (corrigé le 2026-11-15, chantier `fsrs`) : la classe mêlait la courbe d'oubli
+  de FSRS-4 (`9·S`, puissance −0,5) aux paramètres de FSRS-6 (intervalles ≈ 2,1 fois trop longs), fixait la
+  difficulté initiale à 5, ne l'amortissait pas (un seul échec la mettait à 10 pour toujours), ignorait la
+  note après la 1re révision et n'avait ni plafond après un oubli ni court terme. Depuis : conforme à FSRS-6,
+  test de référence `fsrs-reference.test.ts` contre `ts-fsrs`. Les fiches écrites avant gardent leurs anciennes
+  valeurs jusqu'à leur recalcul (chantier `fsrs`, PR 2).
 - `reviewedToday` (`src/lib/server/course-card-attempts.ts`) n'a aucun appelant hors de ses tests
   (relevé du 2026-10-12).
 
