@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2683 et #2684._
+_Mis à jour le 2026-11-15, lot CM2 en cours (branche `feat/blockly-lot-cm2`)._
 
-- **État** : lot 6e publié ; un programme qui ne dépend pas du nombre est faux (#2683, déployée en v0.90.0 le 2026-11-15) ; 6-210 corrigé en prod (spec `afficher 10` faux, corrigé ajusté, #2684 + `update-published-questions --lot blockly-6-210` par David, vérifié en base) · **Prochaine action** : (2) CM2-152 (comme 6-210, nombres simples) : relevé du point en prod, phase 0 courte, lot · puis (3) « prévoir la valeur » (programme en blocs dans l'énoncé, débloque 5-101 / 5-104) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il ne rejoue pas les specs d'un modèle déjà en base (copie sans id, dans le scratchpad si possible) ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `CalculCorrige.svelte` est aussi couvert par `ubumark.md` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance, simulation comprise) ; `db:migrate` → depuis le dépôt principal ; worktree neuf → `pnpm exec svelte-kit sync` · **Worktree / branche** : aucun (retiré le 2026-11-15) ; le prochain lot en ouvre un
+- **État** : lot 6e publié, #2683 en prod (v0.90.0), 6-210 corrigé · lot CM2 (CM2-152, 1 modèle) écrit, PR de contenu ouverte · **Prochaine action** : merge → création en prod par David (`create-questions --dir scripts/questions/CM2-blockly --publier`) → ids commités → migration nœud/tag (Algèbre › Premiers pas algébriques › programmes de calcul) → page à cocher → publication · puis (3) « prévoir la valeur » (débloque 5-101 / 5-104, et CM2-067 sans modèle) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; il ne rejoue pas les specs d'un modèle déjà en base (copie sans id, dans le scratchpad si possible) ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `CalculCorrige.svelte` est aussi couvert par `ubumark.md` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance, simulation comprise) ; `db:migrate` → depuis le dépôt principal ; worktree neuf → `pnpm exec svelte-kit sync` · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-cm2`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -484,3 +484,26 @@ worktree retiré.
   corrigé, lot `blockly-6-210` ; simulation (diff = 3 corrigés + 1 spec, 12/12 vertes) puis
   `--publier` par David ; vérifié en base (publié, 3 corrigés, spec `incorrect`). Ligne ajoutée à
   `verifications-manuelles.md` (après `deploy:prod`).
+
+## Lot CM2 — écrit le 2026-11-15 (branche `feat/blockly-lot-cm2`)
+
+Phase 0 validée par David le 2026-11-15 (« je te suis ») : un modèle À PART (ADR 0020 ; point
+d'Algèbre, pas d'Algorithmique), calqué sur 6-210 avec des nombres plus petits.
+
+Relevé prod (lecture seule, 2026-11-15) : CM2-152 « Produire un programme de calcul pour obtenir un
+résultat donné » (moitié « produire » de « Exécuter ou produire un programme de calcul », BO CM2,
+Nombres › Algèbre), 0 modèle ; nœud **Algèbre › Premiers pas algébriques › programmes de calcul**
+(sous-notion, aucun modèle rangé, aucun sous-nœud). CM2-067 (exécuter) : 0 modèle aussi → piste
+« prévoir la valeur ».
+
+Script `docs/wip/questions/lot-cm2-blockly.py` → `scripts/questions/CM2-blockly/` (1 modèle, 12 specs).
+
+| #   | Point   | Titre                                      | Geste                 | Variations                                           | Niveau |
+| --- | ------- | ------------------------------------------ | --------------------- | ---------------------------------------------------- | ------ |
+| 01  | CM2-152 | Programme de calcul pour un résultat donné | calcul, un seul essai | + a (2..9) ; × a (2..5) ; × a (2..3) puis + b (1..5) | 1      |
+
+- Titre distinct de 6-210 (même niveau) : `create-questions` refuse un homonyme.
+- Énoncé : « Écris un programme de calcul qui donne r quand on choisit le nombre n », opération
+  suggérée, pas imposée ; `afficher r` faux (règle de #2683) ; délai 300 s.
+- Vérifié : simulation 1/1 (12 specs) ; une spec inversée → modèle refusé ;
+  `answer-complexity-corpus` et `student-answer-safety.render` verts. Pas joué en base locale.
