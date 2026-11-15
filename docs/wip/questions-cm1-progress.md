@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15 : migration nœud + tags du lot 5d écrite (§ 15 quinquies), PR à ouvrir._
+_Mis à jour le 2026-11-15, après #2698 (migration nœud + tags du lot 5d mergée, `db:migrate` pas encore lancé)._
 
-- **État** : lots 0 à 5a publiés. **Lot 5b** (10 brouillons) rangé et tagué en prod, page à cocher publiée (§ 14 nonies), `verdicts` vide le 2026-11-15. **Lot 5d** : 3 brouillons créés en prod (3a6017c8, 396c543f, d6633d24) ; 5d-1 remplacé par le modèle CE2 a43667e9 (§ 15 quater) ; migration écrite, testée (20 verts).
-- **Prochaine action** : (a) lot 5d : PR de la migration, `security-auditor`, CI, `check:migrations --pr <n>`, merge ; David lance `pnpm db:migrate` ; vérifier au MCP ; puis page à cocher des 3 brouillons. (b) lot 5b : lire `verdicts` de https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK et compter (10) ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`.
+- **État** : lots 0 à 5a publiés. **Lot 5b** (10 brouillons) rangé et tagué en prod, page à cocher publiée (§ 14 nonies), `verdicts` vide le 2026-11-15. **Lot 5d** : 3 brouillons créés en prod (3a6017c8, 396c543f, d6633d24) ; 5d-1 remplacé par le modèle CE2 a43667e9 (§ 15 quater) ; migration mergée (#2698 : 20 tests verts, `security-auditor` sans finding bloquant, `check:migrations` passé).
+- **Prochaine action** : (a) lot 5d : David lance `pnpm db:migrate` ; vérifier au MCP (3 brouillons sur « Périmètres », 4 tags posés, a43667e9 en `{CE2,CM1}` avec CE2-042 et CM1-073) ; puis page à cocher des 3 brouillons. (b) lot 5b : lire `verdicts` de https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK et compter (10) ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`.
 - **En attente de David** : `db:migrate` après le merge ; la relecture de la page du lot 5b.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom), refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau (tout programme) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d-tags` (migration du lot 5d).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d-page` (depuis `origin/main`, pour la page à cocher ; ce bloc y est commité, pas sur `main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
