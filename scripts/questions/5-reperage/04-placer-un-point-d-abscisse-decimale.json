@@ -1,0 +1,164 @@
+{
+	"title": "Placer un point d'abscisse décimale relative",
+	"description": "Placer un nombre décimal relatif sur une droite graduée en dixièmes : autour de 0, entre deux entiers négatifs, puis deux points",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Place le nombre ${{x}}$ sur la droite graduée.\n\n```line\nstart: -1.5\nend: 1.5\nstep: 0.1\nmajor: 10\nlabels: 0, 1\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..14;±"
+				},
+				{
+					"name": "x",
+					"expression": "eval:k/10;d"
+				}
+			],
+			"conditions": ["k*k!=100"],
+			"correction": {
+				"steps": [
+					"Chaque graduation vaut $0.1$.",
+					"${{x}}$, c'est ${{eval:abs(k)}}$ graduations {{if:k<0|à gauche|à droite}} de $0$ : on place le point en $\\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{x}}$ sur la droite graduée.\n\n```line\nstart: {{eval:-n-1}}\nend: {{eval:-n+0.5;d}}\nstep: 0.1\nmajor: 10\nlabels: {{eval:-n-1}}, {{eval:-n}}\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:-(10*n+k)/10;d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque graduation vaut $0.1$.",
+					"${{x}}$ est entre ${{eval:-n-1}}$ et ${{eval:-n}}$, à ${{k}}$ graduations à gauche de ${{eval:-n}}$ : on place le point en $\\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place les points $A({{xa}})$ et $B({{xb}})$ sur la droite graduée.\n\n```line\nstart: -1.5\nend: 1.5\nstep: 0.1\nmajor: 10\nlabels: 0, 1\nplacer: A={{xa}} ; B={{xb}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..14"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "xa",
+					"expression": "eval:-a/10;d"
+				},
+				{
+					"name": "xb",
+					"expression": "eval:b/10;d"
+				}
+			],
+			"conditions": ["a!=10"],
+			"correction": {
+				"steps": [
+					"Chaque graduation vaut $0.1$.",
+					"$A$ est à ${{a}}$ graduations à gauche de $0$, en $\\textcolor{{{color:primary.0}}}{{{xa}}}$ ; $B$ à ${{b}}$ graduations à droite, en $\\textcolor{{{color:primary.0}}}{{{xb}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−1,3 placé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-13"
+			},
+			"answers": ["-1.3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −0,7 (compté depuis −1 vers la droite)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-13"
+			},
+			"answers": ["-0.7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1,3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-13"
+			},
+			"answers": ["1.3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−3,4 placé",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"k": "4"
+			},
+			"answers": ["-3.4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3,6",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"k": "4"
+			},
+			"answers": ["-3.6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(−0,6), B(0,4) placés",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "4"
+			},
+			"answers": ["-0.6", "0.4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A en 0,6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "4"
+			},
+			"answers": ["0.6", "0.4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
