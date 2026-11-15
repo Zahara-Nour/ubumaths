@@ -197,8 +197,10 @@ describe('tooShortAt', () => {
 });
 
 describe('mockTestDraws — durée de réponse', () => {
-	it('validée : la durée de réponse en secondes', () => {
-		const [draw] = mockTestDraws([trace({ end_reason: 'validated', response_ms: 12_400 })]);
+	it('validée avec une réponse : la durée de réponse en secondes', () => {
+		const [draw] = mockTestDraws([
+			trace({ end_reason: 'validated', response_ms: 12_400, part_verdicts: [false] })
+		]);
 		expect(draw).toMatchObject({ responseSeconds: 12.4, timedOut: false });
 	});
 
@@ -211,7 +213,14 @@ describe('mockTestDraws — durée de réponse', () => {
 	});
 
 	it('validée sans durée déclarée : durée inconnue, pas au-delà', () => {
-		const [draw] = mockTestDraws([trace({ end_reason: 'validated', response_ms: null })]);
+		const [draw] = mockTestDraws([
+			trace({ end_reason: 'validated', response_ms: null, part_verdicts: [true] })
+		]);
+		expect(draw).toMatchObject({ responseSeconds: null, timedOut: false });
+	});
+
+	it('passée à vide avant la fin : durée inconnue (passer ≠ avoir eu le temps)', () => {
+		const [draw] = mockTestDraws([trace({ end_reason: 'validated', response_ms: 2_000 })]);
 		expect(draw).toMatchObject({ responseSeconds: null, timedOut: false });
 	});
 });
@@ -219,11 +228,18 @@ describe('mockTestDraws — durée de réponse', () => {
 describe('controlDraws — durée de réponse', () => {
 	const delays = new Map<string, number | null>([[T1, 20]]);
 
-	it('répondue avant la fin (juste, fausse ou vide) : la durée de réponse', () => {
+	it('répondue avant la fin (juste ou fausse) : la durée de réponse', () => {
 		const [draw] = controlDraws([
 			{ studentId: 'a', answer: { template_id: T1, status: 'incorrect', time_spent: 8 }, delays }
 		]);
 		expect(draw).toMatchObject({ responseSeconds: 8, timedOut: false });
+	});
+
+	it('passée à vide avant la fin : durée inconnue', () => {
+		const [draw] = controlDraws([
+			{ studentId: 'a', answer: { template_id: T1, status: null, time_spent: 2 }, delays }
+		]);
+		expect(draw).toMatchObject({ responseSeconds: null, timedOut: false });
 	});
 
 	it('arrivée au bout du chrono, même avec une réponse : au-delà de la durée', () => {

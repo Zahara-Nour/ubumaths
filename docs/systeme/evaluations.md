@@ -320,9 +320,11 @@ n'y arrive pas : « Modifier » est masqué et la base refuse, UBS01). Règle, s
 la marque (élèves du prof, mode test, postérieurs à la modification du modèle, carte écartée), chaque
 tirage comptant, **durées allouées confondues** :
 
-- un tirage validé avant la fin donne sa durée de réponse (`response_ms` du Contrôle blanc,
-  `time_spent` d'un contrôle) ; arrivé au bout du chrono (contrôle : à la dernière seconde près),
-  réponse commencée ou non, il compte « au-delà » ; durée inconnue : écarté ;
+- un tirage validé avant la fin **avec une réponse** (juste ou fausse) donne sa durée de réponse
+  (`response_ms` du Contrôle blanc, `time_spent` d'un contrôle) ; arrivé au bout du chrono (contrôle :
+  à la dernière seconde près ; Contrôle blanc : `end_reason = 'timeout'`), réponse commencée ou non,
+  il compte « au-delà » ; **passé à vide avant la fin** (passer ≠ avoir eu le temps) ou durée
+  inconnue : écarté ;
 - durée observée = la durée dans laquelle **80 %** des tirages ont été validés, **arrondie aux 5 s
   supérieures**, bornée à 5-300 s (le réglage du panier) ; si les temps écoulés dépassent 20 %, le
   chiffre n'est pas calculable (la marque « trop courte » prend le relais) ; au moins **5 élèves** ;

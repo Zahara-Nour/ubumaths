@@ -86,6 +86,8 @@ signal P7 ; seule une durée agrégée par modèle sort, aucun nom. (Avec Q2 B, 
 - **Q5** : écart ≥ 5 s **et** ≥ 25 % avec la durée de la ligne, dans les deux sens.
 - **Q6** : `mock_test` + contrôles `interactive`.
 - **Accès** : personne ne lit rien de plus.
+- **Q7 (revue, David 2026-11-15 : A)** : une question **passée à vide avant la fin** est écartée
+  (durée inconnue) ; seules les réponses écrites, justes ou fausses, donnent une durée.
 
 ## PR 1 — calcul, endpoint, panier, éditeur (2026-11-15)
 

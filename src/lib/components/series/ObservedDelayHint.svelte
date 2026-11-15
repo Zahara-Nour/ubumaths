@@ -24,7 +24,7 @@
 	<p
 		class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm {className}"
 		data-duree-observee
-		title="Durée dans laquelle 80 % de tes élèves ont répondu"
+		title="Durée dans laquelle 80 % des questions tirées à tes élèves ont été validées"
 	>
 		<Gauge class="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
 		<span>{OBSERVED_LABEL}&nbsp;: <strong>{seconds}&nbsp;s</strong></span>

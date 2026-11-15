@@ -10,6 +10,10 @@ vi.mock('$app/navigation', async (importOriginal) => ({
 	...(await importOriginal<typeof import('$app/navigation')>()),
 	goto: vi.fn(async () => {})
 }));
+const { submitAction } = vi.hoisted(() => ({
+	submitAction: vi.fn(async (_action: string, _form: FormData) => ({ ok: true }))
+}));
+vi.mock('$lib/utils/form-action', () => ({ submitAction }));
 vi.mock('$lib/stores/toaster.svelte', () => ({
 	toaster: { success: vi.fn(), error: vi.fn(), warning: vi.fn(), info: vi.fn() }
 }));
@@ -106,5 +110,14 @@ describe('Éditeur de série — durée observée (A1)', () => {
 			// Appliquée : la suggestion disparaît
 			expect(rows[0].querySelector('[data-duree-observee]')).toBeNull();
 		});
+
+		// Écrite à l'enregistrement : la ligne part à 35 s, l'autre inchangée
+		(container.querySelector('button[type="submit"]') as HTMLButtonElement).click();
+		await vi.waitFor(() => expect(submitAction).toHaveBeenCalled());
+		const form = submitAction.mock.calls[0][1];
+		expect(JSON.parse(String(form.get('items')))).toEqual([
+			{ templateId: T1, quantity: 4, delay: 35 },
+			{ templateId: T2, quantity: 2, delay: 0 }
+		]);
 	});
 });

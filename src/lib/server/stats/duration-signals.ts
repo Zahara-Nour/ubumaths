@@ -24,7 +24,8 @@
  *
  * **Durée observée** (chantier `durees-ajustees`, A1) : mêmes tirages, avec leur
  * durée de réponse. Un temps écoulé dit seulement « au-delà de la durée » (la
- * durée de réponse est plafonnée) ; on rend la durée dans laquelle 80 % des
+ * durée de réponse est plafonnée) ; une question passée à vide avant la fin
+ * ne dit rien du temps nécessaire : durée inconnue, écartée ; on rend la durée dans laquelle 80 % des
  * tirages ont été validés, arrondie aux 5 s supérieures, si ces 80 % sont
  * connus (plus de 20 % de temps écoulés : aucun chiffre) et si au moins
  * 5 élèves ont compté. Chaque tirage compte, durées allouées confondues.
@@ -52,6 +53,7 @@ import {
 import {
 	BreakdownReadError,
 	bestCopies,
+	columnOf,
 	delaysByTemplate,
 	readInBatches,
 	unansweredInTime,
@@ -72,7 +74,10 @@ export interface DurationDraw {
 	delaySeconds: number;
 	/** Temps écoulé sans rien répondu */
 	missed: boolean;
-	/** Validée avant la fin : durée de réponse (s) ; null : temps écoulé ou durée inconnue */
+	/**
+	 * Validée avant la fin AVEC une réponse : durée de réponse (s) ; null : temps
+	 * écoulé, durée inconnue, ou validée à vide (passer ≠ avoir eu le temps, A1)
+	 */
 	responseSeconds: number | null;
 	/** Arrivée au bout du chrono, réponse commencée ou non : « au-delà de la durée » */
 	timedOut: boolean;
@@ -118,7 +123,9 @@ export function mockTestDraws(traces: ReadonlyArray<MockTestTraceRow>): Duration
 				delaySeconds: Math.round(trace.allotted_ms / 1000),
 				missed: trace.end_reason === 'timeout' && trace.part_verdicts === null,
 				responseSeconds:
-					trace.end_reason === 'validated' && trace.response_ms !== null
+					trace.end_reason === 'validated' &&
+					trace.response_ms !== null &&
+					trace.part_verdicts !== null
 						? trace.response_ms / 1000
 						: null,
 				timedOut: trace.end_reason === 'timeout'
@@ -135,13 +142,14 @@ export function controlDraws(answers: ReadonlyArray<ControlAnswer>): DurationDra
 		// Secondes entières déclarées : la dernière seconde vaut le bout du chrono (règle P7)
 		const spent = answer.time_spent === null ? null : Number(answer.time_spent);
 		const timedOut = spent !== null && spent >= delay - 1;
+		const answered = columnOf(answer.status) !== 'empty';
 		return [
 			{
 				studentId,
 				templateId: answer.template_id,
 				delaySeconds: delay,
 				missed: unansweredInTime(answer, delay),
-				responseSeconds: spent !== null && !timedOut ? spent : null,
+				responseSeconds: spent !== null && !timedOut && answered ? spent : null,
 				timedOut
 			}
 		];
