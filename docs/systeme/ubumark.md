@@ -1093,7 +1093,7 @@ sur Chiphre : assemble le programme de calcul avec les blocs, à l'écran. »
 (`CALCUL_A_FAIRE_SUR_CHIPHRE`), ni référence ni départ ; bloc en erreur : « Programme de calcul
 indisponible ». Fiche du catalogue : `block-catalog/calcul.ts`.
 
-**Robot sur un quadrillage** (CE1-080, chantier [suite-fleches](../wip/suite-fleches-progress.md),
+**Robot sur un quadrillage** (CE1-080, chantier [suite-fleches](../archive/wip/suite-fleches-progress.md),
 PR 1a : bloc et juge ; PR 1b : écran, corrigé, PDF) — `src/lib/ubumark/__tests__/robot/` (`robot-parser`,
 `robot-moteur`, `robot-typst`, `robot-catalogue`), `components/markdown/nodes/__tests__/RobotCode.svelte.test.ts` :
 

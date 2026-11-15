@@ -226,7 +226,8 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
 4. Base **locale** : `set -a; . ./.env.local; set +a` puis `create-questions … --publier`
    (sans cela, le script vise `.env` = la PROD). Jouer chaque modèle dans l'aperçu admin
    (`/dashboard/admin/questions/<id>/preview`, `admin@local.test`), une réponse juste, une fausse,
-   la correction.
+   la correction. Ouvrir le serveur par `http://[::1]:<port>`, pas `localhost` : les cookies de
+   `localhost` sont partagés entre les ports, donc avec la session de David sur 5173 (2026-11-15).
 5. PR des fichiers seuls (« revue : aucune, contenu » ; `Doc-inchangée: contenu`), CI verte,
    merge.
 

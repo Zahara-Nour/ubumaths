@@ -1,16 +1,16 @@
 # Chantier `suite-fleches` — suite de flèches à produire (outils-manquants n° 9)
 
-> Demande de David du 2026-11-15 (n° 9 de [`outils-manquants.md`](outils-manquants.md)). Point visé : CE1-080
+> Demande de David du 2026-11-15 (n° 9 de [`outils-manquants.md`](../../wip/outils-manquants.md)). Point visé : CE1-080
 > (« coder un déplacement », volet « produire »). Aujourd'hui, les modèles `08-le-robot-pivote` (e3bacfdc) et
-> `09-le-long-code` (8cbd4fb3) du lot 10 de [`questions-ce1`](questions-ce1-progress.md) (§ 3 C 4, l. 807) font
+> `09-le-long-code` (8cbd4fb3) du lot 10 de [`questions-ce1`](../../wip/questions-ce1-progress.md) (§ 3 C 4, l. 807) font
 > choisir le bon code parmi trois (QCM). Piste notée alors : glisser-déposer (`StructureField`), **pas Blockly** (le
 > BO ne parle que d'un robot « si un robot est disponible », d'aucun logiciel).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après la publication du lot 2._
+_Mis à jour le 2026-11-15 : chantier clos et archivé._
 
-- **État** : chantier terminé. Lot 1 (#2672, #2680, en prod v0.90.0) et lot 2 (#2687, #2689) livrés ; `856f400e` (flèches, niveau 4) et `c8da0674` (avance-pivote, niveau 5) relus OK (2/2) et **publiés** le 2026-11-15, rangés « coder un déplacement », tag CE1-080 ; n° 9 passé dans « Livré » d'`outils-manquants.md` · **Prochaine action** : clôture (versement du durable dans `docs/systeme/`, déjà fait pour le bloc dans `ubumark.md` ; archivage du journal) sur go de David ; hors chantier : les modèles QCM `e3bacfdc`, `8cbd4fb3` pourraient passer au bloc ```robot (phase 0, Q8) · **En attente de David** : go pour la clôture · **Pièges en cours** : le worktree `ubumaths-wt-suite-fleches` porte 9 fichiers `scripts/questions/5-triangles/` modifiés (id écrits) par une autre session : ne pas le retirer sans savoir à qui ils sont · **Worktree / branche** : `ubumaths-wt-suite-fleches` (HEAD détaché sur `origin/main`), branches `feat/suite-fleches-2`, `-2b` mergées
+- **État** : **clos**. Lot 1 (#2672, #2680, en prod v0.90.0) et lot 2 (#2687, #2689) livrés ; `856f400e` (flèches, niveau 4) et `c8da0674` (avance-pivote, niveau 5) publiés le 2026-11-15, rangés « coder un déplacement », tag CE1-080 ; n° 9 dans « Livré » d'`outils-manquants.md`. Durable versé : bloc et pièges dans `docs/systeme/ubumark.md` et `questions.md` ; aperçu local par `http://[::1]:<port>` dans `couvrir-un-niveau.md`. Hors chantier, pas ouvert : passer les QCM `e3bacfdc`, `8cbd4fb3` au bloc ```robot (phase 0, Q8) · **Prochaine action** : aucune · **En attente de David** : rien · **Worktree / branche** : `ubumaths-wt-suite-fleches` à retirer dès que la session `questions-5` a repris les 9 id `5-triangles` écrits par erreur dedans ; branches supprimées
 
 ## Phase 0 — comportements (à valider)
 
@@ -213,8 +213,9 @@ règle d'accès, personne ne lit rien de plus.
   gris, trajet juste en pointillés), avance-pivote juste (nez vers le haut lisible). Étape « droite ou gauche,
   **puis** haut ou bas » réécrite en « et » (le corrigé peut monter d'abord).
 - 2026-11-15 : #2687 mergée (CI verte). David : brouillons créés en prod. #2689 (id, migration générée par
-  `docs/wip/suite-fleches/lot-2-rangement.py` sur le gabarit 5e lot 12, relevé `etat-prod-2026-11-15-lot2/`,
+  `docs/archive/wip/suite-fleches/lot-2-rangement.py` sur le gabarit 5e lot 12, relevé `etat-prod-2026-11-15-lot2/`,
   test d'intégration 19 verts / 8 rouges sans la migration, `security-auditor` sans bloquant) mergée. Dépôt principal
   bloqué par des fichiers d'autres sessions ; entre-temps le `db:migrate` de la session `blockly` a appliqué notre
   migration (note de cette session, intégrée ici). Vérifié par MCP. Page à cocher publiée, verdicts vides.
 - 2026-11-15 : relecture de David : 2/2 OK. `publier-lot.ts` en simulation vert ; David a publié ; relu en base : `published`, niveaux 4 et 5. N° 9 d'`outils-manquants.md` passé dans « Livré ».
+- 2026-11-15 : chantier clos (go de David) : journal et `suite-fleches/` archivés ; session `questions-5` prévenue des 9 id `5-triangles` égarés dans le worktree.

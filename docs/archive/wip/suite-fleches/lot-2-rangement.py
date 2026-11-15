@@ -19,7 +19,7 @@ import subprocess
 from pathlib import Path
 
 ICI = Path(__file__).parent
-RACINE = ICI.parents[2]
+RACINE = ICI.parents[3]
 ETAT = ICI / 'etat-prod-2026-11-15-lot2'
 MIGRATION = RACINE / 'supabase/migrations/20261115165656_questions_ce1_robot_rangement_tags.sql'
 FIXTURE = RACINE / 'tests/integration/fixtures/questions-ce1-robot-rangement.json'

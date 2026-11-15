@@ -73,7 +73,7 @@ Tranchés hors appli : 5-011, 040, 130, 065, 042, 043, 059, 075, 084 (David, `qu
 
 ## 4. Livré (pour mémoire)
 
-Robot sur un quadrillage, code à produire (` ```robot ` + `produire: oui` : cartes flèches ou « avance de » / « pivote », 15 au plus ; tout code qui finit sur la case verte est juste ; corrigé tracé, PDF à 15 cases ; chantier [`suite-fleches`](suite-fleches-progress.md), #2672, #2680, en prod v0.90.0 ; modèles CE1-080 `856f400e` et `c8da0674` publiés le 2026-11-15, #2687, #2689 ; ex-n° 9 du § 1, sans `StructureField`).
+Robot sur un quadrillage, code à produire (` ```robot ` + `produire: oui` : cartes flèches ou « avance de » / « pivote », 15 au plus ; tout code qui finit sur la case verte est juste ; corrigé tracé, PDF à 15 cases ; chantier [`suite-fleches`](../archive/wip/suite-fleches-progress.md), #2672, #2680, en prod v0.90.0 ; modèles CE1-080 `856f400e` et `c8da0674` publiés le 2026-11-15, #2687, #2689 ; ex-n° 9 du § 1, sans `StructureField`).
 
 Triangle quelconque coté en cm (`verifier: triangle ABC : AC = 4 cm ; BC = 3 cm`, ou deux côtés et l'angle compris en cm ; règle graduée, compas ouvert sur la règle, rapporteur ; un seul C ; modèle 6-173 v5 et v6 ; chantier [`triangle-cote-cm`](../archive/wip/triangle-cote-cm-progress.md), #2658, #2660, #2661, en prod v0.88.0, 2026-11-14 ; #2665 au prochain déploiement ; ex-n° 29 du § 1).
 
