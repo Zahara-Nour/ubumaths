@@ -10,7 +10,7 @@
 
 _Mis à jour le 2026-11-15, après #2680._
 
-- **État** : phase 0 validée (Q1-Q8) ; lot 1 livré : PR 1a (#2672, bloc + juge) et PR 1b (#2680, écran à cartes, clavier, corrigé, PDF, série d'automatismes, fiche du catalogue) mergées · **Prochaine action** : lot 2 sur `feat/suite-fleches-2` : deux modèles CE1 « produire » (flèches, avance-pivote) par la skill `couvrir-niveau` ; brouillons en prod (`create-questions --publier` sur demande explicite de David), migration nœud + tag CE1-080 (question d'accès : modèles en brouillon, admin seul) · **En attente de David** : rien · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` : tout affichage passe par `readExpectedRobotAnswer().solution` ; zsh ne découpe pas une variable (`F=(…)`, `"${F[@]}"`) ; `/aide-ecriture` refuse le compte local `teacher@local.test` (403) : captures depuis vitest navigateur ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-2`)
+- **État** : lot 1 livré (#2672, #2680) ; lot 2 : phase 0 validée, modèles écrits (`scripts/questions/ce1-11/`), simulation verte, essayés en local · **Prochaine action** : PR des fichiers → merge → David lance `create-questions --dir scripts/questions/ce1-11 --publier` (prod, brouillons) → commiter les `id` → migration nœud + tag CE1-080 (niveaux 4 et 5) → page à cocher → publication · **En attente de David** : rien pour l'instant · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` ; aperçu local par `http://[::1]:5176` (pas `localhost`) ; zsh ne découpe pas une variable ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-2`)
 
 ## Phase 0 — comportements (à valider)
 
@@ -111,7 +111,7 @@ Réponse de David (2026-11-15) : « je suis tes recos » — Q1-Q8 tranchées se
 **Question d'accès** : aucune migration au lot 1 ; au lot 2, modèles en brouillon (admin seul) et migration nœud + tag
 sans règle d'accès : personne ne lit rien de plus.
 
-## Lot 2 — phase 0 (à valider)
+## Lot 2 — phase 0 (validée le 2026-11-15)
 
 Deux modèles neufs, lot `ce1-11` (`scripts/questions/ce1-11/`, script `docs/wip/questions/lot-ce1-11.py`),
 point **CE1-080**, nœud « Géométrie > Repérage et déplacements > coder un déplacement » (celui de `e3bacfdc` et
@@ -149,6 +149,9 @@ lu comme une flèche absolue (pas de pivot au départ) : faux.
   et 3 (le codage relatif est le plus dur).
 - **L2-Q3.** Quadrillage 8 × 5 sur les deux modèles (tient sur un téléphone, distance la plus longue 11) ?
   Recommandation : oui.
+
+Réponse de David (2026-11-15) : « tes recos ? » puis « oui » (L2-Q1 à L2-Q3). Niveaux : 1 à 3 déjà pris dans la
+rubrique (CP `f7167af7`, `e3bacfdc`, `8cbd4fb3`) → David : **4 et 5** (au lieu de 2 et 3).
 
 **Question d'accès** (déjà tranchée, phase 0 Q8) : modèles en brouillon (admin seul) ; migration nœud + tag sans
 règle d'accès, personne ne lit rien de plus.
@@ -202,3 +205,10 @@ règle d'accès, personne ne lit rien de plus.
   vérifiés rouges sans les correctifs.
 - 2026-11-15 : PR 1b mergée (#2680), CI verte (après refusion de `origin/main`, conflit d'en-tête de
   `docs/systeme/questions.md` : les deux ajouts gardés). Lot 1 clos ; lot 2 sur `feat/suite-fleches-2`.
+- 2026-11-15 : lot 2, phase 0 validée (niveaux 4 et 5). Script `docs/wip/questions/lot-ce1-11.py` →
+  `scripts/questions/ce1-11/` : V1 par variables + conditions, V2 = 12 scènes précalculées (3 murs × 4) tirées
+  par `k` ; 15 specs par modèle, vérifiées par un petit moteur Python ET par le juge réel (simulation verte ; deux
+  specs faussées exprès → refus). Essai en base locale et aperçu admin (`http://[::1]:5176` : `localhost` porte
+  la session de David) : flèches juste / faux (« n'arrive pas », code juste montré), mur (croix rouge sur le
+  gris, trajet juste en pointillés), avance-pivote juste (nez vers le haut lisible). Étape « droite ou gauche,
+  **puis** haut ou bas » réécrite en « et » (le corrigé peut monter d'abord).
