@@ -1,4 +1,5 @@
 {
+	"id": "55615796-d445-4f2d-8cdf-aec271a303f1",
 	"title": "Prévoir la valeur d'une expression",
 	"description": "Prévoir, sans l'exécuter, la valeur d'une expression en blocs Scratch imbriqués : parenthèses données par l'imbrication, variable réutilisée, résultat intermédiaire négatif.",
 	"grades": ["5"],
