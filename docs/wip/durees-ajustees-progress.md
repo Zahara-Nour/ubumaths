@@ -13,7 +13,7 @@ suivi validés ») : « durées ajustées au temps observé ». Suite prévue de
 
 _Mis à jour le 2026-11-15, à l'ouverture._
 
-- **État** : phase 0 écrite (comportements + questions Q1-Q6), rien codé · **Prochaine action** : réponses de David, puis plan technique · **En attente de David** : Q1-Q6 ci-dessous · **Pièges en cours** : prod sans aucune trace avec durée (2026-11-15) ; durée de réponse plafonnée à la durée allouée (donnée censurée) ; `question_templates.updated_at` remet le signal à zéro (Q8 de `durees-trop-courtes`) · **Worktree / branche** : `../ubumaths-wt-durees-ajustees` · `feat/durees-ajustees`
+- **État** : PR 1 (unique) écrite, tests rouges puis verts, PR ouverte · **Prochaine action** : revues (`code-reviewer` + `security-auditor`), CI, merge · **En attente de David** : rien · **Pièges en cours** : prod sans aucune trace avec durée (2026-11-15) ; durée de réponse plafonnée à la durée allouée (donnée censurée) ; `question_templates.updated_at` remet le signal à zéro (Q8 de `durees-trop-courtes`) · **Worktree / branche** : `../ubumaths-wt-durees-ajustees` · `feat/durees-ajustees`
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -76,6 +76,35 @@ _Mis à jour le 2026-11-15, à l'ouverture._
 **Question d'accès** (A2 reco) : **personne ne lit rien de plus** — le prof lit déjà ces traces pour le
 signal P7 ; seule une durée agrégée par modèle sort, aucun nom. (Avec Q2 B, elle serait à reposer.)
 
+## Décisions (David, 2026-11-15 : « oui » aux recommandations)
+
+- **Q1 A** : suggestion « Durée observée : N s » + « Appliquer », panier et éditeur ; rien d'automatique.
+- **Q2 A** : élèves du prof, sous la RLS existante ; **aucune migration**, une seule PR.
+- **Q3 A** : durée où 80 % des tirages sont validés (temps écoulé = au-delà), arrondie aux 5 s
+  supérieures, bornée 5-300 s ; plus de 20 % de temps écoulés → aucun chiffre.
+- **Q4** : ≥ 5 élèves ; traces postérieures à la dernière modification du modèle.
+- **Q5** : écart ≥ 5 s **et** ≥ 25 % avec la durée de la ligne, dans les deux sens.
+- **Q6** : `mock_test` + contrôles `interactive`.
+- **Accès** : personne ne lit rien de plus.
+
+## PR 1 — calcul, endpoint, panier, éditeur (2026-11-15)
+
+- **Calcul** : `observedDurationsOf` (`src/lib/server/stats/duration-signals.ts`) sur les tirages du
+  signal P7, enrichis de `responseSeconds` / `timedOut` ; `response_ms` ajoutée à la lecture des
+  traces `mock_test`. Contrôle : `time_spent ≥ durée − 1` = bout du chrono (règle P7).
+- **Règle d'affichage** : `observedSuggestion` (`src/lib/types/duration-signals.ts`), Q5.
+- **Endpoint** : `GET /api/series/duration-signals` rend `{ signals, observed }` (était `signals`).
+- **UI** : `ObservedDelayHint.svelte` (« Durée observée : N s » + « Appliquer ») dans
+  `CartQuestionCard` et l'éditeur de série (copie de travail, écrite à l'enregistrement).
+- **Série verrouillée** : l'éditeur ne s'ouvre pas (« Modifier » masqué, `handleEdit`) et la base
+  refuse (UBS01) : rien à ajouter.
+- **Tests** : unitaires (calcul, règle, endpoint), client (tuile, éditeur), intégration
+  `tests/integration/durees-trop-courtes.test.ts` (durée observée lue en base ; **rouge sans la
+  lecture de `response_ms`**, vérifié).
+- **Doc** : `docs/systeme/evaluations.md` § Durée observée.
+
 ## Historique
 
+- 2026-11-15 : PR 1 écrite (calcul, endpoint, panier, éditeur).
+- 2026-11-15 : phase 0 validée (recos).
 - 2026-11-15 : chantier ouvert, worktree créé, phase 0 écrite.

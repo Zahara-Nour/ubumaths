@@ -16,7 +16,7 @@ vi.mock('$lib/stores/toaster.svelte', () => ({
 
 import Page from '../+page.svelte';
 import type { DbSeries } from '$lib/types/evaluation';
-import type { DurationSignals } from '$lib/types/duration-signals';
+import type { DurationSignals, ObservedDurations } from '$lib/types/duration-signals';
 
 // Constantes
 const T1 = '11111111-1111-4111-8111-111111111111';
@@ -40,11 +40,16 @@ const TEMPLATES = [
 ];
 
 // Functions
-async function renderPage(durationSignals: DurationSignals | null) {
+async function renderPage(
+	durationSignals: DurationSignals | null,
+	observedDurations: ObservedDurations | null = null
+) {
 	const main = document.body.appendChild(document.createElement('main'));
 	return await render(Page, {
 		target: main,
-		props: { data: { series: SERIES, templates: TEMPLATES, durationSignals } } as never
+		props: {
+			data: { series: SERIES, templates: TEMPLATES, durationSignals, observedDurations }
+		} as never
 	});
 }
 
@@ -72,5 +77,34 @@ describe('Éditeur de série — durées trop courtes', () => {
 		expect(mark?.textContent).toContain('Durée sans doute trop courte');
 		expect(mark?.textContent).toContain("7 élèves sur 10 n'ont rien répondu dans les 10 s");
 		expect(rows[1].querySelector('[data-duree-trop-courte]')).toBeNull();
+	});
+});
+
+describe('Éditeur de série — durée observée (A1)', () => {
+	it('rien sans durée observée', async () => {
+		const { container } = await renderPage(null, null);
+		expect(container.querySelector('[data-duree-observee]')).toBeNull();
+	});
+
+	it('suggère la durée observée sous la ligne concernée ; « Appliquer » change la durée', async () => {
+		const { container } = await renderPage(null, {
+			[T1]: { seconds: 35, students: 8 },
+			// Ligne à 20 s (0) : écart trop faible, rien
+			[T2]: { seconds: 20, students: 6 }
+		});
+		const rows = container.querySelectorAll('li');
+		const hint = rows[0].querySelector('[data-duree-observee]');
+		expect(hint?.textContent?.replace(/\s+/g, ' ')).toContain('Durée observée : 35 s');
+		expect(rows[1].querySelector('[data-duree-observee]')).toBeNull();
+
+		const apply = hint?.querySelector('button');
+		apply?.click();
+		await vi.waitFor(() => {
+			expect(rows[0].querySelector('[data-duree]')?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+				'35 s'
+			);
+			// Appliquée : la suggestion disparaît
+			expect(rows[0].querySelector('[data-duree-observee]')).toBeNull();
+		});
 	});
 });

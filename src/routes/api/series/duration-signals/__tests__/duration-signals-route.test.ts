@@ -33,18 +33,19 @@ function call(role: 'student' | 'teacher' | 'admin', templates: string | null) {
 beforeEach(() => {
 	vi.spyOn(console, 'error').mockImplementation(() => {});
 	vi.mocked(getDurationSignals).mockReset();
-	vi.mocked(getDurationSignals).mockResolvedValue({ status: 'ok', signals: {} });
+	vi.mocked(getDurationSignals).mockResolvedValue({ status: 'ok', signals: {}, observed: {} });
 });
 
 describe('GET /api/series/duration-signals', () => {
-	it('prof : 200, les signaux des modèles demandés, en mode test', async () => {
+	it('prof : 200, signaux et durées observées des modèles demandés, en mode test', async () => {
 		const signals = {
 			[T1]: [{ delaySeconds: 20, students: 6, unansweredInTime: 4, tooShort: true }]
 		};
-		vi.mocked(getDurationSignals).mockResolvedValue({ status: 'ok', signals });
+		const observed = { [T2]: { seconds: 35, students: 7 } };
+		vi.mocked(getDurationSignals).mockResolvedValue({ status: 'ok', signals, observed });
 		const response = await call('teacher', `${T1},${T2}`);
 		expect(response.status).toBe(200);
-		expect(await response.json()).toEqual(signals);
+		expect(await response.json()).toEqual({ signals, observed });
 		expect(vi.mocked(getDurationSignals).mock.calls[0].slice(1)).toEqual([[T1, T2], true]);
 	});
 
