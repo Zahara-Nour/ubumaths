@@ -1,4 +1,5 @@
 {
+	"id": "2b80162e-94fd-48ec-afa9-d4018564113d",
 	"title": "Les hauteurs d'un triangle sont concourantes",
 	"description": "Les trois hauteurs d'un triangle se coupent en un même point : la troisième hauteur passe par le point d'intersection des deux autres et est perpendiculaire au troisième côté",
 	"grades": ["5"],

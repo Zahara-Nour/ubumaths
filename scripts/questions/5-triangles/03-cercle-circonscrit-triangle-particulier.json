@@ -1,4 +1,5 @@
 {
+	"id": "0b7c4059-9ab3-48f0-86a8-1731ac53965b",
 	"title": "Cercle circonscrit d'un triangle particulier",
 	"description": "Le centre du cercle circonscrit d'un triangle rectangle est le milieu de l'hypoténuse (observé, admis) ; dans un triangle isocèle, la médiatrice de la base passe par le sommet principal",
 	"grades": ["5"],

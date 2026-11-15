@@ -1,4 +1,5 @@
 {
+	"id": "500804ed-d34a-4a3a-b21a-a7d8de298b3b",
 	"title": "Quelle est la médiane issue de A ?",
 	"description": "Reconnaître la médiane issue d'un sommet parmi plusieurs segments codés : elle joint le sommet au milieu du côté opposé",
 	"grades": ["5"],

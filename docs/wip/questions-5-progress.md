@@ -5,19 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2690 (lot 13, fichiers mergés)._
+_Mis à jour le 2026-11-15, PR #2692 (lot 13, rangement) ouverte._
 
-- **État** : lots 1 à 12 publiés ; lot 13 « Triangles : droites remarquables » écrit (§ 28 ter, 9 modèles), fichiers
-  mergés (#2690). Restent : lot 14 (7), lot 15 (6), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : **David** lance `create-questions --dir
-scripts/questions/5-triangles --publier` (brouillons en prod) ; ensuite id commités, migration nœud + tag, page à
-  cocher, publication.
+- **État** : lots 1 à 12 publiés ; lot 13 (§ 28 ter) : 9 brouillons en prod, id commités, migration nœud + tag
+  `20261115183239_questions_5_lot13_rangement_tags` (#2692). Restent : lot 14 (7), lot 15 (6), 9 D, 101 et 104
+  (chantier `blockly`) — § 27 quinquies.
+- **Prochaine action** : #2692 verte → merge → `db:migrate` (David, classifieur) → vérifier au MCP → page à cocher →
+  publication par David.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
-- **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
-  `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → passer par une copie ; `db:migrate` en
-  prod refusé par le classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
-  `pnpm migration:horodatage` ; jamais `e`.
-- **Worktree / branche** : aucun (retiré après #2690).
+- **Pièges en cours** : `create-questions --publier` lancé depuis un AUTRE worktree (suite-fleches) y a écrit les id :
+  vérifier `pwd` ; base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; `--publier` en LOCAL
+  écrit les id locaux → passer par une copie ; `pnpm check:migrations --pr <n>` avant merge ; jamais `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot-13-rangement`.
 
 ---
 
@@ -1005,3 +1004,12 @@ triangle obtus en v2 de 04 et 08.
   108° / 108°), 04 (obtus en B, pied sur le prolongement en pointillés), 08 (hauteur tracée à la règle sur le
   quadrillage, triangle obtus : **juste**), 09 (M masqué invisible).
 - #2690 (fichiers) mergée, CI verte ; worktree retiré.
+
+### 28 quater. Lot 13 en prod, rangement (2026-11-15, #2692)
+
+- David a lancé `create-questions --publier` (depuis le worktree `suite-fleches`, qui a reçu les id) : 9 brouillons
+  (`aac77fdb`, `a69eb7f7`, `0b7c4059`, `80bfd3d6`, `500804ed`, `2b80162e`, `d8991c01`, `9dc37ad2`, `28cbee57`), id
+  repris et commités sur la branche (identiques, vérifié).
+- Migration `20261115183239_questions_5_lot13_rangement_tags` (générée, `docs/wip/questions-5/lot-13-rangement.py`,
+  instantané `etat-prod-2026-11-15-lot13`) : 057 ×2 → « perpendiculaires et parallèles », les 7 autres →
+  « triangles ». Test d'intégration 19 verts ; sans le corps, 8 rouges et 7 sautés.
