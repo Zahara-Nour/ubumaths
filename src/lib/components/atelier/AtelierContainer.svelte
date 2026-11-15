@@ -1087,8 +1087,9 @@
 		// écouteurs n'est pas sûr (délégation de Svelte), on ne compte pas dessus
 		if (target !== null && consolePanel?.contains(target)) return;
 		event.preventDefault();
-		// Le graphe agrandi d'abord : un Échap par étage
+		// Le graphe agrandi d'abord, puis la console ouverte : un Échap par étage
 		if (graphFills) graphExpanded = false;
+		else if (consoleOpen) closeConsole();
 		else fullScreen = false;
 	}
 

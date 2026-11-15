@@ -104,6 +104,24 @@ describe('plein écran de l’atelier', () => {
 		expect(buttonNamed(container, 'Console')?.getAttribute('aria-expanded')).toBe('false');
 		expect(getComputedStyle(root(container)).position).toBe('fixed');
 	});
+
+	it('console ouverte, focus ailleurs : Échap ferme la console, puis le plein écran', async () => {
+		const { container } = await render(AtelierContainer, {
+			ephemeral: true,
+			consoleAtStart: true
+		});
+		buttonNamed(container, 'Plein écran')?.click();
+		await tick();
+
+		escape();
+		await tick();
+		expect(buttonNamed(container, 'Console')?.getAttribute('aria-expanded')).toBe('false');
+		expect(getComputedStyle(root(container)).position).toBe('fixed');
+
+		escape();
+		await tick();
+		expect(getComputedStyle(root(container)).position).not.toBe('fixed');
+	});
 });
 
 // =============================================================================

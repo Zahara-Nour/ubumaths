@@ -1962,7 +1962,7 @@ tests (`mes-objets-telephone.svelte.test.ts`).
 
 **« Mes objets » replié sur bureau** (chantier `atelier-plein-ecran`, validé par David le
 2026-11-15) : au-dessus de 720 px, un second bouton de l'en-tête (« Replier / Déplier « Mes
-objets » », `aria-expanded`) replie le panneau en une **bande** de 2,75rem : le bouton en haut,
+objets » », `aria-controls` ; pas d'`aria-expanded`, le nom dit déjà l'état) replie le panneau en une **bande** de 2,75rem : le bouton en haut,
 puis le titre et le compte écrits de haut en bas ; la vue prend la largeur (la colonne de la
 grille passe à `auto` par `:has(.panneau.replie-large)`, sauf sous le graphe agrandi). Il s'ouvre
 déplié, n'a pas de bouton quand l'atelier est vide, se rouvre quand une carte prend la main
@@ -2334,7 +2334,8 @@ ni le menu du site ; « Mes objets », la barre et les onglets restent. Le bouto
 aussi dans Chrome, écarté par David). Échap en sort (`handleExpandedEscape`), après ce qui a
 mieux à faire : un champ, un menu ou une fenêtre ouverts, la console (un Échap venu d'elle la
 ferme seulement — l'ordre des écouteurs délégués de Svelte n'étant pas sûr, on teste
-`consolePanel.contains(target)`), le graphe agrandi (un Échap par étage). Non retenu d'une
+`consolePanel.contains(target)` — ; ouverte, focus ailleurs, Échap la ferme d'abord), le graphe
+agrandi (un Échap par étage). Non retenu d'une
 visite à l'autre.
 Un bouton indisponible garde le focus (`aria-disabled`, pas `disabled`) et dit pourquoi, dans son
 infobulle et à l'aide technique (« Ton atelier est vide : il n'y a rien à enregistrer. »).

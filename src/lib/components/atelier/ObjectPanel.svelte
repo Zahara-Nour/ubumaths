@@ -119,13 +119,14 @@
 			>
 				<ChevronDown class="size-4" aria-hidden="true" />
 			</button>
-			<!-- Sur bureau : replier en bande. Le nom dit le geste, comme les outils de la barre -->
+			<!-- Sur bureau : replier en bande. Le nom dit le geste (comme les outils de la barre),
+			     donc pas d'`aria-expanded` : « Déplier, réduit » se contredirait (revue) -->
 			<button
 				type="button"
 				class="replier-large"
 				aria-label={wideFolded ? 'Déplier « Mes objets »' : 'Replier « Mes objets »'}
 				title={wideFolded ? 'Déplier « Mes objets »' : 'Replier « Mes objets »'}
-				aria-expanded={!wideFolded}
+				aria-controls="atelier-mes-objets-corps"
 				onclick={() => (foldedWide = !wideFolded)}
 			>
 				{#if wideFolded}
