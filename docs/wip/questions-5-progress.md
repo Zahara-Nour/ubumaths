@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, lot 12 publié (9 modèles)._
+_Mis à jour le 2026-11-15, lot 12 publié en entier (11 modèles)._
 
-- **État** : lots 1 à 12 publiés (lot 12 : 9 modèles, vérifié au MCP) ; restent en brouillon `d4f38d30`, `d4d56c1b`
-  (relus ok, à publier avec le lot 12, § 26). Classement (§ 26) : à recompter après leur publication.
-- **Prochaine action** : **David** publie les deux (`! pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/automatismes-2de-geometrie --publier`) ; puis je vérifie au MCP et je recompte les points.
+- **État** : lots 1 à 12 publiés. Relevé MCP : **32 points sans modèle publié** = 9 D, lot 13 (8), lot 14 (7),
+  lot 15 (6), 101 et 104 (chantier `blockly`) — § 27 quinquies.
+- **Prochaine action** : phase 0 du **lot 13 « Triangles : droites remarquables »** (057, 060, 062, 063, 064, 066,
+  131, 132 ; classement du § 26), à faire valider par David avant d'écrire.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
@@ -916,3 +916,14 @@ renumérotés 3 et 4.
   brouillons passent le contrôle. **Erreur** : `d4f38d30`, `d4d56c1b` n'étaient pas publiés (brouillons, fichiers dans
   `scripts/questions/automatismes-2de-geometrie`) ; simulation sur ce dossier : 2 brouillons passent.
 - David a publié le lot (`5-reperage`) : 9 modèles `published`, vérifié au MCP.
+- David a publié `d4f38d30`, `d4d56c1b` (`automatismes-2de-geometrie`) : `published`, vérifié au MCP.
+
+### 27 quinquies. Relevé après le lot 12 (prod, MCP, 2026-11-15)
+
+**32 points de 5e sans modèle publié** (43 − 9 du lot 12 − 047, 128), conformes au classement du § 26 :
+
+- D (9) : 011, 040, 042, 043, 059, 065, 075, 084, 130.
+- Lot 13 (8) : 057, 060, 062, 063, 064, 066, 131, 132.
+- Lot 14 (7) : 067, 068, 069, 070, 071, 072, 133.
+- Lot 15 (6) : 054, 055, 115, 144, 048, 049.
+- Chantier `blockly` (2) : 101, 104.
