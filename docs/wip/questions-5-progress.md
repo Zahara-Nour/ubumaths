@@ -9,7 +9,7 @@ _Mis à jour le 2026-11-15, après la publication du lot 13._
 
 - **État** : lots 1 à 13 publiés. Restent : lot 14 (7 : 067, 068, 069, 070, 071, 072, 133), lot 15 (6 : 054, 055,
   115, 144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : phase 0 du lot 14 proposée (§ 29) → attendre la
+- **Prochaine action** : lot 14 validé (§ 29 bis) → écrire `lot-5-parallelogrammes.py` dans le worktree → attendre la
   validation de David.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
 - **Pièges en cours** : lancer `create-questions --publier` depuis le worktree du chantier (`pwd`) ; worktree neuf :
@@ -1073,3 +1073,8 @@ centre=O)`), papier uni, compas · report · règle ; v2 losange : diagonale [AC
 - **Questions** : (1) 03 et 05 avec « on ne peut pas savoir » comme réponse juste dans une variation piège (reco :
   oui, c'est l'erreur des élèves) ; (2) 06 en deux variations, quadrillage puis papier uni aux instruments (reco :
   oui) ; (3) 07 limité aux diagonales (5-133 dit « côtés ou diagonales », les côtés étant déjà le 06) (reco : oui).
+
+### 29 bis. Lot 14 : validé (David, 2026-11-15, « je te suis »)
+
+« On ne peut pas savoir » juste dans une variation piège de 03 et 05 ; 06 sur quadrillage (v1) puis papier uni aux
+instruments (v2) ; 07 limité aux diagonales.
