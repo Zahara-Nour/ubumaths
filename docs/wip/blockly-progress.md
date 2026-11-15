@@ -476,3 +476,7 @@ worktree retiré.
   (12/12 ; l'ancienne spec « juste » refusée).
 - Tests : `jugement.test.ts` (rouges sans la règle), `CalculProgramme.svelte.test.ts` (corrigé, rouge
   sans la modification de `CalculCorrige.svelte`).
+- **#2683** : revue `code-reviewer` (Opus) sans bloquant ; point 1 corrigé (corrigé : réponse vide
+  avec référence connue gardait « n'affiche rien », test rouge d'abord), point 2 en commentaire
+  (témoins fixes : un polynôme qui s'annule sur chacun tromperait la mesure, cas d'école).
+  CI : `ubumark.md` couvre aussi `CalculCorrige.svelte` → `Doc-inchangée:` (il ne fait que le nommer).
