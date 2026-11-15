@@ -9,7 +9,7 @@
 	"variations": [
 		{
 			"blanks": [],
-			"statement": "Fais tracer à la tortue le carré dessiné en gris, de côté ${{c}}$, en utilisant le bloc **répéter**.\n\n```tortue\nattendu: répéter 4 [ avancer {{c}} ; tourner à gauche 90 ]\nmontrer: oui\n```",
+			"statement": "Fais tracer à la tortue le carré dessiné en gris, de côté ${{c}}$, en utilisant le bloc **répéter**.\n\n```tortue\nattendu: répéter 4 [ avancer {{c}} ; tourner à gauche 90 ]\nmontrer: oui\nblocs: 3\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -21,13 +21,14 @@
 				"steps": [
 					"Un côté se trace en deux instructions : avancer ${{c}}$, puis tourner d'un quart de tour à gauche.",
 					"Le carré a $4$ côtés : on répète ces deux instructions $4$ fois.",
-					"Un programme juste : répéter $4$ [ avancer ${{c}}$ ; tourner à gauche $90$ ]."
+					"Un programme juste : répéter $4$ [ avancer ${{c}}$ ; tourner à gauche $90$ ].",
+					"Le programme doit tenir en $3$ blocs au plus : **répéter**, avancer, tourner. Sans répéter, il en faudrait $7$."
 				]
 			}
 		},
 		{
 			"blanks": [],
-			"statement": "Fais tracer à la tortue l'escalier dessiné en gris : ${{n}}$ marches de ${{s}}$ {{if:s==1|carreau|carreaux}} de haut et de large. Utilise le bloc **répéter**.\n\n```tortue\nattendu: répéter {{n}} [ tourner à gauche 90 ; avancer {{s}} ; tourner à droite 90 ; avancer {{s}} ]\nmontrer: oui\n```",
+			"statement": "Fais tracer à la tortue l'escalier dessiné en gris : ${{n}}$ marches de ${{s}}$ {{if:s==1|carreau|carreaux}} de haut et de large. Utilise le bloc **répéter**.\n\n```tortue\nattendu: répéter {{n}} [ tourner à gauche 90 ; avancer {{s}} ; tourner à droite 90 ; avancer {{s}} ]\nmontrer: oui\nblocs: 5\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -43,13 +44,14 @@
 				"steps": [
 					"Une marche : monter (tourner à gauche, avancer ${{s}}$), puis aller vers la droite (tourner à droite, avancer ${{s}}$).",
 					"On répète cette marche ${{n}}$ fois.",
-					"Un programme juste : répéter ${{n}}$ [ tourner à gauche $90$ ; avancer ${{s}}$ ; tourner à droite $90$ ; avancer ${{s}}$ ]."
+					"Un programme juste : répéter ${{n}}$ [ tourner à gauche $90$ ; avancer ${{s}}$ ; tourner à droite $90$ ; avancer ${{s}}$ ].",
+					"Le programme doit tenir en $5$ blocs au plus : **répéter** et les $4$ instructions d'une marche. Sans répéter, il faudrait écrire ces $4$ instructions ${{n}}$ fois."
 				]
 			}
 		},
 		{
 			"blanks": [],
-			"statement": "Fais tracer à la tortue les créneaux dessinés en gris : ${{n}}$ créneaux de ${{h}}$ {{if:h==1|carreau|carreaux}} de haut, chacun suivi d'un creux de $1$ carreau. Utilise le bloc **répéter**.\n\n```tortue\nattendu: répéter {{n}} [ tourner à gauche 90 ; avancer {{h}} ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer {{h}} ; tourner à gauche 90 ; avancer 1 ]\nmontrer: oui\n```",
+			"statement": "Fais tracer à la tortue les créneaux dessinés en gris : ${{n}}$ créneaux de ${{h}}$ {{if:h==1|carreau|carreaux}} de haut, chacun suivi d'un creux de $1$ carreau. Utilise le bloc **répéter**.\n\n```tortue\nattendu: répéter {{n}} [ tourner à gauche 90 ; avancer {{h}} ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer {{h}} ; tourner à gauche 90 ; avancer 1 ]\nmontrer: oui\nblocs: 9\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -65,7 +67,8 @@
 				"steps": [
 					"Un créneau : monter de ${{h}}$, avancer de $1$, redescendre de ${{h}}$, avancer de $1$ (le creux).",
 					"Les angles : à gauche pour monter, à droite deux fois (en haut puis pour redescendre), à gauche pour repartir vers la droite.",
-					"On répète ce motif ${{n}}$ fois."
+					"On répète ce motif ${{n}}$ fois.",
+					"Le programme doit tenir en $9$ blocs au plus : **répéter** et les $8$ instructions d'un créneau. Sans répéter, il faudrait écrire ces $8$ instructions ${{n}}$ fois."
 				]
 			}
 		}
@@ -87,12 +90,23 @@
 				"avancer 4 ; tourner à gauche 90 ; avancer 4 ; tourner à gauche 90 ; avancer 4 ; tourner à gauche 90 ; avancer 4"
 			],
 			"expected": {
-				"status": "correct"
+				"status": "incorrect"
 			},
 			"variables": {
 				"c": "4"
 			},
-			"description": "Carré : sans répéter (8 blocs, juste aussi)",
+			"description": "Carré : sans répéter (7 blocs, au plus 3) : faux",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["répéter 4 [ avancer 2 ; avancer 2 ; tourner à gauche 90 ]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "4"
+			},
+			"description": "Carré : bon tracé en 4 blocs (au plus 3) : faux",
 			"variationIndex": 0
 		},
 		{
@@ -185,6 +199,34 @@
 				"n": "3"
 			},
 			"description": "Erreur : creux oublié",
+			"variationIndex": 2
+		},
+		{
+			"answers": [
+				"tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 2"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "4",
+				"s": "2"
+			},
+			"description": "Escalier : sans répéter (16 blocs, au plus 5) : faux",
+			"variationIndex": 1
+		},
+		{
+			"answers": [
+				"tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 1 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 1 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 1"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "2",
+				"n": "3"
+			},
+			"description": "Créneaux : sans répéter (24 blocs, au plus 9) : faux",
 			"variationIndex": 2
 		}
 	]

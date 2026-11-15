@@ -607,3 +607,12 @@ Pistes restantes après celle-ci : mode Calcul du bac à sable, étanchéité du
   Tests rouges avant (11 serveur, 3 navigateur), verts après ; 15 538 tests serveur verts.
   Revue `code-reviewer` (Opus) : aucun bloquant ; deux mineurs corrigés (« 1 bloc » au singulier,
   commentaire de `blocsPoses`). PDF inchangé : le cadre « À faire sur Chiphre » suffit.
+- **#2700 mergée le 2026-11-15** (CI verte ; la garde de doc a demandé aussi `questions.md` et
+  `utilitaires-et-demos.md`, faits avant le merge).
+- **PR B** (`feat/blockly-5-106-blocs`) : instantané de prod de 5-106 (`51636342`) dans
+  `scripts/questions/5-blockly-existants/`, `blocs: 3 / 5 / 9`, une étape de corrigé par variation
+  (« doit tenir en N blocs au plus… »), specs : carré sans répéter (7 blocs) devient faux, + carré
+  bon tracé en 4 blocs, escalier et créneaux sans répéter (faux). Lot `blockly-5-106` dans
+  `update-published-questions.ts`. Vérifié en local (`checkTemplate` 12 specs vertes ; les 4
+  nouvelles rouges sur l'ancien contenu). La simulation du script (lecture de la prod) a été refusée
+  par le classifieur du mode auto : **David la lance**, puis `--publier`.
