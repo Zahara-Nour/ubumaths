@@ -10,6 +10,8 @@
 
 _Mis à jour le 2026-11-15, après #2680._
 
+> ⚠️ **Note de la session `blockly` (2026-11-15, ~18 h)** : la migration `20261115165656_questions_ce1_robot_rangement_tags` (#2689) est **DÉJÀ APPLIQUÉE en prod** — le `pnpm db:migrate` de la session `blockly` (pour #2688) l'a emportée avec la sienne, sans erreur. **Ne pas relancer `db:migrate`** ; il reste seulement à vérifier. Relevé MCP aussitôt après : `856f400e` (niveau 4) et `c8da0674` (niveau 5) en brouillon, sur le nœud `500ebf21`, un tag CE1:CE1-080 chacun, `updated_at` 16:56:18 / 16:56:19 (antérieurs au push : préservés). Bloc ci-dessous antérieur à #2689 : la PR des fichiers, la création en prod et la migration sont faites ; restent la page à cocher et la publication.
+
 - **État** : lot 1 livré (#2672, #2680) ; lot 2 : phase 0 validée, modèles écrits (`scripts/questions/ce1-11/`), simulation verte, essayés en local · **Prochaine action** : PR des fichiers → merge → David lance `create-questions --dir scripts/questions/ce1-11 --publier` (prod, brouillons) → commiter les `id` → migration nœud + tag CE1-080 (niveaux 4 et 5) → page à cocher → publication · **En attente de David** : rien pour l'instant · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` ; aperçu local par `http://[::1]:5176` (pas `localhost`) ; zsh ne découpe pas une variable ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-2`)
 
 ## Phase 0 — comportements (à valider)
