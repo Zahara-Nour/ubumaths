@@ -20,7 +20,6 @@ import sys
 DOSSIER = sys.argv[1]
 OPTIONS = {'constraints': {'spacesFromFourDigits': True}}
 VIRGULE_EXIGEE = {'pattern': 'a:number'}
-SOUS_CATEGORIE = 'Périmètre d\'un polygone'
 
 # ---- Gabarits (comme lot-cm1-5a.py) ----
 
@@ -36,10 +35,8 @@ def spec(desc, vi, variables, answers, status, violations=None):
 
 
 def modele(title, description, level, variations, specs, delay=90):
-    # theme / domain / subdomain : anciennes colonnes, remplies pour create-questions ; le
-    # rangement (notion du point) est posé par la migration
-    return {'title': title, 'description': description, 'grades': ['CM1'], 'theme': 'Grandeurs',
-            'domain': 'Périmètres', 'subdomain': SOUS_CATEGORIE, 'level': level, 'delay': delay,
+    # le rangement (notion du point) est posé par la migration ; plus de quadruplet (ADR 0035)
+    return {'title': title, 'description': description, 'grades': ['CM1'], 'level': level, 'delay': delay,
             'status': 'draft', 'options': OPTIONS, 'variations': variations,
             'testSpecs': specs}
 
@@ -557,6 +554,10 @@ MODELES['04-problemes-retrouver-un-cote'] = modele(
      spec('carré de périmètre 34 : 8,5', 3, {'n': 17}, '8,5', 'correct'),
      spec('Erreur : partagé en deux (17)', 3, {'n': 17}, '17', 'incorrect'),
      spec('carré de périmètre 36 : 9', 3, {'n': 18}, '9', 'correct')])
+
+# 5d-1 (CM1-073) n'est pas créé : le modèle CE2 jumeau (a43667e9, même titre, mêmes variations)
+# reçoit le niveau CM1 et le tag CM1-073 (choix de David, 2026-11-15, journal § 15 quater)
+del MODELES['01-qu-est-ce-que-le-perimetre']
 
 for nom, m in MODELES.items():
     with open(f'{DOSSIER}/{nom}.json', 'w') as fh:
