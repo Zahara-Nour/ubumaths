@@ -1,4 +1,5 @@
 {
+	"id": "fbe65ad1-dd95-4cf8-a5d3-d08c2546abe3",
 	"title": "Construire un parallélogramme par ses diagonales",
 	"description": "Les diagonales se coupent en leur milieu : construire les sommets manquants au compas, par le centre du parallélogramme ou du losange",
 	"grades": ["5"],

@@ -1090,3 +1090,14 @@ instruments (v2) ; 07 limité aux diagonales.
 - Base locale (copie au scratchpad : aucun id local dans les fichiers) : aperçu admin regardé pour 03 (trapèze,
   diagonales codées), 05 (carré), 06 (quadrillage), 07 (papier uni, Point · Règle · Compas). Serveur ouvert sur
   `--host 127.0.0.1` : l'extension Chrome refuse `[::1]`, et `localhost` partage les cookies de 5173.
+
+### 29 quater. Lot 14 en prod, rangement (2026-11-15)
+
+- David a lancé `create-questions --publier` depuis le worktree : 7 brouillons (`9920615f`, `95bea43b`, `b23f88b2`,
+  `a920904a`, `bd4bc904`, `fc22e0ae`, `fbe65ad1`), id présents en prod (vérifié au MCP), commités sur
+  `feat/questions-5-lot-14-rangement`.
+- Relevé `etat-prod-2026-11-15-lot14/` : 7 brouillons sans nœud ni tag, niveaux 1 à 7 ; les 7 points sur
+  « Figures planes › parallélogrammes ».
+- Migration `20261115210404_questions_5_lot14_rangement_tags` (générée, `docs/wip/questions-5/lot-14-rangement.py`,
+  gabarit lot 13) : les 7 sur « parallélogrammes », tag posé. Test d'intégration 19 verts ; sans le corps, 8 rouges,
+  7 sautés.
