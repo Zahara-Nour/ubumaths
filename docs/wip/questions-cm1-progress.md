@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15 : lot 6 écrit, essayé en local (§ 16 ter)._
+_Mis à jour le 2026-11-15, après #2701 (fichiers du lot 6 mergés)._
 
-- **État** : lots 0 à 5d publiés (5d : 3 modèles neufs + a43667e9 du CE2 ouvert au CM1). Recompte du 2026-11-15 : 94 points couverts sur 171 (§ 16).
-- **Prochaine action** : PR des fichiers du lot 6 (§ 16 ter) ; après le merge, David lance `create-questions --publier` (prod), puis migration nœud + tags.
-- **En attente de David** : rien (§ 16 bis : un lot de 10, schéma en barres au corrigé, puis 6 bis, 6 ter).
+- **État** : lots 0 à 5d publiés ; lot 6 (problèmes, 10 modèles, § 16) : fichiers mergés (#2701), rien en prod. Recompte du 2026-11-15 : 94 points couverts sur 171.
+- **Prochaine action** : relever à nouveau les niveaux (§ 16 ter), puis David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-6 --publier` (prod) ; commiter les ids, migration nœud + tags (gabarit `lot-cm1-5d-rangement.py`), page à cocher, publication. Ensuite : lot 6 bis (oubliés), lot 6 ter (algèbre).
+- **En attente de David** : la création en prod du lot 6 (`create-questions --publier`).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom), refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau (tout programme) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; prochain lot sur une branche neuve depuis `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main` ; migration du lot 6 sur une branche neuve.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1192,3 +1192,5 @@ données.
   horizontal de la page (≈ 525 px) vient du badge « Template ID » de l'admin, pas des questions.
 - Titre de 6-8 : même titre que le modèle CE2 `43b40fc7` ; **David, 2026-11-15** : renommé « Problèmes mixtes : les
   quatre opérations » (ses nombres restent petits, « jusqu'à 999 999 » aurait été faux).
+
+- #2701 mergée (CI verte), branche supprimée. Titre de 6-8 changé avant le merge.
