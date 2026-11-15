@@ -5,18 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, phase 0 du lot 12 proposée (§ 27)._
+_Mis à jour le 2026-11-15, lot 12 écrit, #2677 ouverte (§ 27 ter)._
 
 - **État** : lots 1 à 11 publiés (lot 11 = Blockly, par `blockly`, 6 modèles publiés le 2026-11-15). Classement
   refait le 2026-11-15 (§ 26) : 43 points sans modèle publié = 9 D, **34 B** (101, 104 compris, corrigé le même jour).
-- **Prochaine action** : validation de la phase 0 du lot 12 (§ 27), puis écriture (`5-reperage/`).
-- **En attente de David** : phase 0 du lot 12 et ses 2 questions (§ 27) ; 02 du lot 7 (deux cases sur deux lignes)
-  à essayer à la main.
+- **Prochaine action** : CI de #2677 verte → merge ; puis **David** lance, depuis `../ubumaths-wt-questions-5`,
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-reperage --publier` et
+  `… --dir scripts/questions/automatismes-2de-geometrie --mettre-a-jour` (niveaux 3, 4 des brouillons) ; je commite
+  les id ; migration nœud + tag ; page à cocher (11 modèles) ; publication.
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
   classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
   `pnpm migration:horodatage` ; jamais `e`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot-12` (#2677).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -842,7 +844,7 @@ placer:`, #2096) ; 047, 128 (brouillons ci-dessus, rien à écrire).
 Ordre des lots 12 à 15 validé ; `d4f38d30`, `d4d56c1b` relus et publiés **avec le lot 12** ; 101, 104 laissés au
 chantier `blockly`, après ses lots.
 
-## 27. Lot 12 « Droite graduée et repère » : phase 0 proposée (2026-11-15, NON validée)
+## 27. Lot 12 « Droite graduée et repère » : phase 0 (2026-11-15)
 
 Relevé prod : aucun modèle sur les 9 points. Nœuds (ceux des points) : « Relatifs › droite graduée » (vide) ;
 « Repérage et déplacements › coordonnées dans le plan » (les 2 brouillons, **tous deux niveau 1**) ; « Fonctions ›
@@ -881,3 +883,18 @@ généralités » (5e : 4 à 9) ; « Statistiques › courbes et repères » (1,
 - Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte connecté).
 - **Questions** : (1) tiers en v3 de 01, réponse en fraction (reco : oui, la borne les cite) ; (2) 03 et 04 sur
   « coordonnées dans le plan » (le nœud de leurs points), brouillons renumérotés 3 et 4 (reco : oui).
+
+### 27 bis. Lot 12 : validé (David, 2026-11-15, « je te suis »)
+
+Tiers en v3 de 01 (réponse en fraction) ; 03, 04 sur « coordonnées dans le plan », brouillons `d4f38d30`, `d4d56c1b`
+renumérotés 3 et 4.
+
+### 27 ter. Lot 12 écrit (2026-11-15, #2677)
+
+- Script `docs/wip/questions/lot-5-reperage.py` → `scripts/questions/5-reperage/` (9 modèles, 65 specs) ; niveaux des
+  deux brouillons dans `scripts/questions/automatismes-2de-geometrie/01`, `02`.
+- `create-questions` (simulation) tout vert ; `sonde-horloges`, `sonde-courbes` : 0 problème sur 300 tirages.
+- Après lecture des tirages : séance du cinéma (07 v2) tirée 5 ou 10 € (elle valait toujours 5 €), repère jusqu'à 80 ;
+  relevé de températures (08 v1) en `x: -1 ; 11` (la fenêtre 5-11 n'avait pas l'axe des ordonnées).
+- Base locale (copie au scratchpad : aucun id local dans les fichiers) : 9 brouillons créés ; aperçu admin regardé
+  pour 01 (unités), 08 (plante, repère de 2 en 2), 09 (ranger décroissant) — rendu juste.
