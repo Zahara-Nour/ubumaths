@@ -15,7 +15,8 @@
  * placer sur une droite graduée ou dans un repère (sans eux / points posés), éléments à
  * associer (deux colonnes à relier / la liste « élément → bonne étiquette », « 1 → étiquette »
  * quand un élément contient une courbe), texte à trous (la réserve et les trous numérotés /
- * « 1 → étiquette ; 2 → étiquette »).
+ * « 1 → étiquette ; 2 → étiquette »), robot à produire (le quadrillage et 15 cases vides /
+ * le quadrillage et « Un code juste : … »).
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
  * fonctions déclarées par le modèle de la question (`shared.genericFunctions`). L'écran
@@ -55,6 +56,8 @@ import {
 import { associerPlacedOf } from '$lib/ubumark/utils/associer';
 import { findTrousToPlace, parseTrousContent } from '$lib/ubumark/parser/trous-parser';
 import { trousPlacedOf } from '$lib/ubumark/utils/trous';
+import { findRobotsToProduce, parseRobotContent } from '$lib/ubumark/parser/robot-parser';
+import { readExpectedRobotAnswer } from '$lib/ubumark/utils/robot-answer';
 import {
 	findVariationsToFill,
 	revealVariationBody
@@ -176,6 +179,8 @@ function reponse(
 
 /** Ligne `case: N` d'un bloc (posée par le générateur, inutile à l'impression) */
 const CASE_LINE = /^\s*case\s*:/;
+/** `produire: oui` d'un robot : retirée au corrigé (le quadrillage seul) */
+const PRODUIRE_LINE = /^\s*produire\s*:/i;
 
 /**
  * Tableaux de signes à compléter (```variation à `?`) : leur corps réécrit par
@@ -506,6 +511,49 @@ function trousAFiger(
 	return { texte: lignes.join('\n'), cases };
 }
 
+/**
+ * Robots à produire (```robot, `produire: oui`) : à l'énoncé, le bloc sans `case:` (le PDF
+ * dessine le quadrillage, puis « Écris le code : » et 15 cases vides) ; au corrigé
+ * (`corrige`), le quadrillage seul (`produire:` retirée) et « Un code juste : … » dessous —
+ * le CODE de la réponse attendue, jamais la scène qui le précède. Une case par robot. Bloc en
+ * retrait ou cité, sans fin, illisible, ou réponse attendue illisible → refus.
+ */
+function robotsAFiger(
+	modele: string,
+	texte: string,
+	corrige: boolean,
+	instance: QuestionInstance
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const blocs = findRobotsToProduce(texte);
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (bloc.nested) throw refus('robot à produire en retrait ou cité');
+		if (!bloc.closed) throw refus('robot à produire sans fin de bloc');
+		const node = parseRobotContent(bloc.body.join('\n'));
+		if (node.errors.length > 0 || node.spec === null || node.caseIndex === undefined) {
+			throw refus(`robot à produire illisible (${node.errors.map((e) => e.message).join(' ; ')})`);
+		}
+		cases += 1;
+		const corps = bloc.body.filter(
+			(ligne) => !CASE_LINE.test(ligne) && !(corrige && PRODUIRE_LINE.test(ligne))
+		);
+		const suite: string[] = [];
+		if (corrige) {
+			const attendue = instance.blanks?.[node.caseIndex]?.expectedAnswer ?? '';
+			const lu = readExpectedRobotAnswer(attendue);
+			if (lu === null) throw refus('robot à produire : réponse attendue illisible');
+			suite.push('', `Un code juste : **${lu.solution}**`);
+		}
+		// Corps du bloc, sa fin (```), puis le code juste au corrigé
+		const fin = bloc.startIndex + bloc.body.length + 1;
+		lignes.splice(bloc.startIndex + 1, bloc.body.length + 1, ...corps, lignes[fin], ...suite);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
 /** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
 function choixImprime(contenu: string): string {
 	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
@@ -564,13 +612,6 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 			`${template.id} : une question à programme (tortue, calcul) ne peut pas entrer dans une série d’automatismes`
 		);
 	}
-	// Robot à produire : pas encore de rendu PDF (chantier `suite-fleches`, PR 1b) ; sans ce
-	// refus, la fiche imprimerait l'énoncé sans quadrillage
-	if (instance.blanks?.some((b) => b.construire === 'robot')) {
-		throw new Error(
-			`${template.id} : un robot à produire ne peut pas encore entrer dans une série d’automatismes (pas de rendu PDF)`
-		);
-	}
 	// Consigne du modèle : lue avec SES fonctions, posée au-dessus du groupe par `buildSerie`
 	const consigne = instance.exerciseInstruction ? enLatex(instance.exerciseInstruction) : undefined;
 	const texte = enLatex(deplierExpressions(instance.statement, instance));
@@ -626,6 +667,10 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	const trousEnonce = trousAFiger(template.id, associerEnonce.texte, false, instance);
 	const trousCorrige = trousAFiger(template.id, associerCorrige.texte, true, instance);
 
+	// Robot à produire : le quadrillage et 15 cases à l'énoncé, un code juste au corrigé
+	const robotsEnonce = robotsAFiger(template.id, trousEnonce.texte, false, instance);
+	const robotsCorrige = robotsAFiger(template.id, trousCorrige.texte, true, instance);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
 	const cases =
@@ -636,17 +681,18 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 		boitesEnonce.cases +
 		graduationsEnonce.cases +
 		associerEnonce.cases +
-		trousEnonce.cases;
+		trousEnonce.cases +
+		robotsEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = trousEnonce.texte
+	const enonce = robotsEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = trousCorrige.texte
+	const corrige = robotsCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 

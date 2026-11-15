@@ -8,9 +8,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2672._
+_Mis à jour le 2026-11-15, PR 1b : findings corrigés, PR à ouvrir (après #2672)._
 
-- **État** : phase 0 validée (Q1-Q8 selon les recos) ; PR 1a mergée (#2672) : bloc ```robot en question, moteur, parseur, juge, câblage, sans écran ni PDF · **Prochaine action** : PR 1b, l'écran — carte du geste (réserve de cartes, bande « Mon code », toucher ou glisser comme `RangerPlacer`, « avance de » + chiffre 1-9), quadrillage dessiné (affichage et question), corrigé dessiné (chemin de l'élève vert / rouge, code juste en pointillés), PDF (quadrillage + 15 cases), fiche du catalogue ; puis lot 2 (deux modèles CE1 « produire ») · **En attente de David** : rien · **Pièges en cours** : la copie corrigée reçoit `expected` = `<scène> \| <code>` complet (passer par `readExpectedRobotAnswer().solution`, asserter le TEXTE montré) ; série d'automatismes refuse le robot tant qu'il n'a pas de PDF (lever ce refus en 1b) ; zsh ne découpe pas une variable (`F=(…)`, `"${F[@]}"`) ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-1b`)
+- **État** : phase 0 validée (Q1-Q8) ; PR 1a mergée (#2672) ; PR 1b sur `feat/suite-fleches-1b` : écran à cartes, corrigé, PDF, série d'automatismes, fiche du catalogue ; `origin/main` fusionnée ; findings 1-5 et 7 de la revue corrigés (6 écarté : flash verrouillé) · **Prochaine action** : PR 1b ouverte → CI → merge ; puis lot 2 (deux modèles CE1 « produire » : flèches, avance-pivote ; brouillons en prod, nœud + tag CE1-080) · **En attente de David** : rien · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` : tout affichage passe par `readExpectedRobotAnswer().solution` ; zsh ne découpe pas une variable (`F=(…)`, `"${F[@]}"`) ; `/aide-ecriture` refuse le compte local `teacher@local.test` (403) : captures depuis vitest navigateur ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-1b`)
 
 ## Phase 0 — comportements (à valider)
 
@@ -130,3 +130,31 @@ sans règle d'accès : personne ne lit rien de plus.
   `expected` = la chaîne complète `<scène> | <code>` : le rendu passe par `readExpectedRobotAnswer().solution`,
   test qui asserte le TEXTE montré.
 - 2026-11-15 : #2672 mergée (PR 1a), CI verte du premier coup.
+- 2026-11-15 : PR 1b écrite. Écran : `RobotCode.svelte` (réserve, bande « Mon code », glisser = insérer
+  avant / après la carte sous le doigt, « avance de » sans chiffre = réponse vide mais carte gardée :
+  `dernierGeste` non réactif relu par le dérivé modifiable `cartes`), `RobotQuadrillage.svelte`
+  (pointillés du code juste PAR-DESSUS le trajet de l'élève, sinon cachés là où ils se recouvrent),
+  `RobotCorrige.svelte`. PDF vérifié à l'œil (compilation typst.ts réelle) : quadrillage, case verte à
+  bord épais, 15 cases (8 par rangée en flèches, 3 larges en avance-pivote) ; les flèches ← ↑ → ↓
+  existent dans Shantell Sans et Chiphre Math (cmap lue). Série d'automatismes : refus levé,
+  `robotsAFiger` (énoncé sans `case:`, corrigé sans `produire:` + « Un code juste : **…** »).
+- 2026-11-15 : revue de la PR 1b (`code-reviewer`, Sonnet) : aucun bloquant ; `robotsAFiger`, Typst, corrigé
+  (code seul), glisser (index, `deplacer`) vérifiés justes. À corriger : (1) `cartes` gardées par
+  `dernierGeste` quand la case repasse à `''` sans geste (même source, autre question) → remettre à
+  zéro ; (2) insérer / déplacer impossible au clavier → « déplacer à gauche / à droite » sur la carte
+  choisie ou Alt + flèches ; (3) focus perdu (15e carte grise le bouton, rangée de chiffres démontée,
+  ouverte sans focus) ; (4) `swallowClick` remis à faux par `setTimeout` : le remettre au `pointerdown`
+  seulement ; (5) `onPointerCancel` sans filtre `pointerId` ; (6) fantôme `position: fixed` décalé sous
+  un ancêtre `transform` (carte flash) : à regarder ; (7) tests manquants : deux robots / robot après
+  trous dans une série, glisser dans la bande, glisser vers la réserve, chiffres après retrait.
+- 2026-11-15 : findings de la revue 1b corrigés. (1) `FillBlanksInput` : `{#key blanks}` dans
+  `{#key node.source}` — même bloc, question suivante → le bloc repart de la case (le `dernierGeste`
+  d'un « avance de » sans chiffre, réponse `''`, ne survit plus) ; (2) Alt + ← → déplace la carte
+  posée (`aria-keyshortcuts`) ; (3) focus suivi : carte déplacée, voisine d'une carte retirée, réserve
+  quand la bande se vide, carte posée à la 15e, 1er chiffre (ou le posé) à l'ouverture, carte à la
+  fermeture (chiffre, Échap) ; (4) `swallowClick` remis à faux au `pointerdown` seulement, un clic
+  clavier (`detail === 0`) jamais avalé ; (5) `pointercancel` filtré par `pointerId` ; (6) écarté : en
+  flash la case est verrouillée (aucun glisser), seul `fadeIn` 0,3 s transforme la carte ; (7) tests :
+  glisser dans la bande et vers la réserve, rangée de chiffres fermée à l'effacement, clavier, focus,
+  autre question (FillBlanksInput), deux robots / robot après des trous dans une série. 6 tests
+  vérifiés rouges sans les correctifs.

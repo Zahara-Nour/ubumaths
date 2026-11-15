@@ -86,6 +86,7 @@
 	import AssocierPlacer from '$lib/components/markdown/nodes/AssocierPlacer.svelte';
 	import TrousEtiquettes from '$lib/components/markdown/nodes/TrousEtiquettes.svelte';
 	import TortueProgramme from '$lib/components/markdown/nodes/TortueProgramme.svelte';
+	import RobotCode from '$lib/components/markdown/nodes/RobotCode.svelte';
 	import CalculProgramme from '$lib/components/markdown/nodes/CalculProgramme.svelte';
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
@@ -247,6 +248,7 @@
 		if (node.type === 'trous') return node.caseIndex !== undefined;
 		if (node.type === 'tortue') return node.caseIndex !== undefined;
 		if (node.type === 'calcul') return node.caseIndex !== undefined;
+		if (node.type === 'robot') return node.caseIndex !== undefined;
 		if (node.type === 'variation-table') return isTableToFill(node);
 		return false;
 	}
@@ -547,7 +549,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-calcul-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-calcul-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -1216,6 +1218,41 @@
 									onChange: (value) => handleInputChange(caseIndex, value)
 								}}
 							/>
+						{/key}
+					</div>
+				{/if}
+			{:else if node.type === 'robot' && node.caseIndex !== undefined && node.spec !== null}
+				<!-- Robot à produire : l'élève compose un code avec des cartes, son code en texte est la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const expected = blanks[caseIndex]?.expectedAnswer}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le trajet d'un code juste et ce code -->
+					<BuildAnswer
+						kind="robot"
+						source={node.source}
+						answer={null}
+						status="solution"
+						expected={expected === undefined ? undefined : [expected]}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<!-- Autre question (même bloc compris), autre bloc : les cartes repartent de la case.
+						     `blanks` : un « avance de » sans chiffre donne '' — la case vide de la question
+						     suivante ne doit pas garder ses cartes -->
+						{#key node.source}
+							{#key blanks}
+								<RobotCode
+									{node}
+									expected={flashMode ? undefined : expected}
+									answer={{
+										value: state?.value ?? '',
+										isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+										disabled: flashMode || effectiveDisabled,
+										onChange: (value) => handleInputChange(caseIndex, value)
+									}}
+								/>
+							{/key}
 						{/key}
 					</div>
 				{/if}

@@ -33,6 +33,7 @@ export type CatalogNodeType =
 	| 'trous'
 	| 'tortue'
 	| 'calcul'
+	| 'robot'
 	| 'collection'
 	| 'monnaie'
 	| 'schema-barres';
