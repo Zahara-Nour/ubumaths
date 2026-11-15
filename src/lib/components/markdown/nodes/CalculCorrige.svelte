@@ -75,7 +75,10 @@
 	 */
 	let messageEleve = $derived.by((): string | null => {
 		if (answer === null) return null;
-		if (reference !== null) return jugerProgrammeCalcul(answer, reference, essais).message ?? null;
+		if (reference !== null) {
+			const message = jugerProgrammeCalcul(answer, reference, essais).message;
+			if (message !== undefined) return message;
+		}
 		const sorties = lireProgrammeCalcul(answer, essais);
 		if (!sorties.ok) return sorties.message;
 		return sorties.sorties.every((s) => s.length === 0) ? RIEN_AFFICHE : null;

@@ -90,6 +90,8 @@ export function lireProgrammeCalcul(texte: string, essais: readonly number[]): P
  * Le programme affiche-t-il des choses différentes selon le nombre choisi ? Mesuré sur les
  * nombres témoins (`ESSAIS_PAR_DEFAUT`) ; un témoin où le programme s'arrête sur une erreur est
  * ignoré. null : programme illisible, ou moins de deux témoins utilisables (on ne sait pas).
+ * Témoins fixes et connus : un polynôme construit pour s'annuler sur chacun tromperait la mesure
+ * (cas d'école, pas d'élève).
  */
 export function dependDuNombre(texte: string): boolean | null {
 	const lu = texteVersEtatCalcul(texte);

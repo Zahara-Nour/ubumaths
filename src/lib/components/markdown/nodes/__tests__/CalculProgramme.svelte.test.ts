@@ -392,6 +392,14 @@ describe('programme de calcul : le corrigé', () => {
 		);
 	});
 
+	it('réponse vide, référence connue : « Ton programme n’affiche rien. » reste', async () => {
+		const screen = await render(CalculCorrige, {
+			target: mainElement(),
+			props: { node: node(`attendu: ${ATTENDU}`, 'essais: 1'), answer: '', correct: false }
+		});
+		expect(screen.container.textContent).toContain('Ton programme n’affiche rien.');
+	});
+
 	it('sans réponse : le programme de référence et ce qu’il affiche', async () => {
 		const screen = await render(CalculCorrige, {
 			target: mainElement(),
