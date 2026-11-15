@@ -5,19 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2692 (lot 13 rangé)._
+_Mis à jour le 2026-11-15, après la publication du lot 13._
 
-- **État** : lots 1 à 12 publiés ; lot 13 (§ 28 quater) : 9 brouillons rangés et tagués en prod, page à cocher
-  publiée (https://claude.ai/artifact/BsSmAMHX3m5At63YkCSRuh). Restent : lot 14 (7), lot 15 (6), 9 D, 101 et 104
-  (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : David relit la page (08, 09 « Tracer » à jouer dans l'aperçu) → compter les verdicts →
-  simulation `publier-lot.ts --dir scripts/questions/5-triangles` → David publie ; puis phase 0 du lot 14.
-- **En attente de David** : verdicts du lot 13 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main
-  (aperçu de `ef08a256`).
+- **État** : lots 1 à 13 publiés. Restent : lot 14 (7 : 067, 068, 069, 070, 071, 072, 133), lot 15 (6 : 054, 055,
+  115, 144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
+- **Prochaine action** : phase 0 du lot 14 (relevé prod au MCP, tableau des modèles, questions) → attendre la
+  validation de David.
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
 - **Pièges en cours** : lancer `create-questions --publier` depuis le worktree du chantier (`pwd`) ; worktree neuf :
   copier `supabase/.temp/` du dépôt principal sinon `db:migrate` « Cannot find project ref » ; base locale = contenu
   de la prod (vrais id) ; `--publier` en LOCAL écrit les id locaux → copie ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5` (détaché sur `main`, à retirer à la clôture du lot 13).
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -1019,3 +1017,8 @@ triangle obtus en v2 de 04 et 08.
   posé, `updated_at` préservé.
 - Page à cocher publiée (https://claude.ai/artifact/BsSmAMHX3m5At63YkCSRuh, capacité `db`, collection `verdicts`
   vide au départ) ; 08, 09 (`figure-a-completer`) non dessinés par la page : à jouer dans l'aperçu.
+
+### Lot 13 : publication (2026-11-15)
+
+- Page à cocher : **9 verdicts sur 9 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
+  `publier-lot.ts` : 9 brouillons passent. David a publié le lot (`5-triangles`) : 9 modèles `published`, vérifié au MCP.
