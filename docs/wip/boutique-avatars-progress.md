@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, PR 3 en préparation (pas encore de PR)._
+_Mis à jour le 2026-11-15, PR 3 en préparation (pas encore de PR)._
 
-- **État** : branche `feat/boutique-avatars-pr3` poussée : migration `20261112044727_avatar_catalog_premier_lot.sql` (21 avatars, données seules, jouée en LOCAL seulement), `pnpm avatars:convertir <dossier>` (→ `static/avatars/<clé>.webp`, 512 px), test d'intégration `avatar-catalog-images.test.ts` rouge tant qu'une image manque.
+- **État** : branche `feat/boutique-avatars-pr3` poussée : migration `20261112044727_avatar_catalog_premier_lot.sql` (21 avatars, données seules, jouée en LOCAL seulement), `pnpm avatars:convertir <dossier>` (→ `static/avatars/<clé>.webp`, 512 px), test d'intégration `avatar-catalog-images.test.ts` rouge tant qu'une image manque. Prompts v5 retenus ; **1/21 image** : `green_candle` validée par David (2026-11-15), référence de style des autres.
 - **Prochaine action** : convertir les images de David, test vert, `check:incremental`, PR, CI, merge, puis `db:migrate` (additive, question d'accès inchangée) depuis la branche mergée.
-- **En attente de David** : les 21 images, nommées selon `boutique-avatars-prompts.md` § Noms des fichiers ; et la validation des noms/sujets du lot (le fichier dit encore « à valider »).
+- **En attente de David** : les 20 images restantes (prompts v5, chandelle jointe en référence), nommées par leur clé.
 - **Pièges en cours** : ne PAS merger avant les images (image cassée partout où l'avatar est porté). Marché ouvert à 37/81 élèves → boutique aussi dans « Mon profil ». Navigateur : `127.0.0.1:<port>` (`--host 127.0.0.1`). Runs CI fantômes possibles.
 - **Worktree / branche** : `../ubumaths-wt-boutique-avatars` · `feat/boutique-avatars-pr3`
 
