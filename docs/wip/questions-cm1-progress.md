@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02 : lot 5d écrit (4 modèles, § 15 ter), commité sur sa branche, PR pas encore ouverte._
+_Mis à jour le 2026-11-15, après #2694 (fichiers du lot 5d mergés)._
 
-- **État** : lots 0 à 5a publiés. **Lot 5b** (10 brouillons) rangé et tagué en prod, page à cocher publiée (§ 14 nonies), `verdicts` vide à la reprise du 2026-11-02. **Lot 5d** (périmètres 073-075, 4 modèles) : phase 0 validée (§ 15 bis), fichiers écrits et vérifiés (specs, sonde, simulation prod 4/4, base locale, aperçu 390 px).
-- **Prochaine action** : (a) lot 5d : ouvrir la PR des fichiers (revue : aucune, contenu ; `Doc-inchangée: contenu` est dans le commit), CI verte, merge ; puis David lance `create-questions --dir scripts/questions/cm1-5d --publier` ; relever les `id`, migration nœud + tag (nœud = notion « Périmètres »). (b) lot 5b : lire `verdicts` de https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK et compter (10) ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`.
-- **En attente de David** : la relecture de la page du lot 5b.
+- **État** : lots 0 à 5a publiés. **Lot 5b** (10 brouillons) rangé et tagué en prod, page à cocher publiée (§ 14 nonies), `verdicts` encore vide le 2026-11-15. **Lot 5d** (périmètres 073-075, 4 modèles) : fichiers mergés (#2694), pas encore créés en prod.
+- **Prochaine action** : (a) lot 5d : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-5d --publier` ; relever les `id`, migration nœud + tag (nœud = notion « Périmètres ») sur `feat/questions-cm1-lot5d-rangement`. (b) lot 5b : lire `verdicts` de https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK et compter (10) ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`.
+- **En attente de David** : `create-questions --publier` du lot 5d ; la relecture de la page du lot 5b.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d` (fichiers du lot 5d commités et poussés).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d-rangement` (depuis `origin/main`, pour la migration du lot 5d).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
