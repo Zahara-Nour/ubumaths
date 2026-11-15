@@ -8,9 +8,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, phase 0 écrite._
+_Mis à jour le 2026-11-15, PR 1a en cours._
 
-- **État** : code lu, phase 0 écrite (§ Phase 0), rien de codé · **Prochaine action** : attendre les réponses de David aux questions Q1-Q8 de la phase 0, puis tests rouges du lot 1 · **En attente de David** : Q1-Q8 (§ Phase 0) · **Pièges en cours** : `StructureField` ne convient pas (glisser des termes d'une expression mathAST, pas des cartes) ; code en dehors de `blockly` (worktree `ubumaths-wt-blockly`) ; dans `tortue/`, `index.ts` importe Blockly (ne rien importer de là) · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches`)
+- **État** : phase 0 validée (Q1-Q8 selon les recos) ; PR 1a (bloc `robot en question : moteur, parseur, juge, câblage, sans écran) codée, tests verts, docs à jour, revue en cours · **Prochaine action** : findings de revue → PR 1a ouverte, CI, merge ; puis PR 1b (écran : carte du geste, corrigé, PDF, catalogue) · **En attente de David** : rien · **Pièges en cours** : sans écran, un bloc `robot ne s'affiche pas et le PDF n'imprime rien jusqu'à la PR 1b ; zsh ne découpe pas une variable (tableau `F=(…)` puis `"${F[@]}"`) ; code en dehors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches`)
 
 ## Phase 0 — comportements (à valider)
 
@@ -118,3 +118,7 @@ sans règle d'accès : personne ne lit rien de plus.
   `docs/wip/triangle-cote-cm-progress.md`, archivé le 2026-11-15 sous `docs/archive/wip/`.
 - 2026-11-15 : code lu (modèles robot CP / CE1, `RangerPlacer`, `StructureField`, tortue) ; phase 0 écrite, en
   attente de David.
+- 2026-11-15 : David : « je suis tes recos » (Q1-Q8). Découpage du lot 1, calqué sur la tortue : PR 1a = bloc
+  ```robot en question sans écran (`robot-moteur.ts`, `robot-answer.ts`, `robot-parser.ts`, câblage aux endroits
+  de ``calcul, tirage refait si la scène est impossible : `robotSceneImpossible`) ; PR 1b = écran (carte du geste,
+  corrigé, PDF, catalogue). Renvoi de `construction-triangle-cm.test.ts` corrigé (journal archivé).
