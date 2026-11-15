@@ -1,4 +1,5 @@
 {
+	"id": "94d75415-2ff0-4d5d-8fdc-e80929b43198",
 	"title": "Programmer un chemin sur quadrillage",
 	"description": "Faire tracer à la tortue un chemin de 3 à 6 traits montré sur le quadrillage, sans boucle.",
 	"grades": ["6"],
