@@ -26,7 +26,8 @@
 --
 -- Garde : chaque modèle doit être encore SANS nœud et SANS aucun tag (relevé du 2026-11-15),
 -- sinon un rangement fait depuis à la main serait écrasé. Nœud désigné par son chemin, résolu
--- STRICTEMENT, et qui doit être celui du point (cherché dans le niveau du modèle) ; la notion
+-- STRICTEMENT, et qui doit être celui du point (cherché dans le niveau écrit pour chaque ligne du
+-- lot, relevé égal à `grades` du modèle) ; la notion
 -- visée ne doit pas avoir gagné de sous-notion depuis le relevé.
 --
 -- Données d'élèves : aucune (modèles neufs, en brouillon).
