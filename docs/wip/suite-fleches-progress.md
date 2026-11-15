@@ -8,9 +8,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, PR 1b : findings corrigés, PR à ouvrir (après #2672)._
+_Mis à jour le 2026-11-15, après #2680._
 
-- **État** : phase 0 validée (Q1-Q8) ; PR 1a mergée (#2672) ; PR 1b sur `feat/suite-fleches-1b` : écran à cartes, corrigé, PDF, série d'automatismes, fiche du catalogue ; `origin/main` fusionnée ; findings 1-5 et 7 de la revue corrigés (6 écarté : flash verrouillé) · **Prochaine action** : PR 1b ouverte → CI → merge ; puis lot 2 (deux modèles CE1 « produire » : flèches, avance-pivote ; brouillons en prod, nœud + tag CE1-080) · **En attente de David** : rien · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` : tout affichage passe par `readExpectedRobotAnswer().solution` ; zsh ne découpe pas une variable (`F=(…)`, `"${F[@]}"`) ; `/aide-ecriture` refuse le compte local `teacher@local.test` (403) : captures depuis vitest navigateur ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-1b`)
+- **État** : phase 0 validée (Q1-Q8) ; lot 1 livré : PR 1a (#2672, bloc + juge) et PR 1b (#2680, écran à cartes, clavier, corrigé, PDF, série d'automatismes, fiche du catalogue) mergées · **Prochaine action** : lot 2 sur `feat/suite-fleches-2` : deux modèles CE1 « produire » (flèches, avance-pivote) par la skill `couvrir-niveau` ; brouillons en prod (`create-questions --publier` sur demande explicite de David), migration nœud + tag CE1-080 (question d'accès : modèles en brouillon, admin seul) · **En attente de David** : rien · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` : tout affichage passe par `readExpectedRobotAnswer().solution` ; zsh ne découpe pas une variable (`F=(…)`, `"${F[@]}"`) ; `/aide-ecriture` refuse le compte local `teacher@local.test` (403) : captures depuis vitest navigateur ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-2`)
 
 ## Phase 0 — comportements (à valider)
 
@@ -158,3 +158,5 @@ sans règle d'accès : personne ne lit rien de plus.
   glisser dans la bande et vers la réserve, rangée de chiffres fermée à l'effacement, clavier, focus,
   autre question (FillBlanksInput), deux robots / robot après des trous dans une série. 6 tests
   vérifiés rouges sans les correctifs.
+- 2026-11-15 : PR 1b mergée (#2680), CI verte (après refusion de `origin/main`, conflit d'en-tête de
+  `docs/systeme/questions.md` : les deux ajouts gardés). Lot 1 clos ; lot 2 sur `feat/suite-fleches-2`.
