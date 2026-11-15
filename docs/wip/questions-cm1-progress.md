@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2694 (fichiers du lot 5d mergés)._
+_Mis à jour le 2026-11-15 : migration nœud + tags du lot 5d écrite (§ 15 quinquies), PR à ouvrir._
 
-- **État** : lots 0 à 5a publiés. **Lot 5b** (10 brouillons) rangé et tagué en prod, page à cocher publiée (§ 14 nonies), `verdicts` encore vide le 2026-11-15. **Lot 5d** (périmètres 073-075) : fichiers mergés (#2694) ; création refusée (champ `theme`), corrigée, 5d-1 abandonné au profit du modèle CE2 a43667e9 (§ 15 quater) → 3 modèles neufs.
-- **Prochaine action** : (a) lot 5d : PR du correctif, merge ; David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-5d --publier` ; relever les `id`, migration nœud + tag (nœud = notion « Périmètres ») des 3 neufs, plus niveau `CM1` et tag CM1-073 sur a43667e9 sur `feat/questions-cm1-lot5d-rangement`. (b) lot 5b : lire `verdicts` de https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK et compter (10) ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`.
-- **En attente de David** : `create-questions --publier` du lot 5d ; la relecture de la page du lot 5b.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d-rangement` (depuis `origin/main`, pour la migration du lot 5d).
+- **État** : lots 0 à 5a publiés. **Lot 5b** (10 brouillons) rangé et tagué en prod, page à cocher publiée (§ 14 nonies), `verdicts` vide le 2026-11-15. **Lot 5d** : 3 brouillons créés en prod (3a6017c8, 396c543f, d6633d24) ; 5d-1 remplacé par le modèle CE2 a43667e9 (§ 15 quater) ; migration écrite, testée (20 verts).
+- **Prochaine action** : (a) lot 5d : PR de la migration, `security-auditor`, CI, `check:migrations --pr <n>`, merge ; David lance `pnpm db:migrate` ; vérifier au MCP ; puis page à cocher des 3 brouillons. (b) lot 5b : lire `verdicts` de https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK et compter (10) ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`.
+- **En attente de David** : `db:migrate` après le merge ; la relecture de la page du lot 5b.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom), refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau (tout programme) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d-tags` (migration du lot 5d).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1086,3 +1086,14 @@ Périmètre d'un polygone`, niveaux 1 à 4 (catégorie neuve).
   tagué CE2-042, mêmes trois variations). **David, 2026-11-15 : réutiliser le modèle CE2** → 5d-1 n'est pas créé ;
   a43667e9 reçoit le niveau `CM1` et le tag CM1-073. Le lot 5d compte donc **3 modèles neufs** (5d-2, 5d-3, 5d-4).
 - Simulation prod : 3/3 « à créer ».
+
+### 15 quinquies. Lot 5d — création et migration nœud + tags (2026-11-15)
+
+- `create-questions --publier` (David, 2026-11-15) : 3 brouillons, 3a6017c8 (5d-2, CM1-074), 396c543f (5d-3,
+  CM1-075), d6633d24 (5d-4, CM1-075) ; ids écrits dans les fichiers.
+- **Accès** (David, 2026-11-15, « je suis tes recos ») : a43667e9 reçoit le niveau CM1 → les élèves de CM1 le voient
+  tout de suite (déjà relu et publié pour le CE2, même point) ; les 3 neufs restent des brouillons.
+- Migration `20261115192344_questions_cm1_lot5d_rangement_tags`, générée par `lot-cm1-5d-rangement.py` (gabarit :
+  `questions-5/lot-13-rangement.py`, qui gère niveaux et tags gardés), depuis l'instantané
+  `etat-prod-2026-11-15-cm1-5d/` (`releve-prod-cm1.ts`, aligné : sans quadruplet, CE2 ajouté aux points). Test
+  `questions-cm1-lot5d-rangement-tags.test.ts` : 20 verts, rouges avec une migration vide.

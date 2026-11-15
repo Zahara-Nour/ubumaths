@@ -1,4 +1,5 @@
 {
+	"id": "3a6017c8-133c-4c1c-a0b9-d49e4cb5aeb0",
 	"title": "Calculer le périmètre d'un polygone",
 	"description": "Longueurs écrites sur les côtés (rectangle, trapèze, maison), cm et mm mêlés ; compter sur un quadrillage ; côtés posés bout à bout sur la règle",
 	"grades": ["CM1"],
