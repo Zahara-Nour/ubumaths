@@ -451,6 +451,13 @@ worktree retiré.
 - Vérifié : simulation 2/2 importable ; une spec inversée → modèle refusé (01 et 02) ;
   `answer-complexity-corpus` et `student-answer-safety.render` verts. Pas joué en base locale.
 - **#2685 mergée le 2026-11-15** (CI verte, contenu seul, pas de revue).
+- **Création en prod** (2026-11-15, David, depuis le dépôt principal) : brouillon `42881663`, id
+  reporté sur la branche (copie dans le scratchpad) ; relevé MCP : en {CM2}, sans nœud ni tag ; nœud
+  visé = sous-notion (branch › notion › subnotion), sans enfant.
+- **Migration** `20261115165220` (1 modèle sur « Algèbre › Premiers pas algébriques › programmes de
+  calcul », un tag), calquée sur `20261115072353` ; test d'intégration 9/9, rouge sans la migration
+  (5/9) ; garde « tout ou rien » sans objet à un modèle (test retiré), remplacée par « sous-notion
+  archivée → échec ».
 - **Création en prod** (2026-11-15, David) : 2 brouillons, ids commités aussitôt
   (01 → `94d75415`, 02 → `befab91c`). Relevé MCP : en {6}, sans nœud ni tag ; « Préalgorithmique »
   sans sous-notion.
