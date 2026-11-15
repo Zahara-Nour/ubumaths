@@ -823,7 +823,7 @@ MX_PARTAGE = probleme(
      ' que toute la somme partagée.'])
 
 MODELES['08-mixtes-deux-ou-trois-etapes'] = modele(
-    'Problèmes mixtes en deux ou trois étapes',
+    'Problèmes mixtes : les quatre opérations',
     'Les quatre opérations enchaînées : 12 tables de 8 et 9 tables de 6 ; 4 cahiers à 2,35 € sur'
     ' un billet de 20 € ; un cinéma, ses places réservées et vendues ; un partage puis une'
     ' addition', 11,

@@ -1190,5 +1190,5 @@ données.
 - Base locale (copie du dossier, pour ne pas écrire d'id local dans les fichiers ; `DOTENV_CONFIG_PATH=.env.local`) :
   10 brouillons, aperçu admin à 390 px, réponse fausse puis corrigé : rendu correct, schémas lisibles. Le défilement
   horizontal de la page (≈ 525 px) vient du badge « Template ID » de l'admin, pas des questions.
-- À trancher : 6-8 porte le même titre que le modèle CE2 `43b40fc7` (« Problèmes mixtes en deux ou trois étapes »),
-  niveaux différents (11 / 9) : la création n'est pas bloquée.
+- Titre de 6-8 : même titre que le modèle CE2 `43b40fc7` ; **David, 2026-11-15** : renommé « Problèmes mixtes : les
+  quatre opérations » (ses nombres restent petits, « jusqu'à 999 999 » aurait été faux).
