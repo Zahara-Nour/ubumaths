@@ -161,6 +161,9 @@ export {
 	isCalculBlockStart
 } from './calcul-parser';
 
+// Bloc ```robot
+export { parseRobot, parseRobotContent, findRobotBlocks, isRobotBlockStart } from './robot-parser';
+
 // Bloc ```partage
 export {
 	parsePartage,

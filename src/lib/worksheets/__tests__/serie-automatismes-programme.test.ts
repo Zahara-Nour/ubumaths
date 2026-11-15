@@ -34,3 +34,20 @@ describe('buildSerie — question à programme', () => {
 		);
 	});
 });
+
+describe('buildSerie — robot à produire', () => {
+	it('refusé tant qu’il n’a pas de rendu PDF', () => {
+		const modeles = new Map([
+			[
+				'robot',
+				modele(
+					'robot',
+					'Code.\n\n```robot\nquadrillage: 8 x 5\ndépart: 2, 1\narrivée: 6, 4\nproduire: oui\n```'
+				)
+			]
+		]);
+		expect(() => buildSerie(modeles, [{ templateId: 'robot', seed: 1 }])).toThrow(
+			'robot : un robot à produire ne peut pas encore entrer dans une série d’automatismes (pas de rendu PDF)'
+		);
+	});
+});

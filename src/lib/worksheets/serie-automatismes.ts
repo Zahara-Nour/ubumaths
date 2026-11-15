@@ -564,6 +564,13 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 			`${template.id} : une question à programme (tortue, calcul) ne peut pas entrer dans une série d’automatismes`
 		);
 	}
+	// Robot à produire : pas encore de rendu PDF (chantier `suite-fleches`, PR 1b) ; sans ce
+	// refus, la fiche imprimerait l'énoncé sans quadrillage
+	if (instance.blanks?.some((b) => b.construire === 'robot')) {
+		throw new Error(
+			`${template.id} : un robot à produire ne peut pas encore entrer dans une série d’automatismes (pas de rendu PDF)`
+		);
+	}
 	// Consigne du modèle : lue avec SES fonctions, posée au-dessus du groupe par `buildSerie`
 	const consigne = instance.exerciseInstruction ? enLatex(instance.exerciseInstruction) : undefined;
 	const texte = enLatex(deplierExpressions(instance.statement, instance));
