@@ -1,4 +1,5 @@
 {
+	"id": "559aa5fc-10ec-4b7e-bd49-c054bb242b34",
 	"title": "Problèmes parties-tout : décimaux, fractions",
 	"description": "Le tout ou une partie avec des décimaux (1,25 km + 2,48 km + 1,36 km ; un prix à virgule manquant) ou des fractions de même dénominateur (5/12 le matin, 4/12 l'après-midi)",
 	"grades": ["CM1"],

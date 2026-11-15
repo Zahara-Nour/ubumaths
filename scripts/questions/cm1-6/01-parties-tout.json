@@ -1,4 +1,5 @@
 {
+	"id": "8a1d9a4a-cc92-4559-9a57-d1a746b5382d",
 	"title": "Problèmes parties-tout (jusqu'à 999 999)",
 	"description": "Chercher le tout (deux ou trois parties), une partie, ou l'état de départ (« il en a vendu 125 400, il lui en reste 86 350 ») avec des nombres jusqu'à 999 999 ; schéma en barres dans le corrigé",
 	"grades": ["CM1"],

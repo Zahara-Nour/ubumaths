@@ -1,4 +1,5 @@
 {
+	"id": "b3771f79-7df9-4a4a-b03b-5d8ae11ba6d1",
 	"title": "Problèmes de partage avec un reste",
 	"description": "Combien de boîtes pleines (le quotient), combien de boîtes pour tout ranger (le quotient + 1), combien en reste-t-il (le reste) : 59 pots par cartons de 8, 45 enfants en barques de 6",
 	"grades": ["CM1"],

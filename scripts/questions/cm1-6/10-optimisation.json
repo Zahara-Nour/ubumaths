@@ -1,4 +1,5 @@
 {
+	"id": "03bd034d-5c4e-49d4-8da4-5e621089c12b",
 	"title": "Problèmes d'optimisation",
 	"description": "Le plus de bracelets possible avec des perles de deux couleurs (le plus petit des deux quotients) ; payer une somme exacte avec le moins de pièces de 2 € et de 5 €",
 	"grades": ["CM1"],

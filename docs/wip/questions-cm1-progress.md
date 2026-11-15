@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2701 (fichiers du lot 6 mergés)._
+_Mis à jour le 2026-11-15 : migration nœud + tags du lot 6 écrite (§ 16 quater), PR en cours._
 
-- **État** : lots 0 à 5d publiés ; lot 6 (problèmes, 10 modèles, § 16) : fichiers mergés (#2701), rien en prod. Recompte du 2026-11-15 : 94 points couverts sur 171.
-- **Prochaine action** : relever à nouveau les niveaux (§ 16 ter), puis David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-6 --publier` (prod) ; commiter les ids, migration nœud + tags (gabarit `lot-cm1-5d-rangement.py`), page à cocher, publication. Ensuite : lot 6 bis (oubliés), lot 6 ter (algèbre).
-- **En attente de David** : la création en prod du lot 6 (`create-questions --publier`).
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom), refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau (tout programme) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main` ; migration du lot 6 sur une branche neuve.
+- **État** : lots 0 à 5d publiés ; lot 6 (problèmes, 10 modèles) : brouillons créés en prod par David le 2026-11-15, ids commités ; migration `20261115213402_questions_cm1_lot6_rangement_tags` (nœud + tag des 10) sur la branche, tests verts. Recompte : 94 points couverts sur 171.
+- **Prochaine action** : merger la PR de la migration ; David lance `pnpm db:migrate` ; puis page à cocher des 10 brouillons, relecture, publication. Ensuite : lot 6 bis (oubliés), lot 6 ter (algèbre).
+- **En attente de David** : `pnpm db:migrate` après le merge.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : à restaurer (`git restore`, David) après le merge.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot6-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1194,3 +1194,16 @@ données.
   quatre opérations » (ses nombres restent petits, « jusqu'à 999 999 » aurait été faux).
 
 - #2701 mergée (CI verte), branche supprimée. Titre de 6-8 changé avant le merge.
+
+### 16 quater. Lot 6 — création en prod et rangement (2026-11-15)
+
+- David a lancé `create-questions --dir scripts/questions/cm1-6 --publier` depuis le dépôt principal : 10 brouillons
+  CM1, sans nœud ni tag ; ids copiés dans le worktree et commités. Niveaux (`level`) revérifiés au MCP : 23, 24
+  (parties-tout, en place ≤ 22), 4, 5 (comparaison, ≤ 3), 10, 11 (en deux étapes, ≤ 9), 12, 13 (multiplicatifs, ≤ 11),
+  2 (produits cartésiens, 1), 1 (optimisation, vide) : aucun chevauchement.
+- Relevé `etat-prod-2026-11-15-cm1-6/` (`releve-prod-cm1.ts`), script `lot-cm1-6-rangement.py` (gabarit 5d) →
+  migration `20261115213402_questions_cm1_lot6_rangement_tags` + fixture : 10 rangés sur la sous-notion de leur point,
+  10 tags posés (CM1-054 ×2, 055, 056 ×2, 057, 058, 059, 060, 134), aucun niveau ni statut changé.
+- Test `questions-cm1-lot6-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs + suite
+  principale sautée. Le cas « tag posé à la main sur un brouillon » du gabarit est impossible (trigger : pas de tag
+  sans nœud) : remplacé par « rangé ET tagué à la main ».
