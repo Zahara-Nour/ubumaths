@@ -64,6 +64,12 @@ export const ERROR_KIND_ORDER: readonly ErrorKind[] = [
 	'square-extra'
 ];
 
+/**
+ * Longueur au-delà de laquelle une réponse n'est pas lue : un nombre d'école
+ * tient en bien moins, et la lecture d'une saisie arbitraire reste bornée
+ */
+const MAX_GUESSED_LENGTH = 64;
+
 // Functions
 
 /** Étiquette d'un type deviné : la puissance de 10 dit son facteur (« × 100 ») */
@@ -86,6 +92,7 @@ function isPlainMathBlank(blank: InstanceBlank | undefined): blank is InstanceBl
 
 /** Le type d'une case fausse, `null` si non reconnu (ou si un moteur lève) */
 function guessOf(answer: string, blank: InstanceBlank): ErrorGuess | null {
+	if (answer.length > MAX_GUESSED_LENGTH) return null;
 	try {
 		return guessErrorKind(answer, blank.expectedAnswerLatex ?? '');
 	} catch {

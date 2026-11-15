@@ -131,6 +131,17 @@ describe('answerErrorKinds', () => {
 		expect(result).toEqual({ kinds: [], unrecognized: 1 });
 	});
 
+	it('réponse trop longue (saisie arbitraire) : jamais lue, non reconnue', () => {
+		const long = `-${'0'.repeat(80)}12`;
+		const result = answerErrorKinds(
+			instance([math('12')]),
+			verdict([{ answer: long }]),
+			[long],
+			'incorrect'
+		);
+		expect(result).toEqual({ kinds: [], unrecognized: 1 });
+	});
+
 	it('figure de travail : jamais comptée', () => {
 		const result = answerErrorKinds(
 			instance([{ type: 'graphical', expectedAnswer: '' }, math('12')]),
