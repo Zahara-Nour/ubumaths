@@ -20,7 +20,7 @@ export type ReviewSource =
 	| {
 			kind: 'deck';
 			deckId: string;
-			/** Filtre d'états FSRS (sections du Programme), ex. `learning,relearning` */
+			/** Filtre d'états FSRS (sections du Programme), ex. `relearning` ou `learning,review` */
 			states?: string;
 			/** Révision forcée : échéance ignorée */
 			all?: boolean;

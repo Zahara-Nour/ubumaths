@@ -425,6 +425,9 @@ Répétition espacée FSRS greffée sur les modèles de questions. Détail : [sr
   `source_deck_id` = copie assignée par le professeur) → `srs_deck_sections`, `srs_cards`.
 - `srs_card_stats` : état FSRS par élève et carte, calculé en TypeScript (`src/lib/srs/fsrs.ts`).
 - `srs_deck_assignments`, `srs_review_sessions`, `srs_anti_fraud_flags` ([srs.md](srs.md), § anti-triche).
+- Statistiques d'un paquet : RPC `get_deck_stats` (SECURITY DEFINER, son compte ou prof / admin, paquet
+  lisible par l'appelant) ; « En cours » = `learning` + `relearning` depuis `20261115221544` (avant :
+  `learning` seul).
 
 Accès : l'élève gère ses paquets **non assignés et non automatiques** ; il ne crée ni ne transforme un
 paquet assigné, automatique ou copié (policies RESTRICTIVE `srs_decks_paquets_serveur_*`) — ces
