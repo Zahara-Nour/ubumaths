@@ -5,6 +5,7 @@ couvre:
   - src/lib/stores/blocklyPlayground.svelte.ts
   - 'src/routes/(protected)/dev/blockly/**'
   - 'src/routes/(public)/tortue/**'
+  - 'src/routes/(public)/programmes-de-calcul/**'
   - src/lib/workers/js-sandbox.worker.ts
   - src/lib/workers/js-sandbox-source.ts
   - 'static/blockly/**'
@@ -13,7 +14,7 @@ couvre:
 # Blockly — programmation par blocs
 
 > Écrite à partir du code le 2026-11-14 (chantier `blockly`, journal
-> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14 ; nombre maximal de blocs (`blocs:`) le 2026-11-15.
+> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14 ; nombre maximal de blocs (`blocs:`) le 2026-11-15 ; bac à sable « Programmes de calcul » le 2026-11-15.
 
 ## À quoi ça sert
 
@@ -21,11 +22,16 @@ L'élève assemble des **blocs** (Blockly) ; Chiphre en tire du **JavaScript** o
 l'exécute, la sortie s'affiche dans une console. Programme visé : algorithmique par blocs du cycle 3
 et du cycle 4 (Scratch au BO), relais vers Python au lycée.
 
-Deux pages, rien n'est enregistré :
+Trois pages, rien n'est enregistré :
 
 - **`/tortue`, « La Tortue »** (publique, sans connexion, dans le menu et le sitemap) : bac à
   sable de la tortue seule. **Aucun JavaScript n'y est exécuté** : seul l'interpréteur de blocs
   tourne ; le code Python est un aperçu replié (« Voir en Python »).
+- **`/programmes-de-calcul`, « Programmes de calcul »** (publique, sans connexion, dans le menu
+  et le sitemap) : bac à sable des blocs de calcul, avec le même éditeur que le geste ```calcul
+  (`CalculEditeur`, espace vide au départ) : « Essayer avec » un nombre, Lancer, affichages. Rien
+  n'est jugé ; **aucun JavaScript exécuté** (interpréteur seul) ; pas d'aperçu Python (les blocs de
+  calcul n'ont pas de générateur). Chaque bac à sable renvoie vers l'autre (« Essaie aussi … »).
 - **`/dev/blockly`** (réservée à l'admin) : prototype à deux modes, **Programme** (console, code
   exécuté dans le worker JS ou Pyodide) et **Tortue** (quadrillage, tracé instantané).
 
@@ -40,6 +46,7 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/routes/(public)/tortue/+page.svelte`                     | Page publique « La Tortue », monte `TortueBacASable`                                                                                                             |
 | `src/lib/components/blockly/TortueBacASable.svelte`           | Blocs tortue, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié ; onglets Blocs / Tortue sous `lg`                               |
+| `src/routes/(public)/programmes-de-calcul/+page.svelte`       | Page publique « Programmes de calcul », monte `CalculEditeur` (programme vide), rien de jugé                                                                     |
 | `src/routes/(protected)/dev/blockly/+page.svelte`             | Page de test, monte `BlocklyPlayground`                                                                                                                          |
 | `src/lib/components/blockly/BlocklyPlayground.svelte`         | Assemble espace de travail, barre d'outils, aperçu du code, console                                                                                              |
 | `src/lib/components/blockly/BlocklyWorkspace.svelte`          | `Blockly.inject` ; charge la locale française (`blockly/msg/fr`) avant                                                                                           |
