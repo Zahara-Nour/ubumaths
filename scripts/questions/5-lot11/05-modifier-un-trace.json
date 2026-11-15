@@ -1,4 +1,5 @@
 {
+	"id": "7cb0e200-b026-4731-9113-8bf6e55e48ca",
 	"title": "Modifier un tracé",
 	"description": "Changer les longueurs d'un programme tortue donné (carré, rectangle).",
 	"grades": ["5"],
