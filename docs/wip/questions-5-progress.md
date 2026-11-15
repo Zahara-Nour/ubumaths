@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après la publication du lot 10._
+_Mis à jour le 2026-11-15, après le reclassement (§ 26)._
 
-- **État** : lots 1 à 10 publiés (lot 10 : 10/10 relus « ok », publiés le 2026-11-15, vérifié au MCP).
-  Lot 11 : porté par `blockly`.
-- **Prochaine action** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
-  128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
-- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
+- **État** : lots 1 à 11 publiés (lot 11 = Blockly, par `blockly`, 6 modèles publiés le 2026-11-15). Classement
+  refait le 2026-11-15 (§ 26) : 43 points sans modèle publié = 9 D, **32 B**, 2 C (101, 104).
+- **Prochaine action** : réponses de David aux questions du § 26, puis phase 0 du lot 12 « Droite graduée et repère ».
+- **En attente de David** : questions du § 26 (ordre des lots, brouillons `d4f38d30` / `d4d56c1b`) ; 02 du lot 7
+  (deux cases sur deux lignes) à essayer à la main.
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
   classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
@@ -795,3 +795,41 @@ le détail. Relevé prod : 0 modèle sur 5-100, 102, 103, 105, 106.
   escalier de 4 marches, créneaux. 06 : L, T, zigzag.
 - 05 : la boucle n'est pas imposée (le jugement compare les tracés) ; accepté (option a).
 - Accès : rien de neuf (tags lisibles par tout compte connecté, comme les autres lots).
+
+## 26. Reclassement (2026-11-15)
+
+Relevé prod (MCP) : **43 points de 5e sans modèle publié**. Lot 11 publié (5-100, 102, 103, 105, 106 : 6 modèles).
+Deux brouillons existent déjà, écrits par le chantier `automatismes-1spe` (#2462, rangés #2474, en attente de
+publication par David) : `d4f38d30` « Lire les coordonnées d'un point » (5-047) et `d4d56c1b` « Placer un point de
+coordonnées données » (5-128). Outils revérifiés dans `ubumark.md`, `questions.md`, `blockly.md`, `outils-manquants.md`.
+
+- **D (hors appli, § 5.5)** : 011, 040, 042, 043, 059, 065, 075, 084, 130.
+- **B — repérage (8)** : 016, 046 (` ```line ` à lire) ; 121, 127 (` ```line placer:`) ; 095, 114 (` ```courbe
+placer:`, #2096) ; 047, 128 (brouillons ci-dessus, rien à écrire).
+- **B — tableaux de valeurs (2)** : 093, 097 (tableau à trous, formule donnée).
+- **B — ranger (1)** : 122 (` ```ranger `, ex-C du § 5.4).
+- **B — solides (3)** : 144 (` ```solide ` + choix : reconnaître cube / pavé), 048 (mettre en relation des
+  perspectives : choix entre solides ; pas de perspective à dessiner hors assemblages de cubes), 049 (` ```patron `
+  - ` ```solide `, choix ; `designer:` / `completer:` pour le cube) — ex-C2.
+- **B — géométrie, lire ou choisir (14)** : 054, 055, 057, 060, 062, 063, 064, 066, 067, 069, 070, 071, 072, 115
+  (` ```figure ` + case ou choix).
+- **B — géométrie, tracer (4, ex-C3)** : 131 (`droite h = perpendiculaire(…)`), 132 (droite par le sommet et
+  `milieu(…)`) — **sur quadrillage seulement** (sur papier uni, `droite` n'accepte que médiatrice et bissectrice),
+  pied et milieu sur des nœuds ; 068, 133 (`point D = …`, message du parallélogramme croisé). Le tracé du symétrique
+  central (054 / 055) : `symetrique par O`.
+- **C (2)** : 101 (entrées / sorties), 104 (prévoir la valeur) — **programme en blocs affiché dans l'énoncé**, piste
+  du chantier `blockly` ; ajouté à `outils-manquants.md` (n° 36).
+
+**Lots proposés** (reco, ordre) :
+
+1. **Lot 12 « Droite graduée et repère »** : 016, 046, 121, 127, 095, 114, 093, 097, 122 (9 modèles), avec les
+   brouillons `d4f38d30`, `d4d56c1b` relus sur la même page à cocher et publiés avec le lot.
+2. **Lot 13 « Triangles : droites remarquables »** : 057, 060, 062, 063, 064, 066, 131, 132.
+3. **Lot 14 « Parallélogrammes »** : 067, 068, 069, 070, 071, 072, 133.
+4. **Lot 15 « Symétrie centrale, aires, solides »** : 054, 055, 115, 144, 048, 049.
+
+**Questions à David** :
+
+1. Ordre des lots 12 à 15 ci-dessus : d'accord ?
+2. `d4f38d30` et `d4d56c1b` : les relire et publier avec le lot 12 (reco), ou les publier tout de suite ?
+3. 101, 104 : laisser au chantier `blockly` (reco : après ses lots, avec la piste « prévoir la valeur »).
