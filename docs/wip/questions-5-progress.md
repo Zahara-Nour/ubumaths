@@ -9,7 +9,7 @@ _Mis à jour le 2026-11-15, après #2668 (lot 10 mergé)._
 
 - **État** : lots 1 à 9 publiés. Lot 10 (§ 24 ter) mergé (#2668) et **créé en prod** (10 brouillons, § 24 quater).
   Lot 11 « Programmer en blocs » (§ 25) : **porté par `blockly`**.
-- **Prochaine action** : relevé, migration nœud + tag (`lot-10-rangement.py`) dans `feat/questions-5-lot-10-rangement`.
+- **Prochaine action** : PR de la migration du lot 10 (§ 24 quinquies) → `security-auditor`, CI, merge, `db:migrate` (David).
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
   128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
@@ -752,6 +752,18 @@ proportionnalité 1 (6e ×2) ; caractérisation 1-3 ; généralités sur les fon
   fois chacun, `draft`. Un second `--publier` lancé juste après a été refusé par la garde d'homonymes (0 doublon).
 - Suite : relevé, `lot-10-rangement.py` (gabarit lot 9), migration nœud + tag, worktree
   `feat/questions-5-lot-10-rangement`.
+
+### 24 quinquies. Lot 10 rangé (2026-11-15)
+
+- Relevé `etat-prod-2026-11-15-lot10/` (10 modèles sans nœud, 0 tag) ; `releve-prod.ts` ne lit plus `theme`,
+  `domain`, `subdomain` (colonnes retirées de la base).
+- Migration `20261115062310_questions_5_lot10_rangement_tags` (`lot-10-rangement.py`, gabarit lot 9) : chaque
+  brouillon sur le nœud de son point, tag posé (5-112 diagrammes en barres ; 5-089 « Situations de
+  proportionnalité » ; 5-090, 141, 091, 099 « caractérisation » ; 5-094, 142, 096, 143 « Généralités sur les
+  fonctions »). Test : 11 rouges avec une migration vide, 19/19 vert.
+- Piège : base locale remplie par `db:seed-riche` = contenu de la prod, vrais id compris → les tests « copies de
+  la prod » butaient sur la clé primaire (lot 9 compris). `insertProdCopies` retire d'abord ces lignes dans la
+  transaction ; les deux cas « base sans les modèles » du test du lot 10 aussi.
 
 ## 25. Lot 11 « Programmer en blocs » : validé (David, 2026-11-14, « je te suis »)
 
