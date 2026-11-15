@@ -150,7 +150,7 @@ describe('buildStudentPointFollowUp', () => {
 			attempts: [attempt('t1', 'auto', true), attempt('t2', 'auto', true)],
 			fsrs: [
 				{ card_reference_id: 't1', state: 'review', next_review: FUTURE },
-				{ card_reference_id: 't2', state: 'learning', next_review: PAST }
+				{ card_reference_id: 't2', state: 'relearning', next_review: PAST }
 			]
 		});
 		expect(entry.badge).toBe('a_remedier');

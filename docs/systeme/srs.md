@@ -150,7 +150,8 @@ s'affichait « toutes capacités ».
   facultatif (tests).
 - **États** : échec → `relearning` ; fiche neuve réussie → `learning` ; toute autre réussite → `review`.
   `learning` et `relearning` ne durent donc qu'une révision (avant le 2026-11-15, `learning` restait
-  `learning` à chaque réussite, et le badge l'affichait « à remédier » une fois due).
+  `learning` à chaque réussite). Le badge ne lit que `relearning` comme « à remédier » : une fiche
+  réussie une fois (`learning`), due, est « à renforcer » (chantier `fsrs`, Q6).
 - `review_history` (JSONB) garde chaque révision ; pour une auto-évaluation, l'entrée porte
   aussi `before`, l'état de la fiche juste avant (ce qui permet de la remplacer dans la journée).
 - Tous les chemins instancient `new FSRS()` : paramètres et rétention **par défaut**
@@ -203,12 +204,12 @@ La page `decks/programme` range les cartes en 4 sections calculées à la lectur
 (`templateToBadge`) et affiche sous chaque carte la **notion** de l'arbre où se range son point
 (niveau de l'élève d'abord, `keepLinksOfGrade` ; points lisibles seuls, le plus petit code s'il y en a
 plusieurs) ; « À remédier » et « À renforcer » lancent une séance filtrée
-(`?states=learning,relearning`, `?states=review`) :
+(`?states=relearning`, `?states=learning,review`) :
 
 | Badge                | Règle (par carte)                                |
 | -------------------- | ------------------------------------------------ |
-| `a_remedier`         | échue, état `learning` ou `relearning`           |
-| `a_renforcer`        | échue, état `review`                             |
+| `a_remedier`         | échue, état `relearning` (un échec)              |
+| `a_renforcer`        | échue, état `learning` ou `review`               |
 | `en_apprentissage`   | état `new`, ou `learning`/`relearning` non échue |
 | `acquise_en_memoire` | état `review` non échue                          |
 

@@ -11,7 +11,7 @@ la PR 6g de `demo-debug` (#1711) : `calculateNewStability` n'utilise pas la note
 
 _Mis à jour le 2026-11-15, après #2705._
 
-- **État** : PR 1 (#2703, algorithme) et PR 1b (#2705, `learning` → `review`) mergées · **Prochaine action** : réponses à Q6-Q7, puis PR 2 (rejouer les 27 fiches depuis `review_history`, script `--essai` puis `--publier` sur demande explicite de David) · **En attente de David** : Q6 (badge d'une fiche réussie une fois, due), Q7 (tuile « En cours ») · **Pièges en cours** : `ts-fsrs` arrondit au 1e-8 → comparaison relative (1e-7) ; les tests qui appellent `reviewCard` sans `now` révisent « le même jour » ; les 27 fiches de prod gardent les anciennes valeurs jusqu'à la PR 2 · **Worktree / branche** : `../ubumaths-wt-fsrs`, `feat/fsrs-rejouer`
+- **État** : #2703, #2705 mergées ; PR 1c codée (Q6 (a) : badge « à remédier » = `relearning` seul) · **Prochaine action** : PR 1c → CI → merge ; puis Q7 (a) (migration : tuile « En cours » = `learning` + `relearning`) ; puis PR 2 (rejouer les 27 fiches, `--essai` puis `--publier` sur demande explicite) · **En attente de David** : rien · **Pièges en cours** : `ts-fsrs` arrondit au 1e-8 → comparaison relative (1e-7) ; les tests qui appellent `reviewCard` sans `now` révisent « le même jour » ; les 27 fiches de prod gardent les anciennes valeurs jusqu'à la PR 2 · **Worktree / branche** : `../ubumaths-wt-fsrs`, `fix/fsrs-badge`
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -128,6 +128,7 @@ une fois** reste à jamais sur des intervalles courts (17 j au lieu de 44 au 5e 
 
 ## Historique
 
+- 2026-11-15 : Q6 et Q7 tranchées (« je te suis » → (a), (a)). PR 1c codée : `templateToBadge` (`relearning` due → à remédier ; `learning` / `review` dues → à renforcer), filtres de séance de la page Programme (`relearning` / `learning,review`), tests (3 rouges avant ; fixtures « à remédier » passées en `relearning`).
 - 2026-11-15 : #2705 mergée (PR 1b ; revue Sonnet sans bloquant, 2 points remontés → Q6, Q7 ; CI verte sur `b7bd6c805`).
 - 2026-11-15 : Q5 tranchée (« je te suis » → (a)) ; PR 1b codée : `learning` → `review` à la réussite, tests qui figeaient le bug réécrits (rouges avant). Les 5 fiches `learning` de prod n'ont qu'une révision : elles ne sont pas encore « bloquées ».
 - 2026-11-15 : #2703 mergée (PR 1 ; CI verte sur `65acfbc7d`).

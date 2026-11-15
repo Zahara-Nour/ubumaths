@@ -38,8 +38,8 @@
 	};
 
 	const sectionStateFilter: Record<ProgrammeBadge, string> = {
-		a_remedier: 'learning,relearning',
-		a_renforcer: 'review',
+		a_remedier: 'relearning',
+		a_renforcer: 'learning,review',
 		en_apprentissage: '',
 		acquise_en_memoire: ''
 	};

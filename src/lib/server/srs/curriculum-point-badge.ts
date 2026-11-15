@@ -4,8 +4,8 @@
  * Le badge dérive des états FSRS (`srs_card_stats`) des templates tagués sur
  * un `curriculum_point`. Règle d'agrégation par priorité décroissante :
  *
- *   1. 🆘 a_remedier        — ≥ 1 template due ET state ∈ {learning, relearning}
- *   2. 🔁 a_renforcer       — ≥ 1 template due ET state = 'review'
+ *   1. 🆘 a_remedier        — ≥ 1 template due ET state = 'relearning' (échec)
+ *   2. 🔁 a_renforcer       — ≥ 1 template due ET state ∈ {learning, review}
  *   3. ⏳ en_apprentissage  — ≥ 1 template avec state = 'new' OU (pas due
  *                              ET state ∈ {learning, relearning})
  *   4. ✅ acquise_en_memoire — ≥ 1 template pas due ET state = 'review'
@@ -150,11 +150,12 @@ export function templateToBadge(
 
 	const nextReviewMs = new Date(nextReview).getTime();
 	const isDue = nextReviewMs <= nowMs;
-	const isLearningState = state === 'learning' || state === 'relearning';
 	const isReviewState = state === 'review';
 
-	if (isDue && isLearningState) return 'a_remedier';
-	if (isDue && isReviewState) return 'a_renforcer';
+	// « À remédier » suppose un échec : seul `relearning` en vient ; `learning`
+	// (réussie une fois) due se renforce (chantier `fsrs`, Q6)
+	if (isDue && state === 'relearning') return 'a_remedier';
+	if (isDue) return 'a_renforcer';
 	if (!isDue && isReviewState) return 'acquise_en_memoire';
 	return 'en_apprentissage';
 }
