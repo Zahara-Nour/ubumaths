@@ -59,7 +59,7 @@ describe('Programmes de calcul : le bac à sable', () => {
 		await expect
 			.element(page.getByRole('link', { name: 'La Tortue' }))
 			.toHaveAttribute('href', '/tortue');
-		expect(screen.container.textContent).not.toContain('Python');
+		await expect.element(page.getByText('Voir en Python')).not.toBeInTheDocument();
 	});
 
 	it('nominal : × 3 puis + 2, essayé avec 4 → 14', async () => {

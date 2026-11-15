@@ -21,8 +21,8 @@
 	<div>
 		<h1 class="text-2xl font-bold text-foreground">Programmes de calcul</h1>
 		<p class="text-muted-foreground">
-			Assemble des blocs pour calculer à partir du nombre choisi, tape un nombre dans « Essayer avec
-			», puis clique sur « Lancer ».
+			Assemble des blocs pour calculer à partir du nombre choisi, tape un nombre dans «&nbsp;Essayer
+			avec&nbsp;», puis clique sur «&nbsp;Lancer&nbsp;».
 		</p>
 	</div>
 	<CalculEditeur programme="" />
