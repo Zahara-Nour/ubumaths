@@ -5,19 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2702 (lot 14, rangement) mergée et migrée._
+_Mis à jour le 2026-11-15, après la publication du lot 14._
 
-- **État** : lots 1 à 13 publiés. Lot 14 « Parallélogrammes » : 7 brouillons en prod, rangés sur « Figures planes ›
-  parallélogrammes », tag posé (#2702, `db:migrate` joué, vérifié au MCP) ; page à cocher publiée (§ 29 quater).
-  Restent : lot 15 (6 : 054, 055, 115, 144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : David publie le lot 14 depuis le dépôt principal :
-  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/5-parallelogrammes --publier` → vérifier au
-  MCP ; puis phase 0 du lot 15.
-- **En attente de David** : publication du lot 14 (7 verdicts « ok », simulation verte) ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main
-  (aperçu de `ef08a256`).
+- **État** : lots 1 à 14 publiés (lot 14 « Parallélogrammes » : 7 modèles `published`, vérifié au MCP). Restent :
+  lot 15 (6 : 054, 055, 115, 144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
+- **Prochaine action** : phase 0 du lot 15 (relevé prod, tableau des modèles, questions), puis attendre la validation.
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
 - **Pièges en cours** : `create-questions --publier` depuis le worktree du chantier (`pwd`) ; `--publier` en LOCAL
-  écrit les id locaux → copie au scratchpad ; serveur de dev sur `--host 127.0.0.1` pour Chrome ; jamais `e`.
-- **Worktree / branche** : aucun (retiré après #2702) ; le lot 15 part d'un worktree neuf `../ubumaths-wt-questions-5`.
+  écrit les id locaux → copie au scratchpad ; serveur de dev sur `--host 127.0.0.1` pour Chrome ; jamais `e` ;
+  retirer un worktree casse le terminal de David s'il y est encore : donner les commandes avec `cd` du dépôt principal.
+- **Worktree / branche** : aucun ; le lot 15 part d'un worktree neuf `../ubumaths-wt-questions-5`.
 
 ---
 
@@ -1111,4 +1108,4 @@ instruments (v2) ; 07 limité aux diagonales.
 ### Lot 14 : relu (2026-11-15)
 
 - Page à cocher : **7 verdicts sur 7 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
-  `publier-lot.ts` : 7 brouillons passent. Worktree retiré.
+  `publier-lot.ts` : 7 brouillons passent. Worktree retiré.- David a publié le lot (`5-parallelogrammes`) : 7 modèles `published`, vérifié au MCP.
