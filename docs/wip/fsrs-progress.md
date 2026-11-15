@@ -9,9 +9,9 @@ la PR 6g de `demo-debug` (#1711) : `calculateNewStability` n'utilise pas la note
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, PR 1 codée._
+_Mis à jour le 2026-11-15, après #2703._
 
-- **État** : PR 1 codée (algorithme FSRS-6 conforme à `ts-fsrs`, tests de référence rouges avant, verts après ; doc `srs.md`) · **Prochaine action** : PR 1 ouverte → revue Opus + CI → merge ; puis Q5 (état `learning`) selon la réponse, puis PR 2 (rejouer les 27 fiches) · **En attente de David** : Q5 · **Pièges en cours** : `ts-fsrs` arrondit au 1e-8 à chaque étape → comparaison relative (1e-7) ; les tests existants qui appellent `reviewCard` sans `now` révisent « le même jour » (court terme) · **Worktree / branche** : `../ubumaths-wt-fsrs`, `fix/fsrs`
+- **État** : PR 1 mergée (#2703, algorithme) ; PR 1b codée (Q5 (a) : réussite → `review`) · **Prochaine action** : PR 1b ouverte → CI → merge ; puis PR 2 (rejouer les 27 fiches depuis `review_history`, script `--essai` puis `--publier` sur demande explicite de David) · **En attente de David** : rien avant la PR 2 · **Pièges en cours** : `ts-fsrs` arrondit au 1e-8 → comparaison relative (1e-7) ; les tests qui appellent `reviewCard` sans `now` révisent « le même jour » ; les 27 fiches de prod gardent les anciennes valeurs jusqu'à la PR 2 · **Worktree / branche** : `../ubumaths-wt-fsrs`, `fix/fsrs-etat`
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -115,6 +115,8 @@ une fois** reste à jamais sur des intervalles courts (17 j au lieu de 44 au 5e 
 
 ## Historique
 
+- 2026-11-15 : Q5 tranchée (« je te suis » → (a)) ; PR 1b codée : `learning` → `review` à la réussite, tests qui figeaient le bug réécrits (rouges avant). Les 5 fiches `learning` de prod n'ont qu'une révision : elles ne sont pas encore « bloquées ».
+- 2026-11-15 : #2703 mergée (PR 1 ; CI verte sur `65acfbc7d`).
 - 2026-11-15 : PR 1 ouverte (#2703) ; revue Opus sans bloquant, 2 mineurs corrigés : scénario du plafond après un oubli (rouge sans le `Math.min`), `best-of-day` passe son `now` à `reviewCard` (rouge sans).
 - 2026-11-15 : PR 1 codée : `fsrs.ts` réécrit (FSRS-6 publié, écart en jours civils à Paris, court terme le même jour, `now` facultatif) ; `DECAY_PARAMETER` = −w[20] ; commentaires des paramètres corrigés ; `ts-fsrs@6.0.0` en devDependency ; 9e défaut vu au passage : un premier « Pas réussi » donnait une stabilité 0 (la fiche restait « neuve »).
 - 2026-11-15 : chantier ouvert, worktree `fix/fsrs` ; constat et simulation ; phase 0 écrite, Q1-Q4 posées.

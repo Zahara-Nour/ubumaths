@@ -242,12 +242,11 @@ export class FSRS {
 			newDifficulty = this.nextDifficulty(d, grade);
 		}
 
+		// Échec → relearning ; neuve réussie → learning (une révision) ; sinon réussite → review
 		let newState: CardState;
-		if (grade === 1) {
-			newState = 'relearning';
-		} else {
-			newState = card.state === 'new' || card.state === 'learning' ? 'learning' : 'review';
-		}
+		if (grade === 1) newState = 'relearning';
+		else if (card.state === 'new') newState = 'learning';
+		else newState = 'review';
 
 		const interval = this.calculateInterval(newStability);
 		const nextReviewDate = new Date(now.getTime() + interval * DAY_MS);
