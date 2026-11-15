@@ -106,7 +106,7 @@
 			</button>
 		{/snippet}
 	</Dialog.Trigger>
-	<Dialog.Content class="max-w-lg">
+	<Dialog.Content class="max-h-[85dvh] max-w-lg overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>Réglages de l’atelier</Dialog.Title>
 			<Dialog.Description>Ils valent pour ce navigateur.</Dialog.Description>
