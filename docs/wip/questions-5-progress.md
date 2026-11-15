@@ -5,14 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2670 (migration de rangement du lot 10 mergée)._
+_Mis à jour le 2026-11-15, après #2670 (lot 10 rangé en prod)._
 
-- **État** : lots 1 à 9 publiés. Lot 10 créé en prod (§ 24 quater), migration nœud + tag mergée (#2670, § 24
-  quinquies, `security-auditor` sans finding), **pas encore appliquée en prod**. Lot 11 : porté par `blockly`.
-- **Prochaine action** : David lance `pnpm db:migrate --dry-run` puis `pnpm db:migrate` depuis `main` (seule
-  `20261115062310_questions_5_lot10_rangement_tags` attendue) ; ensuite vérifier au MCP (10 nœuds, 10 tags,
-  `updated_at` intact), page à cocher du lot 10, publication.
-- **En attente de David** : `db:migrate` du lot 10 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
+- **État** : lots 1 à 9 publiés. Lot 10 créé en prod et **rangé** (#2670 appliquée le 2026-11-15, vérifié au
+  MCP : 10 brouillons sur leur nœud, 1 tag chacun, `updated_at` intact). Lot 11 : porté par `blockly`.
+- **Prochaine action** : page à cocher du lot 10 (`scripts/questions/page-a-cocher.ts`), puis publication.
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
   128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
@@ -766,6 +764,10 @@ proportionnalité 1 (6e ×2) ; caractérisation 1-3 ; généralités sur les fon
 - Piège : base locale remplie par `db:seed-riche` = contenu de la prod, vrais id compris → les tests « copies de
   la prod » butaient sur la clé primaire (lot 9 compris). `insertProdCopies` retire d'abord ces lignes dans la
   transaction ; les deux cas « base sans les modèles » du test du lot 10 aussi.
+
+- #2670 mergée (CI verte, `check:migrations` 0, `security-auditor` sans finding). `db:migrate` lancé par David
+  (dry-run : celle-là seule). Vérifié au MCP : 10 brouillons sur leur nœud, 1 tag chacun, `updated_at` intact
+  (06:20). Les id des fichiers : #2671 (session `blockly`, `create-questions` lancé depuis son worktree).
 
 ## 25. Lot 11 « Programmer en blocs » : validé (David, 2026-11-14, « je te suis »)
 
