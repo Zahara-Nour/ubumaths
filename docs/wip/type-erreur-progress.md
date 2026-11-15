@@ -12,7 +12,7 @@ d'une erreur (signe, oubli du carré…) par le moteur mathAST ».
 
 _Mis à jour le 2026-11-15, à l'ouverture._
 
-- **État** : phase 0 écrite, rien de codé · **Prochaine action** : coder la PR 1 une fois la phase 0 validée · **En attente de David** : Q5 (calculé ou stocké) ; Q1-Q4 tranchées (§ Décisions) · **Pièges en cours** : prod sans réponse écrite (2026-11-14 : 0 `answer_parts`, 0 copie de contrôle) → rien de visible en prod tant que Saisie / Contrôle blanc / contrôles n'ont pas tourné · **Worktree / branche** : `../ubumaths-wt-type-erreur` · `feat/type-erreur`
+- **État** : phase 0 validée ; PR 1 (moteur `guessErrorKind`) en cours · **Prochaine action** : PR 1 → PR 2 (panneaux prof) → PR 3 (élève) · **En attente de David** : rien ; Q1-Q5 tranchées (§ Décisions) · **Pièges en cours** : prod sans réponse écrite (2026-11-14 : 0 `answer_parts`, 0 copie de contrôle) → rien de visible en prod tant que Saisie / Contrôle blanc / contrôles n'ont pas tourné · **Worktree / branche** : `../ubumaths-wt-type-erreur` · `feat/type-erreur`
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -47,7 +47,7 @@ l'autre.
   4. **double / moitié** : réponse = 2 × attendu ou attendu / 2 ;
   5. **carré oublié / en trop** : réponse² = attendu ou réponse = attendu².
 - **Limites** :
-  - attendu = 0, 1 ou −1, ou deux relations vraies en même temps (attendu 0,5 : inverse = double) → **rien**
+  - attendu = 0, 1 ou −1, ou deux relations vraies en même temps (attendu 4, réponse 2 : moitié et carré oublié) → **rien**
     (« non reconnue ») ; on ne devine jamais entre deux ;
   - réponse non numérique (expression, intervalle, QCM, ranger, figure) → rien en v1 ;
   - erreur déjà nommée par un message existant (%, unité, arrondi, forme) → ce message, pas de type en plus ;
@@ -79,9 +79,12 @@ l'autre.
 
 - **Q1** : prof puis élève (PR 2, puis PR 3). **Q2** : les 5 relations numériques. **Q3** : relation +
   invitation (« Ta réponse est l'opposé du résultat : vérifie le signe. »). **Q4** : deux relations vraies,
-  ou attendu 0 / ±1 → rien. **Q5** : en attente.
+  ou attendu 0 / ±1 → rien. **Q5** : calculé à la lecture, sans migration (« je te suis », sur ma reco).
+- **Exemple corrigé** : la question Q4 citait « attendu 0,5, réponse 2 : inverse et double », faux (le double
+  de 0,5 vaut 1). Exemple juste : attendu 4, réponse 2 (moitié et carré oublié). La règle tranchée ne change pas.
 
 ## Historique
 
+- 2026-11-15 : Q5 tranchée (calculé à la lecture) ; PR 1 commencée.
 - 2026-11-15 : Q1-Q4 tranchées (recos).
 - 2026-11-15 : chantier ouvert, worktree créé, phase 0 écrite.
