@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15 : migration du lot 5d passée en prod, page à cocher publiée (§ 15 sexies)._
+_Mis à jour le 2026-11-15 : lots 5b et 5d publiés (§ 15 septies)._
 
-- **État** : lots 0 à 5a publiés. **Lot 5b** (10 brouillons) rangé et tagué, page à cocher publiée (§ 14 nonies), `verdicts` vide le 2026-11-15. **Lot 5d** : 3 brouillons rangés et tagués en prod (#2698, `db:migrate` fait, vérifié) ; a43667e9 (CE2) ouvert au CM1 ; page à cocher publiée.
-- **Prochaine action** : lire `verdicts` des deux pages et compter : lot 5b (10) https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK, lot 5d (3) https://claude.ai/artifact/Y8BhbpCTG5hs4GK7JJ2Lnu ; « À revoir » → corriger ; puis `publier-lot --dir scripts/questions/cm1-5b` / `cm1-5d` (simulation), David lance `--publier`. Ensuite : lot suivant du CM1.
-- **En attente de David** : la relecture des deux pages (5b, 5d).
+- **État** : lots 0 à 5d publiés (5d : 3 modèles neufs + a43667e9 du CE2 ouvert au CM1). Aucun lot suivant découpé.
+- **Prochaine action** : recompter les points du CM1 encore sans modèle (relevé MCP, comme au § 1) et proposer le lot suivant en phase 0 (skill `couvrir-niveau`) ; attendre la validation de David avant d'écrire.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom), refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau (tout programme) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d-page` (depuis `origin/main`, pour la page à cocher ; ce bloc y est commité, pas sur `main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; prochain lot sur une branche neuve depuis `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1104,3 +1104,9 @@ Périmètre d'un polygone`, niveaux 1 à 4 (catégorie neuve).
   ignoré par git ; une seule migration en attente, la nôtre). Vérifié au MCP : 3 brouillons sur « Périmètres »
   (CM1-074, CM1-075 ×2), a43667e9 publié en `{CE2,CM1}` avec CE2-042 et CM1-073, `updated_at` préservés.
 - Page à cocher des 3 brouillons : https://claude.ai/artifact/Y8BhbpCTG5hs4GK7JJ2Lnu (`verdicts`, capacité `db`).
+
+### 15 septies. Lots 5b et 5d — publication (2026-11-15)
+
+- Pages à cocher : lot 5b 10 « OK » sur 10, lot 5d 3 sur 3, aucun commentaire. `publier-lot` en simulation : 13/13 ;
+  `--publier` lancé par David ; vérifié au MCP : 13 publiés. Vérification manuelle notée (périmètres au CM1, #2698).
+- **Lots 5b et 5d clos.** Le découpage du lot 5 (§ 14) est entièrement livré.
