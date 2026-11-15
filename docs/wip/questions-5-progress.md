@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, lot 13 écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-11-15, après #2690 (lot 13, fichiers mergés)._
 
-- **État** : lots 1 à 12 publiés ; lot 13 « Triangles : droites remarquables » écrit (§ 28 ter, 9 modèles), PR des
-  fichiers ouverte. Restent : lot 14 (7), lot 15 (6), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : merger la PR des fichiers, puis **David** lance `create-questions --dir
+- **État** : lots 1 à 12 publiés ; lot 13 « Triangles : droites remarquables » écrit (§ 28 ter, 9 modèles), fichiers
+  mergés (#2690). Restent : lot 14 (7), lot 15 (6), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
+- **Prochaine action** : **David** lance `create-questions --dir
 scripts/questions/5-triangles --publier` (brouillons en prod) ; ensuite id commités, migration nœud + tag, page à
   cocher, publication.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
@@ -17,7 +17,7 @@ scripts/questions/5-triangles --publier` (brouillons en prod) ; ensuite id commi
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → passer par une copie ; `db:migrate` en
   prod refusé par le classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
   `pnpm migration:horodatage` ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5` · `feat/questions-5-lot13`.
+- **Worktree / branche** : aucun (retiré après #2690).
 
 ---
 
@@ -1004,3 +1004,4 @@ triangle obtus en v2 de 04 et 08.
 - Base locale (copie au scratchpad : aucun id local dans les fichiers) : aperçu admin regardé pour 01, 02 (réciproque,
   108° / 108°), 04 (obtus en B, pied sur le prolongement en pointillés), 08 (hauteur tracée à la règle sur le
   quadrillage, triangle obtus : **juste**), 09 (M masqué invisible).
+- #2690 (fichiers) mergée, CI verte ; worktree retiré.
