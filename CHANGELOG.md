@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.90.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.89.0...v0.90.0) (2026-11-15)
+
+### ✨ Features
+
+- **mathast:** type d'erreur devine d'une reponse fausse (guessErrorKind) ([f1f182f](https://github.com/Zahara-Nour/ubumaths/commit/f1f182fd58cb5729ab4a7be63afc77aaa85983ed))
+
+### 🐛 Bug Fixes
+
+- **blockly:** calcul, un programme qui ne depend pas du nombre est faux (6-210, afficher 10) ([4c489c4](https://github.com/Zahara-Nour/ubumaths/commit/4c489c4752077f6abac72e07a222a82340f10e7c))
+- **blockly:** corrige calcul, message de lecture garde quand le jugement n'en donne pas ([b812a2a](https://github.com/Zahara-Nour/ubumaths/commit/b812a2acd965bf75565cd7d946530f0d85e6fc07))
+
+### 📚 Documentation
+
+- **wip:** blockly, 6-210 corrige en prod ([#2683](https://github.com/Zahara-Nour/ubumaths/issues/2683), [#2684](https://github.com/Zahara-Nour/ubumaths/issues/2684)), verification manuelle ([bf1b265](https://github.com/Zahara-Nour/ubumaths/commit/bf1b265dfe4c94889dc04e1d5caabc14e9af89e9))
+- **wip:** blockly, revue de [#2683](https://github.com/Zahara-Nour/ubumaths/issues/2683) ([e69c551](https://github.com/Zahara-Nour/ubumaths/commit/e69c551d227487de1056cc735534da8f16211e12))
+- **wip:** blockly, worktree retire ([a5fb5f7](https://github.com/Zahara-Nour/ubumaths/commit/a5fb5f72748be1c4bfa865462973ab63f8ddd3aa))
+- **wip:** ouvrir type-erreur, phase 0 ([3abaca5](https://github.com/Zahara-Nour/ubumaths/commit/3abaca5b5d5ada2ed331df796d58f14a165f19a8))
+- **wip:** type-erreur apres [#2682](https://github.com/Zahara-Nour/ubumaths/issues/2682) ([da53d9c](https://github.com/Zahara-Nour/ubumaths/commit/da53d9c8fceec4200d5d1e0799c136e6740805cd))
+- **wip:** type-erreur, Q1-Q4 tranchees ([bab3059](https://github.com/Zahara-Nour/ubumaths/commit/bab30590e94d56bfe30bfcc9c235a0831bf396ea))
+
 ## [0.89.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.88.0...v0.89.0) (2026-11-15)
 
 ### ✨ Features
