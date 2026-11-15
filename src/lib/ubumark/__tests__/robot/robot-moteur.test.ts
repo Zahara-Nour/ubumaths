@@ -62,6 +62,17 @@ describe('lireCode / ecrireCode', () => {
 		}
 	});
 
+	it('saisie au clavier : flèches collées, « a » sans accent, NFD, point final', () => {
+		expect(lu('→→↑', FLECHES)).toHaveLength(3);
+		expect(lu('pivote a gauche, Avance de 2.', RELATIF)).toEqual([
+			{ kind: 'pivote', cote: 'gauche' },
+			{ kind: 'avance', pas: 2 }
+		]);
+		expect(lu('pivote à gauche'.normalize('NFD'), RELATIF)).toEqual([
+			{ kind: 'pivote', cote: 'gauche' }
+		]);
+	});
+
 	it('code vide : aucune instruction', () => {
 		expect(lu('', FLECHES)).toEqual([]);
 		expect(lu('  ', RELATIF)).toEqual([]);
@@ -212,7 +223,13 @@ describe('plusCourtCode', () => {
 		};
 		expect(plusCourtCode(scene)).toBeNull();
 		// En avance-pivote, avance de 9 + avance de 2 : 5 instructions suffisent
-		expect(plusCourtCode({ ...scene, codage: 'avance-pivote', sens: 'droite' })).not.toBeNull();
+		// En avance-pivote, avance de 9 + avance de 2 : 5 instructions suffisent, la plus grande d'abord
+		expect(
+			ecrireCode(
+				plusCourtCode({ ...scene, codage: 'avance-pivote', sens: 'droite' })!,
+				'avance-pivote'
+			)
+		).toBe('avance de 9, avance de 2, pivote à gauche, avance de 9, avance de 2');
 	});
 
 	it('plus de 4 virages nécessaires : aucun code', () => {

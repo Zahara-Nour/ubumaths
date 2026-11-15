@@ -61,8 +61,9 @@ const PAS: Record<Sens, Case> = {
 	gauche: { col: -1, ligne: 0 }
 };
 
-const AVANCE = /^avance\s+de\s+(\d+)$/i;
-const PIVOTE = /^pivote\s+à\s+(gauche|droite)$/i;
+const AVANCE = /^avance\s+de\s+(\d+)\.?$/i;
+/** « à » ou « a » (sans accent, au clavier) */
+const PIVOTE = /^pivote\s+[àa]\s+(gauche|droite)\.?$/i;
 
 // ============================================================================
 // NOTATION
@@ -74,10 +75,14 @@ const inconnue = (mot: string): LectureCode => ({
 });
 
 /** Lire un code ; vide = aucune instruction. Plus de 15 instructions : refusé. */
-export function lireCode(texte: string, codage: Codage): LectureCode {
+export function lireCode(brut: string, codage: Codage): LectureCode {
+	// « à » décomposé (NFD) par certaines saisies : recomposé
+	const texte = brut.normalize('NFC');
 	const instructions: Instruction[] = [];
 	if (codage === 'flèches') {
-		for (const mot of texte.split(/[\s,]+/).filter((m) => m !== '')) {
+		// Flèches collées (`→→↑`) : une par caractère
+		const mots = texte.replace(/[↑→↓←]/g, ' $& ').split(/[\s,]+/);
+		for (const mot of mots.filter((m) => m !== '')) {
 			const sens = FLECHE_DE[mot];
 			if (sens === undefined) return inconnue(mot);
 			instructions.push({ kind: 'flèche', sens });
@@ -217,11 +222,14 @@ function suivants(scene: RobotScene, e: Etat): Etat[] {
 		return out;
 	}
 	if (e.sens === null) return out;
+	// La plus grande avance d'abord : à longueur égale, le corrigé dit « avance de 9, avance
+	// de 2 » plutôt que « avance de 2, avance de 9 »
+	const avances: Etat[] = [];
 	let c = e.c;
 	for (let pas = 1; pas <= ROBOT_MAX_AVANCE; pas++) {
 		c = vers(c, e.sens);
 		if (obstacle(scene, c)) break;
-		out.push({
+		avances.push({
 			c,
 			sens: e.sens,
 			virages: e.virages,
@@ -229,6 +237,7 @@ function suivants(scene: RobotScene, e: Etat): Etat[] {
 			instruction: { kind: 'avance', pas }
 		});
 	}
+	out.push(...avances.reverse());
 	for (const cote of ['gauche', 'droite'] as const) {
 		out.push({
 			c: e.c,

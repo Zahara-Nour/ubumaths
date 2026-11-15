@@ -160,6 +160,33 @@ describe('robot à produire : la case et sa réponse', () => {
 		).toMatch(/aucun code de 15 instructions/);
 	});
 
+	it('case hors du quadrillage à un tirage : erreur d’auteur, pas de tirage refait en silence', () => {
+		const t = template({
+			statement: robot('quadrillage: 8 x 5', 'départ: 1, 1', 'arrivée: {{a}}, 4', 'produire: oui'),
+			variables: [{ name: 'a', expression: '1..10' }]
+		});
+		const echecs = Array.from({ length: 30 }, (_, seed) => generateInstance(t, seed)).filter(
+			(r) => !r.success
+		);
+		expect(echecs.length).toBeGreaterThan(0);
+		expect(echecs[0].success ? '' : echecs[0].errors.join(' ')).toMatch(/hors du quadrillage/);
+	});
+
+	it('{{random:…}} dans le bloc : refusé (le tirage ne pourrait pas être vérifié)', () => {
+		expect(
+			generationErrors(
+				template({
+					statement: robot(
+						'quadrillage: 8 x 5',
+						'départ: 1, 1',
+						'arrivée: {{random:5..8}}, 5',
+						'produire: oui'
+					)
+				})
+			)
+		).toMatch(/pas de \{\{random:…\}\} dans le bloc/);
+	});
+
 	it('bloc mal écrit : refusé au prof', () => {
 		expect(
 			generationErrors(template({ statement: robot('départ: 1, 1', 'produire: oui') }))

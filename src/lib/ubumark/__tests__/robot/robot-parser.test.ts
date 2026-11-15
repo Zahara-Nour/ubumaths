@@ -73,6 +73,14 @@ describe('parseRobotContent', () => {
 		expect(node.spec?.solution).toBeNull();
 	});
 
+	it('interdites: point-virgule final toléré', () => {
+		const node = parseRobotContent(
+			bloc('quadrillage: 8 x 5', 'départ: 1, 1', 'interdites: 2, 1 ;')
+		);
+		expect(node.errors).toEqual([]);
+		expect(node.spec?.interdites).toEqual([{ col: 2, ligne: 1 }]);
+	});
+
 	it('case: posée par le générateur', () => {
 		expect(parseRobotContent(bloc('case: 0', QUESTION)).caseIndex).toBe(0);
 	});

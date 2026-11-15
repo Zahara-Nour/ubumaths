@@ -122,3 +122,10 @@ sans règle d'accès : personne ne lit rien de plus.
   ```robot en question sans écran (`robot-moteur.ts`, `robot-answer.ts`, `robot-parser.ts`, câblage aux endroits
   de ``calcul, tirage refait si la scène est impossible : `robotSceneImpossible`) ; PR 1b = écran (carte du geste,
   corrigé, PDF, catalogue). Renvoi de `construction-triangle-cm.test.ts` corrigé (journal archivé).
+- 2026-11-15 : revue de la PR 1a (`code-reviewer`, Opus) : 7 findings, aucun bug du juge ni du parcours. Corrigés :
+  `{{random:` refusé dans un robot à produire (vérifié sur une autre source que le tirage réel) ; seules les
+  erreurs de tirage (aucun code, case grise, arrivée au départ) font refaire le tirage ; série d'automatismes
+  refuse le robot tant qu'il n'a pas de PDF ; saisie tolérante (flèches collées, « a », NFD, point final) ; plus
+  grande avance d'abord ; `interdites:` à `;` final. **À faire en PR 1b** : la copie corrigée reçoit
+  `expected` = la chaîne complète `<scène> | <code>` : le rendu passe par `readExpectedRobotAnswer().solution`,
+  test qui asserte le TEXTE montré.

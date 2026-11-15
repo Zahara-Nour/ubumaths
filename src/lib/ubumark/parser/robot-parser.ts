@@ -254,7 +254,10 @@ export function parseRobotContent(source: string): RobotNode {
 					arrivee = lireCase(value, 'arrivée');
 					break;
 				case 'interdites':
-					interdites = value === '' ? [] : value.split(';').map((c) => lireCase(c, 'interdites'));
+					interdites = value
+						.split(';')
+						.filter((c) => c.trim() !== '')
+						.map((c) => lireCase(c, 'interdites'));
 					break;
 				case 'produire': {
 					const v = value.toLowerCase();

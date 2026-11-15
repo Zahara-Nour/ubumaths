@@ -684,7 +684,9 @@ cadre « À faire sur Chiphre » ; sans, le cadre seul (`generateTortueTypst`, d
 [ubumark](ubumark.md)) ; une figure (`FIGURE_LINES`) dans les cadres de réponse. Un **programme de calcul**
 (` ```calcul `) imprime le cadre « À faire sur Chiphre » seul (`generateCalculTypst`) et compte de même une
 figure dans les cadres de réponse. Un **robot** (` ```robot `, chantier `suite-fleches`) compte une
-figure dans les cadres de réponse ; il n'a pas encore de rendu PDF (PR 1b). Une
+figure dans les cadres de réponse ; il n'a pas encore de rendu PDF (PR 1b) : une série d'automatismes refuse donc un robot à produire
+(« <id> : un robot à produire ne peut pas encore entrer dans une série d’automatismes (pas de
+rendu PDF) »). Une
 série d'automatismes refuse toute question à programme (tortue, calcul), elle se fait à l'écran
 (David, 2026-11-14) : « <id> : une question à programme (tortue, calcul) ne peut pas entrer dans
 une série d'automatismes » (`figer`, avant le compte des cases).

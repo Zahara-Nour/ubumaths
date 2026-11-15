@@ -177,9 +177,12 @@ function rangerLabelsCollide(
 
 /**
  * Un robot à produire (```robot + `produire: oui`) est-il impossible avec ce tirage (aucun
- * code de 15 instructions et 4 virages au plus, arrivée sur une case grise ou au départ) ?
- * Résolu à part, comme `rangerLabelsCollide`. Condition implicite : le tirage est refait ; si
- * aucun ne convient, le dernier passe et le bloc dit son erreur au prof.
+ * code de 15 instructions et 4 virages au plus, départ ou arrivée sur une case grise, arrivée
+ * au départ) ? Résolu à part, comme `rangerLabelsCollide` : les variables seules, d'où le refus
+ * de `{{random:` dans le bloc (`ROBOT_RANDOM_MESSAGE`). Condition implicite : le tirage est
+ * refait ; si aucun ne convient, le dernier passe et le bloc dit son erreur au prof. Toute autre
+ * erreur (case hors du quadrillage, clé inconnue) n'est pas une affaire de tirage : pas de
+ * nouvel essai, le prof la voit tout de suite.
  */
 function robotSceneImpossible(
 	statement: TemplateMarkdown | undefined,
@@ -201,8 +204,25 @@ function robotSceneImpossible(
 				capitalPairs
 			)
 		);
-		return parseRobotContent(resolved).spec === null;
+		const node = parseRobotContent(resolved);
+		return (
+			node.spec === null &&
+			node.errors.every((e) => ROBOT_TIRAGE_ERRORS.some((motif) => motif.test(e.message)))
+		);
 	});
+}
+
+/** Erreurs d'un bloc robot qui tiennent au tirage (`robotSceneImpossible`) */
+const ROBOT_TIRAGE_ERRORS = [/aucun code de/, /l’arrivée est le départ/, /est sur une case grise/];
+
+const ROBOT_RANDOM_MESSAGE =
+	'Robot à produire : pas de {{random:…}} dans le bloc ```robot (le tirage ne pourrait pas être vérifié) ; utiliser une variable';
+
+/** Un robot à produire tire-t-il un hasard dans son bloc (`{{random:`) ? */
+function robotHasRandom(statement: TemplateMarkdown | undefined): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```robot')) return false;
+	return findRobotsToProduce(text).some((block) => block.body.join('\n').includes('{{random'));
 }
 
 /**
@@ -594,6 +614,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					errors: circularResult.errors.map((err) => err.message)
 				};
 			}
+		}
+
+		if (robotHasRandom(resolvedVariation.statement)) {
+			return { success: false, errors: [ROBOT_RANDOM_MESSAGE] };
 		}
 
 		// 5. Resolve variables in declaration order (with condition retry loop).

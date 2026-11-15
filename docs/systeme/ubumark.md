@@ -1114,13 +1114,15 @@ case verte), `interdites:` (cases grises). Sans `produire:`, un bloc d'affichage
 `produire: oui`, une question (`findRobotsToProduce`, `caseIndex` posé par le générateur) :
 `arrivée:` obligatoire, et il faut un code de 15 instructions et 4 virages au plus jusqu'à elle
 (`plusCourtCode`, BO du CE1), sinon erreur d'auteur ; le générateur refait le tirage tant que la
-scène tirée est impossible (`robotSceneImpossible`), puis laisse passer le dernier, dont la case dit
-l'erreur. Refus : case hors du quadrillage, départ ou arrivée sur une case grise, arrivée au départ,
+scène tirée est impossible (`robotSceneImpossible` : aucun code, départ ou arrivée sur une case
+grise, arrivée au départ ; toute autre erreur sort tout de suite), puis laisse passer le dernier,
+dont la case dit l'erreur ; `{{random:…}}` est refusé dans le bloc (le tirage ne serait pas le
+même que celui vérifié : une variable à la place). Refus : case hors du quadrillage, départ ou arrivée sur une case grise, arrivée au départ,
 clé inconnue ou en double, `case:` sans `produire: oui`. Moteur (`utils/robot-moteur.ts`, sans
 dépendance) : notation d'un code (`→ → ↑` ; `avance de 4, pivote à gauche, avance de 3`,
-`lireCode` / `ecrireCode`, 15 instructions au plus, « avance de » 1 à 9), `simuler` (case par case,
+`lireCode` / `ecrireCode`, flèches collées, « a » sans accent, NFD et point final tolérés, 15 instructions au plus, « avance de » 1 à 9), `simuler` (case par case,
 arrêt à la première case hors du quadrillage ou grise), `virages`, `plusCourtCode` (parcours en
-largeur, le moins de virages parmi les plus courts). Rien à masquer en évaluation : la scène ne dit
+largeur, le moins de virages parmi les plus courts, la plus grande avance d'abord). Rien à masquer en évaluation : la scène ne dit
 pas le code. Dans un item de liste ou un choix : nœud lu, sans case, signalé. Éditeur riche : bloc
 de code `robot`, texte gardé. **Pas encore d'écran ni de PDF** (PR 1b) : le bloc ne s'affiche pas,
 le PDF n'imprime rien.
