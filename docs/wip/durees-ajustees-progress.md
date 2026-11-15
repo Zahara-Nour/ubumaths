@@ -11,9 +11,9 @@ suivi validés ») : « durées ajustées au temps observé ». Suite prévue de
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, à l'ouverture._
+_Mis à jour le 2026-11-15, après #2673._
 
-- **État** : PR 1 (unique) écrite, tests rouges puis verts, PR ouverte · **Prochaine action** : revues (`code-reviewer` + `security-auditor`), CI, merge · **En attente de David** : rien · **Pièges en cours** : prod sans aucune trace avec durée (2026-11-15) ; durée de réponse plafonnée à la durée allouée (donnée censurée) ; `question_templates.updated_at` remet le signal à zéro (Q8 de `durees-trop-courtes`) · **Worktree / branche** : `../ubumaths-wt-durees-ajustees` · `feat/durees-ajustees`
+- **État** : PR unique mergée (#2673) : « Durée observée » + « Appliquer » sous la durée d'une ligne (panier, éditeur de série), sur `main`, en prod au prochain `deploy:prod` ; aucune migration · **Prochaine action** : clôture si David la valide (versement : le durable est déjà dans `docs/systeme/evaluations.md`, `analytique-prof.md`, `questions.md` ; journal à archiver) · **En attente de David** : « clore le chantier ? » ; vérification manuelle #2673 dans `verifications-manuelles.md` · **Pièges en cours** : prod sans aucune trace avec durée (2026-11-15) → suggestion invisible tant que Contrôles blancs / contrôles chronométrés n'ont pas tourné ; vérifiable en local seulement (traces fictives) · **Worktree / branche** : aucun (retiré après #2673)
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -88,6 +88,9 @@ signal P7 ; seule une durée agrégée par modèle sort, aucun nom. (Avec Q2 B, 
 - **Accès** : personne ne lit rien de plus.
 - **Q7 (revue, David 2026-11-15 : A)** : une question **passée à vide avant la fin** est écartée
   (durée inconnue) ; seules les réponses écrites, justes ou fausses, donnent une durée.
+  **Vérifié ensuite** : ce cas ne se produit pas avec les écrans actuels — « Valider » reste désactivé
+  tant qu'une case est vide (`QuestionCard.svelte`, `hasValidInput`), et aucune correction ne
+  s'affiche pendant un Contrôle blanc. La règle reste comme garde-fou (données anciennes, écran futur).
 
 ## PR 1 — calcul, endpoint, panier, éditeur (2026-11-15)
 
@@ -107,6 +110,7 @@ signal P7 ; seule une durée agrégée par modèle sort, aucun nom. (Avec Q2 B, 
 
 ## Historique
 
+- 2026-11-15 : #2673 mergée (CI verte ; revues sans bloquant ; Q7 réponse vide écartée).
 - 2026-11-15 : PR 1 écrite (calcul, endpoint, panier, éditeur).
 - 2026-11-15 : phase 0 validée (recos).
 - 2026-11-15 : chantier ouvert, worktree créé, phase 0 écrite.
