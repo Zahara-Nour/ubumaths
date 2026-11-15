@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2698 (migration nœud + tags du lot 5d mergée, `db:migrate` pas encore lancé)._
+_Mis à jour le 2026-11-15 : migration du lot 5d passée en prod, page à cocher publiée (§ 15 sexies)._
 
-- **État** : lots 0 à 5a publiés. **Lot 5b** (10 brouillons) rangé et tagué en prod, page à cocher publiée (§ 14 nonies), `verdicts` vide le 2026-11-15. **Lot 5d** : 3 brouillons créés en prod (3a6017c8, 396c543f, d6633d24) ; 5d-1 remplacé par le modèle CE2 a43667e9 (§ 15 quater) ; migration mergée (#2698 : 20 tests verts, `security-auditor` sans finding bloquant, `check:migrations` passé).
-- **Prochaine action** : (a) lot 5d : David lance `pnpm db:migrate` ; vérifier au MCP (3 brouillons sur « Périmètres », 4 tags posés, a43667e9 en `{CE2,CM1}` avec CE2-042 et CM1-073) ; puis page à cocher des 3 brouillons. (b) lot 5b : lire `verdicts` de https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK et compter (10) ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`.
-- **En attente de David** : `db:migrate` après le merge ; la relecture de la page du lot 5b.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom), refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau (tout programme) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
+- **État** : lots 0 à 5a publiés. **Lot 5b** (10 brouillons) rangé et tagué, page à cocher publiée (§ 14 nonies), `verdicts` vide le 2026-11-15. **Lot 5d** : 3 brouillons rangés et tagués en prod (#2698, `db:migrate` fait, vérifié) ; a43667e9 (CE2) ouvert au CM1 ; page à cocher publiée.
+- **Prochaine action** : lire `verdicts` des deux pages et compter : lot 5b (10) https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK, lot 5d (3) https://claude.ai/artifact/Y8BhbpCTG5hs4GK7JJ2Lnu ; « À revoir » → corriger ; puis `publier-lot --dir scripts/questions/cm1-5b` / `cm1-5d` (simulation), David lance `--publier`. Ensuite : lot suivant du CM1.
+- **En attente de David** : la relecture des deux pages (5b, 5d).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom), refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau (tout programme) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d-page` (depuis `origin/main`, pour la page à cocher ; ce bloc y est commité, pas sur `main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -1097,3 +1097,10 @@ Périmètre d'un polygone`, niveaux 1 à 4 (catégorie neuve).
   `questions-5/lot-13-rangement.py`, qui gère niveaux et tags gardés), depuis l'instantané
   `etat-prod-2026-11-15-cm1-5d/` (`releve-prod-cm1.ts`, aligné : sans quadruplet, CE2 ajouté aux points). Test
   `questions-cm1-lot5d-rangement-tags.test.ts` : 20 verts, rouges avec une migration vide.
+
+### 15 sexies. Lot 5d — migration passée, page à cocher (2026-11-15)
+
+- #2698 mergée ; `db:migrate` lancé par David depuis le worktree (lien Supabase copié de `../ubumaths/supabase/.temp/`,
+  ignoré par git ; une seule migration en attente, la nôtre). Vérifié au MCP : 3 brouillons sur « Périmètres »
+  (CM1-074, CM1-075 ×2), a43667e9 publié en `{CE2,CM1}` avec CE2-042 et CM1-073, `updated_at` préservés.
+- Page à cocher des 3 brouillons : https://claude.ai/artifact/Y8BhbpCTG5hs4GK7JJ2Lnu (`verdicts`, capacité `db`).
