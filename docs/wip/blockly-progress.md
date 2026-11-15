@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2700 et #2704._
+_Mis à jour le 2026-11-15, phase 0 du bac à sable de calcul validée._
 
-- **État** : nombre maximal de blocs livré : outil `blocs:` du bloc ```tortue (#2700) et 5-106 corrigé dans le dépôt (#2704, lot `blockly-5-106`) · **Prochaine action** : choisir avec David la piste suivante (mode Calcul du bac à sable, étanchéité du sandbox JS) — phase 0 d'abord · **En attente de David** : lancer `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) puis `--publier` (5-106 n'a pas encore `blocs:` en prod ; le jugement n'en dépend que par sa réponse attendue) ; `deploy:prod` pour livrer #2700 ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 (sinon l'ancien code lirait `blocs:` comme une clé inconnue : bloc indisponible) ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; modèle sur une notion → `sous_notions_admises` ; `Doc-inchangée:` → dans un COMMIT ; `db:migrate` → depuis le dépôt principal ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → `nightly-integration.yml` ; garde `docs:check-a-jour` : relancer après `git fetch` (un `origin/main` en retard l'a laissée verte en local, rouge en CI) ; garde `r.grade = any(q.grades)` pour les prochaines migrations de rangement · **Worktree / branche** : aucun (retiré après #2704)
+- **État** : PR en cours, bac à sable public `/programmes-de-calcul` (phase 0 validée, section en fin de journal) · **Prochaine action** : page + liens + test du rendu + doc `blockly.md`, PR, revue `code-reviewer` (Sonnet) · **En attente de David** : lancer `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) puis `--publier` ; `deploy:prod` pour livrer #2700 ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 (sinon l'ancien code lirait `blocs:` comme une clé inconnue : bloc indisponible) ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; modèle sur une notion → `sous_notions_admises` ; `Doc-inchangée:` → dans un COMMIT ; `db:migrate` → depuis le dépôt principal ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → `nightly-integration.yml` ; garde `docs:check-a-jour` : relancer après `git fetch` · **Worktree / branche** : `ubumaths-wt-blockly` · `feat/blockly-bac-a-sable-calcul`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -618,3 +618,21 @@ Pistes restantes après celle-ci : mode Calcul du bac à sable, étanchéité du
   par le classifieur du mode auto : **David la lance**, puis `--publier`.
 - **#2704 mergée le 2026-11-15** (CI verte, revue : aucune, contenu). Publication du lot : David,
   **après** le `deploy:prod` qui livre #2700.
+
+## Bac à sable des programmes de calcul — 2026-11-15 (branche `feat/blockly-bac-a-sable-calcul`)
+
+Phase 0 présentée le 2026-11-15 ; David : « je te suis » sur les trois recommandations.
+
+- **Page à part `/programmes-de-calcul`, « Programmes de calcul »**, publique, sans connexion, rien
+  d'enregistré ; pas un second mode de `/tortue` (« La Tortue » qui calcule serait incohérent).
+- **Contenu** : `CalculEditeur` tel quel (blocs de calcul, « Essayer avec », Lancer, Effacer,
+  affichages) ; interpréteur seul (ADR 0039), rien de jugé.
+- **Comportements** : nominal « mettre résultat à nombre choisi × 3 ; afficher résultat + 2 »,
+  essayer avec 4 → 14 ; vide → « n'affiche rien » ; programme constant permis ; > 50 affichages
+  coupés « … » ; 0,5 accepté ; boucle trop longue / division par zéro → message de l'interpréteur ;
+  nombre illisible → refus du geste ; Blockly non chargé → message de rechargement.
+- **Liens** : Header + Sidebar + sitemap, pas de Tour du Royaume ; renvoi croisé sous chaque page
+  (« Essaie aussi … »).
+- **Pas d'aperçu Python** (aucun générateur pour les blocs de calcul) ; un nombre à la fois, pas de
+  tableau de valeurs.
+- **Revue** : `code-reviewer` (Sonnet). Doc : `docs/systeme/blockly.md`.
