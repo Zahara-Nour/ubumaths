@@ -1108,4 +1108,5 @@ instruments (v2) ; 07 limité aux diagonales.
 ### Lot 14 : relu (2026-11-15)
 
 - Page à cocher : **7 verdicts sur 7 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
-  `publier-lot.ts` : 7 brouillons passent. Worktree retiré.- David a publié le lot (`5-parallelogrammes`) : 7 modèles `published`, vérifié au MCP.
+  `publier-lot.ts` : 7 brouillons passent. Worktree retiré.
+- David a publié le lot (`5-parallelogrammes`) : 7 modèles `published`, vérifié au MCP.
