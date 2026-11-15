@@ -1218,7 +1218,8 @@ remarque la phrase de son type d'erreur deviné (`blankErrorGuess` et `errorGues
 `error-kinds.ts`), par exemple « Ta réponse est l'opposé du résultat : vérifie le signe. » ou « Ta
 réponse est 10 fois trop petite : vérifie la place de la virgule. ». Une remarque existante prime
 (%, unité, arrondi…). Mêmes exclusions que côté prof ([evaluations.md](evaluations.md), types
-d'erreur) : case hors écriture mathématique ordinaire, cases appariées librement, ambiguïté. Saisie,
+d'erreur) : case hors écriture mathématique ordinaire, cases appariées librement, case `rulesSuffice` (son attendu
+n'est qu'un exemple), ambiguïté. Saisie,
 Contrôle blanc et copie corrigée montrent la phrase par ce seul chemin. La note ne change pas.
 
 Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(…)`, jamais rendue en

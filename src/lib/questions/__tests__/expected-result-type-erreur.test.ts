@@ -17,7 +17,7 @@ import type { DetailedVerdict } from '$lib/utils/answer-validator';
 // Fixtures
 function generate(
 	statement: string,
-	expected: string[],
+	expected: (string | Record<string, unknown>)[],
 	options?: Record<string, unknown>
 ): QuestionInstance {
 	const t = {
@@ -27,7 +27,13 @@ function generate(
 		grades: ['6'],
 		title: 't',
 		...(options && { options }),
-		variations: [{ statement, blanks: expected.map((e) => ({ expectedAnswer: e })), variables: [] }]
+		variations: [
+			{
+				statement,
+				blanks: expected.map((e) => (typeof e === 'string' ? { expectedAnswer: e } : e)),
+				variables: []
+			}
+		]
 	} as unknown as QuestionTemplate;
 	const r = generateInstance(t, 1);
 	if (!r.success) throw new Error(JSON.stringify(r.errors));
@@ -98,6 +104,21 @@ describe('phrase du type d’erreur', () => {
 			answer(['3', '12'])
 		);
 		expect(remarks(r)).toEqual([]);
+	});
+
+	it('case jugée par ses règles (`rulesSuffice`) : l’attendu est un exemple, aucune phrase', () => {
+		const inst = generate('Donne un diviseur de 12 autre que 1 et 12 : $?$', [
+			{
+				expectedAnswer: '3',
+				rulesSuffice: true,
+				validationRules: [{ type: 'divisor', dividend: '12' }]
+			}
+		]);
+		for (const wrong of ['30', '9', '1,5']) {
+			const r = buildExpectedResult(inst, answer([wrong]));
+			expect(r.status).toBe('incorrect');
+			expect(remarks(r)).toEqual([]);
+		}
 	});
 
 	it('verdict du serveur (copie corrigée) : sa remarque prime, pas de phrase en plus', () => {

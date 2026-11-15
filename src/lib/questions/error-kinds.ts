@@ -16,7 +16,9 @@
  *   il reprend la remarque d'une case, ou dit seulement « Les blancs suivants
  *   sont incorrects » sur toute réponse fausse ;
  * - la question n'apparie pas ses cases librement (`orderIndependent`) : la
- *   réponse attendue d'une case n'y est pas connue.
+ *   réponse attendue d'une case n'y est pas connue ;
+ * - la case n'est pas jugée par ses règles seules (`rulesSuffice`) : son
+ *   attendu n'est qu'un exemple de réponse juste.
  *
  * Le prof lit le type en étiquette (`errorGuessLabel`, panneaux d'erreurs) ;
  * l'élève le lit en phrase sous sa réponse, à la correction
@@ -29,6 +31,7 @@
 import { guessErrorKind, type ErrorGuess, type ErrorKind } from '$lib/mathAST/error-kind';
 import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
 import type { BlankVerdict } from '$lib/utils/answer-validator';
+import { rulesDecide } from './rules-suffice';
 import type { InstanceBlank, QuestionInstance, ValidationStatus } from './types';
 
 // Types
@@ -119,7 +122,10 @@ function isPlainMathBlank(blank: InstanceBlank | undefined): blank is InstanceBl
 		blank.type === 'math' &&
 		blank.construire === undefined &&
 		blank.cellule === undefined &&
-		typeof blank.expectedAnswerLatex === 'string'
+		typeof blank.expectedAnswerLatex === 'string' &&
+		// Case jugée par ses règles (`rulesSuffice`) : l'attendu n'est qu'un exemple
+		// (« un diviseur de 12 » : 3, mais 2, 4, 6 aussi), pas « le résultat »
+		!rulesDecide(blank)
 	);
 }
 
