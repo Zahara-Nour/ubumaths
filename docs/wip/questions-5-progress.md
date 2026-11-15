@@ -7,11 +7,10 @@
 
 _Mis à jour le 2026-11-15, après #2668 (lot 10 mergé)._
 
-- **État** : lots 1 à 9 publiés. Lot 10 (§ 24 ter, 10 modèles) **mergé** (#2668), pas encore créé en prod.
+- **État** : lots 1 à 9 publiés. Lot 10 (§ 24 ter) mergé (#2668) et **créé en prod** (10 brouillons, § 24 quater).
   Lot 11 « Programmer en blocs » (§ 25) : **porté par `blockly`**.
-- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/5-proportionnalite-fonctions`
-  (depuis `main`) ; ensuite relevé, migration nœud + tag (`lot-10-rangement.py`) sur une nouvelle branche.
-- **En attente de David** : création en prod du lot 10 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
+- **Prochaine action** : relevé, migration nœud + tag (`lot-10-rangement.py`) dans `feat/questions-5-lot-10-rangement`.
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
   128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
 - **Pièges en cours** : `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer
@@ -745,6 +744,14 @@ proportionnalité 1 (6e ×2) ; caractérisation 1-3 ; généralités sur les fon
   8 à 12 €).
 - Base locale : 10 brouillons ; aperçu admin : 02, 05, 06, 10 rendus justes (repère, nuage, droites nommées,
   cloche à deux cases). Id locaux retirés des fichiers avant commit.
+
+### 24 quater. Lot 10 en prod (2026-11-15)
+
+- Brouillons créés par David (06:20 UTC) : 79b46762 (01), 5ae1954a (02), 570a6e6b (03), 9567cb1d (04), 6191801f (05),
+  40a9edf0 (06), 87e396e4 (07), c3d20985 (08), 6f3c6c5f (09), 832df844 (10). Vérifié au MCP : 10 modèles, une
+  fois chacun, `draft`. Un second `--publier` lancé juste après a été refusé par la garde d'homonymes (0 doublon).
+- Suite : relevé, `lot-10-rangement.py` (gabarit lot 9), migration nœud + tag, worktree
+  `feat/questions-5-lot-10-rangement`.
 
 ## 25. Lot 11 « Programmer en blocs » : validé (David, 2026-11-14, « je te suis »)
 
