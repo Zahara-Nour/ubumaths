@@ -1,0 +1,101 @@
+[
+	{
+		"id": "2b3be6d7-e950-4211-912d-6ac42ff79246",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-095"]
+	},
+	{
+		"id": "2f1302fe-9caf-42b8-823d-a33dcd9c7681",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Relatifs : sens et écritures > droite graduée",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-016"]
+	},
+	{
+		"id": "324e90e2-c378-407e-8c25-494230250e19",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > courbes et repères",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-114"]
+	},
+	{
+		"id": "5e4f9ecf-54c1-4096-8b01-e24ff6cfd496",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-097"]
+	},
+	{
+		"id": "64a067cf-beb1-4479-9b08-85645937b8e6",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Relatifs : sens et écritures > droite graduée",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-121"]
+	},
+	{
+		"id": "8683328e-34af-47f6-8a1e-9d53b8f4f9eb",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Relatifs : sens et écritures > ordre",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-122"]
+	},
+	{
+		"id": "a5418354-54b4-4063-95f5-a63cc91ea21c",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Repérage et déplacements > coordonnées dans le plan",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-046"]
+	},
+	{
+		"id": "e4d1ea01-fcac-4719-a55c-1596b9bafc75",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Repérage et déplacements > coordonnées dans le plan",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-127"]
+	},
+	{
+		"id": "ef117fcd-d836-4f38-a72b-f3d6ef81f8c2",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-093"]
+	}
+]

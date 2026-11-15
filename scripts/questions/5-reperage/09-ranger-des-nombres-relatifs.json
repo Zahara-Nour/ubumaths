@@ -1,4 +1,5 @@
 {
+	"id": "8683328e-34af-47f6-8a1e-9d53b8f4f9eb",
 	"title": "Ranger des nombres relatifs",
 	"description": "Ranger cinq nombres relatifs : entiers dans l'ordre croissant, puis décimaux dans l'ordre décroissant (−2,05 et −2,5 ; −0,7 et 0)",
 	"grades": ["5"],

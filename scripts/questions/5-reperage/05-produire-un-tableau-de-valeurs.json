@@ -1,4 +1,5 @@
 {
+	"id": "ef117fcd-d836-4f38-a72b-f3d6ef81f8c2",
 	"title": "Produire un tableau de valeurs",
 	"description": "Compléter un tableau de valeurs à partir d'une situation décrite en mots (prix avec livraison) ou d'un programme de calcul, sans formule donnée",
 	"grades": ["5"],
