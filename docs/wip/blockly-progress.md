@@ -450,3 +450,9 @@ worktree retiré.
 - **#2674 mergée le 2026-11-15** (CI verte, contenu seul, pas de revue).
 - Vérifié : simulation 2/2 importable ; une spec inversée → modèle refusé (01 et 02) ;
   `answer-complexity-corpus` et `student-answer-safety.render` verts. Pas joué en base locale.
+- **Création en prod** (2026-11-15, David) : 2 brouillons, ids commités aussitôt
+  (01 → `94d75415`, 02 → `befab91c`). Relevé MCP : en {6}, sans nœud ni tag ; « Préalgorithmique »
+  sans sous-notion.
+- **#2676** : migration `20261115072353` (2 modèles sur « Algorithmique › Préalgorithmique », un tag
+  chacun), calquée sur `20261115061153` ; test d'intégration 10/10, rouge sans la migration (6/10) ;
+  `security-auditor` sans bloquant. CI : `Doc-inchangée:` doit être dans un COMMIT, pas dans la PR.
