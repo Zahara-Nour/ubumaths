@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2696 et son `db:migrate`._
+_Mis à jour le 2026-11-15, après #2696 et la publication du lot « prévoir la valeur »._
 
-- **État** : lots 6e et CM2 publiés ; « prévoir la valeur » = lot de 3 modèles en ```scratch, SANS outil neuf (David, 2026-11-15 : le bloc Blockly en lecture seule est abandonné, § Prévoir la valeur) · **Prochaine action** : relecture de David sur la page à cocher (https://claude.ai/artifact/54wTXeFmRnqVhRADrwT4mx), compter les verdicts en base, puis publication (`publier-lot.ts`, David lance `--publier`) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; modèle sur une notion → `sous_notions_admises` dans la migration ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `db:migrate` → depuis le dépôt principal ; montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance) · **Worktree / branche** : aucun (retiré après #2696) ; le prochain lot en ouvre un
+- **État** : lots 6e, CM2 et « prévoir la valeur » publiés (CM2-067, 5-104, 5-101 : `98f54315`, `55615796`, `b9e88a6e`, en ```scratch, sans outil neuf) · **Prochaine action** : choisir avec David la piste suivante parmi celles qui restent (mode Calcul du bac à sable, nombre maximal de blocs, étanchéité du sandbox JS ; garde `r.grade = any(q.grades)` pour les prochaines migrations de rangement) — phase 0 d'abord · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; modèle sur une notion → `sous_notions_admises` dans la migration ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `db:migrate` → depuis le dépôt principal ; montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance) · **Worktree / branche** : aucun (retiré après #2696) ; le prochain lot en ouvre un
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -577,3 +577,6 @@ Script `docs/wip/questions/lot-prevoir-valeur.py` → `scripts/questions/blockly
 - **Page à cocher** : https://claude.ai/artifact/54wTXeFmRnqVhRADrwT4mx (3 fiches, alerte « bloc
   scratch non dessiné » sur chacune : le programme y est montré en texte ; à jouer dans l'aperçu
   pour le dessin). Collection `verdicts` vide à la publication.
+- **Publication** (2026-11-15) : 3 « ok » sur 3 à la page à cocher, aucun « À revoir » ;
+  `publier-lot.ts --publier` lancé par David ; les 3 modèles sont `published` en prod (vérifié par
+  requête).
