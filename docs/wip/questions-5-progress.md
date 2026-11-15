@@ -9,7 +9,7 @@ _Mis à jour le 2026-11-15, après la publication du lot 13._
 
 - **État** : lots 1 à 13 publiés. Restent : lot 14 (7 : 067, 068, 069, 070, 071, 072, 133), lot 15 (6 : 054, 055,
   115, 144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : phase 0 du lot 14 (relevé prod au MCP, tableau des modèles, questions) → attendre la
+- **Prochaine action** : phase 0 du lot 14 proposée (§ 29) → attendre la
   validation de David.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
 - **Pièges en cours** : lancer `create-questions --publier` depuis le worktree du chantier (`pwd`) ; worktree neuf :
@@ -1022,3 +1022,54 @@ triangle obtus en v2 de 04 et 08.
 
 - Page à cocher : **9 verdicts sur 9 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
   `publier-lot.ts` : 9 brouillons passent. David a publié le lot (`5-triangles`) : 9 modèles `published`, vérifié au MCP.
+
+## 29. Lot 14 « Parallélogrammes » : phase 0 (2026-11-15, NON validée)
+
+Relevé prod (MCP) : aucun modèle sur les 7 points. Nœud « Figures planes › parallélogrammes » : existe, vide (voisins :
+« Aires › parallélogramme », 3 modèles de 5e sur 5-073 ; « Translation et parallélogramme », 4e-3e ; CE2 « Propriétés
+du carré, du rectangle et du losange »). Bornes : seul 5-071 en a une (rectangle = parallélogramme ayant un angle
+droit ; losange = deux côtés consécutifs égaux ; carré = rectangle et losange, Exemples 2026 p. 26). Outils :
+` ```figure ` (`marque_segment`, angle droit, couleurs) + case ou ` ```choix ` ; ` ```figure-a-completer ` avec
+`verifier: point D = sommet(parallelogramme(A, B, C), 4)` (exemple du catalogue, message « ABCD est croisé ») et
+`point C = symetrie(A, centre=O)`.
+
+| #   | Point | Modèle                                           | Réponse                    | Nœud, niveau        |
+| --- | ----- | ------------------------------------------------ | -------------------------- | ------------------- |
+| 01  | 5-067 | Définir le parallélogramme                       | choix                      | parallélogrammes, 1 |
+| 02  | 5-069 | Côtés opposés et diagonales d'un parallélogramme | case (v1, v2) · choix (v3) | parallélogrammes, 2 |
+| 03  | 5-070 | Est-ce un parallélogramme ?                      | choix                      | parallélogrammes, 3 |
+| 04  | 5-071 | Rectangle, losange, carré : définitions          | choix                      | parallélogrammes, 4 |
+| 05  | 5-072 | Rectangle, losange, carré : propriétés           | choix (v1, v2) · case (v3) | parallélogrammes, 5 |
+| 06  | 5-068 | Placer le 4e sommet d'un parallélogramme         | figure à compléter         | parallélogrammes, 6 |
+| 07  | 5-133 | Construire un parallélogramme par ses diagonales | figure à compléter         | parallélogrammes, 7 |
+
+- 01 : v1 « un parallélogramme est un quadrilatère » : dont les côtés opposés sont parallèles deux à deux / qui a
+  deux côtés parallèles / qui a quatre côtés de même longueur / qui a quatre angles droits ; v2 figure ABCD, texte
+  « (AB) ∥ (DC) et (AD) ∥ (BC) » (le parallélisme se dit, il ne se code pas) → ABCD est : un parallélogramme /
+  un rectangle / un losange / on ne peut pas savoir.
+- 02 : ABCD parallélogramme dessiné (penché, jamais rectangle) ; v1 AB = 3 à 9 cm, AD donné → CD (case, cm) ;
+  v2 diagonales sécantes en O, AC = 6 à 16 cm (pair) → AO (case) ; v3 « les diagonales d'un parallélogramme » : se
+  coupent en leur milieu / ont la même longueur / sont perpendiculaires. Erreurs des specs : AD au lieu de CD,
+  AC au lieu de AO.
+- 03 : quadrilatère codé (marques de même longueur) → « ABCD est-il un parallélogramme ? » oui / on ne peut pas
+  savoir ; v1 diagonales qui se coupent en leur milieu (oui) ; v2 côtés opposés deux à deux de même longueur,
+  non croisé (oui) ; v3 piège : une seule paire de côtés opposés de même longueur, ou diagonales de même longueur
+  sans milieu commun (on ne peut pas savoir). Corrigé : la propriété caractéristique citée.
+- 04 : « un rectangle (losange, carré) est un parallélogramme qui a » : un angle droit / deux côtés consécutifs de
+  même longueur / un angle droit et deux côtés consécutifs de même longueur / des diagonales sécantes. Borne 5-071
+  mot pour mot.
+- 05 : parallélogramme codé ; v1 diagonales de même longueur → rectangle ; perpendiculaires → losange ; les deux →
+  carré (choix parmi parallélogramme / rectangle / losange / carré : le plus précis) ; v2 sens direct : « ABCD est
+  un losange ; ses diagonales » sont perpendiculaires / ont la même longueur / ne se coupent pas en leur milieu ;
+  v3 ABCD rectangle, AC = 4 à 12 cm → BD (case).
+- 06 : A, B, C donnés, [AB] et [BC] tracés → placer D ; v1 sur quadrillage (outil point, sommets sur des nœuds) ;
+  v2 sur papier uni, point · règle · équerre · compas · report (trois chemins justes, cf. catalogue). Erreurs des
+  specs : le sommet du parallélogramme croisé (ABDC), le symétrique de B par A.
+- 07 : v1 A, B et O donnés (O centre) → placer C et D (`point C = symetrie(A, centre=O)`, `point D = symetrie(B,
+centre=O)`), papier uni, compas · report · règle ; v2 losange : diagonale [AC] tracée, B donné sur la médiatrice →
+  placer D. Erreurs : C = symétrique de B, D placé à la même distance de O sans alignement.
+- Pas de sous-notion neuve. Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte
+  connecté).
+- **Questions** : (1) 03 et 05 avec « on ne peut pas savoir » comme réponse juste dans une variation piège (reco :
+  oui, c'est l'erreur des élèves) ; (2) 06 en deux variations, quadrillage puis papier uni aux instruments (reco :
+  oui) ; (3) 07 limité aux diagonales (5-133 dit « côtés ou diagonales », les côtés étant déjà le 06) (reco : oui).
