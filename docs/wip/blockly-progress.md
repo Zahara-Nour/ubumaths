@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2685._
+_Mis à jour le 2026-11-15, après #2688._
 
-- **État** : lot 6e publié, #2683 en prod (v0.90.0), 6-210 corrigé · lot CM2 (CM2-152, 1 modèle) écrit, #2685 mergée · **Prochaine action** : création en prod par David, depuis le worktree (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/CM2-blockly --publier`) → ids commités → migration nœud/tag (Algèbre › Premiers pas algébriques › programmes de calcul) → page à cocher → publication · puis (3) « prévoir la valeur » (débloque 5-101 / 5-104, et CM2-067 sans modèle) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; il ne rejoue pas les specs d'un modèle déjà en base (copie sans id, dans le scratchpad si possible) ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `CalculCorrige.svelte` est aussi couvert par `ubumark.md` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance, simulation comprise) ; `db:migrate` → depuis le dépôt principal ; worktree neuf → `pnpm exec svelte-kit sync` · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-cm2-rangement` (ids + migration)
+- **État** : lot 6e publié, #2683 en prod (v0.90.0), 6-210 corrigé · lot CM2 (CM2-152, 1 modèle `42881663`) créé, rangé et tagué en prod (#2685, #2688, `db:migrate` vérifié) · **Prochaine action** : relecture de la page à cocher (https://claude.ai/artifact/X3HA2WHMiWNhUsu9QQF52x) puis `publier-lot.ts --dir scripts/questions/CM2-blockly --publier` par David, vérifier `published` · puis (3) « prévoir la valeur » (débloque 5-101 / 5-104, et CM2-067 sans modèle) · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; il ne rejoue pas les specs d'un modèle déjà en base (copie sans id, dans le scratchpad si possible) ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `CalculCorrige.svelte` est aussi couvert par `ubumark.md` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance, simulation comprise) ; `db:migrate` → depuis le dépôt principal ; worktree neuf → `pnpm exec svelte-kit sync` · **Worktree / branche** : aucun (retiré après #2688) ; le prochain lot en ouvre un
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -458,6 +458,15 @@ worktree retiré.
   calcul », un tag), calquée sur `20261115072353` ; test d'intégration 9/9, rouge sans la migration
   (5/9) ; garde « tout ou rien » sans objet à un modèle (test retiré), remplacée par « sous-notion
   archivée → échec ».
+- `security-auditor` sans bloquant (non bloquants communs au gabarit : `set local lock_timeout` sans
+  effet hors bloc explicite ; le rollback ne revérifie pas le nœud posé).
+- **#2688 mergée le 2026-11-15** ; `db:migrate` (depuis le dépôt principal) appliqué, vérifié en
+  prod : nœud `bd13a6e2`, un tag CM2-152, brouillon, `updated_at` intact (16:50:34), trigger `O`.
+  ⚠️ Le même `db push` a appliqué `20261115165656_questions_ce1_robot_rangement_tags` (#2689,
+  mergée juste avant par une autre session, pas encore appliquée) : sans erreur, contenu non vérifié
+  par ce chantier — signalé à David.
+- **Page à cocher** : https://claude.ai/artifact/X3HA2WHMiWNhUsu9QQF52x (1 fiche, alerte « bloc non
+  dessiné », comme aux lots précédents).
 - **Création en prod** (2026-11-15, David) : 2 brouillons, ids commités aussitôt
   (01 → `94d75415`, 02 → `befab91c`). Relevé MCP : en {6}, sans nœud ni tag ; « Préalgorithmique »
   sans sous-notion.
