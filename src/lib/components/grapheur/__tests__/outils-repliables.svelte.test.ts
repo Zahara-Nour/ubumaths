@@ -7,9 +7,9 @@ import { grapheurContext } from '$lib/stores/grapheur-context';
 
 const STORAGE_KEY = 'grapheur-outils-replies';
 
-async function renderControls() {
+async function renderControls(expanded = false) {
 	return await render(ViewportControls, {
-		props: { svgWidth: 400, svgHeight: 300, onToggleExpanded: () => {} },
+		props: { svgWidth: 400, svgHeight: 300, expanded, onToggleExpanded: () => {} },
 		context: grapheurContext(new GrapheurStore())
 	});
 }
@@ -54,6 +54,16 @@ describe('outils du graphe repliables', () => {
 		toggle!.click();
 		flushSync();
 		expect(button(screen.container, 'Zoom avant')).not.toBeNull();
+	});
+
+	it('graphe agrandi : « Réduire » reste visible outils repliés', async () => {
+		const screen = await renderControls(true);
+		button(screen.container, 'Replier les outils du graphe')!.click();
+		flushSync();
+
+		expect(button(screen.container, 'Zoom avant')).toBeNull();
+		expect(button(screen.container, 'Réduire le graphe')).not.toBeNull();
+		expect(screen.container.querySelectorAll('button')).toHaveLength(2);
 	});
 
 	it('le repli est gardé d’une visite à l’autre', async () => {

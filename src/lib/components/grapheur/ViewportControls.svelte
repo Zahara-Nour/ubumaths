@@ -170,23 +170,25 @@
 		</Button>
 
 		<ExportButton {svgRef} width={svgWidth} height={svgHeight} />
+	{/if}
 
-		{#if onToggleExpanded}
-			<Button
-				variant="outline"
-				size="icon"
-				onclick={onToggleExpanded}
-				title={expanded ? 'Réduire le graphe (Échap)' : 'Agrandir le graphe'}
-				aria-label={expanded ? 'Réduire le graphe' : 'Agrandir le graphe'}
-				aria-pressed={expanded}
-			>
-				{#if expanded}
-					<Minimize2 class="h-4 w-4" />
-				{:else}
-					<Maximize2 class="h-4 w-4" />
-				{/if}
-			</Button>
-		{/if}
+	<!-- Graphe agrandi : « Réduire » reste visible même outils repliés — sur
+	     tablette, sans Échap, sortir doit rester à un geste -->
+	{#if onToggleExpanded && (!collapsed || expanded)}
+		<Button
+			variant="outline"
+			size="icon"
+			onclick={onToggleExpanded}
+			title={expanded ? 'Réduire le graphe (Échap)' : 'Agrandir le graphe'}
+			aria-label={expanded ? 'Réduire le graphe' : 'Agrandir le graphe'}
+			aria-pressed={expanded}
+		>
+			{#if expanded}
+				<Minimize2 class="h-4 w-4" />
+			{:else}
+				<Maximize2 class="h-4 w-4" />
+			{/if}
+		</Button>
 	{/if}
 
 	<Button
