@@ -5,10 +5,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15 : recompte et phase 0 du lot 6 (§ 16)._
+_Mis à jour le 2026-11-15 : lot 6 écrit, essayé en local (§ 16 ter)._
 
 - **État** : lots 0 à 5d publiés (5d : 3 modèles neufs + a43667e9 du CE2 ouvert au CM1). Recompte du 2026-11-15 : 94 points couverts sur 171 (§ 16).
-- **Prochaine action** : écrire le lot 6 (problèmes, § 16), branche `content/questions-cm1-lot6`.
+- **Prochaine action** : PR des fichiers du lot 6 (§ 16 ter) ; après le merge, David lance `create-questions --publier` (prod), puis migration nœud + tags.
 - **En attente de David** : rien (§ 16 bis : un lot de 10, schéma en barres au corrigé, puis 6 bis, 6 ter).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom), refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau (tout programme) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; prochain lot sur une branche neuve depuis `origin/main`.
@@ -1176,3 +1176,19 @@ Questions :
 (` ```schema-barres `) dans le **corrigé** de 6-1, 6-3 et 6-7, aucun dans l'énoncé ; 3. **lot 6 bis « rattrapage »**
 (001, 002, 131, 010, 143, 024, 048) juste après ; 4. **lot 6 ter « algèbre »** (062-066) entre les problèmes et les
 données.
+
+### 16 ter. Lot 6 — écriture (2026-11-15)
+
+- Script `docs/wip/questions/lot-cm1-6.py` → `scripts/questions/cm1-6/` (10 JSON, 34 variations), patron
+  `lot-ce2-5.py`. Niveaux : parties-tout 23, 24 ; comparaison 4 (6-3), 5 (6-7) ; multiplicatifs 12, 13 ; en deux étapes
+  ou plus 10 (6-4), 11 (6-8) ; produits cartésiens 2 ; optimisation 1. À relever une nouvelle fois avant la création en prod.
+- Schéma en barres au corrigé de 6-1, 6-3, 6-7 ; inconnue marquée « ? ». Prix à deux décimales (`zeros: off` sur 6-2,
+  6-4, 6-8 : 12,6 accepté pour 12,60). 6-2 V3 et 6-7 V4 tirent l'une de deux questions (variable `t`).
+  6-9 V3 précise que 1 rouge + 2 bleu ≠ 2 rouge + 1 bleu ; 6-10 V2 : S de 11 à 49, jamais multiple de 5.
+- `question:specs` 300 tirages par variation : 10 200 / 10 200, 121 specs vertes ; `create-questions` en simulation
+  (prod) : 10 « à créer » ; sonde jetable des ` ```schema-barres ` (`parseSchemaBarresContent`) : 3 600 blocs, 0 problème.
+- Base locale (copie du dossier, pour ne pas écrire d'id local dans les fichiers ; `DOTENV_CONFIG_PATH=.env.local`) :
+  10 brouillons, aperçu admin à 390 px, réponse fausse puis corrigé : rendu correct, schémas lisibles. Le défilement
+  horizontal de la page (≈ 525 px) vient du badge « Template ID » de l'admin, pas des questions.
+- À trancher : 6-8 porte le même titre que le modèle CE2 `43b40fc7` (« Problèmes mixtes en deux ou trois étapes »),
+  niveaux différents (11 / 9) : la création n'est pas bloquée.
