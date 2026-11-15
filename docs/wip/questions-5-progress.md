@@ -1110,3 +1110,68 @@ instruments (v2) ; 07 limité aux diagonales.
 - Page à cocher : **7 verdicts sur 7 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
   `publier-lot.ts` : 7 brouillons passent. Worktree retiré.
 - David a publié le lot (`5-parallelogrammes`) : 7 modèles `published`, vérifié au MCP.
+
+## 30. Lot 15 « Symétrie centrale, aires, solides » : phase 0 (2026-11-15, NON validée)
+
+Relevé prod (MCP) : aucun modèle sur les 6 points. Nœuds : 054, 055 → notion « Géométrie › Symétrie centrale » (vide,
+sans sous-notion) ; 115 → notion « Grandeurs et mesures › Aires » elle-même (aucun modèle sur la notion ; voisins 5e :
+sous-notions disque — `8db109a5` valeur exacte, `28d7ad74` π ≈ 3,14 —, parallélogramme, triangle quelconque) ;
+144, 048 → « Solides › perspective cavalière » (vide) ; 049 → « Solides › patrons » (CE2 : niveaux 1, 2). Bornes :
+055 conservation alignement, parallélisme, longueurs, angles (admises) ; 115 parallélogrammes, triangles, disques ;
+144 cube et pavé seulement ; 048 pavé, cube, cylindre, prisme droit ; 049 pavé, prisme droit (base triangle ou
+parallélogramme), cylindre. Outils : ` ```figure ` (`secteur` pour le demi-disque, `symetrie(A, centre=O)`) + case
+ou ` ```choix ` ; ` ```figure-a-completer ` `verifier: symetrique par O` (O point = centre, quadrillage ou instruments) ;
+` ```solide ` (cube, pavé, prisme triangle, cylindre ; `cotes:`, `cachees: non`, `sommets:`) ; ` ```patron ` (pavé
+`1..11` et `faux 1..8`, prisme `1`/`2`, cylindre `1`, `sommets:` avec `?`) ; choix à dessins (patron du CE2 `11ebf9fe`).
+Le bloc solide n'a pas d'orientation : un même pavé « vu autrement » = mêmes cotes dans un autre ordre.
+
+| #   | Point | Modèle                                          | Réponse                    | Nœud, niveau             |
+| --- | ----- | ----------------------------------------------- | -------------------------- | ------------------------ |
+| 01  | 5-054 | Définir la symétrie centrale                    | choix                      | symétrie centrale, 1     |
+| 02  | 5-054 | Construire le symétrique par rapport à un point | figure à compléter         | symétrie centrale, 2     |
+| 03  | 5-055 | Propriétés de la symétrie centrale              | case (v1, v2) · choix (v3) | symétrie centrale, 3     |
+| 04  | 5-115 | Aire d'une figure composée : ajouter            | case                       | aires (notion), 1        |
+| 05  | 5-115 | Aire d'une figure composée : retrancher         | case                       | aires (notion), 2        |
+| 06  | 5-144 | Reconnaître un cube, un pavé                    | choix                      | perspective cavalière, 1 |
+| 07  | 5-048 | Lire des perspectives cavalières                | choix                      | perspective cavalière, 2 |
+| 08  | 5-049 | Perspective et patron                           | choix (v1, v2) · case (v3) | patrons, 3               |
+
+- 01 : v1 « le symétrique du point M par rapport au point O est le point M' tel que » : O est le milieu de [MM'] /
+  OM = OM' / (MM') est perpendiculaire en O à une droite / M' est sur la droite (OM) (deux pièges « à moitié vrais ») ;
+  v2 figure : O et M, quatre points nommés autour (le symétrique ; un point sur (OM) à la mauvaise distance ; un point
+  à la bonne distance hors de (OM) ; le symétrique axial par une droite passant par O) → « le symétrique de M par
+  rapport à O est » (choix des lettres). Corrigé : « demi-tour autour de O », O milieu.
+- 02 : v1 quadrillage, A et O sur des nœuds → placer A' (`point A' = symetrie(A, centre=O)`, outil point) ;
+  v2 quadrillage, triangle ou quadrilatère, O hors de la figure ou sur un sommet → `symetrique par O` ;
+  v3 papier uni, un point, règle et compas (instruments par défaut de `symetrique`). Erreurs des specs : symétrique
+  axial (par la verticale ou l'horizontale passant par O), translation de vecteur AO (A' = O), O placé au tiers.
+- 03 : figure ABC et son symétrique A'B'C' par rapport à O (tracés, O marqué) ; v1 AB = 3 à 9 cm (décimal à un
+  chiffre en 2e tirage) → A'B' (case) ; v2 angle ABC = 25° à 140° → angle A'B'C' (case, degrés) ; v3 « le symétrique
+  de la droite (d) par rapport à O est une droite » : parallèle à (d) / perpendiculaire à (d) / sécante à (d) en O ;
+  (d) ne passant pas par O. Corrigé : « la symétrie centrale conserve les longueurs (les angles, le parallélisme) »,
+  admis. Erreurs : A'C' au lieu de A'B', 180° − l'angle.
+- 04 : figure cotée (cm, entiers ; `texte` des cotes), « aire en cm² » ; v1 rectangle + triangle rectangle accolé ;
+  v2 rectangle + demi-disque (diamètre = un côté, 2 à 10, pair), **π ≈ 3,14** dit dans l'énoncé, réponse décimale
+  exacte (pas d'arrondi) ; v3 parallélogramme + triangle (hauteurs cotées en tirets). Erreurs : le périmètre, le
+  demi-disque compté comme disque entier, base × côté oblique pour le parallélogramme.
+- 05 : de même, « on retire » ; v1 rectangle privé d'un triangle (coin coupé ou triangle intérieur) ; v2 carré privé
+  d'un disque inscrit (côté = diamètre, pair) ou d'un quart de disque de rayon le côté, π ≈ 3,14 ; v3 « cadre » :
+  rectangle privé d'un rectangle intérieur, pour la lecture des cotes. Erreurs : l'addition au lieu de la
+  soustraction, le rayon pris pour le diamètre.
+- 06 : v1 quatre dessins (cube, pavé, prisme droit, pyramide), « lequel est un cube ? » (puis « un pavé ») ; v2 un
+  pavé coté → « ce solide est » : un cube / un pavé droit (non cube) / un prisme ; cube coté a, a, a ou pavé à
+  dimensions différentes. Borne : cube et pavé seulement (les autres solides en distracteurs, jamais en réponse).
+- 07 : v1 « lequel est un prisme droit ? » (puis « un cylindre ») parmi cube, pavé, prisme, cylindre ; v2 un pavé
+  coté 4 × 2 × 3, « lequel représente le même pavé, posé autrement ? » : mêmes cotes dans un autre ordre / deux cotes
+  changées / un cube ; v3 « lequel est bien dessiné en perspective cavalière ? » : le juste / le même avec
+  `cachees: non` (arêtes cachées en plein) — choix de deux.
+- 08 : v1 pavé coté (perspective) → « lequel est son patron ? » : son patron (forme 1..11) / patron d'un pavé aux
+  cotes différentes / un faux patron ; v2 un patron (prisme, cylindre ou pavé) → « c'est le patron » : d'un prisme
+  droit / d'un cylindre / d'un pavé / d'une pyramide (choix en mots) ; v3 pavé ABCDEFGH en perspective et son patron
+  aux sommets nommés, un `?` → « quelle lettre vient à la place de ? » (case, une majuscule).
+- Pas de sous-notion neuve. Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte
+  connecté).
+- **Questions** : (1) 115 en deux modèles, ajouter puis retrancher, avec **π ≈ 3,14** et réponse décimale exacte
+  (reco : oui, comme `28d7ad74`) ; (2) 04, 05 rangés sur la notion « Aires » elle-même, nœud du point (reco : oui,
+  plutôt qu'une sous-notion « figures composées » neuve) ; (3) 048 sans perspective à dessiner (le bloc solide n'a
+  ni orientation ni geste) : « construire » couvert par 049 v3 et les assemblages de 6e (reco : oui).
