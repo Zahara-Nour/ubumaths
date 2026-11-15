@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15 : lots 5b et 5d publiés (§ 15 septies)._
+_Mis à jour le 2026-11-15 : recompte et phase 0 du lot 6 (§ 16)._
 
-- **État** : lots 0 à 5d publiés (5d : 3 modèles neufs + a43667e9 du CE2 ouvert au CM1). Aucun lot suivant découpé.
-- **Prochaine action** : recompter les points du CM1 encore sans modèle (relevé MCP, comme au § 1) et proposer le lot suivant en phase 0 (skill `couvrir-niveau`) ; attendre la validation de David avant d'écrire.
-- **En attente de David** : rien.
+- **État** : lots 0 à 5d publiés (5d : 3 modèles neufs + a43667e9 du CE2 ouvert au CM1). Recompte du 2026-11-15 : 94 points couverts sur 171 (§ 16).
+- **Prochaine action** : écrire le lot 6 (problèmes, § 16), branche `content/questions-cm1-lot6`.
+- **En attente de David** : rien (§ 16 bis : un lot de 10, schéma en barres au corrigé, puis 6 bis, 6 ter).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom), refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau (tout programme) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; prochain lot sur une branche neuve depuis `origin/main`.
 
@@ -1110,3 +1110,69 @@ Périmètre d'un polygone`, niveaux 1 à 4 (catégorie neuve).
 - Pages à cocher : lot 5b 10 « OK » sur 10, lot 5d 3 sur 3, aucun commentaire. `publier-lot` en simulation : 13/13 ;
   `--publier` lancé par David ; vérifié au MCP : 13 publiés. Vérification manuelle notée (périmètres au CM1, #2698).
 - **Lots 5b et 5d clos.** Le découpage du lot 5 (§ 14) est entièrement livré.
+
+## 16. Recompte et lot 6 — problèmes : phase 0 (à valider)
+
+Relevé MCP du 2026-11-15 : **94 points du CM1 sur 171 ont au moins un modèle** (tous publiés). Restent sans modèle :
+
+- **Lot 6, problèmes (prochain dans l'ordre du § 4 bis)** : 054, 134, 055, 056, 057, 058, 059, 060.
+- **Oubliés des lots 2 et 4** (classés A ou B au § 3, jamais mis dans un lot) : 001, 002, 131 (collections
+  organisées, unités de numération), 010, 143 (droite graduée des entiers), 024 (unités, dixièmes, centièmes, annoncé
+  au lot 4 au § 9 mais absent de son tableau), 048 (estimer).
+- **Plus loin dans l'ordre** : algèbre 062-066 ; aires 086-088, angles 089-091, heures 092-095, 166 ; géométrie
+  097-119 ; données 120-139, 169-172 ; probabilités 123-128 ; proportionnalité 129, 130.
+- **D, sans modèle (décidé)** : 140, 097, 104, 105, 114, 116, 119.
+
+Patrons : `scripts/questions/ce2-5/` (12 modèles, tous publiés, nœuds « Problèmes arithmétiques › parties-tout,
+comparaison, multiplicatifs, en deux étapes ou plus, produits cartésiens »). « Problèmes arithmétiques › optimisation »
+existe déjà et ne contient aucun modèle. Pour le CM2, aucun modèle de problème n'est tagué. Niveaux : à la suite de
+ceux en place (parties-tout ≤ 22, comparaison ≤ 3, multiplicatifs ≤ 11, en deux étapes ≤ 9, produits cartésiens 1),
+relevés une nouvelle fois juste avant la création.
+
+Bornes `cycle3.json`, CM1 : entiers jusqu'à 999 999, décimaux, fractions du CM1 ; « plus la structure est complexe,
+plus le champ numérique est réduit » (BO) ; 056 s'appuie sur les tables ; 057 : « fois plus », « fois moins », en une
+ou deux étapes ; 058 : deux ou trois étapes, les quatre opérations ; 059 : tableau, arbre ou liste (6 × 3 tenues,
+sommes de deux dés, dominos de 0 à 4) ; 060 : optimisation sous plusieurs contraintes (bracelets). Le BO demande aussi
+des énoncés où « plus » appelle une soustraction : une variation par modèle de comparaison.
+
+| #    | Point   | Sous-notion            | Modèle                                       | Variations, plages                                                                                                                                                                                                                         |
+| ---- | ------- | ---------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 6-1  | CM1-054 | parties-tout           | Problèmes parties-tout (jusqu'à 999 999)     | V1 le tout (deux ou trois parties) ; V2 une partie (le tout et l'autre partie) ; V3 l'état de départ (« j'en ai vendu a, il m'en reste b ») ; entiers de 1 000 à 999 999                                                                   |
+| 6-2  | CM1-054 | parties-tout           | Problèmes parties-tout : décimaux, fractions | V1 le tout, prix ou longueurs à deux décimales ; V2 une partie, décimale ; V3 fractions de même dénominateur (≤ 20), le tout ou une partie                                                                                                 |
+| 6-3  | CM1-134 | comparaison            | Problèmes de comparaison                     | V1 « a de plus que » → le plus grand ; V2 l'écart (« combien de plus ? ») ; V3 « a de plus que » → le plus petit (le « plus » qui demande une soustraction) ; V4 décimaux et deux unités (Alix 1,61 m, 13 cm de plus que Bruno)            |
+| 6-4  | CM1-055 | en deux étapes ou plus | Problèmes additifs en deux ou trois étapes   | V1 stock + arrivée − départ ; V2 comparaison puis total (« combien en tout ? ») ; V3 deux achats à virgule et un billet, la monnaie rendue ; V4 trois étapes (quatre données) ; grands entiers, ou décimaux à deux décimales               |
+| 6-5  | CM1-056 | multiplicatifs         | Problèmes multiplicatifs : partage exact     | V1 le tout (n paquets de p) ; V2 la valeur d'une part ; V3 le nombre de parts ; produits des tables de 2 à 10, éventuellement × 10 ou × 100 (7 × 80)                                                                                       |
+| 6-6  | CM1-056 | multiplicatifs         | Problèmes de partage avec un reste           | V1 « combien de boîtes pleines ? » (le quotient) ; V2 « combien de boîtes pour **tout** ranger ? » (le quotient + 1) ; V3 « combien en reste-t-il ? » (le reste) ; diviseur de 2 à 9, dividende ≤ 99                                       |
+| 6-7  | CM1-057 | comparaison            | Comparaison multiplicative                   | V1 « k fois plus » → le plus grand ; V2 « k fois moins » → le plus petit ; V3 « k fois plus que » → le plus petit (piège) ; V4 deux étapes (« combien en tout ? », « combien de plus ? ») ; k de 2 à 10                                    |
+| 6-8  | CM1-058 | en deux étapes ou plus | Problèmes mixtes en deux ou trois étapes     | V1 groupes de deux tailles (g tables de n, h tables de m) ; V2 achats identiques à virgule (× un entier < 10), puis la monnaie rendue ; V3 trois étapes (places, réservations) ; V4 un partage puis une addition ou une soustraction       |
+| 6-9  | CM1-059 | produits cartésiens    | Problèmes de dénombrement                    | V1 deux choix (6 hauts × 3 bas) ; V2 trois choix (menus) ; V3 deux dés, un rouge et un bleu : combien de façons d'obtenir la somme s ? (s de 3 à 11) ; V4 dominos de 0 à n (n de 3 à 6) : combien de dominos différents ?                  |
+| 6-10 | CM1-060 | optimisation           | Problèmes d'optimisation                     | V1 bracelets de a perles rouges et b bleues, avec R rouges et B bleues : combien de bracelets au plus ? (le plus petit des deux quotients, jamais égaux) ; V2 payer S € exactement en pièces de 2 € et de 5 €, le moins de pièces possible |
+
+Forme commune : une case, la réponse suivie de son unité (« Il y a ? billes ») ; décimaux à virgule exigée, comme aux
+lots 4 et 5 ; fractions : toute fraction égale acceptée, comme dans le patron CE2 `4f47f8d6`. Le corrigé suit les
+quatre phases (comprendre, calculer, répondre, vérifier) : une ligne qui dit l'opération, une phrase réponse, une
+vérification de vraisemblance. Specs d'erreurs typiques : la mauvaise opération (a + d à la place de a − d en V3),
+l'écart pris pour une valeur, l'oubli du + 1 dans « tout ranger », le quotient à la place du reste, le produit des
+choix additionné, la somme 7 comptée une seule fois, les dominos doubles oubliés ou comptés deux fois.
+
+Questions :
+
+1. **Découpage** : un lot de 10 modèles (ci-dessus), une PR de fichiers et une migration ; ou deux lots, 6a additifs
+   (6-1 à 6-4) et 6b multiplicatifs, dénombrement, optimisation (6-5 à 6-10) ? Reco : **un seul lot**, puisque les
+   patrons CE2 sont tous là.
+2. **Schéma en barres dans le corrigé** (` ```schema-barres `, en prod depuis #2597) pour 6-1, 6-3, 6-7 : le corrigé
+   dessine le schéma, et l'énoncé n'en montre pas ? Reco : **oui**, c'est la façon dont le BO fait modéliser.
+3. **Les oubliés** (001, 002, 131, 010, 143, 024, 048) : en faire un **lot 6 bis « rattrapage »** juste après le lot 6
+   (7 points, outils en prod : case, `collection`, `line` avec `placer:`, case « choix » pour estimer), plutôt que de
+   les laisser jusqu'à la fin ? Reco : oui, juste après.
+4. **Algèbre (062-066)**, absente de l'ordre du § 4 bis : en faire un lot 6 ter, entre les problèmes et les données ?
+   Reco : oui (063 profite du schéma en barres, comme 6-142).
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 16 bis. Lot 6 : réponse de David (2026-11-15)
+
+« je te suis », en réponse aux quatre recommandations du § 16 : 1. **un seul lot** de 10 modèles ; 2. schéma en barres
+(` ```schema-barres `) dans le **corrigé** de 6-1, 6-3 et 6-7, aucun dans l'énoncé ; 3. **lot 6 bis « rattrapage »**
+(001, 002, 131, 010, 143, 024, 048) juste après ; 4. **lot 6 ter « algèbre »** (062-066) entre les problèmes et les
+données.

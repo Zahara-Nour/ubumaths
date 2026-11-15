@@ -1,18 +1,18 @@
 ---
-status: en-cours
+status: clos
 ---
 
 # Chantier `type-erreur` — deviner la nature d'une erreur
 
 Ouvert le 2026-11-15, choisi par David après la clôture de `durees-ajustees`. Suite décidée le 2026-11-14
-dans [`erreurs-frequentes`](../archive/wip/erreurs-frequentes-progress.md) § Suites : « deviner la nature
+dans [`erreurs-frequentes`](./erreurs-frequentes-progress.md) § Suites : « deviner la nature
 d'une erreur (signe, oubli du carré…) par le moteur mathAST ».
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2695._
+_Mis à jour le 2026-11-15 : chantier clos._
 
-- **État** : v1 livrée — PR 1 (#2682, moteur), PR 2 (#2686, prof), PR 3 (#2695, élève : phrase sous la case fausse) mergées ; vérifications manuelles notées · **Prochaine action** : clore le chantier (versement : le durable est déjà dans `docs/systeme/questions.md` § 6 et `evaluations.md`, archiver ce journal) si David le dit ; « plus tard, si utile » : expressions, réponses pièges de l'auteur · **En attente de David** : clôture ? ; relecture des 7 phrases (`ERROR_KIND_SENTENCES`, `src/lib/questions/error-kinds.ts`) · **Pièges en cours** : cases `rulesSuffice` et `orderIndependent` jamais typées ; traces de séries sans remarques (`traceVerdict`) ; réponse > 64 caractères non lue ; la copie vue par le prof montre aussi la phrase tutoyée (choix assumé) · **Worktree / branche** : aucun (retirés après #2695)
+- **État** : clos (v1 : #2682 moteur, #2686 prof, #2695 élève) ; durable dans `docs/systeme/questions.md` (résultat attendu, type d'erreur) et `evaluations.md` (types d'erreur) · **Prochaine action** : aucune ; « plus tard, si utile » (expressions par mathAST, réponses pièges de l'auteur) noté en futur chantier · **Pièges** : cases `rulesSuffice` et `orderIndependent` jamais typées ; traces de séries sans remarques ; réponse > 64 caractères non lue ; la copie vue par le prof montre la phrase tutoyée (choix assumé) ; relecture des 7 phrases et vérification #2695 dans `docs/wip/verifications-manuelles.md` · **Worktree / branche** : aucun
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -85,6 +85,7 @@ l'autre.
 
 ## Historique
 
+- 2026-11-15 : chantier clos, journal archivé.
 - 2026-11-15 : #2695 mergée (PR 3, élève ; revue Opus : cases `rulesSuffice` écartées, côté prof aussi ; CI verte).
 - 2026-11-15 : PR 3 codée (élève) : phrase en remarque de case dans `buildExpectedResult`, une remarque du validateur prime ; `4` pour `-2` (carré en trop) et `-5` pour `25` (carré oublié) figés.
 - 2026-11-15 : #2686 mergée (PR 2, prof ; revue Sonnet + audit sécurité sans bloquant ; borne 64 caractères ajoutée ; CI verte).
