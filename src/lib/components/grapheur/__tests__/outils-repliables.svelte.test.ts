@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync } from 'svelte';
 import ViewportControls from '../ViewportControls.svelte';
@@ -24,6 +24,11 @@ function button(container: HTMLElement, label: string): HTMLButtonElement | null
  */
 describe('outils du graphe repliables', () => {
 	beforeEach(() => {
+		window.localStorage.removeItem(STORAGE_KEY);
+	});
+
+	// Les autres tests du grapheur montent le même composant : ne rien leur laisser.
+	afterEach(() => {
 		window.localStorage.removeItem(STORAGE_KEY);
 	});
 
@@ -58,6 +63,7 @@ describe('outils du graphe repliables', () => {
 		await first.unmount();
 
 		const second = await renderControls();
+		flushSync();
 		expect(button(second.container, 'Zoom avant')).toBeNull();
 		expect(button(second.container, 'Afficher les outils du graphe')).not.toBeNull();
 	});
