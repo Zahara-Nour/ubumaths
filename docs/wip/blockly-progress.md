@@ -601,3 +601,9 @@ Pistes restantes après celle-ci : mode Calcul du bac à sable, étanchéité du
   des réponses.
 - **Découpage** : PR A = l'outil ; PR B = 5-106 (carré 3, escalier 5, créneaux 9 = le nombre de
   blocs de l'attendu, déjà minimal), mise à jour du modèle publié lancée par David.
+- **PR A écrite le 2026-11-15** (`feat/blockly-max-blocs`) : `nombreDeBlocs` (notation), `depassementDeBlocs` /
+  `messageTropDeBlocs` (jugement), réponse attendue `position | blocs 3 | …`, clé `blocs:` (1 à 500,
+  `TORTUE_BLOCS_MAX`), consigne + compteur (`data-compteur-blocs`), message au corrigé, catalogue.
+  Tests rouges avant (11 serveur, 3 navigateur), verts après ; 15 538 tests serveur verts.
+  Revue `code-reviewer` (Opus) : aucun bloquant ; deux mineurs corrigés (« 1 bloc » au singulier,
+  commentaire de `blocsPoses`). PDF inchangé : le cadre « À faire sur Chiphre » suffit.

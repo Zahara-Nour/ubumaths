@@ -89,8 +89,9 @@
 	let refus = $state<string | null>(null);
 
 	/**
-	 * Blocs posés, comptés sur le texte du programme (comme le serveur) ; null : pas comptés
-	 * (illisible, trop long) ; undefined : rien de touché, ceux du programme posé à l'ouverture
+	 * Blocs posés, comptés sur le texte du programme (comme le serveur), trop long compris ;
+	 * null : pas comptés (illisible, bloc inconnu) ; undefined : rien de touché, ceux du programme
+	 * posé à l'ouverture
 	 */
 	let blocsPoses = $state<number | null | undefined>(undefined);
 
@@ -180,7 +181,7 @@
 	>
 		{#if blocsMax !== null}
 			<p class="mb-2 flex flex-wrap justify-between gap-x-4 text-sm">
-				<span class="font-medium">Au plus {blocsMax} blocs</span>
+				<span class="font-medium">Au plus {blocsMax} bloc{blocsMax > 1 ? 's' : ''}</span>
 				{#if Editeur && blocsComptes !== null}
 					<span
 						data-compteur-blocs
