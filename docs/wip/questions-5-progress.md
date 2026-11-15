@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, lot 12 relu (11/11 ok), simulation verte._
+_Mis à jour le 2026-11-15, lot 12 publié (9 modèles)._
 
-- **État** : lots 1 à 11 publiés ; lot 12 : 02 et 04 mis à jour en prod (#2681), page à cocher **11/11 ok**,
-  `publier-lot.ts` en simulation : **9 brouillons passent**. Classement (§ 26) : 43 points sans modèle publié = 9 D, 34 B.
-- **Prochaine action** : **David** publie le lot 12 (`! pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/5-reperage --publier`, dépôt principal) ; puis je vérifie au MCP et je recompte les points (§ 26).
+- **État** : lots 1 à 12 publiés (lot 12 : 9 modèles, vérifié au MCP) ; restent en brouillon `d4f38d30`, `d4d56c1b`
+  (relus ok, à publier avec le lot 12, § 26). Classement (§ 26) : à recompter après leur publication.
+- **Prochaine action** : **David** publie les deux (`! pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/automatismes-2de-geometrie --publier`) ; puis je vérifie au MCP et je recompte les points.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
@@ -913,4 +913,6 @@ renumérotés 3 et 4.
   vide au départ) ; 09 (ranger) non dessiné par la page : à jouer dans l'aperçu.
 - Relecture (2026-11-15) : 02 et 04 mis à jour en prod par David (08:09 UTC, droites vérifiées au MCP) ; page à cocher
   **11 verdicts sur 11 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation `publier-lot.ts` : 9
-  brouillons passent le contrôle (`d4f38d30`, `d4d56c1b` déjà publiés, niveau seul changé).
+  brouillons passent le contrôle. **Erreur** : `d4f38d30`, `d4d56c1b` n'étaient pas publiés (brouillons, fichiers dans
+  `scripts/questions/automatismes-2de-geometrie`) ; simulation sur ce dossier : 2 brouillons passent.
+- David a publié le lot (`5-reperage`) : 9 modèles `published`, vérifié au MCP.
