@@ -148,6 +148,9 @@ s'affichait « toutes capacités ».
   L'écart `t` se compte en **jours civils à Paris** ; `t = 0` (même jour) → formule court terme
   (`w[17..19]`). Bien ×5 à chaque échéance : 2 · 11 · 46 · 163 · 497 j. `reviewCard` prend un `now`
   facultatif (tests).
+- **États** : échec → `relearning` ; fiche neuve réussie → `learning` ; toute autre réussite → `review`.
+  `learning` et `relearning` ne durent donc qu'une révision (avant le 2026-11-15, `learning` restait
+  `learning` à chaque réussite, et le badge l'affichait « à remédier » une fois due).
 - `review_history` (JSONB) garde chaque révision ; pour une auto-évaluation, l'entrée porte
   aussi `before`, l'état de la fiche juste avant (ce qui permet de la remplacer dans la journée).
 - Tous les chemins instancient `new FSRS()` : paramètres et rétention **par défaut**
