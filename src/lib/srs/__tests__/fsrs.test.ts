@@ -339,32 +339,43 @@ describe('FSRS Difficulty Updates', () => {
 		newCard = fsrs.initCard('user-123', 'template', 'template-456');
 	});
 
-	it('should decrease difficulty on EASY grade', () => {
-		const reviewed = fsrs.reviewCard(newCard, Grade.EASY);
+	// FSRS-6 : ΔD = −w[6]·(note − 3), amorti ; on part d'une fiche déjà révisée (Bien)
+	const DAY = 24 * 60 * 60 * 1000;
+	const start = new Date('2026-03-02T11:00:00Z');
+	const later = new Date(start.getTime() + 2 * DAY);
+	const reviewedOnce = () => fsrs.reviewCard(newCard, Grade.GOOD, undefined, start);
 
-		// EASY (grade 4) should decrease difficulty
-		expect(reviewed.difficulty).toBeLessThan(newCard.difficulty);
+	it('should set the initial difficulty of the first grade (w[4] − e^(w[5]·(G − 1)) + 1)', () => {
+		const reviewed = reviewedOnce();
+		expect(reviewed.difficulty).toBeCloseTo(6.4133 - Math.exp(0.8334 * 2) + 1, 6);
 	});
 
-	it('should slightly decrease difficulty on GOOD grade', () => {
-		const reviewed = fsrs.reviewCard(newCard, Grade.GOOD);
+	it('should decrease difficulty on EASY grade', () => {
+		const base = reviewedOnce();
+		expect(fsrs.reviewCard(base, Grade.EASY, undefined, later).difficulty).toBeLessThan(
+			base.difficulty
+		);
+	});
 
-		// GOOD (grade 3) should keep difficulty stable (grade - 3 = 0)
-		expect(Math.abs(reviewed.difficulty - newCard.difficulty)).toBeLessThan(0.1);
+	it('should keep difficulty almost unchanged on GOOD grade', () => {
+		const base = reviewedOnce();
+		const reviewed = fsrs.reviewCard(base, Grade.GOOD, undefined, later);
+		expect(Math.abs(reviewed.difficulty - base.difficulty)).toBeLessThan(0.01);
 	});
 
 	it('should increase difficulty on HARD grade', () => {
-		const reviewed = fsrs.reviewCard(newCard, Grade.HARD);
-
-		// HARD (grade 2) should increase difficulty
-		expect(reviewed.difficulty).toBeGreaterThan(newCard.difficulty);
+		const base = reviewedOnce();
+		expect(fsrs.reviewCard(base, Grade.HARD, undefined, later).difficulty).toBeGreaterThan(
+			base.difficulty
+		);
 	});
 
 	it('should increase difficulty more on AGAIN grade', () => {
-		const reviewed = fsrs.reviewCard(newCard, Grade.AGAIN);
-
-		// AGAIN (grade 1) should increase difficulty the most
-		expect(reviewed.difficulty).toBeGreaterThan(newCard.difficulty);
+		const base = reviewedOnce();
+		const hard = fsrs.reviewCard(base, Grade.HARD, undefined, later);
+		const again = fsrs.reviewCard(base, Grade.AGAIN, undefined, later);
+		expect(again.difficulty).toBeGreaterThan(hard.difficulty);
+		expect(again.difficulty).toBeLessThan(10);
 	});
 
 	it('should clamp difficulty to minimum of 1', () => {
