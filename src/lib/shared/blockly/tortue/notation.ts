@@ -251,3 +251,34 @@ export function texteVersEtat(texte: string): EtatLu {
 		return { ok: false, message };
 	}
 }
+
+// =============================================================================
+// Compte des blocs
+// =============================================================================
+
+/** Blocs d'une pile et de ce qu'elle contient ; les ombres (nombres écrits dedans) ne comptent pas. */
+function compterPile(bloc: Record<string, unknown> | undefined): number {
+	let total = 0;
+	for (let courant = bloc; courant; courant = suivantDe(courant)) {
+		total += 1;
+		const contenu = (courant.inputs as { DO?: { block?: Record<string, unknown> } } | undefined)?.DO
+			?.block;
+		total += compterPile(contenu);
+	}
+	return total;
+}
+
+function suivantDe(bloc: Record<string, unknown>): Record<string, unknown> | undefined {
+	return (bloc.next as { block?: Record<string, unknown> } | undefined)?.block;
+}
+
+/**
+ * Nombre de blocs d'un programme écrit (`blocs:` d'un bloc ```tortue) : chaque instruction et
+ * chaque `répéter` compte un bloc, les nombres écrits dedans aucun. Compté sur le texte, comme le
+ * serveur le reçoit : blocs désactivés ou posés seuls n'y sont plus. Illisible : null.
+ */
+export function nombreDeBlocs(texte: string): number | null {
+	const lu = texteVersEtat(texte);
+	if (!lu.ok) return null;
+	return lu.etat.blocks.blocks.reduce((total, pile) => total + compterPile(pile), 0);
+}

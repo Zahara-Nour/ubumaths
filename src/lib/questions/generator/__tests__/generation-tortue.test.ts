@@ -177,6 +177,48 @@ describe('programme tortue : la case et sa réponse', () => {
 	});
 });
 
+describe('programme tortue : nombre maximal de blocs', () => {
+	const HUIT_BLOCS = Array.from({ length: 4 }, () => 'avancer 3 ; tourner à droite 90').join(' ; ');
+
+	it('blocs: dans la réponse attendue ; au-delà : faux avec le message', () => {
+		const instance = generate(template({ statement: tortue(ATTENDU, 'blocs: 3') }));
+		expect(instance.blanks?.[0].expectedAnswer).toBe(`position | blocs 3 | ${CARRE}`);
+		expect(instance.blanks?.[0].expectedAnswerLatex).toBe(CARRE);
+		expect(validateAnswer([CARRE], instance, [CARRE]).status).toBe('correct');
+		const result = validateAnswer([HUIT_BLOCS], instance, [HUIT_BLOCS]);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Ton programme utilise 8 blocs ; il en faut au plus 3.');
+		expect(isBlankValueCorrect(HUIT_BLOCS, instance.blanks![0], instance)).toBe(false);
+	});
+
+	it('sans blocs: : rien ne change (réponse attendue des modèles déjà publiés)', () => {
+		const instance = generate(template({ statement: tortue(ATTENDU) }));
+		expect(instance.blanks?.[0].expectedAnswer).toBe(`position | ${CARRE}`);
+		expect(isBlankValueCorrect(HUIT_BLOCS, instance.blanks![0], instance)).toBe(true);
+	});
+
+	it('attendu: (avec variables) qui dépasse la limite : refusé au prof', () => {
+		const errors = generationErrors(
+			template({
+				statement: tortue(
+					'attendu: répéter {{n}} [ avancer 1 ; tourner à droite 90 ; avancer 1 ]',
+					'blocs: 3'
+				),
+				variables: [{ name: 'n', expression: '2..3' }]
+			})
+		);
+		expect(errors).toMatch(/plus que blocs: 3/);
+	});
+
+	it('évaluation notée : la limite reste dans l’énoncé envoyé', () => {
+		const full = generate(template({ statement: tortue(ATTENDU, 'blocs: 3') }));
+		const { statement } = toPublicQuestion(full, { position: 0, delaySeconds: 20 });
+		const body = statement.split('```tortue\n')[1].split('\n```')[0];
+		expect(body).not.toContain('avancer');
+		expect(parseTortueContent(body).spec?.blocsMax).toBe(3);
+	});
+});
+
 describe('évaluation notée : l’énoncé envoyé ne dit pas le programme', () => {
 	const META = { position: 0, delaySeconds: 20 };
 

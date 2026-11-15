@@ -12,6 +12,8 @@
 	- `départ:` : le programme posé d'avance dans l'espace de travail, à modifier. Il ne devient la
 	  réponse qu'au premier changement (un programme de départ non touché n'est pas une réponse).
 	- Programme vide → réponse vide (Valider grisé) ; trop long → refusé avant l'envoi, réponse vide.
+	- `blocs: N` : consigne « Au plus N blocs » et compteur des blocs posés, signalé au-delà ;
+	  dépasser est permis (la réponse part, le serveur la juge fausse).
 	- Après la validation : blocs verrouillés, tracé de l'élève vert ou rouge, l'attendu en
 	  pointillés quand il est connu (jamais dans une évaluation notée : `attendu: ?`).
 	- Hors question (aperçu de l'éditeur, cours) : le geste libre, rien de jugé.
@@ -21,7 +23,11 @@
 <script lang="ts">
 	import { onMount, type Component } from 'svelte';
 	import TortueCanvas from '$lib/components/blockly/TortueCanvas.svelte';
-	import { LONGUEUR_MAX_PROGRAMME, type TexteLu } from '$lib/shared/blockly/tortue/notation';
+	import {
+		LONGUEUR_MAX_PROGRAMME,
+		nombreDeBlocs,
+		type TexteLu
+	} from '$lib/shared/blockly/tortue/notation';
 	import { lireProgrammeTortue } from '$lib/shared/blockly/tortue/jugement';
 	import type { Segment } from '$lib/shared/blockly/tortue/segments';
 	import { readExpectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
@@ -82,6 +88,13 @@
 	/** Pourquoi le programme n'est pas une réponse (trop long, bloc inconnu) ; null sinon */
 	let refus = $state<string | null>(null);
 
+	/**
+	 * Blocs posés, comptés sur le texte du programme (comme le serveur), trop long compris ;
+	 * null : pas comptés (illisible, bloc inconnu) ; undefined : rien de touché, ceux du programme
+	 * posé à l'ouverture
+	 */
+	let blocsPoses = $state<number | null | undefined>(undefined);
+
 	// =============================================================================
 	// État dérivé
 	// =============================================================================
@@ -99,6 +112,9 @@
 		if (donne !== '' || verdict !== null) return donne;
 		return spec?.depart ?? '';
 	});
+
+	let blocsMax = $derived(spec?.blocsMax ?? null);
+	let blocsComptes = $derived(blocsPoses === undefined ? nombreDeBlocs(programme) : blocsPoses);
 
 	/** L'attendu, après la validation seulement : la réponse attendue, sinon le bloc */
 	let attendu = $derived.by((): Segment[] | null => {
@@ -118,6 +134,7 @@
 
 	function handleProgramme(lu: TexteLu): void {
 		let valeur = '';
+		blocsPoses = lu.ok ? nombreDeBlocs(lu.texte) : null;
 		if (!lu.ok) refus = lu.message;
 		else if (lu.texte.length > LONGUEUR_MAX_PROGRAMME) refus = PROGRAMME_TROP_LONG;
 		else {
@@ -162,6 +179,22 @@
 				? 'tortue-faux'
 				: 'border-transparent'} {className}"
 	>
+		{#if blocsMax !== null}
+			<p class="mb-2 flex flex-wrap justify-between gap-x-4 text-sm">
+				<span class="font-medium">Au plus {blocsMax} bloc{blocsMax > 1 ? 's' : ''}</span>
+				{#if Editeur && blocsComptes !== null}
+					<span
+						data-compteur-blocs
+						data-depasse={blocsComptes > blocsMax}
+						class={blocsComptes > blocsMax
+							? 'font-medium text-destructive'
+							: 'text-muted-foreground'}
+					>
+						Blocs : {blocsComptes} / {blocsMax}
+					</span>
+				{/if}
+			</p>
+		{/if}
 		{#if Editeur}
 			<Editeur
 				{programme}

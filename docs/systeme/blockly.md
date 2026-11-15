@@ -13,7 +13,7 @@ couvre:
 # Blockly — programmation par blocs
 
 > Écrite à partir du code le 2026-11-14 (chantier `blockly`, journal
-> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14.
+> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14 ; nombre maximal de blocs (`blocs:`) le 2026-11-15.
 
 ## À quoi ça sert
 
@@ -152,6 +152,12 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
   quadrillage, chaque tracé ramené au coin bas gauche de son encadrement). Une rotation d'un
   autre angle ne compte pas. Réponse vide → faux sans message ; illisible, trop longue ou trop
   loin → faux avec le message de la tortue ; attendu illisible ou sans trait → jamais juste.
+- **Nombre maximal de blocs** (`blocs: N` du bloc, réponse attendue `position | blocs 3 |
+<programme>` ; sans limite, la forme d'avant) : `nombreDeBlocs` compte, sur le texte, chaque
+  instruction et chaque `répéter` (les nombres, ombres, ne comptent pas ; un carré en `répéter` =
+  3). Au-delà : faux avec « Ton programme utilise 8 blocs ; il en faut au plus 3. »
+  (`depassementDeBlocs`), même si le tracé est juste ; un programme illisible garde son message de
+  lecture. Programmes de calcul : pas de limite (« un bloc » y est flou).
 - `normaliserSegments` range chaque droite dans une case de taille 1e-6 (direction, décalage) et
   cherche sa pareille dans les cases voisines : deux morceaux d'une même droite à cheval sur une
   frontière d'arrondi sont fusionnés (avant la PR 4, une clé arrondie pouvait les séparer).
@@ -212,6 +218,10 @@ question de calcul »).
   trop long », gardé après la validation) ou illisible. Une réponse déjà donnée revient en blocs
   (`texteVersEtat`) sans être renvoyée, même écrite autrement que `etatVersTexte` (point décimal).
   `FillBlanksInput` recrée la carte quand le bloc change (`{#key node.source}`).
+- **`blocs:`** : « Au plus N blocs » au-dessus de l'éditeur (dès le rendu serveur), puis le
+  compteur « Blocs : 5 / 3 » (`data-compteur-blocs`, `data-depasse`, rouge au-delà), compté comme le
+  serveur. Dépasser est permis : Blockly ne bloque rien, la réponse part et le serveur la juge
+  fausse. Le corrigé redit le message sous « Ton programme ».
 - **Après la validation** (case verrouillée) : l'espace de blocs est recréé en lecture seule
   (`BlocklyWorkspace`, `readonly`), sans « Effacer » ; le quadrillage montre tout de suite le tracé
   final du programme de l'élève, vert juste ou rouge faux, et l'attendu en pointillés quand il est

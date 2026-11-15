@@ -126,12 +126,15 @@ export function buildAnswerOf(
 	// `?` : forme réservée à l'énoncé envoyé pendant une évaluation (rien à attendre)
 	if (MASKABLE_KINDS.has(kind) && hasMaskedValue(source)) return { errors: [MASKED_IN_TEMPLATE] };
 	if (kind === 'tortue') {
-		// Programme tortue : la comparaison et le programme de référence (`attendu:`)
+		// Programme tortue : la comparaison, le nombre maximal de blocs (`blocs:`) et le programme
+		// de référence (`attendu:`)
 		const node = parseTortueContent(source);
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
 		if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
 		if (node.spec?.attendu == null) return { errors: ['attendu: absent'] };
-		return { answer: expectedTortueAnswer(node.spec.comparer, node.spec.attendu) };
+		return {
+			answer: expectedTortueAnswer(node.spec.comparer, node.spec.attendu, node.spec.blocsMax)
+		};
 	}
 	if (kind === 'calcul') {
 		// Programme de calcul : les nombres d'essai et le programme de référence (`attendu:`)

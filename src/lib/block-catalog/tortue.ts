@@ -48,6 +48,13 @@ export const tortueEntry: BlockCatalogEntry = {
 					defaultValue: 'aucun',
 					description:
 						'Un programme posé d’avance dans l’espace de travail de l’élève, à modifier (« change un nombre pour que le carré ait un côté de 4 »). Tant qu’il n’y touche pas, il n’a pas répondu.'
+				},
+				{
+					key: 'blocs',
+					values: 'un nombre entier, de 1 à 500',
+					defaultValue: 'aucune limite',
+					description:
+						'Au plus ce nombre de blocs : au-delà, le programme est faux, même si le tracé est juste (« Ton programme utilise 8 blocs ; il en faut au plus 3. »). Chaque instruction et chaque répéter compte un bloc ; les nombres écrits dedans ne comptent pas. L’élève voit la consigne « Au plus 3 blocs » et un compteur. Sert à rendre la répétition nécessaire : un carré sans répéter demande 8 blocs. Le programme attendu doit tenir dans la limite ; le programme de départ peut la dépasser.'
 				}
 			]
 		}
@@ -81,6 +88,17 @@ export const tortueEntry: BlockCatalogEntry = {
 				'montrer: oui'
 			),
 			explanation: 'Stylo levé : la tortue avance sans tracer, le trou fait partie de la figure.'
+		},
+		{
+			title: 'Un carré, avec répéter obligatoire',
+			source: fence(
+				'tortue',
+				'attendu: répéter 4 [ avancer 3 ; tourner à droite 90 ]',
+				'montrer: oui',
+				'blocs: 3'
+			),
+			explanation:
+				'Trois blocs au plus : répéter, avancer, tourner. Le même carré écrit sans répéter (8 blocs) est faux.'
 		}
 	],
 	mistakes: [
@@ -102,6 +120,12 @@ export const tortueEntry: BlockCatalogEntry = {
 			source: fence('tortue', 'attendu: lever le stylo ; avancer 3'),
 			message: 'ce programme ne trace rien',
 			explanation: 'Stylo levé du début à la fin : il n’y a aucune figure à reproduire.'
+		},
+		{
+			title: 'Limite plus petite que le programme attendu',
+			source: fence('tortue', 'attendu: répéter 4 [ avancer 3 ; tourner à droite 90 ]', 'blocs: 2'),
+			message: 'plus que blocs: 2',
+			explanation: 'Le programme attendu compte 3 blocs : aucun élève ne pourrait être juste.'
 		}
 	],
 	tryIt: fence('tortue', 'attendu: répéter 3 [ avancer 4 ; tourner à gauche 120 ]', 'montrer: oui')

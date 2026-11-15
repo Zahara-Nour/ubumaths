@@ -26,6 +26,9 @@ import type { Segment } from '$lib/shared/blockly/tortue/segments';
 /** Segments au plus dans la figure d'un énoncé masqué (`figure:`). */
 export const TORTUE_FIGURE_MAX_SEGMENTS = 500;
 
+/** `blocs:` au plus (un programme fait au plus 2 000 caractères) */
+export const TORTUE_BLOCS_MAX = 500;
+
 /** Message à l'élève (et dans le PDF) pour un bloc en erreur */
 export const TORTUE_UNAVAILABLE = 'Programme tortue indisponible';
 
@@ -49,6 +52,11 @@ export interface TortueSpec {
 	modele: Segment[] | null;
 	/** Programme de départ, posé dans l'espace de travail de l'élève (`départ:`) ; null sinon */
 	depart: string | null;
+	/**
+	 * Nombre maximal de blocs (`blocs:`) : au-delà, le programme est faux ; null : sans limite.
+	 * Une consigne, pas la réponse : gardée dans l'énoncé d'une évaluation notée
+	 */
+	blocsMax: number | null;
 }
 
 /** Message situé, à destination de l'AUTEUR (jamais montré à l'élève) */
