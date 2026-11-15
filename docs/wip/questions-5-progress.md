@@ -8,7 +8,7 @@
 _Mis à jour le 2026-11-15, phase 0 du lot 12 proposée (§ 27)._
 
 - **État** : lots 1 à 11 publiés (lot 11 = Blockly, par `blockly`, 6 modèles publiés le 2026-11-15). Classement
-  refait le 2026-11-15 (§ 26) : 43 points sans modèle publié = 9 D, **32 B**, 2 C (101, 104).
+  refait le 2026-11-15 (§ 26) : 43 points sans modèle publié = 9 D, **34 B** (101, 104 compris, corrigé le même jour).
 - **Prochaine action** : validation de la phase 0 du lot 12 (§ 27), puis écriture (`5-reperage/`).
 - **En attente de David** : phase 0 du lot 12 et ses 2 questions (§ 27) ; 02 du lot 7 (deux cases sur deux lignes)
   à essayer à la main.
@@ -817,8 +817,11 @@ placer:`, #2096) ; 047, 128 (brouillons ci-dessus, rien à écrire).
   `milieu(…)`) — **sur quadrillage seulement** (sur papier uni, `droite` n'accepte que médiatrice et bissectrice),
   pied et milieu sur des nœuds ; 068, 133 (`point D = …`, message du parallélogramme croisé). Le tracé du symétrique
   central (054 / 055) : `symetrique par O`.
-- **C (2)** : 101 (entrées / sorties), 104 (prévoir la valeur) — **programme en blocs affiché dans l'énoncé**, piste
-  du chantier `blockly` ; ajouté à `outils-manquants.md` (n° 36).
+- **B — algorithmique (2)** : 101 (entrées / sorties), 104 (prévoir la valeur) : bloc ` ```scratch ` (programme
+  affiché en lecture seule, chantier `bloc-scratch`, déjà utilisé par `6-tableaux-programmes/05`) + case ou choix.
+  **Corrigé le 2026-11-15** : d'abord classés C (« programme en blocs affiché » à créer) d'après `blockly-progress.md`,
+  qui l'écrit ainsi ; la ligne n° 36 ajoutée à `outils-manquants.md` est retirée. Reste au chantier `blockly`
+  (décision du § 26 bis), à lui de choisir ` ```scratch ` ou un affichage Blockly.
 
 **Lots proposés** (reco, ordre) :
 
@@ -832,7 +835,7 @@ placer:`, #2096) ; 047, 128 (brouillons ci-dessus, rien à écrire).
 
 1. Ordre des lots 12 à 15 ci-dessus : d'accord ?
 2. `d4f38d30` et `d4d56c1b` : les relire et publier avec le lot 12 (reco), ou les publier tout de suite ?
-3. 101, 104 : laisser au chantier `blockly` (reco : après ses lots, avec la piste « prévoir la valeur »).
+3. 101, 104 : laisser au chantier `blockly` (reco : après ses lots, avec la piste « prévoir la valeur ») — outil existant (` ```scratch `), voir ci-dessus.
 
 ### 26 bis. Reclassement : décisions (David, 2026-11-15, « je te suis »)
 
