@@ -1,4 +1,5 @@
 {
+	"id": "80bfd3d6-4812-4624-8b45-7017a0470aa8",
 	"title": "Quelle est la hauteur issue de A ?",
 	"description": "Reconnaître la hauteur issue d'un sommet parmi plusieurs segments codés : elle part du sommet et est perpendiculaire au côté opposé (ou à son prolongement)",
 	"grades": ["5"],

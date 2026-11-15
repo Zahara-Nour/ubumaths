@@ -1,4 +1,5 @@
 {
+	"id": "28cbee57-88e6-4180-a537-443b4963cc36",
 	"title": "Tracer une médiane d'un triangle",
 	"description": "Sur quadrillage : placer le milieu du côté opposé en comptant les carreaux, puis tracer la droite qui le joint au sommet",
 	"grades": ["5"],

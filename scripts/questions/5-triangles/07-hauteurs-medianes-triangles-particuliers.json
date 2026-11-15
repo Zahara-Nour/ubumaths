@@ -1,4 +1,5 @@
 {
+	"id": "d8991c01-e90b-482e-8daf-3b19cd623248",
 	"title": "Hauteurs et médianes des triangles particuliers",
 	"description": "Triangle isocèle : la hauteur issue du sommet principal est aussi la médiane (son pied est le milieu de la base) ; triangle rectangle : les côtés de l'angle droit sont des hauteurs",
 	"grades": ["5"],
