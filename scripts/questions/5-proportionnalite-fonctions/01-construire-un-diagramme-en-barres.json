@@ -1,0 +1,187 @@
+{
+	"title": "Construire un diagramme en barres",
+	"description": "Tableau des effectifs donné : construire toutes les barres, axe de 5 en 5 ou échelle à choisir",
+	"grades": ["5"],
+	"level": 6,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On a demandé aux élèves de 5e du collège leur sport préféré.\n\n| Sport | Nombre d'élèves |\n|---|---|\n| Football | ${{a}}$ |\n| Natation | ${{b}}$ |\n| Danse | ${{c}}$ |\n| Judo | ${{d}}$ |\n| Tennis | ${{g}}$ |\n\nConstruis le diagramme en barres de ces données.\n\n```barres\ntitre: Sport préféré\naxes: Sport ; Élèves\nFootball = {{a}}\nNatation = {{b}}\nDanse = {{c}}\nJudo = {{d}}\nTennis = {{g}}\naxe: 0 à 50, de 5 en 5\nplacer: toutes\n```",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "1..10"
+				},
+				{
+					"name": "ub",
+					"expression": "1..10"
+				},
+				{
+					"name": "uc",
+					"expression": "1..10"
+				},
+				{
+					"name": "ud",
+					"expression": "1..10"
+				},
+				{
+					"name": "ug",
+					"expression": "1..10"
+				},
+				{
+					"name": "a",
+					"expression": "eval:5*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:5*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:5*uc"
+				},
+				{
+					"name": "d",
+					"expression": "eval:5*ud"
+				},
+				{
+					"name": "g",
+					"expression": "eval:5*ug"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Une graduation de l'axe vaut $5$ élèves.",
+					"Chaque barre monte jusqu'à l'effectif lu dans le tableau : par exemple, la barre Football monte jusqu'à $\\textcolor{{{color:primary.0}}}{{{a}}}$, soit ${{ua}}$ graduations."
+				]
+			}
+		},
+		{
+			"statement": "Une cantine a compté les fruits choisis par les élèves pendant une semaine.\n\n| Fruit | Nombre de fruits |\n|---|---|\n| Pomme | ${{a}}$ |\n| Banane | ${{b}}$ |\n| Fraise | ${{c}}$ |\n| Orange | ${{d}}$ |\n\nChoisis l'échelle de l'axe, puis construis le diagramme en barres.\n\n```barres\ntitre: Fruits choisis\naxes: Fruit ; Fruits\nPomme = {{a}}\nBanane = {{b}}\nFraise = {{c}}\nOrange = {{d}}\naxe: à choisir\nplacer: toutes\n```",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "1..10"
+				},
+				{
+					"name": "ub",
+					"expression": "1..10"
+				},
+				{
+					"name": "uc",
+					"expression": "1..10"
+				},
+				{
+					"name": "ud",
+					"expression": "1..10"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:10*uc"
+				},
+				{
+					"name": "d",
+					"expression": "eval:10*ud"
+				},
+				{
+					"name": "mx",
+					"expression": "eval:max(a,b,c,d)"
+				}
+			],
+			"conditions": ["mx > 50"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"L'axe a $10$ graduations : on prend la plus petite échelle où la plus grande barre rentre.",
+					"La plus grande barre vaut ${{mx}}$. Avec $5$ par graduation, l'axe s'arrêterait à $50$ : trop court. Avec $\\textcolor{{{color:primary.0}}}{10}$, il monte jusqu'à $100$ : tout rentre.",
+					"Chaque barre monte jusqu'à son effectif."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Axe donné : 15, 35, 20, 10, 30",
+			"variationIndex": 0,
+			"variables": {
+				"ua": "3",
+				"ub": "7",
+				"uc": "4",
+				"ud": "2",
+				"ug": "6"
+			},
+			"answers": ["15", "35", "20", "10", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une graduation par élève compté (3, 7, 4, 2, 6)",
+			"variationIndex": 0,
+			"variables": {
+				"ua": "3",
+				"ub": "7",
+				"uc": "4",
+				"ud": "2",
+				"ug": "6"
+			},
+			"answers": ["3", "7", "4", "2", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux barres échangées",
+			"variationIndex": 0,
+			"variables": {
+				"ua": "3",
+				"ub": "7",
+				"uc": "4",
+				"ud": "2",
+				"ug": "6"
+			},
+			"answers": ["35", "15", "20", "10", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Échelle 10 : 30, 70, 40, 60",
+			"variationIndex": 1,
+			"variables": {
+				"ua": "3",
+				"ub": "7",
+				"uc": "4",
+				"ud": "6"
+			},
+			"answers": ["10", "30", "70", "40", "60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : échelle 5 (70 ne rentre pas)",
+			"variationIndex": 1,
+			"variables": {
+				"ua": "3",
+				"ub": "7",
+				"uc": "4",
+				"ud": "6"
+			},
+			"answers": ["5", "30", "70", "40", "60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

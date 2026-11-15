@@ -1,0 +1,201 @@
+{
+	"title": "Lire un graphique cartésien",
+	"description": "Lire l'ordonnée d'un point d'une courbe, ou l'abscisse d'un point d'un nuage",
+	"grades": ["5"],
+	"level": 8,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le graphique donne la hauteur d'eau, en centimètres, dans un bassin selon le temps écoulé, en heures.\n\n```courbe\nx: -1 ; 7\ny: -1 ; 13\ngrille: 1 ; 1\naxes: x = Temps (h) ; y = Hauteur (cm)\ndonnées: (0 ; {{y0}}) ; (1 ; {{y1}}) ; (2 ; {{y2}}) ; (3 ; {{y3}}) ; (4 ; {{y4}}) ; (5 ; {{y5}}) ; (6 ; {{y6}})\ntaille: moyenne\n```\n\nQuelle est la hauteur d'eau au bout de ${{k}}$ h ?\n\n$?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "y0",
+					"expression": "1..12"
+				},
+				{
+					"name": "y1",
+					"expression": "1..12"
+				},
+				{
+					"name": "y2",
+					"expression": "1..12"
+				},
+				{
+					"name": "y3",
+					"expression": "1..12"
+				},
+				{
+					"name": "y4",
+					"expression": "1..12"
+				},
+				{
+					"name": "y5",
+					"expression": "1..12"
+				},
+				{
+					"name": "y6",
+					"expression": "1..12"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "v",
+					"expression": "eval:y0*(1-min(abs(k-0),1))+y1*(1-min(abs(k-1),1))+y2*(1-min(abs(k-2),1))+y3*(1-min(abs(k-3),1))+y4*(1-min(abs(k-4),1))+y5*(1-min(abs(k-5),1))+y6*(1-min(abs(k-6),1))"
+				}
+			],
+			"conditions": ["(v-k)*(v-k) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{k}}$ sur l'axe des abscisses, on monte jusqu'à la ligne, puis on lit l'ordonnée sur l'axe vertical.",
+					"La hauteur est $\\textcolor{{{color:primary.0}}}{{{v}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici six points A, B, C, D, F et G dans un repère.\n\n```courbe\nx: -1 ; 7\ny: -1 ; 11\ngrille: 1 ; 1\npoints: A(1 ; {{y1}}), B(2 ; {{y2}}), C(3 ; {{y3}}), D(4 ; {{y4}}), F(5 ; {{y5}}), G(6 ; {{y6}})\ntaille: moyenne\ndescription: Six points A, B, C, D, F, G d'abscisses 1 à 6.\n```\n\nQuelle est l'abscisse du point d'ordonnée ${{v}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "y1",
+					"expression": "1..10"
+				},
+				{
+					"name": "y2",
+					"expression": "1..10"
+				},
+				{
+					"name": "y3",
+					"expression": "1..10"
+				},
+				{
+					"name": "y4",
+					"expression": "1..10"
+				},
+				{
+					"name": "y5",
+					"expression": "1..10"
+				},
+				{
+					"name": "y6",
+					"expression": "1..10"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "v",
+					"expression": "eval:y1*(1-min(abs(k-1),1))+y2*(1-min(abs(k-2),1))+y3*(1-min(abs(k-3),1))+y4*(1-min(abs(k-4),1))+y5*(1-min(abs(k-5),1))+y6*(1-min(abs(k-6),1))"
+				}
+			],
+			"conditions": [
+				"(y1-y2)*(y1-y2) > 0",
+				"(y1-y3)*(y1-y3) > 0",
+				"(y1-y4)*(y1-y4) > 0",
+				"(y1-y5)*(y1-y5) > 0",
+				"(y1-y6)*(y1-y6) > 0",
+				"(y2-y3)*(y2-y3) > 0",
+				"(y2-y4)*(y2-y4) > 0",
+				"(y2-y5)*(y2-y5) > 0",
+				"(y2-y6)*(y2-y6) > 0",
+				"(y3-y4)*(y3-y4) > 0",
+				"(y3-y5)*(y3-y5) > 0",
+				"(y3-y6)*(y3-y6) > 0",
+				"(y4-y5)*(y4-y5) > 0",
+				"(y4-y6)*(y4-y6) > 0",
+				"(y5-y6)*(y5-y6) > 0",
+				"(v-k)*(v-k) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{v}}$ sur l'axe des ordonnées, on va horizontalement jusqu'au point, puis on lit son abscisse sur l'axe horizontal.",
+					"L'abscisse est $\\textcolor{{{color:primary.0}}}{{{k}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Au bout de 3 h : 8 cm",
+			"variationIndex": 0,
+			"variables": {
+				"y0": "2",
+				"y1": "5",
+				"y2": "7",
+				"y3": "8",
+				"y4": "6",
+				"y5": "9",
+				"y6": "11",
+				"k": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : heure voisine",
+			"variationIndex": 0,
+			"variables": {
+				"y0": "2",
+				"y1": "5",
+				"y2": "7",
+				"y3": "8",
+				"y4": "6",
+				"y5": "9",
+				"y6": "11",
+				"k": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ordonnée 9 : abscisse 5",
+			"variationIndex": 1,
+			"variables": {
+				"y1": "3",
+				"y2": "8",
+				"y3": "5",
+				"y4": "1",
+				"y5": "9",
+				"y6": "6",
+				"k": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rend l'ordonnée",
+			"variationIndex": 1,
+			"variables": {
+				"y1": "3",
+				"y2": "8",
+				"y3": "5",
+				"y4": "1",
+				"y5": "9",
+				"y6": "6",
+				"k": "5"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

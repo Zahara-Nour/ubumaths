@@ -1,0 +1,266 @@
+{
+	"title": "Lire un tableau de valeurs",
+	"description": "Lire la valeur qui correspond à un nombre dans un tableau, ou le nombre qui donne une valeur",
+	"grades": ["5"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le tableau donne l'aire d'un carré selon la longueur de son côté.\n\n| Côté (cm) | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ | $7$ |\n|---|---|---|---|---|---|---|---|\n| Aire (cm²) | $1$ | $4$ | $9$ | $16$ | $25$ | $36$ | $49$ |\n\nQuelle est l'aire d'un carré de côté ${{k}}~\\unit{cm}$ ?\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..7"
+				},
+				{
+					"name": "v",
+					"expression": "eval:k*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche ${{k}}$ dans la ligne « Côté », puis on lit la valeur en dessous.",
+					"L'aire est $\\textcolor{{{color:primary.0}}}{{{v}}~\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau donne la température relevée à chaque heure de la matinée.\n\n| Heure (h) | $6$ | $7$ | $8$ | $9$ | $10$ | $11$ | $12$ |\n|---|---|---|---|---|---|---|---|\n| Température (°C) | ${{t1}}$ | ${{t2}}$ | ${{t3}}$ | ${{t4}}$ | ${{t5}}$ | ${{t6}}$ | ${{t7}}$ |\n\nQuelle température faisait-il à ${{h}}$ h ?\n\n$?~\\unit{°C}$",
+			"variables": [
+				{
+					"name": "t1",
+					"expression": "2..18"
+				},
+				{
+					"name": "t2",
+					"expression": "2..18"
+				},
+				{
+					"name": "t3",
+					"expression": "2..18"
+				},
+				{
+					"name": "t4",
+					"expression": "2..18"
+				},
+				{
+					"name": "t5",
+					"expression": "2..18"
+				},
+				{
+					"name": "t6",
+					"expression": "2..18"
+				},
+				{
+					"name": "t7",
+					"expression": "2..18"
+				},
+				{
+					"name": "k",
+					"expression": "1..7"
+				},
+				{
+					"name": "h",
+					"expression": "eval:k+5"
+				},
+				{
+					"name": "v",
+					"expression": "eval:t1*(1-min(abs(k-1),1))+t2*(1-min(abs(k-2),1))+t3*(1-min(abs(k-3),1))+t4*(1-min(abs(k-4),1))+t5*(1-min(abs(k-5),1))+t6*(1-min(abs(k-6),1))+t7*(1-min(abs(k-7),1))"
+				}
+			],
+			"conditions": [
+				"(t1-t2)*(t1-t2) > 0",
+				"(t1-t3)*(t1-t3) > 0",
+				"(t1-t4)*(t1-t4) > 0",
+				"(t1-t5)*(t1-t5) > 0",
+				"(t1-t6)*(t1-t6) > 0",
+				"(t1-t7)*(t1-t7) > 0",
+				"(t2-t3)*(t2-t3) > 0",
+				"(t2-t4)*(t2-t4) > 0",
+				"(t2-t5)*(t2-t5) > 0",
+				"(t2-t6)*(t2-t6) > 0",
+				"(t2-t7)*(t2-t7) > 0",
+				"(t3-t4)*(t3-t4) > 0",
+				"(t3-t5)*(t3-t5) > 0",
+				"(t3-t6)*(t3-t6) > 0",
+				"(t3-t7)*(t3-t7) > 0",
+				"(t4-t5)*(t4-t5) > 0",
+				"(t4-t6)*(t4-t6) > 0",
+				"(t4-t7)*(t4-t7) > 0",
+				"(t5-t6)*(t5-t6) > 0",
+				"(t5-t7)*(t5-t7) > 0",
+				"(t6-t7)*(t6-t7) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche ${{h}}$ h dans la première ligne, puis on lit la température en dessous.",
+					"Il faisait $\\textcolor{{{color:primary.0}}}{{{v}}~\\unit{°C}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau donne le prix d'une course de taxi selon la distance parcourue.\n\n| Distance (km) | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ |\n|---|---|---|---|---|---|---|\n| Prix (€) | ${{p1}}$ | ${{p2}}$ | ${{p3}}$ | ${{p4}}$ | ${{p5}}$ | ${{p6}}$ |\n\nQuelle distance a-t-on parcourue pour une course de ${{v}}~\\unit{€}$ ?\n\n$?~\\unit{km}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "p1",
+					"expression": "eval:b+a*1"
+				},
+				{
+					"name": "p2",
+					"expression": "eval:b+a*2"
+				},
+				{
+					"name": "p3",
+					"expression": "eval:b+a*3"
+				},
+				{
+					"name": "p4",
+					"expression": "eval:b+a*4"
+				},
+				{
+					"name": "p5",
+					"expression": "eval:b+a*5"
+				},
+				{
+					"name": "p6",
+					"expression": "eval:b+a*6"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "v",
+					"expression": "eval:b+a*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche ${{v}}$ dans la ligne « Prix », puis on lit la distance au-dessus.",
+					"La course mesurait $\\textcolor{{{color:primary.0}}}{{{k}}~\\unit{km}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Côté 5 : 25",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : colonne voisine",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 × côté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 h : 11 °C",
+			"variationIndex": 1,
+			"variables": {
+				"t1": "4",
+				"t2": "6",
+				"t3": "9",
+				"t4": "11",
+				"t5": "14",
+				"t6": "15",
+				"t7": "17",
+				"k": "4"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : colonne voisine",
+			"variationIndex": 1,
+			"variables": {
+				"t1": "4",
+				"t2": "6",
+				"t3": "9",
+				"t4": "11",
+				"t5": "14",
+				"t6": "15",
+				"t7": "17",
+				"k": "4"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Course de 13 € : 4 km",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2",
+				"k": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : lit la ligne du prix",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2",
+				"k": "4"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
