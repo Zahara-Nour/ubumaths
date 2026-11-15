@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 
-- **État** : phase 0, revue de `/parents` point par point (9 points, ci-dessous). Points 1 à 3 tranchés ; FAQ décidée.
-- **Prochaine action** : point 4 (l'IA) : page ou FAQ, puis le texte.
-- **En attente de David** : point 4.
+- **État** : phase 0, revue de `/parents` point par point (9 points, ci-dessous). Points 1 à 4 tranchés ; FAQ décidée.
+- **Prochaine action** : point 5 (Ses données) : page ou FAQ, puis le texte.
+- **En attente de David** : point 5 ; suite de l'étude Mistral (prix, hébergement) s'il la veut.
 - **Pièges en cours** : ne promettre que ce que prouve `docs/systeme/carte-des-fonctionnalites.md` ; argent : jamais « gratuit » seul ni « pour toujours ».
 - **Worktree / branche** : aucun encore (doc sur `main`) ; le code ira dans `views.ts` (`PARENT_VIEW`).
 
@@ -30,13 +30,15 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 - **Point 3** : retiré de la page, ira dans la FAQ (texte de travail ci-dessous, § FAQ).
 - **FAQ** : en bas de `/parents`, questions repliées (option 1 ; données structurées `FAQPage` possibles). Il n'en existait aucune.
 - **Chaque point restant se tranche « page ou FAQ »** avant son texte.
+- **Point 4** : pas de bloc sur la page ; le tuteur est cité en une phrase au point 6 ; l'inquiétude va dans la FAQ (texte validé ci-dessous) ; on **nomme le prestataire (Groq)**.
+- **Mistral** : David veut étudier le chat de Mistral AI (gratuit si possible) à la place de Groq. Premier relevé (2026-11-16) dans § Étude Mistral.
 
 ## Les 9 questions du parent
 
 1. Qu'est-ce que c'est, en une phrase ? — ✅ tranché.
 2. Qui est derrière ? — ✅ tranché.
 3. À qui mon enfant peut-il parler ? — ✅ FAQ.
-4. Et l'IA ? (ni nom, ni courriel, ni identifiant envoyés : `docs/systeme/tuteur-ia.md`)
+4. Et l'IA ? — ✅ FAQ (+ une phrase au point 6).
 5. Ses données ?
 6. Est-ce que ça l'aide vraiment ?
 7. Les jeux et les gidouilles ne vont-ils pas le distraire ? (bloc absent)
@@ -52,6 +54,21 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 - Preuves : `docs/systeme/messagerie-et-moderation.md` (frontière d'école, modération), `docs/systeme/realtime.md` (chat à deux = amis), `docs/systeme/conformite/consentement-parental.md` (lecture seule sans consentement, tout niveau sauf 1re/Tle).
 - ⚠️ Ne pas promettre de filtre (4 mots, marque sans bloquer).
 - ⚠️ Akadada « borné au groupe » (décision du 2026-10-21) **non codé** : pour un élève de cours particuliers, « son école » = Akadada entière. Question ouverte : coder avant de publier, ou la phrase suffit ?
+
+### Le tuteur est une intelligence artificielle : que reçoit-elle ? (✅ validé)
+
+> Père Ubu, le tuteur, guide votre enfant vers la réponse sans la lui donner, et le nombre de messages est limité. Ses messages partent chez un prestataire aux États-Unis (Groq), avec l'énoncé de l'exercice ; Chiphre n'y joint ni son nom, ni son courriel, ni l'identifiant de son compte. Un rappel, sous la zone de saisie, lui demande de ne donner aucune information personnelle.
+
+- Preuves : `docs/systeme/tuteur-ia.md` § Données personnelles ; plafonds `src/lib/config/tutor-limits.ts`.
+- Ne pas promettre : « rien de personnel ne part » (le texte saisi part tel quel) ; que Groq n'entraîne pas ses modèles (non documenté).
+- Si le tuteur passe chez Mistral, ce texte change (pays, nom).
+
+## Étude Mistral (premier relevé, 2026-11-16)
+
+- **Pas d'API gratuite** d'après la doc officielle actuelle : le mode gratuit couvre Vibe et Studio, « Creating API keys and using the API require billing activation and pay-as-you-go » (docs.mistral.ai/admin/billing-usage/usage-limits). Le plan « Experiment » gratuit (2024) que citent des sites tiers semble périmé.
+- **Mode gratuit = données utilisables pour l'entraînement** (opt-out possible) : à exclure de toute façon pour des mineurs.
+- Payant : ZDR (zéro conservation) seulement en pay-as-you-go ; opt-out d'entraînement dans l'Admin.
+- **À vérifier** : prix des petits modèles, région d'hébergement de l'API (UE ?), avant toute décision. Changer de prestataire = registre des sous-traitants + page de confidentialité + FAQ.
 
 ## Propositions en attente
 
