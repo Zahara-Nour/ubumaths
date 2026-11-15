@@ -358,7 +358,10 @@ l'analytique ([analytique-prof.md](analytique-prof.md)), qui y fait passer aussi
   case déjà nommée par une remarque (%, unité, arrondi… ; le message global, agrégat ou phrase
   générique, n'est pas lu), case hors écriture
   mathématique (choix, geste, tableau de signes, figure), question à cases appariées librement
-  (`orderIndependent`), ambiguïté ou attendu 0 / ±1 (règles du moteur). Détail indisponible : seule une
+  (`orderIndependent`), case jugée par ses règles seules (`rulesSuffice` : l'attendu n'est qu'un
+  exemple), ambiguïté ou attendu 0 / ±1 (règles du moteur). Côté élève (PR 3), le même
+  type se dit en phrase sous la réponse, à la correction ([questions.md](questions.md), résultat
+  attendu). Détail indisponible : seule une
   question à une case se lit, d'après la valeur saisie. Traces de séries : leur verdict par case
   (`part_verdicts`) ne garde aucune remarque, la règle « la remarque prime » n'y agit donc pas ; le
   % et l'unité restent écartés par le moteur lui-même (attendu en pourcentage ou non numérique). Calculé à la lecture, jamais stocké ; la note ne

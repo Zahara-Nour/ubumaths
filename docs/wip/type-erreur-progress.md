@@ -10,9 +10,9 @@ d'une erreur (signe, oubli du carré…) par le moteur mathAST ».
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2686._
+_Mis à jour le 2026-11-15, PR 3 en cours._
 
-- **État** : PR 1 (#2682, moteur `guessErrorKind`) et PR 2 (#2686, prof : `answerErrorKinds` dans `src/lib/questions/error-kinds.ts`, comptes par type et étiquettes dans `QuestionErrorsPanel`) mergées ; vérification manuelle notée · **Prochaine action** : PR 3 — la phrase à l'élève à la correction (Saisie, Contrôle blanc, copie de contrôle corrigée), ton tranché (Q3 : « Ta réponse est l'opposé du résultat : vérifie le signe. ») · **En attente de David** : rien · **Pièges en cours** : le message global du validateur vaut « Les blancs suivants sont incorrects » sur toute réponse fausse → ne lire que les `remarks` de la case ; traces de séries sans remarques (`traceVerdict`) ; cases `orderIndependent` non typées ; réponse > 64 caractères non lue ; `rac{-3}{4}`, `-(12)`, `	frac` non lus (mineur) ; à figer en PR 3 : `4` pour `-2` = carré en trop, `-5` pour `25` = carré oublié · **Worktree / branche** : aucun (retiré après #2686) ; PR 3 → nouveau worktree `ubumaths-wt-type-erreur`, branche `feat/type-erreur-eleve`
+- **État** : PR 1 (#2682) et PR 2 (#2686) mergées ; PR 3 (élève : phrase sous la case fausse, remarque du résultat attendu, `blankErrorGuess` + `errorGuessSentence`) codée, tests verts · **Prochaine action** : revue, PR, CI, merge, vérification manuelle (Saisie : `5-17` → répondre `12`) · **En attente de David** : relire les 7 phrases (`ERROR_KIND_SENTENCES`, `src/lib/questions/error-kinds.ts`) · **Pièges en cours** : traces de séries sans remarques (`traceVerdict`) ; cases `orderIndependent` non typées ; réponse > 64 caractères non lue · **Worktree / branche** : `ubumaths-wt-type-erreur`, `feat/type-erreur-eleve`
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -85,6 +85,7 @@ l'autre.
 
 ## Historique
 
+- 2026-11-15 : PR 3 codée (élève) : phrase en remarque de case dans `buildExpectedResult`, une remarque du validateur prime ; `4` pour `-2` (carré en trop) et `-5` pour `25` (carré oublié) figés.
 - 2026-11-15 : #2686 mergée (PR 2, prof ; revue Sonnet + audit sécurité sans bloquant ; borne 64 caractères ajoutée ; CI verte).
 - 2026-11-15 : PR 2 codée (prof) : cases fausses typées, compte par type ; cases à appariement libre (`orderIndependent`) non typées en v1.
 - 2026-11-15 : #2682 mergée (PR 1, moteur ; revue Opus sans bloquant ; CI verte).
