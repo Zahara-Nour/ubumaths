@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, lot « prévoir la valeur » écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-11-15, après #2693 (fichiers du lot « prévoir la valeur »)._
 
-- **État** : lots 6e et CM2 publiés ; « prévoir la valeur » = lot de 3 modèles en ```scratch, SANS outil neuf (David, 2026-11-15 : le bloc Blockly en lecture seule est abandonné, § Prévoir la valeur) · **Prochaine action** : PR des fichiers (`feat/blockly-prevoir-valeur`), merge, puis **David** lance `create-questions --publier` → ids commités aussitôt → migration nœud + tag (CM2-067 sur la sous-notion « programmes de calcul », 5-101 / 5-104 sur la notion « Variables et instructions ») → page à cocher → publication · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; modèle sur une notion → `sous_notions_admises` dans la migration ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `db:migrate` → depuis le dépôt principal ; montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance) · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-prevoir-valeur`
+- **État** : lots 6e et CM2 publiés ; « prévoir la valeur » = lot de 3 modèles en ```scratch, SANS outil neuf (David, 2026-11-15 : le bloc Blockly en lecture seule est abandonné, § Prévoir la valeur) · **Prochaine action** : #2693 mergée, brouillons créés, ids commités ; PR de la migration nœud + tag (`security-auditor`, CI, `check:migrations`, merge, `db:migrate` depuis le dépôt principal) (CM2-067 sur la sous-notion « programmes de calcul », 5-101 / 5-104 sur la notion « Variables et instructions ») → page à cocher → publication · **En attente de David** : vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b et #2683 de `verifications-manuelles.md` · **Pièges en cours** : `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; il refuse un homonyme (même titre ET niveau) ; modèle sur une notion → `sous_notions_admises` dans la migration ; `Doc-inchangée:` → dans un COMMIT, ≤ 100 caractères ; `db:migrate` → depuis le dépôt principal ; montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; modèle publié → instantané `export-question-templates` + lot de `update-published-questions.ts` (David lance) · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-prevoir-valeur-rangement` (ids + migration)
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -561,3 +561,10 @@ Script `docs/wip/questions/lot-prevoir-valeur.py` → `scripts/questions/blockly
 (2) secondes` compris ; témoin d'instruction inconnue bien signalé) ; `audit-question-draws`
   200 tirages par variation sans alerte ; `answer-complexity-corpus` et
   `student-answer-safety.render` verts. Pas joué en base locale (comme les lots précédents).
+- **#2693 mergée le 2026-11-15** (CI verte, revue : aucune, contenu).
+- **Création en prod** (2026-11-15, David) : 3 brouillons, ids commités aussitôt (01 → `98f54315`,
+  02 → `55615796`, 03 → `b9e88a6e`). Relevé MCP : CM2 / 5 / 5, brouillons, sans nœud ni tag.
+- **Migration** `20261115185327` (3 modèles ; CM2-067 sur la sous-notion « programmes de calcul »,
+  5-104 et 5-101 sur la notion « Variables et instructions », `sous_notions_admises` = ses 4
+  sous-notions), calquée sur `20261115061153` avec une colonne `grade` (deux niveaux dans le lot) ;
+  test d'intégration 10/10, rouge sans la migration (6/10).
