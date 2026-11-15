@@ -13,7 +13,7 @@ import type { SeriesItem } from '$lib/validation/series';
 import { createServerLogger } from '$lib/utils/logger';
 import { getDurationSignals } from '$lib/server/stats/duration-signals';
 import { getTeacherTestMode } from '$lib/server/test-mode';
-import type { DurationSignals } from '$lib/types/duration-signals';
+import type { DurationSignalsResponse } from '$lib/types/duration-signals';
 
 const logger = createServerLogger('series/edit');
 
@@ -28,7 +28,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			loadPublishedTemplates(locals.supabase, series.items),
 			loadDurationSignals(locals.supabase, user.id, series.items)
 		]);
-		return { series, templates, durationSignals };
+		return {
+			series,
+			templates,
+			durationSignals: durationSignals?.signals ?? null,
+			observedDurations: durationSignals?.observed ?? null
+		};
 	} catch (e) {
 		if (e instanceof SeriesError) throw error(e.status, e.message);
 		throw e;
@@ -58,21 +63,22 @@ async function loadPublishedTemplates(
 }
 
 /**
- * Durées trop courtes des modèles (chantier `durees-trop-courtes`) ; un échec
- * rend null : pas de marque, la page reste.
+ * Durées trop courtes (chantier `durees-trop-courtes`) et durées observées
+ * (chantier `durees-ajustees`) des modèles ; un échec rend null : ni marque ni
+ * suggestion, la page reste.
  */
 async function loadDurationSignals(
 	supabase: App.Locals['supabase'],
 	userId: string,
 	items: readonly SeriesItem[]
-): Promise<DurationSignals | null> {
+): Promise<DurationSignalsResponse | null> {
 	const isTestMode = await getTeacherTestMode(userId, supabase);
 	const result = await getDurationSignals(
 		supabase,
 		items.map((item) => item.templateId),
 		isTestMode
 	);
-	return result.status === 'ok' ? result.signals : null;
+	return result.status === 'ok' ? { signals: result.signals, observed: result.observed } : null;
 }
 
 /** Lignes sérialisées par la page */

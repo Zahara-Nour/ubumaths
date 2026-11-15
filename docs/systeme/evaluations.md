@@ -78,7 +78,7 @@ pas des notes.
 | -------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/automaths/test` (couverte par [questions.md](questions.md))                          | tous          | Page unique qui joue toutes les formes, libres ou contrôle.                                                                                                                        |
 | `POST /api/series`                                                                     | prof, admin   | Enregistrer le panier comme série. Liste et édition : `/dashboard/teacher/series`.                                                                                                 |
-| `GET /api/series/duration-signals?templates=<uuid,…>`                                  | prof, admin   | Durées sans doute trop courtes des modèles du panier (1 à 100 UUID, Zod) ; des comptes, aucun nom.                                                                                 |
+| `GET /api/series/duration-signals?templates=<uuid,…>`                                  | prof, admin   | `{ signals, observed }` : durées sans doute trop courtes et durées observées des modèles du panier (1 à 100 UUID, Zod) ; des comptes, aucun nom.                                   |
 | `POST /api/tests/save`                                                                 | connecté      | Fin d'une série **libre** : gain du Palotin seulement, rien d'écrit. Refuse un contrôle.                                                                                           |
 | `/dashboard/teacher/assessments` (+ `new`, `[id]/edit`, `[id]/assign`, `[id]/results`) | prof, admin   | Créer depuis une série, régler (brouillon seulement), publier, assigner, résultats.                                                                                                |
 | `/dashboard/student/assessments` (+ `[id]/results`)                                    | élève         | Ses contrôles ; ses tentatives (`[id]` = identifiant de l'**assignation**). S'ouvre depuis « Mon travail » (« Tous mes contrôles »), y revient (`BackLink`).                       |
@@ -298,7 +298,7 @@ les cartes de la page résultats) :
 **modèle × durée**. Elle apparaît dans le panier (sous la durée d'une tuile, pour un prof ou un
 admin, lue par `GET /api/series/duration-signals` quand les modèles du panier changent) et dans
 l'éditeur de série (`/dashboard/teacher/series/[id]/edit`), qui affiche la durée de chaque ligne en
-lecture (elle se règle dans le panier). Le composant est commun : `TooShortMark.svelte`
+lecture (elle se règle dans le panier, ou par la durée observée ci-dessous). Le composant est commun : `TooShortMark.svelte`
 (`src/lib/components/series/`), utilisé aussi par le bilan. Deux sources fusionnées par élève :
 
 - les **traces de Contrôle blanc** (`skill_attempts`, lieu `mock_test`), avec durée =
@@ -311,6 +311,25 @@ du bilan. Ne comptent que les traces et les copies **postérieures à la derniè
 modèle** (`question_templates.updated_at`). Carte de cours écartée. Mode test du prof respecté
 (`profiles.is_test`). Lecture : client du prof, RLS existante (`skill_attempts_select_teacher`, aucun
 accès nouveau). Un échec ne retire que la marque.
+
+**Durée observée** (chantier `durees-ajustees`, besoin A1 ; `observedDurationsOf`, même lecture que la
+marque) : sous la durée d'une ligne, dans le panier et l'éditeur de série, « Durée observée : 35 s »
+et un bouton « Appliquer » (`ObservedDelayHint.svelte`, `src/lib/components/series/`). Rien ne change
+sans ce geste ; dans l'éditeur, la durée appliquée s'écrit à l'enregistrement (une série verrouillée
+n'y arrive pas : « Modifier » est masqué et la base refuse, UBS01). Règle, sur les mêmes tirages que
+la marque (élèves du prof, mode test, postérieurs à la modification du modèle, carte écartée), chaque
+tirage comptant, **durées allouées confondues** :
+
+- un tirage validé avant la fin **avec une réponse** (juste ou fausse) donne sa durée de réponse
+  (`response_ms` du Contrôle blanc, `time_spent` d'un contrôle) ; arrivé au bout du chrono (contrôle :
+  à la dernière seconde près ; Contrôle blanc : `end_reason = 'timeout'`), réponse commencée ou non,
+  il compte « au-delà » ; **passé à vide avant la fin** (passer ≠ avoir eu le temps) ou durée
+  inconnue : écarté ;
+- durée observée = la durée dans laquelle **80 %** des tirages ont été validés, **arrondie aux 5 s
+  supérieures**, bornée à 5-300 s (le réglage du panier) ; si les temps écoulés dépassent 20 %, le
+  chiffre n'est pas calculable (la marque « trop courte » prend le relais) ; au moins **5 élèves** ;
+- affichée seulement si elle s'écarte de la durée de la ligne (0 → 20 s) d'au moins **5 s et 25 %**,
+  dans un sens ou l'autre (`observedSuggestion`, `src/lib/types/duration-signals.ts`).
 
 **Erreurs d'une question** (chantier `erreurs-frequentes`, besoin P4 ; `getEvaluationQuestionErrors` dans
 `evaluation-question-errors.ts`, route `…/assessments/[id]/results/question-errors?template=<uuid>`) :
@@ -458,4 +477,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14 ; durée sans doute trop courte (`durees-trop-courtes`, PR 1) le 2026-11-14, dans le panier et l'éditeur de série (PR 2) le 2026-11-14.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14 ; durée sans doute trop courte (`durees-trop-courtes`, PR 1) le 2026-11-14, dans le panier et l'éditeur de série (PR 2) le 2026-11-14 ; durée observée (`durees-ajustees`) le 2026-11-15.

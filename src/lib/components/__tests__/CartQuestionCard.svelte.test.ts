@@ -29,10 +29,11 @@ const instance = generated.success ? generated.instance : undefined;
 
 async function renderCard(
 	overrides: {
-		onUpdateDelay?: () => void;
+		onUpdateDelay?: (templateId: string, delay: number) => void;
 		onRemove?: () => void;
 		template?: boolean;
 		tooShort?: QuestionTiming | null;
+		observedDelay?: number | null;
 	} = {}
 ) {
 	return await render(CartQuestionCard, {
@@ -43,7 +44,8 @@ async function renderCard(
 		onDecrementQuantity: vi.fn(),
 		onUpdateDelay: overrides.onUpdateDelay ?? vi.fn(),
 		onRemove: overrides.onRemove ?? vi.fn(),
-		tooShort: overrides.tooShort
+		tooShort: overrides.tooShort,
+		observedDelay: overrides.observedDelay
 	});
 }
 
@@ -181,5 +183,21 @@ describe('CartQuestionCard', () => {
 	it('sans signal : aucune marque', async () => {
 		const screen = await renderCard();
 		expect(screen.container.querySelector('[data-duree-trop-courte]')).toBeNull();
+	});
+
+	it('durée observée : la suggestion, et « Appliquer » règle la durée (A1)', async () => {
+		const onUpdateDelay = vi.fn();
+		const screen = await renderCard({ observedDelay: 40, onUpdateDelay });
+		const hint = screen.container.querySelector('[data-duree-observee]');
+		expect(hint?.textContent?.replace(/\s+/g, ' ')).toContain('Durée observée : 40 s');
+		await screen
+			.getByRole('button', { name: 'Appliquer la durée observée de 40 secondes' })
+			.click();
+		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.templateId, 40);
+	});
+
+	it('sans durée observée : aucune suggestion', async () => {
+		const screen = await renderCard();
+		expect(screen.container.querySelector('[data-duree-observee]')).toBeNull();
 	});
 });

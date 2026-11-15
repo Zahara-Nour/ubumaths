@@ -9,7 +9,8 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Clock, Minus, Plus, Trash2 } from '@lucide/svelte';
 	import TooShortMark from '$lib/components/series/TooShortMark.svelte';
-	import { effectiveDelay, tooShortAt } from '$lib/types/duration-signals';
+	import ObservedDelayHint from '$lib/components/series/ObservedDelayHint.svelte';
+	import { effectiveDelay, observedSuggestion, tooShortAt } from '$lib/types/duration-signals';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitAction } from '$lib/utils/form-action';
 	import { getGradeSelectItems } from '$lib/utils/grades';
@@ -40,6 +41,11 @@
 		const next = items[index].quantity + delta;
 		if (next < 1 || next > 99) return;
 		items[index].quantity = next;
+	}
+
+	// Durée observée appliquée à la copie de travail : écrite à l'enregistrement
+	function handleApplyDelay(index: number, seconds: number) {
+		items[index].delay = seconds;
 	}
 
 	function handleRemove(index: number) {
@@ -134,7 +140,7 @@
 									</span>
 								{/if}
 								<div class="flex items-center gap-2">
-									<!-- Durée par question : en lecture (elle se règle dans le panier) -->
+									<!-- Durée par question : en lecture (réglée dans le panier, ou par la durée observée) -->
 									<span
 										class="flex items-center gap-1 text-sm text-muted-foreground"
 										title="Durée par question"
@@ -174,6 +180,11 @@
 								</div>
 								<TooShortMark
 									timing={tooShortAt(data.durationSignals, item.templateId, item.delay)}
+									class="w-full"
+								/>
+								<ObservedDelayHint
+									seconds={observedSuggestion(data.observedDurations, item.templateId, item.delay)}
+									onapply={(seconds) => handleApplyDelay(index, seconds)}
 									class="w-full"
 								/>
 							</li>

@@ -123,7 +123,7 @@ function emptyTally(): BreakdownTally {
 }
 
 /** Statut enregistré → colonne du bilan (statut inconnu ou nul : sans réponse) */
-function columnOf(status: string | null): keyof BreakdownCounts {
+export function columnOf(status: string | null): keyof BreakdownCounts {
 	switch (status) {
 		case 'correct':
 			return 'correct';

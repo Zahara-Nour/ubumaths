@@ -33,7 +33,11 @@
 	} from '$lib/validation/series';
 	import { templatePreview } from '$lib/questions/catalogue';
 	import { fetchDurationSignals } from '$lib/utils/duration-signals';
-	import { tooShortAt, type DurationSignals } from '$lib/types/duration-signals';
+	import {
+		observedSuggestion,
+		tooShortAt,
+		type DurationSignalsResponse
+	} from '$lib/types/duration-signals';
 	import type { TestMode } from '$lib/types/test';
 	import type { PageData } from './$types';
 
@@ -52,8 +56,9 @@
 	let isEmpty = $derived(cartItems.length === 0);
 	let totalInstances = $derived(questionCart.totalInstances);
 
-	// Durées trop courtes chez les élèves du prof (chantier `durees-trop-courtes`)
-	let durationSignals = $state<DurationSignals | null>(null);
+	// Durées trop courtes (chantier `durees-trop-courtes`) et durées observées
+	// (chantier `durees-ajustees`) chez les élèves du prof
+	let durationSignals = $state<DurationSignalsResponse | null>(null);
 	let signalTemplateIds = $derived(
 		isTeacher ? [...new Set(cartItems.map((i) => i.templateId))].sort().join(',') : ''
 	);
@@ -307,7 +312,12 @@
 							onDecrementQuantity={handleDecrementQuantity}
 							onUpdateDelay={handleUpdateDelay}
 							onRemove={handleRemove}
-							tooShort={tooShortAt(durationSignals, item.templateId, item.delay)}
+							tooShort={tooShortAt(durationSignals?.signals, item.templateId, item.delay)}
+							observedDelay={observedSuggestion(
+								durationSignals?.observed,
+								item.templateId,
+								item.delay
+							)}
 						/>
 					{/each}
 				</div>

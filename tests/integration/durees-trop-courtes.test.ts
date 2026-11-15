@@ -35,6 +35,8 @@ const SERVICE_KEY =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
 const T_TABLES = '0a11f0e0-0000-4000-8000-0000000d7c01';
 const T_CARTE = '0a11f0e0-0000-4000-8000-0000000d7c02';
+/** Durée observée calculable (chantier `durees-ajustees`) */
+const T_OBSERVE = '7c8d9e0f-7777-4777-8777-777777777777';
 /** Dernière modification des modèles : les traces d'avant ne comptent pas (Q8) */
 const TEMPLATE_UPDATED_AT = '2026-01-01T00:00:00Z';
 const BEFORE_UPDATE = '2025-06-01T00:00:00Z';
@@ -131,8 +133,8 @@ async function controlCopy(
 }
 
 async function removeDecor(): Promise<void> {
-	await service.from('skill_attempts').delete().in('template_id', [T_TABLES, T_CARTE]);
-	await service.from('question_templates').delete().in('id', [T_TABLES, T_CARTE]);
+	await service.from('skill_attempts').delete().in('template_id', [T_TABLES, T_CARTE, T_OBSERVE]);
+	await service.from('question_templates').delete().in('id', [T_TABLES, T_CARTE, T_OBSERVE]);
 }
 
 describe('durées trop courtes lues par le professeur (RLS réelle)', () => {
@@ -151,7 +153,8 @@ describe('durées trop courtes lues par le professeur (RLS réelle)', () => {
 
 		for (const [id, title, options] of [
 			[T_TABLES, 'Tables durée ZZ', null],
-			[T_CARTE, 'Carte durée ZZ', { courseCard: true }]
+			[T_CARTE, 'Carte durée ZZ', { courseCard: true }],
+			[T_OBSERVE, 'Observée durée ZZ', null]
 		] as const) {
 			await insertId('question_templates', {
 				id,
@@ -197,6 +200,10 @@ describe('durées trop courtes lues par le professeur (RLS réelle)', () => {
 		await mockTrace(teacher, T_TABLES, 40, 'missed');
 		// Carte de cours : jamais de case, jamais de signal
 		for (const s of students) await mockTrace(s, T_CARTE, 10, 'missed');
+		// Validées en 3 s (réponse lue en base) ; le prof et l'élève de test ne comptent pas
+		for (const s of students) await mockTrace(s, T_OBSERVE, 20, 'validated');
+		await mockTrace(testStudent, T_OBSERVE, 20, 'missed');
+		await mockTrace(teacher, T_OBSERVE, 20, 'missed');
 	});
 
 	afterAll(async () => {
@@ -225,13 +232,27 @@ describe('durées trop courtes lues par le professeur (RLS réelle)', () => {
 		expect(result.signals[T_CARTE]).toBeUndefined();
 	});
 
+	it('durée observée : lue sur les durées de réponse en base (A1)', async () => {
+		const result = await getDurationSignals(teacher.client, [T_TABLES, T_CARTE, T_OBSERVE], false);
+		expect(result.status).toBe('ok');
+		if (result.status !== 'ok') return;
+		// 5 élèves, tout validé en 3 s → 5 s (plancher)
+		expect(result.observed[T_OBSERVE]).toEqual({ seconds: 5, students: 5 });
+		// Tables : 5 temps écoulés sur 11 tirages, plus de 20 % → aucun chiffre
+		expect(result.observed[T_TABLES]).toBeUndefined();
+		// Carte de cours : écartée
+		expect(result.observed[T_CARTE]).toBeUndefined();
+	});
+
 	it('mode test : seuls les élèves de test comptent', async () => {
 		const result = await getDurationSignals(teacher.client, [T_TABLES], true);
 		expect(result).toEqual({
 			status: 'ok',
 			signals: {
 				[T_TABLES]: [{ delaySeconds: 10, students: 1, unansweredInTime: 1, tooShort: false }]
-			}
+			},
+			// Un seul élève de test : sous le seuil
+			observed: {}
 		});
 	});
 
