@@ -8,7 +8,7 @@ import { grapheurContext } from '$lib/stores/grapheur-context';
 const STORAGE_KEY = 'grapheur-outils-replies';
 
 async function renderControls() {
-	return render(ViewportControls, {
+	return await render(ViewportControls, {
 		props: { svgWidth: 400, svgHeight: 300, onToggleExpanded: () => {} },
 		context: grapheurContext(new GrapheurStore())
 	});
@@ -55,7 +55,7 @@ describe('outils du graphe repliables', () => {
 		const first = await renderControls();
 		button(first.container, 'Replier les outils du graphe')!.click();
 		flushSync();
-		first.unmount();
+		await first.unmount();
 
 		const second = await renderControls();
 		expect(button(second.container, 'Zoom avant')).toBeNull();
