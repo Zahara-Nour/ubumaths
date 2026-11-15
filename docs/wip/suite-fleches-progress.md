@@ -8,11 +8,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2680._
+_Mis à jour le 2026-11-15, après #2689._
 
-> ⚠️ **Note de la session `blockly` (2026-11-15, ~18 h)** : la migration `20261115165656_questions_ce1_robot_rangement_tags` (#2689) est **DÉJÀ APPLIQUÉE en prod** — le `pnpm db:migrate` de la session `blockly` (pour #2688) l'a emportée avec la sienne, sans erreur. **Ne pas relancer `db:migrate`** ; il reste seulement à vérifier. Relevé MCP aussitôt après : `856f400e` (niveau 4) et `c8da0674` (niveau 5) en brouillon, sur le nœud `500ebf21`, un tag CE1:CE1-080 chacun, `updated_at` 16:56:18 / 16:56:19 (antérieurs au push : préservés). Bloc ci-dessous antérieur à #2689 : la PR des fichiers, la création en prod et la migration sont faites ; restent la page à cocher et la publication.
-
-- **État** : lot 1 livré (#2672, #2680) ; lot 2 : phase 0 validée, modèles écrits (`scripts/questions/ce1-11/`), simulation verte, essayés en local · **Prochaine action** : PR des fichiers → merge → David lance `create-questions --dir scripts/questions/ce1-11 --publier` (prod, brouillons) → commiter les `id` → migration nœud + tag CE1-080 (niveaux 4 et 5) → page à cocher → publication · **En attente de David** : rien pour l'instant · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` ; aperçu local par `http://[::1]:5176` (pas `localhost`) ; zsh ne découpe pas une variable ; code hors de `blockly` · **Worktree / branche** : `ubumaths-wt-suite-fleches` (`feat/suite-fleches-2`)
+- **État** : lot 1 livré (#2672, #2680). Lot 2 : #2687 (modèles `scripts/questions/ce1-11/`) et #2689 (id + migration `20261115165656_questions_ce1_robot_rangement_tags`) mergées ; brouillons créés en prod par David (`856f400e` flèches niveau 4, `c8da0674` avance-pivote niveau 5) ; migration appliquée en prod par le `db:migrate` de la session `blockly` (#2688), vérifiée par MCP (nœud « coder un déplacement », tag CE1-080, brouillons) ; garde des niveaux verte · **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/MsZEbT2WJLF2cZNT8cDYth, collection `verdicts`, 2 fiches ; le bloc robot n'y est pas dessiné : jouer chaque modèle dans l'aperçu admin), compter ; puis `publier-lot.ts --dir scripts/questions/ce1-11` en simulation, David lance `--publier` · **En attente de David** : relecture des 2 modèles · **Pièges en cours** : `expected` de la case = `<scène> \| <code>` ; aperçu local par `http://[::1]:5176` (`localhost` porte la session de David) · **Worktree / branche** : retiré après #2689 (reste : relecture et publication, sans code)
 
 ## Phase 0 — comportements (à valider)
 
@@ -214,3 +212,8 @@ règle d'accès, personne ne lit rien de plus.
   la session de David) : flèches juste / faux (« n'arrive pas », code juste montré), mur (croix rouge sur le
   gris, trajet juste en pointillés), avance-pivote juste (nez vers le haut lisible). Étape « droite ou gauche,
   **puis** haut ou bas » réécrite en « et » (le corrigé peut monter d'abord).
+- 2026-11-15 : #2687 mergée (CI verte). David : brouillons créés en prod. #2689 (id, migration générée par
+  `docs/wip/suite-fleches/lot-2-rangement.py` sur le gabarit 5e lot 12, relevé `etat-prod-2026-11-15-lot2/`,
+  test d'intégration 19 verts / 8 rouges sans la migration, `security-auditor` sans bloquant) mergée. Dépôt principal
+  bloqué par des fichiers d'autres sessions ; entre-temps le `db:migrate` de la session `blockly` a appliqué notre
+  migration (note de cette session, intégrée ici). Vérifié par MCP. Page à cocher publiée, verdicts vides.
