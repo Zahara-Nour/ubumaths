@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après la publication du lot 13._
+_Mis à jour le 2026-11-15, lot 14 écrit (PR des fichiers)._
 
-- **État** : lots 1 à 13 publiés. Restent : lot 14 (7 : 067, 068, 069, 070, 071, 072, 133), lot 15 (6 : 054, 055,
-  115, 144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : lot 14 validé (§ 29 bis) → écrire `lot-5-parallelogrammes.py` dans le worktree → attendre la
-  validation de David.
+- **État** : lots 1 à 13 publiés. Lot 14 « Parallélogrammes » validé (§ 29 bis) et écrit (§ 29 ter), 7 modèles dans
+  `scripts/questions/5-parallelogrammes/`. Restent : lot 15 (6 : 054, 055, 115, 144, 048, 049), 9 D, 101 et 104
+  (chantier `blockly`) — § 27 quinquies.
+- **Prochaine action** : PR des fichiers du lot 14 verte → merge → David lance `create-questions --dir
+scripts/questions/5-parallelogrammes --publier` depuis ce worktree → commiter les id → migration de rangement
+  (nœud « Figures planes › parallélogrammes ») → page à cocher → publication par David.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
-- **Pièges en cours** : lancer `create-questions --publier` depuis le worktree du chantier (`pwd`) ; worktree neuf :
-  copier `supabase/.temp/` du dépôt principal sinon `db:migrate` « Cannot find project ref » ; base locale = contenu
-  de la prod (vrais id) ; `--publier` en LOCAL écrit les id locaux → copie ; jamais `e`.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : `create-questions --publier` depuis le worktree du chantier (`pwd`) ; `--publier` en LOCAL
+  écrit les id locaux → copie au scratchpad ; serveur de dev sur `--host 127.0.0.1` pour Chrome ; jamais `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot-14`.
 
 ---
 
@@ -1078,3 +1079,14 @@ centre=O)`), papier uni, compas · report · règle ; v2 losange : diagonale [AC
 
 « On ne peut pas savoir » juste dans une variation piège de 03 et 05 ; 06 sur quadrillage (v1) puis papier uni aux
 instruments (v2) ; 07 limité aux diagonales.
+
+### 29 ter. Lot 14 écrit (2026-11-15)
+
+- Script `docs/wip/questions/lot-5-parallelogrammes.py` → `scripts/questions/5-parallelogrammes/` (7 modèles, 57
+  specs) ; `create-questions` (simulation) tout vert ; `sonde-figures` : 0 problème sur 300 tirages par modèle.
+- **Pièges** : le juge des points ne lit pas leur nom, il les apparie par position (C et D « échangés » = juste :
+  spec retirée) ; fenêtre d'une figure à `selon` = calculée sur TOUTES les formes tirées (sinon D hors fenêtre) ;
+  étiquette de O en haut (en bas, elle couvre l'angle droit AOB).
+- Base locale (copie au scratchpad : aucun id local dans les fichiers) : aperçu admin regardé pour 03 (trapèze,
+  diagonales codées), 05 (carré), 06 (quadrillage), 07 (papier uni, Point · Règle · Compas). Serveur ouvert sur
+  `--host 127.0.0.1` : l'extension Chrome refuse `[::1]`, et `localhost` partage les cookies de 5173.
