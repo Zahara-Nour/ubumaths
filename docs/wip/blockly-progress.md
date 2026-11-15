@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, lot 6e écrit (PR à venir)._
+_Mis à jour le 2026-11-15, après #2674._
 
-- **État** : lot 6e écrit (`scripts/questions/6-blockly/`, 2 modèles : 6-197 chemin tortue, 6-210 « pour n, affiche r »), fichiers seuls, sans id ; rien en prod · **Prochaine action** : PR des fichiers → merge → **David** lance, depuis `../ubumaths-wt-blockly`, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-blockly --publier` → je commite les ids + migration nœud + tag (les deux → Algorithmique › Préalgorithmique) → page à cocher → publication · **En attente de David** : les choix du lot 6e (§ Lot 6e, « afficher 10 » juste compris) ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une case programme est jugée AVANT la garde de complexité ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT (le lot 10 de la 5e les avait perdus, #2671) ; worktree neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx scripts/…` · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-6`
+- **État** : lot 6e écrit (`scripts/questions/6-blockly/`, 2 modèles : 6-197 chemin tortue, 6-210 « pour n, affiche r »), mergé (#2674), fichiers seuls, sans id ; rien en prod · **Prochaine action** : **David** lance, depuis `../ubumaths-wt-blockly`, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-blockly --publier` → je commite les ids + migration nœud + tag (les deux → Algorithmique › Préalgorithmique) → page à cocher → publication · **En attente de David** : les choix du lot 6e (§ Lot 6e, « afficher 10 » juste compris) ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b et 5b de `verifications-manuelles.md` · **Pièges en cours** : montée de Blockly → recopier `node_modules/blockly/media` dans `static/blockly/media` (`media.test.ts`) ; `index.ts` de `tortue/` importe Blockly : hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement ; dans `calcul/`, seul `blocs.ts` importe Blockly (garde `sans-blockly.test.ts`) ; tout fichier `src/lib` neuf atteint par l'intégration → motif dans `nightly-integration.yml` ; une case programme est jugée AVANT la garde de complexité ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT (le lot 10 de la 5e les avait perdus, #2671) ; worktree neuf → `pnpm exec svelte-kit sync` avant `pnpm tsx scripts/…` · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-lot-6-rangement`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -447,5 +447,12 @@ worktree retiré.
   (`comparer: position`) ; 02 : `essais: {{n}}` seul, donc `afficher 10` est juste (spec qui le dit)
   comme tout autre programme qui affiche r pour n ; l'énoncé suggère l'opération (« et une
   addition ») sans l'imposer ; niveau 1 ; délai 300 s.
+- **#2674 mergée le 2026-11-15** (CI verte, contenu seul, pas de revue).
 - Vérifié : simulation 2/2 importable ; une spec inversée → modèle refusé (01 et 02) ;
   `answer-complexity-corpus` et `student-answer-safety.render` verts. Pas joué en base locale.
+- **Création en prod** (2026-11-15, David) : 2 brouillons, ids commités aussitôt
+  (01 → `94d75415`, 02 → `befab91c`). Relevé MCP : en {6}, sans nœud ni tag ; « Préalgorithmique »
+  sans sous-notion.
+- **#2676** : migration `20261115072353` (2 modèles sur « Algorithmique › Préalgorithmique », un tag
+  chacun), calquée sur `20261115061153` ; test d'intégration 10/10, rouge sans la migration (6/10) ;
+  `security-auditor` sans bloquant. CI : `Doc-inchangée:` doit être dans un COMMIT, pas dans la PR.
