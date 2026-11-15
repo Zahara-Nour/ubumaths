@@ -10,9 +10,9 @@ d'une erreur (signe, oubli du carré…) par le moteur mathAST ».
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, PR 3 en cours._
+_Mis à jour le 2026-11-15, après #2695._
 
-- **État** : PR 1 (#2682) et PR 2 (#2686) mergées ; PR 3 (élève : phrase sous la case fausse, remarque du résultat attendu, `blankErrorGuess` + `errorGuessSentence`) codée, tests verts · **Prochaine action** : revue, PR, CI, merge, vérification manuelle (Saisie : `5-17` → répondre `12`) · **En attente de David** : relire les 7 phrases (`ERROR_KIND_SENTENCES`, `src/lib/questions/error-kinds.ts`) · **Pièges en cours** : traces de séries sans remarques (`traceVerdict`) ; cases `orderIndependent` non typées ; réponse > 64 caractères non lue · **Worktree / branche** : `ubumaths-wt-type-erreur`, `feat/type-erreur-eleve`
+- **État** : v1 livrée — PR 1 (#2682, moteur), PR 2 (#2686, prof), PR 3 (#2695, élève : phrase sous la case fausse) mergées ; vérifications manuelles notées · **Prochaine action** : clore le chantier (versement : le durable est déjà dans `docs/systeme/questions.md` § 6 et `evaluations.md`, archiver ce journal) si David le dit ; « plus tard, si utile » : expressions, réponses pièges de l'auteur · **En attente de David** : clôture ? ; relecture des 7 phrases (`ERROR_KIND_SENTENCES`, `src/lib/questions/error-kinds.ts`) · **Pièges en cours** : cases `rulesSuffice` et `orderIndependent` jamais typées ; traces de séries sans remarques (`traceVerdict`) ; réponse > 64 caractères non lue ; la copie vue par le prof montre aussi la phrase tutoyée (choix assumé) · **Worktree / branche** : aucun (retirés après #2695)
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -85,6 +85,7 @@ l'autre.
 
 ## Historique
 
+- 2026-11-15 : #2695 mergée (PR 3, élève ; revue Opus : cases `rulesSuffice` écartées, côté prof aussi ; CI verte).
 - 2026-11-15 : PR 3 codée (élève) : phrase en remarque de case dans `buildExpectedResult`, une remarque du validateur prime ; `4` pour `-2` (carré en trop) et `-5` pour `25` (carré oublié) figés.
 - 2026-11-15 : #2686 mergée (PR 2, prof ; revue Sonnet + audit sécurité sans bloquant ; borne 64 caractères ajoutée ; CI verte).
 - 2026-11-15 : PR 2 codée (prof) : cases fausses typées, compte par type ; cases à appariement libre (`orderIndependent`) non typées en v1.
