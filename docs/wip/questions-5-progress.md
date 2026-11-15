@@ -5,20 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2670 (lot 10 rangé en prod)._
+_Mis à jour le 2026-11-15, après la publication du lot 10._
 
-- **État** : lots 1 à 9 publiés. Lot 10 créé en prod et **rangé** (#2670 appliquée le 2026-11-15, vérifié au
-  MCP : 10 brouillons sur leur nœud, 1 tag chacun, `updated_at` intact). Lot 11 : porté par `blockly`.
-- **Prochaine action** : David relit la page à cocher du lot 10
-  (https://claude.ai/artifact/KVSPdAyo3EjNnGVA1BnDtW) ; compter les verdicts, puis `publier-lot`.
-- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
-- **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
+- **État** : lots 1 à 10 publiés (lot 10 : 10/10 relus « ok », publiés le 2026-11-15, vérifié au MCP).
+  Lot 11 : porté par `blockly`.
+- **Prochaine action** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
   128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049 ; Blockly → 100, 102, 103, 105, 106).
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main.
 - **Pièges en cours** : base locale remplie par `db:seed-riche` = contenu de la prod (vrais id) ; le
   `create-questions --publier` en LOCAL écrit les id locaux dans les fichiers → les retirer ; `db:migrate` en prod refusé par le
   classifieur du mode auto → David ; `pnpm check:migrations --pr <n>` avant merge ; horodatage =
   `pnpm migration:horodatage` ; jamais `e`.
-- **Worktree / branche** : aucun (`ubumaths-wt-questions-5` retiré après #2670).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -771,6 +769,12 @@ proportionnalité 1 (6e ×2) ; caractérisation 1-3 ; généralités sur les fon
   (06:20). Les id des fichiers : #2671 (session `blockly`, `create-questions` lancé depuis son worktree).
 - Page à cocher https://claude.ai/artifact/KVSPdAyo3EjNnGVA1BnDtW (10 fiches, aucune alerte, capacité `db`,
   `verdicts` vide à la publication).
+
+### Lot 10 : publication (2026-11-15)
+
+- Page à cocher : **10 verdicts sur 10 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
+  `publier-lot` 10/10 ; David : `--publier` → 10/10 ; vérifié au MCP (`status = published` pour les 10, 07:06 UTC).
+  **Lot 10 clos.**
 
 ## 25. Lot 11 « Programmer en blocs » : validé (David, 2026-11-14, « je te suis »)
 
