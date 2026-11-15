@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2699 (lot 14, fichiers) mergée._
+_Mis à jour le 2026-11-15, après #2702 (lot 14, rangement) mergée et migrée._
 
-- **État** : lots 1 à 13 publiés. Lot 14 « Parallélogrammes » écrit (§ 29 ter), #2699 (fichiers) mergée, CI verte ;
-  7 modèles dans `scripts/questions/5-parallelogrammes/`, pas encore en prod. Restent : lot 15 (6 : 054, 055, 115,
-  144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/5-parallelogrammes --publier` depuis le
-  worktree (après `git pull`) → commiter les id → migration de rangement (nœud « Figures planes › parallélogrammes »)
-  → page à cocher → publication par David.
-- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
+- **État** : lots 1 à 13 publiés. Lot 14 « Parallélogrammes » : 7 brouillons en prod, rangés sur « Figures planes ›
+  parallélogrammes », tag posé (#2702, `db:migrate` joué, vérifié au MCP) ; page à cocher publiée (§ 29 quater).
+  Restent : lot 15 (6 : 054, 055, 115, 144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
+- **Prochaine action** : David coche la page https://claude.ai/artifact/37eYa4zpEKzGx2S75ZG2xN (06 et 07 à jouer
+  dans l'aperçu) → compter les verdicts → simulation `publier-lot.ts` → publication par David ; puis phase 0 du lot 15.
+- **En attente de David** : verdicts du lot 14 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main
+  (aperçu de `ef08a256`).
 - **Pièges en cours** : `create-questions --publier` depuis le worktree du chantier (`pwd`) ; `--publier` en LOCAL
   écrit les id locaux → copie au scratchpad ; serveur de dev sur `--host 127.0.0.1` pour Chrome ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot-14` (mergée ; la PR suivante part d'une branche neuve).
+- **Worktree / branche** : aucun (retiré après #2702) ; le lot 15 part d'un worktree neuf `../ubumaths-wt-questions-5`.
 
 ---
 
@@ -1101,3 +1101,8 @@ instruments (v2) ; 07 limité aux diagonales.
 - Migration `20261115210404_questions_5_lot14_rangement_tags` (générée, `docs/wip/questions-5/lot-14-rangement.py`,
   gabarit lot 13) : les 7 sur « parallélogrammes », tag posé. Test d'intégration 19 verts ; sans le corps, 8 rouges,
   7 sautés.
+- #2702 mergée (CI verte, `security-auditor` sans finding, `check:migrations` ok) ; `db:migrate` joué (seule migration
+  en attente, dry-run) ; vérifié au MCP : 7 modèles sur « parallélogrammes », tag posé, niveaux 1 à 7, `updated_at`
+  préservé.
+- Page à cocher publiée (https://claude.ai/artifact/37eYa4zpEKzGx2S75ZG2xN, capacité `db`, collection `verdicts`
+  vide au départ) ; 06, 07 (`figure-a-completer`) non dessinés par la page : à jouer dans l'aperçu.
