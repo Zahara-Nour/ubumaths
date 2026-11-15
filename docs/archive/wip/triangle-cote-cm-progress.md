@@ -1,17 +1,17 @@
 # Chantier `triangle-cote-cm` — triangle quelconque coté en cm (outils-manquants n° 29)
 
-> Demande de David du 2026-11-14 (n° 29 de [`outils-manquants.md`](outils-manquants.md)). Aujourd'hui
+> Demande de David du 2026-11-14 (n° 29 de [`outils-manquants.md`](../../wip/outils-manquants.md)). Aujourd'hui
 > `verifier: triangle ABC : AC = 4 cm ; BC = 3 cm` est refusé hors du triangle rectangle
 > (`construction-parser.ts`, « une longueur en cm ne sert qu'au triangle rectangle ») ; le lot 12 de
-> [`questions-6`](../archive/wip/questions-6-progress.md) § 27 passe par des segments à reporter. Point visé :
+> [`questions-6`](questions-6-progress.md) § 27 passe par des segments à reporter. Point visé :
 > 6-173 (exemples de réussite 6e p. 15 : « trois longueurs (si possible), deux côtés et l'angle compris, un côté
 > et ses deux angles adjacents »).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-14, après #2665._
+_Chantier clos le 2026-11-15._
 
-- **État** : outil et variations en prod (v0.88.0 ; modèle 6-173 f06e45e8 vérifié identique au fichier). #2665 mergée (lot 7 et cas en cm avec angle : un seul C ; côté sans repère → « trace ses côtés avec le rapporteur », jamais au triangle rectangle), **pas encore en prod** · **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, archive du journal) · **En attente de David** : `deploy:prod` de #2665 (quand il voudra) ; relecture des 2 variations en prod · **Pièges en cours** : faux faux d'avant, laissé : deux côtés d'angle en segments qui se croisent au-delà de C, sans [AC] ni [BC] → « doivent se rejoindre » · **Worktree / branche** : aucun pour ce chantier ; `ubumaths-wt-triangle-cm-variations` gardé pour le serveur 5176, à retirer après la relecture
+- **État** : clos. Outil (#2658, #2660) et variations en cm du modèle 6-173 (#2661) en prod (v0.88.0) ; #2665 (lot 7 et cas en cm avec angle : un seul C ; côté sans repère → « trace ses côtés avec le rapporteur ») mergée, **en prod au prochain `deploy:prod`** · **Reste** : relecture des 2 variations en prod (`verifications-manuelles.md`) ; faux faux d'avant, laissé : deux côtés d'angle en segments qui se croisent au-delà de C, sans [AC] ni [BC] → « doivent se rejoindre » · Doc durable : `docs/systeme/questions.md` (triangle coté en cm, lot 7)
 
 ## Ce qui existe (lu dans le code, 2026-11-14)
 
@@ -19,12 +19,12 @@ _Mis à jour le 2026-11-14, après #2665._
   par un segment de la figure (`AC = u`) ou deux points (`AC = PQ`) ; C doit être au **croisement de deux cercles
   construits** (compas ou Report) ; avec un angle : côté d'angle au rapporteur, et C sur ce côté (cercle construit
   ou deuxième côté d'angle).
-- Triangle rectangle coté en cm (PR 4 de [`regle-graduee`](../archive/wip/regle-graduee-progress.md), #2499) :
+- Triangle rectangle coté en cm (PR 4 de [`regle-graduee`](regle-graduee-progress.md), #2499) :
   règle posée en A **avant** le côté, C sur une graduation (`ruledGraduationOf`) ; plusieurs C → faux (Q17) ;
   côté jugé sur le trait vu (Q18) ; refus d'auteur : côté plus long que la règle.
 - Cercle de rayon donné en cm (PR 3, #2494) : règle posée au centre avant le cercle, ouverture du compas aimantée
   aux graduations ; « Ton compas est ouvert à l'œil : ouvre-le sur une graduation de la règle. »
-- 1 unité de la figure = 1 cm ([ADR 0036](../adr/0036-le-cm-de-la-figure.md)), papier uni seulement.
+- 1 unité de la figure = 1 cm ([ADR 0036](../../adr/0036-le-cm-de-la-figure.md)), papier uni seulement.
 
 ## Phase 0 (validée le 2026-11-14)
 
