@@ -11,7 +11,7 @@ la PR 6g de `demo-debug` (#1711) : `calculateNewStability` n'utilise pas la note
 
 _Mis à jour le 2026-11-16, après le `db:migrate` de #2709._
 
-- **État** : PR 1 à 1d mergées (#2703, #2705, #2708, #2709) ; migrations `20261115221544` (fsrs) et `20261115213402` (#2706, questions-cm1, feu vert de David) **en prod depuis le 2026-11-16** · **Prochaine action** : PR 2, rejouer les 27 fiches depuis `review_history` (script `--essai`, puis `--publier` sur demande explicite) · **En attente de David** : rien · **Pièges en cours** : base locale : la migration `20261115061153_questions_5_…` échoue à `migration up` → fonction appliquée en local par `docker exec … psql` ; `ts-fsrs` arrondit au 1e-8 ; commentaire du test `deck-stats-en-cours` (l. 10) à préciser (garde de compte, pas de paquet) dans la PR 2 · **Worktree / branche** : à recréer pour la PR 2
+- **État** : PR 1 à 1d mergées (#2703, #2705, #2708, #2709) ; migrations `20261115221544` (fsrs) et `20261115213402` (#2706, questions-cm1, feu vert de David) **en prod depuis le 2026-11-16** · **Prochaine action** : PR 2, rejouer les 27 fiches depuis `review_history` (script `--essai`, puis `--publier` sur demande explicite) · **En attente de David** : phase 0 de la PR 2 (§ Phase 0 de la PR 2) · **Pièges en cours** : base locale : la migration `20261115061153_questions_5_…` échoue à `migration up` → fonction appliquée en local par `docker exec … psql` ; `ts-fsrs` arrondit au 1e-8 ; commentaire du test `deck-stats-en-cours` (l. 10) à préciser (garde de compte, pas de paquet) dans la PR 2 · **Worktree / branche** : `../ubumaths-wt-fsrs`, `feat/fsrs-rejouer-fiches`
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -125,6 +125,28 @@ une fois** reste à jamais sur des intervalles courts (17 j au lieu de 44 au 5e 
   `learning` seul, donc presque plus rien depuis #2705, et jamais les fiches ratées (`relearning`). Proposé :
   (a) **compter `learning` + `relearning`** (« en cours d'apprentissage », reco ; migration de la fonction
   de statistiques, personne ne lit rien de plus) ; (b) retirer la tuile ; (c) laisser.
+
+## Phase 0 de la PR 2 — rejouer les fiches (posée le 2026-11-16)
+
+Relevé de la prod (lecture seule, 2026-11-16) : 27 fiches, 4 élèves, 93 révisions, notes 1 et 3 seulement,
+**aucune entrée `before`** (pas de « meilleur du jour » à reconstruire), `total_reviews` = longueur de
+l'historique partout ; 18 `relearning` dont **17 à stabilité 0** (9e défaut), 5 `learning`, 2 `review`,
+2 `new` sans historique. Dernière écriture : 2026-11-11.
+
+- **Nominal** : script `scripts/srs/rejouer-fiches.ts`. Pour chaque fiche, repartir d'une fiche neuve et
+  rejouer l'historique dans l'ordre (`reviewCard(note, temps, date)` de l'algorithme actuel). Ce qui est
+  écrit : difficulté, stabilité, état, prochaine révision, et l'historique avec les mêmes dates, notes et
+  temps (écart et récupérabilité recalculés). Date de la dernière révision et nombre de révisions
+  inchangés. Une prochaine révision déjà passée rend la fiche due tout de suite.
+- **`--essai`** (défaut) : n'écrit rien en base, affiche avant → après pour chaque fiche (sans nom
+  d'élève), et enregistre une **sauvegarde JSON des 27 lignes telles quelles hors du dépôt**.
+- **`--publier`** (sur ta demande explicite) : écrit fiche par fiche, **seulement si `updated_at` n'a pas
+  bougé depuis la lecture** ; sinon la fiche est sautée et signalée. `.select()` vérifie chaque écriture.
+- **Limites** : fiche sans historique → non touchée ; entrée d'historique illisible (date ou note hors
+  1-4) → fiche non touchée et signalée ; relancer le script sur des fiches déjà rejouées ne change rien.
+- **Erreur** : une écriture qui rend 0 ligne arrête le script et dit lesquelles sont faites ; retour en
+  arrière = réécrire la sauvegarde.
+- **Accès** : aucun changement, aucune migration ; écriture au client service depuis le poste de David.
 
 ## Historique
 
