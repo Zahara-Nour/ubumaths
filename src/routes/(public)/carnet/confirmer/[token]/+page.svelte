@@ -39,7 +39,7 @@
 <div class="mx-auto w-full max-w-xl p-4">
 	<Card.Root>
 		<Card.Header>
-			<Card.Title class="text-xl">Carnet de liaison</Card.Title>
+			<h1 class="text-xl font-semibold">Carnet de liaison</h1>
 		</Card.Header>
 		<Card.Content class="space-y-4">
 			{#if form?.outcome === 'refused'}

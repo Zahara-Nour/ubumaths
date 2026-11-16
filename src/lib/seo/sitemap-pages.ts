@@ -194,6 +194,14 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	{ pattern: '/cahier/[token]/**', reason: 'cahier de textes ouvert par le jeton du professeur' },
 	{ pattern: '/cours/[token]/**', reason: 'cours d’une classe ouvert par le jeton du professeur' },
 	{
+		pattern: '/carnet/[token]/**',
+		reason: 'carnet de liaison d’un élève, ouvert par le lien d’un parent'
+	},
+	{
+		pattern: '/carnet/confirmer/[token]/**',
+		reason: 'confirmation de l’adresse d’un parent, ouverte par son courriel'
+	},
+	{
 		pattern: '/figures/[id]',
 		reason: 'figure géométrique partagée par lien, en noindex (ADR 0027)'
 	},
