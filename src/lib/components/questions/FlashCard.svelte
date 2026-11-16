@@ -368,9 +368,11 @@
 		{#snippet front()}
 			<div class="face relative h-full">
 				<!-- Recto allégé : ni titre, ni badge du type, ni sous-titre, ni encadré.
-				     Hauteur imposée : la carte défile, place réservée en bas au bouton de retournement
-				     (frère de la carte, il ne défile pas). -->
-				<Card.Root class={cn('face-card h-full', height && 'scrollable')}>
+				     Hauteur imposée : la carte défile. Carte retournable : place réservée en bas au
+				     bouton de retournement (frère de la carte, il ne défile pas). -->
+				<Card.Root
+					class={cn('face-card h-full', height && 'scrollable', flippable && 'reserve-bouton')}
+				>
 					<Card.Content class="space-y-6">
 						{#if instance.exerciseInstruction}
 							<p class="text-base font-medium text-muted-foreground">
@@ -479,7 +481,9 @@
 		{#snippet back()}
 			<div class="face relative h-full">
 				<!-- Verso allégé : titre vert centré ; ni badge du type, ni intitulés, ni encadrés -->
-				<Card.Root class={cn('face-card h-full', height && 'scrollable')}>
+				<Card.Root
+					class={cn('face-card h-full', height && 'scrollable', flippable && 'reserve-bouton')}
+				>
 					<Card.Content class="space-y-6">
 						<p
 							class="text-center text-lg font-semibold text-green-600 dark:text-green-500"
@@ -583,7 +587,10 @@
 	.face :global(.face-card.scrollable) {
 		height: 100%;
 		overflow-y: auto;
-		/* Place du bouton de retournement sous la dernière ligne */
+	}
+
+	/* Place du bouton de retournement sous la dernière ligne, hauteur imposée ou non */
+	.face :global(.face-card.reserve-bouton) {
 		padding-bottom: calc(4rem * var(--font-scale, 1));
 	}
 
