@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, phase 0, après le tour 5 et l'ADR 0040 (aucune PR)._
+_Mis à jour le 2026-11-16, découpage validé, PR 1 en cours._
 
 - **État** : phase 0 ; tours 1 à 4 tranchés ; tour 5 tranché : **comportements A à E validés**, Q17-Q21 suivies ; **ADR 0040** écrite. Rien de codé.
-- **Prochaine action** : **découpage en PR** (migration et fonction `SECURITY DEFINER` d'abord : deux PR, cf. CLAUDE.md § Base de données).
-- **En attente de David** : validation du découpage en PR.
+- **Prochaine action** : PR 1, migration (cf. « Découpage en PR ») : tests d'intégration rouges, SQL, `security-auditor`.
+- **En attente de David** : rien.
 - **Pièges en cours** : données d'élèves mineurs ; aucune policy `anon` (fonction `SECURITY DEFINER` qui reçoit le lien, comme l'ADR 0025) ; décision 8 du 2026-10-21 tient ; adresses confirmées seulement ; revue `code-reviewer` + `security-auditor` obligatoire.
 - **Ensuite** : revenir au point 9 de `presentation-parents` et réécrire le point 8 avec le carnet.
 - **Worktree / branche** : aucun (phase 0, doc sur `main`).
@@ -138,7 +138,7 @@ Vocabulaire : **lien du parent** = l'adresse de son carnet ; **adresse confirmé
 - **Q17** : le carnet part **au geste du professeur**, classe par classe. **Q18** : courriel de confirmation = prénom seul + nom du professeur. **Q19** : un courriel par semaine au plus, qui regroupe les exceptions. **Q20** : pas de carnet pour les élèves hors classe dans la première version. **Q21** : adresses gardées d'une année à l'autre, nouveau lien à la rentrée ; effacées quand l'élève quitte toute classe ou que le consentement expire.
 - ADR écrite : [0040](../adr/0040-carnet-de-liaison-lien-par-parent.md).
 
-## Découpage en PR (proposé le 2026-11-16, à valider)
+## Découpage en PR (validé le 2026-11-16)
 
 1. **Migration** (additive) : adresses des parents (état, confirmation, arrêt des courriels), liens du carnet (un par adresse, expiration 31 août, révocation), réglages par classe, journal des courriels envoyés ; fonctions `SECURITY DEFINER` (lire le carnet par lien, confirmer, « je ne suis pas le parent », arrêter / reprendre les courriels). Tests d'intégration rouges d'abord ; `security-auditor` ; `db:migrate`, `db:types`.
 2. **Page du carnet** `(public)/carnet/[token]` (B1-B5) + **vue élève** dans le Cabinet (C1-C3) + pages de confirmation et d'arrêt.
@@ -147,3 +147,7 @@ Vocabulaire : **lien du parent** = l'adresse de son carnet ; **adresse confirmé
 5. **Doc** : `docs/systeme/` (versement), puis point 8 de `presentation-parents`.
 
 Question Q22 : le lien est-il stocké **haché** (comme un mot de passe) ? Conséquence : « J'ai perdu mon lien » envoie un **nouveau** lien et révoque l'ancien (on ne peut pas renvoyer un lien qu'on ne connaît plus).
+
+### 2026-11-16 (découpage validé, Q22 suivie)
+
+- Découpage en 5 PR validé. **Q22** : le lien est stocké **haché** ; « J'ai perdu mon lien » envoie un nouveau lien et révoque l'ancien. Reporté dans l'ADR 0040.

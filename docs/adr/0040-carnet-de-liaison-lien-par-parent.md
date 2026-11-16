@@ -31,6 +31,7 @@ sur **un** élève, sans compte, par un lien qui lui est propre.
 | Durée de vie        | Le lien expire le 31 août ; nouveau lien à la rentrée si la nouvelle classe a le carnet                     |
 | Élève majeur        | Demande l'arrêt au professeur, qui coupe le partage ; aucune date de naissance enregistrée                  |
 | Arrêt par le parent | « Ne plus recevoir ces courriels » en un clic ; le carnet reste ouvert                                      |
+| Stockage du lien    | **Haché** ; « J'ai perdu mon lien » envoie un nouveau lien et révoque l'ancien                              |
 
 ## Invariants
 
