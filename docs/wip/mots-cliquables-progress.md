@@ -38,6 +38,14 @@ Mesures (base locale = copie de la prod, 2 297 modèles publiés) :
   ou modèle marqué « question de cours »), comme prévu par la décision 4 du 2026-10-08 jamais appliquée.
   Raison (reconstruite, acceptée par David) : le mot cliquable donnerait la réponse (« suite géométrique »
   sur « définition d'une suite géométrique »). Marquage d'auteur `[mot]{.def}` toujours possible.
+- **R5 (2026-11-16) : verbes de consigne « jamais souligné »** (liste fermée, décision 1 du 2026-10-08) —
+  R1 ne suffit pas : `calculer` (CE1) resterait souligné sur une question de CE1/CE2, sans intérêt à aucun
+  niveau. Entrées : calculer, comparer, vérifier, déterminer, ordonner (formes range/rangez), représenter,
+  tracer, décomposer, convertir, justifier. (compléter, écrire, donner, entourer, colorier, placer, lire,
+  citer, expliquer : pas d'entrée, donc jamais soulignés.) **Restent soulignables** (notions) : résoudre,
+  développer, factoriser, simplifier, réduire, démontrer, encadrer, arrondir.
+  - Fait **en base locale** le 2026-11-16 (`update … set auto_link=false`, 10 lignes). **Prod : à faire par
+    David** dans l'admin du dictionnaire (case « jamais souligné »), ou par un lot du chantier.
 
 ## Phase 0 — comportements (à valider)
 
@@ -79,4 +87,4 @@ Erreur :
 
 ## Journal
 
-- 2026-11-16 : chantier ouvert (retour de David sur `/dev/corrections`), mesures, R1–R3 validées ; R4 (question de cours) validée.
+- 2026-11-16 : chantier ouvert (retour de David sur `/dev/corrections`), mesures, R1–R3 validées ; R4 (question de cours) validée ; R5 (verbes de consigne) validée, faite en local.
