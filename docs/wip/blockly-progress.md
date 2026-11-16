@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR D en cours._
+_Mis à jour le 2026-11-16, après #2727._
 
-- **État** : piste 4e / 3e — PR A (#2716), B (#2719), C (#2723) mergées ; 9 brouillons créés en prod par David (ids commités) ; **PR D** (`feat/blockly-4e-3e-rangement`) : migration `20261116183439` nœud du point + tag, test d'intégration 19/19 (rouge sans), question d'accès tranchée (personne) · **Prochaine action** : CI + `security-auditor` + `check:migrations --pr`, merge, `db:migrate` depuis le dépôt principal, vérifier en prod, page à cocher · **En attente de David** : `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `update-published-questions.ts --lot blockly-5-106` (simulation, `--publier`) ; vérifications manuelles en prod (`verifications-manuelles.md`) ; choix des PR A, B et C à relire · **Pièges en cours** : aucun modèle 4e / 3e **publié** avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; la base locale porte les 9 modèles avec des ids LOCAUX ; `docs:check-a-jour` ne lit que les COMMITS · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-4e-3e-rangement`
+- **État** : piste 4e / 3e — PR A (#2716), B (#2719), C (#2723), **D (#2727) mergées** ; 9 brouillons en prod, rangés et tagués (`db:migrate` fait, vérifié) ; page à cocher publiée (https://claude.ai/artifact/HhrEdtV5TE2YPYZbCaXQFT) · **Prochaine action** : quand David a relu, compter les verdicts (`ArtifactData list verdicts`), corriger les « À revoir » ; publication (`publier-lot.ts`, par David) **après** le `deploy:prod` de #2719 · **En attente de David** : relecture de la page à cocher ; `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `update-published-questions.ts --lot blockly-5-106` (simulation, `--publier`) ; vérifications manuelles en prod (`verifications-manuelles.md`) ; choix des PR A, B et C à relire · **Pièges en cours** : aucun modèle 4e / 3e **publié** avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; la base locale porte les 9 modèles avec des ids LOCAUX · **Worktree / branche** : aucun (retiré après #2727)
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -843,3 +843,8 @@ Script `docs/wip/questions/lot-blockly-4e-3e.py` → `scripts/questions/blockly-
   (gabarit : `docs/wip/questions-5/lot-15-rangement.py`, qui garde aussi niveaux et statut, rollback
   gardé), relevé `docs/wip/questions/etat-prod-2026-11-16-blockly-4e-3e/` (`releve-prod.ts`, lecture
   seule). Test d'intégration 19/19, rouge sans la migration (11 en échec, 7 sautés).
+- **#2727 mergée le 2026-11-16** (CI verte, `check:migrations` 0, `security-auditor` sans bloquant ;
+  deux non bloquants hérités du gabarit, laissés). `db:migrate` depuis le dépôt principal ; vérifié en
+  prod : 9 brouillons sur leur nœud, un tag chacun, niveaux inchangés, `updated_at` intact, trigger `O`.
+- **Page à cocher** : https://claude.ai/artifact/HhrEdtV5TE2YPYZbCaXQFT (9 fiches, alerte « bloc calcul
+  non dessiné » sur chacune : à jouer dans l'aperçu). Collection `verdicts` vide à la publication.
