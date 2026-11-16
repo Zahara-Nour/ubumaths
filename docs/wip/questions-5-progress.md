@@ -5,20 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, lot 15 relu (8/8 ok)._
+_Mis à jour le 2026-11-16, lot 15 publié._
 
-- **État** : lots 1 à 14 publiés ; lot 15 « Symétrie centrale, aires, solides » : 8 brouillons rangés et tagués en
-  prod (#2717), page à cocher relue : **8 verdicts sur 8 « ok »** (§ 30 quater). Restent : 9 D, 101 et 104 (`blockly`).
-- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/5-symetrie-aires-solides` (simulation ; le classifieur du mode auto la refuse à Claude), puis
-  `--publier` ; relire `published` au MCP ; retirer le worktree.
+- **État** : lots 1 à 15 publiés (lot 15 « Symétrie centrale, aires, solides » : 8 modèles `published`, vérifié au
+  MCP). Restent : 9 D, 101 et 104 (`blockly`).
+- **Prochaine action** : clore ou non la 5e avec David (9 D, 101, 104 attendent le chantier `blockly`) ; la suite part
+  d'un worktree neuf.
 - **En attente de David** : (1) `--dir scripts/questions/5-parallelogrammes --publier --mettre-a-jour` (02 du lot 14,
   `95bea43b`, publié : variable `e` encore en prod le 2026-11-16) ; (2) corriger `e` dans `d5a36be9`, `092b310c`,
   `406fd9a8`, `7efd2e76` (autres chantiers) ? ; 02 du lot 7 à essayer.
 - **Pièges en cours** : jamais de variable ni de point `e` ; `--publier` LOCAL → copie au scratchpad ; serveur
   `--host 127.0.0.1` ; retirer un worktree : commandes avec `cd` du dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-questions-5` (branche `feat/questions-5-lot-15-rangement`, mergée) gardé
-  pour d'éventuelles corrections du lot ; la suite part d'une branche neuve.
+- **Worktree / branche** : aucun (worktree du lot 15 retiré, branche supprimée).
 
 ---
 
@@ -1227,3 +1225,4 @@ Le bloc solide n'a pas d'orientation : un même pavé « vu autrement » = même
 - Page à cocher : **8 verdicts sur 8 « ok »**, sans commentaire (comptés en base de l'artefact). Rangement revérifié au
   MCP (8 nœuds, 8 tags, `draft`, niveau 5, `updated_at` 13:32 préservé).
 - Simulation `publier-lot.ts` refusée à Claude par le classifieur du mode auto (lecture prod) : à lancer par David.
+- David a publié le lot (`5-symetrie-aires-solides`) : 8 modèles `published`, vérifié au MCP. Worktree retiré.
