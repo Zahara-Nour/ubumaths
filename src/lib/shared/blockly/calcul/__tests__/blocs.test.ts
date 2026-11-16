@@ -1,5 +1,5 @@
 /**
- * Blocs Blockly des programmes de calcul, 5e / 4e / 3e (chantier `docs/wip/blockly-progress.md`,
+ * Blocs Blockly des programmes de calcul, 5e / 4e / 3e (chantier `docs/archive/wip/blockly-progress.md`,
  * piste 4e / 3e, PR B) : chaque bloc proposé par la boîte à outils d'un niveau est admis à ce
  * niveau, et ce que Blockly enregistre est lu par l'interpréteur et la notation.
  */

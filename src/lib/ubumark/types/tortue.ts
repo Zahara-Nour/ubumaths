@@ -3,7 +3,7 @@
  * ======================
  *
  * Question « programme tortue » (chantier `blockly`, PR 4 ; journal
- * `docs/wip/blockly-progress.md`) : l'élève assemble des blocs tortue, sa réponse est son
+ * `docs/archive/wip/blockly-progress.md`) : l'élève assemble des blocs tortue, sa réponse est son
  * programme, jugé sur le tracé.
  *
  * ```tortue

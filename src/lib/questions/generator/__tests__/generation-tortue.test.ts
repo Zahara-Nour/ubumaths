@@ -1,6 +1,6 @@
 /**
  * Question « programme tortue » (bloc ```tortue, chantier `blockly`, PR 4 ; journal
- * `docs/wip/blockly-progress.md`)
+ * `docs/archive/wip/blockly-progress.md`)
  *
  * Une case par bloc, réponse attendue = la comparaison et le programme de référence
  * (`position | répéter 4 [ … ]`), jamais écrite dans le modèle ; la réponse de l'élève (son

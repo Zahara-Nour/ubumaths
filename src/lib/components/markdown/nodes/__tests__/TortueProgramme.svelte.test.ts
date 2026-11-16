@@ -1,5 +1,5 @@
 /**
- * Programme tortue à l'écran (chantier `docs/wip/blockly-progress.md`, PR 4b)
+ * Programme tortue à l'écran (chantier `docs/archive/wip/blockly-progress.md`, PR 4b)
  *
  * Phase 0 (PR 4) : blocs + quadrillage dans la carte ; programme vide → réponse vide ; trop
  * long → refusé avant l'envoi ; après la validation, tracé de l'élève en couleur, attendu en

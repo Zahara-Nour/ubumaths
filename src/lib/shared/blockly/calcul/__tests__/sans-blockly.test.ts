@@ -1,7 +1,7 @@
 /**
  * La correction tourne sous Node : l'interpréteur, la notation et le jugement du programme de
  * calcul ne doivent jamais charger Blockly, même par un import indirect (`blocs.ts` l'importe,
- * lui ; journal `docs/wip/blockly-progress.md`, piège de la PR 5a).
+ * lui ; journal `docs/archive/wip/blockly-progress.md`, piège de la PR 5a).
  */
 import { describe, it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';

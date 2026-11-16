@@ -1,5 +1,5 @@
 /**
- * Programme de calcul à l'écran (chantier `docs/wip/blockly-progress.md`, PR 5b)
+ * Programme de calcul à l'écran (chantier `docs/archive/wip/blockly-progress.md`, PR 5b)
  *
  * Phase 0 (PR 5, Q4) : blocs + « Essayer avec » + Lancer + affichages ; programme vide → réponse
  * vide ; trop long → refusé avant l'envoi ; `départ:` posé dans l'espace de travail ; corrigé =
