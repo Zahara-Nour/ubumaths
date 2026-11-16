@@ -36,7 +36,7 @@
 		type ToolboxDefinition
 	} from '$lib/shared/blockly';
 	import { definirBlocsTortue } from '$lib/shared/blockly/tortue';
-	import { definirBlocsCalcul } from '$lib/shared/blockly/calcul/blocs';
+	import { definirBlocsCalcul, francaiserBlocsCalcul } from '$lib/shared/blockly/calcul/blocs';
 
 	// =============================================================================
 	// Types
@@ -130,6 +130,9 @@
 					)
 				)
 			);
+			// Textes des blocs génériques des programmes de calcul (« mettre x à », « reste de… ») :
+			// réglage global de Blockly, donc aussi pour la tortue (qui n'a pas ces blocs)
+			francaiserBlocsCalcul();
 
 			// Blocs tortue et de calcul (définis une seule fois), avant l'injection
 			definirBlocsTortue();

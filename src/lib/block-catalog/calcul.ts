@@ -1,5 +1,5 @@
 /**
- * Catalogue — bloc ```calcul (programme de calcul en blocs, 5e, chantier `blockly`)
+ * Catalogue — bloc ```calcul (programme de calcul en blocs, 5e / 4e / 3e, chantier `blockly`)
  *
  * Réglages : `src/lib/ubumark/parser/calcul-parser.ts` ; notation des programmes :
  * `src/lib/shared/blockly/calcul/notation.ts`.
@@ -15,9 +15,9 @@ export const calculEntry: BlockCatalogEntry = {
 	fences: ['calcul'],
 	nodeType: 'calcul',
 	summary:
-		'L’élève assemble un programme de calcul en blocs (nombre choisi, + − × ÷, résultat, afficher, répéter) et l’essaie sur les nombres qu’il veut ; il est jugé sur ce que son programme affiche, pas sur son écriture.',
+		'L’élève assemble un programme de calcul en blocs (nombre choisi, + − × ÷, résultat, afficher, répéter ; en 4e et 3e, variables, « si », comparaisons, et / ou / non, « répéter jusqu’à ») et l’essaie sur les nombres qu’il veut ; il est jugé sur ce que son programme affiche, pas sur son écriture.',
 	intro:
-		'Écrivez le programme de référence en texte, dans attendu: . L’élève assemble ses blocs, tape un nombre dans « Essayer avec », appuie sur « Lancer » autant de fois qu’il veut pour voir ce que son programme affiche, puis valide. Les deux programmes sont rejoués sur chaque nombre d’essai : la réponse est juste s’ils affichent les mêmes nombres, dans le même ordre (« afficher nombre × 4 + 8 » est juste pour « afficher (nombre + 2) × 4 »). Instructions : afficher <calcul>, résultat = <calcul> (une seule variable, résultat, qui vaut 0 au départ), répéter n [ … ], séparées par « ; ». Calculs : des nombres, nombre (le nombre choisi), résultat, + − × ÷ et des parenthèses. La consigne (« Écris un programme qui ajoute 2 au nombre choisi, puis multiplie par 4. ») va dans l’énoncé, au-dessus. Sur la fiche PDF : « À faire sur Chiphre ».',
+		'Écrivez le programme de référence en texte, dans attendu: . L’élève assemble ses blocs, tape un nombre dans « Essayer avec », appuie sur « Lancer » autant de fois qu’il veut pour voir ce que son programme affiche, puis valide. Les deux programmes sont rejoués sur chaque nombre d’essai : la réponse est juste s’ils affichent les mêmes nombres, dans le même ordre (« afficher nombre × 4 + 8 » est juste pour « afficher (nombre + 2) × 4 »). Instructions : afficher <calcul>, résultat = <calcul> (une seule variable, résultat, qui vaut 0 au départ), répéter n [ … ], séparées par « ; ». Calculs : des nombres, nombre (le nombre choisi), résultat, + − × ÷ et des parenthèses. Avec niveau: 4e, l’élève crée ses variables (mettre x à <calcul>, ajouter <calcul> à x), utilise si <condition> alors [ … ] sinon [ … ], les comparaisons = ≠ < > ≤ ≥, reste de a par b et répéter <calcul> [ … ] ; avec niveau: 3e, aussi et, ou, non (…) et répéter jusqu’à <condition> [ … ]. La consigne (« Écris un programme qui ajoute 2 au nombre choisi, puis multiplie par 4. ») va dans l’énoncé, au-dessus. Sur la fiche PDF : « À faire sur Chiphre ».',
 	settingGroups: [
 		{
 			settings: [
@@ -34,6 +34,13 @@ export const calculEntry: BlockCatalogEntry = {
 					defaultValue: '−3 ; 0 ; 1 ; 2 ; 5 ; 10 ; 0,5',
 					description:
 						'Les nombres sur lesquels les deux programmes sont rejoués. Un seul ne suffit pas : en partant de 2, « × 2 » et « + 2 » donnent tous deux 4.'
+				},
+				{
+					key: 'niveau',
+					values: '5e, 4e ou 3e',
+					defaultValue: '5e',
+					description:
+						'Les blocs proposés à l’élève, et les seuls admis : 4e ajoute les variables qu’il crée, « si … alors (sinon) », les comparaisons, le reste de la division et la répétition à nombre de tours calculé (sans la variable résultat) ; 3e ajoute et / ou / non et « répéter jusqu’à ». attendu: et départ: doivent tenir dans le niveau. Chaque « si » de attendu: doit être vrai et faux au moins une fois sur les essais.'
 				},
 				{
 					key: 'départ',
@@ -71,9 +78,48 @@ export const calculEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Le programme de départ est posé dans l’espace de travail : l’élève change l’opération au lieu de tout refaire.'
+		},
+		{
+			title: 'Une condition (4e)',
+			source: fence(
+				'calcul',
+				'attendu: mettre x à nombre × 2 ; si x > 10 alors [ afficher x − 10 ] sinon [ afficher x ]',
+				'niveau: 4e'
+			),
+			explanation:
+				'L’élève crée la variable x, puis choisit quoi afficher selon sa valeur (avec 7 : 4 ; avec 3 : 6). Les essais par défaut passent par les deux branches.'
+		},
+		{
+			title: 'Répéter jusqu’à (3e)',
+			source: fence(
+				'calcul',
+				'attendu: mettre x à nombre ; répéter jusqu’à x > 100 [ mettre x à x × 2 ] ; afficher x',
+				'essais: 1 ; 7 ; 30 ; 150',
+				'niveau: 3e'
+			),
+			explanation:
+				'Le nombre est doublé jusqu’à dépasser 100. Les essais sont positifs : en partant de 0 ou d’un nombre négatif, le programme ne s’arrêterait pas.'
 		}
 	],
 	mistakes: [
+		{
+			title: 'Bloc au-dessus du niveau',
+			source: fence('calcul', 'attendu: mettre x à nombre × 2 ; afficher x + 1'),
+			message: 'est un bloc de 4e (ajouter niveau: 4e)',
+			explanation:
+				'Sans niveau:, la question est de 5e : pas de variable créée par l’élève. Ajoutez niveau: 4e, ou utilisez résultat.'
+		},
+		{
+			title: 'Une branche jamais parcourue',
+			source: fence(
+				'calcul',
+				'attendu: si nombre > 100 alors [ afficher 1 ] sinon [ afficher 0 ]',
+				'niveau: 4e'
+			),
+			message: 'n’est jamais vrai sur les essais',
+			explanation:
+				'Aucun essai ne dépasse 100 : un élève qui affiche toujours 0 serait jugé juste. Ajoutez à essais: un nombre plus grand que 100.'
+		},
 		{
 			title: 'Programme de référence oublié',
 			source: fence('calcul', 'essais: 1 ; 2'),

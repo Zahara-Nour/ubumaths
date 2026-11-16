@@ -81,6 +81,46 @@ describe('programme de calcul : la carte', () => {
 		await expect.poll(() => recu.at(-1)).toBe('afficher nombre × 4 + 8');
 	});
 
+	it('niveau: 4e : blocs de 4e proposés, programme à variable essayé et rendu en texte', async () => {
+		const { answer, recu } = caseDeReponse();
+		const programme =
+			'mettre x à nombre × 2 ; si x > 10 alors [ afficher x − 10 ] sinon [ afficher x ]';
+		const screen = await render(CalculProgramme, {
+			target: mainElement(),
+			props: { node: node(`attendu: ${programme}`, 'niveau: 4e', 'case: 0'), answer }
+		});
+		await attendreBlocs(screen.container);
+		await expect.element(page.getByText('Variables', { exact: true })).toBeVisible();
+		await expect.element(page.getByText('Résultat', { exact: true })).not.toBeInTheDocument();
+		poser(programme);
+		await expect.poll(() => recu.at(-1)).toBe(programme);
+		const champ = page.getByLabelText('Essayer avec');
+		await userEvent.clear(champ);
+		await userEvent.fill(champ, '7');
+		await page.getByRole('button', { name: 'Lancer' }).click();
+		await expect.poll(() => sortie(screen.container)).toContain('Avec 7, le programme affiche : 4');
+	});
+
+	it('niveau: 4e : renommer une variable utilisée en un mot du langage → refusé, réponse intacte', async () => {
+		const { answer, recu } = caseDeReponse();
+		const programme = 'mettre x à nombre × 2 ; afficher x';
+		const screen = await render(CalculProgramme, {
+			target: mainElement(),
+			props: { node: node('attendu: afficher nombre × 2', 'niveau: 4e', 'case: 0'), answer }
+		});
+		await attendreBlocs(screen.container);
+		poser(programme);
+		await expect.poll(() => recu.at(-1)).toBe(programme);
+		const variables = Blockly.getMainWorkspace().getVariableMap();
+		const x = variables.getAllVariables()[0];
+		variables.renameVariable(x, 'si');
+		await expect
+			.poll(() => screen.container.querySelector('.calcul-nom-refuse')?.textContent)
+			.toContain('mot du programme');
+		expect(variables.getAllVariables().map((v) => v.getName())).toEqual(['x']);
+		await expect.poll(() => recu.at(-1)).toBe(programme);
+	});
+
 	it('« Essayer avec » : Lancer montre ce que le programme affiche pour ce nombre', async () => {
 		const { answer } = caseDeReponse();
 		const screen = await render(CalculProgramme, {

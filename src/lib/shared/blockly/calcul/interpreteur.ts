@@ -215,6 +215,23 @@ export function verifierNomDeVariable(nom: string): string | null {
 	return null;
 }
 
+/**
+ * Message si un nouveau nom de variable (créé ou renommé par l'élève) est refusé ; null s'il
+ * convient. En plus de `verifierNomDeVariable` : un nom qui ne diffère d'une variable existante
+ * que par les accents ou les majuscules (`Côté` et `cote`) est refusé, car l'interpréteur les
+ * confond alors que Blockly les distingue (revue #2716).
+ */
+export function refusDeNouveauNom(nom: string, autres: readonly string[]): string | null {
+	const message = verifierNomDeVariable(nom);
+	if (message) return message;
+	const cle = normaliserMot(nom);
+	const pareil = autres.find((autre) => normaliserMot(autre) === cle);
+	if (pareil !== undefined) {
+		return `« ${nom} » ressemble trop à la variable « ${pareil} » : choisis un autre nom.`;
+	}
+	return null;
+}
+
 /** Égalité des programmes de calcul : à une très petite marge (0,1 + 0,2 = 0,3). */
 export function egauxCalcul(a: number, b: number): boolean {
 	const ecart = Math.abs(a - b);

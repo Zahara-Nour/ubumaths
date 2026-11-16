@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2716._
+_Mis à jour le 2026-11-16, PR B en cours._
 
-- **État** : piste 4e / 3e — PR A (logique : interpréteur, notation, jugement, `niveau:`, contrôle des branches, variable jamais mise) **mergée (#2716)** · **Prochaine action** : PR B — définitions Blockly de `calcul_si`, `calcul_si_sinon`, `calcul_repeter_jusqua` (+ blocs génériques variables / logique / `math_modulo` / `controls_repeat_ext` en français), boîtes à outils 4e / 3e, `CalculEditeur` qui passe le niveau, carte et corrigé, catalogue, sélecteur « Blocs : 5e · 4e · 3e » de `/programmes-de-calcul` ; refuser à la création un nom de variable qui ne diffère que par les accents · **En attente de David** : `deploy:prod` (livre #2700, #2707, #2716) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation) et `--publier` ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` ; choix de la PR A à lui signaler (section « PR A » ci-dessous) · **Pièges en cours** : **aucun modèle 4e / 3e publié avant la PR B** (l'élève n'aurait pas les blocs) ; publier le lot 5-106 **après** le `deploy:prod` de #2700 ; `docs:check-a-jour` ne lit que les COMMITS ; pre-commit avec `-- <fichiers>` peut laisser un reformatage prettier dans l'index (vérifier `git status` après) ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) · **Worktree / branche** : aucun (retiré après #2716) ; PR B → `git worktree add -b feat/blockly-calcul-4e-3e-ecran ../ubumaths-wt-blockly origin/main`
+- **État** : piste 4e / 3e — PR A mergée (#2716) ; **PR B (écran) en cours** sur `feat/blockly-calcul-4e-3e-ecran` (section « PR B » en bas) · **Prochaine action** : finir la PR B (revue `code-reviewer` Sonnet, CI, merge), puis **PR C** : relevé des points 4e / 3e du BO, liste de premiers modèles proposée à David · **En attente de David** : `deploy:prod` (livre #2700, #2707, #2716) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation) et `--publier` ; vérifications manuelles en prod (lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683, #2700 / #2704 de `verifications-manuelles.md`) ; choix des PR A et B à lui signaler (sections « PR A », « PR B ») · **Pièges en cours** : aucun modèle 4e / 3e publié avant le `deploy:prod` de la PR B ; lot 5-106 **après** le `deploy:prod` de #2700 ; `docs:check-a-jour` ne lit que les COMMITS ; événements Blockly différés (cf. PR B) ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-calcul-4e-3e-ecran`, serveur de test 5176
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -743,3 +743,39 @@ ajouter 1 à compteur`.
   nom qui ne diffère que par les accents ; `CalculEditeur` doit passer le niveau à
   `executerCalcul` ; **aucun modèle 4e / 3e publié avant la PR B** (l'élève n'aurait pas les blocs).
 - **#2716 mergée le 2026-11-16** (CI verte, revue `code-reviewer` Opus traitée).
+
+### PR B — écran (branche `feat/blockly-calcul-4e-3e-ecran`)
+
+- `calcul/blocs.ts` : `calcul_si`, `calcul_si_sinon`, `calcul_repeter_jusqua` (Blockly) ;
+  `francaiserBlocsCalcul` (textes des blocs génériques comme la notation : « mettre x à »,
+  « ajouter 1 à x », « reste de la division de 7 par 2 ») ; `surveillerNomsDeVariables`.
+- `calcul/toolbox.ts` : `toolboxCalcul(niveau)` ; 5e inchangée ; 4e : Calcul + reste, Variables
+  (catégorie dynamique de Blockly), Afficher, Conditions, Boucles (`controls_repeat_ext`), sans
+  Résultat ; 3e : + et / ou / non, « répéter jusqu'à ».
+- `CalculEditeur` : prop `niveau` (boîte à outils, `executerCalcul`), boîte à outils changée sans
+  perdre les blocs, nom refusé affiché sous les blocs ; `CalculProgramme` passe `spec.niveau`.
+- `/programmes-de-calcul` : sélecteur « Blocs : 5e · 4e · 3e » (boutons `aria-pressed`).
+- `interpreteur.ts` : `refusDeNouveauNom` (accents / majuscules, revue #2716).
+- Catalogue : clé `niveau`, exemples 4e (« si ») et 3e (« jusqu'à »), erreurs « bloc au-dessus
+  du niveau » et « branche jamais parcourue ».
+- **Vu à l'essai** (Chrome, port 5176) : la boîte « Créer une variable… » de Blockly 13 est un
+  `<dialog>` natif que la remise à zéro de Tailwind collait en haut à gauche, sans marge →
+  restylé dans `app.css`. Comparaisons bleues sous une catégorie marron → couleurs Conditions et
+  Variables alignées sur le thème Classic.
+- **Piège trouvé** : Blockly envoie ses événements au tour suivant ; comparer un nouveau nom aux
+  variables présentes retirait la PREMIÈRE de deux créations rapprochées → comparaison aux
+  variables déjà acceptées (test rouge avant).
+- Tests rouges avant, verts après : `calcul/__tests__/blocs.test.ts` (14), 5 tests navigateur du
+  bac à sable, 1 de la carte (`niveau: 4e`, rouge vérifié sans le passage du niveau).
+- **Revue `code-reviewer` (Sonnet, 2026-11-16)** : un point important, corrigé (test rouge
+  avant) : après un nom refusé, Ctrl+Z restait bloqué (la correction entrait dans l'historique,
+  annuler recréait la variable refusée) → correction événements coupés, événement refusé retiré de
+  la pile d'annulation ; la réponse est refaite au refus (le renommage remis sans événement
+  l'aurait laissée vide, test rouge avant). Mineurs corrigés : message de nom masqué après la
+  validation et effacé par « Effacer » ; dernier lancer effacé au changement de niveau ;
+  `francaiserBlocsCalcul` commenté (réglage global).
+- **Choix faits sans David, à lui signaler** : la boîte de saisie reste celle de Blockly
+  (restylée), pas un dialogue Shadcn ; un nom refusé est retiré sans redemander ; le sélecteur
+  garde les blocs posés en changeant de niveau ; en 4e / 3e, la boucle proposée est
+  `controls_repeat_ext` seule (un nombre écrit dedans redevient le bloc de 5e au rechargement,
+  même aspect) ; « reste » dans la catégorie Calcul.
