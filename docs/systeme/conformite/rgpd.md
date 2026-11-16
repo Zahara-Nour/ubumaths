@@ -501,7 +501,11 @@ CRON_SECRET                   # Secret taches planifiees
 > confirmation d'une adresse saisie par le professeur ou l'élève (prénom de l'élève et nom du
 > professeur seulement) et lien du carnet (adresse confirmée seulement). Les adresses sont
 > stockées dans `parent_contacts` (lues par le professeur, jamais par l'élève) ; chaque envoi
-> laisse une ligne sans adresse dans `parent_notifications`. Registre à compléter en PR 5 du
+> laisse une ligne sans adresse dans `parent_notifications`. PR 4 : deux courriels de plus vers
+> les adresses confirmées, au plus un par semaine — exception (évaluation non faite, révisions
+> en retard, inactivité ; une phrase par motif) et fin de trimestre (sans aucun nombre) ; chaque
+> courriel porte un jeton propre, haché. Les adresses d'un élève sans classe active depuis
+> 90 jours sont effacées par le cron quotidien. Registre à compléter en PR 5 du
 > chantier ([carnet-de-liaison.md](../carnet-de-liaison.md)).
 
 ---
