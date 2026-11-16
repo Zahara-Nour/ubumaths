@@ -5,13 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2726 (fichiers du lot 6 bis mergés)._
+_Mis à jour le 2026-11-16, après #2729 (migration nœud + tags du lot 6 bis mergée)._
 
-- **État** : lots 0 à 6 publiés (102 points sur 171) ; lot 6 bis (7 modèles, 001, 002, 131, 143, 010, 024, 048)
-  validé (§ 17 bis) et écrit, specs et aperçu local verts.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm1-6bis
---publier` ; ids commités ; migration nœud + tags ; page à cocher ; publication. Puis lot 6 ter « algèbre » (062-066).
-- **En attente de David** : `create-questions --publier` après le merge.
+- **État** : lots 0 à 6 publiés (102 points sur 171) ; lot 6 bis (7 brouillons, 001, 002, 131, 143, 010, 024, 048)
+  créés en prod, migration `20261116193751_questions_cm1_lot6bis_rangement_tags` mergée (§ 17 quater), pas encore
+  passée en prod.
+- **Prochaine action** : après `db:migrate`, vérifier au MCP (7 nœuds, 7 tags) ; page à cocher
+  (`page-a-cocher.ts --dir scripts/questions/cm1-6bis`) ; publication. Puis lot 6 ter « algèbre » (062-066).
+- **En attente de David** : `db:migrate` (migration additive, 4 conditions réunies, mais le mode auto le refuse).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
 
@@ -1294,3 +1295,5 @@ niveaux 4 et 5, le CM2 laissé à 2 et 3 (écart connu, pas corrigé).
   principale sautée.
 - `types:cliquet` tenu ; `security-auditor` : aucun finding (diff avec la migration du lot 6 : préfixe des tables
   temporaires, comptes, données ; état « avant » remesuré au MCP).
+- #2729 mergée (CI verte, `check:migrations --pr 2729` passé ; merge retardé par un `deploy:prod` en cours), branche
+  supprimée. `db:migrate` : à lancer par David.
