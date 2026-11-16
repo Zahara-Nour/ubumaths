@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-16, après #2732._
 
-- **État** : R1–R5 validées ; **R5 en prod** (#2732 mergée, `db:migrate` fait et vérifié le 2026-11-16 : 10 verbes à `auto_link = false`, notions intactes) ; R1–R4 : phase 0, aucun code · **Prochaine action** : réponses de David à Q1–Q2 et validation N1–E1, puis tests rouges de R1–R4 · **En attente de David** : Q1–Q2, validation N1–E1 · **Pièges en cours** : le niveau de lecture sert aussi au choix des définitions montrées (Q1) ; un test qui compare la base au jeu de référence figé applique `withConsigneVerbs` (`tests/fixtures/lexique/verbes-consigne-2026-11-16.ts`) · **Worktree / branche** : aucun (retiré après #2732) ; prochaine PR → nouveau worktree `ubumaths-wt-mots-cliquables`
+- **État** : R1–R6 validées ; **R5 en prod** (#2732 mergée, `db:migrate` fait et vérifié le 2026-11-16 : 10 verbes à `auto_link = false`, notions intactes) ; R1–R4 : phase 0, aucun code · **Prochaine action** : réponses de David à Q1–Q2 et validation N1–E1 et B1–B7, puis tests rouges (R6 d'abord) · **En attente de David** : Q1–Q2, validation N1–E1 et B1–B7 · **Pièges en cours** : le niveau de lecture sert aussi au choix des définitions montrées (Q1) ; un test qui compare la base au jeu de référence figé applique `withConsigneVerbs` (`tests/fixtures/lexique/verbes-consigne-2026-11-16.ts`) · **Worktree / branche** : aucun (retiré après #2732) ; prochaine PR → nouveau worktree `ubumaths-wt-mots-cliquables`
 
 ## Origine
 
@@ -44,6 +44,17 @@ Mesures (base locale = copie de la prod, 2 297 modèles publiés) :
     David** dans l'admin du dictionnaire (case « jamais souligné »), ou par un lot du chantier. → **migration** `20261116205041_dictionnaire_verbes_consigne_jamais_soulignes`
     (choix de David), question d'accès tranchée : personne ; prod mesurée le 2026-11-16 : les 10 à `true`.
 
+- **R6 (2026-11-16) : soulignement masqué par défaut, interrupteur sur la carte.** Même après R5, trop de
+  mots soulignés (« indigeste », David). Un bouton sur la carte (icône livre, « Mots du dictionnaire »)
+  affiche le soulignement ; choix mémorisé **sur l'appareil** (localStorage, comme
+  `chiphre:correction-detail`), valable pour toutes les cartes. Même défaut et même bouton pour un prof
+  (les aperçus montrent ce que voit l'élève).
+  - **Masqué, à la souris** : mots cliquables, soulignement au survol.
+  - **Masqué, au doigt** (pas de survol) : mots **non** cliquables (pas de fiche ouverte par surprise).
+  - **Masqué, au clavier** : mots hors de l'ordre de tabulation ; le bouton les rend atteignables.
+  - Pas de critère de fréquence en plus : R1 allège déjà la vue affichée.
+  - Ordre : R6 d'abord (lecture digeste tout de suite), R1, R2, R4 dans la même PR ou juste après.
+
 ## Phase 0 — comportements (à valider)
 
 Nominal :
@@ -63,6 +74,19 @@ Limites :
   un mot partagé avec une filière (`sharedWith`) suit le niveau où ce lecteur le rencontre (`gradeMetBy`).
 - **L4** Toujours la première occurrence seulement (inchangé) ; si elle est trop ancienne, l'occurrence
   suivante ne prend pas le relais.
+
+Bascule (R6) :
+
+- **B1** Première visite : aucun mot souligné ; bouton « Mots du dictionnaire » visible sur la carte
+  (énoncé), `aria-pressed="false"`.
+- **B2** Clic sur le bouton : les mots repérés (R1, R4, R5, `{.def}`) apparaissent soulignés, sur cette carte
+  et les suivantes ; rechargement de la page : toujours affichés (mémoire de l'appareil).
+- **B3** Masqué, souris : survol d'un mot repéré → souligné ; clic → sa fiche.
+- **B4** Masqué, écran tactile (`(hover: none)`) : toucher un mot ne fait rien.
+- **B5** Masqué, clavier : Tab va du bouton à la case réponse sans s'arrêter sur les mots ; affiché : les
+  mots reprennent leur place dans la tabulation.
+- **B6** Aucun mot repéré sur la carte (question de cours, R4 ; énoncé sans mot) : pas de bouton.
+- **B7** Mémoire illisible (navigation privée, stockage bloqué) : masqué, aucune erreur.
 
 Erreur :
 
@@ -86,3 +110,4 @@ Erreur :
 
 - 2026-11-16 : chantier ouvert (retour de David sur `/dev/corrections`), mesures, R1–R3 validées ; R4 (question de cours) validée ; R5 (verbes de consigne) validée, faite en local.
 - 2026-11-16 : #2732 (migration R5) mergée ; `db:migrate` appliqué et vérifié en prod.
+- 2026-11-16 : R6 validée (masqué par défaut, bouton sur la carte, mémoire de l'appareil ; doigt : non cliquable masqué ; prof : même défaut) ; B1–B7 écrits.
