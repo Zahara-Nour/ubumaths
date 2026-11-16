@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2715._
+_Mis à jour le 2026-11-16, phase 0 4e / 3e validée._
 
-- **État** : `/dev/blockly` et le sandbox JS retirés (#2715, mergée ; option 2, David, 2026-11-16) · **Prochaine action** : la piste **4e / 3e** (variables, conditions, boucle conditionnelle dans l'interpréteur), phase 0 d'abord · **En attente de David** : `deploy:prod` (livre #2700 et #2707) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) et `--publier` ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 (sinon `blocs:` serait une clé inconnue : bloc indisponible) ; garde `docs:check-a-jour` : ne lit que les COMMITS → la lancer après avoir commité le code ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` → dans un COMMIT ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) · **Worktree / branche** : aucun (retiré après #2715)
+- **État** : phase 0 de la piste 4e / 3e validée (« je te suis », 2026-11-16) ; PR A en cours (logique, sans écran) · **Prochaine action** : PR A — interpréteur, notation, jugement, clé `niveau:`, contrôle des branches ; puis PR B (blocs, écran, bac à sable), PR C (modèles) · **En attente de David** : `deploy:prod` (livre #2700 et #2707) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) et `--publier` ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 ; garde `docs:check-a-jour` : ne lit que les COMMITS ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` → dans un COMMIT ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-calcul-4e-3e`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -684,3 +684,33 @@ conditionnelle, structurer des programmes.
   nouveaux blocs ; jugement (affichages sur des essais, comme le calcul ?) ; geste de réponse ;
   bac à sable (`/programmes-de-calcul` élargi ou page à part) ; aperçu Python ; premiers modèles
   (lesquels de 4e et 3e).
+
+### Phase 0 — validée par David le 2026-11-16 (« je te suis »)
+
+- **Q1** : même bloc ``calcul, même interpréteur ; clé `niveau: 5e | 4e | 3e` (absente = 5e,
+modèles publiés inchangés) qui choisit les blocs proposés **et** admis (un bloc d'un niveau
+au-dessus = bloc inconnu du niveau). Pas de bloc ``programme à part.
+- **Q2** : variables créées par l'élève (« mettre x à », « ajouter … à x », lecture) ; `résultat`
+  non proposé en 4e / 3e (lu en 5e) ; variable jamais mise vaut 0 ; 20 variables au plus, nom
+  ≤ 20 caractères ; mots du langage refusés comme noms. Notation `mettre prix à nombre × 3 ;
+ajouter 1 à compteur`.
+- **Q3** : 4e « si … alors » et « si … alors … sinon » (deux blocs, comme Scratch) ; = ≠ < > ≤ ≥,
+  égalité à la marge du jugement ; 3e ET / OU / NON ; une condition ne s'affiche pas.
+  Notation `si nombre > 10 alors [ … ] sinon [ … ]`.
+- **Q4** : « reste de la division de a par b » dès la 4e ; reste par 0 → erreur comme ÷ 0.
+- **Q5** : 3e « répéter jusqu'à » (pas « tant que ») ; boucle infinie → « trop long » ; 4e
+  `controls_repeat_ext` (tours calculés) revient, notation corrigée ; tours arrondis à l'entier
+  le plus proche, négatif → 0.
+- **Q6** : refus à la publication si une branche d'un « si » de la référence n'est jamais
+  parcourue sur les essais (message : ajouter des `essais:`).
+- **Q7** : `/programmes-de-calcul` garde une page, sélecteur « Blocs : 5e · 4e · 3e » (5e par
+  défaut) ; pas d'aperçu Python.
+- **Q8** : la tortue avec variables = piste à part, plus tard.
+- **Comportements** : nominal `mettre x à nombre × 2 ; si x > 10 alors [ afficher x − 10 ] sinon
+[ afficher x ]` (7 → 4, 3 → 6) ; limite : variable non mise = 0, « si » vide ne fait rien,
+  « jusqu'à » déjà vrai = 0 tour, `répéter 2,6` = 3 tours ; erreur : boucle infinie, ÷ ou reste
+  par 0, nom réservé, bloc au-dessus du niveau.
+- **Découpage** : **PR A** logique (interpréteur, notation, jugement, `niveau:`, contrôle des
+  branches ; revue `code-reviewer` Opus) ; **PR B** blocs Blockly, boîtes à outils, écran, corrigé,
+  catalogue, sélecteur du bac à sable ; **PR C** premiers modèles 4e / 3e (relevé des points
+  d'abord, liste proposée à David). Pas de migration.
