@@ -130,7 +130,8 @@
 					)
 				)
 			);
-			// Textes des blocs génériques des programmes de calcul (« mettre x à », « reste de… »)
+			// Textes des blocs génériques des programmes de calcul (« mettre x à », « reste de… ») :
+			// réglage global de Blockly, donc aussi pour la tortue (qui n'a pas ces blocs)
 			francaiserBlocsCalcul();
 
 			// Blocs tortue et de calcul (définis une seule fois), avant l'injection

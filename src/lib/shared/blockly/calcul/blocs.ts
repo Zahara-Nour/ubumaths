@@ -166,6 +166,23 @@ export function surveillerNomsDeVariables(
 	const autresNoms = (id: string): string[] =>
 		[...acceptees].filter(([autre]) => autre !== id).map(([, nom]) => nom);
 
+	/**
+	 * Corrige un nom refusé hors de l'historique : la correction n'émet aucun événement, et
+	 * l'événement refusé sort de la pile d'annulation (sinon Ctrl+Z recréerait la variable
+	 * refusée, aussitôt retirée : l'élève resterait bloqué ; revue de la PR B).
+	 */
+	const corriger = (evenement: Blockly.Events.Abstract, correction: () => void): void => {
+		Blockly.Events.disable();
+		try {
+			correction();
+		} finally {
+			Blockly.Events.enable();
+		}
+		const pile = espace.getUndoStack();
+		const rang = pile.lastIndexOf(evenement);
+		if (rang !== -1) pile.splice(rang, 1);
+	};
+
 	const ecouter = (evenement: Blockly.Events.Abstract): void => {
 		if (evenement instanceof Blockly.Events.VarCreate) {
 			const { varId, varName } = evenement;
@@ -173,7 +190,7 @@ export function surveillerNomsDeVariables(
 			const refus = refusDeNouveauNom(varName, autresNoms(varId));
 			if (refus) {
 				const variable = variables.getVariableById(varId);
-				if (variable) variables.deleteVariable(variable);
+				if (variable) corriger(evenement, () => variables.deleteVariable(variable));
 			} else {
 				acceptees.set(varId, varName);
 			}
@@ -187,7 +204,9 @@ export function surveillerNomsDeVariables(
 			const refus = refusDeNouveauNom(newName, autresNoms(varId));
 			if (refus) {
 				const variable = variables.getVariableById(varId);
-				if (variable && avant !== undefined) variables.renameVariable(variable, avant);
+				if (variable && avant !== undefined) {
+					corriger(evenement, () => variables.renameVariable(variable, avant));
+				}
 			} else {
 				acceptees.set(varId, newName);
 			}

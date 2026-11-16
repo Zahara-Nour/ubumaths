@@ -767,6 +767,13 @@ ajouter 1 à compteur`.
   variables déjà acceptées (test rouge avant).
 - Tests rouges avant, verts après : `calcul/__tests__/blocs.test.ts` (14), 5 tests navigateur du
   bac à sable, 1 de la carte (`niveau: 4e`, rouge vérifié sans le passage du niveau).
+- **Revue `code-reviewer` (Sonnet, 2026-11-16)** : un point important, corrigé (test rouge
+  avant) : après un nom refusé, Ctrl+Z restait bloqué (la correction entrait dans l'historique,
+  annuler recréait la variable refusée) → correction événements coupés, événement refusé retiré de
+  la pile d'annulation ; la réponse est refaite au refus (le renommage remis sans événement
+  l'aurait laissée vide, test rouge avant). Mineurs corrigés : message de nom masqué après la
+  validation et effacé par « Effacer » ; dernier lancer effacé au changement de niveau ;
+  `francaiserBlocsCalcul` commenté (réglage global).
 - **Choix faits sans David, à lui signaler** : la boîte de saisie reste celle de Blockly
   (restylée), pas un dialogue Shadcn ; un nom refusé est retiré sans redemander ; le sélecteur
   garde les blocs posés en changeant de niveau ; en 4e / 3e, la boucle proposée est

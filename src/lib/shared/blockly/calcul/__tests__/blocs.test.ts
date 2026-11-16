@@ -227,6 +227,33 @@ describe('noms de variables à la création', () => {
 		expect(refus[0]).toContain('mot du programme');
 	});
 
+	it('après un nom refusé, annuler revient en arrière (pas bloqué sur le refus)', async () => {
+		espace = new Blockly.Workspace();
+		surveillerNomsDeVariables(espace, () => {});
+		const variables = espace.getVariableMap();
+		variables.createVariable('x');
+		await tourSuivant();
+		variables.createVariable('si');
+		await tourSuivant();
+		const prix = variables.createVariable('prix');
+		await tourSuivant();
+		variables.renameVariable(prix, 'Si');
+		await tourSuivant();
+		const noms = () =>
+			variables
+				.getAllVariables()
+				.map((v) => v.getName())
+				.sort();
+		expect(noms()).toEqual(['prix', 'x']);
+		// Deux annulations : prix, puis x ; les refus n'y laissent rien
+		espace.undo(false);
+		await tourSuivant();
+		expect(noms()).toEqual(['x']);
+		espace.undo(false);
+		await tourSuivant();
+		expect(noms()).toEqual([]);
+	});
+
 	it('variable renommée en un nom refusé : l’ancien nom revient, message', async () => {
 		espace = new Blockly.Workspace();
 		const refus: string[] = [];

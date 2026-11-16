@@ -152,7 +152,11 @@
 	$effect(() => {
 		const espace = workspace;
 		if (!espace || readonly) return;
-		return surveillerNomsDeVariables(espace, (message) => (nomRefuse = message));
+		return surveillerNomsDeVariables(espace, (message) => {
+			nomRefuse = message;
+			// Un renommage refusé est remis sans événement : la réponse est refaite ici
+			if (message) rendreProgramme();
+		});
 	});
 
 	// Niveau changé (sélecteur du bac à sable) : la boîte à outils suit, les blocs restent
@@ -164,6 +168,8 @@
 		espace.updateToolbox(
 			toolboxCalcul(voulu) as unknown as Blockly.utils.toolbox.ToolboxDefinition
 		);
+		// Le dernier lancer était au niveau d'avant : il ne vaut plus (`essai` n'est pas lu ici)
+		essai = null;
 	});
 
 	// =============================================================================
@@ -194,6 +200,7 @@
 	}
 
 	function effacer(): void {
+		nomRefuse = null;
 		workspace?.clear();
 	}
 
@@ -204,6 +211,12 @@
 		essai = null;
 		// L'élève passe aux blocs : le nom refusé n'est plus d'actualité
 		if (event instanceof BlocklyCore.Events.BlockBase) nomRefuse = null;
+		rendreProgramme();
+	}
+
+	/** Le programme des blocs, en texte : la réponse, envoyée seulement si elle a changé. */
+	function rendreProgramme(): void {
+		if (!workspace) return;
 		const lu = etatVersTexteCalcul(BlocklyCore.serialization.workspaces.save(workspace));
 		const texte = lu.ok ? lu.texte : null;
 		if (texte !== null && texte === dernierTexte) return;
@@ -242,7 +255,7 @@
 		<BlocklyWorkspace bind:workspace {toolbox} {readonly} onchange={handleChange} />
 	</div>
 
-	{#if nomRefuse}
+	{#if nomRefuse && !readonly}
 		<p class="calcul-nom-refuse text-sm text-destructive" role="alert">{nomRefuse}</p>
 	{/if}
 
