@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2727._
+_Mis à jour le 2026-11-16, après #2727 et la relecture de la page à cocher._
 
-- **État** : piste 4e / 3e — PR A (#2716), B (#2719), C (#2723), **D (#2727) mergées** ; 9 brouillons en prod, rangés et tagués (`db:migrate` fait, vérifié) ; page à cocher publiée (https://claude.ai/artifact/HhrEdtV5TE2YPYZbCaXQFT) · **Prochaine action** : quand David a relu, compter les verdicts (`ArtifactData list verdicts`), corriger les « À revoir » ; publication (`publier-lot.ts`, par David) **après** le `deploy:prod` de #2719 · **En attente de David** : relecture de la page à cocher ; `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `update-published-questions.ts --lot blockly-5-106` (simulation, `--publier`) ; vérifications manuelles en prod (`verifications-manuelles.md`) ; choix des PR A, B et C à relire · **Pièges en cours** : aucun modèle 4e / 3e **publié** avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; la base locale porte les 9 modèles avec des ids LOCAUX · **Worktree / branche** : aucun (retiré après #2727)
+- **État** : piste 4e / 3e — PR A (#2716), B (#2719), C (#2723), **D (#2727) mergées** ; 9 brouillons en prod, rangés et tagués (`db:migrate` fait, vérifié) ; page à cocher relue : **9 / 9 « ok »**, aucun commentaire, rien à corriger · **Prochaine action** : publication des 9 modèles (`publier-lot.ts`, par David) **après** le `deploy:prod` de #2719 · **En attente de David** : `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `update-published-questions.ts --lot blockly-5-106` (simulation, `--publier`) ; vérifications manuelles en prod (`verifications-manuelles.md`) ; choix des PR A, B et C à relire · **Pièges en cours** : aucun modèle 4e / 3e **publié** avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; la base locale porte les 9 modèles avec des ids LOCAUX · **Worktree / branche** : aucun (retiré après #2727)
 
 ## Phase 0 — validée par David le 2026-11-14
 
