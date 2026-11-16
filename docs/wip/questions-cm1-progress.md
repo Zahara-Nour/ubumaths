@@ -10,7 +10,7 @@ _Mis à jour le 2026-11-16 : lot 6 publié ; phase 0 du lot 6 bis écrite (§ 17
 - **État** : lots 0 à 6 publiés (lot 6 : 10 problèmes, § 16 sexies). Recompte : 102 points couverts sur 171.
 - **Prochaine action** : phase 0 du lot 6 bis écrite (§ 17, 7 modèles), à faire valider avant d'écrire ;
   puis lot 6 ter « algèbre » (062-066).
-- **En attente de David** : rien.
+- **En attente de David** : validation de la phase 0 du lot 6 bis (§ 17, trois questions).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
 
