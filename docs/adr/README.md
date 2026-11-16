@@ -48,6 +48,7 @@ contourner en silence.
 | 0037 | [Cinq formes de série, deux boutons d'auto-évaluation](0037-cinq-formes-de-serie-deux-boutons.md)                                        | 2026-11-11 |
 | 0038 | [Le contenu d'une trace : la graine, la réponse par case, les temps](0038-contenu-d-une-trace.md)                                        | 2026-11-11 |
 | 0039 | [Les blocs tortue et calcul sont interprétés par Chiphre, jamais évalués en JavaScript](0039-blocs-interpretes-par-chiphre.md)           | 2026-11-14 |
+| 0040 | [Le carnet de liaison : un lien par parent, des courriels sur exception](0040-carnet-de-liaison-lien-par-parent.md)                      | 2026-11-16 |
 
 ## Écrire un ADR
 

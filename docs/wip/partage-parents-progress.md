@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, phase 0, comportements proposés (aucune PR)._
+_Mis à jour le 2026-11-16, phase 0, après le tour 5 et l'ADR 0040 (aucune PR)._
 
-- **État** : phase 0 ; tours 1 à 4 tranchés ; **comportements A à E proposés** et questions Q17 à Q21 posées (section « Comportements »). Rien de codé.
-- **Prochaine action** : consigner la validation des comportements et Q17-Q21 ; puis **ADR** (frontière d'accès du carnet, écartés : compte parent, bilan hebdomadaire, SMS, « l'élève peut cacher », date de naissance) ; puis **découpage en PR** (migration et fonction `SECURITY DEFINER` d'abord : deux PR, cf. CLAUDE.md § Base de données).
-- **En attente de David** : validation des comportements A-E et réponses à Q17-Q21.
+- **État** : phase 0 ; tours 1 à 4 tranchés ; tour 5 tranché : **comportements A à E validés**, Q17-Q21 suivies ; **ADR 0040** écrite. Rien de codé.
+- **Prochaine action** : **découpage en PR** (migration et fonction `SECURITY DEFINER` d'abord : deux PR, cf. CLAUDE.md § Base de données).
+- **En attente de David** : validation du découpage en PR.
 - **Pièges en cours** : données d'élèves mineurs ; aucune policy `anon` (fonction `SECURITY DEFINER` qui reçoit le lien, comme l'ADR 0025) ; décision 8 du 2026-10-21 tient ; adresses confirmées seulement ; revue `code-reviewer` + `security-auditor` obligatoire.
 - **Ensuite** : revenir au point 9 de `presentation-parents` et réécrire le point 8 avec le carnet.
 - **Worktree / branche** : aucun (phase 0, doc sur `main`).
@@ -124,10 +124,26 @@ Vocabulaire : **lien du parent** = l'adresse de son carnet ; **adresse confirmé
 - **E6 (erreur)** : envoi Brevo en échec → nouvel essai au passage suivant, sans doublon. Adresse rejetée définitivement → marquée invalide, le professeur le voit.
 - **E7 (invariant)** : jamais de courriel d'exception vers une adresse non confirmée, ni si le partage est coupé, ni si le carnet de la classe est désactivé.
 
-### Questions ouvertes (tour 5)
+### Questions du tour 5
 
 - **Q17 — Activation** : le carnet part-il seul (activé par défaut) ou au geste du professeur, classe par classe ? Recommandation : **au geste du professeur** (le premier courriel aux familles est une décision humaine).
 - **Q18 — Courriel de confirmation** (adresse saisie, peut-être fausse) : que dit-il de l'élève ? Recommandation : **le prénom seul et le nom du professeur** ; ni nom de famille, ni école, ni classe.
 - **Q19 — Plafond** : au plus **un courriel par semaine** par parent, qui regroupe les exceptions ? Recommandation : oui.
 - **Q20 — Élèves hors classe** : pas de carnet dans la première version (aucun professeur pour le régler) ? Recommandation : oui, à rediscuter avec l'offre payante.
 - **Q21 — Rentrée** : les adresses confirmées sont gardées et un nouveau lien part quand l'élève rejoint une classe au carnet activé ; adresses effacées quand l'élève quitte toute classe ou que le consentement expire ? Recommandation : oui.
+
+### 2026-11-16 (tour 5, recommandations suivies)
+
+- **Comportements A à E validés** tels quels.
+- **Q17** : le carnet part **au geste du professeur**, classe par classe. **Q18** : courriel de confirmation = prénom seul + nom du professeur. **Q19** : un courriel par semaine au plus, qui regroupe les exceptions. **Q20** : pas de carnet pour les élèves hors classe dans la première version. **Q21** : adresses gardées d'une année à l'autre, nouveau lien à la rentrée ; effacées quand l'élève quitte toute classe ou que le consentement expire.
+- ADR écrite : [0040](../adr/0040-carnet-de-liaison-lien-par-parent.md).
+
+## Découpage en PR (proposé le 2026-11-16, à valider)
+
+1. **Migration** (additive) : adresses des parents (état, confirmation, arrêt des courriels), liens du carnet (un par adresse, expiration 31 août, révocation), réglages par classe, journal des courriels envoyés ; fonctions `SECURITY DEFINER` (lire le carnet par lien, confirmer, « je ne suis pas le parent », arrêter / reprendre les courriels). Tests d'intégration rouges d'abord ; `security-auditor` ; `db:migrate`, `db:types`.
+2. **Page du carnet** `(public)/carnet/[token]` (B1-B5) + **vue élève** dans le Cabinet (C1-C3) + pages de confirmation et d'arrêt.
+3. **Côté professeur** (D1-D3) + **envoi des liens et des confirmations** par Brevo (A1-A6).
+4. **Courriels d'exception** : cron Vercel quotidien (E1-E7), plafond hebdomadaire, message trimestriel.
+5. **Doc** : `docs/systeme/` (versement), puis point 8 de `presentation-parents`.
+
+Question Q22 : le lien est-il stocké **haché** (comme un mot de passe) ? Conséquence : « J'ai perdu mon lien » envoie un **nouveau** lien et révoque l'ancien (on ne peut pas renvoyer un lien qu'on ne connaît plus).
