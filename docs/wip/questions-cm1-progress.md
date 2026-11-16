@@ -5,15 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, lot 6 ter écrit (§ 18 ter)._
+_Mis à jour le 2026-11-16, après #2734 (fichiers du lot 6 ter mergés)._
 
-- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 ter « algèbre » (062-066) : 8 modèles écrits,
-  PR des fichiers ouverte (branche `feat/questions-cm1-lot6ter`).
-- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --publier` (8 brouillons), commit des
-  ids, migration nœud + tags (gabarit `lot-cm1-6bis-rangement.py`).
-- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier`.
+- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 ter « algèbre » (062-066) : 8 modèles en fichiers
+  (`scripts/questions/cm1-6ter/`, § 18 ter), pas encore en base.
+- **Prochaine action** : David lance `create-questions --publier` (8 brouillons) ; commit des ids ; migration nœud +
+  tags (gabarit `lot-cm1-6bis-rangement.py`, niveau 1, nœuds du § 18) ; page à cocher ; publication.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-6ter --publier`.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot6ter`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
