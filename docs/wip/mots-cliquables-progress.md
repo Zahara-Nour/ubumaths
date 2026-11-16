@@ -2,13 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, à l'ouverture du chantier._
+_Mis à jour le 2026-11-16, PR de la migration R5 ouverte._
 
-- **État** : phase 0, comportements écrits, aucun code · **Prochaine action** : validation par David des
-  comportements N1–E1 et réponses aux Q1–Q2, puis tests rouges · **En attente de David** : Q1–Q2 ci-dessous, validation N1–E1 ·
-  **Pièges en cours** : Q2 revient sur la décision 4 du 2026-10-08 (`lexique-progress.md` : définitions
-  disponibles dans les corrections) ; le niveau de lecture sert aussi au choix des définitions montrées ·
-  **Worktree / branche** : aucun ; au premier code → `ubumaths-wt-mots-cliquables`
+- **État** : R1–R5 validées ; migration R5 (10 verbes de consigne `auto_link = false`) en PR, tests d'intégration verts (rouges sans elle), `security-auditor` sans finding bloquant · **Prochaine action** : merge, `db:migrate`, puis phase 0 de R1–R4 (Q1–Q2, validation N1–E1) · **En attente de David** : Q1–Q2, validation N1–E1 · **Pièges en cours** : le niveau de lecture sert aussi au choix des définitions montrées (Q1) · **Worktree / branche** : `ubumaths-wt-mots-cliquables` / `chore/mots-cliquables-verbes-consigne`
 
 ## Origine
 
@@ -45,7 +41,8 @@ Mesures (base locale = copie de la prod, 2 297 modèles publiés) :
   citer, expliquer : pas d'entrée, donc jamais soulignés.) **Restent soulignables** (notions) : résoudre,
   développer, factoriser, simplifier, réduire, démontrer, encadrer, arrondir.
   - Fait **en base locale** le 2026-11-16 (`update … set auto_link=false`, 10 lignes). **Prod : à faire par
-    David** dans l'admin du dictionnaire (case « jamais souligné »), ou par un lot du chantier.
+    David** dans l'admin du dictionnaire (case « jamais souligné »), ou par un lot du chantier. → **migration** `20261116205041_dictionnaire_verbes_consigne_jamais_soulignes`
+    (choix de David), question d'accès tranchée : personne ; prod mesurée le 2026-11-16 : les 10 à `true`.
 
 ## Phase 0 — comportements (à valider)
 
