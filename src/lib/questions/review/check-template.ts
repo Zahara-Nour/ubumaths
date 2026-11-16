@@ -106,6 +106,15 @@ function withoutId(template: QuestionTemplate): Omit<QuestionTemplate, 'id'> {
 	return rest;
 }
 
+/** Une variable (partagée ou d'une variation) s'appelle `e`, le nom de la constante d'Euler */
+function declaresEulerVariable(template: QuestionTemplate): boolean {
+	const variables = [
+		...(template.shared?.variables ?? []),
+		...template.variations.flatMap((variation) => variation.variables ?? [])
+	];
+	return variables.some((variable) => variable.name === 'e');
+}
+
 /** Chaque variation, seule, génère-t-elle sur `instances` tirages ? */
 function checkGeneration(
 	template: QuestionTemplate,
@@ -258,6 +267,10 @@ export function checkTemplate(
 		reasons.push(
 			`variation(s) sans spec « correct » : ${uncovered.map((index) => index + 1).join(', ')}`
 		);
+	}
+	// `e` est la constante d'Euler : une variable `e` serait lue 2,718… (`1 + e`, `{{if:e==0|…}}`)
+	if (declaresEulerVariable(template)) {
+		reasons.push('variable « e » : réservée à la constante d’Euler, choisir une autre lettre');
 	}
 	if (generation.attempts === 0) reasons.push('aucun tirage effectué');
 	const failedSpecs = specs.filter((spec) => !spec.passed).length;

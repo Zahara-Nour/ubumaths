@@ -352,7 +352,8 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
   intervalle sans `answerKind: intervalles` ; forme non normalisée (`u₁ + (n − 1)r`, `(n² + n)/2`) →
   `requiredForm: {pattern: 'u'}`. Une spec `incorrect` à réponse décimale échoue aussi sans
   `acceptDecimal`. Une spec `unoptimal_form` nomme sa contrainte (`constraintViolations: ['signs']`).
-- **Noms de variables** : ni `e` (Euler) ni `i` (imaginaire, « Complex numbers not supported »).
+- **Noms de variables** : ni `e` (Euler : `checkTemplate` la refuse depuis le 2026-11-16) ni `i`
+  (imaginaire, « Complex numbers not supported »).
   `eval:` ne connaît ni `==` ni `>` → indicatrices `min(max(x-s,0),1)`, `1-min(abs(r-k),1)` ; dans une
   variable, `eval:…` sans accolades et `{{if:}}` sur un seul niveau.
 - **Rendu** : `cleanCoefficients` lit `\sigma(X)` comme σ·(X) (« σX ») → option retirée ; `-E(X)^2` →
