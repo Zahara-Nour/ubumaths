@@ -237,3 +237,18 @@ Questions (recommandation en premier) :
 - **Découpage** : la règle de `CLAUDE.md` (« fonction SQL + code qui l'appelle = deux PR ») coupe la PR 4 en **4a** (migration + tests) et **4b** (cron + courriels).
 - **Q39 (posée)** — `List-Unsubscribe-Post` (désinscription en un geste par la messagerie) : la messagerie envoie un POST de formulaire sans en-tête `Origin` ; SvelteKit le refuse **avant** tout hook (`csrf.checkOrigin`, pas d'exception par chemin). Le permettre = couper la vérification de SvelteKit et ne garder que la nôtre (`csrfHandle`, qui couvre déjà tous les POST) avec une exception pour ce seul chemin. Recommandation : **ne pas le faire** ; mettre `List-Unsubscribe: <lien du carnet#courriels>` (la messagerie ouvre le carnet, le parent clique « Ne plus recevoir »). Le geste unique n'est exigé par Gmail qu'au-delà de 5 000 courriels par jour.
 - E6 « adresse rejetée définitivement → invalide » : Brevo signale les rejets définitifs **après** l'envoi (webhook) ; Chiphre n'a pas de webhook Brevo. La 4b journalise l'échec immédiat (le professeur voit « dernier envoi en échec ») ; le marquage `invalid` des rejets différés reste à faire (noté dans `outils-manquants.md` à la 4b).
+- Revues de la 4a (2026-11-16), `security-auditor` et `code-reviewer` (Opus) : **aucun finding bloquant**. Corrigés :
+  - un jeton de courriel revivait avec un lien plus récent (adresse retirée puis ressaisie, rentrée, lien perdu) → il ne vit qu'avec le lien actif au moment de l'envoi ;
+  - contrainte : seuls les courriels d'exception et trimestriels portent un jeton ;
+  - classe sans école (vacances inconnues) : pas d'alerte d'inactivité ; aucune classe de la prod n'est dans ce cas (mesuré) ;
+  - tests indépendants de la date du jour (classe commune rattachée à une école) ; test « déjà parti » isolé du plafond ; test retrait puis ressaisie.
+
+  Preuves : les nouveaux tests sont rouges avec la version précédente et verts avec celle-ci (58 tests du carnet).
+
+- Laissés, à dire à David :
+  - l'effacement après 90 jours efface aussi les adresses « Je ne suis pas le parent » : une telle adresse pourrait être ressaisie ensuite ;
+  - Q27 sans borne : une évaluation sans échéance jamais faite reste dans le carnet d'une année sur l'autre ;
+  - arrêter puis reprendre les courriels resignale une exception en cours ;
+  - un élève arrivé en cours d'année est jugé inactif depuis la rentrée de l'école ;
+  - `access_count` du lien compte aussi les ouvertures par un courriel.
+- Contrat pour la 4b (écrit dans la migration) : envoyer et journaliser les courriels d'exception **avant** de lire le plan trimestriel.

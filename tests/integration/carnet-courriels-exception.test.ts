@@ -361,7 +361,9 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 		teacherId = prof.id;
 		teacher = await clientFor(prof.email!);
 		templateId = await createFakeTemplate(service, prof.id);
-		classId = await nouvelleClasse();
+		// Classe commune rattachée à une école dont l'année a commencé il y a
+		// 80 jours : les tests ne dépendent pas de la date du jour (rentrée).
+		classId = await nouvelleClasse({}, (await nouvelleEcole(80)).ecole);
 		classeEteinte = (await TestData.class().withName('4e Exceptions éteinte').create()).id;
 		classes.push(classeEteinte);
 		const { error } = await service
@@ -471,6 +473,14 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 			await parentConfirme(sans.id, `p-hortense@${DOMAINE}`);
 			await traces(sans.id, plusJours(aujourdhui(), -18));
 			expect((await exceptions(sans.id)).map((e) => e.reason)).toEqual(['inactivity']);
+		});
+
+		it('inactivité : classe sans école (vacances inconnues) → pas d’alerte', async () => {
+			const classe = await nouvelleClasse();
+			const eleve = await nouvelEleve('Iris', classe);
+			await parentConfirme(eleve.id, `p-iris@${DOMAINE}`);
+			await traces(eleve.id, plusJours(aujourdhui(), -40));
+			expect(await exceptions(eleve.id)).toEqual([]);
 		});
 
 		it('inactivité : moins de 15 jours de classe depuis la rentrée → pas d’alerte', async () => {
@@ -801,6 +811,19 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 			expect(await trimestriel(p1.contactId)).toBeUndefined();
 		});
 
+		it('déjà parti après la fin du trimestre : plus rien, même hors du plafond', async () => {
+			// Trimestre fini à J-20, message parti à J-10 : le plafond (7 jours) ne
+			// le bloque plus, seule la règle « déjà parti » joue.
+			const { ecole } = await nouvelleEcole(90, [], [{ du: -80, au: -20 }]);
+			const classe = await nouvelleClasse({}, ecole);
+			const eleve = await nouvelEleve('Bérénice', classe);
+			const p = await parentConfirme(eleve.id, `p-berenice@${DOMAINE}`);
+			await carte(eleve.id, new Date(Date.now() + 3 * JOUR).toISOString(), true);
+			expect(await trimestriel(p.contactId)).toMatchObject({ reviews_up_to_date: true });
+			await journal(eleve.id, p.contactId, 'quarterly', ilYA(10));
+			expect(await trimestriel(p.contactId)).toBeUndefined();
+		});
+
 		it('rien si la classe l’éteint, ni pendant les vacances', async () => {
 			const { ecole } = await nouvelleEcole(70, [], [{ du: -63, au: -3 }]);
 			const eteinte = await nouvelleClasse({ quarterly_message: false }, ecole);
@@ -853,9 +876,10 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 			expect(parId.get(r.contactId)).toBeNull();
 
 			// Diane rejoint une classe active : marque retirée
-			await service
+			const { error: eRetour } = await service
 				.from('class_members')
 				.insert({ class_id: classId, student_id: revenu.id, status: 'active' });
+			if (eRetour) throw new Error(eRetour.message);
 			// Camille : orpheline depuis 91 jours
 			await service
 				.from('parent_contacts')

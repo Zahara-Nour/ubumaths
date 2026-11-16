@@ -446,7 +446,8 @@ $$;
 --    date de plus de N jours (Q24) ;
 --  - inactivity : aucun jour actif sur les N derniers jours hors vacances
 --    (aujourd'hui exclu du compte, compris dans la recherche), depuis la
---    rentrée ; moins de N jours de classe depuis la rentrée → pas d'alerte.
+--    rentrée ; moins de N jours de classe depuis la rentrée, ou année scolaire
+--    inconnue → pas d'alerte.
 -- Plusieurs classes au carnet : le seuil le plus court, l'alerte si une classe
 -- la demande.
 create or replace function public.carnet_current_exceptions()
@@ -534,7 +535,10 @@ begin
 			limit v_student.inactivity_days
 		) w;
 
-		if v_days >= v_student.inactivity_days and not exists (
+		-- Année scolaire inconnue (classe sans école) : on ne connaît pas les
+		-- vacances (E3), pas d'alerte d'inactivité. Aucune classe de la prod
+		-- n'est dans ce cas (mesuré le 2026-11-16).
+		if v_year_id is not null and v_days >= v_student.inactivity_days and not exists (
 			select 1
 			from public.skill_attempts a
 			where a.student_id = v_student.sid
@@ -611,6 +615,9 @@ $$;
 --  - pendant les vacances (E3), seules les évaluations non faites partent.
 -- Le courriel regroupe les épisodes encore ouverts : une exception résolue
 -- entre-temps a été fermée par `carnet_sync_exception_episodes`.
+-- ⚠️ Contrat avec le cron : envoyer ET journaliser les courriels de ce plan
+-- AVANT de lire `carnet_quarterly_plan` ; sinon une adresse peut recevoir deux
+-- courriels le même jour (Q19).
 create or replace function public.carnet_exception_plan()
 returns table (
 	contact_id uuid,
