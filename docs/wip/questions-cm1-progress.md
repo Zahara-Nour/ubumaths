@@ -5,14 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16 : lot 6 publié ; phase 0 du lot 6 bis écrite (§ 17)._
+_Mis à jour le 2026-11-16 : lot 6 bis écrit (§ 17 ter), PR des fichiers en cours._
 
-- **État** : lots 0 à 6 publiés (lot 6 : 10 problèmes, § 16 sexies). Recompte : 102 points couverts sur 171.
-- **Prochaine action** : phase 0 du lot 6 bis écrite (§ 17, 7 modèles), à faire valider avant d'écrire ;
-  puis lot 6 ter « algèbre » (062-066).
-- **En attente de David** : validation de la phase 0 du lot 6 bis (§ 17, trois questions).
+- **État** : lots 0 à 6 publiés (102 points sur 171) ; lot 6 bis (7 modèles, 001, 002, 131, 143, 010, 024, 048)
+  validé (§ 17 bis) et écrit, specs et aperçu local verts.
+- **Prochaine action** : merger la PR des fichiers ; David lance `create-questions --dir scripts/questions/cm1-6bis
+--publier` ; ids commités ; migration nœud + tags ; page à cocher ; publication. Puis lot 6 ter « algèbre » (062-066).
+- **En attente de David** : `create-questions --publier` après le merge.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot6bis`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1253,3 +1254,28 @@ Questions :
    4 et 5 (à la suite), sans toucher au CM2. D'accord ?
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 17 bis. Lot 6 bis : réponse de David (2026-11-16)
+
+« go » après mes trois recommandations : 1. 6b-7 rangé sous « Décimaux › arrondis et ordres de grandeur » (rangement
+du point) ; 2. 6b-2 V1 (matériel, zéro intercalé) gardée, une variation sur trois ; 3. droite graduée du CM1 aux
+niveaux 4 et 5, le CM2 laissé à 2 et 3 (écart connu, pas corrigé).
+
+### 17 ter. Lot 6 bis — écriture (2026-11-16)
+
+- Script `docs/wip/questions/lot-cm1-6bis.py` → `scripts/questions/cm1-6bis/` (7 JSON, 22 variations). Patrons
+  relevés en lecture seule : `etat-prod-2026-11-16-cm1-6bis-patrons/` (CE2 `4df6c483`, `156dc0bd`, `86f0ca3b` ; CM2
+  `c20b687f`, `7df1aadd`, `25b269de` ; CM1 `1e01404d`).
+- Niveaux : dénombrement 15 (6b-1), 16 (6b-2) ; ordre 15 (6b-3) ; droite graduée 4 (6b-4), 5 (6b-5) ; décomposition 9
+  (6b-6) ; arrondis et ordres de grandeur 9 (6b-7).
+- 6b-3 : A / autant / B en `melanger: non`, attendu `sign(vB-vA)+1` ; écart tiré de −2 à 2 (« autant » une fois sur
+  cinq), `s` échange les collections. 6b-7 : la bonne valeur en premier (indice 0), mélangée à l'affichage ; leurres
+  10 fois plus, 10 fois moins, une erreur (S + 200, arrondi d'un seul facteur, quotient oublié). 6b-4/5 V2 : `b`
+  borné selon le pas pour que la fin de la droite reste ≤ 990 000.
+- Pièges vus : **une plage négative (`-12..12`) ne se tire pas**, passer par `x0` puis `eval:x0-12` ; **`i` est lu
+  comme l'imaginaire** (« Complex numbers not supported ») ; `e` évité (Euler) ; une couleur hors `$` est refusée
+  (`$\textcolor{…}{\text{A}}$`).
+- `question:specs` 300 tirages par variation : 6 600 / 6 600, 52 specs vertes ; `sonde-collections` 365 blocs et
+  `sonde-horloges` (droites) : 0 problème ; `create-questions` en simulation (prod) : 7 « à créer ».
+- Base locale (copie du dossier, `DOTENV_CONFIG_PATH=.env.local`) : 7 brouillons ; aperçu admin à 390 px (Playwright),
+  énoncés et corrigés : collections, droites graduées, choix et nombres groupés rendus correctement.
