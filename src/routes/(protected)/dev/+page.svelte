@@ -12,6 +12,12 @@
 			description: 'Utilisateur, profil et jetons de la session en cours (masqués).'
 		},
 		{
+			href: '/dev/corrections',
+			title: 'Corrections côte à côte',
+			description:
+				'Flash-cards, Saisie et fin de série sur des modèles réels (chantier corrections-modeles).'
+		},
+		{
 			href: '/dev/rls',
 			title: 'Policies RLS',
 			description: 'Ce que lit le compte connecté, table par table.'
