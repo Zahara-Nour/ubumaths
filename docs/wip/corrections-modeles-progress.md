@@ -67,6 +67,20 @@ détaillée. Ce chantier ne se contente pas de marquer les 30 cartes : il repren
     2 297 publiés (~24 %)** ; ≈ 1 740 autres (numération, géométrie, problèmes, fonctions, cours…).
   - Échantillon de corrections écrites : figures (` ```courbe `, ` ```trig `), raisonnement (« la fonction cube
     est strictement croissante… »), conditions `{{if:…}}` selon les valeurs. Le moteur ne produit rien de cela.
+- [x] **Ancien site TinyMath** (`extern/new-tinymath/apps/ubumaths/src`, lu le 2026-11-16) : **deux niveaux,
+      séparés par le retournement de la carte**.
+  - Recto en mode correction (`ui/Question.svelte`, `questions/correctionItem.ts` `createCorrection`) :
+    la **correction simple, construite automatiquement** selon le type (calcul : `expr ≠ réponse` en rouge
+    puis `= solution` encadrée verte ; trous : solutions en vert ; QCM : bordure verte + pastille ✓/✗),
+    surchargeable par modèle (`correctionFormat`, gabarits `&exp`, `&sol`, `&ans`). Remarques (`coms` :
+    « Ta réponse : … », zéros ou parenthèses inutiles, fraction non simplifiée…) à côté, en écriture
+    manuscrite ; pastille numérotée verte / ambre / rouge dans la liste (`CorrectionListItems.svelte`).
+  - Verso « Détails » (`ui/BackCard.svelte`, `createDetailedCorrection`) : les lignes écrites par l'auteur
+    (`correctionDetails` : texte à gabarits ou image). **Pas de bouton de retournement sans détails**
+    (`QuestionCard.svelte`, `isFlashCard`).
+  - Flash-card : verso = « Réponse : » en grand + image de correction + détails.
+  - Dans Chiphre : le recto existe déjà (`ExpectedResultView`, Q92–Q94 livrés) ; le verso porte la correction
+    écrite **et** l'interrupteur concise / détaillée → trois niveaux là où TinyMath en avait deux.
 - [x] **Cartes de cours** : déjà tranché par **Q96** (concise = la réponse de cours ; détail = explication,
       exemple, contre-exemple, lien avec la méthode). Reste à **marquer** les cartes, rien à décider.
 
@@ -88,4 +102,5 @@ détaillée. Ce chantier ne se contente pas de marquer les 30 cartes : il repren
 ## Journal
 
 - 2026-11-16 : état des lieux (prod, code, mathAST) ; lot 2 réduit à l'aperçu prof (D10) ; Q4–Q5 ajoutées.
+- 2026-11-16 : lecture de l'affichage des corrections de TinyMath (§ Étude).
 - 2026-11-16 : chantier ouvert à la demande de David ; renvoi depuis `cours-suites` (retour A1 (2)).
