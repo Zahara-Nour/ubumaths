@@ -641,7 +641,7 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 			expect(arretMort).toBe(false);
 		});
 
-		it('adresse retirée ou partage coupé : le jeton du courriel n’ouvre rien', async () => {
+		it('partage coupé : le jeton du courriel n’ouvre rien', async () => {
 			const eleve = await nouvelEleve('Timéo', classId);
 			const p = await parentConfirme(eleve.id, `p-timeo@${DOMAINE}`);
 			const jeton = nouveauJeton();
@@ -649,6 +649,58 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 			await couperPartage(eleve.id);
 			const { data } = await service.rpc('get_carnet_by_token', { p_token: jeton });
 			expect(data).toBeNull();
+		});
+
+		it('adresse retirée puis ressaisie : les anciens courriels ne revivent pas avec le lien neuf', async () => {
+			const eleve = await nouvelEleve('Tess', classId);
+			const p = await parentConfirme(eleve.id, `p-tess@${DOMAINE}`);
+			const ancien = nouveauJeton();
+			await journal(eleve.id, p.contactId, 'exception', ilYA(1), sha256(ancien));
+
+			// Retrait (le trigger révoque le lien) : le jeton meurt
+			const { data: retire } = await service
+				.from('parent_contacts')
+				.update({ status: 'removed', email: null })
+				.eq('id', p.contactId)
+				.select('id');
+			expect(retire).toHaveLength(1);
+			expect((await service.rpc('get_carnet_by_token', { p_token: ancien })).data).toBeNull();
+
+			// Ressaisie sur la MÊME ligne, reconfirmée, lien neuf
+			const { data: ressaisie } = await service
+				.from('parent_contacts')
+				.update({ status: 'confirmed', email: `p-tess@${DOMAINE}` })
+				.eq('id', p.contactId)
+				.select('id');
+			expect(ressaisie).toHaveLength(1);
+			const lienNeuf = nouveauJeton();
+			const { data: emis } = await service.rpc('issue_parent_carnet_link', {
+				p_contact_id: p.contactId,
+				p_token_hash: sha256(lienNeuf),
+				p_expires_at: new Date(Date.now() + 30 * JOUR).toISOString()
+			});
+			expect(emis).toBe(true);
+
+			expect((await service.rpc('get_carnet_by_token', { p_token: lienNeuf })).data).not.toBeNull();
+			expect((await service.rpc('get_carnet_by_token', { p_token: ancien })).data).toBeNull();
+			const { data: arret } = await service.rpc('set_parent_emails_stopped', {
+				p_token: ancien,
+				p_stopped: true
+			});
+			expect(arret).toBe(false);
+		});
+
+		it('une confirmation ne porte jamais de jeton', async () => {
+			const eleve = await nouvelEleve('Ugo', classId);
+			const p = await parentConfirme(eleve.id, `p-ugo@${DOMAINE}`);
+			const { error } = await service.from('parent_notifications').insert({
+				student_id: eleve.id,
+				contact_id: p.contactId,
+				kind: 'confirmation',
+				status: 'sent',
+				access_token_hash: sha256(nouveauJeton())
+			});
+			expect(error?.code).toBe('23514');
 		});
 
 		it('l’empreinte du jeton n’est lisible ni par le professeur ni par l’élève', async () => {

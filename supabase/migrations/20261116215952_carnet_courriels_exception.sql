@@ -28,6 +28,7 @@
 --   drop function if exists public.carnet_is_holiday(uuid, date);
 --   drop function if exists public.carnet_school_year(uuid);
 --   drop table if exists public.parent_exception_episodes;
+--   alter table public.parent_notifications drop constraint if exists parent_notifications_access_token_kind;
 --   alter table public.parent_notifications drop column if exists access_token_hash;
 --   alter table public.parent_contacts drop column if exists orphaned_since;
 --   puis rejouer, depuis 20261116133453_carnet_de_liaison.sql, les corps de
@@ -42,6 +43,14 @@ alter table public.parent_notifications
 	add column if not exists access_token_hash text unique
 		constraint parent_notifications_access_token_hash
 		check (access_token_hash is null or access_token_hash ~ '^[0-9a-f]{64}$');
+
+-- Seuls les courriels du cron portent un jeton : jamais une confirmation, qui
+-- part vers une adresse non vérifiée.
+alter table public.parent_notifications
+	drop constraint if exists parent_notifications_access_token_kind;
+alter table public.parent_notifications
+	add constraint parent_notifications_access_token_kind
+	check (access_token_hash is null or kind in ('exception', 'quarterly'));
 
 -- Premier jour (Paris) où l'élève n'était membre actif d'aucune classe active ;
 -- remis à null s'il revient (Q35). `class_members.left_at` reste vide à
@@ -189,6 +198,10 @@ as $$
 					where l.contact_id = n.contact_id
 						and l.revoked_at is null
 						and l.expires_at > now()
+						-- Le lien qui était actif quand le courriel est parti : un
+						-- lien plus récent (retrait puis ressaisie, rentrée, lien
+						-- perdu) ne ranime pas les anciens courriels.
+						and n.created_at >= l.created_at
 				)
 		)
 	);
