@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2724._
+_Mis à jour le 2026-11-16, après #2731._
 
-- **État** : PR 1 (#2718, migration, en prod) et PR 2 (#2724 : page du carnet, confirmation, vue élève, doc `docs/systeme/carnet-de-liaison.md`) **mergées**. PR 2 pas encore déployée (`deploy:prod` = David). Rien d'autre de codé.
-- **Prochaine action** : PR 3 — nouveau worktree ; côté professeur (D1-D3 : activer le carnet par classe, seuils, adresses par élève, révoquer, couper le partage) + envoi des liens et des confirmations par Brevo (A1-A6).
-- **En attente de David** : **Q26** — à la confirmation, afficher le carnet (fait aujourd'hui) ou envoyer son lien par courriel (recommandé : un antivirus qui « clique » emporterait sinon le lien) ; **Q27** — garder dans le carnet une évaluation sans échéance non faite de plus de 5 semaines (recommandé, migration en PR 4). Détail : section « PR 2 ».
-- **Pièges en cours** : données d'élèves mineurs ; fonctions à lien = `service_role` seul, via `src/lib/server/carnet/` (limite de débit par IP) ; jeton 43 car. base64url, stocké haché, masqué dans `error_logs` et l'analytique (`redactSecretUrl`) ; la confirmation émet le lien : **la PR 3 envoie CE jeton par courriel** (un second révoquerait le premier) ; `23505` sur (élève, empreinte) à traiter ; en-tête `List-Unsubscribe-Post` pour l'arrêt en un clic ; revue `code-reviewer` + `security-auditor` à chaque PR.
-- **Ensuite** : PR 4 (courriels d'exception, épisodes, effacement Q21, Q27), PR 5 (versement de la doc, registre RGPD, point 8 de `presentation-parents`).
-- **Worktree / branche** : aucun (le prochain : `../ubumaths-wt-partage-parents`, `feat/partage-parents-pr3`).
+- **État** : PR 1 (#2718), PR 2 (#2724) et PR 3 (#2731 : page du professeur par classe, envois Brevo, confirmation qui envoie le lien, « J'ai perdu mon lien », ajout d'adresse par l'élève, « Retirer cette adresse ») **mergées**. Migrations `20261116133453` et `20261116204753` (état `removed`) **appliquées en prod**. Code des PR 2 et 3 pas encore déployé (`deploy:prod` = David). Vérifications manuelles : #2724 et #2731 dans `verifications-manuelles.md`.
+- **Prochaine action** : PR 4, nouveau worktree. Elle apporte les courriels d'exception par cron Vercel quotidien (E1-E7), le plafond d'un courriel par semaine (Q19), le message trimestriel et l'envoi automatique des liens manquants (Q21, Q29). Migration : épisodes d'exception, effacement des adresses (Q21), évaluation sans échéance gardée (Q27) ; en-tête `List-Unsubscribe-Post`.
+- **En attente de David** : rien.
+- **Pièges en cours** : données d'élèves mineurs. Écritures sur les adresses et les liens par `src/lib/server/carnet/envois.ts` seulement (service role). `sendCarnetLink` vérifie que le carnet est ouvert. Un lien neuf révoque l'ancien avant l'envoi (Q32, accepté). L'élève reçoit une réponse neutre pour une adresse connue. Un worktree n'est pas lié à Supabase : pour `db:migrate`, copier `supabase/.temp/{project-ref,linked-project.json,pooler-url}` du dépôt principal. Revue `code-reviewer` + `security-auditor` à chaque PR.
+- **Ensuite** : PR 5 (versement de la doc, registre RGPD, point 8 de `presentation-parents`).
+- **Worktree / branche** : aucun (le prochain : `../ubumaths-wt-partage-parents`, `feat/partage-parents-pr4`).
 
 ## Origine
 
@@ -203,3 +203,4 @@ Points de mise en œuvre posés à David avant de coder (D1-D3 et A1-A6 sont val
 - **Q31 (tranchée le 2026-11-16, après explication)** : bouton « Retirer cette adresse », état `removed` par migration (`20261116204753_carnet_adresse_retiree.sql` : deux contraintes élargies, trigger qui révoque les liens). Le besoin est de corriger une adresse fausse, pas d'écarter un parent (David : « pourquoi refuser l'accès à un parent ? » ; un parent qui a l'autorité parentale reste en droit d'être informé). Question d'accès : personne ne lit rien de nouveau (validée). Le professeur seul ressaisit une adresse retirée.
 - **Q32 (tranchée le 2026-11-16)** : un lien neuf révoque l'ancien avant l'envoi ; accepté et écrit (doc, ADR), fonction SQL inchangée.
 - Migration : intégration rouge sans elle (« retirée » refusée par la contrainte), 35/35 avec ; appliquée en local par psql (jamais `db:migrate` avant le merge).
+- **Mergée** le 2026-11-16 (#2731), CI verte au 2e passage (export interdit dans `+page.server.ts`, doc de la base) ; migration `20261116204753` appliquée en prod, vérifiée (contraintes et trigger).
