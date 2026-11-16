@@ -388,7 +388,7 @@ MODELES.append(modele(
                + figure(FEN_3, 'Le triangle ABC et son symétrique A\'B\'C\' par rapport au point O.',
                         corps_3())
                + 'Combien mesure $A\'B\'$ ?\n\n$A\'B\' = ?$ cm',
-               [var('a', '3..9'), var('e', '1..3'), var('c', 'eval:a+e')], ['{{a}}'],
+               [var('a', '3..9'), var('w', '1..3'), var('c', 'eval:a+w')], ['{{a}}'],
                [CONSERVE,
                 '$[A\'B\']$ est le symétrique de $[AB]$ (et non de $[AC]$) : $A\'B\' = AB = '
                 + col('{{a}}') + '$ cm.']),
@@ -409,8 +409,8 @@ MODELES.append(modele(
                 ' **parallèle**.',
                 'Le symétrique de $(d)$ par rapport à $O$ est donc une droite ' + colt('parallèle à (d)')
                 + ', de l\'autre côté de $O$.'])],
-    [spec('A\'B\' = AB = 6', 0, {'a': 6, 'e': 2, 'c': 8}, '6', 'correct'),
-     spec('Erreur : A\'B\' = AC', 0, {'a': 6, 'e': 2, 'c': 8}, '8', 'incorrect'),
+    [spec('A\'B\' = AB = 6', 0, {'a': 6, 'w': 2, 'c': 8}, '6', 'correct'),
+     spec('Erreur : A\'B\' = AC', 0, {'a': 6, 'w': 2, 'c': 8}, '8', 'incorrect'),
      spec('Angle conservé : 47°', 1, {'g': 47}, '47', 'correct'),
      spec('Erreur : 180 − l\'angle', 1, {'g': 47}, '133', 'incorrect'),
      spec('Droite parallèle', 2, {}, '0', 'correct'),
@@ -423,33 +423,37 @@ PI = 'On prend $\\pi \\approx 3{,}14$.'
 # Échelle double (1 cm = 2 unités) : toutes les coordonnées calculées sont entières (un `eval` non entier
 # s'écrit en fraction, ou avec une virgule en `;d` : illisible dans une figure). Pas de `secteur` (non
 # pris en charge, pas d'export PDF) : le demi-disque est un disque recouvert à moitié par le rectangle.
-FEN_4 = '-2 ; 26 ; -2 ; 18'
-FOND = 'couleur="noir", remplissage="#bcd7f2", opacite_fond=1'
+# Couleurs NOMMÉES (elles suivent le thème) ; « blanc » = le fond de la page : il dessine les trous.
+FOND = 'remplissage="bleu", opacite_fond=0.3'
+POINTILLES = 'trait="tirets"'
+DROIT = 'marque="carre"'
 
 V4_1 = [  # rectangle L × l, triangle rectangle accolé à droite (côtés l et t)
     'a = point(0, 0, visible=faux)', 'b = point({{eval:2*L}}, 0, visible=faux)',
     'c = point({{eval:2*L+2*t}}, 0, visible=faux)', 'd = point({{eval:2*L}}, {{eval:2*l}}, visible=faux)',
     'g = point(0, {{eval:2*l}}, visible=faux)',
-    'polygone(a, c, d, g, ' + FOND + ')', 'segment(b, d, trait="tirets")',
-    'angle(c, b, d, marque="carre")',
+    'polygone(a, c, d, g, ' + FOND + ')', 'segment(b, d, ' + POINTILLES + ')',
+    'angle(c, b, d, ' + DROIT + ')',
     'texte({{L}}, -1, "{{L}} cm")', 'texte({{eval:2*L+t}}, -1, "{{t}} cm")',
-    'texte(-1.4, {{l}}, "{{l}} cm")']
+    'texte(-2, {{l}}, "{{l}} cm")']
 V4_2 = [  # rectangle L × d, demi-disque de diamètre d accolé à droite
     'O = point({{eval:2*L}}, {{d}}, visible=faux)',
     'cercle(O, rayon={{d}}, ' + FOND + ')',
     'a = point(0, 0, visible=faux)', 'b = point({{eval:2*L}}, 0, visible=faux)',
     'c = point({{eval:2*L}}, {{eval:2*d}}, visible=faux)', 'g = point(0, {{eval:2*d}}, visible=faux)',
+    # le rectangle « blanc » efface la moitié gauche du disque, puis il est coloré comme le reste
+    'polygone(a, b, c, g, remplissage="blanc", opacite_fond=1)',
     'polygone(a, b, c, g, ' + FOND + ')',
-    'texte({{L}}, -1, "{{L}} cm")', 'texte(-1.4, {{d}}, "{{d}} cm")']
+    'texte({{L}}, -1, "{{L}} cm")', 'texte(-2, {{d}}, "{{d}} cm")']
 V4_3 = [  # parallélogramme de base b, hauteur h ; triangle de base [DC] et de hauteur t au-dessus
     'A = point(0, 0, visible=faux)', 'B = point({{eval:2*b}}, 0, visible=faux)',
     'C = point({{eval:2*b+3}}, {{eval:2*h}}, visible=faux)', 'D = point(3, {{eval:2*h}}, visible=faux)',
     'E = point({{eval:b+3}}, {{eval:2*h+2*t}}, visible=faux)',
-    'polygone(A, B, C, E, D, ' + FOND + ')', 'segment(D, C, trait="tirets")',
-    'H = point(3, 0, visible=faux)', 'segment(D, H, trait="tirets")',
-    'angle(B, H, D, marque="carre")',
-    'K = point({{eval:b+3}}, {{eval:2*h}}, visible=faux)', 'segment(E, K, trait="tirets")',
-    'angle(C, K, E, marque="carre")',
+    'polygone(A, B, C, E, D, ' + FOND + ')', 'segment(D, C, ' + POINTILLES + ')',
+    'H = point(3, 0, visible=faux)', 'segment(D, H, ' + POINTILLES + ')',
+    'angle(B, H, D, ' + DROIT + ')',
+    'K = point({{eval:b+3}}, {{eval:2*h}}, visible=faux)', 'segment(E, K, ' + POINTILLES + ')',
+    'angle(C, K, E, ' + DROIT + ')',
     'texte({{b}}, -1, "{{b}} cm")', 'texte(4.6, {{h}}, "{{h}} cm")',
     'texte({{eval:b+4.6}}, {{eval:2*h+t}}, "{{t}} cm")']
 
@@ -459,7 +463,7 @@ MODELES.append(modele(
     ' d\'un demi-disque : on additionne les aires',
     1,
     [variation('La figure colorée est faite d\'un rectangle et d\'un triangle rectangle.'
-               + figure(FEN_4, 'Un rectangle de {{L}} cm sur {{l}} cm, et à sa droite un triangle'
+               + figure('-4 ; {{eval:2*L+2*t+2}} ; -2 ; {{eval:max(2*l+1,6)}}', 'Un rectangle de {{L}} cm sur {{l}} cm, et à sa droite un triangle'
                         ' rectangle de côtés {{l}} cm et {{t}} cm.', V4_1)
                + 'Calcule son aire.\n\n$?~\\unit{cm^2}$',
                [var('L', '4..8'), var('l', '2..6'), var('t', '2..4')],
@@ -471,7 +475,7 @@ MODELES.append(modele(
                 'Aire de la figure : ${{eval:L*l}} + {{eval:t*l/2;d}} = '
                 + col('{{eval:L*l+t*l/2;d}}~\\unit{cm^2}') + '$.']),
      variation('La figure colorée est faite d\'un rectangle et d\'un demi-disque. ' + PI
-               + figure(FEN_4, 'Un rectangle de {{L}} cm sur {{d}} cm, et à sa droite un demi-disque de'
+               + figure('-4 ; {{eval:2*L+d+2}} ; -2 ; {{eval:2*d+1}}', 'Un rectangle de {{L}} cm sur {{d}} cm, et à sa droite un demi-disque de'
                         ' diamètre {{d}} cm.', V4_2)
                + 'Calcule son aire.\n\n$?~\\unit{cm^2}$',
                [var('L', '4..8'), var('r', '1..3'), var('d', 'eval:2*r')],
@@ -485,7 +489,7 @@ MODELES.append(modele(
                 + col('{{eval:L*d+157*r^2/100;d}}~\\unit{cm^2}') + '$.']),
      variation('La figure colorée est faite d\'un parallélogramme et d\'un triangle posé sur son côté du'
                ' haut. Les hauteurs sont en pointillés.'
-               + figure(FEN_4, 'Un parallélogramme de base {{b}} cm et de hauteur {{h}} cm, surmonté'
+               + figure('-2 ; {{eval:2*b+5}} ; -2 ; {{eval:2*h+2*t+1}}', 'Un parallélogramme de base {{b}} cm et de hauteur {{h}} cm, surmonté'
                         ' d\'un triangle de même base et de hauteur {{t}} cm.', V4_3)
                + 'Calcule son aire.\n\n$?~\\unit{cm^2}$',
                [var('b', '4..8'), var('h', '2..4'), var('t', '2..3')],
@@ -511,15 +515,15 @@ MODELES.append(modele(
 
 # --- 5. 5-115 : aire d'une figure composée, retrancher -------------------------------------------------
 
-TROU = 'couleur="noir", remplissage="blanc", opacite_fond=1'
+TROU = 'remplissage="blanc", opacite_fond=1'
 V5_1 = [  # rectangle L × l privé d'un coin triangulaire (côtés u, v)
     'a = point(0, 0, visible=faux)', 'b = point({{eval:2*L}}, 0, visible=faux)',
     'c1 = point({{eval:2*L}}, {{eval:2*l-2*v}}, visible=faux)',
     'c2 = point({{eval:2*L-2*u}}, {{eval:2*l}}, visible=faux)',
     'c = point({{eval:2*L}}, {{eval:2*l}}, visible=faux)', 'g = point(0, {{eval:2*l}}, visible=faux)',
-    'polygone(a, b, c1, c2, g, ' + FOND + ')', 'segment(c1, c, trait="tirets")',
-    'segment(c, c2, trait="tirets")',
-    'texte({{L}}, -1, "{{L}} cm")', 'texte(-1.4, {{l}}, "{{l}} cm")',
+    'polygone(a, b, c1, c2, g, ' + FOND + ')', 'segment(c1, c, ' + POINTILLES + ')',
+    'segment(c, c2, ' + POINTILLES + ')',
+    'texte({{L}}, -1, "{{L}} cm")', 'texte(-2, {{l}}, "{{l}} cm")',
     'texte({{eval:2*L-u}}, {{eval:2*l+1}}, "{{u}} cm")',
     'texte({{eval:2*L+1.6}}, {{eval:2*l-v}}, "{{v}} cm")']
 V5_2 = [  # carré de côté c privé du disque inscrit
@@ -527,7 +531,7 @@ V5_2 = [  # carré de côté c privé du disque inscrit
     'f = point({{eval:2*c}}, {{eval:2*c}}, visible=faux)', 'g = point(0, {{eval:2*c}}, visible=faux)',
     'polygone(a, b, f, g, ' + FOND + ')',
     'O = point({{c}}, {{c}}, visible=faux)', 'cercle(O, rayon={{c}}, ' + TROU + ')',
-    'texte({{c}}, -1, "{{c}} cm")', 'texte(-1.4, {{c}}, "{{c}} cm")']
+    'texte({{c}}, -1, "{{c}} cm")', 'texte(-2, {{c}}, "{{c}} cm")']
 V5_3 = [  # cadre : rectangle L × l privé d'un rectangle intérieur, bordure de 1 cm
     'a = point(0, 0, visible=faux)', 'b = point({{eval:2*L}}, 0, visible=faux)',
     'f = point({{eval:2*L}}, {{eval:2*l}}, visible=faux)', 'g = point(0, {{eval:2*l}}, visible=faux)',
@@ -535,7 +539,7 @@ V5_3 = [  # cadre : rectangle L × l privé d'un rectangle intérieur, bordure d
     'i = point(2, 2, visible=faux)', 'j = point({{eval:2*L-2}}, 2, visible=faux)',
     'm = point({{eval:2*L-2}}, {{eval:2*l-2}}, visible=faux)', 'q = point(2, {{eval:2*l-2}}, visible=faux)',
     'polygone(i, j, m, q, ' + TROU + ')',
-    'texte({{L}}, -1, "{{L}} cm")', 'texte(-1.4, {{l}}, "{{l}} cm")',
+    'texte({{L}}, -1, "{{L}} cm")', 'texte(-2, {{l}}, "{{l}} cm")',
     'texte({{L}}, 1, "1 cm")']
 
 MODELES.append(modele(
@@ -544,7 +548,7 @@ MODELES.append(modele(
     ' rectangle ou d\'un carré : on soustrait les aires',
     2,
     [variation('On a coupé un coin triangulaire dans un rectangle. Voici ce qui reste (en couleur).'
-               + figure(FEN_4, 'Un rectangle de {{L}} cm sur {{l}} cm dont on a coupé le coin en haut à'
+               + figure('-4 ; {{eval:2*L+4}} ; -2 ; {{eval:2*l+2}}', 'Un rectangle de {{L}} cm sur {{l}} cm dont on a coupé le coin en haut à'
                         ' droite : un triangle rectangle de côtés {{u}} cm et {{v}} cm.', V5_1)
                + 'Calcule l\'aire de la partie colorée.\n\n$?~\\unit{cm^2}$',
                [var('L', '6..10'), var('l', '4..6'), var('u', '2..3'), var('v', '2..3')],
@@ -555,7 +559,7 @@ MODELES.append(modele(
                 'Aire de la partie colorée : ${{eval:L*l}} - {{eval:u*v/2;d}} = '
                 + col('{{eval:L*l-u*v/2;d}}~\\unit{cm^2}') + '$.']),
      variation('On a retiré un disque d\'un carré. Voici ce qui reste (en couleur). ' + PI
-               + figure(FEN_4, 'Un carré de côté {{c}} cm ; le disque qui touche ses quatre côtés est'
+               + figure('-4 ; {{eval:2*c+1}} ; -2 ; {{eval:2*c+1}}', 'Un carré de côté {{c}} cm ; le disque qui touche ses quatre côtés est'
                         ' retiré.', V5_2)
                + 'Calcule l\'aire de la partie colorée.\n\n$?~\\unit{cm^2}$',
                [var('r', '2..4'), var('c', 'eval:2*r')],
@@ -568,7 +572,7 @@ MODELES.append(modele(
                 ' - {{eval:314*r^2/100;d}} = ' + col('{{eval:c^2-314*r^2/100;d}}~\\unit{cm^2}') + '$.']),
      variation('Ce cadre est un rectangle dont on a retiré un rectangle intérieur ; la bordure a'
                ' partout une largeur de $1$ cm.'
-               + figure(FEN_4, 'Un cadre : rectangle de {{L}} cm sur {{l}} cm, bordure de 1 cm.', V5_3)
+               + figure('-4 ; {{eval:2*L+1}} ; -2 ; {{eval:2*l+1}}', 'Un cadre : rectangle de {{L}} cm sur {{l}} cm, bordure de 1 cm.', V5_3)
                + 'Calcule l\'aire du cadre (en couleur).\n\n$?~\\unit{cm^2}$',
                [var('L', '6..11'), var('l', '4..7')],
                ['{{eval:L*l-(L-2)*(l-2)}}'],
@@ -705,12 +709,14 @@ OPTIONS_8A = [patron('pave {{l}} {{p}} {{h}}', 'forme: {{f}}', 'cotes: cm'),
               patron('pave {{l}} {{p}} {{h}}', 'forme: faux {{m}}', 'cotes: cm')]
 SOLIDES_8B = ['prisme triangle 3 2.5 4', 'cylindre 1 3', 'pave 4 2 3', 'pyramide carree 3 3']
 NOMS_8B = ['d\'un prisme droit', 'd\'un cylindre', 'd\'un pavé droit', 'd\'une pyramide']
-# lettre cachée, puis trois autres lettres proposées ; la bonne en premier
-TROU_8C = {1: ('F', 'GBE'), 2: ('G', 'HCF'), 3: ('H', 'EDG'), 4: ('C', 'BGD')}
+# lettre cachée (un sommet du dessus), puis les trois autres du dessus ; la bonne en premier.
+# Le patron n'écrit que A, B, C, D et le « ? » : il faut le replier (avec les 7 autres lettres écrites,
+# la réponse serait la seule lettre absente).
+TROU_8C = {1: ('F', 'GEH'), 2: ('G', 'HFE'), 3: ('H', 'EGF'), 4: ('E', 'FHG')}
 
 
 def sommets_8c(lettre):
-    return ' '.join('?' if x == lettre else x for x in 'ABCDEFGH')
+    return ' '.join(x if x in 'ABCD' else ('?' if x == lettre else '-') for x in 'ABCDEFGH')
 
 
 MODELES.append(modele(
@@ -741,7 +747,7 @@ MODELES.append(modele(
                    'Six rectangles, deux à deux identiques : c\'est un pavé droit.',
                    'Un carré et quatre triangles qui se rejoignent en un sommet : c\'est une pyramide.']),
                 'C\'est le patron ' + selon('k', [colt(x) for x in NOMS_8B]) + '.']),
-     variation('Voici le pavé $ABCDEFGH$ et un de ses patrons ; le nom d\'un sommet du patron est remplacé par un point d\'interrogation.'
+     variation('Voici le pavé $ABCDEFGH$ et un de ses patrons ; sur le patron, seuls $A$, $B$, $C$, $D$ et un point d\'interrogation sont écrits.'
                + '\n\n' + solide('pave 4 2 3', 'sommets: A B C D E F G H') + '\n\n'
                + patron('pave 4 2 3', 'forme: 1',
                         'sommets: ' + selon('k', [sommets_8c(TROU_8C[k][0]) for k in (1, 2, 3, 4)]))
@@ -749,8 +755,8 @@ MODELES.append(modele(
                + choix(['$' + selon('k', [(TROU_8C[k][0] + TROU_8C[k][1])[i] for k in (1, 2, 3, 4)])
                         + '$' for i in range(4)]),
                [var('k', '1..4')], ['0'],
-               ['Sur le patron, on repère les sommets déjà écrits autour du point d\'interrogation : ce sont les mêmes'
-                ' voisins que sur le pavé.',
+               ['On replie le patron autour de la face $ABCD$ : chaque sommet du dessus vient au-dessus d\'un'
+                ' sommet du dessous ($E$ sur $A$, $F$ sur $B$, $G$ sur $C$, $H$ sur $D$).',
                 'En repliant le patron, le point d\'interrogation vient sur le sommet '
                 + selon('k', [colt(TROU_8C[k][0]) for k in (1, 2, 3, 4)]) + ' du pavé.'])],
     [spec('Le bon patron', 0, {'l': 5, 'p': 2, 'h': 4, 'f': 1, 'm': 3}, '0', 'correct'),

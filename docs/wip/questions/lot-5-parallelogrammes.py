@@ -251,7 +251,7 @@ MODELES.append(modele(
     [variation('$ABCD$ est un parallélogramme avec $AB = {{a}}$ cm et $AD = {{b}}$ cm.'
                + fig_quadri(PARA[0], 'Un parallélogramme ABCD.')
                + 'Combien mesure $CD$ ?\n\n$CD = ?$ cm',
-               [var('a', '3..9'), var('e', '1..3'), var('b', 'eval:a-e')], ['{{a}}'],
+               [var('a', '3..9'), var('w', '1..3'), var('b', 'eval:a-w')], ['{{a}}'],
                ['**Propriété.** Dans un parallélogramme, les **côtés opposés** ont la même'
                 ' longueur.',
                 '$[CD]$ est le côté opposé à $[AB]$ (et non à $[AD]$) : $CD = AB = '
@@ -273,8 +273,8 @@ MODELES.append(modele(
                ['Les diagonales d\'un parallélogramme ' + colt('se coupent en leur milieu') + '.',
                 'Même longueur : c\'est le cas du **rectangle** ; perpendiculaires : du **losange**.'
                 ' Un parallélogramme quelconque n\'a ni l\'un ni l\'autre.'])],
-    [spec('CD = AB = 7', 0, {'a': 7, 'e': 2, 'b': 5}, '7', 'correct'),
-     spec('Erreur : CD = AD', 0, {'a': 7, 'e': 2, 'b': 5}, '5', 'incorrect'),
+    [spec('CD = AB = 7', 0, {'a': 7, 'w': 2, 'b': 5}, '7', 'correct'),
+     spec('Erreur : CD = AD', 0, {'a': 7, 'w': 2, 'b': 5}, '5', 'incorrect'),
      spec('AO = 6', 1, {'m': 6, 'c': 12, 'p': 3, 'd': 7}, '6', 'correct'),
      spec('Erreur : AO = AC', 1, {'m': 6, 'c': 12, 'p': 3, 'd': 7}, '12', 'incorrect'),
      spec('Erreur : AO = BD / 2', 1, {'m': 6, 'c': 12, 'p': 3, 'd': 7}, '3.5', 'incorrect'),

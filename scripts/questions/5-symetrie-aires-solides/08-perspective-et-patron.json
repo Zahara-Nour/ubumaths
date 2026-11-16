@@ -69,7 +69,7 @@
 			}
 		},
 		{
-			"statement": "Voici le pavé $ABCDEFGH$ et un de ses patrons ; le nom d'un sommet du patron est remplacé par un point d'interrogation.\n\n```solide\nforme: pave 4 2 3\nsommets: A B C D E F G H\n```\n\n```patron\nsolide: pave 4 2 3\nforme: 1\nsommets: {{if:k==1|A B C D E ? G H|{{if:k==2|A B C D E F ? H|{{if:k==3|A B C D E F G ?|A B ? D E F G H}}}}}}\n```\n\nQuelle lettre doit-on écrire à la place du point d'interrogation ?\n\n```choix\n- ${{if:k==1|F|{{if:k==2|G|{{if:k==3|H|C}}}}}}$\n- ${{if:k==1|G|{{if:k==2|H|{{if:k==3|E|B}}}}}}$\n- ${{if:k==1|B|{{if:k==2|C|{{if:k==3|D|G}}}}}}$\n- ${{if:k==1|E|{{if:k==2|F|{{if:k==3|G|D}}}}}}$\n```",
+			"statement": "Voici le pavé $ABCDEFGH$ et un de ses patrons ; sur le patron, seuls $A$, $B$, $C$, $D$ et un point d'interrogation sont écrits.\n\n```solide\nforme: pave 4 2 3\nsommets: A B C D E F G H\n```\n\n```patron\nsolide: pave 4 2 3\nforme: 1\nsommets: {{if:k==1|A B C D - ? - -|{{if:k==2|A B C D - - ? -|{{if:k==3|A B C D - - - ?|A B C D ? - - -}}}}}}\n```\n\nQuelle lettre doit-on écrire à la place du point d'interrogation ?\n\n```choix\n- ${{if:k==1|F|{{if:k==2|G|{{if:k==3|H|E}}}}}}$\n- ${{if:k==1|G|{{if:k==2|H|{{if:k==3|E|F}}}}}}$\n- ${{if:k==1|E|{{if:k==2|F|{{if:k==3|G|H}}}}}}$\n- ${{if:k==1|H|{{if:k==2|E|{{if:k==3|F|G}}}}}}$\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -83,8 +83,8 @@
 			],
 			"correction": {
 				"steps": [
-					"Sur le patron, on repère les sommets déjà écrits autour du point d'interrogation : ce sont les mêmes voisins que sur le pavé.",
-					"En repliant le patron, le point d'interrogation vient sur le sommet {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{F}}$|{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{G}}$|{{if:k==3|$\\textcolor{{{color:primary.0}}}{\\text{H}}$|$\\textcolor{{{color:primary.0}}}{\\text{C}}$}}}}}} du pavé."
+					"On replie le patron autour de la face $ABCD$ : chaque sommet du dessus vient au-dessus d'un sommet du dessous ($E$ sur $A$, $F$ sur $B$, $G$ sur $C$, $H$ sur $D$).",
+					"En repliant le patron, le point d'interrogation vient sur le sommet {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{F}}$|{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{G}}$|{{if:k==3|$\\textcolor{{{color:primary.0}}}{\\text{H}}$|$\\textcolor{{{color:primary.0}}}{\\text{E}}$}}}}}} du pavé."
 				]
 			}
 		}
