@@ -9,9 +9,9 @@ la PR 6g de `demo-debug` (#1711) : `calculateNewStability` n'utilise pas la note
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2712._
+_Mis à jour le 2026-11-16, après #2713._
 
-- **État** : PR 1 à 1d et PR 2 (#2712, script `pnpm srs:rejouer-fiches`) mergées ; migrations en prod. **Les 27 fiches de prod ne sont PAS encore rejouées** · **Prochaine action** : sur demande explicite de David, depuis le dépôt principal : `pnpm srs:rejouer-fiches --cible prod` (simulation, à montrer à David sans la coller dans le dépôt), puis `--publier`, puis de nouveau la simulation (doit dire « 0 à rejouer ») ; ensuite clore le chantier (versement) · **En attente de David** : feu vert pour `--cible prod --publier` · **Pièges en cours** : sauvegardes dans `~/Downloads/chiphre-sauvegardes/` (données d'élèves, à supprimer sous 30 jours après vérification) ; base locale : la migration `20261115061153_questions_5_…` échoue à `migration up` · **Worktree / branche** : aucun (rien à coder)
+- **État** : tout le découpage est fait : PR 1 à 1d, PR 2 (#2712, script) et #2713 (tolérance) mergées ; migrations en prod ; **25 fiches de prod rejouées le 2026-11-16** (2 sans historique non touchées, 0 refusée), seconde passe : « 0 à rejouer » · **Prochaine action** : clore le chantier (versement : le durable est déjà dans `docs/systeme/srs.md` ; archiver ce journal) · **En attente de David** : rien · **Pièges en cours** : sauvegardes de prod dans `~/Downloads/chiphre-sauvegardes/` (données d'élèves) : **à supprimer avant le 2026-12-16** · **Worktree / branche** : aucun
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -150,6 +150,8 @@ l'historique partout ; 18 `relearning` dont **17 à stabilité 0** (9e défaut),
 
 ## Historique
 
+- 2026-11-16 : #2713 mergée (tolérance 1e-5 : PostgREST rend les `real` à 6 chiffres significatifs, `extra_float_digits = 0` ; test rouge avant ; CI verte sur `6fe8da16b`). Simulation prod : 0 à rejouer, 25 déjà rejouées.
+- 2026-11-16 : rejeu en prod (feu vert de David) : simulation 25 à rejouer / 2 sans historique / 0 refusée, `--publier` 25 écrites ; la seconde passe annonçait 5 fiches (les `learning`) à tort → #2713.
 - 2026-11-16 : #2712 mergée (PR 2 ; revue Sonnet et audit Opus sans bloquant ; mineurs corrigés : sauvegardes horodatées jamais réécrites, fiches `template` seules, seconde passe après `--publier`, chemin affiché en `~`, conservation 30 j ; tests même jour / minuit à Paris ; CI verte sur `3043dba93`, premier passage tombé sur une panne Docker de la CI).
 - 2026-11-16 : `db:migrate` depuis `main` (feu vert de David pour pousser aussi #2706) : `20261115213402_questions_cm1_lot6_rangement_tags` et `20261115221544_deck_stats_en_cours_relearning` appliquées.
 - 2026-11-15 : #2709 mergée (PR 1d ; audit sécurité sans bloquant : corps = prod à une ligne près, ACL conservée ; CI verte sur `07226e862` ; `check:migrations` OK). `db:migrate` suspendu : le dry-run pousserait aussi la migration de #2706.
