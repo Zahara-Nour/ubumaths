@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, phase 0, après le tour 4 (aucune PR)._
+_Mis à jour le 2026-11-16, phase 0, comportements proposés (aucune PR)._
 
-- **État** : phase 0 ; tours 1 à 4 tranchés (quoi, qui, canal, règles, nom, contenu, question d'accès). Rien de codé.
-- **Prochaine action** : écrire et faire valider les **comportements** (nominal / limite / erreur) du carnet de liaison et des courriels d'exception ; puis **ADR** (frontière d'accès du carnet, écartés : compte parent, bilan hebdomadaire, SMS, « l'élève peut cacher », date de naissance) ; puis **découpage en PR** (migration et fonction `SECURITY DEFINER` d'abord : deux PR, cf. CLAUDE.md § Base de données).
-- **En attente de David** : rien (la prochaine action est à moi).
+- **État** : phase 0 ; tours 1 à 4 tranchés ; **comportements A à E proposés** et questions Q17 à Q21 posées (section « Comportements »). Rien de codé.
+- **Prochaine action** : consigner la validation des comportements et Q17-Q21 ; puis **ADR** (frontière d'accès du carnet, écartés : compte parent, bilan hebdomadaire, SMS, « l'élève peut cacher », date de naissance) ; puis **découpage en PR** (migration et fonction `SECURITY DEFINER` d'abord : deux PR, cf. CLAUDE.md § Base de données).
+- **En attente de David** : validation des comportements A-E et réponses à Q17-Q21.
 - **Pièges en cours** : données d'élèves mineurs ; aucune policy `anon` (fonction `SECURITY DEFINER` qui reçoit le lien, comme l'ADR 0025) ; décision 8 du 2026-10-21 tient ; adresses confirmées seulement ; revue `code-reviewer` + `security-auditor` obligatoire.
 - **Ensuite** : revenir au point 9 de `presentation-parents` et réécrire le point 8 avec le carnet.
 - **Worktree / branche** : aucun (phase 0, doc sur `main`).
@@ -80,3 +80,54 @@ Né du chantier `presentation-parents` (point 8, « Comment le suivre ? »), le 
 - **Q14 — Période** : semaine en cours + 4 précédentes.
 - **Q15 — Élève** : voit **le même carnet** depuis son Cabinet, avec « Tes parents voient cette page » ; ne voit pas les adresses de ses parents.
 - **Q16 — Question d'accès (validée)** : le détenteur du lien d'un parent lit, pour **un seul élève**, jours d'activité, état des révisions, évaluations (faites ou non, échéance, sans note) et liens de sa classe ; **ni** notes, **ni** réponses, **ni** messages, **ni** avertissements, **ni** profil, **ni** autre élève. L'élève lit son propre carnet (aucun accès nouveau). Le professeur lit les adresses confirmées et l'état des liens. Personne d'autre. Accès par fonction `SECURITY DEFINER` recevant le lien ; aucune policy `anon`.
+
+## Comportements (proposés le 2026-11-16, à valider)
+
+Vocabulaire : **lien du parent** = l'adresse de son carnet ; **adresse confirmée** = le parent a cliqué le lien de confirmation (ou le lien du consentement) ; **jour travaillé** = au moins un exercice, une révision ou une évaluation rendue ce jour-là (une simple connexion ne compte pas).
+
+### A. Adresses et liens
+
+- **A1 (nominal)** : l'adresse d'un consentement accordé compte comme confirmée. Quand le carnet est activé pour la classe de l'élève, cette adresse reçoit **un** courriel avec son lien.
+- **A2 (nominal)** : le professeur, ou l'élève depuis son Cabinet, saisit une adresse (2e parent, ou 1re/Tle sans consentement). Elle reçoit **seulement** un courriel de confirmation ; le lien du carnet part après le clic.
+- **A3 (limite)** : deux adresses confirmées au plus. Une troisième est refusée : « Deux parents reçoivent déjà ce carnet. »
+- **A4 (limite)** : lien de confirmation valable 7 jours ; renvoi possible, 3 envois au plus par adresse.
+- **A5 (erreur)** : le destinataire clique « Je ne suis pas le parent de cet élève » : l'adresse est effacée, le professeur le voit, et cette adresse ne peut plus être saisie pour cet élève.
+- **A6 (limite)** : « J'ai perdu mon lien » : le parent saisit son adresse ; si elle est confirmée, le lien lui est renvoyé. **Même réponse** à l'écran dans tous les cas (pas de moyen de savoir si une adresse est connue).
+
+### B. Le carnet (page du parent)
+
+- **B1 (nominal)** : lien valide → semaine en 7 cases sur 5 semaines (en cours + 4), révisions « à jour » ou « N en retard », évaluations à venir (échéance) et passées (faite / non faite, **sans note**), liens du cahier et du cours de la classe s'ils existent. `noindex`.
+- **B2 (limite)** : aucune activité → cases vides et phrase neutre (« Pas encore de travail cette semaine »), sans rouge ni alarme.
+- **B3 (limite)** : l'élève change de classe → le carnet le suit ; les liens du cahier et du cours sont ceux de sa classe actuelle.
+- **B4 (erreur)** : lien révoqué, expiré, inexistant, partage coupé, élève sorti de la classe → **la même page** « Ce lien n'est plus valide. Demandez-en un nouveau au professeur. » (comme l'ADR 0025).
+- **B5 (limite)** : le lien expire le 31 août.
+
+### C. Côté élève
+
+- **C1 (nominal)** : dans son Cabinet, « Mon carnet de liaison » montre le même carnet, avec « Tes parents voient cette page ». Sans adresse confirmée : « Aucun parent ne reçoit encore ton carnet. »
+- **C2 (nominal)** : l'élève voit la liste des courriels envoyés à ses parents (date et motif), jamais les adresses.
+- **C3 (limite)** : partage coupé (élève majeur) : « Le partage avec tes parents est arrêté. »
+
+### D. Côté professeur
+
+- **D1 (nominal)** : par classe : activer le carnet ; seuils (évaluation non faite, révisions en retard depuis N jours, aucune activité depuis N jours) ; message trimestriel oui / non.
+- **D2 (nominal)** : par élève : état de chaque adresse (en attente, confirmée, courriels arrêtés par le parent, invalide) ; ajouter une adresse ; renvoyer une confirmation ; révoquer un lien ; envoyer un nouveau lien ; couper le partage.
+- **D3 (limite)** : couper le partage révoque les liens et arrête les courriels ; le rétablir envoie de nouveaux liens (les anciens restent morts).
+
+### E. Courriels d'exception
+
+- **E1 (nominal)** : un passage par jour. Exceptions : évaluation non faite le lendemain de son échéance ; révisions en retard depuis plus de 7 jours ; aucun jour travaillé depuis 15 jours.
+- **E2 (limite)** : une exception n'est signalée **qu'une fois** par épisode ; elle ne repart que si elle se résout puis revient.
+- **E3 (limite)** : vacances scolaires (`school_holidays`) : aucun courriel, et les jours de vacances ne comptent pas dans les 15 jours ; sauf une évaluation dont l'échéance tombe dans les vacances.
+- **E4 (nominal)** : message positif en fin de trimestre, seulement s'il y a du vrai à dire (jours travaillés, révisions à jour) ; sinon rien.
+- **E5 (nominal)** : le courriel dit le motif en une phrase et donne le lien du carnet ; rien de plus que le carnet. Lien « Ne plus recevoir ces courriels » en un clic ; le carnet reste ouvert ; réabonnement depuis le carnet.
+- **E6 (erreur)** : envoi Brevo en échec → nouvel essai au passage suivant, sans doublon. Adresse rejetée définitivement → marquée invalide, le professeur le voit.
+- **E7 (invariant)** : jamais de courriel d'exception vers une adresse non confirmée, ni si le partage est coupé, ni si le carnet de la classe est désactivé.
+
+### Questions ouvertes (tour 5)
+
+- **Q17 — Activation** : le carnet part-il seul (activé par défaut) ou au geste du professeur, classe par classe ? Recommandation : **au geste du professeur** (le premier courriel aux familles est une décision humaine).
+- **Q18 — Courriel de confirmation** (adresse saisie, peut-être fausse) : que dit-il de l'élève ? Recommandation : **le prénom seul et le nom du professeur** ; ni nom de famille, ni école, ni classe.
+- **Q19 — Plafond** : au plus **un courriel par semaine** par parent, qui regroupe les exceptions ? Recommandation : oui.
+- **Q20 — Élèves hors classe** : pas de carnet dans la première version (aucun professeur pour le régler) ? Recommandation : oui, à rediscuter avec l'offre payante.
+- **Q21 — Rentrée** : les adresses confirmées sont gardées et un nouveau lien part quand l'élève rejoint une classe au carnet activé ; adresses effacées quand l'élève quitte toute classe ou que le consentement expire ? Recommandation : oui.
