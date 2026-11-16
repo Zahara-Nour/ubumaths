@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-16, phase 0 ouverte (aucune PR)._
 
-- **État** : phase 0, tour 1 tranché (Q1 à Q5) ; tour 2 (canal, Q6 à Q9) posé.
-- **Prochaine action** : consigner les réponses du tour 2.
-- **En attente de David** : Q6 à Q9.
+- **État** : phase 0 ; tours 1 et 2 tranchés (quoi, qui, canal) ; tour 3 posé (Q7 à Q12).
+- **Prochaine action** : consigner le tour 3 ; ensuite comportements nominal / limite / erreur, question d'accès, découpage.
+- **En attente de David** : Q7 à Q12.
 - **Pièges en cours** : données d'élèves mineurs (RGPD) ; décision 8 du 2026-10-21 (« le parent ne voit rien du compte de l'enfant ») à rouvrir explicitement, pas en silence ; question d'accès « qui pourra lire quoi » avant tout SQL ; « Parent » absent de `CONTEXT.md`.
 - **Worktree / branche** : aucun (phase 0, doc sur `main`).
 
@@ -47,3 +47,19 @@ Né du chantier `presentation-parents` (point 8, « Comment le suivre ? »), le 
 - **Q7 — Rythme** : hebdomadaire seul, ou alertes immédiates en plus ?
 - **Q8 — Quelles adresses** : seulement une adresse confirmée (consentement accordé) ; comment l'obtenir en 1re/Tle (pas de consentement, donc pas d'adresse) ; un ou deux parents ?
 - **Q9 — Arrêt par le parent** : lien de désinscription dans chaque courriel ?
+- **Réaction de David (Q6)** : « pas convaincu de l'efficacité des mails, on est tous déjà submergés ». Q6 reformulée en deux questions : **où le parent consulte** (page) et **quand on le dérange** (rare, sur exception). Q7 à Q9 attendent. Constat : Chiphre n'a ni manifeste PWA ni notifications push (seul `/python` enregistre un service worker).
+
+### 2026-11-16 (tour 2, recommandations suivies)
+
+- **Q6a — Où** : une **page parent personnelle, sans compte**, toujours à jour (activité de la semaine, alertes en cours, liens du cahier et du cours), ajoutable à l'écran d'accueil. Lien délivré **seulement à une adresse confirmée**, révocable par le professeur, expirant chaque année. Écartés pour l'instant : compte parent (lourd, contredit la décision 8 ; à rediscuter pour l'offre payante) ; rien à consulter.
+- **Q6b — Quand déranger** : **sur exception seulement** (« pas de nouvelles, bonnes nouvelles »), **par courriel d'abord** (Brevo existe) ; notification push plus tard (à construire : manifeste, push ; iPhone = écran d'accueil). Écartés : bilan hebdomadaire systématique (submerge, objection de David) ; SMS (numéro de plus à collecter).
+- La décision 8 du 2026-10-21 tient : le parent reçoit des informations, il ne voit pas le compte de l'enfant.
+
+## Tour 3 (posé le 2026-11-16)
+
+- **Q7 — Exceptions et seuils** (réglables par le professeur, Q2).
+- **Q8 — Adresses** : confirmées seulement, jusqu'à deux ; 1re/Tle.
+- **Q9 — Arrêt des courriels** par le parent.
+- **Q10 — Un lien par parent ou par élève.**
+- **Q11 — Vacances** : pas d'alerte pendant les vacances scolaires (`school_holidays` existe).
+- **Q12 — Nom** de la page parent (terme pour `CONTEXT.md`).
