@@ -1,0 +1,1611 @@
+[
+	{
+		"id": "017b381a-9ecf-451d-a4b5-3713260102ed",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 45,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Le symétrique du point $M$ par rapport au point $O$ est le point $M'$ tel que :\n\n```choix\n- $O$ est le milieu du segment $[MM']$\n- $OM = OM'$\n- $M'$ est sur la droite $(OM)$\n- $(MM')$ est perpendiculaire à une droite passant par $O$\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Définition.** Le symétrique du point $M$ par rapport au point $O$ est le point $M'$ tel que $O$ soit le **milieu** du segment $[MM']$ : on fait un **demi-tour** autour de $O$.",
+						"$OM = OM'$ seul ne suffit pas (tous les points d'un cercle de centre $O$) ; être sur $(OM)$ seul non plus. Il faut **les deux** : c'est dire que $O$ est le milieu.",
+						"La réponse est donc $\\textcolor{{{color:primary.0}}}{\\text{O est le milieu de [MM']}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{j}}"
+					}
+				],
+				"statement": "Voici le point $O$, le point $M$ et quatre autres points.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8\ndescription: Les points O et M, et quatre points E, F, G, H autour de O.\n---\n{{if:k==1|O = point(5, 4, etiquette=\"bas\")\nM = point(2, 5, etiquette=\"haut-gauche\")\nE = point(8, 3, etiquette=\"bas-droite\")\nF = point(6.5, 3.5, etiquette=\"bas-droite\")\nG = point(4, 1, etiquette=\"bas-gauche\")\nH = point(8, 5, etiquette=\"haut-droite\")|{{if:k==2|O = point(5, 4, etiquette=\"bas\")\nM = point(4, 1, etiquette=\"bas-gauche\")\nF = point(6, 7, etiquette=\"haut-droite\")\nH = point(5.5, 5.5, etiquette=\"haut-droite\")\nE = point(8, 3, etiquette=\"bas-droite\")\nG = point(6, 1, etiquette=\"bas-droite\")|O = point(5, 4, etiquette=\"bas\")\nM = point(1.5, 3, etiquette=\"bas-gauche\")\nG = point(8.5, 5, etiquette=\"haut-droite\")\nE = point(6.75, 4.5, etiquette=\"haut-droite\")\nH = point(6, 0.5, etiquette=\"bas-droite\")\nF = point(8.5, 3, etiquette=\"bas-droite\")}}}}\n```\n\nQuel point est le symétrique de $M$ par rapport à $O$ ?\n\n```choix\nmelanger: non\n- $E$\n- $F$\n- $G$\n- $H$\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					},
+					{
+						"name": "j",
+						"expression": "eval:k-1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Définition.** Le symétrique du point $M$ par rapport au point $O$ est le point $M'$ tel que $O$ soit le **milieu** du segment $[MM']$ : on fait un **demi-tour** autour de $O$.",
+						"Les points trop près de $O$, ou à la bonne distance mais hors de la droite $(OM)$, ne conviennent pas ; le symétrique par rapport à une **droite** non plus.",
+						"On prolonge $[MO]$ de la même longueur : on arrive en {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{E}}$|{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{F}}$|$\\textcolor{{{color:primary.0}}}{\\text{G}}$}}}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Définir la symétrie centrale",
+		"description": "Le symétrique de M par rapport à O : O est le milieu de [MM'] (demi-tour autour de O)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Définition : O milieu",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : OM = OM' seulement",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : sur la droite (OM) seulement",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "0",
+					"k": "1"
+				},
+				"description": "Figure 1 : E",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "0",
+					"k": "1"
+				},
+				"description": "Figure 1 : erreur, mauvaise distance",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"k": "2"
+				},
+				"description": "Figure 2 : F",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"k": "2"
+				},
+				"description": "Figure 2 : erreur, symétrique axial",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "2",
+					"k": "3"
+				},
+				"description": "Figure 3 : G",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "2",
+					"k": "3"
+				},
+				"description": "Figure 3 : erreur, quart de tour",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "0d4760f8-5fe1-40de-bb88-ace85b268625",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 150,
+		"level": 2,
+		"variations": [
+			{
+				"statement": "Place le point $A'$, symétrique du point $A$ par rapport au point $O$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\noutils: point\nverifier: point A' = symetrie(A, centre=O)\n---\n{{if:k==1|A = point(2, 2, etiquette=\"bas-gauche\")\nO = point(5, 4, etiquette=\"bas\")|{{if:k==2|A = point(3, 6, etiquette=\"haut-gauche\")\nO = point(5, 4, etiquette=\"bas\")|A = point(1, 4, etiquette=\"haut-gauche\")\nO = point(4, 3, etiquette=\"bas\")}}}}\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Définition.** Le symétrique du point $M$ par rapport au point $O$ est le point $M'$ tel que $O$ soit le **milieu** du segment $[MM']$ : on fait un **demi-tour** autour de $O$.",
+						"Sur le quadrillage, on compte les carreaux pour aller de $A$ à $O$, puis on fait **le même déplacement** à partir de $O$ : on arrive en $\\textcolor{{{color:primary.0}}}{\\text{A'}}$."
+					]
+				}
+			},
+			{
+				"statement": "Construis le symétrique de la figure par rapport au point $O$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\nverifier: symetrique par O\n---\n{{if:k==1|p0 = point(1, 1, visible=faux)\np1 = point(4, 2, visible=faux)\np2 = point(2, 4, visible=faux)\nsegment(p0, p1, epaisseur=3)\nsegment(p1, p2, epaisseur=3)\nsegment(p2, p0, epaisseur=3)\nO = point(5, 4, etiquette=\"bas\")|{{if:k==2|p0 = point(1, 5, visible=faux)\np1 = point(3, 7, visible=faux)\np2 = point(4, 5, visible=faux)\np3 = point(2, 4, visible=faux)\nsegment(p0, p1, epaisseur=3)\nsegment(p1, p2, epaisseur=3)\nsegment(p2, p3, epaisseur=3)\nsegment(p3, p0, epaisseur=3)\nO = point(5, 4, etiquette=\"bas\")|p0 = point(2, 1, visible=faux)\np1 = point(4, 1, visible=faux)\np2 = point(4, 4, visible=faux)\nsegment(p0, p1, epaisseur=3)\nsegment(p1, p2, epaisseur=3)\nsegment(p2, p0, epaisseur=3)\nO = point(5, 4, etiquette=\"bas\")}}}}\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On construit le symétrique de chaque sommet par rapport à $O$ : on compte les carreaux du sommet jusqu'à $O$, et on refait le même déplacement après $O$.",
+						"On relie les sommets obtenus dans le même ordre : la figure obtenue est $\\textcolor{{{color:primary.0}}}{\\text{retournée d'un demi-tour}}$ autour de $O$."
+					]
+				}
+			},
+			{
+				"statement": "Construis le point $A'$, symétrique du point $A$ par rapport au point $O$, avec tes instruments.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\noutils: point, droite, compas\nverifier: point A' = symetrie(A, centre=O)\n---\n{{if:k==1|A = point(2, 3, etiquette=\"bas-gauche\")\nO = point(6, 4.5, etiquette=\"bas\")|{{if:k==2|A = point(3, 7, etiquette=\"haut-gauche\")\nO = point(6, 5, etiquette=\"bas\")|A = point(2.5, 5, etiquette=\"haut-gauche\")\nO = point(6.5, 4, etiquette=\"bas\")}}}}\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Définition.** Le symétrique du point $M$ par rapport au point $O$ est le point $M'$ tel que $O$ soit le **milieu** du segment $[MM']$ : on fait un **demi-tour** autour de $O$.",
+						"On trace la droite $(AO)$, puis le cercle de centre $O$ qui passe par $A$ : il recoupe la droite en $\\textcolor{{{color:primary.0}}}{\\text{A'}}$, de l'autre côté de $O$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Construire le symétrique par rapport à un point",
+		"description": "Construire le symétrique d'un point ou d'une figure par rapport à un point : sur quadrillage, puis au compas sur papier uni",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["point(8;6)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Quadrillage 1 : A' juste",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["point(7;2)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Quadrillage 2 : A' juste",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["point(7;2)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Quadrillage 3 : A' juste",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["point(8;2)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : symétrique par la verticale passant par O",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["point(5;4)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Erreur : A' placé sur O",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : rien de placé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(9;7;6;6)|segment(6;6;8;4)|segment(8;4;9;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Triangle : juste",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(9;3;7;1)|segment(7;1;6;3)|segment(6;3;8;4)|segment(8;4;9;3)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Quadrilatère : juste",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(8;7;6;7)|segment(6;7;6;4)|segment(6;4;8;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Triangle rectangle : juste",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(6;4;9;5)|segment(9;5;7;7)|segment(7;7;6;4)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : figure glissée (translation)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(8;1;6;1)|segment(6;1;6;4)|segment(6;4;8;1)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : symétrique par la verticale passant par O",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["droite(2;3;6;4.5)|cercle(6;4.5;2;3)|point(10;6)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Papier uni 1 : construit",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["droite(3;7;6;5)|cercle(6;5;3;7)|point(9;3)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Papier uni 2 : construit",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["droite(2.5;5;6.5;4)|cercle(2.5;5;6.5;4)|point(-1.5;6)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : cercle de centre A passant par O",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["point(10;6)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : A' placé à l'œil",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "9cc1336b-bb55-4995-884a-446e53727f16",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 60,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{j}}"
+					}
+				],
+				"statement": "Lequel de ces solides est {{if:k==1|un **prisme droit**|un **cylindre**}} ?\n\n````choix\n- ```solide\n  forme: cube 3\n  ```\n- ```solide\n  forme: pave 4.5 2 2.5\n  ```\n- ```solide\n  forme: prisme triangle 3 2.5 4\n  ```\n- ```solide\n  forme: cylindre 1.5 3.5\n  ```\n````",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "j",
+						"expression": "eval:k+1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un **prisme droit** a deux bases superposables (ici des triangles) reliées par des rectangles. Un **cylindre** a deux disques pour bases, dessinés aplatis (en ellipses) en perspective.",
+						"C'est donc {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{le solide aux faces triangulaires}}$|$\\textcolor{{{color:primary.0}}}{\\text{le solide aux bases rondes}}$}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici un pavé droit.\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\ncotes: cm\n```\n\nLequel de ces dessins représente **le même pavé**, posé autrement ?\n\n````choix\n- ```solide\n  forme: pave {{h}} {{p}} {{l}}\n  cotes: cm\n  ```\n- ```solide\n  forme: pave {{l}} {{p}} {{eval:h+1}}\n  cotes: cm\n  ```\n- ```solide\n  forme: cube {{l}}\n  cotes: cm\n  ```\n````",
+				"variables": [
+					{
+						"name": "l",
+						"expression": "4..6"
+					},
+					{
+						"name": "p",
+						"expression": "2..3"
+					},
+					{
+						"name": "h",
+						"expression": "2..4"
+					}
+				],
+				"conditions": ["l!=p", "p!=h", "l!=h"],
+				"correction": {
+					"steps": [
+						"Un même pavé posé autrement garde ses **trois dimensions** : seule leur place change.",
+						"Le pavé donné mesure ${{l}}$ cm, ${{p}}$ cm et ${{h}}$ cm.",
+						"Seul $\\textcolor{{{color:primary.0}}}{\\text{le pavé debout aux mêmes trois dimensions}}$ convient ; l'autre a une dimension changée, et le cube n'a qu'une seule dimension."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Lequel de ces deux dessins est une perspective cavalière correcte ?\n\n````choix\n- ```solide\n  forme: {{if:k==1|pave 4 2 3|{{if:k==2|prisme triangle 3 2.5 4|cube 3}}}}\n  ```\n- ```solide\n  forme: {{if:k==1|pave 4 2 3|{{if:k==2|prisme triangle 3 2.5 4|cube 3}}}}\n  cachees: non\n  ```\n````",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"En perspective cavalière, les arêtes **cachées** (qu'on ne verrait pas de face) sont dessinées en **pointillés**.",
+						"Le dessin correct est donc $\\textcolor{{{color:primary.0}}}{\\text{celui aux arêtes cachées en pointillés}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lire des perspectives cavalières",
+		"description": "Reconnaître un prisme droit, un cylindre ; retrouver un même pavé dessiné autrement ; les arêtes cachées en pointillés",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "2",
+					"k": "1"
+				},
+				"description": "Le prisme",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "2",
+					"k": "1"
+				},
+				"description": "Erreur : le pavé pour le prisme",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "3",
+					"k": "2"
+				},
+				"description": "Le cylindre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "3",
+					"k": "2"
+				},
+				"description": "Erreur : le prisme pour le cylindre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "3",
+					"l": "5",
+					"p": "2"
+				},
+				"description": "Même pavé debout",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "3",
+					"l": "5",
+					"p": "2"
+				},
+				"description": "Erreur : une dimension changée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "2",
+					"l": "4",
+					"p": "3"
+				},
+				"description": "Erreur : le cube",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Arêtes cachées en pointillés",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Erreur : tout en trait plein",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "b05fcd29-73ce-4b7f-8223-109ce7fd48a2",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 60,
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Le triangle $A'B'C'$ est le symétrique du triangle $ABC$ par rapport au point $O$. On sait que $AB = {{a}}$ cm et $AC = {{c}}$ cm.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Le triangle ABC et son symétrique A'B'C' par rapport au point O.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(4, 1.5, etiquette=\"bas-droite\")\nC = point(2, 4, etiquette=\"haut-gauche\")\npolygone(A, B, C)\nAp = point(9, 6, etiquette=\"aucune\")\nBp = point(6, 5.5, etiquette=\"aucune\")\nCp = point(8, 3, etiquette=\"aucune\")\npolygone(Ap, Bp, Cp, couleur=\"bleu\")\ntexte(9.376, 6.329, \"A'\")\ntexte(5.536, 5.686, \"B'\")\ntexte(8.089, 2.508, \"C'\")\nO = point(5, 3.5, etiquette=\"haut\")\n```\n\nCombien mesure $A'B'$ ?\n\n$A'B' = ?$ cm",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "w",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a+w"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Propriété** (admise). La symétrie centrale **conserve** les longueurs, les angles, l'alignement et le parallélisme.",
+						"$[A'B']$ est le symétrique de $[AB]$ (et non de $[AC]$) : $A'B' = AB = \\textcolor{{{color:primary.0}}}{{{a}}}$ cm."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				],
+				"statement": "Le triangle $A'B'C'$ est le symétrique du triangle $ABC$ par rapport au point $O$. On sait que $\\widehat{ABC} = {{g}}°$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Le triangle ABC et son symétrique A'B'C' par rapport au point O ; les angles en B et en B' sont marqués.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(4, 1.5, etiquette=\"bas-droite\")\nC = point(2, 4, etiquette=\"haut-gauche\")\npolygone(A, B, C)\nAp = point(9, 6, etiquette=\"aucune\")\nBp = point(6, 5.5, etiquette=\"aucune\")\nCp = point(8, 3, etiquette=\"aucune\")\npolygone(Ap, Bp, Cp, couleur=\"bleu\")\ntexte(9.376, 6.329, \"A'\")\ntexte(5.536, 5.686, \"B'\")\ntexte(8.089, 2.508, \"C'\")\nO = point(5, 3.5, etiquette=\"haut\")\nangle(A, B, C)\nangle(Ap, Bp, Cp, couleur=\"bleu\")\n```\n\nCombien mesure l'angle $\\widehat{A'B'C'}$ ?\n\n$\\widehat{A'B'C'} = ?°$",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "25..140"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Propriété** (admise). La symétrie centrale **conserve** les longueurs, les angles, l'alignement et le parallélisme.",
+						"$\\widehat{A'B'C'}$ est le symétrique de $\\widehat{ABC}$ : $\\widehat{A'B'C'} = \\widehat{ABC} = \\textcolor{{{color:primary.0}}}{{{g}}°}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "La droite $(d)$ ne passe pas par le point $O$. Son symétrique par rapport à $O$ est une droite :\n\n```choix\n- parallèle à $(d)$\n- perpendiculaire à $(d)$\n- sécante à $(d)$ en $O$\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Propriété** (admise). Le symétrique d'une droite par rapport à un point est une droite **parallèle**.",
+						"Le symétrique de $(d)$ par rapport à $O$ est donc une droite $\\textcolor{{{color:primary.0}}}{\\text{parallèle à (d)}}$, de l'autre côté de $O$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Propriétés de la symétrie centrale",
+		"description": "La symétrie centrale conserve les longueurs et les angles ; le symétrique d'une droite est une droite parallèle",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"c": "8",
+					"w": "2"
+				},
+				"description": "A'B' = AB = 6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"c": "8",
+					"w": "2"
+				},
+				"description": "Erreur : A'B' = AC",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["47"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "47"
+				},
+				"description": "Angle conservé : 47°",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["133"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "47"
+				},
+				"description": "Erreur : 180 − l'angle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Droite parallèle",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : perpendiculaire",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "b4c9a2a1-320b-4f3c-86c6-dfa43908d31b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 75,
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici un pavé droit.\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\ncotes: cm\n```\n\nLequel de ces dessins est un patron de ce pavé ?\n\n````choix\n- ```patron\n  solide: pave {{l}} {{p}} {{h}}\n  forme: {{f}}\n  cotes: cm\n  ```\n- ```patron\n  solide: pave {{l}} {{eval:p+1}} {{h}}\n  forme: {{f}}\n  cotes: cm\n  ```\n- ```patron\n  solide: pave {{l}} {{p}} {{h}}\n  forme: faux {{m}}\n  cotes: cm\n  ```\n````",
+				"variables": [
+					{
+						"name": "l",
+						"expression": "4..5"
+					},
+					{
+						"name": "p",
+						"expression": "2..3"
+					},
+					{
+						"name": "h",
+						"expression": "2..4"
+					},
+					{
+						"name": "f",
+						"expression": "1..11"
+					},
+					{
+						"name": "m",
+						"expression": "1..8"
+					}
+				],
+				"conditions": ["l!=p", "p!=h", "l!=h", "l!=p+1", "h!=p+1"],
+				"correction": {
+					"steps": [
+						"Un patron d'un pavé a $6$ rectangles, deux à deux identiques, qui se replient sans se chevaucher, avec les **mêmes dimensions** que le pavé.",
+						"L'un des dessins a une dimension différente ; un autre, en se repliant, met deux faces au même endroit.",
+						"Le patron du pavé est donc $\\textcolor{{{color:primary.0}}}{\\text{celui qui a ses trois dimensions et se replie}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{j}}"
+					}
+				],
+				"statement": "Voici un patron.\n\n```patron\nsolide: {{if:k==1|prisme triangle 3 2.5 4|{{if:k==2|cylindre 1 3|{{if:k==3|pave 4 2 3|pyramide carree 3 3}}}}}}\nforme: 1\n```\n\nC'est le patron :\n\n```choix\n- d'un prisme droit\n- d'un cylindre\n- d'un pavé droit\n- d'une pyramide\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "j",
+						"expression": "eval:k-1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:k==1|Deux triangles identiques et trois rectangles : en se repliant, ils forment un prisme droit à base triangulaire.|{{if:k==2|Deux disques et un rectangle qui s'enroule autour : c'est un cylindre.|{{if:k==3|Six rectangles, deux à deux identiques : c'est un pavé droit.|Un carré et quatre triangles qui se rejoignent en un sommet : c'est une pyramide.}}}}}}",
+						"C'est le patron {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{d'un prisme droit}}$|{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{d'un cylindre}}$|{{if:k==3|$\\textcolor{{{color:primary.0}}}{\\text{d'un pavé droit}}$|$\\textcolor{{{color:primary.0}}}{\\text{d'une pyramide}}$}}}}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici le pavé $ABCDEFGH$ et un de ses patrons ; sur le patron, seuls $A$, $B$, $C$, $D$ et un point d'interrogation sont écrits.\n\n```solide\nforme: pave 4 2 3\nsommets: A B C D E F G H\n```\n\n```patron\nsolide: pave 4 2 3\nforme: 1\nsommets: {{if:k==1|A B C D - ? - -|{{if:k==2|A B C D - - ? -|{{if:k==3|A B C D - - - ?|A B C D ? - - -}}}}}}\n```\n\nQuelle lettre doit-on écrire à la place du point d'interrogation ?\n\n```choix\n- ${{if:k==1|F|{{if:k==2|G|{{if:k==3|H|E}}}}}}$\n- ${{if:k==1|G|{{if:k==2|H|{{if:k==3|E|F}}}}}}$\n- ${{if:k==1|E|{{if:k==2|F|{{if:k==3|G|H}}}}}}$\n- ${{if:k==1|H|{{if:k==2|E|{{if:k==3|F|G}}}}}}$\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On replie le patron autour de la face $ABCD$ : chaque sommet du dessus vient au-dessus d'un sommet du dessous ($E$ sur $A$, $F$ sur $B$, $G$ sur $C$, $H$ sur $D$).",
+						"En repliant le patron, le point d'interrogation vient sur le sommet {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{F}}$|{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{G}}$|{{if:k==3|$\\textcolor{{{color:primary.0}}}{\\text{H}}$|$\\textcolor{{{color:primary.0}}}{\\text{E}}$}}}}}} du pavé."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Perspective et patron",
+		"description": "Associer un pavé, un prisme droit, un cylindre en perspective cavalière à son patron",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "1",
+					"h": "4",
+					"l": "5",
+					"m": "3",
+					"p": "2"
+				},
+				"description": "Le bon patron",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "7",
+					"h": "4",
+					"l": "5",
+					"m": "3",
+					"p": "2"
+				},
+				"description": "Erreur : dimensions différentes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "11",
+					"h": "2",
+					"l": "4",
+					"m": "5",
+					"p": "3"
+				},
+				"description": "Erreur : faux patron",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "0",
+					"k": "1"
+				},
+				"description": "Prisme",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"k": "2"
+				},
+				"description": "Cylindre",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"k": "2"
+				},
+				"description": "Erreur : cylindre pris pour un prisme",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "3",
+					"k": "4"
+				},
+				"description": "Pyramide",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "3",
+					"k": "4"
+				},
+				"description": "Erreur : pyramide prise pour un prisme",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Lettre juste",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Erreur : sommet voisin",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "dc220b3b-f555-44ba-8425-fcf24f7db10f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 120,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:L*l+t*l/2;d}}"
+					}
+				],
+				"statement": "La figure colorée est faite d'un rectangle et d'un triangle rectangle.\n\n```figure\nfenetre: -4 ; {{eval:2*L+2*t+2}} ; -2 ; {{eval:max(2*l+1,6)}}\ndescription: Un rectangle de {{L}} cm sur {{l}} cm, et à sa droite un triangle rectangle de côtés {{l}} cm et {{t}} cm.\n---\na = point(0, 0, visible=faux)\nb = point({{eval:2*L}}, 0, visible=faux)\nc = point({{eval:2*L+2*t}}, 0, visible=faux)\nd = point({{eval:2*L}}, {{eval:2*l}}, visible=faux)\ng = point(0, {{eval:2*l}}, visible=faux)\npolygone(a, c, d, g, remplissage=\"bleu\", opacite_fond=0.3)\nsegment(b, d, trait=\"tirets\")\nangle(c, b, d, marque=\"carre\")\ntexte({{L}}, -1, \"{{L}} cm\")\ntexte({{eval:2*L+t}}, -1, \"{{t}} cm\")\ntexte(-2, {{l}}, \"{{l}} cm\")\n```\n\nCalcule son aire.\n\n$?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "L",
+						"expression": "4..8"
+					},
+					{
+						"name": "l",
+						"expression": "2..6"
+					},
+					{
+						"name": "t",
+						"expression": "2..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On découpe la figure en deux : $\\text{aire} = \\text{aire du rectangle} + \\text{aire du triangle}$.",
+						"Rectangle : ${{L}} \\times {{l}} = {{eval:L*l}}~\\unit{cm^2}$. Triangle rectangle : $\\dfrac{ {{t}} \\times {{l}} }{2} = {{eval:t*l/2;d}}~\\unit{cm^2}$.",
+						"Aire de la figure : ${{eval:L*l}} + {{eval:t*l/2;d}} = \\textcolor{{{color:primary.0}}}{{{eval:L*l+t*l/2;d}}~\\unit{cm^2}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:L*d+157*r^2/100;d}}"
+					}
+				],
+				"statement": "La figure colorée est faite d'un rectangle et d'un demi-disque. On prend $\\pi \\approx 3{,}14$.\n\n```figure\nfenetre: -4 ; {{eval:2*L+d+2}} ; -2 ; {{eval:2*d+1}}\ndescription: Un rectangle de {{L}} cm sur {{d}} cm, et à sa droite un demi-disque de diamètre {{d}} cm.\n---\nO = point({{eval:2*L}}, {{d}}, visible=faux)\ncercle(O, rayon={{d}}, remplissage=\"bleu\", opacite_fond=0.3)\na = point(0, 0, visible=faux)\nb = point({{eval:2*L}}, 0, visible=faux)\nc = point({{eval:2*L}}, {{eval:2*d}}, visible=faux)\ng = point(0, {{eval:2*d}}, visible=faux)\npolygone(a, b, c, g, remplissage=\"blanc\", opacite_fond=1)\npolygone(a, b, c, g, remplissage=\"bleu\", opacite_fond=0.3)\ntexte({{L}}, -1, \"{{L}} cm\")\ntexte(-2, {{d}}, \"{{d}} cm\")\n```\n\nCalcule son aire.\n\n$?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "L",
+						"expression": "4..8"
+					},
+					{
+						"name": "r",
+						"expression": "1..3"
+					},
+					{
+						"name": "d",
+						"expression": "eval:2*r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On découpe la figure en deux : $\\text{aire} = \\text{aire du rectangle} + \\text{aire du demi-disque}$.",
+						"Rectangle : ${{L}} \\times {{d}} = {{eval:L*d}}~\\unit{cm^2}$. Le demi-disque a pour rayon $\\dfrac{ {{d}} }{2} = {{r}}$ cm : $\\dfrac{3{,}14 \\times {{r}} \\times {{r}}}{2} = {{eval:157*r^2/100;d}}~\\unit{cm^2}$.",
+						"Aire de la figure : ${{eval:L*d}} + {{eval:157*r^2/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:L*d+157*r^2/100;d}}~\\unit{cm^2}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*h+b*t/2;d}}"
+					}
+				],
+				"statement": "La figure colorée est faite d'un parallélogramme et d'un triangle posé sur son côté du haut. Les hauteurs sont en pointillés.\n\n```figure\nfenetre: -2 ; {{eval:2*b+5}} ; -2 ; {{eval:2*h+2*t+1}}\ndescription: Un parallélogramme de base {{b}} cm et de hauteur {{h}} cm, surmonté d'un triangle de même base et de hauteur {{t}} cm.\n---\nA = point(0, 0, visible=faux)\nB = point({{eval:2*b}}, 0, visible=faux)\nC = point({{eval:2*b+3}}, {{eval:2*h}}, visible=faux)\nD = point(3, {{eval:2*h}}, visible=faux)\nE = point({{eval:b+3}}, {{eval:2*h+2*t}}, visible=faux)\npolygone(A, B, C, E, D, remplissage=\"bleu\", opacite_fond=0.3)\nsegment(D, C, trait=\"tirets\")\nH = point(3, 0, visible=faux)\nsegment(D, H, trait=\"tirets\")\nangle(B, H, D, marque=\"carre\")\nK = point({{eval:b+3}}, {{eval:2*h}}, visible=faux)\nsegment(E, K, trait=\"tirets\")\nangle(C, K, E, marque=\"carre\")\ntexte({{b}}, -1, \"{{b}} cm\")\ntexte(4.6, {{h}}, \"{{h}} cm\")\ntexte({{eval:b+4.6}}, {{eval:2*h+t}}, \"{{t}} cm\")\n```\n\nCalcule son aire.\n\n$?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "4..8"
+					},
+					{
+						"name": "h",
+						"expression": "2..4"
+					},
+					{
+						"name": "t",
+						"expression": "2..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On découpe la figure en deux : $\\text{aire} = \\text{aire du parallélogramme} + \\text{aire du triangle}$.",
+						"Parallélogramme : $\\text{base} \\times \\text{hauteur} = {{b}} \\times {{h}} = {{eval:b*h}}~\\unit{cm^2}$. Triangle : $\\dfrac{ {{b}} \\times {{t}} }{2} = {{eval:b*t/2;d}}~\\unit{cm^2}$.",
+						"Aire de la figure : ${{eval:b*h}} + {{eval:b*t/2;d}} = \\textcolor{{{color:primary.0}}}{{{eval:b*h+b*t/2;d}}~\\unit{cm^2}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Aire d'une figure composée : ajouter",
+		"description": "Calculer l'aire d'une figure faite d'un rectangle ou d'un parallélogramme et d'un triangle ou d'un demi-disque : on additionne les aires",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "6",
+					"l": "4",
+					"t": "3"
+				},
+				"description": "Rectangle 6 × 4 + triangle 3 × 4 / 2 = 30",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["36"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "6",
+					"l": "4",
+					"t": "3"
+				},
+				"description": "Erreur : triangle non divisé par 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["22"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "6",
+					"l": "4",
+					"t": "3"
+				},
+				"description": "Erreur : périmètre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["26,28"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "5",
+					"d": "4",
+					"r": "2"
+				},
+				"description": "Rectangle 5 × 4 + demi-disque r = 2 : 26,28",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["32,56"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "5",
+					"d": "4",
+					"r": "2"
+				},
+				"description": "Erreur : disque entier",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["45,12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "5",
+					"d": "4",
+					"r": "2"
+				},
+				"description": "Erreur : diamètre pris pour rayon",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "6",
+					"h": "3",
+					"t": "2"
+				},
+				"description": "Parallélogramme 6 × 3 + triangle 6 × 2 / 2 = 24",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "6",
+					"h": "3",
+					"t": "2"
+				},
+				"description": "Erreur : triangle non divisé par 2",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "e206964d-c612-43df-a086-33b6180bd14b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 120,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:L*l-u*v/2;d}}"
+					}
+				],
+				"statement": "On a coupé un coin triangulaire dans un rectangle. Voici ce qui reste (en couleur).\n\n```figure\nfenetre: -4 ; {{eval:2*L+4}} ; -2 ; {{eval:2*l+2}}\ndescription: Un rectangle de {{L}} cm sur {{l}} cm dont on a coupé le coin en haut à droite : un triangle rectangle de côtés {{u}} cm et {{v}} cm.\n---\na = point(0, 0, visible=faux)\nb = point({{eval:2*L}}, 0, visible=faux)\nc1 = point({{eval:2*L}}, {{eval:2*l-2*v}}, visible=faux)\nc2 = point({{eval:2*L-2*u}}, {{eval:2*l}}, visible=faux)\nc = point({{eval:2*L}}, {{eval:2*l}}, visible=faux)\ng = point(0, {{eval:2*l}}, visible=faux)\npolygone(a, b, c1, c2, g, remplissage=\"bleu\", opacite_fond=0.3)\nsegment(c1, c, trait=\"tirets\")\nsegment(c, c2, trait=\"tirets\")\ntexte({{L}}, -1, \"{{L}} cm\")\ntexte(-2, {{l}}, \"{{l}} cm\")\ntexte({{eval:2*L-u}}, {{eval:2*l+1}}, \"{{u}} cm\")\ntexte({{eval:2*L+1.6}}, {{eval:2*l-v}}, \"{{v}} cm\")\n```\n\nCalcule l'aire de la partie colorée.\n\n$?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "L",
+						"expression": "6..10"
+					},
+					{
+						"name": "l",
+						"expression": "4..6"
+					},
+					{
+						"name": "u",
+						"expression": "2..3"
+					},
+					{
+						"name": "v",
+						"expression": "2..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\text{aire} = \\text{aire du rectangle} - \\text{aire du triangle retiré}$.",
+						"Rectangle : ${{L}} \\times {{l}} = {{eval:L*l}}~\\unit{cm^2}$. Triangle rectangle : $\\dfrac{ {{u}} \\times {{v}} }{2} = {{eval:u*v/2;d}}~\\unit{cm^2}$.",
+						"Aire de la partie colorée : ${{eval:L*l}} - {{eval:u*v/2;d}} = \\textcolor{{{color:primary.0}}}{{{eval:L*l-u*v/2;d}}~\\unit{cm^2}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c^2-314*r^2/100;d}}"
+					}
+				],
+				"statement": "On a retiré un disque d'un carré. Voici ce qui reste (en couleur). On prend $\\pi \\approx 3{,}14$.\n\n```figure\nfenetre: -4 ; {{eval:2*c+1}} ; -2 ; {{eval:2*c+1}}\ndescription: Un carré de côté {{c}} cm ; le disque qui touche ses quatre côtés est retiré.\n---\na = point(0, 0, visible=faux)\nb = point({{eval:2*c}}, 0, visible=faux)\nf = point({{eval:2*c}}, {{eval:2*c}}, visible=faux)\ng = point(0, {{eval:2*c}}, visible=faux)\npolygone(a, b, f, g, remplissage=\"bleu\", opacite_fond=0.3)\nO = point({{c}}, {{c}}, visible=faux)\ncercle(O, rayon={{c}}, remplissage=\"blanc\", opacite_fond=1)\ntexte({{c}}, -1, \"{{c}} cm\")\ntexte(-2, {{c}}, \"{{c}} cm\")\n```\n\nCalcule l'aire de la partie colorée.\n\n$?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "eval:2*r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\text{aire} = \\text{aire du carré} - \\text{aire du disque}$.",
+						"Le disque a pour diamètre le côté du carré : son rayon est $\\dfrac{ {{c}} }{2} = {{r}}$ cm, son aire $3{,}14 \\times {{r}} \\times {{r}} = {{eval:314*r^2/100;d}}~\\unit{cm^2}$.",
+						"Carré : ${{c}} \\times {{c}} = {{eval:c^2}}~\\unit{cm^2}$. Partie colorée : ${{eval:c^2}} - {{eval:314*r^2/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:c^2-314*r^2/100;d}}~\\unit{cm^2}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:L*l-(L-2)*(l-2)}}"
+					}
+				],
+				"statement": "Ce cadre est un rectangle dont on a retiré un rectangle intérieur ; la bordure a partout une largeur de $1$ cm.\n\n```figure\nfenetre: -4 ; {{eval:2*L+1}} ; -2 ; {{eval:2*l+1}}\ndescription: Un cadre : rectangle de {{L}} cm sur {{l}} cm, bordure de 1 cm.\n---\na = point(0, 0, visible=faux)\nb = point({{eval:2*L}}, 0, visible=faux)\nf = point({{eval:2*L}}, {{eval:2*l}}, visible=faux)\ng = point(0, {{eval:2*l}}, visible=faux)\npolygone(a, b, f, g, remplissage=\"bleu\", opacite_fond=0.3)\ni = point(2, 2, visible=faux)\nj = point({{eval:2*L-2}}, 2, visible=faux)\nm = point({{eval:2*L-2}}, {{eval:2*l-2}}, visible=faux)\nq = point(2, {{eval:2*l-2}}, visible=faux)\npolygone(i, j, m, q, remplissage=\"blanc\", opacite_fond=1)\ntexte({{L}}, -1, \"{{L}} cm\")\ntexte(-2, {{l}}, \"{{l}} cm\")\ntexte({{L}}, 1, \"1 cm\")\n```\n\nCalcule l'aire du cadre (en couleur).\n\n$?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "L",
+						"expression": "6..11"
+					},
+					{
+						"name": "l",
+						"expression": "4..7"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\text{aire} = \\text{aire du grand rectangle} - \\text{aire du rectangle intérieur}$.",
+						"Le rectangle intérieur perd $1$ cm de chaque côté : il mesure ${{eval:L-2}}$ cm sur ${{eval:l-2}}$ cm.",
+						"${{L}} \\times {{l}} - {{eval:L-2}} \\times {{eval:l-2}} = {{eval:L*l}} - {{eval:(L-2)*(l-2)}} = \\textcolor{{{color:primary.0}}}{{{eval:L*l-(L-2)*(l-2)}}~\\unit{cm^2}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Aire d'une figure composée : retrancher",
+		"description": "Calculer l'aire d'une figure obtenue en retirant un triangle, un disque ou un rectangle d'un rectangle ou d'un carré : on soustrait les aires",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["37"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "8",
+					"l": "5",
+					"u": "2",
+					"v": "3"
+				},
+				"description": "Rectangle 8 × 5 − triangle 2 × 3 / 2 = 37",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["43"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "8",
+					"l": "5",
+					"u": "2",
+					"v": "3"
+				},
+				"description": "Erreur : triangle ajouté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["34"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "8",
+					"l": "5",
+					"u": "2",
+					"v": "3"
+				},
+				"description": "Erreur : triangle non divisé par 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7,74"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "6",
+					"r": "3"
+				},
+				"description": "Carré 6 − disque r = 3 : 7,74",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-77,04"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "6",
+					"r": "3"
+				},
+				"description": "Erreur : disque de rayon 6",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["13,76"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "8",
+					"r": "4"
+				},
+				"description": "Carré 8 − disque r = 4 : 13,76",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["114,24"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "8",
+					"r": "4"
+				},
+				"description": "Erreur : disque ajouté",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["22"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "8",
+					"l": "5"
+				},
+				"description": "Cadre 8 × 5 : 40 − 18 = 22",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["40"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "8",
+					"l": "5"
+				},
+				"description": "Erreur : aire du grand rectangle",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "8",
+					"l": "5"
+				},
+				"description": "Erreur : rectangle intérieur seul",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "e2419609-0d83-4531-a799-acf1659323a5",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 45,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{j}}"
+					}
+				],
+				"statement": "Lequel de ces solides est {{if:k==1|un **cube**|un **pavé droit** qui n'est pas un cube}} ?\n\n````choix\n- ```solide\n  forme: cube 3\n  ```\n- ```solide\n  forme: pave 4.5 2 2.5\n  ```\n- ```solide\n  forme: prisme triangle 3 2.5 4\n  ```\n- ```solide\n  forme: pyramide carree 3 3.5\n  ```\n````",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "j",
+						"expression": "eval:k-1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un **pavé droit** a $6$ faces rectangulaires. Un **cube** est un pavé droit dont les $6$ faces sont des carrés : toutes ses arêtes ont la même longueur.",
+						"En perspective cavalière, la face de devant est dessinée en vraie grandeur : {{if:k==1|un carré pour le cube.|un rectangle non carré pour ce pavé.}}",
+						"Les deux autres sont un prisme (faces de devant triangulaires) et une pyramide (un sommet en haut) : {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{le cube}}$|$\\textcolor{{{color:primary.0}}}{\\text{le pavé}}$}} est le seul qui convient."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{j}}"
+					}
+				],
+				"statement": "Voici un solide en perspective cavalière.\n\n{{if:k==1|```solide\nforme: cube {{a}}\ncotes: cm\n```|```solide\nforme: pave {{l}} {{p}} {{h}}\ncotes: cm\n```}}\n\nQuel est le nom le plus précis de ce solide ?\n\n```choix\n- un cube\n- un pavé droit (non cube)\n- un prisme droit à base triangulaire\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "j",
+						"expression": "eval:k-1"
+					},
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "l",
+						"expression": "3..7"
+					},
+					{
+						"name": "p",
+						"expression": "2..5"
+					},
+					{
+						"name": "h",
+						"expression": "2..6"
+					}
+				],
+				"conditions": ["l!=p", "p!=h", "l!=h"],
+				"correction": {
+					"steps": [
+						"Les $6$ faces de ce solide sont des rectangles : c'est un pavé droit.",
+						"{{if:k==1|Ses trois dimensions sont égales ($ {{a}} $ cm) : toutes ses faces sont des carrés. C'est $\\textcolor{{{color:primary.0}}}{\\text{un cube}}$, un pavé droit particulier.|Ses dimensions ne sont pas toutes égales : ce n'est pas un cube, c'est $\\textcolor{{{color:primary.0}}}{\\text{un pavé droit}}$.}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Reconnaître un cube, un pavé",
+		"description": "Reconnaître un cube et un pavé droit représentés en perspective cavalière",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "0",
+					"k": "1"
+				},
+				"description": "Le cube",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "0",
+					"k": "1"
+				},
+				"description": "Erreur : le pavé pour le cube",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"k": "2"
+				},
+				"description": "Le pavé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"k": "2"
+				},
+				"description": "Erreur : le prisme pour le pavé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"h": "2",
+					"j": "0",
+					"k": "1",
+					"l": "5",
+					"p": "3"
+				},
+				"description": "Cube coté : un cube",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"h": "2",
+					"j": "0",
+					"k": "1",
+					"l": "5",
+					"p": "3"
+				},
+				"description": "Erreur : cube appelé pavé (non cube)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"h": "2",
+					"j": "1",
+					"k": "2",
+					"l": "5",
+					"p": "3"
+				},
+				"description": "Pavé coté : un pavé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"h": "2",
+					"j": "1",
+					"k": "2",
+					"l": "5",
+					"p": "3"
+				},
+				"description": "Erreur : pavé appelé cube",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	}
+]

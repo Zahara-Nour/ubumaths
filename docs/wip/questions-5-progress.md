@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2714 (lot 15 écrit, mergé)._
+_Mis à jour le 2026-11-16, lot 15 en prod (brouillons), PR de rangement ouverte._
 
-- **État** : lots 1 à 14 publiés ; lot 15 « Symétrie centrale, aires, solides » écrit (8 brouillons,
-  `scripts/questions/5-symetrie-aires-solides/`, § 30 ter), pas encore en prod. Restent : 9 D, 101 et 104 (`blockly`).
-- **Prochaine action** : après le `--publier` de David, commiter les id, migration de rangement (gabarit lot 14 :
-  01-03 → « Symétrie centrale », 04-05 → notion « Aires », 06-07 → « perspective cavalière », 08 → « patrons » n3),
-  page à cocher, publication.
-- **En attente de David** : (1) `create-questions --dir scripts/questions/5-symetrie-aires-solides --publier` depuis le
-  worktree ; (2) `--dir scripts/questions/5-parallelogrammes --publier --mettre-a-jour` (02 du lot 14 : variable `e`) ;
-  (3) corriger `e` dans `d5a36be9`, `092b310c`, `406fd9a8`, `7efd2e76` (autres chantiers) ? ; 02 du lot 7 à essayer.
+- **État** : lots 1 à 14 publiés ; lot 15 « Symétrie centrale, aires, solides » : 8 brouillons en prod (id commités),
+  migration de rangement `20261116133604_questions_5_lot15_rangement_tags` (§ 30 quater). Restent : 9 D, 101 et 104
+  (`blockly`).
+- **Prochaine action** : PR de rangement → CI verte, `security-auditor`, `check:migrations`, merge, `db:migrate`,
+  vérif MCP ; puis page à cocher, publication.
+- **En attente de David** : (1) `--dir scripts/questions/5-parallelogrammes --publier --mettre-a-jour` (02 du lot 14,
+  `95bea43b`, publié : variable `e` encore en prod le 2026-11-16) ; (2) corriger `e` dans `d5a36be9`, `092b310c`,
+  `406fd9a8`, `7efd2e76` (autres chantiers) ? ; 02 du lot 7 à essayer.
 - **Pièges en cours** : jamais de variable ni de point `e` ; `--publier` LOCAL → copie au scratchpad ; serveur
   `--host 127.0.0.1` ; retirer un worktree : commandes avec `cd` du dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-questions-5` (branche `feat/questions-5-lot-15`, mergée) gardé pour le
-  `--publier` ; la suite part d'une branche neuve.
+- **Worktree / branche** : `../ubumaths-wt-questions-5`, branche `feat/questions-5-lot-15-rangement`.
 
 ---
 
@@ -1204,3 +1203,15 @@ Le bloc solide n'a pas d'orientation : un même pavé « vu autrement » = même
   choix E, F, G, H. Figures d'aires : couleurs nommées (le contrôle refuse un hexadécimal, illisible en sombre),
   trous en `blanc` (= fond de la page), fenêtre calculée d'après les cotes.
 - Regardés : 02 v1 (quadrillage), 03 v1, v3, 04 v2 (demi-disque d'une seule teinte), 05 v2 (trou), 07 v3, 08 v2, v3.
+
+### 30 quater. Lot 15 en prod, rangement (2026-11-16)
+
+- David a lancé `create-questions --publier` : 8 brouillons (`017b381a`, `0d4760f8`, `b05fcd29`, `dc220b3b`,
+  `e206964d`, `e2419609`, `9cc1336b`, `b4c9a2a1`), vérifiés au MCP (draft, niveau 5, sans nœud ni tag) ; id commités
+  sur `feat/questions-5-lot-15-rangement`.
+- Relevé `etat-prod-2026-11-16-lot15/` : 054, 055 → notion « Géométrie › Symétrie centrale » ; 115 → notion
+  « Grandeurs et mesures › Aires » ; 144, 048 → « Solides › perspective cavalière » ; 049 → « Solides › patrons ».
+- Migration `20261116133604_questions_5_lot15_rangement_tags` (générée, `docs/wip/questions-5/lot-15-rangement.py`,
+  gabarit lot 14) : les 8 sur le nœud de leur point, tag posé, aucun nœud créé. Test d'intégration 19 verts ; sans le
+  corps, 8 rouges, 7 sautés.
+- 02 du lot 14 (`95bea43b`, publié) : la variable `e` est toujours en prod (`--mettre-a-jour` pas encore lancé).

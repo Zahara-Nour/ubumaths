@@ -1,4 +1,5 @@
 {
+	"id": "dc220b3b-f555-44ba-8425-fcf24f7db10f",
 	"title": "Aire d'une figure composée : ajouter",
 	"description": "Calculer l'aire d'une figure faite d'un rectangle ou d'un parallélogramme et d'un triangle ou d'un demi-disque : on additionne les aires",
 	"grades": ["5"],
