@@ -204,3 +204,21 @@ Points de mise en œuvre posés à David avant de coder (D1-D3 et A1-A6 sont val
 - **Q32 (tranchée le 2026-11-16)** : un lien neuf révoque l'ancien avant l'envoi ; accepté et écrit (doc, ADR), fonction SQL inchangée.
 - Migration : intégration rouge sans elle (« retirée » refusée par la contrainte), 35/35 avec ; appliquée en local par psql (jamais `db:migrate` avant le merge).
 - **Mergée** le 2026-11-16 (#2731), CI verte au 2e passage (export interdit dans `+page.server.ts`, doc de la base) ; migration `20261116204753` appliquée en prod, vérifiée (contraintes et trigger).
+
+## PR 4 — courriels d'exception, message trimestriel, envois automatiques (2026-11-16)
+
+Worktree `../ubumaths-wt-partage-parents`, branche `feat/partage-parents-pr4`. E1-E7, Q19, Q21, Q27 et Q29 sont validés ; restent les points de mise en œuvre.
+
+Constats (prod, lecture seule, 2026-11-16) :
+
+- Trimestres : `academic_periods` est rempli (2026-2027 : T1 jusqu'au 27 nov., T2 jusqu'au 19 fév., T3 jusqu'au 4 juin). Le 1er message trimestriel tomberait donc le 28 novembre si le code est déployé d'ici là.
+- Fin d'année : les classes de 2025-2026 sont inactives et leurs membres `archived`. Entre l'archivage et la rentrée, un élève n'est donc dans **aucune** classe active. Effacer les adresses « quand l'élève quitte toute classe » les effacerait chaque été, ce qui contredit « gardées d'une année à l'autre » (Q21).
+- Un consentement **accordé** n'expire pas dans le schéma (`expires_at` ne vaut que pour un consentement en attente). La branche « consentement expiré » de Q21 ne s'applique donc à aucune adresse confirmée.
+
+Questions (recommandation en premier) :
+
+- **Q33 — Heure et regroupement (Q19)** : un passage par jour vers 17 h, heure de Paris. Une exception nouvelle part le jour même si le parent n'a reçu aucun courriel d'exception ni trimestriel depuis 7 jours ; sinon elle attend la fin des 7 jours et part avec les autres exceptions **encore ouvertes** (une exception résolue entre-temps ne part pas). Les courriels de lien et de confirmation ne comptent pas dans le plafond.
+- **Q34 — Message trimestriel (E4)** : il part le lendemain de la fin du trimestre (`academic_periods` de l'école). « Du vrai à dire » = (a) un jour travaillé ou plus dans au moins 2 semaines de classe sur 3 du trimestre, hors vacances → « Léa a travaillé régulièrement ce trimestre » ; (b) révisions à jour le dernier jour → « Ses révisions sont à jour ». Le courriel ne contient que la ou les phrases vraies, sans aucun nombre ; si aucune n'est vraie, rien ne part. Il compte dans le plafond hebdomadaire.
+- **Q35 — Effacement des adresses (Q21)** : effacer les adresses d'un élève qui n'est membre actif d'**aucune classe active depuis 90 jours** (l'été est couvert ; un départ en cours d'année est effacé en un trimestre). Est effacée la ligne entière (adresse, empreinte, liens) ; le journal des courriels envoyés reste, sans l'adresse. ⚠️ Perte de données voulue (RGPD) : un parent effacé doit être ressaisi et reconfirmé.
+- **Q36 — Liens manquants automatiques (Q29)** : chaque passage envoie d'abord les liens manquants (même règle que le bouton du professeur), puis les exceptions. Au plus 150 courriels par passage (la moitié du quota Brevo de 300 par jour) ; le reste part le lendemain.
+- **Q37 — Question d'accès de la migration** : (1) la table des épisodes d'exception n'est lue par **personne** via l'API (service role seul) ; (2) Q27 : le détenteur d'un lien lit en plus les évaluations sans échéance non faites, créées avant la fenêtre de 5 semaines (titre, faite ou non) ; (3) effacement : le parent effacé perd son carnet ; personne d'autre ne perd rien. Personne ne lit rien d'autre de nouveau.
