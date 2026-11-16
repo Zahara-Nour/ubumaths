@@ -837,4 +837,9 @@ Script `docs/wip/questions/lot-blockly-4e-3e.py` → `scripts/questions/blockly-
   3-049 → Boucles › boucle non bornée ;
   4-068, 4-069, 3-051 → notion « Variables et instructions » (4 sous-notions : blocs
   personnalisés, instructions conditionnelles, types, variables et affectation).
-- **Question d'accès** : posée à David le 2026-11-16, en attente.
+- **Question d'accès** (2026-11-16) : « qui pourra lire quoi, qu'il ne pouvait pas lire avant ? » →
+  personne (rattachement de 9 brouillons à un nœud et à un point, aucune règle ne change) ; David : « oui ».
+- **Migration** `20261116183439` générée par `docs/wip/questions/lot-blockly-4e-3e-rangement.py`
+  (gabarit : `docs/wip/questions-5/lot-15-rangement.py`, qui garde aussi niveaux et statut, rollback
+  gardé), relevé `docs/wip/questions/etat-prod-2026-11-16-blockly-4e-3e/` (`releve-prod.ts`, lecture
+  seule). Test d'intégration 19/19, rouge sans la migration (11 en échec, 7 sautés).
