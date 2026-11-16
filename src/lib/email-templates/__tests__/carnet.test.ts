@@ -5,12 +5,24 @@
  *   sur l'élève (Q18) ; le lien de confirmation, 7 jours ; « Je ne suis pas le
  *   parent » expliqué ;
  * - lien : le lien du carnet, et le chemin « lien perdu » (A6) ;
+ * - exception (PR 4) : une phrase par motif, le lien du carnet et « ne plus
+ *   recevoir », par le jeton du courriel (Q38) ;
+ * - trimestriel : seulement les phrases vraies, sans aucun nombre (Q34) ;
  * - HTML échappé (un prénom saisi peut contenir du balisage).
  */
 
 import { describe, it, expect } from 'vitest';
 import {
+	carnetExceptionPhrase,
+	carnetQuarterlyPhrases,
 	getCarnetConfirmationEmailHtml,
+	getCarnetExceptionEmailHtml,
+	getCarnetExceptionEmailText,
+	getCarnetExceptionSubject,
+	getCarnetQuarterlyEmailHtml,
+	getCarnetQuarterlyEmailText,
+	getCarnetQuarterlySubject,
+	getCarnetStopLink,
 	getCarnetConfirmationEmailText,
 	getCarnetConfirmationSubject,
 	getCarnetLinkEmailHtml,
@@ -53,5 +65,82 @@ describe('courriel du lien', () => {
 			expect(body).toContain(`https://www.chiph.re/carnet/${JETON}`);
 			expect(body).toContain('https://www.chiph.re/carnet/lien-perdu');
 		}
+	});
+});
+
+describe("courriel d'exception (E1, E5, Q38)", () => {
+	const data = {
+		studentFirstname: 'Léa',
+		token: JETON,
+		reasons: ['evaluation_missed', 'reviews_overdue', 'inactivity'] as const,
+		overdueDays: 7,
+		inactivityDays: 15
+	};
+
+	it('une phrase par motif, le lien du carnet et « ne plus recevoir »', () => {
+		const text = getCarnetExceptionEmailText({ ...data, reasons: [...data.reasons] });
+		expect(getCarnetExceptionSubject({ ...data, reasons: [...data.reasons] })).toContain('Léa');
+		expect(text).toContain("Léa n'a pas fait une évaluation avant son échéance.");
+		expect(text).toContain('depuis plus de 7 jours.');
+		expect(text).toContain('ces 15 derniers jours de classe.');
+		expect(text).toContain(`https://www.chiph.re/carnet/${JETON}\n`);
+		expect(text).toContain(`https://www.chiph.re/carnet/${JETON}#courriels`);
+		expect(getCarnetStopLink(JETON)).toBe(`https://www.chiph.re/carnet/${JETON}#courriels`);
+	});
+
+	it('un seul motif : une seule phrase, ni note ni titre d’évaluation', () => {
+		const text = getCarnetExceptionEmailText({ ...data, reasons: ['inactivity'] });
+		expect(text.match(/^- /gm)).toHaveLength(1);
+		expect(text).not.toContain('évaluation');
+		expect(text).not.toContain('révisions');
+	});
+
+	it('HTML échappé', () => {
+		const html = getCarnetExceptionEmailHtml({
+			...data,
+			reasons: ['inactivity'],
+			studentFirstname: '<b>Léa</b>'
+		});
+		expect(html).not.toContain('<b>Léa</b>');
+		expect(html).toContain('&lt;b&gt;Léa&lt;/b&gt;');
+	});
+
+	it('prénom manquant : « Votre enfant » en début de phrase ; objet sans retour à la ligne', () => {
+		const sans = { ...data, studentFirstname: 'votre enfant' };
+		expect(carnetExceptionPhrase('inactivity', sans)).toMatch(/^Votre enfant /);
+		const objet = getCarnetExceptionSubject({
+			...data,
+			reasons: ['inactivity'],
+			studentFirstname: 'Léa\r\nBcc: x@example.test'
+		});
+		expect(objet).not.toMatch(/[\r\n]/);
+	});
+
+	it('chaque motif a sa phrase', () => {
+		for (const reason of data.reasons) {
+			expect(carnetExceptionPhrase(reason, data)).toMatch(/\.$/);
+		}
+	});
+});
+
+describe('message trimestriel (E4, Q34)', () => {
+	const base = { studentFirstname: 'Léa', token: JETON };
+
+	it('seulement les phrases vraies, sans aucun nombre', () => {
+		expect(carnetQuarterlyPhrases({ ...base, regular: true, reviewsUpToDate: false })).toEqual([
+			'Léa a travaillé régulièrement ce trimestre.'
+		]);
+		expect(carnetQuarterlyPhrases({ ...base, regular: false, reviewsUpToDate: true })).toEqual([
+			'Ses révisions sont à jour.'
+		]);
+		const text = getCarnetQuarterlyEmailText({ ...base, regular: true, reviewsUpToDate: true });
+		const sansLiens = text.replace(/https:\S+/g, '');
+		expect(sansLiens).not.toMatch(/\d/);
+		expect(getCarnetQuarterlySubject({ ...base, regular: true, reviewsUpToDate: true })).toContain(
+			'Léa'
+		);
+		expect(
+			getCarnetQuarterlyEmailHtml({ ...base, regular: true, reviewsUpToDate: false })
+		).toContain(`/carnet/${JETON}#courriels`);
 	});
 });

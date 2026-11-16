@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR 4a en cours._
+_Mis à jour le 2026-11-16, après #2736 (4a)._
 
-- **État** : PR 1 à 3 mergées. PR 4 coupée en deux (règle « fonction SQL + code qui l'appelle = deux PR ») : **4a** = migration `20261116215952_carnet_courriels_exception.sql` + `tests/integration/carnet-courriels-exception.test.ts` (19 verts, rouges sans la migration ; appliquée en local par psql).
-- **Prochaine action** : 4a → revues (`code-reviewer` + `security-auditor`, Opus), CI, merge, `db:migrate` (copier `supabase/.temp/{project-ref,linked-project.json,pooler-url}` du dépôt principal), `db:types`. Puis **4b** depuis `origin/main` dans le même worktree : cron `/api/cron/carnet-de-liaison`, `src/lib/server/carnet/courriels.ts`, courriels d'exception et trimestriel. Les modifs TS de la 4b (`brevo.ts`, `email-templates/carnet.ts`, `envois.ts` `maxLinks`) sont **non commitées** dans le worktree : les garder.
-- **En attente de David** : Q39 (`List-Unsubscribe-Post` impossible sans toucher au CSRF de SvelteKit, voir § PR 4).
-- **Pièges en cours** : données d'élèves mineurs. Le 1er trimestre finit le 27 nov. : message trimestriel possible dès le 28 si 4b est déployée. Écritures sur les adresses par le service role seulement. Un worktree n'est pas lié à Supabase (copier `supabase/.temp`).
+- **État** : 4a mergée (#2736), migration `20261116215952` **appliquée en prod** et vérifiée (droits, contrainte), `db:types` fait. **4b** en cours sur `feat/partage-parents-pr4b` : `courriels.ts` (`runCarnetDaily`), cron `/api/cron/carnet-de-liaison` (16 h UTC), courriels d'exception et trimestriel, tests (intégration du passage avec Brevo simulé, route, gabarits), doc `carnet-de-liaison.md` § « Le passage quotidien ».
+- **Prochaine action** : revues de la 4b (`code-reviewer` + `security-auditor`), PR, CI, merge. Rien n'est déployé : `deploy:prod` = David (le 1er trimestre finit le 27 nov.).
+- **En attente de David** : Q39 (`List-Unsubscribe-Post`) ; la 4b fait le choix qui ne change rien (pas de modification du CSRF), réversible.
+- **Pièges en cours** : données d'élèves mineurs. Test d'intégration du passage : client service du test passé explicitement, celui de l'environnement est simulé pour lever une erreur. Une classe de test a besoin d'un professeur (trigger du chat de classe).
 - **Ensuite** : PR 5 (versement de la doc, registre RGPD, point 8 de `presentation-parents`).
-- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-pr4`.
+- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-pr4b`.
 
 ## Origine
 
@@ -252,3 +252,17 @@ Questions (recommandation en premier) :
   - un élève arrivé en cours d'année est jugé inactif depuis la rentrée de l'école ;
   - `access_count` du lien compte aussi les ouvertures par un courriel.
 - Contrat pour la 4b (écrit dans la migration) : envoyer et journaliser les courriels d'exception **avant** de lire le plan trimestriel.
+
+## PR 4b — passage quotidien (2026-11-16)
+
+- #2736 mergée, CI verte ; `db:migrate` (4 conditions réunies) puis vérification en prod en lecture seule : table, colonnes, contrainte, aucun droit pour `anon` / `authenticated`, service role oui. `db:types` commité sur la 4b.
+- `src/lib/server/carnet/courriels.ts` : effacement → liens manquants (plafond) → exceptions (ligne du journal écrite « failed » avec l'empreinte AVANT l'envoi, « sent » après ; épisodes marqués après l'envoi) → trimestriel (lu après les exceptions, contrat de la migration). 150 courriels par passage.
+- Route `api/cron/carnet-de-liaison` (`vercel.json` `0 16 * * *`), liste blanche du déclencheur admin, page admin.
+- Tests : `tests/integration/carnet-passage-quotidien.test.ts` (3, Brevo simulé ; mutation « échec compté comme envoi » → le test E6 rougit), route (3), gabarits (5 de plus).
+- E6 rejets différés : pas de webhook Brevo, écrit en « Limites connues » de `carnet-de-liaison.md` (ce n'est pas un outil pédagogique : rien dans `outils-manquants.md`).
+- Revues de la 4b (2026-11-16), `security-auditor` et `code-reviewer` (Opus) : **aucun finding bloquant**. Corrigés :
+  - deux passages simultanés (cron + bouton de l'admin) envoyaient deux fois : un passage `running` de moins de 30 min → 409 ;
+  - un courriel parti mais resté « failed » échappait au plafond : la ligne est écrite « sent » avant l'envoi et repassée « failed » si Brevo refuse ;
+  - budget négatif (des échecs de base comptés comme courriels) : seuls les courriels tentés comptent, budget borné à 0 ; test « les liens épuisent le budget » ;
+  - objet du courriel sans caractère de contrôle ; « Votre enfant » en début de phrase ; inactivité « ces N derniers jours de classe » (la règle SQL se déclenche à N exactement) ; trimestriel sans « Une bonne nouvelle ».
+- Laissés, à dire à David : plafond par adresse ET par élève (deux enfants → deux courriels possibles le même jour) ; pas de `maxDuration` (la valeur par défaut de Vercel suffit pour un professeur ; à revoir si le passage grossit).

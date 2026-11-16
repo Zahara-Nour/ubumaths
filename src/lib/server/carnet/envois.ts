@@ -580,11 +580,12 @@ async function eachLimited<T, R>(
  * adresses des consentements accordés, puis envoie un lien à chaque adresse
  * confirmée qui n'en a pas. L'appelant a vérifié que le carnet de la classe est
  * activé. Rejouable sans doublon : une adresse qui a reçu son lien n'est plus
- * « manquante ».
+ * « manquante ». `maxLinks` borne les liens envoyés (passage quotidien, Q36).
  */
 export async function sendClassMissingLinks(
 	classId: string,
-	service: SB = createServiceRoleClient()
+	service: SB = createServiceRoleClient(),
+	maxLinks = Number.POSITIVE_INFINITY
 ): Promise<{ sent: number; failed: number }> {
 	const plan = await planClassMissingLinks(classId, service);
 	const now = new Date().toISOString();
@@ -637,14 +638,20 @@ export async function sendClassMissingLinks(
 		if (data && data.length > 0) toLink.push(row.contact_id);
 	}
 
-	const outcomes = await eachLimited(toLink, SEND_CONCURRENCY, async (contactId) => {
-		try {
-			return await sendCarnetLink(contactId, service);
-		} catch (err) {
-			logger.error('[sendClassMissingLinks] lien', err);
-			return 'send_failed' as const;
+	// Plafond du passage quotidien (Q36) : le reste est encore « manquant »
+	// demain (une adresse confirmée ici sans lien l'est aussi).
+	const outcomes = await eachLimited(
+		toLink.slice(0, maxLinks),
+		SEND_CONCURRENCY,
+		async (contactId) => {
+			try {
+				return await sendCarnetLink(contactId, service);
+			} catch (err) {
+				logger.error('[sendClassMissingLinks] lien', err);
+				return 'send_failed' as const;
+			}
 		}
-	});
+	);
 	const sent = outcomes.filter((o) => o === 'sent').length;
 	failed += outcomes.filter((o) => o === 'send_failed').length;
 	return { sent, failed };
