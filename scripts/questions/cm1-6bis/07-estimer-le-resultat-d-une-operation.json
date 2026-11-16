@@ -1,4 +1,5 @@
 {
+	"id": "c08f689b-0039-4388-8671-5bcd8a220246",
 	"title": "Estimer le résultat d'une opération",
 	"description": "Somme de trois nombres proches de centaines, produit de deux nombres proches de dizaines, quotient d'un nombre proche d'un multiple de 100 ; choisir parmi quatre valeurs",
 	"grades": ["CM1"],
