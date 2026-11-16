@@ -11,9 +11,8 @@ _Mis à jour le 2026-11-16, lot 15 publié._
   MCP). Restent : 9 D, 101 et 104 (`blockly`).
 - **Prochaine action** : clore ou non la 5e avec David (9 D, 101, 104 attendent le chantier `blockly`) ; la suite part
   d'un worktree neuf.
-- **En attente de David** : (1) `--dir scripts/questions/5-parallelogrammes --publier --mettre-a-jour` (02 du lot 14,
-  `95bea43b`, publié : variable `e` encore en prod le 2026-11-16) ; (2) corriger `e` dans `d5a36be9`, `092b310c`,
-  `406fd9a8`, `7efd2e76` (autres chantiers) ? ; 02 du lot 7 à essayer.
+- **En attente de David** : variable `e` → chantier `variable-e` (#2725 mergée ; mise à jour de la prod à lancer,
+  `5-parallelogrammes` compris) ; 02 du lot 7 (`ef08a256`, deux cases) à essayer à la main.
 - **Pièges en cours** : jamais de variable ni de point `e` ; `--publier` LOCAL → copie au scratchpad ; serveur
   `--host 127.0.0.1` ; retirer un worktree : commandes avec `cd` du dépôt principal.
 - **Worktree / branche** : aucun (worktree du lot 15 retiré, branche supprimée).
