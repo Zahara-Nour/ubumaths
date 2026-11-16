@@ -9,6 +9,8 @@ export {
 	executerTortue,
 	messageErreurTortue,
 	LIMITE_PAS,
+	NIVEAUX_TORTUE,
+	type NiveauTortue,
 	type EtapeTortue,
 	type EtatTortue,
 	type ErreurTortue,
@@ -31,6 +33,12 @@ export {
 	type EtatLu,
 	type TexteLu
 } from './notation';
+export {
+	etatVersTexteTortue,
+	messageNiveauTortue,
+	nombreDeBlocsTortue,
+	texteVersEtatTortue
+} from './niveaux';
 export {
 	jugerProgrammeTortue,
 	lireProgrammeTortue,

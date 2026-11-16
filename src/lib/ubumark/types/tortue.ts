@@ -17,6 +17,7 @@
 
 import type { BaseNode } from './ast';
 import type { ComparaisonTortue } from '$lib/shared/blockly/tortue/jugement';
+import type { NiveauTortue } from '$lib/shared/blockly/tortue/interpreteur';
 import type { Segment } from '$lib/shared/blockly/tortue/segments';
 
 // ============================================================================
@@ -57,6 +58,11 @@ export interface TortueSpec {
 	 * Une consigne, pas la réponse : gardée dans l'énoncé d'une évaluation notée
 	 */
 	blocsMax: number | null;
+	/**
+	 * Blocs proposés et admis (`niveau: 4e | 3e`) : variables et calculs en 4e, « si » et
+	 * conditions en plus en 3e ; `base` sans `niveau:`
+	 */
+	niveau: NiveauTortue;
 }
 
 /** Message situé, à destination de l'AUTEUR (jamais montré à l'élève) */

@@ -17,6 +17,11 @@
  * - `départ:` : un programme posé d'avance dans l'espace de travail de l'élève, à modifier.
  * - `blocs: N` : au plus N blocs (les nombres écrits dans un bloc ne comptent pas) ; au-delà, le
  *   programme est faux. `attendu:` doit tenir dans la limite ; `départ:` peut la dépasser.
+ * - `niveau: 4e | 3e` (défaut : sans niveau) : les blocs proposés et admis — en 4e, variables,
+ *   calculs dans les entrées, répétition calculée ; en 3e, en plus, « si », conditions, « répéter
+ *   jusqu'à ». `attendu:` et `départ:` s'écrivent alors dans la notation des programmes de calcul
+ *   (`mettre n à 6 ; répéter n [ avancer 3 ; tourner à gauche 360 ÷ n ]`) et doivent tenir dans
+ *   le niveau.
  * - `case: N` : posée par le générateur.
  * - `figure:` : réservée à l'énoncé d'une évaluation notée, où `attendu:` devient `?` ; elle
  *   porte la figure à reproduire (`x1 y1 x2 y2 ; …`).
@@ -30,7 +35,13 @@ import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
 import { isMaskedValue } from '../utils/masked-value';
 import { lireProgrammeTortue, type ComparaisonTortue } from '$lib/shared/blockly/tortue/jugement';
-import { nombreDeBlocs, texteVersEtat } from '$lib/shared/blockly/tortue/notation';
+import {
+	messageNiveauTortue,
+	nombreDeBlocsTortue,
+	texteVersEtatTortue
+} from '$lib/shared/blockly/tortue/niveaux';
+import type { NiveauTortue } from '$lib/shared/blockly/tortue/interpreteur';
+import { variableJamaisMise } from '$lib/shared/blockly/calcul/notation';
 import { normaliserSegments, type Segment } from '$lib/shared/blockly/tortue/segments';
 import {
 	TORTUE_BLOCS_MAX,
@@ -50,9 +61,21 @@ const BLOCK_END_REGEX = /^```\s*$/;
 /** `clé: valeur` */
 const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 
-type Key = 'attendu' | 'montrer' | 'comparer' | 'départ' | 'blocs' | 'case' | 'figure';
+type Key = 'attendu' | 'montrer' | 'comparer' | 'départ' | 'blocs' | 'niveau' | 'case' | 'figure';
 
-const KEY_NAMES: Key[] = ['attendu', 'montrer', 'comparer', 'départ', 'blocs', 'case', 'figure'];
+const KEY_NAMES: Key[] = [
+	'attendu',
+	'montrer',
+	'comparer',
+	'départ',
+	'blocs',
+	'niveau',
+	'case',
+	'figure'
+];
+
+/** Niveaux écrits après `niveau:` (sans la clé : `base`). */
+const NIVEAUX_ECRITS: readonly NiveauTortue[] = ['4e', '3e'];
 
 /** Les clés du bloc, `depart` sans accent compris : une ligne qui commence par l'une d'elles
  * n'est jamais du texte (Q66) */
@@ -198,6 +221,11 @@ export function parseTortueContent(source: string): TortueNode {
 	let figure: Segment[] | null = null;
 	let depart: string | null = null;
 	let blocsMax: number | null = null;
+	let niveau: NiveauTortue = 'base';
+	let niveauLu = true;
+	/** `attendu:` et `départ:` écrits : lus après la boucle, au niveau du bloc */
+	let attenduEcrit: string | null = null;
+	let departEcrit: string | null = null;
 	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
 
@@ -218,7 +246,7 @@ export function parseTortueContent(source: string): TortueNode {
 		if (key === null) {
 			fail(
 				lineNo,
-				`clé « ${match[1]} » inconnue (clés possibles : attendu, montrer, comparer, départ, blocs)`
+				`clé « ${match[1]} » inconnue (clés possibles : attendu, montrer, comparer, départ, blocs, niveau)`
 			);
 			return;
 		}
@@ -238,13 +266,7 @@ export function parseTortueContent(source: string): TortueNode {
 						break;
 					}
 					if (value === '') throw new LineError(`attendu: vide (ex. ${EXEMPLE_ATTENDU})`);
-					const lu = lireProgrammeTortue(value);
-					if (!lu.ok) throw new LineError(`attendu: ${lu.message}`);
-					if (lu.segments.length === 0) {
-						throw new LineError('attendu: ce programme ne trace rien (stylo levé ?)');
-					}
-					attendu = value;
-					segmentsAttendus = lu.segments;
+					attenduEcrit = value;
 					break;
 				}
 				case 'montrer':
@@ -256,10 +278,16 @@ export function parseTortueContent(source: string): TortueNode {
 				case 'figure':
 					figure = parseFigure(value);
 					break;
-				case 'départ': {
-					const lu = texteVersEtat(value);
-					if (!lu.ok) throw new LineError(`départ: ${lu.message}`);
-					depart = value === '' ? null : value;
+				case 'départ':
+					departEcrit = value;
+					break;
+				case 'niveau': {
+					const lu = NIVEAUX_ECRITS.find((n) => n === value.toLowerCase());
+					if (lu === undefined) {
+						niveauLu = false;
+						throw new LineError(`niveau: « ${value} » : 4e ou 3e (sans niveau : pas de ligne)`);
+					}
+					niveau = lu;
 					break;
 				}
 				case 'blocs': {
@@ -287,6 +315,39 @@ export function parseTortueContent(source: string): TortueNode {
 	if (!seen.has('attendu')) {
 		fail(1, `il manque la ligne attendu: (le programme de référence, ex. ${EXEMPLE_ATTENDU})`);
 	}
+
+	/**
+	 * Erreur d'un programme écrit au niveau du bloc : variable lue jamais mise (faute de frappe :
+	 * elle vaudrait 0 ; dite avant le niveau, qui proposerait sinon de monter en 4e), bloc
+	 * au-dessus du niveau, programme illisible ; null s'il convient.
+	 */
+	const erreurDuProgramme = (programme: string): string | null => {
+		const fautive = variableJamaisMise(programme, { tortue: true });
+		if (fautive !== null) return `« ${fautive} » est lue mais jamais mise (faute de frappe ?)`;
+		const horsNiveau = messageNiveauTortue(programme, niveau);
+		if (horsNiveau !== null) return horsNiveau;
+		const lu = texteVersEtatTortue(programme, niveau);
+		return lu.ok ? null : lu.message;
+	};
+	// Un niveau illisible : les programmes ne se lisent pas (son erreur est déjà dite)
+	if (niveauLu && attenduEcrit !== null) {
+		const ligne = seen.get('attendu') ?? 1;
+		const erreur = erreurDuProgramme(attenduEcrit);
+		const lu = erreur === null ? lireProgrammeTortue(attenduEcrit, niveau) : null;
+		if (erreur !== null) fail(ligne, `attendu: ${erreur}`);
+		else if (lu && !lu.ok) fail(ligne, `attendu: ${lu.message}`);
+		else if (lu && lu.segments.length === 0) {
+			fail(ligne, 'attendu: ce programme ne trace rien (stylo levé ?)');
+		} else if (lu) {
+			attendu = attenduEcrit;
+			segmentsAttendus = lu.segments;
+		}
+	}
+	if (niveauLu && departEcrit !== null) {
+		const erreur = erreurDuProgramme(departEcrit);
+		if (erreur !== null) fail(seen.get('départ') ?? 1, `départ: ${erreur}`);
+		else depart = departEcrit === '' ? null : departEcrit;
+	}
 	// La figure montrée part dans `figure:` en évaluation notée : au-delà de la limite,
 	// l'énoncé masqué ne se relirait plus (bloc indisponible pour l'élève)
 	if (
@@ -300,7 +361,7 @@ export function parseTortueContent(source: string): TortueNode {
 		);
 	}
 	// Un attendu au-delà de la limite : aucun élève ne pourrait être juste
-	const blocsAttendus = attendu === null ? null : nombreDeBlocs(attendu);
+	const blocsAttendus = attendu === null ? null : nombreDeBlocsTortue(attendu, niveau);
 	if (blocsMax !== null && blocsAttendus !== null && blocsAttendus > blocsMax) {
 		fail(
 			seen.get('blocs') ?? 1,
@@ -327,7 +388,8 @@ export function parseTortueContent(source: string): TortueNode {
 			comparer,
 			modele: montrer && traceModele ? normaliserSegments(traceModele) : null,
 			depart,
-			blocsMax
+			blocsMax,
+			niveau
 		},
 		errors,
 		...withCase
