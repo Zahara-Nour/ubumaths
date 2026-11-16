@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR A codée, pas encore ouverte._
+_Mis à jour le 2026-11-16, après #2735._
 
-- **État** : PR A (logique, sans écran) codée sur `feat/tortue-variables-logique` : moteur commun extrait de `calcul/interpreteur.ts` (`creerMoteur`, `preparerProgramme`), tortue branchée dessus, `tortue/niveaux.ts`, `niveau:` du parseur, réponse attendue `4e | …` ; tests et doc système à jour · **Prochaine action** : revue `code-reviewer` (Opus), ouvrir la PR A, CI, merge ; puis PR B (écran) · **En attente de David** : rien · **Pièges en cours** : l'écran (`TortueEditeur`, `TortueProgramme`, `TortueCorrige`) n'a pas encore le niveau — un modèle `niveau: 4e` publié avant la PR B serait injouable : ne pas en publier avant · **Worktree / branche** : `../ubumaths-wt-tortue-variables` · `feat/tortue-variables-logique`
+- **État** : PR A (logique) mergée (#2735) : moteur commun, `tortue/niveaux.ts`, `niveau:` du parseur, réponse attendue `4e | …` · **Prochaine action** : PR B (écran) — nouveau worktree `ubumaths-wt-tortue-variables` sur `feat/tortue-variables-ecran` : boîtes à outils par niveau, `TortueEditeur` / `TortueProgramme` / `TortueCorrige` au niveau (`texteVersEtatTortue`, `etatVersTexteTortue`, `nombreDeBlocsTortue`, `lireProgrammeTortue(…, niveau)`), sélecteur « base · 4e · 3e » de `/tortue` (Q6) · **En attente de David** : `départ:` doit-il refuser une variable jamais mise (empêche « complète le programme ») ? cf. § Revue PR A · **Pièges en cours** : écran pas encore au niveau → aucun modèle `niveau:` publié avant la PR B · **Worktree / branche** : aucun (supprimé après #2735)
 
 ## Origine
 
