@@ -2,16 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR ouverte._
+_Mis à jour le 2026-11-16, après #2725._
 
-- **État** : 4 modèles publiés renommés dans leurs fichiers (CP `d5a36be9`, CM1 `092b310c`, 2de `406fd9a8`,
-  `7efd2e76`), garde dans `checkTemplate`, corpus de relecture (3, 16, 17) et fixture de démo renommés.
-- **Prochaine action** : CI verte → merge ; puis David met la prod à jour (commandes ci-dessous).
-- **En attente de David** : `create-questions --publier --mettre-a-jour` sur `cp-b2`, `cm1-3c`, `2de-lecture-a`,
-  `5-parallelogrammes` ; relire au MCP qu'aucun modèle ne déclare plus `e`.
-- **Pièges en cours** : la garde est dans `checkTemplate` (création, publication, `update-published-questions`),
-  PAS dans la génération : les modèles déjà publiés continuent de tourner.
-- **Worktree / branche** : `../ubumaths-wt-variable-e`, branche `fix/variable-e`.
+- **État** : #2725 mergée (CI verte, `code-reviewer` sans finding) : 4 fichiers renommés, garde dans `checkTemplate`.
+- **Prochaine action** : David met la prod à jour ; puis relire au MCP qu'aucun modèle ne déclare plus `e`, et
+  archiver ce journal.
+- **En attente de David** : depuis le dépôt principal, `create-questions --publier --mettre-a-jour` sur `cp-b2`,
+  `cm1-3c`, `2de-lecture-a`, `5-parallelogrammes`.
+- **Pièges en cours** : la garde n'est pas dans la génération : les modèles publiés tournent jusqu'à leur mise à jour.
+- **Worktree / branche** : aucun (retiré après le merge).
 
 ---
 
