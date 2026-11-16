@@ -9,9 +9,9 @@ la PR 6g de `demo-debug` (#1711) : `calculateNewStability` n'utilise pas la note
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après le `db:migrate` de #2709._
+_Mis à jour le 2026-11-16, après #2712._
 
-- **État** : PR 1 à 1d mergées (#2703, #2705, #2708, #2709) ; migrations `20261115221544` (fsrs) et `20261115213402` (#2706, questions-cm1, feu vert de David) **en prod depuis le 2026-11-16** · **Prochaine action** : PR 2, rejouer les 27 fiches depuis `review_history` (script `--essai`, puis `--publier` sur demande explicite) · **En attente de David** : phase 0 de la PR 2 (§ Phase 0 de la PR 2) · **Pièges en cours** : base locale : la migration `20261115061153_questions_5_…` échoue à `migration up` → fonction appliquée en local par `docker exec … psql` ; `ts-fsrs` arrondit au 1e-8 ; commentaire du test `deck-stats-en-cours` (l. 10) à préciser (garde de compte, pas de paquet) dans la PR 2 · **Worktree / branche** : `../ubumaths-wt-fsrs`, `feat/fsrs-rejouer-fiches`
+- **État** : PR 1 à 1d et PR 2 (#2712, script `pnpm srs:rejouer-fiches`) mergées ; migrations en prod. **Les 27 fiches de prod ne sont PAS encore rejouées** · **Prochaine action** : sur demande explicite de David, depuis le dépôt principal : `pnpm srs:rejouer-fiches --cible prod` (simulation, à montrer à David sans la coller dans le dépôt), puis `--publier`, puis de nouveau la simulation (doit dire « 0 à rejouer ») ; ensuite clore le chantier (versement) · **En attente de David** : feu vert pour `--cible prod --publier` · **Pièges en cours** : sauvegardes dans `~/Downloads/chiphre-sauvegardes/` (données d'élèves, à supprimer sous 30 jours après vérification) ; base locale : la migration `20261115061153_questions_5_…` échoue à `migration up` · **Worktree / branche** : aucun (rien à coder)
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -150,6 +150,7 @@ l'historique partout ; 18 `relearning` dont **17 à stabilité 0** (9e défaut),
 
 ## Historique
 
+- 2026-11-16 : #2712 mergée (PR 2 ; revue Sonnet et audit Opus sans bloquant ; mineurs corrigés : sauvegardes horodatées jamais réécrites, fiches `template` seules, seconde passe après `--publier`, chemin affiché en `~`, conservation 30 j ; tests même jour / minuit à Paris ; CI verte sur `3043dba93`, premier passage tombé sur une panne Docker de la CI).
 - 2026-11-16 : `db:migrate` depuis `main` (feu vert de David pour pousser aussi #2706) : `20261115213402_questions_cm1_lot6_rangement_tags` et `20261115221544_deck_stats_en_cours_relearning` appliquées.
 - 2026-11-15 : #2709 mergée (PR 1d ; audit sécurité sans bloquant : corps = prod à une ligne près, ACL conservée ; CI verte sur `07226e862` ; `check:migrations` OK). `db:migrate` suspendu : le dry-run pousserait aussi la migration de #2706.
 - 2026-11-15 : #2708 mergée (PR 1c ; revue Sonnet sans bloquant ; CI verte sur `b85ba8031`). PR 1d codée : migration `20261115221544` (`get_deck_stats`, corps recopié, seul le filtre de `learning_count` change) ; test d'intégration `deck-stats-en-cours.test.ts` rouge sans (1 au lieu de 3), vert avec ; témoin garde 42501.
