@@ -1280,3 +1280,17 @@ niveaux 4 et 5, le CM2 laissé à 2 et 3 (écart connu, pas corrigé).
 - Base locale (copie du dossier, `DOTENV_CONFIG_PATH=.env.local`) : 7 brouillons ; aperçu admin à 390 px (Playwright),
   énoncés et corrigés : collections, droites graduées, choix et nombres groupés rendus correctement.
 - #2726 mergée (CI verte), branche supprimée.
+
+### 17 quater. Lot 6 bis — création en prod et rangement (2026-11-16)
+
+- David a lancé `create-questions --dir scripts/questions/cm1-6bis --publier` depuis le dépôt principal : 7 brouillons
+  CM1, sans nœud ni tag ; ids copiés dans le worktree et commités. Niveaux revérifiés au MCP, à la suite de ceux en
+  place (tous niveaux scolaires) : dénombrement 15, 16 (≤ 14) ; ordre 15 (≤ 14) ; droite graduée 4, 5 (≤ 3) ;
+  Décimaux › décomposition 9 (≤ 8) ; arrondis et ordres de grandeur 9 (≤ 8) : aucun chevauchement.
+- Relevé `etat-prod-2026-11-16-cm1-6bis/` (`releve-prod-cm1.ts`), script `lot-cm1-6bis-rangement.py` (gabarit 6) →
+  migration `20261116193751_questions_cm1_lot6bis_rangement_tags` + fixture : 7 rangés sur la sous-notion de leur
+  point, 7 tags posés (CM1-001, 002, 131, 143, 010, 024, 048), aucun niveau ni statut changé.
+- Test `questions-cm1-lot6bis-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs + suite
+  principale sautée.
+- `types:cliquet` tenu ; `security-auditor` : aucun finding (diff avec la migration du lot 6 : préfixe des tables
+  temporaires, comptes, données ; état « avant » remesuré au MCP).
