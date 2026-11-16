@@ -1175,3 +1175,28 @@ Le bloc solide n'a pas d'orientation : un même pavé « vu autrement » = même
   (reco : oui, comme `28d7ad74`) ; (2) 04, 05 rangés sur la notion « Aires » elle-même, nœud du point (reco : oui,
   plutôt qu'une sous-notion « figures composées » neuve) ; (3) 048 sans perspective à dessiner (le bloc solide n'a
   ni orientation ni geste) : « construire » couvert par 049 v3 et les assemblages de 6e (reco : oui).
+
+### 30 bis. Lot 15 : validé (David, 2026-11-16, « je suis tes recos »)
+
+115 en deux modèles (ajouter, retrancher), π ≈ 3,14 dans l'énoncé, réponse décimale exacte ; 04, 05 sur la notion
+« Aires » ; 048 sans perspective à dessiner. Worktree `../ubumaths-wt-questions-5`, branche `feat/questions-5-lot-15`.
+
+### 30 ter. Lot 15 écrit (2026-11-16)
+
+- Script `docs/wip/questions/lot-5-symetrie-aires-solides.py` → `scripts/questions/5-symetrie-aires-solides/` (8
+  modèles, 75 specs) ; `create-questions` (simulation) tout vert ; `sonde-figures`, `sonde-cubes` : 0 problème sur 300
+  tirages par modèle.
+- **Écarts à la phase 0** : 05 v2 sans quart de disque (pas de `secteur` : « non pris en charge, pas d'export PDF »),
+  disque inscrit seul ; 08 v3 en choix de quatre lettres (aucune case n'attend une lettre).
+- **Pièges** : un bloc ` ```choix ` dans un `{{if:…}}` est vu « non fermé » → seules les lignes des options varient ;
+  `$?$` dans le texte = une case ; nom de point sans apostrophe (`Ap` + `texte(…, "A'")`) ; un `eval` non entier
+  s'écrit en fraction (ou avec une virgule en `;d`) → figures d'aires à l'échelle double, coordonnées entières ;
+  point `e` interdit (Euler) ; demi-disque = disque opaque recouvert par le rectangle.
+- Aperçu admin (base locale, thème sombre) : 03 v1 affichait « AC = 6 + e » (**variable `e`** = Euler) → renommée
+  `w` ; **même défaut dans le lot 14 publié** (`95bea43b`, 02 v1 : « AD = 7 − e ») → fichier et script du lot 14
+  corrigés, `create-questions --mettre-a-jour` à lancer par David. Ailleurs (autres chantiers, publiés) : `d5a36be9`
+  (CP), `092b310c` (CM1, `{{if:e==…}}`), `406fd9a8`, `7efd2e76` (2de) — signalés à David, non touchés.
+- 08 v3 : le patron n'écrit plus que A, B, C, D et le « ? » (avec les sept lettres, la réponse était la seule absente) ;
+  choix E, F, G, H. Figures d'aires : couleurs nommées (le contrôle refuse un hexadécimal, illisible en sombre),
+  trous en `blanc` (= fond de la page), fenêtre calculée d'après les cotes.
+- Regardés : 02 v1 (quadrillage), 03 v1, v3, 04 v2 (demi-disque d'une seule teinte), 05 v2 (trou), 07 v3, 08 v2, v3.
