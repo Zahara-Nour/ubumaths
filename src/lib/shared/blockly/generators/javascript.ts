@@ -85,12 +85,9 @@ function isPrime(n) {
 // =============================================================================
 
 /**
- * Enveloppe le code généré par Blockly avant de l'envoyer au sandbox (js-sandbox.worker.ts).
+ * Enveloppe le code généré par Blockly avec les aides math : c'est l'aperçu JavaScript.
  *
- * Ni capture de `console.log` ni `try/catch` ici : la console du worker envoie déjà chaque ligne
- * à l'élève, et une erreur doit remonter jusqu'au worker pour s'afficher. (Une ancienne version
- * rangeait sortie et erreur dans une valeur de retour que personne ne lisait : rien ne
- * s'affichait.)
+ * Ce code n'est jamais exécuté par Chiphre (ADR 0039) : les blocs passent par l'interpréteur.
  *
  * @param code - Generated JavaScript code from Blockly
  * @returns Wrapped code ready for execution

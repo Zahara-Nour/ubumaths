@@ -44,5 +44,8 @@ personne qui le lance.
 - Chaque bloc proposé à l'élève doit être implémenté dans l'interpréteur (et testé) ; la boîte à
   outils élève se limite à ces blocs. Les blocs génériques de Blockly ne passent pas tels quels.
 - L'interpréteur doit borner lui-même le nombre de pas, pour qu'une boucle infinie s'arrête.
-- Le sandbox JavaScript reste pour l'aperçu du prototype admin ; il n'est pas une frontière de
-  sécurité.
+- ~~Le sandbox JavaScript reste pour l'aperçu du prototype admin ; il n'est pas une frontière de
+  sécurité.~~ **2026-11-16** (David) : le prototype `/dev/blockly` et le sandbox JavaScript sont
+  retirés ; plus rien n'exécute le code généré par Blockly. Garde :
+  `src/lib/shared/blockly/__tests__/aucun-javascript-execute.test.ts`. Les blocs de 4e / 3e
+  (variables, conditions, boucle conditionnelle) passeront eux aussi par l'interpréteur.

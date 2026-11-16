@@ -47,7 +47,6 @@ export const MODULES_WITH_SIDE_EFFECTS: ReadonlySet<string> = new Set([
 	'utils/logger.ts',
 	// Rien qu'un `import 'mathlive/static.css'` : les polices KaTeX de MathLive.
 	'utils/mathlive-styles.ts',
-	'workers/js-sandbox.worker.ts',
 	'workers/pyodide.worker.ts',
 	'worksheets/document/render-exercise.ts',
 	'zod-locale.ts',

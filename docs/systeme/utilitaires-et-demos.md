@@ -133,7 +133,7 @@ journal dans `docs/archive/wip/demo-debug-progress.md`) :
   carrefour de la vitrine (plus bas).
 - **Plus rien sous `/dashboard/admin/debug/`**. Seule la page de contrôle de la base y est restée,
   devenue `/dashboard/admin/integrite-donnees` (« Intégrité des données »).
-- **Anciennes adresses** (`/test-*`, `/geometry-demo/…`, `/slides/…`, `/blockly/playground`,
+- **Anciennes adresses** (`/test-*`, `/geometry-demo/…`, `/slides/…`,
   `/construction-demo`, `/dashboard/admin/debug/…`, anciennes `/demo/…`) : redirigées en 308 par
   `redirectHandle` (table `MOVED_PAGES`, [auth.md](auth.md#la-chaîne-de-handles)), sous-pages et
   query string comprises ; une ancienne adresse publique mène donc le visiteur à la connexion.
@@ -367,8 +367,6 @@ Notés pendant le rangement (chantier demo-debug), pas traités :
   fera plus tard ».
 - **`/dev/saisie-naturelle`** : prototype jetable dont le travail est fait (#1355), candidat à la
   suppression ; à trancher par David.
-- **`/dev/blockly`** : deviendra une vraie fonctionnalité (algorithmique par blocs, cycle 4,
-  relais vers Python ; décidé par David le 2026-10-24) ; phase 0 à ouvrir. Ne pas le supprimer.
 - **Scripts d'essai de constructions et brouillons de `/constructions`** : doublon possible, à
   revoir.
 - **Images de 4 cartes VIP de Mathémo** (Voyelles Révélées, Multiplicateur x1.5, Lettre Bonus,

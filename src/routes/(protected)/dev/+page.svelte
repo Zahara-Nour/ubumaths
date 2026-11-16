@@ -132,11 +132,6 @@
 			href: '/dev/theme',
 			title: 'Thème',
 			description: 'Modes clair et sombre, palette de couleurs, composants Shadcn.'
-		},
-		{
-			href: '/dev/blockly',
-			title: 'Blockly',
-			description: 'Bac à sable de programmation par blocs (pas encore ouvert aux élèves).'
 		}
 	];
 </script>
