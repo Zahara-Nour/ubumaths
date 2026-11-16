@@ -5,7 +5,7 @@
 _Mis à jour le 2026-11-16, à l'ouverture du chantier._
 
 - **État** : phase 0, comportements écrits, aucun code · **Prochaine action** : validation par David des
-  comportements N1–E1 et réponses aux Q1–Q3, puis tests rouges · **En attente de David** : Q1–Q3 ci-dessous ·
+  comportements N1–E1 et réponses aux Q1–Q2, puis tests rouges · **En attente de David** : Q1–Q2 ci-dessous, validation N1–E1 ·
   **Pièges en cours** : Q2 revient sur la décision 4 du 2026-10-08 (`lexique-progress.md` : définitions
   disponibles dans les corrections) ; le niveau de lecture sert aussi au choix des définitions montrées ·
   **Worktree / branche** : aucun ; au premier code → `ubumaths-wt-mots-cliquables`
@@ -34,6 +34,10 @@ Mesures (base locale = copie de la prod, 2 297 modèles publiés) :
 - **R2 Énoncé seulement** : rien de souligné dans la correction (résultat attendu, correction écrite).
 - **R3 Prof et visiteur** : niveau de lecture = le plus **haut** niveau de la question.
 - Chantier séparé de `corrections-modeles`.
+- **Q3 → R4 (2026-11-16) : aucun mot souligné automatiquement sur une question de cours** (carte de cours,
+  ou modèle marqué « question de cours »), comme prévu par la décision 4 du 2026-10-08 jamais appliquée.
+  Raison (reconstruite, acceptée par David) : le mot cliquable donnerait la réponse (« suite géométrique »
+  sur « définition d'une suite géométrique »). Marquage d'auteur `[mot]{.def}` toujours possible.
 
 ## Phase 0 — comportements (à valider)
 
@@ -67,11 +71,12 @@ Erreur :
   et le plus haut pour choisir quoi souligner ? Reco : oui, deux usages distincts.
 - **Q2 : R2 revient sur la décision 4 du 2026-10-08** (« définitions disponibles … corrections »).
   Confirmes-tu ? Reco : oui, la correction se lit d'un trait ; le mot reste cliquable dans l'énoncé.
-- **Q3 : cartes et questions de cours.** La décision 4 disait déjà « pas de repérage automatique sur une
+- ~~**Q3 : cartes et questions de cours.**~~ Tranchée → R4.
+  Texte d'origine : La décision 4 disait déjà « pas de repérage automatique sur une
   question de cours ou une carte de cours » : **pas appliqué** (vérifié le 2026-11-16 :
   `provideQuestionLexicon(() => instance.grades)` dans `FlashCard`, `CorrectionCard`, `QuestionCard`, sans
   test du type ni de `courseQuestion`). L'appliquer dans ce chantier ? Reco : oui.
 
 ## Journal
 
-- 2026-11-16 : chantier ouvert (retour de David sur `/dev/corrections`), mesures, R1–R3 validées.
+- 2026-11-16 : chantier ouvert (retour de David sur `/dev/corrections`), mesures, R1–R3 validées ; R4 (question de cours) validée.
