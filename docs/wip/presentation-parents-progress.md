@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 
-- **État** : phase 0, revue de `/parents` point par point (9 points, ci-dessous). Points 1 à 4 tranchés ; FAQ décidée.
-- **Prochaine action** : point 5 (Ses données) : page ou FAQ, puis le texte.
-- **En attente de David** : point 5 ; suite de l'étude Mistral (prix, hébergement) s'il la veut.
+- **État** : phase 0, revue de `/parents` point par point (9 points, ci-dessous). Points 1 à 5 tranchés ; FAQ décidée.
+- **Prochaine action** : point 6 (Est-ce que ça l'aide ?) ; valider le texte FAQ du point 5.
+- **En attente de David** : point 6 ; texte FAQ « données ».
 - **Pièges en cours** : ne promettre que ce que prouve `docs/systeme/carte-des-fonctionnalites.md` ; argent : jamais « gratuit » seul ni « pour toujours ».
 - **Worktree / branche** : aucun encore (doc sur `main`) ; le code ira dans `views.ts` (`PARENT_VIEW`).
 
@@ -31,7 +31,8 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 - **FAQ** : en bas de `/parents`, questions repliées (option 1 ; données structurées `FAQPage` possibles). Il n'en existait aucune.
 - **Chaque point restant se tranche « page ou FAQ »** avant son texte.
 - **Point 4** : pas de bloc sur la page ; le tuteur est cité en une phrase au point 6 ; l'inquiétude va dans la FAQ (texte validé ci-dessous) ; on **nomme le prestataire (Groq)**.
-- **Mistral** : David veut étudier le chat de Mistral AI (gratuit si possible) à la place de Groq. Premier relevé (2026-11-16) dans § Étude Mistral.
+- **Mistral** : David veut étudier le chat de Mistral AI (gratuit si possible) à la place de Groq. Premier relevé (2026-11-16) dans § Étude Mistral. **Remplacement de Groq : reporté** (« on y réfléchira plus tard »), hors de ce chantier.
+- **Point 5** : le bloc « Ses données » quitte la page pour la FAQ ; « Sans publicité » reste sur la page (avec le prix, point 9).
 
 ## Les 9 questions du parent
 
@@ -39,7 +40,7 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 2. Qui est derrière ? — ✅ tranché.
 3. À qui mon enfant peut-il parler ? — ✅ FAQ.
 4. Et l'IA ? — ✅ FAQ (+ une phrase au point 6).
-5. Ses données ?
+5. Ses données ? — ✅ FAQ (sauf « Sans publicité »).
 6. Est-ce que ça l'aide vraiment ?
 7. Les jeux et les gidouilles ne vont-ils pas le distraire ? (bloc absent)
 8. Comment le suivre ? (lien du cours public absent)
@@ -62,6 +63,13 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 - Preuves : `docs/systeme/tuteur-ia.md` § Données personnelles ; plafonds `src/lib/config/tutor-limits.ts`.
 - Ne pas promettre : « rien de personnel ne part » (le texte saisi part tel quel) ; que Groq n'entraîne pas ses modèles (non documenté).
 - Si le tuteur passe chez Mistral, ce texte change (pays, nom).
+
+### Que deviennent ses données ? (texte proposé)
+
+> La base de données de Chiphre est hébergée à Paris. Le site n'affiche aucune publicité et ne dépose que les cookies strictement nécessaires. Jusqu'à la 2de, votre accord est demandé : vous le donnez par un lien reçu par courriel. Depuis son compte, on peut télécharger toutes ses données ou supprimer le compte.
+> → Vos données personnelles (`/legal/confidentialite`)
+
+- Preuves : `PARENT_FACTS` (`src/lib/kingdom-tour/tour.ts`), carte des fonctionnalités § Points forts ; consentement : `docs/systeme/conformite/consentement-parental.md` (tout niveau sauf 1re/Tle, lien `/consent/[token]`).
 
 ## Étude Mistral (premier relevé, 2026-11-16)
 
