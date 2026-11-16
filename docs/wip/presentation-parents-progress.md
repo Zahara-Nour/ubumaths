@@ -5,8 +5,8 @@
 _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 
 - **État** : phase 0, revue de `/parents` point par point (9 points, ci-dessous). Points 1 à 7 tranchés ; FAQ décidée.
-- **Prochaine action** : point 8 (Comment le suivre ?).
-- **En attente de David** : point 8.
+- **Prochaine action** : point 8 suspendu (réflexion « ce qu'on partage avec les parents ») ; décider si elle devient un chantier à part ; sinon point 9.
+- **En attente de David** : cadre de la réflexion sur le partage avec les parents.
 - **Pièges en cours** : ne promettre que ce que prouve `docs/systeme/carte-des-fonctionnalites.md` ; argent : jamais « gratuit » seul ni « pour toujours ».
 - **Worktree / branche** : aucun encore (doc sur `main`) ; le code ira dans `views.ts` (`PARENT_VIEW`).
 
@@ -40,6 +40,7 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 - **Point 6, démo « La forme compte »** : **retirée de la page parent** (« ça ne sert à rien » pour un parent) ; elle reste sur `/professeurs`.
 - **Point 7** : FAQ (texte validé ci-dessous). **Les gidouilles ne s'achèteront jamais avec de l'argent réel** (décision durable, vaut aussi pour l'offre payante à venir). Préciser que les jeux sont de nature mathématique ou logique.
 - **Futur chantier** (hors de celui-ci) : une **limite de temps ou d'utilisation des jeux**, pour que les élèves n'y restent pas trop longtemps ; aucune n'existe aujourd'hui, donc rien à promettre sur la page.
+- **Point 8 suspendu** : « il y a une vraie réflexion à mener sur ce qu'on partage avec les parents, et comment on le fait ». Texte de travail en attente : « Son professeur peut vous donner deux liens, à ouvrir sans compte : le cahier de textes de la classe, avec les séances et les devoirs, et le cours, avec ses chapitres et ses documents. Il n'y a pas de compte parent. »
 
 ## Les 9 questions du parent
 
@@ -50,7 +51,7 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 5. Ses données ? — ✅ FAQ (sauf « Sans publicité »).
 6. Est-ce que ça l'aide vraiment ? — ✅ page (paragraphe), démo forme retirée.
 7. Les jeux et les gidouilles ne vont-ils pas le distraire ? — ✅ FAQ.
-8. Comment le suivre ? (lien du cours public absent)
+8. Comment le suivre ? — ⏸ suspendu (réflexion sur le partage avec les parents).
 9. Comment l'inscrire, combien ça coûte ? (`/auth/register/parent` absent de la page)
 
 ## FAQ (textes de travail, non validés)
