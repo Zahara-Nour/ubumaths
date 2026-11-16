@@ -1,4 +1,5 @@
 {
+	"id": "ee87b7b1-5c23-465d-b506-d00d18bfc96b",
 	"title": "Boucle « répéter jusqu'à » en blocs",
 	"description": "Écrire en blocs une boucle conditionnelle : reste par soustractions, doublements, multiple.",
 	"grades": ["3"],

@@ -1,4 +1,5 @@
 {
+	"id": "dbab36af-697d-4734-ae52-468cca749db2",
 	"title": "Plusieurs variables en blocs",
 	"description": "Écrire en blocs un programme à plusieurs variables : échange, suite, plus grand de deux.",
 	"grades": ["3"],

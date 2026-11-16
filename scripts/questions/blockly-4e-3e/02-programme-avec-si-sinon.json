@@ -1,4 +1,5 @@
 {
+	"id": "81ab97a2-6bfc-496b-a089-15164dc22da1",
 	"title": "Programme avec « si … sinon »",
 	"description": "Écrire en blocs un programme à deux cas : tarif de groupe, distance à un nombre, impair.",
 	"grades": ["4"],
