@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2719._
+_Mis à jour le 2026-11-16, PR C en cours._
 
-- **État** : piste 4e / 3e — PR A (logique, #2716) et **PR B (écran, #2719) mergées** : blocs, boîtes à outils par niveau, sélecteur du bac à sable, noms refusés à la création · **Prochaine action** : **PR C** — relevé des points 4e / 3e du BO (`src/lib/server/programmes/transcriptions/cycle-4/*informatique.md`), liste de premiers modèles proposée à David (phase 0, attendre sa validation) · **En attente de David** : `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation) et `--publier` ; vérifications manuelles en prod (`verifications-manuelles.md` : #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683, #2700 / #2704, #2716 / #2719) ; choix des PR A et B à lui signaler (sections « PR A », « PR B ») · **Pièges en cours** : aucun modèle 4e / 3e **publié** avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; événements Blockly différés (comparer aux variables acceptées, corriger hors historique : section « PR B ») ; `docs:check-a-jour` ne lit que les COMMITS · **Worktree / branche** : aucun (retiré après #2719) ; PR C → `git worktree add -b feat/blockly-modeles-4e-3e ../ubumaths-wt-blockly origin/main`
+- **État** : piste 4e / 3e — PR A (#2716) et PR B (#2719) mergées ; **PR C** (9 modèles 4e / 3e, branche `feat/blockly-modeles-4e-3e`) écrite et vérifiée, à ouvrir · **Prochaine action** : PR C → CI → merge ; puis, **sur demande de David**, `create-questions --publier` en prod (brouillons), ids commités, migration nœud + tag (comme #2669), page à cocher · **En attente de David** : `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation) et `--publier` ; vérifications manuelles en prod (`verifications-manuelles.md`) ; choix des PR A, B et C à lui signaler (sections « PR A », « PR B », « PR C ») · **Pièges en cours** : aucun modèle 4e / 3e **publié** avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; `--publier` écrit l'id dans les JSON : en local, toujours sur une COPIE ; `docs:check-a-jour` ne lit que les COMMITS · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-modeles-4e-3e`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -779,3 +779,47 @@ ajouter 1 à compteur`.
   garde les blocs posés en changeant de niveau ; en 4e / 3e, la boucle proposée est
   `controls_repeat_ext` seule (un nombre écrit dedans redevient le bloc de 5e au rechargement,
   même aspect) ; « reste » dans la catégorie Calcul.
+
+### PR C — premiers modèles 4e / 3e (branche `feat/blockly-modeles-4e-3e`)
+
+**Phase 0 validée par David le 2026-11-16** (« je valide », sur mes recommandations).
+
+Relevé prod (lecture seule) des 10 points d'informatique du cycle 4 : 4-065, 066, 067 ont un
+modèle **publié** qui fait LIRE un programme (QCM, valeur à prévoir) ; 3-047, 048, 049, 050 un
+**brouillon** Scratch qui fait lire (pas de ce chantier, laissés) ; 4-068, 4-069, 3-051 aucun.
+Aucun modèle ne fait ÉCRIRE un programme en blocs.
+
+- **Décisions** : modèles « écrire » ajoutés à côté des « lire » ; 3-050 « Structurer des
+  programmes » laissé (ni fonction ni bloc personnalisé dans nos blocs ; piste à noter dans
+  `outils-manquants.md` si David le veut) ; Syracuse retiré (cas exotique) → « nombre de
+  divisions par 2 » ; « afficher le nombre s'il est multiple, sinon 0 » plutôt qu'un 1 / 0 ;
+  une PR modèles, puis une PR ids de prod + migration (nœud du point + tag), comme #2667 / #2669.
+
+Script `docs/wip/questions/lot-blockly-4e-3e.py` → `scripts/questions/blockly-4e-3e/`
+(9 modèles, 88 specs).
+
+| #   | Point | Titre                                              | Bloc       | Variations                                                | Niv. |
+| --- | ----- | -------------------------------------------------- | ---------- | --------------------------------------------------------- | ---- |
+| 01  | 4-065 | Écrire une condition                               | 4e         | multiple de a ; âge ≥ a ; gel (< 0)                       | 1    |
+| 02  | 4-066 | Programme avec « si … sinon »                      | 4e         | tarif de groupe ; distance à a ; impair + a               | 1    |
+| 03  | 4-067 | Utiliser une variable                              | 4e         | prix ; table de a ; bactéries (doubler n fois)            | 2    |
+| 04  | 4-068 | Écrire un programme pour résoudre un problème (4e) | 4e         | photocopies ; livraison ; somme 1..n                      | 2    |
+| 05  | 4-069 | Modifier un programme avec condition               | 4e, départ | seuil ; > → ≥ ; ajouter le « sinon »                      | 2    |
+| 06  | 3-047 | Plusieurs variables en blocs                       | 3e         | échange ; suite (somme des deux précédents) ; max         | 2    |
+| 07  | 3-048 | Conditions composées en blocs                      | 3e         | entre a et b ; multiple de 3 ou 5 ; pair et > a ; ni … ni | 2    |
+| 08  | 3-049 | Boucle « répéter jusqu'à » en blocs                | 3e         | reste par soustractions ; doublements ; multiple > n      | 2    |
+| 09  | 3-051 | Écrire un programme pour résoudre un problème (3e) | 3e         | nombre de chiffres ; divisions par 2 ; épargne            | 3    |
+
+- **Choix faits sans David, à lui signaler** : `essais:` toujours écrits (entiers, chaque
+  branche parcourue, aucun essai qui ferait tourner sans fin la référence : énoncés « entier
+  positif » pour 08 / 09) ; la variable n'est pas imposée (jugement par les affichages, comme
+  la boucle au lot 11) ; 1 / 0 gardés pour âge, gel, intervalle (oui / non sans texte affichable) ;
+  délai 300 s, 600 s pour 09 ; « Plusieurs variables **en blocs** » (un brouillon de 3e porte
+  déjà « Plusieurs variables »).
+- **Vérifié** : simulation 9/9 importable, base prod, aucun homonyme ; une spec « incorrect »
+  inversée → chacun des 9 modèles refusé ; essais privés d'une branche → modèle refusé (50
+  tirages en échec sur 150) ; base locale (copie des fichiers, ids locaux non commités), serveur
+  5176 : 02 joué juste avec une autre écriture (≥, branches échangées), 05 départ posé puis joué
+  faux (= au lieu de ≥, ligne rouge dans le tableau), 08 (3e) blocs « répéter jusqu'à » rendus,
+  joué juste.
+- **Publication** : aucune avant le `deploy:prod` qui livre #2719.
