@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16 : lot 6 publié._
+_Mis à jour le 2026-11-16 : lot 6 publié ; phase 0 du lot 6 bis écrite (§ 17)._
 
 - **État** : lots 0 à 6 publiés (lot 6 : 10 problèmes, § 16 sexies). Recompte : 102 points couverts sur 171.
-- **Prochaine action** : phase 0 du lot 6 bis « rattrapage » (001, 002, 131, 010, 143, 024, 048 ; décidé au § 16 bis),
-  à faire valider avant d'écrire ; puis lot 6 ter « algèbre » (062-066).
+- **Prochaine action** : phase 0 du lot 6 bis écrite (§ 17, 7 modèles), à faire valider avant d'écrire ;
+  puis lot 6 ter « algèbre » (062-066).
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
@@ -1222,3 +1222,34 @@ données.
   aucun niveau manquant ; `--publier` lancé par David ; vérifié au MCP : 10 publiés. Vérification manuelle notée
   (problèmes au CM1, schéma en barres du corrigé, #2706).
 - **Lot 6 clos.** Recompte : 102 points couverts sur 171 (94 + 054, 134, 055 à 060).
+
+## 17. Lot 6 bis — rattrapage : phase 0 (à valider, 2026-11-16)
+
+Sept points, un modèle chacun, tous en outils déjà en prod. Bornes : `cycle3.json` (CM1). Le bloc `collection`
+s'arrête à 9 999 (milliers ≤ 9, centaines ≤ 40, dizaines ≤ 30, unités ≤ 100) : au-delà, les unités de numération
+s'écrivent en texte, comme l'exemple du BO. Niveaux : à la suite de ceux en place dans chaque sous-notion.
+
+| #    | Point   | Sous-notion (niveau)                          | Titre                                        | Variations                                                                                                                                                                                                                                                                                                                              | Patron              |
+| ---- | ------- | --------------------------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 6b-1 | CM1-001 | dénombrement (15)                             | Dénombrer des groupements                    | V1 `collection` à gros cubes, un rang à plus de dix (12 plaques, 23 barres…), total ≤ 9 999 ; V2 en texte, comme le BO : « 17 unités, 8 dizaines, 31 centaines et 2 milliers » → 5 197 ; V3 en texte avec dizaines et centaines de milliers (« 4 centaines de milliers, 15 milliers et 32 dizaines »), ≤ 999 999                        | CE2 `4df6c483`      |
+| 6b-2 | CM1-002 | dénombrement (16)                             | Construire une quantité avec des paquets     | V1 `construire:` au matériel, 1 000 à 9 999 avec un zéro intercalé ; V2 « 34 560 timbres en carnets de 1 000, de 100 et de 10, le moins de carnets possible » → trois cases ; V3 un seul type de paquet : « combien de carnets de 100 pour 34 500 timbres ? » → 345                                                                     | CE2 `156dc0bd`      |
+| 6b-3 | CM1-131 | ordre (15)                                    | Comparer deux collections                    | V1 `collection` double (`milliers: 2 ; 1`…), une collection a plus de dix plaques et l'autre plus de milliers ; V2 en texte (« A : 3 milliers et 15 centaines ; B : 4 milliers, 2 centaines et 8 dizaines ») ; réponse en case « choix » : A, B, autant (le cas « autant » tiré une fois sur cinq)                                      | `collection` à deux |
+| 6b-4 | CM1-143 | droite graduée (4)                            | Lire un nombre sur une demi-droite graduée   | V1 pas de 1, 10 ou 100 ; V2 pas de 1 000 ou 10 000 ; V3 pas de 100 000, origine 0 ; deux graduations écrites, cinq intervalles entre elles, le pas à déduire ; tout ≤ 999 999                                                                                                                                                           | CM2 `c20b687f`      |
+| 6b-5 | CM1-010 | droite graduée (5)                            | Placer un nombre sur une demi-droite graduée | mêmes trois variations, geste `placer:`                                                                                                                                                                                                                                                                                                 | CM2 `7df1aadd`      |
+| 6b-6 | CM1-024 | Décimaux › décomposition (9)                  | Unités, dixièmes, centièmes                  | V1 1 unité = ? dixièmes / ? centièmes, 1 dixième = ? centièmes ; V2 k unités ou k dixièmes = ? (plus petite unité) ; V3 en sens inverse : 40 dixièmes = ? unités, 300 centièmes = ? unités, 70 centièmes = ? dixièmes ; V4 utiliser : 3 unités et 4 dixièmes = ? centièmes, 2,35 = ? centièmes. Pas de millièmes                        | CM2 `25b269de`      |
+| 6b-7 | CM1-048 | Décimaux › arrondis et ordres de grandeur (9) | Estimer le résultat d'une opération          | V1 somme de trois nombres proches de centaines (212 + 298 + 496) ; V2 produit de deux nombres à deux chiffres proches de dizaines (52 × 37) ; V3 quotient par 2, 3, 4 ou 5 d'un nombre proche d'une centaine (597 ÷ 2) ; case « choix » de quatre valeurs (≈ 1 000, 10 fois plus, 10 fois moins, une erreur d'arrondi) ; corrigé avec ≈ | BO, exemples p.10   |
+
+Forme commune : réponses entières en case ; corrigé qui dit l'unité de numération (« 31 centaines, c'est 3 milliers et
+1 centaine »). Specs d'erreurs typiques : chiffres juxtaposés sans retenue (« 2 31 8 17 »), rang oublié, pas lu comme
+1, intervalle compté pour une graduation, 1 unité = 10 centièmes, l'estimation pour le calcul exact.
+
+Questions :
+
+1. **Sous-notion de 6b-7** : le point CM1-048 est rangé sous « Décimaux › arrondis et ordres de grandeur », mais
+   estimer porte ici sur des entiers. Je le laisse là (c'est le rangement du point, le tag en dépend) ? Reco : oui.
+2. **6b-2 V1** : la construction au matériel existe déjà au CE2 (`156dc0bd`, jusqu'à 9 999). La garder au CM1 pour
+   le zéro intercalé, ou n'écrire que V2 et V3 en texte ? Reco : la garder, une variation sur trois.
+3. **Niveaux de la droite graduée** : les modèles CM2 sont aux niveaux 2 et 3, comme ceux du CE2 ; je mets le CM1 à
+   4 et 5 (à la suite), sans toucher au CM2. D'accord ?
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
