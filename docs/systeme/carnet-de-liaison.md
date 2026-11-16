@@ -7,6 +7,7 @@ couvre:
   - 'src/routes/(protected)/dashboard/student/carnet/**'
   - 'src/routes/(protected)/dashboard/teacher/classes/[classId]/carnet/**'
   - src/lib/email-templates/carnet.ts
+  - 'src/routes/api/cron/carnet-de-liaison/**'
 ---
 
 # Carnet de liaison
