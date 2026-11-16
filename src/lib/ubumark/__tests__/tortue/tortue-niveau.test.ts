@@ -56,6 +56,16 @@ describe('parseTortueContent — niveau:', () => {
 		expect(node.errors[0].message).toMatch(/« m » est lue mais jamais mise/);
 	});
 
+	it('sans niveau : une variable dit le niveau à demander, pas « jamais mise »', () => {
+		const node = bloc('attendu: avancer trois');
+		expect(node.errors[0].message).toMatch(/« trois » est une variable : un bloc de 4e/);
+	});
+
+	it('erreurs dans l’ordre des lignes', () => {
+		const node = bloc('attendu: avancer x', 'blocs: 0', 'comparer: bof');
+		expect(node.errors.map((e) => e.line)).toEqual([1, 2, 3]);
+	});
+
 	it('division par 0 dans attendu: : refusé', () => {
 		const node = bloc('attendu: mettre n à 0 ; avancer 3 ÷ n', 'niveau: 4e');
 		expect(node.errors[0].message).toMatch(/attendu: .*diviser par 0/);

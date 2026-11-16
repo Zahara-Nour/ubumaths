@@ -322,9 +322,12 @@ export function parseTortueContent(source: string): TortueNode {
 	 * au-dessus du niveau, programme illisible ; null s'il convient.
 	 */
 	const erreurDuProgramme = (programme: string): string | null => {
+		// Sans niveau, pas de variables : `avancer trois` dit le niveau à demander, jamais
+		// « trois est lue mais jamais mise » (revue PR A)
+		const horsNiveau = messageNiveauTortue(programme, niveau);
+		if (niveau === 'base' && horsNiveau !== null) return horsNiveau;
 		const fautive = variableJamaisMise(programme, { tortue: true });
 		if (fautive !== null) return `« ${fautive} » est lue mais jamais mise (faute de frappe ?)`;
-		const horsNiveau = messageNiveauTortue(programme, niveau);
 		if (horsNiveau !== null) return horsNiveau;
 		const lu = texteVersEtatTortue(programme, niveau);
 		return lu.ok ? null : lu.message;
@@ -376,6 +379,8 @@ export function parseTortueContent(source: string): TortueNode {
 	}
 
 	const withCase = caseIndex === undefined ? {} : { caseIndex };
+	// `attendu:` et `départ:` sont lus après les autres lignes : erreurs remises dans l'ordre des lignes
+	errors.sort((a, b) => (a.line ?? 0) - (b.line ?? 0));
 	if (errors.length > 0) return { type: 'tortue', source, spec: null, errors, ...withCase };
 
 	const traceModele = attenduMasque ? figure : segmentsAttendus;

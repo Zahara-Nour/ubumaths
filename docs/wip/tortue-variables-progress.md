@@ -57,3 +57,17 @@ ajouter 1 à côté ]` ; polygone `mettre n à 6 ; répéter n [ avancer 3 ; tou
   `trop-loin` (Q5) ; ÷ 0 → nouvelle erreur `division-par-zero` ; le parseur lit `attendu:` /
   `départ:` après toutes les lignes (`niveau:` peut venir après) ; sans niveau, un programme de
   4e reçoit « ajouter niveau: 4e » plutôt qu'« instruction inconnue ».
+
+### Revue PR A (`code-reviewer` Opus, 2026-11-16)
+
+Aucune régression de jugement, ni pour la tortue sans niveau, ni pour le calcul (vérifié sur les
+30 blocs ```tortue de `scripts/questions/`). Corrigé : ordre des erreurs du parseur, `avancer
+trois` sans niveau. Reste :
+
+- **Écran pas encore au niveau** : ne pas publier de modèle `niveau:` (ni `deploy:prod`, si
+  David le juge utile) avant la PR B.
+- **Question pour David** : `départ:` refuse une variable lue jamais mise (comme le calcul) ;
+  cela empêche « complète le programme » (`départ: répéter n [ … ]` sans `mettre n`).
+- Pour la PR B ou plus tard : en 4e / 3e, des messages de lecture citent le vocabulaire du calcul
+  (`nombre`, `afficher`) ; `afficher` refusé sans nommer le bloc ; `1e2` lu sans niveau, refusé en
+  4e ; `répéter 2,5 [ … ]` écrit tel quel est arrondi sans prévenir l'auteur.
