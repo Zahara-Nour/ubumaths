@@ -10,7 +10,7 @@ couvre:
 # Blockly — programmation par blocs
 
 > Écrite à partir du code le 2026-11-14 (chantier `blockly`, journal
-> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14 ; nombre maximal de blocs (`blocs:`) le 2026-11-15 ; bac à sable « Programmes de calcul » le 2026-11-15.
+> `docs/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14 ; nombre maximal de blocs (`blocs:`) le 2026-11-15 ; bac à sable « Programmes de calcul » le 2026-11-15 ; blocs de 4e / 3e et `niveau:` (logique, sans écran) le 2026-11-16.
 
 ## À quoi ça sert
 
@@ -40,32 +40,32 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 
 ## Carte du code
 
-| Fichier                                                 | Rôle                                                                                                                                                             |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/routes/(public)/tortue/+page.svelte`               | Page publique « La Tortue », monte `TortueBacASable`                                                                                                             |
-| `src/lib/components/blockly/TortueBacASable.svelte`     | Blocs tortue, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié ; onglets Blocs / Tortue sous `lg`                               |
-| `src/routes/(public)/programmes-de-calcul/+page.svelte` | Page publique « Programmes de calcul », monte `CalculEditeur` (programme vide), rien de jugé                                                                     |
-| `src/lib/components/blockly/BlocklyWorkspace.svelte`    | `Blockly.inject` ; charge la locale française (`blockly/msg/fr`) avant                                                                                           |
-| `src/lib/shared/blockly/config.ts`                      | `BLOCKLY_CONFIG` (délais, limites), `DEFAULT_WORKSPACE_OPTIONS`, thème `CHIPHRE_THEME`, messages d'erreur                                                        |
-| `src/lib/shared/blockly/toolbox/standard.ts`            | Boîte à outils : Logique, Boucles, Math, Texte, Listes, Variables, Fonctions                                                                                     |
-| `src/lib/shared/blockly/generators/`                    | `generateCode` / `getRawCode` (générateurs Blockly), enveloppes `wrapJavaScriptCode` / `wrapPythonCode`, garde-fous (longueur, boucles infinies)                 |
-| `src/lib/shared/blockly/lecture.ts`                     | Lecture commune (tortue, calcul) : état sérialisé → `BlocLu` vérifié (`lirePiles`), `premierBlocInconnu`, `nombreDeTours`                                        |
-| `src/lib/shared/blockly/calcul/interpreteur.ts`         | `executerCalcul(etat, nombre)` : interprète un programme de calcul pour un nombre de départ (ADR 0039), rend les nombres affichés                                |
-| `src/lib/shared/blockly/calcul/notation.ts`             | `etatVersTexteCalcul` / `texteVersEtatCalcul` : `mettre résultat à nombre + 2 ; afficher résultat × 4` ↔ état Blockly                                            |
-| `src/lib/shared/blockly/calcul/jugement.ts`             | `jugerProgrammeCalcul` (mêmes affichages sur chaque essai), `dependDuNombre`, `lireProgrammeCalcul`, `lireEssais` / `ecrireEssais`, `ESSAIS_PAR_DEFAUT`          |
-| `src/lib/shared/blockly/calcul/blocs.ts`                | `definirBlocsCalcul` : définitions Blockly des blocs de calcul (sans générateur) ; **seul fichier de `calcul/` qui importe Blockly**                             |
-| `src/lib/shared/blockly/calcul/toolbox.ts`              | `CALCUL_TOOLBOX` (Calcul, Résultat, Afficher, Boucles avec `controls_repeat` seul), `COULEURS_CALCUL` ; sans import de Blockly                                   |
-| `src/lib/components/blockly/CalculEditeur.svelte`       | Éditeur d'une question de calcul (blocs, « Essayer avec », Lancer, affichages) ; rend le programme en texte à chaque modification ; chargé à la demande          |
-| `src/lib/shared/blockly/tortue/interpreteur.ts`         | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments, tortue finale et étapes                                               |
-| `src/lib/shared/blockly/tortue/animation.ts`            | `imageAnimation` (image à l'étape i), `rythmeAnimation` (durée d'un tic, étapes par tic)                                                                         |
-| `src/lib/shared/blockly/tortue/segments.ts`             | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `memesFormes` (8 symétries + translation), `sortDuCadre`                    |
-| `src/lib/shared/blockly/tortue/notation.ts`             | `etatVersTexte` / `texteVersEtat` : programme en notation texte (`répéter 4 [ avancer 3 ; tourner à droite 90 ]`) ↔ état Blockly                                 |
-| `src/lib/shared/blockly/tortue/jugement.ts`             | `jugerProgrammeTortue` (comparaison `position` ou `forme`), `lireProgrammeTortue` (segments ou message d'erreur)                                                 |
-| `src/lib/shared/blockly/tortue/blocs.ts`                | `definirBlocsTortue` : définitions Blockly et générateurs d'aperçu JS / Python (`from turtle import *`)                                                          |
-| `src/lib/shared/blockly/tortue/toolbox.ts`              | `TORTUE_TOOLBOX` : Tortue, « répéter n fois » (`controls_repeat`, champ entier ≥ 0), nombre — uniquement des blocs interprétés                                   |
-| `src/lib/components/blockly/TortueCanvas.svelte`        | Quadrillage fixe 20 × 20 en SVG, segments coupés au cadre, dépassement signalé ; figure modèle en gris, attendu en pointillés, tracé vert / rouge ; sans Blockly |
-| `src/lib/components/blockly/TortueEditeur.svelte`       | Éditeur d'une question tortue (blocs, Lancer, quadrillage, onglets sous `lg`) ; rend le programme en texte à chaque modification ; chargé à la demande           |
-| `static/blockly/media/`                                 | Médias de Blockly (corbeille, sprites, icônes), servis par Chiphre                                                                                               |
+| Fichier                                                 | Rôle                                                                                                                                                                             |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/(public)/tortue/+page.svelte`               | Page publique « La Tortue », monte `TortueBacASable`                                                                                                                             |
+| `src/lib/components/blockly/TortueBacASable.svelte`     | Blocs tortue, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié ; onglets Blocs / Tortue sous `lg`                                               |
+| `src/routes/(public)/programmes-de-calcul/+page.svelte` | Page publique « Programmes de calcul », monte `CalculEditeur` (programme vide), rien de jugé                                                                                     |
+| `src/lib/components/blockly/BlocklyWorkspace.svelte`    | `Blockly.inject` ; charge la locale française (`blockly/msg/fr`) avant                                                                                                           |
+| `src/lib/shared/blockly/config.ts`                      | `BLOCKLY_CONFIG` (délais, limites), `DEFAULT_WORKSPACE_OPTIONS`, thème `CHIPHRE_THEME`, messages d'erreur                                                                        |
+| `src/lib/shared/blockly/toolbox/standard.ts`            | Boîte à outils : Logique, Boucles, Math, Texte, Listes, Variables, Fonctions                                                                                                     |
+| `src/lib/shared/blockly/generators/`                    | `generateCode` / `getRawCode` (générateurs Blockly), enveloppes `wrapJavaScriptCode` / `wrapPythonCode`, garde-fous (longueur, boucles infinies)                                 |
+| `src/lib/shared/blockly/lecture.ts`                     | Lecture commune (tortue, calcul) : état sérialisé → `BlocLu` vérifié (`lirePiles`), `premierBlocInconnu`, `nombreDeTours`                                                        |
+| `src/lib/shared/blockly/calcul/interpreteur.ts`         | `executerCalcul(etat, nombre, niveau)` : interprète un programme de calcul (5e, 4e, 3e) pour un nombre de départ (ADR 0039), rend les nombres affichés ; `branchesNonParcourues` |
+| `src/lib/shared/blockly/calcul/notation.ts`             | `etatVersTexteCalcul` / `texteVersEtatCalcul` : `mettre résultat à nombre + 2 ; afficher résultat × 4` ↔ état Blockly ; `messageNiveau`, `conditionsDuProgramme`                 |
+| `src/lib/shared/blockly/calcul/jugement.ts`             | `jugerProgrammeCalcul` (mêmes affichages sur chaque essai), `dependDuNombre`, `lireProgrammeCalcul`, `lireEssais` / `ecrireEssais`, `ESSAIS_PAR_DEFAUT`                          |
+| `src/lib/shared/blockly/calcul/blocs.ts`                | `definirBlocsCalcul` : définitions Blockly des blocs de calcul (sans générateur) ; **seul fichier de `calcul/` qui importe Blockly**                                             |
+| `src/lib/shared/blockly/calcul/toolbox.ts`              | `CALCUL_TOOLBOX` (Calcul, Résultat, Afficher, Boucles avec `controls_repeat` seul), `COULEURS_CALCUL` ; sans import de Blockly                                                   |
+| `src/lib/components/blockly/CalculEditeur.svelte`       | Éditeur d'une question de calcul (blocs, « Essayer avec », Lancer, affichages) ; rend le programme en texte à chaque modification ; chargé à la demande                          |
+| `src/lib/shared/blockly/tortue/interpreteur.ts`         | `executerTortue` : interprète l'état sérialisé des blocs tortue (ADR 0039), rend segments, tortue finale et étapes                                                               |
+| `src/lib/shared/blockly/tortue/animation.ts`            | `imageAnimation` (image à l'étape i), `rythmeAnimation` (durée d'un tic, étapes par tic)                                                                                         |
+| `src/lib/shared/blockly/tortue/segments.ts`             | Arrondi, `normaliserSegments` / `memesTraces` (comparer deux tracés sans le chemin), `memesFormes` (8 symétries + translation), `sortDuCadre`                                    |
+| `src/lib/shared/blockly/tortue/notation.ts`             | `etatVersTexte` / `texteVersEtat` : programme en notation texte (`répéter 4 [ avancer 3 ; tourner à droite 90 ]`) ↔ état Blockly                                                 |
+| `src/lib/shared/blockly/tortue/jugement.ts`             | `jugerProgrammeTortue` (comparaison `position` ou `forme`), `lireProgrammeTortue` (segments ou message d'erreur)                                                                 |
+| `src/lib/shared/blockly/tortue/blocs.ts`                | `definirBlocsTortue` : définitions Blockly et générateurs d'aperçu JS / Python (`from turtle import *`)                                                                          |
+| `src/lib/shared/blockly/tortue/toolbox.ts`              | `TORTUE_TOOLBOX` : Tortue, « répéter n fois » (`controls_repeat`, champ entier ≥ 0), nombre — uniquement des blocs interprétés                                                   |
+| `src/lib/components/blockly/TortueCanvas.svelte`        | Quadrillage fixe 20 × 20 en SVG, segments coupés au cadre, dépassement signalé ; figure modèle en gris, attendu en pointillés, tracé vert / rouge ; sans Blockly                 |
+| `src/lib/components/blockly/TortueEditeur.svelte`       | Éditeur d'une question tortue (blocs, Lancer, quadrillage, onglets sous `lg`) ; rend le programme en texte à chaque modification ; chargé à la demande                           |
+| `static/blockly/media/`                                 | Médias de Blockly (corbeille, sprites, icônes), servis par Chiphre                                                                                                               |
 
 ## Invariants
 
@@ -159,8 +159,8 @@ question de calcul »).
   de départ, lu seulement : la variable de 5e « en lecture d'une donnée saisie »), `math_number`,
   `calcul_operation` (champ `OP` : `ADD`, `MINUS`, `MULTIPLY`, `DIVIDE`, entrées `A` et `B`),
   `calcul_resultat` (l'unique variable, 0 au départ), `calcul_mettre_resultat`,
-  `calcul_afficher`, `controls_repeat` (nombre de tours écrit dans le bloc ; `controls_repeat_ext`, à
-  nombre de tours calculé, est inconnu : il ne s'écrirait pas en texte). L'élève ne crée pas de variable (4e). Entrée vide
+  `calcul_afficher`, `controls_repeat` (nombre de tours écrit dans le bloc). L'élève ne crée pas
+  de variable en 5e (cf. « Niveaux 4e et 3e »). Entrée vide
   → 0 ; blocs désactivés et calculs posés seuls ignorés ; piles de haut en bas. Erreurs : bloc
   inconnu (même dans une entrée, `math_arithmetic` compris), opération inconnue (illisible),
   division par zéro, nombre devenu infini, plus de 10 000 pas (`LIMITE_PAS_CALCUL` ; une opération compte un pas, comme une instruction
@@ -193,6 +193,46 @@ question de calcul »).
   (`ESSAIS_PAR_DEFAUT`), un témoin en erreur ignoré, moins de deux témoins utilisables → on ne
   sait pas, rien refusé. Une réponse déjà fausse sur les essais garde son verdict sans message ;
   un attendu constant ne déclenche rien (David, 2026-11-15).
+
+### Niveaux 4e et 3e
+
+Phase 0 validée par David le 2026-11-16 (journal `blockly`). Même bloc ```calcul, même
+interpréteur, même jugement ; la clé `niveau:` (5e par défaut) choisit les blocs **admis**
+(`NIVEAU_DES_BLOCS` de `calcul/interpreteur.ts`) : un bloc au-dessus du niveau est un bloc inconnu
+(`executerCalcul(etat, nombre, niveau)`, 5e par défaut : les appelants d'avant ne changent pas).
+
+- **4e** : variables créées par l'élève — `variables_set` (« mettre x à », entrée `VALUE`),
+  `variables_get`, `math_change` (« ajouter … à x », entrée `DELTA`), champ `VAR: { id }` résolu
+  par la liste `variables` de l'état (`nomsDesVariables`) ; une variable jamais mise vaut 0 ; noms
+  comparés sans majuscules ni accents (`Côté` = `cote`) ; 20 variables au plus (`VARIABLES_MAX`),
+  nom de 20 caractères au plus, lettres / chiffres / `_`, jamais un mot du langage (`nombre`,
+  `résultat`, `afficher`, `si`, `et`, `reste`, `par`, `faux`… : `verifierNomDeVariable`).
+  « si » : `calcul_si` (entrées `CONDITION`, `ALORS`), `calcul_si_sinon` (+ `SINON`) ;
+  comparaisons `logic_compare` (`EQ NEQ LT LTE GT GTE`), égalité à la marge du jugement
+  (`egauxCalcul` : 0,1 + 0,2 = 0,3, et n'est pas < 0,3) ; condition vide = fausse ; un nombre à
+  la place d'une condition (ou l'inverse) → illisible. Reste `math_modulo` (`DIVIDEND`,
+  `DIVISOR`) : euclidien, jamais négatif (−7 par 3 → 2), par 0 → division par zéro.
+  `controls_repeat_ext` (tours calculés) : arrondi à l'entier le plus proche, négatif → 0.
+- **3e** : `logic_operation` (`AND` / `OR`, évaluation courte), `logic_negate`,
+  `calcul_repeter_jusqua` (« répéter jusqu'à », entrées `CONDITION`, `DO` ; condition déjà vraie →
+  aucun tour ; sans fin → « trop long »). Pas de « tant que » (Python du lycée).
+- Une comparaison, un ET / OU / NON, un reste comptent un pas ; un tour de « jusqu'à » aussi.
+- **Notation** : `mettre x à …` (ou `x = …`), `ajouter … à x`, `si <condition> alors [ … ]
+sinon [ … ]`, `répéter <calcul> [ … ]` (un entier écrit reste le bloc de 5e), `répéter jusqu’à
+<condition> [ … ]`, `reste de a par b` (a, b : nombre, nom, ou calcul entre parenthèses).
+  Conditions : `= ≠ < > ≤ ≥` (lus aussi `!= <> <= >=`), `et` avant `ou`, `non (…)` toujours
+  entre parenthèses, `faux` = condition vide. Un nom garde sa première écriture. L'état écrit
+  porte la liste `variables` seulement s'il y en a (la 5e est écrite comme avant). La notation lit
+  tous les niveaux ; `messageNiveau(texte, niveau)` dit à l'auteur le bloc qui dépasse (celui du
+  niveau le plus haut) et le niveau à demander.
+- **Contrôle du modèle** : chaque « si » de la référence doit être vrai et faux au moins une
+  fois sur les essais (`branchesNonParcourues`), sinon refus : « « si nombre > 100 » n'est jamais
+  vrai sur les essais : ajouter à essais: un nombre qui le rend vrai ». Un « si » jamais atteint
+  compte comme jamais vrai.
+- **Réponse attendue** : `4e | <essais> | <programme>` (rien devant en 5e : les réponses publiées
+  ne changent pas) ; le jugement et le corrigé rejouent au niveau lu.
+- À venir (PR B) : définitions Blockly des blocs `calcul_si`, `calcul_si_sinon`,
+  `calcul_repeter_jusqua`, boîtes à outils 4e / 3e, écran, sélecteur du bac à sable.
 
 ## L'écran d'une question tortue
 
@@ -272,7 +312,8 @@ question de calcul »).
   blocs passés par un vrai `Blockly.Workspace` sérialisé (dont le champ de `controls_repeat`),
   étapes et `imageAnimation`.
 - `src/lib/shared/blockly/calcul/__tests__/` : interpréteur (opérations, variable, répétition,
-  erreurs), notation (priorités, lecture souple, refus expliqués, aller-retour), jugement (calcul
+  erreurs), `niveaux.test.ts` (4e / 3e : variables, conditions, reste, boucles, niveaux, état mal
+  formé, aller-retours, branches, jugement), notation (priorités, lecture souple, refus expliqués, aller-retour), jugement (calcul
   écrit autrement, essais, marge, messages), `lireEssais` ; `sans-blockly.test.ts` : ni
   l'interpréteur, ni la notation, ni le jugement n'importent Blockly (imports suivis).
 - `src/lib/components/markdown/nodes/__tests__/CalculProgramme.svelte.test.ts` (navigateur) :
