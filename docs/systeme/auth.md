@@ -525,7 +525,8 @@ connexion : aucune session n'est créée.
    l'écriture à l'utilisateur, **après** le contrôle d'identité de la route, et en
    l'ajoutant à `ALLOWED_SERVICE_ROLE_PATHS`. Seule lecture anonyme : le document du lien du
    cours (`(public)/cours/[token]/document/[id]`, ADR 0025), où la garde est le jeton, vérifiée
-   par une fonction SQL que seul le service role exécute. Le fichier d'un document de chapitre
+   par une fonction SQL que seul le service role exécute ; de même le carnet de liaison
+   (`lib/server/carnet/`, ADR 0040), après la forme du jeton et la limite de débit par IP. Le fichier d'un document de chapitre
    (`api/documents/[id]`, ADR 0029) se lit aussi par le service, après la lecture de sa ligne
    avec le client de l'utilisateur (RLS : chapitre visible, document publié).
 6. **Pas d'énumération** : login, inscription et reset rendent le même message que le compte
