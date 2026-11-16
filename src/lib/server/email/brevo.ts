@@ -24,6 +24,7 @@ import { createServerLogger } from '$lib/utils/logger';
 import { isChildAccountEmail } from '$lib/utils/child-account';
 import type { ChildRegistrationEmailData } from '$lib/email-templates/child-registration';
 import type { ChildPasswordResetEmailData } from '$lib/email-templates/child-password-reset';
+import type { CarnetConfirmationEmailData, CarnetLinkEmailData } from '$lib/email-templates/carnet';
 
 const logger = createServerLogger('server/email/brevo');
 
@@ -229,6 +230,41 @@ export async function sendChildPasswordResetEmail(
 		getChildPasswordResetSubject(data),
 		getChildPasswordResetEmailHtml(data),
 		getChildPasswordResetEmailText(data)
+	);
+}
+
+/** Carnet de liaison : confirmation d'une adresse saisie (A2, Q18). */
+export async function sendCarnetConfirmationEmail(
+	toEmail: string,
+	data: CarnetConfirmationEmailData
+): Promise<EmailSendResult> {
+	const {
+		getCarnetConfirmationSubject,
+		getCarnetConfirmationEmailHtml,
+		getCarnetConfirmationEmailText
+	} = await import('$lib/email-templates/carnet');
+
+	return sendEmail(
+		toEmail,
+		getCarnetConfirmationSubject(data),
+		getCarnetConfirmationEmailHtml(data),
+		getCarnetConfirmationEmailText(data)
+	);
+}
+
+/** Carnet de liaison : le lien du carnet, vers une adresse confirmée seulement (A1, Q26). */
+export async function sendCarnetLinkEmail(
+	toEmail: string,
+	data: CarnetLinkEmailData
+): Promise<EmailSendResult> {
+	const { getCarnetLinkSubject, getCarnetLinkEmailHtml, getCarnetLinkEmailText } =
+		await import('$lib/email-templates/carnet');
+
+	return sendEmail(
+		toEmail,
+		getCarnetLinkSubject(data),
+		getCarnetLinkEmailHtml(data),
+		getCarnetLinkEmailText(data)
 	);
 }
 
