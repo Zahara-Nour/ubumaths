@@ -10,7 +10,7 @@ couvre:
 # Blockly — programmation par blocs
 
 > Écrite à partir du code le 2026-11-14 (chantier `blockly`, journal
-> `docs/archive/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14 ; nombre maximal de blocs (`blocs:`) le 2026-11-15 ; bac à sable « Programmes de calcul » le 2026-11-15 ; blocs de 4e / 3e et `niveau:` (logique, sans écran) le 2026-11-16 ; leur écran (blocs Blockly, boîtes à outils par niveau, sélecteur du bac à sable) le 2026-11-16.
+> `docs/archive/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14 ; nombre maximal de blocs (`blocs:`) le 2026-11-15 ; bac à sable « Programmes de calcul » le 2026-11-15 ; blocs de 4e / 3e et `niveau:` (logique, sans écran) le 2026-11-16 ; leur écran (blocs Blockly, boîtes à outils par niveau, sélecteur du bac à sable) le 2026-11-16 ; module partagé (`types.ts`, `config.ts`, `generators/index.ts`) après le ménage, le 2026-11-16.
 
 ## À quoi ça sert
 
@@ -48,9 +48,9 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 | `src/lib/components/blockly/TortueBacASable.svelte`     | Blocs tortue, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié ; onglets Blocs / Tortue sous `lg`                                                             |
 | `src/routes/(public)/programmes-de-calcul/+page.svelte` | Page publique « Programmes de calcul », sélecteur de niveau, monte `CalculEditeur` (programme vide), rien de jugé                                                                              |
 | `src/lib/components/blockly/BlocklyWorkspace.svelte`    | `Blockly.inject` ; charge la locale française (`blockly/msg/fr`) puis `francaiserBlocsCalcul` avant                                                                                            |
-| `src/lib/shared/blockly/config.ts`                      | `BLOCKLY_CONFIG` (délais, limites), `DEFAULT_WORKSPACE_OPTIONS`, thème `CHIPHRE_THEME`, messages d'erreur                                                                                      |
+| `src/lib/shared/blockly/config.ts`                      | `BLOCKLY_CONFIG` (limites), `DEFAULT_WORKSPACE_OPTIONS`, thème `CHIPHRE_THEME`, messages d'erreur                                                                                              |
 | `src/lib/shared/blockly/toolbox/standard.ts`            | Boîte à outils : Logique, Boucles, Math, Texte, Listes, Variables, Fonctions                                                                                                                   |
-| `src/lib/shared/blockly/generators/`                    | `generateCode` / `getRawCode` (générateurs Blockly), enveloppes `wrapJavaScriptCode` / `wrapPythonCode`, garde-fous (longueur, boucles infinies)                                               |
+| `src/lib/shared/blockly/generators/`                    | `generateCode` (générateurs Blockly, aperçu « Voir en Python »), enveloppes `wrapJavaScriptCode` / `wrapPythonCode`, garde-fous (longueur, boucles infinies)                                   |
 | `src/lib/shared/blockly/lecture.ts`                     | Lecture commune (tortue, calcul) : état sérialisé → `BlocLu` vérifié (`lirePiles`), `premierBlocInconnu`, `nombreDeTours`                                                                      |
 | `src/lib/shared/blockly/calcul/interpreteur.ts`         | `executerCalcul(etat, nombre, niveau)` : interprète un programme de calcul (5e, 4e, 3e) pour un nombre de départ (ADR 0039), rend les nombres affichés ; `branchesNonParcourues`               |
 | `src/lib/shared/blockly/calcul/notation.ts`             | `etatVersTexteCalcul` / `texteVersEtatCalcul` : `mettre résultat à nombre + 2 ; afficher résultat × 4` ↔ état Blockly ; `messageNiveau`, `conditionsDuProgramme`                               |
@@ -332,7 +332,7 @@ sinon [ … ]`, `répéter <calcul> [ … ]` (un entier écrit reste le bloc de 
 
 ## Tests
 
-- `src/lib/shared/blockly/__tests__/` : types, médias, `aucun-javascript-execute.test.ts` (ADR 0039).
+- `src/lib/shared/blockly/__tests__/` : configuration, médias, `aucun-javascript-execute.test.ts` (ADR 0039).
 - `src/lib/shared/blockly/generators/__tests__/` : enveloppes, garde-fous, aperçu du bloc `print`.
 - `src/lib/shared/blockly/tortue/__tests__/` : interpréteur (nominal, limites, erreurs), segments,
   blocs passés par un vrai `Blockly.Workspace` sérialisé (dont le champ de `controls_repeat`),
@@ -364,8 +364,7 @@ sinon [ … ]`, `répéter <calcul> [ … ]` (un entier écrit reste le bloc de 
 
 ## Écarts connus
 
-- Types et messages hérités de l'ancien exécuteur (`OutputLine`, `ExecutionContext`,
-  `ERROR_MESSAGES.TIMEOUT_JS`…, `types.ts` / `config.ts`) : plus lus par aucune page.
-- Doublons de doc dans le module (`README.md`, `generators/README.md`, en anglais, de la
-  création du prototype) : non vérifiés contre le code. `QUICK_REFERENCE.md` et les deux
-  `EXAMPLES.md`, qui montraient comment exécuter le code généré dans un worker, ont été retirés.
+- Aucun dans le module partagé depuis le ménage du 2026-11-16 (chantier `blockly-menage`) : types,
+  délais et messages de l'ancien exécuteur retirés, ainsi que les deux `README.md` en anglais du
+  prototype (cette page fait foi). `QUICK_REFERENCE.md` et les deux `EXAMPLES.md` avaient été
+  retirés avec l'exécution du code généré (#2715).
