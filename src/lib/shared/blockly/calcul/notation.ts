@@ -345,6 +345,31 @@ export function conditionsDuProgramme(texte: string): string[] {
 }
 
 /**
+ * Pour l'auteur : la première variable lue mais jamais mise (ni `mettre … à`, ni `ajouter … à`)
+ * dans le programme écrit — presque toujours une faute de frappe (`afficher nombr + 2` : la
+ * variable `nombr` vaudrait 0, revue #2716) ; null sinon, ou si le programme ne se lit pas.
+ */
+export function variableJamaisMise(texte: string): string | null {
+	const lu = texteVersEtatCalcul(texte);
+	if (!lu.ok) return null;
+	try {
+		const noms = nomsDesVariables(lu.etat);
+		const blocs = lirePilesCalcul(lu.etat).flatMap((pile) => [...tousLesBlocs(pile)]);
+		const mises = new Set(
+			blocs
+				.filter((b) => b.type === 'variables_set' || b.type === 'math_change')
+				.map((b) => normaliserMot(nomDeVariable(b, noms)))
+		);
+		const lue = blocs.find(
+			(b) => b.type === 'variables_get' && !mises.has(normaliserMot(nomDeVariable(b, noms)))
+		);
+		return lue ? nomDeVariable(lue, noms) : null;
+	} catch {
+		return null;
+	}
+}
+
+/**
  * Pour l'auteur : le bloc du programme écrit qui dépasse le niveau (celui du niveau le plus haut,
  * le premier à égalité), avec le niveau à demander ; null si le programme tient dans le niveau
  * ou ne se lit pas (son erreur est signalée ailleurs).

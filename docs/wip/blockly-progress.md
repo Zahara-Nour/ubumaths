@@ -734,3 +734,11 @@ ajouter 1 à compteur`.
   condition vide écrite `faux` ; `non (…)` toujours entre parenthèses ; noms : lettres, chiffres,
   `_`, sans espace ; un état qui dépasse le niveau est refusé même si le bloc est désactivé (comme
   un bloc inconnu) ; le message à l'auteur nomme le bloc du niveau le plus haut.
+- **Revue `code-reviewer` (Opus, 2026-11-16)** : aucun bloquant (aucun juste à tort, niveau
+  étanche, 5e inchangée, allers-retours idempotents, bornes tenues). Corrigé (test rouge avant) :
+  variable lue jamais mise dans `attendu:` / `départ:` refusée (« faute de frappe ? »), dite avant
+  le niveau (en 5e, `afficher nombr` proposait de monter en 4e). Documenté : `afficher` seul
+  dans un « si » sans « sinon » → référence refusée (muette sur un essai). **Pour la PR B** :
+  Blockly distingue `Côté` et `cote` (accents), l'interpréteur non → refuser à la création un
+  nom qui ne diffère que par les accents ; `CalculEditeur` doit passer le niveau à
+  `executerCalcul` ; **aucun modèle 4e / 3e publié avant la PR B** (l'élève n'aurait pas les blocs).

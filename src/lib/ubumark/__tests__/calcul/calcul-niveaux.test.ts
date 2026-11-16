@@ -46,6 +46,23 @@ describe('niveau:', () => {
 		).toMatch(/« et » est un bloc de 3e \(ajouter niveau: 3e\)/);
 	});
 
+	it('variable lue jamais mise (faute de frappe) : refusée, sans proposer de monter de niveau (revue #2716)', () => {
+		expect(messages('niveau: 4e\nattendu: afficher nombr + 2')).toMatch(
+			/attendu: « nombr » est lue mais jamais mise \(faute de frappe \?\)/
+		);
+		expect(
+			messages('niveau: 4e\nattendu: mettre prix à nombre × 3 ; afficher pirx + nombre')
+		).toMatch(/« pirx » est lue mais jamais mise/);
+		const cinquieme = messages('attendu: afficher nombr + 2');
+		expect(cinquieme).toMatch(/« nombr » est lue mais jamais mise/);
+		expect(cinquieme).not.toMatch(/niveau: 4e/);
+		expect(messages('attendu: afficher nombre\ndépart: afficher nombr')).toMatch(
+			/départ: « nombr » est lue mais jamais mise/
+		);
+		// Mise par « ajouter … à » : elle compte comme mise
+		expect(messages('niveau: 4e\nattendu: ajouter nombre à n ; afficher n')).toBe('');
+	});
+
 	it('départ au-dessus du niveau : refusé aussi', () => {
 		expect(messages('attendu: afficher nombre\ndépart: mettre x à 1')).toMatch(
 			/départ: « mettre … à » est un bloc de 4e/

@@ -42,7 +42,8 @@ import {
 	conditionsDuProgramme,
 	ecrireNombreCalcul,
 	messageNiveau,
-	texteVersEtatCalcul
+	texteVersEtatCalcul,
+	variableJamaisMise
 } from '$lib/shared/blockly/calcul/notation';
 import type { CalculBlockRange, CalculIssue, CalculNode } from '../types/calcul';
 
@@ -248,11 +249,19 @@ export function parseCalculContent(source: string): CalculNode {
 	if (!seen.has('attendu')) {
 		fail(1, `il manque la ligne attendu: (le programme de référence, ex. ${EXEMPLE_ATTENDU})`);
 	}
-	// Référence et départ dans les blocs du niveau
+	// Référence et départ : pas de variable lue jamais mise (faute de frappe : elle vaudrait 0,
+	// revue #2716 ; dite avant le niveau, qui proposerait sinon de monter en 4e), puis dans les
+	// blocs du niveau
 	const horsNiveau = (key: 'attendu' | 'départ', programme: string | null): boolean => {
 		if (programme === null || !niveauLu) return false;
+		const ligne = seen.get(key) ?? 1;
+		const fautive = variableJamaisMise(programme);
+		if (fautive !== null) {
+			fail(ligne, `${key}: « ${fautive} » est lue mais jamais mise (faute de frappe ?)`);
+			return true;
+		}
 		const message = messageNiveau(programme, niveau);
-		if (message) fail(seen.get(key) ?? 1, `${key}: ${message}`);
+		if (message) fail(ligne, `${key}: ${message}`);
 		return message !== null;
 	};
 	const attenduHorsNiveau = horsNiveau('attendu', attendu);

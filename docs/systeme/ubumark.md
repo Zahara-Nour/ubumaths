@@ -1092,7 +1092,8 @@ rien avec le nombre −3 »). `essais:` : 1 à 20 nombres distincts (`;`, virgul
 `attendu:` et `départ:` doivent tenir dans le niveau, sinon refus qui nomme le bloc et le niveau
 à demander (« « mettre … à » est un bloc de 4e (ajouter niveau: 4e) ») ; chaque « si » de
 `attendu:` doit être vrai et faux au moins une fois sur les essais (« « si nombre > 100 » n'est
-jamais vrai sur les essais : ajouter à essais: … »). Réponse attendue : `4e | <essais> |
+jamais vrai sur les essais : ajouter à essais: … ») ; une variable lue jamais mise est refusée
+(« faute de frappe ? »). Réponse attendue : `4e | <essais> |
 <programme>` au-dessus de la 5e (`calcul-answer.ts`). Clés inconnues, en double,
 ligne hors `clé: valeur` : refus. Masqué : `attendu: ?` seul (essais et départ restent). Dans un
 item de liste ou un choix : nœud lu, sans case, signalé ; masqué quand même et vu par

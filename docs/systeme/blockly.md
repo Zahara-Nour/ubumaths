@@ -228,7 +228,12 @@ sinon [ … ]`, `répéter <calcul> [ … ]` (un entier écrit reste le bloc de 
 - **Contrôle du modèle** : chaque « si » de la référence doit être vrai et faux au moins une
   fois sur les essais (`branchesNonParcourues`), sinon refus : « « si nombre > 100 » n'est jamais
   vrai sur les essais : ajouter à essais: un nombre qui le rend vrai ». Un « si » jamais atteint
-  compte comme jamais vrai.
+  compte comme jamais vrai. Une variable lue mais jamais mise (ni `mettre`, ni `ajouter`) dans
+  `attendu:` ou `départ:` est refusée (`variableJamaisMise` : « « nombr » est lue mais jamais
+  mise (faute de frappe ?) », dit avant le niveau ; revue #2716). Règle d'écriture qui en découle
+  avec « la référence affiche quelque chose sur chaque essai » : un `afficher` seul dans un « si »
+  sans « sinon » ne passe pas (les essais qui le rendent faux n'affichent rien) ; écrire un
+  « sinon » ou un `afficher` hors du « si ».
 - **Réponse attendue** : `4e | <essais> | <programme>` (rien devant en 5e : les réponses publiées
   ne changent pas) ; le jugement et le corrigé rejouent au niveau lu.
 - À venir (PR B) : définitions Blockly des blocs `calcul_si`, `calcul_si_sinon`,
