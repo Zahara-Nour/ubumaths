@@ -182,3 +182,18 @@ Question Q22 : le lien est-il stocké **haché** (comme un mot de passe) ? Cons�
 - Revues (2026-11-16) : `code-reviewer` (Sonnet) et `security-auditor` (Opus), **aucun finding bloquant**. Corrigés : le jeton partait en clair dans `error_logs` (adresse et message, client et serveur) → masqué au point d'écriture unique, `logError` (`redactSecretUrl`) ; Referer interne (ci-dessus) ; confirmation consommée puis émission en échec → « confirmée, le professeur vous enverra le lien » au lieu d'une 500 ; test des évaluations assertant ligne par ligne (mutation vérifiée rouge) ; jeton retiré de `data` ; ordre des blocs et clé d'itération de la page élève ; nombre d'adresses retiré de la phrase de l'élève.
 - Laissés : `now` figé au rendu du composant (un onglet resté ouvert classe une évaluation échue en « à venir » jusqu'au rechargement) ; bornes Zod (`evaluations.max(200)`) qui donneraient une 500 au-delà (la fenêtre SQL de 5 semaines borne déjà) ; journaux d'exécution Vercel qui gardent le chemin (inhérent au jeton dans l'URL, à noter au registre RGPD en PR 5).
 - **Questions pour David** (non bloquantes, PR 3) : **Q26** — un antivirus de messagerie qui exécute un vrai navigateur peut cliquer « Confirmer » : il reçoit alors le lien du carnet, et le vrai parent voit « lien plus valide ». Recommandation : à la confirmation, **ne plus afficher le carnet** mais envoyer son lien par courriel (PR 3), la page disant « Le lien de votre carnet vient de vous être envoyé ». **Q27** — une évaluation **sans échéance** créée il y a plus de 5 semaines et jamais faite disparaît du carnet (fenêtre de `carnet_payload`). Recommandation : la garder tant qu'elle n'est pas faite (nouvelle migration, PR 4).
+
+### 2026-11-16 (Q26, Q27, recommandations suivies)
+
+- **Q26** : à la confirmation, le carnet **n'est plus affiché** ; son lien part par courriel (PR 3). La page dit « Le lien de votre carnet vient de vous être envoyé. »
+- **Q27** : une évaluation sans échéance, non faite, reste dans le carnet tant qu'elle n'est pas faite (migration, PR 4).
+
+## PR 3 — côté professeur et envoi par Brevo (2026-11-16)
+
+Worktree `../ubumaths-wt-partage-parents`, branche `feat/partage-parents-pr3`.
+
+Points de mise en œuvre posés à David avant de coder (D1-D3 et A1-A6 sont validés) :
+
+- **Q28 — Où** : une page par classe `/dashboard/teacher/classes/[classId]/carnet` (bouton « Carnet de liaison » à côté d'« Acquisition ») : réglages D1 en haut, tableau par élève D2-D3 dessous.
+- **Q29 — Arrivées tardives (A1, Q21)** : à l'activation, chaque consentement accordé d'un élève actif devient une adresse confirmée et reçoit son lien ; un bouton « Envoyer les liens manquants » rejoue ce passage (élève arrivé après, consentement accordé après). L'envoi automatique → cron de la PR 4.
+- **Q30 — Quota Brevo** (300 courriels / jour en offre gratuite, partagés avec tous les autres courriels) : avant d'activer, la page dit « Activer enverra N courriels » ; au-delà, les envois en échec restent visibles (E6) et se rejouent par « Envoyer les liens manquants ».
