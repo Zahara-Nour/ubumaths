@@ -142,7 +142,7 @@ export function buildAnswerOf(
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
 		if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
 		if (node.spec?.attendu == null) return { errors: ['attendu: absent'] };
-		return { answer: expectedCalculAnswer(node.spec.essais, node.spec.attendu) };
+		return { answer: expectedCalculAnswer(node.spec.essais, node.spec.attendu, node.spec.niveau) };
 	}
 	if (kind === 'robot') {
 		// Robot à produire : la scène et un code le plus court (le juge rejoue celui de l'élève)
