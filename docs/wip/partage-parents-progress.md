@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR 1 : migration écrite, en revue._
+_Mis à jour le 2026-11-16, après #2718._
 
-- **État** : phase 0 ; tours 1 à 4 tranchés ; tour 5 tranché : **comportements A à E validés**, Q17-Q21 suivies ; **ADR 0040** écrite. Rien de codé.
-- **Prochaine action** : PR 1 — corriger d'après `security-auditor` + `code-reviewer`, ouvrir la PR, CI, merge, `db:migrate`, `db:types` ; puis PR 2 (page du carnet).
+- **État** : PR 1 (migration du carnet) **mergée (#2718) et appliquée en prod** (`db:migrate --include-all`, droits vérifiés en lecture seule). Rien d'autre de codé.
+- **Prochaine action** : PR 2 — nouveau worktree, `pnpm db:types` (types du carnet), puis page du carnet `(public)/carnet/[token]` (B1-B5, palier par semaine Q25) + vue élève dans le Cabinet (C1-C3) + pages de confirmation, refus et arrêt des courriels.
 - **En attente de David** : rien.
-- **Pièges en cours** : données d'élèves mineurs ; aucune policy `anon` (fonction `SECURITY DEFINER` qui reçoit le lien, comme l'ADR 0025) ; décision 8 du 2026-10-21 tient ; adresses confirmées seulement ; revue `code-reviewer` + `security-auditor` obligatoire.
-- **Ensuite** : revenir au point 9 de `presentation-parents` et réécrire le point 8 avec le carnet.
-- **Worktree / branche** : `../ubumaths-wt-partage-parents` · `feat/partage-parents`.
+- **Pièges en cours** : données d'élèves mineurs ; fonctions à lien = `service_role` seul (appel depuis le serveur, limite de débit) ; jeton = 32 octets CSPRNG, stocké haché ; unicité (élève, empreinte) → traiter `23505` (PR 3) ; jour actif = règle de `class_regularity_weeks` (deux endroits) ; revue `code-reviewer` + `security-auditor` à chaque PR.
+- **Ensuite** : PR 3 (professeur + envois), PR 4 (courriels d'exception, nouvelle migration : épisodes, effacement Q21), PR 5 (doc, point 8 de `presentation-parents`).
+- **Worktree / branche** : aucun (le prochain : `../ubumaths-wt-partage-parents`, `feat/partage-parents-carnet`).
 
 ## Origine
 
@@ -166,3 +166,4 @@ Question Q22 : le lien est-il stocké **haché** (comme un mot de passe) ? Cons�
 - Revues (2026-11-16) : `code-reviewer` et `security-auditor` (Opus), **aucun finding bloquant**. Corrigés : arrêt des courriels qui trahissait un carnet fermé ; empreintes illisibles par le professeur (droits par colonne) ; verrou par élève entre émission d'un lien et coupure du partage ; semaines d'avant la rentrée retirées et vacances lues comme la grille du prof (année active de l'école) ; tests ajoutés (palier 4+, retard au jour de Paris, évaluation rendue par un autre élève, brouillon, assignation individuelle, classe sans carnet, source `teacher`, normalisation de l'adresse, limite par UPDATE, rentrée et vacances). 28 tests ; trois mutations vérifiées rouges.
 - Laissés, écrits dans l'ADR : les liens du cahier et du cours vus par un parent survivent à la révocation de son lien. Non corrigé (trace sans effet sur l'accès) : `updated_by` / `stopped_by` posables par le professeur.
 - **Pour la PR 3** : l'unicité (élève, empreinte) bloque aussi une adresse `pending` expirée ou `invalid` → le serveur traite `23505` (renvoyer la confirmation sur la ligne existante) ; jeton = 32 octets CSPRNG au moins ; dire à l'écran que couper le partage ne coupe pas les liens de classe.
+- **Mergée** le 2026-11-16 (#2718), CI verte ; migration appliquée en prod (`--include-all` : une migration d'une autre session, horodatée après, était déjà passée).
