@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-16, phase 0 ouverte (aucune PR)._
 
-- **État** : phase 0, tour 1 : Q1, Q2, Q3, Q5 tranchées ; Q4 rediscutée.
-- **Prochaine action** : consigner les réponses du tour 1 ; tour 2 = « comment partager » (canal).
-- **En attente de David** : Q4 (1re/Tle et élève majeur).
+- **État** : phase 0, tour 1 tranché (Q1 à Q5) ; tour 2 (canal, Q6 à Q9) posé.
+- **Prochaine action** : consigner les réponses du tour 2.
+- **En attente de David** : Q6 à Q9.
 - **Pièges en cours** : données d'élèves mineurs (RGPD) ; décision 8 du 2026-10-21 (« le parent ne voit rien du compte de l'enfant ») à rouvrir explicitement, pas en silence ; question d'accès « qui pourra lire quoi » avant tout SQL ; « Parent » absent de `CONTEXT.md`.
 - **Worktree / branche** : aucun (phase 0, doc sur `main`).
 
@@ -39,3 +39,11 @@ Né du chantier `presentation-parents` (point 8, « Comment le suivre ? »), le 
 - **Q3 — Transparence** : l'élève voit ce que reçoivent ses parents (mention dans son Cabinet).
 - **Q5 — A / B** : base commune (a)+(b)+(e) pour tous ; le détail (c) en plus dans l'offre payante.
 - **Q4** : David conteste la recommandation « seulement si l'élève l'accepte » (« pourquoi donner à l'élève la possibilité de cacher ? »). Rediscutée : l'autorité parentale court jusqu'à 18 ans ; le seuil RGPD de 15 ans porte sur le consentement au traitement, pas sur l'information des parents. Cas limite : un élève **majeur** en Terminale. Chiphre ne connaît aucune date de naissance (aucune colonne dans `database.ts`).
+- **Q4 — 1re et Terminale** (tranchée après discussion) : **même partage qu'aux autres niveaux** ; un élève **majeur** peut demander l'arrêt au professeur, qui coupe le partage pour lui. **Pas de date de naissance enregistrée** (minimisation). Écarté : « seulement si l'élève l'accepte » (David : « pourquoi donner à l'élève la possibilité de cacher ? » ; l'autorité parentale court jusqu'à 18 ans, comme l'ENT du lycée) ; arrêt automatique à 18 ans (exige une date de naissance).
+
+## Tour 2 (posé le 2026-11-16) : comment partager
+
+- **Q6 — Canal** : courriel périodique ; lien personnel par élève ; compte parent ; PDF du professeur.
+- **Q7 — Rythme** : hebdomadaire seul, ou alertes immédiates en plus ?
+- **Q8 — Quelles adresses** : seulement une adresse confirmée (consentement accordé) ; comment l'obtenir en 1re/Tle (pas de consentement, donc pas d'adresse) ; un ou deux parents ?
+- **Q9 — Arrêt par le parent** : lien de désinscription dans chaque courriel ?
