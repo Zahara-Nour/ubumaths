@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR A écrite._
+_Mis à jour le 2026-11-16, après #2716._
 
-- **État** : phase 0 de la piste 4e / 3e validée (« je te suis », 2026-11-16) ; PR A écrite (logique, sans écran), PR ouverte, revue `code-reviewer` Opus · **Prochaine action** : merger la PR A ; puis PR B (blocs, écran, bac à sable), PR C (modèles) · **En attente de David** : `deploy:prod` (livre #2700 et #2707) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) et `--publier` ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 ; garde `docs:check-a-jour` : ne lit que les COMMITS ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` → dans un COMMIT ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-calcul-4e-3e`
+- **État** : piste 4e / 3e — PR A (logique : interpréteur, notation, jugement, `niveau:`, contrôle des branches, variable jamais mise) **mergée (#2716)** · **Prochaine action** : PR B — définitions Blockly de `calcul_si`, `calcul_si_sinon`, `calcul_repeter_jusqua` (+ blocs génériques variables / logique / `math_modulo` / `controls_repeat_ext` en français), boîtes à outils 4e / 3e, `CalculEditeur` qui passe le niveau, carte et corrigé, catalogue, sélecteur « Blocs : 5e · 4e · 3e » de `/programmes-de-calcul` ; refuser à la création un nom de variable qui ne diffère que par les accents · **En attente de David** : `deploy:prod` (livre #2700, #2707, #2716) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation) et `--publier` ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` ; choix de la PR A à lui signaler (section « PR A » ci-dessous) · **Pièges en cours** : **aucun modèle 4e / 3e publié avant la PR B** (l'élève n'aurait pas les blocs) ; publier le lot 5-106 **après** le `deploy:prod` de #2700 ; `docs:check-a-jour` ne lit que les COMMITS ; pre-commit avec `-- <fichiers>` peut laisser un reformatage prettier dans l'index (vérifier `git status` après) ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) · **Worktree / branche** : aucun (retiré après #2716) ; PR B → `git worktree add -b feat/blockly-calcul-4e-3e-ecran ../ubumaths-wt-blockly origin/main`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -742,3 +742,4 @@ ajouter 1 à compteur`.
   Blockly distingue `Côté` et `cote` (accents), l'interpréteur non → refuser à la création un
   nom qui ne diffère que par les accents ; `CalculEditeur` doit passer le niveau à
   `executerCalcul` ; **aucun modèle 4e / 3e publié avant la PR B** (l'élève n'aurait pas les blocs).
+- **#2716 mergée le 2026-11-16** (CI verte, revue `code-reviewer` Opus traitée).
