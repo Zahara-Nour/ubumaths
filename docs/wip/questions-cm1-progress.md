@@ -5,11 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après la publication du lot 6 bis (§ 17 sexies)._
+_Mis à jour le 2026-11-16, phase 0 du lot 6 ter écrite (§ 18)._
 
-- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 bis clos (7 modèles publiés, § 17 sexies).
-- **Prochaine action** : phase 0 du lot 6 ter « algèbre » (062-066) : relevé, outils, tableau, questions à David.
-- **En attente de David** : rien.
+- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 ter « algèbre » (062-066) : phase 0 écrite (§ 18).
+- **Prochaine action** : après les réponses de David, écrire le lot 6 ter (`docs/wip/questions/lot-cm1-6ter.py` →
+  `scripts/questions/cm1-6ter/`).
+- **En attente de David** : les 5 questions du § 18 (découpage, schéma dans l'énoncé, règle en « choix », niveaux,
+  nœud de 065).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
 
@@ -1309,3 +1311,56 @@ niveaux 4 et 5, le CM2 laissé à 2 et 3 (écart connu, pas corrigé).
   aucun niveau manquant ; `--publier` lancé par David ; vérifié au MCP : 7 publiés. Vérification manuelle notée
   (numération au CM1, #2726, #2729).
 - **Lot 6 bis clos.** Recompte : 109 points couverts sur 171 (102 + 001, 002, 010, 024, 048, 131, 143).
+
+## 18. Lot 6 ter — algèbre : phase 0 (à valider, 2026-11-16)
+
+Relevé MCP du 2026-11-16 : 062, 063, 064, 065, 066 n'ont aucun modèle. Leurs nœuds, sous « Algèbre › Premiers pas
+algébriques » : 062 et 063 → **nombre inconnu** (6 modèles de 6e, 6-142, schémas en barres, niveaux 1 et 2) ;
+064 → **programmes de calcul** (2 modèles de CM2, niveau 1 : `98f54315` exécuter, trois étapes, mots ou Scratch ;
+`42881663` le nombre de départ) ; 065 et 066 → **suites de motifs** (1 modèle de 6e, `39bafe0e`, motif d'allumettes
+dessiné en ` ```figure `). Aucun nœud à créer.
+
+Bornes (`cycle3.json`, exemples de réussite CM1 2025 p.13-14, relus dans le PDF) : 062, balances (k crayons
+identiques = 250 g ; 3 paires de ciseaux + 140 g = 500 g) et « Rose a choisi N, 3 × (2 + N) = 27 » ; 063, « en
+ajoutant 7 au triple du nombre de Mia, on trouve 100 », appuyé sur un schéma en barres ; 064, **au plus deux étapes**,
+nombre de départ entier, en mots (ajouter 2, puis multiplier par 4) ou en Scratch ; 065, **les trois termes
+suivants** de 3 ; 7 ; 11 (+4), 4 ; 12 ; 36 (×3), 80 ; 85 ; 83 ; 88 (+5 −2), 1 ; 2 ; 6 ; 7 (+1 +4), et formuler la
+règle ; 066, nombre d'éléments aux **trois étapes suivantes** (cœurs : 3, 6, 9 ; ronds : + le numéro de l'étape),
+règle dite à partir de l'étape précédente.
+
+Outils, tous en prod : balance dessinée en ` ```figure ` (patron CP `5592a129`, `cp-b3/07-balance.json`, à
+l'équilibre ici), ` ```schema-barres `, ` ```scratch ` (CM2 `98f54315`), case « choix » (lot 6 bis, 048), motifs en
+` ```figure ` (patron 6e `39bafe0e`). Classe A ou B pour les cinq points : rien à créer.
+
+| #    | Point   | Sous-notion          | Modèle                                        | Variations, plages                                                                                                                                                                                                               |
+| ---- | ------- | -------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 6t-1 | CM1-062 | nombre inconnu       | Balance : la masse d'un objet                 | Balance à l'équilibre dessinée. V1 k objets identiques = M g (k de 2 à 6, un objet de 5 à 60 g) ; V2 k objets + a g = M g (k de 2 à 4, comme les ciseaux) ; V3 k objets = deux masses (a g et b g) ; une case, en g              |
+| 6t-2 | CM1-062 | nombre inconnu       | Trouver le nombre choisi                      | V1 « Rose a choisi N ; k × (a + N) = r » (k de 2 à 5) ; V2 « N × k + a = r » ; V3 symboles : ▲ + ▲ + ▲ = s, puis ▲ + ● = t, valeur de ● ; N, ▲, ● entiers de 1 à 50 ; une case                                                   |
+| 6t-3 | CM1-063 | nombre inconnu       | Schéma en barres : le nombre choisi           | V1 le triple (k de 2 à 5) plus b donne r (r ≤ 200) ; V2 k fois le nombre moins b donne r ; V3 deux enfants ont T billes, l'un k fois plus que l'autre ; V4 somme et écart (T ≤ 200) ; schéma en barres dessiné (voir question 2) |
+| 6t-4 | CM1-064 | programmes de calcul | Exécuter un programme de calcul (deux étapes) | V1 ajouter a, puis multiplier par b (l'exemple du BO) ; V2 multiplier par a, puis ajouter b ; V3 multiplier par a, puis retirer b ; V4 le même en Scratch (deux instructions) ; départ de 2 à 20 ; une case                      |
+| 6t-5 | CM1-065 | suites de motifs     | Suite de nombres : les trois termes suivants  | Cinq termes donnés (quatre pour ×). V1 + a (a de 2 à 12) ; V2 × k (k = 2 ou 3, départ de 1 à 5) ; V3 + a − b en alternance (a > b) ; V4 + a + b en alternance ; termes ≤ 999 999 ; trois cases                                   |
+| 6t-6 | CM1-065 | suites de motifs     | Suite de nombres : choisir la règle           | Les mêmes quatre suites ; case « choix », quatre règles en phrases (« on ajoute 4 à chaque fois », « on multiplie par 3 », « on ajoute 5, puis on retire 2 », « on ajoute 4, puis on retire 1 »…), une seule juste               |
+| 6t-7 | CM1-066 | suites de motifs     | Motif évolutif : les trois étapes suivantes   | Trois étapes dessinées. V1 colonnes de k jetons (+ k, comme les cœurs, k de 2 à 4) ; V2 escalier de ronds (1, 3, 6 : + le numéro de l'étape) ; V3 carrés d'allumettes accolés (4, 7, 10) ; trois cases (étapes 4, 5, 6)          |
+| 6t-8 | CM1-066 | suites de motifs     | Motif évolutif : choisir la règle             | Les mêmes motifs ; case « choix » : « à chaque étape, on ajoute k », « on ajoute le numéro de l'étape », « on double »…, une seule juste                                                                                         |
+
+Forme commune : réponses entières, une case par nombre. Corrigé : l'opération inverse pas à pas (on retire, puis on
+partage), une vérification qui remet le nombre trouvé dans l'énoncé ; pour les suites et les motifs, les flèches de
+la règle écrites en ligne (« 15 + 4 = 19 »). Specs d'erreurs typiques : M ÷ k sans retirer a ; 27 ÷ 3 = 9 rendu pour N
+(le 2 oublié) ; 100 ÷ 3 ; une seule des deux règles d'une suite alternée appliquée à chaque fois ; + 2 au lieu de
+
+- le numéro de l'étape ; dans un programme, les étapes faites dans l'autre ordre.
+
+Questions :
+
+1. **Découpage** : un lot de 8 modèles (ci-dessus), une PR de fichiers et une migration ? Reco : **oui**.
+2. **Schéma en barres de 6t-3 dans l'énoncé** (avec « ? »), et pas seulement dans le corrigé comme au lot 6 : ici le
+   point est de « s'appuyer sur un schéma », et l'exemple du BO le dessine. Reco : **dans l'énoncé et dans le
+   corrigé**, comme les patrons de 6e.
+3. **« Formuler la règle » en case « choix »** (6t-6, 6t-8), puisqu'une phrase libre ne se corrige pas : reco **oui**.
+   Sinon, la règle reste dans le seul corrigé, et 6t-6 et 6t-8 disparaissent.
+4. **Niveaux** : les modèles du CM1 prennent le **niveau 1** de leur nœud, à côté des modèles de 6e et de CM2 qui y
+   sont déjà (plusieurs modèles partagent déjà le niveau 1), sans renuméroter personne. Reco : **oui**.
+5. **065 (suites de nombres) sous « suites de motifs »**, le nœud de son point, sans créer de sous-notion « suites de
+   nombres ». Reco : **oui** (le nom du nœud se discute à part, s'il le faut).
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
