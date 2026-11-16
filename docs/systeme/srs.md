@@ -154,8 +154,12 @@ s'affichait « toutes capacités ».
   `learning` à chaque réussite). Le badge ne lit que `relearning` comme « à remédier » : une fiche
   réussie une fois (`learning`), due, est « à renforcer » (chantier `fsrs`, Q6).
 - **Fiches écrites par l'ancien algorithme** (avant le 2026-11-15 : difficulté bloquée à 10, stabilité
-  0 après un premier échec) : `pnpm srs:rejouer-fiches --cible prod` (simulation, sauvegarde des lignes
-  dans `~/Downloads`, hors du dépôt) puis `--publier` (sur demande de David). Chaque fiche repart de
+  0 après un premier échec) : `pnpm srs:rejouer-fiches --cible prod` (simulation) puis `--publier` (sur demande de
+  David), puis à nouveau la simulation, qui doit dire « 0 à rejouer » (l'appli écrit sans condition :
+  une révision pendant l'écriture peut réécraser une fiche rejouée). Chaque lancement écrit une
+  sauvegarde neuve des lignes lues dans `~/Downloads/chiphre-sauvegardes/` (hors du dépôt, mode 600,
+  jamais réécrite) : **la supprimer après vérification, sous 30 jours** ; ne pas coller la sortie dans
+  le dépôt. Fiches `template` seulement. Chaque fiche repart de
   zéro et rejoue son `review_history` (mêmes dates, notes, temps) ; écriture sous condition
   `updated_at` inchangé ; une fiche sans historique, ou à l'historique illisible (note hors 1-4,
   désordre, `before`), n'est pas touchée ; relancer ne change rien. Calcul pur et testé :

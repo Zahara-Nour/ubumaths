@@ -99,6 +99,47 @@ describe('rejouerFiche — nominal', () => {
 		expect('timeSpent' in r.apres.review_history[1]).toBe(false);
 	});
 
+	it('deux révisions le même jour civil passent par le court terme, comme dans l’appli', () => {
+		const notes: [string, Grade][] = [
+			['2026-10-01T08:00:00.000Z', Grade.GOOD],
+			['2026-10-01T15:00:00.000Z', Grade.GOOD]
+		];
+		const r = rejouerFiche(
+			ficheLue(
+				notes.map(([d, g]) => entree(d, g)),
+				{ state: 'review', stability: 2 }
+			),
+			fsrs
+		);
+		const attendu = rejeuAttendu(notes);
+
+		expect(r.kind).toBe('rejouee');
+		if (r.kind !== 'rejouee') return;
+		expect(r.apres.stability).toBe(attendu.stability);
+		expect(r.apres.next_review).toBe(attendu.nextReview);
+	});
+
+	it('le jour se compte à Paris : une heure d’écart à cheval sur minuit n’est pas « le même jour »', () => {
+		// 21:30Z = 23:30 à Paris (1er oct.), 22:30Z = 00:30 à Paris (2 oct.) ; même jour en UTC
+		const aCheval = rejouerFiche(
+			ficheLue([
+				entree('2026-10-01T21:30:00.000Z', Grade.GOOD),
+				entree('2026-10-01T22:30:00.000Z', Grade.GOOD)
+			]),
+			fsrs
+		);
+		const memeJour = rejouerFiche(
+			ficheLue([
+				entree('2026-10-01T08:00:00.000Z', Grade.GOOD),
+				entree('2026-10-01T09:00:00.000Z', Grade.GOOD)
+			]),
+			fsrs
+		);
+
+		if (aCheval.kind !== 'rejouee' || memeJour.kind !== 'rejouee') throw new Error('rejeu attendu');
+		expect(aCheval.apres.stability).not.toBe(memeJour.apres.stability);
+	});
+
 	it('une fiche déjà rejouée ne change plus', () => {
 		const historique = [
 			entree('2026-10-01T08:00:00.000Z', Grade.AGAIN),

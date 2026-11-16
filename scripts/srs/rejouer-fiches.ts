@@ -13,19 +13,29 @@
  *
  * Le calcul (`rejouer-fiches-calcul.ts`) est décrit là-bas. Avant toute écriture :
  * 1. sauvegarde des lignes lues, telles quelles, HORS DU DÉPÔT (identifiants d'élèves
- *    mineurs) : `~/Downloads/chiphre-srs-card-stats-avant-rejeu-<cible>.json`. Jamais écrasée
- *    par un état différent : c'est le retour arrière. `--publier` refuse si elle ne garde pas
- *    l'état lu de chaque fiche à écrire ;
+ *    mineurs) : un fichier NEUF à chaque lancement, jamais réécrit (`wx`, mode 600), dans
+ *    `~/Downloads/chiphre-sauvegardes/srs-card-stats-<cible>-<horodatage>.json`. C'est le
+ *    retour arrière : `--publier` refuse si l'ensemble des sauvegardes de la cible ne garde pas
+ *    l'état lu de chaque fiche à écrire. À supprimer après vérification (sous 30 jours) ;
  * 2. écriture fiche par fiche sous condition `updated_at` inchangé depuis la lecture : une
  *    fiche révisée entre-temps rend 0 ligne, le script s'arrête et dit ce qui est fait ;
- * 3. relancer la même commande saute les fiches déjà rejouées.
+ * 3. relancer la même commande saute les fiches déjà rejouées ;
+ * 4. après `--publier`, relancer la simulation : elle doit dire « 0 à rejouer ». L'appli écrit
+ *    sans condition : une révision d'élève pendant l'écriture peut réécraser une fiche rejouée,
+ *    et une seconde passe la rejoue (tout part de l'historique).
+ *
+ * Seules les fiches `template` sont lues et écrites. Ne pas coller la sortie dans le dépôt.
+ *
+ * Retour arrière (non outillé : 27 fiches, une seule fois) : réécrire depuis la sauvegarde les
+ * cinq colonnes que le rejeu change (`difficulty`, `stability`, `state`, `next_review`,
+ * `review_history`) des fiches concernées, au client service, ligne par ligne avec `.select()`.
  *
  * L'affichage ne montre ni élève ni question : le début de l'identifiant de la fiche seulement.
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { parse } from 'dotenv';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { Database, Json } from '../../src/lib/types/database';
@@ -63,37 +73,51 @@ function clientFrom(file: string, urlKey: string, expected: (host: string) => bo
 }
 
 async function lireFiches(supabase: SupabaseClient<Database>): Promise<FicheLue[]> {
-	const { data, error } = await supabase.from('srs_card_stats').select(COLUMNS).order('id');
+	const { data, error } = await supabase
+		.from('srs_card_stats')
+		.select(COLUMNS)
+		.eq('card_reference_type', 'template')
+		.order('id');
 	if (error) throw new Error(`lecture des fiches : ${error.message}`);
 	return data ?? [];
 }
 
-function ecrireSauvegarde(fichier: string, fiches: FicheLue[]): void {
-	const contenu = JSON.stringify(fiches, null, '\t') + '\n';
-	if (existsSync(fichier) && readFileSync(fichier, 'utf8') !== contenu) {
-		console.log(`  sauvegarde déjà présente et différente, gardée telle quelle : ${fichier}`);
-		return;
-	}
-	writeFileSync(fichier, contenu, { mode: 0o600 });
-	console.log(`  sauvegarde : ${fichier}`);
+/** Chemin affiché sans le nom du compte */
+function affiche(chemin: string): string {
+	return chemin.replace(homedir(), '~');
 }
 
-/** Fiches à écrire dont la sauvegarde ne garde pas l'état lu (retour arrière incomplet) */
-function absentesDeLaSauvegarde(fichier: string, fiches: FicheLue[]): string[] {
-	const lu: unknown = existsSync(fichier) ? JSON.parse(readFileSync(fichier, 'utf8')) : [];
-	const sauvees = new Map<string, unknown>(
-		Array.isArray(lu)
-			? lu.flatMap((s: unknown) =>
-					s && typeof s === 'object' && 'id' in s && typeof s.id === 'string' ? [[s.id, s]] : []
-				)
-			: []
-	);
-	return fiches
-		.filter((f) => {
-			const s = sauvees.get(f.id);
-			return !(s && typeof s === 'object' && 'updated_at' in s && s.updated_at === f.updated_at);
-		})
-		.map((f) => court(f.id));
+/** Nouveau fichier de sauvegarde, jamais réécrit (`wx` échoue s'il existe déjà) */
+function ecrireSauvegarde(dossier: string, cible: string, fiches: FicheLue[]): void {
+	mkdirSync(dossier, { recursive: true, mode: 0o700 });
+	const horodatage = new Date().toISOString().replace(/[:.]/g, '-');
+	const fichier = join(dossier, `srs-card-stats-${cible}-${horodatage}.json`);
+	writeFileSync(fichier, JSON.stringify(fiches, null, '\t') + '\n', { mode: 0o600, flag: 'wx' });
+	console.log(`  sauvegarde : ${affiche(fichier)}`);
+}
+
+/** Fiches à écrire dont aucune sauvegarde de la cible ne garde l'état lu */
+function absentesDesSauvegardes(dossier: string, cible: string, fiches: FicheLue[]): string[] {
+	const prefixe = `srs-card-stats-${cible}-`;
+	const sauvees = new Set<string>();
+	for (const nom of readdirSync(dossier)) {
+		if (!nom.startsWith(prefixe) || !nom.endsWith('.json')) continue;
+		const lu: unknown = JSON.parse(readFileSync(join(dossier, nom), 'utf8'));
+		if (!Array.isArray(lu)) continue;
+		for (const s of lu as unknown[]) {
+			if (
+				s &&
+				typeof s === 'object' &&
+				'id' in s &&
+				typeof s.id === 'string' &&
+				'updated_at' in s &&
+				typeof s.updated_at === 'string'
+			) {
+				sauvees.add(`${s.id}|${s.updated_at}`);
+			}
+		}
+	}
+	return fiches.filter((f) => !sauvees.has(`${f.id}|${f.updated_at}`)).map((f) => court(f.id));
 }
 
 function court(id: string): string {
@@ -126,6 +150,7 @@ async function ecrireFiche(
 			review_history: apres.review_history as unknown as Json
 		})
 		.eq('id', fiche.id)
+		.eq('card_reference_type', 'template')
 		.eq('updated_at', fiche.updated_at)
 		.select('id');
 	if (error) throw new Error(`${court(fiche.id)} : ${error.message}`);
@@ -145,18 +170,14 @@ async function main(): Promise<void> {
 		cible === 'prod'
 			? clientFrom('.env', 'PUBLIC_SUPABASE_URL', (h) => h === PROD_HOST)
 			: clientFrom('.env.local', 'SUPABASE_URL', (h) => LOCAL_HOSTS.has(h));
-	const sauvegarde = join(
-		homedir(),
-		'Downloads',
-		`chiphre-srs-card-stats-avant-rejeu-${cible}.json`
-	);
+	const dossier = join(homedir(), 'Downloads', 'chiphre-sauvegardes');
 
 	const fiches = await lireFiches(supabase);
 	console.log(
 		`Cible : ${cible === 'prod' ? 'PRODUCTION' : 'base locale'}${publier ? '' : ' (simulation)'}, ` +
 			`${fiches.length} fiches lues`
 	);
-	ecrireSauvegarde(sauvegarde, fiches);
+	ecrireSauvegarde(dossier, cible, fiches);
 
 	const fsrs = new FSRS();
 	const aEcrire: { fiche: FicheLue; apres: ValeursRejouees }[] = [];
@@ -180,14 +201,14 @@ async function main(): Promise<void> {
 		console.log('Simulation : rien n’est écrit. Relancer avec --publier.');
 		return;
 	}
-	const nonSauvees = absentesDeLaSauvegarde(
-		sauvegarde,
+	const nonSauvees = absentesDesSauvegardes(
+		dossier,
+		cible,
 		aEcrire.map((a) => a.fiche)
 	);
 	if (nonSauvees.length > 0) {
 		throw new Error(
-			`sauvegarde ${sauvegarde} sans l'état lu de : ${nonSauvees.join(', ')} ; rien n'est écrit ` +
-				'(elle garde un état plus ancien : la mettre de côté, relancer la simulation, puis --publier)'
+			`aucune sauvegarde ne garde l'état lu de : ${nonSauvees.join(', ')} ; rien n'est écrit`
 		);
 	}
 
@@ -204,7 +225,9 @@ async function main(): Promise<void> {
 				'les fiches déjà rejouées sont sautées'
 		);
 	}
-	console.log(`${faites} fiche(s) écrite(s).`);
+	console.log(
+		`${faites} fiche(s) écrite(s). Relancer la simulation : elle doit dire « 0 à rejouer ».`
+	);
 }
 
 // ============================================================================
