@@ -168,6 +168,33 @@ describe('rejouerFiche — nominal', () => {
 		});
 		expect(rejouerFiche(relue, fsrs).kind).toBe('inchangee');
 	});
+
+	// Cas de la prod (2026-11-16) : PostgREST rend les `real` à 6 chiffres significatifs
+	// (`extra_float_digits = 0`) — D = 2,118104 stocké, 2,1181 relu.
+	it('une fiche déjà rejouée, relue à 6 chiffres significatifs, ne change plus', () => {
+		const historique = [entree('2026-10-01T08:00:00.000Z', Grade.GOOD)];
+		const premier = rejouerFiche(ficheLue(historique), fsrs);
+		if (premier.kind !== 'rejouee') throw new Error('rejeu attendu');
+
+		const relue = ficheLue(premier.apres.review_history, {
+			...premier.apres,
+			difficulty: Number(premier.apres.difficulty.toPrecision(6)),
+			stability: Number(premier.apres.stability.toPrecision(6))
+		});
+		expect(rejouerFiche(relue, fsrs).kind).toBe('inchangee');
+	});
+
+	it('une difficulté réellement différente (au millième) est encore rejouée', () => {
+		const historique = [entree('2026-10-01T08:00:00.000Z', Grade.GOOD)];
+		const premier = rejouerFiche(ficheLue(historique), fsrs);
+		if (premier.kind !== 'rejouee') throw new Error('rejeu attendu');
+
+		const relue = ficheLue(premier.apres.review_history, {
+			...premier.apres,
+			difficulty: premier.apres.difficulty + 0.001
+		});
+		expect(rejouerFiche(relue, fsrs).kind).toBe('rejouee');
+	});
 });
 
 // =============================================================================
