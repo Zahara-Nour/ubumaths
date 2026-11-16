@@ -16,22 +16,22 @@ de l'enfant ») et l'absence de compte parent. Les liens sans compte du cahier e
 Un **carnet de liaison** (terme de [`CONTEXT.md`](../../CONTEXT.md)) : page personnelle d'**un** parent
 sur **un** élève, sans compte, par un lien qui lui est propre.
 
-| Sujet               | Décision                                                                                                    |
-| ------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Lien                | **Un par parent** (révocation séparée, traçabilité d'une fuite) ; deux parents au plus                      |
-| Adresse             | **Confirmée seulement** (consentement accordé, ou clic sur un lien de confirmation) ; rien d'autre ne part  |
-| Porte d'entrée      | **Une fonction `SECURITY DEFINER`** qui reçoit le lien ; `anon` ne lit aucune table                         |
-| Ce qui est lisible  | Jours travaillés (5 semaines), état des révisions, évaluations faites ou non avec échéance, liens de classe |
-| Jamais lisible      | Notes, réponses, messages, avertissements, profil, adresses, tout autre élève                               |
-| Élève               | Voit **le même carnet** dans son Cabinet, et la liste des courriels envoyés à ses parents                   |
-| Qui règle           | Le professeur, **par classe** (activation, seuils) ; le carnet ne part qu'à son geste                       |
-| Dérangement         | **Courriels sur exception** (évaluation non faite, révisions en retard, inactivité), un par semaine au plus |
-| Message positif     | Un par trimestre, seulement s'il y a du vrai à dire                                                         |
-| Vacances            | Aucun courriel (`school_holidays`), sauf échéance dans la période                                           |
-| Durée de vie        | Le lien expire le 31 août ; nouveau lien à la rentrée si la nouvelle classe a le carnet                     |
-| Élève majeur        | Demande l'arrêt au professeur, qui coupe le partage ; aucune date de naissance enregistrée                  |
-| Arrêt par le parent | « Ne plus recevoir ces courriels » en un clic ; le carnet reste ouvert                                      |
-| Stockage du lien    | **Haché** ; « J'ai perdu mon lien » envoie un nouveau lien et révoque l'ancien                              |
+| Sujet               | Décision                                                                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lien                | **Un par parent** (révocation séparée, traçabilité d'une fuite) ; deux parents au plus                                                                  |
+| Adresse             | **Confirmée seulement** (consentement accordé, ou clic sur un lien de confirmation) ; rien d'autre ne part                                              |
+| Porte d'entrée      | **Une fonction `SECURITY DEFINER`** qui reçoit le lien ; `anon` ne lit aucune table                                                                     |
+| Ce qui est lisible  | Palier de régularité par semaine (5 semaines, règle de la grille du prof), état des révisions, évaluations faites ou non avec échéance, liens de classe |
+| Jamais lisible      | Notes, réponses, messages, avertissements, profil, adresses, tout autre élève                                                                           |
+| Élève               | Voit **le même carnet** dans son Cabinet, et la liste des courriels envoyés à ses parents                                                               |
+| Qui règle           | Le professeur, **par classe** (activation, seuils) ; le carnet ne part qu'à son geste                                                                   |
+| Dérangement         | **Courriels sur exception** (évaluation non faite, révisions en retard, inactivité), un par semaine au plus                                             |
+| Message positif     | Un par trimestre, seulement s'il y a du vrai à dire                                                                                                     |
+| Vacances            | Aucun courriel (`school_holidays`), sauf échéance dans la période                                                                                       |
+| Durée de vie        | Le lien expire le 31 août ; nouveau lien à la rentrée si la nouvelle classe a le carnet                                                                 |
+| Élève majeur        | Demande l'arrêt au professeur, qui coupe le partage ; aucune date de naissance enregistrée                                                              |
+| Arrêt par le parent | « Ne plus recevoir ces courriels » en un clic ; le carnet reste ouvert                                                                                  |
+| Stockage du lien    | **Haché** ; « J'ai perdu mon lien » envoie un nouveau lien et révoque l'ancien                                                                          |
 
 ## Invariants
 
@@ -63,3 +63,9 @@ sur **un** élève, sans compte, par un lien qui lui est propre.
 - Les **notes** (résultats détaillés) relèvent de l'offre payante ; les ajouter ouvre une nouvelle
   question d'accès.
 - Élèves hors classe : pas de carnet dans la première version.
+- Le carnet donne au parent les **liens du cahier et du cours** de la classe (avec son nom) : ces
+  liens sont ceux de la classe ([ADR 0025](0025-cours-lisible-par-lien-sans-compte.md)). Révoquer le
+  lien d'un parent, ou couper le partage, **ne coupe pas** les liens de classe qu'il a déjà vus ; seul
+  leur renouvellement par le professeur le fait (à dire sur l'écran du professeur, PR 3).
+- Le professeur lit les adresses et l'état des liens, **jamais les empreintes** (droits par colonne) :
+  l'empreinte d'une adresse refusée n'est pas anonyme (sha256 non salé).

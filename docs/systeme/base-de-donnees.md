@@ -310,6 +310,19 @@ fonctions `SECURITY DEFINER` qui refont les gardes élève. Pour le cours :
 les lignes des cadres de réponse de chaque exercice) ;
 `get_course_document_by_share_token`, qui rend le chemin du fichier, est réservée au `service_role`.
 
+**Carnet de liaison** ([ADR 0040](../adr/0040-carnet-de-liaison-lien-par-parent.md), migration
+`20261116133453`) : la page d'**un** parent sur **un** élève, sans compte. `class_carnet_settings`
+(activation et seuils par classe ; pas de ligne = désactivé), `parent_contacts` (deux adresses
+actives au plus, trigger `UBP01` ; une adresse refusée est effacée, son empreinte reste et interdit la
+ressaisie), `parent_carnet_links` (un lien actif par adresse, stocké **haché**), `student_carnet_opt_outs`
+(partage coupé : un trigger révoque les liens), `parent_notifications` (courriels envoyés ; l'élève lit
+les siens). Le professeur lit adresses et état des liens, **jamais les colonnes `*_hash`** (droits par
+colonne) ; ni `anon` ni l'élève n'écrivent rien. Les fonctions qui reçoivent un lien
+(`get_carnet_by_token`, `confirm_parent_contact`, `refuse_parent_contact`, `set_parent_emails_stopped`,
+`issue_parent_carnet_link`) sont réservées au `service_role` et rendent la même réponse quelle que soit
+la cause d'un échec ; l'élève lit son carnet par `get_my_carnet`. Le contenu (`carnet_payload`,
+interne) suit la règle du jour actif de `class_regularity_weeks` : la changer aux deux endroits.
+
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture
 s'allume quand le contenu est tagué après coup. Une évaluation se résout en points par les
