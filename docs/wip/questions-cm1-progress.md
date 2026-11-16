@@ -5,11 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16 : page à cocher du lot 6 publiée._
+_Mis à jour le 2026-11-16 : lot 6 publié._
 
-- **État** : lots 0 à 5d publiés ; lot 6 (problèmes, 10 modèles) : brouillons créés en prod par David le 2026-11-15, ids commités ; migration `20261115213402_questions_cm1_lot6_rangement_tags` jouée en prod (vérifié au MCP le 2026-11-16 : 10 rangés, 10 tags) ; toujours en brouillon. Recompte : 94 points couverts sur 171.
-- **Prochaine action** : relecture des 10 brouillons sur la page à cocher (§ 16 quinquies), puis `publier-lot`. Ensuite : lot 6 bis (oubliés), lot 6 ter (algèbre).
-- **En attente de David** : relecture de la page https://claude.ai/artifact/HWS96WKixXmh7KdmsDf1Qv.
+- **État** : lots 0 à 6 publiés (lot 6 : 10 problèmes, § 16 sexies). Recompte : 102 points couverts sur 171.
+- **Prochaine action** : phase 0 du lot 6 bis « rattrapage » (001, 002, 131, 010, 143, 024, 048 ; décidé au § 16 bis),
+  à faire valider avant d'écrire ; puis lot 6 ter « algèbre » (062-066).
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
 
@@ -1214,3 +1215,10 @@ données.
 
 - `page-a-cocher.ts --dir scripts/questions/cm1-6` : 10 fiches (34 exemples), aucune alerte (10 brouillons, nœud et
   point lus en base). Page : https://claude.ai/artifact/HWS96WKixXmh7KdmsDf1Qv (`verdicts`, capacité `db`, vide).
+
+### 16 sexies. Lot 6 — publication (2026-11-16)
+
+- Page à cocher : 10 « OK » sur 10, aucun commentaire. `publier-lot` en simulation : 10/10 ; `garde-niveaux-tags` :
+  aucun niveau manquant ; `--publier` lancé par David ; vérifié au MCP : 10 publiés. Vérification manuelle notée
+  (problèmes au CM1, schéma en barres du corrigé, #2706).
+- **Lot 6 clos.** Recompte : 102 points couverts sur 171 (94 + 054, 134, 055 à 060).
