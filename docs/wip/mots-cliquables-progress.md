@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR de la migration R5 ouverte._
+_Mis à jour le 2026-11-16, après #2732._
 
-- **État** : R1–R5 validées ; migration R5 (10 verbes de consigne `auto_link = false`) en PR, tests d'intégration verts (rouges sans elle), `security-auditor` sans finding bloquant · **Prochaine action** : merge, `db:migrate`, puis phase 0 de R1–R4 (Q1–Q2, validation N1–E1) · **En attente de David** : Q1–Q2, validation N1–E1 · **Pièges en cours** : le niveau de lecture sert aussi au choix des définitions montrées (Q1) · **Worktree / branche** : `ubumaths-wt-mots-cliquables` / `chore/mots-cliquables-verbes-consigne`
+- **État** : R1–R5 validées ; **R5 en prod** (#2732 mergée, `db:migrate` fait et vérifié le 2026-11-16 : 10 verbes à `auto_link = false`, notions intactes) ; R1–R4 : phase 0, aucun code · **Prochaine action** : réponses de David à Q1–Q2 et validation N1–E1, puis tests rouges de R1–R4 · **En attente de David** : Q1–Q2, validation N1–E1 · **Pièges en cours** : le niveau de lecture sert aussi au choix des définitions montrées (Q1) ; un test qui compare la base au jeu de référence figé applique `withConsigneVerbs` (`tests/fixtures/lexique/verbes-consigne-2026-11-16.ts`) · **Worktree / branche** : aucun (retiré après #2732) ; prochaine PR → nouveau worktree `ubumaths-wt-mots-cliquables`
 
 ## Origine
 
@@ -85,3 +85,4 @@ Erreur :
 ## Journal
 
 - 2026-11-16 : chantier ouvert (retour de David sur `/dev/corrections`), mesures, R1–R3 validées ; R4 (question de cours) validée ; R5 (verbes de consigne) validée, faite en local.
+- 2026-11-16 : #2732 (migration R5) mergée ; `db:migrate` appliqué et vérifié en prod.
