@@ -1,5 +1,5 @@
 ---
-status: en-cours
+status: clos
 ---
 
 # Chantier `fsrs` — le planificateur des révisions s'écarte de FSRS-6
@@ -11,7 +11,7 @@ la PR 6g de `demo-debug` (#1711) : `calculateNewStability` n'utilise pas la note
 
 _Mis à jour le 2026-11-16, après #2713._
 
-- **État** : tout le découpage est fait : PR 1 à 1d, PR 2 (#2712, script) et #2713 (tolérance) mergées ; migrations en prod ; **25 fiches de prod rejouées le 2026-11-16** (2 sans historique non touchées, 0 refusée), seconde passe : « 0 à rejouer » · **Prochaine action** : clore le chantier (versement : le durable est déjà dans `docs/systeme/srs.md` ; archiver ce journal) · **En attente de David** : rien · **Pièges en cours** : sauvegardes de prod dans `~/Downloads/chiphre-sauvegardes/` (données d'élèves) : **à supprimer avant le 2026-12-16** · **Worktree / branche** : aucun
+- **État** : **chantier clos le 2026-11-16** (journal archivé) ; tout le découpage est fait : PR 1 à 1d, PR 2 (#2712, script) et #2713 (tolérance) mergées ; migrations en prod ; **25 fiches de prod rejouées le 2026-11-16** (2 sans historique non touchées, 0 refusée), seconde passe : « 0 à rejouer » · **Prochaine action** : clore le chantier (versement : le durable est déjà dans `docs/systeme/srs.md` ; archiver ce journal) · **En attente de David** : rien · **Pièges en cours** : sauvegardes de prod dans `~/Downloads/chiphre-sauvegardes/` (données d'élèves) : **à supprimer avant le 2026-12-16** · **Worktree / branche** : aucun
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
