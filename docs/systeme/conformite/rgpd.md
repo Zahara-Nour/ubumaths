@@ -497,6 +497,12 @@ CRON_SECRET                   # Secret taches planifiees
 > (`granted`) ; le parent choisit le mot de passe sans jamais être connecté au compte de l'enfant
 > ([auth.md § Mots de passe des élèves](../auth.md#mots-de-passe-des-élèves)). Rien de nouveau
 > n'est stocké ni lu : l'adresse vient de `parental_consents`, lue par la clé service.
+> **Carnet de liaison (2026-11-16, ADR 0040)** : deux courriels Brevo de plus vers les parents —
+> confirmation d'une adresse saisie par le professeur ou l'élève (prénom de l'élève et nom du
+> professeur seulement) et lien du carnet (adresse confirmée seulement). Les adresses sont
+> stockées dans `parent_contacts` (lues par le professeur, jamais par l'élève) ; chaque envoi
+> laisse une ligne sans adresse dans `parent_notifications`. Registre à compléter en PR 5 du
+> chantier ([carnet-de-liaison.md](../carnet-de-liaison.md)).
 
 ---
 

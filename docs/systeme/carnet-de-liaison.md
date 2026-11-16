@@ -5,13 +5,16 @@ couvre:
   - 'src/lib/components/carnet/**'
   - 'src/routes/(public)/carnet/**'
   - 'src/routes/(protected)/dashboard/student/carnet/**'
+  - 'src/routes/(protected)/dashboard/teacher/classes/[classId]/carnet/**'
+  - src/lib/email-templates/carnet.ts
 ---
 
 # Carnet de liaison
 
 > Première doc de cette zone, écrite avec la PR 2 du chantier
-> [`partage-parents`](../wip/partage-parents-progress.md) (2026-11-16). Le versement complet
-> (côté professeur, envois, courriels d'exception) vient en PR 5. Décision :
+> [`partage-parents`](../wip/partage-parents-progress.md) (2026-11-16) ; côté professeur et
+> envois ajoutés en PR 3. Les courriels d'exception viennent en PR 4, le versement complet en
+> PR 5. Vérifié contre le code le 2026-11-16. Décision :
 > [ADR 0040](../adr/0040-carnet-de-liaison-lien-par-parent.md).
 
 ## À quoi ça sert
@@ -27,17 +30,49 @@ et les liens du cahier et du cours de la classe.
 
 ## Les surfaces
 
-| Adresse                     | Qui                    | Ce qu'elle fait                                                                                                                                                                     |
-| --------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/carnet/[token]`           | le parent, sans compte | Le carnet (`CarnetView`) ; arrêter ou reprendre les courriels. Tout échec (révoqué, expiré, inexistant, partage coupé, élève sorti de la classe) rend le **même** 404.              |
-| `/carnet/confirmer/[token]` | l'adresse saisie       | Deux boutons : « Confirmer mon adresse » (émet le lien et ouvre le carnet, `?bienvenue`) et « Je ne suis pas le parent » (adresse effacée). L'affichage seul n'appelle pas la base. |
-| `/dashboard/student/carnet` | l'élève                | Son carnet, l'état du partage, les courriels envoyés à ses parents (date, nature, motifs ; jamais les adresses). Entrée « Carnet de liaison » du menu, toujours visible.            |
+| Adresse                                       | Qui                    | Ce qu'elle fait                                                                                                                                                                                                                                                                                     |
+| --------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/carnet/[token]`                             | le parent, sans compte | Le carnet (`CarnetView`) ; arrêter ou reprendre les courriels. Tout échec (révoqué, expiré, inexistant, partage coupé, élève sorti de la classe) rend le **même** 404.                                                                                                                              |
+| `/carnet/confirmer/[token]`                   | l'adresse saisie       | Deux boutons : « Confirmer mon adresse » (émet le lien et l'**envoie par courriel** — la page ne le montre pas, Q26 : un antivirus qui clique n'emporte rien) et « Je ne suis pas le parent » (adresse effacée). L'affichage seul n'appelle pas la base.                                            |
+| `/carnet/lien-perdu`                          | le parent, sans compte | Saisir son adresse : chaque élève dont elle est confirmée et le carnet ouvert reçoit un lien **neuf** (l'ancien est révoqué). Même réponse que l'adresse soit connue ou non ; envoi après la réponse ; limites par IP (5 / 10 min) et par empreinte d'adresse (3 / jour).                           |
+| `/dashboard/student/carnet`                   | l'élève                | Son carnet, l'état du partage, les courriels envoyés à ses parents (date, nature, motifs ; jamais les adresses). Ajouter l'adresse d'un parent (carnet ouvert, moins de 2 parents ; 6 ajouts / heure). Entrée « Carnet de liaison » du menu, toujours visible.                                      |
+| `/dashboard/teacher/classes/[classId]/carnet` | le professeur          | Activer (en annonçant le nombre de courriels), désactiver, seuils des exceptions ; « Envoyer les liens manquants » ; par élève : état des adresses, ajouter, renvoyer une confirmation, révoquer, nouveau lien, couper / rétablir le partage. Bouton « Carnet de liaison » de la liste des classes. |
+
+## Les envois
+
+Toutes les écritures sur les adresses et les liens passent par
+`src/lib/server/carnet/envois.ts` (service role), après les gardes de la route (rôle, élève
+membre actif de la classe, limite de débit). Courriels : `src/lib/email-templates/carnet.ts`.
+
+- **Confirmation** (A2, A4) : vers une adresse saisie par le professeur ou l'élève ; le prénom
+  de l'élève et le nom du professeur seulement (Q18). Jeton neuf à chaque envoi (seul le
+  dernier courriel confirme), valable 7 jours ; 3 envois au plus par adresse, réservés par
+  mise à jour conditionnelle et rendus si Brevo refuse.
+- **Lien** (A1, A6, D2, Q26) : vers une adresse **confirmée** seulement ; le lien neuf révoque
+  le précédent ; si le courriel ne part pas, le lien neuf est révoqué (il redevient
+  « manquant »).
+- **Adresse déjà connue** de l'élève (unicité élève × empreinte) : en attente → nouvelle
+  confirmation ; invalide → remise en attente ; refusée → jamais ; confirmée → rien. Deux
+  adresses actives au plus (`UBP01`).
+- **Liens manquants** d'une classe (A1, Q29) : `planMissingLinks` (pure) crée, confirmées, les
+  adresses des consentements accordés (dans la limite de deux), confirme les adresses en
+  attente qu'un consentement couvre, puis envoie un lien à chaque adresse confirmée sans lien
+  actif ; élèves au partage coupé exclus. Le même plan donne le nombre annoncé avant
+  d'activer (Q30). Rejouable sans doublon ; l'envoi automatique (élève arrivé après) vient
+  avec le cron de la PR 4.
+- **Couper le partage** (D3) : une ligne `student_carnet_opt_outs` écrite par le client du
+  professeur (le trigger révoque les liens) ; les liens du cahier et du cours de la classe
+  restent ouverts. **Rétablir** : ligne retirée, puis lien neuf pour chaque adresse
+  confirmée.
+- Chaque courriel, parti ou non, laisse une ligne `parent_notifications` (sans l'adresse) ;
+  le professeur voit « dernier envoi en échec » (E6).
 
 ## Les portes
 
 - Les fonctions SQL qui reçoivent un lien (`get_carnet_by_token`, `confirm_parent_contact`,
   `issue_parent_carnet_link`, `refuse_parent_contact`, `set_parent_emails_stopped`) sont
-  réservées au **service role** ; seul `src/lib/server/carnet/carnet.ts` les appelle, après la
+  réservées au **service role** ; seuls `src/lib/server/carnet/carnet.ts` et `envois.ts` les
+  appellent (avec `carnet_student_is_shared` pour le lien perdu), après la
   forme du jeton et la limite de débit par IP des routes (30 lectures / min, 10 gestes de
   confirmation / min). Aucune policy `anon`.
 - L'élève lit par **son** client : `get_my_carnet` (garde d'appelant, lui seul) et la RLS de
@@ -58,8 +93,14 @@ et les liens du cahier et du cours de la classe.
 
 ## Tests
 
-- `src/lib/server/carnet/__tests__/carnet.test.ts` : jeton, empreinte, portes, confirmation.
+- `src/lib/server/carnet/__tests__/carnet.test.ts` : jeton, empreinte, portes.
+- `src/lib/server/carnet/__tests__/envois.test.ts` : confirmations, liens, quota, plan des
+  liens manquants, lien perdu. `src/lib/email-templates/__tests__/carnet.test.ts` : courriels.
+- `src/routes/(protected)/dashboard/teacher/classes/[classId]/carnet/__tests__/` : gardes,
+  appartenance à la classe, gestes.
 - `src/routes/(public)/carnet/**/__tests__/`, `src/routes/(protected)/dashboard/student/carnet/__tests__/`.
 - `src/lib/components/carnet/__tests__/CarnetView.svelte.test.ts` : paliers, évaluations par
   ligne, aucune note.
-- `tests/integration/carnet-de-liaison.test.ts` : fonctions SQL et droits.
+- `tests/integration/carnet-de-liaison.test.ts` : fonctions SQL et droits ; bloc « PR 3 » :
+  empreinte du serveur = celle du trigger, porte `carnet_student_is_shared`, upsert des
+  réglages et de l'opt-out par le professeur.

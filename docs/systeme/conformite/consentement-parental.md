@@ -39,6 +39,12 @@ couvre:
 > [auth.md](../auth.md#le-domaine-fictif-eleveschiphre)) : le courriel de consentement part
 > toujours à l'adresse du parent.
 
+> **Carnet de liaison (2026-11-16, ADR 0040)** : quand le professeur active le carnet d'une
+> classe, l'adresse d'un consentement **accordé** (`granted`) devient une adresse confirmée du
+> carnet (`parent_contacts`, source `consent`) et reçoit le lien du carnet par Brevo
+> (`sendCarnetLinkEmail`). Une autre adresse ne reçoit d'abord qu'une confirmation. Détail :
+> [carnet-de-liaison.md](../carnet-de-liaison.md#les-envois).
+
 > Migrations citées : antérieures au baseline, archivées sous `supabase/migrations_archive/` ; le
 > schéma courant est dans `supabase/migrations/20260616220000_baseline_schema.sql`.
 
