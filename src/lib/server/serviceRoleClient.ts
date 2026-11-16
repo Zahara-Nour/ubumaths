@@ -60,6 +60,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'lib/server/chapter-templates.ts',
 	// Consentement parental : IP et navigateur relevés par le serveur, pas par le client
 	'/consent/',
+	// Carnet de liaison (ADR 0040) : fonctions à lien réservées à service_role, appelées
+	// APRÈS la forme du jeton et la limite de débit des routes ; aucune policy `anon`
+	'lib/server/carnet/',
 	// Style d'une fiche (lot 4b, D11) : l'élève destinataire reçoit la mise en page
 	// du style de l'auteur ; il n'a aucun droit sur les tables des styles
 	'lib/server/worksheets/worksheet-styles.ts',

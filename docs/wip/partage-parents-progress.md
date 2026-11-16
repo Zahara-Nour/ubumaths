@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2718._
+_Mis à jour le 2026-11-16, PR 2 en cours._
 
-- **État** : PR 1 (migration du carnet) **mergée (#2718) et appliquée en prod** (`db:migrate --include-all`, droits vérifiés en lecture seule). Rien d'autre de codé.
-- **Prochaine action** : PR 2 — nouveau worktree, `pnpm db:types` (types du carnet), puis page du carnet `(public)/carnet/[token]` (B1-B5, palier par semaine Q25) + vue élève dans le Cabinet (C1-C3) + pages de confirmation, refus et arrêt des courriels.
+- **État** : PR 1 mergée (#2718) et appliquée en prod. PR 2 (page du carnet, confirmation, vue élève) codée et testée sur la branche, PR à ouvrir puis revues `code-reviewer` + `security-auditor`.
+- **Prochaine action** : PR 2 — revues, CI, merge. Puis PR 3 (professeur + envois Brevo).
 - **En attente de David** : rien.
-- **Pièges en cours** : données d'élèves mineurs ; fonctions à lien = `service_role` seul (appel depuis le serveur, limite de débit) ; jeton = 32 octets CSPRNG, stocké haché ; unicité (élève, empreinte) → traiter `23505` (PR 3) ; jour actif = règle de `class_regularity_weeks` (deux endroits) ; revue `code-reviewer` + `security-auditor` à chaque PR.
-- **Ensuite** : PR 3 (professeur + envois), PR 4 (courriels d'exception, nouvelle migration : épisodes, effacement Q21), PR 5 (doc, point 8 de `presentation-parents`).
-- **Worktree / branche** : aucun (le prochain : `../ubumaths-wt-partage-parents`, `feat/partage-parents-carnet`).
+- **Pièges en cours** : données d'élèves mineurs ; fonctions à lien = `service_role` seul (module `src/lib/server/carnet/`, limite de débit par IP) ; jeton = 32 octets base64url (43 car.), stocké haché ; la confirmation émet le lien et y redirige — **la PR 3 doit envoyer CE jeton par courriel** (en émettre un second révoquerait le premier) ; unicité (élève, empreinte) → traiter `23505` (PR 3) ; revue `code-reviewer` + `security-auditor` à chaque PR.
+- **Ensuite** : PR 3 (professeur + envois, en-tête `List-Unsubscribe-Post` pour l'arrêt en un clic), PR 4 (courriels d'exception, nouvelle migration : épisodes, effacement Q21), PR 5 (doc, point 8 de `presentation-parents`).
+- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-carnet`.
 
 ## Origine
 
@@ -167,3 +167,14 @@ Question Q22 : le lien est-il stocké **haché** (comme un mot de passe) ? Cons�
 - Laissés, écrits dans l'ADR : les liens du cahier et du cours vus par un parent survivent à la révocation de son lien. Non corrigé (trace sans effet sur l'accès) : `updated_by` / `stopped_by` posables par le professeur.
 - **Pour la PR 3** : l'unicité (élève, empreinte) bloque aussi une adresse `pending` expirée ou `invalid` → le serveur traite `23505` (renvoyer la confirmation sur la ligne existante) ; jeton = 32 octets CSPRNG au moins ; dire à l'écran que couper le partage ne coupe pas les liens de classe.
 - **Mergée** le 2026-11-16 (#2718), CI verte ; migration appliquée en prod (`--include-all` : une migration d'une autre session, horodatée après, était déjà passée).
+
+## PR 2 — page du carnet et vue élève (2026-11-16)
+
+- `pnpm db:types` : types du carnet ; les 5 tables classées dans « Établissement et personnes » (`scripts/generate-db-doc.ts`) et dans `JAMAIS` du remplissage local (adresses des parents jamais copiées).
+- Module `src/lib/server/carnet/carnet.ts` (seul appelant des fonctions à lien, ajouté à la liste du service role) ; forme du carnet en Zod dans `src/lib/validation/carnet.ts` (retire toute clé hors liste : une note ajoutée côté SQL ne descend pas). Lien émis à la confirmation : `endOfSchoolYear()` (31 août, comme le cahier).
+- `/carnet/[token]` (B1-B5, E5) : même 404 pour tout échec, `noindex`, `Cache-Control: private, no-store`, 30 lectures / min / IP ; boutons arrêter / reprendre les courriels. Referer : la politique du site (`strict-origin-when-cross-origin`) n'envoie que l'origine hors du site, rien à ajouter.
+- `/carnet/confirmer/[token]` (A2, A5) : l'affichage n'appelle pas la base (un antivirus de messagerie qui ouvre le lien ne confirme ni ne refuse) ; « Confirmer » et « Je ne suis pas le parent » = boutons (POST), 10 / min / IP. Confirmer → lien émis → redirection vers le carnet `?bienvenue`.
+- `/dashboard/student/carnet` (C1-C3) + entrée « Carnet de liaison » dans le menu élève (toujours visible : Q3, l'élève sait ce que voient ses parents).
+- Analytique Vercel : `beforeSend` remplace `/carnet/<jeton>` par `/carnet/[token]` (`src/lib/utils/analytics-redact.ts`). Les jetons du cahier, du cours et du consentement partent encore en clair dans l'analytique — hors périmètre, à proposer à David.
+- Vérifié en local (port 5177, données fictives) : carnet 200, jeton inconnu ou mal formé 404, confirmation → carnet avec bandeau, arrêt des courriels. Vue élève non vue au navigateur (session de David sur `localhost`) ; couverte par les tests de rendu.
+- Tests : module 21, routes 19, rendu 10, analytique 4.

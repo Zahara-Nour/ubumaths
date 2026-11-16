@@ -78,6 +78,11 @@ export const DOMAINS: Domain[] = [
 			'friendships',
 			'student_warnings',
 			'parental_consents',
+			'parent_contacts',
+			'parent_carnet_links',
+			'parent_notifications',
+			'class_carnet_settings',
+			'student_carnet_opt_outs',
 			'terms_acceptances',
 			'account_deletion_audit',
 			'welcome_emails_sent'

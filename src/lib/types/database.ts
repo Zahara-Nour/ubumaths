@@ -1432,6 +1432,68 @@ export type Database = {
           },
         ]
       }
+      class_carnet_settings: {
+        Row: {
+          class_id: string
+          enabled: boolean
+          evaluation_missed_alert: boolean
+          inactivity_days: number
+          overdue_reviews_days: number
+          quarterly_message: boolean
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          class_id: string
+          enabled?: boolean
+          evaluation_missed_alert?: boolean
+          inactivity_days?: number
+          overdue_reviews_days?: number
+          quarterly_message?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          class_id?: string
+          enabled?: boolean
+          evaluation_missed_alert?: boolean
+          inactivity_days?: number
+          overdue_reviews_days?: number
+          quarterly_message?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_carnet_settings_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: true
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_carnet_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "class_carnet_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_carnet_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       class_chapters: {
         Row: {
           class_id: string
@@ -7992,6 +8054,210 @@ export type Database = {
           },
         ]
       }
+      parent_carnet_links: {
+        Row: {
+          access_count: number
+          contact_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          last_accessed_at: string | null
+          revoked_at: string | null
+          token_hash: string
+        }
+        Insert: {
+          access_count?: number
+          contact_id: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          last_accessed_at?: string | null
+          revoked_at?: string | null
+          token_hash: string
+        }
+        Update: {
+          access_count?: number
+          contact_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          last_accessed_at?: string | null
+          revoked_at?: string | null
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_carnet_links_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "parent_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parent_contacts: {
+        Row: {
+          confirm_expires_at: string | null
+          confirm_last_sent_at: string | null
+          confirm_sent_count: number
+          confirm_token_hash: string | null
+          confirmed_at: string | null
+          consent_id: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          email_hash: string
+          emails_stopped_at: string | null
+          id: string
+          source: string
+          status: string
+          student_id: string
+        }
+        Insert: {
+          confirm_expires_at?: string | null
+          confirm_last_sent_at?: string | null
+          confirm_sent_count?: number
+          confirm_token_hash?: string | null
+          confirmed_at?: string | null
+          consent_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          email_hash: string
+          emails_stopped_at?: string | null
+          id?: string
+          source: string
+          status?: string
+          student_id: string
+        }
+        Update: {
+          confirm_expires_at?: string | null
+          confirm_last_sent_at?: string | null
+          confirm_sent_count?: number
+          confirm_token_hash?: string | null
+          confirmed_at?: string | null
+          consent_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          email_hash?: string
+          emails_stopped_at?: string | null
+          id?: string
+          source?: string
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_contacts_consent_id_fkey"
+            columns: ["consent_id"]
+            isOneToOne: false
+            referencedRelation: "parental_consents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_contacts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "parent_contacts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_contacts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "parent_contacts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "parent_contacts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_contacts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      parent_notifications: {
+        Row: {
+          contact_id: string | null
+          created_at: string
+          id: string
+          kind: string
+          reasons: string[]
+          status: string
+          student_id: string
+        }
+        Insert: {
+          contact_id?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          reasons?: string[]
+          status: string
+          student_id: string
+        }
+        Update: {
+          contact_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          reasons?: string[]
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_notifications_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "parent_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_notifications_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "parent_notifications_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_notifications_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       parental_consents: {
         Row: {
           consent_given_at: string | null
@@ -11185,6 +11451,67 @@ export type Database = {
           },
           {
             foreignKeyName: "student_buddies_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      student_carnet_opt_outs: {
+        Row: {
+          stopped_at: string
+          stopped_by: string | null
+          student_id: string
+        }
+        Insert: {
+          stopped_at?: string
+          stopped_by?: string | null
+          student_id: string
+        }
+        Update: {
+          stopped_at?: string
+          stopped_by?: string | null
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_carnet_opt_outs_stopped_by_fkey"
+            columns: ["stopped_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_carnet_opt_outs_stopped_by_fkey"
+            columns: ["stopped_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_carnet_opt_outs_stopped_by_fkey"
+            columns: ["stopped_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_carnet_opt_outs_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_carnet_opt_outs_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_carnet_opt_outs_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: true
             referencedRelation: "riddle_progress"
@@ -14747,6 +15074,11 @@ export type Database = {
         Args: { student_profile_id: string }
         Returns: boolean
       }
+      carnet_payload: { Args: { p_student_id: string }; Returns: Json }
+      carnet_student_is_shared: {
+        Args: { p_student_id: string }
+        Returns: boolean
+      }
       check_achievement_prerequisites: {
         Args: { p_achievement_id: string; p_student_id: string }
         Returns: boolean
@@ -14919,6 +15251,7 @@ export type Database = {
           validated_observables: Json
         }[]
       }
+      confirm_parent_contact: { Args: { p_token: string }; Returns: Json }
       count_student_active_cards: {
         Args: { p_card_id: string; p_lock_row?: boolean; p_student_id: string }
         Returns: number
@@ -15157,6 +15490,7 @@ export type Database = {
           total_views: number
         }[]
       }
+      get_carnet_by_token: { Args: { p_token: string }; Returns: Json }
       get_class_course_by_share_token: {
         Args: { p_token: string }
         Returns: Json
@@ -15387,6 +15721,7 @@ export type Database = {
         Args: { p_cycle: string; p_difficulty: string }
         Returns: number
       }
+      get_my_carnet: { Args: never; Returns: Json }
       get_my_error_reports: {
         Args: never
         Returns: {
@@ -15904,6 +16239,14 @@ export type Database = {
         Returns: boolean
       }
       is_valid_grade_array: { Args: { grades: string[] }; Returns: boolean }
+      issue_parent_carnet_link: {
+        Args: {
+          p_contact_id: string
+          p_expires_at: string
+          p_token_hash: string
+        }
+        Returns: boolean
+      }
       join_multiplayer_queue: {
         Args: { p_difficulty: string; p_match_type?: string }
         Returns: Json
@@ -16123,6 +16466,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      refuse_parent_contact: { Args: { p_token: string }; Returns: Json }
       reject_vip_card: {
         Args: { p_instance_id: string; p_student_id: string }
         Returns: Json
@@ -16361,6 +16705,10 @@ export type Database = {
       set_mathou_hat: {
         Args: { p_hat: string; p_notion_id: string; p_student_id: string }
         Returns: Json
+      }
+      set_parent_emails_stopped: {
+        Args: { p_stopped: boolean; p_token: string }
+        Returns: boolean
       }
       set_riddle_of_the_day: {
         Args: { p_date: string; p_riddle_id: string; p_selected_by: string }

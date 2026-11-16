@@ -23,13 +23,15 @@
 	// 2. Avoids adding to the root layout's static dependency chain (see Safari TDZ fix
 	//    in +layout.ts for details on WebKit module initialization issues)
 	import { browser } from '$app/environment';
+	import { redactAnalyticsEvent } from '$lib/utils/analytics-redact';
 
 	$effect(() => {
 		if (!browser) return;
 		Promise.all([import('@vercel/analytics'), import('@vercel/speed-insights/sveltekit')])
 			.then(([{ inject }, { injectSpeedInsights }]) => {
-				inject();
-				injectSpeedInsights();
+				// Le jeton d'un lien personnel (carnet de liaison) ne part pas chez Vercel
+				inject({ beforeSend: redactAnalyticsEvent });
+				injectSpeedInsights({ beforeSend: redactAnalyticsEvent });
 			})
 			.catch((e) => {
 				console.debug('[Analytics] Failed to initialize:', e);
