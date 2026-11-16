@@ -48,6 +48,11 @@ export function getCarnetLink(token: string): string {
 	return `${getSiteUrl()}/carnet/${token}`;
 }
 
+/** A6 : redemander un lien, sans le professeur. */
+export function getCarnetLostLink(): string {
+	return `${getSiteUrl()}/carnet/lien-perdu`;
+}
+
 function teacherPhrase(teacherName: string | null): string {
 	return teacherName
 		? `son professeur de mathématiques, ${teacherName},`
@@ -138,7 +143,7 @@ ${getCarnetLink(data.token)}
 
 Cette page est toujours à jour : régularité des dernières semaines, révisions, évaluations à rendre. Vous pouvez l'ajouter à l'écran d'accueil de votre téléphone.
 
-Ce lien est personnel : ne le transférez pas. Il remplace tout lien reçu auparavant et reste valable jusqu'au 31 août.
+Ce lien est personnel : ne le transférez pas. Il remplace tout lien reçu auparavant et reste valable jusqu'au 31 août. Lien perdu ? ${getCarnetLostLink()}
 
 Chiphre ne vous écrira que si quelque chose mérite votre attention. Pour ne plus recevoir ces courriels, utilisez le bouton en bas du carnet.
 
@@ -164,6 +169,7 @@ export function getCarnetLinkEmailHtml(data: CarnetLinkEmailData): string {
 
   <p style="color: #64748b; font-size: 0.9em; text-align: center;">
     Ce lien est <strong>personnel</strong> : ne le transférez pas. Il remplace tout lien reçu auparavant et reste valable jusqu'au 31 août.
+    Lien perdu ? <a href="${escapeHtml(getCarnetLostLink())}">Demandez-en un nouveau</a>.
   </p>
 
   <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
