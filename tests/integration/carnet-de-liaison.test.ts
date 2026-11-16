@@ -63,7 +63,9 @@ const TABLES = [
 const COURSE_TOKEN = 'CoursCarnetLiaison01';
 const JOURNAL_TOKEN = 'CahierCarnetLiais01';
 const DOMAINE = 'example.test';
-const service = createServiceRoleClient();
+// Client non typé : les tables du carnet n'entrent dans `database.ts` qu'après
+// `db:migrate` + `db:types` (PR suivante).
+const service = createServiceRoleClient() as unknown as SupabaseClient;
 
 // Variables
 let templateId: string;
@@ -128,6 +130,18 @@ async function nouvelEleve(
 	return { id: profil.id, client: await clientFor(profil.email!) };
 }
 
+/** Rentrée par défaut (classe sans école) : le 1er septembre écoulé */
+function premierSeptembre(jour: string): string {
+	const annee = Number(jour.slice(0, 4));
+	const cette = `${annee}-09-01`;
+	return cette <= jour ? cette : `${annee - 1}-09-01`;
+}
+
+/** Les 5 lundis du carnet qui touchent la rentrée ou après */
+function semainesAttendues(jour: string, rentree: string): string[] {
+	return [-4, -3, -2, -1, 0].map((s) => lundi(jour, s)).filter((l) => plusJours(l, 6) >= rentree);
+}
+
 /** Jour de Paris (AAAA-MM-JJ) d'un instant */
 function jourDeParis(d: Date): string {
 	return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(d);
@@ -147,12 +161,18 @@ function plusJours(jour: string, n: number): string {
 	return d.toISOString().slice(0, 10);
 }
 
-async function traces(eleve: string, jour: string, nombre: number, place = 'typing') {
+async function traces(
+	eleve: string,
+	jour: string,
+	nombre: number,
+	place = 'typing',
+	source = 'auto'
+) {
 	const rows = Array.from({ length: nombre }, () => ({
 		student_id: eleve,
 		template_id: templateId,
 		success: true,
-		source: 'auto',
+		source,
 		place,
 		created_at: `${jour}T10:00:00Z`
 	}));
@@ -238,6 +258,14 @@ describe('carnet de liaison (base locale)', () => {
 		await traces(eleveA.id, s2, 5);
 		await traces(eleveA.id, plusJours(s2, 1), 4);
 		await traces(eleveA.id, plusJours(s2, 1), 3, 'evaluation');
+		// Traces posées par le professeur : pas du travail autonome (semaine -3).
+		await traces(eleveA.id, lundi(aujourdhui, -3), 6, 'typing', 'teacher');
+		// A est aussi membre d'une classe SANS carnet : ni son nom ni ses
+		// évaluations ne doivent apparaître.
+		const { error: eMembre } = await service
+			.from('class_members')
+			.insert({ class_id: classeEteinte, student_id: eleveA.id, status: 'active' });
+		if (eMembre) throw new Error(eMembre.message);
 		// L'élève B travaille beaucoup : rien ne doit fuir dans le carnet de A.
 		await traces(eleveB.id, s1, 9);
 		await traces(eleveB.id, plusJours(s1, 1), 9);
@@ -261,17 +289,17 @@ describe('carnet de liaison (base locale)', () => {
 			total_reviews: last ? n : 0,
 			review_history: []
 		});
-		const { error: eCartes } = await service
-			.from('srs_card_stats')
-			.insert([
-				carte(eleveA.id, 2, avant(3), avant(10)),
-				carte(eleveA.id, 3, avant(9), avant(20)),
-				carte(eleveA.id, 1, apres, avant(1)),
-				carte(eleveA.id, 0, avant(2), null),
-				carte(eleveB.id, 1, avant(4), avant(8)),
-				carte(eleveB.id, 1, avant(4), avant(8)),
-				carte(eleveB.id, 1, avant(4), avant(8))
-			]);
+		const { error: eCartes } = await service.from('srs_card_stats').insert([
+			carte(eleveA.id, 2, avant(3), avant(10)),
+			carte(eleveA.id, 3, avant(9), avant(20)),
+			carte(eleveA.id, 1, apres, avant(1)),
+			carte(eleveA.id, 0, avant(2), null),
+			// Échéance passée AUJOURD'HUI (jour de Paris) : pas encore un retard
+			carte(eleveA.id, 2, new Date(Date.now() - 60_000).toISOString(), avant(4)),
+			carte(eleveB.id, 1, avant(4), avant(8)),
+			carte(eleveB.id, 1, avant(4), avant(8)),
+			carte(eleveB.id, 1, avant(4), avant(8))
+		]);
 		if (eCartes) throw new Error(eCartes.message);
 
 		// Évaluations publiées assignées à la classe : une faite (notée 18), une
@@ -283,11 +311,11 @@ describe('carnet de liaison (base locale)', () => {
 				items: [{ templateId, quantity: 1, delay: 20 }],
 				created_by: teacherId
 			});
-		const evaluation = async (titre: string, deadline: string) =>
+		const evaluation = async (titre: string, deadline: string, status = 'published') =>
 			insertId('evaluations', {
 				series_id: await serie(titre),
 				form: 'interactive',
-				status: 'published',
+				status,
 				deadline,
 				created_by: teacherId
 			});
@@ -305,6 +333,39 @@ describe('carnet de liaison (base locale)', () => {
 				assigned_by: teacherId
 			});
 		}
+		// Un brouillon assigné à la classe : invisible. Une évaluation assignée
+		// à A seul : visible.
+		const brouillon = await evaluation('Contrôle brouillon', apres, 'draft');
+		await insertId('evaluation_assignments', {
+			evaluation_id: brouillon,
+			class_id: classId,
+			assigned_by: teacherId
+		});
+		const individuelle = await evaluation('Contrôle individuel', apres);
+		await insertId('evaluation_assignments', {
+			evaluation_id: individuelle,
+			student_id: eleveA.id,
+			assigned_by: teacherId
+		});
+		// B a rendu « puissances » ; A l'a commencé sans le rendre : pas fait.
+		await insertId('test_sessions', {
+			user_id: eleveB.id,
+			evaluation_id: evaluationNonFaite,
+			mode: 'interactive',
+			items: [],
+			total_questions: 1,
+			grade: 12,
+			points_earned: 1,
+			completed_at: avant(1)
+		});
+		await insertId('test_sessions', {
+			user_id: eleveA.id,
+			evaluation_id: evaluationNonFaite,
+			mode: 'interactive',
+			items: [],
+			total_questions: 1,
+			completed_at: null
+		});
 		await insertId('test_sessions', {
 			user_id: eleveA.id,
 			evaluation_id: evaluationFaite,
@@ -354,9 +415,16 @@ describe('carnet de liaison (base locale)', () => {
 			expect(contacts.error?.code === '42501' || (contacts.data ?? []).length === 0).toBe(true);
 			const liens = await eleveA.client.from('parent_carnet_links').select('id');
 			expect(liens.error?.code === '42501' || (liens.data ?? []).length === 0).toBe(true);
-			// Le professeur, lui, les lit.
+			// Le professeur, lui, les lit — sans aucune empreinte.
 			const prof = await teacher.from('parent_contacts').select('id, email').eq('id', contactId);
 			expect(prof.data).toEqual([{ id: contactId, email: `parent-a1@${DOMAINE}` }]);
+			const empreinte = await teacher.from('parent_contacts').select('email_hash');
+			expect(empreinte.error?.code).toBe('42501');
+			const jetons = await teacher.from('parent_carnet_links').select('token_hash');
+			expect(jetons.error?.code).toBe('42501');
+			const etat = await teacher.from('parent_carnet_links').select('id, revoked_at');
+			expect(etat.error).toBeNull();
+			expect((etat.data ?? []).length).toBeGreaterThan(0);
 		});
 
 		it.each([
@@ -390,16 +458,23 @@ describe('carnet de liaison (base locale)', () => {
 
 			// 5 semaines, de la plus ancienne à la courante, palier seulement
 			const aujourdhui = jourDeParis(new Date());
-			expect(carnet!.weeks.map((w) => w.week_start)).toEqual(
-				[-4, -3, -2, -1, 0].map((s) => lundi(aujourdhui, s))
-			);
-			expect(carnet!.weeks.map((w) => w.level)).toEqual(['0', '0', '1', '2-3', '0']);
+			const attendues = semainesAttendues(aujourdhui, premierSeptembre(aujourdhui));
+			expect(carnet!.weeks.map((w) => w.week_start)).toEqual(attendues);
+			const paliers: Record<string, string> = {
+				[lundi(aujourdhui, -4)]: '0',
+				[lundi(aujourdhui, -3)]: '0',
+				[lundi(aujourdhui, -2)]: '1',
+				[lundi(aujourdhui, -1)]: '2-3',
+				[lundi(aujourdhui, 0)]: '0'
+			};
+			expect(carnet!.weeks.map((w) => w.level)).toEqual(attendues.map((l) => paliers[l]));
 
 			expect(carnet!.revisions).toEqual({ overdue: 2 });
 
 			const evaluations = [...carnet!.evaluations].sort((x, y) => x.title.localeCompare(y.title));
 			expect(evaluations.map((e) => [e.title, e.done])).toEqual([
 				['Contrôle fractions', true],
+				['Contrôle individuel', false],
 				['Contrôle puissances', false]
 			]);
 
@@ -423,7 +498,11 @@ describe('carnet de liaison (base locale)', () => {
 			});
 			expect(error).toBeNull();
 			expect(await lireCarnet(revoque.jeton)).toBeNull();
-			expect((await lireCarnet(nouveau))?.firstname).toBe('Basile');
+			const carnetB = await lireCarnet(nouveau);
+			expect(carnetB?.firstname).toBe('Basile');
+			const aujourdhui = jourDeParis(new Date());
+			expect(carnetB?.weeks.find((w) => w.week_start === lundi(aujourdhui, -1))?.level).toBe('4+');
+			expect(carnetB?.revisions).toEqual({ overdue: 3 });
 
 			const expire = await parentConfirme(eleveB.id, `parent-b2@${DOMAINE}`, {
 				expiresAt: new Date(Date.now() - 1000).toISOString()
@@ -471,6 +550,81 @@ describe('carnet de liaison (base locale)', () => {
 				.select('id');
 			expect(data).toHaveLength(1);
 			expect(await lireCarnet(lien.jeton)).toBeNull();
+		});
+
+		it('« ne plus recevoir » ne trahit pas un carnet fermé', async () => {
+			const eleve = await nouvelEleve('Lou', classId);
+			const { jeton } = await parentConfirme(eleve.id, `parent-l1@${DOMAINE}`);
+			const { data } = await service
+				.from('class_members')
+				.update({ status: 'archived', left_at: new Date().toISOString() })
+				.eq('student_id', eleve.id)
+				.select('id');
+			expect(data).toHaveLength(1);
+			const arret = await service.rpc('set_parent_emails_stopped', {
+				p_token: jeton,
+				p_stopped: true
+			});
+			expect(arret.error).toBeNull();
+			expect(arret.data).toBe(false);
+			const inconnu = await service.rpc('set_parent_emails_stopped', {
+				p_token: nouveauJeton(),
+				p_stopped: true
+			});
+			expect(inconnu.data).toBe(false);
+		});
+
+		it('rentrée et vacances de l’école : aucune semaine d’avant la rentrée', async () => {
+			const aujourdhui = jourDeParis(new Date());
+			// Rentrée un mercredi : le lundi et le mardi de la même semaine sont avant.
+			const rentree = plusJours(lundi(aujourdhui, -1), 2);
+			const ecole = await insertId('schools', {
+				name: 'École du carnet',
+				city: 'Testville',
+				country: 'France'
+			});
+			const annee = await insertId('school_years', {
+				school_id: ecole,
+				name: 'Année du carnet',
+				start_date: rentree,
+				end_date: plusJours(rentree, 300),
+				is_active: true
+			});
+			await insertId('school_holidays', {
+				school_year_id: annee,
+				name: 'Vacances du carnet',
+				// Du samedi de la semaine de la rentrée au lundi suivant
+				start_date: plusJours(rentree, 3),
+				end_date: plusJours(rentree, 5)
+			});
+			const classe = (await TestData.class().withName('4e Rentrée').create()).id;
+			const { error: e1 } = await service
+				.from('classes')
+				.update({ school_id: ecole })
+				.eq('id', classe);
+			if (e1) throw new Error(e1.message);
+			const { error: e2 } = await service
+				.from('class_carnet_settings')
+				.insert({ class_id: classe, enabled: true });
+			if (e2) throw new Error(e2.message);
+			try {
+				const eleve = await nouvelEleve('Mael', classe);
+				// Travail le lundi AVANT la rentrée, dans la semaine de la rentrée : pas compté
+				await traces(eleve.id, lundi(aujourdhui, -1), 6);
+				const { jeton } = await parentConfirme(eleve.id, `parent-m1@${DOMAINE}`);
+				const carnet = await lireCarnet(jeton);
+				expect(carnet?.weeks).toEqual([
+					{ week_start: lundi(aujourdhui, -1), level: '0', holiday: true },
+					{ week_start: lundi(aujourdhui, 0), level: '0', holiday: true }
+				]);
+			} finally {
+				await service.from('class_carnet_settings').delete().eq('class_id', classe);
+				await service.from('class_members').delete().eq('class_id', classe);
+				await service.from('classes').delete().eq('id', classe);
+				await service.from('school_holidays').delete().eq('school_year_id', annee);
+				await service.from('school_years').delete().eq('id', annee);
+				await service.from('schools').delete().eq('id', ecole);
+			}
 		});
 
 		it('« ne plus recevoir » garde le carnet ouvert', async () => {
@@ -545,8 +699,42 @@ describe('carnet de liaison (base locale)', () => {
 				status: 'pending',
 				source: 'student'
 			});
-			expect(error).not.toBeNull();
-			expect(error!.message).toContain('UBP01');
+			expect(error?.code).toBe('UBP01');
+		});
+
+		it('une adresse refusée ou invalide ne compte pas, mais ne revient pas en douce', async () => {
+			const eleve = await nouvelEleve('Iris', classId);
+			const invalide = await insertId('parent_contacts', {
+				student_id: eleve.id,
+				email: `parent-ir0@${DOMAINE}`,
+				status: 'invalid',
+				source: 'teacher'
+			});
+			await insertId('parent_contacts', {
+				student_id: eleve.id,
+				email: `parent-ir1@${DOMAINE}`,
+				status: 'pending',
+				source: 'student'
+			});
+			// Adresse normalisée (espaces, majuscules)
+			const deuxieme = await insertId('parent_contacts', {
+				student_id: eleve.id,
+				email: `  Parent-IR2@Example.Test `,
+				status: 'pending',
+				source: 'student'
+			});
+			const relu = await service
+				.from('parent_contacts')
+				.select('email')
+				.eq('id', deuxieme)
+				.single();
+			expect(relu.data?.email).toBe(`parent-ir2@${DOMAINE}`);
+			// Repasser l'adresse invalide en attente : une 3e active, refusée.
+			const { error } = await service
+				.from('parent_contacts')
+				.update({ status: 'pending' })
+				.eq('id', invalide);
+			expect(error?.code).toBe('UBP01');
 		});
 
 		it('« je ne suis pas le parent » efface l’adresse et interdit de la ressaisir', async () => {
@@ -569,13 +757,14 @@ describe('carnet de liaison (base locale)', () => {
 				.single();
 			expect(relu.data).toEqual({ status: 'refused', email: null });
 
+			// Ressaisie, même écrite autrement : refusée par l'unicité de l'empreinte
 			const { error } = await service.from('parent_contacts').insert({
 				student_id: eleve.id,
-				email: `INCONNU-i1@${DOMAINE}`.toLowerCase(),
+				email: '  INCONNU-i1@Example.Test ',
 				status: 'pending',
 				source: 'student'
 			});
-			expect(error).not.toBeNull();
+			expect(error?.code).toBe('23505');
 		});
 	});
 

@@ -63,3 +63,9 @@ sur **un** élève, sans compte, par un lien qui lui est propre.
 - Les **notes** (résultats détaillés) relèvent de l'offre payante ; les ajouter ouvre une nouvelle
   question d'accès.
 - Élèves hors classe : pas de carnet dans la première version.
+- Le carnet donne au parent les **liens du cahier et du cours** de la classe (avec son nom) : ces
+  liens sont ceux de la classe ([ADR 0025](0025-cours-lisible-par-lien-sans-compte.md)). Révoquer le
+  lien d'un parent, ou couper le partage, **ne coupe pas** les liens de classe qu'il a déjà vus ; seul
+  leur renouvellement par le professeur le fait (à dire sur l'écran du professeur, PR 3).
+- Le professeur lit les adresses et l'état des liens, **jamais les empreintes** (droits par colonne) :
+  l'empreinte d'une adresse refusée n'est pas anonyme (sha256 non salé).

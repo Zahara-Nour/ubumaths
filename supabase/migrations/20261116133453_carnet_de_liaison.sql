@@ -187,8 +187,15 @@ create policy "Teachers and admins read parent contacts"
 	to authenticated
 	using (public.is_teacher_or_admin());
 
+-- Droits PAR COLONNE : le professeur ne lit ni l'empreinte de l'adresse
+-- (sha256 non salé : deviner une adresse suffirait à savoir qu'elle a été
+-- saisie puis refusée) ni celle du lien de confirmation.
 revoke all on public.parent_contacts from public, anon, authenticated;
-grant select on public.parent_contacts to authenticated;
+grant select (
+	id, student_id, email, status, source, consent_id, confirm_expires_at,
+	confirm_sent_count, confirm_last_sent_at, confirmed_at, emails_stopped_at,
+	created_at, created_by
+) on public.parent_contacts to authenticated;
 
 -- ---------------------------------------------------------------------------
 -- 3. Liens du carnet (un par adresse, Q10)
@@ -222,8 +229,11 @@ create policy "Teachers and admins read carnet links"
 	to authenticated
 	using (public.is_teacher_or_admin());
 
+-- Droits par colonne : jamais l'empreinte du jeton.
 revoke all on public.parent_carnet_links from public, anon, authenticated;
-grant select on public.parent_carnet_links to authenticated;
+grant select (
+	id, contact_id, expires_at, revoked_at, access_count, last_accessed_at, created_at
+) on public.parent_carnet_links to authenticated;
 
 -- ---------------------------------------------------------------------------
 -- 4. Partage coupé par le professeur (élève majeur, Q4 ; D3)
@@ -266,6 +276,9 @@ security definer
 set search_path = public, pg_temp
 as $$
 begin
+	-- Même verrou que `issue_parent_carnet_link` : pas de lien émis pendant
+	-- qu'on coupe le partage.
+	perform pg_advisory_xact_lock(hashtext('carnet_links:' || new.student_id::text));
 	update public.parent_carnet_links l
 	set revoked_at = now()
 	from public.parent_contacts c
@@ -367,11 +380,41 @@ declare
 	v_today date := (now() at time zone 'Europe/Paris')::date;
 	v_monday date := v_today - (extract(isodow from v_today)::integer - 1);
 	v_start date := v_monday - 28;
+	v_year_id uuid;
+	v_first_day date;
 	v_result jsonb;
 begin
+	-- Rentrée : comme la grille du prof (`regularityFirstDay`,
+	-- `readSchoolYearOfSchool`) — année scolaire active la plus récente déjà
+	-- commencée de l'école d'une classe au carnet ; à défaut, le 1er septembre
+	-- écoulé. Aucune semaine d'avant la rentrée.
+	select sy.id, sy.start_date into v_year_id, v_first_day
+	from public.school_years sy
+	where sy.is_active
+		and sy.start_date <= v_today
+		and sy.school_id in (
+			select c.school_id
+			from public.class_members cm
+			join public.classes c on c.id = cm.class_id
+			join public.class_carnet_settings s on s.class_id = cm.class_id
+			where cm.student_id = p_student_id
+				and cm.status = 'active'
+				and c.is_active
+				and s.enabled
+		)
+	order by sy.start_date desc
+	limit 1;
+
+	if v_first_day is null then
+		v_first_day := make_date(extract(year from v_today)::integer, 9, 1);
+		if v_first_day > v_today then
+			v_first_day := make_date(extract(year from v_today)::integer - 1, 9, 1);
+		end if;
+	end if;
+
 	with
 	classes_du_carnet as (
-		select c.id, c.name, c.school_year_id
+		select c.id, c.name
 		from public.class_members cm
 		join public.classes c on c.id = cm.class_id
 		join public.class_carnet_settings s on s.class_id = cm.class_id
@@ -388,13 +431,15 @@ begin
 			and a.place is distinct from 'evaluation'
 			-- Un jour de marge : minuit à Paris tombe la veille en UTC (index)
 			and a.created_at >= (v_start - 1)::timestamp at time zone 'UTC'
-			and (a.created_at at time zone 'Europe/Paris')::date >= v_start
+			and (a.created_at at time zone 'Europe/Paris')::date >= greatest(v_start, v_first_day)
 		group by day
 		having count(*) >= 5
 	),
 	semaines as (
 		select gs::date as week_start
 		from generate_series(v_start, v_monday, interval '7 days') gs
+		-- Semaine qui touche la rentrée ou après
+		where gs::date + 6 >= v_first_day
 	),
 	paliers as (
 		select
@@ -404,11 +449,13 @@ begin
 			exists (
 				select 1
 				from public.school_holidays h
-				join classes_du_carnet k on k.school_year_id = h.school_year_id
-				where h.start_date <= s.week_start + 6 and h.end_date >= s.week_start
+				where h.school_year_id = v_year_id
+					and h.start_date <= s.week_start + 6 and h.end_date >= s.week_start
 			) as holiday
 		from semaines s
 	),
+	-- Évaluations : à venir, et passées dans la même fenêtre de 5 semaines que
+	-- la régularité (Q14) ; une évaluation sans échéance, si créée dans la fenêtre.
 	evaluations_eleve as (
 		select distinct e.id, sr.title, e.deadline
 		from public.evaluations e
@@ -585,6 +632,12 @@ begin
 	where c.id = p_contact_id
 	for update;
 
+	-- Même verrou que la coupure du partage (trigger d'opt-out), puis
+	-- relecture de l'opt-out après le verrou.
+	if found then
+		perform pg_advisory_xact_lock(hashtext('carnet_links:' || v_contact.student_id::text));
+	end if;
+
 	if not found or v_contact.status <> 'confirmed' or exists (
 		select 1 from public.student_carnet_opt_outs o where o.student_id = v_contact.student_id
 	) then
@@ -688,7 +741,10 @@ begin
 		and l.token_hash = encode(extensions.digest(p_token, 'sha256'), 'hex')
 		and l.revoked_at is null
 		and l.expires_at > now()
-		and c.status = 'confirmed';
+		and c.status = 'confirmed'
+		-- Même porte que la lecture : un carnet fermé (élève sorti de la
+		-- classe, carnet désactivé) ne doit pas se trahir ici (ADR 0040).
+		and public.carnet_student_is_shared(c.student_id);
 
 	return found;
 end;
