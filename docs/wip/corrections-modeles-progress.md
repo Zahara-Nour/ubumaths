@@ -81,6 +81,10 @@ détaillée. Ce chantier ne se contente pas de marquer les 30 cartes : il repren
   - Flash-card : verso = « Réponse : » en grand + image de correction + détails.
   - Dans Chiphre : le recto existe déjà (`ExpectedResultView`, Q92–Q94 livrés) ; le verso porte la correction
     écrite **et** l'interrupteur concise / détaillée → trois niveaux là où TinyMath en avait deux.
+  - Vérifié le 2026-11-16 : (1) **pas de surcharge par modèle** du résultat attendu (`buildExpectedResult`
+    ne lit que `statement`, `blanks`, `expressions`) ; (2) **le bouton de retournement de `CorrectionCard`
+    est toujours là**, verso « Aucune correction disponible. » sans correction écrite (51 modèles publiés) ;
+    `FlashCard` : `flippable` vaut `true` par défaut, son verso a toujours le résultat attendu.
 - [x] **Cartes de cours** : déjà tranché par **Q96** (concise = la réponse de cours ; détail = explication,
       exemple, contre-exemple, lien avec la méthode). Reste à **marquer** les cartes, rien à décider.
 
