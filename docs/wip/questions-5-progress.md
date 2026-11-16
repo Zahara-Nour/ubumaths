@@ -5,19 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, lot 15 en prod (brouillons), PR de rangement ouverte._
+_Mis à jour le 2026-11-16, après #2717 (lot 15 rangé en prod)._
 
 - **État** : lots 1 à 14 publiés ; lot 15 « Symétrie centrale, aires, solides » : 8 brouillons en prod (id commités),
-  migration de rangement `20261116133604_questions_5_lot15_rangement_tags` (§ 30 quater). Restent : 9 D, 101 et 104
-  (`blockly`).
-- **Prochaine action** : PR de rangement → CI verte, `security-auditor`, `check:migrations`, merge, `db:migrate`,
-  vérif MCP ; puis page à cocher, publication.
+  rangés et tagués en prod (#2717, `db:migrate` joué, vérifié au MCP) ; page à cocher publiée (§ 30 quater). Restent :
+  9 D, 101 et 104 (`blockly`).
+- **Prochaine action** : compter les verdicts de la page à cocher (https://claude.ai/artifact/9sVF9qhmG42gFZDqNLgAii),
+  corriger s'il le faut, puis `publier-lot.ts --dir scripts/questions/5-symetrie-aires-solides` en simulation.
 - **En attente de David** : (1) `--dir scripts/questions/5-parallelogrammes --publier --mettre-a-jour` (02 du lot 14,
   `95bea43b`, publié : variable `e` encore en prod le 2026-11-16) ; (2) corriger `e` dans `d5a36be9`, `092b310c`,
   `406fd9a8`, `7efd2e76` (autres chantiers) ? ; 02 du lot 7 à essayer.
 - **Pièges en cours** : jamais de variable ni de point `e` ; `--publier` LOCAL → copie au scratchpad ; serveur
   `--host 127.0.0.1` ; retirer un worktree : commandes avec `cd` du dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-questions-5`, branche `feat/questions-5-lot-15-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-5` (branche `feat/questions-5-lot-15-rangement`, mergée) gardé
+  pour d'éventuelles corrections du lot ; la suite part d'une branche neuve.
 
 ---
 
@@ -1215,3 +1216,8 @@ Le bloc solide n'a pas d'orientation : un même pavé « vu autrement » = même
   gabarit lot 14) : les 8 sur le nœud de leur point, tag posé, aucun nœud créé. Test d'intégration 19 verts ; sans le
   corps, 8 rouges, 7 sautés.
 - 02 du lot 14 (`95bea43b`, publié) : la variable `e` est toujours en prod (`--mettre-a-jour` pas encore lancé).
+- #2717 mergée (CI verte, `security-auditor` sans finding bloquant, `check:migrations` ok) ; `db:migrate` joué depuis le
+  dépôt principal (seule migration en attente, dry-run) ; vérifié au MCP : 8 modèles sur leur nœud, tag posé, `draft`,
+  niveaux 1 à 3, `updated_at` préservé.
+- Page à cocher publiée (https://claude.ai/artifact/9sVF9qhmG42gFZDqNLgAii, capacité `db`, collection `verdicts` vide
+  au départ) ; 02 (`figure-a-completer`) et 08 (`patron`) non dessinés par la page : à jouer dans l'aperçu.
