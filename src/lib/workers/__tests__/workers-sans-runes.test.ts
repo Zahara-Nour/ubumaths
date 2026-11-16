@@ -74,7 +74,6 @@ const workers = readdirSync(WORKERS).filter((f) => f.endsWith('.worker.ts'));
 describe('workers : aucun import de valeur ne mène à un fichier Svelte', () => {
 	it('trouve les workers', () => {
 		expect(workers).toContain('pyodide.worker.ts');
-		expect(workers).toContain('js-sandbox.worker.ts');
 	});
 
 	it.each(workers)('%s', (worker) => {

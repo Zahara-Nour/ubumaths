@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2707._
+_Mis à jour le 2026-11-16, PR de retrait de `/dev/blockly` en cours._
 
-- **État** : bac à sable public `/programmes-de-calcul` livré (#2707, mergée, pas encore en prod) · **Prochaine action** : dernière piste, étanchéité du sandbox JS (retirer le worker JS de `/dev/blockly`, aperçu par l'interpréteur), phase 0 d'abord ; ou clore le chantier si David y renonce · **En attente de David** : `deploy:prod` (livre #2700 et #2707) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) et `--publier` ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` (#2707 validée par David en dev, par Tailscale, le 2026-11-15) · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 (sinon `blocs:` serait une clé inconnue : bloc indisponible) ; garde `docs:check-a-jour` : ne lit que les COMMITS → la lancer après avoir commité le code (avant, verte à tort ; #2707 : `coquille-et-caches.md` et `carte-des-fonctionnalites.md` couvrent menu et sitemap) ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` → dans un COMMIT ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) · **Worktree / branche** : aucun (retiré après #2707)
+- **État** : branche `refactor/blockly-retirer-dev` : `/dev/blockly` et le sandbox JS retirés (option 2, David, 2026-11-16) ; PR à ouvrir · **Prochaine action** : CI, merge ; puis la piste **4e / 3e** (variables, conditions, boucle conditionnelle dans l'interpréteur), phase 0 d'abord · **En attente de David** : `deploy:prod` (livre #2700 et #2707) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) et `--publier` ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 (sinon `blocs:` serait une clé inconnue : bloc indisponible) ; garde `docs:check-a-jour` : ne lit que les COMMITS → la lancer après avoir commité le code ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` → dans un COMMIT ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) · **Worktree / branche** : `ubumaths-wt-blockly` · `refactor/blockly-retirer-dev`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -641,3 +641,43 @@ Phase 0 présentée le 2026-11-15 ; David : « je te suis » sur les trois recom
   aucun bloquant, deux mineurs corrigés (guillemets insécables, test « pas d'aperçu Python » sur le
   rendu). CI d'abord rouge : la garde de doc demandait `coquille-et-caches.md` et
   `carte-des-fonctionnalites.md` (verte en local car lancée avant le commit du code).
+
+## Étanchéité du sandbox JS — 2026-11-16 (branche `refactor/blockly-retirer-dev`)
+
+Phase 0 présentée le 2026-11-16 (options : 1 garder `/dev/blockly` avec un mode Calcul, 2 la
+supprimer, 3 ne rien faire). Constat : seul le mode Programme de `/dev/blockly` exécutait encore
+le JavaScript généré ; les pages élèves passent par l'interpréteur ; la page n'apportait plus rien
+au débogage (interpréteur couvert par les tests, mêmes éditeurs sur les pages publiques). Le
+programme du cycle 4 n'exige que des blocs (pas de Python avant la seconde) : la 4e / 3e passera
+par l'interpréteur, pas par ce worker. **David : option 2.**
+
+- Retirés : la page et `+page.server.ts`, `BlocklyPlayground` / `BlocklyToolbar` /
+  `BlocklyOutput` / `BlocklyCodePreview`, `blocklyPlayground.svelte.ts` (déjà mort), dossiers
+  `shared/blockly/execution/` et `shared/blockly/worker/`, `js-sandbox.worker.ts`,
+  `js-sandbox-source.ts` et leurs tests ; la carte de `/dev` ; la redirection `/blockly/playground`
+  (elle menait à la page retirée) ; `QUICK_REFERENCE.md` et les deux `EXAMPLES.md` du module
+  (recettes d'exécution du code généré dans un worker).
+- Gardés : générateurs JS / Python (aperçu « Voir en Python » de `/tortue`), Pyodide (exercices
+  Python du lycée, hors chantier).
+- Garde **rouge vérifiée** avant le retrait (17 fichiers) : `aucun-javascript-execute.test.ts`.
+- Tests d'aperçu adaptés : `print.test.ts` vérifie `console.log('abc')` dans le code ; les deux
+  tests de `generators.test.ts` qui exécutaient le code dans la fonction sandbox sont retirés.
+- Laissés (écart noté dans `blockly.md`) : types et messages hérités de l'exécuteur
+  (`OutputLine`, `ExecutionContext`, `TIMEOUT_JS`…).
+- Doc : `docs/systeme/blockly.md`, `utilitaires-et-demos.md`, ligne datée dans l'ADR 0039.
+- Revue : `code-reviewer` (Sonnet), retrait de code.
+
+## Piste 4e / 3e — ouverte le 2026-11-16 (phase 0 à faire)
+
+BO (`src/lib/server/programmes/transcriptions/cycle-4/*informatique.md`) : programmation **par
+blocs** seulement. 4e : conditions simples, instructions conditionnelles, manipuler une variable,
+écrire / modifier un programme. 3e : variables approfondies, conditions composées, boucle
+conditionnelle, structurer des programmes.
+
+- Tout passe par l'**interpréteur** (ADR 0039) : variables créées par l'élève, « si … alors …
+  sinon », comparaisons, ET / OU / NON, « répéter jusqu'à » ; `controls_repeat_ext` revient avec
+  les variables. Boucle conditionnelle → borne de pas comme `LIMITE_PAS`.
+- À trancher en phase 0 : interpréteur de calcul étendu ou troisième famille ; notation texte des
+  nouveaux blocs ; jugement (affichages sur des essais, comme le calcul ?) ; geste de réponse ;
+  bac à sable (`/programmes-de-calcul` élargi ou page à part) ; aperçu Python ; premiers modèles
+  (lesquels de 4e et 3e).

@@ -2,11 +2,10 @@ import * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { describe, expect, it } from 'vitest';
 
-import { construireSourceSandbox } from '$lib/workers/js-sandbox-source';
-import { installerGenerateursChiphre, wrapJavaScriptCode } from '../javascript';
+import { installerGenerateursChiphre } from '../javascript';
 
-// Bloc « print » de Blockly : `window.alert(…)` par défaut, or `window` est bloqué dans le
-// sandbox. Il doit écrire dans la console de l'élève.
+// Bloc « print » de Blockly : `window.alert(…)` par défaut. L'aperçu JavaScript montre
+// `console.log`, l'écriture d'un programme (jamais exécuté par Chiphre, ADR 0039).
 function codeDuBlocPrint(): string {
 	const workspace = new Blockly.Workspace();
 	Blockly.serialization.workspaces.load(
@@ -28,17 +27,10 @@ function codeDuBlocPrint(): string {
 }
 
 describe('bloc print (JavaScript)', () => {
-	it('écrit dans la console du sandbox, sans passer par window.alert', () => {
+	it('s’écrit console.log dans l’aperçu, jamais window.alert', () => {
 		installerGenerateursChiphre();
 		const code = codeDuBlocPrint();
 		expect(code).not.toContain('alert');
-
-		const sortie: string[] = [];
-		const console = { log: (...args: unknown[]) => sortie.push(args.join(' ')) };
-		new Function(construireSourceSandbox(['console', 'window'], wrapJavaScriptCode(code))).apply(
-			null,
-			[console, undefined]
-		);
-		expect(sortie).toEqual(['abc']);
+		expect(code).toContain("console.log('abc')");
 	});
 });

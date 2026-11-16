@@ -18,7 +18,6 @@ import {
 	validatePyCodeLength,
 	JS_MATH_HELPERS
 } from '../index';
-import { construireSourceSandbox } from '$lib/workers/js-sandbox-source';
 
 // =============================================================================
 // JavaScript Code Wrapping Tests
@@ -42,29 +41,6 @@ describe('JavaScript Code Wrapping', () => {
 			expect(wrapped).toContain('function gcd(a, b)');
 			expect(wrapped).toContain('function lcm(a, b)');
 			expect(wrapped).toContain('function isPrime(n)');
-		});
-
-		// Comportement réel : le code enveloppé tourne dans la fonction du sandbox
-		// (construireSourceSandbox), avec une console qui écrit vers l'élève.
-		function executerDansLeSandbox(code: string): string[] {
-			const sortie: string[] = [];
-			const console = { log: (...args: unknown[]) => sortie.push(args.join(' ')) };
-			const fn = new Function(
-				construireSourceSandbox(['console', 'window'], wrapJavaScriptCode(code))
-			);
-			fn.apply(null, [console, undefined]);
-			return sortie;
-		}
-
-		it('la sortie de console.log arrive à la console du sandbox', () => {
-			expect(executerDansLeSandbox('console.log("abc"); console.log(gcd(12, 18));')).toEqual([
-				'abc',
-				'6'
-			]);
-		});
-
-		it("une erreur remonte jusqu'au sandbox au lieu de disparaître", () => {
-			expect(() => executerDansLeSandbox('throw new Error("boum");')).toThrow('boum');
 		});
 
 		it('should handle empty code', () => {
