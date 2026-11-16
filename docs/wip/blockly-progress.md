@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR de retrait de `/dev/blockly` en cours._
+_Mis à jour le 2026-11-16, après #2715._
 
-- **État** : branche `refactor/blockly-retirer-dev` : `/dev/blockly` et le sandbox JS retirés (option 2, David, 2026-11-16) ; PR à ouvrir · **Prochaine action** : CI, merge ; puis la piste **4e / 3e** (variables, conditions, boucle conditionnelle dans l'interpréteur), phase 0 d'abord · **En attente de David** : `deploy:prod` (livre #2700 et #2707) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) et `--publier` ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 (sinon `blocs:` serait une clé inconnue : bloc indisponible) ; garde `docs:check-a-jour` : ne lit que les COMMITS → la lancer après avoir commité le code ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` → dans un COMMIT ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) · **Worktree / branche** : `ubumaths-wt-blockly` · `refactor/blockly-retirer-dev`
+- **État** : `/dev/blockly` et le sandbox JS retirés (#2715, mergée ; option 2, David, 2026-11-16) · **Prochaine action** : la piste **4e / 3e** (variables, conditions, boucle conditionnelle dans l'interpréteur), phase 0 d'abord · **En attente de David** : `deploy:prod` (livre #2700 et #2707) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation, refusée à Claude par le classifieur) et `--publier` ; vérifications manuelles en prod, lignes #2627, #2632, #2634 / 3b / 3c, 4b, 5b, #2683 et #2700 / #2704 de `verifications-manuelles.md` · **Pièges en cours** : publier le lot 5-106 **après** le `deploy:prod` de #2700 (sinon `blocs:` serait une clé inconnue : bloc indisponible) ; garde `docs:check-a-jour` : ne lit que les COMMITS → la lancer après avoir commité le code ; `create-questions` attend les ids écrits dans les fichiers : les commiter AUSSITÔT ; `Doc-inchangée:` → dans un COMMIT ; montée de Blockly → recopier `node_modules/blockly/media` ; hors éditeur, importer `notation.ts` / `jugement.ts` / `segments.ts` directement (pas `index.ts`) · **Worktree / branche** : aucun (retiré après #2715)
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -666,6 +666,9 @@ par l'interpréteur, pas par ce worker. **David : option 2.**
   (`OutputLine`, `ExecutionContext`, `TIMEOUT_JS`…).
 - Doc : `docs/systeme/blockly.md`, `utilitaires-et-demos.md`, ligne datée dans l'ADR 0039.
 - Revue : `code-reviewer` (Sonnet), retrait de code.
+- **#2715 mergée le 2026-11-16** (CI verte). Revue : rien de bloquant ; mineurs laissés : README du
+  module et constantes `TIMEOUT_JS` / `OutputLine` périmés (déjà notés dans `blockly.md`), garde
+  limitée à `src/` et aux noms connus. Garde de doc : `auth.md` demandé (worker Blockly hors CSP).
 
 ## Piste 4e / 3e — ouverte le 2026-11-16 (phase 0 à faire)
 
