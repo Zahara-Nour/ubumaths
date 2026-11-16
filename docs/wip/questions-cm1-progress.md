@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15 : migration nœud + tags du lot 6 écrite (§ 16 quater), PR en cours._
+_Mis à jour le 2026-11-16, après #2706 (migration du lot 6 en prod)._
 
-- **État** : lots 0 à 5d publiés ; lot 6 (problèmes, 10 modèles) : brouillons créés en prod par David le 2026-11-15, ids commités ; migration `20261115213402_questions_cm1_lot6_rangement_tags` (nœud + tag des 10) sur la branche, tests verts. Recompte : 94 points couverts sur 171.
-- **Prochaine action** : merger la PR de la migration ; David lance `pnpm db:migrate` ; puis page à cocher des 10 brouillons, relecture, publication. Ensuite : lot 6 bis (oubliés), lot 6 ter (algèbre).
-- **En attente de David** : `pnpm db:migrate` après le merge.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : à restaurer (`git restore`, David) après le merge.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot6-rangement`.
+- **État** : lots 0 à 5d publiés ; lot 6 (problèmes, 10 modèles) : brouillons créés en prod par David le 2026-11-15, ids commités ; migration `20261115213402_questions_cm1_lot6_rangement_tags` jouée en prod (vérifié au MCP le 2026-11-16 : 10 rangés, 10 tags) ; toujours en brouillon. Recompte : 94 points couverts sur 171.
+- **Prochaine action** : page à cocher des 10 brouillons, relecture, publication. Ensuite : lot 6 bis (oubliés), lot 6 ter (algèbre).
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1207,3 +1207,5 @@ données.
 - Test `questions-cm1-lot6-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs + suite
   principale sautée. Le cas « tag posé à la main sur un brouillon » du gabarit est impossible (trigger : pas de tag
   sans nœud) : remplacé par « rangé ET tagué à la main ».
+- #2706 mergée (CI verte, `check:migrations --pr 2706` passé, `security-auditor` : aucun finding), branche supprimée ;
+  `db:migrate` lancé par David ; vérifié au MCP le 2026-11-16 : migration enregistrée, 10 nœuds, 10 tags.
