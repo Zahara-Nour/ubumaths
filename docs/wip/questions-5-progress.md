@@ -779,7 +779,7 @@ proportionnalité 1 (6e ×2) ; caractérisation 1-3 ; généralités sur les fon
 
 ## 25. Lot 11 « Programmer en blocs » : validé (David, 2026-11-14, « je te suis »)
 
-**Porté par le chantier `blockly`** (David, 2026-11-14) : ne pas l'écrire depuis ce chantier. Phase 0 tenue dans le chantier `blockly` (journal `blockly-progress.md`, § Premiers modèles), qui fait foi pour
+**Porté par le chantier `blockly`** (David, 2026-11-14) : ne pas l'écrire depuis ce chantier. Phase 0 tenue dans le chantier `blockly` (journal `../archive/wip/blockly-progress.md`, § Premiers modèles), qui fait foi pour
 le détail. Relevé prod : 0 modèle sur 5-100, 102, 103, 105, 106.
 
 | #   | Point | Modèle                      | Bloc / réponse                    | Nœud                                      |

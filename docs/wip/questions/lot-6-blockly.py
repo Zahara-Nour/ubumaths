@@ -1,6 +1,6 @@
 """Écrit les 2 modèles du lot « Blockly » de la 6e dans scripts/questions/6-blockly/.
 
-Lot porté par le chantier `blockly` (journal docs/wip/blockly-progress.md § Premiers modèles,
+Lot porté par le chantier `blockly` (journal docs/archive/wip/blockly-progress.md § Premiers modèles,
 David le 2026-11-14 : « je te suis ») ; un point par modèle (ADR 0020) :
 
 | #  | Point | Titre | Geste | Niveau |

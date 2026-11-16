@@ -1034,7 +1034,7 @@ petite, trotteuse ; ◀ ▶ d'une seconde) ; réponse `'47 25 40'`, attendue `'9
 trotteuse jugée à la seconde exacte ; phrases en plus : trotteuse pas posée, grande aiguille et trotteuse
 inversées. Masquée : `placer: ? s` (`maskedPlacerValue`), pour que la trotteuse reste à poser.
 
-**Programme tortue** (chantier [blockly](../wip/blockly-progress.md), PR 4) —
+**Programme tortue** (chantier [blockly](../archive/wip/blockly-progress.md), PR 4) —
 `src/lib/ubumark/__tests__/tortue/tortue-parser.test.ts` :
 
 ````text
@@ -1070,7 +1070,7 @@ modifier (BO « modifier ses paramètres ») ; il doit se lire, sinon erreur sit
 (il ne dit pas la réponse). L'écran le pose dans l'espace de blocs quand la case est vide ; il ne
 devient la réponse qu'au premier changement ([blockly](blockly.md) § L'écran d'une question de calcul).
 
-**Programme de calcul** (5e, 4e, 3e ; chantier [blockly](../wip/blockly-progress.md), PR 5a ;
+**Programme de calcul** (5e, 4e, 3e ; chantier [blockly](../archive/wip/blockly-progress.md), PR 5a ;
 `niveau:` le 2026-11-16) — `src/lib/ubumark/__tests__/calcul/calcul-parser.test.ts`,
 `calcul-niveaux.test.ts` :
 

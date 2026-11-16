@@ -1,7 +1,7 @@
 # 0039 — Les blocs tortue et calcul sont interprétés par Chiphre, jamais évalués en JavaScript
 
 - **Statut** : acceptée — mise en œuvre par le chantier `blockly` (journal :
-  [`docs/wip/blockly-progress.md`](../wip/blockly-progress.md))
+  [`docs/archive/wip/blockly-progress.md`](../archive/wip/blockly-progress.md))
 - **Date** : 2026-11-14 · **Décidée par** : David
 
 ## Contexte
