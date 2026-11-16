@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2727 et la relecture de la page à cocher._
+_Mis à jour le 2026-11-16, après le `deploy:prod` v0.91.0 et les publications._
 
-- **État** : piste 4e / 3e — PR A (#2716), B (#2719), C (#2723), **D (#2727) mergées** ; 9 brouillons en prod, rangés et tagués (`db:migrate` fait, vérifié) ; page à cocher relue : **9 / 9 « ok »**, aucun commentaire, rien à corriger ; choix faits seul aux PR A, B et C **tous validés** par David (2026-11-16) · **Prochaine action** : publication des 9 modèles (`publier-lot.ts`, par David) **après** le `deploy:prod` de #2719 · **`deploy:prod` fait le 2026-11-16 (v0.91.0, livre #2700, #2707, #2716, #2719)** · **En attente de David** : publication des 9 modèles ; `update-published-questions.ts --lot blockly-5-106` (simulation, `--publier`) ; vérifications manuelles en prod (`verifications-manuelles.md`) · **Pièges en cours** : la base locale porte les 9 modèles avec des ids LOCAUX · **Worktree / branche** : aucun (retiré après #2727)
+- **État** : piste 4e / 3e livrée — PR A (#2716), B (#2719), C (#2723), D (#2727) mergées ; `deploy:prod` v0.91.0 fait (livre #2700, #2707, #2716, #2719) ; page à cocher 9 / 9 « ok » ; choix des PR A, B et C validés par David ; **9 modèles 4e / 3e `published`** et **lot `blockly-5-106` mis à jour** (`blocs: 3 / 5 / 9`, 12 specs) en prod, par David, vérifié par requête le 2026-11-16 · **Prochaine action** : aucune de code ; décider avec David de la suite du chantier (ou de sa clôture : relire le découpage contre les PR mergées) · **En attente de David** : vérifications manuelles en prod (`verifications-manuelles.md`) · **Pièges en cours** : la base locale porte les 9 modèles avec des ids LOCAUX · **Worktree / branche** : aucun
 
 ## Phase 0 — validée par David le 2026-11-14
 
