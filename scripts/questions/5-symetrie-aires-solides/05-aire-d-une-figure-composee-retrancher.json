@@ -1,4 +1,5 @@
 {
+	"id": "e206964d-c612-43df-a086-33b6180bd14b",
 	"title": "Aire d'une figure composée : retrancher",
 	"description": "Calculer l'aire d'une figure obtenue en retirant un triangle, un disque ou un rectangle d'un rectangle ou d'un carré : on soustrait les aires",
 	"grades": ["5"],
