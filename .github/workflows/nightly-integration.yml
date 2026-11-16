@@ -52,6 +52,9 @@ on:
       # src/lib : dossiers atteints par la suite
       - 'src/lib/dictionary/**'
       - 'src/lib/math/**'
+      # Passage quotidien du carnet de liaison (courriels, forme du carnet)
+      - 'src/lib/email-templates/**'
+      - 'src/lib/validation/carnet.ts'
       - 'src/lib/mathAST/**'
       - 'src/lib/mathoux/**'
       - 'src/lib/programmes/**'
