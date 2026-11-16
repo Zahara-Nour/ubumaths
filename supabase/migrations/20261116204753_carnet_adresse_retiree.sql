@@ -20,8 +20,9 @@
 -- ROLLBACK :
 --   drop trigger if exists parent_contacts_removed_revokes_links on public.parent_contacts;
 --   drop function if exists public.parent_contacts_removed_revokes_links();
---   (⚠️ d'abord : delete from public.parent_contacts where status = 'removed';
---    — perd la trace des adresses retirées, qui redeviendraient saisissables)
+--   (d'abord, sans perte : update public.parent_contacts set status = 'refused'
+--    where status = 'removed'; — l'empreinte reste, l'adresse reste bloquée ;
+--    seul le professeur perd la possibilité de la ressaisir)
 --   alter table public.parent_contacts drop constraint parent_contacts_status;
 --   alter table public.parent_contacts add constraint parent_contacts_status
 --     check (status in ('pending', 'confirmed', 'refused', 'invalid'));

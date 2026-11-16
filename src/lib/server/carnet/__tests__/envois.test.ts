@@ -594,7 +594,15 @@ describe('addParentContact (A2, A3, A5)', () => {
 		});
 		expect(await addParentContact(input, service)).toBe('sent');
 		const reset = calls.find((c) => c.op === 'update' && c.payload?.status === 'pending')!;
-		expect(reset.payload).toEqual({ status: 'pending', email: ADRESSE, confirm_sent_count: 0 });
+		expect(reset.payload).toEqual({
+			status: 'pending',
+			email: ADRESSE,
+			confirm_sent_count: 0,
+			confirmed_at: null,
+			emails_stopped_at: null,
+			consent_id: null,
+			source: 'teacher'
+		});
 		expect(filter(reset, 'status')).toBe('removed');
 		expect(sendConfirmation).toHaveBeenCalledTimes(1);
 	});

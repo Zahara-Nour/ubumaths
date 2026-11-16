@@ -385,7 +385,15 @@ export async function addParentContact(
 			// plus haut) : un geste délibéré, quota remis à zéro.
 			const { data: reset, error: resetError } = await service
 				.from('parent_contacts')
-				.update({ status: 'pending', email, confirm_sent_count: 0 })
+				.update({
+					status: 'pending',
+					email,
+					confirm_sent_count: 0,
+					confirmed_at: null,
+					emails_stopped_at: null,
+					consent_id: null,
+					source: 'teacher'
+				})
 				.eq('id', existing.id)
 				.eq('status', 'removed')
 				.select('id');

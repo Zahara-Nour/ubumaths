@@ -55,7 +55,9 @@ membre actif de la classe, limite de débit). Courriels : `src/lib/email-templat
   **professeur** : en attente → nouvelle confirmation ; invalide → remise en attente (sauf
   quota épuisé) ; retirée → remise en attente, quota à zéro ; refusée → jamais ; confirmée →
   rien. Saisie par l'**élève** : rien ne part, et il lit une réponse **neutre** (la page ne lui
-  dit pas l'état d'une adresse de ses parents, ni ne lui laisse épuiser un quota). Deux
+  dit pas l'état d'une adresse de ses parents, ni ne lui laisse épuiser un quota). Reste, accepté :
+  il distingue une adresse connue d'une adresse neuve, pour son propre carnet (6 essais par
+  heure). Deux
   adresses actives au plus (`UBP01`).
 - **Retirer une adresse** (D2, Q31) : état `removed` (migration
   `20261116204753_carnet_adresse_retiree.sql`) ; adresse effacée, empreinte gardée, liens
