@@ -11,8 +11,8 @@ _Mis à jour le 2026-11-16, lot 15 publié._
   MCP). Restent : 9 D, 101 et 104 (`blockly`).
 - **Prochaine action** : clore ou non la 5e avec David (9 D, 101, 104 attendent le chantier `blockly`) ; la suite part
   d'un worktree neuf.
-- **En attente de David** : variable `e` → chantier `variable-e` (#2725 mergée ; mise à jour de la prod à lancer,
-  `5-parallelogrammes` compris) ; 02 du lot 7 (`ef08a256`, deux cases) à essayer à la main.
+- **En attente de David** : 02 du lot 7 (`ef08a256`, deux cases) à essayer à la main. Variable `e` réglée
+  (chantier `variable-e`, clos : 0 modèle en prod).
 - **Pièges en cours** : jamais de variable ni de point `e` ; `--publier` LOCAL → copie au scratchpad ; serveur
   `--host 127.0.0.1` ; retirer un worktree : commandes avec `cd` du dépôt principal.
 - **Worktree / branche** : aucun (worktree du lot 15 retiré, branche supprimée).

@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2728._
+_Mis à jour le 2026-11-16, chantier clos._
 
-- **État** : #2725 (fichiers + garde) et #2728 (lot `variable-e` de `update-published-questions.ts`) mergées ;
-  simulation verte (5 cibles). Prod pas encore écrite.
-- **Prochaine action** : David lance `pnpm tsx scripts/update-published-questions.ts --lot variable-e --publier`
-  depuis le dépôt principal ; relire au MCP qu'aucun modèle ne déclare plus `e` ; archiver ce journal.
+- **État** : clos. #2725 (fichiers + garde `checkTemplate`) et #2728 (lot `variable-e`) mergées ; David a lancé
+  `update-published-questions.ts --lot variable-e --publier` ; vérifié au MCP : 0 modèle avec une variable `e`, les 5
+  toujours `published` (mis à jour à 20:16 UTC).
+- **Prochaine action** : aucune. Durable versé : `docs/systeme/questions.md` (garde), `couvrir-un-niveau.md` (règle).
 - **Pièges en cours** : modèle PUBLIÉ → `update-published-questions.ts` (lot déclaré), jamais `create-questions`.
 - **Worktree / branche** : aucun (retirés).
 
