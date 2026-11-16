@@ -74,7 +74,7 @@ const logger = createServerLogger(
 const uuid = z.string().uuid();
 
 /** Seuils par défaut (Q7), ceux de la table. */
-export const DEFAULT_CARNET_SETTINGS = {
+const DEFAULT_CARNET_SETTINGS = {
 	enabled: false,
 	evaluation_missed_alert: true,
 	overdue_reviews_days: 7,

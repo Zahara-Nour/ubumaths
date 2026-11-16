@@ -314,7 +314,8 @@ les lignes des cadres de réponse de chaque exercice) ;
 `20261116133453`) : la page d'**un** parent sur **un** élève, sans compte. `class_carnet_settings`
 (activation et seuils par classe ; pas de ligne = désactivé), `parent_contacts` (deux adresses
 actives au plus, trigger `UBP01` ; une adresse refusée est effacée, son empreinte reste et interdit la
-ressaisie), `parent_carnet_links` (un lien actif par adresse, stocké **haché**), `student_carnet_opt_outs`
+ressaisie ; une adresse **retirée** par le professeur, état `removed`, migration `20261116204753`,
+est effacée aussi, ses liens révoqués par trigger, et seul le professeur la ressaisit), `parent_carnet_links` (un lien actif par adresse, stocké **haché**), `student_carnet_opt_outs`
 (partage coupé : un trigger révoque les liens), `parent_notifications` (courriels envoyés ; l'élève lit
 les siens). Le professeur lit adresses et état des liens, **jamais les colonnes `*_hash`** (droits par
 colonne) ; ni `anon` ni l'élève n'écrivent rien. Les fonctions qui reçoivent un lien
