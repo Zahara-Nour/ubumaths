@@ -154,7 +154,7 @@ function profCarnet(enabled: boolean) {
 	};
 }
 
-async function statut(p: Promise<unknown>): Promise<number> {
+async function statut(p: unknown): Promise<number> {
 	try {
 		const r = (await p) as { status?: number };
 		return typeof r?.status === 'number' ? r.status : 200;

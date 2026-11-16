@@ -95,6 +95,7 @@ const addFormSchema = z.object({ student_id: uuid, email: z.string().max(320) })
 
 const ADD_MESSAGES: Record<AddContactOutcome, string> = {
 	sent: 'Courriel de confirmation envoyé. Le lien du carnet partira après le clic du parent.',
+	known: 'Cette adresse est déjà enregistrée pour cet élève.',
 	already_confirmed: 'Cette adresse est déjà confirmée pour cet élève.',
 	refused:
 		'Le destinataire a répondu « Je ne suis pas le parent de cet élève » : cette adresse ne peut plus être saisie pour lui.',

@@ -115,7 +115,15 @@ export async function sendEmail(
 			messageId: response.body?.messageId
 		};
 	} catch (error) {
-		logger.error('[Brevo] Email send error:', error);
+		// Ni l'objet d'erreur entier : celui de Brevo garde la requête, donc le
+		// corps du courriel et les liens à jeton qu'il contient (carnet,
+		// consentement). Le message et le code suffisent.
+		const statusCode = (error as { statusCode?: number } | null)?.statusCode;
+		logger.error(
+			'[Brevo] Email send error:',
+			error instanceof Error ? error.message : 'erreur inconnue',
+			statusCode ?? ''
+		);
 
 		if (error instanceof Error) {
 			return {

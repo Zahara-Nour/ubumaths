@@ -32,22 +32,25 @@ function phrase(): string {
 
 describe('Mon carnet de liaison', () => {
 	it('C1 : un parent le reçoit → « Tes parents voient cette page »', async () => {
-		await render(Page, { data: donnees({ parents: 1 }) });
+		await render(Page, { data: donnees({ parents: 1 }), form: null });
 		expect(phrase()).toContain('Tes parents voient cette page');
 	});
 
 	it('C1 : aucune adresse confirmée', async () => {
-		await render(Page, { data: donnees({ parents: 0 }) });
+		await render(Page, { data: donnees({ parents: 0 }), form: null });
 		expect(phrase()).toBe('Aucun parent ne reçoit encore ton carnet.');
 	});
 
 	it('C3 : partage coupé, même avec des adresses', async () => {
-		await render(Page, { data: donnees({ opted_out: true, shared: false, parents: 2 }) });
+		await render(Page, {
+			data: donnees({ opted_out: true, shared: false, parents: 2 }),
+			form: null
+		});
 		expect(phrase()).toBe('Le partage avec tes parents est arrêté.');
 	});
 
 	it('carnet pas ouvert pour sa classe', async () => {
-		await render(Page, { data: donnees({ shared: false, parents: 0 }) });
+		await render(Page, { data: donnees({ shared: false, parents: 0 }), form: null });
 		expect(phrase()).toContain("n'est pas encore ouvert");
 	});
 
@@ -60,7 +63,8 @@ describe('Mon carnet de liaison', () => {
 					reasons: ['inactivity', 'reviews_overdue']
 				},
 				{ created_at: '2026-11-01T08:00:00Z', kind: 'link', reasons: [] }
-			])
+			]),
+			form: null
 		});
 		await expect
 			.element(screen.getByText('Alerte : pas de travail depuis longtemps, révisions en retard'))
@@ -83,7 +87,7 @@ describe('Mon carnet de liaison', () => {
 			expect(!!document.querySelector('#carnet-parent-email'), JSON.stringify(partage)).toBe(
 				visible
 			);
-			screen.unmount();
+			await screen.unmount();
 		}
 	});
 });

@@ -357,7 +357,8 @@ describe('sendCarnetLink (A1, A6, D2)', () => {
 		expect(await sendCarnetLink(CONTACT, service)).toBe('sent');
 
 		const token = tokenOf(sendLink);
-		const [name, args] = rpcCalls[0];
+		expect(rpcCalls[0]).toEqual(['carnet_student_is_shared', { p_student_id: ELEVE }]);
+		const [name, args] = rpcCalls[1];
 		expect(name).toBe('issue_parent_carnet_link');
 		expect(args.p_token_hash).toBe(hashCarnetToken(token));
 		expect(JSON.stringify(rpcCalls)).not.toContain(token);
@@ -379,12 +380,22 @@ describe('sendCarnetLink (A1, A6, D2)', () => {
 		expect(sendLink).not.toHaveBeenCalled();
 	});
 
-	it('partage coupé (émission refusée) → aucun courriel', async () => {
+	it('partage coupé (émission refusée sous verrou) → aucun courriel', async () => {
 		const { service } = fakeService(
+			() => ({ data: confirmed, error: null }),
+			(name) => ({ data: name === 'carnet_student_is_shared', error: null })
+		);
+		expect(await sendCarnetLink(CONTACT, service)).toBe('not_issued');
+		expect(sendLink).not.toHaveBeenCalled();
+	});
+
+	it('carnet fermé (classe désactivée, élève sorti) → ni lien émis ni courriel', async () => {
+		const { service, rpcCalls } = fakeService(
 			() => ({ data: confirmed, error: null }),
 			() => ({ data: false, error: null })
 		);
 		expect(await sendCarnetLink(CONTACT, service)).toBe('not_issued');
+		expect(rpcCalls.map(([n]) => n)).toEqual(['carnet_student_is_shared']);
 		expect(sendLink).not.toHaveBeenCalled();
 	});
 
@@ -398,7 +409,7 @@ describe('sendCarnetLink (A1, A6, D2)', () => {
 		expect(await sendCarnetLink(CONTACT, service)).toBe('send_failed');
 
 		const revoke = calls.find((c) => c.table === 'parent_carnet_links' && c.op === 'update')!;
-		expect(filter(revoke, 'token_hash')).toBe(rpcCalls[0][1].p_token_hash);
+		expect(filter(revoke, 'token_hash')).toBe(rpcCalls[1][1].p_token_hash);
 		expect(revoke.payload?.revoked_at).toBeTruthy();
 	});
 });
@@ -528,6 +539,31 @@ describe('addParentContact (A2, A3, A5)', () => {
 		expect(sendConfirmation).not.toHaveBeenCalled();
 	});
 
+	it('élève qui ressaisit une adresse connue → « known », rien ne part ni ne change', async () => {
+		for (const status of ['pending', 'confirmed', 'refused', 'invalid']) {
+			const { service, calls } = fakeService((call) =>
+				call.op === 'select'
+					? { data: { id: CONTACT, status, confirm_sent_count: 1 }, error: null }
+					: undefined
+			);
+			expect(await addParentContact({ ...input, source: 'student' }, service), status).toBe(
+				'known'
+			);
+			expect(calls.some((c) => c.op !== 'select')).toBe(false);
+		}
+		expect(sendConfirmation).not.toHaveBeenCalled();
+	});
+
+	it('adresse invalide à 3 envois → « quota », pas remise en attente (elle prendrait une place)', async () => {
+		const { service, calls } = fakeService((call) =>
+			call.op === 'select'
+				? { data: { id: CONTACT, status: 'invalid', confirm_sent_count: 3 }, error: null }
+				: undefined
+		);
+		expect(await addParentContact(input, service)).toBe('quota');
+		expect(calls.some((c) => c.op === 'update')).toBe(false);
+	});
+
 	it('ajout simultané (23505) → la ligne gagnante est reprise', async () => {
 		let lookups = 0;
 		const { service } = fakeService((call) => {
@@ -564,7 +600,12 @@ describe('resendLostLinks (A6)', () => {
 						error: null
 					};
 				return {
-					data: { id: filter(call, 'id'), student_id: ELEVE, email: ADRESSE, status: 'confirmed' },
+					data: {
+						id: filter(call, 'id'),
+						student_id: filter(call, 'id') === CONTACT ? ELEVE : 'ferme',
+						email: ADRESSE,
+						status: 'confirmed'
+					},
 					error: null
 				};
 			},

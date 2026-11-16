@@ -38,7 +38,14 @@ export type ContactSource = 'teacher' | 'student';
 
 /** Issue de l'ajout d'une adresse (A2-A5). */
 export type AddContactOutcome =
-	'sent' | 'already_confirmed' | 'refused' | 'limit' | 'quota' | 'send_failed';
+	| 'sent'
+	/** Adresse déjà connue, saisie par l'élève : rien ne part (il ne relance pas un quota) */
+	| 'known'
+	| 'already_confirmed'
+	| 'refused'
+	| 'limit'
+	| 'quota'
+	| 'send_failed';
 
 /** Issue d'un courriel de confirmation (A2, A4). */
 export type ConfirmationOutcome = 'sent' | 'not_pending' | 'quota' | 'send_failed';
@@ -180,12 +187,15 @@ export async function sendContactConfirmation(
 	if (sent.success) return 'sent';
 
 	// Brevo a refusé : l'envoi ne compte pas dans le quota.
-	const { error: releaseError } = await service
+	const { data: released, error: releaseError } = await service
 		.from('parent_contacts')
 		.update({ confirm_sent_count: count })
 		.eq('id', contactId)
-		.eq('confirm_sent_count', count + 1);
-	if (releaseError) logger.error('[parent_contacts] quota non rendu', releaseError);
+		.eq('confirm_sent_count', count + 1)
+		.select('id');
+	if (releaseError || !released?.length) {
+		logger.error('[parent_contacts] quota non rendu', releaseError ?? 'aucune ligne');
+	}
 	return 'send_failed';
 }
 
@@ -209,6 +219,18 @@ export async function sendCarnetLink(
 	}
 	if (!contact || contact.status !== 'confirmed' || !contact.email) return 'not_confirmed';
 
+	// Carnet fermé (classe désactivée ou archivée, élève sorti) : un lien
+	// n'ouvrirait que « lien plus valide ». La fonction SQL ne regarde que la
+	// coupure du partage ; cette porte-ci regarde tout (B4).
+	const { data: shared, error: sharedError } = await service.rpc('carnet_student_is_shared', {
+		p_student_id: contact.student_id
+	});
+	if (sharedError) {
+		logger.error('[carnet_student_is_shared]', sharedError);
+		throw new Error('Carnet illisible');
+	}
+	if (shared !== true) return 'not_issued';
+
 	const token = generateCarnetToken();
 	const tokenHash = hashCarnetToken(token);
 	const { data: issued, error: issueError } = await service.rpc('issue_parent_carnet_link', {
@@ -220,7 +242,7 @@ export async function sendCarnetLink(
 		logger.error('[issue_parent_carnet_link]', issueError);
 		throw new Error('Lien du carnet impossible');
 	}
-	// Partage coupé (opt-out) : aucun lien.
+	// Partage coupé entre-temps (opt-out, revérifié sous verrou) : aucun lien.
 	if (issued !== true) return 'not_issued';
 
 	const sent = await sendCarnetLinkEmail(contact.email, {
@@ -235,12 +257,17 @@ export async function sendCarnetLink(
 	});
 	if (sent.success) return 'sent';
 
-	const { error: revokeError } = await service
+	// Sans cette révocation, un lien que personne ne connaît masquerait
+	// l'adresse dans le plan des liens manquants.
+	const { data: revoked, error: revokeError } = await service
 		.from('parent_carnet_links')
 		.update({ revoked_at: new Date().toISOString() })
 		.eq('token_hash', tokenHash)
-		.is('revoked_at', null);
-	if (revokeError) logger.error('[parent_carnet_links] lien non remis non révoqué', revokeError);
+		.is('revoked_at', null)
+		.select('id');
+	if (revokeError || !revoked?.length) {
+		logger.error('[parent_carnet_links] lien non remis non révoqué', revokeError ?? 'aucune ligne');
+	}
 	return 'send_failed';
 }
 
@@ -301,12 +328,13 @@ export async function addParentContact(
 	const findExisting = () =>
 		service
 			.from('parent_contacts')
-			.select('id, status')
+			.select('id, status, confirm_sent_count')
 			.eq('student_id', input.studentId)
 			.eq('email_hash', emailHash)
 			.maybeSingle();
 
 	let { data: existing, error } = await findExisting();
+	let isNew = false;
 	if (error) {
 		logger.error('[parent_contacts] recherche', error);
 		throw new Error('Adresses illisibles');
@@ -323,7 +351,7 @@ export async function addParentContact(
 				source: input.source,
 				created_by: input.createdBy
 			})
-			.select('id, status')
+			.select('id, status, confirm_sent_count')
 			.single();
 		if (insertError?.code === 'UBP01') return 'limit';
 		if (insertError?.code === '23505') {
@@ -338,8 +366,14 @@ export async function addParentContact(
 			throw new Error('Adresse non enregistrée');
 		} else {
 			existing = created;
+			isNew = true;
 		}
 	}
+
+	// L'élève ne relance pas une adresse déjà connue : chaque ressaisie
+	// consommerait une des 3 confirmations (A4), et la réponse lui dirait l'état
+	// d'une adresse de ses parents. Seul l'ajout d'une adresse NEUVE envoie.
+	if (input.source === 'student' && !isNew) return 'known';
 
 	switch (existing.status) {
 		case 'refused':
@@ -347,6 +381,9 @@ export async function addParentContact(
 		case 'confirmed':
 			return 'already_confirmed';
 		case 'invalid': {
+			// Quota épuisé : la remettre en attente lui ferait occuper une des deux
+			// places sans qu'aucun courriel puisse partir.
+			if (existing.confirm_sent_count >= MAX_CONFIRM_SENDS) return 'quota';
 			const { error: resetError } = await service
 				.from('parent_contacts')
 				.update({ status: 'pending' })
@@ -656,15 +693,8 @@ export async function resendLostLinks(
 		return;
 	}
 
+	// Carnet fermé : `sendCarnetLink` ne fait rien (« not_issued »).
 	for (const contact of data ?? []) {
-		const { data: shared, error: sharedError } = await service.rpc('carnet_student_is_shared', {
-			p_student_id: contact.student_id
-		});
-		if (sharedError) {
-			logger.error('[carnet_student_is_shared]', sharedError);
-			continue;
-		}
-		if (shared !== true) continue;
 		try {
 			await sendCarnetLink(contact.id, service);
 		} catch (err) {

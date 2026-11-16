@@ -46,7 +46,10 @@
 	// Functions
 
 	/** Chaque geste : bouton désactivé pendant l'envoi, message en toast. */
-	const submit: SubmitFunction = () => {
+	const submit: SubmitFunction = ({ formElement }) => {
+		// Seul le champ d'adresse se vide après succès : remettre à zéro le
+		// formulaire des réglages défairait les cases que la page vient d'écrire.
+		const clears = !!formElement.querySelector('input[name="email"]');
 		pending = true;
 		return async ({ result, update }) => {
 			pending = false;
@@ -59,7 +62,7 @@
 			} else if (result.type === 'error') {
 				toaster.error(result.error?.message ?? 'Une erreur est survenue.');
 			}
-			await update({ reset: result.type === 'success' });
+			await update({ reset: clears && result.type === 'success' });
 		};
 	};
 

@@ -48,14 +48,20 @@ const MAX_ADDS_PER_HOUR = 6;
 
 const addSchema = z.object({ email: z.string().max(320) });
 
-/** Ce que l'élève lit après son ajout : jamais l'état d'une adresse qu'il n'a pas saisie. */
+/**
+ * Ce que l'élève lit après son ajout. Une adresse déjà connue (confirmée,
+ * refusée, en attente, quota) reçoit la MÊME réponse neutre : la page ne doit
+ * pas lui dire l'état d'une adresse de ses parents.
+ */
+const NEUTRAL_MESSAGE =
+	'Cette adresse ne peut pas être ajoutée. Si ton parent ne reçoit rien, parles-en à ton professeur.';
 const ADD_MESSAGES: Record<AddContactOutcome, string> = {
 	sent: 'Un courriel de confirmation est parti. Le lien du carnet suivra quand ton parent aura confirmé.',
-	already_confirmed: 'Cette adresse reçoit déjà ton carnet.',
-	refused: 'Cette adresse ne peut plus être utilisée pour ton carnet.',
+	known: NEUTRAL_MESSAGE,
+	already_confirmed: NEUTRAL_MESSAGE,
+	refused: NEUTRAL_MESSAGE,
+	quota: NEUTRAL_MESSAGE,
 	limit: 'Deux parents reçoivent déjà ce carnet.',
-	quota:
-		'Trois courriels de confirmation sont déjà partis vers cette adresse. Demande à ton professeur.',
 	send_failed: "Le courriel n'a pas pu partir. Réessaie plus tard."
 };
 
