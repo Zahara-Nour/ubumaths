@@ -1,6 +1,6 @@
 /**
- * Adresses envoyées à l'analytique de Vercel : le jeton d'un lien personnel
- * n'en sort jamais.
+ * Adresses envoyées à l'analytique de Vercel ou écrites au journal des
+ * erreurs : le jeton d'un lien personnel n'en sort jamais.
  *
  * Un lien du carnet de liaison (ADR 0040) donne, à qui le détient, le suivi
  * d'un élève mineur : son jeton est un secret. L'analytique reçoit
@@ -9,8 +9,8 @@
 
 // Constantes
 
-/** `/carnet/<jeton>` et `/carnet/confirmer/<jeton>`, avec ou sans suite. */
-const SECRET_PATH = /\/carnet\/(confirmer\/)?[^/?#]+/;
+/** `/carnet/<jeton>` et `/carnet/confirmer/<jeton>` ; jeton en base64url. */
+const SECRET_PATH = /\/carnet\/(confirmer\/)?[A-Za-z0-9_-]+/g;
 
 // Functions
 

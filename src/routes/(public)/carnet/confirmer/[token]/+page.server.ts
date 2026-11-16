@@ -52,7 +52,7 @@ export const actions: Actions = {
 		const result = token ? await confirmParentContact(token) : null;
 		if (!result) return fail(410, { outcome: 'invalid' as const });
 		if (result.carnetToken) throw redirect(303, `/carnet/${result.carnetToken}?bienvenue`);
-		// Adresse confirmée, partage coupé : aucun lien à montrer.
+		// Adresse confirmée sans lien (partage coupé, émission en échec).
 		return { outcome: 'confirmed' as const };
 	},
 

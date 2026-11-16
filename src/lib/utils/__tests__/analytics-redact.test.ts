@@ -19,6 +19,12 @@ describe('redactSecretUrl', () => {
 		);
 	});
 
+	it('masque chaque jeton d’un texte qui en cite plusieurs', () => {
+		expect(redactSecretUrl(`de /carnet/${JETON} vers /carnet/confirmer/${JETON}.`)).toBe(
+			'de /carnet/[token] vers /carnet/confirmer/[token].'
+		);
+	});
+
 	it('laisse les autres adresses intactes', () => {
 		expect(redactSecretUrl('https://chiph.re/parents')).toBe('https://chiph.re/parents');
 		expect(redactSecretUrl('https://chiph.re/dashboard/student/carnet')).toBe(

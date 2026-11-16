@@ -29,6 +29,8 @@
 <svelte:head>
 	<title>Carnet de liaison — {name}</title>
 	<meta name="robots" content="noindex, nofollow" />
+	<!-- Le jeton est dans l'adresse : aucun Referer, même vers le site lui-même -->
+	<meta name="referrer" content="no-referrer" />
 </svelte:head>
 
 <div class="mx-auto w-full max-w-2xl space-y-6 p-4">

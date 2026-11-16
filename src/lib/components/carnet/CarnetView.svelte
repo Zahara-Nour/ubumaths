@@ -4,6 +4,9 @@
 	nombre exact ni les jours, Q25), révisions en retard, évaluations faites ou
 	non (JAMAIS la note), liens du cahier et du cours de la classe.
 
+	Liens de la classe en `noreferrer` : la page du carnet a le jeton dans son
+	adresse, et une navigation vers le même site envoie l'adresse complète.
+
 	Ton neutre (B2) : pas de rouge, pas d'alarme. Le carnet arrive déjà filtré
 	par le serveur (`$lib/validation/carnet`) ; ne rien y ajouter ici.
 -->
@@ -225,9 +228,13 @@
 					{#each links as link (`${link.kind}-${link.token}`)}
 						<li>
 							{#if link.kind === 'cahier'}
-								<a href={resolve(`/cahier/${link.token}`)} class="link">{link.label}</a>
+								<a href={resolve(`/cahier/${link.token}`)} rel="noreferrer" class="link"
+									>{link.label}</a
+								>
 							{:else}
-								<a href={resolve(`/cours/${link.token}`)} class="link">{link.label}</a>
+								<a href={resolve(`/cours/${link.token}`)} rel="noreferrer" class="link"
+									>{link.label}</a
+								>
 							{/if}
 						</li>
 					{/each}

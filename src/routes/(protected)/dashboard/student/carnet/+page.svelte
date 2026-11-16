@@ -12,8 +12,6 @@
 	import { Eye, Mail } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
-	let { data }: { data: PageData } = $props();
-
 	// Constantes
 
 	const KIND_LABELS: Record<string, string> = {
@@ -34,6 +32,10 @@
 		year: 'numeric',
 		timeZone: 'Europe/Paris'
 	});
+
+	// Variables
+
+	let { data }: { data: PageData } = $props();
 
 	// Functions
 
@@ -72,9 +74,7 @@
 				{:else if data.carnet.parents === 0}
 					Aucun parent ne reçoit encore ton carnet.
 				{:else}
-					Tes parents voient cette page{data.carnet.parents > 1
-						? ` (${data.carnet.parents} adresses)`
-						: ''}. Ils ne voient ni tes notes, ni tes messages.
+					Tes parents voient cette page. Ils ne voient ni tes notes, ni tes messages.
 				{/if}
 			</p>
 		</div>
@@ -93,7 +93,7 @@
 					<p class="text-sm text-muted-foreground">Aucun courriel envoyé.</p>
 				{:else}
 					<ul class="divide-y divide-border">
-						{#each data.notifications as n, i (i)}
+						{#each data.notifications as n (`${n.created_at}-${n.kind}`)}
 							<li class="flex flex-wrap justify-between gap-x-3 py-2 text-sm">
 								<span>{notificationLabel(n.kind, n.reasons)}</span>
 								<span class="text-muted-foreground">

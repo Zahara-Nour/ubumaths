@@ -41,9 +41,9 @@ async function setEmails(event: RequestEvent, stopped: boolean) {
 }
 
 export const load: PageServerLoad = async (event) => {
-	// Le suivi d'un élève : ni moteur de recherche, ni cache partagé. Le jeton
-	// ne part pas en Referer vers un autre site : `strict-origin-when-cross-origin`
-	// (hooks.server.ts) n'envoie que l'origine.
+	// Le suivi d'un élève : ni moteur de recherche, ni cache partagé. Referer :
+	// `<meta name="referrer" content="no-referrer">` dans la page (l'en-tête est
+	// posé pour tout le site par hooks.server.ts).
 	event.setHeaders({
 		'X-Robots-Tag': 'noindex, nofollow',
 		'Cache-Control': 'private, no-store'
@@ -53,7 +53,8 @@ export const load: PageServerLoad = async (event) => {
 	const carnet = await readCarnetByToken(token);
 	if (!carnet) throw error(404, INVALID_CARNET_LINK);
 
-	return { carnet, token };
+	// Le jeton ne redescend pas : la page n'en a pas besoin (moins de copies).
+	return { carnet };
 };
 
 export const actions: Actions = {

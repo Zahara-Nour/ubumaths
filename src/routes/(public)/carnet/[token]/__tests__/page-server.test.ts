@@ -91,7 +91,7 @@ describe('load', () => {
 		readCarnet.mockResolvedValue(CARNET);
 		const { ev, headers } = evenement<LoadEvent>(JETON);
 		const data = await load(ev);
-		expect(data).toEqual({ carnet: CARNET, token: JETON });
+		expect(data).toEqual({ carnet: CARNET });
 		expect(rateLimit).toHaveBeenCalledWith(expect.stringContaining('198.51.100.7'), 30, 60_000);
 		expect(rateLimit.mock.invocationCallOrder[0]).toBeLessThan(
 			readCarnet.mock.invocationCallOrder[0]

@@ -65,6 +65,21 @@ describe('logError — journal des erreurs', () => {
 		expect(serialized).toContain('[email]@[domain]');
 	});
 
+	it('masque le jeton du carnet de liaison dans l’URL et le message (ADR 0040)', async () => {
+		const jeton = 'AbCdEfGhJkMnPqRsTuVwXyZ0123456789_-abcdefg';
+		await logError(unusedClient, {
+			error_type: 'client_js',
+			severity: 'error',
+			message: `Échec de https://chiph.re/carnet/confirmer/${jeton}?/confirm`,
+			url: `https://chiph.re/carnet/${jeton}?bienvenue`
+		});
+
+		const ligne = JSON.stringify(insertedRow());
+		expect(ligne).not.toContain(jeton);
+		expect(insertedRow().url).toBe('https://chiph.re/carnet/[token]?bienvenue');
+		expect(insertedRow().message).toContain('/carnet/confirmer/[token]?/confirm');
+	});
+
 	it('masque une adresse courriel dans l’URL', async () => {
 		await logError(unusedClient, {
 			error_type: 'client_js',

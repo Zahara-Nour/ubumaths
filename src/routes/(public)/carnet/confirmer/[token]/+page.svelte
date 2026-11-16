@@ -32,6 +32,8 @@
 <svelte:head>
 	<title>Carnet de liaison — confirmer votre adresse</title>
 	<meta name="robots" content="noindex, nofollow" />
+	<!-- Le jeton est dans l'adresse : aucun Referer, même vers le site lui-même -->
+	<meta name="referrer" content="no-referrer" />
 </svelte:head>
 
 <div class="mx-auto w-full max-w-xl p-4">
@@ -47,8 +49,8 @@
 				</p>
 			{:else if form?.outcome === 'confirmed'}
 				<p role="status">
-					Votre adresse est confirmée. Le carnet n'est pas partagé pour le moment ; vous recevrez un
-					lien s'il l'est.
+					Votre adresse est confirmée. Le lien du carnet n'a pas pu être créé maintenant : le
+					professeur vous l'enverra.
 				</p>
 			{:else if form?.outcome === 'invalid'}
 				<p role="alert">

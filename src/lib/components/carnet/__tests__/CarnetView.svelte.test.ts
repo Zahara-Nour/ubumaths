@@ -47,14 +47,43 @@ describe('CarnetView', () => {
 		await expect.element(screen.getByText('3 révisions en retard.')).toBeVisible();
 	});
 
-	it('évaluations : à venir et passées, faites ou non', async () => {
-		const screen = await render(CarnetView, { carnet: carnet() });
-		const texte = document.body.textContent ?? '';
-		await expect.element(screen.getByRole('heading', { name: 'À venir' })).toBeVisible();
-		await expect.element(screen.getByRole('heading', { name: 'Passées' })).toBeVisible();
-		expect(texte).toMatch(/Puissances[\s\S]*à faire/);
-		expect(texte).toMatch(/Fractions[\s\S]*faite/);
-		expect(texte).toMatch(/Équations[\s\S]*non faite/);
+	it('évaluations : chacune dans sa section, faite ou non sur SA ligne', async () => {
+		await render(CarnetView, {
+			carnet: carnet({
+				evaluations: [
+					{ title: 'Fractions', deadline: '2020-01-10T22:00:00+00:00', done: true },
+					{ title: 'Équations', deadline: '2020-01-12T22:00:00+00:00', done: false },
+					{ title: 'Puissances', deadline: '2099-01-12T22:00:00+00:00', done: false },
+					{ title: 'Calcul mental', deadline: '2099-01-14T22:00:00+00:00', done: true },
+					// Sans échéance : à venir tant qu'elle n'est pas faite
+					{ title: 'Sans date à faire', deadline: null, done: false },
+					{ title: 'Sans date faite', deadline: null, done: true }
+				]
+			})
+		});
+
+		/** Statut affiché sur la ligne de chaque évaluation d'une section */
+		function lignes(section: string): Record<string, string> {
+			const lis = document.querySelectorAll(`section[aria-labelledby="${section}"] li`);
+			return Object.fromEntries(
+				Array.from(lis).map((li) => {
+					const spans = li.querySelectorAll(':scope > span');
+					const titre = spans[0]?.firstChild?.textContent?.trim() ?? '';
+					return [titre, spans[1]?.textContent?.trim() ?? ''];
+				})
+			);
+		}
+
+		expect(lignes('carnet-eval-a-venir')).toEqual({
+			Puissances: 'à faire',
+			'Calcul mental': 'faite',
+			'Sans date à faire': 'à faire'
+		});
+		expect(lignes('carnet-eval-passees')).toEqual({
+			Fractions: 'faite',
+			Équations: 'non faite',
+			'Sans date faite': 'faite'
+		});
 	});
 
 	it('aucune note, même si un champ en portait une', async () => {

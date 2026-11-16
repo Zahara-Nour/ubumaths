@@ -188,6 +188,18 @@ describe('confirmParentContact', () => {
 	});
 });
 
+describe('confirmParentContact — émission en échec', () => {
+	it('adresse confirmée mais lien non émis (erreur) → confirmée sans lien, pas une 500', async () => {
+		rpc
+			.mockResolvedValueOnce({
+				data: { contact_id: '22222222-2222-4222-8222-222222222222', student_id: 's' },
+				error: null
+			})
+			.mockResolvedValueOnce({ data: null, error: { message: 'boom' } });
+		expect(await confirmParentContact(JETON)).toEqual({ carnetToken: null });
+	});
+});
+
 describe('refuseParentContact et setParentEmailsStopped', () => {
 	it('jeton mal formé → false, sans appeler la base', async () => {
 		expect(await refuseParentContact('x')).toBe(false);

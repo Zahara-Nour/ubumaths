@@ -98,7 +98,7 @@ export async function readMyCarnet(supabase: SB): Promise<StudentCarnet | null> 
 /**
  * Confirmer une adresse (A2) puis émettre son lien. Rend le jeton du carnet EN
  * CLAIR — la seule fois qu'il existe hors du courriel — ou `carnetToken: null`
- * si le partage est coupé (adresse confirmée, aucun lien). `null` = confirmation
+ * si le partage est coupé ou si l'émission échoue (adresse confirmée, aucun lien). `null` = confirmation
  * refusée (déjà utilisée, échue, inconnue).
  */
 export async function confirmParentContact(
@@ -122,8 +122,11 @@ export async function confirmParentContact(
 		p_expires_at: endOfSchoolYear().toISOString()
 	});
 	if (issueError) {
+		// L'adresse est DÉJÀ confirmée (le jeton de confirmation est consommé) :
+		// une 500 laisserait le parent devant « lien déjà utilisé » au second
+		// essai. On dit « confirmée » ; le professeur enverra un nouveau lien (D2).
 		logger.error('[issue_parent_carnet_link]', issueError);
-		throw new Error('Lien du carnet indisponible');
+		return { carnetToken: null };
 	}
 	return { carnetToken: issued === true ? carnetToken : null };
 }
