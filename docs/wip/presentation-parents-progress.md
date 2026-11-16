@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 
-- **État** : phase 0, revue de `/parents` point par point (9 points, ci-dessous). Points 1 à 6 tranchés ; FAQ décidée.
-- **Prochaine action** : point 7 (jeux et gidouilles) : page ou FAQ, puis le texte.
-- **En attente de David** : point 7.
+- **État** : phase 0, revue de `/parents` point par point (9 points, ci-dessous). Points 1 à 7 tranchés ; FAQ décidée.
+- **Prochaine action** : point 8 (Comment le suivre ?).
+- **En attente de David** : point 8.
 - **Pièges en cours** : ne promettre que ce que prouve `docs/systeme/carte-des-fonctionnalites.md` ; argent : jamais « gratuit » seul ni « pour toujours ».
 - **Worktree / branche** : aucun encore (doc sur `main`) ; le code ira dans `views.ts` (`PARENT_VIEW`).
 
@@ -38,6 +38,8 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
   > Quand il se trompe, la correction lui montre d'abord l'essentiel, puis le détail s'il le demande. Un mot de l'énoncé lui échappe ? Un clic, et sa définition s'affiche, à son niveau. S'il bloque, Père Ubu, le tuteur, l'aide à trouver sans lui donner la réponse. Et une question réussie revient juste avant qu'il l'oublie, jamais tout à fait la même.
   > → Voir Chiphre en action (`/demo`)
 - **Point 6, démo « La forme compte »** : **retirée de la page parent** (« ça ne sert à rien » pour un parent) ; elle reste sur `/professeurs`.
+- **Point 7** : FAQ (texte validé ci-dessous). **Les gidouilles ne s'achèteront jamais avec de l'argent réel** (décision durable, vaut aussi pour l'offre payante à venir). Préciser que les jeux sont de nature mathématique ou logique.
+- **Futur chantier** (hors de celui-ci) : une **limite de temps ou d'utilisation des jeux**, pour que les élèves n'y restent pas trop longtemps ; aucune n'existe aujourd'hui, donc rien à promettre sur la page.
 
 ## Les 9 questions du parent
 
@@ -47,7 +49,7 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 4. Et l'IA ? — ✅ FAQ (+ une phrase au point 6).
 5. Ses données ? — ✅ FAQ (sauf « Sans publicité »).
 6. Est-ce que ça l'aide vraiment ? — ✅ page (paragraphe), démo forme retirée.
-7. Les jeux et les gidouilles ne vont-ils pas le distraire ? (bloc absent)
+7. Les jeux et les gidouilles ne vont-ils pas le distraire ? — ✅ FAQ.
 8. Comment le suivre ? (lien du cours public absent)
 9. Comment l'inscrire, combien ça coûte ? (`/auth/register/parent` absent de la page)
 
@@ -75,6 +77,12 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 > → Vos données personnelles (`/legal/confidentialite`)
 
 - Preuves : `PARENT_FACTS` (`src/lib/kingdom-tour/tour.ts`), carte des fonctionnalités § Points forts ; consentement : `docs/systeme/conformite/consentement-parental.md` (tout niveau sauf 1re/Tle, lien `/consent/[token]`).
+
+### Les jeux ne vont-ils pas le distraire ? (✅ validé)
+
+> Les jeux du Royaume sont de nature mathématique ou logique. Avec ses révisions du jour, ils lui rapportent des gidouilles, la monnaie du Royaume, qu'il dépense en petits privilèges que son professeur lui accorde en classe, ou pour décorer son personnage. Les gidouilles ne s'achètent pas avec de l'argent réel.
+
+- Preuves : `docs/systeme/jeux-et-economie.md` (jeux, énigmes, révision du jour, cartes VIP, gestes du prof).
 
 ## Étude Mistral (premier relevé, 2026-11-16)
 
