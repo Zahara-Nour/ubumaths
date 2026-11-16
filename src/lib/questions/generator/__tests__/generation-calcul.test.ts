@@ -210,7 +210,12 @@ describe('évaluation notée : l’énoncé envoyé ne dit pas le programme', ()
 		expect(body).not.toContain('× 4');
 		const node = parseCalculContent(body);
 		expect(node.errors).toEqual([]);
-		expect(node.spec).toEqual({ attendu: null, essais: [1, 3], depart: 'afficher nombre' });
+		expect(node.spec).toEqual({
+			attendu: null,
+			essais: [1, 3],
+			depart: 'afficher nombre',
+			niveau: '5e'
+		});
 		expect(node.caseIndex).toBe(0);
 	});
 

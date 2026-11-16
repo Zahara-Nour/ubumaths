@@ -68,6 +68,8 @@
 	let lu = $derived(expected !== undefined ? readExpectedCalculAnswer(expected) : null);
 	let reference = $derived(lu?.attendu ?? spec?.attendu ?? null);
 	let essais = $derived(lu?.essais ?? spec?.essais ?? []);
+	/** Blocs admis : ceux du niveau de la question (5e sans `niveau:`) */
+	let niveau = $derived(lu?.niveau ?? spec?.niveau ?? '5e');
 
 	/**
 	 * Pourquoi le programme de l'élève est faux sans que le tableau le montre : il s'arrête
@@ -76,10 +78,10 @@
 	let messageEleve = $derived.by((): string | null => {
 		if (answer === null) return null;
 		if (reference !== null) {
-			const message = jugerProgrammeCalcul(answer, reference, essais).message;
+			const message = jugerProgrammeCalcul(answer, reference, essais, niveau).message;
 			if (message !== undefined) return message;
 		}
-		const sorties = lireProgrammeCalcul(answer, essais);
+		const sorties = lireProgrammeCalcul(answer, essais, niveau);
 		if (!sorties.ok) return sorties.message;
 		return sorties.sorties.every((s) => s.length === 0) ? RIEN_AFFICHE : null;
 	});
@@ -108,7 +110,7 @@
 		const etat = texteVersEtatCalcul(texte);
 		if (!etat.ok) return null;
 		return essais.map((nombre) => {
-			const resultat = executerCalcul(etat.etat, nombre);
+			const resultat = executerCalcul(etat.etat, nombre, niveau);
 			return resultat.ok ? resultat.affichages : null;
 		});
 	}

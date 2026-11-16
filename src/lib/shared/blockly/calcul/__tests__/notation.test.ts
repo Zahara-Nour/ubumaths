@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { executerCalcul } from '../interpreteur';
-import { etatVersTexteCalcul, texteVersEtatCalcul } from '../notation';
+import { etatVersTexteCalcul, messageNiveau, texteVersEtatCalcul } from '../notation';
 import { LONGUEUR_MAX_PROGRAMME } from '../../tortue/notation';
 
 // =============================================================================
@@ -82,13 +82,17 @@ describe('texteVersEtatCalcul', () => {
 		expect(message('afficher (nombre + 2')).toMatch(/parenthèse/i);
 		expect(message('afficher nombre + 2)')).toMatch(/parenthèse/i);
 		expect(message('afficher -(nombre)')).toMatch(/−/);
-		expect(message('x = 3')).toMatch(/inconnue/i);
 		expect(message('avancer 3')).toMatch(/inconnue/i);
-		expect(message('répéter 2,5 [ afficher 1 ]')).toMatch(/entier/);
 		expect(message('répéter 2 afficher 1')).toMatch(/crochets/);
 		expect(message('répéter 2 [ afficher 1')).toMatch(/refermé/);
 		expect(message('afficher 1 ]')).toMatch(/\]/);
 		expect(message('afficher 2 3')).toMatch(/2 3|calcul/i);
+	});
+
+	it('variable, répétition à nombre de tours non entier : lus, mais des blocs de 4e', () => {
+		expect(messageNiveau('x = 3', '5e')).toMatch(/« mettre … à » est un bloc de 4e/);
+		expect(messageNiveau('répéter 2,5 [ afficher 1 ]', '5e')).toMatch(/répéter.*bloc de 4e/);
+		expect(messageNiveau('afficher nombr + 2', '5e')).toMatch(/« nombr » est une variable/);
 	});
 
 	it('nombre trop grand pour être lu : refusé, jamais lu 0 (revue PR 5a)', () => {

@@ -35,8 +35,8 @@ export interface BlocsConnus {
 /** Imbrication maximale (entrées dans des entrées) : protège la pile d'appels. */
 const IMBRICATION_MAX = 1_000;
 
-/** Entrées qui portent des instructions (le corps d'une répétition) ; les autres, des valeurs. */
-const ENTREES_INSTRUCTIONS: ReadonlySet<string> = new Set(['DO']);
+/** Entrées qui portent des instructions (corps d'une répétition, branches d'un « si ») ; les autres, des valeurs. */
+const ENTREES_INSTRUCTIONS: ReadonlySet<string> = new Set(['DO', 'ALORS', 'SINON']);
 
 // =============================================================================
 // Fonctions

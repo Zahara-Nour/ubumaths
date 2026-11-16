@@ -16,6 +16,7 @@
  */
 
 import type { BaseNode } from './ast';
+import type { NiveauCalcul } from '$lib/shared/blockly/calcul/interpreteur';
 
 // ============================================================================
 // VALEURS
@@ -38,6 +39,11 @@ export interface CalculSpec {
 	essais: number[];
 	/** Programme de départ, posé dans l'espace de travail de l'élève (`départ:`) ; null sinon */
 	depart: string | null;
+	/**
+	 * Blocs proposés et admis (`niveau:`, 5e par défaut) : 4e ajoute variables, « si »,
+	 * comparaisons, reste, répétition calculée ; 3e ajoute et / ou / non, « répéter jusqu'à »
+	 */
+	niveau: NiveauCalcul;
 }
 
 /** Message situé, à destination de l'AUTEUR (jamais montré à l'élève) */

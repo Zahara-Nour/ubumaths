@@ -13,7 +13,12 @@
  * Sans dépendance à Blockly : s'exécute aussi sous Node (correction).
  */
 
-import { executerCalcul, messageErreurCalcul } from './interpreteur';
+import {
+	egauxCalcul,
+	executerCalcul,
+	messageErreurCalcul,
+	type NiveauCalcul
+} from './interpreteur';
 import { ecrireNombreCalcul, texteVersEtatCalcul } from './notation';
 
 // =============================================================================
@@ -39,15 +44,6 @@ export const ESSAIS_PAR_DEFAUT: readonly number[] = [-3, 0, 1, 2, 5, 10, 0.5];
 /** Essais au plus dans un bloc (chaque essai rejoue deux programmes). */
 export const ESSAIS_MAX = 20;
 
-/** Marge relative de l'égalité : 0,1 + 0,2 = 0,3, mais 0,3001 ≠ 0,3. */
-const MARGE = 1e-9;
-
-/**
- * Marge absolue, pour comparer à 0 : 0,1 + 0,2 − 0,3 (≈ 5e-17) vaut 0, mais 0,00000000001
- * ne vaut pas 0 (une marge relative bornée par 1 l'acceptait, revue PR 5a).
- */
-const MARGE_ZERO = 1e-12;
-
 export const RIEN_AFFICHE = 'Ton programme n’affiche rien.';
 
 export const PROGRAMME_CONSTANT =
@@ -57,23 +53,25 @@ export const PROGRAMME_CONSTANT =
 // Fonctions
 // =============================================================================
 
-function egaux(a: number, b: number): boolean {
-	const ecart = Math.abs(a - b);
-	return ecart <= MARGE_ZERO || ecart <= MARGE * Math.max(Math.abs(a), Math.abs(b));
-}
-
-/** Mêmes nombres affichés, dans le même ordre, à la marge près. */
+/** Mêmes nombres affichés, dans le même ordre, à la marge près (`egauxCalcul`). */
 export function memesAffichages(a: readonly number[], b: readonly number[]): boolean {
-	return a.length === b.length && a.every((x, i) => egaux(x, b[i]));
+	return a.length === b.length && a.every((x, i) => egauxCalcul(x, b[i]));
 }
 
-/** Lit un programme écrit et l'exécute sur chaque essai ; rend ses affichages, ou l'erreur. */
-export function lireProgrammeCalcul(texte: string, essais: readonly number[]): ProgrammeCalculLu {
+/**
+ * Lit un programme écrit et l'exécute sur chaque essai, avec les blocs du niveau (5e par
+ * défaut) ; rend ses affichages, ou l'erreur.
+ */
+export function lireProgrammeCalcul(
+	texte: string,
+	essais: readonly number[],
+	niveau: NiveauCalcul = '5e'
+): ProgrammeCalculLu {
 	const lu = texteVersEtatCalcul(texte);
 	if (!lu.ok) return lu;
 	const sorties: number[][] = [];
 	for (const essai of essais) {
-		const resultat = executerCalcul(lu.etat, essai);
+		const resultat = executerCalcul(lu.etat, essai, niveau);
 		if (!resultat.ok) {
 			return {
 				ok: false,
@@ -93,37 +91,41 @@ export function lireProgrammeCalcul(texte: string, essais: readonly number[]): P
  * Témoins fixes et connus : un polynôme construit pour s'annuler sur chacun tromperait la mesure
  * (cas d'école, pas d'élève).
  */
-export function dependDuNombre(texte: string): boolean | null {
+export function dependDuNombre(texte: string, niveau: NiveauCalcul = '5e'): boolean | null {
 	const lu = texteVersEtatCalcul(texte);
 	if (!lu.ok) return null;
 	const sorties: number[][] = [];
 	for (const temoin of ESSAIS_PAR_DEFAUT) {
-		const resultat = executerCalcul(lu.etat, temoin);
+		const resultat = executerCalcul(lu.etat, temoin, niveau);
 		if (resultat.ok) sorties.push(resultat.affichages);
 	}
 	if (sorties.length < 2) return null;
 	return sorties.some((s) => !memesAffichages(s, sorties[0]));
 }
 
-/** Juge le programme de l'élève contre le programme attendu. Ne lève jamais. */
+/**
+ * Juge le programme de l'élève contre le programme attendu, avec les blocs du niveau de la
+ * question (5e par défaut : un bloc au-dessus est refusé). Ne lève jamais.
+ */
 export function jugerProgrammeCalcul(
 	reponse: string,
 	attendu: string,
-	essais: readonly number[]
+	essais: readonly number[],
+	niveau: NiveauCalcul = '5e'
 ): VerdictCalcul {
 	if (reponse.trim() === '' || essais.length === 0) return { juste: false };
 	// Un attendu qui ne marche pas, ou n'affiche rien, est refusé à la publication ; ici,
 	// jamais juste
-	const reference = lireProgrammeCalcul(attendu, essais);
+	const reference = lireProgrammeCalcul(attendu, essais, niveau);
 	if (!reference.ok || reference.sorties.some((s) => s.length === 0)) return { juste: false };
-	const eleve = lireProgrammeCalcul(reponse, essais);
+	const eleve = lireProgrammeCalcul(reponse, essais, niveau);
 	if (!eleve.ok) return { juste: false, message: eleve.message };
 	if (eleve.sorties.every((s) => s.length === 0)) return { juste: false, message: RIEN_AFFICHE };
 	if (!eleve.sorties.every((s, i) => memesAffichages(s, reference.sorties[i]))) {
 		return { juste: false };
 	}
 	// Mêmes affichages sur les essais : encore faut-il dépendre du nombre si l'attendu en dépend
-	if (dependDuNombre(attendu) === true && dependDuNombre(reponse) === false) {
+	if (dependDuNombre(attendu, niveau) === true && dependDuNombre(reponse, niveau) === false) {
 		return { juste: false, message: PROGRAMME_CONSTANT };
 	}
 	return { juste: true };

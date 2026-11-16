@@ -6,6 +6,7 @@
  * attendu: afficher (nombre + 2) × 4
  * essais: -3 ; 0 ; 2,5
  * départ: afficher nombre
+ * niveau: 4e
  * ```
  *
  * - `attendu:` (obligatoire) : le programme de référence, en notation texte
@@ -14,6 +15,9 @@
  * - `essais:` (défaut −3 ; 0 ; 1 ; 2 ; 5 ; 10 ; 0,5) : les nombres sur lesquels les deux
  *   programmes sont rejoués.
  * - `départ:` : un programme posé d'avance dans l'espace de travail de l'élève, à modifier.
+ * - `niveau:` (5e, 4e, 3e ; défaut 5e) : les blocs proposés et admis. `attendu:` et `départ:`
+ *   doivent tenir dans le niveau ; chaque « si » de la référence doit être vrai et faux au moins
+ *   une fois sur les essais (sinon l'élève qui oublie une branche serait jugé juste).
  * - `case: N` : posée par le générateur.
  *
  * Tout bloc ```calcul est une question : il porte toujours sa case.
@@ -25,11 +29,21 @@ import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
 import { isMaskedValue } from '../utils/masked-value';
 import {
+	branchesNonParcourues,
+	NIVEAUX_CALCUL,
+	type NiveauCalcul
+} from '$lib/shared/blockly/calcul/interpreteur';
+import {
 	ESSAIS_PAR_DEFAUT,
 	lireEssais,
 	lireProgrammeCalcul
 } from '$lib/shared/blockly/calcul/jugement';
-import { ecrireNombreCalcul, texteVersEtatCalcul } from '$lib/shared/blockly/calcul/notation';
+import {
+	conditionsDuProgramme,
+	ecrireNombreCalcul,
+	messageNiveau,
+	texteVersEtatCalcul
+} from '$lib/shared/blockly/calcul/notation';
 import type { CalculBlockRange, CalculIssue, CalculNode } from '../types/calcul';
 
 // ============================================================================
@@ -42,9 +56,9 @@ const BLOCK_END_REGEX = /^```\s*$/;
 /** `clé: valeur` */
 const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 
-type Key = 'attendu' | 'essais' | 'départ' | 'case';
+type Key = 'attendu' | 'essais' | 'départ' | 'niveau' | 'case';
 
-const KEY_NAMES: Key[] = ['attendu', 'essais', 'départ', 'case'];
+const KEY_NAMES: Key[] = ['attendu', 'essais', 'départ', 'niveau', 'case'];
 
 /** Les clés du bloc, `depart` sans accent compris : une ligne qui commence par l'une d'elles
  * n'est jamais du texte (Q66) */
@@ -148,6 +162,8 @@ export function parseCalculContent(source: string): CalculNode {
 	let essais: number[] = [...ESSAIS_PAR_DEFAUT];
 	let essaisLus = true;
 	let depart: string | null = null;
+	let niveau: NiveauCalcul = '5e';
+	let niveauLu = true;
 	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
 
@@ -166,7 +182,10 @@ export function parseCalculContent(source: string): CalculNode {
 		const key = normalizeKey(match[1]);
 		const value = match[2].trim();
 		if (key === null) {
-			fail(lineNo, `clé « ${match[1]} » inconnue (clés possibles : attendu, essais, départ)`);
+			fail(
+				lineNo,
+				`clé « ${match[1]} » inconnue (clés possibles : attendu, essais, départ, niveau)`
+			);
 			return;
 		}
 		const previous = seen.get(key);
@@ -205,6 +224,15 @@ export function parseCalculContent(source: string): CalculNode {
 					depart = value === '' ? null : value;
 					break;
 				}
+				case 'niveau': {
+					const lu = NIVEAUX_CALCUL.find((n) => n === value.toLowerCase());
+					if (lu === undefined) {
+						niveauLu = false;
+						throw new LineError(`niveau: « ${value} » : 5e, 4e ou 3e`);
+					}
+					niveau = lu;
+					break;
+				}
 				case 'case':
 					if (!/^\d+$/.test(value))
 						throw new LineError(`case « ${value} » : numéro de case entier`);
@@ -220,11 +248,21 @@ export function parseCalculContent(source: string): CalculNode {
 	if (!seen.has('attendu')) {
 		fail(1, `il manque la ligne attendu: (le programme de référence, ex. ${EXEMPLE_ATTENDU})`);
 	}
+	// Référence et départ dans les blocs du niveau
+	const horsNiveau = (key: 'attendu' | 'départ', programme: string | null): boolean => {
+		if (programme === null || !niveauLu) return false;
+		const message = messageNiveau(programme, niveau);
+		if (message) fail(seen.get(key) ?? 1, `${key}: ${message}`);
+		return message !== null;
+	};
+	const attenduHorsNiveau = horsNiveau('attendu', attendu);
+	horsNiveau('départ', depart);
+
 	// La référence doit marcher et afficher quelque chose pour chaque essai : sinon aucun
 	// programme d'élève ne serait jugé juste
-	if (attendu !== null && essaisLus) {
+	if (attendu !== null && essaisLus && niveauLu && !attenduHorsNiveau) {
 		const ligne = seen.get('attendu') ?? 1;
-		const reference = lireProgrammeCalcul(attendu, essais);
+		const reference = lireProgrammeCalcul(attendu, essais, niveau);
 		if (!reference.ok) {
 			fail(ligne, `attendu: ${reference.message}`);
 		} else {
@@ -233,6 +271,16 @@ export function parseCalculContent(source: string): CalculNode {
 				fail(
 					ligne,
 					`attendu: ce programme n’affiche rien avec le nombre ${ecrireNombreCalcul(essais[muet])}`
+				);
+			}
+			// Chaque « si » vrai et faux au moins une fois sur les essais
+			const lu = texteVersEtatCalcul(attendu);
+			const defaut = lu.ok ? branchesNonParcourues(lu.etat, essais, niveau) : null;
+			if (defaut) {
+				const condition = conditionsDuProgramme(attendu)[defaut.index] ?? '…';
+				fail(
+					ligne,
+					`attendu: « si ${condition} » n’est jamais ${defaut.jamais} sur les essais : ajouter à essais: un nombre qui le rend ${defaut.jamais}`
 				);
 			}
 		}
@@ -244,7 +292,7 @@ export function parseCalculContent(source: string): CalculNode {
 	return {
 		type: 'calcul',
 		source,
-		spec: { attendu: attenduMasque ? null : attendu, essais, depart },
+		spec: { attendu: attenduMasque ? null : attendu, essais, depart, niveau },
 		errors,
 		...withCase
 	};

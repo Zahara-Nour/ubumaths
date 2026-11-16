@@ -25,7 +25,8 @@ describe('parseCalculContent', () => {
 		expect(node.spec).toEqual({
 			attendu: 'afficher (nombre + 2) × 4',
 			essais: [...ESSAIS_PAR_DEFAUT],
-			depart: null
+			depart: null,
+			niveau: '5e'
 		});
 	});
 
@@ -70,7 +71,12 @@ describe('parseCalculContent', () => {
 			['attendu: ?', 'essais: 1 ; 2', 'départ: afficher 0'].join('\n')
 		);
 		expect(node.errors).toEqual([]);
-		expect(node.spec).toEqual({ attendu: null, essais: [1, 2], depart: 'afficher 0' });
+		expect(node.spec).toEqual({
+			attendu: null,
+			essais: [1, 2],
+			depart: 'afficher 0',
+			niveau: '5e'
+		});
 	});
 
 	it('`attendu: ?` est une valeur masquée', () => {
@@ -85,7 +91,8 @@ describe('réponse attendue d’une case calcul', () => {
 		expect(attendue).toBe('−3 ; 0 ; 2,5 | afficher (nombre + 2) × 4');
 		expect(readExpectedCalculAnswer(attendue)).toEqual({
 			essais: [-3, 0, 2.5],
-			attendu: 'afficher (nombre + 2) × 4'
+			attendu: 'afficher (nombre + 2) × 4',
+			niveau: '5e'
 		});
 		expect(readExpectedCalculAnswer('afficher 1')).toBeNull();
 		expect(readExpectedCalculAnswer('deux | afficher 1')).toBeNull();

@@ -25,6 +25,8 @@ export type TexteLu = { ok: true; texte: string } | { ok: false; message: string
 /** État sérialisé d'un espace de travail Blockly, tel que `executerTortue` le lit. */
 export interface EtatProgramme {
 	blocks: { languageVersion: 0; blocks: Record<string, unknown>[] };
+	/** Variables déclarées (programmes de calcul de 4e / 3e), comme les sauve Blockly. */
+	variables?: { name: string; id: string }[];
 }
 
 export type EtatLu = { ok: true; etat: EtatProgramme } | { ok: false; message: string };
