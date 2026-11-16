@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR 2 en cours._
+_Mis à jour le 2026-11-16, après #2724._
 
-- **État** : PR 1 mergée (#2718) et appliquée en prod. PR 2 (page du carnet, confirmation, vue élève) codée et testée sur la branche, PR à ouvrir puis revues `code-reviewer` + `security-auditor`.
-- **Prochaine action** : PR 2 — revues, CI, merge. Puis PR 3 (professeur + envois Brevo).
-- **En attente de David** : Q26 (confirmation : afficher le carnet ou l'envoyer par courriel), Q27 (évaluation sans échéance ancienne), non bloquantes pour la PR 2.
-- **Pièges en cours** : données d'élèves mineurs ; jeton masqué dans `error_logs` et l'analytique (`redactSecretUrl`) ; fonctions à lien = `service_role` seul (module `src/lib/server/carnet/`, limite de débit par IP) ; jeton = 32 octets base64url (43 car.), stocké haché ; la confirmation émet le lien et y redirige — **la PR 3 doit envoyer CE jeton par courriel** (en émettre un second révoquerait le premier) ; unicité (élève, empreinte) → traiter `23505` (PR 3) ; revue `code-reviewer` + `security-auditor` à chaque PR.
-- **Ensuite** : PR 3 (professeur + envois, en-tête `List-Unsubscribe-Post` pour l'arrêt en un clic), PR 4 (courriels d'exception, nouvelle migration : épisodes, effacement Q21), PR 5 (doc, point 8 de `presentation-parents`).
-- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-carnet`.
+- **État** : PR 1 (#2718, migration, en prod) et PR 2 (#2724 : page du carnet, confirmation, vue élève, doc `docs/systeme/carnet-de-liaison.md`) **mergées**. PR 2 pas encore déployée (`deploy:prod` = David). Rien d'autre de codé.
+- **Prochaine action** : PR 3 — nouveau worktree ; côté professeur (D1-D3 : activer le carnet par classe, seuils, adresses par élève, révoquer, couper le partage) + envoi des liens et des confirmations par Brevo (A1-A6).
+- **En attente de David** : **Q26** — à la confirmation, afficher le carnet (fait aujourd'hui) ou envoyer son lien par courriel (recommandé : un antivirus qui « clique » emporterait sinon le lien) ; **Q27** — garder dans le carnet une évaluation sans échéance non faite de plus de 5 semaines (recommandé, migration en PR 4). Détail : section « PR 2 ».
+- **Pièges en cours** : données d'élèves mineurs ; fonctions à lien = `service_role` seul, via `src/lib/server/carnet/` (limite de débit par IP) ; jeton 43 car. base64url, stocké haché, masqué dans `error_logs` et l'analytique (`redactSecretUrl`) ; la confirmation émet le lien : **la PR 3 envoie CE jeton par courriel** (un second révoquerait le premier) ; `23505` sur (élève, empreinte) à traiter ; en-tête `List-Unsubscribe-Post` pour l'arrêt en un clic ; revue `code-reviewer` + `security-auditor` à chaque PR.
+- **Ensuite** : PR 4 (courriels d'exception, épisodes, effacement Q21, Q27), PR 5 (versement de la doc, registre RGPD, point 8 de `presentation-parents`).
+- **Worktree / branche** : aucun (le prochain : `../ubumaths-wt-partage-parents`, `feat/partage-parents-pr3`).
 
 ## Origine
 
@@ -177,7 +177,8 @@ Question Q22 : le lien est-il stocké **haché** (comme un mot de passe) ? Cons�
 - `/dashboard/student/carnet` (C1-C3) + entrée « Carnet de liaison » dans le menu élève (toujours visible : Q3, l'élève sait ce que voient ses parents).
 - Analytique Vercel : `beforeSend` remplace `/carnet/<jeton>` par `/carnet/[token]` (`src/lib/utils/analytics-redact.ts`). Les jetons du cahier, du cours et du consentement partent encore en clair dans l'analytique — hors périmètre, à proposer à David.
 - Vérifié en local (port 5177, données fictives) : carnet 200, jeton inconnu ou mal formé 404, confirmation → carnet avec bandeau, arrêt des courriels. Vue élève non vue au navigateur (session de David sur `localhost`) ; couverte par les tests de rendu.
-- Tests : module 21, routes 19, rendu 10, analytique 4.
+- Tests : module 22, routes 19, rendu 10, analytique et journal 9. CI : deux gardes de dépôt rattrapées au 1er passage (pages publiques exclues du sitemap, `<h1>` de la confirmation).
+- **Mergée** le 2026-11-16 (#2724), CI verte.
 - Revues (2026-11-16) : `code-reviewer` (Sonnet) et `security-auditor` (Opus), **aucun finding bloquant**. Corrigés : le jeton partait en clair dans `error_logs` (adresse et message, client et serveur) → masqué au point d'écriture unique, `logError` (`redactSecretUrl`) ; Referer interne (ci-dessus) ; confirmation consommée puis émission en échec → « confirmée, le professeur vous enverra le lien » au lieu d'une 500 ; test des évaluations assertant ligne par ligne (mutation vérifiée rouge) ; jeton retiré de `data` ; ordre des blocs et clé d'itération de la page élève ; nombre d'adresses retiré de la phrase de l'élève.
 - Laissés : `now` figé au rendu du composant (un onglet resté ouvert classe une évaluation échue en « à venir » jusqu'au rechargement) ; bornes Zod (`evaluations.max(200)`) qui donneraient une 500 au-delà (la fenêtre SQL de 5 semaines borne déjà) ; journaux d'exécution Vercel qui gardent le chemin (inhérent au jeton dans l'URL, à noter au registre RGPD en PR 5).
 - **Questions pour David** (non bloquantes, PR 3) : **Q26** — un antivirus de messagerie qui exécute un vrai navigateur peut cliquer « Confirmer » : il reçoit alors le lien du carnet, et le vrai parent voit « lien plus valide ». Recommandation : à la confirmation, **ne plus afficher le carnet** mais envoyer son lien par courriel (PR 3), la page disant « Le lien de votre carnet vient de vous être envoyé ». **Q27** — une évaluation **sans échéance** créée il y a plus de 5 semaines et jamais faite disparaît du carnet (fenêtre de `carnet_payload`). Recommandation : la garder tant qu'elle n'est pas faite (nouvelle migration, PR 4).
