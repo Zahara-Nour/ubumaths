@@ -824,3 +824,17 @@ Script `docs/wip/questions/lot-blockly-4e-3e.py` → `scripts/questions/blockly-
   joué juste.
 - **Publication** : aucune avant le `deploy:prod` qui livre #2719.
 - **#2723 mergée le 2026-11-16** (CI verte, sans revue : contenu).
+
+### PR D — ids de prod + rangement des 9 modèles 4e / 3e (branche `feat/blockly-4e-3e-rangement`)
+
+- **Création en prod** (2026-11-16, David) : 9 brouillons, ids commités aussitôt (01 → `c3db6174`,
+  02 → `81ab97a2`, 03 → `01109f75`, 04 → `f91149f2`, 05 → `d43fda5a`, 06 → `dbab36af`,
+  07 → `a63f24b7`, 08 → `ee87b7b1`, 09 → `6e99d291`). Relevé MCP : 5 en {4}, 4 en {3},
+  brouillons, sans nœud ni tag.
+- **Nœuds des points** (prod, relevé du 2026-11-16), tous sous « Algorithmique » :
+  4-065, 4-066, 3-048 → Variables et instructions › instructions conditionnelles ;
+  4-067, 3-047 → Variables et instructions › variables et affectation ;
+  3-049 → Boucles › boucle non bornée ;
+  4-068, 4-069, 3-051 → notion « Variables et instructions » (4 sous-notions : blocs
+  personnalisés, instructions conditionnelles, types, variables et affectation).
+- **Question d'accès** : posée à David le 2026-11-16, en attente.
