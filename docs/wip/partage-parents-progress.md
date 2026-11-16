@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2736 (4a)._
+_Mis à jour le 2026-11-17, après #2737._
 
-- **État** : 4a mergée (#2736), migration `20261116215952` **appliquée en prod** et vérifiée (droits, contrainte), `db:types` fait. **4b** en cours sur `feat/partage-parents-pr4b` : `courriels.ts` (`runCarnetDaily`), cron `/api/cron/carnet-de-liaison` (16 h UTC), courriels d'exception et trimestriel, tests (intégration du passage avec Brevo simulé, route, gabarits), doc `carnet-de-liaison.md` § « Le passage quotidien ».
-- **Prochaine action** : revues de la 4b (`code-reviewer` + `security-auditor`), PR, CI, merge. Rien n'est déployé : `deploy:prod` = David (le 1er trimestre finit le 27 nov.).
-- **En attente de David** : Q39 (`List-Unsubscribe-Post`) ; la 4b fait le choix qui ne change rien (pas de modification du CSRF), réversible.
-- **Pièges en cours** : données d'élèves mineurs. Test d'intégration du passage : client service du test passé explicitement, celui de l'environnement est simulé pour lever une erreur. Une classe de test a besoin d'un professeur (trigger du chat de classe).
-- **Ensuite** : PR 5 (versement de la doc, registre RGPD, point 8 de `presentation-parents`).
-- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-pr4b`.
+- **État** : PR 1 à 4 mergées (#2718, #2724, #2731, #2736, #2737). Migrations toutes appliquées en prod. Code des PR 2 à 4 **pas encore déployé** (`deploy:prod` = David) ; le cron `carnet-de-liaison` ne tourne qu'en prod, donc après ce déploiement. Vérifications manuelles : #2724, #2731, #2736-#2737 dans `verifications-manuelles.md`.
+- **Prochaine action** : PR 5, nouveau worktree (`../ubumaths-wt-partage-parents`, `docs/partage-parents-pr5`) : versement de la doc dans `docs/systeme/`, registre RGPD du carnet, point 8 de `presentation-parents` (bloc « Suivre son travail » de `/parents`), ADR 0040 complétée (Q38, jeton par courriel).
+- **En attente de David** : **Q39** (`List-Unsubscribe-Post` : recommandé de ne pas toucher au CSRF ; c'est l'état actuel). Points laissés, à trancher ou non : effacement après 90 jours qui efface aussi les « Je ne suis pas le parent » ; Q27 sans borne d'année ; plafond par élève (deux enfants → deux courriels le même jour) ; resignalement après arrêt puis reprise des courriels.
+- **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 si déployé. Rejets Brevo différés non marqués `invalid` (pas de webhook).
+- **Worktree / branche** : aucun.
 
 ## Origine
 
@@ -266,3 +265,4 @@ Questions (recommandation en premier) :
   - budget négatif (des échecs de base comptés comme courriels) : seuls les courriels tentés comptent, budget borné à 0 ; test « les liens épuisent le budget » ;
   - objet du courriel sans caractère de contrôle ; « Votre enfant » en début de phrase ; inactivité « ces N derniers jours de classe » (la règle SQL se déclenche à N exactement) ; trimestriel sans « Une bonne nouvelle ».
 - Laissés, à dire à David : plafond par adresse ET par élève (deux enfants → deux courriels possibles le même jour) ; pas de `maxDuration` (la valeur par défaut de Vercel suffit pour un professeur ; à revoir si le passage grossit).
+- **Mergée** le 2026-11-17 (#2737), CI verte au 2e passage (filtre de chemins de la suite d'intégration : gabarits de courriels et `validation/carnet.ts` ajoutés). Pas de migration.
