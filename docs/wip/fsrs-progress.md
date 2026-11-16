@@ -9,9 +9,9 @@ la PR 6g de `demo-debug` (#1711) : `calculateNewStability` n'utilise pas la note
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après #2709._
+_Mis à jour le 2026-11-16, après le `db:migrate` de #2709._
 
-- **État** : #2703 (algorithme), #2705 (`learning` → `review`), #2708 (badge « à remédier » = `relearning`), #2709 (migration « En cours ») mergées ; **migration `20261115221544` PAS encore en prod** · **Prochaine action** : `db:migrate` depuis le dépôt principal quand David l'autorise (le `--dry-run` pousserait aussi `20261115213402_questions_cm1_lot6_rangement_tags.sql` de #2706, chantier `questions-cm1`) ; puis PR 2 (rejouer les 27 fiches depuis `review_history`, `--essai` puis `--publier` sur demande explicite) · **En attente de David** : feu vert pour `db:migrate` avec la migration de #2706, ou attendre la session `questions-cm1` · **Pièges en cours** : base locale : la migration `20261115061153_questions_5_…` échoue à `migration up` → fonction appliquée en local par `docker exec … psql` ; `ts-fsrs` arrondit au 1e-8 ; commentaire du test `deck-stats-en-cours` (l. 10) à préciser (garde de compte, pas de paquet) dans la PR 2 · **Worktree / branche** : `../ubumaths-wt-fsrs` (branche mergée, à recréer pour la PR 2)
+- **État** : PR 1 à 1d mergées (#2703, #2705, #2708, #2709) ; migrations `20261115221544` (fsrs) et `20261115213402` (#2706, questions-cm1, feu vert de David) **en prod depuis le 2026-11-16** · **Prochaine action** : PR 2, rejouer les 27 fiches depuis `review_history` (script `--essai`, puis `--publier` sur demande explicite) · **En attente de David** : rien · **Pièges en cours** : base locale : la migration `20261115061153_questions_5_…` échoue à `migration up` → fonction appliquée en local par `docker exec … psql` ; `ts-fsrs` arrondit au 1e-8 ; commentaire du test `deck-stats-en-cours` (l. 10) à préciser (garde de compte, pas de paquet) dans la PR 2 · **Worktree / branche** : à recréer pour la PR 2
 
 ## Ce qui existe (vérifié le 2026-11-15)
 
@@ -128,6 +128,7 @@ une fois** reste à jamais sur des intervalles courts (17 j au lieu de 44 au 5e 
 
 ## Historique
 
+- 2026-11-16 : `db:migrate` depuis `main` (feu vert de David pour pousser aussi #2706) : `20261115213402_questions_cm1_lot6_rangement_tags` et `20261115221544_deck_stats_en_cours_relearning` appliquées.
 - 2026-11-15 : #2709 mergée (PR 1d ; audit sécurité sans bloquant : corps = prod à une ligne près, ACL conservée ; CI verte sur `07226e862` ; `check:migrations` OK). `db:migrate` suspendu : le dry-run pousserait aussi la migration de #2706.
 - 2026-11-15 : #2708 mergée (PR 1c ; revue Sonnet sans bloquant ; CI verte sur `b85ba8031`). PR 1d codée : migration `20261115221544` (`get_deck_stats`, corps recopié, seul le filtre de `learning_count` change) ; test d'intégration `deck-stats-en-cours.test.ts` rouge sans (1 au lieu de 3), vert avec ; témoin garde 42501.
 - 2026-11-15 : Q6 et Q7 tranchées (« je te suis » → (a), (a)). PR 1c codée : `templateToBadge` (`relearning` due → à remédier ; `learning` / `review` dues → à renforcer), filtres de séance de la page Programme (`relearning` / `learning,review`), tests (3 rouges avant ; fixtures « à remédier » passées en `relearning`).
