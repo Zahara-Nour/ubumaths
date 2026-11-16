@@ -1292,3 +1292,5 @@ niveaux 4 et 5, le CM2 laissé à 2 et 3 (écart connu, pas corrigé).
   point, 7 tags posés (CM1-001, 002, 131, 143, 010, 024, 048), aucun niveau ni statut changé.
 - Test `questions-cm1-lot6bis-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs + suite
   principale sautée.
+- `types:cliquet` tenu ; `security-auditor` : aucun finding (diff avec la migration du lot 6 : préfixe des tables
+  temporaires, comptes, données ; état « avant » remesuré au MCP).
