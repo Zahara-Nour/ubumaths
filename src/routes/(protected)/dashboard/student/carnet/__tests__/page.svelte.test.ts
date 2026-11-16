@@ -69,4 +69,21 @@ describe('Mon carnet de liaison', () => {
 		await expect.element(screen.getByText('10 novembre 2026')).toBeVisible();
 		expect(document.body.textContent).not.toContain('@');
 	});
+
+	it('A2 : le formulaire d’ajout n’apparaît que si le carnet est ouvert et moins de 2 parents', async () => {
+		const cas: [Partial<StudentCarnet>, boolean][] = [
+			[{ parents: 0 }, true],
+			[{ parents: 1 }, true],
+			[{ parents: 2 }, false],
+			[{ shared: false, parents: 0 }, false],
+			[{ opted_out: true, shared: false, parents: 0 }, false]
+		];
+		for (const [partage, visible] of cas) {
+			const screen = await render(Page, { data: donnees(partage), form: null });
+			expect(!!document.querySelector('#carnet-parent-email'), JSON.stringify(partage)).toBe(
+				visible
+			);
+			screen.unmount();
+		}
+	});
 });
