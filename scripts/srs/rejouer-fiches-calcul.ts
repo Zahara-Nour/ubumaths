@@ -63,8 +63,11 @@ interface EntreeLue {
 
 /** Écart toléré dans l'historique (jsonb : flottants 64 bits) */
 const EPSILON = 1e-9;
-/** Écart relatif toléré sur difficulté et stabilité : colonnes `real` (32 bits, ~7 chiffres) */
-const EPSILON_REAL = 1e-6;
+/**
+ * Écart relatif toléré sur difficulté et stabilité : colonnes `real` (32 bits), que PostgREST
+ * rend à 6 chiffres significatifs (`extra_float_digits = 0`) — écart jusqu'à 5e-6 en relatif.
+ */
+const EPSILON_REAL = 1e-5;
 
 // ============================================================================
 // FONCTIONS
@@ -95,7 +98,7 @@ function egaux(a: number, b: number): boolean {
 	return Math.abs(a - b) <= EPSILON;
 }
 
-/** Égaux à la précision d'une colonne `real` */
+/** Égaux à la précision d'une colonne `real` relue par PostgREST */
 function egauxReal(lu: number, calcule: number): boolean {
 	return Math.abs(lu - calcule) <= EPSILON_REAL * Math.max(1, Math.abs(calcule));
 }

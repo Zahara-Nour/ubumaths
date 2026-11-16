@@ -164,7 +164,7 @@ s'affichait « toutes capacités ».
   `updated_at` inchangé ; une fiche sans historique, ou à l'historique illisible (note hors 1-4,
   désordre, `before`), n'est pas touchée ; relancer ne change rien. Calcul pur et testé :
   `scripts/srs/rejouer-fiches-calcul.ts`. `difficulty` et `stability` sont des colonnes `real`
-  (32 bits) : on compare à 1e-6 près.
+  (32 bits) que PostgREST rend à 6 chiffres significatifs : on compare à 1e-5 près (relatif).
 - `review_history` (JSONB) garde chaque révision ; pour une auto-évaluation, l'entrée porte
   aussi `before`, l'état de la fiche juste avant (ce qui permet de la remplacer dans la journée).
 - Tous les chemins instancient `new FSRS()` : paramètres et rétention **par défaut**
