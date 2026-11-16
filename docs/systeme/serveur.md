@@ -247,12 +247,15 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 
 ## 3. Tâches planifiées
 
-**Deux tâches planifiées côté Vercel** (2026-10-13) : `/api/cron/riddle-of-the-day`, chaque jour
+**Trois tâches planifiées côté Vercel** (2026-10-13, la troisième le 2026-11-16) : `/api/cron/riddle-of-the-day`, chaque jour
 à 00:05 UTC, qui choisit l'énigme du jour si le prof n'en a pas programmé (`src/lib/server/riddle-auto-select.ts`,
 client service) ; et `/api/cron/deleted-account-files`,
 le dimanche à 04:00 UTC (`vercel.json`), qui retire du storage les fichiers des comptes supprimés
 (`src/lib/server/deleted-account-files.ts`) et les pièces jointes de la messagerie restées sans ligne en base (`sweepOrphanMessageAttachments`) ; le SQL ne peut pas toucher au storage
-(`protect_objects_delete`, pas de `pg_net`). Les deux s'authentifient par `Bearer CRON_SECRET` seul
+(`protect_objects_delete`, pas de `pg_net`). Troisième (2026-11-16) : `/api/cron/carnet-de-liaison`,
+chaque jour à 16:00 UTC, passage quotidien du carnet de liaison (liens manquants, courriels
+d'exception, message trimestriel, effacement des adresses ; `src/lib/server/carnet/courriels.ts`,
+[carnet-de-liaison.md](carnet-de-liaison.md#le-passage-quotidien)). Les trois s'authentifient par `Bearer CRON_SECRET` seul
 (`verifyCronAuth`, `src/lib/server/auth/cron.ts`) : Vercel envoie ce jeton à ses crons, et
 l'en-tête `x-vercel-cron`, que n'importe qui peut envoyer, n'ouvre plus rien. Le reste du
 travail périodique vit dans **pg_cron**, programmé **hors migrations** (le baseline crée l'extension et la vue `admin_pg_cron_jobs`, pas les jobs). État en production, lu le 2026-10-10 (`cron.job`, MCP Supabase en lecture seule) :
