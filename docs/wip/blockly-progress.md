@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR C en cours._
+_Mis à jour le 2026-11-16, après #2723._
 
-- **État** : piste 4e / 3e — PR A (#2716) et PR B (#2719) mergées ; **PR C** (9 modèles 4e / 3e, branche `feat/blockly-modeles-4e-3e`) écrite et vérifiée, à ouvrir · **Prochaine action** : PR C → CI → merge ; puis, **sur demande de David**, `create-questions --publier` en prod (brouillons), ids commités, migration nœud + tag (comme #2669), page à cocher · **En attente de David** : `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `pnpm tsx scripts/update-published-questions.ts --lot blockly-5-106` (simulation) et `--publier` ; vérifications manuelles en prod (`verifications-manuelles.md`) ; choix des PR A, B et C à lui signaler (sections « PR A », « PR B », « PR C ») · **Pièges en cours** : aucun modèle 4e / 3e **publié** avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; `--publier` écrit l'id dans les JSON : en local, toujours sur une COPIE ; `docs:check-a-jour` ne lit que les COMMITS · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-modeles-4e-3e`
+- **État** : piste 4e / 3e — PR A (#2716), PR B (#2719) et **PR C (#2723, 9 modèles 4e / 3e en JSON, aucune écriture en base) mergées** · **Prochaine action** : **sur demande de David**, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/blockly-4e-3e --publier` (brouillons en prod, ids écrits dans les JSON) ; puis PR « ids + migration nœud du point + tag » (comme #2669 : test d'intégration rouge sans la migration, `security-auditor`), page à cocher · **En attente de David** : le go de `--publier` ci-dessus ; `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `update-published-questions.ts --lot blockly-5-106` (simulation, `--publier`) ; vérifications manuelles en prod (`verifications-manuelles.md`) ; choix des PR A, B et C à relire (sections « PR A », « PR B », « PR C ») · **Pièges en cours** : aucun modèle 4e / 3e **publié** (statut published) avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; `--publier` écrit l'id dans les JSON : en local, toujours sur une COPIE ; la base locale porte les 9 modèles avec des ids LOCAUX (le test de migration devra le gérer) ; `docs:check-a-jour` ne lit que les COMMITS · **Worktree / branche** : aucun (retiré après #2723) ; suite → `git worktree add -b feat/blockly-4e-3e-rangement ../ubumaths-wt-blockly origin/main`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -823,3 +823,4 @@ Script `docs/wip/questions/lot-blockly-4e-3e.py` → `scripts/questions/blockly-
   faux (= au lieu de ≥, ligne rouge dans le tableau), 08 (3e) blocs « répéter jusqu'à » rendus,
   joué juste.
 - **Publication** : aucune avant le `deploy:prod` qui livre #2719.
+- **#2723 mergée le 2026-11-16** (CI verte, sans revue : contenu).
