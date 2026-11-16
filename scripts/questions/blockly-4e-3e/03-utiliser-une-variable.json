@@ -1,4 +1,5 @@
 {
+	"id": "01109f75-71fd-4d1f-b093-844c896f1984",
 	"title": "Utiliser une variable",
 	"description": "Écrire en blocs un programme qui range, modifie et affiche une variable.",
 	"grades": ["4"],

@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2723._
+_Mis à jour le 2026-11-16, PR D en cours._
 
-- **État** : piste 4e / 3e — PR A (#2716), PR B (#2719) et **PR C (#2723, 9 modèles 4e / 3e en JSON, aucune écriture en base) mergées** · **Prochaine action** : **sur demande de David**, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/blockly-4e-3e --publier` (brouillons en prod, ids écrits dans les JSON) ; puis PR « ids + migration nœud du point + tag » (comme #2669 : test d'intégration rouge sans la migration, `security-auditor`), page à cocher · **En attente de David** : le go de `--publier` ci-dessus ; `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `update-published-questions.ts --lot blockly-5-106` (simulation, `--publier`) ; vérifications manuelles en prod (`verifications-manuelles.md`) ; choix des PR A, B et C à relire (sections « PR A », « PR B », « PR C ») · **Pièges en cours** : aucun modèle 4e / 3e **publié** (statut published) avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; `--publier` écrit l'id dans les JSON : en local, toujours sur une COPIE ; la base locale porte les 9 modèles avec des ids LOCAUX (le test de migration devra le gérer) ; `docs:check-a-jour` ne lit que les COMMITS · **Worktree / branche** : aucun (retiré après #2723) ; suite → `git worktree add -b feat/blockly-4e-3e-rangement ../ubumaths-wt-blockly origin/main`
+- **État** : piste 4e / 3e — PR A (#2716), B (#2719), C (#2723) mergées ; 9 brouillons créés en prod par David (ids commités) ; **PR D** (`feat/blockly-4e-3e-rangement`) : migration `20261116183439` nœud du point + tag, test d'intégration 19/19 (rouge sans), question d'accès tranchée (personne) · **Prochaine action** : CI + `security-auditor` + `check:migrations --pr`, merge, `db:migrate` depuis le dépôt principal, vérifier en prod, page à cocher · **En attente de David** : `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `update-published-questions.ts --lot blockly-5-106` (simulation, `--publier`) ; vérifications manuelles en prod (`verifications-manuelles.md`) ; choix des PR A, B et C à relire · **Pièges en cours** : aucun modèle 4e / 3e **publié** avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; la base locale porte les 9 modèles avec des ids LOCAUX ; `docs:check-a-jour` ne lit que les COMMITS · **Worktree / branche** : `../ubumaths-wt-blockly`, `feat/blockly-4e-3e-rangement`
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -824,3 +824,22 @@ Script `docs/wip/questions/lot-blockly-4e-3e.py` → `scripts/questions/blockly-
   joué juste.
 - **Publication** : aucune avant le `deploy:prod` qui livre #2719.
 - **#2723 mergée le 2026-11-16** (CI verte, sans revue : contenu).
+
+### PR D — ids de prod + rangement des 9 modèles 4e / 3e (branche `feat/blockly-4e-3e-rangement`)
+
+- **Création en prod** (2026-11-16, David) : 9 brouillons, ids commités aussitôt (01 → `c3db6174`,
+  02 → `81ab97a2`, 03 → `01109f75`, 04 → `f91149f2`, 05 → `d43fda5a`, 06 → `dbab36af`,
+  07 → `a63f24b7`, 08 → `ee87b7b1`, 09 → `6e99d291`). Relevé MCP : 5 en {4}, 4 en {3},
+  brouillons, sans nœud ni tag.
+- **Nœuds des points** (prod, relevé du 2026-11-16), tous sous « Algorithmique » :
+  4-065, 4-066, 3-048 → Variables et instructions › instructions conditionnelles ;
+  4-067, 3-047 → Variables et instructions › variables et affectation ;
+  3-049 → Boucles › boucle non bornée ;
+  4-068, 4-069, 3-051 → notion « Variables et instructions » (4 sous-notions : blocs
+  personnalisés, instructions conditionnelles, types, variables et affectation).
+- **Question d'accès** (2026-11-16) : « qui pourra lire quoi, qu'il ne pouvait pas lire avant ? » →
+  personne (rattachement de 9 brouillons à un nœud et à un point, aucune règle ne change) ; David : « oui ».
+- **Migration** `20261116183439` générée par `docs/wip/questions/lot-blockly-4e-3e-rangement.py`
+  (gabarit : `docs/wip/questions-5/lot-15-rangement.py`, qui garde aussi niveaux et statut, rollback
+  gardé), relevé `docs/wip/questions/etat-prod-2026-11-16-blockly-4e-3e/` (`releve-prod.ts`, lecture
+  seule). Test d'intégration 19/19, rouge sans la migration (11 en échec, 7 sautés).
