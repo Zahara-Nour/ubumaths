@@ -89,6 +89,7 @@
 		"corrections:retouches": "tsx scripts/corrections/retouches.ts",
 		"corrections:marquage-espaces": "tsx scripts/corrections/marquage-espaces.ts",
 		"constructions:reecrire": "tsx scripts/constructions-prod/appliquer.ts",
+		"srs:rejouer-fiches": "tsx scripts/srs/rejouer-fiches.ts",
 		"game:import-challenges": "npx tsx scripts/import-navadra-challenges.ts",
 		"game:seed-spells": "npx tsx scripts/seed-spell-definitions.ts",
 		"docs:check-links": "tsx scripts/check-doc-links.ts",

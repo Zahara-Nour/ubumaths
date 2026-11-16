@@ -6,8 +6,8 @@
  * comptait `learning` seul : depuis #2705, `learning` ne dure qu'une révision, et une
  * question ratée (`relearning`) n'y figurait jamais. Elle compte désormais les deux.
  *
- * Témoins : `new_count`, `review_count`, `total_cards` inchangés ; la garde (paquet
- * d'un autre élève → 42501) tient toujours.
+ * Témoins : `new_count`, `review_count`, `total_cards` inchangés ; la garde de compte
+ * (statistiques demandées pour le compte d'un autre élève → 42501) tient toujours.
  *
  * @vitest-environment node
  */
@@ -112,7 +112,7 @@ describe('get_deck_stats : « En cours » = learning + relearning', () => {
 		expect(Number(stats.due_count)).toBe(1);
 	});
 
-	it('garde inchangée : le paquet d’un autre élève reste refusé', async () => {
+	it('garde inchangée : le compte d’un autre élève reste refusé', async () => {
 		const { error } = await autreEleve.rpc('get_deck_stats', {
 			p_user_id: eleveId,
 			p_deck_id: paquet
