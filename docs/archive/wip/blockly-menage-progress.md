@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-16, après #2733 (mergée) — **chantier clos**._
 
-- **État** : code retiré, doc à jour ; tests et typecheck à passer · **Prochaine action** : PR, revue `code-reviewer` (Sonnet), merge · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-blockly-menage` · `refactor/blockly-menage`
+- **État** : module partagé nettoyé, revue `code-reviewer` (Sonnet) sans finding, CI verte · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : retirés
 
 ## Origine
 
