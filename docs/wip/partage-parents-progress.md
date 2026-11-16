@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, découpage validé, PR 1 en cours._
+_Mis à jour le 2026-11-16, PR 1 en cours (worktree créé)._
 
 - **État** : phase 0 ; tours 1 à 4 tranchés ; tour 5 tranché : **comportements A à E validés**, Q17-Q21 suivies ; **ADR 0040** écrite. Rien de codé.
 - **Prochaine action** : PR 1, migration (cf. « Découpage en PR ») : tests d'intégration rouges, SQL, `security-auditor`.
 - **En attente de David** : rien.
 - **Pièges en cours** : données d'élèves mineurs ; aucune policy `anon` (fonction `SECURITY DEFINER` qui reçoit le lien, comme l'ADR 0025) ; décision 8 du 2026-10-21 tient ; adresses confirmées seulement ; revue `code-reviewer` + `security-auditor` obligatoire.
 - **Ensuite** : revenir au point 9 de `presentation-parents` et réécrire le point 8 avec le carnet.
-- **Worktree / branche** : aucun (phase 0, doc sur `main`).
+- **Worktree / branche** : `../ubumaths-wt-partage-parents` · `feat/partage-parents`.
 
 ## Origine
 
@@ -96,7 +96,7 @@ Vocabulaire : **lien du parent** = l'adresse de son carnet ; **adresse confirmé
 
 ### B. Le carnet (page du parent)
 
-- **B1 (nominal)** : lien valide → semaine en 7 cases sur 5 semaines (en cours + 4), révisions « à jour » ou « N en retard », évaluations à venir (échéance) et passées (faite / non faite, **sans note**), liens du cahier et du cours de la classe s'ils existent. `noindex`.
+- **B1 (nominal)** : lien valide → **palier de régularité par semaine** sur 5 semaines (en cours + 4 ; Q25 remplace les 7 cases), révisions « à jour » ou « N en retard », évaluations à venir (échéance) et passées (faite / non faite, **sans note**), liens du cahier et du cours de la classe s'ils existent. `noindex`.
 - **B2 (limite)** : aucune activité → cases vides et phrase neutre (« Pas encore de travail cette semaine »), sans rouge ni alarme.
 - **B3 (limite)** : l'élève change de classe → le carnet le suit ; les liens du cahier et du cours sont ceux de sa classe actuelle.
 - **B4 (erreur)** : lien révoqué, expiré, inexistant, partage coupé, élève sorti de la classe → **la même page** « Ce lien n'est plus valide. Demandez-en un nouveau au professeur. » (comme l'ADR 0025).
@@ -151,3 +151,9 @@ Question Q22 : le lien est-il stocké **haché** (comme un mot de passe) ? Cons�
 ### 2026-11-16 (découpage validé, Q22 suivie)
 
 - Découpage en 5 PR validé. **Q22** : le lien est stocké **haché** ; « J'ai perdu mon lien » envoie un nouveau lien et révoque l'ancien. Reporté dans l'ADR 0040.
+
+### 2026-11-16 (PR 1, définitions)
+
+- **Q23 — Jour travaillé** = le **jour actif** déjà tranché au chantier `regularite` (`docs/systeme/analytique-prof.md`, `class_regularity_weeks`) : au moins 5 traces autonomes (`auto` / `srs` / `student_self`) le même jour de Paris, hors contrôle. David : « on avait déjà décidé ».
+- **Q24 — Révision en retard** = carte **déjà révisée** (ligne `srs_card_stats`) dont l'échéance (`next_review`) est passée ; une carte jamais vue n'est pas un retard. Alerte « plus de 7 jours » = la plus ancienne échéance dépassée date de plus de 7 jours.
+- **Q25 — Régularité du carnet** : **palier par semaine** (0, 1, 2-3, 4+), comme la grille du prof, jamais de date ni de nombre de jours. Remplace les « 7 cases » de Q13-i (la vue par jour avait été retirée de la grille, « trop précise », besoin P5).
