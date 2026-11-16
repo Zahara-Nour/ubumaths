@@ -84,18 +84,18 @@ le SRS ([srs.md](srs.md)).
 
 ### Hors du dossier
 
-| Fichier                                                                             | Rôle                                                                                                                                                       |
-| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/utils/answer-validator.ts`                                                 | **Le juge** : `validateAnswer`, `validateAnswerDetailed`, `validateBlanks`, `validateChoice`, `isBlankValueCorrect` (≈ 2 500 lignes).                      |
-| `src/lib/mathAST/cosmetic-transforms.ts`                                            | Contrôle de forme unifié `checkForm` (importé sous le nom `checkFormUnified`) et `cosmeticViolations` : les contraintes cosmétiques réelles.               |
-| `src/lib/math/index.ts`                                                             | `areEquivalent`, `evaluateExpression` : le décideur d'équivalence → [convention-equivalence](mathast/convention-equivalence.md).                           |
-| `src/lib/mathAST/pedagogical-*/`                                                    | Étapes de correction générées (mode B) ; stratégies par niveau `STRATEGIES`, `STRATEGIES_QUADRATIC`, `STRATEGIES_RATIONAL` (`pedagogical-solve/types.ts`). |
-| `src/lib/types/question-display.ts`, `src/lib/types/question-template.ts`           | `ValidationResult` ; `toQuestionTemplate` (ligne de base → modèle).                                                                                        |
-| `src/lib/server/validation/questions.ts`                                            | Zod des routes : `createQuestionTemplateSchema`, `updateQuestionTemplateSchema`, `bulkTemplateStatusSchema`, `generateQuestionSchema`.                     |
-| `src/lib/questions/review/check-template.ts`                                        | `checkTemplate` : le contrôle complet (structure, schéma strict, specs, 50 tirages par variation, figure de chaque case « figure » construite).            |
-| `src/lib/server/template-publication.ts`                                            | `templatePublicationErrors` : **le** contrôle de publication, partagé par le `PUT` d'un modèle et la publication par lot.                                  |
-| `src/lib/server/questions-bulk-status.ts`                                           | Publication par lot.                                                                                                                                       |
-| `src/lib/server/evaluation-attempts.ts`, `grading-budget.ts`, `corrected-detail.ts` | Évaluations notées, corrigées par le serveur (ADR 0015).                                                                                                   |
+| Fichier                                                                             | Rôle                                                                                                                                                                 |
+| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/utils/answer-validator.ts`                                                 | **Le juge** : `validateAnswer`, `validateAnswerDetailed`, `validateBlanks`, `validateChoice`, `isBlankValueCorrect` (≈ 2 500 lignes).                                |
+| `src/lib/mathAST/cosmetic-transforms.ts`                                            | Contrôle de forme unifié `checkForm` (importé sous le nom `checkFormUnified`) et `cosmeticViolations` : les contraintes cosmétiques réelles.                         |
+| `src/lib/math/index.ts`                                                             | `areEquivalent`, `evaluateExpression` : le décideur d'équivalence → [convention-equivalence](mathast/convention-equivalence.md).                                     |
+| `src/lib/mathAST/pedagogical-*/`                                                    | Étapes de correction générées (mode B) ; stratégies par niveau `STRATEGIES`, `STRATEGIES_QUADRATIC`, `STRATEGIES_RATIONAL` (`pedagogical-solve/types.ts`).           |
+| `src/lib/types/question-display.ts`, `src/lib/types/question-template.ts`           | `ValidationResult` ; `toQuestionTemplate` (ligne de base → modèle).                                                                                                  |
+| `src/lib/server/validation/questions.ts`                                            | Zod des routes : `createQuestionTemplateSchema`, `updateQuestionTemplateSchema`, `bulkTemplateStatusSchema`, `generateQuestionSchema`.                               |
+| `src/lib/questions/review/check-template.ts`                                        | `checkTemplate` : le contrôle complet (structure, schéma strict, specs, 50 tirages par variation, figure de chaque case « figure » construite, aucune variable `e`). |
+| `src/lib/server/template-publication.ts`                                            | `templatePublicationErrors` : **le** contrôle de publication, partagé par le `PUT` d'un modèle et la publication par lot.                                            |
+| `src/lib/server/questions-bulk-status.ts`                                           | Publication par lot.                                                                                                                                                 |
+| `src/lib/server/evaluation-attempts.ts`, `grading-budget.ts`, `corrected-detail.ts` | Évaluations notées, corrigées par le serveur (ADR 0015).                                                                                                             |
 
 ### `src/lib/exercises/` — exercices de fiche (autre moteur)
 

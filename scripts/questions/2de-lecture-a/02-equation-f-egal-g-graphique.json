@@ -40,7 +40,7 @@
 					"expression": "1|-1"
 				},
 				{
-					"name": "e",
+					"name": "v",
 					"expression": "eval:(a)*(p)+(b)"
 				},
 				{
@@ -56,7 +56,7 @@
 			"correction": {
 				"steps": [
 					"Les solutions de $f(x)=g(x)$ sont les **abscisses** des points d'intersection de $\\mathcal{C}_f$ et $\\mathcal{C}_g$.",
-					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:min(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))-5}} ; {{eval:max(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))+5}}\ngrille: 1 ; 1\nf(x) = ({{a}})*x+({{b}})+({{c}})*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ng(x) = ({{a}})*x+({{b}}) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   rouge   nom=C_g\npoints: A({{p}} ; g({{p}})), B({{q}} ; g({{q}})){{if:e==0| |, A'({{p}} ; 0)}}{{if:w==0| |, B'({{q}} ; 0)}}\ntaille: moyenne\ndescription: Une courbe C_f en forme de parabole et une droite C_g, qui se coupent en deux points. Les solutions sont marquées sur l'axe des abscisses.\n```",
+					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:min(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))-5}} ; {{eval:max(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))+5}}\ngrille: 1 ; 1\nf(x) = ({{a}})*x+({{b}})+({{c}})*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ng(x) = ({{a}})*x+({{b}}) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   rouge   nom=C_g\npoints: A({{p}} ; g({{p}})), B({{q}} ; g({{q}})){{if:v==0| |, A'({{p}} ; 0)}}{{if:w==0| |, B'({{q}} ; 0)}}\ntaille: moyenne\ndescription: Une courbe C_f en forme de parabole et une droite C_g, qui se coupent en deux points. Les solutions sont marquées sur l'axe des abscisses.\n```",
 					"Les courbes se coupent en $A$ et $B$, d'abscisses ${{p}}$ et ${{q}}$. $S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} \\}}$."
 				]
 			}
@@ -73,7 +73,7 @@
 				"a": "1",
 				"b": "1",
 				"c": "1",
-				"e": "-1",
+				"v": "-1",
 				"w": "2"
 			},
 			"answers": ["\\{-2;1\\}"],
@@ -91,7 +91,7 @@
 				"a": "1",
 				"b": "1",
 				"c": "1",
-				"e": "-1",
+				"v": "-1",
 				"w": "2"
 			},
 			"answers": ["\\{-1;2\\}"],
@@ -109,7 +109,7 @@
 				"a": "1",
 				"b": "1",
 				"c": "1",
-				"e": "-1",
+				"v": "-1",
 				"w": "2"
 			},
 			"answers": ["\\{1\\}"],
@@ -127,7 +127,7 @@
 				"a": "1",
 				"b": "1",
 				"c": "1",
-				"e": "-1",
+				"v": "-1",
 				"w": "2"
 			},
 			"answers": ["-2;1"],

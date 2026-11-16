@@ -44,21 +44,21 @@ export const additionGroupingDemo: QuestionTemplate = {
 	variations: [
 		{
 			statement: templateMarkdown(
-				'Calcule ${{a}} + {{b}} \\times {{c}} + {{d}} \\times {{e}} = ?$'
+				'Calcule ${{a}} + {{b}} \\times {{c}} + {{d}} \\times {{g}} = ?$'
 			),
 			variables: [
 				{ name: 'a', expression: '2' },
 				{ name: 'b', expression: '3' },
 				{ name: 'c', expression: '4' },
 				{ name: 'd', expression: '5' },
-				{ name: 'e', expression: '6' }
+				{ name: 'g', expression: '6' }
 			],
-			blanks: [{ expectedAnswer: '{{eval:a+b*c+d*e}}' }],
+			blanks: [{ expectedAnswer: '{{eval:a+b*c+d*g}}' }],
 			correction: {
 				feedback: { correct: templateMarkdown('Excellent !') },
 				generatedSteps: {
 					kind: 'arithmetic',
-					expression: '{{a}}+{{b}}*{{c}}+{{d}}*{{e}}',
+					expression: '{{a}}+{{b}}*{{c}}+{{d}}*{{g}}',
 					options: { schoolLevel: 'auto' }
 				}
 			}
