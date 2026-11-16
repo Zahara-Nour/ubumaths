@@ -6,7 +6,7 @@
 	est encore valable (un antivirus de messagerie qui l'ouvre ne doit rien
 	déclencher). Les deux gestes sont des boutons ; la réponse vient après.
 
-	Confirmer → redirection vers le carnet (`?bienvenue`). « Je ne suis pas le
+	Confirmer → le lien du carnet part par courriel (Q26). « Je ne suis pas le
 	parent » → l'adresse est effacée et ne pourra plus être saisie pour cet
 	élève ; le professeur le voit.
 -->
@@ -47,9 +47,15 @@
 					C'est noté : votre adresse est effacée et ne recevra plus rien de Chiphre pour cet élève.
 					Le professeur en est informé.
 				</p>
+			{:else if form?.outcome === 'link_sent'}
+				<p role="status">
+					Votre adresse est confirmée. Le lien de votre carnet vient de vous être envoyé : ouvrez le
+					courriel « Le carnet de liaison de… » et gardez-le. Ce lien vous est propre ; ne le
+					transférez pas.
+				</p>
 			{:else if form?.outcome === 'confirmed'}
 				<p role="status">
-					Votre adresse est confirmée. Le lien du carnet n'a pas pu être créé maintenant : le
+					Votre adresse est confirmée. Le lien du carnet n'a pas pu vous être envoyé maintenant : le
 					professeur vous l'enverra.
 				</p>
 			{:else if form?.outcome === 'invalid'}

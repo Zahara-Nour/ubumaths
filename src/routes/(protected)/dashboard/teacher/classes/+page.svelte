@@ -68,6 +68,7 @@
 		ShieldCheck,
 		BookOpen,
 		Gauge,
+		BookHeart,
 		GraduationCap,
 		Loader2,
 		ScrollText,
@@ -619,6 +620,10 @@
 								>
 									<Gauge class="mr-2 h-4 w-4" />
 									Acquisition
+								</Button>
+								<Button variant="outline" href="/dashboard/teacher/classes/{classItem.id}/carnet">
+									<BookHeart class="mr-2 h-4 w-4" />
+									Carnet de liaison
 								</Button>
 							</div>
 						</div>
