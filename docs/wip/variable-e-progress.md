@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2725._
+_Mis à jour le 2026-11-16, PR du lot `variable-e` ouverte._
 
-- **État** : #2725 mergée (CI verte, `code-reviewer` sans finding) : 4 fichiers renommés, garde dans `checkTemplate`.
-- **Prochaine action** : David met la prod à jour ; puis relire au MCP qu'aucun modèle ne déclare plus `e`, et
-  archiver ce journal.
-- **En attente de David** : depuis le dépôt principal, `create-questions --publier --mettre-a-jour` sur `cp-b2`,
-  `cm1-3c`, `2de-lecture-a`, `5-parallelogrammes`.
-- **Pièges en cours** : la garde n'est pas dans la génération : les modèles publiés tournent jusqu'à leur mise à jour.
-- **Worktree / branche** : aucun (retiré après le merge).
+- **État** : #2725 mergée (fichiers + garde). `create-questions --mettre-a-jour` REFUSE un modèle publié : la prod
+  n'avait pas bougé. Lot `variable-e` ajouté à `update-published-questions.ts` (instantanés prod renommés, égaux aux
+  fichiers de #2725 ; simulation : 5 cibles, specs vertes, `variations` + `testSpecs` seuls).
+- **Prochaine action** : merge ; David lance `update-published-questions.ts --lot variable-e --publier` ; relire au MCP
+  qu'aucun modèle ne déclare plus `e` ; archiver ce journal.
+- **Pièges en cours** : modèle PUBLIÉ → `update-published-questions.ts` (lot déclaré), jamais `create-questions`.
+- **Worktree / branche** : `../ubumaths-wt-variable-e-prod`, branche `fix/variable-e-prod`.
 
 ---
 
@@ -37,3 +37,10 @@ d’Euler, choisir une autre lettre ». Test `check-template-variable-e.test.ts`
 avec. Le corpus de relecture (`data/relecture/david/3, 16, 17`, absents de la prod sous cette forme) et la démo
 `generated-steps-demo` ont été renommés pour rester verts. Instantanés figés laissés tels quels :
 `data/corrections/*/_modeles.json`, `data/import-tinymath/migration_edits.json` (état passé de la prod).
+
+## Mise à jour de la prod (2026-11-16)
+
+- Ma première consigne (`create-questions --publier --mettre-a-jour`) était fausse : ce script s'arrête sur un
+  modèle publié (« jamais modifié par ce script »). Vérifié au MCP : rien écrit.
+- Instantanés prod (`export-question-templates.ts`) commités bruts, puis `e` renommé : égaux, champ par champ, aux
+  fichiers de #2725. Lot `variable-e` dans `update-published-questions.ts` ; simulation verte (5/5).

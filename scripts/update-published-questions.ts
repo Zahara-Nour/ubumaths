@@ -29,7 +29,7 @@
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
  *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de,
  *          resoudre-graphique-droite-3, somme-vecteurs-2de, triangle-cm-6, blockly-6-210,
- *          blockly-5-106
+ *          blockly-5-106, variable-e
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -215,6 +215,15 @@ const BLOCKLY_5_106: readonly string[] = [
 	'51636342-7294-407b-9fd0-42f9ede6e8a9' // Boucles › boucle bornée : Répéter des instructions (5-106)
 ];
 
+/** Chantier `variable-e` (#2725) : `e` = constante d'Euler, jamais une variable ; renommée en h, v ou w */
+const VARIABLE_E: readonly string[] = [
+	'd5a36be9-f6bb-428f-b0e0-60bee080bd19', // CP « Où est-il ? » (e → h)
+	'092b310c-7a6b-44d0-8d41-3351beb2c912', // CM1 « Quelle fraction de la figure est coloriée ? » (e → h)
+	'406fd9a8-ad71-4c24-ab35-5029ddc1b18b', // 2de « Résoudre graphiquement f(x) = g(x) » (e → v)
+	'7efd2e76-f27c-4b9c-b8f0-71dfa86265e2', // 2de « Résoudre graphiquement f(x) < g(x) » (e → v)
+	'95bea43b-c956-47f0-b66b-31c93a79fde6' // 5e « Côtés opposés et diagonales d'un parallélogramme » (e → w)
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -250,7 +259,8 @@ const LOTS: Record<string, Lot> = {
 	},
 	'triangle-cm-6': { dossier: 'scripts/questions/6-triangle-existants', cibles: TRIANGLE_CM_6 },
 	'blockly-6-210': { dossier: 'scripts/questions/6-blockly-existants', cibles: BLOCKLY_6_210 },
-	'blockly-5-106': { dossier: 'scripts/questions/5-blockly-existants', cibles: BLOCKLY_5_106 }
+	'blockly-5-106': { dossier: 'scripts/questions/5-blockly-existants', cibles: BLOCKLY_5_106 },
+	'variable-e': { dossier: 'scripts/questions/variable-e-existants', cibles: VARIABLE_E }
 };
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
