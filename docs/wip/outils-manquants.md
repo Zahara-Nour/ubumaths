@@ -32,16 +32,16 @@ Le BO en vigueur n'a **ni rotation, ni homothétie, ni agrandissement de figure*
 de la proportionnalité. Ce qui reste : **construire une image**. Reconnaître ou choisir une image se
 fait déjà (` ```figure ` + ` ```choix `, B).
 
-| Niveau     | Points                                                                                     | L'élève doit                            | Outil                                           | État                                                                               |
-| ---------- | ------------------------------------------------------------------------------------------ | --------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------- |
-| CE2        | 072 (axes) ; **073** (compléter une figure symétrique, quadrillage, axe H / V)             | reconnaître ; **compléter**             | B ; **§ 1 n° 1** (contrôle « symétrique »)      | 072, 073 faits (`79e8e279`, `b307a9f9` ; `49b8dc0b`, `ce2-8/09`)                   |
-| CM1        | 106 (axes) ; **107, 108** (compléter, construire le symétrique sur quadrillage, axe H / V) | reconnaître ; **construire**            | B ; **§ 1 n° 1**                                | 106, 107, 108 sans modèle (relevé prod 2026-11-15) : lot de `questions-cm1`        |
-| CM2        | **097** (symétrique, axe vertical, horizontal ou diagonale du quadrillage)                 | **construire**                          | **§ 1 n° 1**                                    | Sans modèle (relevé prod 2026-11-15) : lot de `questions-cm2`                      |
-| 6e         | 179 (définition) ; **180** (construire, papier uni aussi)                                  | énoncer ; **construire**                | case / choix ; **§ 1 n° 1**                     | 179, 180 faits (`9e83ea34` ; `59694d66`, `6-constructions/15`)                     |
-| 5e         | 054, 055 (demi-tour : définir, propriétés) ; tracé du symétrique central                   | reconnaître, appliquer ; **construire** | B ; **§ 1 n° 1** (symétrique par un point)      | Sans modèle : lot 15 de `questions-5` (journal l. 835 ; `symetrique par O` existe) |
-| 4e         | 030, 031, 032 (translation) ; symétrie centrale en 4e (sans code relevé)                   | choisir l'image, calculer               | ` ```figure grille:` + `translation()` + choix  | 030-032 faits (lot 6) ; 4e symétrie centrale à vérifier en base                    |
-| 3e         | 024, 025, 026 (translation, vecteurs, enchaînements)                                       | choisir le point image ; tracer         | quadrillage + choix ; `tracer: vecteur` (#2274) | En cours (`questions-3` lot 6)                                                     |
-| 1re techno | 015, 109, 016, 110, 018, 019 (frises, pavages, motif, transformations du plan)             | analyser une frise, créer une figure    | à concevoir                                     | Aucun journal ne le traite (1TECHNO en second tag seulement)                       |
+| Niveau     | Points                                                                                     | L'élève doit                            | Outil                                           | État                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------ | --------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------- |
+| CE2        | 072 (axes) ; **073** (compléter une figure symétrique, quadrillage, axe H / V)             | reconnaître ; **compléter**             | B ; **§ 1 n° 1** (contrôle « symétrique »)      | 072, 073 faits (`79e8e279`, `b307a9f9` ; `49b8dc0b`, `ce2-8/09`)            |
+| CM1        | 106 (axes) ; **107, 108** (compléter, construire le symétrique sur quadrillage, axe H / V) | reconnaître ; **construire**            | B ; **§ 1 n° 1**                                | 106, 107, 108 sans modèle (relevé prod 2026-11-15) : lot de `questions-cm1` |
+| CM2        | **097** (symétrique, axe vertical, horizontal ou diagonale du quadrillage)                 | **construire**                          | **§ 1 n° 1**                                    | Sans modèle (relevé prod 2026-11-15) : lot de `questions-cm2`               |
+| 6e         | 179 (définition) ; **180** (construire, papier uni aussi)                                  | énoncer ; **construire**                | case / choix ; **§ 1 n° 1**                     | 179, 180 faits (`9e83ea34` ; `59694d66`, `6-constructions/15`)              |
+| 5e         | 054, 055 (demi-tour : définir, propriétés) ; tracé du symétrique central                   | reconnaître, appliquer ; **construire** | B ; **§ 1 n° 1** (symétrique par un point)      | Lot 15 de `questions-5` publié (2026-11-16) ; tracé `symetrique par O`      |
+| 4e         | 030, 031, 032 (translation) ; symétrie centrale en 4e (sans code relevé)                   | choisir l'image, calculer               | ` ```figure grille:` + `translation()` + choix  | 030-032 faits (lot 6) ; 4e symétrie centrale à vérifier en base             |
+| 3e         | 024, 025, 026 (translation, vecteurs, enchaînements)                                       | choisir le point image ; tracer         | quadrillage + choix ; `tracer: vecteur` (#2274) | En cours (`questions-3` lot 6)                                              |
+| 1re techno | 015, 109, 016, 110, 018, 019 (frises, pavages, motif, transformations du plan)             | analyser une frise, créer une figure    | à concevoir                                     | Aucun journal ne le traite (1TECHNO en second tag seulement)                |
 
 ## 3. À trancher par David
 
@@ -67,7 +67,7 @@ touchés : n° 12, 9, 10. Livrés depuis l'ordre du 2026-11-04 : n° 11, 15, 16,
 couverts par le choix et `tracer: vecteur` ; à rouvrir si un modèle exige le tracé de l'image) ; angle non adjacent au côté
 (§ 21) **pas d'outil** (le modèle pose le calcul du 3e angle dans une case, puis la construction par les angles adjacents).
 
-Tranchés hors appli : 5-011, 040, 130, 065, 042, 043, 059, 075, 084 (David, `questions-5` l. 127) ;
+Tranchés hors appli : 5-011, 040, 130, 065, 042, 043, 059, 075, 084 (David, `questions-5` § 5, journal archivé) ;
 2-452, 454, 351 (Q6, `questions-2de` l. 222) ; CP-053, 063-066, 074 ; 6e (« non évaluable », `questions-6` l. 173).
 
 ## 4. Livré (pour mémoire)

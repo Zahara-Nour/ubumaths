@@ -1,21 +1,19 @@
 # Chantier « questions-5 » — couvrir la 5e en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Bornes : `docs/systeme/programmes/bornes/cycle4.json` → `5.points`.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, lot 15 publié._
+_Mis à jour le 2026-11-16, chantier clos._
 
-- **État** : lots 1 à 15 publiés (lot 15 « Symétrie centrale, aires, solides » : 8 modèles `published`, vérifié au
-  MCP). Restent : 9 D, 101 et 104 (`blockly`).
-- **Prochaine action** : clore ou non la 5e avec David (9 D, 101, 104 attendent le chantier `blockly`) ; la suite part
-  d'un worktree neuf.
-- **En attente de David** : 02 du lot 7 (`ef08a256`, deux cases) à essayer à la main. Variable `e` réglée
-  (chantier `variable-e`, clos : 0 modèle en prod).
-- **Pièges en cours** : jamais de variable ni de point `e` ; `--publier` LOCAL → copie au scratchpad ; serveur
-  `--host 127.0.0.1` ; retirer un worktree : commandes avec `cd` du dépôt principal.
-- **Worktree / branche** : aucun (worktree du lot 15 retiré, branche supprimée).
+- **État** : **clos**. Relevé prod (MCP, 2026-11-16) : chaque point de 5e a au moins un modèle publié, sauf les 9
+  points D tranchés hors appli (§ 5.5) : 011, 040, 042, 043, 059, 065, 075, 084, 130. 101 et 104 publiés par le
+  chantier `blockly` (`b9e88a6e`, `55615796`, 2026-11-15).
+- **Prochaine action** : aucune. Journal archivé (`docs/archive/wip/`).
+- **En attente de David** : essai à la main de `ef08a256` (02 du lot 7, deux cases) → reporté dans
+  `docs/wip/verifications-manuelles.md`.
+- **Worktree / branche** : aucun.
 
 ---
 
