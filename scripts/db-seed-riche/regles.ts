@@ -87,6 +87,7 @@ export const JAMAIS: readonly string[] = [
 	'parent_contacts',
 	'parent_carnet_links',
 	'parent_notifications',
+	'parent_exception_episodes',
 	'student_carnet_opt_outs',
 	'terms_acceptances',
 	'welcome_emails_sent',

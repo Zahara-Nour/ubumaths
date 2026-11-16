@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2731._
+_Mis à jour le 2026-11-16, PR 4a en cours._
 
-- **État** : PR 1 (#2718), PR 2 (#2724) et PR 3 (#2731 : page du professeur par classe, envois Brevo, confirmation qui envoie le lien, « J'ai perdu mon lien », ajout d'adresse par l'élève, « Retirer cette adresse ») **mergées**. Migrations `20261116133453` et `20261116204753` (état `removed`) **appliquées en prod**. Code des PR 2 et 3 pas encore déployé (`deploy:prod` = David). Vérifications manuelles : #2724 et #2731 dans `verifications-manuelles.md`.
-- **Prochaine action** : PR 4, nouveau worktree. Elle apporte les courriels d'exception par cron Vercel quotidien (E1-E7), le plafond d'un courriel par semaine (Q19), le message trimestriel et l'envoi automatique des liens manquants (Q21, Q29). Migration : épisodes d'exception, effacement des adresses (Q21), évaluation sans échéance gardée (Q27) ; en-tête `List-Unsubscribe-Post`.
-- **En attente de David** : rien.
-- **Pièges en cours** : données d'élèves mineurs. Écritures sur les adresses et les liens par `src/lib/server/carnet/envois.ts` seulement (service role). `sendCarnetLink` vérifie que le carnet est ouvert. Un lien neuf révoque l'ancien avant l'envoi (Q32, accepté). L'élève reçoit une réponse neutre pour une adresse connue. Un worktree n'est pas lié à Supabase : pour `db:migrate`, copier `supabase/.temp/{project-ref,linked-project.json,pooler-url}` du dépôt principal. Revue `code-reviewer` + `security-auditor` à chaque PR.
+- **État** : PR 1 à 3 mergées. PR 4 coupée en deux (règle « fonction SQL + code qui l'appelle = deux PR ») : **4a** = migration `20261116215952_carnet_courriels_exception.sql` + `tests/integration/carnet-courriels-exception.test.ts` (19 verts, rouges sans la migration ; appliquée en local par psql).
+- **Prochaine action** : 4a → revues (`code-reviewer` + `security-auditor`, Opus), CI, merge, `db:migrate` (copier `supabase/.temp/{project-ref,linked-project.json,pooler-url}` du dépôt principal), `db:types`. Puis **4b** depuis `origin/main` dans le même worktree : cron `/api/cron/carnet-de-liaison`, `src/lib/server/carnet/courriels.ts`, courriels d'exception et trimestriel. Les modifs TS de la 4b (`brevo.ts`, `email-templates/carnet.ts`, `envois.ts` `maxLinks`) sont **non commitées** dans le worktree : les garder.
+- **En attente de David** : Q39 (`List-Unsubscribe-Post` impossible sans toucher au CSRF de SvelteKit, voir § PR 4).
+- **Pièges en cours** : données d'élèves mineurs. Le 1er trimestre finit le 27 nov. : message trimestriel possible dès le 28 si 4b est déployée. Écritures sur les adresses par le service role seulement. Un worktree n'est pas lié à Supabase (copier `supabase/.temp`).
 - **Ensuite** : PR 5 (versement de la doc, registre RGPD, point 8 de `presentation-parents`).
-- **Worktree / branche** : aucun (le prochain : `../ubumaths-wt-partage-parents`, `feat/partage-parents-pr4`).
+- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-pr4`.
 
 ## Origine
 
@@ -204,3 +204,51 @@ Points de mise en œuvre posés à David avant de coder (D1-D3 et A1-A6 sont val
 - **Q32 (tranchée le 2026-11-16)** : un lien neuf révoque l'ancien avant l'envoi ; accepté et écrit (doc, ADR), fonction SQL inchangée.
 - Migration : intégration rouge sans elle (« retirée » refusée par la contrainte), 35/35 avec ; appliquée en local par psql (jamais `db:migrate` avant le merge).
 - **Mergée** le 2026-11-16 (#2731), CI verte au 2e passage (export interdit dans `+page.server.ts`, doc de la base) ; migration `20261116204753` appliquée en prod, vérifiée (contraintes et trigger).
+
+## PR 4 — courriels d'exception, message trimestriel, envois automatiques (2026-11-16)
+
+Worktree `../ubumaths-wt-partage-parents`, branche `feat/partage-parents-pr4`. E1-E7, Q19, Q21, Q27 et Q29 sont validés ; restent les points de mise en œuvre.
+
+Constats (prod, lecture seule, 2026-11-16) :
+
+- Trimestres : `academic_periods` est rempli (2026-2027 : T1 jusqu'au 27 nov., T2 jusqu'au 19 fév., T3 jusqu'au 4 juin). Le 1er message trimestriel tomberait donc le 28 novembre si le code est déployé d'ici là.
+- Fin d'année : les classes de 2025-2026 sont inactives et leurs membres `archived`. Entre l'archivage et la rentrée, un élève n'est donc dans **aucune** classe active. Effacer les adresses « quand l'élève quitte toute classe » les effacerait chaque été, ce qui contredit « gardées d'une année à l'autre » (Q21).
+- Un consentement **accordé** n'expire pas dans le schéma (`expires_at` ne vaut que pour un consentement en attente). La branche « consentement expiré » de Q21 ne s'applique donc à aucune adresse confirmée.
+
+Questions (recommandation en premier) :
+
+- **Q33 — Heure et regroupement (Q19)** : un passage par jour vers 17 h, heure de Paris. Une exception nouvelle part le jour même si le parent n'a reçu aucun courriel d'exception ni trimestriel depuis 7 jours ; sinon elle attend la fin des 7 jours et part avec les autres exceptions **encore ouvertes** (une exception résolue entre-temps ne part pas). Les courriels de lien et de confirmation ne comptent pas dans le plafond.
+- **Q34 — Message trimestriel (E4)** : il part le lendemain de la fin du trimestre (`academic_periods` de l'école). « Du vrai à dire » = (a) un jour travaillé ou plus dans au moins 2 semaines de classe sur 3 du trimestre, hors vacances → « Léa a travaillé régulièrement ce trimestre » ; (b) révisions à jour le dernier jour → « Ses révisions sont à jour ». Le courriel ne contient que la ou les phrases vraies, sans aucun nombre ; si aucune n'est vraie, rien ne part. Il compte dans le plafond hebdomadaire.
+- **Q35 — Effacement des adresses (Q21)** : effacer les adresses d'un élève qui n'est membre actif d'**aucune classe active depuis 90 jours** (l'été est couvert ; un départ en cours d'année est effacé en un trimestre). Est effacée la ligne entière (adresse, empreinte, liens) ; le journal des courriels envoyés reste, sans l'adresse. ⚠️ Perte de données voulue (RGPD) : un parent effacé doit être ressaisi et reconfirmé.
+- **Q36 — Liens manquants automatiques (Q29)** : chaque passage envoie d'abord les liens manquants (même règle que le bouton du professeur), puis les exceptions. Au plus 150 courriels par passage (la moitié du quota Brevo de 300 par jour) ; le reste part le lendemain.
+- **Q37 — Question d'accès de la migration** : (1) la table des épisodes d'exception n'est lue par **personne** via l'API (service role seul) ; (2) Q27 : le détenteur d'un lien lit en plus les évaluations sans échéance non faites, créées avant la fenêtre de 5 semaines (titre, faite ou non) ; (3) effacement : le parent effacé perd son carnet ; personne d'autre ne perd rien. Personne ne lit rien d'autre de nouveau.
+
+### 2026-11-16 (Q33 à Q37, recommandations suivies)
+
+- Q33 à Q37 tranchées comme recommandé, question d'accès Q37 comprise.
+- Mise en œuvre de Q35 : `class_members.left_at` est vide sur les 77 lignes archivées en prod. Les « 90 jours » se comptent donc avec une marque posée par le passage quotidien (première fois que l'élève n'est dans aucune classe active, effacée s'il revient), pas avec `left_at`.
+- **Q38 (posée)** — le lien du carnet est stocké haché (Q22) : le passage quotidien ne le connaît pas et ne peut pas le mettre dans le courriel (E5). Il ne peut pas non plus construire le lien « Ne plus recevoir ». Recommandation : chaque courriel porte son **propre jeton**, stocké haché sur la ligne du journal des courriels. Ce jeton (a) ouvre le carnet, aux mêmes conditions que le lien du parent (adresse confirmée, lien actif, partage ouvert, expiration le 31 août), et (b) arrête les courriels en un clic (`List-Unsubscribe-Post`). Écartés : un lien neuf à chaque courriel (il tuerait le raccourci de l'écran d'accueil) ; un courriel sans lien qui renvoie vers « J'ai perdu mon lien ». Question d'accès : le détenteur d'un courriel lit le carnet tant que le lien du parent vit, comme celui qui détient le courriel du lien.
+
+### 2026-11-16 (Q38 suivie) et PR 4a
+
+- **Q38** : jeton propre à chaque courriel, stocké haché sur sa ligne de `parent_notifications` ; il ouvre le carnet et arrête les courriels tant que l'adresse a un lien actif.
+- Migration `20261116215952_carnet_courriels_exception.sql` : `parent_exception_episodes` (service role seul) ; `parent_notifications.access_token_hash` (la lecture de la table par les comptes passe en droits par colonne, sans l'empreinte) ; `parent_contacts.orphaned_since` ; `carnet_contact_by_token` (lien OU jeton d'un courriel) utilisé par `get_carnet_by_token` et `set_parent_emails_stopped` ; `carnet_payload` (Q27) ; fonctions du cron `carnet_current_exceptions`, `carnet_sync_exception_episodes`, `carnet_exception_plan`, `carnet_quarterly_plan`, `carnet_erase_orphan_contacts`.
+- Choix de mise en œuvre (sans décision nouvelle) : une évaluation non faite = un épisode par évaluation, regardée dans les 7 jours après l'échéance (au-delà, plus d'alerte : sinon l'activation du carnet signalerait tout l'historique) ; plusieurs classes au carnet = seuil le plus court ; inactivité = aucun jour actif sur les N derniers jours hors vacances depuis la rentrée (moins de N jours depuis la rentrée → rien) ; plafond = aucun courriel d'exception ou trimestriel **parti** depuis 6 j 12 h (le cron ne passe pas à la minute près) ; trimestriel cherché jusqu'à 30 jours après la fin du trimestre (des vacances peuvent suivre) ; « révisions à jour » lu le jour de l'envoi, pas le dernier jour du trimestre.
+- **Découpage** : la règle de `CLAUDE.md` (« fonction SQL + code qui l'appelle = deux PR ») coupe la PR 4 en **4a** (migration + tests) et **4b** (cron + courriels).
+- **Q39 (posée)** — `List-Unsubscribe-Post` (désinscription en un geste par la messagerie) : la messagerie envoie un POST de formulaire sans en-tête `Origin` ; SvelteKit le refuse **avant** tout hook (`csrf.checkOrigin`, pas d'exception par chemin). Le permettre = couper la vérification de SvelteKit et ne garder que la nôtre (`csrfHandle`, qui couvre déjà tous les POST) avec une exception pour ce seul chemin. Recommandation : **ne pas le faire** ; mettre `List-Unsubscribe: <lien du carnet#courriels>` (la messagerie ouvre le carnet, le parent clique « Ne plus recevoir »). Le geste unique n'est exigé par Gmail qu'au-delà de 5 000 courriels par jour.
+- E6 « adresse rejetée définitivement → invalide » : Brevo signale les rejets définitifs **après** l'envoi (webhook) ; Chiphre n'a pas de webhook Brevo. La 4b journalise l'échec immédiat (le professeur voit « dernier envoi en échec ») ; le marquage `invalid` des rejets différés reste à faire (noté dans `outils-manquants.md` à la 4b).
+- Revues de la 4a (2026-11-16), `security-auditor` et `code-reviewer` (Opus) : **aucun finding bloquant**. Corrigés :
+  - un jeton de courriel revivait avec un lien plus récent (adresse retirée puis ressaisie, rentrée, lien perdu) → il ne vit qu'avec le lien actif au moment de l'envoi ;
+  - contrainte : seuls les courriels d'exception et trimestriels portent un jeton ;
+  - classe sans école (vacances inconnues) : pas d'alerte d'inactivité ; aucune classe de la prod n'est dans ce cas (mesuré) ;
+  - tests indépendants de la date du jour (classe commune rattachée à une école) ; test « déjà parti » isolé du plafond ; test retrait puis ressaisie.
+
+  Preuves : les nouveaux tests sont rouges avec la version précédente et verts avec celle-ci (58 tests du carnet).
+
+- Laissés, à dire à David :
+  - l'effacement après 90 jours efface aussi les adresses « Je ne suis pas le parent » : une telle adresse pourrait être ressaisie ensuite ;
+  - Q27 sans borne : une évaluation sans échéance jamais faite reste dans le carnet d'une année sur l'autre ;
+  - arrêter puis reprendre les courriels resignale une exception en cours ;
+  - un élève arrivé en cours d'année est jugé inactif depuis la rentrée de l'école ;
+  - `access_count` du lien compte aussi les ouvertures par un courriel.
+- Contrat pour la 4b (écrit dans la migration) : envoyer et journaliser les courriels d'exception **avant** de lire le plan trimestriel.
