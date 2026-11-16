@@ -15,6 +15,7 @@
 	- Après la validation : blocs verrouillés, cadre vert ou rouge ; le corrigé (`CalculCorrige`)
 	  montre le tableau nombre → résultat.
 	- Hors question (aperçu de l'éditeur, cours) : le geste libre, rien de jugé.
+	- `niveau:` (5e, 4e, 3e) : les blocs proposés à l'élève et exécutés quand il essaie.
 
 	@module components/markdown/nodes/CalculProgramme
 -->
@@ -22,6 +23,7 @@
 	import { onMount, type Component } from 'svelte';
 	import { LONGUEUR_MAX_PROGRAMME, type TexteLu } from '$lib/shared/blockly/tortue/notation';
 	import { CALCUL_UNAVAILABLE, type CalculNode } from '$lib/ubumark/types/calcul';
+	import type { NiveauCalcul } from '$lib/shared/blockly/calcul/interpreteur';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
@@ -31,6 +33,7 @@
 
 	interface EditeurProps {
 		programme: string;
+		niveau?: NiveauCalcul;
 		readonly?: boolean;
 		onprogramme?: (lu: TexteLu) => void;
 	}
@@ -142,7 +145,12 @@
 				: 'border-transparent'} {className}"
 	>
 		{#if Editeur}
-			<Editeur {programme} readonly={verrouille} onprogramme={handleProgramme} />
+			<Editeur
+				{programme}
+				niveau={spec.niveau}
+				readonly={verrouille}
+				onprogramme={handleProgramme}
+			/>
 			<!-- Aussi après la validation : la réponse est vide, l'élève voit pourquoi -->
 			{#if refus}
 				<p class="mt-2 text-sm text-destructive" role="alert">{refus}</p>

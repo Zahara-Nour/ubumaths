@@ -106,3 +106,66 @@ describe('Programmes de calcul : le bac à sable', () => {
 		await expect.poll(() => sortie(screen.container)).toContain('Écris un nombre');
 	});
 });
+
+describe('Programmes de calcul : blocs de 4e et de 3e (sélecteur)', () => {
+	const niveau = (n: string) => page.getByRole('button', { name: n, exact: true });
+
+	it('5e par défaut ; 4e : variables et conditions, plus de résultat ; 3e : et / ou', async () => {
+		const screen = await render(Page, { target: mainElement() });
+		await attendreBlocs(screen.container);
+		await expect.element(niveau('5e')).toHaveAttribute('aria-pressed', 'true');
+		await expect.element(page.getByText('Résultat', { exact: true })).toBeVisible();
+		await niveau('4e').click();
+		await expect.element(niveau('4e')).toHaveAttribute('aria-pressed', 'true');
+		await expect.element(page.getByText('Variables', { exact: true })).toBeVisible();
+		await expect.element(page.getByText('Conditions', { exact: true })).toBeVisible();
+		await expect.element(page.getByText('Résultat', { exact: true })).not.toBeInTheDocument();
+	});
+
+	it('nominal 4e : mettre x à nombre × 2, si x > 10… ; 7 → 4, 3 → 6', async () => {
+		const screen = await render(Page, { target: mainElement() });
+		await attendreBlocs(screen.container);
+		await niveau('4e').click();
+		poser('mettre x à nombre × 2 ; si x > 10 alors [ afficher x − 10 ] sinon [ afficher x ]');
+		await essayerAvec('7');
+		await expect.poll(() => sortie(screen.container)).toContain('Avec 7, le programme affiche : 4');
+		await essayerAvec('3');
+		await expect.poll(() => sortie(screen.container)).toContain('Avec 3, le programme affiche : 6');
+	});
+
+	it('3e : « répéter jusqu’à » exécuté', async () => {
+		const screen = await render(Page, { target: mainElement() });
+		await attendreBlocs(screen.container);
+		await niveau('3e').click();
+		poser('mettre x à nombre ; répéter jusqu’à x > 100 [ mettre x à x × 2 ] ; afficher x');
+		await essayerAvec('7');
+		await expect
+			.poll(() => sortie(screen.container))
+			.toContain('Avec 7, le programme affiche : 112');
+	});
+
+	it('bloc au-dessus du niveau choisi : refusé au lancer', async () => {
+		const screen = await render(Page, { target: mainElement() });
+		await attendreBlocs(screen.container);
+		await niveau('4e').click();
+		poser('mettre x à nombre ; afficher x');
+		await niveau('5e').click();
+		await essayerAvec('2');
+		await expect
+			.poll(() => screen.container.querySelector('.calcul-sortie .text-destructive')?.textContent)
+			.toContain('pas pris en charge');
+	});
+
+	it('nom de variable qui ne diffère d’une autre que par les accents : refusé, message', async () => {
+		const screen = await render(Page, { target: mainElement() });
+		await attendreBlocs(screen.container);
+		await niveau('4e').click();
+		const variables = Blockly.getMainWorkspace().getVariableMap();
+		variables.createVariable('cote');
+		variables.createVariable('Côté');
+		await expect
+			.poll(() => screen.container.querySelector('.calcul-nom-refuse')?.textContent)
+			.toContain('ressemble trop à la variable « cote »');
+		expect(variables.getAllVariables().map((v) => v.getName())).toEqual(['cote']);
+	});
+});

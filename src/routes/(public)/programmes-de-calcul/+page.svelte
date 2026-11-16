@@ -3,10 +3,17 @@
   2026-11-15). Sans connexion, rien n'est enregistré ni jugé ; les blocs sont exécutés par
   l'interpréteur de Chiphre (ADR 0039), jamais par du JavaScript. Même éditeur que le geste de
   réponse ```calcul (`CalculEditeur`).
+
+  Sélecteur « Blocs : 5e · 4e · 3e » (piste 4e / 3e, Q7) : 5e par défaut ; changer de niveau change
+  la boîte à outils, les blocs posés restent (un bloc au-dessus du niveau est refusé au lancer).
 -->
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import CalculEditeur from '$lib/components/blockly/CalculEditeur.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { NIVEAUX_CALCUL, type NiveauCalcul } from '$lib/shared/blockly/calcul/interpreteur';
+
+	let niveau = $state<NiveauCalcul>('5e');
 </script>
 
 <svelte:head>
@@ -25,7 +32,21 @@
 			avec&nbsp;», puis clique sur «&nbsp;Lancer&nbsp;».
 		</p>
 	</div>
-	<CalculEditeur programme="" />
+	<div class="flex flex-wrap items-center gap-2" role="group" aria-labelledby="niveau-blocs">
+		<span id="niveau-blocs" class="text-sm font-medium">Blocs :</span>
+		{#each NIVEAUX_CALCUL as n (n)}
+			<Button
+				type="button"
+				size="sm"
+				variant={niveau === n ? 'default' : 'outline'}
+				aria-pressed={niveau === n}
+				onclick={() => (niveau = n)}
+			>
+				{n}
+			</Button>
+		{/each}
+	</div>
+	<CalculEditeur programme="" {niveau} />
 	<p class="text-sm text-muted-foreground">
 		Essaie aussi <a href={resolve('/tortue')} class="font-medium text-primary underline"
 			>La Tortue</a
