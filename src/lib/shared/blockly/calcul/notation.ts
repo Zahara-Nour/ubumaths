@@ -22,6 +22,10 @@
  * La notation lit les blocs de tous les niveaux ; le niveau d'une question est vérifié par
  * l'interpréteur (et `messageNiveau` pour l'auteur).
  *
+ * Tortue de 4e / 3e (option `tortue`) : la même notation, avec en plus les instructions tortue
+ * `avancer <calcul>`, `reculer <calcul>`, `tourner à droite <calcul>`, `tourner à gauche
+ * <calcul>`, `lever le stylo`, `baisser le stylo` (ex. `tourner à gauche 360 ÷ n`).
+ *
  * Lecture souple : accents, majuscules, espaces, virgule ou point décimal. Écriture canonique :
  * `mettre … à …` (en 5e, `résultat = résultat × 3` se lirait comme une égalité), accents, virgule
  * décimale, `−`, `×`, `÷`, `≤`, `≥`, `≠`, `jusqu’à`, parenthèses là seulement où le calcul les
@@ -48,7 +52,8 @@ import {
 	type NiveauCalcul,
 	type OperationCalcul
 } from './interpreteur';
-import { nombreDeTours, valeurNombre, type BlocLu } from '../lecture';
+import { nombreDeTours, premierBlocInconnu, valeurNombre, type BlocLu } from '../lecture';
+import { connusTortue } from '../tortue/interpreteur';
 import { LONGUEUR_MAX_PROGRAMME, type EtatLu, type TexteLu } from '../tortue/notation';
 
 // =============================================================================
@@ -64,6 +69,11 @@ type Jeton =
 type Bloc = Record<string, unknown>;
 
 type Noms = ReadonlyMap<string, string>;
+
+export interface OptionsNotation {
+	/** Lire et écrire aussi les instructions tortue (tortue de 4e / 3e). */
+	tortue?: boolean;
+}
 
 // =============================================================================
 // Constantes
@@ -123,6 +133,32 @@ const PRIORITE_ATOME = 3;
 const PRIORITES_LOGIQUES = { OR: 1, AND: 2 } as const;
 
 const EXEMPLE = 'afficher (nombre + 2) × 4';
+
+const EXEMPLE_TORTUE = 'tourner à gauche 360 ÷ n';
+
+/** Instructions tortue à un calcul : mots normalisés → type de bloc et nom de l'entrée. */
+const TORTUE_A_CALCUL: readonly { mots: string[]; type: string; entree: string }[] = [
+	{ mots: ['avancer'], type: 'tortue_avancer', entree: 'VALEUR' },
+	{ mots: ['reculer'], type: 'tortue_reculer', entree: 'VALEUR' },
+	{ mots: ['tourner', 'a', 'droite'], type: 'tortue_droite', entree: 'ANGLE' },
+	{ mots: ['tourner', 'a', 'gauche'], type: 'tortue_gauche', entree: 'ANGLE' }
+];
+
+/** Instructions tortue sans calcul. */
+const TORTUE_SEULES: readonly { mots: string[]; type: string }[] = [
+	{ mots: ['lever', 'le', 'stylo'], type: 'tortue_lever_stylo' },
+	{ mots: ['baisser', 'le', 'stylo'], type: 'tortue_baisser_stylo' }
+];
+
+/** Écriture canonique des instructions tortue. */
+const ECRITURES_TORTUE: Readonly<Record<string, string>> = {
+	tortue_avancer: 'avancer',
+	tortue_reculer: 'reculer',
+	tortue_droite: 'tourner à droite',
+	tortue_gauche: 'tourner à gauche',
+	tortue_lever_stylo: 'lever le stylo',
+	tortue_baisser_stylo: 'baisser le stylo'
+};
 
 /** Les mots du bloc, pour dire à l'auteur quel bloc dépasse le niveau. */
 const NOMS_DES_BLOCS: Readonly<Record<string, string>> = {
@@ -270,6 +306,18 @@ function ecrirePile(bloc: BlocLu | undefined, noms: Noms): string[] {
 				);
 				break;
 			}
+			case 'tortue_avancer':
+			case 'tortue_reculer':
+				instructions.push(`${ECRITURES_TORTUE[courant.type]} ${valeur(e.VALEUR)}`);
+				break;
+			case 'tortue_droite':
+			case 'tortue_gauche':
+				instructions.push(`${ECRITURES_TORTUE[courant.type]} ${valeur(e.ANGLE)}`);
+				break;
+			case 'tortue_lever_stylo':
+			case 'tortue_baisser_stylo':
+				instructions.push(ECRITURES_TORTUE[courant.type]);
+				break;
 		}
 	}
 	return instructions;
@@ -292,7 +340,7 @@ function nomRefuse(piles: BlocLu[], noms: Noms): string | null {
  * (de haut en bas). Un bloc inconnu, un nom de variable refusé ou un état mal formé rendent une
  * erreur.
  */
-export function etatVersTexteCalcul(etat: unknown): TexteLu {
+export function etatVersTexteCalcul(etat: unknown, options: OptionsNotation = {}): TexteLu {
 	let piles: BlocLu[];
 	let noms: Noms;
 	try {
@@ -301,10 +349,16 @@ export function etatVersTexteCalcul(etat: unknown): TexteLu {
 	} catch {
 		return { ok: false, message: 'Programme illisible.' };
 	}
-	if (piles.some((pile) => premierBlocInconnuCalcul(pile, 'instruction') !== null)) {
+	const inconnu = (pile: BlocLu): boolean =>
+		options.tortue
+			? premierBlocInconnu(pile, 'instruction', connusTortue('3e')) !== null
+			: premierBlocInconnuCalcul(pile, 'instruction') !== null;
+	if (piles.some(inconnu)) {
 		return {
 			ok: false,
-			message: 'Ce programme utilise un bloc qui n’existe pas dans un programme de calcul.'
+			message: options.tortue
+				? 'Ce programme utilise un bloc que la tortue ne connaît pas.'
+				: 'Ce programme utilise un bloc qui n’existe pas dans un programme de calcul.'
 		};
 	}
 	try {
@@ -349,8 +403,8 @@ export function conditionsDuProgramme(texte: string): string[] {
  * dans le programme écrit — presque toujours une faute de frappe (`afficher nombr + 2` : la
  * variable `nombr` vaudrait 0, revue #2716) ; null sinon, ou si le programme ne se lit pas.
  */
-export function variableJamaisMise(texte: string): string | null {
-	const lu = texteVersEtatCalcul(texte);
+export function variableJamaisMise(texte: string, options: OptionsNotation = {}): string | null {
+	const lu = texteVersEtatCalcul(texte, options);
 	if (!lu.ok) return null;
 	try {
 		const noms = nomsDesVariables(lu.etat);
@@ -394,11 +448,19 @@ export function messageNiveau(texte: string, niveau: NiveauCalcul): string | nul
 		}
 	}
 	if (pire === null) return null;
-	const { bloc, niveau: requis } = pire;
+	return messageBlocAuDessus(pire.bloc, pire.niveau, noms);
+}
+
+/**
+ * Pour l'auteur : le bloc est d'un niveau au-dessus, `requis` (« « mettre … à » est un bloc de
+ * 4e (ajouter niveau: 4e) »). Sert aussi à la tortue de 4e / 3e.
+ */
+export function messageBlocAuDessus(bloc: BlocLu, requis: string, noms: Noms): string {
 	const conseil = `(ajouter niveau: ${requis})`;
 	if (bloc.type === 'variables_get') {
 		return `« ${nomDeVariable(bloc, noms)} » est une variable : un bloc de ${requis} ${conseil}`;
 	}
+	const operation = bloc.type === 'calcul_operation' ? operationDe(bloc) : null;
 	const nom =
 		bloc.type === 'logic_operation'
 			? bloc.champs.OP === 'AND'
@@ -406,7 +468,9 @@ export function messageNiveau(texte: string, niveau: NiveauCalcul): string | nul
 				: 'ou'
 			: bloc.type === 'logic_compare'
 				? ECRITURES_COMPARAISON[comparaisonDe(bloc) ?? 'EQ']
-				: (NOMS_DES_BLOCS[bloc.type] ?? bloc.type);
+				: operation !== null
+					? ECRITURES[operation]
+					: (NOMS_DES_BLOCS[bloc.type] ?? bloc.type);
 	return `« ${nom} » est un bloc de ${requis} ${conseil}`;
 }
 
@@ -466,7 +530,7 @@ function chainer(blocs: Bloc[]): Bloc | undefined {
  * liste des variables s'il y en a), prêt pour `executerCalcul` ou pour être rechargé dans
  * l'espace de travail. Texte vide : programme vide.
  */
-export function texteVersEtatCalcul(texte: string): EtatLu {
+export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}): EtatLu {
 	if (texte.length > LONGUEUR_MAX_PROGRAMME) {
 		return { ok: false, message: 'Programme trop long.' };
 	}
@@ -568,8 +632,38 @@ export function texteVersEtatCalcul(texte: string): EtatLu {
 		};
 	}
 
+	/** Les mots normalisés suivent-ils, à partir de la position ? */
+	const suivent = (mots: readonly string[]): boolean => mots.every((m, k) => mot(k) === m);
+
+	/** Instruction tortue (option `tortue`) ; null si ce n'en est pas une. */
+	function lireInstructionTortue(debut: number): Bloc | null {
+		for (const seule of TORTUE_SEULES) {
+			if (!suivent(seule.mots)) continue;
+			position += seule.mots.length;
+			if (!finInstruction()) {
+				throw new TexteIllisible(`« ${cite(debut)} » : instruction mal écrite.`);
+			}
+			return { type: seule.type };
+		}
+		for (const aCalcul of TORTUE_A_CALCUL) {
+			if (!suivent(aCalcul.mots)) continue;
+			position += aCalcul.mots.length;
+			if (finInstruction()) {
+				throw new TexteIllisible(
+					`Après « ${ECRITURES_TORTUE[aCalcul.type]} », il faut un nombre ou un calcul (ex. ${EXEMPLE_TORTUE}).`
+				);
+			}
+			return { type: aCalcul.type, inputs: { [aCalcul.entree]: entree(lireCalculEntier(debut)) } };
+		}
+		return null;
+	}
+
 	function lireInstruction(profondeur: number): Bloc {
 		const debut = position;
+		if (options.tortue) {
+			const tortue = lireInstructionTortue(debut);
+			if (tortue) return tortue;
+		}
 		if (mot() === 'afficher') {
 			position++;
 			if (finInstruction()) {
@@ -661,7 +755,9 @@ export function texteVersEtatCalcul(texte: string): EtatLu {
 		// Le reste de l'instruction, pour le message
 		while (!finInstruction()) position++;
 		position--;
-		throw new TexteIllisible(`Instruction inconnue : « ${cite(debut)} » (ex. ${EXEMPLE}).`);
+		throw new TexteIllisible(
+			`Instruction inconnue : « ${cite(debut)} » (ex. ${options.tortue ? EXEMPLE_TORTUE : EXEMPLE}).`
+		);
 	}
 
 	/** Un calcul qui va jusqu'à la fin de l'instruction. */
