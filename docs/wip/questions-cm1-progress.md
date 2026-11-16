@@ -5,15 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, phase 0 du lot 6 ter écrite (§ 18)._
+_Mis à jour le 2026-11-16, lot 6 ter écrit (§ 18 ter)._
 
-- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 ter « algèbre » (062-066) : phase 0 écrite (§ 18).
-- **Prochaine action** : après les réponses de David, écrire le lot 6 ter (`docs/wip/questions/lot-cm1-6ter.py` →
-  `scripts/questions/cm1-6ter/`).
-- **En attente de David** : les 5 questions du § 18 (découpage, schéma dans l'énoncé, règle en « choix », niveaux,
-  nœud de 065).
+- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 ter « algèbre » (062-066) : 8 modèles écrits,
+  PR des fichiers ouverte (branche `feat/questions-cm1-lot6ter`).
+- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --publier` (8 brouillons), commit des
+  ids, migration nœud + tags (gabarit `lot-cm1-6bis-rangement.py`).
+- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier`.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot6ter`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1364,3 +1364,29 @@ Questions :
    nombres ». Reco : **oui** (le nom du nœud se discute à part, s'il le faut).
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 18 bis. Lot 6 ter : réponse de David (2026-11-16)
+
+« je te suis », en réponse aux cinq recommandations du § 18 : 1. **un seul lot** de 8 modèles ; 2. schéma en barres
+de 6t-3 **dans l'énoncé et dans le corrigé** ; 3. « formuler la règle » en **case « choix »** (6t-6, 6t-8) ; 4. **niveau 1** dans chaque nœud, sans renuméroter personne ; 5. 065 rangé sous **« suites de motifs »**, aucun nœud
+créé.
+
+### 18 ter. Lot 6 ter — écriture (2026-11-16)
+
+- Script `docs/wip/questions/lot-cm1-6ter.py` → `scripts/questions/cm1-6ter/` (8 JSON, 30 variations, niveau 1
+  partout). Patrons : balance CP `5592a129` (refaite à l'équilibre, fléau horizontal, billes bleues, masses en
+  rectangles jaunes ; la masse de gauche posée juste après les billes), schémas en barres de 6e `399342ff` et
+  `d79ea0bc`, Scratch du CM2 `98f54315`, motifs de 6e `39bafe0e`.
+- 6t-3 V2 (« k fois, moins b ») : deux barres, les k parts au-dessus, en dessous r puis b en pointillés (`-b`),
+  longueurs `2k` et `2k − 1 ; 1`. 6t-5 : une case par nombre, avec son rang (« 7e nombre »), parce que trois cases sur
+  une ligne passent à la ligne avec un « ; » seul à 390 px. 6t-2 V3 : symboles `{\square}`, `{\triangle}`.
+- Leurres des « choix » : une règle vraie au premier pas seulement (× k : « on ajoute u(k − 1) », escalier : « on
+  ajoute 2 »), l'alternance à l'envers, la somme des deux pas « à chaque fois », 4 allumettes par carré, 3 par
+  triangle.
+- `question:specs` 300 tirages par variation : 9 000 / 9 000, 62 specs vertes ; `sonde-figures` : 0 problème ;
+  schémas en barres passés à `parseSchemaBarresContent` et formules à `validateLatex` (sonde jetable) : 0 problème ;
+  `create-questions` en simulation (prod) : 8 « à créer ».
+- Base locale (copie du dossier, `.env.local`), **sous le verrou `supabase`** (`scripts/with-db-lock.sh`) : une autre
+  session a remis la base à zéro juste après ma première création, mes 8 brouillons ont disparu sans un mot. Aperçu
+  admin à 390 px (Playwright, onglet « Flash-card » puis « Voir la correction ») : balances, schémas, Scratch, suites,
+  motifs et choix rendus correctement. Piège zsh : `$ids` ne se découpe pas, écrire `${=ids}`.
