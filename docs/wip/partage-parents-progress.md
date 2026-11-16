@@ -4,10 +4,10 @@
 
 _Mis à jour le 2026-11-16, phase 0 ouverte (aucune PR)._
 
-- **État** : phase 0 ; tours 1 et 2 tranchés (quoi, qui, canal) ; tour 3 posé (Q7 à Q12).
-- **Prochaine action** : consigner le tour 3 ; ensuite comportements nominal / limite / erreur, question d'accès, découpage.
-- **En attente de David** : Q7 à Q12.
-- **Pièges en cours** : données d'élèves mineurs (RGPD) ; décision 8 du 2026-10-21 (« le parent ne voit rien du compte de l'enfant ») à rouvrir explicitement, pas en silence ; question d'accès « qui pourra lire quoi » avant tout SQL ; « Parent » absent de `CONTEXT.md`.
+- **État** : phase 0 ; tours 1 à 3 tranchés (quoi, qui, canal, règles, nom). « Carnet de liaison » et « Parent » ajoutés à `CONTEXT.md`.
+- **Prochaine action** : tour 4 — contenu précis du carnet (activité : quoi exactement), question d'accès, comportements nominal / limite / erreur, ADR, découpage en PR.
+- **En attente de David** : tour 4 (pas encore posé).
+- **Pièges en cours** : données d'élèves mineurs (RGPD) ; décision 8 du 2026-10-21 tient (le parent ne voit pas le compte) ; question d'accès « qui pourra lire quoi » avant tout SQL ; un ADR à écrire (frontière d'accès, données de mineurs).
 - **Worktree / branche** : aucun (phase 0, doc sur `main`).
 
 ## Origine
@@ -63,3 +63,12 @@ Né du chantier `presentation-parents` (point 8, « Comment le suivre ? »), le 
 - **Q10 — Un lien par parent ou par élève.**
 - **Q11 — Vacances** : pas d'alerte pendant les vacances scolaires (`school_holidays` existe).
 - **Q12 — Nom** de la page parent (terme pour `CONTEXT.md`).
+
+### 2026-11-16 (tour 3, recommandations suivies)
+
+- **Q7 — Exceptions** (seuils par défaut, réglables par le professeur par classe) : évaluation non faite à son échéance (`evaluations.deadline`) ; révisions en retard depuis plus de 7 jours ; aucune activité depuis 15 jours. **Plus un message positif une fois par trimestre** (que le courriel de Chiphre ne soit pas toujours une mauvaise nouvelle).
+- **Q8 — Adresses** : jusqu'à **deux**, **chacune confirmée** par son propre lien ; rien vers une adresse non confirmée. 1re/Tle : saisie par le professeur ou l'élève, confirmation par le parent (sans valeur de consentement).
+- **Q9 — Arrêt** : lien « ne plus recevoir » dans chaque courriel ; le carnet reste accessible.
+- **Q10 — Un lien par parent** (révocation séparée, ex. parents séparés ; traçabilité d'une fuite).
+- **Q11 — Vacances** : aucune alerte pendant les vacances scolaires (`school_holidays`), sauf échéance fixée par le professeur dans la période.
+- **Q12 — Nom** : **« Carnet de liaison »** (l'objet scolaire que les parents connaissent) ; le décor du Royaume reste dans l'illustration. Ajouté à `CONTEXT.md` avec « Parent ».
