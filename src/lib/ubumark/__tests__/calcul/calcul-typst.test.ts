@@ -2,7 +2,7 @@
  * Bloc ```calcul → Typst : le texte produit, et une compilation RÉELLE par le compilateur
  * typst.ts (celui de la production, en WebAssembly).
  *
- * Phase 0 (chantier `docs/wip/blockly-progress.md`, PR 5, Q4) : PDF = consigne + « À faire sur
+ * Phase 0 (chantier `docs/archive/wip/blockly-progress.md`, PR 5, Q4) : PDF = consigne + « À faire sur
  * Chiphre ». Ni le programme de référence, ni celui de départ (la fiche ne dit pas la réponse).
  *
  * Témoin : un document cassé est refusé, sinon ce test ne prouverait rien.

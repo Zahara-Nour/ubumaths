@@ -2,7 +2,7 @@
 	TortueProgramme.svelte
 	======================
 
-	Bloc ```tortue (chantier `blockly`, PR 4b ; journal `docs/wip/blockly-progress.md`) : l'élève
+	Bloc ```tortue (chantier `blockly`, PR 4b ; journal `docs/archive/wip/blockly-progress.md`) : l'élève
 	assemble des blocs tortue, sa réponse est son programme écrit en texte (`etatVersTexte`),
 	jugé sur le tracé par le serveur.
 

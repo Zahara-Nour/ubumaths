@@ -1,6 +1,6 @@
 /**
  * Question « programme de calcul » (bloc ```calcul, 5e ; chantier `blockly`, PR 5 ; journal
- * `docs/wip/blockly-progress.md`)
+ * `docs/archive/wip/blockly-progress.md`)
  *
  * Une case par bloc, réponse attendue = les nombres d'essai et le programme de référence
  * (`−3 ; 0 ; … | afficher (nombre + 2) × 4`), jamais écrite dans le modèle ; la réponse de

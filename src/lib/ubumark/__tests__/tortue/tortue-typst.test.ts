@@ -2,7 +2,7 @@
  * Bloc ```tortue → Typst : le texte produit, et une compilation RÉELLE par le compilateur
  * typst.ts (celui de la production, en WebAssembly).
  *
- * Phase 0 (chantier `docs/wip/blockly-progress.md`, PR 4) : consigne + figure modèle +
+ * Phase 0 (chantier `docs/archive/wip/blockly-progress.md`, PR 4) : consigne + figure modèle +
  * « À faire sur Chiphre ». Sans `montrer: oui`, aucune figure (elle dirait la réponse).
  *
  * Témoin : un document cassé est refusé, sinon ce test ne prouverait rien.

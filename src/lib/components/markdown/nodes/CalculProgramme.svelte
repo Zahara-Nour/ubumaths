@@ -2,7 +2,7 @@
 	CalculProgramme.svelte
 	======================
 
-	Bloc ```calcul (chantier `blockly`, PR 5b ; journal `docs/wip/blockly-progress.md`) : l'élève
+	Bloc ```calcul (chantier `blockly`, PR 5b ; journal `docs/archive/wip/blockly-progress.md`) : l'élève
 	assemble un programme de calcul en blocs, l'essaie sur les nombres qu'il veut ; sa réponse est
 	son programme écrit en texte (`etatVersTexteCalcul`), jugé par le serveur sur ce qu'il affiche
 	pour chaque nombre d'essai.
