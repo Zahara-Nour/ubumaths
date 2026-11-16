@@ -14,23 +14,13 @@ import { readFileSync } from 'node:fs';
 import type { Client } from 'pg';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { extractRollback } from '../helpers/database/migration-rollback';
+import { CONSIGNE_VERBS_2026_11_16 } from '../fixtures/lexique/verbes-consigne-2026-11-16';
 
 // Constantes
 
 const MIGRATION =
 	'supabase/migrations/20261116205041_dictionnaire_verbes_consigne_jamais_soulignes.sql';
-const VERBES = [
-	'calculer',
-	'comparer',
-	'vérifier',
-	'déterminer',
-	'ordonner',
-	'représenter',
-	'tracer',
-	'décomposer',
-	'convertir',
-	'justifier'
-];
+const VERBES = [...CONSIGNE_VERBS_2026_11_16];
 /** Notions : restent soulignables */
 const NOTIONS = ['résoudre', 'développer', 'factoriser', 'simplifier'];
 
