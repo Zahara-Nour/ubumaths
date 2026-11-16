@@ -2,9 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2727._
+_Mis à jour le 2026-11-16, après #2727 et les publications en prod — **chantier clos**._
 
-- **État** : piste 4e / 3e — PR A (#2716), B (#2719), C (#2723), **D (#2727) mergées** ; 9 brouillons en prod, rangés et tagués (`db:migrate` fait, vérifié) ; page à cocher publiée (https://claude.ai/artifact/HhrEdtV5TE2YPYZbCaXQFT) · **Prochaine action** : quand David a relu, compter les verdicts (`ArtifactData list verdicts`), corriger les « À revoir » ; publication (`publier-lot.ts`, par David) **après** le `deploy:prod` de #2719 · **En attente de David** : relecture de la page à cocher ; `deploy:prod` (livre #2700, #2707, #2716, #2719) ; puis `update-published-questions.ts --lot blockly-5-106` (simulation, `--publier`) ; vérifications manuelles en prod (`verifications-manuelles.md`) ; choix des PR A, B et C à relire · **Pièges en cours** : aucun modèle 4e / 3e **publié** avant le `deploy:prod` de #2719 ; lot 5-106 **après** le `deploy:prod` de #2700 ; la base locale porte les 9 modèles avec des ids LOCAUX · **Worktree / branche** : aucun (retiré après #2727)
+- **État** : clos le 2026-11-16 ; découpage validé recompté contre les PR mergées : PR 1 (#2627), tortue, bac à sable, geste « programme » tortue (4a / 4b) et calcul (5a / 5b), premiers modèles CM2 → 5e, nombre maximal de blocs (#2700, #2704), bac à sable des programmes de calcul, étanchéité (#2715), piste 4e / 3e (#2716, #2719, #2723, #2727) ; `deploy:prod` v0.91.0 ; 9 modèles 4e / 3e publiés ; doc durable : `docs/systeme/blockly.md`, ADR 0039 · **Prochaine action** : aucune · **En attente de David** : vérifications manuelles en prod (`verifications-manuelles.md`) · **Pièges en cours** : la base locale porte les 9 modèles 4e / 3e avec des ids LOCAUX · **Worktree / branche** : aucun
+
+## Suites (futurs chantiers, non ouverts — clôture du 2026-11-16)
+
+- **Tortue avec variables** (Q8 de la piste 4e / 3e) : piste à part.
+- **Blocs imposés** (« plus tard » du découpage de la PR 4) : jamais faits.
+- **Nombre maximal de blocs pour les programmes de calcul** : seulement si un modèle en a besoin
+  (« un bloc » y est flou).
+- **3-050 « Structurer des programmes »** : ni fonction ni bloc personnalisé ; classé « hors appli »
+  dans `outils-manquants.md` § 3.
+- **Ménage mineur** : README du module et types / constantes hérités de l'exécuteur retiré
+  (`OutputLine`, `ExecutionContext`, `TIMEOUT_JS`), notés dans `blockly.md`.
 
 ## Phase 0 — validée par David le 2026-11-14
 
@@ -103,7 +114,7 @@ David suit la recommandation (option 3) : les blocs tortue et calcul sont exécu
 **interpréteur de blocs écrit par Chiphre** (parcours de l'arbre des blocs, pas de JavaScript
 évalué) — rien à évader ; il sert aussi à rejouer le tracé pour la correction par segments. Le JS /
 Python généré reste affiché en aperçu. Options écartées : durcir le worker (course aux
-contournements), interpréteur JS isolé (dépendance, lenteur). Figée : [ADR 0039](../adr/0039-blocs-interpretes-par-chiphre.md).
+contournements), interpréteur JS isolé (dépendance, lenteur). Figée : [ADR 0039](../../adr/0039-blocs-interpretes-par-chiphre.md).
 
 ## PR 2 — la tortue (branche `feat/blockly-tortue`, worktree `ubumaths-wt-blockly`)
 
@@ -112,7 +123,7 @@ suivent les recommandations).
 
 - **Blocs** : avancer de n, reculer de n, tourner à droite de n°, tourner à gauche de n°, lever le
   stylo, baisser le stylo ; « répéter n fois » et « nombre » de Blockly, exécutés par
-  l'interpréteur ([ADR 0039](../adr/0039-blocs-interpretes-par-chiphre.md)).
+  l'interpréteur ([ADR 0039](../../adr/0039-blocs-interpretes-par-chiphre.md)).
 - **Unité** : 1 = **un carreau** (tranché). **Quadrillage fixe 20 × 20** (tranché), tortue au
   centre, orientée vers la droite, stylo baissé ; ce qui sort du cadre est coupé et signalé.
 - **Tracé instantané** (tranché) ; l'animation viendra avec le bac à sable (PR 3).

@@ -1,7 +1,7 @@
 """Blockly 4e / 3e, rangement : migration 20261116183439_questions_blockly_4e_3e_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-16-blockly-4e-3e/` (docs/wip/questions-5/releve-prod.ts) et
-applique les décisions de David du 2026-11-16 (journal `docs/wip/blockly-progress.md` § PR C, PR D)
+applique les décisions de David du 2026-11-16 (journal `docs/archive/wip/blockly-progress.md` § PR C, PR D)
 sur 9 modèles : les 9 brouillons Blockly de 4e et de 3e (scripts/questions/blockly-4e-3e/, #2723),
 créés sans nœud ni tag le 2026-11-16, chacun sur le nœud de son point, tag posé, aucun nœud créé.
 Gabarit : docs/wip/questions-5/lot-15-rangement.py.
@@ -165,7 +165,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangés sur un nœud, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré, {N_POSES} posés. Aucun
 -- statut ne change (9 brouillons). Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-16 (journal docs/wip/blockly-progress.md § PR C : « une PR
+-- Phase 0 validée par David le 2026-11-16 (journal docs/archive/wip/blockly-progress.md § PR C : « une PR
 -- ids de prod + migration (nœud du point + tag) » ; aucun nœud créé). Les 9 brouillons ont été créés
 -- le 2026-11-16 par David avec scripts/create-questions.ts (scripts/questions/blockly-4e-3e/, #2723),
 -- qui ne pose ni nœud ni tag. Fichier GÉNÉRÉ par docs/wip/questions/lot-blockly-4e-3e-rangement.py

@@ -1,6 +1,6 @@
 """Écrit les 3 modèles du lot « prévoir la valeur » dans scripts/questions/blockly-prevoir-valeur/.
 
-Lot porté par le chantier `blockly` (journal docs/wip/blockly-progress.md § Prévoir la valeur,
+Lot porté par le chantier `blockly` (journal docs/archive/wip/blockly-progress.md § Prévoir la valeur,
 David le 2026-11-15 : « je te suis ») ; un point par modèle (ADR 0020) :
 
 | #  | Point   | Titre                               | Niveau scolaire | Niveau |
