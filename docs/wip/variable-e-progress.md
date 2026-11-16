@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, PR du lot `variable-e` ouverte._
+_Mis à jour le 2026-11-16, après #2728._
 
-- **État** : #2725 mergée (fichiers + garde). `create-questions --mettre-a-jour` REFUSE un modèle publié : la prod
-  n'avait pas bougé. Lot `variable-e` ajouté à `update-published-questions.ts` (instantanés prod renommés, égaux aux
-  fichiers de #2725 ; simulation : 5 cibles, specs vertes, `variations` + `testSpecs` seuls).
-- **Prochaine action** : merge ; David lance `update-published-questions.ts --lot variable-e --publier` ; relire au MCP
-  qu'aucun modèle ne déclare plus `e` ; archiver ce journal.
+- **État** : #2725 (fichiers + garde) et #2728 (lot `variable-e` de `update-published-questions.ts`) mergées ;
+  simulation verte (5 cibles). Prod pas encore écrite.
+- **Prochaine action** : David lance `pnpm tsx scripts/update-published-questions.ts --lot variable-e --publier`
+  depuis le dépôt principal ; relire au MCP qu'aucun modèle ne déclare plus `e` ; archiver ce journal.
 - **Pièges en cours** : modèle PUBLIÉ → `update-published-questions.ts` (lot déclaré), jamais `create-questions`.
-- **Worktree / branche** : `../ubumaths-wt-variable-e-prod`, branche `fix/variable-e-prod`.
+- **Worktree / branche** : aucun (retirés).
 
 ---
 
