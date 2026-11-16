@@ -260,3 +260,9 @@ Questions (recommandation en premier) :
 - Route `api/cron/carnet-de-liaison` (`vercel.json` `0 16 * * *`), liste blanche du déclencheur admin, page admin.
 - Tests : `tests/integration/carnet-passage-quotidien.test.ts` (3, Brevo simulé ; mutation « échec compté comme envoi » → le test E6 rougit), route (3), gabarits (5 de plus).
 - E6 rejets différés : pas de webhook Brevo, écrit en « Limites connues » de `carnet-de-liaison.md` (ce n'est pas un outil pédagogique : rien dans `outils-manquants.md`).
+- Revues de la 4b (2026-11-16), `security-auditor` et `code-reviewer` (Opus) : **aucun finding bloquant**. Corrigés :
+  - deux passages simultanés (cron + bouton de l'admin) envoyaient deux fois : un passage `running` de moins de 30 min → 409 ;
+  - un courriel parti mais resté « failed » échappait au plafond : la ligne est écrite « sent » avant l'envoi et repassée « failed » si Brevo refuse ;
+  - budget négatif (des échecs de base comptés comme courriels) : seuls les courriels tentés comptent, budget borné à 0 ; test « les liens épuisent le budget » ;
+  - objet du courriel sans caractère de contrôle ; « Votre enfant » en début de phrase ; inactivité « ces N derniers jours de classe » (la règle SQL se déclenche à N exactement) ; trimestriel sans « Une bonne nouvelle ».
+- Laissés, à dire à David : plafond par adresse ET par élève (deux enfants → deux courriels possibles le même jour) ; pas de `maxDuration` (la valeur par défaut de Vercel suffit pour un professeur ; à revoir si le passage grossit).

@@ -205,6 +205,17 @@ export function getCarnetStopLink(token: string): string {
 	return `${getCarnetLink(token)}#courriels`;
 }
 
+/** Prénom pour l'objet d'un courriel : ni retour à la ligne ni caractère de contrôle. */
+function subjectName(firstname: string): string {
+	// eslint-disable-next-line no-control-regex
+	return firstname.replace(/[\u0000-\u001f\u007f]+/g, ' ').trim();
+}
+
+/** Majuscule en début de phrase (« votre enfant » quand le prénom manque). */
+function sentence(text: string): string {
+	return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 /** Une phrase par motif ; jamais plus que ce que montre le carnet (E5). */
 export function carnetExceptionPhrase(
 	reason: CarnetExceptionReason,
@@ -212,19 +223,22 @@ export function carnetExceptionPhrase(
 ): string {
 	switch (reason) {
 		case 'evaluation_missed':
-			return `${data.studentFirstname} n'a pas fait une évaluation avant son échéance.`;
+			return sentence(`${data.studentFirstname} n'a pas fait une évaluation avant son échéance.`);
 		case 'reviews_overdue':
 			return `Des révisions de ${data.studentFirstname} attendent depuis plus de ${data.overdueDays} jours.`;
 		case 'inactivity':
-			return `${data.studentFirstname} n'a pas travaillé sur Chiphre depuis plus de ${data.inactivityDays} jours de classe.`;
+			return sentence(
+				`${data.studentFirstname} n'a pas travaillé sur Chiphre ces ${data.inactivityDays} derniers jours de classe.`
+			);
 	}
 }
 
 /** Q34 : seulement les phrases vraies, sans aucun nombre. */
 export function carnetQuarterlyPhrases(data: CarnetQuarterlyEmailData): string[] {
 	const phrases: string[] = [];
-	if (data.regular)
-		phrases.push(`${data.studentFirstname} a travaillé régulièrement ce trimestre.`);
+	if (data.regular) {
+		phrases.push(sentence(`${data.studentFirstname} a travaillé régulièrement ce trimestre.`));
+	}
 	if (data.reviewsUpToDate) phrases.push('Ses révisions sont à jour.');
 	return phrases;
 }
@@ -285,7 +299,7 @@ ${items}
 const EXCEPTION_INTRO = 'Un point mérite votre attention cette semaine :';
 
 export function getCarnetExceptionSubject(data: CarnetExceptionEmailData): string {
-	return `Carnet de liaison de ${data.studentFirstname} : un point d'attention`;
+	return `Carnet de liaison de ${subjectName(data.studentFirstname)} : un point d'attention`;
 }
 
 export function getCarnetExceptionEmailText(data: CarnetExceptionEmailData): string {
@@ -300,10 +314,10 @@ export function getCarnetExceptionEmailHtml(data: CarnetExceptionEmailData): str
 
 // --- Message trimestriel (E4, Q34) --------------------------------------------
 
-const QUARTERLY_INTRO = 'Le trimestre vient de se terminer. Une bonne nouvelle :';
+const QUARTERLY_INTRO = 'Le trimestre vient de se terminer :';
 
 export function getCarnetQuarterlySubject(data: CarnetQuarterlyEmailData): string {
-	return `Carnet de liaison de ${data.studentFirstname} : le trimestre`;
+	return `Carnet de liaison de ${subjectName(data.studentFirstname)} : le trimestre`;
 }
 
 export function getCarnetQuarterlyEmailText(data: CarnetQuarterlyEmailData): string {

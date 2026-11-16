@@ -237,6 +237,23 @@ describe('carnet de liaison — passage quotidien (base locale)', () => {
 		expect(envois.exception.filter((e) => e.to === `p-capucine@${DOMAINE}`)).toHaveLength(2);
 	});
 
+	it('plafond partagé : les liens manquants épuisent le budget, aucune exception ne part (Q36)', async () => {
+		const consenti = await nouvelEleve('Fanny');
+		await insertId('parental_consents', {
+			student_id: consenti,
+			parent_email: `p-fanny@${DOMAINE}`,
+			status: 'granted',
+			consent_given_at: new Date().toISOString()
+		});
+		const inactif = await nouvelEleve('Gilles');
+		await parentConfirme(inactif, `p-gilles@${DOMAINE}`);
+
+		const rapport = await runCarnetDaily(service, 1);
+		expect(envois.link.length + envois.exception.length).toBe(1);
+		expect(rapport.capped).toBe(true);
+		expect(rapport.quarterly).toEqual({ sent: 0, failed: 0 });
+	});
+
 	it('plafond du passage : au plus N courriels, le reste demain (Q36)', async () => {
 		const a = await nouvelEleve('Doriane');
 		await parentConfirme(a, `p-doriane@${DOMAINE}`);

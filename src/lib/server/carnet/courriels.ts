@@ -22,8 +22,12 @@
  * Chaque courriel d'exception ou trimestriel porte son PROPRE jeton (Q38) :
  * 32 octets aléatoires, haché sur sa ligne de `parent_notifications`, qui ouvre
  * le carnet et arrête les courriels tant que le lien actif au moment de l'envoi
- * vit. La ligne est écrite AVANT l'envoi (« failed »), puis passée à « sent » :
- * un courriel parti a toujours un jeton valable.
+ * vit. La ligne est écrite AVANT l'envoi, en « sent », et repassée en « failed »
+ * si Brevo refuse : un courriel parti a toujours un jeton valable, et le
+ * plafond hebdomadaire le compte même si le passage est coupé juste après.
+ *
+ * Deux passages ne tournent jamais ensemble (cron + bouton de l'admin) : le
+ * second voit le premier dans `background_job_runs` et s'arrête.
  */
 
 import { z } from 'zod';
@@ -112,7 +116,7 @@ async function sendWithToken(
 	const token = generateCarnetToken();
 	const { data: inserted, error } = await service
 		.from('parent_notifications')
-		.insert({ ...row, status: 'failed', access_token_hash: hashCarnetToken(token) })
+		.insert({ ...row, status: 'sent', access_token_hash: hashCarnetToken(token) })
 		.select('id')
 		.single();
 	if (error || !inserted) {
@@ -121,18 +125,18 @@ async function sendWithToken(
 	}
 
 	const sent = await send(token);
-	if (!sent.success) return false;
+	if (sent.success) return true;
 
 	const { data: updated, error: updateError } = await service
 		.from('parent_notifications')
-		.update({ status: 'sent' })
+		.update({ status: 'failed' })
 		.eq('id', inserted.id)
 		.select('id');
 	if (updateError || !updated?.length) {
-		// Le courriel est parti ; seul le plafond hebdomadaire l'ignorera.
-		logger.error('[parent_notifications] envoi non marqué', updateError ?? 'aucune ligne');
+		// Reste « sent » : le plafond retient une semaine de trop, rien ne part en double.
+		logger.error('[parent_notifications] échec non marqué', updateError ?? 'aucune ligne');
 	}
-	return true;
+	return false;
 }
 
 /** 1. Effacement des adresses orphelines (Q35). */
@@ -162,7 +166,7 @@ async function sendMissingLinks(
 	}
 
 	for (const { class_id } of classes ?? []) {
-		const left = budget - total.sent - total.failed;
+		const left = budget - total.sent;
 		if (left <= 0) break;
 		try {
 			const result = await sendClassMissingLinks(class_id, service, left);
@@ -199,7 +203,7 @@ async function sendExceptions(
 	}
 
 	const total = { sent: 0, failed: 0 };
-	for (const row of plan.data.slice(0, budget)) {
+	for (const row of plan.data.slice(0, Math.max(0, budget))) {
 		const outcome = await sendWithToken(
 			service,
 			{
@@ -257,9 +261,9 @@ async function sendQuarterly(
 	}
 
 	const total = { sent: 0, failed: 0 };
-	for (const row of plan.data.slice(0, budget)) {
-		// Rien de vrai à dire : rien ne part (la fonction SQL l'écarte déjà).
-		if (!row.regular && !row.reviews_up_to_date) continue;
+	// Rien de vrai à dire : rien ne part (la fonction SQL l'écarte déjà).
+	const rows = plan.data.filter((row) => row.regular || row.reviews_up_to_date);
+	for (const row of rows.slice(0, Math.max(0, budget))) {
 		const outcome = await sendWithToken(
 			service,
 			{ student_id: row.student_id, contact_id: row.contact_id, kind: 'quarterly', reasons: [] },
@@ -293,13 +297,15 @@ export async function runCarnetDaily(
 		capped: false
 	};
 	const errors: unknown[] = [];
+	// Courriels tentés. Les échecs des liens manquants mêlent des erreurs de
+	// base (aucun courriel) : seuls les liens partis comptent.
 	const used = () =>
 		report.links.sent +
-		report.links.failed +
 		report.exceptions.sent +
 		report.exceptions.failed +
 		report.quarterly.sent +
 		report.quarterly.failed;
+	const remaining = () => Math.max(0, maxEmails - used());
 
 	try {
 		report.erased = await eraseOrphans(service);
@@ -312,16 +318,16 @@ export async function runCarnetDaily(
 		errors.push(err);
 	}
 	try {
-		report.exceptions = await sendExceptions(service, maxEmails - used());
+		report.exceptions = await sendExceptions(service, remaining());
 	} catch (err) {
 		errors.push(err);
 	}
 	try {
-		report.quarterly = await sendQuarterly(service, maxEmails - used());
+		report.quarterly = await sendQuarterly(service, remaining());
 	} catch (err) {
 		errors.push(err);
 	}
-	report.capped = used() >= maxEmails;
+	report.capped = remaining() === 0;
 
 	if (errors.length > 0) {
 		logger.error('[runCarnetDaily] étapes en échec', errors.length, report);

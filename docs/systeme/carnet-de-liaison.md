@@ -120,13 +120,17 @@ seulement). Module `src/lib/server/carnet/courriels.ts` (`runCarnetDaily`), dans
    plafond ; « a travaillé régulièrement » (un jour actif dans 2 semaines de classe sur 3) et
    « révisions à jour », sans aucun nombre ; rien de vrai → rien ne part.
 
-Au plus 150 courriels par passage (la moitié du quota Brevo), le reste le lendemain. Courriels :
+Au plus 150 courriels par passage (la moitié du quota Brevo), le reste le lendemain ; seuls les
+courriels tentés comptent. Deux passages ne tournent jamais ensemble : un passage `running` de
+moins de 30 min dans `background_job_runs` fait répondre 409 au suivant (cron et bouton de
+l'admin). Courriels :
 `getCarnetExceptionEmail*`, `getCarnetQuarterlyEmail*` (`src/lib/email-templates/carnet.ts`),
 une phrase par motif, jamais plus que le carnet.
 
 **Jeton d'un courriel** (Q38) : chaque courriel d'exception ou trimestriel porte son propre
-jeton, haché dans `parent_notifications.access_token_hash` (ligne écrite « failed » avant
-l'envoi, passée « sent » après). `carnet_contact_by_token` accepte le lien du parent ou ce
+jeton, haché dans `parent_notifications.access_token_hash` (ligne écrite « sent » avant
+l'envoi, repassée « failed » si Brevo refuse : un courriel parti compte toujours dans le plafond,
+même si le passage est coupé). `carnet_contact_by_token` accepte le lien du parent ou ce
 jeton, tant que le lien qui était actif au moment de l'envoi vit : un lien neuf (retrait puis
 ressaisie, rentrée, lien perdu) ne ranime pas les anciens courriels. Le courriel mène au carnet
 et à son bas (`#courriels`, bouton « Ne plus recevoir ») ; en-tête `List-Unsubscribe` vers ce
@@ -138,6 +142,11 @@ formulaire sans `Origin` de notre site (Q39).
 - Les rejets définitifs que Brevo signale **après** l'envoi ne marquent pas l'adresse
   `invalid` (pas de webhook Brevo) ; seuls les échecs immédiats sont journalisés.
 - `access_count` du lien compte aussi les ouvertures par le jeton d'un courriel.
+- Le plafond d'un courriel par semaine vaut par adresse **et par élève** : un parent de deux
+  élèves peut recevoir deux courriels le même jour ; un lien et un courriel d'exception peuvent
+  partir le même jour (Q33 : les liens ne comptent pas).
+- Épisodes non marqués après un envoi réussi (erreur de base) : journalisé, ils repartent une
+  semaine plus tard.
 - Arrêter puis reprendre les courriels resignale une exception encore en cours ; un élève
   arrivé en cours d'année est jugé inactif depuis la rentrée de l'école ; une évaluation sans
   échéance jamais faite reste dans le carnet d'une année sur l'autre (Q27).

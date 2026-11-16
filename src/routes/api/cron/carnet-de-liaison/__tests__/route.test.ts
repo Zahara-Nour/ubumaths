@@ -10,8 +10,16 @@ vi.mock('$lib/server/env', () => ({ getEnv: vi.fn() }));
 vi.mock('$lib/server/carnet/courriels', () => ({ runCarnetDaily: vi.fn() }));
 
 const rpc = vi.fn();
+// Passages en cours : `from('background_job_runs').select().eq().eq().gte().limit()`
+const enCours = vi.fn();
+const chaine = {
+	select: () => chaine,
+	eq: () => chaine,
+	gte: () => chaine,
+	limit: () => enCours()
+};
 vi.mock('$lib/server/serviceRoleClient', () => ({
-	createServiceRoleClient: () => ({ rpc })
+	createServiceRoleClient: () => ({ rpc, from: () => chaine })
 }));
 
 const SECRET = 'test-secret-12345678901234567890';
@@ -33,6 +41,7 @@ beforeEach(() => {
 	vi.clearAllMocks();
 	vi.mocked(getEnv).mockReturnValue({ CRON_SECRET: SECRET } as ReturnType<typeof getEnv>);
 	rpc.mockResolvedValue({ data: 'run-1', error: null });
+	enCours.mockResolvedValue({ data: [], error: null });
 });
 
 describe('api/cron/carnet-de-liaison', () => {
@@ -54,6 +63,22 @@ describe('api/cron/carnet-de-liaison', () => {
 			p_status: 'success',
 			p_metadata: RAPPORT
 		});
+	});
+
+	it('un passage déjà en cours : 409, rien ne part (pas deux courriels au même parent)', async () => {
+		enCours.mockResolvedValue({ data: [{ id: 'run-0' }], error: null });
+		const response = await POST(event({ authorization: `Bearer ${SECRET}` }));
+		expect(response.status).toBe(409);
+		expect(runCarnetDaily).not.toHaveBeenCalled();
+		expect(rpc).not.toHaveBeenCalled();
+	});
+
+	it('journal non ouvert : le passage a lieu quand même', async () => {
+		rpc.mockResolvedValue({ data: null, error: { message: 'journal indisponible' } });
+		vi.mocked(runCarnetDaily).mockResolvedValue(RAPPORT);
+		const response = await GET(event({ authorization: `Bearer ${SECRET}` }));
+		expect(await response.json()).toEqual({ success: true, report: RAPPORT });
+		expect(rpc).not.toHaveBeenCalledWith('complete_job_run', expect.anything());
 	});
 
 	it('un échec est journalisé en échec, sans détail vers l’appelant', async () => {

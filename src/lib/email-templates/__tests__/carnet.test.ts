@@ -82,7 +82,7 @@ describe("courriel d'exception (E1, E5, Q38)", () => {
 		expect(getCarnetExceptionSubject({ ...data, reasons: [...data.reasons] })).toContain('Léa');
 		expect(text).toContain("Léa n'a pas fait une évaluation avant son échéance.");
 		expect(text).toContain('depuis plus de 7 jours.');
-		expect(text).toContain('depuis plus de 15 jours de classe.');
+		expect(text).toContain('ces 15 derniers jours de classe.');
 		expect(text).toContain(`https://www.chiph.re/carnet/${JETON}\n`);
 		expect(text).toContain(`https://www.chiph.re/carnet/${JETON}#courriels`);
 		expect(getCarnetStopLink(JETON)).toBe(`https://www.chiph.re/carnet/${JETON}#courriels`);
@@ -103,6 +103,17 @@ describe("courriel d'exception (E1, E5, Q38)", () => {
 		});
 		expect(html).not.toContain('<b>Léa</b>');
 		expect(html).toContain('&lt;b&gt;Léa&lt;/b&gt;');
+	});
+
+	it('prénom manquant : « Votre enfant » en début de phrase ; objet sans retour à la ligne', () => {
+		const sans = { ...data, studentFirstname: 'votre enfant' };
+		expect(carnetExceptionPhrase('inactivity', sans)).toMatch(/^Votre enfant /);
+		const objet = getCarnetExceptionSubject({
+			...data,
+			reasons: ['inactivity'],
+			studentFirstname: 'Léa\r\nBcc: x@example.test'
+		});
+		expect(objet).not.toMatch(/[\r\n]/);
 	});
 
 	it('chaque motif a sa phrase', () => {
