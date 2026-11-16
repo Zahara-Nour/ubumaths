@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-16, après #2732._
 
-- **État** : R1–R6 validées ; **R5 en prod** (#2732 mergée, `db:migrate` fait et vérifié le 2026-11-16 : 10 verbes à `auto_link = false`, notions intactes) ; R1–R4 : phase 0, aucun code · **Prochaine action** : réponses de David à Q1–Q2 et validation N1–E1 et B1–B7, puis tests rouges (R6 d'abord) · **En attente de David** : Q1–Q2, validation N1–E1 et B1–B7 · **Pièges en cours** : le niveau de lecture sert aussi au choix des définitions montrées (Q1) ; un test qui compare la base au jeu de référence figé applique `withConsigneVerbs` (`tests/fixtures/lexique/verbes-consigne-2026-11-16.ts`) · **Worktree / branche** : aucun (retiré après #2732) ; prochaine PR → nouveau worktree `ubumaths-wt-mots-cliquables`
+- **État** : R1–R6 validées ; **R5 en prod** (#2732 mergée, `db:migrate` fait et vérifié le 2026-11-16 : 10 verbes à `auto_link = false`, notions intactes) ; R1–R4 : phase 0, aucun code · **Prochaine action** : nouveau worktree, tests rouges de R6 (B1–B7) puis R1–R4 (N1–L4, E1), implémentation, `code-reviewer` · **En attente de David** : rien · **Pièges en cours** : le niveau de lecture sert aussi au choix des définitions montrées (Q1) ; un test qui compare la base au jeu de référence figé applique `withConsigneVerbs` (`tests/fixtures/lexique/verbes-consigne-2026-11-16.ts`) · **Worktree / branche** : aucun (retiré après #2732) ; prochaine PR → nouveau worktree `ubumaths-wt-mots-cliquables`
 
 ## Origine
 
@@ -55,7 +55,7 @@ Mesures (base locale = copie de la prod, 2 297 modèles publiés) :
   - Pas de critère de fréquence en plus : R1 allège déjà la vue affichée.
   - Ordre : R6 d'abord (lecture digeste tout de suite), R1, R2, R4 dans la même PR ou juste après.
 
-## Phase 0 — comportements (à valider)
+## Phase 0 — comportements (validés par David le 2026-11-16)
 
 Nominal :
 
@@ -93,9 +93,11 @@ Erreur :
 - **E1** Niveau de lecture inconnu (question sans niveau, profil sans niveau) : aucun mot souligné
   (aujourd'hui : aucun aussi, `lexiconGrade` rend `null`).
 
-## Questions (en attente de David)
+## Questions (tranchées par David le 2026-11-16 : oui aux deux recos)
 
-- **Q1 : la fiche montrée au clic.** R3 change aussi les définitions affichées à un prof ou un visiteur
+- **Q1 → oui** : prof et visiteur, plus petit niveau pour la fiche, plus haut pour choisir quoi souligner.
+- **Q2 → oui** : rien de souligné dans la correction (revient sur la décision 4 du 2026-10-08).
+- Texte d'origine — **Q1 : la fiche montrée au clic.** R3 change aussi les définitions affichées à un prof ou un visiteur
   (aujourd'hui les plus simples, celles du plus petit niveau). Garder le plus petit niveau pour la fiche
   et le plus haut pour choisir quoi souligner ? Reco : oui, deux usages distincts.
 - **Q2 : R2 revient sur la décision 4 du 2026-10-08** (« définitions disponibles … corrections »).
@@ -110,4 +112,5 @@ Erreur :
 
 - 2026-11-16 : chantier ouvert (retour de David sur `/dev/corrections`), mesures, R1–R3 validées ; R4 (question de cours) validée ; R5 (verbes de consigne) validée, faite en local.
 - 2026-11-16 : #2732 (migration R5) mergée ; `db:migrate` appliqué et vérifié en prod.
+- 2026-11-16 : Q1, Q2 tranchées (oui) ; N1–E1 et B1–B7 validés.
 - 2026-11-16 : R6 validée (masqué par défaut, bouton sur la carte, mémoire de l'appareil ; doigt : non cliquable masqué ; prof : même défaut) ; B1–B7 écrits.
