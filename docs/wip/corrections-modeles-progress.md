@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, à l'ouverture du chantier._
+_Mis à jour le 2026-11-16, après l'état des lieux._
 
-- **État** : chantier ouvert, phase 0 (étude), aucun code · **Prochaine action** : faire l'état des lieux (§ Étude) puis poser à David les questions de phase 0 · **En attente de David** : Q1 à Q3 ci-dessous · **Pièges en cours** : ne pas refaire ce que l'ADR 0017 et Q91–Q101 ont déjà tranché ; le dire si une proposition y revient · **Worktree / branche** : aucun (étude seulement) ; au premier code → `ubumaths-wt-corrections-modeles`
+- **État** : phase 0, état des lieux fait (§ Étude), aucun code · **Prochaine action** : réponses de David aux Q1–Q5, puis découpage · **En attente de David** : Q1 à Q5 ci-dessous · **Pièges en cours** : ne pas refaire ce que l'ADR 0017 et Q91–Q101 ont déjà tranché ; le dire si une proposition y revient · **Worktree / branche** : aucun (étude seulement) ; au premier code → `ubumaths-wt-corrections-modeles`
 
 ## Origine
 
@@ -32,17 +32,43 @@ détaillée. Ce chantier ne se contente pas de marquer les 30 cartes : il repren
   détaillée), places selon la situation (Q91), présentation des réponses fausses (Q92–Q93), résultat attendu
   construit automatiquement (Q94), correction d'une carte de cours (Q96).
 
-## Étude (à faire)
+## Étude (faite le 2026-11-16)
 
-- [ ] Prod : combien de modèles ont des étapes écrites à la main (mode A), combien utilisent `generatedSteps`
-      (mode B), combien ont au moins un marqueur de détail.
-- [ ] Code : où chaque situation affiche la correction aujourd'hui, et ce que chacune fait des détails
-      (relevé à faire dans le code, pas dans la doc).
-- [ ] mathAST : quelles familles de modèles une correction générée sait traiter (calcul, développement,
-      équation…), et ce qu'elle produit en `summarized` et en `detailed`. Comparer avec les corrections
-      écrites à la main sur un échantillon de modèles publiés.
-- [ ] Cartes de cours : une correction générée n'a pas de sens pour une connaissance. Que faut-il marquer
-      comme détail sur ces cartes (démonstration, rappel, exemple) ?
+- [x] **Prod** (MCP lecture seule, 2026-11-16) : 2 442 modèles (2 297 publiés, 145 brouillons ; types
+      `fill_in_blanks` et `course_card`, 10 cartes de cours dont 6 brouillons « Cours : … »).
+  - Mode A : 2 220 publiés et 145 brouillons ont des étapes écrites (2,5 étapes en moyenne).
+  - **Mode B : 0** modèle avec `generatedSteps`.
+  - **Marqueurs de détail : 0** (`\detail{`, `[!…]`, `]{.…}` cherchés dans tout le JSON) → l'interrupteur
+    n'est jamais apparu à un élève en prod.
+  - 51 publiés n'ont **aucune** correction (seulement la réponse attendue, ex. « Calcule $4a$ »).
+  - Les 30 « Cours : … » de `cours-suites` = 6 `course_card` + 24 `fill_in_blanks`, tous brouillons.
+- [x] **Code** (relevé dans `src/`, vérifié par sondage) :
+  - **Concise + interrupteur** (`CorrectionView`) : flash-cards (`FlashCard`), révision SRS, grille En classe,
+    `CorrectionCard` (résultats d'Entraînement, résultats d'évaluation élève et prof), cartes de cours
+    (`CourseCardBack`). → La partie « autres affichages » du lot 2 est **déjà faite**.
+  - **Détaillée seule** : aperçu de l'éditeur (`QuestionPreview.svelte:60`), `/dev/apercu-question`
+    (`QuestionPreviewBaseCard`) → **reste du lot 2 = D10** (le prof voit les deux vues dans l'aperçu).
+    `QuestionCompareView` n'existe plus.
+  - PDF : corrigés d'exercices toujours en détaillée (`render-exercise.ts:457`) ; `serie-automatismes.ts`
+    garde les marqueurs bruts mais n'a aucun appelant hors tests.
+  - **Mode B** : affiché seulement par `CorrectionCard:404` et `CourseCardBack:31`. `FlashCard`, SRS et
+    l'aperçu ignorent `_renderedSteps` → un modèle en mode B sans étapes écrites y apparaîtrait **sans
+    correction**. `verbosity: 'summarized'` n'est passé nulle part (défaut `detailed`) ; le `feedback` qui
+    suit les étapes générées est rendu sans transformation des marqueurs.
+- [x] **mathAST** (`generator/correction-generator.ts:106`, 12 `kind`) : calcul (opérations, fractions,
+      puissances, racines, notation scientifique), équations 1er et 2nd degré, inéquations (1er, 2nd degré,
+      rationnelles, tableaux de signes), dérivée, primitive/intégrale, simplifier (factoriser, développer,
+      réduire), limite, ensemble de définition.
+  - `summarized` ≠ `detailed` : en général les mêmes étapes **sans le texte d'explication** ; seul
+    « développer » fusionne des lignes. Aucun test ne montre une sortie `summarized` hors développement.
+  - Échec du moteur → repli silencieux sur le mode A (`console.warn`) ; le mode A l'emporte toujours.
+  - **Périmètre en prod, estimé d'après le verbe de l'énoncé** (grossier) : calculer 317, équation 65,
+    inéquation 36, limite 26, réduire 25, développer 24, dériver 23, intégrer 22, factoriser 14 → **≈ 550 des
+    2 297 publiés (~24 %)** ; ≈ 1 740 autres (numération, géométrie, problèmes, fonctions, cours…).
+  - Échantillon de corrections écrites : figures (` ```courbe `, ` ```trig `), raisonnement (« la fonction cube
+    est strictement croissante… »), conditions `{{if:…}}` selon les valeurs. Le moteur ne produit rien de cela.
+- [x] **Cartes de cours** : déjà tranché par **Q96** (concise = la réponse de cours ; détail = explication,
+      exemple, contre-exemple, lien avec la méthode). Reste à **marquer** les cartes, rien à décider.
 
 ## Questions de phase 0 (en attente de David)
 
@@ -53,7 +79,13 @@ détaillée. Ce chantier ne se contente pas de marquer les 30 cartes : il repren
   Le prof peut-il choisir modèle par modèle ?
 - **Q3 : les 30 cartes de `cours-suites`.** Leur publication attend-elle la fin de ce chantier, ou peuvent-elles
   sortir avec une correction concise identique à la détaillée (cas D4 de l'ADR, prévu) ?
+- **Q4 : marquer l'existant.** 0 des 2 365 corrections écrites n'a de marqueur. Les marque-t-on par lots
+  (proposition de marquage relue par David sur une page à cocher, niveau par niveau), ou seulement au fil
+  des nouveaux modèles et des retouches ?
+- **Q5 : les 51 modèles publiés sans correction.** Leur écrit-on une correction (ou une correction générée,
+  ce sont des calculs), ou la réponse attendue suffit-elle ?
 
 ## Journal
 
+- 2026-11-16 : état des lieux (prod, code, mathAST) ; lot 2 réduit à l'aperçu prof (D10) ; Q4–Q5 ajoutées.
 - 2026-11-16 : chantier ouvert à la demande de David ; renvoi depuis `cours-suites` (retour A1 (2)).
