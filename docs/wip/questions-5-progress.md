@@ -5,16 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, après la publication du lot 14._
+_Mis à jour le 2026-11-16, après #2714 (lot 15 écrit, mergé)._
 
-- **État** : lots 1 à 14 publiés (lot 14 « Parallélogrammes » : 7 modèles `published`, vérifié au MCP). Restent :
-  lot 15 (6 : 054, 055, 115, 144, 048, 049), 9 D, 101 et 104 (chantier `blockly`) — § 27 quinquies.
-- **Prochaine action** : phase 0 du lot 15 (relevé prod, tableau des modèles, questions), puis attendre la validation.
-- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la main (aperçu de `ef08a256`).
-- **Pièges en cours** : `create-questions --publier` depuis le worktree du chantier (`pwd`) ; `--publier` en LOCAL
-  écrit les id locaux → copie au scratchpad ; serveur de dev sur `--host 127.0.0.1` pour Chrome ; jamais `e` ;
-  retirer un worktree casse le terminal de David s'il y est encore : donner les commandes avec `cd` du dépôt principal.
-- **Worktree / branche** : aucun ; le lot 15 part d'un worktree neuf `../ubumaths-wt-questions-5`.
+- **État** : lots 1 à 14 publiés ; lot 15 « Symétrie centrale, aires, solides » écrit (8 brouillons,
+  `scripts/questions/5-symetrie-aires-solides/`, § 30 ter), pas encore en prod. Restent : 9 D, 101 et 104 (`blockly`).
+- **Prochaine action** : après le `--publier` de David, commiter les id, migration de rangement (gabarit lot 14 :
+  01-03 → « Symétrie centrale », 04-05 → notion « Aires », 06-07 → « perspective cavalière », 08 → « patrons » n3),
+  page à cocher, publication.
+- **En attente de David** : (1) `create-questions --dir scripts/questions/5-symetrie-aires-solides --publier` depuis le
+  worktree ; (2) `--dir scripts/questions/5-parallelogrammes --publier --mettre-a-jour` (02 du lot 14 : variable `e`) ;
+  (3) corriger `e` dans `d5a36be9`, `092b310c`, `406fd9a8`, `7efd2e76` (autres chantiers) ? ; 02 du lot 7 à essayer.
+- **Pièges en cours** : jamais de variable ni de point `e` ; `--publier` LOCAL → copie au scratchpad ; serveur
+  `--host 127.0.0.1` ; retirer un worktree : commandes avec `cd` du dépôt principal.
+- **Worktree / branche** : `../ubumaths-wt-questions-5` (branche `feat/questions-5-lot-15`, mergée) gardé pour le
+  `--publier` ; la suite part d'une branche neuve.
 
 ---
 
