@@ -361,7 +361,9 @@ export async function addParentContact(
 		}
 	}
 
-	return sendContactConfirmation(existing.id, input.teacherName, service);
+	const outcome = await sendContactConfirmation(existing.id, input.teacherName, service);
+	// L'adresse a quitté « en attente » entre-temps (confirmée par un autre geste).
+	return outcome === 'not_pending' ? 'already_confirmed' : outcome;
 }
 
 /**
