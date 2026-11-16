@@ -2,12 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, phase 0 ouverte (aucune PR)._
+_Mis à jour le 2026-11-16, phase 0, après le tour 4 (aucune PR)._
 
-- **État** : phase 0 ; tours 1 à 3 tranchés (quoi, qui, canal, règles, nom). « Carnet de liaison » et « Parent » ajoutés à `CONTEXT.md`.
-- **Prochaine action** : tour 4 — contenu précis du carnet (activité : quoi exactement), question d'accès, comportements nominal / limite / erreur, ADR, découpage en PR.
-- **En attente de David** : tour 4 (pas encore posé).
-- **Pièges en cours** : données d'élèves mineurs (RGPD) ; décision 8 du 2026-10-21 tient (le parent ne voit pas le compte) ; question d'accès « qui pourra lire quoi » avant tout SQL ; un ADR à écrire (frontière d'accès, données de mineurs).
+- **État** : phase 0 ; tours 1 à 4 tranchés (quoi, qui, canal, règles, nom, contenu, question d'accès). Rien de codé.
+- **Prochaine action** : écrire et faire valider les **comportements** (nominal / limite / erreur) du carnet de liaison et des courriels d'exception ; puis **ADR** (frontière d'accès du carnet, écartés : compte parent, bilan hebdomadaire, SMS, « l'élève peut cacher », date de naissance) ; puis **découpage en PR** (migration et fonction `SECURITY DEFINER` d'abord : deux PR, cf. CLAUDE.md § Base de données).
+- **En attente de David** : rien (la prochaine action est à moi).
+- **Pièges en cours** : données d'élèves mineurs ; aucune policy `anon` (fonction `SECURITY DEFINER` qui reçoit le lien, comme l'ADR 0025) ; décision 8 du 2026-10-21 tient ; adresses confirmées seulement ; revue `code-reviewer` + `security-auditor` obligatoire.
+- **Ensuite** : revenir au point 9 de `presentation-parents` et réécrire le point 8 avec le carnet.
 - **Worktree / branche** : aucun (phase 0, doc sur `main`).
 
 ## Origine
@@ -72,3 +73,10 @@ Né du chantier `presentation-parents` (point 8, « Comment le suivre ? »), le 
 - **Q10 — Un lien par parent** (révocation séparée, ex. parents séparés ; traçabilité d'une fuite).
 - **Q11 — Vacances** : aucune alerte pendant les vacances scolaires (`school_holidays`), sauf échéance fixée par le professeur dans la période.
 - **Q12 — Nom** : **« Carnet de liaison »** (l'objet scolaire que les parents connaissent) ; le décor du Royaume reste dans l'illustration. Ajouté à `CONTEXT.md` avec « Parent ».
+
+### 2026-11-16 (tour 4, recommandations suivies)
+
+- **Q13 — Contenu du carnet** : (i) jours travaillés, semaine en 7 cases ; (ii) révisions « à jour » ou « N en retard » ; (iii) évaluations à venir (échéance) et passées, faites ou non, **sans la note**. Écarté : (iv) temps passé (mal mesuré : un onglet ouvert compte comme du travail).
+- **Q14 — Période** : semaine en cours + 4 précédentes.
+- **Q15 — Élève** : voit **le même carnet** depuis son Cabinet, avec « Tes parents voient cette page » ; ne voit pas les adresses de ses parents.
+- **Q16 — Question d'accès (validée)** : le détenteur du lien d'un parent lit, pour **un seul élève**, jours d'activité, état des révisions, évaluations (faites ou non, échéance, sans note) et liens de sa classe ; **ni** notes, **ni** réponses, **ni** messages, **ni** avertissements, **ni** profil, **ni** autre élève. L'élève lit son propre carnet (aucun accès nouveau). Le professeur lit les adresses confirmées et l'état des liens. Personne d'autre. Accès par fonction `SECURITY DEFINER` recevant le lien ; aucune policy `anon`.
