@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, phase 0 validée, aucun code écrit._
+_Mis à jour le 2026-11-16, PR A codée, pas encore ouverte._
 
-- **État** : phase 0 validée par David le 2026-11-16 (« je te suis ») ; worktree ouvert, rien codé · **Prochaine action** : PR A (logique, sans écran) — tests rouges d'abord : interpréteur tortue avec `niveau:`, notation, compte des blocs ; réutiliser l'évaluation des expressions et la gestion des variables de `calcul/interpreteur.ts` (ne pas dupliquer) · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-tortue-variables` · `feat/tortue-variables-logique`
+- **État** : PR A (logique, sans écran) codée sur `feat/tortue-variables-logique` : moteur commun extrait de `calcul/interpreteur.ts` (`creerMoteur`, `preparerProgramme`), tortue branchée dessus, `tortue/niveaux.ts`, `niveau:` du parseur, réponse attendue `4e | …` ; tests et doc système à jour · **Prochaine action** : revue `code-reviewer` (Opus), ouvrir la PR A, CI, merge ; puis PR B (écran) · **En attente de David** : rien · **Pièges en cours** : l'écran (`TortueEditeur`, `TortueProgramme`, `TortueCorrige`) n'a pas encore le niveau — un modèle `niveau: 4e` publié avant la PR B serait injouable : ne pas en publier avant · **Worktree / branche** : `../ubumaths-wt-tortue-variables` · `feat/tortue-variables-logique`
 
 ## Origine
 
@@ -42,3 +42,18 @@ ajouter 1 à côté ]` ; polygone `mettre n à 6 ; répéter n [ avancer 3 ; tou
   `code-reviewer` Opus — correction des réponses) ; **PR B** écran (boîtes à outils par niveau,
   sélecteur du bac à sable, corrigé, catalogue) ; **PR C** modèles ; **PR D** ids de prod +
   rangement (nœud du point + tag, migration comme #2727). Pas de migration avant la PR D.
+
+## PR A — logique (2026-11-16)
+
+- **Moteur commun** (`calcul/interpreteur.ts`) : `creerMoteur(noms, domaine, limitePas)` exécute
+  variables, calculs, conditions, « si », répétitions ; le domaine (calcul ou tortue) lui confie
+  ses blocs (`valeur`, `instruction`) et, pour la tortue sans niveau, l'arrondi inférieur des
+  répétitions calculées (`toursCalcules`). `preparerProgramme` : lecture + blocs connus + noms.
+  Sans niveau, la tortue garde exactement ses pas et son arrondi (tests d'avant verts).
+- **Notation** : option `{ tortue: true }` de `texteVersEtatCalcul` / `etatVersTexteCalcul` /
+  `variableJamaisMise` ; sans niveau, `notation.ts` de la tortue inchangée.
+- **Choix faits sans question** (dans le cadre de la phase 0) : `reste de … par` non admis pour la
+  tortue (Q2 ne le liste pas) ; `nombre`, `résultat`, `afficher` jamais admis ; nombre infini →
+  `trop-loin` (Q5) ; ÷ 0 → nouvelle erreur `division-par-zero` ; le parseur lit `attendu:` /
+  `départ:` après toutes les lignes (`niveau:` peut venir après) ; sans niveau, un programme de
+  4e reçoit « ajouter niveau: 4e » plutôt qu'« instruction inconnue ».
