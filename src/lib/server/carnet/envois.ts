@@ -380,6 +380,25 @@ export async function addParentContact(
 			return 'refused';
 		case 'confirmed':
 			return 'already_confirmed';
+		case 'removed': {
+			// Retirée par le professeur, ressaisie par lui (l'élève a reçu « known »
+			// plus haut) : un geste délibéré, quota remis à zéro.
+			const { data: reset, error: resetError } = await service
+				.from('parent_contacts')
+				.update({ status: 'pending', email, confirm_sent_count: 0 })
+				.eq('id', existing.id)
+				.eq('status', 'removed')
+				.select('id');
+			if (resetError?.code === 'UBP01') return 'limit';
+			if (resetError || !reset?.length) {
+				logger.error(
+					'[parent_contacts] remise d’une adresse retirée',
+					resetError ?? 'aucune ligne'
+				);
+				throw new Error('Adresse non enregistrée');
+			}
+			break;
+		}
 		case 'invalid': {
 			// Quota épuisé : la remettre en attente lui ferait occuper une des deux
 			// places sans qu'aucun courriel puisse partir.
@@ -623,22 +642,32 @@ export async function sendClassMissingLinks(
 	return { sent, failed };
 }
 
-/** Révoquer le lien actif d'une adresse (D2). Rend le nombre de liens révoqués. */
-export async function revokeContactLink(
+/**
+ * Retirer une adresse (D2, Q31) : adresse effacée (son empreinte reste), liens
+ * révoqués par trigger, place libérée. Elle ne revient ni par l'élève, ni par
+ * un consentement, ni par « lien perdu » ; le professeur seul peut la
+ * ressaisir. Rend `false` si l'adresse était déjà retirée ou refusée.
+ */
+export async function removeParentContact(
 	contactId: string,
 	service: SB = createServiceRoleClient()
-): Promise<number> {
+): Promise<boolean> {
 	const { data, error } = await service
-		.from('parent_carnet_links')
-		.update({ revoked_at: new Date().toISOString() })
-		.eq('contact_id', contactId)
-		.is('revoked_at', null)
+		.from('parent_contacts')
+		.update({
+			status: 'removed',
+			email: null,
+			confirm_token_hash: null,
+			confirm_expires_at: null
+		})
+		.eq('id', contactId)
+		.in('status', ['pending', 'confirmed', 'invalid'])
 		.select('id');
 	if (error) {
-		logger.error('[parent_carnet_links] révocation', error);
-		throw new Error('Révocation impossible');
+		logger.error('[parent_contacts] retrait', error);
+		throw new Error('Retrait impossible');
 	}
-	return data?.length ?? 0;
+	return (data?.length ?? 0) > 0;
 }
 
 /**

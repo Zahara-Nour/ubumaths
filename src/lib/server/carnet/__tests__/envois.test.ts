@@ -49,6 +49,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 
 const {
 	addParentContact,
+	removeParentContact,
 	confirmContactAndSendLink,
 	hashParentEmail,
 	missingLinksCount,
@@ -202,11 +203,19 @@ describe('planMissingLinks (A1, Q29, Q30)', () => {
 		expect(plan.create).toEqual([]);
 	});
 
-	it('adresse refusée ou invalide → jamais rien, même avec un consentement (A5)', () => {
+	it('adresse refusée, invalide ou retirée → jamais rien, même avec un consentement (A5, Q31)', () => {
 		const plan = planMissingLinks(
 			[ELEVE],
-			[consent('c1', ADRESSE), consent('c2', 'autre@exemple.test')],
-			[contact('k1', ADRESSE, 'refused'), contact('k2', 'autre@exemple.test', 'invalid')],
+			[
+				consent('c1', ADRESSE),
+				consent('c2', 'autre@exemple.test'),
+				consent('c3', 'retiree@exemple.test')
+			],
+			[
+				contact('k1', ADRESSE, 'refused'),
+				contact('k2', 'autre@exemple.test', 'invalid'),
+				contact('k3', 'retiree@exemple.test', 'removed')
+			],
 			new Set()
 		);
 		expect(missingLinksCount(plan)).toBe(0);
@@ -564,6 +573,32 @@ describe('addParentContact (A2, A3, A5)', () => {
 		expect(calls.some((c) => c.op === 'update')).toBe(false);
 	});
 
+	it('adresse retirée, ressaisie par le professeur → en attente, quota à zéro, confirmation', async () => {
+		const { service, calls } = fakeService((call) => {
+			if (call.table !== 'parent_contacts') return undefined;
+			if (call.op === 'update' && call.payload?.status === 'pending')
+				return { data: [{ id: CONTACT }], error: null };
+			if (call.op === 'update') return { data: [{ id: CONTACT }], error: null };
+			if (filter(call, 'email_hash'))
+				return { data: { id: CONTACT, status: 'removed', confirm_sent_count: 3 }, error: null };
+			return {
+				data: {
+					id: CONTACT,
+					student_id: ELEVE,
+					email: ADRESSE,
+					status: 'pending',
+					confirm_sent_count: 0
+				},
+				error: null
+			};
+		});
+		expect(await addParentContact(input, service)).toBe('sent');
+		const reset = calls.find((c) => c.op === 'update' && c.payload?.status === 'pending')!;
+		expect(reset.payload).toEqual({ status: 'pending', email: ADRESSE, confirm_sent_count: 0 });
+		expect(filter(reset, 'status')).toBe('removed');
+		expect(sendConfirmation).toHaveBeenCalledTimes(1);
+	});
+
 	it('ajout simultané (23505) → la ligne gagnante est reprise', async () => {
 		let lookups = 0;
 		const { service } = fakeService((call) => {
@@ -621,5 +656,27 @@ describe('resendLostLinks (A6)', () => {
 		const issued = rpcCalls.filter(([n]) => n === 'issue_parent_carnet_link');
 		expect(issued.map(([, a]) => a.p_contact_id)).toEqual([CONTACT]);
 		expect(sendLink).toHaveBeenCalledTimes(1);
+	});
+});
+
+// --- Retrait (Q31) -----------------------------------------------------------
+
+describe('removeParentContact (D2, Q31)', () => {
+	it('adresse effacée, statut « removed », seulement depuis un état actif ou invalide', async () => {
+		const { service, calls } = fakeService(() => ({ data: [{ id: CONTACT }], error: null }));
+		expect(await removeParentContact(CONTACT, service)).toBe(true);
+		const update = calls[0];
+		expect(update.payload).toEqual({
+			status: 'removed',
+			email: null,
+			confirm_token_hash: null,
+			confirm_expires_at: null
+		});
+		expect(filter(update, 'status')).toEqual(['pending', 'confirmed', 'invalid']);
+	});
+
+	it('déjà retirée ou refusée (zéro ligne) → false', async () => {
+		const { service } = fakeService(() => ({ data: [], error: null }));
+		expect(await removeParentContact(CONTACT, service)).toBe(false);
 	});
 });

@@ -90,6 +90,8 @@
 				return '« Je ne suis pas le parent de cet élève » : adresse effacée';
 			case 'invalid':
 				return 'Adresse rejetée par la messagerie';
+			case 'removed':
+				return 'Retirée par vous : effacée, plus aucun lien (ressaisissez-la pour la rétablir)';
 		}
 	}
 </script>
@@ -290,11 +292,11 @@
 														</Button>
 													</form>
 												{/if}
-												{#if contact.link}
-													<form method="POST" action="?/revokeLink" use:enhance={submit}>
+												{#if contact.status === 'pending' || contact.status === 'confirmed' || contact.status === 'invalid'}
+													<form method="POST" action="?/removeContact" use:enhance={submit}>
 														<input type="hidden" name="contact_id" value={contact.id} />
 														<Button type="submit" size="sm" variant="ghost" disabled={pending}>
-															Révoquer le lien
+															Retirer cette adresse
 														</Button>
 													</form>
 												{/if}

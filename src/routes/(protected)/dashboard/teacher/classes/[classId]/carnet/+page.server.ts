@@ -28,7 +28,7 @@ import {
 	addParentContact,
 	missingLinksCount,
 	planClassMissingLinks,
-	revokeContactLink,
+	removeParentContact,
 	sendCarnetLink,
 	sendClassMissingLinks,
 	sendContactConfirmation,
@@ -41,7 +41,7 @@ import { createServerLogger } from '$lib/utils/logger';
 
 // Types
 
-export type ContactStatus = 'pending' | 'confirmed' | 'refused' | 'invalid';
+export type ContactStatus = 'pending' | 'confirmed' | 'refused' | 'invalid' | 'removed';
 
 export interface CarnetContactRow {
 	id: string;
@@ -484,12 +484,14 @@ export const actions: Actions = {
 		return outcome === 'sent' ? { message } : fail(409, { message });
 	},
 
-	/** D2 : révoquer le lien d'un parent (il voit « lien plus valide »). */
-	revokeLink: async (event) => {
+	/** D2, Q31 : retirer une adresse — son lien meurt et ne revient pas tout seul. */
+	removeContact: async (event) => {
 		const { contactId } = await guardContact(event);
-		const count = await revokeContactLink(contactId);
+		const removed = await removeParentContact(contactId);
+		if (!removed) return fail(409, { message: 'Cette adresse est déjà retirée.' });
 		return {
-			message: count > 0 ? 'Lien révoqué.' : "Cette adresse n'avait pas de lien actif."
+			message:
+				'Adresse retirée : son lien ne fonctionne plus et elle ne recevra plus rien. Vous seul pouvez la ressaisir. Les liens du cahier et du cours de la classe restent ouverts.'
 		};
 	},
 

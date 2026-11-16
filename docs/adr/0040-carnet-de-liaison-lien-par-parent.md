@@ -64,8 +64,16 @@ sur **un** élève, sans compte, par un lien qui lui est propre.
   question d'accès.
 - Élèves hors classe : pas de carnet dans la première version.
 - Le carnet donne au parent les **liens du cahier et du cours** de la classe (avec son nom) : ces
-  liens sont ceux de la classe ([ADR 0025](0025-cours-lisible-par-lien-sans-compte.md)). Révoquer le
-  lien d'un parent, ou couper le partage, **ne coupe pas** les liens de classe qu'il a déjà vus ; seul
-  leur renouvellement par le professeur le fait (à dire sur l'écran du professeur, PR 3).
+  liens sont ceux de la classe ([ADR 0025](0025-cours-lisible-par-lien-sans-compte.md)). Retirer
+  l'adresse d'un parent, ou couper le partage, **ne coupe pas** les liens de classe qu'il a déjà vus ;
+  seul leur renouvellement par le professeur le fait (dit sur l'écran du professeur).
+- **Retirer une adresse** (amendement du 2026-11-16, Q31) : « révoquer un lien » ne suffisait pas,
+  l'adresse restée confirmée en récupérait un par « J'ai perdu mon lien ». Le professeur **retire**
+  l'adresse (état `removed` : effacée, liens révoqués, place libérée) ; elle ne revient que s'il la
+  ressaisit. Le besoin est de corriger une adresse fausse (bidon, mauvaise personne, périmée), pas
+  d'écarter un parent : un parent qui a l'autorité parentale reste en droit d'être informé.
+- **Lien neuf avant l'envoi** (Q32, accepté) : un lien neuf révoque l'ancien avant l'envoi du
+  courriel ; un envoi en échec laisse le parent sans lien jusqu'au renvoi, et un tiers qui connaît
+  son adresse peut faire tourner son lien (3 fois par jour). Gêne sans fuite.
 - Le professeur lit les adresses et l'état des liens, **jamais les empreintes** (droits par colonne) :
   l'empreinte d'une adresse refusée n'est pas anonyme (sha256 non salé).

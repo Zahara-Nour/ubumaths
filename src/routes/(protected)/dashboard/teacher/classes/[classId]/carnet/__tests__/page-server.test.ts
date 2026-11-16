@@ -39,7 +39,7 @@ vi.mock('$lib/server/stats/teacher-class-auth', () => ({
 const envois = {
 	addParentContact: vi.fn(),
 	planClassMissingLinks: vi.fn(),
-	revokeContactLink: vi.fn(),
+	removeParentContact: vi.fn(),
 	sendCarnetLink: vi.fn(),
 	sendClassMissingLinks: vi.fn(),
 	sendContactConfirmation: vi.fn(),
@@ -51,7 +51,7 @@ vi.mock('$lib/server/carnet/envois', async (importOriginal) => {
 		...original,
 		addParentContact: (...a: unknown[]) => envois.addParentContact(...a),
 		planClassMissingLinks: (...a: unknown[]) => envois.planClassMissingLinks(...a),
-		revokeContactLink: (...a: unknown[]) => envois.revokeContactLink(...a),
+		removeParentContact: (...a: unknown[]) => envois.removeParentContact(...a),
 		sendCarnetLink: (...a: unknown[]) => envois.sendCarnetLink(...a),
 		sendClassMissingLinks: (...a: unknown[]) => envois.sendClassMissingLinks(...a),
 		sendContactConfirmation: (...a: unknown[]) => envois.sendContactConfirmation(...a),
@@ -174,7 +174,7 @@ beforeEach(() => {
 	envois.addParentContact.mockResolvedValue('sent');
 	envois.sendCarnetLink.mockResolvedValue('sent');
 	envois.sendContactConfirmation.mockResolvedValue('sent');
-	envois.revokeContactLink.mockResolvedValue(1);
+	envois.removeParentContact.mockResolvedValue(true);
 	envois.sendLinksToConfirmedContacts.mockResolvedValue({ sent: 1, failed: 0 });
 	serviceRespond = serviceParDefaut;
 });
@@ -216,18 +216,18 @@ describe('gardes', () => {
 			call.table === 'parent_contacts'
 				? { data: { student_id: AUTRE_ELEVE }, error: null }
 				: serviceParDefaut(call);
-		for (const name of ['resendConfirmation', 'revokeLink', 'sendNewLink'] as const) {
+		for (const name of ['resendConfirmation', 'removeContact', 'sendNewLink'] as const) {
 			const { event } = evenement({ contact_id: CONTACT }, profCarnet(true));
 			expect(await statut(actions[name](event)), name).toBe(404);
 		}
 		expect(envois.sendContactConfirmation).not.toHaveBeenCalled();
-		expect(envois.revokeContactLink).not.toHaveBeenCalled();
+		expect(envois.removeParentContact).not.toHaveBeenCalled();
 		expect(envois.sendCarnetLink).not.toHaveBeenCalled();
 	});
 
 	it('identifiants mal formés → 400 / 404 avant toute lecture', async () => {
 		const { event } = evenement({ contact_id: 'pas-un-uuid' });
-		expect(await statut(actions.revokeLink(event))).toBe(404);
+		expect(await statut(actions.removeContact(event))).toBe(404);
 		const bad = evenement({});
 		(bad.event as { params: { classId: string } }).params.classId = 'x';
 		expect(await statut(actions.activate(bad.event))).toBe(400);
@@ -327,14 +327,14 @@ describe('élèves et adresses (A2, D2, D3)', () => {
 		expect(envois.sendLinksToConfirmedContacts).not.toHaveBeenCalled();
 	});
 
-	it('nouveau lien, révocation, confirmation : sur l’adresse vérifiée', async () => {
+	it('nouveau lien, retrait, confirmation : sur l’adresse vérifiée', async () => {
 		const a = evenement({ contact_id: CONTACT }, profCarnet(true));
 		await actions.sendNewLink(a.event);
 		expect(envois.sendCarnetLink).toHaveBeenCalledWith(CONTACT);
 
 		const b = evenement({ contact_id: CONTACT }, profCarnet(true));
-		await actions.revokeLink(b.event);
-		expect(envois.revokeContactLink).toHaveBeenCalledWith(CONTACT);
+		await actions.removeContact(b.event);
+		expect(envois.removeParentContact).toHaveBeenCalledWith(CONTACT);
 
 		const c = evenement({ contact_id: CONTACT }, profCarnet(true));
 		await actions.resendConfirmation(c.event);

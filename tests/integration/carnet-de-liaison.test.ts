@@ -956,4 +956,79 @@ describe('carnet de liaison (base locale)', () => {
 			expect(lu.data).toEqual([{ kind: 'link', status: 'failed' }]);
 		});
 	});
+
+	describe('adresse retirée par le professeur (Q31)', () => {
+		it('retirée : adresse effacée, lien mort, place libérée, jamais recréée en douce', async () => {
+			const eleve = await nouvelEleve('Maé', classId);
+			const adresse = `parent-mae@${DOMAINE}`;
+			const { contactId, jeton } = await parentConfirme(eleve.id, adresse);
+			await insertId('parent_contacts', {
+				student_id: eleve.id,
+				email: `parent-mae2@${DOMAINE}`,
+				status: 'pending',
+				source: 'student'
+			});
+
+			const { data, error } = await service
+				.from('parent_contacts')
+				.update({ status: 'removed', email: null })
+				.eq('id', contactId)
+				.select('status, email');
+			expect(error).toBeNull();
+			expect(data).toEqual([{ status: 'removed', email: null }]);
+
+			// Le lien ne lit plus rien, et il est révoqué en base (trigger).
+			expect(await lireCarnet(jeton)).toBeNull();
+			const liens = await service
+				.from('parent_carnet_links')
+				.select('revoked_at')
+				.eq('contact_id', contactId);
+			expect(liens.data?.length).toBe(1);
+			expect(liens.data?.[0].revoked_at).not.toBeNull();
+
+			// Aucun lien ne se réémet pour elle.
+			const reemis = await service.rpc('issue_parent_carnet_link', {
+				p_contact_id: contactId,
+				p_token_hash: sha256(nouveauJeton()),
+				p_expires_at: new Date(Date.now() + 86_400_000).toISOString()
+			});
+			expect(reemis.data).toBe(false);
+
+			// L'empreinte reste : la même adresse ne se recrée pas en ligne neuve.
+			const recree = await service.from('parent_contacts').insert({
+				student_id: eleve.id,
+				email: adresse,
+				status: 'confirmed',
+				source: 'consent'
+			});
+			expect(recree.error?.code).toBe('23505');
+
+			// La place est libérée : une deuxième adresse active passe.
+			const autre = await service
+				.from('parent_contacts')
+				.insert({
+					student_id: eleve.id,
+					email: `parent-mae3@${DOMAINE}`,
+					status: 'pending',
+					source: 'teacher'
+				})
+				.select('id');
+			expect(autre.error).toBeNull();
+		});
+
+		it('une adresse retirée n’a plus d’adresse en clair', async () => {
+			const eleve = await nouvelEleve('Noé', classId);
+			const id = await insertId('parent_contacts', {
+				student_id: eleve.id,
+				email: `parent-noe@${DOMAINE}`,
+				status: 'pending',
+				source: 'teacher'
+			});
+			const { error } = await service
+				.from('parent_contacts')
+				.update({ status: 'removed' })
+				.eq('id', id);
+			expect(error?.code).toBe('23514');
+		});
+	});
 });
