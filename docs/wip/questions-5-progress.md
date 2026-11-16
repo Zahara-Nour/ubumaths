@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2717 (lot 15 rangé en prod)._
+_Mis à jour le 2026-11-16, lot 15 relu (8/8 ok)._
 
-- **État** : lots 1 à 14 publiés ; lot 15 « Symétrie centrale, aires, solides » : 8 brouillons en prod (id commités),
-  rangés et tagués en prod (#2717, `db:migrate` joué, vérifié au MCP) ; page à cocher publiée (§ 30 quater). Restent :
-  9 D, 101 et 104 (`blockly`).
-- **Prochaine action** : compter les verdicts de la page à cocher (https://claude.ai/artifact/9sVF9qhmG42gFZDqNLgAii),
-  corriger s'il le faut, puis `publier-lot.ts --dir scripts/questions/5-symetrie-aires-solides` en simulation.
+- **État** : lots 1 à 14 publiés ; lot 15 « Symétrie centrale, aires, solides » : 8 brouillons rangés et tagués en
+  prod (#2717), page à cocher relue : **8 verdicts sur 8 « ok »** (§ 30 quater). Restent : 9 D, 101 et 104 (`blockly`).
+- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/5-symetrie-aires-solides` (simulation ; le classifieur du mode auto la refuse à Claude), puis
+  `--publier` ; relire `published` au MCP ; retirer le worktree.
 - **En attente de David** : (1) `--dir scripts/questions/5-parallelogrammes --publier --mettre-a-jour` (02 du lot 14,
   `95bea43b`, publié : variable `e` encore en prod le 2026-11-16) ; (2) corriger `e` dans `d5a36be9`, `092b310c`,
   `406fd9a8`, `7efd2e76` (autres chantiers) ? ; 02 du lot 7 à essayer.
@@ -1221,3 +1221,9 @@ Le bloc solide n'a pas d'orientation : un même pavé « vu autrement » = même
   niveaux 1 à 3, `updated_at` préservé.
 - Page à cocher publiée (https://claude.ai/artifact/9sVF9qhmG42gFZDqNLgAii, capacité `db`, collection `verdicts` vide
   au départ) ; 02 (`figure-a-completer`) et 08 (`patron`) non dessinés par la page : à jouer dans l'aperçu.
+
+### Lot 15 : relu (2026-11-16)
+
+- Page à cocher : **8 verdicts sur 8 « ok »**, sans commentaire (comptés en base de l'artefact). Rangement revérifié au
+  MCP (8 nœuds, 8 tags, `draft`, niveau 5, `updated_at` 13:32 préservé).
+- Simulation `publier-lot.ts` refusée à Claude par le classifieur du mode auto (lecture prod) : à lancer par David.
