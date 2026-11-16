@@ -21,7 +21,11 @@
  *  - deux adresses actives au plus ; « je ne suis pas le parent » efface
  *    l'adresse et interdit de la ressaisir ;
  *  - couper le partage révoque les liens (relu en service role : la RLS échoue
- *    en silence).
+ *    en silence) ;
+ *  - PR 3 : ce sur quoi s'appuie le serveur (`$lib/server/carnet/envois`, page
+ *    du professeur) — empreinte de l'adresse calculée comme le trigger, porte
+ *    `carnet_student_is_shared` ouverte au service role, réglages et opt-out
+ *    écrits par le client du professeur (upsert, retrait).
  *
  * ⚠️ Aucune assertion ne se contente d'un `error === null`.
  *
@@ -853,6 +857,103 @@ describe('carnet de liaison (base locale)', () => {
 				.eq('class_id', classId)
 				.single();
 			expect(relu.data?.inactivity_days).toBe(15);
+		});
+	});
+
+	describe('écritures du serveur et du professeur (PR 3)', () => {
+		it('l’empreinte calculée par le serveur est celle du trigger (adresse normalisée)', async () => {
+			const eleve = await nouvelEleve('Iris', classId);
+			const normalisee = `parent-iris@${DOMAINE}`;
+			const id = await insertId('parent_contacts', {
+				student_id: eleve.id,
+				email: `  Parent-Iris@${DOMAINE.toUpperCase()} `,
+				// Le serveur envoie son empreinte ; le trigger la recalcule.
+				email_hash: sha256(normalisee),
+				status: 'pending',
+				source: 'teacher'
+			});
+			const { data } = await service
+				.from('parent_contacts')
+				.select('email, email_hash')
+				.eq('id', id)
+				.single();
+			expect(data).toEqual({ email: normalisee, email_hash: sha256(normalisee) });
+		});
+
+		it('le service role lit la porte « carnet ouvert » ; personne d’autre', async () => {
+			const ouvert = await service.rpc('carnet_student_is_shared', { p_student_id: eleveA.id });
+			expect(ouvert.data).toBe(true);
+			const horsCarnet = await nouvelEleve('Jade', classeEteinte);
+			const ferme = await service.rpc('carnet_student_is_shared', {
+				p_student_id: horsCarnet.id
+			});
+			expect(ferme.data).toBe(false);
+			const parLeProf = await teacher.rpc('carnet_student_is_shared', {
+				p_student_id: eleveA.id
+			});
+			expect(parLeProf.data).toBeNull();
+			expect(parLeProf.error).not.toBeNull();
+		});
+
+		it('le professeur active une classe sans réglage par upsert, et relit ses seuils', async () => {
+			const neuve = (await TestData.class().withName('4e Carnet neuf').create()).id;
+			const { data, error } = await teacher
+				.from('class_carnet_settings')
+				.upsert({ class_id: neuve, enabled: true }, { onConflict: 'class_id' })
+				.select('class_id, enabled, overdue_reviews_days, inactivity_days');
+			expect(error).toBeNull();
+			expect(data).toEqual([
+				{ class_id: neuve, enabled: true, overdue_reviews_days: 7, inactivity_days: 15 }
+			]);
+		});
+
+		it('couper deux fois puis rétablir : liens révoqués, ligne retirée par le professeur', async () => {
+			const eleve = await nouvelEleve('Kenza', classId);
+			const { contactId } = await parentConfirme(eleve.id, `parent-k@${DOMAINE}`);
+			for (let i = 0; i < 2; i++) {
+				const { error } = await teacher
+					.from('student_carnet_opt_outs')
+					.upsert({ student_id: eleve.id }, { onConflict: 'student_id', ignoreDuplicates: true })
+					.select('student_id');
+				expect(error).toBeNull();
+			}
+			const liens = await service
+				.from('parent_carnet_links')
+				.select('revoked_at')
+				.eq('contact_id', contactId);
+			expect(liens.data?.length).toBe(1);
+			expect(liens.data?.[0].revoked_at).not.toBeNull();
+
+			const { data } = await teacher
+				.from('student_carnet_opt_outs')
+				.delete()
+				.eq('student_id', eleve.id)
+				.select('student_id');
+			expect(data).toEqual([{ student_id: eleve.id }]);
+			const relu = await service
+				.from('student_carnet_opt_outs')
+				.select('student_id')
+				.eq('student_id', eleve.id);
+			expect(relu.data).toEqual([]);
+		});
+
+		it('le service role trace un envoi en échec ; l’élève le lit, sans adresse', async () => {
+			const eleve = await nouvelEleve('Lou', classId);
+			const contactId = await insertId('parent_contacts', {
+				student_id: eleve.id,
+				email: `parent-lou@${DOMAINE}`,
+				status: 'pending',
+				source: 'student'
+			});
+			const { error } = await service.from('parent_notifications').insert({
+				student_id: eleve.id,
+				contact_id: contactId,
+				kind: 'link',
+				status: 'failed'
+			});
+			expect(error).toBeNull();
+			const lu = await eleve.client.from('parent_notifications').select('kind, status');
+			expect(lu.data).toEqual([{ kind: 'link', status: 'failed' }]);
 		});
 	});
 });

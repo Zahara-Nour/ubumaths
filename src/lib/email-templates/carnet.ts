@@ -54,9 +54,7 @@ export function getCarnetLostLink(): string {
 }
 
 function teacherPhrase(teacherName: string | null): string {
-	return teacherName
-		? `son professeur de mathématiques, ${teacherName},`
-		: 'son professeur de mathématiques';
+	return teacherName ? `son professeur, ${teacherName}` : 'son professeur';
 }
 
 function htmlPage(title: string, body: string): string {
@@ -86,7 +84,7 @@ export function getCarnetConfirmationSubject(data: CarnetConfirmationEmailData):
 export function getCarnetConfirmationEmailText(data: CarnetConfirmationEmailData): string {
 	return `Bonjour,
 
-Votre adresse a été donnée pour recevoir le carnet de liaison de ${data.studentFirstname} sur Chiphre, l'application de mathématiques de ${teacherPhrase(data.teacherName)} : une page qui montre sa régularité, ses révisions et ses évaluations à rendre.
+Votre adresse a été donnée pour recevoir le carnet de liaison de ${data.studentFirstname} sur Chiphre, l'application de mathématiques qu'utilise ${teacherPhrase(data.teacherName)}. Le carnet est une page qui montre sa régularité, ses révisions et ses évaluations à rendre.
 
 Confirmer votre adresse :
 ${getCarnetConfirmLink(data.token)}
@@ -109,7 +107,7 @@ export function getCarnetConfirmationEmailHtml(data: CarnetConfirmationEmailData
 		`  <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
     <h1 style="color: #1e40af; margin-top: 0;">Carnet de liaison de ${firstname}</h1>
     <p>Bonjour,</p>
-    <p>Votre adresse a été donnée pour recevoir le carnet de liaison de <strong>${firstname}</strong> sur <strong>Chiphre</strong>, l'application de mathématiques de ${teacher} : une page qui montre sa régularité, ses révisions et ses évaluations à rendre.</p>
+    <p>Votre adresse a été donnée pour recevoir le carnet de liaison de <strong>${firstname}</strong> sur <strong>Chiphre</strong>, l'application de mathématiques qu'utilise ${teacher}. Le carnet est une page qui montre sa régularité, ses révisions et ses évaluations à rendre.</p>
   </div>
 
   <div style="text-align: center; margin: 30px 0;">
