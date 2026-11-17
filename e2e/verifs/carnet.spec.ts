@@ -60,18 +60,26 @@ function carnetUrl(): string {
 }
 
 /**
- * Cases de la régularité de A : une par semaine depuis son arrivée (décor :
- * il y a 30 jours, après la rentrée), semaine en cours comprise.
+ * Cases de la régularité de A : une par semaine depuis la plus tardive de la
+ * rentrée (année active du décor) et de son arrivée (décor : il y a 30 jours),
+ * semaine en cours comprise. Lu dans le décor : en septembre, la rentrée est
+ * plus récente que l'arrivée.
  */
-function weeksSinceArrival(): number {
-	const parisDay = (d: Date) =>
-		new Date(
-			`${new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(d)}T12:00:00Z`
-		);
-	const monday = (d: Date) => d.getTime() - ((d.getUTCDay() + 6) % 7) * 86_400_000;
-	const today = parisDay(new Date());
-	const arrival = parisDay(new Date(Date.now() - 30 * 86_400_000));
-	return Math.round((monday(today) - monday(arrival)) / (7 * 86_400_000)) + 1;
+async function weeksSinceArrival(): Promise<number> {
+	const rows = await sql<{ n: number }>(
+		`with jour as (select (now() at time zone 'Europe/Paris')::date as d)
+		 select ((date_trunc('week', jour.d)::date
+		   - date_trunc('week', greatest(sy.start_date, (cm.joined_at at time zone 'Europe/Paris')::date))::date)
+		   / 7 + 1)::int as n
+		 from jour, class_members cm
+		 join classes c on c.id = cm.class_id
+		 join school_years sy on sy.school_id = c.school_id and sy.is_active
+		 where cm.class_id = $1 and cm.student_id = $2 and sy.start_date <= jour.d
+		 order by sy.start_date desc
+		 limit 1`,
+		[decor.classId, decor.a.id]
+	);
+	return rows[0].n;
 }
 
 /** Le texte d'un courriel ne porte que le prénom de l'élève, jamais son nom. */
@@ -208,7 +216,7 @@ test('#2724 carnet, côté élève et page du parent', async ({ page, browser })
 	const linkA = (await emailsTo(parents.a))[0];
 	await parent.goto(await emailLink(linkA, 'Ouvrir le carnet'));
 	await expect(parent.getByText(`Le travail de ${a.firstname} sur Chiphre.`)).toBeVisible();
-	await expect(parent.locator('[data-cell]')).toHaveCount(weeksSinceArrival());
+	await expect(parent.locator('[data-cell]')).toHaveCount(await weeksSinceArrival());
 	await expect(parent.getByText(/\d+([,.]\d+)?\s*\/\s*20/)).toHaveCount(0);
 	await shootPage(parent, '2724-parent');
 	await parent.getByRole('button', { name: 'Ne plus recevoir ces courriels' }).click();

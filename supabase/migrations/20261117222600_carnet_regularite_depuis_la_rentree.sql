@@ -114,8 +114,8 @@ begin
 			) as holiday
 		from semaines s
 	),
-	-- Évaluations : à venir, et passées dans la même fenêtre de 5 semaines que
-	-- la régularité (Q14), mais pas échues avant l'arrivée de l'élève (Q43) ;
+	-- Évaluations : à venir, et passées dans une fenêtre de 5 semaines (Q14),
+	-- distincte de celle de la régularité, mais pas échues avant l'arrivée de l'élève (Q43) ;
 	-- une évaluation sans échéance de l'année scolaire en cours, si créée dans
 	-- la fenêtre, ou tant qu'elle n'est pas faite (Q27, bornée le 2026-11-17).
 	evaluations_eleve as (
