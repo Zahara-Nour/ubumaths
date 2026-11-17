@@ -8,22 +8,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2743 (T1 mergée, migrée, vérifiée en prod)._
+_Mis à jour le 2026-11-17, branche T2 prête (PR pas encore ouverte)._
 
-- **État** : **T1 en prod** (#2743, migration `20261117122739` jouée) : 15 modèles publiés portent chacun leur
-  point 1TECHNO (14 points) et `1_TECHNO` ; garde des niveaux verte. Page T2 relue : **33 « OK » sur 33**
-  (§ 10, données au § 11). Rien d'écrit pour T2.
-- **Prochaine action** : attendre l'avis de `questions-1gen` (`db:migrate` de sa PR #2744 joué), puis worktree
-  `git worktree add -b feat/questions-1techno-t2 ../ubumaths-wt-questions-1techno origin/main` ; relever de
-  nouveau les grades des 33 ; migration + test T2 générés à partir de ceux de T1 (§ 11).
-- **En attente de David** : rien (décisions Q1-Q12 prises).
-- **Pièges en cours** : **un point par programme** (trigger) ; point sur une sous-notion → seuls les modèles
-  de cette sous-notion ; `grades` en `array_append` / `array_remove` seulement (accord `questions-1gen`) ;
-  **T2 : 95ee57c8 et 5397c20f ont DÉJÀ `1_TECHNO`** → n'ajouter le niveau que s'il manque ; **T2 attend le
-  `db:migrate` de #2744** (sa migration garde le relevé exact des tags de 19 modèles, dont 8 de T2 :
-  21f42c7f, 42bb2d66, aab8e41c, afe51ac4, d8c9cb60, f2ed0ea0, 5397c20f, 95ee57c8) ; commitlint refuse
-  « T1 » en début de sujet ; CI : « Client Tests browser » peut tomber sur `wrapDynamicImport` (relancer).
-- **Worktree / branche** : aucun (T1 nettoyé).
+- **État** : T1 en prod (#2743). **T2 prêt sur sa branche** (§ 13) : migration `20261117131417` (33 modèles,
+  24 points, `1_TECHNO` ajouté à 31) + test d'intégration (13 verts, rouges sans le corps) + 33 instantanés.
+  #2744 (questions-1gen) **mergée, mais pas encore migrée** en prod au moment du commit.
+- **Prochaine action** : dès que `20261117124605_questions_1gen_tags` est en prod → relevé des 33 (grades, tags :
+  95ee57c8 doit avoir perdu `1_GEN`, 8 modèles un tag 1GEN), ajuster `LOT` du test si besoin, ouvrir la PR,
+  CI, `check:migrations --pr`, merge, `db:migrate`, vérification prod.
+- **En attente de David** : rien (décisions Q1-Q12 prises ; question d'accès tranchée pour T1, même nature).
+- **Pièges en cours** : **ne pas ouvrir la PR T2 avant le `db:migrate` de #2744** (sa garde compte les tags
+  exacts de 8 modèles de T2) ; un point par programme (trigger) ; `grades` en `array_append`/`array_remove`
+  seulement ; worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` (`$lib`) ; export prod :
+  `pnpm tsx --env-file=.env scripts/export-question-templates.ts` ; commitlint refuse « T1 » en début de sujet.
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno` · `feat/questions-1techno-t2`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -296,3 +294,21 @@ PR #2743 : CI verte après une relance (« Client Tests browser, shard 1/2 », `
 Prod vérifiée (MCP) : 15 modèles, 15 tags 1TECHNO (001, 004, 005, 006, 008, 009, 010, 011, 032, 046, 106,
 108, 120, 142), 15 avec `1_TECHNO`, 15 publiés. `garde-niveaux-tags` : aucun niveau manquant. Worktree et
 branche retirés.
+
+## 13. Lot T2 : branche (2026-11-17)
+
+Relevé prod refait (MCP) : identique au § 11 (33 publiés, aucun point 1TECHNO, 6 sur sous-notion : 007, 054,
+058). Instantanés : `scripts/questions/1techno-t2/` (33). Migration `20261117131417_questions_1techno_t2_tags`
+sur le gabarit de T1, plus la colonne `deja` (5397c20f, 95ee57c8 ont déjà `1_TECHNO` : pas d'ajout, pas de
+retrait au rollback) ; garde « niveau 1_TECHNO différent du relevé ». Test
+`tests/integration/questions-1techno-t2-tags.test.ts` : 13 verts ; corps de la migration retiré → 8 rouges,
+5 ignorés (rollback refusé : 2 sur 33 conformes). Cas ajouté : état d'après questions-1gen (95ee57c8 sans
+`1_GEN`) → `['1_SPE', '1_TECHNO']`, 1_TECHNO conservé au rollback. NB : la base locale `db:seed-riche` porte
+les modèles de prod ; le cas « base sans les modèles » y rejoue donc la vraie migration.
+
+Revues (2026-11-17) : `code-reviewer` et `security-auditor` sans bloquant. Retenu : cas « base sans les
+modèles » rendu probant (modèles retirés dans la transaction, 0 tag vérifié). À savoir pour le `db:migrate` :
+un `db push` jouerait aussi `20261117124605_questions_1gen_tags` si elle n'est pas en prod → **attendre que
+questions-1gen l'ait migrée** ; après un `db push` en échec, relire `tgenabled` de
+`update_question_templates_updated_at` (attendu `O`) ; `set local lock_timeout` sans effet hors transaction
+(risque d'attente seulement).
