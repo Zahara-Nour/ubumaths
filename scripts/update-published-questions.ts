@@ -29,7 +29,7 @@
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
  *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de,
  *          resoudre-graphique-droite-3, somme-vecteurs-2de, triangle-cm-6, blockly-6-210,
- *          blockly-5-106, variable-e, totaux-ce
+ *          blockly-5-106, variable-e, totaux-ce, horloges-ce-zeros
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -231,6 +231,13 @@ const VARIABLE_E: readonly string[] = [
 	'95bea43b-c956-47f0-b66b-31c93a79fde6' // 5e « Côtés opposés et diagonales d'un parallélogramme » (e → w)
 ];
 
+/** Chantier `questions-cm1` (§ 21 neuvies) : `zeros: off` là où l'élève écrit une heure, pour que
+ *  « 8 h 05 » (minutes sur deux chiffres, écriture usuelle) ait le point entier, pas ½ */
+const HORLOGES_CE_ZEROS: readonly string[] = [
+	'0d41a45e-e8fb-4297-8007-7afbf12f09c8', // CE2 « Quelle heure est-il ? (heures et minutes) » V1, V2, V3
+	'71741618-2f0f-4d24-a4cf-95d360984dea' // CE2 « Dire l'heure et l'écrire en chiffres » V2, V3
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -268,7 +275,8 @@ const LOTS: Record<string, Lot> = {
 	'blockly-6-210': { dossier: 'scripts/questions/6-blockly-existants', cibles: BLOCKLY_6_210 },
 	'blockly-5-106': { dossier: 'scripts/questions/5-blockly-existants', cibles: BLOCKLY_5_106 },
 	'variable-e': { dossier: 'scripts/questions/variable-e-existants', cibles: VARIABLE_E },
-	'totaux-ce': { dossier: 'scripts/questions/ce-totaux-existants', cibles: TOTAUX_CE }
+	'totaux-ce': { dossier: 'scripts/questions/ce-totaux-existants', cibles: TOTAUX_CE },
+	'horloges-ce-zeros': { dossier: 'scripts/questions/ce-horloges-zeros', cibles: HORLOGES_CE_ZEROS }
 };
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
