@@ -155,6 +155,9 @@ personne n'écrit directement dans l'historique.
     **Professeur ou visiteur** (`questionReadingGrades`) : soulignement au **plus haut** niveau de
     la question (R3), fiche au **plus petit** (définitions les plus simples) ; un mot souligné que
     le plus petit niveau ne voit pas se lit au plus haut (`lexiconCard`, `fallbackGrade`).
+    Un homonyme ouvre tous ses sens visibles, chacun lu ainsi : sur une question de translation
+    4e + 3e, « image » montre « image (transformation) » et « image (fonction) », comme pour un
+    élève de 3e ; pas de choix du sens selon le contexte (décidé par David le 2026-11-17).
     Niveau inconnu : aucun mot.
   - **Mots récents** (R1, `recentOnly`) : un mot n'est souligné d'office que s'il est rencontré
     (`gradeMetBy`, filières comprises) à l'année scolaire du lecteur ou à celle d'avant

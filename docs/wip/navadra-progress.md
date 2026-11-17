@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, phase 0, rien n'est codé._
+_Mis à jour le 2026-11-17, phase 0, rien n'est codé._
 
 - **État** : analyse faite. David repart **de zéro**, avec un **nouveau nom** et le **lore de Chiphre**. Le principe reste le même : chaque sort ou coup se valide par une question, et les questions viennent du système de questions de Chiphre.
 - **Tranché** : avatar combattant, accompagné d'un Mathou familier ; une magie ajoutée au lore (§ « Tranché »).
@@ -15,6 +15,7 @@ _Mis à jour le 2026-11-09, phase 0, rien n'est codé._
 - **Tranché aussi** : le grade de l'Ordre de la Grande Passoire se fondera sur le travail réel, pas sur les gidouilles ; c'est le chantier à part `ordre-grande-passoire`.
 - **Prochaine action** : la question 5, point par point, en commençant par **5a** (la puissance de l'avatar). Les propositions 5a à 5e sont dans § « À trancher ».
 - **En attente de David** : 5a à 5e. La question 3 (public) est réglée : du primaire au lycée.
+- **5a présentée le 2026-11-17, sans réponse.** Un point ouvert : **qu'est-ce qui débloque les coups et les sorts** (combats gagnés, travail dans Chiphre, ou les deux ; ma recommandation : le travail). Il touche le grade de l'Ordre (même mesure du travail) : David lance d'abord **`ordre-grande-passoire`** dans une autre session. Relire son journal avant de reposer 5a.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
   - Le Compendium n'interdit que les **mots** anglais affichés (XP, level, boss, score, leaderboard ; `lore-pataphysique.md:968,1776`), **pas les mécaniques**.

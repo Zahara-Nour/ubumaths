@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2759 (§ 19 quinquies)._
+_Mis à jour le 2026-11-17, après #2769 (§ 19 septies)._
 
-- **État** : lots 0 à 6 ter publiés (114 points sur 171). Lot 7 « données » : 13 brouillons en prod (#2751), migration
-  `20261117165426` (13 rangés, 13 tags) (#2759 mergée, migrée).
-- **Prochaine action** : relecture de la page à cocher https://claude.ai/artifact/94MF9SuHHDq8Jaa9hkBSLq
-  (`verdicts`), puis publication (`publier-lot`, lancé par David).
-- **En attente de David** : la relecture ; décider du sort des 4 variations CE1 / CE2 dont le total
-  affiché donne la réponse (§ 19 ter).
+- **État** : lots 0 à 7 publiés, **126 points sur 171** (recompte MCP). Lot 7 « données » publié (13 modèles).
+  Totaux masqués dans 4 variations CE1 / CE2 : #2769 mergée, pas encore écrite en prod.
+- **Prochaine action** : relever les 45 points sans modèle publié, puis phase 0 du lot 8.
+- **En attente de David** : `pnpm tsx scripts/update-published-questions.ts --lot totaux-ce --publier` (depuis le
+  dépôt principal), puis vérification au MCP (4 blocs avec `totaux: non`).
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, aucune branche ouverte.
@@ -1536,3 +1535,19 @@ geste dans le nœud, partagé, sans renuméroter.
   et repères 139, 172, 136 ; notion « Représenter des données » 122 ×2).
 - `page-a-cocher.ts --dir scripts/questions/cm1-7` : 13 fiches (38 exemples), aucune alerte. Page :
   https://claude.ai/artifact/94MF9SuHHDq8Jaa9hkBSLq (`verdicts`, capacité `db`, vide).
+
+### 19 sexies. Totaux masqués dans 4 variations CE1 / CE2 publiées (2026-11-17)
+
+- Décision de David (« je te suis ») : `totaux: non` dans les 4 variations où la ligne Total, affichée par défaut
+  depuis `238ec6bc6a`, donnait la réponse : CE2 `f0f681c4` V1 (le jour où il y en a le plus), V2 (le moins), V3
+  (combien un jour) ; CE1 `29edb833` V2 (le jour où il y en a le plus). Rien d'autre ne change : les corrigés
+  additionnaient déjà eux-mêmes ; la V1 de `29edb833` garde `totaux: oui` (écrit exprès, même question à lire).
+- Modèles publiés : `update-published-questions.ts`, lot `totaux-ce` (instantané
+  `scripts/questions/ce-totaux-existants/`). Simulation : variations seules, specs 10/10 et 9/9, 400 tirages.
+- #2769 mergée (CI verte), branche supprimée. Écriture en prod : à lancer par David.
+
+### 19 septies. Lot 7 — publié (2026-11-17)
+
+- Page à cocher : 13 « OK » sur 13, aucun commentaire. `publier-lot --dir scripts/questions/cm1-7` (simulation),
+  `garde-niveaux-tags` et `--publier` lancés par David. Vérifié au MCP : 13 modèles `published`.
+- Recompte MCP : **126 points du CM1 sur 171** ont un modèle publié (114 + les 12 du lot).

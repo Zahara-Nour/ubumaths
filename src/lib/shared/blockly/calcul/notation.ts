@@ -56,6 +56,7 @@ import {
 } from './interpreteur';
 import { nombreDeTours, premierBlocInconnu, valeurNombre, type BlocLu } from '../lecture';
 import { connusTortue } from '../tortue/interpreteur';
+import { ecrireSansExposant, messageExposant } from '../nombres';
 import { LONGUEUR_MAX_PROGRAMME, type EtatLu, type TexteLu } from '../tortue/notation';
 
 // =============================================================================
@@ -187,16 +188,9 @@ const NOMS_DES_BLOCS: Readonly<Record<string, string>> = {
 
 class TexteIllisible extends Error {}
 
-/** Écriture sans exposant (`1e21`, `1e-7` ne se reliraient pas). */
-const FORMAT_NOMBRE = new Intl.NumberFormat('en-US', {
-	useGrouping: false,
-	maximumFractionDigits: 20
-});
-
+/** Écriture sans exposant (`1e21`, `1e-7` ne se reliraient pas), signe moins typographique. */
 export function ecrireNombreCalcul(n: number): string {
-	return FORMAT_NOMBRE.format(n || 0)
-		.replace('.', ',')
-		.replace('-', '−');
+	return ecrireSansExposant(n).replace('-', '−');
 }
 
 interface Ecrit {
@@ -589,6 +583,22 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 			.map(ecrireJeton)
 			.join(' ');
 
+	/**
+	 * Le nombre écrit à `i`, exposant compris : `1e-2` est découpé en `1e`, `-`, `2` par la
+	 * lecture des opérations, et se recolle ici pour le message — seulement s'il est écrit d'un
+	 * seul tenant (`avancer 1e − 2` cite « 1e », pas un nombre que l'élève n'a pas écrit).
+	 */
+	function exposantEcrit(i: number): string {
+		const [a, b, c] = [jetons[i], jetons[i + 1], jetons[i + 2]];
+		if (a?.type !== 'mot') return '';
+		if (/e$/i.test(a.mot) && b?.type === 'op' && c?.type === 'mot') {
+			const signes = b.op === 'ADD' ? ['+'] : b.op === 'MINUS' ? ['-', '−'] : [];
+			const ecrit = signes.map((s) => `${a.mot}${s}${c.mot}`).find((e) => texte.includes(e));
+			if (ecrit) return ecrit;
+		}
+		return a.mot;
+	}
+
 	/** Id de la variable nommée (créée à sa première écriture) ; nom refusé → erreur. */
 	function variable(nom: string): string {
 		// Tortue : `ajouter 1 à résultat` dit le même refus que `avancer résultat`
@@ -773,6 +783,15 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 			}
 			// Sinon, un nombre de tours calculé (4e)
 			const fois = lireCalcul(0);
+			// Tortue : un nombre écrit non entier ou négatif est refusé, jamais arrondi en silence
+			if (options.tortue && fois.type === 'math_number') {
+				const n = Number((fois.fields as { NUM: number }).NUM);
+				if (!Number.isInteger(n) || n < 0) {
+					throw new TexteIllisible(
+						`« répéter ${cite(debut + 1, position - 1)} » : il faut un nombre entier de fois.`
+					);
+				}
+			}
 			const corps = lireCorps(profondeur, `répéter ${cite(debut + 1, position - 1)}`);
 			return {
 				type: 'controls_repeat_ext',
@@ -880,6 +899,8 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 				position++;
 				return { type: 'variables_get', fields: { VAR: { id: variable(jeton.mot) } } };
 			}
+			const exposant = messageExposant(exposantEcrit(position));
+			if (exposant) throw new TexteIllisible(exposant);
 			throw new TexteIllisible(
 				options.tortue
 					? `« ${jeton.mot} » : dans un calcul, seulement des nombres et des variables.`

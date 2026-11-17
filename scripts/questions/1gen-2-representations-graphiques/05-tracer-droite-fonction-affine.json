@@ -1,4 +1,5 @@
 {
+	"id": "216555e7-9f28-4992-b0f4-416bc418e7da",
 	"title": "Tracer la représentation graphique d'une fonction affine",
 	"description": "Placer deux points de la droite y = ax + b : coefficient entier, puis fractionnaire, puis coût fixe + coût par séance",
 	"grades": ["1_GEN"],

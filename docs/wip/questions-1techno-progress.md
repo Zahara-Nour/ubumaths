@@ -8,18 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2758 (lot G en prod)._
+_Mis à jour le 2026-11-17, après #2764 (83b1f614 v3 en prod)._
 
-- **État** : T1, T2, lot 0, **lot G** en prod (#2743, #2748, #2753, #2758). Lot G : 0b5c3db6 → 036, c4887e49 → 038,
-  569e0140 → 049, `{1_GEN,1_TECHNO}`, vérifié en prod (§ 17).
-- **Prochaine action** : 83b1f614 v3 (Q4 bis (a) : « x = p est racine évidente » au corrigé ; prévenir questions-1gen
-  avant) ; puis lots d'écriture (§ 5, 9). Lot 2 commun de questions-1gen (R2 → 044, R3 → 117, R4 → 119) : attendre
-  leurs ids, puis page à cocher + migration (§ 18).
-- **En attente de David** : rien.
+- **État** : T1, T2, lot 0, lot G, **83b1f614 v3** en prod (#2743, #2748, #2753, #2758, #2764). 83b1f614 : corrigé
+  de v3 par racines évidentes, migration jouée et vérifiée en prod (§ 19).
+- **Prochaine action** : lot 2 commun (§ 20, 21) : lire les verdicts de la page à cocher R2, R3, R4, puis migration
+  `array_append('1_TECHNO')` + tags 044 / 117 / 119 sur les « OK » (gabarit du lot G, § 17 ; modèles en BROUILLON).
+  Ensuite lots d'écriture (§ 5, 9), lot 1 « suites géométriques » d'abord (moins 036, 038, 049).
+- **En attente de David** : verdicts de la page à cocher R2, R3, R4 (§ 21).
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
-  `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min.
-- **Worktree / branche** : aucun (lot G nettoyé).
+  `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db:migrate` « inserted before » → `--dry-run --include-all`.
+- **Worktree / branche** : aucun (83b1f614 nettoyé).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -407,3 +407,55 @@ d'accord, aucune objection sur les plages (termes > 0, q = 1/2 ou 1/3 = fraction
 sans logarithme, uₙ accepté pour les communs). Points : **R2 → 044, R3 → 117, R4 → 119**, tous trois sur ce nœud
 (`320aaed2`). **Retirés de notre lot 4 « graphiques »**, qui garde 121, 085, 082, 059, 104. Suite : leurs ids après
 leur migration nœud + tags, puis page à cocher et migration `array_append('1_TECHNO')` + tags (gabarit du lot G).
+
+## 19. 83b1f614 v3 : racines évidentes au corrigé (2026-11-17)
+
+Q4 bis (a). Prévenus avant : questions-1gen (« aucune modification en cours, tu peux continuer ») et
+questions-ttechno (« sans effet chez nous » : 83b1f614 classé « non » pour 049/087 à leur lot 0). Relevé prod
+(MCP) : publié, `{1_SPE,1_TECHNO}`, 3 variations, md5(variations::text) `d2ee6195…` ; instantané
+`scripts/questions/1techno-83b1f614/` = les sources `1spe-0-variations/83b1f614.json` et
+`derivation-1spe/C-03-…json` (au statut et aux niveaux près).
+
+Variation 3 (index 2), seules les étapes du corrigé changent (2 → 3) : f′(x) développée ; « On cherche des racines
+évidentes parmi les petits entiers : f′(p) = … = 0 et f′(q) = … = 0 » (calculs affichés) ; « Donc f′(x) =
+6(x − p)(x − q) : … signe de son coefficient de x² à l'extérieur des racines ». Tableau et étape finale
+inchangés. `checkTemplate` vert (900 tirages, specs vertes) ; rendu relu sur 6 tirages.
+
+Migration `20261117171928_questions_1techno_83b1f614_contenu`, générée par
+`docs/wip/questions-1techno/83b1f614-contenu.py` (garde : variations EXACTEMENT celles de la prod, sinon rien ;
+modèle absent : rien) ; test `tests/integration/questions-1techno-83b1f614-contenu.test.ts` : 9 verts (décor au
+md5 de la prod) ; migration vidée → 2 rouges et le bloc nominal ne démarre pas. Accès : aucune règle ne change
+(même nature que le lot G : contenu d'un modèle publié).
+
+PR #2764 : audit de sécurité sans finding bloquant (non bloquant : modèle absent en prod → migration muette ; couvert
+par la vérification prod après `db:migrate`). CI : Lint rouge sur la garde de doc (`Doc-inchangée:` dans la PR
+seulement, pas dans le commit) → commit de journal qui porte la ligne.
+
+Mergée (48e3cad4bc). `migration list --linked` : seule 20261117171928 en attente ; `db:migrate` refusé
+(« inserted before », une migration plus récente déjà en prod) → `db push --dry-run --include-all` (seule la
+nôtre) puis `--include-all`. Prod vérifiée (MCP) : v3 en 5 étapes, la 2e = racines évidentes ; publié,
+`{1_SPE,1_TECHNO}`, 2 tags inchangés. Vérification visuelle notée dans `verifications-manuelles.md`.
+
+## 20. Lot 2 commun de questions-1gen : ids reçus (2026-11-17)
+
+Message de questions-1gen : migration `20261117174437` appliquée en prod (vérifiée par eux, MCP) ; les trois sont
+sur « Suites > Généralités sur les suites > représentation graphique », en **brouillon**, `grades = {1_GEN}` :
+
+| Modèle                                        | id                                     | tag 1GEN | à poser     |
+| --------------------------------------------- | -------------------------------------- | -------- | ----------- |
+| R2 Placer les termes d'une suite arithmétique | `96668141-c1a7-4996-bb59-b39f6c106b45` | 1GEN-019 | 1TECHNO-044 |
+| R3 Placer les termes d'une suite géométrique  | `13388e8f-e662-4f28-97b6-934afaeead31` | 1GEN-041 | 1TECHNO-117 |
+| R4 Lire sur le nuage d'une suite géométrique  | `e8f08a19-b417-4183-9cd3-fab7f3810211` | 1GEN-058 | 1TECHNO-119 |
+
+Écarts acceptés par David (chez eux) : R3 et R4 sur u₀ à u₃ seulement, graduation verticale = plus petit terme
+(1 à 4). R3 : 5 variations (explicite, récurrence, croissante / décroissante, bactéries) ; R4 : 6 (u₀ et q, u_k,
+sens croissante, sens décroissante, dépasse, passe sous). Ordre convenu : **page à cocher d'abord**, puis notre
+migration. Leur rollback n'est valable qu'avant nos tags.
+
+## 21. Lot 2 commun : page à cocher (2026-11-17)
+
+Relevé prod (MCP) : 96668141, 13388e8f, e8f08a19 en **brouillon**, `grades = {1_GEN}` (3, 5 et 6 variations).
+Instantanés (`export-question-templates.ts`) dans le scratchpad, à copier dans `scripts/questions/1techno-r/` sur la
+branche de la migration. Page à cocher : https://claude.ai/artifact/LbvfzTA9MAxfVfQsfyyJUF (capacité `db`,
+collection `verdicts` vide au départ ; 14 exemples, chacun avec son nuage dessiné ; aucune alerte). Point affiché =
+le point 1GEN ; le point 1TECHNO visé est dans l'intro (R2 → 044, R3 → 117, R4 → 119).

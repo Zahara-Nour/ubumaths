@@ -5,18 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2765 (lot 10 mergé)._
+_Mis à jour le 2026-11-17, lot 10 publié._
 
-- **État** : lots 1 à 9 publiés. Relevé prod du 2026-11-17 : 78 points sur 82 ont un modèle publié ; sans
-  modèle : 027, 028, 074 (lot 10), 038 (outil manquant, `outils-manquants.md` n° 37, rattaché à la 6e), 026
-  (classe D). 068, 069 couverts depuis (modèles tortue, #2746). Lot 10 : fichiers mergés (**#2765**), § 51.
-- **Prochaine action** : David lance `create-questions --publier` sur
-  `scripts/questions/4-lot-10` ; commiter les `id` ; migration nœud + tag ; page à cocher ; publication.
-- **En attente de David** : supprimer la branche locale périmée `feat/questions-4-lot-10` (2 commits jamais
-  poussés, remplacés par `-bis` ; `branch -D` = liste `ask`).
-- **Pièges en cours** : migrations : `pnpm migration:horodatage`, `pnpm check:migrations --pr <n>` avant
-  `gh pr merge`, `git merge origin/main` dans le worktree avant la CI ; `db push --include-all` réservé à David ;
-  QCM = case choix ; tests navigateur de la CI parfois tombés (`wrapDynamicImport`) : relancer le job.
+- **État** : lots 1 à 10 publiés. Relevé prod du 2026-11-17 (MCP) : **80 points de 4e sur 82** ont un modèle
+  publié ; sans modèle : 4-026 (classe D, non évaluable) et 4-038 (outil manquant, `outils-manquants.md`
+  n° 37, rattaché à la 6e).
+- **Prochaine action** : rien dans ce chantier tant que l'outil de 4-038 n'existe pas ; proposer à David la
+  clôture (versement du durable dans `docs/systeme/`, archivage du journal).
+- **En attente de David** : décider la clôture du chantier.
+- **Pièges en cours** : aucun propre au chantier.
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
@@ -1247,3 +1244,23 @@ le trou noté pour le chantier d'outils.
   écrit ainsi.
 - 4-038 ajouté à `outils-manquants.md` (n° 37) : il n'y figurait pas.
 - PR #2765 (contenu seul, pas de revue) : CI verte, mergée le 2026-11-17.
+
+## 52. Lot 10 : en prod, rangé, page à cocher (2026-11-17)
+
+- David a lancé `create-questions --publier` : brouillons 0ea43bcd (027), 235df57a (028), 63a06b04 (074) ;
+  `id` commités dans #2768.
+- #2768 (migration `20261117174541`, gabarit du lot 9) : test d'intégration rouge sans la migration (3 échecs,
+  4 sautés), 9/9 vert avec ; `security-auditor` : aucun finding bloquant ; CI : job « Types des tests » annulé
+  une fois, vert à la relance ; `check:migrations --pr 2768` OK ; mergée. `migration list --linked` : seule
+  `20261117174541` en attente ; `db:migrate` depuis le dépôt principal. MCP : 3 brouillons sur leur sous-notion,
+  un tag chacun.
+- Page à cocher : https://claude.ai/artifact/M18upimVqzAupAsfpu8xNd (capacités `db` + `user`, `verdicts` vide,
+  rendu vérifié à 390 px) ; alerte attendue : bloc `patron` non dessiné (028).
+
+## 53. Lot 10 : relecture (2026-11-17)
+
+- Verdicts de la page à cocher : 3/3 « ok », aucun commentaire.
+- `publier-lot.ts --dir scripts/questions/4-lot-10` en simulation : 3 brouillons passent le contrôle ;
+  `--publier` à lancer par David.
+- David a lancé `publier-lot.ts --dir scripts/questions/4-lot-10 --publier` : 3/3 publiés (statut relu en base).
+  MCP : 80 points sur 82 couverts, restent 4-026 (D) et 4-038 (outil n° 37).

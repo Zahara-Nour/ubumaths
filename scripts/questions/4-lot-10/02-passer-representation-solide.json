@@ -1,4 +1,5 @@
 {
+	"id": "235df57a-25f4-4701-b787-8ced5e050d81",
 	"title": "Passer d'une représentation à l'autre",
 	"description": "Passer du patron au solide et du solide au patron : nommer le solide d'un patron, choisir le patron d'un solide, désigner la face opposée ou les faces qui contiennent un sommet, longueur du rectangle du patron d'un cylindre, dimensions d'une face du patron d'un pavé",
 	"grades": ["4"],

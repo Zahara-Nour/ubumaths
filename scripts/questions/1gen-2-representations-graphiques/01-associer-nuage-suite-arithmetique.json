@@ -1,4 +1,5 @@
 {
+	"id": "817d257f-dcc6-4c31-92ca-57b0d20665da",
 	"title": "Associer un nuage de points à une suite arithmétique",
 	"description": "Trois nuages de points ↔ trois suites arithmétiques (forme explicite, puis récurrence)",
 	"grades": ["1_GEN"],

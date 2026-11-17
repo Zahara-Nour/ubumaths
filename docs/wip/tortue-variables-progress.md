@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la publication des 4 modèles._
+_Mis à jour le 2026-11-17, après #2761._
 
-- **État** : PR A (#2735), B (#2742), C (#2746), D (#2755) mergées, livrées par `deploy:prod` (0.93.0) ; 4 modèles publiés par David (`publier-lot --publier`), vérifiés `published` (MCP) · **Prochaine action** : PR `fix/tortue-nombres` (phase 0 validée, § Correctif), puis clore le chantier (versement dans `docs/systeme/blockly.md`, ligne de `outils-manquants.md`, journal archivé) · **En attente de David** : rien · **Pièges en cours** : `db:migrate` pousse TOUTES les migrations de `main` en attente · **Worktree / branche** : aucun
+- **État** : PR A (#2735), B (#2742), C (#2746), D (#2755) mergées et livrées (0.93.0) ; 4 modèles publiés (vérifiés) ; correctif des nombres #2761 mergé (tours entiers ≥ 0 partout, aucun exposant), pas encore livré · **Prochaine action** : clore le chantier — versement dans `docs/systeme/blockly.md` (déjà à jour du correctif), ligne de `docs/wip/outils-manquants.md` (4-067, 3-047), vérification manuelle de #2761 dans `verifications-manuelles.md`, journal archivé · **En attente de David** : `deploy:prod` pour livrer #2761 (pas bloquant pour la clôture) · **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente · **Worktree / branche** : aucun (`ubumaths-wt-tortue-nombres` supprimé)
 
 ## Origine
 
@@ -196,3 +196,22 @@ refusés). David : « je veux quelque chose de propre ».
 
 Calcul de 5e (arrondi façon Scratch) hors correctif. Une PR, revue `code-reviewer` Opus, pas de
 migration ; puis clôture du chantier.
+
+### Correctif — implémentation (2026-11-17, worktree `ubumaths-wt-tortue-nombres`)
+
+- Relevé prod (MCP) : 8 modèles tortue, aucun exposant, aucun `répéter` décimal ou négatif écrit.
+- `nombres.ts` (nouveau) : `ecrireSansExposant`, `messageExposant`, `toursEntiers` (tolérance
+  1e-9 : `0,1 × 30` = 3 tours, pas un arrêt). Interpréteur : `toursDeLaTortue` à tous les niveaux,
+  erreur `tours-non-entier` (valeur dans le message, `−` typographique). Notation 4e / 3e : nombre
+  écrit non entier ou négatif après `répéter` refusé, cité par `cite` (« répéter − 2 »). Notation
+  sans niveau : plus d'exposant lu ni écrit ; `controls_repeat_ext` écrit sa valeur brute.
+- Tests rouges d'abord (10), puis verts : 355 tests `blockly` ; specs des 9 modèles tortue du dépôt
+  vertes ; `check:incremental` 0 erreur ; `docs/systeme/blockly.md` mise à jour.
+- Hors correctif, inchangé : `controls_repeat` (champ entier, Blockly interdit virgule et
+  négatif) ; calcul de 5e (arrondi façon Scratch).
+- Revue `code-reviewer` Opus : aucun bloquant, 3 comportements tenus, modèles existants intacts.
+  Corrigé : `exposantEcrit` ne recolle que ce qui est écrit d'un seul tenant (`1e − 2` cite « 1e ») ;
+  `−` typographique dans le message d'exposant (aussi lu : `1e−2`) ; doc (arrondi Scratch = programmes
+  de calcul 4e / 3e ; champ de `controls_repeat` lu à l'entier inférieur, état fabriqué seulement).
+- #2761 mergée (CI verte ; 2 corrections de CI : motif `nombres.ts` du filtre d'intégration,
+  `Doc-inchangée:` pour `environnement-de-dev.md`). Worktree et branche supprimés.

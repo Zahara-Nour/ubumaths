@@ -109,7 +109,7 @@ détaillée. Ce chantier ne se contente pas de marquer les 30 cartes : il repren
 ## Retours de David sur `/dev/corrections`
 
 - **RC1 (2026-11-16)** : les mots soulignés alourdissent la lecture → chantier
-  [`mots-cliquables`](mots-cliquables-progress.md) (mots récents seulement, rien dans la correction).
+  [`mots-cliquables`](../archive/wip/mots-cliquables-progress.md) (mots récents seulement, rien dans la correction).
 
 ## Questions de phase 0 (en attente de David)
 

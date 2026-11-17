@@ -7,21 +7,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 2 écrit (§ 16), PR des fichiers ouverte._
+_Mis à jour le 2026-11-17, après la publication du lot 2._
 
-- **État** : lot 1 publié (§ 13). Lot 2 écrit : 6 modèles R1 à R6, specs, sonde et essai local verts (§ 16), PR des
-  fichiers sur `feat/questions-1gen-lot2`. Phases 0 des lots 3 et 4 validées (§ 14).
-- **Prochaine action** : PR verte → merge ; puis **David** lance `create-questions --dir
-scripts/questions/1gen-2-representations-graphiques --publier` ; commiter les ids ; migration nœud + tags (016, 019,
-  041, 058 → représentation graphique ; 020, 051 → expression et droite) ; envoyer les ids de R2, R3, R4 à
-  questions-1techno. Ensuite lots 3, 4.
-- **En attente de David** : jouer R1 à R6 dans l'aperçu admin (l'extension Chrome ne pilote pas `[::1]`, § 16) ; dire
-  si les écarts à la phase 0 du § 16 lui vont.
+- **État** : lots 1 (§ 13) et 2 (§ 17) **publiés**. Phases 0 des lots 3 (aˣ) et 4 (taux moyen / seuils) validées
+  (§ 14), envoyées à questions-ttechno.
+- **Prochaine action** : écrire le lot 3 dans un worktree neuf `../ubumaths-wt-questions-1gen-lot3`, branche
+  `feat/questions-1gen-lot3` (script `docs/wip/questions/lot-1gen-3.py` calqué sur `lot-1gen-2.py`) ; puis lot 4.
+- **En attente de David** : rien.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
-  `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; modèles
-  communs : R2, R3, R4 (1techno), E2 et autres candidats TTECHNO (ttechno) ; correction de la coquille « t/n » de
-  `src/lib/server/programmes/transcriptions/1_GEN.md` dans la PR du lot 3.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot2`, `feat/questions-1gen-lot2`.
+  `array_remove` ciblés ; `db push` pousse TOUTES les migrations en attente (`migration list --linked` d'abord) ;
+  specs d'un bloc associer : le testeur tire avec la graine 0 (relever l'ordre affiché) ; aperçu admin : serveur
+  `--host 127.0.0.1` (l'extension Chrome refuse `[::1]`), et la base locale peut avoir été remise à zéro par une autre
+  session ; questions-1techno tague R2, R3, R4 (044, 117, 119) ; coquille « t/n » de
+  `src/lib/server/programmes/transcriptions/1_GEN.md` à corriger dans la PR du lot 3.
+- **Worktree / branche** : aucun ; le lot 3 ouvre une branche neuve.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -583,7 +582,11 @@ Script `docs/wip/questions/lot-1gen-2.py` → `scripts/questions/1gen-2-represen
 contre la prod (aucun homonyme) ; 555 formules des aperçus (40 tirages) passées à `validateLatex` avec un compte des
 accolades : 0 problème ; `sonde-courbes` sur 300 tirages, 2 700 blocs ` ```courbe ` (nuages du bloc associer
 compris) : 0 problème. Essai en base locale : les 6 modèles créés en brouillon (copie des fichiers, ids locaux).
-**Aperçu admin non joué** : l'appli redirige vers `http://[::1]:<port>` et l'extension Chrome refuse cette adresse.
+Aperçu admin joué le 2026-11-17 (serveur `--host 127.0.0.1` : l'extension Chrome refuse `[::1]`, la base locale
+avait été remise à zéro entre-temps, modèles recréés) : R1 relié juste ; R2 cinq points placés, juste ; R3 D placé en
+(3 ; 8) → « Tu as placé D en (3 ; 8). », faux ; R5 deux points de y = ½x − 1, juste ; R6 antécédent lu, juste ; R4
+q = 1 (différence) → case 2 fausse, correction affichée. Rendu des nuages lisible, petits repères du bloc associer
+compris.
 
 | Modèle | Fichier                                | Variations | Specs |
 | ------ | -------------------------------------- | ---------- | ----- |
@@ -594,7 +597,8 @@ compris) : 0 problème. Essai en base locale : les 6 modèles créés en brouill
 | R5     | `05-tracer-droite-fonction-affine`     | 3          | 8     |
 | R6     | `06-lire-droite-fonction-affine`       | 4          | 11    |
 
-Écarts à la phase 0 (§ 15), sans effet sur les points ni sur les formes de réponse :
+Écarts à la phase 0 (§ 15), sans effet sur les points ni sur les formes de réponse — **acceptés par David le
+2026-11-17** :
 
 - **R1** : les premiers termes sont tirés dans trois plages disjointes (−3..−1, 1..4, 5..8). Avec 15 conditions, le
   tirage échouait 4 fois sur 100. Le nuage 1 a donc toujours le plus petit u₀, mais les étiquettes sont mélangées au
@@ -608,3 +612,28 @@ compris) : 0 problème. Essai en base locale : les 6 modèles créés en brouill
 - **R4** : nuage limité à u₀..u₃, au lieu de u₀..u₅ : avec u₅, les termes dépasseraient 32 (jusqu'à 243). Seuils à mi-chemin
   entre deux termes, toujours entiers.
 - **R5 v3** : salle d'escalade, 10 à 20 € d'inscription, 5 ou 10 € la séance, grille 1 × 5.
+
+## 17. Lot 2 : en prod, rangement et page à cocher (2026-11-17)
+
+David a lancé `create-questions --publier` après #2762. Relu au MCP : 6 brouillons, `grades` `['1_GEN']`, sans nœud, 0
+tag. Ids commités dans les fichiers.
+
+| Modèle | id                                     | Point    | Nœud                                                           |
+| ------ | -------------------------------------- | -------- | -------------------------------------------------------------- |
+| R1     | `817d257f-dcc6-4c31-92ca-57b0d20665da` | 1GEN-016 | Suites > Généralités sur les suites > représentation graphique |
+| R2     | `96668141-c1a7-4996-bb59-b39f6c106b45` | 1GEN-019 | idem                                                           |
+| R3     | `13388e8f-e662-4f28-97b6-934afaeead31` | 1GEN-041 | idem                                                           |
+| R4     | `e8f08a19-b417-4183-9cd3-fab7f3810211` | 1GEN-058 | idem                                                           |
+| R5     | `216555e7-9f28-4992-b0f4-416bc418e7da` | 1GEN-020 | Fonctions > Fonctions affines > expression et droite           |
+| R6     | `e17ce5be-7beb-4773-b267-7910d6c8a86b` | 1GEN-051 | idem                                                           |
+
+- Migration `20261117174437_questions_1gen_lot2_rangement_tags.sql` (calquée sur celle du lot 1) et son test : rouge
+  sans le corps, 9 / 9 vert avec. `security-auditor` : aucun finding bloquant (faible, hérité du gabarit :
+  `set local lock_timeout` sans effet hors transaction). PR #2767, CI verte, `check:migrations` vert, mergée.
+- `db:migrate` depuis le dépôt principal : seule notre migration en attente (`migration list --linked`). Relu au MCP :
+  chaque modèle sur son nœud, un seul tag, brouillon, `updated_at` inchangé.
+- Ids de R2, R3, R4 envoyés à questions-1techno (tags 1TECHNO-044, 117, 119 à poser par elle).
+- Page à cocher : 6 fiches, 23 exemples ; une alerte attendue (bloc associer de R1 non dessiné, joué dans l'aperçu,
+  § 16). https://claude.ai/artifact/7rNB4sGX6PJP6LaYjWLNAJ (capacité `db`, collection `verdicts` vide au départ).
+- Verdicts lus en base : **6/6 OK**, sans commentaire. Simulation `publier-lot.ts` : 6 brouillons passent ; David a
+  lancé `--publier` : « 6/6 modèles du lot publiés ». Relu au MCP : les 6 `published`, `grades` `['1_GEN']`.

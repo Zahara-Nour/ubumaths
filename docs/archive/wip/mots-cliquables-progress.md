@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2757 (homonymes tranchés)._
+_Mis à jour le 2026-11-17, après #2757 — chantier clos._
 
-- **État** : R1–R6 en prod (v0.93.0 du 2026-11-17) ; test d'écran prof/visiteur 4e + 3e ajouté (#2757, mergée) · **Prochaine action** : clôture après les vérifications manuelles : versement (`docs/systeme/dictionnaire.md` déjà à jour), journal archivé · **En attente de David** : vérifications au doigt sur téléphone (toucher un mot masqué = rien, icône 40 px confortable) et coup d'œil en prod ; le reste vérifié par Claude en dev le 2026-11-17 (voir l'historique) ; feu vert pour retirer `ubumaths-wt-mots-cliquables` (serveur 5177) · **Pièges en cours** : un nom trop ancien reste dans le motif (il occupe son texte) ; `CorrectionCard` montre l'énoncé rempli au recto, donc sans mot (N3) · **Worktree / branche** : aucun chantier ouvert ; `ubumaths-wt-mots-cliquables` (branche R6 mergée) à retirer sur feu vert de David
+- **État** : R1–R6 en prod (v0.93.0), vérifiées par David (téléphone, prod) ; homonymes chez le prof/visiteur laissés tels quels · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun (le durable est dans `docs/systeme/dictionnaire.md`) · **Worktree / branche** : aucun ; `ubumaths-wt-mots-cliquables` et `feat/mots-cliquables-r6` retirés
 
 ## Origine
 
 Retour de David du 2026-11-16, en relisant `/dev/corrections` (chantier
-[`corrections-modeles`](corrections-modeles-progress.md)) : les mots soulignés partout alourdissent la
+[`corrections-modeles`](../../wip/corrections-modeles-progress.md)) : les mots soulignés partout alourdissent la
 lecture des cartes ; à réserver aux mots qui ne servent pas à tout bout de champ.
 
 Mesures (base locale = copie de la prod, 2 297 modèles publiés) :
@@ -126,3 +126,4 @@ Erreur :
 - 2026-11-17 : test d'écran demandé par David (« je te suis ») : prof/visiteur, question 4e + 3e, « fonction » souligné, fiche avec sa définition de 3e (niveau de secours de `lexiconCard`, jusque-là sans test) ; vérifié rouge sans le secours ; #2757 mergée, CI verte.
 - 2026-11-17 : vérifications de #2741 et #2747 faites par Claude dans Chrome, en dev sur `main` (= v0.93.0), comptes locaux fictifs (élève passé en 4e puis 1re spé le temps du test, remis en 6e), GIF `~/Downloads/verif-mots-cliquables-v0.93.gif`. Tout conforme : élève 4e, « Calcule », « calcul », « figure », « prix » non soulignés, « coefficient multiplicateur » et « parallélogramme » (5e) soulignés ; masqués par défaut, survol → souligné, clic → fiche, icône 40 × 40, choix gardé sur la carte suivante et au rechargement, Tab saute les mots masqués et s'y arrête affichés ; verso de flash-card et cartes de correction de fin de série sans mot ni icône ; carte de cours « dérivée » (élève 1re spé) sans mot ni icône, question ordinaire « dérivée » soulignée, « fonction » (3e) non ; visiteur et prof sur question 4e + 3e : « image », « translation » soulignés, « parallélogramme » non (R3), fiches pleines, dont « image (fonction) », sens de 3e lu par le secours. Aucune question 4e + 3e de la base ne contient de mot de 3e seul : ce cas reste couvert par le test de #2757. Non vérifiable ici : le doigt sur un vrai téléphone, la prod.
 - 2026-11-17 : homonymes chez le prof/visiteur tranchés par David : laisser tel quel (les deux sens d'« image » sur une question de translation, comme un élève de 3e).
+- 2026-11-17 : vérifications au doigt et en prod faites par David ; lignes #2741 et #2747 retirées de `verifications-manuelles.md` ; worktree `ubumaths-wt-mots-cliquables` retiré ; versement dans `docs/systeme/dictionnaire.md` (homonymes) ; journal archivé. Chantier clos.

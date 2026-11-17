@@ -1,4 +1,5 @@
 {
+	"id": "13388e8f-e662-4f28-97b6-934afaeead31",
 	"title": "Placer les premiers termes d'une suite géométrique",
 	"description": "Représenter u₀ à u₃ (termes positifs) par des points (n ; uₙ) : forme explicite, récurrence, bactéries",
 	"grades": ["1_GEN"],

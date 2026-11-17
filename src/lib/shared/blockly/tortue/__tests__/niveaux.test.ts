@@ -90,9 +90,9 @@ describe('executerTortue avec niveau — nominal', () => {
 		expect(tortue.cap).toBeCloseTo(22.5);
 	});
 
-	it('répéter un nombre calculé : arrondi, négatif → 0 tour', () => {
-		expect(trace('répéter 5 ÷ 2 [ avancer 1 ]', '4e').tortue.x).toBe(3);
-		expect(trace('mettre n à 0 − 3 ; répéter n [ avancer 1 ]', '4e').segments).toEqual([]);
+	it('répéter un nombre calculé entier : ce nombre de tours', () => {
+		expect(trace('mettre n à 6 ÷ 2 ; répéter n [ avancer 1 ]', '4e').tortue.x).toBe(3);
+		expect(trace('mettre n à 0 ; répéter n [ avancer 1 ]', '4e').segments).toEqual([]);
 	});
 
 	it('3e : si / sinon choisit la branche', () => {
@@ -368,5 +368,122 @@ describe('notation de 4e / 3e : messages au vocabulaire de la tortue', () => {
 		expect(lu.ok).toBe(false);
 		if (!lu.ok) expect(lu.message).toMatch(/ex\. nombre > 0/);
 		expect(texteVersEtatCalcul('afficher nombre').ok).toBe(true);
+	});
+});
+
+// Correctif `tortue-nombres` (phase 0 validée par David le 2026-11-17) : nombre de tours entier
+// ≥ 0 à tous les niveaux, jamais arrondi en silence ; aucune écriture à exposant (`1e2`).
+describe('nombre de tours : entier ≥ 0, jamais arrondi en silence', () => {
+	function refusAlaLecture(texte: string, niveau: NiveauTortue): string {
+		const lu = texteVersEtatTortue(texte, niveau);
+		if (lu.ok) throw new Error(`« ${texte} » devait être refusé en ${niveau}`);
+		return lu.message;
+	}
+
+	it('écrit non entier ou négatif : refusé à la lecture, en 4e comme en 3e', () => {
+		for (const niveau of ['4e', '3e'] as const) {
+			expect(refusAlaLecture('répéter 2,5 [ avancer 1 ]', niveau)).toBe(
+				'« répéter 2,5 » : il faut un nombre entier de fois.'
+			);
+			expect(refusAlaLecture('répéter 2.5 [ avancer 1 ]', niveau)).toMatch(
+				/« répéter 2.5 » : il faut un nombre entier de fois/
+			);
+			expect(refusAlaLecture('répéter -2 [ avancer 1 ]', niveau)).toBe(
+				'« répéter − 2 » : il faut un nombre entier de fois.'
+			);
+			expect(refusAlaLecture('répéter − 2 [ avancer 1 ]', niveau)).toMatch(
+				/il faut un nombre entier de fois/
+			);
+		}
+	});
+
+	it('écrit entier : inchangé, 0 compris', () => {
+		expect(trace('répéter 3 [ avancer 1 ]', '4e').tortue.x).toBe(3);
+		expect(trace('répéter 0 [ avancer 1 ]', '4e').segments).toEqual([]);
+	});
+
+	it('calculé non entier : arrêt, le message dit la valeur', () => {
+		const e = erreur('mettre n à 2,5 ; répéter n [ avancer 1 ]', '4e');
+		expect(e).toEqual({ type: 'tours-non-entier', valeur: 2.5 });
+		expect(messageErreurTortue(e)).toBe(
+			'Répéter : le nombre de fois vaut 2,5, il faut un nombre entier (0, 1, 2…).'
+		);
+		expect(erreur('répéter 5 ÷ 2 [ avancer 1 ]', '3e')).toEqual({
+			type: 'tours-non-entier',
+			valeur: 2.5
+		});
+	});
+
+	it('calculé négatif : arrêt, signe moins typographique dans le message', () => {
+		const e = erreur('mettre n à 0 − 3 ; répéter n [ avancer 1 ]', '4e');
+		expect(e).toEqual({ type: 'tours-non-entier', valeur: -3 });
+		expect(messageErreurTortue(e)).toMatch(/vaut −3,/);
+	});
+
+	it('calculé entier à l’arrondi du calcul près (0,1 × 30) : admis', () => {
+		expect(trace('mettre n à 0,1 × 30 ; répéter n [ avancer 1 ]', '4e').tortue.x).toBe(3);
+	});
+
+	it('tracé partiel gardé jusqu’à la répétition fautive', () => {
+		const r = executerTortue(
+			etat('avancer 2 ; mettre n à 1,5 ; répéter n [ avancer 1 ]', '4e'),
+			'4e'
+		);
+		expect(r.ok).toBe(false);
+		expect(r.segments).toHaveLength(1);
+	});
+
+	it('jugement : la réponse fautive est refusée avec le message', () => {
+		const lu = lireProgrammeTortue('mettre n à 2,5 ; répéter n [ avancer 1 ]', '4e');
+		expect(lu).toEqual({
+			ok: false,
+			message: 'Répéter : le nombre de fois vaut 2,5, il faut un nombre entier (0, 1, 2…).'
+		});
+	});
+});
+
+describe('nombres sans exposant, à tous les niveaux', () => {
+	it('« 1e2 » refusé, le message donne le nombre écrit en entier', () => {
+		for (const niveau of ['4e', '3e'] as const) {
+			const lu = texteVersEtatTortue('avancer 1e2', niveau);
+			expect(lu).toEqual({ ok: false, message: '« 1e2 » : écrire le nombre en entier (100).' });
+		}
+		expect(texteVersEtat('avancer 1e2')).toEqual({
+			ok: false,
+			message: '« 1e2 » : écrire le nombre en entier (100).'
+		});
+		expect(texteVersEtat('avancer 2,5E1')).toEqual({
+			ok: false,
+			message: '« 2,5E1 » : écrire le nombre en entier (25).'
+		});
+		expect(texteVersEtat('répéter 1e1 [ avancer 1 ]')).toMatchObject({ ok: false });
+	});
+
+	it('exposant à signe (« 1e-2 ») : refusé sans « e » dans le nombre', () => {
+		expect(texteVersEtat('avancer 1e-2')).toEqual({
+			ok: false,
+			message: '« 1e-2 » : écrire le nombre en entier (0,01).'
+		});
+		expect(texteVersEtatTortue('avancer 1e-2', '4e')).toEqual({
+			ok: false,
+			message: '« 1e-2 » : écrire le nombre en entier (0,01).'
+		});
+		expect(texteVersEtatTortue('avancer 1e−2', '4e')).toMatchObject({
+			ok: false,
+			message: '« 1e−2 » : écrire le nombre en entier (0,01).'
+		});
+	});
+
+	it('exposant écrit en morceaux (« 1e − 2 ») : le message ne cite que ce qui est écrit', () => {
+		const lu = texteVersEtatTortue('avancer 1e − 2', '4e');
+		expect(lu.ok).toBe(false);
+		if (!lu.ok) expect(lu.message).not.toMatch(/1e-2|0,01/);
+	});
+
+	it('nombre négatif : signe moins typographique dans le message', () => {
+		expect(texteVersEtat('avancer -1e2')).toEqual({
+			ok: false,
+			message: '« -1e2 » : écrire le nombre en entier (−100).'
+		});
 	});
 });

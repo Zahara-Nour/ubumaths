@@ -5,14 +5,14 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2766 (lot 1 rangé et tagué en prod)._
+_Mis à jour le 2026-11-17, après la publication du lot 1._
 
-- **État** : lot 0 en prod (#2756). Lot 1 (§ 11, 4 modèles : indices base 100, inégalité) : brouillons en prod,
-  nœud + tags migrés (#2766, `20261117172627`, vérifié par MCP). Page à cocher publiée, 0 verdict :
-  https://claude.ai/artifact/TJCp41QzxCSUjjiKRjpgej
-- **Prochaine action** : relire et compter les verdicts (`ArtifactData list verdicts`) ; puis `publier-lot.ts
---dir scripts/questions/ttechno-1-automatismes` en simulation, **David** avec `--publier`. Ensuite lot 2 (suites).
-- **En attente de David** : sa relecture du lot 1 sur la page à cocher.
+- **État** : lot 0 en prod (#2756). Lot 1 (§ 11, 4 modèles : indices base 100, inégalité) **publié** : relu 4/4 ok,
+  `publier-lot.ts --publier` lancé par David, 4 `published` vérifiés par MCP.
+- **Prochaine action** : lot 2 (suites : 016, 018, 074, 076, 077 ; § 3, § 4) — phase 0 : relever l'existant
+  (tous niveaux, lecture complète, § 7 ; brouillons 1re spé du § 6 ; journal `questions-1techno` pour les suites),
+  puis proposer les modèles à David et **attendre sa validation**.
+- **En attente de David** : rien.
 - **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
   piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
@@ -314,3 +314,7 @@ départ ; 3 fiches au bloc « ranger » non dessiné, à jouer dans l'aperçu : 
   `migration list --linked` : seule `20261117172627` en attente ; `db:migrate` depuis le dépôt principal ; prod
   vérifiée (4 nœuds, 4 tags, `updated_at` = création, trigger réactivé).
 - Page à cocher : https://claude.ai/artifact/TJCp41QzxCSUjjiKRjpgej (4 fiches, aucune alerte ; `verdicts` vide).
+
+**Publication (2026-11-17)** : page à cocher relue, 4 verdicts sur 4 « ok » ; `publier-lot.ts` en simulation (4
+passent) ; `garde-niveaux-tags.ts` vert ; David a lancé `--publier` ; 4 `published`, `grades ['T_TECHNO']`,
+vérifiés par MCP. **Lot 1 clos.**

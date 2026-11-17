@@ -1,4 +1,5 @@
 {
+	"id": "96668141-c1a7-4996-bb59-b39f6c106b45",
 	"title": "Placer les premiers termes d'une suite arithmétique",
 	"description": "Représenter u₀ à u₄ par des points (n ; uₙ) : forme explicite, récurrence, épargne",
 	"grades": ["1_GEN"],
