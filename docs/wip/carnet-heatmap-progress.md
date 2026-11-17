@@ -6,12 +6,12 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2786._
+_Mis à jour le 2026-11-17, après le deploy:prod v0.94.0 (#2786 en prod)._
 
-- **État** : PR 1 (affichage, Zod `max(53)`) mergée (#2786), pas encore en prod. Le SQL rend toujours 5 semaines.
-- **Prochaine action** : PR 2 (migration `carnet_payload` depuis la rentrée / l'arrivée ; évaluations gardées à 5 semaines ; L3 école sans année = 5 semaines ; ADR 0040 ; e2e à refaire), **seulement après le `deploy:prod` de #2786**.
-- **En attente de David** : `deploy:prod` de #2786.
-- **Pièges en cours** : migrer avant ce déploiement = carnet de tous les parents en erreur (Zod `max(5)` en prod). Port 5176 souvent pris par un autre worktree : e2e avec `VERIFS_PORT` libre.
+- **État** : PR 1 (affichage, Zod `max(53)`) mergée (#2786) et **en prod (v0.94.0)**. Le SQL rend toujours 5 semaines.
+- **Prochaine action** : PR 2 (migration `carnet_payload` depuis la rentrée / l'arrivée ; évaluations gardées à 5 semaines ; L3 école sans année = 5 semaines ; ADR 0040 ; e2e à refaire) : **débloquée** (#2786 en prod).
+- **En attente de David** : rien.
+- **Pièges en cours** : port 5176 souvent pris par un autre worktree : e2e avec `VERIFS_PORT` libre.
 - **Worktree / branche** : aucun (à recréer pour la PR 2).
 
 ---
