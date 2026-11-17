@@ -10,12 +10,13 @@
 
 _Mis à jour le 2026-11-17, après #2787 (lot 2, fichiers)._
 
-- **État** : lot 1 clos (#2783). **Lot 2** : fichiers mergés (#2787), 8 brouillons créés en prod (ids § 24), page à
-  cocher publiée, migration `20261117222845_questions_1techno_lot2_rangement_tags` + test écrits sur la branche.
-- **Prochaine action** : verdicts de la page à cocher ; test d'intégration vert puis rouge sans la migration ;
-  `security-auditor` ; PR → CI → merge ; `db:migrate` par David ; publication (`publier-lot.ts`).
-- **En attente de David** : la relecture (https://claude.ai/artifact/FrRt7ig4wuX6mLsY9dP5Q3) ; le go sur la partie
-  destructive (1acb6d47 perd 1TECHNO-057 et `1_TECHNO`, aucune donnée d'élève).
+- **État** : lot 1 clos (#2783). **Lot 2** : fichiers mergés (#2787), 8 brouillons en prod (ids § 24), page à cocher
+  8 « ok » sur 8 ; migration `20261117222845_questions_1techno_lot2_rangement_tags` + test (14 verts, preuve rouge),
+  `security-auditor` sans bloquant ; PR de la migration ouverte.
+- **Prochaine action** : CI verte → **merge seulement après le go de David** (partie destructive) → `db:migrate` par
+  David → vérif MCP → publication (`publier-lot.ts`, `--publier` par David) → lot clos.
+- **En attente de David** : le go sur la partie destructive (1acb6d47 perd 1TECHNO-057 et `1_TECHNO`, aucune donnée
+  d'élève).
 - **Pièges en cours** : M1–M7 communs `{1_GEN,1_TECHNO}`, deux tags (un par programme) ; worktree neuf →
   `svelte-kit sync` avant `page-a-cocher.ts` ; `db:migrate` pousse tout ce qui attend (`migration list --linked`).
 - **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot2-rangement`.
@@ -611,4 +612,7 @@ Migration `20261117222845_questions_1techno_lot2_rangement_tags` : (A) 8 brouill
 1TECHNO, 15 tags (8 × 1TECHNO, 7 × 1GEN, le point 1GEN exigé sur le même nœud) ; (B) 1acb6d47 perd 1TECHNO-057 et
 `1_TECHNO`. **Partie destructive** (une ligne de tag, une valeur de niveau), rendue par le rollback. Gardes : tout ou
 rien (9), brouillons sans nœud ni tag avec les niveaux du relevé, 1acb6d47 avec `1_TECHNO` et 057 pour seul point
-1TECHNO. Test `tests/integration/questions-1techno-lot2-rangement-tags.test.ts`.
+1TECHNO. Test `tests/integration/questions-1techno-lot2-rangement-tags.test.ts` : 14 verts ; corps retiré → 7 rouges
+et le bloc nominal ne démarre pas. `security-auditor` : aucun bloquant (note : 1acb6d47 reste rangé sur le nœud
+« parabole », son tag 1SPE-402 étant sur sa notion ; seul l'arbre de l'admin en est touché). Page à cocher : 8 « ok »
+sur 8, sans commentaire.
