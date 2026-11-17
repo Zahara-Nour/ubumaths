@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 9 écrit (§ 15.2), PR à ouvrir._
+_Mis à jour le 2026-11-17, après #2789 et les brouillons du lot 9._
 
-- **État** : lots 0 à 8 publiés (lot 8 : 038, 053, 055-057, publiés le 2026-11-17, `published` relu au MCP).
-- **Prochaine action** : PR des fichiers du lot 9 (§ 15.2), merge, puis David : `create-questions --dir scripts/questions/cm2-9 --publier` (prod) ; ensuite migration nœud + tag (nœuds « définition » 12-15, « écritures » 14).
+- **État** : lots 0 à 8 publiés ; lot 9 (partages) : 5 brouillons en prod (§ 15.3), migration de rangement écrite, tests rouges puis verts.
+- **Prochaine action** : PR de la migration du lot 9 (+ ids des fichiers), `security-auditor`, CI, `check:migrations --pr`, merge, `migration list --linked` puis `db:migrate`, vérif MCP, page à cocher.
 - **En attente de David** : rien avant le merge. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
-- **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot9`.
+- **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal, puis `pnpm exec svelte-kit sync`. Page à cocher : `partage` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » à supprimer après le merge (copie sur la branche).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot9-tags`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -935,3 +935,16 @@ de 30 ; (b) un seul lot de 5 modèles. Tableau du § 15 gardé.
   figure juste dessinée ; grille 5×10 à lire (47/50) lisible ; « Colorie 0,1 », une ligne glissée →
   « Juste ». La saisie MathLive ne se fait pas par l'extension Chrome : réponses tapées couvertes par les
   specs. Fichiers réécrits par le script ensuite (ids locaux retirés, identiques à la copie d'avant).
+- #2789 (fichiers) : CI verte ; merge retenu par la garde pendant un `deploy:prod` (v0.94.0), puis mergée.
+
+### 15.3 Lot 9 : brouillons, rangement (2026-11-17)
+
+- David : `create-questions --dir scripts/questions/cm2-9 --publier` (dépôt principal) → `46b9aa11` (132,
+  niv. 12), `549c7f1c` (131, 13), `137195bd` (137, 14), `5cc4ef1a` (136, 15), `b9ff4834` (143, 14) ; MCP :
+  5 brouillons [CM2] sans nœud ni tag, `updated_at` = création. Fichiers à ids reportés sur
+  `feat/questions-cm2-lot9-tags` (copie identique, `cmp`) ; ceux du dépôt principal mis en stash
+  « cm2-9 ids (copie, reportée sur feat/questions-cm2-lot9-tags) ».
+- Migration `20261117222938_questions_cm2_lot9_rangement_tags.sql`, copie du lot 8 (script, aucun reste
+  du lot 8 au grep) ; nœuds : « Fractions : sens et écritures > définition » (131, 132, 136, 137),
+  « Décimaux : numération > écritures » (143). Test `questions-cm2-lot9-rangement-tags` : 9 verts ;
+  corps remplacé par `select 1;` → 5 rouges ; fichier restauré depuis sa copie (`cmp`).
