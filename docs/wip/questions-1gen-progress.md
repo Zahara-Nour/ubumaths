@@ -345,3 +345,6 @@ avec les ids écrits en tête des fichiers (commit 1487a0f73). Relevé en prod :
 `tests/integration/questions-1gen-lot1-rangement-tags.test.ts`. Relevé MCP avant le SQL : les 5 brouillons toujours
 sans nœud, 0 tag, `grades` `['1_GEN']` ; les 5 points sur les nœuds du § 11. Test rouge sans le corps (5 / 9 en
 échec), 9 / 9 vert avec. `grades` non touché. Rollback à jouer avant que questions-1techno ait tagué G1, G4, G5.
+
+`security-auditor` : aucun finding bloquant. Faibles : branche en retard sur `main` (fusionnée, test relancé, 9 / 9) ;
+rollback valable seulement avant les tags 1TECHNO de G1, G4, G5 (dit dans l'en-tête).
