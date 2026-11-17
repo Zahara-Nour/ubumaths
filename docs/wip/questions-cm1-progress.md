@@ -5,14 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 du lot 7 écrite (§ 19)._
+_Mis à jour le 2026-11-17, phase 0 du lot 7 validée (§ 19 bis)._
 
 - **État** : lots 0 à 6 ter publiés (114 points sur 171, recompte MCP du 2026-11-17). Lot 7 « données » : phase 0
   écrite au § 19 (13 modèles, 12 points ; 135 et 136 passent de C à B).
-- **Prochaine action** : réponse de David aux 5 questions du § 19, puis écriture du lot 7 dans le worktree (branche
-  neuve depuis `origin/main`).
-- **En attente de David** : les 5 questions du § 19 (découpage, villes inventées, échelle de 7-8, repère à axes
-  donnés, niveaux).
+- **Prochaine action** : écriture du lot 7 (§ 19 bis) dans le worktree, branche `feat/questions-cm1-lot7`.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; `axe: à choisir` : échelles 1, 2, 5, 10 seulement, données ≤ 100.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main` (son journal est périmé : lire celui de `main`).
 
@@ -1479,3 +1477,10 @@ Questions :
    partagé s'il le faut, sans renuméroter personne ; relevés une nouvelle fois juste avant la création. Reco : **oui**.
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 19 bis. Lot 7 : réponse de David (2026-11-17)
+
+Les cinq recommandations du § 19 : 1. **un seul lot** de 13 modèles ; 2. **villes inventées** (7-2, 7-3) ; 3. 7-8
+écrit **dans les limites de `axe: à choisir`** (1, 2, 5, 10, données ≤ 100), échelles 20 à 100 notées au n° 36 de
+`outils-manquants.md` ; 4. repère de 7-11 à **axes donnés** ; 5. **niveaux** : celui qui suit le modèle CE2 de même
+geste dans le nœud, partagé, sans renuméroter.
