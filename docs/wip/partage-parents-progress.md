@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR 6 ouverte._
+_Mis à jour le 2026-11-17, après #2739._
 
-- **État** : PR 1 à 4 mergées, migrations en prod ; code des PR 2 à 4 **pas encore déployé** (`deploy:prod` = David). PR 5 (doc) sur `main`. **PR 6** (migration : arrivée en cours d'année Q43, Q27 bornée) ouverte, tests 66/66.
-- **Prochaine action** : revues PR 6 (`code-reviewer` + `security-auditor`, Opus), CI, merge, `db:migrate`. Puis PR 7 : politique de confidentialité (Q41), **avant** le `deploy:prod` du carnet. Plus tard : Q42 (journal des courriels effacé après un an).
-- **En attente de David** : rien.
+- **État** : PR 1 à 4 et 6 mergées (#2718, #2724, #2731, #2736, #2737, #2739), migrations en prod (dont `20261117113154`, vérifiée). Code des PR 2 à 4 **pas encore déployé** (`deploy:prod` = David). PR 5 (doc) sur `main`.
+- **Prochaine action** : PR 7, politique de confidentialité (Q41) **avant** le `deploy:prod` du carnet ; brouillon du texte donné à David le 2026-11-17 (§ 3.4 nouveau, § 4, § 6 Brevo, § 7 durées). Plus tard : Q42 (journal des courriels effacé après un an, migration) ; point 8 sur `/parents` après le déploiement (chantier `presentation-parents`).
+- **En attente de David** : validation du texte de la politique de confidentialité (Q41).
 - **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 si déployé. Rejets Brevo différés non marqués `invalid` (pas de webhook).
-- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-pr6`.
+- **Worktree / branche** : aucun.
 
 ## Origine
 
@@ -299,3 +299,4 @@ Worktree `../ubumaths-wt-partage-parents`, branche `feat/partage-parents-pr6`.
 - Migration `20261117113154_carnet_arrivee_en_cours_d_annee.sql` : corps de `carnet_payload` et `carnet_current_exceptions` remplacés ; arrivée = plus ancienne adhésion active à une classe au carnet (`joined_at`) ; aucune nouvelle fonction, droits inchangés.
 - Tests : 4 nouveaux (`carnet-courriels-exception.test.ts`, Q27 bornée + 3 Q43), **rouges sans la migration**, verts avec ; les aides `nouvelEleve` des trois fichiers posent une arrivée il y a 400 jours (avant toute rentrée). 66/66.
 - Revues (2026-11-17), `code-reviewer` et `security-auditor` (Opus) : **aucun finding bloquant**. Corrigés : la borne de Q27 écartait aussi une évaluation préparée l'été (avant la rentrée) → borne seulement sur « non faite hors fenêtre », un mois de marge avant la rentrée (test « Préparée l'été ») ; classe sans carnet ignorée dans le calcul de l'arrivée (test) ; rollback écrit avec ses lignes ; limite « retiré puis remis / changement de classe » complétée dans la doc.
+- **Mergée** le 2026-11-17 (#2739), CI verte au 2e passage (garde de doc : `base-de-donnees.md`). `db:migrate` (4 conditions réunies) depuis le dépôt principal (le worktree n'est pas lié à Supabase) ; il a aussi appliqué `20261117113333` (chantier `questions-cm1`, déjà mergée). Vérifié en prod en lecture seule : les deux fonctions lisent `joined_at`, droits inchangés (postgres, service_role).
