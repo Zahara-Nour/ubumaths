@@ -332,7 +332,9 @@ et arrête les courriels tant que l'adresse a un lien actif ; colonne illisible 
 `carnet_current_exceptions`, `carnet_sync_exception_episodes`, `carnet_exception_plan`,
 `carnet_quarterly_plan`, `carnet_erase_orphan_contacts` ; internes : `carnet_school_year`,
 `carnet_is_holiday`, `carnet_contact_by_token`. Une évaluation sans échéance non faite reste dans le
-carnet (Q27).
+carnet si elle date de l'année en cours (Q27). Migration `20261117113154` : `carnet_payload` et
+`carnet_current_exceptions` comptent depuis l'**arrivée** de l'élève dans une classe au carnet
+(`class_members.joined_at`, Q43), pas seulement depuis la rentrée.
 
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture

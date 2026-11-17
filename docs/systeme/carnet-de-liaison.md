@@ -28,6 +28,12 @@ travail pour chacune des 5 dernières semaines (0, 1, 2-3, 4+ ; jamais le nombre
 jours), le nombre de révisions en retard, les évaluations faites ou non (**jamais la note**),
 et les liens du cahier et du cours de la classe.
 
+Tout se compte depuis la rentrée **et depuis l'arrivée de l'élève** dans une classe au carnet
+(Q43 ; la plus ancienne de ses adhésions actives, `class_members.joined_at`) : ni semaine, ni
+évaluation échue d'avant son arrivée. Une évaluation sans échéance non faite reste tant
+qu'elle n'est pas faite, si elle date de l'année scolaire en cours (créée au plus tôt un mois
+avant la rentrée : préparation d'été ; Q27).
+
 ## Les surfaces
 
 | Adresse                                       | Qui                    | Ce qu'elle fait                                                                                                                                                                                                                                                                                                |
@@ -107,8 +113,8 @@ seulement). Module `src/lib/server/carnet/courriels.ts` (`runCarnetDaily`), dans
    activé (élève arrivé après, consentement accordé après, rentrée, envoi en échec).
 3. **Exceptions** (E1-E3, E7) : `carnet_sync_exception_episodes` ouvre un épisode par adresse
    et par exception en cours (évaluation non faite dans les 7 jours après l'échéance, une par
-   évaluation ; plus ancienne révision en retard depuis plus de N jours ; aucun jour actif sur
-   les N derniers jours de classe hors vacances, depuis la rentrée ; année scolaire inconnue →
+   évaluation, si l'échéance suit l'arrivée de l'élève ; plus ancienne révision en retard depuis plus de N jours ; aucun jour actif sur
+   les N derniers jours de classe hors vacances, depuis la rentrée et l'arrivée de l'élève ; année scolaire inconnue →
    pas d'inactivité) et ferme ceux qui ont disparu ; `carnet_exception_plan` rend un courriel
    par adresse qui a des épisodes non signalés, si aucun courriel d'exception ou trimestriel
    n'est parti vers elle depuis 6 j 12 h (Q19, Q33) ; pendant les vacances, seules les
@@ -146,9 +152,12 @@ formulaire sans `Origin` de notre site (Q39).
   partir le même jour (Q33 : les liens ne comptent pas).
 - Épisodes non marqués après un envoi réussi (erreur de base) : journalisé, ils repartent une
   semaine plus tard.
-- Arrêter puis reprendre les courriels resignale une exception encore en cours ; un élève
-  arrivé en cours d'année est jugé inactif depuis la rentrée de l'école ; une évaluation sans
-  échéance jamais faite reste dans le carnet d'une année sur l'autre (Q27).
+- Arrêter puis reprendre les courriels resignale une exception encore en cours (voulu : le
+  parent qui reprend veut l'état présent).
+- Un élève qui change de classe en cours d'année, ou retiré puis remis dans sa classe (un
+  retrait efface l'adhésion) : tout repart de sa nouvelle arrivée. Le parent ne voit plus les
+  semaines ni les évaluations échues d'avant ; l'alerte d'inactivité attend N jours (jamais de
+  fausse alarme).
 - L'effacement des 90 jours efface aussi les adresses « Je ne suis pas le parent » et retirées :
   leur empreinte ne bloque plus une ressaisie.
 - Le journal des courriels (`parent_notifications`) n'a pas de durée propre : il vit avec le profil

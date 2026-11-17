@@ -129,7 +129,13 @@ async function nouvelEleve(
 	if (e1) throw new Error(e1.message);
 	const { error: e2 } = await service
 		.from('class_members')
-		.insert({ class_id: classe, student_id: profil.id, status: 'active' });
+		// Arrivé avant toute rentrée (Q43 : le carnet compte depuis l'arrivée)
+		.insert({
+			class_id: classe,
+			student_id: profil.id,
+			status: 'active',
+			joined_at: new Date(Date.now() - 400 * 86_400_000).toISOString()
+		});
 	if (e2) throw new Error(e2.message);
 	return { id: profil.id, client: await clientFor(profil.email!) };
 }
