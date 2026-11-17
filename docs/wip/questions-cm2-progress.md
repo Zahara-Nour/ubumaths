@@ -9,8 +9,8 @@
 _Mis à jour le 2026-11-17, après #2780._
 
 - **État** : lots 0 à 7 publiés. **Lot 8** (038, 053, 055-057 ; 5 modèles) : brouillons en prod, rangés et tagués (#2780, `db:migrate` joué et vérifié au MCP).
-- **Prochaine action** : page à cocher du lot 8 (`scripts/questions/page-a-cocher.ts --dir scripts/questions/cm2-8`), relecture de David, `publier-lot` en simulation puis `--publier` par David. Après le lot 8 : reclasser le § 3 (§ 12 d).
-- **En attente de David** : sa relecture sur la page à cocher du lot 8. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-8 --publier` (relecture faite : 5 OK, 055-057 joués dans l'aperçu ; simulation verte), puis vérifier `published` au MCP. Après le lot 8 : reclasser le § 3 (§ 12 d).
+- **En attente de David** : le `--publier` du lot 8. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
 - **Worktree / branche** : aucun (worktree du lot 8 retiré, branches mergées supprimées).
 
