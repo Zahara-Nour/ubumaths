@@ -5,13 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 8a écrit (§ 21 ter)._
+_Mis à jour le 2026-11-17, après #2782 (§ 21 quater)._
 
-- **État** : lots 0 à 7 publiés, 126 points sur 171. Lot 8a « heures et durées » (5 modèles) écrit, PR des fichiers
-  en cours ; puis 8b, 8c, 8d, 8e, 9 (découpage du § 20).
-- **Prochaine action** : merge de la PR 8a, puis `create-questions --publier` par David, migration nœud + tag.
-- **En attente de David** : « 05 » vaut ½ point dans les horloges CE2 (règle `zeros`, § 21 ter) : corriger ces
-  modèles publiés (`zeros: off`) ?
+- **État** : lots 0 à 7 publiés, 126 points sur 171. Lot 8a « heures et durées » (5 modèles) : fichiers mergés
+  (#2782), rien en prod. Suite : 8b, 8c, 8d, 8e, 9 (découpage du § 20).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm1-8a --publier` (depuis le
+  worktree) ; puis ids commités, niveaux relevés, migration nœud + tag (« lecture de l'heure », « calcul de durées »).
+- **En attente de David** : ce `--publier` ; « 05 » vaut ½ point dans les horloges CE2 publiées (règle `zeros`,
+  § 21 ter) : les corriger (`zeros: off`) ?
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, aucune branche ouverte.
@@ -1651,3 +1652,7 @@ celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renum
   0 problème ; `create-questions` en simulation (prod) : 5 « à créer ».
 - Base locale (copie du dossier, `.env.local`, sous `scripts/with-db-lock.sh`), aperçu admin à 390 px (Playwright,
   port 5178) : les 15 variations vues, cadrans nus, horloge à placer, quatre horloges légendées, cases + choix du jour.
+
+### 21 quater. Lot 8a — fichiers mergés (2026-11-17)
+
+- #2782 mergée (CI verte), branche supprimée ; worktree détaché sur `main`.
