@@ -21,7 +21,9 @@ _Mis à jour le 2026-11-17, PR #2743 (T1) ouverte, page T2 relue (33 « OK »)._
 - **Pièges en cours** : **un point par programme** (trigger) ; point sur une sous-notion → seuls les modèles
   de cette sous-notion ; `grades` en `array_append` / `array_remove` seulement (accord `questions-1gen`) ;
   **T2 : 95ee57c8 et 5397c20f ont DÉJÀ `1_TECHNO`** → n'ajouter le niveau que s'il manque (la garde T1
-  « 1_TECHNO absent » les refuserait) ; commitlint refuse « T1 » en début de sujet (sentence-case).
+  « 1_TECHNO absent » les refuserait) ; **T2 attend le `db:migrate` de la PR #2744 (`questions-1gen`)** : sa migration
+  garde le relevé exact des tags de 19 modèles, dont 8 de T2 (21f42c7f, 42bb2d66, aab8e41c, afe51ac4,
+  d8c9cb60, f2ed0ea0, 5397c20f, 95ee57c8) ; elle prévient quand c'est joué ; commitlint refuse « T1 » en début de sujet (sentence-case).
 - **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-t1` (propre, poussée).
 
 ## 1. Relevé (prod, 2026-11-17)
