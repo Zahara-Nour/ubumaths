@@ -97,3 +97,7 @@ sur **un** élève, sans compte, par un lien qui lui est propre.
   SvelteKit refuse avant tout hook. L'en-tête `List-Unsubscribe` mène au carnet (`#courriels`), où le
   parent clique « Ne plus recevoir ». Gmail n'exige le geste unique qu'au-delà de 5 000 courriels par
   jour.
+- **Arrivée en cours d'année** (amendement du 2026-11-17, Q43) : l'inactivité, l'alerte d'évaluation
+  non faite et le carnet se comptent depuis l'arrivée de l'élève dans une classe au carnet, pas
+  depuis la rentrée (sinon fausse alarme dès le lendemain de son arrivée). Une évaluation sans
+  échéance non faite ne reste que si elle date de l'année scolaire en cours (Q27 bornée).

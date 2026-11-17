@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR 5 (doc, commit direct sur `main`)._
+_Mis à jour le 2026-11-17, PR 6 ouverte._
 
-- **État** : PR 1 à 4 mergées (#2718, #2724, #2731, #2736, #2737), migrations en prod. Code des PR 2 à 4 **pas encore déployé** (`deploy:prod` = David). PR 5 faite : registre RGPD (fiche T9), ADR 0040 complétée (Q35, Q38, Q39), `carnet-de-liaison.md` versée, carte des fonctionnalités, texte du point 8 proposé dans `presentation-parents-progress.md`.
-- **Prochaine action** : selon les réponses de David : politique de confidentialité (PR de code, **avant** le `deploy:prod` du carnet) ; puis archiver ce journal (`docs/archive/wip/`).
-- **En attente de David** : **Q39** (`List-Unsubscribe-Post`) ; **Q40** texte du point 8 ; **Q41** politique de confidentialité publique ; **Q42** durée du journal des courriels. Points laissés : effacement des 90 jours qui efface aussi les « Je ne suis pas le parent » ; Q27 sans borne d'année ; plafond par élève ; resignalement après arrêt puis reprise.
+- **État** : PR 1 à 4 mergées, migrations en prod ; code des PR 2 à 4 **pas encore déployé** (`deploy:prod` = David). PR 5 (doc) sur `main`. **PR 6** (migration : arrivée en cours d'année Q43, Q27 bornée) ouverte, tests 66/66.
+- **Prochaine action** : revues PR 6 (`code-reviewer` + `security-auditor`, Opus), CI, merge, `db:migrate`. Puis PR 7 : politique de confidentialité (Q41), **avant** le `deploy:prod` du carnet. Plus tard : Q42 (journal des courriels effacé après un an).
+- **En attente de David** : rien.
 - **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 si déployé. Rejets Brevo différés non marqués `invalid` (pas de webhook).
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-pr6`.
 
 ## Origine
 
@@ -290,3 +290,11 @@ Questions (recommandation en premier) :
 - Question d'accès (migration Q43 + Q27) : personne ne lit rien de nouveau ; en miroir, le parent **ne lit plus** les évaluations sans échéance non faites d'une année passée.
 - Laissés tels quels : effacement des 90 jours qui efface les refus ; plafond par élève ; resignalement après arrêt puis reprise.
 - Ordre : PR 6 (migration Q43 + Q27) → PR 7 (code si besoin, politique de confidentialité, point 8 sur `/parents` après le déploiement) ; avant le 28 novembre.
+
+## PR 6 — arrivée en cours d'année et Q27 bornée (2026-11-17)
+
+Worktree `../ubumaths-wt-partage-parents`, branche `feat/partage-parents-pr6`.
+
+- **Décidé le 2026-11-17** (après question) : les trois — inactivité, alerte d'évaluation, carnet — comptent depuis l'arrivée dans la classe.
+- Migration `20261117113154_carnet_arrivee_en_cours_d_annee.sql` : corps de `carnet_payload` et `carnet_current_exceptions` remplacés ; arrivée = plus ancienne adhésion active à une classe au carnet (`joined_at`) ; aucune nouvelle fonction, droits inchangés.
+- Tests : 4 nouveaux (`carnet-courriels-exception.test.ts`, Q27 bornée + 3 Q43), **rouges sans la migration**, verts avec ; les aides `nouvelEleve` des trois fichiers posent une arrivée il y a 400 jours (avant toute rentrée). 66/66.

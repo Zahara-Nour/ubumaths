@@ -184,9 +184,15 @@ async function nouvelleEcole(
 	return { ecole, annee };
 }
 
+/**
+ * Élève membre actif de `classe`. Arrivé par défaut il y a 400 jours, avant
+ * toute rentrée : seuls les tests de l'arrivée en cours d'année (Q43) posent
+ * une date récente.
+ */
 async function nouvelEleve(
 	prenom: string,
-	classe: string
+	classe: string,
+	arriveIlYA = 400
 ): Promise<{ id: string; email: string; client: () => Promise<SupabaseClient> }> {
 	const profil = await TestData.profile().withRole('student').create();
 	const { error: e1 } = await service
@@ -194,9 +200,12 @@ async function nouvelEleve(
 		.update({ firstname: prenom, lastname: 'Nomdefamille' })
 		.eq('id', profil.id);
 	if (e1) throw new Error(e1.message);
-	const { error: e2 } = await service
-		.from('class_members')
-		.insert({ class_id: classe, student_id: profil.id, status: 'active' });
+	const { error: e2 } = await service.from('class_members').insert({
+		class_id: classe,
+		student_id: profil.id,
+		status: 'active',
+		joined_at: ilYA(arriveIlYA)
+	});
 	if (e2) throw new Error(e2.message);
 	return { id: profil.id, email: profil.email!, client: () => clientFor(profil.email!) };
 }
@@ -354,6 +363,12 @@ async function journal(
 }
 
 // Tests
+async function titresDuCarnet(jeton: string): Promise<string[]> {
+	const { data, error } = await service.rpc('get_carnet_by_token', { p_token: jeton });
+	if (error) throw new Error(error.message);
+	return (data as { evaluations: { title: string }[] }).evaluations.map((e) => e.title);
+}
+
 describe('carnet de liaison — courriels d’exception (base locale)', () => {
 	beforeAll(async () => {
 		await cleanupAllTestData();
@@ -766,6 +781,73 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 			const titres = (data as { evaluations: { title: string }[] }).evaluations.map((e) => e.title);
 			expect(titres).toContain('Ancienne non faite');
 			expect(titres).not.toContain('Ancienne faite');
+		});
+	});
+
+	describe('Q27 bornée à l’année scolaire', () => {
+		it('une évaluation sans échéance d’avant la rentrée ne reste pas, même non faite', async () => {
+			// Rentrée de la classe commune : il y a 80 jours
+			const eleve = await nouvelEleve('Xavier', classId);
+			const p = await parentConfirme(eleve.id, `p-xavier@${DOMAINE}`);
+			await evaluation('Année passée non faite', null, { class_id: classId }, ilYA(100));
+			await evaluation('Cette année non faite', null, { class_id: classId }, ilYA(70));
+			const titres = await titresDuCarnet(p.jeton);
+			expect(titres).toContain('Cette année non faite');
+			expect(titres).not.toContain('Année passée non faite');
+		});
+	});
+
+	describe('arrivée en cours d’année (Q43)', () => {
+		it('inactivité : comptée depuis l’arrivée dans la classe, pas depuis la rentrée', async () => {
+			const nouveau = await nouvelEleve('Yanis', classId, 5);
+			await parentConfirme(nouveau.id, `p-yanis@${DOMAINE}`);
+			expect(await exceptions(nouveau.id)).toEqual([]);
+
+			// Arrivé il y a 20 jours, rien fait : l'alerte part
+			const ancien = await nouvelEleve('Yvonne', classId, 20);
+			await parentConfirme(ancien.id, `p-yvonne@${DOMAINE}`);
+			expect((await exceptions(ancien.id)).map((e) => e.reason)).toEqual(['inactivity']);
+		});
+
+		it('évaluation non faite : seulement si l’échéance suit l’arrivée', async () => {
+			const classe = await nouvelleClasse();
+			const eleve = await nouvelEleve('Zelie', classe, 3);
+			await parentConfirme(eleve.id, `p-zelie@${DOMAINE}`);
+			await actifAujourdhui(eleve.id);
+			await evaluation('Échue avant l’arrivée', ilYA(5), { class_id: classe });
+			const apres = await evaluation('Échue après l’arrivée', ilYA(1), { class_id: classe });
+			expect(await exceptions(eleve.id)).toEqual([
+				{ student_id: eleve.id, reason: 'evaluation_missed', evaluation_id: apres }
+			]);
+		});
+
+		it('carnet : ni les semaines ni les évaluations échues d’avant l’arrivée', async () => {
+			const classe = await nouvelleClasse({}, (await nouvelleEcole(80)).ecole);
+			// Arrivée il y a 10 jours : la semaine de l'arrivée et les suivantes
+			const eleve = await nouvelEleve('Zoran', classe, 10);
+			const p = await parentConfirme(eleve.id, `p-zoran@${DOMAINE}`);
+			await evaluation('Échue avant', ilYA(12), { class_id: classe });
+			await evaluation('Échue après', ilYA(2), { class_id: classe });
+			await evaluation('À venir', new Date(Date.now() + 3 * JOUR).toISOString(), {
+				class_id: classe
+			});
+			// Sans échéance, créée avant l'arrivée : il peut encore la faire
+			await evaluation('Sans échéance', null, { class_id: classe }, ilYA(30));
+
+			const { data, error } = await service.rpc('get_carnet_by_token', { p_token: p.jeton });
+			if (error) throw new Error(error.message);
+			const carnet = data as { weeks: { week_start: string }[]; evaluations: { title: string }[] };
+			const arrivee = jourDeParis(new Date(Date.now() - 10 * JOUR));
+			const lundiArrivee = plusJours(
+				arrivee,
+				-((new Date(`${arrivee}T12:00:00Z`).getUTCDay() + 6) % 7)
+			);
+			expect(carnet.weeks.length).toBeGreaterThan(0);
+			for (const w of carnet.weeks) expect(w.week_start >= lundiArrivee, w.week_start).toBe(true);
+			expect(carnet.weeks[0].week_start).toBe(lundiArrivee);
+			expect(carnet.evaluations.map((e) => e.title).sort()).toEqual(
+				['Sans échéance', 'Échue après', 'À venir'].sort()
+			);
 		});
 	});
 
