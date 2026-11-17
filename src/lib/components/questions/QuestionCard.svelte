@@ -29,7 +29,7 @@
 
 <script lang="ts">
 	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
+	import { getQuestionType, isCourseQuestion } from '$lib/questions/types';
 	import { isWorkFigureBlank } from '$lib/questions/graded-part';
 	import {
 		isIncompleteRepresentation,
@@ -76,10 +76,12 @@
 		unitKeys
 	}: Props = $props();
 
-	// Mots cliquables : jamais en évaluation notée (décision de David, 2026-10-08)
+	// Mots cliquables : jamais en évaluation notée (décision de David, 2026-10-08) ;
+	// question de cours : seuls les mots marqués `{.def}` (R4, chantier mots-cliquables)
 	provideQuestionLexicon(
 		() => instance.grades,
-		() => !collectOnly
+		() => !collectOnly,
+		() => isCourseQuestion(instance)
 	);
 
 	// ============================================================================

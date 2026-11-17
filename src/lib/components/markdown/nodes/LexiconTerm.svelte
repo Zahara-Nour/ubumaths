@@ -43,9 +43,9 @@
 
 	// Le repérage a déjà chargé le dictionnaire : un mot cliquable n'existe qu'après
 	let card = $derived.by(() => {
-		const grade = lexicon();
+		const reading = lexicon();
 		const runtime = lexiconRuntime();
-		return grade && runtime ? runtime.lexiconCard(ids, grade) : [];
+		return reading && runtime ? runtime.lexiconCard(ids, reading.grade, reading.linkGrade) : [];
 	});
 
 	// Masqué (R6) : sur une carte de question, tant que le bouton ne l'affiche pas

@@ -15,8 +15,8 @@
  * @module lexicon/linker
  */
 
-import { isTermVisibleTo, type MathTerm } from '$lib/dictionary/model';
-import type { GradeCode } from '$lib/types/grades';
+import { gradeMetBy, isTermVisibleTo, type MathTerm } from '$lib/dictionary/model';
+import { GRADES, type GradeCode } from '$lib/types/grades';
 import type { DocumentNode, LexiconMark, TermRange, TextNode } from '$lib/ubumark';
 
 // ---------------------------------------------------------------------------
@@ -26,6 +26,26 @@ import type { DocumentNode, LexiconMark, TermRange, TextNode } from '$lib/ubumar
 /** Identifiant d'une entrée : son nom, suivi de son sens pour un homonyme (« carré (puissance) »). */
 export function termId(term: MathTerm): string {
 	return term.sense ? `${term.term} (${term.sense})` : term.term;
+}
+
+/**
+ * Options du repérage sur une carte de question (chantier mots-cliquables,
+ * validé par David le 2026-11-16). Sans option : tous les mots visibles.
+ */
+export interface LinkOptions {
+	/**
+	 * R1 : un mot n'est souligné automatiquement que s'il est rencontré au niveau
+	 * du lecteur ou l'année scolaire d'avant (`schoolYear`, filières comprises).
+	 */
+	recentOnly?: boolean;
+	/** R4 (question de cours) : `false`, seuls les mots marqués `{.def}` sont repérés. */
+	auto?: boolean;
+}
+
+/** R1 : le lecteur rencontre-t-il ce terme à son année scolaire ou à celle d'avant ? */
+export function isRecentFor(term: MathTerm, readerGrade: GradeCode): boolean {
+	const met = gradeMetBy(term, readerGrade);
+	return met !== undefined && GRADES[met].schoolYear >= GRADES[readerGrade].schoolYear - 1;
 }
 
 // ---------------------------------------------------------------------------
@@ -60,6 +80,8 @@ interface LexiconIndex {
 	allExact: RegExp | null;
 	/** Nom en minuscules → entrées (plusieurs pour un homonyme) */
 	byName: Map<string, MathTerm[]>;
+	/** Entrées soulignées automatiquement (ni liste fermée, ni trop anciennes avec `recentOnly`) */
+	autoTerms: Set<MathTerm>;
 }
 
 /** Motif d'un nom : accents exacts, casse ignorée (drapeau `i`), pluriel admis sur chaque mot. */
@@ -94,11 +116,19 @@ function byLength(a: string, b: string): number {
 	return b.length - a.length || a.localeCompare(b);
 }
 
-function buildIndex(entries: readonly MathTerm[], grade: GradeCode): LexiconIndex {
+function buildIndex(
+	entries: readonly MathTerm[],
+	grade: GradeCode,
+	recentOnly: boolean
+): LexiconIndex {
 	const byName = new Map<string, MathTerm[]>();
 	const auto = new Set<string>();
+	const autoTerms = new Set<MathTerm>();
 	for (const term of entries) {
 		if (!isTermVisibleTo(term, grade)) continue;
+		// Un nom trop ancien (R1) reste dans le motif : il occupe son texte (« triangle
+		// rectangle » ancien ne laisse pas « rectangle » souligné), sans être souligné
+		if (term.autoLink !== false && (!recentOnly || isRecentFor(term, grade))) autoTerms.add(term);
 		for (const name of [term.term, ...(term.synonyms ?? []), ...(term.forms ?? [])]) {
 			const key = name.toLowerCase();
 			const entries = byName.get(key) ?? [];
@@ -114,7 +144,8 @@ function buildIndex(entries: readonly MathTerm[], grade: GradeCode): LexiconInde
 		auto: namesRegex(autoNames),
 		allNames,
 		allExact: exactRegex(allNames),
-		byName
+		byName,
+		autoTerms
 	};
 }
 
@@ -126,9 +157,9 @@ function matchedName(match: RegExpExecArray, names: string[]): string {
 	throw new Error('Correspondance sans groupe');
 }
 
-/** Entrées soulignables d'un nom : celles de la liste fermée en sont exclues. */
+/** Entrées soulignables d'un nom : celles de la liste fermée (et trop anciennes, R1) en sont exclues. */
 function autoEntries(index: LexiconIndex, name: string): MathTerm[] {
-	return (index.byName.get(name) ?? []).filter((term) => term.autoLink !== false);
+	return (index.byName.get(name) ?? []).filter((term) => index.autoTerms.has(term));
 }
 
 // ---------------------------------------------------------------------------
@@ -163,7 +194,8 @@ function linkText(
 	index: LexiconIndex,
 	grade: GradeCode,
 	seen: Set<string>,
-	getTermById: (id: string) => MathTerm | undefined
+	getTermById: (id: string) => MathTerm | undefined,
+	auto: boolean
 ): TextNode {
 	if (node.code || node.lexicon?.mode === 'block') return node;
 	if (node.lexicon?.mode === 'force') {
@@ -172,7 +204,7 @@ function linkText(
 		seen.add(idsKey(entries));
 		return { ...node, terms: [{ start: 0, end: node.content.length, ids: entries.map(termId) }] };
 	}
-	if (!index.auto) return node;
+	if (!auto || !index.auto) return node;
 
 	const terms: TermRange[] = [];
 	// Expression compilée une fois par niveau : on repart du début du texte
@@ -223,7 +255,8 @@ function linkWith(
 	doc: DocumentNode,
 	grade: GradeCode,
 	index: LexiconIndex,
-	getTermById: (id: string) => MathTerm | undefined
+	getTermById: (id: string) => MathTerm | undefined,
+	auto: boolean
 ): DocumentNode {
 	const seen = new Set<string>();
 
@@ -231,7 +264,7 @@ function linkWith(
 		if (!isContainer(node)) return node;
 		if (Array.isArray(node.children)) {
 			const children = node.children.map((child) =>
-				isText(child) ? linkText(child, index, grade, seen, getTermById) : visit(child)
+				isText(child) ? linkText(child, index, grade, seen, getTermById, auto) : visit(child)
 			);
 			return { ...node, children };
 		}
@@ -253,26 +286,34 @@ export interface Linker {
 	/** Entrée du dictionnaire par son identifiant. */
 	getTermById(id: string): MathTerm | undefined;
 	/** Le document, avec les mots repérés au niveau `grade` (voir `linkWith`). */
-	linkDocument(doc: DocumentNode, grade: GradeCode): DocumentNode;
+	linkDocument(doc: DocumentNode, grade: GradeCode, options?: LinkOptions): DocumentNode;
 }
 
 /** Repérage des mots de `entries` ; l'index d'un niveau est construit une fois (~19 ms). */
 export function createLinker(entries: readonly MathTerm[]): Linker {
 	const byId = new Map(entries.map((term) => [termId(term), term]));
-	const indexes = new Map<GradeCode, LexiconIndex>();
+	const indexes = new Map<string, LexiconIndex>();
 	const getTermById = (id: string) => byId.get(id);
 
-	function getIndex(grade: GradeCode): LexiconIndex {
-		let index = indexes.get(grade);
+	function getIndex(grade: GradeCode, recentOnly: boolean): LexiconIndex {
+		const key = `${grade}|${recentOnly}`;
+		let index = indexes.get(key);
 		if (!index) {
-			index = buildIndex(entries, grade);
-			indexes.set(grade, index);
+			index = buildIndex(entries, grade, recentOnly);
+			indexes.set(key, index);
 		}
 		return index;
 	}
 
 	return {
 		getTermById,
-		linkDocument: (doc, grade) => linkWith(doc, grade, getIndex(grade), getTermById)
+		linkDocument: (doc, grade, options = {}) =>
+			linkWith(
+				doc,
+				grade,
+				getIndex(grade, options.recentOnly ?? false),
+				getTermById,
+				options.auto ?? true
+			)
 	};
 }

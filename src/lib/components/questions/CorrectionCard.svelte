@@ -25,7 +25,7 @@
 
 <script lang="ts">
 	import type { TestAnswerResult } from '$lib/types/test';
-	import { getQuestionType } from '$lib/questions/types';
+	import { getQuestionType, isCourseQuestion } from '$lib/questions/types';
 	import { buildExpectedResult, showsInstructionOnly } from '$lib/questions/expected-result';
 	import {
 		filledMarkdown,
@@ -61,6 +61,7 @@
 	import { provideChoiceCaseResults } from '$lib/components/markdown/choice-case-results';
 	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
 	import LexiconToggle from './LexiconToggle.svelte';
+	import LexiconOff from '$lib/components/markdown/LexiconOff.svelte';
 
 	// Props
 	interface Props {
@@ -102,8 +103,13 @@
 	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
 
 	const instance = $derived(answerResult.instance);
-	// Mots cliquables : la correction se lit après la réponse, évaluation notée comprise
-	provideQuestionLexicon(() => instance.grades);
+	// Mots cliquables dans l'énoncé, évaluation notée comprise ; ni dans le résultat
+	// attendu ni au verso (R2), seuls les mots `{.def}` d'une question de cours (R4)
+	provideQuestionLexicon(
+		() => instance.grades,
+		() => true,
+		() => isCourseQuestion(instance)
+	);
 	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
 	const genericFunctions = $derived(templateGenericFunctions(instance.genericFunctions));
 	// Sens de `AB` de l'instance (longueur ou produit) : posé pour toutes les formules
@@ -348,7 +354,10 @@
 								Auto-évaluation : {answerResult.isCorrect ? 'je savais' : 'je ne savais pas'}
 							</p>
 						{:else if expected}
-							<ExpectedResultView result={expected} />
+							<!-- Résultat attendu : aucun mot du dictionnaire (R2) -->
+							<LexiconOff>
+								<ExpectedResultView result={expected} />
+							</LexiconOff>
 						{:else if waitsForPositions}
 							<!-- Calcul des positions en cours de chargement : cadre de la figure -->
 							<div
@@ -402,30 +411,33 @@
 					</Card.Header>
 
 					<Card.Content class="pb-16">
-						{#if useGeneratedSteps && renderedSteps}
-							<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
-								<GeneratedStepsCorrection steps={renderedSteps} />
-								{#if correctFeedback}
-									<div class="mt-3 border-t pt-3">
-										<MarkdownRenderer content={correctFeedback} {genericFunctions} />
-									</div>
-								{/if}
-							</div>
-						{:else if correctionMarkdown}
-							<div class="rounded-lg border bg-muted/50 p-4">
-								<CorrectionView
-									markdown={correctionMarkdown}
-									expectedAnswer={expectedAnswerMarkdown}
-									{genericFunctions}
-								/>
-							</div>
-						{:else}
-							<div
-								class="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-8 text-center"
-							>
-								<p class="text-muted-foreground">Aucune correction disponible.</p>
-							</div>
-						{/if}
+						<!-- Correction : aucun mot du dictionnaire (R2, chantier mots-cliquables) -->
+						<LexiconOff>
+							{#if useGeneratedSteps && renderedSteps}
+								<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
+									<GeneratedStepsCorrection steps={renderedSteps} />
+									{#if correctFeedback}
+										<div class="mt-3 border-t pt-3">
+											<MarkdownRenderer content={correctFeedback} {genericFunctions} />
+										</div>
+									{/if}
+								</div>
+							{:else if correctionMarkdown}
+								<div class="rounded-lg border bg-muted/50 p-4">
+									<CorrectionView
+										markdown={correctionMarkdown}
+										expectedAnswer={expectedAnswerMarkdown}
+										{genericFunctions}
+									/>
+								</div>
+							{:else}
+								<div
+									class="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-8 text-center"
+								>
+									<p class="text-muted-foreground">Aucune correction disponible.</p>
+								</div>
+							{/if}
+						</LexiconOff>
 					</Card.Content>
 				</Card.Root>
 

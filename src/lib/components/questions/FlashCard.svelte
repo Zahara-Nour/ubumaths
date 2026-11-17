@@ -27,7 +27,7 @@
 
 <script lang="ts">
 	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
+	import { getQuestionType, isCourseQuestion } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import {
 		validateAnswer,
@@ -64,6 +64,7 @@
 	import ExpectedResultView from './ExpectedResultView.svelte';
 	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
 	import LexiconToggle from './LexiconToggle.svelte';
+	import LexiconOff from '$lib/components/markdown/LexiconOff.svelte';
 
 	// Props
 	interface Props {
@@ -111,7 +112,12 @@
 	}: Props = $props();
 
 	// Mots cliquables dans l'énoncé et la correction
-	provideQuestionLexicon(() => instance.grades);
+	// Question de cours : seuls les mots marqués `{.def}` (R4, chantier mots-cliquables)
+	provideQuestionLexicon(
+		() => instance.grades,
+		() => true,
+		() => isCourseQuestion(instance)
+	);
 
 	// ============================================================================
 	// STATE MANAGEMENT
@@ -483,93 +489,96 @@
 
 		{#snippet back()}
 			<div class="face relative h-full">
-				<!-- Verso allégé : titre vert centré ; ni badge du type, ni intitulés, ni encadrés -->
-				<Card.Root
-					class={cn('face-card h-full', height && 'scrollable', flippable && 'reserve-bouton')}
-				>
-					<Card.Content class="space-y-6">
-						<p
-							class="text-center text-lg font-semibold text-green-600 dark:text-green-500"
-							data-verso-title
-						>
-							<!-- En-tête du résultat attendu ; « Correction » intitule la correction plus bas -->
-							{isCourseCard ? 'Verso' : 'Réponse'}
-						</p>
+				<!-- Verso : aucun mot du dictionnaire (R2, chantier mots-cliquables) -->
+				<LexiconOff>
+					<!-- Verso allégé : titre vert centré ; ni badge du type, ni intitulés, ni encadrés -->
+					<Card.Root
+						class={cn('face-card h-full', height && 'scrollable', flippable && 'reserve-bouton')}
+					>
+						<Card.Content class="space-y-6">
+							<p
+								class="text-center text-lg font-semibold text-green-600 dark:text-green-500"
+								data-verso-title
+							>
+								<!-- En-tête du résultat attendu ; « Correction » intitule la correction plus bas -->
+								{isCourseCard ? 'Verso' : 'Réponse'}
+							</p>
 
-						{#if isCourseCard}
-							<!-- Carte de cours : le verso EST la correction (source unique partagée) -->
-							<CourseCardBack correction={instance.correction} {genericFunctions} />
-						{:else}
-							<!-- Statut, consigne et résultat attendu : groupés, plus serrés que les sections -->
-							<div class="space-y-3">
-								{#if globalVerdict}
-									<p class="flex justify-center">
-										<span
-											class="verdict-badge verdict-{globalVerdict.kind}"
-											data-testid="global-verdict"
-											data-kind={globalVerdict.kind}
-										>
-											{#if globalVerdict.kind === 'correct'}
-												<Check class="h-3.5 w-3.5" aria-hidden="true" />
-											{:else if globalVerdict.kind === 'half'}
-												<TriangleAlert class="h-3.5 w-3.5" aria-hidden="true" />
-											{:else}
-												<X class="h-3.5 w-3.5" aria-hidden="true" />
-											{/if}
-											{globalVerdict.label}
-										</span>
-									</p>
-								{/if}
-								{#if instruction}
-									<!-- Consigne seule (Q104) : la formule à case est remplacée par la solution -->
-									<div class="text-muted-foreground" data-testid="instruction">
-										<MarkdownRenderer content={instruction} />
-									</div>
-								{/if}
-								<div class="correct-answer">
-									{#if expected && expected.lines.length > 0}
-										<!-- Résultat attendu (R9, ou R1-R7 après « Valider ») -->
-										<ExpectedResultView result={expected} class={expectedSizeClasses[size]} />
-									{:else}
-										<!--
-										Hors carte de cours, une question est classée `fill_in_blanks`.
-										Sans `blanks`, il n'y a aucune réponse structurée à afficher — sans ce
-										repli, la zone de réponse se rendait vide et muette.
-									-->
-										<p class="text-sm text-muted-foreground">
-											{correctionMarkdown
-												? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
-												: 'Aucune réponse enregistrée pour cette question.'}
+							{#if isCourseCard}
+								<!-- Carte de cours : le verso EST la correction (source unique partagée) -->
+								<CourseCardBack correction={instance.correction} {genericFunctions} />
+							{:else}
+								<!-- Statut, consigne et résultat attendu : groupés, plus serrés que les sections -->
+								<div class="space-y-3">
+									{#if globalVerdict}
+										<p class="flex justify-center">
+											<span
+												class="verdict-badge verdict-{globalVerdict.kind}"
+												data-testid="global-verdict"
+												data-kind={globalVerdict.kind}
+											>
+												{#if globalVerdict.kind === 'correct'}
+													<Check class="h-3.5 w-3.5" aria-hidden="true" />
+												{:else if globalVerdict.kind === 'half'}
+													<TriangleAlert class="h-3.5 w-3.5" aria-hidden="true" />
+												{:else}
+													<X class="h-3.5 w-3.5" aria-hidden="true" />
+												{/if}
+												{globalVerdict.label}
+											</span>
 										</p>
 									{/if}
-								</div>
-							</div>
-
-							{#if correctionMarkdown}
-								<!-- Filet et intitulé : la correction ne s'enchaîne pas au résultat attendu -->
-								<div>
-									<hr class="correction-separator" data-testid="correction-separator" />
-									<p class="correction-heading" data-testid="correction-heading">Correction</p>
-									<div class="correction-steps">
-										<!-- Concise par défaut, interrupteur « Voir le détail » (ADR 0017) -->
-										<CorrectionView markdown={correctionMarkdown} {genericFunctions} />
+									{#if instruction}
+										<!-- Consigne seule (Q104) : la formule à case est remplacée par la solution -->
+										<div class="text-muted-foreground" data-testid="instruction">
+											<MarkdownRenderer content={instruction} />
+										</div>
+									{/if}
+									<div class="correct-answer">
+										{#if expected && expected.lines.length > 0}
+											<!-- Résultat attendu (R9, ou R1-R7 après « Valider ») -->
+											<ExpectedResultView result={expected} class={expectedSizeClasses[size]} />
+										{:else}
+											<!--
+											Hors carte de cours, une question est classée `fill_in_blanks`.
+											Sans `blanks`, il n'y a aucune réponse structurée à afficher — sans ce
+											repli, la zone de réponse se rendait vide et muette.
+										-->
+											<p class="text-sm text-muted-foreground">
+												{correctionMarkdown
+													? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
+													: 'Aucune réponse enregistrée pour cette question.'}
+											</p>
+										{/if}
 									</div>
 								</div>
-							{/if}
-						{/if}
-					</Card.Content>
-				</Card.Root>
 
-				{#if flippable}
-					<button
-						class="flip-button"
-						onclick={handleFlip}
-						aria-label="Retour à la question"
-						title="Retour à la question"
-					>
-						<RotateCw class="h-5 w-5" />
-					</button>
-				{/if}
+								{#if correctionMarkdown}
+									<!-- Filet et intitulé : la correction ne s'enchaîne pas au résultat attendu -->
+									<div>
+										<hr class="correction-separator" data-testid="correction-separator" />
+										<p class="correction-heading" data-testid="correction-heading">Correction</p>
+										<div class="correction-steps">
+											<!-- Concise par défaut, interrupteur « Voir le détail » (ADR 0017) -->
+											<CorrectionView markdown={correctionMarkdown} {genericFunctions} />
+										</div>
+									</div>
+								{/if}
+							{/if}
+						</Card.Content>
+					</Card.Root>
+
+					{#if flippable}
+						<button
+							class="flip-button"
+							onclick={handleFlip}
+							aria-label="Retour à la question"
+							title="Retour à la question"
+						>
+							<RotateCw class="h-5 w-5" />
+						</button>
+					{/if}
+				</LexiconOff>
 			</div>
 		{/snippet}
 	</FlipCard>

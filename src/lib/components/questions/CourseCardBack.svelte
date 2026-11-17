@@ -6,6 +6,7 @@
 	par FlashCard (révision SRS) et CourseCardView (entraînement, aperçus).
 	Étapes écrites (mode A) OU étapes générées (mode B), plus le feedback.
 	Le texte passe par CorrectionView : concis par défaut (ADR 0017).
+	Aucun mot du dictionnaire : c'est une correction (R2, mots-cliquables).
 -->
 
 <script lang="ts">
@@ -14,6 +15,7 @@
 	import type { GenericFunctionConfig } from '$lib/mathAST';
 	import CorrectionView from './CorrectionView.svelte';
 	import GeneratedStepsCorrection from './GeneratedStepsCorrection.svelte';
+	import { provideLexicon } from '$lib/components/markdown/lexicon-context';
 
 	interface Props {
 		correction: ResolvedCorrection | undefined;
@@ -22,6 +24,9 @@
 	}
 
 	let { correction, genericFunctions }: Props = $props();
+
+	// Correction : aucun mot du dictionnaire (R2, chantier mots-cliquables)
+	provideLexicon(() => null);
 
 	const parts = $derived(courseCardBackParts(correction));
 </script>
