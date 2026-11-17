@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2236 (lot 7b écrit)._
+_Mis à jour le 2026-11-17, ids erronés du lot 7b retirés._
 
-- **État** : lots 0 à 7a publiés. Lot 7b (138, 025, 144, 032) mergé (#2236) ; simulation `create-questions` en prod : 4 à créer, 0 en base.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-7b --publier` (prod) ; puis relever les 4 ids au MCP, migration de rangement + tags (copie du lot 7a) sur `feat/questions-cm2-lot7b-rangement`, page à cocher. Ensuite petit lot 8 (038, 053, 055-057), puis reclasser le § 3.
-- **En attente de David** : le `--publier` du lot 7b en prod.
+- **État** : lots 0 à 7a publiés. Lot 7b (138, 025, 144, 032) mergé (#2236). Le 2026-11-17, le `--publier` a trouvé les 4 « déjà en base » : le commit `ed0cd5caf6` (2026-11-04, id écrit dans les fichiers de lot) leur avait donné les ids des modèles **CM1** de même titre (`cm1-3b/07-08`, `cm1-4/03-04`). Ids retirés sur cette branche ; simulation : 4 à créer. Titres CM2 identiques aux CM1 gardés (grade et niveau les distinguent).
+- **Prochaine action** : David lance le `--publier` **depuis le worktree** (`cd ../ubumaths-wt-questions-cm2`), pour que les ids s'écrivent dans les fichiers de la branche ; puis relever les 4 ids au MCP, migration de rangement + tags (copie du lot 7a), page à cocher. Ensuite petit lot 8 (038, 053, 055-057), puis reclasser le § 3.
+- **En attente de David** : le `--publier` du lot 7b en prod, depuis le worktree. ⛔ Jamais `--mettre-a-jour` avec les anciens fichiers : il écraserait les modèles CM1.
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b-rangement` (rien de commité dessus hors journal).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b-rangement` (ids retirés commités ; à jour avec `main` au 2026-11-17).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
