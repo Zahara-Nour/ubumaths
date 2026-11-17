@@ -5,18 +5,19 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 2a écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-17, après #2774._
 
-- **État** : lots 0 et 1 en prod. Lot 2a (M1–M8, § 12–13) écrit sur `feat/questions-ttechno-lot2a` : simulation
-  verte, formules contrôlées, aperçu local joué.
-- **Prochaine action** : PR des fichiers → merge → David lance `create-questions --dir
-scripts/questions/ttechno-2a-suites --publier` → migration nœud + tag des 8 et tags c4887e49 → 025,
-  0b5c3db6 → 023 (page à cocher des deux tags d'abord). Puis lot 2b (Python, P1–P3).
-- **En attente de David** : rien (la création en prod viendra après le merge).
+- **État** : lots 0 et 1 en prod. Lot 2a (M1–M8 : moyennes, trois nombres, raison, sommes en situation, Σ ;
+  § 12–13) mergé (#2774), fichiers dans `scripts/questions/ttechno-2a-suites/`, **pas encore créés en prod**.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-2a-suites
+--publier` (8 brouillons, ids écrits dans les fichiers → les commiter) ; puis migration nœud + tag des 8 et tags
+  c4887e49 → 025, 0b5c3db6 → 023 (`array_append('T_TECHNO')`, Q16) ; page à cocher ; publication. Ensuite lot 2b
+  (Python, P1–P3).
+- **En attente de David** : la commande `create-questions --publier` ci-dessus.
 - **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
   piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot2a`.
+- **Worktree / branche** : aucun (#2774 mergée, worktree retiré).
 
 ## 1. Périmètre
 
@@ -394,5 +395,5 @@ points du § 12.
 - Base locale (copie des fichiers, ids locaux) : 8 brouillons créés ; aperçu admin joué (Chrome du Mac mini,
   serveur `--host 127.0.0.1`) : M4 v2, réponse fausse refusée, correction à virgules ; M7 v0, `10203` → ½ point
   « chiffres mal espacés », `10 203` attendu.
-- Suite : PR des fichiers (contenu) ; après merge, David lance `create-questions --publier` ; puis migration
+- #2774 mergée (CI verte). Suite : après merge, David lance `create-questions --publier` ; puis migration
   nœud + tag des 8 et tags c4887e49 → 025, 0b5c3db6 → 023 (`array_append('T_TECHNO')`), page à cocher d'abord.
