@@ -1,0 +1,1821 @@
+[
+	{
+		"id": "2d7d0e63-fd5b-4a30-b7d8-e9adeeb51a30",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(n+a)*b}}"
+					}
+				],
+				"statement": "Voici un programme de calcul :\n\n- choisir un nombre entier ;\n- ajouter ${{a}}$ au nombre choisi ;\n- multiplier le résultat par ${{b}}$ ;\n- écrire le nombre obtenu.\n\nOn choisit le nombre ${{n}}$. Quel nombre le programme écrit-il ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Dans l'ordre.** La deuxième étape s'applique au résultat de la première.",
+						"${{n}} + {{a}} = {{eval:n+a}}$",
+						"${{eval:n+a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b}}}$ : le programme écrit $\\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:n*a+b}}"
+					}
+				],
+				"statement": "Voici un programme de calcul :\n\n- choisir un nombre entier ;\n- multiplier le nombre choisi par ${{a}}$ ;\n- ajouter ${{b}}$ au résultat ;\n- écrire le nombre obtenu.\n\nOn choisit le nombre ${{n}}$. Quel nombre le programme écrit-il ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..30"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Dans l'ordre.** La deuxième étape s'applique au résultat de la première.",
+						"${{n}} \\times {{a}} = {{eval:n*a}}$",
+						"${{eval:n*a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:n*a+b}}}$ : le programme écrit $\\textcolor{{{color:primary.0}}}{{{eval:n*a+b}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:n*a-b}}"
+					}
+				],
+				"statement": "Voici un programme de calcul :\n\n- choisir un nombre entier ;\n- multiplier le nombre choisi par ${{a}}$ ;\n- retirer ${{b}}$ au résultat ;\n- écrire le nombre obtenu.\n\nOn choisit le nombre ${{n}}$. Quel nombre le programme écrit-il ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..20"
+					}
+				],
+				"conditions": ["n*a>b", "n>b"],
+				"correction": {
+					"steps": [
+						"**Dans l'ordre.** La deuxième étape s'applique au résultat de la première.",
+						"${{n}} \\times {{a}} = {{eval:n*a}}$",
+						"${{eval:n*a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:n*a-b}}}$ : le programme écrit $\\textcolor{{{color:primary.0}}}{{{eval:n*a-b}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(n+a)*b}}"
+					}
+				],
+				"statement": "Voici un programme de calcul écrit avec Scratch.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Choisis un nombre.] et attendre\nmettre [nombre v] à ((réponse) + ({{a}}))\nmettre [nombre v] à ((nombre) * ({{b}}))\ndire (nombre)\n```\n\nOn tape ${{n}}$. Quel nombre le lutin dit-il ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Une instruction après l'autre.** La variable « nombre » prend d'abord la réponse plus ${{a}}$, puis cette valeur multipliée par ${{b}}$.",
+						"${{n}} + {{a}} = {{eval:n+a}}$",
+						"${{eval:n+a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b}}}$ : le lutin dit $\\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Exécuter un programme de calcul (deux étapes)",
+		"description": "Appliquer à un nombre entier un programme de deux étapes, écrit en mots ou avec Scratch",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["28"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "4",
+					"n": "5"
+				},
+				"description": "5 : + 2 puis × 4 = 28",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "4",
+					"n": "5"
+				},
+				"description": "Erreur : 13 (5 + 2 × 4)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["31"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "10",
+					"n": "7"
+				},
+				"description": "7 : × 3 puis + 10 = 31",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["51"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "10",
+					"n": "7"
+				},
+				"description": "Erreur : 51 (ajouté d'abord)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["31"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"n": "9"
+				},
+				"description": "9 : × 4 puis − 5 = 31",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"n": "9"
+				},
+				"description": "Erreur : 16 (retiré d'abord)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["45"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"n": "6"
+				},
+				"description": "Scratch, 6 : + 3 puis × 5 = 45",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["21"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"n": "6"
+				},
+				"description": "Erreur : 21 (6 + 3 × 5)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "37dd213b-d85f-4774-8e78-b04bd92f774a",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4*k}}"
+					},
+					{
+						"expectedAnswer": "{{eval:5*k}}"
+					},
+					{
+						"expectedAnswer": "{{eval:6*k}}"
+					}
+				],
+				"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; 6.7 ; -1.6 ; {{eval:k-0.3;d}}\ndescription: Trois étapes d'un motif de jetons : 1, 2 puis 3 colonnes de {{k}} jetons.\n---\nJ000 = point(0, 0, visible=faux)\ncercle(J000, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ001 = point(0, 1, visible=faux)\ncercle(J001, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ002 = point(0, 2, visible=faux)\ncercle(J002, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ003 = point(0, 3, visible=faux)\ncercle(J003, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ100 = point(1.5, 0, visible=faux)\ncercle(J100, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ101 = point(1.5, 1, visible=faux)\ncercle(J101, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ102 = point(1.5, 2, visible=faux)\ncercle(J102, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ103 = point(1.5, 3, visible=faux)\ncercle(J103, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ110 = point(2.5, 0, visible=faux)\ncercle(J110, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ111 = point(2.5, 1, visible=faux)\ncercle(J111, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ112 = point(2.5, 2, visible=faux)\ncercle(J112, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ113 = point(2.5, 3, visible=faux)\ncercle(J113, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ200 = point(4, 0, visible=faux)\ncercle(J200, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ201 = point(4, 1, visible=faux)\ncercle(J201, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ202 = point(4, 2, visible=faux)\ncercle(J202, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ203 = point(4, 3, visible=faux)\ncercle(J203, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ210 = point(5, 0, visible=faux)\ncercle(J210, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ211 = point(5, 1, visible=faux)\ncercle(J211, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ212 = point(5, 2, visible=faux)\ncercle(J212, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ213 = point(5, 3, visible=faux)\ncercle(J213, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ220 = point(6, 0, visible=faux)\ncercle(J220, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ221 = point(6, 1, visible=faux)\ncercle(J221, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ222 = point(6, 2, visible=faux)\ncercle(J222, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ223 = point(6, 3, visible=faux)\ncercle(J223, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\ntexte(0, -1, \"Étape 1\")\ntexte(2, -1, \"Étape 2\")\ntexte(5, -1, \"Étape 3\")\n```\n\nCombien de jetons y aura-t-il aux trois étapes suivantes ?\n\nÉtape 4 : $?$ jetons\n\nÉtape 5 : $?$ jetons\n\nÉtape 6 : $?$ jetons",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**On compte.** Étape 1 : ${{eval:1*k}}$ ; étape 2 : ${{eval:2*k}}$ ; étape 3 : ${{eval:3*k}}$.",
+						"**La règle.** À chaque étape, on ajoute ${{k}}$ jetons. Pourquoi : on ajoute une colonne de ${{k}}$ jetons.",
+						"**Les trois suivantes.** étape 4 : ${{eval:3*k}} + {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:4*k}}}$ ; étape 5 : ${{eval:4*k}} + {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:5*k}}}$ ; étape 6 : ${{eval:5*k}} + {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:6*k}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10}}"
+					},
+					{
+						"expectedAnswer": "{{eval:15}}"
+					},
+					{
+						"expectedAnswer": "{{eval:21}}"
+					}
+				],
+				"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; 6.7 ; -1.6 ; 2.7\ndescription: Trois étapes d'un motif de jetons en escalier : 1 jeton, puis des colonnes de 1 et 2 jetons, puis des colonnes de 1, 2 et 3 jetons.\n---\nJ000 = point(0, 0, visible=faux)\ncercle(J000, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ100 = point(1.5, 0, visible=faux)\ncercle(J100, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ110 = point(2.5, 0, visible=faux)\ncercle(J110, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ111 = point(2.5, 1, visible=faux)\ncercle(J111, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ200 = point(4, 0, visible=faux)\ncercle(J200, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ210 = point(5, 0, visible=faux)\ncercle(J210, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ211 = point(5, 1, visible=faux)\ncercle(J211, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ220 = point(6, 0, visible=faux)\ncercle(J220, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ221 = point(6, 1, visible=faux)\ncercle(J221, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ222 = point(6, 2, visible=faux)\ncercle(J222, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\ntexte(0, -1, \"Étape 1\")\ntexte(2, -1, \"Étape 2\")\ntexte(5, -1, \"Étape 3\")\n```\n\nCombien de jetons y aura-t-il aux trois étapes suivantes ?\n\nÉtape 4 : $?$ jetons\n\nÉtape 5 : $?$ jetons\n\nÉtape 6 : $?$ jetons",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**On compte.** Étape 1 : ${{eval:1}}$ ; étape 2 : ${{eval:3}}$ ; étape 3 : ${{eval:6}}$.",
+						"**La règle.** À chaque étape, on ajoute autant de jetons que le numéro de la nouvelle étape. Pourquoi : la nouvelle colonne a autant de jetons que le numéro de l'étape.",
+						"**Les trois suivantes.** étape 4 : ${{eval:6}} + 4 = \\textcolor{{{color:primary.0}}}{{{eval:10}}}$ ; étape 5 : ${{eval:10}} + 5 = \\textcolor{{{color:primary.0}}}{{{eval:15}}}$ ; étape 6 : ${{eval:15}} + 6 = \\textcolor{{{color:primary.0}}}{{{eval:21}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:13}}"
+					},
+					{
+						"expectedAnswer": "{{eval:16}}"
+					},
+					{
+						"expectedAnswer": "{{eval:19}}"
+					}
+				],
+				"statement": "Voici les trois premières étapes d'un motif de allumettes.\n\n```figure\nfenetre: -0.5 ; 9.5 ; -1.5 ; 1.5\ndescription: Trois étapes d'un motif d'allumettes : une rangée de 1, 2 puis 3 carrés accolés.\n---\nC0B0 = point(0, 0, visible=faux)\nC0H0 = point(0, 1, visible=faux)\nC0B1 = point(1, 0, visible=faux)\nC0H1 = point(1, 1, visible=faux)\nsegment(C0B0, C0B1, couleur=\"marron\", epaisseur=3)\nsegment(C0H0, C0H1, couleur=\"marron\", epaisseur=3)\nsegment(C0B0, C0H0, couleur=\"marron\", epaisseur=3)\nsegment(C0B1, C0H1, couleur=\"marron\", epaisseur=3)\nC1B0 = point(2.5, 0, visible=faux)\nC1H0 = point(2.5, 1, visible=faux)\nC1B1 = point(3.5, 0, visible=faux)\nC1H1 = point(3.5, 1, visible=faux)\nC1B2 = point(4.5, 0, visible=faux)\nC1H2 = point(4.5, 1, visible=faux)\nsegment(C1B0, C1B1, couleur=\"marron\", epaisseur=3)\nsegment(C1H0, C1H1, couleur=\"marron\", epaisseur=3)\nsegment(C1B1, C1B2, couleur=\"marron\", epaisseur=3)\nsegment(C1H1, C1H2, couleur=\"marron\", epaisseur=3)\nsegment(C1B0, C1H0, couleur=\"marron\", epaisseur=3)\nsegment(C1B1, C1H1, couleur=\"marron\", epaisseur=3)\nsegment(C1B2, C1H2, couleur=\"marron\", epaisseur=3)\nC2B0 = point(6, 0, visible=faux)\nC2H0 = point(6, 1, visible=faux)\nC2B1 = point(7, 0, visible=faux)\nC2H1 = point(7, 1, visible=faux)\nC2B2 = point(8, 0, visible=faux)\nC2H2 = point(8, 1, visible=faux)\nC2B3 = point(9, 0, visible=faux)\nC2H3 = point(9, 1, visible=faux)\nsegment(C2B0, C2B1, couleur=\"marron\", epaisseur=3)\nsegment(C2H0, C2H1, couleur=\"marron\", epaisseur=3)\nsegment(C2B1, C2B2, couleur=\"marron\", epaisseur=3)\nsegment(C2H1, C2H2, couleur=\"marron\", epaisseur=3)\nsegment(C2B2, C2B3, couleur=\"marron\", epaisseur=3)\nsegment(C2H2, C2H3, couleur=\"marron\", epaisseur=3)\nsegment(C2B0, C2H0, couleur=\"marron\", epaisseur=3)\nsegment(C2B1, C2H1, couleur=\"marron\", epaisseur=3)\nsegment(C2B2, C2H2, couleur=\"marron\", epaisseur=3)\nsegment(C2B3, C2H3, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\ntexte(3.5, -0.9, \"Étape 2\")\ntexte(7.5, -0.9, \"Étape 3\")\n```\n\nCombien de allumettes y aura-t-il aux trois étapes suivantes ?\n\nÉtape 4 : $?$ allumettes\n\nÉtape 5 : $?$ allumettes\n\nÉtape 6 : $?$ allumettes",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**On compte.** Étape 1 : ${{eval:4}}$ ; étape 2 : ${{eval:7}}$ ; étape 3 : ${{eval:10}}$.",
+						"**La règle.** À chaque étape, on ajoute $3$ allumettes. Pourquoi : un carré de plus ne demande que $3$ allumettes : il prend un côté au carré d'avant.",
+						"**Les trois suivantes.** étape 4 : ${{eval:10}} + 3 = \\textcolor{{{color:primary.0}}}{{{eval:13}}}$ ; étape 5 : ${{eval:13}} + 3 = \\textcolor{{{color:primary.0}}}{{{eval:16}}}$ ; étape 6 : ${{eval:16}} + 3 = \\textcolor{{{color:primary.0}}}{{{eval:19}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:9}}"
+					},
+					{
+						"expectedAnswer": "{{eval:11}}"
+					},
+					{
+						"expectedAnswer": "{{eval:13}}"
+					}
+				],
+				"statement": "Voici les trois premières étapes d'un motif de allumettes.\n\n```figure\nfenetre: -0.5 ; 7 ; -1.5 ; 1.4\ndescription: Trois étapes d'un motif d'allumettes : une bande de 1, 2 puis 3 triangles accolés.\n---\nT0B0 = point(0, 0, visible=faux)\nT0B1 = point(1, 0, visible=faux)\nT0H0 = point(0.5, 0.87, visible=faux)\nsegment(T0B0, T0B1, couleur=\"marron\", epaisseur=3)\nsegment(T0B0, T0H0, couleur=\"marron\", epaisseur=3)\nsegment(T0H0, T0B1, couleur=\"marron\", epaisseur=3)\nT1B0 = point(1.75, 0, visible=faux)\nT1B1 = point(2.75, 0, visible=faux)\nT1H0 = point(2.25, 0.87, visible=faux)\nT1H1 = point(3.25, 0.87, visible=faux)\nsegment(T1B0, T1B1, couleur=\"marron\", epaisseur=3)\nsegment(T1H0, T1H1, couleur=\"marron\", epaisseur=3)\nsegment(T1B0, T1H0, couleur=\"marron\", epaisseur=3)\nsegment(T1H0, T1B1, couleur=\"marron\", epaisseur=3)\nsegment(T1B1, T1H1, couleur=\"marron\", epaisseur=3)\nT2B0 = point(4, 0, visible=faux)\nT2B1 = point(5, 0, visible=faux)\nT2B2 = point(6, 0, visible=faux)\nT2H0 = point(4.5, 0.87, visible=faux)\nT2H1 = point(5.5, 0.87, visible=faux)\nsegment(T2B0, T2B1, couleur=\"marron\", epaisseur=3)\nsegment(T2B1, T2B2, couleur=\"marron\", epaisseur=3)\nsegment(T2H0, T2H1, couleur=\"marron\", epaisseur=3)\nsegment(T2B0, T2H0, couleur=\"marron\", epaisseur=3)\nsegment(T2H0, T2B1, couleur=\"marron\", epaisseur=3)\nsegment(T2B1, T2H1, couleur=\"marron\", epaisseur=3)\nsegment(T2H1, T2B2, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\ntexte(2.75, -0.9, \"Étape 2\")\ntexte(5.5, -0.9, \"Étape 3\")\n```\n\nCombien de allumettes y aura-t-il aux trois étapes suivantes ?\n\nÉtape 4 : $?$ allumettes\n\nÉtape 5 : $?$ allumettes\n\nÉtape 6 : $?$ allumettes",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**On compte.** Étape 1 : ${{eval:3}}$ ; étape 2 : ${{eval:5}}$ ; étape 3 : ${{eval:7}}$.",
+						"**La règle.** À chaque étape, on ajoute $2$ allumettes. Pourquoi : un triangle de plus ne demande que $2$ allumettes : il prend un côté au triangle d'avant.",
+						"**Les trois suivantes.** étape 4 : ${{eval:7}} + 2 = \\textcolor{{{color:primary.0}}}{{{eval:9}}}$ ; étape 5 : ${{eval:9}} + 2 = \\textcolor{{{color:primary.0}}}{{{eval:11}}}$ ; étape 6 : ${{eval:11}} + 2 = \\textcolor{{{color:primary.0}}}{{{eval:13}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Motif évolutif : les trois étapes suivantes",
+		"description": "Motif dessiné en trois étapes (colonnes de jetons, escalier, carrés ou triangles d'allumettes) : le nombre d'éléments aux étapes 4, 5 et 6",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["12", "15", "18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Colonnes de 3 : 12 ; 15 ; 18",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10", "11", "12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : 10 ; 11 ; 12 (+ 1)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10", "15", "21"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Escalier : 10 ; 15 ; 21",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9", "12", "15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : 9 ; 12 ; 15 (+ 3)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["13", "16", "19"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Carrés : 13 ; 16 ; 19",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["14", "18", "22"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : 14 ; 18 ; 22 (4 par carré)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["9", "11", "13"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Triangles : 9 ; 11 ; 13",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["10", "13", "16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : 10 ; 13 ; 16 (3 par triangle)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "98f558e4-3361-42df-9bee-5e5837100e74",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Rose a choisi un nombre, noté $N$. Elle a calculé $${{k}} \\times ({{a}} + N)$$ et elle a trouvé ${{r}}$.\n\nQuel nombre Rose a-t-elle choisi ?\n\n$N = ?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..5"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "2..20"
+					},
+					{
+						"name": "r",
+						"expression": "eval:k*(a+n)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Le nombre entre parenthèses.** ${{k}} \\times ({{a}} + N) = {{r}}$, donc $({{a}} + N) = {{r}} \\div {{k}} = {{eval:a+n}}$.",
+						"**Le nombre choisi.** ${{a}} + N = {{eval:a+n}}$, donc $N = {{eval:a+n}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{n}}}$.",
+						"**Vérification.** ${{k}} \\times ({{a}} + {{n}}) = {{k}} \\times {{eval:a+n}} = {{r}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Léo a choisi un nombre, noté $N$. Il a calculé $$N \\times {{k}} + {{a}}$$ et il a trouvé ${{r}}$.\n\nQuel nombre Léo a-t-il choisi ?\n\n$N = ?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "1..20"
+					},
+					{
+						"name": "n",
+						"expression": "2..30"
+					},
+					{
+						"name": "r",
+						"expression": "eval:n*k+a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**On défait la dernière étape.** $N \\times {{k}} + {{a}} = {{r}}$, donc $N \\times {{k}} = {{r}} - {{a}} = {{eval:n*k}}$.",
+						"**Puis la première.** $N = {{eval:n*k}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{n}}}$.",
+						"**Vérification.** ${{n}} \\times {{k}} + {{a}} = {{eval:n*k}} + {{a}} = {{r}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Chaque symbole cache un nombre ; un même symbole cache toujours le même nombre.\n\n$${\\square} + {\\square}{{if:k>2| + {\\square}|}}{{if:k>3| + {\\square}|}} = {{s}}$$\n\n$${\\square} + {\\triangle} = {{t}}$$\n\nQuel nombre cache $\\triangle$ ?\n\n$\\triangle = ?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "2..30"
+					},
+					{
+						"name": "d",
+						"expression": "1..40"
+					},
+					{
+						"name": "s",
+						"expression": "eval:k*c"
+					},
+					{
+						"name": "t",
+						"expression": "eval:c+d"
+					}
+				],
+				"conditions": ["c!=d"],
+				"correction": {
+					"steps": [
+						"**D'abord $\\square$.** ${{k}}$ fois le même nombre font ${{s}}$ : $\\square = {{s}} \\div {{k}} = {{c}}$.",
+						"**Puis $\\triangle$.** ${{c}} + \\triangle = {{t}}$, donc $\\triangle = {{t}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{d}}}$.",
+						"**Vérification.** ${{c}} + {{d}} = {{t}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Trouver le nombre choisi",
+		"description": "Un nombre inconnu noté par une lettre ou un symbole : k × (a + N) = r, N × k + a = r, deux égalités à symboles enchaînées",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"k": "3",
+					"n": "7",
+					"r": "27"
+				},
+				"description": "3 × (2 + N) = 27 : N = 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"k": "3",
+					"n": "7",
+					"r": "27"
+				},
+				"description": "Erreur : 9 (le 2 oublié)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"k": "4",
+					"n": "12",
+					"r": "53"
+				},
+				"description": "N × 4 + 5 = 53 : N = 12",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["48"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"k": "4",
+					"n": "12",
+					"r": "53"
+				},
+				"description": "Erreur : 48 (pas divisé)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "12",
+					"d": "8",
+					"k": "3",
+					"s": "36",
+					"t": "20"
+				},
+				"description": "□ + □ + □ = 36, □ + △ = 20 : △ = 8",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "12",
+					"d": "8",
+					"k": "3",
+					"s": "36",
+					"t": "20"
+				},
+				"description": "Erreur : 12 (le carré rendu)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "ac5fcd5c-d87c-4bea-9ab2-349b4855d955",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; 6.7 ; -1.6 ; {{eval:k-0.3;d}}\ndescription: Trois étapes d'un motif de jetons : 1, 2 puis 3 colonnes de {{k}} jetons.\n---\nJ000 = point(0, 0, visible=faux)\ncercle(J000, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ001 = point(0, 1, visible=faux)\ncercle(J001, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ002 = point(0, 2, visible=faux)\ncercle(J002, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ003 = point(0, 3, visible=faux)\ncercle(J003, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ100 = point(1.5, 0, visible=faux)\ncercle(J100, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ101 = point(1.5, 1, visible=faux)\ncercle(J101, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ102 = point(1.5, 2, visible=faux)\ncercle(J102, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ103 = point(1.5, 3, visible=faux)\ncercle(J103, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ110 = point(2.5, 0, visible=faux)\ncercle(J110, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ111 = point(2.5, 1, visible=faux)\ncercle(J111, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ112 = point(2.5, 2, visible=faux)\ncercle(J112, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ113 = point(2.5, 3, visible=faux)\ncercle(J113, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ200 = point(4, 0, visible=faux)\ncercle(J200, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ201 = point(4, 1, visible=faux)\ncercle(J201, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ202 = point(4, 2, visible=faux)\ncercle(J202, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ203 = point(4, 3, visible=faux)\ncercle(J203, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ210 = point(5, 0, visible=faux)\ncercle(J210, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ211 = point(5, 1, visible=faux)\ncercle(J211, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ212 = point(5, 2, visible=faux)\ncercle(J212, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ213 = point(5, 3, visible=faux)\ncercle(J213, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ220 = point(6, 0, visible=faux)\ncercle(J220, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ221 = point(6, 1, visible=faux)\ncercle(J221, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ222 = point(6, 2, visible=faux)\ncercle(J222, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ223 = point(6, 3, visible=faux)\ncercle(J223, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\ntexte(0, -1, \"Étape 1\")\ntexte(2, -1, \"Étape 2\")\ntexte(5, -1, \"Étape 3\")\n```\n\nQuelle phrase dit comment on passe d'une étape à la suivante ?\n\n```choix\n- À chaque étape, on ajoute ${{k}}$ jetons.\n- À chaque étape, on ajoute ${{eval:k+1}}$ jetons.\n- À chaque étape, on double le nombre de jetons.\n- À chaque étape, on ajoute autant de jetons que le numéro de la nouvelle étape.\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**On compte.** Étape 1 : ${{eval:1*k}}$ ; étape 2 : ${{eval:2*k}}$ ; étape 3 : ${{eval:3*k}}$.",
+						"**La règle.** À chaque étape, on ajoute ${{k}}$ jetons. Pourquoi : on ajoute une colonne de ${{k}}$ jetons. Elle marche pour chaque passage : ${{eval:1*k}} + {{k}} = {{eval:2*k}}$ et ${{eval:2*k}} + {{k}} = {{eval:3*k}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; 6.7 ; -1.6 ; 2.7\ndescription: Trois étapes d'un motif de jetons en escalier : 1 jeton, puis des colonnes de 1 et 2 jetons, puis des colonnes de 1, 2 et 3 jetons.\n---\nJ000 = point(0, 0, visible=faux)\ncercle(J000, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ100 = point(1.5, 0, visible=faux)\ncercle(J100, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ110 = point(2.5, 0, visible=faux)\ncercle(J110, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ111 = point(2.5, 1, visible=faux)\ncercle(J111, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ200 = point(4, 0, visible=faux)\ncercle(J200, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ210 = point(5, 0, visible=faux)\ncercle(J210, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ211 = point(5, 1, visible=faux)\ncercle(J211, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ220 = point(6, 0, visible=faux)\ncercle(J220, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ221 = point(6, 1, visible=faux)\ncercle(J221, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ222 = point(6, 2, visible=faux)\ncercle(J222, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\ntexte(0, -1, \"Étape 1\")\ntexte(2, -1, \"Étape 2\")\ntexte(5, -1, \"Étape 3\")\n```\n\nQuelle phrase dit comment on passe d'une étape à la suivante ?\n\n```choix\n- À chaque étape, on ajoute autant de jetons que le numéro de la nouvelle étape.\n- À chaque étape, on ajoute $2$ jetons.\n- À chaque étape, on double le nombre de jetons.\n- À chaque étape, on ajoute $3$ jetons.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**On compte.** Étape 1 : ${{eval:1}}$ ; étape 2 : ${{eval:3}}$ ; étape 3 : ${{eval:6}}$.",
+						"**La règle.** À chaque étape, on ajoute autant de jetons que le numéro de la nouvelle étape. Pourquoi : la nouvelle colonne a autant de jetons que le numéro de l'étape. Elle marche pour chaque passage : ${{eval:1}} + 2 = {{eval:3}}$ et ${{eval:3}} + 3 = {{eval:6}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici les trois premières étapes d'un motif de allumettes.\n\n```figure\nfenetre: -0.5 ; 9.5 ; -1.5 ; 1.5\ndescription: Trois étapes d'un motif d'allumettes : une rangée de 1, 2 puis 3 carrés accolés.\n---\nC0B0 = point(0, 0, visible=faux)\nC0H0 = point(0, 1, visible=faux)\nC0B1 = point(1, 0, visible=faux)\nC0H1 = point(1, 1, visible=faux)\nsegment(C0B0, C0B1, couleur=\"marron\", epaisseur=3)\nsegment(C0H0, C0H1, couleur=\"marron\", epaisseur=3)\nsegment(C0B0, C0H0, couleur=\"marron\", epaisseur=3)\nsegment(C0B1, C0H1, couleur=\"marron\", epaisseur=3)\nC1B0 = point(2.5, 0, visible=faux)\nC1H0 = point(2.5, 1, visible=faux)\nC1B1 = point(3.5, 0, visible=faux)\nC1H1 = point(3.5, 1, visible=faux)\nC1B2 = point(4.5, 0, visible=faux)\nC1H2 = point(4.5, 1, visible=faux)\nsegment(C1B0, C1B1, couleur=\"marron\", epaisseur=3)\nsegment(C1H0, C1H1, couleur=\"marron\", epaisseur=3)\nsegment(C1B1, C1B2, couleur=\"marron\", epaisseur=3)\nsegment(C1H1, C1H2, couleur=\"marron\", epaisseur=3)\nsegment(C1B0, C1H0, couleur=\"marron\", epaisseur=3)\nsegment(C1B1, C1H1, couleur=\"marron\", epaisseur=3)\nsegment(C1B2, C1H2, couleur=\"marron\", epaisseur=3)\nC2B0 = point(6, 0, visible=faux)\nC2H0 = point(6, 1, visible=faux)\nC2B1 = point(7, 0, visible=faux)\nC2H1 = point(7, 1, visible=faux)\nC2B2 = point(8, 0, visible=faux)\nC2H2 = point(8, 1, visible=faux)\nC2B3 = point(9, 0, visible=faux)\nC2H3 = point(9, 1, visible=faux)\nsegment(C2B0, C2B1, couleur=\"marron\", epaisseur=3)\nsegment(C2H0, C2H1, couleur=\"marron\", epaisseur=3)\nsegment(C2B1, C2B2, couleur=\"marron\", epaisseur=3)\nsegment(C2H1, C2H2, couleur=\"marron\", epaisseur=3)\nsegment(C2B2, C2B3, couleur=\"marron\", epaisseur=3)\nsegment(C2H2, C2H3, couleur=\"marron\", epaisseur=3)\nsegment(C2B0, C2H0, couleur=\"marron\", epaisseur=3)\nsegment(C2B1, C2H1, couleur=\"marron\", epaisseur=3)\nsegment(C2B2, C2H2, couleur=\"marron\", epaisseur=3)\nsegment(C2B3, C2H3, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\ntexte(3.5, -0.9, \"Étape 2\")\ntexte(7.5, -0.9, \"Étape 3\")\n```\n\nQuelle phrase dit comment on passe d'une étape à la suivante ?\n\n```choix\n- À chaque étape, on ajoute $3$ allumettes.\n- À chaque étape, on ajoute $4$ allumettes.\n- À chaque étape, on double le nombre d'allumettes.\n- À chaque étape, on ajoute autant d'allumettes que le numéro de la nouvelle étape.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**On compte.** Étape 1 : ${{eval:4}}$ ; étape 2 : ${{eval:7}}$ ; étape 3 : ${{eval:10}}$.",
+						"**La règle.** À chaque étape, on ajoute $3$ allumettes. Pourquoi : un carré de plus ne demande que $3$ allumettes : il prend un côté au carré d'avant. Elle marche pour chaque passage : ${{eval:4}} + 3 = {{eval:7}}$ et ${{eval:7}} + 3 = {{eval:10}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici les trois premières étapes d'un motif de allumettes.\n\n```figure\nfenetre: -0.5 ; 7 ; -1.5 ; 1.4\ndescription: Trois étapes d'un motif d'allumettes : une bande de 1, 2 puis 3 triangles accolés.\n---\nT0B0 = point(0, 0, visible=faux)\nT0B1 = point(1, 0, visible=faux)\nT0H0 = point(0.5, 0.87, visible=faux)\nsegment(T0B0, T0B1, couleur=\"marron\", epaisseur=3)\nsegment(T0B0, T0H0, couleur=\"marron\", epaisseur=3)\nsegment(T0H0, T0B1, couleur=\"marron\", epaisseur=3)\nT1B0 = point(1.75, 0, visible=faux)\nT1B1 = point(2.75, 0, visible=faux)\nT1H0 = point(2.25, 0.87, visible=faux)\nT1H1 = point(3.25, 0.87, visible=faux)\nsegment(T1B0, T1B1, couleur=\"marron\", epaisseur=3)\nsegment(T1H0, T1H1, couleur=\"marron\", epaisseur=3)\nsegment(T1B0, T1H0, couleur=\"marron\", epaisseur=3)\nsegment(T1H0, T1B1, couleur=\"marron\", epaisseur=3)\nsegment(T1B1, T1H1, couleur=\"marron\", epaisseur=3)\nT2B0 = point(4, 0, visible=faux)\nT2B1 = point(5, 0, visible=faux)\nT2B2 = point(6, 0, visible=faux)\nT2H0 = point(4.5, 0.87, visible=faux)\nT2H1 = point(5.5, 0.87, visible=faux)\nsegment(T2B0, T2B1, couleur=\"marron\", epaisseur=3)\nsegment(T2B1, T2B2, couleur=\"marron\", epaisseur=3)\nsegment(T2H0, T2H1, couleur=\"marron\", epaisseur=3)\nsegment(T2B0, T2H0, couleur=\"marron\", epaisseur=3)\nsegment(T2H0, T2B1, couleur=\"marron\", epaisseur=3)\nsegment(T2B1, T2H1, couleur=\"marron\", epaisseur=3)\nsegment(T2H1, T2B2, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\ntexte(2.75, -0.9, \"Étape 2\")\ntexte(5.5, -0.9, \"Étape 3\")\n```\n\nQuelle phrase dit comment on passe d'une étape à la suivante ?\n\n```choix\n- À chaque étape, on ajoute $2$ allumettes.\n- À chaque étape, on ajoute $3$ allumettes.\n- À chaque étape, on double le nombre d'allumettes.\n- À chaque étape, on ajoute $1$ allumette.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**On compte.** Étape 1 : ${{eval:3}}$ ; étape 2 : ${{eval:5}}$ ; étape 3 : ${{eval:7}}$.",
+						"**La règle.** À chaque étape, on ajoute $2$ allumettes. Pourquoi : un triangle de plus ne demande que $2$ allumettes : il prend un côté au triangle d'avant. Elle marche pour chaque passage : ${{eval:3}} + 2 = {{eval:5}}$ et ${{eval:5}} + 2 = {{eval:7}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Motif évolutif : choisir la règle",
+		"description": "Motif dessiné en trois étapes : reconnaître, parmi quatre phrases, comment on passe d'une étape à la suivante",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Colonnes de 3 : on ajoute 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : on double",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Escalier : le numéro de l'étape",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : on ajoute 2 (vrai au premier passage seulement)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Carrés : on ajoute 3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : on ajoute 4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Triangles : on ajoute 2",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : on ajoute 3",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "b28c7f78-5841-4098-955e-16a3df8dca48",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "Les ${{k}}$ billes sont identiques. La balance est en équilibre.\n\n```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Une balance en équilibre : à gauche {{k}} billes identiques, à droite une masse de {{w}} g.\n---\nB1 = point(3.95, 0, visible=faux)\nB2 = point(5.05, 0, visible=faux)\nB3 = point(4.5, 1.15, visible=faux)\nBP = polygone(B1, B2, B3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nK0 = point(0.6, 1.5, visible=faux)\ncercle(K0, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nK1 = point(1.2, 1.5, visible=faux)\ncercle(K1, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nK2 = point(1.8, 1.5, visible=faux)\ncercle(K2, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nK3 = point(2.4, 1.5, visible=faux)\ncercle(K3, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nK4 = point(3.0, 1.5, visible=faux)\ncercle(K4, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<k|vrai|faux}})\nK5 = point(3.6, 1.5, visible=faux)\ncercle(K5, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:5<k|vrai|faux}})\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.7, 1.3, visible=faux)\nD3 = point(7.7, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\nDP = polygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.5, 1.75, \"{{w}} g\")\n```\n\nCombien pèse une bille ?\n\nUne bille pèse $?$ g.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..6"
+					},
+					{
+						"name": "p",
+						"expression": "5..60"
+					},
+					{
+						"name": "w",
+						"expression": "eval:k*p"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Équilibre.** Les deux plateaux pèsent autant : les ${{k}}$ billes pèsent ${{w}}$ g en tout.",
+						"On note $B$ la masse d'une bille, en g : $${{k}} \\times B = {{w}}$$",
+						"**Une bille.** $B = {{w}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{p}}}$ : une bille pèse $\\textcolor{{{color:primary.0}}}{{{p}}}$ g.",
+						"**Vérification.** ${{k}} \\times {{p}} = {{w}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "Les ${{k}}$ billes sont identiques. La balance est en équilibre.\n\n```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Une balance en équilibre : à gauche {{k}} billes identiques et une masse de {{a}} g, à droite une masse de {{w}} g.\n---\nB1 = point(3.95, 0, visible=faux)\nB2 = point(5.05, 0, visible=faux)\nB3 = point(4.5, 1.15, visible=faux)\nBP = polygone(B1, B2, B3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nK0 = point(0.6, 1.5, visible=faux)\ncercle(K0, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nK1 = point(1.2, 1.5, visible=faux)\ncercle(K1, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nK2 = point(1.8, 1.5, visible=faux)\ncercle(K2, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nK3 = point(2.4, 1.5, visible=faux)\ncercle(K3, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nK4 = point(3.0, 1.5, visible=faux)\ncercle(K4, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<k|vrai|faux}})\nK5 = point(3.6, 1.5, visible=faux)\ncercle(K5, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:5<k|vrai|faux}})\nG1 = point({{eval:0.6*k+0.45;d}}, 1.3, visible=faux)\nG2 = point({{eval:0.6*k+1.75;d}}, 1.3, visible=faux)\nG3 = point({{eval:0.6*k+1.75;d}}, 2.2, visible=faux)\nG4 = point({{eval:0.6*k+0.45;d}}, 2.2, visible=faux)\nGP = polygone(G1, G2, G3, G4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte({{eval:0.6*k+1.1;d}}, 1.75, \"{{a}} g\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.7, 1.3, visible=faux)\nD3 = point(7.7, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\nDP = polygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.5, 1.75, \"{{w}} g\")\n```\n\nCombien pèse une bille ?\n\nUne bille pèse $?$ g.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..4"
+					},
+					{
+						"name": "p",
+						"expression": "20..150"
+					},
+					{
+						"name": "x",
+						"expression": "2..30"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*x"
+					},
+					{
+						"name": "w",
+						"expression": "eval:k*p+a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On note $B$ la masse d'une bille, en g : $${{k}} \\times B + {{a}} = {{w}}$$",
+						"**On retire ${{a}}$ g de chaque plateau.** L'équilibre reste : ${{k}} \\times B = {{w}} - {{a}} = {{eval:k*p}}$.",
+						"**Une bille.** $B = {{eval:k*p}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{p}}}$ : une bille pèse $\\textcolor{{{color:primary.0}}}{{{p}}}$ g.",
+						"**Vérification.** ${{k}} \\times {{p}} + {{a}} = {{eval:k*p}} + {{a}} = {{w}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "Les ${{k}}$ billes sont identiques. La balance est en équilibre.\n\n```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Une balance en équilibre : à gauche {{k}} billes identiques, à droite deux masses de {{a}} g et de {{b}} g.\n---\nB1 = point(3.95, 0, visible=faux)\nB2 = point(5.05, 0, visible=faux)\nB3 = point(4.5, 1.15, visible=faux)\nBP = polygone(B1, B2, B3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nK0 = point(0.6, 1.5, visible=faux)\ncercle(K0, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nK1 = point(1.2, 1.5, visible=faux)\ncercle(K1, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nK2 = point(1.8, 1.5, visible=faux)\ncercle(K2, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nK3 = point(2.4, 1.5, visible=faux)\ncercle(K3, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nK4 = point(3.0, 1.5, visible=faux)\ncercle(K4, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<k|vrai|faux}})\nK5 = point(3.6, 1.5, visible=faux)\ncercle(K5, rayon=0.27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:5<k|vrai|faux}})\nD1 = point(4.95, 1.3, visible=faux)\nD2 = point(6.65, 1.3, visible=faux)\nD3 = point(6.65, 2.2, visible=faux)\nD4 = point(4.95, 2.2, visible=faux)\nDP = polygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(5.800000000000001, 1.75, \"{{a}} g\")\nE1 = point(6.9, 1.3, visible=faux)\nE2 = point(8.6, 1.3, visible=faux)\nE3 = point(8.6, 2.2, visible=faux)\nE4 = point(6.9, 2.2, visible=faux)\nEP = polygone(E1, E2, E3, E4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(7.75, 1.75, \"{{b}} g\")\n```\n\nCombien pèse une bille ?\n\nUne bille pèse $?$ g.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..5"
+					},
+					{
+						"name": "p",
+						"expression": "10..100"
+					},
+					{
+						"name": "x",
+						"expression": "1..40"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*x"
+					},
+					{
+						"name": "b",
+						"expression": "eval:k*p-a"
+					}
+				],
+				"conditions": ["b>=10"],
+				"correction": {
+					"steps": [
+						"**Équilibre.** Les ${{k}}$ billes pèsent autant que les deux masses : ${{a}} + {{b}} = {{eval:k*p}}$ g.",
+						"On note $B$ la masse d'une bille, en g : $${{k}} \\times B = {{eval:k*p}}$$",
+						"**Une bille.** $B = {{eval:k*p}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{p}}}$ : une bille pèse $\\textcolor{{{color:primary.0}}}{{{p}}}$ g.",
+						"**Vérification.** ${{k}} \\times {{p}} = {{eval:k*p}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Balance : la masse d'un objet",
+		"description": "Balance à l'équilibre dessinée : des billes identiques seules, avec une masse, ou face à deux masses ; trouver la masse d'une bille (nombre inconnu noté B dans le corrigé)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "5",
+					"p": "50",
+					"w": "250"
+				},
+				"description": "5 billes = 250 g : 50 g",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["250"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "5",
+					"p": "50",
+					"w": "250"
+				},
+				"description": "Erreur : 250 (pas divisé)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["120"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "140",
+					"k": "3",
+					"p": "120",
+					"w": "500",
+					"x": "14"
+				},
+				"description": "3 billes + 140 g = 500 g : 120 g",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["360"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "140",
+					"k": "3",
+					"p": "120",
+					"w": "500",
+					"x": "14"
+				},
+				"description": "Erreur : 360 (pas divisé)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["166"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "140",
+					"k": "3",
+					"p": "120",
+					"w": "500",
+					"x": "14"
+				},
+				"description": "Erreur : 166 (masse de gauche oubliée)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "120",
+					"k": "4",
+					"p": "80",
+					"x": "20"
+				},
+				"description": "4 billes = 200 g + 120 g : 80 g",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["320"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "200",
+					"b": "120",
+					"k": "4",
+					"p": "80",
+					"x": "20"
+				},
+				"description": "Erreur : 320 (pas divisé)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "b47f2699-d908-49bb-aa13-d4ba6ccc350d",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:u+5*a}}"
+					},
+					{
+						"expectedAnswer": "{{eval:u+6*a}}"
+					},
+					{
+						"expectedAnswer": "{{eval:u+7*a}}"
+					}
+				],
+				"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u+0*a}} \\ ;\\  {{eval:u+1*a}} \\ ;\\  {{eval:u+2*a}} \\ ;\\  {{eval:u+3*a}} \\ ;\\  {{eval:u+4*a}} \\ ;\\  \\ldots$$\n\nTrouve la règle, puis écris les trois nombres suivants.\n\n6e nombre : $?$\n\n7e nombre : $?$\n\n8e nombre : $?$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..50"
+					},
+					{
+						"name": "a",
+						"expression": "2..12"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**La règle.** On ajoute ${{a}}$ à chaque fois. On le vérifie sur les nombres donnés : ${{eval:u+0*a}} + {{a}} = {{eval:u+1*a}}$, ${{eval:u+1*a}} + {{a}} = {{eval:u+2*a}}$.",
+						"**Les trois suivants.** ${{eval:u+4*a}} + {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:u+5*a}}}$ ; ${{eval:u+5*a}} + {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:u+6*a}}}$ ; ${{eval:u+6*a}} + {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:u+7*a}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:u*k^4}}"
+					},
+					{
+						"expectedAnswer": "{{eval:u*k^5}}"
+					},
+					{
+						"expectedAnswer": "{{eval:u*k^6}}"
+					}
+				],
+				"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u*k^0}} \\ ;\\  {{eval:u*k^1}} \\ ;\\  {{eval:u*k^2}} \\ ;\\  {{eval:u*k^3}} \\ ;\\  \\ldots$$\n\nTrouve la règle, puis écris les trois nombres suivants.\n\n5e nombre : $?$\n\n6e nombre : $?$\n\n7e nombre : $?$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..5"
+					},
+					{
+						"name": "k",
+						"expression": "2..3"
+					}
+				],
+				"conditions": ["u*(k-1)!=k"],
+				"correction": {
+					"steps": [
+						"**La règle.** On multiplie par ${{k}}$ à chaque fois. On le vérifie sur les nombres donnés : ${{eval:u*k^0}} \\times {{k}} = {{eval:u*k^1}}$, ${{eval:u*k^1}} \\times {{k}} = {{eval:u*k^2}}$.",
+						"**Les trois suivants.** ${{eval:u*k^3}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:u*k^4}}}$ ; ${{eval:u*k^4}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:u*k^5}}}$ ; ${{eval:u*k^5}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:u*k^6}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:u+3*a-3*b}}"
+					},
+					{
+						"expectedAnswer": "{{eval:u+4*a-3*b}}"
+					},
+					{
+						"expectedAnswer": "{{eval:u+4*a-4*b}}"
+					}
+				],
+				"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u}} \\ ;\\  {{eval:u+a}} \\ ;\\  {{eval:u+a-b}} \\ ;\\  {{eval:u+2*a-b}} \\ ;\\  {{eval:u+2*a-2*b}} \\ ;\\  {{eval:u+3*a-2*b}} \\ ;\\  \\ldots$$\n\nTrouve la règle, puis écris les trois nombres suivants.\n\n7e nombre : $?$\n\n8e nombre : $?$\n\n9e nombre : $?$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "10..80"
+					},
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					}
+				],
+				"conditions": ["b<a"],
+				"correction": {
+					"steps": [
+						"**La règle.** On ajoute ${{a}}$, puis on retire ${{b}}$, et ainsi de suite. On le vérifie sur les nombres donnés : ${{eval:u}} + {{a}} = {{eval:u+a}}$, ${{eval:u+a}} - {{b}} = {{eval:u+a-b}}$.",
+						"On peut aussi dire : on ajoute ${{eval:a-b}}$ pour aller deux rangs plus loin.",
+						"**Les trois suivants.** ${{eval:u+3*a-2*b}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:u+3*a-3*b}}}$ ; ${{eval:u+3*a-3*b}} + {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:u+4*a-3*b}}}$ ; ${{eval:u+4*a-3*b}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:u+4*a-4*b}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:u+3*a+3*b}}"
+					},
+					{
+						"expectedAnswer": "{{eval:u+4*a+3*b}}"
+					},
+					{
+						"expectedAnswer": "{{eval:u+4*a+4*b}}"
+					}
+				],
+				"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u}} \\ ;\\  {{eval:u+a}} \\ ;\\  {{eval:u+a+b}} \\ ;\\  {{eval:u+2*a+b}} \\ ;\\  {{eval:u+2*a+2*b}} \\ ;\\  {{eval:u+3*a+2*b}} \\ ;\\  \\ldots$$\n\nTrouve la règle, puis écris les trois nombres suivants.\n\n7e nombre : $?$\n\n8e nombre : $?$\n\n9e nombre : $?$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..20"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["a!=b"],
+				"correction": {
+					"steps": [
+						"**La règle.** On ajoute ${{a}}$, puis on ajoute ${{b}}$, et ainsi de suite. On le vérifie sur les nombres donnés : ${{eval:u}} + {{a}} = {{eval:u+a}}$, ${{eval:u+a}} + {{b}} = {{eval:u+a+b}}$.",
+						"On peut aussi dire : on ajoute ${{eval:a+b}}$ pour aller deux rangs plus loin.",
+						"**Les trois suivants.** ${{eval:u+3*a+2*b}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:u+3*a+3*b}}}$ ; ${{eval:u+3*a+3*b}} + {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:u+4*a+3*b}}}$ ; ${{eval:u+4*a+3*b}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:u+4*a+4*b}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Suite de nombres : les trois termes suivants",
+		"description": "Trouver la règle d'une suite (+ a, × k, + a − b et + a + b en alternance) et écrire les trois termes suivants",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["23", "27", "31"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"u": "3"
+				},
+				"description": "3 ; 7 ; 11 ; 15 ; 19 → 23 ; 27 ; 31",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20", "21", "22"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"u": "3"
+				},
+				"description": "Erreur : 20 ; 21 ; 22 (+ 1)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["324", "972", "2\\,916"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"u": "4"
+				},
+				"description": "4 ; 12 ; 36 ; 108 → 324 ; 972 ; 2 916",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["180", "252", "324"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3",
+					"u": "4"
+				},
+				"description": "Erreur : + 72 à chaque fois",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["89", "94", "92"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"u": "80"
+				},
+				"description": "80 ; 85 ; 83 ; 88 ; 86 ; 91 → 89 ; 94 ; 92",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["96", "101", "106"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"u": "80"
+				},
+				"description": "Erreur : + 5 à chaque fois",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["16", "17", "21"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4",
+					"u": "1"
+				},
+				"description": "1 ; 2 ; 6 ; 7 ; 11 ; 12 → 16 ; 17 ; 21",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["13", "17", "18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4",
+					"u": "1"
+				},
+				"description": "Erreur : 13 ; 17 ; 18 (alternance décalée)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "c4011427-3b47-4837-9c98-2fe4b0b93cb1",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Mia a choisi un nombre. Elle le multiplie par ${{k}}$, puis elle ajoute ${{b}}$ : elle trouve ${{r}}$.\n\n```schema-barres\nMia : ? (2) ; ? (2){{if:k>2| ; ? (2)|}}{{if:k>3| ; ? (2)|}}{{if:k>4| ; ? (2)|}} ; {{b}} (1) = {{r}}\n```\n\nQuel nombre Mia a-t-elle choisi ?\n\nMia a choisi $?$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..5"
+					},
+					{
+						"name": "n",
+						"expression": "5..40"
+					},
+					{
+						"name": "b",
+						"expression": "1..30"
+					},
+					{
+						"name": "r",
+						"expression": "eval:k*n+b"
+					}
+				],
+				"conditions": ["r<=200"],
+				"correction": {
+					"steps": [
+						"**On enlève ${{b}}$.** Il reste ${{k}}$ parts égales : ${{r}} - {{b}} = {{eval:k*n}}$.",
+						"**Une part.** ${{eval:k*n}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ : Mia a choisi $\\textcolor{{{color:primary.0}}}{{{n}}}$.\n\n```schema-barres\nMia : {{n}} (2) ; {{n}} (2){{if:k>2| ; {{n}} (2)|}}{{if:k>3| ; {{n}} (2)|}}{{if:k>4| ; {{n}} (2)|}} ; {{b}} (1) = {{r}}\n```\n\n",
+						"**Vérification.** ${{n}} \\times {{k}} + {{b}} = {{eval:k*n}} + {{b}} = {{r}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Tom a choisi un nombre. Il le multiplie par ${{k}}$, puis il retire ${{b}}$ : il trouve ${{r}}$.\n\n```schema-barres\nTom : ? (2) ; ? (2){{if:k>2| ; ? (2)|}}{{if:k>3| ; ? (2)|}}{{if:k>4| ; ? (2)|}}\n : {{r}} ({{eval:2*k-1}}) ; -{{b}} (1)\n```\n\nQuel nombre Tom a-t-il choisi ?\n\nTom a choisi $?$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..5"
+					},
+					{
+						"name": "n",
+						"expression": "6..40"
+					},
+					{
+						"name": "b",
+						"expression": "1..20"
+					},
+					{
+						"name": "r",
+						"expression": "eval:k*n-b"
+					}
+				],
+				"conditions": ["r<=200", "r>=5"],
+				"correction": {
+					"steps": [
+						"**On rajoute ${{b}}$.** Les ${{k}}$ parts égales font ${{r}} + {{b}} = {{eval:k*n}}$.",
+						"**Une part.** ${{eval:k*n}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ : Tom a choisi $\\textcolor{{{color:primary.0}}}{{{n}}}$.\n\n```schema-barres\nTom : {{n}} (2) ; {{n}} (2){{if:k>2| ; {{n}} (2)|}}{{if:k>3| ; {{n}} (2)|}}{{if:k>4| ; {{n}} (2)|}}\n : {{r}} ({{eval:2*k-1}}) ; -{{b}} (1)\n```\n\n",
+						"**Vérification.** ${{n}} \\times {{k}} - {{b}} = {{eval:k*n}} - {{b}} = {{r}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					},
+					{
+						"expectedAnswer": "{{eval:k*n}}"
+					}
+				],
+				"statement": "Léo et Zoé ont ${{t}}$ billes à eux deux. Zoé en a ${{k}}$ fois plus que Léo.\n\n```schema-barres\nLéo : ?\nZoé : ? (1) ; ? (1){{if:k>2| ; ? (1)|}}{{if:k>3| ; ? (1)|}}{{if:k>4| ; ? (1)|}}\ntotal : {{t}}\n```\n\nCombien de billes chacun a-t-il ?\n\nLéo : $?$ billes\n\nZoé : $?$ billes",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..5"
+					},
+					{
+						"name": "n",
+						"expression": "3..40"
+					},
+					{
+						"name": "t",
+						"expression": "eval:(k+1)*n"
+					}
+				],
+				"conditions": ["t<=200"],
+				"correction": {
+					"steps": [
+						"**Des parts égales.** Léo a $1$ part, Zoé ${{k}}$ parts : ${{eval:k+1}}$ parts en tout.",
+						"**Une part.** ${{t}} \\div {{eval:k+1}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ : Léo a $\\textcolor{{{color:primary.0}}}{{{n}}}$ billes.",
+						"**Zoé.** ${{n}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:k*n}}}$ : Zoé a $\\textcolor{{{color:primary.0}}}{{{eval:k*n}}}$ billes.\n\n```schema-barres\nLéo : {{n}}\nZoé : {{n}} (1) ; {{n}} (1){{if:k>2| ; {{n}} (1)|}}{{if:k>3| ; {{n}} (1)|}}{{if:k>4| ; {{n}} (1)|}}\ntotal : {{t}}\n```\n\n",
+						"**Vérification.** ${{n}} + {{eval:k*n}} = {{t}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					},
+					{
+						"expectedAnswer": "{{eval:p+d}}"
+					}
+				],
+				"statement": "Hugo et Nina ont ${{t}}$ cartes à eux deux. Nina en a ${{d}}$ de plus que Hugo.\n\n```schema-barres\nHugo : ? (3)\nNina : ? (3) ; {{d}} (1,5)\ntotal : {{t}}\n```\n\nCombien de cartes chacun a-t-il ?\n\nHugo : $?$ cartes\n\nNina : $?$ cartes",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "5..90"
+					},
+					{
+						"name": "d",
+						"expression": "2..60"
+					},
+					{
+						"name": "t",
+						"expression": "eval:2*p+d"
+					}
+				],
+				"conditions": ["t<=200", "p>=d", "d*4>=p"],
+				"correction": {
+					"steps": [
+						"**Deux parts égales.** On enlève l'écart du total : ${{t}} - {{d}} = {{eval:2*p}}$. Il reste deux barres égales.",
+						"**Hugo.** ${{eval:2*p}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{p}}}$.",
+						"**Nina.** ${{p}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:p+d}}}$.\n\n```schema-barres\nHugo : {{p}} (3)\nNina : {{p}} (3) ; {{d}} (1,5)\ntotal : {{t}}\n```\n\n",
+						"**Vérification.** ${{p}} + {{eval:p+d}} = {{t}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Schéma en barres : le nombre choisi",
+		"description": "Problèmes algébriques appuyés sur un schéma en barres donné : k fois un nombre plus ou moins b, « k fois plus », somme et écart (nombres ≤ 200)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["31"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "7",
+					"k": "3",
+					"n": "31",
+					"r": "100"
+				},
+				"description": "3 × N + 7 = 100 : 31",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["93"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "7",
+					"k": "3",
+					"n": "31",
+					"r": "100"
+				},
+				"description": "Erreur : 93 (pas divisé)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["33"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "7",
+					"k": "3",
+					"n": "31",
+					"r": "100"
+				},
+				"description": "Erreur : 33 (le 7 oublié)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "6",
+					"k": "3",
+					"n": "20",
+					"r": "54"
+				},
+				"description": "3 × N − 6 = 54 : 20",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "6",
+					"k": "3",
+					"n": "20",
+					"r": "54"
+				},
+				"description": "Erreur : 16 (6 retiré au lieu d'ajouté)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["21", "63"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"n": "21",
+					"t": "84"
+				},
+				"description": "84 billes, 3 fois plus : 21 et 63",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["28", "84"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3",
+					"n": "21",
+					"t": "84"
+				},
+				"description": "Erreur : 28 et 84 (divisé par 3)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["36", "48"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "12",
+					"p": "36",
+					"t": "84"
+				},
+				"description": "84 cartes, écart 12 : 36 et 48",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["42", "54"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "12",
+					"p": "36",
+					"t": "84"
+				},
+				"description": "Erreur : 42 et 54 (moitié du total)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "e59976bf-d175-4d13-adf4-8952015a1606",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u+0*a}} \\ ;\\  {{eval:u+1*a}} \\ ;\\  {{eval:u+2*a}} \\ ;\\  {{eval:u+3*a}} \\ ;\\  {{eval:u+4*a}} \\ ;\\  \\ldots$$\n\nQuelle règle permet de construire cette suite ?\n\n```choix\n- On ajoute ${{a}}$ à chaque fois.\n- On ajoute ${{eval:a+1}}$ à chaque fois.\n- On ajoute ${{eval:2*a}}$ à chaque fois.\n- On multiplie par $2$ à chaque fois.\n```",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..50"
+					},
+					{
+						"name": "a",
+						"expression": "2..12"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**La règle.** On ajoute ${{a}}$ à chaque fois.",
+						"Elle marche pour tous les nombres donnés : ${{eval:u+0*a}} + {{a}} = {{eval:u+1*a}}$ ; ${{eval:u+1*a}} + {{a}} = {{eval:u+2*a}}$ ; ${{eval:u+2*a}} + {{a}} = {{eval:u+3*a}}$ ; ${{eval:u+3*a}} + {{a}} = {{eval:u+4*a}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u*k^0}} \\ ;\\  {{eval:u*k^1}} \\ ;\\  {{eval:u*k^2}} \\ ;\\  {{eval:u*k^3}} \\ ;\\  \\ldots$$\n\nQuelle règle permet de construire cette suite ?\n\n```choix\n- On multiplie par ${{k}}$ à chaque fois.\n- On ajoute ${{eval:u*(k-1)}}$ à chaque fois.\n- On multiplie par ${{eval:k+1}}$ à chaque fois.\n- On ajoute ${{k}}$ à chaque fois.\n```",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..5"
+					},
+					{
+						"name": "k",
+						"expression": "2..3"
+					}
+				],
+				"conditions": ["u*(k-1)!=k"],
+				"correction": {
+					"steps": [
+						"**La règle.** On multiplie par ${{k}}$ à chaque fois.",
+						"Elle marche pour tous les nombres donnés : ${{eval:u*k^0}} \\times {{k}} = {{eval:u*k^1}}$ ; ${{eval:u*k^1}} \\times {{k}} = {{eval:u*k^2}}$ ; ${{eval:u*k^2}} \\times {{k}} = {{eval:u*k^3}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u}} \\ ;\\  {{eval:u+a}} \\ ;\\  {{eval:u+a-b}} \\ ;\\  {{eval:u+2*a-b}} \\ ;\\  {{eval:u+2*a-2*b}} \\ ;\\  {{eval:u+3*a-2*b}} \\ ;\\  \\ldots$$\n\nQuelle règle permet de construire cette suite ?\n\n```choix\n- On ajoute ${{a}}$, puis on retire ${{b}}$, et ainsi de suite.\n- On ajoute ${{eval:a-b}}$ à chaque fois.\n- On retire ${{b}}$, puis on ajoute ${{a}}$, et ainsi de suite.\n- On ajoute ${{a}}$ à chaque fois.\n```",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "10..80"
+					},
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					}
+				],
+				"conditions": ["b<a"],
+				"correction": {
+					"steps": [
+						"**La règle.** On ajoute ${{a}}$, puis on retire ${{b}}$, et ainsi de suite.",
+						"Elle marche pour tous les nombres donnés : ${{eval:u}} + {{a}} = {{eval:u+a}}$ ; ${{eval:u+a}} - {{b}} = {{eval:u+a-b}}$ ; ${{eval:u+a-b}} + {{a}} = {{eval:u+2*a-b}}$ ; ${{eval:u+2*a-b}} - {{b}} = {{eval:u+2*a-2*b}}$ ; ${{eval:u+2*a-2*b}} + {{a}} = {{eval:u+3*a-2*b}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u}} \\ ;\\  {{eval:u+a}} \\ ;\\  {{eval:u+a+b}} \\ ;\\  {{eval:u+2*a+b}} \\ ;\\  {{eval:u+2*a+2*b}} \\ ;\\  {{eval:u+3*a+2*b}} \\ ;\\  \\ldots$$\n\nQuelle règle permet de construire cette suite ?\n\n```choix\n- On ajoute ${{a}}$, puis on ajoute ${{b}}$, et ainsi de suite.\n- On ajoute ${{eval:a+b}}$ à chaque fois.\n- On ajoute ${{b}}$, puis on ajoute ${{a}}$, et ainsi de suite.\n- On ajoute ${{a}}$ à chaque fois.\n```",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..20"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["a!=b"],
+				"correction": {
+					"steps": [
+						"**La règle.** On ajoute ${{a}}$, puis on ajoute ${{b}}$, et ainsi de suite.",
+						"Elle marche pour tous les nombres donnés : ${{eval:u}} + {{a}} = {{eval:u+a}}$ ; ${{eval:u+a}} + {{b}} = {{eval:u+a+b}}$ ; ${{eval:u+a+b}} + {{a}} = {{eval:u+2*a+b}}$ ; ${{eval:u+2*a+b}} + {{b}} = {{eval:u+2*a+2*b}}$ ; ${{eval:u+2*a+2*b}} + {{a}} = {{eval:u+3*a+2*b}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Suite de nombres : choisir la règle",
+		"description": "Reconnaître la règle d'une suite (+ a, × k, + a − b et + a + b en alternance) parmi quatre phrases",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"u": "3"
+				},
+				"description": "+ 4 : la bonne règle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"u": "3"
+				},
+				"description": "Erreur : + 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"u": "4"
+				},
+				"description": "× 3 : la bonne règle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3",
+					"u": "4"
+				},
+				"description": "Erreur : + 8 (vrai au premier pas seulement)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"u": "80"
+				},
+				"description": "+ 5 − 2 : la bonne règle",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"u": "80"
+				},
+				"description": "Erreur : + 3 à chaque fois",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4",
+					"u": "1"
+				},
+				"description": "+ 1 + 4 : la bonne règle",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4",
+					"u": "1"
+				},
+				"description": "Erreur : + 4 puis + 1",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	}
+]
