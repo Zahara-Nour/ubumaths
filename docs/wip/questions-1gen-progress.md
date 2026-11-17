@@ -15,8 +15,7 @@ _Mis à jour le 2026-11-17, après #2762 (fichiers du lot 2)._
 scripts/questions/1gen-2-representations-graphiques --publier` ; commiter les ids ; migration nœud + tags (016, 019,
   041, 058 → représentation graphique ; 020, 051 → expression et droite) ; envoyer les ids de R2, R3, R4 à
   questions-1techno. Ensuite lots 3, 4.
-- **En attente de David** : jouer R1 à R6 dans l'aperçu admin (l'extension Chrome ne pilote pas `[::1]`, § 16) ; dire
-  si les écarts à la phase 0 du § 16 lui vont.
+- **En attente de David** : dire si les écarts à la phase 0 du § 16 lui vont ; lancer `create-questions --publier`.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
   `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; modèles
   communs : R2, R3, R4 (1techno), E2 et autres candidats TTECHNO (ttechno) ; correction de la coquille « t/n » de
@@ -583,7 +582,11 @@ Script `docs/wip/questions/lot-1gen-2.py` → `scripts/questions/1gen-2-represen
 contre la prod (aucun homonyme) ; 555 formules des aperçus (40 tirages) passées à `validateLatex` avec un compte des
 accolades : 0 problème ; `sonde-courbes` sur 300 tirages, 2 700 blocs ` ```courbe ` (nuages du bloc associer
 compris) : 0 problème. Essai en base locale : les 6 modèles créés en brouillon (copie des fichiers, ids locaux).
-**Aperçu admin non joué** : l'appli redirige vers `http://[::1]:<port>` et l'extension Chrome refuse cette adresse.
+Aperçu admin joué le 2026-11-17 (serveur `--host 127.0.0.1` : l'extension Chrome refuse `[::1]`, la base locale
+avait été remise à zéro entre-temps, modèles recréés) : R1 relié juste ; R2 cinq points placés, juste ; R3 D placé en
+(3 ; 8) → « Tu as placé D en (3 ; 8). », faux ; R5 deux points de y = ½x − 1, juste ; R6 antécédent lu, juste ; R4
+q = 1 (différence) → case 2 fausse, correction affichée. Rendu des nuages lisible, petits repères du bloc associer
+compris.
 
 | Modèle | Fichier                                | Variations | Specs |
 | ------ | -------------------------------------- | ---------- | ----- |
