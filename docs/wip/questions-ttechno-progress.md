@@ -5,17 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 2b écrit (§ 17), #2784 ouverte._
+_Mis à jour le 2026-11-17, après #2784 (lot 2b, fichiers)._
 
-- **État** : lots 0, 1 et 2a en prod et publiés. Lot 2b (P1–P3, Python) écrit, PR des fichiers #2784 ouverte (CI à suivre).
-- **Prochaine action** : CI verte → merge ; David lance `create-questions --publier` sur
-  `scripts/questions/ttechno-2b-python` ; puis migration nœud + tag (030, 075, 076), page à cocher, publication.
+- **État** : lots 0, 1 et 2a en prod et publiés. Lot 2b (P1–P3, Python) mergé (#2784), pas encore en base.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-2b-python
+--publier` ; puis migration nœud + tag (030, 075, 076) sur le gabarit du lot 2a, page à cocher, publication.
 - **`questions-1gen`** : lot 3 (aˣ) **publié** ; E1–E4 à lire contre nos bornes puis taguer (§ 15). Par défaut, un
   seul lot de tags avec T1 → 035 et T2 → 038 du lot 4 (pas encore écrit, ids promis par `questions-1gen`).
-- **En attente de David** : tags E1–E4 maintenant (PR à part) ou avec le lot 4 (défaut) ?
+- **En attente de David** : `create-questions --publier` du lot 2b ; tags E1–E4 maintenant ou avec le lot 4 (défaut).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`).
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno-lot2b` · `feat/questions-ttechno-lot2b`.
+- **Worktree / branche** : aucun (#2784 mergée, worktree retiré).
 
 ## 1. Périmètre
 
@@ -466,3 +466,5 @@ chez nous, [0 ; +∞[ chez eux → complément x < 0 si besoin), puis tags + `ar
 - Corrigé en route : `\textcolor` hors `$` (P3 v3) → gras ; « 1, …, 2 » pour n = 2 → « de 1 à n ».
 - Base locale : 3 brouillons créés (copie des fichiers) ; aperçu admin (Chrome, `127.0.0.1:5176`) : bloc Python
   rendu, P3 v2 `5/6` refusé « Faux » (11/6 attendu), P3 v0 choix D « coché, juste ».
+
+**#2784 mergée (2026-11-17)**, CI verte sur le dernier commit.
