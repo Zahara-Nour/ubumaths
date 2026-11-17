@@ -7,19 +7,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2754._
+_Mis à jour le 2026-11-17, après #2754 et son `db:migrate`._
 
-- **État** : migration nœud + tags du lot 1 mergée (#2754, § 12), **pas encore jouée en prod**. 5 brouillons en prod,
-  `grades` `['1_GEN']`, sans nœud ni tag tant que `db:migrate` n'est pas fait.
-- **Prochaine action** : `db:migrate` depuis le dépôt principal à jour (`--dry-run` d'abord : SEULE la nôtre doit
-  partir), relire en prod (MCP), **puis prévenir questions-1techno** (il attend notre nœud) ; puis page à cocher,
-  publication. En parallèle : phase 0 des lots 3 et 4 pour questions-ttechno.
-- **En attente de David** : `db push` emporterait aussi `20261117140233_questions_1techno_lot0_retrait_118.sql`
-  (questions-1techno, DESTRUCTIVE, mergée non jouée) : la jouer avec la nôtre, ou attendre que questions-1techno
-  la joue ?
+- **État** : lot 1 rangé et tagué en prod (#2754, § 12), 5 brouillons, `grades` `['1_GEN']`. Migration jouée par la
+  session tortue-variables (son `db push` a emporté toutes les migrations en attente), relue au MCP : conforme.
+  questions-1techno prévenu.
+- **Prochaine action** : page à cocher du lot 1 pour David, puis publication. En parallèle : phase 0 des lots 3 et 4
+  pour questions-ttechno ; puis lot 2.
+- **En attente de David** : rien.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
-  `array_remove` ciblés ; rollback du § 12 valable seulement avant les tags 1TECHNO de G1, G4, G5 ; modèle 1GEN-022
-  commun avec 1TECHNO-057.
+  `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; rollback
+  du § 12 valable seulement avant les tags 1TECHNO de G1, G4, G5 ; modèle 1GEN-022 commun avec 1TECHNO-057.
 - **Worktree / branche** : aucun (retiré après #2754) ; le lot suivant ouvre une branche neuve.
 
 ## 1. Relevé (prod, 2026-11-17)
@@ -348,3 +346,11 @@ sans nœud, 0 tag, `grades` `['1_GEN']` ; les 5 points sur les nœuds du § 11. 
 
 `security-auditor` : aucun finding bloquant. Faibles : branche en retard sur `main` (fusionnée, test relancé, 9 / 9) ;
 rollback valable seulement avant les tags 1TECHNO de G1, G4, G5 (dit dans l'en-tête).
+
+### `db:migrate` (2026-11-17)
+
+Avant le nôtre, le `--dry-run` montrait aussi `20261117140233` (questions-1techno, destructive) : arrêt, question à
+David. Entre-temps, la session tortue-variables a lancé `db:migrate`, qui a poussé 20261117140132, 20261117140233 et
+la nôtre, sans erreur. Relu en prod (MCP) : version enregistrée ; G1 → définition / 1GEN-028, G2 → Suites
+géométriques / 039, G3 → idem / 057, G4 → terme général / 029, G5 → Suites géométriques / 030 ; un seul tag chacun ;
+brouillons, `grades` `['1_GEN']`, `updated_at` inchangés.
