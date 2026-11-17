@@ -5,20 +5,19 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, migration du lot 2b écrite (§ 18), PR ouverte._
+_Mis à jour le 2026-11-17, après #2790 (migrée)._
 
-- **État** : lots 0, 1 et 2a en prod et publiés. Lot 2b : 3 brouillons en prod (2327bbef P1, fe576c5b P2,
-  e1f5fa4d P3), migration nœud + tag `20261117215645` en PR.
-- **Prochaine action** : CI verte → merge → `check:migrations --pr` → `migration list --linked` (seule
-  `20261117215645` en attente) → `db:migrate` depuis le dépôt principal (4 conditions réunies, § 18) → vérif MCP →
-  page à cocher (3 fiches) → publication.
-- **`questions-1gen`** : lot 3 (aˣ) **publié** ; E1–E4 à lire contre nos bornes puis taguer (§ 15). Par défaut, un
-  seul lot de tags avec T1 → 035 et T2 → 038 du lot 4 (pas encore écrit, ids promis par `questions-1gen`).
-- **En attente de David** : tags E1–E4 maintenant ou avec le lot 4 (défaut).
+- **État** : lots 0, 1 et 2a en prod et publiés. Lot 2b : 3 brouillons en prod, rangés et tagués (#2784, #2790).
+- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/VgyVMezCt3FqJM1wqZZXZE),
+  puis David lance `garde-niveaux-tags.ts` et `publier-lot.ts --dir scripts/questions/ttechno-2b-python` (simulation,
+  puis `--publier`). Ensuite : tags des modèles de `questions-1gen` (E1–E4, T1–T2).
+- **En attente de David** : relecture de la page à cocher (3 fiches) ; tags E1–E4 maintenant ou avec le lot 4
+  (défaut).
+- **`questions-1gen`** : lot 3 (aˣ) **publié** ; E1–E4 à lire contre nos bornes puis taguer (§ 15) ; lot 4 (T1 → 035,
+  T2 → 038) en cours d'écriture chez eux, ids promis.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
-  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`) ;
-  copie des ids du lot 2b mise de côté sur `main` par `git stash` : à jeter après le merge, une fois `main` égal.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno-lot2b-tags` · `feat/questions-ttechno-lot2b-tags`.
+  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`).
+- **Worktree / branche** : aucun (#2790 mergée, worktree retiré).
 
 ## 1. Périmètre
 
@@ -484,3 +483,10 @@ MCP (`draft`, `{T_TECHNO}`, niveau 2, sans nœud ni tag) ; ids commités sur la 
   fichier restauré d'une copie, identique. `types:cliquet` tenu.
 - `security-auditor` : aucun finding bloquant (diff avec le lot 1 = ids, codes, chemins, compteurs ; rollback
   miroir ; trigger `updated_at` actif en prod ; aucune policy, aucune table d'élève).
+
+**Migré (2026-11-17)** : #2790 mergée (CI verte, `check:migrations --pr 2790` vert) ; `migration list --linked` :
+seule `20261117215645` en attente ; `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : 3
+brouillons sur « Suites > Généralités sur les suites », un tag chacun (030, 075, 076), `updated_at` inchangés.
+Copie des ids mise de côté sur `main` jetée (identique).
+
+- Page à cocher : https://claude.ai/artifact/VgyVMezCt3FqJM1wqZZXZE (3 fiches, `verdicts` vide).

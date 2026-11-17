@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-17, phase 0 (aucune PR)._
 
-- **État** : phase 0, revue de `/parents` point par point : **les 9 points sont tranchés** (8 et 9 le 2026-11-17). FAQ : 3 textes validés sur 4.
-- **Prochaine action** : trancher la FAQ « À qui mon enfant peut-il parler ? » (question Akadada), puis découpage de la PR du code (`PARENT_VIEW` + FAQ).
-- **En attente de David** : FAQ « À qui parler ? » — la règle « borné au groupe » d'Akadada n'est pas codée : la coder avant de publier, ou ajuster la phrase ?
+- **État** : phase 0 : les 9 points de la page et les 4 textes de la FAQ sont tranchés (2026-11-17).
+- **Prochaine action** : comportements de la PR (`PARENT_VIEW` + FAQ repliée) proposés à David, attendre sa validation avant de coder.
+- **En attente de David** : validation des comportements de la PR.
 - **Pièges en cours** : ne promettre que ce que prouve `docs/systeme/carte-des-fonctionnalites.md` ; argent : jamais « gratuit » seul ni « pour toujours ».
 - **Worktree / branche** : aucun encore (doc sur `main`) ; le code ira dans `views.ts` (`PARENT_VIEW`).
 
@@ -62,6 +62,10 @@ Bloc « L'inscrire, et combien ça coûte » validé tel quel (« oui »), lien 
 
 - Fait vérifié : `/auth/register/parent` exige un code de classe ; le parent B (sans code) passe donc par le contact.
 
+### 2026-11-17 (FAQ « À qui parler ? »)
+
+- Choix 1 (« je te suis ») : la FAQ « À qui mon enfant peut-il parler ? » est publiée **telle quelle** (la phrase « élèves de son école » est exacte aujourd'hui) ; « borné au groupe » d'Akadada sera codé **dans un chantier à part**, plus tard (migration + tests d'intégration + `security-auditor`). Si ce chantier aboutit, la phrase de la FAQ sera précisée.
+
 ## Les 9 questions du parent
 
 1. Qu'est-ce que c'est, en une phrase ? — ✅ tranché.
@@ -76,7 +80,7 @@ Bloc « L'inscrire, et combien ça coûte » validé tel quel (« oui »), lien 
 
 ## FAQ (textes de travail, non validés)
 
-### À qui mon enfant peut-il parler ?
+### À qui mon enfant peut-il parler ? (✅ validé, 2026-11-17)
 
 > Votre enfant n'échange qu'avec des élèves de son école, et seulement par le chat : celui de sa classe, ou à deux avec un camarade qui a accepté son amitié. Seul son professeur peut lui écrire en privé. Un message déplacé se signale d'un clic ; le professeur peut le supprimer et retirer à un élève le droit d'écrire. Jusqu'à la 2de, tant que vous n'avez pas donné votre accord, il ne peut écrire à personne.
 
