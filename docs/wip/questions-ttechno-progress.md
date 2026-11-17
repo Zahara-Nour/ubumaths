@@ -494,3 +494,20 @@ Copie des ids mise de côté sur `main` jetée (identique).
 - `garde-niveaux-tags.ts` (David) : 2 408 modèles tagués, aucun niveau manquant (12 écarts voulus, hors lot).
 - `publier-lot.ts --dir scripts/questions/ttechno-2b-python` : simulation verte (3 brouillons), puis `--publier` par
   David : 3/3 publiés, statut relu en base (2327bbef, fe576c5b, e1f5fa4d).
+
+## 20. Lot 3 : lecture de E1–E4 contre nos bornes (2026-11-17)
+
+Lus en entier par MCP (lecture seule) : énoncés, variables, corrigés, `test_specs`. Les 4 sont **publiés** (le § 15
+disait brouillons), `grades ['1_GEN']`, un seul tag chacun (1GEN-032 à 035), aucun tag TTECHNO.
+
+- **E1** e4e65a69 → **031 : OK**. Calcul de aˣ à la calculatrice, x > 0 non entier ; capital à intérêts
+  composés ; 0,5ˣ en demi-vies. Partie x ⩾ 0 seulement : a⁻ˣ = 1/aˣ reste à écrire ici (prévu, § 8 bis).
+- **E2** 60971c9a → **081 : OK ⚠**. Var. 0 (produit, 034), 1 (quotient, 078), 2 ((aᵐ)ᵏ, k ∈ 2..4 entier : 079) dans nos bornes. ⚠ Var. 3 : aˣ × bˣ = (ab)ˣ, deux bases différentes : propriété absente de 034 / 078 /
+  079 (le BO dit « par extension des puissances entières », sans la nommer). Corrigé de la var. 2 écrit
+  « (aˣ)ʸ = aˣʸ pour tous réels positifs » : plus large que 079 (n entier), vrai.
+- **E3** 2a9c316a → **032 : OK**. a > 1, 0 < a < 1, a = 1, comparaison sans calcul, médicament (parallèle
+  avec la suite géométrique écrit au corrigé). Sur [0 ; +∞[ : vrai sur ce domaine, complément x < 0 à décider.
+- **E4** 065eea60 → **033 : OK**. Courbes sur [0 ; 4], point (1 ; a), a = 1 en var. 1.
+
+Tags : avec ceux de T1 / T2 (lot 4), défaut retenu. Les 4 étant publiés, le tag les rend visibles aux élèves de
+Tle STMG dès `db:migrate` (même cas que le lot 0, question d'accès Q2). Page à cocher : E2 marqué ⚠.
