@@ -5,17 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2756 (lot 0 migré en prod) et la phase 0 1GEN des lots 3 et 4._
+_Mis à jour le 2026-11-17, PR du lot 1 (fichiers) ouverte._
 
-- **État** : lot 0 en prod (#2756, `20261117145436`) : 30 modèles tagués TTECHNO (17 points) + `T_TECHNO`,
-  vérifié par MCP (30/30, `updated_at` intact). Avec 4ff9d049 : 31 modèles réutilisés. Les 13 « en partie »
-  et les « non » attendent les lots d'écriture (jumeaux / plages, § 9).
-- **Prochaine action** : lot suivant de l'ordre du § 4 (lots d'écriture), hors lots 3 et 4.
-- **En attente de `questions-1gen`** : phase 0 aˣ / taux moyen validée (leur § 14, § 8 bis ici) ; leurs ids
-  et plages des lots 3 et 4 à leur création, puis nos tags et compléments.
-- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
-  worktree sans lien Supabase : `db:migrate` après copie de `supabase/.temp` du dépôt principal.
-- **Worktree / branche** : aucun (#2756 mergée ; journal sur `main`).
+- **État** : lot 0 en prod (#2756). Lot 1 (automatismes, 4 modèles, § 11) écrit : simulation verte (54 specs),
+  joué en base locale (rendu vérifié) ; PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR ; puis David lance `create-questions --publier` (brouillons prod),
+  ids commités, migration nœud + tags (073, 015 ×2, 092), page à cocher, publication.
+- **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
+- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; worktree
+  sans lien Supabase : `db:migrate` après copie de `supabase/.temp` ; Chrome piloté = choisir le Chrome du
+  Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot1`.
 
 ## 1. Périmètre
 
@@ -271,3 +271,31 @@ départ ; 3 fiches au bloc « ranger » non dessiné, à jouer dans l'aperçu : 
 - Mergé (#2756) après la fin d'un `deploy:prod` voisin ; `db:migrate` depuis le worktree à `origin/main`
   (dépôt principal occupé par une autre session) : seule cette migration en attente (`--dry-run`), jouée ;
   prod vérifiée (30 publiés, 30 `T_TECHNO`, 30 tags TTECHNO, trigger `updated_at` réactivé).
+
+## 11. Lot 1 : automatismes (2026-11-17)
+
+**Décisions (David, 2026-11-17, « je valide »)** — 4 modèles neufs, `grades ['T_TECHNO']`, brouillons :
+
+| #   | Modèle                                       | Point | Nœud                                  | Niveau |
+| --- | -------------------------------------------- | ----- | ------------------------------------- | ------ |
+| I1  | Calculer un indice de base 100               | 073   | Évolutions › indices (0 modèle avant) | 1      |
+| I2  | Interpréter un indice de base 100            | 015   | Évolutions › indices                  | 1      |
+| I3  | Taux d'évolution entre deux années (indices) | 015   | Évolutions › indices                  | 2      |
+| I4  | Isoler une variable dans une inégalité       | 092   | Calcul littéral › isoler une variable | 2      |
+
+- Relevé : aucun modèle d'indice en prod (tous niveaux) ; ec690625 et d7aa3f33 (2de, nœud de 092) isolent
+  dans une **égalité** → pas réutilisables.
+- Question d'accès : modèles neufs en brouillon, personne ne lit rien de nouveau ; à la publication, les
+  classes de Tle techno les voient.
+
+**Écriture** : `docs/wip/questions/lot-ttechno-1.py` → `scripts/questions/ttechno-1-automatismes/`.
+
+- Simulation : 54 specs vertes, 2 200 tirages, 1 408 formules aux accolades équilibrées.
+- I3 v2 : l'affirmation fausse (« d % », l'écart en points) tombait parfois à 1 point du vrai taux, ambiguë
+  → a ∈ 118..140, d ∈ 8..20, condition d − 100d/a ⩾ 1,5.
+- I4 : le moteur accepte `\le` et les termes dans l'autre ordre ; refuse sens non changé, second membre non
+  divisé ; forme non réduite et écriture à l'envers (`… ⩾ y`) = forme à améliorer.
+- Base locale : joués dans l'aperçu (I1 tableau, I3 choix + corrigé, I4) : virgule décimale, tableau à case,
+  choix, corrigé OK ; U, P, I en romain droit (comme le modèle de la loi d'Ohm en prod).
+- Message de `questions-1techno` : corrigé de 83b1f614 réécrit (racines évidentes de f′) ; sans effet ici,
+  83b1f614 est « non » au § 9.
