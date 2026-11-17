@@ -5,17 +5,16 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, migration du lot 0 écrite (§ 10), PR à ouvrir._
+_Mis à jour le 2026-11-17, après #2756 (lot 0 migré en prod)._
 
-- **État** : page à cocher du lot 0 : **30 « OK » sur 30**, ⚠ compris, sans commentaire. Migration
-  `20261117145436_questions_ttechno_lot0_tags` + test d'intégration (14 verts, rouges sans le corps) ;
-  instantanés dans `scripts/questions/ttechno-t0/`. Revues `code-reviewer` + `security-auditor` sans bloquant.
-- **Prochaine action** : PR, CI verte, merge, puis `db:migrate` depuis la branche mergée
-  (`migration list --linked` avant), vérification en prod (MCP : 30 tags, 30 `T_TECHNO`).
+- **État** : lot 0 en prod (#2756, `20261117145436`) : 30 modèles tagués TTECHNO (17 points) + `T_TECHNO`,
+  vérifié par MCP (30/30, `updated_at` intact). Avec 4ff9d049 : 31 modèles réutilisés. Les 13 « en partie »
+  et les « non » attendent les lots d'écriture (jumeaux / plages, § 9).
+- **Prochaine action** : lot suivant de l'ordre du § 4 (lots d'écriture), hors lots 3 et 4.
 - **En attente de `questions-1gen`** : sa phase 0 aˣ et taux moyen ; nos lots 3 et 4 attendent.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
-  verdicts détaillés du § 9 hors dépôt (scratchpad `ttechno-verdicts-g1..3.md`).
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot0`.
+  worktree sans lien Supabase : `db:migrate` après copie de `supabase/.temp` du dépôt principal.
+- **Worktree / branche** : aucun (#2756 mergée ; journal sur `main`).
 
 ## 1. Périmètre
 
@@ -251,3 +250,6 @@ départ ; 3 fiches au bloc « ranger » non dessiné, à jouer dans l'aperçu : 
   uniques, trigger `updated_at` réactivé après le gabarit). Retenus : décor avec un tag d'un autre programme
   (1TECHNO-120 sur e4eaaf16, sinon « ne bougent pas » comparait du vide) ; tests des gardes « point archivé »
   et « rollback : tag retiré » → 14 verts.
+- Mergé (#2756) après la fin d'un `deploy:prod` voisin ; `db:migrate` depuis le worktree à `origin/main`
+  (dépôt principal occupé par une autre session) : seule cette migration en attente (`--dry-run`), jouée ;
+  prod vérifiée (30 publiés, 30 `T_TECHNO`, 30 tags TTECHNO, trigger `updated_at` réactivé).
