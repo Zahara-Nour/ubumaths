@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0, rien n'est codé._
+_Mis à jour le 2026-11-17, phase 0, rien n'est codé ; 5a tranchée._
 
 - **État** : analyse faite. David repart **de zéro**, avec un **nouveau nom** et le **lore de Chiphre**. Le principe reste le même : chaque sort ou coup se valide par une question, et les questions viennent du système de questions de Chiphre.
 - **Tranché** : avatar combattant, accompagné d'un Mathou familier ; une magie ajoutée au lore (§ « Tranché »).
@@ -13,9 +13,10 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé._
 - **Tranché aussi** : la descente ne suit aucun ordre. Les Bêtes surgissent n'importe où dans le Royaume, et le joueur va les combattre là où elles sont.
 - **Tranché aussi** : les Bêtes naissent des besoins de l'élève et sont vulnérables à ce domaine ; le joueur choisit le domaine par son coup ou son sort, la recrue comprise.
 - **Tranché aussi** : le grade de l'Ordre de la Grande Passoire se fondera sur le travail réel, pas sur les gidouilles ; c'est le chantier à part `ordre-grande-passoire`.
-- **Prochaine action** : la question 5, point par point, en commençant par **5a** (la puissance de l'avatar). Les propositions 5a à 5e sont dans § « À trancher ».
-- **En attente de David** : 5a à 5e. La question 3 (public) est réglée : du primaire au lycée.
-- **5a présentée le 2026-11-17, sans réponse.** Un point ouvert : **qu'est-ce qui débloque les coups et les sorts** (combats gagnés, travail dans Chiphre, ou les deux ; ma recommandation : le travail). Il touche le grade de l'Ordre (même mesure du travail) : Le chantier `ordre-grande-passoire` est clos (2026-11-17) : relire son journal archivé (`docs/archive/wip/ordre-grande-passoire-progress.md`, question D) avant de reposer 5a.
+- **Tranché aussi (5a, 2026-11-17)** : on gagne des coups et des sorts en **maîtrisant des notions**, comme pour l'Ordre ; les questions des combats comptent comme du travail.
+- **Prochaine action** : la question **5b** (les récompenses), puis 5c à 5e. Les propositions sont dans § « À trancher ».
+- **En attente de David** : 5b à 5e. La question 3 (public) est réglée : du primaire au lycée.
+- **Façon de poser** : David n'a pas compris la 5a posée en termes techniques. Poser chaque point **en mots simples, avec un exemple**, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
   - Le Compendium n'interdit que les **mots** anglais affichés (XP, level, boss, score, leaderboard ; `lore-pataphysique.md:968,1776`), **pas les mécaniques**.
@@ -31,7 +32,7 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé._
   - **Apprenti**, au collège : des sorts tout faits, rattachés à une Province, façon Navadra.
   - **Mage**, au lycée : la grille verbe × matière, composée par l'élève.
   - Un sort tout fait est une case cachée de la grille.
-  - **Le niveau scolaire** (`profiles.grade`) **ouvre l'étape** ; jouer en débloque le contenu progressivement.
+  - **Le niveau scolaire** (`profiles.grade`) **ouvre l'étape** ; jouer en débloque le contenu progressivement. _(Précisé par la 5a du 2026-11-17 : c'est la maîtrise des notions qui débloque, et les combats en sont une des façons.)_
   - **Le verbe donne l'effet en combat** (soigner, frapper, entraver, transformer, révéler) ; **la matière seule décide du domaine** de la question. Pas d'étiquetage par compétence.
 
 - **2026-11-09 — Adversaires : les Bêtes imprévues, et le Czar pour les grandes batailles** (choix de David). David préfère les monstres imaginaires de Navadra aux troupes du Czar :
@@ -66,6 +67,12 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé._
   - **Le joueur choisit toujours le domaine** par son coup ou son sort. **La recrue aussi** : elle choisit ses coups par Province, et la Bête l'oriente.
   - **Mode classe** (le prof impose les notions du moment, comme les créneaux de Navadra) : **plus tard**, pas en v1, avec la Bataille de Bataillon (idée n° 3).
 
+- **2026-11-17 — 5a : on gagne des coups et des sorts en maîtrisant des notions** (David suit ma recommandation, question D du journal archivé `ordre-grande-passoire`) :
+  - un coup, un sort ou une case de la grille se débloque quand l'élève **maîtrise une notion de son programme** (exemple : il maîtrise les fractions, il gagne un sort de Nombrilie). C'est la mesure de l'Ordre de la Grande Passoire : les points acquis, pas les gidouilles ;
+  - **gagner un combat ne débloque rien en soi** ;
+  - **les questions des combats comptent comme du travail** : une réponse en combat s'enregistre comme une réponse faite ailleurs dans Chiphre et fait avancer la maîtrise des notions (donc aussi l'Ordre). Un élève qui ne fait que combattre apprend et progresse quand même ;
+  - **À régler au moment du code** : ce que débloque chaque notion (Province pour les coups et sorts, matière ou verbe pour la grille) ; un premier jeu de coups dès le départ, puisque personne ne maîtrise encore de notion à son arrivée.
+
 ## À trancher (posé à David le 2026-11-09)
 
 1. **Combattants** : les **Mathoux** servent-ils de combattants (équipe de 3, chaque attaque est une question de la notion du Mathou), à la place des sorts et du grimoire ? C'est la décision du 2026-10-18 (`mathoux-conception.md:98-109`) : la confirmer ou la rouvrir.
@@ -77,7 +84,7 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé._
 6. ✅ _Tranché le 2026-11-09 : aucun ordre, voir § « Tranché »._ **Ordre de la descente** (posé le 2026-11-09). D'après le Compendium (l. 568), le fleuve passe par Bedonstan (géométrie, source), Glitchistan (algorithmique), Patatovie (logique), Nombrilie (nombres), Pifométrie (probabilités et statistiques), puis Yoyolande (fonctions, delta). Faut-il suivre cet ordre, une Province après l'autre, ou chaque étape mêle-t-elle les domaines ?
 
 7. **Progression (question 5)**, proposée le 2026-11-09. On n'ajoute pas de grade propre au jeu.
-   - **5a. Puissance de l'avatar** : pas de niveau ni de chiffres qui gonflent ; on progresse par déblocage (coups, sorts, cases de la grille).
+   - ✅ **5a. Puissance de l'avatar** : pas de niveau ni de chiffres qui gonflent ; on progresse par déblocage (coups, sorts, cases de la grille). _Tranché le 2026-11-17, voir § « Tranché »._
    - **5b. Récompenses** : gidouilles seulement, plafonnées côté serveur.
    - **5c. Carnet de route** : les Bêtes vaincues, Province par Province.
    - **5d. Le Mathou familier** : un appui modeste qui grandit avec son stade.
@@ -140,6 +147,8 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé._
   - le Czar n'est jamais monstrueux, et on ne nomme aucun pays réel.
 
 ## Historique
+
+- **2026-11-17** : 5a tranchée (maîtrise des notions ; les combats comptent comme du travail).
 
 - **2026-11-09** :
   - dépôt `Navadra/navadra-jeu` ajouté à `extern/repos.md` (`ecafc4520`) ;
