@@ -18,7 +18,8 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
 - **Tranché aussi (5c, 2026-11-17)** : un carnet de voyage, album des Bêtes vaincues par Province, visible par l'élève seul.
 - **Tranché aussi (5d, 2026-11-17)** : le Mathou familier donne un petit coup de main qui grandit avec son stade.
 - **Tranché aussi (5e, 2026-11-17)** : 3 Bêtes par jour, 5 au plus ; celles des notions à retravailler restent jusqu'à leur défaite ; une grosse Bête par semaine. **La question 5 est close.**
-- **Prochaine action** : relire avec David § « Ce qu'on garde de Navadra » et § « Idées d'ajouts », encore non validées et en partie périmées (équipe de 3 Mathoux, Mathoux-sorts) ; puis écrire les comportements de phase 0 (nominal, limite, erreur) et le découpage de la v1. Les propositions sont dans § « À trancher ».
+- **Fait (2026-11-17)** : § « Ce qu'on garde de Navadra » relue et validée (indices : le Mathou seul ; tutoriel : Bordure ; chiffres : ceux de Navadra).
+- **Prochaine action** : relire avec David § « Idées d'ajouts » (non validée) ; puis écrire les comportements de phase 0 (nominal, limite, erreur) et le découpage de la v1. Les propositions sont dans § « À trancher ».
 - **En attente de David** : rien de posé. La question 3 (public) est réglée : du primaire au lycée.
 - **Façon de poser** : David n'a pas compris la 5a posée en termes techniques. Poser chaque point **en mots simples, avec un exemple**, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
@@ -130,22 +131,22 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
   - Aucune donnée n'est à conserver.
 - À supprimer **après** le nouveau jeu. C'est une migration destructive : grep des usages et arrêt avant le `DROP`.
 
-## Ce qu'on garde de Navadra et comment l'adapter (proposition, non validée)
+## Ce qu'on garde de Navadra (relu avec David le 2026-11-17)
 
-- **Un sort = une question réussie** ; un échec n'a pas d'autre effet. On le garde.
+**Validé :**
+
+- **Un coup ou un sort = une question réussie** ; un échec fait seulement rater le coup.
   - Rendu par `QuestionCard` + `TestTimer`, instances générées par `generateInstance`.
   - Correction côté client, comme partout (ADR 0001). Les gains se plafonnent côté serveur (ADR 0014).
-- **Round = 3 coups, puis riposte de l'adversaire.** Cela va avec l'équipe de 3 Mathoux.
-- **4 éléments → 6 Provinces** (une par domaine). Un Mathou appartient à la Province de sa branche. Les faiblesses se jouent entre Provinces.
-- **Pyrs et grimoire supprimés.** Les Mathoux s'obtiennent par le travail seulement : ce sont eux, les sorts. Leur stade fait la puissance.
-- **Tirage adaptatif.** On reprend l'idée, branchée sur `student_point_state` : d'abord les points à remédier, puis les non acquis, puis ceux à revoir. Ce sélecteur est à écrire.
-- **Équilibrage chiffré de l'original** comme point de départ : formules dans `extern/navadra-jeu/CLAUDE.md` § 5.
-- **Tutoriel court** mené par Bordure (Sergent-Recruteur). Les indices viennent de Conscience.
+- **Round** : l'avatar agit 3 fois, puis la Bête riposte (la recrue a une question d'esquive en plus ; voir § « Tranché », riposte).
+- **Tirage adaptatif** : ce sont les Bêtes nées des besoins de l'élève (§ « Tranché »), branchées sur `student_point_state` ; sélecteur à écrire.
+- **Indices : le Mathou familier seul** (choix de David, 2026-11-17). Ni Conscience ni les Palotins dans les combats.
+- **Tutoriel : un premier combat guidé par le Capitaine Bordure** (Sergent-Recruteur, `lore-pataphysique.md:614`) contre une petite Bête facile, 2 ou 3 minutes, qu'on peut passer et qui ne revient pas (choix de David, 2026-11-17).
+- **Chiffres de départ : ceux de Navadra** (`extern/navadra-jeu/CLAUDE.md` § 5), adaptés à nos règles (vulnérabilité ×2, Mathou), réglés à l'usage. Cible : **un combat de quelques minutes** (Bête ordinaire en 3 ou 4 tours, une dizaine de questions) ; une grosse Bête demande plusieurs combats (choix de David, 2026-11-17).
 - **Les 464 défis** servent de **réserve de contenu** pour le cycle 3 et la 6e (skill `couvrir-niveau`). Ce n'est pas un format à reprendre.
-- **On abandonne** :
-  - les saisons et le classement ouvert ;
-  - le chat, la messagerie et les questions créées par les joueurs ;
-  - le multijoueur hors de l'école.
+- **On abandonne** : les saisons et le classement ouvert ; le chat, la messagerie et les questions créées par les joueurs ; le multijoueur hors de l'école.
+
+**Retiré (périmé par les décisions de David) :** l'équipe de 3 Mathoux combattants et « les Mathoux sont les sorts » (remplacés par l'avatar, son Mathou familier et les sorts gagnés par la maîtrise des notions) ; les faiblesses entre Provinces façon éléments (remplacées par la vulnérabilité de la Bête à la notion à travailler) ; pyrs et grimoire.
 
 ## Idées d'ajouts (proposition)
 
@@ -171,6 +172,7 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
 
 ## Historique
 
+- **2026-11-17** : § « Ce qu'on garde de Navadra » relue avec David : indices par le Mathou seul, tutoriel par Bordure, chiffres de Navadra au départ.
 - **2026-11-17** : 5e tranchée ; la question 5 est close.
 - **2026-11-17** : 5d tranchée (Mathou familier, aide modeste selon le stade).
 - **2026-11-17** : 5c tranchée (carnet de voyage, élève seul).
