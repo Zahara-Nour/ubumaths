@@ -8,9 +8,9 @@
 
 _Mis à jour le 2026-11-17, après #2780._
 
-- **État** : lots 0 à 7 publiés. **Lot 8** (038, 053, 055-057 ; 5 modèles) : brouillons en prod, rangés et tagués (#2780, `db:migrate` joué et vérifié au MCP).
-- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-8 --publier` (relecture faite : 5 OK, 055-057 joués dans l'aperçu ; simulation verte), puis vérifier `published` au MCP. Après le lot 8 : reclasser le § 3 (§ 12 d).
-- **En attente de David** : le `--publier` du lot 8. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 8 publiés (lot 8 : 038, 053, 055-057, publiés le 2026-11-17, `published` relu au MCP).
+- **Prochaine action** : reclasser le § 3 (§ 12 d) : points du CM2 encore sans modèle, puis phase 0 du lot suivant.
+- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
 - **Worktree / branche** : aucun (worktree du lot 8 retiré, branches mergées supprimées).
 
@@ -826,3 +826,5 @@ modèles. Tableau du § 13 gardé.
 - #2777 (fichiers) : CI verte, mergée.
 
 - 2026-11-17 : `db:migrate` joué par David (lot 8 + 1re techno lot 1) ; 5 modèles rangés et tagués, `updated_at` inchangé (MCP). Page à cocher publiée (5 fiches ; « bloc operation non dessiné » sur 055, 056, 057 : à jouer dans l'aperçu) : https://claude.ai/artifact/71F7ncJkoVsfEqzNCpsJSr ; 5 verdicts « OK » écrits à 20:49 (base relue). `publier-lot` en simulation : 5 brouillons passent.
+
+- 2026-11-17 : lot 8 publié par David (`publier-lot --publier`), 5/5 `published` relus au MCP.
