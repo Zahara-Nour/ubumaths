@@ -218,8 +218,14 @@ export async function prepareCarnetDecor(): Promise<CarnetDecor> {
 /** Connexion par la page de connexion. */
 export async function login(page: Page, email: string, password: string): Promise<void> {
 	await page.goto('/auth/login');
-	await page.locator('input[name="email"]').fill(email);
-	await page.locator('input[type="password"]').fill(password);
+	// Saisie avant l'hydratation = champs vidés ensuite : attendre la page prête.
+	await page.waitForLoadState('networkidle');
+	const emailField = page.locator('input[name="email"]');
+	const passwordField = page.locator('input[type="password"]');
+	await emailField.fill(email);
+	await passwordField.fill(password);
+	await expect(emailField).toHaveValue(email);
+	await expect(passwordField).toHaveValue(password);
 	await page.locator('button[type="submit"]').click();
 	await page.waitForURL((url) => !url.pathname.startsWith('/auth/login'));
 }
