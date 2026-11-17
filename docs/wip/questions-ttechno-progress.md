@@ -5,16 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la coordination avec `questions-1gen` (§ 8)._
+_Mis à jour le 2026-11-17, après la lecture complète du lot 0 (§ 9)._
 
-- **État** : relevé, classement, recherche de doublons faits (§ 1 à 7) ; Q1 à Q6 tranchées (§ 5) ;
-  coordination avec la session `questions-1gen` (§ 8). Rien d'écrit en base ni en fichiers de modèles.
-- **Prochaine action** : lot 0 — lire en entier chaque candidat (tous niveaux, § 7), page à cocher,
-  puis migration de tags (`array_append` de `T_TECHNO` seulement).
-- **En attente de David** : rien. **En attente de `questions-1gen`** : sa phase 0 aˣ et taux moyen
-  (promise avant écriture : un modèle, tags 1GEN + TTECHNO) ; nos lots 3 et 4 attendent.
-- **Pièges en cours** : jumeaux pas encore vérifiés variation par variation (pas de e, ln, factorielle,
-  variance) ; ne jamais réécrire `grades` en entier (modèles partagés avec 1gen et 1techno).
+- **État** : lot 0 lu en entier (157 modèles, 60 points, § 9) : **30 OK** à taguer (+ 4ff9d049 déjà posé), 13
+  « en partie », le reste non. Page à cocher publiée : https://claude.ai/artifact/DXvJnW815iBaxJcf54b3Eh.
+- **Prochaine action** : lire les verdicts de la page (collection `verdicts`), puis worktree + migration de
+  tags sur les seuls « OK » (gabarit `20261117131417_questions_1techno_t2_tags`, `array_append(T_TECHNO)`).
+- **En attente de David** : la page à cocher (30 fiches ; 4 marquées ⚠ à trancher).
+- **En attente de `questions-1gen`** : sa phase 0 aˣ et taux moyen ; nos lots 3 et 4 attendent.
+- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
+  instantanés et verdicts détaillés hors dépôt (scratchpad `ttechno-lot0/`, `ttechno-verdicts-g1..3.md`) :
+  à réexporter sur la branche (`export-question-templates.ts --ids …` dans `scripts/questions/ttechno-t0/`).
 - **Worktree / branche** : aucun (journal sur `main`).
 
 ## 1. Périmètre
@@ -195,3 +196,41 @@ Message de la session `questions-1gen` ; réponse envoyée :
   les compléments (x < 0, k·aˣ, propriétés algébriques). **Lots 3 et 4 ici après les siens.**
 - Seuils : 1GEN sans logarithme, TTECHNO-085 par le logarithme décimal → modèles distincts.
 - Points 1 et 2 du message (7 modèles sans point, `1acb6d47`) : chantier `questions-1techno`, pas celui-ci.
+
+## 9. Lot 0 : lecture complète des candidats (2026-11-17)
+
+Relevé prod (MCP) : tous les couples (point TTECHNO STMG, modèle **publié** rangé sur le nœud du point ou une
+sous-notion fille) = **157 modèles**, 60 points, 448 couples libres. Tous exportés et lus en entier (variations,
+plages, corrigés, testSpecs) par trois lectures parallèles (suites et Python ; aˣ, log, inverse ; probabilités),
+contre `bornes/lycee/ttechno.md`. Verdicts : 31 OK (dont 4ff9d049, déjà posé sur 089), 13 en partie, 113 non.
+
+**OK, point visé** (30 à taguer) : 024 0af4bf32, 373fc5b4, 65e96f31 · 026 44b32cad, ef807ee9 · 027 e7cfe442 ·
+077 e4eaaf16 ⚠ · 046 7201f3b2, e2908d60 · 047 b0a94f05 ⚠ · 048 1048e462 · 055 5ba712bc · 056 2c116f4d,
+69a05f98, 6dd2f133, a9c71276, ecf4d46b · 058 dbee4649 · 059 07ebdcbe · 062 a29488bc ⚠ · 063 a4b9281f ⚠ · 064
+a95a9c0d · 065 e56be9b5 · 066 96be181c · 068 0718f490, 6fbc355c, 8354a0e7, ad555cb1, bc59d5ce, eafd17a1.
+⚠ = à trancher sur la page : e4eaaf16 (somme écrite « + ⋯ + », jamais Σ), b0a94f05 (démonstration de 2de, pas
+le signe de −1/x²), a29488bc (distracteur « loi uniforme »), a4b9281f (démonstration littérale en n, k, p).
+
+**Corrections du § 2 / § 3** (la lecture par titre se trompait) :
+
+- Non : 61e2ac1f, fcf1057e (« semble-t-elle… » sur 5 termes : conjecture, pas la preuve sur trois nombres de
+  020 / 021) ; 1315d326, 349e1be5, 85afd455 (calcul nu de la raison, pas « modélisant une évolution » ; termes ±) ;
+  tous les modèles eˣ / ln des puissances (13) et du log (7) ; 17f64f63, 782bf7f8, 83b1f614 et les cartes
+  « étude de fonction » (polynômes seuls ou génériques : 049 / 087 forcés) ; 30b597c3, 77498f1b (loi géométrique
+  en distracteur) ; e0520082 (formalisme de partition) ; 0417223e (linéarité) ; a3f92832 (dans les bornes,
+  mais sans point TTECHNO : 1TECHNO-138).
+- Hors couples posables mais proches : 98c3f740 (accroissement constant → 022) et b6753dff (taux constant →
+  023), rangés sous les moyennes (016 / 018) : le trigger refuse 022 / 023 ; à reprendre aux lots d'écriture.
+
+**En partie** (une variation hors bornes ; jumeaux techno à écrire, ou plage à resserrer — Q11 de 1techno :
+jumeau) : 025 ← 95c38330, e67b1cbd, eca755e6, fc921674 (raison ou termes ±) ; 027 ← b72fae4a (q < 0) ; 046 ←
+a86442c1 (x⁴, x⁵), d2bca2d8 (√x, 1/x²) ; 049 ← 3fa3af6c (eˣ ⩾ 1 + x ; v2 x + a²/x est le bon exemple) ; 058 ←
+040b57c3 (démonstrations de E = np) ; 085 ← 4ee9a359 (seuil corrigé par ln) ; 059 / 061 ← 4dcbae71, 970dab52,
+ef3c495c (n > 10 calculé par l'élève, contre ltt-3).
+**Calques à réécrire** (lots 3 et 5) : 6137a555, bd45ed7f, c24d21e1, e6b429b4 (eˣ → aˣ : 034, 078, 079) ;
+7c8b341b (ln → log : 042, 082, 083) ; 17f35a67 (ln y → log y : 052).
+
+**Points couverts après le lot 0** : 024, 026, 027, 046, 047, 048, 055, 056, 058, 059, 062–066, 068, 077 (+ 089).
+Sans modèle : 016–023, 025, 028–030, 034–045, 049–054, 057, 060, 061, 067, 069, 073–076, 078–088, 090–092.
+Page à cocher : https://claude.ai/artifact/DXvJnW815iBaxJcf54b3Eh (30 fiches, collection `verdicts` vide au
+départ ; 3 fiches au bloc « ranger » non dessiné, à jouer dans l'aperçu : a4b9281f, b0a94f05, e2908d60).
