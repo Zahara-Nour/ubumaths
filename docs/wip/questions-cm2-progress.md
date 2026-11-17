@@ -948,3 +948,6 @@ de 30 ; (b) un seul lot de 5 modèles. Tableau du § 15 gardé.
   du lot 8 au grep) ; nœuds : « Fractions : sens et écritures > définition » (131, 132, 136, 137),
   « Décimaux : numération > écritures » (143). Test `questions-cm2-lot9-rangement-tags` : 9 verts ;
   corps remplacé par `select 1;` → 5 rouges ; fichier restauré depuis sa copie (`cmp`).
+- `security-auditor` : aucun finding (diff au gabarit du lot 8 : ids, codes, chemins, table temporaire et
+  commentaires seuls ; 5 ids concordants partout ; relevé MCP : 5 points résolus sur leur sous-notion).
+  Prod : dernière migration jouée `20261117215645`, la nôtre seule en attente.
