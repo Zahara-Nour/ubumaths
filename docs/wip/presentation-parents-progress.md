@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-15, phase 0 (aucune PR)._
+_Mis à jour le 2026-11-17, phase 0 (aucune PR)._
 
-- **État** : phase 0, revue de `/parents` point par point (9 points, ci-dessous). Points 1 à 7 tranchés ; FAQ décidée.
-- **Prochaine action** : point 9 (Comment l'inscrire, combien ça coûte ?), **après** la phase 0 du chantier `partage-parents` (ouvert le 2026-11-16).
-- **En attente de David** : point 9, quand on reviendra ici.
+- **État** : phase 0, revue de `/parents` point par point (9 points, ci-dessous). Points 1 à 8 tranchés (point 8 validé le 2026-11-17 ; le carnet est en prod depuis v0.93.0, le texte peut donc être mis en ligne) ; FAQ décidée.
+- **Prochaine action** : point 9 (Comment l'inscrire, combien ça coûte ?). Fait vérifié : `/auth/register/parent` exige un code de classe.
+- **En attente de David** : point 9 ; FAQ « À qui parler ? » encore non validée (question Akadada ouverte).
 - **Pièges en cours** : ne promettre que ce que prouve `docs/systeme/carte-des-fonctionnalites.md` ; argent : jamais « gratuit » seul ni « pour toujours ».
 - **Worktree / branche** : aucun encore (doc sur `main`) ; le code ira dans `views.ts` (`PARENT_VIEW`).
 
