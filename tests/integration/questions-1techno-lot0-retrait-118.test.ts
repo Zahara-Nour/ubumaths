@@ -156,6 +156,16 @@ describe('1re techno lot 0 : retrait de 1TECHNO-118 sur 2 modèles (migration de
 		expect(LOT.map((id) => apres.grades.get(id))).toEqual([['1_SPE'], ['1_SPE']]);
 	});
 
+	it('le trigger de date est réactivé après la migration', async () => {
+		await pg.query(readFileSync(MIGRATION, 'utf-8')).catch(() => undefined);
+		const r = await pg.query<{ tgenabled: string }>(
+			`select tgenabled from pg_trigger
+			  where tgname = 'update_question_templates_updated_at'
+			    and tgrelid = 'public.question_templates'::regclass`
+		);
+		expect(r.rows[0].tgenabled).toBe('O');
+	});
+
 	it('f36ce3ff garde 1TECHNO-118 et 1_TECHNO', () => {
 		expect(apres.points.get(GARDE)).toEqual(AVANT_POINTS);
 		expect(apres.grades.get(GARDE)).toEqual(['1_SPE', '1_TECHNO']);
@@ -176,10 +186,13 @@ describe('1re techno lot 0 : retrait de 1TECHNO-118 sur 2 modèles (migration de
 describe('1re techno lot 0 : les branches d’échec de la migration', () => {
 	let pg: Client;
 	let auteur: string;
+	let eleve: string;
 
 	beforeAll(async () => {
 		await cleanupAllTestData();
 		auteur = (await TestData.profile().withRole('teacher').create()).id;
+		// Créé hors transaction : la transaction du cas tient un verrou qui bloque le trigger de profil
+		eleve = (await TestData.profile().withRole('student').create()).id;
 		pg = await getPostgresClient();
 	});
 
@@ -258,6 +271,34 @@ describe('1re techno lot 0 : les branches d’échec de la migration', () => {
 			);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
 				/le point 1TECHNO-118 perdrait son dernier modèle publié/
+			);
+		});
+	});
+
+	it('une tentative d’élève sur le lot fait échouer la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(
+				`insert into public.skill_attempts (student_id, source, template_id, success) values ($1, 'auto', $2, true)`,
+				[eleve, LOT[0]]
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/données d'élèves sur le lot : 1 tentative\(s\) ou carte\(s\)/
+			);
+		});
+	});
+
+	it('rollback refusé si un point 1TECHNO a été posé depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query(
+				`insert into public.question_template_points (template_id, point_id)
+				 select $1, id from public.curriculum_points where code = '1TECHNO-118'`,
+				[LOT[0]]
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : point 1TECHNO posé depuis la migration : 1239554b \(1TECHNO-118\)/
 			);
 		});
 	});

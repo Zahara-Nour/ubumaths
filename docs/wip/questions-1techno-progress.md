@@ -11,12 +11,12 @@
 _Mis à jour le 2026-11-17, lot 0 en branche (avant PR)._
 
 - **État** : T1 et T2 en prod (#2743, #2748). **Lot 0** (§ 15) : migration de retrait de 1TECHNO-118 et
-  `1_TECHNO` sur 1239554b et 79d69593 écrite, test 12 verts (rouge sans le corps), revues en cours.
+  `1_TECHNO` sur 1239554b et 79d69593 écrite, test 15 verts (rouge sans le corps), revues sans bloquant.
 - **Prochaine action** : PR du lot 0, CI, merge ; puis `db:migrate` **sur go explicite de David** (destructive :
   jamais autonome) ; puis correction de 83b1f614 v3 (prévenir questions-1gen avant), puis lots d'écriture (§ 5, 9).
 - **En attente de David** : go pour le `db:migrate` du lot 0 (ce qui est perdu : § 15).
-- **En attente de questions-1gen** : ids de G1-G5 en prod → notre migration de tags 036, 038, 040 ou 049
-  (+ 039, 057 si un point s'y prête), `array_append` de `1_TECHNO`.
+- **questions-1gen** : G1, G4, G5 en prod en brouillon (ids au § 15) → notre migration `1_TECHNO` + tags 036,
+  038, 040 ou 049, après leur migration nœud + tags 1GEN (branche `feat/questions-1gen-lot1-tags`).
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; commitlint refuse « T1 » en début de sujet ;
   CI : le cliquet peut être coupé à 20 min (relancer).
@@ -335,8 +335,20 @@ modèles « Calculer un terme » ont `{1_SPE,1_TECHNO}`, tags 1SPE-377 et 1TECHN
 Migration `20261117140233_questions_1techno_lot0_retrait_118` (gabarit de T1, en miroir) : `delete` du tag 118 et
 `array_remove` de `1_TECHNO` ; gardes tout ou rien (2 modèles, `1_TECHNO` et tag présents, 118 garde au moins un
 modèle publié hors lot) ; rollback en commentaire (repose tag et niveau). Test
-`tests/integration/questions-1techno-lot0-retrait-118.test.ts` : 12 verts ; corps retiré → 6 rouges, 5 ignorés.
+`tests/integration/questions-1techno-lot0-retrait-118.test.ts` : 15 verts ; corps retiré → 8 rouges, 6 ignorés.
+
+Revues : `code-reviewer` et `security-auditor` sans bloquant. Retenus : f36ce3ff verrouillé (`for update`),
+`archived_at is null` partout, trigger de date coupé avant toute écriture, insertion du rollback comptée, garde
+« aucune tentative ni carte d'élève sur le lot », tests du trigger réactivé et des nouvelles branches. Laissé :
+le brouillon 0495289a garde 118 (hors lot, mentionné en en-tête).
 
 **Ce qui est perdu** (destructive) : ces deux modèles sortent du catalogue et du cahier de texte de 1re techno et
 ne comptent plus pour 1TECHNO-118. Ils restent publiés en 1re spé, contenu inchangé. Aucune donnée d'élève.
 **`db:migrate` jamais autonome** (condition 4 non réunie) : go explicite de David après le merge.
+
+Message de questions-1gen (2026-11-17) : modèles communs en prod, **brouillons**, `grades = ['1_GEN']`, sans
+nœud ni tag — G1 « raison » `0b5c3db6-cb37-40fc-8247-12e3ace03a46` (→ 036), G4 « terme général »
+`c4887e49-2337-4ac7-a2c9-369434868b65` (→ 038), G5 « sens de variation » `569e0140-d5da-440f-a4c3-07bae4e6b30b`
+(→ 040 ou 049). Non communs : G2 `f15045ec`, G3 `e0f3ac2f`. Ils posent nœud + tags 1GEN par leur migration
+(branche `feat/questions-1gen-lot1-tags`), sans toucher `grades` ; à nous `array_append('1_TECHNO')` et nos tags,
+après la leur (le trigger exige le nœud). Fichiers : `scripts/questions/1gen-1-suites-geometriques/`.

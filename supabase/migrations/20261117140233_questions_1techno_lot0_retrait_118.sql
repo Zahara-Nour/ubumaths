@@ -13,7 +13,8 @@
 -- négatif ; la borne de 1re techno n'admet que des termes strictement positifs. Décision de David
 -- (Q3 = a, 2026-11-17) : retirer le tag 1TECHNO et `1_TECHNO`, sans toucher au modèle de 1re spé.
 -- Le point 1TECHNO-118 garde f36ce3ff (vérifié : la migration refuse s'il perdait son dernier
--- modèle publié).
+-- modèle publié ; f36ce3ff est verrouillé pendant la migration). Le brouillon 0495289a, lui aussi
+-- tagué 1TECHNO-118, n'est pas touché (hors lot, relu à sa publication).
 --
 -- Relevé de la prod du 2026-11-17 (MCP) : les deux modèles ont `grades = {1_SPE,1_TECHNO}`, les
 -- tags 1SPE-377 et 1TECHNO-118, aucune tentative, carte, entrée de journal ni question
@@ -27,14 +28,16 @@
 -- Niveaux : la migration ne RETIRE que `1_TECHNO` (`array_remove`), jamais une affectation complète
 -- de `grades` (accord entre sessions du 2026-11-17 : chacun ne touche que son niveau).
 --
--- Données d'élèves : aucune n'est modifiée (aucune n'existe sur ces deux modèles).
+-- Données d'élèves : aucune n'est modifiée. Garde : la migration refuse si une tentative ou une
+-- carte de révision existe sur ces deux modèles (le relevé du jour en compte 0).
 --
 -- Accès : aucune règle (policy) ne change. Question en miroir (« qui ne pourra plus lire ce qu'il
 -- lisait ? ») : personne ne perd l'accès à une donnée ; un professeur de 1re techno ne trouve plus
 -- ces deux modèles sous le niveau et le point de 1re techno (il les trouve toujours en 1re spé).
 --
 -- Rollback (aucune donnée d'élève). Il repose le tag 1TECHNO-118 et `1_TECHNO` (ajouté en fin de
--- `grades`, comme au relevé). Garde : il refuse si un modèle a déjà `1_TECHNO` ou un point 1TECHNO.
+-- `grades`, comme au relevé). Garde : il refuse si un modèle a déjà `1_TECHNO` ou un point 1TECHNO,
+-- ou si le tag n'a pas pu être reposé sur les deux. Les tags reposés ont un `created_at` neuf.
 -- Bloc éprouvé par le test d'intégration, à jouer dans UNE transaction
 -- (`psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL en un seul envoi) :
 -- ROLLBACK:BEGIN
@@ -46,7 +49,7 @@
 -- 	('79d69593-e815-496c-b429-637a1cd68b4d');
 -- select 1 from public.question_templates where id in (select id from _q1tl0_retour) order by id for update;
 -- do $rollback$
--- declare v_presents integer; v_sans integer; v_deja text;
+-- declare v_presents integer; v_sans integer; v_deja text; v_tags integer;
 -- begin
 -- 	select count(*), count(*) filter (where not ('1_TECHNO' = any(q.grades)))
 -- 	  into v_presents, v_sans
@@ -72,6 +75,10 @@
 -- 	select r.id, p.id
 -- 	  from _q1tl0_retour r
 -- 	  join public.curriculum_points p on p.code = '1TECHNO-118' and p.archived_at is null;
+-- 	get diagnostics v_tags = row_count;
+-- 	if v_tags <> 2 then
+-- 		raise exception 'rollback : tag 1TECHNO-118 reposé sur % modèle(s) sur 2', v_tags;
+-- 	end if;
 -- 	alter table public.question_templates disable trigger update_question_templates_updated_at;
 -- 	update public.question_templates q set grades = array_append(q.grades, '1_TECHNO')
 -- 	  from _q1tl0_retour r where q.id = r.id;
@@ -92,11 +99,14 @@ insert into _q1tl0_modeles values
 	('1239554b-d442-4be6-8867-d9dc38311999'),
 	('79d69593-e815-496c-b429-637a1cd68b4d');
 
-select 1 from public.question_templates where id in (select id from _q1tl0_modeles) order by id for update;
+-- f36ce3ff (garde du point 118) est verrouillé aussi : il ne peut pas être dépublié pendant le retrait.
+select 1 from public.question_templates
+ where id in (select id from _q1tl0_modeles) or id = 'f36ce3ff-9ae5-435e-b6c2-affe0ad902ec'
+ order by id for update;
 
 -- ---- 2. Gardes : présence TOUT ou RIEN, état du relevé, 118 garde un modèle ----------
 do $garde$
-declare v_presents integer; v_niveau integer; v_tags integer; v_autres integer;
+declare v_presents integer; v_niveau integer; v_tags integer; v_autres integer; v_eleves integer;
 begin
 	select count(*), count(*) filter (where '1_TECHNO' = any(q.grades))
 	  into v_presents, v_niveau
@@ -113,27 +123,35 @@ begin
 	select count(*) into v_tags
 	  from _q1tl0_modeles r
 	  join public.question_template_points t on t.template_id = r.id
-	  join public.curriculum_points p on p.id = t.point_id and p.code = '1TECHNO-118';
+	  join public.curriculum_points p on p.id = t.point_id and p.code = '1TECHNO-118' and p.archived_at is null;
 	if v_tags <> 2 then
 		raise exception 'tag 1TECHNO-118 absent : % sur 2', v_tags;
 	end if;
 	select count(*) into v_autres
 	  from public.question_template_points t
-	  join public.curriculum_points p on p.id = t.point_id and p.code = '1TECHNO-118'
+	  join public.curriculum_points p on p.id = t.point_id and p.code = '1TECHNO-118' and p.archived_at is null
 	  join public.question_templates q on q.id = t.template_id and q.status = 'published'
 	 where t.template_id not in (select id from _q1tl0_modeles);
 	if v_autres = 0 then
 		raise exception 'le point 1TECHNO-118 perdrait son dernier modèle publié';
 	end if;
+	select (select count(*) from public.skill_attempts where template_id in (select id from _q1tl0_modeles))
+	     + (select count(*) from public.srs_cards where template_id in (select id from _q1tl0_modeles))
+	  into v_eleves;
+	if v_eleves <> 0 then
+		raise exception 'données d''élèves sur le lot : % tentative(s) ou carte(s) ; relevé à refaire', v_eleves;
+	end if;
 end $garde$;
 
 -- ---- 3. Retrait du tag et du niveau ---------------------------------------------------
--- (en base locale, aucun modèle : rien n'est touché)
+-- (en base locale, aucun modèle : rien n'est touché). Le trigger est coupé AVANT toute écriture :
+-- une attente de verrou échoue donc avant le retrait des tags.
+alter table public.question_templates disable trigger update_question_templates_updated_at;
+
 delete from public.question_template_points t
  using _q1tl0_modeles r, public.curriculum_points p
- where p.code = '1TECHNO-118' and t.template_id = r.id and t.point_id = p.id;
+ where p.code = '1TECHNO-118' and p.archived_at is null and t.template_id = r.id and t.point_id = p.id;
 
-alter table public.question_templates disable trigger update_question_templates_updated_at;
 update public.question_templates q set grades = array_remove(q.grades, '1_TECHNO')
   from _q1tl0_modeles r
  where q.id = r.id;
