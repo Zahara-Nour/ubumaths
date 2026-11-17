@@ -8,18 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2783 (migration du lot 1)._
+_Mis à jour le 2026-11-17, lot 2 écrit (branche, pas encore de PR)._
 
-- **État** : T1, T2, lot 0, lot G, 83b1f614 v3, lot R, **lot 1 (039, 040, 041) en prod et publié** (#2743 … #2783).
-  Reste 5 lots, 37 points (§ 23, tableau) : 2 second degré, 3 dérivation, 4 algorithmique, 5 graphiques/stats, 6 probas.
-- **Prochaine action** : lot 2 « second degré sans formule » (123, 124, 061, 062, 064, 125, 126 ; 057 jumeau de
-  1GEN-022 → demander à questions-1gen) : phase 0 à proposer, nouveau worktree depuis `origin/main`.
+- **État** : lot 1 clos (#2783). **Lot 2 « second degré »** : phase 0 validée (§ 24), 8 modèles écrits
+  (`scripts/questions/1techno-2/`, script `lot-1techno-2.py`), simulation tout vert, essai en base locale OK.
+- **Prochaine action** : commit des fichiers sur la branche → PR (contenu, sans revue) → CI → merge ; puis David
+  lance `create-questions --dir scripts/questions/1techno-2 --publier` ; ids → questions-1gen ; page à cocher ;
+  migration (nœuds, tags 1TECHNO + 1GEN, retrait de 1TECHNO-057 et `1_TECHNO` de 1acb6d47).
 - **En attente de David** : rien.
-- **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
-  worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
-  `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; `Doc-inchangée:` dans un COMMIT pour une
-  migration ; `db:migrate` pousse tout ce qui attend (`migration list --linked` avant).
-- **Worktree / branche** : aucun (à créer pour le lot 2).
+- **Pièges en cours** : M1–M7 communs `{1_GEN,1_TECHNO}`, deux tags (un par programme) ; 126 ↔ 1GEN-027 (croisé,
+  afe51ac4 a 1GEN-055 + 066) ; `bad_form` d'une spec exige `constraintViolations: ['form']` ; zsh : `echo ====`
+  plante ; `db:migrate` pousse tout ce qui attend (`migration list --linked` avant).
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot2`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -568,3 +568,29 @@ questions-cm2). Vérifié MCP : M1 sur 7ed1251c + 1TECHNO-039, M2 sur c90700c5 +
 817d257f `{1_GEN,1_TECHNO}`, publié, tags 1GEN-016 + 1TECHNO-041, `updated_at` inchangé ; trigger de date `O`.
 Publication : `publier-lot.ts` en simulation (2 brouillons) puis lancé par David avec `--publier` : 2/2 publiés,
 relu en base. **Lot 1 clos.**
+
+## 24. Lot 2 « second degré sans formule » (2026-11-17)
+
+Relevé prod (MCP) : les 7 points techno ont chacun un point **identique** en 1re générale, même sous-notion :
+057↔1GEN-022, 061↔024, 123↔052, 124↔053, 062↔025, 125↔054 (nœud « parabole »), 126↔027 (« signe » ; afe51ac4
+porte déjà 1GEN-055 + 1TECHNO-066, d'où le croisement). C'est tout le lot 5 de questions-1gen. 064 → « formes ».
+
+**Décisions (David, « je suis tes recos »)** : Q1 modèles communs `{1_GEN,1_TECHNO}` pour les 7 points, deux tags ;
+Q2 les 8 modèles ci-dessous, racines entières (borne 1GEN, plus stricte), tableau de variation depuis la forme
+factorisée ou ax² + c seulement. questions-1gen d'accord (message du 2026-11-17), retire son lot 5, attend les ids.
+
+| Modèle                  | Points             | Niveau | Variations                                                               |
+| ----------------------- | ------------------ | ------ | ------------------------------------------------------------------------ |
+| M1 allure               | 057 + 1GEN-022     | 1      | ax², ax² + c, a(x−r)(x−s), ax² + bx + c, piège k(u−x)(x+v)               |
+| M2 associer             | 061 + 1GEN-024     | 2      | 4 courbes pour ax², ax² + c, a(x−r)(x−s) ; 4 expressions pour une courbe |
+| M3 axe                  | 123 + 1GEN-052     | 2      | milieu des racines, x = 0 pour ax² + c, piège                            |
+| M4 sommet               | 124 + 1GEN-053     | 3      | forme factorisée (milieu puis image), ax² + c                            |
+| M5 f(x) = c             | 062 + 1GEN-025     | 3      | guidé (solutions, axe, sommet), axe seul                                 |
+| M6 tableau de variation | 125 + 1GEN-054     | 3      | ` ```variation ` à compléter (abscisse, valeur, 2 flèches)               |
+| M7 signe                | 126 + 1GEN-027     | 2      | règle (choix), tableau de signes à compléter, piège                      |
+| M8 factoriser           | 064 (techno seule) | 3      | racines données (forme imposée), une racine connue, racine 0 évidente    |
+
+Écriture : `docs/wip/questions/lot-1techno-2.py` → `scripts/questions/1techno-2/` (59 specs). `create-questions` en
+simulation : 8 « à créer », tout vert. Essai en base locale (copie scratchpad) : 8 brouillons ; M6 joué dans
+l'aperçu admin (juste, corrigé avec flèches), M2 rendu (4 courbes). Question d'accès : brouillons ; la migration
+range et tague ; 1acb6d47 quitte le catalogue de 1re techno (M1 le remplace).
