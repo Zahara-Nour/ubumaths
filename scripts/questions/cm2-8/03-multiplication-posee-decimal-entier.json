@@ -1,4 +1,5 @@
 {
+	"id": "34bfa4b1-fd08-4213-8e76-3c32198b5967",
 	"title": "Poser la multiplication d'un nombre décimal par un nombre entier",
 	"description": "Multiplication posée d'un décimal par un entier de 2 ou 3 chiffres : 876 × 20,8 ; 8,76 × 208",
 	"grades": ["CM2"],
