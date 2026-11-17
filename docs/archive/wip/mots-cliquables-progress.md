@@ -9,7 +9,7 @@ _Mis à jour le 2026-11-17, après #2757 — chantier clos._
 ## Origine
 
 Retour de David du 2026-11-16, en relisant `/dev/corrections` (chantier
-[`corrections-modeles`](corrections-modeles-progress.md)) : les mots soulignés partout alourdissent la
+[`corrections-modeles`](../../wip/corrections-modeles-progress.md)) : les mots soulignés partout alourdissent la
 lecture des cartes ; à réserver aux mots qui ne servent pas à tout bout de champ.
 
 Mesures (base locale = copie de la prod, 2 297 modèles publiés) :
