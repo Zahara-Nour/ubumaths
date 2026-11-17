@@ -13,8 +13,8 @@ _Mis à jour le 2026-11-17, PR #2743 (T1) ouverte, passe anti-doublons (§ 9)._
 - **État** : T1 = PR #2743 (15 tags, migration `20261117122739`), CI en cours ; `security-auditor` sans
   finding bloquant ; test rouge sans la migration, vert avec. Passe anti-doublons faite (§ 9).
 - **Prochaine action** : CI verte → `check:migrations --pr 2743`, merge, `db:migrate` depuis le dépôt
-  principal, vérification en prod (15 tags, 15 `1_TECHNO`). Puis page à cocher T2 / T3 (§ 9).
-- **En attente de David** : Q9 à Q12 (§ 9).
+  principal, vérification en prod (15 tags, 15 `1_TECHNO`). Puis verdicts T2 → migration T2 sur les seuls « OK ».
+- **En attente de David** : verdicts de la page T2 (§ 10).
 - **Pièges en cours** : **un point par programme** (trigger) ; point sur une sous-notion → seuls les modèles
   de CETTE sous-notion ; `grades` : `array_append` / `array_remove` seulement (accord avec `questions-1gen`) ;
   deux nœuds « définition ».
@@ -223,3 +223,14 @@ arrive au second degré ; je préviens avant de corriger 83b1f614 ou de retirer 
   dans les bornes (comme Q3), ou resserrer le modèle de 1re spé ? Reco : jumeau.
 - **Q12 — Connaissances couvertes de fait** (question 2 du message précédent : un modèle court par point,
   ou rien) : toujours ouverte.
+
+**Décisions (David, 2026-11-17, « je suis tes recos »)** : **Q9** 4f8f420a → 034 ; **Q10** page à cocher
+avant la migration ; **Q11** jumeaux techno (le modèle de 1re spé n'est pas touché) ; **Q12** un modèle
+court par connaissance (lot « connaissances »).
+
+## 10. Lot T2 : page à cocher (2026-11-17)
+
+T2 et T3 réunis en une page : 33 modèles, tous publiés, tous posables, aucun avec un point 1TECHNO
+(vérifié en prod) — les candidats du § 3 encore libres, 4f8f420a → 034, et les 9 points « conviennent » du
+§ 9. Page : https://claude.ai/artifact/Wnh4bDD9e4wjzC3GJuTMTZ ; instantanés hors dépôt (scratchpad) jusqu'à
+la branche T2. 77498f1b (100) signalé dans l'intro (leurres 𝒢(p), ℬ(100 ; p)).
