@@ -25,7 +25,8 @@ const WITH_PROMPT = {
 	statement: resolvedMarkdown('Calcule la somme : $3+5=\\placeholder[0]{}$'),
 	blanks: [{ expectedAnswer: '8', expectedAnswerLatex: '8', type: 'math' }],
 	correction: { steps: [resolvedMarkdown('$3+5=8$')] },
-	grades: ['6'],
+	// CE1 : « calculer » (CE1) et « somme » (CP) sont des mots récents (R1)
+	grades: ['CE1'],
 	level: 1,
 	generatedAt: new Date().toISOString()
 } as QuestionInstance;

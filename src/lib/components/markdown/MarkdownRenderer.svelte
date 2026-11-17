@@ -230,9 +230,11 @@
 				: isProjectMediaOnly()
 					? neutralizeUnsafeBlocks(doc)
 					: doc;
-			const grade = lexicon();
+			const reading = lexicon();
 			const runtime = lexiconRuntime();
-			return grade && runtime ? runtime.linkDocument(safe, grade) : safe;
+			return reading && runtime
+				? runtime.linkDocument(safe, reading.linkGrade, reading.link)
+				: safe;
 		};
 
 		// Check cache first

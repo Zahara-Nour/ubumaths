@@ -326,9 +326,11 @@
 	// Mots repérés en dernier : les positions portent sur le texte affiché (après le
 	// découpage en phrases de `onlyBlanks`)
 	let augmentedAST = $derived.by(() => {
-		const grade = lexicon();
+		const reading = lexicon();
 		const runtime = lexiconRuntime();
-		return grade && runtime ? runtime.linkDocument(structuredAST, grade) : structuredAST;
+		return reading && runtime
+			? runtime.linkDocument(structuredAST, reading.linkGrade, reading.link)
+			: structuredAST;
 	});
 
 	// Build InputState[] from blanks + validationResults (or correction mode)

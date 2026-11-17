@@ -45,9 +45,11 @@
 	// Fonctions
 	/** Le mot a une fiche (même règle que `LexiconTerm`) : son bouton est l'arrêt clavier */
 	function isLinked(key: string): boolean {
-		const grade = lexicon();
+		const reading = lexicon();
 		const runtime = lexiconRuntime();
-		return grade !== null && runtime !== null && runtime.lexiconCard([key], grade).length > 0;
+		return (
+			reading !== null && runtime !== null && runtime.lexiconCard([key], reading.grade).length > 0
+		);
 	}
 
 	/** Nom accessible d'un segment de texte ou de formule : son texte */

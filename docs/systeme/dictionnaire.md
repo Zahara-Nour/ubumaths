@@ -51,8 +51,9 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `src/lib/lexicon/linker.ts`                                           | `createLinker` : repérage des mots dans l'AST d'ubumark (`TextNode.terms`)               |
 | `src/lib/lexicon/card.ts`                                             | `lexiconCard`, `findPrincipal` : contenu de la fiche d'un mot                            |
 | `src/lib/lexicon/runtime.ts`, `runtime-store.svelte.ts`               | Chargement à la demande (dictionnaire + repérage) au premier énoncé qui en a besoin      |
-| `src/lib/lexicon/grade.ts`, `reader-grade.ts`                         | Niveau de lecture (`lexiconGrade`, `provideReaderGrade`)                                 |
+| `src/lib/lexicon/grade.ts`, `reader-grade.ts`                         | Niveau de lecture (`lexiconGrade`, `questionReadingGrades`, `provideReaderGrade`)        |
 | `src/lib/components/markdown/lexicon-context.ts`                      | `provideLexicon`, `provideQuestionLexicon` : qui active les mots cliquables              |
+| `src/lib/components/markdown/LexiconOff.svelte`                       | Coupe les mots dans ce qu'il contient (correction, résultat attendu)                     |
 | `src/lib/components/markdown/nodes/LexiconTerm.svelte`                | Le mot souligné et sa fiche (dialogue accessible)                                        |
 | `src/lib/lexicon/visibility.svelte.ts`, `card-terms.svelte.ts`        | Mots affichés ou masqués sur les cartes (appareil), mots repérés d'une carte             |
 | `src/lib/components/questions/LexiconToggle.svelte`                   | Bouton « Mots du dictionnaire » d'une carte de question                                  |
@@ -146,11 +147,28 @@ personne n'écrit directement dans l'historique.
 - Marquage d'auteur dans ubumark (`TextNode.lexicon`, `LexiconMark`) : `[mot]{.def}` force,
   `{.def=carré (géométrie)}` tranche un homonyme, `{.nodef}` bloque. Homonyme non tranché → la
   fiche montre les deux sens.
-- Niveau de lecture (`lexiconGrade`) : celui de l'élève connecté (`readReaderGrade`, posé par le
-  layout racine), sinon le plus petit niveau de la question (visiteur, professeur).
+- Lecture posée par `provideLexicon` (`LexiconReading`) : `grade` (définitions de la fiche),
+  `linkGrade` (choix des mots soulignés), `link` (options de `linkDocument`). Un niveau seul vaut
+  pour les deux, sans option (démo, structure, programmes).
+- Sur une carte (`provideQuestionLexicon`, chantier `mots-cliquables`, 2026-11-17) :
+  - **Élève** : son niveau (`readReaderGrade`, posé par le layout racine) pour les deux.
+    **Professeur ou visiteur** (`questionReadingGrades`) : soulignement au **plus haut** niveau de
+    la question (R3), fiche au **plus petit** (définitions les plus simples) ; un mot souligné que
+    le plus petit niveau ne voit pas se lit au plus haut (`lexiconCard`, `fallbackGrade`).
+    Niveau inconnu : aucun mot.
+  - **Mots récents** (R1, `recentOnly`) : un mot n'est souligné d'office que s'il est rencontré
+    (`gradeMetBy`, filières comprises) à l'année scolaire du lecteur ou à celle d'avant
+    (`schoolYear`). Un nom trop ancien reste dans le motif : il occupe son texte, et l'occurrence
+    suivante ne prend pas le relais. `{.def}` force toujours un mot ancien.
+  - **Question de cours** (R4, `isCourseQuestion` : carte de cours ou `options.courseQuestion`) :
+    aucun mot repéré d'office (`auto: false`, il donnerait la réponse) ; `{.def}` reste possible.
+  - **Correction** (R2) : aucun mot. `LexiconOff` entoure le verso de `FlashCard` (résultat
+    attendu, énoncé rempli, correction), le résultat attendu et le verso de `CorrectionCard` ;
+    `CourseCardBack` coupe lui-même.
 - Qui active : `QuestionCard`, `FlashCard`, `CorrectionCard` via `provideQuestionLexicon`.
   `null` coupe les mots : **évaluation notée** (`collectOnly`), fiche d'un mot déjà ouverte, choix
-  de QCM (un choix est un bouton). Sans fournisseur (chat, fiches, aperçus) : aucun mot souligné.
+  de QCM (un choix est un bouton), correction. Sans fournisseur (chat, fiches, aperçus) : aucun mot
+  souligné.
 - **Soulignement masqué par défaut sur une carte** (R6, chantier `mots-cliquables`, 2026-11-17) :
   `provideQuestionLexicon` pose aussi le compteur des mots de la carte (`card-terms.svelte.ts`) ;
   chaque `LexiconTerm` repéré s'y annonce. `LexiconToggle` (bouton « Mots du dictionnaire »,
