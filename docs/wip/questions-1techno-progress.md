@@ -12,10 +12,10 @@ _Mis à jour le 2026-11-17, après #2764 (83b1f614 v3 en prod)._
 
 - **État** : T1, T2, lot 0, lot G, **83b1f614 v3** en prod (#2743, #2748, #2753, #2758, #2764). 83b1f614 : corrigé
   de v3 par racines évidentes, migration jouée et vérifiée en prod (§ 19).
-- **Prochaine action** : lot 2 commun (§ 20, 21) : lire les verdicts de la page à cocher R2, R3, R4, puis migration
-  `array_append('1_TECHNO')` + tags 044 / 117 / 119 sur les « OK » (gabarit du lot G, § 17 ; modèles en BROUILLON).
-  Ensuite lots d'écriture (§ 5, 9), lot 1 « suites géométriques » d'abord (moins 036, 038, 049).
-- **En attente de David** : verdicts de la page à cocher R2, R3, R4 (§ 21).
+- **Prochaine action** : lot R (§ 22) : PR de la migration `20261117181914` (tags 044 / 117 / 119 + `1_TECHNO`
+  sur R2, R3, R4, publiés), audit, CI, merge, `db:migrate`, vérif prod. Ensuite lots d'écriture (§ 5, 9), lot 1
+  « suites géométriques » d'abord (moins 036, 038, 049).
+- **En attente de David** : rien.
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
   `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db:migrate` « inserted before » → `--dry-run --include-all`.
@@ -459,3 +459,14 @@ Instantanés (`export-question-templates.ts`) dans le scratchpad, à copier dans
 branche de la migration. Page à cocher : https://claude.ai/artifact/LbvfzTA9MAxfVfQsfyyJUF (capacité `db`,
 collection `verdicts` vide au départ ; 14 exemples, chacun avec son nuage dessiné ; aucune alerte). Point affiché =
 le point 1GEN ; le point 1TECHNO visé est dans l'intro (R2 → 044, R3 → 117, R4 → 119).
+
+## 22. Lot R (lot 2 commun) : migration (2026-11-17)
+
+Verdicts de la page à cocher : 3 « ok » sur 3 (96668141, 13388e8f, e8f08a19), sans commentaire. Relevé prod (MCP) :
+les trois sont désormais **publiés** par questions-1gen, `grades = {1_GEN}`, seul tag le point 1GEN (019, 041, 058),
+tous sur le nœud `320aaed2` qui porte aussi 1TECHNO-044, 117 et 119. Même nature que le lot G (modèles publiés) : la
+question d'accès du chantier s'applique.
+Migration `20261117181914_questions_1techno_lot_r_tags`, générée du lot G par substitution (ids, codes, nom de table
+temporaire `_q1tr_`) ; test `tests/integration/questions-1techno-lot-r-tags.test.ts`. Instantanés prod (publiés) :
+`scripts/questions/1techno-r/`.
+12 tests verts ; migration vidée → 7 rouges et le bloc nominal (5) ne démarre pas.
