@@ -7,16 +7,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 2 écrit (§ 16), PR des fichiers ouverte._
+_Mis à jour le 2026-11-17, après #2762 (fichiers du lot 2)._
 
-- **État** : lot 1 publié (§ 13). Lot 2 écrit : 6 modèles R1 à R6, specs, sonde et essai local verts (§ 16), PR des
-  fichiers sur `feat/questions-1gen-lot2`. Phases 0 des lots 3 et 4 validées (§ 14).
-- **Prochaine action** : PR verte → merge ; puis **David** lance `create-questions --dir
+- **État** : lot 1 publié (§ 13). Lot 2 écrit : 6 modèles R1 à R6, specs, sonde et essai local verts (§ 16), fichiers
+  mergés (#2762). Phases 0 des lots 3 et 4 validées (§ 14).
+- **Prochaine action** : **David** lance, depuis le worktree, `create-questions --dir
 scripts/questions/1gen-2-representations-graphiques --publier` ; commiter les ids ; migration nœud + tags (016, 019,
   041, 058 → représentation graphique ; 020, 051 → expression et droite) ; envoyer les ids de R2, R3, R4 à
   questions-1techno. Ensuite lots 3, 4.
-- **En attente de David** : jouer R1 à R6 dans l'aperçu admin (l'extension Chrome ne pilote pas `[::1]`, § 16) ; dire
-  si les écarts à la phase 0 du § 16 lui vont.
+- **En attente de David** : lancer `create-questions --publier` (écarts du § 16 acceptés le 2026-11-17).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
   `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; modèles
   communs : R2, R3, R4 (1techno), E2 et autres candidats TTECHNO (ttechno) ; correction de la coquille « t/n » de
@@ -583,7 +582,11 @@ Script `docs/wip/questions/lot-1gen-2.py` → `scripts/questions/1gen-2-represen
 contre la prod (aucun homonyme) ; 555 formules des aperçus (40 tirages) passées à `validateLatex` avec un compte des
 accolades : 0 problème ; `sonde-courbes` sur 300 tirages, 2 700 blocs ` ```courbe ` (nuages du bloc associer
 compris) : 0 problème. Essai en base locale : les 6 modèles créés en brouillon (copie des fichiers, ids locaux).
-**Aperçu admin non joué** : l'appli redirige vers `http://[::1]:<port>` et l'extension Chrome refuse cette adresse.
+Aperçu admin joué le 2026-11-17 (serveur `--host 127.0.0.1` : l'extension Chrome refuse `[::1]`, la base locale
+avait été remise à zéro entre-temps, modèles recréés) : R1 relié juste ; R2 cinq points placés, juste ; R3 D placé en
+(3 ; 8) → « Tu as placé D en (3 ; 8). », faux ; R5 deux points de y = ½x − 1, juste ; R6 antécédent lu, juste ; R4
+q = 1 (différence) → case 2 fausse, correction affichée. Rendu des nuages lisible, petits repères du bloc associer
+compris.
 
 | Modèle | Fichier                                | Variations | Specs |
 | ------ | -------------------------------------- | ---------- | ----- |
@@ -594,7 +597,8 @@ compris) : 0 problème. Essai en base locale : les 6 modèles créés en brouill
 | R5     | `05-tracer-droite-fonction-affine`     | 3          | 8     |
 | R6     | `06-lire-droite-fonction-affine`       | 4          | 11    |
 
-Écarts à la phase 0 (§ 15), sans effet sur les points ni sur les formes de réponse :
+Écarts à la phase 0 (§ 15), sans effet sur les points ni sur les formes de réponse — **acceptés par David le
+2026-11-17** :
 
 - **R1** : les premiers termes sont tirés dans trois plages disjointes (−3..−1, 1..4, 5..8). Avec 15 conditions, le
   tirage échouait 4 fois sur 100. Le nuage 1 a donc toujours le plus petit u₀, mais les étiquettes sont mélangées au

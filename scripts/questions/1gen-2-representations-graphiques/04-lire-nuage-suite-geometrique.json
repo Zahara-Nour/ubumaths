@@ -1,4 +1,5 @@
 {
+	"id": "e8f08a19-b417-4183-9cd3-fab7f3810211",
 	"title": "Lire sur le nuage de points d'une suite géométrique",
 	"description": "Termes positifs : lire u₀ et la raison, un terme, le sens de variation, un premier rang",
 	"grades": ["1_GEN"],
