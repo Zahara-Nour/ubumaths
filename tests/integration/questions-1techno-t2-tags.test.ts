@@ -260,7 +260,15 @@ describe('1re techno T2 : les branches d’échec de la migration', () => {
 
 	it('base sans les modèles (locale) : la migration et le rollback passent sans rien toucher', async () => {
 		await enTransaction(async () => {
+			// `db:seed-riche` copie les modèles de la prod : on les retire pour avoir vraiment une base
+			// sans eux (annulé avec la transaction)
+			await pg.query('delete from public.question_templates where id = any($1::uuid[])', [ids]);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).resolves.toBeDefined();
+			const tags = await pg.query<{ n: string }>(
+				'select count(*) as n from public.question_template_points where template_id = any($1::uuid[])',
+				[ids]
+			);
+			expect(Number(tags.rows[0].n)).toBe(0);
 			await expect(pg.query(extractRollback(MIGRATION))).resolves.toBeDefined();
 		});
 	});
