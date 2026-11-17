@@ -307,3 +307,5 @@ départ ; 3 fiches au bloc « ranger » non dessiné, à jouer dans l'aperçu : 
   rien, `updated_at` préservé, rollback en commentaire. Test
   `tests/integration/questions-ttechno-lot1-rangement-tags.test.ts` : 9 verts ; corps retiré → 5 rouges ;
   fichier restauré d'une copie, identique.
+- `security-auditor` : aucun bloquant (ids, codes, chemins revérifiés en prod ; écart avec le gabarit = données
+  seules ; rollback symétrique ; accès : personne). Note : `migration list --linked` juste avant `db:migrate`.
