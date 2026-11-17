@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0, rien n'est codé ; 5a tranchée._
+_Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
 
 - **État** : analyse faite. David repart **de zéro**, avec un **nouveau nom** et le **lore de Chiphre**. Le principe reste le même : chaque sort ou coup se valide par une question, et les questions viennent du système de questions de Chiphre.
 - **Tranché** : avatar combattant, accompagné d'un Mathou familier ; une magie ajoutée au lore (§ « Tranché »).
@@ -17,8 +17,9 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; 5a tranchée._
 - **Tranché aussi (5b, 2026-11-17)** : une victoire rapporte des gidouilles, plafonnées par jour, et rien d'autre.
 - **Tranché aussi (5c, 2026-11-17)** : un carnet de voyage, album des Bêtes vaincues par Province, visible par l'élève seul.
 - **Tranché aussi (5d, 2026-11-17)** : le Mathou familier donne un petit coup de main qui grandit avec son stade.
-- **Prochaine action** : la question **5e** (l'apparition des Bêtes). Les propositions sont dans § « À trancher ».
-- **En attente de David** : 5e. La question 3 (public) est réglée : du primaire au lycée.
+- **Tranché aussi (5e, 2026-11-17)** : 3 Bêtes par jour, 5 au plus ; celles des notions à retravailler restent jusqu'à leur défaite ; une grosse Bête par semaine. **La question 5 est close.**
+- **Prochaine action** : relire avec David § « Ce qu'on garde de Navadra » et § « Idées d'ajouts », encore non validées et en partie périmées (équipe de 3 Mathoux, Mathoux-sorts) ; puis écrire les comportements de phase 0 (nominal, limite, erreur) et le découpage de la v1. Les propositions sont dans § « À trancher ».
+- **En attente de David** : rien de posé. La question 3 (public) est réglée : du primaire au lycée.
 - **Façon de poser** : David n'a pas compris la 5a posée en termes techniques. Poser chaque point **en mots simples, avec un exemple**, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
@@ -90,13 +91,18 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; 5a tranchée._
   - il aide un peu, par exemple **un indice par combat** ou **un coup de la Bête amorti** ; le choix exact se fait au moment du code ;
   - **son aide grandit avec son stade** (chaton, matou, grand matou), donc avec la maîtrise de sa notion.
 
+- **2026-11-17 — 5e : l'apparition des Bêtes** (David suit ma recommandation ; chiffres à régler à l'usage) :
+  - **3 nouvelles Bêtes par jour**, **5 au plus** en attente sur la carte ;
+  - une Bête née d'une **notion à retravailler** (point à remédier) **reste jusqu'à sa défaite** ; les autres repartent au bout de quelques jours, comme dans Navadra ;
+  - **une grosse Bête par semaine**, plus longue à vaincre.
+
 ## À trancher (posé à David le 2026-11-09)
 
-1. **Combattants** : les **Mathoux** servent-ils de combattants (équipe de 3, chaque attaque est une question de la notion du Mathou), à la place des sorts et du grimoire ? C'est la décision du 2026-10-18 (`mathoux-conception.md:98-109`) : la confirmer ou la rouvrir.
+1. ✅ _Tranché le 2026-11-09 (l'avatar, accompagné d'un Mathou familier)._ **Combattants** : les **Mathoux** servent-ils de combattants (équipe de 3, chaque attaque est une question de la notion du Mathou), à la place des sorts et du grimoire ? C'est la décision du 2026-10-18 (`mathoux-conception.md:98-109`) : la confirmer ou la rouvrir.
 2. ✅ _Tranché le 2026-11-09 (Bêtes imprévues, voir § « Tranché »)._ **Adversaires** : des **erreurs typiques** (« le Carré Fourbe ») au service du **Czar Alexis**, ou autre chose ? Cela engage un catalogue d'erreurs rattachées aux modèles de questions, et des illustrations.
-3. **Public de la première version** : quels niveaux ? Navadra visait la 6e.
-4. **Nom du jeu** : David en a-t-il un, ou faut-il des propositions tirées du lore ?
-5. Question rattachée à la 1 : faut-il une progression propre au jeu (niveau, prestige personnel ou limité au Bataillon), ou le stade des Mathoux suffit-il ?
+3. ✅ _Tranché : du primaire au lycée._ **Public de la première version** : quels niveaux ? Navadra visait la 6e.
+4. ✅ _Tranché le 2026-11-09 (La Descente de la Vistule)._ **Nom du jeu** : David en a-t-il un, ou faut-il des propositions tirées du lore ?
+5. ✅ _Tranché par la question 7 (5a à 5e)._ Question rattachée à la 1 : faut-il une progression propre au jeu (niveau, prestige personnel ou limité au Bataillon), ou le stade des Mathoux suffit-il ?
 
 6. ✅ _Tranché le 2026-11-09 : aucun ordre, voir § « Tranché »._ **Ordre de la descente** (posé le 2026-11-09). D'après le Compendium (l. 568), le fleuve passe par Bedonstan (géométrie, source), Glitchistan (algorithmique), Patatovie (logique), Nombrilie (nombres), Pifométrie (probabilités et statistiques), puis Yoyolande (fonctions, delta). Faut-il suivre cet ordre, une Province après l'autre, ou chaque étape mêle-t-elle les domaines ?
 
@@ -105,7 +111,7 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; 5a tranchée._
    - ✅ **5b. Récompenses** : gidouilles seulement, plafonnées côté serveur. _Tranché le 2026-11-17, voir § « Tranché »._
    - ✅ **5c. Carnet de route** : les Bêtes vaincues, Province par Province. _Tranché le 2026-11-17, voir § « Tranché »._
    - ✅ **5d. Le Mathou familier** : un appui modeste qui grandit avec son stade. _Tranché le 2026-11-17, voir § « Tranché »._
-   - **5e. Apparition des Bêtes** : 3 par jour, 5 en stock au plus. Une Bête née d'un point à remédier reste jusqu'à sa défaite. Une grosse Bête par semaine.
+   - ✅ _Tranché le 2026-11-17._ **5e. Apparition des Bêtes** : 3 par jour, 5 en stock au plus. Une Bête née d'un point à remédier reste jusqu'à sa défaite. Une grosse Bête par semaine.
    - **Hors du jeu** : le grade de l'Ordre se fondera sur le travail réel, pas sur les gidouilles (décision de David du 2026-11-09). C'est le chantier `ordre-grande-passoire`, clos le 2026-11-17 : règle dans le Compendium (section VII), journal `docs/archive/wip/ordre-grande-passoire-progress.md`. La Descente ne doit pas être le moyen le plus rapide de monter dans l'Ordre.
 
 ## Existant dans Chiphre (portage d'octobre 2025, en pause depuis le 2026-10-13)
@@ -165,6 +171,7 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; 5a tranchée._
 
 ## Historique
 
+- **2026-11-17** : 5e tranchée ; la question 5 est close.
 - **2026-11-17** : 5d tranchée (Mathou familier, aide modeste selon le stade).
 - **2026-11-17** : 5c tranchée (carnet de voyage, élève seul).
 - **2026-11-17** : 5b tranchée (gidouilles plafonnées par jour, rien d'autre).
