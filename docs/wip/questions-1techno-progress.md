@@ -8,21 +8,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2748 (T2 mergée, migrée, vérifiée en prod)._
+_Mis à jour le 2026-11-17, lot 0 en branche (avant PR)._
 
-- **État** : **T1 et T2 en prod** (#2743, #2748) : 48 modèles portent un point 1TECHNO et `1_TECHNO`. Q11 de
-  questions-1gen tranchée (§ 14) : les modèles de suites géométriques G1, G4, G5 sont **communs**, écrits par
-  questions-1gen ; notre lot 1 se réduit à **047**.
-- **Prochaine action** : lot 0 (retrait de 1TECHNO-118 sur 1239554b et 79d69593 : destructif, accord de David),
-  puis correction de 83b1f614 v3 (prévenir questions-1gen avant), puis lots d'écriture (§ 5, 9).
-- **En attente de David** : accord sur le lot 0 (destructif).
+- **État** : T1 et T2 en prod (#2743, #2748). **Lot 0** (§ 15) : migration de retrait de 1TECHNO-118 et
+  `1_TECHNO` sur 1239554b et 79d69593 écrite, test 12 verts (rouge sans le corps), revues en cours.
+- **Prochaine action** : PR du lot 0, CI, merge ; puis `db:migrate` **sur go explicite de David** (destructive :
+  jamais autonome) ; puis correction de 83b1f614 v3 (prévenir questions-1gen avant), puis lots d'écriture (§ 5, 9).
+- **En attente de David** : go pour le `db:migrate` du lot 0 (ce qui est perdu : § 15).
 - **En attente de questions-1gen** : ids de G1-G5 en prod → notre migration de tags 036, 038, 040 ou 049
   (+ 039, 057 si un point s'y prête), `array_append` de `1_TECHNO`.
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
-  worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod :
-  `pnpm tsx --env-file=.env scripts/export-question-templates.ts` ; commitlint refuse « T1 » en début de sujet ;
+  worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; commitlint refuse « T1 » en début de sujet ;
   CI : le cliquet peut être coupé à 20 min (relancer).
-- **Worktree / branche** : aucun (T2 nettoyé).
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `fix/questions-1techno-lot0`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -327,3 +325,18 @@ Q11 (journal questions-1gen § 9, commit 1029a04775, David « je te suis tes rec
 choisir) sont des modèles communs ; questions-1gen les écrit avec `grades` `1_GEN` ; nous posons `1_TECHNO`
 et nos tags par notre propre migration, après création des brouillons. G2 (forme explicite, 039) et G3
 (récurrence, 057) sont sur la notion « Suites géométriques ». Notre lot 1 n'écrit que 047.
+
+## 15. Lot 0 : retrait de 1TECHNO-118 sur 1239554b et 79d69593 (2026-11-17)
+
+Go de David (2026-11-17, « go » en réponse à la demande d'accord sur le lot 0). Relevé prod (MCP) : les deux
+modèles « Calculer un terme » ont `{1_SPE,1_TECHNO}`, tags 1SPE-377 et 1TECHNO-118, rangés sur le nœud du point
+(sous-notion) ; 0 tentative, 0 carte SRS, 0 entrée de journal, 0 question d'évaluation. f36ce3ff garde 118.
+
+Migration `20261117140233_questions_1techno_lot0_retrait_118` (gabarit de T1, en miroir) : `delete` du tag 118 et
+`array_remove` de `1_TECHNO` ; gardes tout ou rien (2 modèles, `1_TECHNO` et tag présents, 118 garde au moins un
+modèle publié hors lot) ; rollback en commentaire (repose tag et niveau). Test
+`tests/integration/questions-1techno-lot0-retrait-118.test.ts` : 12 verts ; corps retiré → 6 rouges, 5 ignorés.
+
+**Ce qui est perdu** (destructive) : ces deux modèles sortent du catalogue et du cahier de texte de 1re techno et
+ne comptent plus pour 1TECHNO-118. Ils restent publiés en 1re spé, contenu inchangé. Aucune donnée d'élève.
+**`db:migrate` jamais autonome** (condition 4 non réunie) : go explicite de David après le merge.
