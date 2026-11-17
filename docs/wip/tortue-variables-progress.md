@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2742._
+_Mis à jour le 2026-11-17, après #2746._
 
-- **État** : PR A (logique, #2735) et PR B (écran, #2742) mergées : tortue de 4e / 3e complète (boîtes à outils, carte, corrigé, sélecteur de `/tortue`, `départ:` à compléter) · **Prochaine action** : PR C (modèles, Q7) — relevé fait (§ PR C) ; écrire les modèles une fois la liste validée · **En attente de David** : liste des modèles de la PR C (4 modèles, 1 par point ; Fibonacci en 3e ?) · **Pièges en cours** : un modèle `niveau:` n'a d'écran en prod qu'après `deploy:prod` ; reste en suspens (revue PR A) : `1e2` lu sans niveau / refusé en 4e, `répéter 2,5 [ … ]` arrondi sans prévenir l'auteur ; vérification manuelle du bac à sable notée · **Worktree / branche** : aucun (supprimé après #2742)
+- **État** : PR A (#2735), PR B (#2742), PR C (#2746 : 4 modèles dans `scripts/questions/tortue-variables/`, publiés en base locale) mergées · **Prochaine action** : PR D (nœud du point + tag par migration, comme #2727) une fois les ids de prod connus · **En attente de David** : relecture des 4 modèles (serveur 5175, base locale), puis `create-questions --dir scripts/questions/tortue-variables --publier` en prod (brouillons, ids écrits dans les fichiers) ; `deploy:prod` avant toute publication · **Pièges en cours** : écran tortue 4e / 3e pas en prod avant `deploy:prod` ; « répéter jusqu’à » à l'apostrophe courbe ; en suspens (revue PR A) : `1e2`, `répéter 2,5` · **Worktree / branche** : aucun (supprimé après #2746)
 
 ## Origine
 
@@ -121,5 +121,28 @@ porte donc un `blocs: N` qui rend la variable nécessaire. Deux suites arithmét
 toujours l'une de l'autre (`avancer a + 2`) : le tracé seul ne peut pas exiger **deux** variables
 (3-047), sauf une suite de Fibonacci (`ajouter a à b ; mettre a à b − a`).
 
-Liste proposée à David : voir le message de la session du 2026-11-17 (recopiée ici après sa
-réponse).
+### Décisions (David, 2026-11-17 : « je valide »)
+
+Un modèle par point (ADR 0020), tous jugés à la position, `blocs: N` pour rendre la variable
+nécessaire :
+
+1. **4-067 « Spirale avec une variable »** (4e) : spirale carrée (`mettre côté à a ; répéter n [
+avancer côté ; tourner à gauche 90 ; ajouter p à côté ]`, 5 blocs) ; escalier aux marches
+   croissantes (7 blocs) ; spirale à compléter (`départ:` sans « ajouter »).
+2. **4-068 « Tracer une figure avec un programme (4e) »** : polygone régulier à compléter
+   (`départ: mettre n à … ; répéter n [ avancer c ]`, n ∈ {3, 5, 6, 8}) ; carrés emboîtés (6 blocs).
+3. **3-047 « Deux variables (tortue) »** : spirale de Fibonacci (1, 1, 2, 3, 5, 8), 8 blocs (admet
+   aussi la solution à trois variables `mettre c à a + b ; …`) ; la même à compléter (il manque
+   `mettre a à b − a`). Pas de spirale rectangulaire : une seule variable y suffit.
+4. **3-051 « Tracer une figure avec un programme (3e) »** : spirale « répéter jusqu’à » (5 blocs ;
+   `répéter n` admis, même tracé) ; créneaux de hauteurs alternées avec « si / sinon » (13 blocs ;
+   `mettre h à 3 − h` admis).
+
+### Écriture (2026-11-17)
+
+- JSON écrits directement dans `scripts/questions/tortue-variables/` ; quadrillage vérifié (spirales
+  n ≤ 9 : ≤ 10 carreaux du départ ; Fibonacci n ≤ 6).
+- `question:specs` : 12 + 9 + 8 + 9 specs vertes, 450 tirages réussis ; preuve du juge : specs
+  inversées → 0/8.
+- Base locale : `create-questions --publier` depuis une copie (les ids locaux ne vont pas dans le
+  dépôt).
