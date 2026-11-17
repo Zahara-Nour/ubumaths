@@ -15,7 +15,7 @@ _Mis à jour le 2026-11-17, après #2762 (fichiers du lot 2)._
 scripts/questions/1gen-2-representations-graphiques --publier` ; commiter les ids ; migration nœud + tags (016, 019,
   041, 058 → représentation graphique ; 020, 051 → expression et droite) ; envoyer les ids de R2, R3, R4 à
   questions-1techno. Ensuite lots 3, 4.
-- **En attente de David** : dire si les écarts à la phase 0 du § 16 lui vont ; lancer `create-questions --publier`.
+- **En attente de David** : lancer `create-questions --publier` (écarts du § 16 acceptés le 2026-11-17).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
   `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; modèles
   communs : R2, R3, R4 (1techno), E2 et autres candidats TTECHNO (ttechno) ; correction de la coquille « t/n » de
@@ -597,7 +597,8 @@ compris.
 | R5     | `05-tracer-droite-fonction-affine`     | 3          | 8     |
 | R6     | `06-lire-droite-fonction-affine`       | 4          | 11    |
 
-Écarts à la phase 0 (§ 15), sans effet sur les points ni sur les formes de réponse :
+Écarts à la phase 0 (§ 15), sans effet sur les points ni sur les formes de réponse — **acceptés par David le
+2026-11-17** :
 
 - **R1** : les premiers termes sont tirés dans trois plages disjointes (−3..−1, 1..4, 5..8). Avec 15 conditions, le
   tirage échouait 4 fois sur 100. Le nuage 1 a donc toujours le plus petit u₀, mais les étiquettes sont mélangées au
