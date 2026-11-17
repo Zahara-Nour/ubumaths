@@ -5,16 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 du lot 2._
+_Mis à jour le 2026-11-17, lot 2a écrit (PR à ouvrir)._
 
-- **État** : lots 0 et 1 en prod (#2756, #2763, #2766 ; lot 1 publié). Lot 2 (suites) : phase 0 écrite (§ 12),
-  15 points, 11 modèles neufs proposés (M1–M8, P1–P3) + 2 tags (c4887e49 → 025, 0b5c3db6 → 023).
-- **Prochaine action** : écriture du lot 2a (M1–M8) et page à cocher des tags (Q16–Q18 tranchées, § 12).
-- **En attente de David** : rien.
+- **État** : lots 0 et 1 en prod. Lot 2a (M1–M8, § 12–13) écrit sur `feat/questions-ttechno-lot2a` : simulation
+  verte, formules contrôlées, aperçu local joué.
+- **Prochaine action** : PR des fichiers → merge → David lance `create-questions --dir
+scripts/questions/ttechno-2a-suites --publier` → migration nœud + tag des 8 et tags c4887e49 → 025,
+  0b5c3db6 → 023 (page à cocher des deux tags d'abord). Puis lot 2b (Python, P1–P3).
+- **En attente de David** : rien (la création en prod viendra après le merge).
 - **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
   piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
-- **Worktree / branche** : aucun (#2763, #2766 mergées ; journal sur `main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot2a`.
 
 ## 1. Périmètre
 
@@ -376,3 +378,21 @@ plus une passe par contenu (`\sum`, Σ, moyenne, trois nombres, termes consécut
 
 **Décisions (David, 2026-11-17, « je suis tes recos »)** : **Q16** 0b5c3db6 tagué 023 ; **Q17** rien pour 017,
 019 ; **Q18** lot 2a « suites » (M1–M8 + tags c4887e49 → 025, 0b5c3db6 → 023), puis lot 2b « Python » (P1–P3).
+
+## 13. Lot 2a : écriture (2026-11-17)
+
+`docs/wip/questions/lot-ttechno-2a.py` → `scripts/questions/ttechno-2a-suites/` (8 fichiers, 112 specs), nœuds et
+points du § 12.
+
+- Simulation `create-questions` verte contre la prod (aucun homonyme) ; `question:specs` 8 / 8 importables ;
+  3 584 formules de 40 tirages par modèle passées à `validateLatex` + compte des accolades : 0 problème.
+- Corrigé en route : `u_{{n}}` rendait `u_24` (u₂ puis 4) → `u_{ {{n}} }` ; « n-ième » → « nᵉ » ; somme de M8
+  écrite en entier (n ⩽ 5). Moteur : `19/2` pour 9,5 = `bad_form` (décimal attendu, M1) ; `16380` sans espace =
+  `unoptimal_form` « spaces » (M7), comme le reste du site.
+- M4 : le « non » de v1 est une progression **arithmétique** (piège : « oui, car b − a = c − b ») ; v0 perturbe c
+  (jamais arithmétique : il faudrait d < 0) ; v2 prix +t % contre +t € par an.
+- Base locale (copie des fichiers, ids locaux) : 8 brouillons créés ; aperçu admin joué (Chrome du Mac mini,
+  serveur `--host 127.0.0.1`) : M4 v2, réponse fausse refusée, correction à virgules ; M7 v0, `10203` → ½ point
+  « chiffres mal espacés », `10 203` attendu.
+- Suite : PR des fichiers (contenu) ; après merge, David lance `create-questions --publier` ; puis migration
+  nœud + tag des 8 et tags c4887e49 → 025, 0b5c3db6 → 023 (`array_append('T_TECHNO')`), page à cocher d'abord.
