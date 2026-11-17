@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 8 écrit._
+_Mis à jour le 2026-11-17, après #2777._
 
-- **État** : lots 0 à 7 publiés. **Lot 7 clos** (7a : 6 modèles ; 7b : 4 modèles `b432b38e`, `521c3f16`, `4a2edffb`, `03c5df14`, publiés le 2026-11-17).
-- **Prochaine action** : PR des fichiers du lot 8 (`scripts/questions/cm2-8/`), merge, puis David lance `create-questions --dir scripts/questions/cm2-8 --publier` ; ensuite migration nœud + tag. Après le lot 8 : reclasser le § 3 (§ 12 d).
-- **En attente de David** : rien avant le merge. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 7 publiés. **Lot 8** (038, 053, 055-057 ; 5 modèles) : fichiers mergés (#2777), pas encore en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-8 --publier` (brouillons en prod), puis commit des ids ; migration nœud + tag (gabarit du lot 7b), page à cocher, publication. Après le lot 8 : reclasser le § 3 (§ 12 d).
+- **En attente de David** : le `--publier` du lot 8. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot8`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot8` mergée (#2777) ; nouvelle branche pour la migration du lot 8.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -823,3 +823,4 @@ modèles. Tableau du § 13 gardé.
 - Variable `e` refusée (constante d'Euler) : `f` pour l'écart de l'estimation par division.
 - Base locale : 5 brouillons créés, joués dans l'aperçu admin (division 43 713 ÷ 6 saisie 7285,5 → juste, correction lisible ; 1 − 1/2 = ?/4 ; estimation 4 980 − 293 en case « choix » ; 212 × 60,8 posé). Fichiers réécrits par le script ensuite (ids locaux retirés).
 - Aperçu : le serveur de dev doit écouter sur `127.0.0.1` (`--host 127.0.0.1`) ; l'extension Chrome refuse `[::1]`.
+- #2777 (fichiers) : CI verte, mergée.
