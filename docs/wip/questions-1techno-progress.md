@@ -427,3 +427,7 @@ Migration `20261117171928_questions_1techno_83b1f614_contenu`, générée par
 modèle absent : rien) ; test `tests/integration/questions-1techno-83b1f614-contenu.test.ts` : 9 verts (décor au
 md5 de la prod) ; migration vidée → 2 rouges et le bloc nominal ne démarre pas. Accès : aucune règle ne change
 (même nature que le lot G : contenu d'un modèle publié).
+
+PR #2764 : audit de sécurité sans finding bloquant (non bloquant : modèle absent en prod → migration muette ; couvert
+par la vérification prod après `db:migrate`). CI : Lint rouge sur la garde de doc (`Doc-inchangée:` dans la PR
+seulement, pas dans le commit) → commit de journal qui porte la ligne.
