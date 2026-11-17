@@ -7,11 +7,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la publication du lot 1._
+_Mis à jour le 2026-11-17, après la phase 0 des lots 3 et 4._
 
 - **État** : lot 1 (5 modèles de suites géométriques) relu (5/5 OK) et **publié** en prod (§ 13).
-- **Prochaine action** : phase 0 des lots 3 et 4 pour questions-ttechno ; puis lot 2.
-- **En attente de David** : rien.
+- **Prochaine action** : après validation, envoyer la phase 0 des lots 3 et 4 (§ 14) à questions-ttechno ; puis
+  écrire le lot 2 (représentations graphiques), puis 3, puis 4.
+- **En attente de David** : Q13 à Q16 (phase 0 de nos lots 3 aˣ et 4 taux moyen, § 14).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
   `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; rollback
   du § 12 valable seulement avant les tags 1TECHNO de G1, G4, G5 ; modèle 1GEN-022 commun avec 1TECHNO-057 ; G1, G4,
@@ -362,3 +363,126 @@ https://claude.ai/artifact/8oXNs9VrKYg9aUMvrfiMyN. Verdicts lus en base : **5/5 
 
 Simulation `publier-lot.ts` : 5 brouillons passent le contrôle. David a lancé `--publier` : « 5/5 modèles du lot
 publiés (statut relu en base) ». Relu au MCP : les 5 `published`, `grades` `['1_GEN']`.
+
+## 14. Lots 3 et 4 — phase 0 (proposée le 2026-11-17, promise à questions-ttechno)
+
+Phase 0 des deux lots avancée devant le lot 2, parce que questions-ttechno attend nos modèles aˣ et taux moyen pour
+les taguer TTECHNO et n'écrire que les compléments (x < 0, k·aˣ). L'**écriture** suit l'ordre de Q10 (lot 2, puis 3,
+puis 4).
+
+**Borne commune** (BO 1re ES p.7, `1gen.md`) : x ↦ aˣ avec **a > 0 et x ⩾ 0** ; ni logarithme, ni dérivée, ni eˣ ;
+propriétés algébriques admises ; exposant **1/n** (le PDF dit « 1/n » ; la transcription
+`src/lib/server/programmes/transcriptions/1_GEN.md` écrit « t/n », coquille à corriger dans la PR du lot 3).
+Valeurs non entières de aˣ : à la calculatrice (approche différenciée du BO).
+
+**Nœuds relevés en prod (2026-11-17)** : chaque point est sur une sous-notion ; chaque modèle va sur le nœud de son
+point (ADR 0020) et porte un seul point 1GEN.
+
+- 032, 033, 034, 035, 036, 042, 059 → « Fonctions > Fonction exponentielle > fonctions x ↦ aˣ » : **0 modèle
+  publié** ; points TTECHNO-031 à 033, 036, 037, 039, 080, 081 sur le même nœud.
+- 037, 040 → « Proportionnalité > Évolutions > taux d'évolution moyen » : 0 modèle ; TTECHNO-035, 038 sur le nœud.
+- 038, 043, 056 → « Fonctions > Fonction exponentielle > croissance et décroissance exponentielles » : 3 modèles
+  de 1re spé (245b4eb1, 22141fa4, ca8f40c2), tous en eˣ ou raison eᵏ : hors borne.
+- 044, 060 → « Suites > Modèles d'évolution > seuil » : 4 modèles. eb9517ed (021, linéaire) et 0b686e01 (061,
+  tableau de valeurs = outil numérique) déjà 1GEN ; f1963ef2 (logarithme) et 19961e67 (Python) hors 044 / 060.
+- Calques possibles pour 033 : 6137a555, bd45ed7f, c24d21e1, e6b429b4 (1re spé, eˣ ; questions-ttechno les
+  réécrit en aˣ pour ses 034, 078, 079 : **modèle commun à décider**, Q15).
+
+### Lot 3 « Fonctions aˣ » (7 modèles, nœud « fonctions x ↦ aˣ »)
+
+| Modèle                                                | Point | Niveau | Réponse                   |
+| ----------------------------------------------------- | ----- | ------ | ------------------------- |
+| E1 Calculer une valeur de aˣ (x non entier)           | 032   | 1      | case, décimal arrondi     |
+| E2 Propriétés algébriques : une seule puissance       | 033   | 2      | case, expression `a^{…}`  |
+| E3 Sens de variation de x ↦ aˣ                        | 034   | 1      | choix                     |
+| E4 Associer une courbe à sa fonction aˣ               | 035   | 2      | ` ```associer ` + courbes |
+| E5 Exposant 1/n                                       | 036   | 1      | case, nombre              |
+| E6 Placer les points de la courbe d'une exponentielle | 042   | 1      | ` ```courbe ` + `placer:` |
+| E7 Lire sur la courbe d'une exponentielle             | 059   | 1      | case, lecture (tolérance) |
+
+- **E1** : v1 `f(x) = aˣ`, a ∈ {1,5 ; 2 ; 3 ; 0,5 ; 0,8}, x ∈ {0,5 ; 1,5 ; 2,5 ; 3,2}, arrondi au centième ;
+  v2 capital C ∈ {1 000 ; 2 000 ; 5 000} placé à t ∈ {2 ; 3 ; 4} % : valeur au bout de x ∈ {1,5 ; 2,5 ; 3,5} ans,
+  `C × (1 + t/100)ˣ`, arrondi au centime (« fraction d'annuité », BO) ; v3 noyaux N₀ ∈ {1 000 ; 8 000} au bout de
+  x ∈ {0,5 ; 1,5 ; 2,5} demi-vies, `N₀ × 0,5ˣ`, arrondi à l'unité. Erreurs : a × x, aˣ⁺¹, intérêts simples
+  (C(1 + xt/100)).
+- **E2** : écrire sous la forme d'une seule puissance aᶜ, exposants **positifs** (décimaux simples) : v1 aˣ × aʸ ;
+  v2 aˣ / aʸ avec x > y ; v3 (aˣ)ᵏ, k ∈ 2..4 ; v4 aˣ × bˣ = (ab)ˣ. a ∈ {2 ; 3 ; 5 ; 1,5}, x, y ∈ {0,5 ; 1,5 ; 2 ;
+  2,5 ; 3}. Erreurs : aˣʸ pour le produit, a^{x/y} pour le quotient, a^{x+k} pour la puissance, (a + b)ˣ. Forme
+  attendue (une seule puissance) à vérifier à l'écriture (`requiredForm`, piège § 9 de la démarche).
+- **E3** (choix croissante / décroissante / constante, comme G5) : v1 `f(x) = aˣ`, a > 1 ; v2 0 < a < 1 ; v3 a = 1 ;
+  v4 comparer f(x₁) et f(x₂) sans calcul (choix <, >), x₁ < x₂ ; v5 contexte « quantité qui diminue de t % par
+  heure, modélisée par … ». a ∈ {1,2 ; 1,5 ; 2 ; 3} ou {0,2 ; 0,5 ; 0,8 ; 0,9}. Parallèle avec les suites
+  géométriques (BO), sans le dire dans la réponse.
+- **E4** (` ```associer `, courbes dans les éléments) : trois courbes sur [0 ; 4] (deux a > 1 dont une plus
+  « rapide », une 0 < a < 1) ↔ trois expressions ; v2 avec a = 1 (droite horizontale) parmi les trois. Repère
+  commun, toutes passent par (0 ; 1) : on distingue par le sens et par f(1) = a.
+- **E5** : v1 a^{1/n} exact : 4^{1/2}, 9^{1/2}, 8^{1/3}, 27^{1/3}, 64^{1/3}, 16^{1/4}, 81^{1/4}, 32^{1/5} ;
+  v2 « le nombre positif dont la puissance n-ième vaut b » = b^{1/n}, arrondi au centième (b ∈ 2..20, n ∈ 2..5) ;
+  v3 (a^{1/n})ⁿ = a. Erreurs : b/n, b × 1/n, bⁿ.
+- **E6** (` ```courbe ` + `placer:` de points, décision Q5) : tableau de valeurs à x = 0..4 donné ou à calculer,
+  `f(x) = 2ˣ`, `1,5ˣ`, `0,5ˣ` ou `k × aˣ` à valeurs lisibles (100 × 0,5ˣ, 10 × 2ˣ) ; placer 4 ou 5 points ; échelle
+  choisie pour des ordonnées entières ou demi-entières. Le tracé de la courbe elle-même reste hors outil (aucun geste
+  ne trace une courbe non affine, § 3).
+- **E7** (` ```courbe `, lecture) : courbe de `f(x) = k × aˣ` sur [0 ; 6] ; v1 lire f(x₀) ; v2 lire x tel que
+  f(x) = y₀ ; v3 lire a (f(1) quand k = 1, ou f(1)/f(0)). Réponse à tolérance de lecture (une demi-graduation).
+
+### Lot 4 « Taux moyen, phénomènes exponentiels, seuils » (7 modèles)
+
+| Modèle                                                | Point | Nœud                       | Niveau | Réponse          |
+| ----------------------------------------------------- | ----- | -------------------------- | ------ | ---------------- |
+| T1 Taux moyen de n évolutions successives             | 037   | taux d'évolution moyen     | 2      | case, % arrondi  |
+| T2 Taux moyen entre une valeur de départ et d'arrivée | 040   | taux d'évolution moyen     | 2      | case, % arrondi  |
+| T3 Reconnaître une évolution exponentielle            | 038   | croissance et décroissance | 1      | choix            |
+| T4 Modéliser par une fonction exponentielle           | 056   | croissance et décroissance | 2      | case, expression |
+| T5 Ordre de grandeur d'une évolution exponentielle    | 043   | croissance et décroissance | 2      | choix            |
+| T6 Seuil par le calcul (sans logarithme)              | 044   | seuil                      | 2      | case, entier     |
+| T7 Seuil lu sur la courbe                             | 060   | seuil                      | 1      | case, lecture    |
+
+- **T1** (037, le **contenu**) : n ∈ {2 ; 3 ; 4} évolutions **données une à une** (+10 %, −5 %, +20 %…), taux moyen
+  `((1 + t₁)…(1 + tₙ))^{1/n} − 1`, en %, arrondi à 0,01 %. Erreurs : moyenne arithmétique des taux, somme des taux / n,
+  oubli du −1.
+- **T2** (040, la **capacité**) : v1 valeur V₀ → Vₙ en n ans (population, prix), taux annuel moyen `(Vₙ/V₀)^{1/n} − 1` ;
+  v2 taux global donné (+50 % en 5 ans) ; v3 taux annuel → taux mensuel équivalent (n = 12). Erreurs : taux global / n,
+  oubli du −1, exposant n au lieu de 1/n.
+- **T3** (choix) : v1 tableau de valeurs à pas constant : linéaire (différences constantes), exponentielle (quotients
+  constants) ou aucune des deux ; v2 description en mots (« augmente de 3 % par an » / « de 300 habitants par an » /
+  « est divisée par 2 toutes les 8 h ») ; v3 croissance ou décroissance exponentielle ; v4 discret (suite) ou continu
+  (fonction) : « nombre de bactéries à chaque heure entière » / « à tout instant t ». Valeurs exactes (quotients
+  simples : 2, 1,5, 0,5, 1,1).
+- **T4** (expression en t ou x) : v1 substance éliminée à t % par heure, Q₀ mg → `Q₀ × (1 − t/100)ᵗ` ; v2 population
+  +t % par an, à tout instant → `P₀ × (1 + t/100)ˣ` ; v3 divisée par 2 chaque heure → `N₀ × 0,5ᵗ` ; v4 rumeur
+  (chaque personne prévient k autres) → `kˣ`. Q₀ ∈ {50 ; 100 ; 200}, t ∈ {10 ; 15 ; 20 ; 25}. Erreurs : baisse linéaire Q₀ − (t/100)·Q₀·t,
+  (linéaire), Q₀ × (t/100)ᵗ, Q₀ × (1 + t/100)ᵗ pour une baisse. Distinct de G4 (029 : terme général discret).
+  Variable de l'énoncé (t, x) acceptée telle quelle ; `constraints.form: off` comme G4 (décimal dans l'expression).
+- **T5** (choix d'une puissance de 10) : v1 « double chaque année » : au bout de 10 ans ×≈ 10³, 20 ans ×≈ 10⁶
+  (2¹⁰ ≈ 10³) ; v2 demi-vie : au bout de 10 demi-vies il reste ≈ 1/1 000 ; v3 rumeur ×3 par étape, 10 étapes ≈ 6 × 10⁴
+  → ordre 10⁴ ou 10⁵ ; v4 R₀ = 2 ou 3 sur n générations. Choix 10, 10², 10³, 10⁴, 10⁶. Erreurs : 2 × 10 (linéaire),
+  10² pour 2¹⁰.
+- **T6** (entier, **sans logarithme** : essais à la calculatrice) : « à partir de quelle année / quel rang » ; v1 placement
+  C × (1 + t/100)ⁿ ⩾ 2C ; v2 substance Q₀ × 0,8ⁿ < seuil ; v3 population P₀ × 1,0tⁿ > P₁. Réponse n ⩽ 20. Erreurs :
+  n − 1 (dernier rang sous le seuil), n + 1. Corrigé : les deux puissances encadrantes (uₙ₋₁ et uₙ), pas de tableau
+  complet (0b686e01, 061, fait le tableau).
+- **T7** (` ```courbe `, lecture) : courbe de `f(x) = k × aˣ` et droite y = s tracée ; v1 croissance : « à partir de
+  quel x f(x) ⩾ s » ; v2 décroissance : « à partir de quel instant la quantité passe sous s » ; v3 discret (points
+  d'une suite géométrique, 058-like) : premier rang au-dessus de s. Tolérance une demi-graduation (v1, v2), entier
+  exact (v3).
+
+### Coordination questions-ttechno
+
+Nos modèles tiennent dans ses bornes (a > 0, x ⩾ 0 est un cas de ses x réels) : candidats TTECHNO E1 (031), E2 (037 /
+081), E3 (032), E4 (033), E5 et T1 / T2 (035 / 038). Comme Q11 : nous écrivons avec `grades` `['1_GEN']`, elle fait
+son `array_append('T_TECHNO')` et ses tags après notre migration nœud + tags. Lui envoyer cette phase 0 dès sa
+validation, puis les ids des brouillons.
+
+**Question d'accès** (migrations nœud + tags de chaque lot) : personne ne lit rien de nouveau ; brouillons rangés et
+tagués, visibles des élèves seulement après publication par David.
+
+### Questions (2026-11-17)
+
+- **Q13** — 037 et 040 séparés ainsi : T1 évolutions successives données (contenu), T2 valeurs de départ et
+  d'arrivée, taux global, mensuel équivalent (capacité) ?
+- **Q14** — E6 (042) : placer les points d'un tableau, sans tracer la courbe (rappel de Q5) ; et E2 (033) limité aux
+  exposants positifs (x ⩾ 0) ?
+- **Q15** — Propriétés algébriques (033) : modèle commun avec questions-ttechno (elle réécrivait les calques eˣ en aˣ
+  pour ses 034, 078, 079) : nous l'écrivons à exposants positifs et elle écrit seulement le complément négatif ?
+- **Q16** — Phase 0 des lots 3 et 4 (modèles, variations, plages, niveaux, formes de réponse) ci-dessus : validée ?
