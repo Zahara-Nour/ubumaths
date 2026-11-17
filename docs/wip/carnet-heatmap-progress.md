@@ -1,18 +1,18 @@
 ---
-status: phase-0
+status: en-cours
 ---
 
 # Heatmap de régularité dans le carnet de liaison — journal du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 écrite._
+_Mis à jour le 2026-11-17, phase 0 validée._
 
 - **État** : décisions D1 et D2 prises par David (ci-dessous) ; rien de codé.
-- **Prochaine action** : validation de la phase 0 par David, puis PR 1 (affichage) dans un worktree.
-- **En attente de David** : phase 0 (N1-N5, L1-L5, E1), découpage inversé, Q1 et Q2.
+- **Prochaine action** : PR 1 (affichage) en cours.
+- **En attente de David** : rien ; après le merge de PR 1, son `deploy:prod` avant la PR 2.
 - **Pièges en cours** : Zod `weeks.max(5)` → l'affichage d'abord, livré par `deploy:prod`, puis la migration (sinon carnet en erreur). `db:types` hors jeu (signature inchangée). ADR 0040 à mettre à jour.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-carnet-heatmap` · `feat/carnet-heatmap`.
 
 ---
 
@@ -42,7 +42,7 @@ personnel, contrôles exclus).
   lieu des 5 dernières semaines. Rien d'autre ne s'ouvre : ni les jours, ni les notes, ni un autre
   élève.
 
-## Phase 0 — comportements (à valider par David)
+## Phase 0 — comportements (validés par David le 2026-11-17 : « je valide »)
 
 Lu dans le code le 2026-11-17 : `carnet_payload` (dernière version :
 `20261117113154_carnet_arrivee_en_cours_d_annee.sql`), `CarnetView.svelte`,
@@ -85,7 +85,7 @@ au merge (`db:migrate`) alors que le code en prod (Zod `.max(5)`) n'est livré q
 `deploy:prod` : **le carnet de tous les parents tomberait en erreur** entre les deux. Et
 `db:types` n'est pas en jeu : la fonction rend toujours un `jsonb`, la signature ne change pas.
 
-## Découpage (proposé, à valider)
+## Découpage (validé le 2026-11-17)
 
 1. **PR 1 — affichage** : Zod `.max(53)` ; `CarnetView` passe à la rangée de cases (réutilise
    `RegularityTable`, un seul « élève ») ; marche avec 5 semaines comme avec 40 ;
@@ -94,7 +94,7 @@ au merge (`db:migrate`) alors que le code en prod (Zod `.max(5)`) n'est livré q
    depuis la rentrée / l'arrivée (évaluations : fenêtre de 5 semaines gardée) ; tests
    d'intégration rouges sans la migration ; ADR 0040 mis à jour ; captures refaites.
 
-## Questions de phase 0
+## Questions de phase 0 (tranchées le 2026-11-17 : recommandations validées)
 
 - **Q1 — vocabulaire** : le carnet dit « jours de travail », la grille du prof « jours actifs ».
   `RegularityTable` prend une prop de libellé : le carnet garde « jours de travail » (recommandé :
@@ -103,3 +103,5 @@ au merge (`db:migrate`) alors que le code en prod (Zod `.max(5)`) n'est livré q
   carnet, le prénom est déjà en titre de page : **pas de colonne de nom** (recommandé).
 
 ## Journal
+
+- 2026-11-17 : phase 0 validée (ordre inversé, Q1 « jours de travail », Q2 sans colonne de nom). Worktree ouvert pour la PR 1.

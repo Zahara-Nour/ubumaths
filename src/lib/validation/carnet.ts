@@ -25,7 +25,11 @@ export const CARNET_LEVELS = ['0', '1', '2-3', '4+'] as const;
 
 export const carnetSchema = z.object({
 	firstname: z.string().nullable(),
-	/** La semaine en cours et les 4 précédentes, sans semaine d'avant la rentrée */
+	/**
+	 * Une semaine par entrée, de la rentrée (ou de l'arrivée de l'élève, Q43) à
+	 * la semaine en cours. 53 au plus : une année scolaire, même mal saisie.
+	 * (Le SQL rendait 5 semaines ; chantier `carnet-heatmap`.)
+	 */
 	weeks: z
 		.array(
 			z.object({
@@ -34,7 +38,7 @@ export const carnetSchema = z.object({
 				holiday: z.boolean()
 			})
 		)
-		.max(5),
+		.max(53),
 	revisions: z.object({ overdue: z.number().int().min(0) }),
 	/** Faite ou non, échéance — JAMAIS la note */
 	evaluations: z
