@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-17, après #2776 (migrée)._
   puis `publier-lot.ts --dir scripts/questions/ttechno-2a-suites` (simulation) ; David lance `--publier`. Ensuite
   lot 2b (Python, P1–P3).
 - **En attente de David** : relecture de la page à cocher (8 fiches).
-- **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
+- **`questions-1gen`** : lot 3 (aˣ) reçu (§ 15, 4 candidats E1–E4, brouillons) ; lot 4 (taux moyen) encore attendu.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
   piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
 - **Worktree / branche** : aucun (#2774 mergée, worktree retiré).
@@ -423,3 +423,24 @@ bloquant : ids, chemins, points revérifiés en prod, rollback miroir, aucune ta
 Copie des ids mise de côté sur `main` jetée (identique). `garde-niveaux-tags` : aucun niveau manquant.
 
 - Page à cocher : https://claude.ai/artifact/4fCZW4x4Y5yKuZDwmt7v2Z (8 fiches, aucune alerte ; `verdicts` vide).
+
+## 15. Message de `questions-1gen` : lot 3 (aˣ) en prod (2026-11-17)
+
+7 brouillons rangés et tagués 1GEN (migration `20261117191427`, #2778), tous sur « Fonctions > Fonction exponentielle >
+fonctions x ↦ aˣ », `grades ['1_GEN']`, encore brouillons (leur page à cocher d'abord). Candidats TTECHNO (§ 8 bis) :
+
+- **E1** `e4e65a69-2710-45d1-9592-1edd100d9067` « Calculer une valeur de a^x » → 031 : a ∈ {1,5 ; 2 ; 3 ; 0,5 ;
+  0,8}, x ∈ {0,5 ; 1,5 ; 2,5 ; 3,2} ; capital 1000 / 2000 / 5000 € à 2–4 %, x ∈ {1,5 ; 2,5 ; 3,5} ; 1000 / 8000 ×
+  0,5ˣ, x ∈ {0,5 ; 1,5 ; 2,5}.
+- **E2** `60971c9a-82e7-4ed5-a18a-7520b40c38b2` « Une seule puissance » (commun, Q15) → 081 : exposants positifs
+  seulement (a ∈ {2 ; 3 ; 5 ; 1,5}, exposants 0,5…4,5, k ∈ 2..4, b ∈ {2 ; 3 ; 4}) ; complément à exposants
+  négatifs à écrire ici.
+- **E3** `2a9c316a-ee3d-44dc-89be-8b3b5c00ac2c` « Sens de variation de x ↦ a^x » → 032 : a > 1, 0 < a < 1, a = 1,
+  comparaison sans calcul, médicament (−p %/h), sur [0 ; +∞[.
+- **E4** `065eea60-1d6d-4404-9015-f4624e661ab2` « Associer une courbe à sa fonction » → 033 : courbes sur [0 ; 4],
+  a ∈ {1,2 ; 1,5 ; 2 ; 2,5 ; 0,5 ; 0,6 ; 0,8}, a = 1 en v2.
+- E5 3a8ef5f7, E6 9ead685c, E7 fc27769e : sans point TTECHNO.
+- ⚠ Le rollback commenté de leur migration retire le nœud : ils ne le joueront plus une fois nos tags posés.
+
+À faire au lot 3 ici : lire les 4 en entier contre nos bornes (031 parle aussi de a⁻ˣ = 1/aˣ ; 032 / 033 sur ℝ
+chez nous, [0 ; +∞[ chez eux → complément x < 0 si besoin), puis tags + `array_append('T_TECHNO')`.
