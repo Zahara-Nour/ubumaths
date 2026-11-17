@@ -12,8 +12,7 @@ _Mis à jour le 2026-11-17, lot 10 publié._
   n° 37, rattaché à la 6e).
 - **Prochaine action** : rien dans ce chantier tant que l'outil de 4-038 n'existe pas ; proposer à David la
   clôture (versement du durable dans `docs/systeme/`, archivage du journal).
-- **En attente de David** : décider la clôture du chantier ; supprimer la branche locale périmée
-  `feat/questions-4-lot-10` (`branch -D` = liste `ask`).
+- **En attente de David** : décider la clôture du chantier.
 - **Pièges en cours** : aucun propre au chantier.
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
