@@ -511,3 +511,13 @@ disait brouillons), `grades ['1_GEN']`, un seul tag chacun (1GEN-032 à 035), au
 
 Tags : avec ceux de T1 / T2 (lot 4), défaut retenu. Les 4 étant publiés, le tag les rend visibles aux élèves de
 Tle STMG dès `db:migrate` (même cas que le lot 0, question d'accès Q2). Page à cocher : E2 marqué ⚠.
+
+**T1 / T2 reçus** (message de `questions-1gen`, migration `20261117222809`, #2793 jouée) : brouillons, `grades
+['1_GEN']`, nœud « Proportionnalité > Évolutions > taux d'évolution moyen ». Lus en entier :
+
+- **T1** a439df84 (1GEN-037) → **035 : OK**. 2, 3 ou 4 évolutions données une à une, (1 + tₘ)ⁿ = CM, exposant 1/n.
+- **T2** f84e23a3 (1GEN-040) → **038 : OK**. Taux annuel moyen entre deux valeurs, à partir d'un taux global,
+  taux mensuel équivalent : les deux contextes du BO.
+
+Prochaine étape : une migration de tags pour les 6 (E1–E4 publiés, T1–T2 brouillons), gabarit lot 0. Avant le
+SQL : question d'accès et verdict sur E2 var. 3, posés à David.
