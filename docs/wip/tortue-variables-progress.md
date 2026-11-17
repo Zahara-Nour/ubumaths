@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-17, après la publication des 4 modèles._
 
-- **État** : PR A (#2735), B (#2742), C (#2746), D (#2755) mergées, livrées par `deploy:prod` (0.93.0) ; 4 modèles publiés par David (`publier-lot --publier`), vérifiés `published` (MCP) · **Prochaine action** : clore le chantier (versement dans `docs/systeme/blockly.md`, ligne de `outils-manquants.md`, journal archivé) · **En attente de David** : `1e2` et `répéter 2,5` (revue PR A) — corriger, ou noter en limite connue · **Pièges en cours** : `db:migrate` pousse TOUTES les migrations de `main` en attente · **Worktree / branche** : aucun
+- **État** : PR A (#2735), B (#2742), C (#2746), D (#2755) mergées, livrées par `deploy:prod` (0.93.0) ; 4 modèles publiés par David (`publier-lot --publier`), vérifiés `published` (MCP) · **Prochaine action** : PR `fix/tortue-nombres` (phase 0 validée, § Correctif), puis clore le chantier (versement dans `docs/systeme/blockly.md`, ligne de `outils-manquants.md`, journal archivé) · **En attente de David** : rien · **Pièges en cours** : `db:migrate` pousse TOUTES les migrations de `main` en attente · **Worktree / branche** : aucun
 
 ## Origine
 
@@ -179,3 +179,20 @@ Les 4 modèles relus en base locale, validés tels quels (`répéter 8` admis po
 - `deploy:prod` 0.93.0 par David : #2735, #2742, #2746, #2755 dans `origin/production` (vérifié).
 - `publier-lot --dir scripts/questions/tortue-variables --publier` lancé par David ; MCP : 25991652,
   81bacf03, a0b27395, d64ddd78 → `published`.
+
+## Correctif `fix/tortue-nombres` — phase 0 validée par David le 2026-11-17 (« je valide »)
+
+Constat (sonde) : sans niveau `avancer 1e2` lu, en 4e / 3e refusé ; en 4e / 3e `répéter 2,5` → 3
+tours, `répéter -2` → 0 tour, `mettre n à 2,5 ; répéter n` → 3 tours, sans message (sans niveau :
+refusés). David : « je veux quelque chose de propre ».
+
+1. Nombre de tours = entier ≥ 0 à tous les niveaux : `répéter 2,5` / `répéter -2` écrits →
+   refusés à la lecture (« il faut un nombre entier de fois ») ; calculé non entier ou négatif →
+   arrêt avec message nommant la valeur. `répéter 0` inchangé.
+2. Aucune écriture à exposant (`1e2`) à aucun niveau : refus « écrire le nombre en entier : 100 » ;
+   le texte tiré des blocs n'écrit jamais d'exposant.
+3. Relevé prod des modèles tortue (exposant, `répéter` non entier ou négatif) avant de coder ;
+   un cas → stop, le montrer à David.
+
+Calcul de 5e (arrondi façon Scratch) hors correctif. Une PR, revue `code-reviewer` Opus, pas de
+migration ; puis clôture du chantier.
