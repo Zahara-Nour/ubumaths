@@ -56,6 +56,7 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 | `src/lib/shared/blockly/toolbox/standard.ts`            | Boîte à outils : Logique, Boucles, Math, Texte, Listes, Variables, Fonctions                                                                                                                                                                                                                                           |
 | `src/lib/shared/blockly/generators/`                    | `generateCode` (générateurs Blockly, aperçu « Voir en Python »), enveloppes `wrapJavaScriptCode` / `wrapPythonCode`, garde-fous (longueur, boucles infinies)                                                                                                                                                           |
 | `src/lib/shared/blockly/lecture.ts`                     | Lecture commune (tortue, calcul) : état sérialisé → `BlocLu` vérifié (`lirePiles`), `premierBlocInconnu`, `nombreDeTours`                                                                                                                                                                                              |
+| `src/lib/shared/blockly/nombres.ts`                     | Nombres des programmes (tortue, calcul) : `ecrireSansExposant`, `messageExposant` (refus de `1e2`), `toursEntiers` (nombre de tours entier ≥ 0 à l'arrondi du calcul près)                                                                                                                                             |
 | `src/lib/shared/blockly/calcul/interpreteur.ts`         | `executerCalcul(etat, nombre, niveau)` : interprète un programme de calcul (5e, 4e, 3e) pour un nombre de départ (ADR 0039), rend les nombres affichés ; `branchesNonParcourues` ; **moteur commun** `creerMoteur` / `preparerProgramme` (variables, calculs, conditions, « si », répétitions), partagé avec la tortue |
 | `src/lib/shared/blockly/calcul/notation.ts`             | `etatVersTexteCalcul` / `texteVersEtatCalcul` : `mettre résultat à nombre + 2 ; afficher résultat × 4` ↔ état Blockly ; `messageNiveau`, `conditionsDuProgramme`                                                                                                                                                       |
 | `src/lib/shared/blockly/calcul/jugement.ts`             | `jugerProgrammeCalcul` (mêmes affichages sur chaque essai), `dependDuNombre`, `lireProgrammeCalcul`, `lireEssais` / `ecrireEssais`, `ESSAIS_PAR_DEFAUT`                                                                                                                                                                |
@@ -97,8 +98,8 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
   le programme (rien n'est tracé).
 - Blocs : `tortue_avancer` / `tortue_reculer` (entrée `VALEUR`), `tortue_gauche` /
   `tortue_droite` (entrée `ANGLE`), `tortue_lever_stylo`, `tortue_baisser_stylo` ;
-  `controls_repeat` / `controls_repeat_ext` (répétitions arrondies à l'entier inférieur, négatives
-  → 0), `math_number`. Entrée vide → 0, bloc désactivé → ignoré, nombre posé seul → ignoré. Piles
+  `controls_repeat` / `controls_repeat_ext` (nombre de tours entier ≥ 0, cf. § Tortue de 4e et 3e,
+  Exécution), `math_number`. Entrée vide → 0, bloc désactivé → ignoré, nombre posé seul → ignoré. Piles
   exécutées de haut en bas ; les suivants (`next`) sont lus en boucle, seule l'imbrication
   (bornée à 1 000) fait récursion.
 - Repère : unité = un carreau, départ en (0, 0), cap 0 = vers la droite, tourner à gauche = sens
@@ -115,8 +116,9 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
   (§ Tortue de 4e et 3e).
 - **Moteur commun** : depuis le chantier `tortue-variables`, `executerTortue` passe par le moteur
   des programmes de calcul (`creerMoteur`) ; les blocs tortue lui sont confiés comme instructions
-  propres au domaine. Sans niveau, rien ne change (mêmes pas, même arrondi inférieur des
-  répétitions, tests d'avant inchangés).
+  propres au domaine. Sans niveau, mêmes pas qu'avant ; le nombre de tours calculé suit la règle
+  de tous les niveaux (entier ≥ 0, sinon arrêt `tours-non-entier` — correctif `tortue-nombres`,
+  2026-11-17 ; avant : entier inférieur, négatif → 0).
 - Quadrillage fixe 20 × 20 (`DEMI_COTE_CADRE`). Sur `/tortue`, **animé** : pause de 600 ms au départ (`PAUSE_DEPART_MS`, tortue au départ, rien de
   tracé), puis 300 ms par étape jusqu'à 40 étapes, au-delà l'animation entière dure
   12 s (plusieurs étapes par tic sous 16 ms) ; « Tout de suite » saute à la fin, toute
@@ -139,10 +141,13 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
   une réponse trop longue à `MAX_ANSWER_LENGTH`, un programme de cette longueur exacte peut avoir
   été coupé (et rejoué comme un autre programme) : il est refusé (« Programme trop long »).
 - `etatVersTexte` suit l'exécution : piles de haut en bas, blocs désactivés et nombres posés
-  seuls ignorés, entrée vide → 0, répétitions à l'entier inférieur ; un bloc inconnu refuse tout.
+  seuls ignorés, entrée vide → 0 ; nombre de tours d'un `controls_repeat_ext` écrit tel quel (non
+  entier : la relecture le refuse) ; nombres toujours écrits sans exposant (`nombres.ts`,
+  `ecrireSansExposant`) ; un bloc inconnu refuse tout.
   `texteVersEtat` rend une seule pile (`controls_repeat`, ombres `math_number`), rejouable par
   `executerTortue` et rechargeable dans l'espace de blocs. Refus : instruction inconnue (le
-  message la cite), nombre absent ou illisible, `répéter` sans entier ≥ 0 ou sans crochets,
+  message la cite), nombre absent ou illisible, nombre à exposant (« « 1e2 » : écrire le nombre en
+  entier (100). », `messageExposant`), `répéter` sans entier ≥ 0 ou sans crochets,
   crochets mal appariés, plus de 50 répétitions imbriquées, texte trop long. Un aller-retour
   texte → blocs → texte rend le même texte.
 - **Jugement** (`jugement.ts`) : les deux programmes rejoués, segments comparés sans ordre ni
@@ -180,9 +185,13 @@ corrigé au niveau, sélecteur de `/tortue` (§ L'écran d'une question tortue, 
   sinon », comparaisons, et / ou / non) et « répéter jusqu'à ». Un nom de variable refusé l'est
   dès sa création (`surveillerNomsDeVariables`, message `.tortue-nom-refuse` sous les blocs).
 - **Exécution** : celle du moteur commun, mêmes règles que le calcul (variable jamais mise = 0,
-  20 variables au plus, noms réservés refusés, condition vide fausse, égalité à la marge). En
-  4e / 3e, `controls_repeat_ext` arrondit à l'entier le plus proche (négatif → 0) ; sans niveau,
-  entier inférieur comme avant. Distance négative = recule ; angle non entier admis. Arrêts :
+  20 variables au plus, noms réservés refusés, condition vide fausse, égalité à la marge).
+  **Nombre de tours** (`controls_repeat_ext`), à tous les niveaux : entier ≥ 0 à l'arrondi du
+  calcul près (`toursEntiers`, `0,1 × 30` = 3), jamais arrondi en silence ; sinon arrêt
+  `tours-non-entier` avec le tracé partiel (« Répéter : le nombre de fois vaut 2,5, il faut un
+  nombre entier (0, 1, 2…). »). Écrit non entier ou négatif (`répéter 2,5 [ … ]`, `répéter -2`) :
+  refusé dès la lecture. Le calcul de 5e garde l'arrondi à l'entier le plus proche (Scratch).
+  Distance négative = recule ; angle non entier admis. Arrêts :
   ÷ 0 → `division-par-zero` (« on ne peut pas diviser par 0 ») ; nombre infini → `trop-loin` ;
   boucle sans fin → `trop-long` (10 000 pas, une opération ou une comparaison comptent un pas).
   Étapes de l'animation : une par instruction tortue, aucune pour une variable ou un « si ».

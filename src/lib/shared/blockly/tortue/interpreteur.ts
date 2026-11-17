@@ -29,6 +29,7 @@ import {
 	VARIABLES_MAX,
 	verifierNomDeVariable
 } from '../calcul/interpreteur';
+import { ecrireSansExposant, toursEntiers } from '../nombres';
 
 export type { BlocLu } from '../lecture';
 
@@ -50,6 +51,7 @@ export type ErreurTortue =
 	| { type: 'trop-long' }
 	| { type: 'trop-loin' }
 	| { type: 'division-par-zero' }
+	| { type: 'tours-non-entier'; valeur: number }
 	| { type: 'programme-illisible' }
 	| { type: 'nom-de-variable'; nom: string }
 	| { type: 'trop-de-variables' };
@@ -130,7 +132,10 @@ const VALEURS_TOUTES: ReadonlySet<string> = new Set(
 /** Blocs valeur sans niveau. */
 const VALEURS = new Set(['math_number']);
 
-const MESSAGES: Record<Exclude<ErreurTortue['type'], 'nom-de-variable'>, string> = {
+const MESSAGES: Record<
+	Exclude<ErreurTortue['type'], 'nom-de-variable' | 'tours-non-entier'>,
+	string
+> = {
 	'bloc-inconnu': 'Ce bloc n’est pas pris en charge par la tortue.',
 	'trop-long': `Programme arrêté après ${LIMITE_PAS.toLocaleString('fr-FR')} pas : il est trop long, ou ne s’arrête pas.`,
 	'trop-loin': `La tortue est partie trop loin (plus de ${DISTANCE_MAX.toLocaleString('fr-FR')} carreaux du départ).`,
@@ -146,6 +151,10 @@ const MESSAGES: Record<Exclude<ErreurTortue['type'], 'nom-de-variable'>, string>
 export function messageErreurTortue(erreur: ErreurTortue): string {
 	if (erreur.type === 'nom-de-variable') {
 		return verifierNomDeVariable(erreur.nom) ?? `« ${erreur.nom} » : nom de variable refusé.`;
+	}
+	if (erreur.type === 'tours-non-entier') {
+		const valeur = ecrireSansExposant(erreur.valeur).replace('-', '−');
+		return `Répéter : le nombre de fois vaut ${valeur}, il faut un nombre entier (0, 1, 2…).`;
 	}
 	return MESSAGES[erreur.type];
 }
@@ -215,9 +224,22 @@ export function nombreDeTours(bloc: BlocLu): number {
 
 class TropLoin extends Error {}
 
-/** Tours d'une répétition à nombre calculé, sans niveau : entier inférieur, jamais négatif. */
-function toursDeBase(valeur: number): number {
-	return Number.isFinite(valeur) ? Math.max(0, Math.floor(valeur)) : 0;
+/** Arrêt : le nombre de tours calculé d'une répétition n'est pas un entier ≥ 0. */
+class ToursNonEntiers extends Error {
+	constructor(readonly valeur: number) {
+		super();
+	}
+}
+
+/**
+ * Tours d'une répétition à nombre calculé, à tous les niveaux : entier ≥ 0 (à l'arrondi du calcul
+ * près), sinon arrêt — jamais arrondi en silence. Infini : la tortue partirait trop loin.
+ */
+function toursDeLaTortue(valeur: number): number {
+	if (!Number.isFinite(valeur)) throw new TropGrand();
+	const tours = toursEntiers(valeur);
+	if (tours === null) throw new ToursNonEntiers(valeur);
+	return tours;
 }
 
 /**
@@ -295,8 +317,7 @@ export function executerTortue(etat: unknown, niveau: NiveauTortue = 'base'): Re
 				etapes.push({ tortue: { ...tortue }, segments: segments.length });
 				return true;
 			},
-			// Sans niveau, comme avant les niveaux : entier inférieur ; en 4e / 3e, arrondi (calcul)
-			...(niveau === 'base' && { toursCalcules: toursDeBase })
+			toursCalcules: toursDeLaTortue
 		},
 		LIMITE_PAS
 	);
@@ -304,6 +325,10 @@ export function executerTortue(etat: unknown, niveau: NiveauTortue = 'base'): Re
 	try {
 		for (const pile of prepare.piles) moteur.executerPile(pile);
 	} catch (erreur) {
+		if (erreur instanceof ToursNonEntiers) {
+			const err = { type: 'tours-non-entier' as const, valeur: erreur.valeur };
+			return { ok: false, erreur: err, segments, tortue, etapes, pas: moteur.pas() };
+		}
 		const type =
 			erreur instanceof TropLong
 				? 'trop-long'

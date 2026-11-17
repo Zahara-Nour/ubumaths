@@ -196,3 +196,16 @@ refusés). David : « je veux quelque chose de propre ».
 
 Calcul de 5e (arrondi façon Scratch) hors correctif. Une PR, revue `code-reviewer` Opus, pas de
 migration ; puis clôture du chantier.
+
+### Correctif — implémentation (2026-11-17, worktree `ubumaths-wt-tortue-nombres`)
+
+- Relevé prod (MCP) : 8 modèles tortue, aucun exposant, aucun `répéter` décimal ou négatif écrit.
+- `nombres.ts` (nouveau) : `ecrireSansExposant`, `messageExposant`, `toursEntiers` (tolérance
+  1e-9 : `0,1 × 30` = 3 tours, pas un arrêt). Interpréteur : `toursDeLaTortue` à tous les niveaux,
+  erreur `tours-non-entier` (valeur dans le message, `−` typographique). Notation 4e / 3e : nombre
+  écrit non entier ou négatif après `répéter` refusé, cité par `cite` (« répéter − 2 »). Notation
+  sans niveau : plus d'exposant lu ni écrit ; `controls_repeat_ext` écrit sa valeur brute.
+- Tests rouges d'abord (10), puis verts : 355 tests `blockly` ; specs des 9 modèles tortue du dépôt
+  vertes ; `check:incremental` 0 erreur ; `docs/systeme/blockly.md` mise à jour.
+- Hors correctif, inchangé : `controls_repeat` (champ entier, Blockly interdit virgule et
+  négatif) ; calcul de 5e (arrondi façon Scratch).
