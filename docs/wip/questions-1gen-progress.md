@@ -7,18 +7,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après le redécoupage (§ 4) et la phase 0 du lot 1 (§ 9)._
+_Mis à jour le 2026-11-17, après les décisions Q10 à Q12 (§ 9)._
 
-- **État** : #2744 jouée en prod (§ 8). Relevé prod : **39 points sans modèle** (les 38 du § 7 + 022, qui a perdu
-  1acb6d47). Redécoupés en 6 lots (§ 4). Phase 0 du lot 1 (suites géométriques, 5 modèles) écrite (§ 9).
-- **Prochaine action** : après le go de David (Q10 à Q12, § 9), prévenir questions-1techno (modèles communs du lot 1),
-  puis worktree `questions-1gen` et écriture du lot 1 ; envoyer à questions-ttechno la phase 0 des lots 3 et 4.
-- **En attente de David** : Q10 (découpage), Q11 (modèles communs 1GEN + 1TECHNO), Q12 (phase 0 du lot 1).
+- **État** : #2744 jouée en prod (§ 8). 39 points sans modèle, redécoupés en 6 lots (§ 4). Phase 0 du lot 1 (suites
+  géométriques, G1 à G5) **validée** (§ 9) ; questions-1techno prévenu (G1, G4, G5 communs).
+- **Prochaine action** : écrire le lot 1 dans `../ubumaths-wt-questions-1gen` (`feat/questions-1gen-lot1`) ; envoyer
+  à questions-1techno les ids des brouillons G1 à G5 dès leur création ; puis phase 0 des lots 3 et 4 pour
+  questions-ttechno.
+- **En attente de David** : rien.
 - **Pièges en cours** : AVANT tout tag, ADR 0020 et `couvrir-un-niveau.md` § 9 (un point par programme, point sur le
   nœud du modèle ou sa notion) ; `grades` par `array_append` / `array_remove` ciblés ; `db:migrate` seulement après
-  le merge, depuis le dépôt principal à jour ; modèle 1GEN-022 commun avec 1TECHNO-057 (le premier au second degré
-  l'écrit).
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions-1gen` retiré après #2744).
+  le merge, depuis le dépôt principal à jour ; modèles G1, G4, G5 communs avec 1TECHNO (on écrit `1_GEN` seul,
+  questions-1techno ajoute `1_TECHNO` et ses tags par sa migration) ; modèle 1GEN-022 commun avec 1TECHNO-057.
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen` · `feat/questions-1gen-lot1`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -288,3 +289,12 @@ modèles sont créés en brouillon, la migration ne fait que les ranger et les t
   nos modèles G1, G4, G5 sont **communs** (on écrit, `grades` 1_GEN + 1_TECHNO, questions-1techno pose ses tags par
   sa propre migration), comme le modèle 1GEN-022 + 1TECHNO-057 ; prévenir la session avant d'écrire.
 - **Q12** — Phase 0 du lot 1 (modèles, variations, plages, niveaux, formes de réponse) ci-dessus : validée ?
+
+### Décisions (David, 2026-11-17 : « je te suis tes recos »)
+
+- **Q10** : découpage en 6 lots du § 4, dans l'ordre 1 à 6.
+- **Q11** : G1, G4, G5 sont des modèles **communs** 1GEN + 1TECHNO. questions-1gen les écrit (`grades` `1_GEN`) ;
+  questions-1techno ajoute `1_TECHNO` (`array_append`) et ses tags 036, 038, 040 ou 049 par sa propre migration,
+  après la création des brouillons. Session prévenue le 2026-11-17 ; elle n'écrit aucun modèle de suites
+  géométriques de son lot 1 (il lui reste 047).
+- **Q12** : phase 0 du lot 1 validée telle quelle (modèles, variations, plages, niveaux, formes de réponse).
