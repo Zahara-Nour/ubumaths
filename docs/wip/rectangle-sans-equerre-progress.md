@@ -6,16 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR 1 codée et commitée (§ 4), pas encore ouverte._
+_Mis à jour le 2026-11-17, revue de la PR 1 lue (§ 5), corrections à faire._
 
-- **État** : PR 1 (l'outil) commitée sur la branche, tests verts (40 + 2 de vue), `check:incremental` 0,
-  cliquet tenu, `lint:fast` propre ; revue `code-reviewer` (Opus) lancée, résultat pas encore lu.
-- **Prochaine action** : relancer la revue `code-reviewer` en `model: opus` sur `git diff origin/main...HEAD
--- src` (le résultat de la session précédente est perdu au /clear), corriger, pousser, ouvrir la PR, CI,
-  merge. Puis PR 2 : le modèle 4-038 dans `questions-4`.
+- **État** : PR 1 commitée et poussée sur `feat/rectangle-sans-equerre`, PR pas encore ouverte ; revue
+  `code-reviewer` (Opus) faite : 2 Importants, 3 Mineurs, aucune réponse fausse jugée juste (§ 5).
+- **Prochaine action** : corriger les 5 findings du § 5, un test rouge chacun (1, 2, 3 au moins), puis tests,
+  `check:incremental`, push, ouvrir la PR, CI, merge. Puis PR 2 : le modèle 4-038 dans `questions-4`.
 - **En attente de David** : rien.
-- **Pièges en cours** : `docs:check-a-jour` signale `utilitaires-et-demos.md` (catalogue) : `Doc-inchangée:`
-  déjà au commit du journal. Ne pas toucher à `ruled-polygon.ts`.
+- **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. `Doc-inchangée:` (catalogue) déjà dans un commit.
+  Push : ne pas filtrer sa sortie par `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE).
 - **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre`.
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
@@ -180,3 +179,21 @@ correction sans codage · Q5 côté donné [AB] seul.
 - Vue : une seule retouche, l'indice de la Règle posée propose aussi le Segment (O à 3 cm, D à 6 cm de B).
 - Doc : `docs/systeme/questions.md`, `docs/systeme/ubumark.md`, exemple du catalogue
   (`block-catalog/figure-a-completer.ts`, page `/aide-ecriture/blocs/figure-a-completer`).
+
+## 5. Revue de la PR 1 (code-reviewer, Opus, 2026-11-17) — à corriger
+
+1. **Important** — D construit sur la règle mais atteint par un autre segment que [BD] refusé
+   (`builtPredicate` exige le 0 de la règle sur l'autre bout du MÊME segment). Gestes : règle en B vers O, puis
+   [CD] tracé de C jusqu'à la graduation 60 ; ou [BO] puis [OD] arrêté sur la graduation 60. Correction : un
+   bout `p` est construit s'il existe une règle posée avant le segment, 0 sur un point construit, dirigée vers
+   un point construit, `p` sur une graduation > 0 (comme `ruledGraduationOf` du triangle).
+2. **Important** — le choix de B par « mesuré depuis A » passe avant la longueur : `AB = 3 cm ; AC = 5 cm`,
+   B pris par CB = 4 (compas en C), D par la règle de B vers O, puis règle posée en A vers D pour tracer [AD]
+   → « [AB] mesure 4 cm au lieu de 3 cm » sur une réponse juste. Correction : si un seul des deux sommets est
+   à AB de A (à eps près), c'est B ; « mesuré » ne départage que le reste.
+3. **Mineur** — parseur : `AB = 4 cm` seul ou `BD = 6 cm` seul renvoient au message du rectangle à
+   l'équerre (`BC = 3 cm`) ; router toute longueur seule autre que [BC] vers `readDiagonalRectangle`.
+4. **Mineur** — `d = droite(A, C)` (ou un segment plus long passant par A et C) accepté comme diagonale :
+   exiger un segment de la figure de bouts A et C.
+5. **Mineur** — segment sur la médiatrice de [AC] admis sans limite de longueur : le borner (par exemple aux
+   croisements des deux cercles de même rayon) ou le dire dans la doc.
