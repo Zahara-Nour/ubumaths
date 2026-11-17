@@ -1,4 +1,5 @@
 {
+	"id": "a95aedfd-e91e-4eb4-91e6-3a440ecaa1d5",
 	"title": "Construire un rectangle sans équerre",
 	"description": "La diagonale est tracée : construire le rectangle au compas et à la règle graduée, par le cercle de diamètre la diagonale et les diagonales de même milieu et de même longueur",
 	"grades": ["4"],
