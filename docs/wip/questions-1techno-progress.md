@@ -8,18 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2753 (lot 0 en prod)._
+_Mis à jour le 2026-11-17, après #2758 (lot G en prod)._
 
-- **État** : T1, T2 et **lot 0** en prod (#2743, #2748, #2753). Le lot 0 a été migré par le `db push` d'une autre
-  session (tortue-variables), pas par ce chantier ; effet vérifié conforme (§ 15).
-- **Prochaine action** : verdicts de la page à cocher G1, G4, G5 (§ 16), puis migration de tags ; puis 83b1f614 v3 ; puis lots (§ 5, 9).
-- **En attente de David** : verdicts sur la page à cocher G1, G4, G5 (§ 16).
-- **questions-1gen** : G1, G4, G5 en prod, brouillons, **rangés et tagués 1GEN** (#2754, migrée) → notre
-  migration `1_TECHNO` + tags 036 (G1), 038 (G4), 040 ou 049 (G5) est débloquée ; page à cocher avant (Q10).
+- **État** : T1, T2, lot 0, **lot G** en prod (#2743, #2748, #2753, #2758). Lot G : 0b5c3db6 → 036, c4887e49 → 038,
+  569e0140 → 049, `{1_GEN,1_TECHNO}`, vérifié en prod (§ 17).
+- **Prochaine action** : 83b1f614 v3 (Q4 bis (a) : « x = p est racine évidente » au corrigé ; prévenir questions-1gen
+  avant) ; puis lots d'écriture (§ 5, 9). Lot 2 commun de questions-1gen (R2 → 044, R3 → 117, R4 → 119) : attendre
+  leurs ids, puis page à cocher + migration (§ 18).
+- **En attente de David** : rien.
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
-  worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; commitlint refuse « T1 » en début de sujet ;
-  CI : le cliquet peut être coupé à 20 min (relancer).
-- **Worktree / branche** : aucun (lot 0 nettoyé).
+  worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
+  `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min.
+- **Worktree / branche** : aucun (lot G nettoyé).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -381,3 +381,29 @@ départ). Instantanés prod (`export-question-templates.ts`) dans le scratchpad,
 `scripts/questions/1techno-g/` sur la branche de la migration. Relecture préalable : premier terme et raison
 strictement positifs partout, ni somme ni limite. Points 036, 038, 049 sur le même nœud que le point 1GEN de
 G1, G4, G5.
+
+## 17. Lot G : migration (2026-11-17)
+
+Verdicts de la page à cocher : 3 « ok » sur 3 (0b5c3db6, c4887e49, 569e0140), sans commentaire. Relevé prod
+(MCP) : les trois sont désormais **publiés** par questions-1gen (`updated_at` 15:05), `grades = {1_GEN}`, chacun
+sur le nœud de son point 1GEN, qui est aussi celui du point 1TECHNO visé (028/036, 029/038, 030/049). Même nature
+que T1/T2 (modèles publiés) : la question d'accès du chantier s'applique.
+Migration `20261117164821_questions_1techno_lot_g_tags` sur le gabarit de T2 (sans `deja` : aucun n'a
+`1_TECHNO`) ; test `tests/integration/questions-1techno-lot-g-tags.test.ts` (décor avec le tag 1GEN posé,
+12 tests verts ; migration vidée → 6 rouges et le bloc nominal ne démarre pas). Instantanés prod :
+`scripts/questions/1techno-g/`.
+
+PR #2758 : audit de sécurité sans finding bloquant ; CI verte ; `check:migrations --pr 2758` vert ; merge ;
+`migration list --linked` : seule `20261117164821` en attente ; `db:migrate` depuis le dépôt principal (4 conditions
+réunies). Prod vérifiée (MCP) : les 3 modèles `{1_GEN,1_TECHNO}`, publiés, tags 1GEN-028 + 1TECHNO-036, 1GEN-029 +
+1TECHNO-038, 1GEN-030 + 1TECHNO-049 ; `updated_at` inchangé (15:05:51) ; trigger de date `O`.
+
+## 18. Lot 2 de questions-1gen : modèles communs « représentation graphique » (2026-11-17)
+
+Message de questions-1gen (journal questions-1gen § 15, lot 2 validé par David) : R2 placer les termes d'une suite
+arithmétique, R3 placer les termes d'une suite géométrique > 0, R4 lire sur le nuage d'une suite géométrique > 0,
+écrits en `['1_GEN']` sur le nœud « Suites > Généralités sur les suites > représentation graphique ». Réponse :
+d'accord, aucune objection sur les plages (termes > 0, q = 1/2 ou 1/3 = fractions simples, seuil lu sur le nuage
+sans logarithme, uₙ accepté pour les communs). Points : **R2 → 044, R3 → 117, R4 → 119**, tous trois sur ce nœud
+(`320aaed2`). **Retirés de notre lot 4 « graphiques »**, qui garde 121, 085, 082, 059, 104. Suite : leurs ids après
+leur migration nœud + tags, puis page à cocher et migration `array_append('1_TECHNO')` + tags (gabarit du lot G).
