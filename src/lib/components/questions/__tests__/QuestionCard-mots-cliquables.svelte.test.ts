@@ -1,10 +1,12 @@
 /**
  * Mots cliquables dans une question (lot 2 du lexique, comportements 12 et 13,
- * validés par David le 2026-10-09) : au niveau de l'élève connecté, sinon au
- * plus petit niveau de la question ; jamais en évaluation notée.
+ * validés par David le 2026-10-09) : au niveau de l'élève connecté ; sinon
+ * soulignement au plus haut niveau de la question et fiche au plus petit (R3 et
+ * Q1 du chantier `mots-cliquables`) ; jamais en évaluation notée.
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { userEvent } from 'vitest/browser';
 import QuestionCard from '../QuestionCard.svelte';
 import ReaderGradeHarness from './ReaderGradeHarness.svelte';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
@@ -104,5 +106,19 @@ describe('mots cliquables dans une question', () => {
 			readerGrade: null
 		});
 		await expect.poll(() => lexiconButtons(container)).toEqual(['dérivée']);
+	});
+
+	// N4 + Q1 : fiche au plus petit niveau (4e), mais « fonction » n'arrive qu'en 3e ;
+	// sans le niveau de secours de `lexiconCard`, sa fiche serait vide.
+	it('R3. professeur ou visiteur, question 4e + 3e : un mot de 3e souligné, sa fiche n’est pas vide', async () => {
+		const { container } = await render(ReaderGradeHarness, {
+			instance: instanceOf('Trace la fonction.', ['4', '3']),
+			readerGrade: null
+		});
+		await expect.poll(() => lexiconButtons(container)).toEqual(['fonction']);
+		await userEvent.click(container.querySelector<HTMLButtonElement>('button.lexicon-term')!);
+		await expect
+			.poll(() => document.querySelector('[role="dialog"]')?.textContent)
+			.toContain('Procédé qui, à chaque nombre');
 	});
 });
