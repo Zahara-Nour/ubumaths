@@ -300,3 +300,12 @@ Worktree `../ubumaths-wt-partage-parents`, branche `feat/partage-parents-pr6`.
 - Tests : 4 nouveaux (`carnet-courriels-exception.test.ts`, Q27 bornée + 3 Q43), **rouges sans la migration**, verts avec ; les aides `nouvelEleve` des trois fichiers posent une arrivée il y a 400 jours (avant toute rentrée). 66/66.
 - Revues (2026-11-17), `code-reviewer` et `security-auditor` (Opus) : **aucun finding bloquant**. Corrigés : la borne de Q27 écartait aussi une évaluation préparée l'été (avant la rentrée) → borne seulement sur « non faite hors fenêtre », un mois de marge avant la rentrée (test « Préparée l'été ») ; classe sans carnet ignorée dans le calcul de l'arrivée (test) ; rollback écrit avec ses lignes ; limite « retiré puis remis / changement de classe » complétée dans la doc.
 - **Mergée** le 2026-11-17 (#2739), CI verte au 2e passage (garde de doc : `base-de-donnees.md`). `db:migrate` (4 conditions réunies) depuis le dépôt principal (le worktree n'est pas lié à Supabase) ; il a aussi appliqué `20261117113333` (chantier `questions-cm1`, déjà mergée). Vérifié en prod en lecture seule : les deux fonctions lisent `joined_at`, droits inchangés (postgres, service_role).
+
+## PR 7 — politique de confidentialité (2026-11-17)
+
+Worktree `../ubumaths-wt-partage-parents`, branche `feat/partage-parents-pr7`.
+
+- Brouillon du texte perdu (donné en conversation, jamais écrit) : réécrit depuis la fiche T9 du registre.
+- `/legal/confidentialite` version 1.3 : § 2 (carnet), § 3.3 nouveau « Données des parents » (tableau, ce que montre le carnet, base légale), ancien 3.3 → 3.4, § 4 finalité « Information des parents », § 5.2 (transparence envers l'élève, élève majeur), § 6 (parent destinataire, Brevo), § 7 (adresse 90 jours, lien 31 août, liste des courriels avec le profil), § 8 (droits des parents).
+- **Tranché par David (2026-11-17, recommandations suivies)** : base légale **intérêt légitime** (art. 6.1.f), écrite dans la page et dans le registre ; la durée de la liste des courriels reste « supprimée avec le profil » jusqu'à la PR de Q42, qui la passera à 1 an dans la page.
+- Registre T9 : base légale et remarque mises à jour.

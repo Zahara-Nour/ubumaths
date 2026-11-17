@@ -51,7 +51,7 @@ couvre:
 | Minimisation des donnees        | 9/10     | Excellent        |
 | Retention des donnees           | 8/10     | Bon (v1.5)       |
 | Droits utilisateur              | 10/10    | Excellent (v1.6) |
-| Documentation legale            | 7/10     | Bon (v1.2)       |
+| Documentation legale            | 7/10     | Bon (v1.3)       |
 | Consentement mineurs            | 9/10     | Excellent (v1.8) |
 | Tracabilite & Audit             | 8/10     | Bon (v1.9)       |
 | **GLOBAL**                      | **9/10** | **CONFORME**     |
