@@ -24,16 +24,17 @@ lien qui lui est propre ([CONTEXT.md](../../CONTEXT.md)). L'élève voit le mêm
 son Cabinet, avec « Tes parents voient cette page ».
 
 Le carnet montre seulement (question d'accès Q16) : le prénom, un **palier** de jours de
-travail pour chacune des 5 dernières semaines (0, 1, 2-3, 4+ ; jamais le nombre exact ni les
+travail pour chaque semaine depuis la rentrée (0, 1, 2-3, 4+ ; jamais le nombre exact ni les
 jours), le nombre de révisions en retard, les évaluations faites ou non (**jamais la note**),
 et les liens du cahier et du cours de la classe.
 
 La régularité s'affiche en **une rangée de cases**, une par semaine, la plus ancienne à
 gauche : une ligne de la grille du professeur (`RegularityTable`, sans colonne de nom, en
 « jours de travail » et non « jours actifs »), calée à droite pour que la semaine en cours soit
-visible sur téléphone. La forme accepte jusqu'à 53 semaines (`carnetSchema`) : le carnet doit
-passer à « depuis la rentrée » (chantier `carnet-heatmap`, PR 2), après la livraison de
-l'affichage.
+visible sur téléphone. Elle part de la semaine de la rentrée (ou de l'arrivée de l'élève,
+ci-dessous), 53 semaines au plus (`carnetSchema` et SQL). Année scolaire inconnue (classe sans
+école, ou école sans année active) : les 5 dernières semaines, faute de rentrée et de vacances
+connues. Les **évaluations** gardent leur fenêtre de 5 semaines (Q14).
 
 Tout se compte depuis la rentrée **et depuis l'arrivée de l'élève** dans une classe au carnet
 (Q43 ; la plus ancienne de ses adhésions actives, `class_members.joined_at`) : ni semaine, ni

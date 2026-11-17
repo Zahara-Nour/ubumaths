@@ -334,7 +334,9 @@ et arrête les courriels tant que l'adresse a un lien actif ; colonne illisible 
 `carnet_is_holiday`, `carnet_contact_by_token`. Une évaluation sans échéance non faite reste dans le
 carnet si elle date de l'année en cours (Q27). Migration `20261117113154` : `carnet_payload` et
 `carnet_current_exceptions` comptent depuis l'**arrivée** de l'élève dans une classe au carnet
-(`class_members.joined_at`, Q43), pas seulement depuis la rentrée. Migration `20261117134539` :
+(`class_members.joined_at`, Q43), pas seulement depuis la rentrée. Migration `20261117222600` :
+la régularité de `carnet_payload` court depuis la semaine de la rentrée (53 semaines au plus ; 5
+sans année scolaire connue), les évaluations restent sur 5 semaines. Migration `20261117134539` :
 `carnet_erase_old_notifications` (cron, `service_role` seul) efface les lignes de
 `parent_notifications` de plus d'un an (Q42).
 
