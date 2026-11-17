@@ -11,8 +11,9 @@ _Mis à jour le 2026-11-17, lot 4 écrit (avant sa PR)._
 
 - **État** : lots 1, 2 et 3 publiés ; lot 4 écrit (§ 20) : specs, sondes, simulation prod vertes, 7 brouillons en
   base locale. Lot 5 (second degré) écrit par questions-1techno (§ 4).
-- **Prochaine action** : jouer les 7 modèles dans l'aperçu admin (l'extension Chrome n'ouvrait pas
-  `127.0.0.1:5176`), puis PR des fichiers ; ensuite brouillons en prod (David), migration nœud + tags, page à cocher.
+- **Prochaine action** : finir l'aperçu admin (T2, T3, T5, T6 restent à jouer ; brouillons à recréer en base
+  locale, remise à zéro par une autre session), puis PR des fichiers (commit déjà fait sur la branche) ; ensuite
+  brouillons en prod (David), migration nœud + tags, page à cocher.
 - **En attente de David** : accepter les écarts à la phase 0 du § 20.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente (`migration list --linked` d'abord) ; ids écrits par `create-questions` dans le dépôt
@@ -725,8 +726,10 @@ Script `docs/wip/questions/lot-1gen-4.py` → `scripts/questions/1gen-4-taux-moy
 `question:specs` vert pour les 7 (50 tirages par variation, `\textcolor` toujours dans `$…$`) ; `sonde-courbes`
 sur 300 tirages, 300 blocs ` ```courbe ` : 0 problème ; `validateLatex` + compte des accolades sur 2 903 formules
 (40 aperçus par modèle) : 0 problème ; simulation `create-questions` verte contre la prod (aucun homonyme). Essai en
-base locale : 7 brouillons créés (copie des fichiers, ids locaux). Aperçu admin **pas encore joué** : l'extension
-Chrome restait sur un nouvel onglet en ouvrant `http://127.0.0.1:5176`.
+base locale : 7 brouillons créés (copie des fichiers, ids locaux). Aperçu admin (serveur `--host 127.0.0.1`, première compilation
+lente) : T7 v1 « 4 » pour 4,12 → juste, nuage de la v3 et droite y = 9 lisibles ; T4 « 5000·1,02ˣ » → juste ; T1 v3
+(+30, −20, +40, −10) « 10 » (moyenne des taux) → faux, tableau rendu. T2, T3, T5, T6 restent à jouer : la base
+locale a été remise à zéro par une autre session (brouillons recréés une fois), puis le serveur a été arrêté.
 
 | Modèle | Fichier                                  | Variations | Specs |
 | ------ | ---------------------------------------- | ---------- | ----- |
