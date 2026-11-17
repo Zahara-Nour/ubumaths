@@ -5,17 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2740 et `db:migrate` (lot 6 ter rangé, page à cocher publiée)._
+_Mis à jour le 2026-11-17, lot 6 ter publié (§ 18 sexies)._
 
-- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 ter « algèbre » (062-066) : 8 brouillons en prod,
-  rangés et tagués (#2740, migration passée, vérifié au MCP) ; page à cocher publiée, en relecture.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, page
-  https://claude.ai/artifact/XiA4snkC73LZt3Ktvsny5Q) et les compter ; « À revoir » → corriger ; tout « OK » →
-  `publier-lot` (simulation), `garde-niveaux-tags`, puis `--publier` par David.
-- **En attente de David** : la relecture des 8 fiches (Scratch de 2d7d0e63 non dessiné par la page : le jouer dans
-  l'aperçu admin).
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
+- **État** : lots 0 à 6 ter publiés (114 points sur 171). Lot 6 ter « algèbre » (062-066) : 8 modèles publiés en
+  prod (vérifié au MCP), page à cocher 8 « OK » sur 8.
+- **Prochaine action** : recompte au MCP, puis phase 0 du lot 7 « données » (120-139, 169-172, ordre du § 4 bis :
+  7 données → 8 géométrie dessinée → probabilités, proportionnalité → outils neufs ; restent aussi aires 086-088,
+  angles 089-091, heures 092-095, 166).
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main` (son journal est périmé : lire celui de `main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1415,3 +1414,9 @@ créé.
 - `page-a-cocher.ts --dir scripts/questions/cm1-6ter` : 8 fiches (30 exemples), une alerte (bloc `scratch` de
   2d7d0e63 non dessiné : déjà vu dans l'aperçu admin à 390 px, § 18 ter). Page :
   https://claude.ai/artifact/XiA4snkC73LZt3Ktvsny5Q (`verdicts`, capacité `db`, vide).
+
+### 18 sexies. Lot 6 ter — publié (2026-11-17)
+
+- Page à cocher : 8 « OK » sur 8, aucun commentaire. `publier-lot --dir scripts/questions/cm1-6ter` (simulation),
+  `garde-niveaux-tags` et `--publier` lancés par David (le mode auto refuse ces scripts). Vérifié au MCP : 8 modèles
+  `published`.
