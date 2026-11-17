@@ -6,15 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 écrite (§ 3), soumise à David._
+_Mis à jour le 2026-11-17, phase 0 validée (§ 3.8), PR 1 en cours._
 
-- **État** : phase 0 écrite (§ 3) ; aucun code, aucun worktree.
-- **Prochaine action** : David tranche Q1 à Q5 (§ 3.7) ; puis worktree, tests rouges, PR 1 (l'outil).
-- **En attente de David** : Q1 à Q5 du § 3.7 (recommandations données).
-- **Pièges en cours** : ne pas toucher au juge du rectangle à l'équerre (`ruled-polygon.ts`, chantier
-  `regle-graduee`) : une forme à côté, pas un changement de l'existante. « Construit » par la règle graduée
-  n'est pas dans `constructionOf` : l'étendre dans le nouveau juge (§ 3.3), sans changer les autres juges.
-- **Worktree / branche** : aucun (à créer : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre`).
+- **État** : phase 0 validée par David (Q1 à Q5 = recos, § 3.8) ; PR 1 (l'outil) en cours dans le worktree.
+- **Prochaine action** : tests rouges (parseur, juge), puis parseur, juge, correction, catalogue, `ubumark.md`.
+- **En attente de David** : rien.
+- **Pièges en cours** : ne pas toucher au juge du rectangle à l'équerre (`ruled-polygon.ts`) ; « construit » par
+  la règle graduée n'est pas dans `constructionOf` : l'étendre dans le nouveau juge (§ 3.3).
+- **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre`.
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
 
@@ -155,3 +154,9 @@ posée, pas de codage (Q4).
   **Reco : sans** (l'arc et le cercle suffisent ; le codage s'ajoute après si tu le veux).
 - **Q5. Côté donné** : seulement [AB] (depuis A), ou aussi [BC] (depuis C, la même figure retournée) ?
   **Reco : [AB] seul** — l'auteur renomme ; une forme de moins à tester.
+
+### 3.8 Décisions de David (2026-11-17, « je te suis, go »)
+
+Q1 diagonale écrite (`AB = 4 cm ; AC = 6 cm`, vérifiée contre la figure) · Q2 message de l'angle en B avec
+l'indice du cercle de diamètre [AC] · Q3 segments sur [AC] et [BD] admis (traits de construction) · Q4
+correction sans codage · Q5 côté donné [AB] seul.
