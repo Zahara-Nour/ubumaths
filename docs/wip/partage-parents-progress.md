@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2752._
+_Mis à jour le 2026-11-17, après le `deploy:prod` v0.93.0._
 
-- **État** : PR 1 à 4 et 6 à 9 mergées (#2718, #2724, #2731, #2736, #2737, #2739, #2745, #2749, #2752), migrations en prod. Q42 faite : journal des courriels effacé au bout d'un an par le passage quotidien, politique v1.4. Code des PR 2 à 4 et 9 **pas encore déployé**.
-- **Prochaine action** : rien ne bloque le `deploy:prod` du carnet. Puis point 8 sur `/parents` après le déploiement (chantier `presentation-parents`).
-- **En attente de David** : `deploy:prod` (avant le 28 novembre pour les messages trimestriels) ; échec de l'effacement : arrêter tout le passage ? (gardé : les autres étapes tournent, passage noté en échec).
-- **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 si déployé. Base locale en retard sur d'anciennes migrations de contenu. Rejets Brevo différés non marqués `invalid` (pas de webhook). AIPD : l'analyse de risque du carnet reste à y intégrer.
+- **État** : PR 1 à 4 et 6 à 9 mergées (#2718, #2724, #2731, #2736, #2737, #2739, #2745, #2749, #2752), migrations en prod. Q42 faite : journal des courriels effacé au bout d'un an par le passage quotidien, politique v1.4. **Tout le carnet est en prod** (v0.93.0, 2026-11-17).
+- **Prochaine action** : point 8 sur `/parents` (chantier `presentation-parents`) ; vérification manuelle du carnet en prod.
+- **En attente de David** : échec de l'effacement : arrêter tout le passage ? (gardé : les autres étapes tournent, passage noté en échec).
+- **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 (déployé). Base locale en retard sur d'anciennes migrations de contenu. Rejets Brevo différés non marqués `invalid` (pas de webhook). AIPD : l'analyse de risque du carnet reste à y intégrer.
 - **Worktree / branche** : aucun.
 
 ## Origine
