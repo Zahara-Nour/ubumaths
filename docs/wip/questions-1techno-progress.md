@@ -8,17 +8,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2772 (lot R en prod)._
+_Mis à jour le 2026-11-17, lot 1 refondu (§ 23)._
 
-- **État** : T1, T2, lot 0, lot G, 83b1f614 v3, **lot R** en prod (#2743, #2748, #2753, #2758, #2764, #2772). Lot R :
-  R2, R3, R4 de questions-1gen (représentation graphique) tagués 1TECHNO-044 / 117 / 119, `{1_GEN,1_TECHNO}` (§ 22).
-- **Prochaine action** : lots d'écriture (§ 5, 9), lot 1 « suites géométriques » d'abord (moins 036, 038, 049) ;
-  lot 4 « graphiques » garde 121, 085, 082, 059, 104 (§ 18).
-- **En attente de David** : rien.
+- **État** : T1, T2, lot 0, lot G, 83b1f614 v3, lot R en prod (#2743 … #2772). Lot 1 « suites géométriques » vide
+  (couvert par G et T2) → **lot 1 = connaissances des suites (039, 040, 041)** ; lots refaits (§ 23, tableau).
+- **Prochaine action** : phase 0 du lot 1 (§ 23) à valider, puis écrire M1, M2 (`docs/wip/questions/lot-1techno-1.py`).
+- **En attente de David** : validation de la phase 0 du lot 1 (§ 23).
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
   `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db:migrate` « inserted before » → `--dry-run --include-all`.
-- **Worktree / branche** : aucun (lot R nettoyé).
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot1`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -477,3 +476,64 @@ vert ; mergée (f18b1afd42). `migration list --linked` : seule `20261117181914` 
 non tirable : modifications d'une autre session ; `supabase/.temp` copié pour le lien). Prod vérifiée (MCP) : les 3
 `{1_GEN,1_TECHNO}`, publiés, tags 1GEN-019 + 1TECHNO-044, 1GEN-041 + 1TECHNO-117, 1GEN-058 + 1TECHNO-119 ;
 `updated_at` inchangé (18:18:12, publication par questions-1gen).
+
+## 23. Lot 1 vidé, découpage des lots refait (2026-11-17)
+
+Relevé prod (MCP) : les cinq points du lot 1 « suites géométriques » sont couverts ou renvoyés — 036 0b5c3db6,
+038 c4887e49, 049 569e0140 (lot G), 047 d1010214 (T2) ; 040 renvoyé aux connaissances (§ 16). **38 points STMG
+sans modèle** (hors D 012, 143), plus les jumeaux de 1acb6d47 (057) et 97b3a376 (137). Le § 5 datait d'avant la
+passe anti-doublons (§ 9) : la dérivation, 126, 090, 084 n'étaient dans aucun lot.
+
+Décision (David, « je suis tes recos ») : lot 1 = connaissances des suites (039, 040, 041) ; découpage refait.
+
+| Lot | Thème                                       | Points                                                           |
+| --- | ------------------------------------------- | ---------------------------------------------------------------- |
+| 1   | Connaissances des suites                    | 039, 040, 041                                                    |
+| 2   | Second degré sans formule                   | 123, 124, 061, 062, 064, 125, 126 + jumeau 057 (commun 1GEN-022) |
+| 3   | Dérivation                                  | 128, 069, 071, 072, 074, 130, 131, 081, 056                      |
+| 4   | Algorithmique (` ```python `)               | 003, 107, 051, 122, 067, 103, 105, 101                           |
+| 5   | Graphiques et statistiques à deux variables | 121, 059, 082, 085, 104, 084, 087                                |
+| 6   | Probabilités                                | 090, 097, 136, 013 + jumeau 137                                  |
+
+Total 40 = 38 + 057 + 137. Avant chaque lot : demander à questions-1gen s'il a un modèle commun en cours (lot 2 :
+1GEN-022 ↔ 057 déjà convenu, § 9).
+
+### Lot 1 — phase 0 (proposée, à valider)
+
+Points (connaissances) et nœuds (relevé MCP) : 039 et 1GEN-015 sur la notion « Suites arithmétiques »
+(`7ed1251c`) ; 040 et 1GEN-030 sur « Suites géométriques » (`c90700c5`) ; 041 et 1GEN-016 sur la sous-notion
+« représentation graphique » (`320aaed2`). Les exercices du sens de variation ont déjà leurs modèles (5cb7f6ce
+sur 048, 569e0140 sur 049) : pour 039 et 040, des modèles **de cours**, courts.
+
+Candidats écartés : brouillons 1re spé du chantier `cours-suites` (B10 24b7e5dc, C17 93f113af, C18 97088e3d,
+B12 b0992067) — en relecture chez David, notation uₙ ; C17 et C18 tirent u0 ou q négatifs (hors borne de 040).
+
+- **M1 « Cours : sens de variation d'une suite arithmétique »** → 039, nœud `7ed1251c`, niveau 1,
+  `grades = ['1_TECHNO']`, réponse ` ```choix ` (`melanger: non`), notation u(n). Leurres communs : « croissante »,
+  « décroissante », « constante », « on ne peut pas savoir ».
+  - v1 « (u(n)) est arithmétique de raison r > 0. Alors elle est… » → croissante.
+  - v2 raison r < 0 → décroissante. v3 raison 0 → constante.
+  - v4 « Le sens de variation d'une suite arithmétique dépend… » : du signe de sa raison seulement / de son premier
+    terme seulement / de son premier terme et de sa raison.
+  - v5 vrai ou faux : « La suite arithmétique de premier terme u(0) = −a et de raison r est décroissante »,
+    a ∈ 1..20, r ∈ 1..9 → faux (erreur visée : lire le signe de u(0)).
+  - Corrigé : u(n+1) − u(n) = r, le signe de r décide, quel que soit u(0).
+- **M2 « Cours : sens de variation d'une suite géométrique »** → 040, nœud `c90700c5`, niveau 1, même forme ;
+  premier terme et raison **strictement positifs partout** (borne).
+  - v1 « u(0) > 0 et q > 1 : la suite est… » → croissante. v2 u(0) > 0 et 0 < q < 1 → décroissante. v3 q = 1 →
+    constante.
+  - v4 « Pour une suite géométrique de premier terme et de raison strictement positifs, le sens de variation se lit… »
+    : en comparant q à 1 / en comparant q à 0 / sur le premier terme (erreur visée : q > 0 ⇒ croissante, comme r > 0).
+  - Corrigé : u(n+1) − u(n) = u(n) × (q − 1), avec u(n) > 0 : signe de q − 1.
+- **041 → tag de 817d257f** « Associer un nuage de points à une suite arithmétique » (questions-1gen R1, publié,
+  `grades = {1_GEN}`, tag 1GEN-016, nœud `320aaed2`) : 2 variations (forme explicite, récurrence), u0 de −3 à 8,
+  r de −2 à 3, dans les bornes générales ; uₙ (modèle commun, comme G et R). Page à cocher, puis migration
+  `array_append('1_TECHNO')` + tag 1TECHNO-041 (gabarit du lot R). Prévenir questions-1gen (rien à faire chez lui).
+
+Livraison : PR des fichiers M1, M2 (contenu, sans revue) ; David lance `create-questions --publier` (brouillons) ;
+migration nœud + tags de M1, M2, et tag + `1_TECHNO` de 817d257f, une seule PR ; page à cocher (M1, M2, 817d257f)
+**avant** la migration ; publication de M1, M2.
+
+**Question d'accès** : M1 et M2 naissent brouillons (personne d'autre que le prof ne les voit) ; la migration range
+et tague, et met 817d257f (déjà publié pour tous) au catalogue de 1re techno — aucune règle d'accès ne change, comme
+les lots G et R.
