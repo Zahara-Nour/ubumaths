@@ -796,8 +796,8 @@ figure, palette Segment · Équerre · Règle graduée exactement, seul dans la 
 sans équerre, `rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`, chantier `rectangle-sans-equerre` : le
 côté [AB] et la diagonale [AC] dans n'importe quel ordre (`BA`, `CA` admis), au mm près, le côté plus
 court que la diagonale, [AC] tracé dans la figure à la longueur écrite, B et D absents, palette Segment ·
-Compas · Règle graduée exactement, seul dans la figure, quadrillage refusé ; reconnu à la diagonale
-nommée ou aux deux longueurs, `readDiagonalRectangle`),
+Compas · Règle graduée exactement, seul dans la figure, quadrillage refusé ; reconnu aux deux longueurs
+ou à une longueur nommée autre que [BC], `readDiagonalRectangle`),
 `symetrique par d` / `symetrique A ; B ; C par d` (`symétrique`
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
 rectangle ou symétrique, jamais mêlé à `droite_par` ; `point A' = <expression>`, outil point, une ligne par

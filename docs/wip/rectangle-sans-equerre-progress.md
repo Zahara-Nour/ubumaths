@@ -6,15 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, revue de la PR 1 lue (§ 5), corrections à faire._
+_Mis à jour le 2026-11-17, findings de la revue corrigés (§ 5), PR 1 à ouvrir._
 
-- **État** : PR 1 commitée et poussée sur `feat/rectangle-sans-equerre`, PR pas encore ouverte ; revue
-  `code-reviewer` (Opus) faite : 2 Importants, 3 Mineurs, aucune réponse fausse jugée juste (§ 5).
-- **Prochaine action** : corriger les 5 findings du § 5, un test rouge chacun (1, 2, 3 au moins), puis tests,
-  `check:incremental`, push, ouvrir la PR, CI, merge. Puis PR 2 : le modèle 4-038 dans `questions-4`.
+- **État** : PR 1 sur `feat/rectangle-sans-equerre`, les 5 findings du § 5 corrigés (6 tests rouges puis
+  verts), doc mise à jour. PR ouverte ou à ouvrir : `gh pr list --search "head:feat/rectangle-sans-equerre"`.
+- **Prochaine action** : CI verte → merge. Puis PR 2 : le modèle 4-038 dans `questions-4`.
 - **En attente de David** : rien.
-- **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. `Doc-inchangée:` (catalogue) déjà dans un commit.
-  Push : ne pas filtrer sa sortie par `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE).
+- **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. Push : ne pas filtrer sa sortie par
+  `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE).
 - **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre`.
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
@@ -180,7 +179,7 @@ correction sans codage · Q5 côté donné [AB] seul.
 - Doc : `docs/systeme/questions.md`, `docs/systeme/ubumark.md`, exemple du catalogue
   (`block-catalog/figure-a-completer.ts`, page `/aide-ecriture/blocs/figure-a-completer`).
 
-## 5. Revue de la PR 1 (code-reviewer, Opus, 2026-11-17) — à corriger
+## 5. Revue de la PR 1 (code-reviewer, Opus, 2026-11-17) — corrigée
 
 1. **Important** — D construit sur la règle mais atteint par un autre segment que [BD] refusé
    (`builtPredicate` exige le 0 de la règle sur l'autre bout du MÊME segment). Gestes : règle en B vers O, puis
@@ -197,3 +196,10 @@ correction sans codage · Q5 côté donné [AB] seul.
    exiger un segment de la figure de bouts A et C.
 5. **Mineur** — segment sur la médiatrice de [AC] admis sans limite de longueur : le borner (par exemple aux
    croisements des deux cercles de même rayon) ou le dire dans la doc.
+
+**Corrections (2026-11-17)**, un test rouge chacune (`describe('… revue de la PR 1')`) : 1. bout de segment
+construit par toute règle posée avant lui (0 sur un point construit, dirigée vers un point construit),
+quel que soit l'autre bout ; 2. B = le seul sommet à AB de A, avant « mesuré » ; 3. toute longueur seule
+autre que [BC] → `readDiagonalRectangle` ; 4. [AC] = un segment de la figure de bouts A et C ; 5. segment
+sur la médiatrice admis entre les croisements de deux cercles de même rayon centrés en A et en C (au-delà :
+trait qui dépasse ; sans ces cercles : trait de trop).

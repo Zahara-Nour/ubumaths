@@ -559,14 +559,14 @@ function readRuledPolygon(
 		}
 		return { kind, points: [a, b, c, d], ruled: true, line };
 	}
-	// Rectangle sans équerre : deux longueurs, ou la diagonale [AC] nommée
+	// Rectangle sans équerre : deux longueurs, ou une longueur nommée autre que [BC]
 	if (lengthText !== null) {
 		const parts = lengthText.split(';').map((part) => part.trim());
-		const namesAC = (part: string) => {
+		const namesOtherThanBC = (part: string) => {
 			const named = /^([A-Z])([A-Z])\s*=/.exec(part);
-			return named !== null && [named[1], named[2]].sort().join('') === [a, c].sort().join('');
+			return named !== null && [named[1], named[2]].sort().join('') !== [b, c].sort().join('');
 		};
-		if (parts.length > 1 || parts.some(namesAC)) {
+		if (parts.length > 1 || parts.some(namesOtherThanBC)) {
 			return readDiagonalRectangle([a, b, c, d], parts, line);
 		}
 	}

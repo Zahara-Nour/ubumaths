@@ -650,3 +650,108 @@ describe('rectangle sans équerre : correction', () => {
 		).toEqual([]);
 	});
 });
+
+describe('rectangle sans équerre : revue de la PR 1', () => {
+	it('D sur la règle de B vers O, atteint par [CD] et non par [BD] : juste', () => {
+		const objects: DrawnObject[] = [
+			...CONSTRUCTION,
+			segment(A, B),
+			segment(B, C),
+			RULER_B,
+			segment(C, D),
+			segment(D, A)
+		];
+		expect(judge(SOURCE, objects)).toEqual({ status: 'correct' });
+	});
+
+	it('D sur la règle de B vers O, atteint par [BO] puis [OD] : juste', () => {
+		const objects: DrawnObject[] = [
+			...CONSTRUCTION,
+			segment(A, B),
+			segment(B, C),
+			RULER_B,
+			segment(B, O),
+			segment(O, D),
+			segment(C, D),
+			segment(D, A)
+		];
+		expect(judge(SOURCE, objects)).toEqual({ status: 'correct' });
+	});
+
+	it('AB = 3 cm, B pris par CB = 4 cm, puis [AD] tracé à la règle posée en A : juste', () => {
+		const a = { x: 3, y: 4.5 };
+		const c = { x: 8, y: 4.5 };
+		const source = figure('rectangle A ; B ; C ; D : AB = 3 cm ; AC = 5 cm', [
+			'A = point(3, 4.5)',
+			'C = point(8, 4.5)',
+			'd = segment(A, C)'
+		]);
+		const rulerA = regle(a, c);
+		const compass25 = compasSurRegle(rulerA, 25);
+		const ac: Trait = { kind: 'segment', a, b: c };
+		const o = crossing(traitOfObject(compass25), ac, () => true);
+		const circleO = cercle(o, a);
+		const rulerC = regle(c, a);
+		const compassC = compasSurRegle(rulerC, 40);
+		const b = crossing(traitOfObject(compassC), traitOfObject(circleO), above);
+		const rulerB = regle(b, o);
+		const d = rulerGraduation(rulerB, 50);
+		const objects: DrawnObject[] = [
+			rulerA,
+			compass25,
+			circleO,
+			rulerC,
+			compassC,
+			segment(a, b),
+			segment(b, c),
+			rulerB,
+			segment(b, d),
+			segment(c, d),
+			regle(a, d),
+			segment(a, d)
+		];
+		expect(judge(source, objects)).toEqual({ status: 'correct' });
+	});
+
+	it('une longueur seule autre que [BC] : le message du rectangle sans équerre', () => {
+		for (const lengths of ['AB = 4 cm', 'BD = 6 cm', 'CD = 4 cm']) {
+			expect(errorOf(figure(`rectangle A ; B ; C ; D : ${lengths}`))).toMatch(
+				/donner le côté \[AB\] et la diagonale \[AC\]/
+			);
+		}
+	});
+
+	it('refuse une droite (AC), ou un segment plus long, à la place de la diagonale [AC]', () => {
+		const line = figure(VERIFIER, ['A = point(3, 4.5)', 'C = point(9, 4.5)', 'd = droite(A, C)']);
+		expect(() => assertChecks(line)).toThrow(/la diagonale \[AC\] doit être tracée/);
+		const longer = figure(VERIFIER, [
+			'A = point(3, 4.5)',
+			'C = point(9, 4.5)',
+			'P = point(2, 4.5)',
+			'Q = point(10, 4.5)',
+			'd = segment(P, Q)'
+		]);
+		expect(() => assertChecks(longer)).toThrow(/la diagonale \[AC\] doit être tracée/);
+	});
+
+	it('médiatrice de [AC] : un segment sans les deux cercles, ou au-delà de leurs croisements, refusé', () => {
+		const up = { x: O.x, y: O.y + 1 };
+		const down = { x: O.x, y: O.y - 1 };
+		expect(judge(SOURCE, [...NOMINAL, segment(up, down)])).toEqual({
+			status: 'incorrect',
+			feedback: EXTRA_SEGMENT_FEEDBACK
+		});
+		const fromA = cercle(A, C);
+		const fromC = cercle(C, A);
+		const p = crossing(traitOfObject(fromA), traitOfObject(fromC), above);
+		const q = crossing(traitOfObject(fromA), traitOfObject(fromC), below);
+		const beyond = { x: p.x, y: p.y + 0.5 };
+		expect(judge(SOURCE, [fromA, fromC, ...NOMINAL, segment(beyond, q)])).toEqual({
+			status: 'incorrect',
+			feedback: OVERSHOOT_FEEDBACK
+		});
+		expect(judge(SOURCE, [fromA, fromC, ...NOMINAL, segment(p, q)])).toEqual({
+			status: 'correct'
+		});
+	});
+});

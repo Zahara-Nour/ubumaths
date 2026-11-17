@@ -26,12 +26,11 @@
  */
 
 import type { DiagonalRectangleCheck, LengthUnit } from '$lib/ubumark/types/construction';
-import type { DrawnLine, DrawnObject, DrawnRegle } from './answer';
+import type { DrawnCircle, DrawnLine, DrawnObject, DrawnRegle } from './answer';
 import { compassGraduationOf } from './circle';
 import {
 	basePointsOf,
 	constructionOf,
-	distanceToTrait,
 	intersectionsOf,
 	isInFrame,
 	rulerGraduationOf,
@@ -154,11 +153,10 @@ function settingOf(
 	if (ac <= tolerance(a, c)) {
 		throw new DiagonalRectangleAuthorError(`${label} : ${nameA} et ${nameC} sont au même endroit`);
 	}
-	const traced = (shapes?.traits ?? []).some(
-		(t) =>
-			t.kind !== 'circle' &&
-			distanceToTrait(a, t) <= tolerance(a, c) &&
-			distanceToTrait(c, t) <= tolerance(a, c)
+	// Un segment de la figure de bouts A et C (ni une droite, ni un segment plus long)
+	const eps = tolerance(a, c);
+	const traced = (shapes?.segments ?? []).some(
+		(s) => (near(s.a, a, eps) && near(s.b, c, eps)) || (near(s.a, c, eps) && near(s.b, a, eps))
 	);
 	if (!traced) {
 		throw new DiagonalRectangleAuthorError(
@@ -256,22 +254,23 @@ function builtPredicate(
 				return;
 			}
 			if (object.kind !== 'segment') return;
-			const ends = [
+			// Un bout sur une graduation d'une règle posée avant le segment, quel que soit
+			// l'autre bout (comme `ruledGraduationOf` du triangle) : [CD] arrêté sur la
+			// règle posée de B vers O, ou [OD] après [BO]
+			for (const end of [
 				{ x: object.x1, y: object.y1 },
 				{ x: object.x2, y: object.y2 }
-			];
-			for (const [from, to] of [ends, [ends[1], ends[0]]]) {
-				if (!construction.isBuilt(from) || construction.isBuilt(to)) continue;
+			]) {
+				if (construction.isBuilt(end)) continue;
+				if (extraPoints.some((p) => near(p, end, tolerance(p, end)))) continue;
 				const graduated = rulersBefore(i).some((ruler) => {
-					if (!near({ x: ruler.ox, y: ruler.oy }, from, tolerance(from))) return false;
-					const mm = rulerGraduationOf(to, ruler, rulerLength);
+					if (!construction.isBuilt({ x: ruler.ox, y: ruler.oy })) return false;
+					const mm = rulerGraduationOf(end, ruler, rulerLength);
 					return mm !== null && mm > 0 && aimed(ruler);
 				});
 				if (!graduated) continue;
-				extraPoints.push(to);
-				used.add(i);
+				extraPoints.push(end);
 				grew = true;
-				return;
 			}
 		});
 		if (!grew) return construction.isBuilt;
@@ -340,10 +339,11 @@ export function judgeDiagonalRectangle(
 		return incorrect(side ? NOT_CLOSED_FEEDBACK : diagonalRectangleSidesFeedback(names));
 	}
 	if (closed.length > 1) return incorrect(severalDiagonalRectanglesFeedback(names));
-	// B : le sommet que l'élève a mesuré depuis A (compas piqué en A, ou segment parti de A
-	// arrêté sur une graduation d'une règle posée en A) ; sinon le plus près de la longueur
-	// donnée (l'autre est D)
+	// B : le seul des deux sommets à la longueur donnée de A ; sinon celui que l'élève a
+	// mesuré depuis A (compas piqué en A, ou règle posée en A) ; sinon le plus près de la
+	// longueur donnée (l'autre est D)
 	const [x, y] = closed[0];
+	const fits = (p: Position) => Math.abs(distance(a, p) - setting.side) <= eps;
 	const measured = (p: Position) =>
 		objects.some((object) => {
 			if (object.kind === 'cercle') {
@@ -360,7 +360,17 @@ export function judgeDiagonalRectangle(
 	const byLength =
 		Math.abs(distance(a, x) - setting.side) <= Math.abs(distance(a, y) - setting.side);
 	const [b, d] =
-		measured(x) !== measured(y) ? (measured(x) ? [x, y] : [y, x]) : byLength ? [x, y] : [y, x];
+		fits(x) !== fits(y)
+			? fits(x)
+				? [x, y]
+				: [y, x]
+			: measured(x) !== measured(y)
+				? measured(x)
+					? [x, y]
+					: [y, x]
+				: byLength
+					? [x, y]
+					: [y, x];
 
 	const isBuilt = builtPredicate(
 		objects,
@@ -392,9 +402,28 @@ export function judgeDiagonalRectangle(
 	const ac = carrierOf({ a, b: c });
 	const bd = carrierOf({ a: b, b: d });
 	const bisector = carrierOf({ a: o, b: { x: o.x - (c.y - a.y), y: o.y + (c.x - a.x) } });
+	// La médiatrice ne va pas au-delà des croisements de deux cercles de même rayon,
+	// l'un centré en A, l'autre en C (M4)
+	const circles = objects.filter((x): x is DrawnCircle => x.kind === 'cercle');
+	const radiusOf = (k: DrawnCircle) => distance({ x: k.cx, y: k.cy }, { x: k.x, y: k.y });
+	const centeredAt = (p: Position) => circles.filter((k) => near({ x: k.cx, y: k.cy }, p, eps));
+	const bisectorEnds = centeredAt(a).flatMap((ka) =>
+		centeredAt(c)
+			.filter((kc) => Math.abs(radiusOf(ka) - radiusOf(kc)) <= eps)
+			.flatMap((kc) => {
+				const crossings = intersectionsOf(
+					[traitOf(ka), traitOf(kc)].filter((t): t is Trait => t !== null)
+				);
+				return crossings.length === 2 ? [crossings as [Position, Position]] : [];
+			})
+	);
 	let overshoot = false;
 	const rest = pieces.filter((piece) => {
-		if (sameLine(piece, bisector, eps)) return false;
+		if (sameLine(piece, bisector, eps)) {
+			if (bisectorEnds.length === 0) return true;
+			if (!bisectorEnds.some(([p, q]) => within(piece, p, q, eps))) overshoot = true;
+			return false;
+		}
 		for (const [diagonal, p, q] of [
 			[ac, a, c],
 			[bd, b, d]
