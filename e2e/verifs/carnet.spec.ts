@@ -2,12 +2,15 @@ import { mkdir } from 'node:fs/promises';
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import {
 	ADMIN,
+	assertLocalServerEnv,
 	carnetSkipReason,
 	emailLink,
+	emailHtml,
 	emailsTo,
 	emailText,
 	login,
 	loginStudent,
+	PHONE,
 	prepareCarnetDecor,
 	shootEmail,
 	shootPage,
@@ -62,14 +65,17 @@ async function expectFirstnameOnly(
 	s: CarnetStudent
 ) {
 	const text = await emailText(email);
+	const html = await emailHtml(email);
 	expect(email.subject).toContain(s.firstname);
 	expect(text).toContain(s.firstname);
-	expect(`${email.subject}\n${text}`).not.toContain(s.lastname);
+	expect(html).toContain(s.firstname);
+	expect(`${email.subject}\n${text}\n${html}`).not.toContain(s.lastname);
 }
 
 test.beforeAll(async () => {
 	const skip = carnetSkipReason();
 	if (skip) return;
+	assertLocalServerEnv();
 	await mkdir(SHOTS_DIR, { recursive: true });
 	decor = await prepareCarnetDecor();
 });
@@ -252,6 +258,7 @@ test('#2736 #2737 passage quotidien, courriel d’exception', async ({ page, bro
 
 	// L'admin lance la tâche : A, sans travail depuis 30 jours, déclenche un courriel.
 	await login(page, ADMIN.email, ADMIN.password);
+	const [{ now: before }] = await sql<{ now: Date }>('select now()');
 	const first = await trigger();
 	expect(first.status(), await first.text()).toBe(200);
 	const alert = await waitForEmail(parents.a, 2);
@@ -265,27 +272,41 @@ test('#2736 #2737 passage quotidien, courriel d’exception', async ({ page, bro
 	await expect(parent.getByText(`Le travail de ${a.firstname} sur Chiphre.`)).toBeVisible();
 	const stop = await emailLink(alert, 'Ne plus recevoir ces courriels');
 	expect(stop).toMatch(/#courriels$/);
+	await parent.setViewportSize(PHONE);
 	await parent.goto(stop);
 	await expect(
 		parent.getByRole('button', { name: 'Ne plus recevoir ces courriels' })
 	).toBeInViewport();
 	await parent.context().close();
 
-	// Journal de la tâche : des nombres seulement, aucune adresse.
-	const [run] = await sql<{ status: string; metadata: unknown }>(
-		`select status, metadata from background_job_runs
-		 where job_name = 'carnet_de_liaison' order by started_at desc limit 1`
-	);
+	// Journal de CE passage : des nombres seulement, aucune adresse.
+	const runsSince = (since: Date) =>
+		sql<{ id: string; status: string; metadata: unknown }>(
+			`select id, status, metadata from background_job_runs
+			 where job_name = 'carnet_de_liaison' and started_at >= $1 order by started_at`,
+			[since]
+		);
+	await expect.poll(async () => (await runsSince(before)).length).toBe(1);
+	const [run] = await runsSince(before);
 	expect(run.status).toBe('success');
-	const metadata = JSON.stringify(run.metadata);
-	expect(metadata).not.toContain('@');
-	expect(metadata).not.toMatch(/"[^"]*":\s*"/);
+	expect(run.metadata).toBeInstanceOf(Object);
+	expect(Object.keys(run.metadata as object).length).toBeGreaterThan(0);
+	const leaves: unknown[] = [];
+	const walk = (v: unknown) =>
+		v !== null && typeof v === 'object' ? Object.values(v).forEach(walk) : leaves.push(v);
+	walk(run.metadata);
+	expect(leaves.every((v) => typeof v === 'number' || typeof v === 'boolean')).toBe(true);
+	expect(JSON.stringify(run.metadata)).not.toContain('@');
 
-	// Relancer le même jour (la limite du bouton est d'un lancement par minute) : rien de neuf.
+	// Relancer le même jour (la limite du bouton est d'un lancement par minute) :
+	// le passage tourne, et rien de neuf ne part.
 	await page.waitForTimeout(61_000);
+	const [{ now: beforeSecond }] = await sql<{ now: Date }>('select now()');
 	const second = await trigger();
-	expect([200, 409]).toContain(second.status());
-	await page.waitForTimeout(3_000);
+	expect(second.status(), await second.text()).toBe(200);
+	await expect
+		.poll(async () => (await runsSince(beforeSecond)).map((r) => r.status))
+		.toEqual(['success']);
 	expect(await emailsTo(parents.a)).toHaveLength(2);
 
 	// Côté élève : le courriel est dans la liste.

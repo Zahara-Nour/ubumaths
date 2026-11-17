@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { expect, type Page } from '@playwright/test';
@@ -64,6 +65,31 @@ export const SHOTS_DIR = resolve('.captures/verifs/carnet');
 export function carnetSkipReason(): string | null {
 	if (process.env.VERIFS_URL) return 'carnet : base locale seulement (VERIFS_URL posé)';
 	return null;
+}
+
+/**
+ * Le serveur de dev de ce dossier vise-t-il la base locale ? Sans `.env.local`,
+ * il viserait la prod (`.env`) : on refuse avant d'écrire quoi que ce soit.
+ */
+export function assertLocalServerEnv(): void {
+	let raw = '';
+	try {
+		raw = readFileSync(resolve('.env.local'), 'utf8');
+	} catch {
+		throw new Error(
+			'.env.local absent : le serveur de dev viserait la base de prod. Rien n’est écrit.'
+		);
+	}
+	const url = /^PUBLIC_SUPABASE_URL=(.*)$/m
+		.exec(raw)?.[1]
+		?.trim()
+		.replace(/^["']|["']$/g, '');
+	const host = url ? new URL(url).hostname : '';
+	if (host !== '127.0.0.1' && host !== 'localhost') {
+		throw new Error(
+			'PUBLIC_SUPABASE_URL de .env.local n’est pas la base locale. Rien n’est écrit.'
+		);
+	}
 }
 
 async function withDb<T>(task: (db: pg.Client) => Promise<T>): Promise<T> {
@@ -242,7 +268,10 @@ export async function emailsTo(to: string): Promise<CapturedEmail[]> {
 /** Attend le `count`-ième courriel vers `to` (1 = le premier) et le rend. */
 export async function waitForEmail(to: string, count = 1): Promise<CapturedEmail> {
 	await expect
-		.poll(async () => (await emailsTo(to)).length, { timeout: 20_000 })
+		.poll(async () => (await emailsTo(to)).length, {
+			timeout: 20_000,
+			message: `courriel n° ${count} vers ${to} absent de ${CAPTURE_DIR} : serveur lancé depuis un autre dossier, ou envoi réel (EMAIL_ENVOI_REEL) ?`
+		})
 		.toBeGreaterThanOrEqual(count);
 	return (await emailsTo(to))[count - 1];
 }
@@ -264,7 +293,7 @@ export async function emailLink(email: CapturedEmail, label: string): Promise<st
 	for (const match of html.matchAll(/<a\s[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)) {
 		if (match[2].replace(/<[^>]+>/g, '').trim() === label) {
 			const url = new URL(match[1].replace(/&amp;/g, '&'));
-			return url.pathname + url.hash;
+			return url.pathname + url.search + url.hash;
 		}
 	}
 	throw new Error(`Lien « ${label} » absent du courriel « ${email.subject} »`);
