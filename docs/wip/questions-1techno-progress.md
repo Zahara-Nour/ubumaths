@@ -12,8 +12,9 @@ _Mis à jour le 2026-11-17, lot 1 refondu (§ 23)._
 
 - **État** : T1, T2, lot 0, lot G, 83b1f614 v3, lot R en prod (#2743 … #2772). Lot 1 « suites géométriques » vide
   (couvert par G et T2) → **lot 1 = connaissances des suites (039, 040, 041)** ; lots refaits (§ 23, tableau).
-- **Prochaine action** : phase 0 du lot 1 (§ 23) à valider, puis écrire M1, M2 (`docs/wip/questions/lot-1techno-1.py`).
-- **En attente de David** : validation de la phase 0 du lot 1 (§ 23).
+- **Prochaine action** : PR des fichiers M1, M2 (`scripts/questions/1techno-1/`) ; après merge, **David** lance
+  `create-questions --dir scripts/questions/1techno-1 --publier` ; puis page à cocher (M1, M2, 817d257f) et migration.
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
   `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db:migrate` « inserted before » → `--dry-run --include-all`.
@@ -537,3 +538,10 @@ migration nœud + tags de M1, M2, et tag + `1_TECHNO` de 817d257f, une seule PR 
 **Question d'accès** : M1 et M2 naissent brouillons (personne d'autre que le prof ne les voit) ; la migration range
 et tague, et met 817d257f (déjà publié pour tous) au catalogue de 1re techno — aucune règle d'accès ne change, comme
 les lots G et R.
+
+### Lot 1 — écriture (2026-11-17)
+
+Phase 0 validée par David (« oui »). Script `docs/wip/questions/lot-1techno-1.py` → `scripts/questions/1techno-1/`
+(M1 5 variations, 11 specs ; M2 4 variations, 8 specs). `create-questions` en simulation : tout vert. Essai en base
+locale (copie dans le scratchpad, ids locaux hors dépôt) : deux brouillons créés ; M1 joué dans l'aperçu admin (choix
+faux marqué faux, bonne réponse montrée) ; aperçus `question:specs --apercu 12` relus pour les deux.
