@@ -528,3 +528,89 @@ describe('case « figure » : triangle coté en cm, revue de #2658', () => {
 		expect(container.textContent).not.toContain('ou Segment pour tracer le long de la règle');
 	});
 });
+
+// Rectangle sans équerre (chantier `rectangle-sans-equerre`) : A(2 ; 4), C(8 ; 4), [AC] = 6 cm,
+// AB = 4 cm ; O(5 ; 4), B(4,67 ; 6,98), D(5,33 ; 1,02)
+const DIAGONAL_BLOCK = [
+	'```figure-a-completer',
+	'fenetre: 0 ; 10 ; 0 ; 8',
+	'verifier: rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm',
+	'---',
+	'A = point(2, 4)',
+	'C = point(8, 4)',
+	'd = segment(A, C)',
+	'```'
+].join('\n');
+
+describe('case « figure » : rectangle sans équerre (rectangle-sans-equerre)', () => {
+	it('M1 aux touchers : O à 3 cm, cercle de diamètre [AC], B à 4 cm, D à 6 cm de B → juste', async () => {
+		const { container, rect } = await rendered(DIAGONAL_BLOCK);
+		const palette = ['segment', 'compas', 'regle'].map((id) => byTestId(container, `outil-${id}`));
+		expect(palette.map((b) => b?.textContent?.trim())).toEqual([
+			'Segment',
+			'Compas',
+			'Règle graduée'
+		]);
+		expect(byTestId(container, 'outil-equerre')).toBeNull();
+		// Règle en A vers C ; compas ouvert à 3 cm : O au croisement avec [AC]
+		await rulerAndCompass(container, rect, { x: 2, y: 4 }, { x: 8, y: 4 }, { x: 5.02, y: 4.05 });
+		await expect.poll(() => mmShown(container)).toBe('30');
+		// Cercle de centre O passant par A
+		tool(container, 'compas');
+		tap(rect, 5.03, 4.03);
+		tap(rect, 2.03, 4.03);
+		await expect.poll(() => all(container, 'cercle-eleve').length).toBe(2);
+		// Compas ouvert à 4 cm en A
+		tool(container, 'compas');
+		tap(rect, 2.05, 4.05);
+		tap(rect, 6.02, 4.05);
+		await expect.poll(() => all(container, 'cercle-eleve').length).toBe(3);
+		// [AB], [BC]
+		tool(container, 'segment');
+		tap(rect, 2.05, 4.05);
+		tap(rect, 4.68, 6.97);
+		tap(rect, 4.68, 6.97);
+		tap(rect, 8.05, 4.05);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(2);
+		// Règle de B vers O, [BD] arrêté à 6 cm
+		tool(container, 'regle');
+		tap(rect, 4.68, 6.97);
+		tap(rect, 5.02, 4.03);
+		await expect
+			.poll(() => container.textContent)
+			.toContain('ou Segment pour tracer le long de la règle');
+		tool(container, 'segment');
+		tap(rect, 4.68, 6.97);
+		tap(rect, 5.34, 1.0);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(3);
+		await expect.poll(() => mmShown(container)).toBe('60');
+		// [CD], [DA]
+		tap(rect, 8.05, 4.05);
+		tap(rect, 5.33, 1.03);
+		tap(rect, 5.33, 1.03);
+		tap(rect, 2.05, 4.05);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(5);
+		button(container, 'Valider').click();
+		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);
+	});
+
+	it('B à l’œil : message ; à la correction, le cercle de diamètre [AC] et l’arc en A', async () => {
+		const { container, rect } = await rendered(DIAGONAL_BLOCK);
+		tool(container, 'segment');
+		tap(rect, 2.05, 4.05);
+		tap(rect, 4.6, 7);
+		tap(rect, 4.6, 7);
+		tap(rect, 8.05, 4.05);
+		tap(rect, 8.05, 4.05);
+		tap(rect, 5.4, 1);
+		tap(rect, 5.4, 1);
+		tap(rect, 2.05, 4.05);
+		await expect.poll(() => all(container, 'segment-eleve').length).toBe(4);
+		button(container, 'Valider').click();
+		await expect
+			.poll(() => container.textContent)
+			.toContain('Ton sommet B est placé à l’œil : construis-le avec ton compas ou ta règle.');
+		await expect.poll(() => all(container, 'bon-triangle-arc').length).toBe(2);
+		expect(all(container, 'bonne-regle')).toHaveLength(0);
+	});
+});
