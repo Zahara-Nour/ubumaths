@@ -7,11 +7,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 2 écrit (§ 16), PR des fichiers ouverte._
+_Mis à jour le 2026-11-17, après #2762 (fichiers du lot 2)._
 
-- **État** : lot 1 publié (§ 13). Lot 2 écrit : 6 modèles R1 à R6, specs, sonde et essai local verts (§ 16), PR des
-  fichiers sur `feat/questions-1gen-lot2`. Phases 0 des lots 3 et 4 validées (§ 14).
-- **Prochaine action** : PR verte → merge ; puis **David** lance `create-questions --dir
+- **État** : lot 1 publié (§ 13). Lot 2 écrit : 6 modèles R1 à R6, specs, sonde et essai local verts (§ 16), fichiers
+  mergés (#2762). Phases 0 des lots 3 et 4 validées (§ 14).
+- **Prochaine action** : **David** lance, depuis le worktree, `create-questions --dir
 scripts/questions/1gen-2-representations-graphiques --publier` ; commiter les ids ; migration nœud + tags (016, 019,
   041, 058 → représentation graphique ; 020, 051 → expression et droite) ; envoyer les ids de R2, R3, R4 à
   questions-1techno. Ensuite lots 3, 4.
