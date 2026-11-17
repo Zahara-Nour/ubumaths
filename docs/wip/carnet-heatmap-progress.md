@@ -6,12 +6,12 @@ status: phase-0
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, ouverture du chantier._
+_Mis à jour le 2026-11-17, phase 0 écrite._
 
 - **État** : décisions D1 et D2 prises par David (ci-dessous) ; rien de codé.
-- **Prochaine action** : phase 0 : comportements (nominal / limite / erreur) à faire valider, puis découpage en deux PR (migration de la fonction SQL du carnet, puis affichage).
-- **En attente de David** : la validation de la phase 0 (pas encore écrite).
-- **Pièges en cours** : `db:types` génère depuis la prod → la migration d'abord, mergée et appliquée, puis le code. ADR 0040 à mettre à jour (« 5 semaines » → « depuis la rentrée »).
+- **Prochaine action** : validation de la phase 0 par David, puis PR 1 (affichage) dans un worktree.
+- **En attente de David** : phase 0 (N1-N5, L1-L5, E1), découpage inversé, Q1 et Q2.
+- **Pièges en cours** : Zod `weeks.max(5)` → l'affichage d'abord, livré par `deploy:prod`, puis la migration (sinon carnet en erreur). `db:types` hors jeu (signature inchangée). ADR 0040 à mettre à jour.
 - **Worktree / branche** : aucun.
 
 ---
@@ -42,11 +42,64 @@ personnel, contrôles exclus).
   lieu des 5 dernières semaines. Rien d'autre ne s'ouvre : ni les jours, ni les notes, ni un autre
   élève.
 
-## Découpage (à valider en phase 0)
+## Phase 0 — comportements (à valider par David)
 
-1. PR 1 — migration : `carnet_payload` rend les paliers depuis la rentrée / l'arrivée ; tests
-   d'intégration rouges sans la migration ; ADR 0040 mis à jour.
-2. PR 2 — affichage : `CarnetView` (parent et élève) réutilise la rangée de `RegularityTable` ;
-   `e2e/verifs/carnet.spec.ts` (aujourd'hui `li[data-level]` × 5) et captures à refaire.
+Lu dans le code le 2026-11-17 : `carnet_payload` (dernière version :
+`20261117113154_carnet_arrivee_en_cours_d_annee.sql`), `CarnetView.svelte`,
+`RegularityTable.svelte`, `$lib/validation/carnet.ts`.
+
+### Nominal
+
+- **N1** : le parent (lien) et l'élève (« Mon carnet ») voient la même carte « Régularité » :
+  une rangée de cases, une par semaine, de la semaine de la rentrée (ou de l'arrivée de l'élève,
+  Q43) à la semaine en cours, la plus ancienne à gauche, comme une ligne de la grille du prof.
+- **N2** : même rendu que `RegularityTable` : une couleur (l'accent) en quatre intensités, mois
+  au-dessus de la première semaine de chaque mois, trait sous les semaines de vacances, légende.
+- **N3** : appui, survol ou clavier sur une case → « semaine du 3 nov. : 2 à 3 jours de travail »
+  en toutes lettres, jamais le nombre exact (Q25).
+- **N4** : sur téléphone (≈ 40 cases × 16 px = 640 px), la rangée défile horizontalement et
+  **s'ouvre calée à droite** : la semaine en cours visible d'emblée.
+- **N5** : seule la régularité s'allonge. Les **évaluations gardent leur fenêtre de 5 semaines**
+  (Q14), et les courriels sur exception ne changent pas.
+
+### Limites
+
+- **L1** : semaine de la rentrée ou de l'arrivée → une seule case.
+- **L2** : élève dans plusieurs classes au carnet → depuis la plus ancienne arrivée (règle Q43 actuelle).
+- **L3** : école sans année scolaire connue → aujourd'hui `v_first_day` nul, `greatest` l'ignore,
+  la fenêtre reste bornée par les 5 semaines. Sans elle, la profondeur serait infinie : dans ce
+  cas on **garde 5 semaines** (aucune classe de la prod n'est concernée, mesuré le 2026-11-16).
+- **L4** : borne dure de 53 semaines (Zod et SQL), même si une année était mal saisie.
+- **L5** : semaine en cours à 0 → case vide comme les autres (plus de « Pas encore de travail
+  cette semaine » à part).
+
+### Erreur
+
+- **E1** : réponse SQL hors forme (plus de 53 semaines, palier inconnu) → Zod refuse, la page
+  montre l'erreur du carnet comme aujourd'hui, rien de partiel.
+
+### Piège trouvé : l'ordre des PR s'inverse
+
+`carnetSchema.weeks` est en `.max(5)`. Si la migration passait la première, elle serait appliquée
+au merge (`db:migrate`) alors que le code en prod (Zod `.max(5)`) n'est livré qu'au prochain
+`deploy:prod` : **le carnet de tous les parents tomberait en erreur** entre les deux. Et
+`db:types` n'est pas en jeu : la fonction rend toujours un `jsonb`, la signature ne change pas.
+
+## Découpage (proposé, à valider)
+
+1. **PR 1 — affichage** : Zod `.max(53)` ; `CarnetView` passe à la rangée de cases (réutilise
+   `RegularityTable`, un seul « élève ») ; marche avec 5 semaines comme avec 40 ;
+   `e2e/verifs/carnet.spec.ts` (`li[data-level]` × 5) refait. Puis `deploy:prod` (David).
+2. **PR 2 — migration**, seulement après ce `deploy:prod` : `carnet_payload` rend les paliers
+   depuis la rentrée / l'arrivée (évaluations : fenêtre de 5 semaines gardée) ; tests
+   d'intégration rouges sans la migration ; ADR 0040 mis à jour ; captures refaites.
+
+## Questions de phase 0
+
+- **Q1 — vocabulaire** : le carnet dit « jours de travail », la grille du prof « jours actifs ».
+  `RegularityTable` prend une prop de libellé : le carnet garde « jours de travail » (recommandé :
+  un parent ne connaît pas « jour actif »), la grille du prof ne bouge pas.
+- **Q2 — en-tête de la rangée** : la grille du prof met le nom de l'élève à gauche. Dans le
+  carnet, le prénom est déjà en titre de page : **pas de colonne de nom** (recommandé).
 
 ## Journal
