@@ -9,8 +9,8 @@ _Mis à jour le 2026-11-17, phase 0 du lot 2._
 
 - **État** : lots 0 et 1 en prod (#2756, #2763, #2766 ; lot 1 publié). Lot 2 (suites) : phase 0 écrite (§ 12),
   15 points, 11 modèles neufs proposés (M1–M8, P1–P3) + 2 tags (c4887e49 → 025, 0b5c3db6 → 023).
-- **Prochaine action** : réponses de David à Q16–Q18 (§ 12), puis écriture du lot 2a (M1–M8) dans un worktree.
-- **En attente de David** : Q16 (tag 0b5c3db6 → 023 ?), Q17 (connaissances 017, 019 : rien ?), Q18 (2a puis 2b ?).
+- **Prochaine action** : écriture du lot 2a (M1–M8) et page à cocher des tags (Q16–Q18 tranchées, § 12).
+- **En attente de David** : rien.
 - **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
   piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
@@ -373,3 +373,6 @@ plus une passe par contenu (`\sum`, Σ, moyenne, trois nombres, termes consécut
   l'instant (les brouillons « Cours » D20–D22 de 1re spé font ce travail une fois publiés).
 - **Q18 — Découpage** : lot 2a « suites » (M1–M8 + tags) puis lot 2b « Python » (P1–P3), ou un seul lot ?
   Reco : **2a puis 2b** (11 modèles d'un coup font une page à cocher trop longue).
+
+**Décisions (David, 2026-11-17, « je suis tes recos »)** : **Q16** 0b5c3db6 tagué 023 ; **Q17** rien pour 017,
+019 ; **Q18** lot 2a « suites » (M1–M8 + tags c4887e49 → 025, 0b5c3db6 → 023), puis lot 2b « Python » (P1–P3).
