@@ -89,7 +89,7 @@
 					"expectedAnswer": "{{r}}"
 				}
 			],
-			"statement": "Ce tableau donne le nombre d'élèves qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\ncoin: Élèves \\ Jour\n```\n\nQuel jour y a-t-il le plus d'élèves à la cantine ?\n\n```choix\nmelanger: non\n- Lundi\n- Mardi\n- Jeudi\n- Vendredi\n```",
+			"statement": "Ce tableau donne le nombre d'élèves qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\ncoin: Élèves \\ Jour\ntotaux: non\n```\n\nQuel jour y a-t-il le plus d'élèves à la cantine ?\n\n```choix\nmelanger: non\n- Lundi\n- Mardi\n- Jeudi\n- Vendredi\n```",
 			"variables": [
 				{
 					"name": "f1",

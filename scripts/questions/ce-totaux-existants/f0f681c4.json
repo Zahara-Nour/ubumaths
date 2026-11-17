@@ -13,7 +13,7 @@
 					"expectedAnswer": "{{r}}"
 				}
 			],
-			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\n```\n\nQuel jour y a-t-il le plus de personnes à la cantine ?\n\n```choix\nmelanger: non\n- Lundi\n- Mardi\n- Jeudi\n- Vendredi\n```",
+			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\ntotaux: non\n```\n\nQuel jour y a-t-il le plus de personnes à la cantine ?\n\n```choix\nmelanger: non\n- Lundi\n- Mardi\n- Jeudi\n- Vendredi\n```",
 			"variables": [
 				{
 					"name": "f1",
@@ -105,7 +105,7 @@
 					"expectedAnswer": "{{r}}"
 				}
 			],
-			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\n```\n\nQuel jour y a-t-il le moins de personnes à la cantine ?\n\n```choix\nmelanger: non\n- Lundi\n- Mardi\n- Jeudi\n- Vendredi\n```",
+			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\ntotaux: non\n```\n\nQuel jour y a-t-il le moins de personnes à la cantine ?\n\n```choix\nmelanger: non\n- Lundi\n- Mardi\n- Jeudi\n- Vendredi\n```",
 			"variables": [
 				{
 					"name": "f1",
@@ -197,7 +197,7 @@
 					"expectedAnswer": "{{n}}"
 				}
 			],
-			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\n```\n\nCombien de personnes ont mangé à la cantine {{if:j==0|le lundi|{{if:j==1|le mardi|{{if:j==2|le jeudi|le vendredi}}}}}} ?\n\n$?$ personnes",
+			"statement": "Ce tableau donne le nombre de personnes qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons ; Adultes\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\nAdultes = {{a1}} ; {{a2}} ; {{a3}} ; {{a4}}\ncoin: Personnes \\ Jour\ntotaux: non\n```\n\nCombien de personnes ont mangé à la cantine {{if:j==0|le lundi|{{if:j==1|le mardi|{{if:j==2|le jeudi|le vendredi}}}}}} ?\n\n$?$ personnes",
 			"variables": [
 				{
 					"name": "f1",
