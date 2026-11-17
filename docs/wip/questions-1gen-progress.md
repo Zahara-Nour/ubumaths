@@ -171,3 +171,24 @@ découper les modèles de 1re spé en prod (Q8).
   modèles de 1re spé scindés en prod (instantané, ids nouveaux) ?
 - **Q9** — 001 : les tableaux croisés de 2de écartés car 001 demande un diagramme (recommandé : un modèle neuf,
   diagramme en barres groupées ou circulaires à comparer).
+
+## 6. Coordination avec les autres chantiers (2026-11-17)
+
+- **Règle commune des `grades`** (acceptée par les deux sessions) : chaque chantier n'ajoute ou ne retire que **son**
+  niveau (`array_append` / `array_remove` ciblés, garde « absent / présent »), jamais une affectation complète.
+- ⚠️ **Un seul point par programme et par modèle** : le trigger `question_template_points_check_rules` refuse un
+  2e point 1GEN sur un modèle (ADR 0020). Les doubles points du § 2.2 / 2.3 se réduisent à un seul : 42bb2d66 → 011,
+  f2ed0ea0 et d8c9cb60 → 010, afe51ac4 → 055, bd27e002 → 018, d2067413 → 031, d1010214 → 058, f3100c29 → 038,
+  c90fa022 et 70e682f9 → 017, 98c3f740 et 103cf8d9 → 048, 27d77564 → 029, aeb1389d → 056. **La migration couvre donc
+  15 points, pas 17 : 016 et 027 repassent aux lots** (32 points à écrire ; 016 au lot 1, 027 au lot 4).
+- **questions-ttechno** (`ubumaths-a3`) : son lot 0 tague TTECHNO des modèles déjà tagués 1GEN (1315d326, 65e96f31,
+  373fc5b4) ; il ne corrige ni ne scinde rien. **Il attend nos lots aˣ (032 à 036, 042, 059) et taux moyen
+  (037, 040)** : nos modèles à x ⩾ 0 tiennent dans ses bornes, il les taguera TTECHNO et n'écrira que les compléments
+  (x < 0, k·aˣ). Promis : la phase 0 de ces lots avant l'écriture, puis les ids et plages des brouillons. Seuils : les
+  siens passent par le logarithme décimal → pas de doublon.
+- **questions-1techno** (`ubumaths-52`) : migration T1 en `array_append` gardé. Sur les 7 modèles de Q2, il ne pose
+  que des tags (95ee57c8 → 1TECHNO-127, 5397c20f → 1TECHNO-139, lot T2) sans toucher `grades`. f3100c29 et aeb1389d
+  reçoivent 1TECHNO-142 (T1). **Modèle commun 1GEN-022 + 1TECHNO-057** à la place de 1acb6d47 (sommet par le milieu
+  des racines ou f(x) = c, aucune formule ; bornes 1techno dans `bornes/lycee/1techno.md`) : celui qui arrive le
+  premier au second degré l'écrit, l'autre pose son tag ; non tranché par David. Il prévient avant de corriger
+  83b1f614 v3.
