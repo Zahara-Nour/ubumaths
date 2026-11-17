@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2746._
+_Mis à jour le 2026-11-17, après #2755._
 
-- **État** : PR A (#2735), B (#2742), C (#2746) mergées ; 4 modèles publiés en prod en brouillon par David ; PR D (migration `20261117140132`, nœud du point + tag) ouverte · **Prochaine action** : CI verte → merge → `db:migrate` (4 conditions réunies) → vérifier en prod (MCP) nœuds + tags · **En attente de David** : `deploy:prod` avant toute publication des 4 modèles · **Pièges en cours** : écran tortue 4e / 3e pas en prod avant `deploy:prod` ; « répéter jusqu’à » à l'apostrophe courbe ; en suspens (revue PR A) : `1e2`, `répéter 2,5` · **Worktree / branche** : `../ubumaths-wt-tortue-variables`, `feat/tortue-variables-rangement`
+- **État** : PR A (#2735), B (#2742), C (#2746), D (#2755) mergées ; migration `20261117140132` appliquée en prod (vérifiée MCP : 4 brouillons sur le nœud de leur point, 4 tags) · **Prochaine action** : après le `deploy:prod` de David, publier les 4 modèles (25991652, 81bacf03, a0b27395, d64ddd78) ; puis clore le chantier (versement dans `docs/systeme/blockly.md`, journal archivé) · **En attente de David** : `deploy:prod` · **Pièges en cours** : écran tortue 4e / 3e pas en prod avant `deploy:prod` ; en suspens (revue PR A) : `1e2`, `répéter 2,5` ; `db:migrate` pousse TOUTES les migrations de `main` en attente (celles de questions-1techno et questions-1gen sont parties avec la nôtre) · **Worktree / branche** : aucun (supprimé après #2755)
 
 ## Origine
 
@@ -164,3 +164,12 @@ Les 4 modèles relus en base locale, validés tels quels (`répéter 8` admis po
   affectation pour 4-067 / 3-047, la notion Variables et instructions pour 4-068 / 3-051), 4 tags.
 - Test d'intégration : 19 verts ; rouge sans la migration (8 échecs) ; `security-auditor` : aucun
   finding (diff avec #2727 = données seules ; gardes vérifiées sur la prod en lecture).
+- Merge #2755 puis `db:migrate` (dépôt principal ; le worktree n'est pas lié au projet) : la commande
+  a appliqué AUSSI `20261117140233_questions_1techno_lot0_retrait_118` (destructive, décidée par
+  David) et `20261117142038_questions_1gen_lot1_rangement_tags`, mergées mais pas encore migrées par
+  leurs sessions. Sessions questions-1techno et questions-1gen prévenues ; David prévenu. Leçon :
+  `supabase migration list --linked` AVANT `db:migrate`, et s'arrêter si d'autres migrations
+  attendent.
+- Prod (MCP) : 25991652 → variables et affectation, 4-067 ; 81bacf03 → Variables et instructions,
+  4-068 ; a0b27395 → variables et affectation, 3-047 ; d64ddd78 → Variables et instructions, 3-051 ;
+  tous `draft`.
