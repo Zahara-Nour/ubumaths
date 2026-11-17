@@ -6,13 +6,13 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 validée._
+_Mis à jour le 2026-11-17, après #2786._
 
-- **État** : décisions D1 et D2 prises par David (ci-dessous) ; rien de codé.
-- **Prochaine action** : PR 1 (affichage) en cours.
-- **En attente de David** : rien ; après le merge de PR 1, son `deploy:prod` avant la PR 2.
-- **Pièges en cours** : Zod `weeks.max(5)` → l'affichage d'abord, livré par `deploy:prod`, puis la migration (sinon carnet en erreur). `db:types` hors jeu (signature inchangée). ADR 0040 à mettre à jour.
-- **Worktree / branche** : `../ubumaths-wt-carnet-heatmap` · `feat/carnet-heatmap`.
+- **État** : PR 1 (affichage, Zod `max(53)`) mergée (#2786), pas encore en prod. Le SQL rend toujours 5 semaines.
+- **Prochaine action** : PR 2 (migration `carnet_payload` depuis la rentrée / l'arrivée ; évaluations gardées à 5 semaines ; L3 école sans année = 5 semaines ; ADR 0040 ; e2e à refaire), **seulement après le `deploy:prod` de #2786**.
+- **En attente de David** : `deploy:prod` de #2786.
+- **Pièges en cours** : migrer avant ce déploiement = carnet de tous les parents en erreur (Zod `max(5)` en prod). Port 5176 souvent pris par un autre worktree : e2e avec `VERIFS_PORT` libre.
+- **Worktree / branche** : aucun (à recréer pour la PR 2).
 
 ---
 
@@ -105,3 +105,4 @@ au merge (`db:migrate`) alors que le code en prod (Zod `.max(5)`) n'est livré q
 ## Journal
 
 - 2026-11-17 : phase 0 validée (ordre inversé, Q1 « jours de travail », Q2 sans colonne de nom). Worktree ouvert pour la PR 1.
+- 2026-11-17 : PR 1 #2786 mergée (CI verte, `code-reviewer` : rien de bloquant).
