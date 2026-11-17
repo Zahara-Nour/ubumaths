@@ -7,18 +7,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la publication du lot 3._
+_Mis à jour le 2026-11-17, aperçu du lot 4 terminé (avant sa PR)._
 
-- **État** : lots 1, 2 et 3 **publiés** (lot 3 : 7/7 `published` relu au MCP, § 19).
-- **Prochaine action** : lot 4 (taux moyen, phénomènes exponentiels, seuils ; phase 0 validée § 14, T1 à T7),
-  worktree neuf `../ubumaths-wt-questions-1gen-lot4` ; envoyer ses ids à questions-ttechno (T1 → 035, T2 → 038).
-- **En attente de David** : rien.
+- **État** : lots 1, 2 et 3 publiés ; lot 4 écrit et joué en entier dans l'aperçu admin (§ 20), PR des fichiers
+  ouverte. Lot 5 (second degré) écrit par questions-1techno (§ 4).
+- **Prochaine action** : CI verte → merge ; puis brouillons en prod (David lance `create-questions --publier`),
+  migration nœud + tags, page à cocher.
+- **En attente de David** : rien (écarts du § 20 acceptés).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente (`migration list --linked` d'abord) ; ids écrits par `create-questions` dans le dépôt
-  principal → les copier dans un worktree, commiter, puis `git restore` (jamais les fichiers d'une autre session) ;
-  merge de `origin/main` dans une branche : message conventionnel (commitlint) ; rollbacks des lots 2 et 3 : ne plus
-  les jouer une fois les tags 1TECHNO / TTECHNO posés.
-- **Worktree / branche** : aucun.
+  principal → les copier dans un worktree, commiter, puis `git restore` ; envoyer à questions-ttechno les ids de T1
+  (→ 035) et T2 (→ 038). Aperçu : le serveur redirige vers `[::1]` → lancer `--host ::`, pas `--host 127.0.0.1`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot4`, `feat/questions-1gen-lot4`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -128,6 +128,8 @@ modèle (1acb6d47) a perdu son tag. Six lots, un thème chacun, groupés par nœ
 4. **Taux moyen, phénomènes exponentiels, seuils** (A + B) : 037, 040, 043, 038, 056, 044, 060 (7). 037, 040
    partagés avec questions-ttechno.
 5. **Second degré** (A + B) : 022 (modèle commun avec 1TECHNO-057), 024, 025, 027, 052, 053, 054 (7).
+   **Écrit par questions-1techno** (décision de David, 2026-11-17) : modèles communs `1_GEN` + `1_TECHNO`, elle pose
+   les deux tags dans sa migration (branche `feat/questions-1techno-lot2`) ; rien à écrire ici, ids attendus.
 6. **Statistiques à deux caractères** (B, plus A pour 006) : 001, 002, 003, 004, 005, 006, 007 (7).
 
 Ancien découpage (5 lots, avant le § 7) : lot 1 mêlait suites géométriques et représentations ; lots 2 et 3
@@ -716,3 +718,53 @@ Tous sur « Fonctions > Fonction exponentielle > fonctions x ↦ aˣ ».
 
 **Publication (2026-11-17)** : David a lancé `publier-lot.ts --publier` ; 7/7 modèles relus `published` (script et
 MCP). questions-ttechno prévenue (tags TTECHNO d'E1 à E4).
+
+## 20. Lot 4 « taux moyen, phénomènes exponentiels, seuils » : écriture (2026-11-17)
+
+Script `docs/wip/questions/lot-1gen-4.py` → `scripts/questions/1gen-4-taux-moyen-seuils/` (7 fichiers, 77 specs).
+`question:specs` vert pour les 7 (50 tirages par variation, `\textcolor` toujours dans `$…$`) ; `sonde-courbes`
+sur 300 tirages, 300 blocs ` ```courbe ` : 0 problème ; `validateLatex` + compte des accolades sur 2 903 formules
+(40 aperçus par modèle) : 0 problème ; simulation `create-questions` verte contre la prod (aucun homonyme). Essai en
+base locale : 7 brouillons créés (copie des fichiers, ids locaux). Aperçu admin (serveur `--host 127.0.0.1`, première compilation
+lente) : T7 v1 « 4 » pour 4,12 → juste, nuage de la v3 et droite y = 9 lisibles ; T4 « 5000·1,02ˣ » → juste ; T1 v3
+(+30, −20, +40, −10) « 10 » (moyenne des taux) → faux, tableau rendu. T2, T3, T5, T6 restent à jouer : la base
+locale a été remise à zéro par une autre session (brouillons recréés une fois), puis le serveur a été arrêté.
+
+Aperçu repris le 2026-11-17 (brouillons recréés en base locale depuis une copie des fichiers, serveur `--host ::`),
+une réponse juste et une fausse par variation, corrections lues : **T2** v1 (25 000 → 30 000 en 5 ans) « 3,71 »
+juste, « 4 » (taux global ÷ n) faux, v1 en baisse « −1,05 » juste, v2 « 4,61 » juste, v3 « 0,797 » juste, « 0,833 »
+(10/12) et « 0,8 » faux ; **T3** 8/8 variations juste et faux, option « t ↦ k × aᵗ » rendue, correction « ni l'une
+ni l'autre » (différences 1, 2, 3, 4 ; quotients 10/9 ≠ 12/10) juste ; **T5** 3/3 (2³⁰ → 10⁹, 20 demi-vies → 10⁶,
+vidéo 18 min sur 6 h → 2²⁰ → 10⁶), correction rendue ; **T6** 3/3 (1,1ⁿ ⩾ 2 → 8, 200 × 0,7ⁿ < 10 → 9,
+1,03ⁿ ⩾ 1,5 → 14), n − 1 faux, correction rendue (200 × 0,7⁸ ≈ 11,53, 200 × 0,7⁹ ≈ 8,07). Rien à corriger.
+
+| Modèle | Fichier                                  | Variations | Specs |
+| ------ | ---------------------------------------- | ---------- | ----- |
+| T1     | `01-taux-moyen-evolutions-successives`   | 3          | 8     |
+| T2     | `02-taux-moyen-entre-deux-valeurs`       | 3          | 9     |
+| T3     | `03-reconnaitre-evolution-exponentielle` | 8          | 18    |
+| T4     | `04-modeliser-fonction-exponentielle`    | 4          | 15    |
+| T5     | `05-ordre-de-grandeur-exponentielle`     | 3          | 9     |
+| T6     | `06-seuil-par-le-calcul`                 | 3          | 9     |
+| T7     | `07-seuil-sur-un-graphique`              | 3          | 9     |
+
+Écarts à la phase 0 (§ 14), sans effet sur les points ni sur les formes de réponse — **acceptés par David le
+2026-11-17** :
+
+- **T1** : v1 « hausse de a %, puis baisse de b % » (n = 2), v2 deux hausses puis une baisse (n = 3), v3 tableau de
+  quatre évolutions alternées (n = 4). Une condition écarte les tirages où la moyenne des taux, arrondie au
+  centième, donnerait la bonne réponse (petits taux : écart de quelques millièmes).
+- **T2** : v3 (taux mensuel équivalent) arrondi **au millième** de pourcent, et non au centième : à 3 %,
+  1,03^(1/12) − 1 ≈ 0,247 % et 3/12 = 0,25 % tombent tous deux sur 0,25 au centième. v1 : rapports 1,2 ; 1,25 ;
+  1,5 ; 0,8 ; 0,9 (baisses comprises, taux négatif).
+- **T3** : 8 variations au lieu de 4, une réponse par variation : tableau linéaire, exponentiel (×2, ×1,5, ×0,5),
+  ni l'un ni l'autre (a + b·n(n+1)/2) ; phrase « +p % », « +p habitants », « divisée par 2 » ; croissance ou
+  décroissance (×q) ; discret ou continu.
+- **T4** : v4 (rumeur) dit « le nombre est multiplié par k à chaque étape », sans donner la forme.
+- **T5** : le ×3 de la v3 est retiré : 3¹⁰ ≈ 6 × 10⁴ n'a pas d'ordre de grandeur sans ambiguïté (10⁴ ou 10⁵).
+  Trois variations, toutes par 2¹⁰ ≈ 10³ : doublements (10, 20, 30 h), demi-vies (10, 20, 30), vidéo qui double
+  toutes les m minutes. Choix 10, 10², 10³, 10⁶, 10⁹.
+- **T6** : v1 seuil 1,5 ou 2 fois le capital, t ∈ {4 ; 5 ; 6 ; 8 ; 10} ; v2 p ∈ {10 ; 20 ; 25 ; 30}, seuil 5, 10 ou
+  20 mg ; v3 seuil 1,2, 1,3 ou 1,5 fois la population, t ∈ {2 ; 3 ; 5}. n ⩽ 20 partout.
+- **T7** : v1 et v2 abscisses graduées de 0,5 en 0,5, tolérance 0,25 (comme E7) ; v3 nuage u₀ × qⁿ (u₀ ∈ {1 ; 1,5},
+  q ∈ {1,5 ; 1,6}, n = 0..6), seuil entier à 0,4 au moins de chaque terme.
