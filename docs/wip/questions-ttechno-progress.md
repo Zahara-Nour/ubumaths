@@ -5,17 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR du lot 1 (fichiers) ouverte._
+_Mis à jour le 2026-11-17, après #2766 (lot 1 rangé et tagué en prod)._
 
-- **État** : lot 0 en prod (#2756). Lot 1 (automatismes, 4 modèles, § 11) écrit : simulation verte (54 specs),
-  joué en base locale (rendu vérifié) ; PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR ; puis David lance `create-questions --publier` (brouillons prod),
-  ids commités, migration nœud + tags (073, 015 ×2, 092), page à cocher, publication.
+- **État** : lot 0 en prod (#2756). Lot 1 (§ 11, 4 modèles : indices base 100, inégalité) : brouillons en prod,
+  nœud + tags migrés (#2766, `20261117172627`, vérifié par MCP). Page à cocher publiée, 0 verdict :
+  https://claude.ai/artifact/TJCp41QzxCSUjjiKRjpgej
+- **Prochaine action** : relire et compter les verdicts (`ArtifactData list verdicts`) ; puis `publier-lot.ts
+--dir scripts/questions/ttechno-1-automatismes` en simulation, **David** avec `--publier`. Ensuite lot 2 (suites).
+- **En attente de David** : sa relecture du lot 1 sur la page à cocher.
 - **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
-- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; worktree
-  sans lien Supabase : `db:migrate` après copie de `supabase/.temp` ; Chrome piloté = choisir le Chrome du
-  Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot1`.
+- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
+  piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
+- **Worktree / branche** : aucun (#2763, #2766 mergées ; journal sur `main`).
 
 ## 1. Périmètre
 
@@ -309,3 +310,7 @@ départ ; 3 fiches au bloc « ranger » non dessiné, à jouer dans l'aperçu : 
   fichier restauré d'une copie, identique.
 - `security-auditor` : aucun bloquant (ids, codes, chemins revérifiés en prod ; écart avec le gabarit = données
   seules ; rollback symétrique ; accès : personne). Note : `migration list --linked` juste avant `db:migrate`.
+- #2766 mergée (CI verte ; job « Garde SECURITY DEFINER » relancé une fois : clone git bloqué 15 min) ;
+  `migration list --linked` : seule `20261117172627` en attente ; `db:migrate` depuis le dépôt principal ; prod
+  vérifiée (4 nœuds, 4 tags, `updated_at` = création, trigger réactivé).
+- Page à cocher : https://claude.ai/artifact/TJCp41QzxCSUjjiKRjpgej (4 fiches, aucune alerte ; `verdicts` vide).
