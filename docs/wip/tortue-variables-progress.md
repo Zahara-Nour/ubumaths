@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-17, après #2742._
 
-- **État** : PR A (logique, #2735) et PR B (écran, #2742) mergées : tortue de 4e / 3e complète (boîtes à outils, carte, corrigé, sélecteur de `/tortue`, `départ:` à compléter) · **Prochaine action** : PR C (modèles, Q7) — relevé prod des points 4-067, 4-068, 3-047, 3-051, puis liste de modèles proposée à David avant d'écrire · **En attente de David** : rien (la liste de la PR C lui sera soumise) · **Pièges en cours** : un modèle `niveau:` n'a d'écran en prod qu'après `deploy:prod` ; reste en suspens (revue PR A) : `1e2` lu sans niveau / refusé en 4e, `répéter 2,5 [ … ]` arrondi sans prévenir l'auteur ; vérification manuelle du bac à sable notée · **Worktree / branche** : aucun (supprimé après #2742)
+- **État** : PR A (logique, #2735) et PR B (écran, #2742) mergées : tortue de 4e / 3e complète (boîtes à outils, carte, corrigé, sélecteur de `/tortue`, `départ:` à compléter) · **Prochaine action** : PR C (modèles, Q7) — relevé fait (§ PR C) ; écrire les modèles une fois la liste validée · **En attente de David** : liste des modèles de la PR C (4 modèles, 1 par point ; Fibonacci en 3e ?) · **Pièges en cours** : un modèle `niveau:` n'a d'écran en prod qu'après `deploy:prod` ; reste en suspens (revue PR A) : `1e2` lu sans niveau / refusé en 4e, `répéter 2,5 [ … ]` arrondi sans prévenir l'auteur ; vérification manuelle du bac à sable notée · **Worktree / branche** : aucun (supprimé après #2742)
 
 ## Origine
 
@@ -100,3 +100,26 @@ trois` sans niveau. Reste :
 Aucun bloquant. Deux mineurs corrigés : `ajouter 1 à résultat` / `à nombre` donnent le même refus
 que `avancer résultat` (« n'existe pas pour la tortue ») ; le bac à sable ne génère plus le Python
 hors du niveau de base.
+
+## PR C — modèles : relevé prod (2026-11-17, MCP lecture seule)
+
+Points visés et modèles déjà tagués (tous des programmes de calcul, aucun ```tortue au-delà de la
+5e) :
+
+| Point | Libellé (borne)                                                | Modèles                                          |
+| ----- | -------------------------------------------------------------- | ------------------------------------------------ |
+| 4-067 | Manipuler une variable (une seule, ex. accumulation en boucle) | 20cb9b55 texte, 01109f75 calcul — publiés        |
+| 4-068 | Écrire un programme simple pour un objectif (sans borne)       | f91149f2 calcul — publié                         |
+| 3-047 | Approfondir les variables (plusieurs dans un même programme)   | 962da675 texte (draft), dbab36af calcul — publié |
+| 3-051 | Écrire un programme pour un objectif (sans borne)              | 6e99d291 calcul — publié                         |
+
+Tortue en prod : 6-197, 5-100, 5-105, 5-106 seulement. Quadrillage ±10 carreaux autour du départ.
+
+**Contrainte relevée** : le jugement compare les tracés ; sans `blocs:`, une spirale se trace
+aussi en `avancer 1 ; tourner … ; avancer 2 ; …` sans variable. Chaque variation « avec variable »
+porte donc un `blocs: N` qui rend la variable nécessaire. Deux suites arithmétiques se déduisent
+toujours l'une de l'autre (`avancer a + 2`) : le tracé seul ne peut pas exiger **deux** variables
+(3-047), sauf une suite de Fibonacci (`ajouter a à b ; mettre a à b − a`).
+
+Liste proposée à David : voir le message de la session du 2026-11-17 (recopiée ici après sa
+réponse).
